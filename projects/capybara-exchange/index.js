@@ -4,7 +4,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 Object.keys(config).forEach((chain) => {
   const arg = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
+    tvl: async (api) => {
       const pools = Object.values(arg["pools"]);
 
       let allUnderlying = await api.multiCall({ abi: "address[]:getTokens", calls: pools, });
