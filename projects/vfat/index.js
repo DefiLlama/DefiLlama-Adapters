@@ -54,8 +54,8 @@ const config = {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
     chainName: 'mode',
     fromBlockSickle: 7464171,
-    gaugeFactory:  '0x31832f2a97Fd20664D76Cc421207669b55CE4BC0',
-    voter:  '0xD2F998a46e4d9Dd57aF1a28EBa8C34E7dD3851D7' ,
+    gaugeFactory: '0x31832f2a97Fd20664D76Cc421207669b55CE4BC0',
+    voter: '0xD2F998a46e4d9Dd57aF1a28EBa8C34E7dD3851D7',
     fromBlock: 7453232,
   },
   fantom: {
@@ -239,22 +239,15 @@ async function fetchGauges3(api, voter, fromBlock) {
   return deployLogs.map(log => log.args[2]);
 }
 
-// TVL calculation for Base and Optimism
-async function tvlBaseOptimism(api) {
-  const { factory, gaugeFactory, gaugeFactory2, voter, NonfungiblePositionManager, fromBlock, fromBlockSickle, chainName } = config[api.chain];
-
-  const sickles = await fetchSickles(api, factory, fromBlockSickle);
-  const deployedAeroGauges = await fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2);
-
-  const stakingTokens = await api.multiCall({ abi: 'address:stakingToken', calls: deployedAeroGauges.lp });
+async function getLPBalances(api, gauges, sickles, stakingTokens) {
   const gaugeTokenMapping = {};
   stakingTokens.forEach((stakingToken, index) => {
-    gaugeTokenMapping[deployedAeroGauges.lp[index]] = stakingToken;
+    gaugeTokenMapping[gauges[index]] = stakingToken;
   });
 
   const balanceCallsLP = [];
   const tokens = [];
-  for (const gauge of deployedAeroGauges.lp) {
+  for (const gauge of gauges) {
     for (const sickle of sickles) {
       balanceCallsLP.push({ target: gauge, params: [sickle] });
       tokens.push(gaugeTokenMapping[gauge]);
@@ -262,7 +255,23 @@ async function tvlBaseOptimism(api) {
   }
 
   const lpBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsLP });
-  api.add(tokens, lpBals);
+
+  return {
+    balances: lpBals,
+    tokens: tokens
+  };
+}
+
+// TVL calculation for Base and Optimism
+async function tvlBaseOptimism(api) {
+  const { factory, gaugeFactory, gaugeFactory2, voter, NonfungiblePositionManager, fromBlock, fromBlockSickle, chainName } = config[api.chain];
+
+  const sickles = await fetchSickles(api, factory, fromBlockSickle);
+  const deployedAeroGauges = await fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2);
+  const stakingTokens = await api.multiCall({ abi: 'address:stakingToken', calls: deployedAeroGauges.lp });
+  const { balances, tokens } = await getLPBalances(api, deployedAeroGauges.lp, sickles, stakingTokens);
+
+  api.add(tokens, balances);
 
   const pools = await api.multiCall({ abi: 'address:pool', calls: deployedAeroGauges.nft });
   const slot0s = await api.multiCall({ abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, bool unlocked)', calls: pools });
@@ -289,23 +298,9 @@ async function tvlArbitrumLinea(api) {
   const sickles = await fetchSickles(api, factory, fromBlockSickle);
   const gauges = await fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, chainName);
   const stakingTokens = await api.multiCall({ abi: 'address:stake', calls: gauges.lp });
-  const gaugeTokenMapping = {};
-  stakingTokens.forEach((stakingToken, index) => {
-    gaugeTokenMapping[gauges.lp[index]] = stakingToken;
-  });
 
-  const balanceCallsLP = [];
-  const tokens = [];
-  for (const gauge of gauges.lp) {
-    for (const sickle of sickles) {
-      balanceCallsLP.push({ target: gauge, params: [sickle] });
-      tokens.push(gaugeTokenMapping[gauge]);
-    }
-  }
-
-  const lpBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsLP });
-  api.add(tokens, lpBals);
-
+  const { balances, tokens } = await getLPBalances(api, gauges.lp, sickles, stakingTokens);
+  api.add(tokens, balances);
 
   const positions = await fetchSickleNftPositions(api, sickles, config[api.chain].NonfungiblePositionManager);
   const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
@@ -319,30 +314,11 @@ async function tvlArbitrumLinea(api) {
 
 async function modeTvl(api) {
   const { factory, voter, fromBlock, fromBlockSickle, chainName } = config[api.chain];
-
   const sickles = await fetchSickles(api, factory, fromBlockSickle);
   const gauges = await fetchGauges3(api, voter, fromBlock);
-
-  //console.log(gauges);
-
   const stakingTokens = await api.multiCall({ abi: 'address:stakingToken', calls: gauges });
-  const gaugeTokenMapping = {};
-  stakingTokens.forEach((stakingToken, index) => {
-    gaugeTokenMapping[gauges[index]] = stakingToken;
-  });
-
-  const balanceCallsLP = [];
-  const tokens = [];
-  for (const gauge of gauges) {
-    for (const sickle of sickles) {
-      balanceCallsLP.push({ target: gauge, params: [sickle] });
-      tokens.push(gaugeTokenMapping[gauge]);
-    }
-  }
-
-  const lpBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsLP });
-  api.add(tokens, lpBals);
-
+  const { balances, tokens } = await getLPBalances(api, gauges, sickles, stakingTokens);
+  api.add(tokens, balances);
   return sumTokens2({ api, resolveLP: true });
 }
 
@@ -358,8 +334,8 @@ async function genericTvl(api) {
   }
 
   if (NonfungiblePositionManager) {
-  const positions = await fetchSickleNftPositions(api, sickles, NonfungiblePositionManager);
-  positions.forEach(position => addUniV3LikePosition({ ...position, api }));
+    const positions = await fetchSickleNftPositions(api, sickles, NonfungiblePositionManager);
+    positions.forEach(position => addUniV3LikePosition({ ...position, api }));
   }
 
   return sumTokens2({ api, resolveLP: true });
@@ -393,30 +369,14 @@ async function tvlFantom(api) {
   const sickles = await fetchSickles(api, factory, fromBlockSickle);
   const gauges = await fetchFantomGauges(api, fromBlock, gaugeFactory, voter, chainName);
   const stakingTokens = await api.multiCall({ abi: 'address:stake', calls: gauges });
-  const gaugeTokenMapping = {};
-  stakingTokens.forEach((stakingToken, index) => {
-    gaugeTokenMapping[gauges[index]] = stakingToken;
-  });
-
-  const balanceCallsLP = [];
-  const tokens = [];
-  for (const gauge of gauges) {
-    for (const sickle of sickles) {
-      balanceCallsLP.push({ target: gauge, params: [sickle] });
-      tokens.push(gaugeTokenMapping[gauge]);
-    }
-  }
-
-  const lpBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsLP });
-  api.add(tokens, lpBals);
+  const { balances, tokens } = await getLPBalances(api, gauges, sickles, stakingTokens);
+  api.add(tokens, balances);
 
   return sumTokens2({ api, resolveLP: true });
 }
 
-
-
 Object.keys(config).forEach(chain => {
-  if (['base', 'optimism'].includes(chain)) {
+  if (['basez', 'optimismz'].includes(chain)) {
     module.exports[chain] = { tvl: tvlBaseOptimism };
   } else if (['arbitrum', 'linea'].includes(chain)) {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
