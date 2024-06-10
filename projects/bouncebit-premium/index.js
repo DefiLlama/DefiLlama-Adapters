@@ -23,7 +23,7 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: ["0x1ddD6E5eA766511CC0f348DC8d17578a821B680F", "0xa2B283e4dbdFEA5461C36a59E3B94b3ef2883085"],
-      tokens: [BBTC, BBUSD]
+      tokens: [BBTC] // removed BBUSD because its tracked on bouncebit ethena listing
     }),
   },
   bsc: {
