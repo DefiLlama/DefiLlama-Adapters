@@ -1,7 +1,6 @@
 const { sumTokens2 } = require('./unwrapLPs')
 const { getLogs } = require('./cache/getLogs')
 const { cachedGraphQuery } = require('./cache')
-const { request, } = require('graphql-request')
 
 const uniswapConfig = {
   eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)',
