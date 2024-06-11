@@ -1,6 +1,6 @@
 // Maverick Protocol
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs2 } = require("../helper/cache/getLogs");
 
 function maverickTVL(config) {
   const exports = {};
@@ -8,20 +8,16 @@ function maverickTVL(config) {
   Object.keys(config).forEach((chain) => {
     const { factories } = config[chain];
     exports[chain] = {
-      tvl: async (_, _b, _cb, { api }) => {
+      tvl: async (api) => {
         let logs = [];
         for (let k = 0; k < factories.length; k++) {
           logs.push(
-            ...(await getLogs({
+            ...(await getLogs2({
               api,
               target: factories[k].address,
-              topics: [
-                "0x848331e408557f4b7eb6561ca1c18a3ac43004fbe64b8b5bce613855cfdf22d2",
-              ],
               fromBlock: factories[k].startBlock,
               eventAbi:
                 "event PoolCreated(address poolAddress,uint8 protocolFeeRatio,uint256 feeAIn,uint256 feeBIn,uint256 tickSpacing,uint256 lookback,int32 activeTick,address tokenA,address tokenB,uint8 kinds,address accessor)",
-              onlyArgs: true,
             }))
           );
         }
