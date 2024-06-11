@@ -1,5 +1,3 @@
-const sdk = require('@defillama/sdk');
-
 async function tvl(api) {
   const { lending: lendingContract, tvlAddresses } = config[api.chain];
 
@@ -11,20 +9,13 @@ async function borrowed(api) {
 
   const borrowAmounts = await api.multiCall({
     abi: 'function getPseudoTotalBorrowAmount(address) view returns (uint256)',
-    calls: borrowAddresses.map(token => ({
-      target: lendingContract,
-      params: [token]
-    }))
-  });
+    target: lendingContract,
+    calls: borrowAddresses
+  })
 
-  const balances = {};
-  borrowAddresses.forEach((token, i) => {
-    const borrowed = borrowAmounts[i];
-    sdk.util.sumSingleBalance(balances, token, borrowed, api.chain);
-  });
-
-  return balances;
+  api.add(borrowAddresses, borrowAmounts)
 }
+
 const aavePools = [
   "0x724dc807b04555b71ed48a6896b6F41593b8C637",
   "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
