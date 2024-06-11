@@ -1,14 +1,12 @@
-const { getTokenSupply } = require("../helper/solana")
+const { getStakedSol } = require("../helper/solana")
 
 async function tvl(api) {
-  const vSOL = 'vSoLxydx6akxyMD9XEcPvGYNGq6Nn66oqVb3UkGkei7'
-  const supply = await getTokenSupply(vSOL)
-  api.add(vSOL, supply * 1e9)
+  // https://docs.thevault.finance/about/stake-pool-address
+  await getStakedSol('GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW', api)
 }
 
 module.exports = {
   timetravel: false,
-  methodology: "vSOL total supply as it's equal to the SOL staked",
   solana: {
     tvl
   },
