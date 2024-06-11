@@ -1,30 +1,23 @@
-const sdk = require('@defillama/sdk')
-const {get} = require("../helper/http");
-const { getChainTransform } = require('../helper/portedTokens')
+const { getConfig } = require('../helper/cache');
 
-const abi = {asset: "address:asset", totalAssets: "uint256:totalAssets"};
+async function tvl(api) {
+  let vaults = await getConfig('credbull', "https://incredbull.io/api/vaults")
+  vaults = vaults[api.chain]
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
+}
 
-async function tvl(api, block) {
-    const vaults = await get("https://incredbull.io/api/vaults");
-
-    const chain = api.chain;
-    const calls = vaults[chain].map(i => ({target: i}));
-    const params = {calls, chain, block};
-
-    const {output: tokens} = await sdk.api.abi.multiCall({abi: abi.asset, ...params});
-    const {output: totalAssets} = await sdk.api.abi.multiCall({abi: abi.totalAssets, ...params});
-
-    const transform = await getChainTransform(chain);
-    const balances = {};
-    for (let i = 0; i < tokens.length; i++) {
-        sdk.util.sumSingleBalance(balances, transform(tokens[i].output), totalAssets[i].output);
-    }
-
-    return balances;
+async function borrowed(api) {
+  let vaults = await getConfig('credbull', "https://incredbull.io/api/vaults")
+  vaults = vaults[api.chain]
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  const bals = await api.multiCall({ abi: 'address:totalAssets', calls: vaults })
+  api.add(tokens, bals)
+  const tBals = (await api.multiCall({  abi: 'erc20:balanceOf', calls: tokens.map((t,i) => ({ target: t, params: vaults[i] })) })).map(i => i * -1)
+  api.add(tokens, tBals)
 }
 
 module.exports = {
-    timetravel: false,
-    methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
-    btr: {tvl},
+  methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
+  btr: { tvl, borrowed, },
 };
