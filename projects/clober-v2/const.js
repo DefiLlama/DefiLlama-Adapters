@@ -1,4 +1,4 @@
-export const CONTRACT_INFOS = {
+const CONTRACT_INFOS = {
   base: {
     bookManagerContract: {
       address: '0x382CCccbD3b142D7DA063bF68cd0c89634767F76',
@@ -19,4 +19,9 @@ export const CONTRACT_INFOS = {
   },
 }
 
-export const zeroAddress = '0x0000000000000000000000000000000000000000'
+const zeroAddress = '0x0000000000000000000000000000000000000000'
+
+module.exports = {
+  CONTRACT_INFOS,
+  zeroAddress
+}
