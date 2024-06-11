@@ -34,7 +34,7 @@ const chains = {
   ethereum: 1,
   optimism: 10,
   cronos: 25,
-//  bsc: 56,  "stargate-v2-bsc-usdt" pool giving B
+  bsc: 56,
   xdai: 100,
   fuse: 122,
   heco: 128,

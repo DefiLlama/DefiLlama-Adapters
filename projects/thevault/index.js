@@ -1,8 +1,8 @@
 const { getStakedSol } = require("../helper/solana")
 
 async function tvl(api) {
-  // https://stake-docs.solblaze.org/developers/addresses
-  await getStakedSol('6WecYymEARvjG5ZyqkrVQ6YkhPfujNzWpSPwNKXHCbV2', api)
+  // https://docs.thevault.finance/about/stake-pool-address
+  await getStakedSol('GdNXJobf8fbTR5JSE7adxa6niaygjx4EEbnnRaDCHMMW', api)
 }
 
 module.exports = {
