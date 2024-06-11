@@ -24,8 +24,7 @@ const borrowed = async (api) => {
     const [market, borrowed_denom] = pool.borrowed_amount.denom.split('-');
     const market_id = `${market}:usd`;
     const price = price_info.prices.find(price => price.market_id === market_id)?.price;
-    borrowed_amount = pool.borrowed_amount.amount * price; 
-    api.add(borrowed_denom, borrowed_amount);
+    api.add(borrowed_denom, pool.borrowed_amount.amount * price);
   });
 }
 
