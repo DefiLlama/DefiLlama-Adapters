@@ -30,6 +30,7 @@ const sets = [
   icethAddress,
   dsETH,
   gtcETH,
+  hyETH,
 ];
 
 async function tvl(api) {
