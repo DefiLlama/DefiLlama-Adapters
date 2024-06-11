@@ -970,6 +970,7 @@ const BLAST_REGISTRY_TOKENS = [
   "0x76da31d7c9cbeae102aff34d3398bc450c8374c1",
   "0x47c337bd5b9344a6f3d6f58c474d9d8cd419d8ca",
   "0x216a5a1135a9dab49fa9ad865e0f22fe22b5630a",
+  "0x2416092f143378750bb29b79ed961ab195cceea5",
 ];
 
 const registryTokensByChain = {
