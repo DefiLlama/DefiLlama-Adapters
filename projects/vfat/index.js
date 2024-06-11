@@ -70,7 +70,8 @@ const config = {
   mantle: {
     factory: '0xB4C31b0f0B76b351395D4aCC94A54dD4e6fbA1E8',
     chainName: 'mantle',
-    fromBlockSickle: 62383980
+    fromBlockSickle: 62383980,
+    moeMasterchef:  '0xA756f7D419e1A5cbd656A438443011a7dE1955b5'
   },
   bsc: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
@@ -375,6 +376,61 @@ async function tvlFantom(api) {
   return sumTokens2({ api, resolveLP: true });
 }
 
+async function tvlMantle(api) {
+  const { factory, fromBlockSickle, moeMasterchef } = config[api.chain];
+
+  const sickles = await fetchSickles(api, factory, fromBlockSickle);
+
+  const numberOfFarms = await api.call({
+    abi: 'function getNumberOfFarms() view returns (uint256)',
+    target: moeMasterchef
+  });
+
+  const farmIds = Array.from({ length: numberOfFarms }, (_, i) => i);
+  const tokens = await api.multiCall({
+    abi: 'function getToken(uint256 pid) view returns (address)',
+    calls: farmIds.map(pid => ({ target: moeMasterchef, params: [pid] }))
+  });
+
+  const farmTokenMap = farmIds.reduce((map, pid, index) => {
+    map[pid] = tokens[index];
+    return map;
+  }, {});
+
+  const depositCalls = [];
+  sickles.forEach(sickle => {
+    farmIds.forEach(pid => {
+      depositCalls.push({ target: moeMasterchef, params: [pid, sickle] });
+    });
+  });
+
+  const deposits = await api.multiCall({
+    abi: 'function getDeposit(uint256 pid, address account) view returns (uint256)',
+    calls: depositCalls
+  });
+
+  const tokenBalanceMap = {};
+
+  depositCalls.forEach((call, index) => {
+    const pid = call.params[0];
+    const deposit = deposits[index];
+    const token = farmTokenMap[pid];
+    
+    if (!tokenBalanceMap[token]) {
+      tokenBalanceMap[token] = deposit;
+    } else {
+      tokenBalanceMap[token] = (BigInt(tokenBalanceMap[token]) + BigInt(deposit)).toString();
+    }
+  });
+
+  const tokenList = Object.keys(tokenBalanceMap);
+  const balanceList = Object.values(tokenBalanceMap);
+
+  api.add(tokenList, balanceList);
+
+  return sumTokens2({ api, resolveLP: true });
+}
+
 Object.keys(config).forEach(chain => {
   if (['base', 'optimism'].includes(chain)) {
     module.exports[chain] = { tvl: tvlBaseOptimism };
@@ -384,7 +440,9 @@ Object.keys(config).forEach(chain => {
     module.exports[chain] = { tvl: tvlFantom };
   } else if (chain === 'mode') {
     module.exports[chain] = { tvl: modeTvl };
-  } else if (!['base', 'optimism', 'arbitrum', 'linea', 'fantom', 'mode'].includes(chain)) {
+  } else if (chain === 'mantle') {
+    module.exports[chain] = { tvl: tvlMantle };
+  } else if (!['base', 'optimism', 'arbitrum', 'linea', 'fantom', 'mode', 'mantle'].includes(chain)) {
     module.exports[chain] = { tvl: genericTvl };
   }
 });
