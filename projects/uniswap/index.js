@@ -3,12 +3,12 @@ const { cachedGraphQuery, configPost } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const graphs = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-  optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
+  ethereum: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5AXe97hGLfjgFAc6Xvg6uDpsD5hqpxrxcma9MoxG7j7h",
+  optimism: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/Cghf4LfVqPiFw6fp6Y5X5Ubc8UpmUhSfJL82zwiBFLaj",
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
-  polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
-  celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
-  bsc: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc",
+  polygon: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/3hCPRGf4z88VC5rsBKU5AA9FBBq5nF3jbKJG7VZCbhjm",
+  celo: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/ESdrTJ3twMwWVoQ1hUE2u7PugEHX3QkenudD6aXCkDQ4",
+  bsc: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/F85MNzUGYqgSHSHRGgeVMNsdnW1KtZSVgFULumXRZTw2",
   avax: "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax",
   base: "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/version/latest",
 }
