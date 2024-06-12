@@ -1,5 +1,6 @@
 const erc4626Abi = require("./erc4626.json");
 const { sumTokens2 } = require("../helper/solana");
+const { sumTokens2: sumTokensEVM } = require("../helper/unwrapLPs");
 
 const erc4626Vaults = {
   "ethereum": [
@@ -8,6 +9,12 @@ const erc4626Vaults = {
     "0x6B0825b3E079fad25086431F7154acB3073f933B",
     "0xf06e004caB43F326AA3668C8723A8bDBCF5bD165",
     "0xfCB69E5E535e04A809dC8Af7eba59c2FED4b2868",
+  ],
+  "optimism": [
+    "0x2CD4B4EB84028F70e1090B053859B813ef9ad160",
+    "0xAD1999728F840082aC3Bf9eA09b30D19a7923bbC",
+    "0xCE05f5d12e7DaF74C2239A2264c99d38176ac3B4",
+    "0xa850550A115062a860A951a3f77bFD4c22A441fA",
   ]
 }
 
@@ -89,19 +96,28 @@ const getERC4626IdleVaultFundsByChain = async (api) => {
   });
 }
 
-async function tvl(_, block, _cb, { api, }) {
+async function tvl(api) {
   await getERC4626VaultFundsByChain(api);
   if (idleCdos[api.chain])
     await getERC4626IdleVaultFundsByChain(api);
 
-  return api.getBalances()
+  return sumTokensEVM({ api, resolveLP: true, })
 }
 
 async function SolanaTvl() {
   const tokensAndOwners = [
     ['mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', 'AkkGFKVJY8o5MRqBf2St4Q8NQnfTTi2bSssMMk9zXAMr'],
     ['J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', '86vJYeZiXc9Uq1wmtLzERDfQzAnpoJgs2oF5Y4BirKkn'],
-    ['bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1', '8HpEPmkKb6T7xNDzhheWhK2P6BEdp2nGv7JbcEoDmDST']
+    ['bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1', '8HpEPmkKb6T7xNDzhheWhK2P6BEdp2nGv7JbcEoDmDST'],
+    ['SoLW9muuNQmEAoBws7CWfYQnXRXMVEG12cQhy6LE2Zf', '6iK6zK2nDQswaCrpELNYnnbuo4vwzpFsEpZYyqwpRWbD']
+  ]
+
+  return sumTokens2({ tokensAndOwners })
+}
+
+async function staking() {
+  const tokensAndOwners = [
+    ['AMUwxPsqWSd1fbCGzWsrRKDcNoduuWMkdR38qPdit8G8', 'NEFYtG7y49aLYbyPqQHAkzzCSms5VmVtA6bJWHJErSD']
   ]
 
   return sumTokens2({ tokensAndOwners })
@@ -111,5 +127,5 @@ module.exports = {
   ethereum: { tvl },
   polygon_zkevm: { tvl },
   optimism: { tvl },
-  solana: { tvl: SolanaTvl }
+  solana: { tvl: SolanaTvl, staking, }
 }

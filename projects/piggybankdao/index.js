@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokensAndLPsSharedOwners, sumLPWithOnlyOneToken} = require('../helper/unwrapLPs')
 const { stakingPricedLP } = require('../helper/staking')
 
@@ -17,7 +18,7 @@ async function avaxTvl(time, ethBlock, chainBlocks){
     await sumLPWithOnlyOneToken(balances, "0xd3a6eebbe6f6d9197a7fc2aaaf94d8b0ec51f8a8", treasury, MIM, chainBlocks.avax, "avax", transform)
     await sumTokensAndLPsSharedOwners(balances, [
         [MIM, false],
-        ["0x50b7545627a5162f82a992c33b87adc75187b218", false]
+        [ADDRESSES.avax.WBTC_e, false]
     ], [treasury], chainBlocks.avax, "avax", transform)
     return balances
 }

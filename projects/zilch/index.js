@@ -2,7 +2,7 @@ const abi = require('./abi')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const farm = "0xa65D04f79633BeBdC4Dd785498269e8ABD6A1476"
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const poolInfos = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: farm })
   let pools = poolInfos.map(i => i.lpToken)
   const stakingPools = pools.slice(0, 3)

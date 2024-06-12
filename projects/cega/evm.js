@@ -13,6 +13,8 @@ const FCN_PURE_OPTIONS_ADDRESSES = [
   '0x042021d59731d3fFA908c7c4211177137Ba362Ea', // supercharger
   '0x56F00A399151EC74cf7bE8DC38225363E84975E6', // go fast
   '0x784e3C592A6231D92046bd73508B3aAe3A7cc815', // insanic
+  '0x2aAE28E495626F587677ca779838266DB9bD6Cd1', // puppy
+  '0x98b872604F36807169c096241ECD4646021de133', // l2
 ];
 
 // Funds are lent out 100%
@@ -42,7 +44,7 @@ async function getSumFCNProductQueuedDeposits(fcnProducts, api) {
 function getLOVCalls(lovProducts) {
   const calls = []
   for (const product of lovProducts)
-    for (let i = 2; i < maxLeverage; i++)
+    for (let i = 1; i <= maxLeverage; i++)
       calls.push([product, i])
   return calls.map(i => ({ params: i }))
 }
@@ -59,7 +61,7 @@ async function getSumLOVProductQueuedDeposits(lovProducts, api) {
   return await api.multiCall({ target: CEGA_PRODUCT_VIEWER, abi: abi.getLOVProductQueuedDeposits, calls })
 }
 
-async function getEthereumTvl(_, _1, _2, { api }) {
+async function getEthereumTvl(api) {
   const { usdcAddress } = config[api.chain]
   const lovProducts = await getProducts(api);
   const calls = [
@@ -67,7 +69,9 @@ async function getEthereumTvl(_, _1, _2, { api }) {
     getSumLOVProductQueuedDeposits(lovProducts, api)
   ]
   if (api.chain === 'ethereum') {
-    calls.push(getSumFCNProductDeposits(FCN_PURE_OPTIONS_ADDRESSES, api), getSumFCNProductQueuedDeposits(FCN_PURE_OPTIONS_ADDRESSES, api))
+    calls.push(getSumFCNProductDeposits(FCN_PURE_OPTIONS_ADDRESSES, api),
+    getSumFCNProductQueuedDeposits(FCN_PURE_OPTIONS_ADDRESSES, api),
+    getSumFCNProductQueuedDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api))
   }
   const results = await Promise.all(calls);
   const sum = results.flat().flat().reduce((total, currentValue) => total + +currentValue, 0);
@@ -75,11 +79,10 @@ async function getEthereumTvl(_, _1, _2, { api }) {
   return api.getBalances()
 }
 
-async function getBorrowedTvl(_, _1, _2, { api }) {
+async function getBorrowedTvl(api) {
   const { usdcAddress } = config[api.chain]
   const results = await Promise.all([
-    getSumFCNProductDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api),
-    getSumFCNProductQueuedDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api),
+    getSumFCNProductDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api)
   ]);
   const sum = results.flat().flat().reduce((total, currentValue) => total + +currentValue, 0);
   api.add(usdcAddress, sum)

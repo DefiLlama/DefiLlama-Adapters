@@ -1,35 +1,28 @@
-const utils = require('../helper/utils')
+const { getLogs } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const pool2s = [
-    "0xf0D415189949d913264A454F57f4279ad66cB24d", // Aludel v1
-    "0x93c31fc68E613f9A89114f10B38F9fd2EA5de6BC" // Aludel v1.5
-]
+const getAludelDataABI = "function getAludelData() view returns ((address stakingToken, address rewardToken, address rewardPool, (uint256 floor, uint256 ceiling, uint256 time) rewardScaling, uint256 rewardSharesOutstanding, uint256 totalStake, uint256 totalStakeUnits, uint256 lastUpdate, (uint256 duration, uint256 start, uint256 shares)[] rewardSchedules) aludel)"
 
-// Retrieve Staked Token Values from API
-const endpoint = "https://crucible.alchemist.wtf/api/get-program-staked-usd?network=1"
-
-function get(includePool2) {
-    return async function () {
-        const rewardPrograms = await utils.fetchURL(endpoint)
-        const tether = Object.entries(rewardPrograms.data).reduce((t, c) => {
-            let isPool2 = pool2s.some(p => p.toLowerCase() === c[0].toLowerCase())
-            if (includePool2) {
-                isPool2 = !isPool2
-            }
-            if (isPool2) {
-                return t
-            }
-            return t + c[1]
-        }, 0)
-        return { tether }
-    }
+async function tvl(api) {
+  const logs = await getLogs({
+    api,
+    target: '0xF016fa84D5f3a252409a63b5cb89B555A0d27Ccf',
+    eventAbi: 'event InstanceAdded (address instance)',
+    onlyArgs: true,
+    fromBlock: 11881110,
+  })
+  const pools = logs.map(l => l.instance)
+  const owners = await api.multiCall({ abi: 'address:owner', calls: pools })
+  const data = await api.multiCall({ abi: getAludelDataABI, calls: owners })
+  data.forEach(i => api.add(i.stakingToken, i.totalStake))
+  await sumTokens2({ api, resolveLP: true, })
+  api.removeTokenBalance('0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab')
+  return api.getBalances()
 }
 
 module.exports = {
-    methodology: 'Tvl equals the sum of the tokens locked on all rewards programs except their own (aludels). Aludels are counted as pool2',
-    timetravel: false,
-    ethereum: {
-        tvl: get(false),
-        pool2:  get(true),
-    }
+  ethereum: {
+    tvl,
+    pool2: () => ({}),
+  }
 }

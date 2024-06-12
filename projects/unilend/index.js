@@ -1,69 +1,19 @@
-const { getConfig } = require('../helper/cache')
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking.js");
 
 const UnilendContract = "0x13A145D215182924c89F2aBc7D358DCc72F8F788";
-
-const API_URL = "https://unilend.finance/list.json";
-
-const calcTvl = async (balances, Id, block, chain, transformAddr) => {
-  const tokenList = (await getConfig('unilend', API_URL)).tokens
-    .filter((CHAIN) => CHAIN.chainId == Id)
-    .map((token) => token.address);
-
-  for (const token of tokenList) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[token, false]],
-      [UnilendContract],
-      block,
-      chain,
-      transformAddr
-    );
-  }
-};
-
-const ethTvl = async () => {
-  const balances = {};
-
-  await calcTvl(balances, 1);
-
-  return balances;
-};
-
-const polygonTvl = async (chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = i => `polygon:${i}`;
-  await calcTvl(
-    balances,
-    137,
-    chainBlocks["polygon"],
-    "polygon",
-    transformAddress
-  );
-
-  return balances;
-};
-
-const bscTvl = async (chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = i => `bsc:${i}`;
-  await calcTvl(balances, 56, chainBlocks["bsc"], "bsc", transformAddress);
-
-  return balances;
-};
+const tvl = { tvl: sumTokensExport({ owners: [UnilendContract], fetchCoValentTokens: true, blacklistedTokens: ['0x0202Be363B8a4820f3F4DE7FaF5224fF05943AB1', '0x5b4cf2c120a9702225814e18543ee658c5f8631e']})}
 
 module.exports = {
-  misrepresentedTokens: true,
   ethereum: {
-    tvl: ethTvl,
+    tvl,
+    staking: staking(UnilendContract,"0x0202Be363B8a4820f3F4DE7FaF5224fF05943AB1")
   },
-  polygon: {
-    tvl: polygonTvl,
-  },
+  polygon: tvl,
   bsc: {
-    tvl: bscTvl,
+    tvl,
+    staking: staking(UnilendContract,"0x2645d5f59D952ef2317C8e0AaA5A61c392cCd44d")
   },
   methodology:
     "We count liquidity on the Pools through UnilendFlashLoansCore Contract",

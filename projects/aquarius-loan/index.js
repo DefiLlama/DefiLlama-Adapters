@@ -2,6 +2,7 @@ const { compoundExports2 } = require("../helper/compound");
 const { stakingUnknownPricedLP } = require('../helper/staking')
 
 module.exports = {
+  arbitrum: compoundExports2({ comptroller: '0xf854c6b57e6d8ec3e790ec6da1a13060d19549d4', cether: '0x13f9a7f33550fe935bf7b544e536584d30ecf50a'}),
   core: compoundExports2({ comptroller: '0x6056Eb6a5634468647B8cB892d3DaA5F816939FC', cether: '0x03ef96f537a7cda4411c8643afd9d8814d5b4906'})
 };
 

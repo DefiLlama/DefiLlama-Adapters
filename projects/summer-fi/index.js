@@ -1,19 +1,17 @@
-const { automationTvl, dpmPositions, makerTvl } = require("./handlers");
+const { automationTvl } = require("./handlers");
 const { getAutomationCdpIdList, setCallCache } = require("./helpers");
 const sdk = require("@defillama/sdk");
-const { getConfig, getCache, setCache } = require("../helper/cache");
-const { endpoints } = require("./constants/endpoints");
+const { getCache, setCache } = require("../helper/cache");
 
 module.exports = {
   doublecounted: true,
   ethereum: { tvl },
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   await api.getBlock();
   const executionStart = Date.now() / 1000;
-  const [confirmedSummerFiMakerVaults, cdpIdList, cache] = await Promise.all([
-    await getConfig("summer-fi/maker-vaults", endpoints.makerVaults()),
+  const [cdpIdList, cache] = await Promise.all([
     getAutomationCdpIdList({ api }),
     getCache("summer-fi/cache", api.chain),
   ]);
@@ -23,9 +21,7 @@ async function tvl(_, _1, _2, { api }) {
   sdk.log([...cdpIdList].length, "cdpIdList");
 
   await Promise.all([
-    dpmPositions({ api }),
     automationTvl({ api, cdpIdList }),
-    makerTvl({ api, cdpIdList, confirmedSummerFiMakerVaults }),
   ]);
 
   await setCache("summer-fi/cache", api.chain, cache);

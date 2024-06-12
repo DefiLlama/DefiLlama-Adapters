@@ -123,7 +123,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
 }
 
 function sumTokensExport({...args}) {
-  return async (_, _1, _2, { api }) => sumTokens({ ...args, api, })
+  return async (api) => sumTokens({ ...args, api, })
 }
 
 async function transformLSUs(api) {

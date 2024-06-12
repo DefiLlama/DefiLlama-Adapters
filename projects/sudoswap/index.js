@@ -32,7 +32,7 @@ query get_pairs($lastId: String, $block: Int) {
 module.exports = {
   methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
   ethereum: {
-    tvl: async (timestamp, block, chainBlocks, { api }) => {
+    tvl: async (api) => {
       const data = await graphFetchById({
         endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
         query,
@@ -70,7 +70,7 @@ const { nullAddress, } = require('../helper/unwrapLPs')
 module.exports = {
   methodology: 'Sum up all the ETH & nfts in pools',
   ethereum: {
-    tvl: async (_, block, _1, { api }) => {
+    tvl: async (api) => {
       const PairFactory = '0xb16c1342E617A5B6E4b631EB114483FDB289c0A4'
       const logs = await getLogs({
         api,

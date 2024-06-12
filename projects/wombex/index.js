@@ -40,7 +40,7 @@ async function veWomBalanceCrutch(masterWombat, voterProxy, wmxLocker, wmx, wom,
     api.add(wom, womBal)
 }
 
-async function tvl(masterWombat, voterProxy, wmxLocker, wmx, wom, veWom, timestamp, ethereumBlock, chainBlocks, { api }) {
+async function tvl(masterWombat, voterProxy, wmxLocker, wmx, wom, veWom, api) {
     await veWomBalance(masterWombat, voterProxy, wmxLocker, wmx, wom, veWom, api)
     await voterProxyBalances(masterWombat, voterProxy, wmxLocker, wmx, wom, veWom, api)
     await veWomBalanceCrutch(masterWombat, voterProxy, wmxLocker, wmx, wom, veWom, api)

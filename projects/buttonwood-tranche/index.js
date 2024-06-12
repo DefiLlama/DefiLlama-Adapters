@@ -30,7 +30,7 @@ async function getAllBondsFromBondFactory(api, bondFactory, fromBlock) {
 Object.keys(config).forEach(chain => {
   const { bondFactories, fromBlock } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       // Collecting all the bonds
       const allBonds = await Promise.all(

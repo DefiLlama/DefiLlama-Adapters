@@ -18,7 +18,7 @@ module.exports = {};
 
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const vaultData = await getVaults(chain)
       const vaults = vaultData.map(i => i.vault_address)
       const beefys = await api.multiCall({ abi: 'address:BEEFY_VAULT', calls: vaults, permitFailure: true, })

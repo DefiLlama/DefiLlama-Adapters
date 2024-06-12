@@ -74,16 +74,15 @@ const STAKING_CONTRACTS = {
 }
 
 const tvls = {
-    astar: getUniTVL({ factory: FACTORIES.astar, chain: 'astar', useDefaultCoreAssets: true, }),
-    shiden: getUniTVL({ factory: FACTORIES.shiden, chain: 'shiden', useDefaultCoreAssets: true, }),
-    bsc: getUniTVL({ factory: FACTORIES.bsc, chain: 'bsc', useDefaultCoreAssets: true, }),
-    ethereum: getUniTVL({ factory: FACTORIES.ethereum, chain: 'ethereum', useDefaultCoreAssets: true, }),
+    astar: getUniTVL({ factory: FACTORIES.astar, useDefaultCoreAssets: true, }),
+    shiden: getUniTVL({ factory: FACTORIES.shiden, useDefaultCoreAssets: true, }),
+    bsc: getUniTVL({ factory: FACTORIES.bsc, useDefaultCoreAssets: true, }),
+    ethereum: getUniTVL({ factory: FACTORIES.ethereum, useDefaultCoreAssets: true, }),
     polygon: async () => 0,
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology: "PolkaEx Tvl Calculation",
     astar: {
         tvl: tvls.astar,

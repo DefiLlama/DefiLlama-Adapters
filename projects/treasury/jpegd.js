@@ -42,7 +42,7 @@ const treasuryTvl = treasuryExports({
   },
 });
 
-const liquidityTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const liquidityTvl = async (api) => {
   const troveManager = '0xA39739EF8b0231DbFA0DcdA07d7e29faAbCf4bb2'
   const stabilityPool = '0x66017d22b0f8556afdd19fc67041899eb65a21bb'
   const troveData = await api.call({ abi: 'function Troves(address) view returns (uint256 debt, uint256 coll,uint256 stake ,uint8 status , uint128 arrayIndex )', target: troveManager, params: multisig })

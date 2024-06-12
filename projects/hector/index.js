@@ -38,7 +38,7 @@ module.exports = {
   bsc: { tvl, }
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const calls = [
     walletBalances(api),
     deployedBalances(api),

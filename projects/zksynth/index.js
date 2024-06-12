@@ -10,7 +10,7 @@ const query = `{
   }
 }`
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { pools } = await cachedGraphQuery('zksynth', 'https://api.thegraph.com/subgraphs/name/prasad-kumkar/zksynth-mainnet', query)
   const tokensAndOwners = pools.map(i => i.collaterals).flat().map(i => [i.token.id, i.pool.id])
   return sumTokens2({ api, tokensAndOwners })

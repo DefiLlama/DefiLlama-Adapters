@@ -9,7 +9,7 @@ module.exports = {
   methodology: `Metis tokens, USDC, USDT, WETH, TETHYS allocated in LP`,
   misrepresentedTokens: true,
   metis:{
-    tvl: getUniTVL({ factory, chain: 'metis', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
     staking: staking(masterchef, tethys),
   }
 }

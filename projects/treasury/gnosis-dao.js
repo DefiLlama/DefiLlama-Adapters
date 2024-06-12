@@ -12,7 +12,7 @@ const GNO = ADDRESSES.ethereum.GNO;
 const treasurygnosis = "0x458cd345b4c05e8df39d0a07220feb4ec19f5e6f"
 const gnognosis = ADDRESSES.xdai.GNO
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const treasury = '0x849d52316331967b6ff1198e5e32a0eb168d039d'
   await addAuraTvl()
   await unwrapMakerPositions({ api, owner: treasury, blacklistedTokens: [ADDRESSES.ethereum.GNO]})  
@@ -35,7 +35,7 @@ async function tvl(_, _b, _cb, { api, }) {
   }
 }
 
-async function ownTokens(_, _b, _cb, { api, }) {
+async function ownTokens(api) {
   return unwrapMakerPositions({ api, owner: '0x849d52316331967b6ff1198e5e32a0eb168d039d', skipDebt: true, whitelistedTokens: [ADDRESSES.ethereum.GNO]})  
 }
 

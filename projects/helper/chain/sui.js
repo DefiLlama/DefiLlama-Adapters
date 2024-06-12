@@ -97,7 +97,7 @@ function dexExport({
     timetravel: false,
     misrepresentedTokens: true,
     sui: {
-      tvl: async (_, _1, _2, { api }) => {
+      tvl: async (api) => {
         const data = []
         let pools
         if (!eventType) {

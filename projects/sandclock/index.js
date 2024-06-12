@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { staking } = require('../helper/staking');
 
 const LUSD = ADDRESSES.ethereum.LUSD;
 const WETH = ADDRESSES.ethereum.WETH;
@@ -22,7 +23,8 @@ const v1Vaults = [YEARN_VAULT, LIQUITY_VAULT, JADE, AMETHYST];
 const v2Vaults = [EMERALD, OPAL, AMBER];
 const liquityVaults = [LIQUITY_VAULT, JADE, AMETHYST, AMBER];
 
-async function tvl(_, _b, _cb, { api, chain, block, }) {
+async function tvl(api) {
+  const { chain, block} = api
   const balances = {}
   // v1 vaults assets
   const v1VaultBalances = await api.multiCall({
@@ -58,11 +60,11 @@ async function tvl(_, _b, _cb, { api, chain, block, }) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  methodology: 'add underlying asset balances in all the vaults together.',
+    methodology: 'add underlying asset balances in all the vaults together.',
   doublecounted: true,
   start: 15308000, // The first vault YEARN_VAULT was deployed
   ethereum: {
     tvl,
+    staking: staking("0x0a36f9565c6fb862509ad8d148941968344a55d8", "0xba8a621b4a54e61c442f5ec623687e2a942225ef")
   }
 };

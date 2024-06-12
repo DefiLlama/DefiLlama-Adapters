@@ -17,6 +17,7 @@ module.exports = {
   methodology: "Liquidity on the DEX",
   hallmarks: [
     [1651881600, "UST depeg"],
+    [1676300400,"Migaloo Chain Launch"]
   ]
 }
 

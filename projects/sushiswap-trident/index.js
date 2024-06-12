@@ -19,8 +19,13 @@ trident_chains.forEach((chain) => {
 });
 
 module.exports = {
-  misrepresentedTokens: false,
-  ...modulesToExport,
+    ...modulesToExport,
 };
 
 module.exports.kava = { tvl: () => 0}
+module.exports.bittorrent = { tvl: () => 0}
+module.exports.bsc = { tvl: () => 0}
+module.exports.avax = { tvl: () => 0}
+module.exports.arbitrum = { tvl: () => 0}
+module.exports.avax = { tvl: () => 0}
+module.exports.metis = { tvl: () => 0}

@@ -1,10 +1,12 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
-const { queryAllium } = require('../helper/allium')
+const { startAlliumQuery, retrieveAlliumResults } = require('../helper/allium')
+const { getCache, setCache, } = require('../helper/cache')
 
 async function getEigenPods(timestamp) {
-  for (let i = 1; i < 4; i++) {
-    const eigenPods = await queryAllium(`
+  const queryId = await getCache('eigenlayer', 'eigenpods-query')
+  const offset = 3;
+  const newQuery = await startAlliumQuery(`
  select
   sum(balance) as sum
  from
@@ -23,18 +25,19 @@ async function getEigenPods(timestamp) {
   slot_timestamp
     from beacon.validator.balances
     where
-      status = 'active_ongoing'
-  and slot_timestamp = '${new Date(timestamp * 1e3 - i * 24 * 3600e3).toISOString().split('T')[0]}T23:59:59'
+      status in ('active_ongoing', 'pending_queued', 'pending_initialized', 'withdrawal_possible')
+  and slot_timestamp = '${new Date(timestamp * 1e3 - offset * 24 * 3600e3).toISOString().split('T')[0]}T23:59:59'
   ) beacon where pods.params['eigenPod'] = beacon.WITHDRAWAL_ADDRESS`)
-    const sum = eigenPods[0]?.["sum"]
-    if (sum !== null) {
-      return sum
-    }
+  await setCache('eigenlayer', 'eigenpods-query', newQuery)
+  const eigenPods = await retrieveAlliumResults(queryId)
+  const sum = eigenPods[0]?.["sum"]
+  if (!sum) {
+    throw new Error("Empty eigenpods")
   }
-  throw new Error("Empty eigenpods")
+  return sum
 }
 
-async function tvl(timestamp, _b, _cb, { api, }) {
+async function tvl({timestamp}, _b, _cb, { api, }) {
   /*
   const podLogs = await getLogs({
     api,
@@ -65,6 +68,7 @@ async function tvl(timestamp, _b, _cb, { api, }) {
 
 // https://github.com/Layr-Labs/eigenlayer-contracts/blob/master/script/output/M1_deployment_mainnet_2023_6_9.json
 module.exports = {
+  timetravel: false,
   ethereum: {
     tvl,
   },

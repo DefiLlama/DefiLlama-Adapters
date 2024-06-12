@@ -9,6 +9,7 @@ const {
   TreasuryTokenAddresses,
   governorAddress,
   guardianAddress,
+  stablecoins,
 } = require("./addresses.js");
 
 const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2";
@@ -38,7 +39,26 @@ async function getVaultManagersFromAPI(api) {
   return calls;
 }
 
-async function tvl(timestamp, _1, _2, { api }) {
+/**
+ * Returns all collaterals of a transmuter
+ * @param api - DefiLlama api
+ * @param transmuter - Contract address
+ * @param genesis - Timestamp to start getting collaterals from
+ * @returns [tokenAddress, ownerAddress]
+ */
+async function transmuterCollaterals(api, transmuter, genesis) {
+  if (api.chain !== "ethereum") return []
+  if (api.timestamp <= genesis) return []
+
+  const collaterals = await api.call({
+    abi: transmuter_abi["getCollateralList"],
+    target: transmuter,
+  })
+
+  return collaterals.map((collateral, i) => [collateral, transmuter])
+}
+
+async function tvl(api) {
   const chain = api.chain;
 
   const balances = {};
@@ -116,17 +136,16 @@ async function tvl(timestamp, _1, _2, { api }) {
       totPoolTokenSupply;
     sdk.util.sumSingleBalance(balances, EUROC, eurocBalance);
 
-    // Transmuter
-    if (timestamp > 1691656362) {
-      let collaterals = await api.call({
-        abi: transmuter_abi["getCollateralList"],
-        target: agEUR.transmuter,
-      });
+    //Fetch all collaterals from transmuters
+    const transmutersCollaterals = (
+      await Promise.all(
+        stablecoins.map(({ transmuter, genesis }) =>
+          transmuterCollaterals(api, transmuter, genesis)
+        )
+      )
+    ).flat(1)
 
-      collaterals.forEach((collateral, i) => {
-        tokensAndOwners.push([collateral, agEUR.transmuter]);
-      });
-    }
+    transmutersCollaterals.forEach((v) => tokensAndOwners.push(v));
   }
 
   // Borrowing module
@@ -142,9 +161,20 @@ async function tvl(timestamp, _1, _2, { api }) {
   const guardianTokens = TreasuryTokenAddresses["guardian"][chain];
   guardianTokens.forEach((token) => {
     tokensAndOwners.push([token, guardianAddress[chain]]);
-  });
+  })
 
-  return sumTokens2({ balances, api, tokensAndOwners });
+  // Treasury - Stablecoins
+  stablecoins
+    .map(({ treasury, treasuryTokens }) =>
+      treasuryTokens?.[chain]?.map((token) => [token, treasury])
+    )
+    .flat(1).forEach((tokenAndOwner) => tokensAndOwners.push(tokenAndOwner))
+
+  return sumTokens2({
+    api,
+    balances,
+    tokensAndOwners,
+  });
 }
 
 /*
@@ -156,9 +186,10 @@ module.exports = {
   hallmarks: [
     [Math.floor(new Date("2023-03-13") / 1e3), "Euler was hacked"],
     [Math.floor(new Date("2023-08-02") / 1e3), "Migration to v2 (Transmuter)"],
+    [Math.floor(new Date("2024-03-14") / 1e3), "Rebrading of agEUR to EURA"],
   ],
   ethereum: {
-    staking: staking(veANGLE, ANGLE, "ethereum"),
+    staking: staking(veANGLE, ANGLE),
   },
   methodology: `TVL is retrieved on-chain by getting the total assets managed by the Transmuter, the balances of the vaultManagers of the Borrowing module and of the governance addresses of the protocol.`,
 };

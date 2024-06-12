@@ -8,10 +8,12 @@ const PWN_BUNDLER_MAINNET = "0x19e3293196aee99BB3080f28B9D3b4ea7F232b8d";
 const PWN_BUNDLER_POLYGON = "0xe52405604bF644349f57b36Ca6E85cf095faB8dA";
 const PWN_BUNDLER_CRONOS = "0x973E09e96E64E4bf17e383a8A497Fb566284c707";
 const PWN_BUNDLER_BASE = "0x6fD3f5439aB1C103599385929d5f4c19acdBd264";
-const PWN_BUNDLER_MANTLE = "0x67c86D5900a6494a08EE48448e95781DcF33c804";
+const PWN_BUNDLER_OPTIMISM = "0x43Ffd9dF079451Fe7D16Ac2c51E13DF2a173B71E";
+const PWN_BUNDLER_ARBITRUM = "0x448E3D0a4BAa00FE511a03E7B27177AeDE6d9636";
+const PWN_BUNDLER_BSC = "0x4A75a527E97d853109aA6998a2B9E45a87A31e9f";
 const PWN_V1_SIMPLE_LOAN = "0x50160ff9c19fbE2B5643449e1A321cAc15af2b2C";
-const PWN_V1_1_SIMPLE_LOAN_A = "0x57c88D78f6D08b5c88b4A3b7BbB0C1AA34c3280A"; // Polygon and Mainnet
-const PWN_V1_1_SIMPLE_LOAN_B = "0x4188C513fd94B0458715287570c832d9560bc08a"; // Cronos, Base, Mantle
+const PWN_V1_1_SIMPLE_LOAN_A = "0x57c88D78f6D08b5c88b4A3b7BbB0C1AA34c3280A"; // Mainnet, Polygon, Arbitrum, BSC
+const PWN_V1_1_SIMPLE_LOAN_B = "0x4188C513fd94B0458715287570c832d9560bc08a"; // Cronos, Base, Optimism
 
 module.exports = {
   misrepresentedTokens: true,
@@ -52,9 +54,20 @@ module.exports = {
       owners: [PWN_BUNDLER_BASE, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true,
     }),
   },
-  mantle: {
+  arbitrum: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_MANTLE, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true, tokenConfig: { useCovalent: true, },
-    })
-  }
+      owners: [PWN_BUNDLER_ARBITRUM, PWN_V1_1_SIMPLE_LOAN_A], fetchCoValentTokens: true,
+    }),
+  },
+  optimism: {
+    tvl: sumTokensExport({
+      owners: [PWN_BUNDLER_OPTIMISM, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true,
+    }),
+  },
+  bsc: {
+    tvl: sumTokensExport({
+      owners: [PWN_BUNDLER_BSC, PWN_V1_1_SIMPLE_LOAN_A], fetchCoValentTokens: true,
+    }),
+  },
+  mantle: { tvl: () => ({}) },
 };

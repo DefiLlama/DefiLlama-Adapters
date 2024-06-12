@@ -9,7 +9,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const _config = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = (await Promise.all(_config.map(({ factory, fromBlock, }) => getLogs({
         api,
         target: factory,
