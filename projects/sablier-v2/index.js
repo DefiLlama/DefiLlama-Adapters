@@ -32,12 +32,12 @@ async function vesting(api) {
 }
 
 const config = {
-  ethereum: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2'], },
-  arbitrum: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-arbitrum'], },
-  bsc: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-bsc'], },
+  ethereum: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m'], },
+  arbitrum: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/AR77w8PwmkAG7c9DJSsfW6yTrC5UdvdQ1Hz5ZTCuaUWz'], },
+  bsc: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BVyi15zcH5eUg5PPKfRDDesezMezh6cAkn8LPvh7MVAF'], },
   xdai: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-gnosis'], },
   optimism: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-optimism'], },
-  polygon: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-polygon'], },
+  polygon: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/J8XJaFtxcz7xowzVJ5LwZhi35N5Lbtwfrt4sea6G1ysJ'], },
   avax: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-avalanche'], },
   base: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-base'], },
   blast: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-v2-blast/version/latest'], },
