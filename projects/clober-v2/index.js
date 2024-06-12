@@ -39,7 +39,7 @@ async function tvl(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "TVL consists of tokens in the Clober Book Manager contract",
+  methodology: "TVL consists of assets deposited into the Clober Book Manager contract",
   base: {
     tvl,
   },
