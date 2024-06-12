@@ -49,6 +49,8 @@ async function post(endpoint, body, options) {
 }
 
 async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, chain, chainBlocks, useBlock = false } = {}) {
+
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
   if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   if (api) {
     if (!timestamp) timestamp = api.timestamp
@@ -63,6 +65,7 @@ async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, c
 }
 
 async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
   const graphQLClient = new GraphQLClient(endpoint)
   await api.getBlock()
   const block = api.block
