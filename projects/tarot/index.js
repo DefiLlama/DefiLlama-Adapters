@@ -69,6 +69,11 @@ const config = {
       '0xf450b51fb2E1e4f05DAf9Cf7D9BB97714540B4f4', // Tarot Zeniths
     ]
   },
+  linea: {
+    factories: [
+      '0xb6193DF61351736e5190bF1DEB2E4f0769bd1BF2', // Tarot Leyline
+    ]
+  },
 }
 
 tarotHelper(module.exports, config)
