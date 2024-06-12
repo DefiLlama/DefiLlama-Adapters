@@ -40,6 +40,11 @@ const fixBalancesTokens = {
       [ADDRESSES.q.ELK]: { coingeckoId: "elk-finance", decimals: 18 },
       [ADDRESSES.q.WETH]: { coingeckoId: "ethereum", decimals: 18 },
   },
+  stacks: {
+    "SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.token-vlqstx::vlqstx": { coingeckoId: "blockstack", decimals: 6 },
+    "SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc::bridged-btc": { coingeckoId: "xlink-bridged-btc-stacks", decimals: 8 },
+    "SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex::alex": { coingeckoId: "alexgo", decimals: 8 },
+  },
   stellar: {
     "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA": { coingeckoId: "stellar", decimals: 7},
     "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75": { coingeckoId: "usd-coin", decimals: 7},
