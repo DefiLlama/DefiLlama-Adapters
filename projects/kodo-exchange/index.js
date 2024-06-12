@@ -1,8 +1,3 @@
-const {uniTvlExport} = require('../helper/calculateUniTvl.js')
+const {uniTvlExport} = require('../helper/unknownTokens.js')
 
-module.exports = {
-  misrepresentedTokens: true,
-  taiko: {
-    tvl: uniTvlExport("0x535E02960574d8155596a73c7Ad66e87e37Eb6Bc", undefined, true, undefined, { useDefaultCoreAssets: true, hasStablePools: true, }),
-  },
-}
+module.exports = uniTvlExport('taiko', '0x535E02960574d8155596a73c7Ad66e87e37Eb6Bc', { hasStablePools: true})
