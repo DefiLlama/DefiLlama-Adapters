@@ -1,37 +1,19 @@
-// TODO: add Stacks TVL
-
+const { getExports } = require('../helper/heroku-api')
 const { sumTokens } = require('../helper/sumTokens');
 const ADDRESSES = require('../helper/coreAssets.json');
-const { call } = require('../helper/chain/stacks-api')
 
 async function tvl(api) {
-    const factories = config[api.chain];    
-
-    // if(api.chain == 'stacks'){
-    //     let lqstx = 0;
-    //     let abtc = 0;
-    //     let alex = 0;
-    //     for(const owner of factories.owners){
-    //         lqstx += Number((await call({ target: 'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.token-vlqstx', abi: 'get-share', inputArgs: [{ type: 'principal', value: owner}]})).value);
-    //         abtc += Number((await call({ target: 'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc', abi: 'get-balance', inputArgs: [{ type: 'principal', value: owner}]})).value);
-    //         alex += Number((await call({ target: 'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex', abi: 'get-balance', inputArgs: [{ type: 'principal', value: owner}]})).value);
-    //     }
-        
-    //     return {
-    //         blockstack: lqstx / 1e6,
-    //         bitcoin: abtc / 1e8,
-    //         alexgo: alex / 1e8
-    //     } 
-    // }   
+    const factories = config[api.chain];
     return sumTokens({ chain: api.chain, owners: factories.owners, tokens: factories.tokens });
 }
 
 module.exports = {
   methodology: "TVL of XLink is the sum of the tokens locked in its contracts",
+  timetravel: false,    
   bitcoin: { tvl },
   bsc: { tvl },
   ethereum: { tvl },
-  stacks: { tvl }
+  ...getExports("xlink", ['stacks']),
 };
 
 const config = {
@@ -67,15 +49,5 @@ const config = {
         [
             ADDRESSES.ethereum.USDT            
         ]
-    },
-    stacks: {
-        owners:
-        [
-            'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.cross-bridge-registry-v2-01',
-            'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.btc-peg-out-endpoint-v2-01'
-        ],
-        tokens:
-        [
-        ]
-    },
+    }
 }
