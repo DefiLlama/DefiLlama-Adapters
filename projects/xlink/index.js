@@ -12,7 +12,8 @@ module.exports = {
   methodology: "TVL of XLink is the sum of the tokens locked in its contracts",
   bitcoin: { tvl },
   bsc: { tvl },
-  ethereum: { tvl }
+  ethereum: { tvl },
+  stacks: { tvl }
 };
 
 const config = {
@@ -47,6 +48,20 @@ const config = {
         tokens:
         [
             ADDRESSES.ethereum.USDT            
+        ]
+    },
+    stacks: {
+        owners:
+        [
+            'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.cross-bridge-registry-v2-01',
+            'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.btc-peg-out-endpoint-v2-01'
+        ],
+        tokens:
+        [
+            'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex',
+            'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc',
+            'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-susdt',
+            'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.token-vlqstx'
         ]
     }
 }
