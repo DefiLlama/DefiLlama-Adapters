@@ -18,6 +18,9 @@ async function borrowed(api) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1714251306,"self-whitehack"]
+  ],
   doublecounted: true,
   blast: {
     tvl,
