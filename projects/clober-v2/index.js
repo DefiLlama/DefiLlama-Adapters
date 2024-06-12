@@ -1,49 +1,25 @@
-const sdk = require("@defillama/sdk");
+const { getLogs2 } = require('../helper/cache/getLogs')
 
-const { getLogs } = require('../helper/cache/getLogs');
-const { CONTRACT_INFOS, zeroAddress } = require("./const");
+const abi = {
+  openEvent: 'event Open(uint192 indexed id, address indexed base, address indexed quote, uint64 unitSize, uint24 makerPolicy, uint24 takerPolicy, address hooks)',
+}
+
+const config = {
+  base: { factory: '0x382CCccbD3b142D7DA063bF68cd0c89634767F76', fromBlock: 14528050, },
+  era: { factory: '0xAaA0e933e1EcC812fc075A81c116Aa0a82A5bbb8', fromBlock: 34448160, },
+}
 
 async function tvl(api) {
-  const chain = api.chain
-  const CONTRACT_INFO = CONTRACT_INFOS[chain]
-  const openEvents = await getLogs({
-    api,
-    target: CONTRACT_INFO.bookManagerContract.address,
-    fromBlock: CONTRACT_INFO.bookManagerContract.fromBlock,
-    eventAbi: CONTRACT_INFO.bookManagerContract.abi.openEvent,
-    onlyArgs: true,
-  })
-  const tokens = [...new Set([...openEvents.map(({ base, quote }) => [base, quote]).flat()])]
-  const erc20Tokens = tokens.filter(token => token !== zeroAddress)
-  const includesEth = tokens.includes(zeroAddress)
-  const [ethBalance, erc20Balances] = await Promise.all([
-    sdk.api.eth.getBalance({
-      target: CONTRACT_INFO.bookManagerContract.address,
-    }),
-    api.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: erc20Tokens.map(
-        token => ({
-          target: token,
-          params: CONTRACT_INFO.bookManagerContract.address,
-        })
-      ),
-    })
-  ])
-  api.addTokens(erc20Tokens, erc20Balances)
-  if (includesEth) {
-    api.addToken(zeroAddress, ethBalance.output)
-  }
-  return api.getBalances()
+  const { factory, fromBlock } = config[api.chain]
+  const logs = await getLogs2({ api, factory, eventAbi: abi.openEvent, fromBlock, })
+  const tokens = logs.map(({ base, quote }) => [base, quote]).flat()
+  return api.sumTokens({ owner: factory, tokens, })
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: "TVL consists of assets deposited into the Clober Book Manager contract",
-  base: {
-    tvl,
-  },
-  era: {
-    tvl,
-  },
 };
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
