@@ -92,11 +92,11 @@ async function tvl(api, isOwnTokensMode = false) {
 const subgraphUrls = {
   ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${getEnv("OLYMPUS_GRAPH_API_KEY")}/subgraphs/id/7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/2XQDRQ9AXhp5us6PsNyRM5BxKWeXhy3BNQLynA6YmmjA",
   fantom:
     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/JCVMW1dbqectgaSLRuKSen6FKe9RPMJRQhNYZa4iTgFb",
 };
   
   //filter out problematic pools that dont have a decimals function.

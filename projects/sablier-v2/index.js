@@ -32,14 +32,14 @@ async function vesting(api) {
 }
 
 const config = {
-  ethereum: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2'], },
-  arbitrum: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-arbitrum'], },
-  bsc: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-bsc'], },
-  xdai: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-gnosis'], },
-  optimism: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-optimism'], },
-  polygon: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-polygon'], },
-  avax: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-avalanche'], },
-  base: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-base'], },
+  ethereum: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m'], },
+  arbitrum: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m-arbitrum'], },
+  bsc: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m-bsc'], },
+  xdai: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m-gnosis'], },
+  optimism: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m-optimism'], },
+  polygon: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m-polygon'], },
+  avax: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m-avalanche'], },
+  base: { endpoints: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m-base'], },
   blast: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-v2-blast/version/latest'], },
 }
 

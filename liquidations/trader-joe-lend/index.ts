@@ -3,7 +3,7 @@ import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
 import { Liq } from "../utils/types";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/lending";
+const subgraphUrl = "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/JB5EdQqbddMjawMLYe3C5ifmhN9WKYvLdgAKoUy1CyYy";
 
 const accountsQuery = gql`
   query accounts($lastId: ID, $pageSize: Int) {

@@ -24,23 +24,23 @@ const toAmountAbi =
 
 const bentoSubgraphs = {
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-ethereum",
-  polygon: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-polygon",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8HYeoDopVqqvb5RJEV2TtSzFsouYPz8cownnG3mbhiGy",
+  polygon: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6kJg5kFoQY8B8Ge2hqswHMqZDcmsR1TLUUz7AKov69fy",
   fantom: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-fantom",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-avalanche",
+  bsc: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BggyE3r5snDsjx19jgZcbiBH7cbtrkpjvyGLFHMdXekd",
+  avax: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/EhYaJodF1WQjKgxx1ZC63goeCwp5swD4AQRdaKXBm2xk",
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-arbitrum",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/JZFyMKR4jnsFQ58q7dT6nbXenTzNgE176zTejc6Gf8Z",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-optimism",
-  xdai: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-gnosis",
-  harmony: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-harmony",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8b4Hy4Kn7jCNAf9JFrqHb24LsqmapG4HrAsCrwdJf9Nu",
+  xdai: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9jn9kA6SKCNxXQSqb93zZPLdLaru4FeZBwLNWAK4nfZ2",
+  harmony: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/Bioj7N3Rf2n7iBq9PVoaMie3WiuzPze9NMi7aSye7LFc",
   moonbeam:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-moonbeam",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/7wA5gqWNP4E1dPWBsTYvz5eQSDbtYDFgyU5BGdHr2UKp",
   moonriver:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-moonriver",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/73XEV6UQKpPSJn68WZBAYTwALcZtFJkFYn58ZoZUb7tn",
   //metis: "",
-  celo: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-celo",
+  celo: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5DwkvjxPGVFFaWEMM68g1yztDdhCgJEYAxS6FuhkajzR",
   //kava: "",
 };
 
@@ -60,23 +60,23 @@ const bentoQuery = gql`
 
 const furoSubgraphs = {
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-ethereum",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-polygon",
-  fantom: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-fantom",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-avalanche",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4",
+  fantom: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS",
+  bsc: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk",
+  avax: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx",
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-arbitrum",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-optimism",
-  xdai: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-gnosis",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69",
+  xdai: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB",
   harmony:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-harmony",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH",
   moonbeam:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonbeam",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf",
   moonriver:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonriver",
+    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC",
 };
 
 const furoQuery = gql`

@@ -2,7 +2,7 @@
 https://api.thegraph.com/subgraphs/name/1inch-exchange/oneinch-liquidity-protocol-v2
 
 #### Balancer
-https://api.thegraph.com/subgraphs/name/balancer-labs/balancer
+https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/93yusydMYauh7cfe9jEfoGABmwnX4GffHd7in8KJi1XB
 
 #### Bancor
 https://thegraph.com/explorer/subgraph/blocklytics/bancor
@@ -31,4 +31,4 @@ https://thegraph.com/explorer/subgraph/perpetual-protocol/perp-position-subgraph
 https://perp.gq/pairs
 
 #### Uniswap
-https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2
+https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum

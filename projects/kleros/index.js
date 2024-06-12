@@ -3,7 +3,7 @@ const { getBlock } = require('../helper/http')
 
 const graphUrls = {
   ethereum: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard',
-  xdai: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard-xdai',
+  xdai: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/Ck26N16xgimEuuuNSJqYVWBKcWSwPmkk36BWZGtfx1ox',
 }
 
 const totalStakedQuery = gql`
