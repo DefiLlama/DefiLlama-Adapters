@@ -3,7 +3,7 @@ const abi = require('./abi');
 
 const v2Contract = "0x1344A36A1B56144C3Bc62E7757377D288fDE0369"
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   let tokens = await api.fetchList({ lengthAbi: abi.getMaxCurrencyId, itemAbi: abi.getCurrency, target: v2Contract, startFromOne: true, })
   tokens = tokens.flat().map(i => i[0])
   const tokenNames = await api.multiCall({  abi: 'string:name', calls: tokens, permitFailure: true, })

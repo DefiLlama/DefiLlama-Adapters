@@ -11,7 +11,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const vaults = [
     "BUvduFTd2sWFagCunBPLupG8fBTJqweLw9DuhruNFSCm", // SOL
     "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS", // USDC

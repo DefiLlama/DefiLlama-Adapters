@@ -9,7 +9,7 @@ module.exports = {
     tvlV1Bsc
 }
 
-async function tvlV1Eth(timestamp, block) {
+async function tvlV1Eth({timestamp}, block) {
     const startTimestamp = 1602054167;
     const startBlock = 11007158;
   

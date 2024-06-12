@@ -26,8 +26,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: "TVL is equal to the amount of KLAY staked in the Staking pool",
+    methodology: "TVL is equal to the amount of KLAY staked in the Staking pool",
   klaytn: {
     tvl: tvl,
   },

@@ -1,8 +1,7 @@
 const { compoundExports } = require("./helper/compound");
 
 module.exports = {
-    timetravel: true,
-    aurora: {
+        aurora: {
         ...compoundExports(
             '0x817af6cfAF35BdC1A634d6cC94eE9e4c68369Aeb',
             'aurora',

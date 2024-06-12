@@ -88,7 +88,7 @@ function sumBalancesByTokenAddress(arr) {
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
+async function tvl(api, isOwnTokensMode = false) {
 const subgraphUrls = {
   ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${getEnv("OLYMPUS_GRAPH_API_KEY")}/subgraphs/id/7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
   arbitrum:
@@ -162,8 +162,8 @@ const subgraphUrls = {
   return sumTokens2({ api, resolveLP: true, })
 }
 
-async function ownTokens(timestamp, block, _, { api }) {
-  return tvl(timestamp, block, _, { api }, true);
+async function ownTokens(api) {
+  return tvl(api, true);
 }
 
 module.exports = {

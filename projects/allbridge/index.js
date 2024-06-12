@@ -36,7 +36,7 @@ const data = {
             {name: "avalanche-2", address: NATIVE_ADDRESS, decimals: 18},
             {name: "usd-coin", address: ADDRESSES.avax.USDC_e, decimals: 6},
             {name: "tether", address: ADDRESSES.avax.USDT_e, decimals: 6},
-            {name: "bitcoin", address: "0x50b7545627a5162F82A992c33b87aDc75187B218", decimals: 8},
+            {name: "bitcoin", address: ADDRESSES.avax.WBTC_e, decimals: 8},
             {name: "apyswap", address: "0x4b0093a44802bD870FC20E811862875f0F1E5970", decimals: 18}
         ]
     },
@@ -191,11 +191,10 @@ const nearData = {
 const toNumber = (decimals, n) => BigNumber(n/(10 ** decimals)).toFixed(0)
 
 function getTVLFunction(chain) {
-    return async function tvl(timestamp, ethBlock, {[chain]: block }) {
-        const balances = {}
+    return async function tvl(api) {
         const chainData = data[chain];
         const tokens = chainData.tokens.map(i => i.address)
-        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress })
+        return sumTokens2({ api, tokens, owner: chainData.contractAddress })
     }
 }
 
