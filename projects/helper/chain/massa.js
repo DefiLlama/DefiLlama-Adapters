@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 const axios = require("axios");
 
 const {
@@ -8,12 +6,15 @@ const {
   strToBytes,
   Args,
 } = require("@massalabs/massa-web3");
-const { decode } = require("@project-serum/anchor/dist/cjs/utils/bytes/hex");
+
+const {
+  TokenAmount, 
+  Token, 
+  Fraction
+} = require("@dusalabs/sdk");
 
 const RPC_ENDPOINT = "https://mainnet.massa.net/api/v2";
-const factoryAddress = {
-  massa: "AS1rahehbQkvtynTomfoeLmwRgymJYgktGv5xd1jybRtiJMdu8XX",
-};
+
 const idGecko = {
   WMAS: "wrapped-massa",
   "USDC.e": "massa-bridged-usdc-massa",
@@ -42,8 +43,16 @@ function u8ArrayToString(array) {
 const decodePairInformation = async (bs) => {
   const args = new Args(bs);
   return {
+    activeId: args.nextU32(),
     reserveX: args.nextU256(),
     reserveY: args.nextU256(),
+    feesX: args.nextU256(),
+    feesY: args.nextU256(),
+    oracleSampleLifetime: args.nextU32(),
+    oracleSize: args.nextU32(),
+    oracleActiveSize: args.nextU32(),
+    oracleLastTimestamp: args.nextU32(),
+    oracleId: args.nextU32(),
   };
 };
 
@@ -126,6 +135,22 @@ const getPairAddressTokens = async (poolAddress) => {
     });
 };
 
+const getDatastoreEntries = async (tokenAddress) => {
+  return baseClient
+    .publicApi()
+    .getDatastoreEntries([
+      {
+        address: tokenAddress,
+        key: strToBytes("DECIMALS"),
+      },
+    ])
+    .then((res) => {
+      if (!res[0].candidate_value) throw new Error("No token info found");
+      return res[0].candidate_value;
+    });
+
+}
+
 const fetchTokensInfo = async (tokenX, tokenY) => {
   return baseClient
     .publicApi()
@@ -160,7 +185,15 @@ const poolsInformation = async (factoryAddress) => {
       const tokens = await getPairAddressTokens(pool);
       let tokensInfo;
       if (tokens[0] && tokens[1]) {
-        tokensInfo = await fetchTokensInfo(tokens[0], tokens[1]);
+        tokensInfo = await fetchTokensInfo(tokens[1], tokens[0]);
+        const decimalsX = await getDatastoreEntries(tokens[0]);
+        const decimalsY = await getDatastoreEntries(tokens[1]);
+
+        tokensInfo = {
+          ...tokensInfo,
+          decimalsX: Number(decimalsX),
+          decimalsY: Number(decimalsY),
+        };
       }
       return tokensInfo;
     })
@@ -192,77 +225,96 @@ const symbolAndPrices = async (pools) => {
   }
   return symbolAndPricesArray;
 };
-
-const fetchTVL = async (pools) => {
-  console.log("pools = lists daddresse de la pool ", pools);
-  const symbolAndPricesArray = await symbolAndPrices(pools);
-  let tvl = BigInt(0);
-
-  for (const pool of pools) {
-    const priceX = BigInt(
-      Math.round(
-        (symbolAndPricesArray.find((item) => item.symbol === pool.symbolX)
-          ?.price || 1) * 1e18
-      )
-    );
-    const priceY = BigInt(
-      Math.round(
-        (symbolAndPricesArray.find((item) => item.symbol === pool.symbolY)
-          ?.price || 1) * 1e18
-      )
-    );
-
-    const valueX = (pool.reserveX * priceX) / BigInt(1e18);
-    const valueY = (pool.reserveY * priceY) / BigInt(1e18);
-
-    tvl += valueX + valueY;
-  }
-
-  const tvlInOriginalScale = Number(tvl.toString().slice(0, 6));
-
-  console.log(tvlInOriginalScale.toLocaleString());
-  return tvlInOriginalScale;
+const toFraction = (price) => {
+  const value = BigInt(Math.round((price || 1) * 1e18));
+  return new Fraction(value, BigInt(1e18));
 };
 
-async function main() {
-  const tokenSymbolPool = await poolsInformation(factoryAddress.massa);
-  const symbolAndPricesArray = await symbolAndPrices(tokenSymbolPool);
+const roundFraction = (amount, precision = 6) =>
+  Number(amount.toSignificant(precision));
 
-  const poolAddresses = await getPairAddress(factoryAddress.massa);
-  if (poolAddresses[0].startsWith(":")) {
-    poolAddresses[0] = poolAddresses[0].substring(1);
+const fetchTVL = async (poolInfo, prices) => {
+
+  const symbolAndPricesArray = prices;
+  const priceX = symbolAndPricesArray.find(
+      (item) => item.symbol === poolInfo.symbolX
+    )?.price;
+  const priceY = symbolAndPricesArray.find(
+      (item) => item.symbol === poolInfo.symbolY
+    )?.price;
+  
+  if (priceX === 0 || priceY === 0) {
+    return 0;
   }
-  const pools = poolAddresses[0].split(":");
-  let i = 0;
-  let tvl = BigInt(0);
-  // pour chaque pool
-  for (const pool of pools) {
-    const info = await getPairInformation(pool);
-    let poolInfo = await decodePairInformation(info);
-    poolInfo = {
-      ...poolInfo,
-      symbolX: tokenSymbolPool[i].symbolX,
-      symbolY: tokenSymbolPool[i].symbolY,
-    };
+  
+  const reserveX = poolInfo.reserveX;
+  const reserveY = poolInfo.reserveY;
 
-    //TO DO : finish the function to fetch the TVL with the right conversion type
-    const priceX =
-      symbolAndPricesArray.find((item) => item.symbol === poolInfo.symbolX)
-        ?.price ;
-    const priceY =
-      symbolAndPricesArray.find((item) => item.symbol === poolInfo.symbolY)
-        ?.price ;
-    console.log('priceX', priceX, 'priceY', priceY, 'poolInfo.reserveX', poolInfo.reserveX, 'poolInfo.reserveY', poolInfo.reserveY);
+  const tokenX = new Token('', '', poolInfo.decimalsX, poolInfo.symbolX, '');
+  const tokenY = new Token('', '', poolInfo.decimalsY,poolInfo.symbolY, '');
 
-        i += 1;
-  }
+  const amount0 = new TokenAmount(tokenX, reserveX);
+  const amount1 = new TokenAmount(tokenY, reserveY);
+
+
+  // 1rst method
+  // const tvl = 
+  // roundFraction(amount0
+  //   .multiply(toFraction(priceX))
+  //   .add(amount1.multiply(toFraction(priceY))));
+
+  // 2nd method
+  const tvl = amount0.multiply(toFraction(priceX)).add(amount1.multiply(toFraction(priceY)));
+  
+  return Number(tvl.toSignificant(6));
+
+  
+  // return tvl;
 }
 
-main().catch(console.error);
+
+// async function main() {
+//   const tokenSymbolPool = await poolsInformation(factoryAddress.massa);
+//   const symbolAndPricesArray = await symbolAndPrices(tokenSymbolPool);
+
+//   const poolAddresses = await getPairAddress(factoryAddress.massa);
+
+
+//   if (poolAddresses[0].startsWith(":")) {
+//     poolAddresses[0] = poolAddresses[0].substring(1);
+//   }
+//   const pools = poolAddresses[0].split(":");
+
+//   let i = 0;
+//   let tvl = 0;
+//   for (const pool of pools) {
+//     const info = await getPairInformation(pool);
+//     let poolInfo = await decodePairInformation(info);
+//     console.log("pool", pool);
+//     poolInfo = {
+//       reserveX: Number(poolInfo.reserveX),
+//       reserveY: Number(poolInfo.reserveY),
+//       symbolX: tokenSymbolPool[i].symbolX,
+//       symbolY: tokenSymbolPool[i].symbolY,
+//       decimalsX: tokenSymbolPool[i].decimalsX,
+//       decimalsY: tokenSymbolPool[i].decimalsY,
+//     };
+//     const tvlInPool = await fetchTVL(poolInfo, symbolAndPricesArray);
+
+  
+//     tvl += (tvlInPool); 
+//     console.log('tvl', tvl);
+//     i += 1;
+//   }
+//   console.log('tvl.toLocaleString()', tvl.toLocaleString());
+// }
+
 
 module.exports = {
-  getPairAddress,
-  fetchTVL,
-  baseClient,
-  getPairAddressTokens,
+  fetchTVL, 
+  poolsInformation,
+  symbolAndPrices,
+  getPairAddress, 
+  decodePairInformation,
+  getPairInformation
 };
