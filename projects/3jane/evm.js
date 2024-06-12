@@ -34,7 +34,7 @@ async function addVaults({
 
 async function ethTvl(_, block) {
   const balances = {}
-  const vaults = [[eEthCallVault]]
+  const vaults = [[weEth, eEthCallVault]]
 
   await addVaults({ balances, block, vaults })
 
