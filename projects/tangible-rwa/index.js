@@ -16,7 +16,6 @@ module.exports = {
       const baskets = await api.call({ abi: 'address[]:getBasketsArray', target: basketManager })
       for (let i = 0; i < baskets.length; i++) {
         const basketTVL = await api.call({ abi: 'uint256:getTotalValueOfBasket', target: baskets[i].toLowerCase() })
-        console.log(basketTVL)
         api.add(USTB, basketTVL)
       }
     },
