@@ -5,8 +5,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { call } = require('../helper/chain/stacks-api')
 
 async function tvl(api) {
-    const factories = config[api.chain];
-    const _sumTokens = await sumTokens({ chain: api.chain, owners: factories.owners, tokens: factories.tokens });
+    const factories = config[api.chain];    
 
     if(api.chain == 'stacks'){
         let lqstx = 0;
@@ -19,13 +18,12 @@ async function tvl(api) {
         }
         
         return {
-            ..._sumTokens,
             blockstack: lqstx / 1e6,
             bitcoin: abtc / 1e8,
             alexgo: alex / 1e8
         } 
     }   
-    return _sumTokens;
+    return sumTokens({ chain: api.chain, owners: factories.owners, tokens: factories.tokens });
 }
 
 module.exports = {
