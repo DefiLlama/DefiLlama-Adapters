@@ -26,7 +26,7 @@ const bentoSubgraphs = {
   ethereum:
     "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8HYeoDopVqqvb5RJEV2TtSzFsouYPz8cownnG3mbhiGy",
   polygon: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6kJg5kFoQY8B8Ge2hqswHMqZDcmsR1TLUUz7AKov69fy",
-  fantom: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-fantom",
+  fantom: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/2KqXx6dGw7T4mZeGKyzQ9m9iyuCMjPR8PntLB9Gn9AEK',
   bsc: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BggyE3r5snDsjx19jgZcbiBH7cbtrkpjvyGLFHMdXekd",
   avax: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/EhYaJodF1WQjKgxx1ZC63goeCwp5swD4AQRdaKXBm2xk",
   arbitrum:
@@ -97,11 +97,11 @@ const furoQuery = gql`
 `;
 
 const kashiSubgraphs = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-ethereum",
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-polygon",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-arbitrum",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushiswap/kashi-avalanche",
+  ethereum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6Kf5cPeXUMVzfGCtzBnSxDU849w2YM2o9afn1uiPpy2m',
+  polygon: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5F3eB4Cm5mxorArsyrbs2a1TDxctmk3znpDZ4LEzqrBJ',
+  arbitrum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/G3rbmaF7w2ZLQjZgGoi12BzPeL9z4MTW662iVyjYmtiX',
+  bsc: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/D1TGHRKx2Q54ce2goyt9hbtKNuT94FDBsuPwtGg5EzRw',
+  avax: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BHeJByyVoNuVtqufK3Nk7YYmFkBs43boYpKv8z6hQ5Q1',
 };
 
 const kashiQuery = gql`
@@ -124,15 +124,15 @@ const kashiQuery = gql`
 
 const tridentSubgraphs = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-optimism",
+  optimism: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51',
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
   bittorrent:
     "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-arbitrum",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-avalanche",
+  arbitrum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx',
+  bsc: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn',
+  avax: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1',
 };
 
 const tridentQuery = gql`

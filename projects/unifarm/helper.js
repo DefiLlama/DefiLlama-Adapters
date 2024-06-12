@@ -77,9 +77,9 @@ query MyQuery {
 `;
 
 const v2EndPoints = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-eth",
-  polygon: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-polygon",
-  bsc: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-bsc",
+  ethereum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/Cquw1hbmvNrSvUjaqoRhu9nWv7AX1Mz2gEb9sapYdMA5',
+  polygon: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/Ami8CcwigwYViJsUrwqK8DWwDPtFVAKbeYfii6ANahax',
+  bsc: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/EsA5LyABgi7ibZJGNr5PQsQ2L8QDPZxNdDvd5qPs5CJj',
 }
 
 const getV1Calls = async (chain) => {

@@ -2,11 +2,11 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { blockQuery } = require("../helper/http");
 
 const graphUrls = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-ethereum",
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-polygon",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-arbitrum",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushiswap/kashi-avalanche",
+  ethereum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6Kf5cPeXUMVzfGCtzBnSxDU849w2YM2o9afn1uiPpy2m',
+  polygon: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5F3eB4Cm5mxorArsyrbs2a1TDxctmk3znpDZ4LEzqrBJ',
+  arbitrum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/G3rbmaF7w2ZLQjZgGoi12BzPeL9z4MTW662iVyjYmtiX',
+  bsc: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/D1TGHRKx2Q54ce2goyt9hbtKNuT94FDBsuPwtGg5EzRw',
+  avax: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BHeJByyVoNuVtqufK3Nk7YYmFkBs43boYpKv8z6hQ5Q1',
 };
 
 const bentoboxes = {

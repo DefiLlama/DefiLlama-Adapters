@@ -5,7 +5,7 @@ const CLAM = "0xC250e9987A032ACAC293d838726C511E6E1C029d";
 const PearlBank = "0x845EB7730a8D37e8D190Fb8bb9c582038331B48a";
 
 async function tvl({timestamp}, block, chainBlocks) {
-  let endpoint = "https://api.thegraph.com/subgraphs/name/otterclam/otterclam";
+  let endpoint = 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/CejrrsnSQAxHJBpkgiBrLHQZ7h2MkK9QArM8bJvN9GuQ';
   let graphQLClient = new GraphQLClient(endpoint);
   let query = gql`
     query tvl($start: BigInt!, $end: BigInt!) {

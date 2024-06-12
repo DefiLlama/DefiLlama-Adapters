@@ -5,13 +5,13 @@ const { stakings } = require("../helper/staking");
 const supportedChains = [
   {
     name: 'Polygon',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-polygon',
+    subgraphEndpoint: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/uQxLz6EarmJcr2ymRRmTnrRPi8cCqas4XcPQb71HBvw',
     chainId: 137,
     identifier: 'polygon'
   },
   {
     name: 'Arbitrum',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-arbitrum',
+    subgraphEndpoint: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/HVC4Br5yprs3iK6wF8YVJXy4QZWBNXTCFp8LPe3UpcD4',
     chainId: 42161,
     identifier: 'arbitrum'
   },

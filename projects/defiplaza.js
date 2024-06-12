@@ -5,7 +5,7 @@ const { getConfig } = require('./helper/cache');
 const { get } = require('./helper/http');
 const sdk = require('@defillama/sdk');
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defiplaza';
+const graphUrl = 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4z9FBF12CrfoQJhAkWicqzY2fKYN9QRmuzSsizVXhjKa';
 
 module.exports = {
    ethereum: {
