@@ -14,6 +14,7 @@ Object.keys(GRAPH_URLS).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { metrics: [{ investmentVaults }] } = await cachedGraphQuery('origami/' + chain, endpoint, '{ metrics { investmentVaults { id } } }')
+      console.log(investmentVaults)
       const vaults = investmentVaults.map(vault => vault.id)
       let tokens = await api.multiCall({  abi: 'address:reserveToken', calls: vaults })
       if (chain === 'arbitrum') 
