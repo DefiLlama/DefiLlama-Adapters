@@ -21,7 +21,7 @@ async function get_staking(api) {
 module.exports = {
   timetravel: false,
   methodology:
-    "THE MOST TRUSTED #MOVE LAUNCHPAD ON APTOS.",
+    "TVL is calculated by summing the staked amounts in the specified staking pools on the Aptos blockchain.",
   aptos: {
     tvl: () => ({
     }),
