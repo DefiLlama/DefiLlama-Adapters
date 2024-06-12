@@ -8,7 +8,7 @@ module.exports = {
     polygon:{
     staking: staking("0x958d208Cdf087843e9AD98d23823d32E17d723A1", ADDRESSES.polygon.QUICK),
     tvl: getChainTvl({
-      polygon: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/FUWdkXWpi8JyhAnhKL5pZcVshpxuaUQG8JHMDqNCxjPd'
+      polygon: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/FUWdkXWpi8JyhAnhKL5pZcVshpxuaUQG8JHMDqNCxjPd`
     })('polygon')
   },
     hallmarks:[

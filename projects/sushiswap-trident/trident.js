@@ -3,16 +3,16 @@ const { blockQuery } = require('../helper/http')
 const graphUrls = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
   polygonOldRouter:
-    'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5LBvcUQthQDZTMe6cyJ7DbeokFkYeVpYYBZruHPUjMG5',
-  optimism: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51',
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/5LBvcUQthQDZTMe6cyJ7DbeokFkYeVpYYBZruHPUjMG5`,
+  optimism: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51`,
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
   bittorrent:
     "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
-  arbitrum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx',
-  bsc: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn',
-  avax: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1',
+  arbitrum: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx`,
+  bsc: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn`,
+  avax: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1`,
 };
 
 const tridentQueryWithBlock = `

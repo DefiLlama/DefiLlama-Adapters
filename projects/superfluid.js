@@ -6,8 +6,8 @@ const { transformBalances } = require('./helper/portedTokens')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
-// const polygonGraphUrl = 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BoiJR4mfVpVthWjTcansrCUFCjKY9MfDxgTfzkf4YpAN'
-// const xdaiGraphUrl = 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/A3LhWnFQR13mxQPFGUZML9vyBrLLKhLJBhfFsrdShxBU'
+// const polygonGraphUrl = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/BoiJR4mfVpVthWjTcansrCUFCjKY9MfDxgTfzkf4YpAN`
+// const xdaiGraphUrl = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/A3LhWnFQR13mxQPFGUZML9vyBrLLKhLJBhfFsrdShxBU`
 
 const supertokensQuery = `
 query get_supertokens($block: Int) {
@@ -99,12 +99,12 @@ async function retrieveSupertokensBalances(chain, block, isVesting, ts, graphUrl
 }
 
 const config = {
-  avax: { graph: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/CtYR3ng4ED64HVEzDo49eKQgEf78RERiC8mDUtwLxda', },
-  polygon: { graph: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/7d9iBvDoM43SZiZhRR2pnpW8z3ujSEy9nC6RuqnufRU9', },
-  xdai: { graph: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/DE6fybqxjXLNvqGpd4QLAD92kAZNEmha1ZfKvS2qM376', },
-  optimism: { graph: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/S48f1C3KhNB2YbEMDxYHPzZ3FYt27fQZdruKfSTeEdZ', },
-  arbitrum: { graph: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/ES5GNHtiaqP6jFydhUyD9R4RackYrbGr6LEL1ZDauktd', },
-  bsc: { graph: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/FzYUiDH968QKbjURULGE5Pwh1ZRvcBNjDcut5YSiMYnj', },
+  avax: { graph: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/CtYR3ng4ED64HVEzDo49eKQgEf78RERiC8mDUtwLxda`, },
+  polygon: { graph: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/7d9iBvDoM43SZiZhRR2pnpW8z3ujSEy9nC6RuqnufRU9`, },
+  xdai: { graph: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/DE6fybqxjXLNvqGpd4QLAD92kAZNEmha1ZfKvS2qM376`, },
+  optimism: { graph: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/S48f1C3KhNB2YbEMDxYHPzZ3FYt27fQZdruKfSTeEdZ`, },
+  arbitrum: { graph: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/ES5GNHtiaqP6jFydhUyD9R4RackYrbGr6LEL1ZDauktd`, },
+  bsc: { graph: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/FzYUiDH968QKbjURULGE5Pwh1ZRvcBNjDcut5YSiMYnj`, },
 }
 
 module.exports = {

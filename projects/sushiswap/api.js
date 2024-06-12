@@ -2,7 +2,7 @@ const { toUSDTBalances } = require('../helper/balances');
 const { blockQuery } = require('../helper/http')
 const { getUniTVL } = require("../helper/unknownTokens")
 
-const graphUrl = 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8TXwDMLemg6p4eicVuixKk7Mw9aNxpod1PQQFdSvFj6H'
+const graphUrl = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8TXwDMLemg6p4eicVuixKk7Mw9aNxpod1PQQFdSvFj6H`
 const graphQuery = `
 query get_tvl($block: Int) {
   uniswapFactory(

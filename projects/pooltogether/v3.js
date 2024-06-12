@@ -3,13 +3,13 @@ const abi = require('./abi.json')
 
 const GRAPH_URLS = {
   ethereum: [
-    'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/DpnLpjCKyyQ8TZnD2V6VNyx4JR7bGrCfGaLbrrsn5r7s',
-    'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6SXRM2pyUiLKgNvXU6fiSF1E3dDDFGGAFiMurbZhZew8',
-    'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6fBV3gC2fjdPsKvnmhi2SNzp74RYZj3tS1AiWFGHapyX',
-    'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/C12o8EA9X9EKjjDoxKGUiM9YniNT4RVCiV6jGuYWwwZX'
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/DpnLpjCKyyQ8TZnD2V6VNyx4JR7bGrCfGaLbrrsn5r7s`,
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/6SXRM2pyUiLKgNvXU6fiSF1E3dDDFGGAFiMurbZhZew8`,
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/6fBV3gC2fjdPsKvnmhi2SNzp74RYZj3tS1AiWFGHapyX`,
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/C12o8EA9X9EKjjDoxKGUiM9YniNT4RVCiV6jGuYWwwZX`
   ],
-  celo: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/7RqWfG27PACLZEvSMGtcK87qnV1DJCQfYjNdqwHDQdTe'],
-  bsc: ['https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9Qmsc7YBLy2sdbEAcGv8vkpaqdGm3YMYoqiWLCid64MN']
+  celo: [`https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/7RqWfG27PACLZEvSMGtcK87qnV1DJCQfYjNdqwHDQdTe`],
+  bsc: [`https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9Qmsc7YBLy2sdbEAcGv8vkpaqdGm3YMYoqiWLCid64MN`]
 }
 const GRAPH_QUERY = `
   query GET_POOLS {

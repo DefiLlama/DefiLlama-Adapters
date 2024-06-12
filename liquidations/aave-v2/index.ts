@@ -75,14 +75,14 @@ const rc: { [chain in Chains]: AaveAdapterResource } = {
     name: "aave",
     chain: Chains.ethereum,
     usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    subgraphUrl: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N",
+    subgraphUrl: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N`,
     explorerBaseUrl: "https://etherscan.io/address/",
   },
   // [Chains.polygon]: {
   //   name: "aave",
   //   chain: Chains.polygon,
   //   usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-  //   subgraphUrl: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/H1Et77RZh3XEf27vkAmJyzgCME2RSFLtDS2f4PPW6CGp",
+  //   subgraphUrl: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/H1Et77RZh3XEf27vkAmJyzgCME2RSFLtDS2f4PPW6CGp`,
   //   explorerBaseUrl: "https://polygonscan.com/address/",
   // },
 };

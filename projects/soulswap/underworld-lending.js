@@ -4,8 +4,8 @@ const { BigNumber } = require('bignumber.js');
 
 // https://thegraph.com/hosted-service/subgraph/soulswapfantom/coffinbox
 const graphUrls = {
-  'fantom': 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/FhS8cRWsTPZwXfmn7b8YGvKii2h2ghr2v7ah5T8oiDmo',
-  'avax': 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6WonmxWbw3MSVXVR5P4VhC8jWBEG5RkipWzxhAA67hoP',
+  'fantom': `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/FhS8cRWsTPZwXfmn7b8YGvKii2h2ghr2v7ah5T8oiDmo`,
+  'avax': `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/6WonmxWbw3MSVXVR5P4VhC8jWBEG5RkipWzxhAA67hoP`,
 }
 
 const coffinboxQuery = gql`

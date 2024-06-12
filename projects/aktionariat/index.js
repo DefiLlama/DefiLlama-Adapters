@@ -2,8 +2,8 @@ const { request, gql } = require('graphql-request');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const graphs = {
-  ethereum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/2ZoJCp4S7YP7gbYN2ndsYNjPeZBV1PMti7BBoPRRscNq',
-  optimism: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/3QfEXbPfP23o3AUzcmjTfRtUUd4bfrFj3cJ4jET57CTX',
+  ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/2ZoJCp4S7YP7gbYN2ndsYNjPeZBV1PMti7BBoPRRscNq`,
+  optimism: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/3QfEXbPfP23o3AUzcmjTfRtUUd4bfrFj3cJ4jET57CTX`,
 }
 
 function tvlPaged(chain) {

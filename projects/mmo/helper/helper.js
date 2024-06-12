@@ -14,7 +14,7 @@ const MtrollerABI = {
 
 async function fetch(query) {
   var endpoint =
-    'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/DUQF7Lhwu1dzz2GwyNi3eRvjZeUnMNCDFjQRA8BYpoRJ';
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/DUQF7Lhwu1dzz2GwyNi3eRvjZeUnMNCDFjQRA8BYpoRJ`;
   var graphQLClient = new GraphQLClient(endpoint);
 
   const results = await graphQLClient.request(query)

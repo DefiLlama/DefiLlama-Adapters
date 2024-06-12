@@ -5,14 +5,14 @@ const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const graphEndpoints = {
-  // ethereum: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/Ef7uxVMFPgMkwKdAYEKsvcLmFjM5GSgTTXS4VpaT1nf7",
-  // "bsc": "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/EymZB8aN7s99v1AKTDPyZefxhA61ogQnvNtdPWZJ72sK",
+  // ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/Ef7uxVMFPgMkwKdAYEKsvcLmFjM5GSgTTXS4VpaT1nf7`,
+  // "bsc": `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/EymZB8aN7s99v1AKTDPyZefxhA61ogQnvNtdPWZJ72sK`,
   // //"heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
-  // "polygon": "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4ngshgumX4LgFPSN4XHnbo2c4wbEdMDBwuLLSjvpERCh",
-  // "arbitrum": "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/575fiW1Kt8kETmfMjGLnyWv8Lyc6gwYFo1HgbactDqTu",
-  // "aurora": "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/7YTPmPZXg7f8VMtQGueoPFcToYvhKeGnBfqCy4BQmoUv",
-  // "avax": "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8GUXi8PNrW4ACf968KCWxH9AkeNt8YEQin7MDa7RuULW",
-  // "optimism": "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/GscH44twEB19DR8ad1oM7zZzP7wVBkvjNQmknHtigPqR",
+  // "polygon": `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/4ngshgumX4LgFPSN4XHnbo2c4wbEdMDBwuLLSjvpERCh`,
+  // "arbitrum": `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/575fiW1Kt8kETmfMjGLnyWv8Lyc6gwYFo1HgbactDqTu`,
+  // "aurora": `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/7YTPmPZXg7f8VMtQGueoPFcToYvhKeGnBfqCy4BQmoUv`,
+  // "avax": `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8GUXi8PNrW4ACf968KCWxH9AkeNt8YEQin7MDa7RuULW`,
+  // "optimism": `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/GscH44twEB19DR8ad1oM7zZzP7wVBkvjNQmknHtigPqR`,
   // "base": "https://api.studio.thegraph.com/query/2860/dodoex_v2_base/v0.0.5",
   // "linea": "https://api.dodoex.io/graphql?chainId=59144&schemaName=dodoex&apikey=graphqldefiLlamadodoYzj5giof",
   // "scroll": "https://api.dodoex.io/graphql?chain=src&schemaName=dodoex&apikey=graphqldefiLlamadodoYzj5giof", // ChainId mapping error, so using chain 

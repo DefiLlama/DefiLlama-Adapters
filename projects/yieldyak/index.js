@@ -1,7 +1,7 @@
 const { staking } = require('../helper/staking');
 const { cachedGraphQuery, getConfig } = require('../helper/cache')
 
-const graphUrl = 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/7oSYYdK5RKmqggdzFyfUnojP6puDAj31C4ezDGrgVfk9'
+const graphUrl = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/7oSYYdK5RKmqggdzFyfUnojP6puDAj31C4ezDGrgVfk9`
 const graphQuery = `{ farms(first: 1000) { id }}`;
 
 async function tvl(api) {

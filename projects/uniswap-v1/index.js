@@ -1,7 +1,7 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 
 const v1graph = getChainTvl({
-  ethereum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/ESnjgAG9NjfmHypk4Huu4PVvz55fUwpyrRqHF21thoLJ'
+  ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/ESnjgAG9NjfmHypk4Huu4PVvz55fUwpyrRqHF21thoLJ`
 }, "uniswaps", "totalLiquidityUSD")
 
 module.exports = {

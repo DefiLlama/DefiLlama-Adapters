@@ -3,7 +3,7 @@ import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
 import { Liq } from "../utils/types";
 
-const subgraphUrl = "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/JB5EdQqbddMjawMLYe3C5ifmhN9WKYvLdgAKoUy1CyYy";
+const subgraphUrl = `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/JB5EdQqbddMjawMLYe3C5ifmhN9WKYvLdgAKoUy1CyYy`;
 
 const accountsQuery = gql`
   query accounts($lastId: ID, $pageSize: Int) {

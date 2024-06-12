@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 const SUBGRAPH_HONEYSWAP_V2 =
   "https://api.thegraph.com/subgraphs/name/1hive/honeyswap-v2";
 const SUBGRAPH_GARDENS_XDAI =
-  "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/G4EbcSW588SUy8CdprPPxCN69VN8mxvnwt4oyR6YpGza";
+  `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/G4EbcSW588SUy8CdprPPxCN69VN8mxvnwt4oyR6YpGza`;
 
 
 const balanceAbi = 'function balance(address _token) view returns (uint256)'

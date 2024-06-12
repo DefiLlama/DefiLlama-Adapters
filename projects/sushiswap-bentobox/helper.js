@@ -24,23 +24,23 @@ const toAmountAbi =
 
 const bentoSubgraphs = {
   ethereum:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8HYeoDopVqqvb5RJEV2TtSzFsouYPz8cownnG3mbhiGy",
-  polygon: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6kJg5kFoQY8B8Ge2hqswHMqZDcmsR1TLUUz7AKov69fy",
-  fantom: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/2KqXx6dGw7T4mZeGKyzQ9m9iyuCMjPR8PntLB9Gn9AEK',
-  bsc: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BggyE3r5snDsjx19jgZcbiBH7cbtrkpjvyGLFHMdXekd",
-  avax: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/EhYaJodF1WQjKgxx1ZC63goeCwp5swD4AQRdaKXBm2xk",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8HYeoDopVqqvb5RJEV2TtSzFsouYPz8cownnG3mbhiGy`,
+  polygon: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/6kJg5kFoQY8B8Ge2hqswHMqZDcmsR1TLUUz7AKov69fy`,
+  fantom: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/2KqXx6dGw7T4mZeGKyzQ9m9iyuCMjPR8PntLB9Gn9AEK`,
+  bsc: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/BggyE3r5snDsjx19jgZcbiBH7cbtrkpjvyGLFHMdXekd`,
+  avax: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/EhYaJodF1WQjKgxx1ZC63goeCwp5swD4AQRdaKXBm2xk`,
   arbitrum:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/JZFyMKR4jnsFQ58q7dT6nbXenTzNgE176zTejc6Gf8Z",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/JZFyMKR4jnsFQ58q7dT6nbXenTzNgE176zTejc6Gf8Z`,
   optimism:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8b4Hy4Kn7jCNAf9JFrqHb24LsqmapG4HrAsCrwdJf9Nu",
-  xdai: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9jn9kA6SKCNxXQSqb93zZPLdLaru4FeZBwLNWAK4nfZ2",
-  harmony: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/Bioj7N3Rf2n7iBq9PVoaMie3WiuzPze9NMi7aSye7LFc",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8b4Hy4Kn7jCNAf9JFrqHb24LsqmapG4HrAsCrwdJf9Nu`,
+  xdai: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9jn9kA6SKCNxXQSqb93zZPLdLaru4FeZBwLNWAK4nfZ2`,
+  harmony: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/Bioj7N3Rf2n7iBq9PVoaMie3WiuzPze9NMi7aSye7LFc`,
   moonbeam:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/7wA5gqWNP4E1dPWBsTYvz5eQSDbtYDFgyU5BGdHr2UKp",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/7wA5gqWNP4E1dPWBsTYvz5eQSDbtYDFgyU5BGdHr2UKp`,
   moonriver:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/73XEV6UQKpPSJn68WZBAYTwALcZtFJkFYn58ZoZUb7tn",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/73XEV6UQKpPSJn68WZBAYTwALcZtFJkFYn58ZoZUb7tn`,
   //metis: "",
-  celo: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5DwkvjxPGVFFaWEMM68g1yztDdhCgJEYAxS6FuhkajzR",
+  celo: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/5DwkvjxPGVFFaWEMM68g1yztDdhCgJEYAxS6FuhkajzR`,
   //kava: "",
 };
 
@@ -60,23 +60,23 @@ const bentoQuery = gql`
 
 const furoSubgraphs = {
   ethereum:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf`,
   polygon:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4",
-  fantom: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS",
-  bsc: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk",
-  avax: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4`,
+  fantom: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS`,
+  bsc: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk`,
+  avax: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx`,
   arbitrum:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F`,
   optimism:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69",
-  xdai: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69`,
+  xdai: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB`,
   harmony:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH`,
   moonbeam:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf`,
   moonriver:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC`,
 };
 
 const furoQuery = gql`
@@ -97,11 +97,11 @@ const furoQuery = gql`
 `;
 
 const kashiSubgraphs = {
-  ethereum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/6Kf5cPeXUMVzfGCtzBnSxDU849w2YM2o9afn1uiPpy2m',
-  polygon: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5F3eB4Cm5mxorArsyrbs2a1TDxctmk3znpDZ4LEzqrBJ',
-  arbitrum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/G3rbmaF7w2ZLQjZgGoi12BzPeL9z4MTW662iVyjYmtiX',
-  bsc: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/D1TGHRKx2Q54ce2goyt9hbtKNuT94FDBsuPwtGg5EzRw',
-  avax: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/BHeJByyVoNuVtqufK3Nk7YYmFkBs43boYpKv8z6hQ5Q1',
+  ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/6Kf5cPeXUMVzfGCtzBnSxDU849w2YM2o9afn1uiPpy2m`,
+  polygon: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/5F3eB4Cm5mxorArsyrbs2a1TDxctmk3znpDZ4LEzqrBJ`,
+  arbitrum: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/G3rbmaF7w2ZLQjZgGoi12BzPeL9z4MTW662iVyjYmtiX`,
+  bsc: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/D1TGHRKx2Q54ce2goyt9hbtKNuT94FDBsuPwtGg5EzRw`,
+  avax: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/BHeJByyVoNuVtqufK3Nk7YYmFkBs43boYpKv8z6hQ5Q1`,
 };
 
 const kashiQuery = gql`
@@ -124,15 +124,15 @@ const kashiQuery = gql`
 
 const tridentSubgraphs = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
-  optimism: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51',
+  optimism: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51`,
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
   bittorrent:
     "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
-  arbitrum: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx',
-  bsc: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn',
-  avax: 'https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1',
+  arbitrum: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx`,
+  bsc: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn`,
+  avax: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1`,
 };
 
 const tridentQuery = gql`

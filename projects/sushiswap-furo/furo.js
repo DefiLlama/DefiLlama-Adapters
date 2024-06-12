@@ -5,23 +5,23 @@ const { isWhitelistedToken } = require('../helper/streamingHelper')
 
 const graphUrls = {
   ethereum:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf`,
   polygon:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4",
-  fantom: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS",
-  bsc: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk",
-  avax: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4`,
+  fantom: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS`,
+  bsc: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk`,
+  avax: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx`,
   arbitrum:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F`,
   optimism:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69",
-  xdai: "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69`,
+  xdai: `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB`,
   harmony:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH`,
   moonbeam:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf`,
   moonriver:
-    "https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC",
+    `https://gateway-arbitrum.network.thegraph.com/api/${process.env.GRAPH_PROTOCOL}/subgraphs/id/9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC`,
 };
 
 const bentoboxes = {
