@@ -16,7 +16,7 @@ const farm_avax = '0xB1e330401c920077Ddf157AbA5594238d36b54B1'
 const soul_avax = '0x11d6DD25c1695764e64F439E32cc7746f3945543'
 
 module.exports = {
-  // misrepresentedTokens: true,
+  misrepresentedTokens: true,
   fantom:{
     staking: staking(farm_fantom, soul_fantom),
     tvl: getUniTVL({ factory: factory_fantom, useDefaultCoreAssets: true, abis, }),
@@ -27,6 +27,5 @@ module.exports = {
     tvl: getUniTVL({ factory: factory_avax, useDefaultCoreAssets: true, abis, }),
     borrowed: underworldLending('avax', true)
   },
-  misrepresentedTokens: true,
   methodology: "Counts liquidity on the exchange, staked soul, and underworld assets.",
 }
