@@ -30,6 +30,14 @@ const config = {
       }
     ]
   },
+  optimism: {
+    factories: [
+      {
+        START_BLOCK: 120480601,
+        SILO_FACTORY: '0x6B14c4450a29Dd9562c20259eBFF67a577b540b9', // Silo Optimism (Original)
+      }
+    ]
+  },
 }
 
 const XAI = '0xd7c9f0e536dc865ae858b0c0453fe76d13c3beac'
@@ -82,6 +90,7 @@ async function getSilos(api) {
 module.exports = {
   ethereum: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, },
+  optimism: { tvl, borrowed, },
   hallmarks: [
     [1668816000, "XAI Genesis"]
   ]
