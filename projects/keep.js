@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { GraphQLClient,  } = require('graphql-request')
 const utils = require('./helper/utils');
-const sdk = require('@defillama/sdk')
 
 async function tvl() {
   var q2 =  `{
