@@ -27,6 +27,5 @@ module.exports = {
     tvl: getUniTVL({ factory: factory_avax, useDefaultCoreAssets: true, abis, }),
     borrowed: underworldLending('avax', true)
   },
-  misrepresentedTokens: true,
   methodology: "Counts liquidity on the exchange, staked soul, and underworld assets.",
 }
