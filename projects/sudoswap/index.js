@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { graphFetchById, } = require('../helper/cache')
 const { ART_BLOCKS, sumArtBlocks } = require('../helper/nft')
-const sdk = require('@defillama/sdk')
 
 const query = `
 query get_pairs($lastId: String, $block: Int) {
