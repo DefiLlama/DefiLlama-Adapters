@@ -10,7 +10,7 @@ async function staking(api) {
 }
 module.exports = {
   bsc: {
-    tvl: v1Tvl('0x48ab312150E1802D57639859d7C3107aE751FE35', 8973039),
+  //  tvl: v1Tvl('0x48ab312150E1802D57639859d7C3107aE751FE35', 8973039),
     tvl: sdk.util.sumChainTvls([v1Tvl('0x48ab312150E1802D57639859d7C3107aE751FE35', 8973039), uniTvlExport('bsc', '0x86873f85bc12ce40321340392c0ff39c3bdb8d68', {
       abis: {
         allPairsLength: 'uint256:allPoolsLength',
