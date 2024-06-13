@@ -22,22 +22,22 @@ module.exports = {
     tvl: async (api) => {
       const KUSDC = {
         vault: "0x4c18E80b801AA24066D8B1C6E65ee245497Cb741",
-        token: "0xa415021bC5c4C3b5B989116DC35Ae95D9C962c8D",
+        token: ADDRESSES.karak.USDC,
       };
 
       const KWETH = {
         vault: "0x9a9631F7BEcE5C6E0aBA1f73f0e5796c534dc4db",
-        token: "0x4200000000000000000000000000000000000006",
+        token: ADDRESSES.optimism.WETH_1,
       };
 
       const wethLending = {
         vault: "0xd6034F9147CF7528e857403Dea93bc45743295eb",
-        token: "0x4200000000000000000000000000000000000006",
+        token: ADDRESSES.optimism.WETH_1,
       };
 
       const usdcLending = {
         vault: "0x475820E4bCE0E3d233Ad7f6A8c9DD1f66974c5d6",
-        token: "0xa415021bC5c4C3b5B989116DC35Ae95D9C962c8D",
+        token: ADDRESSES.karak.USDC,
       };
 
       const KarakUSDCBal = await api.call({ target: KUSDC.vault, abi: contractAbis.getTotalSupply });

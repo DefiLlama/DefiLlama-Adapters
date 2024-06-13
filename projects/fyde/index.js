@@ -27,7 +27,7 @@ async function tvl(api) {
   const decimals = await api.multiCall({  abi: 'uint8:decimals', calls: tokens})
 
   for (let i = 0; i < tokens.length; i++) {
-    if (response[i] !== '0x0000000000000000000000000000000000000000') {
+    if (response[i] !== ADDRESSES.null) {
       const balance = bals[i] / 10 ** (decimals[i] - 18)
       api.add(response[i], balance)
     } else 
