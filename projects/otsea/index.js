@@ -50,13 +50,12 @@ config.chains.forEach(async chainInfo => {
 
     if (chain == 'ethereum') {
         module.exports[chain] = {
-            tvl: otsea_tvl,
+            tvl: getMarketVolume(endpoint),
             staking:  staking(OTSEA_TREASURY, OTSEA_TOKEN),
-            offers: getMarketVolume(endpoint),
         }
     } else {
         module.exports[chain] = {
-            offers: getMarketVolume(endpoint),
+            tvl: getMarketVolume(endpoint),
         }
     }
 })
