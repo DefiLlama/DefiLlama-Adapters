@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
-const sdk = require('@defillama/sdk')
 const { compoundExports2 } = require('../helper/compound')
 const config = {
   bsc: {
