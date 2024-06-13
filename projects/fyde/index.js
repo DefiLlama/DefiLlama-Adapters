@@ -7,7 +7,6 @@ const WETH = ADDRESSES.ethereum.WETH;
 async function tvl(api) {
   const tokens = await api.fetchList({ lengthAbi: 'getAssetsListLength', itemAbi: 'assetsList', target: FYDE_CONTRACT })
   const bals = await api.multiCall({  abi: 'function totalAssetAccounting(address) view returns (uint256)', calls: tokens, target: FYDE_CONTRACT })
-  api.addTokens(tokens, bals)
 
   // add restaking aggregator TVL
   const amountStakedETH = await api.call({
@@ -20,27 +19,20 @@ async function tvl(api) {
 
   // add tokens deployed to yield module. Check which token from tokens is a yield-token, map to the underlying and 
   // add balances to TVL
-  const response = (await api.multiCall({
-    calls: tokens.map(token => ({
-      target: ORACLE,
-      params: [token]
-    })),
+  const response = await api.multiCall({
+    target: ORACLE,
+    calls: tokens,
     abi: 'function yieldTokenToToken(address) external view returns (address)',
-    withMetadata: true,
-  })).map(x => x.output);
-
-  let tokenInYieldManager = [];
-  let balInYieldManager = []; 
+  })
+  const decimals = await api.multiCall({  abi: 'uint8:decimals', calls: tokens})
 
   for (let i = 0; i < tokens.length; i++) {
     if (response[i] !== '0x0000000000000000000000000000000000000000') {
-      tokenInYieldManager.push(response[i]);
-      balInYieldManager.push(bals[i]);
-    }
+      const balance = bals[i] / 10 ** (decimals[i] - 18)
+      api.add(response[i], balance)
+    } else 
+      api.add(tokens[i], bals[i])
   }
-
-  api.addTokens(tokenInYieldManager, balInYieldManager)
-  
 }
 
 module.exports = {
