@@ -273,9 +273,9 @@ async function tvl(api) {
 }
 
 const config = {
-  /*mantle: {
+  mantle: {
     fromBlock: 3471026,
-  },*/
+  },
   ethereum: {
     fromBlock: 18213104,
   },
