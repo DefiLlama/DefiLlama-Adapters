@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const { balanceFetcher, uniV2Lp, tokenAddress } = require('../ca')
 const BigNumber = require("bignumber.js");
 
@@ -5,9 +6,9 @@ const BigNumber = require("bignumber.js");
 // underlying token mapping
 const RingTokenMappings = {
     // fwUSDB -> USDB
-    "0x866f2C06B83Df2ed7Ca9C2D044940E7CD55a06d6": tokenAddress.USDB,
+    [ADDRESSES.blast.fwUSDB]: tokenAddress.USDB,
     // fwWETH -> WETH
-    "0x66714DB8F3397c767d0A602458B5b4E3C0FE7dd1": tokenAddress.WETH,
+    [ADDRESSES.blast.fwWETH]: tokenAddress.WETH,
 };
 
 async function getTvlForDexBalancer(agentAddresses, api) {

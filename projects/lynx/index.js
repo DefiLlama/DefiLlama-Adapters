@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const config = {
@@ -15,7 +16,7 @@ const config = {
     tokenAndOwnerPair: [
       [
         // WFUSE Token
-        "0x0BE9e53fd7EDaC9F859882AfdDa116645287C629",
+        ADDRESSES.fuse.WFUSE,
         // OFTChipAdapter (owner)
         "0x962FD1B229c8c775bC2E37A8a90dac4f3C0105B7",
       ],
@@ -87,7 +88,7 @@ const config = {
       ],
       [
         // WMATIC Token
-        "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+        ADDRESSES.polygon.WMATIC_2,
         // OFTChipAdapter (owner)
         "0x028815b56433a4aae10087290d1ed9ef7437068f",
       ],

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 const { mergeExports } = require('../helper/utils');
 
@@ -20,7 +21,7 @@ module.exports = treasuryExports({
 async function tvl(api) {
   if(api.timestamp > 1687828149){
     // Staked 100k ETH in validators
-    api.add("0x0000000000000000000000000000000000000000", 100e3*1e18)
+    api.add(ADDRESSES.null, 100e3*1e18)
   }
   return api.getBalances()
 }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const chains = [
   "ethereum",
   "arbitrum",
@@ -12,9 +13,9 @@ const WEETH_ADDRESS = {
   ethereum: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
   arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
   optimism: "0x346e03f8cce9fe01dcb3d0da3e9d00dc2c0e08f0",
-  mode: "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
+  mode: ADDRESSES.blast.weETH,
   manta: "0x77b6F99970f488cFA8bd41892900b6Ce881C2300",
-  blast: "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
+  blast: ADDRESSES.blast.weETH,
   linea: "0x1bf74c010e6320bab11e2e5a532b5ac15e0b8aa6",
 };
 

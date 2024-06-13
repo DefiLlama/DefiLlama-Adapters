@@ -17,6 +17,6 @@ module.exports = {
     tvl: sumTokensExport({ owners: manta_owners, tokens: [ADDRESSES.manta.USDT, manta_stone_token] })
   },
   taiko: {
-    tvl: sumTokensExport({ owners: taiko_owners, tokens: ['0x07d83526730c7438048D55A4fc0b850e2aaB6f0b'] })
+    tvl: sumTokensExport({ owners: taiko_owners, tokens: [ADDRESSES.taiko.USDC] })
   },
 };

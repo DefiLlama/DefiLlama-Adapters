@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const CakepieReaderAbi = require("./abis/CakepieReader.json");
 const MasterCakepieAbi = require("./abis/MasterCakepie.json");
 const config = require("./config")
@@ -12,7 +13,7 @@ async function tvl(api) {
     token = token.toLowerCase()
     switch (token) {
       case '0x581fa684d0ec11ccb46b1d92f1f24c8a3f95c0ca': return CakeAddress // mcake -> cake
-      case '0x7dc91cbd6cb5a3e6a95eed713aa6bf1d987146c8': return '0x2170ed0880ac9a755fd29b2688956bd959f933f8' // mwbeth -> eth
+      case '0x7dc91cbd6cb5a3e6a95eed713aa6bf1d987146c8': return ADDRESSES.bsc.ETH // mwbeth -> eth
       default: return token
     }
   }
