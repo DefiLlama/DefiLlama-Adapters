@@ -1,11 +1,14 @@
 const sdk = require("@defillama/sdk");
 const { v1Tvl } = require("../helper/balancer");
-const { uniTvlExport } = require('../helper/unknownTokens')
+const { uniTvlExport } = require("../helper/unknownTokens");
 const BUNI_CONTRACT_ADDRESS = "0x0e7beec376099429b85639eb3abe7cf22694ed49";
 const MASTERCHEF_CONTRACT_ADDRESS = "0xA12c974fE40ea825E66615bA0Dc4Fd19be4D7d24";
 
 async function staking(api) {
-  return api.sumTokens({ owner: MASTERCHEF_CONTRACT_ADDRESS, tokens: [BUNI_CONTRACT_ADDRESS] });
+  return api.sumTokens({
+    owner: MASTERCHEF_CONTRACT_ADDRESS,
+    tokens: [BUNI_CONTRACT_ADDRESS],
+  });
 }
 
 module.exports = {
