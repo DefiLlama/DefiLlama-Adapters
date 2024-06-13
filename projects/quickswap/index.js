@@ -17,6 +17,6 @@ module.exports = {
     [1619611200, "DeFi season on Polygon PoS begun"],
     [1623851400, "Iron Finance V1 collapse"],
     [1651668418, "QUICK split by 1:1000"],
-    [1652481840, "QuickSwap’s GoDaddy Domain Hijack"]
+    [1652481840, "QuickSwap GoDaddy Domain Hijack"]
    ]
 }

@@ -1,3 +1,4 @@
+const { cachedGraphQuery } = require('../helper/cache')
 const { graphQuery, } = require('../helper/http')
 const { sleep, log } = require('../helper/utils')
 const v1Data = require('./v1Data.json')
@@ -95,7 +96,7 @@ const getV1Calls = async (chain) => {
 };
 
 const getV2Calls = async (chain) => {
-  const { cohorts } = await graphQuery(v2EndPoints[chain], v2Query)
+  const { cohorts } = await cachedGraphQuery('unifarm/'+chain, v2EndPoints[chain], v2Query)
   let calls = [];
   for (let i = 0; i < cohorts.length; i++) {
     const owner = cohorts[i].id
