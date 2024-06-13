@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { blockQuery } = require("../helper/http");
 const { getEnv } = require("../helper/env");
@@ -94,7 +95,7 @@ const subgraphUrls = {
   arbitrum:
     "2XQDRQ9AXhp5us6PsNyRM5BxKWeXhy3BNQLynA6YmmjA",
   fantom:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
+    sdk.graph.modifyEndpoint('3qSJTWdWJETFzht814HVV9rVafwRLQp3k9mZhCF39bYd'),
   polygon:
     "JCVMW1dbqectgaSLRuKSen6FKe9RPMJRQhNYZa4iTgFb",
 };

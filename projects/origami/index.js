@@ -1,8 +1,9 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/templedao/origami-mainnet", // ethereum
-  arbitrum: "https://api.thegraph.com/subgraphs/name/templedao/origami-arb", // arbitrum
+  ethereum: sdk.graph.modifyEndpoint('GGN8RoYQBiw2Ui6wUeaKcHsBBSrQzQoryYi2feoTKwPX'), // ethereum
+  arbitrum: sdk.graph.modifyEndpoint('AHT1ffJhw7NWdeH3XYbWzMmy5USbB22K3ecVDu8azGuF'), // arbitrum
 }
 
 module.exports = {
