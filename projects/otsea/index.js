@@ -1,35 +1,42 @@
 
 const { GraphQLClient, gql } = require("graphql-request");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const config = require("./config");
 
 const OTSEA_TOKEN = "0x5dA151B95657e788076D04d56234Bd93e409CB09";
-const OTSEA_TREASURY = "0xF2c8e860ca12Cde3F3195423eCf54427A4f30916";
+const OTSEA_MARKET_CONTRACT = "0x6E8B67B315b44519f8C2BEfdbbE11097c45353b4";
+const OTSEA_STAKING_CONTRACT = "0xF2c8e860ca12Cde3F3195423eCf54427A4f30916";
 
 // OTSEA market volume by network
 function getMarketVolume(endpoint) {
     return async (api) => {
+        // locked in sell orders (ETH amount on sell orders)
         let graphQLClient = new GraphQLClient(endpoint);
         let query = gql`
-          query Globals {
-              globals {
-                  totalOrders
-                  totalVolume
+          query openSellOrders {
+              orders (where: { type: 1, state: 0 }) {
+                  fulfilledOutput
+                  totalOutput
               }
           }
         `;
         const results = await graphQLClient.request(query)
 
-        const { globals } = results || {
-            globals: [{ totalOrders: 0, totalVolume: 0 }],
+        const { orders } = results || {
+            orders: [{ totalOutput: 0 }],
         }
-      
-        api.addCGToken('ethereum', parseFloat(globals[0].totalVolume || 0) / 1e18)
+        const lockedInSellOrders = orders.reduce((sum, o) => sum += +o.totalOutput - o.fulfilledOutput, 0)
+
+        // Locked in buy orders (ETH balance of market contract)
+        const lockedInBuyOrders = await api.sumTokens({ owner: OTSEA_MARKET_CONTRACT, tokens: [ADDRESSES.null] });
+
+        api.addCGToken('ethereum', parseFloat(lockedInSellOrders + lockedInBuyOrders) / 1e18)
     }
 }
 
-// TVL of OTSEA
-async function otsea_tvl(api) {
+// Total Volume of OTSEA
+async function otsea_total_volume(api) {
     const collateralBalance = await api.call({
         abi: 'erc20:totalSupply',
         target: OTSEA_TOKEN,
@@ -41,7 +48,7 @@ async function otsea_tvl(api) {
 
 // Global export
 module.exports = {
-  methodology: "We uses otsea's subgraphs to fetch tvl and offers data.",
+  methodology: "We aggregated the assets locked on OTSea market",
 };
 
 // Network exports
@@ -51,7 +58,7 @@ config.chains.forEach(async chainInfo => {
     if (chain == 'ethereum') {
         module.exports[chain] = {
             tvl: getMarketVolume(endpoint),
-            staking:  staking(OTSEA_TREASURY, OTSEA_TOKEN),
+            staking:  staking(OTSEA_STAKING_CONTRACT, OTSEA_TOKEN),
         }
     } else {
         module.exports[chain] = {
