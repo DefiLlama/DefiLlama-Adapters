@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/http');

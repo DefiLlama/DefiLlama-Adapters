@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const sdk = require('@defillama/sdk');
 const { sumTokens2, } = require('../helper/unwrapLPs');
 const { cachedGraphQuery } = require('../helper/cache');
 

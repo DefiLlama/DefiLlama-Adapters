@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
