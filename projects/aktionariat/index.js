@@ -1,8 +1,9 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 
 const graphs = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/aktionariat/brokerbot",
-  optimism: "https://api.thegraph.com/subgraphs/name/aktionariat/brokerbot-optimism",
+  ethereum: sdk.graph.modifyEndpoint('2ZoJCp4S7YP7gbYN2ndsYNjPeZBV1PMti7BBoPRRscNq'),
+  optimism: sdk.graph.modifyEndpoint('3QfEXbPfP23o3AUzcmjTfRtUUd4bfrFj3cJ4jET57CTX'),
 }
 
 function tvlPaged(chain) {

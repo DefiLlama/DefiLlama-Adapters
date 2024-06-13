@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { cachedGraphQuery } = require('../helper/cache')
 
@@ -6,7 +7,7 @@ const configV1 = {
     startBlock: 29520285,
     blockDelay: 30,
     theGraph: {
-      endpoint: 'https://api.thegraph.com/subgraphs/name/swaap-labs/swaapv1',
+      endpoint: sdk.graph.modifyEndpoint('A1ibaGVUkqdLeBG7VeeSB8jm9QNmS8phSz8iooXR8puv'),
       query: `pools: pools(orderBy: liquidity, orderDirection: desc) {
         id
         tokens {

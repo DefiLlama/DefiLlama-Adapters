@@ -1,3 +1,4 @@
+import * as sdk from "@defillama/sdk";
 import { gql, request } from "graphql-request";
 import { Liq } from "../utils/types";
 import { getPagedGql } from "../utils/gql";
@@ -75,14 +76,14 @@ const rc: { [chain in Chains]: AaveAdapterResource } = {
     name: "aave",
     chain: Chains.ethereum,
     usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/protocol-v2",
+    subgraphUrl: sdk.graph.modifyEndpoint('8wR23o1zkS4gpLqLNU4kG3JHYVucqGyopL5utGxP2q1N'),
     explorerBaseUrl: "https://etherscan.io/address/",
   },
   // [Chains.polygon]: {
   //   name: "aave",
   //   chain: Chains.polygon,
   //   usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-  //   subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic",
+  //   subgraphUrl: sdk.graph.modifyEndpoint('H1Et77RZh3XEf27vkAmJyzgCME2RSFLtDS2f4PPW6CGp'),
   //   explorerBaseUrl: "https://polygonscan.com/address/",
   // },
 };
