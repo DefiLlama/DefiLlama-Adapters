@@ -1,4 +1,4 @@
-const { graphQuery } = require("../helper/http");
+const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const chains = {
@@ -47,8 +47,6 @@ async function fetchPools(chain) {
     case "scroll": url = 'https://scroll-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-scroll'; break;
     default: url = `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
   }
-  let length
-  let lastId = ''
   let toa = [];
   const poolQuery = `
     query pools($lastId: String) {
@@ -62,25 +60,21 @@ async function fetchPools(chain) {
         }
       }
     }`;
-  do {
-    const {pools} = await graphQuery(url, poolQuery, { lastId })
+    const pools = await cachedGraphQuery('kyber/'+chain, url, poolQuery, { fetchById: true,  })
     pools.forEach(({ id, token0, token1}) => {
       toa.push([token0.id, id])
       toa.push([token1.id, id])
     })
-    lastId = pools[pools.length - 1].id
-  } while (length === 1000)
   
   return toa;
 }
 
 function elastic(chain) {
-  return async (_, block, chainBlocks) => {
+  return async (api) => {
     if (!("graphId" in chains[chain])) return {};
 
-    block = chainBlocks[chain];
     const pools = await fetchPools(chains[chain].graphId);
-    return sumTokens2({ chain, block, tokensAndOwners: pools })
+    return sumTokens2({ api, tokensAndOwners: pools })
   }
 }
 
@@ -96,3 +90,5 @@ Object.keys(chains).forEach(chain => {
     tvl: elastic(chain)
   };
 });
+
+module.exports.base.tvl = () => ({})  // setting base to 0 for now as I could not find the graph endpoint

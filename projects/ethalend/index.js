@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
@@ -49,7 +48,7 @@ async function avaxTvl(_, _block, cb) {
 async function tvl(chain, block, chainId) {
   const balances = {}
   if (chain === 'polygon') {
-    const globalData = (await request("https://api.thegraph.com/subgraphs/name/ethalend/etha-v1", globalDataQuery, { block: block - 100 })).globalDatas
+    const globalData = (await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 100 })).globalDatas
     await Promise.all(globalData.filter(v => v.type === "lending").map(async v => {
       if (v.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
         v.address = ADDRESSES.polygon.WMATIC_2

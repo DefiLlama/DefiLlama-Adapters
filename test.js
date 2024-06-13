@@ -27,7 +27,7 @@ const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'GRAPH_API_KEY', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
