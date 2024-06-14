@@ -4,6 +4,7 @@ const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
 const { getConfig } = require('../helper/cache')
+const sdk = require('@defillama/sdk')
 
 const { gql, request } = require('graphql-request')
 const { default: BigNumber } = require('bignumber.js')
