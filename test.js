@@ -428,7 +428,7 @@ function buildPricesGetQueries(readKeys) {
   const queries = []
   let query = burl
 
-  for (key of readKeys) {
+  for (const key of readKeys) {
     if (query.length + key.length > 2000) {
       queries.push(query.slice(0, -1))
       query = burl
