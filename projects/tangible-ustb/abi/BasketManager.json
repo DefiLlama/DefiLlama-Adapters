@@ -1,3 +1,0 @@
-{
-  "getBasketsArray": "function getBasketsArray() view returns (address[] memory)"
-}
