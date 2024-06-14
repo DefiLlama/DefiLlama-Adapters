@@ -7,7 +7,8 @@ module.exports = {
 }
 
 const config = {
-  arbitrum: { endpoint: sdk.graph.modifyEndpoint('DHZvo3KRhryqHH9zj9sK8n9sjXvg3ddmDoVdLZcZQMJg'), },
+  arbitrum: { endpoint: 'https://api.goldsky.com/api/public/project_clws2t7g7ae9c01xsbnu80a51/subgraphs/swaap-earn-arbitrum/1.0.0/gn', },
+  ethereum: { endpoint: 'https://api.goldsky.com/api/public/project_clws2t7g7ae9c01xsbnu80a51/subgraphs/swaap-earn-ethereum/1.0.0/gn', },
 }
 
 Object.keys(config).forEach(chain => {
