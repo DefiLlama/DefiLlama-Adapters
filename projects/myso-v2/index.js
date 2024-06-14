@@ -30,8 +30,8 @@ const getContracts = async (chainId) => {
   const response = await get(
     `https://api.myso.finance/chainIds/${chainId}/contracts`,
     {
-      decompress: false,
       responseType: "stream",
+      decompress: false,
       transformResponse: (data) => {
         return data.pipe(zlib.createBrotliDecompress());
       },
