@@ -128,7 +128,7 @@ const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
 
   if (!(fundingPoolFactory && fundingPools.length)) return;
 
-  const logs = await getLogs({
+  /*const logs = await getLogs({
     api,
     target: fundingPoolFactory,
     eventAbi:
@@ -150,7 +150,7 @@ const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
       calls: logs.map((log) => log.fundingPool),
     });
     api.add(tokens, loanProposalBalances);
-  }
+  }*/
 
   let tokensAndOwners = fundingPools.map((fundingPool) => {
     return [fundingPool.loanCcyToken, fundingPool.contractAddr];
