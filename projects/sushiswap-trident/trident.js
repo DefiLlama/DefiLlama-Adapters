@@ -1,18 +1,19 @@
+const sdk = require("@defillama/sdk");
 const { blockQuery } = require('../helper/http')
 
 const graphUrls = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
   polygonOldRouter:
-    "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-optimism",
+    sdk.graph.modifyEndpoint('5LBvcUQthQDZTMe6cyJ7DbeokFkYeVpYYBZruHPUjMG5'),
+  optimism: sdk.graph.modifyEndpoint('FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51'),
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
   bittorrent:
     "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-arbitrum",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-avalanche",
+  arbitrum: sdk.graph.modifyEndpoint('4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx'),
+  bsc: sdk.graph.modifyEndpoint('9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn'),
+  avax: sdk.graph.modifyEndpoint('NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1'),
 };
 
 const tridentQueryWithBlock = `

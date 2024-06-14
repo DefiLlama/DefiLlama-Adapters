@@ -1,8 +1,9 @@
+const sdk = require("@defillama/sdk");
 const { toUSDTBalances } = require('../helper/balances');
 const { blockQuery } = require('../helper/http')
 const { getUniTVL } = require("../helper/unknownTokens")
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
+const graphUrl = sdk.graph.modifyEndpoint('8TXwDMLemg6p4eicVuixKk7Mw9aNxpod1PQQFdSvFj6H')
 const graphQuery = `
 query get_tvl($block: Int) {
   uniswapFactory(
@@ -95,6 +96,7 @@ module.exports = {
   },
   blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b', useDefaultCoreAssets: true, }) },
   core: { tvl: tvl2 },
+  rsk: { tvl: tvl2 },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')

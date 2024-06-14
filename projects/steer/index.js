@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { stakings } = require("../helper/staking");
 
@@ -5,25 +6,25 @@ const { stakings } = require("../helper/staking");
 const supportedChains = [
   {
     name: 'Polygon',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-polygon',
+    subgraphEndpoint: sdk.graph.modifyEndpoint('uQxLz6EarmJcr2ymRRmTnrRPi8cCqas4XcPQb71HBvw'),
     chainId: 137,
     identifier: 'polygon'
   },
   {
     name: 'Arbitrum',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-arbitrum',
+    subgraphEndpoint: sdk.graph.modifyEndpoint('HVC4Br5yprs3iK6wF8YVJXy4QZWBNXTCFp8LPe3UpcD4'),
     chainId: 42161,
     identifier: 'arbitrum'
   },
   {
     name: 'Optimism',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-optimism',
+    subgraphEndpoint: sdk.graph.modifyEndpoint('GgW1EwNARL3dyo3acQ3VhraQQ66MHT7QnYuGcQc5geDG'),
     chainId: 10,
     identifier: 'optimism'
   },
   {
     name: 'Binance',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-bsc',
+    subgraphEndpoint: sdk.graph.modifyEndpoint('GLDP56fPGDz3MtmhtfTkz5CxWiqiNLACVrsJ9RqQeL4U'),
     chainId: 56,
     identifier: 'bsc'
   },
@@ -35,7 +36,7 @@ const supportedChains = [
   },
   {
     name: 'Avalanche',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-avalanche',
+    subgraphEndpoint: sdk.graph.modifyEndpoint('GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA'),
     chainId: 43114,
     identifier: 'avax'
   },
@@ -101,7 +102,7 @@ const supportedChains = [
   },
   {
     name: 'Fantom',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-protocol-fantom-test',
+    subgraphEndpoint: sdk.graph.modifyEndpoint('8k6x2Uho5PEqjxHx5SeSE334MEaxSZqMZhH6p5XYvqjM'),
     chainId: 250,
     identifier: 'fantom'
   },
@@ -129,9 +130,21 @@ const supportedChains = [
     chainId: 3776,
     identifier: 'astrzk'
   },
+  {
+    name: 'Telos',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-telos/1.0.1/gn',
+    chainId: 40,
+    identifier: 'telos'
+  },
+  {
+    name: 'X Layer',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-x-layer/1.0.1/gn',
+    chainId: 196,
+    identifier: 'xlayer'
+  },
   // {
   //   name: 'Celo',
-  //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
+  //   subgraphEndpoint: sdk.graph.modifyEndpoint('DDwt4z55qLHPNmasiQXFH3nRjgCBrBhsiz3uEqKRJoa'),
   //   chainId: 42220,
   //   identifier: 'celo'
   // },
