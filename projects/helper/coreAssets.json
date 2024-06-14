@@ -49,8 +49,7 @@
     "AEVO": "0xB528edBef013aff855ac3c50b381f253aF13b997",
     "STONE": "0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0",
     "USDM": "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C",
-    "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-    "USTB": "0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd"
+    "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3"
   },
   "fantom": {
     "WFTM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
@@ -1795,10 +1794,6 @@
   },
   "btr": {
     "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
-  },
-  "real": {
-    "arcUSD": "0xaec9e50e3397f9ddc635c6c429c8c7eca418a143",
-    "RWA": "0x4644066f535ead0cde82d209df78d94572fcbf14"
   },
   "taiko": {
     "USDC": "0x07d83526730c7438048D55A4fc0b850e2aaB6f0b",
