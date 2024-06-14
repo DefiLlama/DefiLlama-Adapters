@@ -173,9 +173,9 @@ async function tvl(api) {
     contracts = await getCache("myso-v2", api.chain);
   }
 
-  await getBlitzMatchBalances(api, contracts, fromBlock);
+  //await getBlitzMatchBalances(api, contracts, fromBlock);
   //await getCoveredCallOfTheWeekBalances(api, contracts);
-  //return await getWhaleMatchBalances(api, contracts, fromBlock);
+  return await getWhaleMatchBalances(api, contracts, fromBlock);
 }
 
 const config = {
