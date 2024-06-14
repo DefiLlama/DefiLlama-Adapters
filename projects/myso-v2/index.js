@@ -175,7 +175,7 @@ async function tvl(api) {
 
   await getBlitzMatchBalances(api, contracts, fromBlock);
   //await getCoveredCallOfTheWeekBalances(api, contracts);
-  return await getWhaleMatchBalances(api, contracts, fromBlock);
+  //return await getWhaleMatchBalances(api, contracts, fromBlock);
 }
 
 const config = {
