@@ -100,7 +100,6 @@ const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
 
   const fundingPools =
     contracts.filter((contract) => contract.type === "funding_pool") || [];
-  console.log(api.chain, fundingPools, fundingPoolFactory)
 
   if (!(fundingPoolFactory && fundingPools.length))
     return;
