@@ -11,6 +11,7 @@ const {
 
 async function transformInjectiveAddress() {
   return addr => {
+    if (addr.startsWith('ibc:')) return addr
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))

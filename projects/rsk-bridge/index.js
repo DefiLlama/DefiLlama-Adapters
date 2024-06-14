@@ -1,6 +1,26 @@
+const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { getBalance } = require("@defillama/sdk/build/eth");
+const { getBlock } = require("@defillama/sdk/build/util/blocks");
 
 module.exports = {
+  bitcoin: {
+    tvl: async (api) => {
+      const block = (await getBlock("rsk", api.timestamp)).block;
+      const unminted =
+        (
+          await getBalance({
+            target: "0x0000000000000000000000000000000001000006",
+            chain: "rsk",
+            block,
+          })
+        ).output / 1e18;
+
+      const minted = 21e6 - unminted;
+
+      return { "coingecko:bitcoin": minted };
+    },
+  },
   ethereum: {
     tvl: sumTokensExport({
       owner: "0x12eD69359919Fc775bC2674860E8Fe2d2b6a7B5D",
@@ -17,7 +37,7 @@ module.exports = {
         "0xFF9EA341d9ea91CB7c54342354377f5104Fd403f",
         "0x4991516DF6053121121274397A8C1DAD608bc95B",
         "0x1BDa44fda023F2af8280a16FD1b01D1A493BA6c4",
-        "0xEf213441a85DF4d7acBdAe0Cf78004E1e486BB96",
+        ADDRESSES.rsk.rUSDT,
         "0x75c6e15702ebAcd51177154ff383DF9695E1B1DA",
         "0x9C3a5F8d686fadE293c0Ce989A62a34408C4e307",
         "0xe506F698B31a66049bD4653Ed934e7A07Cbc5549",

@@ -18,7 +18,7 @@ module.exports = {
 		},
 	},
 	ethereum: {
-		tvl: async (_, _1, _2, { api }) => {
+		tvl: async (api) => {
 			const vETH = await api.call({
 				target: "0x4bc3263eb5bb2ef7ad9ab6fb68be80e43b43801f",
 				abi: "uint256:totalSupply",
@@ -53,6 +53,13 @@ module.exports = {
 			const { bifrost } = getExports("bifrost-staking", ["bifrost"]);
 			const { astar } = await bifrost.tvl();
 			return { astar };
+		},
+	},
+	manta: {
+		tvl: async () => {
+			const { bifrost } = getExports("bifrost-staking", ["bifrost"]);
+			const tvl = await bifrost.tvl();
+			return { 'manta-network': tvl['manta-network'] };
 		},
 	},
 };

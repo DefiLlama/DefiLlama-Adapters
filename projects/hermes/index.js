@@ -1,9 +1,7 @@
 const { getUniTVL, staking, } = require('../helper/unknownTokens')
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
-  misrepresentedTokens: true,
+      misrepresentedTokens: true,
   methodology:
     'We calculate liquidity on all pairs with data retreived from the "hermes-defi/hermes-graph" subgraph plus the total amount in dollars of our staking pools xHermes and sHermes.',
   harmony: {

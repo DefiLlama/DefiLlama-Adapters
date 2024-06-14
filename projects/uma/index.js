@@ -29,7 +29,8 @@ const ethEmpCreators = [
 ];
 
 // Captures TVL for EMP contracts on Ethereum
-async function ethEmp(timestamp, block, _1, { api }) {
+async function ethEmp(api) {
+  const block = api.block
   const balances = {};
   for (let i = 0; i < ethEmpCreators.length; i++) {
     const logs = await getLogs({
@@ -58,7 +59,8 @@ async function ethEmp(timestamp, block, _1, { api }) {
 }
 
 // Captures TVL for LSP contracts on Ethereum
-async function ethLsp(timestamp, block, _1, { api }) {
+async function ethLsp(api) {
+  const block = api.block
   const balances = {};
   for (let i = 0; i < ethLspCreators.length; i++) {
     const logs = await getLogs({
@@ -87,10 +89,10 @@ async function ethLsp(timestamp, block, _1, { api }) {
 }
 
 // Captures TVL for LSP contracts on Polygon
-async function polygonLsp(timestamp, block, chainBlocks, { api }) {
+async function polygonLsp(api) {
+  const block = api.block
   const balances = {};
   const transform = await getChainTransform('polygon');
-  block = await getBlock(timestamp, "polygon", chainBlocks);
   
   for (let i = 0; i < polygonLspCreators.length; i++) {
     const logs = await getLogs({
@@ -122,11 +124,11 @@ async function polygonLsp(timestamp, block, chainBlocks, { api }) {
 }
 
 // Captures TVL for LSP contracts on Boba
-async function bobaLsp(timestamp, block, chainBlocks, { api }) {
+async function bobaLsp(api) {
+  const block = api.block
   const chain = "boba";
   const balances = {};
   const transform = await getChainTransform(chain);
-  block = await getBlock(timestamp, chain, chainBlocks);
 
   for (let i = 0; i < bobaLspCreators.length; i++) {
     const lspCreatorAddress = bobaLspCreators[i];

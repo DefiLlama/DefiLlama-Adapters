@@ -133,7 +133,8 @@ async function getLiquidityPoolBalances(timestamp, block, api) {
   return toa
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const { timestamp, block } = api
   const tokensAndOwners = await getLiquidityPoolBalances(timestamp, block);
   const balances = await getHidingVaultBalances(timestamp, block);
 

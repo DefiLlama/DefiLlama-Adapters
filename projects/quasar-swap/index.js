@@ -16,7 +16,7 @@ const poolManual = "0x693D075Db2F6c231e2f375c29EDd52F47027b45E";
 const dexFactory = "0x9FF350c22d2A1A9d2867E1afb44B83eF114DFD7b";
 
 module.exports = {
-  nova: {
+/*   nova: {
     tvl: getUniTVL({
       factory: dexFactory,
       useDefaultCoreAssets: true,
@@ -30,5 +30,10 @@ module.exports = {
         chain: "nova",
         block,
       }),
-  },
+  }, */
+  //deadFrom: "2024-01-01",
+  nova: {
+    tvl: () => ({}),
+    staking: () => ({}),
+  }
 }

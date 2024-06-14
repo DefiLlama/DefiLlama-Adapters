@@ -1,7 +1,7 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const USDT_TOKEN_CONTRACT = "0x1E4a5963aBFD975d8c9021ce480b42188849D41d";
+const USDT_TOKEN_CONTRACT = ADDRESSES.astarzk.USDT;
 const WALLET_ADDR = [
   "0x62e724cB4d6C6C7317e2FADe4A03001Fe7856940",
   "0xA59a2365D555b24491B19A5093D3c99b119c2aBb",
@@ -49,6 +49,15 @@ module.exports = {
         "0x5f075a6a11B2e25DF664Ce7419c274943017B595",
       ],
       tokens: [ADDRESSES.base.USDC],
+    }),
+  },
+  xlayer: {
+    tvl: sumTokensExport({
+      owners: [
+        "0x80DD5bC934122e56B9536a9F19F2Ea95a38E98c8",
+        "0xf915391346Fad5a75F31CD00218BB1EFC13e01f2",
+      ],
+      tokens: [ADDRESSES.xlayer.USDC],
     }),
   },
 }

@@ -1,4 +1,5 @@
 const ADDRESSES = require('./coreAssets.json')
+const { getUniqueAddresses } = require('./tokenMapping')
 let stableTokens = ['USDC', 'USDT', 'DAI', 'WETH', 'WFTM', 'WGLMR', 'WBNB', 'WAVAX', 'JCHF', 'JEUR', 'WBTC', 'AGDAI', 'JPYC',
   'MIMATIC', 'WXDAI', 'EURS', 'JGBP', 'CNT', 'USD+', 'AMUSDC', 'RAI', 'SLP', 'SDAM3CRV', 'AMDAI', 'TUSD', 'RAI', 'UNI-V2', 'SLP', 'ScUSDC',
   'cUSDC', 'iDAI', 'FTM', 'yUSDC', 'cDAI', 'MATIC', 'UST', 'stETH', 'USD', 'mUSD', 'iUSDC', 'aDAI', 'AGEUR', 'BCT', 'WMATIC', 
@@ -10,6 +11,7 @@ function isStableToken(symbol = '', address = '') {
 }
 
 async function getWhitelistedTokens({ api, tokens, isVesting }) {
+  tokens = getUniqueAddresses(tokens)
   const symbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true})
   tokens = tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
   return tokens

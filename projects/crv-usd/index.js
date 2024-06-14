@@ -19,7 +19,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { pools} = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await Promise.all(pools.map(getLogs_))
 
       return sumTokens2({ api, tokensAndOwners: logs.flat().map(i => [i.collateral, i.amm]) })

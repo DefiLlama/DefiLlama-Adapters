@@ -1,20 +1,15 @@
-const { request, gql } = require('graphql-request');
-const { getBlock } = require('../helper/http');
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const sdk = require("@defillama/sdk");
+const { cachedGraphQuery } = require('../helper/cache')
 
 const graphs = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/aktionariat/brokerbot",
-  optimism: "https://api.thegraph.com/subgraphs/name/aktionariat/brokerbot-optimism",
+  ethereum: sdk.graph.modifyEndpoint('2ZoJCp4S7YP7gbYN2ndsYNjPeZBV1PMti7BBoPRRscNq'),
+  optimism: sdk.graph.modifyEndpoint('3QfEXbPfP23o3AUzcmjTfRtUUd4bfrFj3cJ4jET57CTX'),
 }
 
 function tvlPaged(chain) {
-  return async (_, _b, { [chain]: block }) => {
-    block = await getBlock(_, chain, { [chain]: block })
-    const balances = {}
+  return async (api) => {
     const size = 1000
-    let lastId = ''
-    let brokerbots
-    let graphQueryPaged = gql`
+    let graphQueryPaged = `
     query brokerbotQuery($lastId: String, $block: Int) {
       brokerbots(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
         id
@@ -23,17 +18,9 @@ function tvlPaged(chain) {
       }
     }
   `
-  
-
-    do {
-      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 5000 });
-      brokerbots = res.brokerbots
-      const tokensAndOwners = brokerbots.map(i => ([[i.token.id, i.id], [i.base.id, i.id]])).flat()
-      await sumTokens2({ balances, tokensAndOwners, chain, block })
-      lastId = brokerbots[brokerbots.length - 1]?.id
-    } while (brokerbots.length === size)
-
-    return balances
+    const data = await cachedGraphQuery('aktionariat-brokerbot/' + chain, graphs[chain], graphQueryPaged, { useBlock: true, api, fetchById: true, })
+    const ownerTokens = data.map(i => [[i.token.id, i.base.id], i.id])
+    return api.sumTokens({ ownerTokens })
   }
 }
 
