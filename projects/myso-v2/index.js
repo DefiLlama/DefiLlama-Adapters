@@ -43,9 +43,11 @@ const getContracts = async (chainId) => {
   return data.contracts;
 };
 
-const CoveredCallStrategiesAbi = "function strategies(uint256) view returns (address underlying, uint128 maxDeposits, uint128 minDeposits, uint128 startTime, uint128 tenor, uint128 minStrike, uint128 subscribeEndTime, uint256 totalDeposits, uint128 tokenRewardsPerDeposit)"
+const CoveredCallStrategiesAbi =
+  "function strategies(uint256) view returns (address underlying, uint128 maxDeposits, uint128 minDeposits, uint128 startTime, uint128 tenor, uint128 minStrike, uint128 subscribeEndTime, uint256 totalDeposits, uint128 tokenRewardsPerDeposit)";
 
-const whaleMatchTotalSubscriptionsAbi = "function totalSubscriptions(address) view returns (uint256)";
+const whaleMatchTotalSubscriptionsAbi =
+  "function totalSubscriptions(address) view returns (uint256)";
 
 const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
   const vaultFactory = contracts?.find(
@@ -63,6 +65,16 @@ const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
     fromBlock,
   });
 
+  const CHUNK_SIZE = 40;
+
+  function chunkArray(array, chunkSize) {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
   let ownerTokens = logs.map((i) => {
     return [
       contracts
@@ -72,10 +84,19 @@ const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
     ];
   });
 
-  return sumTokens2({ api, ownerTokens, });
+  let ownerTokenChunks = chunkArray(ownerTokens, CHUNK_SIZE);
+
+  return processChunks(api, ownerTokenChunks);
 };
 
-const getCoveredCallOfTheWeekBalances = async (api, contracts,) => {
+async function processChunks(api, ownerTokenChunks) {
+  const promises = ownerTokenChunks.map((chunk) =>
+    sumTokens2({ api, ownerTokens: chunk })
+  );
+  await Promise.all(promises);
+}
+
+const getCoveredCallOfTheWeekBalances = async (api, contracts) => {
   const coveredCallOfTheWeeks = contracts?.filter(
     (contract) => contract.type === "p2p"
   );
@@ -90,8 +111,10 @@ const getCoveredCallOfTheWeekBalances = async (api, contracts,) => {
     abi: CoveredCallStrategiesAbi,
   });
 
-  coveredCallOfTheWeekStrategies.forEach((strategy) => api.add(strategy.underlying, strategy.totalDeposits))
-}
+  coveredCallOfTheWeekStrategies.forEach((strategy) =>
+    api.add(strategy.underlying, strategy.totalDeposits)
+  );
+};
 
 const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
   const fundingPoolFactory = contracts.find(
@@ -101,8 +124,7 @@ const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
   const fundingPools =
     contracts.filter((contract) => contract.type === "funding_pool") || [];
 
-  if (!(fundingPoolFactory && fundingPools.length))
-    return;
+  if (!(fundingPoolFactory && fundingPools.length)) return;
 
   const logs = await getLogs({
     api,
@@ -121,16 +143,18 @@ const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
       })),
       abi: whaleMatchTotalSubscriptionsAbi,
     });
-    const tokens = await api.multiCall({ abi: 'address:depositToken', calls: logs.map(log => log.fundingPool) })
-    api.add(tokens, loanProposalBalances)
+    const tokens = await api.multiCall({
+      abi: "address:depositToken",
+      calls: logs.map((log) => log.fundingPool),
+    });
+    api.add(tokens, loanProposalBalances);
   }
-
 
   let tokensAndOwners = fundingPools.map((fundingPool) => {
     return [fundingPool.loanCcyToken, fundingPool.contractAddr];
   });
 
-  return sumTokens2({ api, tokensAndOwners, });
+  return sumTokens2({ api, tokensAndOwners });
 };
 
 async function tvl(api) {
