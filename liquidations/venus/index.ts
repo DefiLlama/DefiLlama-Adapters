@@ -1,4 +1,3 @@
-import * as sdk from "@defillama/sdk";
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";

@@ -1,4 +1,3 @@
-import * as sdk from "@defillama/sdk";
 import axios from "axios";
 import { gql } from "graphql-request";
 import BigNumber from "bignumber.js";
