@@ -65,6 +65,8 @@ const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
     fromBlock,
   });
 
+  if (!logs.length) return;
+
   const CHUNK_SIZE = 40;
 
   function chunkArray(array, chunkSize) {
