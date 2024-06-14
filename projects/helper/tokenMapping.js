@@ -36,6 +36,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ftn: {
+    '0x4084ab20f8ffca76c19aaf854fb5fe9de6217fbb': { coingeckoId: 'fasttoken', decimals: 18 },
+    '0x498d1cf9ad2d66144c98057a5880ee16e801e2f7': { coingeckoId: 'fasttoken', decimals: 18 },
+  },
   q: {
       [ADDRESSES.q.ELK]: { coingeckoId: "elk-finance", decimals: 18 },
       [ADDRESSES.q.WETH]: { coingeckoId: "ethereum", decimals: 18 },
