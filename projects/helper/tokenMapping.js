@@ -37,6 +37,7 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   ftn: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'fasttoken', decimals: 18 },
     '0x4084ab20f8ffca76c19aaf854fb5fe9de6217fbb': { coingeckoId: 'fasttoken', decimals: 18 },
     '0x498d1cf9ad2d66144c98057a5880ee16e801e2f7': { coingeckoId: 'fasttoken', decimals: 18 },
   },
