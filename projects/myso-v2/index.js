@@ -3,7 +3,6 @@ const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getCache, setCache } = require("../helper/cache");
 const { get } = require("../helper/http");
-const { util } = require("@defillama/sdk");
 
 const brotliDecode = (stream) => {
   return new Promise((resolve, reject) => {
@@ -31,8 +30,8 @@ const getContracts = async (chainId) => {
   const response = await get(
     `https://api.myso.finance/chainIds/${chainId}/contracts`,
     {
-      decompress: false,
       responseType: "stream",
+      decompress: false,
       transformResponse: (data) => {
         return data.pipe(zlib.createBrotliDecompress());
       },
@@ -44,92 +43,18 @@ const getContracts = async (chainId) => {
   return data.contracts;
 };
 
-const CoveredCallStrategiesAbi = {
-  inputs: [
-    {
-      internalType: "uint256",
-      name: "",
-      type: "uint256",
-    },
-  ],
-  name: "strategies",
-  outputs: [
-    {
-      internalType: "address",
-      name: "underlying",
-      type: "address",
-    },
-    {
-      internalType: "uint128",
-      name: "maxDeposits",
-      type: "uint128",
-    },
-    {
-      internalType: "uint128",
-      name: "minDeposits",
-      type: "uint128",
-    },
-    {
-      internalType: "uint128",
-      name: "startTime",
-      type: "uint128",
-    },
-    {
-      internalType: "uint128",
-      name: "tenor",
-      type: "uint128",
-    },
-    {
-      internalType: "uint128",
-      name: "minStrike",
-      type: "uint128",
-    },
-    {
-      internalType: "uint128",
-      name: "subscribeEndTime",
-      type: "uint128",
-    },
-    {
-      internalType: "uint256",
-      name: "totalDeposits",
-      type: "uint256",
-    },
-    {
-      internalType: "uint128",
-      name: "tokenRewardsPerDeposit",
-      type: "uint128",
-    },
-  ],
-  stateMutability: "view",
-  type: "function",
-};
+const CoveredCallStrategiesAbi =
+  "function strategies(uint256) view returns (address underlying, uint128 maxDeposits, uint128 minDeposits, uint128 startTime, uint128 tenor, uint128 minStrike, uint128 subscribeEndTime, uint256 totalDeposits, uint128 tokenRewardsPerDeposit)";
 
-const whaleMatchTotalSubscriptionsAbi = {
-  inputs: [
-    {
-      internalType: "address",
-      name: "",
-      type: "address",
-    },
-  ],
-  name: "totalSubscriptions",
-  outputs: [
-    {
-      internalType: "uint256",
-      name: "",
-      type: "uint256",
-    },
-  ],
-  stateMutability: "view",
-  type: "function",
-};
+const whaleMatchTotalSubscriptionsAbi =
+  "function totalSubscriptions(address) view returns (uint256)";
 
 const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
   const vaultFactory = contracts?.find(
     (contract) => contract.type === "vault_factory"
   )?.contractAddr;
 
-  if (!vaultFactory) return {};
+  if (!vaultFactory);
 
   const logs = await getLogs({
     api,
@@ -140,6 +65,18 @@ const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
     fromBlock,
   });
 
+  if (!logs.length) return;
+
+  const CHUNK_SIZE = 40;
+
+  function chunkArray(array, chunkSize) {
+    const chunks = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
   let ownerTokens = logs.map((i) => {
     return [
       contracts
@@ -149,18 +86,19 @@ const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
     ];
   });
 
-  return await sumTokens2({
-    api,
-    ownerTokens,
-  });
+  let ownerTokenChunks = chunkArray(ownerTokens, CHUNK_SIZE);
+
+  return processChunks(api, ownerTokenChunks);
 };
 
-const getCoveredCallOfTheWeekBalances = async (
-  api,
-  contracts,
-  fromBlock,
-  balances
-) => {
+async function processChunks(api, ownerTokenChunks) {
+  const promises = ownerTokenChunks.map((chunk) =>
+    sumTokens2({ api, ownerTokens: chunk })
+  );
+  await Promise.all(promises);
+}
+
+const getCoveredCallOfTheWeekBalances = async (api, contracts) => {
   const coveredCallOfTheWeeks = contracts?.filter(
     (contract) => contract.type === "p2p"
   );
@@ -173,22 +111,16 @@ const getCoveredCallOfTheWeekBalances = async (
       params: [contract.poolData.strategyId],
     })),
     abi: CoveredCallStrategiesAbi,
-    withMetadata: true,
   });
 
-  coveredCallOfTheWeekStrategies.forEach((strategy) =>
-    util.sumSingleBalance(
-      balances,
-      strategy.output.underlying.toLowerCase(),
-      strategy.output.totalDeposits,
-      api.chain
-    )
-  );
+  if (!coveredCallOfTheWeekStrategies.length) return;
 
-  return balances;
+  coveredCallOfTheWeekStrategies.forEach((strategy) =>
+    api.add(strategy.underlying, strategy.totalDeposits)
+  );
 };
 
-const getWhaleMatchBalances = async (api, contracts, fromBlock, balances) => {
+const getWhaleMatchBalances = async (api, contracts, fromBlock) => {
   const fundingPoolFactory = contracts.find(
     (contract) => contract.type === "funding_pool_factory"
   )?.contractAddr;
@@ -196,9 +128,7 @@ const getWhaleMatchBalances = async (api, contracts, fromBlock, balances) => {
   const fundingPools =
     contracts.filter((contract) => contract.type === "funding_pool") || [];
 
-  if (!(fundingPoolFactory && fundingPools.length)) {
-    return balances;
-  }
+  if (!(fundingPoolFactory && fundingPools.length)) return;
 
   const logs = await getLogs({
     api,
@@ -210,42 +140,25 @@ const getWhaleMatchBalances = async (api, contracts, fromBlock, balances) => {
   });
 
   if (logs.length) {
-    try {
-      const loanProposalBalances = await api.multiCall({
-        calls: logs.map((log) => ({
-          target: log?.fundingPool,
-          params: [log.loanProposalAddr],
-        })),
-        abi: whaleMatchTotalSubscriptionsAbi,
-        withMetadata: true,
-      });
-
-      loanProposalBalances.forEach((loanProposalBalance) =>
-        util.sumSingleBalance(
-          balances,
-          fundingPools
-            .find(
-              (fundingPool) =>
-                fundingPool.contractAddr.toLowerCase() ===
-                loanProposalBalance.input.target.toLowerCase()
-            )
-            ?.loanCcyToken.toLowerCase(),
-          loanProposalBalance.output,
-          api.chain
-        )
-      );
-    } catch (e) {}
+    const loanProposalBalances = await api.multiCall({
+      calls: logs.map((log) => ({
+        target: log?.fundingPool,
+        params: [log.loanProposalAddr],
+      })),
+      abi: whaleMatchTotalSubscriptionsAbi,
+    });
+    const tokens = await api.multiCall({
+      abi: "address:depositToken",
+      calls: logs.map((log) => log.fundingPool),
+    });
+    api.add(tokens, loanProposalBalances);
   }
 
-  let ownerTokens = fundingPools.map((fundingPool) => {
-    return [[fundingPool.loanCcyToken], fundingPool.contractAddr];
+  let tokensAndOwners = fundingPools.map((fundingPool) => {
+    return [fundingPool.loanCcyToken, fundingPool.contractAddr];
   });
 
-  return await sumTokens2({
-    balances,
-    api,
-    ownerTokens,
-  });
+  return sumTokens2({ api, tokensAndOwners });
 };
 
 async function tvl(api) {
@@ -260,16 +173,10 @@ async function tvl(api) {
     contracts = await getCache("myso-v2", api.chain);
   }
 
-  let balances = await getBlitzMatchBalances(api, contracts, fromBlock);
+  await getBlitzMatchBalances(api, contracts, fromBlock);
+  await getCoveredCallOfTheWeekBalances(api, contracts);
 
-  balances = await getCoveredCallOfTheWeekBalances(
-    api,
-    contracts,
-    fromBlock,
-    balances
-  );
-
-  return await getWhaleMatchBalances(api, contracts, fromBlock, balances);
+  return getWhaleMatchBalances(api, contracts, fromBlock);
 }
 
 const config = {
