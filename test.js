@@ -354,10 +354,10 @@ async function computeTVL(balances, timestamp) {
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
 
+  const queries = buildPricesGetQueries(readKeys)
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 100))
-    .process(async (keys) => {
-      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
+    .for(queries).process(async (query) => {
+      tokenData.push((await axios.get(query)).data.coins)
     })
 
   if (errors && errors.length)
@@ -423,7 +423,22 @@ setTimeout(() => {
     process.exit(1);
 }, 10 * 60 * 1000) // 10 minutes
 
+function buildPricesGetQueries(readKeys) {
+  const burl = 'https://coins.llama.fi/prices/current/'
+  const queries = []
+  let query = burl
 
+  for (key of readKeys) {
+    if (query.length + key.length > 2000) {
+      queries.push(query.slice(0, -1))
+      query = burl
+    }
+    query += `${key},`
+  }
+
+  queries.push(query.slice(0, -1))
+  return queries
+}
 
 async function initCache() {
   let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
