@@ -159,6 +159,7 @@ const tokens = {
   gard: 684649988,
   gold$: 246516580,
   silver$: 246519683,
+  ASAGold: 1241944285
 };
 
 // store all asset ids as string

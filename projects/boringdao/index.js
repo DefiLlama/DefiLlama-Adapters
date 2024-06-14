@@ -1,39 +1,20 @@
-const { getBalance } = require("../helper/utils");
-const { sumTokens } = require("../helper/unwrapLPs")
+const { sumTokensExport } = require("../helper/sumTokens")
 const contracts = require("./contracts.json");
 const sdk = require("@defillama/sdk");
+const { staking } = require('../helper/staking')
 
 function chainTvl(chain) {
-  const exports = {
-    tvl: async (timestamp, _, { [chain]: block }) => {
-      const toa = []
-      const holders = Object.values(contracts[chain].contracts)
-      const tokens = Object.values(contracts[chain].tokens)
-      holders.forEach(o => tokens.forEach(t => toa.push([t, o])))
-      return sumTokens({}, toa, block, chain)
-    },
+  const owners = Object.values(contracts[chain].contracts)
+  const tokens = Object.values(contracts[chain].tokens)
+  module.exports[chain] = {
+    tvl: sumTokensExport({ owners, tokens }),
   }
-  if (chain === 'ethereum')
-    exports.staking = async (_, block) => {
-      return sumTokens({}, [
-        ["0xbc19712feb3a26080ebf6f2f7849b417fdd792ca", "0x204c87CDA5DAAC87b2Fc562bFb5371a0B066229C"],
-      ], block)
-    }
-  return exports
 }
 
-const chainTVLObject = Object.keys(contracts)
-  .reduce((agg, chain) => ({ ...agg, [chain]: chainTvl(chain) }), {});
-
 module.exports = {
-  ...chainTVLObject,
   timetravel: false,
   bitcoin: {
-    tvl: async () => {
-      return {
-        bitcoin: await getBalance('bitcoin', '33ZibwpiZe4bM5pwpAdQNqqs2RthLkpJer')
-      }
-    }
+    tvl: sumTokensExport({ owner: '33ZibwpiZe4bM5pwpAdQNqqs2RthLkpJer'})
   },
   litecoin: {
     tvl: async (_, block) => {
@@ -50,3 +31,7 @@ module.exports = {
     }
   }
 };
+
+Object.keys(contracts).forEach(chainTvl)
+
+module.exports.ethereum.staking = staking('0x204c87CDA5DAAC87b2Fc562bFb5371a0B066229C', '0xbc19712feb3a26080ebf6f2f7849b417fdd792ca')

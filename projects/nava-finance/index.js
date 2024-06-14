@@ -32,4 +32,4 @@ module.exports.rei.tvl = async (_, _b, { rei: block }) => sumUnknownTokens({
   useDefaultCoreAssets: true,
 })
 
-staking(rewardPool, WREI, 'rei')
+staking(rewardPool, WREI)

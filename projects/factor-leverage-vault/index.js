@@ -1,21 +1,27 @@
+const sdk = require("@defillama/sdk");
 const { blockQuery } = require('../helper/http')
 
-const queryBlock = `query  data($block: Int){
-  leverageVaultPoolTokenStates(where: { balanceRaw_gt: 0} block: { number: $block }) {
-    id type underlyingAssetAddress      balanceRaw
+const queryBlock = `query data($block: Int){
+  leverageVaultPairStates(block: { number: $block }) {
+      id
+      assetBalanceRaw
+      assetTokenAddress
+      debtBalanceRaw
+      debtTokenAddress
   }
 }`
 
 const SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/dimasriat/factor-leverage-vault";
+  sdk.graph.modifyEndpoint('BZhGLLFicmKB9N9oMgDEAP8HmhVxTTjjxQA3ctGewAFc');
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
-  const { leverageVaultPoolTokenStates } = await blockQuery(SUBGRAPH_URL, queryBlock, { api })
+async function tvl(api) {
+  const { leverageVaultPairStates } = await blockQuery(SUBGRAPH_URL, queryBlock, { api })
 
-  for (let poolTokenState of leverageVaultPoolTokenStates) {
-    let { underlyingAssetAddress, balanceRaw } = poolTokenState;
-    if (poolTokenState.type === 'debt') balanceRaw *= -1
-    api.add(underlyingAssetAddress, balanceRaw)
+  for (let pairState of leverageVaultPairStates) {
+    const { assetTokenAddress, assetBalanceRaw, debtTokenAddress, debtBalanceRaw } = pairState
+    const decreasingDebt = debtBalanceRaw * -1
+    api.add(assetTokenAddress, assetBalanceRaw)
+    api.add(debtTokenAddress, decreasingDebt)
   }
 
   return api.getBalances()

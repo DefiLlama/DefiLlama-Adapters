@@ -18,11 +18,12 @@ query GET_TOTAL_TOKEN_TVL {
 const dai = ADDRESSES.ethereum.DAI
 
 async function getData(api) {
-  return graphQuery(subgraphUrl, graphTotalTokenTVLQuery, { api, })
+  return graphQuery(subgraphUrl, graphTotalTokenTVLQuery, {}, { api, })
 }
 
-async function borrowed(timestamp, ethBlock, _, {api }) {
+async function borrowed(api) {
   let total = BigNumber(0)
+  const ethBlock = await api.getBlock()
   if (!data[ethBlock]) data[ethBlock] = await getData(api)
   const { pools } = await data[ethBlock]
   pools.forEach(pool => {
@@ -34,8 +35,9 @@ async function borrowed(timestamp, ethBlock, _, {api }) {
   }
 }
 
-async function tvl(timestamp, ethBlock, _, {api }) {
+async function tvl(api) {
   let total = BigNumber(0)
+  const ethBlock = await api.getBlock()
   if (!data[ethBlock]) data[ethBlock] = await getData(api)
   const { pools } = await data[ethBlock]
   pools.forEach(pool => {

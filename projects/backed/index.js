@@ -18,7 +18,7 @@ const blacklistedOwners = [
   '0x43624c744A4AF40754ab19b00b6f681Ca56F1E5b', // treasury/cold wallet
 ]
 							
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   let tokens = [...contracts]
   if (api.chain === 'base') {
     tokens.push('0xC3cE78B037DDA1B966D31EC7979d3f3a38571A8E')

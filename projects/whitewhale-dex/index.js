@@ -8,6 +8,7 @@ const factory = {
   chihuahua: "chihuahua1s8ehad3r9wxyk08ls2nmz8mqh4vlfmaxd2nw0crxwh04t4l5je4s8ljv0j",
   migaloo: "migaloo1z89funaazn4ka8vrmmw4q27csdykz63hep4ay8q2dmlspc6wtdgq92u369",
   sei: "sei1tcx434euh2aszzfsjxqzvjmc4cww54rxvfvv8v7jz353rg779l2st699q0",
+  osmosis: "osmo1vuzkc4nzzav7g6t20f2vp0ed4sm3vaqnkpzy7yq3kujxs2g2hawqwnwy5w"
 }
 
 module.exports = {
@@ -16,6 +17,7 @@ module.exports = {
   methodology: "Liquidity on the DEX",
   hallmarks: [
     [1651881600, "UST depeg"],
+    [1676300400,"Migaloo Chain Launch"]
   ]
 }
 

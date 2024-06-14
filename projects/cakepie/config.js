@@ -7,6 +7,7 @@ module.exports = {
         CakeAddress: "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
         MCakeAddress: "0x581FA684D0Ec11ccb46B1d92F1F24C8A3F95C0CA",
         PancakeStaking: "0xb47b790076050423888cde9EBB2D5Cb86544F327",
-        CakepieReader: "0xc1cc256846224e8c0bA530692c338a99FbC27cB5"
+        CakepieReader: "0xc1cc256846224e8c0bA530692c338a99FbC27cB5",
+        vlCKPAddress: "0x232594e7F0096ba7DDAbcD8689cB0D994694eb26"
     },
   };

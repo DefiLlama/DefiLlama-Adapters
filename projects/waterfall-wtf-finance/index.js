@@ -15,7 +15,7 @@ const pancakeLPs = [
 module.exports = {
     bsc: {
         tvl: async () => ({}),
-        staking: staking(masonry, shares, "bsc"),
+        staking: staking(masonry, shares),
         pool2: pool2Exports(shareRewardPool, pancakeLPs, "bsc", addr=>`bsc:${addr}`)
     }
 }

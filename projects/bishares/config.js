@@ -1,8 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 // data taken from 
-// https://api.thegraph.com/subgraphs/name/toffick/bisharesfunds 
-// https://api.thegraph.com/subgraphs/name/bisharesindexfund/bisharesfunds-ybf-fantom
-// https://api.thegraph.com/subgraphs/name/toffick/bisharesfunds-fantom
 
 module.exports = {
   toa: {

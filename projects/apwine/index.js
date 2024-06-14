@@ -108,11 +108,11 @@ module.exports = {
   doublecounted: true,
   ethereum: {
     tvl: tvl_from_registry('ethereum'),
-    staking: staking(veAPW, APW, "ethereum"), 
+    staking: staking(veAPW, APW), 
   },
   polygon: {
     tvl: tvl_from_registry('polygon'), 
-    pool2: pool2s([APW_WETH_cometh_staking, APW_MUST_cometh_staking], [APW_WETH_cometh, APW_MUST_cometh], "polygon")
+    pool2: pool2s([APW_WETH_cometh_staking, APW_MUST_cometh_staking], [APW_WETH_cometh, APW_MUST_cometh])
   },
   methodology: `Use the registry to retrieve futureVaults, and get for each vault the IBT which is the token that this vault holds - the user locked collateral`
 }

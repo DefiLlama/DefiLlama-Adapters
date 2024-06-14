@@ -1,0 +1,10 @@
+{
+  "ethereum": {
+    "factory": "0xae4d5d5199265512B2a77Ad675107735B891aBc8",
+    "fromBlock": 19727256
+  },
+  "arbitrum": {
+    "factory": "0x51100574E1CF11ee9fcC96D70ED146250b0Fdb60",
+    "fromBlock": 204418891
+  }
+}

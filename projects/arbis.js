@@ -1,14 +1,6 @@
 const { staking } = require('./helper/staking')
-const sdk = require('@defillama/sdk')
-const { unwrapLPsAuto } = require('./helper/unwrapLPs')
-const { getChainTransform } = require('./helper/portedTokens')
 
-const chain = 'arbitrum'
-
-
-async function tvl(_, _b, { [chain]: block}) {
-  const balances = {}
-  const transformAddress = await getChainTransform(chain)
+async function tvl(api) {
   const vaults1 = [
     '0x47a156668F1Ecc659Efbbf4910508Ace1b46a49b',
     '0xdc2d66044e894d0726570bdc03d2123ab8f2cd51',
@@ -26,47 +18,18 @@ async function tvl(_, _b, { [chain]: block}) {
     '0xb970E280F9ddAA3349ab9F3ecf778970cDE46655',
   ]
 
-  const { output: tokens } = await sdk.api.abi.multiCall({
-    abi: abi.stakedToken,
-    calls: vaults.map(i => ({ target: i})),
-    chain, block,
-  })
-
-  const { output: deposits } = await sdk.api.abi.multiCall({
-    abi: abi.totalSupply,
-    calls: vaults.map(i => ({ target: i})),
-    chain, block,
-  })
-
-  const { output: tokens1 } = await sdk.api.abi.multiCall({
-    abi: abi.depositToken,
-    calls: vaults1.map(i => ({ target: i})),
-    chain, block,
-  })
-
-  const { output: deposits1 } = await sdk.api.abi.multiCall({
-    abi: abi.totalDeposits,
-    calls: vaults1.map(i => ({ target: i})),
-    chain, block,
-  })
-
-  tokens.forEach((data, i) => {
-    sdk.util.sumSingleBalance(balances, transformAddress(data.output), deposits[i].output)
-  })
-
-  tokens1.forEach((data, i) => {
-    sdk.util.sumSingleBalance(balances, transformAddress(data.output), deposits1[i].output)
-  })
-
-  await unwrapLPsAuto({ balances, block, chain, })
-
-  return balances
+  const tokens = await api.multiCall({  abi: abi.stakedToken, calls: vaults})
+  const bals = await api.multiCall({  abi: abi.totalSupply, calls: vaults})
+  api.add(tokens, bals)
+  const tokens1 = await api.multiCall({  abi: abi.depositToken, calls: vaults1})
+  const bals1 = await api.multiCall({  abi: abi.totalDeposits, calls: vaults1})
+  api.add(tokens1, bals1)
 }
 
 module.exports = {
   arbitrum: {
     tvl,
-    staking: staking('0xBf00759D7E329d7A7fa1D4DCdC914C53d1d2db86', '0x9f20de1fc9b161b34089cbeae888168b44b03461', 'arbitrum')
+    staking: staking('0xBf00759D7E329d7A7fa1D4DCdC914C53d1d2db86', '0x9f20de1fc9b161b34089cbeae888168b44b03461')
   }
 }
 

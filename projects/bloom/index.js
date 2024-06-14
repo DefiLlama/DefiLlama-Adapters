@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const REGISTRY = '0xBbBe37FE58e9859b6943AC53bDf4d0827f7F0034';
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const activePools = await api.call({ target: REGISTRY, abi: abi['getActiveTokens'] });
   const inactivePools = await api.call({ target: REGISTRY, abi: abi['getInactiveTokens'] });
   const allPools = [...activePools, ...inactivePools];

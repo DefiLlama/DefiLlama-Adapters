@@ -4,8 +4,8 @@ const { BigNumber } = require('bignumber.js');
 
 // https://thegraph.com/hosted-service/subgraph/soulswapfantom/coffinbox
 const graphUrls = {
-  'fantom': 'https://api.thegraph.com/subgraphs/name/soulswapfinance/fantom-coffinbox',
-  'avax': 'https://api.thegraph.com/subgraphs/name/soulswapfinance/coffinbox-avalanche',
+  'fantom': sdk.graph.modifyEndpoint('FhS8cRWsTPZwXfmn7b8YGvKii2h2ghr2v7ah5T8oiDmo'),
+  'avax': sdk.graph.modifyEndpoint('6WonmxWbw3MSVXVR5P4VhC8jWBEG5RkipWzxhAA67hoP'),
 }
 
 const coffinboxQuery = gql`

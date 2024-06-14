@@ -10,7 +10,7 @@ const MULAY_ADDRESS = "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D";
 const MUU_TOKEN = "0xc5BcAC31cf55806646017395AD119aF2441Aee37";
 const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const [veKGL, veLAY] = await api.multiCall({ abi: 'erc20:totalSupply', calls: [MUKGL_ADDRESS, MULAY_ADDRESS] })
   api.add(ADDRESSES.astar.KGL, veKGL)
   api.add(ADDRESSES.astar.LAY, veLAY)

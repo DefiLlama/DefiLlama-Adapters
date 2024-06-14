@@ -1,7 +1,6 @@
 const ADDRESSES = require('./helper/coreAssets.json')
-const { sumTokens } = require('./helper/unwrapLPs')
 
-async function tvl(ts, block) {
+async function tvl(api) {
   const toa = [
     [ADDRESSES.ethereum.DAI, '0xEBd12620E29Dc6c452dB7B96E1F190F3Ee02BDE8'],
     [ADDRESSES.ethereum.sUSD, '0xdc42a21e38c3b8028b01a6b00d8dbc648f93305c'],
@@ -10,7 +9,7 @@ async function tvl(ts, block) {
     ['0xdf5e0e81dff6faf3a7e52ba697820c5e32d806a8', '0xC462d8ee54953E7d7bF276612b75387Ea114c3bf'],
   ]
 
-  return sumTokens(undefined, toa, block)
+  return api.sumTokens({ tokensAndOwners: toa })
 }
 
 

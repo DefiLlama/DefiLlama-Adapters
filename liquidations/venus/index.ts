@@ -15,7 +15,7 @@ import {
 } from "../utils/compound-helpers";
 const sdk = require("@defillama/sdk");
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/venusprotocol/venus-subgraph";
+const subgraphUrl = sdk.graph.modifyEndpoint('7h65Zf3pXXPmf8g8yZjjj2bqYiypVxems5d8riLK1DyR');
 
 const accountsQuery = gql`
   query accounts($lastId: ID, $pageSize: Int) {

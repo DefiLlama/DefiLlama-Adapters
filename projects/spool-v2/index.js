@@ -27,7 +27,7 @@ const allStrategiesQuery = `
 Object.keys(config).forEach((chain) => {
   const { subgraphUrl } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let { strategies } = await cachedGraphQuery(`spool-v2-${chain}`, subgraphUrl, allStrategiesQuery)
       const tokens = strategies.map((i) => i.assetGroup.assetGroupTokens.map(i => i.token.id));
       strategies = strategies.map(i => i.id);

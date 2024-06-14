@@ -1,5 +1,6 @@
 
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('../helper/coreAssets.json');
+const methodologies = require('../helper/methodologies');
 
 const config = {
   ethereum: {
@@ -26,8 +27,7 @@ const abi = {
   totalBorrows: "uint256:totalBorrows",
 };
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const { userManager, DAI, uDAI } = config[api.chain]
   const bals = await api.batchCall([
     { target: userManager, abi: abi.totalStaked },
@@ -37,16 +37,14 @@ async function tvl() {
   bals.forEach(i => api.add(DAI, i))
 }
 
-async function borrowed() {
-  const { api } = arguments[3]
+async function borrowed(api) {
   const { DAI, uDAI } = config[api.chain]
   const borrows = await api.call({ target: uDAI, abi: abi.totalBorrows, })
   api.add(DAI, borrows)
 }
 
 module.exports = {
-  methodology:
-    "Counts the tokens locked in the contracts to be used to underwrite or to borrow. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.",
+  methodology: methodologies.lendingMarket,
 };
 
 Object.keys(config).forEach(chain => {

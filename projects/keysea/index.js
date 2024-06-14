@@ -2,7 +2,7 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const KEYSEA_V1_CONTRACT = "0x28C0C1b47021C9d7BBD26c83eEa448F377F9600a"
 
-async function tvl(time, ethBlock, _b, { api }) {
+async function tvl(api) {
   return sumTokens2({ tokens: [nullAddress], owner: KEYSEA_V1_CONTRACT, api })
 }
 

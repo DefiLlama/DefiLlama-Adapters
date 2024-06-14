@@ -3,8 +3,7 @@ const BigNumber = require("bignumber.js");
 
 const SCALLOP_SUI_MARKET_ID = "0xa757975255146dc9686aa823b7838b507f315d704f428cbadad2f4ea061939d9"
 
-async function suiBorrowed() {
-  const { api } = arguments[3]
+async function suiBorrowed(api) {
   const object = await sui.getObject(SCALLOP_SUI_MARKET_ID)
 
   const balanceSheetsFields = await sui.getDynamicFieldObjects({
@@ -20,8 +19,7 @@ async function suiBorrowed() {
   })
 }
 
-async function suiTvl() {
-  const { api } = arguments[3]
+async function suiTvl(api) {
   const object = await sui.getObject(SCALLOP_SUI_MARKET_ID)
 
   const balanceSheetsFields = await sui.getDynamicFieldObjects({

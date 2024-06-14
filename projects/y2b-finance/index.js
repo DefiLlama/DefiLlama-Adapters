@@ -1,7 +1,7 @@
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(timestamp, _b, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     fromBlock: 16310967,

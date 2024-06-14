@@ -30,12 +30,20 @@ const config = {
       }
     ]
   },
+  optimism: {
+    factories: [
+      {
+        START_BLOCK: 120480601,
+        SILO_FACTORY: '0x6B14c4450a29Dd9562c20259eBFF67a577b540b9', // Silo Optimism (Original)
+      }
+    ]
+  },
 }
 
 const XAI = '0xd7c9f0e536dc865ae858b0c0453fe76d13c3beac'
 const fallbackBlacklist = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa",];
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   const siloArray = await getSilos(api)
   const assets = await api.multiCall({
     abi: getAssetsAbi,
@@ -46,7 +54,7 @@ async function tvl(_, block, _1, { api }) {
   return sumTokens2({ api, ownerTokens: toa, blacklistedTokens: [XAI], })
 }
 
-async function borrowed(_, block, _1, { api }) {
+async function borrowed(api) {
   const siloArray = await getSilos(api)
   const assetStates = await api.multiCall({
     abi: getAssetStateAbi,
@@ -83,6 +91,7 @@ module.exports = {
   methodology: `We calculate TVL by interacting with Silo Factory smart contracts on Ethereum and Arbitrum. For Ethereum, it queries Silo(Original)(0x4D919CEcfD4793c0D47866C8d0a02a0950737589), (Convex Factory)(0x6d4A256695586F61b77B09bc3D28333A91114d5a), and (LLAMA Edition)(0x2c0fA05281730EFd3ef71172d8992500B36b56eA). On Arbitrum, we query the Silo Arbitrum factory(0x4166487056A922D784b073d4d928a516B074b719) to obtain the addresses of Silos, retrieve the assets of each Silo, and then calculates the sum of the deposited tokens, borrowed amount are exported separately`,
   ethereum: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, },
+  optimism: { tvl, borrowed, },
   hallmarks: [
     [1692968400, "Launch CRV market"]
   ]

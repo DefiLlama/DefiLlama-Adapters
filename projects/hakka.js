@@ -16,7 +16,7 @@ const intelligenceETH = ['0x0F2fd95c221770d108aCD5363D25b06Bdc43140B']
 const intelligenceBSC = ['0xD8B3fF98025Cf203Ba6D7Bb2d25DBeEF9539E6FB', '0x517Ef6281a9b3dc4Ef6B0318Bc5EDFDCf677d29D', '0x0A3e364eE37bac9E6aFF9E864E65B4603D5BC5D4']
 const BSC_BHS_ADDRESS = '0x75192D6f3d51554CC2eE7B40C3aAc5f97934ce7E'
 
-async function ethereum(_, block) {
+async function ethereum(api) {
   const toa = [
     [nullAddress, thirdFloorAddress], // thirdFloor
     // guild bank
@@ -26,16 +26,15 @@ async function ethereum(_, block) {
     [ADDRESSES.ethereum.USDC, hakkaGuildBank],
   ]
 
-  return sumTokens2({ tokensAndOwners: toa, block, })
+  return sumTokens2({ tokensAndOwners: toa, api, })
 }
-async function bsc(_, _b, { bsc: block }) {
-  const chain = 'bsc'
+async function bsc(api) {
   const toa = [
     [ADDRESSES.bsc.BUSD, BSC_BHS_ADDRESS], // thirdFloor
     [ADDRESSES.bsc.USDT, BSC_BHS_ADDRESS], // thirdFloor
   ]
 
-  return sumTokens2({ tokensAndOwners: toa, block, chain })
+  return sumTokens2({ tokensAndOwners: toa, api })
 }
 
 module.exports = {
@@ -51,6 +50,6 @@ module.exports = {
   },
   bsc: {
     tvl: bsc,
-    staking: sumTokensExport({ owners: intelligenceBSC, tokens: [HAKKA_ADDRESSES[56]], chain: 'bsc' }),
+    staking: sumTokensExport({ owners: intelligenceBSC, tokens: [HAKKA_ADDRESSES[56]], }),
   }
 }

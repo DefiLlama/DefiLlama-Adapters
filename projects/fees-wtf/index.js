@@ -10,7 +10,7 @@ module.exports = {
   methodology: `TVL for fees.wtf consists of the staking of WTF and pool2 of uni-v2 WTF-WETH.`, 
   ethereum:{
     tvl: () => ({}),
-    staking: staking(stakingContract, WTF, "ethereum"), 
-    pool2: pool2(WTF_ETH_univ2_staking, WTF_ETH_univ2, "ethereum"), 
+    staking: staking(stakingContract, WTF), 
+    pool2: pool2(WTF_ETH_univ2_staking, WTF_ETH_univ2), 
   }
 }

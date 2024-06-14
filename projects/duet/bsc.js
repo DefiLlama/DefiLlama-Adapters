@@ -21,7 +21,7 @@ async function getEBCakeTvl(api) {
   api.add('0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', ret.allEbStacked)
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const ret = await getConfig("duet-fi", TOKEN_LIST_URL);
   const vaultList = [];
   for (const token of ret) {

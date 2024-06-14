@@ -1,5 +1,5 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/http');
@@ -30,7 +30,7 @@ const synthetixs = {
 }
 const snxGraphEndpoints = {
   ethereum: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-ethereum',
-  optimism: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-optimism-regenesis'
+  optimism: sdk.graph.modifyEndpoint('5NQi9n4ztd8M6EEDFKA6gwcCnbLdmzZRymiDbPkbjEWN')
 }
 const ethStaking = "0xc1aae9d18bbe386b102435a8632c8063d31e747c"
 const weth = ADDRESSES.ethereum.WETH

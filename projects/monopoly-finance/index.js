@@ -5,7 +5,7 @@ const chef = "0x2900f5E68cD57b712806f60096514A4D3F772E9D";
 const poly = "0x34772C4D12F288368Aa35AE7bc527A6B2b3e8906".toLowerCase();
 const ACC_POLY_PRECISION = 1e18;
 
-async function getTokensInMasterChef(time, ethBlock, chainBlocks, { api }) {
+async function getTokensInMasterChef(api) {
   const poolInfo = await api.fetchList({
     lengthAbi: abi.poolLength,
     itemAbi: abi.poolInfo,
@@ -24,7 +24,7 @@ async function getTokensInMasterChef(time, ethBlock, chainBlocks, { api }) {
   await unwrapLPsAuto({
     api,
     lpAddresses: poolInfo.map((p) => p.lpToken),
-    block: chainBlocks["arbitrum"],
+    block: api.block,
   });
 }
 module.exports = {

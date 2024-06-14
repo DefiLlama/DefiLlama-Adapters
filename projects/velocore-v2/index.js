@@ -30,17 +30,33 @@ const cannonicalPoolsAbi = "function canonicalPools(address user, uint256 begin,
 Object.keys(config).forEach(chain => {
   const { factory, blacklistedTokens, vault, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let a
       if (chain === 'telos') {
         a = await api.multiCall({  abi: cannonicalPoolsAbi, calls: [...Array(5).keys()].map(i => ({ params: [factory, i, 2]})), target: factory})
         a = a.flat()
       } else {
-        a = await api.call({
-          abi: cannonicalPoolsAbi,
-          target: factory,
-          params: [factory, 0, 1000]
-        })
+        if (chain === 'era') {
+
+        let size = 20
+        a =  []
+        let currentAsize
+        do {
+          currentAsize = a.length
+          const b = await api.call({
+            abi: cannonicalPoolsAbi,
+            target: factory,
+            params: [factory, a.length, size]
+          })
+          a = a.concat(b)
+        } while (currentAsize < a.length)
+        } else {
+          a = await api.call({
+            abi: cannonicalPoolsAbi,
+            target: factory,
+            params: [factory, 0, 1000]
+          })
+        }
       }
       const b = await api.call({
         abi: "function wombatGauges(address user) returns (tuple(address gauge, tuple(address pool, string poolType, bytes32[] lpTokens, uint256[] mintedLPTokens, bytes32[] listedTokens, uint256[] reserves, bytes poolParams) poolData, bool killed, uint256 totalVotes, uint256 userVotes, uint256 userClaimable, uint256 emissionRate, uint256 userEmissionRate, uint256 stakedValueInHubToken, uint256 userStakedValueInHubToken, uint256 averageInterestRatePerSecond, uint256 userInterestRatePerSecond, bytes32[] stakeableTokens, uint256[] stakedAmounts, uint256[] userStakedAmounts, bytes32[] underlyingTokens, uint256[] stakedUnderlying, uint256[] userUnderlying, tuple(bytes32[] tokens, uint256[] rates, uint256[] userClaimable, uint256[] userRates)[] bribes)[] gaugeDataArray)",

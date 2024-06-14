@@ -76,10 +76,10 @@ module.exports = {
     staking: staking(farmingStakingContract, UFI),
   },
   bsc: {
-    staking: stakings(farmingStakingContracts_bsc, UFI_bsc, "bsc"),
+    staking: stakings(farmingStakingContracts_bsc, UFI_bsc),
   },
   polygon: {
-    staking: stakings(farmingStakingContracts_polygon, UFI_polygon, "polygon"),
+    staking: stakings(farmingStakingContracts_polygon, UFI_polygon),
     tvl: polygonTvl,
   },
   //tvl: (tvl) => ({}),

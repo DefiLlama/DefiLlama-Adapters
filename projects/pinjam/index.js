@@ -18,7 +18,7 @@ async function getTokens(api) {
   return logs.map(log => getAddress(log.topics[1]))
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { lendingPool } = config[api.chain]
   const tokens = await getTokens(api)
   const bals = await api.multiCall({ abi: abi.getTotalLiquidity, calls: tokens, target: lendingPool })
@@ -27,7 +27,7 @@ async function tvl(_, _b, _cb, { api, }) {
   api.addTokens(tokens, borrows.map(i => i * -1))
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const { lendingPool } = config[api.chain]
   const tokens = await getTokens(api)
   const bals = await api.multiCall({ abi: abi.getTotalDebt, calls: tokens, target: lendingPool })
