@@ -1,0 +1,7 @@
+{
+  "poolLength": "function poolLength() view returns (uint256)",
+  "pools": "function pools(uint256) view returns (address)",
+  "quoteToken": "function quoteToken() view returns (address)",
+  "quoteReserve": "function quoteReserve() view returns (uint256)",
+  "withdrawingLiquidity": "function withdrawingLiquidity() view returns (uint256)"
+}
