@@ -424,6 +424,7 @@ setTimeout(() => {
 }, 10 * 60 * 1000) // 10 minutes
 
 function buildPricesGetQueries(readKeys) {
+  if (!readKeys.length) return []
   const burl = 'https://coins.llama.fi/prices/current/'
   const queries = []
   let query = burl
