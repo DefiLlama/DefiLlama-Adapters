@@ -18,7 +18,7 @@ const config = {
     factories: [
       { factory: '0xfd513630f697a9c1731f196185fb9eba6eaac20b', fromBlock: 19961383 },
     ],
-  }
+  },
 }
 
 Object.keys(config).forEach(chain => {

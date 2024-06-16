@@ -1,6 +1,7 @@
 const { staking } = require("../helper/staking");
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
+  getDeposits: "function getDeposits(address) view returns (address[], address[], uint256[], uint256[])",
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
   getPrice: "function answer() external view returns (uint256)",
@@ -16,6 +17,45 @@ const contractAbis = {
 
 module.exports = {
   misrepresentedTokens: true,
+
+  karak: {
+    tvl: async (api) => {
+      const KUSDC = {
+        vault: "0x4c18E80b801AA24066D8B1C6E65ee245497Cb741",
+        token: ADDRESSES.karak.USDC,
+      };
+
+      const KWETH = {
+        vault: "0x9a9631F7BEcE5C6E0aBA1f73f0e5796c534dc4db",
+        token: ADDRESSES.optimism.WETH_1,
+      };
+
+      const wethLending = {
+        vault: "0xd6034F9147CF7528e857403Dea93bc45743295eb",
+        token: ADDRESSES.optimism.WETH_1,
+      };
+
+      const usdcLending = {
+        vault: "0x475820E4bCE0E3d233Ad7f6A8c9DD1f66974c5d6",
+        token: ADDRESSES.karak.USDC,
+      };
+
+      const KarakUSDCBal = await api.call({ target: KUSDC.vault, abi: contractAbis.getTotalSupply });
+
+      const KarakWETHbal = await api.call({ target: KWETH.vault, abi: contractAbis.getTotalSupply });
+
+      const strategies = [wethLending, usdcLending];
+
+      const tokensAndOwners = [];
+
+      strategies.forEach(({ vault, token }) => tokensAndOwners.push([token, vault]));
+
+      await api.sumTokens({ tokensAndOwners });
+
+      api.add(KUSDC.token, KarakUSDCBal);
+      api.add(KWETH.token, KarakWETHbal);
+    },
+  },
 
   zklink: {
     tvl: async (api) => {
@@ -41,22 +81,22 @@ module.exports = {
 
       const airPuff1XwETHMode = {
         vault: "0xeAaD8f5F1901D2f92B747650c0f941Bfa3413dAF",
-        pendleAddress: "0x4200000000000000000000000000000000000006",
+        pendleAddress: ADDRESSES.optimism.WETH_1,
       };
 
       const airPuff1XUSDTMode = {
         vault: "0xCEb6264CdCcDDd8c9631212Dc7112304F9393818",
-        pendleAddress: "0xf0F161fDA2712DB8b566946122a5af183995e2eD",
+        pendleAddress: ADDRESSES.mode.USDT,
       };
 
       const airPuff1XUSDCMode = {
         vault: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
-        pendleAddress: "0xd988097fb8612cc24eeC14542bC03424c656005f",
+        pendleAddress: ADDRESSES.mode.USDC,
       };
 
       const airPuff1XwBTCMode = {
         vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
-        pendleAddress: "0xcdd475325d6f564d27247d1dddbb0dac6fa0a5cf",
+        pendleAddress: ADDRESSES.mode.WBTC,
       };
 
       const airPuff1XwrsETHMode = {
@@ -76,7 +116,7 @@ module.exports = {
 
       const airPuff1XstoneMode = {
         vault: "0xaC9dAdf209F14f46Fe103C6E5C787130a6129205",
-        pendleAddress: "0x80137510979822322193FC997d400D5A6C747bf7",
+        pendleAddress: ADDRESSES.mode.STONE,
       };
 
       const airPuff1XMerlinBTCMode = {
@@ -310,6 +350,11 @@ module.exports = {
         pendleAddress: "0x5cb12D56F5346a016DBBA8CA90635d82e6D1bcEa",
       };
 
+      const pTEzETHDEC30 = {
+        vault: "0xebdaDFC590393938b601a9738C3107460838e880",
+        pendleAddress: "0xf7906F274c174A52d444175729E3fa98f9bde285",
+      };
+
       const tokensAndOwners2 = [
         pTweETH,
         pTezETH,
@@ -320,6 +365,7 @@ module.exports = {
         bptzrsETH1x,
         bptzUSDe1x,
         bptrswETH1x,
+        pTEzETHDEC30,
       ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);
       await api.sumTokens({ tokensAndOwners });
@@ -345,6 +391,11 @@ module.exports = {
         pendleAddress: "0xad853EB4fB3Fe4a66CdFCD7b75922a0494955292",
       };
 
+      const bsolvBTC1X = {
+        vault: "0x43D10bfB9f1625827Ee8EE7A461eDE28340bdBb5",
+        tokenAddress: "0x3647c54c4c2C65bC7a2D63c0Da2809B399DBBDC0",
+      };
+
       await api.sumTokens({
         tokensAndOwners: [
           [ADDRESSES.arbitrum.USDC, lendingArb.usdc_e],
@@ -354,6 +405,7 @@ module.exports = {
           [ADDRESSES.arbitrum.ARB, lendingArb.arb],
           [ADDRESSES.arbitrum.USDC_CIRCLE, lendingArb.usdc],
           [bptUSDe1x.pendleAddress, bptUSDe1x.vault],
+          [bsolvBTC1X.tokenAddress, bsolvBTC1X.vault],
         ],
       });
 
