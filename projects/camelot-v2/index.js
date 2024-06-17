@@ -10,4 +10,8 @@ const export2 = uniV3Export({
   arbitrum: { factory: '0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B', fromBlock: 75633510, isAlgebra: true, },
 })
 
-module.exports = mergeExports([export1, export2]);
+const export3 = uniV3Export({
+  sanko: { factory: '0xcF8d0723e69c6215523253a190eB9Bc3f68E0FFa', fromBlock: 51, isAlgebra: true}
+})
+
+module.exports = mergeExports([export1, export2, export3]);
