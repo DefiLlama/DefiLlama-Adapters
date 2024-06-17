@@ -18,5 +18,9 @@ const export4 = uniV3Export({
   xai: { factory: '0xD8676fBdfa5b56BB2298D452c9768f51e80e34AE', fromBlock: 2398999, isAlgebra: true}
 })
 
+const export5 = uniV3Export({
+  rari: { factory: '0xcF8d0723e69c6215523253a190eB9Bc3f68E0FFa', fromBlock: 340548, isAlgebra: true}
+})
 
-module.exports = mergeExports([export1, export2, export3, export4]);
+
+module.exports = mergeExports([export1, export2, export3, export4, export5]);
