@@ -174,6 +174,10 @@ const fixBalancesTokens = {
   },
   sanko: {
     "0x0000000000000000000000000000000000000000": { coingeckoId: 'wrapped-dmt', decimals: 18 },
+    "0x754cdad6f5821077d6915004be2ce05f93d176f8": { coingeckoId: 'wrapped-dmt', decimals: 18 },
+    "0xe01e3b20c5819cf919f7f1a2b4c18bbfd222f376": { coingeckoId: 'sanko-bridged-weth-sanko', decimals: 18 },
+    "0x13d675bc5e659b11cfa331594cf35a20815dcf02": { coingeckoId: 'sanko-bridged-usdc-sanko', decimals: 6 },
+    "0x3c84f959f4b8ca0c39847d02f936e13fa8fc4eb9": { coingeckoId: 'beat-the-allegations', decimals: 18 }, // star
   }
 }
 
