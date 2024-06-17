@@ -171,6 +171,9 @@ const fixBalancesTokens = {
   },
   zeta: {
     "0x1e4bF3CaBD7707089138dD5a545B077413FA83Fc": { coingeckoId: 'pufeth', decimals: 18 },
+  },
+  sanko: {
+    "0x0000000000000000000000000000000000000000": { coingeckoId: 'wrapped-dmt', decimals: 18 },
   }
 }
 
