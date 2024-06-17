@@ -23,7 +23,7 @@ async function tvl(api) {
 
 
     await getTvlForDexBalancer(dexBalancerAgents.map(i => i.agentAddress), api)
-    await  getTvlForLooperWithOrbit(looperAgentsAddresses, api)
+    await getTvlForLooperWithOrbit(looperAgentsAddresses, api)
     await sumTokens2({
         tokensAndOwners: [
             ...thrusterv2,
