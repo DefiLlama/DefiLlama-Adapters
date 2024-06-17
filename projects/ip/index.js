@@ -46,7 +46,7 @@ const cappedTokens = {
   },
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = {}
   const count = await api.call({  abi: " function vaultsMinted() view returns (uint96)", target: VaultController })
   const calls = []

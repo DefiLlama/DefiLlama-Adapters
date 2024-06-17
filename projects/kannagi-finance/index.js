@@ -21,8 +21,8 @@ function yieldHelperWrapper(){
 
 const tvlFun = helperReturn.era.tvl;
 
-const tvlFunWrapper =async function(_, _b, _cb, { api }){
-  const tvlBalances =  await tvlFun(_, _b, _cb, { api })
+const tvlFunWrapper =async function(api){
+  const tvlBalances =  await tvlFun(api)
   if(tvlBalances[USDT_ADDRESS]!=='0'&&tvlBalances[USDT_ADDRESS]!==undefined){
     let balance = (tvlBalances[USDT_ADDRESS])/1e6;
     tvlBalances["tether"] = balance;

@@ -28,7 +28,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { vaults } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = await api.multiCall({ abi: 'address:want', calls: vaults })
       const bals = await api.multiCall({ abi: 'uint256:balance', calls: vaults })
       api.addTokens(tokens, bals)
