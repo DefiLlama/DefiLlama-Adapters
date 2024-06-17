@@ -242,6 +242,7 @@
   "quasar",
   "quicksilver",
   "radixdlt",
+  "rari",
   "real",
   "reef",
   "regen",
@@ -322,5 +323,6 @@
   "zksync",
   "zora",
   "zyx",
-  "joltify"
+  "joltify",
+  "sanko"
 ]
