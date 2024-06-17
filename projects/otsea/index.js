@@ -49,6 +49,7 @@ async function otsea_total_volume(api) {
 // Global export
 module.exports = {
   methodology: "We aggregated the assets locked on OTSea market",
+  misrepresentedTokens: true,
 };
 
 // Network exports
