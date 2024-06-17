@@ -178,6 +178,11 @@ const fixBalancesTokens = {
     "0xe01e3b20c5819cf919f7f1a2b4c18bbfd222f376": { coingeckoId: 'sanko-bridged-weth-sanko', decimals: 18 },
     "0x13d675bc5e659b11cfa331594cf35a20815dcf02": { coingeckoId: 'sanko-bridged-usdc-sanko', decimals: 6 },
     "0x3c84f959f4b8ca0c39847d02f936e13fa8fc4eb9": { coingeckoId: 'beat-the-allegations', decimals: 18 }, // star
+  },
+  xai: {
+    "0x3fb787101dc6be47cfe18aeee15404dcc842e6af": { coingeckoId: 'xai-blockchain', decimals: 18 },
+    "0xbee82cfdaff4a6aa4e4793cb81eb1c2e79ac463c": { coingeckoId: 'weth', decimals: 18 },
+    "0x1e3769bd5fb2e9e9e7d4ed8667c947661f9a82e3": { coingeckoId: 'usd-coin', decimals: 6 }
   }
 }
 
