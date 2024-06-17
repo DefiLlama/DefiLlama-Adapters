@@ -26,6 +26,7 @@ const DEFAULTS = {
   LUKSO_RPC: 'https://rpc.lukso.sigmacore.io',
   HAM_RPC: 'https://rpc.ham.fun',
   HAM_RPC_MULTICALL: '0xB7c3Ea932649fBD594C881aDCb3F19415e2EA2d5',
+  SANKO_RPC_MULTICALL: '0xB32d192e07727A0F6f48e721791aa4e02cd292e1',
 }
 
 const ENV_KEYS = [
