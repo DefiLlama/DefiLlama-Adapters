@@ -67,16 +67,6 @@ const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
 
   if (!logs.length) return;
 
-  const CHUNK_SIZE = 40;
-
-  function chunkArray(array, chunkSize) {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-      chunks.push(array.slice(i, i + chunkSize));
-    }
-    return chunks;
-  }
-
   let ownerTokens = logs.map((i) => {
     return [
       contracts
@@ -86,17 +76,8 @@ const getBlitzMatchBalances = async (api, contracts, fromBlock) => {
     ];
   });
 
-  let ownerTokenChunks = chunkArray(ownerTokens, CHUNK_SIZE);
-
-  return processChunks(api, ownerTokenChunks);
+  return sumTokens2({ api, ownerTokens });
 };
-
-async function processChunks(api, ownerTokenChunks) {
-  const promises = ownerTokenChunks.map((chunk) =>
-    sumTokens2({ api, ownerTokens: chunk })
-  );
-  await Promise.all(promises);
-}
 
 const getCoveredCallOfTheWeekBalances = async (api, contracts) => {
   const coveredCallOfTheWeeks = contracts?.filter(
