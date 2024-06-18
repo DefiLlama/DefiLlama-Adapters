@@ -24,7 +24,7 @@ const config = {
       predictionPRO: "0x599974D3f2948b50545Fb5aa77C9e0bddc230ADE",
       predictionPROV2: "0x22dB94d719659d7861612E0f43EE28C9FF9909C7",
       predictionclassicV3: "0x00199E444155f6a06d74CF36315419d39b874f5c",
-      predictionPROV3: "0x49eFb44831aD88A9cFFB183d48C0c60bF4028da8"
+      predictionPROV3: "0x49eFb44831aD88A9cFFB183d48C0c60bF4028da8",
     }),
     tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, ADDRESSES.bsc.ETH],
   },
