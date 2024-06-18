@@ -18,6 +18,7 @@ const config = {
 };
 
 
+
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: sumERC4626VaultsExport({ vaults: config[chain], isOG4626: true, })

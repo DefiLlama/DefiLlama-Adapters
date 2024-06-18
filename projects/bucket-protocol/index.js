@@ -3,8 +3,7 @@ const sui = require("../helper/chain/sui");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
-const BUCK =
-  "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK";
+const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 
@@ -48,7 +47,10 @@ const BUCKETUS_PSM =
 const CETABLE_PSM =
   "0x6e94fe6910747a30e52addf446f2d7e844f69bf39eced6bed03441e01fa66acd";
 
-async function tvl(_, _1, _2, { api }) {
+const STAPEARL_PSM =
+  "0xccdaf635eb1c419dc5ab813cc64c728a9f5a851202769e254f348bff51f9a6dc";
+
+async function tvl(api) {
   const protocolFields = await sui.getDynamicFieldObjects({
     parent: MAINNET_PROTOCOL_ID,
   });
@@ -83,6 +85,9 @@ async function tvl(_, _1, _2, { api }) {
 
   const cetablePSMObj = await sui.getObject(CETABLE_PSM);
   const cetablePSMAmount = cetablePSMObj.fields.pool;
+
+  const stapearlPSMObj = await sui.getObject(STAPEARL_PSM);
+  const stapearlPSMAmount = stapearlPSMObj.fields.pool;
 
   const bucketList = protocolFields.filter((item) =>
     item.type.includes("Bucket")
@@ -153,6 +158,11 @@ async function tvl(_, _1, _2, { api }) {
   const halfCetableAmount = Math.floor(cetablePSMAmount / 2);
   api.add(USDC, Math.floor(halfCetableAmount));
   api.add(USDT, Math.floor(halfCetableAmount));
+
+  // 1 STAPEARL = 0.5 USDC + 0.5 USDT
+  const halfStapearlAmount = Math.floor(stapearlPSMAmount / 2);
+  api.add(USDC, Math.floor(halfStapearlAmount));
+  api.add(USDT, Math.floor(halfStapearlAmount));
 
   const halfBucketusAmount = Math.floor(bucketusPSMAmount / 2);
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));

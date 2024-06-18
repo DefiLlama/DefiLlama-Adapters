@@ -1,5 +1,6 @@
 const axios = require('axios')
 const { get } = require('../http')
+const { transformBalances } = require('../portedTokens')
 const API_HOST = "https://nodes.wavesnodes.com/"; // https://docs.waves.tech/en/waves-node/node-api/#api-of-pool-of-public-nodes
 
 const axiosObj = axios.create({
@@ -36,6 +37,38 @@ async function assetDetails(assetId) {
 }
 
 /**
+ * Get detailed information about a WAVES. [See fields descriptions](https://docs.waves.tech/en/blockchain/account/account-balance)
+ * @param {string} address - Address base58 encoded
+ * @returns {{
+*   address: string,
+*   regular: number,  
+*   generating: number,
+*   available: number,
+*   effective: number
+* }} Waves balance details
+*/
+async function wavesBalanceDetails(address) {
+  const response = await axiosObj.get(`/addresses/balance/details/${address}`);
+  return response.data;
+}
+
+/**
+ * Get balance about asset. [See fields descriptions](https://docs.waves.tech/en/blockchain/account/account-balance)
+ * @param {string} address - Address base58 encoded
+ * @param {string} assetId - assetId base58 encoded
+ * @returns {{
+*   address: string,
+*   assetId: string,  
+*   balance: number
+* }} Asset balance
+*/
+async function assetBalance(address, assetId) {
+  const response = await axiosObj.get(`/assets/balance/${address}/${assetId}`);
+  return response.data;
+}
+
+
+/**
  * Evaluates the provided expression, taking into account the deployed dApp contract
  * @param {string} contract - Address of the deployed dApp contract
  * @returns {{
@@ -66,11 +99,19 @@ async function data(address, key) {
   return response.data;
 }
 
-const tokenMapping = {
-  '3VuV5WTmDz47Dmdn3QpcYjzbSdipjQE4JMdNe1xZpX13': { cgId: 'ethereum', decimals: 8 },
-  '2Fge5HEBRD3XTeg7Xg3FW5yiB9HVJFQtMXiWMQo72Up6': { cgId: 'wrapped-bitcoin', decimals: 8 },
-  '9wc3LXNA4TEBsXyKtoLE9mrbDD7WMHXvXrCjZvabLAsi': { cgId: 'tether', decimals: 6 },
-  'HGgabTqUS8WtVFUJzfmrTDMgEccJuZLBPhFgQFxvnsoW': { cgId: 'usd-coin', decimals: 6 },
+/**
+ * Read account data entries by given keys or a regular expression
+ * @param {string} address - Address base58 encoded
+ * @param {string} matches - Data key
+ * @returns {[{
+*   key: string,
+*   type: string,
+*   value: any
+* }]} Data values
+*/
+async function dataSearch(address, matches) {
+ const response = await axiosObj.get(`/addresses/data/${address}?matches=${matches}`);
+ return response.data;
 }
 
 async function sumTokens({ owners, api, includeWaves = true, blacklistedTokens = [] }) {
@@ -80,12 +121,7 @@ async function sumTokens({ owners, api, includeWaves = true, blacklistedTokens =
       const { balances } = await get(API_HOST + `assets/balance/${owner}`);
       balances.forEach(({ assetId, balance }) => {
         if (blacklistedTokens.has(assetId)) return;
-        if (tokenMapping[assetId]) {
-          const { cgId, decimals } = tokenMapping[assetId]
-          api.addCGToken(cgId, balance / (10 ** decimals))
-        } else {
           api.add(assetId, balance)
-        }
       })
     })
   )
@@ -96,6 +132,7 @@ async function sumTokens({ owners, api, includeWaves = true, blacklistedTokens =
       api.addCGToken('waves', balance / 1e8)
     })
   )
+  return transformBalances('waves', api.getBalances())
 }
 
 async function call({ target, key}) {
@@ -106,6 +143,9 @@ async function call({ target, key}) {
 module.exports = {
   call,
   assetDetails,
+  wavesBalanceDetails,
+  dataSearch,
+  assetBalance,
   scriptEvaluate,
   data,
   sumTokens,

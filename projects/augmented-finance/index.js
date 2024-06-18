@@ -1,3 +1,4 @@
+const methodologies = require("../helper/methodologies");
 
 const config = {
   ethereum: '0x9276635Ec39C72866f3cF70298eFe501EB5dcDf1',
@@ -7,7 +8,7 @@ const config = {
 }
 
 module.exports = {
-  methodology: "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
+  methodology: methodologies.lendingMarket,
   // deadFrom: 2024-02-22
 };
 
@@ -15,7 +16,7 @@ Object.keys(config).forEach(chain => {
   const provider = config[chain]
   module.exports[chain] = {
     borrowed: () => ({}), // project abandoned?
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       if (chain === 'xdai') return {}
       const tokens = await api.call({  abi: abi.getReservesList, target: config[chain] })
       const data = await api.multiCall({  abi: abi.getReserveData, calls: tokens, target: config[chain]})

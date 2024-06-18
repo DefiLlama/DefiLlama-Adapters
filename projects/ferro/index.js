@@ -29,12 +29,12 @@ const tokens = {
     SWAP_LCRO_WCRO_ADDRESSES,
   ],
   // LATOM-ATOM
-  '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': ['0x5FA9412C2563c0B13CD9F96F0bd1A971F8eBdF96'],
+  [ADDRESSES.cronos.ATOM]: ['0x5FA9412C2563c0B13CD9F96F0bd1A971F8eBdF96'],
   '0xac974ee7fc5d083112c809ccb3fce4a4f385750d': ['0x5FA9412C2563c0B13CD9F96F0bd1A971F8eBdF96'],
   '0xD42E078ceA2bE8D03cd9dFEcC1f0d28915Edea78': ['0x6A41732eaDBE15e9c9FcA2cfF1299c6321AA104B'],
 };
 
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
   const tokensAndOwners = Object.entries(tokens).map(([token, owners]) => owners.map(owner => [token, owner])).flat()
   return sumTokens2({ api, tokensAndOwners })
 }

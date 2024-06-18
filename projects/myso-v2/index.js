@@ -43,7 +43,7 @@ const getContracts = async (chainId) => {
   return data.contracts;
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const { fromBlock } = config[api.chain];
   let contracts;
 
@@ -106,6 +106,9 @@ const config = {
   },
   linea: {
     fromBlock: 2118418,
+  },
+  sei: {
+    fromBlock: 79773668,
   },
 };
 

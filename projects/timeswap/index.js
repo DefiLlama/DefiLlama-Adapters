@@ -1,13 +1,14 @@
+const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
   polygon:
-    "https://api.thegraph.com/subgraphs/name/timeswap-labs/timeswap-defi-llama",
+    sdk.graph.modifyEndpoint('CjoTTVotweY5YZYjGbskVMZvJi8oD6urLnP1N7rWVFun'),
 };
 
 function chainTvl(chain) {
-  return async (timestamp, _ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const query = `
       {
         pairs {

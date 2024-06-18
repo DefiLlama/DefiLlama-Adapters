@@ -39,7 +39,7 @@ module.exports = mergeExports([
 ]);
 
 // add amount in pulsex farm
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   let rehypothecations = await api.fetchList({
     lengthAbi: "uint256:poolLength",
     itemAbi:
