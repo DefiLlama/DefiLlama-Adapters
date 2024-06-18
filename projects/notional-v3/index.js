@@ -3,7 +3,9 @@ const abi = require('../notional/abi');
 const { cachedGraphQuery } = require('../helper/cache')
 
 const SUBGRAPHS = {
+  // Prod URL: https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/DnghsCNvJ4xmp4czX8Qn7UpkJ8HyHjy7cFN4wcH91Nrx
   arbitrum: 'https://api.studio.thegraph.com/query/60626/notional-v3-arbitrum/version/latest',
+  // Prod URL: https://gateway-arbitrum.network.thegraph.com/api/[api-key]/subgraphs/id/4oVxkMtN4cFepbiYrSKz1u6HWnJym435k5DQRAFt2vHW
   ethereum: 'https://api.studio.thegraph.com/query/60626/notional-v3-mainnet/version/latest'
 };
 const vaultsQuery = `{ vaultConfigurations { id } }`
