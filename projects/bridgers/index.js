@@ -19,8 +19,6 @@ const getBridgeContract = (chain) => {
       return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1'; 
     case 'tron':
       return 'TEorZTZ5MHx8SrvsYs1R3Ds5WvY1pVoMSA';
-    case 'solana':
-      return 'AL89We2CN1RdEJhUAtUs8ZhdQhkdECg6WX6qq7QntoWH'; 
     case 'base':
       return '0xa18968cc31232724f1dbd0d1e8d0b323d89f3501';
     case 'sui':
@@ -120,12 +118,6 @@ const tokensConf = {
     USDJ: ADDRESSES.tron.USDJ,
     BTT: ADDRESSES.tron.BTT,
     JST: ADDRESSES.tron.JST,
-  },
-  solana: {
-    SOL: ADDRESSES.solana.SOL,
-    USDT: ADDRESSES.solana.USDT,
-    USDC: ADDRESSES.solana.USDC,
-    BONK: ADDRESSES.solana.BONK,
   },
   base:{
     ETH: nullAddress,
