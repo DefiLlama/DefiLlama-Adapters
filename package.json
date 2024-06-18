@@ -20,8 +20,6 @@
   "license": "ISC",
   "dependencies": {
     "@defillama/sdk": "latest",
-    "@dusalabs/sdk": "^0.5.27",
-    "@massalabs/massa-web3": "^4.0.3",
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.87.6",
     "@solendprotocol/solend-sdk": "^0.4.3",
