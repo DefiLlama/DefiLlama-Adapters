@@ -1,16 +1,13 @@
 const abi = require("./abi.js")
 const starknet = require("../helper/chain/starknet");
 const { getConfig } = require("../helper/cache");
-
-// teahouse public api for vault
-const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
+const { vaults } = require("./vaults.json");
 
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let pairVault = [];
   let portVault = [];
   let starknetPairVault = [];
-  const { vaults } = await getConfig("teahouse/v3_reset_cache", teahouseVaultAPI);
   vaults.forEach((element) => {
     // permissionless vaults
     if (element.isDeFi == true && element.isActive == true) {
