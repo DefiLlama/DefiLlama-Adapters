@@ -22,12 +22,11 @@ function lending(borrowed) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology,
+    methodology,
   bsc: {
     tvl: lending(false),
     borrowed: lending(true),
-    staking: staking(stakingContract, SCULPT, "bsc"),
-    pool2: pool2(stakingContractPool2, SCULPT_BNB, "bsc"),
+    staking: staking(stakingContract, SCULPT),
+    pool2: pool2(stakingContractPool2, SCULPT_BNB),
   },
 };

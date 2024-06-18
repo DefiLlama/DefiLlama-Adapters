@@ -16,6 +16,6 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { vaults = [] } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _1, _2, { api }) => await getVaultTVL(api, vaults),
+    tvl: async (api) => await getVaultTVL(api, vaults),
   }
 })

@@ -11,7 +11,7 @@ const abis = {
   "getStakingPoolAddress": "function getStakingPoolAddress(address) view returns (address)",
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const tokens = await api.call({ abi: abis.getStakingTokens, target: FACTORY_CONTRACT, })
   const owners = await api.multiCall({ abi: abis.getStakingPoolAddress, target: FACTORY_CONTRACT, calls: tokens })
   tokens.forEach((v, i) => {

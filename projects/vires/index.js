@@ -34,13 +34,13 @@ const aTokens = [
 
 ]
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens({
     owners: aTokens, api, includeWaves: true,
   })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   await Promise.all(aTokens.map(async (token) => {
     const assetId = (await call({ target: token, key: 'assetId'})).split('_')[0]
     const res = (await call({ target: token, key: 'reserveGlobalData'})).split('|')[2]

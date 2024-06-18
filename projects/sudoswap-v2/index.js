@@ -1,7 +1,7 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { target, fromBlock } = config[api.chain]
   const multicallAddy = '0xca11bde05977b3631167028862be2a173976ca11'
   const logs1155 = await getLogs({
@@ -28,6 +28,7 @@ const config = {
   ethereum: { target: '0xA020d57aB0448Ef74115c112D18a9C231CC86000', fromBlock: 17309203 },
   arbitrum: { target: '0x4f1627be4C72aEB9565D4c751550C4D262a96B51', fromBlock: 168473054 },
   base: { target: '0x605145d263482684590f630e9e581b21e4938eb8', fromBlock: 7529192 },
+  sanko: { target: '0x5bfE2ef160EaaAa4aFa89A8fa09775b6580162c9', fromBlock: 5317 },
 }
 
 Object.keys(config).forEach(chain => {

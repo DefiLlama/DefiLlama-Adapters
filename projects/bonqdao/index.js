@@ -42,7 +42,7 @@ async function getPairTVL(balances, contract, api) {
     sdk.util.sumSingleBalance(balances, token1, uBals[1] * ratio, api.chain)
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const balances = {};
 
   const tokenUnderlying = await api.multiCall({

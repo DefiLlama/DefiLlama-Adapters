@@ -78,7 +78,7 @@ const trancheConfig = {
 }
 const getCurrentAllocationsABI = 'function getCurrentAllocations() returns (address[] tokenAddresses,  uint256[] amounts,  uint256 total)'
 
-async function tvl(time, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { v1 = [], v3 = [], safe = [], cdos = [] } = contracts[api.chain]
   const balances = {}
   const ownerTokens = []

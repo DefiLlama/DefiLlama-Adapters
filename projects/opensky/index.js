@@ -9,7 +9,7 @@ const abi = {
   getTotalBorrowBalance: "function getTotalBorrowBalance(uint256 reserveId) view returns (uint256)",
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const balances = {};
   const factory = '0xdae29a91f663faf7657594f908e183e3b826d437'
   const logs = await getLogs({
@@ -24,7 +24,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   return sumTokens2({ api, owner: '0x87d6dec027e167136b081f888960fe48bb10328a', resolveNFTs: true, balances, })
 }
 
-async function borrowed(timestamp, block, chainBlocks, { api }) {
+async function borrowed(api) {
   const balances = {};
   const factory = '0xdae29a91f663faf7657594f908e183e3b826d437'
   const logs = await getLogs({

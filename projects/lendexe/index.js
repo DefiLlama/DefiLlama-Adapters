@@ -12,8 +12,8 @@ const mapping = {
   [ADDRESSES.ethereum.USDT]: 6,
   [ADDRESSES.ethereum.WBTC]: 8,
 }
-async function borrowedWrapped(_, _1, _2, { api }) {
-  const borrowedRes = await borrowed(_, _1, _2, { api })
+async function borrowedWrapped(api) {
+  const borrowedRes = await borrowed(api)
   Object.entries(mapping).forEach(([t, decimals]) => {
     const regex = new RegExp(t, 'gi')
     Object.keys(borrowedRes).forEach(key => {

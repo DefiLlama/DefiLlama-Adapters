@@ -21,11 +21,10 @@ function lending(borrowed) {
 
 
 module.exports = {
-  timetravel: true,
-  methodology,
+    methodology,
   pulse: {
     tvl: lending(false),
     borrowed: lending(true),
-    staking: staking(stakingContract, PHIAT, "pulse"),
+    staking: staking(stakingContract, PHIAT),
   },
 };

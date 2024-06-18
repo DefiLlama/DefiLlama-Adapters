@@ -1,7 +1,7 @@
 const { queryContract } = require('../helper/chain/cosmos')
 const ILendPoolContractAddress = "inj1j8pkx3dwsmtgg76shj9jaezxu6v0vj7lpl3dx0";
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const config = { chain: api.chain, contract: ILendPoolContractAddress }
 
   const { supported_tokens: tokens } = await queryContract({ ...config, data: { get_supported_tokens: {} } })
@@ -14,7 +14,7 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const config = { chain: api.chain, contract: ILendPoolContractAddress }
   const { supported_tokens: tokens } = await queryContract({ ...config, data: { get_supported_tokens: {} } })
   await Promise.all(tokens.map(async ({ denom }) => {

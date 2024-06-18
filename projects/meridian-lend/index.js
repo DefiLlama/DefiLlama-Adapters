@@ -14,4 +14,6 @@ function v2(chain, v2Registry) {
 
 module.exports = {
   telos: v2("telos", "0xb84171C0824B4F3C0B415706C99A4A8ED5779b75"),
+  meter: v2("meter", "0x64Be9ee529E555860DA0705819138F41247e76E6"),
+  fuse: v2("fuse", "0xbdD3d2f93cc1c6C951342C42Ef0795323CE83719"),
 }
