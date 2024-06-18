@@ -10,7 +10,6 @@ const factoryAddress='AS1rahehbQkvtynTomfoeLmwRgymJYgktGv5xd1jybRtiJMdu8XX'
 
 async function tvl(api){
   const pools = await getPairAddress(factoryAddress);
-  console.log('api', api);
   const toa = [];
 
   for (let i = 0; i < pools.length; i++) {

@@ -186,9 +186,7 @@ async function sumTokens2(toa,api){
 async function formatBalances(balances, api){
   const formattedBalances = {};
   for (const j in balances){
-    formattedBalances['massa:'+j.toString()] = balances[j];
-    console.log('j', j);
-    
+    formattedBalances['massa:'+j.toString()] = balances[j];    
     api.addTokens(j, balances[j]);
   }
   return formattedBalances;
