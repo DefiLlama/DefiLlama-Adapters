@@ -37,7 +37,7 @@ const config = {
       predictionclassicv3: "0x9f9564BE7b566dfE4B091a83a591752102aF3F33",
       predictionPROV3: "0x0b9c8c0a04354f41b985c10daf7db30bc66998f5",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.polygon.USDT, ADDRESSES.polygon.USDC, ADDRESSES.polygon.ETH],
+    tokens: [ADDRESSES.null, ADDRESSES.polygon.USDT, ADDRESSES.polygon.USDC, ADDRESSES.polygon.WETH],
   },
 };
 
