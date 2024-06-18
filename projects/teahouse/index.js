@@ -1,14 +1,10 @@
 const abi = require("./abi.json");
 const { getConfig } = require("../helper/cache");
-
-// teahouse public api for vault
-const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
-
+const { vaults } = require("./vaults.json");
 
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let htAddress = [];
-  const { vaults } = await getConfig("teahouse/v1", teahouseVaultAPI);
   vaults.forEach((element) => {
     // v2 vaults
     if (element.isDeFi == false && element.isActive == true) {
@@ -19,7 +15,7 @@ async function getVaultContractsAddress(chain) {
 }
 
 
-const chains = ["ethereum", "optimism", "arbitrum", 'polygon','bsc'];
+const chains = ["ethereum", "optimism", "arbitrum",'bsc'];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
