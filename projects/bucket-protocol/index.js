@@ -50,6 +50,20 @@ const CETABLE_PSM =
 const STAPEARL_PSM =
   "0xccdaf635eb1c419dc5ab813cc64c728a9f5a851202769e254f348bff51f9a6dc";
 
+const safSUI_ID =
+  "0x68c75e284d608e33bdefa45353417ce44fce157c06795ee86fc6f766437a0c8a";
+
+const svSUI_ID =
+  "0x5f3185f92c544907394a6450d6d48dc9bae9b92c13d066db6d102c623d734f4a";
+
+const shaSUI_ID =
+  "0xea36aab579832e9a885a412d3ed33a0131489ee56f0627c7c6b33a76931ae3b8";
+
+async function getStakingLPAmount(id) {
+  const stakingLPObject = await sui.getObject(id);
+  return stakingLPObject.fields.balance;
+}
+
 async function tvl(api) {
   const protocolFields = await sui.getDynamicFieldObjects({
     parent: MAINNET_PROTOCOL_ID,
@@ -183,6 +197,25 @@ async function tvl(api) {
   api.add(
     `0x${afsuiSuiTokenNames[1]}`,
     Math.floor(afsuiPercentage * afsuiSuiLpBucketStaked)
+  );
+
+  //Staking LPs
+  const safSUILPAmount = await getStakingLPAmount(safSUI_ID);
+  api.add(
+    "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI",
+    safSUILPAmount
+  );
+
+  const svSUILPAmount = await getStakingLPAmount(svSUI_ID);
+  api.add(
+    "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
+    svSUILPAmount
+  );
+
+  const shaSUILPAmount = await getStakingLPAmount(shaSUI_ID);
+  api.add(
+    "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
+    shaSUILPAmount
   );
 }
 
