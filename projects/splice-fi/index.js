@@ -5,6 +5,10 @@ const config = {
     factoryV3: "0x9e6d12097339ddd5402FDD39fc0Ef86Eec54AB39",
     fromBlockV3: 7764229,
   },
+  blast: {
+    factoryV3: "0x96A6C433078059577F0CEB707d596A5F81d64375",
+    fromBlockV3: 1850297,
+  },
 }
 
 Object.keys(config).forEach((chain) => {
