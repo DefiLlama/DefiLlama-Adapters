@@ -15,28 +15,29 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama): XTapBit 
 
 
 ##### Twitter Link:
+https://twitter.com/XTAPBIT?t=3T0Ih0zFudDCbbtVzgxCqA&s=09
 
 
 ##### List of audit links if any:
 
 
-##### Website Link:
+##### Website Link:https://www.dextools.io/app/en/ton/pair-explorer/EQDCQYxpXE7k2MleH0N696XVgra4gh32ZK744IusNE0AbKTp?t=1718840938961
 
 
-##### Logo (High resolution, will be shown with rounded borders):
+##### Logo (High resolution, will be shown with rounded borders): https://red-realistic-lungfish-798.mypinata.cloud/ipfs/QmXEpk1J1TKrC78TeNtPiaoJCVWLgX8VZtpcuHHAdfCLyY
 
 
-##### Current TVL:
+##### Current TVL:https://www.dextools.io/app/en/ton/pair-explorer/EQDCQYxpXE7k2MleH0N696XVgra4gh32ZK744IusNE0AbKTp?t=1718840938961
 
 
 ##### Treasury Addresses (if the protocol has treasury)
+EQAZOL85mdcfB2GPPzBaox3i7dmZVFwomv0_pj_OE1gxMh7y
 
-
-##### Chain:
+##### Chain: ton
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -46,22 +47,22 @@
 
 
 ##### Short Description (to be shown on DefiLlama):
+XTapBit is a cutting-edge platform offering comprehensive solutions for all your digital finance needs. From fast transactions to secure storage, we've got you covered.
+
+##### Token address and ticker if any:EQAZOL85mdcfB2GPPzBaox3i7dmZVFwomv0_pj_OE1gxMh7y
 
 
-##### Token address and ticker if any:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: https://www.dextools.io/app/en/ton/pair-explorer/EQDCQYxpXE7k2MleH0N696XVgra4gh32ZK744IusNE0AbKTp?t=1718840938961
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
-
-
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): https://tonviewer.com/UQBCz1cY__2RRsUFfHcOJaox2tetj9HQXikfq-BoLOmDzjyd/jetton/EQDCQYxpXE7k2MleH0N696XVgra4gh32ZK744IusNE0AbKTp
 ##### Implementation Details: Briefly describe how the oracle is integrated into your project:
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage: https://coinsniper.net/coin/67065
 
-##### forkedFrom (Does your project originate from another project):
+##### forkedFrom (Does your project originate from another project):https://coinmooner.com/coin/xtapbit-xtb
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity):
+##### Github org/user (Optional, if your code is open source, we can track activity): https://github.com/Giftdollar/XTapBit
