@@ -19,6 +19,9 @@ module.exports = {
       owners: [WBTC_LIQUIDITY_ADDRESS],
       tokens: [ADDRESSES.arbitrum.WBTC],
     }),
+    staking: sumTokensExport({
+      owners: [STAKING_CONTRACT_ADDRESS],
+      tokens: [SEED_TOKEN_ADDRESS],
+    }),
   },
 };
-
