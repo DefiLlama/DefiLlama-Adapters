@@ -14,6 +14,12 @@ module.exports = {
       sumTokensExport({ owners: [BTC_LIQUIDITY_ADDRESS] }),
     ]),
   },
+  ethereum: {
+    tvl: sumTokensExport({
+      owners: [WBTC_LIQUIDITY_ADDRESS],
+      tokens: [ADDRESSES.ethereum.WBTC],
+    }),
+  },
   arbitrum: {
     tvl: sumTokensExport({
       owners: [WBTC_LIQUIDITY_ADDRESS],
