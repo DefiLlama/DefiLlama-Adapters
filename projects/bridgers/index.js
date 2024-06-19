@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
+const { nullAddress, sumTokensExport, } = require('../helper/sumTokens')
 
 const getBridgeContract = (chain) => {
   switch (chain) {
@@ -16,7 +16,7 @@ const getBridgeContract = (chain) => {
     case 'fantom':
       return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
     case 'arbitrum':
-      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1'; 
+      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
     case 'tron':
       return 'TEorZTZ5MHx8SrvsYs1R3Ds5WvY1pVoMSA';
     case 'solana':
@@ -24,28 +24,23 @@ const getBridgeContract = (chain) => {
     case 'base':
       return '0xa18968cc31232724f1dbd0d1e8d0b323d89f3501';
     case 'sui':
-      return '0x2b0876f0b7034320ad6d2f378501fe92e41c8b4780bda7769094d2431170e532';   
+      return '0x5b64222ecff7e41abe28d48667fe81b13afa526d2490324080db9430f053052e';
     case 'aptos':
-      return '0x4512ba8a4862edcb20d5027a8d1b47129299d4bed9e41a8a727b78808d6faef4'; 
+      return '0x4512ba8a4862edcb20d5027a8d1b47129299d4bed9e41a8a727b78808d6faef4';
     case 'ton':
       return 'EQBueUEMhTXyX4ugA_sJ-sCchXU29W9VIwW2hNIlDQkUE8xq';
     case 'era':
-      return '0x2042ecdc71f9ffb2eb9cda7f801eccc5c6c8b7eb'; 
+      return '0x2042ecdc71f9ffb2eb9cda7f801eccc5c6c8b7eb';
     case 'linea':
-      return '0x8159891dfe9de7fc3bf1b665eb1adda60f2acd0e';  
+      return '0x8159891dfe9de7fc3bf1b665eb1adda60f2acd0e';
     case 'optimism':
       return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
     case 'avax':
-      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';     
+      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
     default:
       throw new Error('Missing bridgers contract');
   }
 }
-
-/*
- * TOKEN CONFIGURATION
- * ADD TOKENS AND NETWORKS HERE
- */
 
 const tokensConf = {
   ethereum: {
@@ -57,7 +52,7 @@ const tokensConf = {
     WBTC: ADDRESSES.ethereum.WBTC,
     WETH: ADDRESSES.ethereum.WETH,
     AAVE: ADDRESSES.ethereum.AAVE,
-    SWFTC: "0x0bb217e40f8a5cb79adf04e1aab60e5abd0dfc1e",
+    // SWFTC: "0x0bb217e40f8a5cb79adf04e1aab60e5abd0dfc1e",
     HT: "0x6f259637dcd74c767781e37bc6133cd6a68aa161",
     PEPE: "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
     WLD: "0x163f8C2467924be0ae7B5347228CABF260318753",
@@ -71,7 +66,7 @@ const tokensConf = {
     WBNB: ADDRESSES.bsc.WBNB,
     BTCB: ADDRESSES.bsc.BTCB,
     ETH: ADDRESSES.bsc.ETH,
-    SWFTC: "0xe64e30276c2f826febd3784958d6da7b55dfbad3",
+    // SWFTC: "0xe64e30276c2f826febd3784958d6da7b55dfbad3",
     DOGE: "0xba2ae424d960c26247dd6c32edc70b295c744c43",
   },
   heco: {
@@ -80,7 +75,7 @@ const tokensConf = {
     USDT: ADDRESSES.heco.USDT,
     HUSD: "0x0298c2b32eae4da002a15f36fdf7615bea3da047",
     ETH: "0x64ff637fb478863b7468bc97d30a5bf3a428a1fd",
-    SWFTC: "0x329dda64Cbc4DFD5FA5072b447B3941CE054ebb3",
+    // SWFTC: "0x329dda64Cbc4DFD5FA5072b447B3941CE054ebb3",
   },
   okexchain: {
     OKT: nullAddress,
@@ -127,22 +122,22 @@ const tokensConf = {
     USDC: ADDRESSES.solana.USDC,
     BONK: ADDRESSES.solana.BONK,
   },
-  base:{
+  base: {
     ETH: nullAddress,
     WETH: ADDRESSES.base.WETH,
     USDT: ADDRESSES.base.USDbC,
     USDC: ADDRESSES.base.USDC,
   },
-  sui:{
+  sui: {
     SUI: ADDRESSES.sui.SUI,
     USDT: ADDRESSES.sui.USDT,
     USDC: ADDRESSES.sui.USDC,
-    SSWP: '0x361dd589b98e8fcda9a7ee53b85efabef3569d00416640d2faa516e3801d7ffc::TOKEN::TOKEN',
+    // SSWP: '0x361dd589b98e8fcda9a7ee53b85efabef3569d00416640d2faa516e3801d7ffc::TOKEN::TOKEN',
   },
-  aptos:{
+  aptos: {
     APT: ADDRESSES.aptos.APT,
   },
-  ton:{
+  ton: {
     TON: ADDRESSES.ton.TON,
     USDT: ADDRESSES.ton.USDT,
     USDC: ADDRESSES.ton.USDC,
@@ -176,22 +171,13 @@ const tokensConf = {
   },
 };
 
-/*
- * END OF CONFIGURATION
- */
-
-const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
-  const bridgeContract = getBridgeContract(chain);
-  const tokens = Object.values(tokensConf[chain])
-  const owners = [bridgeContract]
-  return sumTokens2({tokens: tokens, owners: owners, block:chainBlocks[chain], chain: chain })
-};
-
 module.exports = {
   methodology: "Assets staked in the pool and trading contracts",
 }
 for (const network of Object.keys(tokensConf)) {
+  const owner = getBridgeContract(network)
+  const tokens = Object.values(tokensConf[network])
   module.exports[network] = {
-    tvl: createTvlFunction(network),
+    tvl: sumTokensExport({ owner, tokens }),
   };
 }
