@@ -19,16 +19,16 @@ const getBridgeContract = (chain) => {
       return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1'; 
     case 'tron':
       return 'TEorZTZ5MHx8SrvsYs1R3Ds5WvY1pVoMSA';
-    /*case 'solana':
-      return 'AL89We2CN1RdEJhUAtUs8ZhdQhkdECg6WX6qq7QntoWH';*/
+    case 'solana':
+      return 'AL89We2CN1RdEJhUAtUs8ZhdQhkdECg6WX6qq7QntoWH';
     case 'base':
       return '0xa18968cc31232724f1dbd0d1e8d0b323d89f3501';
-    /*case 'sui':
+    case 'sui':
       return '0x2b0876f0b7034320ad6d2f378501fe92e41c8b4780bda7769094d2431170e532';   
     case 'aptos':
       return '0x4512ba8a4862edcb20d5027a8d1b47129299d4bed9e41a8a727b78808d6faef4'; 
     case 'ton':
-      return 'EQBueUEMhTXyX4ugA_sJ-sCchXU29W9VIwW2hNIlDQkUE8xq'; */
+      return 'EQBueUEMhTXyX4ugA_sJ-sCchXU29W9VIwW2hNIlDQkUE8xq';
     case 'era':
       return '0x2042ecdc71f9ffb2eb9cda7f801eccc5c6c8b7eb'; 
     case 'linea':
@@ -121,19 +121,19 @@ const tokensConf = {
     BTT: ADDRESSES.tron.BTT,
     JST: ADDRESSES.tron.JST,
   },
-  /*solana: {
+  solana: {
     SOL: ADDRESSES.solana.SOL,
     USDT: ADDRESSES.solana.USDT,
     USDC: ADDRESSES.solana.USDC,
     BONK: ADDRESSES.solana.BONK,
-  },*/
+  },
   base:{
     ETH: nullAddress,
     WETH: ADDRESSES.base.WETH,
     USDT: ADDRESSES.base.USDbC,
     USDC: ADDRESSES.base.USDC,
   },
-  /*sui:{
+  sui:{
     SUI: ADDRESSES.sui.SUI,
     USDT: ADDRESSES.sui.USDT,
     USDC: ADDRESSES.sui.USDC,
@@ -147,7 +147,7 @@ const tokensConf = {
     USDT: ADDRESSES.ton.USDT,
     USDC: ADDRESSES.ton.USDC,
     NOT: 'EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT',
-  },*/
+  },
   era: {
     ETH: nullAddress,
     USDT: ADDRESSES.era.USDT,
