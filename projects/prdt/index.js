@@ -14,7 +14,7 @@ const config = {
       predictionPROV2: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
       predictionPROV3: "0xe2ca0a434effea151d5b2c649b754acd3c8a20f0",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC],
+    tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
   },
   bsc: {
     owners: Object.values({
@@ -37,7 +37,7 @@ const config = {
       predictionclassicv3: "0x9f9564BE7b566dfE4B091a83a591752102aF3F33",
       predictionPROV3: "0x0b9c8c0a04354f41b985c10daf7db30bc66998f5",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.polygon.USDT, ADDRESSES.polygon.USDC, ADDRESSES.polygon.WETH],
+    tokens: [ADDRESSES.null, ADDRESSES.polygon.USDT, ADDRESSES.polygon.USDC_CIRCLE, ADDRESSES.polygon.WETH],
   },
 };
 
