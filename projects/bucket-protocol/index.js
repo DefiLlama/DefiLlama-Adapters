@@ -50,18 +50,18 @@ const CETABLE_PSM =
 const STAPEARL_PSM =
   "0xccdaf635eb1c419dc5ab813cc64c728a9f5a851202769e254f348bff51f9a6dc";
 
-const safSUI_ID =
-  "0x68c75e284d608e33bdefa45353417ce44fce157c06795ee86fc6f766437a0c8a";
+const afSUI_sLP_ID =
+  "0x508da82c0b6785653f638b95ebf7c89d720ecffae15c4d0526228a2edae7d429";
 
-const svSUI_ID =
-  "0x5f3185f92c544907394a6450d6d48dc9bae9b92c13d066db6d102c623d734f4a";
+const vSUI_sLP_ID =
+  "0xa68124b518290f430f2133bcb679c519e51c99045e622cd6bcb00374c97f6d9d";
 
-const shaSUI_ID =
-  "0xea36aab579832e9a885a412d3ed33a0131489ee56f0627c7c6b33a76931ae3b8";
+const haSUI_sLP_ID =
+  "0xa8993bf1c1e717b7c0f164c51346fa99a4e771c50d90c14e755adc48e39b7768";
 
 async function getStakingLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
-  return stakingLPObject.fields.balance;
+  return stakingLPObject.fields.output_volume;
 }
 
 async function tvl(api) {
@@ -200,19 +200,25 @@ async function tvl(api) {
   );
 
   //Staking LPs
-  const safSUILPAmount = await getStakingLPAmount(safSUI_ID);
+  const safSUILPAmount = await getStakingLPAmount(afSUI_sLP_ID);
+
+  console.log("safSUILPAmount", safSUILPAmount);
   api.add(
     "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI",
     safSUILPAmount
   );
 
-  const svSUILPAmount = await getStakingLPAmount(svSUI_ID);
+  const svSUILPAmount = await getStakingLPAmount(vSUI_sLP_ID);
+  console.log("svSUILPAmount", svSUILPAmount);
+
   api.add(
     "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
     svSUILPAmount
   );
 
-  const shaSUILPAmount = await getStakingLPAmount(shaSUI_ID);
+  const shaSUILPAmount = await getStakingLPAmount(haSUI_sLP_ID);
+  console.log("shaSUILPAmount", shaSUILPAmount);
+
   api.add(
     "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
     shaSUILPAmount
