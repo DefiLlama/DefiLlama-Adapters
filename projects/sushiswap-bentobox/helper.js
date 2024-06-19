@@ -123,7 +123,7 @@ const kashiQuery = gql`
 `;
 
 const tridentSubgraphs = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
+  polygon: sdk.graph.modifyEndpoint('BSdbRfU6PjWSdKjhpfUQ6EgUpzMxgpf5c1ugaVwBJFsQ'),
   optimism: sdk.graph.modifyEndpoint('FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51'),
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
