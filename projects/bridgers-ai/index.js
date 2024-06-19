@@ -69,14 +69,14 @@ const tokensConf = {
     // SWFTC: "0xe64e30276c2f826febd3784958d6da7b55dfbad3",
     DOGE: "0xba2ae424d960c26247dd6c32edc70b295c744c43",
   },
-  heco: {
+  /*heco: {
     HT: nullAddress,
     USDC: ADDRESSES.heco.USDC_HECO,
     USDT: ADDRESSES.heco.USDT,
     HUSD: "0x0298c2b32eae4da002a15f36fdf7615bea3da047",
     ETH: "0x64ff637fb478863b7468bc97d30a5bf3a428a1fd",
     // SWFTC: "0x329dda64Cbc4DFD5FA5072b447B3941CE054ebb3",
-  },
+  },*/
   okexchain: {
     OKT: nullAddress,
     USDC: ADDRESSES.okexchain.USDC,
