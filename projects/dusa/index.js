@@ -1,34 +1,33 @@
-const {
-  sumTokens2,
-  formatBalances,
-  getPairAddressTokens,
-  getPairAddress
-  } = require('../helper/chain/massa.js');
+const { queryKey, u8ArrayToString, getTokenBalances, } = require('../helper/chain/massa.js');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
+const factoryAddress = 'AS1rahehbQkvtynTomfoeLmwRgymJYgktGv5xd1jybRtiJMdu8XX'
 
-const factoryAddress='AS1rahehbQkvtynTomfoeLmwRgymJYgktGv5xd1jybRtiJMdu8XX'
+const getPairAddress = async (factoryAddress) => {
+  const transform = val => {
+    let poolAddresses = u8ArrayToString(val)
+    if (poolAddresses.startsWith(":"))
+      poolAddresses = poolAddresses.substring(1);
 
-async function tvl(api){
-  const pools = await getPairAddress(factoryAddress);
-  const toa = [];
-
-  for (let i = 0; i < pools.length; i++) {
-    const tokens = await getPairAddressTokens(pools[i]);
-     
-    toa.push([tokens[1], pools[i]]);
-    toa.push([tokens[0], pools[i]]);
+    const pools = poolAddresses.split(":");
+    return pools
   }
-  const sum = await sumTokens2(toa, api);
-  const formattedBalances = await formatBalances(sum, api);
+  return (await queryKey([factoryAddress], "ALL_PAIRS", transform))[0]
+}
 
-  console.log('formattedBalances', formattedBalances, 'api',api);
-  return formattedBalances;
+async function tvl(api) {
+  const pools = await getPairAddress(factoryAddress)
+  const tokenXs = await queryKey(pools, "TOKEN_X")
+  const tokenYs = await queryKey(pools, "TOKEN_Y")
+  const tokenXBalances = await getTokenBalances(tokenXs, pools)
+  const tokenYBalances = await getTokenBalances(tokenYs, pools)
+  api.add(tokenXs, tokenXBalances)
+  api.add(tokenYs, tokenYBalances)
+  return sumTokens2({ api })
 }
 
 module.exports = {
-  methodology: 'counts the tvl in the protocol',
-  massa: {
-    tvl: tvl,
-  }
+  timetravel: false,
+  massa: { tvl, }
 };
 

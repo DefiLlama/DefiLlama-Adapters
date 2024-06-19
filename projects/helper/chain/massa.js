@@ -1,25 +1,28 @@
-const {
-  Client,
-  ProviderType,
-  strToBytes,
-  bytesToU256, 
-  bytesToU64
-} = require("@massalabs/massa-web3");
+const axios = require("axios");
 
-const { TokenAmount, Token } = require("@dusalabs/sdk");
-
+// https://github.com/massalabs/massa-web3/blob/main/packages/massa-web3/src/web3/PublicApiClient.ts
 const RPC_ENDPOINT = "https://mainnet.massa.net/api/v2";
-const ERC20_KEYS = ['SYMBOL', 'NAME', 'OWNER', 'TOTAL_SUPPLY', 'DECIMALS'];
+const client = axios.create({ baseURL: RPC_ENDPOINT });
 
-const providers = [
-  { url: RPC_ENDPOINT, type: ProviderType.PUBLIC },
-  { url: RPC_ENDPOINT, type: ProviderType.PRIVATE },
-];
+async function request(method, params) {
+  params.forEach((param) => {
+    if (param.key)
+      param.key = convertUnit8ArrayToNumberArray(param.key);
+  })
 
-const baseClient = new Client({
-  providers,
-  retryStrategyOn: false,
-});
+  const response = await client.post("/", {
+    jsonrpc: "2.0",
+    method,
+    params: [params],
+    id: 1,
+  })
+
+  return response.data.result;
+
+  function convertUnit8ArrayToNumberArray(unit8Array) {
+    return Array.from(unit8Array, (byte) => byte)
+  }
+}
 
 function u8ArrayToString(array) {
   let str = "";
@@ -29,174 +32,75 @@ function u8ArrayToString(array) {
   return str;
 }
 
-
-const getPairAddress = async (factoryAddress) => {
-  if (!factoryAddress) {
-    throw new Error("factoryAddress is undefined");
+function strToBytes(str) {
+  if (!str.length) {
+    return new Uint8Array(0);
   }
-  return await baseClient
-    .publicApi()
-    .getDatastoreEntries([
-      {
-        address: factoryAddress,
-        key: strToBytes("ALL_PAIRS"),
-      },
-    ])
-    .then((r) => {
-      if (r[0].candidate_value && r[0].final_value){
-        const poolAddresses = [u8ArrayToString(r[0].candidate_value)];
-          if (poolAddresses[0].startsWith(":")) {
-            poolAddresses[0] = poolAddresses[0].substring(1);
-          }
-          const pools = poolAddresses[0].split(":");
-            return pools
-      }
-      return [];
-    })
-    .catch((e) => {
-      console.error("error", e);
-      return [""];
-    });
-};
-
-async function getPairAddressTokens(poolAddress) {
-  return baseClient
-    .publicApi()
-    .getDatastoreEntries([
-      {
-        address: poolAddress,
-        key: strToBytes("TOKEN_X"),
-      },
-
-      {
-        address: poolAddress,
-        key: strToBytes("TOKEN_Y"),
-      },
-    ])
-    .then((r) => {
-      if (r[0].candidate_value && r[1].candidate_value) {
-        return [
-          u8ArrayToString(r[0].candidate_value),
-          u8ArrayToString(r[1].candidate_value),
-        ];
-      } else {
-        console.error("error in getPairAddressTokens", r);
-        return [];
-      }
-    })
-    .catch((e) => {
-      console.error("error", e);
-      return [""];
-    });
+  return new Uint8Array(Buffer.from(str, 'utf-8'));
 }
 
-const getDatastoreEntries = async (tokenAddress) => {
-  return baseClient
-    .publicApi()
-    .getDatastoreEntries([
-      {
-        address: tokenAddress,
-        key: strToBytes("DECIMALS"),
-      },
-    ])
-    .then((res) => {
-      if (!res[0].candidate_value) throw new Error("No token info found");
-      return res[0].candidate_value;
-    });
-};
+
+/**
+ * Converts a Uint8Array into an unsigned 64-bit integer (u64) BigInt.
+ *
+ * @param arr - The array to convert
+ * @param offset - The optional offset in the Uint8Array at which to start reading the u64 value (default: 0)
+ *
+ * @returns The deserialized u64 BigInt value
+ *
+ */
+function bytesToU64(arr, offset = 0) {
+  if (!arr?.length) return '0'
+  arr = new Uint8Array(arr);
+  const view = new DataView(arr.buffer);
+  return view.getBigUint64(offset, true);
+}
+
+/**
+ * Converts a Uint8Array into an unsigned 256-bit integer (u256) BigInt.
+ *
+ * @param arr - The array to convert
+ * @param offset - The optional offset in the Uint8Array at which to start reading the u256 value (default: 0)
+ *
+ * @returns The deserialized u256BigInt value
+ *
+ */
+function bytesToU256(arr, offset = 0) {
+  if (!arr?.length) return '0'
+  arr = new Uint8Array(arr);
+  const view = new DataView(arr.buffer, offset);
+  const p0 = view.getBigUint64(0, true);
+  const p1 = view.getBigUint64(8, true);
+  const p2 = view.getBigUint64(16, true);
+  const p3 = view.getBigUint64(24, true);
+  return (p3 << 192n) | (p2 << 128n) | (p1 << 64n) | p0;
+}
 
 
-const toDatastoreInput = (address, keys) =>
-	keys.map((key) => ({ address, key: strToBytes(key) }));
+async function queryKey(addresses, key, transform = val => u8ArrayToString(val)) {
+  const res = await request('get_datastore_entries', addresses.map((address) => ({ address, key: strToBytes(key) })))
+  return res.map((entry) => transform(entry.candidate_value));
+}
 
 const bytesToBigInt = (bytes) => {
-	try {
-		return bytesToU256(bytes);
-	} catch (e) {
-		try {
-			return bytesToU64(bytes);
-		} catch (e) {
-			return 0n;
-		}
-	}
+  try {
+    return bytesToU256(bytes);
+  } catch (e) {
+    return bytesToU64(bytes);
+  }
 };
-async function getTokenBalance(tokenAddress, ownerAddress) {
-  const tokens = await baseClient
-    .publicApi()
-    .getAddresses([tokenAddress])
-    .then((res) =>
-      res[0].final_datastore_keys
-        .map((v) => String.fromCharCode(...v))
-        .sort((a, b) => a.localeCompare(b))
-        .filter((entry) => entry.startsWith('BALANCE'))
-    )
-    .catch((err) => {
-      console.error(err);
-      return [];
-    });
 
-  const keys = [...new Set([...ERC20_KEYS, ...tokens.slice(0, 1000)])];
-  const r = await baseClient
-    .publicApi()
-    .getDatastoreEntries(
-      
-      toDatastoreInput(tokenAddress, keys)
-    )
-
-  const balanceEntries = r.filter(
-      (entry, i) => keys[i].startsWith('BALANCE') && entry.candidate_value !== null
-  );
-
-  const balances= balanceEntries
-  .map((entry) => ({
-    address: keys[r.indexOf(entry)].slice(7),
-    value: bytesToBigInt(entry.candidate_value)
+async function getTokenBalances(tokenAddresses, ownerAddresses) {
+  const params = tokenAddresses.map((tokenAddress, i) => ({
+    address: tokenAddress,
+    key: strToBytes(`BALANCE${ownerAddresses[i]}`)
   }))
-  .sort((a, b) => Number(b.value - a.value));
-
-  const tokenBalance = balances.find((entry) => entry.address === ownerAddress);
-
-  if (tokenBalance === undefined) {
-    return {[tokenAddress]: 0n}
-  }
-  else {
-    return {[tokenAddress]: tokenBalance.value};
-  } 
+  const res = await request('get_datastore_entries', params)
+  return res.map((entry) => bytesToBigInt(entry.candidate_value).toString());
 }
-
-async function sumTokens2(toa,api){
-  let balances = {};
-  for (const i in toa){
-    let balance = await getTokenBalance(toa[i][0], toa[i][1]);
-    const tokenBalance = (balance[toa[i][0]]);
-    if (balances[toa[i][0]] === undefined) {
-      const decimal = await getDatastoreEntries(toa[i][0]);
-      const token = new Token("", "", Number(decimal), "", ""); 
-      balances[toa[i][0]] = Math.round(Number(new TokenAmount(token, tokenBalance).toFixed(Number(decimal))));
-    } else {
-      
-      const decimal = await getDatastoreEntries(toa[i][0]);
-      const token = new Token("", "", Number(decimal), "", "");
-      balances[toa[i][0]] += Math.round(Number(new TokenAmount(token, tokenBalance).toFixed(Number(decimal))));
-    }
-  }
-  return balances;
-}
-
-async function formatBalances(balances, api){
-  const formattedBalances = {};
-  for (const j in balances){
-    formattedBalances['massa:'+j.toString()] = balances[j];    
-    api.addTokens(j, balances[j]);
-  }
-  return formattedBalances;
-}
-
 
 module.exports = {
-  getPairAddressTokens,
-  formatBalances,
-  getPairAddress,
-  sumTokens2,
-  getTokenBalance
+  queryKey,
+  u8ArrayToString,
+  getTokenBalances,
 };

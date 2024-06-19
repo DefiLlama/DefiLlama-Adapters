@@ -17,7 +17,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'massa',]
 
 const transformTokens = {
   // Sample Code
@@ -86,11 +86,11 @@ const fixBalancesTokens = {
     '0x6665a6Cae3F52959f0f653E3D04270D54e6f13d8': { coingeckoId: 'rosy', decimals: 18 },
     '0x9ca066f00e55b90623efe323feb2a649686538b6': { coingeckoId: 'tether', decimals: 6 },
   },
-  massa :{
-    'AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9': { coingecko: 'wrapped-massa', decimals: 9},
-    'AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ': { coingecko: 'massa-bridged-usdc-massa', decimals: 6},
-    'AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv': { coingecko: 'massa-bridged-dai-massa', decimals: 18},
-    'AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY': { coingecko: 'wrapped-ether-massa', decimals: 18},
+  massa: {
+    'AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9': { coingeckoId: 'wrapped-massa', decimals: 9 },
+    'AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ': { coingeckoId: 'massa-bridged-usdc-massa', decimals: 6 },
+    'AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv': { coingeckoId: 'massa-bridged-dai-massa', decimals: 18 },
+    'AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY': { coingeckoId: 'wrapped-ether-massa', decimals: 18 },
   },
   // Sample Code
   ozone: {
