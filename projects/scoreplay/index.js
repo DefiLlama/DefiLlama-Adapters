@@ -1,31 +1,7 @@
-const { GraphQLClient, gql } = require("graphql-request");
-const ethers = require("ethers");
-
-async function tvl() {
-  var graphQLClient = new GraphQLClient(
-    "https://api.studio.thegraph.com/query/70998/scoreplay-euro24/version/latest"
-  );
-
-  const getTotalTvl = gql`
-    {
-      tvlActivity(id: "0x01") {
-        totalVolume
-      }
-    }
-  `;
-  const results = await graphQLClient.request(getTotalTvl);
-
-  const totalVolume = parseFloat(
-    ethers.formatEther(results.tvlActivity.totalVolume)
-  );
-
-  return {
-    ethereum: totalVolume,
-  };
-}
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
-  methodology: "sums the eth balance in each team for LeagueFactory contract.",
-  start: 15582196,
-  base: { tvl },
-};
+  start: 1717958404,
+  base: { tvl: sumTokensExport({ owner: '0xFcab8B765FB0BCB05407d16173941e2d1F09DE12', tokens: [ADDRESSES.base.WETH] }) },
+}
