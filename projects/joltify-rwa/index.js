@@ -8,6 +8,8 @@ const tvl = async (api) => {
 
   pools.pools_info.forEach(async pool => {
     api.add(pool.usable_amount.denom, pool.usable_amount.amount);
+    api.add(pool.escrow_principal_amount.denom, pool.escrow_principal_amount.amount);
+    api.add(pool.escrow_principal_amount.denom, pool.escrow_interest_amount);
   });
 }
 

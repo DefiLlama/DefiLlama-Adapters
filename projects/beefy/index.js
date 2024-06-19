@@ -41,7 +41,7 @@ const chains = {
   polygon: 137,
   fantom: 250,
   fraxtal: 252,
-  zksync: 324,
+  era: 324,
   metis: 1088,
   polygon_zkevm: 1101,
   moonbeam: 1284,
