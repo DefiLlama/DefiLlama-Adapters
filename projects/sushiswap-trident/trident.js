@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { blockQuery } = require('../helper/http')
 
 const graphUrls = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
+  polygon: sdk.graph.modifyEndpoint('BSdbRfU6PjWSdKjhpfUQ6EgUpzMxgpf5c1ugaVwBJFsQ'),
   polygonOldRouter:
     sdk.graph.modifyEndpoint('5LBvcUQthQDZTMe6cyJ7DbeokFkYeVpYYBZruHPUjMG5'),
   optimism: sdk.graph.modifyEndpoint('FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51'),
