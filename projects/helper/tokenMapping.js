@@ -19,7 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', ]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', ]
 
 const transformTokens = {
   // Sample Code
@@ -65,6 +65,12 @@ const fixBalancesTokens = {
   ace: {
     [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
     '0x85119527cf38f6ccf7b1b8f8fad05145358aaa81': { coingeckoId: "endurance", decimals: 18 },
+  },
+  massa: {
+    'AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9': { coingeckoId: 'wrapped-massa', decimals: 9 },
+    'AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ': { coingeckoId: 'massa-bridged-usdc-massa', decimals: 6 },
+    'AS1ZGF1upwp9kPRvDKLxFAKRebgg7b3RWDnhgV7VvdZkZsUL7Nuv': { coingeckoId: 'massa-bridged-dai-massa', decimals: 18 },
+    'AS124vf3YfAJCSCQVYKczzuWWpXrximFpbTmX4rheLs5uNSftiiRY': { coingeckoId: 'wrapped-ether-massa', decimals: 18 },
   },
   // Sample Code
   ozone: {
@@ -149,6 +155,7 @@ const fixBalancesTokens = {
     '0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd': { coingeckoId: 'mountain-protocol-usdm', decimals: 18 },
   },
   taiko: {
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.taiko.WETH]: { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.taiko.USDC]: { coingeckoId: 'usd-coin', decimals: 6 },
   },
