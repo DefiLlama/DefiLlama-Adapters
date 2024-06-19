@@ -29,7 +29,7 @@ const TOKENS = {
     pufETH: "0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC"
   },
   cronos: {
-    USDC: "0xc21223249ca28397b4b6541dffaecc539bff0c59"
+    USDC: ADDRESSES.cronos.USDC
   }
 }
 
