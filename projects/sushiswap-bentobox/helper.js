@@ -24,23 +24,23 @@ const toAmountAbi =
 
 const bentoSubgraphs = {
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-ethereum",
-  polygon: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-polygon",
-  fantom: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-fantom",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-avalanche",
+    sdk.graph.modifyEndpoint('8HYeoDopVqqvb5RJEV2TtSzFsouYPz8cownnG3mbhiGy'),
+  polygon: sdk.graph.modifyEndpoint('6kJg5kFoQY8B8Ge2hqswHMqZDcmsR1TLUUz7AKov69fy'),
+  fantom: sdk.graph.modifyEndpoint('2KqXx6dGw7T4mZeGKyzQ9m9iyuCMjPR8PntLB9Gn9AEK'),
+  bsc: sdk.graph.modifyEndpoint('BggyE3r5snDsjx19jgZcbiBH7cbtrkpjvyGLFHMdXekd'),
+  avax: sdk.graph.modifyEndpoint('EhYaJodF1WQjKgxx1ZC63goeCwp5swD4AQRdaKXBm2xk'),
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-arbitrum",
+    sdk.graph.modifyEndpoint('JZFyMKR4jnsFQ58q7dT6nbXenTzNgE176zTejc6Gf8Z'),
   optimism:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-optimism",
-  xdai: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-gnosis",
-  harmony: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-harmony",
+    sdk.graph.modifyEndpoint('8b4Hy4Kn7jCNAf9JFrqHb24LsqmapG4HrAsCrwdJf9Nu'),
+  xdai: sdk.graph.modifyEndpoint('9jn9kA6SKCNxXQSqb93zZPLdLaru4FeZBwLNWAK4nfZ2'),
+  harmony: sdk.graph.modifyEndpoint('Bioj7N3Rf2n7iBq9PVoaMie3WiuzPze9NMi7aSye7LFc'),
   moonbeam:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-moonbeam",
+    sdk.graph.modifyEndpoint('7wA5gqWNP4E1dPWBsTYvz5eQSDbtYDFgyU5BGdHr2UKp'),
   moonriver:
-    "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-moonriver",
+    sdk.graph.modifyEndpoint('73XEV6UQKpPSJn68WZBAYTwALcZtFJkFYn58ZoZUb7tn'),
   //metis: "",
-  celo: "https://api.thegraph.com/subgraphs/name/sushiswap/bentobox-celo",
+  celo: sdk.graph.modifyEndpoint('5DwkvjxPGVFFaWEMM68g1yztDdhCgJEYAxS6FuhkajzR'),
   //kava: "",
 };
 
@@ -60,23 +60,23 @@ const bentoQuery = gql`
 
 const furoSubgraphs = {
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-ethereum",
+    sdk.graph.modifyEndpoint('D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf'),
   polygon:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-polygon",
-  fantom: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-fantom",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-avalanche",
+    sdk.graph.modifyEndpoint('4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4'),
+  fantom: sdk.graph.modifyEndpoint('E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS'),
+  bsc: sdk.graph.modifyEndpoint('2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk'),
+  avax: sdk.graph.modifyEndpoint('8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx'),
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-arbitrum",
+    sdk.graph.modifyEndpoint('8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F'),
   optimism:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-optimism",
-  xdai: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-gnosis",
+    sdk.graph.modifyEndpoint('8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69'),
+  xdai: sdk.graph.modifyEndpoint('5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB'),
   harmony:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-harmony",
+    sdk.graph.modifyEndpoint('9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH'),
   moonbeam:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonbeam",
+    sdk.graph.modifyEndpoint('HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf'),
   moonriver:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonriver",
+    sdk.graph.modifyEndpoint('9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC'),
 };
 
 const furoQuery = gql`
@@ -97,11 +97,11 @@ const furoQuery = gql`
 `;
 
 const kashiSubgraphs = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-ethereum",
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-polygon",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-arbitrum",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushiswap/kashi-avalanche",
+  ethereum: sdk.graph.modifyEndpoint('6Kf5cPeXUMVzfGCtzBnSxDU849w2YM2o9afn1uiPpy2m'),
+  polygon: sdk.graph.modifyEndpoint('5F3eB4Cm5mxorArsyrbs2a1TDxctmk3znpDZ4LEzqrBJ'),
+  arbitrum: sdk.graph.modifyEndpoint('G3rbmaF7w2ZLQjZgGoi12BzPeL9z4MTW662iVyjYmtiX'),
+  bsc: sdk.graph.modifyEndpoint('D1TGHRKx2Q54ce2goyt9hbtKNuT94FDBsuPwtGg5EzRw'),
+  avax: sdk.graph.modifyEndpoint('BHeJByyVoNuVtqufK3Nk7YYmFkBs43boYpKv8z6hQ5Q1'),
 };
 
 const kashiQuery = gql`
@@ -124,15 +124,15 @@ const kashiQuery = gql`
 
 const tridentSubgraphs = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-optimism",
+  optimism: sdk.graph.modifyEndpoint('FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51'),
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
   bittorrent:
     "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-arbitrum",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-avalanche",
+  arbitrum: sdk.graph.modifyEndpoint('4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx'),
+  bsc: sdk.graph.modifyEndpoint('9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn'),
+  avax: sdk.graph.modifyEndpoint('NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1'),
 };
 
 const tridentQuery = gql`

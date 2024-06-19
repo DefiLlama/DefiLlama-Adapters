@@ -21,7 +21,7 @@ async function getExchanges(factory, data) {
 
     sdk.log(factory, exchanges.length, pools.length, hasMore)
     pools.push(...exchanges)
-    const { errors } = await PromisePool.withConcurrency(1)
+    const { errors } = await PromisePool.withConcurrency(10)
       .for(exchanges)
       .process(async (i) => {
         let { address, contract } = i
@@ -36,8 +36,9 @@ async function getExchanges(factory, data) {
         await sleep(1000)
       })
 
-    if (errors && errors.length)
-      throw errors[0]
+    console.log(errors, errors.length, factory, exchanges.length, pools.length, hasMore)
+    // if (errors && errors.length)
+    //   throw errors[0]
 
   } while (hasMore)
 }

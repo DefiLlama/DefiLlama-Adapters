@@ -148,7 +148,7 @@ const tokens = {
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
     },
     avax: {
-        sBUSD: '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd',
+        sBUSD: ADDRESSES.avax.sBUSD,
         EURA: '0xAEC8318a9a59bAEb39861d10ff6C7f7bf1F96C57',
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
     },
@@ -159,7 +159,7 @@ const tokens = {
         stUSD: '0x0022228a2cc5E7eF0274A7Baa600d44da5aB5776',
     },
     bsc: {
-        TUSD: '0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9',
+        TUSD: ADDRESSES.bsc.TUSD,
         EURA: '0x12f31B73D812C6Bb0d735a218c086d44D5fe5f89',
         USDA: '0x0000206329b97DB379d5E1Bf586BbDB969C63274',
     },
