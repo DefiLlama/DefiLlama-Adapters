@@ -25,11 +25,11 @@ async function solanaTvl() {
   const program = new Program(ALLSTAKE_SOLANA_PROGRAM_IDL, programId, provider);
   const state = await program.account.strategyManager.all();
   const strategyManager = state[0].account.data.v1[0];
-  const mints = getUniqueAddresses(strategyManager.strategyMints.slice(0, strategyManager.strategyMintsLen).map(mint => mint.toBase58()), true);
+  const tokens = getUniqueAddresses(strategyManager.strategyMints.slice(0, strategyManager.strategyMintsLen).map(mint => mint.toBase58()), true);
 
   const tokensAndOwners = [];
-  for (const mint of mints) {
-    const pubKey = new PublicKey(mint);
+  for (const token of tokens) {
+    const pubKey = new PublicKey(token);
     const owner = PublicKey.findProgramAddressSync(
       [
         Buffer.from('STRATEGY'),
@@ -37,7 +37,7 @@ async function solanaTvl() {
       ],
       ALLSTAKE_SOLANA_PROGRAM
     )[0].toBase58();
-    tokensAndOwners.push([mint, owner]);
+    tokensAndOwners.push([token, owner]);
   }
 
   return sumTokens2({
