@@ -16,34 +16,6 @@
           }
         ]
       }
-    },
-    {
-      "name": "Strategy",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "data",
-            "type": {
-              "defined": "VersionedStrategy"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "UserDeposit",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "data",
-            "type": {
-              "defined": "VersionedUserDeposit"
-            }
-          }
-        ]
-      }
     }
   ],
   "types": [
@@ -89,102 +61,6 @@
       }
     },
     {
-      "name": "StrategyV1",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "id",
-            "docs": [
-              "strategy ID"
-            ],
-            "type": "u8"
-          },
-          {
-            "name": "mint",
-            "docs": [
-              "mint token address of this strategy"
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "totalDeposited",
-            "docs": [
-              "total deposited amount"
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "withdrawDelay",
-            "docs": [
-              "withdraw queueing delay length in seconds."
-            ],
-            "type": "i64"
-          },
-          {
-            "name": "depositPaused",
-            "docs": [
-              "whether deposit is paused for this strategy"
-            ],
-            "type": "bool"
-          },
-          {
-            "name": "withdrawPaused",
-            "docs": [
-              "whether withdraw is paused for this strategy"
-            ],
-            "type": "bool"
-          }
-        ]
-      }
-    },
-    {
-      "name": "UserDepositV1",
-      "docs": [
-        "State for each user per strategy"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "user",
-            "docs": [
-              "public key of the user"
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "mint",
-            "docs": [
-              "mint address of the strategy"
-            ],
-            "type": "publicKey"
-          },
-          {
-            "name": "deposited",
-            "docs": [
-              "deposited amount"
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "queuedWithdrawAmount",
-            "docs": [
-              "queued withdraw amount"
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "withdrawStartedAt",
-            "docs": [
-              "timestamp when the latest queue withdraw request is fired"
-            ],
-            "type": "i64"
-          }
-        ]
-      }
-    },
-    {
       "name": "VersionedStrategyManager",
       "type": {
         "kind": "enum",
@@ -194,38 +70,6 @@
             "fields": [
               {
                 "defined": "StrategyManagerV1"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "VersionedStrategy",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "V1",
-            "fields": [
-              {
-                "defined": "StrategyV1"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "VersionedUserDeposit",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "V1",
-            "fields": [
-              {
-                "defined": "UserDepositV1"
               }
             ]
           }
