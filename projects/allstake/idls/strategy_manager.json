@@ -1,0 +1,687 @@
+{
+  "version": "0.1.0",
+  "name": "strategy_manager",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "minWithdrawDelay",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "createStrategy",
+      "accounts": [
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategy",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "withdrawDelay",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "register",
+      "accounts": [
+        {
+          "name": "userDeposit",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategy",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "strategyMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit",
+      "accounts": [
+        {
+          "name": "from",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "fromAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userDeposit",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategy",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "queueWithdraw",
+      "accounts": [
+        {
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userDeposit",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategy",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyMint",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "completeWithdraw",
+      "accounts": [
+        {
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "receiverAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyAta",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userDeposit",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategy",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "state",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "pauseStrategy",
+      "accounts": [
+        {
+          "name": "state",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "strategy",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "strategyMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "pauseDeposit",
+          "type": "bool"
+        },
+        {
+          "name": "pauseWithdraw",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "StrategyManager",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data",
+            "type": {
+              "defined": "VersionedStrategyManager"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Strategy",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data",
+            "type": {
+              "defined": "VersionedStrategy"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserDeposit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data",
+            "type": {
+              "defined": "VersionedUserDeposit"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "StrategyManagerV1",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "docs": [
+              "owner of strategy manager program"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "strategyMints",
+            "docs": [
+              "list of supported strategies' mint address"
+            ],
+            "type": {
+              "array": [
+                "publicKey",
+                32
+              ]
+            }
+          },
+          {
+            "name": "strategyMintsLen",
+            "docs": [
+              "size of the list above"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "minWithdrawDelay",
+            "docs": [
+              "min withdraw queueing delay length in seconds"
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "StrategyV1",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "docs": [
+              "strategy ID"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "mint token address of this strategy"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "totalDeposited",
+            "docs": [
+              "total deposited amount"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "withdrawDelay",
+            "docs": [
+              "withdraw queueing delay length in seconds."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "depositPaused",
+            "docs": [
+              "whether deposit is paused for this strategy"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "withdrawPaused",
+            "docs": [
+              "whether withdraw is paused for this strategy"
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserDepositV1",
+      "docs": [
+        "State for each user per strategy"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "docs": [
+              "public key of the user"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "mint address of the strategy"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "deposited",
+            "docs": [
+              "deposited amount"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "queuedWithdrawAmount",
+            "docs": [
+              "queued withdraw amount"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "withdrawStartedAt",
+            "docs": [
+              "timestamp when the latest queue withdraw request is fired"
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VersionedStrategyManager",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1",
+            "fields": [
+              {
+                "defined": "StrategyManagerV1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "VersionedStrategy",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1",
+            "fields": [
+              {
+                "defined": "StrategyV1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "VersionedUserDeposit",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1",
+            "fields": [
+              {
+                "defined": "UserDepositV1"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "CreateStrategyEvent",
+      "fields": [
+        {
+          "name": "strategyId",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "strategyMint",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "UserRegisterEvent",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "mint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "strategyId",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "UserDepositEvent",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "mint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "strategyId",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "QueueWithdrawEvent",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "mint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "strategyId",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CompleteWithdrawEvent",
+      "fields": [
+        {
+          "name": "user",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "mint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "strategyId",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "PauseStrategy",
+      "fields": [
+        {
+          "name": "strategyMint",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "strategyId",
+          "type": "u8",
+          "index": false
+        },
+        {
+          "name": "depositPaused",
+          "type": "bool",
+          "index": false
+        },
+        {
+          "name": "withdrawPaused",
+          "type": "bool",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotOwner",
+      "msg": "Not Owner"
+    },
+    {
+      "code": 6001,
+      "name": "InsufficientBalance",
+      "msg": "Insufficient Balance"
+    },
+    {
+      "code": 6002,
+      "name": "NoQueuedWithdraw",
+      "msg": "No Queued Withdraw"
+    },
+    {
+      "code": 6003,
+      "name": "WithdrawNotReady",
+      "msg": "Withdraw Now Ready"
+    },
+    {
+      "code": 6004,
+      "name": "DepositPaused",
+      "msg": "Deposit Paused"
+    },
+    {
+      "code": 6005,
+      "name": "WithdrawPaused",
+      "msg": "Withdraw Paused"
+    },
+    {
+      "code": 6006,
+      "name": "TooManyStrategies",
+      "msg": "Too Many Strategies"
+    }
+  ]
+}
