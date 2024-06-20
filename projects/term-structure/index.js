@@ -1,6 +1,8 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const ZkTrueUpContractAddress = "0x09E01425780094a9754B2bd8A3298f73ce837CF9";
+const EthTokenAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
 module.exports = {
   ethereum: {
     tvl: async (api) => {
@@ -17,16 +19,17 @@ module.exports = {
         }))
       })
 
-      const tokens = assetConfigs.map(assetConfig => assetConfig.token);
+      const tokens = assetConfigs.map(assetConfig => {
+        const isETH2WETH = assetConfig.token ===  EthTokenAddress;
+        return isETH2WETH ? ADDRESSES.ethereum.WETH : assetConfig.token;
+      });
 
-      return sumTokens2({
-        api,
-        tokens: tokens,
+      return await api.sumTokens({
         owners: [
           ZkTrueUpContractAddress,
         ],
+        tokens: tokens,
       });
-
     },
   },
 };
