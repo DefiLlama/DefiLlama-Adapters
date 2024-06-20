@@ -49,7 +49,7 @@ async function tvl() {
     return { flow: flowTokenTVL };
   } catch (error) {
     throw new Error(
-      "Couln't query scripts of fixes 𝔉rc20 treasury pool",
+      "Couldn't query scripts of fixes 𝔉rc20 treasury pool",
       error
     );
   }
