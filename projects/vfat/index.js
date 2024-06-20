@@ -73,7 +73,7 @@ const config = {
     factory: '0xB4C31b0f0B76b351395D4aCC94A54dD4e6fbA1E8',
     chainName: 'mantle',
     fromBlockSickle: 62383980,
-    moeMasterchef:  '0xA756f7D419e1A5cbd656A438443011a7dE1955b5'
+    moeMasterchef: '0xA756f7D419e1A5cbd656A438443011a7dE1955b5'
   },
   bsc: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
@@ -207,9 +207,11 @@ async function fetchSickleNftPositions(api, sickles, managerAddress, isMasterche
     const poolInfos = await api.multiCall({
       abi: 'function poolInfo(uint256 pid) view returns (uint256 allocPoint, address v3Pool, address token0, address token1, uint24 fee, uint256 totalLiquidity, uint256 totalBoostLiquidity)',
       calls: poolInfoCalls,
+      permitFailure: true,
     });
 
     positions.forEach((position, index) => {
+      if (!position) return;
       const poolInfo = poolInfos[index];
       position.allocPoint = poolInfo.allocPoint;
       position.v3Pool = poolInfo.v3Pool;
@@ -221,7 +223,7 @@ async function fetchSickleNftPositions(api, sickles, managerAddress, isMasterche
     });
   }
 
-  return positions;
+  return positions.filter(position => position)
 }
 
 async function fetchGauges3(api, voter, fromBlock) {
@@ -424,7 +426,7 @@ async function tvlMantle(api) {
     const pid = call.params[0];
     const deposit = deposits[index];
     const token = farmTokenMap[pid];
-    
+
     if (!tokenBalanceMap[token]) {
       tokenBalanceMap[token] = deposit;
     } else {
