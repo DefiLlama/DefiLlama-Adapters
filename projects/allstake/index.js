@@ -1,11 +1,10 @@
-const { call, sumTokens } = require('../helper/chain/near');
-const { sumTokens2 } = require('../helper/solana');
 const { getUniqueAddresses } = require('../helper/utils');
-const { getProvider, } = require('../helper/solana')
-const { Program, } = require('@coral-xyz/anchor');
-const { PublicKey, } = require('@solana/web3.js');
+const { call, sumTokens } = require('../helper/chain/near');
+const { sumTokens2, getProvider } = require('../helper/solana');
+const { Program } = require('@coral-xyz/anchor');
+const { PublicKey } = require('@solana/web3.js');
 
-const ALLSTAKE_NEAR_CONTRACT = 'allstake.near'
+const ALLSTAKE_NEAR_CONTRACT = 'allstake.near';
 const ALLSTAKE_SOLANA_PROGRAM = new PublicKey('a11zL6Uxue6mYG3JD3APmnVhS4RVjGTJZbENY7L6ZfD');
 const ALLSTAKE_SOLANA_PROGRAM_IDL = require('./idls/strategy_manager.json');
 
