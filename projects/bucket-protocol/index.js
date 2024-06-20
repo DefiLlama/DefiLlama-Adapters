@@ -60,7 +60,7 @@ const haSUI_sLP_ID =
   "0xa8993bf1c1e717b7c0f164c51346fa99a4e771c50d90c14e755adc48e39b7768";
 
 const navi_sLP_ID =
-  "0x55ce58556e32a4b5e8c24f683854e454784422a76e100b6c55ec8d801b876c60";
+  "0xcbe804c8c334dcadecd4ba05ee10cffa54dad36f279ab4ec9661d67f9372881c";
 
 async function getStakingLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
@@ -204,32 +204,24 @@ async function tvl(api) {
 
   //Staking LPs
   const safSUILPAmount = await getStakingLPAmount(afSUI_sLP_ID);
-
-  console.log("safSUILPAmount", safSUILPAmount);
   api.add(
     "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI",
     safSUILPAmount
   );
 
   const svSUILPAmount = await getStakingLPAmount(vSUI_sLP_ID);
-  console.log("svSUILPAmount", svSUILPAmount);
-
   api.add(
     "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
     svSUILPAmount
   );
 
   const shaSUILPAmount = await getStakingLPAmount(haSUI_sLP_ID);
-  console.log("shaSUILPAmount", shaSUILPAmount);
-
   api.add(
     "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
     shaSUILPAmount
   );
 
   const snaviLPAmount = await getStakingLPAmount(navi_sLP_ID);
-  console.log("snaviLPAmount", snaviLPAmount);
-
   api.add(
     "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
     snaviLPAmount
