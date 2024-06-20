@@ -145,7 +145,7 @@ const supportedChains = [
     name: 'Rootstock',
     subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-rootstock/1.1.1/gn',
     chainId: 30,
-    identifier: 'rootstock'
+    identifier: 'rsk'
   },
   // {
   //   name: 'Celo',
