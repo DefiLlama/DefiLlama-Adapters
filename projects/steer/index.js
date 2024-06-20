@@ -141,6 +141,12 @@ const supportedChains = [
     chainId: 196,
     identifier: 'xlayer'
   },
+  {
+    name: 'Rootstock',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-rootstock/1.1.1/gn',
+    chainId: 30,
+    identifier: 'rootstock'
+  },
   // {
   //   name: 'Celo',
   //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
