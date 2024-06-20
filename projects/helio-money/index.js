@@ -42,22 +42,22 @@ module.exports = {
 
         // BTCB
         [
-          "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+          ADDRESSES.bsc.BTCB,
           "0xad9eAAe95617c39019aCC42301a1dCa4ea5b6f65",
         ],
         // ezETH
         [
-          "0x2416092f143378750bb29b79ed961ab195cceea5",
+          ADDRESSES.blast.ezETH,
           "0xd7E33948e2a43e7C1ec2F19937bf5bf8BbF9BaE8",
         ],
         // weETH
         [
-          "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
+          ADDRESSES.blast.weETH,
           "0x2367f2Da6fd39De6944218CC9EC706BCdc9a6918",
         ],
         // STONE
         [
-          "0x80137510979822322193fc997d400d5a6c747bf7",
+          ADDRESSES.scroll.STONE,
           "0x876cd9a380Ee7712129b52f8293F6f06056c3104",
         ],
       ],
