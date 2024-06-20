@@ -13,12 +13,11 @@ module.exports = {
         target: ZkTrueUpContractAddress,
         abi: "function getAssetConfig(uint16 tokenId) external view returns (bool isStableCoin, bool isTsbToken, uint8 decimals, uint128 minDepositAmt, address token)",
         calls: new Array(Number(tokenNums)).fill(0).map((_, i) => ({
-          // target: ZkTrueUpContractAddress,
           params: [i+1],
         }))
       })
 
-      const tokens = assetConfigs.map(assetConfig => assetConfig[4]);
+      const tokens = assetConfigs.map(assetConfig => assetConfig.token);
 
       return sumTokens2({
         api,
