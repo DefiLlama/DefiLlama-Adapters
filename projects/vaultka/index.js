@@ -164,8 +164,6 @@ module.exports = {
 
       const klpValue = (klpPrice * klpBalance * 1e6) / 1e36;
 
-      console.log(StakedVLPBalV3);
-
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
       api.add(addresses.VLP, StakedVLPBalV3);
