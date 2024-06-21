@@ -23,7 +23,7 @@ const BTCOwners = [
 
 
 module.exports = {
-  methodology: "Staking tokens for BFBTC Dataset counts as TVL.",
+  methodology: "Staking tokens for BitFi Dataset counts as TVL.",
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
       sumTokensExport({ owners: BTCOwners }),
