@@ -23,6 +23,7 @@
           },
           {
             "addresses": [
+              "0x3991bA795fb13a7646a8745F90b0F24Ed2443b03",
               "0x1b026577241654671be10eacead97a75f671719b"
             ],
             "events": [
@@ -58,6 +59,7 @@
         "contracts": [
           {
             "addresses": [
+              "0x3991bA795fb13a7646a8745F90b0F24Ed2443b03",
               "0xfaacd9f7e68bb36c1029ab87d1d7325919e67cc0"
             ],
             "events": [
@@ -107,6 +109,7 @@
           },
           {
             "addresses": [
+              "0x3991bA795fb13a7646a8745F90b0F24Ed2443b03",
               "0xdd07f3d739039e6d0cac33f6d071e91a0187732b"
             ],
             "events": [
@@ -156,6 +159,7 @@
           },
           {
             "addresses": [
+              "0x3991bA795fb13a7646a8745F90b0F24Ed2443b03",
               "0x9dc402316ffa90d50caa604f2953e36c9471da15"
             ],
             "events": [
@@ -205,6 +209,7 @@
           },
           {
             "addresses": [
+              "0x3991bA795fb13a7646a8745F90b0F24Ed2443b03",
               "0xb80ABCC52788ed028802898092B7f8bF2AcBf5c5"
             ],
             "events": [
@@ -236,7 +241,7 @@
         "univ3": {
           "nfpm": "0x7b8a01b39d58278b5de7e48c8449c9f4f5170613",
           "factory": "0xdB1d10011AD0Ff90774D0C6Bb92e5C5c8b4461F7",
-          "fromBlock": 37909278,
+          "fromBlock": 37990095,
           "contracts": [
             {
               "addresses": [
@@ -254,6 +259,7 @@
             },
             {
               "addresses": [
+                "0x3991bA795fb13a7646a8745F90b0F24Ed2443b03",
                 "0xf71061a726aab49ae4372b76e2eb090a85c7ca4b"
               ],
               "events": [
