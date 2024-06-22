@@ -22,7 +22,7 @@ async function getData() {
       bondOffers,
       bondTradeTxn,
     ] = await Promise.all([
-      getFilteredAccounts(program, 'bondOfferV2', bondOfferOffset, [5, 7,]),
+      getFilteredAccounts(program, 'bondOfferV3', bondOfferOffset, [5, 7,]),
       getFilteredAccounts(program, 'bondTradeTransactionV3', bondTradeTxnOffset, [2, 6, 9]),
     ])
 
