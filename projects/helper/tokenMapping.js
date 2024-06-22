@@ -195,7 +195,11 @@ const fixBalancesTokens = {
     [ADDRESSES.null]: { coingeckoId: 'weth', decimals: 18 },
     "0xf037540e51d71b2d2b1120e8432ba49f29edfbd0": { coingeckoId: 'weth', decimals: 18 },
     "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6": { coingeckoId: 'usd-coin', decimals: 6 },
-  }
+  },
+  ailayer: {
+    [ADDRESSES.ailayer.ABTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    [ADDRESSES.ailayer.bBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
