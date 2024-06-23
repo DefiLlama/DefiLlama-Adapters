@@ -17,8 +17,16 @@ const DEFAULTS = {
   DEFICHAIN_EVM_RPC_MULTICALL: '0x7fEf77CDe3B41221Cff54B84Ea89D2EBc6b53352',
   BOUNCEBIT_RPC_MULTICALL: '0x493d616f5F9a64e5B3D527120E406439bdF29272',
   ZKLINK_RPC_MULTICALL: '0xa8738F57538E3Bb73872d1133F2358c7Fe56FD35',
-  REAL_RPC: 'https://real.drpc.org',
+  REAL_RPC: 'https://real.drpc.org', // added manually short name is re-al
+  TAIKO_RPC: 'https://rpc.taiko.xyz', // added manually short name is tko-mainnet
   REAL_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  SEI_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  TAIKO_RPC_MULTICALL: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D',
+  SEI_RPC: 'https://evm-rpc.sei-apis.com/',
+  LUKSO_RPC: 'https://rpc.lukso.sigmacore.io',
+  HAM_RPC: 'https://rpc.ham.fun',
+  HAM_RPC_MULTICALL: '0xB7c3Ea932649fBD594C881aDCb3F19415e2EA2d5',
+  SANKO_RPC_MULTICALL: '0xB32d192e07727A0F6f48e721791aa4e02cd292e1',
 }
 
 const ENV_KEYS = [
