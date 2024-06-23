@@ -62,9 +62,20 @@ const haSUI_sLP_ID =
 const navi_sLP_ID =
   "0xcbe804c8c334dcadecd4ba05ee10cffa54dad36f279ab4ec9661d67f9372881c";
 
+const scallop_sUSDC_LP_ID =
+  "0x7b16192d63e6fa111b0dac03f99c5ff965205455089f846804c10b10be55983c";
+
+const scallop_sUSDT_LP_ID =
+  "0x6b68b42cbb4efccd9df30466c21fff3c090279992c005c45154bd1a0d87ac725";
+
 async function getStakingLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
   return stakingLPObject.fields.output_volume;
+}
+
+async function getScallopsLPAmount(id) {
+  const stakingLPObject = await sui.getObject(id);
+  return stakingLPObject.fields.coin_balance;
 }
 
 async function tvl(api) {
@@ -226,6 +237,12 @@ async function tvl(api) {
     "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
     snaviLPAmount
   );
+
+  const scallopUSDC_LPAmount = await getScallopsLPAmount(scallop_sUSDC_LP_ID);
+  api.add(USDC, scallopUSDC_LPAmount);
+
+  const scallopUSDT_LPAmount = await getScallopsLPAmount(scallop_sUSDT_LP_ID);
+  api.add(USDT, scallopUSDT_LPAmount);
 }
 
 module.exports = {
