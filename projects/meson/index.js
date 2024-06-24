@@ -20,10 +20,10 @@ const config = {
   bsquared: {
     tokens: [
       ADDRESSES.bsquared.USDT,
-      '0x7537C1F80c9E157ED7AFD93a494be3e1f04f1462',
+      ADDRESSES.bsquared.BSTONE,
       '0xa793740863F1710A87070a5918820976ff32B758',
-      '0xC2Fe4f673455Ef92299770a09CDB5E8756A525D5',
-      '0xD48d3A551757ac47655fCe25BDE1B0B6b1Cb2a5A',
+      ADDRESSES.bsquared.FDUSD,
+      ADDRESSES.bsquared.ETH,
       ADDRESSES.bsquared.USDC,
     ],
     id: 'b2',

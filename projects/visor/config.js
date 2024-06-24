@@ -86,6 +86,7 @@ const HYPE_REGISTRY = {
     ["0x39ce2eB762e7bFe19b6AD4D5bA384c67CE4051f0", 7310157], // Swapbased
     ["0x8118C33513feC13f8cf488CCb4509190650F0e92", 7310111], // Baseswap
     ["0xf1DF4F17e34Ba710DfFC487F73f1e19476E815a6", 8743213], // Thick
+    ["0xe1cd1c2d2e4B44dE211D554649BC7dc49eF07784", 15063294], // Kinetix
   ],
   kava: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 6384272], // Kinetix
@@ -126,6 +127,13 @@ const HYPE_REGISTRY = {
   ],
   mode: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 696737], // KIM
+  ],
+  taiko: [
+    ["0xc27ddd78fc49875fe6f844b72bbf31dfbb099881", 57600], // Uniswap
+  ],
+  rsk: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 6414342], // Uniswap
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 6414350], // Sushiswap
   ],
 };
 

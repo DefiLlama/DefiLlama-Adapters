@@ -3,7 +3,7 @@ const http = require('./http')
 const { getEnv } = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
 const { getUniqueAddresses } = require('./tokenMapping')
-const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
+const { Connection, PublicKey, Keypair, StakeProgram, } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
@@ -439,6 +439,29 @@ function readBigUInt64LE(buffer, offset) {
   return BigInt(lo) + (BigInt(hi) << BigInt(32));
 }
 
+async function getStakedSol(solAddress, api) {
+  const stakeAccounts = await getConnection().getProgramAccounts(StakeProgram.programId, {
+    filters: [{
+      memcmp: { bytes: solAddress, offset: 4 + 8 }
+    }],
+    dataSlice: { offset: 0, length: 1 } // we dont care about the data, just the lamports
+  })
+  const totalStakedSol = stakeAccounts.reduce((tvl, { account }) => { return tvl + account.lamports }, 0)
+  if (api) {
+    api.add(ADDRESSES.solana.SOL, totalStakedSol)
+    return api
+  }
+  return totalStakedSol
+}
+
+async function getSolBalanceFromStakePool(address, api) {
+  const connection = getConnection()
+  if (typeof address === 'string') address = new PublicKey(address)
+  const accountInfo = await connection.getAccountInfo(address);
+  const deserializedAccountInfo = decodeAccount('stakePool', accountInfo)
+  return api.add(ADDRESSES.solana.SOL, +deserializedAccountInfo.totalLamports)
+}
+
 module.exports = {
   endpoint: endpoint(),
   getTokenSupply,
@@ -466,4 +489,6 @@ module.exports = {
   getValidGeckoSolTokens,
   getOwnerAllAccount,
   blacklistedTokens_default,
+  getStakedSol,
+  getSolBalanceFromStakePool,
 };

@@ -1,13 +1,13 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
-const sdk = require('@defillama/sdk')
 const { compoundExports2 } = require('../helper/compound')
 const config = {
   bsc: {
-    endpoint: 'https://api.thegraph.com/subgraphs/name/venusprotocol/venus-isolated-pools',
+    endpoint: sdk.graph.modifyEndpoint('H2a3D64RV4NNxyJqx9jVFQRBpQRzD6zNZjLDotgdCrTC'),
     corePools: ['0xfd36e2c2a6789db23113685031d7f16329158384'],
   },
   ethereum: {
-    endpoint: 'https://api.thegraph.com/subgraphs/name/venusprotocol/venus-isolated-pools-ethereum',
+    endpoint: sdk.graph.modifyEndpoint('Htf6Hh1qgkvxQxqbcv4Jp5AatsaiY5dNLVcySkpCaxQ8'),
     corePools: ['0x67aA3eCc5831a65A5Ba7be76BED3B5dc7DB60796'],
   }
 }

@@ -3,14 +3,14 @@ const { cachedGraphQuery, configPost } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const graphs = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-  optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
-  arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
-  polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
-  celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
-  bsc: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax",
-  base: "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/version/latest",
+  ethereum: "5AXe97hGLfjgFAc6Xvg6uDpsD5hqpxrxcma9MoxG7j7h",
+  optimism: "Cghf4LfVqPiFw6fp6Y5X5Ubc8UpmUhSfJL82zwiBFLaj",
+  arbitrum: 'FbCGRftH4a3yZugY7TnbYgPJVEv2LvMT6oF1fxPe9aJM',
+  polygon: "3hCPRGf4z88VC5rsBKU5AA9FBBq5nF3jbKJG7VZCbhjm",
+  celo: "ESdrTJ3twMwWVoQ1hUE2u7PugEHX3QkenudD6aXCkDQ4",
+  bsc: "F85MNzUGYqgSHSHRGgeVMNsdnW1KtZSVgFULumXRZTw2",
+  // avax: "3Pwd3cqFKbqKAyaJfGUVmJJ7oYbFQLDa19iB27iMxebD",
+  base: "43Hwfi3dJSoGpyas9VwNoDAv55yjgGrPpNSmbQZArzMG",
 }
 
 const blacklists = {
@@ -82,12 +82,15 @@ module.exports = {
     scroll: { factory: "0x70C62C8b8e801124A4Aa81ce07b637A3e83cb919", fromBlock: 1367, },
     blast: { factory: "0x792edade80af5fc680d96a2ed80a44247d2cf6fd", fromBlock: 400903, },
     linea: { factory: "0x31FAfd4889FA1269F7a13A66eE0fB458f27D72A9", fromBlock: 25247, },
-    manta: {factory: "0x06D830e15081f65923674268121FF57Cc54e4e23", fromBlock: 1191705}
+    manta: { factory: "0x06D830e15081f65923674268121FF57Cc54e4e23", fromBlock: 1191705 },
+    avax: { factory: "0x740b1c1de25031C31FF4fC9A62f554A55cdC1baD", fromBlock: 27832972 },
+    taiko: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 961 }
+
   }),
   filecoin: { tvl: filecoinTvl },
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avax', 'base']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'base']
 
 chains.forEach(chain => {
   module.exports[chain] = {

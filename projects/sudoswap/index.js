@@ -1,6 +1,6 @@
+const sdk = require("@defillama/sdk");
 const { graphFetchById, } = require('../helper/cache')
 const { ART_BLOCKS, sumArtBlocks } = require('../helper/nft')
-const sdk = require('@defillama/sdk')
 
 const query = `
 query get_pairs($lastId: String, $block: Int) {
@@ -34,7 +34,7 @@ module.exports = {
   ethereum: {
     tvl: async (api) => {
       const data = await graphFetchById({
-        endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
+        endpoint: sdk.graph.modifyEndpoint('5ZEPsiros7UhV5noPBHHkzy1rfSBFRP2d2ghHZHHCugd'),
         query,
         api,
         options: {

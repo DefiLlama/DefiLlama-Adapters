@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const KALAX = "0x2F67F59b3629Bf24962290DB9edE0CD4127e606D";
@@ -9,8 +10,8 @@ async function tvl(api) {
   pools
     .filter((i) => i.assets !== KALAX)
     .forEach((i) => {
-      if (i.assets === "0x0000000000000000000000000000000000000001") {
-        i.assets = "0x0000000000000000000000000000000000000000";
+      if (i.assets === ADDRESSES.linea.WETH_1) {
+        i.assets = ADDRESSES.null;
       }
       api.add(i.assets, i.tvl);
     });

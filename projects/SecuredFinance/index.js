@@ -6,6 +6,7 @@ const config = {
         tokenVault: '0x0896AC8B9e2DC3545392ff65061E5a8a3eD68824',
         currencyController: '0x9E1254292195F241FA2DF1aA51af23796627A74B',
     },
+    filecoin: {}
 };
 
 Object.keys(config).forEach(chain => {

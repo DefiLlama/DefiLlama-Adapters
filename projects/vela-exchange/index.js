@@ -1,11 +1,12 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking")
 const { graphQuery } = require('../helper/http')
 
 const VELA = '0x088cd8f5eF3652623c22D48b1605DCfE860Cd704'
 
-const arbitrumEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official"
-const baseEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official-base"
+const arbitrumEndpoint = sdk.graph.modifyEndpoint('6H9PEiNPZgwXfpbijjesZh96LFBzUvkHmEutMoYQ9fvp')
+const baseEndpoint = sdk.graph.modifyEndpoint('2qsbZ4X5TJM7NupC2eRJv167kBDFCDBd37KnK7PQtdga')
 async function staking_arbitrum_(api) {
 
   const query = `

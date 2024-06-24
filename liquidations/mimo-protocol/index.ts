@@ -49,16 +49,16 @@ const getSubgraphUrl = (chain: Chain) => {
 
   switch (chain) {
     case Chain.ethereum: {
-      subgraphUrl = "https://api.thegraph.com/subgraphs/name/m19/titan";
+      subgraphUrl = sdk.graph.modifyEndpoint('FV3Dw1zMs97LpVPegWZKJv4bsbsZdrob2EqLCPxdcoDS');
       break;
     }
     case Chain.polygon: {
-      subgraphUrl = "https://api.thegraph.com/subgraphs/name/m19/titanpolygon";
+      subgraphUrl = sdk.graph.modifyEndpoint('EfFLqiwngmmtE5su2t1EsFoEttoj8KWervocfab1ofYT');
       break;
     }
     // case Chain.fantom: {
     //   subgraphUrl =
-    //     "https://api.thegraph.com/subgraphs/name/rayxpub/titanfantom";
+    //     sdk.graph.modifyEndpoint('DkSQLWkkiNfeNG43NJnHsW9hfih8hDt4SHFTNMQgPHJH');
     //   break;
     // }
   }

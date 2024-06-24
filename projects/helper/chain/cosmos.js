@@ -41,7 +41,8 @@ const endPoints = {
   sifchain: "https://sifchain-api.polkachu.com",
   nolus: "https://pirin-cl.nolus.network:1317",
   nibiru: "https://lcd.nibiru.fi",
-  bostrom: "https://lcd.bostrom.cybernode.ai"
+  bostrom: "https://lcd.bostrom.cybernode.ai",
+  joltify: "https://lcd.joltify.io"
 };
 
 const chainSubpaths = {
@@ -50,6 +51,7 @@ const chainSubpaths = {
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
+  joltify: "joltify",
 };
 
 // some contract calls need endpoint with higher gas limit

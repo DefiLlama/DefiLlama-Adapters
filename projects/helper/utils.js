@@ -84,6 +84,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
   if (chain === 'mantle' && ['MoeLP'].includes(symbol)) return true
   if (chain === 'blast' && ['RING-V2'].includes(symbol)) return true
+  if (chain === 'fraxtal' && ['FS-V2'].includes(symbol)) return true
   if (chain === 'era' && /(ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'flare' && symbol.endsWith('_LP')) return true // for enosys dex
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
@@ -262,7 +263,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     labelMapping[label] = token
   })
 
-  if (tokens.length > 100) {
+  if (tokens.length > 400) {
     sdk.log('too many unknowns')
     return;
   }
