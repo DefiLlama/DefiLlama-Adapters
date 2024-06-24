@@ -26,7 +26,7 @@ const config = {
     owners: 
       [
         '0xFFda60ed91039Dd4dE20492934bC163e0F61e7f5',
-        '0x5caeb9d58325044a1ad9d4abff2e0d525928812d'
+        // '0x5caeb9d58325044a1ad9d4abff2e0d525928812d' // is EOA
       ], 
     tokens: 
       [
@@ -38,7 +38,7 @@ const config = {
     owners: 
       [
         '0x13b72A19e221275D3d18ed4D9235F8F859626673',
-        '0x1bf78679b001c5efa20d80600e085ae52d25abc1'
+        // '0x1bf78679b001c5efa20d80600e085ae52d25abc1' // is EOA
       ], 
     tokens: 
       [
