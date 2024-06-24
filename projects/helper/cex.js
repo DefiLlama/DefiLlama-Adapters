@@ -106,6 +106,7 @@ const defaultTokens = {
      '0x3a856d4effa670c54585a5d523e96513e148e95d', //trias
      '0x1495bc9e44af1f8bcb62278d2bec4540cf0c05ea', //deia
      '0x4cff49d0a19ed6ff845a9122fa912abcfb1f68a6', //wtk
+     "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
   ],
   tron: [
     nullAddress,
