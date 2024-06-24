@@ -92,40 +92,22 @@ async function tvl(api) {
   pools = Object.values(pools);
   const uTokens = await api.multiCall({ abi: "address:asset", calls: pools });
   await api.sumTokens({ tokensAndOwners2: [uTokens, pools] });
-  const accounts = await api.fetchList({
-    lengthAbi: "allAccountsLength",
-    itemAbi: "allAccounts",
-    target: factory,
-  });
+  const accounts = await api.fetchList({ lengthAbi: 'allAccountsLength', itemAbi: 'allAccounts', target: factory, });
 
-  const assetData = await api.multiCall({
-    abi: abi.assetData,
-    calls: accounts,
-  });
-  const ownerTokens = accounts.map((account, i) => [
-    assetData[i].assets,
-    account,
-  ]);
+  const assetData = await api.multiCall({ abi: abi.assetData, calls: accounts, });
+  const ownerTokens = accounts.map((account, i) => [assetData[i].assets, account])
   const ownerIds = accounts.map((account, i) => [
     assetData[i][0],
     assetData[i][1],
     account,
   ]);
-  await api.sumTokens({
-    ownerTokens,
-    blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT],
-  });
+  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT], });
 
   const balances = api.getBalances();
   const block = await api.getBlock();
   await unwrapArcadiaAeroLPs({ api, balances, block, ownerIds });
 
-  return sumTokens2({
-    api,
-    owners: accounts,
-    resolveUniV3: true,
-    resolveSlipstream: true,
-  });
+  return sumTokens2({ api, owners: accounts, resolveUniV3: true, resolveSlipstream: true })
 }
 
 module.exports = {
