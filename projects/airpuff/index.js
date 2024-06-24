@@ -13,10 +13,33 @@ const contractAbis = {
   getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
   getUniswapPrice:
     "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 observationCardinalityNext, uint8 observationCardinalityNext)",
+  getMantleBalance: "function balances(address) view returns (uint256)",
 };
 
 module.exports = {
   misrepresentedTokens: true,
+
+  mantle: {
+    tvl: async (api) => {
+      const mantle = {
+        vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
+        lending: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
+        staking: "0x9f39dC8eA0a73ab462d23104699AFAE9c30d1E4f",
+      };
+
+      const stakedBalance = await api.call({
+        abi: contractAbis.getMantleBalance,
+        target: mantle.staking,
+        params: [mantle.vault],
+      });
+
+      api.add(ADDRESSES.mantle.WMNT, stakedBalance);
+
+      await api.sumTokens({
+        tokensAndOwners: [[ADDRESSES.mantle.WMNT, mantle.lending]],
+      });
+    },
+  },
 
   karak: {
     tvl: async (api) => {

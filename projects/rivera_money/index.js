@@ -33,6 +33,21 @@ const config = {
   arbitrum: [
     "0x8E99B66dE170b53b39D9B54f189a12D7c6AC0cd9"
   ],
+
+  degen: [
+    "0xA95417805d18d00844c3C6FB7742577Cd263fE05",
+    "0x39dD79E8b1e74E8B514D7e133b3671435Ec3Da42",
+    "0xE45F416eE25844281edF2780247E28569303c7Cd",
+  ],
+
+  bsquared: [
+    "0xBC91a7a0eE37085af193C61747ecE693979Ec0C1",
+    "0xD57a87a9101d567C4139247CdF149b1DA4c8604A"
+  ],
+
+  polygon: [
+    "0x67e07BFfce318ADbA7b08618CBf4B8E271499197"
+  ],
 }
 
 module.exports = {

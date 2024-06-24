@@ -13,6 +13,7 @@ const bedAddress = "0x2aF1dF3AB0ab157e1E2Ad8F88A7D04fbea0c7dc6";
 const dataAddress = "0x33d63Ba1E57E54779F7dDAeaA7109349344cf5F1";
 const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
 const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
+const hyETH = "0xc4506022Fb8090774E8A628d5084EED61D9B99Ee";
 const dsETH = "0x341c05c0E9b33C0E38d64de76516b2Ce970bB3BE";
 const aaveDebtToken = "0xf63b34710400cad3e044cffdcab00a0f32e33ecf";
 const USDC = ADDRESSES.ethereum.USDC
@@ -29,6 +30,7 @@ const sets = [
   icethAddress,
   dsETH,
   gtcETH,
+  hyETH,
 ];
 
 async function tvl(api) {
