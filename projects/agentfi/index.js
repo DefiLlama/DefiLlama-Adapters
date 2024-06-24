@@ -3,6 +3,7 @@ const { getTvlForLooperWithOrbit } = require('./strategies/looper')
 const { getTvlForDexBalancer } = require('./strategies/dex-balancer')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const { getAllAgent } = require("./utils");
+const { getTvlForBladeSwapCLM } = require("./strategies/bladeswap");
 
 
 async function tvl(api) {
@@ -10,6 +11,7 @@ async function tvl(api) {
     const allAgentsAddress = allAgents.map(i => i.agentAddress)
     const dexBalancerAgents = allAgents.filter(i => i.moduleType === "DexBalancer")
     const concentratedLiquidityAgents = allAgents.filter(i => i.moduleType === "ConcentratedLiquidity")
+    const bladeSwapConcentratedLiquidityAgentAddresses = allAgents.filter(i => i.moduleType === "BladeSwapLiquidityManager").map(i => i.agentAddress)
     const looperAgentsAddresses = allAgents.filter(i => i.moduleType === "Looper").map(i => i.agentAddress)
 
 
@@ -23,7 +25,8 @@ async function tvl(api) {
 
 
     await getTvlForDexBalancer(dexBalancerAgents.map(i => i.agentAddress), api)
-    await  getTvlForLooperWithOrbit(looperAgentsAddresses, api)
+    await getTvlForLooperWithOrbit(looperAgentsAddresses, api)
+    await getTvlForBladeSwapCLM(bladeSwapConcentratedLiquidityAgentAddresses, api)
     await sumTokens2({
         tokensAndOwners: [
             ...thrusterv2,

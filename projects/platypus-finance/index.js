@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { cachedGraphQuery } = require('../helper/cache')
@@ -13,7 +14,8 @@ const query = `{
 
 async function tvl(api) {
   if (api.timestamp > +new Date("2023-02-17") / 1e3) blacklistedTokens.push("0xdaCDe03d7Ab4D81fEDdc3a20fAA89aBAc9072CE2") // USP was hacked
-  const { pools } = await cachedGraphQuery("platypus-finance", "https://api.thegraph.com/subgraphs/name/platypus-finance/platypus-dashboard", query)
+  const { pools } = await cachedGraphQuery("platypus-finance", sdk.graph.modifyEndpoint('Bu5QPRWGnZB6NxU4S7kAKQZJpY4pHmAq3TV69V1W2Qqw'), query)
+  console.log(pools)
   const tokensAndOwners = pools.map(i => i.assetsList.map(v => [v.token.id, v.id])).flat()
   return sumTokens2({ api, tokensAndOwners, blacklistedTokens });
 }

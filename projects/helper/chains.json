@@ -2,6 +2,7 @@
   "acala",
   "ace",
   "aelf",
+  "ailayer",
   "airdao",
   "alephium",
   "algorand",
@@ -175,6 +176,7 @@
   "lukso",
   "lung",
   "manta",
+  "massa",
   "manta_atlantic",
   "mantle",
   "map",
@@ -242,6 +244,7 @@
   "quasar",
   "quicksilver",
   "radixdlt",
+  "rari",
   "real",
   "reef",
   "regen",
@@ -322,5 +325,6 @@
   "zksync",
   "zora",
   "zyx",
-  "joltify"
+  "joltify",
+  "sanko"
 ]

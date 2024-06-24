@@ -27,6 +27,9 @@ const TOKENS = {
   },
   zklink: {
     pufETH: "0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC"
+  },
+  cronos: {
+    USDC: ADDRESSES.cronos.USDC
   }
 }
 
@@ -378,6 +381,15 @@ module.exports = {
        ],
        holders: [
          '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf', // portal v2
+       ]
+     },
+     {
+       name: 'cronos',
+       tokens: [
+         TOKENS.cronos.USDC,
+       ],
+       holders: [
+         '0xE75C7E85FE6ADd07077467064aD15847E6ba9877', // portal v2
        ]
      },
   ]
