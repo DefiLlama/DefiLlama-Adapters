@@ -1,4 +1,4 @@
-const { sumTokens2, unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 
 const config = {
   base: {
@@ -9,33 +9,15 @@ const config = {
     },
     uniNFT: "0x03a520b32c04bf3beef7beb72e919cf822ed34f1",
     slipNFT: "0x827922686190790b37229fd06084350e74485b72",
-    wAeroNFT: "0x17B5826382e3a5257b829cF0546A08Bd77409270",
-    sAeroNFT: "0x9f42361B7602Df1A8Ae28Bf63E6cb1883CD44C27",
+    wAeroNFT: "0x17B5826382e3a5257b829cF0546A08Bd77409270".toLowerCase(),
+    sAeroNFT: "0x9f42361B7602Df1A8Ae28Bf63E6cb1883CD44C27".toLowerCase(),
   },
 };
 
-async function unwrapArcadiaAeroLPs({
-  api,
-  balances = {},
-  block,
-  chain = "base",
-  ownerIds,
-}) {
-  const lpPositionsWrapped = await unwrapArcadiaAeroLP({
-    api,
-    ownerIds,
-    chain,
-    block,
-  });
-  await unwrapUniswapLPs(balances, lpPositionsWrapped, block, (chain = "base"));
-  return balances;
-}
-
-async function unwrapArcadiaAeroLP({ api, ownerIds, chain, block }) {
-  let lpPositions = [];
-  let positionState;
-  let poolAddress;
-  let positionAmount;
+async function unwrapArcadiaAeroLP({ api, ownerIds, }) {
+  const { wAeroNFT, sAeroNFT } = config[api.chain]
+  const wAERONFTIds = []
+  const sAERONFTIds = []
 
   // for each asset address owned by an account
   // check if the asset is the wrapped or staked aero asset module
@@ -44,46 +26,22 @@ async function unwrapArcadiaAeroLP({ api, ownerIds, chain, block }) {
   for (const ownerId of ownerIds) {
     const [nftAddresses, ids] = ownerId;
     for (let i = 0; i < nftAddresses.length; i++) {
-      const nftAddress = nftAddresses[i];
-      const id = ids[i];
-
-      if (nftAddress === config[chain].wAeroNFT) {
-        positionState = await api.call({
-          abi: abi.wrappedAeroPositionState,
-          target: nftAddress,
-          params: [id],
-          chain,
-          block,
-        });
-        poolAddress = positionState.pool;
-        positionAmount = parseInt(positionState.amountWrapped);
-      } else if (nftAddress === config[chain].sAeroNFT) {
-        positionState = await api.call({
-          abi: abi.stakedAeroPositionState,
-          target: nftAddress,
-          params: [id],
-          chain,
-          block,
-        });
-        poolAddress = positionState.pool;
-        positionAmount = parseInt(positionState.amountStaked);
-      } else {
-        continue;
-      }
-      // Update the corresponding lpPosition
-      const lpPosition = lpPositions.find((pos) => pos.token === poolAddress);
-      if (lpPosition) {
-        lpPosition.balance += positionAmount;
-      } else {
-        // If not found, add a new position
-        lpPositions.push({
-          token: poolAddress,
-          balance: positionAmount,
-        });
+      const nftAddress = nftAddresses[i].toLowerCase()
+      switch (nftAddress) {
+        case wAeroNFT:
+          wAERONFTIds.push(ids[i]);
+          break;
+        case sAeroNFT:
+          sAERONFTIds.push(ids[i]);
+          break;
       }
     }
   }
-  return lpPositions;
+
+  const wrappedData = await api.multiCall({ abi: abi.wrappedAeroPositionState, calls: wAERONFTIds, target: wAeroNFT, });
+  const stakedData = await api.multiCall({ abi: abi.stakedAeroPositionState, calls: sAERONFTIds, target: sAeroNFT, });
+  wrappedData.forEach((data) => api.add(data.pool, data.amountWrapped));
+  stakedData.forEach((data) => api.add(data.pool, data.amountStaked));
 }
 
 async function tvl(api) {
@@ -103,9 +61,7 @@ async function tvl(api) {
   ]);
   await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT], });
 
-  const balances = api.getBalances();
-  const block = await api.getBlock();
-  await unwrapArcadiaAeroLPs({ api, balances, block, ownerIds });
+  await unwrapArcadiaAeroLP({ api, ownerIds });
 
   return sumTokens2({ api, owners: accounts, resolveUniV3: true, resolveSlipstream: true })
 }
