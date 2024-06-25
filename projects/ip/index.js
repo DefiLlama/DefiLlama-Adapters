@@ -6,13 +6,7 @@ const { eth } = require('@defillama/sdk/build/api');
 const { ethereum } = require('../helper/whitelistedNfts');
 const { default: BigNumber } = require('bignumber.js');
 
-
 const vaultSummaryAbi = 'function vaultSummaries(uint96 start, uint96 stop) view returns (tuple(uint96 id, uint192 borrowingPower, uint192 vaultLiability, address[] tokenAddresses, uint256[] tokenBalances)[])'
-const vaultAddrAbi = "function vaultAddress(uint96 id) view returns (address vaultAddress)"
-const votingVaultAddrAbi = "function votingVaultAddress(uint96 id) view returns (address vaultAddress)"
-const primaryReserveAbi = "function _reserve() view returns (uint256 reserve)"
-const secondaryReserveAbi = "function _secondaryReserve() view returns (uint256 reserve)"
-
 
 async function eth_tvl(api) {
   //get reserves
@@ -106,9 +100,6 @@ async function eth_tvl(api) {
 
   return sumTokens2({ api, balances, owner: '0x2A54bA2964C8Cd459Dc568853F79813a60761B58', tokens: [ADDRESSES.ethereum.USDC] })
 
-  /**
-  
-   */
 }
 
 async function op_tvl(api) {
@@ -127,10 +118,7 @@ async function op_tvl(api) {
   await api.add(ADDRESSES.optimism.USDC, primaryReserve)
   await api.add(ADDRESSES.optimism.USDC_CIRCLE, secondaryReserve)
 
-
   //get collaterals
-  //9 enabled tokens, last index == 8
-  //todo idx 6 - UNI POSITION
   const cappedTokens = {
     "0x696607447225f6690883e718fd0Db0Abaf36B6E2": {
       address: ADDRESSES.optimism.WETH_1,
@@ -160,7 +148,7 @@ async function op_tvl(api) {
       address: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
       symbol: 'aOptUSDC',
     },
-    "0x6F7A2f0d9DBd284E274f28a6Fa30e8760C25F9D2": {
+    "0x6F7A2f0d9DBd284E274f28a6Fa30e8760C25F9D2": {//depricated wrapper
       address: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
       symbol: "aOptUSDC"
     }
