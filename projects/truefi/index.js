@@ -6,6 +6,8 @@ const TRU = '0x4C19596f5aAfF459fA38B0f7eD92F11AE6543784'
 const managedPortfolioFactory = '0x17b7b75FD4288197cFd99D20e13B0dD9da1FF3E7'
 const assetVaultFactory = '0x5Def383172C7dFB6F937e32aDf5be4D252168eDA'
 
+const alocVaultFactoryArbitrum = '0xCA1353dAB799d87D70E3750c2280205A5c8f62e9'
+
 const pools = [
   '0x97cE06c3e3D027715b2d6C22e67D5096000072E5', // TUSD
   '0x6002b1dcB26E7B1AA797A17551C6F487923299d7', // USDT
@@ -40,6 +42,20 @@ async function getAllTvl(api, isBorrowed) {
   }
 }
 
+async function getArbitrumTvl(api, isBorrowed) {
+  const alocVaults = await api.call({target: alocVaultFactoryArbitrum, abi: abi.getAlocVaults, chain: 'arbitrum'})
+  const alocUnderlyingTokens = await api.multiCall({calls: alocVaults, abi: abi.asset, chain: 'arbitrum'})
+  const alocLiquidAssets = await api.multiCall({calls: alocVaults, abi: abi.liquidAssets, chain: 'arbitrum'})
+  const alocIlliquidAssets = await api.multiCall({calls: alocVaults, abi: abi.borrowedAssets, chain: 'arbitrum'})
+
+  if(!isBorrowed) {
+    api.addTokens(alocUnderlyingTokens, alocLiquidAssets)
+  } else {
+    api.addTokens(alocUnderlyingTokens, alocIlliquidAssets)
+  }
+
+}
+
 async function borrowed(api) {
   return getAllTvl(api, true)
 }
@@ -48,11 +64,23 @@ async function tvl(api) {
   return getAllTvl(api, false)
 }
 
+async function borrowedArbitrum(api) {
+  return getArbitrumTvl(api, true)
+}
+
+async function tvlArbitrum(api) {
+  return getArbitrumTvl(api, false)
+}
+
 module.exports = {
   start: 1605830400,            // 11/20/2020 @ 12:00am (UTC)
   ethereum: {
     tvl,
     staking: staking(stkTRU, TRU),
     borrowed,
+  },
+  arbitrum: {
+    tvl: tvlArbitrum,
+    borrowed: borrowedArbitrum,
   }
 }
