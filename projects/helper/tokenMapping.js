@@ -202,6 +202,9 @@ const fixBalancesTokens = {
     '0xc5ed6c946cdc82f4599f0f2f012e1822502e70e3': { coingeckoId: 'artificial-neural-network-ordinals', decimals: 18 },
     '0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d': { coingeckoId: 'izumi-bond-usd', decimals: 18 },
   },
+  fraxtal: {
+    [ADDRESSES.fraxtal.WETH]: { coingeckoId: 'weth', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
