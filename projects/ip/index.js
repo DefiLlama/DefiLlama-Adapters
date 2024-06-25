@@ -73,7 +73,6 @@ async function eth_tvl(api) {
 }
 
 async function op_tvl(api) {
-
   //get reserves
   const USDI = "0x889be273BE5F75a177f9a1D00d84D607d75fB4e1"
   const primaryReserve = await api.call({
@@ -128,8 +127,8 @@ async function op_tvl(api) {
     }
   }
   const positionWrapperIds = [6]//token IDs for position wrappers
+  const positionWrapper = "0x7131FF92a3604966d7D96CCc9d596F7e9435195c"
   const VaultController = "0x05498574BD0Fa99eeCB01e1241661E7eE58F8a85"
-  const VotingVaultController = "0x9C3b60A1ad08740fCD842351ff0960C1Ee3FeA52"
   const count = await api.call({ abi: " function vaultsMinted() view returns (uint96)", target: VaultController })
   const balances = {}
   const calls = []
@@ -144,24 +143,26 @@ async function op_tvl(api) {
       sdk.util.sumSingleBalance(balances, token, vault.tokenBalances[i])
     })
   })
-
+  
   //add
   for (const [addr, total] of Object.entries(balances)) {
     if (addr == ADDRESSES.optimism.WBTC) {
       //scale for wbtc decimals
       const scaled = new BigNumber(total).div(new BigNumber("10000000000"))
       await api.add(addr, scaled.c[0])
+    } else if (addr == positionWrapper) {
+      //total is already in usd 1e18 terms, add as DAI, as this is a stablecoin at 1e18
+      await api.add(ADDRESSES.optimism.DAI, total)
     } else {
       await api.add(addr, total)
     }
   }
-
 }
 
 module.exports = {
   start: 14962974,
   ethereum: {
-    tvl: eth_tvl
+    //tvl: eth_tvl
   },
   optimism: {
     tvl: op_tvl
