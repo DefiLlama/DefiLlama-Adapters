@@ -12,6 +12,11 @@ const config = {
   blast: {
     factory: "0x6Aa1BDa7e764BC62589E64F371A4022B80B3c72a",
     getTokensAbi: "function getDShares() external view returns (address[] memory, address[] memory)"
+  },
+  kinto: {
+    factory: "0xE4Daa69e99F48AD0C4D4843deF4447253248A906",
+    getTokensAbi: "function getDShares() external view returns (address[] memory, address[] memory)",
+    usdplus: "0x6F086dB0f6A621a915bC90295175065c9e5d9b8c"
   }
 }
 
