@@ -4,6 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const { lendingMarket } = require('../helper/methodologies');
 const { eth } = require('@defillama/sdk/build/api');
 const { ethereum } = require('../helper/whitelistedNfts');
+const { default: BigNumber } = require('bignumber.js');
 
 
 const vaultSummaryAbi = 'function vaultSummaries(uint96 start, uint96 stop) view returns (tuple(uint96 id, uint192 borrowingPower, uint192 vaultLiability, address[] tokenAddresses, uint256[] tokenBalances)[])'
@@ -143,12 +144,18 @@ async function op_tvl(api) {
       sdk.util.sumSingleBalance(balances, token, vault.tokenBalances[i])
     })
   })
-  
+
   //add
-  for(const [addr, total] of Object.entries(balances)){
-    await api.add(addr, total)
+  for (const [addr, total] of Object.entries(balances)) {
+    if (addr == ADDRESSES.optimism.WBTC) {
+      //scale for wbtc decimals
+      const scaled = new BigNumber(total).div(new BigNumber("10000000000"))
+      await api.add(addr, scaled.c[0])
+    } else {
+      await api.add(addr, total)
+    }
   }
-  
+
 }
 
 module.exports = {
