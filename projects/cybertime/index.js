@@ -100,7 +100,7 @@ const bscTvl = async (api) => {
 module.exports = {
     bsc: {
     staking: Staking,
-    pool2: pool2s(pool2FarmContracts, lpPool2, "bsc"),
+    pool2: pool2s(pool2FarmContracts, lpPool2),
     tvl: bscTvl,
   },
   methodology:

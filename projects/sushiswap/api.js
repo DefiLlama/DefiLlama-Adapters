@@ -1,8 +1,9 @@
+const sdk = require("@defillama/sdk");
 const { toUSDTBalances } = require('../helper/balances');
 const { blockQuery } = require('../helper/http')
 const { getUniTVL } = require("../helper/unknownTokens")
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
+const graphUrl = sdk.graph.modifyEndpoint('8TXwDMLemg6p4eicVuixKk7Mw9aNxpod1PQQFdSvFj6H')
 const graphQuery = `
 query get_tvl($block: Int) {
   uniswapFactory(
@@ -50,6 +51,7 @@ const tvl = getUniTVL({
     '0xc0e39cbac6a5c5cdcdf2c1a1c29cbf5917754943', // GSHIB
   ],
 })
+const tvl2 = getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, })
 
 module.exports = {
   ethereum: { tvl: eth, },
@@ -61,12 +63,12 @@ module.exports = {
   okexchain: { tvl, },
   arbitrum: { tvl, },
   xdai: { tvl, },
-  harmony: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, queryBatched: 200}), },
+  harmony: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, queryBatched: 200 }), },
   fantom: { tvl, },
   bsc: { tvl, },
   heco: { tvl, },
   boba: { tvl, },
-  boba_avax: { tvl, },
+  //boba_avax: { tvl, },
   boba_bnb: { tvl, },
   avax: { tvl, },
   fuse: {
@@ -78,24 +80,30 @@ module.exports = {
   base: {
     tvl: getUniTVL({ factory: '0x71524B4f93c58fcbF659783284E38825f0622859', useDefaultCoreAssets: true, }),
   },
-  scroll: {
-    tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, }),
-  },
+  scroll: { tvl: tvl2, },
   kava: {
     tvl: getUniTVL({ factory: '0xD408a20f1213286fB3158a2bfBf5bFfAca8bF269', useDefaultCoreAssets: true, }),
   },
   metis: {
     tvl: getUniTVL({ factory: '0x580ED43F3BBa06555785C81c2957efCCa71f7483', useDefaultCoreAssets: true, }),
   },
-  bittorrent: {
-    tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, }),
-  },
+  bittorrent: { tvl: tvl2, },
   filecoin: {
     tvl: getUniTVL({ factory: '0x9B3336186a38E1b6c21955d112dbb0343Ee061eE', useDefaultCoreAssets: true, }),
   },
   zeta: {
     tvl: getUniTVL({ factory: '0x33d91116e0370970444B0281AB117e161fEbFcdD', useDefaultCoreAssets: true, }),
   },
+  blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b', useDefaultCoreAssets: true, }) },
+  core: { tvl: tvl2 },
+  rsk: { tvl: tvl2 },
+  europa: { tvl: getUniTVL({ factory: '0x1aaF6eB4F85F8775400C1B10E6BbbD98b2FF8483', useDefaultCoreAssets: true, }) },
+  moonbeam: { tvl: getUniTVL({ factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4', useDefaultCoreAssets: true, }) },
+  polygon_zkevm: { tvl: tvl2 },
+  optimism: { tvl: getUniTVL({ factory: '0xFbc12984689e5f15626Bad03Ad60160Fe98B303C', useDefaultCoreAssets: true, }) },
+  linea: { tvl: getUniTVL({ factory: '0xFbc12984689e5f15626Bad03Ad60160Fe98B303C', useDefaultCoreAssets: true, }) },
+  thundercore: { tvl: tvl2 },
+  //haqq: { tvl: tvl2 },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
