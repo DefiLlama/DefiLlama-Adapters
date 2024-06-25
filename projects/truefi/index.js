@@ -5,6 +5,7 @@ const stkTRU = '0x23696914Ca9737466D8553a2d619948f548Ee424'
 const TRU = '0x4C19596f5aAfF459fA38B0f7eD92F11AE6543784'
 const managedPortfolioFactory = '0x17b7b75FD4288197cFd99D20e13B0dD9da1FF3E7'
 const assetVaultFactory = '0x5Def383172C7dFB6F937e32aDf5be4D252168eDA'
+const alocVaultFactory = '0x1672f101be9FfE121AfF7514B373e956272fe249'
 
 const alocVaultFactoryArbitrum = '0xCA1353dAB799d87D70E3750c2280205A5c8f62e9'
 
@@ -31,14 +32,21 @@ async function getAllTvl(api, isBorrowed) {
   const avLiquidAssets = await api.multiCall({ calls: assetVaults, abi: abi.liquidAssets, })
   const avIlliquidAssets = await api.multiCall({ calls: assetVaults, abi: abi.outstandingAssets, })
 
+  const alocVaults = await api.call({target: alocVaultFactory, abi: abi.getAlocVaults})
+  const alocUnderlyingTokens = await api.multiCall({calls: alocVaults, abi: abi.asset})
+  const alocLiquidAssets = await api.multiCall({calls: alocVaults, abi: abi.liquidAssets})
+  const alocIlliquidAssets = await api.multiCall({calls: alocVaults, abi: abi.borrowedAssets})
+
   if (!isBorrowed) {
     api.addTokens(tokens, currencyBalance)
     api.addTokens(underlyingToken, liquidValue)
     api.addTokens(avUnderlyingTokens, avLiquidAssets)
+    api.addTokens(alocUnderlyingTokens, alocLiquidAssets)
   } else {
     api.addTokens(tokens, loansValue)
     api.addTokens(underlyingToken, illiquidValue)
     api.addTokens(avUnderlyingTokens, avIlliquidAssets)
+    api.addTokens(alocUnderlyingTokens, alocIlliquidAssets)
   }
 }
 
