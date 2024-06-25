@@ -203,7 +203,7 @@ const fixBalancesTokens = {
     '0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d': { coingeckoId: 'izumi-bond-usd', decimals: 18 },
   },
   fraxtal: {
-    [ADDRESSES.fraxtal.WETH]: { coingeckoId: 'weth', decimals: 18 },
+    [ADDRESSES.fraxtal.WETH]: { coingeckoId: 'ethereum', decimals: 18 },
   },
 }
 
