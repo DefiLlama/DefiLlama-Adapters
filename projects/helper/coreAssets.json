@@ -1816,5 +1816,8 @@
   },
   "ailayer": {
     "ABTC": "0x1470a4831F76954686BfB4dE8180F7469EA8dE6F"
+  },
+  "fraxtal": {
+    "WETH": "0xA8a59D73388D0c4344a7b0Ba287ddb654227c38a"
   }
 }
