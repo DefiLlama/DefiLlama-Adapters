@@ -50,6 +50,11 @@ const config = {
   polygon: [
     "0x67e07BFfce318ADbA7b08618CBf4B8E271499197"
   ],
+
+  core: [
+    "0xBC91a7a0eE37085af193C61747ecE693979Ec0C1",
+    "0x018BeE125A17D456E6dacE22A66E8B9aF3c69449",
+  ],
 }
 
 module.exports = {
