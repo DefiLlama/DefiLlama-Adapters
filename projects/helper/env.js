@@ -29,6 +29,7 @@ const DEFAULTS = {
   SANKO_RPC_MULTICALL: '0xB32d192e07727A0F6f48e721791aa4e02cd292e1',
   AILAYER_RPC: "https://mainnet-rpc.ailayer.xyz",
   MINT_RPC: "https://rpc.mintchain.io",
+  MINT_RPC_MULTICALL: "0xE55B0367a178D9cF5F03354FD06904A8b3bb682a",
 }
 
 const ENV_KEYS = [
