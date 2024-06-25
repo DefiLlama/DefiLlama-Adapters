@@ -15,6 +15,16 @@ const secondaryReserveAbi = "function _secondaryReserve() view returns (uint256 
 
 
 async function eth_tvl(api) {
+  //get reserves
+  const USDI = "0x2A54bA2964C8Cd459Dc568853F79813a60761B58"
+  const primaryReserve = await api.call({
+    abi: 'erc20:balanceOf',
+    target: ADDRESSES.ethereum.USDC,
+    params: [USDI]
+  })
+  await api.add(ADDRESSES.ethereum.USDC, primaryReserve)
+
+
   const cappedTokens = {
     "0x5aC39Ed42e14Cf330A864d7D1B82690B4D1B9E61": {
       address: ADDRESSES.ethereum.MATIC,
@@ -52,6 +62,30 @@ async function eth_tvl(api) {
       address: ADDRESSES.ethereum.cbETH,
       symbol: 'cbETH',
     },
+    "0xe2C1d2E7aA4008081CAAFc350A040246b9EBB579": {
+      address: ADDRESSES.ethereum.YFI,
+      symbol: 'YFI',
+    },
+    "0x6b68C5708DAffD0393aCC6A8cc92f8C2146346Ae": {
+      address: "0xD33526068D116cE69F19A9ee46F0bd304F21A51f",
+      symbol: 'RPL',
+    },
+    "0xbb5578c08bC08c15AcE5cd09c6683CcCcB2A9148": {
+      address: ADDRESSES.ethereum.MKR,
+      symbol: 'MKR',
+    },
+    "0x739D346421a42beb13FD8D560dd2F42250d4Ac88": {
+      address: "0xDcEe70654261AF21C44c093C300eD3Bb97b78192",
+      symbol: 'WOETH',
+    },
+    "0xDdAD1d1127A7042F43CFC209b954cFc37F203897": {
+      address: "0x06AF07097C9Eeb7fD685c692751D5C66dB49c215",
+      symbol: "CHAI"
+    },
+    "0xDf623240ec300fD9e2B7780B34dC2F417c0Ab6D2": {
+      address: "0xE41d2489571d322189246DaFA5ebDe1F4699F498",
+      symbol: "ZRX"
+    }    
   }
   const VaultController = "0x4aaE9823Fb4C70490F1d802fC697F3ffF8D5CbE3"
 
@@ -69,7 +103,12 @@ async function eth_tvl(api) {
       sdk.util.sumSingleBalance(balances, token, vault.tokenBalances[i])
     })
   })
+
   return sumTokens2({ api, balances, owner: '0x2A54bA2964C8Cd459Dc568853F79813a60761B58', tokens: [ADDRESSES.ethereum.USDC] })
+
+  /**
+  
+   */
 }
 
 async function op_tvl(api) {
@@ -126,7 +165,6 @@ async function op_tvl(api) {
       symbol: "aOptUSDC"
     }
   }
-  const positionWrapperIds = [6]//token IDs for position wrappers
   const positionWrapper = "0x7131FF92a3604966d7D96CCc9d596F7e9435195c"
   const VaultController = "0x05498574BD0Fa99eeCB01e1241661E7eE58F8a85"
   const count = await api.call({ abi: " function vaultsMinted() view returns (uint96)", target: VaultController })
@@ -143,7 +181,7 @@ async function op_tvl(api) {
       sdk.util.sumSingleBalance(balances, token, vault.tokenBalances[i])
     })
   })
-  
+
   //add
   for (const [addr, total] of Object.entries(balances)) {
     if (addr == ADDRESSES.optimism.WBTC) {
@@ -159,25 +197,21 @@ async function op_tvl(api) {
   }
 }
 
+//updated 6/25/2024
 module.exports = {
   start: 14962974,
-  ethereum: {
-    //tvl: eth_tvl
-  },
-  optimism: {
-    tvl: op_tvl
-  },
-  /**
   ethereum: {
     tvl: eth_tvl
   },
   optimism: {
-    tvl:op_tvl
-  }, */
+    tvl: op_tvl
+  },
   methodology: `${lendingMarket}.
-  For Interest Protocol, TVL is Reserve + Total Collateral Value
-  Reserve is found through calling USDC.getBalances(USDI)
+  For Interest Protocol, TVL is USDC Reserve + Total Deposited Collateral Value
+  Reserve is the amount of USDC held by the USDI contract
   Balances are found through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
   Capped tokens converted 1:1 to underlying
+  Wrapped Uni V3 Positions as implemented report their values to Interest Protocol in USD terms * 1e18,
+  as such, they are currently listed as DAI, and DAI numbers should be treated as Uniswap V3 position collateral value. 
   `
 };
