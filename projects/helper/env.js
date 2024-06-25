@@ -28,6 +28,7 @@ const DEFAULTS = {
   HAM_RPC_MULTICALL: '0xB7c3Ea932649fBD594C881aDCb3F19415e2EA2d5',
   SANKO_RPC_MULTICALL: '0xB32d192e07727A0F6f48e721791aa4e02cd292e1',
   AILAYER_RPC: "https://mainnet-rpc.ailayer.xyz",
+  MINT_RPC: "https://rpc.mintchain.io",
 }
 
 const ENV_KEYS = [
