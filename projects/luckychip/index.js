@@ -70,7 +70,7 @@ const masterChef = '0x15D2a6FC45aF66A2952dC27c40450C1F06A1eC2b';
 module.exports={
         methodology: 'TVL comes from the tables of LuckyChip for now.',
     bsc: {
-        staking: staking(masterChef, lcToken, 'bsc'),
+        staking: staking(masterChef, lcToken),
         tvl,
     }
 }

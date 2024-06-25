@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { getUniqueAddresses } = require('../helper/utils')
 const { getConfig } = require('../helper/cache')
 const archimedesAbi = require('./archimedes.json')
@@ -17,21 +16,14 @@ const fetchChainAddresses = async chain => {
 }
 
 const fetchTvl = chain => {
-  return async (_timestamp, _block, chainBlocks) => {
-    const block = chainBlocks[chain]
+  return async (api) => {
     const addresses = await fetchChainAddresses(chains[chain])
-    let pools = await Promise.all(addresses.map(i => sdk.api2.abi.fetchList({ withMetadata: true, chain, block, target: i, lengthAbi: archimedesAbi['poolLength'], itemAbi: archimedesAbi['poolInfo'] })))
+    let pools = await Promise.all(addresses.map(i => api.fetchList({ withMetadata: true, target: i, lengthAbi: archimedesAbi['poolLength'], itemAbi: archimedesAbi['poolInfo'] })))
     pools = pools.flat()
     const wantTokens = pools.map(i => i.output.want)
     const calls = pools.map(i => i.input)
-    const { output: bal } = await sdk.api.abi.multiCall({
-      abi: archimedesAbi.balance,
-      calls,
-      chain, block,
-    })
-    const balances = {}
-    bal.forEach(({ output}, i) => sdk.util.sumSingleBalance(balances,wantTokens[i],output, chain))
-    return balances
+    const  bal = await api.multiCall({      abi: archimedesAbi.balance,      calls,    })
+    api.add(wantTokens, bal)
   }
 }
 

@@ -30,7 +30,7 @@ const polygonTVL = async (timestamp, _block, { [chain]: block}) => {
 
 module.exports = {
   polygon: {
-    staking: staking(polygonStaking, polygonMVX, "polygon"),
+    staking: staking(polygonStaking, polygonMVX),
     tvl: polygonTVL,
   },
 };

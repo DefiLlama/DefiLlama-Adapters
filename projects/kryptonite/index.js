@@ -32,6 +32,15 @@ const config = {
       sei10knxlv9e54z0xcywdhtycc63uf970aefeec73ycqwd75ep9nu45sh66m6a: "kryptonite",
       sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed: "seiyan"
     }
+  },
+  nibiru: {
+    coinGeckoId: "nibiru",
+    hub: "nibi1dvepyy7s2nkfep05c4v6tfkmzqyvz7x3nj6ddj3kkr8nfsmmylhqy7t9a0",
+    seilorLps: [],
+    coinGeckoMap: {
+      unibiru: "nibiru",
+      nibi1fke5pfygutantkfd9lakf9e8zu06cq43tss6avclm8lhkskr4f3semnvx5: "nibiru"
+    }
   }
 };
 
@@ -49,8 +58,8 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       // Logic for calculating TVL excluding staked LP tokens
-      const { total_bond_stsei_amount } = await queryContractWithRetries({ contract: hub, chain, data: { state: {} } });
-      api.add(coinGeckoId, total_bond_stsei_amount / 10 ** 6, { skipChain: true });
+      const { total_bond_stsei_amount, total_bond_st_amount } = await queryContractWithRetries({ contract: hub, chain, data: { state: {} } });
+      api.add(coinGeckoId, (total_bond_stsei_amount ?? total_bond_st_amount) / 10 ** 6, { skipChain: true });
       return api.getBalances();
     },
     pool2: async (api) => {
