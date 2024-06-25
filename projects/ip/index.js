@@ -212,6 +212,7 @@ module.exports = {
   Balances are found through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
   Capped tokens converted 1:1 to underlying
   Wrapped Uni V3 Positions as implemented report their values to Interest Protocol in USD terms * 1e18,
-  as such, they are currently listed as DAI, and DAI numbers should be treated as Uniswap V3 position collateral value. 
+  as such, they are currently listed as DAI in the TVL calculation, 
+  therefore DAI numbers in the TVL should be treated as Uniswap V3 position collateral value, as DAI is not otherwise listed on IP. 
   `
 };
