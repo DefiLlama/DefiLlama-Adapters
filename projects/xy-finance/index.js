@@ -71,7 +71,7 @@ const config = {
   taiko: {
     chainId: '167000'
   },
-  ok_chain: {
+  ox_chain: {
     chainId: '6699'
   }
 }
@@ -115,10 +115,10 @@ const yPoolDepositContract = {
       "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
       "tokenAddress": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
     },
-    "BITCOIN": {
-      "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
-      "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
-    }
+    // "BITCOIN": {
+    //   "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+    //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F" // doesnt exist
+    // }
   },
   "25": {
     "ETH": {
@@ -473,10 +473,10 @@ const yPoolDepositContract = {
       "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
       "tokenAddress": "0xfaffa4b4D8538A2ba63bEa39ACbF709E3A972714"
     },
-    "BITCOIN": {
-      "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
-      "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
-    }
+    // "BITCOIN": {
+    //   "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
+    //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
+    // }
   }
 }
 
