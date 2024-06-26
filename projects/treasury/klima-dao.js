@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
+const { mergeExports } = require('../helper/utils');
 
 const klimaTreasury1 = "0x7dd4f0b986f032a44f913bf92c9e8b7c17d77ad7";
 const daoWallet_polygon = "0x65A5076C0BA74e5f3e069995dc3DAB9D197d995c"
@@ -8,7 +9,17 @@ const daoWallet_base = "0xa79cd47655156b299762dfe92a67980805ce5a31"
 const KLIMA_polygon = "0x4e78011ce80ee02d2c3e649fb657e45898257815"; // on polygon
 const KLIMA_base = "0xdcefd8c8fcc492630b943abcab3429f12ea9fea2"; // on base
 
-module.exports = treasuryExports({
+const AERO = "0x940181a94A35A4569E4529A3CDfB74e38FD98631";
+const aeroVotingEscrow = "0xebf418fe2512e7e6bd9b87a8f0f294acdc67e6b4";
+
+const veAEROIds = [
+  "22922",
+  "20882",
+  "20680",
+  "19983",
+];
+
+module.exports = mergeExports([treasuryExports({
   polygon: {
     tokens: [
       nullAddress,
@@ -42,13 +53,28 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       ADDRESSES.base.USDC, // USDC
-      ADDRESSES.base.USDT,
+      //ADDRESSES.base.USDT,
       ADDRESSES.base.WETH,
       '0x576Bca23DcB6d94fF8E537D88b0d3E1bEaD444a2', // BCT (base address)
       '0x20b048fa035d5763685d695e66adf62c5d9f5055', // CHAR
+      AERO,
 
     ],
     owners: [daoWallet_base],
     ownTokens: [KLIMA_base],
-  }
-})
+  },
+}), {
+  base: {
+    tvl: async (api) => {
+      const lockedAmounts = await api.multiCall({
+        abi: "function balanceOfNFT(uint256) external view returns (uint256)",
+        calls: veAEROIds.map(veAEROId => ({ target: aeroVotingEscrow, params: veAEROId })),
+        permitFailure: true,
+      });
+      // Assuming api.add() aggregates the locked amounts
+      lockedAmounts.forEach(amount => api.add(AERO, amount));
+
+    return api.getBalances();
+    },
+  },
+}])
