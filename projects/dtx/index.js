@@ -1,6 +1,7 @@
 const { sumERC4626VaultsExport } = require("../helper/erc4626")
-const sdk = require("@defillama/sdk")
 const { sumTokensExport } = require("../helper/unwrapLPs")
+
+const sdk = require("@defillama/sdk")
 const ADDRESSES = require("../helper/coreAssets.json")
 
 const config = {
@@ -15,7 +16,11 @@ const config = {
       "0x802B1f8e092AC4469B30C7560266F9a6f8CA450F",
     ],
     tokenConfig: {
-      tokens: [ADDRESSES.blast.USDB, ADDRESSES.blast.WETH, ADDRESSES.blast.ezETH],
+      tokens: [
+        ADDRESSES.blast.USDB,
+        ADDRESSES.blast.WETH,
+        ADDRESSES.blast.ezETH,
+      ],
       owners: [
         "0x9AdF2b330697C6816176491E1fd5503BB746d1d8",
         "0x0E5b7DDbF37d92B21512Ae5A6CE66aEfA7A7828F",
@@ -23,20 +28,28 @@ const config = {
     },
   },
   taiko: {
-    vaults: ['0xdA6a745740Bbdbe5F588b79FEe57f2e10ad4Da11'],
+    vaults: [
+      "0xdA6a745740Bbdbe5F588b79FEe57f2e10ad4Da11",
+      "0xE3e6818bbC193D454f38772D34FA4cf8C19684d5",
+    ],
     tokenConfig: {
-      tokens: ['0xa51894664a773981c6c112c43ce576f315d5b1b6'],
+      tokens: [ADDRESSES.taiko.USDC, ADDRESSES.taiko.WETH],
       owners: [
         "0xc0ab776604059D10880dbD219758FF7B82997cc0",
         "0xB00231B308B01Dbb90f16F966F62d86fBc78c450",
       ],
     },
-  }
+  },
 }
 
-Object.keys(config).forEach(chain => {
-  const { vaults, tokenConfig, } = config[chain]
+Object.keys(config).forEach((chain) => {
+  const { vaults, tokenConfig, factory } = config[chain]
   const vaultTvl = sumERC4626VaultsExport({ vaults, isOG4626: true })
   const otherTvl = sumTokensExport(tokenConfig)
-  module.exports[chain] = { tvl: sdk.util.sumChainTvls([vaultTvl, otherTvl]), }
+
+  let tvlCalculators = [vaultTvl, otherTvl]
+
+  module.exports[chain] = {
+    tvl: sdk.util.sumChainTvls(tvlCalculators),
+  }
 })

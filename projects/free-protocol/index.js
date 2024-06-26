@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 module.exports = {
@@ -10,9 +11,8 @@ module.exports = {
         '0xE12382e046DB998DE89aF19Ca799CbB757106781',
       ],
       tokens: [
-        '0xB880fd278198bd590252621d4CD071b1842E9Bcd',
+        ADDRESSES.merlin.WBTC_1,
         '0xC5BD913eE3BEFD4721C609177F29a8770ACD7242',
-        '0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71',
         '0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71',
       ],
     }),
@@ -20,13 +20,17 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: [
+        '0x1B5668Ca8edfC8AF5DcB9De014b4B08ed5d0615F',
+        '0x3111653DB0e7094b111b8e435Df9193b62C2C576',
         '0xd6572c7cd671ecf75d920adcd200b00343959600',
         '0xa97Fe3E9c1d3Be7289030684eD32A6710d2d02bA',
         '0xeea3A032f381AB1E415e82Fe08ebeb20F513c42c',
       ],
       tokens: [
+        ADDRESSES.ethereum.USDC,
         '0x7122985656e38bdc0302db86685bb972b145bd3c',
-        '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        ADDRESSES.ethereum.USDT,
+        '0x7122985656e38BDC0302Db86685bb972b145bD3C',
       ]
     })
   },
@@ -37,9 +41,8 @@ module.exports = {
         '0xBA43F3C8733b0515B5C23DFF46F47Af6EB46F85C',
       ],
       tokens: [
-        '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
-        '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
-        '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
+        ADDRESSES.arbitrum.USDT,
+        ADDRESSES.arbitrum.USDC_CIRCLE,
       ]
     })
   },
@@ -56,13 +59,15 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       owners: [
+        '0xF8aeD4da2598d3dF878488F40D982d6EcC8B13Ad',
         '0xBA43F3C8733b0515B5C23DFF46F47Af6EB46F85C',
         '0x0A80028d73Faaee6e57484E3335BeFda0de7f455',
       ],
       tokens: [
-        '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409',
-        '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c',
-        '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409',
+        ADDRESSES.ethereum.FDUSD,
+        ADDRESSES.bsc.BTCB,
+        ADDRESSES.ethereum.FDUSD,
+        '0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7',
       ]
     })
   },
