@@ -9,7 +9,7 @@ const multisig = '0xacB39b9Bf0462203b4Ca0CB74eC1AffB1b17c3b6';
 module.exports = treasuryExports({
 	arbitrum: {
 		owners: [mainTreasury, multisig],
-		ownTokens: [
+		tokens: [
 			ADDRESSES.arbitrum.USDC,
 			ADDRESSES.arbitrum.WETH,
 			'0x92a212d9f5eef0b262ac7d84aea64a0d0758b94f', //gdex
@@ -27,14 +27,14 @@ module.exports = treasuryExports({
 	},
 	avax: {
 		owners: [mainTreasury],
-		ownTokens: [
+		tokens: [
 			ADDRESSES.avax.USDT_e,
 			ADDRESSES.avax.WETH_e,
 		]
 	},
 	optimism: {
 		owners: [mainTreasury],
-		ownTokens: [
+		tokens: [
 			ADDRESSES.optimism.OP,
 			ADDRESSES.optimism.WETH,
 			ADDRESSES.optimism.USDC,
@@ -42,7 +42,7 @@ module.exports = treasuryExports({
 	},
 	manta: {
 		owners: [mainTreasury],
-		ownTokens: [
+		tokens: [
 			ADDRESSES.manta.USDC,
 			'0x95cef13441be50d20ca4558cc0a27b601ac544e5', //MANTA
 			'0x4c2a0f964a37a3ce305fe41c575beeb48c8c3fa2', //gCETO
@@ -51,19 +51,19 @@ module.exports = treasuryExports({
 			'0x6da9ebd271a0676f39c088a2b5fd849d5080c0af', //USDEX
 		]
 	},
-	pulse: {
-		owners: [mainTreasury],
-		ownTokens: [
-			ADDRESSES.pulse.WETH,
-			'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //usdc(fork)
-			'0x30fcb23a906493371b1721c8feb8815804808d74', //sdai
-			'0xaa2c47a35c1298795b5271490971ec4874c8e53d', //usdex
-			'0x6386704cd6f7a584ea9d23ccca66af7eba5a727e', //spark
-		]
-	},
+	// pulse: {
+	// 	owners: [mainTreasury],
+	// 	tokens: [
+	// 		ADDRESSES.pulse.WETH,
+	// 		'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //usdc(fork)
+	// 		'0x30fcb23a906493371b1721c8feb8815804808d74', //sdai
+	// 		'0xaa2c47a35c1298795b5271490971ec4874c8e53d', //usdex
+	// 		'0x6386704cd6f7a584ea9d23ccca66af7eba5a727e', //spark
+	// 	]
+	// },
 	base: {
 		owners: [mainTreasury],
-		ownTokens: [
+		tokens: [
 			ADDRESSES.base.USDC,
 			'0x532f27101965dd16442e59d40670faf5ebb142e4', //brett
 			'0xece7b98bd817ee5b1f2f536daf34d0b6af8bb542', //rock
