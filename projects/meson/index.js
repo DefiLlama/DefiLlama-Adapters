@@ -65,6 +65,7 @@ const config = {
       ADDRESSES.tron.WTRX,
     ],
   },
+  taiko: { id: 'taiko' },
   ancient8: { id: 'ancient8' },
   arbitrum: { id: 'arb' },
   aurora: {},
