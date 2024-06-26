@@ -11,11 +11,11 @@ const olalending = usdCompoundExports(unitroller_fuse, "fuse", "0x025B0ff0920298
 module.exports = {
     fuse:{
         tvl: olalending.tvl,
-        borrowed: async function(timestamp, ...otherParams){
-            if(timestamp >= 1648684800){
+        borrowed: async function(api){
+            if(api.timestamp >= 1648684800){
                 return {}
             }
-            return olalending.borrowed(timestamp, ...otherParams)
+            return olalending.borrowed(api)
         }
     },
     hallmarks: [
