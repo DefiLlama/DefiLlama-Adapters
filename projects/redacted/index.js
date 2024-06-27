@@ -121,8 +121,7 @@ async function staking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: true,
-    methodology: "tvl = Treasury assets (bonding). staking = rlBTRFLY (locked tokens)",
+        methodology: "tvl = Treasury assets (bonding). staking = rlBTRFLY (locked tokens)",
     ethereum:{
         tvl,
         staking

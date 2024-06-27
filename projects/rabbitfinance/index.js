@@ -6,7 +6,7 @@ const RS = "0xc25b7244e192d531495c400c64ea914a77e730a2";
 
 const BANK_CONTRACT = "0xc18907269640D11E2A91D7204f33C5115Ce3419e";
 
-const bscTvl = async (timestamp, ethBlock, _, { api }) => {
+const bscTvl = async (api) => {
 
   const poolsInfo = [
     ADDRESSES.bsc.USDT,

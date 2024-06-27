@@ -13,7 +13,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const dataProvider = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const aggregators = await api.call({target: dataProvider, abi: abi['getVaults'], })
       aggregators.forEach((aggregator) => api.add(aggregator.asset, (aggregator.totalAssets - aggregator.totalDebt)))
     
@@ -21,7 +21,7 @@ Object.keys(config).forEach(chain => {
       strategies.forEach((strategy) => api.add(strategy.pairData.asset, strategy.pairData.totalAsset))
       strategies.forEach((strategy) => api.add(strategy.pairData.collateral, strategy.pairData.totalCollateral))
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const strategies = await api.call({ target: dataProvider, abi: abi['getStrategies'], })
       const pairs = strategies.map((strategy) => strategy.pair);
       const assets = strategies.map((strategy) => strategy.pairData.asset);

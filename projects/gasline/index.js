@@ -12,7 +12,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: sumTokensExport({ owner: gasline, tokens: [weth] }),
     staking: staking(gasline, gas, chain),
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const supply = await api.call({  abi: 'erc20:totalSupply', target: gasline})
       api.addGasToken(supply)
     },

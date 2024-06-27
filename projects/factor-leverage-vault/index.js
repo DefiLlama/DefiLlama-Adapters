@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { blockQuery } = require('../helper/http')
 
 const queryBlock = `query data($block: Int){
@@ -11,9 +12,9 @@ const queryBlock = `query data($block: Int){
 }`
 
 const SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/dimasriat/factor-leverage-vault";
+  sdk.graph.modifyEndpoint('BZhGLLFicmKB9N9oMgDEAP8HmhVxTTjjxQA3ctGewAFc');
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { leverageVaultPairStates } = await blockQuery(SUBGRAPH_URL, queryBlock, { api })
 
   for (let pairState of leverageVaultPairStates) {

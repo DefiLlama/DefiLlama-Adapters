@@ -8,7 +8,7 @@ const poolHelpers = {
   'ethereum': '0x2BDE204066a8994357Fe84BFa2a92DA013bfAbdb',
 } 
 
-const tvl = async (_, _1, _2, { api }) => {
+const tvl = async (api) => {
   const chain = api.chain
   const toa = [] 
   const chunkSize = 10

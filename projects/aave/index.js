@@ -10,8 +10,9 @@ const methodologies = require('../helper/methodologies');
 const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
 
 function ethereum(borrowed) {
-  return async (timestamp, block, _, { api })=> {
+  return async (api)=> {
     const balances = api.getBalances()
+    const { block } = api
 
     // V2 TVLs
     if (block >= 11360925) {
@@ -32,7 +33,7 @@ function ethereum(borrowed) {
 
 const aaveTokenAddress = ADDRESSES.ethereum.AAVE;
 
-async function stakingBalancerTvl(timestamp, block, _, { api }) {
+async function stakingBalancerTvl(api) {
   return unwrapBalancerToken({ api, owner: '0xa1116930326d21fb917d5a27f1e9943a9595fb47', balancerToken: '0x41a08648c3766f9f9d85598ff102a08f4ef84f84', isV2: false, })
 }
 
@@ -49,8 +50,7 @@ function v2(chain, v2Registry){
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: methodologies.lendingMarket,
+    methodology: methodologies.lendingMarket,
   ethereum: {
     staking: staking(aaveStakingContract, aaveTokenAddress),
     pool2: stakingBalancerTvl,

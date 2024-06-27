@@ -1,13 +1,13 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking")
 const { graphQuery } = require('../helper/http')
 
 const VELA = '0x088cd8f5eF3652623c22D48b1605DCfE860Cd704'
 
-const arbitrumEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official"
-const baseEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official-base"
-async function staking_arbitrum_() {
-  const { api } = arguments[3]
+const arbitrumEndpoint = sdk.graph.modifyEndpoint('6H9PEiNPZgwXfpbijjesZh96LFBzUvkHmEutMoYQ9fvp')
+const baseEndpoint = sdk.graph.modifyEndpoint('2qsbZ4X5TJM7NupC2eRJv167kBDFCDBd37KnK7PQtdga')
+async function staking_arbitrum_(api) {
 
   const query = `
       query {
@@ -25,8 +25,7 @@ async function staking_arbitrum_() {
   api.add(VELA, graphRes?.pid3)
 }
 
-async function staking_base_() {
-  const { api } = arguments[3]
+async function staking_base_(api) {
 
   const query = `
       query {
@@ -47,7 +46,7 @@ async function staking_base_() {
 module.exports = {
   methodology: "Counts USDC deposited to trade and to mint VLP. Staking counts VELA and esVELA deposited to earn esVELA",
   arbitrum: {
-    tvl: staking('0xC4ABADE3a15064F9E3596943c699032748b13352', ADDRESSES.arbitrum.USDC),
+    tvl: staking('0xC4ABADE3a15064F9E3596943c699032748b13352', [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDC]),
     staking: staking_arbitrum_
   },
   base: {

@@ -116,7 +116,7 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
   } = {}) {
   abis = { ...abi, ...abis }
   blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
-  return async (timestamp, ethBlock, _, { api = undefined } = {}) => {
+  return async (api) => {
     if (!api) {
       api = new sdk.ChainApi({ chain, })
     }
@@ -293,9 +293,7 @@ function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEqui
 
 function fullCoumpoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress) {
   return {
-    timetravel: true,
-    doublecounted: false,
-    [chain]: compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress)
+            [chain]: compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress)
   }
 }
 

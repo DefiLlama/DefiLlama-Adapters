@@ -10,7 +10,7 @@ const tokens = {
 };
 const POOL_DIAMOND_CONTRACT = "0xE7D96684A56e60ffBAAe0fC0683879da48daB383";
 
-async function blastTvl(_, _1, _2, { api }) {
+async function blastTvl(api) {
   const vaultStorageAddress = "0x97e94BdA44a2Df784Ab6535aaE2D62EFC6D2e303";
   const hlpUnderlyings = [
     "0xb9d94A3490bA2482E2D4F21F0E76b92E5661Ded8",

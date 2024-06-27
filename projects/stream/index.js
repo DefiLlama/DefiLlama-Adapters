@@ -12,7 +12,7 @@ const vaults = Object.values({
 const TBILL_VAULT_CLUB_BOND_CONTRACT =
   "0xd86FFB404147163e19E010a0e9d4995E0e36F335";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const bals = await api.multiCall({  abi: abi.totalBalance, calls: vaults})
   const vaultParams = await api.multiCall({  abi: abi.vaultParams, calls: vaults})
   const tokens = vaultParams.map(i => i.asset)

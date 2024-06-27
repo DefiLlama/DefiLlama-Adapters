@@ -16,7 +16,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const factories = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const configs = await Promise.all(factories.map(getTvlConfig))
       return sumTokens2({ api, ownerTokens: configs.flat() })
 
