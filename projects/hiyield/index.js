@@ -14,7 +14,7 @@ Object.keys(config).forEach(chain => {
   let pools = config[chain]
   pools = Object.values(pools)
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       if (chain === 'canto') {
         const pool = pools[0]
         const supply = await api.call({  abi: "uint256:totalSupply", target: pool })

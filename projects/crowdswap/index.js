@@ -6,7 +6,7 @@ const bscStakingContracts = '0x21224834612ecaC194c4b877b49e7794f193d2A2';
 const CROWD = "0x483dd3425278C1f79F377f1034d9d2CaE55648B6";
 const BscCROWD = "0xA5d4B64a639d93b660cdA04D331374dA1108F8f5";
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { factories } = config[api.chain]
   const ownerTokens = []
 

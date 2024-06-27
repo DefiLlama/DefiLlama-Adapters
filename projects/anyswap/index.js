@@ -76,7 +76,7 @@ const EXECUTOR = '0x2A038e100F8B85DF21e4d44121bdBfE0c288A869'
 const NEW_ADDR = '0x1eed63efba5f81d95bfe37d82c8e736b974f477b'
 
 function fetchChain(chain) {
-  return async (_, _1, _2, { api }) => {
+  return async (api) => {
     const data = await getChainData()
     const protocolsInChain = chain === null ? data : data.filter(p => p.srcChainId.toString() === chain.toString())
     const tokensAndOwners = []

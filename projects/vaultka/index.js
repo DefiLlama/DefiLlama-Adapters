@@ -1,6 +1,6 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
-
+const { staking } = require("../helper/staking");
 // 19/12/2023 ALP Leverage Vault
 // 29/11/2023 GMXV2 Leverage(Neutral) Vault
 // 12/11/2023 GLP Compound Vault
@@ -22,7 +22,7 @@ module.exports = {
   ],
 
   arbitrum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const vaults = [
         "0x0081772FD29E4838372CbcCdD020f53954f5ECDE", // VodkaVault
         "0x6df0018b0449bB4468BfAE8507E13021a7aa0583", // WaterVault
@@ -39,6 +39,7 @@ module.exports = {
         sake: "0x45BeC5Bb0EE87181A7Aa20402C66A6dC4A923758",
         sakeWater: "0x6b367F9EB22B2E6074E9548689cddaF9224FC0Ab",
         sakeV2: "0xc53A53552191BeE184557A15f114a87a757e5b6F",
+        sakeV3: "0x7Fe1A53c23C0a7a6c9dF6560518DDE36e1dd1184",
         sakeWaterV2: "0x806e8538FC05774Ea83d9428F778E423F6492475",
         vodkaV1_Water: "0xC99C6427cB0B824207606dC2745A512C6b066E7C",
         VodkaV1: "0x88D7500aF99f11fF52E9f185C7aAFBdF9acabD93",
@@ -108,16 +109,12 @@ module.exports = {
       });
 
       const contractAbis = {
-        stakedVlpBalance:
-          "function getStakedVlpBalance() public view returns (uint256)",
-        stakedHlpBalance:
-          "function userTokenAmount(address user) public view returns (uint256)",
-        stakedAlpBalance:
-          "function userInfo(address account) external view returns (uint256, uint256)",
+        stakedVlpBalance: "function getStakedVlpBalance() public view returns (uint256)",
+        stakedHlpBalance: "function userTokenAmount(address user) public view returns (uint256)",
+        stakedAlpBalance: "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //
         klpPrice: "function getKlpPrice(bool) external view returns (uint256)",
-        balanceOf:
-          "function balanceOf(address) external view returns (uint256)",
+        balanceOf: "function balanceOf(address) external view returns (uint256)",
       };
 
       const StakedVLPBal = await api.call({
@@ -128,6 +125,12 @@ module.exports = {
         abi: contractAbis.stakedVlpBalance,
         target: addresses.sakeV2,
       });
+
+      const StakedVLPBalV3 = await api.call({
+        abi: contractAbis.stakedVlpBalance,
+        target: addresses.sakeV3,
+      });
+
       const StakedHLPBal = await api.call({
         abi: contractAbis.stakedHlpBalance,
         target: addresses.hlpStaking,
@@ -163,9 +166,11 @@ module.exports = {
 
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
+      api.add(addresses.VLP, StakedVLPBalV3);
       api.add(addresses.hlp, StakedHLPBal);
       api.add(ADDRESSES.arbitrum.USDC, alpValue);
       api.add(ADDRESSES.arbitrum.USDC, klpValue);
     },
+    staking: staking("0xA6f217d92A1F23C0454792cb7Bf81c74C8416550", "0xAFccb724e3aec1657fC9514E3e53A0E71e80622D"),
   },
 };

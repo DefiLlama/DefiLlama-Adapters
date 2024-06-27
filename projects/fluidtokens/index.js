@@ -72,9 +72,7 @@ async function staking() {
   };
 }
 
-async function borrowed(
-  ts //timestamp in seconds
-) {
+async function borrowed() {
   const data = await get("https://api.fluidtokens.com/get-ft-stats");
   let SC_tvl = parseInt(data.active_loans_volume);
 

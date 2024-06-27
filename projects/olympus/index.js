@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { blockQuery } = require("../helper/http");
 const { getEnv } = require("../helper/env");
@@ -88,15 +89,15 @@ function sumBalancesByTokenAddress(arr) {
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
+async function tvl(api, isOwnTokensMode = false) {
 const subgraphUrls = {
-  ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${getEnv("OLYMPUS_GRAPH_API_KEY")}/subgraphs/id/7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
+  ethereum: `7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
+    "2XQDRQ9AXhp5us6PsNyRM5BxKWeXhy3BNQLynA6YmmjA",
   fantom:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
+    sdk.graph.modifyEndpoint('3qSJTWdWJETFzht814HVV9rVafwRLQp3k9mZhCF39bYd'),
   polygon:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
+    "JCVMW1dbqectgaSLRuKSen6FKe9RPMJRQhNYZa4iTgFb",
 };
   
   //filter out problematic pools that dont have a decimals function.
@@ -162,8 +163,8 @@ const subgraphUrls = {
   return sumTokens2({ api, resolveLP: true, })
 }
 
-async function ownTokens(timestamp, block, _, { api }) {
-  return tvl(timestamp, block, _, { api }, true);
+async function ownTokens(api) {
+  return tvl(api, true);
 }
 
 module.exports = {

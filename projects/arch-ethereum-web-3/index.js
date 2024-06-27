@@ -17,21 +17,27 @@ const polygonChambers = [
   '0xde2925d582fc8711a0e93271c12615bdd043ed1c',
 ]
 
+const strategies = ['0x4e39ceae6e771605ddd7d1121f3320f7a2319318']
+
 const setAbi = 'address[]:getComponents'
 
 const chamberAbi = 'address[]:getConstituentsAddresses'
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const setsTokens = await api.multiCall({ abi: setAbi, calls: sets })
   const chambersTokens = await api.multiCall({ abi: chamberAbi, calls: chambers })
   const toa = []
   setsTokens.forEach((o, i) => toa.push([o, sets[i]]))
   chambersTokens.forEach((o, i) => toa.push([o, chambers[i]]))
-  const balances = await sumTokens2({ api, ownerTokens: toa, blacklistedTokens: [...sets, ...chambers] })
+  const balances = await sumTokens2({ api, ownerTokens: toa, blacklistedTokens: [...sets, ...chambers, ...strategies] })
+
+  // Add vaults
+  await api.erc4626Sum({ calls: strategies, balanceAbi: 'totalAssets', tokenAbi: "asset" })
+
   return balances
 }
 
-async function polygonTvl(timestamp, block, _, { api }) {
+async function polygonTvl(api) {
   const chambersTokens = await api.multiCall({ abi: chamberAbi, calls: polygonChambers })
   const toa = []
   chambersTokens.forEach((o, i) => toa.push([o, polygonChambers[i]]))

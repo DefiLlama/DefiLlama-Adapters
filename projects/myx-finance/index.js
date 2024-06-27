@@ -10,7 +10,7 @@ Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl };
 });
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { vault, fromBlock } = config[api.chain];
   const logs = await getLogs({
     api,

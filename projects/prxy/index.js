@@ -2,7 +2,7 @@ const { staking } = require('../helper/staking')
 const prxy = "0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591";
 const btcpx = "0x9C32185b81766a051E08dE671207b34466DD1021";
 
-async function tvl(timestamp, _, _1, { api }) {
+async function tvl(api) {
   const bal = await api.call({ abi: 'erc20:totalSupply', target: btcpx })
   api.add(btcpx, bal)
 }

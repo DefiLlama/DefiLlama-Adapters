@@ -62,7 +62,7 @@ Object.keys(config).forEach(chain => {
   const { bank, fromBlock, markets } = config[chain]
   const _getLogs = api => getLogs({ api, target: bank, eventAbi: 'event Create (address indexed underlying, address bToken)', onlyArgs: true, fromBlock, })
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       // const logs = await _getLogs(api)
       const logs = markets
       const underlyingTokens = logs.map(log => log.underlying)
@@ -71,7 +71,7 @@ Object.keys(config).forEach(chain => {
       underlyingTokens.push(...underlyingTokens)
       return api.sumTokens({ tokensAndOwners2: [underlyingTokens, bTokens] })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       // const logs = await _getLogs(api)
       const logs = markets
       const underlyingTokens = logs.map(log => log.underlying)

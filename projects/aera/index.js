@@ -1,58 +1,149 @@
-const { cachedGraphQuery } = require("../helper/cache");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const COMPOUND_ORACLE_NAME = 'CompoundV3PositionOracle'
 const AAVE_ORACLE_NAME = 'AaveV3PositionOracle'
 
 const config = {
   polygon: {
-    graphUrl: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph-polygon',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     aavePoolDataProvider: '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654',
     comets: [
       {
         address: '0xF25212E676D1F7F89Cd72fFEe66158f541246445',
-        baseToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+        baseToken: ADDRESSES.polygon.USDC
       }
     ],
-    cometReward: '0x45939657d1CA34A8FA39A924B71D28Fe8431e581'
+    cometReward: '0x45939657d1CA34A8FA39A924B71D28Fe8431e581',
+    vaultFactories: [
+        {
+            address: "0xfa6295a04f99815e8fa65240ed2cf9ad383c50ba",
+            fromBlock: 42027977
+        },
+        {
+            address: "0x3c14801dc6402e0560d69083f2b238b4c4b4dafe",
+            fromBlock: 42835719
+        },
+        {
+            address: "0x49b428ea1cd536e7d103e9729ea14400785e30ec",
+            fromBlock: 54062542
+        },
+        {
+            address: "0xa1c908cf7371047649dfca9ece01327dc6db3094",
+            fromBlock: 48024333
+        }
+    ]
   },
   ethereum: {
-    graphUrl: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph',
     aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
     aavePoolDataProvider: '0x7B4EB56E7CD4b454BA8ff71E4518426369a138a3',
     comets: [
       {
         address: '0xA17581A9E3356d9A858b789D68B4d866e593aE94',
-        baseToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+        baseToken: ADDRESSES.ethereum.WETH
       },
       {
         address: '0xc3d688B66703497DAA19211EEdff47f25384cdc3',
-        baseToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+        baseToken: ADDRESSES.ethereum.USDC
       }
     ],
-    cometReward: '0x1B0e765F6224C21223AeA2af16c1C46E38885a40'
-  }
+    cometReward: '0x1B0e765F6224C21223AeA2af16c1C46E38885a40',
+    vaultFactories: [
+      {
+          address: "0x8a7c03e9f037ba096f1fa8b48bfd65c7578327c9",
+          fromBlock: 17642780
+      },
+      {
+          address: "0xbebb92ed09688e64dc38c240b600d0b1d504ee56",
+          fromBlock: 17694550
+      },
+      {
+          address: "0x6b8d4485e11aae228a32FAe5802c6d4BA25EA404",
+          fromBlock: 18143506
+      },
+      {
+          address: "0x9500948c2BEeeB2Da4CC3aA21CB05Bd2e7C27191",
+          fromBlock: 18192390
+      },
+      {
+          address: "0x38896b4ac8420b8A2B768001Da44d11109F1797D",
+          fromBlock: 18737324
+      }
+  ]
+  },
+  arbitrum: {
+    aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+    aavePoolDataProvider: '0x6b4E260b765B3cA1514e618C0215A6B7839fF93e',
+    comets: [
+      {
+        address: '0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA',
+        baseToken: ADDRESSES.arbitrum.USDC,
+      },
+      {
+        address: '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf',
+        baseToken: ADDRESSES.arbitrum.USDC_CIRCLE,
+      },
+    ],
+    cometReward: '0x88730d254A2f7e6AC8388c3198aFd694bA9f7fae',
+    vaultFactories: [
+        {
+            address: "0xaF2762E1F75DeCdb8d240576e7A2CEc1A365cD46",
+            fromBlock: 203397910
+        }
+    ]
+  },
+  base: {
+    aavePool: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5',
+    aavePoolDataProvider: '0x2d8A3C5677189723C4cB8873CfC9C8976FDF38Ac',
+    comets: [
+      {
+        address: '0x46e6b214b524310239732D51387075E0e70970bf',
+        baseToken: ADDRESSES.optimism.WETH_1,
+      },
+      {
+        address: '0xb125E6687d4313864e53df431d5425969c15Eb2F',
+        baseToken: ADDRESSES.base.USDC,
+      },
+      {
+        address: '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf',
+        baseToken: ADDRESSES.base.USDbC,
+      },
+    ],
+    cometReward: '0x123964802e6ABabBE1Bc9547D72Ef1B69B00A6b1',
+    vaultFactories: [
+        {
+            address: "0x5CD0Cb0DcDEF98a8d07a8D44054a13F2c35C53E1",
+            fromBlock: 13582859
+        }
+    ]
+  },
 }
-
-const graphQuery = `query MyQuery($block: Int) {vaultCreateds(block: {number: $block}){ id vault assetRegistry }}`
 
 module.exports.methodology = 'Counts tokens held directly in vaults, as well as aave and compound positions.'
 module.exports.start = 1682619377
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
-      const GRAPH_URL = config[chain].graphUrl
+    tvl: async (api) => {
       const AAVE_POOL = config[chain].aavePool
       const AAVE_POOL_DATA_PROVIDER = config[chain].aavePoolDataProvider
       const COMETS = config[chain].comets
       const COMET_REWARD = config[chain].cometReward
-      const cacheKey = `aera/${chain}`
-
-      const block = (await api.getBlock()) - 100 // polygon subgraph sync lags
-
-      const { vaultCreateds } = await cachedGraphQuery(cacheKey, GRAPH_URL, graphQuery, { api, variables: { block } })
+      const vaultFactories = config[chain].vaultFactories
+      
+      const vaultCreateds = []
+      for (const { address, fromBlock} of vaultFactories) {
+        const logs = await getLogs({
+          api,
+          target: address,
+          topic: 'VaultCreated(address indexed,address,address, address indexed, address indexed, address, uint256, string, address)',
+          eventAbi: 'event VaultCreated(address indexed vault, address assetRegistry, address hooks, address indexed owner, address indexed guardian, address feeRecipient, uint256 fee, string description, address wrappedNativeToken)',
+          onlyArgs: true,
+          fromBlock,
+        })
+        vaultCreateds.push(...logs.map(x => ({vault: x.vault, assetRegistry: x.assetRegistry})))
+      }
 
       const vaults = []
       const assetRegistries = []

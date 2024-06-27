@@ -86,8 +86,7 @@ async function fuse(timestamp, ethBlock, chainBlocks) {
 module.exports = {
     methodology: `Aggregation of funds staked in our contracts on Ethereum and Fuse, funds locked in reserve backing G$ token and community treasury. G$ value was converted to USD based on current price at the reserve.`,
     misrepresentedTokens: true,
-    timetravel: true,
-    ethereum: {
+        ethereum: {
         tvl: eth
     },
     fuse: {

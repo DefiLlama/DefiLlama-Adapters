@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -17,7 +18,7 @@ module.exports = {
 
 const config = {
   optimism: {
-    endpoint: 'https://api.thegraph.com/subgraphs/name/denverbaumgartner/rubiconmetricsoptimism',
+    endpoint: sdk.graph.modifyEndpoint('AUcAkUd4sJutFD3hYQfvB6uvXrEdYP26qiZwZ5qyrgTw'),
     owners: [
       RUBICON_MARKET_OPTIMISM, // Rubicon Market
       "0xB0bE5d911E3BD4Ee2A8706cF1fAc8d767A550497", // bathETH
@@ -30,7 +31,7 @@ const config = {
     ]
   },
   arbitrum: {
-    endpoint: 'https://api.thegraph.com/subgraphs/name/jossduff/rubiconmetricsarbitrum',
+    endpoint: sdk.graph.modifyEndpoint('B4cTJXyWHMLkxAcpLGK7dJfArJdrbyWukCoCLPDT1f7n'),
     owners: [RUBICON_MARKET_ARBITRUM,]
   }
 }
@@ -38,7 +39,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { endpoint, owners } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const response = await cachedGraphQuery('rubicon/' + chain, endpoint, `{ tokens { address } }`)
       const tokens = response.tokens.map(i => i.address)
       return sumTokens2({ api, tokens, owners})

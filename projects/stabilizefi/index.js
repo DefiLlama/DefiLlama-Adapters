@@ -18,7 +18,7 @@ const BTC_TROVE_MANAGER_ADDRESS = "0x56c194F1fB30F8cdd49E7351fC9C67d8C762a86F";
 const DAI_TROVE_MANAGER_ADDRESS = "0x54b35c002468a5Cc2BD1428C011857d26463ecbC";
 
 // --- staking ---
-async function stakingTvl(_, _ethBlock, chainBlocks, { api }) {
+async function stakingTvl(api) {
   const StakesBalance = await api.call({ target: TOKEN_STAKING_ADDRESS, abi: "uint256:totalTokenStaked", })
   return { [SET_ADDRESS]: StakesBalance }
 }

@@ -5,6 +5,9 @@ const config = {
   polygon: {},
   base: {},
   boba: { factory: '0xFaf1Af4dC761dBA157227a3c06CeC9A7486D8a07' },
+  blast: { factory: '0x8C554F200B1EEECdE99370Fe6284B15d23E50E07' },
+  scroll: { factory: '0xc2cC57a62982c4C92C69B856B5d03c6DECa32E77' },
+  linea: { factory: '0x8C554F200B1EEECdE99370Fe6284B15d23E50E07' },
 }
 
 module.exports = {
@@ -14,7 +17,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { factory = '0x5B7B8b487D05F77977b7ABEec5F922925B9b2aFa' } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const vaults = await api.fetchList({ lengthAbi: 'uint256:numVaults', itemAbi: 'function vaults(uint) view returns (address)', target: factory })
       const token0s = await api.multiCall({ abi: 'address:token0', calls: vaults })
       const token1s = await api.multiCall({ abi: 'address:token1', calls: vaults })

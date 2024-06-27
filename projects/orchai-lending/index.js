@@ -1,6 +1,6 @@
 const { queryContract, } = require("../helper/chain/cosmos");
 
-async function oraiTVL(_, _1, _2, { api }) {
+async function oraiTVL(api) {
   let tokensDelegated = await queryContract({
     contract: 'orai1ez359uvv5p7l2ssgadzjk2pfuune9rrhu72ehwdsu4h2qhqf9jlsxw7e0f',
     chain: "orai",
