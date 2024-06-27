@@ -1,10 +1,11 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const KALAX = "0x2F67F59b3629Bf24962290DB9edE0CD4127e606D";
 
 async function tvl(api) {
   const FARM = "0xE63153C3360aCa0F4e7Ca7A1FC61c2215FAEF5A1";
+  const FARM2 = "0xFe899401A1d86cC1113020fb40878c76239142a5";
 
   let pools = await api.call({ abi: abiInfo.poolInfos, target: FARM });
   pools
@@ -15,6 +16,17 @@ async function tvl(api) {
       }
       api.add(i.assets, i.tvl);
     });
+
+  pools = await api.call({ abi: abiInfo.poolInfos, target: FARM2 });
+  pools
+    .filter((i) => i.assets !== KALAX)
+    .forEach((i) => {
+      if (i.assets === ADDRESSES.linea.WETH_1) {
+        i.assets = ADDRESSES.null;
+      }
+      api.add(i.assets, i.tvl);
+    });
+
   return await sumTokens2({ api, resolveLP: true });
 }
 
