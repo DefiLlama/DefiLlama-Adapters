@@ -12,6 +12,7 @@ const config = {
       amprPTrsETH: '0x0498b85FB4EC85EF5EFe82513aa9DaF767358A15',
       amprPTezETH: '0x920F17e741029D904936c58a545DFFC72f82C079',
       amprETH: '0xcdc51f2b0e5f0906f2fd5f557de49d99c34df54e',
+      amphrLRT: '0x06824C27C8a0DbDe5F72f770eC82e3c0FD4DcEc3',
     },
   },
 };
