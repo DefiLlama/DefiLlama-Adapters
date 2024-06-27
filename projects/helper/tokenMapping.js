@@ -106,6 +106,7 @@ const fixBalancesTokens = {
     [ADDRESSES.optimism.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
   },
   blast: {
+    '0x0000000000000000000000000000000000000001': { coingeckoId: 'ethereum', decimals: 18 },
     '0xf7bc58b8d8f97adc129cfc4c9f45ce3c0e1d2692': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
     '0x9e0d7d79735e1c63333128149c7b616a0dc0bbdb': { coingeckoId: "weth", decimals: 18 }, //pirex eth
     '0xde55b113a27cc0c5893caa6ee1c020b6b46650c0': { coingeckoId: "deus-finance-2", decimals: 18 }, // deus
@@ -159,9 +160,6 @@ const fixBalancesTokens = {
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.taiko.WETH]: { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.taiko.USDC]: { coingeckoId: 'usd-coin', decimals: 6 },
-  },
-  blast: {
-    '0x0000000000000000000000000000000000000001': { coingeckoId: 'ethereum', decimals: 18 },
   },
   sei: {
     '0x3894085ef7ff0f0aedf52e2a2704928d1ec074f1': { coingeckoId: 'usd-coin', decimals: 6 },
