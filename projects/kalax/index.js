@@ -1,43 +1,20 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs")
 
-const KALAX = "0x2F67F59b3629Bf24962290DB9edE0CD4127e606D";
+const KALAX = "0x2F67F59b3629Bf24962290DB9edE0CD4127e606D"
+const farms = ['0xE63153C3360aCa0F4e7Ca7A1FC61c2215FAEF5A1', '0xFe899401A1d86cC1113020fb40878c76239142a5']
 
 async function tvl(api) {
-  const FARM = "0xE63153C3360aCa0F4e7Ca7A1FC61c2215FAEF5A1";
-  const FARM2 = "0xFe899401A1d86cC1113020fb40878c76239142a5";
-
-  let pools = await api.call({ abi: abiInfo.poolInfos, target: FARM });
+  let pools = (await api.multiCall({ abi: abiInfo.poolInfos, calls: farms })).flat()
   pools
     .filter((i) => i.assets !== KALAX)
-    .forEach((i) => {
-      if (i.assets === ADDRESSES.linea.WETH_1) {
-        i.assets = ADDRESSES.null;
-      }
-      api.add(i.assets, i.tvl);
-    });
+    .forEach((i) => api.add(i.assets, i.tvl))
 
-  pools = await api.call({ abi: abiInfo.poolInfos, target: FARM2 });
-  pools
-    .filter((i) => i.assets !== KALAX)
-    .forEach((i) => {
-      if (i.assets === ADDRESSES.linea.WETH_1) {
-        i.assets = ADDRESSES.null;
-      }
-      api.add(i.assets, i.tvl);
-    });
-
-  return await sumTokens2({ api, resolveLP: true });
+  return sumTokens2({ api, resolveLP: true })
 }
 
 async function staking(api) {
-  const FARM = "0xE63153C3360aCa0F4e7Ca7A1FC61c2215FAEF5A1";
-
-  let pools = await api.call({ abi: abiInfo.poolInfos, target: FARM });
-  let target = pools.find((i) => i.assets === KALAX);
-
-  api.add(target.assets, target.tvl);
-  return api.getBalances();
+  let pools = (await api.multiCall({ abi: abiInfo.poolInfos, calls: farms })).flat()
+  pools.filter((i) => i.assets === KALAX).forEach((i) => api.add(i.assets, i.tvl))
 }
 
 module.exports = {
@@ -45,9 +22,9 @@ module.exports = {
     tvl,
     staking,
   },
-};
+}
 
 const abiInfo = {
   poolInfos:
     "function getPoolTotalTvl() view returns (tuple(uint256 pid, address assets, uint256 tvl)[])",
-};
+}
