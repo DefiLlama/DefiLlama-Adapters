@@ -2,7 +2,7 @@ const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   misrepresentedTokens: true,
-  etherlink: {
+  etlk: {
     tvl: getUniTVL({
       fetchBalances: true,
       useDefaultCoreAssets: true,
