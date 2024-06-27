@@ -84,7 +84,8 @@ module.exports = {
     linea: { factory: "0x31FAfd4889FA1269F7a13A66eE0fB458f27D72A9", fromBlock: 25247, },
     manta: { factory: "0x06D830e15081f65923674268121FF57Cc54e4e23", fromBlock: 1191705 },
     avax: { factory: "0x740b1c1de25031C31FF4fC9A62f554A55cdC1baD", fromBlock: 27832972 },
-    taiko: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 961 }
+    taiko: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 961 },
+    sei: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 79245151 }
 
   }),
   filecoin: { tvl: filecoinTvl },
