@@ -14,7 +14,7 @@ const tvl = async (api) => {
     const [market, borrowed_denom] = pool.borrowed_amount.denom.split('-');
     const market_id = `${market}:usd`;
     const price = price_info.prices.find(price => price.market_id === market_id)?.price;
-    api.add(borrowed_denom, pool.borrowed_amount.amount * price);
+    api.add(borrowed_denom, pool.total_transfer_ownership_amount.amount * price);
     api.add(pool.usable_amount.denom, pool.usable_amount.amount);
     api.add(pool.escrow_principal_amount.denom, pool.escrow_principal_amount.amount);
     api.add(pool.escrow_principal_amount.denom, pool.escrow_interest_amount);
