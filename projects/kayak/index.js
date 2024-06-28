@@ -9,7 +9,7 @@ async function displayTVL() {
     try {
          const tvl1 = await tvl();
         console.log("tvl1:",tvl1)
-        return tvl1;
+        return {'USD': tvl1};
     } catch (error) {
         console.error('Error fetching TVL:', error);
     }
