@@ -11,31 +11,6 @@ const VAULT_CONTRACT = '0x1Cf3F6a9f8c6eEF1729E374B18F498E2d9fC6DCA'
 const DATA_PROVIDER_CONTRACT = '0x87E697c3EBe41eD707E4AD52541f19292Be81177'
 const LMT_QUOTER_CONTRACT = '0xED14586763578147136e55D20a0Ee884Cd8fBC6d'
 
-const LIQUIDITY_PROVIDED_QUERY = `
-query {
-  liquidityProvideds(first:1000 orderBy: blockTimestamp orderDirection: desc) {
-    pool
-    recipient
-    liquidity
-    tickLower
-    tickUpper
-    blockTimestamp
-  }
-}
-`
-
-const LIQUIDITY_WITHDRAWN_QUERY = `
-query {
-  liquidityWithdrawns(first:1000 orderBy: blockTimestamp orderDirection: desc) {
-    pool
-    recipient
-    liquidity
-    tickLower
-    tickUpper
-    blockTimestamp
-  }
-}
-`
 
 const LiquidityProvidedQueryV2 = (first, skip, blockTimestamp) => {
   return `
@@ -194,15 +169,12 @@ async function base_tvl(api) {
   uniquePools?.forEach((pool, index) => {
     const uniqueToken = uniqueTokens.get(pool)
     if (uniqueToken) {
-      // console.log("POOL KEY", poolKeys)
-      // console.log("POOL INFO", uniqueToken)
       const currentTick = poolKeys
       .filter((item) => 
         item[0] === uniqueToken[0] && 
         item[1] === uniqueToken[1] && 
         item[4] === uniqueToken[2]
       )[0][9]
-      // console.log("CURRENT TICK", currentTick[0][9])
       const poolAddress = pool
       if (!slot0ByPoolAddress[poolAddress]) {
         slot0ByPoolAddress[poolAddress] = currentTick
@@ -296,9 +268,6 @@ async function base_tvl(api) {
   const processLiqEntry = (entry) => {
     const pool = entry.pool
     let curTick = slot0ByPoolAddress[pool]
-    // if (!curTick) curTick = slot0ByPoolAddress?.[pool]?.tick
-    // console.log("TICK", curTick)
-
 
     let amount0
     let amount1
