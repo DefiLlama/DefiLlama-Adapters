@@ -45,12 +45,11 @@ async function ammV4Tvl(api) {
   const allPoolVaultAmount = await connection.getProgramAccounts(new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), { filters: [{ dataSize: 165 }, { memcmp: { offset: 32, bytes: auth } }], dataSlice: { offset: 64, length: TokenAmountLayout.span } })
   console.timeEnd('raydium: ammV4Tvl fetching vault balances')
   console.log(allPoolVaultAmount.length, 'fetched vault amounts')
-  await sleep(30000)
   const vaultIdToAmount = {}
   for (const item of allPoolVaultAmount) {
     vaultIdToAmount[item.pubkey.toString()] = TokenAmountLayout.decode(item.account.data).amount.toString()
   }
-  console.log(vaultIdToAmount['XMt99QwT4NuzQotsLhp2G4PwdkUfXekFTezmyq1q5AB'], 'account value')
+  await sleep(20000)
   const allPoolKeyInfo = await connection.getProgramAccounts(new PublicKey(AmmV4), { filters: [{ dataSize: 752 }], dataSlice: { offset: 336, length: KeyLayoutv4.span } })
 
   
