@@ -1,5 +1,5 @@
 const { uniV3Export } = require('../helper/uniswapV3')
-const { cachedGraphQuery, configPost } = require('../helper/cache')
+const { cachedGraphQuery, configPost, getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const graphs = {
@@ -98,3 +98,12 @@ chains.forEach(chain => {
     tvl: v3TvlPaged(chain)
   }
 })
+
+module.exports.sei.tvl = async (api) => {
+  const { result } = await getConfig('oku-trade/sei', 'https://omni.icarus.tools/sei/cush/getAllPoolsInOrder')
+  const pools = result.map(i => i.pool)
+  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
+  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
+  const ownerTokens = pools.map((pool, i) => [[token0s[i], token1s[i]], pool])
+  return sumTokens2({ api, ownerTokens })
+}
