@@ -35,7 +35,7 @@ const config = {
     { factory: '0xFB5cd8426FBC3b1f2ea4B113A5A37752B3098C79', fromBlock: 15137100 },
   ],
   xlayer: [
-    { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98', fromBlock: 100 },
+    { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98', fromBlock: 2353300 },
   ],
   linea: [
     { factory: '0xFB5cd8426FBC3b1f2ea4B113A5A37752B3098C79', fromBlock: 5006600 },
