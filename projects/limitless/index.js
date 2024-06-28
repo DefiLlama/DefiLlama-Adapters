@@ -410,4 +410,4 @@ module.exports = {
   base: {
     tvl:base_tvl,
   }
-} 
+}

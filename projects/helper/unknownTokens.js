@@ -9,6 +9,16 @@ const { getTokenPrices, sumUnknownTokens, getLPData, } = require('./cache/sumUnk
 const { getUniTVL } = require('./cache/uniswap')
 const { getUniqueAddresses, } = require('./utils')
 
+function uniTvlExports(config, commonOptions) {
+  const exportsObj = {
+    misrepresentedTokens: true,
+  }
+  Object.keys(config).forEach(chain => {
+    exportsObj[chain] =  uniTvlExport(chain, config[chain],commonOptions )[chain]
+  })
+  return exportsObj
+}
+
 function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
   useDefaultCoreAssets = false, }) {
   let getPrices
@@ -256,4 +266,5 @@ module.exports = {
   sumTokensExport,
   yieldHelper,
   uniTvlExport,
+  uniTvlExports,
 };
