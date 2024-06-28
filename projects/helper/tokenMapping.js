@@ -160,6 +160,8 @@ const fixBalancesTokens = {
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.taiko.WETH]: { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.taiko.USDC]: { coingeckoId: 'usd-coin', decimals: 6 },
+    [ADDRESSES.taiko.USDC_e]: { coingeckoId: 'usd-coin', decimals: 6 },
+    [ADDRESSES.taiko.USDT]: { coingeckoId: 'tether', decimals: 6 },
   },
   sei: {
     '0x3894085ef7ff0f0aedf52e2a2704928d1ec074f1': { coingeckoId: 'usd-coin', decimals: 6 },
