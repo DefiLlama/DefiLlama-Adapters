@@ -6,4 +6,7 @@ module.exports = {
   base: {
     tvl: getUniTVL({ factory: "0x9a9a171c69cc811dc6b59bb2f9990e34a22fc971", }),
   },
+  ethereum: {
+    tvl: getUniTVL({ factory: "0x5fbe219e88f6c6f214ce6f5b1fcaa0294f31ae1b", }),
+  },
 };
