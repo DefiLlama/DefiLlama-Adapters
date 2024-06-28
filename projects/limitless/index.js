@@ -2,12 +2,14 @@ const sdk = require("@defillama/sdk")
 const limWethAbi = require("./limWeth.json")
 const vaultAbi = require("./vault.json")
 const dataProviderAbi = require("./dataProvider.json")
+const lmtQuoterAbi = require("./lmtQuoter.json")
 const axios = require("axios")
 
 const LIM_WETH_CONTRACT = '0x845d629D2485555514B93F05Bdbe344cC2e4b0ce'
 const BASE_WETH_CONTRACT = '0x4200000000000000000000000000000000000006'
 const VAULT_CONTRACT = '0x1Cf3F6a9f8c6eEF1729E374B18F498E2d9fC6DCA'
 const DATA_PROVIDER_CONTRACT = '0x87E697c3EBe41eD707E4AD52541f19292Be81177'
+const LMT_QUOTER_CONTRACT = '0xED14586763578147136e55D20a0Ee884Cd8fBC6d'
 
 const LIQUIDITY_PROVIDED_QUERY = `
 query {
@@ -35,7 +37,99 @@ query {
 }
 `
 
+const LiquidityProvidedQueryV2 = (first, skip, blockTimestamp) => {
+  return `
+  query {
+    liquidityProvideds(
+      where: {blockTimestamp_gt: ${blockTimestamp}}
+      first: ${first}, 
+      skip: ${skip}, 
+      orderBy: blockTimestamp, 
+      orderDirection: asc
+    ) {
+      pool
+      recipient
+      liquidity
+      tickLower
+      tickUpper
+      blockTimestamp
+    }
+  }
+`
+} 
+
+const LiquidityWithdrawnQueryV2 = (first, skip, blockTimestamp) => {
+  return `
+  query {
+    liquidityWithdrawns(
+      where: {blockTimestamp_gt: ${blockTimestamp}}
+      first: ${first}, 
+      skip: ${skip}, 
+      orderBy: blockTimestamp, 
+      orderDirection: asc
+    ) {
+      pool
+      recipient
+      liquidity
+      tickLower
+      tickUpper
+      blockTimestamp
+    }
+  }
+`
+}
+
 const LMT_SUBGRAPH_ENDPOINT_BASE = 'https://api.studio.thegraph.com/query/71042/limitless-subgraph-base/version/latest'
+
+async function fetchAllData(query) {
+  let allResults = []
+  const first = 1000 // maximum limit
+  let skip = 0
+
+
+  
+  let timestamp = 0
+  let queryResultLength = 6000
+
+  while (queryResultLength === 6000) {
+    const promises = []
+    for (let i = 0; i < 6; i++) {
+      promises.push(axios.post(LMT_SUBGRAPH_ENDPOINT_BASE, {
+        query: query === 'provided'
+        ? LiquidityProvidedQueryV2(first, skip, timestamp) 
+        : LiquidityWithdrawnQueryV2(first, skip, timestamp)
+      }))
+      skip += first
+    }
+    queryResultLength = 0
+    const results = await Promise.all(promises)
+
+    for (const result of results) {
+      let newData = null
+      
+      if (query === 'provided') {
+        newData = result.data?.data?.liquidityProvideds
+      } else if (query === 'withdrawn') {
+        newData = result.data?.data?.liquidityWithdrawns
+      }
+
+      if (newData && newData.length) {
+        queryResultLength += newData.length
+        allResults.push(...newData)
+      }
+    }
+    if (queryResultLength === 6000) {
+      const uniqueTimestamps = Array.from(new Set(allResults.map(result => result.blockTimestamp)))
+      skip = 0
+      timestamp = uniqueTimestamps[uniqueTimestamps.length - 2]
+      allResults = allResults.filter(result => result.blockTimestamp !== uniqueTimestamps[uniqueTimestamps.length - 1])
+    } else {
+      break
+    }
+  }
+
+  return allResults
+}
 
 async function base_tvl(api) {
   const tokenBalance = BigInt((await sdk.api.abi.call({
@@ -51,15 +145,17 @@ async function base_tvl(api) {
     chain: 'base'
   })).output)
 
+  const poolKeys = (await sdk.api.abi.call({
+    target: LMT_QUOTER_CONTRACT,
+    abi: lmtQuoterAbi.getPoolKeys,
+    chain: 'base'
+  })).output
+
   api.add(VAULT_CONTRACT, vault)
 
-  const providedData = (await axios.post(LMT_SUBGRAPH_ENDPOINT_BASE, {
-    query: LIQUIDITY_PROVIDED_QUERY
-  })).data.data.liquidityProvideds
+  const providedData = await fetchAllData('provided')
+  const withdrawnData = await fetchAllData('withdrawn') 
 
-  const withdrawnData = (await axios.post(LMT_SUBGRAPH_ENDPOINT_BASE, {
-    query: LIQUIDITY_WITHDRAWN_QUERY
-  })).data.data.liquidityWithdrawns
 
   let pools = new Set()
   providedData.forEach((entry) => {
@@ -69,7 +165,6 @@ async function base_tvl(api) {
     }
   })
   const uniquePools = Array.from(pools)
-
   const uniqueTokens = new Map()
 
   await Promise.all(
@@ -93,17 +188,27 @@ async function base_tvl(api) {
       } else return null
     })
   )
-
   const slot0s = []
   const slot0ByPoolAddress = {}
 
   uniquePools?.forEach((pool, index) => {
-    const slot0 = slot0s[index]
-    if (slot0 && uniqueTokens.get(pool)) {
+    const uniqueToken = uniqueTokens.get(pool)
+    if (uniqueToken) {
+      // console.log("POOL KEY", poolKeys)
+      // console.log("POOL INFO", uniqueToken)
+      const currentTick = poolKeys
+      .filter((item) => 
+        item[0] === uniqueToken[0] && 
+        item[1] === uniqueToken[1] && 
+        item[4] === uniqueToken[2]
+      )[0][9]
+      // console.log("CURRENT TICK", currentTick[0][9])
       const poolAddress = pool
       if (!slot0ByPoolAddress[poolAddress]) {
-        slot0ByPoolAddress[poolAddress] = slot0.result
+        slot0ByPoolAddress[poolAddress] = currentTick
       }
+    } else {
+
     }
   })
 
@@ -190,8 +295,9 @@ async function base_tvl(api) {
 
   const processLiqEntry = (entry) => {
     const pool = entry.pool
-    let curTick = slot0ByPoolAddress[pool]?.[0].tick
-    if (!curTick) curTick = slot0ByPoolAddress?.[pool]?.tick
+    let curTick = slot0ByPoolAddress[pool]
+    // if (!curTick) curTick = slot0ByPoolAddress?.[pool]?.tick
+    // console.log("TICK", curTick)
 
 
     let amount0
@@ -228,7 +334,6 @@ async function base_tvl(api) {
     }
 
     const tokens = uniqueTokens.get(pool)
-
     return {
       pool,
       amount0,
