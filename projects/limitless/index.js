@@ -179,8 +179,6 @@ async function base_tvl(api) {
       if (!slot0ByPoolAddress[poolAddress]) {
         slot0ByPoolAddress[poolAddress] = currentTick
       }
-    } else {
-
     }
   })
 
