@@ -1,9 +1,9 @@
-const { getConnection, sumTokens2, decodeAccount, } = require("./helper/solana");
+const { getConnection, sumTokens2, decodeAccount, } = require("../helper/solana");
 const { PublicKey, } = require("@solana/web3.js");
 
-const { TokenAmountLayout, KeyLayoutv4 } = require("./helper/utils/solana/layouts/raydium-layout");
+const { TokenAmountLayout, KeyLayoutv4 } = require("../helper/utils/solana/layouts/raydium-layout");
 const { transformDexBalances } = require("./helper/portedTokens");
-const { sleep } = require("./helper/utils");
+const { sleep } = require("../helper/utils");
 
 const CLMM = 'CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK'
 const AmmV4 = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8'
