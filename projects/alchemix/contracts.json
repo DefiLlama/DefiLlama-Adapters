@@ -1,4 +1,18 @@
 {
+    "arbitrum": {
+      "tokenHolders": {
+        "alUSDAlchemist": "0xb46eE2E4165F629b4aBCE04B7Eb4237f951AC66F",
+        "alUSDTransmuterBuffer": "0x00E33722ba54545667E76a18CE9D544130eEAbcC",
+        "alUSDTransmuter": "0xe7ec71B894583E9C1b07873fA86A7e81f3940eA8",
+        "alETHAlchemist": "0x654e16a0b161b150F5d1C8a5ba6E7A7B7760703A",
+        "alETHTransmuterBuffer": "0xECAd08EE07f1AA87f3E080997eBa6d02d28bb9D2",
+        "alETHTransmuter": "0x1EB7D78d7f6D73e5de67Fa62Fd8b55c54Aa9c0D4"
+      },
+      "underlyingTokens": {
+        "USDC": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+        "WETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"
+      }
+    },
     "fantom": {
       "tokenHolders": {
         "alUSDAlchemist": "0x76b2E3c5a183970AAAD2A48cF6Ae79E3e16D3A0E",
