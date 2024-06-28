@@ -82,9 +82,7 @@ async function tvl(api) {
 }
 
 Object.keys(factory).forEach(chain => {
-  module.exports = {
-    [chain]: {
-      tvl
-    }
-  };
+  module.exports[chain] = {
+    tvl
+  }
 })
