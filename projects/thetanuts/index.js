@@ -88,9 +88,9 @@ const arbPutVault = '0xf94ea5B18401821BE07FBfF535B8211B061A7F70'
 const ethCallVaultArb = '0x1D1CD4abe0F2AF9d79b5e3149BF4A503f97C1EAd'
 const ethPutVaultArb = '0xA8459eC6DF0D9a61058C43a308dD8A2CEc9d550E'
 // Assets locked in Aave V2 fork
-const aArb = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5' 
-const aUsdc = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
-const aWeth = '0xBbf03fC0C8441e9cc50cC087f74899C137597b6e'
+const aArb_ARB = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5' 
+const aUsdc_ARB = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
+const aWeth_ARB = '0xBbf03fC0C8441e9cc50cC087f74899C137597b6e'
 // LongLiquidityVaults - Holds aAssets (not counted) and V3 liquidity NFTs
 const arbC_LLV = '0x721Bba1556649e9c70E2dF1EAFC04270376025f7'
 const arbP_LLV = '0x57eD79afD32c616E4631231636F4597188d20C5e'
@@ -159,6 +159,7 @@ const wcro = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23'
 // Arbitrum assets
 const arb = ADDRESSES.arbitrum.ARB
 const usdc_arb = ADDRESSES.arbitrum.USDC_CIRCLE
+const weth_arb = ADDRESSES.arbitrum.WETH
 const univ3nft_arb = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
 
 // Polygon zkEVM assets
@@ -225,14 +226,19 @@ const config = {
     tokensAndOwners: [
       [arb, arbCallVault,],
       [usdc_arb, arbPutVault,],
-      [arb, ethCallVaultArb,],
+      [weth_arb, ethCallVaultArb,],
       [usdc_arb, ethPutVaultArb,],
-      [arb, aArb,],
-      [usdc_arb, aUsdc,],
-      
+      [arb, aArb_ARB,],
+      [weth_arb, aWeth_ARB,],
+      [usdc_arb, aUsdc_ARB,],      
+
       [PTezETH_27JUN24, aPTezETH_27JUN24,],
       [PTrsETH_27JUN24, aPTrsETH_27JUN24,],
       [PTweETH_27JUN24, aPTweETH_27JUN24,],
+
+      [PTezETH_26SEP24, aPTezETH_26SEP24,],
+      [PTrsETH_26SEP24, aPTrsETH_26SEP24,],
+      [PTweETH_26SEP24, aPTweETH_26SEP24,],
     ],
     LLVOwners: [
       [univ3nft_arb, arbC_LLV,],
