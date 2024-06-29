@@ -8,5 +8,4 @@ module.exports = {
     tvl: staking(stakingContract, ROCK, "bitrock"),
   },
   methodology: "ROCK tokens locked in staking contract",
-}
-
+};
