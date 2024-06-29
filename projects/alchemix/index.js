@@ -24,8 +24,8 @@ async function tvl(api) {
         }
       })
     })
-  );
-};
+  )
+}
 
 module.exports = {
   doublecounted: true,
@@ -39,4 +39,4 @@ module.exports = {
   fantom: { tvl, },
   optimism: { tvl, },
   arbitrum: { tvl },
-};
+}
