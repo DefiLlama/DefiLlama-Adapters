@@ -13,6 +13,11 @@ async function tvl(_, __, ___, { api }) {
 }
 
 module.exports = {
+  start: 19181985, // Start of stETH deposits into the contract
+  hallmarks: [
+    { timestamp: 19219800, description: 'MOR token launch' }
+  ],
+
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'Calculates TVL based on stETH deposits in the project contract.',
