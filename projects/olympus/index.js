@@ -89,7 +89,8 @@ function sumBalancesByTokenAddress(arr) {
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-async function tvl(api, isOwnTokensMode = false) {
+function buildTvl(isOwnTokensMode = false){
+return async function tvl(api) {
 const subgraphUrls = {
   ethereum: `7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
   arbitrum:
@@ -160,11 +161,12 @@ const subgraphUrls = {
     } else if (isOwnTokensMode) return;
     api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
   })
-  return sumTokens2({ api, resolveLP: true, })
+  return await sumTokens2({ api, resolveLP: true, })
+}
 }
 
 async function ownTokens(api) {
-  return tvl(api, true);
+  return buildTvl(true)(api);
 }
 
 module.exports = {
@@ -174,19 +176,19 @@ module.exports = {
     "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",
   ethereum: {
     staking: staking(OlympusStakings, [OHM, OHM_V1]),
-    tvl,
+    tvl: buildTvl(false),
     ownTokens,
   },
   arbitrum: {
-    tvl,
+    tvl: buildTvl(false),
     // pool2,
   },
   polygon: {
-    tvl,
+    tvl: buildTvl(false),
     // pool2,
   },
   fantom: {
-    tvl,
+    tvl: buildTvl(false),
     // pool2,
   },
 };
