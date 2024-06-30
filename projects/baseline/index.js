@@ -10,11 +10,15 @@ async function tvl(api) {
   const position = await api.multiCall({ target: BASELINE_CONTRACT, calls: positions, abi: abi.getPosition, });
   //return managed positions from baseline contract
   const baselinePositionBalances = await api.multiCall({ target: BASELINE_CONTRACT, calls: position.map(i => ({ params: [i], })), abi: abi.getBalancesForPosition, });
+  const collateralLocked = await 
   //sum the reserve balances
   api.addGasToken(baselinePositionBalances.map(i => i.reserves));
 
   //baseline V2 Positions
   const v2Positions = await api.multiCall({ target: BASELINE_CONTRACT_V2, calls: positions, abi: v2Abi.getPosition });
+  //account for collateral now locked in protocol from borrowing activity
+  const v2CollateralLocked = await api.call({ target: CREDT_CONTRACT, abi: credtAbi.totalCollateralized });
+  api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);
   api.addGasToken(v2Positions.map(i => i.reserves));
 }
 
@@ -50,4 +54,5 @@ const v2Abi = {
 
 const credtAbi = {
   totalCreditIssues: "function totalCreditIssued() view returns (uint256)",
+  totalCollateralized: "function totalCollateralized() view returns (uint256)",
 }
