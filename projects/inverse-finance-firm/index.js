@@ -47,7 +47,8 @@ module.exports = {
   methodology: "Get collateral balances from users personal escrows",
   hallmarks: [    
     [1696204800, "Borrow against INV on FiRM"],
-    [1707177600, "Launch of sDOLA"],    
+    [1707177600, "Launch of sDOLA"],
+    [1718236800, "CRV liquidation"]    
   ],
   start: 1670701200, // Dec 10 2022
   ethereum: { tvl }
