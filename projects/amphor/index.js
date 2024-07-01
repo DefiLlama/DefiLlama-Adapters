@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumERC4626VaultsExport } = require('../helper/erc4626');
 const { sumTokensExport } = require('../helper/unwrapLPs');
 const sdk = require('@defillama/sdk');
@@ -18,7 +19,7 @@ const config = {
 
 const claimableSilo = '0x06eCFaAde8fcb8C1bC58CB05104604282f8a8144';
 const pendingSilo = '0x361a027e660844f336d5fa07E4cb38c40d5880d9';
-const WETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+const WETH = ADDRESSES.ethereum.WETH;
 
 const tvl = sdk.util.sumChainTvls([
   sumERC4626VaultsExport({
