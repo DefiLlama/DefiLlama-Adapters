@@ -33,18 +33,13 @@ Object.keys(config).map((network) => {
 
       // fetch underlying balances of adapter contracts
       const fetchedbalances = await api.multiCall({
-        abi: "erc20:balanceOf",
-        calls: adapters.map((adapter, i) => {
-          return {
-            target: underlyingTokens[i],
-            params: adapter,
-          }
-        }),
+        abi: "function totalAssets() external view returns (uint256 totalManaged)",
+        calls: adapters
       })
 
       // sum up the balances
-      fetchedbalances.forEach((balance, i) => {
-        api.add(underlyingTokens[i], balance)
+      fetchedbalances.forEach((totalManaged, i) => {
+        api.add(underlyingTokens[i], totalManaged)
       })
     },
   };
