@@ -15,28 +15,28 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama):XTZ Miner
 
 
-##### Twitter Link:
+##### Twitter Link:https://x.com/xtzminer
 
 
 ##### List of audit links if any:
 
 
-##### Website Link:
+##### Website Link:https://www.xtzminer.xyz/
 
 
-##### Logo (High resolution, will be shown with rounded borders):
+##### Logo (High resolution, will be shown with rounded borders):https://www.xtzminer.xyz/img/Logo.png
 
 
-##### Current TVL:
+##### Current TVL:$114.5
 
 
-##### Treasury Addresses (if the protocol has treasury)
+##### Treasury Addresses (if the protocol has treasury) 0xF66Bd930f89BF3eFeeB243DaD4f95340b2D9789B
 
 
-##### Chain:
+##### Chain:Etherlink
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -45,23 +45,23 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): An innovative DeFi project on Etherlink. With a daily income of up to 8% and a referral bonus of up to 12%, the miners optimize their ability to profit from the Coal they own.
 
 
-##### Token address and ticker if any:
+##### Token address and ticker if any:0xF66Bd930f89BF3eFeeB243DaD4f95340b2D9789B
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: Miner
 
 
 ##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
 ##### Implementation Details: Briefly describe how the oracle is integrated into your project:
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:https://docs.xtzminer.xyz/
 
 ##### forkedFrom (Does your project originate from another project):
 
 
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### methodology (what is being counted as tvl, how is tvl being calculated): contractbalance = tvl
 
 
 ##### Github org/user (Optional, if your code is open source, we can track activity):
