@@ -10,7 +10,6 @@ async function tvl(api) {
   const position = await api.multiCall({ target: BASELINE_CONTRACT, calls: positions, abi: abi.getPosition, });
   //return managed positions from baseline contract
   const baselinePositionBalances = await api.multiCall({ target: BASELINE_CONTRACT, calls: position.map(i => ({ params: [i], })), abi: abi.getBalancesForPosition, });
-  const collateralLocked = await 
   //sum the reserve balances
   api.addGasToken(baselinePositionBalances.map(i => i.reserves));
 
