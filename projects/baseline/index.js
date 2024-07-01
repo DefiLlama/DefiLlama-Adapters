@@ -17,7 +17,7 @@ async function tvl(api) {
   const v2Positions = await api.multiCall({ target: BASELINE_CONTRACT_V2, calls: positions, abi: v2Abi.getPosition });
   //account for collateral now locked in protocol from borrowing activity
   const v2CollateralLocked = await api.call({ target: CREDT_CONTRACT, abi: credtAbi.totalCollateralized });
-  api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);
+  // api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);  // YES considered own token and should not be counted towards tvl
   api.addGasToken(v2Positions.map(i => i.reserves));
 }
 
