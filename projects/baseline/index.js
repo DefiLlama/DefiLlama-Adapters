@@ -16,8 +16,7 @@ async function tvl(api) {
   //baseline V2 Positions
   const v2Positions = await api.multiCall({ target: BASELINE_CONTRACT_V2, calls: positions, abi: v2Abi.getPosition });
   //account for collateral now locked in protocol from borrowing activity
-  const v2CollateralLocked = await api.call({ target: CREDT_CONTRACT, abi: credtAbi.totalCollateralized });
-  // api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);  // YES considered own token and should not be counted towards tvl
+
   api.addGasToken(v2Positions.map(i => i.reserves));
 }
 
@@ -28,6 +27,11 @@ async function borrowed(api) {
   api.addGasToken(lentReservesV2)
 }
 
+async function staking(api) {
+  const v2CollateralLocked = await api.call({ target: CREDT_CONTRACT, abi: credtAbi.totalCollateralized });
+  api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);  // YES considered own token and should not be counted towards tvl
+}
+
 module.exports = {
   hallmarks: [
     [1714251306, "self-whitehack"]
@@ -36,6 +40,7 @@ module.exports = {
   blast: {
     tvl,
     borrowed,
+    staking,
   },
 };
 
