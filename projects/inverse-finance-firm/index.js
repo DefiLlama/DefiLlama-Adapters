@@ -15,7 +15,7 @@ async function tvl(api) {
     topics: ['0xc3dfb88ee5301cecf05761fb2728064e5b641524346ae69b9ba80394631bf11f'],
     fromBlock: firmStart,
     eventAbi: abi.AddMarket,
-    skipCache: true
+    extraKey: "fix-firm"
   })
   
   // unique markets
