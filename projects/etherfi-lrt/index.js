@@ -5,6 +5,7 @@ const owners = ["0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88"]
 
 module.exports = {
   methodology: "LRTS on 0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
+  doublecounted: true,
   ethereum: {
     tvl: sumTokensExport({
       owners: [owners],
