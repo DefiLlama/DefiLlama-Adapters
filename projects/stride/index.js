@@ -80,7 +80,7 @@ const chains = {
     coinGeckoId: "dymension",
   },
 
-  haqq: {
+  islm: {
     chainId: "haqq_11235-1",
     denom: "aISLM",
     coinGeckoId: "islamic-coin",
