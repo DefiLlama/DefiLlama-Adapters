@@ -242,6 +242,13 @@ const defaultTokens = {
     ADDRESSES.cronos.WBTC,
     "0xe44fd7fcb2b1581822d0c862b68222998a0c299a" //weth
   ],
+  ton: [
+    nullAddress,
+    ADDRESSES.ton.USDT,
+    ADDRESSES.ton.TON_1,
+    ADDRESSES.ton.TON_2,
+    ADDRESSES.ton.TON_3,
+  ],
 }
 
 function cexExports(config) {
