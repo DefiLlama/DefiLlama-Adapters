@@ -164,7 +164,7 @@ const config = {
       DAI: ADDRESSES.optimism.DAI,
     }
   },
-  zksync: {
+  era: {
     mosContract: "0xBEf06a32166C4B819fF04cCfa887733B8bb67eB5",
     tokens: {
       USDT:  ADDRESSES.era.USDT,
