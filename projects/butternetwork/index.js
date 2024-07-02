@@ -165,11 +165,11 @@ const config = {
     }
   },
   zksync: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: "0xBEf06a32166C4B819fF04cCfa887733B8bb67eB5",
     tokens: {
-      USDT: "0x493257fd37edb34451f62edf8d2a0c418852ba4c",
-      USDC: "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4",
-      WETH: "0x9e2dfb9912debb2f8cdafc05d4c1de6b57f4d404",
+      USDT:  ADDRESSES.era.USDT,
+      USDC: ADDRESSES.era.USDC,
+      WETH: ADDRESSES.era.WETH
     },
   },
   // ainn: {
