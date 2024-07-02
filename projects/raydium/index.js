@@ -118,6 +118,8 @@ async function ammV2V3() {
 }
 
 async function combinedTvl(api) {
+  try {
+
   console.time('raydium: combinedTvl')
 
   console.time('raydium: tvlCLMM')
@@ -139,8 +141,14 @@ async function combinedTvl(api) {
   await ammV4Tvl(api)
   console.timeEnd('raydium: ammV4Tvl')
 
+  } catch (e) {
+    console.error('raydium', e)
+    throw e
+  }
 
   console.timeEnd('raydium: combinedTvl')
+  const tvl = await api.getUSDValue()
+  if (tvl < 1.5e8) throw new Error('TVL is too low :' + tvl/1e6 + 'M')
   return api.getBalances()
 }
 
