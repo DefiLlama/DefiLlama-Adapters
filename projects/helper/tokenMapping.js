@@ -79,6 +79,7 @@ const fixBalancesTokens = {
   scroll: {
     [ADDRESSES.mode.STONE]: { coingeckoId: "ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c", decimals: 0 },
     '0x3ba89d490ab1c0c9cc2313385b30710e838370a4': { coingeckoId: "solv-btc", decimals: 18 },
+    '0x01f0a31698c4d065659b9bdc21b3610292a1c506': { coingeckoId: "ethereum:0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee", decimals: 0 },
   },
   tezos: {
     "KT1PnUZCp3u2KzWr93pn4DD7HAJnm3rWVrgn": { coingeckoId: "tezos", decimals: 6 },
