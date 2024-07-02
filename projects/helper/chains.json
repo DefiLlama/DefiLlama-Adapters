@@ -2,6 +2,7 @@
   "acala",
   "ace",
   "aelf",
+  "aeternity",
   "ailayer",
   "airdao",
   "alephium",
@@ -102,6 +103,7 @@
   "equilibrium",
   "era",
   "ergo",
+  "etlk",
   "ethereum",
   "ethereumclassic",
   "ethf",
@@ -189,6 +191,7 @@
   "migaloo",
   "milkomeda",
   "milkomeda_a1",
+  "mint",
   "mixin",
   "mode",
   "moonbeam",
@@ -326,5 +329,6 @@
   "zora",
   "zyx",
   "joltify",
-  "sanko"
+  "sanko",
+  "ox_chain"
 ]

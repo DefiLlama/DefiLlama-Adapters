@@ -20,4 +20,5 @@ async function borrowed(api) {
 module.exports = {
   methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
   btr: { tvl, borrowed, },
+  arbitrum: { tvl, borrowed },
 };
