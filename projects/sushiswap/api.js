@@ -103,7 +103,7 @@ module.exports = {
   optimism: { tvl: getUniTVL({ factory: '0xFbc12984689e5f15626Bad03Ad60160Fe98B303C', useDefaultCoreAssets: true, }) },
   linea: { tvl: getUniTVL({ factory: '0xFbc12984689e5f15626Bad03Ad60160Fe98B303C', useDefaultCoreAssets: true, }) },
   thundercore: { tvl: tvl2 },
-  //haqq: { tvl: tvl2 },
+  islm: { tvl: tvl2 },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
