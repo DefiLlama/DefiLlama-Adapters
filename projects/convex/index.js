@@ -51,6 +51,16 @@ async function tvl(chain, block) {
     })
     sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXN, fxnLocked)
   } else {
+    if (chain === 'fraxtal') {
+      //cvxfxs supply on fraxtal
+      const { output: fxsLockedFraxtal } = await sdk.api.abi.call({
+        target: '0x007FD070a7E1B0fA1364044a373Ac1339bAD89CF', // veFXS
+        params: '0x59CFCD384746ec3035299D90782Be065e466800B', // Convex Frax Fraxtal vote proxy
+        abi: 'erc20:balanceOf', block, chain
+      })
+      sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXS, fxsLockedFraxtal)
+    }
+
     abiPoolInfo = arbiPoolInfoABI
   }
 
