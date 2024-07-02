@@ -88,6 +88,9 @@ const fixBalancesTokens = {
   iotaevm: {
     "0x6e47f8d48a01b44DF3fFF35d258A10A3AEdC114c": { coingeckoId: 'iota', decimals: 18 },
   },
+  aurora: {
+    '0x368ebb46aca6b8d0787c96b2b20bd3cc3f2c45f7': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
   acala: {
     ACA: { coingeckoId: "acala", decimals: 12 },
     LDOT: { coingeckoId: "liquid-staking-dot", decimals: 10 },
