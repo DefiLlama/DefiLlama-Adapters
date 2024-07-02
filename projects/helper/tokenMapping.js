@@ -66,6 +66,9 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
     '0x85119527cf38f6ccf7b1b8f8fad05145358aaa81': { coingeckoId: "endurance", decimals: 18 },
   },
+  xlayer: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "okb", decimals: 18 },
+  },
   massa: {
     'AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9': { coingeckoId: 'wrapped-massa', decimals: 9 },
     'AS1hCJXjndR4c9vekLWsXGnrdigp4AaZ7uYG3UKFzzKnWVsrNLPJ': { coingeckoId: 'massa-bridged-usdc-massa', decimals: 6 },
