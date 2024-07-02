@@ -1,4 +1,5 @@
 const { sumERC4626VaultsExport } = require("../helper/erc4626");
+const { staking } = require("../helper/staking");
 const config = {
   mantle: [
     "0xfa944c1996efBF9FbFF1a378903F4AD82C172D72",
@@ -57,13 +58,47 @@ const config = {
   ],
 }
 
+const stakingDetails = {
+  telos: {
+    stakingContract: "0xC7c74fB5aa1b11d2e960B6cf9C057F67c8C602bc",
+    stakingTokens: [
+      "0x67e07BFfce318ADbA7b08618CBf4B8E271499197",
+      "0xA0dD02ef78570a4d93b7eE334EA9c593F7A0ebc4",
+      "0x4778CAAa0E52F0B58eAF5e947Ae81A0a10cDe707",
+    ]
+  },
+  degen: {
+    stakingContract: "0xA69D8E6995BF89BC0206a6C983874D8776dE0C4E",
+    stakingTokens: [
+      "0xA95417805d18d00844c3C6FB7742577Cd263fE05",
+      "0x39dD79E8b1e74E8B514D7e133b3671435Ec3Da42",
+      "0xE45F416eE25844281edF2780247E28569303c7Cd",
+    ]
+  },
+  polygon: {
+    stakingContract: "0x2c869eE61377290bbBE145b4f077113f2628Ce67",
+    stakingTokens: [
+      "0x67e07BFfce318ADbA7b08618CBf4B8E271499197",
+    ]
+  },
+}
+
+
 module.exports = {
   doublecounted: true,
 };
 
 Object.keys(config).forEach(chain => {
   const vaults = config[chain]
-  module.exports[chain] = {
-    tvl: sumERC4626VaultsExport({ vaults, tokenAbi: 'asset', balanceAbi: 'totalAssets' })
+  const stakingC = stakingDetails[chain]
+  if (stakingC) {
+    module.exports[chain] = {
+      tvl: sumERC4626VaultsExport({ vaults, tokenAbi: 'asset', balanceAbi: 'totalAssets' }),
+      staking: staking(stakingC.stakingContract, stakingC.stakingTokens),
+    };
+  } else {
+    module.exports[chain] = {
+      tvl: sumERC4626VaultsExport({ vaults, tokenAbi: 'asset', balanceAbi: 'totalAssets' }),
+    };
   }
-})
+}) 
