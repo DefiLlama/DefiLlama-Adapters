@@ -1828,5 +1828,12 @@
   },
   "fraxtal": {
     "WETH": "0xA8a59D73388D0c4344a7b0Ba287ddb654227c38a"
+  },
+  "aeternity": {
+    "WAE": "ct_J3zBY8xxjsRr3QojETNw48Eb38fjvEuJKkQ6KzECvubvEcvCa",
+    "WETH": "ct_WVqAvLQpvZCgBg4faZLXA1YBj43Fxj91D33Z8K7pFsY8YCofv",
+    "WBTC": "ct_26Q5MYFKE4z4GaYLmhZiZ9AHsSVqVNZiiyzySSHTorWyr4od4K",
+    "USDT": "ct_2AiMceYFXnUdA6A9Lu2ZQ2tr2TpfbGVfkxLfBnceoWgHTKZYvc",
+    "USDC": "ct_U1i8dzJTVWdnU2cv59TZQfLFpLfjqf7MQQC5ygSMKphn8Yew2"
   }
 }
