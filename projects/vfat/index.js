@@ -16,9 +16,11 @@ const config = {
   optimism: {
     factory: '0xB4C31b0f0B76b351395D4aCC94A54dD4e6fbA1E8',
     gaugeFactory: '0x8391fE399640E7228A059f8Fa104b8a7B4835071',
-    gaugeFactory2: '0x282AC0eA96493650F1A5E5e5d20490C782F1592a',
+    oldGaugeFactory2: '0x282AC0eA96493650F1A5E5e5d20490C782F1592a',
+    gaugeFactory2: '0x327147eE440252b893A771345025B41A267Ad985',
     voter: '0x41C914ee0c7E1A5edCD0295623e6dC557B5aBf3C',
-    NonfungiblePositionManager: '0xbB5DFE1380333CEE4c2EeBd7202c80dE2256AdF4',
+    oldNonfungiblePositionManager: '0xbB5DFE1380333CEE4c2EeBd7202c80dE2256AdF4',
+    NonfungiblePositionManager: '0x416b433906b1B72FA758e166e239c43d68dC6F29',
     fromBlock: 105896812,
     fromBlockSickle: 117753454,
     chainName: 'optimism',
@@ -71,7 +73,7 @@ const config = {
     factory: '0xB4C31b0f0B76b351395D4aCC94A54dD4e6fbA1E8',
     chainName: 'mantle',
     fromBlockSickle: 62383980,
-    moeMasterchef:  '0xA756f7D419e1A5cbd656A438443011a7dE1955b5'
+    moeMasterchef: '0xA756f7D419e1A5cbd656A438443011a7dE1955b5'
   },
   bsc: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
@@ -93,7 +95,7 @@ async function fetchSickles(api, factory, fromBlockSickle) {
 }
 
 // Helper function to fetch and process gauges
-async function fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2) {
+async function fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2, includeOldContract = false, oldGaugeFactory2 = '') {
   const deployAeroLogs = await getLogs({
     api,
     target: voter,
@@ -116,7 +118,7 @@ async function fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2) {
       const gaugeAddress = log.args.gauge;
       if (gaugeFactoryAddress === gaugeFactory) {
         acc.lp.push(gaugeAddress);
-      } else if (gaugeFactoryAddress === gaugeFactory2) {
+      } else if (gaugeFactoryAddress === gaugeFactory2 || (includeOldContract && gaugeFactoryAddress === oldGaugeFactory2)) {
         acc.nft.push(gaugeAddress);
       }
       return acc;
@@ -124,6 +126,7 @@ async function fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2) {
     { lp: [], nft: [] }
   );
 }
+
 
 async function fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, chainName) {
   const eventAbi = `event GaugeCreated(
@@ -204,9 +207,11 @@ async function fetchSickleNftPositions(api, sickles, managerAddress, isMasterche
     const poolInfos = await api.multiCall({
       abi: 'function poolInfo(uint256 pid) view returns (uint256 allocPoint, address v3Pool, address token0, address token1, uint24 fee, uint256 totalLiquidity, uint256 totalBoostLiquidity)',
       calls: poolInfoCalls,
+      permitFailure: true,
     });
 
     positions.forEach((position, index) => {
+      if (!position) return;
       const poolInfo = poolInfos[index];
       position.allocPoint = poolInfo.allocPoint;
       position.v3Pool = poolInfo.v3Pool;
@@ -218,7 +223,7 @@ async function fetchSickleNftPositions(api, sickles, managerAddress, isMasterche
     });
   }
 
-  return positions;
+  return positions.filter(position => position)
 }
 
 async function fetchGauges3(api, voter, fromBlock) {
@@ -265,10 +270,12 @@ async function getLPBalances(api, gauges, sickles, stakingTokens) {
 
 // TVL calculation for Base and Optimism
 async function tvlBaseOptimism(api) {
-  const { factory, gaugeFactory, gaugeFactory2, voter, NonfungiblePositionManager, fromBlock, fromBlockSickle, chainName } = config[api.chain];
+  const { factory, gaugeFactory, gaugeFactory2, oldGaugeFactory2, voter, NonfungiblePositionManager, oldNonfungiblePositionManager, fromBlock, fromBlockSickle, chainName } = config[api.chain];
 
   const sickles = await fetchSickles(api, factory, fromBlockSickle);
-  const deployedAeroGauges = await fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2);
+  const includeOldContract = chainName === 'optimism';
+  const deployedAeroGauges = await fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2, includeOldContract, oldGaugeFactory2);
+
   const stakingTokens = await api.multiCall({ abi: 'address:stakingToken', calls: deployedAeroGauges.lp });
   const { balances, tokens } = await getLPBalances(api, deployedAeroGauges.lp, sickles, stakingTokens);
 
@@ -280,8 +287,12 @@ async function tvlBaseOptimism(api) {
   await Promise.all(deployedAeroGauges.nft.map(async (gauge, i) => {
     const tick = slot0s[i].tick;
     const nftIds = (await api.multiCall({ abi: 'function stakedValues(address depositor) view returns (uint256[])', calls: sickles, target: gauge })).flat();
-    const positions = await api.multiCall({ abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)', calls: nftIds, target: NonfungiblePositionManager });
-    positions.forEach(position => addUniV3LikePosition({ ...position, tick, api }));
+    const positions = await api.multiCall({ abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)', calls: nftIds, target: NonfungiblePositionManager, permitFailure: true, });
+    if (chainName === 'optimism' && oldNonfungiblePositionManager) {
+      const oldPositions = await api.multiCall({ abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)', calls: nftIds, target: oldNonfungiblePositionManager, permitFailure: true, });
+      positions.push(...oldPositions);
+    }
+    positions.filter(i => i).forEach(position => addUniV3LikePosition({ ...position, tick, api }));
   }));
 
   if (chainName === 'base') {
@@ -415,7 +426,7 @@ async function tvlMantle(api) {
     const pid = call.params[0];
     const deposit = deposits[index];
     const token = farmTokenMap[pid];
-    
+
     if (!tokenBalanceMap[token]) {
       tokenBalanceMap[token] = deposit;
     } else {
