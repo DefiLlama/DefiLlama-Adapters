@@ -220,6 +220,14 @@ const fixBalancesTokens = {
   fraxtal: {
     [ADDRESSES.fraxtal.WETH]: { coingeckoId: 'ethereum', decimals: 18 },
   },
+  aeternity: {
+    [ADDRESSES.null]:{ coingeckoId: 'aeternity', decimals: 18 },
+    [ADDRESSES.aeternity.WAE]:{ coingeckoId: 'aeternity', decimals: 18 },
+    [ADDRESSES.aeternity.WETH]:{ coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.aeternity.USDC]:{ coingeckoId: 'usd-coin', decimals: 18 },
+    [ADDRESSES.aeternity.USDT]:{ coingeckoId: 'tether', decimals: 18 },
+    [ADDRESSES.aeternity.WBTC]:{ coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
