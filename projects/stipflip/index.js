@@ -1,51 +1,24 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const { cachedGraphQuery } = require("../helper/cache");
-
-const synthQuery = `{
-  synths {
-    id
-  }
-}`;
-
-const poolQuery = `{
-  pools {
-    id
-  }
-}`;
-
-const WETC = "0x82A618305706B14e7bcf2592D4B9324A366b6dAd";
-const ETC = "0x0000000000000000000000000000000000000000";
-const ORACLE = "0x4AC635E92801e657F44BDEfcc7660Ea1431DF846";
-
-const endpoint = "https://ether-graphiql.sf.exchange/subgraphs/name/sotachi/sf";
+const { getLogs2 } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { uniV3Export } = require('../helper/uniswapV3')
 
 async function tvl(api) {
-  const { pools } = await cachedGraphQuery(
-    "stipflip/pools/ethereumclassic",
-    endpoint,
-    poolQuery,
-    {
-      api,
-    }
-  );
-  const { synths } = await cachedGraphQuery(
-    "stipflip/synths/ethereumclassic",
-    endpoint,
-    synthQuery,
-    {
-      api,
-    }
-  );
+  const logs = await getLogs2({
+    api,
+    factory: '0x352Cea820fAE79016490518b20f1FD4F53bC56Af',
+    eventAbi: 'event SynthCreated(address indexed oracle, address indexed synth, bool long)',
+    fromBlock: 20172088,
+  })
+  const synths = logs.map(log => log.synth)
+  await api.sumTokens({ owners: synths, tokens: [ADDRESSES.null] })
+  const uniTvl = uniV3Export({
+    ethereumclassic: { blacklistedTokens: synths.concat(['0xf09ace63aa1345882a1ca200b7243f5786eb177b']), factory: '0xaCc703c9C8248a141113C672ea71d196E8118210', fromBlock: 20130563, }
+  }).ethereumclassic.tvl
 
-  return sumTokensExport({
-    owners: [ORACLE, ...synths.map((s) => s.id), ...pools.map((p) => p.id)],
-    tokens: [WETC, ETC],
-  })(api);
+  return uniTvl(api)
 }
 
 module.exports = {
-  methodology:
-    "Fetch all the pools and synths from the subgraph and sum their balance up. Synths balances are in the native ETC token, pool balance is in WETC wrapped token.",
   ethereumclassic: {
     tvl,
   },
