@@ -4,6 +4,7 @@ const { cachedGraphQuery } = require('../helper/cache')
 const graphs = {
   ethereum: sdk.graph.modifyEndpoint('2ZoJCp4S7YP7gbYN2ndsYNjPeZBV1PMti7BBoPRRscNq'),
   optimism: sdk.graph.modifyEndpoint('3QfEXbPfP23o3AUzcmjTfRtUUd4bfrFj3cJ4jET57CTX'),
+  polygon: sdk.graph.modifyEndpoint('7camBLZckE5TLKha372tqawpDs8Lkez6yYiri7PykRak'),
 }
 
 function tvlPaged(chain) {
@@ -29,7 +30,7 @@ module.exports = {
   timetravel: false,
   hallmarks: []
 }
-const chains = ['ethereum', 'optimism']
+const chains = ['ethereum', 'optimism', 'polygon']
 
 chains.forEach(chain => {
   module.exports[chain] = {
