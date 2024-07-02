@@ -154,7 +154,7 @@ const config = {
       DAI: ADDRESSES.arbitrum.DAI,
     }
   },
-  "optimistic-ethereum": {
+  optimism: {
     mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
     tokens: {
       USDT: ADDRESSES.optimism.USDT,
@@ -172,13 +172,13 @@ const config = {
       WETH: "0x9e2dfb9912debb2f8cdafc05d4c1de6b57f4d404",
     },
   },
-  ainn: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
-    tokens: {
-      USDT: "0x0663C09Bd0911181B39D66ec4bfAC9d89c8516BA",
-      USDC: "0xfaBc451eA1Fd9707c6Ba1769F570E760101C7f22",
-    }
-  },
+  // ainn: {
+  //   mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+  //   tokens: {
+  //     USDT: "0x0663C09Bd0911181B39D66ec4bfAC9d89c8516BA",
+  //     USDC: "0xfaBc451eA1Fd9707c6Ba1769F570E760101C7f22",
+  //   }
+  // },
   mantle: {
     mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
     tokens: {
