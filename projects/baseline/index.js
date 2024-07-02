@@ -29,7 +29,7 @@ async function borrowed(api) {
 
 async function staking(api) {
   const v2CollateralLocked = await api.call({ target: CREDT_CONTRACT, abi: credtAbi.totalCollateralized });
-  api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);  // YES considered own token and should not be counted towards tvl
+  api.add(BASELINE_CONTRACT_V2, v2CollateralLocked);  // collateral deposited into protocol by EOA in exchange for a loan
 }
 
 module.exports = {
