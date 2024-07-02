@@ -9,10 +9,8 @@ const boosterAddresses = {
 };
 
 const staker = '0x989aeb4d175e16225e39e87d0d97a3360524ad80'
-const cvxAddress = ADDRESSES.ethereum.CVX;
 const cvxRewardsAddress = "0xCF50b810E57Ac33B91dCF525C6ddd9881B139332";
 const cvxLockerAddress = "0x72a19342e8F1838460eBFCCEf09F6585e32db86E";
-const crvAddress = ADDRESSES.ethereum.CRV;
 
 const arbiPoolInfoABI = 'function poolInfo(uint256) view returns (address lptoken, address gauge, address rewards, bool shutdown, address factory)'
 
@@ -27,15 +25,31 @@ async function tvl(chain, block) {
       params: staker,
       abi: 'erc20:balanceOf', block,
     })
-    sdk.util.sumSingleBalance(balances, crvAddress, crvLocked)
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.CRV, crvLocked)
 
     //cvxfxs supply
     const { output: fxsLocked } = await sdk.api.abi.call({
       target: '0xc8418af6358ffdda74e09ca9cc3fe03ca6adc5b0', // veFXS
-      params: '0x59cfcd384746ec3035299d90782be065e466800b',
+      params: '0x59cfcd384746ec3035299d90782be065e466800b', // Convex Frax vote proxy
       abi: 'erc20:balanceOf', block,
     })
-    sdk.util.sumSingleBalance(balances, '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', fxsLocked)
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXS, fxsLocked)
+
+    //cvxprisma supply
+    const { output: [prismaLocked] } = await sdk.api.abi.call({
+      target: '0x3f78544364c3eCcDCe4d9C89a630AEa26122829d', // PRISMA locker
+      params: '0x8ad7a9e2B3Cd9214f36Cb871336d8ab34DdFdD5b', // Convex Prisma vote proxy
+      abi: 'function getAccountBalances(address) view returns (uint256, uint256)', block,
+    })
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.PRISMA, prismaLocked * 1e18)
+
+    //cvxfxn supply
+    const { output: fxnLocked } = await sdk.api.abi.call({
+      target: '0xEC6B8A3F3605B083F7044C0F31f2cac0caf1d469', // veFXN
+      params: '0xd11a4Ee017cA0BECA8FA45fF2abFe9C6267b7881', // Convex F(x) vote proxy
+      abi: 'erc20:balanceOf', block,
+    })
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXN, fxnLocked)
   } else {
     abiPoolInfo = arbiPoolInfoABI
   }
@@ -83,4 +97,4 @@ chains.forEach(chain => {
   }
 })
 
-module.exports.ethereum.staking = stakings([cvxLockerAddress, cvxRewardsAddress], cvxAddress)
+module.exports.ethereum.staking = stakings([cvxLockerAddress, cvxRewardsAddress], ADDRESSES.ethereum.CVX)
