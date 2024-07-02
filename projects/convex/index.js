@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const ABI = require('./abi.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { stakings } = require('../helper/staking');
 
 const boosterAddresses = {
   fraxtal: '0xd3327cb05a8E0095A543D582b5B3Ce3e19270389',
@@ -11,6 +11,7 @@ const boosterAddresses = {
 const staker = '0x989aeb4d175e16225e39e87d0d97a3360524ad80'
 const cvxAddress = ADDRESSES.ethereum.CVX;
 const cvxRewardsAddress = "0xCF50b810E57Ac33B91dCF525C6ddd9881B139332";
+const cvxLockerAddress = "0x72a19342e8F1838460eBFCCEf09F6585e32db86E";
 const crvAddress = ADDRESSES.ethereum.CRV;
 
 const arbiPoolInfoABI = 'function poolInfo(uint256) view returns (address lptoken, address gauge, address rewards, bool shutdown, address factory)'
@@ -82,4 +83,4 @@ chains.forEach(chain => {
   }
 })
 
-module.exports.ethereum.staking = sumTokensExport({ owner: cvxRewardsAddress, tokens: [cvxAddress] })
+module.exports.ethereum.staking = stakings([cvxLockerAddress, cvxRewardsAddress], cvxAddress)
