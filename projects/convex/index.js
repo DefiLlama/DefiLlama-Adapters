@@ -3,7 +3,11 @@ const sdk = require("@defillama/sdk");
 const ABI = require('./abi.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
-const boosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
+const boosterAddresses = {
+  fraxtal: '0xd3327cb05a8E0095A543D582b5B3Ce3e19270389',
+  default: '0xF403C135812408BFbE8713b5A23a04b3D48AAE31',
+};
+
 const staker = '0x989aeb4d175e16225e39e87d0d97a3360524ad80'
 const cvxAddress = ADDRESSES.ethereum.CVX;
 const cvxRewardsAddress = "0xCF50b810E57Ac33B91dCF525C6ddd9881B139332";
@@ -35,13 +39,25 @@ async function tvl(chain, block) {
     abiPoolInfo = arbiPoolInfoABI
   }
 
-  let poolInfo = await sdk.api2.abi.fetchList({ chain, block, lengthAbi: ABI.poolLength, itemAbi: abiPoolInfo, target: boosterAddress })
+  const poolInfo = await sdk.api2.abi.fetchList({
+    chain,
+    block,
+    lengthAbi: ABI.poolLength,
+    itemAbi: abiPoolInfo,
+    target: boosterAddresses[chain] ?? boosterAddresses.default,
+  })
+
   const { output: gaugeBalances } = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
-    calls: Array.from(new Set(poolInfo.map(p=>p.gauge))).map(i => ({ target: i, params: staker })),
-    chain, block,
+    calls: Array.from(new Set(poolInfo.map(p => p.gauge))).map(i => ({ target: i, params: staker })),
+    chain,
+    block,
   })
-  gaugeBalances.forEach(({ output, input }, i) => sdk.util.sumSingleBalance(balances, chain + ':' + poolInfo.find(p=>p.gauge.toLowerCase()===input.target.toLowerCase()).lptoken, output))
+
+  gaugeBalances.forEach(({ output, input }, i) => {
+    sdk.util.sumSingleBalance(balances, chain + ':' + poolInfo.find(p => p.gauge.toLowerCase() === input.target.toLowerCase()).lptoken, output)
+  })
+
   return balances
 }
 
@@ -49,13 +65,14 @@ const chains = [
   'ethereum',
   'arbitrum',
   'polygon',
+  'fraxtal',
 ]
 
 module.exports = {
   doublecounted: true,
   hallmarks: [
     [1640164144, "cvxFXS Launched"],
-    [1651881600, "UST depeg"]
+    [1651881600, "UST depeg"],
   ]
 };
 
