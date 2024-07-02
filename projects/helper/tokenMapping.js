@@ -45,6 +45,9 @@ const fixBalancesTokens = {
       [ADDRESSES.q.ELK]: { coingeckoId: "elk-finance", decimals: 18 },
       [ADDRESSES.q.WETH]: { coingeckoId: "ethereum", decimals: 18 },
   },
+  degen: {
+    '0xf058eb3c946f0eaeca3e6662300cb01165c64ede': { coingeckoId: 'ethereum', decimals: 18 },
+  },
   stacks: {
     "SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.token-vlqstx::vlqstx": { coingeckoId: "blockstack", decimals: 6 },
     "SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc::bridged-btc": { coingeckoId: "xlink-bridged-btc-stacks", decimals: 8 },
@@ -65,17 +68,6 @@ const fixBalancesTokens = {
   ace: {
     [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
     '0x85119527cf38f6ccf7b1b8f8fad05145358aaa81': { coingeckoId: "endurance", decimals: 18 },
-  },
-  xlayer: {
-    '0x0000000000000000000000000000000000000000': { coingeckoId: "okb", decimals: 18 },
-  },
-  ontology_evm: {
-    [nullAddress]: { coingeckoId: "ontology", decimals: 18 },
-    '0x219cc8e994ea6b35cdcffb5d44e229325d5ad02a': { coingeckoId: "ontology", decimals: 9 },
-    '0x72b0f5612802d473a13716db71a0348bcf631d98': { coingeckoId: "tether", decimals: 6 },
-    '0xae834526aa3b70de9b34f81c4bf51bc2c80a5473': { coingeckoId: "usd-coin", decimals: 6 },
-    '0xfcad47c29551c7691398776c8fa73287c8fa8ec0': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-    '0xd18f97592a1adf4fa18d041abb7bd89491d3a8be': { coingeckoId: "ethereum", decimals: 18 },
   },
   massa: {
     'AS12U4TZfNK7qoLyEERBBRDMu8nm5MKoRzPXDXans4v9wdATZedz9': { coingeckoId: 'wrapped-massa', decimals: 9 },
