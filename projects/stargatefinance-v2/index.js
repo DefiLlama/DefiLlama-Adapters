@@ -1,4 +1,4 @@
-const abi = require('./abi.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const CONFIG = {
   ethereum: {
@@ -87,18 +87,8 @@ const CONFIG = {
 
 const createTvlFunction = (pools) => {
   return async (api) => {
-    const [tokens, balances] = await Promise.all([
-      api.multiCall({
-        abi: abi.token,
-        calls: pools,
-      }),
-      api.multiCall({
-        abi: abi.tvl,
-        calls: pools,
-      }),
-    ]);
-
-    api.add(tokens, balances);
+    const tokens = await api.multiCall({ abi: 'address:token', calls: pools, })
+    return sumTokens2({ api, tokensAndOwners2: [tokens, pools] })
   };
 };
 

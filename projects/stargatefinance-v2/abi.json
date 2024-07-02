@@ -1,4 +1,0 @@
-{
-  "token": "function token() view returns (address)",
-  "tvl": "function tvl() view returns (uint256)"
-}
