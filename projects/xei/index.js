@@ -1,24 +1,14 @@
-const { json } = require('starknet');
-const { get } = require('../helper/http');
-const { uniV3Export } = require('../helper/uniswapV3');
-const { toUSDTBalances } = require('../helper/balances');
-
-
-
-const V3Factory = '0x0596a0469D5452F876523487251BDdE73D4B2597';
+const { getConfig } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 async function tvl(api) {
-  // console.log(api.timestamp)
-  const res=await get("https://app.xei.finance/indexer/1329/xei/dexTvl?endAt="+api.timestamp.toString())
-  const tvl=parseInt(res.data)
- return toUSDTBalances(tvl)
-  
-  
+  const { data } = await getConfig('xei', 'https://app.xei.finance/indexer/1329/xei/poolList?page=1&pageSize=999')
+  const transformToken = i => i === ADDRESSES.null ? ADDRESSES.sei.WSEI : i
+  const ownerTokens = data.list.map(({ detail: i }) => ([[i.Token0, i.Token1].map(transformToken), i.Pool]))
+  return sumTokens2({ api, ownerTokens, })
 }
 
 module.exports = {
-  methodology:"TVL of LPs",
-  sei:{
-    tvl
-  }
-}; 
+  sei: { tvl },
+}
