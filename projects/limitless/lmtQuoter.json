@@ -1,0 +1,3 @@
+{
+  "getPoolKeys": "function getPoolKeys() view returns (tuple(address, address, string, string, uint24, string, string, uint8, uint8, int24)[])"
+}
