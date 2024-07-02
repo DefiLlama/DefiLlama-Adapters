@@ -15,6 +15,7 @@ const poolQuery = `{
 
 const WETC = "0x82A618305706B14e7bcf2592D4B9324A366b6dAd";
 const ETC = "0x0000000000000000000000000000000000000000";
+const ORACLE = "0x4AC635E92801e657F44BDEfcc7660Ea1431DF846";
 
 const endpoint = "https://ether-graphiql.sf.exchange/subgraphs/name/sotachi/sf";
 
@@ -37,7 +38,7 @@ async function tvl(api) {
   );
 
   return sumTokensExport({
-    owners: [...synths.map((s) => s.id), ...pools.map((p) => p.id)],
+    owners: [ORACLE, ...synths.map((s) => s.id), ...pools.map((p) => p.id)],
     tokens: [WETC, ETC],
   })(api);
 }
