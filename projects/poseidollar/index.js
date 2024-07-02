@@ -1,5 +1,4 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { default: BigNumber } = require("bignumber.js");
 const sui = require("../helper/chain/sui");
 
 const extractRewardTokenType = (type) => {
@@ -14,13 +13,12 @@ const extractRewardTokenType = (type) => {
 const extractFarmTokensTypeLP = (type) => {
   if (type.includes("::LP<")) {
     const pair = type.split("::LP<")[1];
-    const lpType = `${
-      type
+    const lpType = `${type
         .split(
           type.includes("::Custodian<") ? "::Custodian<" : "::FeeCollector<"[1]
         )[1]
         .split(">")[0]
-    }>`;
+      }>`;
     const coinXType = pair.split(",")[0]?.trim();
     const coinYType = pair.split(",")[1].split(">")[0]?.trim();
     return { coinXType, coinYType, lpType };
@@ -51,20 +49,23 @@ const getPool = async (listPoolFlowX, poolRegistry) => {
       poolInfo[0].objectType
     );
 
-    let coinXStaked = new BigNumber(0);
-    let coinYStaked = new BigNumber(0);
+    let coinXStaked = 0;
+    let coinYStaked = 0;
     if (lpType) {
       const flowxPoolInfo = listPoolFlowX.find((item) =>
         item.lp_supply.type.includes(lpType)
       );
-      const lpRate = new BigNumber(totalStaked).div(
-        flowxPoolInfo.lp_supply.fields.value
-      );
-      coinXStaked = lpRate.multipliedBy(flowxPoolInfo.reserve_x.fields.balance);
-      coinYStaked = lpRate.multipliedBy(flowxPoolInfo.reserve_y.fields.balance);
+      const lpRate = totalStaked / flowxPoolInfo.lp_supply.fields.value
+      coinXStaked = lpRate * flowxPoolInfo.reserve_x.fields.balance
+      coinYStaked = lpRate * flowxPoolInfo.reserve_y.fields.balance
     } else {
-      coinXStaked = new BigNumber(totalStaked);
+      coinXStaked = totalStaked
     }
+
+    if (coinXType === ADDRESSES.sui.USDC) 
+      coinXStaked = coinXStaked / 1e3
+    if (coinYType === ADDRESSES.sui.USDC)
+      coinYStaked = coinYStaked / 1e3
 
     poolInfoResult.push({
       poolId: poolId,
@@ -92,34 +93,12 @@ async function suiTVL(api) {
     "0x3cfad71fc1f65addbadc0d4056fbd1106aa6b9a219e3ea1f5356a2f500d13182"
   );
 
-  let totalResult = {};
-
   //TVL on PSH Earn
   for (let i = 0; i < poolShareInfo.length; i++) {
-    if (!totalResult.hasOwnProperty(poolShareInfo[i].coinX)) {
-      totalResult[poolShareInfo[i].coinX] = poolShareInfo[i].coinXStaked;
-    } else {
-      totalResult[poolShareInfo[i].coinX] = totalResult[
-        poolShareInfo[i].coinX
-      ].plus(poolShareInfo[i].coinXStaked);
-    }
+    api.add(poolShareInfo[i].coinX, poolShareInfo[i].coinXStaked)
 
-    if (poolShareInfo[i].coinY) {
-      if (!totalResult.hasOwnProperty(poolShareInfo[i].coinY)) {
-        totalResult[poolShareInfo[i].coinY] = poolShareInfo[i].coinYStaked;
-      } else {
-        totalResult[poolShareInfo[i].coinY] = totalResult[
-          poolShareInfo[i].coinY
-        ].plus(poolShareInfo[i].coinYStaked);
-      }
-    }
-  }
-
-  //Result
-  for (const property in totalResult) {
-    if (property) {
-      api.add(property, totalResult[property].toFixed(0));
-    }
+    if (poolShareInfo[i].coinY)
+      api.add(poolShareInfo[i].coinY, poolShareInfo[i].coinYStaked)
   }
 }
 
