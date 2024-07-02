@@ -87,7 +87,13 @@ module.exports = {
   doublecounted: true,
   hallmarks: [
     [1640164144, "cvxFXS Launched"],
+    [1642374675, "MIM depeg"],
     [1651881600, "UST depeg"],
+    [1654822801, "stETH depeg"],
+    [1667692800, "FTX collapse"],
+    [1690715622, "Curve reentrancy hack"],
+    [1695705887, "cvxFXN Launched"],
+    [1698409703, "cvxPRISMA Launched"],
   ]
 };
 
