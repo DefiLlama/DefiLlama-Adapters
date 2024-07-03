@@ -3,14 +3,14 @@ const starknet = require("../helper/chain/starknet");
 const { getConfig } = require("../helper/cache");
 
 // teahouse public api for vault
-const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
+const teahouseVaultAPI = "https://raw.githubusercontent.com/TeahouseFinance/Vaults-for-DeFiLlama/main/vaults.json";
 
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let pairVault = [];
   let portVault = [];
   let starknetPairVault = [];
-  const { vaults } = await getConfig("teahouse/v3_reset_cache", teahouseVaultAPI);
+  const { vaults } = await getConfig("teahouse/v3_vault_data", teahouseVaultAPI);
   vaults.forEach((element) => {
     // permissionless vaults
     if (element.isDeFi == true && element.isActive == true) {
