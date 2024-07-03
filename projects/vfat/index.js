@@ -307,7 +307,7 @@ async function tvlArbitrumLinea(api) {
   const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
 
   positions.forEach(position => addUniV3LikePosition({ ...position, api }));
-  masterchefPositions.forEach(position => addUniV3LikePosition({ ...position, api }));
+  masterchefPositions.splice(6, 1).forEach(position => addUniV3LikePosition({ ...position, api }));
 
   return sumTokens2({ api, resolveLP: true });
 
