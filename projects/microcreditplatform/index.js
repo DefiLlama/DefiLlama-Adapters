@@ -9,8 +9,8 @@ module.exports = {
         '0x78ed6350E3E4A0Fa59C48DA702d66cEe90F38BDB', // microcreditprofitshare contract
       ],
       tokens: [ 
-        '0xe5CeD8244f9F233932d754A0B1F7268555FBd3B5', // fake USDT
-        '0x829e43f497b8873fA5c83FcF665b96A39a1FBeD6', // fake MCT
+        '0xe5CeD8244f9F233932d754A0B1F7268555FBd3B5', 
+        '0x829e43f497b8873fA5c83FcF665b96A39a1FBeD6', 
       ],
     }),
   },
