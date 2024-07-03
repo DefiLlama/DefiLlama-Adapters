@@ -100,7 +100,8 @@ const config = {
   polygon_zkevm: { id: 'zkevm'},
   era: { id: 'zksync'},
   btr: { id: 'bitlayer'},
-  bouncebit: { id: 'bb'}
+  bouncebit: { id: 'bb'},
+  europa: { id: 'skale-europa' }
 }
 
 async function addCoinfg(id, ownerTokens) {
