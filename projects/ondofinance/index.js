@@ -1,6 +1,7 @@
 const { getTokenSupply } = require("../helper/solana");
 const sui = require("../helper/chain/sui");
 const { aQuery } = require("../helper/chain/aptos");
+const { get } = require("../helper/http");
 
 module.exports = {
   methodology: "Sums the total supplies of Ondo's issued tokens.",
@@ -27,6 +28,9 @@ const config = {
   },
   aptos: {
     USDY: "0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc",
+  },
+  noble: {
+    USDY: "ausdy",
   },
 };
 
@@ -67,6 +71,9 @@ Object.keys(config).forEach((chain) => {
           supply.vec[0].integer.vec[0].value / Math.pow(10, decimals);
 
         api.addTokens(config.ethereum.USDY, aptosSupply * 1e18, { skipChain: true, });
+      } else if (chain === "noble") {
+        const res = await get(`https://noble-api.polkachu.com/cosmos/bank/v1beta1/supply/${config.noble.USDY}`);
+        api.addTokens(config.ethereum.USDY, parseInt(res.amount.amount), { skipChain: true, });
       } else {
         supplies = await api.multiCall({
           abi: "erc20:totalSupply",
