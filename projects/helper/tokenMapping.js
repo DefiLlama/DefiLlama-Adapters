@@ -158,10 +158,13 @@ const fixBalancesTokens = {
     '0x2967e7bb9daa5711ac332caf874bd47ef99b3820': { coingeckoId: 'wrapped-stbtc', decimals: 18 },
   },
   real: {
-    [ADDRESSES.null]: { coingeckoId: 'bitcoin', decimals: 18 },
-    '0x90c6e93849e06ec7478ba24522329d14a5954df4': { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+    '0x90c6E93849E06EC7478ba24522329d14A5954Df4': { coingeckoId: 'ethereum', decimals: 18 },
     '0x75d0cbf342060b14c2fc756fd6e717dfeb5b1b70': { coingeckoId: 'dai', decimals: 18 },
-    '0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd': { coingeckoId: 'mountain-protocol-usdm', decimals: 18 },
+    '0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd': { coingeckoId: 'real-us-t-bill', decimals: 18 },
+    '0xAEC9e50e3397f9ddC635C6c429C8C7eca418a143': { coingeckoId: 'arcana-2', decimals: 18 }, // arcUSD
+    '0xeAcFaA73D34343FcD57a1B3eB5B0D949df727712': { coingeckoId: 'arcana-2', decimals: 18 }, // PTa, 1:1 wrapped arcUSD
+    '0x25ea98ac87A38142561eA70143fd44c4772A16b6': { coingeckoId: 'stack-2', decimals: 18 }, // MORE
   },
   taiko: {
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
