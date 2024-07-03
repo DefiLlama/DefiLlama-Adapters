@@ -26,7 +26,12 @@ const Vaults = [
 const HOP_MAGIC_VAULT = "0x2d79B76841191c9c22238535a93Ee8169096A5Cc";
 const GMX_VAULT = "0x8CdF8d10ea6Cd3492e67C4250481A695c2a75C4a";
 const GMX = ADDRESSES.arbitrum.GMX;
-const STEER_VAULTS = ["0x3fB6C1C5b7319Af78608570F97b920a553aB0Ed3", "0xe41586C416D8fAb3ee01e8a29DaD6f3a8655097d"];
+const STEER_VAULTS = [
+  "0x404148F0B94Bc1EA2fdFE98B0DbF36Ff3E015Bb5",
+  "0x84f35729fF344C76FA73989511735c85E1F7487D",
+  "0x79deCB182664B1E7809a7EFBb94B50Db4D183310",
+  "0x4fFD588241Fa9183f5cDd57C4CACCac3817A380d",
+];
 
 async function getHopMagicData(api) {
   const tokenAddress = await api.call({
@@ -42,12 +47,28 @@ async function getHopMagicData(api) {
 }
 
 async function getSteerData(api) {
-  let tokens = await api.multiCall({ abi: "address:steerVault", calls: STEER_VAULTS });
-  let bals = await api.multiCall({
-    abi: "uint256:balance",
-    calls: STEER_VAULTS,
+  let tokens = await api.multiCall({ abi: "address:token", calls: STEER_VAULTS });
+  const [token0s, token1s, supplies, reserves, bals] = await Promise.all([
+    api.multiCall({ abi: "address:token0", calls: tokens }),
+    api.multiCall({ abi: "address:token1", calls: tokens }),
+    api.multiCall({ abi: "uint256:totalSupply", calls: tokens }),
+    api.multiCall({
+      abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+      calls: tokens,
+    }),
+    api.multiCall({
+      abi: "uint256:balance",
+      calls: STEER_VAULTS,
+    }),
+  ]);
+
+  bals.forEach((bal, i) => {
+    const ratio = bal / supplies[i];
+    const token0Bal = reserves[i][0] * ratio;
+    const token1Bal = reserves[i][1] * ratio;
+    api.addToken(token0s[i], token0Bal);
+    api.addToken(token1s[i], token1Bal);
   });
-  api.addTokens(tokens, bals);
 }
 
 async function getGMXData(api) {
@@ -74,6 +95,7 @@ async function tvl(api) {
   await getSteerData(api);
 
   api.addTokens(tokens, bals);
+
   return sumTokens2({ api, resolveLP: true });
 }
 
