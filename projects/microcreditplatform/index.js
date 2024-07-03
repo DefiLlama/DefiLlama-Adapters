@@ -1,4 +1,5 @@
-const { sumTokensExport } = require('../helper/unknownTokens')
+const { getChainTvl } = require('@defillama/sdk/build/generalUtil');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const creditDatabaseContract = '0xf79B598E856858527573cE0771b872C88887a055'
 const microcreditInvestmentContract = '0x3B724e84Fd7479C1bed10cAf8eed825dad852C1b'
@@ -7,29 +8,17 @@ const microcreditProfitShareContract = '0x78ed6350E3E4A0Fa59C48DA702d66cEe90F38B
 const fakeUsdt = '0xe5CeD8244f9F233932d754A0B1F7268555FBd3B5'
 const fakeMct = '0x829e43f497b8873fA5c83FcF665b96A39a1FBeD6'
 
-async function tvl(api) {
+async function tvl(timestamp, ethBlock, chainBlocks) {
   const balances = {}
+  const block = chainBlocks.haqq;
+  const transformAddress = addr => `haqq:${addr}`
   const contracts = [
     creditDatabaseContract,
     microcreditInvestmentContract,
     microcreditProfitShareContract,
   ]
-  
-  const tokens = [
-    fakeUsdt,
-    fakeMct,
-  ]
 
-  for (const contract of contracts) {
-    for (const token of tokens) {
-      const balance = await api.call({
-        abi: 'erc20:balanceOf',
-        target: token,
-        params: [contract],
-      })
-      api.add(balances, token, balance)
-    }
-  }
+  await sumTokens2({ balances, block, chain: 'haqq', owners: contracts, tokens: [fakeUsdt, fakeMct], transformAddress })
 
   return balances
 }
