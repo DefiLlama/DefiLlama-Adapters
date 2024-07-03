@@ -239,6 +239,9 @@ const fixBalancesTokens = {
     [ADDRESSES.aeternity.USDC]:{ coingeckoId: 'usd-coin', decimals: 18 },
     [ADDRESSES.aeternity.USDT]:{ coingeckoId: 'tether', decimals: 18 },
     [ADDRESSES.aeternity.WBTC]:{ coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  },
+  arbitrum: {
+    '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34': { coingeckoId:'ethereum:0x4c9edd5852cd905f086c759e8383e09bff1e68b3', decimals:0 }
   }
 }
 
