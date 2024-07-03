@@ -6,12 +6,12 @@ const config = {
   ethereum: {
     lvTokens: {
       totalAssets: [
-        // '0x3b022EdECD65b63288704a6fa33A8B9185b5096b', // ampr-LP-USD
-        // '0x2791EB5807D69Fe10C02eED6B4DC12baC0701744', // ampr-LP-ETH
-        // '0xC4A324fDF8a2495776B4d6cA46599B5a52f96489', // ampr-LP-BTC
-        // '0xf97ecda5F9ff31d83f635a6EA70D2D3B9C8f2e00', // amprPTweETH
-        // '0x0498b85FB4EC85EF5EFe82513aa9DaF767358A15', // amprPTrsETH
-        // '0x920F17e741029D904936c58a545DFFC72f82C079', // amprPTezETH
+        '0x3b022EdECD65b63288704a6fa33A8B9185b5096b', // ampr-LP-USD
+        '0x2791EB5807D69Fe10C02eED6B4DC12baC0701744', // ampr-LP-ETH
+        '0xC4A324fDF8a2495776B4d6cA46599B5a52f96489', // ampr-LP-BTC
+        '0xf97ecda5F9ff31d83f635a6EA70D2D3B9C8f2e00', // amprPTweETH
+        '0x0498b85FB4EC85EF5EFe82513aa9DaF767358A15', // amprPTrsETH
+        '0x920F17e741029D904936c58a545DFFC72f82C079', // amprPTezETH
         '0xcdc51f2b0e5f0906f2fd5f557de49d99c34df54e', // amprETH
       ],
       totalSupply: [
@@ -45,5 +45,6 @@ module.exports['ethereum'] = { tvl };
 
 module.exports.hallmarks = [
   [1710115200, 'Beta test closing'],
-  [1712361600, 'LRT vault release'],
+  [1712361600, 'ETH Boosted Vault Release'],
+  [1718064000, 'Symbiotic LRT Vault Release'],
 ];
