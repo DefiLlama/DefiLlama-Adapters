@@ -197,6 +197,7 @@ const fixBalancesTokens = {
   },
   etlk: {
     '0xc9b53ab2679f573e480d01e0f49e2b5cfb7a3eab': { coingeckoId: 'tezos', decimals: 18 }, //DONE
+    '0x3571aed54ccea5b69b00516d5a149a6baea77118': { coingeckoId: 'tezos', decimals: 18 },
   },
   sanko: { 
     [ADDRESSES.null]: { coingeckoId: 'wrapped-dmt', decimals: 18 }, //DONE
