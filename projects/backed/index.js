@@ -11,13 +11,14 @@ const contracts = [
   "0x20C64dEE8FdA5269A78f2D5BDBa861CA1d83DF7a", // bHIGH
   "0x3f95AA88dDbB7D9D484aa3D482bf0a80009c52c9", // bERNX
   "0xAde6057FcAfa57d6d51FFa341C64ce4814995995", // bZPR1
+  "0xA34C5e0AbE843E10461E2C9586Ea03E55Dbcc495", // bNVDA
 ].map(i => i.toLowerCase())
 
 const blacklistedOwners = [
   '0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD', // working capital
   '0x43624c744A4AF40754ab19b00b6f681Ca56F1E5b', // treasury/cold wallet
 ]
-							
+
 async function tvl(api) {
   let tokens = [...contracts]
   if (api.chain === 'base') {
