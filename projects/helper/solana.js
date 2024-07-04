@@ -24,7 +24,11 @@ const blacklistedTokens_default = [
 
 let connection, provider
 
-const endpoint = () => getEnv('SOLANA_RPC')
+const endpoint = (isClient) => {
+  if (isClient) return getEnv('SOLANA_RPC_CLIENT') ?? getEnv('SOLANA_RPC')
+  return getEnv('SOLANA_RPC')
+}
+
 const renecEndpoint = () => getEnv('RENEC_RPC')
 const endpointMap = {
   solana: endpoint,
@@ -32,7 +36,7 @@ const endpointMap = {
 }
 
 function getConnection(chain = 'solana') {
-  if (!connection) connection = new Connection(endpointMap[chain]())
+  if (!connection) connection = new Connection(endpointMap[chain](true))
   return connection
 }
 
