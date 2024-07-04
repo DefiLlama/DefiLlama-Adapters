@@ -3,6 +3,24 @@ const { cachedGraphQuery, getConfig, } = require('../helper/cache');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const factory = "0xc35dadb65012ec5796536bd9864ed8773abc74c4"
 
+/* 
+Arbitrum: https://thegraph.com/explorer/subgraphs/96EYD64NqmnFxMELu2QLWB95gqCmA9N96ssYsZfFiYHg
+Avalanche: https://thegraph.com/explorer/subgraphs/4BxsTB5ADnYdgJgdmzyddmnDGCauctDia28uxB1hgTBE
+Base: https://thegraph.com/explorer/subgraphs/Cz4Snpih41NNNPZcbj1gd3fYXPwFr5q92iWMoZjCarEb
+Boba: https://thegraph.com/explorer/subgraphs/71VWMKCvsWRqrJouxmEQwSEMqqnqiiVYSxTZvzR8PHRx
+BSC: https://thegraph.com/explorer/subgraphs/FiJDXMFCBv88GP17g2TtPh8BcA8jZozn5WRW7hCN7cUT
+Ethereum: https://thegraph.com/explorer/subgraphs/5nnoU1nUFeWqtXgbpC54L9PWdpgo7Y9HYinR3uTMsfzs
+Fantom: https://thegraph.com/explorer/subgraphs/4BzEvR229mwKjneCbJTDM8dsS3rjgoKcXt5C7J1DaUxK
+Fuse: https://thegraph.com/explorer/subgraphs/8P62wYTJvhd6Aas656hVYhsccsGo2ihrJShaEnCoLJRK
+Gnosis: https://thegraph.com/explorer/subgraphs/GFvGfWBX47RNnvgwL6SjAAf2mrqrPxF91eA53F4eNegW
+Linea: https://thegraph.com/explorer/subgraphs/E2vqqvSzDdUiPP1r7PFnPKZQ34pAhNZjc6rEcdj3uE5t
+Moonriver: https://thegraph.com/explorer/subgraphs/F46W9YVQXGism5iN9NZNhKm2DQCvjhr4u847rL1tRebS
+Optimism: https://thegraph.com/explorer/subgraphs/Dr3FkshPgTMMDwxckz3oZdwLxaPcbzZuAbE92i6arYtJ
+Polygon: https://thegraph.com/explorer/subgraphs/CqLnQY1d6DLcBYu7aZvGmt17LoNdTe4fDYnGbE2EgotR
+PolygonZkEVM: https://thegraph.com/explorer/subgraphs/E2x2gmtYdm2HX3QXorUBY4KegfGu79Za6TEQYjVrx15c
+Scroll: https://thegraph.com/explorer/subgraphs/5gyhoHx768oHn3GxsHsEc7oKFMPFg9AH8ud1dY8EirRc 
+*/
+
 module.exports = uniV3Export({
   ethereum: {
     factory: "0xbACEB8eC6b9355Dfc0269C18bac9d6E2Bdc29C4F",
