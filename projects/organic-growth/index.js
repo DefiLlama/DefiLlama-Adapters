@@ -1,46 +1,22 @@
-const { request, gql } = require("graphql-request");
+const { getLogs2 } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const query = gql`
-query Tokens {
-  tokens {
-    price
-    poolAddress
-    address
-  }
-}
-`
-
-const FACTOR = 1_000_000_000_000_000_000
-const ogEndpoint = "https://long-gamma-labs.squids.live/organicgrowth-mainnet-squid/graphql"
 async function tvl(api) {
-  const response = await request(ogEndpoint, query)
-  const prices = {}
-  const calls = []
-  for (const token of response["tokens"]) {
-    prices[token["address"]] = Number(token["price"])
-    calls.push({ target: token["address"], params: token["poolAddress"]})
-  }
-  const poolTokens = await api.multiCall({
-    calls,
-    abi: 'erc20:balanceOf',
+  const logs = await getLogs2({
+    api,
+    factory: '0x9767E409259E314F3C69fe1E7cA0D3161Bba4F5a',
+    eventAbi: 'event PairCreated(address indexed token, address indexed weth, address pair)',
+    fromBlock: 308542,
   })
-  let poolsSum = 0
-  for (let i = 0; i < calls.length; i++) {
-    poolsSum += prices[calls[i].target] * Number(poolTokens[i]) / FACTOR
-  }
 
-  const wxtz = await api.call({
-    abi: "uint256:totalSupply",
-    target: "0x3571aeD54CCEA5B69B00516D5A149A6BAeA77118",
-  }) / FACTOR;
-
-  return {
-    'tezos':  wxtz + poolsSum,
-  }
+  const wethBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: logs.map(i => ({ target: i.weth, params: i.pair })) })
+  const tokens = logs.map(i => i.weth)
+  api.add(tokens, wethBalances)
+  api.add(tokens, wethBalances) // second time to add equivalent token value
+  return sumTokens2({ api, })
 }
 
 module.exports = {
-  etlk: {
-    tvl
-  }
+  misrepresentedTokens: true,
+  etlk: { tvl }
 }
