@@ -326,21 +326,23 @@ async function unwrapSlipstreamNFTs({ balances = {}, nftsAndOwners = [], block, 
   return balances
 }
 
-async function unwrapSlipstreamNFT({ balances, owner, nftAddress, block, chain = 'base', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
+async function unwrapSlipstreamNFT({ balances, owner, positionIds = [], nftAddress, block, chain = 'base', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
-  const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
   const factoryKey = getFactoryKey(chain, nftAddress)
   if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
   let factory = (await factories[factoryKey]).output
 
-  const positionIds = (await sdk.api.abi.multiCall({
-    block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
-    calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
-  })).output.map(positionIdCall => positionIdCall.output)
+  if (!positionIds) {
+    const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
+    positionIds = (await sdk.api.abi.multiCall({
+      block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+      calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
+    })).output.map(positionIdCall => positionIdCall.output)
+  }
 
   const positions = (await sdk.api.abi.multiCall({
     block, chain, abi: slipstreamNftABI.positions, target: nftAddress,
@@ -1110,6 +1112,7 @@ async function unwrapSolidlyVeNft({ api, baseToken, veNft, owner, hasTokensOfOwn
 module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
+  unwrapSlipstreamNFT,
   addTokensAndLPs,
   sumTokensAndLPsSharedOwners,
   sumTokensAndLPs,
