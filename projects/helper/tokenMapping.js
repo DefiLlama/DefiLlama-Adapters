@@ -36,6 +36,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  map: {
+    '0x7eb8b1fe3ee3287fd5864e50f32322ce3285b39d': {coingeckoId: 'solv-btc', decimals: 18 }, 
+    '0x9bd1e0a3a727d0d4f4e9a6d59022e071ddc79924 ': {coingeckoId: 'marcopolo', decimals: 18 }, 
+  },
   ftn: {
     [ADDRESSES.null]: { coingeckoId: 'fasttoken', decimals: 18 },
     '0x4084ab20f8ffca76c19aaf854fb5fe9de6217fbb': { coingeckoId: 'fasttoken', decimals: 18 }, //done
