@@ -2,7 +2,12 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
   doublecounted: true,
-  methodology: 'TVL: RWA STBT, issued by Matrixdock (part of Matrixport), is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
+  hallmarks: [
+    [1719734400, "Launched on Merlin Chain"],
+    [1718092800, "DeSyn KelpDAO Restaking Fund Launched"],
+    [1713340800, "Restaking Fund Series Launched"],
+  ],
+  methodology: 'RWA STBT, issued by Matrixdock (part of Matrixport), is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
 }
 
 const config = {
