@@ -1,8 +1,5 @@
 const config = {
   base: { vaults: ["0x37327c99bBc522e677a97d01021dB20227faF60A"] },
-  arbitrum: {
-    vaults: ["0x5c1b2312FaE6c0d61B6A15A8093842E9fE5b1e44"],
-  },
 };
 
 async function getVaultTVL(api, vaults) {
