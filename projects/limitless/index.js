@@ -12,16 +12,15 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       if (limWETH) {
-        const token = await api.call({  abi: 'address:asset', target: limWETH })
-        await api.sumTokens({ owner: limWETH, tokens: [token]})
+        const token = await api.call({ abi: 'address:asset', target: limWETH })
+        await api.sumTokens({ owner: limWETH, tokens: [token] })
       }
       const allTokens = []
 
       const getKey = (token0, token1, fee) => `${token0}-${token1}-${fee}`
-
-      const positionData = await api.fetchList({ lengthAbi: 'totalSupply', itemAbi: abi.positions, target: postionManager })
+      const tokenIds = await api.fetchList({ lengthAbi: 'totalSupply', itemAbi: abi.tokenByIndex, target: postionManager })
+      const positionData = await api.multiCall({ calls: tokenIds, abi: abi.positions, target: postionManager })
       const poolData = {}
-      // console.table(positionData.map(({ token0, token1, tokensOwed0, tokensOwed1, fee, liquidity }) => ({ token0, token1, tokensOwed0, tokensOwed1, fee, liquidity })))
       positionData.forEach(({ token0, token1, tokensOwed0, tokensOwed1, fee, liquidity }) => {
         if (liquidity === 0) return;
         if (token0 === nullAddress && token1 === nullAddress) return;
@@ -41,17 +40,19 @@ Object.keys(config).forEach(chain => {
       Object.values(poolData).forEach((data, i) => data.tick = ticks[i]?.tick)
 
       positionData.forEach(({ token0, token1, tickUpper, tickLower, fee, liquidity }) => {
-        if (liquidity === 0) return;
+        if (+liquidity === 0) return;
         const tick = poolData[getKey(token0, token1, fee)]?.tick
+        if (!tick) console.log({ token0, token1, fee, tickUpper, tickLower, liquidity })
         if (!tick) return;  // pool not found
         addUniV3LikePosition({ api, token0, token1, tick, liquidity, tickUpper, tickLower, })
       })
-      if (marginContract) return api.sumTokens({ tokens: allTokens, owner: marginContract})
+      if (marginContract) return api.sumTokens({ tokens: allTokens, owner: marginContract })
     }
   }
 })
 
 const abi = {
+  "tokenByIndex": "function tokenByIndex(uint256 index) view returns (uint256)",
   "positions": "function positions(uint256 tokenId) view returns (address owner, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)",
   "totalSupply": "uint256:totalSupply",
   "getPool": "function getPool(address, address, uint24) view returns (address)",
