@@ -4,6 +4,7 @@ const config = {
   optimism: { fromBlock: 120302044, },
   blast: { fromBlock: 3696521, },
   base: { fromBlock: 14706751, },
+  arbitrum: { fromBlock: 223877881, },
 }
 
 Object.keys(config).forEach(chain => {
