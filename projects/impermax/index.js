@@ -48,6 +48,11 @@ const config = {
       '0x9b4ae930255CB8695a9F525dA414F80C4C7a945B',
     ]
   },
+  scroll: { 
+    factories: [
+      '0x02Ff7B4d96EeBF8c9B34Fae0418E591e11da3099',
+    ]
+  },
 }
 
 const blacklistedPools = {
@@ -89,6 +94,7 @@ const blacklistedPools = {
     '0x877a330af63094d88792b9ca28ac36c71673eb1c', // IMX-FTM
     '0xb97b6ed451480fe6466a558e9c54eaac32e6c696', // OXD-FTM
   ],
+  scroll: [],
 }
 
 module.exports = {}
