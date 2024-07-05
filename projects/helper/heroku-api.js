@@ -1,5 +1,5 @@
 const { get } = require('./http')
-const endpoint = "https://sushi-analytics.llama.fi"
+const endpoint = "https://sushi-analytics.llama.fi/temp"
 
 let data 
 async function getData() {

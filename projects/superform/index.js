@@ -25,6 +25,10 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "counts the TVL of each superform across all the supported networks",
+  hallmarks: [
+    [1707350400,"Early Access"],
+    [1715212800,"Open Launch"]
+  ]
 };
 
 superform_chains.forEach(chain => module.exports[chain] = { tvl })
