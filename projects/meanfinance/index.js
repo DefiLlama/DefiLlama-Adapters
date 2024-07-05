@@ -65,6 +65,7 @@ module.exports = {
   bsc: getV2TvlObject('bsc'),
   xdai: getV2TvlObject('xdai'),
   moonbeam: getV2TvlObject('moonbeam'),
+  avax: getV2TvlObject('avax'),
   rsk: getV2TvlObject('rsk'),
    hallmarks: [
     [1650082958, "Protocol is paused due to non-critical vulnerability"],
