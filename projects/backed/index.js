@@ -11,8 +11,9 @@ const contracts = [
   "0x20C64dEE8FdA5269A78f2D5BDBa861CA1d83DF7a", // bHIGH
   "0x3f95AA88dDbB7D9D484aa3D482bf0a80009c52c9", // bERNX
   "0xAde6057FcAfa57d6d51FFa341C64ce4814995995", // bZPR1
-  "0xA34C5e0AbE843E10461E2C9586Ea03E55Dbcc495", // bNVDA
 ].map(i => i.toLowerCase())
+
+const bNVDA = "0xA34C5e0AbE843E10461E2C9586Ea03E55Dbcc495".toLowerCase() // Deployed atm only on Ethereum
 
 const blacklistedOwners = [
   '0x5F7A4c11bde4f218f0025Ef444c369d838ffa2aD', // working capital
@@ -24,6 +25,9 @@ async function tvl(api) {
   if (api.chain === 'base') {
     tokens.push('0xC3cE78B037DDA1B966D31EC7979d3f3a38571A8E')
     tokens = tokens.filter(i => i !== '0x1e2c4fb7ede391d116e6b41cd0608260e8801d59')
+  }
+  if (api.chain === 'ethereum') {
+    tokens.push(bNVDA)
   }
   const supply = await api.multiCall({ abi: 'erc20:totalSupply', calls: tokens })
   const balances = {}
