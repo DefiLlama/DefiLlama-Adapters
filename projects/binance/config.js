@@ -593,9 +593,6 @@ const assetList = [
   ['XRP', 'XRP', 'rhWj9gaovwu2hZxYW7p388P8GRbuXFLQkK'],
   ['XRP', 'XRP', 'rpmxpWis42eYV4oMhyxJNSzrLRdacJVooa'],
   ['XRP', 'XRP', 'rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza'],  
-  ['ETH', 'MANTA', '0x3cdfb47b0e910d9190ed788726cd72489bf10499'],
-  ['ETH', 'MANTA', '0x923fc76cb13a14e5a87843d309c9f401ec498e2d'],
-  ['ETH', 'MANTA', '0xf977814e90da44bfa03b6295a0616a897441acec'],
 ]
 
 function getAddresses(chain) {
@@ -682,7 +679,9 @@ module.exports = {
   near: {
     owners: getOwners('NEAR')
   },
+  /*
   doge: {
     owners: getOwners('DOGE')
   },
+  */
 }
