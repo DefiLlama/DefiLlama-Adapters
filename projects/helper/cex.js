@@ -170,6 +170,7 @@ const defaultTokens = {
      '0xfe1d7f7a8f0bda6e415593a2e4f82c64b446d404', //blp
      '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
      '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
+     '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
