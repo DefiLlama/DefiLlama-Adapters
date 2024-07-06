@@ -129,7 +129,8 @@ const config = {
   },
   polygon_zkevm: {
     vaultConfigs: [
-      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4830529, isAlgebra: false, }, // Zero
+      { factory: '0xe8532Db60408f2d47693dA5b9093D71580B8C23F', fromBlock: 10890417, isAlgebra: false, }, // PancakeSwap
+      { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
     ]
   },
 }
