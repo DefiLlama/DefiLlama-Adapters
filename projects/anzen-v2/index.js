@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 
 const USDz = '0xa469b7ee9ee773642b3e93e842e5d9b5baa10067';
 const Base_USDz = '0x04d5ddf5f3a8939889f11e97f8c4bb48317f1938';
-const Blast_USDz = '0x52056ED29Fe015f4Ba2e3b079D10C0B87f46e8c6';
+const Base_USDz = '0x52056ed29fe015f4ba2e3b079d10c0b87f46e8c6';
 const SPCT = '0xf30a29f1c540724fd8c5c4be1af604a6c6800d29'; // Secured collateral
 
 const mainnet_tvl = async (api) => {
