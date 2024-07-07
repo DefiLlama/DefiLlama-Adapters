@@ -1846,7 +1846,8 @@
     "USDC": "ct_U1i8dzJTVWdnU2cv59TZQfLFpLfjqf7MQQC5ygSMKphn8Yew2"
   },
   "etlk": {
-    "OGV1WXTZ": "0x3571aed54ccea5b69b00516d5a149a6baea77118"
+    "OGV1WXTZ": "0x3571aed54ccea5b69b00516d5a149a6baea77118",
+    "WXTZ": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb"
   },
   "rari": {
     "WETH": "0xf037540e51d71b2d2b1120e8432ba49f29edfbd0",
