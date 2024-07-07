@@ -40,6 +40,8 @@ const config = {
   avax: { endpoints: [sdk.graph.modifyEndpoint('FdVwZuMV43yCb1nPmjnLQwmzS58wvKuLMPzcZ4UWgWAc')], },
   base: { endpoints: [sdk.graph.modifyEndpoint('HS6B8Wi9ZY7D9bjHEuJwDqHa5eCMX5d6H59YyGVnQ5QP')], },
   blast: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-v2-blast/version/latest'], },
+  scroll: { endpoints: [sdk.graph.modifyEndpoint('HVcngokCByfveLwguuafrBC34xB65Ne6tpGrXHmqDSrh')], },
+  era: { endpoints: [sdk.graph.modifyEndpoint('GY2fGozmfZiZ3xF2MfevohLR4YGnyxGxAyxzi9zmU5bY')], },
 }
 
 Object.keys(config).forEach(chain => {
