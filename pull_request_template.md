@@ -16,27 +16,34 @@
 
 ---
 ##### Name (to be shown on DefiLlama):
+Mind Network
 
 
 ##### Twitter Link:
+https://x.com/mindnetwork_xyz
 
 
 ##### List of audit links if any:
+https://github.com/mind-network/mind-restaking-contracts/tree/main/audit
 
 
-##### Website Link:
+##### Website Link: 
+https://www.mindnetwork.xyz/
 
 
 ##### Logo (High resolution, will be shown with rounded borders):
+https://cdn.prod.website-files.com/66505f7fdc6935a2b4246635/665b3d63e16851de727df3ca_logo11-p-500.webp
 
 
 ##### Current TVL:
+1.24K
 
 
 ##### Treasury Addresses (if the protocol has treasury)
 
 
 ##### Chain:
+ethereum,scroll
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -46,12 +53,14 @@
 
 
 ##### Short Description (to be shown on DefiLlama):
+An FHE Restaking Layer for PoS and AI Networks.
 
 
 ##### Token address and ticker if any:
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: 
+Restaking
 
 
 ##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
@@ -62,6 +71,8 @@
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
+Counts the total amount of asset tokens deposited in each of the Strategy contracts registered in the helper contract on each chain.
 
 
 ##### Github org/user (Optional, if your code is open source, we can track activity):
+https://github.com/mind-network
