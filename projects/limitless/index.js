@@ -35,7 +35,7 @@ query {
 `
 
 Object.keys(config).forEach(chain => {
-  const { postionManager, factory, limWETH, marginContract, graphEndpoint, dataProvider, lmQuoter, } = config[chain]
+  const { postionManager, factory, limWETH, marginContract, graphEndpoint, } = config[chain]
 
   module.exports[chain] = {
     tvl: async (api) => {
@@ -142,6 +142,4 @@ const abi = {
   "totalSupply": "uint256:totalSupply",
   "getPool": "function getPool(address, address, uint24) view returns (address)",
   "slot0": "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
-  "getPoolData": "function getPoolkeys(address pool) view returns (address token0, address token1, uint24 fee)",
-  "getPoolKeys": "function getPoolKeys() view returns (tuple(address, address, string, string, uint24, string, string, uint8, uint8, int24)[])",
 }
