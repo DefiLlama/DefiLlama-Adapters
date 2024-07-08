@@ -7,8 +7,6 @@ const config = {
     pool_factory: {
       address: "0x17354e8e7518599c7f6B7095a6706766e4e4dC61",
       deployedAt: 20212038,
-      // Previous script had a bug, so we need to skip cache at least once
-      skipCache: Date.now() < 1721031189_000, // Thu, 11 Jul 2024 08:20:30 GMT
     },
     tranche_factory: {
       address: "0x83CE9e95118b48DfED91632e1bB848f1D4ee12e3",
@@ -38,7 +36,6 @@ Object.keys(config).map((network) => {
         target: pool_factory.address,
         eventAbi: "event Deployed(address indexed basePool, address indexed underlying, address indexed pool)",
         onlyArgs: true,
-        skipCache: pool_factory.skipCache,
         fromBlock: pool_factory.deployedAt,
       }) : [];
 
@@ -53,7 +50,6 @@ Object.keys(config).map((network) => {
       const underlyingTokens = results.map((r) => r.underlying);
       const adapterBalances = await api.multiCall({ abi: 'uint256:totalAssets', calls: adapters })
       api.add(underlyingTokens, adapterBalances)
-      console.log({ pools, adapters, tranches })
       return api.erc4626Sum({ calls: pools, tokenAbi: 'underlying', balanceAbi: 'totalUnderlying' })
     },
   };
