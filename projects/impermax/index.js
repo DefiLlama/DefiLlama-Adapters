@@ -51,6 +51,7 @@ const config = {
   scroll: { 
     factories: [
       '0x02Ff7B4d96EeBF8c9B34Fae0418E591e11da3099',
+      '0xFBD17F3AA7d6506601D2bF7e15a6C96081296a01', // scroll stablefactory
     ]
   },
 }
