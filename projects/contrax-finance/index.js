@@ -34,20 +34,15 @@ const STEER_VAULTS = [
 ];
 
 async function getHopMagicData(api) {
-  const tokenAddress = await api.call({
-    abi: "function token() view returns (address token)",
-    target: HOP_MAGIC_VAULT,
-    params: [],
-  });
-  const balance = await api.call({
-    abi: "uint256:balance",
-    target: HOP_MAGIC_VAULT,
-  });
+  const [tokenAddress, balance] = await Promise.all([
+    api.call({ abi: "function token() view returns (address token)", target: HOP_MAGIC_VAULT,params: [] }),
+    api.call({ abi: "uint256:balance", target: HOP_MAGIC_VAULT })
+  ])
   api.add(tokenAddress, balance);
 }
 
 async function getSteerData(api) {
-  let tokens = await api.multiCall({ abi: "address:token", calls: STEER_VAULTS });
+  const tokens = await api.multiCall({ abi: "address:token", calls: STEER_VAULTS });
   const [token0s, token1s, supplies, reserves, bals] = await Promise.all([
     api.multiCall({ abi: "address:token0", calls: tokens }),
     api.multiCall({ abi: "address:token1", calls: tokens }),
@@ -59,16 +54,19 @@ async function getSteerData(api) {
     api.multiCall({
       abi: "uint256:balance",
       calls: STEER_VAULTS,
+      permitFailure: true
     }),
   ]);
 
-  bals.forEach((bal, i) => {
+
+  for (const [i, bal] of bals.entries()) {
+    if (!bal) continue
     const ratio = bal / supplies[i];
     const token0Bal = reserves[i][0] * ratio;
     const token1Bal = reserves[i][1] * ratio;
     api.addToken(token0s[i], token0Bal);
     api.addToken(token1s[i], token1Bal);
-  });
+  }
 }
 
 async function getGMXData(api) {
@@ -80,22 +78,20 @@ async function getGMXData(api) {
 }
 
 async function tvl(api) {
-  let tokens = await api.multiCall({ abi: "address:token", calls: Vaults });
-  let bals = await api.multiCall({
-    abi: "uint256:balance",
-    calls: Vaults,
-  });
+  const [tokens, bals] = await Promise.all([
+    api.multiCall({ abi: "address:token", calls: Vaults }),
+    api.multiCall({ abi: "uint256:balance", calls: Vaults }),
+    getHopMagicData(api),
+    getGMXData(api),
+    getSteerData(api)
+  ])
 
   // const bals = await api.multiCall({
   //   abi: "erc20:balanceOf",
   //   calls: tokens.map((t, i) => ({ target: targets[i], params: [t] })),
   // });
-  await getHopMagicData(api);
-  await getGMXData(api);
-  await getSteerData(api);
 
   api.addTokens(tokens, bals);
-
   return sumTokens2({ api, resolveLP: true });
 }
 
