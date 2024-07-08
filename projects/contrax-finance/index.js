@@ -58,8 +58,9 @@ async function getSteerData(api) {
     }),
   ]);
 
+
   for (const [i, bal] of bals.entries()) {
-    if (!bal || !supplies[i] || !reserves[i] || !reserves[i][0] || !reserves[i][1]) continue
+    if (!bal) continue
     const ratio = bal / supplies[i];
     const token0Bal = reserves[i][0] * ratio;
     const token1Bal = reserves[i][1] * ratio;
