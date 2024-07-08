@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
   doublecounted: true,
-  methodology: 'TVL: Solv.btc deposite in the vault',
+  methodology: 'Product: On-chain restaking<br/>TVL: It includes above<br/>Revenue: Staking rewards, management fees, performance fees',
 }
 
 const config = {

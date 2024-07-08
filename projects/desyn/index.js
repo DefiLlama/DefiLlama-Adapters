@@ -7,7 +7,7 @@ module.exports = {
     [1718092800, "DeSyn KelpDAO Restaking Fund Launched"],
     [1713340800, "Restaking Fund Series Launched"],
   ],
-  methodology: 'RWA STBT, issued by Matrixdock (part of Matrixport), is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
+  methodology: 'Product: Liquid restaking strategy<br/>TVL: It includes above<br/>Revenue: Staking rewards, management fees, performance fees',
 }
 
 const config = {
