@@ -59,6 +59,7 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       owners: [
+        '0x40a25786937eCc0643e78ca40Df02Db4dff27bb0',
         '0xF8aeD4da2598d3dF878488F40D982d6EcC8B13Ad',
         '0xBA43F3C8733b0515B5C23DFF46F47Af6EB46F85C',
         '0x0A80028d73Faaee6e57484E3335BeFda0de7f455',
