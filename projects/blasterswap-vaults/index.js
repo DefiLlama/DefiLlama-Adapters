@@ -5,8 +5,8 @@ const { staking } = require('../helper/staking')
 
 module.exports = {
 	methodology: "BLAST can be staked in Blasterswap vault",
-	ethereum: {
+	blast: {
+		tvl: () => ({}),
 		staking: staking(stakingContract, blast),
-		tvl: () => ({})
 	},
 }
