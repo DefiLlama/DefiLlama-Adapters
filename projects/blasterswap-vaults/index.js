@@ -1,5 +1,3 @@
-const { getLogs } = require('../helper/cache/getLogs');
-
 const config = {
 	blast: {
 		pools: {
