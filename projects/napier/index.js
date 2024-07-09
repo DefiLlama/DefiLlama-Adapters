@@ -26,6 +26,7 @@ Object.keys(config).map((network) => {
           "event TrancheDeployed(uint256 indexed maturity, address indexed principalToken, address indexed yieldToken)",
         onlyArgs: true,
         fromBlock: tranche_factory.deployedAt,
+        extraKey: 'fix-cache-issue'
       }) : [];
 
       const tranches = trancheDeployedLogs.map((event) => event.principalToken);
