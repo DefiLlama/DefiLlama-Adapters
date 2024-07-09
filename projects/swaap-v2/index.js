@@ -24,6 +24,6 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { vault, fromBlock, permitFailure } = config[chain]
   module.exports[chain] = {
-    tvl: onChainTvl(vault, fromBlock, permitFailure)
+    tvl: onChainTvl(vault, fromBlock, { permitFailure })
   }
 })

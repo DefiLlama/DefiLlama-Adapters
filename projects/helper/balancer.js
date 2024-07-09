@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('./unwrapLPs');
 const { getLogs } = require('./cache/getLogs')
 
-function onChainTvl(vault, fromBlock, permitFailure, { blacklistedTokens = [], preLogTokens = [], onlyUseExistingCache } = {}) {
+function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], onlyUseExistingCache, permitFailure } = {}) {
   return async (api) => {
     const logs = await getLogs({
       api,
