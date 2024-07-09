@@ -18,5 +18,5 @@ module.exports = {
     hallmarks: [],
     methodology: "Buzz Farming collaborates with well-known BTCFi projects such as Babylon, Lombard, and Bedrock, as well as prominent blockchains, offering users a variety of multifaceted profit strategies. Users can conveniently select and operate investment strategies through Buzz Farming.",
 
-    bsquared: {tvl: sumTokensExport({owner: '0x796e4D53067FF374B89b2Ac101ce0c1f72ccaAc2', tokens: tokenList})},
+    bsquared: {tvl: sumTokensExport({owner: '0xe677F4B6104726D76DeBc681d7a862CE269aA8F3', tokens: tokenList})},
 }
