@@ -5,6 +5,7 @@ module.exports = compoundV3Exports({
     markets: [
       '0xc3d688B66703497DAA19211EEdff47f25384cdc3', // USDC Market
       '0xa17581a9e3356d9a858b789d68b4d866e593ae94', // ETH Market
+      '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840', // USDT Market
     ],
   },
   arbitrum: {
