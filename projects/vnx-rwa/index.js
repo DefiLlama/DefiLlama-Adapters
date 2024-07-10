@@ -1,4 +1,5 @@
 const { getTokenSupply } = require("../helper/solana");
+const fetch = require('node-fetch');
 
 const ASSETS = {
   EVM: {
@@ -34,55 +35,78 @@ const ASSETS = {
       "VCHF-GDXLSLCOPPHTWOQXLLKSVN4VN3G67WD2ENU7UMVAROEYVJLSPSEWXIZN"   // VCHF
     ]
   }
-}
+};
+
+const MAPPINGS = {
+  stellar: {
+    'VNXAU-GCKIYYQVIFBIFDRN7BNDNHL3UZSFHT5NHDAISG2N3MWCZY3WNXL3LXN3': '0x6d57b2e05f26c26b549231c866bdd39779e4a488',
+    'VEUR-GDXLSLCOPPHTWOQXLLKSVN4VN3G67WD2ENU7UMVAROEYVJLSPSEWXIZN': '0x6bA75D640bEbfe5dA1197bb5A2aff3327789b5d3',
+    'VCHF-GDXLSLCOPPHTWOQXLLKSVN4VN3G67WD2ENU7UMVAROEYVJLSPSEWXIZN': '0x79d4f0232A66c4c91b89c76362016A1707CFBF4f'
+  },
+  q: {
+    '0xe4fadbbf24f118b1e63d65f1aac2a825a07f7619': '0x6d57b2e05f26c26b549231c866bdd39779e4a488',
+    '0x513f99dee650f529d7c65bb5679f092b64003520': '0x6bA75D640bEbfe5dA1197bb5A2aff3327789b5d3',
+    '0x65b9d36281e97418793f3430793f88440dab68d7': '0x79d4f0232A66c4c91b89c76362016A1707CFBF4f'
+  }
+};
 
 const fetchStellarSupply = async (asset) => {
-  const stellarApi = `https://api.stellar.expert/explorer/public/asset/${asset}`
+  const stellarApi = `https://api.stellar.expert/explorer/public/asset/${asset}`;
   const response = await fetch(stellarApi);
   const { supply } = await response.json();
-  return supply;
-}
+  return supply / 1e7 * 1e18;  // supply / stellar dec * eth dec
+};
 
 const solanaTvl = async (api, assets) => {
-  const supplies = await Promise.all(assets.map(getTokenSupply))
-  const scaledSupplies = supplies.map((supply) => supply * 1e9)
-  api.add(assets, scaledSupplies)
-}
+  const supplies = await Promise.all(assets.map(getTokenSupply));
+  const scaledSupplies = supplies.map((supply) => supply * 1e9);
+  api.add(assets, scaledSupplies);
+};
 
 const stellarTvl = async (api, assets) => {
-  const supplies = await Promise.all(assets.map(fetchStellarSupply))
-  api.add(assets, supplies)
-}
+  const supplies = await Promise.all(assets.map(fetchStellarSupply));
+  supplies.forEach((supply, index) => {
+    const ethereumAsset = MAPPINGS.stellar[assets[index]];
+    api.add(ethereumAsset, supply, { skipChain: true });
+  });
+};
 
-const evmTvl = (assets) => {
+const evmTvl = (chain, assets) => {
   return async (api) => {
-    const totalSupplies = await api.multiCall({ calls: assets, abi: 'erc20:totalSupply' })
-    api.add(assets, totalSupplies)
-  }
-}
+    const totalSupplies = await api.multiCall({ calls: assets, abi: 'erc20:totalSupply' });
+    if (chain === 'q') {
+      totalSupplies.forEach((supply, index) => {
+        const ethereumAsset = MAPPINGS.q[assets[index]];
+        api.add(ethereumAsset, supply, { skipChain: true });
+      });
+    } else {
+      api.add(assets, totalSupplies);
+    }
+  };
+};
 
 const nonEvmTvl = (chain, assets) => {
   return async (api) => {
     if (chain === "solana") {
-      await solanaTvl(api, assets)
+      await solanaTvl(api, assets);
     } else if (chain === "stellar") {
-      await stellarTvl(api, assets)
+      await stellarTvl(api, assets);
     }
-  }
-}
+  };
+};
 
 const getTvlFunction = (key, chain, assets) => {
   if (key === 'EVM') {
-    return evmTvl(assets);
+    return evmTvl(chain, assets);
   } else if (key === 'nonEVM') {
     return nonEvmTvl(chain, assets);
   }
-}
+};
 
 Object.entries(ASSETS).forEach(([key, chains]) => {
   Object.entries(chains).forEach(([chain, assets]) => {
     module.exports[chain] = {
       tvl: getTvlFunction(key, chain, assets)
-    }
+    };
   });
 });
