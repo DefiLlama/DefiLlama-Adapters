@@ -84,8 +84,6 @@ module.exports = {
     })
   },
   kroma: {
-    tvl: sumTokensExport({
-      tokens: [ADDRESSES.kroma['M-BTC']]
-    })
+    tvl: () => ({})
   }
 };
