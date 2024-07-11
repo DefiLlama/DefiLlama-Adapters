@@ -21,7 +21,7 @@ module.exports = {
         }
       })
       const data = await queryAddresses({ addresses: pools.map(i => i.address) })
-      const owners = data.map(i => i.metadata.items.find(i => i.key === 'liquidity_pool').value?.typed?.value).filter(i => i)
+      const owners = data.map(i => i.metadata.items.find(i => i.key === 'liquidity_pool')?.value?.typed?.value).filter(i => i)
       return sumTokens({ owners, api, })
     },
   },

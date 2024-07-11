@@ -1,9 +1,10 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
-  polygon: { endpoint: 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme-core-polygon' },
-  ethereum: { endpoint: 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme-core' },
+  polygon: { endpoint: sdk.graph.modifyEndpoint('GCAHDyqvZBLMwqdb9U7AqWAN4t4TSwR3aXMHDoUUFuRV') },
+  ethereum: { endpoint: sdk.graph.modifyEndpoint('9DLBBLep5UyU16kUQRvxBCMqko4q9XzuE4XsMMpARhKK') },
 }
 const query = `query get_accounts($lastId: String!) {
   vaults(

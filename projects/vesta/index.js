@@ -58,7 +58,6 @@ module.exports = {
     pool2,
   },
   start: 1644339600,
-  timetravel: true,
-  methodology:
+    methodology:
     "Total Value Locked includes all stability pools, troves, and vst pairs",
 };

@@ -89,8 +89,7 @@ const savingsVaultTvl = (chain) => async (api) => {
 
 module.exports = {
   methodology: "TVL considers tokens deposited to Phuture Products",
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   ethereum: {
     tvl: sdk.util.sumChainTvls([
       indexTvl("ethereum"),

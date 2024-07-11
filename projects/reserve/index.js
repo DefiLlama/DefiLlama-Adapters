@@ -41,16 +41,16 @@ async function tvl(api) {
   // Common logic for calculating TVL (only mainnet has vault)
   const ownerTokens = config.vault
     ? [
+      [
         [
-          [
-            ADDRESSES.ethereum.USDC, //usdc
-            "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
-            ADDRESSES.ethereum.TUSD, //tusd
-            ADDRESSES.ethereum.BUSD, //busd
-          ],
-          config.vault,
+          ADDRESSES.ethereum.USDC, //usdc
+          "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
+          ADDRESSES.ethereum.TUSD, //tusd
+          ADDRESSES.ethereum.BUSD, //busd
         ],
-      ]
+        config.vault,
+      ],
+    ]
     : [];
   const blacklistedTokens = [config.rsr];
   const fluxListWithOwner = [];
@@ -85,26 +85,14 @@ async function tvl(api) {
   const allManagers = basketRes.flatMap(([tokens], i) =>
     tokens.map(() => backingManagers[i])
   );
-  const allNames = await api.multiCall({
-    abi: "string:name",
-    calls: allTokens,
-  });
+  const allNames = await api.multiCall({ abi: "string:name", calls: allTokens, });
 
-  const aTokenWrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Static Aave")
-  );
 
-  const cUsdcV3Wrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Wrapped cUSDCv3")
-  );
-
-  const morphoWrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Tokenised Morpho")
-  );
-
-  const stargateLpWrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Wrapped Stargate")
-  );
+  const aTokenWrappersV2 = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave") && allNames[i].includes("interest"));
+  const aTokenWrappersV3 = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave") && !allNames[i].includes("interest"));
+  const cUsdcV3Wrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped cUSDCv3"));
+  const morphoWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Tokenised Morpho"));
+  const stargateLpWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped Stargate"));
   const cTokenWrappers = allTokens.filter(
     (_, i) => /^Compound.*Vault$/.test(allNames[i]) // Starts with Compound, ends with Vault
   );
@@ -125,35 +113,24 @@ async function tvl(api) {
     convexTokensAndOwners.push([token, allManagers[i]]);
   });
 
-  let cTokens = await api.multiCall({
-    abi: "address:underlying",
-    calls: cTokenWrappers,
-  });
-
-  let aTokens = await api.multiCall({
-    abi: api.chain === "base" ? "address:aToken" : "address:ATOKEN",
-    calls: aTokenWrappers,
-  });
-
-  let morphoUnderlyingTokens = await api.multiCall({
-    abi: "address:asset",
-    calls: morphoWrappers,
-  });
-
-  let morphoUnderlyingBalances = await api.multiCall({
-    abi: "uint256:totalAssets",
-    calls: morphoWrappers,
-  });
+  let cTokens = await api.multiCall({ abi: "address:underlying", calls: cTokenWrappers, });
+  let aTokensV2 = await api.multiCall({ abi: "address:ATOKEN", calls: aTokenWrappersV2, });
+  let aTokensV3 = await api.multiCall({ abi: "address:aToken", calls: aTokenWrappersV3, });
+  let morphoUnderlyingTokens = await api.multiCall({ abi: "address:asset", calls: morphoWrappers, });
+  let morphoUnderlyingBalances = await api.multiCall({ abi: "uint256:totalAssets", calls: morphoWrappers, });
 
   blacklistedTokens.push(
-    ...aTokenWrappers,
+    ...aTokenWrappersV2,
+    ...aTokenWrappersV3,
     ...stargateLpWrappers,
     ...cTokenWrappers,
     ...cUsdcV3Wrappers,
     ...morphoWrappers
   );
+
   cTokens.forEach((v, i) => ownerTokens.push([[v], cTokenWrappers[i]]));
-  aTokens.forEach((v, i) => ownerTokens.push([[v], aTokenWrappers[i]]));
+  aTokensV2.forEach((v, i) => ownerTokens.push([[v], aTokenWrappersV2[i]]));
+  aTokensV3.forEach((v, i) => ownerTokens.push([[v], aTokenWrappersV3[i]]));
   morphoUnderlyingTokens.forEach((v, i) =>
     api.add(v, morphoUnderlyingBalances[i])
   );

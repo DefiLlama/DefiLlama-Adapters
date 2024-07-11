@@ -32,7 +32,7 @@ const config = {
     {
       "manta": {
         token: '0x95cef13441be50d20ca4558cc0a27b601ac544e5',
-        "LST": "0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547"
+        "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
       }
     }
   ],
@@ -40,7 +40,7 @@ const config = {
   {
     "zeta": {
       "baseToken": '0xf091867ec603a6628ed83d274e835539d82e9cc8',
-      "LST": '0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547'
+      "LST": '0xcba2aeec821b0b119857a9ab39e09b034249681a'
     }
   },
   {

@@ -22,9 +22,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
+      methodology:
     "Queries LINK staking/priority pools and SDL staking pool for the total amount of tokens staked",
   start: 1670337984,
   ethereum: {
