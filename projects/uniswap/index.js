@@ -85,8 +85,8 @@ module.exports = {
     manta: { factory: "0x06D830e15081f65923674268121FF57Cc54e4e23", fromBlock: 1191705 },
     avax: { factory: "0x740b1c1de25031C31FF4fC9A62f554A55cdC1baD", fromBlock: 27832972 },
     taiko: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 961 },
-    sei: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 79245151 }
-
+    sei: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 79245151 },
+    mantle: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 63795918 }
   }),
   filecoin: { tvl: filecoinTvl },
 }
