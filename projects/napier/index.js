@@ -6,7 +6,7 @@ const config = {
   ethereum: {
     pool_factory: {
       address: "0x17354e8e7518599c7f6B7095a6706766e4e4dC61",
-      deployedAt: 20017932,
+      deployedAt: 20212038,
     },
     tranche_factory: {
       address: "0x83CE9e95118b48DfED91632e1bB848f1D4ee12e3",
@@ -26,6 +26,7 @@ Object.keys(config).map((network) => {
           "event TrancheDeployed(uint256 indexed maturity, address indexed principalToken, address indexed yieldToken)",
         onlyArgs: true,
         fromBlock: tranche_factory.deployedAt,
+        extraKey: 'fix-cache-issue'
       }) : [];
 
       const tranches = trancheDeployedLogs.map((event) => event.principalToken);
@@ -34,7 +35,7 @@ Object.keys(config).map((network) => {
       const poolDeployedLogs = pool_factory.address ? await getLogs({
         api,
         target: pool_factory.address,
-        eventAbi: "event Deployed(uint256 indexed basePool, address indexed underlying, address indexed pool)",
+        eventAbi: "event Deployed(address indexed basePool, address indexed underlying, address indexed pool)",
         onlyArgs: true,
         fromBlock: pool_factory.deployedAt,
       }) : [];
@@ -48,10 +49,9 @@ Object.keys(config).map((network) => {
       });
       const adapters = results.map((r) => r.adapter);
       const underlyingTokens = results.map((r) => r.underlying);
-      const adapterBalances = await api.multiCall({  abi: 'uint256:totalAssets', calls: adapters})
+      const adapterBalances = await api.multiCall({ abi: 'uint256:totalAssets', calls: adapters })
       api.add(underlyingTokens, adapterBalances)
-      console.log({ pools, adapters, tranches})
-      return api.erc4626Sum({ calls: pools, tokensAbi: 'underlying', balanceAbi: 'totalUnderlying'})
+      return api.erc4626Sum({ calls: pools, tokenAbi: 'underlying', balanceAbi: 'totalUnderlying' })
     },
   };
 });
