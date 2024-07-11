@@ -84,7 +84,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology:
-    "Counting the $FLOW token locked in Fixes Coins' Bonding Curve, Fixes Coins' Burned Pool, and Fixes Coins' LockDrop Pool.",
+    "Counting the $FLOW token locked in Fixes Coins' Bonding Curve, and Fixes Coins' LockDrop Pool.",
   flow: {
     tvl,
   },
