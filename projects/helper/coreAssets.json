@@ -1535,8 +1535,7 @@
     "WETH": "0x4200000000000000000000000000000000000001",
     "USDC": "0x49A5010110a358d9069282873F3e7eCf6B41DC10",
     "USDT": "0x0Cf7c2A584988871b654Bd79f96899e4cd6C41C0",
-    "WEMIX": "0x3720b1dc2c8dde3bd6cfcf0b593d0a2bbcac856e",
-    "M-BTC": "0x0F921c39eFd98809FE6D20a88A4357454578987a"
+    "WEMIX": "0x3720b1dc2c8dde3bd6cfcf0b593d0a2bbcac856e"
   },
   "radixdlt": {
     "XRD": "resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd",
