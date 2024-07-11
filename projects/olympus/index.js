@@ -4,7 +4,7 @@ const { blockQuery } = require("../helper/http");
 const { getEnv } = require("../helper/env");
 const { staking } = require('../helper/staking');
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { sumTokensExport, sumTokens } = require("../helper/sumTokens");
+const { sumTokens } = require("../helper/sumTokens");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -97,7 +97,7 @@ function sumBalancesByTokenAddress(arr) {
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-function buildTvl(isOwnTokensMode = false) {
+function buildTvl(isOwnTokensMode = false){
   return async function tvl(api) {
     const subgraphUrls = {
       ethereum: `7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
