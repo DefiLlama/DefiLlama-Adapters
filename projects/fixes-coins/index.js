@@ -23,7 +23,6 @@ fun main(): UFix64 {
     // dictionary of tickers and total locked token balances
     let tickerTotal: {String: UFix64} = {}
     // This is the soft burned LP value which is fully locked in the BlackHole Vault
-    var burnedLPValue = 0.0
     var flowLockedInBondingCurve = 0.0
     addrsDict.forEachKey(fun (key: String): Bool {
         if let addr = addrsDict[key] {
@@ -34,7 +33,6 @@ fun main(): UFix64 {
             }
             // sum up all burned LP value in Tradable Pool
             if let tradablePool = FixesTradablePool.borrowTradablePool(addr) {
-                burnedLPValue = burnedLPValue + tradablePool.getBurnedLiquidityValue()
                 flowLockedInBondingCurve = flowLockedInBondingCurve + tradablePool.getFlowBalanceInPool()
             }
         }
@@ -57,7 +55,7 @@ fun main(): UFix64 {
         }
         return true
     })
-    return totalLockingTokenTVL + burnedLPValue + flowLockedInBondingCurve
+    return totalLockingTokenTVL + flowLockedInBondingCurve
 }
 `;
 
