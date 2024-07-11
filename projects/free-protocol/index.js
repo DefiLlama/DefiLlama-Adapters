@@ -83,4 +83,7 @@ module.exports = {
       ]
     })
   },
+  kroma: {
+    tvl: () => ({})
+  }
 };
