@@ -1,31 +1,33 @@
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs, getLogs2 } = require("../helper/cache/getLogs");
 
 const config = {
-  mode: {
+  mode: [{
     factoryV3: "0x9e6d12097339ddd5402FDD39fc0Ef86Eec54AB39",
     fromBlockV3: 7764229,
-  },
-  blast: {
+  }],
+  blast: [{
     factoryV3: "0x96A6C433078059577F0CEB707d596A5F81d64375",
     fromBlockV3: 1850297,
-  },
+  }, {
+    factoryV3: "0xf87E18913f7143E7C7eFee714813ABbC8e0E34bf",
+    fromBlockV3: 1850297,
+  },],
 }
 
 Object.keys(config).forEach((chain) => {
-  const { factoryV3, fromBlockV3 } = config[chain];
+  const factories = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
-      const logsV3 = await getLogs({
-          api,
-          target: factoryV3,
-          topic: [
-            "0xae811fae25e2770b6bd1dcb1475657e8c3a976f91d1ebf081271db08eef920af",
-          ],
-          eventAbi:
-            "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor, uint256 lnFeeRateRoot)",
-          onlyArgs: true,
-          fromBlock: fromBlockV3,
-        })
+      const logsV3 = (await Promise.all(factories.map(i => getLogs2({
+        api,
+        target: i.factoryV3,
+        topic: [
+          "0xae811fae25e2770b6bd1dcb1475657e8c3a976f91d1ebf081271db08eef920af",
+        ],
+        eventAbi:
+          "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor, uint256 lnFeeRateRoot)",
+        fromBlock: i.fromBlockV3,
+      })))).flat()
 
       const pt = logsV3.map((i) => i.PT)
       let sy = [
