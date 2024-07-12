@@ -26,8 +26,6 @@ async function tvl() {
 module.exports = {
   stacks: {
     tvl: tvl,
-    timetravel: false,
-    methodology: 'The calculated TVL is the current USD sum of all pools from core contract',
   }
 }
   
