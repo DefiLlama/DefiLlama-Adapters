@@ -1150,8 +1150,7 @@
   },
   "xdc": {
     "WXDC": "0x951857744785e80e2de051c32ee7b25f9c458c42",
-    "XSP": "0x36726235dadbdb4658d33e62a249dca7c4b2bc68",
-    "CGO": "0x8f9920283470F52128bF11B0c14E798bE704fD15"
+    "XSP": "0x36726235dadbdb4658d33e62a249dca7c4b2bc68"
   },
   "kardia": {
     "WKAI": "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d"

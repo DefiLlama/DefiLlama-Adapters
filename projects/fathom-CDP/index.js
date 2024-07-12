@@ -6,5 +6,5 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {  
-  xdc: { tvl: sumTokensExport({ owners: Vaults, tokens: [ADDRESSES.xdc.WXDC, ADDRESSES.xdc.CGO]}) },
+  xdc: { tvl: sumTokensExport({ owners: Vaults, tokens: [ADDRESSES.xdc.WXDC, '0x8f9920283470f52128bf11b0c14e798be704fd15']}) },
 }
