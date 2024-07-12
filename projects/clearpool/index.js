@@ -23,6 +23,10 @@ const CHAIN = {
   MANTLE: "mantle",
 }
 
+const blacklistedTokens = {
+  flare: ['0x4a771cc1a39fdd8aa08b8ea51f7fd412e73b3d2b'],
+}
+
 const config = {
   [CHAIN.ETHEREUM]: {
     dynamic: {
@@ -162,7 +166,7 @@ Object.keys(config).forEach((chain) => {
     let allPools = []
 
     const promiseArray = dataPerChain.map(
-      async ({ factory, fromBlock, abi, borrowFn, protocol }) => {
+      async ({ factory, fromBlock, abi, protocol }) => {
         const { pools, tokens } = await _getLogs(
           api,
           factory,
@@ -177,7 +181,7 @@ Object.keys(config).forEach((chain) => {
 
     await Promise.all(promiseArray)
 
-    return sumTokens2({ api, tokensAndOwners2: [allTokens, allPools] })
+    return sumTokens2({ api, tokensAndOwners2: [allTokens, allPools], blacklistedTokens: blacklistedTokens[chain]})
   }
 
   const borrowed = async (api) => {
@@ -201,7 +205,9 @@ Object.keys(config).forEach((chain) => {
     await Promise.all(promiseArray)
 
     api.addTokens(allTokens, balances)
-    return sumTokens2({ api })
+    if (blacklistedTokens[chain]) {
+      blacklistedTokens[chain].forEach((token) =>  api.removeTokenBalance(token))
+    }
   }
   module.exports[chain] = { tvl, borrowed }
 })

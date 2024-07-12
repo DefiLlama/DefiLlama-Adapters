@@ -1,5 +1,5 @@
 
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs2 } = require("../helper/cache/getLogs");
 
 // https://docs.napier.finance/contract-and-integrations/deployed-contracts
 const config = {
@@ -19,25 +19,24 @@ Object.keys(config).map((network) => {
   const { tranche_factory, pool_factory } = config[network];
   module.exports[network] = {
     tvl: async (api) => {
-      const trancheDeployedLogs = tranche_factory.address ? await getLogs({
+      const trancheDeployedLogs = tranche_factory.address ? await getLogs2({
         api,
         target: tranche_factory.address,
         eventAbi:
           "event TrancheDeployed(uint256 indexed maturity, address indexed principalToken, address indexed yieldToken)",
-        onlyArgs: true,
         fromBlock: tranche_factory.deployedAt,
-        extraKey: 'fix-cache-issue'
+        extraKey: 'v1'
       }) : [];
 
       const tranches = trancheDeployedLogs.map((event) => event.principalToken);
 
       // fetch deployed pools
-      const poolDeployedLogs = pool_factory.address ? await getLogs({
+      const poolDeployedLogs = pool_factory.address ? await getLogs2({
         api,
         target: pool_factory.address,
         eventAbi: "event Deployed(address indexed basePool, address indexed underlying, address indexed pool)",
-        onlyArgs: true,
         fromBlock: pool_factory.deployedAt,
+        extraKey: 'v1'
       }) : [];
 
       const pools = poolDeployedLogs.map((event) => event.pool)
