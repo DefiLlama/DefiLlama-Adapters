@@ -1,134 +1,37 @@
-const sdk = require("@defillama/sdk");
-const Result = require("./Helpers/Result");
-const YelLPFarm = require("./Providers/YelLPFarm");
-const addr = require("./config/addresses.json");
-const YelEnhancedLpFarm = require("./Providers/YelEnhancedLpFarm");
-const YelSingleStaking = require("./Providers/YelSingleStaking");
-const YelEnhancedSingleStake = require("./Providers/YelEnhancedSingleStake");
+const ADDRESSES = require('../helper/coreAssets.json')
+const WETH = ADDRESSES.blast.WETH
+const USDB = ADDRESSES.blast.USDB
+const BLAST = ADDRESSES.blast.BLAST
 
-async function ethereumStaking() {
-    const [
-        ifarmEnhanced,
-        yelSSEth,
-    ] = await Promise.all([
-        YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.ethereum.ifarm, 'ethereum'),
-        YelSingleStaking.getStakedYel(addr.yelFarmingContract.ethereum, 'ethereum'),
-    ])
-    return (new Result(ifarmEnhanced))
-        .append(yelSSEth)
-        .render();
-}
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { staking } = require('../helper/staking');
 
-async function bscStaking() {
-    return await YelSingleStaking.getStakedYel(addr.yelFarmingContract.bsc, 'bsc');
-}
+const yelToken = '0x949185D3BE66775Ea648F4a306740EA9eFF9C567';
 
-async function ftmStaking() {
-    const [
-        anySwap,
-        yelSSFantom
-    ] = await Promise.all([
-        YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.fantom.anySwap, 'fantom', 2),
-        YelSingleStaking.getStakedYel(addr.yelFarmingContract.fantom, 'fantom'),
-    ])
-    return (new Result(anySwap))
-        .append(yelSSFantom)
-        .render();
-}
+const blastIndexLp = '0x7D8490333315EaAa5e93F3C6983d1e8128D7f50f';
+const yelInitialLp = '0x1e7Dd1829c6f905Db35320385e036E62970d11f5';
 
-async function maticStaking() {
-    const [
-        yelInLpPolygon,
-        dQuick
-    ] = await Promise.all([
-        YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.polygon.dQuick, 'polygon', 2),
-        YelSingleStaking.getStakedYel(addr.yelFarmingContract.polygon, 'polygon'),
-    ])
-    return (new Result(dQuick))
-        .append(yelInLpPolygon)
-        .render();
-}
+const yelIndex = '0x7d2f5881F0C4B840fcFA2c49F4052d1A004eAf0d';
+const wethIndex = '0x795a85CD543D0E2d29F7e11e33a20a38A4b5121e';
+const blastIndex = '0x07BF0Bc908Ef4badF8ec0fB1f77A8dBFe33c33c0';
 
-async function ethereumPool2() {
-    const [
-        yelInLpEth,
-        wethInLp,
-    ] = await Promise.all([
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.ethereum, 'ethereum'),
-        YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.ethereum, 'ethereum'),
-    ])
-    return (new Result(yelInLpEth))
-        .append(wethInLp)
-        .render();
-}
-
-async function bscPool2() {
-    const [
-        bnbInYel,
-        yelInLpBsc,
-        bananaBnb,
-    ] = await Promise.all([
-        YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.bsc, 'bsc'),
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.bsc, 'bsc'),
-        YelEnhancedLpFarm.tokensInLP(addr.yelEnhancedPools.bsc.bnbBanana, 'bsc'),
-    ])
-    return (new Result(bnbInYel))
-        .append(bananaBnb)
-        .append(yelInLpBsc)
-        .render();
-}
-
-async function ftmPool2() {
-    const [
-        ftmInYel,
-        yelInLpFantom,
-        ftmBoo,
-    ] = await Promise.all([
-        YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.fantom, 'fantom'),
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.fantom, 'fantom'),
-        YelEnhancedLpFarm.tokensInLP(addr.yelEnhancedPools.fantom.ftmBoo, 'fantom')
-    ])
-    return (new Result(ftmInYel))
-        .append(ftmBoo)
-        .append(yelInLpFantom)
-        .render();
-}
-
-async function maticPool2() {
-    const [
-        maticInYel,
-        yelInLpPolygon,
-    ] = await Promise.all([
-        YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.polygon, 'polygon'),
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.polygon, 'polygon'),
-    ])
-    return (new Result(maticInYel))
-        .append(yelInLpPolygon)
-        .render();
-}
-
-async function tvl() { 
-    return {}; 
+const config = {
+  blast: { vaults: [yelIndex, wethIndex, blastIndex], tokens: [yelToken, WETH, BLAST] },
 }
 
 module.exports = {
-    ethereum: {
-        staking: ethereumStaking,
-        pool2: ethereumPool2,
-        tvl,
-    },
-    bsc: {
-        staking: bscStaking,
-        pool2: ethereumPool2
-    },
-    fantom: {
-        staking: ftmStaking,
-        pool2: ftmPool2
-    },
-    polygon: {
-        staking: maticStaking,
-        pool2: maticPool2
-    },
-    methodology: "TVL is accounted from YEL liquidity mining farms, enhanced pools, partner farms and other protocols. Basically, that’s all the funds held at YEL Finance smart-contracts.",
+  methodology: 'YelFinance TVL is calculated by summing assets in all indexes created. Also add liquidity to the TVL with the WETH + YEL',
 };
-// node test.js projects/yel/index.js
+
+['blast'].forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const vaults = config[chain]?.vaults;
+      const tokens = config[chain]?.tokens;
+      return sumTokens2({ api, tokensAndOwners2: [tokens, vaults]})
+    }
+  }
+});
+
+module.exports.blast.staking = staking([blastIndexLp], [USDB])
+module.exports.blast.pool2 = staking([yelInitialLp], [WETH, yelToken])
