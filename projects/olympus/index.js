@@ -4,6 +4,7 @@ const { blockQuery } = require("../helper/http");
 const { getEnv } = require("../helper/env");
 const { staking } = require('../helper/staking');
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens } = require("../helper/sumTokens");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -14,8 +15,15 @@ const OlympusStakings = [
 ];
 
 const OHM_V1 = "0x383518188c0c6d7730d91b2c03a03c837814a899" // this is OHM v1
-const OHM = "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5" // this is OHM v1
+const OHM = "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5"
+const GOHM = "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f"
 
+const TREASURY_MULTISIG = "0x245cc372c84b3645bf0ffe6538620b04a217988b";
+
+const olympusTokens = [
+  GOHM, // GOHM
+  OHM,
+];
 /** Map any staked assets without price feeds to those with price feeds.
  * All balances are 1: 1 to their unstaked counterpart that has the price feed.
  **/
@@ -90,82 +98,80 @@ function sumBalancesByTokenAddress(arr) {
  * #3. Sum values returned
  ***/
 function buildTvl(isOwnTokensMode = false){
-return async function tvl(api) {
-const subgraphUrls = {
-  ethereum: `7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
-  arbitrum:
-    "2XQDRQ9AXhp5us6PsNyRM5BxKWeXhy3BNQLynA6YmmjA",
-  fantom:
-    sdk.graph.modifyEndpoint('3qSJTWdWJETFzht814HVV9rVafwRLQp3k9mZhCF39bYd'),
-  polygon:
-    "JCVMW1dbqectgaSLRuKSen6FKe9RPMJRQhNYZa4iTgFb",
-};
-  
-  //filter out problematic pools that dont have a decimals function.
-  const poolsWithoutDecimals = ["0x88051b0eea095007d3bef21ab287be961f3d8598"];
-  
-  const indexedBlockForEndpoint = await blockQuery(
-    subgraphUrls[api.chain],
-    getLatestBlockIndexed,
-    { api }
-  );
-  const blockNum = indexedBlockForEndpoint.lastBlock[0].block;
-  const { tokenRecords } = await blockQuery(
-    subgraphUrls[api.chain],
-    protocolQuery(blockNum),
-    { api }
-  );
+  return async function tvl(api) {
+    const subgraphUrls = {
+      ethereum: `7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
+      arbitrum:
+        "2XQDRQ9AXhp5us6PsNyRM5BxKWeXhy3BNQLynA6YmmjA",
+      fantom:
+        sdk.graph.modifyEndpoint('3qSJTWdWJETFzht814HVV9rVafwRLQp3k9mZhCF39bYd'),
+      polygon:
+        "JCVMW1dbqectgaSLRuKSen6FKe9RPMJRQhNYZa4iTgFb",
+    };
 
-  const filteredTokenRecords = tokenRecords.filter(
-    (t) => !poolsWithoutDecimals.includes(t.tokenAddress)
-  );
+    //filter out problematic pools that dont have a decimals function.
+    const poolsWithoutDecimals = ["0x88051b0eea095007d3bef21ab287be961f3d8598"];
 
-  const aDay = 24 * 3600;
-  const now = Date.now() / 1e3;
-  if (now - blockNum[0].timestamp > 3 * aDay) {
-    throw new Error("outdated");
+    const indexedBlockForEndpoint = await blockQuery(
+      subgraphUrls[api.chain],
+      getLatestBlockIndexed,
+      { api }
+    );
+    const blockNum = indexedBlockForEndpoint.lastBlock[0].block;
+    const { tokenRecords } = await blockQuery(
+      subgraphUrls[api.chain],
+      protocolQuery(blockNum),
+      { api }
+    );
+
+    const filteredTokenRecords = tokenRecords.filter(
+      (t) => !poolsWithoutDecimals.includes(t.tokenAddress)
+    );
+
+    const aDay = 24 * 3600;
+    const now = Date.now() / 1e3;
+    if (now - blockNum[0].timestamp > 3 * aDay) {
+      throw new Error("outdated");
+    }
+    // const filteredTokenRecords = poolsOnly
+    //   ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
+    //   : tokenRecords;
+
+    /**
+     * iterates over filtered list from subgraph and returns any addresses
+     * that need to be normalized for pricing .
+     * See addressMap above
+     **/
+    const normalizedFilteredTokenRecords = filteredTokenRecords.map((token) => {
+      const normalizedAddress = addressMap[token.tokenAddress]
+        ? addressMap[token.tokenAddress]
+        : token.tokenAddress;
+      return { ...token, tokenAddress: normalizedAddress };
+    });
+
+    const tokensToBalances = sumBalancesByTokenAddress(
+      normalizedFilteredTokenRecords
+    ).filter(i => {
+      if (api.chain !== 'arbitrum') return true;
+      return !['0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0000200000000000000000423', '0xce6195089b302633ed60f3f427d1380f6a2bfbc7000200000000000000000424'].includes(i.tokenAddress)
+    })
+    const tokens = tokensToBalances.map(i => i.tokenAddress)
+
+
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+    const ownTokens = new Set(olympusTokens.map(i => i.toLowerCase()))
+    tokensToBalances.map(async (token, i) => {
+      if (ownTokens.has(token.tokenAddress.toLowerCase())) {
+        if (!isOwnTokensMode) return;
+      } else if (isOwnTokensMode) return;
+      api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
+    })
+    return await sumTokens2({ api, resolveLP: true, })
   }
-  // const filteredTokenRecords = poolsOnly
-  //   ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
-  //   : tokenRecords;
-
-  /**
-   * iterates over filtered list from subgraph and returns any addresses
-   * that need to be normalized for pricing .
-   * See addressMap above
-   **/
-  const normalizedFilteredTokenRecords = filteredTokenRecords.map((token) => {
-    const normalizedAddress = addressMap[token.tokenAddress]
-      ? addressMap[token.tokenAddress]
-      : token.tokenAddress;
-    return { ...token, tokenAddress: normalizedAddress };
-  });
-
-  const tokensToBalances = sumBalancesByTokenAddress(
-    normalizedFilteredTokenRecords
-  ).filter(i => {
-    if (api.chain !== 'arbitrum') return true;
-    return !['0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0000200000000000000000423', '0xce6195089b302633ed60f3f427d1380f6a2bfbc7000200000000000000000424'].includes(i.tokenAddress)
-  })
-  const tokens = tokensToBalances.map(i => i.tokenAddress)
-
-
-  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
-  const ownTokens = new Set([
-    '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f', // GOHM
-    '0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5', // OHM
-  ].map(i => i.toLowerCase()))
-  tokensToBalances.map(async (token, i) => {
-    if (ownTokens.has(token.tokenAddress.toLowerCase())) {
-      if (!isOwnTokensMode) return;
-    } else if (isOwnTokensMode) return;
-    api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
-  })
-  return await sumTokens2({ api, resolveLP: true, })
-}
 }
 
 async function ownTokens(api) {
+  api.sumTokens({ owners: [TREASURY_MULTISIG], tokens: olympusTokens })
   return buildTvl(true)(api);
 }
 
