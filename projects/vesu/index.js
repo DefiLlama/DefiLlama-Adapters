@@ -13,25 +13,19 @@ const assets = [
   "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
 ];
 
-const poolId =
-  "2198503327643286920898110335698706244522220458610657370981979460625005526824";
+const poolId = "0x4dc4f0ca6ea4961e4c8373265bfd5317678f4fe374d76f3fd7135f57763bf28";
 
 async function tvl(api) {
   return sumTokens({ api, owner: poolAddress, tokens: assets });
 }
 
 const borrowed = async (api) => {
-  const decimalsCalls = assets.map((asset) => ({ target: asset }));
   const debtCalls = assets.map((asset) => ({ target: poolAddress, params: [poolId, asset] }));
-
-  const [debtsRes, decimals] = await Promise.all([
-    multiCall({ calls: debtCalls, abi: abi.debtData, allAbi }),
-    multiCall({ calls: decimalsCalls, abi: abi.decimals })
-  ])
-
+  const debtsRes = await multiCall({ calls: debtCalls, abi: abi.asset_config_unsafe, allAbi });
+  const decimals = await multiCall({ calls: assets, abi: abi.decimals });
   return debtsRes.forEach((res, index) => {
-    const { total_nominal_debt } = res["0"];
-    const adjustDebt = Number(total_nominal_debt) * Math.pow(10, Number(decimals[index])) / Math.pow(10, 18)
+    const { total_nominal_debt } = res['0']
+    const adjustDebt = Number(total_nominal_debt) * 10 ** (Number(decimals[index]) - 18)
     api.add(assets[index], adjustDebt);
   });
 };
