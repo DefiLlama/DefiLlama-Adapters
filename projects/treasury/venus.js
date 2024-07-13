@@ -18,6 +18,7 @@ module.exports = treasuryExports({
       ADDRESSES.bsc.BETH, //BETH
       ADDRESSES.bsc.WBNB,
       venusBTC,
+      "0x2170Ed0880ac9A755fd29B2688956BD959F933F8", //eth
       "0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8", // venusUSDC
       "0xf508fCD89b8bd15579dc79A6827cB4686A3592c8", // venusETH
       "0xfD5840Cd36d94D7229439859C0112a4185BC0255", // venusUSDT
