@@ -17,6 +17,12 @@ module.exports = treasuryExports({
       "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", //DAI
       ADDRESSES.bsc.BETH, //BETH
       ADDRESSES.bsc.WBNB,
+      venusBTC,
+      "0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8", // venusUSDC
+      "0xf508fCD89b8bd15579dc79A6827cB4686A3592c8", // venusETH
+      "0xfD5840Cd36d94D7229439859C0112a4185BC0255", // venusUSDT
+      "0xB248a295732e0225acd3337607cc01068e3b9c10", // venusXRP
+      "0x95c78222B3D6e262426483D42CfA53685A67Ab9D", // venusBUSD
       "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82", //cake
       "0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11", //thena
       "0x4338665CBB7B2485A8855A139b75D5e34AB0DB94", //ltc
@@ -50,15 +56,6 @@ module.exports = treasuryExports({
       "0x12f31B73D812C6Bb0d735a218c086d44D5fe5f89", //ageur
     ],
     owners: [venusTreasury],
-    ownTokens: [
-      XVS,
-      venusBTC,
-      VAI,
-      "0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8", // venusUSDC
-      "0xf508fCD89b8bd15579dc79A6827cB4686A3592c8", // venusETH
-      "0xfD5840Cd36d94D7229439859C0112a4185BC0255", // venusUSDT
-      "0xB248a295732e0225acd3337607cc01068e3b9c10", // venusXRP
-      "0x95c78222B3D6e262426483D42CfA53685A67Ab9D", // venusBUSD
-    ],
+    ownTokens: [XVS, VAI],
   },
 });
