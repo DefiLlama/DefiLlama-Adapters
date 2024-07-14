@@ -299,7 +299,7 @@ async function lqdrFtm_BeetsLp(owner, balances, block) {
 module.exports = {
 	fantom: {
 		tvl: fantomTvl,
-		staking: staking(fantomStaking, fantomFhm, "fantom")
+		staking: staking(fantomStaking, fantomFhm)
 	},
 	moonriver: {
 		tvl: moonriverTvl,

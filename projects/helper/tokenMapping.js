@@ -1,3 +1,4 @@
+const { decimals } = require('@defillama/sdk/build/erc20')
 let coreAssets = require('./coreAssets.json')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
@@ -16,8 +17,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
+
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', ]
 
 const transformTokens = {
   // Sample Code
@@ -34,24 +36,19 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  ethereum: {
-    '0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0': { coingeckoId: 'stakestone-ether', decimals: 18 },
-  },
-  islm: {
-    '0xeC8CC083787c6e5218D86f9FF5f28d4cC377Ac54': { coingeckoId: 'islamic-coin', decimals: 18 },
-    '0xc5e00d3b04563950941f7137b5afa3a534f0d6d6': { coingeckoId: 'dai', decimals: 18 },
-    '0xeceeefcee421d8062ef8d6b4d814efe4dc898265': { coingeckoId: 'ethereum', decimals: 18 },
-    '0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-    '0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75': { coingeckoId: 'tether', decimals: 6 },
-    '0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd': { coingeckoId: 'axlusdc', decimals: 6 },
-  },
-  svm: {
-    '0x5db252ead05C54B08A83414adCAbF46Eaa9E0337': { coingeckoId: 'bitcoin', decimals: 18 },
-  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  }
+  },
+  xdc: {
+    '0x8f9920283470f52128bf11b0c14e798be704fd15': { coingeckoId: 'comtech-gold', decimals: 18 },
+  },
+
+  real: {
+    '0x4644066f535ead0cde82d209df78d94572fcbf14': { coingeckoId: 're-al', decimals: 18 },
+    '0xaec9e50e3397f9ddc635c6c429c8c7eca418a143': { coingeckoId: 'arcana-2', decimals: 18 },
+    '0xce1581d7b4ba40176f0e219b2cac30088ad50c7a': { coingeckoId: 'pearl', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
@@ -93,6 +90,7 @@ function getCoreAssets(chain = 'ethereum') {
 
 function normalizeAddress(address, chain, extractChain = false) {
   if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
+  if (chain === 'sei' && address?.startsWith('0x')) return address.toLowerCase()
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }

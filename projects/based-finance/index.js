@@ -33,7 +33,7 @@ module.exports = {
              factory: '0x407C47E3FDB7952Ee53aa232B5f28566A024A759',
              useDefaultCoreAssets: true,
            }),
-    staking: staking(acropolisAddress, bshareTokenAddress, "fantom"),
+    staking: staking(acropolisAddress, bshareTokenAddress),
     treasury
   },
 };

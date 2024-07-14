@@ -41,7 +41,7 @@ module.exports = {
   ],
   misrepresentedTokens: true,
   avax: {
-    staking: stakings(sashimidaoStakings, SASHI, "avax"),
+    staking: stakings(sashimidaoStakings, SASHI),
     tvl: avaxTvl,
   },
   methodology: "Counts MIM and TLP (SASHI-MIM) on the treasury",
