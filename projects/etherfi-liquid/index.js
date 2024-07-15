@@ -22,7 +22,7 @@ async function tvl(api) {
     throw new Error('Data is outdated')
   }
   console.log(updatedTimestamp, api.timestamp)
-  api.add(ADDRESSES.ethereum.EETH, balETH - wethBal);
+  api.add(ADDRESSES.ethereum.EETH, BigInt(balETH) - BigInt(wethBal));
   api.add(ADDRESSES.ethereum.WETH, wethBal)
   const balUSD = await api.call({
     abi: "uint256:totalSupply",

@@ -10,7 +10,7 @@ const graphUrlList = {
   ethereum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-prod/version/latest',
   bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
   arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
-  mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
+  mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mantle/-/gn',
   merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin',
 }
 
@@ -93,6 +93,13 @@ async function borrowed(api) {
       }
     }
 
+    const symbols = await api.multiCall({
+      abi: abi.symbol,
+      calls: poolBaseInfos.map((index) => ({
+        target: index[1]
+      })),
+    })
+
     const balances = await api.multiCall({
       abi: abi.balanceOf,
       calls: Object.values(vaults).map((index) => ({
@@ -113,7 +120,9 @@ async function borrowed(api) {
         vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`] = undefined
       }
       if (balance > 0) {
-        api.add(poolBaseInfos[i][1], balance)
+        if (symbols[i] !== "SolvBTC") {
+          api.add(poolBaseInfos[i][1], balance)
+        }
       }
     }
   }
@@ -249,8 +258,8 @@ async function liquidity(api, iziswap, owner) {
 
   tokenList.forEach((token, index) => {
     const amounts = getAmounts(state[index], liquidities[index])
-    api.add(token[0], amounts.amountX)
-    api.add(token[1], amounts.amountY)
+    api.add(token[0], amounts.amountX);
+    api.add(token[1], amounts.amountY);
   })
 }
 
@@ -320,6 +329,13 @@ async function vaultBalance(api, graphData) {
       }
     }
 
+    const symbols = await api.multiCall({
+      abi: abi.symbol,
+      calls: Object.values(vaults).map((index) => ({
+        target: index[0]
+      })),
+    })
+
     const balances = await api.multiCall({
       abi: abi.balanceOf,
       calls: Object.values(vaults).map((index) => ({
@@ -329,7 +345,9 @@ async function vaultBalance(api, graphData) {
     })
 
     for (const key in balances) {
-      api.add(Object.values(vaults)[key][0], balances[key])
+      if (symbols[key] !== "SolvBTC") {
+        api.add(Object.values(vaults)[key][0], balances[key])
+      }
     }
   }
 }
@@ -430,36 +448,6 @@ async function ceffuBalance(api, address, graphData) {
       }
     }
   }
-}
-
-
-async function getGraphSoltData(timestamp, chain, api, slot) {
-  console.log("slot", slot)
-  const poolSlotDataQuery = `query PoolOrderInfos {
-            poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot:"${slot["slot"]}") {
-              marketContractAddress
-              contractAddress
-              navOracle
-              poolId
-              vault
-              openFundShareSlot
-          }
-        }`;
-
-  console.log("slotDataQuery", poolSlotDataQuery);
-  let data;
-  if (graphUrlList[chain]) {
-    data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], poolSlotDataQuery, { api, fetchById: true }));
-  }
-
-  let poolList = [];
-  if (data != undefined && data.poolOrderInfos != undefined) {
-    poolList = data.poolOrderInfos;
-  }
-
-  return {
-    pools: poolList
-  };
 }
 
 async function getGraphData(timestamp, chain, api) {
