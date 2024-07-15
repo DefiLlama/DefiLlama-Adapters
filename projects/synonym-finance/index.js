@@ -1,3 +1,4 @@
+const bytes32ToAddress = (bytes32Address) => "0x" + bytes32Address.substr(-40);
 
 const hub = '0x1e3f1f1cA8C62aABCB3B78D87223E988Dfa3780E'
 async function tvl(api) {
@@ -41,9 +42,11 @@ async function getTokenInfos(api) {
     switch (chainId[i]) {
       case '2': chain = 'ethereum'; break;
       case '24': chain = 'optimism'; break;
-      default: console.log('Unsupported chain ' + chainId[i]); return;
+      case '30': chain = 'base'; break;
+      case '34': chain = 'scroll'; break;
+      default: console.log('Unsupported chain ' + chainId[i] + bytes32ToAddress(natives[i])); return;
     }
-    tokenMappings.push(chain + ':' + "0x" + BigInt(natives[i]).toString(16))
+    tokenMappings.push(chain + ':' + bytes32ToAddress(natives[i]))
     tokens.push(asset)
   })
 
