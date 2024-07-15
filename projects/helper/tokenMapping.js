@@ -49,11 +49,13 @@ const fixBalancesTokens = {
     '0xaec9e50e3397f9ddc635c6c429c8c7eca418a143': { coingeckoId: 'arcana-2', decimals: 18 },
     '0xce1581d7b4ba40176f0e219b2cac30088ad50c7a': { coingeckoId: 'pearl', decimals: 18 },
   },
-
   airdao: {
     [ADDRESSES.null]: { coingeckoId: 'amber', decimals: 18 },
     [ADDRESSES.airdao.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
-  }
+  },
+  bfc: {
+    '0x6906Ccda405926FC3f04240187dd4fAd5DF6d555': { coingeckoId: "bitcoin-usd-btcfi", decimals: 18, },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
