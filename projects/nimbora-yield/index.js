@@ -17,7 +17,7 @@ const totalAssetsAbi = {
 }
 
 async function fetcher() {
-  return get('https://backend.nimbora.io/yield-dex/strategies', {
+  return get('https://stats.nimbora.io/aggregator/strategies', {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
