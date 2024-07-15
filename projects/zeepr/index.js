@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 
 module.exports = {
@@ -7,7 +8,7 @@ module.exports = {
   },
   core: {
     tvl: () => ({}),
-    staking: staking("0x60101E4388D1c2B389d78daC29d37Ee2DAc88e07", ["0x1281E326C6e4413A98DafBd0D174a4Ae07ff4223","0x40375C92d9FAf44d2f9db9Bd9ba41a3317a2404f"]),
+    staking: staking("0x60101E4388D1c2B389d78daC29d37Ee2DAc88e07", ["0x1281E326C6e4413A98DafBd0D174a4Ae07ff4223",ADDRESSES.core.WCORE]),
   },
   bsc: {
     tvl: () => ({}),

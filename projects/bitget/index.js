@@ -31,6 +31,17 @@ const config = {
         '0x842ea89f73add9e4fe963ae7929fdc1e80acdb52',  //add on 12/01/2024
         '0x1a96e5da1315efcf9b75100f5757d5e8b76abb0c',  //add on 12/01/2024
         '0x4dfc15890972ecea7a213bda2b478dabc382e7a1',  //add on 12/01/2024
+        '0x70213959a644baa94840bbfb4129550bceceb3c2',  // add on 27/05/2024
+        '0x54a679e853281a440911f72eae0e24107e9413dc',  // add on 27/05/2024
+        '0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23', // add on 27/05/2024
+        '0x0edd5b0de0fe748be331186bf0aa878f47f601db', // add on 27/05/2024
+        '0x4121217c238db06e942f3d87371106d30d0f8c84', // add on 27/05/2024
+        '0xed470553f61f23cd30ccf51ab066dc1598ed0c4f', // add on 27/05/2024
+        '0x59708733fbbf64378d9293ec56b977c011a08fd2', // add on 27/05/2024
+        '0xaab0039de2a8dba8696ee4d42c0d1aa30d7e1059', // add on 27/05/2024
+        '0xf207b2f9f9417fc73cad069f7aa5ae1c6a5b428d', // add on 27/05/2024
+        '0x4d216d2682f3997f6c19420beee4530d08d0ea5f', // add on 27/05/2024
+        '0xdbe46a02322e636b92296954637e1d7db9d5ed26', // add on 27/05/2024
     ]
   },
   tron: {
@@ -46,6 +57,10 @@ const config = {
         'TBM2FK4KBEEsMVYjm4WAW2Q8Es2NKdmUB8', //add on 12/01/2024
         'TCvfZC9h6fFXnF7KbHPgY4jgfen93VkfVW', //add on 12/01/2024
         'TGp7SNzjrctsWNwaFFN2PNTh3b1Kgxdtib', //add on 12/01/2024
+        'TBpo1Sh7vKCLrfxocZHd8CA5wc2R75kSJM', // add on 27/05/2024
+        'TMauqkA78pfysSTn8jD1dvEUkjme2gEEdn', // add on 27/05/2024
+        'TKPqvBMU2v23RyjjViKvp16kiHPx7FnrHQ', // add on 27/05/2024
+        'TVSdtELybCCa9DPDH15CMAPjeRcENAmDJZ', // add on 27/05/2024
     ]
   },
   bitcoin: {
@@ -56,6 +71,12 @@ const config = {
         '3HcSp9sR23w6MxeRrLqqyDzLqThtSMaypQ',
         '3MdofQ2ouxom9MzC9kKazGUShoL5R3cVLG',
         '3Jxc4zsvEruEVAFpvwj818TfZXq5y2DLyF', //add on 12/01/2024
+        '3KUwtHc5UhWQ76z6WrZRQHHVTZMuUWiZcU', // add on 27/05/2024
+        '3H6JnFoz5jcoATKQ83BuQ3cUUCHswqfgtG', // add on 27/05/2024
+        '3AZHcgLnJL5C5xKo33mspyHpQX7x4H5bBw', // add on 27/05/2024
+        '3DSST4myyyRbiGzgCBE1RVHY7GRjDCh4n9', // add on 27/05/2024
+        '3Nu84pbqfcfaFztQ74qc9ni2PH5HGM1bzS', // add on 27/05/2024
+        '34hatYbZ27CLLoZWhuJHzBgoTCwXEv8GwT', // add on 27/05/2024
     ]
   },
   arbitrum: {

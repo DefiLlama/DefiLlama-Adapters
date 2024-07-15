@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const SUBGRAPH_URL = 'https://subgraph.satsuma-prod.com/c59d37e827d0/non-fungible-technologies/protocol/api';
 const CHAIN = 'ethereum';
 
@@ -16,7 +17,7 @@ const STAKING_REWARDS = "0x80bDdd56b947c547Ab8964D80E98E42Ff77a5793";
 const SINGLE_SIDED_STAKING = "0x72854FBb44d3dd87109D46a9298AEB0d018740f0";
 const ARCD = "0xe020B01B6fbD83066aa2e8ee0CCD1eB8d9Cc70bF";
 const ARCD_WETH_LP = "0x06af8C358c0787640588734E4733A779961a2bca";
-const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 const VAULT_FACTORIES = new Set();
 VAULT_FACTORIES.add(VAULT_FACTORY_A);

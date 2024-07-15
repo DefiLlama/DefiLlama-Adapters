@@ -40,8 +40,6 @@ async function tvl(api) {
       }),
     ]);
 
-  console.log({ jusdcTvl });
-
   api.addTokens(metavaultTokens, metavaultBalances);
   api.addTokens(optionVaultTokens, optionVaultBalances);
   api.addTokens(addresses.tokens.usdc, jusdcTvl.output);
