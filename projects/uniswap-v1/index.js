@@ -1,7 +1,7 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 
 const v1graph = getChainTvl({
-  ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap'
+  ethereum: 'ESnjgAG9NjfmHypk4Huu4PVvz55fUwpyrRqHF21thoLJ'
 }, "uniswaps", "totalLiquidityUSD")
 
 module.exports = {

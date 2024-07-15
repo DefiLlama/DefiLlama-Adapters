@@ -7,6 +7,8 @@ module.exports = uniV3Export({
   kava: { factory: '0x0e0Ce4D450c705F8a0B6Dd9d5123e3df2787D16B', fromBlock: 6037137, },
   ethereum: { factory: '0xB9a14EE1cd3417f3AcC988F61650895151abde24', fromBlock: 18240112, },
   metis: { factory: '0x8112E18a34b63964388a3B2984037d6a2EFE5B8A', fromBlock: 9740222, },
+  zklink: { factory: '0x6175b648473F1d4c1549aAC3c2d007e7720585e6', fromBlock: 1339353, },
+  iotaevm: { factory: '0x01Bd510B2eA106917e711f9a05a42fC162bee2Ac', fromBlock: 143828, },
 })
 
 module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'https://kava.graph.wagmi.com/subgraphs/name/v3', minTVLUSD: 0 }) }

@@ -35,4 +35,10 @@ module.exports = {
   injective: {
     tvl: async () => await computeTVL("injective"),
   },
+  base: {
+    tvl: async () => await computeTVL("base"),
+  },
+  arbitrum: {
+    tvl: async () => await computeTVL("arbitrum"),
+  },
 };

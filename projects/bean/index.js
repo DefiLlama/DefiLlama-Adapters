@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BEANSTALK = "0xc1e088fc1323b20bcbee9bd1b9fc9546db5624c5";
 
 const BEAN_ERC20_V1 = "0xdc59ac4fefa32293a95889dc396682858d52e5db";
@@ -12,9 +13,9 @@ const BEAN3CRV_V2 = "0xc9c32cd16bf7efb85ff14e0c8603cc90f6f2ee49";
 const BEANETH_V2 = "0xbea0e11282e2bb5893bece110cf199501e872bad";
 
 // Underlying non-bean tokens
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 const CRV3 = "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490";
-const LUSD = "0x5f98805a4e8be255a32880fdec7f6728c6568ba0";
+const LUSD = ADDRESSES.ethereum.LUSD;
 
 /// REFERENCE                 BLOCKS    TIMESTAMPS
 // Whitelist    BEANETH_V1    12974075  1628288832

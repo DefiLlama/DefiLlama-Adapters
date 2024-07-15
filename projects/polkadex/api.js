@@ -1,21 +1,9 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const sdk = require('@defillama/sdk')
+const {fetchURL} = require("../helper/utils");
 
 const rpcNodes = ["wss://polkadex.api.onfinality.io/public-ws", "wss://polkadex.public.curie.radiumblock.co/ws"];
 const orderbookWallet = "esoEt6uZ3GuFV8EzKB2EAREe3KE9WuRVfmhK1RRtwffY78ArH"
-
-const assetMapping = {
-  '193492391581201937291053139015355410612': 'pha',
-  '182269558229932594457975666948556356791': 'moonbeam',
-  '313524628741076911470961827389955394913': 'voucher-dot',
-  '130314105136721928300689838359167097187': 'bifrost-native-coin',
-  '95930534000017180603917534864279132680': 'polkadot',
-  '119367686984583275840673742485354142551': 'dot-is-ded',
-  '32595388462891559990827225517299393930': 'unique-network',
-  '3496813586714279103986568049643838918': 'tether',
-  '222121451965151777636299756141619631150': 'astar',
-  '226557799181424065994173367616174607641': 'interbtc',
-}
 
 function add(_api, token, bal) {
   _api.add(token, bal, { skipChain: true })
@@ -26,12 +14,15 @@ async function tvl(_api) {
   const api = await ApiPromise.create({ provider, });
   await api.isReady;
 
+  const assetMapping = await getAssetMappings();
+
   const pdexBalance = await api.query.system.account(orderbookWallet)
   add(_api,'polkadex', pdexBalance.data.free / 1e12)
 
   let requestedAssets = [];
   Object.keys(assetMapping).forEach(function(key) {
-    requestedAssets.push([key, orderbookWallet]);
+    if(key !== "PDEX")
+      requestedAssets.push([key, orderbookWallet]);
   })
 
   const results = await api.query.assets.account.multi(requestedAssets);
@@ -63,6 +54,20 @@ async function staking(_api) {
   add(_api,'polkadex', results.toPrimitive() / 1e12)
 
   return _api.getBalances()
+}
+
+async function getAssetMappings() {
+  let coingeckoMappings = await fetchURL("https://integration-api.polkadex.trade/v1/assets");
+  let assetMapping = {};
+
+  if(coingeckoMappings.data === null)
+    return assetMapping;
+
+  Object.keys(coingeckoMappings.data).forEach(function(key) {
+    assetMapping[coingeckoMappings.data[key].asset_id] = coingeckoMappings.data[key].coingecko_id;
+  })
+
+  return assetMapping;
 }
 
 module.exports = {

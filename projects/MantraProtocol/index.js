@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
-const NATIVE_TOKEN_INTERNAL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const NATIVE_TOKEN_INTERNAL_ADDRESS = ADDRESSES.null
 
 const MANTRA_CONTRACT_PER_CHAIN = {
   shibarium: '0xf27B9704a15fFe47818fD48660D952235e9C39aF',

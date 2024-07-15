@@ -56,7 +56,7 @@ Object.keys(config).forEach(chain => {
         target: usdeVault.fwUSDe,
         params: usdeVault.vault
       });
-      api.add('0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34', wrappedUSDeBalance)
+      api.add(ADDRESSES.arbitrum.USDe, wrappedUSDeBalance)
       return sumTokens2({ api })
     }
   }

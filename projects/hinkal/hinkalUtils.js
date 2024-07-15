@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const ownerByChain = require("./owners.js");
 
-const nullAddress = "0x0000000000000000000000000000000000000000";
+const nullAddress = ADDRESSES.null;
 
 const nativeVolatileChains = ["blast"];
 

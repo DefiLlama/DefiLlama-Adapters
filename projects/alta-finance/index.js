@@ -5,7 +5,7 @@ module.exports = {
 
 const config = {
   polygon: { investments: ['0xcf152E9f60E197A44FAdce961c6B822Dcb6c9dcc'], debts: [], token: ADDRESSES.polygon.USDC },
-  base: { investments: ['0xF36d1AdDA798Ea9340069207806dcBB137d31212'], debts: [], token: ADDRESSES.base.USDC }
+  base: { investments: [], debts: [], token: ADDRESSES.base.USDC }
 }
 
 Object.keys(config).forEach(chain => {

@@ -13,6 +13,7 @@ const helpers = {
   "cosmos": require("./chain/cosmos"),
   "solana": require("./solana"),
   "aptos": require("./chain/aptos"),
+  "sui": require("./chain/sui"),
   "tezos": require("./chain/tezos"),
   "zilliqa": require("./chain/zilliqa"),
   "near": require("./chain/near"),

@@ -10,6 +10,7 @@ const { SCN_STAKE_POOL } = require("./layouts/scnSOL");
 const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
 const { parseSanctumLstStateList } = require("./layouts/sanctum-validators-lsts-layout");
 const { STAKE_POOL_PARTIAL } = require("./layouts/stake-pool-partial-layout");
+const { STAKE_POOL_LAYOUT } = require("./layouts/stakePool");
 
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
@@ -59,7 +60,8 @@ const customDecoders = {
   phoenix: parsePhoenix,
   sanctumInfinity: defaultParseLayout(SANCTUM_INFINITY),
   sanctumValidatorLsts: parseSanctumLstStateList,
-  stakePoolPartial: defaultParseLayout(STAKE_POOL_PARTIAL)
+  stakePoolPartial: defaultParseLayout(STAKE_POOL_PARTIAL),
+  stakePool: defaultParseLayout(STAKE_POOL_LAYOUT),
 }
 
 function decodeAccount(layout, accountInfo) {
