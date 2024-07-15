@@ -93,7 +93,7 @@ const config = {
       fromBlock: 5147666,
     },
   ],
-  gnosis: [
+  xdai: [
     {
       name: "Gyro E-CLP V2 Factory",
       factory: "0x5d3Be8aaE57bf0D1986Ff7766cC9607B6cC99b89",
