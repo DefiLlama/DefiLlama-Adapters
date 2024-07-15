@@ -8,6 +8,8 @@ async function tvl() {
 }
 
 module.exports = {
-  timetravel: false,
-  tvl
+    timetravel: false,
+    cardano: {
+        tvl
+    }
 }
