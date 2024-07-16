@@ -1,13 +1,8 @@
-const { getUniTVL } = require("../helper/unknownTokens");
+const { uniV3Export } = require("../helper/uniswapV3");
 
-module.exports = {
-  misrepresentedTokens: true,
-  methodology: `Uses factory(0xEaD128BDF9Cff441eF401Ec8D18a96b4A2d25252) address and whitelisted tokens address to find and price liquidity pool pairs`,
-  mantle: {
-    tvl: getUniTVL({
-      factory: "0xEaD128BDF9Cff441eF401Ec8D18a96b4A2d25252",
-      hasStablePools: true,
-      useDefaultCoreAssets: true,
-    }),
+module.exports = uniV3Export({
+  polygon: {
+    factory: "0xEaD128BDF9Cff441eF401Ec8D18a96b4A2d25252",
+    fromBlock: 62692352,
   },
-};
+});
