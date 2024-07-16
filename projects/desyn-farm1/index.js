@@ -1,12 +1,11 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
-  doublecounted: true,
   methodology: 'Product: On-chain restaking<br/>TVL: It includes above<br/>Revenue: Staking rewards, management fees, performance fees',
 }
 
 const config = {
-  merlin: { factory: '0x790b4ee7998A93702f29e56f8b615eF35BE5af43', fromBlock: 11260440},
+  btr: { factory: '0x09eFC8C8F08B810F1F76B0c926D6dCeb37409665', fromBlock: 2393247},
 }
 
 Object.keys(config).forEach(chain => {
