@@ -1,9 +1,3 @@
-
-
-module.exports = {
-  methodology: "Compute the total TVL by summing the balances of each pool's underlying pools and multiplying by the BTP valuation",
-};
-
 const config = {
   ethereum: [
     "0x86b130298719F753808E96cA6540b684a2d21466",// wstETH
