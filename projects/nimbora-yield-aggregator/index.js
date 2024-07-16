@@ -25,7 +25,7 @@ async function fetcher() {
 }
 
 async function tvl(api) {
-  const strategyData = await getConfig('nimbora-yield', undefined, { fetcher })
+  const strategyData = await getConfig('nimbora-yield-aggregator', undefined, { fetcher })
   for (let index = 0; index < strategyData.length; index++) {
     const strategyInfo = strategyData[index];
     const underlying = parseAddress(strategyInfo.underlying);
