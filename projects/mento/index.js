@@ -7,7 +7,7 @@ module.exports = {
   celo: {
     tvl: sumTokensExport({
       owners: ['0x9380fA34Fd9e4Fd14c06305fd7B6199089eD4eb9', '0x246f4599eFD3fA67AC44335Ed5e749E518Ffd8bB', '0x298FbD6dad2Fc2cB56d7E37d8aCad8Bf07324f67', '0x87647780180b8f55980c7d3ffefe08a9b29e9ae1'],
-      tokens: [nullAddress, ADDRESSES.celo.STEUR, ADDRESSES.celo.USDT],
+      tokens: [nullAddress, ADDRESSES.celo.STEUR, ADDRESSES.celo.USDT_1],
       chain: 'celo',
     })
   },
