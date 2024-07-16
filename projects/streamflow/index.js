@@ -33,7 +33,7 @@ async function getCachedApiRespnse() {
 
 async function tvl(api) {
   return {
-    tether: getValueForKey(await getCachedApiRespnse(), api.chain, TVL_KEY),
+    tether: 0
   }
 }
 async function vesting(api) {
