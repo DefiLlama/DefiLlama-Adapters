@@ -7,7 +7,7 @@ module.exports = {
     [1718092800, "DeSyn KelpDAO Restaking Fund Launched"],
     [1713340800, "Restaking Fund Series Launched"],
   ],
-  methodology: 'Product: Liquid restaking strategy<br/>TVL: It includes above<br/>Revenue: Staking rewards, management fees, performance fees',
+  methodology: 'Liquid restaking strategy',
 }
 
 const config = {
