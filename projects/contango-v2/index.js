@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
 const { cachedGraphQuery } = require("../helper/cache");
 
@@ -8,27 +9,27 @@ const config = {
   arbitrum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-arbitrum",
+    grapUrl: sdk.graph.modifyEndpoint('BmHqxUxxLuMoDYgbbXU6YR8VHUTGPBf9ghD7XH6RYyTQ'),
   },
   optimism: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-optimism",
+    grapUrl: sdk.graph.modifyEndpoint('PT2TcgYqhQmx713U3KVkdbdh7dJevgoDvmMwhDR29d5'),
   },
   ethereum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-mainnet",
+    grapUrl: sdk.graph.modifyEndpoint('FSn2gMoBKcDXEHPvshaXLPC1EJN7YsfCP78swEkXcntY'),
   },
   polygon: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-polygon",
+    grapUrl: sdk.graph.modifyEndpoint('5t3rhrAYt79iyjm929hgwyiaPLk9uGxQRMiKEasGgeSP'),
   },
   xdai: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-gnosis",
+    grapUrl: sdk.graph.modifyEndpoint('9h1rHUKJK9CGqztdaBptbj4Q9e2zL9jABuu9LpRQ1XkC'),
   },
   base: {
     contango: CONTANGO_PROXY,

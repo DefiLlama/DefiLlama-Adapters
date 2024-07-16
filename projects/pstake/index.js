@@ -33,6 +33,11 @@ const chainInfos = {
     name: "stargaze",
     decimals: 1e6,
     endpoint: "/stkstars/stars_tvu"
+  },
+  persistence: {
+    name: "persistence",
+    decimals: 1e6,
+    endpoint: "/stkxprt/xprt_tvu"
   }
 }
 

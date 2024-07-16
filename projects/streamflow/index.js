@@ -10,6 +10,7 @@ const chains = [
   "bsc",
   "polygon",
   "ethereum",
+  "sui",
 ];
 const chainMapping = {
   bsc: 'bnb'

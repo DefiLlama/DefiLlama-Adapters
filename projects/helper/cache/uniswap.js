@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 
 const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
@@ -28,8 +29,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     let chain = api?.chain
     if (!chain)
       chain = _chain
-    // const supply = await api.call({ abi: 'erc20:totalSupply', target: '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf' })
-    // console.log(await sdk.api.eth.getBalance({ target: '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf', chain: api.chain }), supply)
+    // console.log(await api.call({ target: factory, abi: 'address:factory' }))
     factory = normalizeAddress(factory, chain)
     blacklist = (blacklistedTokens || blacklist).map(i => normalizeAddress(i, chain))
     const key = `${factory}-${chain}`
