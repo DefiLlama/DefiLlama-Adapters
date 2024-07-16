@@ -1,7 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
-  doublecounted: false,
   methodology: 'Product: On-chain restaking<br/>TVL: It includes above<br/>Revenue: Staking rewards, management fees, performance fees',
 }
 
