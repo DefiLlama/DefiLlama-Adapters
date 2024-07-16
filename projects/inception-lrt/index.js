@@ -7,14 +7,13 @@ async function tvl_eth(api) {
   const strategies = await api.multiCall({  abi: 'address:strategy', calls: vaults})
   const tokens = await api.multiCall({  abi: 'address:underlyingToken', calls: strategies})
   // const result = total_deposited.map((deposited, index) => deposited - total_withdraw[index]);
-  if (api.timestamp > 1715181240) {
-    const staked = await api.call({ abi: 'uint256:totalAssets', target: '0xf073bAC22DAb7FaF4a3Dd6c6189a70D54110525C' })
-    api.add(ADDRESSES.null, staked)
-  }
   api.add(tokens, total_deposited)
 }
 
 module.exports = {
+  hallmarks: [
+    [1714953600,"Genesis Merges with InceptionLRT"]
+  ],
   doublecounted: true,
   ethereum: { tvl: tvl_eth, } ,
 }

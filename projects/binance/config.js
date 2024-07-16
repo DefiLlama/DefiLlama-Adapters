@@ -22,6 +22,8 @@ const assetList = [
   ['ARB', 'ARB', '0xa7c0d36c4698981fab42a7d8c783674c6fe2592d'],
   ['ARB', 'ARB', '0xb38e8c17e38363af6ebdcb3dae12e0243582891d'],
   ['ARB', 'ARB', '0xf977814e90da44bfa03b6295a0616a897441acec'],
+  ['ARB', 'ARB', '0x25681ab599b4e2ceea31f8b498052c53fc2d74db'],
+  ['ARB', 'ARB', '0x3931dab967c3e2dbb492fe12460a66d0fe4cc857'],
   ['ARB', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
   ['BNB', 'BEP2', 'bnb142q467df6jun6rt5u2ar58sp47hm5f9wvz2cvg'],
   ['BNB', 'BEP2', 'bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz'],
@@ -591,7 +593,6 @@ const assetList = [
   ['XRP', 'XRP', 'rhWj9gaovwu2hZxYW7p388P8GRbuXFLQkK'],
   ['XRP', 'XRP', 'rpmxpWis42eYV4oMhyxJNSzrLRdacJVooa'],
   ['XRP', 'XRP', 'rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza'],  
-
 ]
 
 function getAddresses(chain) {
@@ -678,7 +679,9 @@ module.exports = {
   near: {
     owners: getOwners('NEAR')
   },
+  /*
   doge: {
     owners: getOwners('DOGE')
   },
+  */
 }
