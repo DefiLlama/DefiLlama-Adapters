@@ -14,14 +14,12 @@ async function tvl(api) {
     })
   }
 
-  return transformDexBalances({
-    chain: 'aeternity',
-    data: allPools,
-  });
+  return transformDexBalances({ chain: 'aeternity', data: allPools, });
 }
 
 
 module.exports = {
+  timetravel: false,
   methodology: 'TVL is calculated based on tokens that are locked in the Superhero DEX pools.',
   aeternity: {
     tvl,
