@@ -27,14 +27,7 @@ async function tvl() {
     const balances = {};
     const tokenAddresses = Object.keys(tokenMap);
     for (let i = 0; i < tokenAddresses.length; i++) {
-        let a = await axios.get(burl + tokenAddresses[i])
-        let supply 
-        try {
-         supply = (await axios.get(burl + tokenAddresses[i])).data.totalSupply;
-        } catch {
-            let b = tokenAddresses[i]
-            a
-        }
+        const supply = (await axios.get(burl + tokenAddresses[i])).data.totalSupply;
         balances[tokenMap[tokenAddresses[i]]] = supply
     }
     return balances;
