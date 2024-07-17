@@ -6,25 +6,25 @@ const { stakings } = require("../helper/staking");
 const supportedChains = [
   {
     name: 'Polygon',
-    subgraphEndpoint: sdk.graph.modifyEndpoint('uQxLz6EarmJcr2ymRRmTnrRPi8cCqas4XcPQb71HBvw'),
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-polygon/1.1.1/gn',
     chainId: 137,
     identifier: 'polygon'
   },
   {
     name: 'Arbitrum',
-    subgraphEndpoint: sdk.graph.modifyEndpoint('HVC4Br5yprs3iK6wF8YVJXy4QZWBNXTCFp8LPe3UpcD4'),
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-arbitrum/1.1.0/gn',
     chainId: 42161,
     identifier: 'arbitrum'
   },
   {
     name: 'Optimism',
-    subgraphEndpoint: sdk.graph.modifyEndpoint('GgW1EwNARL3dyo3acQ3VhraQQ66MHT7QnYuGcQc5geDG'),
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GgW1EwNARL3dyo3acQ3VhraQQ66MHT7QnYuGcQc5geDG',
     chainId: 10,
     identifier: 'optimism'
   },
   {
     name: 'Binance',
-    subgraphEndpoint: sdk.graph.modifyEndpoint('GLDP56fPGDz3MtmhtfTkz5CxWiqiNLACVrsJ9RqQeL4U'),
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GLDP56fPGDz3MtmhtfTkz5CxWiqiNLACVrsJ9RqQeL4U',
     chainId: 56,
     identifier: 'bsc'
   },
@@ -36,7 +36,7 @@ const supportedChains = [
   },
   {
     name: 'Avalanche',
-    subgraphEndpoint: sdk.graph.modifyEndpoint('GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA'),
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
     chainId: 43114,
     identifier: 'avax'
   },
@@ -102,7 +102,7 @@ const supportedChains = [
   },
   {
     name: 'Fantom',
-    subgraphEndpoint: sdk.graph.modifyEndpoint('8k6x2Uho5PEqjxHx5SeSE334MEaxSZqMZhH6p5XYvqjM'),
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/9uyX2WDuaxmcYh11ehUhU68M9uSCp5FXVQV2w4LqbpbV',
     chainId: 250,
     identifier: 'fantom'
   },
@@ -151,7 +151,7 @@ const supportedChains = [
 
   // {
   //   name: 'Celo',
-  //   subgraphEndpoint: sdk.graph.modifyEndpoint('DDwt4z55qLHPNmasiQXFH3nRjgCBrBhsiz3uEqKRJoa'),
+  //   subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/BPaFHyfVrhv3pdjGodpQcWggAg1Bcrvc9SFc2t2BXeho',
   //   chainId: 42220,
   //   identifier: 'celo'
   // },
@@ -188,7 +188,8 @@ module.exports.arbitrum.staking = stakings(
     "0x0b619438d1E8b8c205656502de59Af2Af71C43e0",
     "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
     "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4",
-    "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B"
+    "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B",
+    "0x3338B85fB1607C519962571B67061e02408475Bb"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"
