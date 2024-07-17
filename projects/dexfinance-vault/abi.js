@@ -18,6 +18,11 @@ exports.abi = {
     pid: "uint256:pid",
     type: "string:stakingTokenType",
     version: "uint256:dexVersion",
+    tokenId: "uint256:tokenId",
+    stakingTokenLiquidity:
+      "function stakingTokenLiquidity(uint256 tokenId_) view returns (uint256 liquidity_)",
+    stakingTokenData:
+      "function stakingTokenData() view returns ((string stakingTokenType, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, (uint256 sqrtPriceX96LowInit, uint256 sqrtPriceX96UpInit, uint256 sqrtPriceX96LowLimit, uint256 sqrtPriceX96UpLimit, uint256 sqrtPriceX96ApproxPricePercent, uint256 sqrtPriceX96ShiftPercentLow, uint256 sqrtPriceX96ShiftPercentUp, uint256 sqrtPriceX96DefaultShiftPercentLow, uint256 sqrtPriceX96DefaultShiftPercentUp) pricesData, (address tokenIn, address tokenOut)[] swapsToken0ToNative, (address tokenIn, address tokenOut)[] swapsToken1ToNative, (address tokenIn, address tokenOut)[] swapsNativeToToken0, (address tokenIn, address tokenOut)[] swapsNativeToToken1))",
   },
   lpv2: {
     lpReservesAbi:
