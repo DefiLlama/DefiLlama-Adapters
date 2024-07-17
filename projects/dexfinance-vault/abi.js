@@ -18,6 +18,7 @@ exports.abi = {
     pid: "uint256:pid",
     type: "string:stakingTokenType",
     version: "uint256:dexVersion",
+    tokenId: "uint256:tokenId",
   },
   lpv2: {
     lpReservesAbi:
