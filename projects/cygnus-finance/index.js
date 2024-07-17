@@ -34,7 +34,7 @@ async function tonTvl() {
 
 
 module.exports = {
-  methodology: "Calculates the total cgUSD Supply",
+  methodology: "Calculates the total cgUSD and cgUSDT Supply",
   start: START_TIME,
   base: {
     tvl: baseTvl,
