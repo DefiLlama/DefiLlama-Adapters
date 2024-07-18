@@ -26,4 +26,7 @@ module.exports = {
   ethereum: {
     tvl,
   },
+  hallmarks:[
+    [1613091600, "Election market resolves"]
+  ]
 }
