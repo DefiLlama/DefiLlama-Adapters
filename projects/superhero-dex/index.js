@@ -19,7 +19,6 @@ async function tvl(api) {
 
 
 module.exports = {
-  timetravel: false,
   methodology: 'TVL is calculated based on tokens that are locked in the Superhero DEX pools.',
   aeternity: {
     tvl,
