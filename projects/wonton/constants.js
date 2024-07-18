@@ -1,4 +1,0 @@
-module.exports = {
-  HIGHLOAD_CONTRACT: "UQD8ucMJDu-VfMbemse1GaSefy8DUB18VxpvbnWiHQGlGMED",
-  POOL_CONTRACT: "UQDzfsiEm9p5KCPA8xNiXHLX42WShhvXEwVadworVgFvCyV8",
-};
