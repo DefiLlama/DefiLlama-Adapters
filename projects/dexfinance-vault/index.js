@@ -2,29 +2,29 @@ const { abi } = require("./abi");
 const { sumTokens2, addUniV3LikePosition } = require("../helper/unwrapLPs");
 
 const CONFIG = {
-  optimism: {
-    factory: "0xd4f1a99212e5be72426bde45abadef66d7d6edf3",
-  },
-  fantom: {
-    factory: "0x9b7e30644a9b37eebaa7158129b03f5a3088659d",
-  },
-  pulse: {
-    factory: "0xac297968C97EF5686c79640960D106f65C307a37",
-  },
+  // base: {
+  //   factory: "0x714c94b9820d7d73e61510e4c18b91f995a895c1",
+  // },
+  // optimism: {
+  //   factory: "0xd4f1a99212e5be72426bde45abadef66d7d6edf3",
+  // },
+  // fantom: {
+  //   factory: "0x9b7e30644a9b37eebaa7158129b03f5a3088659d",
+  // },
+  // pulse: {
+  //   factory: "0xac297968C97EF5686c79640960D106f65C307a37",
+  // },
   arbitrum: {
     factory: "0xe31fceaf93667365ce1e9edad3bed4a7dd0fc01a",
   },
-  avax: {
-    factory: "0x6b714e6296b8b977e1d5ecb595197649e10a3db1",
-  },
-  bsc: {
-    factory: "0x3ace08b10b5c08a17d1c46277d65c81249e65f44",
-  },
+  // avax: {
+  //   factory: "0x6b714e6296b8b977e1d5ecb595197649e10a3db1",
+  // },
+  // bsc: {
+  //   factory: "0x3ace08b10b5c08a17d1c46277d65c81249e65f44",
+  // },
   // manta: {
   //   factory: "0x714C94B9820D7D73e61510e4C18B91F995A895C1",
-  // },
-  // base: {
-  //   factory: "0x714c94b9820d7d73e61510e4c18b91f995a895c1",
   // },
 };
 
@@ -54,7 +54,7 @@ const getVaults = async (api, factory) => {
   );
 };
 
-const getVaultsConnectors = async (api, factory, vaults) => {
+const getConnectors = async (api, factory, vaults) => {
   const connectorsCalls = [];
   const calculationConnectorCalls = [];
 
@@ -80,62 +80,45 @@ const getVaultsConnectors = async (api, factory, vaults) => {
   ]);
 
   let connectorIndex = 0;
-  return vaults.map((vaultWithFarms) => {
-    const updatedFarms = vaultWithFarms.farms.map((farm) => ({
-      ...farm,
-      calculationConnector: calculationConnectors[connectorIndex],
-      connector: connectors[connectorIndex++],
-    }));
+  const farmsFlat = [];
 
-    return { ...vaultWithFarms, farms: updatedFarms };
+  vaults.forEach(({ farms }) => {
+    farms.forEach((farm) => {
+      farmsFlat.push({
+        ...farm,
+        calculationConnector: calculationConnectors[connectorIndex],
+        connector: connectors[connectorIndex++],
+      });
+    });
   });
+
+  return farmsFlat;
 };
 
-const getVaultsDatas = async (api, vaults) => {
-  const calls = vaults.flatMap(({ farms }) =>
-    farms.map((farm) => ({ target: farm.connector }))
-  );
+const getVaultsDatas = async (api, farms) => {
+  const calls = farms.map((farm) => ({ target: farm.connector }));
+  const liquiditiesCalls = farms.map(({ calculationConnector, connector }) => ({
+    target: calculationConnector,
+    params: [connector],
+  }));
 
-  const [types, stakingTokens, gauges, tokenIds] = await Promise.all([
-    api.multiCall({ calls, abi: abi.farm.type }),
-    api.multiCall({ calls, abi: abi.farm.stakingToken }),
-    api.multiCall({ calls, abi: abi.farm.farm }),
-    api.multiCall({ calls, abi: abi.farm.tokenId, permitFailure: true }),
-  ]);
+  const [types, stakingTokens, gauges, tokenIds, liquidities] =
+    await Promise.all([
+      api.multiCall({ calls, abi: abi.farm.type }),
+      api.multiCall({ calls, abi: abi.farm.stakingToken }),
+      api.multiCall({ calls, abi: abi.farm.farm }),
+      api.multiCall({ calls, abi: abi.farm.tokenId, permitFailure: true }),
+      api.multiCall({ calls: liquiditiesCalls, abi: abi.vault.liquidity }),
+    ]);
 
-  let callsIndex = 0;
-  return vaults.map((vault) => {
-    const updatedFarms = vault.farms.map((farm) => ({
-      ...farm,
-      type: types[callsIndex],
-      gauge: gauges[callsIndex],
-      tokenId: tokenIds[callsIndex] ?? 0,
-      stakingToken: stakingTokens[callsIndex++],
-    }));
-
-    return { ...vault, farms: updatedFarms };
-  });
-};
-
-const getVaultsBalances = async (api, vaults) => {
-  const calls = vaults.flatMap(({ farms }) =>
-    farms.map(({ calculationConnector, connector }) => ({
-      target: calculationConnector,
-      params: [connector],
-    }))
-  );
-
-  const liquidities = await api.multiCall({ calls, abi: abi.vault.liquidity });
-
-  let callsIndex = 0;
-  return vaults.map((vault) => {
-    const updatedFarms = vault.farms.map((farm) => ({
-      ...farm,
-      liquidity: liquidities[callsIndex++],
-    }));
-
-    return { ...vault, farms: updatedFarms };
-  });
+  return farms.map((farm, i) => ({
+    ...farm,
+    type: types[i],
+    gauge: gauges[i],
+    tokenId: tokenIds[i] ?? 0,
+    stakingToken: stakingTokens[i],
+    liquidity: liquidities[i],
+  }));
 };
 
 const groupBy = (array, keyFn) => {
@@ -155,14 +138,14 @@ const lpv2Balances = async (api, farms) => {
   });
 };
 
-const sqrtPriceX96ToPrice = (sqrtPriceX96) => {
-  const Q96 = 2 ** 96;
-  return (sqrtPriceX96 / Q96) ** 2;
-};
-
-const priceToTick = (price) => Math.log(price) / Math.log(1.0001);
-
 const lpv3Balances = async (api, farms) => {
+  const priceToTick = (price) => Math.log(price) / Math.log(1.0001);
+
+  const sqrtPriceX96ToPrice = (sqrtPriceX96) => {
+    const Q96 = 2 ** 96;
+    return (sqrtPriceX96 / Q96) ** 2;
+  };
+
   const calls = farms
     .filter(({ tokenId }) => tokenId != 0)
     .map(({ connector, tokenId }) => ({
@@ -185,8 +168,13 @@ const lpv3Balances = async (api, farms) => {
 
   const dataV3 = stakingTokenDataV3.map((data, index) => {
     const sqrtPriceX96LowInit = Number(data.pricesData.sqrtPriceX96LowInit);
-    const priceLowInit = sqrtPriceX96ToPrice(sqrtPriceX96LowInit);
-    const tick = priceToTick(priceLowInit);
+    const sqrtPriceX96UpInit = Number(data.pricesData.sqrtPriceX96UpInit);
+
+    const avgPrice =
+      (sqrtPriceX96ToPrice(sqrtPriceX96LowInit) +
+        sqrtPriceX96ToPrice(sqrtPriceX96UpInit)) /
+      2;
+    const tick = priceToTick(avgPrice);
 
     return {
       token0: data.token0,
@@ -213,11 +201,14 @@ const lpv3Balances = async (api, farms) => {
 
 const tvl = async (api, factory) => {
   const vaults = await getVaults(api, factory);
-  const vaultsConnectors = await getVaultsConnectors(api, factory, vaults);
-  const updatedVaults = await getVaultsDatas(api, vaultsConnectors);
-  const vaultsBalances = await getVaultsBalances(api, updatedVaults);
 
-  const farms = vaultsBalances.flatMap((vault) => vault.farms);
+  const test_vaults = vaults.filter(
+    ({ vault }) =>
+      vault.toLowerCase() === "0x2eb87185141a7e303e6fe11ea18769e2b230edc0"
+  );
+
+  const vaultsConnectors = await getConnectors(api, factory, test_vaults);
+  const farms = await getVaultsDatas(api, vaultsConnectors);
   const sortedFarms = groupBy(farms, ({ type }) => `${type}`);
 
   const lpv2Farms = Object.keys(sortedFarms)
