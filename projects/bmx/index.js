@@ -15,7 +15,7 @@ const tokenAddresses = {
 };
 
 module.exports = {
-    methodology: "BMX Classic liquidity is calculated by the value of tokens in the BLT/MLT pool. BMX Freestyle TVL is calculated by the value of USDC deposited for trading. TVL also includes BMX staked.",
+    methodology: "BMX Classic liquidity is calculated by the value of tokens in the BLT/MLT pool. TVL also includes BMX staked.",
     base: {
         tvl: gmxExports({ vault: vaultAddresses.base }),
         staking: staking(stakingAddresses.base, tokenAddresses.base)
