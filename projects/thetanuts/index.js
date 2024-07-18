@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 
 // Ethereum Vaults
 const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
@@ -240,11 +240,11 @@ const config = {
       [PTrsETH_26SEP24, aPTrsETH_26SEP24,],
       [PTweETH_26SEP24, aPTweETH_26SEP24,],
     ],
-    LLVOwners: [
-      [univ3nft_arb, arbC_LLV,],
-      [univ3nft_arb, arbP_LLV,],
-      [univ3nft_arb, ethC_LLV,],
-      [univ3nft_arb, ethP_LLV,],
+    uniV3Owners: [
+       arbC_LLV,
+       arbP_LLV,
+       ethC_LLV,
+       ethP_LLV,
     ]
   },
   fantom: {
@@ -310,8 +310,11 @@ const config = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { tokensAndOwners, LLVOwners } = config[chain]
+  const { tokensAndOwners, uniV3Owners } = config[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ tokensAndOwners, resolveUniV3 : LLVOwners != null && LLVOwners.length > 0 ? true : false,  uniV3nftsAndOwners : LLVOwners })
+    tvl: async (api) => {
+      if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true})
+      return sumTokens2({ api, tokensAndOwners})
+    }
   }
 })

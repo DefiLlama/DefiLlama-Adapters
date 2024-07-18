@@ -193,6 +193,8 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
 
 const PANCAKE_NFT_ADDRESS = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
 async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
+  nftAddress = nftAddress ?? uniV3ExtraConfig.nftAddress
+  const commonConfig = { balances, owner, owners, chain, block, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, }
   // https://docs.uniswap.org/contracts/v3/reference/deployments
   if (!nftsAndOwners.length) {
     if (!nftAddress)
@@ -209,15 +211,13 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
-    if ((!owners || !owners.length) && owner)
-      owners = [owner]
-    owners = getUniqueAddresses(owners, chain)
-    if (Array.isArray(nftAddress))
-      nftsAndOwners = nftAddress.map(nft => owners.map(o => [nft, o])).flat()
-    else
-      nftsAndOwners = owners.map(o => [nftAddress, o])
-  }
-  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })))
+    if (Array.isArray(nftAddress)) {
+      await Promise.all(nftAddress.map((addr) => unwrapUniswapV3NFT({ ...commonConfig, nftAddress: addr, })))
+    } else
+      await unwrapUniswapV3NFT({ ...commonConfig, nftAddress, })
+
+  } else
+    await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ ...commonConfig, owner, nftAddress, })))
   return balances
 }
 
@@ -225,23 +225,37 @@ const factories = {}
 
 const getFactoryKey = (chain, nftAddress) => `${chain}:${nftAddress}`.toLowerCase()
 
-async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
+async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
-  const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
   const factoryKey = getFactoryKey(chain, nftAddress)
   if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
   let factory = (await factories[factoryKey]).output
   if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') // thruster finance has a bug where they set the pool deployer instead of the factory
     factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
 
-  const positionIds = (await sdk.api.abi.multiCall({
-    block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
-    calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
-  })).output.map(positionIdCall => positionIdCall.output)
+  let positionIds = uniV3ExtraConfig.positionIds
+  if (!positionIds) {
+    if (!owners && owner) owners = [owner]
+    owners = getUniqueAddresses(owners, chain)
+    const { output: lengths } = await sdk.api.abi.multiCall({
+      block, chain, abi: wildCreditABI.balanceOf,
+      calls: owners.map((params) => ({ target: nftIdFetcher, params, })),
+    })
+    const positionIDCalls = []
+    for (let i = 0; i < owners.length; i++) {
+      const length = lengths[i].output
+      positionIDCalls.push(...createIncrementArray(length).map(j => ({ params: [owners[i], j] })))
+    }
+
+    positionIds = (await sdk.api.abi.multiCall({
+      block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+      calls: positionIDCalls,
+    })).output.map(positionIdCall => positionIdCall.output)
+  }
 
   const positions = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.positions, target: nftAddress,
@@ -846,7 +860,11 @@ async function sumTokens2({
   fetchCoValentTokens = false,
   tokenConfig = {},
   sumChunkSize = undefined,
-  uniV3ExtraConfig = {},
+  uniV3ExtraConfig = {
+    // positionIds
+    // nftAddress
+    // nftIdFetcher
+  },
   resolveICHIVault = false,
   solidlyVeNfts = [],
 }) {

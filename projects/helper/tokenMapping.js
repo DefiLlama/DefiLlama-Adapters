@@ -60,6 +60,9 @@ const fixBalancesTokens = {
   bfc: {
     '0x6906Ccda405926FC3f04240187dd4fAd5DF6d555': { coingeckoId: "bitcoin-usd-btcfi", decimals: 18, },
   },
+  pulse: {
+    '0x30fcb23a906493371b1721c8feb8815804808d74': { coingeckoId: 'savings-dai', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
