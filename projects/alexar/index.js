@@ -25,9 +25,12 @@ chainListSupply.concat(chainListTotal).forEach(chain => {
       if (!assetTvl) return;
 
       const isEVM = assetTvl.gateway_address?.startsWith('0x')
+      const data = assetTvl.contract_data
       if (isEVM) {
-        if (assetTvl.contract_data.symbol.startsWith('axl')) return;
-        tokensAndOwners.push([assetTvl.contract_data.address, assetTvl.gateway_address])
+        if (data.symbol.startsWith('axl')) return;
+        tokensAndOwners.push([data.address, assetTvl.gateway_address])
+        if (data.token_manager_address)
+          tokensAndOwners.push([data.address, data.token_manager_address])
       } else {
         if (assetTvl.denom_data.symbol.startsWith('axl')) return;
         owners.push(...assetTvl.source_escrow_addresses)
