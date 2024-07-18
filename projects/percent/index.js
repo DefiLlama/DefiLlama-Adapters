@@ -52,11 +52,11 @@ async function resolveBalancers({ balances = {}, toa, api }) {
   return balances
 }
 
-async function pool2(_, _1, _2, { api }) {
+async function pool2(api) {
   return resolveBalancers({ toa: [[lpOfPool2, pool2Contract]], api })
 }
 
-async function ethTvl(_, _1, _2, { api }) {
+async function ethTvl(api) {
   const toa = []
   for (let i = 0; i < pctPoolContracts.length; i++)
     toa.push([lpOfPctPools[i], pctPoolContracts[i]])

@@ -13,7 +13,7 @@ const { tvl: drachmaTvl, borrowed: drachmaBorrowed } = compoundExports(
 
 //tvl for drachma app
 function tvl(chain) {
-  return async (timestamp, block, chainBlocks, { api }) => {
+  return async (api) => {
     const toa = []
     toa.push(...contracts[chain].map(c => ([c.token, c.address])))
     toa.push(...contracts[chain].map(c => ([contracts.usdc[chain], c.address])))

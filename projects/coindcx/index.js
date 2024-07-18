@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require('../helper/cex')
 
 const config = {
@@ -29,8 +30,8 @@ const config = {
         '0x8c7Efd5B04331EFC618e8006f19019A3Dc88973e',
         '0xCCFA6f3b01c7bf07B033A9d496Fdf22F0cdF5293',
         '0x90f76616d34Cb6A1F4423B33c0201B2A1980Fc81',
-        '0x4E15361FD6b4BB609Fa63C81A2be19d873717870',
-        '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+        ADDRESSES.ethereum.FTM,
+        ADDRESSES.ethereum.MATIC,
         '0xC1723Af0Dc5400A1cAAa47E76a45c39538A6AD49',
         '0x07E114C06462D8892Ae4574A7502b8c1c0FBdFbb',
         '0x274c427B1BF0bB4a137EDE688c6D621263CA7Ce8',

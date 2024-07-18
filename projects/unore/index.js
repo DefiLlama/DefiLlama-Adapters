@@ -9,14 +9,14 @@ const config = {
     uToken: '0x474021845c4643113458ea4414bdb7fb74a01a77',
     tokensAndOwners: [
       [nullAddress, ethSSIPEth],
-      [ADDRESSES.ethereum.USDT, '0x920d510d5c70c01989b66f4e24687dddb988ddae'],
-      [ADDRESSES.ethereum.USDC, '0xfdfaa453ef3709d2c26ecf43786a14ab8bf27e36'],
+      [ADDRESSES.ethereum.USDT, '0x442e9fe958202Dc29d7018c1AA47479F2159D8a0'],
+      [ADDRESSES.ethereum.USDC, '0xF37c0901662f39039AFBd3c2546e3141c091e014'],
     ],
     pools: [
-      '0x1eECc8C8298ed9Bd46c147D44E2D7A7BfACE2034', // UNO SSRP
-      '0xbd3E70819A8Add92B06d6d92A06DcdA9249DF2a3',  // UNO SSIP
-      '0x920d510d5c70c01989b66f4e24687dddb988ddae', // USDT SSIP
-      '0xfdfaa453ef3709d2c26ecf43786a14ab8bf27e36' // USDC SSIP
+      '0x076E2A501FD0DA41E5A659aB664b2B6792B80Fa2', // UNO SSRP
+      '0x8978d08bd89B9415eB08A4D52C1bDDf070F19fA2',  // UNO SSIP
+      '0x442e9fe958202Dc29d7018c1AA47479F2159D8a0', // USDT SSIP
+      '0xF37c0901662f39039AFBd3c2546e3141c091e014' ,// USDC SSIP
     ],
   },
   bsc: {
@@ -25,12 +25,12 @@ const config = {
       [ADDRESSES.bsc.USDC, '0xEcE9f1A3e8bb72b94c4eE072D227b9c9ba4cd750'],
       [ADDRESSES.bsc.USDC, '0x0b5C802ecA88161B5daed08e488C83d819a0cD02'],
       [ADDRESSES.bsc.USDC, '0x2cd32dF1C436f8dE6e09d1A9851945c56bcEd32a'],
-      [ADDRESSES.bsc.USDC, '0xFC9a02a13B19F65219034AB03ADcD8CAdf275f35'],
-      [ADDRESSES.bsc.USDC, '0x456d60a7E2a2DA97BDb43759Cf63f7acbC3a700a'],
+      [ADDRESSES.bsc.USDC, '0xabb83630993984C54fd60650F5A592407C51e54b'],
+      [ADDRESSES.bsc.USDC, '0xeF21cB3eE91EcB498146c43D56C2Ef9Bae6B7d53'],
     ],
     pools: [
-      '0xFC9a02a13B19F65219034AB03ADcD8CAdf275f35', // Zeus V2
-      '0x456d60a7E2a2DA97BDb43759Cf63f7acbC3a700a' // Ares V2
+      '0xabb83630993984C54fd60650F5A592407C51e54b', // Zeus V2
+      '0xeF21cB3eE91EcB498146c43D56C2Ef9Bae6B7d53' // Ares V2
     ],
   },
   kava: {
@@ -48,8 +48,8 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { pools, uToken, tokensAndOwners, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api,}) =>  sumTokens2({api, tokensAndOwners})
+    tvl: async (api) =>  sumTokens2({api, tokensAndOwners})
   }
   if (uToken)
-  module.exports[chain].staking = async (_, _b, _cb, { api,}) =>  sumTokens2({api, tokens: [uToken], owners: pools})
+  module.exports[chain].staking = async (api) =>  sumTokens2({api, tokens: [uToken], owners: pools})
 })

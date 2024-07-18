@@ -11,13 +11,13 @@ const chainMapping = {
 };
 
 const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', 'crescent', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
-const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum',];
+const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum', 'base'];
 
 
 chainListSupply.concat(chainListTotal).forEach(chain => {
   module.exports[chain] = { tvl };
-  async function tvl(_, _b, _cb, { api }) {
-    const config = await getConfig('alexar', 'https://api.axelarscan.io/cross-chain/tvl')
+  async function tvl(api) {
+    const config = await getConfig('alexar', 'https://api.axelarscan.io/api/getTVL')
     const tokensAndOwners = []
     const owners = []
     const mappedChain = chainMapping[chain] || chain;

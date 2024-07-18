@@ -62,6 +62,18 @@ const config = {
   scroll: {
     chainId: '534352',
   },
+  blast: {
+    chainId: '81457',
+  },
+  xlayer: {
+    chainId: '196'
+  },
+  taiko: {
+    chainId: '167000'
+  },
+  ox_chain: {
+    chainId: '6699'
+  }
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -90,7 +102,23 @@ const yPoolDepositContract = {
     "eYe": {
       "contractAddress": "0xF0052C0B4F08078846aF48FE8C7bb365c9937c21",
       "tokenAddress": "0x9A257C90Fa239fBA07771ef7da2d554D148c2E89"
-    }
+    },
+    "LOOT": {
+      "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
+      "tokenAddress": "0x721A1B990699eE9D90b6327FaaD0A3E840aE8335"
+    },
+    "PEPE": {
+      "contractAddress": "0x4F19699cb57543B76167b7d38040f34db4d11fEC",
+      "tokenAddress": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+    },
+    "MOG": {
+      "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
+      "tokenAddress": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+    },
+    // "BITCOIN": {
+    //   "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+    //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F" // doesnt exist
+    // }
   },
   "25": {
     "ETH": {
@@ -133,6 +161,14 @@ const yPoolDepositContract = {
       "contractAddress": "0x58F29F7d759aef5B8e34C8e4152d6117893017aB",
       "tokenAddress": "0xae620DC4B9b6e44FBeb4a949F63AC957Cc43b5dD"
     },
+    "LLT": {
+      "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+      "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
+    },
+    "RIP": {
+      "contractAddress": "0xd15f36e89e08A67AEe910629fCe9aBA7D2e8Ac80",
+      "tokenAddress": "0x34aceA6Cc02578aF041a5E976b7289ca23cCB7A8"
+    }
   },
   "56": {
     "ETH": {
@@ -187,6 +223,10 @@ const yPoolDepositContract = {
       "contractAddress": "0xF98bfE69d069B40668D4F6aaeA22E73d1DC21A93",
       "tokenAddress": "0x925FAdb35B73720238cc78777d02ED4dD3100816",
     },
+    "LLT": {
+      "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+      "tokenAddress": "0x0DdE4811C4DD68Dc740A1D7997F33fF46CD186a9"
+    }
   },
   "250": {
     "ETH": {
@@ -342,12 +382,20 @@ const yPoolDepositContract = {
   },
   "8453": {
     "ETH": {
-      "contractAddress": "0xD195070107d853e55Dad9A2e6e7E970c400E67b8",
+      "contractAddress": "0x4F19699cb57543B76167b7d38040f34db4d11fEC",
       "tokenAddress": ethAddress
     },
     "USDC": {
-      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "contractAddress": "0xd15f36e89e08A67AEe910629fCe9aBA7D2e8Ac80",
       "tokenAddress": ADDRESSES.base.USDbC
+    },
+    "LOOT": {
+      "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+      "tokenAddress": "0x94a42083948d86432246eAD625B30d49014A4BFF"
+    },
+    "RIP": {
+      "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
+      "tokenAddress": "0x34aceA6Cc02578aF041a5E976b7289ca23cCB7A8"
     }
   },
   "5000": {
@@ -362,6 +410,10 @@ const yPoolDepositContract = {
     "USDT": {
       "contractAddress": "0x0241fb446d6793866245b936F2C3418F818bDcD3",
       "tokenAddress": ADDRESSES.mantle.USDT
+    },
+    "LOOT": {
+      "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+      "tokenAddress": "0x94a42083948d86432246eAD625B30d49014A4BFF"
     }
   },
   "534352": {
@@ -374,17 +426,69 @@ const yPoolDepositContract = {
       "tokenAddress": ADDRESSES.scroll.USDC
     }
   },
+  "81457": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ethAddress
+    },
+    "LOOT": {
+      "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
+      "tokenAddress": "0x1C559a960aE5293eA56C40EFC3c0169B413DDcF3"
+    }
+  },
+  "196": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ADDRESSES.xlayer.WETH
+    },
+    "USDT": {
+      "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
+      "tokenAddress": ADDRESSES.xlayer.USDT
+    }
+  },
+  "167000": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
+      "tokenAddress": ADDRESSES.taiko.USDC
+    }
+  },
+  "6699": {
+    "USDC": {
+      "contractAddress": "0xd15f36e89e08A67AEe910629fCe9aBA7D2e8Ac80",
+      "tokenAddress": "0xcE8f4E26e2532A78DAcD7A497A1827692b14b31D"
+    },
+    "ETH": {
+      "contractAddress": "0x4F19699cb57543B76167b7d38040f34db4d11fEC",
+      "tokenAddress": "0x7e6ecF974310d75325Ab1209253250aC7fCCe09b"
+    },
+    "PEPE": {
+      "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
+      "tokenAddress": "0x4aE774bF3dEfF2eaD31D5D51Aa636EE216fBE274"
+    },
+    "MOG": {
+      "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+      "tokenAddress": "0xfaffa4b4D8538A2ba63bEa39ACbF709E3A972714"
+    },
+    // "BITCOIN": {
+    //   "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
+    //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
+    // }
+  }
 }
 
 module.exports={}
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, {[chain]: block}) => {
+    tvl: async (api) => {
       const { chainId } = config[chain]
       const toa = []
       Object.values(yPoolDepositContract[chainId]).forEach(i => toa.push([i.tokenAddress, i.contractAddress]))
-      return sumTokens2({ chain, block, tokensAndOwners: toa, })
+      return sumTokens2({ api, tokensAndOwners: toa, })
     }
   }
 })

@@ -9,6 +9,7 @@ module.exports = {
   polygon_zkevm: { tvl, },
   avax: { tvl, },
   base: { tvl, },
+  arbitrum: { tvl, },
   methodology:
     "TVL comes from the DEX liquidity pools"
 };
