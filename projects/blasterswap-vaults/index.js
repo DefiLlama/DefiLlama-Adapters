@@ -6,6 +6,7 @@ const tokens = ['0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad', '0xd43D8aDAC6A4C7d
 module.exports = {
 	methodology: "Staking",
 	blast: {
-		staking: staking(vaults, tokens),
+		tvl: () => { },
+		staking: staking(vaults, tokens)
 	},
 }
