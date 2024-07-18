@@ -56,11 +56,10 @@ const getVaultsDatas = async (api, vaultFarms) => {
   const calls = vaultFarms.map(({ connector }) => connector)
   const liquidityCalls = vaultFarms.map(({ calculationConnector, connector }) => ({ target: calculationConnector, params: [connector] }))
 
-  const [types, stakingTokens, tokenIds, liquidities] =
+  const [types, stakingTokens, liquidities] =
     await Promise.all([
       api.multiCall({ calls, abi: abi.farm.type }),
       api.multiCall({ calls, abi: abi.farm.stakingToken }),
-      api.multiCall({ calls, abi: abi.farm.tokenId, permitFailure: true }),
       api.multiCall({ calls: liquidityCalls, abi: abi.vault.liquidity }),
     ]);
 
@@ -68,7 +67,6 @@ const getVaultsDatas = async (api, vaultFarms) => {
     item.type = types[i]
     item.stakingToken = stakingTokens[i]
     item.liquidity = liquidities[i]
-    item.tokenId = tokenIds[i]
   })
 };
 
