@@ -10,7 +10,7 @@ const CONFIG = {
   },
   pulse: {
     factory: "0xac297968C97EF5686c79640960D106f65C307a37",
-    USDEX_PLUS: "0xaA2C47a35C1298795B5271490971Ec4874C8e53d",
+    USDEX_PLUS: "0xaa2c47a35c1298795b5271490971ec4874c8e53d",
   },
   base: {
     factory: "0x714c94b9820d7d73e61510e4c18b91f995a895c1",
@@ -26,9 +26,10 @@ const CONFIG = {
   bsc: {
     factory: "0x3ace08b10b5c08a17d1c46277d65c81249e65f44",
   },
-  // manta: {
-  //   factory: "0x714C94B9820D7D73e61510e4C18B91F995A895C1",
-  // },
+  manta: {
+    factory: "0x714C94B9820D7D73e61510e4C18B91F995A895C1",
+    USDEX_PLUS: '0x6da9ebd271a0676f39c088a2b5fd849d5080c0af',
+  },
 };
 
 const getVaults = async (api, factory) => {
@@ -121,10 +122,10 @@ const tvl = async (api) => {
     lpv2Balances(api, lpv2Farms),
     addERC721Data(api, lpv3Farms)
   ])
-
+  
+  await sumTokens2({ api, resolveLP: true });
   if (USDEX_PLUS) api.removeTokenBalance(USDEX_PLUS);
   if (gDEX) api.removeTokenBalance(gDEX);
-  return sumTokens2({ api, resolveLP: true });
 };
 
 Object.keys(CONFIG).forEach((chain) => {
