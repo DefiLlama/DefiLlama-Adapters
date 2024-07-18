@@ -89,42 +89,20 @@ const lpv2Balances = async (api, farms) => {
   });
 };
 
-const lpv3Balances = async (api, farms) => {
-  const Q96 = 2 ** 96;
-  const priceToTick = (price) => Math.log(price) / Math.log(1.0001);
-  const sqrtPriceX96ToPrice = (sqrtPriceX96) => (sqrtPriceX96 / Q96) ** 2;
+async function addERC721Data(api, vaultFarms) {
+  const positionIds = await api.multiCall({ abi: abi.farm.tokenId, calls: vaultFarms.map(i => i.connector) })
+  const nftPositionMapping = {}
+  vaultFarms.forEach((item, i) => {
+    if (!+positionIds[i])
+      return;
 
-  const calls = farms.filter(({ tokenId }) => tokenId !== 0).map(({ connector, tokenId }) => ({ target: connector, params: [tokenId] }));
-  const callsDataV3 = farms.filter(({ tokenId }) => tokenId !== 0).map(({ connector }) => ({ target: connector }))
-
-  const [liquidityV3, stakingTokenDataV3] = await Promise.all([
-    api.multiCall({ calls, abi: abi.farm.stakingTokenLiquidity, permitFailure: true }),
-    api.multiCall({ calls: callsDataV3, abi: abi.farm.stakingTokenData, permitFailure: true }),
-  ]);
-
-  farms.forEach((_, index) => {
-    const liquidity = liquidityV3[index];
-    const data = stakingTokenDataV3[index];
-
-    if (liquidity && data) {
-      const sqrtPriceX96LowInit = Number(data.pricesData.sqrtPriceX96LowInit);
-      const sqrtPriceX96UpInit = Number(data.pricesData.sqrtPriceX96UpInit);
-
-      const avgPrice = (sqrtPriceX96ToPrice(sqrtPriceX96LowInit) + sqrtPriceX96ToPrice(sqrtPriceX96UpInit)) / 2;
-      const tick = priceToTick(avgPrice);
-
-      addUniV3LikePosition({
-        api,
-        token0: data.token0,
-        token1: data.token1,
-        liquidity,
-        tickLower: data.tickLower,
-        tickUpper: data.tickUpper,
-        tick,
-      });
-    }
-  });
-};
+    const nft = item.stakingToken.toLowerCase()
+    if (!nftPositionMapping[nft]) nftPositionMapping[nft] = []
+    nftPositionMapping[nft].push(positionIds[i])
+  })
+  for (const [nftAddress, positionIds] of Object.entries(nftPositionMapping))
+    await sumTokens2({ api, uniV3ExtraConfig: { nftAddress, positionIds, } })
+}
 
 const tvl = async (api) => {
   const { factory, USDEX_PLUS, gDEX } = CONFIG[api.chain];
@@ -143,7 +121,7 @@ const tvl = async (api) => {
 
   await Promise.all([
     lpv2Balances(api, lpv2Farms),
-    lpv3Balances(api, lpv3Farms)
+    addERC721Data(api, lpv3Farms)
   ])
 
   if (USDEX_PLUS) api.removeTokenBalance(USDEX_PLUS);
