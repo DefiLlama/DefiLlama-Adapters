@@ -18,6 +18,7 @@ const CONFIG = {
   arbitrum: {
     factory: "0xe31fceaf93667365ce1e9edad3bed4a7dd0fc01a",
     USDEX_PLUS: "0x4117EC0A779448872d3820f37bA2060Ae0B7C34B",
+    gDEX: "0x92a212d9f5eef0b262ac7d84aea64a0d0758b94f"
   },
   avax: {
     factory: "0x6b714e6296b8b977e1d5ecb595197649e10a3db1",
