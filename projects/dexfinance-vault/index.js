@@ -10,12 +10,14 @@ const CONFIG = {
   },
   pulse: {
     factory: "0xac297968C97EF5686c79640960D106f65C307a37",
+    USDEX_PLUS: "0xaA2C47a35C1298795B5271490971Ec4874C8e53d",
   },
   base: {
     factory: "0x714c94b9820d7d73e61510e4c18b91f995a895c1",
   },
   arbitrum: {
     factory: "0xe31fceaf93667365ce1e9edad3bed4a7dd0fc01a",
+    USDEX_PLUS: "0x4117EC0A779448872d3820f37bA2060Ae0B7C34B",
   },
   avax: {
     factory: "0x6b714e6296b8b977e1d5ecb595197649e10a3db1",
@@ -70,7 +72,7 @@ const getVaultsDatas = async (api, vaultFarms) => {
 };
 
 async function addERC721Data(api, vaultFarms) {
-  vaultFarms = vaultFarms.filter(({ type }) => type === 'ERC721')
+  vaultFarms = vaultFarms.filter(({ type }) => type.startsWith('ERC721'))
   const positionIds = await api.multiCall({ abi: abi.farm.tokenId, calls: vaultFarms.map(i => i.connector) })
   const nftPositionMapping = {}
   vaultFarms.forEach((item, i) => {
@@ -85,31 +87,23 @@ async function addERC721Data(api, vaultFarms) {
     await sumTokens2({ api, uniV3ExtraConfig: { nftAddress, positionIds, } })
 }
 
-const tvl = async (api, factory) => {
+const tvl = async (api) => {
+  const { factory, USDEX_PLUS } = CONFIG[api.chain];
   const vaultFarms = await getVaults(api, factory);
   await getVaultsConnectors(api, factory, vaultFarms);
   await getVaultsDatas(api, vaultFarms);
-  // console.log(vaultFarms.filter(({ type, version, liquidity, }) => !['LP', 'ERC20', 'SINGLE-LP',].includes(type)), api.chain)
-  const dataTypes = new Set(vaultFarms.map(({ type, version }) => type + '-' + version))
-  api.log(dataTypes, api.chain)
+  // const dataTypes = new Set(vaultFarms.map(({ type, version }) => type + '-' + version))
+  // api.log(dataTypes, api.chain)
   await addERC721Data(api, vaultFarms)
   vaultFarms.forEach((item) => {
     if (['LP', 'SINGLE-LP'].includes(item.type) && +item.liquidity > 0) {
       api.add(item.stakingToken, item.liquidity)
     }
   })
-  return sumTokens2({ api, resolveLP: true, })
+  await sumTokens2({ api, resolveLP: true, })
+  if (USDEX_PLUS) api.removeTokenBalance(USDEX_PLUS)
 };
 
 Object.keys(CONFIG).forEach((chain) => {
-  const { factory } = CONFIG[chain];
-  module.exports[chain] = {
-    tvl: async (api) => {
-      await tvl(api, factory);
-    },
-  };
-});
-
-// module.exports = {
-//   arbitrum: module.exports.arbitrum
-// }
+  module.exports[chain] = { tvl, };
+})
