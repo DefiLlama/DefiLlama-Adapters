@@ -1,28 +1,32 @@
+const sdk = require('@defillama/sdk')
+const { transformBalances } = require('../helper/portedTokens')
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
 
-const chain = 'nolus'
+// Osmosis Noble USDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_NOBLE) pirin-1
+const osmosisNobleOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
+const osmosisNobleLppAddr = 'nolus1ueytzwqyadm6r0z8ajse7g6gzum4w3vv04qazctf8ugqrrej6n4sq027cf'
+const osmosisNobleLeaserAddr = 'nolus1dca9sf0knq3qfg55mv2sn03rdw6gukkc4n764x5pvdgrgnpf9mzsfkcjp6'
+
+// Osmosis axlUSDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_AXELAR) pirin-1
+const osmosisAxlOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
+const osmosisAxlLeaserAddr = 'nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f'
+const osmosisAxlLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
+
+// Astroport Protocol Contracts (NEUTRON-ASTROPORT-USDC_AXELAR) pirin-1
+const astroportOracleAddr = 'nolus1jew4l5nq7m3xhkqzy8j7cc99083m5j8d9w004ayyv8xl3yv4h0dql2dd4e'
+const astroportLppAddr = 'nolus1qqcr7exupnymvg6m63eqwu8pd4n5x6r5t3pyyxdy7r97rcgajmhqy3gn94'
+const astroportLeaserAddr = 'nolus1et45v5gepxs44jxewfxah0hk4wqmw34m8pm4alf44ucxvj895kas5yrxd8'
+
 const _6Zeros = 1000000
-const _8Zeros = 100000000
-const _18Zeros = 1000000000000000000
 
-// Osmosis
-const osmosisLeaserAddr = 'nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f'
-const osmosisOracleAddr = 'nolus1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgsv3wzl4'
-const osmosisLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
-
-// Neutron (Astroport)
-const neutronLeaserAddr = 'nolus1et45v5gepxs44jxewfxah0hk4wqmw34m8pm4alf44ucxvj895kas5yrxd8'
-const neutronOracleAddr = 'nolus1jew4l5nq7m3xhkqzy8j7cc99083m5j8d9w004ayyv8xl3yv4h0dql2dd4e'
-const neutronLppAddr = 'nolus1qqcr7exupnymvg6m63eqwu8pd4n5x6r5t3pyyxdy7r97rcgajmhqy3gn94'
+const nativeTokens = {
+  'untrn': 'neutron:untrn',
+  'uosmo': 'osmosis:uosmo'
+}
 
 async function getLeaseCodeId(leaserAddress) {
-  const leaserContract = await queryContract({
-    contract: leaserAddress,
-    chain: chain,
-    data: { config: {} }
-  })
-
-  const leaseCodeId = leaserContract?.config?.lease_code_id
+  const leaserContract = await queryContract({ contract: leaserAddress, chain: 'nolus', data: { 'config': {} } })
+  const leaseCodeId = leaserContract?.config?.lease_code
   if (!leaseCodeId) {
     return 0
   }
@@ -31,57 +35,15 @@ async function getLeaseCodeId(leaserAddress) {
 }
 
 async function getLeaseContracts(leaseCodeId) {
-  return await queryContracts({
-    chain: chain,
-    codeId: leaseCodeId,
-  })
+  return await queryContracts({ chain: 'nolus', codeId: leaseCodeId, })
 }
 
 async function getLeases(leaseAddresses) {
-  return await queryManyContracts({
-    contracts: leaseAddresses,
-    chain: chain,
-    data: {}
-  })
-}
-
-async function getPrices(oracleAddr) {
-  const oracle = await queryContract({
-    contract: oracleAddr,
-    chain: chain,
-    data: { prices: {} }
-  })
-
-  const prices = {}
-  oracle.prices.forEach(p => {
-    let price = 0
-    switch (p.amount.ticker) {
-      case "WBTC":
-      case "CRO":
-        price = (p.amount_quote.amount / (p.amount.amount / _8Zeros)) / _6Zeros
-        break
-      case "WETH":
-      case "EVMOS":
-      case "INJ":
-      case "DYDX":
-        price = (p.amount_quote.amount / (p.amount.amount / _18Zeros)) / _6Zeros
-        break
-      default:
-        price = p.amount_quote.amount / p.amount.amount
-        break
-    }
-    prices[p.amount.ticker] = price
-  })
-
-  return prices
+  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {} })
 }
 
 async function getLppTvl(lppAddresses) {
-  const lpps = await queryManyContracts({
-    contracts: lppAddresses,
-    chain: chain,
-    data: { "lpp_balance": [] }
-  })
+  const lpps = await queryManyContracts({ contracts: lppAddresses, chain: 'nolus', data: { 'lpp_balance': [] } })
 
   let totalLpp = 0
   lpps.forEach(v => {
@@ -91,79 +53,65 @@ async function getLppTvl(lppAddresses) {
   return totalLpp / _6Zeros
 }
 
-function sumAssests(leases) {
-  let assets = {}
+function sumAssests(balances, leases, currencies) {
   leases.forEach(v => {
     if (v.opened) {
-      const ticker = v.opened.amount.ticker
-      const amount = BigInt(v.opened.amount.amount)
-
-      if (ticker in assets) {
-        assets[ticker] += amount
-      } else {
-        assets[ticker] = amount
+      let ticker = v.opened.amount.ticker
+      const amount = parseInt(v.opened.amount.amount, 10)
+      const currencyData = find(currencies, (n) => n.ticker == ticker)
+      if (nativeTokens.hasOwnProperty(currencyData.dex_symbol)) {
+        sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount)
       }
+      sdk.util.sumSingleBalance(balances, currencyData.dex_symbol, amount)
     }
   })
-  return assets
 }
 
-function getAssetsTvl(assets, prices) {
-  let totalTvl = 0
-  for (const ticker in assets) {
-    if (Object.hasOwnProperty.call(assets, ticker)) {
-      let amount = 0
-      switch (ticker) {
-        case "WBTC":
-        case "CRO":
-          amount = Number(assets[ticker]) / _8Zeros
-          break
-        case "WETH":
-        case "EVMOS":
-        case "INJ":
-        case "DYDX":
-          amount = Number(assets[ticker]) / _18Zeros
-          break
-        default:
-          amount = Number(assets[ticker]) / _6Zeros
-          break
-      }
-      totalTvl += amount * prices[ticker]
+function find (collection, predicate) {
+  for (let i = 0; i < collection.length; i++) {
+    if (predicate(collection[i])) {
+      return collection[i];
     }
   }
-  return totalTvl
+  return undefined;
 }
 
-async function tvl(leaserAddr, oracleAddr) {
-  const leaseCodeId = await getLeaseCodeId(leaserAddr)
-  const leaseContracts = await getLeaseContracts(leaseCodeId)
-  const leases = await getLeases(leaseContracts)
-  const assets = sumAssests(leases)
-  const prices = await getPrices(oracleAddr)
-  return getAssetsTvl(assets, prices)
+async function tvl(protocols) {
+  let balances = {}
+  for (let i = 0; i < protocols.length; i++) {
+    const p = protocols[i]
+    const oracleData = await queryContract({ contract: p.oracle, chain: 'nolus', data: { 'currencies': {} } })
+    const leaseCodeId = await getLeaseCodeId(p.leaser)
+    const leaseContracts = await getLeaseContracts(leaseCodeId)
+    const leases = await getLeases(leaseContracts)
+    sumAssests(balances, leases, oracleData)
+  }
+  return transformBalances('nolus', balances)
 }
 
 module.exports = {
-  methodology: "The combined total of lending pool assets and the current market value of active leases",
+  methodology: 'The combined total of lending pool assets and the current market value of active leases',
   nolus: {
     tvl: async () => {
       return {
-        'axlusdc': await getLppTvl([osmosisLppAddr, neutronLppAddr])
+        'axlusdc': await getLppTvl([osmosisAxlLppAddr, astroportLppAddr]),
+        'usd-coin': await getLppTvl([osmosisNobleLppAddr])
       }
     }
   },
   neutron: {
     tvl: async () => {
-      return {
-        'axlusdc': await tvl(neutronLeaserAddr, neutronOracleAddr)
-      }
+      return await tvl([
+        { leaser: astroportLeaserAddr, oracle: astroportOracleAddr }
+      ])
     }
   },
   osmosis: {
     tvl: async () => {
-      return {
-        'axlusdc': await tvl(osmosisLeaserAddr, osmosisOracleAddr)
-      }
+      return await tvl([
+        { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
+        { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
+      ])
     }
   }
 }

@@ -21,7 +21,7 @@ async function _getLogs(api, factory, fromBlock,) {
 Object.keys(config).forEach(chain => {
   const factories = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = []
       for (const { factory, fromBlock, } of factories) {
         const _logs = await _getLogs(api, factory, fromBlock,)
@@ -30,7 +30,7 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = logs.map(i => [[i.asset, i.collateral], i.pair])
       return sumTokens2({ api, ownerTokens, })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const logs = []
       for (const { factory, fromBlock, } of factories) {
         const _logs = await _getLogs(api, factory, fromBlock,)

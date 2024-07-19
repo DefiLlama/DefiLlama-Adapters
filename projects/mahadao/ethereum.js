@@ -24,7 +24,7 @@ const eth = {
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
-async function tvl(_, block, _1,  { api }) {
+async function tvl(api) {
   const troves = [
     "0x8b1da95724b1e376ae49fdb67afe33fe41093af5", // ETH Trove
   ];

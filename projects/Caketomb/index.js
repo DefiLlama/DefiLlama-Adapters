@@ -14,7 +14,7 @@ module.exports = {
     deadFrom: 1648765747,
     bsc: {
         tvl: async () => ({}),
-        staking: staking(boardroom, shares, "bsc"),
+        staking: staking(boardroom, shares),
         pool2: pool2Exports(shareRewardPool, pancakeLPs, "bsc", addr=>`bsc:${addr}`)
     }
 }

@@ -1,3 +1,4 @@
+const methodologies = require("../helper/methodologies");
 const { getTVL, getBorrowed } = require("./helper/index");
 
 async function tvl(timestamp, block, chainBlocks) {
@@ -13,8 +14,7 @@ async function borrowed(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL`,
+  methodology: methodologies.lendingMarket,
   ethereum: {
     tvl,
     borrowed,

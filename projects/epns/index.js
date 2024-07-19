@@ -9,7 +9,7 @@ module.exports = {
   methodology: `TVL for PUSH consists of the staking of PUSH and pool2 of uni-v2 LP.`, 
   ethereum:{
     tvl: () => ({}),
-    staking: staking(staking_contract, PUSH, 'ethereum'), 
-    pool2: pool2(staking_contract, PUSH_WETH_LP, 'ethereum'), 
+    staking: staking(staking_contract, PUSH), 
+    pool2: pool2(staking_contract, PUSH_WETH_LP), 
   }
 }

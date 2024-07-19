@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { GraphQLClient, gql } = require('graphql-request')
 const { staking } = require("../helper/staking");
 
@@ -10,7 +11,7 @@ const UNB_POLY = '0xD81F558b71A5323e433729009D55159955F8A7f9'
 
 
 async function ethTvl() {
-    var endpoint = 'https://api.thegraph.com/subgraphs/name/unbound-finance/unbound'
+    var endpoint = sdk.graph.modifyEndpoint('8hYGnnqzaQ98ikvhi9uZ5GRmYjd7C2ykopeNpbA3DXUh')
     var graphQLClient = new GraphQLClient(endpoint)
 
     var query = gql`
@@ -40,7 +41,7 @@ async function ethTvl() {
 }
 
 async function polyTvl() {
-  var endpoint = 'https://api.thegraph.com/subgraphs/name/unbound-finance/unbound-polygon'
+  var endpoint = sdk.graph.modifyEndpoint('EtpUNR2s35iZNRGfQ5vqCSayGf72THHd1duUtkxKreGU')
   var graphQLClient = new GraphQLClient(endpoint)
 
   var query = gql`

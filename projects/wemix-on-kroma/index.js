@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
-const wemixEContract = '0x3720b1dc2c8dde3bd6cfcf0b593d0a2bbcac856e';
+const wemixEContract = ADDRESSES.kroma.WEMIX;
 const stakingContract = '0xA5c7992710A94A2ef2e8E910b441bD70385DBAB8'
 
 module.exports = {

@@ -6,7 +6,7 @@ const linkToken = ADDRESSES.ethereum.LINK;
 const linkStakingPool = "0xb8b295df2cd735b15BE5Eb419517Aa626fc43cD5";
 const linkPriorityPool = "0xDdC796a66E8b83d0BcCD97dF33A6CcFBA8fd60eA";
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api}) {
+async function tvl(api) {
   const bals = await Promise.all([
     api.call({ target: linkStakingPool, abi: 'uint256:totalStaked', }),
     api.call({ target: linkPriorityPool, abi: 'uint256:totalQueued', }),
@@ -15,16 +15,14 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api}) {
   return api.getBalances()
 }
 
-async function staking(timestamp, ethBlock, chainBlocks, { api}) {
+async function staking(api) {
   const bal = await api.call({  abi: 'uint256:totalStaked', target: sdlStakingPool})
   api.add(sdlToken, bal)
   return api.getBalances()
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
+      methodology:
     "Queries LINK staking/priority pools and SDL staking pool for the total amount of tokens staked",
   start: 1670337984,
   ethereum: {
