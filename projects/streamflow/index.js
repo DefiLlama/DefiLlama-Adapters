@@ -50,6 +50,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
 }
+
 chains.forEach((chain) => {
   module.exports[chain] = {
     tvl, vesting
