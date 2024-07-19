@@ -197,8 +197,12 @@ async function tvlBaseOptimism(api) {
 // TVL calculation for Arbitrum and Linea
 async function tvlArbitrumLinea(api) {
   const { factory, gaugeFactory, gaugeFactory2, voter, fromBlock, fromBlockSickle, chainName } = config[api.chain];
+  const blacklistedSickles = ['0x4989D5e508eBa5D4999b6A34FB30021e1f1bB4d8'];
+  let sickles = await fetchSickles(api, factory, fromBlockSickle);
+  if (chainName === 'linea') {
+    sickles = sickles.filter(sickle => !blacklistedSickles.includes(sickle));
+  }
 
-  const sickles = await fetchSickles(api, factory, fromBlockSickle);
   const gauges = await fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, chainName);
   const stakingTokens = await api.multiCall({ abi: 'address:stake', calls: gauges.lp });
 
@@ -306,15 +310,15 @@ async function tvlMantle(api) {
 Object.keys(config).forEach(chain => {
   let tvl
   switch (chain) {
-    case 'base':
-    case 'optimism': tvl = tvlBaseOptimism; break;
-    case 'arbitrum':
+    //case 'base':
+    //case 'optimism': tvl = tvlBaseOptimism; break;
+    //case 'arbitrum':
     case 'linea': tvl = tvlArbitrumLinea; break;
-    case 'fantom': tvl = tvlFantom; break;
-    case 'mode': tvl = modeTvl; break;
-    case 'mantle': tvl = tvlMantle; break;
-    default:
-      tvl = genericTvl
+    //case 'fantom': tvl = tvlFantom; break;
+    //case 'mode': tvl = modeTvl; break;
+    //case 'mantle': tvl = tvlMantle; break;
+    //default:
+    //  tvl = genericTvl
   }
 
   module.exports[chain] = { tvl }
