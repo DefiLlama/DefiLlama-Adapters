@@ -18,7 +18,7 @@ module.exports = {
     tvl: () => ({}),
   },
   fantom: {
-    tvl: getUniTVL({ factory, chain: 'fantom', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
     staking: stakingUnknownPricedLP(
       masterchef,
       dfy,

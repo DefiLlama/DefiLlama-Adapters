@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require("../helper/http");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-async function tvl(_, _b, _c, { api }) {
+async function tvl(api) {
   const mapping = await get(
     `https://raw.githubusercontent.com/starknet-io/starknet-addresses/master/bridged_tokens/mainnet.json`
   );

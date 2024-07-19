@@ -69,7 +69,7 @@ module.exports = mergeExports([
   }
 ])
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const convexStakingProxy = '0x5754B88287A88dfA3d02cfb87747E340A840c70A'
   const fraxFarm = '0x4edF7C64dAD8c256f6843AcFe56876024b54A1b6'
   const liquidity = await api.call({ abi: 'function lockedLiquidityOf(address) view returns (uint256)', target: fraxFarm, params: convexStakingProxy })

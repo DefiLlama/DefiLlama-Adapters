@@ -4,19 +4,29 @@ const { getStorage, sumTokens2 } = require("../helper/chain/tezos");
 async function tvl() {
   return sumTokens2({
     owners: [
-      "KT1GYKoownVC1ukP2TBDgKx7bSXRM5XkV1W6",
-      "KT1MX7D6ZJp2DDSSeDS96JPTFPXKkNiHFhwb",
-      "KT1W8P4ZxD8eREKjDnxMe5882NP3GnAgrv46"
-    ], 
+      // v1 contracts
+      "KT1GYKoownVC1ukP2TBDgKx7bSXRM5XkV1W6", // ꜰXTZ v1
+      "KT1MX7D6ZJp2DDSSeDS96JPTFPXKkNiHFhwb", // ꜰUSDtz v1
+      "KT1W8P4ZxD8eREKjDnxMe5882NP3GnAgrv46", // ꜰUSDt v1
+      // v2 contracts
+      "KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm", // ꜰXTZ v2
+      "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs", // ꜰUSDtz v2
+      "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB"  // ꜰUSDt v2
+    ],
     includeTezos: true,
   });
 }
 
 async function borrowed() {
   const borrowedTokensAddresses = [
-    "KT1GYKoownVC1ukP2TBDgKx7bSXRM5XkV1W6",
-    "KT1MX7D6ZJp2DDSSeDS96JPTFPXKkNiHFhwb",
-    "KT1W8P4ZxD8eREKjDnxMe5882NP3GnAgrv46"
+    // v1 contracts
+    "KT1GYKoownVC1ukP2TBDgKx7bSXRM5XkV1W6", // ꜰXTZ v1
+    "KT1MX7D6ZJp2DDSSeDS96JPTFPXKkNiHFhwb", // ꜰUSDtz v1
+    "KT1W8P4ZxD8eREKjDnxMe5882NP3GnAgrv46", // ꜰUSDt v1
+    // v2 contracts
+    "KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm", // ꜰXTZ v2
+    "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs", // ꜰUSDtz v2
+    "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB"  // ꜰUSDt v2
   ];
 
   const balances = {};

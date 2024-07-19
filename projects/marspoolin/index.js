@@ -81,8 +81,7 @@ const ethTvl = async (timestamp, ethBlock) => {
 };
 
 module.exports = {
-  doublecounted: false,
-  ethereum: {
+    ethereum: {
     tvl: ethTvl,
   },
 };

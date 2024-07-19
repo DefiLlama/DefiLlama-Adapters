@@ -1,11 +1,14 @@
 const config = require("./config");
+const ADDRESSES = require('../helper/coreAssets.json')
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const { eigenConfig, eigenStaking } = config[api.chain];
 
-  const tokens = await api.call({ abi: 'address[]:getSupportedAssetList', target: eigenConfig, });
-  const bals = await api.multiCall({ abi: 'function getTotalAssetDeposits(address) view returns (uint256)', calls: tokens, target: eigenStaking })
-  api.add(tokens, bals)
+  let tokens = await api.call({ abi: 'address[]:getSupportedAssetList', target: eigenConfig, });
+  const mlrttokens = await api.multiCall({ abi: 'function mLRTReceiptByAsset(address) view returns (address)', calls: tokens, target: eigenConfig })
+  const tokenSupplies = await api.multiCall({  abi: 'uint256:totalSupply', calls: mlrttokens})
+  tokens = tokens.map(token => token.toLowerCase() === '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf'.toLowerCase() ?  ADDRESSES.null : token)
+  api.add(tokens, tokenSupplies)
 }
 
 Object.keys(config).forEach((chain) => {

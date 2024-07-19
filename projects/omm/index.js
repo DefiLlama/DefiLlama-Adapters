@@ -2,7 +2,7 @@ const { call, toInt } = require("../helper/chain/icx");
 
 const ommLendingPoolDataProviderContract = 'cx5f9a6ca11b2b761a469965cedab40ada9e503cb5'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 
   let data = await call(ommLendingPoolDataProviderContract, 'getAllReserveData', {})
   let total = 0
@@ -13,7 +13,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return { 'coingecko:tether': total }
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
 
   let data = await call(ommLendingPoolDataProviderContract, 'getAllReserveData', {})
   let total = 0

@@ -18,7 +18,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'TVL counts the tokens deposited to all vaults',
   bsc:{
-    staking: staking(stakingContract, vlty, "bsc"),
+    staking: staking(stakingContract, vlty),
     tvl
   }
 };

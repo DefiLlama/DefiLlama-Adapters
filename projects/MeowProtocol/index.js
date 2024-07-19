@@ -8,11 +8,11 @@ const config = {
 Object.keys(config).forEach(chain => {
   const lendingPoolCore = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = await api.call({ abi: 'address[]:getReserves', target: lendingPoolCore })
       return sumTokens2({api, tokens, owner: lendingPoolCore })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const tokens = await api.call({ abi: 'address[]:getReserves', target: lendingPoolCore })
       const bals = await api.multiCall({ abi: "function getReserveTotalBorrows(address _reserve) view returns (uint256)", target: lendingPoolCore, calls: tokens })
       api.add(tokens, bals)

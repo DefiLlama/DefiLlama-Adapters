@@ -14,7 +14,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   await api.sumTokens({ owner: RUST_POOL, tokens: [ADDRESSES.ethereum.USDC, STBT]})
   return sumTokens2({ owner: UNI_V3_MANAGER, resolveUniV3: true, blacklistedTokens: [USTP], api,  })
   

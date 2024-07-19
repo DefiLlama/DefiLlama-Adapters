@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const { stakings } = require('../helper/staking')
 const GARBI = '0x5fd71280b6385157b291b9962f22153fc9e79000'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = {}
 
   const singleFarms = [

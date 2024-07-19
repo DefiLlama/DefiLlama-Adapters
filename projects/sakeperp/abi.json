@@ -1,7 +1,0 @@
-{
-  "allPairs": "function allPairs(uint256) view returns (address)",
-  "allPairsLength": "uint256:allPairsLength",
-  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
-  "token0": "address:token0",
-  "token1": "address:token1"
-}

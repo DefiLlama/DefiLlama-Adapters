@@ -13,7 +13,7 @@ async function getTotalSupply(token, { api }) {
   return totalSupply;
 }
 
-async function getBorrowedOnEthereum(_, _1, _2, { api }) {
+async function getBorrowedOnEthereum(api) {
   const [flrSupply, flrInBridgeCustody] = await Promise.all([getTotalSupply(ETH_FLR, { api }), await api.call({
     abi: "function balanceOf(address account) view returns (uint256)",
     target: ETH_FLR,
@@ -25,7 +25,7 @@ async function getBorrowedOnEthereum(_, _1, _2, { api }) {
   api.add(ETH_EURS, borrowed / 1e16); //18 decimals (FLR) -> 2 decimals (EURS)
 }
 
-async function getBorrowedOnArbitrum(_, _1, _2, { api }) {
+async function getBorrowedOnArbitrum(api) {
   const borrowed = await getTotalSupply(ARB_FLR, { api }); //FLR that are bridged to Ethereum are burned by the Arbitrum bridge. So there is no need to subtract here.
   api.add(ARB_AGEUR, borrowed); //Decimals of FLR and agEUR are both 18. No conversion needed.
 }

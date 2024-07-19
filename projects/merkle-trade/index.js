@@ -6,7 +6,7 @@ const MERKEL_TRADE =
 const lzUSDC =
   ADDRESSES.aptos.USDC_2;
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const {
     coin_store: { value },
   } = await getResource(

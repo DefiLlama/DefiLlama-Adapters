@@ -1,6 +1,6 @@
 const { queryContract, sumTokens } = require('../helper/chain/cosmos')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { chain } = api
   const { factory } = config[chain]
   // Get a list of marketIds from the factory contract

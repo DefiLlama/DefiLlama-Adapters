@@ -1,7 +1,7 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const response = await getConfig('velvet-capital', "https://defivas.xyz/api/portfolio")
   const indexes = response.data;
   const ownerTokens = []

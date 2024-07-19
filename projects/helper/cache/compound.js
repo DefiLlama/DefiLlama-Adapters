@@ -61,8 +61,8 @@ function compoundExports(comptroller, { blacklistedTokens = [], resolveLps = fal
   }
 
   return {
-    tvl: async (_, _1, _2, { api }) => (await _getCompoundV2Tvl(api)).tvl,
-    borrowed: async (_, _1, _2, { api }) => (await _getCompoundV2Tvl(api)).borrowed,
+    tvl: async (api) => (await _getCompoundV2Tvl(api)).tvl,
+    borrowed: async (api) => (await _getCompoundV2Tvl(api)).borrowed,
   }
 }
 

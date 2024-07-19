@@ -46,8 +46,8 @@ module.exports = {
     },
     polygon: {
         tvl: async () => ({}),
-        staking: staking(stakingContract, POWER_polygon, "polygon"),
-        pool2: staking(stakingContract, POWER_USDC_UNIV2, "polygon"),
+        staking: staking(stakingContract, POWER_polygon),
+        pool2: staking(stakingContract, POWER_USDC_UNIV2),
     },
     methodology:
         "Counts tvl of WETH deposited through ETH Prime Contract, also there are pool2 and staking part from different seccions. Polygon tvl consist of staked POWER and the POWER/USDC LP pool2",

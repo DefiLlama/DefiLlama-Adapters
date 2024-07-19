@@ -69,7 +69,7 @@ const mycPool = "0x061aee9ab655e73719577EA1df116D7139b2A7E7";
 const visr = "0xF938424F7210f31dF2Aee3011291b658f872e91e";
 const visrPool = "0x2d3eADE781c4E203c6028DAC11ABB5711C022029";
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
   const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
   const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
@@ -174,7 +174,7 @@ function lpBalances(holdings, toa, tokens, calls) {
   }
 }
 
-async function staking(timestamp, block, _, { api }) {
+async function staking(api) {
   let vestedToke = '57238445'
   api.add(ADDRESSES.ethereum.TOKE, vestedToke * 1e18 * -1)
   return sumTokens2({

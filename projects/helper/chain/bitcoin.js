@@ -21,6 +21,7 @@ async function getBalanceNow(addr) {
 }
 
 async function sumTokens({ balances = {}, owners = [], timestamp }) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   const bitBals = []
   for (const addr of owners)
     bitBals.push(await getBalance(addr, timestamp))

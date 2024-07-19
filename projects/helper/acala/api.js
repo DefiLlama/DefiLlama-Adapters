@@ -1,10 +1,7 @@
-
-
 const { ApiPromise, WsProvider } = require("@polkadot/api")
-const { Wallet } = require("@acala-network/sdk/wallet")
-const { FixedPointNumber, forceToCurrencyName } = require("@acala-network/sdk-core");
-const { options } = require("@acala-network/api")
 const sdk = require('@defillama/sdk')
+const { getCoreAssets } = require("../tokenMapping")
+
 
 const api = {}
 
@@ -56,21 +53,11 @@ const providers = {
 async function getAPI(chain) {
   if (!api[chain]) {
     const provider = new WsProvider(providers[chain]);
-    api[chain] = ApiPromise.create(options({ provider }))
+    api[chain] = ApiPromise.create({ provider })
   }
 
   await api[chain].isReady
   return api[chain]
-}
-
-async function getWallet(chain) {
-  const api = await getAPI(chain)
-  const wallet = new Wallet(api, {
-    supportAUSD: true,
-  })
-
-  await wallet.isReady
-  return wallet
 }
 
 const fixMapping = {
@@ -199,58 +186,19 @@ async function getTokenPrices({ api, chain = '' }) {
   }
 }
 
-const geckoMappings = {
-  acala: {
-    token: {
-      ACA: 'acala',
-      DOT: 'polkadot',
-      // AUSD: 'acala-dollar',
-      // LDOT: 'liquid-staking-dot',  // coingecko delisted it
-    },
-    liquidCrowdloan: {
-      // 13: 'liquid-crowdloan-dot',  // coingecko delisted it
-    }
-  },
-  karura: {
-    token: {
-      KSM: 'kusama',
-      LKSM: 'liquid-ksm',
-      KAR: 'karura',
-      BNC: 'bifrost-native-coin',
-      KINT: 'kintsugi',
-      KBTC: 'kintsugi-btc',
-    },
-    liquidCrowdloan: {
-    }
-  },
-}
 
 async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet, }) {
-  if (!api) api = await getAPI(chain)
-  if (!wallet) wallet = await getWallet(chain)
-  const geckoMapping = geckoMappings[chain]
-  const tokenJson = tokenArg.toJSON()
-  const token = await wallet.getToken(forceToCurrencyName(tokenArg));
-  amount = FixedPointNumber.fromInner(amount.toString(), token.decimals)
-
-  if (tokenJson.token && geckoMapping.token[tokenJson.token])
-    return sdk.util.sumSingleBalance(balances, geckoMapping.token[tokenJson.token], amount.toNumber())
-
-  if (tokenJson.liquidCrowdloan && geckoMapping.liquidCrowdloan[tokenJson.liquidCrowdloan])
-    return sdk.util.sumSingleBalance(balances, geckoMapping.liquidCrowdloan[tokenJson.liquidCrowdloan], amount.toNumber())
-
-  if (chain === 'acala' && tokenJson.foreignAsset === 3) return;
-
-  const price = await wallet.getPrice(token)
-  if (price) {
-    sdk.log('Adding token value in USD (in millions), amount: ', forceToCurrencyName(tokenArg), amount.times(price).toNumber() / 1e6, amount.toNumber()/1e6,)
-    sdk.util.sumSingleBalance(balances, 'tether', amount.times(price).toNumber())
+  const coreAssets = getCoreAssets(chain)
+  const getTokenName = tokenJson => {
+    tokenJson = tokenJson.toJSON()
+    if (tokenJson.token && coreAssets.includes(tokenJson.token.toLowerCase())) return tokenJson.token
+    return chain + ':' + JSON.stringify(tokenJson).replace(/(\{|\}|\s|")/g, '')
   }
+  sdk.util.sumSingleBalance(balances, getTokenName(tokenArg), amount)
 }
 
 module.exports = {
   getAPI,
-  getWallet,
   getTokenPrices,
   addTokenBalance,
 }

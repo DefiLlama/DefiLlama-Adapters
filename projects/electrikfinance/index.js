@@ -6,7 +6,7 @@ const tokenAPI = "address:want"
 
 module.exports = {
   [chain]: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let { result: { pools } } = await getConfig('elektrik-finance', 'https://api.electrik.finance/api/status/pools');
       pools = Object.values(pools)
       const vaults = [];

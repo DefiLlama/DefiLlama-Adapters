@@ -1,9 +1,6 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { stakingUnknownPricedLP, staking } = require("../helper/staking");
+const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 
-const avaxKitty = "0x788AE3b5D153d49F8DB649aacbA1857f744b739e";
-const polyKitty = "0x182dB1252C39073eeC9d743F13b5eeb80FDE314e";
 const avaxCat = "0x094BFaC9894d2A2A35771D0BD6d2447689190F32";
 const polyCat = "0xB932D203f83B8417Be0F61D9dAFad09cc24a4715";
 const polyChef = "0xc17c09f7615c660dd5A7C1051E096240CF75685a";
@@ -19,59 +16,15 @@ const avaxLPs = [
   "0x2d9A57C484C60241f5340a145a3004c7E4cfE040", // CAT-AVAX LP
 ];
 
-async function calcPool2(masterchef, lps, block, chain) {
-  let balances = {};
-  const lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: lps.map((p) => ({
-        target: p,
-        params: masterchef,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-      chain,
-    })
-  ).output;
-  let lpPositions = [];
-  lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
-    });
-  });
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-  return balances;
-}
-
-async function polyPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(polyChef, polyLPs, chainBlocks.polygon, "polygon");
-}
-
-async function avaxPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(avaxChef, avaxLPs, chainBlocks.avax, "avax");
-}
-
 module.exports = {
   polygon: {
     tvl: async () => ({}),
-    pool2: polyPool2,
-    staking: stakingUnknownPricedLP(
-      polyNursery,
-      polyCat,
-      "polygon",
-      polyLPs[1],
-      (addr) => `polygon:${addr}`
-    ),
+    pool2: pool2(polyChef, polyLPs),
+    staking: staking(polyNursery, polyCat),
   },
   avax: {
     tvl: async () => ({}),
-    pool2: avaxPool2,
-    staking: staking(avaxNursery, avaxCat, "avax"),
+    pool2: pool2(avaxChef, avaxLPs),
+    staking: staking(avaxNursery, avaxCat),
   },
 };

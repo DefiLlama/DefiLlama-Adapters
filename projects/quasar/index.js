@@ -1,8 +1,7 @@
 const { queryContract } = require('../helper/chain/cosmos')
 const { getConfig } = require('../helper/cache')
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const data = await getConfig('quasar-vaults', 'https://api.quasar.fi/vaults')
   const vaults = data.filter(i => i.chainId === 'osmosis-1').map(i => i.address)
   for (const vault of vaults) {

@@ -11,4 +11,4 @@ module.exports = yieldHelper({
   nativeToken: POLYCUB_TOKEN,
 })
 
-module.exports.polygon.staking = staking('0x905E21f6C4CB1Ad789CeD61CD0734590a4542346', POLYCUB_TOKEN, 'polygon')
+module.exports.polygon.staking = staking('0x905E21f6C4CB1Ad789CeD61CD0734590a4542346', POLYCUB_TOKEN)

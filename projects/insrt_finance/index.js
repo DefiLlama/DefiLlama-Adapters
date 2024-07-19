@@ -9,7 +9,7 @@ const miladyvault = '0x861ff455dcd810895cb4050460e4b6a47fec3304'
 const insrtVaults = [ fidenzavault, rockvault, baycvault2, squigglevault, penguvault, miladyvault ]
 const vaulttokens = [nullAddress, '0xa3f5998047579334607c47a6a2889bf87a17fc02', '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d', '0xbd3531da5cf5857e7cfaa92426877b022e612cf8', '0x524cab2ec69124574082676e6f654a18df49a048', '0x062e691c2054de82f28008a8ccc6d7a1c8ce060d', '0x5Af0D9827E0c53E4799BB226655A1de152A425a5' ]
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   await vaultTvl(api, [punkvault, baycvault, ])
   return sumTokens2({ api, owners: insrtVaults , tokens: vaulttokens, resolveArtBlocks: true, })
 }

@@ -15,10 +15,10 @@ const bscChef = "0xa49f4CF57eaFE0098D398DF3eD3A7dF10EAaBfAB";
 module.exports = {
     heco: {
         tvl: uniTvlExport('heco', hecoFactory).heco.tvl,
-        staking: staking(hecoChef, hecoButter, 'heco'),
+        staking: staking(hecoChef, hecoButter),
     },
     bsc: {
         tvl: uniTvlExport('bsc', bscFactory).bsc.tvl,
-        staking: staking(bscChef, bscButter, 'bsc'),
+        staking: staking(bscChef, bscButter),
     },
 }

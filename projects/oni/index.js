@@ -9,7 +9,7 @@ module.exports = {
   methodology:
     "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://info.oni.exchange/ as the source. Staking accounts for ONI locked in MasterChef (0xE93fC7e6103EF86F3329635B8197D462B74F0cb8)",
   bsc: {
-    tvl: getUniTVL({ factory: OniFactory, chain: 'bsc', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: OniFactory, useDefaultCoreAssets: true }),
     staking: stakingPricedLP(
       MasterChef,
       OniToken,

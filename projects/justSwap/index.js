@@ -32,8 +32,7 @@ async function v2(timestamp){
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology: "We get liquidity from the ablesdxd.link API",
     tron:{
       tvl: sdk.util.sumChainTvls([v1,v2])

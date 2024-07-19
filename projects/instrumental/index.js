@@ -11,8 +11,8 @@ const veSTRM = "0x62ae88697782f474b2537b890733cc15d3e01f1d";
 module.exports = {
   ethereum: {
     tvl: () => ({}),
-    pool2: staking([LP_staking, LP_locking], [STRM_ETH_sushi], "ethereum"),
-    staking: staking(veSTRM, STRM, "ethereum"), // vote escrowed STRM, TVL corresponds
+    pool2: staking([LP_staking, LP_locking], [STRM_ETH_sushi]),
+    staking: staking(veSTRM, STRM), // vote escrowed STRM, TVL corresponds
   },
   methodology:
     "Instrumental can be LP'ed and LP can be staked or locked (pool2s). Plus STRM itself can be locked against veSTRM (staking). Vaults coming soon.",

@@ -7,6 +7,6 @@ module.exports = {
   methodology: `TVL for TheOpenDAO consists of the staking of SOS into veSOS to get protocol fees.`, 
   ethereum:{
     tvl: () => ({}),
-    staking: staking(veSOS, SOS, "ethereum"), 
+    staking: staking(veSOS, SOS), 
   }
 }

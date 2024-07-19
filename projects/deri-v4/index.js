@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 const { transformBalances } = require('../helper/portedTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { factory, fromBlock, } = config[api.chain]
   const logs = await getLogs({
     api,

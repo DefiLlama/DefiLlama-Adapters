@@ -112,4 +112,5 @@ module.exports = {
   addDexPosition,
   resolveLPPosition,
   getBigMapById,
+  getTezosBalance,
 }

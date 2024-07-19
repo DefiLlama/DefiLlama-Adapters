@@ -1,7 +1,7 @@
 const { getConfig } = require('../helper/cache')
 const { getUniqueAddresses } = require('../helper/utils')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const res = await getConfig('sovryn', 'https://backend.sovryn.app/tvl')
   let pools = Object.values(res.tvlLending).map(i => i?.contract).filter(i => i)
   pools = getUniqueAddresses(pools)
@@ -9,7 +9,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return api.sumTokens({ tokensAndOwners2: [tokens, pools] })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const res = await getConfig('sovryn', 'https://backend.sovryn.app/tvl')
   let pools = Object.values(res.tvlLending).map(i => i?.contract).filter(i => i)
   pools = getUniqueAddresses(pools)

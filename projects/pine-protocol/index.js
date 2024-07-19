@@ -15,7 +15,7 @@ async function _getLogs(api) {
   return logs.map(i => i.topics.slice(1).map(getAddress))
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { factory, wrapped } = config[api.chain]
   const logs = await _getLogs(api)
   const tokensAndOwners = logs.map(i => [i[1], i[0]])
@@ -23,7 +23,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return sumTokens2({ api, tokensAndOwners, permitFailure: true, sumChunkSize: 20 })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const balances = {}
   const allLogs = await _getLogs(api)
   for (const logs of sliceIntoChunks(allLogs, 30)) {

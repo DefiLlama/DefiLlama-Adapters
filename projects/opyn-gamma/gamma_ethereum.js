@@ -9,10 +9,10 @@ function toAddress(str, skip = 0) {
   return `0x${str.slice(64 - 40 + 2 + skip * 64, 64 + 2 + skip * 64)}`.toLowerCase();
 }
 
-module.exports = async function ethereumTvl(timestamp, block, _1, { api }) {  
+module.exports = async function ethereumTvl(api) {  
   let balances = {};
 
-  if(block >= START_BLOCK) {
+  if(!api.block || api.block >= START_BLOCK) {
     const whitelistedCollaterals = await getLogs({
       target: whitelist,
       topic: 'CollateralWhitelisted(address)',

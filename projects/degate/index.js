@@ -5,7 +5,7 @@ const DEGATE_EXCHANGE_CONTRACT = '0x9C07A72177c5A05410cA338823e790876E79D73B';
 
 const START_BLOCK = 18552105;
 
-async function tvl(timestamp, block, _1, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: DEGATE_EXCHANGE_CONTRACT,
@@ -13,7 +13,7 @@ async function tvl(timestamp, block, _1, { api }) {
     onlyArgs: true,
     fromBlock: START_BLOCK,
   })
-  return api.sumTokens({ tokens: logs.map((log) => log.token), owner: DEGATE_DEPOSIT_CONTRACT })
+  return api.sumTokens({ tokens: logs.map((log) => log.token), owner: DEGATE_DEPOSIT_CONTRACT, blacklistedTokens: ['0x53C8395465A84955c95159814461466053DedEDE'] })
 }
 
 module.exports = {

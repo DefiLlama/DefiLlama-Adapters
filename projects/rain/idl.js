@@ -5,54 +5,140 @@ module.exports = {
   "instructions": [],
   "accounts": [
     {
-      "name": "assetManager",
+      "name": "loan",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "currencyIn",
+            "name": "kind",
+            "type": {
+              "defined": "LoanKind"
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": "LoanStatus"
+            }
+          },
+          {
+            "name": "borrower",
             "type": "publicKey"
           },
           {
-            "name": "currencyOut",
+            "name": "lender",
             "type": "publicKey"
           },
           {
-            "name": "pythInFeed",
+            "name": "pool",
             "type": "publicKey"
           },
           {
-            "name": "pythOutFeed",
+            "name": "mint",
             "type": "publicKey"
           },
           {
-            "name": "totalAmountTokenized",
+            "name": "currency",
+            "type": "publicKey"
+          },
+          {
+            "name": "isCustom",
+            "type": "bool"
+          },
+          {
+            "name": "isFrozen",
+            "type": "bool"
+          },
+          {
+            "name": "price",
             "type": "u64"
           },
           {
-            "name": "currentAmountTokenized",
+            "name": "interest",
             "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "duration",
+            "type": "u64"
+          },
+          {
+            "name": "collection",
+            "type": "u32"
+          },
+          {
+            "name": "liquidation",
+            "type": "u16"
+          },
+          {
+            "name": "marketplace",
+            "type": {
+              "defined": "Marketplace"
+            }
+          },
+          {
+            "name": "sale",
+            "type": {
+              "defined": "Sale"
+            }
           },
           {
             "name": "createdAt",
             "type": "u64"
           },
           {
-            "name": "updatedAt",
+            "name": "expiredAt",
             "type": "u64"
+          },
+          {
+            "name": "repaidAt",
+            "type": "u64"
+          },
+          {
+            "name": "soldAt",
+            "type": "u64"
+          },
+          {
+            "name": "liquidatedAt",
+            "type": "u64"
+          },
+          {
+            "name": "listing",
+            "type": {
+              "defined": "Listing"
+            }
+          },
+          {
+            "name": "isCompressedLoan",
+            "type": "bool"
+          },
+          {
+            "name": "isDefi",
+            "type": "bool"
+          },
+          {
+            "name": "collateralAmount",
+            "type": "u64"
+          },
+          {
+            "name": "collateralDecimals",
+            "type": "u8"
           },
           {
             "name": "padding",
             "type": {
               "array": [
                 "u64",
-                31
+                5
               ]
             }
           },
           {
-            "name": "totalAmountLiquidated",
-            "type": "u64"
+            "name": "padding1",
+            "type": "u32"
           }
         ]
       }
@@ -214,6 +300,40 @@ module.exports = {
   ],
   "types": [
     {
+      "name": "LoanKind",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Loan"
+          },
+          {
+            "name": "Mortgage"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Ongoing"
+          },
+          {
+            "name": "Repaid"
+          },
+          {
+            "name": "Liquidated"
+          },
+          {
+            "name": "Sold"
+          }
+        ]
+      }
+    },
+    {
       "name": "Curve",
       "type": {
         "kind": "struct",
@@ -350,7 +470,80 @@ module.exports = {
         ]
       }
     },
+    {
+      "name": "Marketplace",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Auctionhouse"
+          },
+          {
+            "name": "Solanart"
+          },
+          {
+            "name": "Hyperspace"
+          },
+          {
+            "name": "Yaww"
+          },
+          {
+            "name": "Hadeswap"
+          },
+          {
+            "name": "Rain"
+          },
+          {
+            "name": "TensorswapOrder"
+          },
+          {
+            "name": "TensorswapListing"
+          },
+          {
+            "name": "MagicEden"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sale",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isForSale",
+            "type": "bool"
+          },
+          {
+            "name": "salePrice",
+            "type": "u64"
+          },
+          {
+            "name": "currency",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Listing",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isListed",
+            "type": "bool"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          }
+        ]
+      }
+    }
   ],
   "errors": []
 }
-  

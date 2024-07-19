@@ -3,9 +3,7 @@ const ABI = require('./abi.json')
 const positionManagerFactory = "0x3332Ae0fC25eF24352ca75c01A1fCfd9fc33EAca"
 const positionHelper = "0x76136A56963740b4992C5E9dA5bB58ECffC92ce3"
 
-async function tvl() {
-  const { api } = arguments[3]
-
+async function tvl(api) {
   const { managers } = await api.call({
     target: positionManagerFactory,
     abi: ABI.getPositionManagers,

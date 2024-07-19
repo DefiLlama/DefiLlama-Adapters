@@ -100,7 +100,7 @@ module.exports = {
     },
     bsc: {
         tvl: async () => ({}),
-        staking: staking(aShareBoardroomAddress, ashareTokenAddress, "bsc"),
+        staking: staking(aShareBoardroomAddress, ashareTokenAddress),
         pool2: pool2Exports(ashareRewardPool, BSCLPTokens, "bsc", addr=> {
             addr = addr.toLowerCase();
             if (addr === "0x36d53ed6380313f3823eed2f44dddb6d1d52f656") {

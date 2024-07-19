@@ -33,7 +33,7 @@ async function auroraTvl(timestamp, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   aurora: {
-    staking: staking(empyreanStaking, EMPYR, "aurora"),
+    staking: staking(empyreanStaking, EMPYR),
     tvl: auroraTvl,
   },
   methodology:

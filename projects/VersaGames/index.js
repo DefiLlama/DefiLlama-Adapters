@@ -6,8 +6,7 @@ const versaAddress = config.tokens["versa"].addresses[chain.id];
 const xVersaAddress = config.tokens["xversa"].addresses[chain.id];
 
 module.exports = {
-  timetravel: true,
-  cronos: {
+    cronos: {
     staking: staking(xVersaAddress, versaAddress, chain.name),
     tvl: () => ({}),
   },

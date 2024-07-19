@@ -24,7 +24,7 @@ async function getTokenData() {
   return tokenData
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const data = await getTokenData()
   data.tokens.forEach(({ mint }, i) => {
     const token = mint.toBase58()
@@ -35,7 +35,7 @@ async function tvl(_, _1, _2, { api }) {
   })
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const data = await getTokenData()
   data.tokens.forEach(({ mint }, i) => {
     const token = mint.toBase58()

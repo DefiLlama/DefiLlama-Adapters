@@ -9,7 +9,5 @@ const abis = {
 
 
 module.exports={
-    timetravel: true,
-    doublecounted: false,
-    fantom:usdCompoundExports(unitroller_fantom, "fantom", "0xed8F2C964b47D4d607a429D4eeA972B186E6f111", abis)
+            fantom:usdCompoundExports(unitroller_fantom, "fantom", "0xed8F2C964b47D4d607a429D4eeA972B186E6f111", abis)
 }

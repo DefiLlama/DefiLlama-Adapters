@@ -17,7 +17,7 @@ const vaultpools = {
 }
 
 
-async function tvl(timestamp, blockETH, chainBlocks, { api }) {
+async function tvl(api) {
   return api.sumTokens({
     tokensAndOwners: [
       [[tokens.LINA], LnCollateralSystemAddress],
@@ -27,8 +27,7 @@ async function tvl(timestamp, blockETH, chainBlocks, { api }) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: "Counts LINA used to collateralize lUSD",
+    methodology: "Counts LINA used to collateralize lUSD",
   bsc: {
     tvl,
     pool2: pool2(vaultpools["LP"], "0x392f351fc02a3b74f7900de81a9aaac13ec28e95"),

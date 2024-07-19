@@ -9,6 +9,6 @@ module.exports = {
   start: 1692423851,
   ethereum: {
     tvl: getLiquityTvl('0x51c014510A5AdA43408b40D49eF52094014ef3A7'),
-    staking: staking(STAKING_ADDRESS, ALTR_ADDRESS, "ethereum")
+    staking: staking(STAKING_ADDRESS, ALTR_ADDRESS)
   }
 };

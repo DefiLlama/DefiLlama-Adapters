@@ -12,13 +12,12 @@ const THO_moonbeam = ADDRESSES.shiden.JPYC;
 
 
 module.exports = {
-  timetravel: true,
-  avax:{
+    avax:{
     tvl: getUniTVL({
       useDefaultCoreAssets: true,
       factory: factoryContract,
     }),
-    staking: staking(thorusMaster_avax, THO_avax, "avax"),
+    staking: staking(thorusMaster_avax, THO_avax),
   },
   moonbeam: {
     tvl: getUniTVL({

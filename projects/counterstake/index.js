@@ -72,7 +72,7 @@ async function totalObyteTvl(timestamp) {
     }
 }
 
-const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
+const totalTVLByEVMNetwork = async (api) => {
     const bridges = await getConfig('counterstake/bridges', 'https://counterstake.org/api/bridges').then((data) => data.data);
     const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data);
 
@@ -160,8 +160,7 @@ const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Counterstake protocol. " +
         "This includes the value of exported assets held in the custody of cross-chain bridges, the stakes of cross-chain transfers, " +

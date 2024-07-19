@@ -50,8 +50,7 @@ const borrowed = async (_, ethBlock) => {
 };
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   start: HOME_START,
   ethereum: {
     tvl,

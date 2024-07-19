@@ -6,11 +6,11 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { pool } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const reserveData = await getReserveData(api)
       return api.sumTokens({ tokensAndOwners: reserveData.map(i => [i.token, i.aTokenAddress])})
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const reserveData = await getReserveData(api)
       const borrows = await api.multiCall({  abi: 'erc20:totalSupply', calls: reserveData.map(i => i.variableDebtTokenAddress)})
       api.addTokens(reserveData.map(i => i.token), borrows)

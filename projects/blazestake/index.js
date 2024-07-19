@@ -1,14 +1,12 @@
-const { getTokenSupply } = require("../helper/solana")
+const { getStakedSol } = require("../helper/solana")
 
-async function tvl(_, _1, _2, { api }) {
-  const bSOL = 'bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1'
-  const supply = await getTokenSupply(bSOL)
-  api.add(bSOL, supply * 1e9)
+async function tvl(api) {
+  // https://stake-docs.solblaze.org/developers/addresses
+  await getStakedSol('6WecYymEARvjG5ZyqkrVQ6YkhPfujNzWpSPwNKXHCbV2', api)
 }
 
 module.exports = {
   timetravel: false,
-  methodology: "bSOL total supply as it's equal to the SOL staked",
   solana: {
     tvl
   },

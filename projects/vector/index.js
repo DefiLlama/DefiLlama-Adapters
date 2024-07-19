@@ -19,7 +19,7 @@ const VectorLPPools = [
   VectorPoolsInfo.PTP_XPTP,
   VectorPoolsInfo.JOE_ZJOE,
 ];
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const balancerPools = [
     '0x26fa40f1f29e3b495ec3c4c46b24df7EcDE796d9',
     '0x0708b37dD778E459bEAB114FDF1C431068888379',

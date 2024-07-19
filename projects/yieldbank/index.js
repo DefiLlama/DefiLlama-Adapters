@@ -1,5 +1,5 @@
 const { sumUnknownTokens } = require('../helper/unknownTokens')
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const vaults = [
     '0x605E65d82A6fa21A7383990D4B2eAbe343040b52',
   ]

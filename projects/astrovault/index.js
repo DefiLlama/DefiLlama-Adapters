@@ -6,7 +6,7 @@ const STABLE_FACTORY_ARCHWAY = "archway19yzx44k7w7gsjjhumkd4sh9r0z6lscq583hgpu9s
 const STANDARD_FACTORY_ARCHWAY = "archway1cq6tgc32az7zpq5w7t2d89taekkn9q95g2g79ka6j46ednw7xkkq7n55a2";
 const HYBRID_FACTORY_ARCHWAY = "archway1zlc00gjw4ecan3tkk5g0lfd78gyfldh4hvkv2g8z5qnwlkz9vqmsdfvs7q";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { chain } = api
   for (const factory of [STABLE_FACTORY_ARCHWAY, STANDARD_FACTORY_ARCHWAY, HYBRID_FACTORY_ARCHWAY]) {
     let allPools = [];

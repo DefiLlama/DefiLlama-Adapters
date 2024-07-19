@@ -11,7 +11,7 @@ query get_tvl($timestamp: Int!) {
 }
 `;
 
-async function tvl(timestamp, block) {
+async function tvl({timestamp}, block) {
    const { sonicDayData } = await request(graphUrl, graphQuery, {
       timestamp,
    });

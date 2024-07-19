@@ -4,7 +4,7 @@ const { staking } = require("../helper/staking");
 const USDT = ADDRESSES.ethereum.USDT;
 const STABLZ_CANNAVEST_RWA_POOL = "0xa030f3e984A08B5Ada0377A9f4EaAF846E6A2cB0";
 
-async function borrowed(_, block, _1, { api }) {
+async function borrowed(api) {
   const bal = await api.call({ abi: 'erc20:totalSupply', target: STABLZ_CANNAVEST_RWA_POOL })
   const usdtBal = await api.call({ abi: 'erc20:balanceOf', target: USDT, params: STABLZ_CANNAVEST_RWA_POOL, })
   api.add(USDT, bal - usdtBal)

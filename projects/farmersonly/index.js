@@ -71,6 +71,6 @@ const vaultTvl = async (_, _b, { [chain]: block }) => {
 module.exports = {
   harmony: {
     tvl: sdk.util.sumChainTvls([vaultTvl, dexTVL]),
-    staking: stakings(['0x15e04418d328c39bA747690F6DaE9Bbf548CD358', '0xA68E643e1942fA8635776b718F6EeD5cEF2a3F15',], '0x0159ed2e06ddcd46a25e74eb8e159ce666b28687', 'harmony')
+    staking: stakings(['0x15e04418d328c39bA747690F6DaE9Bbf548CD358', '0xA68E643e1942fA8635776b718F6EeD5cEF2a3F15',], '0x0159ed2e06ddcd46a25e74eb8e159ce666b28687')
   }
 }

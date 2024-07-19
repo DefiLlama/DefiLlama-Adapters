@@ -156,7 +156,7 @@ const bscStaking = async (chainBlocks) => {
 
 const polygonStaking = async (...params) => {
   for (const stakingContract of retroStakingsPolygon) {
-    return staking(stakingContract, pQBERT, "polygon")(...params);
+    return staking(stakingContract, pQBERT)(...params);
   }
 };
 
@@ -199,12 +199,12 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
     staking: bscStaking,
-    pool2: pool2s(pool2StratsBsc, excludePool2Bsc, "bsc"),
+    pool2: pool2s(pool2StratsBsc, excludePool2Bsc),
   },
   polygon: {
     tvl: polygonTvl,
     staking: polygonStaking,
-    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon, "polygon"),
+    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon),
   },
   methodology:
     "We count liquidity on the Farms through MasterChef contracts; and Saking of TCG2 and QBERT tokens through retroStaking contracts",

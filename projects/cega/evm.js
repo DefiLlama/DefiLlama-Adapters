@@ -61,7 +61,7 @@ async function getSumLOVProductQueuedDeposits(lovProducts, api) {
   return await api.multiCall({ target: CEGA_PRODUCT_VIEWER, abi: abi.getLOVProductQueuedDeposits, calls })
 }
 
-async function getEthereumTvl(_, _1, _2, { api }) {
+async function getEthereumTvl(api) {
   const { usdcAddress } = config[api.chain]
   const lovProducts = await getProducts(api);
   const calls = [
@@ -79,7 +79,7 @@ async function getEthereumTvl(_, _1, _2, { api }) {
   return api.getBalances()
 }
 
-async function getBorrowedTvl(_, _1, _2, { api }) {
+async function getBorrowedTvl(api) {
   const { usdcAddress } = config[api.chain]
   const results = await Promise.all([
     getSumFCNProductDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api)

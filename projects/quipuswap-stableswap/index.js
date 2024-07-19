@@ -2,13 +2,13 @@ const { sumTokens2, getStorage, getBigMapById, } = require('../helper/chain/tezo
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
 
-const stableSwap = async (_, _1, _2, { api }) => {
+const stableSwap = async (api) => {
   const data = await getStorage('KT1UPiYB4HrLFcHQ5tkjahGnDM55E8iEbNAx')
   const pools = await getBigMapById(data.storage.pool_id_to_address);
   return sumTokens2({ owners: Object.values(pools), includeTezos: false, })
 }
 
-const sswapAndYupuna = async (_, _1, _2, { api }) => {
+const sswapAndYupuna = async (api) => {
   const data = await getStorage('KT1Q9gw5mZSLPGkoCaWc5a8FKLGDiTiULc6R')
   const pools = await getBigMapById(data.storage.pool_id_to_address);
   const { errors } = await PromisePool.withConcurrency(10)

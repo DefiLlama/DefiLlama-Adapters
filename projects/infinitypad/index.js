@@ -13,7 +13,7 @@ async function fetchBalances(api, contracts) {
 
 // node test.js projects/infinitypad/index.js
 function tvl(chain) {
-    return async (timestamp, block, chainBlocks, { api }) => {
+    return async (api) => {
         const vestingContracts = (await getConfig('infinitypad', "https://api.infinitypad.com/get-all-vesting-contracts"));
         const clientVesting = {};
         for (const vestingContract of vestingContracts) {

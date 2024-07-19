@@ -4,7 +4,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 // minted by depositing USDC
 const SPCT = '0xEf5AAcB3c38a5Be7785a361008e27fb0328a62B5';
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const uTokens = await api.multiCall({ abi: 'address:usdc', calls: [SPCT] })
   const bals = (await api.multiCall({ abi: 'uint256:totalPooledUSD', calls: [SPCT] })).map(i => i / 1e12)
 
@@ -12,7 +12,7 @@ async function tvl(_, _1, _2, { api }) {
   return api.getBalances()
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   // Borrowed amount in shares of pool
   const executedShares = await api.call({
     target: SPCT,

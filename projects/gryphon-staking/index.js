@@ -15,7 +15,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { nAssets } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       for (const { asset, coingeckoId } of nAssets) {
         const { total_supply, decimals } = await queryContract({ contract: asset, chain, data: { token_info: {} } })
         api.add(coingeckoId, total_supply / 10 ** decimals, { skipChain: true })

@@ -12,8 +12,7 @@ async function depositsTvl() {
   const banks = await program.account.bank.all();
   return sumTokens2({ tokenAccounts: banks.map((i) => i.account.vault) });
 }
-async function borrowed() {
-  const { api } = arguments[3];
+async function borrowed(api) {
   const provider = getProvider();
   const program = new Program(
     idl,

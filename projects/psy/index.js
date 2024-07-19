@@ -6,7 +6,7 @@ const tokenAddresses = [
 ]
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, tokens: tokenAddresses, owner: activePool})
 }
 

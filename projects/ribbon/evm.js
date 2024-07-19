@@ -56,7 +56,7 @@ const uni = ADDRESSES.ethereum.UNI;
 
 // Avalanche Assets
 const wavax = ADDRESSES.avax.WAVAX;
-const savax = "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
+const savax = ADDRESSES.avax.SAVAX;
 const usdce = ADDRESSES.avax.USDC_e;
 
 async function addVaults({ balances, chain, vaults, block, transformAddress = a => a }) {
@@ -118,7 +118,7 @@ async function avaxTvl(_, _b, { avax: block }) {
  */
 const RBN = "0x6123B0049F904d730dB3C36a31167D9d4121fA6B";
 const veRBN = "0x19854C9A5fFa8116f48f984bDF946fB9CEa9B5f7";
-const veRBNStaking = staking(veRBN, RBN, "ethereum");
+const veRBNStaking = staking(veRBN, RBN);
 
 module.exports = {
   ethereum: {

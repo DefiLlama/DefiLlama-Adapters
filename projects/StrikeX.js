@@ -7,7 +7,7 @@ const token = "0xd6fdde76b8c1c45b33790cc8751d5b88984c44ec"
 
 module.exports = {
   
-    //staking: staking("5867cd4f7e105878afbc903505c207eb7b130a50", "bsc"),
+    //staking: staking("5867cd4f7e105878afbc903505c207eb7b130a50"),
     ...masterChefExports(masterchef, "bsc", token) 
 
 };

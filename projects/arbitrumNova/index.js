@@ -2,7 +2,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 module.exports = {
   ethereum: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [

@@ -50,7 +50,7 @@ const config = {
       { underlying: ADDRESSES.avax.USDC_e, bToken: '0xaAAD5237FAcD7e61548dc1DE71B26D3431562bf3' },
       { underlying: ADDRESSES.avax.DAI, bToken: '0x2D29dcdBc64658EFd33565731cAFbA48c95Eae76' },
       { underlying: ADDRESSES.avax.WETH_e, bToken: '0xd62eFF4221f83f05843AB1F645F7C0b4E38A6b49' },
-      { underlying: '0x50b7545627a5162F82A992c33b87aDc75187B218', bToken: '0x8aEE941d2043d4Ee9327394c810a29c97d13DE52' },
+      { underlying: ADDRESSES.avax.WBTC_e, bToken: '0x8aEE941d2043d4Ee9327394c810a29c97d13DE52' },
       { underlying: '0xCE1bFFBD5374Dac86a2893119683F4911a2F7814', bToken: '0x7a7426B0d4b95952F81b170a09A26F9eaAC949C2' },
       { underlying: '0x511D35c52a3C244E7b8bd92c0C297755FbD89212', bToken: '0x5837dE0D87Ec40f05E79a27cBa7Dc7Ff96da5980' },
       { underlying: '0x2147EFFF675e4A4eE1C2f918d181cDBd7a8E208f', bToken: '0x4da7A2Cf132E12cd4D3fD2C8a30A076f9e08d7A7' },
@@ -62,7 +62,7 @@ Object.keys(config).forEach(chain => {
   const { bank, fromBlock, markets } = config[chain]
   const _getLogs = api => getLogs({ api, target: bank, eventAbi: 'event Create (address indexed underlying, address bToken)', onlyArgs: true, fromBlock, })
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       // const logs = await _getLogs(api)
       const logs = markets
       const underlyingTokens = logs.map(log => log.underlying)
@@ -71,7 +71,7 @@ Object.keys(config).forEach(chain => {
       underlyingTokens.push(...underlyingTokens)
       return api.sumTokens({ tokensAndOwners2: [underlyingTokens, bTokens] })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       // const logs = await _getLogs(api)
       const logs = markets
       const underlyingTokens = logs.map(log => log.underlying)

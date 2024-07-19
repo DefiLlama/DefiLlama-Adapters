@@ -50,7 +50,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { bookkeeper, contract_Reader, controllerV2, veTETU } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
+    tvl: async (api) => {
 
       // * ############### Tetu V1 vaults
       const vaultsCall = [];

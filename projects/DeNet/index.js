@@ -9,9 +9,7 @@ const owners = [
 module.exports = {
   start: 1691761595, // Friday, 11-Aug-23 13:46:35 UTC	
   methodology: "Total amount of DE tokens used for DeNet storage payments",
-  timetravel: true,
-  misrepresentedTokens: false,
-
+    
   polygon: {
 	tvl: () => ({}),
     staking: sumTokensExport({ 

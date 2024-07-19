@@ -123,11 +123,9 @@ const config = {
       'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
     ]
   },
-/*
   doge: {
     owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']
   }
-*/
 }
 
 module.exports = cexExports(config)

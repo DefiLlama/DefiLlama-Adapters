@@ -7,9 +7,10 @@ const tokens = [
   ADDRESSES.ethereum.USDC,
   ADDRESSES.ethereum.TUSD,
   ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.USDM,
 ];
 
-const owner = '0x39e2f550fef9ee15b459d16bD4B243b04b1f60e5'
+const owner = "0x39e2f550fef9ee15b459d16bD4B243b04b1f60e5";
 
 module.exports = {
   methodology: "Sum assets on Nayms",

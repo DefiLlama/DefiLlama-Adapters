@@ -12,7 +12,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on Sushiswap. Staking accounts for the JELLY locked in our farming contracts',
   ethereum: {
-    pool2: staking([sweetPool, royalPool], [jellyUsdcLP], 'ethereum'),
+    pool2: staking([sweetPool, royalPool], [jellyUsdcLP]),
     tvl: () => ({}),
   },
 }

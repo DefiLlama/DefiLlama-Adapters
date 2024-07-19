@@ -21,7 +21,7 @@ const vaults = [
   contracts.uPRISMA,
 ]
 
-async function tvl(time, block, _, { api },) {
+async function tvl(api,) {
   const balances = {};
 
   const bals = await api.multiCall({ abi: "uint256:totalUnderlying", calls: vaults })

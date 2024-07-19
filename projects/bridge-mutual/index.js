@@ -30,52 +30,21 @@ const config = {
   },
 }
 
-module.exports = {
-};
-
 Object.keys(config).forEach(chain => {
   const { CapitalPool, staking, PolicyBookRegistry, ShieldMining, usdt, bmi, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      const balances = {}
-      // =================== GET USDT BALANCES =================== //
-      const vusdtBalances = (
-        await sdk.api.abi.call({
-          target: CapitalPool,
-          abi: abi["virtualUsdtAccumulatedBalance"],
-          chain, block
-        })
-      ).output;
-      sdk.util.sumSingleBalance(balances, `${chain}:${usdt}`, vusdtBalances);
-      const policyBooks = await getPolicyBookList(chain, block, PolicyBookRegistry)
-      const { output: tokens } = await sdk.api.abi.multiCall({
-        target: ShieldMining,
-        abi: abi.getShieldTokenAddress,
-        calls: policyBooks.map(i => ({ params: i })),
-        chain, block,
-      })
-      const toa = tokens.map(({ input: { target }, output, }) => ([output, target]))
-      return sumTokens2({ balances, chain, block, tokensAndOwners: toa})
+    tvl: async (api) => {
+      const vusdtBalances = await api.call({ target: CapitalPool, abi: abi["virtualUsdtAccumulatedBalance"], })
+      api.add(usdt, vusdtBalances)
+      const policyBooks = await getPolicyBookList(api, PolicyBookRegistry)
+      const tokens = await api.multiCall({ target: ShieldMining, abi: abi.getShieldTokenAddress, calls: policyBooks, })
+      return sumTokens2({ api, tokensAndOwners2: [tokens, policyBooks] })
     },
-    staking: sumTokensExport({ chain, owners: staking, tokens: [bmi] })
+    staking: sumTokensExport({ owners: staking, tokens: [bmi] })
   }
 })
 
-// =================== GET LIST OF POLICY BOOKS =================== //
-async function getPolicyBookList(chain, block, PolicyBookRegistry) {
-  const countPolicyBooks = (
-    await sdk.api.abi.call({
-      target: PolicyBookRegistry,
-      abi: abi["count"],
-      chain, block,
-    })
-  ).output;
-  return (
-    await sdk.api.abi.call({
-      target: PolicyBookRegistry,
-      params: [0, countPolicyBooks],
-      abi: abi["list"],
-      chain, block,
-    })
-  ).output;
+async function getPolicyBookList(api, PolicyBookRegistry) {
+  const countPolicyBooks = await api.call({ target: PolicyBookRegistry, abi: abi["count"], })
+  return api.call({ target: PolicyBookRegistry, params: [0, countPolicyBooks], abi: abi["list"], })
 }

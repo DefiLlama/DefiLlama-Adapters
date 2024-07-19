@@ -18,7 +18,7 @@ const abi = {
   getPoolInfo: 'function getPoolInfo(uint256 pid) external view returns (tuple(uint256 accRewardPerShare, uint256 accMPPerShare, uint256 lastRewardBlock, uint256 totalDeposit, uint256 totalMP, address rewardToken, bool isInputNative, bool isRewardNative, bool activatedMP, bool lock, address[] path, address breaker, address breakerSetter) memory info)'
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const wonderStakingContract = await api.call({ abi: abi.getContractAddress, target: registryContract, params: Staking })
   const govContract = await api.call({ abi: abi.getContractAddress, target: registryContract, params: Governance })
   const members = await api.fetchList({ lengthAbi: abi.getMemberLength, itemAbi: abi.getMember, target: govContract, startFromOne: true })

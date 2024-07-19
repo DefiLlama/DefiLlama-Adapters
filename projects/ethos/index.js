@@ -25,7 +25,7 @@ const strategiesVersioned = {
 
 const strategies = Object.values(strategiesVersioned).map(i => Object.values(i)).flat()
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const vaults = Object.values(admins)
   const configs = await api.multiCall({ abi: 'address:collateralConfig', calls: vaults })
   const collaterals = await api.multiCall({ abi: 'address[]:getAllowedCollaterals', calls: configs })
@@ -42,7 +42,7 @@ async function tvl(_, _b, _cb, { api, }) {
   // api.addTokens(tokens, bals)
 }
 
-async function pool2(_, _b, _cb, { api, }) {
+async function pool2(api) {
   const toa = [
     ['0xd20f6F1D8a675cDCa155Cb07b5dC9042c467153f', '0x9425b96462b1940e7563cd765464300f6a774805'],
     ['0xD13D81aF624956327A24d0275CBe54b0eE0E9070', '0x6c56A0Ca937A3C9f29bCF386D3cD0667Ef9d7e88'],

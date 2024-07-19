@@ -13,7 +13,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, ownerTokens = [], optionsBaseToken, optionsContract, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       if (factory) {
         const logs = await getLogs({

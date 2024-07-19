@@ -8,8 +8,8 @@ const NSDX_USDC_UNIV2 = "0x56B8936a96cD5EE5C5837F385a19B4c2999fD74a";
 module.exports = {
   misrepresentedTokens: true,
   polygon:{
-    staking: staking(stakingContract, NSDX, "polygon"),
-    pool2: pool2(stakingContract, NSDX_USDC_UNIV2, "polygon"),
+    staking: staking(stakingContract, NSDX),
+    pool2: pool2(stakingContract, NSDX_USDC_UNIV2),
     tvl: async () => ({}),
   },
   methodology:

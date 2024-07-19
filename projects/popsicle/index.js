@@ -35,7 +35,7 @@ async function fantomTvl(timestamp, block, chainBlocks, {api}) {
   return api.sumTokens({ owner: '0xFDB988aF9ef9D0C430176f972bA82B98b476F3ee', tokens: ['0xddc0385169797937066bbd8ef409b5b3c0dfeb52']})
 }
 
-async function fantomStaking(timestamp, block, chainBlocks, { api }) {
+async function fantomStaking(api) {
   return sumTokens2({
     api,
     tokensAndOwners: [

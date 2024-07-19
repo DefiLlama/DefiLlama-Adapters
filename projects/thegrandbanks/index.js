@@ -154,11 +154,11 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    staking: staking(GRANDBANKS_CONTRACT.bsc, GRAND.bsc, "bsc"),
+    staking: staking(GRANDBANKS_CONTRACT.bsc, GRAND.bsc),
     tvl: bscTvl,
   },
   polygon: {
-    staking: staking(GRANDBANKS_CONTRACT.polygon, GRAND.polygon, "polygon"),
+    staking: staking(GRANDBANKS_CONTRACT.polygon, GRAND.polygon),
     tvl: polygonTvl,
   },
   moonriver: {

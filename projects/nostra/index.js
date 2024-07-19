@@ -17,7 +17,7 @@ const supplyTokens = [
   "0x05dcd26c25d9d8fd9fc860038dcb6e4d835e524eb8a85213a8cda5b7fff845f6",
   "0x06eda767a143da12f70947192cd13ee0ccc077829002412570a88cd6539c1d85",
   "0x05f296e1b9f4cf1ab452c218e72e02a8713cee98921dad2d3b5706235e128ee4",
-  // DAI
+  // DAIv0
   "0x022ccca3a16c9ef0df7d56cbdccd8c4a6f98356dfd11abc61a112483b242db90",
   "0x04f18ffc850cdfa223a530d7246d3c6fc12a5969e0aa5d4a88f470f5fe6c46e9",
   "0x02b5fd690bb9b126e3517f7abfb9db038e6a69a068303d06cf500c49c1388e20",
@@ -42,6 +42,26 @@ const supplyTokens = [
   "0x40f5a6b7a6d3c472c12ca31ae6250b462c6d35bbdae17bd52f6c6ca065e30cf",
   "0x26c5994c2462770bbf940552c5824fb0e0920e2a8a5ce1180042da1b3e489db",
   "0x7c2e1e733f28daa23e78be3a4f6c724c0ab06af65f6a95b5e0545215f1abc1b",
+  // nstSTRK
+  "0x4b11c750ae92c13fdcbe514f9c47ba6f8266c81014501baa8346d3b8ba55342",
+  "0x0142af5b6c97f02cac9c91be1ea9895d855c5842825cb2180673796e54d73dc5",
+  "0x78a40c85846e3303bf7982289ca7def68297d4b609d5f588208ac553cff3a18",
+  "0x67a34ff63ec38d0ccb2817c6d3f01e8b0c4792c77845feb43571092dcf5ebb5",
+  // UNO
+  "0x1325caf7c91ee415b8df721fb952fa88486a0fc250063eafddd5d3c67867ce7",
+  "0x2a3a9d7bcecc6d3121e3b6180b73c7e8f4c5f81c35a90c8dd457a70a842b723",
+  "0x6757ef9960c5bc711d1ba7f7a3bff44a45ba9e28f2ac0cc63ee957e6cada8ea",
+  "0x7d717fb27c9856ea10068d864465a2a8f9f669f4f78013967de06149c09b9af",
+  // NSTR
+  "0x2b674ffda238279de5550d6f996bf717228d316555f07a77ef0a082d925b782",
+  "0x6f8ad459c712873993e9ffb9013a469248343c3d361e4d91a8cac6f98575834",
+  "0x2589fc11f60f21af6a1dda3aeb7a44305c552928af122f2834d1c3b1a7aa626",
+  "0x46ab56ec0c6a6d42384251c97e9331aa75eb693e05ed8823e2df4de5713e9a4",
+  // DAI
+  "0x0184dd6328115c2d5f038792e427f3d81d9552e40dd675e013ccbf74ba50b979",
+  "0x036e722e04ef2ccadb9229b5415272353aaeb9554c989b83d4d932dba8dbe8f9",
+  "0x065bde349f553cf4bdd873e54cd48317eda0542764ebe5ba46984cedd940a5e4",
+  "0x000215cbd38a1e765cfd2c60bcb291c9d0b0bb7e7f56f682f0d3501303586185",
 ];
 const debtTokens = [
   "0x0491480f21299223b9ce770f23a2c383437f9fbf57abc2ac952e9af8cdb12c97",
@@ -52,6 +72,10 @@ const debtTokens = [
   "0x348cc417fc877a7868a66510e8e0d0f3f351f5e6b0886a86b652fcb30a3d1fb",
   "0x35778d24792bbebcf7651146896df5f787641af9e2a3db06480a637fbc9fff8",
   "0x1258eae3eae5002125bebf062d611a772e8aea3a1879b64a19f363ebd00947",
+  "0x292be6baee291a148006db984f200dbdb34b12fb2136c70bfe88649c12d934b",
+  "0x4b036839a8769c04144cc47415c64b083a2b26e4a7daa53c07f6042a0d35792",
+  "0x3e0576565c1b51fcac3b402eb002447f21e97abb5da7011c0a2e0b465136814",
+  "0x06726ec97bae4e28efa8993a8e0853bd4bad0bd71de44c23a1cd651b026b00e7",
 ];
 
 function* chunks(arr, n) {
@@ -60,7 +84,7 @@ function* chunks(arr, n) {
   }
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const supplied = await multiCall({
     calls: supplyTokens,
     abi: assetTokenAbi.totalSupply,
@@ -80,7 +104,7 @@ async function tvl(_, _1, _2, { api }) {
   api.addTokens(underlyings, data);
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const borrowed = await multiCall({
     calls: debtTokens,
     abi: assetTokenAbi.totalSupply,

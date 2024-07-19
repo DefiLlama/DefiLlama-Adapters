@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(timestamp, block, _1, { api }) {
+async function tvl(api) {
   const lsBals = await api.multiCall({  abi: 'erc20:totalSupply', calls: ['0x20BC832ca081b91433ff6c17f85701B6e92486c5', '0xFe2e637202056d30016725477c5da089Ab0A043A']})
 
   const solosValidators = await getLogs({

@@ -10,40 +10,40 @@ const { getConfig } = require('../helper/cache')
 const chainParams = {
     optimism: {
         safeBoxApi: "https://api.homora.alphaventuredao.io/v2/10/safeboxes",
-        latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/mintcnn/optimism`,
+        latestAlphaHomoraV2GraphUrl: sdk.graph.modifyEndpoint('B3g98fbbStVKtff6QUY6iMUqp7rxqrdDyGdrXAmcWG6B'),
         poolsJsonUrl: "https://api.homora.alphaventuredao.io/v2/10/pools",
         instances: [ ]
     },
     avax: {
         safeBoxApi: "https://homora-api.alphafinance.io/v2/43114/safeboxes",
-        latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-avax`,
+        latestAlphaHomoraV2GraphUrl: sdk.graph.modifyEndpoint('8zVTsZBmd8CU7vnmonPr7qex4A69yM7NSzxKCpGHw6Q6'),
         poolsJsonUrl: "https://homora-api.alphafinance.io/v2/43114/pools",
         instances: [
             {
                 wMasterChefAddress: "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
                 wLiquidityGauge: "0xf1f32c8eeb06046d3cc3157b8f9f72b09d84ee5b", // wrong
                 poolsJsonUrl: "https://homora-api.alphafinance.io/v2/43114/pools",
-                graphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-avax`,
+                graphUrl: sdk.graph.modifyEndpoint('8zVTsZBmd8CU7vnmonPr7qex4A69yM7NSzxKCpGHw6Q6'),
             },
         ]
     },
     fantom: {
         safeBoxApi: "https://homora-api.alphafinance.io/v2/250/safeboxes",
-        latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+        latestAlphaHomoraV2GraphUrl: sdk.graph.modifyEndpoint('H4Q15YbQxRWw14HaABfWiTptSwRzanXNwyACY8MCRqVS'),
         poolsJsonUrl: "https://homora-api.alphafinance.io/v2/250/pools",        
         instances: [
             {
                 wMasterChefAddress: "0x5FC20fCD1B50c5e1196ac790DADCfcDD416bb0C7",
                 wLiquidityGauge: "0xf1f32c8eeb06046d3cc3157b8f9f72b09d84ee5b", // wrong
                 poolsJsonUrl: "https://homora-api.alphafinance.io/v2/43114/pools",
-                graphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+                graphUrl: sdk.graph.modifyEndpoint('H4Q15YbQxRWw14HaABfWiTptSwRzanXNwyACY8MCRqVS'),
             },
         ]
     },
     ethereum: {
         safeBoxApi: "https://homora-api.alphafinance.io/v2/1/safeboxes",
         coreOracleAddress: "0x6be987c6d72e25f02f6f061f94417d83a6aa13fc",
-        latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`,
+        latestAlphaHomoraV2GraphUrl: sdk.graph.modifyEndpoint('CnfAARjTUna6ZVo7RjJvQmm44e7uWx6kbaRm4Xh5MR5N'),
         instances: [
             {
                 // Current
@@ -53,7 +53,7 @@ const chainParams = {
                 wStakingRewardIndex: "0x011535fd795fd28c749363e080662d62fbb456a7",
                 wStakingRewardPerp: "0xc4635854480fff80f742645da0310e9e59795c63",
                 poolsJsonUrl: "https://homora-api.alphafinance.io/v2/1/pools",
-                graphUrl: `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-relaunch`,
+                graphUrl: sdk.graph.modifyEndpoint('37CbUUxwQC7uTqQquQXtQQF8b2bU7L3VBrkEntiHxf4r'),
             },
             {
                 // Legacy
@@ -64,7 +64,7 @@ const chainParams = {
                 wStakingRewardPerp: "0xc4635854480fff80f742645da0310e9e59795c63",
                 poolsJsonUrl:
                     "local",
-                graphUrl: `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`,
+                graphUrl: sdk.graph.modifyEndpoint('CnfAARjTUna6ZVo7RjJvQmm44e7uWx6kbaRm4Xh5MR5N'),
             }
         ]
     }

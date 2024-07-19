@@ -27,7 +27,7 @@ const ARNXM_VAULT = {
   address: "0x1337DEF1FC06783D4b03CB8C1Bf3EBf7D0593FC4",
 }
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   //get TVL of Uninsurance vaults
   let resp = await getConfig('ease', VAULT_LIST_URL);
   let vaults = resp.map(i => i.address.toLowerCase()).filter(i => i !== '0x8f247eb2d71beeacdf212f8bc748f09cdf7144c0')

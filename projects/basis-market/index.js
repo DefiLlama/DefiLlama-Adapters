@@ -13,6 +13,6 @@ module.exports = {
   methodology: `TVL for basis market is staking for now`, 
   solana:{
     tvl: () => ({}),
-    staking: stakingTVL//: staking(basis_staking, basis, "solana"), 
+    staking: stakingTVL//: staking(basis_staking, basis), 
   }
 }

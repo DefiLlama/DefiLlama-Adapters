@@ -29,7 +29,7 @@ async function pool2(timestamp, block, chainBlocks) {
   return balances;
 }
 
-async function vault(timestamp, block, chainBlocks, { api }){
+async function vault(api){
   return vaultUtils.vaultLocked(api)
 }
 

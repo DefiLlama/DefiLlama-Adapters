@@ -70,12 +70,12 @@ async function gettotalTvl(block) {
   }
 }
 
-async function tvl(_, _b, { [chain]: block }) {
-  return (await gettotalTvl(block)).tvl
+async function tvl(api) {
+  return (await gettotalTvl(api.block)).tvl
 }
 
-async function pool2(_, _b, { [chain]: block }) {
-  return (await gettotalTvl(block)).pool2
+async function pool2(api) {
+  return (await gettotalTvl(api.block)).pool2
 }
 /*
 async function staking(_, _b, { [chain]: block }) {
@@ -88,6 +88,7 @@ module.exports = {
   hallmarks: [
     [1665187200, "Rug Pull"]
   ],
+  deadFrom: 1665187200,
   misrepresentedTokens: true,
   avax: {
     tvl, 

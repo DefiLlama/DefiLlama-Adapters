@@ -15,9 +15,7 @@ async function aptosTvl() {
   return {...lyfTvl};
 }
 
-async function suiTvl() {
-  const { api } = arguments[3]
-
+async function suiTvl(api) {
   return calLyfTvlSui(api)
 }
 

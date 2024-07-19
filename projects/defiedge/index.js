@@ -10,8 +10,7 @@ const query = /* GraphQL */ `
   }
 `;
 
-async function getTvl() {
-  const { api } = arguments[3];
+async function getTvl(api) {
   const { network } = config[api.chain];
 
   const results = await graphQuery(endpoint, query, { network: [network] });

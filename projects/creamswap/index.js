@@ -31,7 +31,8 @@ function isCrToken(address) {
   return crTokens.includes(address);
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   let balances = {
     [ADDRESSES.null]: '0', // ETH
   };

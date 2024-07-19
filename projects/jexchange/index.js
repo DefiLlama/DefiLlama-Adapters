@@ -2,7 +2,7 @@ const { sumTokens } = require("../helper/chain/elrond");
 const { getConfig } = require('../helper/cache')
 
 async function tvl() {
-  const pools = await getConfig('jexchange', 'https://api.jexchange.io/pools/v3')
+  const pools = await getConfig('jexchange-pools', 'https://api.jexchange.io/pools/v3')
   const owners = [
     ...pools.map(pool => pool.sc_address),
     "erd1qqqqqqqqqqqqqpgqmmxzmktd09gq0hldtczerlv444ykt3pz6avsnys6m9",
@@ -12,8 +12,12 @@ async function tvl() {
 }
 
 async function staking() {
-  const owner = "erd1qqqqqqqqqqqqqpgq05whpg29ggrrm9ww3ufsf9ud23f66msv6avs5s5xxy";
-  return sumTokens({ owner });
+  const farms = await getConfig('jexchange-farms', 'https://api.jexchange.io/farms')
+  const owners = [
+    ...farms.map(farm => farm.sc_address),
+    "erd1qqqqqqqqqqqqqpgq05whpg29ggrrm9ww3ufsf9ud23f66msv6avs5s5xxy",
+  ];
+  return sumTokens({ owners });
 }
 
 module.exports = {

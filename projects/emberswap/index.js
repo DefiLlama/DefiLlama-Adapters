@@ -14,7 +14,7 @@ module.exports = {
   methodology:
     "Factory address (0xE62983a68679834eD884B9673Fb6aF13db740fF0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM. Ember tokens sent to vault are counted towards staking.",
   smartbch: {
-    tvl: getUniTVL({ factory: FACTORY, chain: 'smartbch', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true }),
     staking: stakingPricedLP(VAULT, EMBER, "smartbch", EMBER_WBCH_PAIR, "bitcoin-cash", 18)
   }
 };

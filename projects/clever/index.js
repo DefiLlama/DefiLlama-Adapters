@@ -29,7 +29,7 @@ async function getClevers(balances, api) {
   })
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   let balances = {}
   const [totalLockedGlobal] = await Promise.all([
     api.call({

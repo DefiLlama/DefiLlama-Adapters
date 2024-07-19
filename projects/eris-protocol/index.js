@@ -399,8 +399,7 @@ async function productsTvl(chain) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  methodology: "Liquid Staking and Arbitrage Protocol",
+    methodology: "Liquid Staking and Arbitrage Protocol",
   terra2: { tvl: () => productsTvl("terra2") },
   terra: { tvl: () => productsTvl("terra") },
   kujira: { tvl: () => productsTvl("kujira") },

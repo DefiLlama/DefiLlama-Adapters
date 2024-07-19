@@ -49,7 +49,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   cronos: {
     tvl,
-    staking: staking(betifystaking, betify, "cronos"),
+    staking: staking(betifystaking, betify),
   },
   methodology:
     "Counts tokens on the treasury for tvl and staked BETIFY for staking",

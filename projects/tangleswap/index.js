@@ -17,7 +17,7 @@ const query = `query getPools($lastId: String!) {
   }
 }`
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   const { endpoint } = config[api.chain]
   const pools = await cachedGraphQuery('tangleswap/' + api.chain, endpoint, query, { fetchById: true, })
   return sumTokens2({
@@ -37,3 +37,4 @@ module.exports.milkomeda = uniV3Export({  milkomeda: { factory: "0xda2f048C12850
 module.exports.milkomeda.staking = staking('0xbDD88a555cB49b6b482850aA50c1c2C74fa3367a', '0x6085C822B7A4c688D114468B1380a0Ed1873a0B3')
 module.exports.shimmer_evm.staking = staking('0x86eea5C341ece8f96D403eA9fB4d184A6a94C0E1', '0xE5f3dCC241Dd008E3c308e57cf4F7880eA9210F8')
 // module.exports.shimmer_evm = uniV3Export({  milkomeda: { factory: "0xdf7bA717FB0D5ce579252f05167cD96d0fA77bCb", fromBlock: 19701714, },}).milkomeda
+// module.exports.iotaevm = uniV3Export({  iotaevm: { factory: "0xdf7bA717FB0D5ce579252f05167cD96d0fA77bCb", fromBlock: 19701714, },}).iotaevm

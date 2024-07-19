@@ -5,23 +5,23 @@ const { isWhitelistedToken } = require('../helper/streamingHelper')
 
 const graphUrls = {
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-ethereum",
+    sdk.graph.modifyEndpoint('D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf'),
   polygon:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-polygon",
-  fantom: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-fantom",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-avalanche",
+    sdk.graph.modifyEndpoint('4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4'),
+  fantom: sdk.graph.modifyEndpoint('E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS'),
+  bsc: sdk.graph.modifyEndpoint('2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk'),
+  avax: sdk.graph.modifyEndpoint('8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx'),
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-arbitrum",
+    sdk.graph.modifyEndpoint('8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F'),
   optimism:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-optimism",
-  xdai: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-gnosis",
+    sdk.graph.modifyEndpoint('8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69'),
+  xdai: sdk.graph.modifyEndpoint('5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB'),
   harmony:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-harmony",
+    sdk.graph.modifyEndpoint('9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH'),
   moonbeam:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonbeam",
+    sdk.graph.modifyEndpoint('HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf'),
   moonriver:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonriver",
+    sdk.graph.modifyEndpoint('9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC'),
 };
 
 const bentoboxes = {

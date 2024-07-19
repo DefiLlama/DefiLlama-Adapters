@@ -10,7 +10,7 @@ const acrewavaxpgl = "0x64694FC8dFCA286bF1A15b0903FAC98217dC3AD7";
 module.exports = {
     avax:{
         tvl: async () => ({}),
-        staking: staking(stakingContract, acre, "avax"),
+        staking: staking(stakingContract, acre),
         pool2: pool2Exports(farming, [acrewavaxpgl], "avax")
     }
 }

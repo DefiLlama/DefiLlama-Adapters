@@ -11,7 +11,7 @@ const lpVaults = [
   "0x336e16b1f3A10048F38367B16808CF70e9e34E50",
 ];
 
-const tvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const tvl = async (api) => {
   const balances = {};
 
   const wantTokens = await api.multiCall({  abi: abi.want, calls: lpVaults}) 

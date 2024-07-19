@@ -24,8 +24,8 @@ module.exports = {
   methodology: 'Counts the value of LP tokens and PEX tokens in the staking contracts, assets locked in the P2P escrow contract, and assets in the treasury contract.',
   start: 15966251, // Mar-11-2022 01:00:01 PM +UTC
   bsc: {
-    tvl: sumTokensExport({ chain: 'bsc', tokens, owner: DOTC_CONTRACT, }),
-    staking: stakings([TREASURY_ADDRESS, PEX_STAKING_POOL_CONTRACT], PEX_TOKEN_CONTRACT, "bsc"),
-    pool2: pool2(PEX_BNB_LP_MASTER_CHEF, PEX_BNB_LP_CONTRACT, 'bsc')
+    tvl: sumTokensExport({ tokens, owner: DOTC_CONTRACT, }),
+    staking: stakings([TREASURY_ADDRESS, PEX_STAKING_POOL_CONTRACT], PEX_TOKEN_CONTRACT),
+    pool2: pool2(PEX_BNB_LP_MASTER_CHEF, PEX_BNB_LP_CONTRACT)
   }
 };

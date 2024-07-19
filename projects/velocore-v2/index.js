@@ -30,7 +30,7 @@ const cannonicalPoolsAbi = "function canonicalPools(address user, uint256 begin,
 Object.keys(config).forEach(chain => {
   const { factory, blacklistedTokens, vault, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let a
       if (chain === 'telos') {
         a = await api.multiCall({  abi: cannonicalPoolsAbi, calls: [...Array(5).keys()].map(i => ({ params: [factory, i, 2]})), target: factory})

@@ -104,7 +104,7 @@ let daoLockerClients = null
 Object.keys(chainConfig).forEach(chain => {
   const chainData = chainConfig[chain]
 
-  async function tvl(ts, _block, chainBlocks, { api }) {
+  async function tvl(api) {
     const tokensAndOwners = [
       [nullAddress, TOKEN],
       ...RESERVES.map(i => [nullAddress, i])

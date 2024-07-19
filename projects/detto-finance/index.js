@@ -15,12 +15,12 @@ async function getTvl(api, isStaking,farmAddress) {
 }
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   await getTvl(api,false,DETTO_FARM_ADDRESS)
   return await getTvl(api,false,DETTO_FARM_ADDRESS_2)
 }
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   return getTvl(api, true,DETTO_FARM_ADDRESS)
 }
 

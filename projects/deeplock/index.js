@@ -97,7 +97,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    pool2: pool2s(stakingPool2Contracts, lpAddresses, "bsc"),
+    pool2: pool2s(stakingPool2Contracts, lpAddresses),
     tvl: bscTvl,
   },
   methodology:

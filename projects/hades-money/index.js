@@ -14,7 +14,7 @@ const pool2LPs = [
 module.exports = {
     metis: {
         tvl: async () => ({}),
-        staking: staking(masonry, hellshare, "metis"),
+        staking: staking(masonry, hellshare),
         pool2: pool2Exports(hellsharerewardpool, pool2LPs, "metis")
     }
 }

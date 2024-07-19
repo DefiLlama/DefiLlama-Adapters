@@ -8,7 +8,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const masterChef = "0x9942cb4c6180820E6211183ab29831641F58577A";
 const PNDA = "0x47DcC83a14aD53Ed1f13d3CaE8AA4115f07557C0";
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const tokenInfo = await api.fetchList({  lengthAbi: 'uint256:poolLength', itemAbi: abi.poolInfo, target: masterChef })
   let tokens = tokenInfo.map(i => i.lpToken)
   const symbols = await api.multiCall({  abi: 'erc20:symbol', calls: tokens})

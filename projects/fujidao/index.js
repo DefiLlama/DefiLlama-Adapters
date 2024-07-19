@@ -99,8 +99,7 @@ async function optimism(_timestamp, ethBlock, chainBlocks){
 
 module.exports = {
     timetravel: false,
-    misrepresentedTokens: false,
-    methodology: "Counts on-chain balance of receipt tokens in F1155 contracts for all vaults.",
+        methodology: "Counts on-chain balance of receipt tokens in F1155 contracts for all vaults.",
     ethereum:{
         tvl:eth
     },

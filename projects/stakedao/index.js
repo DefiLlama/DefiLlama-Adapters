@@ -1,11 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache');
 
-const STRATEGIES_ENDPOINT = 'https://lockers.stakedao.org/api/strategies/cache';
-const LOCKERS_ENDPOINT = 'https://lockers.stakedao.org/api/lockers/cache';
+const STRATEGIES_ENDPOINT = 'https://classic.stakedao.org/api/strategies/cache';
+const LOCKERS_ENDPOINT = 'https://classic.stakedao.org/api/lockers/cache';
 
 async function strategiesCurveBalancer(timestamp, block) {
   const resp = await Promise.all([
@@ -19,7 +19,7 @@ async function strategiesCurveBalancer(timestamp, block) {
   return lgv4
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   let balances = {}
   /////////////////////////////////////////////////////////////////////
   // --- STRATEGIES V2 
@@ -226,7 +226,7 @@ async function staking(timestamp, block) {
   })
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks, { api, }) {
+async function polygon(api) {
   const crv_3crv_vault_polygon = {
     contract: '0x7d60F21072b585351dFd5E8b17109458D97ec120',
   }
@@ -243,7 +243,7 @@ async function getBalances(api, vaults, { balances = {} } = {}) {
   return balances
 }
 
-async function avax(timestamp, ethBlock, chainBlocks, { api }) {
+async function avax(api) {
   const crv_3crv_vault_avalanche = {
     contract: '0x0665eF3556520B21368754Fb644eD3ebF1993AD4',
   }
@@ -254,16 +254,11 @@ async function avax(timestamp, ethBlock, chainBlocks, { api }) {
   return getBalances(api, vaultsAvalanche)
 }
 
-async function bsc(timestamp, ethBlock, chainBlocks, { api }) {
-  const btcEPS_vault_bsc = {
-    contract: '0xf479e1252481360f67c2b308F998395cA056a77f',
-  }
-  const EPS3_vault_bsc = {
-    contract: '0x4835BC54e87ff7722a89450dc26D9dc2d3A69F36',
-  }
-  const fusdt3EPS_vault_bsc = {
-    contract: '0x8E724986B08F2891cD98F7F71b5F52E7CFF420de',
-  }
+async function bsc(api) {
+  // OLD STRATEGIES
+  const btcEPS_vault_bsc = { contract: '0xf479e1252481360f67c2b308F998395cA056a77f' }
+  const EPS3_vault_bsc = { contract: '0x4835BC54e87ff7722a89450dc26D9dc2d3A69F36' }
+  const fusdt3EPS_vault_bsc = { contract: '0x8E724986B08F2891cD98F7F71b5F52E7CFF420de' }
 
   const vaultsBsc = [
     btcEPS_vault_bsc,
@@ -272,8 +267,24 @@ async function bsc(timestamp, ethBlock, chainBlocks, { api }) {
   ].map(i => i.contract)
 
   const [bitcoin, usdc, tether] = (await api.multiCall({ abi: abi.balance, calls: vaultsBsc })).map(i => i / 1e18)
+
+  // CAKE LOCKER
+  const VE_CAKE = '0x5692DB8177a81A6c6afc8084C2976C9933EC1bAB'
+  const STAKE_DAO_CAKE_LOCKER = '0x1E6F87A9ddF744aF31157d8DaA1e3025648d042d'
+  const PANCAKESWAP_MASTERCHEF_V3 = '0x556B9306565093C855AEA9AE92A594704c2Cd59e'
+
+  const cakeLock = await api.multiCall({ abi: abi.locks, calls: [{ target: VE_CAKE, params: STAKE_DAO_CAKE_LOCKER }] })
+  const cake = Number(cakeLock[0].amount) / 1e18
+
+  // PANCAKE STRATEGIES
+  const pcsStratsTvl = await sumTokens2({ 
+    api,
+    uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, STAKE_DAO_CAKE_LOCKER]],
+    uniV3ExtraConfig: { nftIdFetcher: PANCAKESWAP_MASTERCHEF_V3 }
+  })
+
   return {
-    bitcoin, tether, 'usd-coin': usdc
+    bitcoin, tether, 'usd-coin': usdc, 'pancakeswap-token': cake, ...pcsStratsTvl
   }
 }
 

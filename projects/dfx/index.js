@@ -14,7 +14,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const configs = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = []
       for (const { factory, fromBlock } of configs) {
         logs.push(await getLogs({
