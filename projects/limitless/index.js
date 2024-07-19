@@ -9,8 +9,13 @@ const config = {
   linea: { postionManager: '0x726e3116AE07f43A7E1921c635352B75e2DEa4Ad', factory: '0x31FAfd4889FA1269F7a13A66eE0fB458f27D72A9', limWETH: '0x5188b47Cb80D1A3E22Cc6221792F199f1Fb0DD3c', },
 }
 const liquidityProvidedQuery = `
-query {
-  liquidityProvideds(first:1000 orderBy: blockTimestamp orderDirection: desc) {
+query($lastId: String, $block: Int) {
+  liquidityProvideds(
+    first:1000
+    block: { number: $block }
+    where: { id_gt: $lastId }
+  ) {
+  id
     pool
     recipient
     liquidity
@@ -22,8 +27,13 @@ query {
 `
 
 const liquidityWithdrawnQuery = `
-query {
-  liquidityWithdrawns(first:1000 orderBy: blockTimestamp orderDirection: desc) {
+query($lastId: String, $block: Int) {
+  liquidityWithdrawns(
+    first:1000
+    block: { number: $block }
+    where: { id_gt: $lastId }
+  ) {
+    id
     pool
     recipient
     liquidity
