@@ -3,7 +3,7 @@ const { PublicKey } = require('@solana/web3.js')
 const DEX_PROGRAM_ID = 'CTMAxxk34HjKWxQ3QLZK1HpaLXmBveao3ESePXbiyfzh'
 
 async function fetchStaking() {
-  return sumTokens2({ owners: ['5mEH7a7abQwUEXqfusVepc3z9cHVQg8uhqTXdq47J91o'], getAllTokenAccounts: true });
+  return sumTokens2({ owners: ['5mEH7a7abQwUEXqfusVepc3z9cHVQg8uhqTXdq47J91o'] });
 }
 
 async function getTokenAccounts() {
