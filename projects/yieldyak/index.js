@@ -1,7 +1,8 @@
 const { staking } = require('../helper/staking');
 const { cachedGraphQuery, getConfig } = require('../helper/cache')
+const sdk = require('@defillama/sdk')
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
+const graphUrl = sdk.graph.modifyEndpoint('7oSYYdK5RKmqggdzFyfUnojP6puDAj31C4ezDGrgVfk9')
 const graphQuery = `{ farms(first: 1000) { id }}`;
 
 async function tvl(api) {

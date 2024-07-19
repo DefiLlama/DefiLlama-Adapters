@@ -16,4 +16,7 @@ module.exports = {
     sei: {
         tvl: getFactoryTvl("sei1xr3rq8yvd7qplsw5yx90ftsr2zdhg4e9z60h5duusgxpv72hud3shh3qfl")
     },
+    osmosis: {
+        tvl: getFactoryTvl("osmo1246fnsutktuqqzrru673pqwtt64n288004j5fauyuezwr54llw5sl6drp6")
+    },
 } // node test.js projects/astroport/index.js

@@ -127,6 +127,9 @@ async function tvl() {
 
 module.exports = {
   misrepresentedTokens: true,
+  hallmarks: [
+    [1717977600,"Withdrawal Only Mode Announced"]
+  ],
   timetravel: false,
   solana: {
     tvl,

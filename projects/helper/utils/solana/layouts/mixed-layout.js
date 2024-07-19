@@ -208,8 +208,6 @@ const Hub3Layout = BufferLayout.struct([
   u64("d"),
 ])
 
-console.log(Hub3Layout.span)
-
 const eSOL_feeFields = [u64('denominator'), u64('numerator')];
 const eSOL_rateOfExchangeFields = [u64('denominator'), u64('numerator')];
 

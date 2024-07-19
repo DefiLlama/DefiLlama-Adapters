@@ -14,7 +14,7 @@ const blacklistedTokens = [
 async function getTokens(api, owners, isVesting) {
   let tokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false, })))).flat().filter(i => !blacklistedTokens.includes(i))
   tokens = getUniqueAddresses(tokens)
-  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens })
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })
   return tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
 }
 

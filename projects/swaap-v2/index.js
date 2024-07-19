@@ -6,8 +6,12 @@ const {onChainTvl} = require("../helper/balancer");
  */
 const config = {
   ethereum: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 17598578, },
-  arbitrum: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 137451745,},
+  arbitrum: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 137451745, permitFailure: true },
   polygon: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 44520023,},
+  optimism: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 120693792, },
+  bsc: { vault: '0x03c01acae3d0173a93d819efdc832c7c4f153b06', fromBlock: 39148730,},
+  base: { vault: '0x03c01acae3d0173a93d819efdc832c7c4f153b06', fromBlock: 14451361,},
+  mode: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 7242549,},
 }
 
 /**
@@ -18,8 +22,8 @@ const config = {
 
 
 Object.keys(config).forEach(chain => {
-  const { vault, fromBlock } = config[chain]
+  const { vault, fromBlock, permitFailure } = config[chain]
   module.exports[chain] = {
-    tvl: onChainTvl(vault, fromBlock)
+    tvl: onChainTvl(vault, fromBlock, { permitFailure })
   }
 })

@@ -10,7 +10,6 @@ const aelin_data = {
       { target: '0x2c0979b0de5f99c2bde1e698aeca13b55695951e', fromBlock: 13996006 },
       { target: '0x5541da82549d732878c4104c9887c408790397af', fromBlock: 13846412 },
     ],
-    'graphUrl': 'https://api.thegraph.com/subgraphs/name/aelin-xyz/aelin',
     'AELIN_ETH_LP': '0x974d51fafc9013e42cbbb9465ea03fe097824bcc',
     'AELIN_ETH_staking': '0x944cb90082fc1416d4b551a21cfe6d7cc5447c80',
     'AELIN': '0xa9c125bf4c8bb26f299c00969532b66732b1f758'
@@ -21,7 +20,6 @@ const aelin_data = {
       { target: '0x87525307974a312AF13a78041F88B0BAe23ebb10', fromBlock: 1487918 },
       { target: '0x914ffc8dc0678911aae77f51b8489d6e214da20f', fromBlock: 1971285 },
     ],
-    'graphUrl': 'https://api.thegraph.com/subgraphs/name/aelin-xyz/optimism',
     'AELIN': '0x61BAADcF22d2565B0F471b291C475db5555e0b76',
     'AELIN_staking': '0xfe757a40f3eda520845b339c698b321663986a4d',
     'AELIN_ETH_LP': '0x665d8D87ac09Bdbc1222B8B9E72Ddcb82f76B54A',

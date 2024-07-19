@@ -68,6 +68,23 @@ module.exports = mergeExports([
         bob: compoundExports2({
             comptroller: "0x1e514767F5cFe1ddE599dd39a79666E3BeEAaf7d",
         }),
-    },    
-
+    },   
+    {
+        kroma: compoundExports2({
+            comptroller: "0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC",
+            cether: "0xD13bE8b716b18265e294831FCb1330d170840BB3",
+        }),
+    }, 
+    {
+        fuse: compoundExports2({
+            comptroller: "0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC",
+            cether: "0xD13bE8b716b18265e294831FCb1330d170840BB3",
+        }),
+    }, 
+    {
+        zklink: compoundExports2({
+            comptroller: "0x89e348e0ab4D83aEDbf1354004552822a805a12e",
+            cether: "0x4dA697a89ea1D166881362b56E6863294820eC97",
+        }),
+    }, 
 ]);

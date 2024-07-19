@@ -102,8 +102,10 @@ const config = {
   // },
   linea: {
     vaultConfigs: [
+      { factory: '0xb0e7871d53BE1b1d746bBfD9511e2eF3cD70a6E7', fromBlock: 4722347, isAlgebra: false, }, // Linehub
       { factory: '0x0248b992ac2a75294b05286E9DD3A2bD3C9CFE4B', fromBlock: 1599561, isAlgebra: true, }, // Lynex
       { factory: '0x2592686212C164C1851dF2f62c5d5EC50600195E', fromBlock: 4148753, isAlgebra: false, }, // Metavault 
+      { factory: '0xa29F3D5403D50Ea1BF597E2Ef01791A1Ce4F544E', fromBlock: 5033991, isAlgebra: false, }, // Nile
       { factory: '0x6E3eB904966B0158833852cAFD1200c171772b53', fromBlock: 3976012, isAlgebra: false, }, // Uniswap 
     ]
   },
@@ -127,7 +129,8 @@ const config = {
   },
   polygon_zkevm: {
     vaultConfigs: [
-      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4830529, isAlgebra: false, }, // Zero
+      { factory: '0xe8532Db60408f2d47693dA5b9093D71580B8C23F', fromBlock: 10890417, isAlgebra: false, }, // PancakeSwap
+      { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
     ]
   },
 }

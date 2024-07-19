@@ -6,7 +6,7 @@ async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:want', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:balance', calls: vaults })
   api.addTokens(tokens, bals)
-  return sumUnknownTokens({ api, resolveLP: true, useDefaultCoreAssets: false  })
+  return sumUnknownTokens({ api, resolveLP: true, useDefaultCoreAssets: false })
 }
 
 module.exports = {
@@ -16,5 +16,5 @@ module.exports = {
     tvl: () => ({}),
     staking: () => ({})
   },
-//   deadFrom: "2023-12-01",
+  deadFrom: "2023-12-01",
 }

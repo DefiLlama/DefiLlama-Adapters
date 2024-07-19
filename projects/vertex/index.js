@@ -11,12 +11,28 @@ const config = {
   "perpEngine": "0xb74C78cca0FADAFBeE52B2f48A67eE8c834b5fd1"
 }
 
+const mantleConfig = {
+  "querier": "0x71b50Ce0E7f7B920c1BAee3BDE00F2c3F7470395",
+  //"feeCalculator": "",
+  "clearinghouse": "0x5bcfC8AD38Ee1da5F45d9795aCaDf57D37FEC172",
+  "clearinghouseLiq": "0x4b62c8179F85E399ce24fB279d44803F17118Aa4",
+  "endpoint": "0x526D7C7ea3677efF28CB5bA457f9d341F297Fd52",
+  "spotEngine": "0xb64d2d606DC23D7a055B770e192631f5c8e1d9f8",
+  "perpEngine": "0x38080ee5fb939d045A9e533dF355e85Ff4f7e13D"
+}
+
 
 module.exports = {
   arbitrum: {
     tvl: sumTokensExport({
       owners: [config.clearinghouse, config.endpoint],
       tokens: [ADDRESSES.arbitrum.WBTC, ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.ARB, ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
+    })
+  },
+  mantle: {
+    tvl: sumTokensExport({
+      owners: [mantleConfig.clearinghouse, mantleConfig.endpoint],
+      tokens: ["0xcDA86A272531e8640cD7F1a92c01839911B90bb0", ADDRESSES.mantle.USDC, ADDRESSES.mantle.WETH, ADDRESSES.mantle.WMNT],
     })
   }
 }

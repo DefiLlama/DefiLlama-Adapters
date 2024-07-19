@@ -1,8 +1,9 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/templedao/origami-mainnet", // ethereum
-  arbitrum: "https://api.thegraph.com/subgraphs/name/templedao/origami-arb", // arbitrum
+  ethereum: sdk.graph.modifyEndpoint('GGN8RoYQBiw2Ui6wUeaKcHsBBSrQzQoryYi2feoTKwPX'), // ethereum
+  arbitrum: sdk.graph.modifyEndpoint('AHT1ffJhw7NWdeH3XYbWzMmy5USbB22K3ecVDu8azGuF'), // arbitrum
 }
 
 module.exports = {
@@ -14,6 +15,7 @@ Object.keys(GRAPH_URLS).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { metrics: [{ investmentVaults }] } = await cachedGraphQuery('origami/' + chain, endpoint, '{ metrics { investmentVaults { id } } }')
+      console.log(investmentVaults)
       const vaults = investmentVaults.map(vault => vault.id)
       let tokens = await api.multiCall({  abi: 'address:reserveToken', calls: vaults })
       if (chain === 'arbitrum') 

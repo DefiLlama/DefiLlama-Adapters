@@ -1,298 +1,76 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const abi = require('./abi.json')
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const assetsInfo = require("./assetsInfo");
-
-const EXPORT_TYPE_TVL = 0;
-const EXPORT_TYPE_DHV_STAKING = 1;
-const EXPORT_TYPE_POOL2 = 2;
-
-async function stakingTvl(chain, meta, ethBlock) {
-    return (await sdk.api.abi.call({
-        target: meta.stakingAddress,
-        abi: abi.poolInfo,
-        params: meta.poolId,
-        chain,
-        block: ethBlock
-    })).output.poolSupply;
+const config = {
+  ethereum: {
+    clusters: ['0x6Bc3F65Fc50E49060e21eD6996be96ee4B404752'],
+    pool2s: [['0x60c5bf43140d6341bebfe13293567fafbe01d65b', '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0']],
+    stakings: [['0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A', '0x04595f9010F79422a9b411ef963e4dd1F7107704']],
+  },
+  polygon: {
+    stakings: [['0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26', '0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7']],
+    pool2s: [['0xfd0E242c95b271844bf6860D4bC0E3e136bC0f7C', '0xf4feb23531EdBe471a4493D432f8BB29Bf0A3868']],
+    impulses: ['0xE6E6982fb5dDF4fcc74cCCe4e4eea774E002D17F', '0xf4feb23531EdBe471a4493D432f8BB29Bf0A3868'],
+    clusters: ['0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0', '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a'],
+  },
+  bsc: {
+    stakings: [['0x58759dd469ae5631c42cf8a473992335575b58d7', '0x35f28aA0B2F34eFF17d2830135312ab2a777De36']],
+    pool2s: [['0x72ba008B631D9FD5a8E8013023CB3c05E19A7CA9', '0xF2e8CD1c40C766FEe73f56607fDffa526Ba8fa6c']],
+    impulses: ['0xA9c97Ff825dB9dd53056d65aE704031B4959d99a'],
+    clusters: ['0x0a684421ef48b431803BFd75F38675EAb1e38Ed5'],
+  },
+  xdai: {
+    stakings: [['0xFbdd194376de19a88118e84E279b977f165d01b8', '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a']],
+    pool2s: [['0x14EE6d20B8167eacb885F4F2F45C3Bf2d4FD06f4', '0xa4E7BE054000603B82B79208aC3eE5428554CaF6']],
+    impulses: ['0xfa7Ca14a28CD419a69E45e8416cA4FA87457aCE8'],
+    clusters: ['0xF557B2B73b872E6d2F43826f9D77B7402A363Bc0', '0xA6C090c5572f54d529B0839b8fd2D50a4afB1E6B'],
+  },
 }
 
-async function stakingDhvTvl(chain, meta, ethBlock) {
-    return (await sdk.api.abi.call({
-        target: meta.tokenAddress,
-        abi: abi.balanceOf,
-        params: meta.stakingAddress,
-        chain,
-        block: ethBlock
-    })).output;
-}
+Object.keys(config).forEach(chain => {
+  const { clusters, pool2s, stakings, impulses } = config[chain]
 
-async function lpStakingTvl(chain, meta, ethBlock) {
-    const { poolSupply } = (await sdk.api.abi.call({
-        target: meta.stakingAddress,
-        abi: abi.poolInfo,
-        params: meta.poolId,
-        chain,
-        block: ethBlock
-    })).output;
-    const poolSupplyBN = new BigNumber(poolSupply);
+  const blacklistedTokens = []
+  if (pool2s) pool2s.forEach(p => blacklistedTokens.push(p[0]))
+  if (stakings) stakings.forEach(s => blacklistedTokens.push(s[0]))
 
-    const lpTotalSupply = (await sdk.api.abi.call({
-        target: meta.lpAddress,
-        abi: abi.totalSupply,
-        chain,
-        block: ethBlock
-    })).output;
-    const lpTotalSupplyBN = new BigNumber(lpTotalSupply);
+  const blacklistedSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
 
-    const tvl = [];
-    for (let i = 0; i < meta.underlying.length; i++) {
-        const underlyingLpBalance = (await sdk.api.abi.call({
-            target: meta.underlying[i],
-            abi: abi.balanceOf,
-            params: meta.lpAddress,
-            chain,
-            block: ethBlock
-        })).output;
-        const underlyingLpBalanceBN = new BigNumber(underlyingLpBalance);
-        const underlyingTvl = poolSupplyBN.multipliedBy(underlyingLpBalanceBN).div(lpTotalSupplyBN);
+  const exportObj = {
+    tvl: async (api) => {
+      if (clusters) {
+        const tokens = await api.multiCall({ abi: 'address[]:getUnderlyings', calls: clusters })
+        const ownerTokens = tokens.map((t, i) => [t, clusters[i]])
+        await api.sumTokens({ ownerTokens })
+      }
 
-        tvl.push([meta.underlying[i], underlyingTvl.integerValue().toFixed()]);
-    }
-
-    if (meta.dhvToken) {
-        const dhvBalance = (await sdk.api.abi.call({
-            target: meta.dhvToken,
-            abi: abi.balanceOf,
-            params: meta.stakingAddress,
-            chain,
-            block: ethBlock
-        })).output;
-        tvl.push([meta.dhvToken, dhvBalance]);
-    }
-    return tvl;
-}
-
-async function crvStakingTvl(chain, meta, ethBlock) {
-    const { strategy } = (await sdk.api.abi.call({
-        target: meta.stakingAddress,
-        abi: abi.impulseMultiPoolInfo,
-        params: meta.poolId,
-        chain,
-        block: ethBlock
-    })).output;
-
-    const wantLockedTotal = (await sdk.api.abi.call({
-        target: strategy,
-        abi: abi.wantLockedTotal,
-        chain,
-        block: ethBlock
-    })).output;
-
-    const underlyingList = (await sdk.api.abi.call({
-        target: strategy,
-        abi: abi.listUnderlying,
-        chain,
-        block: ethBlock
-    })).output;
-
-    const underlyingAmount = (await sdk.api.abi.call({
-        target: strategy,
-        abi: abi.wantPriceInUnderlying,
-        params: wantLockedTotal,
-        chain,
-        block: ethBlock
-    })).output;
-
-    return underlyingList.map((_, i) => [underlyingList[i], underlyingAmount[i]]);
-}
-
-async function impulseStakingTvl(chain, meta, ethBlock) {
-    if (chain === 'bsc') {
-        return await lpStakingTvl(chain, meta, ethBlock); // from staking pool
-    }
-    const { strategy } = (await sdk.api.abi.call({
-        target: meta.stakingAddress,
-        abi: abi.impulseMultiPoolInfo,
-        params: meta.poolId,
-        chain,
-        block: ethBlock
-    })).output;
-
-    const wantLockedTotal = (await sdk.api.abi.call({
-        target: strategy,
-        abi: abi.wantLockedTotal,
-        chain,
-        block: ethBlock
-    })).output;
-
-    const usdToken = (await sdk.api.abi.call({
-        target: strategy,
-        abi: abi.usdToken,
-        chain,
-        block: ethBlock
-    })).output;
-
-    const wantPrice = (await sdk.api.abi.call({
-        target: strategy,
-        abi: abi.wantPriceInUsd,
-        params: wantLockedTotal,
-        chain,
-        block: ethBlock
-    })).output;
-
-    let tvl = await lpStakingTvl(chain, meta, ethBlock); // from staking pool
-    tvl.push([usdToken, wantPrice]); // from strategy
-
-    return tvl;
-}
-
-async function clusterTvl(chain, meta, ethBlock) {
-    const poolSupply = (await sdk.api.abi.call({
-        target: meta.clusterAddress,
-        abi: "erc20:totalSupply",
-        chain,
-        block: ethBlock
-    })).output;
-
-    const underlyingList = (await sdk.api.abi.call({
-        target: meta.clusterAddress,
-        abi: abi.getUnderlyings,
-        chain,
-        block: ethBlock
-    })).output;
-
-    const underlyingAmount = (await sdk.api.abi.call({
-        target: meta.clusterAddress,
-        abi: abi.getUnderlyingsAmountsFromClusterAmount,
-        params: poolSupply,
-        chain,
-        block: ethBlock
-    })).output;
-
-    return underlyingList.map((_, i) => [underlyingList[i], underlyingAmount[i]]);
-}
-
-async function chainTvl(chain, chainBlocks, exportType) {
-    const tvl = {};
-    const transform = addr => `${chain}:${addr}`
-    const block = chainBlocks[chain]
-    await Promise.all(assetsInfo[chain].map(async (staking) => {
-        {
-            let calculateTvlFunction = undefined;
-            switch (staking.tvl) {
-                case "stakingTvl":
-                    calculateTvlFunction = stakingTvl;
-                    break;
-                case "stakingDhvTvl":
-                    calculateTvlFunction = stakingDhvTvl;
-                    break;
-                case "lpStakingTvl":
-                    calculateTvlFunction = lpStakingTvl;
-                    break;
-                case "crvStakingTvl":
-                    calculateTvlFunction = crvStakingTvl;
-                    break;
-                case "clusterTvl":
-                    calculateTvlFunction = clusterTvl;
-                    break;
-                case "impulseStakingTvl":
-                    calculateTvlFunction = impulseStakingTvl;
-                    break;
-                default:
-                    sdk.log('unknown tvl type', JSON.stringify(staking, null, 4));
-                    return;
+      if (impulses) {
+        for (const impulse of impulses) {
+          let i = 0
+          let length = 5
+          let moreTokens = true
+          do {
+            const calls = []
+            for (let j = 0; j < length; j++) {
+              calls.push(i + j)
+              i += length
             }
-            if (
-                (staking.tvl === "stakingDhvTvl" && exportType !== EXPORT_TYPE_DHV_STAKING)
-                || (staking.tvl !== "stakingDhvTvl" && exportType === EXPORT_TYPE_DHV_STAKING)
-                || (staking.tvl === "lpStakingTvl" && exportType === EXPORT_TYPE_POOL2 && (staking.isPool2 !== true))
-                || (staking.tvl === "lpStakingTvl" && exportType !== EXPORT_TYPE_POOL2 && (staking.isPool2 === true))
-            ) {
-                return;
-            }
-            const tvls = await calculateTvlFunction(chain, staking.meta, block);
-            if (typeof tvls === 'string') {
-                sdk.util.sumSingleBalance(tvl, transform(staking.meta.tokenAddress), tvls)
-            } else {
-                for (let i = 0; i < tvls.length; i++) {
-                    sdk.util.sumSingleBalance(tvl, transform(tvls[i][0]), tvls[i][1])
-                }
-            }
+            const data = await api.multiCall({ abi: 'function poolInfo(uint256) view returns (address token, uint256 lastReward, uint256 poolSupply, bool paused, address strategy)', calls, target: impulse, permitFailure: true })
+            moreTokens = data.some(d => !d)
+            data.forEach(i => {
+              if (!i) return;
+              if (blacklistedSet.has(i.token.toLowerCase())) return;
+              api.add(i.token, i.poolSupply)
+            })
+          } while (moreTokens)
         }
-    }))
-    return tvl
-}
-
-async function ethereumTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('ethereum', chainBlocks, EXPORT_TYPE_TVL);
-}
-
-async function polygonTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('polygon', chainBlocks, EXPORT_TYPE_TVL);
-}
-
-async function bscTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('bsc', chainBlocks, EXPORT_TYPE_TVL);
-}
-
-async function xdaiTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('xdai', chainBlocks, EXPORT_TYPE_TVL);
-}
-
-async function ethereumStaking(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('ethereum', chainBlocks, EXPORT_TYPE_DHV_STAKING);
-}
-
-async function polygonStaking(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('polygon', chainBlocks, EXPORT_TYPE_DHV_STAKING);
-}
-
-async function bscStaking(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('bsc', chainBlocks, EXPORT_TYPE_DHV_STAKING);
-}
-
-async function xdaiStaking(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('xdai', chainBlocks, EXPORT_TYPE_DHV_STAKING);
-}
-
-async function ethereumPool2(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('ethereum', chainBlocks, EXPORT_TYPE_POOL2);
-}
-
-async function polygonPool2(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('polygon', chainBlocks, EXPORT_TYPE_POOL2);
-}
-
-async function bscPool2(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('bsc', chainBlocks, EXPORT_TYPE_POOL2);
-}
-
-async function xdaiPool2(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('xdai', chainBlocks, EXPORT_TYPE_POOL2);
-}
-
-
-module.exports = {
-    ethereum: {
-        tvl: ethereumTvl,
-        pool2: ethereumPool2,
-        staking: ethereumStaking
-    },
-    polygon: {
-        tvl: polygonTvl,
-        pool2: polygonPool2,
-        staking: polygonStaking
-    },
-    bsc: {
-        tvl: bscTvl,
-        pool2: bscPool2,
-        staking: bscStaking
-    },
-    xdai: {
-        tvl: xdaiTvl,
-        pool2: xdaiPool2,
-        staking: xdaiStaking
+      }
     }
-};
+  }
+
+  if (pool2s)
+    exportObj.pool2 = sumTokensExport({ tokensAndOwners: pool2s, resolveLP: true, })
+
+  if (stakings)
+    exportObj.staking = sumTokensExport({ tokensAndOwners: stakings, })
+  module.exports[chain] = exportObj
+})
