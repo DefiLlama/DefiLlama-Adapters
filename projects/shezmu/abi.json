@@ -1,0 +1,4 @@
+{
+  "getFloorUSD": "function getFloorUSD() view returns (uint256)",
+  "balanceOf": "function balanceOf(address account, uint256 id) view returns (uint256)"
+}
