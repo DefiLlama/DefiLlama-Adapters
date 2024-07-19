@@ -6,7 +6,7 @@ async function tvl() {
     '8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ', // Main Pool
     'GU1nCjN7mcLiSX1dtBw2t9agYCw3ybXfu1me41Q2tGT3', // Hubble Innovation Zone
     'Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa', // UXD Innovation Zone
-  ], getAllTokenAccounts: true, })
+  ], })
 }
 
 module.exports = {

@@ -225,14 +225,13 @@ async function sumTokens2({
   solOwners = [],
   blacklistedTokens = [],
   allowError = false,
-  getAllTokenAccounts = false,
 }) {
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
-  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0) && getAllTokenAccounts) {
+  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0)) {
     const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
     for (const _owner of _owners) {
       const data = await getOwnerAllAccount(_owner)

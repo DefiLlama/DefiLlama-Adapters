@@ -15,7 +15,7 @@ const owners = [
 ]
 
 async function tvl() {
-  return sumTokens2({ owners, getAllTokenAccounts: true });
+  return sumTokens2({ owners });
 }
 
 module.exports = {
