@@ -20,7 +20,7 @@ async function getCachedApiRespnse() {
   return apiResponse;
 }
 
-async function tvl(api) {
+async function fetchData(api, key) {
   const tokenHoldings = await getCachedApiRespnse();
   const chain = (chainMapping[api.chain] || api.chain).toUpperCase();
 
@@ -30,11 +30,19 @@ async function tvl(api) {
   for (const tokenHolding of tokenHoldings) {
     if (tokenHolding.chain === chain) {
       mints.push(tokenHolding.mint);
-      balances.push(tokenHolding.amount_locked);
+      balances.push(tokenHolding[key]);
     }
   }
 
   api.addTokens(mints, balances);
+}
+
+async function tvl(api) {
+  await fetchData(api, "amount_locked_core");
+}
+
+async function vesting(api) {
+  await fetchData(api, "amount_locked_vested");
 }
 
 module.exports = {
@@ -44,6 +52,6 @@ module.exports = {
 }
 chains.forEach((chain) => {
   module.exports[chain] = {
-    tvl
+    tvl, vesting
   };
 });
