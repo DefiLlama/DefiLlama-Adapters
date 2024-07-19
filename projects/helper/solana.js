@@ -53,22 +53,6 @@ function getProvider() {
 }
 
 
-async function getSolBalances(accounts) {
-  const formBody = key => ({ "jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [key] })
-  const tokenBalances = []
-  const chunks = sliceIntoChunks(accounts, 99)
-  for (let chunk of chunks) {
-    const bal = await http.post(endpoint(), chunk.map(formBody))
-    tokenBalances.push(...bal)
-  }
-  return tokenBalances.reduce((a, i) => a + i.result.value, 0)
-}
-
-async function getSolBalance(account) {
-  return getSolBalances([account])
-}
-
-const TOKEN_LIST_URL = "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
 
 async function getTokenSupply(token) {
   const tokenSupply = await http.post(endpoint(), {
@@ -78,32 +62,6 @@ async function getTokenSupply(token) {
     params: [token],
   });
   return tokenSupply.result.value.uiAmount;
-}
-
-async function getGeckoSolTokens() {
-  const tokens = await getTokenList()
-  const tokenSet = new Set()
-  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101).forEach(i => tokenSet.add(i.address))
-  return tokenSet
-}
-
-
-async function getValidGeckoSolTokens() {
-  const tokens = await getTokenList()
-  const tokenSet = new Set()
-  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101 && !i.name.includes('(Wormhole v1)')).forEach(i => tokenSet.add(i.address))
-  return tokenSet
-}
-
-async function getTokenDecimals(tokens) {
-  const calls = tokens => tokens.map((t, i) => ({ jsonrpc: '2.0', id: t, method: 'getTokenSupply', params: [t] }))
-  const res = {}
-  const chunks = sliceIntoChunks(tokens, 99)
-  for (const chunk of chunks) {
-    const tokenSupply = await http.post(endpoint(), calls(chunk))
-    tokenSupply.forEach(({ id, result }) => res[id] = result.value.decimals)
-  }
-  return res
 }
 
 function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
@@ -117,16 +75,6 @@ function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
       { encoding: "jsonParsed", },
     ],
   }
-}
-async function getOwnerAllAccount(owner) {
-  const tokenBalance = await http.post(endpoint(), formOwnerBalanceQuery(owner));
-  return tokenBalance.result.value.map(i => ({
-    account: i.pubkey,
-    mint: i.account.data.parsed.info.mint,
-    amount: i.account.data.parsed.info.tokenAmount.amount,
-    uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
-    decimals: i.account.data.parsed.info.tokenAmount.decimals,
-  }))
 }
 
 function formTokenBalanceQuery(token, account, id = 1) {
@@ -204,43 +152,6 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
   return balances
 }
 
-
-async function getTokenAccountBalance(account) {
-  const tokenBalance = await http.post(
-    endpoint(),
-    {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "getTokenAccountBalance",
-      params: [account],
-    },
-    {
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-  return tokenBalance.result?.value?.uiAmount;
-}
-
-let tokenList
-let _tokenList
-
-async function getTokenList() {
-  if (!_tokenList)
-    _tokenList = http.get(TOKEN_LIST_URL)
-  tokenList = (await _tokenList).tokens
-  return tokenList
-}
-
-// Example: [[token1, account1], [token2, account2], ...]
-async function sumTokens(tokensAndOwners, balances = {}) {
-  return sumTokens2({ balances, tokensAndOwners, })
-}
-
-// Example: [[token1, account1], [token2, account2], ...]
-async function sumTokensUnknown(tokensAndOwners) {
-  return sumTokens2({ tokensAndOwners, })
-}
-
 // accountsArray is an array of base58 address strings
 async function getMultipleAccountsRaw(accountsArray) {
   if (
@@ -265,54 +176,6 @@ async function getMultipleAccountsRaw(accountsArray) {
   return res;
 }
 
-// Gets data in Buffers of all addresses, while preserving labels
-// Example: labeledAddresses = { descriptiveLabel: "9xDUcgo8S6DdRjvrR6ULQ2zpgqota8ym1a4tvxiv2dH8", ... }
-async function getMultipleAccountBuffers(labeledAddresses) {
-  let labels = [];
-  let addresses = [];
-
-  for (const [label, address] of Object.entries(labeledAddresses)) {
-    labels.push(label);
-    addresses.push(address);
-  }
-  const accountsData = await getMultipleAccountsRaw(addresses);
-
-  const results = {};
-  accountsData.forEach((account, index) => {
-    if (account === null) {
-      results[labels[index]] = null;
-    } else {
-      results[labels[index]] = Buffer.from(account.data[0], account.data[1]);
-    }
-
-    // Uncomment and paste into a hex editor to do some reverse engineering
-  });
-
-  return results;
-}
-
-// Example: [[token1, account1], [token2, account2], ...]
-async function sumOrcaLPs(tokensAndAccounts) {
-  const [tokenlist, orcaPools] = await Promise.all([
-    getTokenList(),
-    http.get("https://api.orca.so/pools"),
-  ]);
-  let totalUsdValue = 0;
-  await Promise.all(
-    tokensAndAccounts.map(async ([token, owner]) => {
-      const balance = await getTokenBalance(token, owner);
-      const symbol = tokenlist
-        .find((t) => t.address === token)
-        ?.symbol?.replace("[stable]", "");
-      const supply = await getTokenSupply(token);
-      const poolLiquidity =
-        orcaPools.find((p) => p.name2 === symbol)?.liquidity ?? 0;
-      totalUsdValue += (balance * poolLiquidity) / supply;
-    })
-  );
-  return totalUsdValue;
-}
-
 function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
   return async () => {
     if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
@@ -331,8 +194,7 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
       data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
     }
 
-    const coreTokens = chain === 'solana' ? await getGeckoSolTokens() : null
-    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, coreTokens, })
+    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, })
   }
 
   async function _getTokenAccounts() {
@@ -423,6 +285,28 @@ async function sumTokens2({
     })
     return [...set].map(i => i.split('$'))
   }
+
+  async function getOwnerAllAccount(owner) {
+    const tokenBalance = await http.post(endpoint(), formOwnerBalanceQuery(owner));
+    return tokenBalance.result.value.map(i => ({
+      account: i.pubkey,
+      mint: i.account.data.parsed.info.mint,
+      amount: i.account.data.parsed.info.tokenAmount.amount,
+      uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
+      decimals: i.account.data.parsed.info.tokenAmount.decimals,
+    }))
+  }
+
+  async function getSolBalances(accounts) {
+    const formBody = key => ({ "jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [key] })
+    const tokenBalances = []
+    const chunks = sliceIntoChunks(accounts, 99)
+    for (let chunk of chunks) {
+      const bal = await http.post(endpoint(), chunk.map(formBody))
+      tokenBalances.push(...bal)
+    }
+    return tokenBalances.reduce((a, i) => a + i.result.value, 0)
+  }
 }
 
 async function transformBalances({ tokenBalances, balances = {}, }) {
@@ -470,28 +354,14 @@ module.exports = {
   endpoint: endpoint(),
   getTokenSupply,
   getTokenBalance,
-  getTokenAccountBalance,
-  sumTokens,
   getMultipleAccountsRaw,
-  getMultipleAccountBuffers,
-  sumOrcaLPs,
-  getSolBalance,
-  sumTokensUnknown,
   exportDexTVL,
   getProvider,
   getConnection,
   sumTokens2,
-  getTokenBalances,
   transformBalances,
-  getSolBalances,
-  getTokenDecimals,
-  getGeckoSolTokens,
-  getTokenAccountBalances,
-  getTokenList,
   readBigUInt64LE,
   decodeAccount,
-  getValidGeckoSolTokens,
-  getOwnerAllAccount,
   blacklistedTokens_default,
   getStakedSol,
   getSolBalanceFromStakePool,
