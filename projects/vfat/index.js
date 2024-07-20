@@ -310,15 +310,15 @@ async function tvlMantle(api) {
 Object.keys(config).forEach(chain => {
   let tvl
   switch (chain) {
-    //case 'base':
-    //case 'optimism': tvl = tvlBaseOptimism; break;
-    //case 'arbitrum':
+    case 'base':
+    case 'optimism': tvl = tvlBaseOptimism; break;
+    case 'arbitrum':
     case 'linea': tvl = tvlArbitrumLinea; break;
-    //case 'fantom': tvl = tvlFantom; break;
-    //case 'mode': tvl = modeTvl; break;
-    //case 'mantle': tvl = tvlMantle; break;
-    //default:
-    //  tvl = genericTvl
+    case 'fantom': tvl = tvlFantom; break;
+    case 'mode': tvl = modeTvl; break;
+    case 'mantle': tvl = tvlMantle; break;
+    default:
+      tvl = genericTvl
   }
 
   module.exports[chain] = { tvl }
