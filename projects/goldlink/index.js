@@ -1,7 +1,7 @@
 const abi = require("./abi.json");
 
-GOLDLINK_GMX_VAULT_ADDRESS = '0xd8dd54df1a7d2ea022b983756d8a481eea2a382a'
-USDC_TOKEN_ADDRESS = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
+const GOLDLINK_GMX_VAULT_ADDRESS = '0xd8dd54df1a7d2ea022b983756d8a481eea2a382a'
+const USDC_TOKEN_ADDRESS = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
 
 async function getTotalDeposits(api, block) {
     const totalAmount = await api.call({
