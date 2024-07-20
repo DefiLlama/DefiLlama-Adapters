@@ -6,7 +6,7 @@ const { sumTokens2, getConnection , getProvider} = require('./helper/solana')
 
 async function tvl() {
   // previously we were incorrectly counting all tokens in serum pools as atrix tvl
-  return sumTokens2({ owner: '3uTzTX5GBSfbW7eM9R9k95H7Txe32Qw3Z25MtyD2dzwC', getAllTokenAccounts: true, })
+  return sumTokens2({ owner: '3uTzTX5GBSfbW7eM9R9k95H7Txe32Qw3Z25MtyD2dzwC', })
 /*   const connection = getConnection()
   const provider = getProvider()
   const program = new Program(idl, 'HvwYjjzPbXWpykgVZhqvvfeeaSraQVnTiQibofaFw9M7', provider)
