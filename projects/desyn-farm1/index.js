@@ -1,12 +1,12 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
-  methodology: 'Product: On-chain restaking<br/>TVL: It includes above<br/>Revenue: Staking rewards, management fees, performance fees',
+  methodology: 'On-chain restaking',
 }
 
 const config = {
   btr: { factory: '0x09eFC8C8F08B810F1F76B0c926D6dCeb37409665', fromBlock: 2393247},
-  mode: { factory: '0x09Dfee598d5217da799bEAd56206beC0fDB0D17B', fromBlock: 9912410},
+  mode: { factory: '0x09Dfee598d5217da799bEAd56206beC0fDB0D17B', fromBlock: 9912410}
 }
 
 Object.keys(config).forEach(chain => {
