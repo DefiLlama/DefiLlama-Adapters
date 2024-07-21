@@ -4,7 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 async function sumLPBalances(api, gauges, sickles, lpTokens) {
   api.log(api.chain, sickles.length, gauges.length,)
   lpTokens.forEach((lpToken, index) => lpTokens[index] = lpToken.toLowerCase())
-  let minLPValue = 10e3
+  let minLPValue = 4e3
   if (lpTokens.length > 200) minLPValue = 15e3
   if (lpTokens.length > 400) minLPValue = 25e3
 
