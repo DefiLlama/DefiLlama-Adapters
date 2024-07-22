@@ -235,14 +235,14 @@ async function sumTokens2({
   }
 
   async function getSolBalances(accounts) {
-    const formBody = key => ({ "jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [key] })
-    const tokenBalances = []
-    const chunks = sliceIntoChunks(accounts, 99)
-    for (let chunk of chunks) {
-      const bal = await http.post(endpoint(), chunk.map(formBody))
-      tokenBalances.push(...bal)
-    }
-    return tokenBalances.reduce((a, i) => a + i.result.value, 0)
+    const connection = getConnection()
+    
+    const balances = await runInChunks(accounts, async (chunk) => {
+      chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
+      const accountInfos = await connection.getMultipleAccountsInfo(chunk)
+      return accountInfos.map(account => account?.lamports ?? 0)
+    })
+    return balances.reduce((a, b) => a + +b, 0)
   }
 
   function computeTokenAccounts(tokensAndOwners) {
