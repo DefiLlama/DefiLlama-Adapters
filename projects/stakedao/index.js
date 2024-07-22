@@ -155,14 +155,10 @@ async function tvl(api) {
     sdk.util.sumSingleBalance(balances, lockersInfos[i].token, amount)
   }
 
-  /////////////////////////////////////////////////////////////////////
-  // --- veSDT
-  /////////////////////////////////////////////////////////////////////
-  const veSDT = ['0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F','0x0C30476f66034E11782938DF8e4384970B6c9e8a']
 
   return sumTokens2({ 
     api, 
-    tokensAndOwners: [...strategies, veSDT], 
+    tokensAndOwners: strategies, 
     balances, 
     uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, LOCKERS.pancakeswap[1]]],
     uniV3ExtraConfig: { nftIdFetcher: PANCAKESWAP_MASTERCHEF_V3 }
