@@ -10,11 +10,12 @@ const PROTOCOL_ADDRESSES = [
   "erd1qqqqqqqqqqqqqpgqakyy2eaxmv7njv2z6fn4p9makpty3lfpl3tshxnz97", // bounties
 ];
 
-async function getDaoAddresses() {
-  return await getConfig(
+async function getDaoAddresses() { 
+  const addresses = await getConfig(
     "peerme",
     API_BASE_URL + "/integrations/defi-llama/dao-addresses"
-  );
+  )
+  return addresses.filter(address => address !== null)
 }
 
 async function tvl() {
@@ -25,7 +26,7 @@ async function tvl() {
   });
 }
 
-async function vestingTvl() {
+async function vesting() {
   const daoAddresses = await getDaoAddresses();
   return await sumTokens({
     owners: [...PROTOCOL_ADDRESSES, ...daoAddresses],
@@ -37,6 +38,6 @@ module.exports = {
   timetravel: false,
   elrond: {
     tvl,
-    vesting: vestingTvl,
+    vesting,
   },
 };
