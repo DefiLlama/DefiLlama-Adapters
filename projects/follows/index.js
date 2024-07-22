@@ -7,7 +7,12 @@ async function tvl() {
 	);
 	const connection = getConnection();
 
-	const accounts = await connection.getProgramAccounts(programId);
+	const accounts = await connection.getProgramAccounts(programId, {
+		filters: [{
+			dataSize: 88
+		}],
+		dataSlice: { offset: 0, length: 0 }
+	});
 
 	return {
 		solana: accounts.reduce((tvl, { account }) => {
