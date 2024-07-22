@@ -28,7 +28,6 @@ const LOCKERS = {
   }
 }
 
-// ----------------------------------- ETHEREUM ----------------------------------- //
 
 async function getLPStrategiesMainnet(timestamp, block) {
   const resp = await Promise.all([
@@ -47,27 +46,18 @@ async function getLPStrategiesMainnet(timestamp, block) {
 }
 
 async function tvl(api) {
-  /////////////////////////////////////////////////////////////////////
-  // --- STRATEGIES V2 
-  /////////////////////////////////////////////////////////////////////
   let vaults = [
-    '0xB17640796e4c27a39AF51887aff3F8DC0daF9567', , // crv3_vault_v2 
-    '0xCD6997334867728ba14d7922f72c893fcee70e84', , // eurs_vault_v2 
-    '0x5af15DA84A4a6EDf2d9FA6720De921E1026E37b7', , // frax_vault_v2 
-    '0x99780beAdd209cc3c7282536883Ef58f4ff4E52F', , // frax_vault2_v2 
-    '0xa2761B0539374EB7AF2155f76eb09864af075250', , // eth_vault_v2 
-    '0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065', , // steth_vault_v2 
+    '0xB17640796e4c27a39AF51887aff3F8DC0daF9567', // crv3_vault_v2 
+    '0xCD6997334867728ba14d7922f72c893fcee70e84', // eurs_vault_v2 
+    '0x5af15DA84A4a6EDf2d9FA6720De921E1026E37b7', // frax_vault_v2 
+    '0x99780beAdd209cc3c7282536883Ef58f4ff4E52F', // frax_vault2_v2 
+    '0xa2761B0539374EB7AF2155f76eb09864af075250', // eth_vault_v2 
+    '0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065', // steth_vault_v2 
   ]
   await api.erc4626Sum({ calls: vaults })
 
-  /////////////////////////////////////////////////////////////////////
-  // --- LP Strategies
-  /////////////////////////////////////////////////////////////////////
   const strategies = await getLPStrategiesMainnet()
 
-  /////////////////////////////////////////////////////////////////////
-  // --- LIQUID LOCKERS
-  /////////////////////////////////////////////////////////////////////
   const resp = (await get(LOCKERS_ENDPOINT)).parsed
 
   let lockersInfos = resp.filter((locker) => locker.chainId === 1).map((locker) => ({ contract: `${locker.modules.locker}`, veToken: `${locker.modules.veToken}`, token: `${locker.token.address}` }))
