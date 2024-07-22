@@ -9,7 +9,7 @@ const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk');
-const { TOKEN_PROGRAM_ID } = require('@project-serum/anchor/dist/cjs/utils/token');
+const { TOKEN_PROGRAM_ID, ASSOCIATED_PROGRAM_ID, } = require('@project-serum/anchor/dist/cjs/utils/token');
 
 const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
@@ -40,19 +40,15 @@ function getConnection(chain = 'solana') {
   return connection
 }
 
-function getProvider() {
+function getProvider(chain = 'solana') {
   if (!provider) {
     const dummy_keypair = Keypair.generate();
     const wallet = new Wallet(dummy_keypair);
 
-    provider = new Provider(
-      getConnection(), wallet
-    );
+    provider = new Provider(getConnection(chain), wallet)
   }
   return provider;
 }
-
-
 
 async function getTokenSupply(token) {
   const tokenSupply = await http.post(endpoint(), {
@@ -64,116 +60,40 @@ async function getTokenSupply(token) {
   return tokenSupply.result.value.uiAmount;
 }
 
-function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
-  return {
-    jsonrpc: "2.0",
-    id: 1,
-    method: "getTokenAccountsByOwner",
-    params: [
-      owner,
-      { programId: String(programId) },
-      { encoding: "jsonParsed", },
-    ],
-  }
-}
-
-function formTokenBalanceQuery(token, account, id = 1) {
-  return {
-    jsonrpc: "2.0",
-    id,
-    method: "getTokenAccountsByOwner",
-    params: [
-      account,
-      { mint: token, },
-      { encoding: "jsonParsed", },
-    ],
-  }
-}
-async function getTokenBalance(token, account) {
-  const tokenBalance = await http.post(endpoint(), formTokenBalanceQuery(token, account));
-  return tokenBalance.result.value.reduce(
-    (total, account) =>
-      total + account.account.data.parsed?.info.tokenAmount.uiAmount ?? 0,
-    0
-  );
-}
-
-async function getTokenBalances(tokensAndAccounts) {
-  const body = tokensAndAccounts.map(([token, account], i) => formTokenBalanceQuery(token, account, i))
-  const tokenBalances = await http.post(endpoint(), body);
-  const balances = {}
-  // if (!tokenBalances) {
-  //   sdk.log('missing response', tokenBalances, tokensAndAccounts)
-  //   return balances
-  // }
-  // tokenBalances.forEach((v, i )=> {
-  //   if (!v.result) sdk.log('missing response', v, tokensAndAccounts[i])
-  // } )
-  tokenBalances.forEach(({ result: { value } = {} } = {}) => {
-    if (!value) return;
-    value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
-      sdk.util.sumSingleBalance(balances, mint, amount)
-    })
-  })
-  return balances
-}
-
-async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99, allowError = false, chain = 'solana' } = {}) {
+async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
   log('total token accounts: ', tokenAccounts.length)
-  const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: account })
+  tokenAccounts.forEach((val, i) => {
+    if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
+  })
+  const connection = getConnection(chain)
   const balancesIndividual = []
   const balances = {}
-  const chunks = sliceIntoChunks(tokenAccounts, chunkSize)
-  for (const chunk of chunks) {
-    const body = chunk.map(formBody)
-    const data = await http.post(endpointMap[chain](), body);
-    if (data.length !== chunk.length) {
-      throw new Error(`Mismatched returned for getTokenAccountBalances()`)
+  const res = await runInChunks(tokenAccounts, chunk => connection.getMultipleAccountsInfo(chunk))
+  res.forEach((data, idx) => {
+    if (!data) {
+      sdk.log(`Invalid account: ${tokenAccounts[idx]}`)
+      if (allowError) return;
+      else throw new Error(`Invalid account: ${tokenAccounts[idx]}`)
     }
-    data.forEach(({ result: { value } }, i) => {
-      if (!value || !value.data?.parsed) {
-        if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
-          log('Null account: skipping it')
-          return;
-        }
-        if (allowError) return;
-        else throw new Error(`Invalid account: ${tokenAccounts[i]}`)
-      }
-      const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
-      sdk.util.sumSingleBalance(balances, mint, amount)
+    data = decodeAccount('tokenAccount', data)
+    const mint = data.mint.toString()
+    const amount = data.amount.toString()
+    if (individual)
       balancesIndividual.push({ mint, amount })
-    })
-    if (chunks.length > 4) {
-      // log('waiting before more calls')
-      await sleep(400)
-    }
-  }
-  if (individual) return balancesIndividual
-  return balances
+    else
+      sdk.util.sumSingleBalance(balances, mint, amount)
+  })
+
+  return individual ? balancesIndividual : balances
 }
 
-// accountsArray is an array of base58 address strings
-async function getMultipleAccountsRaw(accountsArray) {
-  if (
-    !Array.isArray(accountsArray) ||
-    accountsArray.length === 0 ||
-    typeof accountsArray[0] !== "string"
-  ) {
-    throw new Error("Expected accountsArray to be an array of strings");
-  }
-  const res = []
-  const chunks = sliceIntoChunks(accountsArray, 99)
-  for (const chunk of chunks) {
-    const accountsInfo = await http.post(endpoint(), {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "getMultipleAccounts",
-      params: [chunk],
-    })
-    res.push(...accountsInfo.result.value)
-  }
-
-  return res;
+async function getMultipleAccounts(accountsArray) {
+  const connection = getConnection()
+  if (!accountsArray.length) return []
+  accountsArray.forEach((val, i) => {
+    if (typeof val === 'string') accountsArray[i] = new PublicKey(val)
+  })
+  return runInChunks(accountsArray, chunk => connection.getMultipleAccountsInfo(chunk))
 }
 
 function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
@@ -215,6 +135,10 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
   }
 }
 
+function sumTokensExport({ tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest }) {
+  return (api) => sumTokens2({ api, chain: api.chain, tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest })
+}
+
 async function sumTokens2({
   balances = {},
   tokensAndOwners = [],
@@ -225,40 +149,41 @@ async function sumTokens2({
   solOwners = [],
   blacklistedTokens = [],
   allowError = false,
+  computeTokenAccount = false,
 }) {
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
-  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0)) {
+  if (!tokensAndOwners.length) {
     const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
-    for (const _owner of _owners) {
-      const data = await getOwnerAllAccount(_owner)
-      for (const item of data) {
-        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
-        sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
-      }
+
+    const data = await getOwnerAllAccounts(_owners)
+    for (const item of data) {
+      if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+      sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
     }
   }
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
+  // 
 
-  if (tokensAndOwners.length) {
+  if (computeTokenAccount) {
+    const computedTokenAccounts = computeTokenAccounts(tokensAndOwners)
+    tokenAccounts.push(...computedTokenAccounts)
+  } else if (tokensAndOwners.length) {
     tokensAndOwners = getUnique(tokensAndOwners)
     log('total balance queries: ', tokensAndOwners.length)
-    const chunks = sliceIntoChunks(tokensAndOwners, 99)
-    for (const chunk of chunks) {
-      await _sumTokens(chunk)
-      if (chunks.length > 2) {
-        // log('waiting before more calls')
-        await sleep(400)
-      }
-    }
+    await runInChunks(tokensAndOwners, async (chunk) => {
+      const tokenBalances = await getTokenBalances(chunk)
+      transformBalances({ tokenBalances, balances, })
+    }, { sleepTime: 400 })
   }
 
   if (tokenAccounts.length) {
     tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
+
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
     await transformBalances({ tokenBalances, balances, })
   }
@@ -272,11 +197,6 @@ async function sumTokens2({
 
   return balances
 
-  async function _sumTokens(tokensAndAccounts) {
-    const tokenBalances = await getTokenBalances(tokensAndAccounts)
-    return transformBalances({ tokenBalances, balances, })
-  }
-
   function getUnique(tokensAndOwners) {
     const set = new Set()
     tokensAndOwners.forEach(i => {
@@ -285,15 +205,33 @@ async function sumTokens2({
     return [...set].map(i => i.split('$'))
   }
 
-  async function getOwnerAllAccount(owner) {
-    const tokenBalance = await http.post(endpoint(), formOwnerBalanceQuery(owner));
-    return tokenBalance.result.value.map(i => ({
-      account: i.pubkey,
-      mint: i.account.data.parsed.info.mint,
-      amount: i.account.data.parsed.info.tokenAmount.amount,
-      uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
-      decimals: i.account.data.parsed.info.tokenAmount.decimals,
-    }))
+  async function getOwnerAllAccounts(owners) {
+    console.log('fetching sol token balances for', owners.length, 'owners')
+    return runInChunks(owners, async (chunk) => {
+      const body = chunk.map(i => formOwnerBalanceQuery(i))
+      const tokenBalances = await http.post(endpoint(), body)
+      return tokenBalances.map(i => i.result.value).flat().map(i => ({
+        account: i.pubkey,
+        mint: i.account.data.parsed.info.mint,
+        amount: i.account.data.parsed.info.tokenAmount.amount,
+        uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
+        decimals: i.account.data.parsed.info.tokenAmount.decimals,
+      }))
+
+    })
+  }
+
+  function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
+    return {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "getTokenAccountsByOwner",
+      params: [
+        owner,
+        { programId: String(programId) },
+        { encoding: "jsonParsed", },
+      ],
+    }
   }
 
   async function getSolBalances(accounts) {
@@ -305,6 +243,46 @@ async function sumTokens2({
       tokenBalances.push(...bal)
     }
     return tokenBalances.reduce((a, i) => a + i.result.value, 0)
+  }
+
+  function computeTokenAccounts(tokensAndOwners) {
+    tokensAndOwners.forEach(([token, account], i) => {
+      if (typeof token === 'string') tokensAndOwners[i][0] = new PublicKey(token)
+      if (typeof account === 'string') tokensAndOwners[i][1] = new PublicKey(account)
+    })
+    const programBuffer = TOKEN_PROGRAM_ID.toBuffer()
+    return tokensAndOwners.map(([mint, owner]) => {
+      return PublicKey.findProgramAddressSync(
+        [owner.toBuffer(), programBuffer, mint.toBuffer(),],
+        ASSOCIATED_PROGRAM_ID
+      )[0]
+    })
+  }
+
+  async function getTokenBalances(tokensAndAccounts) {
+    const body = tokensAndAccounts.map(([token, account], i) => formTokenBalanceQuery(token, account, i))
+    const tokenBalances = await http.post(endpoint(), body);
+    const balances = {}
+    tokenBalances.forEach(({ result: { value } = {} } = {}) => {
+      if (!value) return;
+      value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
+        sdk.util.sumSingleBalance(balances, mint, amount)
+      })
+    })
+    return balances
+
+    function formTokenBalanceQuery(token, account, id = 1) {
+      return {
+        jsonrpc: "2.0",
+        id,
+        method: "getTokenAccountsByOwner",
+        params: [
+          account,
+          { mint: token, },
+          { encoding: "jsonParsed", },
+        ],
+      }
+    }
   }
 }
 
@@ -349,15 +327,26 @@ async function getSolBalanceFromStakePool(address, api) {
   return api.add(ADDRESSES.solana.SOL, +deserializedAccountInfo.totalLamports)
 }
 
+async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
+  const chunks = sliceIntoChunks(inputs, chunkSize)
+  const results = []
+  for (const chunk of chunks) {
+    results.push(...(await fn(chunk) ?? []))
+    if (sleepTime) await sleep(sleepTime)
+  }
+
+  return results.flat()
+}
+
 module.exports = {
   endpoint: endpoint(),
   getTokenSupply,
-  getTokenBalance,
-  getMultipleAccountsRaw,
+  getMultipleAccounts,
   exportDexTVL,
   getProvider,
   getConnection,
   sumTokens2,
+  sumTokensExport,
   transformBalances,
   readBigUInt64LE,
   decodeAccount,
