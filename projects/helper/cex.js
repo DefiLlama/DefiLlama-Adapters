@@ -262,7 +262,7 @@ function cexExports(config) {
   chains.forEach(chain => {
     let { tokensAndOwners, owners, tokens, blacklistedTokens, } = config[chain]
 
-    if (!tokensAndOwners && !tokens) {
+    if (!tokensAndOwners && !tokens && chain !== 'solana') {
       tokens = defaultTokens[chain]
       if (!tokens) {
         // log(chain, 'Missing default token list, counting only native token balance',)

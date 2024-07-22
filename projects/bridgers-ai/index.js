@@ -117,10 +117,6 @@ const tokensConf = {
     JST: ADDRESSES.tron.JST,
   },
   solana: {
-    SOL: ADDRESSES.solana.SOL,
-    USDT: ADDRESSES.solana.USDT,
-    USDC: ADDRESSES.solana.USDC,
-    BONK: ADDRESSES.solana.BONK,
   },
   base: {
     ETH: nullAddress,
@@ -176,7 +172,8 @@ module.exports = {
 }
 for (const network of Object.keys(tokensConf)) {
   const owner = getBridgeContract(network)
-  const tokens = Object.values(tokensConf[network])
+  let tokens = Object.values(tokensConf[network])
+  if (network === 'solana') tokens = undefined
   module.exports[network] = {
     tvl: sumTokensExport({ owner, tokens }),
   };

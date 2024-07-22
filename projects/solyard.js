@@ -5,7 +5,7 @@ async function staking() {
 }
 
 module.exports = {
-  // deadFrom: '2022-06-30',
+  deadFrom: '2022-06-30',
   timetravel: false,
   solana: {
     tvl: () => ({}),
