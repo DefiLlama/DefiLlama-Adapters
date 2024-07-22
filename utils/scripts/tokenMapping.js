@@ -20,7 +20,11 @@ const transformTokens = {
 
 const ibcMappings = {}
 
-const fixBalancesTokens = {}
+const fixBalancesTokens = {
+  base: {
+    "0xe4b20925D9E9a62F1E492e15a81dC0de62804dd4": { coingeckoId: "bitcoin-usd-btcfi", decimals: 18 }
+  }
+}
 
 // run()
 
