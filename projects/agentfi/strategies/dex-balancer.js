@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const { balanceFetcher, uniV2Lp, tokenAddress } = require('../ca')
 const BigNumber = require("bignumber.js");
 
@@ -5,9 +6,9 @@ const BigNumber = require("bignumber.js");
 // underlying token mapping
 const RingTokenMappings = {
     // fwUSDB -> USDB
-    "0x866f2C06B83Df2ed7Ca9C2D044940E7CD55a06d6": tokenAddress.USDB,
+    [ADDRESSES.blast.fwUSDB]: tokenAddress.USDB,
     // fwWETH -> WETH
-    "0x66714DB8F3397c767d0A602458B5b4E3C0FE7dd1": tokenAddress.WETH,
+    [ADDRESSES.blast.fwWETH]: tokenAddress.WETH,
 };
 
 async function getTvlForDexBalancer(agentAddresses, api) {
@@ -56,8 +57,8 @@ async function getTvlForDexBalancer(agentAddresses, api) {
             const reserve1BigN = BigNumber(reserve1)
             const token0Balance = lpBalanceBigN.times(reserve0BigN).div(totalBigN)
             const token1Balance = lpBalanceBigN.times(reserve1BigN).div(totalBigN)
-            api.add(RingTokenMappings[address0], token0Balance.toFixed(0))
-            api.add(RingTokenMappings[address1], token1Balance.toFixed(0))
+            api.add(RingTokenMappings[address0.toLowerCase()], token0Balance.toFixed(0))
+            api.add(RingTokenMappings[address1.toLowerCase()], token1Balance.toFixed(0))
         }
         const hyperlocklpBalance = hyperlocklpBalances.find(b => b.input.params[0] === address)
         if (hyperlocklpBalance.success) {

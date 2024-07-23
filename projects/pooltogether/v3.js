@@ -1,15 +1,16 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const abi = require('./abi.json')
 
 const GRAPH_URLS = {
   ethereum: [
-    'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_1_0',
-    'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_2',
-    'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_8',
-    'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_4_3'
+    sdk.graph.modifyEndpoint('DpnLpjCKyyQ8TZnD2V6VNyx4JR7bGrCfGaLbrrsn5r7s'),
+    sdk.graph.modifyEndpoint('6SXRM2pyUiLKgNvXU6fiSF1E3dDDFGGAFiMurbZhZew8'),
+    sdk.graph.modifyEndpoint('6fBV3gC2fjdPsKvnmhi2SNzp74RYZj3tS1AiWFGHapyX'),
+    sdk.graph.modifyEndpoint('C12o8EA9X9EKjjDoxKGUiM9YniNT4RVCiV6jGuYWwwZX')
   ],
-  celo: ['https://api.thegraph.com/subgraphs/name/pooltogether/celo-v3_4_5'],
-  bsc: ['https://api.thegraph.com/subgraphs/name/pooltogether/bsc-v3_4_3']
+  celo: [sdk.graph.modifyEndpoint('7RqWfG27PACLZEvSMGtcK87qnV1DJCQfYjNdqwHDQdTe')],
+  bsc: [sdk.graph.modifyEndpoint('9Qmsc7YBLy2sdbEAcGv8vkpaqdGm3YMYoqiWLCid64MN')]
 }
 const GRAPH_QUERY = `
   query GET_POOLS {

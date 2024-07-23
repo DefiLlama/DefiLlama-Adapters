@@ -2,10 +2,26 @@ const sdk = require('@defillama/sdk')
 
 const { staking } = require('../helper/staking')
 const { getUniqueAddresses } = require('../helper/utils')
-const { graphQuery } = require('../helper/http')
 
 const config = {
-  ethereum: { dpools: 'https://api.thegraph.com/subgraphs/name/bacon-labs/eighty-eight-mph', vPools: [
+  ethereum: { dpools: [
+    "0x19e10132841616ce4790920d5f94b8571f9b9341",
+    "0x22e6b9a65163ce1225d1f65ef7942a979d093039",
+    "0x23fa6b36e870ca5753853538d17c3ca7f5269e84",
+    "0x2f3efd1a90a2336ab8fa1b9060380dc37361ca55",
+    "0x303cb7ede0c3ad99ce017cdc3abacd65164ff486",
+    "0x35966201a7724b952455b73a36c8846d8745218e",
+    "0x374226dbaa3e44bf3923afb63f5fd83928b7e148",
+    "0x3f5611f7762cc39fc11e10c864ae38526f650e9d",
+    "0x6712baab01fa2dc7be6635746ec2da6f8bd73e71",
+    "0x681aaa7cf3f7e1f110842f0149ba8a4af53ef2fd",
+    "0x904f81eff3c35877865810cca9a63f2d9cb7d4dd",
+    "0xb1abaac351e06d40441cf2cd97f6f0098e6473f2",
+    "0xd4837145c7e13d580904e8431cfd481f9794fc41",
+    "0xdc86ac6140026267e0873b27c8629efe748e7146",
+    "0xe615e59353f70ca2424aa0f24f49c639b8e924d3",
+    "0xe8c52367b81113ed32bb276184e521c2fbe9393a",
+  ], vPools: [
     "0x062214fbe3f15d217512deb14572eb01face0392",
     "0x085d70ca0dade4683d0f59d5a5b7d3298011b4de",
     "0x0f834c3601088d1b060c47737a2f5ce4ffa5ac1d",
@@ -40,8 +56,36 @@ const config = {
     "0x8eb1b3ac29e0dcbd7f519c86f1eb76a3aea41b76",
     "0xc1f147db2b6a9c9fbf322fac3d1fbf8b8aaeec10"
   ] },
-  avax: { dpools: 'https://api.thegraph.com/subgraphs/name/88mphapp/88mph-avalanche' },
-  fantom: { dpools: 'https://api.thegraph.com/subgraphs/name/88mphapp/88mph-fantom', vPools: [
+  avax: { dpools: [
+    "0x2252185532317932b1883b3429407296a2c69244",
+      "0x336c38657837aa2b5fd21d41ea651b6d792291d9",
+      "0x4f28fc2be45682d1be1d0f155f4a52d4509db629",
+      "0x58e65f624c5ecf595824c96b3853ea8da2f9adf1",
+      "0x747cdec7d885ca961baec11481cda651bf4d1004",
+      "0xa78276c04d8d807feb8271fe123c1f94c08a414d",
+      "0xbcd1571761c2f3d8e0ae93651753aa968e357425",
+      "0xc7cbb403d1722ee3e4ae61f452dc36d71e8800de",
+      "0xd1fea1b2dc4e0be1f5f16bacf1dfeb7fc3434b5f",
+      "0xd9f46096801799f59f34c95e0b4df0f6a76bfcf3",
+      "0xeb706249f3b4640839e64211336b2063a3cdfbb9",
+      "0xf0ca068be757e61cdfa6314bf59f5243767f1bfd"
+  ] },
+  fantom: { dpools: [
+    "0x23fe5a2ba80ea2251843086ec000911cfc79c864",
+      "0x2744b79c985ae0c6b81f1da8eed1a4c67eb4b732",
+      "0x3cab1cb5a9b68350b39ddf7ce23518d609a8bc78",
+      "0x7e4697f650934ea6743b8b0619fc2454db02405a",
+      "0xa1857578cec558eaed9120739b0c533549bdcb61",
+      "0xa78276c04d8d807feb8271fe123c1f94c08a414d",
+      "0xbdf43e9c6cf68359deff9292098622643ede5ec3",
+      "0xc0710b3564fd4768f912150d39d519b66f2952d4",
+      "0xc7cbb403d1722ee3e4ae61f452dc36d71e8800de",
+      "0xc80cc61910c6f8f47aadc69e40ab8d1b2fa2c4df",
+      "0xc91c2255525e80630eee710e7c0637bce7d98978",
+      "0xcb29ce2526ff5f80ad1536c6a1b13238d615b4b9",
+      "0xd62f71937fca1c7c05da08cec4c451f12fc64964",
+      "0xf7fb7f095c8d0f4ee8ffbd142fe0b311491b45f3"
+  ], vPools: [
     "0x3cab1cb5a9b68350b39ddf7ce23518d609a8bc78",
     "0xa1857578cec558eaed9120739b0c533549bdcb61",
     "0xa78276c04d8d807feb8271fe123c1f94c08a414d",
@@ -57,26 +101,24 @@ const config = {
     "0x2744b79c985ae0c6b81f1da8eed1a4c67eb4b732",
     "0xc91c2255525e80630eee710e7c0637bce7d98978"
   ] },
-  polygon: { dpools: 'https://api.thegraph.com/subgraphs/name/88mphapp/88mph-polygon' },
+  polygon: { dpools: [
+    "0x0e99145166e2982bb67054a1e5d3a902fc4d2b59",
+    "0x3933baac41f04d0ffa0977b0e879bc56482ad667",
+    "0x3b79eb9675ed29554f57b719dc66a461a4c84970",
+    "0x4f28fc2be45682d1be1d0f155f4a52d4509db629",
+    "0xa78276c04d8d807feb8271fe123c1f94c08a414d",
+    "0xf5ef24a27f35cbe8a2b0a954acf81d7064ce6b70"
+  ] },
 }
-
-const dPoolQuery = `{
-  dpools {
-    id
-    address
-  }
-}`
 
 const tvlExports = {};
 
 Object.keys(config).forEach(chain => {
-  const { dpools, vPools = [], } = config[chain]
+  let { dpools: pools, vPools = [], } = config[chain]
   tvlExports[chain] = {
     tvl: async (api) => {
       const balances = {}
 
-      const logs = await graphQuery(dpools, dPoolQuery)
-      let pools = logs.dpools.map(i => i.address)
       pools.push(...vPools)
       pools = getUniqueAddresses(pools)
       const tokens = await api.multiCall({ abi: 'address:stablecoin', calls: pools })

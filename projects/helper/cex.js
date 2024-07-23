@@ -106,6 +106,9 @@ const defaultTokens = {
      '0x3a856d4effa670c54585a5d523e96513e148e95d', //trias
      '0x1495bc9e44af1f8bcb62278d2bec4540cf0c05ea', //deia
      '0x4cff49d0a19ed6ff845a9122fa912abcfb1f68a6', //wtk
+     "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
+     "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
+     "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
   ],
   tron: [
     nullAddress,
@@ -169,6 +172,7 @@ const defaultTokens = {
      '0xfe1d7f7a8f0bda6e415593a2e4f82c64b446d404', //blp
      '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
      '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
+     '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -241,6 +245,13 @@ const defaultTokens = {
     ADDRESSES.cronos.WBTC,
     "0xe44fd7fcb2b1581822d0c862b68222998a0c299a" //weth
   ],
+  ton: [
+    nullAddress,
+    ADDRESSES.ton.USDT,
+    ADDRESSES.ton.TON_1,
+    ADDRESSES.ton.TON_2,
+    ADDRESSES.ton.TON_3,
+  ],
 }
 
 function cexExports(config) {
@@ -251,7 +262,7 @@ function cexExports(config) {
   chains.forEach(chain => {
     let { tokensAndOwners, owners, tokens, blacklistedTokens, } = config[chain]
 
-    if (!tokensAndOwners && !tokens) {
+    if (!tokensAndOwners && !tokens && chain !== 'solana') {
       tokens = defaultTokens[chain]
       if (!tokens) {
         // log(chain, 'Missing default token list, counting only native token balance',)
