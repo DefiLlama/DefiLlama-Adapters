@@ -22,7 +22,7 @@ async function tvl() {
 
         return { flow: flowTokenTVL };
     } catch (error) {
-        throw new Error(`Couln't query scripts of increment liquid staking for flow chain`, error);
+        throw new Error(`Couldn't query scripts of increment liquid staking for flow chain`, error);
     }
 }
 

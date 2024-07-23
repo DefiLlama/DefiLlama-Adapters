@@ -77,7 +77,7 @@ async function tvl() {
 
     return { flow: flowTokenTVL };
   } catch (error) {
-    throw new Error("Couln't query scripts of Fixes coins", error);
+    throw new Error("Couldn't query scripts of Fixes coins", error);
   }
 }
 

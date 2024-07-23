@@ -125,7 +125,7 @@ async function fantom(timestamp, ethblock, chainBlocks) {
 
 
 module.exports = {
-    methodology: 'Total supply in lending pools, not couting borrowed amount.',
+    methodology: 'Total supply in lending pools, not counting borrowed amount.',
     bsc: {
         tvl: bsc
     },

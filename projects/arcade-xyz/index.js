@@ -46,7 +46,7 @@ async function tvl(api) {
   });
 }
 
-// Fetches all active loans, their payable curency and amount borrowed then sums it up.
+// Fetches all active loans, their payable currency and amount borrowed then sums it up.
 async function borrowed(api) {
   const loans = await fetchLoans(await api.getBlock());
 
