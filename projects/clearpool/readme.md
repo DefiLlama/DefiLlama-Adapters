@@ -1,6 +1,6 @@
-# Add new protocol and network
+# Add a new protocol and network
 
-### To add new protocol or network 
+## To add a new protocol or network 
 ```
 1. Open https://squid.subsquid.io/cpool-squid/v/v1/graphql on browser 
 ```
