@@ -23,6 +23,15 @@ async function arbiTvl(api) {
     api.add(token, vals[i])
   })
 }
+async function mantleTvl(api) {
+  const farms = await getConfig('yieldyak/mantle', 'https://staging-api.yieldyak.com/5000/farms')
+  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.address), permitFailure: true, })
+  const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.address), permitFailure: true, })
+  tokens.forEach((token, i) => {
+    if (!token || !vals[i]) return;
+    api.add(token, vals[i])
+  })
+}
 
 const masterYak = "0x0cf605484A512d3F3435fed77AB5ddC0525Daf5f"
 const yakToken = "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
@@ -33,4 +42,5 @@ module.exports = {
     staking: staking(masterYak, yakToken),
   },
   arbitrum: { tvl: arbiTvl },
+  mantle: { tvl: mantleTvl}
 }
