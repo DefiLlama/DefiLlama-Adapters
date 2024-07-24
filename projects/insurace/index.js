@@ -1,161 +1,50 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
+const { staking } = require('../helper/staking')
+const { pool2 } = require('../helper/pool2')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const BigNumber = require('bignumber.js');
-const axios = require("axios");
-const polygonPools = require('./polygonPools.json')
-const avalanchePools = require('./avalanchePools.json')
 const { getConfig } = require('../helper/cache')
 
+const config = {
+  ethereum: { 
+    endpoint: "https://files.insurace.io/public/defipulse/ethPools.json",
+    INSUR: '0x544c42fBB96B39B21DF61cf322b5EDC285EE7429',
+    stakingPool: ['0x136D841d4beCe3Fc0E4dEbb94356D8b6B4b93209', '0xaFc3A52BF951c3540883e7156EaBA030E444328b'],
+    pool2Pool: '0x136D841d4beCe3Fc0E4dEbb94356D8b6B4b93209',
+    pool2Token: '0x169BF778A5eADAB0209C0524EA5Ce8e7a616E33b',
+  },
+  bsc: { 
+    endpoint: "https://files.insurace.io/public/defipulse/bscPools.json",
+    INSUR: '0x3192CCDdf1CDcE4Ff055EbC80f3F0231b86A7E30',
+    stakingPool: ['0xd50E8Ce9D5c1f5228BCC77E318907bB4960578eF', '0x8937f826526076c74401edDCd19a41DE3d09D76d'],
+  },
+  polygon: { 
+    endpoint: "https://files.insurace.io/public/defipulse/polygonPools.json",
+    INSUR: '0x8a0e8b4b0903929f47C3ea30973940D4a9702067',
+    stakingPool: ['0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F', '0xE8DBB5F68DE0aC5d4015737a27977db809cAC27D'],
+  },
+  avax: { 
+    endpoint: "https://files.insurace.io/public/defipulse/avalanchePools.json",
+    INSUR: '0x544c42fBB96B39B21DF61cf322b5EDC285EE7429',
+    stakingPool: ['0xF851cBB9940F8bAebd1D0EaF259335c108E9E893', '0x645844f595309deB4637e184B366360807a2D986'],
+  },
+}
 
-async function eth(timestamp, ethBlock) {
-    // ETH
-    // start timestamp: 1619248141
-    // start ethBlock: 12301500
-    // Stakers Pool creation time, Saturday, 24 April 2021 07:09:01 AM
-    if (ethBlock < 12301500) {
-        throw new Error("Not yet deployed")
+
+Object.keys(config).forEach(chain => {
+  const { endpoint, INSUR, stakingPool, pool2Pool, pool2Token, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      let blacklistedTokens = []
+      if (INSUR) blacklistedTokens.push(INSUR)
+      if (pool2Token) blacklistedTokens.push(pool2Token)
+      blacklistedTokens = blacklistedTokens.flat()
+      const { pools } = await getConfig('insurace/'+api.chain, endpoint);
+      return sumTokens2({ api, blacklistedTokens, tokensAndOwners: pools.map(pool => [pool.PoolToken, pool.StakersPool])})
     }
-    const data = await getConfig('insurace/ethereum', "https://files.insurace.io/public/defipulse/pools.json");
-    const pools = data.pools;
-
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
-            target: pool.StakersPool,
-            params: pool.PoolToken,
-        })),
-        abi: abi["getStakedAmountPT"],
-        ethBlock,
-    }
-    );
-
-    const balances = {};
-    _tvlList.forEach((element) => {
-        let address = element.input.params[0].toLowerCase();
-        if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-            address = ADDRESSES.null;
-        }
-        let balance = element.output;
-        if (BigNumber(balance).toNumber() <= 0) {
-            return;
-        }
-        balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-    })
-    const uniLPINSUR2USDC = "0x169bf778a5eadab0209c0524ea5ce8e7a616e33b";
-    /*
-    await unwrapUniswapLPs(balances, [{
-        token: uniLPINSUR2USDC,
-        balance: balances[uniLPINSuniLPINSUR2USDCUR2USDC]
-    }], ethBlock);
-    */
-    delete balances[uniLPINSUR2USDC];
-    return balances;
-}
-
-async function bsc(timestamp, ethBlock, chainBlocks){
-    // BSC
-    // start bscBlock: 8312474
-    // Stakers Pool creation time, Jun-15-2021 07:33:48 AM +UTC
-    const bscBlock = chainBlocks["bsc"]
-    if (bscBlock < 8312474) {
-        throw new Error("Not yet deployed")
-    }
-    const data = await getConfig('insurace/bsc', "https://files.insurace.io/public/defipulse/bscPools.json");
-    const pools = data.pools;
-
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
-            target: pool.StakersPool,
-            params: pool.PoolToken,
-        })),
-        abi: abi["getStakedAmountPT"],
-        bscBlock,
-        chain: "bsc"
-    }
-    );
-
-    const balances = {};
-    _tvlList.forEach((element) => {
-        let address = element.input.params[0].toLowerCase();
-        if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-            address = "bsc:" + ADDRESSES.bsc.WBNB;
-        }else if (address == "0x3192ccddf1cdce4ff055ebc80f3f0231b86a7e30") {
-            address = "0x544c42fbb96b39b21df61cf322b5edc285ee7429";
-        }else{
-            address = `bsc:${address}`;
-        }
-        let balance = element.output;
-        if (BigNumber(balance).toNumber() <= 0) {
-            return;
-        }
-        balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-    })
-    return balances;
-}
-
-async function polygon(timestamp, ethBlock, chainBlocks) {
-    const pools = polygonPools.pools;
-
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
-            target: pool.StakersPool,
-            params: pool.PoolToken,
-        })),
-        abi: abi["getStakedAmountPT"],
-        block: chainBlocks.polygon,
-        chain: 'polygon'
-    });
-
-    const balances = {};
-    _tvlList.forEach((element) => {
-        let address = element.input.params[0].toLowerCase();
-        if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
-            address = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
-        }
-        let balance = element.output;
-        sdk.util.sumSingleBalance(balances, 'polygon:'+address, balance)
-    })
-    return balances;
-}
-
-const INSUR = "0x544c42fbb96b39b21df61cf322b5edc285ee7429"
-async function avax(timestamp, ethBlock, chainBlocks) {
-    const pools = avalanchePools.pools;
-
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
-            target: pool.StakersPool,
-            params: pool.PoolToken,
-        })),
-        abi: abi["getStakedAmountPT"],
-        block: chainBlocks.avax,
-        chain: 'avax'
-    });
-
-    const balances = {};
-    _tvlList.forEach((element) => {
-        let address = element.input.params[0].toLowerCase();
-        if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
-            address = ADDRESSES.avax.WAVAX
-        }
-        let balance = element.output;
-        sdk.util.sumSingleBalance(balances, address===INSUR?INSUR:'avax:'+address, balance)
-    })
-    return balances;
-}
-
-module.exports = {
-    ethereum: {
-        tvl: eth,
-    },
-    bsc:{
-        tvl: bsc
-    },
-    polygon:{
-        tvl: polygon
-    },
-    avax:{
-        tvl: avax
-    },
-}
+  }
+  if (INSUR && stakingPool) 
+    module.exports[chain].staking = staking(stakingPool, INSUR)
+  
+  if (pool2Pool && pool2Token)
+    module.exports[chain].pool2 = pool2(pool2Pool, pool2Token)
+})

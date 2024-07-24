@@ -3,6 +3,9 @@ const { ohmTvl } = require('../helper/ohm')
 
 const treasury = "0xD4b0DC48AB6BD7907E3698A62CCD1DBE2d46d310"
 module.exports = {
+    hallmarks: [
+        [1648765747,"Rug Pull"]
+    ],
     deadFrom: 1648765747,
     ...ohmTvl(treasury, [
     //BUSD

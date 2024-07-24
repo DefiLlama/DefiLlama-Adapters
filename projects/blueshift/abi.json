@@ -1,6 +1,6 @@
 {
   "BlueshiftRegistry": {
-    "getPortfolios": "function getPortfolios() view returns (tuple(string name, address contractAddress, address baseTokenAddress, address lpTokenAddress, uint256 lpTokenPrice, uint256 totalValue, uint256 tokenCount, tuple(address tokenAddress, uint256 amount, uint256 price, uint256 depositLimit, uint256 withdrawLimit, uint256 depositEMAPrice, uint256 withdrawEMAPrice, uint256 portfolioShare, uint256 targetWeight)[] tokens)[])"
+    "getPortfolios": "function getPortfolios() view returns (tuple(string[] name, address[] contractAddress, address[] baseTokenAddress, address[] lpTokenAddress, uint256[] lpTokenPrice, uint256[] totalValue, uint256[] tokenCount, uint256[] baseTokenPriceCoefficient, tuple(address[] tokenAddress, uint256[] amount, uint256[] price, uint256[] depositLimit, uint256[] withdrawLimit, uint256[] depositEMAPrice, uint256[] withdrawEMAPrice, uint256[] portfolioShare, uint256[] targetWeight)[] tokens))"
   },
   "BlueshiftEarning": {
     "getAccDeposit": "uint256:getAccDeposit",

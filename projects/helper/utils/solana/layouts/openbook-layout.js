@@ -90,7 +90,47 @@ const MARKET_STATE_LAYOUT_V3 = struct([
 ]);
 
 
+const MARKET_STATE_LAYOUT_V3_MINIMAL = struct([
+  publicKey('baseMint'),
+  publicKey('quoteMint'),
+
+  publicKey('baseVault'),
+  u64('baseDepositsTotal'),
+  u64('baseFeesAccrued'),
+
+  publicKey('quoteVault'),
+  u64('quoteDepositsTotal'),
+  u64('quoteFeesAccrued'),
+]);
+
+const OPEN_ORDERS_LAYOUT_V2 = struct([
+  blob(5),
+
+  accountFlagsLayout('accountFlags'),
+
+  publicKey('market'),
+  publicKey('owner'),
+
+  u64('baseTokenFree'),
+  u64('baseTokenTotal'),
+  u64('quoteTokenFree'),
+  u64('quoteTokenTotal'),
+
+  u128('freeSlotBits'),
+  u128('isBidBits'),
+
+  seq(u128(), 128, 'orders'),
+  seq(u64(), 128, 'clientIds'),
+
+  u64('referrerRebatesAccrued'),
+
+  blob(7),
+]);
+
+
 module.exports = {
+  MARKET_STATE_LAYOUT_V3_MINIMAL,
   MARKET_STATE_LAYOUT_V3,
+  OPEN_ORDERS_LAYOUT_V2
 }
 

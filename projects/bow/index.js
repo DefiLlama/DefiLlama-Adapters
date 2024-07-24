@@ -1,13 +1,11 @@
-const { get } = require("../helper/http");
-const { sumTokens, endPoints } = require('../helper/chain/cosmos')
+
+const { getConfig } = require("../helper/cache");
+const { sumTokens } = require('../helper/chain/cosmos')
 
 
 async function tvl() {
-  const bowPoolCodes = [46, 54, 36];
-  const bowPools = (await Promise.all(bowPoolCodes.map(async (code) => {
-    const result = await get(endPoints.kujira + `/cosmwasm/wasm/v1/code/${code}/contracts?pagination.limit=100`);
-    return result.contracts;
-  }))).flat();
+  const contracts = await getConfig("kujira/contracts", "https://raw.githubusercontent.com/Team-Kujira/kujira.js/master/src/resources/contracts.json");
+  const bowPools = contracts["kaiyo-1"].bow.map(x => x.address)
   const owners = [
   ...bowPools
 ]
@@ -16,8 +14,7 @@ async function tvl() {
 }
 
 module.exports = {
-  doublecounted: false,
-  kujira: {
+    kujira: {
     tvl,
   },
 }

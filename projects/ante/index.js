@@ -36,7 +36,7 @@ const CONFIG = {
       },
     ],
     startBlock: 32245577,
-    gasToken: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    gasToken: ADDRESSES.polygon.WMATIC_2,
   },
   bsc: {
     factories: [

@@ -32,7 +32,6 @@ const lionStaking = {
   cronos: { tvl: () => 0},
   kava: {
     staking: sumTokensExport({
-      chain: "kava",
       tokensAndOwners: [
 
         ['0x990e157fC8a492c28F5B50022F000183131b9026', '0x199A0CD96065f50F9f7978c7BB47869503a9eD1E'], // Lion cave

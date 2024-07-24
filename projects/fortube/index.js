@@ -12,13 +12,10 @@ const config = {
   polygon: '0x4Ac2735652944FE5C3dD95807287643502e5dE51',
 }
 
-module.exports = {
-};
-
 Object.keys(config).forEach(chain => {
   const owner = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const markets = await api.call({
         abi:  abi.getAllMarkets,
         target: owner,

@@ -4,7 +4,6 @@ module.exports = {
   misrepresentedTokens: true,
   multivac: {
     tvl: getUniTVL({
-      chain: 'multivac',
       factory: '0xbaC576111e2BC5EfBbE7c5d765b9DC44083901fD',
       useDefaultCoreAssets: true,
     })

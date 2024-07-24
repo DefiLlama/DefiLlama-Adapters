@@ -3,8 +3,9 @@ const { getConfig } = require('../helper/cache')
 
 const { userInfos } = require('./FairLaunch')
 
-const { getChainTransform, getFixBalances } = require('../helper/portedTokens')
+const { getChainTransform } = require('../helper/portedTokens')
 const { getTokenPrices } = require('../helper/unknownTokens')
+const kExports = require('../kleva-lend')
 
 const chain = 'klaytn'
 // const TOKEN_PRICE_QUERY_URL = "https://api.kltalchemy.com/klay/ksInfo"
@@ -18,7 +19,6 @@ async function getWorkers() {
 // - multicall 'userInfos' on FairLaunch contract with lpPoolId & workerAddress
 async function getFarmingTVL(data, balances,) {
   const transform = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
   const balancesTemp = {}
   const lps = []
 
@@ -46,7 +46,6 @@ async function getFarmingTVL(data, balances,) {
 
   await updateBalances(balancesTemp)
 
-  await fixBalances(balancesTemp)
   Object.entries(balancesTemp).forEach(([token, value]) => sdk.util.sumSingleBalance(balances, token, value))
 
   return balances
@@ -59,6 +58,6 @@ async function fetchLiquidity() {
 }
 
 module.exports = {
-  klaytn: { tvl: fetchLiquidity },
+  klaytn: { tvl: sdk.util.sumChainTvls([fetchLiquidity, kExports.klaytn.tvl]) },
   doublecounted: true,
 }

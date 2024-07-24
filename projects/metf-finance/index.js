@@ -103,7 +103,6 @@ async function staking(timestamp, block, chainBlocks) {
     const balances = {
         ["cronos:0xb8df27c687c6af9afe845a2afad2d01e199f4878"]: staked
     }
-    // console.log(balances)
     return balances
 }
 
@@ -112,6 +111,6 @@ module.exports = {
     cronos: {
         tvl: newTVL,
         staking: staking,
-        pool2: pool2("0xE25737b093626233877EC0777755c5c4081580be", "0xd7385f46FFb877d8c8Fe78E5f5a7c6b2F18C05A7", "cronos")
+        pool2: pool2("0xE25737b093626233877EC0777755c5c4081580be", "0xd7385f46FFb877d8c8Fe78E5f5a7c6b2F18C05A7")
     }
 }

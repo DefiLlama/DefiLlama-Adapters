@@ -1,9 +1,10 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const VAULT_ADDR = '0x8C7Ef34aa54210c76D6d5E475f43e0c11f876098';
+const CRO_VAULT_ADDR = '0x8C7Ef34aa54210c76D6d5E475f43e0c11f876098';
+const ZKSYNC_VAULT_ADDR = '0x7d5b0215EF203D0660BC37d5D09d964fd6b55a1E';
 
 function fulExports({ vault, }) {
-  return async (ts, _block, _, { api }) => {
+  return async (api) => {
     const tokenAddresses = await api.fetchList({
       target: vault,
       lengthAbi: abis.whitelistedTokenCount,
@@ -21,6 +22,9 @@ const abis = {
 
 module.exports = {
   cronos: {
-    tvl: fulExports({ vault: VAULT_ADDR, }),
-  }
+    tvl: fulExports({ vault: CRO_VAULT_ADDR, }),
+  },
+  era: {
+    tvl: fulExports({ vault: ZKSYNC_VAULT_ADDR, }),
+  },
 }

@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
+const { getChainTransform, } = require("../helper/portedTokens")
 
 const KDAI = ADDRESSES.klaytn.KDAI;
 const KSD = ADDRESSES.klaytn.KSD;
@@ -71,7 +71,6 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
     tvl: {}
   }
   const transform = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
 
   await Promise.all(LPs.map(lp => addToBalance({
     balances: balances.tvl,
@@ -95,7 +94,6 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
   const staking = stakingBalance * tokenPrice / 10 ** 18
 
   sdk.util.sumSingleBalance(balances.staking, 'tether', staking)
-  fixBalances(balances.tvl)
 
   return balances
 }

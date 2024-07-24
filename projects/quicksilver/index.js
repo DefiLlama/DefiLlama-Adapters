@@ -1,28 +1,36 @@
 const sdk = require("@defillama/sdk");
 const { get } = require("../helper/http");
+const { endPoints } = require("../helper/chain/cosmos");
 
 const coinGeckoIds = {
+  adydx: "dydx-chain",
   uatom: "cosmos",
   uosmo: "osmosis",
+  usomm: "sommelier",
   uregen: "regen",
-  ustars: "stargaze"
+  ujuno: "juno-network",
+  ustars: "stargaze",
+  usaga: "saga-2",
+  ubld: "agoric",
 };
 
 async function tvl() {
   const balances = {};
 
   const { zones } = await get(
-    "https://rest.cosmos.directory/quicksilver/quicksilver/interchainstaking/v1/zones"
+    endPoints.quicksilver + "/quicksilver/interchainstaking/v1/zones"
   );
   const { supply } = await get(
-    "https://rest.cosmos.directory/quicksilver/cosmos/bank/v1beta1/supply"
+    endPoints.quicksilver + "/cosmos/bank/v1beta1/supply"
   );
 
   zones.map((zone) => {
     const balance = supply.find((coin) => {
       return coin.denom === zone.local_denom;
     });
-    const amount = balance.amount / 1e6;
+    let amount = balance.amount / 1e6;
+    if (zone.base_denom === "adydx")
+      amount = balance.amount / 1e18
 
     const id = coinGeckoIds[zone.base_denom]
     if (!id) {

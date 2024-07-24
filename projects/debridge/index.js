@@ -20,7 +20,6 @@ function chainTvl(chain) {
 
     const url = `${http_api_url}?chainId=${chainIds[chain]}`;
     const debridge_response = await getConfig('debridge/'+chain,url);
-    // console.log(debridge_response)
     const tokensAndOwners = debridge_response
       .filter(t => !t.tokenName.startsWith('deBridge '))
       .map(t => [t.tokenAddress, debridgeGate]);

@@ -24,14 +24,14 @@ const latestRoundDataABI = {
 enum Chain {
   ethereum = "ethereum",
   polygon = "polygon",
-  fantom = "fantom",
+  // fantom = "fantom",
 }
 
 const getEURUSD = async (chain: Chain) => {
   const oracleAddresses = {
     [Chain.ethereum]: "0xb49f677943bc038e9857d61e7d053caa2c1734c1",
     [Chain.polygon]: "0x73366fe0aa0ded304479862808e02506fe556a98",
-    [Chain.fantom]: "0x3e68e68ea2c3698400465e3104843597690ae0f7",
+    // [Chain.fantom]: "0x3e68e68ea2c3698400465e3104843597690ae0f7",
   };
 
   const eurUSDRoundData = await sdk.api.abi.call({
@@ -49,18 +49,18 @@ const getSubgraphUrl = (chain: Chain) => {
 
   switch (chain) {
     case Chain.ethereum: {
-      subgraphUrl = "https://api.thegraph.com/subgraphs/name/m19/titan";
+      subgraphUrl = sdk.graph.modifyEndpoint('FV3Dw1zMs97LpVPegWZKJv4bsbsZdrob2EqLCPxdcoDS');
       break;
     }
     case Chain.polygon: {
-      subgraphUrl = "https://api.thegraph.com/subgraphs/name/m19/titanpolygon";
+      subgraphUrl = sdk.graph.modifyEndpoint('EfFLqiwngmmtE5su2t1EsFoEttoj8KWervocfab1ofYT');
       break;
     }
-    case Chain.fantom: {
-      subgraphUrl =
-        "https://api.thegraph.com/subgraphs/name/rayxpub/titanfantom";
-      break;
-    }
+    // case Chain.fantom: {
+    //   subgraphUrl =
+    //     sdk.graph.modifyEndpoint('DkSQLWkkiNfeNG43NJnHsW9hfih8hDt4SHFTNMQgPHJH');
+    //   break;
+    // }
   }
 
   return subgraphUrl;
@@ -194,7 +194,7 @@ module.exports = {
   polygon: {
     liquidations: positions(Chain.polygon),
   },
-  fantom: {
-    liquidations: positions(Chain.fantom),
-  },
+  // fantom: {
+  //   liquidations: positions(Chain.fantom),
+  // },
 };

@@ -1,7 +1,0 @@
-{
-  "getProjectTokensLength": "uint256:projectTokensLength",
-  "getLendingTokensLength": "uint256:lendingTokensLength",
-  "getProjectTokenByIndex": "function projectTokens(uint256) view returns (address)",
-  "getLendingTokenByIndex": "function lendingTokens(uint256) view returns (address)",
-  "getLendingTokenInfo": "function lendingTokenInfo(address) view returns (bool isListed, bool isPaused, address bLendingToken)"
-}

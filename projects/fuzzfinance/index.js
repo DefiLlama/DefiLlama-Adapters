@@ -22,7 +22,7 @@ async function staking(timestamp, block, chainBlocks) {
 module.exports = {
   methodology: `Counts the tokens locked on AMM pools from the factory contract.`,
   harmony: {
-    tvl: uniTvlExport(factory, 'harmony'),
+    tvl: uniTvlExport(factory, 'harmony', true),
     staking,
   },
 };

@@ -9,6 +9,14 @@ const config = {
   polygon: {
     registry: '0xd3d0e85f225348a2006270daf624d8c46cae4e1f',
     fromBlock: 31243728,
+  },
+  polygon_zkevm: {
+    registry: '0xc02a7B4658861108f9837007b2DF2007d6977116',
+    fromBlock: 2665891,
+  },
+  base: {
+    registry: '0xc02a7B4658861108f9837007b2DF2007d6977116',
+    fromBlock: 2785683,
   }
 }
 
@@ -16,14 +24,10 @@ module.exports = {
   doublecounted: true,
 };
 
-const ignored = [
-  '0x728fD7ec3cBB50D809735879318d04D8CbEb7157'
-]
-
 Object.keys(config).forEach(chain => {
   const { registry, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       const logs = await getLogs({
         api,
@@ -46,9 +50,9 @@ Object.keys(config).forEach(chain => {
         extraKey: 'TokenLocked'
       })
       tokenLockedLogs.forEach(i => delete vaultKeys[i.nft])
-      let vaults = Object.values(vaultKeys).filter(i => !ignored.includes(i))
+      let vaults = Object.values(vaultKeys)
       const tokens = await api.multiCall({ abi: 'function vaultTokens() view returns (address[])', calls: vaults })
-      const bals = await api.multiCall({ abi: 'function tvl() view returns (uint256[] minTokenAmounts, uint256[] maxTokenAmounts)', calls: vaults })
+      const bals = await api.multiCall({ abi: 'function tvl() view returns (uint256[] minTokenAmounts, uint256[] maxTokenAmounts)', calls: vaults, permitFailure: true })
       tokens.forEach((tokens, i) => {
         if (!bals[i]) return;
         let balsInner = bals[i].minTokenAmounts

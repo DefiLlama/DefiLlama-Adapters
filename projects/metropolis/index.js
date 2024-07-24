@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const factories = {
   fantom: '0xdD693b9F810D0AEE1b3B74C50D3c363cE45CEC0C',
 }
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const pools = await api.fetchList({
     target: factories[api.chain],
     itemAbi: 'function allLBPairs(uint256) view returns (address)',
@@ -33,4 +33,5 @@ module.exports = {
   fantom:{
     tvl: () => 0
   },
+  deadFrom: 1680097334,
 };

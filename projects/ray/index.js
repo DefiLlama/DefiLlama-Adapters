@@ -4,7 +4,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const ETH_ADDRESS = ADDRESSES.null;
 const WETH_ADDRESS = ADDRESSES.ethereum.WETH;
-const SAI_ADDRESS = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
+const SAI_ADDRESS = ADDRESSES.ethereum.SAI;
 const DAI_ADDRESS = ADDRESSES.ethereum.DAI;
 const USDC_ADDRESS = ADDRESSES.ethereum.USDC;
 

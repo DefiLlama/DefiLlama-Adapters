@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens, } = require('../helper/unwrapLPs')
-const { transformBscAddress, } = require('../helper/portedTokens');
 
 const chain = 'bsc'
 
@@ -22,7 +21,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     [token, DEPOSIT_CONTRACT],
     [token, BANK_ADDRESS],
   ]).flat()
-  const transform = await transformBscAddress()
+  const transform = i => `bsc:${i}`
 
   await sumTokens(
     balances,

@@ -36,7 +36,7 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.DAI,//DAI
         ADDRESSES.ethereum.USDC,//USDC
         ADDRESSES.ethereum.USDT,//USDT
-        "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",//LUSD
+        ADDRESSES.ethereum.LUSD,//LUSD
         "0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656",//aWBTC
         ADDRESSES.ethereum.WETH,//WETH
         ADDRESSES.ethereum.RETH,//rETH
@@ -47,6 +47,7 @@ module.exports = treasuryExports({
      ],
     owners: [treasury_vault, treasury_ops, treasury_voter, treasury_dev, treasury_tech, treasury_pay, treasury_drip1, treasury_drip2, treasury_bfraxbp],
     ownTokens: [BADGER, DIGG],
+    blacklistedTokens: ['0x7491989cfbc6da74141bc8cd187e480c21ece169'],
     resolveUniV3: true,
     transformAddress,
   },

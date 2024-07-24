@@ -1,16 +1,13 @@
-const axios = require('axios')
-// const chain = 'optimism'
+const ADDRESSES = require('../helper/coreAssets.json')
+const { get } = require('../helper/http');
 
 // api
-const BASE_URL = "https://perps-api-experimental.polynomial.fi/snx-perps/tvl";
-const api = axios.create({
-  baseURL: BASE_URL,
-});
+const BASE_URL = "https://perps-v2-mainnet.polynomial.fi/snx-perps/tvl";
 
 async function tvl (timestamp, ethBlock) {
-  const perpApi = await api.get();
+  const perpApi = await get(BASE_URL);
   return {
-    'ethereum:0x57Ab1ec28D129707052df4dF418D58a2D46d5f51': perpApi.data.tvl * 1e18
+    [`ethereum:${ADDRESSES.ethereum.sUSD}`]: perpApi.tvl * 1e18
   };
 }
 

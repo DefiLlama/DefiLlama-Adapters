@@ -14,15 +14,15 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      ADDRESSES.ethereum.USDC, // USDC
+      ADDRESSES.ethereum.USDC,
       "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", // 3CRV DAI/USDC/USDT
       "0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F", // SDT
-      "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7", // cvxCRV
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+      ADDRESSES.ethereum.cvxCRV,
+      ADDRESSES.ethereum.SAFE,
       "0xFCc5c47bE19d06BF83eB04298b026F81069ff65b", // yCRV
       "0x616e8BfA43F920657B3497DBf40D6b1A02D4608d", // auraBAl
       "0xA13a9247ea42D743238089903570127DdA72fE44", // bb-a-USD
-      ADDRESSES.ethereum.cvxFXS, // cvxFXS
+      ADDRESSES.ethereum.cvxFXS,
       "0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC", // crvFRAX
       "0xfA0F307783AC21C39E939ACFF795e27b650F6e68", // S*FRAX
       "0x0Faf1d2d3CED330824de3B8200fc8dc6E397850d", // S*DAI
@@ -50,7 +50,7 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [
       nullAddress,
-      ADDRESSES.bsc.USDT, // BSC_USD
+      ADDRESSES.bsc.USDT,
       "0x98a5737749490856b401DB5Dc27F522fC314A4e1", // S*BUSD
       "0x4e145a589e4c03cBe3d28520e4BF3089834289Df", // S*USDD
       "0x7BfD7f2498C4796f10b6C611D9db393D3052510C", // S*MAI
@@ -66,7 +66,7 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       "0x1c272232Df0bb6225dA87f4dEcD9d37c32f63Eea", // S*FRAX
-      ADDRESSES.avax.USDC, // USDC
+      ADDRESSES.avax.USDC,
       "0x8736f92646B2542B3e5F3c63590cA7Fe313e283B", // S*MAI
       "0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c", // S*USDt
       "0xEAe5c2F6B25933deB62f754f239111413A0A25ef", // S*USDt
@@ -81,7 +81,7 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [
       nullAddress,
-      ADDRESSES.polygon.USDC, // USDC
+      ADDRESSES.polygon.USDC,
       "0x1c272232Df0bb6225dA87f4dEcD9d37c32f63Eea", // S*DAI
       "0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c", // S*USDT
       "0x8736f92646B2542B3e5F3c63590cA7Fe313e283B", // S*miMATIC
@@ -98,7 +98,7 @@ module.exports = treasuryExports({
     owners: [arbitrum],
     tokens: [
       nullAddress,
-      ADDRESSES.arbitrum.USDC, // USDC
+      ADDRESSES.arbitrum.USDC,
       "0xaa4BF442F024820B2C28Cd0FD72b82c63e66F56C", // S*FRAX
       "0xF39B7Be294cB36dE8c510e267B82bb588705d977", // S*MAI
       "0x915A55e36A01285A14f05dE6e81ED9cE89772f8e", // S*SGETH
@@ -114,8 +114,8 @@ module.exports = treasuryExports({
     owners: [optimism],
     tokens: [
       nullAddress,
-      ADDRESSES.optimism.OP, // OP
-      ADDRESSES.optimism.USDC, // USDC
+      ADDRESSES.optimism.OP,
+      ADDRESSES.optimism.USDC,
       "0x165137624F1f692e69659f944BF69DE02874ee27", // S*DAI
       "0x368605D9C6243A80903b9e326f1Cddde088B8924", // S*FRAX
       "0x3533F5e279bDBf550272a199a223dA798D9eff78", // S*LUSD
@@ -135,7 +135,7 @@ module.exports = treasuryExports({
     owners: [fantom],
     tokens: [
       nullAddress,
-      ADDRESSES.fantom.USDC, // USDC
+      ADDRESSES.fantom.USDC,
       "0x12edeA9cd262006cC3C4E77c90d2CD2DD4b1eb97", // S*USDC
     ],
     ownTokens: [
@@ -146,7 +146,7 @@ module.exports = treasuryExports({
   metis: {
     owners: [metis],
     tokens: [
-      ADDRESSES.metis.Metis, // METIS
+      ADDRESSES.metis.Metis,
     ],
     ownTokens: [],
   },

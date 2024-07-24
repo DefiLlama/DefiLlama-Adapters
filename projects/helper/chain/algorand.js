@@ -40,7 +40,7 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams, })
 }
 
 
-async function searchAccountsAll({ appId, limit = 1000, searchParams = {} }) {
+async function searchAccountsAll({ appId, limit = 1000, searchParams = {}, sumTokens = false, api }) {
   const accounts = []
   let nexttoken
   do {
@@ -48,6 +48,15 @@ async function searchAccountsAll({ appId, limit = 1000, searchParams = {} }) {
     nexttoken = res['next-token']
     accounts.push(...res.accounts)
   } while (nexttoken)
+  if (sumTokens && api) {
+    sdk.log('sumTokens', accounts.length)
+    for (const account of accounts) {
+      api.add('1', account.amount)
+      for (const asset of (account.assets ?? [])) {
+        api.add(asset['asset-id']+'', asset.amount)
+      }
+    }
+  }
   return accounts
 }
 
@@ -91,7 +100,7 @@ async function getAssetInfo(assetId) {
 }
 
 async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedTokens, }) {
-  const lpBalance = balances['algorand:'+lpId]
+  const lpBalance = balances['algorand:' + lpId]
   if (lpBalance && lpBalance !== '0') {
     const lpInfo = await getAssetInfo(lpId)
     let ratio = lpBalance / lpInfo.circulatingSupply
@@ -110,11 +119,14 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
     }
   }
   delete balances[lpId]
-  delete balances['algorand:'+lpId]
+  delete balances['algorand:' + lpId]
   return balances
 }
 
 async function getAccountInfo(accountId) {
+  if (typeof accountId === 'number') { // it is an application id
+    accountId = getApplicationAddress(accountId)
+  }
   if (!accountCache[accountId]) accountCache[accountId] = _getAccountInfo()
   return accountCache[accountId]
 
@@ -133,12 +145,22 @@ async function getAccountInfo(accountId) {
 
 const tokens = {
   usdc: 31566704,
+  usdt: 312769,
+  wBtc: 1058926737,
+  wEth: 887406851,
+  wBtcGoBtcLp: 1058934626,
+  wEthGoEthLp: 1058935051,
+  xUsdGoUsdLp: 1081974597,
+  usdtGoUsdLp: 1081978679,
+  wusdcGoUsdLp: 1242543501,
+  wusdtGoUsdLp: 1242550568,
   goUsd: 672913181,
   usdcGoUsdLp: 885102318,
   gard: 684649988,
   gold$: 246516580,
   silver$: 246519683,
-}
+  ASAGold: 1241944285
+};
 
 // store all asset ids as string
 Object.keys(tokens).forEach(t => tokens[t] = '' + tokens[t])
@@ -153,6 +175,7 @@ async function getAppGlobalState(marketId) {
     response.application.params["global-state"].forEach(x => {
       let decodedKey = Buffer.from(x.key, "base64").toString("binary")
       results[decodedKey] = x.value.uint
+      if (x.value.type === 1) results[decodedKey] = Buffer.from(x.value.bytes, "base64").toString("binary")
     })
 
     return results
@@ -169,7 +192,7 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
     if (geckoMapping.includes(id)) {
       return {
         price: i.amount / unknownAssetQuantity,
-        geckoId: 'algorand:'+id,
+        geckoId: 'algorand:' + id,
         decimals: 0,
       }
     }

@@ -30,11 +30,14 @@ const AXE_DAI_POOL = "0xd34d3b648db688bee383022dd26a9027592b82d5";
 }
 
 module.exports = {
+  hallmarks: [
+    [1648765747, "Rug Pull"]
+  ],
     deadFrom: 1648765747,
     start: 1637036516, // 16 Nov 2021
     ethereum: {
       tvl: ethTvl,
-      staking: staking(AXEStaking, AXE, "ethereum"),
+      staking: staking(AXEStaking, AXE),
     },
     methodology:
       "Counts DAI, USDC and DAI SLP (AXE-DAI) on the treasury",

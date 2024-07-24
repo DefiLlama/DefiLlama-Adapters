@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformFantomAddress } = require('../helper/portedTokens');
 const { unwrapUniswapLPs, sumTokens } = require('../helper/unwrapLPs');
 const abis = require("./abis.json");
 

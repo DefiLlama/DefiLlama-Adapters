@@ -1,79 +1,25 @@
-const BigNumber = require("bignumber.js");
-const { toUSDTBalances } = require("../helper/balances");
 const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
-const tokenSubgraphUrl =
-  "https://api.thegraph.com/subgraphs/name/bunicorndefi/buni-token";
-const stableSubgraphUrl =
-  "https://api.thegraph.com/subgraphs/name/bunicorndefi/buni-stablecoins";
+const { v1Tvl } = require("../helper/balancer");
+const { uniTvlExport } = require("../helper/unknownTokens");
 const BUNI_CONTRACT_ADDRESS = "0x0e7beec376099429b85639eb3abe7cf22694ed49";
-const MASTERCHEF_CONTRACT_ADDRESS =
-  "0xA12c974fE40ea825E66615bA0Dc4Fd19be4D7d24";
+const MASTERCHEF_CONTRACT_ADDRESS = "0xA12c974fE40ea825E66615bA0Dc4Fd19be4D7d24";
 
-const graphTotalTokenTVLQuery = gql`
-{\n  bunis(where: {id: \"1\"}) {\n    totalLiquidity\n  }\n}
-`;
+async function staking(api) {
+  return api.sumTokens({
+    owner: MASTERCHEF_CONTRACT_ADDRESS,
+    tokens: [BUNI_CONTRACT_ADDRESS],
+  });
+}
 
-const graphTotalStableTVLQuery = gql`
-{\n  buniCornFactories( where: {id: \"0x86873f85bc12ce40321340392c0ff39c3bdb8d68\"}) {\n    id\n    totalLiquidityUSD\n  }\n\n}
-`;
-
-async function getTotalFarmTVL(timestamp, ethBlock, chainBlocks) {
-  try {
-    const balances = {};
-    const stakedBuni = sdk.api.erc20.balanceOf({
-      target: BUNI_CONTRACT_ADDRESS,
-      owner: MASTERCHEF_CONTRACT_ADDRESS,
-      chain: "bsc",
-      block: chainBlocks.bsc,
-    });
-    sdk.util.sumSingleBalance(
-      balances,
-      "bsc:" + BUNI_CONTRACT_ADDRESS,
-      (await stakedBuni).output
-    );
-    return balances;
-  } catch (e) {
-    throw new Error("getTotalFarmTVL has exception:" + e.message);
-  }
-}
-async function getTotalTokenTVL(timestamp, ethBlock, chainBlocks) {
-  try {
-    const { bunis } = await request(tokenSubgraphUrl, graphTotalTokenTVLQuery, {
-      block: chainBlocks.bsc,
-    });
-    return (bunis[0] && bunis[0].totalLiquidity) || 0;
-  } catch (e) {
-    throw new Error("getTotalTokenTVL has exception:" + e.message);
-  }
-}
-async function getTotalStableTVL(timestamp, ethBlock, chainBlocks) {
-  try {
-    const { buniCornFactories } = await request(
-      stableSubgraphUrl,
-      graphTotalStableTVLQuery,
-      {
-        block: chainBlocks.bsc,
-      }
-    );
-    return (
-      (buniCornFactories[0] && buniCornFactories[0].totalLiquidityUSD) || 0
-    );
-  } catch (e) {
-    throw new Error("getTotalStableTVL has exception:" + e.message);
-  }
-}
-async function getTotalTVL(timestamp, ethBlock, chainBlocks) {
-  const [tokensSummary, stableSummary] = await Promise.all([
-    getTotalTokenTVL(timestamp, ethBlock, chainBlocks),
-    getTotalStableTVL(timestamp, ethBlock, chainBlocks),
-  ]);
-  return toUSDTBalances(new BigNumber(tokensSummary).plus(stableSummary));
-}
 module.exports = {
-  misrepresentedTokens: true,
   bsc: {
-    tvl: getTotalTVL,
-    staking: getTotalFarmTVL,
+    tvl: sdk.util.sumChainTvls([v1Tvl('0x48ab312150E1802D57639859d7C3107aE751FE35', 8973039), uniTvlExport('bsc', '0x86873f85bc12ce40321340392c0ff39c3bdb8d68', {
+      abis: {
+        allPairsLength: 'uint256:allPoolsLength',
+        allPairs: 'function allPools(uint256) view returns (address)',
+      },
+      fetchBalances: true,
+    }).bsc.tvl]),
+    staking,
   },
 };

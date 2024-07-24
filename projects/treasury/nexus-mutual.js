@@ -10,10 +10,10 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      ADDRESSES.ethereum.USDT, // USDT
+      ADDRESSES.ethereum.USDT,
       "0x2ba592F78dB6436527729929AAf6c908497cB200", // CREAM
-      ADDRESSES.ethereum.USDC, // USDC
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.SAFE,
     ],
     ownTokens: [nxm, wNxm],
     owners: [communityFund, treasury],

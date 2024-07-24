@@ -1,23 +1,21 @@
-const { getConnection, decodeAccount, } = require('../helper/solana')
+const { getConnection, decodeAccount, blacklistedTokens_default, } = require('../helper/solana')
 const sdk = require('@defillama/sdk')
 const { PublicKey } = require("@solana/web3.js")
-const blacklistedTokens = new Set([
-  '674PmuiDtgKx3uKuJ1B16f9m5L84eFvNwj3xDMvHcbo7', // $WOOD
-  'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
-  'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
-])
+const { MARKET_STATE_LAYOUT_V3_MINIMAL } = require('../helper/utils/solana/layouts/openbook-layout')
+const blacklistedTokens = new Set(blacklistedTokens_default)
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const connection = getConnection()
 
   const programPublicKey = new PublicKey('srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX')
   const programAccounts = await connection.getProgramAccounts(programPublicKey, {
-    filters: [{ dataSize: 388 }]
+    filters: [{ dataSize: 388 }],
+    dataSlice: { offset: 53, length: MARKET_STATE_LAYOUT_V3_MINIMAL.span } 
   });
   sdk.log('#markets', programAccounts.length)
 
   programAccounts.forEach((account) => {
-    const market = decodeAccount('openbook', account.account)
+    const market = decodeAccount('openbook-minimal', account.account)
     const baseToken = market.baseMint.toBase58()
     const quoteToken = market.quoteMint.toBase58()
     const baseBal = +market.baseDepositsTotal + +market.baseFeesAccrued

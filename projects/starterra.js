@@ -6,5 +6,6 @@ module.exports = {
   },
    hallmarks:[
     [1651881600, "UST depeg"],
-  ]
+  ],
+  deadFrom: 1651881600,
 }

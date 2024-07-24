@@ -96,7 +96,7 @@ const tokens = {
     USDT: ADDRESSES.polygon.USDT,
     // Network Tokens
     WETH: ADDRESSES.polygon.WETH_1,
-    WMATIC: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    WMATIC: ADDRESSES.polygon.WMATIC_2,
     // Further tokens
     DAF: "0x2f0e07e881363bb1cdff32971b2f8c87ef8ff432",
     GFX: "0x65ad6a2288b2dd23e466226397c8f5d1794e58fc",

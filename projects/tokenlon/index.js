@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { covalentGetTokens } = require("../helper/http");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 
@@ -16,15 +15,15 @@ const PERMANENT_STORAGE_PROXY = "0x6D9Cc14a1d36E6fF13fc6efA9e9326FcD12E7903";
 
 const STAGES_STAKING_CONTRACTS = [
   //FIRST_STAGE
-  ["0x7924a818013f39cf800f5589ff1f1f0def54f31f", "0x929CF614C917944dD278BC2134714EaA4121BC6A",], 
+  ["0x7924a818013f39cf800f5589ff1f1f0def54f31f", "0x929CF614C917944dD278BC2134714EaA4121BC6A",],
   //SECOND_STAGE_LON_ETH
-  ["0x7924a818013f39cf800f5589ff1f1f0def54f31f", "0xc348314f74b043ff79396e14116b6f19122d69f4",], 
+  ["0x7924a818013f39cf800f5589ff1f1f0def54f31f", "0xc348314f74b043ff79396e14116b6f19122d69f4",],
   //SECOND_STAGE_LON_USDT
-  ["0x55d31f68975e446a40a2d02ffa4b0e1bfb233c2f", "0x11520d501e10e2e02a2715c4a9d3f8aeb1b72a7a",], 
+  ["0x55d31f68975e446a40a2d02ffa4b0e1bfb233c2f", "0x11520d501e10e2e02a2715c4a9d3f8aeb1b72a7a",],
   //THIRD_STAGE_LON_ETH
-  ["0x7924a818013f39cf800f5589ff1f1f0def54f31f", "0x74379CEC6a2c9Fde0537e9D9346222a724A278e4",], 
+  ["0x7924a818013f39cf800f5589ff1f1f0def54f31f", "0x74379CEC6a2c9Fde0537e9D9346222a724A278e4",],
   //THIRD_STAGE_LON_USDT
-  ["0x55d31f68975e446a40a2d02ffa4b0e1bfb233c2f", "0x539a67b6f9c3cad58f434cc12624b2d520bc03f8"], 
+  ["0x55d31f68975e446a40a2d02ffa4b0e1bfb233c2f", "0x539a67b6f9c3cad58f434cc12624b2d520bc03f8"],
 ];
 
 // Receives rewards/fee from AMM wrapper via reward distributor on WETH shape, some are sold for LON...
@@ -32,30 +31,11 @@ const MULTISIG_ONE = "0x3557BD3d422300198719710Cc3f00194E1c20A46";
 
 const WETH = ADDRESSES.ethereum.WETH;
 
-const ethTvl = async (timestamp, block) => {
-  const amm_wrapper_addr = (
-    await sdk.api.abi.call({
-      abi: abi.ammWrapperAddr,
-      target: PERMANENT_STORAGE_PROXY,
-      block,
-    })
-  ).output;
+const ethTvl = async (api) => {
+  const amm_wrapper_addr = await api.call({ abi: abi.ammWrapperAddr, target: PERMANENT_STORAGE_PROXY, })
+  const pmm_addr = await api.call({ abi: abi.pmmAddr, target: PERMANENT_STORAGE_PROXY, })
 
-
-  const pmm_addr = (
-    await sdk.api.abi.call({
-      abi: abi.pmmAddr,
-      target: PERMANENT_STORAGE_PROXY,
-      block,
-    })
-  ).output;
-
-  const [ tokens_amm, tokens_pmm] = await Promise.all([covalentGetTokens(amm_wrapper_addr), covalentGetTokens(pmm_addr)])
-  const toa = []
-  tokens_amm.forEach(t => toa.push([t, amm_wrapper_addr]))
-  tokens_pmm.forEach(t => toa.push([t, pmm_addr]))
-
-  return sumTokens2({ tokensAndOwners: toa, block, });
+  return sumTokens2({ api, owners: [amm_wrapper_addr, pmm_addr], fetchCoValentTokens: true });
 };
 
 module.exports = {
@@ -64,5 +44,5 @@ module.exports = {
     staking: staking(CONTRACT_FOR_STAKING, LON_TOKEN),
     pool2: (_, block) => sumTokens2({ tokensAndOwners: STAGES_STAKING_CONTRACTS, block, resolveLP: true }),
   },
-  
+
 };

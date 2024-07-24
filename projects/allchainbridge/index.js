@@ -70,7 +70,7 @@ const tokensConf = {
     MATIC: nullAddress,
     USDC: ADDRESSES.polygon.USDC,
     USDT: ADDRESSES.polygon.USDT,
-    WMATIC: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    WMATIC: ADDRESSES.polygon.WMATIC_2,
   },
   fantom: {
     FTM: nullAddress,
@@ -92,7 +92,7 @@ const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
   const bridgeContract = getBridgeContract(chain);
   const tokens = Object.values(tokensConf[chain])
   const owners = [bridgeContract]
-  return sumTokens2({ chain, block:chainBlocks[chain], tokens, owners, })
+  return sumTokens2({ chain, block:chainBlocks[chain], tokens, owners })
 };
 
 module.exports = {

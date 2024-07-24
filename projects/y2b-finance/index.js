@@ -1,7 +1,7 @@
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(timestamp, _b, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     fromBlock: 16310967,
@@ -22,6 +22,9 @@ async function tvl(timestamp, _b, chainBlocks, { api }) {
 
 
 module.exports = {
+  hallmarks: [
+    [1673913600, "Rug Pull"]
+  ],
     ethereum: {
     tvl,
     // staking: sumTokensExport({ owners: [], tokens: ['0xF9C12B27cE5058ab98ce11BD53900f84E18C0650']})

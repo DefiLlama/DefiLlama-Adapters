@@ -4,7 +4,6 @@ module.exports = {
   misrepresentedTokens: true,
   ethpow: {
     tvl: getUniTVL({
-      chain: 'ethpow',
       useDefaultCoreAssets: true,
       factory: '0x78376072F4945b2A5450B1A6B41a85ff20034527',
     })

@@ -6,7 +6,6 @@ module.exports = {
   hpb: {
     tvl: getUniTVL({
       factory: "0xE1d563BcFD4E2a5A9ce355CC8631421186521aAA",
-      chain: "hpb",
       useDefaultCoreAssets: true,
     })
   }

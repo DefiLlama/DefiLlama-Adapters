@@ -10,7 +10,6 @@ module.exports = {
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://becoswap.com/info as the source. Staking accounts for the BECO locked in MasterChef (0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e)',
   kardia: {
     tvl: sdk.util.sumChainTvls(factories.map(factory => getUniTVL({
-      chain: 'kardia',
       useDefaultCoreAssets: true,
       factory,
     })))

@@ -1,21 +1,11 @@
-const PieDAO = require("./pieDAO.js");
+const { addPools, calculatePies, } = require("./pieDAO.js");
 const { staking } = require('../helper/staking')
 
-async function tvl(timestamp, ethBlock) {
-    // creating the PieDAO helper...
-    let pieDAO = new PieDAO(ethBlock);
-
+async function tvl(api) {
     await Promise.all([
-        // calculating the total for Ovens...
-        await pieDAO.calculateOvens(),
-        // calculating the total for Pies...
-        await pieDAO.calculatePies(),
-        // calculating the total for Pools...
-        await pieDAO.calculatePools(),
+        addPools(api),
+        calculatePies(api),
     ])
-
-    // finally, returning the total NAV...
-    return pieDAO.calculateNAV();
 }
 
 module.exports = {

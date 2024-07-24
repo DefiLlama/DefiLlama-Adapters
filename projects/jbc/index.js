@@ -11,6 +11,9 @@ const tokensAndOwners = [
 const lpToken = '0x85c6da933a7451bf2a6d836304b30967f3e76e11'
 
 module.exports = {
+  hallmarks: [
+    [1681516800, "Rug Pull"]
+  ],
   arbitrum: {
     tvl: sumTokensExport({ tokensAndOwners }),
     pool2: pool2({ stakingContract: '0x0F6f73c7ecCE4FB9861E25dabde79CBA112550b3', lpToken, useDefaultCoreAssets: true, }),

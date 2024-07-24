@@ -60,7 +60,6 @@ async function getTvl(chain, block, ethBlock) {
     sdk.util.sumSingleBalance(ethBalances, bareToken, balance)
   })
 
-  // console.log(JSON.stringify(ethBalances, null, 2));
   // resolve LPs
   if (chain === 'xdai')
     await Promise.all([

@@ -1,6 +1,8 @@
+const sdk = require('@defillama/sdk')
 const { calLyfTvl } = require("./lyf");
 const { calAusdTvl } = require('./ausd');
 const { calxALPACAtvl } = require('./xalpaca');
+const aExports = require('../alpaca-finance-lend');
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
   const lyfTvl = await calLyfTvl('bsc', chainBlocks.bsc);
@@ -25,11 +27,11 @@ async function ftmStaking(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   start: 1602054167,
   bsc: {
-    tvl: bscTvl,
+    tvl: sdk.util.sumChainTvls([bscTvl, aExports.bsc.tvl]),
     staking: bscStaking,
   },
   fantom: {
-    tvl: fantomTvl,
+    tvl: sdk.util.sumChainTvls([fantomTvl, aExports.fantom.tvl]),
     staking: ftmStaking,
   }
 };

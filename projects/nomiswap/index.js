@@ -7,7 +7,6 @@ const constantProductFactory = "0xd6715A8be3944ec72738F0BFDC739d48C3c29349";
 const stableSwapFactory = "0xC6B7ee49D386bAe4FD501F2d2f8d18828F1f6285";
 const factories = [constantProductFactory, stableSwapFactory].map(factory => getUniTVL({
   factory,
-  chain: 'bsc',
   useDefaultCoreAssets: true
 }))
 
@@ -20,7 +19,7 @@ const stakingPools = [
 
 module.exports = {
   bsc: {
-    staking: stakings(stakingPools, NMX, 'bsc'),
+    staking: stakings(stakingPools, NMX),
     tvl: sdk.util.sumChainTvls(factories),
   },
 };

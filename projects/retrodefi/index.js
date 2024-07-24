@@ -3,10 +3,6 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const {
-  transformBscAddress,
-  transformPolygonAddress,
-} = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 // --- BSC Addresses ---
@@ -143,7 +139,7 @@ const calcTvl = async (
 const bscStaking = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
   for (const token of stakingTokensBsc) {
     await sumTokensAndLPsSharedOwners(
       balances,
@@ -160,14 +156,14 @@ const bscStaking = async (chainBlocks) => {
 
 const polygonStaking = async (...params) => {
   for (const stakingContract of retroStakingsPolygon) {
-    return staking(stakingContract, pQBERT, "polygon")(...params);
+    return staking(stakingContract, pQBERT)(...params);
   }
 };
 
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
 
   await calcTvl(
     balances,
@@ -184,7 +180,7 @@ const bscTvl = async (chainBlocks) => {
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
 
   await calcTvl(
     balances,
@@ -203,12 +199,12 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
     staking: bscStaking,
-    pool2: pool2s(pool2StratsBsc, excludePool2Bsc, "bsc"),
+    pool2: pool2s(pool2StratsBsc, excludePool2Bsc),
   },
   polygon: {
     tvl: polygonTvl,
     staking: polygonStaking,
-    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon, "polygon"),
+    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon),
   },
   methodology:
     "We count liquidity on the Farms through MasterChef contracts; and Saking of TCG2 and QBERT tokens through retroStaking contracts",

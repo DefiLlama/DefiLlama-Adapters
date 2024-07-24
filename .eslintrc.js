@@ -14,6 +14,7 @@ module.exports = {
     "rules": {
         "no-case-declarations": "off",
         "no-unused-vars": "off",
+        "no-useless-escape": "warn",
         "no-prototype-builtins": "off",
     }
 }

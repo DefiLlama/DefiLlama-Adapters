@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs, getAddress } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
+const { sliceIntoChunks } = require('../helper/utils')
 
 async function _getLogs(api) {
   const { factory, fromBlock } = config[api.chain]
@@ -14,25 +15,28 @@ async function _getLogs(api) {
   return logs.map(i => i.topics.slice(1).map(getAddress))
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { factory, wrapped } = config[api.chain]
   const logs = await _getLogs(api)
   const tokensAndOwners = logs.map(i => [i[1], i[0]])
   tokensAndOwners.push([wrapped, factory])
-  return sumTokens2({ api, tokensAndOwners, permitFailure: true })
+  return sumTokens2({ api, tokensAndOwners, permitFailure: true, sumChunkSize: 20 })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const balances = {}
-  const logs = await _getLogs(api)
-  const loans = await api.multiCall({ abi: 'uint256:_currentLoanAmount', calls: logs.map(i => i[0]) })
-  loans.forEach((val, i) => sdk.util.sumSingleBalance(balances, logs[i][2], val, api.chain))
+  const allLogs = await _getLogs(api)
+  for (const logs of sliceIntoChunks(allLogs, 30)) {
+    const loans = await api.multiCall({ abi: 'uint256:_currentLoanAmount', calls: logs.map(i => i[0]) })
+    loans.forEach((val, i) => sdk.util.sumSingleBalance(balances, logs[i][2], val, api.chain))
+  }
+
   return balances
 }
 
 const config = {
   ethereum: { factory: '0x19c56cb20e6e9598fc4d22318436f34981e481f9', fromBlock: 16423090, wrapped: ADDRESSES.ethereum.WETH, },
-  polygon: { factory: '0x85b609f4724860fead57e16175e66cf1f51bf72d', fromBlock: 40378130, wrapped: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', },
+  polygon: { factory: '0x85b609f4724860fead57e16175e66cf1f51bf72d', fromBlock: 40378130, wrapped: ADDRESSES.polygon.WMATIC_2, },
 }
 
 module.exports = {

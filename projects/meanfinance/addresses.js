@@ -19,9 +19,9 @@ const TOKENS_IN_LEGACY_VERSIONS = {
     ADDRESSES.tombchain.FTM, // WETH
     ADDRESSES.optimism.OP, // OP
     ADDRESSES.optimism.BitANT, // BitANT
-    '0x50c5725949a6f0c72e6c4a641f24049a917db0cb', // LYRA
+    ADDRESSES.base.DAI, // LYRA
     '0x65559aa14915a70190438ef90104769e5e890a00', // ENS
-    '0x68f180fcce6836688e9084f035309e29bf0a2095', // WBTC
+    ADDRESSES.optimism.WBTC, // WBTC
     '0x6fd9d7ad17242c41f7131d257212c54a0e816691', // UNI
     ADDRESSES.optimism.USDC, // USDC
     '0x7fb688ccf682d58f86d7e38e03f9d22e7705448b', // RAI
@@ -37,7 +37,7 @@ const TOKENS_IN_LEGACY_VERSIONS = {
   ],
   polygon: [
     '0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a', // SUSHI
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // WMATIC
+    ADDRESSES.polygon.WMATIC_2, // WMATIC
     '0x172370d5cd63279efa6d502dab29171933a610af', // CRV
     ADDRESSES.polygon.WBTC, // WBTC
     ADDRESSES.polygon.USDC, // USDC

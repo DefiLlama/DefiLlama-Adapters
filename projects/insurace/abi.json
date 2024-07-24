@@ -1,3 +1,0 @@
-{
-  "getStakedAmountPT": "function getStakedAmountPT(address _token) view returns (uint256)"
-}

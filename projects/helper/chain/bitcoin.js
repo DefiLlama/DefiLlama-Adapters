@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { get } = require('../http')
-const env = require('../env')
+const { getEnv } = require('../env')
 
 const url = addr => 'https://blockstream.info/api/address/' + addr
 
@@ -21,6 +21,7 @@ async function getBalanceNow(addr) {
 }
 
 async function sumTokens({ balances = {}, owners = [], timestamp }) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   const bitBals = []
   for (const addr of owners)
     bitBals.push(await getBalance(addr, timestamp))
@@ -34,7 +35,7 @@ async function getBalance(addr, timestamp) {
 
   if (!timestamp || (now - timestamp) < delay) return balance
 
-  let endpoint = `https://btc.getblock.io/${env.GETBLOCK_KEY}/mainnet/blockbook/api/v2/balancehistory/${addr}?fiatcurrency=btc&groupBy=86400&from=${timestamp}`
+  let endpoint = `https://btc.getblock.io/${getEnv('GETBLOCK_KEY')}/mainnet/blockbook/api/v2/balancehistory/${addr}?fiatcurrency=btc&groupBy=86400&from=${timestamp}`
 
   const response = await get(endpoint)
   response.forEach(({ sent, received }) => balance += sent / 1e8 - received / 1e8)

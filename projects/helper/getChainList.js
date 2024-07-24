@@ -1,10 +1,11 @@
 const fs = require('fs')
 const path = require('path')
-
+/* 
 const projectsFolder = path.join(__dirname, '..')
 
 const files = fs.readdirSync(projectsFolder, { withFileTypes: true })
 const whitelistedKeys = require('./whitelistedExportKeys.json')
+const sdk = require('@defillama/sdk')
 
 const projectNames = []
 const rModules = []
@@ -29,10 +30,10 @@ files.forEach(i => {
       projectNames.push(i.name)
       return;
     }
-    console.log('Adapter wrong? ', i.name)
+    sdk.log('Adapter wrong? ', i.name)
   } catch (e) {
     // console.error(e)
-    console.log('error in', i.name)
+    sdk.log('error in', i.name)
   }
 })
 
@@ -42,7 +43,7 @@ function getModule(fPath, projectName) {
   delete module.hallmarks
   if (typeof module.tvl === 'function') {
     const chainsWithTVL = Object.keys(module).filter(chain => typeof module[chain] === 'object' && typeof module[chain].tvl === 'function')
-    if (chainsWithTVL.length) console.log('I am confused:', projectName, chainsWithTVL)
+    if (chainsWithTVL.length) sdk.log('I am confused:', projectName, chainsWithTVL)
     else module.ethereum = { tvl: module.tvl }
     delete module.tvl
   }
@@ -75,8 +76,6 @@ rModules.forEach((module, i) => {
   })
 })
 
-// console.log(`projectMissingChainNames count: `, projectMissingChainNames.length, projectMissingChainNames.join(', '))
-// console.log(`Chain count: `, Object.keys(chainCount).length)
 const chainCountTable = Object.keys(chainCount).map((chain) => [chain, chainCount[chain].length, chainCount[chain]]).sort((a, b) => b[1] - a[1])
 const keyCountTable = Object.keys(keysCount).map((key) => [key, keysCount[key].length, keysCount[key]]).sort((a, b) => b[1] - a[1])
 console.table(chainCountTable)
@@ -94,3 +93,8 @@ function checkFileExistsSync(filepath) {
   }
   return flag;
 }
+ */
+
+const chainNames = require('./chains.json')
+chainNames.sort()
+fs.writeFileSync(path.join(__dirname, './chains.json'), JSON.stringify(chainNames, null, 2))

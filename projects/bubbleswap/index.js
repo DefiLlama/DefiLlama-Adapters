@@ -5,5 +5,6 @@ module.exports = {
   hallmarks: [
     [1666569600, "Start V1 Rewards"],
     [1683813600, "V1 Deprecation"],
-  ]
+  ],
+  deadFrom: 1683813600,
 }

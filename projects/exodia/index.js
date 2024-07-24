@@ -1,8 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk');
-const { transformFantomAddress } = require("../helper/portedTokens");
-const { request, gql } = require("graphql-request");
 
 const ExodStaking = "0x8b8d40f98a2f14e2dd972b3f2e2a2cc227d1e3be"
 const exod = "0x3b57f3feaaf1e8254ec680275ee6e7727c7413c7"
@@ -65,7 +63,7 @@ const getPoolTokens = async (block) => {
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   await sumTokens(balances, [[exod, ExodStaking]], chainBlocks.fantom, 'fantom', transformAddress)
 
@@ -74,7 +72,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   const treasuryBalances = await getPoolTokens(chainBlocks.fantom)
   const tokens = [mai, dai, wftm, gohm, exod, wsexod]

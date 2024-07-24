@@ -1,22 +1,33 @@
-const { queryContract } = require('../helper/chain/cosmos')
+const { queryContract, queryContracts, sumTokens, queryContractWithRetries } = require('../helper/chain/cosmos')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 
+function extractTokenInfo(asset) {
+  const { native_token, token, native } = asset.info
+  for (const tObject of [native_token, token, native]) {
+    if (!tObject) continue
+    if (typeof tObject === 'string') return tObject
+    const token = tObject.denom || tObject.contract_addr
+    if (token) return token
+  }
+}
+
 function getAssetInfo(asset) {
-  return [asset.info.native_token?.denom ?? asset.info.token?.contract_addr, Number(asset.amount)]
+  return [extractTokenInfo(asset), Number(asset.amount)]
 }
 
 async function getAllPairs(factory, chain) {
   let allPairs = []
   let currentPairs;
+  const limit = factory === 'terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r' ? 29 : 30 // some weird native token issue at one of the pagination query
   do {
-    const queryStr = `{"pairs": { "limit": 30 ${allPairs.length ? `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}` : ""} }}`
+    const queryStr = `{"pairs": { "limit": ${limit} ${allPairs.length ? `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}` : ""} }}`
     currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
     allPairs.push(...currentPairs)
   } while (currentPairs.length > 0)
   const dtos = []
   const getPairPool = (async (pair) => {
-    const pairRes = await queryContract({ contract: pair.contract_addr, chain, data: { pool: {} } })
+    const pairRes = await queryContractWithRetries({ contract: pair.contract_addr, chain, data: { pool: {} } })
     const pairDto = {}
     pairDto.assets = []
     pairDto.addr = pair.contract_addr
@@ -26,10 +37,13 @@ async function getAllPairs(factory, chain) {
     })
     dtos.push(pairDto)
   })
-  await PromisePool
-    .withConcurrency(31)
+  const {errors} = await PromisePool
+    .withConcurrency(10)
     .for(allPairs)
     .process(getPairPool)
+  if((errors?.length ?? 0) > 50){
+    throw new Error(`Too many errors: ${errors.length}/${allPairs.length} on ${chain}`)
+  }
   return dtos
 }
 
@@ -47,6 +61,17 @@ function getFactoryTvl(factory) {
   }
 }
 
+
+function getSeiDexTvl(codeId) {
+  return async (api) => {
+    const chain = api.chain
+    const contracts = await queryContracts({ chain, codeId, })
+    return sumTokens({ chain, owners: contracts })
+  }
+}
+
 module.exports = {
-  getFactoryTvl
+  getFactoryTvl,
+  getSeiDexTvl,
+  getAssetInfo,
 }

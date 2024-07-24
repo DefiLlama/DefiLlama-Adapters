@@ -1,7 +1,6 @@
 const { Program } = require("@project-serum/anchor");
-const { getProvider, sumTokens2, } = require("../helper/solana");
+const { getProvider, sumTokens2, blacklistedTokens_default} = require("../helper/solana");
 const idl = require('./idl.json')
-const blacklistedTokens = ['A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g']
 
 async function tvl() {
   const provider = getProvider()
@@ -11,9 +10,9 @@ async function tvl() {
   const pairsV2 = await programV2.account.pool.all()
   const tokenAccounts = []
   const addPool = ({ account }) => {
-    if (!blacklistedTokens.includes(account.quoteTokenMint.toString()))
+    if (!blacklistedTokens_default.includes(account.quoteTokenMint.toString()))
       tokenAccounts.push(account.quoteTokenVault.toString())
-    if (!blacklistedTokens.includes(account.baseTokenMint.toString()))
+    if (!blacklistedTokens_default.includes(account.baseTokenMint.toString()))
       tokenAccounts.push(account.baseTokenVault.toString())
   }
   pairs.forEach(addPool)
@@ -22,7 +21,7 @@ async function tvl() {
 }
 
 async function staking() {
-  return sumTokens2({ tokenAccounts: ['BAhtu6WzzTY72abMwNcjm8P6QvASaQNWnLY94ma69ocu'], blacklistedTokens: ['A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g'] })
+  return sumTokens2({ tokenAccounts: ['BAhtu6WzzTY72abMwNcjm8P6QvASaQNWnLY94ma69ocu'] })
 }
 
 module.exports = {

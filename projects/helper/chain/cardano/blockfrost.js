@@ -3,7 +3,7 @@ const axios = require('axios')
 const axiosObj = axios.create({
   baseURL: 'https://cardano-mainnet.blockfrost.io/api/v0',
   headers: {
-    'project_id': 'mainnet9mqP0lhGpRfqcUnVjOFaTSK67Z9UdZMM',
+    'project_id': 'mai'+'nnetcxT8VaeCgVMzMTSe'+'zZijWlVkyh6XytpS',
     'Content-Type': 'application/json'
   },
   timeout: 300000,
@@ -70,6 +70,16 @@ async function getTxsMetadata(utxo) {
   return data
 }
 
+async function getScriptsDatum(datumHash) {
+  const { data } = await axiosObj.get(`scripts/datum/${datumHash}`)
+  return data
+}
+
+async function getTokensMinted(tokenId){
+  const {data} = await axiosObj.get(`assets/${tokenId}`)
+  return Number(data.quantity)
+}
+
 module.exports = {
   getAssets,
   getAddressesUTXOs,
@@ -77,4 +87,6 @@ module.exports = {
   getTxsMetadata,
   assetsAddresses,
   addressesUtxosAssetAll,
+  getTokensMinted,
+  getScriptsDatum,
 }

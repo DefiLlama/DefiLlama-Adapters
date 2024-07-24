@@ -16,5 +16,5 @@ const SUSHI = ADDRESSES.ethereum.SUSHI
 module.exports = indexExports
 module.exports.misrepresentedTokens = true
 
-module.exports.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum')
+module.exports.ethereum.staking = staking(xSUSHI, SUSHI)
 // node test.js projects/sushiswap/index.js

@@ -51,6 +51,7 @@ function updateFile(file) {
   fs.writeFileSync(file, fileStr, { encoding: 'utf-8' })
 
   function updateFileStr(label, address, file) {
+    if (!address || !address.length) return;
     if (!updateFile) {
       updateFile = (new RegExp(address, 'i')).test(fileStr)
       // if (updateFile)

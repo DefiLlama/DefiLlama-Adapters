@@ -14,6 +14,9 @@ async function tvl(timestamp, _block, { harmony: block }) {
 
 module.exports = {
     deadFrom: 1650564340,
+    hallmarks: [
+        [1650412800, "Rug Pull"]
+    ],
     harmony: {
         tvl
     }

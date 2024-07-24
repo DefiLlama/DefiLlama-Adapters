@@ -12,7 +12,7 @@ const abi = {
   "tokenInfo": "function tokenInfo(uint256) view returns (address stableToken, uint256 underlyingContractDecimals, bool canMint)",
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { poolCount, vault } = config[api.chain]
   const calls = createIncrementArray(poolCount)
   const tokensInfo = await api.multiCall({ abi: abi.tokenInfo, calls, target: vault })

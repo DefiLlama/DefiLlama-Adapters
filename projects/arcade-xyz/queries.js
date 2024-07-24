@@ -75,6 +75,7 @@ const fetchLoansQuery = gql`
     arcadeLoans(first: <FIRST>, block: { number: <BLOCK> }, where :{ state: "Active", cursor_gte: <CURSOR> }) {
       payableCurrency
       principal
+      interestRate
     }
   }
 `

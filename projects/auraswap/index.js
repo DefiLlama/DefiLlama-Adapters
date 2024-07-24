@@ -7,7 +7,7 @@ const FACTORY_POLYGON = "0x015DE3ec460869eb5ceAe4224Dc7112ac0a39303";
 
 module.exports = {
   polygon: {
-    tvl: uniTvlExport(FACTORY_POLYGON, 'polygon'),
-    staking: staking(MASTER_CHEF, AURA_TOKEN, "polygon"),
+    tvl: uniTvlExport(FACTORY_POLYGON, 'polygon', true),
+    staking: staking(MASTER_CHEF, AURA_TOKEN),
   },
 }

@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/http')
@@ -92,7 +91,7 @@ const polygonTvl = async (_, _block, chainBlocks) => {
   const balances = {};
   const block = await getBlock(_, 'polygon', chainBlocks) - 500
 
-  let transformAddress = await transformPolygonAddress();
+  let transformAddress = i => `polygon:${i}`;
 
   await sumTokensAndLPsSharedOwners(
     balances,
@@ -110,14 +109,13 @@ const polygonTvl = async (_, _block, chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: ethTvl,
   },
   polygon: {
-    staking: staking(stkGHST_QUICKContract, GHST_Polygon, "polygon"),
+    staking: staking(stkGHST_QUICKContract, GHST_Polygon),
     tvl: polygonTvl,
-    pool2: staking([stkGHST_QUICKContract], GHST_pools2, "polygon")
+    pool2: staking([stkGHST_QUICKContract], GHST_pools2)
   },
   methodology:
     `We count liquidity on Vaults from ETHEREUM and Polygon chains through Vault Contracts;
