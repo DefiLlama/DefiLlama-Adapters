@@ -1,5 +1,5 @@
 
-const decimal_default = require("decimal.js");
+const decimal_default = require("./decimal.js");
 const import_bn6 = require("bn.js");
 
 function asIntN(int, bits = 32) {
