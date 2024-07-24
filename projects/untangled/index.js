@@ -6,8 +6,8 @@ const Contracts = {
 
 async function tvl(api) {
   const pools = await api.fetchList({  lengthAbi: 'getPoolsLength', itemAbi: 'pools', target: Contracts.SecuritizationManager})
-  const poolValues = await api.multiCall({target: Contracts.SecuritizationPoolValueService, abi: "function getPoolValue(address poolAddress) external view returns (uint256)", calls:pools})
-  api.add(Contracts.USDC, poolValues)
+  const reserves = await api.multiCall({  abi: 'function getReserves() external view returns (uint256, uint256)', calls: pools })
+  api.add(Contracts.USDC, reserves.map(i => i[1]))
 }
 
 async function borrowed(api) {
