@@ -28,6 +28,7 @@ async function getProcolAddresses(chain) {
     );
   }else if(chain === 'sui') {
     return (
+      // modify the hosts for raw.githubusercontent.com ip if it cannot be retrieved.
       await getConfig('mole/'+chain,
         "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.sui_mainnet.json"
       )
@@ -288,7 +289,9 @@ async function calLyfTvlSui(api) {
   for (let i = 0; i < vaultInfos.length; i++) {
     const baseToken = addresses.Vaults[i].baseToken
     const tokenAmount = vaultInfos[i].fields.value.fields.coin
-    api.add(baseToken, tokenAmount)
+    const vaultDebtVal  = vaultInfos[i].fields.value.fields.vault_debt_val
+    const vaultAmount = parseInt(tokenAmount) + parseInt(vaultDebtVal)
+    api.add(baseToken, vaultAmount.toString())
   }
 }
 

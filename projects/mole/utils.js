@@ -1,5 +1,5 @@
 
-const decimal_default = require("./decimal.js");
+const BigNumber = require("bignumber.js");
 const import_bn6 = require("bn.js");
 
 function asIntN(int, bits = 32) {
@@ -11,11 +11,11 @@ function i32BitsToNumber(v) {
 }
 
 function toX64_Decimal(num) {
-    return num.mul(decimal_default.pow(2, 64));
+    return (new BigNumber(num)).times(new BigNumber(2).pow(64));
 }
 
 function fromX64_Decimal(num) {
-    return num.mul(decimal_default.pow(2, -64));
+    return (new BigNumber(num)).times(new BigNumber(2).pow(-64));
 }
 
 function signedShiftRight(n0, shiftBy, bitWidth) {
@@ -170,31 +170,32 @@ function tickIndexToSqrtPriceX64(tickIndex) {
    * @returns
    */
 function getCoinAmountFromLiquidity(liquidity, curSqrtPrice, lowerPrice, upperPrice, roundUp) {
-    const liq = new decimal_default(liquidity.toString());
-    const curSqrtPriceStr = new decimal_default(curSqrtPrice.toString());
-    const lowerPriceStr = new decimal_default(lowerPrice.toString());
-    const upperPriceStr = new decimal_default(upperPrice.toString());
+    const liq = new BigNumber(liquidity.toString());
+    const curSqrtPriceStr = new BigNumber(curSqrtPrice.toString());
+    const lowerPriceStr = new BigNumber(lowerPrice.toString());
+    const upperPriceStr = new BigNumber(upperPrice.toString());
     let coinA;
     let coinB;
     if (curSqrtPrice.lt(lowerPrice)) {
-      coinA = toX64_Decimal(liq).mul(upperPriceStr.sub(lowerPriceStr)).div(lowerPriceStr.mul(upperPriceStr));
-      coinB = new decimal_default(0);
+      coinA = toX64_Decimal(liq).times(upperPriceStr.minus(lowerPriceStr)).div(lowerPriceStr.times(upperPriceStr));
+      coinB = new BigNumber(0);
     } else if (curSqrtPrice.lt(upperPrice)) {
-      coinA = toX64_Decimal(liq).mul(upperPriceStr.sub(curSqrtPriceStr)).div(curSqrtPriceStr.mul(upperPriceStr));
-      coinB = fromX64_Decimal(liq.mul(curSqrtPriceStr.sub(lowerPriceStr)));
+      coinA = toX64_Decimal(liq).times(upperPriceStr.minus(curSqrtPriceStr)).div(curSqrtPriceStr.times(upperPriceStr));
+      coinB = fromX64_Decimal(liq.times(curSqrtPriceStr.minus(lowerPriceStr)));
     } else {
-      coinA = new decimal_default(0);
-      coinB = fromX64_Decimal(liq.mul(upperPriceStr.sub(lowerPriceStr)));
+      coinA = new BigNumber(0);
+      coinB = fromX64_Decimal(liq.times(upperPriceStr.minus(lowerPriceStr)));
     }
     if (roundUp) {
       return {
-        coinA: new import_bn6(coinA.ceil().toString()),
-        coinB: new import_bn6(coinB.ceil().toString())
+        coinA: new import_bn6(coinA.integerValue(BigNumber.ROUND_CEIL).toFixed()),
+        coinB: new import_bn6(coinB.integerValue(BigNumber.ROUND_CEIL).toFixed())
       };
     }
+
     return {
-      coinA: new import_bn6(coinA.floor().toString()),
-      coinB: new import_bn6(coinB.floor().toString())
+      coinA: new import_bn6(coinA.integerValue(BigNumber.ROUND_FLOOR).toFixed()),
+      coinB: new import_bn6(coinB.integerValue(BigNumber.ROUND_FLOOR).toFixed())    
     };
   }
 
