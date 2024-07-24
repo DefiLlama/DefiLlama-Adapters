@@ -23,7 +23,10 @@ const chains = [
   "celo",
   "kava",
   "base",
-  "fraxtal"
+  "fraxtal",
+  "xlayer",
+  "bsc",
+  "mantle"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -181,7 +184,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 }
 
 const blacklists = {
-  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7', '0xEf1385D2b5dc6D14d5fecB86D53CdBefeCA20fcC', ADDRESSES.ethereum.CRVUSD, '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
   arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378'],
 }
 
