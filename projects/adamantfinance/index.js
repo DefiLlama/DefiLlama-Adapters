@@ -16,6 +16,19 @@ const vaultsUrl = {
     "https://raw.githubusercontent.com/eepdev/vaults/main/arbitrum_vaults.json",
   cronos:
     "https://raw.githubusercontent.com/eepdev/vaults/main/cronos_vaults.json",
+  fraxtal:
+    "https://raw.githubusercontent.com/eepdev/vaults/main/current_vaults_all_chains.json"
+};
+
+const allVaultsUrl = "https://raw.githubusercontent.com/eepdev/vaults/main/current_vaults_all_chains.json";
+
+const NetworkID = {
+  ETH_MAINNET: 1,
+  POLYGON: 137,
+  ARBITRUM: 42161,
+  CRONOS: 25,
+  FRAXTAL: 252,
+  OPTIMISM: 10
 };
 
 /*** Polygon Addresses ***/
@@ -28,6 +41,7 @@ const vaultAddresses_polygon = ["0xF7661EE874Ec599c2B450e0Df5c40CE823FEf9d3"]; /
 const lpAddresses_polygon = ["0xa5bf14bb945297447fe96f6cd1b31b40d31175cb"]; //ADDY/WETH
 
 const ADDY = "0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539";
+const adMESH = "0x459dc0fB79653A48469F2C3c375d0A522750Dd40";
 
 /*** Arbitrum Addresses ***/
 const stakingContracts_Arbitrum = [
@@ -66,7 +80,7 @@ async function pool2Polygon(api) {
 }
 
 async function polygonTvl(timestamp, block, chainBlocks) {
-  return await tvl(timestamp, "polygon", chainBlocks, lpAddresses_polygon);
+  return await tvl2(timestamp, "polygon", NetworkID.POLYGON, chainBlocks, lpAddresses_polygon);
 }
 
 async function arbitrumTvl(timestamp, block, chainBlocks) {
@@ -74,7 +88,11 @@ async function arbitrumTvl(timestamp, block, chainBlocks) {
 }
 
 async function cronosTvl(timestamp, block, chainBlocks) {
-  return await tvl(timestamp, "cronos", chainBlocks, lpAddresses_cronos);
+  return await tvl2(timestamp, "cronos", NetworkID.CRONOS, chainBlocks, lpAddresses_cronos);
+}
+
+async function fraxtalTvl(timestamp, block, chainBlocks) {
+  return await tvl2(timestamp, "fraxtal", NetworkID.FRAXTAL, chainBlocks, []); //no Adamant platform token on Fraxtal
 }
 
 async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress = (a) => a) {
@@ -98,7 +116,6 @@ async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, tra
       sdk.util.sumSingleBalance(balances, chain + ':' + v.lpAddress, vault_balances[idx])
     }
   });
-
   await unwrapLPsAuto({ balances, block, chain, });
   return balances;
 }
@@ -114,7 +131,7 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
   let uniVaults = resp
     .filter(
       (vault) =>
-        vault.vaultAddress !== '0x459dc0fB79653A48469F2C3c375d0A522750Dd40' &&
+        vault.vaultAddress !== adMESH &&
         vault.platform !== "dodo"
     )
     .map((vault) => ({
@@ -123,6 +140,32 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
     }));
   balances = await uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress);
 
+  return balances;
+};
+
+const tvl2 = async (timestamp, chain, chainId, chainBlocks, lpAddressesIgnored) => {
+
+  const block = chainBlocks[chain];
+  const transformAddress = await getChainTransform(chain)
+  let balances = {};
+
+  let resp = await getConfig('adamant-fi/'+chain, allVaultsUrl);
+
+  let uniVaults = resp
+    .filter(
+      (vault) =>
+        vault.vaultAddress !== adMESH &&
+        vault.vaultAddress !== "0x01d2833e6d86D5Ad8380044DEb2cA520fc60D326" && //adMESH related token/deposit
+        vault.vaultAddress !== "0xbe6aa0AF32984fE3f65a73071DECC09Ab607e310" && //adMESH related token/deposit
+        vault.platform !== "dodo" &&
+        vault.chainId == chainId
+    )
+    .map((vault) => ({
+      vaultAddress: vault.vaultAddress,
+      lpAddress: vault.lpAddress,
+    }));
+
+  balances = await uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress);
   return balances;
 };
 
@@ -139,6 +182,9 @@ module.exports = {
   cronos: {
     staking: stakingUnknown({ owners: stakingContracts_cronos, tokens: [CADDY], chain: 'cronos', lps: lpAddresses_cronos, useDefaultCoreAssets: true }),
     tvl: cronosTvl,
+  },
+  fraxtal: {
+    tvl: fraxtalTvl,
   },
   methodology:
     "The current vaults on Adamant Finance are found on the Github. Once we have the vaults, we filter out the LP addresses of each vault and unwrap the LPs so that each token can be accounted for. Coingecko is used to price the tokens and the sum of all tokens is provided as the TVL",

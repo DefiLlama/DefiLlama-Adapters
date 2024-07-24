@@ -3,15 +3,15 @@ const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
 const { getTokenSupply } = require('../helper/solana')
 
-const ethGraphUrl = "https://api.thegraph.com/subgraphs/name/renproject/renvm";
+const ethGraphUrl = sdk.graph.modifyEndpoint('AJaQdD8DUunuwHCbAsZk5h62AfyNG1etRtK9EcDH7gwH');
 const bscGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-binance-smart-chain";
+    sdk.graph.modifyEndpoint('6UCMxzH5LPvZrLhcpSVrSDhoKRYJchvHM7vnTUo2bBp2');
 const avalancheGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-avalanche";
+    sdk.graph.modifyEndpoint('GBRcEpUZTHMyjmtkPsHMYmHuPtcLFqnU5SPvpaLdfmau');
 const fantomGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-fantom";
+    sdk.graph.modifyEndpoint('2TV9sKK7fLvfsbnUox6irt3XbiHAzw1fvbh9j8vnBXmH');
 const polygonGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-polygon";
+    sdk.graph.modifyEndpoint('GQCGcDW16JfawMXegTemUte8PPyJQVvtF6kACvMYwX8V');
 const graphQuery = gql`
   {
     assets {
