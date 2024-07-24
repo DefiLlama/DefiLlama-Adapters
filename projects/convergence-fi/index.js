@@ -28,10 +28,8 @@ const getSdtStakingsAddresses = async (api, tower, limit) => {
 
 const getsdtStakingViews = async (api, viewer, sdtStakings) => {
   const stakingdatasRes = await api.multiCall({
-    calls: sdtStakings.map((address) => ({
-      target: viewer,
-      params: [address],
-    })),
+    target: viewer,
+    calls: sdtStakings,
     abi: abi.getGlobalViewCvgSdtStaking,
   });
 
@@ -40,15 +38,14 @@ const getsdtStakingViews = async (api, viewer, sdtStakings) => {
     balance: actualTotal,
   }));
 
-  const stakingTokensRes = await api.multiCall({
+  const stakingTokens = await api.multiCall({
     calls: stakingDatas.map(({ staking }) => ({ target: staking })),
     abi: abi.staking_token,
   });
 
-  const stakingTokens = stakingTokensRes.map((address) => address);
 
   const deeperUnwrapTokens = await api.multiCall({
-    calls: stakingTokens.map((address) => ({ target: address })),
+    calls: stakingTokens,
     abi: abi.token,
     permitFailure: true,
   });
@@ -61,7 +58,7 @@ const getsdtStakingViews = async (api, viewer, sdtStakings) => {
 };
 
 const tvl = async (api) => {
-  const getSdtStakings = await getSdtStakingsAddresses(api, tower, 100);
+  const getSdtStakings = await getSdtStakingsAddresses(api, tower, 1000);
   await getsdtStakingViews(api, viewer, getSdtStakings);
   api.removeTokenBalance(CVG);
   return sumTokens2({ api, resolveLP: true });
