@@ -17,7 +17,6 @@ async function tvl(_timestamp, _block) {
 
 module.exports = {
   timetravel: false,
-  methodology: "Liquid staking for Internet Computer Protocol.",
   methodology: 'Staked tokens are counted as TVL.',
   icp: {
     tvl,
