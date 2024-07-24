@@ -14,7 +14,6 @@ Object.keys(config).forEach(chain => {
       let pools = await api.call({ target: manager, abi: "address[]:getAllPools", });
       const tokens = await api.multiCall({ abi: 'address:getBaseAsset', calls: pools })
       return api.sumTokens({ owner: vault, tokens })
-
     }
   }
 })
