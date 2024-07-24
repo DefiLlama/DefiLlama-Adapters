@@ -1,16 +1,17 @@
 const BigNumber = require("bignumber.js");
 const { get } = require("../helper/http");
 
-const url = 'https://tsbvt-pyaaa-aaaar-qafva-cai.raw.ic0.app/api/metadata';
+const url = 'https://tsbvt-pyaaa-aaaar-qafva-cai.raw.icp0.io/api/metadata';
 
 async function tvl(_timestamp, _block) {
-  const tvl = (await get(url)).tvl;
-  if (tvl === undefined) {
+  const metadata = (await get(url));
+  const staked_icp = metadata.tracked_6m_stake + metadata.neuron_8y_stake_e8s;
+  if (staked_icp === undefined) {
       // API didn't return a tvl number to work with
       throw new Error("Unknown");
   }
   return {
-    "coingecko:internet-computer": BigNumber(tvl).div(1e8).toFixed(0),
+    "coingecko:internet-computer": BigNumber(staked_icp).div(1e8).toFixed(0),
   };
 }
 
