@@ -168,6 +168,10 @@ const yPoolDepositContract = {
     "RIP": {
       "contractAddress": "0xd15f36e89e08A67AEe910629fCe9aBA7D2e8Ac80",
       "tokenAddress": "0x34aceA6Cc02578aF041a5E976b7289ca23cCB7A8"
+    },
+    "STUCK": {
+      "contractAddress": "0xc1Ae654b7D9C6a2Cfb0f97254AB5246AAbd2Ce7b",
+      "tokenAddress": "0xa0D445dC147f598d63518b5783CA97Cd8Bd9f5Bc"
     }
   },
   "56": {
@@ -396,6 +400,10 @@ const yPoolDepositContract = {
     "RIP": {
       "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
       "tokenAddress": "0x34aceA6Cc02578aF041a5E976b7289ca23cCB7A8"
+    },
+    "STUCK": {
+      "contractAddress": "0xc1Ae654b7D9C6a2Cfb0f97254AB5246AAbd2Ce7b",
+      "tokenAddress": "0xa0D445dC147f598d63518b5783CA97Cd8Bd9f5Bc"
     }
   },
   "5000": {
