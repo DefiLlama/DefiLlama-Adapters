@@ -1,4 +1,4 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { getLogs2 } = require('../helper/cache/getLogs')
 const ADDRESSES = require("../helper/coreAssets.json");
 const VECTOR = require("../vector/vectorContracts.json");
 
@@ -44,17 +44,30 @@ const tokens = {
   },
 };
 
-let tokenAndOwners = [];
+let tokensAndOwners = [];
 for (const [symbol, token] of Object.entries(tokens)) {
-  tokenAndOwners.push([token.contractAddr, token.pool]);
-  tokenAndOwners.push([token.contractAddr, coreModuleProxy]);
-  tokenAndOwners.push([token.contractAddr, xliplessDex]);
+  tokensAndOwners.push([token.contractAddr, token.pool]);
+  tokensAndOwners.push([token.contractAddr, coreModuleProxy]);
+  tokensAndOwners.push([token.contractAddr, xliplessDex]);
 }
 
 module.exports = {
   avax: {
-    tvl: sumTokensExport({
-      tokensAndOwners: tokenAndOwners,
-    }),
+    tvl,
   },
 };
+
+async function tvl(api) {
+  const FACTORY_SUB_MODULE_PROXY = '0x54b048eB204B7CbBb469901fdb5BbfB80d0F0CD1'
+  const logs = await getLogs2({
+    api,
+    factory: FACTORY_SUB_MODULE_PROXY,
+    eventAbi: "event CreateMarket(address indexed creator, address core, address collateralPool, address collateralToken, address underlyingPool, address underlyingToken, bytes32 pairbytes)",
+    fromBlock: 46125548,
+  })
+  logs.forEach(i => {
+    tokensAndOwners.push([i.collateralToken, i.collateralPool])
+    tokensAndOwners.push([i.underlyingToken, i.underlyingPool])
+  })
+  return api.sumTokens({ tokensAndOwners })
+}
