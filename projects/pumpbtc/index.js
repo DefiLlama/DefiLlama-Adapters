@@ -37,7 +37,7 @@ async function mantle(api) {
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
-    methodology: 'Total pumpBTC minted amount of the pumpBTC protocol.',
+    methodology: 'TVL for pumpBTC is calculated based on the total value of WBTC, FBTC, BTCB held in the contract that were utilized in the minting process of pumpBTC.',
     ethereum: {
         tvl: ethereum,
     },
