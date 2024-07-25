@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLiquityTvl } = require("../helper/liquity.js");
 const { sumTokensExport } = require("../helper/unknownTokens.js");
 
 // TroveManager holds total system collateral (deposited PLSX)
 const TROVE_MANAGER_ADDRESS = "0x118b7CF595F6476a18538EAF4Fbecbf594338B39";
-const PLSX_ADDRESS = "0x95B303987A60C71504D99Aa1b13B4DA07b0790ab";
+const PLSX_ADDRESS = ADDRESSES.pulse.PLSX;
 
 // Staking holds LQTY tokens and receive share of protocol revenue
 const STAKING_ADDRESS = "0xd92DF13b6cd9eA8fc116b1865D2d72Be41d74B1a";

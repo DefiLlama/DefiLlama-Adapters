@@ -2,5 +2,6 @@
   "depositToken": "address:depositToken",
   "totalDeposits": "uint256:totalDeposits",
   "token": "address:token",
-  "getRatio": "uint256:getRatio"
+  "getRatio": "uint256:getRatio",
+  "symbol": "string:symbol"
 }

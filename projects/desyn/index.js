@@ -1,11 +1,22 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
-  methodology: 'RWA STBT is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
+  doublecounted: true,
+  hallmarks: [
+    [1719734400, "Launched on Merlin Chain"],
+    [1718092800, "DeSyn KelpDAO Restaking Fund Launched"],
+    [1713340800, "Restaking Fund Series Launched"],
+  ],
+  methodology: 'Liquid restaking strategy',
 }
 
 const config = {
   ethereum: { factory: '0x01a38B39BEddCD6bFEedBA14057E053cBF529cD2', fromBlock: 17335174},
+  arbitrum: { factory: '0xdE6b117384452b21F5a643E56952593B88110e78', fromBlock: 175985457},
+  //merlin chain is tracked under a new listing for farm
+  // merlin: { factory: '0x790b4ee7998A93702f29e56f8b615eF35BE5af43', fromBlock: 11260440},
+    //bitlayer chain is tracked under a new listing for farm
+  // btr: { factory: '0x09eFC8C8F08B810F1F76B0c926D6dCeb37409665', fromBlock: 2393247},
 }
 
 Object.keys(config).forEach(chain => {
