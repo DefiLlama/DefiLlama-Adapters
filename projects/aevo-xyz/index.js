@@ -27,7 +27,12 @@ module.exports = {
         '0x7711C90bD0a148F3dd3f0e587742dc152c3E9DDB', // Native USDC
         '0x90bFB3C35ddfBbA42D998414F0ff1eADD430E161', // WETH
       ], 
-      fetchCoValentTokens: true, 
+      tokens: [
+        ADDRESSES.arbitrum.USDC,
+        ADDRESSES.arbitrum.USDT,
+        ADDRESSES.arbitrum.WETH,
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+      ]
     }) 
   },
   optimism: { 
