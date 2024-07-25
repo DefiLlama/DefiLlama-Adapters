@@ -66,6 +66,9 @@ const fixBalancesTokens = {
   saakuru: {
     '0x557a526472372f1F222EcC6af8818C1e6e78A85f': { coingeckoId: 'oasys', decimals: 18 },
     '0x739222D8A9179fE05129C77a8fa354049c088CaA': { coingeckoId: 'usd-coin', decimals: 6 }
+  },
+  bouncebit: {
+    '0x8f083eafcbba2e126ad9757639c3a1e25a061a08': { coingeckoId: 'bouncebit-btc', decimals: 18 }
   }
 }
 
