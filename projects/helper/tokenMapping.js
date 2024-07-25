@@ -69,7 +69,10 @@ const fixBalancesTokens = {
   },
   bouncebit: {
     '0x8f083eafcbba2e126ad9757639c3a1e25a061a08': { coingeckoId: 'bouncebit-btc', decimals: 18 }
-  }
+  },
+  ripple: {
+    "XRP": { coingeckoId: "ripple", decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
