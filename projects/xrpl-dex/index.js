@@ -7,6 +7,7 @@ module.exports = {
   ripple: {
     tvl,
   },
+  misrepresentedTokens: true,
 };
 
 function getTimeNow() {
@@ -21,6 +22,5 @@ async function tvl() {
   let { lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
   if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds) 
     throw new Error("stale/missing tvl data");
-  console.log(tvl)
   return tvl
 }
