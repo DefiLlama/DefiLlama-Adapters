@@ -3,7 +3,7 @@ const { sumTokensExport } = require('../helper/chain/cardano')
 module.exports = {
   timetravel: false,
   cardano: {
-    tvl: sumTokensExport({ scripts: ['111af84a9e697e1e7b042a0a06f061e88182feb9e9ada950b36a916bd55ea481523030b23a495286ca1a18bd141a493e9b5a19d889953f6cdb'] },), // 0x0f4b4f7f7e507f3b6e9e954d5f6f3f8f7fa06e0f
+    tvl: sumTokensExport({ scripts: ['addr1zyd0sj57d9lpu7cy9g9qdurpazqc9l4eaxk6j59nd2gkh4275jq4yvpskgayj55xegdp30g5rfynax66r8vgn9fldndsqzf5tn'] },), // 0x0f4b4f7f7e507f3b6e9e954d5f6f3f8f7fa06e0f
   }
 }
 
