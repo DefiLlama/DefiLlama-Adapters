@@ -1,32 +1,39 @@
-
+const ADDRESSES = require('../helper/coreAssets.json')
 async function tvl(api) {
-  const { lending: lendingContract, feeManager } = config[api.chain]
-  const pools = await api.fetchList({ lengthAbi: 'uint256:getPoolTokenAddressesLength', itemAbi: 'function getPoolTokenAdressesByIndex(uint256) view returns (address)', target: feeManager })
-  const isATokens = await api.multiCall({ abi: 'function isAaveToken(address) view returns (bool)', calls: pools, target: feeManager })
-  const aTokens = pools.filter((_, i) => isATokens[i])
-  let otherTokens = pools.filter((_, i) => !isATokens[i])
-  const names = await api.multiCall({ abi: 'string:name', calls: otherTokens })
-  const pendleTokens = otherTokens.filter((_, i) => names[i].includes(' Pendle '))
-  otherTokens = otherTokens.filter(i => !pendleTokens.includes(i))
-  const uaTokens = await api.multiCall({ abi: 'function underlyingToken(address) view returns (address)', calls: aTokens, target: feeManager })
+  const { lending: lendingContract, tvlAddresses } = config[api.chain];
 
-  // unwrap pendle
-  const pBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pendleTokens.map(t => ({ target: t, params: lendingContract })) })
-  const pSupply = await api.multiCall({ abi: 'erc20:totalSupply', calls: pendleTokens })
-  const pTotalAssets = await api.multiCall({ abi: 'uint256:totalLpAssets', calls: pendleTokens })
-  const pUnderlying = await api.multiCall({ abi: 'address:UNDERLYING_PENDLE_MARKET', calls: pendleTokens })
+  return api.sumTokens({ owner: lendingContract, tokens: tvlAddresses });
+}
 
-  pUnderlying.forEach((token, i) => {
-    api.add(token, pBals[i] * pTotalAssets[i] / pSupply[i])
+async function borrowed(api) {
+  const { lending: lendingContract, borrowAddresses } = config[api.chain];
+
+  const borrowAmounts = await api.multiCall({
+    abi: 'function getPseudoTotalBorrowAmount(address) view returns (uint256)',
+    target: lendingContract,
+    calls: borrowAddresses
   })
 
-  return api.sumTokens({ owner: lendingContract, tokens: [...otherTokens, ...uaTokens], })
+  api.add(borrowAddresses, borrowAmounts)
 }
+
+const aavePools = [
+  "0x724dc807b04555b71ed48a6896b6F41593b8C637",
+  "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
+  ADDRESSES.arbitrum.WSTETH,
+  "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+  "0x6ab707Aca953eDAeFBc4fD23bA73294241490620",
+];
 
 const config = {
-  arbitrum: { lending: '0x9034a49587bd2c1af27598e0f04f30db66c87ebf', feeManager: '0x90a022796798f9dbA1Da0f8645234B284d4E8EC6' },
-}
+  arbitrum: {
+    lending: '0x9034a49587bD2c1Af27598E0f04F30Db66C87Ebf',
+    feeManager: '0x90a022796798f9dbA1Da0f8645234B284d4E8EC6',
+    tvlAddresses: aavePools,
+    borrowAddresses: aavePools
+  },
+};
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
-})
+  module.exports[chain] = { tvl, borrowed };
+});
