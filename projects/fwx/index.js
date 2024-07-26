@@ -1,21 +1,29 @@
-const axios = require("axios");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
+const VECTOR = require("../vector/vectorContracts.json");
+const axios = require('axios')
 
-async function getTVL() {
-  const { data } = await axios.get(
-    "https://app.fwx.finance/api/v2/traction?chain_id=43114"
-  );
+const xliplessDex = "0x82E90fB94fd9a5C19Bf38648DD2C9639Bde67c74";
 
-  const divisor = BigInt(1e18);
-  const number = BigInt(data.total_value_locked);
-  const integerPart = number / divisor;
-  const fractionalPart = number % divisor;
-  const fractionalString = fractionalPart.toString().padStart(18, "0");
+async function tvl(api) {
+  const getAssetRes = await axios.get("https://app.fwx.finance/api/v2/assets?chain_id=43114")
+  const assets = getAssetRes.data.assets
 
-  return { usd: `${integerPart}.${fractionalString}` };
+  let tokensAndOwners = [];
+  for (let i = 0; i < assets.length; i++) {
+    const asset = assets[i]
+    tokensAndOwners.push(
+      [asset.token_address, asset.pool_address],
+      [asset.token_address, asset.core_address],
+      [asset.token_address, xliplessDex],
+    );
+  }
+
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
   avax: {
-    tvl: getTVL,
+    tvl,
   },
 };
