@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const KALAX = "0x2F67F59b3629Bf24962290DB9edE0CD4127e606D"
-const farms = ['0xE63153C3360aCa0F4e7Ca7A1FC61c2215FAEF5A1', '0xFe899401A1d86cC1113020fb40878c76239142a5']
+const farms = ['0xE63153C3360aCa0F4e7Ca7A1FC61c2215FAEF5A1', '0xFe899401A1d86cC1113020fb40878c76239142a5',"0x1CB8f6cecf7c8FBB9863417f8371Cb2A076C9115"]
 
 async function tvl(api) {
   let pools = (await api.multiCall({ abi: abiInfo.poolInfos, calls: farms })).flat()

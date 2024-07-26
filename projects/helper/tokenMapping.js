@@ -40,11 +40,38 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  xdc: {
+    '0x8f9920283470f52128bf11b0c14e798be704fd15': { coingeckoId: 'comtech-gold', decimals: 18 },
+  },
 
   real: {
     '0x4644066f535ead0cde82d209df78d94572fcbf14': { coingeckoId: 're-al', decimals: 18 },
     '0xaec9e50e3397f9ddc635c6c429c8c7eca418a143': { coingeckoId: 'arcana-2', decimals: 18 },
     '0xce1581d7b4ba40176f0e219b2cac30088ad50c7a': { coingeckoId: 'pearl', decimals: 18 },
+  },
+  airdao: {
+    [ADDRESSES.null]: { coingeckoId: 'amber', decimals: 18 },
+    [ADDRESSES.airdao.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
+  },
+  lukso: {
+    [ADDRESSES.null]: { coingeckoId: "lukso-token-2", decimals: 18 },
+    [ADDRESSES.lukso.WLYX]: { coingeckoId: 'lukso-token-2', decimals: 18 },
+  },
+  bfc: {
+    '0x6906Ccda405926FC3f04240187dd4fAd5DF6d555': { coingeckoId: "bitcoin-usd-btcfi", decimals: 18, },
+  },
+  pulse: {
+    '0x30fcb23a906493371b1721c8feb8815804808d74': { coingeckoId: 'savings-dai', decimals: 18 },
+  },
+  saakuru: {
+    '0x557a526472372f1F222EcC6af8818C1e6e78A85f': { coingeckoId: 'oasys', decimals: 18 },
+    '0x739222D8A9179fE05129C77a8fa354049c088CaA': { coingeckoId: 'usd-coin', decimals: 6 }
+  },
+  bouncebit: {
+    '0x8f083eafcbba2e126ad9757639c3a1e25a061a08': { coingeckoId: 'bouncebit-btc', decimals: 18 }
+  },
+  ripple: {
+    "XRP": { coingeckoId: "ripple", decimals: 6 },
   },
 }
 
