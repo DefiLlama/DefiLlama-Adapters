@@ -1,17 +1,16 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
-const axios = require('axios')
+const { getConfig } = require('../helper/cache')
 
-const xliplessDex = "0x82E90fB94fd9a5C19Bf38648DD2C9639Bde67c74";
+const xliplessDex = "0x82E90fB94fd9a5C19Bf38648DD2C9639Bde67c74"
 
 module.exports = {
   avax: {
     tvl,
   },
-};
+}
 
 async function tvl(api) {
-  const getAssetRes = await axios.get("https://app.fwx.finance/api/v2/assets?chain_id=43114")
-  const assets = getAssetRes.data.assets
+  const { assets } = await getConfig('fwx/'+api.chain, "https://app.fwx.finance/api/v2/assets?chain_id=43114")
 
   let tokensAndOwners = [];
   for (let i = 0; i < assets.length; i++) {
