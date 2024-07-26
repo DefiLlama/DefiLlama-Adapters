@@ -2,7 +2,7 @@ const axios = require("axios");
 
 async function getTVL() {
   const { data } = await axios.get(
-    "http://127.0.0.1:8012/getTVL"
+    "https://test.filliquid.io/rpc/getTVL"
   );
 
   const divisor = BigInt(1e18);
