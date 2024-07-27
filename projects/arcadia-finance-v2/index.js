@@ -42,7 +42,7 @@ async function unwrapArcadiaAeroLP({ api, ownerIds, }) {
       }
     }
   }
-  
+
   const wrappedData = await api.multiCall({ abi: abi.wrappedAeroPositionState, calls: wAERONFTIds, target: wAeroNFT, });
   const stakedData = await api.multiCall({ abi: abi.stakedAeroPositionState, calls: sAERONFTIds, target: sAeroNFT, });
   wrappedData.forEach((data) => api.add(data.pool, data.amountWrapped));
