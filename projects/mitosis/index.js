@@ -4,19 +4,19 @@ const sdk = require('@defillama/sdk');
 
 const UNIETH_ADDRESS = {
   ethereum: { 
-    asset: "0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4", 
+    asset: "0xf1376bcef0f78459c0ed0ba5ddce976f1ddf51f4", 
     vault: "0x02Ff1F648Ff443B5d88214341F0acE6ECFb94cF3",
   },
   arbitrum: { 
-    asset: "0x3d15fD46CE9e551498328B1C83071D9509E2C3a0", 
+    asset: "0x3d15fd46ce9e551498328b1c83071d9509e2c3a0", 
     vault: "0x7E8cffBe165c6905a8AceC0f37B341c00353e8BA",
   },
   scroll: { 
-    asset: "0x15EEfE5B297136b8712291B632404B66A8eF4D25", 
+    asset: "0x15eefe5b297136b8712291b632404b66a8ef4d25", 
     vault: "0xA0EeB418213f8472cba2c842378E1bB64e28bd28",
   },
   linea: { 
-    asset: "0x15EEfE5B297136b8712291B632404B66A8eF4D25", 
+    asset: "0x15eefe5b297136b8712291b632404b66a8ef4d25", 
     vault: "0x56ceD49205e5D9b4d8D9B29f4aBfbe7bb8b08768",
   },
 };
@@ -33,7 +33,7 @@ const WEETH_ADDRESS = {
 };
 
 const VAULT_weETHs = {
-  ethereum: "0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
+  ethereum: "0x917cee801a67f933f2e6b33fc0cd1ed2d5909d88",
 };
 
 const CAP_ADDRESS = {
@@ -51,37 +51,6 @@ const vaults = {
   scroll: '0xB9Ca61A6D5fA0c443F3c48Ab1fbf0118964308D6',
   ethereum: '0xE4cf2D4eb9c01784798679F2FED4CF47cc59a3ec'
 };
-
-const ethCapTVL = async (api) => {
-  const ethcap = CAP_ADDRESS.ethereum;
-  const tvl = await api.call({ abi: "uint256:load", target: ethcap });
-  
-  const balance = {};
-  balance[WEETH_ADDRESS.ethereum] = tvl;
-
-  return balance;
-};
-
-const ethVaultTVL = async (api) => {
-  const ethvault = vaults.ethereum;
-  return sumTokens2({ api, owner: ethvault, tokens: [VAULT_weETHs.ethereum] });
-};
-
-const scrollVaultTVL = async (api) => {
-  const vault = vaults.scroll;
-  return sumTokens2({ api, owner: vault, tokens: [WEETH_ADDRESS.scroll] });
-};
-
-const capTVL = (chain) => async (api) => {
-  const cap = CAP_ADDRESS[chain] ?? "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2";
-  const tvl = await api.call({ abi: "uint256:load", target: cap });
-  api.add(WEETH_ADDRESS[chain], tvl);
-};
-
-const uniEthTVL = (chain) => async (api) => {
-  const { asset, vault } = UNIETH_ADDRESS[chain];
-  return sumTokens2({ api, owner: vault, tokens: [asset] });
-}
 
 /**
  * @param {
@@ -105,15 +74,17 @@ const chainTVL = (chain, inputs) => async (api) => {
   for (const { type, data } of inputs) {
     if (type === 'cap') {
       const tvl = await api.call({ abi: "uint256:load", target: data.cap });
+      console.log(chain, type, data.asset, tvl);
       api.add(data.asset, tvl);
     } else if (type === 'vault') {
       const tvl = await sumTokens2({ api, owner: data.vault, tokens: [data.asset] });
-      api.add(data.asset, tvl[data.vault]);
+      api.add(data.asset, tvl[`${chain}:${data.asset}`]);
     }
   }
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: chainTVL(
       "ethereum",
