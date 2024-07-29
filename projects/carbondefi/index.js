@@ -9,6 +9,10 @@ const config = {
     fromBlock: 79146720,
     controller: "0xe4816658ad10bF215053C533cceAe3f59e1f1087",
   },
+  celo: {
+    fromBlock: 26828280,
+    controller: "0x6619871118D144c1c28eC3b23036FC1f0829ed3a",
+  },
 };
 
 Object.keys(config).forEach((chain) => {
