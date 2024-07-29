@@ -15,7 +15,7 @@ async function getTVL() {
 }
 
 module.exports = {
-  fig: {
+  filecoin: {
     tvl: getTVL,
   },
 };
