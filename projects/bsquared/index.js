@@ -13,6 +13,9 @@ const BTCOwners = [
   "bc1qr4cpjazz6hhjh44yrshqw4xs4e3eld60wnsq2m",
   "14UwPgMLZY6rLZRDxxvmNWQ9rMkg2iraHG",
   "bc1quetqhxs809mwgms0rhae4cw98chzqe0er8fryr",
+  "34ThPcBtz5ayRybbg1MXnQWBGtUzqUDCMa",
+  "3LmiF7qBJt8BteQi4eJdqa2TXLHBHVjE9L",
+  "32pdcULaBMkd5o7gvJeoaamPuCFMeqwpDh"
 ];
 const BRC20Owners = [
   "bc1q97ctqygjgj0ljxgge4q735ujxvlad8smass7f0axc6x3ggffr8xqwn69hc", //Bitcoin Multisig Addresses
