@@ -44,7 +44,7 @@ const CAP_ADDRESS = {
   manta: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
   blast: "0x096430ef0a653c067df32e93ff77090e084169de",
   linea: "0xcd32876b9b483eb75e8ca74935e4b51725f33a91",
-  scroll: "0x4a6219E25a41FD4165fbd158D89723a7175EA382",
+  scroll: "0xcd32876b9B483eb75e8ca74935E4b51725F33A91",
 };
 
 const vaults = {
@@ -78,7 +78,9 @@ const chainTVL = (chain, inputs) => async (api) => {
       api.add(data.asset, tvl);
     } else if (type === 'vault') {
       const tvl = await sumTokens2({ api, owner: data.vault, tokens: [data.asset] });
-      api.add(data.asset, tvl[`${chain}:${data.asset}`]);
+      const key = `${chain}:${data.asset}`;
+      // console.log(chain, type, data.asset, tvl, key, tvl[key]);
+      api.add(data.asset, tvl[key]);
     }
   }
 }
