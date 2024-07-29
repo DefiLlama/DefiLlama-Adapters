@@ -2,6 +2,8 @@
   "acala",
   "ace",
   "aelf",
+  "aeternity",
+  "ailayer",
   "airdao",
   "alephium",
   "algorand",
@@ -101,6 +103,7 @@
   "equilibrium",
   "era",
   "ergo",
+  "etlk",
   "ethereum",
   "ethereumclassic",
   "ethf",
@@ -188,6 +191,7 @@
   "migaloo",
   "milkomeda",
   "milkomeda_a1",
+  "mint",
   "mixin",
   "mode",
   "moonbeam",
@@ -204,6 +208,7 @@
   "neutron",
   "new",
   "nibiru",
+  "noble",
   "nolus",
   "nos",
   "nova",
@@ -257,6 +262,7 @@
   "rsk",
   "rss3_vsl",
   "rvn",
+  "saakuru",
   "sapphire",
   "scroll",
   "secret",
@@ -325,5 +331,6 @@
   "zora",
   "zyx",
   "joltify",
-  "sanko"
+  "sanko",
+  "ox_chain"
 ]

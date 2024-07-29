@@ -56,6 +56,12 @@ const config = {
         '0xfA705a98FA89134F460Bf79457D4fbd3d8E118d9'
     ]
   }, 
+  ton: {
+    owners: [
+        'EQDQpuuVQI6Vzpewyll_xSP_SAlSNjXo9RngD9y99C8MVJri',
+        'EQBlnb9GCDGnJ5XEqamHL7Sj5_0wJ4MGja5T6PKlwVAISgrW',
+    ]
+  }, 
 }
 
 module.exports = cexExports(config)
