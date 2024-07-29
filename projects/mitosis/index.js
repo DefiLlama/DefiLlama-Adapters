@@ -37,10 +37,14 @@ const VAULT_weETHs = {
 };
 
 const CAP_ADDRESS = {
-  scroll: "0x4a6219E25a41FD4165fbd158D89723a7175EA382",
   ethereum: "0x451d791b6e9a9b8c9237bb55e58a7757342b16f9",
+  arbitrum: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
+  optimism: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
+  mode: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
+  manta: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
   blast: "0x096430ef0a653c067df32e93ff77090e084169de",
   linea: "0xcd32876b9b483eb75e8ca74935e4b51725f33a91",
+  scroll: "0x4a6219E25a41FD4165fbd158D89723a7175EA382",
 };
 
 const vaults = {
@@ -79,29 +83,104 @@ const uniEthTVL = (chain) => async (api) => {
   return sumTokens2({ api, owner: vault, tokens: [asset] });
 }
 
+/**
+ * @param {
+ *  (
+ *    {
+ *      type: 'cap';
+ *      data: {
+ *        asset: string;
+ *        cap: string;
+ *      }
+ *    } | {
+ *      type: 'vault'; 
+ *      data: {
+ *        asset: string; 
+ *        cap: string;
+ *      }
+ *    }
+ *  )[]} inputs
+ */
+const chainTVL = (chain, inputs) => async (api) => {
+  for (const { type, data } of inputs) {
+    if (type === 'cap') {
+      const tvl = await api.call({ abi: "uint256:load", target: data.cap });
+      api.add(data.asset, tvl);
+    } else if (type === 'vault') {
+      const tvl = await sumTokens2({ api, owner: data.vault, tokens: [data.asset] });
+      api.add(data.asset, tvl[data.vault]);
+    }
+  }
+}
+
 module.exports = {
   ethereum: {
-    tvl: sdk.util.sumChainTvls([ethCapTVL, ethVaultTVL, uniEthTVL("ethereum")])
+    tvl: chainTVL(
+      "ethereum",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.ethereum, cap: CAP_ADDRESS.ethereum }},
+        { type: 'vault', data: { asset: VAULT_weETHs.ethereum, vault: vaults.ethereum }},
+        { type: 'vault', data: UNIETH_ADDRESS.ethereum },
+      ],
+    ),
   },
   scroll: {
-    tvl: sdk.util.sumChainTvls([scrollVaultTVL, uniEthTVL("scroll")]),
+    tvl: chainTVL(
+      "scroll",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.scroll, cap: CAP_ADDRESS.scroll }},
+        { type: 'vault', data: UNIETH_ADDRESS.scroll },
+      ]
+    ),
   },
   arbitrum: {
-    tvl: sdk.util.sumChainTvls([capTVL("arbitrum"), uniEthTVL("arbitrum")]),
+    tvl: chainTVL(
+      "arbitrum",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.arbitrum, cap: CAP_ADDRESS.arbitrum }},
+        { type: 'vault', data: UNIETH_ADDRESS.arbitrum },
+      ]
+    ),
   },
   optimism: {
-    tvl: capTVL("optimism"),
+    tvl: chainTVL(
+      "optimism",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.optimism, cap: CAP_ADDRESS.optimism }},
+      ],
+    ),
   },
   mode: {
-    tvl: capTVL("mode"),
+    tvl: chainTVL(
+      "mode",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.mode, cap: CAP_ADDRESS.mode }},
+      ],
+    ),
   },
   manta: {
-    tvl: capTVL("manta"),
+    tvl: chainTVL(
+      "manta",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.manta, cap: CAP_ADDRESS.manta }},
+      ],
+    ),
   },
   blast: {
-    tvl: capTVL("blast"),
+    tvl: chainTVL(
+      "blast",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.blast, cap: CAP_ADDRESS.blast }},
+      ],
+    ),
   },
   linea: {
-    tvl: sdk.util.sumChainTvls([capTVL("linea"), uniEthTVL("linea")]),
+    tvl: chainTVL(
+      "linea",
+      [
+        { type: 'cap', data: { asset: WEETH_ADDRESS.linea, cap: CAP_ADDRESS.linea }},
+        { type: 'vault', data: UNIETH_ADDRESS.linea },
+      ],
+    ),
   },
 };
