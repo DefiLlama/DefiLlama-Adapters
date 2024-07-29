@@ -15,7 +15,7 @@ async function getTVL() {
 }
 
 module.exports = {
-  avax: {
+  fig: {
     tvl: getTVL,
   },
 };
