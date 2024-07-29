@@ -2,6 +2,25 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const sdk = require('@defillama/sdk');
 
+const UNIETH_ADDRESS = {
+  ethereum: { 
+    asset: "0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4", 
+    vault: "0x02Ff1F648Ff443B5d88214341F0acE6ECFb94cF3",
+  },
+  arbitrum: { 
+    asset: "0x3d15fD46CE9e551498328B1C83071D9509E2C3a0", 
+    vault: "0x7E8cffBe165c6905a8AceC0f37B341c00353e8BA",
+  },
+  scroll: { 
+    asset: "0x15EEfE5B297136b8712291B632404B66A8eF4D25", 
+    vault: "0xA0EeB418213f8472cba2c842378E1bB64e28bd28",
+  },
+  linea: { 
+    asset: "0x15EEfE5B297136b8712291B632404B66A8eF4D25", 
+    vault: "0x56ceD49205e5D9b4d8D9B29f4aBfbe7bb8b08768",
+  },
+};
+
 const WEETH_ADDRESS = {
   ethereum: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
   arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
@@ -55,16 +74,20 @@ const capTVL = (chain) => async (api) => {
   api.add(WEETH_ADDRESS[chain], tvl);
 };
 
+const uniEthTVL = (chain) => async (api) => {
+  const { asset, vault } = UNIETH_ADDRESS[chain];
+  return sumTokens2({ api, owner: vault, tokens: [asset] });
+}
 
 module.exports = {
   ethereum: {
-    tvl: sdk.util.sumChainTvls([ethCapTVL, ethVaultTVL])
+    tvl: sdk.util.sumChainTvls([ethCapTVL, ethVaultTVL, uniEthTVL("ethereum")])
   },
   scroll: {
-    tvl: scrollVaultTVL,
+    tvl: sdk.util.sumChainTvls([scrollVaultTVL, uniEthTVL("scroll")]),
   },
   arbitrum: {
-    tvl: capTVL("arbitrum"),
+    tvl: sdk.util.sumChainTvls([capTVL("arbitrum"), uniEthTVL("arbitrum")]),
   },
   optimism: {
     tvl: capTVL("optimism"),
@@ -79,10 +102,6 @@ module.exports = {
     tvl: capTVL("blast"),
   },
   linea: {
-    tvl: capTVL("linea"),
+    tvl: sdk.util.sumChainTvls([capTVL("linea"), uniEthTVL("linea")]),
   },
 };
-
-
-
-
