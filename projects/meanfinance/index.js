@@ -2,7 +2,10 @@ const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
-const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
+const YIELD_VERSION = (chain) => {
+  if (chain == 'rsk') return '0x8CC0Df843610cefF7f4AFa01100B6abf6756Bdf2';
+  else return '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345';
+}
 const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
 const VULN_VERSION = '0x230C63702D1B5034461ab2ca889a30E343D81349'
 const BETA_VERSION = '0x24F85583FAa9F8BD0B8Aa7B1D1f4f53F0F450038'
@@ -13,7 +16,7 @@ const LEGACY_VERSIONS = {
 }
 
 async function getTokensInChain(chain) {
-  const data = await getConfig('mean-finance/'+chain, `https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
+  const data = await getConfig('mean-finance/'+chain, `https://api.balmy.xyz/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
   return data.map(({ address }) => address)
 }
 
@@ -29,7 +32,7 @@ async function getV2TVL(chain, block) {
   const tokens = await getTokensInChain(chain)
   const versions = [
     ...legacyVersions.map(contract => ({ contract, tokens: legacyTokens })),
-    { contract: YIELD_VERSION, tokens }
+    { contract: YIELD_VERSION(chain), tokens }
   ]
 
   const toa = versions.map(({ contract, tokens }) => tokens.map(t => ([t, contract]))).flat()
@@ -62,6 +65,8 @@ module.exports = {
   bsc: getV2TvlObject('bsc'),
   xdai: getV2TvlObject('xdai'),
   moonbeam: getV2TvlObject('moonbeam'),
+  avax: getV2TvlObject('avax'),
+  rsk: getV2TvlObject('rsk'),
    hallmarks: [
     [1650082958, "Protocol is paused due to non-critical vulnerability"],
     [1654057358, "Deployment on Optimism"],

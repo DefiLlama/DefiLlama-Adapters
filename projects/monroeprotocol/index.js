@@ -19,7 +19,6 @@ const V1_SPECIAL_ADDRESSES = {
 // V2
 const roeUSD = "0xF88DF111343BffE7a2d89FB770d77A264d53f043"
 
-
 async function tvl(api) {
   const owners = []
   const tokens = []
@@ -45,7 +44,7 @@ async function tvl(api) {
     tokens.push(..._tokensV2)
     owners.push(...vaultsV2)
   }
-  
+
   return api.sumTokens({ tokensAndOwners2: [tokens, owners]})
 }
 
