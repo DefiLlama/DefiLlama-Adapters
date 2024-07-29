@@ -64,4 +64,13 @@ module.exports = {
   methodology: `Total amount of liquid staked tokens on Persistence.`,
   bsc: { tvl: bsctvl },
   persistence: { tvl: cosmostvl() },
+  bitcoin: {
+    tvl: async () => {
+      const btcEndpoint = 'https://btc-orchestrator-mainnet.tail78aed.ts.net/api/cobo/total-amount'
+      const amount = await get(btcEndpoint)
+      return {
+        bitcoin: amount.amount/1e8
+      }
+    }
+  }
 };
