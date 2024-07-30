@@ -100,7 +100,7 @@ async function getPoolReserves(api, pool) {
 
   pool = pool.toLowerCase();
   const poolBalances = await api.multiCall({
-    calls: ALL_POOLS[pool].underlying.map(token => ({
+    calls: (ALL_POOLS[pool] && ALL_POOLS[pool].underlying || []).map(token => ({
       target: token,
       params: pool
     })),
