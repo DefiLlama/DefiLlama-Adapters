@@ -14,8 +14,17 @@ const tokens = [
   "0x7122985656e38BDC0302Db86685bb972b145bD3C", // STONE
   "0xbdBb63F938c8961AF31eaD3deBa5C96e6A323DD1", // eDLLR
   "0xbdab72602e9AD40FC6a6852CAf43258113B8F7a5", // eSOV
-  "0xe7c3755482d0dA522678Af05945062d4427e0923", // ALEX
-  
+  "0xe7c3755482d0dA522678Af05945062d4427e0923", // ALEX  
+];
+
+// taken from onramp factory (allOnramps): https://explorer.gobob.xyz/address/0x1831d29376eb94bba3ca855af7984db923768b27?tab=read_contract
+const bobOnrampAddresses = [
+  "0x587e6E2b280C70ec811a371671D3CBE9D7b9F691",
+  "0xA1884124a52331Bc2fa66e2b0EFa15856C6830c6",
+  "0x2e0A1Fa2f61985c475B869559cF2Cf733d4DB282",
+  "0xCA94d277d04e8e6ce960F7492b2df62e2215d562",
+  "0x9BBBc8F4e4258cC9Ec79164DDB7ef72954f381E2",
+  "0x47340424457463Fa77B59FDAdea31cA886a241FD",
 ];
 
 module.exports = {
@@ -33,5 +42,16 @@ module.exports = {
         fetchCoValentTokens: true,
       }),
   },
+  bob: {
+    tvl: (api) =>
+      sumTokens2({
+        api,
+        tokens: [
+          ADDRESSES.bob.WBTC,
+          ADDRESSES.bob.TBTC,
+        ],
+        owners: bobOnrampAddresses,
+      }),
+  }
 };
 
