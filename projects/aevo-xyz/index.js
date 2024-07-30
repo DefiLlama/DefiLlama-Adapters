@@ -42,7 +42,12 @@ module.exports = {
         '0x7809621a6D7e61E400853C64b61568aA773A28Ef', // Native USDC
         '0x5c7Dd6cb73d93879E94F20d103804C495A10aE7e', // WETH
       ], 
-      fetchCoValentTokens: true, 
+      tokens: [
+        ADDRESSES.optimism.USDC,
+        ADDRESSES.optimism.USDT,
+        ADDRESSES.optimism.WETH_1,
+        ADDRESSES.optimism.USDC_CIRCLE
+      ]
     }) 
   },
 }
