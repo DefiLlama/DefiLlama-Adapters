@@ -15,7 +15,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       const tokens = await getLogs2({ api, factory, eventAbi: 'event LogTokenDeployed (string tokenType, string bondingCurveType, uint256 tokenId, address deployedAddr)', fromBlock, transform: i => i.deployedAddr })
       const uTokens = await api.multiCall({ abi: 'address:getRaisingToken', calls: tokens })
-      return api.sumTokens({ tokensAndOwners2: [uTokens, tokens] })
+      return api.sumTokens({ tokensAndOwners2: [uTokens, tokens], blacklistedTokens: tokens })
     }
   }
 })
