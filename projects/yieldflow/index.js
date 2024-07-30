@@ -36,42 +36,43 @@ const managers = [
   '0xCF49168017096dB97Eb14552bd0af6eE9a27e76A',
   '0x899DF9d131D2276Db3c5f392ce2b396d9b1BFa8c',
 
- '0xC3ec6F076fE7395B0C263f7E37B084EC4Fd06eaF',
- '0x034a5fC7518d2D1b6a8C9CaccD273ee37C669E95',
- '0xE0D19D57BAFF656d2910BFFBec81E33f1368A0Ee',
- '0x2de0b61a2778169f095A8a7DAD7B566A9973E977',
- '0x440b228411a4D83820e0c63cD71E769a6660E037',
- '0x717FADe04FF819a58128Be591caC8C801F28Cd5b',
- '0x1655cfD162b4148E1715B6302DA4EF075Fa72ADf',
- '0x604Ef6Dc8c7abf78008749b57a4135C87d69fc35',
- '0xa63fa8FE58A5E197f092742619D8F4C7fE4924e8',
+  '0xC3ec6F076fE7395B0C263f7E37B084EC4Fd06eaF',
+  '0x034a5fC7518d2D1b6a8C9CaccD273ee37C669E95',
+  '0xE0D19D57BAFF656d2910BFFBec81E33f1368A0Ee',
+  '0x2de0b61a2778169f095A8a7DAD7B566A9973E977',
+  '0x440b228411a4D83820e0c63cD71E769a6660E037',
+  '0x717FADe04FF819a58128Be591caC8C801F28Cd5b',
+  '0x1655cfD162b4148E1715B6302DA4EF075Fa72ADf',
+  '0x604Ef6Dc8c7abf78008749b57a4135C87d69fc35',
+  '0xa63fa8FE58A5E197f092742619D8F4C7fE4924e8',
 
- '0xC22c7f332cA100725Bf4eA832f2D169e471923D6',
- '0x1E5F83Fc7f167fF44D58e59142DeE2358346331B',
- '0x8702800D715461Fb7D9C89C74DDB7bE73F5a37C6',
- '0xb6F1E82e7AE822DE9eD64967D04359Fe4D58A569',
- '0xE0213546258ABd7EF0D689D26Cf6d6BCEeE20e8a',
- '0xf732Fc726B3a4bE9f6c86a710Fd3367259DB456e',
+  '0xC22c7f332cA100725Bf4eA832f2D169e471923D6',
+  '0x1E5F83Fc7f167fF44D58e59142DeE2358346331B',
+  '0x8702800D715461Fb7D9C89C74DDB7bE73F5a37C6',
+  '0xb6F1E82e7AE822DE9eD64967D04359Fe4D58A569',
+  '0xE0213546258ABd7EF0D689D26Cf6d6BCEeE20e8a',
+  '0xf732Fc726B3a4bE9f6c86a710Fd3367259DB456e',
 
- '0x16A3EBd3D55b27FF6e2839DA2078889cA148C040',
- '0xf4447cCFeE677A5b0BaD6bcD5f92A1929c171b48',
- '0x538A753B616F5aAD60852ca039572e5C4B72cA85',
+  '0x16A3EBd3D55b27FF6e2839DA2078889cA148C040',
+  '0xf4447cCFeE677A5b0BaD6bcD5f92A1929c171b48',
+  '0x538A753B616F5aAD60852ca039572e5C4B72cA85',
 
- '0x780A252d7C797cFB255fe2EAa4E1a257a897B6ed',
- '0xffF3c0063f2Fc1Af569C359480b5b62841357169',
- '0xEFF4A3260263A927D0707190C931bE13292bD4Ba',
+  '0x780A252d7C797cFB255fe2EAa4E1a257a897B6ed',
+  '0xffF3c0063f2Fc1Af569C359480b5b62841357169',
+  '0xEFF4A3260263A927D0707190C931bE13292bD4Ba',
 
- '0xD4c68a094De7e1336E261c6EDD595F64cd70A064',
- '0x88609B69feDc0EEF4326c3390a8ae1b2073DcF03',
- '0xdcC4391042d462158C847f73F4232ce47A8F999c',
+  '0xD4c68a094De7e1336E261c6EDD595F64cd70A064',
+  '0x88609B69feDc0EEF4326c3390a8ae1b2073DcF03',
+  '0xdcC4391042d462158C847f73F4232ce47A8F999c',
 ]
 
 async function tvl(api) {
-  const positionManagers = await api.multiCall({  abi: 'address:positionManager', calls: managers})
-  const tokenIds = await api.multiCall({  abi: abi.getCurrentTokenId, calls: managers})
-  const liquidities = await api.multiCall({  abi: abi.getPositions, calls: positionManagers.map((v, i) => ({ target: v, params: tokenIds[i]})) })
-  const tokenAmounts = await api.multiCall({  abi: abi.getAmountsForTicks, calls: liquidities.map((v, i) => ({ target: managers[i], params: [v.tickLower, v.tickUpper, v.liquidity]})) })
-  
+  const { managers } = config[api.chain]
+  const positionManagers = await api.multiCall({ abi: 'address:positionManager', calls: managers })
+  const tokenIds = await api.multiCall({ abi: abi.getCurrentTokenId, calls: managers })
+  const liquidities = await api.multiCall({ abi: abi.getPositions, calls: positionManagers.map((v, i) => ({ target: v, params: tokenIds[i] })) })
+  const tokenAmounts = await api.multiCall({ abi: abi.getAmountsForTicks, calls: liquidities.map((v, i) => ({ target: managers[i], params: [v.tickLower, v.tickUpper, v.liquidity] })) })
+
   liquidities.forEach((v, i) => {
     api.add(v.token0, tokenAmounts[i][0])
     api.add(v.token1, tokenAmounts[i][1])
@@ -81,5 +82,22 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
-  arbitrum: { tvl },
-};
+}
+
+const config = {
+  arbitrum: { managers },
+  ethereum: {
+    managers: [
+      '0x65D1788F9d9A800c5Fc9b9CB8e49A1b488C736c7',
+      '0x01Af749E58c076c301B1F57D0BCBBf2D49B503bD',
+      '0x47Dd57DFe9e01616e4Adc28015243Ea6A2C09cEC',
+      '0x0a4a169a6b2ac75c86e2F0e42822fdEA13fB1CC8',
+      '0xafFA16b152232dAd8BF3AaDF6bb6F895A836F917',
+      '0xFB04d48e4CE9C042188Ef933ff4cf58921Ab59B8'
+    ]
+  }
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
