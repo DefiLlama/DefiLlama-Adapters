@@ -46,6 +46,7 @@ module.exports = {
     tvl: (api) =>
       sumTokens2({
         api,
+        chain: "bob",
         tokens: [
           ADDRESSES.bob.WBTC,
           ADDRESSES.bob.TBTC,
