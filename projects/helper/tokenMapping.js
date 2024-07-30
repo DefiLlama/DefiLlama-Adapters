@@ -73,6 +73,10 @@ const fixBalancesTokens = {
   ripple: {
     "XRP": { coingeckoId: "ripple", decimals: 6 },
   },
+  reya: {
+    "0x6b48c2e6a32077ec17e8ba0d98ffc676dfab1a30": { coingeckoId: "ethereum", decimals: 18 },
+    "0xa9f32a851b1800742e47725da54a09a7ef2556a3": { coingeckoId: "usd-coin", decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
