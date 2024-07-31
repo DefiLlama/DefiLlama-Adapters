@@ -107,14 +107,14 @@ async function addPoolTVL2(api, alphafiNaviPools){
 }
 
 async function tvl(api) {
-
-  // await addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS);
-  // await addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS);
+  
   await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS)])
 
 }
 async function pool2(api) {
+
   await addPoolTVL(api, ALPHAFI_POOL2_IDS)
+  
 }
 
 
