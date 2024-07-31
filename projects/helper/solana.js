@@ -61,14 +61,15 @@ async function getTokenSupply(token) {
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
-  log('total token accounts: ', tokenAccounts.length)
+  const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  log('total token accounts: ', tokenAccounts.length, 'sleepTime: ', sleepTime)
   tokenAccounts.forEach((val, i) => {
     if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
   })
   const connection = getConnection(chain)
   const balancesIndividual = []
   const balances = {}
-  const res = await runInChunks(tokenAccounts, chunk => connection.getMultipleAccountsInfo(chunk))
+  const res = await runInChunks(tokenAccounts, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
   res.forEach((data, idx) => {
 
     if (!data) {
