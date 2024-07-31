@@ -9,6 +9,7 @@ module.exports = uniV3Export({
   metis: { factory: '0x8112E18a34b63964388a3B2984037d6a2EFE5B8A', fromBlock: 9740222, },
   zklink: { factory: '0x6175b648473F1d4c1549aAC3c2d007e7720585e6', fromBlock: 1339353, },
   iotaevm: { factory: '0x01Bd510B2eA106917e711f9a05a42fC162bee2Ac', fromBlock: 143828, },
+  base: { factory: '0x576A1301B42942537d38FB147895fE83fB418fD4', fromBlock: 14250787, },
 })
 
 module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'https://kava.graph.wagmi.com/subgraphs/name/v3', minTVLUSD: 0 }) }
