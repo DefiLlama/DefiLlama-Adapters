@@ -1,25 +1,15 @@
 const { fetchURL } = require("../helper/utils")
 const BigNumber = require("bignumber.js");
 
-// Mapping of HTS Symbols to Coingeko API Ids
-const coingecko = {
-  'XSAUCE': 'xsauce',
-  'USDC':'usd-coin',
-  'KARATE':'karate-combat',
-  'HBARX':'hbarx',
-  'SAUCE':'saucerswap',
-  'WHBAR': 'hedera-hashgraph'
-}
-
 const tvl = async () => {
   const res = await fetchURL("https://bonzoapi.azurewebsites.net/Stats");
   const result = {};
   const reserves = res.data.reserves;  
   for(let i = 0 ; i < reserves.length; i ++) {
-    const address = coingecko[reserves[i].symbol] ?? reserves[i].symbol;
+    const tokenId = reserves[i].coingecko_id;
     const tinytoken = reserves[i].available_liquidity.tiny_token;
     const decimals = reserves[i] .decimals;
-    result[address] = BigNumber(tinytoken).shiftedBy(-decimals);
+    result[tokenId] = BigNumber(tinytoken).shiftedBy(-decimals);
   }
   return result;
 
@@ -32,11 +22,11 @@ const borrowed = async () => {
   const result = {};
   const reserves = res.data.reserves;  
   for(let i = 0 ; i < reserves.length; i ++) {
-    const address = coingecko[reserves[i].symbol] ?? reserves[i].symbol;
+    const tokenId = reserves[i].coingecko_id;
     // Note: for new we only suppport variable debt
     const tinytoken = reserves[i].total_variable_debt.tiny_token;
     const decimals = reserves[i] .decimals;
-    result[address] = BigNumber(tinytoken).shiftedBy(-decimals);
+    result[tokenId] = BigNumber(tinytoken).shiftedBy(-decimals);
   }
   return result;
 
