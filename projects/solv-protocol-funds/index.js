@@ -34,101 +34,6 @@ async function tvl(api) {
   return api.getBalances();
 }
 
-async function borrowed(api) {
-  const network = api.chain;
-
-  const graphData = await getGraphData(api.timestamp, network, api);
-  if (graphData.pools.length > 0) {
-    const poolLists = graphData.pools;
-
-    let address = (await getConfig('solv-protocol/funds', addressUrl));
-    const depositAddress = filterDepositAddress(network, address);
-
-    let fofFundPoolId = [];
-    if (address[network] && address[network]["fofFund"]) {
-      fofFundPoolId = address[network]["fofFund"];
-    }
-
-    let pools = [];
-    for (const pool of poolLists) {
-      if (depositAddress.length == 0 && depositAddress.indexOf(pool.vault) == -1 && fofFundPoolId.indexOf(pool.poolId) == -1) {
-        pools.push(pool);
-      }
-    }
-
-    const poolConcretes = await concrete(pools, api);
-    const nav = await api.multiCall({
-      abi: abi.getSubscribeNav,
-      calls: pools.map((index) => ({
-        target: index.navOracle,
-        params: [index.poolId, api.timestamp * 1000]
-      })),
-    })
-
-    const poolTotalValues = await api.multiCall({
-      abi: abi.slotTotalValue,
-      calls: pools.map((index) => ({
-        target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
-      })),
-    })
-
-    const poolBaseInfos = await api.multiCall({
-      abi: abi.slotBaseInfo,
-      calls: pools.map((index) => ({
-        target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
-      })),
-    })
-
-    const poolDecimalList = await api.multiCall({
-      abi: abi.decimals,
-      calls: poolBaseInfos.map(i => i[1]),
-    })
-
-    let vaults = {};
-    for (const key in pools) {
-      if (poolBaseInfos[key][1] && pools[key]["vault"]) {
-        vaults[`${pools[key]["vault"].toLowerCase()}-${poolBaseInfos[key][1].toLowerCase()}`] = [poolBaseInfos[key][1], pools[key]["vault"]]
-      }
-    }
-
-    const symbols = await api.multiCall({
-      abi: abi.symbol,
-      calls: poolBaseInfos.map((index) => ({
-        target: index[1]
-      })),
-    })
-
-    const balances = await api.multiCall({
-      abi: abi.balanceOf,
-      calls: Object.values(vaults).map((index) => ({
-        target: index[0],
-        params: [index[1]]
-      })),
-    })
-
-    let vaultbalances = {};
-    for (let i = 0; i < Object.keys(vaults).length; i++) {
-      vaultbalances[Object.keys(vaults)[i]] = balances[i];
-    }
-    for (let i = 0; i < poolTotalValues.length; i++) {
-      const decimals = poolDecimalList[i];
-      let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
-      if (pools[i]['vault'] && poolBaseInfos[i][1] && vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]) {
-        balance = BigNumber(balance).minus(vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]).toNumber();
-        vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`] = undefined
-      }
-      if (balance > 0) {
-        if (symbols[i] !== "SolvBTC") {
-          api.add(poolBaseInfos[i][1], balance)
-        }
-      }
-    }
-  }
-  return api.getBalances()
-}
-
 async function otherDeposit(api, address) {
   if (!address[api.chain] || !address[api.chain]["otherDeposit"]) {
     return;
@@ -357,7 +262,7 @@ async function ceffuBalance(api, address, graphData) {
     return;
   }
   let ceffuData = address[api.chain]["ceffu"];
-  
+
   let pools = [];
   for (const graph of graphData.pools) {
     if (graph['openFundShareSlot'] == ceffuData['slot']) {
@@ -479,40 +384,10 @@ async function getGraphData(timestamp, chain, api) {
   };
 }
 
-function filterDepositAddress(network, address) {
-  let depositAddresses = [];
-  if (address[network]) {
-    if (address[network]["gm"]) {
-      for (let depositAddress of address[network]["gm"]["depositAddress"]) {
-        depositAddresses.push(depositAddress.toLowerCase())
-      }
-    }
-    if (address[network]["mux"]) {
-      depositAddresses.push(address[network]["mux"]["account"].toLowerCase())
-    }
-    if (address[network]["klp"]) {
-      for (let poolAddress of address[network]["klp"]["klpPool"]) {
-        depositAddresses.push(poolAddress.toLowerCase())
-      }
-    }
-    if (address[network]["iziswap"]) {
-      for (let owner of address[network]["iziswap"]["owner"]) {
-        depositAddresses.push(owner.toLowerCase())
-      }
-    }
-    if (address[network]["lendle"]) {
-      depositAddresses.push(address[network]["lendle"]["account"]["user"].toLowerCase())
-    }
-  }
-
-  return depositAddresses;
-}
-
 
 // node test.js projects/solv-protocol-funds
 ['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
   module.exports[chain] = {
-    tvl,
-    borrowed
+    tvl
   }
 })
