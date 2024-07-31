@@ -70,18 +70,32 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   const balances = {}
   const res = await runInChunks(tokenAccounts, chunk => connection.getMultipleAccountsInfo(chunk))
   res.forEach((data, idx) => {
+
     if (!data) {
       sdk.log(`Invalid account: ${tokenAccounts[idx]}`)
       if (allowError) return;
       else throw new Error(`Invalid account: ${tokenAccounts[idx]}`)
     }
-    data = decodeAccount('tokenAccount', data)
-    const mint = data.mint.toString()
-    const amount = data.amount.toString()
-    if (individual)
-      balancesIndividual.push({ mint, amount })
-    else
-      sdk.util.sumSingleBalance(balances, mint, amount)
+
+    try {
+
+      data = decodeAccount('tokenAccount', data)
+      const mint = data.mint.toString()
+      const amount = data.amount.toString()
+      if (individual)
+        balancesIndividual.push({ mint, amount })
+      else
+        sdk.util.sumSingleBalance(balances, mint, amount)
+
+    } catch (e) {
+      if (individual)
+        balancesIndividual.push({ mint: 'error', amount: 0 })
+
+      sdk.log(`Error decoding account: ${tokenAccounts[idx]}`)
+      if (allowError) return;
+      else throw new Error(`Error decoding account: ${tokenAccounts[idx]}`)
+    }
+
   })
 
   return individual ? balancesIndividual : balances
@@ -105,7 +119,7 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
     const chunks = sliceIntoChunks(tokenAccounts, 99)
     const results = []
     for (const chunk of chunks)
-      results.push(...await getTokenAccountBalances(chunk, { individual: true, chain, }))
+      results.push(...await getTokenAccountBalances(chunk, { individual: true, chain, allowError: true, }))
 
     const data = []
     for (let i = 0; i < results.length; i = i + 2) {
@@ -236,7 +250,7 @@ async function sumTokens2({
 
   async function getSolBalances(accounts) {
     const connection = getConnection()
-    
+
     const balances = await runInChunks(accounts, async (chunk) => {
       chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
       const accountInfos = await connection.getMultipleAccountsInfo(chunk)
