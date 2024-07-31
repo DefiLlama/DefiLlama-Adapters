@@ -14,6 +14,14 @@ async function hbarTvl(timestamp) {
   };
 }
 
+async function fantomTvl() {
+  const res = await getData();
+  return {
+    "fantom": res.fantom.native,
+  };
+}
+
+
 async function maticTvl() {
   const res = await getData();
   return {
@@ -24,7 +32,7 @@ async function maticTvl() {
 async function terra2Tvl() {
   const res = await getData();
   return {
-    "terra-luna-2": res.terra.native,
+    "terra-luna-2": res.terra.native || 0,
   };
 }
 
