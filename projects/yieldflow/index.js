@@ -1,7 +1,9 @@
+const sdk = require('@defillama/sdk')
 const abi = {
   "getCurrentTokenId": "function currentTokenId() view returns (uint)",
   "getPositions": "function positions(uint256 tokenId) view returns (uint96 nonce,address operator,address token0,address token1,uint24 fee,int24 tickLower,int24 tickUpper,uint128 liquidity,uint256 feeGrowthInside0LastX128,uint256 feeGrowthInside1LastX128,uint128 tokensOwed0,uint128 tokensOwed1)",
-  "getAmountsForTicks": "function getAmountsForTicks(int24,int24,uint128) view returns (uint256,uint256)"
+  "getAmountsForTicks": "function getAmountsForTicks(int24,int24,uint128) view returns (uint256,uint256)",
+  "balanceOf": "function balanceOf(address owner) view returns (uint256)"
 }
 
 const managers = [
@@ -66,17 +68,61 @@ const managers = [
   '0xdcC4391042d462158C847f73F4232ce47A8F999c',
 ]
 
+const WETH_ARBITRUM = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
+const WETH_ETHEREUM = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
 async function tvl(api) {
   const { managers } = config[api.chain]
+
+  const WETH_ADDRESS = api.chain === 'arbitrum' ? WETH_ARBITRUM : WETH_ETHEREUM;
+
   const positionManagers = await api.multiCall({ abi: 'address:positionManager', calls: managers })
   const tokenIds = await api.multiCall({ abi: abi.getCurrentTokenId, calls: managers })
   const liquidities = await api.multiCall({ abi: abi.getPositions, calls: positionManagers.map((v, i) => ({ target: v, params: tokenIds[i] })) })
   const tokenAmounts = await api.multiCall({ abi: abi.getAmountsForTicks, calls: liquidities.map((v, i) => ({ target: managers[i], params: [v.tickLower, v.tickUpper, v.liquidity] })) })
 
+  const token0Calls = managers.map((manager, i) => ({
+    target: liquidities[i].token0 === WETH_ADDRESS ? manager : liquidities[i].token0,
+    params: liquidities[i].token0 === WETH_ADDRESS ? [] : [manager],
+    isEth: liquidities[i].token0 === WETH_ADDRESS
+  }));
+
+  const token1Calls = managers.map((manager, i) => ({
+    target: liquidities[i].token1 === WETH_ADDRESS ? manager : liquidities[i].token1,
+    params: liquidities[i].token1 === WETH_ADDRESS ? [] : [manager],
+    isEth: liquidities[i].token1 === WETH_ADDRESS
+  }));
+
+  const token0Balances = await api.multiCall({
+    abi: abi.balanceOf,
+    calls: token0Calls.filter(call => !call.isEth)
+  });
+
+  const token1Balances = await api.multiCall({
+    abi: abi.balanceOf,
+    calls: token1Calls.filter(call => !call.isEth)
+  });
+
+  const ethBalanceCalls = [...token0Calls, ...token1Calls].filter(call => call.isEth).map(call => call.target);
+
+  const ethBalances = await Promise.all(
+      ethBalanceCalls.map(address => sdk.api.eth.getBalance({ target: address, chain: api.chain }).then(res => res.output))
+  );
+
+  let ethIndex = 0;
   liquidities.forEach((v, i) => {
-    api.add(v.token0, tokenAmounts[i][0])
-    api.add(v.token1, tokenAmounts[i][1])
-  })
+    const token0 = v.token0;
+    const token1 = v.token1;
+
+    const token0Balance = token0 === WETH_ADDRESS ? ethBalances[ethIndex++] : token0Balances.shift();
+    const token1Balance = token1 === WETH_ADDRESS ? ethBalances[ethIndex++] : token1Balances.shift();
+
+    api.add(token0, tokenAmounts[i][0]);
+    api.add(token1, tokenAmounts[i][1]);
+    api.add(token0, token0Balance);
+    api.add(token1, token1Balance);
+  });
+
   return api.getBalances()
 }
 
