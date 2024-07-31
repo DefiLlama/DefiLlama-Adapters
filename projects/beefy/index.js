@@ -57,6 +57,7 @@ const chains = {
   oasis: 42262,
   avax: 43114,
   linea: 59144,
+  real: 111188,
   aurora: 1313161554,
   harmony: 1666600000
 }
