@@ -2,6 +2,21 @@ const { staking } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unknownTokens");
 const { aaveExports, methodology, } = require("../helper/aave");
 
+const unwrapLpBase = async (api) => {
+  const wethRdntLP = '0x8A76639FE8e390Ed16eA88f87BEB46d6A5328254';
+
+  const [token0, token1, { liquidity, amount0, amount1 }, totalSupply] = await Promise.all([
+    api.call({ target: wethRdntLP, abi: 'address:token0' }),
+    api.call({ target: wethRdntLP, abi: 'address:token1' }),
+    api.call({ target: wethRdntLP, abi: 'function getBasePosition() view returns (uint128 liquidity, uint256 amount0, uint256 amount1)' }),
+    api.call({ target: wethRdntLP, abi: 'erc20:totalSupply' }),
+  ]);
+
+  api.add(token0, (amount0 * liquidity) / totalSupply);
+  api.add(token1, (amount1 * liquidity) / totalSupply);
+};
+
+
 module.exports = {
   hallmarks: [
     [1704178500,"flash loan exploit"]
@@ -24,7 +39,6 @@ module.exports = {
   },
   base: {
     ...aaveExports('base', '0x3eAF348Cf1fEC09C0f8d4f52AD3B8D894206b724'),
-    // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
-    pool2: staking("0xD87F8a52a91680c993ece968B281bf92505A3741", "0x8A76639FE8e390Ed16eA88f87BEB46d6A5328254")
+    staking: unwrapLpBase,
   },
 };
