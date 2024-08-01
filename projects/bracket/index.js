@@ -5,10 +5,12 @@ const RSETH_MAINNET = ADDRESSES.ethereum.rsETH;
 const WEETH_MAINNET = ADDRESSES.ethereum.weETH;
 const ANKRETH_MAINNET = ADDRESSES.ethereum.ankrETH;
 const OSETH_MAINNET = ADDRESSES.ethereum.osETH;
+const EZETH_MAINNET = ADDRESSES.ethereum.ezETH;
 const WSTETH_ARBITRUM = ADDRESSES.arbitrum.WSTETH;
 const RETH_ARBITRUM = ADDRESSES.arbitrum.RETH;
 const RSETH_ARBITRUM = ADDRESSES.arbitrum.rsETH;
 const WEETH_ARBITRUM = ADDRESSES.arbitrum.weETH;
+const EZETH_ARBITRUM = ADDRESSES.arbitrum.ezETH;
 const BRACKET_ESCROW_PROXY = '0x9b9d7297C3374DaFA2A609d47C79904e467970Bc';
 
 async function getEthereumTvl(api) {
@@ -42,6 +44,11 @@ async function getEthereumTvl(api) {
     target: OSETH_MAINNET,
     params: [BRACKET_ESCROW_PROXY],
   });
+  const ezETHCollateralBalance = await api.call({
+    abi: 'erc20:balanceOf',
+    target: EZETH_MAINNET,
+    params: [BRACKET_ESCROW_PROXY],
+  });
 
   api.add(WSTETH_MAINNET, wstETHCollateralBalance);
   api.add(RETH_MAINNET, rETHCollateralBalance);
@@ -49,6 +56,7 @@ async function getEthereumTvl(api) {
   api.add(WEETH_MAINNET, weETHCollateralBalance);
   api.add(ANKRETH_MAINNET, ankrETHCollateralBalance);
   api.add(OSETH_MAINNET, osETHCollateralBalance);
+  api.add(EZETH_MAINNET, ezETHCollateralBalance);
 }
 
 async function getArbitrumTvl(api) {
@@ -72,11 +80,17 @@ async function getArbitrumTvl(api) {
     target: WEETH_ARBITRUM,
     params: [BRACKET_ESCROW_PROXY],
   });
+  const ezETHCollateralBalance = await api.call({
+    abi: 'erc20:balanceOf',
+    target: EZETH_ARBITRUM,
+    params: [BRACKET_ESCROW_PROXY],
+  });
 
   api.add(WSTETH_ARBITRUM, wstETHCollateralBalance);
   api.add(RETH_ARBITRUM, rETHCollateralBalance);
   api.add(RSETH_ARBITRUM, rsETHCollateralBalance);
   api.add(WEETH_ARBITRUM, weETHCollateralBalance);
+  api.add(EZETH_ARBITRUM, ezETHCollateralBalance);
 }
 
 module.exports = {
