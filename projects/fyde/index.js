@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+
 const FYDE_CONTRACT = "0x87Cc45fFF5c0933bb6aF6bAe7Fc013b7eC7df2Ee";
 const RESTAKING_AGGREGATOR = "0x3f69F62e25441Cf72E362508f4d6711d53B05341";
+const DEPOSIT_ESCROW = "0x63ec950633Eb85797477166084AD0a7121910470";
 const ORACLE = "0x05198327206123E89c24ABd9A482316449bD2aEe"
 const WETH = ADDRESSES.ethereum.WETH;
 
@@ -33,10 +35,14 @@ async function tvl(api) {
     } else 
       api.add(tokens[i], bals[i])
   }
+
+  // add assets in the deposit escrow
+  const tokensEscrow = await api.fetchList({ lengthAbi: 'getAssetListLength', itemAbi: 'assetList', target: DEPOSIT_ESCROW })
+  return api.sumTokens({ tokens: tokensEscrow, owner: DEPOSIT_ESCROW })
 }
 
 module.exports = {
-  methodology: 'Read out balances from internal accounting for each asset in Fyde in the YieldModule. Add ETH staked in LRT Aggregator.',
+  methodology: 'Read out balances from internal accounting for each asset in Fyde, the YieldModule and the DepositEscrow. Add ETH staked in LRT Aggregator.',
   ethereum: {
     tvl
   }

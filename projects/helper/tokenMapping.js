@@ -62,7 +62,21 @@ const fixBalancesTokens = {
   },
   pulse: {
     '0x30fcb23a906493371b1721c8feb8815804808d74': { coingeckoId: 'savings-dai', decimals: 18 },
-  }
+  },
+  saakuru: {
+    '0x557a526472372f1F222EcC6af8818C1e6e78A85f': { coingeckoId: 'oasys', decimals: 18 },
+    '0x739222D8A9179fE05129C77a8fa354049c088CaA': { coingeckoId: 'usd-coin', decimals: 6 }
+  },
+  bouncebit: {
+    '0x8f083eafcbba2e126ad9757639c3a1e25a061a08': { coingeckoId: 'bouncebit-btc', decimals: 18 }
+  },
+  ripple: {
+    "XRP": { coingeckoId: "ripple", decimals: 6 },
+  },
+  reya: {
+    "0x6b48c2e6a32077ec17e8ba0d98ffc676dfab1a30": { coingeckoId: "ethereum", decimals: 18 },
+    "0xa9f32a851b1800742e47725da54a09a7ef2556a3": { coingeckoId: "usd-coin", decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

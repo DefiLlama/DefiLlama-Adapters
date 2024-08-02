@@ -99,10 +99,11 @@ module.exports = uniV3Export({
 
 const config = {
   filecoin: { endpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin' },
+  europa: { endpoint: 'https://elated-tan-skat-graph.skalenodes.com:8000/subgraphs/name/sushi/v3-skale-europa' },
 }
 
 const query = `{
-  pools {
+  pools(first:1000) {
     id
     token0 { id }
     token1 { id }
@@ -122,6 +123,7 @@ Object.keys(config).forEach(chain => {
 
 const config1 = {
   islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
+  // europa: { endpoint: 'https://web-8ngym4vde.sushi.com/pool/api/pools?chainIds=2046399126&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3,SUSHISWAP_V2' },
 }
 
 Object.keys(config1).forEach(chain => {
