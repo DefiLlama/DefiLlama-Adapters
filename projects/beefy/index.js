@@ -47,6 +47,7 @@ const chains = {
   polygon_zkevm: 1101,
   moonbeam: 1284,
   moonriver: 1285,
+  sei: 1329,
   kava: 2222,
   mantle: 5000,
   canto: 7700,

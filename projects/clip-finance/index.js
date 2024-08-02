@@ -19,28 +19,33 @@ const VaultType = {
   Aero: 4,
   LynexAlgebra: 5,
   NileCl: 6,
+  ZeroLend: 7,
+  StargateFarming: 8,
 };
 
 const typesDataInterfaces = {
   any: ["uint256"], // has only vaultType
   amm: ["uint256", "address"], // vaultType, amm pool address
+  vaultBased: ["uint256", "address"], // vaultType, strategy address
   [VaultType.PancakeV3]: ["uint256", "address"], // vaultType, v3 pool address
   [VaultType.Stargate]: ["uint256"], // vaultType
-  [VaultType.MendiLending]: ["uint256", "address"], //vaultType, mendiLeverage address
+  [VaultType.MendiLending]: ["uint256", "address"], //vaultType, mendi strategy address
   [VaultType.Aero]: ["uint256"], //vaultType
   [VaultType.LynexAlgebra]: ["uint256", "address"], // vaultType, algebra pool address
   [VaultType.NileCl]: ["uint256", "address", "address"], // vaultType, nileCl pool address, stacking contract address
+  [VaultType.ZeroLend]: ["uint256", "address"], // vaultType, ZeroLend strategy address
+  [VaultType.StargateFarming]: ["uint256", "address"] // vaultType, Stargate strategy address
 };
 
 const tvl = async (api) => {
   const { vaultRegistry } = config[api.chain];
   const vaultDatas = await api.call({ abi: abis.getVaults, target: vaultRegistry });
   const decoder = ethers.AbiCoder.defaultAbiCoder();
-  //for DefiLlama's reviewer: it is better to check vault type using vaultType instead of existence of certain
-  //function. We are not sure that we will not add the same function to other vault type.
+  // for DefiLlama's reviewer: it is better to check vault type using vaultType instead of existence of certain
+  // function. We are not sure that we will not add the same function to other vault type.
   const vaults = vaultDatas.map((i) => ({ ...i, vaultType: decoder.decode(typesDataInterfaces.any, i.data) }));
 
-  //ammVaults
+  // ammVaults
   const ammTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl];
   const ammVaults = vaults.filter((i) => ammTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
   const ammPools = vaults
@@ -56,7 +61,7 @@ const tvl = async (api) => {
     api.add(ammToken1s[i], pool.total1);
   });
 
-  //Aerodrom Vaults
+  // Aerodrom Vaults
   const aerodromVaults = vaults.filter((i) => i.vaultType == VaultType.Aero).map((i) => i.vault);
   const tokenAs = await api.multiCall({ abi: "address:tokenA", calls: aerodromVaults });
 
@@ -112,11 +117,12 @@ const tvl = async (api) => {
     }
   });
 
-  //Mendi Vaults
-  const mendiVaults = vaults.filter((i) => i.vaultType == VaultType.MendiLending).map((i) => i.vault);
-  const depositTokens = await api.multiCall({ abi: "address:depositToken", calls: mendiVaults });
-  const TVLs = await api.multiCall({ abi: "uint256:TVL", calls: mendiVaults });
-  mendiVaults.forEach((_, i) => {
+  // Vault Based Vaults
+  const vaultBasedTypes = [VaultType.MendiLending, VaultType.ZeroLend, VaultType.StargateFarming];
+  const vaultBasedVaults = vaults.filter((i) => vaultBasedTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
+  const depositTokens = await api.multiCall({ abi: "address:depositToken", calls: vaultBasedVaults });
+  const TVLs = await api.multiCall({ abi: "uint256:TVL", calls: vaultBasedVaults });
+  vaultBasedVaults.forEach((_, i) => {
     api.add(depositTokens[i], TVLs[i]);
   });
 
