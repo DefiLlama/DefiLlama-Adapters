@@ -135,6 +135,12 @@ const HYPE_REGISTRY = {
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 6414342], // Uniswap
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 6414350], // Sushiswap
   ],
+  iotaevm: [
+    ["0xF44cECB1CF40ee12303E85Eb8651263c01812EaD", 223591], // wagmi
+  ],
+  sei: [
+    ["0x1E86A593E55215957C4755f1BE19a229AF3286f6", 86766078], // Yaka
+  ],
 };
 
 Object.keys(HYPE_REGISTRY).forEach(chain => {
