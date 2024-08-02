@@ -35,7 +35,7 @@ module.exports = {
     //     [eth.zaiFraxBP, eth.zaiFraxBPStaked],
     //   ]
     // }),
-    staking: staking(eth.stakedZai, eth.zai),
+    // staking: staking(eth.stakedZai, eth.zai),  // we dont staking for CDP as tokens backing the minted token is already counted towards tvl
     tvl: () => sumTokens2({ owners: pegStabilityModules, tokens: collaterals}),
   }
 };
