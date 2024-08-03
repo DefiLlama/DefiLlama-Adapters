@@ -9,6 +9,11 @@ const config = {
     router: "0x0Fee97363deEFBE4De038D437D805A98dbEbA400",
     fromBlock: 13704184,
   },
+  base: {
+    pool: "0xc08304a5300D9a2310A603b8D7fB8470f752947F",
+    router: "0x0Fee76f15DE74A5211e5Bc2aBF95394d7f50C400",
+    fromBlock: 14089843,
+  }
 }
 
 module.exports = {

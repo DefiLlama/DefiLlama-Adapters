@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk');
+const sdk = require("@defillama/sdk");
 const { sumTokens2, } = require('../helper/unwrapLPs');
 const { cachedGraphQuery } = require('../helper/cache');
 
@@ -17,7 +17,7 @@ const PRIME_SATELLITE_NETWORKS = {
   //   filecoin: 314
 };
 
-const primeSubgraphUrl = 'https://api.thegraph.com/subgraphs/name/prime-protocol/liquidity-incentives';
+const primeSubgraphUrl = sdk.graph.modifyEndpoint('6LrvPGTZeMZfEQh4p9DvDBBv4G8cjhLs4v3mdiUycERp');
 
 const primeMarketsQuery = `{
     markets { address chainId }
