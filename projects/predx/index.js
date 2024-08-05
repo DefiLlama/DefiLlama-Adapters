@@ -13,12 +13,12 @@ module.exports = {
       tokens: ["0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"]
     }),
   },
-  // sei: {
-  //   tvl: sumTokensExport({
-  //     owners: ["0xACbd78769333697ebB2c859a8344d1507b45F044"],
-  //     tokens: ["0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1"]
-  //   }),
-  // },
+  sei: {
+    tvl: sumTokensExport({
+      owners: ["0xACbd78769333697ebB2c859a8344d1507b45F044"],
+      tokens: ["0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1"]
+    }),
+  },
   linea: {
     tvl: sumTokensExport({
       owners: ["0xF9AD26Bb325f4C82F26bF2549b65e6f9a4a04a78"],
@@ -43,4 +43,4 @@ module.exports = {
       tokens: ["0x9827431e8b77e87c9894bd50b055d6be56be0030"]
     }),
   },
-};
+}
