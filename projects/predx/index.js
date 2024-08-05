@@ -1,4 +1,4 @@
-const { sumTokensExport } = require('../helper/sumTokens');
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
     zklink: {
