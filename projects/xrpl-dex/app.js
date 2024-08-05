@@ -111,7 +111,7 @@ const getAllPoolsReserves = async (poolAddresses, atLedgerIndex) => {
       });
     });
   if (errors.length > 0)
-    throw new Error(errors)
+    throw new Error(errors[0])
   return poolsWithReserves
 }
 
