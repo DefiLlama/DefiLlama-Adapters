@@ -47,6 +47,7 @@ const chains = {
   polygon_zkevm: 1101,
   moonbeam: 1284,
   moonriver: 1285,
+  sei: 1329,
   kava: 2222,
   mantle: 5000,
   canto: 7700,
@@ -57,6 +58,7 @@ const chains = {
   oasis: 42262,
   avax: 43114,
   linea: 59144,
+  real: 111188,
   aurora: 1313161554,
   harmony: 1666600000
 }
