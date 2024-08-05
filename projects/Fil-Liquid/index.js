@@ -1,25 +1,21 @@
-const { Web3 } = require('web3');
-const web3 = new Web3('https://api.node.glif.io'); // 注意将 URL 包裹在引号中
-const abi = require('./abi.json');
-const ADDRESSES = require('../helper/coreAssets.json');
-const contract = "0x857b27968f522afA5038F01b1e1f9EdfA3cc631d";
+const sdk = require('@defillama/sdk');
+const ADDRESSES = require('../helper/coreAssets.json')
+const static_contract = "0xA25F892cF2731ba89b88750423Fc618De0959C43";
 
-async function getTVL(api) {
-  try {
-    const instance = new web3.eth.Contract(abi, contract);
-    const data = await instance.methods.getTVL().call();
+async function tvl(api) {
 
-    console.log("minerNum %d, collaterizedMinerNum %d, totalLockedMinerBalance %d, totalFILLiquidity %d, availableFILLiquidity %d, TVL %d", 
-      data[0], data[1], data[2], data[3], data[4], data[5]);
-    
-    api.add(ADDRESSES.null, data[5]); // 传递 TVL 数据给 defilama 的 API
-  } catch (error) {
-    console.error("Error fetching TVL:", error);
-  }
+  const balance = await api.call({
+    abi: 'function getTVL() external view returns (uint)',
+    target: static_contract,
+  });
+
+  api.add(ADDRESSES.null,balance)
 }
 
 module.exports = {
+  timetravel: false,
+  methodology: 'Get the total amount of pledge and account balance of fil in the statistical contract',
   filecoin: {
-    tvl: getTVL,
-  },
+    tvl
+  }
 };
