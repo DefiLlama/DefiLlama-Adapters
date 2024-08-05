@@ -131,15 +131,15 @@ async function main() {
   const cacheKey = 'cache'
   let { allPools, lastPoolUpdate, lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
   if (!lastPoolUpdate || timeNow - lastPoolUpdate > 3 * aDayInSeconds) {
-    try {
+    // try {
       console.time("xrpl-dex fetch pool list");
       allPools = await discoverPools(null, 1);
       console.timeEnd("xrpl-dex fetch pool list");
       lastPoolUpdate = getTimeNow();
       await setCache(projectKey, cacheKey, { allPools, lastPoolUpdate, lastDataUpdate, tvl })
-    } catch (e) {
-      console.error(e)
-    }
+    // } catch (e) {
+    //   console.error(e)
+    // }
   }
   if (lastDataUpdate && timeNow - lastDataUpdate < 2 * 60 * 60) {
     // data was updated recently, no need to update
