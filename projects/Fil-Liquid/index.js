@@ -2,14 +2,13 @@ const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
 const static_contract = "0xA25F892cF2731ba89b88750423Fc618De0959C43";
 
-async function tvl(api) {
-
-  const balance = await api.call({
+function tvl(api) {
+  return api.call({
     abi: 'function getTVL() external view returns (uint)',
     target: static_contract,
+  }).then(balance => {
+    api.add(ADDRESSES.null, balance);
   });
-
-  api.add(ADDRESSES.null,balance)
 }
 
 module.exports = {
