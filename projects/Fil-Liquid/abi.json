@@ -1,0 +1,64 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "filliquid",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "_filliquid",
+		"outputs": [
+			{
+				"internalType": "contract FILLiquidInterface",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTVL",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "minerNum",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "collaterizedMinerNum",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalLockedMinerBalance",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalFILLiquidity",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "availableFILLiquidity",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tvl",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]
