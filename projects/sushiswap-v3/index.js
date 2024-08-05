@@ -100,6 +100,7 @@ module.exports = uniV3Export({
 const config = {
   filecoin: { endpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin' },
   europa: { endpoint: 'https://elated-tan-skat-graph.skalenodes.com:8000/subgraphs/name/sushi/v3-skale-europa' },
+  zeta: { endpoint: 'https://api.goldsky.com/api/public/project_cls39ugcfyhbq01xl9tsf6g38/subgraphs/v3-zetachain/1.0.0/gn' },
 }
 
 const query = `{
