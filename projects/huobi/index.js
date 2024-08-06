@@ -60,7 +60,7 @@ const config = {
       '0x5c985e89dde482efe97ea9f1950ad149eb73829b',
       '0xe4818f8fde0c977a01da4fa467365b8bf22b071e',
       '0xe93381fb4c4f14bda253907b18fad305d799241a',  // end add on 23/02/2024 (we defillama)
-      
+      '0x6663613FbD927cE78abBF7F5Ca7e2c3FE0d96d18', // add on 22/07/2024
     ],
     blacklistedTokens: [
       '0x0316eb71485b0ab14103307bf65a021042c6d380', // HBTC , we already track their backed BTC (1btc wallet on the list)
@@ -75,7 +75,12 @@ const config = {
            ]
   },
   litecoin: {
-    owners: ['MNky8PL58UjL14mcZm3ESvEkYQkzMY9kfu']
+    owners: [
+      'MNky8PL58UjL14mcZm3ESvEkYQkzMY9kfu',
+      'LYmdXiH1u6UN2bFetfTGnNuFgEG64FWVLU',
+      'MGZv8pEkrsmpa2YAXRVXTtdCPBMnnR28fY',
+      'MCRXTQ5uuBh6Qt8t4LuqZNvruZ5SmWXjrY'
+    ]
   },
   solana: {
     owners: [

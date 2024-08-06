@@ -7,7 +7,7 @@ const query = `query {
   tokens { id name symbol }
 }`
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { tokens } = await cachedGraphQuery('haduken-fi-dex', endpoint, query)
   return sumTokens2({
     api, owner: '0x4f8bdf24826ebcf649658147756115ee867b7d63', tokens: tokens

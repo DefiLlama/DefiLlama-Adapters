@@ -14,6 +14,14 @@ async function hbarTvl(timestamp) {
   };
 }
 
+async function fantomTvl() {
+  const res = await getData();
+  return {
+    "fantom": res.fantom.native,
+  };
+}
+
+
 async function maticTvl() {
   const res = await getData();
   return {
@@ -24,7 +32,7 @@ async function maticTvl() {
 async function terra2Tvl() {
   const res = await getData();
   return {
-    "terra-luna-2": res.terra.native,
+    "terra-luna-2": res.terra.native || 0,
   };
 }
 
@@ -76,7 +84,7 @@ module.exports = {
     tvl: nearTvl,
   },
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const res = await getData();
       const nodeOperatorRegistry = "0x4f4bfa0861f62309934a5551e0b2541ee82fdcf1";
       const nodeOperatorCount = await api.call({

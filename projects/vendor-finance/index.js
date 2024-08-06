@@ -1,7 +1,7 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const { factory, fromBlock } = config[api.chain]
   const logs = await getLogs({
     api,
@@ -11,12 +11,11 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     eventAbi: 'event DeployPool (address _poolAddress, address _deployer, uint256 _mintRatio, address _colToken, address _lendToken, uint48 _protocolFee, uint48 _protocolColFee, uint48 _expiry, address[] _borrowers)'
   })
 
-  block = chainBlocks.arbitrum;
   const balances = {};
   const tokensAndOwners = []
 
   for (const { args: { _poolAddress, _colToken, _lendToken, _expiry }} of logs) {
-    if (_expiry < timestamp) continue;
+    if (_expiry < api.timestamp) continue;
     tokensAndOwners.push([_colToken, _poolAddress])
     tokensAndOwners.push([_lendToken, _poolAddress])
   }

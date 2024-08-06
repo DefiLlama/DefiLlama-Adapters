@@ -1,7 +1,7 @@
 const { ethers } = require("ethers");
 const { getLogs } = require("../helper/cache/getLogs");
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const factories = config[api.chain];
 
   const promises = factories.map(async ({ factory, fromBlock, name }) => {
@@ -42,7 +42,8 @@ async function tvl(_, _b, _cb, { api }) {
       const data = await api.multiCall({
         abi: "function liquidity() view returns (uint256 total_, uint256[] memory individual_)",
         calls: pools.map((v) => ({ target: v })),
-      });
+        permitFailure: true
+      })
 
       // Curve.derivatives(0)
       const derivatives0 = await api.multiCall({
@@ -67,6 +68,8 @@ async function tvl(_, _b, _cb, { api }) {
       });
 
       data.forEach((d, i) => {
+        if (!d) return
+        
         const divisor0 = ethers.parseUnits(
           "1",
           parseInt(derivatives0Decimals[i])

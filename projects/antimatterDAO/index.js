@@ -47,7 +47,7 @@ chains.forEach(chain => {
 module.exports.ethereum.staking = staking(antimatterStakingContract, '0x9b99cca871be05119b2012fd4474731dd653febe')
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let toa = []
   const usdToken = usdTokens[api.chain]
   if (usdToken) {

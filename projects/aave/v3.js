@@ -1,4 +1,6 @@
-const { aaveChainTvl } = require('../helper/aave');
+const { aaveChainTvl, aaveExports } = require('../helper/aave');
+const methodologies = require('../helper/methodologies');
+const { mergeExports } = require('../helper/utils');
 
 const v3params = ["0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654"]]
 
@@ -23,13 +25,16 @@ function v3(chain) {
   }
 }
 
-module.exports = {
-  methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
+module.exports = mergeExports({
+  methodology: methodologies.lendingMarket,
   avax: v3("avax"),
   ...["optimism", "fantom", "harmony", "arbitrum", "polygon", "ethereum", "metis", "base", "xdai", "scroll", "bsc"].reduce((t, c) => ({ ...t, [c]: v3(c) }), {}),
   hallmarks: [
     [1659630089, "Start OP Rewards"],
     [1650471689, "Start AVAX Rewards"]
   ],
-};
+}, {
+  // Lido pool
+  ethereum: aaveExports(undefined,  "0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0xa3206d66cF94AA1e93B21a9D8d409d6375309F4A"], { v3: true, }),
+});
 // node test.js projects/aave/index.js

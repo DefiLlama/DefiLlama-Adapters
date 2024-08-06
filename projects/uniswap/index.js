@@ -1,16 +1,16 @@
 const { uniV3Export } = require('../helper/uniswapV3')
-const { cachedGraphQuery } = require('../helper/cache')
+const { cachedGraphQuery, configPost, getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const graphs = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-  optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
-  arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
-  polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
-  celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
-  bsc: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax",
-  base: "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/version/latest",
+  ethereum: "5AXe97hGLfjgFAc6Xvg6uDpsD5hqpxrxcma9MoxG7j7h",
+  optimism: "Cghf4LfVqPiFw6fp6Y5X5Ubc8UpmUhSfJL82zwiBFLaj",
+  arbitrum: 'FbCGRftH4a3yZugY7TnbYgPJVEv2LvMT6oF1fxPe9aJM',
+  polygon: "3hCPRGf4z88VC5rsBKU5AA9FBBq5nF3jbKJG7VZCbhjm",
+  celo: "ESdrTJ3twMwWVoQ1hUE2u7PugEHX3QkenudD6aXCkDQ4",
+  bsc: "F85MNzUGYqgSHSHRGgeVMNsdnW1KtZSVgFULumXRZTw2",
+  // avax: "3Pwd3cqFKbqKAyaJfGUVmJJ7oYbFQLDa19iB27iMxebD",
+  base: "43Hwfi3dJSoGpyas9VwNoDAv55yjgGrPpNSmbQZArzMG",
 }
 
 const blacklists = {
@@ -21,7 +21,7 @@ const blacklists = {
 }
 
 function v3TvlPaged(chain) {
-  return async (_, _b, _2, { api }) => {
+  return async (api) => {
     const block = await api.getBlock()
 
     let graphQueryPaged = `
@@ -42,6 +42,24 @@ function v3TvlPaged(chain) {
   }
 }
 
+async function filecoinTvl(api) {
+  const { result: { pools } } = await configPost('oku-trade/filecoin', 'https://cush.apiary.software/filecoin', {
+    "jsonrpc": "2.0",
+    "method": "cush_topPools",
+    "params": [
+      {
+        "result_size": 1000,
+        "sort_by": "tx_count",
+        "sort_order": false
+      }
+    ],
+    "id": 0
+  })
+  const ownerTokens = pools.map(i => [[i.t0, i.t1], i.address])
+  return api.sumTokens({ ownerTokens })
+}
+
+
 module.exports = {
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   timetravel: false,
@@ -60,15 +78,33 @@ module.exports = {
     moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 },
     era: { factory: '0x8FdA5a7a8dCA67BBcDd10F02Fa0649A937215422', fromBlock: 12637080 },
     boba: { factory: "0xFFCd7Aed9C627E82A765c3247d562239507f6f1B", fromBlock: 969351, },
-    rsk: { factory: "0xAf37Ec98A00fD63689cF3060Bf3b6784e00CaD82", fromBlock: 5829207, }, 
+    rsk: { factory: "0xAf37Ec98A00fD63689cF3060Bf3b6784e00CaD82", fromBlock: 5829207, },
     scroll: { factory: "0x70C62C8b8e801124A4Aa81ce07b637A3e83cb919", fromBlock: 1367, },
-  })
+    blast: { factory: "0x792edade80af5fc680d96a2ed80a44247d2cf6fd", fromBlock: 400903, },
+    linea: { factory: "0x31FAfd4889FA1269F7a13A66eE0fB458f27D72A9", fromBlock: 25247, },
+    manta: { factory: "0x06D830e15081f65923674268121FF57Cc54e4e23", fromBlock: 1191705 },
+    avax: { factory: "0x740b1c1de25031C31FF4fC9A62f554A55cdC1baD", fromBlock: 27832972 },
+    taiko: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 961 },
+    sei: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 79245151 },
+    mantle: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 63795918 },
+    polygon_zkevm: { factory: "0xff83c3c800Fec21de45C5Ec30B69ddd5Ee60DFC2", fromBlock: 8466867 },
+  }),
+  filecoin: { tvl: filecoinTvl },
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avax', 'base']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'base']
 
 chains.forEach(chain => {
   module.exports[chain] = {
     tvl: v3TvlPaged(chain)
   }
 })
+
+module.exports.sei.tvl = async (api) => {
+  const { result } = await getConfig('oku-trade/sei', 'https://omni.icarus.tools/sei/cush/getAllPoolsInOrder')
+  const pools = result.map(i => i.pool)
+  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
+  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
+  const ownerTokens = pools.map((pool, i) => [[token0s[i], token1s[i]], pool])
+  return sumTokens2({ api, ownerTokens })
+}
