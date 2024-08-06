@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const sdk = require('@defillama/sdk');
 
 const UNIETH_ADDRESS = {
   ethereum: { 
@@ -70,17 +69,13 @@ const vaults = {
  *    }
  *  )[]} inputs
  */
-const chainTVL = (chain, inputs) => async (api) => {
+const chainTVL = (inputs) => async (api) => {
   for (const { type, data } of inputs) {
     if (type === 'cap') {
       const tvl = await api.call({ abi: "uint256:load", target: data.cap });
-      console.log(chain, type, data.asset, tvl);
       api.add(data.asset, tvl);
     } else if (type === 'vault') {
-      const tvl = await sumTokens2({ api, owner: data.vault, tokens: [data.asset] });
-      const key = `${chain}:${data.asset}`;
-      // console.log(chain, type, data.asset, tvl, key, tvl[key]);
-      api.add(data.asset, tvl[key]);
+      await sumTokens2({ api, owner: data.vault, tokens: [data.asset] });
     }
   }
 }
@@ -89,7 +84,6 @@ module.exports = {
   doublecounted: true,
   ethereum: {
     tvl: chainTVL(
-      "ethereum",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.ethereum, cap: CAP_ADDRESS.ethereum }},
         { type: 'vault', data: { asset: VAULT_weETHs.ethereum, vault: vaults.ethereum }},
@@ -99,7 +93,6 @@ module.exports = {
   },
   scroll: {
     tvl: chainTVL(
-      "scroll",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.scroll, cap: CAP_ADDRESS.scroll }},
         { type: 'vault', data: UNIETH_ADDRESS.scroll },
@@ -108,7 +101,6 @@ module.exports = {
   },
   arbitrum: {
     tvl: chainTVL(
-      "arbitrum",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.arbitrum, cap: CAP_ADDRESS.arbitrum }},
         { type: 'vault', data: UNIETH_ADDRESS.arbitrum },
@@ -117,7 +109,6 @@ module.exports = {
   },
   optimism: {
     tvl: chainTVL(
-      "optimism",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.optimism, cap: CAP_ADDRESS.optimism }},
       ],
@@ -125,7 +116,6 @@ module.exports = {
   },
   mode: {
     tvl: chainTVL(
-      "mode",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.mode, cap: CAP_ADDRESS.mode }},
       ],
@@ -133,7 +123,6 @@ module.exports = {
   },
   manta: {
     tvl: chainTVL(
-      "manta",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.manta, cap: CAP_ADDRESS.manta }},
       ],
@@ -141,7 +130,6 @@ module.exports = {
   },
   blast: {
     tvl: chainTVL(
-      "blast",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.blast, cap: CAP_ADDRESS.blast }},
       ],
@@ -149,7 +137,6 @@ module.exports = {
   },
   linea: {
     tvl: chainTVL(
-      "linea",
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.linea, cap: CAP_ADDRESS.linea }},
         { type: 'vault', data: UNIETH_ADDRESS.linea },
