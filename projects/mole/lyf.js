@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BN = require("bn.js");
 const BigNumber = require("bignumber.js");
 const { coreTokens } = require("../helper/chain/aptos");
 const { getResources } = require("../helper/chain/aptos");
@@ -8,8 +7,6 @@ const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs, addUniV3LikePosition } = require("../helper/unwrapLPs");
 const sui = require('../helper/chain/sui')
 const { transformBalances } = require("../helper/portedTokens");
-const { getObject } = require("../helper/chain/sui");
-const { i32BitsToNumber, getCoinAmountFromLiquidity, tickIndexToSqrtPriceX64 } = require("./utils")
 
 async function getProcolAddresses(chain) {
   // if (chain === 'avax') {
