@@ -35,7 +35,7 @@ const oft_supplies = async (api) => {
   const totalSupplies = await Promise.all(
     Object.keys(oft_tokens).map(async (chain) => {
       const chainApi = new sdk.ChainApi({ chain, timestamp: api.timestamp})
-      await chainApi.getBlock()
+      // await chainApi.getBlock()
       return chainApi.call({ abi: 'erc20:totalSupply', target: oft_tokens[chain] });
     })
   );
@@ -43,6 +43,7 @@ const oft_supplies = async (api) => {
 }
 
 module.exports = {
+  timetravel: false,
   doublecounted: true,
   methodology:
     "deposited LSTs in deposit pool, node delegator contracts and from them into eigenlayer strategy contracts",
