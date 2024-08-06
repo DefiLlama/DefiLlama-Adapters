@@ -73,6 +73,18 @@ const fixBalancesTokens = {
   ripple: {
     "XRP": { coingeckoId: "ripple", decimals: 6 },
   },
+  moonriver: {
+    '0x8b29344f368b5fa35595325903fe0eaab70c8e1f': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
+  moonbeam: {
+    '0x8b29344f368b5fa35595325903fe0eaab70c8e1f': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
+  xdai: {
+    '0x9a2a80c38abb1fdc3cb0fbf94fefe88bef828e00': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
+  celo: {
+    '0xb4d8a602fff7790eec3f2c0c1a51a475ee399b2d': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
