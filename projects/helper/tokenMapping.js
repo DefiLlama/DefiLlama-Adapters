@@ -73,9 +73,24 @@ const fixBalancesTokens = {
   ripple: {
     "XRP": { coingeckoId: "ripple", decimals: 6 },
   },
+  moonriver: {
+    '0x8b29344f368b5fa35595325903fe0eaab70c8e1f': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
+  moonbeam: {
+    '0x8b29344f368b5fa35595325903fe0eaab70c8e1f': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
+  xdai: {
+    '0x9a2a80c38abb1fdc3cb0fbf94fefe88bef828e00': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
+  celo: {
+    '0xb4d8a602fff7790eec3f2c0c1a51a475ee399b2d': { coingeckoId: 'polkamarkets', decimals: 18 },
+  },
   reya: {
     "0x6b48c2e6a32077ec17e8ba0d98ffc676dfab1a30": { coingeckoId: "ethereum", decimals: 18 },
     "0xa9f32a851b1800742e47725da54a09a7ef2556a3": { coingeckoId: "usd-coin", decimals: 6 },
+  },
+  base: {
+    "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2": { coingeckoId: "tether", decimals: 6 },
   },
 }
 
