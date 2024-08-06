@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const DEPOSIT_POOL = "0x036676389e48133B63a802f8635AD39E752D375D";
 const rstETH = '0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7'
 
@@ -16,7 +17,6 @@ const oft_tokens = {
 
 async function tvl(api) {
   const supplies = await oft_supplies(api)
-  api.chain = 'ethereum'
   const config = await api.call({  abi: 'address:lrtConfig', target: DEPOSIT_POOL})
   const tokens = await api.call({  abi: 'address[]:getSupportedAssetList', target: config})
   const bals = await api.multiCall({  abi: 'function getTotalAssetDeposits(address) external view returns (uint256)', calls: tokens, target: DEPOSIT_POOL})
@@ -34,8 +34,9 @@ const oft_tvls = async (api, oft) => {
 const oft_supplies = async (api) => {
   const totalSupplies = await Promise.all(
     Object.keys(oft_tokens).map(async (chain) => {
-      api.chain = chain;
-      return api.call({ abi: 'erc20:totalSupply', target: oft_tokens[chain] });
+      const chainApi = new sdk.ChainApi({ chain, timestamp: api.timestamp})
+      await chainApi.getBlock()
+      return chainApi.call({ abi: 'erc20:totalSupply', target: oft_tokens[chain] });
     })
   );
   return totalSupplies.reduce((sum, value) => sum + Number(value), 0);
@@ -54,7 +55,6 @@ Object.keys(oft_tokens).forEach((chain) => {
   const contract = oft_tokens[chain];
   module.exports[chain] = {
     tvl: async (api) => oft_tvls(api, contract),
-    methodology: "deposited LSTs in deposit pool, node delegator contracts and from them into eigenlayer strategy contracts",
   };
 });
 
