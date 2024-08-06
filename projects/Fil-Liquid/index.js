@@ -1,3 +1,4 @@
+/* eslint-disable no-async-promise-executor */
 const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
 const static_contract = "0xA25F892cF2731ba89b88750423Fc618De0959C43";
@@ -18,3 +19,4 @@ module.exports = {
     tvl
   }
 };
+/* eslint-enable no-async-promise-executor */
