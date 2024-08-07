@@ -24,7 +24,7 @@ async function tvl(api){
 
 module.exports = {
   avax:{
-    ownTokens: stakings(owners, qi, "avax"),
+    ownTokens: stakings(owners, qi),
     tvl
   }
 }

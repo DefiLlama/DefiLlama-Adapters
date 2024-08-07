@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { chainExports } = require('../helper/exports')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
@@ -41,7 +42,7 @@ function chainTvl(chain) {
                 }
             }
         }
-        toa = toa.filter(([i, j]) => i && j && j !== '0x0000000000000000000000000000000000000000')
+        toa = toa.filter(([i, j]) => i && j && j !== ADDRESSES.null)
         return sumTokens2({ api, tokensAndOwners: toa, })
     }
 }

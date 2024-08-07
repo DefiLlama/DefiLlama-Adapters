@@ -1,32 +1,37 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const ADDRESSES = require("../helper/coreAssets.json");
-const VECTOR = require("../vector/vectorContracts.json");
+const { getLogs2 } = require('../helper/cache/getLogs')
+const { getConfig } = require('../helper/cache')
 
-const tokens = {
-  COQ: "0x420FcA0121DC28039145009570975747295f2329",
-};
-const coreModuleProxy = "0xceE74C8c242047c85e6833633AbB7A4Cd8465757";
-const pools = {
-  WAVAX: "0x7F91272ff1A0114743D2df95F5905F9613Fd92b3",
-  USDC: "0x94732A5319e1feAcc7d08e08Fdc4C2c7f5123143",
-  COQ: "0xc97d9B3971BfE1B8Ac8EA7f990Df721d8f695223",
-  SAVAX: "0xe57a4042eA63Df072B2cf6352F9779E4D2445A92",
-  core: "0xceE74C8c242047c85e6833633AbB7A4Cd8465757",
-};
+const xliplessDex = "0x82E90fB94fd9a5C19Bf38648DD2C9639Bde67c74"
 
 module.exports = {
   avax: {
-    tvl: sumTokensExport({
-      tokensAndOwners: [
-        [ADDRESSES.avax.WAVAX, pools.WAVAX],
-        [ADDRESSES.avax.USDC, pools.USDC],
-        [tokens.COQ, pools.COQ],
-        [VECTOR.tokens.SAVAX.address, pools.SAVAX],
-        [ADDRESSES.avax.WAVAX, coreModuleProxy],
-        [ADDRESSES.avax.USDC, coreModuleProxy],
-        [tokens.COQ, coreModuleProxy],
-        [VECTOR.tokens.SAVAX.address, coreModuleProxy],
-      ],
-    }),
+    tvl,
   },
-};
+}
+
+async function tvl(api) {
+  const { assets } = await getConfig('fwx/'+api.chain, "https://app.fwx.finance/api/v2/assets?chain_id=43114")
+
+  let tokensAndOwners = [];
+  for (let i = 0; i < assets.length; i++) {
+    const asset = assets[i]
+    tokensAndOwners.push(
+      [asset.token_address, asset.pool_address],
+      [asset.token_address, asset.core_address],
+      [asset.token_address, xliplessDex],
+    );
+  }
+
+  const FACTORY_SUB_MODULE_PROXY = '0x54b048eB204B7CbBb469901fdb5BbfB80d0F0CD1'
+  const logs = await getLogs2({
+    api,
+    factory: FACTORY_SUB_MODULE_PROXY,
+    eventAbi: "event CreateMarket(address indexed creator, address core, address collateralPool, address collateralToken, address underlyingPool, address underlyingToken, bytes32 pairbytes)",
+    fromBlock: 46125548,
+  })
+  logs.forEach(i => {
+    tokensAndOwners.push([i.collateralToken, i.collateralPool])
+    tokensAndOwners.push([i.underlyingToken, i.underlyingPool])
+  })
+  return api.sumTokens({ tokensAndOwners })
+}

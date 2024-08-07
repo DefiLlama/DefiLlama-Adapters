@@ -19,8 +19,9 @@ function getAssetInfo(asset) {
 async function getAllPairs(factory, chain) {
   let allPairs = []
   let currentPairs;
+  const limit = factory === 'terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r' ? 29 : 30 // some weird native token issue at one of the pagination query
   do {
-    const queryStr = `{"pairs": { "limit": 30 ${allPairs.length ? `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}` : ""} }}`
+    const queryStr = `{"pairs": { "limit": ${limit} ${allPairs.length ? `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}` : ""} }}`
     currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
     allPairs.push(...currentPairs)
   } while (currentPairs.length > 0)

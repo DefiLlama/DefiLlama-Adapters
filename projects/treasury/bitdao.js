@@ -72,7 +72,7 @@ const tokenTreasuries = treasuryExports({
         '0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9',//FTT
         '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',//xSUSHI
         "0x52A8845DF664D76C69d2EEa607CD793565aF42B8",
-        "0x9d39a5de30e57443bff2a8307a4256c8797a3497", //sUSDe
+        ADDRESSES.ethereum.sUSDe, //sUSDe
      ],
     owners: [mTreasuryL1, mTreasuryL1SC,mTreasuryL1O1,mTreasuryL1E1, mTreasuryL1RB1, mTreasuryL1LPE1, ...ecspWallets ],
     ownTokens: [BIT, MNT],

@@ -133,7 +133,7 @@ module.exports = {
     pool2: dmodBscLPPool
   },
   moonbeam: {
-    tvl: getUniTVL({ factory: '0x61999fAb7fdcEe1B26b82b5c2f825BCC8F8c2458', chain: 'moonbeam', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: '0x61999fAb7fdcEe1B26b82b5c2f825BCC8F8c2458', useDefaultCoreAssets: true }),
   },
 };
 // node test.js projects/demodyfi/index.js

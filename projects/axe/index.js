@@ -37,7 +37,7 @@ module.exports = {
     start: 1637036516, // 16 Nov 2021
     ethereum: {
       tvl: ethTvl,
-      staking: staking(AXEStaking, AXE, "ethereum"),
+      staking: staking(AXEStaking, AXE),
     },
     methodology:
       "Counts DAI, USDC and DAI SLP (AXE-DAI) on the treasury",
