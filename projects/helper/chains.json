@@ -151,6 +151,7 @@
   "iotex",
   "islm",
   "jbc",
+  "joltify",
   "juno",
   "kadena",
   "karak",
@@ -226,6 +227,7 @@
   "orai",
   "ore",
   "osmosis",
+  "ox_chain",
   "ozone",
   "palette",
   "palm",
@@ -264,6 +266,7 @@
   "rss3_vsl",
   "rvn",
   "saakuru",
+  "sanko",
   "sapphire",
   "scroll",
   "secret",
@@ -326,12 +329,10 @@
   "zeniq",
   "zeta",
   "zilliqa",
+  "zkcro",
   "zkfair",
   "zklink",
   "zksync",
   "zora",
-  "zyx",
-  "joltify",
-  "sanko",
-  "ox_chain"
+  "zyx"
 ]
