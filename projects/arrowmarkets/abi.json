@@ -1,0 +1,5 @@
+{
+    "stakingContract": {
+      "totalStakeAmounts": "function totalStakeAmounts() view returns (uint256)"
+    }
+}
