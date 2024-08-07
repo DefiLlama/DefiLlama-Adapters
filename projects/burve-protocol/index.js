@@ -1,7 +1,8 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const config = {
   bsc: { fromBlock: 35953570 },
-  base: { fromBlock: 15653766  },
+  arbitrum: { fromBlock: 184614246 },
+  base: { fromBlock: 15653766 },
 }
 
 module.exports = {
