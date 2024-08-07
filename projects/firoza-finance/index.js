@@ -1,43 +1,13 @@
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const { get } = require("../helper/http");
-
-const erc4626Abi = require("./erc4626.json");
+const { getConfig } = require('../helper/cache')
+const { sumERC4626Vaults } = require('../helper/erc4626');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const POOL_API_URL = "https://firoza.finance/api/pools";
 
-async function fetchPoolAddresses() {
-  try {
-    const poolAddresses = await get(POOL_API_URL);
-    return poolAddresses;
-  } catch (error) {
-    console.error("Error fetching pool addresses:", error);
-    return null;
-  }
-}
-
-
-async function tvl(timestamp, block, chainBlocks, { api }) {
-  const poolAddresses = await fetchPoolAddresses();
-
-  const [tokens, balances] = await Promise.all([
-    api.multiCall({ abi: erc4626Abi.asset, calls: poolAddresses }),
-    api.multiCall({ abi: erc4626Abi.totalAssets, calls: poolAddresses }),
-  ]);
-
-  const balancesMap = {};
-  tokens.forEach((token, i) => {
-    const balance = BigNumber(balances[i] || 0);
-    if (balance.gt(0)) {
-      balancesMap[token] = (balancesMap[token] || BigNumber(0)).plus(balance);
-    }
-  });
-
-  Object.entries(balancesMap).forEach(([token, balance]) => {
-    api.add(token, balance.toString());
-  });
-
-  return api.getBalances();
+async function tvl(api) {
+  const poolAddresses = await getConfig('firoza', POOL_API_URL);
+  await sumERC4626Vaults({ api, calls: poolAddresses, isOG4626: true, });
+  return sumTokens2({ api })
 }
 
 module.exports = {
