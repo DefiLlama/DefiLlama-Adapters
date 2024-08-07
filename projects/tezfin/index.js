@@ -11,7 +11,8 @@ async function tvl() {
       // v2 contracts
       "KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm", // ꜰXTZ v2
       "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs", // ꜰUSDtz v2
-      "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB"  // ꜰUSDt v2
+      "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB", // ꜰUSDt v2
+      "KT19gZac3vqV3ZeMJbhMX7Xy8kcocKK4Tbz1"  // ꜰtzBTC v2
     ],
     includeTezos: true,
   });
@@ -26,7 +27,8 @@ async function borrowed() {
     // v2 contracts
     "KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm", // ꜰXTZ v2
     "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs", // ꜰUSDtz v2
-    "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB"  // ꜰUSDt v2
+    "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB", // ꜰUSDt v2
+    "KT19gZac3vqV3ZeMJbhMX7Xy8kcocKK4Tbz1"  // ꜰtzBTC v2
   ];
 
   const balances = {};
