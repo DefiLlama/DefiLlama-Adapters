@@ -165,6 +165,9 @@ module.exports = mergeExports([
   { ethereum: { tvl: stakingTVL, } }
 ])
 module.exports.methodology = 'We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.'
+module.exports.hallmarks = [
+  [1723066836,"remove usdd collateral"]
+]
 
 
 async function stakingTVL() {
