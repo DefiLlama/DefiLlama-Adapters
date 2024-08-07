@@ -99,7 +99,7 @@ const config = {
       'TAuUCiH4JVNBZmDnEDZkXEUXDARdGpXTmX',
       'TF2fmSbg5HAD34KPUH7WtWCxxvgXHohzYM',
       'THZovMcKoZaV9zzFTWteQYd2f3NEvnzxAM',
-      'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa',
+    //  'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa', // this wallet is backing USDD acording here https://prnt.sc/lvIQUtCNbk2X. For that reason, it should not included as HTX.
       'TDvf1dSBhR7dEskJs17HxGHheJrjXhiFyM',
       'TUJGLHo3rq4EAUY1LHRhNkHPX8qmrv9WFs', // add on 08/08/2023 (we defillama)
       'TRSXRWudzfzY4jH7AaMowdMNUXDkHisbcd', // add on 08/08/2023 (we defillama)
