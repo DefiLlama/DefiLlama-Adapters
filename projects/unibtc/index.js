@@ -16,15 +16,15 @@ const config = {
   },
   bsquared: {
     vault: defaultVault,
-    tokens: ['0x0000000000000000000000000000000000000000',"0x4200000000000000000000000000000000000006"]
+    tokens: [[ADDRESSES['bsquared'].BTC],[ADDRESSES['bsquared'].WBTC]]
   },
   merlin: {
     vault: defaultVault,
-    tokens: ["0x0000000000000000000000000000000000000000",'0xB880fd278198bd590252621d4CD071b1842E9Bcd']
+    tokens: [[ADDRESSES['merlin'].BTC],[ADDRESSES['merlin'].WBTC_1]]
   },
   btr: {
     vault: defaultVault,
-    tokens: ["0x0000000000000000000000000000000000000000", '0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f']
+    tokens: [[ADDRESSES['btr'].BTC], [ADDRESSES['btr'].WBTC]]
   },
 }
 
