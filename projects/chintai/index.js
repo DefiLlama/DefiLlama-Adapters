@@ -3,6 +3,7 @@ const {
   sumTokensExport: sumTokensExportSolana,
 } = require("../helper/unwrapLPs");
 const { sumTokens2 } = require("../helper/solana");
+const { get_account_tvl } = require("../helper/chain/eos");
 
 const ADDRESSES = require("../helper/coreAssets.json");
 const config = {
@@ -71,7 +72,13 @@ async function solanaTvl() {
       raydiumAccounts,
     ].flat(),
   });
+}
 
+async function eosTvl() {
+  const tokens = [
+    ["chexchexchex","CHEX","chex-token"],
+  ]
+  return await get_account_tvl(["swap.defi","newdexpublic"], tokens);
 }
 
 module.exports = {
@@ -109,5 +116,8 @@ module.exports = {
   },
   solana: {
     tvl: solanaTvl,
+  },
+  eos: {
+    tvl: eosTvl,
   },
 };
