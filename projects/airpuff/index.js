@@ -222,7 +222,11 @@ module.exports = {
         reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
         oracle: "0xb09cbB6Aa95A004F9aeE4349DF431aF5ad03ECe4",
       };
+
+
       tokensAndOwners.push([eETH.reStakingToken, eETH.vault]);
+
+    
 
       // leverage users
       const ezETH = {
@@ -334,6 +338,11 @@ module.exports = {
         pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
       };
 
+      const bptrswETH1x2 = {
+        vault: "0x76338fca82925Fe2Df2C4F2c6e9545247617C634",
+        pendleAddress: "0x7bAf258049cc8B9A78097723dc19a8b103D4098F"
+      };
+
       //new 1x strats on pendle v2
 
       //PT Tensorplex Staked TAO 27JUN2024 (PT-stTAO-...)
@@ -388,6 +397,7 @@ module.exports = {
         bptzrsETH1x,
         bptzUSDe1x,
         bptrswETH1x,
+        bptrswETH1x2,
         pTEzETHDEC30,
       ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);
