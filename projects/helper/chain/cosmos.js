@@ -311,5 +311,6 @@ module.exports = {
   getTokenBalance,
   getToken,
   sumCW20Tokens,
+  getEndpoint,
   queryContractWithRetries
 };
