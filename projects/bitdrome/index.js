@@ -1,25 +1,13 @@
-const USDT = '0xa67ED736649F2958A35fd249a584151056b4b745';
-const WBTC = '0xB5136FEba197f5fF4B765E5b50c74db717796dcD'
-const USDT_WBCT_POOL = '0x02383dC175a6EB8C58B348fBEB2Eb4e00aB7e45f';
-
 async function tvl(api) {
-    const btcBalance = await api.call({
-        abi: 'erc20:balanceOf',
-        target: WBTC,
-        params: [USDT_WBCT_POOL]
-    })
-    const usdtBalance = await api.call({
-        abi: 'erc20:balanceOf',
-        target: USDT,
-        params: [USDT_WBCT_POOL]
-    })
-    api.addTokens([WBTC, USDT], [btcBalance, USDT]);
+  const TwoPoolFactory = '0x634FB7F07BDb77281c64a57F69E1EB19583E727a'
+  const pools = await api.fetchList({ lengthAbi: 'pool_count', itemAbi: 'pool_list', target: TwoPoolFactory })
+  const tokens = await api.multiCall({ target: TwoPoolFactory, calls: pools, abi: 'function get_coins(address _pool) view returns (address[2])' })
+  const ownerTokens = tokens.map((v, i) => [v, pools[i]])
+  return api.sumTokens({ ownerTokens })
 }
 
 module.exports = {
-    methodology: 'calculate tvl of Bitdrome pools',
-    start: 1981544,
-    bevm: {
-        tvl
-    }
+  bevm: {
+    tvl
+  }
 }
