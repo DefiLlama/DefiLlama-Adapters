@@ -47,8 +47,8 @@ async function staking(api) {
     })
     let p = (sqrtPriceX96 / 2 ** 96) ** 2
    let rate = p * 10**12
-   let usdtNum = poolTvl/10**18 * rate
-   api.add(usdt,usdtNum*10**6)
+   let usdtNum = poolTvl/10**18 * rate * 10**6
+   api.add(usdt,usdtNum)
   }
 }
 
