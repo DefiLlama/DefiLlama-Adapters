@@ -10,9 +10,20 @@ async function tvl(api) {
   let kalax = api.chain === 'blast'?blastKalax:scrollKalax
 
   let pools = (await api.multiCall({ abi: abiInfo.poolInfos, calls: farms })).flat()
-  pools
+  if(api.chain === 'blast'){
+    pools
+      .filter((i) => i.assets !== kalax)
+      .forEach((i) => api.add(i.assets, i.tvl))
+  }else{
+    pools
     .filter((i) => i.assets !== kalax)
-    .forEach((i) => api.add(i.assets, i.tvl))
+    .forEach((i)=>{
+      if(i.assets === '0x0000000000000000000000000000000000000001'){
+        i.assets ='0x0000000000000000000000000000000000000000'
+      }
+      api.add(i.assets, i.tvl)
+    })
+  }
 
   return sumTokens2({ api, resolveLP: true })
 }
