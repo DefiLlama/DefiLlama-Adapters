@@ -51,9 +51,10 @@ async function tvl(api) {
     withMetadata: true,
   })
 
-  // tokens are Pendle PT Tokens with ETH underlying asset, price them as WETH which is due at maturity date
+  // tokens are Pendle PT Tokens with weETH underlying asset, price them as weETH which is due at maturity 
+  const weETH = "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee"
   ptBalances.forEach((bal, i) => {
-    api.add(WETH, bal['output'])
+    api.add(weETH, bal['output'])
   });
 }
 
