@@ -5,16 +5,18 @@ let _poolData
 
 function getPoolData() {
   if (!_poolData) {
-    _poolData = new Promise(async (resolve, reject) => {
-      try {
-        const poolAddresses = await getPoolAddresses()
-        const poolInfos = await Promise.all(poolAddresses.map(getPoolInfo))
-        resolve(poolInfos)
-      } catch (e) { reject(e) }
-    })
+    _poolData = new Promise(fetchPoolData)
   }
 
   return _poolData
+
+  async function fetchPoolData(resolve, reject) {
+    try {
+      const poolAddresses = await getPoolAddresses()
+      const poolInfos = await Promise.all(poolAddresses.map(getPoolInfo))
+      resolve(poolInfos)
+    } catch (e) { reject(e) }
+  }
 
   async function getPoolAddresses() {
     const pools = await function_view({ functionStr: "0x68476f9d437e3f32fd262ba898b5e3ee0a23a1d586a6cf29a28add35f253f6f7::meso::pools" })

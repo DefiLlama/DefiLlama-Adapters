@@ -38,6 +38,21 @@ const ALPHAFI_CETUS_TVL_IDS = [
     token0Type: "0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN",
     token1Type: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN"
   },
+  { 
+    poolID: "0x045e4e3ccd383bedeb8fda54c39a7a1b1a6ed6a9f66aec4998984373558f96a0",
+    cetusPoolID: "0x0254747f5ca059a1972cd7f6016485d51392a3fde608107b93bbaebea550f703",
+    investorID: "0xdd9018247d579bd7adfdbced4ed39c28821c6019461d37dbdf32f0d409959b1c",
+    token0Type: "0xa99b8952d4f7d947ea77fe0ecdcc9e5fc0bcab2841d6e2a5aa00c3044e5544b5::navx::NAVX",
+    token1Type: "0x2::sui::SUI"
+  },
+  {
+    poolID: "0x59ff9c5df31bfd0a59ac8393cf6f8db1373252e845958953e6199952d194dae4",
+    cetusPoolID: "0x81fe26939ed676dd766358a60445341a06cea407ca6f3671ef30f162c84126d5",
+    investorID: "0x8051a9ce43f9c21e58331b1ba2b1925e4ae4c001b1400459236d86d5d3d2888b",
+    token0Type: "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
+    token1Type: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN"
+  },
+
 ]
 
 const ALPHAFI_NAVI_TVL_IDS = [
@@ -60,6 +75,11 @@ const ALPHAFI_NAVI_TVL_IDS = [
     poolID: "0x01493446093dfcdcfc6c16dc31ffe40ba9ac2e99a3f6c16a0d285bff861944ae",
     tokenType: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
     expo: 6
+  },
+  {
+    poolID: "0xe4eef7d4d8cafa3ef90ea486ff7d1eec347718375e63f1f778005ae646439aad",
+    tokenType: "0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN",
+    expo: 8
   },
 ]
 
