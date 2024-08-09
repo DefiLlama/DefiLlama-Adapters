@@ -2,8 +2,8 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const USDT_TOKEN_CONTRACT = ADDRESSES.astarzk.USDT;
-const EZETH_BASE = "0x2416092f143378750bb29b79eD961ab195CcEea5";
-const EZETH_LINEA = "0x2416092f143378750bb29b79eD961ab195CcEea5";
+const EZETH_BASE = ADDRESSES.blast.ezETH;
+const EZETH_LINEA = ADDRESSES.blast.ezETH;
 const ZK = "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E";
 const WALLET_ADDR = [
   "0x62e724cB4d6C6C7317e2FADe4A03001Fe7856940",
