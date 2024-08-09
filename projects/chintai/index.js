@@ -1,9 +1,8 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const {
-  sumTokensExport: sumTokensExportSolana,
-} = require("../helper/unwrapLPs");
 const { sumTokens2 } = require("../helper/solana");
 const { get_account_tvl } = require("../helper/chain/eos");
+const { get } = require("../helper/http");
+const { toUSDTBalances } = require("../helper/balances");
 
 const ADDRESSES = require("../helper/coreAssets.json");
 const config = {
@@ -35,15 +34,12 @@ const uniswapPools = [
 const aerodromePool = "0x6466e1a3b42Ef91f8f7C135970db4495e89F9C0A";
 const pancakeSwapPool = "0xf51c15df6cdeb8c4a7ddee596cd3886db3365c6d";
 
-
-
 async function solanaTvl() {
   const orcaTokenAccounts = [
-    "FU1Axs4T5G6QSD6UMvKQRmcgB4xkHmy2tTDEpyFHCySz", 
-    "5YYrLug5xJr9HXJidSStAaqR2yg8CD21ovU8fBZEBtuY", 
+    "FU1Axs4T5G6QSD6UMvKQRmcgB4xkHmy2tTDEpyFHCySz",
+    "5YYrLug5xJr9HXJidSStAaqR2yg8CD21ovU8fBZEBtuY",
     "BaNDYFKnVsJk9aS8zRifaZ3Duc312PPL3obZVWJNDeSr",
-    "7KjuZf6Dwtd9JJjEnzvrb5LM2iJKvVLa47edrBE11am6"
-
+    "7KjuZf6Dwtd9JJjEnzvrb5LM2iJKvVLa47edrBE11am6",
   ];
 
   const meteoraAccounts = [
@@ -52,40 +48,39 @@ async function solanaTvl() {
     "5qmWvgyCSZQNJs2NWwTKdFsmcRT2NJJAuomti8GBCBfm",
     "8y3jryTeRcerNRyozfQR5bgdjME24hqBMFLQptZkBEhb",
     "LqZmiW9gmtNnHMu56stPii414pT5EUwhXkpiwa6d4RW",
-    "FhCPZa4bjZdaV9GBrvjyeeK95XmjkU83AfwTNdr7bjn3"
+    "FhCPZa4bjZdaV9GBrvjyeeK95XmjkU83AfwTNdr7bjn3",
   ];
-
-
 
   const raydiumAccounts = [
     "3yc8oB6RE5Rz8ThRTJSvzwFqZSMpNAzzwMtJifgn2m7Z",
     "6yDMv6GEgMsJWV6Fr7Lk8YfXcMEAvz18CRsPzVn6B4hB",
     "2qmJC3SVFSkK2fYz7fswkPn7ySqtf9xH2AkLBZ999sbr",
-    "AD7qRvY14byTLY19tWZTvXLaMF7AZj4dw4Gb1nHbgaW6"
+    "AD7qRvY14byTLY19tWZTvXLaMF7AZj4dw4Gb1nHbgaW6",
   ];
 
-  
   return sumTokens2({
-    tokenAccounts: [
-      orcaTokenAccounts,
-      meteoraAccounts,
-      raydiumAccounts,
-    ].flat(),
+    tokenAccounts: [orcaTokenAccounts, meteoraAccounts, raydiumAccounts].flat(),
   });
 }
 
 async function eosTvl() {
   const tokens = [
-    ["chexchexchex","CHEX","chex-token"],
-  ]
-  return await get_account_tvl(["swap.defi","newdexpublic"], tokens);
+    ["chexchexchex", "CHEX", "chex-token"],
+    ["eosio.token", "EOS", "eos-token"],
+  ];
+  return await get_account_tvl(["swap.defi", "newdexpublic"], tokens);
+}
+
+async function fetchChintaiTvl() {
+  const stats = await get("https://sg.app.chintai.io/api/stats");
+  return toUSDTBalances(stats.totalValueLocked);
 }
 
 module.exports = {
   methodology: `Chintai TVL is achieved by querying token balances from Chintai pools`,
   ethereum: {
     tvl: sumTokensExport({
-      chain: 'ethereum',
+      chain: "ethereum",
       owners: uniswapPools,
       tokens: [
         config.addresses.ethereum.chex,
@@ -96,22 +91,16 @@ module.exports = {
   },
   base: {
     tvl: sumTokensExport({
-      chain: 'base',
+      chain: "base",
       owners: [aerodromePool],
-      tokens: [
-        ADDRESSES.base.USDC,
-        config.addresses.base.chex
-      ],
+      tokens: [ADDRESSES.base.USDC, config.addresses.base.chex],
     }),
   },
   bsc: {
     tvl: sumTokensExport({
-      chain: 'bsc',
+      chain: "bsc",
       owners: [pancakeSwapPool],
-      tokens: [
-        ADDRESSES.bsc.WBNB,
-        config.addresses.bsc.chex
-      ],
+      tokens: [ADDRESSES.bsc.WBNB, config.addresses.bsc.chex],
     }),
   },
   solana: {
@@ -119,5 +108,8 @@ module.exports = {
   },
   eos: {
     tvl: eosTvl,
+  },
+  chintai: {
+    tvl: fetchChintaiTvl,
   },
 };
