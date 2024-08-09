@@ -10,9 +10,9 @@ const taiko_owners = ["0x735D00A9368164B9dcB2e008d5Cd15b367649aD5", "0x235C5C450
 
 module.exports = {
   start: 1690971144,
-  bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT, "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409", "0x80137510979822322193FC997d400D5A6C747bf7"], }) },
+  bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT, ADDRESSES.ethereum.FDUSD, ADDRESSES.scroll.STONE], }) },
   op_bnb: {
-    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [ADDRESSES.op_bnb.USDT, "0x50c5725949a6f0c72e6c4a641f24049a917db0cb","0x4200000000000000000000000000000000000006"] })
+    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [ADDRESSES.op_bnb.USDT, ADDRESSES.base.DAI,ADDRESSES.optimism.WETH_1] })
   },
   manta: {
     tvl: sumTokensExport({ owners: manta_owners, tokens: [ADDRESSES.manta.USDT, manta_stone_token, manat_manta_token] })

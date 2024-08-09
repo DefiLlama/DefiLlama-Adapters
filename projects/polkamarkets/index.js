@@ -41,7 +41,7 @@ const config = {
     ],
     v2: {
       contract: '0x60d7956805ec5a698173def4d0e1ecdefb06cc57',
-      tokens: ['0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0xc2132d05d31c914a87c6611c10748aeb04b58e8f'],
+      tokens: [ADDRESSES.polygon.WMATIC_2, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT],
     },
   },
   xdai: {

@@ -44,7 +44,7 @@ const TOKENS_IN_LEGACY_VERSIONS = {
     '0x2c89bbc92bd86f8075d1decc58c7f4e0107f286b', // AVAX
     '0x3066818837c5e6ed6601bd5a91b0762877a6b731', // UMA
     '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4', // stMATIC
-    '0x45c32fa6df82ead1e2ef74d17b76547eddfaff89', // FRAX
+    ADDRESSES.polygon.FRAX, // FRAX
     '0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c', // jEUR
     '0x50b728d8d964fd00c2d0aad81718b71311fef68a', // SNX
     '0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39', // LINK

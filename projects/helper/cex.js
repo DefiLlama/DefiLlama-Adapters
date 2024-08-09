@@ -86,7 +86,7 @@ const defaultTokens = {
     '0xaaef88cea01475125522e117bfe45cf32044e238', // GF
     '0x949d48eca67b17269629c7194f4b727d4ef9e5d6', // MC
     '0xbb0e17ef65f82ab018d8edd776e8dd940327b28b', // AXS
-    '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // FXS
+    ADDRESSES.ethereum.FXS, // FXS
     '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
