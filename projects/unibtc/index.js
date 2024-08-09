@@ -20,7 +20,7 @@ const config = {
   },
   merlin: {
     vault: defaultVault,
-    tokens: [ADDRESSES.null,ADDRESSES['merlin'].WBTC_1]
+    tokens: [ADDRESSES.null,ADDRESSES['merlin'].WBTC,ADDRESSES['merlin'].WBTC_1]
   },
   btr: {
     vault: defaultVault,
