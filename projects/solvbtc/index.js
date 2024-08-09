@@ -1,157 +1,35 @@
-const abi = require("./abi.json");
-const { getConfig } = require("../helper/cache");
-const { cachedGraphQuery } = require("../helper/cache");
-const { sumTokens2, } = require("../helper/unwrapLPs");
+const { cexExports } = require('../helper/cex')
 
-// The Graph
-const graphUrlList = {
-  ethereum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-prod/version/latest',
-  bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
-  arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
-  mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mantle/-/gn',
-  merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin',
-}
-
-const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
-
-async function tvl(api) {
-  let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
-
-  await gm(api, solvbtc)
-  await vaultBalance(api, solvbtc);
-  await otherDeposit(api, solvbtc);
-
-  return api.getBalances();
-}
-
-async function gm(api, solvbtc) {
-  if (!solvbtc[api.chain] || !solvbtc[api.chain]["gm"]) {
-    return;
-  }
-  let gm = solvbtc[api.chain]["gm"];
-
-  let tokens = []
-  for (const pool of gm["depositAddress"]) {
-    for (const address of gm["gmTokens"]) {
-      tokens.push({ address, pool })
-    }
-  }
-
-  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true });
-}
-
-async function otherDeposit(api, solvbtc) {
-  if (!solvbtc[api.chain] || !solvbtc[api.chain]["otherDeposit"]) {
-    return;
-  }
-  let otherDeposit = solvbtc[api.chain]["otherDeposit"];
-
-  let tokens = []
-  for (const deposit of otherDeposit["depositAddress"]) {
-    for (const tokenAddress of otherDeposit["tokens"]) {
-      tokens.push({ tokenAddress, deposit })
-    }
-  }
-
-  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.tokenAddress, i.deposit]), permitFailure: true });
-}
-
-async function concrete(slots, api) {
-  var slotsList = [];
-  var only = {};
-  for (var i = 0; i < slots.length; i++) {
-    if (!only[slots[i].contractAddress]) {
-      slotsList.push(slots[i]);
-      only[slots[i].contractAddress] = true;
-    }
-  }
-
-  const concreteLists = await api.multiCall({
-    calls: slotsList.map((index) => index.contractAddress),
-    abi: abi.concrete,
-  })
-
-  let concretes = {};
-  for (var k = 0; k < concreteLists.length; k++) {
-    concretes[slotsList[k].contractAddress] = concreteLists[k];
-  }
-
-  return concretes;
-}
-
-async function vaultBalance(api, solvbtc) {
-  if (!solvbtc[api.chain] || !solvbtc[api.chain]["slot"]) {
-    return;
-  }
-  let slot = solvbtc[api.chain]["slot"];
-
-  const graphData = await getGraphData(api.timestamp, api.chain, api, slot);
-  if (graphData.pools.length > 0) {
-    const poolLists = graphData.pools;
-
-    const poolConcretes = await concrete(poolLists, api);
-
-    const poolBaseInfos = await api.multiCall({
-      abi: abi.slotBaseInfo,
-      calls: poolLists.map((index) => ({
-        target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
-      })),
-    })
-
-    let vaults = {};
-    for (const key in poolLists) {
-      if (poolBaseInfos[key][1] && poolLists[key]["vault"]) {
-        vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
-      }
-    }
-
-    const balances = await api.multiCall({
-      abi: abi.balanceOf,
-      calls: Object.values(vaults).map((index) => ({
-        target: index[0],
-        params: [index[1]]
-      })),
-    })
-
-    for (const key in balances) {
-      api.add(Object.values(vaults)[key][0], balances[key])
-    }
+const config = {
+  bitcoin: {
+    owners: [
+      "bc1qdpwl80flfh3k6h6sumzwgws3ephkrmx307hk64"
+    ]
+  },
+  bsc: {
+    tokensAndOwners: [
+      ["0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", "0xb37Cf50f279a5f6C63CC33f447679E600D03394f"],
+      ["0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", "0x51c2ba3c5e8a90E7c27Fa9eC8b287454EB698EAd"],
+      ["0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", "0x9537Bc0546506785bD1eBd19fD67d1F06800D185"],
+    ]
+  },
+  ethereum: {
+    tokensAndOwners: [
+      ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0x51c2ba3c5e8a90E7c27Fa9eC8b287454EB698EAd"],
+      ["0xc96de26018a54d51c097160568752c4e3bd6c364", "0x4Bd622D2e26f46Fe150Bb9D9652eb1A6e460bd54"],
+      ["0xc96de26018a54d51c097160568752c4e3bd6c364", "0xBE6297731720B7E218031Ca8970921f9b41f3D00"],
+    ]
+  },
+  arbitrum: {
+    tokensAndOwners: [
+      ["0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f", "0x032470aBBb896b1255299d5165c1a5e9ef26bcD2"],
+    ]
+  },
+  merlin: {
+    tokensAndOwners: [
+      ["0xB880fd278198bd590252621d4CD071b1842E9Bcd", "0x6A57a8D6C4fe64B1FD6E8c3E07b0591d22B7ce7f"],
+    ]
   }
 }
 
-
-async function getGraphData(timestamp, chain, api, slot) {
-
-  const slotDataQuery = `query PoolOrderInfos {
-            poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_in: ${JSON.stringify(slot)}}) {
-              marketContractAddress
-              contractAddress
-              navOracle
-              poolId
-              vault
-              openFundShareSlot
-          }
-        }`;
-
-  let data;
-  if (graphUrlList[chain]) {
-    data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, }));
-  }
-
-  let poolList = [];
-  if (data != undefined && data.poolOrderInfos != undefined) {
-    poolList = data.poolOrderInfos;
-  }
-
-  return {
-    pools: poolList
-  };
-}
-
-// node test.js projects/solvbtc
-['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
-  module.exports[chain] = {
-    tvl
-  }
-})
+module.exports = cexExports(config)
