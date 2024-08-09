@@ -1,7 +1,7 @@
 const sui = require("../helper/chain/sui")
 const { addUniV3LikePosition } = require("../helper/unwrapLPs")
 
-const ALPHAFI_TVL_IDS = [
+const ALPHAFI_CETUS_TVL_IDS = [
   {
 
     poolID: "0x30066d9879374276dc01177fbd239a9377b497bcd347c82811d75fcda35b18e5",
@@ -38,6 +38,49 @@ const ALPHAFI_TVL_IDS = [
     token0Type: "0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN",
     token1Type: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN"
   },
+  { 
+    poolID: "0x045e4e3ccd383bedeb8fda54c39a7a1b1a6ed6a9f66aec4998984373558f96a0",
+    cetusPoolID: "0x0254747f5ca059a1972cd7f6016485d51392a3fde608107b93bbaebea550f703",
+    investorID: "0xdd9018247d579bd7adfdbced4ed39c28821c6019461d37dbdf32f0d409959b1c",
+    token0Type: "0xa99b8952d4f7d947ea77fe0ecdcc9e5fc0bcab2841d6e2a5aa00c3044e5544b5::navx::NAVX",
+    token1Type: "0x2::sui::SUI"
+  },
+  {
+    poolID: "0x59ff9c5df31bfd0a59ac8393cf6f8db1373252e845958953e6199952d194dae4",
+    cetusPoolID: "0x81fe26939ed676dd766358a60445341a06cea407ca6f3671ef30f162c84126d5",
+    investorID: "0x8051a9ce43f9c21e58331b1ba2b1925e4ae4c001b1400459236d86d5d3d2888b",
+    token0Type: "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
+    token1Type: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN"
+  },
+
+]
+
+const ALPHAFI_NAVI_TVL_IDS = [
+  {
+    poolID: "0x643f84e0a33b19e2b511be46232610c6eb38e772931f582f019b8bbfb893ddb3",
+    tokenType: "0x2::sui::SUI",
+    expo: 9
+  },
+  {
+    poolID: "0x0d9598006d37077b4935400f6525d7f1070784e2d6f04765d76ae0a4880f7d0a",
+    tokenType: "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
+    expo: 9
+  },
+  {
+    poolID: "0xc696ca5b8f21a1f8fcd62cff16bbe5a396a4bed6f67909cfec8269eb16e60757",
+    tokenType: "0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN",
+    expo: 6,
+  },
+  {
+    poolID: "0x01493446093dfcdcfc6c16dc31ffe40ba9ac2e99a3f6c16a0d285bff861944ae",
+    tokenType: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
+    expo: 6
+  },
+  {
+    poolID: "0xe4eef7d4d8cafa3ef90ea486ff7d1eec347718375e63f1f778005ae646439aad",
+    tokenType: "0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN",
+    expo: 8
+  },
 ]
 
 const ALPHAFI_POOL2_IDS = [{
@@ -56,8 +99,8 @@ function asIntN(int, bits = 32) {
   return Number(BigInt.asIntN(bits, BigInt(int)))
 }
 
-async function addPoolTVL(api, pools) {
-  for (const { poolID, cetusPoolID, investorID, token0Type, token1Type } of pools) {
+async function addPoolTVL(api, alphafiCetusPools) {
+  for (const { poolID, cetusPoolID, investorID, token0Type, token1Type } of alphafiCetusPools) {
     let investorObject = await sui.getObject(investorID)
     let poolObject = await sui.getObject(poolID)
     let cetusPoolObject = await sui.getObject(cetusPoolID)
@@ -73,12 +116,27 @@ async function addPoolTVL(api, pools) {
   }
 }
 
+async function addPoolTVL2(api, alphafiNaviPools){
+ 
+  for (const { poolID, tokenType, expo } of alphafiNaviPools){
+    let poolObject = await sui.getObject(poolID);
+    let tokensInvested = poolObject.fields.tokensInvested;
+    let balance = BigInt(tokensInvested)/BigInt(Math.pow(10, 9-expo));
+    api.add(tokenType, balance);
+  }
+}
+
 async function tvl(api) {
-  await addPoolTVL(api, ALPHAFI_TVL_IDS)
+  
+  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS)])
+
 }
 async function pool2(api) {
+
   await addPoolTVL(api, ALPHAFI_POOL2_IDS)
+  
 }
+
 
 async function staking(api) {
   let alphaPoolObject = await sui.getObject(ALPHA_POOL_ID)

@@ -5,8 +5,8 @@ module.exports = {
   ethereum: {
     tvl: sumERC4626VaultsExport({
       vaults: [
-        '0x0D53bc2BA508dFdf47084d511F13Bb2eb3f8317B',
-        '0x47657094e3AF11c47d5eF4D3598A1536B394EEc4',
+        '0xcbC632833687DacDcc7DfaC96F6c5989381f4B47',
+        '0xF0a949B935e367A94cDFe0F2A54892C2BC7b2131',
       ],
       isOG4626: true,
     }),

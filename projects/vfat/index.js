@@ -197,13 +197,15 @@ async function tvlBaseOptimism(api) {
 // TVL calculation for Arbitrum and Linea
 async function tvlArbitrumLinea(api) {
   const { factory, gaugeFactory, gaugeFactory2, voter, fromBlock, fromBlockSickle, chainName } = config[api.chain];
-
-  const sickles = await fetchSickles(api, factory, fromBlockSickle);
+  const blacklistedSickles = ['0x4989D5e508eBa5D4999b6A34FB30021e1f1bB4d8'];
+  let sickles = await fetchSickles(api, factory, fromBlockSickle);
+  if (chainName === 'linea') {
+    sickles = sickles.filter(sickle => !blacklistedSickles.includes(sickle));
+  }
   const gauges = await fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, chainName);
   const stakingTokens = await api.multiCall({ abi: 'address:stake', calls: gauges.lp });
 
   await sumLPBalances(api, gauges.lp, sickles, stakingTokens);
-
   await fetchSickleNftPositions(api, sickles, config[api.chain].NonfungiblePositionManager);
   await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
 

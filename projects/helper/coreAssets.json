@@ -1294,7 +1294,8 @@
     "MEGA": "EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf",
     "WEMIX": "EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ",
     "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA",
-    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs"
+    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+    "NOT": "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT"
   },
   "defichain": {
     "DFI": "DFI",
@@ -1810,7 +1811,9 @@
     "TBTC": "0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2"
   },
   "btr": {
-    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
+    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2",
+    "WBTC": "0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f"
+    
   },
   "taiko": {
     "USDC": "0x07d83526730c7438048D55A4fc0b850e2aaB6f0b",

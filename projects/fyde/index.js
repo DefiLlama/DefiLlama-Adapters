@@ -4,7 +4,9 @@ const FYDE_CONTRACT = "0x87Cc45fFF5c0933bb6aF6bAe7Fc013b7eC7df2Ee";
 const RESTAKING_AGGREGATOR = "0x3f69F62e25441Cf72E362508f4d6711d53B05341";
 const DEPOSIT_ESCROW = "0x63ec950633Eb85797477166084AD0a7121910470";
 const ORACLE = "0x05198327206123E89c24ABd9A482316449bD2aEe"
+const YIELDMANAGER = "0xB615A7E4D1Ed426470Ac2Df14F3153fA2DcCC3ba"
 const WETH = ADDRESSES.ethereum.WETH;
+const PTTOKENS = ["0x1c085195437738d73d75DC64bC5A3E098b7f93b1", "0x6ee2b5e19ecba773a352e5b21415dc419a700d1d"]
 
 async function tvl(api) {
   const tokens = await api.fetchList({ lengthAbi: 'getAssetsListLength', itemAbi: 'assetsList', target: FYDE_CONTRACT })
@@ -38,20 +40,21 @@ async function tvl(api) {
 
   // add assets in the deposit escrow
   const tokensEscrow = await api.fetchList({ lengthAbi: 'getAssetListLength', itemAbi: 'assetList', target: DEPOSIT_ESCROW })
-  
-  const balsEscrow = await api.multiCall({
-    calls: tokensEscrow.map(token => ({
+  api.sumTokens({ tokens: tokensEscrow, owner: DEPOSIT_ESCROW })
+
+  const ptBalances = await api.multiCall({
+    calls: PTTOKENS.map(token => ({
       target: token,
-      params: [DEPOSIT_ESCROW]
+      params: [YIELDMANAGER]
     })),
     abi: 'erc20:balanceOf',
     withMetadata: true,
   })
-  
-  balsEscrow.forEach((bal, i) => {
-    api.add(tokensEscrow[i], bal['output'])
-  });
 
+  // tokens are Pendle PT Tokens with ETH underlying asset, price them as WETH which is due at maturity date
+  ptBalances.forEach((bal, i) => {
+    api.add(WETH, bal['output'])
+  });
 }
 
 module.exports = {
