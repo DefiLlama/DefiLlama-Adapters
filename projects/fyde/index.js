@@ -5,6 +5,8 @@ const RESTAKING_AGGREGATOR = "0x3f69F62e25441Cf72E362508f4d6711d53B05341";
 const DEPOSIT_ESCROW = "0x63ec950633Eb85797477166084AD0a7121910470";
 const ORACLE = "0x05198327206123E89c24ABd9A482316449bD2aEe"
 const WETH = ADDRESSES.ethereum.WETH;
+const YIELDMANAGER = "0xB615A7E4D1Ed426470Ac2Df14F3153fA2DcCC3ba"
+const PTTOKENS = ["0x1c085195437738d73d75DC64bC5A3E098b7f93b1", "0x6ee2b5e19ecba773a352e5b21415dc419a700d1d"]
 
 async function tvl(api) {
   const tokens = await api.fetchList({ lengthAbi: 'getAssetsListLength', itemAbi: 'assetsList', target: FYDE_CONTRACT })
@@ -38,7 +40,10 @@ async function tvl(api) {
 
   // add assets in the deposit escrow
   const tokensEscrow = await api.fetchList({ lengthAbi: 'getAssetListLength', itemAbi: 'assetList', target: DEPOSIT_ESCROW })
-  return api.sumTokens({ tokens: tokensEscrow, owner: DEPOSIT_ESCROW })
+  return api.sumTokens({ ownerTokens: [
+    [tokensEscrow, DEPOSIT_ESCROW],
+    [PTTOKENS, YIELDMANAGER],
+  ],})
 }
 
 module.exports = {
