@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
@@ -12,7 +13,7 @@ const config = {
   celo: {
     fromBlock: 26828280,
     controller: "0x6619871118D144c1c28eC3b23036FC1f0829ed3a",
-    gasToken: "0x471EcE3750Da237f93B8E339c536989b8978a438",
+    gasToken: ADDRESSES.celo.CELO,
   },
 };
 

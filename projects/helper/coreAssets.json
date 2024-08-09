@@ -1815,7 +1815,9 @@
     "TBTC": "0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2"
   },
   "btr": {
-    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
+    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2",
+    "WBTC": "0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f"
+    
   },
   "taiko": {
     "USDC": "0x07d83526730c7438048D55A4fc0b850e2aaB6f0b",
