@@ -84,7 +84,7 @@ async function eosTvl() {
   return await get_account_tvl(["swap.defi", "newdexpublic"], tokens);
 }
 
-async function fetchChintaiTvl() {
+async function chintaiTvl() {
   const stats = await get("https://sg.app.chintai.io/api/stats");
   return toUSDTBalances(stats.totalValueLocked);
 }
@@ -122,7 +122,7 @@ module.exports = {
   eos: {
     tvl: eosTvl,
   },
-  // chintai: {
-  //   tvl: fetchChintaiTvl,
-  // },
+  chintai: {
+    tvl: chintaiTvl,
+  },
 };
