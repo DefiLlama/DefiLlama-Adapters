@@ -1,6 +1,6 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require("../helper/unwrapLPs.js");
-const { staking } = require("../helper/staking");
+const ADDRESSES = require('../helper/coreAssets.json');
+const { staking } = require('../helper/staking.js');
+const { sumTokensExport } = require('../helper/unwrapLPs.js');
 
 const eth = {
   // tokens
@@ -11,15 +11,12 @@ const eth = {
   weth: ADDRESSES.ethereum.WETH,
   zai: "0x69000405f9dce69bd4cbf4f2865b79144a69bfe0",
 
-  // pools
-  zaiFraxBPCurve: "0x057c658dfbbcbb96c361fb4e66b86cca081b6c6a",
-  mahaEthCurve: "0x6b7127a638edc7db04bede220c7c49930fdb4160",
-
-  // staking contracts
+  // peg stability modules
   psmUSDC: '0x69000052a82e218ccb61fe6e9d7e3f87b9c5916f',
-  stakedZai: '0x69000e468f7f6d6f4ed00cf46f368acdac252553',
-  zaiFraxBPStaked: "0x6900066d9f8df0bfaf1e25ef89c0453e8e12373d",
 
+  // pools
+  zaiUsdcCurve: "0x6ee1955afb64146b126162b4ff018db1eb8f08c3",
+  zaiMahaCurve: "0x0086ef314a313018c70a2cd92504c7d1038a25aa",
 };
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
@@ -29,13 +26,14 @@ const pegStabilityModules = [eth.psmUSDC]
 
 module.exports = {
   ethereum: {
-    // todo add pool2
-    // pool2: genericUnwrapCvxDeposit({
-    //   tokensAndOwners: [
-    //     [eth.zaiFraxBP, eth.zaiFraxBPStaked],
-    //   ]
-    // }),
-    // staking: staking(eth.stakedZai, eth.zai),  // we dont staking for CDP as tokens backing the minted token is already counted towards tvl
-    tvl: () => sumTokens2({ owners: pegStabilityModules, tokens: collaterals}),
+    pool2: sumTokensExport({
+      tokensAndOwners: [
+        [eth.usdc, eth.zaiUsdcCurve], // Curve USDZ/USDC
+        [eth.zai, eth.zaiUsdcCurve], // Curve USDZ/USDC
+        [eth.zai, eth.zaiMahaCurve], // Curve USDZ/MAHA
+        [eth.maha, eth.zaiMahaCurve], // Curve USDZ/MAHA
+      ]
+    }),
+    tvl: sumTokensExport({ owners: pegStabilityModules, tokens: collaterals}),
   }
 };
