@@ -3,7 +3,6 @@ const abi = require("../helper/abis/morpho.json");
 
 module.exports = {
   methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
-  doublecounted: true,
 };
 
 const config = {

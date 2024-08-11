@@ -19,10 +19,8 @@ async function tvl(api) {
     const blasterswapv2 = dexBalancerAgents.map(i => [uniV2Lp.blasterswap, i.agentAddress])
     const ringv2 = dexBalancerAgents.map(i => [uniV2Lp.ring, i.agentAddress])
 
-    const blasterswapV3 = concentratedLiquidityAgents.map(i => [uniV3NftManager.blasterswap, i.agentAddress])
-    const blasterswap2V3 = concentratedLiquidityAgents.map(i => [uniV3NftManager.blasterswap2, i.agentAddress])
-    const thrusterV3 = concentratedLiquidityAgents.map(i => [uniV3NftManager.thruster, i.agentAddress])
-
+    const agents = concentratedLiquidityAgents.map(i => i.agentAddress)
+    await sumTokens2({ api, owners: agents, uniV3ExtraConfig: { nftAddress: [uniV3NftManager.blasterswap, uniV3NftManager.blasterswap2, uniV3NftManager.thruster]}})
 
     await getTvlForDexBalancer(dexBalancerAgents.map(i => i.agentAddress), api)
     await getTvlForLooperWithOrbit(looperAgentsAddresses, api)
@@ -32,11 +30,6 @@ async function tvl(api) {
             ...thrusterv2,
             ...blasterswapv2,
             ...ringv2,
-        ],
-        uniV3nftsAndOwners: [
-            ...blasterswapV3,
-            ...blasterswap2V3,
-            ...thrusterV3
         ],
         resolveLP: true,
         api,

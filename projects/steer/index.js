@@ -60,7 +60,7 @@ const supportedChains = [
   },
   {
     name: 'Linea',
-    subgraphEndpoint: 'https://subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-linea/1.1.2/gn',
     chainId: 59144,
     identifier: 'linea'
   },
@@ -84,7 +84,7 @@ const supportedChains = [
   },
   {
     name: 'Scroll',
-    subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-scroll/1.1.1/gn',
     chainId: 534352,
     identifier: 'scroll'
   },
@@ -106,12 +106,6 @@ const supportedChains = [
     chainId: 250,
     identifier: 'fantom'
   },
-  // {
-  //   name: 'Flare',
-  //   subgraphEndpoint: '',
-  //   chainId: 14,
-  //   identifier: 'flare'
-  // },
   {
     name: 'Blast',
     subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-blast/1.1.1/gn',
@@ -126,7 +120,7 @@ const supportedChains = [
   },
   {
     name: 'AstarzkEVM',
-    subgraphEndpoint: 'https://subgraph.steer.finance/astarzkevm/subgraphs/name/steerprotocol/steer-astarzkevm',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
     chainId: 3776,
     identifier: 'astrzk'
   },
@@ -148,13 +142,24 @@ const supportedChains = [
     chainId: 30,
     identifier: 'rsk'
   },
-
-  // {
-  //   name: 'Celo',
-  //   subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/BPaFHyfVrhv3pdjGodpQcWggAg1Bcrvc9SFc2t2BXeho',
-  //   chainId: 42220,
-  //   identifier: 'celo'
-  // },
+  {
+    name: 'Celo',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-celo/1.1.1/gn',
+    chainId: 42220,
+    identifier: 'celo'
+  },
+  {
+    name: 'ZklinkNova',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-zklink-nova/1.0.1/gn',
+    chainId: 810180,
+    identifier: 'zklink'
+  },
+  {
+    name: 'Flare',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-flare/1.1.1/gn',
+    chainId: 14,
+    identifier: 'flare'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain

@@ -7,7 +7,7 @@ module.exports = {
     [1718092800, "DeSyn KelpDAO Restaking Fund Launched"],
     [1713340800, "Restaking Fund Series Launched"],
   ],
-  methodology: 'Liquid restaking strategies',
+  methodology: 'Liquid restaking strategy',
 }
 
 const config = {
@@ -15,7 +15,8 @@ const config = {
   arbitrum: { factory: '0xdE6b117384452b21F5a643E56952593B88110e78', fromBlock: 175985457},
   //merlin chain is tracked under a new listing for farm
   // merlin: { factory: '0x790b4ee7998A93702f29e56f8b615eF35BE5af43', fromBlock: 11260440},
-  btr: { factory: '0x09eFC8C8F08B810F1F76B0c926D6dCeb37409665', fromBlock: 2393247},
+    //bitlayer chain is tracked under a new listing for farm
+  // btr: { factory: '0x09eFC8C8F08B810F1F76B0c926D6dCeb37409665', fromBlock: 2393247},
 }
 
 Object.keys(config).forEach(chain => {

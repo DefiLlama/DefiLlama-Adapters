@@ -22,7 +22,7 @@ const config = {
       ],
       [
         // USDC Token
-        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+        ADDRESSES.fantom.USDC,
         // OFTChipAdapter (owner)
         "0x194609ea1C1D77e66eaB28C48CE266A48f3bC30a",
       ],
@@ -90,7 +90,7 @@ const config = {
     tokenAndOwnerPair: [
       [
         // stEUR Token
-        "0x004626a008b1acdc4c74ab51644093b155e59a23",
+        ADDRESSES.celo.STEUR,
         // OFTChipAdapter (owner)
         "0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90",
       ],

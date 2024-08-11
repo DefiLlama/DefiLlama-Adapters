@@ -25,7 +25,8 @@ const chains = [
   "base",
   "fraxtal",
   "xlayer",
-  "bsc"
+  "bsc",
+  "mantle"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,

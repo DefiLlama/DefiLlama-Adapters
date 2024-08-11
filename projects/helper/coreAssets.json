@@ -151,7 +151,8 @@
     "YIN": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8",
     "BNB": "0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f",
     "BUSD": "0x9c9e5fd8bbc25984b178fdce6117defa39d2db39",
-    "WORK": "0x6002410dda2fb88b4d0dc3c1d562f7761191ea80"
+    "WORK": "0x6002410dda2fb88b4d0dc3c1d562f7761191ea80",
+    "FRAX": "0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89"
   },
   "xdai": {
     "WXDAI": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
@@ -273,7 +274,8 @@
     "GMX": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
     "WSTETH": "0x5979D7b546E38E414F7E9822514be443A4800529",
     "plvGLP": "0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1",
-    "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34"
+    "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+    "FRAX": "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F"
   },
   "fuse": {
     "WFUSE": "0x0be9e53fd7edac9f859882afdda116645287c629",
@@ -378,7 +380,9 @@
     "DAI": "0x90ca507a5d4458a4c6c6249d186b6dcb02a5bccd",
     "NCT": "0x02de4766c272abc10bc88c220d214a26960a7e92",
     "cMCO2": "0x32a9fe697a32135bfd313a6ac28792dae4d9979d",
-    "USDT": "0x617f3112bf5397d0467d315cc709ef968d9ba546"
+    "USDT": "0x617f3112bf5397d0467d315cc709ef968d9ba546",
+    "STEUR": "0x004626A008B1aCdC4c74ab51644093b155e59A23",
+    "USDT_1": "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e"
   },
   "boba": {
     "WETH": "0xd203de32170130082896b4111edf825a4774c18e",
@@ -1290,7 +1294,8 @@
     "MEGA": "EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf",
     "WEMIX": "EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ",
     "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA",
-    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs"
+    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+    "NOT": "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT"
   },
   "defichain": {
     "DFI": "DFI",
@@ -1639,7 +1644,8 @@
   },
   "airdao": {
     "SAMB": "0x2b2d892c3fe2b4113dd7ac0d2c1882af202fb28f",
-    "BUSD": "0x7a477aa8ed4884509387dba81ba6f2b7c97597e2"
+    "BUSD": "0x7a477aa8ed4884509387dba81ba6f2b7c97597e2",
+    "USDC": "0xFF9F502976E7bD2b4901aD7Dd1131Bb81E5567de"
   },
   "acala": {
     "DOT": "0x0000000000000000000100000000000000000002",
@@ -1805,7 +1811,9 @@
     "TBTC": "0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2"
   },
   "btr": {
-    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
+    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2",
+    "WBTC": "0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f"
+    
   },
   "taiko": {
     "USDC": "0x07d83526730c7438048D55A4fc0b850e2aaB6f0b",
@@ -1838,7 +1846,8 @@
     "WBTC": "0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3"
   },
   "fraxtal": {
-    "WETH": "0xA8a59D73388D0c4344a7b0Ba287ddb654227c38a"
+    "WETH": "0xA8a59D73388D0c4344a7b0Ba287ddb654227c38a",
+    "FRAX": "0xfc00000000000000000000000000000000000001"
   },
   "aeternity": {
     "WAE": "ct_J3zBY8xxjsRr3QojETNw48Eb38fjvEuJKkQ6KzECvubvEcvCa",

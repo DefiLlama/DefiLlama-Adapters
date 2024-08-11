@@ -74,4 +74,12 @@ module.exports = maverickTVL({
       },
     ],
   },
+  scroll: {
+    factories: [
+      {
+        address: "0x0A7e848Aca42d879EF06507Fca0E7b33A0a63c1e",
+        startBlock: 7332349,
+      },
+    ],
+  },
 });

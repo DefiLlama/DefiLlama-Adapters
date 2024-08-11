@@ -8,7 +8,7 @@ const config = {
     owners: [
       '12qTdZHx6f77aQ74CPCZGSY47VaRwYjVD8',
       '143gLvWYUojXaWZRrxquRKpVNTkhmr415B',
-      '1KVpuCfhftkzJ67ZUegaMuaYey7qni7pPj',
+   //   '1KVpuCfhftkzJ67ZUegaMuaYey7qni7pPj', this wallet is backing USDD acording here https://prnt.sc/i3cFaak7H9Y8. For that reason, it should not included as HTX. 
       //These 3 addresses has 48,555 #Bitcoin. This is only less than 3% of the total high value assets we have, including btc, usd, stablecoins, T-bills.. According to Justin Sun https://twitter.com/justinsuntron/status/1590311559242612743
       '14XKsv8tT6tt8P8mfDQZgNF8wtN5erNu5D',
       '1LXzGrDQqKqVBqxfGDUyhC6rTRBN5s8Sbj',
@@ -54,13 +54,10 @@ const config = {
       '0xf881bcb3705926cea9c598ab05a837cf41a833a9', // add on 08/08/2023 (we defillama)
       '0xa03400e098f4421b34a3a44a1b4e571419517687',
       '0x598273ea2cabd9f798564877851788c5e0d5b7b9', // start add on 23/02/2024 (we defillama)
-      '0x18709e89bd403f470088abdacebe86cc60dda12e',
       '0x4fb312915b779b1339388e14b6d079741ca83128',
       '0x30741289523c2e4d2a62c7d6722686d14e723851',
-      '0x5c985e89dde482efe97ea9f1950ad149eb73829b',
-      '0xe4818f8fde0c977a01da4fa467365b8bf22b071e',
       '0xe93381fb4c4f14bda253907b18fad305d799241a',  // end add on 23/02/2024 (we defillama)
-      
+      '0x6663613FbD927cE78abBF7F5Ca7e2c3FE0d96d18', // add on 22/07/2024
     ],
     blacklistedTokens: [
       '0x0316eb71485b0ab14103307bf65a021042c6d380', // HBTC , we already track their backed BTC (1btc wallet on the list)
@@ -102,7 +99,7 @@ const config = {
       'TAuUCiH4JVNBZmDnEDZkXEUXDARdGpXTmX',
       'TF2fmSbg5HAD34KPUH7WtWCxxvgXHohzYM',
       'THZovMcKoZaV9zzFTWteQYd2f3NEvnzxAM',
-      'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa',
+    //  'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa', // this wallet is backing USDD acording here https://prnt.sc/lvIQUtCNbk2X. For that reason, it should not included as HTX.
       'TDvf1dSBhR7dEskJs17HxGHheJrjXhiFyM',
       'TUJGLHo3rq4EAUY1LHRhNkHPX8qmrv9WFs', // add on 08/08/2023 (we defillama)
       'TRSXRWudzfzY4jH7AaMowdMNUXDkHisbcd', // add on 08/08/2023 (we defillama)
@@ -165,6 +162,9 @@ module.exports = mergeExports([
   { ethereum: { tvl: stakingTVL, } }
 ])
 module.exports.methodology = 'We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.'
+module.exports.hallmarks = [
+  [1723066836,"remove usdd collateral"]
+]
 
 
 async function stakingTVL() {

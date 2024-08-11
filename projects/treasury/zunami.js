@@ -15,7 +15,7 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.CVX,
       ADDRESSES.ethereum.vlCVX,
       "0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F", // SDT
-      "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0" // FXS
+      ADDRESSES.ethereum.FXS // FXS
     ],
     owners: [treasury],
     ownTokens: [ZUN]
