@@ -9,8 +9,6 @@ const vaults = [
 
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  tokens.push(ADDRESSES.null)
-  vaults.push('0xdc400bbe0b8b79c07a962ea99a642f5819e3b712')
   return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
 }
 
