@@ -104,12 +104,12 @@ async function toBalances(symbol, value) {
     await sdk.api.abi.call({
       target: address,
       abi: "erc20:decimals",
-      chain: "ethereum"
+      chain: "ethereum",
     })
   ).output;
-  
+
   return {
-    [address]: scaleValue(value, 10**decimals),
+    [address]: scaleValue(value, 10 ** decimals),
   };
 }
 
