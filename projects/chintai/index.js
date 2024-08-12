@@ -1,10 +1,17 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const { sumTokens2 } = require("../helper/solana");
-const { get_account_tvl } = require("../helper/chain/eos");
 const { get } = require("../helper/http");
-const { toUSDTBalances } = require("../helper/balances");
+const { get_account_tvl } = require("../helper/chain/eos");
+const { sumTokens2 } = require("../helper/solana");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const BigNumber = require("bignumber.js");
+const sdk = require("@defillama/sdk");
 
 const ADDRESSES = require("../helper/coreAssets.json");
+
+const DECIMALS = {
+  USDC: 6,
+  WBTC: 8,
+};
+
 const config = {
   ethereum: {
     addresses: {
@@ -79,14 +86,46 @@ async function solanaTvl() {
 async function eosTvl() {
   const tokens = [
     ["chexchexchex", "CHEX", "chex-token"],
-    ["eosio.token", "EOS", "eos-token"],
+    ["eosio.token", "EOS", "eos"],
   ];
   return await get_account_tvl(["swap.defi", "newdexpublic"], tokens);
 }
 
+const scaleValue = (value, times = 1) =>
+  BigNumber(value).times(times).toFixed(0);
+
+async function toBalances(symbol, value) {
+  const address = ADDRESSES.ethereum[symbol];
+  if (!address) {
+    return null;
+  }
+
+  const decimals = (
+    await sdk.api.abi.call({
+      target: address,
+      abi: "erc20:decimals",
+      chain: "ethereum"
+    })
+  ).output;
+  
+  return {
+    [address]: scaleValue(value, 10**decimals),
+  };
+}
+
 async function chintaiTvl() {
   const stats = await get("https://sg.app.chintai.io/api/stats");
-  return toUSDTBalances(stats.totalValueLocked);
+
+  let balances = {};
+  for (const [symbol, supply] of Object.entries(stats.coinsBalances)) {
+    const decimals = DECIMALS[symbol] ?? 18;
+    let balance = await toBalances(symbol, supply);
+    if (balance) {
+      Object.assign(balances, balance);
+    }
+  }
+
+  return balances;
 }
 
 module.exports = {
