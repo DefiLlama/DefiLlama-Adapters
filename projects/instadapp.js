@@ -18,9 +18,6 @@ module.exports = {
   ethereum: {
     tvl: fetch,
   },
-  chintai:{
-    tvl: fetch
-  }
   
 }
 // node test.js projects/instadapp.js
