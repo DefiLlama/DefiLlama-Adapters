@@ -92,6 +92,7 @@ const scaleValue = (value, times = 1) =>
 async function toBalances(symbol, value) {
   const address = ADDRESSES.ethereum[symbol];
   if (!address) {
+    console.error("Could not find address for:", symbol);
     return null;
   }
 
@@ -111,9 +112,9 @@ async function toBalances(symbol, value) {
 async function chintaiTvl() {
   const stats = await get("https://sg.app.chintai.io/api/stats");
 
-  let balances = {};
-  for (const [symbol, supply] of Object.entries(stats.coinsBalances)) {
-    let balance = await toBalances(symbol, supply);
+  const balances = {};
+  for (const [symbol, supply] of Object.entries(stats.tokenBalances)) {
+    const balance = await toBalances(symbol, supply);
     if (balance) {
       Object.assign(balances, balance);
     }
@@ -123,7 +124,7 @@ async function chintaiTvl() {
 }
 
 module.exports = {
-  methodology: `Chintai TVL is achieved by querying the USD value of all the asset issued and staked on the Chintai platform`,
+  methodology: "Chintai TVL is achieved by querying the USD value of all the asset issued and staked on the Chintai platform as well as the value locked in all the CHEX token liquidity pools.",
   ethereum: {
     tvl: sumTokensExport({
       chain: "ethereum",
