@@ -7,11 +7,6 @@ const sdk = require("@defillama/sdk");
 
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const DECIMALS = {
-  USDC: 6,
-  WBTC: 8,
-};
-
 const config = {
   ethereum: {
     addresses: {
@@ -118,7 +113,6 @@ async function chintaiTvl() {
 
   let balances = {};
   for (const [symbol, supply] of Object.entries(stats.coinsBalances)) {
-    const decimals = DECIMALS[symbol] ?? 18;
     let balance = await toBalances(symbol, supply);
     if (balance) {
       Object.assign(balances, balance);
