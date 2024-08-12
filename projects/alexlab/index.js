@@ -1,44 +1,59 @@
-const { get } = require('../helper/http')
+const axios = require("axios");
+const ADDRESSES = require("../helper/coreAssets.json");
+const { toUSDT } = require("../helper/balances");
 
-// https://explorer.stacks.co/txid/SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.alex-vault?chain=mainnet
-// https://stacks-node-api.blockstack.org/extended/v1/address/SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.alex-vault/balances
-const ALEX_API = "https://api.alexlab.co/v1";
+const pool_api = "https://api.alexlab.co/v2/public/pools";
+const price_api = "https://api.alexlab.co/v1/price/";
+const decimals = 1e18;
 
-async function fetch() {
-  const url = `${ALEX_API}/pool_token_stats`;
-  const alexStatsResponse = await get(url)
+const ownerTokens = [
+  "SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex",
+  "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.auto-alex-v2",
+];
 
-  const valueLockedMap = {};
-  let totalValueLocked = 0;
-  for (const pool of alexStatsResponse) {
-    let poolValue = 0;
-    const poolToken = pool.pool_token;
+const getPools = async (url) => {
+  const { data } = await axios.get(url);
+  return data.data.map((pool) => ({
+    token_x: pool.token_x,
+    balance_x: pool.balance_x,
+    token_y: pool.token_y,
+    balance_y: pool.balance_y,
+  }));
+};
 
-    if (poolToken == "age000-governance-token") {
-      poolValue = pool.price * pool.reserved_balance;
-    } else {
-      poolValue = pool.price * pool.total_supply;
-    }
-    totalValueLocked += poolValue;
-    valueLockedMap[poolToken] = poolValue;
-  }
+const poolPriceInUSD = async (api, pools) => {
+  await Promise.all(
+    pools.map(async (pool) => {
+      const [{ data: priceX }, { data: priceY }] = await Promise.all([
+        axios.get(`${price_api}${pool.token_x}`),
+        axios.get(`${price_api}${pool.token_y}`),
+      ]);
 
-  return { tether: totalValueLocked };
-}
+      let usd_balance_x = 0;
+      let usd_balance_y = 0;
 
-async function staking() {
-  const url = `${ALEX_API}/stats/tvl`;
-  const alexResponse = await get(url)
-  return { tether: alexResponse.reserve_pool_value };
-}
+      if (!ownerTokens.includes(pool.token_x)) {
+        usd_balance_x = pool.balance_x * priceX.price;
+      }
 
-// node test.js projects/alexlab/index.js
+      if (!ownerTokens.includes(pool.token_y)) {
+        usd_balance_y = pool.balance_y * priceY.price;
+      }
+
+      const usdtPoolBalance = toUSDT(usd_balance_x + usd_balance_y) / decimals;
+      api.add(ADDRESSES.ethereum.USDT, usdtPoolBalance, { skipChain: true });
+    })
+  );
+};
+
+const tvl = async (api) => {
+  const pools = await getPools(pool_api);
+  return poolPriceInUSD(api, pools, ownerTokens);
+};
+
 module.exports = {
+  methodology: "Alex Lab TVL is sum of tokens locked in ALEX platform.",
   misrepresentedTokens: true,
   timetravel: false,
-  stacks: {
-    tvl: fetch,
-    staking,
-  },
-  methodology: "Alex Lab TVL is sum of tokens locked in ALEX platform.",
+  stacks: { tvl },
 };
