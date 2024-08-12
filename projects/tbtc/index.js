@@ -27,6 +27,7 @@ const owners = [
 
 module.exports = {
   methodology: "BTC on btc chain",
+  ethereum: {tvl: () =>  ({}) },
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
       sumTokensExport({ owners }),
