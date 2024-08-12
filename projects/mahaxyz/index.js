@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { staking } = require('../helper/staking.js');
 const { sumTokensExport } = require('../helper/unwrapLPs.js');
 
 const eth = {
@@ -17,6 +16,10 @@ const eth = {
   // pools
   zaiUsdcCurve: "0x6ee1955afb64146b126162b4ff018db1eb8f08c3",
   zaiMahaCurve: "0x0086ef314a313018c70a2cd92504c7d1038a25aa",
+
+  // pool staking contracts
+  zaiMahaCurveStaking: "0x237efe587f2cb44597063dc8403a4892a60a5a4f",
+  zaiUsdcCurveStaking: "0x154F52B347D8E48b8DbD8D8325Fe5bb45AAdCCDa",
 };
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
@@ -28,12 +31,10 @@ module.exports = {
   ethereum: {
     pool2: sumTokensExport({
       tokensAndOwners: [
-        [eth.usdc, eth.zaiUsdcCurve], // Curve USDZ/USDC
-        [eth.zai, eth.zaiUsdcCurve], // Curve USDZ/USDC
-        [eth.zai, eth.zaiMahaCurve], // Curve USDZ/MAHA
-        [eth.maha, eth.zaiMahaCurve], // Curve USDZ/MAHA
+        [eth.zaiMahaCurve, eth.zaiMahaCurveStaking],
+        [eth.zaiUsdcCurve, eth.zaiUsdcCurveStaking]
       ]
     }),
-    tvl: sumTokensExport({ owners: pegStabilityModules, tokens: collaterals}),
+    tvl: sumTokensExport({ owners: pegStabilityModules, tokens: collaterals }),
   }
 };
