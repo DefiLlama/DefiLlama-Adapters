@@ -123,7 +123,7 @@ async function chintaiTvl() {
 }
 
 module.exports = {
-  methodology: `Chintai TVL is achieved by querying token balances from Chintai pools`,
+  methodology: `Chintai TVL is achieved by querying the USD value of all the asset issued and staked on the Chintai platform`,
   ethereum: {
     tvl: sumTokensExport({
       chain: "ethereum",
