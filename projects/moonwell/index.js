@@ -31,8 +31,17 @@ const baseConfig = {
 // Moonbeam
 const baseTVL = usdCompoundExports(baseConfig.comptroller, baseConfig.chain)
 
+// Optimism
+const optimismConfig = {
+  comptroller: '0xCa889f40aae37FFf165BccF69aeF1E82b5C511B9',
+  chain: 'optimism'
+}
+
+const optimismTVL = usdCompoundExports(optimismConfig.comptroller, optimismConfig.chain)
+
 module.exports = {
   moonbeam: { ...moonbeamTVL, staking: moonbeamStaking },
   base: { ...baseTVL },
+  optimism: { ...optimismTVL },
   hallmarks: [[1659312000, 'Nomad Bridge Exploit']]
 }
