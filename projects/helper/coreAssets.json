@@ -1294,7 +1294,8 @@
     "MEGA": "EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf",
     "WEMIX": "EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ",
     "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA",
-    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs"
+    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs",
+    "NOT": "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT"
   },
   "defichain": {
     "DFI": "DFI",
@@ -1420,7 +1421,8 @@
     "USDC": "0x15D38573d2feeb82e7ad5187aB8c1D52810B1f07",
     "USDT": "0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f",
     "HEX": "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39",
-    "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305"
+    "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305",
+    "sDAI": "0x30fcb23a906493371b1721c8feb8815804808d74"
   },
   "onus": {
     "WONUS": "0x4c761e48d1e735af551cc38abcbdce1d7faac6e4",
@@ -1470,7 +1472,8 @@
     "WETH": "0x4200000000000000000000000000000000000006",
     "USDbC": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
     "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb"
+    "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+    "USDT": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2"
   },
   "sei": {
     "SEI": "usei",
@@ -1575,7 +1578,8 @@
     "BIFI": "0x047938C3aD13c1eB821C8e310B2B6F889b6d0003",
     "WBTC": "0x7b8FAC5F29E101BaaB33c5f9c39d4F85ba2cc7C1",
     "BTCB": "0xd267F821F1b8344B5A63626c8c824697194A173E",
-    "BitcoinUSD": "0x6906Ccda405926FC3f04240187dd4fAd5DF6d555"
+    "BitcoinUSD": "0x6906Ccda405926FC3f04240187dd4fAd5DF6d555",
+    "BtcUSD": "0x6906Ccda405926FC3f04240187dd4fAd5DF6d555"
   },
   "scroll": {
     "WETH": "0x5300000000000000000000000000000000000004",
@@ -1810,7 +1814,8 @@
     "TBTC": "0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2"
   },
   "btr": {
-    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
+    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2",
+    "WBTC": "0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f"
   },
   "taiko": {
     "USDC": "0x07d83526730c7438048D55A4fc0b850e2aaB6f0b",
@@ -1860,5 +1865,20 @@
   "rari": {
     "WETH": "0xf037540e51d71b2d2b1120e8432ba49f29edfbd0",
     "USDC.e": "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6"
+  },
+  "real": {
+    "RWA": "0x4644066f535ead0cde82d209df78d94572fcbf14"
+  },
+  "saakuru": {
+    "WOAS": "0x557a526472372f1F222EcC6af8818C1e6e78A85f",
+    "USDC.e": "0x739222D8A9179fE05129C77a8fa354049c088CaA"
+  },
+  "bouncebit": {
+    "wstBBTC": "0x8f083eafcbba2e126ad9757639c3a1e25a061a08"
+  },
+  "reya": {
+    "WETH": "0x6b48c2e6a32077ec17e8ba0d98ffc676dfab1a30",
+    "USDC": "0x3B860c0b53f2e8bd5264AA7c3451d41263C933F2",
+    "RUSD": "0xa9f32a851b1800742e47725da54a09a7ef2556a3"
   }
 }
