@@ -62,6 +62,10 @@ const fixBalancesTokens = {
   },
   pulse: {
     '0x30fcb23a906493371b1721c8feb8815804808d74': { coingeckoId: 'savings-dai', decimals: 18 },
+  },
+  saakuru: {
+    '0x557a526472372f1F222EcC6af8818C1e6e78A85f': { coingeckoId: 'oasys', decimals: 18 },
+    '0x739222D8A9179fE05129C77a8fa354049c088CaA': { coingeckoId: 'usd-coin', decimals: 6 }
   }
 }
 
