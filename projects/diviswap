@@ -1,0 +1,12 @@
+const { getUniTVL } = require("../helper/unknownTokens");
+module.exports = {
+  misrepresentedTokens: true,
+  methodology:
+    "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through Factory Contract.",
+  chz: {
+    tvl: getUniTVL({
+      factory: "0xbdd9c322ecf401e09c9d2dca3be46a7e45d48bb1",
+      useDefaultCoreAssets: true,
+    }),
+  },
+};
