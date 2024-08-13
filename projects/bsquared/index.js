@@ -14,9 +14,15 @@ const BTCOwners = [
   "14UwPgMLZY6rLZRDxxvmNWQ9rMkg2iraHG",
   "bc1quetqhxs809mwgms0rhae4cw98chzqe0er8fryr",
   "34ThPcBtz5ayRybbg1MXnQWBGtUzqUDCMa",
-  "3LmiF7qBJt8BteQi4eJdqa2TXLHBHVjE9L",
-  "32pdcULaBMkd5o7gvJeoaamPuCFMeqwpDh"
+  "bc1q082azm83lgpln7puvn4egc9dumlaqfqkqmsght",
+  "bc1qxxgxywxcq0q405849fyrlxa2zu4nxukf4ytg57",
+  "3LcCJLivWmaomMyhnyt4pqg8iWi2ECU92T",
+  "bc1qe4xx7eg5c4qjq8838zv05f7uzfmyyyftdpy48t",
+  "3GPVsXtvbfFNRYbLwJowaL7EXo8hqakfkv",
+  "bc1q8axfvwqa0fqds5w6vva9g5kej9e4mp4ap3dmff",
+  "19M7Z1E8Bs4pkXmHJrrJtngmVMUmgFu4K2"
 ];
+
 const BRC20Owners = [
   "bc1q97ctqygjgj0ljxgge4q735ujxvlad8smass7f0axc6x3ggffr8xqwn69hc", //Bitcoin Multisig Addresses
 ];
