@@ -1,10 +1,8 @@
 const axios = require("axios");
-const ADDRESSES = require("../helper/coreAssets.json");
-const { toUSDT } = require("../helper/balances");
+const { transformDexBalances } = require('../helper/portedTokens')
 
 const pool_api = "https://api.alexlab.co/v2/public/pools";
-const price_api = "https://api.alexlab.co/v1/price/";
-const decimals = 1e18;
+const decimals = 18;
 
 const ownerTokens = [
   "SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex",
@@ -14,41 +12,17 @@ const ownerTokens = [
 const getPools = async (url) => {
   const { data } = await axios.get(url);
   return data.data.map((pool) => ({
-    token_x: pool.token_x,
-    balance_x: pool.balance_x,
-    token_y: pool.token_y,
-    balance_y: pool.balance_y,
+    token0: pool.token_x,
+    token0Bal: pool.balance_x / 10**(decimals-8),
+    token1: pool.token_y,
+    token1Bal: pool.balance_y / 10**(decimals-8),
   }));
 };
 
-const poolPriceInUSD = async (api, pools) => {
-  await Promise.all(
-    pools.map(async (pool) => {
-      const [{ data: priceX }, { data: priceY }] = await Promise.all([
-        axios.get(`${price_api}${pool.token_x}`),
-        axios.get(`${price_api}${pool.token_y}`),
-      ]);
-
-      let usd_balance_x = 0;
-      let usd_balance_y = 0;
-
-      if (!ownerTokens.includes(pool.token_x)) {
-        usd_balance_x = pool.balance_x * priceX.price;
-      }
-
-      if (!ownerTokens.includes(pool.token_y)) {
-        usd_balance_y = pool.balance_y * priceY.price;
-      }
-
-      const usdtPoolBalance = toUSDT(usd_balance_x + usd_balance_y) / decimals;
-      api.add(ADDRESSES.ethereum.USDT, usdtPoolBalance, { skipChain: true });
-    })
-  );
-};
-
 const tvl = async (api) => {
-  const pools = await getPools(pool_api);
-  return poolPriceInUSD(api, pools, ownerTokens);
+  const data = await getPools(pool_api);
+  await transformDexBalances({ chain: "stacks", data, balances: api.getBalances() })
+  api.deleteTokens(ownerTokens)
 };
 
 module.exports = {
