@@ -1,6 +1,5 @@
 const { call } = require('../helper/chain/stacks-api')
 const { getCache, setCache } = require('../helper/cache')
-const { transformDexBalances } = require('../helper/portedTokens')
 const { sleep } = require('../helper/utils')
 const sdk = require('@defillama/sdk')
 
