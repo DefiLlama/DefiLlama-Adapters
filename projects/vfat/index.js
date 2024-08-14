@@ -321,3 +321,5 @@ Object.keys(config).forEach(chain => {
 
   module.exports[chain] = { tvl }
 })
+
+module.exports.isHeavyProtocol = true
