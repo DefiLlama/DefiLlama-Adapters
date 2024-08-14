@@ -1,0 +1,6 @@
+{
+    "avalonCeDefi": {
+        "getPoolManagerReserveInformation": "function getPoolManagerReserveInformation() view returns (tuple(uint256 userAmount, uint256 collateral, uint256 debt, uint256 claimableUSDT, uint256 claimableBTC) poolManagerReserveInfor)"
+    }
+}
+
