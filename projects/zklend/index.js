@@ -3,12 +3,14 @@ const { multiCall, sumTokens } = require('../helper/chain/starknet')
 const { marketAbi } = require('./abi');
 
 const market = '0x4c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
+const stakingContract = '0x0212c219a68c8fe38f37951123d1ec877570dfa891de270aa4f8634c5e60bc23'
 
 const assets = [
     ADDRESSES.starknet.WBTC,
     ADDRESSES.starknet.ETH,
     ADDRESSES.starknet.USDC,
     ADDRESSES.starknet.DAI,
+    ADDRESSES.starknet.DAI_1,
     ADDRESSES.starknet.USDT,
     ADDRESSES.starknet.WSTETH,
     ADDRESSES.starknet.STRK
@@ -21,7 +23,7 @@ async function tvl(api) {
 async function staking(api) {
     return sumTokens({
         api,
-        owner: market,
+        owner: stakingContract,
         tokens: [
             ADDRESSES.starknet.ZEND
         ]
