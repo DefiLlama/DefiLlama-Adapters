@@ -454,7 +454,7 @@ async function GetOldFarmTvl() {
                 lpPerUsd = BigNumber(0);
             }
         }
-        tmpTvl = totalStaked.multipliedBy(lpPerUsd);
+        const tmpTvl = totalStaked.multipliedBy(lpPerUsd);
         tvl = tvl.plus(tmpTvl);
     }
     return tvl;
@@ -495,7 +495,7 @@ async function GetCurrentFarmTvl() {
               lpPerUsd = BigNumber(0);
           }
       }
-      tmpTvl = totalStaked.multipliedBy(lpPerUsd);
+      const tmpTvl = totalStaked.multipliedBy(lpPerUsd);
       tvl = tvl.plus(tmpTvl);
   }
   return tvl;
