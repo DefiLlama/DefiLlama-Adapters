@@ -33,7 +33,8 @@ const config = {
             address: "0xa1c908cf7371047649dfca9ece01327dc6db3094",
             fromBlock: 48024333
         }
-    ]
+    ],
+    specialTokens: []
   },
   ethereum: {
     aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
@@ -70,7 +71,8 @@ const config = {
           address: "0x38896b4ac8420b8A2B768001Da44d11109F1797D",
           fromBlock: 18737324
       }
-  ]
+    ],
+    specialTokens: ['0x971e5b5D4baa5607863f3748FeBf287C7bf82618']
   },
   arbitrum: {
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
@@ -91,7 +93,8 @@ const config = {
             address: "0xaF2762E1F75DeCdb8d240576e7A2CEc1A365cD46",
             fromBlock: 203397910
         }
-    ]
+    ],
+    specialTokens: []
   },
   base: {
     aavePool: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5',
@@ -116,7 +119,8 @@ const config = {
             address: "0x5CD0Cb0DcDEF98a8d07a8D44054a13F2c35C53E1",
             fromBlock: 13582859
         }
-    ]
+    ],
+    specialTokens: []
   },
 }
 
@@ -131,6 +135,7 @@ Object.keys(config).forEach(chain => {
       const COMETS = config[chain].comets
       const COMET_REWARD = config[chain].cometReward
       const vaultFactories = config[chain].vaultFactories
+      const specialTokens = config[chain].specialTokens
       
       const vaultCreateds = []
       for (const { address, fromBlock} of vaultFactories) {
@@ -180,10 +185,21 @@ Object.keys(config).forEach(chain => {
         }
       }
 
-      const [underlyingTokens, vaultErc4626Balances, tokenNames,] = await Promise.all([
+      const specialTokensCalls = []
+      for (const tokenAndOwner of tokensAndOwners) {
+        const specialToken = specialTokens.find(x => x.toLowerCase() === tokenAndOwner[0].toLowerCase())
+
+        if (specialToken) {
+          specialTokensCalls.push([specialToken, tokenAndOwner[1]])
+        }
+      }
+
+      const [underlyingTokens, vaultErc4626Balances, tokenNames, specialTokensAssets, specialTokensBalances] = await Promise.all([
         api.multiCall({ abi: 'address:asset', calls: Object.keys(erc4626UnderylingMap) }),
         api.multiCall({ abi: 'erc20:balanceOf', calls: erc4626sAndOwners.map(x => ({ target: x[0], params: x[1] })) }),
         api.multiCall({ abi: 'string:name', calls: positions.map(x => x[0]), permitFailure: true }),
+        api.multiCall({ abi: 'address:asset', calls: specialTokensCalls.map(x => x[0])}),
+        api.multiCall({ abi: 'erc20:balanceOf', calls: specialTokensCalls.map(x => ({ target: x[0], params: x[1] })) })
       ])
       await processLendingTvls(positions, tokenNames, api, AAVE_POOL, AAVE_POOL_DATA_PROVIDER, COMETS, vaults, COMET_REWARD)
 
@@ -194,6 +210,10 @@ Object.keys(config).forEach(chain => {
       erc4626sAndOwners.forEach(([token,], i) => {
         const underlyingToken = erc4626UnderylingMap[token]
         api.add(underlyingToken, vaultConvertToAssets[i])
+      })
+
+      specialTokensAssets.forEach((asset, i) => {
+        api.add(asset, specialTokensBalances[i])
       })
 
       return sumTokens2({ api, tokensAndOwners })
