@@ -18,9 +18,12 @@ const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 10_000 });
 
 async function _sumTokensBlockchain({ balances = {}, owners = [], }) {
   console.time('bitcoin' + owners.length + '___' + owners[0])
-  const { addresses } = await get(url3(owners))
-  for (const addr of addresses)
-    sdk.util.sumSingleBalance(balances, 'bitcoin', addr.final_balance / 1e8)
+  const STEP = 200
+  for(let i=0; i<owners.length; i+=STEP){
+    const { addresses } = await get(url3(owners.slice(i, i+STEP)))
+    for (const addr of addresses)
+      sdk.util.sumSingleBalance(balances, 'bitcoin', addr.final_balance / 1e8)
+  }
 
   console.timeEnd('bitcoin' + owners.length + '___' + owners[0])
   return balances
