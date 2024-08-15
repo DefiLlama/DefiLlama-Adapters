@@ -23,6 +23,7 @@ const DEFAULTS = {
   SEI_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   SEI_RPC: 'https://evm-rpc.sei-apis.com/',
   ETLK_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  CRONOS_ZKEVM_RPC: 'https://mainnet.zkevm.cronos.org' // added manually short name is zkcro
 }
 
 const ENV_KEYS = [
