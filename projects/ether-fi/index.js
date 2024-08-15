@@ -1,6 +1,11 @@
-const { staking } = require("../helper/staking");
 const { nullAddress } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk')
+
+function staking(contract, token) {
+  return async (api) => {
+    api.add(token, await api.call({ target: contract, abi: 'erc20:totalSupply'}))
+  }
+}
 
 module.exports = {
   doublecounted: true,

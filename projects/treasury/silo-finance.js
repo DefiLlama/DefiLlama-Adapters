@@ -38,7 +38,7 @@ module.exports = mergeExports([
         ADDRESSES.ethereum.CRV, // CRV
         ADDRESSES.ethereum.CRVUSD, // crvUSD
         "0xc944E90C64B2c07662A292be6244BDf05Cda44a7", // GRT
-        "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0" // FXS
+        ADDRESSES.ethereum.FXS // FXS
       ],
       owners: ETHEREUM_MAINNET_TREASURIES,
       ownTokens: [SILO_ETHEREUM_MAINNET, XAI_ETHEREUM_MAINNET],
