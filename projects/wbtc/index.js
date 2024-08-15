@@ -404,7 +404,7 @@ async function tvl(api){
 
 module.exports = {
   bitcoin: {
-    tvl: sdk.util.sumChainTvls([]),
+    tvl,
   },
   methodology: `TVL for WBTC consists of the BTC deposits in custody that were used to mint WBTC`,
 };
