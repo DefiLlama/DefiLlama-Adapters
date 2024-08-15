@@ -29,7 +29,11 @@ const TOKENS = {
     pufETH: "0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC"
   },
   cronos: {
-    USDC: "0xc21223249ca28397b4b6541dffaecc539bff0c59"
+    USDC: ADDRESSES.cronos.USDC
+  },
+  fraxtal: {
+    WETH: ADDRESSES.fraxtal.WETH,
+    FRAX: ADDRESSES.fraxtal.FRAX
   }
 }
 
@@ -42,6 +46,7 @@ module.exports = {
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.WBTC,
+        ADDRESSES.ethereum.FRAX,
         TOKENS.ethereum.XDAO,
         TOKENS.ethereum.LADYS,
         TOKENS.ethereum.pufETH,
@@ -86,6 +91,7 @@ module.exports = {
       tokens: [
         ADDRESSES.polygon.USDC,
         ADDRESSES.polygon.WETH_1,
+        ADDRESSES.polygon.FRAX,
         TOKENS.polygon.XDAO,
       ],
       holders: [
@@ -178,6 +184,7 @@ module.exports = {
         ADDRESSES.arbitrum.USDC, // USDC.e
         ADDRESSES.arbitrum.USDC_CIRCLE,
         ADDRESSES.arbitrum.WETH,
+        ADDRESSES.arbitrum.FRAX,
         TOKENS.arbitrum.XDAO,
         TOKENS.arbitrum.LADYS,
       ],
@@ -378,6 +385,7 @@ module.exports = {
        name: 'zeta',
        tokens: [
          TOKENS.zeta.pufETH,
+         ADDRESSES.zeta.USDC_1,
        ],
        holders: [
          '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf', // portal v2
@@ -390,6 +398,16 @@ module.exports = {
        ],
        holders: [
          '0xE75C7E85FE6ADd07077467064aD15847E6ba9877', // portal v2
+       ]
+     },
+     {
+       name: 'fraxtal',
+       tokens: [
+         TOKENS.fraxtal.WETH,
+         TOKENS.fraxtal.FRAX,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
        ]
      },
   ]
