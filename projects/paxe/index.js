@@ -22,7 +22,7 @@ async function tvl(api) {
 
 module.exports = {
       methodology: 'We count the TVL on the PAXE token in the farming contract and the restaking pool',
-    
+   
   bsc: {
     tvl,
   }
