@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { sumTokensExport } = require("../helper/sumTokens");
+const ADDRESSES = require('./helper/coreAssets.json')
 
 
 // WALLETS FROM HERE https://wbtc.network/dashboard/audit
@@ -391,11 +392,19 @@ const owners = [
   "bc1qzm3t8m5fcnz8t22kf2lyr97u2wret0pkjvzngldnqq5su434tsrqxjncvj",
 ];
 
+async function tvl(api){
+  if(api.timestamp > Date.now()/1e3 - 3600){
+    return sumTokensExport({ owners })(api)
+  } else {
+    return {
+      [ADDRESSES.ethereum.WBTC]: (await sdk.api.erc20.totalSupply({ target: ADDRESSES.ethereum.WBTC, block:api.block })).output
+    }
+  }
+}
+
 module.exports = {
   bitcoin: {
-    tvl: sdk.util.sumChainTvls([sumTokensExport({ owners })]),
+    tvl: sdk.util.sumChainTvls([]),
   },
-  ethereum: { tvl: () => ({}) },
-  tron: { tvl: () => ({}) },
   methodology: `TVL for WBTC consists of the BTC deposits in custody that were used to mint WBTC`,
 };
