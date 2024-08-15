@@ -1,8 +1,8 @@
 
 const { sumTokens2 } = require('./helper/unwrapLPs')
 const ADDRESSES = require('./helper/coreAssets.json');
-const { getPoolLiquidityAmount } = require('./config/bella/izi');
-const iziABI = require('./config/bella/abis/izi');
+const { getPoolLiquidityAmount } = require('./bella/izi');
+const iziABI = require('./bella/abis/izi');
 
 const bVaults = {
   bUsdt: '0x2c23276107b45E64c8c59482f4a24f4f2E568ea6',
@@ -24,6 +24,7 @@ async function tvl(api) {
   const utokens = await api.multiCall({ calls: tokens, abi: 'address:token'})
   const bals = await api.multiCall({ calls: tokens, abi: "uint256:underlyingBalance"})
   api.add(utokens, bals)
+
 }
 
 async function pool2(api) {
@@ -35,7 +36,7 @@ module.exports = {
     tvl,
     pool2,
   },
-  manta: {
+   manta: {
     pool2: async (api) => {
       const STONE = '0xEc901DA9c68E90798BbBb74c11406A32A70652C3'
       const WUSDM = '0xbdAd407F77f44F7Da6684B416b1951ECa461FB07'
@@ -106,10 +107,9 @@ module.exports = {
       const infoABI = "function getMiningContractInfo() external view returns (address tokenX, address tokenY, uint24 fee_, address iziTokenAddr, uint256 lastTouchTime_, uint256 totalVLiquidity_, uint256 bal0, uint256 bal1, uint256 balIzi, uint256 startTime_, uint256 endTime_)"
 
       const data = await api.multiCall({ abi: infoABI, calls: pool2s })
-      const transform = i => i.toLowerCase() === '0xb83cfb285fc8d936e8647fa9b1cc641dbaae92d9' ? 'ethereum:0xa91ac63d040deb1b7a5e4d4134ad23eb0ba07e14' : 'era:' + i
       for (const { tokenX, tokenY, iziTokenAddr, bal0, bal1, balIzi } of data) {
-        api.add(transform(tokenX), bal0, { skipChain: true })
-        api.add(transform(tokenY), bal1, { skipChain: true })
+        api.add(tokenX, bal0)
+        api.add(tokenY, bal1)
         api.add(iziTokenAddr, balIzi)
       }
     },
