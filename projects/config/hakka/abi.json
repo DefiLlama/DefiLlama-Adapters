@@ -1,7 +1,0 @@
-{
-  "balanceOf": "function balanceOf(address account) view returns (uint256)",
-  "totalSupply": "uint256:totalSupply",
-  "pancakeUserInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)",
-  "alpacaUserInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt, uint256 bonusDebt, address fundedBy)",
-  "beltUserInfo": "function userInfo(uint256, address) view returns (uint256 shares, uint256 rewardDebt)"
-}
