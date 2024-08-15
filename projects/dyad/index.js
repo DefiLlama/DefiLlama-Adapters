@@ -5,12 +5,11 @@ const vaults = [
   "0x7e5f2b8f089a4cd27f5b6b846306020800df45bd",
   // "0xf3768D6e78E65FC64b8F12ffc824452130BD5394", // Kerosene is own token
   "0x3D72f7Fc3A9537e1fcC6FBF91AF55CcF2c5C4ed0",
+  "0x3FC5c0e19b6287f25EB271c2E8e7Ba898FE7ab29",
 ]
 
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  tokens.push(ADDRESSES.null)
-  vaults.push('0xdc400bbe0b8b79c07a962ea99a642f5819e3b712')
   return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
 }
 

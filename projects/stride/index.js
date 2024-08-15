@@ -17,7 +17,7 @@ const chains = {
   juno: {
     chainId: "juno-1",
     denom: "ujuno",
-    coinGeckoId: "juno-network",
+    coinGeckoId: "juno-network", 
   },
 
   osmosis: {

@@ -22,6 +22,9 @@ const config = {
   arbitrum: {
     liquidityResolver: (block) => "0x46859d33E662d4bF18eEED88f74C36256E606e44",
   },
+  base: {
+    liquidityResolver: (block) => "0x35A915336e2b3349FA94c133491b915eD3D3b0cd",
+  },
 };
 
 async function getListedTokens(api) {
@@ -62,7 +65,7 @@ async function borrowed(api) {
   const tokens = await getListedTokens(api);
   const borrowed = await api.call({
     target: config[api.chain].liquidityResolver(api.block),
-    abi: api.block < 19992056 ? abi.getOverallTokensDataLegacy : abi.getOverallTokensData,
+    abi: api.chain == "ethereum" && api.block < 19992056 ? abi.getOverallTokensDataLegacy : abi.getOverallTokensData,
     params: [tokens],
   });
   api.add(
@@ -75,5 +78,6 @@ module.exports = {
   methodology: methodologies.lendingMarket,
   ethereum: { tvl, borrowed },
   arbitrum: { tvl, borrowed },
+  base: { tvl, borrowed },
 };
 // node test.js projects/fluid/index.js
