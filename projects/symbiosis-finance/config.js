@@ -385,6 +385,7 @@ module.exports = {
        name: 'zeta',
        tokens: [
          TOKENS.zeta.pufETH,
+         ADDRESSES.zeta.USDC_1,
        ],
        holders: [
          '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf', // portal v2
