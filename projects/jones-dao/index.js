@@ -44,6 +44,48 @@ async function tvl(api) {
   api.addTokens(optionVaultTokens, optionVaultBalances);
   api.addTokens(addresses.tokens.usdc, jusdcTvl.output);
 
+  for (const factoryAddress of addresses.smartLpArbFactories) {
+    const nonce = await api.call({
+      target: factoryAddress,
+      abi: "uint256:nonce",
+    });
+
+    const contracts = await api.multiCall({
+      abi: "function getLPManagerContracts(uint256 _nonce) view returns (address lp,address viewer,address swapper,address receiver,address priceHelper,address lpManager,address doubleTracker,address singleTrackerZero,address singleTrackerOne,address compounder,address router)",
+      calls: Array.from({ length: nonce }, (_n, i) => i + 1).map((i) => ({
+        target: factoryAddress,
+        params: [i],
+      })),
+    });
+    const lpManagers = contracts.map((c) => c.lpManager);
+
+    const [token0s, token1s, aums] = await Promise.all([
+      api.multiCall({
+        abi: "address:token0",
+        calls: lpManagers,
+      }),
+      api.multiCall({
+        abi: "address:token1",
+        calls: lpManagers,
+      }),
+      api.multiCall({
+        abi: "function aum() returns (uint256 amount0, uint256 amount1)",
+        calls: lpManagers,
+      }),
+    ]);
+
+    const balancesMap = aums.reduce((acc, { amount0, amount1 }, i) => {
+      acc[token0s[i]] = (acc[token0s[i]] ?? BigInt(0)) + BigInt(amount0);
+      acc[token1s[i]] = (acc[token1s[i]] ?? BigInt(0)) + BigInt(amount1);
+      return acc;
+    }, {});
+
+    const tokens = Object.keys(balancesMap);
+    const balances = Object.values(balancesMap);
+
+    api.addTokens(tokens, balances);
+  }
+
   const tokensAndOwners = [
     [addresses.tokens.uvrt, addresses.glp.stableRewardTracker],
     [addresses.tokens.uvrt, addresses.glp.router],
