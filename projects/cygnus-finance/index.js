@@ -31,10 +31,10 @@ async function tonTvl() {
   const cgUsdtTotalSupply = jettonResult['total_supply']
 
   // subtract the amount of cgUSDT in the withdrawal vault
-  const balance = await getJettonBalance(MINTER_ADDRESS, CGUSDT_ADDRESS)
+  const withdrawVaultBalance = await getJettonBalance(MINTER_ADDRESS, CGUSDT_ADDRESS)
 
   // caculate tvl
-  const tvl = (cgUsdtTotalSupply - balance) / 10 ** 6 * cgusdtTousdt
+  const tvl = (cgUsdtTotalSupply - withdrawVaultBalance) / 10 ** 6 * cgusdtTousdt
   return { "coingecko:tether": tvl }
 }
 
