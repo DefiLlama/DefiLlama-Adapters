@@ -65,6 +65,10 @@ const config = {
       factory: "0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80",
       fromBlock: 113112037,
     },
+    prime: {
+      factory: "0x44fEF0fAB3A96CA34b06d5142350Ef9223F65A7e",
+      fromBlock: 226174706,
+    },
   },
   [CHAIN.MANTLE]: {
     dynamic: {

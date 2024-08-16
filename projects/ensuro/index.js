@@ -7,7 +7,7 @@ const addressBook = {
     aave_v3_usdc: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",  // aPolUSDC
     aave_v2_usdc: "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",  // amUSDC
     compound_v3_usdc: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",  // Compound USDC
-    mountain_usdm: "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C",  // Mountain USDM
+    mountain_usdm: ADDRESSES.ethereum.USDM,  // Mountain USDM
     reserves: [
       // eTokens
       {name: "eToken Junior Koala", address: "0x8d2Ee82c4172B2138B06b8037d769cBfAf9C0274"},
