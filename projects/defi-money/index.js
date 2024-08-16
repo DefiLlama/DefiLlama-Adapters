@@ -83,6 +83,7 @@ const getTvl = async (api, controller, viewer, stakingContracts, MONEY) => {
 Object.keys(config).forEach((chain) => {
   const { controller, viewer, stakeLPs, MONEY } = config[chain];
   module.exports[chain] = {
+    doublecounted:true,
     methodology:
       "TVL corresponds to the collateral deposited in the markets and the LPs used for yield",
     tvl: (api) => getTvl(api, controller, viewer, stakeLPs, MONEY),
