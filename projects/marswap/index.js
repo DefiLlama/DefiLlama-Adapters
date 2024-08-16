@@ -7,6 +7,7 @@ const config = {
   shibarium: ["0xBe0223f65813C7c82E195B48F8AAaAcb304FbAe7","0xd871a3f5d3bB9c00DDB0cC772690351B9712968D"],
   base: ["0xeE42fe6d6Be1eF43701DDAbc417AD22d82C5ecC3"],
   cronos: ["0xD716B78F0002C23190B024fc93C33CF73E30b8A6"],
+  cronos_zkevm: ["0xc547615d77b2d5c1add3d744342d8CB027873e82"]
 }
 
 module.exports = {

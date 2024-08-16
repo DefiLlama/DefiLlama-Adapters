@@ -26,7 +26,8 @@ const owners = [
   "bc1qq76dy32nnk5sha36etg6pdj94vl5zrskavux2f", // add on 12/05/2024
   "36n825H7orW1u8yWmvR4zs2CWfmkY2rkpK", // add on 12/05/2024
   "bc1p35l88j3ashhktg75tjctt6pacrgpyr93ldt7yw484dm4expq073qk4n0a0", // add on 12/05/2024
-
+  "bc1pahkqca39mfcfay7nueczyhn9v8wq96x7mp4pjxpsdpsnurxzuwuqnhsdg3", // this wallet was provide by merlin team chain on the 14/08/2024
+  "1A7oMBdQir24ESgk8LDccM4MUKJx6d2mCw" // this wallet was provide by merlin team chain on the 14/08/2024
 ]
 
 module.exports = {

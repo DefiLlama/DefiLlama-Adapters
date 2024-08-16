@@ -28,6 +28,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   hallmarks: [
     [1667826000, "FTX/Alameda collapse"],
     [1680310800, "Move to onchain data"],

@@ -22,4 +22,9 @@ module.exports = {
     // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
     pool2: staking("0x28e395a54a64284dba39652921cd99924f4e3797", "0xcF7b51ce5755513d4bE016b0e28D6EDEffa1d52a")
   },
+  base: {
+    ...aaveExports('base', '0x3eAF348Cf1fEC09C0f8d4f52AD3B8D894206b724'),
+    // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
+    pool2: staking("0xD87F8a52a91680c993ece968B281bf92505A3741", "0x8a76639fe8e390ed16ea88f87beb46d6a5328254")
+  },
 };

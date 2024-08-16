@@ -110,6 +110,9 @@ sdk.api.abi.call = async (...args) => {
   } catch (e) {
     console.log(e)
   }
+  if(module.hallmarks && module.hallmarks.length > 6){
+    console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+  }
   // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
@@ -121,7 +124,6 @@ sdk.api.abi.call = async (...args) => {
   const tokensBalances = {};
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
-  const knownTokenPrices = {};
 
   let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
     if (typeof value !== "object" || value === null) {

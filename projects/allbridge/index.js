@@ -211,8 +211,7 @@ async function solanaTvl() {
 }
 
 async function solanaStaking() {
-    const balance = await solana.getTokenAccountBalance(solanaData.staking.tokenAccount);
-    return {allbridge: toNumber(0, balance)}
+    return solana.sumTokens2({ tokenAccounts: [solanaData.staking.tokenAccount] })
 }
 
 async function terraTvl() {

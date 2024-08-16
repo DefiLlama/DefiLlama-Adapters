@@ -11,6 +11,7 @@ module.exports = {
   solana: {
     tvl,
   },
+  deadFrom: 1675728000,
   methodology:
     "To obtain the Ratio Finance TVL we make on-chain calls",
 };
