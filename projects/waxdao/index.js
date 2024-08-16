@@ -12,7 +12,7 @@ const tokens = [
 // WaxDAO
 // https://waxdao.io
 async function wax() {
-  const accounts = ["waxdaolocker", "waxdaomarket", "waxdaobacker", "dao.waxdao", "waxdaoescrow", "waxdaosynths"];
+  const accounts = ["waxdaolocker", "waxdaomarket", "waxdaobacker", "waxdaoescrow", "waxdaosynths"];
 
   return await get_account_tvl(accounts, tokens, "wax");
 }
@@ -22,7 +22,7 @@ async function staking() {
 }
 
 module.exports = {
-  methodology: `WaxDAO TVL is achieved by querying token balances from vesting, farming, market and DAO contracts`,
+  methodology: `WaxDAO TVL is achieved by querying token balances from vesting, farming, and market contract(s)`,
   wax: {
     tvl: wax,
     staking
