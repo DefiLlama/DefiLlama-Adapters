@@ -1,5 +1,5 @@
 const { get } = require("../helper/http");
-const { exportDexalotTVL } = require("../helper/dexalot");
+const { exportDexalotTVL } = require("./helper");
 
 const dexalotAPI = "https://api.dexalot.com"
 

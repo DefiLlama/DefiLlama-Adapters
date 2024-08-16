@@ -1,5 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { get } = require("./http");
+const { get } = require("../helper/http");
 
 const dexalotTradingAPI = "https://api.dexalot.com/privapi/trading"
 
