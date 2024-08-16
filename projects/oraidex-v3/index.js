@@ -22,6 +22,7 @@ async function tvl() {
   try {
     const CHUNK_SIZE = 100
     const pools = []
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const res = await oraichainQueryData({
         contract: AMM_V3_CONTRACT,
