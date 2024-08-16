@@ -52,6 +52,7 @@ const getTvl = async (api, controller, viewer) => {
 Object.keys(config).forEach((chain) => {
   const { controller, viewer } = config[chain];
   module.exports[chain] = {
+    methodology: 'TVL corresponds to the sum of collaterals deposited in the markets',
     tvl: (api) => getTvl(api, controller, viewer),
   };
 });
