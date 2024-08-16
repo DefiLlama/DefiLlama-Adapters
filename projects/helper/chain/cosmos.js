@@ -195,7 +195,28 @@ const multipleEndpoints = {
     "https://sei-m.api.n0ok.net",
     "https://sei-api.lavenderfive.com",
     "https://api-sei.stingray.plus"
+  ],
+  oraichain: [
+    "https://lcd.orai.io"
   ]
+}
+
+async function queryBankWithRetries({address, chain, denom}) {
+  const rpcs = multipleEndpoints[chain]
+  for (let i = 0; i < rpcs.length; i++) {
+    try {
+      const url = `${rpcs[i]}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=${denom}`
+      return (
+        await get(
+          `${rpcs[i]}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=${denom}`
+        )
+      ).balance;
+    } catch (e) {
+      if (i >= rpcs.length - 1) {
+        throw e
+      }
+    }
+  }
 }
 
 async function queryContractWithRetries({ contract, chain, data }) {
@@ -311,5 +332,6 @@ module.exports = {
   getTokenBalance,
   getToken,
   sumCW20Tokens,
-  queryContractWithRetries
+  queryContractWithRetries,
+  queryBankWithRetries
 };

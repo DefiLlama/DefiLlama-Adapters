@@ -1,28 +1,68 @@
-const graphql = require('../helper/utils/graphql');
-const ADDRESSES = require('../helper/coreAssets.json')
+const {queryContractWithRetries, queryBankWithRetries} = require('../helper/chain/cosmos');
+
+const AMM_V3_CONTRACT = "orai10s0c75gw5y5eftms5ncfknw6lzmx0dyhedn75uz793m8zwz4g8zq4d9x9a";
+const isNativeToken = (denom) => {
+  if (denom.startsWith("orai1")) {
+    return false;
+  }
+  return true;
+};
+
+async function oraichainQueryData({contract, data}) {
+  return await queryContractWithRetries({contract, chain: 'oraichain', data});
+}
+
+function getTokenFormat(tokenAddr) {
+  if (tokenAddr.includes("ibc")) return tokenAddr.split("/").join(":")
+  else if (tokenAddr.includes("factory")) return "orai:" + tokenAddr.split("/").join(":")
+  return "orai:" + tokenAddr
+}
 
 async function tvl() {
   try {
-    const endpoint = 'https://staging-ammv3-indexer.oraidex.io'
-    const query = `query poolQuery {
-        pools {
-          nodes {
-              id
-              totalValueLockedInUSD
+    const CHUNK_SIZE = 100
+    const pools = []
+    while (true) {
+      const res = await oraichainQueryData({
+        contract: AMM_V3_CONTRACT,
+        data: {
+          pools: {
+            limit: CHUNK_SIZE,
+            startAfter: pools.length == 0 ? undefined : pools[pools.length - 1].pool_key
           }
         }
-      }`
-    const res = await graphql.request(endpoint, query)
 
-    const token = 'orai:' + ADDRESSES.orai.USDT
-    const sum = {
-      [token]: 0
+      })
+      pools.push(...res);
+      if (res.length < CHUNK_SIZE) break;
     }
-    const COSMOS_DECIMALS = 6;
-    const decimals = 10 ** COSMOS_DECIMALS;
-    res.pools.nodes.forEach(pool => {
-      sum[token] += pool.totalValueLockedInUSD * decimals
+    const poolTokens = pools.map(pool => [pool.pool_key.token_x, pool.pool_key.token_y]).flat()
+    const uniqueTokens = new Set(poolTokens);
+
+    const sum = {}
+    const balancePromises = Array.from(uniqueTokens).map(async (token) => {
+      const key = getTokenFormat(token)
+      let tokenBalances = {}
+      if (isNativeToken(token)) {
+        tokenBalances = await queryBankWithRetries({
+          address: AMM_V3_CONTRACT,
+          chain: 'oraichain',
+          denom: token
+        })
+        sum[key] = tokenBalances.amount
+      } else {
+        tokenBalances = await  oraichainQueryData({
+          contract: token,
+          data: {
+            balance: {
+              address: AMM_V3_CONTRACT,
+            }
+          }
+        })
+        sum[key] = tokenBalances.balance
+      }
     })
+    await Promise.all(balancePromises)
     return sum
   } catch (error) {
     console.error("Error when get tvl oraidex v3: ", error)
