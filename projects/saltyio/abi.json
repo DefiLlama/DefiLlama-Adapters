@@ -1,0 +1,8 @@
+{
+  "whitelistedPools": "function whitelistedPools() returns ( tuple(bytes32 poolID)[] )",
+  "underlyingTokenPair": "function underlyingTokenPair( bytes32 poolID) returns ( address tokenA, address tokenB )",
+  "balanceOf": "function balanceOf( address owner) returns ( uint256 balance )",
+  "maxSALT": "function maxSALT() returns ( uint256 max )",
+  "priceSALT": "function priceSALT() returns ( uint256 price )",
+  "circulatingSALT": "function circulatingSALT() returns ( uint256 circulating )"
+}

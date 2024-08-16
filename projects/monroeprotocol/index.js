@@ -25,8 +25,6 @@ const V2_ADDRESSES = {
   ethereum: DETERMINISTIC_roeUSD
 }
 
-
-
 async function tvl(api) {
   const owners = []
   const tokens = []
@@ -48,11 +46,12 @@ async function tvl(api) {
     const vaultLengthV2 = await api.call({ abi: "uint:getVaultsLength", target: V2_ADDRESSES[api.chain] })
     const vaultCallsV2 = createIncrementArray(vaultLengthV2)
     const vaultsV2 = await api.multiCall({  abi: "function vaults(uint vaultId) view returns (address)", calls: vaultCallsV2, target: V2_ADDRESSES[api.chain]})
+
     const _tokensV2 = await api.multiCall({  abi: 'address:collateralAsset', calls: vaultsV2})
     tokens.push(..._tokensV2)
     owners.push(...vaultsV2)
   }
-  
+
   return api.sumTokens({ tokensAndOwners2: [tokens, owners]})
 }
 
