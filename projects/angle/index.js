@@ -164,12 +164,11 @@ async function tvl(api) {
   })
 
   // Treasury - Stablecoins
-  const treasuriesTokens = stablecoins
+  stablecoins
     .map(({ treasury, treasuryTokens }) =>
       treasuryTokens?.[chain]?.map((token) => [token, treasury])
     )
-    .flat(2)
-  tokensAndOwners.push(treasuriesTokens)
+    .flat(1).forEach((tokenAndOwner) => tokensAndOwners.push(tokenAndOwner))
 
   return sumTokens2({
     api,

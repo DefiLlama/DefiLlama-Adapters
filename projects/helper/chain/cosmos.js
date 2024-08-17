@@ -40,7 +40,9 @@ const endPoints = {
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
   nolus: "https://pirin-cl.nolus.network:1317",
-  bostrom: "https://lcd.bostrom.cybernode.ai"
+  nibiru: "https://lcd.nibiru.fi",
+  bostrom: "https://lcd.bostrom.cybernode.ai",
+  joltify: "https://lcd.joltify.io"
 };
 
 const chainSubpaths = {
@@ -49,6 +51,7 @@ const chainSubpaths = {
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
+  joltify: "joltify",
 };
 
 // some contract calls need endpoint with higher gas limit
@@ -115,7 +118,13 @@ async function getBalance({ token, owner, block, chain } = {}) {
   return Number(data.balance);
 }
 
-async function sumCW20Tokens({ balances = {}, tokens, owner, block, chain } = {}) {
+async function sumCW20Tokens({ balances, tokens, owner, block, chain, api, } = {}) {
+  if (api) {
+    if (!chain) chain = api.chain;
+    if (!balances) balances = api.getBalances();
+  } else {
+    if (!balances) balances = {};
+  }
   await Promise.all(
     tokens.map(async (token) => {
       const balance = await getBalance({ token, owner, block, chain, });
@@ -136,7 +145,7 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
   return balance ? Number(balance.amount) : 0;
 }
 
-async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, } = {}) {
+async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, api, } = {}) {
   const subpath = "cosmos";
   let endpoint = `${getEndpoint(
     chain
@@ -150,7 +159,9 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
   for (const { denom, amount } of data) {
     if (blacklistedTokens?.includes(denom)) continue;
     if (tokens && !tokens.includes(denom)) continue;
-    sdk.util.sumSingleBalance(balances, denom.replaceAll('/', ':'), amount);
+    if (api) api.add(denom, amount);
+    else
+      sdk.util.sumSingleBalance(balances, denom.replaceAll('/', ':'), amount);
   }
   return balances;
 }
@@ -192,7 +203,7 @@ const multipleEndpoints = {
     "https://sei-m.api.n0ok.net",
     "https://sei-api.lavenderfive.com",
     "https://api-sei.stingray.plus"
-  ]
+  ],
 }
 
 async function queryContractWithRetries({ contract, chain, data }) {
@@ -217,7 +228,7 @@ async function queryContractWithRetries({ contract, chain, data }) {
   }
 }
 
-async function queryManyContracts({ contracts = [], chain, data, permitFailure = false}) {
+async function queryManyContracts({ contracts = [], chain, data, permitFailure = false }) {
   const parallelLimit = 25
   const { results, errors } = await PromisePool
     .withConcurrency(parallelLimit)
@@ -277,7 +288,13 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain, owner, tokens, blacklistedTokens, }) {
+async function sumTokens({ balances, owners = [], chain, owner, tokens, blacklistedTokens, api, }) {
+  if (api) {
+    if (!chain) chain = api.chain;
+    if (!balances) balances = api.getBalances();
+  } else {
+    if (!balances) balances = {};
+  }
   if (!tokens?.length || (tokens?.length === 1 && tokens[0] === ADDRESSES.null)) tokens = undefined;
   if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
@@ -285,7 +302,7 @@ async function sumTokens({ balances = {}, owners = [], chain, owner, tokens, bla
 
   const { errors } = await PromisePool.withConcurrency(parallelLimit)
     .for(owners)
-    .process(async (owner) => getBalance2({ balances, owner, chain, tokens, blacklistedTokens, }));
+    .process(async (owner) => getBalance2({ balances, owner, chain, tokens, blacklistedTokens, api, }));
 
   if (errors && errors.length) throw errors[0];
   return transformBalances(chain, balances);
@@ -308,5 +325,5 @@ module.exports = {
   getTokenBalance,
   getToken,
   sumCW20Tokens,
-  queryContractWithRetries
+  queryContractWithRetries,
 };

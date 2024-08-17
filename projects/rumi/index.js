@@ -20,5 +20,5 @@ module.exports = {
   arbitrum: {
     tvl: () => ({}),
   },
-  // deadFrom: '2023-12-11',
+  deadFrom: '2023-12-11',
 }; 
