@@ -25,7 +25,7 @@ async function getEigenPods(timestamp) {
   slot_timestamp
     from beacon.validator.balances
     where
-      status = 'active_ongoing'
+      status in ('active_ongoing', 'pending_queued', 'pending_initialized', 'withdrawal_possible')
   and slot_timestamp = '${new Date(timestamp * 1e3 - offset * 24 * 3600e3).toISOString().split('T')[0]}T23:59:59'
   ) beacon where pods.params['eigenPod'] = beacon.WITHDRAWAL_ADDRESS`)
   await setCache('eigenlayer', 'eigenpods-query', newQuery)

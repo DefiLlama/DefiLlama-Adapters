@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { stakings } = require("../helper/staking");
 
@@ -5,25 +6,25 @@ const { stakings } = require("../helper/staking");
 const supportedChains = [
   {
     name: 'Polygon',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-polygon',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-polygon/1.1.1/gn',
     chainId: 137,
     identifier: 'polygon'
   },
   {
     name: 'Arbitrum',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-arbitrum',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-arbitrum/1.1.0/gn',
     chainId: 42161,
     identifier: 'arbitrum'
   },
   {
     name: 'Optimism',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-optimism',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GgW1EwNARL3dyo3acQ3VhraQQ66MHT7QnYuGcQc5geDG',
     chainId: 10,
     identifier: 'optimism'
   },
   {
     name: 'Binance',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-bsc',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GLDP56fPGDz3MtmhtfTkz5CxWiqiNLACVrsJ9RqQeL4U',
     chainId: 56,
     identifier: 'bsc'
   },
@@ -35,7 +36,7 @@ const supportedChains = [
   },
   {
     name: 'Avalanche',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-avalanche',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
     chainId: 43114,
     identifier: 'avax'
   },
@@ -59,7 +60,7 @@ const supportedChains = [
   },
   {
     name: 'Linea',
-    subgraphEndpoint: 'https://subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-linea/1.1.2/gn',
     chainId: 59144,
     identifier: 'linea'
   },
@@ -83,7 +84,7 @@ const supportedChains = [
   },
   {
     name: 'Scroll',
-    subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-scroll/1.1.1/gn',
     chainId: 534352,
     identifier: 'scroll'
   },
@@ -101,16 +102,10 @@ const supportedChains = [
   },
   {
     name: 'Fantom',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-protocol-fantom-test',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/9uyX2WDuaxmcYh11ehUhU68M9uSCp5FXVQV2w4LqbpbV',
     chainId: 250,
     identifier: 'fantom'
   },
-  // {
-  //   name: 'Flare',
-  //   subgraphEndpoint: '',
-  //   chainId: 14,
-  //   identifier: 'flare'
-  // },
   {
     name: 'Blast',
     subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-blast/1.1.1/gn',
@@ -125,16 +120,46 @@ const supportedChains = [
   },
   {
     name: 'AstarzkEVM',
-    subgraphEndpoint: 'https://subgraph.steer.finance/astarzkevm/subgraphs/name/steerprotocol/steer-astarzkevm',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
     chainId: 3776,
     identifier: 'astrzk'
   },
-  // {
-  //   name: 'Celo',
-  //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
-  //   chainId: 42220,
-  //   identifier: 'celo'
-  // },
+  {
+    name: 'Telos',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-telos/1.0.1/gn',
+    chainId: 40,
+    identifier: 'telos'
+  },
+  {
+    name: 'X Layer',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-x-layer/1.0.1/gn',
+    chainId: 196,
+    identifier: 'xlayer'
+  },
+  {
+    name: 'Rootstock',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-rootstock/1.1.1/gn',
+    chainId: 30,
+    identifier: 'rsk'
+  },
+  {
+    name: 'Celo',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-celo/1.1.1/gn',
+    chainId: 42220,
+    identifier: 'celo'
+  },
+  {
+    name: 'ZklinkNova',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-zklink-nova/1.0.1/gn',
+    chainId: 810180,
+    identifier: 'zklink'
+  },
+  {
+    name: 'Flare',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-flare/1.1.1/gn',
+    chainId: 14,
+    identifier: 'flare'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
@@ -167,7 +192,9 @@ module.exports.arbitrum.staking = stakings(
     "0x25Ef108B328Cf752F0E0b0169D499Db164173763",
     "0x0b619438d1E8b8c205656502de59Af2Af71C43e0",
     "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
-    "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4"
+    "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4",
+    "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B",
+    "0x3338B85fB1607C519962571B67061e02408475Bb"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"

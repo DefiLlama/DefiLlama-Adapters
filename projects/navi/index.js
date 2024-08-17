@@ -13,10 +13,10 @@ async function borrow(api) {
   const storageObject = await sui.getObject(storageId);
   const reservesId = storageObject.fields.reserves.fields.id.id
 
-  const dynamicFields = await sui.getDynamicFieldObjects({parent: reservesId})
+  const dynamicFields = await sui.getDynamicFieldObjects({ parent: reservesId })
   dynamicFields.forEach((data) => {
     const coin = '0x' + data.fields.value.fields.coin_type
-    const borrowed = data.fields.value.fields.borrow_balance.fields.total_supply
+    const borrowed = data.fields.value.fields.borrow_balance.fields.total_supply * data.fields.value.fields.current_borrow_index / 1e27
     const amount = borrowed * (10 ** (decimalShift[coin] ?? 0))
     api.add(coin, amount)
   })
@@ -27,15 +27,17 @@ async function tvl(api) {
   const storageObject = await sui.getObject(storageId);
   const reservesId = storageObject.fields.reserves.fields.id.id
 
-   const dynamicFields = await sui.getDynamicFieldObjects({parent: reservesId})
+  const dynamicFields = await sui.getDynamicFieldObjects({ parent: reservesId })
+
   dynamicFields.forEach(object => {
     const coin = '0x' + object.fields.value.fields.coin_type
-    const total_supply = object.fields.value.fields.supply_balance.fields.total_supply
-    const borrowed = object.fields.value.fields.borrow_balance.fields.total_supply
+    const total_supply = object.fields.value.fields.supply_balance.fields.total_supply * object.fields.value.fields.current_supply_index / 1e27
+    const borrowed = object.fields.value.fields.borrow_balance.fields.total_supply * object.fields.value.fields.current_borrow_index / 1e27
     const amount = (total_supply - borrowed) * (10 ** (decimalShift[coin] ?? 0))
     api.add(coin, amount)
   })
 }
+
 
 module.exports = {
   timetravel: false,

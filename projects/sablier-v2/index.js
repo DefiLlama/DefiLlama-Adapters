@@ -22,25 +22,25 @@ async function getTokensConfig(api, isVesting) {
 }
 
 async function tvl(api) {
-  const { owners } = config[api.chain]
   return api.sumTokens(await getTokensConfig(api, false))
 }
 
 async function vesting(api) {
-  const { owners } = config[api.chain]
   return api.sumTokens(await getTokensConfig(api, true))
 }
 
 const config = {
-  ethereum: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2'], },
-  arbitrum: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-arbitrum'], },
-  bsc: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-bsc'], },
-  xdai: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-gnosis'], },
-  optimism: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-optimism'], },
-  polygon: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-polygon'], },
-  avax: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-avalanche'], },
-  base: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-base'], },
-  blast: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-v2-blast/version/latest'], },
+  ethereum: { endpoints: ['5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m'], },
+  arbitrum: { endpoints: ['8BnGPBojHycDxVo83LP468pUo4xDyCQbtTpHGZXR6SiB'], },
+  bsc: { endpoints: ['BVyi15zcH5eUg5PPKfRDDesezMezh6cAkn8LPvh7MVAF'], },
+  xdai: { endpoints: ['EXhNLbhCbsewJPx4jx5tutNXpxwdgng2kmX1J7w1bFyu'], },
+  optimism: { endpoints: ['6e6Dvs1yDpsWDDREZRqxGi54SVdvTNzUdKpKJxniKVrp'], },
+  polygon: { endpoints: ['CsDNYv9XPUMP8vufuwDVKQrVhsxhzzRHezjLFFKZZbrx'], },
+  avax: { endpoints: ['FdVwZuMV43yCb1nPmjnLQwmzS58wvKuLMPzcZ4UWgWAc'], },
+  base: { endpoints: ['3pxjsW9rbDjmZpoQWzc5CAo4vzcyYE9YQyTghntmnb1K'], },
+  blast: { endpoints: ['BXoC2ToMZXnTmCjWftQRPh9zMyM7ysijMN54Nxzb2CEY'], },
+  scroll: { endpoints: ['HVcngokCByfveLwguuafrBC34xB65Ne6tpGrXHmqDSrh'], },
+  era: { endpoints: ['GY2fGozmfZiZ3xF2MfevohLR4YGnyxGxAyxzi9zmU5bY'], },
 }
 
 Object.keys(config).forEach(chain => {

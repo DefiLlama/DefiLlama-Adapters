@@ -9,7 +9,7 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0',//FXS
+        ADDRESSES.ethereum.FXS,//FXS
         '0xca1207647Ff814039530D7d35df0e1Dd2e91Fa84',//DHT
         '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F',//SDT
         '0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b',//DPI

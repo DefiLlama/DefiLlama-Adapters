@@ -5,6 +5,9 @@ const config = {
   polygon: {},
   base: {},
   boba: { factory: '0xFaf1Af4dC761dBA157227a3c06CeC9A7486D8a07' },
+  blast: { factory: '0x8C554F200B1EEECdE99370Fe6284B15d23E50E07' },
+  scroll: { factory: '0xc2cC57a62982c4C92C69B856B5d03c6DECa32E77' },
+  linea: { factory: '0x8C554F200B1EEECdE99370Fe6284B15d23E50E07' },
 }
 
 module.exports = {

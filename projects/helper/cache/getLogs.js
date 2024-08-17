@@ -18,7 +18,7 @@ async function getLogs({ target,
   const block = api.block
   const chain = api.chain ?? 'ethereum'
   if (!toBlock) toBlock = block
-  if (!toBlock) throw new Error('Missing fromBlock!')
+  if (!toBlock) throw new Error('Missing toBlock!')
 
   let iface
 

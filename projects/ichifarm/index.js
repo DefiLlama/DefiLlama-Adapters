@@ -46,17 +46,23 @@ const config = {
       { factory: '0x1Cc05B01f2e52ae3bb29F7A0059Fe112C60aA3f4', fromBlock: 147199960, isAlgebra: false, }, // Horiza
     ],
   },
+  base: {
+    vaultConfigs: [
+      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
+    ]
+  },
+  blast: {
+    vaultConfigs: [
+      { factory: '0xb42D5956cDe4386B65C087CfCD16910aB6114F15', fromBlock: 2247439, isAlgebra: true, }, // Fenix
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 1630201, isAlgebra: false, }, // Uni v3
+    ],
+  },
   bsc: {
     vaultConfigs: [
       { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, isAlgebra: false, },
       { factory: '0xAc93148e93d1C49D89b1166BFd74942E80F5D501', fromBlock: 32489803, isAlgebra: true, }, // Thena
       { factory: '0x065356d9f628cDd1bb9F2384E2972CdAC50f51b7', fromBlock: 34595133, isAlgebra: false, }, // Uni v3
     ],
-  },
-  base: {
-    vaultConfigs: [
-      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
-    ]
   },
   celo: {
     vaultConfigs: [
@@ -81,6 +87,7 @@ const config = {
   fantom: {
     vaultConfigs: [
       { factory: '0x932E1908461De58b0891E5022431dc995Cb95C5E', fromBlock: 74304207, isAlgebra: false, }, // Equalizer
+      { factory: '0x89FFdaa18b296d9F0CF02fBD88e5c633FEFA5f34', fromBlock: 79156621, isAlgebra: true, }, // Spiritswap 
     ]
   },
   // hedera: {
@@ -88,9 +95,18 @@ const config = {
   //     { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
   //   ]
   // },
+  // kava: {
+  //   vaultConfigs: [
+  //     { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
+  //   ]
+  // },
   linea: {
     vaultConfigs: [
+      { factory: '0xb0e7871d53BE1b1d746bBfD9511e2eF3cD70a6E7', fromBlock: 4722347, isAlgebra: false, }, // Linehub
       { factory: '0x0248b992ac2a75294b05286E9DD3A2bD3C9CFE4B', fromBlock: 1599561, isAlgebra: true, }, // Lynex
+      { factory: '0x2592686212C164C1851dF2f62c5d5EC50600195E', fromBlock: 4148753, isAlgebra: false, }, // Metavault 
+      { factory: '0xa29F3D5403D50Ea1BF597E2Ef01791A1Ce4F544E', fromBlock: 5033991, isAlgebra: false, }, // Nile
+      { factory: '0x6E3eB904966B0158833852cAFD1200c171772b53', fromBlock: 3976012, isAlgebra: false, }, // Uniswap 
     ]
   },
   mantle: {
@@ -113,7 +129,8 @@ const config = {
   },
   polygon_zkevm: {
     vaultConfigs: [
-      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4830529, isAlgebra: false, }, // Zero
+      { factory: '0xe8532Db60408f2d47693dA5b9093D71580B8C23F', fromBlock: 10890417, isAlgebra: false, }, // PancakeSwap
+      { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
     ]
   },
 }

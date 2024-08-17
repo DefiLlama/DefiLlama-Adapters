@@ -48,7 +48,10 @@ const chainPools = {
     UnifiedUSDC: { pool: '0x168b2D7dd6b9812392f99bA01A14db03ED06dedc', token: ADDRESSES.bfc.UnifiedUSDC },
     UnifiedMATIC: { pool: '0xA1Bd1d501aF7d0B146951fDFF49BD4C0bD25e220', token: ADDRESSES.bfc.UnifiedMATIC },
     UnifiedUSDT: { pool: '0xeD7B0974dC5d98B9e7C83695C415d68b8781B0F8', token: ADDRESSES.bfc.UnifiedUSDT },
-    UnifiedDAI: { pool: '0x2168dAb12A6A93181bbAD9C9dc769307C36fB45C', token: ADDRESSES.bfc.UnifiedDAI }
+    UnifiedDAI: { pool: '0x2168dAb12A6A93181bbAD9C9dc769307C36fB45C', token: ADDRESSES.bfc.UnifiedDAI },
+    UnifiedWBTC: { pool: '0xEa3b4a2dA5DbE8379AD4c60aaD5184df69D7C9AD', token: ADDRESSES.bfc.WBTC},
+    UnifiedBTCB: { pool: '0x0B31FeE8bF53bFe2f5F7083B73A4c9C8B517E32F', token: ADDRESSES.bfc.BTCB},
+    BitcoinUSD: { pool: '0xcF2FC1d354018A39D5Ef036aA865Ad8cbF7B611E', token: ADDRESSES.bfc.BitcoinUSD }
   },
 }
 

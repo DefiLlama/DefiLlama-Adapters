@@ -22,8 +22,13 @@ const owners = [
   "bc1pruhkl5exjt0z824cafauf750f5g08azuvgcjctv0enz5csayaj7ss3j5wc", // add on 25/02/2024
   "bc1q97vmervc8x9hzr4z4yvzn3x4rk74se6e8x8sgy", // add on 25/02/2024
   "bc1q2lzqzjcq472x8v0kgdcn4m5y8cq95ysnxm6vemu0qsuqgzyge06sqmqdal", // add on 25/02/2024
-  "bc1qcmj5lkumeycyn35lxc3yr32k3fzue87yrjrna6", //nft_vault_address
-];
+  "bc1qcmj5lkumeycyn35lxc3yr32k3fzue87yrjrna6", //nft_vault_address;
+  "bc1qq76dy32nnk5sha36etg6pdj94vl5zrskavux2f", // add on 12/05/2024
+  "36n825H7orW1u8yWmvR4zs2CWfmkY2rkpK", // add on 12/05/2024
+  "bc1p35l88j3ashhktg75tjctt6pacrgpyr93ldt7yw484dm4expq073qk4n0a0", // add on 12/05/2024
+  "bc1pahkqca39mfcfay7nueczyhn9v8wq96x7mp4pjxpsdpsnurxzuwuqnhsdg3", // this wallet was provide by merlin team chain on the 14/08/2024
+  "1A7oMBdQir24ESgk8LDccM4MUKJx6d2mCw" // this wallet was provide by merlin team chain on the 14/08/2024
+]
 
 module.exports = {
   methodology: "Staking tokens via BitStable counts as TVL",

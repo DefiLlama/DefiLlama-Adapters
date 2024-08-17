@@ -52,7 +52,7 @@ const blacklisted_LPS = new Set([
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
-  if (chain === 'bsc' &&  symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  if (chain === 'bsc' && symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
   return false
 }
 
@@ -65,7 +65,6 @@ function isLP(symbol, token, chain) {
   if (chain === 'pulse' && ['PLP', 'PLT'].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
-  if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
@@ -73,7 +72,8 @@ function isLP(symbol, token, chain) {
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
-  if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
+  if (chain === 'polygon' && ['MbtLP', 'GLP', 'WLP', 'FLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['DLP'].includes(symbol)) return false
   if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
@@ -84,6 +84,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
   if (chain === 'mantle' && ['MoeLP'].includes(symbol)) return true
   if (chain === 'blast' && ['RING-V2'].includes(symbol)) return true
+  if (chain === 'fraxtal' && ['FS-V2'].includes(symbol)) return true
   if (chain === 'era' && /(ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'flare' && symbol.endsWith('_LP')) return true // for enosys dex
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
@@ -110,8 +111,8 @@ function isLP(symbol, token, chain) {
 
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
-  if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    sdk.log(chain, symbol, token)
+  // if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+  //   sdk.log(chain, symbol, token)
 
   return isLPRes
 }
@@ -254,7 +255,8 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    if (!token.startsWith('0x') || chain === 'starknet') return;
+    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos']
+    if (!token.startsWith('0x') || blacklistedChains.includes(chain)) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
     else
@@ -262,7 +264,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     labelMapping[label] = token
   })
 
-  if (tokens.length > 100) {
+  if (tokens.length > 400) {
     sdk.log('too many unknowns')
     return;
   }
@@ -302,7 +304,14 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   sdk.log('Balance table for [%s] %s', chain, tableLabel)
-  console.table(logObj.filter(i => !/\.(com|net|org|xyz|site)\s/.test(i.symbol)))
+  const filtered = logObj.filter(i => {
+    const symbol = i.symbol?.toLowerCase() ?? ''
+    if (/\.(com|net|org|xyz|site|io)/.test(symbol)) return false
+    if (/claim|access|airdrop/.test(symbol)) return false
+    return true
+  })
+  if (filtered.length)
+    console.table(filtered)
 }
 
 function once(func) {

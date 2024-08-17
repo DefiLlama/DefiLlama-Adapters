@@ -6,6 +6,7 @@ const config = {
   optimism: { fromBlock: 113464669, },
   base: { fromBlock: 7869252, },
   arbitrum: { fromBlock: 159919891, },
+  linea: { factory: '0x00000000333288eBA83426245D144B966Fd7e82E', fromBlock: 3982456 },
 };
 
 async function getVaults(api) {

@@ -2,15 +2,29 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs");
 
-const BUCKETUS_VAULT_ID =
-  "0x1a0b93fd2965ce3ceb4039c90b232ddee7b0e79015cab0ca10528bb5f4285188";
-const BUCK_USDC_POOL_ID =
-  "0x6ecf6d01120f5f055f9a605b56fd661412a81ec7c8b035255e333c664a0c12e7";
-
-const FEE_RATE_BUCKETUS_VAULT_ID =
-  "0x6edfc992f6e775fe926a5e850661c151ad01e6149e9b34792a2102e1721065fc";
-const FEE_RATE_BUCK_USDC_POOL_ID =
-  "0x81fe26939ed676dd766358a60445341a06cea407ca6f3671ef30f162c84126d5";
+const BUCKETUS_VAULT_AND_POOL_IDS = [
+  {
+    //NEW_BUCKETUS
+    vaultID:
+      "0x1a0b93fd2965ce3ceb4039c90b232ddee7b0e79015cab0ca10528bb5f4285188",
+    poolID:
+      "0x6ecf6d01120f5f055f9a605b56fd661412a81ec7c8b035255e333c664a0c12e7",
+  },
+  {
+    //BUCKETUS
+    vaultID:
+      "0x6edfc992f6e775fe926a5e850661c151ad01e6149e9b34792a2102e1721065fc",
+    poolID:
+      "0x81fe26939ed676dd766358a60445341a06cea407ca6f3671ef30f162c84126d5",
+  },
+  {
+    //FEE_RATE_BUCKETUS
+    vaultID:
+      "0x706a998f7f223b30c32ac3400a63721dae00f1b3e15169defeaafe2756af99c8",
+    poolID:
+      "0x81fe26939ed676dd766358a60445341a06cea407ca6f3671ef30f162c84126d5",
+  },
+];
 
 const CETABLE_VAULT_ID =
   "0xeed4e7948f88f1f044b653717a7855eef6fe188e9cbbb103d5169f9bc3edd257";
@@ -22,47 +36,30 @@ const STAPREAL_VAULT_ID =
 const STAPEARL_PAIR_METADTA_ID =
   "0x243096d976a44de24fde33f087665f8265543a533b5cdbae60fc72a939669867";
 
+const ST_SBUCK_VAULT_OBJECT_ID = "0xe83e455a9e99884c086c8c79c13367e7a865de1f953e75bcf3e529cdf03c6224"
+
 function asIntN(int, bits = 32) {
   return Number(BigInt.asIntN(bits, BigInt(int)));
 }
 
 async function tvl(api) {
-  const bucketusVaultObjs = await sui.getObject(BUCKETUS_VAULT_ID);
-  const bucketusPoolObjs = await sui.getObject(BUCK_USDC_POOL_ID);
+  for (const { vaultID, poolID } of BUCKETUS_VAULT_AND_POOL_IDS) {
+    const vaultObjs = await sui.getObject(vaultID);
+    const poolObjs = await sui.getObject(poolID);
 
-  const bucketusPool = bucketusPoolObjs.fields;
-  const bucketusPosition = bucketusVaultObjs.fields.position.fields;
+    const pool = poolObjs.fields;
+    const position = vaultObjs.fields.position.fields;
 
-  addUniV3LikePosition({
-    api,
-    tickLower: asIntN(bucketusPosition.tick_lower_index.fields.bits),
-    tickUpper: asIntN(bucketusPosition.tick_upper_index.fields.bits),
-    tick: asIntN(bucketusPool.current_tick_index.fields.bits),
-    liquidity: bucketusPosition.liquidity,
-    token0: ADDRESSES.sui.BUCK,
-    token1: ADDRESSES.sui.USDC,
-  });
-
-  const feeRateBucketusVaultObjs = await sui.getObject(
-    FEE_RATE_BUCKETUS_VAULT_ID
-  );
-  const feeRateBucketusPoolObjs = await sui.getObject(
-    FEE_RATE_BUCK_USDC_POOL_ID
-  );
-
-  const feeRateBucketusPool = feeRateBucketusPoolObjs.fields;
-  const feeRateBucketusPosition =
-    feeRateBucketusVaultObjs.fields.position.fields;
-
-  addUniV3LikePosition({
-    api,
-    tickLower: asIntN(feeRateBucketusPosition.tick_lower_index.fields.bits),
-    tickUpper: asIntN(feeRateBucketusPosition.tick_upper_index.fields.bits),
-    tick: asIntN(feeRateBucketusPool.current_tick_index.fields.bits),
-    liquidity: feeRateBucketusPosition.liquidity,
-    token0: ADDRESSES.sui.BUCK,
-    token1: ADDRESSES.sui.USDC,
-  });
+    addUniV3LikePosition({
+      api,
+      tickLower: asIntN(position.tick_lower_index.fields.bits),
+      tickUpper: asIntN(position.tick_upper_index.fields.bits),
+      tick: asIntN(pool.current_tick_index.fields.bits),
+      liquidity: position.liquidity,
+      token0: ADDRESSES.sui.BUCK,
+      token1: ADDRESSES.sui.USDC,
+    });
+  }
 
   const cetableVaultObjs = await sui.getObject(CETABLE_VAULT_ID);
   const cetablePoolObjs = await sui.getObject(USDC_USDT_POOL_ID);
@@ -97,8 +94,18 @@ async function tvl(api) {
   const stapearlUSDTAmount =
     (stapearlLpAmount * stapearlReserveY) / stapearlLpSupply;
 
+  // saving vault
+  const savingVaultcObj = await sui.getObject(ST_SBUCK_VAULT_OBJECT_ID)
+  let savingVaultTVL = Number(savingVaultcObj.fields.free_balance) + Number(savingVaultcObj.fields.time_locked_profit.fields.locked_balance) + Number(savingVaultcObj.fields.time_locked_profit.fields.unlocked_balance)
+  const strategies = savingVaultcObj.fields.strategies.fields.contents
+  for(const strategy of strategies){
+    const botrrowedAmount = Number(strategy.fields.value.fields.borrowed)
+    savingVaultTVL += botrrowedAmount
+  }
+
   api.add(ADDRESSES.sui.USDC, stapearlUSDCAmount);
   api.add(ADDRESSES.sui.USDT, stapearlUSDTAmount);
+  api.add(ADDRESSES.sui.BUCK, savingVaultTVL)
 }
 
 module.exports = {
