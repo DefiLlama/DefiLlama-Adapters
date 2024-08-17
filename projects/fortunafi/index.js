@@ -20,16 +20,12 @@ const config = {
   },
 }
 
-module.exports = {
-  misrepresentedTokens: true,
-}
-
 Object.keys(config).forEach(chain => {
-  const tConfig = config[chain]
+  const tokens = Object.values(config[chain])
   module.exports[chain] = {
     tvl: async (api) => {
-      const nav = await api.multiCall({  abi: 'uint256:nav', calls: Object.values(tConfig), permitFailure: true })
-      api.addCGToken('tether', nav.reduce((acc, i) => acc + (i ?? 0)/1e18, 0))
+      const supplies = await api.multiCall({  abi: 'uint256:totalSupply', calls: tokens})
+      api.add(tokens, supplies)
     }
   }
 })
