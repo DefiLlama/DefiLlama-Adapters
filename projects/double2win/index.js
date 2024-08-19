@@ -1,11 +1,6 @@
-const config = require("./config");
+const config = require("./config")
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { cachedGraphQuery } = require('../helper/cache');
-const { getTokenPrices } = require('../helper/unknownTokens');
-const { stripTokenHeader } = require('../helper/utils');
-const sdk = require('@defillama/sdk');
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
-const { default: BigNumber } = require("bignumber.js");
+const { cachedGraphQuery } = require('../helper/cache')
 
 const subgraphs = {
   "arbitrum": "https://api.studio.thegraph.com/query/16975/double-arbitrum/version/latest",
@@ -26,75 +21,43 @@ async function getTokens(chain) {
         ammType
       }
     }
-  `;
+  `
 
-  const { assetTokens, migrations, liquidities } = await cachedGraphQuery(`double2win/${chain}`, subgraphs[chain], graphQuery);
+  const { assetTokens, migrations, liquidities } = await cachedGraphQuery(`double2win/${chain}`, subgraphs[chain], graphQuery)
 
-  return { assetTokens, migrations, liquidities };
+  return { assets: assetTokens.map(i => i.tokenAddress), v2Tokens: migrations.concat(liquidities).filter(i => i.ammType === 'UniswapV2').map(i => i.pair) }
 }
 
-module.exports = {}
+module.exports = {
+  doublecounted: true,
+}
 
-Object.keys(config).forEach((network) => {
-  const networkConfig = config[network];
+Object.keys(config).forEach((chain) => {
+  const configs = Object.values(config[chain])
 
-  module.exports[network] = {
+  module.exports[chain] = {
     tvl: async (api) => {
-      // Initialize an empty map to store TVL per token
-      const block = api.block;
-      const tokenBalances = {};
-      const tokenData = await getTokens(network);
-      const pairAddresses = [];
-      tokenData.migrations.forEach(migration => {
-        pairAddresses.push(migration.pair.toLowerCase());
-      });
-      tokenData.liquidities.forEach(liquidity => {
-        pairAddresses.push(liquidity.pair.toLowerCase());
-      });
-      const assetAddresses = [];
-      tokenData.assetTokens.forEach(assetToken => {
-        assetAddresses.push(assetToken.tokenAddress.toLowerCase());
-      });
-      // Iterate over each contract type within the network
-      await Promise.all(
-        Object.keys(networkConfig).map(async (contractType) => {
-          const tokensAndOwners = [];
-          const { doubleContract, fromBlock, type } = networkConfig[contractType];
-          if (type.startsWith("v3")) {
-            await sumTokens2({ api, balances: tokenBalances, owner: doubleContract, resolveUniV3: true, chain: network, sumChunkSize: 50 })
-          } else {
-            if (type.startsWith("v2")) {
-              pairAddresses.forEach(pairAddress => {
-                tokensAndOwners.push([pairAddress, doubleContract]);
-              });
-              await sumTokens2({ api, balances: tokenBalances, tokensAndOwners: tokensAndOwners, chain: network, resolveLP: true, sumChunkSize: 50})
-            } else {
-              assetAddresses.forEach(asset => {
-                tokensAndOwners.push([asset, doubleContract]);
-              });
-              await sumTokens2({ api, balances: tokenBalances, tokensAndOwners: tokensAndOwners, chain: network, sumChunkSize: 50})
-            }
-          }
-        })
-      );
-      const balances = Object.fromEntries(
-        Object.entries(tokenBalances).filter(([_, value]) => !Number.isNaN(value))
-      );
-      const finalBalances = balances;
-      const transformAddress = await getChainTransform(network);
-      const { prices} = await getTokenPrices({ chain: network, block, lps: ["0x27D336a834775988b1305df42569E27128932bDD"],  useDefaultCoreAssets: true})
-      Object.entries(balances).forEach(([address, amount = 0]) => {
-        const token = stripTokenHeader(address)
-        const price = prices[token];
-        if (!price) return;
-        let tokenAmount = price[1] * +amount
-        const coreAsset = price[2]
-        sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(tokenAmount).toFixed(0))
-        delete balances[address]
+      const v2Vaults = []
+      const v3Vaults = []
+      const assetVaults = []
+      configs.forEach((config) => {
+        switch (config.type) {
+          case 'v2-vault':
+            v2Vaults.push(config.doubleContract)
+            break
+          case 'v3-vault':
+            v3Vaults.push(config.doubleContract)
+            break
+          case 'asset-vault':
+            assetVaults.push(config.doubleContract)
+            break
+        }
       })
-      const fixBalances = await getFixBalances(network)
-      fixBalances(finalBalances)
-      return finalBalances
-    },
-  };
-});
+      const { assets, v2Tokens } = await getTokens(chain)
+      await sumTokens2({ resolveUniV3: true, api, owners: v3Vaults })
+      await sumTokens2({ owners: assetVaults, tokens: assets, api })
+      return sumTokens2({ owners: v2Vaults, tokens: v2Tokens, resolveLP: true, api })
+    }
+  }
+
+})
