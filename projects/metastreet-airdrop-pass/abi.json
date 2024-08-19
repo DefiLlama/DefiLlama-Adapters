@@ -1,0 +1,4 @@
+{
+  "delegateTokenIds": "function delegateTokenIds(address airdropPassToken, uint256 offset, uint256 count) external view returns (uint256[] memory)",
+  "AirdropPassTokenDeployed": "event AirdropPassTokenDeployed(address indexed airdropPassToken, bytes32 indexed deploymentHash, address indexed token, uint256 expiry, bytes32 rights)"
+}
