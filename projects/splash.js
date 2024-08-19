@@ -1,12 +1,9 @@
 const { get } = require('./helper/http');
+const ADDRESSES = require('./helper/coreAssets.json')
 
-async function cardanoTVL() {
-  let { tvlAda } = await get('https://api2.splash.trade/platform-api/v1/platform/stats')
-  if(tvlAda>1e9){
-    throw new Error("wrong")
-  }
-
-  return { cardano: tvlAda };
+async function cardanoTVL(api) {
+  const { tvlAda } = await get('https://api2.splash.trade/platform-api/v1/platform/stats')
+  api.add(ADDRESSES.cardano.ADA, tvlAda)
 }
 
 module.exports = {
