@@ -17,7 +17,7 @@ async function tvl() {
     .for(pairs)
     .process(async ({ pool_id }) => {
       const res = await get(`https://uvevg-iyaaa-aaaak-ac27q-cai.raw.ic0.app/pool_tvl?poolId=${pool_id}&limit=1`)
-      if (res.length > 0)
+      if (res.length > 0 && res[0].tvlUSD < 100e6)
         tvl += +res[0].tvlUSD
     })
 
