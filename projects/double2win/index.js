@@ -80,37 +80,18 @@ Object.keys(config).forEach((network) => {
       const balances = Object.fromEntries(
         Object.entries(tokenBalances).filter(([_, value]) => !Number.isNaN(value))
       );
-      const lpAddresses = [];
       const finalBalances = balances;
-      transformAddress = await getChainTransform(network);
-      const { pairBalances, prices} = await getTokenPrices({ chain: network, block, lps: ["0x27D336a834775988b1305df42569E27128932bDD"],  useDefaultCoreAssets: true})
+      const transformAddress = await getChainTransform(network);
+      const { prices} = await getTokenPrices({ chain: network, block, lps: ["0x27D336a834775988b1305df42569E27128932bDD"],  useDefaultCoreAssets: true})
       Object.entries(balances).forEach(([address, amount = 0]) => {
         const token = stripTokenHeader(address)
         const price = prices[token];
-        if (pairBalances[token]) {
-          lpAddresses.push(token)
-          return;
-        }
         if (!price) return;
         let tokenAmount = price[1] * +amount
         const coreAsset = price[2]
         sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(tokenAmount).toFixed(0))
         delete balances[address]
       })
-
-      if (lpAddresses.length) {
-        const totalBalances = (await sdk.api.abi.multiCall({
-          abi: 'erc20:totalSupply', calls: lpAddresses.map(i => ({ target: i })), block, chain
-        })).output
-
-        totalBalances.forEach((item) => {
-          const token = item.input.target
-          const address = transformAddress(token)
-          const ratio = +item.output > 0 ? (+(balances[address]) || 0) / +item.output : 0
-          addBalances(pairBalances[token], finalBalances, { ratio, pairAddress: token, })
-          delete balances[address]
-        })
-      }
       const fixBalances = await getFixBalances(network)
       fixBalances(finalBalances)
       return finalBalances
