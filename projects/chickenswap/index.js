@@ -67,7 +67,4 @@ module.exports = {
         pool2: pool2(chickenChefContract, WETH_KFC_UNIV2),
         tvl: sdk.util.sumChainTvls([dexTVL, ethTvl,]),
     },
-    methodology:
-        `We count liquidity on the Vaults (only single tokens) through ChickenChef Contract and the liquuidity on the AMM Pools (only pairs) 
-        pulling data from the subgraph at https://api.thegraph.com/subgraphs/name/chickenswap/graph`,
 };

@@ -27,10 +27,10 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.CRV,
         ADDRESSES.ethereum.YFI,
         "0xa258C4606Ca8206D8aA700cE2143D7db854D168c",
-        "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+        ADDRESSES.ethereum.FXS,
         "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
         "0xF1bB87563A122211d40d393eBf1c633c330377F9", //xpremia
-        "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+        ADDRESSES.ethereum.FXS,
         "0x7f50786A0b15723D741727882ee99a0BF34e3466"
      ],
     owners: [alchemixTreasury, operations_treasury, treasury2, treasury3, treasury4, treasury5], 

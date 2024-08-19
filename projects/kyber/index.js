@@ -1,4 +1,5 @@
-const { graphQuery } = require("../helper/http");
+const sdk = require("@defillama/sdk")
+const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const chains = {
@@ -45,10 +46,14 @@ async function fetchPools(chain) {
     case "cronos": url = 'https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos'; break;
     case "base": url = 'https://base-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-base'; break;
     case "scroll": url = 'https://scroll-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-scroll'; break;
+    case "mainnet": url = sdk.graph.modifyEndpoint('4U9PxDR4asVvfXyoVy18fhuj6NHnQhLzZkjZ5Bmuc5xk'); break;
+    case "arbitrum-one" : url = sdk.graph.modifyEndpoint('C36tj8jSpEHxcNbjM3z7ayUZHVjrk4HRqnpGMFuRgXs6'); break;
+    case "avalanche": url = sdk.graph.modifyEndpoint('9oMJfc7CL8uDqqQ3T3NFBnFCz9JMwq2YhH9AqojECFWp'); break;
+    case "bsc": url = sdk.graph.modifyEndpoint('FDEDgycFnTbPZ7PfrnWEZ4iR7T5De6BR69zx1i8gKQRa'); break;
+    case "fantom": url = sdk.graph.modifyEndpoint('9aj6YZFVL647wFBQXnNKM72eiowP4fyzynQKwLrn5axL'); break;
+    case "optimism": url = sdk.graph.modifyEndpoint('3Kpd8i7U94pTz3Mgdb8hyvT5o26fpwT7SUHAbTa6JzfZ'); break;
     default: url = `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
   }
-  let length
-  let lastId = ''
   let toa = [];
   const poolQuery = `
     query pools($lastId: String) {
@@ -62,25 +67,21 @@ async function fetchPools(chain) {
         }
       }
     }`;
-  do {
-    const {pools} = await graphQuery(url, poolQuery, { lastId })
+    const pools = await cachedGraphQuery('kyber/'+chain, url, poolQuery, { fetchById: true,  })
     pools.forEach(({ id, token0, token1}) => {
       toa.push([token0.id, id])
       toa.push([token1.id, id])
     })
-    lastId = pools[pools.length - 1].id
-  } while (length === 1000)
   
   return toa;
 }
 
 function elastic(chain) {
-  return async (_, block, chainBlocks) => {
+  return async (api) => {
     if (!("graphId" in chains[chain])) return {};
 
-    block = chainBlocks[chain];
     const pools = await fetchPools(chains[chain].graphId);
-    return sumTokens2({ chain, block, tokensAndOwners: pools })
+    return sumTokens2({ api, tokensAndOwners: pools })
   }
 }
 
@@ -96,3 +97,5 @@ Object.keys(chains).forEach(chain => {
     tvl: elastic(chain)
   };
 });
+
+module.exports.base.tvl = () => ({})  // setting base to 0 for now as I could not find the graph endpoint
