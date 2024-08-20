@@ -1,29 +1,19 @@
-const { DHEDGE_FACTORY_ABI, LOBSTER_POOL_ABI } = require("./abis");
-const { CONFIG_DATA } = require("./config");
+const DHEDGE_FACTORY_ABI = "function getManagedPools(address manager) view returns (address[] managedPools)";
+const LOBSTER_POOL_ABI = "function getFundSummary() view returns (tuple(string name, uint256 totalSupply, uint256 totalFundValue))";
+
+const CONFIG_DATA = {
+  arbitrum: {
+    dhedgeFactory: "0xffFb5fB14606EB3a548C113026355020dDF27535",
+    lobsterManager: "0x6EBb1B5Be9bc93858f71714eD03f67BF237473cB",
+  }
+}
 
 async function tvl(api) {
-  const { chain, } = api
-  const { dhedgeFactory, lobsterManager } = CONFIG_DATA[chain];
+  const { dhedgeFactory, lobsterManager } = CONFIG_DATA[api.chain];
 
-  const pools = await api.call({
-    abi: DHEDGE_FACTORY_ABI,
-    target: dhedgeFactory,
-    params: [lobsterManager],
-  });
-
-  const poolSummaries = await api.multiCall({
-    abi: LOBSTER_POOL_ABI,
-    calls: pools,
-  });
-
-  const totalValue = poolSummaries.reduce(
-    (acc, i) => acc + +i.totalFundValue,
-    0
-  );
-
-  return {
-    tether: totalValue / 1e18,
-  };
+  const pools = await api.call({ abi: DHEDGE_FACTORY_ABI, target: dhedgeFactory, params: lobsterManager, });
+  const poolSummaries = await api.multiCall({ abi: LOBSTER_POOL_ABI, calls: pools, })
+  api.addCGToken('tether', poolSummaries.reduce((acc, p) => acc + +p.totalFundValue/1e18, 0))
 }
 
 module.exports = {
@@ -35,6 +25,6 @@ module.exports = {
     tvl,
   },
   hallmarks: [
-    [171097151, "First Arbitrum Vault Release"],
+    [1710971510, "First Arbitrum Vault Release"],
   ],
-};
+}
