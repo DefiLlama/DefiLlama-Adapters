@@ -50,6 +50,36 @@ const CETABLE_PSM =
 const STAPEARL_PSM =
   "0xccdaf635eb1c419dc5ab813cc64c728a9f5a851202769e254f348bff51f9a6dc";
 
+const afSUI_sLP_ID =
+  "0x508da82c0b6785653f638b95ebf7c89d720ecffae15c4d0526228a2edae7d429";
+
+const vSUI_sLP_ID =
+  "0xa68124b518290f430f2133bcb679c519e51c99045e622cd6bcb00374c97f6d9d";
+
+const haSUI_sLP_ID =
+  "0xa8993bf1c1e717b7c0f164c51346fa99a4e771c50d90c14e755adc48e39b7768";
+
+const navi_sLP_ID =
+  "0xcbe804c8c334dcadecd4ba05ee10cffa54dad36f279ab4ec9661d67f9372881c";
+
+const scallop_sUSDC_LP_ID =
+  "0x7b16192d63e6fa111b0dac03f99c5ff965205455089f846804c10b10be55983c";
+
+const scallop_sUSDT_LP_ID =
+  "0x6b68b42cbb4efccd9df30466c21fff3c090279992c005c45154bd1a0d87ac725";
+
+const haSUI_Navi_Pond_ID = "0xef1ff1334c1757d8e841035090d34b17b7aa3d491a3cb611319209169617518e"
+
+async function getStakingLPAmount(id) {
+  const stakingLPObject = await sui.getObject(id);
+  return stakingLPObject.fields.output_volume;
+}
+
+async function getScallopsLPAmount(id) {
+  const stakingLPObject = await sui.getObject(id);
+  return stakingLPObject.fields.coin_balance;
+}
+
 async function tvl(api) {
   const protocolFields = await sui.getDynamicFieldObjects({
     parent: MAINNET_PROTOCOL_ID,
@@ -184,6 +214,43 @@ async function tvl(api) {
     `0x${afsuiSuiTokenNames[1]}`,
     Math.floor(afsuiPercentage * afsuiSuiLpBucketStaked)
   );
+
+  //Staking LPs
+  const safSUILPAmount = await getStakingLPAmount(afSUI_sLP_ID);
+  api.add(
+    "0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI",
+    safSUILPAmount
+  );
+
+  const svSUILPAmount = await getStakingLPAmount(vSUI_sLP_ID);
+  api.add(
+    "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
+    svSUILPAmount
+  );
+
+  const shaSUILPAmount = await getStakingLPAmount(haSUI_sLP_ID);
+  api.add(
+    "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
+    shaSUILPAmount
+  );
+
+  const snaviLPAmount = await getStakingLPAmount(navi_sLP_ID);
+  api.add(
+    "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
+    snaviLPAmount
+  );
+
+  const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
+  api.add(
+    "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
+    haSuiNaviPondAmount
+  );
+
+  const scallopUSDC_LPAmount = await getScallopsLPAmount(scallop_sUSDC_LP_ID);
+  api.add(USDC, scallopUSDC_LPAmount);
+
+  const scallopUSDT_LPAmount = await getScallopsLPAmount(scallop_sUSDT_LP_ID);
+  api.add(USDT, scallopUSDT_LPAmount);
 }
 
 module.exports = {

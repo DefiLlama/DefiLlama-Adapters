@@ -114,6 +114,7 @@ const HYPE_REGISTRY = {
   ],
   scroll: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 4651930], // Uniswap
+    ["0x0B79d5117dd22eDC1e5F2649aC32746aF7Ca3445", 8111003], // Scribe
   ],
   blast: [
     ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 1727054], // Uniswap
@@ -127,6 +128,16 @@ const HYPE_REGISTRY = {
   ],
   mode: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 696737], // KIM
+  ],
+  taiko: [
+    ["0xc27ddd78fc49875fe6f844b72bbf31dfbb099881", 57600], // Uniswap
+  ],
+  rsk: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 6414342], // Uniswap
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 6414350], // Sushiswap
+  ],
+  iotaevm: [
+    ["0xF44cECB1CF40ee12303E85Eb8651263c01812EaD", 223591], // wagmi
   ],
 };
 
