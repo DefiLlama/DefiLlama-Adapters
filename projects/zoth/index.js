@@ -1,6 +1,7 @@
-const { graphQuery } = require('../helper/http')
+const { request } = require("graphql-request");
 
-const subgraphUrl = 'https://api.studio.thegraph.com/proxy/77016/wallet-base/version/latest';
+const endpoint = "https://api.studio.thegraph.com/proxy/77016/wallet-base/version/latest";
+
 const securityAddress = '0x07E4826972da11Ccb99A100A6cC3d596a2143549';
 const query = `
 query MyQuery {
@@ -12,26 +13,37 @@ query MyQuery {
 }
 `;
 
-async function getData(api) {
-    return graphQuery(subgraphUrl, query, {}, { api, })
-}
+async function getTvl() {
+  try {
+    const data = await request(endpoint, query);
 
-async function tvl(api) {
-    let total = 0
-    const res = await getData(api)
+    const securities = data.securities || [];
+    
+    let tokens = 0;
+    const currencyDecimal = 10 ** 18; 
 
-    res.securities[0].secondaryInvestors.map((item) => {
-        total = total + Number(item.amount)
-    })
+    securities.forEach(security => {
+      security.secondaryInvestors.forEach(investor => {
+        const amt = parseFloat(investor.amount);
+        tokens += amt / currencyDecimal;
+      });
+    });
 
-    return {
-        ["base"]: total / (10 ** 18)
-    }
+    const price = 100.5;
+    const tvl = tokens * price;
+
+    // console.log("tvl", tvl);
+    return tvl;
+  } catch (error) {
+    console.error("Error fetching TVL:", error);
+    return 0;
+  }
 }
 
 module.exports = {
-    timetravel: false,
-    base: {
-        tvl,
-    }
-}
+  timetravel: false,
+  base: {
+    fetch: getTvl
+  },
+  fetch: getTvl
+};
