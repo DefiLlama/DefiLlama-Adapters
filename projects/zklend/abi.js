@@ -50,29 +50,7 @@ const staking = [
 const stakingAbi = {}
 staking.forEach(i => stakingAbi[i.name] = i)
 
-const erc20 = [{
-  "name": "balanceOf",
-  "type": "function",
-  "inputs": [
-    {
-      "name": "account",
-      "type": "felt"
-    }
-  ],
-  "outputs": [
-    {
-      "name": "balance",
-      "type": "Uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "customInput": 'address',
-}]
-const erc20Abi = {}
-erc20.forEach(i => erc20Abi[i.name] = i)
-
 module.exports = {
   marketAbi,
   stakingAbi,
-  erc20Abi
 }
