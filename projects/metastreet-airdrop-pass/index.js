@@ -1,19 +1,17 @@
-const { getLogs2, getAddress } = require('../helper/cache/getLogs')
 async function tvl(api) {
-  const logs = await getLogs2({
-    api,
-    factory:'0xA8a7e295c19b7D9239A992B8D9C053917b8841C6',
-    fromBlock: 20518021,
-    topics: ['0x15fc3a903a61f172517fb952e6bd117215850f3dbfb9de008591509754dabf59']
-  })
-  const nfts = logs.map(log => getAddress(log.topics[3]))
-  return api.sumTokens({ owner: '0xc2e257476822377dfb549f001b4cb00103345e66', tokens: nfts})
+  const factory = '0xA8a7e295c19b7D9239A992B8D9C053917b8841C6'
+  const delegateV2 = '0x00000000000000447e69651d841bD8D104Bed493'
+  const delegations = await api.call({ abi: abi.getIncomingDelegations, target: delegateV2, params: factory })
+  delegations.filter(i => i.type_ === '3').forEach(i => api.add(i.contract_, 1))
 }
 
 module.exports = {
   ethereum: {
     tvl,
   },
-  methodology:
-    "TVL is calculated by summing the value of underlying NFTs of the delegation tokens owned by MetaStreet Airdrop Pass Factory."
-};
+  methodology: "TVL is calculated by summing the value of underlying NFTs of the delegation tokens owned by MetaStreet Airdrop Pass Factory."
+}
+
+const abi = {
+  "getIncomingDelegations": "function getIncomingDelegations(address to) view returns ((uint8 type_, address to, address from, bytes32 rights, address contract_, uint256 tokenId, uint256 amount)[] delegations_)",
+}
