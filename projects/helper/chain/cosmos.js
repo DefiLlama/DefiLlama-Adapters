@@ -76,7 +76,10 @@ async function query(url, block, chain) {
   return (await get(endpoint)).result;
 }
 
-async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
+async function queryV1Beta1({ chain, paginationKey, block, url, api } = {}) {
+  if (api) {
+    chain = api.chain
+  }
   const subpath = chainSubpaths[chain] || "cosmos";
   let endpoint = `${getEndpoint(chain)}/${subpath}/${url}`;
   if (block !== undefined) {
