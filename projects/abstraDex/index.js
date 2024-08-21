@@ -1,4 +1,3 @@
-
 const { getUniTVL } = require("../helper/unknownTokens");
 
 module.exports = {
@@ -16,5 +15,11 @@ module.exports = {
       useDefaultCoreAssets: true,
     }),
   },
-};
 
+  cronos_zkevm: {
+    tvl: getUniTVL({
+      factory: "0x76D1fC018676f8A973474C24F40A2e14e401b770",
+      useDefaultCoreAssets: true,
+    }),
+  },
+};
