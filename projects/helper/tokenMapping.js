@@ -54,7 +54,11 @@ const fixBalancesTokens = {
   },
   blast: {
     '0xf8a5d147a3a3416ab151758d969eff15c27ab743': { coingeckoId: "blast:0x59c159e5a4f4d1c86f7abdc94b7907b7473477f6", decimals: 0 },
-  }
+  },
+  q: {
+    [ADDRESSES.q.QUSD]: { coingeckoId: "usd-coin", decimals: 18 },
+    [ADDRESSES.q.WQ]: { coingeckoId: "q-protocol", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
