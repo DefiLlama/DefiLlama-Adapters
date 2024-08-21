@@ -16,7 +16,7 @@ const abi = {
 }
 
 
-async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
+async function borrowed(api) {
     // V3.2
     const v320USDCState = await api.call({ abi: abi.v320.getAsset, target: v320Address, params: 1})
     const v320ETHState = await api.call({ abi: abi.v320.getAsset, target: v320Address, params: 2 })

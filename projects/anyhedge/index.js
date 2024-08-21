@@ -1,27 +1,23 @@
 const axios = require("axios");
 
-
-const dayHistory = {};
-
-async function GetDailyHistory() {
+async function GetDailyHistory(day) {
   // Data & calculation method is fully reproducible, see:
   // https://gitlab.com/0353F40E/anyhedge-stats/-/blob/master/readme.md
-
-  let { data } = await axios.get('https://gitlab.com/0353F40E/anyhedge-stats/-/raw/master/stats_daily.csv');
-  data = parseCSV(data);
-
-  data.forEach((row) => {
-    if (!row.tvl) return;
-    dayHistory[row.day] = row.tvl;
-  });
+  try {
+    let { data } = await axios.get(`https://gitlab.com/0353F40E/anyhedge-stats/-/raw/master/stats_daily/${day}.csv`);
+    data = parseCSV(data);
+    return data[0].tvl;
+  } catch {
+      return null;
+  }
 }
 
 async function getTVLAnyHedge(timestamp) {
   const day = new Date(timestamp * 1000).toISOString().slice(0,10)
-  return dayHistory[day]
+  return await GetDailyHistory(day);
 }
 
-async function tvl(timestamp) {
+async function tvl({timestamp}) {
   let tvlAnyHedge, testDataSource
 
   // tvl data lags by contract duration since contracts are secret until settled
@@ -31,8 +27,6 @@ async function tvl(timestamp) {
   const lastTimestamp = Math.floor(new Date().getTime() / 1000 - 31*86400);
   if (timestamp > lastTimestamp)
     throw "Data for the date is incomplete, awaiting contract reveals."
-
-  await GetDailyHistory();
 
   tvlAnyHedge = await getTVLAnyHedge(timestamp)
   testDataSource = await getTVLAnyHedge(timestamp + 31*86400)

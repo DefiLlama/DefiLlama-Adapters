@@ -16,6 +16,6 @@ const lps = [
 const chain = 'cronos'
 module.exports = tombTvl(SHIFT, SFSHARE, rewardPool, boardroom, lps, chain, undefined, false, lps[0])
 
-module.exports[chain].tvl = async  (_, _b, { [chain]: block}) => {
-  return sumTokens2({ chain, block, owner: factory, tokens: [USDC ]})
+module.exports[chain].tvl = async  (api) => {
+  return sumTokens2({ api, owner: factory, tokens: [USDC ]})
 }

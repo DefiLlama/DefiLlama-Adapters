@@ -9,6 +9,11 @@ const ggAVAXBalancerBalanceAbi = "function balancerGgAvaxBalance() view returns 
 const yyAVAXBalancerBalanceAbi = "function balancerYyAvaxBalance() view returns (uint256)"
 const sAVAXBalancerBalanceAbi = "function balancerSAvaxBalance() view returns (uint256)"
 
+const yieldYakWombatAvaxBalanceInWombatAvaxSavaxLP = "function avaxBalanceAvaxSavaxYY() view returns (uint256)"
+const yieldYakWombatSAvaxBalanceInWombatAvaxSavaxLP = "function sAvaxBalanceAvaxSavaxYY() view returns (uint256)"
+const yieldYakWombatsAvaxBalanceInWombatAvaxGgavaxLP = "function avaxBalanceAvaxGgavaxYY() view returns (uint256)"
+const yieldYakWombatsGgavaxBalanceInWombatAvaxGgavaxLP = "function ggAvaxBalanceAvaxGgavaxYY() view returns (uint256)"
+
 const assetToAddressMappingAvalanche = require('./mappings/assetToAddressMappingAvalanche.json')
 const assetToAddressMappingArbitrum = require('./mappings/assetToAddressMappingArbitrum.json')
 
@@ -30,7 +35,7 @@ const DAI_POOL_TUP_ARBI_CONTRACT = '0xd5E8f691756c3d7b86FD8A89A06497D38D362540';
 
 const SMART_LOANS_FACTORY_TUP_ARBITRUM = '0xFf5e3dDaefF411a1dC6CcE00014e4Bca39265c20';
 
-async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
+async function tvlAvalanche(api) {
   const tokensAndOwners = [
     [assetToAddressMappingAvalanche.USDC, USDC_POOL_TUP_CONTRACT],
     [assetToAddressMappingAvalanche.USDT, USDT_POOL_TUP_CONTRACT],
@@ -76,13 +81,24 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   let yyAvaxBalancerBalances = await api.multiCall({ abi: yyAVAXBalancerBalanceAbi, calls: accounts })
   let sAvaxBalancerBalances = await api.multiCall({ abi: sAVAXBalancerBalanceAbi, calls: accounts })
 
+  let avaxYYWombatAvaxSAvaxLPBalances = await api.multiCall({ abi: yieldYakWombatAvaxBalanceInWombatAvaxSavaxLP, calls: accounts })
+  let savaxYYWombatAvaxSAvaxLPBalances = await api.multiCall({ abi: yieldYakWombatSAvaxBalanceInWombatAvaxSavaxLP, calls: accounts })
+  let avaxYYWombatAvaxGgavaxLPBalances = await api.multiCall({ abi: yieldYakWombatsAvaxBalanceInWombatAvaxGgavaxLP, calls: accounts })
+  let ggAaxYYWombatAvaxGgavaxLPBalances = await api.multiCall({ abi: yieldYakWombatsGgavaxBalanceInWombatAvaxGgavaxLP, calls: accounts })
+
   ggAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_ggAVAX_AVAX"], i, api.chain))
   yyAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_yyAVAX_AVAX"], i, api.chain))
   sAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_sAVAX_AVAX"], i, api.chain))
+
+  avaxYYWombatAvaxSAvaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_sAVAX_AVAX_LP_AVAX"], i, api.chain))
+  savaxYYWombatAvaxSAvaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_sAVAX_AVAX_LP_sAVAX"], i, api.chain))
+  avaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_AVAX"], i, api.chain))
+  ggAaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_ggAVAX"], i, api.chain))
+
   return balances;
 }
 
-async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
+async function tvlArbitrum(api) {
   const tokensAndOwners = [
     [assetToAddressMappingArbitrum.USDC, USDC_POOL_TUP_ARBI_CONTRACT],
     [assetToAddressMappingArbitrum.ETH, ETH_POOL_TUP_ARBI_CONTRACT],

@@ -12,7 +12,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { addressProvider } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = await api.call({ abi: abi.getReservesList, target: addressProvider })
       const tokenData = await api.multiCall({ abi: abi.getReserveData, target: addressProvider, calls: tokens, })
       return sumTokens2({ api, tokensAndOwners2: [tokens, tokenData.map(i => i.aTokenAddress)], })
@@ -21,7 +21,7 @@ Object.keys(config).forEach(chain => {
   }
 })
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const { addressProvider } = config[api.chain]
   const tokens = await api.call({ abi: abi.getReservesList, target: addressProvider })
   const tokenData = await api.multiCall({ abi: abi.getReserveData, target: addressProvider, calls: tokens, })

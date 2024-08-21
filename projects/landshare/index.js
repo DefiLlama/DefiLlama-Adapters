@@ -1,34 +1,13 @@
-
-const { toUSDTBalances } = require('../helper/balances');
-const { get } = require('../helper/http');
-
-const LandshareApi = "https://api.landshare.io/api/properties";
-
-async function landshareTVL() {
-  const rentals = await get(LandshareApi + "/rentals");
-  const flips = await get(LandshareApi + "/flips");
-
-  const totalRentals = rentals.reduce((acc, item) => {
-    acc = acc + item.value
-    return acc;
-  }, 0);
-
-  const totalFlips = flips.reduce((acc, item) => {
-    acc = acc + item;
-    return acc;
-  }, 0);
-
-  const total = totalRentals + totalFlips;
-
-  return toUSDTBalances(total);
-}
+const { pool2 } = require('../helper/pool2')
+const { staking } = require('../helper/staking')
+const LANDSHARE_TOKEN_CONTRACT = '0xA73164DB271931CF952cBaEfF9E8F5817b42fA5C'
+const LANDSHARE_STAKING_CONTRACT = '0x3f9458892fB114328Bc675E11e71ff10C847F93b'
+const LANDSHARE_LP_TOKEN_CONTRACT = '0x13f80c53b837622e899e1ac0021ed3d1775caefa'
 
 module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
   bsc: {
-    tvl: landshareTVL,
-  }
-};
-
-// node test.js projects/landshare/index.js
+    tvl: () => ({}),
+    staking: staking(LANDSHARE_STAKING_CONTRACT, LANDSHARE_TOKEN_CONTRACT),
+    pool2: pool2(LANDSHARE_STAKING_CONTRACT, LANDSHARE_LP_TOKEN_CONTRACT),
+  },
+}

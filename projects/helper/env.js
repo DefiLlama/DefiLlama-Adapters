@@ -4,6 +4,7 @@ const BOOL_KEYS = [
 ]
 
 const DEFAULTS = {
+  STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
@@ -11,14 +12,7 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  CORE_RPC: "https://rpc.coredao.org,https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
-  BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
-  LYRA_RPC: "https://rpc.lyra.finance",
-  BITCHAIN_RPC: "https://rpc.bitchain.biz/",
-  ALV_RPC: "https://elves-core3.alvey.io/",
-  OZONE_RPC: "https://node1.ozonechain.io",
-  XDC_RPC: "https://erpc.xinfin.network",
-  ZETA_RPC: "https://zetachain-evm.blockpi.network/v1/rpc/public"
+  CRONOS_ZKEVM_RPC_MULTICALL: '0x9b122BF7a96F24EFB7A2b5765c635909dB3458F7',
 }
 
 const ENV_KEYS = [
@@ -26,10 +20,12 @@ const ENV_KEYS = [
   ...Object.keys(DEFAULTS),
   'GETBLOCK_KEY',
   'LOFTY_API',
+  'SOLANA_RPC_CLIENT',
   'OLYMPUS_GRAPH_API_KEY',
   'SUMMER_HISTORY_ENDPOINT',
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
+  'ETHEREUM_TOKENS_ENDPOINT',
   'UNISAT_AUTH'
 ]
 
