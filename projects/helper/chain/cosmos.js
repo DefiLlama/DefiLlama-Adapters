@@ -42,7 +42,8 @@ const endPoints = {
   nolus: "https://pirin-cl.nolus.network:1317",
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
-  joltify: "https://lcd.joltify.io"
+  joltify: "https://lcd.joltify.io",
+  noble: "https://api.noble.xyz"
 };
 
 const chainSubpaths = {
