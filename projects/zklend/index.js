@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { multiCall, sumTokens } = require('../helper/chain/starknet')
-const { marketAbi } = require('./abi');
+const { multiCall, sumTokens, call } = require('../helper/chain/starknet')
+const { marketAbi, stakingAbi, erc20Abi } = require('./abi');
 
 const market = '0x4c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
 const stakingContract = '0x0212c219a68c8fe38f37951123d1ec877570dfa891de270aa4f8634c5e60bc23'
@@ -21,13 +21,28 @@ async function tvl(api) {
 }
 
 async function staking(api) {
-    return sumTokens({
-        api,
-        owner: stakingContract,
-        tokens: [
+    const [amountStakedAtStakingContract, amountStakedAtMarketContract] = await Promise.all([
+        call({
+            target: stakingContract,
+            abi: stakingAbi.get_total_staked_amount
+        }),
+        call({
+            target: ADDRESSES.starknet.ZEND,
+            abi: erc20Abi.balanceOf,
+            params: [
+                market
+            ]
+        })
+    ])
+    const totalStaked = BigInt(amountStakedAtStakingContract) + BigInt(amountStakedAtMarketContract)
+    api.addTokens(
+        [
             ADDRESSES.starknet.ZEND
+        ],
+        [
+            totalStaked
         ]
-    })
+    )
 }
 
 async function borrowed(api) {
