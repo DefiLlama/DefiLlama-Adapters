@@ -1,6 +1,8 @@
 const utils = require("../helper/utils");
 const { getApiTvl } = require("../helper/historicalApi");
 
+const AQUA_STATS_URL = "https://amm-api.aqua.network/api/external/v1/statistics/totals/?size=all"
+
 function findClosestDate(items) {
   const currentDate = new Date().getTime();
 
@@ -21,22 +23,22 @@ function findClosestDate(items) {
 }
 
 async function current() {
-  var aquaPoolsLiquidity = (
-    await utils.fetchURL("https://amm-api.aqua.network/api/external/v1/statistics/totals/")
-  ).data.items;
+  var aquaHistoricalData = (
+    await utils.fetchURL(AQUA_STATS_URL)
+  ).data;
 
-  const currentItem = findClosestDate(aquaPoolsLiquidity);
+  const currentItem = findClosestDate(aquaHistoricalData);
 
   return parseFloat(currentItem.tvl) / 10e7;
 }
 
 function tvl(time) {
   return getApiTvl(time, current, async () => {
-    var dayData = (
-        await utils.fetchURL("https://amm-api.aqua.network/api/external/v1/statistics/totals/")
-    )
+    var aquaHistoricalData = (
+      await utils.fetchURL(AQUA_STATS_URL)
+    ).data;
        
-    return dayData.items.map((item) => ({
+    return aquaHistoricalData.map((item) => ({
       date: new Date(item.date),
       totalLiquidityUSD: parseFloat(item.tvl) / 10e7,
     }));
