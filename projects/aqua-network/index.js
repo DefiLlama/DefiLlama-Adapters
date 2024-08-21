@@ -47,6 +47,6 @@ function tvl(time) {
 
 module.exports = {
   methodology:
-    'TVL counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API: "https://amm-api.aqua.network/api/external/v1/statistics/totals/".',
+    'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API: "https://amm-api.aqua.network/api/external/v1/statistics/totals/".',
   stellar: {tvl},
 };
