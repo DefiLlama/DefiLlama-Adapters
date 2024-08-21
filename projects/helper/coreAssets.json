@@ -1887,5 +1887,9 @@
   },
   "neutron": {
     "NTRN": "untrn"
+  },
+  "noble": {
+    "USDC": "uusdc",
+    "USDY": "ausdy"
   }
 }
