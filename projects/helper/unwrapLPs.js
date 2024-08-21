@@ -906,8 +906,8 @@ async function sumTokens2({
 
   if (resolveNFTs) {
     const coreNftTokens = whitelistedNFTs[api.chain] ?? []
-    const nftTokens = await Promise.all(owners.map(i => covalentGetTokens(i, api)))
-    nftTokens.forEach((tokens, i) => ownerTokens.push([[tokens, coreNftTokens].flat(), owners[i]]))
+    const nftTokens = await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false})))
+    nftTokens.forEach((nfts, i) => ownerTokens.push([[nfts, tokens, coreNftTokens].flat(), owners[i]]))
   }
 
   if (solidlyVeNfts.length) {
