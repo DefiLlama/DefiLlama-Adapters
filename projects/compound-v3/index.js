@@ -36,6 +36,7 @@ module.exports = compoundV3Exports({
     markets: [
       '0x2e44e174f7D53F0212823acC11C01A11d58c5bCB', // USDC Market
       '0x995E394b8B2437aC8Ce61Ee0bC610D617962B214', // USDT Market
+      '0xE36A30D249f7761327fd973001A32010b521b6Fd', // ETH Market
     ],
   }
 })
