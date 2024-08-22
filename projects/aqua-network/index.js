@@ -22,27 +22,28 @@ function findClosestDate(items) {
   return closestItem;
 }
 
-async function current() {
+function getCurrent(aquaHistoricalData) {
+  const currentItem = findClosestDate(aquaHistoricalData);
+  return parseFloat(currentItem.tvl) / 10e7;
+}
+
+function getDayData(aquaHistoricalData)  {
+  return aquaHistoricalData.map((item) => ({
+    date: new Date(item.date).getTime() / 1e3,
+    totalLiquidityUSD: parseFloat(item.tvl) / 10e7,
+  }));
+}
+
+async function tvl(time) {
   var aquaHistoricalData = (
     await utils.fetchURL(AQUA_STATS_URL)
   ).data;
 
-  const currentItem = findClosestDate(aquaHistoricalData);
-
-  return parseFloat(currentItem.tvl) / 10e7;
-}
-
-function tvl(time) {
-  return getApiTvl(time, current, async () => {
-    var aquaHistoricalData = (
-      await utils.fetchURL(AQUA_STATS_URL)
-    ).data;
-
-    return aquaHistoricalData.map((item) => ({
-      date: new Date(item.date),
-      totalLiquidityUSD: parseFloat(item.tvl) / 10e7,
-    }));
-  });
+  return getApiTvl(
+    time,
+    () => getCurrent(aquaHistoricalData),
+    () => getDayData(aquaHistoricalData)
+  );
 }
 
 module.exports = {
@@ -50,4 +51,5 @@ module.exports = {
   methodology:
     'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API: "https://amm-api.aqua.network/api/external/v1/statistics/totals/".',
   stellar: { tvl },
+  start: 1719792000,
 };
