@@ -15,7 +15,13 @@ async function getTokens(api, owners, isVesting) {
   let tokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false, })))).flat().filter(i => !blacklistedTokens.includes(i))
   tokens = getUniqueAddresses(tokens)
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })
-  return tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
+
+  const validTokens = tokens.map((token, index) => {
+    const symbol = symbols[index];
+    return symbol ? { token, symbol } : null;
+  }).filter(pair => pair !== null);
+
+  return validTokens.filter(token => isWhitelistedToken(token.symbol, token.token, isVesting)).map(token => token.token);
 }
 
 async function tvl(api) {

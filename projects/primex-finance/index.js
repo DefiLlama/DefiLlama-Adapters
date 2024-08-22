@@ -21,7 +21,7 @@ const config = {
       EPMX: "0xDc6D1bd104E1efa4A1bf0BBCf6E0BD093614E31A",
       OM: "0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea",
       SAND: "0xbbba073c31bf03b8acf7c28ef0738decf3695683",
-      QUICK: "0xb5c064f955d8e7f38fe0460c556a72987494ee17",
+      QUICK: ADDRESSES.polygon.QUICK,
       UNI: "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
       MANA: "0xa1c57f48f0deb89f569dfbe6e2b7f46d33606fd4",
       BAL: "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",

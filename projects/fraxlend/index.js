@@ -15,8 +15,8 @@ const registry_config = {
 
 const frax_config = {
   ethereum: ADDRESSES.ethereum.FRAX,
-  fraxtal: "0xFc00000000000000000000000000000000000001",
-  arbitrum: "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F"
+  fraxtal: ADDRESSES.fraxtal.FRAX,
+  arbitrum: ADDRESSES.arbitrum.FRAX
 }
 
 async function tvl(api) {

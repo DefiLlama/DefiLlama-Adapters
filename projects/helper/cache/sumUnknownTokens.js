@@ -365,7 +365,7 @@ async function getTokenPrices({
 async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {}, resolveLP = false, abis,
-  ownerTokens,
+  ownerTokens = [],
 }) {
   if (api) {
     chain = api.chain ?? chain
