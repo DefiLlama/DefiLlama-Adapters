@@ -131,7 +131,6 @@ async function main() {
   const projectKey = 'xrpl-dex'
   const cacheKey = 'cache'
   let { allPools, lastPoolUpdate, lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
-  lastPoolUpdate = false
   if (!lastPoolUpdate || timeNow - lastPoolUpdate > 3 * aDayInSeconds) {
     // try {
     console.time("xrpl-dex fetch pool list");
