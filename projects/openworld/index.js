@@ -1,7 +1,8 @@
-const { gmxExports } = require('../helper/gmx')
+const { openWorldExports } = require('../helper/openworld');
 
 module.exports = {
-  arbitrum: {
-    tvl: gmxExports({ vault: '0xec45801399EB38B75A3bf793051b00bb64fF3eF8', })
-  },
-}
+    arbitrum: {
+      tvl: openWorldExports
+    },
+    methodology: "Calculates the total value locked in OpenWorld on Arbitrum"
+};
