@@ -1891,5 +1891,8 @@
   "noble": {
     "USDC": "uusdc",
     "USDY": "ausdy"
+  },
+  "ripple": {
+    "XRP": "XRP"
   }
 }
