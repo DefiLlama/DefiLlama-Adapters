@@ -7,24 +7,14 @@ module.exports = {
 }
 
 async function tvl(api) {
-  let { balancers } = await cachedGraphQuery('jellyverse', 'https://graph.mainnet.jellyverse.org/subgraphs/name/jelly/verse', `{
-  balancers {
-    pools {
-      address
-      tokens {
-        symbol
-        address
-      }
-    }
+  let tokens = await cachedGraphQuery('jellyverse', 'https://graph.mainnet.jellyverse.org/subgraphs/name/jelly/verse', `query q($lastId: ID){
+  tokens (where: {id_gt: $lastId} first: 1000) {
+  id
+    address
+    pool { id }
   }
-}`)
+}`, { fetchById: true })
   const vault = "0xFB43069f6d0473B85686a85F4Ce4Fc1FD8F00875"
-  const blacklistedTokens = []
-  const tokens = balancers.map(i => {
-    blacklistedTokens.push(...i.pools.map(j => j.address))
-    return i.pools.map(j => {
-      return j.tokens.map(k => k.address)
-    }).flat()
-  }).flat()
-  return api.sumTokens({ owner: vault, tokens, blacklistedTokens, })
+  tokens = tokens.filter(t => !t.pool).map(t => t.address)
+  return api.sumTokens({ owner: vault, tokens })
 }
