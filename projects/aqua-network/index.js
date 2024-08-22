@@ -37,7 +37,7 @@ function tvl(time) {
     var aquaHistoricalData = (
       await utils.fetchURL(AQUA_STATS_URL)
     ).data;
-       
+
     return aquaHistoricalData.map((item) => ({
       date: new Date(item.date),
       totalLiquidityUSD: parseFloat(item.tvl) / 10e7,
@@ -46,7 +46,8 @@ function tvl(time) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API: "https://amm-api.aqua.network/api/external/v1/statistics/totals/".',
-  stellar: {tvl},
+  stellar: { tvl },
 };
