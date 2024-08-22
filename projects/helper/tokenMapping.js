@@ -60,7 +60,6 @@ const fixBalancesTokens = {
     [ADDRESSES.noble.USDY]: { coingeckoId: "ondo-us-dollar-yield", decimals: 18 },
   },
   q: {
-    [ADDRESSES.q.QUSD]: { coingeckoId: "usd-coin", decimals: 18 },
     [ADDRESSES.q.WQ]: { coingeckoId: "q-protocol", decimals: 18 },
   },
 }
