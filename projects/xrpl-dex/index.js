@@ -20,7 +20,7 @@ async function tvl() {
   const projectKey = 'xrpl-dex'
   const cacheKey = 'cache'
   let { lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
-  if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds) 
+  if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds || !Object.keys(tvl).length) 
     throw new Error("stale/missing tvl data");
   return tvl
 }
