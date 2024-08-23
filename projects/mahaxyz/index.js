@@ -25,7 +25,7 @@ const eth = {
 const oftAddresses = {
   scroll: '0x132ed59080de3b5063b4859108ba36734b302bac',
   arbitrum: '0xad2808bf820b9cc6b373bf52c63e501a183833dd',
-  base: '0x154f52b347d8e48b8dbd8d8325fe5bb45aadccda',
+  base: '0x69000a259d21c1824c7ffe3fd1e19a557a81d87e',
   blast: '0xeb109ba8b4565e1ebf8845da3b78aba0c634655b',
   bsc: '0x132ed59080de3b5063b4859108ba36734b302bac',
   linea: '0xdb9c83cc3e2c61217ac1763232ba508da1064ba1',
