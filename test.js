@@ -322,7 +322,6 @@ function fixBalances(balances) {
 const confidenceThreshold = 0.5
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
-
   Object.keys(balances).map(k => {
     const balance = balances[k]
     delete balances[k]
@@ -355,7 +354,6 @@ async function computeTVL(balances, timestamp) {
   const unknownTokens = {}
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
-
   const queries = buildPricesGetQueries(readKeys)
   const { errors } = await PromisePool.withConcurrency(5)
     .for(queries).process(async (query) => {
