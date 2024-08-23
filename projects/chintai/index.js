@@ -7,6 +7,15 @@ const sdk = require("@defillama/sdk");
 
 const ADDRESSES = require("../helper/coreAssets.json");
 
+
+const chintaiSymbolToCoinGeckoIds = {
+  CHEX: "chex-token",
+  BTC: "bitcoin",
+  ETH: "ethereum",
+  WETH: "weth",
+  WBTC: "wrapped-bitcoin",
+};
+
 const config = {
   ethereum: {
     addresses: {
@@ -117,6 +126,13 @@ async function chintaiTvl() {
     const balance = await toBalances(symbol, supply);
     if (balance) {
       Object.assign(balances, balance);
+    } else {
+      const coinGeckoId = chintaiSymbolToCoinGeckoIds[symbol];
+      if(!coinGeckoId) {
+        console.error("Could not find CoinGecko ID for:", symbol);
+      }else{
+        await sdk.util.sumSingleBalance(balances, coinGeckoId, supply, "");
+      }
     }
   }
 
@@ -124,7 +140,8 @@ async function chintaiTvl() {
 }
 
 module.exports = {
-  methodology: "Chintai TVL is achieved by querying the USD value of all the asset issued and staked on the Chintai platform as well as the value locked in all the CHEX token liquidity pools.",
+  methodology:
+    "Chintai TVL is achieved by querying the USD value of all the asset issued and staked on the Chintai platform as well as the value locked in all the CHEX token liquidity pools.",
   ethereum: {
     tvl: sumTokensExport({
       chain: "ethereum",
