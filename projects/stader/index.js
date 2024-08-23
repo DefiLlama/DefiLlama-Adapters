@@ -7,7 +7,7 @@ async function getData() {
   return _res;
 }
 
-async function hbarTvl(timestamp) {
+async function hbarTvl() {
   const res = await get("https://universe.staderlabs.com/common/tvl");
   return {
     "hedera-hashgraph": res.hedera.native,
@@ -21,31 +21,10 @@ async function maticTvl() {
   };
 }
 
-async function ftmTvl() {
-  const res = await getData();
-  return {
-    fantom: res.fantom.native,
-  };
-}
-
-async function terra2Tvl() {
-  const res = await getData();
-  return {
-    "terra-luna-2": res.terra.native,
-  };
-}
-
 async function bscTvl() {
   const res = await getData();
   return {
     binancecoin: res.bnb.native,
-  };
-}
-
-async function nearTvl() {
-  const res = await getData();
-  return {
-    near: res.near.native,
   };
 }
 
@@ -71,19 +50,19 @@ module.exports = {
     tvl: maticTvl
   }, */
   fantom: {
-    tvl: ftmTvl,
+    tvl: () => ({}),
   },
   terra2: {
-    tvl: terra2Tvl,
+    tvl: () => ({}),
   },
   bsc: {
     tvl: bscTvl,
   },
   near: {
-    tvl: nearTvl,
+    tvl: () => ({}),
   },
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const res = await getData();
       const nodeOperatorRegistry = "0x4f4bfa0861f62309934a5551e0b2541ee82fdcf1";
       const nodeOperatorCount = await api.call({

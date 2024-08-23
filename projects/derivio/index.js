@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 function tvl({ pool }) {
-  return async (ts, _block, _, { api }) => {
+  return async (api) => {
     const tokenAddresses = await api.call({
       target: pool,
       abi: 'function getAssetWhitelist() view returns (address[] memory)',

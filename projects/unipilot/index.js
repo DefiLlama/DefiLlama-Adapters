@@ -97,7 +97,7 @@ async function getVaultLogs(vaults, factoryType, api) {
   return vaults;
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   let vaults = {};
   if (api.chain === "dogechain") {
     const res = await cachedGraphQuery('unipilot/'+api.chain, 'https://apis.unipilot.io:5000/subgraphs/name/hamzabhatti125/stats-dogechain', `{

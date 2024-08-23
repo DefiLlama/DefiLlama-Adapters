@@ -2,8 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { default: BigNumber } = require("bignumber.js");
 const sui = require("../helper/chain/sui");
 
-async function suiTVL() {
-  const { api } = arguments[3];
+async function suiTVL(api) {
 
   //get list pool flowx
   const listPoolFlowX = (

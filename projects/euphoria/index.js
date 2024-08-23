@@ -49,7 +49,7 @@ async function tvl(time, ethBlock, {harmony: block}) {
 module.exports = {
   harmony: {
     tvl,
-    staking: staking(wagmiAddresses.staking, wagmiAddresses.wagmi, 'harmony'),
+    staking: staking(wagmiAddresses.staking, wagmiAddresses.wagmi),
   },
   methodology:
     'Counts tokens in the treasury for tvl and staked WAGMI for staking',

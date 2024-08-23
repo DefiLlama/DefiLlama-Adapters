@@ -135,8 +135,7 @@ module.exports = {
     [1632873600, "Comptroller vulnerability exploit"],
     [1592226000, "COMP distribution begins"]
   ],
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl,
     borrowed
   },

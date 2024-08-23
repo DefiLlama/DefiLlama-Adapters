@@ -1,8 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens2: sumSolana } = require("../helper/solana");
 const { staking, } = require("../helper/staking")
-const { getConnection, getTokenBalance } = require('../helper/solana')
+const { getConnection, } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -15,7 +16,6 @@ const TVL_DATA_SIZE = 8;
 const PROGRAM_ID = "5D9yi4BKrxF8h65NkVE1raCCWFKUs5ngub2ECxhvfaZe";
 
 let _tvl
-const usdc = ADDRESSES.solana.USDC
 
 function getTvl(borrowed = false) {
   return async () => {
@@ -42,10 +42,13 @@ async function getSolanaTVL() {
   for (const account of accounts) {
     const data = account.account.data.slice(TVL_OFFSET, TVL_OFFSET + TVL_DATA_SIZE)
     const poolTvl = Number(data.readBigUint64LE())
-    const loanBalance = await getTokenBalance(usdc, account.pubkey.toString())
-    tvlValue += loanBalance * 1e6
-    borrowed += poolTvl - loanBalance * 1e6
+    borrowed += poolTvl
   }
+  const usdc = ADDRESSES.solana.USDC
+  const tempBalances = await sumSolana({ owners: accounts.map(a => a.pubkey.toString()), tokens: [ADDRESSES.solana.USDC] })
+  const usdValue = +(tempBalances['solana:'+usdc] ?? 0)
+  tvlValue += usdValue
+  borrowed -= usdValue
   if (borrowed < 0) borrowed = 0
 
   return {
@@ -91,7 +94,8 @@ async function getPoolInfo(block, api) {
   }
 }
 
-async function ethTvl2(_, block, _1, { api }) {
+async function ethTvl2(api) {
+  const block = api.block
   const { managers, assets, } = await getPoolInfo(block, api)
   const pools = await api.multiCall({
     abi: abis.pool,
@@ -101,9 +105,9 @@ async function ethTvl2(_, block, _1, { api }) {
   return sumTokens2({ block, tokensAndOwners: pools.map((o, i) => ([assets[i], o])) })
 }
 
-async function borrowed2(_, block, _1, { api }) {
+async function borrowed2(api) {
   const balances = {}
-  const { proxies, assets, } = await getPoolInfo(block, api)
+  const { proxies, assets, } = await getPoolInfo(api.block, api)
   const principalOut = await api.multiCall({
     abi: abis.principalOut,
     calls: proxies,

@@ -15,7 +15,7 @@ Object.keys(config).forEach(chain => {
   const { staking} = config[chain]
   module.exports[chain] = {
     tvl: () => ({}),
-    staking: async (_, _b, _cb, { api, }) => {
+    staking: async (api) => {
       const stakingToken = await api.call({  abi: 'address:stakingToken', target: staking})
       return api.sumTokens({ owner: staking, tokens: [stakingToken]})
     }
