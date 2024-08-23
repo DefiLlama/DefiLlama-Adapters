@@ -18,6 +18,19 @@ const innovativeMarket = {
 	merlin: aaveExports('', '0x91b212e9FaF20117Eae59d6289CB38749DDFc070', undefined, ['0x883cb2E2d9c5D4D9aF5b0d37fc39Fa2284405682'], { v3: true }),
 	btr:  aaveExports('', '0x90EA8C92AddE4D3f323Dad9E36f0E0395dbc929d', undefined, ['0x4c25c261Fe47bC216113D140BaF72B05E151bcE4'], { v3: true }),
 }
+const pumpBTCMarkets = {
+	// Ethereum - Pump BTC
+	ethereum: aaveExports('', '0xE00A3FE97714765A1a2054E850724Fd1320FaCc0', undefined, ['0x2eE0438BCC1876cEA2c6fc43dD21417cF3D1c2eF'], { v3: true }),
+	// BSC - PumpBTC
+	bsc: aaveExports('', '0xb1C93Ba1286b6CCA1496C266f0eBfCe94b0C0cc0', undefined, ['0x58c937fa2D147117dB43d187f9411151edfFf03c'], { v3: true }),
+}
 
-module.exports = mergeExports(mainMarket, innovativeMarket)
+const otherProtocolTokenMarkets = {
+	// ETH - Swell BTC
+	ethereum: aaveExports('', '0x3975BE5E668b189b8Ac9049B96A9D9561c4F5273', undefined, ['0x87Ed94868f6fbaA834Db81a1C5854c445caCaB67'], { v3: true }),
+	// Merlin - UniBTC
+	merlin: aaveExports('', '0x0024818043D04B1Cc9685233D47eF7eea6Df0A5E', undefined, ['0x623700Fee1dF64088f258e2c4DAB4D6aEac4dDA6'], { v3: true }),
+}
+
+module.exports = mergeExports(mainMarket, innovativeMarket,pumpBTCMarkets,otherProtocolTokenMarkets)
 module.exports.methodology = methodologies.lendingMarket
