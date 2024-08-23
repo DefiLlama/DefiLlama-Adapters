@@ -1,3 +1,4 @@
 module.exports = {
-  fetch: () => 0
+  tvl: async () => {
+    return 0;
 }
