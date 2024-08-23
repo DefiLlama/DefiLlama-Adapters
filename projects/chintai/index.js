@@ -7,7 +7,6 @@ const sdk = require("@defillama/sdk");
 
 const ADDRESSES = require("../helper/coreAssets.json");
 
-
 const chintaiSymbolToCoinGeckoIds = {
   CHEX: "chex-token",
   BTC: "bitcoin",
@@ -128,11 +127,11 @@ async function chintaiTvl() {
       Object.assign(balances, balance);
     } else {
       const coinGeckoId = chintaiSymbolToCoinGeckoIds[symbol];
-      if(!coinGeckoId) {
+      if (!coinGeckoId) {
         console.error("Could not find CoinGecko ID for:", symbol);
-      }else{
-        await sdk.util.sumSingleBalance(balances, coinGeckoId, supply, "");
+        continue;
       }
+      await sdk.util.sumSingleBalance(balances, coinGeckoId, supply, "");
     }
   }
 
