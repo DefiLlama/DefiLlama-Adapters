@@ -107,6 +107,7 @@ function impermaxHelper(exportsObj, config, blacklistedPools) {
       case 'scroll':
       case 'base':
       case 'mantle':
+      case 'optimism':
       default:
         impermaxSymbol = 'STKD-UNI-V2'
         return underlyings.filter((_, i) => uSymbols[i] === impermaxSymbol)
