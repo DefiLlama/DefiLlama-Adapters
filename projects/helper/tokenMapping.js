@@ -1,3 +1,4 @@
+const { decimals } = require('@defillama/sdk/build/erc20')
 let coreAssets = require('./coreAssets.json')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
@@ -16,8 +17,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
+
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', ]
 
 const transformTokens = {
   // Sample Code
@@ -34,67 +36,37 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  zklink: {
-    [ADDRESSES.zklink.WETH]: { coingeckoId: "ethereum", decimals: 18 },
-  },
-  stacks: {
-    'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token::wstx': { coingeckoId: "blockstack", decimals: 6 },
-    'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.wstx': { coingeckoId: "blockstack", decimals: 6 },
-    'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-abtc': { coingeckoId: "bitcoin", decimals: 8 },
-  },
-  waves: {
-    'WAVES': { coingeckoId: 'waves', decimals: 8 },
-    'YiNbofFzC17jEHHCMwrRcpy9MrrjabMMLZxg8g5xmf7': { coingeckoId: 'waves', decimals: 8 },
-    '3VuV5WTmDz47Dmdn3QpcYjzbSdipjQE4JMdNe1xZpX13': { coingeckoId: 'ethereum', decimals: 8 },
-    '2Fge5HEBRD3XTeg7Xg3FW5yiB9HVJFQtMXiWMQo72Up6': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-    '66a1br3BrkoaJgP7yEar9hJcSTvJPoH6PYBLqscXcMGo': { coingeckoId: 'binancecoin', decimals: 8 },
-    'QGDb5VHmjUMfHPAvRJ4g36nmU5qYByYyYzReJN71nad': { coingeckoId: 'chainlink', decimals: 8 },
-    '2x8CpnEDNw2nsuyvEptEmEbVrkxh9regRDNrqTWThJTZ': { coingeckoId: 'maker', decimals: 8 },
-    '78ePJGDo2H6cZUDYsAMzqxe2iSRNgz4QBnYYg58ZxdgH': { coingeckoId: 'uniswap', decimals: 8 },
-    'AhGJvjtYmRG2pKwXvTh8N6sX1M2wNTpkjxaWKQfzJe7q': { coingeckoId: 'matic-network', decimals: 8 },
-    'EW1uGLVo21Wd9i2Rhq8o4VKDTCQTGCGXE8DqayHGrLg8': { coingeckoId: 'binance-bitcoin', decimals: 8 },
-    'FmsB2B21fVVetWvZm7Q48cC2Bvs2hEZtft49TBn3guV1': { coingeckoId: 'curve-dao-token', decimals: 8 },
-    '5Ga8eJdR5PoBWLC2xaq6F6PAGCM5hWVNhuyycgsNn4jR': { coingeckoId: 'crvusd', decimals: 6 },
-    'Fwvk46RZ4iBg4L9GzwjQ7jwVsEScn4aPD32V6wftTLHQ': { coingeckoId: 'tron', decimals: 6 },
-
-    'C1iWsKGqLwjHUndiQ7iXpdmPum9PeCDFfyXBdJJosDRS': { coingeckoId: 'waves-ducks', decimals: 8 },
-    'GAzAEjApmjMYZKPzri2g2VUXNvTiQGF7KDYZFFsP3AEq': { coingeckoId: 'pete', decimals: 8 },
-    '2thsACuHmzDMuNezPM32wg9a3BwUzBWDeSKakgz3cw21': { coingeckoId: 'power-token', decimals: 8 },
-    'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { coingeckoId: 'puzzle-swap', decimals: 8 },
-  },
-  zora: {
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
-  },
-  imx: {
-    [nullAddress]: { coingeckoId: 'immutable-x', decimals: 18 },
-    '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D': { coingeckoId: 'immutable-x', decimals: 18 },
-    '0x52a6c53869ce09a731cd772f245b97a4401d3348': { coingeckoId: 'ethereum', decimals: 18 },
-    '0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2': { coingeckoId: 'usd-coin', decimals: 6 },
-  },
-  merlin: {
-    '0xB880fd278198bd590252621d4CD071b1842E9Bcd': { coingeckoId: 'bitcoin', decimals: 18 },
-  },
-  rss3_vsl: {
-    '0xe27d019909738d98ab7f850c05ee07806c30c71d': { coingeckoId: 'rss3', decimals: 18 },
-  },
-  core: {
-    '0x191e94fa59739e188dce837f7f6978d84727ad01': { coingeckoId: 'coredaoorg', decimals: 18 },
-  },
-  sapphire: {
-    [nullAddress]: { coingeckoId: 'oasis-network', decimals: 18 },
-    '0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019': { coingeckoId: 'oasis-network', decimals: 18 },
-    '0x6665a6Cae3F52959f0f653E3D04270D54e6f13d8': { coingeckoId: 'rosy', decimals: 18 },
-    '0x9ca066f00e55b90623efe323feb2a649686538b6': { coingeckoId: 'tether', decimals: 6 },
-  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  }
+  },
+  islm: {
+    '0x0ce35b0d42608ca54eb7bcc8044f7087c18e7717': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
+  cronos_zkevm: {
+    '0xc1bf55ee54e16229d9b369a5502bfe5fc9f20b6d': { coingeckoId: 'crypto-com-chain', decimals: 18 },
+  },
+  lac: {
+    [ADDRESSES.null]: { coingeckoId: "la-coin", decimals: 18 },
+    '0x2911a1AB18546cb501628Be8625C7503a2A7DB54': { coingeckoId: "la-coin", decimals: 18 },
+    '0x42c8c9c0f0a98720dacdaeac0c319cb272b00d7e': { coingeckoId: "ethereum", decimals: 18 },
+    '0xf54b8cb8eeee3823a55dddf5540ceaddf9724626': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+  },
+  blast: {
+    '0xf8a5d147a3a3416ab151758d969eff15c27ab743': { coingeckoId: "blast:0x59c159e5a4f4d1c86f7abdc94b7907b7473477f6", decimals: 0 },
+  },
+  noble: {
+    [ADDRESSES.noble.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.noble.USDY]: { coingeckoId: "ondo-us-dollar-yield", decimals: 18 },
+  },
+  q: {
+    [ADDRESSES.q.WQ]: { coingeckoId: "q-protocol", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
-function getUniqueAddresses(addresses, chain) {
+function getUniqueAddresses(addresses, chain = 'ethereum') {
   const toLowerCase = !caseSensitiveChains.includes(chain)
   const set = new Set()
   addresses.forEach(i => set.add(toLowerCase ? i.toLowerCase() : i))
@@ -131,6 +103,7 @@ function getCoreAssets(chain = 'ethereum') {
 
 function normalizeAddress(address, chain, extractChain = false) {
   if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
+  if (chain === 'sei' && address?.startsWith('0x')) return address.toLowerCase()
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }

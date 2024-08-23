@@ -1,17 +1,14 @@
-const { staking, stakings } = require("../helper/staking");
-const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
   methodology: "Total USDC locked in the Vest Exchange.",
   start: 1710709200,
   era: {
-    tvl: stakings(
-      [
+    tvl: staking([
         "0xf7483A1464DeF6b8d5A6Caca4A8ce7E5be8F1F68",
         "0x7ccF5BbeC69c790D27dA3b5398B9e0d6D6EeC9F3",
-      ],
-      ADDRESSES.era.USDC
-    ),
+      ], ADDRESSES.era.USDC),
   },
   base: {
     tvl: staking(
@@ -43,4 +40,4 @@ module.exports = {
       ADDRESSES.arbitrum.USDC_CIRCLE
     ),
   },
-};
+}

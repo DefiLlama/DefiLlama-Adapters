@@ -31,6 +31,10 @@ const poolHelpers = {
   'blast': ['0x5e7902aDf0Ea0ff827683Cc1d431F740CAD0731b'],
   'zklink': ['0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F'],
   'mode': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'xlayer': ['0xF42C48f971bDaA130573039B6c940212EeAb8496'],
+  'bob': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'taiko': ['0x33531bDBFE34fa6Fd5963D0423f7699775AacaaF'],
+  'core': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
@@ -38,9 +42,13 @@ const blacklistedTokens = [
   '0x1382628e018010035999A1FF330447a0751aa84f',
   ADDRESSES.bsc.iUSD, // mantle iUSD
   '0x078f712f038A95BeEA94F036cADB49188a90604b', // manta iUSD
-  '0x0A3BB08b3a15A19b4De82F8AcFc862606FB69A2D', // merlin iUSD
+  ADDRESSES.bsc.iUSD, // merlin iUSD
 ]
 
 Object.keys(poolHelpers).forEach(chain => {
   module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens }), }
 })
+
+module.exports.hallmarks = [
+  [1715648400,"End Mode TVL Campaign S1"]
+]

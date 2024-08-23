@@ -53,11 +53,14 @@ async function tvl(api) {
 }
 
 async function addEquityValuationToBalances(address, api) {
-  var usdc_balance = await api.call({
+  var [usdc_balance] = await api.multiCall({
     target: address,
     abi: "function getEquityValuation(bool startIndex_, bool endIndex_) view returns (uint256)",
-    params: [true, false],
+    calls: [{ params: [true, false] }],
+    permitFailure: true,
   })
+  if (!usdc_balance)
+    return
   api.add(USDC_TOKEN_CONTRACT, usdc_balance)
 }
 
