@@ -22,12 +22,34 @@ const eth = {
   zaiUsdcCurveStaking: "0x154F52B347D8E48b8DbD8D8325Fe5bb45AAdCCDa",
 };
 
+const oftAddresses = {
+  scroll: '0x132ed59080de3b5063b4859108ba36734b302bac',
+  arbitrum: '0xad2808bf820b9cc6b373bf52c63e501a183833dd',
+  base: '0x154f52b347d8e48b8dbd8d8325fe5bb45aadccda',
+  blast: '0xeb109ba8b4565e1ebf8845da3b78aba0c634655b',
+  bsc: '0x132ed59080de3b5063b4859108ba36734b302bac',
+  linea: '0xdb9c83cc3e2c61217ac1763232ba508da1064ba1',
+  optimism: '0x132ed59080de3b5063b4859108ba36734b302bac',
+  xlayer: '0xd077abe1663166c0920d41fd37ea2d9a00fabd40',
+}
+
+function l2Tvl(chain) {
+  return async function (api) {
+    console.log('hit', chain)
+    return {
+      [eth.zai]: await api.call({ target: oftAddresses[chain], abi: "erc20:totalSupply" })
+    }
+  }
+}
+
+
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
 const collaterals = [eth.usdc, eth.usdt, eth.dai];
 const pegStabilityModules = [eth.psmUSDC]
 
-module.exports = {
+const data = {
+  doublecounted: true,
   ethereum: {
     pool2: sumTokensExport({
       tokensAndOwners: [
@@ -38,3 +60,9 @@ module.exports = {
     tvl: sumTokensExport({ owners: pegStabilityModules, tokens: collaterals }),
   }
 };
+
+Object.keys(oftAddresses).forEach(chain => {
+  data[chain] = { tvl: l2Tvl(chain) }
+})
+
+module.exports = data
