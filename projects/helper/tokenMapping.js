@@ -62,6 +62,9 @@ const fixBalancesTokens = {
   q: {
     [ADDRESSES.q.WQ]: { coingeckoId: "q-protocol", decimals: 18 },
   },
+  taiko: {
+    '0x7d02A3E0180451B17e5D7f29eF78d06F8117106C': { coingeckoId: "dai", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
