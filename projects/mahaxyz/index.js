@@ -35,7 +35,6 @@ const oftAddresses = {
 
 function l2Tvl(chain) {
   return async function (api) {
-    console.log('hit', chain)
     return {
       [eth.zai]: await api.call({ target: oftAddresses[chain], abi: "erc20:totalSupply" })
     }
@@ -48,7 +47,7 @@ Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 const collaterals = [eth.usdc, eth.usdt, eth.dai];
 const pegStabilityModules = [eth.psmUSDC]
 
-const data = {
+module.exports = {
   doublecounted: true,
   ethereum: {
     pool2: sumTokensExport({
@@ -62,7 +61,5 @@ const data = {
 };
 
 Object.keys(oftAddresses).forEach(chain => {
-  data[chain] = { tvl: l2Tvl(chain) }
+  module.exports[chain] = { tvl: l2Tvl(chain) }
 })
-
-module.exports = data
