@@ -79,11 +79,11 @@ const config = {
       { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
-  europa: {
+  /* europa: {
     vaultConfigs: [
       { factory: '0x1B0ef045830466171D617dD0F1142aD699A4Cd63', fromBlock: 5607229, isAlgebra: false, }, // Sushi
     ]
-  },
+  }, */
   evmos: {
     vaultConfigs: [
       { factory: '0x7c6389714719c68caac8ae06bae6e878b3605f6d', fromBlock: 19029984, isAlgebra: false, }, // Forge
@@ -100,11 +100,11 @@ const config = {
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 30026180, isAlgebra: false, }, // Voltage
     ]
   },
-  hedera: {
+  /* hedera: {
     vaultConfigs: [
       { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
     ]
-  },
+  }, */
   kava: {
     vaultConfigs: [
       { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
@@ -200,8 +200,9 @@ Object.keys(config).forEach(chain => {
           onlyArgs: true,
           fromBlock,
         })
-        const vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls: logs.map(l => l.ichiVault) })
+        const vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls: logs.map(l => l.ichiVault), permitFailure: true })
         vaultBalances.forEach((b, i) => {
+          if (!b) return
           const { tokenA, tokenB } = logs[i]
           if (!blacklistedTokens.includes(tokenA.toLowerCase())) api.add(tokenA, b.total0)
           if (!blacklistedTokens.includes(tokenB.toLowerCase())) api.add(tokenB, b.total1)
