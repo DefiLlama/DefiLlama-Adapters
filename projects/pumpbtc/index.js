@@ -1,12 +1,12 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress } = require('../helper/unwrapLPs')
 
 module.exports = {
-  methodology: 'TVL for pumpBTC is calculated based on the total value of WBTC, FBTC, BTCB held in the contract that were utilized in the minting process of pumpBTC.',
+  methodology: 'TVL for pumpBTC is calculated based on the total amount of pumpBTC.',
 }
 const config = {
-  ethereum: { owners: ['0x1fCca65fb6Ae3b2758b9b2B394CB227eAE404e1E', '0x3d9bCcA8Bc7D438a4c5171435f41a0AF5d5E6083'], tokens: ['0xC96dE26018A54D51c097160568752c4E3BD6C364', ADDRESSES.ethereum.WBTC], },
-  bsc: { owners: ['0x2Ee808F769AB697C477E0aF8357315069b66bCBb'], tokens: [ADDRESSES.bsc.BTCB], },
-  mantle: { owners: ['0xd6Ab15B2458B6EC3E94cE210174d860FdBdd6b96'], tokens: ['0xC96dE26018A54D51c097160568752c4E3BD6C364'], },
+  ethereum: { owners: [nullAddress], tokens: ['0xf469fbd2abcd6b9de8e169d128226c0fc90a012e'], },
+  bsc: { owners: [nullAddress], tokens: ['0xf9C4FF105803A77eCB5DAE300871Ad76c2794fa4'], },
+  mantle: { owners: [nullAddress], tokens: ['0xC75D7767F2EdFbc6a5b18Fc1fA5d51ffB57c2B37'], },
 }
 
 Object.keys(config).forEach(chain => {
