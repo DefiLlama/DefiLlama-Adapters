@@ -4,7 +4,7 @@ const axios = require('axios');
 
 
 async function fetchWalletAddresses() {
-  const response = await axios.get('https://corsproxy.io/?https://api.threshold.network/tbtc/wallets/pof');
+  const response = await axios.get('https://api.threshold.network/tbtc/wallets/pof');
   const owners = response.data.wallets.map(wallet => wallet.walletBitcoinAddress);
   return owners;
 }
