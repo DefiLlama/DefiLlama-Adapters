@@ -6,7 +6,7 @@ const BITMAP_TOKEN = '0x7b0400231Cddf8a7ACa78D8c0483890cd0c6fFD6'
 
 module.exports = {
   merlin: {
-    tvl: staking([STAKE_BITMAP_TOKEN_CONTRACT, STAKE_MERL_CONTRACT,], [BITMAP_TOKEN, MERL_TOKEN,]),
-    staking: () => ({}),
+    tvl: staking([STAKE_BITMAP_TOKEN_CONTRACT, STAKE_MERL_CONTRACT,], MERL_TOKEN),
+    staking: staking([STAKE_BITMAP_TOKEN_CONTRACT, STAKE_MERL_CONTRACT,], BITMAP_TOKEN,),
   }
 }
