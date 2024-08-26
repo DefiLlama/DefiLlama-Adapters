@@ -35,6 +35,6 @@ module.exports = {
   start: 1719792000,
   misrepresentedTokens: true,
   methodology:
-    'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API: "https://amm-api.aqua.network/api/external/v1/statistics/totals/".',
+    'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API.',
   stellar: { tvl },
 };
