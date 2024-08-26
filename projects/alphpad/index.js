@@ -7,10 +7,6 @@ const Addresses = {
   vault: 'yzoCumd4Fpi959NSis9Nnyr28UkgyRYqrKBgYNAuYj3m'
 }
 
-const TokenIds = {
-  apad: alephium.contractIdFromAddress(Addresses.apad),
-}
-
 async function apadLocked() {
   const results = await alephium.contractMultiCall([
     { group: 0, address: Addresses.vault, methodIndex: 34 },
@@ -18,22 +14,22 @@ async function apadLocked() {
     { group: 0, address: Addresses.alphUsdtPool, methodIndex: 8 },
   ]);
   const apadLocked = results[0].returns[0].value;
-  const apadInAlph = results[1].returns[0].value/results[1].returns[1].value;
-  const alphInUsd = (results[2].returns[1].value * 10**12)/results[2].returns[0].value;
-  return ((apadLocked/10**18) * apadInAlph) * alphInUsd;
+  const apadInAlph = results[1].returns[0].value / results[1].returns[1].value;
+  const alphInUsd = (results[2].returns[1].value * 10 ** 12) / results[2].returns[0].value;
+  return ((apadLocked / 10 ** 18) * apadInAlph) * alphInUsd;
 }
 
-async function staking() {
+async function staking(api) {
   const apadLockedValue = await apadLocked();
-  return {
-    apad: apadLockedValue,
-  }
+  api.addCGToken('tether', apadLockedValue)
 }
 
-async function tvl() { return {}; }
 
 module.exports = {
   timetravel: false,
   methodology: 'TVL locked in the APAD on Alephium',
-  alephium: { tvl, staking }
+  alephium: {
+    tvl: () => ({}),
+    staking
+  }
 }
