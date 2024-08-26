@@ -30,8 +30,10 @@ async function staking() {
   }
 }
 
+async function tvl() { return {}; }
+
 module.exports = {
   timetravel: false,
   methodology: 'TVL locked in the APAD on Alephium',
-  alephium: { staking }
+  alephium: { tvl, staking }
 }
