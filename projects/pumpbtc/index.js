@@ -14,8 +14,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const supply = await api.call({  abi: 'erc20:totalSupply', target: token })
-      //console.log('>>s', tokens[0], supply)
-      //return supply
+      //console.log('>>s', token, supply)
       api.add(token, supply)
     }
   }
