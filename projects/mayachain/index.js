@@ -10,7 +10,7 @@ const chainMapping = {
   THOR: "thorchain",
   DASH: "dash",
   ARB: "arbitrum",
-  XRD: "radix",
+  XRD: "radixdlt",
 };
 
 const tokenGeckoMapping = {
