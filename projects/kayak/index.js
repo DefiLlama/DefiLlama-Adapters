@@ -1,9 +1,13 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
+const { uniV3Export } = require('../helper/uniswapV3')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
-  avax: { factory: '0x4df3038C2C7e13F46F0d63eC3AF5728F75Be3775', fromBlock: 46950081, }
+  avax: { factory: '0x4df3038C2C7e13F46F0d63eC3AF5728F75Be3775', fromBlock: 46950081, },
 }
+module.exports = uniV3Export({
+  scroll: { factory: '0x359d8BC3c4C70b8b73cf911aA5EfEC004146b663', fromBlock: 8564317, },
+})
 
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
