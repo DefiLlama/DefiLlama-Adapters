@@ -106,7 +106,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
         id: 42
       }
     };
-    const tokens = {}
+    const tokens = cache.tokens ?? {}
     const { data: { result: { assets } } } = await axios.request(options)
     const tokenCache = { timestamp: timeNow, tokens, }
     for (const asset of assets) {
