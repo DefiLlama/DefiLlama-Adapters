@@ -28,7 +28,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: `Counts the TVL of MATIC tokens in TruFin's TruStake vault.`,
+  methodology: `Counts the TVL of native tokens across all TruStake vaults.`,
   ethereum: {
     tvl
   },
