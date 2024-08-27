@@ -13,7 +13,6 @@ module.exports = {
       const { data: { supply } } = await aQuery(`/v1/accounts/${LSD_ACCOUNT}/resource/0x1::coin::CoinInfo%3C${LSD_ACCOUNT}::staking::ThalaAPT%3E`);
       const [active, inactive, pending_active, pending_inactive] = await function_view({
         functionStr: `0x1::delegation_pool::get_delegation_pool_stake`,
-        type_arguments: [],
         args: [THALA_VALIDATOR]
       });
       const validator_apt = Number(active) + Number(inactive) + Number(pending_active) + Number(pending_inactive);

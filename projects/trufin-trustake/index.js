@@ -7,7 +7,7 @@ const FUNCTION = "total_staked"
 
 async function aptosTvl(api) {
   const totalStaked = await function_view({ functionStr: `${TRUSTAKE_APT_CONTRACT_ADDR}::${MODULE}::${FUNCTION}` })
-  api.add(ADDRESSES.aptos.APT, totalStaked[0])
+  api.add(ADDRESSES.aptos.APT, totalStaked)
 }
 
 const abi = {
