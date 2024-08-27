@@ -1,27 +1,21 @@
-const { graphQuery } = require("../helper/http");
-const { toUSDTBalances } = require('../helper/balances');
+const { gmxExportsV2 } = require('../helper/gmx')
+const {uniTvlExport} = require('../helper/calculateUniTvl.js')
+const { mergeExports } = require('../helper/utils')
 
-const api = "https://api.goldsky.com/api/public/project_clyqktolulxs201q46av1eils/subgraphs/modemax-synthetics-stats/v0.0.1/gn";
+const swap = uniTvlExport('0x423A079C43e4eD7ca561Ef04765eDB796F0Ec6c6', 'mode', true)
+const perp = gmxExportsV2({ eventEmitter: '0xd63352120c45378682d705f42a9F085E79E3c888', fromBlock: 25655, })
 
-const query = /* GraphQL */ `
-  query volumeInfo {
-    volumeInfos(where: { period: "total" }) {
-      volumeUsd
-    }
-  }
-`;
-function formatUnits(value, decimals) {
-  const factor = Math.pow(10, decimals);
-  return (value / factor).toFixed(decimals); 
-}
-async function getTvl() {
-  const results = await graphQuery(api, query);
-  const tvl = results.volumeInfos[0].volumeUsd;
-  return toUSDTBalances(formatUnits(tvl, 30));
-}
+console.log(perp, swap)
 
-module.exports = {
+const swapTvl = {
   mode: {
-    tvl: getTvl
+    tvl: swap,
   }
 }
+const perpTvl = {
+  mode: {
+    tvl: perp,
+  }
+}
+
+module.exports = mergeExports(swapTvl, perpTvl)
