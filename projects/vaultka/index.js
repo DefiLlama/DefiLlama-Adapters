@@ -38,6 +38,7 @@ module.exports = {
       return sumTokens2({
         owner: lendingSol,
         tokensAndOwners: [
+          [jupSol, jupSolProgram],
           [jitoSol, jitoSolProgram],
           [jlp, strategyJlp],
           [usdc, lendingUsdc],
