@@ -32,6 +32,12 @@ const config = {
   noble: {
     USDY: "ausdy",
   },
+  arbitrum: {
+    USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
+  },
+  xlayer: {
+    USDY: "0x5903E2Be82832c42a868A4748B64b5c401DE91Eb",
+  },
 };
 
 async function getUSDYTotalSupplySUI() {
@@ -79,6 +85,7 @@ Object.keys(config).forEach((chain) => {
           abi: "erc20:totalSupply",
           calls: fundAddresses,
         });
+
         if (chain === "ethereum") {
           const usdycIndex = fundAddresses.indexOf(config.ethereum.USDYc);
           const usdyIndex = fundAddresses.indexOf(config.ethereum.USDY);
@@ -87,8 +94,13 @@ Object.keys(config).forEach((chain) => {
             parseInt(supplies[usdyIndex]) + parseInt(supplies[usdycIndex]);
           fundAddresses.splice(usdycIndex, 1);
           supplies.splice(usdycIndex, 1);
+          api.addTokens(fundAddresses, supplies);
+        } else if (chain === "arbitrum" || chain === "xlayer") {
+          // Use ethereum price
+          api.addTokens(config.ethereum.USDY, supplies[0], { skipChain: true, });
+        } else {
+          api.addTokens(fundAddresses, supplies);
         }
-        api.addTokens(fundAddresses, supplies);
       }
       return api.getBalances();
     },
