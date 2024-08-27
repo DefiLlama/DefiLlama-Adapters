@@ -24,7 +24,7 @@ const queryAdaLoans = `query($input: LoansInput){
         pagesCount
         results {
           collaterals {
-            amount
+            qTokenAmount
             market {
               id
             }
@@ -49,9 +49,11 @@ const query = `query($input: MarketsInput)  {
             qTokenName
             qTokenCurrencySymbol
             currencySymbol
+            name
             decimals
           }
           supply
+          liquidity
           borrow
           utilization
         }
@@ -68,7 +70,7 @@ const tokenMapping = {
 };
 const getToken = (market) =>
   tokenMapping[market.asset.symbol] ??
-  market.asset.currencySymbol + toHex(market.asset.symbol);
+  market.asset.currencySymbol + toHex(market.asset.name);
 
 const getOptimBondTVL = async () => {
   const getLoans = async (pageIndex = 0, collectedLoans = []) => {
@@ -100,7 +102,7 @@ const getOptimBondTVL = async () => {
   const bonds = relevantLoans
     .flatMap((l) => l.collaterals)
     .filter((c) => c.market.id === "OptimBond1")
-    .reduce((acc, collateral) => acc + collateral.amount, 0);
+    .reduce((acc, collateral) => acc + collateral.qTokenAmount, 0);
   return bonds;
 };
 
@@ -127,12 +129,16 @@ async function tvl(api) {
   };
 
   const markets = await getMarkets();
-  markets.forEach((market) => add(api, market, market.supply));
+  markets.forEach((market) =>
+    add(api, market, market.liquidity * 10 ** market.asset.decimals),
+  );
   add(api, "OptimBond1", await getOptimBondTVL());
 }
 
 function add(api, market, bal) {
   const token = market === "OptimBond1" ? "OptimBond1" : getToken(market);
+  if (["usd-coin", "tether"].includes(token)) bal /= 1e8;
+  if (["dai"].includes(token)) bal /= 1e6;
   api.add(token, bal, {
     skipChain: ["usd-coin", "tether", "dai"].includes(token),
   });
@@ -162,7 +168,7 @@ async function borrowed(api) {
 
   const markets = await getMarkets();
   markets.forEach((market) => {
-    add(api, market, market.borrow);
+    add(api, market, market.borrow * 10 ** market.asset.decimals);
   });
 }
 
