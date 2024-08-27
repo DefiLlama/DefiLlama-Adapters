@@ -30,11 +30,18 @@ module.exports = {
       const jupSolProgram = "6j6Fwxf7UzfaXqQA2QraWGEAYUYzjjZP3t6ChzjzkmL9";
       const jitoSolProgram = "6MAnq2z4ww8nnvfd8sec4sRMhTEdsdZXB1FLgqaYsg4d";
 
+      const lendingUsdc = "DefkwTSvkHeZASCuaVJ8AxUWS6zvBCwrLFpW2FniLSWo";  //change it to token account 
+      const usdc = ADDRESSES.solana.USDC;
+      const jlp = "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4"
+      const strategyJlp = "5852AnvCSV2GDzgpRVG4ZQ5cNn7abR7pPty5FaBxHLzW" 
+
       return sumTokens2({
         owner: lendingSol,
         tokensAndOwners: [
-          [jupSol, jupSolProgram],
           [jitoSol, jitoSolProgram],
+          [jlp, strategyJlp],
+          [usdc, lendingUsdc],
+        
         ],
         solOwners: [lendingSol],
       });
