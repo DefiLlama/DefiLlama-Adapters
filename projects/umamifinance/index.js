@@ -1,4 +1,3 @@
-const { stakings } = require("../helper/staking");
 const { sumERC4626VaultsExport } = require("../helper/erc4626");
 
 
