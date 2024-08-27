@@ -44,7 +44,6 @@ async function tvl(api) {
     owner: MARKET_ADDR
   });
   
-  /* console.log("balances", balances) */
   return balances
 }
 

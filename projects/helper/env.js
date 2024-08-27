@@ -12,9 +12,8 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology",
-  BOB_RPC: "https://rpc.gobob.xyz/",
-  BOB_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  CRONOS_ZKEVM_RPC_MULTICALL: '0x9b122BF7a96F24EFB7A2b5765c635909dB3458F7',
+  NEOX_RPC_MULTICALL: '0xD6010D102015fEa9cB3a9AbFBB51994c0Fd6E672',
 }
 
 const ENV_KEYS = [
@@ -22,10 +21,12 @@ const ENV_KEYS = [
   ...Object.keys(DEFAULTS),
   'GETBLOCK_KEY',
   'LOFTY_API',
+  'SOLANA_RPC_CLIENT',
   'OLYMPUS_GRAPH_API_KEY',
   'SUMMER_HISTORY_ENDPOINT',
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
+  'ETHEREUM_TOKENS_ENDPOINT',
   'UNISAT_AUTH'
 ]
 

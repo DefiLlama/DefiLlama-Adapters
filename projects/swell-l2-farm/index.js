@@ -3,6 +3,9 @@ const { nullAddress } = require("../helper/tokenMapping");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
+    hallmarks: [
+        [1714867303,"justin sun depo"]
+      ],
     ethereum: {
         tvl: sumTokensExport({
             owners: ["0x38D43a6Cb8DA0E855A42fB6b0733A0498531d774"],
@@ -26,7 +29,14 @@ module.exports = {
                 "0xC58aa33Ce619c7f7Ac4929DF357D0Ef762edbD23",
                 "0x6ee2b5E19ECBa773a352E5B21415Dc419A700d1d",
                 "0xac440d0eE23FA69632Aa731322C2a480dD1376e4",
-                "0x330c4DD05dB16db6323505262C57CFdE5f0A78Ea"
+                "0x330c4DD05dB16db6323505262C57CFdE5f0A78Ea",
+                ADDRESSES.ethereum.USDe,
+                ADDRESSES.ethereum.FRAX,
+                "0xA663B02CF0a4b149d2aD41910CB81e23e1c41c32",
+                "0x5E8422345238F34275888049021821E8E08CAa1f",
+                ADDRESSES.ethereum.sfrxETH,
+                "0x18f313Fc6Afc9b5FD6f0908c1b3D476E3feA1DD9",
+                "0xf7906F274c174A52d444175729E3fa98f9bde285"
             ]
         })
     }

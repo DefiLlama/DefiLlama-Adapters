@@ -7,4 +7,5 @@ module.exports = {
   solana: {
     tvl: () => 0
   },
+  deadFrom: 1660392000,
 };

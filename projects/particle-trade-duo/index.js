@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = {
   blast: {
     weth90d: '0xc932317385fDc794633f612874BD687eA987B151',
@@ -18,8 +20,15 @@ const wrappedToken = {
 
 const wrappedNativeTokenMap = {
   blast: {
-    '0x1Da40C742F32bBEe81694051c0eE07485fC630f6': '0x66714DB8F3397c767d0A602458B5b4E3C0FE7dd1',
-    '0x1A3D9B2fa5c6522c8c071dC07125cE55dF90b253': '0x866f2C06B83Df2ed7Ca9C2D044940E7CD55a06d6',
+    '0x1Da40C742F32bBEe81694051c0eE07485fC630f6': ADDRESSES.blast.fwWETH,
+    '0x1A3D9B2fa5c6522c8c071dC07125cE55dF90b253': ADDRESSES.blast.fwUSDB,
+  }
+}
+
+const usdeVaults = {
+  blast: {
+    vault: '0xeEa70D690C6c9c5534FcB90b6b0aE71199C7d4d3',
+    fwUSDe: '0x04efc000dC9c27445b092622f42e09E173beE61f',
   }
 }
 
@@ -40,6 +49,15 @@ Object.keys(config).forEach(chain => {
       const wrappedBalances = await api.multiCall({  abi: 'uint256:totalSupply', calls: wrappedTokens})
       const nativeTokens = wrappedTokens.map(wrappedToken => wrappedNativeTokenMap[chain][wrappedToken])
       api.add(nativeTokens, wrappedBalances);
+
+      let usdeVault = usdeVaults[chain]
+      const wrappedUSDeBalance = await api.call({
+        abi: 'erc20:balanceOf',
+        target: usdeVault.fwUSDe,
+        params: usdeVault.vault
+      });
+      api.add(ADDRESSES.arbitrum.USDe, wrappedUSDeBalance)
+      return sumTokens2({ api })
     }
   }
 })
