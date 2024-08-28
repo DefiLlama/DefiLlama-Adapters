@@ -14,10 +14,11 @@ async function tvl(api) {
   const poolSummaries = await api.multiCall({
     abi: TOROS_POOL_ABI,
     calls: pools,
+    permitFailure: true
   });
 
   const totalValue = poolSummaries.reduce(
-    (acc, i) => acc + +i.totalFundValue,
+    (acc, i) => i && acc + +i.totalFundValue,
     0
   );
 
