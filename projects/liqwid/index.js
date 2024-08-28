@@ -137,7 +137,7 @@ function add(api, market, bal) {
   if (["usd-coin", "tether",].includes(token)) bal /= 1e8
   if (["dai",].includes(token)) bal /= 1e6
   api.add(token, bal, {
-    skipChain: ['usd-coin', 'tether', 'dai'].includes(token),
+    skipChain: ['usd-coin', 'tether', 'dai'].includes(token)
   })
 }
 
