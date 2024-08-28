@@ -80,7 +80,7 @@ const savingsVaultTvl = (chain) => async (api) => {
   calls.forEach((call, i) => {
     const asset = assets[i]
     const bal = totalAssets[i]
-    if(!bal || call.toLowerCase() === "0x6bad6a9bcfda3fd60da6834ace5f93b8cfed9598") return
+    if(!bal) return
     sdk.util.sumSingleBalance(balances, asset, bal, chain)
   })
 
