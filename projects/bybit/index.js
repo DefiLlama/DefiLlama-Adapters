@@ -135,6 +135,19 @@ const config = {
       "0xf89d7b9c864f589bbF53a82105107622B35EaA40",
     ],
   },
+  polkadot: {
+    owners: [
+      "11yLs2qzU15AhxnH1d7Koqcf83AwutKkDaGbqsJJ6yDWQjc",
+      "12nr7GiDrYHzAYT9L8HdeXnMfWcBuYfAXpgfzf3upujeCciz"
+    ],
+  },
+  eos: {
+    owners: [
+      "coldcrazycat",
+      "eosdididada3",
+      "kcwo3rimcnqf"
+    ],
+  },
 };
 
 module.exports = cexExports(config);
