@@ -34,7 +34,7 @@ async function tvl() {
     return { flow: flowTokenTVL };
   } catch (error) {
     throw new Error(
-      "Couln't query scripts of fixes 𝔉rc20 treasury pool",
+      "Couln't query scripts of Flow Rewards Platform.",
       error
     );
   }
