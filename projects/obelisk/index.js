@@ -8,7 +8,7 @@ module.exports = {
         let result = await sdk.api.erc20.totalSupply({ target: MINT_OBTC_TOKEN_CONTRACT, block: block });
         console.log(result);
         return {
-            [MINT_OBTC_TOKEN_CONTRACT]: (result.output || 0),
+            [MINT_OBTC_TOKEN_CONTRACT]: ((result && result.output) || 0),
         }
     }
   },
