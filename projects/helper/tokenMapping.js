@@ -68,6 +68,7 @@ const fixBalancesTokens = {
   neox: {
     [ADDRESSES.null]: { coingeckoId: "gas", decimals: 18 },
     '0x008cd7f573998cb841a5d82a857ed1f0ce03a653': { coingeckoId: "gas", decimals: 18 },
+    '0xde41591ed1f8ed1484ac2cd8ca0876428de60eff': { coingeckoId: "gas", decimals: 18 },
   }
 }
 
