@@ -2,8 +2,8 @@ const { staking } = require('../helper/staking')
 const ADDRESSES = require('../helper/coreAssets.json');
 
 const config = {
-  avax: { factory: "0x3D193de151F8e4e3cE1C4CB2977F806663106A87", },
-  base: { factory: "0x4ccf7aa5736c5e8b6da5234d1014b5019f50cb56", },
+  avax: { factory: "0x3D193de151F8e4e3cE1C4CB2977F806663106A87", wrapperFactory: '0x39aB4aabAd7656f94E32ebD90547C3c4a183f4B4' },
+  base: { factory: "0x4ccf7aa5736c5e8b6da5234d1014b5019f50cb56", wrapperFactory: '0xc9fbf1e865eeababe92d47ddb11d580f37ce4e00' },
   ethereum: { factory: "0x820c889D5749847217599B43ab86FcC91781019f", },
 }
 
@@ -15,11 +15,20 @@ async function _staking(api) {
 }
 
 module.exports.methodology = "The Apex DeFi factory contract address is used to obtain the balances held in each token contract as liquidity and the staking contract is used to get the staked APEX balance.";
+module.exports.misrepresentedTokens = true
 
 Object.keys(config).forEach(chain => {
-  const { factory, } = config[chain]
+  const { factory,wrapperFactory, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+      // count the value of erc20 wrapped and deposited in the pools
+      if (wrapperFactory) {
+        const wrapperPools = await api.fetchList({  lengthAbi: 'allWrappersLength', itemAbi: 'allWrappers', target: wrapperFactory })
+        const erc314Tokens = await api.multiCall({  abi: 'address:wrappedToken', calls: wrapperPools})
+        // this is a hack, summing value of gas tokens in the contract and assuming it matches the value of wrapped tokens in the pools
+        await api.sumTokens({ owners:erc314Tokens, tokens: [ADDRESSES.null] })
+      }
+
       const tokens = await api.call({ abi: 'address[]:getAllTokens', target: factory })
       return api.sumTokens({ owners: tokens, tokens: [ADDRESSES.null] })
     }
