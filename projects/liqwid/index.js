@@ -1,20 +1,17 @@
-const { sumTokensExport } = require("../helper/chain/cardano");
-const { graphQuery } = require("../helper/http");
+const { sumTokensExport } = require('../helper/chain/cardano');
+const { graphQuery } = require('../helper/http');
 
 module.exports = {
   cardano: {
     // tvl: sumTokensExport({ scripts: scriptAddresses, }),
     tvl,
     borrowed,
-    staking: sumTokensExport({
-      scripts: ["addr1w8arvq7j9qlrmt0wpdvpp7h4jr4fmfk8l653p9t907v2nsss7w7r4"],
-    }),
-    methodology:
-      "Adds up the Ada in the 16 action tokens and batch final token.",
-  },
+    staking: sumTokensExport({ scripts: ["addr1w8arvq7j9qlrmt0wpdvpp7h4jr4fmfk8l653p9t907v2nsss7w7r4"], }),
+    methodology: 'Adds up the Ada in the 16 action tokens and batch final token.'
+  }
 };
 
-const endpoint = "https://v2.api.liqwid.finance/graphql";
+const endpoint = 'https://v2.api.liqwid.finance/graphql'
 
 const queryAdaLoans = `query($input: LoansInput){
   liqwid {
@@ -34,7 +31,7 @@ const queryAdaLoans = `query($input: LoansInput){
     }
   }
 }
-`;
+`
 
 const query = `query($input: MarketsInput)  {
   liqwid {
@@ -61,16 +58,16 @@ const query = `query($input: MarketsInput)  {
     }
   }
 }
-`;
+`
 
 const tokenMapping = {
-  ADA: "lovelace",
-  DJED: "8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344",
-  DAI: "dai",
-};
-const getToken = (market) =>
-  tokenMapping[market.asset.symbol] ??
-  market.asset.currencySymbol + toHex(market.asset.name);
+  ADA: 'lovelace',
+  DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
+  DAI: 'dai',
+
+}
+
+const getToken = (market) => tokenMapping[market.asset.symbol] ?? market.asset.currencySymbol + toHex(market.asset.name)
 
 const getOptimBondTVL = async () => {
   const getLoans = async (pageIndex = 0, collectedLoans = []) => {
@@ -80,31 +77,31 @@ const getOptimBondTVL = async () => {
       },
     } = await graphQuery(endpoint, queryAdaLoans, {
       input: {
-        marketIds: "Ada",
+        marketIds: 'Ada',
         page: pageIndex,
       },
-    });
+    })
 
-    const allLoans = [...collectedLoans, ...loans.results];
+    const allLoans = [...collectedLoans, ...loans.results]
 
     // Check if we've reached the last page
     if (pageIndex < loans.pagesCount - 1) {
-      return await getLoans(pageIndex + 1, allLoans);
+      return await getLoans(pageIndex + 1, allLoans)
     }
 
-    return allLoans;
-  };
+    return allLoans
+  }
 
-  const loans = await getLoans();
+  const loans = await getLoans()
   const relevantLoans = loans.filter((l) =>
-    l.collaterals.some((c) => c.market.id === "OptimBond1"),
-  );
+    l.collaterals.some((c) => c.market.id === 'OptimBond1'),
+  )
   const bonds = relevantLoans
     .flatMap((l) => l.collaterals)
-    .filter((c) => c.market.id === "OptimBond1")
-    .reduce((acc, collateral) => acc + collateral.qTokenAmount, 0);
-  return bonds;
-};
+    .filter((c) => c.market.id === 'OptimBond1')
+    .reduce((acc, collateral) => acc + collateral.qTokenAmount, 0)
+  return bonds
+}
 
 async function tvl(api) {
   const getMarkets = async (pageIndex = 0, collectedMarkets = []) => {
@@ -116,32 +113,32 @@ async function tvl(api) {
       input: {
         page: pageIndex,
       },
-    });
+    })
 
-    const allMarkets = [...collectedMarkets, ...markets.results];
+    const allMarkets = [...collectedMarkets, ...markets.results]
 
     // Check if we've reached the last page
     if (pageIndex < markets.pagesCount - 1) {
-      return await getMarkets(pageIndex + 1, allMarkets);
+      return await getMarkets(pageIndex + 1, allMarkets)
     }
 
-    return allMarkets;
-  };
+    return allMarkets
+  }
 
-  const markets = await getMarkets();
+  const markets = await getMarkets()
   markets.forEach((market) =>
     add(api, market, market.liquidity * 10 ** market.asset.decimals),
-  );
-  add(api, "OptimBond1", await getOptimBondTVL());
+  )
+  add(api, "OptimBond1", await getOptimBondTVL())
 }
 
 function add(api, market, bal) {
-  const token = market === "OptimBond1" ? "OptimBond1" : getToken(market);
-  if (["usd-coin", "tether"].includes(token)) bal /= 1e8;
-  if (["dai"].includes(token)) bal /= 1e6;
+  const token = market === "OptimBond1" ? "OptimBond1" : getToken(market)
+  if (["usd-coin", "tether",].includes(token)) bal /= 1e8
+  if (["dai",].includes(token)) bal /= 1e6
   api.add(token, bal, {
-    skipChain: ["usd-coin", "tether", "dai"].includes(token),
-  });
+    skipChain: ['usd-coin', 'tether', 'dai'].includes(token),
+  })
 }
 
 async function borrowed(api) {
@@ -154,28 +151,28 @@ async function borrowed(api) {
       input: {
         page: pageIndex,
       },
-    });
+    })
 
-    const allMarkets = [...collectedMarkets, ...markets.results];
+    const allMarkets = [...collectedMarkets, ...markets.results]
 
     // Check if we've reached the last page
     if (pageIndex < markets.pagesCount - 1) {
-      return await getMarkets(pageIndex + 1, allMarkets);
+      return await getMarkets(pageIndex + 1, allMarkets)
     }
 
-    return allMarkets;
-  };
+    return allMarkets
+  }
 
-  const markets = await getMarkets();
+  const markets = await getMarkets()
   markets.forEach((market) => {
-    add(api, market, market.borrow * 10 ** market.asset.decimals);
-  });
+    add(api, market, market.borrow * 10 ** market.asset.decimals)
+  })
 }
 
 function toHex(str) {
-  let hex = "";
+  let hex = ''
   for (let i = 0; i < str.length; i++) {
     hex += str.charCodeAt(i).toString(16);
   }
-  return hex;
+  return hex
 }
