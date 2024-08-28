@@ -76,6 +76,7 @@ const savingsVaultTvl = (chain) => async (api) => {
   })
   const totalAssets = await api.multiCall({
     abi: savingsVaultAbi.totalAssets, calls,
+    permitFailure: true
   })
   const balances = {}
 
