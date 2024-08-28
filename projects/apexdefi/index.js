@@ -15,18 +15,16 @@ async function _staking(api) {
 }
 
 module.exports.methodology = "The Apex DeFi factory contract address is used to obtain the balances held in each token contract as liquidity and the staking contract is used to get the staked APEX balance.";
-module.exports.misrepresentedTokens = true
 
 Object.keys(config).forEach(chain => {
-  const { factory,wrapperFactory, } = config[chain]
+  const { factory, wrapperFactory, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       // count the value of erc20 wrapped and deposited in the pools
       if (wrapperFactory) {
-        const wrapperPools = await api.fetchList({  lengthAbi: 'allWrappersLength', itemAbi: 'allWrappers', target: wrapperFactory })
-        const erc314Tokens = await api.multiCall({  abi: 'address:wrappedToken', calls: wrapperPools})
-        // this is a hack, summing value of gas tokens in the contract and assuming it matches the value of wrapped tokens in the pools
-        await api.sumTokens({ owners:erc314Tokens, tokens: [ADDRESSES.null] })
+        const wrapperPools = await api.fetchList({ lengthAbi: 'allWrappersLength', itemAbi: 'allWrappers', target: wrapperFactory })
+        const tokens = await api.multiCall({ abi: 'address:originalToken', calls: wrapperPools })
+        await api.sumTokens({ tokensAndOwners2: [tokens, wrapperPools]})
       }
 
       const tokens = await api.call({ abi: 'address[]:getAllTokens', target: factory })
