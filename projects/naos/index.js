@@ -173,7 +173,7 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
     borrowed: bscBorrowed,
-    staking: stakings([BSC_BOOST_POOL,], BSC_NAOS_ADDRESS, 'bsc'),
-    pool2: pool2(BSC_STAKING_POOL_WITH_TRANSFER, CAKE_BNB_NAOS_LP_ADDRESS, 'bsc'),
+    staking: stakings([BSC_BOOST_POOL,], BSC_NAOS_ADDRESS),
+    pool2: pool2(BSC_STAKING_POOL_WITH_TRANSFER, CAKE_BNB_NAOS_LP_ADDRESS),
   },
 };

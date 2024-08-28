@@ -191,11 +191,10 @@ const nearData = {
 const toNumber = (decimals, n) => BigNumber(n/(10 ** decimals)).toFixed(0)
 
 function getTVLFunction(chain) {
-    return async function tvl(timestamp, ethBlock, {[chain]: block }) {
-        const balances = {}
+    return async function tvl(api) {
         const chainData = data[chain];
         const tokens = chainData.tokens.map(i => i.address)
-        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress })
+        return sumTokens2({ api, tokens, owner: chainData.contractAddress })
     }
 }
 
@@ -212,8 +211,7 @@ async function solanaTvl() {
 }
 
 async function solanaStaking() {
-    const balance = await solana.getTokenAccountBalance(solanaData.staking.tokenAccount);
-    return {allbridge: toNumber(0, balance)}
+    return solana.sumTokens2({ tokenAccounts: [solanaData.staking.tokenAccount] })
 }
 
 async function terraTvl() {

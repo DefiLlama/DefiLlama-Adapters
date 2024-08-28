@@ -1,6 +1,5 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
-const ERA_ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
 
 const config = {
   ethereum: {
@@ -9,11 +8,13 @@ const config = {
       "0xAd16eDCF7DEB7e90096A259c81269d811544B6B6",
     ],
     tokens: [
+      ADDRESSES.null,
       "0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",  // mmETH
       "0xE46a5E19B19711332e33F33c2DB3eA143e86Bc10", // mwBETH  
       "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678", // mswETH 
       "0x49446A0874197839D15395B908328a74ccc96Bc0", // mstETH
       "0xC6572019548dfeBA782bA5a2093C836626C7789A", // nETH   
+      "0x9Dc7e196092DaC94f0c76CFB020b60FA75B97C5b", // rnETH   
       "0x57F5E098CaD7A3D1Eed53991D4d66C45C9AF7812", // wUSDM
     ]
   },
@@ -24,8 +25,7 @@ const config = {
     ],
     tokens: [
       "0x4186BFC76E2E237523CBC30FD220FE055156b41F",  // rsETH
-      "0x3082CC23568eA640225c2467653dB90e9250AaA0", // RDNT  
-      "0x3abb0E23618a042ef55a624b903E9873F8756881", // ZKT 
+      "0x3082CC23568eA640225c2467653dB90e9250AaA0", // RDNT
     ],
   },
   linea: {
@@ -35,9 +35,8 @@ const config = {
     ],
     tokens: [
       "0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4",  // WBTC
-      "0x2416092f143378750bb29b79eD961ab195CcEea5", // ezETH  
-      "0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F", // wstETH
-      "0x531e4901EB141a71e111Cc23Fc4fBD4B7dB788d5", // ZKT  
+      ADDRESSES.blast.ezETH, // ezETH  
+      "0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F", // wstETH 
       ADDRESSES.linea.USDT, // USDT 
       ADDRESSES.linea.DAI, // DAI
       ADDRESSES.linea.USDC, // USDC
@@ -65,7 +64,6 @@ const config = {
       "0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2", // WBTC
       "0xcDA86A272531e8640cD7F1a92c01839911B90bb0", // meth
       "0x779f4E5fB773E17Bc8E809F4ef1aBb140861159a", // KTC
-      "0x531e4901EB141a71e111Cc23Fc4fBD4B7dB788d5", // zkt
     ],
   },
   manta: {
@@ -80,7 +78,6 @@ const config = {
       "0xEc901DA9c68E90798BbBb74c11406A32A70652C3", //STONE
       "0xbdAd407F77f44F7Da6684B416b1951ECa461FB07", //WUSDM
       "0x34c7Ad65E4163306f8745996688b476914201cE0", //uniETH
-      "0x9Af5CC797695717A20eCF3E258D6303316277A55", //ZKT
     ],
   },
   blast: {
@@ -90,8 +87,7 @@ const config = {
     ],
     tokens: [
       ADDRESSES.null,
-      "0x2416092f143378750bb29b79eD961ab195CcEea5", // ezeth
-      "0x8cDe337D4D39f692f867c9FFA696f555EdaB4BeD", // zkt
+      ADDRESSES.blast.ezETH, // ezeth
       "0x038f1C6ED5FccF690A920a27b39366eeeF27eFCe", // rich
       "0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204", // BAJA
       "0xf782E172A14Ee1c85cD980C15375bA0E87957028", // CACA
@@ -104,7 +100,6 @@ const config = {
     ],
     tokens: [
       "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",  // wstETH
-      "0x60F6659f92Db201670c39CC51D3630eD32cEdBb5", // ZKT  
     ],
   },
   optimism: {
@@ -112,15 +107,30 @@ const config = {
       "0x46C8D02E93d5a03899dFa7Cf8A40A07589A3fA1b",
       "0x5Bd51296423A9079b931414C1De65e7057326EaA",
     ],
-    tokens: [
-      "0x7d685a13eaFd76c12Dc6a9E9340778381Eef6bd7", // ZKT  
+  },
+  tron: {
+    owners: [
+      "TXZFj3Eo7xLArr32SYea2GtWmG1BekdpDq", // nova bridge address
     ],
+    tokens: [ADDRESSES.tron.BTC],
+  },
+  merlin: {
+    owners: [
+      "0xf5b90fE755Aa2e3CcC69d9548cbeB7b38c661D73", // nova bridge address
+    ],
+    tokens: [
+      ADDRESSES.merlin.WBTC_1, //MBTC
+      "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71", //Solv BTC
+    ],
+
   },
 }
 
-Object.keys(config).forEach(chain => {
-  const fetchCoValentTokens = !['manta'].includes(chain)
-  module.exports[chain] = {
-    tvl: sumTokensExport({ ...config[chain], fetchCoValentTokens, })
-  }
+async function tvl(api) {
+  const fetchCoValentTokens = !['manta', 'mantle', 'blast', 'tron', 'merlin'].includes(api.chain)
+  return sumTokens2({ api, ...config[api.chain], fetchCoValentTokens, })
+}
+
+Object.keys(config).forEach(async chain => {
+  module.exports[chain] = { tvl }
 })

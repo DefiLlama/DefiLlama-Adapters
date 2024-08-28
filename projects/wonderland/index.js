@@ -44,7 +44,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
     balances,
     [
       [ADDRESSES.ethereum.LUSD, false],
-      ["0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0", false], // FRAX
+      [ADDRESSES.ethereum.FXS, false], // FRAX
       [ADDRESSES.ethereum.CVX, false],
       [ADDRESSES.ethereum.cvxCRV, false],
       ["0x55C08ca52497e2f1534B59E2917BF524D4765257", false], // UwU
@@ -76,7 +76,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   avax: {
     tvl: avaxTvl,
-    staking: stakings([TimeStaking, RevenueSharingFarm], [TIME, wMEMO], "avax"),
+    staking: stakings([TimeStaking, RevenueSharingFarm], [TIME, wMEMO]),
   },
   ethereum: {
     tvl: ethTvl,

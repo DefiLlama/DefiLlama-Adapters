@@ -17,8 +17,8 @@ const lpAddresses = [
 
 module.exports = {
   bsc: {
-    staking: stakings(stakingContracts, boggedToken, "bsc"),
-    pool2: stakings(lpContracts, lpAddresses, "bsc"),
-    tvl: (async) => ({}),
+    staking: stakings(stakingContracts, boggedToken),
+    pool2: stakings(lpContracts, lpAddresses),
+    tvl: () => ({}),
   },
-};
+}
