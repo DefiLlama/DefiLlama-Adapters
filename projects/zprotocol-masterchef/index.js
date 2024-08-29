@@ -11,7 +11,7 @@ const farmAbi = {
 }
 
 module.exports = {
-  methodology: "All of Z Protocol's DEX liquidity is counted. All of the liquidity locked through Z Protocol's FarmMaster is counted, unless it was already counted as DEX liquidity.",
+  methodology: "count value of staked tokens except of z-dex LP tokens",
   misrepresentedTokens: true,
   scroll: {
     tvl,
