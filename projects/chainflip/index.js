@@ -117,10 +117,10 @@ async function pools_tvl(api) {
         return acc;
       }, []);
 
-    console.log(assets);
+    // console.log(assets);
     assets.forEach(item => {
         const liquidity = BigInt(item.liquidityAmount) / BigInt(10 ** assetDecimals(item.asset));
-        console.log('Adding', liquidity, item.asset);
+        // console.log('Adding', liquidity, item.asset);
         api.add(
             item.asset, 
             liquidity, 
@@ -156,10 +156,10 @@ async function boost_tvl(api) {
         return acc;
       }, []);
 
-    console.log(assets);
+    // console.log(assets);
     assets.forEach(item => {
         const liquidity = BigInt(item.liquidityAmount) / BigInt(10 ** assetDecimals(item.asset));
-        console.log('Adding', liquidity, item.asset);
+        // console.log('Adding', liquidity, item.asset);
         api.add(
             item.asset, 
             liquidity, 
@@ -168,7 +168,7 @@ async function boost_tvl(api) {
 }
 
 module.exports = {
-    methodology: 'counts the number of FLIP tokens in the Chainflip State Chain Gateway Contract.',
+    methodology: 'The number of FLIP tokens in the Chainflip State Chain Gateway Contract, as well as the total deployed liquidity.',
     start: 1700740800, // FLIP went live on 2023-11-23 12:00 UTC
     ethereum: {
         tvl: () => {},
