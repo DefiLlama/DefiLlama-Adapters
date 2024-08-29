@@ -65,6 +65,22 @@ const fixBalancesTokens = {
   taiko: {
     '0x7d02A3E0180451B17e5D7f29eF78d06F8117106C': { coingeckoId: "dai", decimals: 18 },
   },
+  neox: {
+    [ADDRESSES.null]: { coingeckoId: "gas", decimals: 18 },
+    '0x008cd7f573998cb841a5d82a857ed1f0ce03a653': { coingeckoId: "gas", decimals: 18 },
+    '0xde41591ed1f8ed1484ac2cd8ca0876428de60eff': { coingeckoId: "gas", decimals: 18 },
+  },
+  aura: {
+    [ADDRESSES.null]: { coingeckoId: "aura-network", decimals: 18 },
+    '0xDE47A655a5d9904BD3F7e1A536D8323fBD99993A': { coingeckoId: "aura-network", decimals: 18 },
+    '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd': { coingeckoId: "tether", decimals: 6 },
+  },
+  gravity: {
+    [ADDRESSES.null]: { coingeckoId: "g-token", decimals: 18 },
+    '0xbb859e225ac8fb6be1c7e38d87b767e95fef0ebd': { coingeckoId: "g-token", decimals: 18 },
+    '0xf6f832466Cd6C21967E0D954109403f36Bc8ceaA': { coingeckoId: "ethereum", decimals: 18 },
+    '0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6': { coingeckoId: "usd-coin", decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
