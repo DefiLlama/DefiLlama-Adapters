@@ -12,7 +12,7 @@ module.exports = uniV3Export({
   base: { factory: '0x576A1301B42942537d38FB147895fE83fB418fD4', fromBlock: 14250787, },
 })
 
-module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'https://kava.graph.wagmi.com/subgraphs/name/v3', minTVLUSD: 0 }) }
+module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'https://kava.graph.wagmi.com/subgraphs/name/v3' }) }
 
 const stakingConfig = {
   metis: { swagmi: '0x5fb3983adc4dcc82a610a91d2e329f6401352558', wagmi: '0xaf20f5f19698f1d19351028cd7103b63d30de7d7', },
