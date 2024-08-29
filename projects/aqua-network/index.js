@@ -9,7 +9,7 @@ async function getData() {
   const data = await _data
   const res = {}
   data.forEach((item) => {
-    res[item.date] = item.tvl / 1e8
+    res[item.date] = item.tvl / 1e7
   })
   return res
 }
