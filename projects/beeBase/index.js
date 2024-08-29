@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
-    taiko: {
+    base: {
         tvl: sumTokensExport({ owners: 
             [
               "0xFD09F108D1728E6B6eD241ccd254775e322f1ed6",
