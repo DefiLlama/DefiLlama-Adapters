@@ -63,4 +63,13 @@ module.exports = {
       tokens: [ADDRESSES.xlayer.USDC],
     }),
   },
+  arbitrum:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x5aCCEb99De5cc07168C193396C1fdC3E3abEEED7",
+        "0xAE9a83510cbB26c58595BA671f131e0A03Fe9A03",
+      ],
+      tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
+    }),
+  },
 };

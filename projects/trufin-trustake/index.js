@@ -7,7 +7,7 @@ const FUNCTION = "total_staked"
 
 async function aptosTvl(api) {
   const totalStaked = await function_view({ functionStr: `${TRUSTAKE_APT_CONTRACT_ADDR}::${MODULE}::${FUNCTION}` })
-  api.add(ADDRESSES.aptos.APT, totalStaked[0])
+  api.add(ADDRESSES.aptos.APT, totalStaked)
 }
 
 const abi = {
@@ -28,7 +28,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: `Counts the TVL of MATIC tokens in TruFin's TruStake vault.`,
+  methodology: `Counts the TVL of native tokens across all TruStake vaults.`,
   ethereum: {
     tvl
   },
