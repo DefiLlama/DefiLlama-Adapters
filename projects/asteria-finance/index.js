@@ -1,5 +1,5 @@
-const { asteriaFinanceExport } = require('../helper/asteriaFinance')
+const { asteriaFinanceExport } = require('./asteriaFinance')
 
 module.exports = asteriaFinanceExport({
-  scroll: '0x77C99431b679e21C42464f1714221eAE94C1e3ed',
+  scroll: { factory: '0x77C99431b679e21C42464f1714221eAE94C1e3ed' },
 })
