@@ -58,7 +58,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'The number of FLIP tokens in the Chainflip State Chain Gateway Contract, as well as the total deployed liquidity.',
+  methodology: 'The number of FLIP tokens in the Chainflip State Chain Gateway Contract, as well as the total liquidity.',
   start: 1700740800, // FLIP went live on 2023-11-23 12:00 UTC
   ethereum: {
     tvl: () => ({}),
