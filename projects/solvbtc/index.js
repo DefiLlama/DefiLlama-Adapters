@@ -1,7 +1,9 @@
 const abi = require("./abi.json");
+const sdk = require('@defillama/sdk');
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
+const { sumTokensExport, } = require('../helper/sumTokens');
 
 // The Graph
 const graphUrlList = {
@@ -13,6 +15,11 @@ const graphUrlList = {
 }
 
 const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
+
+const bitcionOwners = [
+  'bc1pjrxeuc9f3zqtx92s3mnf6202894jzufswur957l6s04rjns6dumsyh6u89',
+  'bc1qdpwl80flfh3k6h6sumzwgws3ephkrmx307hk64'
+]
 
 async function tvl(api) {
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
@@ -150,8 +157,16 @@ async function getGraphData(timestamp, chain, api, slot) {
 }
 
 // node test.js projects/solvbtc
-['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
-  module.exports[chain] = {
-    tvl
+['bitcoin', 'ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
+  if (chain == 'bitcoin') {
+    module.exports[chain] = {
+      tvl: sdk.util.sumChainTvls([
+        sumTokensExport({ owners: bitcionOwners }),
+      ])
+    }
+  } else {
+    module.exports[chain] = {
+      tvl
+    }
   }
 })
