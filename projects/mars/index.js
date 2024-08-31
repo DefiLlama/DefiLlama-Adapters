@@ -12,6 +12,8 @@ const addresses = {
   },
   neutron: {
     redBank: 'neutron1n97wnm7q6d2hrcna3rqlnyqw2we6k0l8uqvmyqq6gsml92epdu7quugyph',
+    creditManager: 'neutron1qdzn3l4kn7gsjna2tfpg3g3mwd6kunx4p50lfya59k02846xas6qslgs3r',
+    params: 'neutron1x4rgd7ry23v2n49y7xdzje0743c5tgrnqrqsvwyya2h6m48tz4jqqex06x'
   }
 }
 
@@ -22,93 +24,7 @@ async function osmosisTVL() {
   let balances = {};
   await addRedBankTvl(balances, 'osmosis');
   await addCreditManagerTvl(balances, 'osmosis');
-  await osmosisSumVaultsTVL(balances);
   return balances;
-}
-
-async function osmosisSumVaultsTVL(balances) {
-  let coins = [];
-  let vaultPagesRemaining = true;
-  let startAfter = null;
-  const pageLimit = 10;
-  const osmosisDenomTransform = await getChainTransform('osmosis');
-
-  while (vaultPagesRemaining) {
-    const roverVaultConfigs = await queryContract({
-      contract: addresses.osmosis.params,
-      chain: 'osmosis',
-      data: { 'all_vault_configs': { limit: pageLimit, 'start_after': startAfter } } 
-    });
-
-    if(roverVaultConfigs.length === pageLimit) {
-      startAfter = roverVaultConfigs[roverVaultConfigs.length - 1].vault;
-      vaultPagesRemaining = true
-    } else {
-      vaultPagesRemaining = false;
-    }
-
-    await osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigs);
-  }
-
-  coins.forEach(coin =>  {
-    sdk.util.sumSingleBalance(balances, osmosisDenomTransform(coin.denom), coin.amount);
-  })
-}
-
-async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigsPage) {
-    let vaultsMetadata = roverVaultConfigsPage.map(rvi => ({ fieldsVaultInfo: rvi }));
-
-    // query the vault info for the vault contract itself to get the vault's
-    // base token
-    await Promise.all(vaultsMetadata.map(async vm => {
-      let vaultInfo = await queryContract({
-        contract: vm.fieldsVaultInfo.addr,
-        chain: 'osmosis',
-        data: { 'info': {} } 
-      });
-      vm.vaultInfo = vaultInfo;
-    }));
-
-    // get total vault shares owned by fields for each vault
-    await Promise.all(vaultsMetadata.map(async vm => {
-      let vaultShares = await cosmosDenomBalanceStr(
-        'osmosis',
-        vm.vaultInfo.vault_token,
-        addresses.osmosis.creditManager
-      );
-      vm.vaultShares = vaultShares;
-    }));
-
-    // convert vault shares to vault base asset
-    await Promise.all(vaultsMetadata.map( async vm => {
-      let query = {
-        contract: vm.fieldsVaultInfo.addr,
-        chain: 'osmosis',
-        data: { 'convert_to_assets': { amount: vm.vaultShares } } 
-      };
-      let amount = await queryContract(query);
-      vm.baseTokenAmount = amount;
-    }));
-
-    // Add coins to then be added to balances
-    //  * For gamm lp tokens compute the share of underlying assets and add those
-    //  * For other assets, add as is
-    await Promise.all(vaultsMetadata.map( async vm => {
-      const baseToken = vm.vaultInfo['base_token'];
-      if (baseToken.startsWith('gamm/pool/')) {
-        let poolId = baseToken.split('/')[2];
-        const url = `osmosis/gamm/v1beta1/pools/${poolId}`;
-        const query = await cosmosLCDQuery(url, 'osmosis');
-        const pool = query.pool;
-        pool['pool_assets'].forEach(asset => {
-          const denom = asset.token.denom;
-          const amount = asset.token.amount * vm.baseTokenAmount / pool['total_shares'].amount;
-          coins.push({denom, amount});
-        });
-      } else {
-        coins.push({denom: baseToken, amount: vm.baseTokenAmount});
-      }
-    }));
 }
 
 // NEUTRON
@@ -116,6 +32,7 @@ async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigsPage) {
 async function neutronTVL() {
   let balances = {};
   await addRedBankTvl(balances, 'neutron');
+  await addCreditManagerTvl(balances, 'neutron');
   return balances;
 }
 
@@ -163,5 +80,6 @@ module.exports = {
     [1675774800, 'Relaunch on Osmosis'],
     [1690945200, 'Red Bank launch on Neutron'],
     [1696906800, 'Mars V2 launch on Osmosis'],
+    [1724166000, 'Mars v2 Launch on Neutron']
   ]
 };
