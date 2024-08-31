@@ -1726,7 +1726,9 @@
     "WDAI": "0xDeb87c37Dcf7F5197026f574cd40B3Fc8Aa126D1",
     "WUSDC": "0x79Cb92a2806BF4f82B614A84b6805963b8b1D8BB",
     "WETH": "0xd56F9ffF3fe3BD0C7B52afF9A42eb70E05A287Cc",
-    "ELK": "0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE"
+    "ELK": "0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE",
+    "QUSD": "0xE31DD093A2A0aDc80053bF2b929E56aBFE1B1632",
+    "WQ": "0xd07178e3eCbC78De110Df84fe1A979D5f349784a"
   },
   "zklink": {
     "WBTC": "0xda4aaed3a53962c83b35697cd138cc6df43af71f",
@@ -1887,5 +1889,12 @@
   },
   "neutron": {
     "NTRN": "untrn"
+  },
+  "noble": {
+    "USDC": "uusdc",
+    "USDY": "ausdy"
+  },
+  "ripple": {
+    "XRP": "XRP"
   }
 }
