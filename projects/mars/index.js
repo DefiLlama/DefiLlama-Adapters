@@ -3,13 +3,9 @@ const sdk = require('@defillama/sdk');
 const { queryContract} = require('../helper/chain/cosmos');
 const { getChainTransform } = require('../helper/portedTokens');
 
-const addresses = {
-  osmosis: {
-    params: 'osmo1nlmdxt9ctql2jr47qd4fpgzg84cjswxyw6q99u4y4u4q6c2f5ksq7ysent'
-  },
-  neutron: {
-    params: 'neutron1x4rgd7ry23v2n49y7xdzje0743c5tgrnqrqsvwyya2h6m48tz4jqqex06x'
-  }
+const paramsContractAddresses = {
+  'osmosis': 'osmo1nlmdxt9ctql2jr47qd4fpgzg84cjswxyw6q99u4y4u4q6c2f5ksq7ysent',
+  'neutron':'neutron1x4rgd7ry23v2n49y7xdzje0743c5tgrnqrqsvwyya2h6m48tz4jqqex06x'
 }
 
 
@@ -40,7 +36,7 @@ async function fetchDeposits(balances, chain) {
 
   while (assetParamsPagesRemaining) {
     const assetParams = await queryContract({
-      contract: addresses[chain].params,
+      contract: paramsContractAddresses[chain],
       chain,
       data: { 'all_asset_params': { limit: pageLimit, 'start_after': startAfter } } 
     });
@@ -52,7 +48,7 @@ async function fetchDeposits(balances, chain) {
       assetParamsPagesRemaining = false;
     }
 
-    await addCoinsFromAssetParams(coins, assetParams);
+    await addCoinsFromAssetParams(coins, assetParams, chain);
   }
 
   coins.forEach(coin =>  {
@@ -66,7 +62,7 @@ async function addCoinsFromAssetParams(coins, assetParams, chain) {
   // query the deposited amount for each asset and add it to the coins array
   await Promise.all(assetDenoms.map(async denom => {
     let totalDepositInfo = await queryContract({
-      contract: addresses[chain].params,
+      contract: paramsContractAddresses[chain],
       chain,
       data: { 'total_deposit': {
         'denom': denom,
