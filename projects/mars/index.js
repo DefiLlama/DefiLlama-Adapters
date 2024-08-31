@@ -12,6 +12,8 @@ const addresses = {
   },
   neutron: {
     redBank: 'neutron1n97wnm7q6d2hrcna3rqlnyqw2we6k0l8uqvmyqq6gsml92epdu7quugyph',
+    creditManager: 'neutron1qdzn3l4kn7gsjna2tfpg3g3mwd6kunx4p50lfya59k02846xas6qslgs3r',
+    params: 'neutron1x4rgd7ry23v2n49y7xdzje0743c5tgrnqrqsvwyya2h6m48tz4jqqex06x'
   }
 }
 
@@ -116,6 +118,7 @@ async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigsPage) {
 async function neutronTVL() {
   let balances = {};
   await addRedBankTvl(balances, 'neutron');
+  await addCreditManagerTvl(balances, 'neutron');
   return balances;
 }
 
@@ -163,5 +166,6 @@ module.exports = {
     [1675774800, 'Relaunch on Osmosis'],
     [1690945200, 'Red Bank launch on Neutron'],
     [1696906800, 'Mars V2 launch on Osmosis'],
+    [1724166000, 'Mars v2 Launch on Neutron']
   ]
 };
