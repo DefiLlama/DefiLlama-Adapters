@@ -211,6 +211,7 @@ async function tvlArbitrumLinea(api) {
   await fetchSickleNftPositions(api, sickles, config[api.chain].NonfungiblePositionManager);
   await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
 
+  api.removeTokenBalance('0xe80772eaf6e2e18b651f160bc9158b2a5cafca65')
   return sumTokens2({ api, resolveLP: true });
 }
 
