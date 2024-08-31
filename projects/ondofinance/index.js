@@ -32,6 +32,9 @@ const config = {
   noble: {
     USDY: "ausdy",
   },
+  arbitrum: {
+    USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
+  },
 };
 
 async function getUSDYTotalSupplySUI() {
@@ -75,22 +78,9 @@ Object.keys(config).forEach((chain) => {
         const res = await get(`https://noble-api.polkachu.com/cosmos/bank/v1beta1/supply/${config.noble.USDY}`);
         api.addTokens(config.ethereum.USDY, parseInt(res.amount.amount), { skipChain: true, });
       } else {
-        supplies = await api.multiCall({
-          abi: "erc20:totalSupply",
-          calls: fundAddresses,
-        });
-        if (chain === "ethereum") {
-          const usdycIndex = fundAddresses.indexOf(config.ethereum.USDYc);
-          const usdyIndex = fundAddresses.indexOf(config.ethereum.USDY);
-          // add USDYc supply to USDY supply
-          supplies[usdyIndex] =
-            parseInt(supplies[usdyIndex]) + parseInt(supplies[usdycIndex]);
-          fundAddresses.splice(usdycIndex, 1);
-          supplies.splice(usdycIndex, 1);
-        }
+        supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);
       }
-      return api.getBalances();
     },
   };
 });

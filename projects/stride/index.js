@@ -17,7 +17,7 @@ const chains = {
   juno: {
     chainId: "juno-1",
     denom: "ujuno",
-    coinGeckoId: "juno-network", 
+    coinGeckoId: "juno-network",
   },
 
   osmosis: {
@@ -85,6 +85,12 @@ const chains = {
     denom: "aISLM",
     coinGeckoId: "islamic-coin",
   },
+
+  band: {
+    chainId: "laozi-mainnet",
+    denom: "uband",
+    coinGeckoId: "band-protocol",
+  }
 };
 
 // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination

@@ -14,6 +14,6 @@ module.exports = {
 	methodology: `Counts the tokens in pool address in different chains`
 };
 
-['ethereum', 'polygon', 'moonbeam', 'arbitrum', 'optimism', 'mantle', 'base'].forEach(chain => {
+['ethereum', 'polygon', 'moonbeam', 'arbitrum', 'optimism', 'mantle', 'base', 'polygon_zkevm'].forEach(chain => {
 	module.exports[chain] = { tvl }
 })
