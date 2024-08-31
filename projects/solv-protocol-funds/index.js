@@ -30,8 +30,24 @@ async function tvl(api) {
   await vaultBalance(api, graphData);
   await otherDeposit(api, address);
   await ceffuBalance(api, address, graphData);
+}
 
-  return api.getBalances();
+const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
+async function getSolvBTCVAddresses(api) {
+  let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
+
+  const blacklisted = {}
+  if (!solvbtc[api.chain] || !solvbtc[api.chain]["otherDeposit"]) {
+    return blacklisted
+  }
+  let otherDeposit = solvbtc[api.chain]["otherDeposit"];
+  for (const deposit of otherDeposit["depositAddress"]) {
+    for (const tokenAddress of otherDeposit["tokens"]) {
+      const key = `${tokenAddress}-${deposit}`.toLowerCase()
+      blacklisted[key] = true
+    }
+  }
+  return blacklisted
 }
 
 async function otherDeposit(api, address) {
@@ -233,27 +249,17 @@ async function vaultBalance(api, graphData) {
         vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
       }
     }
+    const tokens = Object.values(vaults).map(([token]) => token)
 
-    const symbols = await api.multiCall({
-      abi: abi.symbol,
-      calls: Object.values(vaults).map((index) => ({
-        target: index[0]
-      })),
+    const symbols = await api.multiCall({ abi: abi.symbol, calls: tokens, })
+    const blacklisted = await getSolvBTCVAddresses(api)
+    const blacklistedTokens = tokens.filter((token, i) => symbols[i].toLowerCase().includes('solvbtc'))
+    const tokensAndOwners = Object.values(vaults).filter(([token, owner]) => {
+      const key = `${token}-${owner}`.toLowerCase()
+      return !blacklisted[key] && !blacklistedTokens.includes(token)
     })
-
-    const balances = await api.multiCall({
-      abi: abi.balanceOf,
-      calls: Object.values(vaults).map((index) => ({
-        target: index[0],
-        params: [index[1]]
-      })),
-    })
-
-    for (const key in balances) {
-      if (symbols[key] !== "SolvBTC") {
-        api.add(Object.values(vaults)[key][0], balances[key])
-      }
-    }
+    
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens, })
   }
 }
 
@@ -262,7 +268,7 @@ async function ceffuBalance(api, address, graphData) {
     return;
   }
   let ceffuData = address[api.chain]["ceffu"];
-  
+
   let pools = [];
   for (const graph of graphData.pools) {
     if (graph['openFundShareSlot'] == ceffuData['slot']) {
