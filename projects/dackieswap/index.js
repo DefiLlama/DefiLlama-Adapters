@@ -8,4 +8,5 @@ module.exports = uniV3Export({
   inevm: { factory: "0xf79A36F6f440392C63AD61252a64d5d3C43F860D", fromBlock: 291933 },
   mode: { factory: "0xc6f3966E5D08Ced98aC30f8B65BeAB5882Be54C7", fromBlock: 6102035 },
   xlayer: { factory: "0xc6f3966e5d08ced98ac30f8b65beab5882be54c7", fromBlock: 278971 },
+  linea: { factory: "0xc6255ec7CDb11C890d02EBfE77825976457B2470", fromBlock: 8488016 },
 });
