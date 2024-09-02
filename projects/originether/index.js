@@ -19,7 +19,6 @@ const ethTvl = async (api) => {
   const lpSupply = await api.call({  abi: 'erc20:totalSupply', target: lp})
   const ethInPool = await api.call({  abi: 'function balances(uint256) view returns (uint256)', target: lp, params: ethIndex})
   const ethLPBalance = (lpBalance / lpSupply) * ethInPool
-  console.log(lpBalance, lpSupply, ethInPool, ethLPBalance)
   api.add(ADDRESSES.ethereum.WETH, ethLPBalance)
 
 
