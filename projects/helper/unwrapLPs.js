@@ -350,7 +350,7 @@ async function unwrapSlipstreamNFT({ balances, owner, positionIds = [], nftAddre
   if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
   let factory = (await factories[factoryKey]).output
 
-  if (!positionIds) {
+  if (!positionIds || positionIds.length === 0) {
     const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
     positionIds = (await sdk.api.abi.multiCall({
       block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
@@ -906,8 +906,8 @@ async function sumTokens2({
 
   if (resolveNFTs) {
     const coreNftTokens = whitelistedNFTs[api.chain] ?? []
-    const nftTokens = await Promise.all(owners.map(i => covalentGetTokens(i, api)))
-    nftTokens.forEach((tokens, i) => ownerTokens.push([[tokens, coreNftTokens].flat(), owners[i]]))
+    const nftTokens = await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false})))
+    nftTokens.forEach((nfts, i) => ownerTokens.push([[nfts, tokens, coreNftTokens].flat(), owners[i]]))
   }
 
   if (solidlyVeNfts.length) {
