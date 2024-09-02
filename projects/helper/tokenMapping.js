@@ -40,6 +40,16 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  chainflip: {
+    Dot: { coingeckoId:'polkadot', decimals: 10 },
+    Usdc: { coingeckoId:'usd-coin', decimals: 6 },
+    Flip: { coingeckoId:'chainflip', decimals: 18 },
+    Btc: { coingeckoId:'bitcoin', decimals: 8 },
+    Eth: { coingeckoId:'ethereum', decimals: 18 },
+    Usdt: { coingeckoId:'tether', decimals: 6 },
+    ArbEth: { coingeckoId:'ethereum', decimals: 18 },
+    ArbUsdc: { coingeckoId:'usd-coin', decimals: 6 },
+  },
   islm: {
     '0x0ce35b0d42608ca54eb7bcc8044f7087c18e7717': { coingeckoId: 'usd-coin', decimals: 6 },
   },
@@ -79,6 +89,9 @@ const fixBalancesTokens = {
     [ADDRESSES.null]: { coingeckoId: "g-token", decimals: 18 },
     '0xbb859e225ac8fb6be1c7e38d87b767e95fef0ebd': { coingeckoId: "g-token", decimals: 18 },
     '0xf6f832466Cd6C21967E0D954109403f36Bc8ceaA': { coingeckoId: "ethereum", decimals: 18 },
+    '0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6': { coingeckoId: "usd-coin", decimals: 6 },
+  },
+  idex: {
     '0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6': { coingeckoId: "usd-coin", decimals: 6 },
   },
 }
