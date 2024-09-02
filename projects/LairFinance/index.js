@@ -8,7 +8,7 @@ const contracts = {
 async function tvl(api) {
   const chain = 'klaytn'
   const tvl = await sdk.api.abi.call({ chain, target: contracts.node, abi: "uint256:getTotalStakingAmount" });
-console.log('123',tvl.output)
+
   return {
     [`${chain}:0x0000000000000000000000000000000000000000`]: tvl.output
   };
