@@ -36,7 +36,9 @@ async function neutronTVL() {
 // HELPERS
 
 async function fetchDepositsMinusDebts(balances, chain) {
-  let coins = [];
+  let depositCoins = [];
+  let debtCoins = [];
+  let coins = []
   let assetParamsPagesRemaining = true;
   let redBankParamsPagesRemaining = true;
   let startAfter = null;
@@ -57,7 +59,7 @@ async function fetchDepositsMinusDebts(balances, chain) {
       assetParamsPagesRemaining = false;
     }
 
-    await addCoinsFromAssetParams(coins, assetParams, chain);
+    await addCoinsFromAssetParams(depositCoins, assetParams, chain);
   }
 
 
@@ -76,18 +78,20 @@ async function fetchDepositsMinusDebts(balances, chain) {
       redBankParamsPagesRemaining = false;
     }
 
-    await deductCoinsFromMarkets(coins, markets, chain);
+    await deductCoinsFromMarkets(debtCoins, markets, chain);
   }
+
+  deductDebtFromDeposits(depositCoins, debtCoins, coins);
 
   coins.forEach(coin =>  {
     sdk.util.sumSingleBalance(balances, denomTransform(coin.denom), coin.amount);
   })
 }
 
-async function addCoinsFromAssetParams(coins, assetParams, chain) {
+async function addCoinsFromAssetParams(depositCoins, assetParams, chain) {
   const assetDenoms = assetParams.map(asset => asset.denom);
 
-  // query the deposited amount for each asset and add it to the coins array
+  // query the deposited amount for each asset and add it to the depositCoins array
   await Promise.all(assetDenoms.map(async denom => {
     let totalDepositInfo = await queryContract({
       contract: contractAddresses[chain].params,
@@ -96,11 +100,11 @@ async function addCoinsFromAssetParams(coins, assetParams, chain) {
         'denom': denom,
       } } 
     });
-    coins.push({denom, amount: totalDepositInfo.amount});
+    depositCoins.push({denom, amount: totalDepositInfo.amount});
   }));
 }
 
-async function deductCoinsFromMarkets(coins, markets, chain) {
+async function deductCoinsFromMarkets(debtCoins, markets, chain) {
 
   // query the underlying debt amount from the debt_total_scaled
   await Promise.all(markets.map(async market => {
@@ -109,16 +113,22 @@ async function deductCoinsFromMarkets(coins, markets, chain) {
       chain,
       data: { 'underlying_debt_amount': {
         'denom': market.denom,
-        'amount_scaled': market.debt_total_scaled
+        'amount_scaled': market['debt_total_scaled']
       } } 
     });
-    coins.forEach(coin => {
-      if(coin.denom === market.denom) {
-        coin.amount = new BigNumber(coin.amount).minus(totalDebt).toString();
-      }
-    });
-    
+    debtCoins.push({denom: market.denom, amount: totalDebt})
   }));
+}
+
+function deductDebtFromDeposits(depositCoins, debtCoins, coins) {
+  depositCoins.forEach(depositCoin => {
+    let debtCoin = debtCoins.find(debtCoin => debtCoin.denom === depositCoin.denom);
+    if(debtCoin) {
+      coins.push({denom: depositCoin.denom, amount: new BigNumber(depositCoin.amount).minus(debtCoin.amount).toString()});
+    } else {
+      coins.push(depositCoin);
+    }
+  });
 }
 
 
