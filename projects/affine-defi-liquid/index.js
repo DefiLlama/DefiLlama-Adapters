@@ -1,6 +1,4 @@
 const { sumERC4626VaultsExport } = require('../helper/erc4626')
-const {sumTokensExport} = require("../helper/unwrapLPs");
-const ADDRESSES = require('../helper/coreAssets.json')
 
 // LINEA
 const LINEA_VAULT = "0xB838Eb4F224c2454F2529213721500faf732bf4d"
