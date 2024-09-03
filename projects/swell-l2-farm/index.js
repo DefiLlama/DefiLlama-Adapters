@@ -30,11 +30,11 @@ module.exports = {
                 "0x6ee2b5E19ECBa773a352E5B21415Dc419A700d1d",
                 "0xac440d0eE23FA69632Aa731322C2a480dD1376e4",
                 "0x330c4DD05dB16db6323505262C57CFdE5f0A78Ea",
-                "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
-                "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+                ADDRESSES.ethereum.USDe,
+                ADDRESSES.ethereum.FRAX,
                 "0xA663B02CF0a4b149d2aD41910CB81e23e1c41c32",
                 "0x5E8422345238F34275888049021821E8E08CAa1f",
-                "0xac3E018457B222d93114458476f3E3416Abbe38F",
+                ADDRESSES.ethereum.sfrxETH,
                 "0x18f313Fc6Afc9b5FD6f0908c1b3D476E3feA1DD9",
                 "0xf7906F274c174A52d444175729E3fa98f9bde285"
             ]
