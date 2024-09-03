@@ -63,7 +63,7 @@ async function fetchDepositsMinusDebts(balances, chain) {
   }
 
 
-
+  startAfter = null;
   while (redBankParamsPagesRemaining) {
     const markets = await queryContract({
       contract: contractAddresses[chain].redBank,
