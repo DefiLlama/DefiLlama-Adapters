@@ -139,6 +139,10 @@ const HYPE_REGISTRY = {
   iotaevm: [
     ["0xF44cECB1CF40ee12303E85Eb8651263c01812EaD", 223591], // wagmi
   ],
+  core: [
+    ["0x32e27fF479454e32868ff67Ee9F06BAFDC1E908F", 17268275], // Glyph
+    ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 17164390], // Glyph
+  ],
 };
 
 Object.keys(HYPE_REGISTRY).forEach(chain => {
