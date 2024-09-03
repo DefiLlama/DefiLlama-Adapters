@@ -27,7 +27,7 @@ const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'GRAPH_API_KEY', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
@@ -110,6 +110,9 @@ sdk.api.abi.call = async (...args) => {
   } catch (e) {
     console.log(e)
   }
+  if(module.hallmarks && module.hallmarks.length > 6){
+    console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+  }
   // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
@@ -121,7 +124,6 @@ sdk.api.abi.call = async (...args) => {
   const tokensBalances = {};
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
-  const knownTokenPrices = {};
 
   let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
     if (typeof value !== "object" || value === null) {
@@ -354,10 +356,10 @@ async function computeTVL(balances, timestamp) {
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
 
+  const queries = buildPricesGetQueries(readKeys)
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 100))
-    .process(async (keys) => {
-      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
+    .for(queries).process(async (query) => {
+      tokenData.push((await axios.get(query)).data.coins)
     })
 
   if (errors && errors.length)
@@ -423,7 +425,23 @@ setTimeout(() => {
     process.exit(1);
 }, 10 * 60 * 1000) // 10 minutes
 
+function buildPricesGetQueries(readKeys) {
+  if (!readKeys.length) return []
+  const burl = 'https://coins.llama.fi/prices/current/'
+  const queries = []
+  let query = burl
 
+  for (const key of readKeys) {
+    if (query.length + key.length > 2000) {
+      queries.push(query.slice(0, -1))
+      query = burl
+    }
+    query += `${key},`
+  }
+
+  queries.push(query.slice(0, -1))
+  return queries
+}
 
 async function initCache() {
   let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
