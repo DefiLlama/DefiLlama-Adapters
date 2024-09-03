@@ -1,4 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unknownTokens");
 
 module.exports = {
@@ -65,5 +66,6 @@ module.exports = {
                 ],
             ],
         }),
+        staking: staking('0xd0C380D31DB43CD291E2bbE2Da2fD6dc877b87b3','0xFceB31A79F71AC9CBDCF853519c1b12D379EdC46')
     },
 };
