@@ -5,6 +5,7 @@ const vaults = [
   '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642',
   '0x352180974C71f84a934953Cf49C4E538a6F9c997',
   '0xeDa663610638E6557c27e2f4e973D3393e844E70',
+  '0x5401b8620E5FB570064CA9114fd1e135fd77D57c',
 ]
 
 module.exports = {
@@ -12,6 +13,6 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({ owners: vaults, fetchCoValentTokens: true, tokenConfig: {
       onlyWhitelisted: false,
-    }}),
+    }, resolveUniV3: true, }),
   },
 }
