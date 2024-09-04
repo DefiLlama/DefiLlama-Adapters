@@ -7,17 +7,21 @@ const manta_owners = ["0xA2E2F3726DF754C1848C8fd1CbeA6aAFF84FC5B2", "0x1EbEd4024
 const manta_stone_token = "0xEc901DA9c68E90798BbBb74c11406A32A70652C3";
 const manat_manta_token = "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5";
 const taiko_owners = ["0x735D00A9368164B9dcB2e008d5Cd15b367649aD5", "0x235C5C450952C12C8b815086943A7bBCF96bc619","0x2646E743A8F47b8d2427dBcc10f89e911f2dBBaa"];
+const bsquared_owners = ["0xA2E2F3726DF754C1848C8fd1CbeA6aAFF84FC5B2", "0x1EbEd4024308afcb05E6938eF8Ebd1ec5d6E8C46","0xB20Faa4BA0DdEbDe49299557f4F1ebB5532745e3"];
 
 module.exports = {
   start: 1690971144,
-  bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT, "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409", "0x80137510979822322193FC997d400D5A6C747bf7"], }) },
+  bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT, ADDRESSES.ethereum.FDUSD, ADDRESSES.scroll.STONE], }) },
   op_bnb: {
-    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [ADDRESSES.op_bnb.USDT, "0x50c5725949a6f0c72e6c4a641f24049a917db0cb","0x4200000000000000000000000000000000000006"] })
+    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [ADDRESSES.op_bnb.USDT, ADDRESSES.base.DAI,ADDRESSES.optimism.WETH_1] })
   },
   manta: {
     tvl: sumTokensExport({ owners: manta_owners, tokens: [ADDRESSES.manta.USDT, manta_stone_token, manat_manta_token] })
   },
   taiko: {
     tvl: sumTokensExport({ owners: taiko_owners, tokens: [ADDRESSES.taiko.USDC] })
+  },
+  bsquared: {
+    tvl: sumTokensExport({ owners: bsquared_owners, tokens: [ADDRESSES.bsquared.USDT] })
   },
 };
