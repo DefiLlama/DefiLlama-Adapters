@@ -24,13 +24,14 @@ const btcOwnersOfCedefi = [
 const getMetrics = async (api, borrowed) => {
   const { poolAddress, lfbtcAddress, usdtAddress } = config[api.chain]
   const marketData = await api.call({ abi: abi.getPoolManagerReserveInformation, target: poolAddress, });
-  const balanceOfCollateral = marketData.collateral;
+  // @note: no more count collateral on Ethereum, count collateral on Bitcoin instead
+  // const balanceOfCollateral = marketData.collateral;
   const balanceOfDebt = marketData.debt;
 
   if (borrowed)
     api.add(usdtAddress, balanceOfDebt);
-  else
-    api.add(lfbtcAddress, balanceOfCollateral);
+  // else
+  //   api.add(lfbtcAddress, balanceOfCollateral);
 }
 
 module.exports = {
