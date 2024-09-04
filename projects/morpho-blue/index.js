@@ -12,12 +12,13 @@ const config = {
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    blackList: ['0x6ee1955afb64146b126162b4ff018db1eb8f08c3'],
     fromBlock: 13977148,
   },
 };
 
-Object.keys(config).forEach((chain) => {
-  const { morphoBlue, fromBlock } = config[chain];
+Object.keys(config).forEach((chain) => { 
+  const { morphoBlue, fromBlock, blackList = [] } = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
       const marketIds = await getMarkets(api);
@@ -28,6 +29,7 @@ Object.keys(config).forEach((chain) => {
           abi: abi.morphoBlueFunctions.idToMarketParams,
         })
       )
+        .filter((i) => !blackList.includes(i.collateralToken.toLowerCase()))
         .map((i) => [i.collateralToken, i.loanToken])
         .flat();
       return api.sumTokens({ owner: morphoBlue, tokens });
