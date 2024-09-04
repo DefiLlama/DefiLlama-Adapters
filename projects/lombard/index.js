@@ -1,5 +1,7 @@
+const { getConfig } = require('../helper/cache')
 const { sumTokens } = require('../helper/chain/bitcoin')
 const { get } = require('../helper/http')
+const sdk = require('@defillama/sdk')
 
 const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
 const BATCH_SIZE = 1000
@@ -17,7 +19,7 @@ async function getAllAddresses() {
     const newAddresses = data.map(a => a.btc_address)
     allAddresses = allAddresses.concat(newAddresses)
     
-    console.log(`Batch ${batchNumber} completed: ${newAddresses.length} addresses`)
+    sdk.log(`Batch ${batchNumber} completed: ${newAddresses.length} addresses`)
     
     hasMore = response.has_more
     offset += BATCH_SIZE
@@ -28,8 +30,7 @@ async function getAllAddresses() {
 }
 
 async function tvl() {
-  const addresses = await getAllAddresses()
-  console.log("Summing tokens for addresses:", addresses)
+  const addresses = await getConfig('lombard', undefined, { fetcher: getAllAddresses})
   return sumTokens({ owners: addresses })
 }
 
