@@ -73,11 +73,11 @@ async function tvl(api) {
           const totalShares = poolInfo.poolTotalShare;
           const poolAssets = poolInfo.assets;
           poolAssets.forEach((asset) => {
-            const amount = new BigNumber(asset.amount).shiftedBy(-asset.decimals);
+            const amount = new BigNumber(asset.amount);
             const amountPerShare = amount.div(totalShares);
 
             // add the underlying tokens to the api
-            api.add(asset.denom, amountPerShare.times(totalDepositInfo.amount).toNumber());
+            api.add(asset.denom, amountPerShare.times(totalDepositInfo.amount).integerValue(BigNumber.ROUND_DOWN).toString());
           });
         } else {
           // if the it's a token and not a liquidity pool share, add it to the api
