@@ -8,7 +8,7 @@ module.exports = {
   ton: {
     tvl: sumTokensExport({
       owners: [ROUTER],
-      tokens: ADDRESSES.ton.TON,
+      tokens: [ADDRESSES.ton.TON],
     })
   },
 }
