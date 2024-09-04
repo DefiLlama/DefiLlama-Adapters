@@ -29,10 +29,9 @@ Object.keys(config).forEach((chain) => {
           abi: abi.morphoBlueFunctions.idToMarketParams,
         })
       )
-        .filter((i) => !blackList.includes(i.collateralToken.toLowerCase()))
         .map((i) => [i.collateralToken, i.loanToken])
         .flat();
-      return api.sumTokens({ owner: morphoBlue, tokens });
+      return api.sumTokens({ owner: morphoBlue, tokens, blacklistedTokens: blackList });
     },
     borrowed: async (api) => {
       const marketIds = await getMarkets(api);
