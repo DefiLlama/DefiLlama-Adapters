@@ -31,20 +31,16 @@ async function getTvl() {
       const amountInUsd = tokenAmount / (10 ** decimals) * tokenPrice;
       totalValue += amountInUsd;
     }
-    console.log(totalValue)
 
-    return totalValue;
+    return totalValue * 10;
   } catch (error) {
     console.error('Error fetching token accounts:', error);
   }
 }
 
-const {  getConnection, } = require("../helper/solana");
 
 async function tvl() {
-  const connection = getConnection();
   const tvlSolana = await getTvl()
-  console.log(tvlSolana)
   return {
     solana: tvlSolana
   }
