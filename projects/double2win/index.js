@@ -55,7 +55,11 @@ Object.keys(config).forEach((chain) => {
       })
       const { assets, v2Tokens } = await getTokens(chain)
       await sumTokens2({ resolveUniV3: true, api, owners: v3Vaults })
-      await sumTokens2({ owners: assetVaults, tokens: assets, api })
+      await sumTokens2({
+        owners: assetVaults, tokens: assets, api, blacklistedTokens: [
+          '0x13654df31871b5d01e5fba8e6c21a5d0344820f5'
+        ]
+      })
       return sumTokens2({ owners: v2Vaults, tokens: v2Tokens, resolveLP: true, api })
     }
   }

@@ -17,5 +17,7 @@ module.exports = {
       "bsc",
     ),
   },
-  bob: compoundExports2({ comptroller: "0xcD7C4F508652f33295F0aEd075936Cd95A4D2911", cether: '0xd7c6cc5aef7396182c5d7ebdac66ff674f3ddcf4' })
+  bob:  compoundExports2({ comptroller: "0xcD7C4F508652f33295F0aEd075936Cd95A4D2911", cether: '0xd7c6cc5aef7396182c5d7ebdac66ff674f3ddcf4' }),
+  rsk:  compoundExports2({ comptroller: "0x2eea8fbA494d5008ba72f80E0091Cc74dB5f9926", cether: '0x8F9958ec0FeeccCf0feC871B7bBB3D8d0B7A4D3c' }),
+  core: compoundExports2({ comptroller: "0xaba65b87eBEdB2D753b37AeCECD1E168341eE0DD", cether: '0xb57A4b3ccE8d999A1e6B0357c0a31C3808401B42' }),
 };

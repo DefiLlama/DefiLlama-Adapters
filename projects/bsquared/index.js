@@ -20,6 +20,7 @@ const BTCOwners = [
   "bc1qe4xx7eg5c4qjq8838zv05f7uzfmyyyftdpy48t",
   "3GPVsXtvbfFNRYbLwJowaL7EXo8hqakfkv",
   "bc1q8axfvwqa0fqds5w6vva9g5kej9e4mp4ap3dmff",
+  "bc1q6crqwsg59s2j4v5gvd94775pjj8l0fmflmv9jd",
   "19M7Z1E8Bs4pkXmHJrrJtngmVMUmgFu4K2"
 ];
 

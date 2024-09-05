@@ -626,6 +626,9 @@ const assetList = [
   ['MATIC', 'MATIC', '0x505e71695e9bc45943c58adec1650577bca68fd9'],
   ['USDT', 'MATIC', '0x505e71695e9bc45943c58adec1650577bca68fd9'],
   ['USDT', 'TRX', 'TRGCqsUXeynKTgynp2j9g3sg7Nux2KtB3u'],
+  // added on the 27/08/2024
+  ['BTC', 'BTC', '3PXBET2GrTwCamkeDzKCx8DeGDyrbuGKoc'],
+  ['BTC', 'BTC', '3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud'],
 ]
 
 function getAddresses(chain) {
