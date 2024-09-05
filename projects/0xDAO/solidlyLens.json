@@ -1,3 +1,0 @@
-{
-  "poolsReservesInfo": "function poolsReservesInfo(address[] _poolsAddresses) view returns (tuple(address id, address token0Address, address token1Address, uint256 token0Reserve, uint256 token1Reserve, uint8 token0Decimals, uint8 token1Decimals)[])"
-}

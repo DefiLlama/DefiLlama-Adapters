@@ -1,8 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const {staking} = require("../helper/staking");
-const {sumTokensAndLPsSharedOwners} = require("../helper/unwrapLPs");
-const index = require('./index.json')
+const { sumTokens2} = require("../helper/unwrapLPs");
 const MasterChefBeets = require('./MasterChefBeets.json')
 const BalancerVaultBeets = require('./BalancerVaultBeets.json')
 const BalancerWeightedPoolBeets = require('./BalancerWeightedPoolBeets.json')
@@ -29,41 +28,13 @@ const ftmTradfi3mContract = "0xEFbe7fe9E8b407a3F0C0451E7669E70cDD0C4C77";
 const ftmTradfi6mContract = "0xB1c77436BC180009709Be00C9e852246476321A3";
 const masterChefContract = "0x4897EB3257A5391d80B2f73FB0748CCd4150b586";
 
-//
-// Moonriver TVL should consist of - treasury value and investments on gnosis safe
-//
-const movr_transforms = {
-	"0x748134b5f553f2bcbd78c6826de99a70274bdeb3": "ethereum:" + ADDRESSES.ethereum.USDC, // USDC
-	"0xe936caa7f6d9f5c9e907111fcaf7c351c184cda7": "ethereum:" + ADDRESSES.ethereum.USDT, // USDT
-	"0xfa1fbb8ef55a4855e5688c0ee13ac3f202486286": "fantom:0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286", // FHM
-}
 
-async function moonriverTvl(timestamp, block, chainBlocks) {
-	let balances = {};
-	block = chainBlocks.moonriver
-
-	// treasury value
-	await sumTokensAndLPsSharedOwners(balances, [
-				["0x748134b5f553f2bcbd78c6826de99a70274bdeb3", false], // USDC.m
-				["0xE936CAA7f6d9F5C9e907111FCAf7c351c184CDA7", false], // USDT.m
-				["0x0b6116bb2926d996cdeba9e1a79e44324b0401c9", true], // HB LP
-			], [moonriverTreasuryContract], block, "moonriver",
-			addr => (movr_transforms[addr.toLowerCase()] ? movr_transforms[addr.toLowerCase()] : `moonriver:${addr}`));
-
-	// investments
-	await Promise.all([
-		balanceOf(moonriverGnosisContract, "0x98878B06940aE243284CA214f92Bb71a2b032B8A", "moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A", balances, chainBlocks.moonriver, "moonriver"), // wMOVR
-	]);
-
-	return balances;
-}
-
-//
-// Fantom TVL should consist of - treasury value and investments on gnosis safe
-//
-const fantom_transforms = {
-	[ADDRESSES.fantom.DAI]: ADDRESSES.ethereum.DAI, // DAI
-	[ADDRESSES.fantom.USDC]: ADDRESSES.ethereum.USDC, // USDC
+async function moonriverTvl(api) {
+	return sumTokens2({api, owner: moonriverTreasuryContract, tokens: [
+		"0x748134b5f553f2bcbd78c6826de99a70274bdeb3",
+		"0xE936CAA7f6d9F5C9e907111FCAf7c351c184CDA7",
+		"0x0b6116bb2926d996cdeba9e1a79e44324b0401c9", 
+	], resolveLP: true	})
 }
 
 async function fantomTvl(timestamp, _, {fantom: block}) {
