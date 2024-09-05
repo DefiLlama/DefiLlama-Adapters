@@ -1,13 +1,12 @@
 const { staking } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unknownTokens");
-const { aaveExports } = require("../helper/aave");
+const { aaveExports, methodology, } = require("../helper/aave");
 
 module.exports = {
   hallmarks: [
     [1704178500,"flash loan exploit"]
   ],
-  methodology:
-    "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending",
+  methodology,
   arbitrum: {
     ...aaveExports('arbitrum', '0x9D36DCe6c66E3c206526f5D7B3308fFF16c1aa5E'),
     // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
@@ -22,5 +21,10 @@ module.exports = {
     ...aaveExports('ethereum', '0xe969066F2cCcE3145f62f669F151c6D566068BA2'),
     // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
     pool2: staking("0x28e395a54a64284dba39652921cd99924f4e3797", "0xcF7b51ce5755513d4bE016b0e28D6EDEffa1d52a")
+  },
+  base: {
+    ...aaveExports('base', '0x3eAF348Cf1fEC09C0f8d4f52AD3B8D894206b724'),
+    // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
+    pool2: staking("0xD87F8a52a91680c993ece968B281bf92505A3741", "0x8a76639fe8e390ed16ea88f87beb46d6a5328254")
   },
 };

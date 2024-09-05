@@ -7,7 +7,7 @@ const vaults = {
   kava: "0x5712ab97A299a8A4544BCc728B7f3E9663965443",
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const vault = vaults[api.chain];
   const tokens = await api.call({ abi: 'function getAcceptingTokens () view returns (address[])', target: vault, });
   const bals = await api.multiCall({ abi: 'function getStakedAmountPerToken(address token) view returns (uint256)', calls: tokens, target: vault })

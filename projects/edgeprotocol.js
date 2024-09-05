@@ -4,14 +4,14 @@ async function getMarkets() {
     const res = await queryContract({ contract: 'terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w', data: { market_lists: {} }, chain: 'terra' })
     return res
 }
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
     const markets = await getMarkets()
     markets.forEach(m => {
         api.add(m.underlying, Math.floor(m.total_credit - m.total_insurance))
     });
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
     const markets = await getMarkets()
     markets.forEach(m => {
         api.add(m.underlying, Math.floor(m.total_loan))

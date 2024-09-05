@@ -16,7 +16,7 @@ async function getTokensAndOwners(api) {
   return logs.map(i => ([i.underlyingToken, i.marginEngine]))
 }
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, tokensAndOwners: await getTokensAndOwners(api), })
 }
 

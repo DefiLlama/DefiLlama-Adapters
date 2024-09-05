@@ -9,7 +9,7 @@ const accounts = Object.values({
   account5: 'cro1hhfh6xaflg8zwhwvrs7sgur2pyfunjqeu8wsd6',
 })
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const data = await Promise.all(accounts.map(account => queryV1Beta1({ chain: 'cronos', url: `/staking/v1beta1/delegations/${account}`, })));
   const factroy_contract_address = '0x66f5997b7810723aceeeb8a880846fc117081bd0';
   data.map(i => i.delegation_responses).flat().forEach(i => api.add(ADDRESSES.cronos.WCRO, i.balance.amount * 1e10))

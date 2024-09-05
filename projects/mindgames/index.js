@@ -4,7 +4,7 @@ const xCRX = "0x35AfE95662fdf442762a11E4eD5172C81fBceF7e";
 const CRX = "0xb21Be1Caf592A5DC1e75e418704d1B6d50B0d083";
 const factory = "0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0";
 
-const tvl = getUniTVL({ factory, chain: 'arbitrum', useDefaultCoreAssets: true, fetchBalances: true })
+const tvl = getUniTVL({ factory, useDefaultCoreAssets: true, fetchBalances: true })
 
 module.exports = {
   misrepresentedTokens: true,

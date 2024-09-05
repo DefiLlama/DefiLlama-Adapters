@@ -40,7 +40,12 @@ function get_precision(symbol) {
 async function get_staked(account_name, symbol, chain = "eos") {
     const response = await post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name })
     try {
-        return response.voter_info.staked / (10 ** get_precision(symbol))
+        let refunding = 0;
+        if(response.refund_request){
+            refunding += parseFloat(response.refund_request.cpu_amount);
+            refunding += parseFloat(response.refund_request.net_amount);
+        }
+        return refunding + (response.voter_info.staked / (10 ** get_precision(symbol)))
     } catch (e) {
         return 0;
     }

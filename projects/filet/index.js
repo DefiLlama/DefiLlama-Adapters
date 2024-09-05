@@ -43,7 +43,7 @@ const getMinersList = async () => {
 module.exports = {
   timetravel: false,
   heco: {
-    tvl: async (_, _1, _2, { api}) => {
+    tvl: async () => {
         const tvlData = await fetchURL(filetAPI)
         return {
           ["filecoin"]: new BigNumber(tvlData.data.data.hecoTvl),
@@ -51,7 +51,7 @@ module.exports = {
       }
   },
   bsc: {
-    tvl: async (_, _1, _2, { api}) => {
+    tvl: async () => {
 
         const tvlData = await fetchURL(filetAPI)
         return {
@@ -61,7 +61,7 @@ module.exports = {
       }
   },
   filecoin: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
 
       const filetMpool180 = await api.call({    target: filetStorageCon_FVM,    abi: abi.filetFVMAbi, params:[poolOnFVM180] });
       const filetMpool360 = await api.call({    target: filetStorageCon_FVM,    abi: abi.filetFVMAbi, params:[poolOnFVM360] });
@@ -78,7 +78,7 @@ module.exports = {
     },
   },
   mixin: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const tvlData = await fetchURL(filetAPI)
       return {
         ["filecoin"]: new BigNumber(tvlData.data.data.mixinTvl),

@@ -13,7 +13,7 @@ const addresses = {
   lens: "0xb73f303472c4fd4ff3b9f59ce0f9b13e47fbfd19",
 };
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   // Compute TVL of lps
   let pools = await api.fetchList({ target: LIQUIS_BOOSTER, itemAbi: abi.poolInfo, lengthAbi: abi.poolLength, })
   const liqPools = pools.map(pool => pool.token);
@@ -40,8 +40,8 @@ async function tvl(_, block, _1, { api }) {
   })
 
   // Compute veLIT locked value
-  const { output: veLitTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veLIT, block })
-  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veLIT, owner: addresses.voterProxy, block })
+  const { output: veLitTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veLIT, block: api.block })
+  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veLIT, owner: addresses.voterProxy, block: api.block })
   const ratio = veBalance / veLitTotalSupply
   const bal = await unwrapBalancerToken({ api, balancerToken: addresses.lit80weth20, owner: addresses.veLIT, })
   Object.entries(bal).forEach(([token, value]) => {

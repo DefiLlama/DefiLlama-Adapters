@@ -24,7 +24,7 @@ const queries = {
 }
 
 function getFactoryTvl(factory) {
-  return async function tvl(timestamp, _, { terra: block }, { api }) {
+  return async function tvl(api) {
     const chain = api.chain
     const pairs = await getPairs(chain, factory)
     sdk.log(chain, factory, pairs.length)

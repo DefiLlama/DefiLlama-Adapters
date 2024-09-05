@@ -11,7 +11,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { marketManager, usd } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const ownerTokens = [[[usd], marketManager]];
       return sumTokens2({ api, ownerTokens });
     }
