@@ -55,11 +55,11 @@ async function tvl(api) {
     '0xF06f65a6b7D2c401FcB8B3273d036D21Fe2a5963', // DPI in Fuse pool 19
     nullAddress
   ]
-  return sumTokens2({ api, owners, tokens,})
+  return sumTokens2({ api, owners, tokens, })
 }
 
 module.exports = {
-    ethereum: { tvl },
+  ethereum: { tvl },
 };
 module.exports.hallmarks = [
   [1651325520, "Exploit $80M FEI"],
