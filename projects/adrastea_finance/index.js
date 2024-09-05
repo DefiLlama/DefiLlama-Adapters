@@ -1,7 +1,5 @@
-const {  getConnection, } = require("../helper/solana");
-const { PublicKey } = require('@solana/web3.js');
+const { Connection, PublicKey } = require('@solana/web3.js');
 const axios = require('axios');
-const { TOKEN_PROGRAM_ID } = require('@solana/spl-token');
 
 async function fetchTokenPrice(mintAddress) {
   try {
@@ -15,8 +13,9 @@ async function fetchTokenPrice(mintAddress) {
 
 async function getTvl() {
   try {
-    const connection = getConnection()
+    const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
     const owner = new PublicKey("Ec5tJ1H24iVSM2L8Yd7SHf7bjtD7FUWDiYSeESpFYynM");
+    const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
     const response = await connection.getParsedTokenAccountsByOwner(owner, {
       programId: TOKEN_PROGRAM_ID,
     });
@@ -32,15 +31,20 @@ async function getTvl() {
       const amountInUsd = tokenAmount / (10 ** decimals) * tokenPrice;
       totalValue += amountInUsd;
     }
+    console.log(totalValue)
+
     return totalValue;
   } catch (error) {
     console.error('Error fetching token accounts:', error);
   }
 }
 
+const {  getConnection, } = require("../helper/solana");
 
 async function tvl() {
+  const connection = getConnection();
   const tvlSolana = await getTvl()
+  console.log(tvlSolana)
   return {
     solana: tvlSolana
   }
