@@ -1,7 +1,7 @@
 const USTB = "0x43415eb6ff9db7e26a15b704e7a3edce97d31c4e";
 
 module.exports = {
-  methodology: "TVL corresponds to the total amount of USTB minted",
+  methodology: "TVL corresponds to the total amount of USTB minted onchain, does not include Superstate book-entry AUM",
   ethereum: {
     tvl: async (api) => {
       const totalSupplies = await api.multiCall({
