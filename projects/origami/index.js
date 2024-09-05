@@ -2,8 +2,8 @@ const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
-  ethereum: sdk.graph.modifyEndpoint('GGN8RoYQBiw2Ui6wUeaKcHsBBSrQzQoryYi2feoTKwPX'), // ethereum
-  arbitrum: sdk.graph.modifyEndpoint('AHT1ffJhw7NWdeH3XYbWzMmy5USbB22K3ecVDu8azGuF'), // arbitrum
+  ethereum: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-mainnet/api'), // ethereum
+  arbitrum: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-arbitrum/api'), // arbitrum
 }
 
 module.exports = {
@@ -15,10 +15,10 @@ Object.keys(GRAPH_URLS).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { metrics: [{ investmentVaults }] } = await cachedGraphQuery('origami/' + chain, endpoint, '{ metrics { investmentVaults { id } } }')
-      console.log(investmentVaults)
       const vaults = investmentVaults.map(vault => vault.id)
+      console.log('investmentVaults', {count: vaults.length, investmentVaults})
       let tokens = await api.multiCall({  abi: 'address:reserveToken', calls: vaults })
-      if (chain === 'arbitrum') 
+      if (chain === 'arbitrum')
         tokens = await api.multiCall({  abi: 'address:baseToken', calls: tokens })
 
       const decimals = await api.multiCall({  abi: 'uint8:decimals', calls: vaults })
