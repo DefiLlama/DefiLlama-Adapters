@@ -17,6 +17,18 @@ const config = {
     vault: defaultVault,
     tokens: [fbtc0, fbtc1]
   },
+  bob: {
+    vault: '0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf',
+    tokens: [ADDRESSES['bob'].WBTC]
+  },
+  zeta: {
+    vault: '0x84E5C854A7fF9F49c888d69DECa578D406C26800',
+    tokens: [ADDRESSES['zeta'].BTC]
+  },
+  bsc: {
+    vault: '0x84E5C854A7fF9F49c888d69DECa578D406C26800',
+    tokens: [fbtc0, ADDRESSES['bsc'].BTCB]
+  },
   bsquared: {
     vault: defaultVault,
     tokens: [ADDRESSES.null,ADDRESSES['bsquared'].WBTC]
