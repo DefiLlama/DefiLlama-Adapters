@@ -16,7 +16,6 @@ Object.keys(GRAPH_URLS).forEach(chain => {
     tvl: async (api) => {
       const { metrics: [{ investmentVaults }] } = await cachedGraphQuery('origami/' + chain, endpoint, '{ metrics { investmentVaults { id } } }')
       const vaults = investmentVaults.map(vault => vault.id)
-      console.log('investmentVaults', {count: vaults.length, investmentVaults})
       let tokens = await api.multiCall({  abi: 'address:reserveToken', calls: vaults })
       if (chain === 'arbitrum')
         tokens = await api.multiCall({  abi: 'address:baseToken', calls: tokens })
@@ -25,7 +24,6 @@ Object.keys(GRAPH_URLS).forEach(chain => {
       const supplies = await api.multiCall({  abi: 'uint256:totalSupply', calls: vaults })
       const reserves = await api.multiCall({  abi: 'uint256:reservesPerShare', calls: vaults })
       const bals = reserves.map((reserve, i) => reserve * supplies[i] / 10 ** decimals[i])
-      console.log(tokens, bals, vaults, api.chain)
       api.add(tokens, bals)
     }
   }
