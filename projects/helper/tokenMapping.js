@@ -55,6 +55,7 @@ const fixBalancesTokens = {
   },
   cronos_zkevm: {
     '0xc1bf55ee54e16229d9b369a5502bfe5fc9f20b6d': { coingeckoId: 'crypto-com-chain', decimals: 18 },
+    '0x898b3560affd6d955b1574d87ee09e46669c60ea': { coingeckoId: 'ethereum', decimals: 18 },
   },
   lac: {
     [ADDRESSES.null]: { coingeckoId: "la-coin", decimals: 18 },
@@ -94,6 +95,7 @@ const fixBalancesTokens = {
   idex: {
     '0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6': { coingeckoId: "usd-coin", decimals: 6 },
   },
+
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
