@@ -16,7 +16,7 @@ const config = {
         '0x366ba28Ec89113454EA6e82bB606426e8cA22780'
     ],
     tokens: [
-      ADDRESSES.polygon.EGX,
+      '0xA8C557c7ac1626EacAa0e80fAc7b6997346306E8',
     ]
   },
   tron: {
