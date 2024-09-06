@@ -14,6 +14,9 @@ const config = {
   polygon: {
     owners: [
         '0x366ba28Ec89113454EA6e82bB606426e8cA22780'
+    ],
+    tokens: [
+      ADDRESSES.polygon.EGX,
     ]
   },
   tron: {
