@@ -8,6 +8,6 @@ module.exports = {
     tvl: getUniTVL({ factory: '0x03407772F5EBFB9B10Df007A2DD6FFf4EdE47B53', useDefaultCoreAssets: true }),
   },
   curio: {
-    // tvl: getUniTVL({ factory: '0xc36f5180b181f1b949e0ff4d65b258e0987f443f', chain: 'curio', useDefaultCoreAssets: true }),
+    // tvl: getUniTVL({ factory: '0xc36f5180b181f1b949e0ff4d65b258e0987f443f', useDefaultCoreAssets: true }),
   },
 };

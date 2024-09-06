@@ -84,7 +84,7 @@ module.exports = {
   meta: { tvl },
   wemix: { tvl },
   ripple: {
-    tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia' })
+    tvl: sumTokensExport({ owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia' })
   },
   ton: {
     tvl: tonExport({ owner: "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy", tokens: [ADDRESSES.null], onlyWhitelistedTokens: true }),

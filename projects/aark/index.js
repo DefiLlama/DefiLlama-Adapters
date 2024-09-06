@@ -5,7 +5,7 @@ async function tvl(api) {
   return api.sumTokens({ owner: VAULT_CONTRACT_ADDRESS, tokens: [
     ADDRESSES.arbitrum.WETH,
     ADDRESSES.arbitrum.USDC,
-    '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F', //FRAX
+    ADDRESSES.arbitrum.FRAX, //FRAX
     ADDRESSES.arbitrum.USDC_CIRCLE,
     ADDRESSES.arbitrum.WSTETH,
     ADDRESSES.arbitrum.DAI,
@@ -17,7 +17,9 @@ async function tvl(api) {
     '0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407',
     '0xD9535bB5f58A1a75032416F2dFe7880C30575a41',
     '0xB686BcB112660343E6d15BDb65297e110C8311c4',
-    '0xec70dcb4a1efa46b8f2d97c310c9c4790ba5ffa8'
+    '0xec70dcb4a1efa46b8f2d97c310c9c4790ba5ffa8',
+    ADDRESSES.arbitrum.WBTC,
+    '0x9bEcd6b4Fb076348A455518aea23d3799361FE95' // weETH-25APR2024
   ] })
 }
 

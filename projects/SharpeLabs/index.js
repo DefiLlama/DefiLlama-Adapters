@@ -18,9 +18,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'counts the Eth amount of by substracting Supplied stEth amount of vault by borrowed Weth of vault',
+      methodology: 'counts the Eth amount of by substracting Supplied stEth amount of vault by borrowed Weth of vault',
   ethereum: {
     tvl,
   }

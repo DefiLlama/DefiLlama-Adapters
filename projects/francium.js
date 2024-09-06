@@ -1,7 +1,7 @@
 const { get } = require('./helper/http')
 async function fetch() {
   const response = (
-    await get("https://francium.io/api/pools/liquidity")
+    await get("https://francium-data.s3-us-west-2.amazonaws.com/tvl/liquidity.json")
   ).data;
 
   const poolLiqArray = response.farm.map(pool => pool.liquidityLocked);

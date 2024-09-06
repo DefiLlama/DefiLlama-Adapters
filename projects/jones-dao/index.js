@@ -15,32 +15,48 @@ const jAssetToAsset = {
 };
 
 async function tvl(api) {
-  const [
-    metavaultTokens,
-    metavaultBalances,
-    optionVaultTokens,
-    optionVaultBalances,
-  ] = await Promise.all([
-    api.multiCall({
-      abi: "address:depositToken",
-      calls: addresses.metaVaultsAddresses,
-    }),
-    api.multiCall({
-      abi: "uint256:workingBalance",
-      calls: addresses.metaVaultsAddresses,
-    }),
-    api.multiCall({
-      abi: "address:asset",
-      calls: addresses.optionVaultAddresses,
-    }),
-    api.multiCall({
-      abi: "uint256:totalAssets",
-      calls: addresses.optionVaultAddresses,
-    }),
-  ]);
+  const [metavaultTokens, metavaultBalances, optionVaultTokens, optionVaultBalances, jusdcTvl] =
+    await Promise.all([
+      api.multiCall({
+        abi: "address:depositToken",
+        calls: addresses.metaVaultsAddresses,
+      }),
+      api.multiCall({
+        abi: "uint256:workingBalance",
+        calls: addresses.metaVaultsAddresses,
+      }),
+      api.multiCall({
+        abi: "address:asset",
+        calls: addresses.optionVaultAddresses,
+      }),
+      api.multiCall({
+        abi: "uint256:totalAssets",
+        calls: addresses.optionVaultAddresses,
+      }),
+      sdk.api.abi.call({
+        abi: "uint256:totalAssets",
+        target: addresses.jusdc.underlyingVault,
+        chain: "arbitrum",
+      }),
+    ]);
 
   api.addTokens(metavaultTokens, metavaultBalances);
   api.addTokens(optionVaultTokens, optionVaultBalances);
+  api.addTokens(addresses.tokens.usdc, jusdcTvl.output);
+  const getLPManagerContractsABI = "function getLPManagerContracts(uint256 _nonce) view returns (address lp,address viewer,address swapper,address receiver,address priceHelper,address lpManager,address doubleTracker,address singleTrackerZero,address singleTrackerOne,address compounder,address router)"
+
+
+  for (const factoryAddress of addresses.smartLpArbFactories) {
+    const contracts = await api.fetchList({ lengthAbi: 'nonce', itemAbi: getLPManagerContractsABI, target: factoryAddress, startFromOne: true })
+    const lpManagers = contracts.map(c => c.lpManager)
+
+    const token0s = await api.multiCall({ abi: "address:token0", calls: lpManagers })
+    const token1s = await api.multiCall({ abi: "address:token1", calls: lpManagers })
+    const aums = await api.multiCall({ abi: "function aum() returns (uint256 amount0, uint256 amount1)", calls: lpManagers })
+
+    api.add(token0s, aums.map(a => a.amount0))
+    api.add(token1s, aums.map(a => a.amount1))
+  }
 
   const tokensAndOwners = [
     [addresses.tokens.uvrt, addresses.glp.stableRewardTracker],
@@ -81,11 +97,7 @@ module.exports = {
       addr = addr.toLowerCase();
       return `arbitrum:${jAssetToAsset[addr] ?? addr}`;
     }),
-    staking: stakings(
-      addresses.stakingContracts,
-      addresses.tokens.jones,
-      "arbitrum"
-    ),
+    staking: stakings(addresses.stakingContracts, addresses.tokens.jones, "arbitrum"),
   },
 
   ethereum: {

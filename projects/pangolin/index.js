@@ -28,7 +28,7 @@ module.exports = {
     "The Pangolin factory contract address are used to obtain the balance held in every LP pair and the stake contract is used to get the locked PNG balance.",
   avax: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
-    staking: staking(contracts.avax.stakingContract, contracts.avax.png, "avax"),
+    staking: staking(contracts.avax.stakingContract, contracts.avax.png),
   },
   songbird: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.songbird.factory, }),
@@ -46,13 +46,14 @@ module.exports = {
   },
   hedera: {
     tvl: async () => {
-       const block = await getCurrentBlock()
+      // const block = await getCurrentBlock()
+      // pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
       const data = await graphQuery('https://graph-hedera-pangolin.canary.exchange/subgraphs/name/pangolin', `{
-          pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
+          pangolinFactory(id: "1") {
           totalLiquidityUSD
           }
       }`)
-      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD) 
+      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
     }
   },
   start: 1612715300, // 7th-Feb-2021

@@ -91,7 +91,6 @@ async function tvl(api) {
   const owners = []
   toa.map((_, i) => {
     if (!symbols[i].startsWith('RWA')) return;
-    // console.log(symbols[i], toa[i])
     owners.push(toa[i][1])
   })
   const ilks = await api.multiCall({ abi: 'function ilk() view returns (bytes32)', calls: owners })
@@ -102,8 +101,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: `Counts all the tokens being used as collateral of CDPs.
+    methodology: `Counts all the tokens being used as collateral of CDPs.
 
   On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
   start: 1513566671, // 12/18/2017 @ 12:00am (UTC)

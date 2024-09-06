@@ -34,7 +34,7 @@ Object.keys(config).forEach(chain => {
         // tokensAndOwners.push([result.collToken, callOwners[i]])
         // tokensAndOwners.push([result.borrowToken, callOwners[i]])
       })
-      return api.sumTokens({ owners: vaults, tokens: Array.from(tokenSet) })
+      return api.sumTokens({ owners: vaults, tokens: Array.from(tokenSet), blacklistedTokens: ['0x401307732d732dd3b05ac1138b8661c0f55830ea'] })
     }
   }
 })
@@ -47,6 +47,6 @@ const abi = {
 module.exports = mergeExports([
   module.exports,
   uniV3Export({
-    mantle: { factory: "0x8f140Fc3e9211b8DC2fC1D7eE3292F6817C5dD5D", fromBlock: 59915640, blacklistedTokens: ['0x26a6b0dcdcfb981362afa56d581e4a7dba3be140'] },
+    mantle: { factory: "0x8f140Fc3e9211b8DC2fC1D7eE3292F6817C5dD5D", fromBlock: 59915640 },
   })
 ])
