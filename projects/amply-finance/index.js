@@ -14,10 +14,6 @@ function v3() {
 
 module.exports = {
   methodology: methodologies.lendingMarket,
-  cronos_zkevm: v3(),
-  hallmarks: [
-    [1659630089, "Start OP Rewards"],
-    [1650471689, "Start AVAX Rewards"]
-  ],
+  cronos_zkevm: v3()
 };
 // node test.js projects/aave/index.js
