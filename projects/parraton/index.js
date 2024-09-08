@@ -4,7 +4,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 async function tvl(api) {
   const vaults = await get('https://api.parraton.com/v1/vaults')
   const tvl =vaults.reduce((acc, vault) => {
-    acc += vault.tvlUsd
+    acc += Number(vault.tvlUsd)
     return acc
   }, 0)
   api.add(ADDRESSES.ton.USDT, tvl * 1e6)
