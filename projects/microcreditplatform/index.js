@@ -1,12 +1,12 @@
 const sdk = require('@defillama/sdk');
 
-const microcreditInvestmentContract = '0x3B724e84Fd7479C1bed10cAf8eed825dad852C1b';
-const microcreditProfitShareContract = '0x78ed6350E3E4A0Fa59C48DA702d66cEe90F38BDB';
+const microcreditInvestmentContract = '0x951d1571C75C519Cc3D09b6B71595C6aCe1c06dB';
+const microcreditProfitShareContract = '0x165D74d2DEFe37794371eB63c63999ab5620DBfB';
 
-const fakeUsdt = '0xe5CeD8244f9F233932d754A0B1F7268555FBd3B5';
-const fakeMct = '0x829e43f497b8873fA5c83FcF665b96A39a1FBeD6';
+const axlUSDC = '0x0CE35b0D42608Ca54Eb7bcc8044f7087C18E7717';
+const MCT = '0xA8759ca1758fBd8db3BA14C31d2284ae58a64CD1';
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl(chainBlocks) {
   const balances = {};
   const block = chainBlocks.haqq;
 
@@ -14,11 +14,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   const investmentBalances = await sdk.api.abi.multiCall({
     calls: [
       {
-        target: fakeUsdt,
+        target: axlUSDC,
         params: [microcreditInvestmentContract],
       },
       {
-        target: fakeMct,
+        target: MCT,
         params: [microcreditInvestmentContract],
       }
     ],
@@ -33,11 +33,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   const profitShareBalances = await sdk.api.abi.multiCall({
     calls: [
       {
-        target: fakeUsdt,
+        target: axlUSDC,
         params: [microcreditProfitShareContract],
       },
       {
-        target: fakeMct,
+        target: MCT,
         params: [microcreditProfitShareContract],
       }
     ],
