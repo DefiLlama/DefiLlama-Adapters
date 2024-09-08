@@ -38,5 +38,5 @@ async function getStakingAddresses() {
 
   const nativeBtcAddresses = res.data.data.details.btc.details.map(d => d.address)
   const babylonAddresses = res.data.data.details.babylon.details.map(d => d.address)
-  return [...nativeBtcAddresses, ...babylonAddresses].slice(0, 100)
+  return [...nativeBtcAddresses, ...babylonAddresses]
 }
