@@ -6,7 +6,7 @@ const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, } =
 const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
 const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2, MARKET_STATE_LAYOUT_V3_MINIMAL } = require('./layouts/openbook-layout')
 const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, } = require('./layouts/mixed-layout');
-const { SCN_STAKE_POOL } = require("./layouts/scnSOL");
+const { SCN_STAKE_POOL, TOKEN_LAYOUT, } = require("./layouts/scnSOL");
 const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
 const { parseSanctumLstStateList } = require("./layouts/sanctum-validators-lsts-layout");
 const { STAKE_POOL_PARTIAL } = require("./layouts/stake-pool-partial-layout");
@@ -40,6 +40,7 @@ const defaultParseLayout = Layout => info => {
 }
 
 const customDecoders = {
+  tokenAccount: defaultParseLayout(TOKEN_LAYOUT),
   reserve: parseReserve,
   lido: parseLido,
   lidoValidatorList: parseLidoValidatorList,

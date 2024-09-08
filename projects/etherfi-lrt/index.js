@@ -1,14 +1,20 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/sumTokens');
-
-const owners = ["0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88"]
+const { sumTokensExport } = require('../helper/unwrapLPs');
+const vaults = [
+  '0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88',
+  '0x7223442cad8e9cA474fC40109ab981608F8c4273',
+  '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642',
+  '0x352180974C71f84a934953Cf49C4E538a6F9c997',
+  '0xeDa663610638E6557c27e2f4e973D3393e844E70',
+  '0x5401b8620E5FB570064CA9114fd1e135fd77D57c',
+]
 
 module.exports = {
-  methodology: "LRTS on 0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
   doublecounted: true,
   ethereum: {
-    tvl: sumTokensExport({
-      owners,
-      tokens: [ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.sfrxETH, ADDRESSES.ethereum.cbETH, ADDRESSES.ethereum.EETH, ADDRESSES.ethereum.RETH, ADDRESSES.null, "0xf951E335afb289353dc249e82926178EaC7DEd78", "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee", "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b", "0xa2E3356610840701BDf5611a53974510Ae27E2e1", "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa" ] 
-    }),
-  }}
+    tvl: sumTokensExport({ owners: vaults, fetchCoValentTokens: true, tokenConfig: {
+      onlyWhitelisted: false,
+    }, resolveUniV3: true, blacklistedTokens: [
+      '0x657e8c867d8b37dcc18fa4caead9c45eb088c642', // eBTC
+    ] }),
+  },
+}

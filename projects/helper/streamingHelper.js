@@ -10,9 +10,12 @@ function isStableToken(symbol = '', address = '') {
   return stableTokenAddresses.includes(address.toLowerCase()) || stableTokens.includes(symbol.toUpperCase())
 }
 
-async function getWhitelistedTokens({ api, tokens, isVesting }) {
-  tokens = getUniqueAddresses(tokens)
-  const symbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true})
+async function getWhitelistedTokens({ api, tokens, isVesting  }) {
+  tokens = getUniqueAddresses(tokens, api.chain)
+  let symbols = []
+  if (!['solana', 'sui', 'aptos'].includes(api.chain)) {
+    symbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true})
+  }
   tokens = tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
   return tokens
 }
@@ -87,6 +90,24 @@ const stableTokenAddresses = [
   ADDRESSES.meter.BUSD_bsc,
   ADDRESSES.meter.USDT_eth,
   '0x687A6294D0D6d63e751A059bf1ca68E4AE7B13E2',
+
+  ADDRESSES.solana.SOL,
+  ADDRESSES.solana.USDC,
+  ADDRESSES.solana.USDT,
+
+  ADDRESSES.sui.SUI,
+  ADDRESSES.sui.USDC,
+  ADDRESSES.sui.WETH,
+  ADDRESSES.sui.USDT,
+
+  ADDRESSES.aptos.APT,
+  ADDRESSES.aptos.USDC,
+  ADDRESSES.aptos.USDC_1,
+  ADDRESSES.aptos.USDC_2,
+  ADDRESSES.aptos.USDT,
+  ADDRESSES.aptos.USDT_2,
+
+
 ].map(i => i.toLowerCase())
 
 module.exports = {
