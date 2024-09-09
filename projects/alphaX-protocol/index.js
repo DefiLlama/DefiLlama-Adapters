@@ -13,6 +13,6 @@ const tokenAddress = {
 
 Object.keys(walletAddresses).forEach(chain => {
   module.exports[chain] = {
-    tvl: sumTokensExport({ owners: walletAddresses[chain], tokenAddresses: tokenAddress[chain], })
+    tvl: sumTokensExport({ owners: walletAddresses[chain], tokens: tokenAddress[chain], })
   }
 })
