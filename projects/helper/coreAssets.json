@@ -1870,14 +1870,14 @@
   },
   "rari": {
     "WETH": "0xf037540e51d71b2d2b1120e8432ba49f29edfbd0",
-    "USDC.e": "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6"
+    "USDC_e": "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6"
   },
   "real": {
     "RWA": "0x4644066f535ead0cde82d209df78d94572fcbf14"
   },
   "saakuru": {
     "WOAS": "0x557a526472372f1F222EcC6af8818C1e6e78A85f",
-    "USDC.e": "0x739222D8A9179fE05129C77a8fa354049c088CaA"
+    "USDC_e": "0x739222D8A9179fE05129C77a8fa354049c088CaA"
   },
   "bouncebit": {
     "wstBBTC": "0x8f083eafcbba2e126ad9757639c3a1e25a061a08"
