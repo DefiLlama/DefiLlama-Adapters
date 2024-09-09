@@ -13,7 +13,7 @@ const config = {
   bitcoin: {},
 }
 
-Object.keys(config).forEach(async chain => {
+Object.keys(config).forEach(chain => {
   const { owners, tokens, } = config[chain]
 
   if (chain === 'bitcoin') {
