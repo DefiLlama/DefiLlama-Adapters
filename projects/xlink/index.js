@@ -32,7 +32,7 @@ module.exports = {
         "0xcD0cb6AA811E1c8cD9A55EcB9Cc83f6a50Bed311",
         "0x13b72A19e221275D3d18ed4D9235F8F859626673",
       ],
-      tokens: ["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", ADDRESSES.null],
+      tokens: [ADDRESSES.ethereum.WBTC, ADDRESSES.null],
     }),
   },
   bsc: {
@@ -43,8 +43,8 @@ module.exports = {
         "0xFFda60ed91039Dd4dE20492934bC163e0F61e7f5",
       ],
       tokens: [
-        "0x55d398326f99059fF775485246999027B3197955",
-        "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+        ADDRESSES.bsc.USDT,
+        ADDRESSES.bsc.BTCB,
       ],
     }),
   },

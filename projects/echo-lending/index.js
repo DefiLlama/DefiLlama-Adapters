@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../helper/portedTokens");
 const { function_view } = require("../helper/chain/aptos");
@@ -5,7 +6,7 @@ const { function_view } = require("../helper/chain/aptos");
 let _data
 
 const mapping = {
-  'APT': "0x1::aptos_coin::AptosCoin",
+  'APT': ADDRESSES.aptos.APT,
 }
 
 async function getData() {

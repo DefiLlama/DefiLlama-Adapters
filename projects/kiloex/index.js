@@ -13,12 +13,12 @@ module.exports = {
   start: 1690971144,
   bsc: { tvl: sumTokensExport({ owners, tokens: [
     ADDRESSES.bsc.USDT, ADDRESSES.ethereum.FDUSD, ADDRESSES.scroll.STONE,
-    '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', //WBNB
+    ADDRESSES.bsc.WBNB, //WBNB
     '0xba2ae424d960c26247dd6c32edc70b295c744c43', //DOGE
-    '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c', //BTCB
+    ADDRESSES.bsc.BTCB, //BTCB
     '0xb0b84d294e0c75a6abe60171b70edeb2efd14a1b',//slisBNB
     '0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5',//lisUSD
-    '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', //usdc
+    ADDRESSES.bsc.USDC, //usdc
     
   ], }) },
   op_bnb: {
@@ -26,29 +26,29 @@ module.exports = {
       ADDRESSES.op_bnb.USDT, 
       ADDRESSES.base.DAI, //FDUSD
       ADDRESSES.optimism.WETH_1, //WBNB
-      '0x7c6b91d9be155a6db01f749217d76ff02a7227f2', //BTCB
-      '0xe7798f023fc62146e8aa1b36da45fb70855a77ea', //ETH
+      ADDRESSES.defiverse.USDC, //BTCB
+      ADDRESSES.defiverse.ETH, //ETH
     ] })
   },
   manta: {
     tvl: sumTokensExport({ owners: manta_owners, tokens: [
       ADDRESSES.manta.USDT, manta_stone_token, manat_manta_token,
       '0x7746ef546d562b443ae4b4145541a3b1a3d75717', //vMANTA
-      '0xb73603c5d87fa094b7314c74ace2e64d165016fb', //USDC
+      ADDRESSES.manta.USDC, //USDC
       ] })
   },
   taiko: {
     tvl: sumTokensExport({ owners: taiko_owners, tokens: [
       ADDRESSES.taiko.USDC,
-      '0x19e26b0638bf63aa9fa4d14c6baf8d52ebe86c5c', //USDC.e
+      ADDRESSES.taiko.USDC_e, //USDC.e
       ] })
   },
   bsquared: {
     tvl: sumTokensExport({ owners: bsquared_owners, tokens: [
       ADDRESSES.bsquared.USDT,
-      '0xe544e8a38add9b1abf21922090445ba93f74b9e5', //USDC
-      '0x7537c1f80c9e157ed7afd93a494be3e1f04f1462', //BSTONE
-      '0x796e4d53067ff374b89b2ac101ce0c1f72ccaac2',//uBTC
+      ADDRESSES.bsquared.USDC, //USDC
+      ADDRESSES.bsquared.BSTONE, //BSTONE
+      ADDRESSES.bsquared.UBTC,//uBTC
       ] })
   },
 };

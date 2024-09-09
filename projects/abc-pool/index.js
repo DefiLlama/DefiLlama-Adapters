@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const PoSPoolProxy1967_core = "cfx:type.contract:accpx9uxky39pg1hzav757vdej95w1kbcp13d0hvm7";
 const PoSPoolProxy1967_espace = "0xb6eb7aa86f3886b6edc0fc1c826221b1fb26e437";
 const core_rpc = "https://main.confluxrpc.com";

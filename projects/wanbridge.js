@@ -1,3 +1,4 @@
+const ADDRESSES = require('helper/coreAssets.json')
 const { get } = require("./helper/http");
 let ret;
 async function getTvl() {
@@ -28,7 +29,7 @@ const chainsMap = {
   tron: "tron",
   wan: "wanchain",
   xdc: "xdc",
-  ripple: "xrp",
+  ripple: ADDRESSES.ripple.XRP,
   // clover: "clover",
   // telos: "telos",
 };
