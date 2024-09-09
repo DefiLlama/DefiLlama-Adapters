@@ -1,4 +1,4 @@
-const ADDRESSES = require('helper/coreAssets.json')
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens2 } = require("./helper/unwrapLPs")
 
 async function getVaults(api) {

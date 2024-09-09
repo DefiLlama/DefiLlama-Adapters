@@ -1,4 +1,4 @@
-const ADDRESSES = require('helper/coreAssets.json')
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens } = require('./helper/chain/near');
 
 const GRID_CONTRACT_ID = 'grid.deltatrade.near';
