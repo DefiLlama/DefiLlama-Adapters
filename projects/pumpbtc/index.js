@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokensExport, sumTokens } = require('../helper/sumTokens');
 const utils = require('../helper/utils');
+const { bitcoin } = require('../wbtc');
 
 module.exports = {
   methodology: 'TVL for pumpBTC is calculated based on the total value of WBTC, FBTC, BTCB held in the contract that were utilized in the minting process of pumpBTC.',
@@ -19,12 +20,15 @@ Object.keys(config).forEach(async chain => {
   if (chain === 'bitcoin') {
     module.exports[chain] = {
       tvl: 
-        sdk.util.sumChainTvls([
           async (api) => {
             const addresses = await getStakingAddresses()
-            return sumTokens({...api, api, ...{owners: addresses}})
+            const total = await sumTokens({...api, api, ...{owners: addresses}})
+            console.log('>>> total', total)
+            //return sumTokens({owners: addresses}, api)
+            //return res * 1e8
+            //api.add(ADDRESSES.ethereum.WBTC, total * 1e8)
+            return total
           }
-        ])
     }
   } else {
     module.exports[chain] = {
@@ -38,5 +42,5 @@ async function getStakingAddresses() {
 
   const nativeBtcAddresses = res.data.data.details.btc.details.map(d => d.address)
   const babylonAddresses = res.data.data.details.babylon.details.map(d => d.address)
-  return [...nativeBtcAddresses, ...babylonAddresses]
+  return [...nativeBtcAddresses, ...babylonAddresses].slice(0, 1200)
 }
