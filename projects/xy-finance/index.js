@@ -67,6 +67,15 @@ const config = {
   },
   xlayer: {
     chainId: '196'
+  },
+  taiko: {
+    chainId: '167000'
+  },
+  ox_chain: {
+    chainId: '6699'
+  },
+  cronos_zkevm: {
+    chainId: '388'
   }
 }
 
@@ -96,7 +105,23 @@ const yPoolDepositContract = {
     "eYe": {
       "contractAddress": "0xF0052C0B4F08078846aF48FE8C7bb365c9937c21",
       "tokenAddress": "0x9A257C90Fa239fBA07771ef7da2d554D148c2E89"
-    }
+    },
+    "LOOT": {
+      "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
+      "tokenAddress": "0x721A1B990699eE9D90b6327FaaD0A3E840aE8335"
+    },
+    "PEPE": {
+      "contractAddress": "0x4F19699cb57543B76167b7d38040f34db4d11fEC",
+      "tokenAddress": "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
+    },
+    "MOG": {
+      "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
+      "tokenAddress": "0xaaeE1A9723aaDB7afA2810263653A34bA2C21C7a"
+    },
+    // "BITCOIN": {
+    //   "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+    //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F" // doesnt exist
+    // }
   },
   "25": {
     "ETH": {
@@ -123,14 +148,16 @@ const yPoolDepositContract = {
       "contractAddress": "0xEC8476DCC72b4AB6Cbc3C2bD7f50A15891485fDB",
       "tokenAddress": "0xA2ae6273Dd65F9fA76C3d383eDe9c1261e025DAC"
     },
-    "DBX": {
-      "contractAddress": "0x812e9eE2437a3e4FE0A4A4A7f195536844301f07",
-      "tokenAddress": "0x061E31e7768b39a4282822b65569F8d814dC15f6"
-    },
-    "DBC": {
-      "contractAddress": "0xD99995b63F44fc500B702251262B7d9f35adA0BC",
-      "tokenAddress": "0x730B05d100EeFb92f04016C6c0cF6f2bBB2C3A57"
-    },
+    // DBX is already counted from DBX tvl on Arbitrum since its just a mint on Cronos
+    // "DBX": {
+    //   "contractAddress": "0x812e9eE2437a3e4FE0A4A4A7f195536844301f07",
+    //   "tokenAddress": "0x061E31e7768b39a4282822b65569F8d814dC15f6"
+    // },
+    // DBC is already counted from DBC tvl on Arbitrum since its just a mint on Cronos
+    // "DBC": {
+    //   "contractAddress": "0xD99995b63F44fc500B702251262B7d9f35adA0BC",
+    //   "tokenAddress": "0x730B05d100EeFb92f04016C6c0cF6f2bBB2C3A57"
+    // },
     "SINGLE": {
       "contractAddress": "0x9A4cC214782Fea5880394eFDE60187797a2FEF01",
       "tokenAddress": "0x0804702a4E749d39A35FDe73d1DF0B1f1D6b8347"
@@ -139,6 +166,20 @@ const yPoolDepositContract = {
       "contractAddress": "0x58F29F7d759aef5B8e34C8e4152d6117893017aB",
       "tokenAddress": "0xae620DC4B9b6e44FBeb4a949F63AC957Cc43b5dD"
     },
+    // LLT is already counted from LLT tvl on Polygon since its just a mint on Cronos
+    // "LLT": {
+    //   "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+    //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
+    // },
+    "RIP": {
+      "contractAddress": "0xd15f36e89e08A67AEe910629fCe9aBA7D2e8Ac80",
+      "tokenAddress": "0x34aceA6Cc02578aF041a5E976b7289ca23cCB7A8"
+    },
+    "STUCK": {
+      "contractAddress": "0xc1Ae654b7D9C6a2Cfb0f97254AB5246AAbd2Ce7b",
+      "tokenAddress": "0xa0D445dC147f598d63518b5783CA97Cd8Bd9f5Bc"
+    }
+    
   },
   "56": {
     "ETH": {
@@ -181,10 +222,11 @@ const yPoolDepositContract = {
       "contractAddress": "0xf4137e5D07b476e5A30f907C3e31F9FAAB00716b",
       "tokenAddress": ADDRESSES.polygon.USDC
     },
-    "BLU": {
-      "contractAddress": "0x7C1C974367Ee28D3d7aBb088f5FCd748B3759EA4",
-      "tokenAddress": "0x759d34685468604c695De301ad11A9418e2f1038",
-    },
+    // BLU is already counted from BLU tvl on Cronos since its just a mint on Polygon
+    // "BLU": {
+    //   "contractAddress": "0x7C1C974367Ee28D3d7aBb088f5FCd748B3759EA4",
+    //   "tokenAddress": "0x759d34685468604c695De301ad11A9418e2f1038",
+    // },
     "CANDY": {
       "contractAddress": "0x5Bd40e579Cb7D37784689044E6C7c333E2E300e6",
       "tokenAddress": "0x54E53ed24C12c1d3Df7D653587E2f27d3FbaE3d2",
@@ -193,6 +235,10 @@ const yPoolDepositContract = {
       "contractAddress": "0xF98bfE69d069B40668D4F6aaeA22E73d1DC21A93",
       "tokenAddress": "0x925FAdb35B73720238cc78777d02ED4dD3100816",
     },
+    "LLT": {
+      "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+      "tokenAddress": "0x0DdE4811C4DD68Dc740A1D7997F33fF46CD186a9"
+    }
   },
   "250": {
     "ETH": {
@@ -235,10 +281,11 @@ const yPoolDepositContract = {
       "contractAddress": "0x680ab543ACd0e52035E9d409014dd57861FA1eDf",
       "tokenAddress": ADDRESSES.arbitrum.USDC
     },
-    "DBF": {
-      "contractAddress": "0xa1fB1F1E5382844Ee2D1BD69Ef07D5A6Abcbd388",
-      "tokenAddress": "0x38A896c29Eb54c566A3fD593f559174520Dc6F75"
-    },
+    // DBF is already counted from DBF tvl on Cronos since its just a mint on Arbitrum
+    // "DBF": {
+    //   "contractAddress": "0xa1fB1F1E5382844Ee2D1BD69Ef07D5A6Abcbd388",
+    //   "tokenAddress": "0x38A896c29Eb54c566A3fD593f559174520Dc6F75"
+    // },
     "DBX": {
       "contractAddress": "0x156C04ca75f11817DdbF887692990F3E46e8982B",
       "tokenAddress": "0x0b257fe969d8782fAcb4ec790682C1d4d3dF1551"
@@ -348,13 +395,28 @@ const yPoolDepositContract = {
   },
   "8453": {
     "ETH": {
-      "contractAddress": "0xD195070107d853e55Dad9A2e6e7E970c400E67b8",
+      "contractAddress": "0x4F19699cb57543B76167b7d38040f34db4d11fEC",
       "tokenAddress": ethAddress
     },
     "USDC": {
-      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "contractAddress": "0xd15f36e89e08A67AEe910629fCe9aBA7D2e8Ac80",
       "tokenAddress": ADDRESSES.base.USDbC
-    }
+    },
+    // LOOT is already counted from LOOT tvl on Ethereum since its just a mint on Base
+    // "LOOT": {
+    //   "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+    //   "tokenAddress": "0x94a42083948d86432246eAD625B30d49014A4BFF"
+    // },
+    // RIP is already counted from RIP tvl on Cronos since its just a mint on Base
+    // "RIP": {
+    //   "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
+    //   "tokenAddress": "0x34aceA6Cc02578aF041a5E976b7289ca23cCB7A8"
+    // },
+    // STUCK is already counted from STUCK tvl on Cronos since its just a mint on Base
+    // "STUCK": {
+    //   "contractAddress": "0xc1Ae654b7D9C6a2Cfb0f97254AB5246AAbd2Ce7b",
+    //   "tokenAddress": "0xa0D445dC147f598d63518b5783CA97Cd8Bd9f5Bc"
+    // }
   },
   "5000": {
     "ETH": {
@@ -368,7 +430,12 @@ const yPoolDepositContract = {
     "USDT": {
       "contractAddress": "0x0241fb446d6793866245b936F2C3418F818bDcD3",
       "tokenAddress": ADDRESSES.mantle.USDT
-    }
+    },
+    // LOOT is already counted from LOOT tvl on Ethereum since its just a mint on Mantle
+    // "LOOT": {
+    //   "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+    //   "tokenAddress": "0x94a42083948d86432246eAD625B30d49014A4BFF"
+    // }
   },
   "534352": {
     "ETH": {
@@ -385,6 +452,11 @@ const yPoolDepositContract = {
       "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
       "tokenAddress": ethAddress
     },
+    // LOOT is already counted from LOOT tvl on Ethereum since its just a mint on Blast
+    // "LOOT": {
+    //   "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
+    //   "tokenAddress": "0x1C559a960aE5293eA56C40EFC3c0169B413DDcF3"
+    // }
   },
   "196": {
     "ETH": {
@@ -395,6 +467,48 @@ const yPoolDepositContract = {
       "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
       "tokenAddress": ADDRESSES.xlayer.USDT
     }
+  },
+  "167000": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
+      "tokenAddress": ADDRESSES.taiko.USDC
+    }
+  },
+  "6699": {
+    // USDC is already counted from USDC tvl on Base since its just a mint on OxChain
+    // "USDC": {
+    //   "contractAddress": "0xd15f36e89e08A67AEe910629fCe9aBA7D2e8Ac80",
+    //   "tokenAddress": "0xcE8f4E26e2532A78DAcD7A497A1827692b14b31D"
+    // },
+    // ETH is already counted from ETH tvl on Base since its just a mint on OxChain
+    // "ETH": {
+    //   "contractAddress": "0x4F19699cb57543B76167b7d38040f34db4d11fEC",
+    //   "tokenAddress": "0x7e6ecF974310d75325Ab1209253250aC7fCCe09b"
+    // },
+    // PEPE is already counted from PEPE tvl on Ethereum since its just a mint on OxChain
+    // "PEPE": {
+    //   "contractAddress": "0x0790eF241DC85Adf32998aae5E5738579c417701",
+    //   "tokenAddress": "0x4aE774bF3dEfF2eaD31D5D51Aa636EE216fBE274"
+    // },
+    // MOG is already counted from MOG tvl on Ethereum since its just a mint on OxChain
+    // "MOG": {
+    //   "contractAddress": "0x141E379505C3b89C5BBE4Bd2353f12CA4681e3D2",
+    //   "tokenAddress": "0xfaffa4b4D8538A2ba63bEa39ACbF709E3A972714"
+    // },
+    // "BITCOIN": {
+    //   "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
+    //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
+    // }
+  },
+  "388": {
+    "ETH": {
+      "contractAddress": "0xAa0b0654E79E17332d983E2351bD926cE336B9BD",
+      "tokenAddress": "0x271602A97027ee1dd03b1E6e5dB153eB659A80b1"
+    },
   }
 }
 

@@ -185,6 +185,18 @@ const RAYDIUM_STABLE_STATE_LAYOUT_V1 = struct([
   seq(u64("padding"), 64, "padding"),
 ])
 
+const KeyLayoutv4 = struct([
+  publicKey('vaultA'),
+  publicKey('vaultB'),
+  publicKey('mintA'),
+  publicKey('mintB'),
+])
+
+const TokenAmountLayout = struct([
+  u64('amount'),
+])
+
+
 module.exports = {
-  RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1,
+  RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, KeyLayoutv4, TokenAmountLayout,
 }
