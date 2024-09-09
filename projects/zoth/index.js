@@ -2,7 +2,7 @@ const { request } = require("graphql-request");
 
 const endpoint = "https://api.studio.thegraph.com/proxy/77016/wallet-base/version/latest";
 
-const securityAddress = '0x07E4826972da11Ccb99A100A6cC3d596a2143549';
+const securityAddress = '0x917991d52Aa2fC1b5612A6aa5e4e81d580F97532';
 const query = `
 query MyQuery {
   securities(where: {security: "${securityAddress}"}) {
@@ -42,7 +42,7 @@ async function getTvl() {
 
 module.exports = {
   timetravel: false,
-  base: {
+  ethereum: {
     fetch: getTvl
   },
   fetch: getTvl
