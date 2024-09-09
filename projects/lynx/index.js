@@ -26,7 +26,7 @@ const config = {
     tokenAndOwnerPair: [
       [
         // WFTM Token
-        "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+        ADDRESSES.fantom.WFTM,
         // OFTChipAdapter (owner)
         "0x614aA983f54409D475aeC5D18120FECFD6320eF4"
       ],

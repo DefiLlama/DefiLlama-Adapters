@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens } = require('./helper/chain/near');
 
 const GRID_CONTRACT_ID = 'grid.deltatrade.near';
@@ -7,7 +8,7 @@ const tokens = [
   'wrap.near',
   '17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1',
   'token.v2.ref-finance.near',
-  'token.burrow.near',
+  ADDRESSES.near.BURROW,
   'token.lonkingnearbackto2024.near',
   'blackdragon.tkn.near',
   'ftv2.nekotoken.near',
