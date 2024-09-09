@@ -22,11 +22,8 @@ Object.keys(config).forEach(async chain => {
       tvl: 
           async (api) => {
             const addresses = await getStakingAddresses()
-            //const total = await sumTokens({...api, api, ...{owners: addresses}})
-            const total = sumTokens({owners: addresses})
-            sdk.log('>>> total', total, addresses.length)
-            //return res * 1e8
-            //api.add(ADDRESSES.ethereum.WBTC, total * 1e8)
+            const total = await sumTokens({...api, api, ...{owners: addresses}})
+            sdk.log('>>> total', total)
             return total
           }
     }
@@ -40,7 +37,7 @@ Object.keys(config).forEach(async chain => {
 async function getStakingAddresses() {
   let res = await utils.fetchURL('https://dashboard.pumpbtc.xyz/api/dashboard/btc/realtime')
 
-  const nativeBtcAddresses = res.data.data.details.btc.details.map(d => d.address)
+  const btcAddresses = res.data.data.details.btc.details.map(d => d.address)
   const babylonAddresses = res.data.data.details.babylon.details.map(d => d.address)
-  return [...nativeBtcAddresses, ...babylonAddresses].slice(100)
+  return [...btcAddresses, ...babylonAddresses]
 }
