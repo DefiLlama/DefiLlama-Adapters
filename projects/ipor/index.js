@@ -16,7 +16,24 @@ async function tvlEthereum(api) {
 }
 async function tvlArbitrum(_, block, _1, {api}) {
     const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
+
+    const assets = [
+      ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
+    ]
+
+    const output = await api.multiCall({ abi: abi.getBalancesForOpenSwap, calls: assets, target: addresses.arbitrum.IporProtocolRouter })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: assets })
+
+    output.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
+      const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
+      const decimal = 18 - decimals[i]
+      api.add(assets[i], balance / (10 ** decimal))
+    });
+
     for (const pool of addresses.arbitrum.pools) {
+        if (assets.includes(pool.asset)) {
+            continue;
+        }
         await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
     }
     return api.getBalances();
@@ -41,6 +58,9 @@ async function calculateTvlForV2(api) {
   });
 
   for (const pool of addresses.ethereum.pools) {
+    if (assets.includes(pool.asset)) {
+      continue;
+    }
     await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
   }
 
