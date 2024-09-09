@@ -7,6 +7,10 @@ const chainsConfig = {
     subgraphUrl:
       "https://api.studio.thegraph.com/query/77016/vault-base/version/latest",
   },
+  ethereum: {
+    subgraphUrl:
+      "https://api.studio.thegraph.com/query/77016/vault-mainnet/version/latest",
+  },
 };
 
 //gets and record tvl for each token
@@ -36,6 +40,7 @@ const customiseTable = async (tokens, tvls) => {
   return table;
 };
 
+//Todo: first 100 pools?
 //fetch secondary, primary and margin issue pools
 const getChainPools = async (url) => {
   const QUERY = gql`
