@@ -1,6 +1,9 @@
 const { compoundExports2 } = require("../helper/compound");
 
 module.exports = {
+  hallmarks: [
+    [1720051200,"Rug Pull"]
+  ],
   methodology:
     "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
   merlin: {
