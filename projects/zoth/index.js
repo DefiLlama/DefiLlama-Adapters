@@ -1,6 +1,6 @@
 const { request } = require("graphql-request");
 
-const endpoint = "https://api.studio.thegraph.com/proxy/77016/wallet-base/version/latest";
+const endpoint = "https://api.studio.thegraph.com/query/77016/wallet-mainnet/version/latest";
 
 const securityAddress = '0x917991d52Aa2fC1b5612A6aa5e4e81d580F97532';
 const query = `
