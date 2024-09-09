@@ -14,6 +14,9 @@ async function getVaults(api) {
 }
 
 module.exports = {
+    hallmarks: [
+        [1720742400, "Protocol Exploit"]
+    ],
     ethereum: {
         tvl: async (api) => {
             const { vaults, tokens } = await getVaults(api)
