@@ -12,7 +12,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "Calculates the total ZeUSD Supply",
+  methodology: "Total ZeUSD Supply on all chains",
   ethereum: {
     tvl,
   },
