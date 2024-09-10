@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const CONTRACT_ADDRESSES = {
-  environmentContract: "0x0000000000000000000000000000000000001000", // Environment contract address
+  environmentContract: ADDRESSES.findora.FRA, // Environment contract address
   stakesManagerContract: "0x0000000000000000000000000000000000001001", // Stakes manager contract address
   oasJumboStaking: "0x7e6347ddC55dF19B94C9FE893bf551CFc8C2208b", // OAS Jumbo staking contract address
 };
