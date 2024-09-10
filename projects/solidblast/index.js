@@ -6,7 +6,6 @@ module.exports = {
     blast: {
         tvl: getUniTVL({
             factory: "0x5a79cC04Ad1494A8Ec04cE5C1E25bB50A10111eA",
-            fetchBalances: true,
             useDefaultCoreAssets: true,
         }),
     },

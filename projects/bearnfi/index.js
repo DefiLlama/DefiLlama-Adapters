@@ -84,7 +84,7 @@ async function yieldTVL(timestamp, chainBlocks) {
   return balances;
 }
 
-const cExports = compoundExports(COMPTROLLER, chain, cBNB, wBNB,)
+const cExports = compoundExports(COMPTROLLER, cBNB, wBNB,)
 
 const dexTVL = getUniTVL({
   factory: BDEX_FACTORY,
