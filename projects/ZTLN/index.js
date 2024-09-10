@@ -42,6 +42,7 @@ async function getTvl() {
 
 module.exports = {
   timetravel: false,
+  methodology: "The value in RWA held by the protocol",
   ethereum: {
     fetch: getTvl
   },
