@@ -38,7 +38,7 @@ Object.keys(chainsMap).map((chain) => {
   module.exports[chain] = {
     tvl: async () => {
       let ret = await getTvl();
-      return { tether: ret[chainsMap[chain]] }
+      return { tether: ret[chainsMap[chain]] ?? 0 }
     },
   };
 });
