@@ -1,4 +1,3 @@
-const { compoundExports2 } = require("../helper/compound");
 const { stakings } = require("../helper/staking");
 const { sumTokens } = require("../helper/sumTokens");
 const { nullAddress } = require("../helper/treasury");
@@ -9,7 +8,10 @@ const owners = [treasury, treasury2]
 const qi = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
 
 async function tvl(api) {
-  await compoundExports2({ comptroller: '0x486af39519b4dc9a7fccd318217352830e8ad9b4' }).tvl(api)
+  const markets = await api.call({  abi: "address[]:getAllMarkets", target: '0x486af39519b4dc9a7fccd318217352830e8ad9b4'})
+  const underlyings = (await api.multiCall({  abi: 'address:underlying', calls: markets, permitFailure: true })).map(i => i ?? nullAddress)
+  const bals = await api.multiCall({  abi: 'uint256:totalReserves', calls: markets})
+  api.add(underlyings, bals)
   return sumTokens({ api, owners, tokens: [nullAddress] })
 }
 
