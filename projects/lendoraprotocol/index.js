@@ -4,7 +4,6 @@ const { staking } = require('../helper/staking')
 module.exports = {
   scroll: compoundExports2({
     comptroller: '0xA27CDE1F3dcaaF653624049Fc3b1a720eC1D4e91',
-    fetchBalances: true,
     cether: '0xBC7fA7C2dF265d073Be6D1c88468AEB5c06ba07c',
   }),
 };

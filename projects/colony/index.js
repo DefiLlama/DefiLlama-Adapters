@@ -29,7 +29,6 @@ function _tvl() {
 
   const colonyDexTVL = getUniTVL({
     factory: colonyDexFactory,
-    fetchBalances: true,
     useDefaultCoreAssets: true
   })
 

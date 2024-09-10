@@ -9,7 +9,7 @@ module.exports = {
   misrepresentedTokens: true,
   start: 1686309181,
   era: {
-    tvl: getUniTVL({ factory: '0x15C664A62086c06D43E75BB3fddED93008B8cE63', useDefaultCoreAssets: true,fetchBalances: true, }),
+    tvl: getUniTVL({ factory: '0x15C664A62086c06D43E75BB3fddED93008B8cE63', useDefaultCoreAssets: true,  }),
     staking: stakingPricedLP(xSWORD,SWORD_TOKEN,'era',SWORD_WETH_LP,'weth')
   },
 };

@@ -1,5 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { compoundExports } = require('../helper/compound');
+const { compoundExports2 } = require('../helper/compound');
 
 const comptroller = {
     heco: "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
@@ -12,14 +11,9 @@ const ceth = {
     heco: "0x397c6D1723360CC1c317CdC9B2E926Ae29626Ff3",
 }
 
-const native = {
-    bsc: ADDRESSES.bsc.WBNB,
-    heco: ADDRESSES.heco.WHT,
-}
-
 module.exports = {
     ...Object.keys(comptroller).reduce((exp, chain) => {
-        exp[chain] = compoundExports(comptroller[chain], chain, ceth[chain], native[chain], undefined, symbol => ["MLP", "CLP", "SLP"].some(c => symbol.includes(c)))
+        exp[chain] = compoundExports2({ comptroller: comptroller[chain], cether: ceth[chain]})
         return exp
     }, {})
 }

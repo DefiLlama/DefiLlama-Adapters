@@ -8,6 +8,6 @@ module.exports = {
   methodology:
     "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
   arbitrum: {
-    ...compoundExports(unitroller, "arbitrum"),
+    ...compoundExports(unitroller),
   },
 };

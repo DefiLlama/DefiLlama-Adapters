@@ -1,9 +1,5 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const {usdCompoundExports} = require("./helper/compound");
-
-const controllerAddress = "0x0d4fe8832857Bb557d8CFCf3737cbFc8aE784106";
+const { compoundExports2 } = require("./helper/compound");
 
 module.exports = {
-  timetravel: true, // but we don't have a thundercore archive node atm
-  thundercore: usdCompoundExports(controllerAddress, "thundercore", "0xeF5A0CE54a519B1Db3F350EB902C4cFbf7671D88", undefined, { cetheEquivalent: ADDRESSES.thundercore.WTT })
-};
+  thundercore: compoundExports2({ comptroller: '0x0d4fe8832857Bb557d8CFCf3737cbFc8aE784106', cether: '0xef5a0ce54a519b1db3f350eb902c4cfbf7671d88' })
+}
