@@ -4,7 +4,7 @@ const { getUniTVL } = require("../helper/unknownTokens");
 
 const unitroller = '0x643dc7C5105d1a3147Bd9524DFC3c5831a373F1e'
 
-const lendingMarket = compoundExports(unitroller, "cronos", "0x2e909694B362c2FcA3C8168613bd47842245504B", "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23", undefined, undefined, {
+const lendingMarket = compoundExports(unitroller, "0x2e909694B362c2FcA3C8168613bd47842245504B", "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",  {
   blacklistedTokens: [
     '0xa4434afeae0decb9820d906bf01b13291d00651a',
   ]
