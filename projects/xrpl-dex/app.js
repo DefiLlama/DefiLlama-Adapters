@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const rippleCodec = require("ripple-binary-codec");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { getCache, setCache } = require("../helper/cache");
@@ -92,7 +93,7 @@ const parseReserve = (reserveData) => {
   if (!reserveData) return null;
   const reserveIsXrp = typeof reserveData === "string";
   return {
-    currency: reserveIsXrp ? "XRP" : reserveData.currency,
+    currency: reserveIsXrp ? [ADDRESSES.ripple.XRP]: reserveData.currency,
     issuer: reserveIsXrp ? null : reserveData.issuer,
     amount: reserveIsXrp ? reserveData : reserveData.value,
   };
