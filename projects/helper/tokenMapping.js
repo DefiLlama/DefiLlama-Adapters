@@ -18,7 +18,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', ]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',]
 
 const transformTokens = {
   // Sample Code
@@ -40,14 +40,14 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   chainflip: {
-    Dot: { coingeckoId:'polkadot', decimals: 10 },
-    Usdc: { coingeckoId:'usd-coin', decimals: 6 },
-    Flip: { coingeckoId:'chainflip', decimals: 18 },
-    Btc: { coingeckoId:'bitcoin', decimals: 8 },
-    Eth: { coingeckoId:'ethereum', decimals: 18 },
-    Usdt: { coingeckoId:'tether', decimals: 6 },
-    ArbEth: { coingeckoId:'ethereum', decimals: 18 },
-    ArbUsdc: { coingeckoId:'usd-coin', decimals: 6 },
+    Dot: { coingeckoId: 'polkadot', decimals: 10 },
+    Usdc: { coingeckoId: 'usd-coin', decimals: 6 },
+    Flip: { coingeckoId: 'chainflip', decimals: 18 },
+    Btc: { coingeckoId: 'bitcoin', decimals: 8 },
+    Eth: { coingeckoId: 'ethereum', decimals: 18 },
+    Usdt: { coingeckoId: 'tether', decimals: 6 },
+    ArbEth: { coingeckoId: 'ethereum', decimals: 18 },
+    ArbUsdc: { coingeckoId: 'usd-coin', decimals: 6 },
   },
   thundercore: {
     '0xc3c857a9e5be042c8acf4f2827aa053e93b5d039': { coingeckoId: 'thunder-token', decimals: 18 },
@@ -68,6 +68,9 @@ const fixBalancesTokens = {
   },
   moonriver: {
     '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  zircuit: {
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
   },
   islm: {
     '0x0ce35b0d42608ca54eb7bcc8044f7087c18e7717': { coingeckoId: 'usd-coin', decimals: 6 },
