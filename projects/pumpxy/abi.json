@@ -1,5 +1,0 @@
-{
-  "allMemecoinsCount": "uint32:allMemecoinsCount",
-  "allMemecoins": "function allMemecoins(uint256) view returns (address)"
-}
-
