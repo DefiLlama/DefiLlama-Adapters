@@ -1,5 +1,6 @@
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
+const { deadFrom } = require('../mosquitos-finance')
 
 async function tvl(api) {
   const logs = await getLogs({
@@ -25,6 +26,7 @@ module.exports = {
   hallmarks: [
     [1673913600, "Rug Pull"]
   ],
+  deadFrom: 1673913600,
     ethereum: {
     tvl,
     // staking: sumTokensExport({ owners: [], tokens: ['0xF9C12B27cE5058ab98ce11BD53900f84E18C0650']})
