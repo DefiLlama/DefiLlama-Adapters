@@ -22,5 +22,6 @@ module.exports = {
   hallmarks: [
     [1646870400, "Rug Pull"]
   ],
+  deadFrom: 1646870400,
   ...zombiTvl(token, share, rewardPool, rewardPoolGeneris, masonry, pool2LPs, listedTokenGeneris, "fantom", undefined, false, "0xe577DF94b4Ea94399B7438e27EA1Ba81717464A0")
 }

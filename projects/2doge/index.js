@@ -19,5 +19,6 @@ module.exports = {
   },
   hallmarks: [
     [1646179200, "Rug Pull"]
-  ]
+  ],
+  deadFrom: 1646179200
 };

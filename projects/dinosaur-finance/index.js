@@ -24,6 +24,7 @@ module.exports = {
   hallmarks: [
     [1675814400, "Rug Pull"]
   ],
+  deadFrom: '2023-02-08',
   arbitrum: {
     tvl,
   }
