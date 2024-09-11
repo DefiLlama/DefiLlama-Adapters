@@ -7,6 +7,15 @@ const treasuries = [
   "0x63Fe55B3fe3f74B42840788cFbe6229869590f83", 
   "0xdFac83173A96b06C5D6176638124d028269cfCd2" 
 ];
+const baseTokenRate = [
+  // '',
+  '0x81A777c4aB65229d1Bf64DaE4c831bDf628Ccc7f',
+  '0x7ceD6167b5A08111dC8d0D2f9F7E482c4Da62506',
+  '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee',
+  '0xE3fF08070aB3aD7eeE7a1cab35105F27DF8EfF10',
+  // '',
+  '0x6Eb03222179F83126735D7E9FdE94571D716D399'
+]
 const cvxAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
 const aCVX = "0xb0903Ab70a7467eE5756074b31ac88aEBb8fB777";
 const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
@@ -18,7 +27,7 @@ module.exports = {
   },
 };
 
-async function getACRVInfo(api) {
+async function getACVXInfo(api) {
   const totalAssets = await api.api.call(
     {
       target: aCVX,
@@ -40,17 +49,25 @@ async function getUniBTCTvl(api) {
     })
   return totalSupply
 }
+async function getBaseTokenRate(api) {
+  const rates = await api.multiCall({ abi: 'uint256:getRate', calls: baseTokenRate })
+  rates.splice(0, 0, 1e18);
+  rates.splice(5, 0, 1e18);
+  return rates
+}
+
 async function tvl(api) {
-  const aCvxRate = await getACRVInfo(api)
+  const aCvxRate = await getACVXInfo(api)
+  const rates = await getBaseTokenRate(api)
   const tokens = await api.multiCall({ abi: 'address:baseToken', calls: treasuries })
   const bals = await api.multiCall({ abi: 'uint256:totalBaseToken', calls: treasuries })
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
   const uniBTCTvl = await getUniBTCTvl(api)
   bals.forEach((bal, i) => {
     if (tokens[i].toLowerCase() === aCVX.toLowerCase()) {
-      api.add(cvxAddress, bal*aCvxRate / 10 ** (18 - decimals[i]))  
+      api.add(cvxAddress, bal/(rates[i]/1e18)*aCvxRate / 10 ** (18 - decimals[i]))  
     } else {
-      api.add(tokens[i], bal / 10 ** (18 - decimals[i]))
+      api.add(tokens[i], bal/(rates[i]/1e18) / 10 ** (18 - decimals[i]))
     }
   })
   api.add(uniBTC, uniBTCTvl)
