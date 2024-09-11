@@ -1,7 +1,5 @@
 const sdk = require("@defillama/sdk");
-const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
-const ETH = ADDRESSES.null;
 
 module.exports = {
   zircuit: {
@@ -20,7 +18,7 @@ async function tvl(api, block) {
     chain: 'zircuit',
   });
   ethBalances.forEach((ethBalance) => {
-    sdk.util.sumSingleBalance(balances, ETH, ethBalance.balance, api.chain);
+    sdk.util.sumSingleBalance(balances, 'coingecko:ethereum', ethBalance.balance / 1e18);
   }); 
 
   return balances
