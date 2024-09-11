@@ -58,6 +58,11 @@ const fixBalancesTokens = {
   base: {
     '0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c': { coingeckoId: 'rocket-pool-eth', decimals: 18 },
   },
+  ftn: {
+    '0x780fb5aca83f2e3f57ee18cc3094988ef49d8c3d': { coingeckoId: 'lolik-staked-ftn', decimals: 18 },
+    '0x4b7708ee3ccbd3f9af68208e69ad31f611e1befe': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0xb7dc5eca6de5cb9b46ac405d3d4596333714f3f7': { coingeckoId: 'tether', decimals: 6 },
+  },
   op_bnb: {
     '0x7c6b91d9be155a6db01f749217d76ff02a7227f2': { coingeckoId: 'binance-bitcoin', decimals: 18 },
     '0xe7798f023fc62146e8aa1b36da45fb70855a77ea': { coingeckoId: 'ethereum', decimals: 18 },
