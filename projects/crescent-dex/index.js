@@ -26,5 +26,6 @@ module.exports = {
   methodology: "Counts the liquidity on all pools. ",
   crescent: {
     tvl
-  }
+  },
+  deadFrom: '2024-05-01'
 }
