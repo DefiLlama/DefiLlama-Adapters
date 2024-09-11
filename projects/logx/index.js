@@ -1,18 +1,15 @@
 const { nullAddress } = require("../helper/tokenMapping")
 
 module.exports = {
-  methodology: "USDC.e in the vault",
+  methodology: "Tokens locked in HypCollateral contracts on different chains.",
 }
 
 const config = {
-  linea: '0xc5f444d25d5013c395f70398350d2969ef0f6aa0',
-  mantle: '0x7A74Dd56Ba2FB26101A7f2bC9b167A93bA5e1353',
-  kroma: '0xC5f444D25D5013C395F70398350d2969eF0F6AA0',
-  manta: '0x53c6decad02cB6C535a7078B686650c951aD6Af5',
-  telos: '0x082321F9939373b02Ad54ea214BF6e822531e679',
-  fuse: '0x082321F9939373b02Ad54ea214BF6e822531e679',
-  mode: ['0x34b83A3759ba4c9F99c339604181bf6bBdED4C79', '0x082321F9939373b02Ad54ea214BF6e822531e679'],
-  zklink: ['0x75940cDa18F14D1F97562fc2A6dBCe31CBe03870']
+  arbitrum: ['0x297CE7A9156b9Dfc5b4468a6fd9ec5FdAd27e23A', '0xf0bDCFB8bfE1c5000481d263D672E1b09D58C3BE', '0x7EA2426a2396A98A370c1a8506D86df8Fd6C8174']
+}
+
+const hypTokenConfig = {
+  arbitrum: ['0xaf88d065e77c8cC2239327C5EDb3A432268e5831', '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', '0x827d5b0Cc07748B7B1c8Fbef19E288C71ee87FE8']
 }
 
 Object.keys(config).forEach(chain => {
@@ -20,16 +17,12 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       if (!Array.isArray(vault)) vault = [vault]
-      const ownerTokens = []
-      for (const v of vault) {
-        const tokens = await api.fetchList({ lengthAbi: 'allWhitelistedTokensLength', itemAbi: 'allWhitelistedTokens', target: v })
-        ownerTokens.push([tokens.map(i => {
-          switch (i.toLowerCase()) {
-            case '0x000000000000000000000000000000000000800a': return nullAddress
-            default: return i
-          }
-        }), v])
+      const hypTokens = hypTokenConfig[chain];
+      const ownerTokens = [];
+      for (let i = 0; i < vault.length; i++) {
+        ownerTokens.push([[hypTokens[i]], vault[i]])
       }
+      console.log(ownerTokens)
       return api.sumTokens({ ownerTokens })
     }
   }
