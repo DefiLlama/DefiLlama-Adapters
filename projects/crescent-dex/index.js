@@ -27,5 +27,6 @@ module.exports = {
   crescent: {
     tvl
   },
-  deadFrom: '2024-05-01'
+  deadFrom: '2024-05-01',
+  hallmarks: [1713052800, 'Sunset of Crescent Network']
 }
