@@ -13,3 +13,6 @@ module.exports = {
   methodology,
   ethpow: compoundExports("0x5e496e7F241B13c514A78B7E840bc3cC744D7215",  "0xb9e008f2C039fB994C8adD806F8aF709899aA95e", ADDRESSES.ethereum.WETH, { blacklistedTokens: blacklist })
 } 
+
+module.exports.deadFrom='2023-05-01',
+module.exports.ethpow.borrowed = () => ({}) // bad debt
