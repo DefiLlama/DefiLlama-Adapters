@@ -12,3 +12,5 @@ module.exports = {
     ...compoundExports(unitroller),
   },
 };
+
+module.exports.arbitrum.borrowed = () => ({}) // bad debt
