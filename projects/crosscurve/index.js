@@ -12,15 +12,14 @@ const fantom = async (api) => {
     "0x795b38c85d6f1524b434f14aa37c1c808c2bbd6b", // sx3crv_g
   ];
 
-  await Promise.allSettled(
-    contracts.map(async (contract) => {
-      const balance = await api.call({
-        abi: "erc20:totalSupply",
-        target: contract,
-      });
-      api.add(contract, balance);
-    })
-  );
+  const balances = await api.multiCall({
+    abi: "erc20:totalSupply",
+    calls: contracts.map((target) => ({ target })),
+  });
+
+  contracts.forEach((contract, i) => {
+    api.add(contract, balances[i]);
+  });
 };
 
 module.exports = {
@@ -48,7 +47,7 @@ module.exports = {
         "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", // usdc.e
         "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // DAI
         "0xec090cf6DD891D2d014beA6edAda6e05E025D93d", // crvUSDC
-        "0x82670f35306253222F8a165869B28c64739ac62e", // 3c-crvUSD //
+        "0x82670f35306253222F8a165869B28c64739ac62e", // 3c-crvUSD
         "0x73aF1150F265419Ef8a5DB41908B700C32D49135", // crvUSDT
         "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // 2CRV
       ],
