@@ -18,6 +18,7 @@ async function fetch() {
 }
 
 module.exports = {
+  deadFrom: '2024-01-01',
   mixin: {
     fetch
   },
