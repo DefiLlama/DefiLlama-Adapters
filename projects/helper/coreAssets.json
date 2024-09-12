@@ -487,6 +487,7 @@
   },
   "cronos": {
     "WCRO": "0xca2503482e5d6d762b524978f400f03e38d5f962",
+    "WCRO_1": "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
     "USDC": "0xc21223249ca28397b4b6541dffaecc539bff0c59",
     "WBTC": "0x062e66477faf219f25d27dced647bf57c3107d52",
     "SVN": "0x654bac3ec77d6db497892478f854cf6e8245dca9",
