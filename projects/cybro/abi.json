@@ -1,3 +1,0 @@
-{
-  "vault": "function totalSupply() view returns (uint256)"
-}
