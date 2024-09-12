@@ -36,7 +36,7 @@ const config = {
     contango_lens: CONTANGO_LENS_PROXY,
     graphUrl: alchemyGraphUrl('base'),
   },
-  avalanche: {
+  avax: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
     graphUrl: alchemyGraphUrl('avalanche'),
