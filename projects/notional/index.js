@@ -18,6 +18,6 @@ async function tvl(api) {
 
 module.exports = {
   deadFrom: '2024-08-22',
-  hallmarks: [1724284800, "End of Deprecation process for migrating from Notional V2 to Notional V3"],
+  hallmarks: [[1724284800, "End of Deprecation process for migrating from Notional V2 to Notional V3"]],
   ethereum: { tvl },
 };
