@@ -12,9 +12,7 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  KARAK_RPC: "https://rpc.karak.network",
-  FSC_RPC: "https://fsc-dataseed1.fonscan.io,https://fsc-dataseed2.fonscan.io,https://fonscan.io/api/eth-rpc",
-  FSC_RPC_MULTICALL: "0x18fA376d92511Dd04090566AB6144847c03557d8",
+  IDEX_RPC: "https://xchain-rpc.idex.io",
 }
 
 const ENV_KEYS = [
@@ -22,10 +20,12 @@ const ENV_KEYS = [
   ...Object.keys(DEFAULTS),
   'GETBLOCK_KEY',
   'LOFTY_API',
+  'SOLANA_RPC_CLIENT',
   'OLYMPUS_GRAPH_API_KEY',
   'SUMMER_HISTORY_ENDPOINT',
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
+  'ETHEREUM_TOKENS_ENDPOINT',
   'UNISAT_AUTH'
 ]
 

@@ -11,10 +11,8 @@ module.exports = {
     cronos: {
         ...compoundExports(
             "0xdD8c94211dD19155EFFbd57EAb6D4e0DE31A3b9E",
-            "cronos",
             mmCRO,
             wCRO,
-            addr => `cronos:${addr}`,
         ),
         staking: stakingUnknownPricedLP(stakingContract, token, "cronos", "0xf56FDfeeF0Ba3de23DaB13a85602bd7BF135E80f", addr=>`cronos:${addr}`)
     }
