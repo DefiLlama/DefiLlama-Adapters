@@ -6,11 +6,17 @@ const BigNumber = require("bignumber.js");
 const ethereum = "ethereum";
 const polygon = "polygon";
 const bsc = "bsc";
+const base = "base";
+const moonriver = "moonriver";
+const moonbeam = "moonbeam";
 
 const periFinanceContract = {
-  ethereum: "0x3a9a93A04eFB22e632632Ab584fF45DEB7321aC8",
-  polygon: "0x7C4cE79655Ac1e84400bC5962b4B75c2b86Bd974",
-  bsc: "0x82995a4170318f5E26CA6b650A337738dcc8114c",
+  ethereum: "0x0207157a7c154bFdEAD22751474c68660A4a540b",
+  polygon: "0x8f151e700772d6e8Dc7dA8B260c9e0C3eCbF4174",
+  bsc: "0x2Da103C31c4A80f828ea4158bD090e926003e8ad",
+  base: "0x0f2Af7246e1FcbEC5e334092B1F0D91BDA924faD",
+  moonriver: "0xB2f5Cd646Aab5f887150945576d51a8B5902F288",
+  moonbeam: "0x0f2Af7246e1FcbEC5e334092B1F0D91BDA924faD",
 };
 
 const pUSD = "pUSD";
@@ -54,6 +60,15 @@ module.exports = {
   },
   polygon: {
     tvl: tvlByChain(polygon),
+  },
+  base: {
+    tvl: tvlByChain(base),
+  },
+  moonriver: {
+    tvl: tvlByChain(moonriver),
+  },
+  moonbeam: {
+    tvl: tvlByChain(moonbeam),
   },
 };
 
