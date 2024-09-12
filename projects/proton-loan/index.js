@@ -74,11 +74,13 @@ async function getTotalStaking() {
 }
 
 module.exports = {
+  deadFrom: '2024-09-09',
   misrepresentedTokens: true,
   methodology: `Proton Loan TVL is the sum of all lending deposits in the Proton Loan smart contract and single-side staked LOAN.`,
   proton: {
     tvl: getLendingTvl(false),
-    borrowed: getLendingTvl(true),
+    borrowed: () => ({}), // bad debt getLendingTvl(true),
     staking: getTotalStaking
   }, 
 }
+

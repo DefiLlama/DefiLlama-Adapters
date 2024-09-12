@@ -9,6 +9,9 @@ const { tvl, borrowed } = compoundExports(
     unitroller, bETH, );
 
 module.exports = {
+    deadFrom: '2023-04-17',
             methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
     boba: { tvl, borrowed }
 }
+
+module.exports.boba.borrowed = () => ({}) // bad debt
