@@ -70,6 +70,7 @@ const fixBalancesTokens = {
   },
   optimism: {
     '0x5a7facb970d094b6c7ff1df0ea68d99e6e73cbff': { coingeckoId: 'wrapped-eeth', decimals: 18 },
+    '0x2416092f143378750bb29b79ed961ab195cceea5': { coingeckoId: "renzo-restaked-eth", decimals: 18 },
   },
   moonriver: {
     '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c': { coingeckoId: 'ethereum', decimals: 18 },
@@ -125,8 +126,7 @@ const fixBalancesTokens = {
   xdai: {
     '0x6c76971f98945ae98dd7d4dfca8711ebea946ea6': { coingeckoId: "wrapped-steth", decimals: 18 },
     '0xaf204776c7245bf4147c2612bf6e5972ee483701': { coingeckoId: "savings-dai", decimals: 18 },
-  }
-
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
