@@ -1,4 +1,5 @@
 const { cachedGraphQuery } = require("../helper/cache");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const CONTANGO_PROXY = "0x6Cae28b3D09D8f8Fc74ccD496AC986FC84C0C24E";
 const CONTANGO_LENS_PROXY = "0xe03835Dfae2644F37049c1feF13E8ceD6b1Bb72a";
@@ -72,10 +73,13 @@ Object.keys(config).forEach((chain) => {
         positionsTvl(api, contango_lens, graphUrl, false),
         vaultTvl(api, contango, graphUrl),
       ]);
-      return api.getBalances();
+      return sumTokens2({ api })
     },
-    borrowed: async (api) =>
-      positionsTvl(api, contango_lens, graphUrl, true),
+    borrowed: async (api) => {
+
+      await positionsTvl(api, contango_lens, graphUrl, true)
+      return sumTokens2({ api })
+    }
   };
 });
 
