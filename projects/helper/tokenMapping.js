@@ -125,7 +125,10 @@ const fixBalancesTokens = {
   xdai: {
     '0x6c76971f98945ae98dd7d4dfca8711ebea946ea6': { coingeckoId: "wrapped-steth", decimals: 18 },
     '0xaf204776c7245bf4147c2612bf6e5972ee483701': { coingeckoId: "savings-dai", decimals: 18 },
-  }
+  },
+  bsc: {
+    '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3': { coingeckoId: "wrapped-bitcoin", decimals: 18 }
+  },
 
 }
 
