@@ -9,7 +9,6 @@ module.exports = {
     tvl: getUniTVL({
       factory: "0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0",
       useDefaultCoreAssets: true,
-      fetchBalances: true,
     }),
   },
 };

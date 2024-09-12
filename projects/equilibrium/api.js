@@ -54,6 +54,7 @@ const ASSETS = {
 const PRECISION = 1_000_000_000n;
 
 async function tvl() {
+	throw new Error("Equilibrium chain is deprecated");
 	const provider = new WsProvider("wss://node.pol.equilibrium.io/");
 	const api = await ApiPromise.create({ provider });
 

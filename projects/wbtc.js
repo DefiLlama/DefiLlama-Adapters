@@ -391,13 +391,12 @@ const owners = [
   "bc1qzm3t8m5fcnz8t22kf2lyr97u2wret0pkjvzngldnqq5su434tsrqxjncvj",
 ];
 
-async function tvl(api, block){
+async function tvl(api){
   if(api.timestamp > Date.now()/1e3 - 3600){
     return sumTokens({ owners, api })
   } else {
-    return {
-      [ADDRESSES.ethereum.WBTC]: (await sdk.api.erc20.totalSupply({ target: ADDRESSES.ethereum.WBTC, block:block })).output
-    }
+    const supply = await api.call({ target: ADDRESSES.ethereum.WBTC, abi: 'erc20:totalSupply', })
+    api.add(ADDRESSES.ethereum.WBTC, supply)
   }
 }
 

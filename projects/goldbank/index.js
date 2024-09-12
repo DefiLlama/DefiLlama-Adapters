@@ -5,9 +5,12 @@ module.exports = {
   hallmarks: [
     [Math.floor(new Date('2023-06-11') / 1e3), 'Project rugged'],
   ],
+  deadFrom: '2023-06-11',
   methodology:
     "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
   arbitrum: {
-    ...compoundExports(unitroller, "arbitrum"),
+    ...compoundExports(unitroller),
   },
 };
+
+module.exports.arbitrum.borrowed = () => ({}) // bad debt
