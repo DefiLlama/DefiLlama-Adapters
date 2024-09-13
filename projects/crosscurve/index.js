@@ -1,27 +1,5 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const fantom = async (api) => {
-  const contracts = [
-    "0x14f8e5851879a18e0fea77b5a17f15523262a99e", // s3crv_e
-    "0x2902257ba817e1436b93f9f959ed50b95560b7d5", // s2crv_ar
-    "0x740568006c07888216649632aace6620288c7078", // s3crv_o
-    "0x9be1ae6175b106f26439cebaf2217d7815f684af", // sav3crv_av
-    "0x4636a4efba1c02917d0584505e47bb2d22afe359", // sam3crv_p
-    "0xab72e7f7bcfe09a9105f24ffe45038f50f45ca5c", // sb3pool_b
-    "0x904603366bc8acf881a35cd4c7e0d514f0477ffc", // s4pool_ba
-    "0x795b38c85d6f1524b434f14aa37c1c808c2bbd6b", // sx3crv_g
-  ];
-
-  const balances = await api.multiCall({
-    abi: "erc20:totalSupply",
-    calls: contracts.map((target) => ({ target })),
-  });
-
-  contracts.forEach((contract, i) => {
-    api.add(contract, balances[i]);
-  });
-};
-
 module.exports = {
   ethereum: {
     tvl: sumTokensExport({
@@ -124,8 +102,5 @@ module.exports = {
         "0x1337bedc9d22ecbe766df105c9623922a27963ec", // x3CRV
       ],
     }),
-  },
-  fantom: {
-    tvl: fantom,
   },
 };
