@@ -23,6 +23,10 @@ const CHAIN = {
   MANTLE: "mantle",
 }
 
+const blacklistedTokens = {
+  flare: ['0x4a771cc1a39fdd8aa08b8ea51f7fd412e73b3d2b'],
+}
+
 const config = {
   [CHAIN.ETHEREUM]: {
     dynamic: {
@@ -61,6 +65,14 @@ const config = {
       factory: "0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80",
       fromBlock: 113112037,
     },
+    prime: {
+      factory: "0x44fEF0fAB3A96CA34b06d5142350Ef9223F65A7e",
+      fromBlock: 226174706,
+    },
+    vaults: {
+      factory: "0xA8e8AccabCf29e7d8b33D086085D87F9F38a6Ed7",
+      fromBlock: 226193395
+    }
   },
   [CHAIN.MANTLE]: {
     dynamic: {
@@ -70,6 +82,10 @@ const config = {
     vaults: {
       factory: "0xF041A2838794266d19f79709F416A2977F896A9B",
       fromBlock: 59594636
+    },
+    prime: {
+      factory: "0x29157e2B6A34Ae1787CDdD05Ad54DD4aa9783A5c",
+      fromBlock: 68483768
     }
   },
   [CHAIN.BASE]: {
@@ -162,7 +178,7 @@ Object.keys(config).forEach((chain) => {
     let allPools = []
 
     const promiseArray = dataPerChain.map(
-      async ({ factory, fromBlock, abi, borrowFn, protocol }) => {
+      async ({ factory, fromBlock, abi, protocol }) => {
         const { pools, tokens } = await _getLogs(
           api,
           factory,
@@ -177,7 +193,7 @@ Object.keys(config).forEach((chain) => {
 
     await Promise.all(promiseArray)
 
-    return sumTokens2({ api, tokensAndOwners2: [allTokens, allPools] })
+    return sumTokens2({ api, tokensAndOwners2: [allTokens, allPools], blacklistedTokens: blacklistedTokens[chain] })
   }
 
   const borrowed = async (api) => {
@@ -201,7 +217,9 @@ Object.keys(config).forEach((chain) => {
     await Promise.all(promiseArray)
 
     api.addTokens(allTokens, balances)
-    return sumTokens2({ api })
+    if (blacklistedTokens[chain]) {
+      blacklistedTokens[chain].forEach((token) => api.removeTokenBalance(token))
+    }
   }
   module.exports[chain] = { tvl, borrowed }
 })

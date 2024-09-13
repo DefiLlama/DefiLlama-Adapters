@@ -2,9 +2,9 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const USDT_TOKEN_CONTRACT = ADDRESSES.astarzk.USDT;
-const EZETH_BASE = "0x2416092f143378750bb29b79eD961ab195CcEea5";
-const EZETH_LINEA = "0x2416092f143378750bb29b79eD961ab195CcEea5";
-const ZK = "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E";
+const EZETH_BASE = ADDRESSES.blast.ezETH;
+const EZETH_LINEA = ADDRESSES.blast.ezETH;
+const ZK = ADDRESSES.era.ZK;
 const WALLET_ADDR = [
   "0x62e724cB4d6C6C7317e2FADe4A03001Fe7856940",
   "0xA59a2365D555b24491B19A5093D3c99b119c2aBb",
@@ -61,6 +61,15 @@ module.exports = {
         "0xf915391346Fad5a75F31CD00218BB1EFC13e01f2",
       ],
       tokens: [ADDRESSES.xlayer.USDC],
+    }),
+  },
+  arbitrum:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x5aCCEb99De5cc07168C193396C1fdC3E3abEEED7",
+        "0xAE9a83510cbB26c58595BA671f131e0A03Fe9A03",
+      ],
+      tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
     }),
   },
 };

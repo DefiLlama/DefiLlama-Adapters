@@ -8,7 +8,6 @@ const KSWAP = "0x29ABc4D03D133D8Fd1F1C54318428353CE08727E";
 module.exports = {
   methodology: `Uses factory(${FACTORY}) address and whitelisted tokens address to find and price Liquidity Pool pairs`,
   misrepresentedTokens: true,
-      incentivized: true,
   bsc: {
     tvl: getUniTVL({
       factory: FACTORY,
