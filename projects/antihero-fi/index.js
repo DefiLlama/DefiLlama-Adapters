@@ -17,3 +17,5 @@ module.exports = {
   },
   deadFrom: "2023-08-27"
 };
+
+module.exports.arbitrum.borrowed = () => ({}) // bad debt
