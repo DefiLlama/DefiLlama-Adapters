@@ -93,5 +93,8 @@ module.exports = {
   },
   arbitrum: {
     tvl: tvlArbitrum
-  }
+  },
+  hallmarks:[
+    [1674648000, "Liquidity Mining Start"]
+  ],
 };
