@@ -10,14 +10,14 @@ const chainMapping = {
   bsc: 'binance'
 };
 
-const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', 'crescent', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
-const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum',];
+const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', /*'crescent',*/ 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
+const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum', 'base'];
 
 
 chainListSupply.concat(chainListTotal).forEach(chain => {
   module.exports[chain] = { tvl };
   async function tvl(api) {
-    const config = await getConfig('alexar', 'https://api.axelarscan.io/cross-chain/tvl')
+    const config = await getConfig('alexar', 'https://api.axelarscan.io/api/getTVL')
     const tokensAndOwners = []
     const owners = []
     const mappedChain = chainMapping[chain] || chain;
@@ -25,9 +25,12 @@ chainListSupply.concat(chainListTotal).forEach(chain => {
       if (!assetTvl) return;
 
       const isEVM = assetTvl.gateway_address?.startsWith('0x')
+      const data = assetTvl.contract_data
       if (isEVM) {
-        if (assetTvl.contract_data.symbol.startsWith('axl')) return;
-        tokensAndOwners.push([assetTvl.contract_data.address, assetTvl.gateway_address])
+        if (data.symbol.startsWith('axl')) return;
+        tokensAndOwners.push([data.address, assetTvl.gateway_address])
+        if (data.token_manager_address)
+          tokensAndOwners.push([data.address, data.token_manager_address])
       } else {
         if (assetTvl.denom_data.symbol.startsWith('axl')) return;
         owners.push(...assetTvl.source_escrow_addresses)

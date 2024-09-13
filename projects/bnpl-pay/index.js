@@ -101,5 +101,8 @@ const abi = {
 }
 
 module.exports = {
+  deadFrom: '2023-02-12',
   ethereum: { tvl, staking, borrowed, },
 }
+
+module.exports.ethereum.borrowed = () => ({}) // bad debt
