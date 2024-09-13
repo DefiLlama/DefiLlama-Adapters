@@ -32,8 +32,8 @@ async function queryEvents({ eventType, transform = i => i }) {
 }
 
 async function getObjects(objectIds) {
-  if (objectIds.length > 49) {
-    const chunks = sliceIntoChunks(objectIds, 49)
+  if (objectIds.length > 9) {
+    const chunks = sliceIntoChunks(objectIds, 9)
     const res = []
     for (const chunk of chunks) res.push(...(await getObjects(chunk)))
     return res
