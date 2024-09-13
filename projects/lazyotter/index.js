@@ -7,32 +7,14 @@ const ambientVaults = ["0x07ab0C3A3D9e286ba790FF57f205970bC462BB21", "0x018B3ac3
 
 async function tvl(api) {
   await api.erc4626Sum2({ calls: aaveVaults, });
-
-  // ambient vaults tvl calculation
-  for (const vault of ambientVaults) {
-    const totalAssets = await api.call({
-      abi: 'uint256:totalAssets',
-      target: vault
-    })
-
-    const [quoteTokenAmount, baseTokenAmount] = await api.call({
-      abi: 'function previewAmountByAsset(address vault, uint256 assets) view returns (uint256, uint256)',
-      target: ambientVaultHelper,
-      params: [vault, totalAssets]
-    })
-
-    const quoteToken = await api.call({
-      abi: 'address:quoteToken',
-      target: vault
-    })
-
-    const baseToken = await api.call({
-      abi: 'address:baseToken',
-      target: vault
-    })
-
-    api.add(quoteToken, quoteTokenAmount)
-    api.add(baseToken, baseTokenAmount) // baseToken might be address(0) which represents eth, is it ok for Defillama's api?
+  const ambAssets = await api.multiCall({  abi: 'uint256:totalAssets', calls: ambientVaults})
+  const calls = ambAssets.map((v, i) => ({ params: [ambientVaults[i], v]}))
+  const res = await api.multiCall({ abi: 'function previewAmountByAsset(address vault, uint256 assets) view returns (uint256, uint256)', calls, target: ambientVaultHelper})
+  const quoteTokens = await api.multiCall({  abi: 'address:quoteToken', calls: ambientVaults})
+  const baseTokens = await api.multiCall({  abi: 'address:baseToken', calls: ambientVaults})
+  for (const i in res){
+    api.add(quoteTokens[i], res[i][0])
+    api.add(baseTokens[i], res[i][1])
   }
 }
 
