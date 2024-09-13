@@ -1,4 +1,5 @@
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
+const { get } = require('../helper/http')
 
 // This address holds all the locked ETH as well as locked ERC20 tokens
 const ethereum_contract = "0xb25eA1D493B49a1DeD42aC5B1208cC618f9A9B80";
