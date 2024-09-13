@@ -11,53 +11,26 @@ module.exports = {
 }
 
 Object.keys(GRAPH_URLS).forEach(chain => {
-  const endpoint = GRAPH_URLS[chain]
-  module.exports[chain] = {
-    tvl: (api) => tvl(api, chain, endpoint),
-    borrowed: (api) => liabilities(api, chain, endpoint)
-  }
+  module.exports[chain] = { tvl }
 })
 
-async function tvl(
-  api,
-  chain,
-  endpoint,
-) {
-  const { metrics: [{  investmentVaults }] } = await cachedGraphQuery('origami/' + chain, endpoint, '{ metrics { investmentVaults { id kinds } } }')
-  await Promise.all(
-    investmentVaults.map(async vault => {
-      const isLeveraged = !!vault.kinds.find( v => v === 'Leverage')
-      let token = await api.call({ abi: 'address:reserveToken', target: vault.id })
+async function tvl(api) {
+  const { metrics: [{ investmentVaults }] } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ metrics { investmentVaults { id kinds } } }')
 
-      if (isLeveraged) {
-        const assetsAndLiabilities = await api.call({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', target: vault.id })
-        const tvl = assetsAndLiabilities.assets - assetsAndLiabilities.liabilities
-        api.add(token, tvl)
-      } else {
-        token = await api.call({ abi: 'address:baseToken', target: token })
-        const decimals = await api.call({ abi: 'uint8:decimals', target: vault.id })
-        const supplies = await api.call({ abi: 'uint256:totalSupply', target: vault.id })
-        const reserves = await api.call({ abi: 'uint256:reservesPerShare', target: vault.id })
-        const bal = reserves * supplies / 10 ** decimals
-        api.add(token, bal)
-      }
-    })
-  )
-}
+  const isLeveraged = vault => !!vault.kinds.find(v => v === 'Leverage')
+  const levVaults = investmentVaults.filter(isLeveraged).map(v => v.id)
+  const nonLevVaults = investmentVaults.filter(v => !isLeveraged(v)).map(v => v.id)
 
-async function liabilities(
-  api,
-  chain,
-  endpoint,
-) {
-  const { metrics: [{  investmentVaults, }] } = await cachedGraphQuery('origami/' + chain, endpoint, '{ metrics { investmentVaults { id kinds } } }')
-  await Promise.all(
-    investmentVaults.map(async vault => {
-      const isLeveraged = !!vault.kinds.find( v => v === 'Leverage')
-      if (!isLeveraged) return
-      let token = await api.call({ abi: 'address:reserveToken', target: vault.id })
-      const assetsAndLiabilities = await api.call({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', target: vault.id })
-      api.add(token, assetsAndLiabilities.liabilities)
-    })
-  )
+  let nonLevTokens = await api.multiCall({ abi: 'address:reserveToken', calls: nonLevVaults })
+  nonLevTokens = await api.multiCall({ abi: 'address:baseToken', calls: nonLevTokens })
+  const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: nonLevVaults })
+  const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: nonLevVaults })
+  const reserves = await api.multiCall({ abi: 'uint256:reservesPerShare', calls: nonLevVaults })
+  const bals = supplies.map((supply, idx) => reserves[idx] * supply / 10 ** decimals[idx])
+  api.add(nonLevTokens, bals)
+
+  const levReserveTokens = await api.multiCall({ calls: levVaults, abi: 'address:reserveToken' })
+  const assetsAndLiabilities = await api.multiCall({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', calls: levVaults })
+  const levBals = assetsAndLiabilities.map(({ assets, liabilities }) => assets - liabilities)
+  api.add(levReserveTokens, levBals)
 }
