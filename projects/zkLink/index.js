@@ -119,7 +119,7 @@ const config = {
       "0xf5b90fE755Aa2e3CcC69d9548cbeB7b38c661D73", // nova bridge address
     ],
     tokens: [
-      "0xB880fd278198bd590252621d4CD071b1842E9Bcd", //MBTC
+      ADDRESSES.merlin.WBTC_1, //MBTC
       "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71", //Solv BTC
     ],
 
