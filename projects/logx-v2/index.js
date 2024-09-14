@@ -3,7 +3,8 @@ module.exports = {
 }
 
 const config = {
-  arbitrum: ['0x297CE7A9156b9Dfc5b4468a6fd9ec5FdAd27e23A', '0xf0bDCFB8bfE1c5000481d263D672E1b09D58C3BE',]
+  arbitrum: ['0x297CE7A9156b9Dfc5b4468a6fd9ec5FdAd27e23A', '0xf0bDCFB8bfE1c5000481d263D672E1b09D58C3BE',],
+  mantle: ['0x895389e5744F2093A8ac985d8dB208eb9C1e6BA7', '0x8fb8a7E1ee970E3bf80494be0043B1117d835da8',]
 }
 
 Object.keys(config).forEach(chain => {
