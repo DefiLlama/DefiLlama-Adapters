@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokensExport: sumTokensExportOfTon } = require("../helper/chain/ton");
 
 const USDT_TOKEN_CONTRACT = ADDRESSES.astarzk.USDT;
 const EZETH_BASE = ADDRESSES.blast.ezETH;
@@ -11,7 +12,7 @@ const WALLET_ADDR = [
 ];
 module.exports = {
   methodology:
-    "TVL includes the total token value inside the protocol's liquidity pools.",
+    "Counts Satori smartcontract balance as TVL..",
   polygon_zkevm: {
     tvl: sumTokensExport({
       owners: WALLET_ADDR,
@@ -72,4 +73,21 @@ module.exports = {
       tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
     }),
   },
+  xlayer:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x80DD5bC934122e56B9536a9F19F2Ea95a38E98c8",
+        "0xf915391346Fad5a75F31CD00218BB1EFC13e01f2",
+      ],
+      tokens: [ADDRESSES.xlayer.USDC],
+    }),
+  },
+  ton:{
+    tvl: sumTokensExportOfTon({
+      owners: [
+        "EQDrGCJ3V8cMw92Gg8Tf9nfq3piaT_iI3EkCGVF0OUG0vWEh",
+      ],
+      tokens: [ADDRESSES.ton.USDT],
+    }),
+  }
 };
