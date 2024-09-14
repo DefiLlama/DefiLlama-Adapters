@@ -31,14 +31,14 @@ const linea = {
 
 const data = {};
 Object.keys(config).forEach((chain) => {
+  const pools = config[chain]
+
   // iterate over each chain's pool for tvl
   const tvl = async (api) => {
     const balances = {}
-    const pools = config[chain]
     await Promise.all(pools.map(async (address) => {
       const data = aaveExports(chain, undefined, undefined, [address]);
-      const balance = await data.tvl(api)
-      mergeBalances(balances, balance)
+      mergeBalances(balances, await data.tvl(api))
     }))
     return balances
   };
@@ -46,11 +46,9 @@ Object.keys(config).forEach((chain) => {
   // iterate over each chain's pool for borrowed
   const borrowed = async (api) => {
     const balances = {}
-    const pools = config[chain]
     await Promise.all(pools.map(async (address) => {
       const data = aaveExports(chain, undefined, undefined, [address]);
-      const balance = await data.borrowed(api)
-      mergeBalances(balances, balance)
+      mergeBalances(balances, await data.borrowed(api))
     }))
     return balances
   };
