@@ -56,6 +56,9 @@ const fixBalancesTokens = {
   oasis: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'oasis-network', decimals: 18 },
   },
+  heco: {
+    '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f': { coingeckoId: 'huobi-token', decimals: 18 },
+  },
   base: {
     '0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c': { coingeckoId: 'rocket-pool-eth', decimals: 18 },
   },
