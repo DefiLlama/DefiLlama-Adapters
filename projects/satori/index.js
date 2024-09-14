@@ -5,7 +5,7 @@ const { sumTokensExport: sumTokensExportOfTon } = require("../helper/chain/ton")
 const USDT_TOKEN_CONTRACT = ADDRESSES.astarzk.USDT;
 const EZETH_BASE = ADDRESSES.blast.ezETH;
 const EZETH_LINEA = ADDRESSES.blast.ezETH;
-const ZK = "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E";
+const ZK = ADDRESSES.era.ZK;
 const WALLET_ADDR = [
   "0x62e724cB4d6C6C7317e2FADe4A03001Fe7856940",
   "0xA59a2365D555b24491B19A5093D3c99b119c2aBb",
@@ -73,15 +73,6 @@ module.exports = {
       tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
     }),
   },
-  xlayer:{
-    tvl: sumTokensExport({
-      owners: [
-        "0x80DD5bC934122e56B9536a9F19F2Ea95a38E98c8",
-        "0xf915391346Fad5a75F31CD00218BB1EFC13e01f2",
-      ],
-      tokens: [ADDRESSES.xlayer.USDC],
-    }),
-  },
   ton:{
     tvl: sumTokensExportOfTon({
       owners: [
@@ -90,4 +81,5 @@ module.exports = {
       tokens: [ADDRESSES.ton.USDT],
     }),
   }
+
 };

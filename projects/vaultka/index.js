@@ -1,6 +1,7 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
 const { staking } = require("../helper/staking");
+const { getProvider, getTokenBalance, sumTokens2 } = require("../helper/solana");
 // 19/12/2023 ALP Leverage Vault
 // 29/11/2023 GMXV2 Leverage(Neutral) Vault
 // 12/11/2023 GLP Compound Vault
@@ -20,6 +21,38 @@ module.exports = {
     [1702915200, "ALP Leverage Vault"],
     [1707385004, "GLM(basket of GMs)"],
   ],
+
+  solana: {
+    tvl: async (api) => {
+      const lendingSol = "DMhoXyVNpCFeCEfEjEQfS6gzAEcPUUSXM8Xnd2UXJfiS";
+      const jupSol = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v";
+      const jitoSol = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
+      const jupSolProgram = "6j6Fwxf7UzfaXqQA2QraWGEAYUYzjjZP3t6ChzjzkmL9";
+      const jitoSolProgram = "6MAnq2z4ww8nnvfd8sec4sRMhTEdsdZXB1FLgqaYsg4d";
+      const jlpUsdtStrategy = "9vuDo8ZQsmMMe3qsiFCYoxsjhHieQVMNXLsfcfpC4SrX"
+
+
+      const lendingUsdc = "DefkwTSvkHeZASCuaVJ8AxUWS6zvBCwrLFpW2FniLSWo";  //change it to token account 
+      const lendingUsdt = "HDNrMywo5z84uBLdbcdHpgVP3bao8bw2PDiUwtM4hvHk"
+      const usdc = ADDRESSES.solana.USDC;
+      const usdt = ADDRESSES.solana.USDT;
+      const jlp = "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4"
+      const strategyJlp = "5852AnvCSV2GDzgpRVG4ZQ5cNn7abR7pPty5FaBxHLzW" 
+
+      return sumTokens2({
+        owner: lendingSol,
+        tokensAndOwners: [
+          [jupSol, jupSolProgram],
+          [jitoSol, jitoSolProgram],
+          [jlp, strategyJlp],
+          [usdc, lendingUsdc],
+          [usdt, lendingUsdt],
+          [jlp, jlpUsdtStrategy],   
+        ],
+        solOwners: [lendingSol],
+      });
+    },
+  },
 
   arbitrum: {
     tvl: async (api) => {
@@ -115,7 +148,7 @@ module.exports = {
       });
 
       const contractAbis = {
-        stakedVlpBalance: "function getStakedVlpBalance() public view returns (uint256)",
+        stakedVlpBalance: "function getStakedVlpBalance() public view returns ( uint256)",
         stakedHlpBalance: "function userTokenAmount(address user) public view returns (uint256)",
         stakedAlpBalance: "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //

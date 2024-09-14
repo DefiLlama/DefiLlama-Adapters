@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const rippleCodec = require("ripple-binary-codec");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { getCache, setCache } = require("../helper/cache");
@@ -43,8 +44,8 @@ const fetchPoolReserves = async (pool, atLedgerIndex) => {
   });
   const xrplResponseJson = await xrplResponse.json();
   return {
-    token0: parseReserve(xrplResponseJson.result.amm.amount),
-    token1: parseReserve(xrplResponseJson.result.amm.amount2),
+    token0: parseReserve(xrplResponseJson.result.amm?.amount),
+    token1: parseReserve(xrplResponseJson.result.amm?.amount2),
   };
 };
 
@@ -89,9 +90,10 @@ const discoverPools = async (nextMarker, isBinary, atLedgerIndex, poolsFound = [
 };
 
 const parseReserve = (reserveData) => {
+  if (!reserveData) return null;
   const reserveIsXrp = typeof reserveData === "string";
   return {
-    currency: reserveIsXrp ? "XRP" : reserveData.currency,
+    currency: reserveIsXrp ? [ADDRESSES.ripple.XRP]: reserveData.currency,
     issuer: reserveIsXrp ? null : reserveData.issuer,
     amount: reserveIsXrp ? reserveData : reserveData.value,
   };
@@ -132,11 +134,11 @@ async function main() {
   let { allPools, lastPoolUpdate, lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
   if (!lastPoolUpdate || timeNow - lastPoolUpdate > 3 * aDayInSeconds) {
     // try {
-      console.time("xrpl-dex fetch pool list");
-      allPools = await discoverPools(null, 1);
-      console.timeEnd("xrpl-dex fetch pool list");
-      lastPoolUpdate = getTimeNow();
-      await setCache(projectKey, cacheKey, { allPools, lastPoolUpdate, lastDataUpdate, tvl })
+    console.time("xrpl-dex fetch pool list");
+    allPools = await discoverPools(null, 1);
+    console.timeEnd("xrpl-dex fetch pool list");
+    lastPoolUpdate = getTimeNow();
+    await setCache(projectKey, cacheKey, { allPools, lastPoolUpdate, lastDataUpdate, tvl })
     // } catch (e) {
     //   console.error(e)
     // }
@@ -149,17 +151,16 @@ async function main() {
 
   tvl = await transformDexBalances({
     chain: 'ripple',
-    data: poolsWithReserves.map(i => ({
-      token0: i.token0Reserve.currency,
-      token0Bal: i.token0Reserve.amount,
-      token1: i.token1Reserve.currency,
-      token1Bal: i.token1Reserve.amount,
-    })),
+    data: poolsWithReserves
+      .filter(i => i.token0Reserve && i.token1Reserve)
+      .map(i => ({
+        token0: i.token0Reserve.currency,
+        token0Bal: i.token0Reserve.amount,
+        token1: i.token1Reserve.currency,
+        token1Bal: i.token1Reserve.amount,
+      })),
   })
   await setCache(projectKey, cacheKey, {
-    allPools, lastPoolUpdate, lastDataUpdate: getTimeNow(), tvl: {
-      ripple: tvl.ripple,
-      'ripple:XRP': tvl['ripple:XRP'],
-    }
+    allPools, lastPoolUpdate, lastDataUpdate: getTimeNow(), tvl,
   })
 }
