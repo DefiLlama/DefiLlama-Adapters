@@ -1,6 +1,9 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const MANAGER_ABI = require('./abis/manager');
+const MANAGER_ABI = {
+  getPoolToken: "function getPoolToken(uint256 id, address token) view returns (address _address, uint256 amount, uint256, bool)",
+  getPoolToken_2: "function pools(uint256 id) view returns (address router, uint8 poolType, address token, uint256 orderlyDepositFee, uint256 orderlyWithdrawalFee, uint256 activeAmount, uint256 hardcap)"
+}
 
 const DEUSD_LP_STAKING = "0xC7963974280261736868f962e3959Ee1E1B99712";
 const COMMITS = "0x4265f5D6c0cF127d733EeFA16D66d0df4b650D53";
@@ -18,32 +21,17 @@ const LP_TOKENS = [
 const VERTEX_MANAGER = '0x052Ab3fd33cADF9D9f227254252da3f996431f75'
 const ORDERLY_MANAGER = '0x79865208f5dc18a476f49e6dbfd7d79785cb8cd8'
 
+const orderlyIntegration = async (api, manager, poolIds) => {
+  const pools = await api.multiCall({ abi: MANAGER_ABI.getPoolToken_2, calls: poolIds, target: manager });
+  pools.forEach(i => api.add(i.token, i.activeAmount));
+}
+
 const integration = async (api, manager, poolIds, tokens) => {
-  const tokenBalances = tokens.reduce((acc, token) => ({ ...acc, [token[1]]: 0 }), {});
-
-  for (const poolId of poolIds) {
-    for (const token of tokens) {
-      if (manager === ORDERLY_MANAGER) {
-        const amount = await api.call({
-          target: manager,
-          abi: MANAGER_ABI.getPoolToken_2,
-          params: [poolId]
-        });
-        tokenBalances[token[1]] += Number(amount[5]);
-      } else {
-        const amount = await api.call({
-          target: manager,
-          abi: MANAGER_ABI.getPoolToken,
-          params: [poolId, token[1]]
-        });
-        tokenBalances[token[1]] += Number(amount[1]);
-      }
-    }
-  }
-
-  for (const token of tokens) {
-    api.add(token[1], tokenBalances[token[1]]);
-  }
+  if (manager === ORDERLY_MANAGER)
+    return orderlyIntegration(api, manager, poolIds)
+  const calls = poolIds.map(id => tokens.map(token => ({ params: [id, token] }))).flat();
+  const pools = await api.multiCall({ abi: MANAGER_ABI.getPoolToken, calls, target: manager });
+  pools.forEach((v, i) => api.add(calls[i].params[1], v.amount));
 }
 
 module.exports = {
@@ -58,17 +46,14 @@ module.exports = {
   arbitrum: {
     tvl: async (api) => {
       await integration(api, VERTEX_MANAGER, [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 31, 34, 36, 38, 40, 41, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62], [
-        [0, ADDRESSES.arbitrum.USDC_CIRCLE],
-        [0, ADDRESSES.arbitrum.USDT],
-        [0, ADDRESSES.arbitrum.ARB],
-        [0, '0x95146881b86B3ee99e63705eC87AfE29Fcc044D9'],
-        [0, ADDRESSES.arbitrum.WBTC],
-        [0, ADDRESSES.arbitrum.WETH]
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+        ADDRESSES.arbitrum.USDT,
+        ADDRESSES.arbitrum.ARB,
+        '0x95146881b86B3ee99e63705eC87AfE29Fcc044D9',
+        ADDRESSES.arbitrum.WBTC,
+        ADDRESSES.arbitrum.WETH,
       ])
-
-      await integration(api, ORDERLY_MANAGER, Array.from({ length: 10 }, (_, i) => i + 1), [
-        [0, ADDRESSES.arbitrum.USDC_CIRCLE]
-      ])
+      await integration(api, ORDERLY_MANAGER, Array.from({ length: 10 }, (_, i) => i + 1))
     }
   }
 };
