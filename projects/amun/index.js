@@ -1,6 +1,6 @@
 const solana = require('../helper/solana');
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return solana.sumTokens2({ tokenAccounts: ['GprM9vgGpUbNU4N5SbDAigL1JYCvQiDop28cmEQ7Bw2w'] })
 }
 

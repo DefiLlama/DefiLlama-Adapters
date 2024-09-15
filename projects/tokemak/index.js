@@ -27,7 +27,7 @@ const gohm = "0x0ab87046fbb341d058f17cbc4c1133f25a20a52f";
 const alcxPool = "0xD3B5D9a561c293Fb42b446FE7e237DaA9BF9AA84";
 const alcx = "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF";
 const fxsPool = "0xADF15Ec41689fc5b6DcA0db7c53c9bFE7981E655";
-const fxs = "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0";
+const fxs = ADDRESSES.ethereum.FXS;
 const tcrPool = "0x15A629f0665A3Eb97D7aE9A7ce7ABF73AeB79415";
 const tcr = "0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050";
 const toke = ADDRESSES.ethereum.TOKE;
@@ -69,7 +69,7 @@ const mycPool = "0x061aee9ab655e73719577EA1df116D7139b2A7E7";
 const visr = "0xF938424F7210f31dF2Aee3011291b658f872e91e";
 const visrPool = "0x2d3eADE781c4E203c6028DAC11ABB5711C022029";
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
   const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
   const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
@@ -174,7 +174,7 @@ function lpBalances(holdings, toa, tokens, calls) {
   }
 }
 
-async function staking(timestamp, block, _, { api }) {
+async function staking(api) {
   let vestedToke = '57238445'
   api.add(ADDRESSES.ethereum.TOKE, vestedToke * 1e18 * -1)
   return sumTokens2({

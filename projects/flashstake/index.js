@@ -33,7 +33,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   // const { fromBlock, protocol, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       // const logs = await getLogs({
       //   api,

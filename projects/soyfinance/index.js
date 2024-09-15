@@ -9,7 +9,7 @@ module.exports = {
     tvl: getUniTVL({
       factory: '0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5',
       useDefaultCoreAssets: true,
-      blacklistedTokens: ["0x9fae2529863bd691b4a7171bdfcf33c7ebb10a65"]
+      blacklistedTokens: [ADDRESSES.callisto.SOY]
     })
   },
   ethereumclassic: {

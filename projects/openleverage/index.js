@@ -17,7 +17,7 @@ Object.keys(config).forEach(chain => {
   const openLevAddr = config[chain]
   const borrowAddr = borrowConfig[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await api.fetchList({ lengthAbi: 'uint256:numPairs', itemAbi: "function markets(uint16) view returns (address pool0, address pool1, address token0, address token1, uint16 marginLimit, uint16 feesRate, uint16 priceDiffientRatio, address priceUpdater, uint256 pool0Insurance, uint256 pool1Insurance)", target: openLevAddr })
       const tokensAndOwners = data.map(i => {
         const toa = [

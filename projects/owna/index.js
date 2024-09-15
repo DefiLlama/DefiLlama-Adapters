@@ -46,7 +46,8 @@ config.chains.forEach(async chainInfo => {
   }
 
   async function getOffersCount(tokenId) {
-    return parseInt(await get('https://backend.owna.io/offer/getOffersCount?mintId=' + tokenId));
+    const backendUrl = chain === 'polygon' ? 'https://polygon-backend.owna.io' : 'https://backend.owna.io';
+    return parseInt(await get(`${backendUrl}/offer/getOffersCount?mintId=` + tokenId));
   }
 
   async function totalOffers() {
@@ -86,9 +87,13 @@ config.chains.forEach(async chainInfo => {
     };
   }
 
+  module.exports.deadFrom='2023-11-16',
   module.exports[chain] = {
     tvl: sumTokensExport({ chain, tokens, owners: [lendingContract] }),
-    borrowed: totalBorrowed,
-    offers: totalOffers,
+    borrowed: () => ({}) // bad debt totalBorrowed,
+    //offers: totalOffers,
   }
 })
+
+
+

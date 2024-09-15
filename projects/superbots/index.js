@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { pool2 } = require('../helper/pool2')
 const { staking } = require('../helper/staking')
 
 const vault_tokens = [
@@ -33,17 +32,15 @@ const config = {
     }
 }
 
-async function tvl(_, _b, { bsc: block }) {
-    return sumTokens2({ owners: vaults, tokens: vault_tokens, chain: 'bsc', block })
+async function tvl(api) {
+    return sumTokens2({ owners: vaults, tokens: vault_tokens, api })
 }
 
 module.exports = {
-    timetravel: false,
-    misrepresentedTokens: true,
     bsc: {
         tvl,
-        staking: staking(config.bsc.stakingPool, config.bsc.ubxt, 'bsc'),
-        pool2: staking(config.bsc.stakingPool, config.bsc.ubxtLP, 'bsc'),
+        staking: staking(config.bsc.stakingPool, config.bsc.ubxt),
+        pool2: staking(config.bsc.stakingPool, config.bsc.ubxtLP),
     },
     ethereum: {
         staking: staking(config.ethereum.stakingPool, config.ethereum.ubxt,),
