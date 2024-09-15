@@ -10,6 +10,7 @@ const config = {
   ethereum: { stakingPool: "0x2EDfFbc62C3dfFD2a8FbAE3cd83A986B5bbB5495", tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT] },
   bsc: {},
   polygon: {},
+  bouncebit: {},
 }
 module.exports = {
   methodology: `Tokens bridged via MultiBit are counted as TVL`,
