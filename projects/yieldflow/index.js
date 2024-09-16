@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const abi = {
   "getCurrentTokenId": "function currentTokenId() view returns (uint)",
   "getPositions": "function positions(uint256 tokenId) view returns (uint96 nonce,address operator,address token0,address token1,uint24 fee,int24 tickLower,int24 tickUpper,uint128 liquidity,uint256 feeGrowthInside0LastX128,uint256 feeGrowthInside1LastX128,uint128 tokensOwed0,uint128 tokensOwed1)",
@@ -73,11 +75,12 @@ async function tvl(api) {
   const liquidities = await api.multiCall({ abi: abi.getPositions, calls: positionManagers.map((v, i) => ({ target: v, params: tokenIds[i] })) })
   const tokenAmounts = await api.multiCall({ abi: abi.getAmountsForTicks, calls: liquidities.map((v, i) => ({ target: managers[i], params: [v.tickLower, v.tickUpper, v.liquidity] })) })
 
+  const ownerTokens = liquidities.map((v, i) => [[v.token0, v.token1, ADDRESSES.null], managers[i]])
   liquidities.forEach((v, i) => {
     api.add(v.token0, tokenAmounts[i][0])
     api.add(v.token1, tokenAmounts[i][1])
   })
-  return api.getBalances()
+  return api.sumTokens({ ownerTokens })
 }
 
 module.exports = {
@@ -93,7 +96,8 @@ const config = {
       '0x47Dd57DFe9e01616e4Adc28015243Ea6A2C09cEC',
       '0x0a4a169a6b2ac75c86e2F0e42822fdEA13fB1CC8',
       '0xafFA16b152232dAd8BF3AaDF6bb6F895A836F917',
-      '0xFB04d48e4CE9C042188Ef933ff4cf58921Ab59B8'
+      '0xFB04d48e4CE9C042188Ef933ff4cf58921Ab59B8',
+      '0x36232356758c746A50AD5078815F09e39E34628d'
     ]
   }
 }

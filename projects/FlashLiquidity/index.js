@@ -1,7 +1,7 @@
 const { getUniTVL } = require("../helper/unknownTokens");
 
 const factory = "0x6e553d5f028bD747a27E138FA3109570081A23aE"
-const tvl = getUniTVL({ factory, useDefaultCoreAssets: true, fetchBalances: true, })
+const tvl = getUniTVL({ factory, useDefaultCoreAssets: true,  })
 
 module.exports = {
   misrepresentedTokens: true,

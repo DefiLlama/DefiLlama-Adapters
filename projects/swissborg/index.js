@@ -16,6 +16,8 @@ const config = {
       '0x11444C6389A26C8E41d7FD5CafBfCC511303b7d3',
       '0x67FE3293FC4e877F3CDc3F0ed93721a600f72BdE',
       '0x178Fb204c1ff2Ed7d0651C522A3a5B15480Eb76d',
+      '0xFbA64167e4f091Ca625FA79aa6f83665856f8Bf2',
+      '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
     ],
   },
   bitcoin: {
@@ -105,6 +107,11 @@ const config = {
   cosmos: {
     owners: [
         'cosmos10dfzd2wpnpeuy2lgan35ah8dg5p4l298v0n8e8',
+    ]
+  },
+  arbitrum: {
+    owners: [
+      '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
     ]
   }
 }
