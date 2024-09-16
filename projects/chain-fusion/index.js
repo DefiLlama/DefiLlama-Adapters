@@ -1,11 +1,11 @@
-const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 const { get } = require('../helper/http')
 
 // This address holds all the locked ETH as well as locked ERC20 tokens
 const ethereum_contract = "0xb25eA1D493B49a1DeD42aC5B1208cC618f9A9B80";
 
 async function ethereum_tvl(api) {
-  return sumTokens2({ tokens: [nullAddress], owner: ethereum_contract, api });
+  return sumTokens2({  owner: ethereum_contract, api, fetchCoValentTokens: true  });
 }
 
 async function bitcoin_tvl(ts) {
