@@ -16,8 +16,7 @@ const rhoMarketsVault = [
 ]
 
 async function tvl(api) {
-  await api.erc4626Sum2({ calls: aaveVaults, });
-  await api.erc4626Sum2({ calls: rhoMarketsVault, });
+  await api.erc4626Sum2({ calls: aaveVaults.concat(rhoMarketsVault), });
   const ambAssets = await api.multiCall({  abi: 'uint256:totalAssets', calls: ambientVaults})
   const calls = ambAssets.map((v, i) => ({ params: [ambientVaults[i], v]}))
   const res = await api.multiCall({ abi: 'function previewAmountByAsset(address vault, uint256 assets) view returns (uint256, uint256)', calls, target: ambientVaultHelper})
