@@ -2,7 +2,7 @@ const { cexExports } = require('../helper/cex')
 
 const config = {
   bitcoin: {
-    // from https://insights.deribit.com/exchange-updates/deribit-wallet-holdings/
+    // from https://insights.deribit.com/exchange-updates/proof-of-reserves-deribit/
     owners: [
         "bc1qa3phj5uhnuauk6r62cku6r6fl9rawqx4n6d690",
         "bc1qtq5zfllw9fs9w6stnfgalf9v59fgrcxxyawuvm",
@@ -36,7 +36,8 @@ const config = {
         "0x1baE874af9f81B8F93315b27F080260Da4702D3a",
         "0x2563328d58AC7eE9e930E89C29Ce96046a291207",
         "0x866c9a77d8Ab71d2874703e80cb7aD809b301e8e",
-        "0xCf2027AAB22980820F0767d9f214CDBD2AA2428D"
+        "0xCf2027AAB22980820F0767d9f214CDBD2AA2428D",
+        "0xACd41f0dA1A84f5543c84a33864e025cE30C099D",
     ]
   },
   solana: {
