@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, } = require("../helper/cache");
 
 
@@ -14,13 +15,14 @@ function getTimeNow() {
   return Math.floor(Date.now() / 1000);
 }
 
-async function tvl() {
+async function tvl(api) {
   const timeNow = getTimeNow()
   const aDayInSeconds = 60 * 60 * 24;
   const projectKey = 'xrpl-dex'
   const cacheKey = 'cache'
   let { lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
-  if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds) 
+  const val = tvl?.XRP
+  if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds || !val) 
     throw new Error("stale/missing tvl data");
-  return tvl
+  api.addCGToken('ripple', val/1e6)
 }
