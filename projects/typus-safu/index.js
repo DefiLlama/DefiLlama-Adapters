@@ -16,6 +16,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   sui: {
     tvl,
   },
