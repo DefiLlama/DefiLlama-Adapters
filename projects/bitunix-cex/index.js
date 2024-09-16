@@ -28,7 +28,16 @@ const config = {
         "TLnMjGrgWTZLadqNRzbQPTzDPWbH6Dc1HA",
         "TRcvGsNpzkm8LdhLYmqBWESRrTUv7BPQ8t",
         "TWJ6R2EbFC5KdZFwLNj9GDiENn7WyAUjQE",
-        "TJqCunxn9xYtnXtP8v5t54W7uR2huUbFvS",
+        'TJqCunxn9xYtnXtP8v5t54W7uR2huUbFvS',
+        'THY84dJ4EPsPddwJP2URsqkDzHwVB9uk48',
+        'TQTn7XQmZ9p2jToTV2rPbrVLZSftaZjK9y',
+        'TLvpkJy9cn695PZLU2fEKYbfVDDpUymZvR',
+        'TGmri3M7L5bhMVZdEViUX9tdARpJ4ANdNb',
+        'TQTgNHaHLPEcCsvfFciriXLvQDktWNQ7yM',
+        'TVaRQRPJh3MT3AfGLVZuaTdJL8nd176tpB',
+        'TXP66hCnRzRP4ZNbQcNSWcBV4C5JnHK51F',
+        'TP5UzNzk4tL2Jo6twHavUM9s9NjUPSgrvN',
+        'TJRkfdgdQTSTmfQQzFy8RR6o73eLCEorSH'
     ],
   },
 }

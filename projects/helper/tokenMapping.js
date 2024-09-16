@@ -1,3 +1,4 @@
+const { decimals } = require('@defillama/sdk/build/erc20')
 let coreAssets = require('./coreAssets.json')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
@@ -54,6 +55,9 @@ const fixBalancesTokens = {
   },
   oasis: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'oasis-network', decimals: 18 },
+  },
+  heco: {
+    '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f': { coingeckoId: 'huobi-token', decimals: 18 },
   },
   base: {
     '0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c': { coingeckoId: 'rocket-pool-eth', decimals: 18 },
@@ -127,6 +131,9 @@ const fixBalancesTokens = {
     '0x6c76971f98945ae98dd7d4dfca8711ebea946ea6': { coingeckoId: "wrapped-steth", decimals: 18 },
     '0xaf204776c7245bf4147c2612bf6e5972ee483701': { coingeckoId: "savings-dai", decimals: 18 },
   },
+  etn: {
+    '0x138dafbda0ccb3d8e39c19edb0510fc31b7c1c77': { coingeckoId: "electroneum", decimals: 18 }
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
