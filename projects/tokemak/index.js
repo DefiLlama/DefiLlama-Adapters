@@ -15,6 +15,26 @@ const cvx_abi = {
   stkcvxFRAXBP_lockedStakesOf: "function lockedStakesOf(address account) view returns (tuple(bytes32 kek_id, uint256 start_timestamp, uint256 liquidity, uint256 ending_timestamp, uint256 lock_multiplier)[])",
 }
 
+const v2Gen3EthMainnet = {
+  systemRegistry:  {
+    address: "0x2218F90A98b0C070676f249EF44834686dAa4285",
+    abi: {
+      autoPoolRegistry: "function autoPoolRegistry() view returns (address)"
+    }
+  },
+  autoPoolRegistry: {    
+    abi: {
+      listVaults: "function listVaults() view returns (address[] memory)"
+    }
+  },
+  autopool: {
+    abi: {
+      totalAssets: "function totalAssets() view returns (uint256)",
+      asset: "function asset() view returns (address)"
+    }
+  }
+}
+
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
 const wethPool = "0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36";
 const usdcPool = "0x04bda0cf6ad025948af830e75228ed420b0e860d";
@@ -31,9 +51,9 @@ const fxs = ADDRESSES.ethereum.FXS;
 const tcrPool = "0x15A629f0665A3Eb97D7aE9A7ce7ABF73AeB79415";
 const tcr = "0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050";
 const toke = ADDRESSES.ethereum.TOKE;
-const rtoke1 = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930";
-const rtoke2 = "0x96f98ed74639689c3a11daf38ef86e59f43417d3";
-const rtoke3 = "0xA374A62DdBd21e3d5716cB04821CB710897c0972";
+const tTokeReactor = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930";
+const stakingVestingV1 = "0x96f98ed74639689c3a11daf38ef86e59f43417d3";
+const accTokeV1 = "0xA374A62DdBd21e3d5716cB04821CB710897c0972";
 const sushiPool = "0xf49764c9C5d644ece6aE2d18Ffd9F1E902629777";
 const sushi = ADDRESSES.ethereum.SUSHI;
 const fraxPool = "0x94671A3ceE8C7A12Ea72602978D1Bb84E920eFB2";
@@ -150,6 +170,38 @@ async function tvl(api) {
   tokens.forEach((val, i) => sdk.util.sumSingleBalance(balances, val, amountRes[i].amount, api.chain))
 
 
+  // ================================================
+  // Autopilot
+  // ================================================
+
+  // Get the instance of the Autopool Registry from the System Registry
+  const autopoolRegistry = await api.call({
+    abi: v2Gen3EthMainnet.systemRegistry.abi.autoPoolRegistry,
+    target: v2Gen3EthMainnet.systemRegistry.address,
+    params: [],
+  });
+
+  // Use the Autopool Registry to get all the Autopools in the system
+  const autopools = await api.call({
+    abi: v2Gen3EthMainnet.autoPoolRegistry.abi.listVaults,
+    target: autopoolRegistry,
+    params: [],
+  });
+
+  // Get the totalAssets() from each Autopool
+  const autopoolTotalAssets = await api.multiCall({ abi: v2Gen3EthMainnet.autopool.abi.totalAssets, calls: autopools.map((x) => {
+    return { target: x, params: [] }
+  }) });
+
+  // Get the asset() from each Autopool
+  const autopoolAssets = await api.multiCall({ abi: v2Gen3EthMainnet.autopool.abi.asset, calls: autopools.map((x) => {
+    return { target: x, params: [] }
+  }) });
+
+  for(let i = 0; i < autopoolTotalAssets.length; i++) {    
+    sdk.util.sumSingleBalance(balances, autopoolAssets[i].toLowerCase(), autopoolTotalAssets[i])
+  }
+
   return sumTokens2({ balances, api, tokensAndOwners: toa, })
 }
 
@@ -175,11 +227,11 @@ function lpBalances(holdings, toa, tokens, calls) {
 }
 
 async function staking(api) {
-  let vestedToke = '57238445'
+  let vestedToke = '1438444'
   api.add(ADDRESSES.ethereum.TOKE, vestedToke * 1e18 * -1)
   return sumTokens2({
     api, tokensAndOwners: [
-      [toke, rtoke1], [toke, rtoke2], [toke, rtoke3]
+      [toke, tTokeReactor], [toke, stakingVestingV1], [toke, accTokeV1]
     ]
   })
 }
