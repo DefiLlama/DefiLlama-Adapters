@@ -15,8 +15,6 @@ async function tvl(api) {
 
   const unihouseIdList = unihouseList.map((house) => house.fields.id.id);
 
-  // console.log(unihouseIdList);
-
   for (const id of unihouseIdList) {
     const house = await sui.getObject(id);
 
