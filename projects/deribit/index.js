@@ -2,7 +2,7 @@ const { cexExports } = require('../helper/cex')
 
 const config = {
   bitcoin: {
-    // from https://insights.deribit.com/exchange-updates/deribit-wallet-holdings/
+    // from https://insights.deribit.com/exchange-updates/proof-of-reserves-deribit/
     owners: [
         "bc1qa3phj5uhnuauk6r62cku6r6fl9rawqx4n6d690",
         "bc1qtq5zfllw9fs9w6stnfgalf9v59fgrcxxyawuvm",
