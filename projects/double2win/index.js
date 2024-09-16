@@ -1,5 +1,4 @@
 const { cachedGraphQuery } = require('../helper/cache')
-const { sumUnknownTokens } = require('../helper/unknownTokens')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
 async function getTokens(chain, subgraph) {
