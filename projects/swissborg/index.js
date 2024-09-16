@@ -108,6 +108,11 @@ const config = {
     owners: [
         'cosmos10dfzd2wpnpeuy2lgan35ah8dg5p4l298v0n8e8',
     ]
+  },
+  arbitrum: {
+    owners: [
+      '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+    ]
   }
 }
 
