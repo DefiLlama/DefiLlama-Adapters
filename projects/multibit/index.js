@@ -7,10 +7,10 @@ const BRIDGE_TOKENS = "https://api.multibit.exchange/support/token";
 
 const config = {
   // https://app.multibit.exchange/staking
-  ethereum: { stakingPool: "0x2EDfFbc62C3dfFD2a8FbAE3cd83A986B5bbB5495", tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT] },
+  ethereum: { stakingPool: "0x2EDfFbc62C3dfFD2a8FbAE3cd83A986B5bbB5495", tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT], chainKey: 'eth' },
   bsc: {},
   polygon: {},
-  bouncebit: {},
+  bouncebit: { chainKey: 'bb'},
 }
 module.exports = {
   methodology: `Tokens bridged via MultiBit are counted as TVL`,
@@ -27,12 +27,11 @@ module.exports = {
   },
 }
 Object.keys(config).forEach(chain => {
-  const { stakingPool, tokens = [ADDRESSES.null] } = config[chain]
+  const { stakingPool, tokens = [ADDRESSES.null], chainKey = chain } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const data = await getConfig('multibit', BRIDGE_TOKENS)
-      const key = chain === 'ethereum' ? 'eth': chain
-      const owner = data.find(v => v.chain === key)?.real?.contract
+      const owner = data.find(v => v.chain === chainKey)?.real?.contract
       if (!owner) return {}
       return api.sumTokens({ owner, tokens, })
     }
