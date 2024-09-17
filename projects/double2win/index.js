@@ -40,15 +40,11 @@ async function arbitrumTvl(api) {
   }
   
   const tokens = await getTokens(chain, subgraph)
-  let tokenBalances = {}
 
-  await sumTokens2({ api, balances: tokenBalances, owner: addresses.uniswapV3Vault, chain: chain, resolveUniV3: true })
-  await sumTokens2({ api, balances: tokenBalances, owner: addresses.uniswapV3Migration, chain: chain, resolveUniV3: true })
-  await sumTokens2({ api, balances: tokenBalances, owner: addresses.uniswapV2Vault, tokens, chain: chain, resolveLP: true })
-  await sumTokens2({ api, balances: tokenBalances, owner: addresses.uniswapV2Migration, tokens, chain: chain, resolveLP: true })
-  await sumTokens2({ api, balances: tokenBalances, owner: addresses.assetVault, tokens, chain: chain })
+  const blacklistedTokens = ['0x13654df31871b5d01e5fba8e6c21a5d0344820f5']
+  await sumTokens2({ api, owners: [addresses.uniswapV3Vault, addresses.uniswapV3Migration,], resolveUniV3: true, blacklistedTokens, })
+  await sumTokens2({ api, owners: [addresses.uniswapV2Migration, addresses.assetVault, addresses.uniswapV2Vault], tokens, resolveLP: true, blacklistedTokens, })
   
-  return tokenBalances
 }
 
 module.exports = {
