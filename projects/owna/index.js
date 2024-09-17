@@ -87,9 +87,13 @@ config.chains.forEach(async chainInfo => {
     };
   }
 
+  module.exports.deadFrom='2023-11-16',
   module.exports[chain] = {
     tvl: sumTokensExport({ chain, tokens, owners: [lendingContract] }),
-    borrowed: totalBorrowed,
-    offers: totalOffers,
+    borrowed: () => ({}) // bad debt totalBorrowed,
+    //offers: totalOffers,
   }
 })
+
+
+
