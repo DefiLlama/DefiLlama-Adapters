@@ -122,11 +122,13 @@ async function tvlArbitrum(api) {
   }
 
   sdk.log(accounts.length)
-  const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, })
+  const ownedAssetss = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, permitFailure: true })
   await addTraderJoeLPs({ api, accounts })
 
   accounts.forEach((o, i) => {
-    ownedAssets[i].forEach(tokenStr => {
+    const ownedAssets = ownedAssetss[i]
+    if (!ownedAssets) return
+    ownedAssets.forEach(tokenStr => {
       tokenStr = ethers.decodeBytes32String(tokenStr)
       const token = assetToAddressMappingArbitrum[tokenStr]
       if (!token) return;
@@ -144,9 +146,10 @@ async function tvlArbitrum(api) {
 
 async function addTraderJoeLPs({ api, accounts }) {
   const pairSet = new Set()
-  const bins = await api.multiCall({ abi: 'function getOwnedTraderJoeV2Bins() public view returns (tuple(address pair, uint24 bin)[])', calls: accounts })
+  const bins = await api.multiCall({ abi: 'function getOwnedTraderJoeV2Bins() public view returns (tuple(address pair, uint24 bin)[])', calls: accounts, permitFailure: true })
   const calls = []
   bins.forEach((res, i) => {
+    if (!res) return
     const account = accounts[i]
     res.forEach(({ pair, bin }) => {
       pair = pair.toLowerCase()
