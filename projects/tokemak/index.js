@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const positions = require('./positions.json');
@@ -16,13 +15,13 @@ const cvx_abi = {
 }
 
 const v2Gen3EthMainnet = {
-  systemRegistry:  {
+  systemRegistry: {
     address: "0x2218F90A98b0C070676f249EF44834686dAa4285",
     abi: {
       autoPoolRegistry: "function autoPoolRegistry() view returns (address)"
     }
   },
-  autoPoolRegistry: {    
+  autoPoolRegistry: {
     abi: {
       listVaults: "function listVaults() view returns (address[] memory)"
     }
@@ -130,7 +129,6 @@ async function tvl(api) {
     [cvxFRAXPool, tokeManager],
     [cvxalUSDPool, tokeManager],
   ]
-  const balances = {}
 
   // cvxcrvFRAX
   const cvxFraxUsdcPool = "0x7e880867363A7e321f5d260Cade2B0Bb2F717B02";
@@ -153,9 +151,9 @@ async function tvl(api) {
     target: cvxcvxFxsPool,
     params: [tokeTreasury],
   });
-  sdk.util.sumSingleBalance(balances, cvxcrvFrax, cvxcrvFraxBal)
-  sdk.util.sumSingleBalance(balances, cvxcrvFrax, treasuryFraxBal[0]['liquidity'])
-  sdk.util.sumSingleBalance(balances, cvxcvxFxs, cvxcvxFxsBal)
+  api.add(cvxcrvFrax, cvxcrvFraxBal)
+  api.add(cvxcrvFrax, treasuryFraxBal[0]['liquidity'])
+  api.add(cvxcvxFxs, cvxcvxFxsBal)
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
@@ -167,7 +165,7 @@ async function tvl(api) {
   lpBalances(curveHoldings, toa, tokens, calls,)
   lpBalances(uniHoldings, toa, tokens, calls)
   const amountRes = await api.multiCall({ abi: abi.userInfo, calls })
-  tokens.forEach((val, i) => sdk.util.sumSingleBalance(balances, val, amountRes[i].amount, api.chain))
+  tokens.forEach((val, i) => api.add(val, amountRes[i].amount))
 
 
   // ================================================
@@ -175,34 +173,12 @@ async function tvl(api) {
   // ================================================
 
   // Get the instance of the Autopool Registry from the System Registry
-  const autopoolRegistry = await api.call({
-    abi: v2Gen3EthMainnet.systemRegistry.abi.autoPoolRegistry,
-    target: v2Gen3EthMainnet.systemRegistry.address,
-    params: [],
-  });
-
+  const autopoolRegistry = await api.call({ abi: v2Gen3EthMainnet.systemRegistry.abi.autoPoolRegistry, target: v2Gen3EthMainnet.systemRegistry.address, });
   // Use the Autopool Registry to get all the Autopools in the system
-  const autopools = await api.call({
-    abi: v2Gen3EthMainnet.autoPoolRegistry.abi.listVaults,
-    target: autopoolRegistry,
-    params: [],
-  });
+  const autopools = await api.call({ abi: v2Gen3EthMainnet.autoPoolRegistry.abi.listVaults, target: autopoolRegistry, });
+  await api.erc4626Sum2({ calls: autopools})
 
-  // Get the totalAssets() from each Autopool
-  const autopoolTotalAssets = await api.multiCall({ abi: v2Gen3EthMainnet.autopool.abi.totalAssets, calls: autopools.map((x) => {
-    return { target: x, params: [] }
-  }) });
-
-  // Get the asset() from each Autopool
-  const autopoolAssets = await api.multiCall({ abi: v2Gen3EthMainnet.autopool.abi.asset, calls: autopools.map((x) => {
-    return { target: x, params: [] }
-  }) });
-
-  for(let i = 0; i < autopoolTotalAssets.length; i++) {    
-    sdk.util.sumSingleBalance(balances, autopoolAssets[i].toLowerCase(), autopoolTotalAssets[i])
-  }
-
-  return sumTokens2({ balances, api, tokensAndOwners: toa, })
+  return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
 function lpBalances(holdings, toa, tokens, calls) {
