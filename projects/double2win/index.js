@@ -48,6 +48,7 @@ async function arbitrumTvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   arbitrum: {
     tvl: arbitrumTvl,
   },
