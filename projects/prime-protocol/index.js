@@ -125,7 +125,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Adds the deposits of each market to the borrows that were not redeposited into that market.',
+  methodology: 'Adds the deposits of each market to the borrows of that market that were not redeposited into that market.',
 };
 
 Object.keys(PRIME_SATELLITE_NETWORKS).forEach(primeSatelliteNetwork => {
