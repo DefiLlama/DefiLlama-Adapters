@@ -1,61 +1,16 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
-const { request, gql } = require("graphql-request");
+const { getLogs2 } = require('../helper/cache/getLogs')
 
-const GRAPH_QUERY = gql`
-    query PositionQuery {
-        positions {
-            items {
-                collateral
-                position
-            }
-        }
-    }
-`;
-
-const rpcUrl = 'https://ofd-ponder-production.up.railway.app';
-let contractAddresses = []
-let tokens = [
-    '0x55d398326f99059fF775485246999027B3197955',
-];
-
-async function fetchContractAddresses() {
-    try {
-        const response = await request(rpcUrl, GRAPH_QUERY);
-
-        response.positions.items.map((item) => {
-            if (!tokens.includes(item.collateral)){
-                tokens.push(item.collateral)
-            }
-            contractAddresses.push(item.position)
-        });
-        return contractAddresses;
-    } catch (error) {
-        console.error('Error fetching contract addresses:', error);
-    }
+const config = {
+  bsc: { factory: '0xFe00054AF44E24f0B4bd49b1A2d2984C4264aabE', fromBlock: 37882077, },
 }
 
-
-async function tvl(timestamp, block, chainBlocks) {
-    const balances = {};
-
-    // Fetch contract addresses dynamically
-    await fetchContractAddresses();
-
-    // Sum token balances from the fetched contract addresses
-    await sumTokens2({
-        chain: 'bsc',
-        block: chainBlocks.bsc,
-        tokens,
-        owners: contractAddresses, // Fetched contract addresses
-        rpcUrl,
-        balances,
-    });
-
-    return balances;
-}
-
-module.exports = {
-    bsc: {
-        tvl,
-    },
-};
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const logs = await getLogs2({ api, factory, eventAbi: 'event PositionOpened (address indexed owner, address indexed position, address ofd, address collateral, uint256 price)', fromBlock, })
+      const tokensAndOwners = logs.map(log => [log.collateral, log.position])
+      return api.sumTokens({ tokensAndOwners })
+    }
+  }
+})
