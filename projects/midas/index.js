@@ -7,7 +7,7 @@ async function tvl(api) {
   });
 
   const rate = await api.call({
-    target: "0x32d1463EB53b73C095625719Afa544D5426354cB", // IB01/USD
+    target: "0x056339C044055819E8Db84E71f5f2E1F536b2E5b", // mTBILL 
     abi: "function latestRoundData() external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
   });
   api.addCGToken("tether", (mtbillSupply / 1e18) * ((rate.answer / 1e8) / 100));
