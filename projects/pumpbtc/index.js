@@ -35,9 +35,9 @@ Object.keys(config).forEach(async chain => {
 })
 
 async function getStakingAddresses() {
-  let res = await utils.fetchURL('https://dashboard.pumpbtc.xyz/api/dashboard/btc/realtime')
+  let res = await utils.fetchURL('https://dashboard.pumpbtc.xyz/api/dashboard/btc/addresses')
 
-  const btcAddresses = res.data.data.details.btc.details.map(d => d.address)
-  const babylonAddresses = res.data.data.details.babylon.details.map(d => d.address)
-  return [...btcAddresses, ...babylonAddresses]
+  const btcAddresses = res.data.data || []
+  //console.log('>>', btcAddresses.length) 
+  return btcAddresses
 }
