@@ -7,10 +7,10 @@ async function tvl(api) {
   });
 
   const rate = await api.call({
-    target: "0x056339C044055819E8Db84E71f5f2E1F536b2E5b", // mTBILL 
+    target: "0x056339C044055819E8Db84E71f5f2E1F536b2E5b", // mTBILL Oracle
     abi: "function latestRoundData() external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)",
   });
-  api.addCGToken("tether", (mtbillSupply / 1e18) * ((rate.answer / 1e8) / 100));
+  api.addCGToken("tether", (mtbillSupply / 1e18) * ((rate.answer / 1e8)));
 }
 
 const chains = ["ethereum"];
