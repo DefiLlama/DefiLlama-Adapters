@@ -11,17 +11,44 @@ const bsquared_owners = ["0xA2E2F3726DF754C1848C8fd1CbeA6aAFF84FC5B2", "0x1EbEd4
 
 module.exports = {
   start: 1690971144,
-  bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT, ADDRESSES.ethereum.FDUSD, ADDRESSES.scroll.STONE], }) },
+  bsc: { tvl: sumTokensExport({ owners, tokens: [
+    ADDRESSES.bsc.USDT, ADDRESSES.ethereum.FDUSD, ADDRESSES.scroll.STONE,
+    ADDRESSES.bsc.WBNB, //WBNB
+    '0xba2ae424d960c26247dd6c32edc70b295c744c43', //DOGE
+    ADDRESSES.bsc.BTCB, //BTCB
+    '0xb0b84d294e0c75a6abe60171b70edeb2efd14a1b',//slisBNB
+    '0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5',//lisUSD
+    ADDRESSES.bsc.USDC, //usdc
+    
+  ], }) },
   op_bnb: {
-    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [ADDRESSES.op_bnb.USDT, ADDRESSES.base.DAI,ADDRESSES.optimism.WETH_1] })
+    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [
+      ADDRESSES.op_bnb.USDT, 
+      ADDRESSES.base.DAI, //FDUSD
+      ADDRESSES.optimism.WETH_1, //WBNB
+      ADDRESSES.defiverse.USDC, //BTCB
+      ADDRESSES.defiverse.ETH, //ETH
+    ] })
   },
   manta: {
-    tvl: sumTokensExport({ owners: manta_owners, tokens: [ADDRESSES.manta.USDT, manta_stone_token, manat_manta_token] })
+    tvl: sumTokensExport({ owners: manta_owners, tokens: [
+      ADDRESSES.manta.USDT, manta_stone_token, manat_manta_token,
+      '0x7746ef546d562b443ae4b4145541a3b1a3d75717', //vMANTA
+      ADDRESSES.manta.USDC, //USDC
+      ] })
   },
   taiko: {
-    tvl: sumTokensExport({ owners: taiko_owners, tokens: [ADDRESSES.taiko.USDC] })
+    tvl: sumTokensExport({ owners: taiko_owners, tokens: [
+      ADDRESSES.taiko.USDC,
+      ADDRESSES.taiko.USDC_e, //USDC.e
+      ] })
   },
   bsquared: {
-    tvl: sumTokensExport({ owners: bsquared_owners, tokens: [ADDRESSES.bsquared.USDT] })
+    tvl: sumTokensExport({ owners: bsquared_owners, tokens: [
+      ADDRESSES.bsquared.USDT,
+      ADDRESSES.bsquared.USDC, //USDC
+      ADDRESSES.bsquared.BSTONE, //BSTONE
+      ADDRESSES.bsquared.UBTC,//uBTC
+      ] })
   },
 };

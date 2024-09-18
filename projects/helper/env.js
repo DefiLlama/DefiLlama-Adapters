@@ -12,8 +12,8 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  CRONOS_ZKEVM_RPC_MULTICALL: '0x9b122BF7a96F24EFB7A2b5765c635909dB3458F7',
-  NEOX_RPC_MULTICALL: '0xD6010D102015fEa9cB3a9AbFBB51994c0Fd6E672',
+  IDEX_RPC: "https://xchain-rpc.idex.io",
+  ETN_RPC: "https://rpc.ankr.com/electroneum"
 }
 
 const ENV_KEYS = [
