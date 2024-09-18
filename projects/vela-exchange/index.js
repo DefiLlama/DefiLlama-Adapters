@@ -39,6 +39,7 @@ module.exports = {
   hallmarks: [
     [Math.floor(new Date('2023-04-13') / 1e3), 'Refunded tokens to VLP holders & traders'],
     [1693926000, 'Launched on Base Chain'],
-    [1721314800, 'Implemented Aave VLP supply integration']
+    [1721314800, 'Implemented Aave VLP supply integration'],
+    [1726596000, 'Burned 65m Vela tokens']
   ],
 }
