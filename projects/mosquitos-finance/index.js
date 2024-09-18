@@ -141,6 +141,7 @@ module.exports = {
     [1678320000, "Rug Pull"]
   ],
   timetravel: false,
+  deadFrom: 1678320000,
   aptos: {
     tvl,
     staking

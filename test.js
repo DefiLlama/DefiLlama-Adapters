@@ -103,6 +103,25 @@ sdk.api.abi.call = async (...args) => {
   }
 }
 
+function validateHallmarks(hallmark) {
+  if (!Array.isArray(hallmark)) {
+    throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
+  }
+  const [timestamp, text] = hallmark
+  if (typeof timestamp !== 'number' && isNaN(+new Date(timestamp))) {
+    throw new Error("Hallmark timestamp should be a number/dateString")
+  }
+  const year = new Date(timestamp * 1000).getFullYear()
+  const currentYear = new Date().getFullYear()
+  if (year < 2010 || year > currentYear) {
+    throw new Error("Hallmark timestamp should be between 2010 and "+ currentYear + " but got " + year)
+  }
+
+  if (typeof text !== 'string') {
+    throw new Error("Hallmark text should be a string")
+  }
+}
+
 (async () => {
   let module = {};
   try {
@@ -110,8 +129,15 @@ sdk.api.abi.call = async (...args) => {
   } catch (e) {
     console.log(e)
   }
-  if(module.hallmarks && module.hallmarks.length > 6){
-    console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+  if (module.hallmarks) {
+    if (!Array.isArray(module.hallmarks)) {
+      throw new Error("Hallmarks should be an array of arrays")
+    }
+    if(module.hallmarks.length > 6){
+      console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+    }
+
+    module.hallmarks.forEach(validateHallmarks)
   }
   // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));

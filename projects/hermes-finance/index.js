@@ -1,5 +1,5 @@
 const { staking } = require('../helper/staking');
-const { pool2Exports } = require('../helper/pool2');
+const { pool2 } = require('../helper/pool2');
 
 const hermes = "0xB15f02F9Da8CD1f99E9dd375F21dc96D25ddd82C";
 const hermesShares = "0xfa4b6db72a650601e7bd50a0a9f537c9e98311b2";
@@ -15,6 +15,6 @@ module.exports = {
     avax:{
         tvl: async () => ({}),
         staking: staking(olympus, hermesShares),
-        pool2: pool2Exports(hShareRewardPool, pool2LPs, "avax")
+        pool2: pool2(hShareRewardPool, pool2LPs, "avax")
     }
 }

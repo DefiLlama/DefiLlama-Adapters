@@ -1,4 +1,0 @@
-{
-  "getAssetLength": "uint256:getAssetLength",
-  "assetBalance": "function assetBalance(uint16) view returns (uint256)"
-}

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getTokenSupply } = require("../helper/solana");
 const sui = require("../helper/chain/sui");
 const { aQuery } = require("../helper/chain/aptos");
@@ -30,7 +31,7 @@ const config = {
     USDY: "0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc",
   },
   noble: {
-    USDY: "ausdy",
+    USDY: ADDRESSES.noble.USDY,
   },
   arbitrum: {
     USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",

@@ -44,6 +44,11 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.USDC,//usdc
     ],
     owners: [ethowners]
-
   },
 });
+
+module.exports.deadFrom = '2024-08-30'
+module.exports.ethereum.tvl = () => ({})
+module.exports.ethereum.ownTokens = () => ({})
+module.exports.arbitrum.tvl = () => ({})
+module.exports.arbitrum.ownTokens = () => ({})

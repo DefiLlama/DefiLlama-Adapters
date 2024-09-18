@@ -1,17 +1,11 @@
 
 const sdk = require('@defillama/sdk');
 const abi = require('../abis/compound.json');
-const { nullAddress, unwrapLPsAuto } = require('../unwrapLPs');
-const { requery } = require("../requery");
-const { getCache, setCache } = require("../cache");
+const { nullAddress, } = require('../unwrapLPs');
 const { getChainTransform, getFixBalancesSync, } = require('../portedTokens');
-const { usdtAddress } = require('../balances');
-const agoraAbi = require("../../agora/abi.json");
 
-const project = 'compound'
-const getKey = (chain, addr) => `${chain}/${addr}`
 
-function compoundExports(comptroller, { blacklistedTokens = [], resolveLps = false, transformAdress, abis = {}} = {}) {
+function compoundExports(comptroller, { blacklistedTokens = [], transformAdress, abis = {}} = {}) {
   let response
   abis = { ...abi, ...abis }
 

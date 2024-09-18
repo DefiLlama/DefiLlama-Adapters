@@ -1,21 +1,10 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { pool2Exports } = require("../helper/pool2");
-const { stakingUnknownPricedLP } = require("../helper/staking");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { pool2 } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
 
 const meow = "0x41F4CC9613E31d4E77C428b40D53537Da24264Ee";
 const meowMining = "0xba1a3dACa919616aA462E93A80EFbe82753f9087";
 const meowFtm = "0x150Aeb5389d56E258c2bbb42c7e67e944EDEE913";
-const treasuryContract = "0x7d25f49C648B2a12B5f530Df929204352cb6080e";
-
-const translate = {
-  [ADDRESSES.fantom.fUSDT]:
-    ADDRESSES.ethereum.USDT,
-  [ADDRESSES.fantom.DAI]:
-    ADDRESSES.ethereum.DAI,
-};
 
 const workers = [
   "0x5f1D549826e1AE30D653aD17e7277Fb7C6AC7EDD", // SpiritswapWorker_USDC_FTM_Spirit_Worker
@@ -37,172 +26,29 @@ const workers = [
   "0xC14f48826EB564201Bf7D7111f0b46e2301bF36A", // SpookyswapWorker_fUSDT_FTM_Spooky_Worker
 ];
 
-async function calcTvl(block, chain, borrow) {
-  let balances = {};
-  const poolLength = (
-    await sdk.api.abi.call({
-      target: meowMining,
-      abi: abi.poolLength,
-      block,
-      chain,
-    })
-  ).output;
-  const poolInfo = (
-    await sdk.api.abi.multiCall({
-      calls: Array.from({ length: Number(poolLength) }, (_, k) => ({
-        target: meowMining,
-        params: k,
-      })),
-      abi: abi.poolInfo,
-      block,
-      chain,
-    })
-  ).output;
-  const symbols = (
-    await sdk.api.abi.multiCall({
-      calls: poolInfo.map((p) => ({
-        target: p.output.stakeToken,
-      })),
-      abi: "erc20:symbol",
-      block,
-      chain,
-    })
-  ).output;
-  let ibTokens = [];
-  symbols.forEach((p) => {
-    if (p.output.startsWith("ib")) {
-      ibTokens.push(p.input.target);
-    }
-  });
-  const underlyingtoken = (
-    await sdk.api.abi.multiCall({
-      calls: ibTokens.map((p) => ({
-        target: p,
-      })),
-      abi: abi.token,
-      block,
-      chain,
-    })
-  ).output;
-  const totalToken = (
-    await sdk.api.abi.multiCall({
-      calls: ibTokens.map((p) => ({
-        target: p,
-      })),
-      abi: abi.totalToken,
-      block,
-      chain,
-    })
-  ).output;
-  const vaultDebtVal = (
-    await sdk.api.abi.multiCall({
-      calls: ibTokens.map((p) => ({
-        target: p,
-      })),
-      abi: abi.vaultDebtVal,
-      block,
-      chain,
-    })
-  ).output;
-  for (let i = 0; i < ibTokens.length; i++) {
-    let token = underlyingtoken[i].output.toLowerCase();
-    let total = Number(totalToken[i].output);
-    let debt = Number(vaultDebtVal[i].output);
-    if (translate[token] !== undefined) {
-      token = translate[token];
-    } else {
-      token = `fantom:${token}`;
-    }
-    if (!borrow) {
-      sdk.util.sumSingleBalance(balances, token, total - debt);
-    } else {
-      sdk.util.sumSingleBalance(balances, token, debt);
-    }
-  }
-  return balances;
+async function calcTvl(api, borrow) {
+  if (borrow) return {}
+  const poolInfos = await api.fetchList({  lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: meowMining})
+  return api.sumTokens({ owner: meowMining, tokens: poolInfos.map(p => p.stakeToken), blacklistedTokens: [meowFtm] })
 }
 
-async function tvl(timestamp, block, chainBlocks) {
-  let balances = await calcTvl(chainBlocks.fantom, "fantom", false);
-  const lpTokens = (
-    await sdk.api.abi.multiCall({
-      calls: workers.map((p) => ({
-        target: p,
-      })),
-      abi: abi.lpToken,
-      block: chainBlocks.fantom,
-      chain: "fantom",
-    })
-  ).output;
-  const masterchefs = (
-    await sdk.api.abi.multiCall({
-      calls: workers.map((p) => ({
-        target: p,
-      })),
-      abi: abi.masterchef,
-      block: chainBlocks.fantom,
-      chain: "fantom",
-    })
-  ).output;
-  const pids = (
-    await sdk.api.abi.multiCall({
-      calls: workers.map((p) => ({
-        target: p,
-      })),
-      abi: abi.pid,
-      block: chainBlocks.fantom,
-      chain: "fantom",
-    })
-  ).output;
-  const userInfos = (
-    await sdk.api.abi.multiCall({
-      calls: Array.from({ length: workers.length }, (_, k) => ({
-        target: masterchefs[k].output,
-        params: [pids[k].output, workers[k]],
-      })),
-      abi: abi.userInfo,
-      block: chainBlocks.fantom,
-      chain: "fantom",
-    })
-  ).output;
-  let lpPos = [];
-  for (let i = 0; i < workers.length; i++) {
-    if (userInfos[i].output.amount === "0") continue;
-    lpPos.push({
-      token: lpTokens[i].output,
-      balance: userInfos[i].output.amount,
-    });
-  }
-  await unwrapUniswapLPs(
-    balances,
-    lpPos,
-    chainBlocks.fantom,
-    "fantom",
-    (addr) => `fantom:${addr}`
-  );
-  return balances;
+async function tvl(api) {
+  await calcTvl(api, false);
+  const lpTokens = await api.multiCall({  abi: abi.lpToken, calls: workers})
+  const shares = await api.multiCall({  abi: 'uint256:totalShare', calls: workers})
+  const bals  = (await api.multiCall({  abi: 'function shareToBalance(uint256) view returns (uint256)', calls: lpTokens.map((lp, i) => ({ target: lp, params: shares[i] })), permitFailure: true})).map(b => b || 0)
+  api.add(lpTokens, bals)
 }
 
-async function borrowed(timestamp, block, chainBlocks) {
-  return await calcTvl(chainBlocks.fantom, "fantom", true);
+async function borrowed(api) {
+  return await calcTvl(api, true);
 }
 
 module.exports = {
   fantom: {
     tvl,
     borrowed,
-    pool2: pool2Exports(
-      meowMining,
-      [meowFtm],
-      "fantom",
-      (addr) => `fantom:${addr}`
-    ),
-    staking: stakingUnknownPricedLP(
-      meowMining,
-      meow,
-      "fantom",
-      meowFtm,
-      (addr) => `fantom:${addr}`
-    ),
+    pool2: pool2(meowMining, [meowFtm],),
+    staking: staking(meowMining, meow,),
   },
 };

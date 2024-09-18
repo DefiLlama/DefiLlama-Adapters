@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require('../helper/cex')
 
 const config = {

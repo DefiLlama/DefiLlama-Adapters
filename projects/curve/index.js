@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
+const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
@@ -257,25 +257,15 @@ module.exports.ethereum["staking"] = staking(
 );
 
 module.exports.harmony = {
-  tvl: async (ts, ethB, chainB) => {
-    if (ts > 1655989200) {
+  tvl: async (api) => {
+    if (api.timestamp > 1655989200) {
       // harmony hack
       return {};
     }
-    const block = chainB.harmony
-    const balances = {};
-    await sumTokensSharedOwners(
-      balances,
-      [
-        "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
-        "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
-      ],
-      ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
-      block,
-      "harmony",
-      addr => `harmony:${addr}`
-    );
-    return balances;
+    return api.sumTokens({ owner: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023', tokens:  [
+      "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
+      "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
+    ]})
   }
 };
 

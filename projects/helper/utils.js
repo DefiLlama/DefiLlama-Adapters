@@ -68,7 +68,8 @@ function isLP(symbol, token, chain) {
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
-  if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
+  if (chain === 'oasis' && ['LPT', 'GLP'].includes(symbol)) return true
+  if (chain === 'iotex' && ['MIMO-LP'].includes(symbol)) return true
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true

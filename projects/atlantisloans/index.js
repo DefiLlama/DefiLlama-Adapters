@@ -3,8 +3,6 @@ const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { compoundExports } = require("../helper/compound");
 
-const comptroller = "0xE7E304F136c054Ee71199Efa6E26E8b0DAe242F3";
-const polygonComptroller = "0x8f85ee1c0a96734cb76870106dd9c016db6de09a"
 const avaxComptroller = "0x8f85ee1c0a96734cb76870106dd9c016db6de09a"
 const dcComptroller = "0xA65722af4957CeF481Edb4cB255f804DD36E8aDc"
 
@@ -19,28 +17,16 @@ module.exports = {
       bsc: {
     pool2: pool2(lpVaultStakingContract_BNB, ALT_BUSD_CakeLP_BNB),
     staking: staking(vaultStakingContract_BNB, ATL),
-    // ...compoundExports(comptroller,
-    //   "bsc",
-    //   "0x5A9A90983A369b6bB8F062f0AFe6219Ac01caF63",
-    //   ADDRESSES.bsc.WBNB
-    // ),
     tvl: async () => ({}),
   },
-  // polygon: compoundExports(polygonComptroller,
-  //   "polygon",
-  //   "0xa65722af4957cef481edb4cb255f804dd36e8adc",
-  //   ADDRESSES.polygon.WMATIC_2
-  // ),
   polygon: {
     tvl: async () => ({}),
   },
   avax: compoundExports(avaxComptroller,
-    "avax",
     "0x6bd2154fbc086cb43411966e0e72584196ccd065",
     ADDRESSES.avax.WAVAX
   ),
   dogechain: compoundExports(dcComptroller,
-    "dogechain",
     "0xbc46Dc817ce983CfD1B36cBc599031aCBEc2FDfe",
     ADDRESSES.dogechain.WWDOGE
   ),
