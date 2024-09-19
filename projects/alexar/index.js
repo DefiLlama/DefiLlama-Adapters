@@ -10,7 +10,7 @@ const chainMapping = {
   bsc: 'binance'
 };
 
-const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', /*'crescent',*/ 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
+const chainListSupply = ['juno', 'cosmos', /*'comdex',*/ 'carbon', /*'crescent',*/ 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
 const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum', 'base'];
 
 
