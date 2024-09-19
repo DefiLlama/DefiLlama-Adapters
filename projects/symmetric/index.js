@@ -23,7 +23,4 @@ module.exports = {
   taiko: {
     tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 371729),
   },
-  etlk: {
-    tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 2642360),
-  }
 }
