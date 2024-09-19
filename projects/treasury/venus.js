@@ -60,4 +60,13 @@ module.exports = treasuryExports({
     owners: [venusTreasury],
     ownTokens: [XVS, VAI],
   },
+  era: {
+    tokens: [
+      ADDRESSES.era.WBTC, 
+      ADDRESSES.era.ZK, 
+      ADDRESSES.era.USDC, 
+      ADDRESSES.era.WETH  
+    ],
+    owners: ['0xB2e9174e23382f7744CebF7e0Be54cA001D95599']
+  }
 });
