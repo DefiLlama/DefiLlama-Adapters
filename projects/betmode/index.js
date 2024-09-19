@@ -18,7 +18,7 @@ module.exports = {
   optimism: {
     tvl: sumTokensExport({
       owners: ["0x4b9d8f10bB6F50765DbeB9F8FBBF3Dace0Db8f3c"],
-      tokens: [ADDRESSES.optimism.USDC],
+      tokens: [ADDRESSES.optimism.USDC_CIRCLE],
     }),
   },
 };
