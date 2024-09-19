@@ -68,16 +68,16 @@ async function fetchBalancesPerBranch(api, block) {
   }, {});
 }
 
-let balancesPerBranch;
-let lastFetchedBlock;
-let isFetchingBalances = false;
-
 async function tvl(branchChain) {
   const api = new sdk.ChainApi({
     chain: "arbitrum",
     timestamp: sdk.api.timestamp,
   });
   await api.getBlock();
+
+  let balancesPerBranch;
+  let lastFetchedBlock;
+  let isFetchingBalances = false;
 
   const block = lastFetchedBlock;
 
