@@ -2,15 +2,17 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
+  deadFrom: '2024-09-16',
   misrepresentedTokens: true,
   methodology:
     "Factory address (0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
   callisto: {
-    tvl: getUniTVL({
-      factory: '0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5',
-      useDefaultCoreAssets: true,
-      blacklistedTokens: [ADDRESSES.callisto.SOY]
-    })
+    tvl : () => ({})
+    // tvl: getUniTVL({
+    //   factory: '0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5',
+    //   useDefaultCoreAssets: true,
+    //   blacklistedTokens: [ADDRESSES.callisto.SOY]
+    // })
   },
   ethereumclassic: {
     tvl: getUniTVL({
