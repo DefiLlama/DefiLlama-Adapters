@@ -2,8 +2,8 @@ const { transformDexBalances } = require('../helper/portedTokens')
 const { get } = require('../helper/http')
 
 module.exports = {
-  deadFrom: '2024-09-01',
-  hallmarks: [[1719446400,'Sunset of cSwap']],
+  deadFrom: '2024-09-17',
+  hallmarks: [[1726531200,'Sunset of cSwap']],
   timetravel: false,
   misrepresentedTokens: true,
   comdex: {
