@@ -17,6 +17,6 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   solana: { tvl },
-  methodology: "TVL consists of deposits made into hedgehog markets programs.",
+  methodology: "TVL consists of deposits made into Hedgehog Markets.",
   hallmarks: [],
 };
