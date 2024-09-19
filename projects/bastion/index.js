@@ -1,5 +1,4 @@
 const { compoundExports } = require("../helper/compound");
-const sdk = require('@defillama/sdk')
 
 const mainHubExport = compoundExports(
   "0x6De54724e128274520606f038591A00C5E94a1F6",
@@ -21,20 +20,12 @@ const bastion = [
 module.exports = {
   aurora: {
     tvl: async (...args) => {
-      let balances = {};
-      const tvls = await Promise.all(bastion.map(realm => realm.tvl(...args)))
-      tvls.forEach(tvl => {
-        Object.keys(tvl).forEach(key => sdk.util.sumSingleBalance(balances, key, tvl[key]))
-      })
-      return balances;
+      await Promise.all(bastion.map(realm => realm.tvl(...args)))
+      return args[0].getBalances();
     },
     borrowed: async (...args) => {
-      let balances = {};
-      const tvls = await Promise.all(bastion.map(realm => realm.borrowed(...args)))
-      tvls.forEach(tvl => {
-        Object.keys(tvl).forEach(key => sdk.util.sumSingleBalance(balances, key, tvl[key]))
-      })
-      return balances;
+      await Promise.all(bastion.map(realm => realm.borrowed(...args)))
+      return args[0].getBalances();
     },
   },
 };
