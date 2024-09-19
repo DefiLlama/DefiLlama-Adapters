@@ -60,4 +60,13 @@ module.exports = treasuryExports({
     owners: [venusTreasury],
     ownTokens: [XVS, VAI],
   },
+  era: {
+    tokens: [
+      '0xBBeB516fb02a01611cBBE0453Fe3c580D7281011',
+      '0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E',
+      '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4',
+      '0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91'
+    ],
+    owners: ['0xB2e9174e23382f7744CebF7e0Be54cA001D95599']
+  }
 });
