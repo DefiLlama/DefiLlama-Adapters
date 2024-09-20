@@ -65,15 +65,15 @@ const getFullTVl = async (api) => {
 
     const decimalPow = Math.pow(10, farm.decimals);
     const balance = balanceRaw / decimalPow;
-    api.add("tether", balance * (prices[farm.token] || 0), { skipChain: true });
+    api.addUSDValue(balance * (prices[farm.token] || 0));
   }
-  return api.getBalances();
 };
 
 module.exports = {
   timetravel: false,
-  hallmarks: farms.map((farm) => [farm.launch, `${farm.name} token launch`]),
+  misrepresentedTokens: true,
   ton: {
-    tvl: getFullTVl,
+    tvl: () => ({}),
+    staking: getFullTVl,
   },
 };
