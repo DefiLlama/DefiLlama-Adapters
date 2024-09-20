@@ -1,3 +1,5 @@
+//@ts-check
+
 const { getAddressDecoder } = require("@solana/addresses");
 const {
   getArrayDecoder,
@@ -6,13 +8,18 @@ const {
   getU8Decoder,
 } = require("@solana/codecs");
 
-const { getRpc, getTokenBalances, mergeBalances } = require("./utils");
+const { getRpc, getTokenBalancesByOwner, mergeBalances } = require("./utils");
 
-const programId = "PARrVs6F5egaNuz8g6pKJyU4ze3eX5xGZCFb3GLiVvu";
-const poolOwner = "3SAUPiGiATqv8TBgvzSJqpLxLGF6LbJamvimueJQT7WT";
+/**
+ * @template {string} [TAddress=string]
+ * @typedef {import("@solana/addresses").Address<TAddress>} Address
+ */
+
+const programId = /** @type {Address} */("PARrVs6F5egaNuz8g6pKJyU4ze3eX5xGZCFb3GLiVvu"); /* prettier-ignore */
+const poolOwner = /** @type {Address} */("3SAUPiGiATqv8TBgvzSJqpLxLGF6LbJamvimueJQT7WT"); /* prettier-ignore */
 
 async function getAwaitingClaim() {
-  return getTokenBalances(poolOwner);
+  return getTokenBalancesByOwner(poolOwner);
 }
 
 async function getDeposits() {
@@ -33,10 +40,9 @@ async function getDeposits() {
   const base64Encoder = getBase64Encoder();
 
   const addressDecoder = getAddressDecoder();
-  const amountsDecoder = getArrayDecoder(getU64Decoder(), {
-    size: getU8Decoder(),
-  });
+  const amountsDecoder = getArrayDecoder(getU64Decoder(), { size: getU8Decoder() }); /* prettier-ignore */
 
+  /** @type {Record<Address, bigint>} */
   const deposits = {};
 
   for (const { account } of result) {
@@ -63,4 +69,4 @@ async function tvl() {
   return mergeBalances(...balances);
 }
 
-module.exports = { tvl };
+module.exports = tvl;

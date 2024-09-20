@@ -1,10 +1,20 @@
-const { tvl: p2p } = require("./p2p");
-const { tvl: parimutuel } = require("./parimutuel");
-const { tvl: parlay } = require("./parlay");
+//@ts-check
+
+const classicMarkets = require("./classic-markets");
+const p2p = require("./p2p");
+const parimutuel = require("./parimutuel");
+const parlay = require("./parlay");
+
 const { mergeBalances } = require("./utils");
 
 async function tvl() {
-  const balances = await Promise.all([p2p(), parimutuel(), parlay()]);
+  const balances = await Promise.all([
+    classicMarkets(),
+    p2p(),
+    parimutuel(),
+    parlay(),
+  ]);
+
   const merged = mergeBalances(...balances);
 
   const result = {};
