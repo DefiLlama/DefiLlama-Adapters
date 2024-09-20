@@ -133,6 +133,11 @@ const fixBalancesTokens = {
   },
   etn: {
     '0x138dafbda0ccb3d8e39c19edb0510fc31b7c1c77': { coingeckoId: "electroneum", decimals: 18 }
+  },
+  polynomial: {
+    [ADDRESSES.polynomial.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.polynomial.SDAI]: { coingeckoId: "savings-dai", decimals: 18 },
+    [ADDRESSES.polynomial.sUSDe]: { coingeckoId: "ethena-staked-usde", decimals: 18 },
   }
 }
 
