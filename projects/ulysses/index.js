@@ -1,40 +1,27 @@
-const sdk = require("@defillama/sdk");
-const { getLogs2 } = require("../helper/cache/getLogs");
-const {
-  config: {
-    RootPort,
-    chainToLZChainID,
-    nativeTokenPerChain,
-    EVM_CHAIN_ID_FROM_LZ_CHAIN_ID,
-    CHAINS,
-  },
-} = require("./config");
+const { sumTokensExport } = require("../helper/unwrapLPs")
+const ADDRESSES = require('../helper/coreAssets.json')
 
-async function tvl(api) {
-  const arbitrumApi = new sdk.ChainApi({ chain: 'arbitrum', timestamp: api.timestamp })
-
-  const logs = await getLogs2({
-    api: arbitrumApi,
-    target: RootPort,
-    fromBlock: 241817312,
-    eventAbi: "event LocalTokenAdded(address indexed underlyingAddress, address indexed localAddress, address indexed globalAddress, uint256 chainId)",
-  });
-
-  const tokens = []
-  const uTokens = []
-  logs.forEach((log) =>  {
-    const chain = EVM_CHAIN_ID_FROM_LZ_CHAIN_ID[log.chainId.toString()];
-    console.log(log.chainId, chain, log.chainId.toString())
-    if (!chain) return;
-    const uToken = `${chain}:${log.underlyingAddress}`; 
-    tokens.push(log.globalAddress);
-    uTokens.push(uToken);
-  })
-  const bals  = (await api.multiCall({  abi: 'erc20:totalSupply', calls: tokens, permitFailure: true })).map(i => i ?? 0)
-
-  console.log(tokens, uTokens, bals, api.chain)
-  api.add(uTokens, bals, { skipChain: true });
+const defaultPort = '0x6C6d3FB0289039b0FCa2E7244A06Cf9403464646'
+const ports = {
+  arbitrum: '0x0c453ef35986E1d8dA22043fF00BF03cEB42e1f7',
+  ethereum: undefined,
+  optimism: undefined,
+  base: undefined,
+  polygon: undefined,
+  avax: undefined,
+  bsc: undefined,
+  // metis: undefined,
 }
 
-CHAINS.forEach(chain => module.exports[chain] = { tvl, })
-module.exports.arbitrum = { tvl, }
+Object.keys(ports).forEach(chain => module.exports[chain] = { tvl: sumTokensExport({ owner: ports[chain] ?? defaultPort, fetchCoValentTokens: true, }) })
+
+const chainsWithCovalentSupport = {
+  metis: { tokens: Object.values(ADDRESSES.metis).concat([
+    ADDRESSES.null,
+  ])}
+}
+
+Object.keys(chainsWithCovalentSupport).forEach(chain => {
+  const { tokens, port =defaultPort } = chainsWithCovalentSupport[chain]
+  module.exports[chain] = { tvl: sumTokensExport({ owner: port, tokens })
+} })
