@@ -1,107 +1,40 @@
 const sdk = require("@defillama/sdk");
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs2 } = require("../helper/cache/getLogs");
 const {
   config: {
     RootPort,
-    EVM_CHAIN_ID_FROM_LZ_CHAIN_ID,
+    chainToLZChainID,
     nativeTokenPerChain,
+    EVM_CHAIN_ID_FROM_LZ_CHAIN_ID,
     CHAINS,
   },
 } = require("./config");
 
-async function fetchBalancesPerBranch(api, block) {
-  const data = await getLogs({
-    api,
+async function tvl(api) {
+  const arbitrumApi = new sdk.ChainApi({ chain: 'arbitrum', timestamp: api.timestamp })
+
+  const logs = await getLogs2({
+    api: arbitrumApi,
     target: RootPort,
-    topics: [
-      "0xbc68f8c6bc7725cd153211b66209e3c2bc0706ec10427059be524f96db68247c",
-    ],
     fromBlock: 241817312,
-    toBlock: block,
-    eventAbi:
-      "event LocalTokenAdded(address indexed underlyingAddress, address indexed localAddress, address indexed globalAddress, uint256 chainId)",
+    eventAbi: "event LocalTokenAdded(address indexed underlyingAddress, address indexed localAddress, address indexed globalAddress, uint256 chainId)",
   });
 
-  const branchTokensPerChain = data.reduce((memo, log) => {
-    const tokenChain = EVM_CHAIN_ID_FROM_LZ_CHAIN_ID[Number(log.args[3])];
+  const tokens = []
+  const uTokens = []
+  logs.forEach((log) =>  {
+    const chain = EVM_CHAIN_ID_FROM_LZ_CHAIN_ID[log.chainId.toString()];
+    console.log(log.chainId, chain, log.chainId.toString())
+    if (!chain) return;
+    const uToken = `${chain}:${log.underlyingAddress}`; 
+    tokens.push(log.globalAddress);
+    uTokens.push(uToken);
+  })
+  const bals  = (await api.multiCall({  abi: 'erc20:totalSupply', calls: tokens, permitFailure: true })).map(i => i ?? 0)
 
-    if (!tokenChain) return memo;
-
-    const underlyingAddress = log.args[0];
-    const globalAddress = log.args[2];
-
-    return {
-      ...memo,
-      [globalAddress]: { underlyingAddress, tokenChain },
-    };
-  }, nativeTokenPerChain);
-
-  const globalAddresses = Object.keys(branchTokensPerChain);
-
-  const balances = await Promise.all(
-    globalAddresses.map(
-      async (target) =>
-        (
-          await sdk.api.erc20.totalSupply({
-            target,
-            block,
-            chain: api.chain,
-          })
-        ).output
-    )
-  );
-
-  return balances.reduce((memo, balance, i) => {
-    const globalAddress = globalAddresses[i];
-    const { underlyingAddress, tokenChain } =
-      branchTokensPerChain[globalAddress];
-
-    const chainBalances = memo[tokenChain] ?? {};
-
-    return {
-      ...memo,
-      [tokenChain]: {
-        ...chainBalances,
-        [tokenChain + ":" + underlyingAddress]: balance,
-      },
-    };
-  }, {});
+  console.log(tokens, uTokens, bals, api.chain)
+  api.add(uTokens, bals, { skipChain: true });
 }
 
-async function tvl(branchChain) {
-  const api = new sdk.ChainApi({
-    chain: "arbitrum",
-    timestamp: sdk.api.timestamp,
-  });
-  await api.getBlock();
-
-  let balancesPerBranch;
-  let lastFetchedBlock;
-  let isFetchingBalances = false;
-
-  const block = lastFetchedBlock;
-
-  if (!isFetchingBalances && (!block || block !== api.block)) {
-    lastFetchedBlock = api.block;
-    isFetchingBalances = true;
-    balancesPerBranch = await fetchBalancesPerBranch(api, api.block);
-    isFetchingBalances = false;
-  }
-
-  await new Promise((resolve) => {
-    if (isFetchingBalances) {
-      setTimeout(() => resolve(), 1000);
-    } else {
-      resolve();
-    }
-  });
-
-  return balancesPerBranch?.[branchChain];
-}
-
-CHAINS.forEach(
-  async (chain) =>
-    (module.exports[chain] = {
-      tvl: () => tvl(chain),
-    })
-);
+CHAINS.forEach(chain => module.exports[chain] = { tvl, })
+module.exports.arbitrum = { tvl, }
