@@ -29,6 +29,12 @@ async function getAvaxTvl() {
   }
 }
 
+async function getFlowTvl() {
+  return {
+    'flow': await getTvls("flowevm", "totalStaked"),
+  }
+}
+
 async function polkadot() {
   return {
     polkadot: await getTvls("dot", "totalStaked"),
@@ -90,6 +96,9 @@ module.exports = {
   },
   fantom: {
     tvl: getFantomTvl,
+  },
+  flow: {
+    tvl: getFlowTvl,
   },
   polkadot: {
     tvl: polkadot,

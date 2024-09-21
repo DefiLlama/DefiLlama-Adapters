@@ -1897,5 +1897,10 @@
   },
   "ripple": {
     "XRP": "XRP"
+  }, 
+  "polynomial": {
+    "USDC": "0x17C9D8Cef7Ef072844EEaEdE1F9f54C7E3fa8743",
+    "SDAI": "0x615172e47c0C5A6dA8ea959632Ac0166f7a59eDc",
+    "sUSDe": "0x2A06DEAc3E863c23DD6a89Eeacd80aBA9E08B77B"
   }
 }
