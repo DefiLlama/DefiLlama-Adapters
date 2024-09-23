@@ -32,8 +32,7 @@ async function borrowed(api) {
   const cMarkets = ['TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP']
   const otherMarkets = []
   for (let i = 0; i < markets.length; i++) {
-    if (cMarkets.includes(markets[i])) {
-    } else
+    if (!cMarkets.includes(markets[i]))
       otherMarkets.push(markets[i])
   }
 
