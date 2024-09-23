@@ -9,14 +9,9 @@ const STAKING_CONTRACT_SEASON_5 = "0x6e05d3a61f5026EEa67d0a82843d5E82eb3E2608";
 const STAKING_CONTRACT_SEASON_6 = "0xE5ff1432DC7BE35CC73216A8cc468608398AD433";
 
 module.exports = {
-    ethereum: {
-        tvl: () => ({}),
-        staking: stakings([
-            STAKING_CONTRACT_SEASON_1,
-            STAKING_CONTRACT_SEASON_2,
-            STAKING_CONTRACT_SEASON_3,
-            STAKING_CONTRACT_SEASON_4,
-            STAKING_CONTRACT_SEASON_5,
-        ], GRACY_TOKEN),
-    },
+  ethereum: {
+    tvl: () => ({}),
+    staking: stakings([STAKING_CONTRACT_SEASON_1, STAKING_CONTRACT_SEASON_2, STAKING_CONTRACT_SEASON_3, STAKING_CONTRACT_SEASON_4, STAKING_CONTRACT_SEASON_5, STAKING_CONTRACT_SEASON_6,
+    ], GRACY_TOKEN),
+  },
 };
