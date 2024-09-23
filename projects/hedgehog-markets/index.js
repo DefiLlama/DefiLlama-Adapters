@@ -11,7 +11,7 @@ async function tvl(api) {
   await getClassicMarketTokenAccounts()
   await addP2PBalances()
   await addParlay()
-  await addParimutuel()
+  // await addParimutuel()
 
   const balances = api.getBalances()
   await sumTokens2({ owners, balances, })
@@ -102,7 +102,7 @@ async function tvl(api) {
       const data = decodeAccount('hhPari', account)
       const token  = data.mint.toString()
       const amounts = data.amounts.map(Number)
-      // api.add(token, amounts)
+      api.add(token, amounts)
     })
   }
 }
