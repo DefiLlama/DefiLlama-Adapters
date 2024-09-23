@@ -1,20 +1,10 @@
-const { getTokenAccountBalance, sumTokens2 } = require('../helper/solana');
+const { sumTokensExport } = require('../helper/solana');
 
 const contractAddress = '3Q3pE1izgCeAtTR23eufZy5vCEGtpWLBQcGD2HGd1cbU';
 
-async function tvl() {
-  const balances = {};
-
-  await sumTokens2({
-    balances,
-    owners: [contractAddress],
-  });
-  
-  return balances;
-}
-
 module.exports = {
   solana: {
-    tvl,
+    tvl: sumTokensExport({ owners: [contractAddress], blacklistedTokens: ['8twuNzMszqWeFbDErwtf4gw13E6MUS4Hsdx5mi3aqXAM'] }),
+    staking: sumTokensExport({ owners: [contractAddress], tokens: ['8twuNzMszqWeFbDErwtf4gw13E6MUS4Hsdx5mi3aqXAM'] }),
   },
 };
