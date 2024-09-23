@@ -13,9 +13,11 @@ const config = {
     '0xEe9ec60657B714E3FAC5255a5443AC5EC7Ba5bB0', // foxy linea market
   ],
   xlayer: ["0x97e59722318F1324008484ACA9C343863792cBf6"],
+  zircuit: ["0xA754b2f1535287957933db6e2AEE2b2FE6f38588"],
   ethereum: [
     "0x47223D4eA966a93b2cC96FFB4D42c22651FADFcf", // ethereum lrt market
-    '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611' // bitcoin lrt market
+    '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611', // bitcoin lrt market
+    '0x298ECDcb0369Aef75cBbdA3e46a224Cfe622E287' // stablecoin rwa market
   ],
 };
 
