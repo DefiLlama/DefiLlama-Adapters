@@ -16,6 +16,6 @@
   "compilerOptions": {
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "typeRoots": ["./typings/", "./node_modules/@types/", "./node_modules/"]
+    "typeRoots": ["./typings/", "./node_modules/@types/"]
   }
 }
