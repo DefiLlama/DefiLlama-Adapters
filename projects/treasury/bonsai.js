@@ -20,14 +20,14 @@ module.exports = treasuryExports({
       ADDRESSES.arbitrum.fsGLP,
       ADDRESSES.arbitrum.fGLP,
       ADDRESSES.arbitrum.USDC, // USDC.e
-      "0xaf88d065e77c8cc2239327c5edb3a432268e5831", // USDC
+      ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
       ADDRESSES.arbitrum.USDT,
       ADDRESSES.arbitrum.WETH,
       ADDRESSES.arbitrum.GMX,
       ADDRESSES.arbitrum.ARB,
       ADDRESSES.arbitrum.WBTC,
       "0xe4dddfe67e7164b0fe14e218d80dc4c08edc01cb", // KNC
-      "0xf97f4df75117a78c1a5a0dbb814af92458539fb4", // LINK
+      ADDRESSES.arbitrum.LINK, // LINK
       "0x56659245931cb6920e39c189d2a0e7dd0da2d57b", // IBEX
       "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0", // UNI
       "0x55ff62567f09906a85183b866df84bf599a4bf70", // KROM

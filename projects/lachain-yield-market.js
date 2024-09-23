@@ -1,4 +1,5 @@
 const utils = require('./helper/utils');
+const { deadFrom } = require('./ladex-exchange');
 
 async function fetch() {
     const response = await utils.fetchURL(`https://farms-info.lachain.io/farms/beefy`); 
@@ -20,6 +21,7 @@ async function fetch() {
 }
 
 module.exports = {
+  deadFrom: '2024-01-01',
   lachain: { fetch },
   fetch,
 }
