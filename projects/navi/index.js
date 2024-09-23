@@ -5,6 +5,7 @@ const decimalShift = {
   [ADDRESSES.sui.USDC]: -3, // USDC
   [ADDRESSES.sui.USDT]: -3, // USDT
   [ADDRESSES.sui.WETH]: -1,  // WETH
+  ["0x2053d08c1e2bd02791056171aab0fd12bd7cd7efad2ab8f6b9c8902f14df2ff2::ausd::AUSD"]: -3,
 }
 
 const storageId = "0xbb4e2f4b6205c2e2a2db47aeb4f830796ec7c005f88537ee775986639bc442fe"
