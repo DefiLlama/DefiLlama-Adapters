@@ -1,0 +1,28 @@
+{
+  "inputs": [],
+  "name": "settings",
+  "outputs": [
+    {
+      "internalType": "bool",
+      "name": "lockedOnly",
+      "type": "bool"
+    },
+    {
+      "internalType": "uint64",
+      "name": "backingRatio",
+      "type": "uint64"
+    },
+    {
+      "internalType": "uint64",
+      "name": "vestingRatio",
+      "type": "uint64"
+    },
+    {
+      "internalType": "uint64",
+      "name": "vestingPeriod",
+      "type": "uint64"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
