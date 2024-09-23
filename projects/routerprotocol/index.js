@@ -97,7 +97,7 @@ const config = {
     contractAddress: "0x6e14f48576265272B6CAA3A7cC500a26050Be64E",
     tokens: [
       { name: "usd-coin", address: ADDRESSES.cronos.USDC, decimals: 6 },
-      { name: "wrapped-cro", address: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23", decimals: 18 },
+      { name: "wrapped-cro", address: ADDRESSES.cronos.WCRO_1, decimals: 18 },
       { name: "wmatic", address: "0xad79AC3c5a5c15C6B9194F5568e451b3fc3C2B40", decimals: 18 },
       { name: "wbnb", address: ADDRESSES.telos.ETH, decimals: 18 },
       { name: "wrapped-avax", address: ADDRESSES.shiden.ETH, decimals: 18 },

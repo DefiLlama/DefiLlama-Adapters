@@ -8,7 +8,7 @@ module.exports = {
         api,
         owners: [
           "0xDE1617Ddb7C8A250A409D986930001985cfad76F", // usdc vault
-          "0x615172e47c0C5A6dA8ea959632Ac0166f7a59eDc", // sdai vault
+          ADDRESSES.polynomial.SDAI, // sdai vault
           "0xC6cfb996A7CFEB89813A68CD13942CD75553032b", // susde vault
           "0x034cbb620d1e0e4C2E29845229bEAc57083b04eC" // eth bridge
         ],
@@ -40,7 +40,7 @@ module.exports = {
       sumTokens2({
         api,
         owners: [
-          "0x615172e47c0C5A6dA8ea959632Ac0166f7a59eDc", // usdc vault
+          ADDRESSES.polynomial.SDAI, // usdc vault
         ],
         tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
       }),

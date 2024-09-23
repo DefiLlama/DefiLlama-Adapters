@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 
 const chain = "thundercore";
-const posStaking = "0xC3C857a9E5Be042C8acF4F2827Aa053e93b5d039"
+const posStaking = ADDRESSES.thundercore.veTT
 const posABI = {
   getTTPoolAbi: "uint256:getTTPool"
 }

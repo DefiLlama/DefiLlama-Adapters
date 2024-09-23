@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const treasuries = [
   "0x0e5CAA5c889Bdf053c9A76395f62267E653AFbb0", 
   "0xED803540037B0ae069c93420F89Cd653B6e3Df1f", 
@@ -16,7 +17,7 @@ const baseTokenRate = [
   // '',
   '0x6Eb03222179F83126735D7E9FdE94571D716D399'
 ]
-const cvxAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
+const cvxAddress = ADDRESSES.ethereum.CVX;
 const aCVX = "0xb0903Ab70a7467eE5756074b31ac88aEBb8fB777";
 const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
 const uniBTC_Genesis_Gauge = "0x1D20671A21112E85b03B00F94Fd760DE0Bef37Ba"

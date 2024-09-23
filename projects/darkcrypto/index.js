@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakingUnknownPricedLP } = require("../helper/staking");
 const farmUtils = require("./farm-utils");
 const vaultUtils = require("./vault-utils")
@@ -15,15 +16,15 @@ async function pool2(timestamp, block, chainBlocks) {
   //add CRO balance in LP pool
   sdk.util.sumSingleBalance(
     balances,
-    "cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
-    farmTvl["cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23"]
+    "cronos:" + ADDRESSES.cronos.WCRO_1,
+    farmTvl["cronos:" + ADDRESSES.cronos.WCRO_1]
   );
 
   //add Dark and Sky balance in LP pool
   sdk.util.sumSingleBalance(
     balances,
-    "cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
-    farmTvl["cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23"],
+    "cronos:" + ADDRESSES.cronos.WCRO_1,
+    farmTvl["cronos:" + ADDRESSES.cronos.WCRO_1],
   );
 
   return balances;
