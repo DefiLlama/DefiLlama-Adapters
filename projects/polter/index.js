@@ -22,4 +22,4 @@ module.exports = {
 }
 
 module.exports.fantom.staking = sumTokensExport({ owner: fantom.MULTIFEE_CONTRACT, tokens: [fantom.POLTER_CONTRACT], lps: [fantom.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })
-module.exports.base.staking = sumTokensExport({ owner: base.MULTIFEE_CONTRACT, tokens: [base.POLTER_CONTRACT], lps: [base.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })
+module.exports.base.staking = sumTokensExport({ owner: base.MULTIFEE_CONTRACT, tokens: [base.POLTER_CONTRACT],})
