@@ -1,6 +1,7 @@
 const { getFactoryTvl } = require('../terraswap/factoryTvl')
 
 module.exports = {
+    deadFrom: '2022-07-01',
     timetravel: false,
     misrepresentedTokens: true,
     methodology: "Liquidity on the DEX",
@@ -10,4 +11,4 @@ module.exports = {
     hallmarks: [
         [1651881600, "UST depeg"],
     ]
-} // node test.js projects/astroport/index.js
+}
