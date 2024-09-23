@@ -78,7 +78,8 @@ async function vesting(api) {
 }
 
 module.exports = {
-  methodology: "counts the number of MINT tokens in the Club Bonding contract.",
+  methodology:
+    "Counts the liquidity locked inside the K9 Finance DAO protocol, including: the BONE amount locked at the Liquid Staking, the KNINE amount locked at the Real Yield Staking, the KNINE amount locked at the Vesting, the LP tokens locked at the Farming.",
   ethereum: {
     tvl,
   },
