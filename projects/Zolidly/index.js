@@ -5,6 +5,7 @@ module.exports = {
   hallmarks: [
     [1684713600, "Rug Pull"]
   ],
+  deadFrom: '2023-05-22',
   era: {
     tvl: getUniTVL({ 
         factory: '0x6E1315819908Eaa036405f405c033cC2BfFBFc75', 
