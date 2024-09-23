@@ -164,6 +164,7 @@ function addToBalance(balances, token, amount) {
 module.exports = {
   methodology:
     "Sums up the supported tokens in Rumpel Wallets + Deposits in the Rumpel Point Tokenization Vault",
+  timetravel: true,
   ethereum: {
     start: DEPLOYMENT.RUMPEL_WALLET_FACTORY.timestamp,
     tvl,
