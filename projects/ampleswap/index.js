@@ -12,5 +12,6 @@ module.exports = {
     staking: staking(MasterChefContract, AMPLE),
   },
   alv: { tvl: getUniTVL({ factory: '0x01dC97C89DF7d3C616a696dD53F600aB3FF12983', useDefaultCoreAssets: true }), },
-  dsc: { tvl: getUniTVL({ factory: '0x232Ba9f3B3643ab28d28ED7ee18600708D60E5fe', useDefaultCoreAssets: true, }), },
+  dsc: { tvl: () => ({}) }
+  // dsc: { tvl: getUniTVL({ factory: '0x232Ba9f3B3643ab28d28ED7ee18600708D60E5fe', useDefaultCoreAssets: true, }), },
 };
