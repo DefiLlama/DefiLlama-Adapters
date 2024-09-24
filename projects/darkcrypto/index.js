@@ -1,6 +1,6 @@
 const { stakingUnknownPricedLP } = require("../helper/staking");
 const vaultUtils = require("./vault-utils")
-const { masterChefExports } = require("../helper/masterchef")
+const { pool2Balances } = require("./farm-utils");
 
 const sky = "0x9D3BBb0e988D9Fb2d55d07Fe471Be2266AD9c81c";
 const boardroom = "0x2e7d17ABCb9a2a40ec482B2ac9a9F811c12Bf630";
@@ -14,7 +14,7 @@ module.exports = {
   doublecounted: true,
   cronos: {
     tvl:vault,
-    pool2: masterChefExports(masterChef, 'cronos', sky, false),
+    pool2: (api) => pool2Balances(api, masterChef),
     staking: stakingUnknownPricedLP(
       boardroom,
       sky,
