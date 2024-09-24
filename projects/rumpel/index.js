@@ -1,5 +1,5 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getLogs } = require("../helper/cache/getLogs");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getLogs2 } = require("../helper/cache/getLogs")
 
 const CONTRACTS = {
   RUMEPL_POINT_TOKENIZATION_VAULT: "0xe47F9Dbbfe98d6930562017ee212C1A1Ae45ba61",
@@ -18,13 +18,13 @@ const DEPLOYMENT = {
 
 const TOKENS = {
   AGETH: "0xe1B4d34E8754600962Cd944B535180Bd758E6c2e",
-  SUSDE: "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
-  USDE: "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
-  WSTETH: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+  SUSDE: ADDRESSES.ethereum.sUSDe,
+  USDE: ADDRESSES.ethereum.USDe,
+  WSTETH: ADDRESSES.ethereum.WSTETH,
   WEETH: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
   WEETHS: "0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
   MSTETH: "0x49446A0874197839D15395B908328a74ccc96Bc0",
-  STETH: "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+  STETH: ADDRESSES.ethereum.STETH,
   RSUSDE: "0x82f5104b23FF2FA54C2345F821dAc9369e9E0B26",
   RSTETH: "0x7a4effd87c2f3c55ca251080b1343b605f327e3a",
   KUSDE: "0xBE3cA34D0E877A1Fc889BD5231D65477779AFf4e",
@@ -38,21 +38,61 @@ const MORPHO_SUSDE_MARKET_ID =
 
 async function tvl(api) {
   const owners = await getOwners(api);
-  const balances = {};
 
-  await Promise.all([
-    sumBaseTokens(api, owners, balances),
-    handleLockedUSDE(api, owners, balances),
-    handleMorphoSuppliedSUSDE(api, owners, balances),
-    handleZircuitAssets(api, owners, balances),
-    handleStrategyTokenBalances(api, owners, balances),
-  ]);
+  await Promise.all([sumBaseTokens, handleLockedUSDE, handleMorphoSuppliedSUSDE, handleZircuitAssets, handleStrategyTokenBalances].map(async (fn) => fn()));
 
-  return balances;
+  async function sumBaseTokens() {
+    return api.sumTokens({
+      owners, tokens: [TOKENS.AGETH, TOKENS.WEETH, TOKENS.USDE, TOKENS.SUSDE, TOKENS.MSTETH, TOKENS.WSTETH, TOKENS.STETH,]
+    })
+  }
+
+
+  async function handleLockedUSDE() {
+    const stakes = await api.multiCall({
+      target: CONTRACTS.ETHENA_LP_STAKING,
+      abi: "function stakes(address,address) view returns (uint256 amount,uint152,uint104)",
+      calls: owners.map((owner) => ({ params: [owner, TOKENS.USDE] })),
+    });
+    api.add(TOKENS.USDE, stakes.map(i => i.amount))
+  }
+
+  async function handleMorphoSuppliedSUSDE() {
+    const positions = await api.multiCall({
+      target: CONTRACTS.MORPHO_BLUE,
+      abi: "function position(bytes32,address) view returns (uint256,uint128,uint128 amount)",
+      calls: owners.map((owner) => ({ params: [MORPHO_SUSDE_MARKET_ID, owner] })),
+    });
+    api.add(TOKENS.USDE, positions.map(i => i.amount))
+  }
+
+  async function handleZircuitAssets() {
+    const assets = [TOKENS.WEETH, TOKENS.WEETHS, TOKENS.USDE, TOKENS.MSTETH]
+    const calls = []
+    for (const asset of assets)
+      for (const owner of owners)
+        calls.push({ params: [asset, owner] })
+    const tokens = calls.map(i => i.params[0])
+    const bals = await api.multiCall({ target: CONTRACTS.ZIRCUIT_RESTAKING_POOL, abi: "function balance(address,address) view returns (uint256)", calls, });
+    api.add(tokens, bals)
+  }
+  
+  async function handleStrategyTokenBalances() {
+    const tokens = [
+      TOKENS.KWEETH,
+      TOKENS.KUSDE,
+      TOKENS.DC_WSTETH_COLLATERAL,
+      TOKENS.DC_SUSDE_COLLATERAL,
+      TOKENS.MSTETH,
+      TOKENS.RSUSDE,
+      TOKENS.RSTETH,
+    ]
+    return api.sumTokens({ owners, tokens })
+  }
 }
 
 async function getOwners(api) {
-  const logs = await getLogs({
+  const logs = await getLogs2({
     api,
     target: CONTRACTS.RUMPEL_WALLET_FACTORY,
     topic: "SafeCreated(address,address[],uint256)",
@@ -61,112 +101,17 @@ async function getOwners(api) {
     fromBlock: DEPLOYMENT.RUMPEL_WALLET_FACTORY.block,
   });
   return logs
-    .map((log) => log.args.safe)
+    .map((log) => log.safe)
     .concat(CONTRACTS.RUMEPL_POINT_TOKENIZATION_VAULT);
 }
 
-async function sumBaseTokens(api, owners, balances) {
-  await sumTokens2({
-    api,
-    tokens: [
-      TOKENS.AGETH,
-      TOKENS.WEETH,
-      TOKENS.USDE,
-      TOKENS.SUSDE,
-      TOKENS.MSTETH,
-      TOKENS.WSTETH,
-      TOKENS.STETH,
-    ],
-    owners,
-    balances,
-  });
-}
 
-async function handleLockedUSDE(api, owners, balances) {
-  const stakes = await api.multiCall({
-    target: CONTRACTS.ETHENA_LP_STAKING,
-    abi: "function stakes(address,address) view returns (uint256,uint152,uint104)",
-    calls: owners.map((owner) => ({ params: [owner, TOKENS.USDE] })),
-  });
-  addToBalance(
-    balances,
-    TOKENS.USDE,
-    stakes.reduce((acc, stake) => acc + BigInt(stake[0]), 0n)
-  );
-}
-
-async function handleMorphoSuppliedSUSDE(api, owners, balances) {
-  const positions = await api.multiCall({
-    target: CONTRACTS.MORPHO_BLUE,
-    abi: "function position(bytes32,address) view returns (uint256,uint128,uint128)",
-    calls: owners.map((owner) => ({ params: [MORPHO_SUSDE_MARKET_ID, owner] })),
-  });
-  addToBalance(
-    balances,
-    TOKENS.SUSDE,
-    positions.reduce((acc, pos) => acc + BigInt(pos[2]), 0n)
-  );
-}
-
-async function handleZircuitAssets(api, owners, balances) {
-  const assets = [TOKENS.WEETH, TOKENS.WEETHS, TOKENS.USDE, TOKENS.MSTETH];
-  await Promise.all(
-    assets.map((asset) => handleZircuitAsset(asset, api, owners, balances))
-  );
-}
-
-async function handleZircuitAsset(asset, api, owners, balances) {
-  const balancesRaw = await api.multiCall({
-    target: CONTRACTS.ZIRCUIT_RESTAKING_POOL,
-    abi: "function balance(address,address) view returns (uint256)",
-    calls: owners.map((owner) => ({ params: [asset, owner] })),
-  });
-  addToBalance(
-    balances,
-    asset,
-    balancesRaw.reduce((acc, bal) => acc + BigInt(bal), 0n)
-  );
-}
-
-async function handleStrategyTokenBalances(api, owners, balances) {
-  const configurations = [
-    { target: TOKENS.KWEETH, output: TOKENS.WEETH },
-    { target: TOKENS.KUSDE, output: TOKENS.USDE },
-    { target: TOKENS.DC_WSTETH_COLLATERAL, output: TOKENS.WSTETH },
-    { target: TOKENS.DC_SUSDE_COLLATERAL, output: TOKENS.SUSDE },
-    { target: TOKENS.MSTETH, output: TOKENS.WSTETH },
-    { target: TOKENS.RSUSDE, output: TOKENS.USDE },
-    { target: TOKENS.RSTETH, output: TOKENS.WSTETH },
-  ];
-
-  await Promise.all(
-    configurations.map(async ({ target, output }) => {
-      const balancesRaw = await api.multiCall({
-        abi: "erc20:balanceOf",
-        calls: owners,
-        target,
-      });
-      addToBalance(
-        balances,
-        output,
-        balancesRaw.reduce((acc, bal) => acc + BigInt(bal), 0n)
-      );
-    })
-  );
-}
-
-function addToBalance(balances, token, amount) {
-  if (amount > 0n) {
-    balances[token] = (BigInt(balances[token] || 0n) + amount).toString();
-  }
-}
 
 module.exports = {
   methodology:
     "Sums up the supported tokens in Rumpel Wallets + Deposits in the Rumpel Point Tokenization Vault",
-  timetravel: true,
+  start: DEPLOYMENT.RUMPEL_WALLET_FACTORY.timestamp,
   ethereum: {
-    start: DEPLOYMENT.RUMPEL_WALLET_FACTORY.timestamp,
     tvl,
   },
 };
