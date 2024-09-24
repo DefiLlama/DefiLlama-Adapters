@@ -14,7 +14,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    methodology: "TVL is being calculated as the sum of available COMB Pool balance in the vault and total borrowed USDC from the pool by users.",
+    methodology: "TVL is calculated as the sum of the available COMB pool balance in the vault and the total USDC borrowed by users from the pool for leverage trading.",
     sei:{
         tvl,
     },
