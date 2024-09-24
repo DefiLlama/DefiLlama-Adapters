@@ -7,6 +7,7 @@ const config = {
   mantle: { factory: '0x4a2b015CcB8658998692Db9eD4522B8e846962eD', },
   bsc: { factory: '0x4a2b015CcB8658998692Db9eD4522B8e846962eD', },
   blast: { factory: '0x58b5dc145ca2BE84fe087614CFe36055be609BB3', },
+  fraxtal: { factory: '0xdF922c74CC0dc394022ea002Af5aFaa32348670e', },
 }
 
 Object.keys(config).forEach(chain => {
