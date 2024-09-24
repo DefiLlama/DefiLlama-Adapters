@@ -2,7 +2,7 @@ const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
 
 const GRAPH_QUERY = gql`
-  query get_tvl($dto: GetTotalValueLockedDto) {
+  query get_tvl($dto: GetTotalValueLockedDto!) {
     totalValueLocked(dto: $dto) {
       value
     }
@@ -32,7 +32,7 @@ function getChainTvl(graphUrls) {
 }
 
 const v2graph = getChainTvl({
-  aelf: "https://dapp.awaken.finance/AElfIndexer_Swap/SwapIndexerSchema/graphql",
+  aelf: "https://indexer-api.aefinder.io/api/app/graphql/awaken",
 });
 
 module.exports = {
