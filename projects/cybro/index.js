@@ -16,6 +16,8 @@ const vaults = [
   '0x9cc62ef691e869c05fd2ec41839889d4e74c3a3f',
   '0x3500e1d4e93c9f45aa8198efda16842cb73fa1bc',
   '0x6654cddf2a14a06307af6a8d7731dd4e059962a1',
+  '0xdb5e7d5ac4e09206fed80efd7abd9976357e1c03',
+  '0x3db2bd838c2bed431dcfa012c3419b7e94d78456',
 ]
 
 async function tvl(api) {
