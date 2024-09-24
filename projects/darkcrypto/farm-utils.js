@@ -1,90 +1,38 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
-const farmCronos = require('./farm-cronos.json');
+const abi = {
+  getReserves: "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  poolInfo: "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 lastRewardTime, uint256 accSkyPerShare, bool isStarted)"
+}
 
-const farmLPBalance = async (
-  chain,
-  block,
-  masterChef,
-  lpToken,
-  token0,
-  token1,
-) => {
-  const balances = (
-    await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: [
-        {
-          target: token0,
-          params: [lpToken],
-        },
-        {
-          target: token1,
-          params: [lpToken],
-        },
-        {
-          target: lpToken,
-          params: [masterChef],
-        },
-      ],
-      block,
-      chain: chain,
-    })
-  ).output;
-    
-    const lpTotalSuply = (
-    await sdk.api.abi.call({
-      target: lpToken,
-      abi: 'erc20:totalSupply',
-      chain: chain,
-      block,
-    })
-  ).output;
-  const token0Locked = (balances[2].output * balances[0].output) / lpTotalSuply;
-  const token1Locked = (balances[2].output * balances[1].output) / lpTotalSuply;
-  return [
-    { token: `${chain}:${token0}`, locked: token0Locked },
-    { token: `${chain}:${token1}`, locked: token1Locked },
-  ];
-};
+const pool2Balances = async (api, masterChef) => {
+  const calls = Array.from({ length: 9 }, (_, i) => ({ target: masterChef, params: [i] }));
+  const poolsInfos = await api.multiCall({ calls, abi: abi.poolInfo })
+  const pools = poolsInfos.map(({ token }) => token)
 
+  const [token0s, token1s, balances, reserves, supplies] = await Promise.all([
+    api.multiCall({ calls: pools.map((p) => ({ target: p })), abi: 'address:token0', permitFailure: true }),
+    api.multiCall({ calls: pools.map((p) => ({ target: p })), abi: 'address:token1', permitFailure: true }),
+    api.multiCall({ calls: pools.map((p) => ({ target: p,  params: [masterChef] })), abi: 'erc20:balanceOf', permitFailure:true }),
+    api.multiCall({ calls: pools.map((p) => ({ target: p })), abi: abi.getReserves, permitFailure:true }),
+    api.multiCall({ calls: pools.map((p) => ({ target: p })), abi: 'erc20:totalSupply', permitFailure:true })
+  ])
 
-const farmLocked = async (block) => {
-  const balances = {};
-  const tokens = farmCronos.tokens;
+  pools.forEach((_, i) => {
+    const token0 = token0s[i]
+    const token1 = token1s[i]
+    const balance = balances[i]
+    const reserve = reserves[i]
+    const supply = supplies[i]
+    if (!token0 || !token1 || !balance || !reserve || !supply) return
 
-  const allPools = farmCronos.farms
-    .map((t) => {
-      return t.pools.map((pool) => {
-        return Object.assign(pool, {
-          masterChef: t.masterChef,
-        });
-      });
-    })
-    .reduce((acc, current) => [...acc, ...current], []);
-  const promises = allPools.map((item) => {
-    return  farmLPBalance(
-          'cronos',
-          block,
-          item.masterChef,
-          item.lpToken,
-          tokens[item.token0],
-          tokens[item.token1],
-        );
-  });
+    const _balance0 = Math.round(reserve[0] * balance / supply)
+    const _balance1 = Math.round(reserve[1] * balance / supply)
 
-  const data = await Promise.all(promises);
-  data.forEach((farm) => {
-    farm.forEach((item) => {
-      balances[item.token] = new BigNumber(balances[item.token] || 0)
-        .plus(item.locked || 0)
-        .toFixed(0);
-    });
-  });
+    api.add(token0, _balance0)
+    api.add(token1, _balance1)
+  })
+}
 
-  return balances;
-};
 
 module.exports = {
-  farmLocked,
-};
+  pool2Balances
+}
