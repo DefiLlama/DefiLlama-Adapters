@@ -2,7 +2,7 @@ const { fetchURL } = require("../helper/utils")
 const BigNumber = require("bignumber.js");
 
 const tvl = async () => {
-  const res = await fetchURL("https://bonzoapi.azurewebsites.net/Stats");
+  const res = await fetchURL("https://bonzo-data-api-eceac9d8a2aa.herokuapp.com/stats");
   const result = {};
   const reserves = res.data.reserves;  
   for(let i = 0 ; i < reserves.length; i ++) {
@@ -18,7 +18,7 @@ const tvl = async () => {
 }
 
 const borrowed = async () => {
-  const res = await fetchURL("https://bonzoapi.azurewebsites.net/Stats");
+  const res = await fetchURL("https://bonzo-data-api-eceac9d8a2aa.herokuapp.com/stats");
   const result = {};
   const reserves = res.data.reserves;  
   for(let i = 0 ; i < reserves.length; i ++) {
