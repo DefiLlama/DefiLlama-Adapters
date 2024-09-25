@@ -1897,7 +1897,8 @@
     "USDC_e": "0x739222D8A9179fE05129C77a8fa354049c088CaA"
   },
   "bouncebit": {
-    "wstBBTC": "0x8f083eafcbba2e126ad9757639c3a1e25a061a08"
+    "wstBBTC": "0x8f083eafcbba2e126ad9757639c3a1e25a061a08",
+    "BBUSD": "0x77776b40C3d75cb07ce54dEA4b2Fd1D07F865222"
   },
   "reya": {
     "WETH": "0x6b48c2e6a32077ec17e8ba0d98ffc676dfab1a30",
