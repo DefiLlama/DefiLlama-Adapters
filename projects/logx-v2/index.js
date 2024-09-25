@@ -1,3 +1,5 @@
+const { staking } = require('../helper/staking')
+
 module.exports = {
   methodology: "Tokens locked in HypCollateral contracts on different chains.",
 }
@@ -18,3 +20,5 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports.arbitrum.staking = staking('0x89E86f7d2398e8C1070d321D18c1Ce75aBF09b75', '0x59062301Fb510F4ea2417B67404CB16D31E604BA')
