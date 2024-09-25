@@ -63,8 +63,9 @@ module.exports = {
       const bals = await api.multiCall({
         abi: "int256:getVaultMarketValue",
         calls: vaults,
+        permitFailure: true
       });
-      bals.forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
+      bals.filter((bal) => bal !== null).forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
 
       const addresses = {
         wSol: "0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07",

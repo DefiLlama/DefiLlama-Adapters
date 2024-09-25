@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
@@ -23,7 +24,7 @@ const config = {
   bsc: {
     tvlContracts: ['0x9484f12044b9d5707AfeaC5BD02b5E0214381801'],
     tokens: [
-      "0x55d398326f99059fF775485246999027B3197955"
+      ADDRESSES.bsc.USDT
     ],
     NEST: '0x98f8669F6481EbB341B522fCD3663f79A3d1A6A7',
     stakingContracts: ["0x09CE0e021195BA2c1CDE62A8B187abf810951540"]

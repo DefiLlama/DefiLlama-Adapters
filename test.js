@@ -261,6 +261,7 @@ function checkExportKeys(module, filePath, chains) {
     || (filePath.length === 2 &&
       !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
         || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
+        || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
       )))
     process.exit(0)
 
