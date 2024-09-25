@@ -22,6 +22,9 @@ module.exports = {
           // V2 gateways taken from gateway registry (allGateways): https://explorer.gobob.xyz/address/0x37f330e667208633e1da1cf601d01f0ef8484306?tab=read_contract
           "0x1578c26085b45A559D6B4D4cCfc1DD9e5c66F7B6",
           "0x2a7b7Db980B2228D5FfC47711D09d13F8F90961e",
+          // V3 gateways taken from gateway registry (allGateways): https://explorer.gobob.xyz/address/0xAE6770a207E86FaE3b191564FA55ce7Bfee0Dde9?tab=read_contract
+          "0xcc2c1d45A3ECeEdec364a6B9e537AE97Fa20bEa7",
+          "0x32768E87f7E929616f43B02F83c0F155A942Bc6B",
         ],
       }),
   }

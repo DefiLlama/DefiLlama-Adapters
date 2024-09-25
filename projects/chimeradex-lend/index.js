@@ -8,3 +8,6 @@ const config = {
 Object.keys(config).forEach(chain => {
 	module.exports[chain] = compoundExports2({ comptroller: config[chain]})
 })
+module.exports.deadFrom='2023-12-12'
+module.exports.scroll.borrowed = () => ({}) // bad debt
+module.exports.arbitrum.borrowed = () => ({}) // bad debt

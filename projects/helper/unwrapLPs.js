@@ -103,53 +103,6 @@ async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethere
   await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
 }
 
-/*
-tokens [
-    [token, isLP] - eg ["0xaaa", true]
-]
-*/
-async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress) {
-  if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
-  const balanceOfTokens = await sdk.api.abi.multiCall({
-    calls: tokens.map(t => owners.map(o => ({
-      target: t[0],
-      params: o
-    }))).flat(),
-    abi: 'erc20:balanceOf',
-    block,
-    chain
-  })
-  await requery(balanceOfTokens, chain, block, 'erc20:balanceOf')
-  const isLP = {}
-  tokens.forEach(token => {
-    isLP[token[0].toLowerCase()] = token[1]
-  })
-  const lpBalances = []
-  balanceOfTokens.output.forEach((result, idx) => {
-    const token = result.input.target.toLowerCase()
-    const balance = result.output
-    if (isLP[token] === true) {
-      lpBalances.push({
-        token,
-        balance
-      })
-    } else {
-      sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
-    }
-  })
-  if (lpBalances.length > 0) {
-    await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
-  }
-}
-
-async function sumTokensSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress) {
-  if (transformAddress === undefined) {
-    transformAddress = addr => `${chain}:${addr}`
-  }
-  await sumTokensAndLPsSharedOwners(balances, tokens.map(t => [t, false]), owners, block, chain, transformAddress)
-}
-
 async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain = "ethereum", transformAddress = id => id) {
   const [balanceOfLP, balanceOfTokenListedInLP, lpSupply] = await Promise.all([
     sdk.api.erc20.balanceOf({
@@ -589,40 +542,6 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   return balances
 }
 
-async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress = id => id) {
-  const [balanceOfTokens, exchangeRates, underlyingTokens] = await Promise.all([
-    sdk.api.abi.multiCall({
-      calls: tokensAndOwners.map(t => ({
-        target: t[0],
-        params: t[1]
-      })),
-      abi: 'erc20:balanceOf',
-      block,
-      chain
-    }),
-    sdk.api.abi.multiCall({
-      calls: tokensAndOwners.map(t => ({
-        target: t[0],
-      })),
-      abi: creamAbi.exchangeRateStored,
-      block,
-      chain
-    }),
-    sdk.api.abi.multiCall({
-      calls: tokensAndOwners.map(t => ({
-        target: t[0],
-      })),
-      abi: creamAbi.underlying,
-      block,
-      chain
-    })
-  ])
-  balanceOfTokens.output.forEach((balanceCall, i) => {
-    const underlying = underlyingTokens.output[i].output
-    const balance = BigNumber(balanceCall.output).times(exchangeRates.output[i].output).div(1e18).toFixed(0)
-    sdk.util.sumSingleBalance(balances, transformAddress(underlying), balance)
-  })
-}
 
 const cvx_abi = {
   cvxBRP_pid: "uint256:pid",
@@ -666,15 +585,6 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
   return balances
 }
 
-async function genericUnwrapCvxDeposit({ api, owner, token, balances }) {
-  if (!balances) balances = await api.getBalances()
-  const [bal, cToken] = await api.batchCall([
-    { target: token, params: owner, abi: 'erc20:balanceOf' },
-    { target: token, abi: 'address:curveToken' },
-  ])
-  sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
-  return balances
-}
 
 async function genericUnwrapCvxRewardPool({ api, owner, pool, balances }) {
   if (!balances) balances = await api.getBalances()
@@ -1132,13 +1042,10 @@ module.exports = {
   unwrapUniswapLPs,
   unwrapSlipstreamNFT,
   addTokensAndLPs,
-  sumTokensAndLPsSharedOwners,
   sumTokensAndLPs,
   sumTokens,
   sumBalancerLps,
-  unwrapCreamTokens,
   sumLPWithOnlyOneToken,
-  sumTokensSharedOwners,
   sumLPWithOnlyOneTokenOtherThanKnown,
   genericUnwrapCvx,
   unwrapLPsAuto,
@@ -1147,7 +1054,6 @@ module.exports = {
   sumTokens2,
   unwrapBalancerToken,
   sumTokensExport,
-  genericUnwrapCvxDeposit,
   genericUnwrapCvxRewardPool,
   genericUnwrapCvxFraxFarm,
   genericUnwrapCvxPrismaPool,
