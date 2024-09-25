@@ -18,7 +18,9 @@ const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-
 
 const bitcionOwners = [
   'bc1pjrxeuc9f3zqtx92s3mnf6202894jzufswur957l6s04rjns6dumsyh6u89',
-  'bc1qdpwl80flfh3k6h6sumzwgws3ephkrmx307hk64'
+  'bc1qdpwl80flfh3k6h6sumzwgws3ephkrmx307hk64',
+  'bc1q5pzsptd5whcljevzyztavuqru0hugd5ymgx5ezksdqug3ztrjvmqauys2q',
+  'bc1q437jw8wqph854vf9dwxy4c2u6daveupjm5dqptj469gxw6vcpp0qfpr0mh'
 ]
 
 async function tvl(api) {
