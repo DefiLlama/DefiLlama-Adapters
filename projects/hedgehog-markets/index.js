@@ -7,11 +7,11 @@ async function tvl(api) {
   const provider = getProvider()
   const connection = getConnection()
   const tokenAccounts = []
-  const owners= []
+  const owners = []
   await getClassicMarketTokenAccounts()
   await addP2PBalances()
   await addParlay()
-  // await addParimutuel()
+  await addParimutuel()
 
   const balances = api.getBalances()
   await sumTokens2({ owners, balances, })
@@ -39,7 +39,7 @@ async function tvl(api) {
       // - entry count (101..105)
       // - entry cost (105..113)
       dataSlice: { offset: 69, length: 44 },
-      filters:  [
+      filters: [
         // Market accounts have a discriminator of 3 at offset 0.
         { memcmp: { offset: 0, bytes: "4" } },
         // Open markets have a state of 0 at offset 149.
@@ -68,20 +68,19 @@ async function tvl(api) {
       dataSlice: { offset: 69, length: 56 },
       filters: [
         // Market accounts have a discriminator of 3 at offset 0.
-        { memcmp: { offset: 0, bytes: "4",  } },
+        { memcmp: { offset: 0, bytes: "4", } },
         // Open markets have a state of 0 at offset 129.
-        { memcmp: { offset: 129, bytes: "1"} },
+        { memcmp: { offset: 129, bytes: "1" } },
       ],
     });
 
     accounts.forEach(({ account: { data } }) => {
-      const mint = new PublicKey(data.slice(0,  32)).toString()
+      const mint = new PublicKey(data.slice(0, 32)).toString()
       const yesAmount = Number(data.readUInt8(40));
       const noAmount = Number(data.readUInt8(48));
       api.add(mint, yesAmount + noAmount)
     })
   }
-
 
   async function addParimutuel() {
     const programId = new PublicKey('PARrVs6F5egaNuz8g6pKJyU4ze3eX5xGZCFb3GLiVvu')
@@ -89,8 +88,7 @@ async function tvl(api) {
     owners.push(poolOwner)
 
     const accounts = await connection.getProgramAccounts(programId, {
-      dataSlice: { offset: 69, length: 70 },
-      filters:  [
+      filters: [
         // Market accounts have a discriminator of 3 at offset 0.
         { memcmp: { offset: 0, bytes: "4" } },
         // Open markets have a state of 0 at offset 149.
@@ -98,10 +96,16 @@ async function tvl(api) {
       ],
     })
 
-    accounts.forEach(({ account }) => {
-      const data = decodeAccount('hhPari', account)
-      const token  = data.mint.toString()
-      const amounts = data.amounts.map(Number)
+    accounts.forEach(({ account: { data } }) => {
+      const token = new PublicKey(data.slice(69,69+ 32)).toString()
+      // Amounts is a u64 array with u8 length prefix at offset 131.
+      const amountsLen = data.readUint8(131);
+
+      let amounts = []
+      for (let i = 0; i < amountsLen; i++) {
+        amounts.push(data.readBigUint64LE(132 + i * 8).toString())
+      }
+
       api.add(token, amounts)
     })
   }
