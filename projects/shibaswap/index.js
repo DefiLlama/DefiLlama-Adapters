@@ -1,5 +1,4 @@
-const { getUniTVL } = require('../helper/unknownTokens');
-const { uniTvlExport } = require('../helper/unknownTokens');
+const { getUniTVL, uniTvlExport } = require('../helper/unknownTokens');
 
 const FACTORY_ETHEREUM = '0x115934131916c8b277dd010ee02de363c09d037c';
 
@@ -19,5 +18,5 @@ module.exports = {
       ],
     })
   },
-  shibarium: uniTvlExport('shibarium', '0x938e62594610Dd35A25a1DfE35C94fA0A9f6bfAA')
+  tvl: uniTvlExport('shibarium', '0x938e62594610Dd35A25a1DfE35C94fA0A9f6bfAA', { hasStablePools: true })
 };
