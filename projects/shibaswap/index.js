@@ -19,5 +19,5 @@ module.exports = {
       ],
     })
   },
-  shibarium: uniTvlExport('shibarium', '0x938e62594610Dd35A25a1DfE35C94fA0A9f6bfAA', { hasStablePools: true })
+  shibarium: uniTvlExport('shibarium', '0x938e62594610Dd35A25a1DfE35C94fA0A9f6bfAA')
 };
