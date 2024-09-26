@@ -1,12 +1,12 @@
-const {getUniTVL} = require('../helper/unknownTokens')
+const { getUniTVL, uniTvlExport } = require('../helper/unknownTokens');
 
-const FACTORY = '0x115934131916c8b277dd010ee02de363c09d037c';
-
+const FACTORY_ETHEREUM = '0x115934131916c8b277dd010ee02de363c09d037c';
+const FACTORY_SHIBARIUM = '0x938e62594610Dd35A25a1DfE35C94fA0A9f6bfAA';
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     tvl: getUniTVL({
-      factory: FACTORY,
+      factory: FACTORY_ETHEREUM,
       useDefaultCoreAssets: true,
       blacklist: [
         '0x6ADb2E268de2aA1aBF6578E4a8119b960E02928F', 
@@ -17,5 +17,12 @@ module.exports = {
         '0xC1bfcCd4c29813eDe019D00D2179Eea838a67703'
       ],
     })
+  },
+  shibarium: {
+    tvl: getUniTVL({
+    tvl: uniTvlExport({
+      factory: FACTORY_SHIBARIUM,
+      useDefaultCoreAssets: true,
+    })
   }
-}; 
+};
