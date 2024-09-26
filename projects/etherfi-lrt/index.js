@@ -12,6 +12,8 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({ owners: vaults, fetchCoValentTokens: true, tokenConfig: {
       onlyWhitelisted: false,
-    }}),
+    }, resolveUniV3: true, blacklistedTokens: [
+      '0x657e8c867d8b37dcc18fa4caead9c45eb088c642', // eBTC
+    ] }),
   },
 }
