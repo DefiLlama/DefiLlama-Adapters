@@ -1,7 +1,7 @@
 const { getUniTVL } = require('../helper/unknownTokens');
 
 const FACTORY_ETHEREUM = '0x115934131916c8b277dd010ee02de363c09d037c';
-const FACTORY_SHIBARIUM = '0xEF83bbB63E8A7442E3a4a5d28d9bBf32D7c813c8';
+const FACTORY_SHIBARIUM = '0x938e62594610Dd35A25a1DfE35C94fA0A9f6bfAA';
 
 module.exports = {
   misrepresentedTokens: true,
