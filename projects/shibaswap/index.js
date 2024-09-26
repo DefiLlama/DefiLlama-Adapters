@@ -19,5 +19,5 @@ module.exports = {
       ],
     })
   },
-  uniTvlExport('shibarium', FACTORY_SHIBARIUM, { hasStablePools: true })
+  uniTvlExport('shibarium', FACTORY_SHIBARIUM)
 };
