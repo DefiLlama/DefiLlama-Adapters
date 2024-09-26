@@ -1,3 +1,5 @@
+const { rippleTvl } = require("./app")
+
 async function tvl(api) {
   let contract = '0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a'
   if (api.chain === 'arbitrum') contract = '0xF84D28A8D28292842dD73D1c5F99476A80b6666A'
@@ -11,4 +13,5 @@ async function tvl(api) {
 module.exports = {
   ethereum: { tvl },
   arbitrum: { tvl },
+  ripple: { tvl: rippleTvl }
 }
