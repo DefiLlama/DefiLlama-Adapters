@@ -8,6 +8,7 @@ const zkCRO_contract_address = "0x28Ff2E4dD1B58efEB0fC138602A28D5aE81e44e2";
 const vETH_contract_address = "0x271602A97027ee1dd03b1E6e5dB153eB659A80b1";
 const vUSD_contract_address = "0x5b91e29Ae5A71d9052620Acb813d5aC25eC7a4A2";
 const lcro_contract_address = "0x9fae23a2700feecd5b93e43fdbc03c76aa7c08a6"
+const l2_base_token_address = "0x000000000000000000000000000000000000800a"
 
 
 async function tvlCronos(api) {
@@ -32,18 +33,24 @@ async function tvlEra(api) {
 
 
 async function tvlCronosZkEVM(zkEvmApi) {
+  const ethApi = new sdk.ChainApi({ chain: 'ethereum' });
+  const cronosApi = new sdk.ChainApi({ chain: 'cronos' });
+
   const totalVEth = await zkEvmApi.call({ abi: "uint256:ybEthValue", target: vETH_contract_address });
   zkEvmApi.addCGToken('ethereum', totalVEth / 1e18); 
   const totalVUsd = await zkEvmApi.call({ abi: "uint256:ybUsdValue", target: vUSD_contract_address });
   zkEvmApi.addCGToken('dai', totalVUsd / 1e18);
 
-  const ethApi = new sdk.ChainApi({ chain: 'ethereum' });
-  const cro_pooled = await ethApi.call({ abi: "uint256:totalPooledCro", target: zkCRO_contract_address });
-  const cronosApi = new sdk.ChainApi({ chain: 'cronos' });
+  const totalZkCro = await zkEvmApi.call({ abi: "uint256:totalSupply", target: l2_base_token_address });
+  const croOfZkCroContract = await ethApi.call({
+      abi: 'function convertToAsset(uint256 shares) view returns (uint256 assets)',
+      target: zkCRO_contract_address,
+      params: [`${totalZkCro}`]
+    });
   const totalLcro = await cronosApi.call({
     abi: 'function convertToShare(uint256 assets) view returns (uint256 shares)',
     target: lcro_contract_address,
-    params: [cro_pooled]
+    params: [croOfZkCroContract]
   });
 
   zkEvmApi.addCGToken('liquid-cro', totalLcro / 1e8);
