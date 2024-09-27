@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury
@@ -13,8 +12,8 @@ module.exports = treasuryExports({
     tokens: [
       // Rootstock Assets
       nullAddress,
-      "0x2aCc95758f8b5F583470bA265Eb685a8f45fC9D5", // RIF      
     ],
     owners: [treasuryGrants, treasuryActive, treasuryGrowth, treasuryGeneral],
+    ownTokens: ["0x2aCc95758f8b5F583470bA265Eb685a8f45fC9D5",] // RIF      
   },
 });
