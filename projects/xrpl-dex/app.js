@@ -9,7 +9,6 @@ const xrpl = require("xrpl");
 const NODE_URL = "https://xrplcluster.com";
 // const xrpTBILL = 'rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn'
 
-
 const fetchLedgerData = async (binary, marker, atLedgerIndex) => {
   const xrplResponse = await fetch(NODE_URL, {
     method: "POST",
@@ -169,7 +168,7 @@ async function xrplDex () {
   })
 }
 
-async function openedenRippleTvl(api) {
+async function openedenRippleTvl() {
   const timeNow = getTimeNow()
   const aDayInSeconds = 60 * 60 * 24;
   const projectKey = 'openeden-tbill'
