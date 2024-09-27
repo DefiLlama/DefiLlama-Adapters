@@ -24,7 +24,6 @@ async function ripplTvl (api) {
   if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds || !tvl) 
     throw new Error("stale/missing tvl data");
   api.add(ADDRESSES.ethereum.USDC, tvl * 10 ** 6, { skipChain: true })
-
 }
 
 module.exports = {
