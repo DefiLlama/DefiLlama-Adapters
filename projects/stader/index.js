@@ -32,7 +32,7 @@ module.exports = {
   timetravel: false,
   methodology: "We aggregated the assets staked across Stader staking protocols",
   /*terra: { tvl },*/
-  hedera: {tvl: hbarTvl },
+  hedera: { tvl: hbarTvl },
   // its on ethereum because funds are locked there
   //  ethereum: { tvl: maticTvl },
   fantom: { tvl: () => ({}) },
