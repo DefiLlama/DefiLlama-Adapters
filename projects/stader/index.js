@@ -38,7 +38,7 @@ module.exports = {
   fantom: { tvl: () => ({}) },
   terra2: { tvl: () => ({}) },
   bsc: { tvl: bscTvl },
-  near: {tvl: () => ({}) },
+  near: { tvl: () => ({}) },
   ethereum: {
     tvl: async (api) => {
       const res = await getData();
