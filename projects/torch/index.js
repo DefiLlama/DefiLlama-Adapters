@@ -1,7 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json")
 const { sumTokens } = require('../helper/chain/ton')
 const { get } = require("../helper/http")
-const { methodology } = require("../parraton")
 
 const DEX = 'EQCaEOMOR2SRcXTVSolw--rY62ghCoCRjn4Is3bBdnqYwIVZ'
 const YIELD_ROUTER = 'EQDYU6gxBxFT3arWR-N9RFTfqAoQKyWk4JMgTBNOM2KL18Dw'
