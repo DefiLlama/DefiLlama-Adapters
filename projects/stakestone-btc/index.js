@@ -2,7 +2,7 @@ const vaultABI = {
   "getDepositAmounts": "function getDepositAmounts() view returns (address[], uint256[])"
 }
 
-const VaultBSC = '0xc6f830BB162e6CFb7b4Bac242B0E43cF1984c853';
+const VaultBSC = '0x3aa0670E24Cb122e1d5307Ed74b0c44d619aFF9b';
 
 const bscTvl = async (api) => {
   const [btclist] = await api.call({ abi: vaultABI.getDepositAmounts, target: VaultBSC })
