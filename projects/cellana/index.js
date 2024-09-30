@@ -13,8 +13,7 @@ const extractCoinAddress = (str) => str.slice(str.indexOf("<") + 1, str.lastInde
 const reserveContrainerFilter = (i) => i.type.includes("0x1::coin::CoinStore")
 
 async function getfungibleAssetBalances(api) {
-  const data = await _getPools('0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1')
-  const poolsAddresses = data[0];
+  const poolsAddresses = await _getPools('0x4bf51972879e3b95c4781a5cdcb9e1ee24ef483e7d22f2d903626f126df62bd1')
   for (const pool of poolsAddresses) {
     const fungibleAssetPoolStore = (await getResources(pool.inner)).find(i => i.type.includes('liquidity_pool::LiquidityPool'))?.data
     const fungibleAssetAddressToken1 = fungibleAssetPoolStore?.token_store_1?.inner

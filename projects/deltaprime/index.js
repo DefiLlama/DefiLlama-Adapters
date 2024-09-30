@@ -95,8 +95,6 @@ async function tvlAvalanche(api) {
   avaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_AVAX"], i, api.chain))
   ggAaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_ggAVAX"], i, api.chain))
 
-  console.log(`Balances: ${JSON.stringify(balances)}`)
-
   return balances;
 }
 

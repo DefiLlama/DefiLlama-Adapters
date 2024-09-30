@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require("../helper/unknownTokens");
 const {
   sumTokensExport,
@@ -10,7 +11,7 @@ const pendleAbi = require("../pendle/abi.json");
 const FACTORY = "0x955219A87eB0C6754fd247266af970F7d16906CD";
 const SPARK_TOKEN = "0x6386704cD6f7A584EA9D23cccA66aF7EBA5a727e";
 const SPARK_LP = "0x33208439e1B28B1d6fCfbB6334e9950027Ee3B52";
-const SDAI_TOKEN = "0x30FCB23A906493371b1721C8feb8815804808D74";
+const SDAI_TOKEN = ADDRESSES.pulse.sDAI;
 const SDAI_DAI_LP = "0xf32B9398a7277609772F328Fc2005D7DA5420E77";
 const SDAI_SPARK_LP = "0x9095D464A29Abd1B840C1C5205FB602ae5b011FF";
 const MASTERCHEF = "0x63c2a0083861F8C496A0A29BD8BA223E1180664e";
