@@ -1,3 +1,10 @@
+const { getCache, } = require("../helper/cache");
+const ADDRESSES = require('../helper/coreAssets.json')
+
+function getTimeNow() {
+  return Math.floor(Date.now() / 1000);
+}
+
 async function tvl(api) {
   let contract = '0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a'
   if (api.chain === 'arbitrum') contract = '0xF84D28A8D28292842dD73D1c5F99476A80b6666A'
@@ -8,7 +15,19 @@ async function tvl(api) {
   api.add(token, bal)
 }
 
+async function ripplTvl (api) {
+  const timeNow = getTimeNow()
+  const aDayInSeconds = 60 * 60 * 24;
+  const projectKey = 'openeden-tbill'
+  const cacheKey = 'cache'
+  let { lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
+  if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds || !tvl) 
+    throw new Error("stale/missing tvl data");
+  api.add(ADDRESSES.ethereum.USDC, tvl * 10 ** 6, { skipChain: true })
+}
+
 module.exports = {
   ethereum: { tvl },
   arbitrum: { tvl },
+  ripple: { tvl: ripplTvl }
 }
