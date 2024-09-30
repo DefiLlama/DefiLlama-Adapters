@@ -193,11 +193,6 @@ async function openedenRippleTvl() {
     await setCache(projectKey, cacheKey, { lastDataUpdate, tvl })
     client.disconnect();
   }
-
-  if (lastDataUpdate && timeNow - lastDataUpdate < 2 * 60 * 60) {
-    // data was updated recently, no need to update
-    return
-  }
 }
 
 async function main() {
