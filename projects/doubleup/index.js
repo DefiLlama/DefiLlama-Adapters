@@ -20,10 +20,16 @@ async function tvl(api) {
     const houseType = house?.type;
     const coinType = houseType.split("<")[1].split(">")[0];
 
-    const pipeDebt = house?.fields?.pipe_debt?.fields?.value;
-    const houseTvl = Number(pipeDebt) + Number(house?.fields?.pool);
+    const housePipeDebt = house?.fields?.house_pipe_debt?.fields?.value;
+    const housePool = house?.fields?.house_pool;
+    const houseTvl = Number(housePipeDebt) + Number(housePool);
 
     api.add(coinType, houseTvl);
+
+    const pipeDebt = house?.fields?.pipe_debt?.fields?.value;
+    const _tvl = Number(pipeDebt) + Number(house?.fields?.pool);
+
+    api.add(coinType, _tvl);
   }
 }
 
