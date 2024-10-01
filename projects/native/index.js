@@ -3,7 +3,7 @@ const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 
 module.exports = {
   methodology:
-    "includes the liquidity provided to the infrasturcture and ecosystem of Native",
+    "Counts the inventory held by Native's Partnered Market Makers used to facilitate slippage free swaps on the protocol",
 };
 
 const config = {

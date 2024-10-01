@@ -11,7 +11,7 @@ const unitroller2 = "0x627742AaFe82EB5129DD33D237FF318eF5F76CBC"
 const unitroller3 = "0x1eD65DbBE52553A02b4bb4bF70aCD99e29af09f8"
 
 const cExports = [unitroller1, unitroller2, unitroller3, ].map(i => ({
-  polygon: compoundExports(i, 'polygon')
+  polygon: compoundExports(i)
 }))
 
 module.exports = mergeExports([{
