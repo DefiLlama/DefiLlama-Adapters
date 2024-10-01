@@ -34,7 +34,7 @@ const chains = {
   ethereum: 1,
   optimism: 10,
   cronos: 25,
-  rootstock: 30,
+  rsk: 30,
   bsc: 56,
   xdai: 100,
   fuse: 122,
