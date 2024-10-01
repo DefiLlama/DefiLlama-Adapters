@@ -1,4 +1,3 @@
-const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
 
 const UNI_HOUSE_OBJ_ID = "0x75c63644536b1a7155d20d62d9f88bf794dc847ea296288ddaf306aa320168ab"
