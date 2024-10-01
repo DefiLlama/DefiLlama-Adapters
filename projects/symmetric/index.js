@@ -19,5 +19,8 @@ module.exports = {
   },
   meter: {
     tvl: onChainTvl('0x913f21E596790aFC6AA45229E9ff8b7d0A473D5A', 51825430),
-  }
+  },
+  taiko: {
+    tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 371729),
+  },
 }
