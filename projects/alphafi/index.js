@@ -163,7 +163,12 @@ async function addPoolTVL3(api, alphafiNaviLoopPools){
     let tokensInvested = poolObject.fields.tokensInvested;
     
     let liquidity = parseFloat(tokensInvested);
-    
+    /*
+    in the code below, we are subtracting the debt in the pool from the liquidity, since the borrowed tokens are supplied back to the pool (as part of our strategy).
+    we have current_debt_to_supply_ratio in the object, so current debt in the system is (current liquidity * current_debt_to_supply_ratio).
+    we subtract the above derived debt from the liquidity.
+    current_debt_to_supply_ratio in our system is scaled by 1e20, hence the division of 1e20 in the below used expression.
+    */
     liquidity = liquidity*(1-(parseFloat(investorObject.fields.current_debt_to_supply_ratio)/parseFloat(1e20)));
     
     tokensInvested = (liquidity.toString().split('.')[0]);
