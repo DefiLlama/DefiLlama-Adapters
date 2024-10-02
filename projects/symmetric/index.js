@@ -1,5 +1,26 @@
 const sdk = require('@defillama/sdk');
 const { v1Tvl, onChainTvl } = require('../helper/balancer')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { request, gql } = require("graphql-request");
+
+const graphEndpoints = {
+  etlk: sdk.graph.modifyEndpoint('4y4fC3k9DMrJ9XYY6Z1Qi8DXJkpRrQuQCjh7zBRhxjQr')
+}
+
+function tokensFromGraph(vault, network) {
+  return async (api) => {
+    const query = gql`
+    {
+      tokens(where: {totalBalanceNotional_gt: "0"}) {
+        address
+      }
+    }
+    `
+    const res = await request(graphEndpoints[network], query);
+    const tokens = res.tokens.map(t => t.address) || [];
+    return sumTokens2({ api, owner: vault, tokens, blacklistedTokens: [] })
+  }
+}
 
 module.exports = {
   celo: {
@@ -23,4 +44,7 @@ module.exports = {
   taiko: {
     tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 371729),
   },
+  etlk: {
+    tvl: tokensFromGraph('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 'etlk')
+  }
 }
