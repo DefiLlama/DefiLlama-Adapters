@@ -13,11 +13,14 @@ async function getJettonMetadata(addr) {
   const res = await get(`https://tonapi.io/v2/jettons/${addr}`)
   return res
 }
+async function getJettonBalance(address, jettonMasterAddress) {
+  const res = await get(`https://tonapi.io/v2/accounts/${address}/jettons/${jettonMasterAddress}`)
+  return res.balance
+}
 
 async function tonTvl() {
   const MINTER_ADDRESS = "EQCfvQW-thWpqKgyqtXCFbYayDlHqS0-frkyP6VD70paLFZa"
   const CGUSDT_ADDRESS = 'EQBIBw3mF_TDMJqWAZihVsyUBMWpWw_deftZLiCxTmrCUOKy'
-
 
   const minterResult = await call({ target: MINTER_ADDRESS, abi: "get_minter_data", stack: [] })
   // exchange rate from cgUSDT to USDT: decimal 9
@@ -27,8 +30,11 @@ async function tonTvl() {
   const jettonResult = await getJettonMetadata(CGUSDT_ADDRESS)
   const cgUsdtTotalSupply = jettonResult['total_supply']
 
+  // subtract the amount of cgUSDT in the withdrawal vault
+  const withdrawVaultBalance = await getJettonBalance(MINTER_ADDRESS, CGUSDT_ADDRESS)
+
   // caculate tvl
-  const tvl = (cgUsdtTotalSupply) / 10 ** 6 * cgusdtTousdt
+  const tvl = (cgUsdtTotalSupply - withdrawVaultBalance) / 10 ** 6 * cgusdtTousdt
   return { "coingecko:tether": tvl }
 }
 
