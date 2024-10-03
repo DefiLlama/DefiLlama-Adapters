@@ -1,14 +1,17 @@
-const sdk = require("@defillama/sdk");
-const { transformBalances } = require("../helper/portedTokens");
-const { get } = require('../helper/http');
+const sdk = require('@defillama/sdk');
+const { transformBalances } = require('../helper/portedTokens');
 const ADDRESSES = require('../helper/coreAssets.json');
-const { BASE_API_URL } = require("./constants");
-const nullAddress = ADDRESSES.null;
+const { call } = require('../helper/chain/ton');
+const { POOL_ADDRESS } = require('./constants');
 
 async function borrowed(api) {
   const balances = {};
-  const result = await get(`${BASE_API_URL}/api/v1/analytics/borrowed`);
-  sdk.util.sumSingleBalance(balances, nullAddress, result.value, api.chain);
+  const result = await call({
+    target: POOL_ADDRESS,
+    abi: 'get_pool_data',
+  });
+  const borrowedTon = result[2];
+  sdk.util.sumSingleBalance(balances, ADDRESSES.ton.TON, borrowedTon, api.chain);
   return transformBalances(api.chain, balances);
 }
 

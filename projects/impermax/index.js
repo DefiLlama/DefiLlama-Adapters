@@ -11,12 +11,13 @@ const config = {
       '0xBB92270716C8c424849F17cCc12F4F24AD4064D6',
       '0x7F7AD5b16c97Aa9C2B0447C2676ce7D5CEFEbCd3',
       '0x7ED6eF7419cD9C00693d7A4F81c2a151F49c7aC2',
+      '0x60f57cF15a34fA0Aa25eF37eB827E1a0948966c5'
     ]
   },
   arbitrum: {
     factories: [
       '0x8C3736e2FE63cc2cD89Ee228D9dBcAb6CE5B767B',
-      '0x8C3736e2FE63cc2cD89Ee228D9dBcAb6CE5B767B',
+      '0x9708e0b216a88d38d469b255ce78c1369ad898e6',
       '0x97bc7fefb84a4654d4d3938751b5fe401e8771c2',
     ]
   },
@@ -48,6 +49,29 @@ const config = {
       '0x9b4ae930255CB8695a9F525dA414F80C4C7a945B',
     ]
   },
+  scroll: {
+    factories: [
+      '0x02Ff7B4d96EeBF8c9B34Fae0418E591e11da3099',
+      '0xFBD17F3AA7d6506601D2bF7e15a6C96081296a01', // scroll stablefactory
+    ]
+  },
+  base: {
+    factories: [
+      '0x66ca66E002a9CEE8dEfE25dB6f0c6225117C2d9f',
+      '0x8aDc5F73e63b3Af3fd0648281fE451738D8B9D86',
+      '0x47183bB55AD0F891887E099Cec3570d3C667cD00'
+    ]
+  },
+  mantle: {
+    factories: [
+      '0x3047523D5ed0df1545B1C440BdAaB095f1f3cf5C'
+    ]
+  },
+  optimism: {
+    factories: [
+      '0xa058Ba91958cD30D44c7B0Cf58A369876Fb70B05'
+    ]
+  }
 }
 
 const blacklistedPools = {
@@ -89,6 +113,10 @@ const blacklistedPools = {
     '0x877a330af63094d88792b9ca28ac36c71673eb1c', // IMX-FTM
     '0xb97b6ed451480fe6466a558e9c54eaac32e6c696', // OXD-FTM
   ],
+  scroll: [],
+  base: [],
+  mantle: [],
+  optimism: []
 }
 
 module.exports = {}
