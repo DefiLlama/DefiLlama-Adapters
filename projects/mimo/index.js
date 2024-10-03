@@ -1,39 +1,36 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs');
 const config = {
-  ethereum: {
-    vaultCore: ['0x4026BdCD023331D52533e3374983ded99CcBB6d4'],
-    collaterals: [
-    ADDRESSES.ethereum.WETH, //wETH
-    ADDRESSES.ethereum.WBTC, //wBTC
-    ADDRESSES.ethereum.USDC, //USDC
+  ethereum:
+  {
+    vaultCore: [
+      '0x68E88c802F146eAD2f99F3A91Fb880D1A2509672', //PAR
+      '0x917b9D8E62739986EC182E0f988C7F938651aFD7', //paUSD
     ],
   },
   polygon: {
-    vaultCore: ['0x03175c19cb1d30fa6060331a9ec181e04cac6ab0'],
-    collaterals: [
-      ADDRESSES.polygon.WMATIC_2, //wMATIC
-      ADDRESSES.polygon.WETH_1, //wETH
-      ADDRESSES.polygon.WBTC, //wBTC
-      ADDRESSES.polygon.USDC, //USDC
+    vaultCore: [
+      '0x78C48A7d7Fc69735fDab448fe6068bbA44a920E6', //PAR
+      '0xc0459Eff90be3dCd1aDA71E1E8BDB7619a16c1A4', //paUSD
     ],
   },
   fantom: {
     vaultCore: ['0xB2b4feB22731Ae013344eF63B61f4A0e09fa370e'],
-    collaterals:[
-      ADDRESSES.fantom.WFTM, //wFTM
-      '0x74b23882a30290451A17c44f4F05243b6b58C76d', //ETH
-      '0x321162Cd933E2Be498Cd2267a90534A804051b11', //BTC
-      ADDRESSES.fantom.USDC, //USDC
-    ],
   }
 }
 
-module.exports = {};
 
 Object.keys(config).forEach(chain => {
-  const { vaultCore: owners, collaterals: tokens } = config[chain]
-  module.exports[chain] = {
-    tvl: sumTokensExport({ chain, owners, tokens, })
+  const { vaultCore } = config[chain]
+  module.exports[chain] = { tvl }
+
+  async function tvl(api) {
+    const ownerTokens = []
+    for (const vault of vaultCore) {
+      const addressProvider = await api.call({  abi: 'address:a', target: vault})
+      const config = await api.call({  abi: 'address:config', target: addressProvider})
+      const tokenConfig = await api.fetchList({  lengthAbi: 'numCollateralConfigs', itemAbi: "function collateralConfigs(uint256 _id) view returns ((address collateralType, uint256 debtLimit, uint256 liquidationRatio, uint256 minCollateralRatio, uint256 borrowRate, uint256 originationFee, uint256 liquidationBonus, uint256 liquidationFee))", target: config})
+      const tokens = tokenConfig.map(t => t.collateralType)
+      ownerTokens.push([tokens, vault])
+    }
+    return api.sumTokens({ ownerTokens })
   }
 })
