@@ -53,6 +53,20 @@ const ALPHAFI_CETUS_TVL_IDS = [
     token0Type: ADDRESSES.sui.BUCK,
     token1Type: ADDRESSES.sui.USDC
   },
+  {
+    poolID: "0xd50ec46c2514bc8c588760aa7ef1446dcd37993bc8a3f9e93563af5f31b43ffd",
+    cetusPoolID: "0x9ddb0d269d1049caf7c872846cc6d9152618d1d3ce994fae84c1c051ee23b179",
+    investorID: "0x74308f0de7ea1fc4aae2046940522f8f79a6a76db94e1227075f1c2343689882",
+    token0Type: ADDRESSES.sui.SOL,
+    token1Type: ADDRESSES.sui.USDC
+  },
+  {
+    poolID: "0x6eec371c24ad264ced3a1f40b83d7d720aa2b0afa860a6af85436f6a769842e1",
+    cetusPoolID: "0xaa72bd551b25715b8f9d72f226fa02526bdf2e085a86faec7184230c5209bb6e",
+    investorID: "0x651acc1166023a08c17f24e71550982400e9b1f4950cc1324410300efc1af905",
+    token0Type: "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA",
+    token1Type: ADDRESSES.sui.SUI
+  },
 
 ]
 
@@ -83,13 +97,27 @@ const ALPHAFI_NAVI_TVL_IDS = [
     expo: 8
   },
 ]
-
+const ALPHAFI_NAVI_LOOP_TVL_IDS = [
+  {
+    poolID: "0xd013a1a0c6f2bad46045e3a1ba05932b4a32f15864021d7e0178d5c2fdcc85e3",
+    investorID: "0x36cc3135c255632f9275a5b594145745f8344ce8f6e46d9991ffb17596195869",
+    tokenType: "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
+    expo: 9
+  },
+]
 const ALPHAFI_POOL2_IDS = [{
   poolID: "0x594f13b8f287003fd48e4264e7056e274b84709ada31e3657f00eeedc1547e37",
   cetusPoolID: "0xda7347c3192a27ddac32e659c9d9cbed6f8c9d1344e605c71c8886d7b787d720",
   investorID: "0x46d901d5e1dba34103038bd2ba789b775861ea0bf4d6566afd5029cf466a3d88",
   token0Type: "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA",
   token1Type: ADDRESSES.sui.SUI
+},
+{
+  poolID: "0x430986b53a787362e54fa83d0ae046a984fb4285a1bc4fb1335af985f4fe019d",
+  cetusPoolID: "0x0cbe3e6bbac59a93e4d358279dff004c98b2b8da084729fabb9831b1c9f71db6",
+  investorID: "0x705c560fd1f05c64e0480af05853e27e1c3d04e255cd6c5cb6921f5d1df12b5a",
+  token0Type: "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA",
+  token1Type: ADDRESSES.sui.USDC
 },
 ]
 
@@ -127,9 +155,32 @@ async function addPoolTVL2(api, alphafiNaviPools){
   }
 }
 
+async function addPoolTVL3(api, alphafiNaviLoopPools){
+ 
+  for (const { poolID, investorID, tokenType, expo } of alphafiNaviLoopPools){
+    let poolObject = await sui.getObject(poolID);
+    let investorObject = await sui.getObject(investorID);
+    let tokensInvested = poolObject.fields.tokensInvested;
+    
+    let liquidity = parseFloat(tokensInvested);
+    /*
+    in the code below, we are subtracting the debt in the pool from the liquidity, since the borrowed tokens are supplied back to the pool (as part of our strategy).
+    we have current_debt_to_supply_ratio in the object, so current debt in the system is (current liquidity * current_debt_to_supply_ratio).
+    we subtract the above derived debt from the liquidity.
+    current_debt_to_supply_ratio in our system is scaled by 1e20, hence the division of 1e20 in the below used expression.
+    */
+    liquidity = liquidity*(1-(parseFloat(investorObject.fields.current_debt_to_supply_ratio)/parseFloat(1e20)));
+    
+    tokensInvested = (liquidity.toString().split('.')[0]);
+    
+    let balance = BigInt(tokensInvested)/BigInt(Math.pow(10, 9-expo));
+    api.add(tokenType, balance);
+  }
+}
+
 async function tvl(api) {
   
-  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS)])
+  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS)])
 
 }
 async function pool2(api) {
@@ -141,7 +192,7 @@ async function pool2(api) {
 
 async function staking(api) {
   let alphaPoolObject = await sui.getObject(ALPHA_POOL_ID)
-  api.addToken(ALPHA_COIN_TYPE, Number(alphaPoolObject.fields.alpha_bal))
+  api.addToken(ALPHA_COIN_TYPE, BigInt(alphaPoolObject.fields.alpha_bal))
 }
 
 module.exports = {
