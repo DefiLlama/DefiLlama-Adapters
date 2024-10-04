@@ -11,5 +11,5 @@ module.exports = {
     hallmarks: [
         [1651881600, "UST depeg"],
     ],
-    // deadFrom: '2024-10-02'
-} // node test.js projects/astroport/index.js
+    deadFrom: '2024-10-02'
+}
