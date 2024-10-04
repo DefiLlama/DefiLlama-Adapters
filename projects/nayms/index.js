@@ -13,7 +13,7 @@ const tokens = [
 const tokensBase = [
   ADDRESSES.base.WETH,
   ADDRESSES.base.USDC,
-  "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C",
+  ADDRESSES.ethereum.USDM,
 ];
 
 const owner = "0x39e2f550fef9ee15b459d16bD4B243b04b1f60e5";
