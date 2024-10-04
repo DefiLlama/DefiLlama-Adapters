@@ -1,6 +1,7 @@
 const { staking } = require("../helper/staking");
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
+  getDeposits: "function getDeposits(address) view returns (address[], address[], uint256[], uint256[])",
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
   getPrice: "function answer() external view returns (uint256)",
@@ -12,10 +13,72 @@ const contractAbis = {
   getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
   getUniswapPrice:
     "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 observationCardinalityNext, uint8 observationCardinalityNext)",
+  getMantleBalance: "function balances(address) view returns (uint256)",
 };
 
 module.exports = {
   misrepresentedTokens: true,
+
+  mantle: {
+    tvl: async (api) => {
+      const mantle = {
+        vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
+        lending: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
+        staking: "0x9f39dC8eA0a73ab462d23104699AFAE9c30d1E4f",
+      };
+
+      const stakedBalance = await api.call({
+        abi: contractAbis.getMantleBalance,
+        target: mantle.staking,
+        params: [mantle.vault],
+      });
+
+      api.add(ADDRESSES.mantle.WMNT, stakedBalance);
+
+      await api.sumTokens({
+        tokensAndOwners: [[ADDRESSES.mantle.WMNT, mantle.lending]],
+      });
+    },
+  },
+
+  karak: {
+    tvl: async (api) => {
+      const KUSDC = {
+        vault: "0x4c18E80b801AA24066D8B1C6E65ee245497Cb741",
+        token: ADDRESSES.karak.USDC,
+      };
+
+      const KWETH = {
+        vault: "0x9a9631F7BEcE5C6E0aBA1f73f0e5796c534dc4db",
+        token: ADDRESSES.optimism.WETH_1,
+      };
+
+      const wethLending = {
+        vault: "0xd6034F9147CF7528e857403Dea93bc45743295eb",
+        token: ADDRESSES.optimism.WETH_1,
+      };
+
+      const usdcLending = {
+        vault: "0x475820E4bCE0E3d233Ad7f6A8c9DD1f66974c5d6",
+        token: ADDRESSES.karak.USDC,
+      };
+
+      const KarakUSDCBal = await api.call({ target: KUSDC.vault, abi: contractAbis.getTotalSupply });
+
+      const KarakWETHbal = await api.call({ target: KWETH.vault, abi: contractAbis.getTotalSupply });
+
+      const strategies = [wethLending, usdcLending];
+
+      const tokensAndOwners = [];
+
+      strategies.forEach(({ vault, token }) => tokensAndOwners.push([token, vault]));
+
+      await api.sumTokens({ tokensAndOwners });
+
+      api.add(KUSDC.token, KarakUSDCBal);
+      api.add(KWETH.token, KarakWETHbal);
+    },
+  },
 
   zklink: {
     tvl: async (api) => {
@@ -38,6 +101,69 @@ module.exports = {
       await api.sumTokens({
         tokensAndOwners: [[ADDRESSES.mode.WETH, lendingMode.eth]],
       });
+
+      const airPuff1XwETHMode = {
+        vault: "0xeAaD8f5F1901D2f92B747650c0f941Bfa3413dAF",
+        pendleAddress: ADDRESSES.optimism.WETH_1,
+      };
+
+      const airPuff1XUSDTMode = {
+        vault: "0xCEb6264CdCcDDd8c9631212Dc7112304F9393818",
+        pendleAddress: ADDRESSES.mode.USDT,
+      };
+
+      const airPuff1XUSDCMode = {
+        vault: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
+        pendleAddress: ADDRESSES.mode.USDC,
+      };
+
+      const airPuff1XwBTCMode = {
+        vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
+        pendleAddress: ADDRESSES.mode.WBTC,
+      };
+
+      const airPuff1XwrsETHMode = {
+        vault: "0xEd487e254b1ED41Db4d1Ed457774827d01dfF56F",
+        pendleAddress: "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
+      };
+
+      const airPuff1XankrETHMode = {
+        vault: "0x83886Af55Dac462Dc7840cdb0157bB3e7d8A6ac4",
+        pendleAddress: "0x12D8CE035c5DE3Ce39B1fDD4C1d5a745EAbA3b8C",
+      };
+
+      const airPuff1XpxETHMode = {
+        vault: "0xFf5C03ADf31865A4a8E6C0e59eDb4178C9BCC32E",
+        pendleAddress: "0x9E0d7D79735e1c63333128149c7b616a0dC0bBDb",
+      };
+
+      const airPuff1XstoneMode = {
+        vault: "0xaC9dAdf209F14f46Fe103C6E5C787130a6129205",
+        pendleAddress: ADDRESSES.mode.STONE,
+      };
+
+      const airPuff1XMerlinBTCMode = {
+        vault: "0x83A162dA8Df54FF845773169f019fd1505A9e29f",
+        pendleAddress: "0x59889b7021243dB5B1e065385F918316cD90D46c",
+      };
+
+      const strategies = [
+        airPuff1XwETHMode,
+        airPuff1XUSDTMode,
+        airPuff1XUSDCMode,
+        airPuff1XwBTCMode,
+        airPuff1XwrsETHMode,
+        airPuff1XankrETHMode,
+        airPuff1XpxETHMode,
+        airPuff1XstoneMode,
+        airPuff1XMerlinBTCMode,
+      ];
+
+      const tokensAndOwners = [];
+
+      strategies.forEach(({ vault, pendleAddress }) => tokensAndOwners.push([pendleAddress, vault]));
+
+      await api.sumTokens({ tokensAndOwners });
 
       const ezETH = {
         vault: "0x497eB27Ca1ed7566653edf811b03d6418a03FC9d",
@@ -96,7 +222,11 @@ module.exports = {
         reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
         oracle: "0xb09cbB6Aa95A004F9aeE4349DF431aF5ad03ECe4",
       };
+
+
       tokensAndOwners.push([eETH.reStakingToken, eETH.vault]);
+
+    
 
       // leverage users
       const ezETH = {
@@ -208,6 +338,11 @@ module.exports = {
         pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
       };
 
+      const bptrswETH1x2 = {
+        vault: "0x76338fca82925Fe2Df2C4F2c6e9545247617C634",
+        pendleAddress: "0x7bAf258049cc8B9A78097723dc19a8b103D4098F"
+      };
+
       //new 1x strats on pendle v2
 
       //PT Tensorplex Staked TAO 27JUN2024 (PT-stTAO-...)
@@ -247,6 +382,11 @@ module.exports = {
         pendleAddress: "0x5cb12D56F5346a016DBBA8CA90635d82e6D1bcEa",
       };
 
+      const pTEzETHDEC30 = {
+        vault: "0xebdaDFC590393938b601a9738C3107460838e880",
+        pendleAddress: "0xf7906F274c174A52d444175729E3fa98f9bde285",
+      };
+
       const tokensAndOwners2 = [
         pTweETH,
         pTezETH,
@@ -257,6 +397,8 @@ module.exports = {
         bptzrsETH1x,
         bptzUSDe1x,
         bptrswETH1x,
+        bptrswETH1x2,
+        pTEzETHDEC30,
       ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);
       await api.sumTokens({ tokensAndOwners });
@@ -282,6 +424,11 @@ module.exports = {
         pendleAddress: "0xad853EB4fB3Fe4a66CdFCD7b75922a0494955292",
       };
 
+      const bsolvBTC1X = {
+        vault: "0x43D10bfB9f1625827Ee8EE7A461eDE28340bdBb5",
+        tokenAddress: "0x3647c54c4c2C65bC7a2D63c0Da2809B399DBBDC0",
+      };
+
       await api.sumTokens({
         tokensAndOwners: [
           [ADDRESSES.arbitrum.USDC, lendingArb.usdc_e],
@@ -291,6 +438,7 @@ module.exports = {
           [ADDRESSES.arbitrum.ARB, lendingArb.arb],
           [ADDRESSES.arbitrum.USDC_CIRCLE, lendingArb.usdc],
           [bptUSDe1x.pendleAddress, bptUSDe1x.vault],
+          [bsolvBTC1X.tokenAddress, bsolvBTC1X.vault],
         ],
       });
 
