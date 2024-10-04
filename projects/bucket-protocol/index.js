@@ -3,6 +3,7 @@ const sui = require("../helper/chain/sui");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
+  const SUI = ADDRESSES.sui.SUI;
 const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
@@ -67,6 +68,10 @@ const scallop_sUSDC_LP_ID =
 
 const scallop_sUSDT_LP_ID =
   "0x6b68b42cbb4efccd9df30466c21fff3c090279992c005c45154bd1a0d87ac725";
+
+const haSUI_Navi_Pond_ID = "0xef1ff1334c1757d8e841035090d34b17b7aa3d491a3cb611319209169617518e"
+
+const SUI_Navi_Pond_ID = "0xcf887d7201c259496a191348da86b4772a2e2ae3f798ca50d1247194e30b7656";
 
 async function getStakingLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
@@ -236,6 +241,18 @@ async function tvl(api) {
   api.add(
     "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
     snaviLPAmount
+  );
+
+  const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
+  api.add(
+    "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
+    haSuiNaviPondAmount
+  );
+
+  const suiNaviPondAmount = await getStakingLPAmount(SUI_Navi_Pond_ID);
+  api.add(
+    SUI,
+    suiNaviPondAmount
   );
 
   const scallopUSDC_LPAmount = await getScallopsLPAmount(scallop_sUSDC_LP_ID);

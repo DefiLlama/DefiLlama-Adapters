@@ -84,7 +84,7 @@ const getCoveredCallOfTheWeekBalances = async (api, contracts) => {
     (contract) => contract.type === "p2p"
   );
 
-  if (!coveredCallOfTheWeeks) return balances;
+  if (!coveredCallOfTheWeeks) return;
 
   const coveredCallOfTheWeekStrategies = await api.multiCall({
     calls: coveredCallOfTheWeeks.map((contract) => ({

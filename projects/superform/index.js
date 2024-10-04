@@ -1,4 +1,4 @@
-const superform_chains = ["ethereum", "polygon", "bsc", "avax", "arbitrum", "optimism", "base", "fantom"];
+const superform_chains = ["ethereum", "polygon", "bsc", "avax", "arbitrum", "optimism", "base", "fantom", "blast", "linea"];
 const factory_contract = "0xD85ec15A9F814D6173bF1a89273bFB3964aAdaEC";
 const fantom_factory_contract = "0xbc85043544CC2b3Fd095d54b6431822979BBB62A";
 
