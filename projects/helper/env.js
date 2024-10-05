@@ -9,12 +9,15 @@ const DEFAULTS = {
   SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
+  FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  FLOW_EVM_RPC: 'https://mainnet.evm.nodes.onflow.org',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   IDEX_RPC: "https://xchain-rpc.idex.io",
-  CRONOS_ZKEVM_RPC_MULTICALL: '0x9b122BF7a96F24EFB7A2b5765c635909dB3458F7',
-  NEOX_RPC_MULTICALL: '0xD6010D102015fEa9cB3a9AbFBB51994c0Fd6E672',
+  ETN_RPC: "https://rpc.ankr.com/electroneum",
+  MATCHAIN_RPC: "https://rpc.matchscan.io,https://rpc.matchain.io",
+  MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
 }
 
 const ENV_KEYS = [
