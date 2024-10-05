@@ -74,8 +74,12 @@ const fixBalancesTokens = {
     '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': { coingeckoId: 'usd-coin', decimals: 6 },
   },
   core: {
-    '0x782e2b85fda9a8224c17b191fc5de1e085a962b2': { coingeckoId: "wrapped-bitcoin-universal", decimals: 18 }
-  }
+    '0x782e2b85fda9a8224c17b191fc5de1e085a962b2': { coingeckoId: "wrapped-bitcoin-universal", decimals: 18 },
+  },
+  matchain: {
+    [ADDRESSES.null]: { coingeckoId: 'binancecoin', decimals: 18 },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'binancecoin', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
