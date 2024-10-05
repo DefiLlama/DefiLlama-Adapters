@@ -72,6 +72,9 @@ const fixBalancesTokens = {
     '0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e': { coingeckoId: 'flow', decimals: 18 },
     '0x1b97100ea1d7126c4d60027e231ea4cb25314bdb': { coingeckoId: 'ankr-staked-flow', decimals: 18 },
     '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
+  core: {
+    '0x782e2b85fda9a8224c17b191fc5de1e085a962b2': { coingeckoId: "wrapped-bitcoin-universal", decimals: 18 }
   }
 }
 
