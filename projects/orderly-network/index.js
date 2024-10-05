@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { call, view_account, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
 const { sumTokensExport } = require('../helper/unwrapLPs');
-const { ethereum } = require('../helper/whitelistedNfts');
 
 const ASSET_MANAGER_CONTRACT = 'asset-manager.orderly-network.near';
 const GET_LISTED_TOKENS_METHOD = 'get_listed_tokens';
