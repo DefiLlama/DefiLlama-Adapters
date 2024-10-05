@@ -14,6 +14,7 @@ module.exports = {
         "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4", // crvUSDT
         "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", // 3Crv
         "0xc4AD29ba4B3c580e6D59105FFf484999997675Ff", // crv3crypto
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
       ],
     }),
   },
@@ -29,6 +30,7 @@ module.exports = {
         "0x82670f35306253222F8a165869B28c64739ac62e", // 3c-crvUSD
         "0x73aF1150F265419Ef8a5DB41908B700C32D49135", // crvUSDT
         "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // 2CRV
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // WETH
       ],
     }),
   },
@@ -72,6 +74,7 @@ module.exports = {
         "0x03771e24b7c9172d163bf447490b142a15be3485", // crvUSDC
         "0x1337bedc9d22ecbe766df105c9623922a27963ec", // 3pool
         "0xd1b30ba128573fcd7d141c8a987961b40e047bb6", // crvUSDT
+        "0x4200000000000000000000000000000000000006", // WETH
       ],
     }),
   },
@@ -93,6 +96,7 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         "0xf6C5F01C7F3148891ad0e19DF78743D31E390D1f", // 4pool
+        "0x4200000000000000000000000000000000000006", // WETH
       ],
     }),
   },
@@ -101,6 +105,38 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         "0x1337bedc9d22ecbe766df105c9623922a27963ec", // x3CRV
+      ],
+    }),
+  },
+  blast: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0x4300000000000000000000000000000000000004", // WETH
+      ],
+    }),
+  },
+  mantle: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111", // WETH
+      ],
+    }),
+  },
+  linea: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f", // WETH
+      ],
+    }),
+  },
+  taiko: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0xa51894664a773981c6c112c43ce576f315d5b1b6", // WETH
       ],
     }),
   },

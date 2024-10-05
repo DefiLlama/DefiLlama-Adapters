@@ -17,6 +17,13 @@ const staticAddresses = [
   '32DgQPVHSV6FSxLnw68nggvchp3ZNKquxA',
   'bc1qj9w5ee2kf4akvtzrj59p77yc6x02nqqg9m0tcd',
   'bc1q6w7dn3fkky587a2qwxp6swyhlwgueh2ew26zem',
+
+  '3Pg6HJJPhm3X7eWrdHbPFQeHU723a9GSJ7',
+  '35cUDQg2EBuc3wadWmcEFW2YG7Uj2yfNRq',
+  'bc1qwgnhe6vn5zzu7csukavhfatzdasvmkavktqe4udzx96dk602ghsqaz8vt6',
+  'bc1qf2lqvumkq2l2d3qej7u6w9u84djfnmy7kfcqdulfpcm7zqxl330smc0mkj',
+  'bc1qyzsetzfrwzxs7zzqtsmyaz39mumhrh58mu04kyjcy8pynn9zhk5q2dc2r3',
+  'bc1qxsuy93rr0mat8sdlzjuk86z6ajpr04634wfx04lcuerw7dj52k5q8k6qaq'
 ]
 const abi = {
   getQualifiedUserInfo: "function getQualifiedUserInfo(address _user) view returns ((bool locked, string depositAddress, string withdrawalAddress) info)",

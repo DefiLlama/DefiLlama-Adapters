@@ -18,6 +18,7 @@ const config = {
       '0x178Fb204c1ff2Ed7d0651C522A3a5B15480Eb76d',
       '0xFbA64167e4f091Ca625FA79aa6f83665856f8Bf2',
       '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+      '0xe2484A7Ac1b9Cb6D8E55fd00e129aB913172bea6'
     ],
   },
   bitcoin: {
