@@ -15,7 +15,9 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   IDEX_RPC: "https://xchain-rpc.idex.io",
-  ETN_RPC: "https://rpc.ankr.com/electroneum"
+  ETN_RPC: "https://rpc.ankr.com/electroneum",
+  MATCHAIN_RPC: "https://rpc.matchscan.io,https://rpc.matchain.io",
+  MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
 }
 
 const ENV_KEYS = [
