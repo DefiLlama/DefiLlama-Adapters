@@ -56,8 +56,9 @@ module.exports = {
     pool2: sumTokensExport({
       tokensAndOwners: [
         [base.zaiMahaAerodrome, base.zaiMahaStaking],
-        [base.zaiUsdcAerodrome, base.zaiUsdcStaking]
-      ]
+        [base.zaiUsdcAerodrome, base.zaiUsdcStaking],
+      ],
+      resolveLP: true,
     }),
   }
 };
