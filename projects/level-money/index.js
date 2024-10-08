@@ -21,7 +21,7 @@ const TOKEN_CONTRACTS = [
 module.exports = {
     ethereum: {
         tvl: sumTokensExport({ 
-          owner: [LEVEL_STAKING_CONTRACT, ...LEVEL_RESERVE_MANAGERS], 
+          owners: [LEVEL_STAKING_CONTRACT, ...LEVEL_RESERVE_MANAGERS], 
           tokens: TOKEN_CONTRACTS,
         }),
     }
