@@ -17,8 +17,7 @@ const owners = [
 'bc1qw4vp94e9egkaxc04qsu5z9aq5pqpku2p6pzer8',
 'bc1qqg3cdyadq25zn99sdprr4lgpsxg2za998eygy8',
 'bc1q6dtp7ayaj5k2zv0z5ayhkdsvmtvdqgyaa9zs53',
-'bc1qaajdlp5yrj5f77wq2ndtfqnmsamvvxhpy95662zkzykn9qhvdgys580hcs',
-'bc1qcmmkxfp2rawrp6yx55rez9jcqdnxtam8jhu2v2d9kz46upf948wq2usauv',
+'bc1qaajdlp5yrj5f77wq2ndtfqnmsamvvxhpy95662zkzykn9qhvdgys580hcs'
 ]
 
 module.exports = {
