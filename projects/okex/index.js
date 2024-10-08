@@ -567,7 +567,12 @@ const config = {
     owners: [
       '0x834d639b10d20dcb894728aa4b9b572b2ea2d97073b10eacb111f338b20ea5d7'
     ]
-  }//
+  },
+  starknet:{
+    owners: [
+      '0x0269ea391a9c99cb6cee43ff589169f547cbc48d7554fdfbbfa7f97f516da700'
+    ]
+  }
 }
 
 module.exports = cexExports(config)

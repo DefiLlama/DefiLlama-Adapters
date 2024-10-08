@@ -108,6 +108,11 @@ const config = {
       'rNnWmrc1EtNRe5SEQEs9pFibcjhpvAiVKF',
       'rNu9U5sSouNoFunHp9e9trsLV6pvsSf54z',   
     ]
+  },
+  starknet: {
+    owners: [
+      '0x00e91830f84747f37692127b20d4e4f9b96482b1007592fee1d7c0136ee60e6d'  
+    ]
   }
 }
 

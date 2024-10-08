@@ -217,6 +217,11 @@ const config = {
       '0xd6216fc19db775df9774a6e33526131da7d19a2c',
       '0xfb6a733bf7ec9ce047c1c5199f18401052eb062d',
     ],
+  },
+  starknet: {
+    owners: [
+      '0x0566ec9d06c79b1ca32970519715a27f066e76fac8971bbd21b96a50db826d90'
+    ],
   }
 }
 
