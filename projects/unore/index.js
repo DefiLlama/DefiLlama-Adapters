@@ -44,6 +44,7 @@ const config = {
 
 module.exports = {
   start: 1626100000,  // Sep-20-2021 07:27:47 AM +UTC
+  kava: { tvl: async () => ({})},
 };
 
 Object.keys(config).forEach(chain => {

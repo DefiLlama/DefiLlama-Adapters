@@ -81,6 +81,9 @@ const fixBalancesTokens = {
     [ADDRESSES.null]: { coingeckoId: 'binancecoin', decimals: 18 },
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'binancecoin', decimals: 18 },
   },
+  rollux: {
+    '0x570baA32dB74279a50491E88D712C957F4C9E409': { coingeckoId: 'uno-re', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
