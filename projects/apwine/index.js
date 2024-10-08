@@ -114,5 +114,8 @@ module.exports = {
     tvl: tvl_from_registry('polygon'), 
     pool2: pool2s([APW_WETH_cometh_staking, APW_MUST_cometh_staking], [APW_WETH_cometh, APW_MUST_cometh])
   },
-  methodology: `Use the registry to retrieve futureVaults, and get for each vault the IBT which is the token that this vault holds - the user locked collateral`
+  methodology: `Use the registry to retrieve futureVaults, and get for each vault the IBT which is the token that this vault holds - the user locked collateral`,
+  hallmarks: [
+    [1677798000, "Announcement of V1 Retirement"]
+  ],
 }

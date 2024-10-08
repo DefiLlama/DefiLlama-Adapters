@@ -11,7 +11,9 @@ module.exports = {
         tvl: getFactoryTvl("terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r")
     },
     neutron: {
-        tvl: getFactoryTvl("neutron1hptk0k5kng7hjy35vmh009qd5m6l33609nypgf2yc6nqnewduqasxplt4e")
+        tvl: getFactoryTvl("neutron1hptk0k5kng7hjy35vmh009qd5m6l33609nypgf2yc6nqnewduqasxplt4e", {
+            blacklistedPairs: ['neutron14hn88erzgqskhvvczvdncu79tz4xqncrun5l5yqkwecmzrlpqnjquqp33f']
+        })
     },
     sei: {
         tvl: getFactoryTvl("sei1xr3rq8yvd7qplsw5yx90ftsr2zdhg4e9z60h5duusgxpv72hud3shh3qfl")

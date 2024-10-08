@@ -2,13 +2,13 @@ const abi = require("./abi.json");
 const { getConfig } = require("../helper/cache");
 
 // teahouse public api for vault
-const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
+const teahouseVaultAPI = "https://raw.githubusercontent.com/TeahouseFinance/Vaults-for-DeFiLlama/main/vaults.json";
 
 
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let htAddress = [];
-  const { vaults } = await getConfig("teahouse/v1_reset_cache", teahouseVaultAPI);
+  const { vaults } = await getConfig("teahouse/vault_data", teahouseVaultAPI);
   vaults.forEach((element) => {
     // v2 vaults
     if (element.isDeFi == false && element.isActive == true) {
