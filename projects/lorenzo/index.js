@@ -12,7 +12,8 @@ const LorenzoOwners = [
     "bc1qrx3fpr5j6sprxett45c2kl9p4pajyxep0mapfd",
     "bc1q00t2ntm46c2nfvcer6ukj6npaxjurujthse4qq",
     "bc1q3pzhncle68gct6me08kn5kf9awkevt6ettwrmg",
-    "bc1qw6cvwx8ajprmp2lzkhrsps2qx4k9r2pj4xj98x"
+    "bc1qw6cvwx8ajprmp2lzkhrsps2qx4k9r2pj4xj98x",
+    "bc1ppwfa95ug52ufc2azau5wn8qvlss8xkmf8jutydg0azkwegks7wfs7cd98n"
 ];
 
 module.exports = {
