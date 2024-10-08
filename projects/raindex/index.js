@@ -1,4 +1,4 @@
-const { request } = require("graphql-request");
+const { request } = require("graphql-request")
 
 const orderbooks = {
   arbitrum: {
@@ -38,24 +38,25 @@ const query = `
   }
 `
 
-// get all token addresses currently held by the contract
+// get token addresses currently held by the contract
 async function getTokens(sg) {
-  let page = 0;
-  const tokens = [];
+  let page = 0
+  const tokens = []
 
   // catch errors in case anything goes wrong with underlying subgraph endpoint
   try {
     for(;;) {
       const { erc20S } = await request(sg, query, {
         first: 50,
-        skip: 50 * page
-      });
-      page++
+        skip: 50 * page++
+      })
       if (erc20S && erc20S.length) {
         tokens.push(...erc20S)
-        if (erc20S.length < 50) break;
+        if (erc20S.length < 50) {
+          break
+        }
       } else {
-        break;
+        break
       }
     }
   } catch {
@@ -68,22 +69,22 @@ async function getTokens(sg) {
 async function tvl(api) {
   const { address, sg } = orderbooks[api.chain]
 
-  const tokens = await getTokens(sg);
+  const tokens = await getTokens(sg)
   const balances = await api.multiCall({
-    calls: tokens.map(token => ({
-      target: token.address,
-      params: [address]
-    })),
-    abi: 'erc20:balanceOf',
     chain: api.chain,
-  });
+    abi: 'erc20:balanceOf',
+    calls: tokens.map(t => ({
+      target: t.address,
+      params: [address],
+    })),
+  })
   
   api.addTokens(tokens.map(t => t.address), balances)
 }
 
 module.exports = {
-  methodology: 'Balance of ERC20 tokens held by contract.',
-}; 
+  methodology: 'Balance of ERC20 tokens held by Rain Orderbook contract.',
+}
 
 Object.keys(orderbooks).forEach(chain => {
   module.exports[chain] = { tvl }
