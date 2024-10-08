@@ -175,6 +175,7 @@ const defaultTokens = {
      '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
      '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
      '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
