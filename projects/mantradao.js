@@ -1,41 +1,83 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const { sumTokens } = require("./helper/unwrapLPs");
-const { compoundExports } = require("./helper/compound");
-const { stakingAssetsETH, stakingAssetsBSC, stakingAssetsPOLYGON, } = require("./config/mantra-dao/contracts/naked-staking-contracts");
-const { lpStakingAssetsETH, lpStakingAssetsBSC, lpStakingAssetsPOLYGON, } = require("./config/mantra-dao/contracts/lp-staking-contracts");
+const { sumTokensExport } = require('./helper/unwrapLPs')
+const { compoundExports2 } = require("./helper/compound");
 
-const chainConfig = {
-  ethereum: { staking: stakingAssetsETH, pool2: lpStakingAssetsETH, },
-  bsc: { staking: stakingAssetsBSC, pool2: lpStakingAssetsBSC, },
-  polygon: { staking: stakingAssetsPOLYGON, pool2: lpStakingAssetsPOLYGON, },
+module.exports = {
+  ethereum: compoundExports2({ comptroller: "0x606246e9EF6C70DCb6CEE42136cd06D127E2B7C7", cether: '0x4F905f75F5576228eD2D0EA508Fb0c32a0696090', blacklistedTokens: ['0x3593d125a4f7849a1b059e64f4517a86dd60c95d'] })
 }
 
-const comptroller = "0x606246e9EF6C70DCb6CEE42136cd06D127E2B7C7"
-const zenETH = "0x4F905f75F5576228eD2D0EA508Fb0c32a0696090"
-const zenETHEquivalent = ADDRESSES.ethereum.WETH;
+const config = {
+  ethereum: {
+    staking: [
+      ["0x3593D125a4f7849a1B059E64F4517A86Dd60c95d", "0x9E15Ad979919bB4db331Bfe864475Ae3BFFebA93"],
+      ["0x3593D125a4f7849a1B059E64F4517A86Dd60c95d", "0xa01892d97e9c8290c2c225fb0b756bfe26bc9802"],
+      ["0x3593D125a4f7849a1B059E64F4517A86Dd60c95d", "0x04493F715B08DeA8af77814d600bEf22f1f0C63B"],
+      ["0x3593D125a4f7849a1B059E64F4517A86Dd60c95d", "0x1eA973A69643091410721C7D91aA5499CF8D2Cb7"],
+      ["0xaf9f549774ecedbd0966c52f250acc548d3f36e5", "0x456DF576962289256A92290C9E48EE116B8Cb413"],
+      ["0xdef1da03061ddd2a5ef6c59220c135dec623116d", "0xdbc34d084393ed8d7b750FfCCea5A139EC7b9349"],
+      ["0x7eaF9C89037e4814DC0d9952Ac7F888C784548DB", "0x4Cd4c0eEDb2bC21f4e280d0Fe4C45B17430F94A9"],
+      ["0x8a40c222996f9F3431f63Bf80244C36822060f12", "0x6BcDC61A7A6d86f7b7B66d461b7eF7fa268571a0"],
+      ["0x4eed0fa8de12d5a86517f214c2f11586ba2ed88d", "0x1dfdb0fb85402dc7f8d72d92ada8fbbb3ffc8633"],
+      ["0x5eaa69b29f99c84fe5de8200340b4e9b4ab38eac", "0x2d0ea72db9f9a63f4b185eab1ca74137d808ebfa"],
+      ["0x67b6d479c7bb412c54e03dca8e1bc6740ce6b99c", "0x6ae05b5db520011bf76645ebb4d6a697e5b3774b"],
+      ["0x8b0e42f366ba502d787bb134478adfae966c8798", "0x6f0db359309CAD297D2e7952a4F5f081bDC1e373"],
+      ["0x8b0E42F366bA502d787BB134478aDfAE966C8798", "0xb96e42c0de658ca26048b0e200f9a1e05ad89e0f"],
+      ["0xd2dda223b2617cb616c1580db421e4cfae6a8a85", "0x39621A555554A7FF77F2b64185c53E04C90cD540"],
+      ["0x4eED0fa8dE12D5a86517f214C2f11586Ba2ED88D", "0xa571309B1267676568Bf9f155606a08790896Fe2"],
+      ["0x93C9175E26F57d2888c7Df8B470C9eeA5C0b0A93", "0xb19b94d53D362CDfC7360C951a85ca2c1d5400BA"],
+    ],
+    pool2: [
+      ["0x2d9fd51e896ff0352cb6d697d13d04c2cb85ca83", "0x5f81a986611C600a3656d9adc202283186C6121D"],
+      ["0x2d9fd51e896ff0352cb6d697d13d04c2cb85ca83", "0xfc8e3b55897d8cef791451bbe69b204b9c58fc8a"],
+      ["0xe46935ae80e05cdebd4a4008b6ccaa36d2845370", "0x91fe14df53eae3a87e310ec6edcdd2d775e1a23f"],
+      ["0x6d9d2427cfa49e39b4667c4c3f627e56ae586f37", "0x55e0F2cE66Fa8C86ef478fa47bA0bE978eFC2647"],
+      ["0x1f07f8e712659087914b96db4d6f6e4fee32285e", "0xb12f0CbcC89457d44323139e6Bb0526Fd82f12F2"],
+      ["0x1f07f8e712659087914b96db4d6f6e4fee32285e", "0x18Ba986ED3128fc7E3E86a09E902436e900a899c"],
+      ["0x2a182e532a379cb2c7f1b34ce3f76f3f7d3596f7", "0x6406788d1CD4fdD823ef607A924c00a4244a841d"],
+      ["0x4fc47579ecf6aa76677ee142b6b75faf9eeafba8", "0xe2a80A76B084B51CFAe5B2C3e0FF5232e0408201"],
+      ["0xc62bf2c79f34ff24e2f97982af4f064161ed8949", "0xFF964d0bf9f81c401932A6B975EAE54129712eE5"],
+    ]
+  },
+  bsc: {
+    staking: [
+      ["0x651cd665bd558175a956fb3d72206ea08eb3df5b", "0x7dd79e93dba1d677574d0b5e99721f2e4b45e297"],
+      ["0x96058f8c3e16576d9bd68766f3836d9a33158f89", "0x004c0908518e19aa8b27a55c171564097fa3c354"],
+      ["0x4518231a8fdf6ac553b9bbd51bbb86825b583263", "0xF0185520Cc773502f0f208433ca178f2f57157A9"],
+      ["0xf78d2e7936f5fe18308a3b2951a93b6c4a41f5e2", "0xEfc2d65302eb6345A7C0e212B791e0d45C2C3c91"],
+      ["0xf78d2e7936f5fe18308a3b2951a93b6c4a41f5e2", "0x41A32C610FA23dEa9E85D471CAD66ea828853153"],
+      ["0xf78d2e7936f5fe18308a3b2951a93b6c4a41f5e2", "0xEf2663d96e48a543D9EA96A39869aB54f7F5D872"],
+    ],
+    pool2: [
+      ["0xC309a6d2F1537922E06f15aA2eb21CaA1b2eEDb6", "0xF25897a7EDf1Dfa9C65f5DB7Ec4Bad868873805B"],
+      ["0x49837a48abde7c525bdc86d9acba39f739cbe22c", "0xcbf42ace1dbd895ffdcabc1b841488542626014d"],
+      ["0x0b49580278b403ca13055bf4d81b6b7aa85fd8b9", "0x92fCe8AfFB2A68d418BaDF8E360E0CDe06c39356"],
+      ["0x538e61bd3258304e9970f4f2db37a217f60436e1", "0x1E8BC897bf03ebac570Df7e5526561f8a42eCe05"],
+      ["0xb8b4383b49d451bbea63bc4421466e1086da6f18", "0xD862866599CA681c492492E1B7B9aB80066f2FaC"],
+      ["0x5a26eb7c9c72140d01039eb172dcb8ec98d071bd", "0x4F905f75F5576228eD2D0EA508Fb0c32a0696090"],
+      ["0x5548bd47293171d3bc1621edccd953bcc9b814cb", "0x5B4463bBD7B2E870601e91161e0F1F7f84CDE214"],
+      ["0x560b96f81a2190ff6ac84ebfd17788bab3679cbc", "0x398a5FEE22E0dEb67dA1bD15FA4841b6Aa64c471"],
+      ["0xB62c57Bda4C126E21A726e3D28734bfb1151231e", "0x3ba3E2f3cACcDbE3C56D3046FFe859cc9deE08a0"],
+    ]
+  },
+  polygon: {
+    staking: [
+      ["0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea", "0xCdD0f77A2A158B0C7cFe38d00443E9A4731d6ea6"],
+      ["0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea", "0xD77F495Ce60cd9414F99670bEc8657A021e34C83"],
+      ["0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea", "0x427756E0BBb792f24018E670D570b1b147DbF1F8"],
+      ["0x3f6b3595ecf70735d3f48d69b09c4e4506db3f47", "0xd1ecDC553651daB068486d9c4d066eCDC614416e"],
+    ],
+    pool2: [
+      ["0xff2bbcb399ad50bbd06debadd47d290933ae1038", "0xCBf42Ace1dBD895FFDCaBC1b841488542626014d"],
+      ["0x1dF661fC4319415a2f990bd5F49D5cA70EFDee1C", "0x11c70CAA910647d820bD014d676Dcd97EDD64A99"],
+    ]
+  },
+}
 
-module.exports = {}
-
-Object.keys(chainConfig).forEach(chain => {
-  const { staking, pool2 } = chainConfig[chain]
-  let ethAdditional = {}
-
-  if (chain === 'ethereum')
-    ethAdditional = compoundExports(comptroller, "ethereum", zenETH, zenETHEquivalent)
-
-  module.exports[chain] = {
-    tvl: () => ({}),
-    staking: async (ts, _block, chainBlocks) => {
-      const block = chainBlocks[chain]
-      const tokens = staking.map(i => [i.token, i.contract,])
-      return sumTokens(undefined, tokens, block, chain)
-    },
-    pool2: async (ts, _block, chainBlocks) => {
-      const block = chainBlocks[chain]
-      const tokens = pool2.map((p) => [p.pairAddress, p.contract,])
-      return sumTokens(undefined, tokens, block, chain)
-    },
-    ...ethAdditional,
-  }
+Object.keys(config).forEach(chain => {
+  const { staking = [], pool2 = [], } = config[chain]
+  if (!module.exports[chain])
+    module.exports[chain] = {}
+  module.exports.deadFrom='2024-07-09'
+  module.exports[chain].staking = sumTokensExport({ tokensAndOwners: staking })
+  module.exports[chain].pool2 = sumTokensExport({ tokensAndOwners: pool2, resolveLP: true, })
+  module.exports.ethereum.borrowed = () => ({}) // bad debt
 })
-

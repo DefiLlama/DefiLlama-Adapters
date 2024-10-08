@@ -1,11 +1,12 @@
 // increment liquid staking link: https://app.increment.fi/staking
 const { post } = require('../helper/http')
 
-let queryLiquidStakingTVLCode =
-    "import DelegatorManager from 0xd6f80565193ad727\
-pub fun main(): UFix64 {\
-    return DelegatorManager.getTotalValidStakingAmount()\
-}";
+let queryLiquidStakingTVLCode = `
+import DelegatorManager from 0xd6f80565193ad727
+
+access(all) fun main(): UFix64 {
+    return DelegatorManager.getTotalValidStakingAmount()
+}`;
 
 const queryCodeBase64 = Buffer.from(queryLiquidStakingTVLCode, 'utf-8').toString('base64');
 

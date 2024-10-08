@@ -23,6 +23,7 @@ function lending(borrowed) {
 }
 
 module.exports = {
+  deadFrom: '2023-10-18',
     methodology: methodologies.lendingMarket,
   fantom: {
     tvl: lending(false),
@@ -34,3 +35,5 @@ module.exports = {
     [1665090175, "BSC Bridge hacker deposits coins"]
   ],
 };
+
+module.exports.fantom.borrowed = () => ({}) // bad debt

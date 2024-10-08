@@ -55,6 +55,10 @@ module.exports = {
       '0xf1A7b474440702BC32F622291B3A01B80247835E', // BITLAYER WBTC Collateral
       '0xe9897fe6C8bf96D5ef8B0ECC7cBfEdef9818232c', // BITLAYER stBTC Collateral
     ],
+    nymInformation: {
+      address: '0xC562321a494290bE5FeDF9092cee35DE6f884D50',
+      fromBlock: 3442163,
+    }
   }),
   bob: createExports({
     troveList: [

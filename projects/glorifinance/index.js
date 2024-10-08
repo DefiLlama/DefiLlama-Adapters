@@ -24,3 +24,5 @@ module.exports = mergeExports([
   arbi_helper,
   { arbitrum: lend, }
 ])
+module.exports.deadFrom='2024-04-30',
+module.exports.arbitrum.borrowed = () => ({}) // bad debt
