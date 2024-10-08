@@ -777,6 +777,7 @@ async function sumTokens2({
   },
   resolveICHIVault = false,
   solidlyVeNfts = [],
+  convexRewardPools = [],
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -827,6 +828,13 @@ async function sumTokens2({
       )
         .flat()
     )
+  }
+  
+  if (convexRewardPools.length) {
+    const convexRewardPoolsTokensAndOwners = convexRewardPools.map(poolAddress => {
+      return owners.map(owner => [poolAddress, owner])
+    }).flat();
+    await unwrapConvexRewardPools({ api, tokensAndOwners: convexRewardPoolsTokensAndOwners });
   }
 
   if (ownerTokens.length) {
