@@ -16,7 +16,7 @@ const config = {
       '0x076E2A501FD0DA41E5A659aB664b2B6792B80Fa2', // UNO SSRP
       '0x8978d08bd89B9415eB08A4D52C1bDDf070F19fA2',  // UNO SSIP
       '0x442e9fe958202Dc29d7018c1AA47479F2159D8a0', // USDT SSIP
-      '0xF37c0901662f39039AFBd3c2546e3141c091e014' ,// USDC SSIP
+      '0xF37c0901662f39039AFBd3c2546e3141c091e014',// USDC SSIP
     ],
   },
   bsc: {
@@ -48,8 +48,8 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { pools, uToken, tokensAndOwners, } = config[chain]
   module.exports[chain] = {
-    tvl: async (api) =>  sumTokens2({api, tokensAndOwners})
+    tvl: async (api) => sumTokens2({ api, tokensAndOwners })
   }
   if (uToken)
-  module.exports[chain].staking = async (api) =>  sumTokens2({api, tokens: [uToken], owners: pools})
+    module.exports[chain].staking = async (api) => sumTokens2({ api, tokens: [uToken], owners: pools })
 })
