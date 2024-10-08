@@ -27,20 +27,22 @@ const orderbooks = {
   },
 }
 
+const query = `
+  query Tokens($first: Int, $skip: Int) {
+    erc20S(first: $first, skip: $skip) {
+      address
+      decimals
+      name
+      symbol
+    }
+  }
+`
+
 // get all token addresses currently held by the contract
 async function getTokens(sg) {
   let page = 0;
   const tokens = [];
-  const query = `
-    query Tokens($first: Int, $skip: Int) {
-      erc20S(first: $first, skip: $skip) {
-        address
-        decimals
-        name
-        symbol
-      }
-    }
-  `
+
   // catch errors in case anything goes wrong with underlying subgraph endpoint
   try {
     for(;;) {
