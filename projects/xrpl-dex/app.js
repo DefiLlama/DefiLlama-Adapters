@@ -196,10 +196,8 @@ async function openedenRippleTvl() {
 }
 
 async function main() {
-  await openedenRippleTvl()
-  await xrplDex()
+  return  Promise.allSettled([
+    openedenRippleTvl(),
+    xrplDex()
+  ])
 }
-
-
-
-
