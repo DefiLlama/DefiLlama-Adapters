@@ -54,6 +54,9 @@ module.exports = treasuryExports({
     blacklistedTokens: [
       '0x21e83dbfd8f11d885eba9f9ba126da11ae0671b7',
       '0x265befe2b1a0f4f646dea96ba09c1656b74bda91',
+    ],
+    convexRewardPools: [
+      "0x9a2d1b49b7c8783E37780AcE4ffA3416Eea64357",// DBR tripool CVX
     ]
   },
   optimism: {
