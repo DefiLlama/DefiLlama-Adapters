@@ -5,7 +5,6 @@ const { default: BigNumber } = require("bignumber.js");
 const HYPERDRIVE_REGISTRY_ADDRESS = "0xbe082293b646cb619a638d29e8eff7cf2f46aa3a";
 const NAME_ABI = "function name() view returns (string)";
 const GET_POOL_CONFIG_ABI = "function getPoolConfig() view returns (tuple(address baseToken, address vaultSharesToken, address linkerFactory, bytes32 linkerCodeHash, uint256 initialVaultSharePrice, uint256 minimumShareReserves, uint256 minimumTransactionAmount, uint256 circuitBreakerDelta, uint256 positionDuration, uint256 checkpointDuration, uint256 timeStretch, address governance, address feeCollector, address sweepCollector, address checkpointRewarder, tuple(uint256 curve, uint256 flat, uint256 governanceLP, uint256 governanceZombie) fees))";
-const GET_POOL_INFO_ABI = "function getPoolInfo() view returns (tuple(uint256 shareReserves, int256 shareAdjustment, uint256 zombieBaseProceeds, uint256 zombieShareReserves, uint256 bondReserves, uint256 lpTotalSupply, uint256 vaultSharePrice, uint256 longsOutstanding, uint256 longAverageMaturityTime, uint256 shortsOutstanding, uint256 shortAverageMaturityTime, uint256 withdrawalSharesReadyToWithdraw, uint256 withdrawalSharesProceeds, uint256 lpSharePrice, uint256 longExposure))";
 const GET_NUMBER_OF_INSTANCES_ABI = "function getNumberOfInstances() view returns (uint256)";
 const GET_INSTANCES_IN_RANGE_ABI = "function getInstancesInRange(uint256 _startIndex, uint256 _endIndex) view returns (address[] memory instances)";
 const POSITION_ABI = "function position(bytes32 id, address user) view returns (tuple(uint256 supplyShares, uint128 borrowShares, uint128 collateral))";
@@ -38,16 +37,6 @@ module.exports = {
 async function getPoolDetails(api, poolAddress, block) {
   const name = await api.call({ target: poolAddress, abi: NAME_ABI, block: block });
   const config = await api.call({ target: poolAddress, abi: GET_POOL_CONFIG_ABI, block: block });
-  const info = await api.call({ target: poolAddress, abi: GET_POOL_INFO_ABI, block: block });
-
-  let baseTokenBalance;
-  if (config.baseToken === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-    baseTokenBalance = await callWithRetry(() => sdk.api.eth.getBalance({ target: poolAddress, block: block }));
-    console.log("baseTokenBalance: ", baseTokenBalance);
-  } else {
-    baseTokenBalance = await callWithRetry(() => api.call({target: config.baseToken, abi: 'erc20:balanceOf', params: [poolAddress], block: block}));
-    console.log("baseTokenBalance: ", baseTokenBalance);
-  }
 
   let vaultSharesBalance = 0;
   console.log("name: ", name)
@@ -76,10 +65,7 @@ async function getPoolDetails(api, poolAddress, block) {
     vaultSharesBalance = await api.call({target: config.vaultSharesToken, abi: 'erc20:balanceOf', params: [poolAddress], block: block});
   }
 
-  const shortRewardableTvl = info.shortsOutstanding;
-  const lpRewardableTvl = BigNumber(vaultSharesBalance).minus(shortRewardableTvl).toString();
-
-  return { config, info, name, vaultSharesBalance, lpRewardableTvl, shortRewardableTvl, baseTokenBalance };
+  return { config, name, vaultSharesBalance };
 };
 
 async function tvl(api) {
