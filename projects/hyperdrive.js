@@ -55,7 +55,7 @@ async function getPoolDetails(api, poolAddress, block) {
     vaultSharesBalance = await callWithRetry(() => api.call({ target: config.vaultSharesToken, abi: 'erc20:balanceOf', params: [poolAddress], block: block }));
   }
   return { config, name, vaultSharesBalance };
-};
+}
 
 async function tvl(api, chain, registry) {
   const block = await api.getBlock();
