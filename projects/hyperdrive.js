@@ -1,6 +1,4 @@
 const ethers = require("ethers");
-const sdk = require("@defillama/sdk");
-const { sumUnknownTokens } = require('./helper/unknownTokens');
 
 const MAINNET_REGISTRY_ADDRESS = "0xbe082293b646cb619a638d29e8eff7cf2f46aa3a";
 const GNOSIS_REGISTRY_ADDRESS = "0x666fa9ef9bca174a042c4c306b23ba8ee0c59666"
@@ -40,63 +38,36 @@ async function getPoolDetails(api, poolAddress, block) {
   console.log("name: ", name)
   if (name.includes("Morpho")) {
     console.log("Morpho");
-    // const vault = await api.call({ target: poolAddress, abi: VAULT_ABI });
     const vault = await callWithRetry(() => api.call({ target: poolAddress, abi: VAULT_ABI, block: block }));
-    console.log("vault: ", vault)
     const collateralToken = await callWithRetry(() => api.call({ target: poolAddress, abi: COLLATERAL_TOKEN_ABI, block: block }));
-    console.log("collateralToken: ", collateralToken)
     const oracle = await callWithRetry(() => api.call({ target: poolAddress, abi: ORACLE_ABI, block: block }));
-    console.log("oracle: ", oracle)
     const irm = await callWithRetry(() => api.call({ target: poolAddress, abi: IRM_ABI, block: block }));
-    console.log("irm: ", irm)
     const lltv = await callWithRetry(() => api.call({ target: poolAddress, abi: LLTV_ABI, block: block }));
-    console.log("lltv: ", lltv)
 
-    // const abiCoder = new ethers.utils.AbiCoder();
     const abiCoder = ethers.AbiCoder.defaultAbiCoder();
     const packedIds = abiCoder.encode(
       ['address', 'address', 'address', 'address', 'uint256'],
       [config.baseToken, collateralToken, oracle, irm, lltv]
     );
-    console.log("packedIds: ", packedIds)
     const morphoMarketId = ethers.keccak256(packedIds);
-    console.log("morphoMarketId", morphoMarketId)
     const position = await api.call({ target: vault, abi: POSITION_ABI, params: [morphoMarketId, poolAddress], block: block });
-    console.log("position: ", position)
     vaultSharesBalance = position[0]/1e6;
-    tokenSymbol = await api.call({ target: config.baseToken, abi: 'erc20:symbol' })
-    tokenAddress = config.baseToken
   } else if (config.vaultSharesToken !== "0x0000000000000000000000000000000000000000") {
     vaultSharesBalance = await api.call({target: config.vaultSharesToken, abi: 'erc20:balanceOf', params: [poolAddress], block: block});
-    tokenSymbol = await api.call({ target: config.vaultSharesToken, abi: 'erc20:symbol' })
-    tokenAddress = config.vaultSharesToken
   }
-  console.log("  ", tokenSymbol, vaultSharesBalance)
-  console.log("   tokenAddress: ", tokenAddress)
-
   return { config, name, vaultSharesBalance };
 };
 
 async function tvl(api, chain, registry) {
-  // we lock in the block we're querying for here, to make sure all our pools are consistent
-  const block = api.block ?? await api.getBlock();
-  console.log("block: ", block);
-
-  const numberOfInstances = await api.call({target: registry,abi: GET_NUMBER_OF_INSTANCES_ABI, block: block});
-  const instanceList = await api.call({ target: registry, abi: GET_INSTANCES_IN_RANGE_ABI, params: [0, numberOfInstances], block: block });
-
+  const numberOfInstances = await api.call({target: registry,abi: GET_NUMBER_OF_INSTANCES_ABI});
+  const instanceList = await api.call({ target: registry, abi: GET_INSTANCES_IN_RANGE_ABI, params: [0, numberOfInstances]});
   for (const poolAddress of instanceList) {
-  // first item only
-  // item = 10
-  // for (const poolAddress of instanceList.slice(item, item+1)) {
     const poolDetails = await getPoolDetails(api, poolAddress, block);
     const tokenAddress = poolDetails.config.vaultSharesToken === "0x0000000000000000000000000000000000000000" 
       ? poolDetails.config.baseToken 
       : poolDetails.config.vaultSharesToken;
-
     api.add(tokenAddress, poolDetails.vaultSharesBalance);
   }
-  // return sumUnknownTokens({ api, resolveLP: true, useDefaultCoreAssets: true, })
 }
 
 module.exports = {
