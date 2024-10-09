@@ -51,7 +51,10 @@ async function tvl(api) {
   })
   const positionCalls = morphoVaults.map((vault, i) => ({ target: mVaults[i], abi: POSITION_ABI, params: [morphoMarketIds[i], vault], }))
   const positions = await api.multiCall({ calls: positionCalls, abi: POSITION_ABI })
-  positions.forEach((position, i) =>  api.add(morphoVaultInfos[i].config.baseToken, position.supplyShares / 1e6))
+  positions.forEach((position, i) =>  {
+    api.add(morphoVaultInfos[i].config.baseToken, position.supplyShares / 1e6)
+    api.add(mCollaterals[i], position.borrowShares * -1 / 1e6)
+  })
 
   return api.sumTokens({ tokensAndOwners })
 }
