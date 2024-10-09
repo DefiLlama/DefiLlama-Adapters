@@ -1,0 +1,28 @@
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const MEN_TOKEN_CONTRACT = '0x94b959c93761835f634B8d6E655070C58E2CAa12';
+const USDT_TOKEN_CONTRACT = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F';
+const contractAddresses = [
+  '0xF3Bc54A6b9615569194a203f852E64476f70d875',
+  '0x58e353BA88F22d6955b99Ee3a84826751F5B01be',
+  '0x126b40E61efAE1ef7b86ed3ffF4083369E3DaDF3',
+  '0x8Db60A7F9Ff1C92288C905fE780aE4D6f69Dd72e',
+  '0x0C6feFB39a0fe19054490F18C3Cb2412f407F650',
+  '0xd12ba2a40289ed8728682447dc77d001f03675f9',
+  '0x59494ad90e0eecde3d16f231f2b57cdc7684cf70',
+  '0x053c6e3b8fa38b78fa06571d6b562dc4ed3e05be',
+  '0xf72d1642a6ce6e8b50597b6dca636488e14b666b',
+  '0xf416E1c9AdeCc1F8AF16E5fc26b06F69520A613b',
+  '0x1a0900f58ed4c558a0b35f184276ec9383ff29b0',
+  '0x56485038b32a24C7f5Ee1449eaC7f444ca4b21F2'
+]
+
+module.exports = {
+  polygon: {
+    tvl: (api) =>
+      sumTokens2({
+        tokens: [MEN_TOKEN_CONTRACT, USDT_TOKEN_CONTRACT],
+        api,
+        owners: contractAddresses,
+      }),
+  },
+};
