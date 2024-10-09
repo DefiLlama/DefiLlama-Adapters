@@ -37,7 +37,6 @@ async function getPoolDetails(api, poolAddress, block) {
   let vaultSharesBalance = 0;
   console.log("name: ", name)
   if (name.includes("Morpho")) {
-    console.log("Morpho");
     const vault = await callWithRetry(() => api.call({ target: poolAddress, abi: VAULT_ABI, block: block }));
     const collateralToken = await callWithRetry(() => api.call({ target: poolAddress, abi: COLLATERAL_TOKEN_ABI, block: block }));
     const oracle = await callWithRetry(() => api.call({ target: poolAddress, abi: ORACLE_ABI, block: block }));
@@ -50,17 +49,18 @@ async function getPoolDetails(api, poolAddress, block) {
       [config.baseToken, collateralToken, oracle, irm, lltv]
     );
     const morphoMarketId = ethers.keccak256(packedIds);
-    const position = await api.call({ target: vault, abi: POSITION_ABI, params: [morphoMarketId, poolAddress], block: block });
+    const position = await callWithRetry(() => api.call({ target: vault, abi: POSITION_ABI, params: [morphoMarketId, poolAddress], block: block }));
     vaultSharesBalance = position[0]/1e6;
   } else if (config.vaultSharesToken !== "0x0000000000000000000000000000000000000000") {
-    vaultSharesBalance = await api.call({target: config.vaultSharesToken, abi: 'erc20:balanceOf', params: [poolAddress], block: block});
+    vaultSharesBalance = await callWithRetry(() => api.call({ target: config.vaultSharesToken, abi: 'erc20:balanceOf', params: [poolAddress], block: block }));
   }
   return { config, name, vaultSharesBalance };
 };
 
 async function tvl(api, chain, registry) {
-  const numberOfInstances = await api.call({target: registry,abi: GET_NUMBER_OF_INSTANCES_ABI});
-  const instanceList = await api.call({ target: registry, abi: GET_INSTANCES_IN_RANGE_ABI, params: [0, numberOfInstances]});
+  const block = await api.getBlock();
+  const numberOfInstances = await callWithRetry(() => api.call({ target: registry, abi: GET_NUMBER_OF_INSTANCES_ABI }));
+  const instanceList = await callWithRetry(() => api.call({ target: registry, abi: GET_INSTANCES_IN_RANGE_ABI, params: [0, numberOfInstances] }));
   for (const poolAddress of instanceList) {
     const poolDetails = await getPoolDetails(api, poolAddress, block);
     const tokenAddress = poolDetails.config.vaultSharesToken === "0x0000000000000000000000000000000000000000" 
