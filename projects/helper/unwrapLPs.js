@@ -942,10 +942,10 @@ async function unwrapAuraPool({ api, chain, block, auraPool, owner, balances, is
     { abi: 'erc20:balanceOf', target: auraPool, params: owner },
     { abi: 'address:asset', target: auraPool },
   ]);
+  if (+lpTokens === 0) return balances;
   const [vault] = await api.batchCall([
     { abi: 'address:getVault', target: balancerToken },
   ]);
-  if (+lpTokens === 0) return balances;
   const auraRatio = lpTokens / lpSupply;
   return unwrapBalancerToken({ api, chain, block, balancerToken, owner: vault, balances, isBPool, isV2, extraRatio: auraRatio })
 }
