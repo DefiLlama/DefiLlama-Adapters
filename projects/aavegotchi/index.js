@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/http')
 
@@ -19,24 +17,14 @@ const vaultContractsPolygon = [
 const GHST_Polygon = "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7";
 const stkGHST_QUICKContract = "0xA02d547512Bb90002807499F05495Fe9C4C3943f";
 const GHST_pools2 = [
-    "0xccb9d2100037f1253e6c1682adf7dc9944498aff", // WETH_GHST_UNIV2
-    "0x8B1Fd78ad67c7da09B682c5392b65CA7CaA101B9", // GHST_QUICK_UNIV2
-    "0x096C5CCb33cFc5732Bcd1f3195C13dBeFC4c82f4"  // GHST_USDC_UNIV2
+  "0xccb9d2100037f1253e6c1682adf7dc9944498aff", // WETH_GHST_UNIV2
+  "0x8B1Fd78ad67c7da09B682c5392b65CA7CaA101B9", // GHST_QUICK_UNIV2
+  "0x096C5CCb33cFc5732Bcd1f3195C13dBeFC4c82f4"  // GHST_USDC_UNIV2
 ]
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  for (const token of tokensETH) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[token, false]],
-      [vaultContractETH]
-    );
-  }
-
-  return balances;
-};
+const ethTvl = async (api) => {
+  return api.sumTokens({ owner: vaultContractETH, tokens: tokensETH })
+}
 
 
 const graphUrl = 'https://subgraph.satsuma-prod.com/tWYl5n5y04oz/aavegotchi/aavegotchi-core-matic/api'
@@ -58,14 +46,14 @@ query GET_SUMMONED_GOTCHIS ($minGotchiId: Int, $block: Int) {
     stakedAmount
   }
 }`
-async function getGotchisCollateral(timestamp, block) {
+async function getGotchisCollateral(timestamp, block, api) {
   const allGotchis = [];
   let minGotchiId = 0;
   while (minGotchiId !== -1) {
     const { aavegotchis } = await request(
       graphUrl,
-      graphQuery, 
-      {minGotchiId, block}
+      graphQuery,
+      { minGotchiId, block }
     );
     if (aavegotchis && aavegotchis.length > 0) {
       minGotchiId = parseInt(aavegotchis[aavegotchis.length - 1].gotchiId);
@@ -74,42 +62,18 @@ async function getGotchisCollateral(timestamp, block) {
       minGotchiId = -1;
     }
   }
-  const gotchisBalances = {
-    output: allGotchis.map(g => ({
-      input: {target: g.collateral},
-      success: true,
-      output: g.stakedAmount
-    }))
-  };
-
-  const balances = {};
-  sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);
-  return gotchisBalances;
+  allGotchis.map(i => api.add(i.collateral, i.stakedAmount));
 }
 
-const polygonTvl = async (_, _block, chainBlocks) => {
-  const balances = {};
-  const block = await getBlock(_, 'polygon', chainBlocks) - 500
+const polygonTvl = async (api) => {
+  const block = await getBlock(api.timestamp, 'polygon', { polygon: api.block }) - 500
 
-  let transformAddress = i => `polygon:${i}`;
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[GHST_Polygon, false]],
-    vaultContractsPolygon,
-    block,
-    "polygon",
-    transformAddress
-  );
-
-  const gotchisBalances = await getGotchisCollateral(_, block);
-  sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);
-
-  return balances;
+  await api.sumTokens({ owners: vaultContractsPolygon, tokens: [GHST_Polygon] })
+  await getGotchisCollateral(api.timestamp, block, api);
 };
 
 module.exports = {
-    ethereum: {
+  ethereum: {
     tvl: ethTvl,
   },
   polygon: {

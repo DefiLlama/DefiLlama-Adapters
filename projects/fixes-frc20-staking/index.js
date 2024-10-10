@@ -1,5 +1,5 @@
 // Fixes Inscription Protocol - Staking Pool: https://fixes.world/
-const { post } = require("../helper/http");
+const { callCadence } = require("../helper/chain/flow");
 
 let queryTVLCode = `
 import FRC20Staking from 0xd2abb5dbf5e08666
@@ -11,7 +11,7 @@ import FRC20Indexer from 0xd2abb5dbf5e08666
 access(all)
 fun main(): UFix64 {
     let acctsPool = FRC20AccountsPool.borrowAccountsPool()
-    let stakingTokens = acctsPool.getFRC20Addresses(type: FRC20AccountsPool.ChildAccountType.Staking)
+    let stakingTokens = acctsPool.getAddresses(type: FRC20AccountsPool.ChildAccountType.Staking)
 
     var totalTVL = 0.0
     let ticks = stakingTokens.keys
@@ -59,22 +59,9 @@ fun main(): UFix64 {
 }
 `;
 
-const queryCodeBase64 = Buffer.from(queryTVLCode, "utf-8").toString("base64");
-
 async function tvl() {
   try {
-    const response = await post(
-      "https://rest-mainnet.onflow.org/v1/scripts",
-      { script: queryCodeBase64 },
-      {
-        headers: { "content-type": "application/json" },
-      }
-    );
-    let resEncoded = response;
-    let resString = Buffer.from(resEncoded, "base64").toString("utf-8");
-    let resJson = JSON.parse(resString);
-    let flowTokenTVL = Number(resJson.value);
-
+    const flowTokenTVL = await callCadence(queryTVLCode, true);
     return { flow: flowTokenTVL };
   } catch (error) {
     throw new Error(

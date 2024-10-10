@@ -3,14 +3,14 @@ const starknet = require("../helper/chain/starknet");
 const { getConfig } = require("../helper/cache");
 
 // teahouse public api for vault
-const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
+const teahouseVaultAPI = "https://raw.githubusercontent.com/TeahouseFinance/Vaults-for-DeFiLlama/main/vaults.json";
 
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let pairVault = [];
   let portVault = [];
   let starknetPairVault = [];
-  const { vaults } = await getConfig("teahouse/v3_reset_cache", teahouseVaultAPI);
+  const { vaults } = await getConfig("teahouse/v3_vault_data", teahouseVaultAPI);
   vaults.forEach((element) => {
     // permissionless vaults
     if (element.isDeFi == true && element.isActive == true) {
@@ -45,19 +45,25 @@ chains.forEach((chain) => {
     tvl: async (api) => {
       const vaults = await getVaultContractsAddress(chain);
 
-      // EVM pair vault
-      let tokens = await api.multiCall({
+      let tokens0 = await api.multiCall({
+        abi: abi.assetToken0,
+        calls: vaults.pair,
+      });
+      let tokens1 = await api.multiCall({
         abi: abi.assetToken1,
         calls: vaults.pair,
       });
       let bals = await api.multiCall({
-        abi: abi.estimatedValueIntoken1,
+        abi: abi.vaultAllUnderlyingAssets,
         calls: vaults.pair,
       });
-      api.addTokens(tokens, bals);
+      let bals0 = bals.map(innerArray => innerArray[0]);
+      let bals1 = bals.map(innerArray => innerArray[1]);
+      api.addTokens(tokens0, bals0);
+      api.addTokens(tokens1, bals1);
 
       // EVM portfolio vault
-      tokens = await api.multiCall({ abi: abi.getAssets, calls: vaults.port });
+      let tokens = await api.multiCall({ abi: abi.getAssets, calls: vaults.port });
       bals = await api.multiCall({ abi: abi.getAssetsBalance, calls: vaults.port });
       let assetTypes = await Promise.all(tokens.map(
         async (tokenArr, index) =>
@@ -88,15 +94,22 @@ chains.forEach((chain) => {
       api.addTokens(tokens, bals);
 
       // Starknet pair vault
-      tokens = await starknet.multiCall({
+      tokens0 = await starknet.multiCall({
         abi: abi.asset_token0,
         calls: vaults.starknetPair,
       });
-      bals = await starknet.multiCall({
-        abi: abi.estimated_value_in_token0,
+      tokens1 = await starknet.multiCall({
+        abi: abi.asset_token1,
         calls: vaults.starknetPair,
       });
-      api.addTokens(tokens, bals);
+      bals = await starknet.multiCall({
+        abi: abi.vault_all_underlying_assets,
+        calls: vaults.starknetPair,
+      });
+      bals0 = bals.map(innerArray => innerArray.amount['0']);
+      bals1 = bals.map(innerArray => innerArray.amount['1']);
+      api.addTokens(tokens0, bals0);
+      api.addTokens(tokens1, bals1);
 
       return api.getBalances();
     },

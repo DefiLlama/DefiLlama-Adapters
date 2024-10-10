@@ -15,6 +15,7 @@ const getFluxTVLDetail = 'function getFluxTVLDetail() view returns (uint256 tota
 
 module.exports = {
   misrepresentedTokens: true,
+  deadFrom: '2022-12-07',
 };
 
 Object.keys(config).forEach(chain => {
@@ -31,7 +32,9 @@ Object.keys(config).forEach(chain => {
         tether: (totalSupply - totalBorrow) / 1e18
       }
     },
-    borrowed: async (_, _b, {[chain]: block}) => {
+    borrowed:  () => ({}), // bad debt
+    
+    /*async (_, _b, {[chain]: block}) => {
       const { reportContract } = config[chain]
       const { output: { totalBorrow, } } = await sdk.api.abi.call({
         target: reportContract,
@@ -42,7 +45,7 @@ Object.keys(config).forEach(chain => {
       return {
         tether: totalBorrow / 1e18
       }
-    },
+    },*/
     staking: async (_, _b, {[chain]: block}) => {
       const { reportContract } = config[chain]
       const { output: { totalStaked, } } = await sdk.api.abi.call({
@@ -57,3 +60,4 @@ Object.keys(config).forEach(chain => {
     },
   }
 })
+
