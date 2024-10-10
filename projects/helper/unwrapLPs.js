@@ -777,6 +777,8 @@ async function sumTokens2({
   },
   resolveICHIVault = false,
   solidlyVeNfts = [],
+  convexRewardPools = [],
+  auraPools = [],
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -827,6 +829,24 @@ async function sumTokens2({
       )
         .flat()
     )
+  }
+  
+  if (convexRewardPools.length) {
+    const convexRewardPoolsTokensAndOwners = convexRewardPools.map(poolAddress => {
+      return owners.map(owner => [poolAddress, owner])
+    }).flat();
+    await unwrapConvexRewardPools({ api, tokensAndOwners: convexRewardPoolsTokensAndOwners });
+  }
+  
+  if (auraPools.length) {
+    const tokensAndOwners = auraPools.map(poolAddress => {
+      return owners.map(owner => [poolAddress, owner])
+    }).flat();
+    Promise.all(
+      tokensAndOwners.map(([pool, owner]) => {
+        return unwrapAuraPool({ api, auraPool: pool, owner })
+      })
+    );
   }
 
   if (ownerTokens.length) {
@@ -912,7 +932,25 @@ function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, 
   return async (api) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveSlipstream, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
 }
 
-async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances, isBPool = false, isV2 = true }) {
+async function unwrapAuraPool({ api, chain, block, auraPool, owner, balances, isBPool = false, isV2 = true }) {
+  if (!api) {
+    api = new sdk.ChainApi({ chain, block, })
+  }
+  balances = balances || api.getBalances()
+  const [lpSupply, lpTokens, balancerToken] = await api.batchCall([
+    { abi: 'erc20:totalSupply', target: auraPool },
+    { abi: 'erc20:balanceOf', target: auraPool, params: owner },
+    { abi: 'address:asset', target: auraPool },
+  ]);
+  if (+lpTokens === 0) return balances;
+  const [vault] = await api.batchCall([
+    { abi: 'address:getVault', target: balancerToken },
+  ]);
+  const auraRatio = lpTokens / lpSupply;
+  return unwrapBalancerToken({ api, chain, block, balancerToken, owner: vault, balances, isBPool, isV2, extraRatio: auraRatio })
+}
+
+async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances, isBPool = false, isV2 = true, extraRatio = 1 }) {
   if (!api) {
     api = new sdk.ChainApi({ chain, block, })
   }
@@ -922,14 +960,17 @@ async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, ba
     { abi: 'erc20:balanceOf', target: balancerToken, params: owner },
   ])
   if (+lpTokens === 0) return balances
-  const ratio = lpTokens / lpSupply
+  const ratio = lpTokens / lpSupply * extraRatio
 
   if (isV2) {
     const poolId = await api.call({ abi: 'function getPoolId() view returns (bytes32)', target: balancerToken })
     const vault = await api.call({ abi: 'address:getVault', target: balancerToken })
     const [tokens, bals] = await api.call({ abi: 'function getPoolTokens(bytes32) view returns (address[], uint256[],uint256)', target: vault, params: poolId })
     tokens.forEach((v, i) => {
-      sdk.util.sumSingleBalance(balances, v, bals[i] * ratio, api.chain)
+      // handle balancer composable metapools case where the pool contains the LP itself, we can skip it for our calc
+      if(v.toLowerCase() !== balancerToken.toLowerCase()) {
+        sdk.util.sumSingleBalance(balances, v, bals[i] * ratio, api.chain)
+      }
     })
   } else {
     let underlyingPool = balancerToken
