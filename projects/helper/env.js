@@ -4,6 +4,7 @@ const BOOL_KEYS = [
 ]
 
 const DEFAULTS = {
+  shape_RPC:'https://mainnet.shape.network',
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
