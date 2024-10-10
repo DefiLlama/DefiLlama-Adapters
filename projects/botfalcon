@@ -1,6 +1,6 @@
-const { FetchOptions, SimpleAdapter } from "../adapters/types";
-const { CHAIN } from "../helpers/chains";
-const { queryDune } from "../helpers/dune";
+import { FetchOptions, SimpleAdapter } from "../adapters/types";
+import { CHAIN } from "../helpers/chains";
+import { queryDune } from "../helpers/dune";
 
 const fethcFeesSolana = async (options: FetchOptions) => {
   try {
