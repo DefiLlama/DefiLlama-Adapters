@@ -82,7 +82,7 @@ const orderbooks = {
 async function tvl(api) {
   const { v3 = [], v4 = [] } = orderbooks[api.chain]
   const owners = v3.concat(v4).map(orderbook => orderbook.address)
-  return sumTokens2({ api, owners, fetchCoValentTokens: true, })
+  return sumTokens2({ api, owners, fetchCoValentTokens: true, permitFailure: true })
 }
 
 module.exports = {
