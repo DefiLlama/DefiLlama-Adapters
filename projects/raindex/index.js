@@ -1,4 +1,4 @@
-const { Interface, id } = require("ethers")
+const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const orderbooks = {
   arbitrum: {
@@ -53,12 +53,12 @@ const orderbooks = {
       { address: "0xF97DE1c2d864d90851aDBcbEe0A38260440B8D90", start: 1722282647 },
     ]
   },
-  matchain: {
-    v3: [],
-    v4: [
-      { address: "0x40312EDAB8Fe65091354172ad79e9459f21094E2", start: 1725285390 },
-    ]
-  },
+  // matchain: {
+  //   v3: [],
+  //   v4: [
+  //     { address: "0x40312EDAB8Fe65091354172ad79e9459f21094E2", start: 1725285390 },
+  //   ]
+  // },
   polygon: {
     v3: [
       { address: "0xde5abe2837bc042397d80e37fb7b2c850a8d5a6c", start: 1705929922 },
@@ -79,125 +79,13 @@ const orderbooks = {
   },
 }
 
-const ABI_V3 = {
-  Deposit: "event Deposit(address sender, address token, uint256 vaultId, uint256 amount)",
-  AddOrder: "event AddOrder(address sender, address expressionDeployer, (address owner, bool handleIO, (address interpreter, address store, address expression) evaluable, (address token, uint8 decimals, uint256 vaultId)[] validInputs, (address token, uint8 decimals, uint256 vaultId)[] validOutputs) order, bytes32 orderHash)",
-}
-const ABI_V4 = {
-  Deposit: "event Deposit(address sender, address token, uint256 vaultId, uint256 amount)",
-  AddOrderV2: "event AddOrderV2(address sender, bytes32 orderHash, (address owner, (address interpreter, address store, bytes bytecode) evaluable, (address token, uint8 decimals, uint256 vaultId)[] validInputs, (address token, uint8 decimals, uint256 vaultId)[] validOutputs, bytes32 nonce) order)",
-}
-
-const abi_v3 = new Interface([ ABI_V3.Deposit, ABI_V3.AddOrder ])
-const abi_v4 = new Interface([ ABI_V4.Deposit, ABI_V4.AddOrderV2 ])
-
-async function getV3Tokens(api, orderbook) {
-  const tokenMap = {}
-  const [depositLogs, addOrderLogs] = await Promise.all([
-    api.getLogs({
-      entireLog: true, 
-      target: orderbook.address,
-      toTimestamp: api.timestamp,
-      fromTimestamp: orderbook.start,
-      topic: id(abi_v3.getEvent("Deposit").format()),
-    }),
-    api.getLogs({
-      entireLog: true,
-      target: orderbook.address,
-      toTimestamp: api.timestamp,
-      fromTimestamp: orderbook.start,
-      topic: id(abi_v3.getEvent("AddOrder").format()),
-    })
-  ])
-
-  depositLogs.forEach(log => {
-    if (!tokenMap[log.address]) tokenMap[log.address] = []
-    const { token } = abi_v3.decodeEventLog("Deposit", log.data)
-    if (!tokenMap[log.address].includes(token)) {
-      tokenMap[log.address].push(token)
-    }
-  })
-  addOrderLogs.forEach(log => {
-    if (!tokenMap[log.address]) tokenMap[log.address] = []
-    const {
-      order: { validInputs, validOutputs }
-    } = abi_v3.decodeEventLog("AddOrder", log.data)
-
-    validInputs.forEach(io => {
-      if (!tokenMap[log.address].includes(io.token)) {
-        tokenMap[log.address].push(io.token)
-      }
-    })
-    validOutputs.forEach(io => {
-      if (!tokenMap[log.address].includes(io.token)) {
-        tokenMap[log.address].push(io.token)
-      }
-    })
-  })
-  return tokenMap
-}
-
-async function getV4Tokens(api, orderbook) {
-  const tokenMap = {}
-  const [depositLogs, addOrderLogs] = await Promise.all([
-    api.getLogs({
-      entireLog: true, 
-      target: orderbook.address,
-      toTimestamp: api.timestamp,
-      fromTimestamp: orderbook.start,
-      topic: id(abi_v4.getEvent("Deposit").format()),
-    }),
-    api.getLogs({
-      entireLog: true,
-      target: orderbook.address,
-      toTimestamp: api.timestamp,
-      fromTimestamp: orderbook.start,
-      topic: id(abi_v4.getEvent("AddOrderV2").format()),
-    })
-  ])
-
-  depositLogs.forEach(log => {
-    if (!tokenMap[log.address]) tokenMap[log.address] = []
-    const { token } = abi_v4.decodeEventLog("Deposit", log.data)
-    if (!tokenMap[log.address].includes(token)) {
-      tokenMap[log.address].push(token)
-    }
-  })
-  addOrderLogs.forEach(log => {
-    if (!tokenMap[log.address]) tokenMap[log.address] = []
-    const {
-      order: { validInputs, validOutputs }
-    } = abi_v4.decodeEventLog("AddOrderV2", log.data)
-
-    validInputs.forEach(io => {
-      if (!tokenMap[log.address].includes(io.token)) {
-        tokenMap[log.address].push(io.token)
-      }
-    })
-    validOutputs.forEach(io => {
-      if (!tokenMap[log.address].includes(io.token)) {
-        tokenMap[log.address].push(io.token)
-      }
-    })
-  })
-  return tokenMap
-}
-
 async function tvl(api) {
-  const tokenMap = {}
-  const result = await Promise.all([
-    ...orderbooks[api.chain].v3.map(v => getV3Tokens(api, v)),
-    ...orderbooks[api.chain].v4.map(v => getV4Tokens(api, v)),
-  ])
-  result.forEach(v => {
-    Object.entries(v).forEach(e => tokenMap[e[0]] = e[1])
-  })
-
-  return api.sumTokens({ ownerTokens: Object.entries(tokenMap).map(v => [v[1], v[0]]) })
+  const { v3 = [], v4 = [] } = orderbooks[api.chain]
+  const owners = v3.concat(v4).map(orderbook => orderbook.address)
+  return sumTokens2({ api, owners, fetchCoValentTokens: true, })
 }
 
 module.exports = {
-  timetravel: true,
   methodology: 'Balance of tokens held by Rain Orderbook contract.',
 }
 
