@@ -25,29 +25,34 @@ const readFilesInDirectory = (dir) => {
 
 // Function to extract Bitcoin addresses from a file
 const extractBtcAddresses = (filePath) => {
-  const content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, 'utf8');
+  if (['solana', 'tezos'].some(i => content.includes(i)) && !content.includes('bitcoin')) return []
+  content = content.replaceAll('modifyEndpoint("', '')
+  content = content.replaceAll('modifyEndpoint(\'', '')
   return content.match(addressRegex) || [];
 };
 
 // Function to find duplicates between files
 const findDuplicates = (folderPath) => {
-  const files = readFilesInDirectory(folderPath);
+  console.log(folderPath)
+  const files = readFilesInDirectory(folderPath+'/');
   const addressMap = new Map();
 
-  for (const file of files) {
+  for (let file of files) {
     const addresses = extractBtcAddresses(file);
+    file = file.replace(folderPath, '')
     for (let address of addresses) {
       address = address.replace(/'/g, '').replace(/"/g, '')
       if (address.startsWith('0x') || !/\d/.test(address)) continue;
       if (addressMap.has(address)) {
-        addressMap.get(address).push(file);
+        const arry = addressMap.get(address)
+        if (!arry.includes(file))
+          arry.push(file);
       } else {
         addressMap.set(address, [file]);
       }
     }
   }
-
-  console.log(addressMap)
 
   // Find duplicates
   const duplicates = [];
@@ -75,4 +80,4 @@ const main = (folderPath) => {
   }
 };
 
-main(__dirname+'/../../projects');
+main(path.join(__dirname, '../../projects'));
