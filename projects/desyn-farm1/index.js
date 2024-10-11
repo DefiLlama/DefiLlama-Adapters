@@ -6,6 +6,8 @@ module.exports = {
 
 const config = {
   btr: { factory: '0x09eFC8C8F08B810F1F76B0c926D6dCeb37409665', fromBlock: 2393247},
+  mode: { factory: '0x09Dfee598d5217da799bEAd56206beC0fDB0D17B', fromBlock: 9912410},
+  zklink: { factory: '0xCCA610644f19d7d8f96b90a896B160f54cBE3204', fromBlock: 4734230}
 }
 
 Object.keys(config).forEach(chain => {
