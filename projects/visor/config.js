@@ -106,6 +106,7 @@ const HYPE_REGISTRY = {
     ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 9080358], // Hercules
   ],
   xdai: [
+    ["0xc0766FF871c6C8e72C110100d0120829dc017d38", 36307837], // Uniswap
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 31760496], // Swapr
   ],
   astrzk: [
