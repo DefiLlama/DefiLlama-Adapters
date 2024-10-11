@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const GGAVAX_CONTRACT = '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3';
 const GGP_STAKING_CONTRACT = '0xB6dDbf75e2F0C7FC363B47B84b5C03959526AecB';
 const MINIPOOL_MANAGER_CONTRACT = '0xb84fA022c7fE1CE3a1F94C49f2F13236C3d1Ed08';
@@ -6,10 +7,10 @@ const ggAVAXTotalAssetsAbi = "function totalAssets() view returns (uint256)";
 const AvaxInMinipoolsABI = "function getTotalAVAXLiquidStakerAmt() view returns (uint256)";
 const GGPStakedAbi = "function getTotalGGPStake() view returns (uint256)";
 
-const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
+const wavax = ADDRESSES.avax.WAVAX;
 const ggp = "0x69260B9483F9871ca57f81A90D91E2F96c2Cd11d";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const avax_lst_side = await api.call({  abi: ggAVAXTotalAssetsAbi, target: GGAVAX_CONTRACT });
   // Minipool operators are matched with LST AVAX 1:1
   const avax_minipool_side = await api.call({ abi: AvaxInMinipoolsABI, target: MINIPOOL_MANAGER_CONTRACT });

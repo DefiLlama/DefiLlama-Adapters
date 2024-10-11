@@ -29,16 +29,15 @@ async function getTVL(api, borrowed) {
   await sumTokens2({ api, tokens: [nullAddress], owners, balances, })
   return balances
 }
-async function borrowed(_, block, _1, { api }) {
+async function borrowed(api) {
   return await getTVL(api, true)
 }
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   return await getTVL(api, false)
 }
 
 module.exports = {
-  timetravel: true,
-  start: 1666638251,
+    start: 1666638251,
   methodology: 'TVL is calculated by adding up all the ETH in the pools and the totalBorrowed of every pool',
   ethereum: {
     tvl: tvl,

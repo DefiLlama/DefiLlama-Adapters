@@ -18,8 +18,7 @@ const staking = async (timestamp, ethBlock, {[chain]: block}) => {
 }
 
 module.exports = {
-    misrepresentedTokens: false,
-    methodology: "Total value of NFTs sent to staking contract is counted towards staking metric",
+        methodology: "Total value of NFTs sent to staking contract is counted towards staking metric",
     smartbch: {
         tvl: () => ({}),
         staking: staking,

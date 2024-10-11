@@ -4,7 +4,8 @@ const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
 const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const methodologies = require('./methodologies');
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress, abis = {}) {
   let validProtocolDataHelpers
@@ -103,8 +104,10 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
   })
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], hasV2LPs = false, } = {}) {
-  return async (timestamp, ethBlock, { [chain]: block }) => {
+function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+  return async (api) => {
+    const chain = api.chain
+    const block = api.block
     const balances = {}
     const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances } = await getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, })
     if (borrowed) {
@@ -124,14 +127,15 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
     return balances
   }
 }
-function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
   return {
-    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
+    tvl: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
+    borrowed: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
   }
 }
 
 module.exports = {
+  methodology: methodologies.lendingMarket,
   aaveChainTvl,
   getV2Reserves,
   getTvl,
@@ -191,7 +195,7 @@ const oracleAbis = {
 
 function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [] } = {}) {
 
-  async function tvl(_, _b, _c, { api }) {
+  async function tvl(api) {
     const data = await getReservesData(api)
     const tokensAndOwners = data.map(i => ([i.underlying, i.aTokenAddress]))
     if (!useOracle)
@@ -204,7 +208,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
     return balances
   }
 
-  async function borrowed(_, _b, _c, { api }) {
+  async function borrowed(api) {
     const balances = {}
     const data = await getReservesData(api)
     const supplyVariable = await api.multiCall({

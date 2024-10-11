@@ -10,8 +10,7 @@ const Terminal_V3_1_2 = "0x1d9619E10086FdC1065B114298384aAe3F680CC0";
 const ETH = ADDRESSES.null
 
 module.exports = {
-  timetravel: true,
-  methodology: "Count the value of the Ether in the Juicebox V3 terminals",
+    methodology: "Count the value of the Ether in the Juicebox V3 terminals",
   ethereum:
   {
     start: 1663679075, // 2022-10-20 15:04:35(UTC)

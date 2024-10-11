@@ -9,6 +9,7 @@ module.exports = {
 
 const config = {
   bsc: [{ target: '0x25a55f9f2279a54951133d503490342b50e5cd15', fromBlock: 25535459, token3: true, },],
+  ethereum: [{ target: '0xD173bf0851D2803177CC3928CF52F7b6bd29D054', fromBlock: 20362671, token3: true, },],
   arbitrum: [{ target: '0x5D5fBB19572c4A89846198c3DBEdB2B6eF58a77a', fromBlock: 169319653, token3: true, },],
 }
 
@@ -16,7 +17,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const factories = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const configs = await Promise.all(factories.map(getTvlConfig))
       return sumTokens2({ api, ownerTokens: configs.flat() })
 

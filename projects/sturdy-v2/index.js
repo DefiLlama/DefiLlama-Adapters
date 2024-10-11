@@ -4,6 +4,9 @@ const abi = require("./abi.json");
 const config = {
   ethereum: '0x69764E3e0671747A7768A1C1AfB7C0C39868CC9e',
   mode: '0xF0382A9Eca5276d7B4BbcC503e4159C046c120ec',
+  linea: "0xd67Da8636Ae87b0cECBDa2e66dB58d4839722B52",
+  optimism: "0x9dc7B2130e478C5810Dc0cDbD46B9D479b2e1aC4",
+  sei: "0x4534F53A81416a83F6bAF5ac63c94aEd1fea1303",
 }
 
 module.exports = {
@@ -13,7 +16,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const dataProvider = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const aggregators = await api.call({target: dataProvider, abi: abi['getVaults'], })
       aggregators.forEach((aggregator) => api.add(aggregator.asset, (aggregator.totalAssets - aggregator.totalDebt)))
     
@@ -21,7 +24,7 @@ Object.keys(config).forEach(chain => {
       strategies.forEach((strategy) => api.add(strategy.pairData.asset, strategy.pairData.totalAsset))
       strategies.forEach((strategy) => api.add(strategy.pairData.collateral, strategy.pairData.totalCollateral))
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const strategies = await api.call({ target: dataProvider, abi: abi['getStrategies'], })
       const pairs = strategies.map((strategy) => strategy.pair);
       const assets = strategies.map((strategy) => strategy.pairData.asset);

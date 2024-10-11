@@ -7,11 +7,11 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { archController } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const { markets, tokens } = await getMarkets(api)
       return api.sumTokens({ tokensAndOwners2: [tokens, markets] })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const { markets, tokens } = await getMarkets(api)
       const debts = await api.multiCall({ abi: 'uint256:totalDebts', calls: markets })
       const assets = await api.multiCall({ abi: 'uint256:totalAssets', calls: markets })

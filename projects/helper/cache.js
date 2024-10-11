@@ -106,6 +106,7 @@ async function configPost(project, endpoint, data) {
 
 async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
   if (!configCache[cacheKey]) configCache[cacheKey] = _cachedGraphQuery()
@@ -137,6 +138,7 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
 async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500 } = {} }) {
   if (useBlock && !params.block)
     params.block = await api.getBlock() - safeBlockLimit
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
 
   let data = []
   let lastId = ""

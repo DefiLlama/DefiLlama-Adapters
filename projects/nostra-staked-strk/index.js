@@ -1,12 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { call } = require("../helper/chain/starknet");
 const { stakedStrkAbi } = require("./abi");
 
 const STAKED_STRK =
-  "0x04619e9ce4109590219c5263787050726be63382148538f3f936c22aa87d2fc2";
+  ADDRESSES.starknet.NSTSTRK;
 const STRK =
-  "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d";
+  ADDRESSES.starknet.STRK;
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const totalAssets = await call({
     target: STAKED_STRK,
     abi: stakedStrkAbi.total_assets,

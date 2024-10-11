@@ -10,9 +10,7 @@ const chain = 'smartbch'
 const decimals = 18
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'Counting all FLEX tokens staked in the DAO',
+      methodology: 'Counting all FLEX tokens staked in the DAO',
   start: 2153800,
   [chain]: {
     tvl: ()=>({}),
