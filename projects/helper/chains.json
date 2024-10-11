@@ -283,6 +283,7 @@
   "scroll",
   "secret",
   "sei",
+  "shape",
   "shibarium",
   "shiden",
   "shimmer_evm",
@@ -347,6 +348,5 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx",
-  "shape"
+  "zyx"
 ]
