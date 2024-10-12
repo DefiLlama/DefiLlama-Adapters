@@ -131,7 +131,7 @@ function getBean(timestamp) {
   if (timestamp <= EXPLOIT_TIME) {
     return ADDR.ethereum.BEAN_ERC20_V1;
   } else if ( timestamp <= ARB_MIGRATION_TIME) {
-    return BEAN_ERC20;
+    return ADDR.ethereum.BEAN_ERC20;
   } else {
     return ADDR.arbitrum.BEAN_ERC20;
   }
@@ -181,7 +181,7 @@ async function getSiloDeposited(api, token) {
     // Prior to BIP12, there was no generalized deposit getter
     result = await api.call({
       abi: 
-        token === BEAN_ERC20_V1
+        token === ADDR.ethereum.BEAN_ERC20_V1
           ? "function totalDepositedBeans() public view returns (uint256)"
           : "function totalDepositedLP() public view returns (uint256)",
       target: ADDR[api.chain].BEANSTALK
