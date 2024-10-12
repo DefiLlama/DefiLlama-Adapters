@@ -12,4 +12,14 @@ module.exports = {
         fetchCoValentTokens: true,
       }),
   },
+  taiko: {
+    tvl: (api) =>
+      sumTokens2({
+        api,
+        owners: [
+          "0x3e71a41325e1d6B450307b6535EC48627ac4DaCC",
+        ],
+        fetchCoValentTokens: true,
+      }),
+  },
 };
