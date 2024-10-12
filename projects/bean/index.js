@@ -267,9 +267,6 @@ async function staking(api) {
     getRipePooledBalances(api, ADDR[api.chain].UNRIPE_BEAN_ERC20)
   ]);
   const totalStaked = siloBeans + unripeSiloBeans[ADDR[api.chain].BEAN_ERC20];
-  console.log({
-    [`${api.chain}:${bean.toLowerCase()}`]: totalStaked
-  });
 
   return {
     [`${api.chain}:${bean.toLowerCase()}`]: totalStaked
