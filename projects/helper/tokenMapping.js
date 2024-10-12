@@ -89,6 +89,9 @@ const fixBalancesTokens = {
   rollux: {
     '0x570baA32dB74279a50491E88D712C957F4C9E409': { coingeckoId: 'uno-re', decimals: 18 },
   },
+  taiko: {
+    '0xd347949f8c85d9f3d6b06bfc4f8c2e07c161f064': { coingeckoId: "loopring", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
