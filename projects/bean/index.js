@@ -316,7 +316,7 @@ async function pool2(api) {
 
 module.exports = {
   methodology: "Counts the value of deposited Beans and LP tokens in the silo.",
-  start: 12974077,
+  start: 1628287657,
   ethereum: {
     tvl: () => ({}),
     pool2,
