@@ -1,5 +1,4 @@
 const { sumTokensExport } = require("../helper/sumTokens");
-const sdk = require("@defillama/sdk");
 
 const owner = [
   "bc1pn87rjuhzl3sr9tffhgx3nrrq7rhyxg7y58dl0uk5kyhmkfj26ssqz76lfc",
@@ -13,8 +12,8 @@ const owner = [
 ];
 
 module.exports = {
-  methodology: `Total amount of BTC in ${owner.join(", ")}. Restaked on babylon`,
+  methodology: `Total amount of BTC in restaked on babylon`,
   bitcoin: {
-    tvl: sdk.util.sumChainTvls([sumTokensExport({ owner })]),
+    tvl: sumTokensExport({ owner }),
   },
 };
