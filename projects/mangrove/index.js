@@ -1,9 +1,12 @@
 const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
 
-const mgvReader = "0x26fD9643Baf1f8A44b752B28f0D90AEBd04AB3F8";
+const mgvReaders = {
+  blast: "0x26fD9643Baf1f8A44b752B28f0D90AEBd04AB3F8",
+  arbitrum: "0x7E108d7C9CADb03E026075Bf242aC2353d0D1875",
+};
 
-const getOffers = async (api, { tkn0, tkn1, tickSpacing }) => {
+const getOffers = async (api, mgvReader, { tkn0, tkn1, tickSpacing }) => {
   let total = BigNumber(0);
   let currentId = 0;
   do {
@@ -25,7 +28,7 @@ const getOffers = async (api, { tkn0, tkn1, tickSpacing }) => {
   return total;
 };
 
-async function getMangroveTVL(api) {
+async function getMangroveTVL(api, mgvReader) {
   const markets = await api.call({
     target: mgvReader,
     abi: abi.openMarkets,
@@ -33,18 +36,30 @@ async function getMangroveTVL(api) {
 
   for (const market of markets) {
     const [tkn0, tkn1, tickSpacing] = market;
-    const tkn0TPV = await getOffers(api, { tkn0, tkn1, tickSpacing });
-    const tkn1TPV = await getOffers(api, { tkn0: tkn1, tkn1: tkn0, tickSpacing });
+    const tkn0TPV = await getOffers(api, mgvReader, {
+      tkn0,
+      tkn1,
+      tickSpacing,
+    });
+    const tkn1TPV = await getOffers(api, mgvReader, {
+      tkn0: tkn1,
+      tkn1: tkn0,
+      tickSpacing,
+    });
 
     api.addTokens([tkn0, tkn1], [tkn0TPV, tkn1TPV]);
   }
 }
 
 module.exports = {
-  blast: {
-    tvl: getMangroveTVL,
-  },
   misrepresentedTokens: false,
-  methodology: "TVL is calculated by getting the total promised liquidity on the orderbook on a specific block.",
+  methodology:
+    "TVL is calculated by getting the total promised liquidity on the orderbook on a specific block.",
   start: 1708992000,
 };
+
+for (const chain in mgvReaders) {
+  module.exports[chain] = {
+    tvl: (api) => getMangroveTVL(api, mgvReaders[chain]),
+  };
+}

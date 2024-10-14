@@ -1,109 +1,59 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const { getParamCalls } = require('../helper/utils')
 
 const YieldContract = "0xE4Baf69B887843aB6A0e82E8BAeA49010fF619af";
 const LendingPool = "0xbc3534b076EDB8E8Ef254D81b81DC193c53057F7";
 const LendingPoolV2 = "0x503fba251cdc4c06a1eeea4faf89e3fafc5923a6";
 
-const ethTvl = async (timestamp, block, chainBlocks) => {
-  const tokens = [nullAddress]
-  const { output: length } = await sdk.api.abi.call({
-    target: YieldContract,
-    abi: abi.getNoOfErc20s, block,
-  })
-
-  const { output } = await sdk.api.abi.multiCall({
-    target: YieldContract,
-    abi: abi.erc20List,
-    calls: getParamCalls(length), block,
-  })
-
-  output.forEach(i => tokens.push(i.output))
-  return sumTokens2({ tokens, owner: YieldContract, block, })
+const ethTvl = async (api) => {
+  const tokens = await api.fetchList({ lengthAbi: abi.getNoOfErc20s, itemAbi: abi.erc20List, target: YieldContract })
+  tokens.push(nullAddress)
+  return sumTokens2({ tokens, owner: YieldContract, })
 };
 
-const chain = 'bsc'
-
-async function getReservesData(block) {
-  const { output: tokens } = await sdk.api.abi.call({
-    abi: abi.getReserves,
-    target: LendingPool,
-    chain, block,
-  })
-
-  const { output: reservesData } = await sdk.api.abi.multiCall({
-    abi: abi.getReserveData,
-    target: LendingPool,
-    calls: tokens.map(i => ({ params: i })),
-    chain, block,
-  })
-
-  return reservesData.map(({ input: { params: [token]}, output}) => {
-    output.token = token
-    return output
-  })
+async function getReservesData(api) {
+  const tokens = await api.call({ abi: abi.getReserves, target: LendingPool, })
+  const res = await api.multiCall({ abi: abi.getReserveData, target: LendingPool, calls: tokens, })
+  tokens.map((v, i) => res[i].token = v)
+  return res
 }
 
-async function tvl(_, _b, { bsc: block }) {
-  const data = await getReservesData(block)
+async function tvl(api) {
+  const data = await getReservesData(api)
   const tokensAndOwners = data.map(i => ([i.token, i.mTokenAddress]))
-  return sumTokens2({ tokensAndOwners, chain, block, })
+  return sumTokens2({ tokensAndOwners, api, })
 }
 
-async function borrowed(_, _b, { bsc: block }) {
-  const balances = {}
-  const data = await getReservesData(block)
-  data.forEach(i => sdk.util.sumSingleBalance(balances,'bsc:'+i.token,i.totalBorrowsVariable))
-  return balances
+async function borrowed(api) {
+  const data = await getReservesData(api)
+  data.forEach(i => api.add(i.token, i.totalBorrowsVariable))
+  return api.getBalances()
 }
 
-async function tvlV2(_, _b, { bsc: block }) {
-  const data = await getReservesDataV2(block)
+async function tvlV2(api) {
+  const data = await getReservesDataV2(api)
   const tokensAndOwners = data.map(i => ([i.token, i.aTokenAddress]))
-  return sumTokens2({ tokensAndOwners, chain, block, })
+  return sumTokens2({ tokensAndOwners, api, })
 }
 
-async function borrowedV2(_, _b, { bsc: block }) {
-  const balances = {}
-  const data = await getReservesDataV2(block)
-  const { output: supplyVariable } = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: data.map(i => ({ target: i.variableDebtTokenAddress})),
-    chain, block,
-  })
-  const { output: supplyStable } = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: data.map(i => ({ target: i.stableDebtTokenAddress})),
-    chain, block,
-  })
+async function borrowedV2(api) {
+  const data = await getReservesDataV2(api)
+  const supplyVariable = await api.multiCall({ abi: 'erc20:totalSupply', calls: data.map(i => i.variableDebtTokenAddress), })
+  const supplyStable = await api.multiCall({ abi: 'erc20:totalSupply', calls: data.map(i => i.stableDebtTokenAddress), })
   data.forEach((i, idx) => {
-    sdk.util.sumSingleBalance(balances,'bsc:'+i.token,supplyVariable[idx].output)
-    sdk.util.sumSingleBalance(balances,'bsc:'+i.token,supplyStable[idx].output)
+    api.add(i.token, supplyVariable[idx])
+    api.add(i.token, supplyStable[idx])
   })
-  return balances
+  return api.getBalances()
 }
 
 
-async function getReservesDataV2(block) {
-  const { output: tokens } = await sdk.api.abi.call({
-    abi: abiv2.getReservesList,
-    target: LendingPoolV2,
-    chain, block,
-  })
-
-  const { output: reservesData } = await sdk.api.abi.multiCall({
-    abi: abiv2.getReserveData,
-    target: LendingPoolV2,
-    calls: tokens.map(i => ({ params: i })),
-    chain, block,
-  })
-
-  return reservesData.map(({ input: { params: [token]}, output}) => {
-    output.token = token
-    return output
-  })
+async function getReservesDataV2(api) {
+  const tokens = await api.call({ abi: abiv2.getReservesList, target: LendingPoolV2, })
+  const res = await api.multiCall({ abi: abiv2.getReserveData, target: LendingPoolV2, calls: tokens, })
+  tokens.map((v, i) => res[i].token = v)
+  return res
 }
 
 const abiv2 = {
@@ -117,6 +67,6 @@ module.exports = {
   },
   bsc: {
     tvl: sdk.util.sumChainTvls([tvl, tvlV2]),
-    borrowed: sdk.util.sumChainTvls([borrowed, borrowedV2]),
+    borrowed: sdk.util.sumChainTvls([borrowedV2, ]),
   },
 };
