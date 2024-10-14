@@ -1,18 +1,5 @@
-// const { sumTokensExport } = require('../helper/sumTokens')
 
-const { endPoints, queryContract } = require('../helper/chain/cosmos')
-
-const contractAddresses = [
-  'osmo1rk4hregdr63rlqqj0k2rjzk6kz7w6v6tw8f5fqx2wg8203eam5equ67tdl',
-  'osmo1zttzenjrnfr8tgrsfyu8kw0eshd8mas7yky43jjtactkhvmtkg2qz769y2',
-  'osmo18pfsg9n2kn6epty7uhur7vxfszadvflx6f66569ejc469k8p64pqrve3yz',
-]
-
-// const osmosisPower = [
-//   'osmo1rk4hregdr63rlqqj0k2rjzk6kz7w6v6tw8f5fqx2wg8203eam5equ67tdl',
-//   'osmo1zttzenjrnfr8tgrsfyu8kw0eshd8mas7yky43jjtactkhvmtkg2qz769y2',
-//   'osmo18pfsg9n2kn6epty7uhur7vxfszadvflx6f66569ejc469k8p64pqrve3yz',
-// ]
+const { queryContract } = require('../helper/chain/cosmos')
 
 const osmosisVaults = {
   stOSMO: "osmo16s3sxs5886p42kteunp6370pken2n5ukzszz0trkr39epqtawn2qk4r9l5",
@@ -32,56 +19,22 @@ const neutronVaults = {
   NTRNStructured: "neutron13h4jzme5880knnc23xvwu9gytynnxu5cc0fek6fndmjyctzznj9sd5yhhy",
 }
 
-
-async function osmosisTvl(api) {
-    if (api.chain != "osmosis") return {}
-    for (const contractName in osmosisVaults) {
-        let contractAddress = osmosisVaults[contractName];
-        let vaultInfo = await queryContract({
-            contract: contractAddress,
-            chain: 'osmosis',
-            data: { 'info': {} }
-        });
-
-        const token = vaultInfo.base_token;
-        let totalAssets = await queryContract({
-            contract: contractAddress,
-            chain: 'osmosis',
-            data: { 'total_assets': {} }
-        });
-
-        api.add(token, totalAssets);
-    }
+const config = {
+  osmosis: osmosisVaults,
+  neutron: neutronVaults,
 }
-
-async function neutronTvl(api) {
-    if (api.chain != "neutron") return {}
-    for (const contractName in neutronVaults) {
-        let contractAddress = neutronVaults[contractName];
-        let vaultInfo = await queryContract({
-            contract: contractAddress,
-            chain: 'neutron',
-            data: { 'info': {} }
-        });
-
-        const token = vaultInfo.base_token;
-        let totalAssets = await queryContract({
-            contract: contractAddress,
-            chain: 'neutron',
-            data: { 'total_assets': {} }
-        });
-
-        api.add(token, totalAssets);
-    }
-}
-
 
 module.exports = {
   methodology: 'Total TVL on vaults',
-  osmosis: {
-    tvl: osmosisTvl,
-  },
-  neutron: {
-    tvl: neutronTvl,
-  },
+}
+
+Object.keys(config).forEach(chain => module.exports[chain] = { tvl })
+
+async function tvl(api) {
+  const vaults = config[api.chain]
+  for (const contract of Object.values(vaults)) {
+    let vaultInfo = await queryContract({ contract, api, data: { 'info': {} }, });
+    let totalAssets = await queryContract({ contract, api, data: { 'total_assets': {} }, });
+    api.add(vaultInfo.base_token, totalAssets);
+  }
 }
