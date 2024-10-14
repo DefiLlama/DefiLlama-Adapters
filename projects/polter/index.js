@@ -11,7 +11,7 @@ const fantom = {
 const base = {
   POLTER_CONTRACT: '0xA0820613976B441E2c6A90E4877E2fb5f7D72552',
   MULTIFEE_CONTRACT: '0x0B7B45A920Ae54f066b6c013fEdF27C37840dE38',
-  POLTER_LP_CONTRACT: '', // no LP atm
+  POLTER_LP_CONTRACT: '0xee7ef14845c466b30f7f4a41f5491df8824cb64e',
   POLTER_LENDINGPOOL_CONTRACT: '0x33CA62504cebAB919f0FCa94562413ee121A9798'
 }
 
@@ -22,4 +22,4 @@ module.exports = {
 }
 
 module.exports.fantom.staking = sumTokensExport({ owner: fantom.MULTIFEE_CONTRACT, tokens: [fantom.POLTER_CONTRACT], lps: [fantom.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })
-module.exports.base.staking = sumTokensExport({ owner: base.MULTIFEE_CONTRACT, tokens: [base.POLTER_CONTRACT],})
+module.exports.base.staking = sumTokensExport({ owner: base.MULTIFEE_CONTRACT, tokens: [base.POLTER_CONTRACT], lps: [base.POLTER_LP_CONTRACT], useDefaultCoreAssets: true, })
