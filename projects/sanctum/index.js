@@ -1,5 +1,5 @@
 const { Program } = require("@project-serum/anchor");
-const { getProvider, getMultipleAccountsRaw } = require("../helper/solana");
+const { getProvider, getMultipleAccounts, } = require("../helper/solana");
 const partialIdl = require("./partialIdl");
 
 const PROGRAM_ADDR = "unpXTU2Ndrc7WWNyEhQWe4udTzSibLPi25SXv2xbCHQ";
@@ -8,11 +8,11 @@ const SOL_RESERVES = "3rBnnH9TTgd3xwu48rnzGsaQkSr1hR64nY71DrDt6VrQ";
 
 async function tvl() {
   const program = new Program(partialIdl, PROGRAM_ADDR, getProvider());
-  const [poolAccount, reservesAccount] = await getMultipleAccountsRaw([
+  const [poolAccount, reservesAccount] = await getMultipleAccounts([
     POOL_ADDR,
     SOL_RESERVES,
   ]);
-  const pool = program.coder.accounts.decode("pool", Buffer.from(poolAccount.data[0], poolAccount.data[1]));
+  const pool = program.coder.accounts.decode("pool", poolAccount.data)
   return {
     solana: (reservesAccount.lamports + pool.incomingStake.toNumber()) / 1e9,
   }

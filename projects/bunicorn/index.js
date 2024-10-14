@@ -18,7 +18,7 @@ module.exports = {
         allPairsLength: 'uint256:allPoolsLength',
         allPairs: 'function allPools(uint256) view returns (address)',
       },
-      fetchBalances: true,
+      fetchBalances: true, // get reserves call fails
     }).bsc.tvl]),
     staking,
   },
