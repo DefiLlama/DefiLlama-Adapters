@@ -29,7 +29,7 @@ async function tvl(api) {
 module.exports = {
   arbitrum: {
     tvl,
-    staking: staking('0xBf00759D7E329d7A7fa1D4DCdC914C53d1d2db86', '0x9f20de1fc9b161b34089cbeae888168b44b03461', 'arbitrum')
+    staking: staking('0xBf00759D7E329d7A7fa1D4DCdC914C53d1d2db86', '0x9f20de1fc9b161b34089cbeae888168b44b03461')
   }
 }
 

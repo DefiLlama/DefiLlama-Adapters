@@ -13,7 +13,7 @@ async function frbVault(api) {
   return balances
 }
 
-const stakedFRB = staking("0xcc2F243FA7bBcab3BD951E8aE40730173af88b83", "0x9BedCE29F79076b21DD04958a9Fd4B22F63fD86D", "avax")
+const stakedFRB = staking("0xcc2F243FA7bBcab3BD951E8aE40730173af88b83", "0x9BedCE29F79076b21DD04958a9Fd4B22F63fD86D")
 
 module.exports = {
   misrepresentedTokens: true,

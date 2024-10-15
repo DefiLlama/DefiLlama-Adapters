@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
+const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
@@ -22,7 +22,11 @@ const chains = [
   "moonbeam",
   "celo",
   "kava",
-  "base"
+  "base",
+  "fraxtal",
+  "xlayer",
+  "bsc",
+  "mantle"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -85,17 +89,19 @@ function getRegistryType(registryId) {
 }
 
 async function getPools(block, chain) {
-  let { registriesMapping } = contracts[chain]
+  let { registriesMapping, addressProvider } = contracts[chain]
   if (!registriesMapping) {
     registriesMapping = {};
-    (await sdk.api.abi.multiCall({
-      block, chain,
-      calls: Object.values(registryIds).map(r => ({ params: r })),
-      target: contracts[chain].addressProvider,
-      abi: abi.get_id_info
-    })).output
-      .filter(r => r.output.addr !== nullAddress)
-      .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    if(addressProvider){
+      (await sdk.api.abi.multiCall({
+        block, chain,
+        calls: Object.values(registryIds).map(r => ({ params: r })),
+        target: addressProvider,
+        abi: abi.get_id_info
+      })).output
+        .filter(r => r.output.addr !== nullAddress)
+        .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    }
   }
   if (contracts[chain].CurveStableswapFactoryNG) {
     registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
@@ -178,7 +184,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 }
 
 const blacklists = {
-  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7', '0xEf1385D2b5dc6D14d5fecB86D53CdBefeCA20fcC', ADDRESSES.ethereum.CRVUSD, '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
   arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378'],
 }
 
@@ -251,25 +257,15 @@ module.exports.ethereum["staking"] = staking(
 );
 
 module.exports.harmony = {
-  tvl: async (ts, ethB, chainB) => {
-    if (ts > 1655989200) {
+  tvl: async (api) => {
+    if (api.timestamp > 1655989200) {
       // harmony hack
       return {};
     }
-    const block = chainB.harmony
-    const balances = {};
-    await sumTokensSharedOwners(
-      balances,
-      [
-        "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
-        "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
-      ],
-      ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
-      block,
-      "harmony",
-      addr => `harmony:${addr}`
-    );
-    return balances;
+    return api.sumTokens({ owner: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023', tokens:  [
+      "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
+      "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
+    ]})
   }
 };
 
