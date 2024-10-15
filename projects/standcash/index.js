@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const boardroomContracts = "0x7F28D5a90b3A0BE2e34accDEF255eC13cf695b1e";
 const SAS = "0x4c38d0e726b6c86f64c1b281348e725973542043";
@@ -52,29 +52,8 @@ const tokenAddresses = [
   "0xE95A203B1a91a908F9B9CE46459d101078c2c3cb",
 ];
 
-async function pool2() {
-  const balances = {};
-
-  for (let i = 0; i < lpStakingContracts.length; i++) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[lpAddresses[i], true]],
-      [lpStakingContracts[i]]
-    );
-  }
-
-  for (let i = 0; i < poolContracts.length; i++) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [
-        [tokenAddresses[i], false],
-        [SAC, false],
-      ],
-      [poolContracts[i]]
-    );
-  }
-
-  return balances;
+async function pool2(api) {
+  return sumTokens2({ api, owners: poolContracts.concat(lpStakingContracts), tokens: [...tokenAddresses, SAC, ...lpAddresses], resolveLP: true })
 }
 
 module.exports = {
@@ -82,7 +61,7 @@ module.exports = {
   ethereum: {
     staking: stakings(stakingContracts, SAS),
     pool2: pool2,
-    tvl: (tvl) => ({}),
+    tvl: () => ({}),
   },
   methodology: "Counts liquidty on the Staking and Pool2 Only",
 };

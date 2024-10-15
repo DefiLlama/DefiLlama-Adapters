@@ -28,6 +28,23 @@ async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens
   })
 }
 
+async function getTokenRates({ tokens = [] }) {
+  const { rates } = await get(`https://tonapi.io/v2/rates?` + (
+    new URLSearchParams({ tokens: tokens.join(','), currencies: "usd" })
+  ).toString());
+  
+  const tokenPrices = {};
+  
+  tokens.forEach(tokenAddress => {
+    if (rates[tokenAddress]) {
+      const usdPrice = rates[tokenAddress].prices.USD;
+      tokenPrices[tokenAddress] = usdPrice;
+    }
+  });
+  
+  return tokenPrices
+}
+
 const sumTokensAccount = rateLimited(_sumTokensAccount)
 
 async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false }) {
@@ -70,6 +87,7 @@ async function call({ target, abi, params = [] }) {
 
 module.exports = {
   getTonBalance,
+  getTokenRates,
   sumTokens,
   sumTokensExport,
   call,

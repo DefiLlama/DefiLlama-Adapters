@@ -9,6 +9,7 @@ module.exports = {
   hallmarks: [
     [1684108800, "Rug Pull"]
   ],
+  deadFrom: '2023-05-15',
   methodology: `Counts the tokens balances of the KyborgHub contract`,
 };
 

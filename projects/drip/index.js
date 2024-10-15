@@ -8,6 +8,6 @@ module.exports = {
     "Counts the native tokens staked in the vault contract as staking.",
   bsc: {
     tvl: async () => ({}),
-    staking: staking(VAULT_CONTRACT, TOKEN_CONTRACT, "bsc"),
+    staking: staking(VAULT_CONTRACT, TOKEN_CONTRACT),
   },
 };

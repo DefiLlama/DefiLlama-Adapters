@@ -7,7 +7,7 @@ const X = "0xAe28714390e95B8dF1Ef847C58AEaC23ED457702";
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    staking: staking(swapMiningStakingContract, X, "bsc"),
+    staking: staking(swapMiningStakingContract, X),
     tvl: getUniTVL({ factory: '0x97bCD9BB482144291D77ee53bFa99317A82066E8', useDefaultCoreAssets: true }),
   },
   methodology:

@@ -7,7 +7,7 @@ const BSWAP = "0xacc234978a5eb941665fd051ca48765610d82584";
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    staking: staking(BSWAPStakingContract, BSWAP, "bsc"),
+    staking: staking(BSWAPStakingContract, BSWAP),
     tvl: getUniTVL({ factory: '0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0', useDefaultCoreAssets: true }),
   },
   methodology:
