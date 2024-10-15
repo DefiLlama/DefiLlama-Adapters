@@ -35,8 +35,7 @@ function tvl(chain) {
         return await api.multiCall({
             calls: markets.map(market => ({
                 target: config[chain].marketView,
-                params: [config[chain].marketFactory[factoryIndex]
-                    .target, market
+                params: [config[chain].marketFactory[factoryIndex], market
                 ]
             })),
             abi: MARKET_VIEW_ABI,
