@@ -8,10 +8,14 @@ async function tvl(api) {
     
     const activeTvlBitcoin = activeTvlSatoshis / 100000000;
 
+    
     console.log('Active TVL (in Bitcoin):', activeTvlBitcoin);
 
+    
     if (activeTvlBitcoin && activeTvlBitcoin > 0) {
+      console.log('Attempting to add TVL to API...');
       api.add('bitcoin', activeTvlBitcoin);  
+      console.log('TVL added:', activeTvlBitcoin);
     } else {
       console.error('No valid active TVL returned from API.');
     }
@@ -21,9 +25,9 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'The TVL is calculated by taking the total Bitcoin locked in the Babylon Chain staking protocol.',
+  methodology: 'The TVL is calculated by taking the total Bitcoin locked in the Babylon Chain staking protocol, fetched from the Babylon API.',
   start: 1729000000,  
-  timetravel: false,
+  timetravel: false,  
   misrepresentedTokens: false,
   bitcoin: {
     tvl,
