@@ -9,10 +9,17 @@ const routers = [
 	"0x0bf8edd756ff6caf3f583d67a9fd8b237e40f58a"
 ];
 
+const routersEth = [
+	"0xA7d854eAf481846f7dA8CC863a46aC1F67b548D8"
+];
+
 const tokens = [coreAssets.null];
 
 module.exports = {
 	base: {
 		tvl: sumTokensExport({ owners: routers, tokens })
 	},
+	ethereum: {
+		tvl: sumTokensExport({ owners: routersEth, tokens })
+	}
 };

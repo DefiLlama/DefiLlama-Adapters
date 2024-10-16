@@ -65,6 +65,8 @@ module.exports = {
       '0xc50D117C21054455aE9602237d3d17ca5Fa91288', // BOB WETH Collateral
       '0xBDFedF992128CbF10974DC935976116e10665Cc9', // BOB WBTC Collateral
       '0x8FAE9D3dBeE1c66b84E90df21A1DbdBab9262843', // BOB tBTC Collateral
+      '0xFFFE50D535aaA9B16499D2fDb3BbD94144ca5336', // BOB SolvBTC Collateral
+      '0xa0B2325BB635679cCFbf50570edd0C6F3D7dA81e', // BOB SolvBTC.BBN Collateral
     ],
     nymInformation: {
       address: '0x7253493c3259137431a120752e410b38d0c715C2',
