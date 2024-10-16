@@ -51,7 +51,7 @@ const config = {
   },
   telos: {
     endpoint:
-      "https://telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics",
+      "https://test.telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics",
   },
   taiko: {
     endpoint:
