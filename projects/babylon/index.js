@@ -3,16 +3,17 @@ const axios = require('axios');
 async function tvl(api) {
   try {
     const response = await axios.get('https://staking-api.babylonlabs.io/v1/stats');
-    const activeTvl = response.data.data.active_tvl;
+    const activeTvlSatoshis = response.data.data.active_tvl;
 
     
-    console.log('Active TVL (in satoshis):', activeTvl);
+    const activeTvlBitcoin = activeTvlSatoshis / 100000000;
 
-    
-    if (activeTvl) {
-      api.add('bitcoin', activeTvl);
+    console.log('Active TVL (in Bitcoin):', activeTvlBitcoin);
+
+    if (activeTvlBitcoin && activeTvlBitcoin > 0) {
+      api.add('bitcoin', activeTvlBitcoin);  
     } else {
-      console.error('No active TVL returned from API.');
+      console.error('No valid active TVL returned from API.');
     }
   } catch (error) {
     console.error('Error fetching TVL:', error);
@@ -20,9 +21,9 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'The TVL is calculated by taking the total Bitcoin (in satoshis) locked in the Babylon Chain staking protocol.',
-  start: 1729000000,
-  timetravel: false, 
+  methodology: 'The TVL is calculated by taking the total Bitcoin locked in the Babylon Chain staking protocol.',
+  start: 1729000000,  
+  timetravel: false,
   misrepresentedTokens: false,
   bitcoin: {
     tvl,
