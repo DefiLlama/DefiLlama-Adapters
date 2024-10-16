@@ -1404,7 +1404,8 @@
     "USDC_ARB": "0xe32d3ebafa42e6011b87ef1087bbc6053b499bf6f095807b9013aff5a6ecd7bb::coin::COIN",
     "USDC_BNB": "0x909cba62ce96d54de25bec9502de5ca7b4f28901747bbf96b76c2e63ec5f1cba::coin::COIN",
     "BUCK": "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
-    "SUI": "0x2::sui::SUI"
+    "SUI": "0x2::sui::SUI",
+    "USDC_CIRCLE": "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
   },
   "grove": {
     "WGRV": "0xE85f139488c689038028a3EB8fC38dcC29D4C340"
@@ -1844,6 +1845,8 @@
     "USDT": "0x2def195713cf4a606b49d07e520e22c17899a736",
     "USDC_e": "0x19e26b0638bf63aa9fa4d14c6baf8d52ebe86c5c",
     "DAI": "0x7d02A3E0180451B17e5D7f29eF78d06F8117106C",
+    "TAIKO": "0xA9d23408b9bA935c230493c40C73824Df71A0975",
+    "LRC": "0xd347949f8c85d9f3d6b06bfc4f8c2e07c161f064",
     "WETH": "0xA51894664A773981C6C112C43ce576f315d5b1B6"
   },
   "stellar": {
@@ -1940,5 +1943,8 @@
   },
   "etn": {
     "WETN": "0x138dafbda0ccb3d8e39c19edb0510fc31b7c1c77"
+  },
+  "bitkub": {
+    "KKUB": "0x67ebd850304c70d983b2d1b93ea79c7cd6c3f6b5"
   }
 }
