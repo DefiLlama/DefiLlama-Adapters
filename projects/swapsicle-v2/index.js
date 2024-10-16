@@ -16,6 +16,11 @@ module.exports = uniV3Export({
     fromBlock: 301362984,
     isAlgebra: true,
   },
+  taiko: {
+    factory: "0xBa90FC740a95A6997306255853959Bb284cb748a",
+    fromBlock: 338445,
+    isAlgebra: true,
+  },
 });
 
 const contracts = {
@@ -33,6 +38,10 @@ const contracts = {
       "0x21b276de139ce8c75a7b4f750328dbf356195b49",
     slush: "0x8309bc8bb43fb54db02da7d8bf87192355532829",
   },
+  taiko: {
+    stakingContract_iceCreamVan: "0x0cdde1dead51b156bd62113664d60b354b4df4ab",
+    slush: "0x36BFE1F1b36CfdB4fe75cC592FF5dC6200Ad3E0f",
+  },
 };
 
 const config = {
@@ -43,6 +52,10 @@ const config = {
   telos: {
     endpoint:
       "https://telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics",
+  },
+  taiko: {
+    endpoint:
+      "https://api.goldsky.com/api/public/project_clr6mlufzbtuy01vd012wgt5k/subgraphs/swapsicle-analytics-taiko/prod/gn",
   },
 };
 
@@ -62,6 +75,7 @@ const slushPriceQuery = `{
 
 const WTLOS = ADDRESSES.telos.WTLOS;
 const WMNT = ADDRESSES.mantle.WMNT;
+const TAIKO = ADDRESSES.taiko.TAIKO;
 
 function getTLOSAddress(address) {
   return `telos:${address}`;
@@ -71,16 +85,19 @@ function getMantleAddress(address) {
   return `mantle:${address}`;
 }
 
+function getTaikoAddress(address) {
+  return `taiko:${address}`;
+}
+
 async function slushToEthConvert(slushAmount, chain) {
   const slushETH = await cachedGraphQuery(
     "swapsicle-slush-eth-price/" + chain,
-    chain == "telos" ? config.telos.endpoint : config.mantle.endpoint,
+    chain == "telos" ? config.telos.endpoint : chain == "mantle" ? config.mantle.endpoint : config.taiko.endpoint,
     slushPriceQuery.replace(
       "TOKENID",
-      chain == "telos" ? contracts.telos.slush : contracts.mantle.slush
+      chain == "telos" ? contracts.telos.slush : chain == "mantle" ? contracts.mantle.slush : contracts.taiko.slush
     )
   );
-
   const slushStaked = slushAmount / 10 ** 18;
   return slushStaked * slushETH.token.derivedMatic;
 }
@@ -94,17 +111,23 @@ async function iceCreamVanStake({ chain, telos: block }) {
           chain: "telos",
           block,
         })
-      : await sdk.api.abi.call({
+      : chain == "mantle"
+      ? await sdk.api.abi.call({
           target: contracts.mantle.stakingContract_iceCreamVan,
           abi: iceCreamVanABI.totalShares,
           chain: "mantle",
           block,
+        })
+      : await sdk.api.abi.call({
+          target: contracts.taiko.stakingContract_iceCreamVan,
+          abi: iceCreamVanABI.totalShares,
+          chain: "taiko",
+          block,
         });
-
   const ETHBalance = await slushToEthConvert(tokenBalance.output, chain);
 
   const balances = {};
-  balances[chain == "telos" ? getTLOSAddress(WTLOS) : getMantleAddress(WMNT)] =
+  balances[chain == "telos" ? getTLOSAddress(WTLOS) : chain == "mantle" ? getMantleAddress(WMNT) : getTaikoAddress(TAIKO)] =
     ETHBalance * 10 ** 18;
 
   return balances;
@@ -163,9 +186,8 @@ async function ICZStake({ chain, telos: block }) {
 Object.keys(config).forEach((chain) => {
   const { endpoint } = config[chain];
   module.exports[chain].staking = sdk.util.sumChainTvls([
-      () => iceCreamVanStake({ chain }),
-      () => ZombieVanStake({ chain }),
-      // NFT's
-      () => ICZStake({ chain }),
-    ])
+    () => iceCreamVanStake({ chain }),
+    () => (chain !== 'taiko' ? ZombieVanStake({ chain }) : 0),
+    () => (chain !== 'taiko' ? ICZStake({ chain }) : 0),
+  ]);
 });
