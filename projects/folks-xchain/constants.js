@@ -50,6 +50,28 @@ const HubPools = {
       tokenAddress: "0x0000000000000000000000000000000000000000",
       chainPoolAddress: '0xe3B0e4Db870aA58A24f87d895c62D3dc5CD05883',
     },
+    { // cbBTC_base      
+      poolAddress: "0x9eD81F0b5b0E9b6dE00F374fFc7f270902576EF7",
+      tokenAddress: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+      chainPoolAddress: '0x50d5Bb3Cf57D2fB003b602A6fD10F90baa8567EA',
+    },
+  ],
+  'bsc': [
+    { // BNB      
+      poolAddress: "0x89970d3662614a5A4C9857Fcc9D9C3FA03824fe3",
+      tokenAddress: "0x0000000000000000000000000000000000000000",
+      chainPoolAddress: '0x5f2F4771B7dc7e2F7E9c1308B154E1e8957ecAB0',
+    },
+    { // ETHB_bsc      
+      poolAddress: "0x18031B374a571F9e060de41De58Abb5957cD5258",
+      tokenAddress: "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+      chainPoolAddress: '0x4Db12F554623E4B0b3F5bAcF1c8490D4493380A5',
+    },
+    { // BTCB_bsc      
+      poolAddress: "0xC2FD40D9Ec4Ae7e71068652209EB75258809e131",
+      tokenAddress: "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+      chainPoolAddress: '0x12Db9758c4D9902334C523b94e436258EB54156f',
+    },
   ]
 }
 
