@@ -1,70 +1,47 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../helper/portedTokens");
+const { function_view } = require("../helper/chain/aptos");
 
-const { default: axios } = require("axios")
+let _data
 
-
-async function _getResources() {
-  const res = await axios.post('https://api.mainnet.aptoslabs.com/v1/view', {
-    "function": "0xeab7ea4d635b6b6add79d5045c4a45d8148d88287b1cfa1c3b6a4b56f46839ed::pool_data_provider::get_all_reserves_tokens",
-    "type_arguments": [],
-    "arguments": []
-  });
-
-  return res.data
+const mapping = {
+  'APT': ADDRESSES.aptos.APT,
 }
 
-async function _getTokenSupply(token_address) {
-  const res = await axios.post('https://api.mainnet.aptoslabs.com/v1/view', {
-    "function": "0xeab7ea4d635b6b6add79d5045c4a45d8148d88287b1cfa1c3b6a4b56f46839ed::pool_data_provider::get_a_token_total_supply",
-    "type_arguments": [],
-    "arguments": [token_address]
-  });
-  return res.data
-}
-  async function _getTokenDebt(token_address) {
-    const res = await axios.post('https://api.mainnet.aptoslabs.com/v1/view', {
-      "function": "0xeab7ea4d635b6b6add79d5045c4a45d8148d88287b1cfa1c3b6a4b56f46839ed::pool_data_provider::get_total_debt",
-      "type_arguments": [],
-      "arguments": [token_address]
-    });
+async function getData() {
+  if (!_data)
+    _data = _getData()
 
-    return res.data
+  return _data
+
+
+  async function _getData() {
+    const resources = await function_view({ functionStr: "0xeab7ea4d635b6b6add79d5045c4a45d8148d88287b1cfa1c3b6a4b56f46839ed::pool_data_provider::get_all_reserves_tokens", })
+    const [uTokens, tokens] = await function_view({ functionStr: "0xeab7ea4d635b6b6add79d5045c4a45d8148d88287b1cfa1c3b6a4b56f46839ed::underlying_token_factory::get_coin_asset_pairs", })
+    const mapping = {}
+    tokens.forEach((token, i) => mapping[token] = uTokens[i])
+
+    for (const item of resources) {
+      const token = item.token_address
+      item.uToken = mapping[token]
+      item.reserve = await function_view({ functionStr: "0xeab7ea4d635b6b6add79d5045c4a45d8148d88287b1cfa1c3b6a4b56f46839ed::pool_data_provider::get_reserve_data", args: [token] })
+      item.debt = item.reserve[3]
+      item.balance = +item.reserve[2] - +item.debt
+    }
+    return resources.filter(i => i.uToken && i.uToken !== '0x4e1854f6d332c9525e258fb6e66f84b6af8aba687bbcb832a24768c4e175feec::abtc::ABTC')
   }
+}
 
 module.exports = {
   aptos: {
-    tvl: async () => {
-      const balances = {};
-      const data = await _getResources()
-      const coinContainers = []
-      for (const item of data[0]) {
-        const tokenSupply = await _getTokenSupply(item.token_address)
-        coinContainers.push({
-          lamports: tokenSupply[0],
-          tokenAddress: item.token_address
-        })
-      }
-      coinContainers.forEach(({ lamports, tokenAddress }) => {
-        sdk.util.sumSingleBalance(balances, tokenAddress, lamports);
-      });
-      return transformBalances("aptos", balances);
+    tvl: async (api) => {
+      const data = await getData()
+      api.add(data.map(i => i.uToken), data.map(i => i.balance))
     },
-    borrowed: async () => {
-      const balances = {};
-      const data = await _getResources()
-      const coinContainers = []
-      for (const item of data[0]) {
-        const tokenDebt = await _getTokenDebt(item.token_address)
-        coinContainers.push({
-          lamports: tokenDebt[0],
-          tokenAddress: item.token_address
-        })
-      }
-      coinContainers.forEach(({ lamports, tokenAddress }) => {
-        sdk.util.sumSingleBalance(balances, tokenAddress, lamports);
-      });
-      return transformBalances("aptos", balances);
+    borrowed: async (api) => {
+      const data = await getData()
+      api.add(data.map(i => i.uToken), data.map(i => i.debt))
     }
   }
 };
