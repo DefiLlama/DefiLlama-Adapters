@@ -73,6 +73,7 @@ const staking = async (api) => {
   api.add(EIGEN, balance)
 }
 
+// https://github.com/Layr-Labs/eigenlayer-contracts/blob/master/script/output/M1_deployment_mainnet_2023_6_9.json
 module.exports = {
   timetravel: false,
   ethereum: { tvl, staking },
