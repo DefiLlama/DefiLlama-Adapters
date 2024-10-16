@@ -65,6 +65,6 @@ module.exports = {
         sdk.util.sumSingleBalance(balances, tokenAddress, lamports);
       });
       return transformBalances("aptos", balances);
-    },
-  },
+    }
+  }
 };
