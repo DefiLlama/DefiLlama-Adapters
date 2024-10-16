@@ -10,9 +10,9 @@ module.exports = {
       }),
     },
     optimism: {
-      tvl: pool2('0x51f97e67b2ff5ed064dc2b27b7a745e0d4c47ee0', ['0xA41F70B283b8f097112ca3Bb63cB2718EE662e49']),
+      pool2: pool2('0x51f97e67b2ff5ed064dc2b27b7a745e0d4c47ee0', ['0xA41F70B283b8f097112ca3Bb63cB2718EE662e49']),
     },
     bitkub: {
-      tvl: pool2('0xe5B764566CB5b26fE7568e59370368ACf9c7c5c3', ['0x5Cced24E580586841f326d5088D288e6Ddd201dA']),
+      pool2: pool2('0xe5B764566CB5b26fE7568e59370368ACf9c7c5c3', ['0x5Cced24E580586841f326d5088D288e6Ddd201dA']),
     }
 };
