@@ -2,9 +2,11 @@ const { staking } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { aaveExports, methodology, } = require("../helper/aave");
 
+
 module.exports = {
   hallmarks: [
-    [1704178500,"flash loan exploit"]
+    [1704178500,"flash loan exploit"],
+    [Math.floor(new Date('2024-10-16')/1e3), 'Multisig was compromised'],
   ],
   methodology,
   arbitrum: {
