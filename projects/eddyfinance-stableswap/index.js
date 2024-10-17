@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)';
-/*
+
 const stablePools = [
   '0x448028804461e8e5a8877c228F3adFd58c3Da6B6', // 4 asset pool
   '0x01a9cd602c6c3f05ea9a3a55184c2181bd43e4b8', // 2 asset pool accumulated finance
@@ -27,12 +27,11 @@ async function stableSwapTvl(api) {
 
   return sumTokens2({ api, tokensAndOwners, blacklistedTokens: stablePools })
 }
-*/ // separate into eddyfinance-stableswap adapter
 
-const uniTvl = getUniTVL({ factory: '0x9fd96203f7b22bCF72d9DCb40ff98302376cE09c', abis: { getReserves } })
+
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "Sum of tvl of UniV2 pools",
-  zeta: { tvl: uniTvl },
+  methodology: "Sum of tvl of the StableSwap pools",
+  zeta: { tvl:  stableSwapTvl },
 };
