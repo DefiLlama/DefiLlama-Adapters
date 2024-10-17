@@ -33,12 +33,16 @@ async function getExternalChainDepositsCached() {
   return getExternalChainDepositsPromise
 }
 
-
+// Network identifiers are found by calling the getAssets method on the balancedAssetManagerContract
 const networkIdentifiers = {
   "0x100.icon": "havah",
   "0x38.bsc": "bnbchain",
   "0xa86a.avax": "avalanche",
   "archway-1": "archway",
+  "injective-1/inj": "injective",
+  "0xa4b1.arbitrum": "arbitrum",
+  "0x2105.base": "base",
+  "sui/0000000000000000000000000000000000000000000000000000000000000002::sui::SUI": "sui",
 }
 
 // Get decimals of cross-chain Balanced assets in balancedAssetManagerContract
@@ -70,7 +74,7 @@ async function getExternalChainDeposits() {
       try {
         const priceData = await call(balancedOracle, "getPriceDataInUSD", { symbol: tokenSymbol, })
         const rateHex = priceData.rate
-        rateDecimal = parseInt(rateHex, 16) / decimals[tokenNetworkAddress]
+        rateDecimal = parseInt(rateHex, 16) / 1e18 // price value always has 18 decimals no matter the token decimals
       } catch (error) {
         // console.log(
         //   `No price data available for ${tokenSymbol}, moving to Peg Stability pricing`
@@ -138,7 +142,9 @@ async function computeTVL(chainName) {
   let TVL = 0
   deposits.forEach((deposit) => {
     if (deposit.chain === chainName) {
-      TVL += deposit.tvlInUsd
+      if(deposit.tvlInUsd < 1e9){
+        TVL += deposit.tvlInUsd
+      }
     }
   })
   return { tether: TVL }

@@ -74,7 +74,7 @@ async function tvl(_, block, _c) {
         '0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b',
         '0xc944e90c64b2c07662a292be6244bdf05cda44a7',
         '0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828',
-        '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0',
+        ADDRESSES.ethereum.FXS,
         '0x43Dfc4159D86F3A37A5A4B3D4580b888ad7d4DDd',
         '0x0cec1a9154ff802e7934fc916ed7ca50bde6844e',
         '0xa47c8bf37f92abed4a126bda807a7b7498661acd',

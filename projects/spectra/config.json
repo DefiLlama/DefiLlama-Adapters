@@ -1,0 +1,18 @@
+{
+  "ethereum": {
+    "factory": "0xae4d5d5199265512B2a77Ad675107735B891aBc8",
+    "fromBlock": 19727256
+  },
+  "arbitrum": {
+    "factory": "0x51100574E1CF11ee9fcC96D70ED146250b0Fdb60",
+    "fromBlock": 204418891
+  },
+  "optimism": {
+    "factory": "0x9c594C2e2e2e5aa300be12596215188C324c3E7c",
+    "fromBlock": 122132149
+  },
+  "base": {
+    "factory": "0x51100574E1CF11ee9fcC96D70ED146250b0Fdb60",
+    "fromBlock": 16537568
+  }
+}

@@ -51,6 +51,7 @@ module.exports = {
 };
 
 function addChain(chain) {
+  module.exports.deadFrom = "2023-02-01"
   module.exports[chain] = {
     tvl: async () => {
       const balances = {}
