@@ -39,6 +39,7 @@ const getStakedTVL = async (api) => {
     // console.log(`Core Token Total Supply (in ether): ${totalCOREInEther}`);
 
   }
+  
   api.addUSDValue(totalCOREInEther)
 }
 
