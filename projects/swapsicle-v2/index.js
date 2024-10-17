@@ -89,40 +89,35 @@ async function getStakeBalance(slushBalance, chain) {
   };
 }
 
-async function iceCreamVanStake({ chain, block }) {
-  const response = await sdk.api.abi.call({
-    target: contracts[chain].stakingContract_iceCreamVan,
+async function iceCreamVanStake(api) {
+  const response = await api.call({
+    target: contracts[api.chain].stakingContract_iceCreamVan,
     abi: iceCreamVanABI.totalShares,
-    chain,
-    block,
   })
-  return getStakeBalance(response.output, chain);
+  return getStakeBalance(response, api.chain);
 }
 
-async function ZombieVanStake({ chain, block }) {
-  const response = await sdk.api.abi.call({
-    target: contracts[chain].stakingContract_zombieVan,
+async function ZombieVanStake(api) {
+  const response = await api.call({
+    target: contracts[api.chain].stakingContract_zombieVan,
     abi: zombieVanABI.totalStaked,
-    chain,
-    block,
   })
-  return getStakeBalance(response.output, chain);
+  return getStakeBalance(response, api.chain);
 }
 
-async function ICZStake({ chain, block }) {
-  const response = await sdk.api.erc20.balanceOf({
-    target: contracts[chain].slush,
-    owner: contracts[chain].stakingContract_iceCreamZombies,
-    chain,
-    block,
+async function ICZStake(api) {
+  const response = await api.call({
+    abi: 'erc20:balanceOf',
+    target: contracts[api.chain].slush,
+    params: contracts[api.chain].stakingContract_iceCreamZombies,
   })
-  return getStakeBalance(response.output, chain);
+  return getStakeBalance(response, api.chain);
 }
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain].staking = sdk.util.sumChainTvls([
-    () => iceCreamVanStake({ chain }),
-    () => (chain !== 'taiko' ? ZombieVanStake({ chain }) : 0),
-    () => (chain !== 'taiko' ? ICZStake({ chain }) : 0),
+    (api) => iceCreamVanStake(api),
+    (api) => (chain !== 'taiko' ? ZombieVanStake(api) : 0),
+    (api) => (chain !== 'taiko' ? ICZStake(api) : 0),
   ]);
 });
