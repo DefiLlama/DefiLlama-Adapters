@@ -21,7 +21,7 @@ async function getData() {
     const [uTokens, tokens] = await function_view({ functionStr: "0xeab7ea4d635b6b6add79d5045c4a45d8148d88287b1cfa1c3b6a4b56f46839ed::underlying_token_factory::get_coin_asset_pairs", })
     const mapping = {}
     tokens.forEach((token, i) => mapping[token] = uTokens[i])
-    
+
     for (const item of resources) {
       const token = item.token_address
       item.uToken = mapping[token]
@@ -42,6 +42,6 @@ module.exports = {
     borrowed: async (api) => {
       const data = await getData()
       api.add(data.map(i => i.uToken), data.map(i => i.debt))
-    },
-  },
+    }
+  }
 };
