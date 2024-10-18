@@ -3,7 +3,7 @@
  **
  **
  ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
- ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.3.1
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.4.1
  **
  **
  **
@@ -16,6 +16,7 @@ var getLogs = require("../helper/cache/getLogs");
 var ADDRESS_PROVIDER_V3 = {
   ethereum: "0x9ea7b04da02a5373317d745c1571c84aad03321d",
   arbitrum: "0x7d04eCdb892Ae074f03B5D0aBA03796F90F3F2af",
+  optimism: "0x3761ca4BFAcFCFFc1B8034e69F19116dD6756726",
 };
 
 // src/adapter/pools/abi.ts
@@ -144,7 +145,6 @@ async function getV1CAs(creditManager, block, api) {
   const topics = [];
   cm.interface.forEachEvent((e) => topics.push(e.topicHash));
   const rawLogs = await getLogs.getLogs({
-    skipCache: true,
     target: creditManager,
     fromBlock: 13854983,
     toBlock: block,
@@ -356,6 +356,11 @@ var v3Abis = {
     "function getCreditManagersV3List() view returns (tuple(address addr, string name, uint256 cfVersion, address creditFacade, address creditConfigurator, address underlying, address pool, uint256 totalDebt, uint256 totalDebtLimit, uint256 baseBorrowRate, uint256 minDebt, uint256 maxDebt, uint256 availableToBorrow, address[] collateralTokens, tuple(address targetContract, address adapter)[] adapters, uint256[] liquidationThresholds, bool isDegenMode, address degenNFT, uint256 forbiddenTokenMask, uint8 maxEnabledTokensLength, uint16 feeInterest, uint16 feeLiquidation, uint16 liquidationDiscount, uint16 feeLiquidationExpired, uint16 liquidationDiscountExpired, tuple(address token, uint16 rate, uint16 quotaIncreaseFee, uint96 totalQuoted, uint96 limit, bool isActive)[] quotas, tuple(address interestModel, uint256 version, uint16 U_1, uint16 U_2, uint16 R_base, uint16 R_slope1, uint16 R_slope2, uint16 R_slope3, bool isBorrowingMoreU2Forbidden) lirm, bool isPaused)[])",
   getCreditAccountsByCreditManager:
     "function getCreditAccountsByCreditManager(address creditManager, (address token, bytes callData)[] priceUpdates) returns ((bool isSuccessful, address[] priceFeedsNeeded, address addr, address borrower, address creditManager, string cmName, address creditFacade, address underlying, uint256 debt, uint256 cumulativeIndexLastUpdate, uint128 cumulativeQuotaInterest, uint256 accruedInterest, uint256 accruedFees, uint256 totalDebtUSD, uint256 totalValue, uint256 totalValueUSD, uint256 twvUSD, uint256 enabledTokensMask, uint256 healthFactor, uint256 baseBorrowRate, uint256 aggregatedBorrowRate, (address token, uint256 balance, bool isForbidden, bool isEnabled, bool isQuoted, uint256 quota, uint16 quotaRate, uint256 quotaCumulativeIndexLU)[] balances, uint64 since, uint256 cfVersion, uint40 expirationDate, address[] activeBots)[])",
+  creditAccounts: "function creditAccounts() view returns (address[])",
+  collateralTokensCount:
+    "function collateralTokensCount() view returns (uint8)",
+  getTokenByMask:
+    "function getTokenByMask(uint256 tokenMask) view returns (address token)",
 };
 
 // src/adapter/v3/index.ts
@@ -386,22 +391,65 @@ async function getCreditManagersV3(dc300, block, api) {
   });
 }
 async function getV3CAs(dc300, creditManager, block, api) {
+  try {
+    const accs = await api.call({
+      // IDataCompressorV3_00__factory.createInterface().getFunction("getCreditAccountsByCreditManager").format(ethers.utils.FormatTypes.full)
+      target: dc300,
+      abi: v3Abis["getCreditAccountsByCreditManager"],
+      params: [creditManager, []],
+      block,
+    });
+    const result = [];
+    for (const acc of accs) {
+      for (const { balance, token } of acc.balances) {
+        if (balance !== "0" && balance !== "1") {
+          result.push({
+            addr: acc.addr,
+            bal: balance,
+            token,
+          });
+        }
+      }
+    }
+    return result;
+  } catch (e) {
+    return getV3CAsWithoutCompressor(creditManager, block, api);
+  }
+}
+async function getV3CAsWithoutCompressor(creditManager, block, api) {
   const accs = await api.call({
-    // IDataCompressorV3_00__factory.createInterface().getFunction("getCreditAccountsByCreditManager").format(ethers.utils.FormatTypes.full)
-    target: dc300,
-    abi: v3Abis["getCreditAccountsByCreditManager"],
-    params: [creditManager, []],
+    target: creditManager,
+    abi: v3Abis["creditAccounts"],
+    params: [],
+    block,
+  });
+  const collateralTokensCount = await api.call({
+    target: creditManager,
+    abi: v3Abis["collateralTokensCount"],
+  });
+  const bitMasks = [];
+  for (let i = 0; i < collateralTokensCount; i++) {
+    bitMasks.push(1 << i);
+  }
+  const collateralTokens = await api.multiCall({
+    abi: v3Abis["getTokenByMask"],
+    calls: bitMasks.map((bm) => ({
+      target: creditManager,
+      params: [bm],
+    })),
     block,
   });
   const result = [];
-  for (const acc of accs) {
-    for (const { balance, token } of acc.balances) {
-      if (balance !== "0" && balance !== "1") {
-        result.push({
-          addr: acc.addr,
-          bal: balance,
-          token,
-        });
+  for (const token of collateralTokens) {
+    const balances = await api.multiCall({
+      abi: "erc20:balanceOf",
+      calls: accs.map((owner) => ({ target: token, params: [owner] })),
+      permitFailure: true,
+    });
+    for (let i = 0; i < balances.length; i++) {
+      const bal = balances[i];
+      if (bal) {
+        result.push({ token, addr: accs[i], bal });
       }
     }
   }
@@ -431,6 +479,9 @@ var adapter_default = {
     tvl,
   },
   arbitrum: {
+    tvl,
+  },
+  optimism: {
     tvl,
   },
   methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,

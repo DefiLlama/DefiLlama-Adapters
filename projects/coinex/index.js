@@ -41,6 +41,11 @@ const config = {
         'TFp4V3S9JqJyQAMMCewyn4aAaLueJwzS7H',
     ]
   },
+  starknet: {
+    owners: [
+        '0x00fb108ed29e1b5d82bb61a39a15bbab410543818bf7df9be3c0f5dd0d612cf3'
+    ]
+  },
 }
 
 module.exports = cexExports(config)

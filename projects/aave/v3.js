@@ -1,5 +1,6 @@
-const { aaveChainTvl } = require('../helper/aave');
+const { aaveChainTvl, aaveExports } = require('../helper/aave');
 const methodologies = require('../helper/methodologies');
+const { mergeExports } = require('../helper/utils');
 
 const v3params = ["0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654"]]
 
@@ -17,6 +18,8 @@ function v3(chain) {
     params = ['0xFBedc64AeE24921cb43004312B9eF367a4162b57', undefined, ['0xa99F4E69acF23C6838DE90dD1B5c02EA928A53ee']]
   else if (chain === 'bsc')
     params = ['0x117684358D990E42Eb1649E7e8C4691951dc1E71', undefined, ['0x41585C50524fb8c3899B43D7D797d9486AAc94DB']]
+  else if (chain === 'era')
+    params = ['0x0753E3637ddC6efc40759D9c347251046644F25F', undefined, ['0x48B96565291d1B23a014bb9f68E07F4B2bb3Cd6D']]
   const section = borrowed => aaveChainTvl(chain, ...params, borrowed, true);
   return {
     tvl: section(false),
@@ -24,13 +27,17 @@ function v3(chain) {
   }
 }
 
-module.exports = {
+module.exports = mergeExports({
   methodology: methodologies.lendingMarket,
   avax: v3("avax"),
-  ...["optimism", "fantom", "harmony", "arbitrum", "polygon", "ethereum", "metis", "base", "xdai", "scroll", "bsc"].reduce((t, c) => ({ ...t, [c]: v3(c) }), {}),
-  hallmarks: [
-    [1659630089, "Start OP Rewards"],
-    [1650471689, "Start AVAX Rewards"]
-  ],
-};
+  ...["optimism", "fantom", "harmony", "arbitrum", "polygon", "ethereum", "metis", "base", "xdai", "scroll", "bsc", "era"].reduce((t, c) => ({ ...t, [c]: v3(c) }), {}),
+}, {
+  // Lido pool
+  ethereum: aaveExports(undefined,  "0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0xa3206d66cF94AA1e93B21a9D8d409d6375309F4A"], { v3: true, }),
+});
+
+module.exports.hallmarks = [
+  [1659630089, "Start OP Rewards"],
+  [1650471689, "Start AVAX Rewards"]
+]
 // node test.js projects/aave/index.js
