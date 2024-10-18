@@ -11,7 +11,6 @@ async function tvl() {
     return {
         usd: total_value_locked
     }
-
 }
 
 module.exports={
