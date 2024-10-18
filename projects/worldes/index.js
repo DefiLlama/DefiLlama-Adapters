@@ -14,5 +14,5 @@ module.exports = {
     arbitrum: {
         tvl,
     },
-    methodology: "TVL for the  Platform is calculated by summing the values of all assets, with each asset's value determined by multiplying its token supply by its token price, where the token price is obtained from the priceOracle."
+    methodology: "WORLDES is a RWA Liquidity Yield Protocol, and is building an entry and trading platform for real world assets (RWA). WORLDES integrates blockchain, AMM, and Generative AI (GAI) technologies to tokenize real-world assets such as real estate through Real World Assets (RWA). WORLDES solves the issue of poor liquidity in traditional real estate assets, providing users with a secure, fast-trading platform for digital asset management and investment, offering potentially high returns."
 };
