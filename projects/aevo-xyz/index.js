@@ -50,4 +50,17 @@ module.exports = {
       ]
     }) 
   },
+  base: {
+    tvl: sumTokensExport({
+      owners: [
+        '0x6ee3907D1B9423584195979812379143B327fb48', // Native USDC
+        '0xA8bD0eCb10a83CC6E14FC5381f384DD3C0779e8B', // WETH
+      ],
+      tokens: [
+        ADDRESSES.base.USDC,
+        ADDRESSES.base.USDbC,
+        ADDRESSES.base.WETH,
+      ]
+    })
+  }
 }

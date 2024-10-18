@@ -13,6 +13,7 @@ module.exports = {
     hallmarks: [
         [1648684800, "Rug Pull"]
     ],
+    deadFrom: 1648684800,
     misrepresentedTokens: true,
     ...ohmTvl(treasury, treasuryTokens, "bsc", fidlStaking, fidl, undefined, undefined, false)
 }
