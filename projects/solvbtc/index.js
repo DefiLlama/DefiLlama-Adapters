@@ -36,7 +36,7 @@ async function otherDeposit(api, solvbtc) {
 }
 
 // node test.js projects/solvbtc
-['bitcoin', 'ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'avax', 'bob'].forEach(chain => {
+['bitcoin', 'ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'avax', 'bob', 'base'].forEach(chain => {
   if (chain == 'bitcoin') {
     module.exports[chain] = {
       tvl: bitcoinTvl,
