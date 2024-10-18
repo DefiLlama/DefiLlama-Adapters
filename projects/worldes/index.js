@@ -1,18 +1,36 @@
+const { getLogs } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const excludedTokens = ['0x854315f8ef8db4d8fbe782863979b219e4f62f14', '0x411c5c42fba934260b2fce850aab5a4b1b783c2a', '0xceab5af10d5376016c8c352ea77f8bc6a88bda11'].map(i => i.toLowerCase())
-const usdtTokenAddress = '0x665ea71a2dbbaeca044efe09d33e07c0f409d375'
-
-async function tvl(api) {
-    const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: excludedTokens })
-    const prices = await api.multiCall({ abi: 'function decimals() external view returns (uint8)', calls: excludedTokens })
-
-    supplies.forEach((v, i) => api.add(usdtTokenAddress , v / prices[i] ** 10))
+const config = {
+    arbitrum: { dvmFactory: '0x3bA0388E64900e274f2C6fCfaE34Eed65c01282A', fromBlock: 228710000, dspFactory: '0xf3AadDd00C2E263d760BE52BB7142276B74E8b47', WorldesRWATokenFactory: '0x4Ef31B45919aE1874840B9563D46FCD57E2Ae0b7', WorldesDvmProxy: '0x7e93ED796aFD3D9a6e9a24c668153fBb981bE60E', WorldesDspProxy: '0xE6933Fb2dc110a43fdeC6bB83d6ae99aC557c452', WorldesMineProxy: '0x2eFda50249176e3ee1A26964Ad6496DC5aA2aCE7' },
 }
 
-module.exports = {
-    misrepresentedTokens: true,
-    arbitrum: {
-        tvl,
-    },
-    methodology: "WORLDES is a RWA Liquidity Yield Protocol, and is building an entry and trading platform for real world assets (RWA). WORLDES integrates blockchain, AMM, and Generative AI (GAI) technologies to tokenize real-world assets such as real estate through Real World Assets (RWA). WORLDES solves the issue of poor liquidity in traditional real estate assets, providing users with a secure, fast-trading platform for digital asset management and investment, offering potentially high returns."
-};
+Object.keys(config).forEach(chain => {
+    const { dvmFactory, fromBlock, dspFactory, blacklistedTokens, } = config[chain]
+    module.exports[chain] = {
+        tvl: async (api) => {
+            const ownerTokens = []
+            const funcs = [];
+            const builder = (factorys, event) => {
+                if (Array.isArray(factorys)) {
+                    factorys.forEach(factory => funcs.push(addLogs(factory, event)));
+                } else {
+                    funcs.push(addLogs(factorys, event));
+                }
+            }
+            builder(dvmFactory, 'event NewDVM(address baseToken, address quoteToken, address creator, address pool)');
+            builder(dspFactory, 'event NewDSP(address baseToken, address quoteToken, address creator, address pool)');
+            await Promise.all(funcs)
+            api.log(ownerTokens.length * 2, api.chain)
+
+            return api.sumTokens({ ownerTokens, blacklistedTokens, permitFailure: true, })
+
+            async function addLogs(target, eventAbi) {
+                if (!target) return;
+                const convert = i => [[i.baseToken, i.quoteToken], i.pool]
+                let logs = await getLogs({ api, target, eventAbi, onlyArgs: true, fromBlock, })
+                ownerTokens.push(...logs.map(convert))
+            }
+        }
+    }
+})
