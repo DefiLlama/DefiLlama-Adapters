@@ -24,7 +24,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    doublecounted: true,
+    doublecounted: false,
     ethereum: {
         tvl,
     }
