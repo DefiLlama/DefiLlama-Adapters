@@ -9,11 +9,11 @@ async function tvl(api) {
     }
 }
 
-    module.exports = {
-        doublecounted: true,
-        methodology: 'Returns the ETH equivalent value of the total supply of apETH tokens on Ethereum. This is calculated by the multiplier used in the contract to determine the ETH value of each token when minting apETH.',
-        start: 20937454,
-        ethereum: {
-        tvl,
-        }
-    }; 
+module.exports = {
+    doublecounted: true,
+    methodology: 'Returns the ETH equivalent value of the total supply of apETH tokens on Ethereum. This is calculated by the multiplier used in the contract to determine the ETH value of each token when minting apETH.',
+    start: 20937454,
+    ethereum: {
+    tvl,
+    }
+}; 
