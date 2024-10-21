@@ -1031,6 +1031,13 @@
     "DAI": "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8",
     "WETH": "0x726138359c17f1e56ba8c4f737a7caf724f6010b"
   },
+  "rollux": {
+    "WSYS": "0x4200000000000000000000000000000000000006",
+    "USDC": "0x368433cac2a0b8d76e64681a9835502a1f2a8a30",
+    "WETH": "0xaa1c53afd099e415208f47fcfa2c880f659e6904",
+    "USDT": "0x28c9c7fb3fe3104d2116af26cc8ef7905547349c",
+    "WBTC": "0x2a4dc2e946b92ab4a1f7d62844eb237788f9056c"
+  },
   "syscoin": {
     "WSYS": "0xd3e822f3ef011ca5f17d82c956d952d8d7c3a1bb",
     "USDC": "0x2bf9b864cdc97b08b6d79ad4663e71b8ab65c45c",
