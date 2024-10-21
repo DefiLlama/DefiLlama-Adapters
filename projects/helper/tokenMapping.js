@@ -88,6 +88,8 @@ const fixBalancesTokens = {
   },
   rollux: {
     '0x570baA32dB74279a50491E88D712C957F4C9E409': { coingeckoId: 'uno-re', decimals: 18 },
+    '0xaa1c53afd099e415208f47fcfa2c880f659e6904': { coingeckoId: 'weth', decimals: 18 },
+    '0x2a4dc2e946b92ab4a1f7d62844eb237788f9056c': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
   taiko: {
     '0xd347949f8c85d9f3d6b06bfc4f8c2e07c161f064': { coingeckoId: "loopring", decimals: 18 },
