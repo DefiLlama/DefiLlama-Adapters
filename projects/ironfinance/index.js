@@ -128,24 +128,24 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   return tvl;
 };
 
-const {tvl: polygonLending, borrowed: polygonBorrowed} =
-  compoundExports(Contracts.polygon.lend.ironController, "polygon", "0xCa0F37f73174a28a64552D426590d3eD601ecCa1", Contracts.polygon.wrappedNative)
-const {tvl: fantomLending, borrowed: fantomBorrowed} = 
-  compoundExports(Contracts.fantom.lend.ironController, "fantom", "0xdfce3E14a8c77D32fe2455a9E56424F149E2F271", Contracts.fantom.wrappedNative)
+const { tvl: polygonLending, borrowed: polygonBorrowed } =
+  compoundExports(Contracts.polygon.lend.ironController, "0xCa0F37f73174a28a64552D426590d3eD601ecCa1", Contracts.polygon.wrappedNative)
+const { tvl: fantomLending, borrowed: fantomBorrowed } =
+  compoundExports(Contracts.fantom.lend.ironController, "0xdfce3E14a8c77D32fe2455a9E56424F149E2F271", Contracts.fantom.wrappedNative)
 
 module.exports = {
-    polygon: {
+  polygon: {
     tvl: sdk.util.sumChainTvls([polygonTvl, polygonLending]),
     borrowed: polygonBorrowed
   },
-  avax:{
+  avax: {
     tvl: avaxTvl,
   },
   fantom: {
-    tvl:  sdk.util.sumChainTvls([fantomTvl, fantomLending]),
+    tvl: sdk.util.sumChainTvls([fantomTvl, fantomLending]),
     borrowed: fantomBorrowed
   },
   hallmarks: [
-    [1652270400,"Re-entrancy Exploit"]
+    [1652270400, "Re-entrancy Exploit"]
   ],
 };

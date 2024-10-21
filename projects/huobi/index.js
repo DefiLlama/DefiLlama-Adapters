@@ -155,6 +155,11 @@ const config = {
       '0xafdfd157d9361e621e476036fee62f688450692b',
            ],
   },
+  starknet: {
+    owners: [
+      '0x03fd14213a96e9d90563ebe1b224f357c6481a755ee6f046c8ce9acd9b8654a7'
+           ],
+  },
 }
 
 module.exports = mergeExports([

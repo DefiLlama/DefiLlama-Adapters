@@ -19,9 +19,9 @@ const abis = {
 
 Object.keys(config).forEach(chain => {
   const comptroller = config[chain]
-  module.exports[chain] = compoundExports2({ comptroller, fetchBalances: true, abis, })
+  module.exports[chain] = compoundExports2({ comptroller, abis, })
 })
 
 module.exports = mergeExports([module.exports, {
-  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', fetchBalances: true, abis, }),
+  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, }),
 }])

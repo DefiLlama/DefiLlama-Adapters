@@ -41,7 +41,8 @@ const networkIdentifiers = {
   "archway-1": "archway",
   "injective-1/inj": "injective",
   "0xa4b1.arbitrum": "arbitrum",
-  "0x2105.base": "base"
+  "0x2105.base": "base",
+  "sui/0000000000000000000000000000000000000000000000000000000000000002::sui::SUI": "sui",
 }
 
 // Get decimals of cross-chain Balanced assets in balancedAssetManagerContract

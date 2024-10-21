@@ -6,12 +6,9 @@ const V1_SINGLE_DEPOSIT_VAULT_REGISTRY = "0x4ae62c4d67f9f5d7077626fcc6d450535c4d
 const V1_SINGLE_BID_VAULT_REGISTRY = "0x2c8cdd00ced47e717420cd2fc54990b3b38e115e34a9209271063a59ddeeb059";
 
 async function tvl(api) {
-  const depositVaultFields = await sui.getDynamicFieldObjects({
+  const depositVaults = await sui.getDynamicFieldObjects({
     parent: SINGLE_DEPOSIT_VAULT_REGISTRY,
   });
-
-  const depositVaultIds = depositVaultFields.map((item) => item.fields.id.id);
-  const depositVaults = await sui.getObjects(depositVaultIds);
 
   depositVaults.forEach(({ fields }) => {
     const deposit_token = "0x" + fields.deposit_token.fields.name;

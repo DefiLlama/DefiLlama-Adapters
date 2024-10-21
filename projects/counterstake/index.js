@@ -74,7 +74,7 @@ async function totalObyteTvl(timestamp) {
 
 const totalTVLByEVMNetwork = async (api) => {
     const bridges = await getConfig('counterstake/bridges', 'https://counterstake.org/api/bridges').then((data) => data.data);
-    const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data);
+    const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data.assistants);
 
     const bridgeAasByChain = [];
     const tokensAndOwners = []
@@ -88,6 +88,7 @@ const totalTVLByEVMNetwork = async (api) => {
             bridgeAasByChain.push(import_aa);
         }
     });
+
 
     pooledAssistants.filter(({ network }) => network.toLowerCase() === api.chain).forEach(({ assistant_aa, side, bridge_id }) => {
         const bridge = bridges.find((bridge) => bridge.bridge_id === bridge_id);

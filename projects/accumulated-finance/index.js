@@ -62,6 +62,12 @@ const config = {
         "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
       },
     }
+  ],
+  "oasis": [
+    {
+      "sapphire": {
+        "LST": "0xed57966f1566de1a90042d07403021ea52ad4724"
+    }}
   ]
 }
 

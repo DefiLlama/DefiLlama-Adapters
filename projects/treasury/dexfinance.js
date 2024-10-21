@@ -56,7 +56,7 @@ module.exports = treasuryExports({
 	// 	tokens: [
 	// 		ADDRESSES.pulse.WETH,
 	// 		ADDRESSES.ethereum.USDC, //usdc(fork)
-	// 		'0x30fcb23a906493371b1721c8feb8815804808d74', //sdai
+	// 		ADDRESSES.pulse.sDAI, //sdai
 	// 		'0xaa2c47a35c1298795b5271490971ec4874c8e53d', //usdex
 	// 		'0x6386704cd6f7a584ea9d23ccca66af7eba5a727e', //spark
 	// 	]

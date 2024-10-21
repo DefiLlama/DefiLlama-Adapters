@@ -11,10 +11,13 @@ async function tvl(api) {
     params: [torosMultisigManager],
   });
 
-  const poolSummaries = await api.multiCall({
+  const poolSummariesRes = await api.multiCall({
     abi: TOROS_POOL_ABI,
     calls: pools,
+    permitFailure: true
   });
+
+  const poolSummaries = poolSummariesRes.filter(i => i && i.totalFundValue !== null && i.totalFundValue !== undefined);
 
   const totalValue = poolSummaries.reduce(
     (acc, i) => acc + +i.totalFundValue,

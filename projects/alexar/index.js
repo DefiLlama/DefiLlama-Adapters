@@ -10,12 +10,17 @@ const chainMapping = {
   bsc: 'binance'
 };
 
-const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', 'crescent', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
+const blackListChains = ['comdex', 'crescent'];
+const chainListSupply = ['juno', 'cosmos', 'carbon', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
 const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum', 'base'];
 
 
 chainListSupply.concat(chainListTotal).forEach(chain => {
-  module.exports[chain] = { tvl };
+  if (blackListChains.includes(chain)) {
+    module.exports[chain] = { tvl: () => ({}) };
+  } else {
+    module.exports[chain] = { tvl };
+  }
   async function tvl(api) {
     const config = await getConfig('alexar', 'https://api.axelarscan.io/api/getTVL')
     const tokensAndOwners = []

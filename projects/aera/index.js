@@ -17,22 +17,22 @@ const config = {
     ],
     cometReward: '0x45939657d1CA34A8FA39A924B71D28Fe8431e581',
     vaultFactories: [
-        {
-            address: "0xfa6295a04f99815e8fa65240ed2cf9ad383c50ba",
-            fromBlock: 42027977
-        },
-        {
-            address: "0x3c14801dc6402e0560d69083f2b238b4c4b4dafe",
-            fromBlock: 42835719
-        },
-        {
-            address: "0x49b428ea1cd536e7d103e9729ea14400785e30ec",
-            fromBlock: 54062542
-        },
-        {
-            address: "0xa1c908cf7371047649dfca9ece01327dc6db3094",
-            fromBlock: 48024333
-        }
+      {
+        address: "0xfa6295a04f99815e8fa65240ed2cf9ad383c50ba",
+        fromBlock: 42027977
+      },
+      {
+        address: "0x3c14801dc6402e0560d69083f2b238b4c4b4dafe",
+        fromBlock: 42835719
+      },
+      {
+        address: "0x49b428ea1cd536e7d103e9729ea14400785e30ec",
+        fromBlock: 54062542
+      },
+      {
+        address: "0xa1c908cf7371047649dfca9ece01327dc6db3094",
+        fromBlock: 48024333
+      }
     ]
   },
   ethereum: {
@@ -51,26 +51,26 @@ const config = {
     cometReward: '0x1B0e765F6224C21223AeA2af16c1C46E38885a40',
     vaultFactories: [
       {
-          address: "0x8a7c03e9f037ba096f1fa8b48bfd65c7578327c9",
-          fromBlock: 17642780
+        address: "0x8a7c03e9f037ba096f1fa8b48bfd65c7578327c9",
+        fromBlock: 17642780
       },
       {
-          address: "0xbebb92ed09688e64dc38c240b600d0b1d504ee56",
-          fromBlock: 17694550
+        address: "0xbebb92ed09688e64dc38c240b600d0b1d504ee56",
+        fromBlock: 17694550
       },
       {
-          address: "0x6b8d4485e11aae228a32FAe5802c6d4BA25EA404",
-          fromBlock: 18143506
+        address: "0x6b8d4485e11aae228a32FAe5802c6d4BA25EA404",
+        fromBlock: 18143506
       },
       {
-          address: "0x9500948c2BEeeB2Da4CC3aA21CB05Bd2e7C27191",
-          fromBlock: 18192390
+        address: "0x9500948c2BEeeB2Da4CC3aA21CB05Bd2e7C27191",
+        fromBlock: 18192390
       },
       {
-          address: "0x38896b4ac8420b8A2B768001Da44d11109F1797D",
-          fromBlock: 18737324
+        address: "0x38896b4ac8420b8A2B768001Da44d11109F1797D",
+        fromBlock: 18737324
       }
-  ]
+    ]
   },
   arbitrum: {
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
@@ -87,10 +87,10 @@ const config = {
     ],
     cometReward: '0x88730d254A2f7e6AC8388c3198aFd694bA9f7fae',
     vaultFactories: [
-        {
-            address: "0xaF2762E1F75DeCdb8d240576e7A2CEc1A365cD46",
-            fromBlock: 203397910
-        }
+      {
+        address: "0xaF2762E1F75DeCdb8d240576e7A2CEc1A365cD46",
+        fromBlock: 203397910
+      }
     ]
   },
   base: {
@@ -112,10 +112,10 @@ const config = {
     ],
     cometReward: '0x123964802e6ABabBE1Bc9547D72Ef1B69B00A6b1',
     vaultFactories: [
-        {
-            address: "0x5CD0Cb0DcDEF98a8d07a8D44054a13F2c35C53E1",
-            fromBlock: 13582859
-        }
+      {
+        address: "0x5CD0Cb0DcDEF98a8d07a8D44054a13F2c35C53E1",
+        fromBlock: 13582859
+      }
     ]
   },
 }
@@ -131,9 +131,9 @@ Object.keys(config).forEach(chain => {
       const COMETS = config[chain].comets
       const COMET_REWARD = config[chain].cometReward
       const vaultFactories = config[chain].vaultFactories
-      
+
       const vaultCreateds = []
-      for (const { address, fromBlock} of vaultFactories) {
+      for (const { address, fromBlock } of vaultFactories) {
         const logs = await getLogs({
           api,
           target: address,
@@ -142,7 +142,7 @@ Object.keys(config).forEach(chain => {
           onlyArgs: true,
           fromBlock,
         })
-        vaultCreateds.push(...logs.map(x => ({vault: x.vault, assetRegistry: x.assetRegistry})))
+        vaultCreateds.push(...logs.map(x => ({ vault: x.vault, assetRegistry: x.assetRegistry })))
       }
 
       const vaults = []

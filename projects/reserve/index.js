@@ -1,8 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const {
   sumTokens2,
-  genericUnwrapCvxDeposit,
-  unwrapCreamTokens,
 } = require("../helper/unwrapLPs.js");
 const {
   getStargateLpValues,
@@ -152,13 +150,8 @@ async function tvl(api) {
     );
   }
 
-  await Promise.all(
-    convexTokensAndOwners.map(([token, owner]) =>
-      genericUnwrapCvxDeposit({ api, token, owner })
-    )
-  );
-
-  await unwrapCreamTokens(api.getBalances(), fluxListWithOwner, api.block);
+  await genericUnwrapCvxDeposit(api, convexTokensAndOwners)
+  await unwrapCreamTokens(api, fluxListWithOwner);
 
   await sumTokens2({ api, ownerTokens, blacklistedTokens });
 }
@@ -182,3 +175,50 @@ module.exports = {
   },
   methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens.`,
 };
+
+
+async function unwrapCreamTokens(api, tokensAndOwners,) {
+  const [balanceOfTokens, exchangeRates, underlyingTokens] = await Promise.all([
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+        params: t[1]
+      })),
+      abi: 'erc20:balanceOf',
+    }),
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+      })),
+      abi: "uint256:exchangeRateStored",
+    }),
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+      })),
+      abi: "address:underlying",
+    })
+  ])
+  balanceOfTokens.forEach((balanceCall, i) => {
+    api.add(underlyingTokens[i], balanceCall * exchangeRates[i] / 1e18)
+  })
+}
+
+async function genericUnwrapCvxDeposit(api, tokensAndOwners) {
+  const tokens = [...new Set(tokensAndOwners.map(t => t[0]))]
+  const uTokens = await api.multiCall({ abi: 'address:curveToken', calls: tokens })
+  const tokenMapping = {}
+  tokens.forEach((token, i) => {
+    tokenMapping[token] = uTokens[i]
+  })
+  const balances = await api.multiCall({
+    calls: tokensAndOwners.map(t => ({
+      target: t[0],
+      params: t[1]
+    })),
+    abi: 'erc20:balanceOf',
+  })
+  balances.forEach((balance, i) => {
+    api.add(tokenMapping[tokensAndOwners[i][0]], balance)
+  })
+}

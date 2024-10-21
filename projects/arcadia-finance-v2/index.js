@@ -6,6 +6,7 @@ const config = {
     pools: {
       wethPool: "0x803ea69c7e87D1d6C86adeB40CB636cC0E6B98E2",
       usdcPool: "0x3ec4a293Fb906DD2Cd440c20dECB250DeF141dF1",
+      cbbtcPool: "0xa37E9b4369dc20940009030BfbC2088F09645e3B"
     },
     uniNFT: "0x03a520b32c04bf3beef7beb72e919cf822ed34f1",
     slipNFT: "0x827922686190790b37229fd06084350e74485b72",

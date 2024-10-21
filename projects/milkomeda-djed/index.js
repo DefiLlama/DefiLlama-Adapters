@@ -1,24 +1,15 @@
-const sdk = require('@defillama/sdk');
-const { transformBalances } = require('../helper/portedTokens');
-
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json');
-const config = require("./config.json");
 
-async function tvl(chain, chainBlocks) {
-  const balances = {};
-
-  const reserve = (await sdk.api.abi.call({
-    abi: abi.Djed.reserve, chain: chain, target: config.djedAddress[chain], params: [ 0 ], block: chainBlocks[chain],
-  })).output;
-
-  sdk.util.sumSingleBalance(balances, config.reserveTokenAddress[chain], reserve); // Using WADA address instead of mADA
-  return transformBalances(chain, balances);
+async function tvl(api) {
+  const reserve = await api.call({  abi: abi.Djed.reserve, target:'0x67A30B399F5Ed499C1a6Bc0358FA6e42Ea4BCe76', params: 0 })
+  api.add(ADDRESSES.milkomeda.WADA, reserve); // Using WADA address instead of mADA
 }
 
 module.exports = {
   methodology: 'The TVL of each Djed deployment on Milkomeda C1.',
   milkomeda: {
     start: 10440400,
-    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda', chainBlocks)
+    tvl,
   },
 };

@@ -1,8 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs');
+const { get } = require('../helper/http');
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs');
 
 const config = require('./config');
-const { sumLPBalances } = require('./utils');
+const { sumLPBalances, filteredV3LPTokens } = require('./utils');
 
 // Helper function to fetch sickles
 async function fetchSickles(api, factory, fromBlockSickle) {
@@ -175,9 +176,11 @@ async function tvlBaseOptimism(api) {
   await sumLPBalances(api, deployedAeroGauges.lp, sickles, stakingTokens);
 
   const pools = await api.multiCall({ abi: 'address:pool', calls: deployedAeroGauges.nft });
+  const whitelistedPoolList = new Set(await filteredV3LPTokens({ api, lpTokens: pools, minLPValue: 50e3 }));
   const slot0s = await api.multiCall({ abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, bool unlocked)', calls: pools });
 
   await Promise.all(deployedAeroGauges.nft.map(async (gauge, i) => {
+    if (!whitelistedPoolList.has(pools[i])) return;
     const tick = slot0s[i].tick;
     const nftIds = (await api.multiCall({ abi: 'function stakedValues(address depositor) view returns (uint256[])', calls: sickles, target: gauge })).flat();
     const positions = await api.multiCall({ abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)', calls: nftIds, target: NonfungiblePositionManager, permitFailure: true, });
@@ -209,6 +212,7 @@ async function tvlArbitrumLinea(api) {
   await fetchSickleNftPositions(api, sickles, config[api.chain].NonfungiblePositionManager);
   await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
 
+  api.removeTokenBalance('0xe80772eaf6e2e18b651f160bc9158b2a5cafca65')
   return sumTokens2({ api, resolveLP: true });
 }
 
@@ -319,7 +323,20 @@ Object.keys(config).forEach(chain => {
       tvl = genericTvl
   }
 
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl: tvl2 }
 })
 
-module.exports.isHeavyProtocol = true
+// module.exports.isHeavyProtocol = true
+module.exports.misrepresentedTokens = true
+let _get
+
+async function tvl2(api) {
+  if (!_get) 
+    _get = get(`https://api.vfat.io/v1/sickle-stats`)
+  
+  const { chainStats } = await _get
+  chainStats.filter(chain => chain.chainId === api.chainId).forEach(chain => {
+    api.addUSDValue(chain.tvl)
+  })
+
+}

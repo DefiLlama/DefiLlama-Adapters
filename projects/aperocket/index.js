@@ -1,12 +1,5 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-
-/* Certain portion of TVL accounted by their site is coming from their own native token
- * in differente blockchains (i.e, bsc and polygon). Aprox $6.0M
- */
-
-const V2_READER = "0xDc84cbf85ADA13ACAe796FAa4472C19cC901b042"
-const MERCURY_READER = "0xc9e54c7ec73aEe86e2BB07c4c6B65BE8BD86Ca90"
+const { staking } = require("../helper/staking");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const V2_VAULTS_CONTRACTS_BSC = [
   "0xa13eF34F11cD905A1aACe891e3Fd1b355D770e7F", // BANANA
@@ -38,54 +31,17 @@ const V2_VAULTS_CONTRACTS_BSC = [
   "0x1AFB491895D301a7cea026a5c65316b2C05A56B4", // ETH-BTCB LP Maximizer (Biswap)
 ];
 
-const MERCURY_SINGLE_VAULTS_CONTRACTS_BSC = [
-  {
-    address: "0xFfDcD49d902d71445B93DCbFa51E2F9797de05C9", // BANANA
-    isLp: false,
-    router: "0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7",
-  },
-];
-
-const bscTvl = async (timestamp, block, chainBlocks) => {
-  block = chainBlocks.bsc
-  const getV2Tvls = (
-    await sdk.api.abi.multiCall({
-      abi: abi.tvlOfPool,
-      calls: V2_VAULTS_CONTRACTS_BSC.map((vcb) => ({
-        target: V2_READER,
-        params: [vcb],
-      })),
-      block,
-      chain: "bsc",
-    })
-  ).output.map((tvl) => tvl.output);
-
-  const v2Tvl = getV2Tvls.reduce((previousValue, currentValue) => Number(previousValue) + Number(currentValue))
-
-  const getMercuryTvls = (
-    await sdk.api.abi.multiCall({
-      abi: abi.tvlOfVault,
-      calls: MERCURY_SINGLE_VAULTS_CONTRACTS_BSC.map((vcb) => ({
-        target: MERCURY_READER,
-        params: [vcb.address, vcb.isLp, vcb.router],
-      })),
-      block,
-      chain: "bsc",
-    })
-  ).output.map((tvl) => tvl.output);
-
-  const mercuryTvl = getMercuryTvls.reduce((previousValue, currentValue) => Number(previousValue) + Number(currentValue))
-
-  const totalTvl = (v2Tvl / 10 ** 18) + (mercuryTvl / 10 ** 18)
-
-  return {
-    'tether': totalTvl,
-  };
+const bscTvl = async (api) => {
+  const tokens = await api.multiCall({  abi: 'address:STAKING_TOKEN', calls: V2_VAULTS_CONTRACTS_BSC})
+  const bals = await api.multiCall({  abi: 'uint256:balance', calls: V2_VAULTS_CONTRACTS_BSC})
+  api.add(tokens, bals)
+  return sumTokens2({ api, resolveLP: true})
 };
 
 module.exports = {
   bsc: {
     tvl: bscTvl,
+    staking: staking("0xFfDcD49d902d71445B93DCbFa51E2F9797de05C9", "0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95"),
   },  
   methodology: `TVL consists of deposits made to the Earn Vaults of ApeRocket minus the 'SPACE' vault and the 'SPACE-BNB' pool2 vault which are created using the protocol's native token.`,
   misrepresentedTokens: true,

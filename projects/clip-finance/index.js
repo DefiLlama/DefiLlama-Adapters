@@ -6,6 +6,9 @@ const config = {
   },
   linea: {
     vaultRegistry: "0x5A9B5E22be45d04c753863A916c4311f07bd4dF0",
+    clipTokenStaking: "0x8bbc8f21aabC8ecb5a566cE6013842E1F3c8fCC1",
+    clipToken: "0x4Ea77a86d6E70FfE8Bb947FC86D68a7F086f198a",
+    wClipToken: "0x54e4a172dbEaC5B239131a44B71C37113A8530F7",
   },
   base: {
     vaultRegistry: "0x5A9B5E22be45d04c753863A916c4311f07bd4dF0",
@@ -21,6 +24,7 @@ const VaultType = {
   NileCl: 6,
   ZeroLend: 7,
   StargateFarming: 8,
+  UniswapV3: 9,
 };
 
 const typesDataInterfaces = {
@@ -34,7 +38,8 @@ const typesDataInterfaces = {
   [VaultType.LynexAlgebra]: ["uint256", "address"], // vaultType, algebra pool address
   [VaultType.NileCl]: ["uint256", "address", "address"], // vaultType, nileCl pool address, stacking contract address
   [VaultType.ZeroLend]: ["uint256", "address"], // vaultType, ZeroLend strategy address
-  [VaultType.StargateFarming]: ["uint256", "address"] // vaultType, Stargate strategy address
+  [VaultType.StargateFarming]: ["uint256", "address"], // vaultType, Stargate strategy address
+  [VaultType.UniswapV3]: ["uint256", "address"], // vaultType, v3 pool address
 };
 
 const tvl = async (api) => {
@@ -46,7 +51,7 @@ const tvl = async (api) => {
   const vaults = vaultDatas.map((i) => ({ ...i, vaultType: decoder.decode(typesDataInterfaces.any, i.data) }));
 
   // ammVaults
-  const ammTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl];
+  const ammTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl, VaultType.UniswapV3];
   const ammVaults = vaults.filter((i) => ammTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
   const ammPools = vaults
     .filter((i) => ammTypes.includes(Number(i.vaultType.toString())))
@@ -61,20 +66,20 @@ const tvl = async (api) => {
     api.add(ammToken1s[i], pool.total1);
   });
 
-  // Aerodrom Vaults
-  const aerodromVaults = vaults.filter((i) => i.vaultType == VaultType.Aero).map((i) => i.vault);
-  const tokenAs = await api.multiCall({ abi: "address:tokenA", calls: aerodromVaults });
+  // Aerodrome Vaults
+  const aerodromeVaults = vaults.filter((i) => i.vaultType == VaultType.Aero).map((i) => i.vault);
+  const tokenAs = await api.multiCall({ abi: "address:tokenA", calls: aerodromeVaults });
 
-  const tokenBs = await api.multiCall({ abi: "address:tokenB", calls: aerodromVaults });
-  const farms = await api.multiCall({ abi: "address:farm", calls: aerodromVaults });
+  const tokenBs = await api.multiCall({ abi: "address:tokenB", calls: aerodromeVaults });
+  const farms = await api.multiCall({ abi: "address:farm", calls: aerodromeVaults });
 
-  const lpTokens = await api.multiCall({ abi: "address:lpToken", calls: aerodromVaults });
+  const lpTokens = await api.multiCall({ abi: "address:lpToken", calls: aerodromeVaults });
 
   const liquidities = await api.multiCall({
     abi: abis.balanceOf,
     calls: farms.map((vault, i) => ({
       target: vault,
-      params: aerodromVaults[i],
+      params: aerodromeVaults[i],
     })),
   });
 
@@ -98,7 +103,7 @@ const tvl = async (api) => {
     abi: abis.balanceOf,
     calls: tokenAs.map((tokenA, i) => ({
       target: tokenA,
-      params: aerodromVaults[i],
+      params: aerodromeVaults[i],
     })),
   });
 
@@ -106,11 +111,11 @@ const tvl = async (api) => {
     abi: abis.balanceOf,
     calls: tokenBs.map((tokenB, i) => ({
       target: tokenB,
-      params: aerodromVaults[i],
+      params: aerodromeVaults[i],
     })),
   });
 
-  aerodromVaults.forEach((_, i) => {
+  aerodromeVaults.forEach((_, i) => {
     if (lpTotalSupplies > 0) {
       api.add(tokenAs[i], Math.floor((liquidities[i] * lpBalanceAs[i]) / lpTotalSupplies[i] + tokenABalances[i]));
       api.add(tokenBs[i], Math.floor((liquidities[i] * lpBalanceBs[i]) / lpTotalSupplies[i] + tokenBBalances[i]));
@@ -139,15 +144,26 @@ module.exports = {
 };
 
 Object.keys(config).forEach((chain) => {
+  const { clipTokenStaking, clipToken, wClipToken } = config[chain];
+
   module.exports[chain] = {
     tvl,
   };
+
+  if (clipTokenStaking && clipToken && wClipToken)
+    module.exports[chain].staking = async (api) => {
+      const totalStackedWClip = await api.call({ target: clipTokenStaking, abi: abis.getCumulativeStaked, params: wClipToken, });
+
+      // Add to TVL wCLIP (1 wCLIP = 1 CLIP always) staked in the Clip Token Staking contract
+      api.add(clipToken, totalStackedWClip);
+    }
 });
 
 const abis = {
-  getTotalAmounts: "function getTotalAmounts() public view returns (uint256 total0, uint256 total1, uint128 liquidity)",
+  getTotalAmounts: "function getTotalAmounts() external view returns (uint256 total0, uint256 total1, uint128 liquidity)",
   depositToken: "address:depositToken",
   totalTokens: "uint256:totalTokens",
   getVaults: "function getVaults() view returns ((address vault, bytes data)[])",
   balanceOf: "function balanceOf(address) view returns (uint256)",
+  getCumulativeStaked: "function getCumulativeStaked(address stakedToken) external view returns (uint256)"
 };

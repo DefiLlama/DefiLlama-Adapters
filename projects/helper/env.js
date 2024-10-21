@@ -9,20 +9,18 @@ const DEFAULTS = {
   SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
+  FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  FLOW_EVM_RPC: 'https://mainnet.evm.nodes.onflow.org',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology", // add manually, short name is b2-mainnet
-  BTR_RPC_MULTICALL: '0xc8818aaeaBF0dF9f3f3ffF54Ab185705177A6234',
-  DEFICHAIN_EVM_RPC_MULTICALL: '0x7fEf77CDe3B41221Cff54B84Ea89D2EBc6b53352',
-  BOUNCEBIT_RPC_MULTICALL: '0x493d616f5F9a64e5B3D527120E406439bdF29272',
-  ZKLINK_RPC_MULTICALL: '0xa8738F57538E3Bb73872d1133F2358c7Fe56FD35',
-  REAL_RPC: 'https://real.drpc.org', // added manually short name is re-al
-  TAIKO_RPC: 'https://rpc.taiko.xyz', // added manually short name is tko-mainnet
-  REAL_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
-  SEI_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
-  SEI_RPC: 'https://evm-rpc.sei-apis.com/',
-  ETLK_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  IDEX_RPC: "https://xchain-rpc.idex.io",
+  ETN_RPC: "https://rpc.ankr.com/electroneum",
+  MATCHAIN_RPC: "https://rpc.matchscan.io,https://rpc.matchain.io",
+  MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
+  SHAPE_RPC:'https://mainnet.shape.network',
+  SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public"
 }
 
 const ENV_KEYS = [

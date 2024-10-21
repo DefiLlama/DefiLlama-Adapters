@@ -35,6 +35,7 @@ const poolHelpers = {
   'bob': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'taiko': ['0x33531bDBFE34fa6Fd5963D0423f7699775AacaaF'],
   'core': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'gravity': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [

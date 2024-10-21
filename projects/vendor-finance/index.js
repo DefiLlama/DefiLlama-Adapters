@@ -14,7 +14,7 @@ async function tvl(api) {
   const balances = {};
   const tokensAndOwners = []
 
-  for (const { args: { _poolAddress, _colToken, _lendToken, _expiry }} of logs) {
+  for (const { args: { _poolAddress, _colToken, _lendToken, _expiry } } of logs) {
     if (_expiry < api.timestamp) continue;
     tokensAndOwners.push([_colToken, _poolAddress])
     tokensAndOwners.push([_lendToken, _poolAddress])
@@ -31,6 +31,7 @@ const config = {
 module.exports = {
   methodology: 'The sum of the balance of all listed collateral and lend tokens in all deployed pools.',
   start: 20274088,
+  deadFrom: '2024-08-30'
 };
 
 Object.keys(config).forEach(chain => {
