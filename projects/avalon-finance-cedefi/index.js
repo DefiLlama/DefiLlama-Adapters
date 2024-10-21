@@ -27,6 +27,11 @@ const getMetrics = async (api, borrowed) => {
   // @note: no more count collateral on Ethereum, count collateral on Bitcoin instead
   // const balanceOfCollateral = marketData.collateral;
   const balanceOfDebt = marketData.debt;
+  if (!borrowed) {
+    const supply= await api.call({  abi: 'erc20:totalSupply', target: '0x3119a1AD5B63A000aB9CA3F2470611eB997B93B9'})
+    api.add('0x3119a1AD5B63A000aB9CA3F2470611eB997B93B9', supply)
+
+  }
 
   if (borrowed)
     api.add(usdtAddress, balanceOfDebt);
@@ -47,3 +52,5 @@ module.exports = {
     ]),
   },
 }
+
+delete module.exports.bitcoin
