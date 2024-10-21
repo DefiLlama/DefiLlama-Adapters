@@ -104,6 +104,13 @@ const fixBalancesTokens = {
     '0xaf3111a248ff7a3238cdeea845bb2d43cf3835f1f6b8c9d28360728b55b9ce5b': { coingeckoId: 'manta-mbtc', decimals: 9 },
     '0xafd219f513317b1750783c6581f55530d6cf189a5863fd18bd1b3ffcec1714b4': { coingeckoId: 'manta-meth', decimals: 9 },
     '0x91b3559edb2619cde8ffb2aa7b3c3be97efd794ea46700db7092abeee62281b0': { coingeckoId: 'renzo-restaked-eth', decimals: 9 },
+  },
+  wc: {
+
+    '0x79A02482A880bCE3F13e09Da970dC34db4CD24d1': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x2cFc85d8E48F8EAB294be644d9E25C3030863003': { coingeckoId: 'worldcoin-wld', decimals: 18 },
+    '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3': { coingeckoId: 'bitcoin', decimals: 8 },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'weth', decimals: 18 }
   }
 }
 
