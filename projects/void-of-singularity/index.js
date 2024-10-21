@@ -1,20 +1,25 @@
-const MINT_TOKEN_CONTRACT = '0x1f3Af095CDa17d63cad238358837321e95FC5915';
-const MINT_CLUB_BOND_CONTRACT = '0x8BBac0C7583Cc146244a18863E708bFFbbF19975';
+import { FetchOptions, SimpleAdapter } from "../adapters/types";
+import { CHAIN } from "../helpers/chains";
+import { queryDune } from "../helpers/dune";
 
-async function tvl(api) {
-  const collateralBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: MINT_TOKEN_CONTRACT,
-    params: [MINT_CLUB_BOND_CONTRACT],
-  });
+const fetch: any = async (options: FetchOptions) => {
+  const dailyFees = options.createBalances();
+  const value = (await queryDune("3521814", {
+    start: options.startTimestamp,
+    end: options.endTimestamp,
+    receiver: '9yMwSPk9mrXSN7yDHUuZurAh1sjbJsfpUqjZ7SvVtdco'
+  }));
+  dailyFees.add('So11111111111111111111111111111111111111112', value[0].fee_token_amount);
 
-  api.add(MINT_TOKEN_CONTRACT, collateralBalance)
+  return { dailyFees, dailyRevenue: dailyFees }
 }
 
-module.exports = {
-  methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
-  start: 1000235,
-  bsc: {
-    tvl,
-  }
-}; 
+export default {
+  version: 2,
+  adapter: {
+    [CHAIN.SOLANA]: {
+      fetch: fetch,
+      start: 0,
+    },
+  },
+};
