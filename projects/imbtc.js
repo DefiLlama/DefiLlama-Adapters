@@ -1,11 +1,14 @@
-
-async function tvl(api) {
-  const imBTC = '0x3212b29E33587A00FB1C83346f5dBFA69A458923'
-  const supply = await api.call({  abi: 'erc20:totalSupply', target: imBTC })
-  api.add(imBTC, supply)
-}
+const { sumTokens } = require('./helper/chain/bitcoin')
 
 module.exports = {
-  ethereum: { tvl },
-  methodology: `TVL for imBTC consists of the BTC deposits in custody that were used to mint imBTC`
+  ethereum: { tvl: () => ({}) },
+  bitcoin: {
+    tvl: () => sumTokens({
+      owners: ['3JMjHDTJjKPnrvS7DycPAgYcA6HrHRk8UG', '3GH4EhMi1MG8rxSiAWqfoiUCMLaWPTCxuy'],
+    })
+  },
+  methodology: `TVL for imBTC consists of the BTC deposits in custody that were used to mint imBTC`,
+  hallmarks: [
+    [Math.floor(new Date('2024-01-31') / 1e3), 'Project ceases operation'],
+  ],
 }
