@@ -20,6 +20,7 @@ const DEFAULTS = {
   MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
   SHAPE_RPC:'https://mainnet.shape.network',
   SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public"
 }
 
 const ENV_KEYS = [
