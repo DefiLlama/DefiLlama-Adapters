@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const LEVEL_STAKING_CONTRACT = '0x7FDA203f6F77545548E984133be62693bCD61497';
+const LEVEL_RESERVE_MANAGERS = ['0x70D544F75c2228D68EE04BC63e6e4Bae8F31fCEF'];
 
 const TOKEN_CONTRACTS = [
     ADDRESSES.ethereum.USDT, // USDT
@@ -20,7 +21,7 @@ const TOKEN_CONTRACTS = [
 module.exports = {
     ethereum: {
         tvl: sumTokensExport({ 
-          owner: LEVEL_STAKING_CONTRACT, 
+          owners: [LEVEL_STAKING_CONTRACT].concat(LEVEL_RESERVE_MANAGERS), 
           tokens: TOKEN_CONTRACTS,
         }),
     }
