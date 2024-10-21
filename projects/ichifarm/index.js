@@ -95,6 +95,11 @@ const config = {
       { factory: '0x89FFdaa18b296d9F0CF02fBD88e5c633FEFA5f34', fromBlock: 79156621, isAlgebra: true, }, // Spiritswap 
     ]
   },
+  flare: {
+    vaultConfigs: [
+      { factory: '0x85a4dd4ed356A7976a8302b1b690202d58583c55', fromBlock: 30879155, isAlgebra: false, }, // SparkDex
+    ]
+  },
   fuse: {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 30026180, isAlgebra: false, }, // Voltage
@@ -124,6 +129,11 @@ const config = {
       { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
     ]
   },
+  mode: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 12395812, isAlgebra: true, }, // Kim
+    ]
+  },
   op_bnb: {
     vaultConfigs: [
       { factory: '0xADDA3A15EA71c223a82Af86d4578EF2B076035F1', fromBlock: 13911597, isAlgebra: true, }, // Thena
@@ -141,6 +151,11 @@ const config = {
     vaultConfigs: [
       { factory: '0xe8532Db60408f2d47693dA5b9093D71580B8C23F', fromBlock: 10890417, isAlgebra: false, }, // PancakeSwap
       { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
+    ]
+  },
+  real: {
+    vaultConfigs: [
+      { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
     ]
   },
   scroll: {
