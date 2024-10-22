@@ -13,6 +13,7 @@ async function tvl() {
 
 module.exports = {
   methodology: 'Staked tokens via Babylon and Core are counted towards TVL, as they represent the underlying BTC assets securing their respective networks.',
+  doublecounted:true,
   bitcoin: {
     tvl
   }

@@ -5,6 +5,7 @@ const owner = ["bc1qajcp935tuvqakut95f0sc9qm09hxjj6egexl9d", "bc1pzq0ve6e7j6jt4c
 
 module.exports = {
   methodology: `Total amount of BTC in ${owner.join(", ")}. Restaked on babylon`,
+  doublecounted:true,
   bitcoin: {
     tvl: sdk.util.sumChainTvls([sumTokensExport({ owner })]),
   },
