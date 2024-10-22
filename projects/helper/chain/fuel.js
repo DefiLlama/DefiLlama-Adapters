@@ -28,7 +28,22 @@ async function sumTokens({ api, owner, owners, token, tokens = [], tokensAndOwne
   }
 }
 
+async function sumAllTokens({ api, owners = [] }) {
+  const query = owners.map((owner, i) => `q${i}: contractBalances(
+    filter: { contract: "${owner}" }, first: 100
+  ) { nodes { assetId amount } }`).join('\n');
+
+  const results = await client.request(`{${query}}`);
+  Object.values(results).forEach(res => {
+    res.nodes.forEach(node => {
+      api.add(node.assetId, node.amount);
+    });
+  });
+
+  return transformBalances('fuel', api.getBalances());
+}
 
 module.exports = {
   sumTokens,
+  sumAllTokens
 }
