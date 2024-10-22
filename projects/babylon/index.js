@@ -19,7 +19,6 @@ async function tvl() {
 }
 
 module.exports = {
-  doublecounted:true,
   methodology: 'TVL is fetched from Babylon’s Staking API and represents the total Bitcoin locked in the Babylon staking protocol.',
   start: 1724351485, 
   timetravel: false,
