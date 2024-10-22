@@ -7,18 +7,19 @@ const termIssuer = '0x128D86A9e854a709Df06b884f81EeE7240F6cCf7';
 const tvl = async (api) => {
 
     const trUSDTotalDebt = await api.call({ target: termIssuer, abi: 'function totalDebt() external view returns (uint256)' });
-
-    api.add(ADDRESSES['ethereum'].USDC, trUSDTotalDebt / 1e12);
+    api.add(termIssuer, trUSDTotalDebt);
 
     const rUSDTotalSupply = await api.call({ target: rUSD, abi: 'function totalSupply() external view returns (uint256)' });
-
-    api.add(ADDRESSES['ethereum'].USDC, rUSDTotalSupply / 1e12);
+    api.add(rUSD, rUSDTotalSupply);
 
     const srUSDTotalSupply = await api.call({ target: srUSD, abi: 'function totalSupply() external view returns (uint256)' });
-
-    api.add(ADDRESSES['ethereum'].USDC, srUSDTotalSupply / 1e12);
+    api.add(srUSD, srUSDTotalSupply / 1e12);
 }
 
 module.exports = {
-    ethereum: { tvl }
+    ethereum: {
+        tvl,
+        borrowed: async (api) => {
+        }
+    }
 };
