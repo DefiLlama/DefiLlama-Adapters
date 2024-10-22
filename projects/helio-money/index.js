@@ -16,7 +16,7 @@ const abi = {
     lpTotalSupply: "uint256:lpTotalSupply",
 };
 
-const pool2 = async (api) => {
+const lpRestaking = async (api) => {
     const [lisLpTokens, lisLpBalances] = await Promise.all([
         api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.lpToken }),
         api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.lpTotalSupply }),
@@ -91,7 +91,7 @@ module.exports = {
                 ],
             ],
         }),
-        pool2,
-        staking: staking('0xd0C380D31DB43CD291E2bbE2Da2fD6dc877b87b3','0xFceB31A79F71AC9CBDCF853519c1b12D379EdC46')
+        lpRestaking,
+        lockedLista: staking('0xd0C380D31DB43CD291E2bbE2Da2fD6dc877b87b3','0xFceB31A79F71AC9CBDCF853519c1b12D379EdC46')
     },
 };
