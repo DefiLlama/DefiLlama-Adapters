@@ -1,0 +1,21 @@
+{
+  "weth": "address:WETHToken",
+  "mCake": "address:mCake",
+  "mCakeSV": "address:mCakeSV",
+  "poolLength": "uint256:poolLength",
+  "poolList": "function poolList(uint256) view returns (address)",
+  "tokenToPoolInfo": "function tokenToPoolInfo(address) view returns (address stakingToken, address receiptToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accCakepiePerShare, uint256 totalStaked, address rewarder, bool isActive)",
+  "pools": "function pools(address) view returns (address poolAddress, address depositToken, address rewarder, address receiptToken, uint256 lastHarvestTime, uint256 poolType, uint256 v3Liquidity, bool isAmount0, bool isNative, bool isActive)",
+  "masterChefv3": "address:masterChefV3",
+  "pancakeV3Helper": "address:pancakeV3Helper",
+  "v3FARM_BOOSTER": "address:v3FARM_BOOSTER",
+  "v3PoolAddressPid": "function v3PoolAddressPid(address) view returns (uint256)",
+  "poolInfo": "function poolInfo(uint256) view returns(uint256 allocPoint ,address v3Pool ,address token0 ,address token1 ,uint24 fee , uint256 totalLiquidity , uint256 totalBoostLiquidity)",
+  "slot0": "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint32 feeProtocol, bool unlocked)",
+  "fee": "function fee() view returns (uint24 fee)",
+  "liquidity": "function liquidity() view returns (uint128 liquidity)",
+  "lmPool": "function lmPool() view returns (address lmPool)",
+  "lmLiquidity": "function lmLiquidity() view returns (uint128 lmLiquidity)",
+  "whiteList": "function whiteList(uint256) view returns (bool whiteList)",
+  "getMCakePooInfo": "function getMCakePooInfo(address account, address poolAddr) view returns (CakepiePool memory)"
+}

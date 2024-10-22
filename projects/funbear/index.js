@@ -4,7 +4,7 @@ const stakeContractAddresses = {
   yearlyStake: '0xb991FAeF710f2ae699c425a92482Fc5D3Ae0cCD7',
 }
 
-async function staking(timestamp, block, chainBlocks, { api }) {
+async function staking(api) {
   const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: Object.values(stakeContractAddresses) })
   supplies.forEach(i => api.add(FUNB, i, { skipChain: true }))
   return api.getBalances()

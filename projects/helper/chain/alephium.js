@@ -5,7 +5,7 @@ const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 const bs58 = basex(ALPHABET)
 
 const EXPLORER_API_HOST = 'https://backend-v115.mainnet.alephium.org'
-const NODE_API_HOST = 'https://chadnode.ayin.app'
+const NODE_API_HOST = 'https://node.mainnet.alephium.org'
 
 async function getAlphBalance(address) {
   return (await axios.get(`${EXPLORER_API_HOST}/addresses/${address}/balance`)).data

@@ -1,8 +1,10 @@
 const { staking } = require('../helper/staking')
-const { unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, _b, _cb, { api, }) {
-  return unwrapUniswapV3NFTs({
+async function tvl(api) {
+  return sumTokens2({
+    api,
+    resolveUniV3: true,
     owners: [
       '0xc8b1039928a98d7a272f6942d86814ed9d8f9f17',
       '0x3f96c580436dd59404ba612bf6d8079dc10f6f7e',

@@ -1,39 +1,19 @@
-const sdk = require('@defillama/sdk')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const utils = require('../helper/utils');
-const { ethers } = require("ethers");
-const ADDRESSES = require('../helper/coreAssets.json')
-const { USDC } = ADDRESSES.ethereum
-
+const treasury = '0x85b6acaba696b9e4247175274f8263f99b4b9180'
 
 // treasury address: 0xc47ec74a753acb09e4679979afc428cde0209639
-async function tvl(_, _1, _2, { api }) {
-  let balances = {};
-
-  const toWei = async(address, balance) => {
-    if (!+balance > 0) return;
-    const decimals = await api.call({
-      abi: 'erc20:decimals',
-      target: address,
-    })
-    return ethers.utils.parseUnits((balance >> 0).toString(), decimals).toString()
-  }
-
-  const response = await utils.fetchURL('https://api.spiral.farm/data/eth/treasury');
-  if (response.data.success) {
-    for (let [address, info] of Object.entries(response.data.tokens)){
-      if (address === 'eth'){
-        await sdk.util.sumSingleBalance(balances, 'ethereum', info.totalAmount)
-      } else {
-        await sdk.util.sumSingleBalance(balances, address, await toWei(address, info.totalAmount))
-      }
-
-    }
-    await sdk.util.sumSingleBalance(balances, USDC,
-      await toWei(USDC, response.data.extraUsdValues.tokenRedeemContractUsdcBalance))
-    await sdk.util.sumSingleBalance(balances, USDC, response.data.extraUsdValues.bribes)
-  }
-
-  return balances;
+async function tvl(api) {
+  const { data: { tokens, extraUsdValues } } = await utils.fetchURL('https://api.spiral.farm/data/eth/treasury');
+   const addrs = Object.keys(tokens).filter(addr => addr.startsWith('0x'))
+  const decimals = await api.multiCall({  abi: 'erc20:decimals', calls: addrs})
+  addrs.forEach((addr, idx) => {
+    api.add(addr, tokens[addr].totalAmount * 10 ** decimals[idx])
+  })
+  api.add(nullAddress, tokens.eth.totalAmount * 1e18)
+  api.add('coingecko:tether', extraUsdValues.tokenRedeemContractUsdcBalance, { skipChain: true })
+  api.add('coingecko:tether', extraUsdValues.bribes, { skipChain: true })
+  // return sumTokens2({ api,  owner: treasury,  fetchCoValentTokens: true,  })
 }
 
 module.exports = {

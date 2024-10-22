@@ -1,20 +1,23 @@
 {
   "get_registry": "address:get_registry",
-  "pool_list": "function pool_list(uint256 arg0) view returns (address) @2217",
+  "pool_list": "function pool_list(uint256 arg0) view returns (address)",
   "pool_count": "uint256:pool_count",
-  "get_id_info": "function get_id_info(uint256 arg0) view returns (address addr, bool is_active, uint256 version, uint256 last_modified, string description) @12168",
+  "get_id_info": "function get_id_info(uint256 arg0) view returns (address addr, bool is_active, uint256 version, uint256 last_modified, string description)",
   "get_n_coins": {
-    "stableswap": "function get_n_coins(address _pool) view returns (uint256[2]) @1521",
-    "stableFactory": "function get_n_coins(address _pool) view returns (uint256) @2699",
-    "crypto": "function get_n_coins(address _pool) view returns (uint256) @2834",
-    "cryptoFactory": "function get_n_coins(address _pool) view returns (uint256) @2834",
-    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])"
+    "stableswap": "function get_n_coins(address _pool) view returns (uint256[2])",
+    "stableFactory": "function get_n_coins(address _pool) view returns (uint256)",
+    "crypto": "function get_n_coins(address _pool) view returns (uint256)",
+    "cryptoFactory": "function get_n_coins(address _pool) view returns (uint256)",
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])",
+    "CurveStableswapFactoryNG": "function get_n_coins(address _pool) view returns (uint256)"
   },
   "get_coins": {
-    "stableswap": "function get_coins(address _pool) view returns (address[8]) @12102",
-    "stableFactory": "function get_coins(address _pool) view returns (address[4]) @9164",
-    "crypto": "function get_coins(address _pool) view returns (address[8]) @22975",
+    "stableswap": "function get_coins(address _pool) view returns (address[8])",
+    "stableFactory": "function get_coins(address _pool) view returns (address[4])",
+    "crypto": "function get_coins(address _pool) view returns (address[8])",
     "cryptoFactory": "function get_coins(address _pool) view returns (address[2])",
-    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])"
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])",
+    "CurveStableswapFactoryNG": "function get_coins(address _pool) view returns (address[])",
+    "CurveL2TricryptoFactory": "function get_coins(address _pool) view returns (address[3])"
   }
 }

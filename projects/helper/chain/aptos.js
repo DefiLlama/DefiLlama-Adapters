@@ -103,7 +103,7 @@ async function getTableData({ table, data }) {
 
 async function function_view({ functionStr, type_arguments = [], args = [] }) {
   const response = await http.post(`${endpoint()}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments: args })
-  return response
+  return response.length === 1 ? response[0] : response
 }
 
 function hexToString(hexString) {
@@ -123,7 +123,7 @@ function hexToString(hexString) {
 }
 
 function sumTokensExport(options) {
-  return async (_, _b, _cb, { api }) => sumTokens({ ...api, api, ...options })
+  return async (api) => sumTokens({ ...api, api, ...options })
 }
 
 module.exports = {

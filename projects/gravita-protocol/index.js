@@ -8,6 +8,7 @@ const ADMIN_ADDRESSES = {
   linea: "0xC8a25eA0Cbd92A6F787AeED8387E04559053a9f8",
   optimism: "0x326398De2dB419Ee39F97600a5eeE97093cf3B27",
   polygon_zkevm: "0x6b42581aC12F442503Dfb3dff2bC75ed83850637",
+  mantle: "0x4F39F12064D83F6Dd7A2BDb0D53aF8be560356A6",
 };
 
 const ETH_WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase();
@@ -15,7 +16,7 @@ const ETH_RPL = "0xD33526068D116cE69F19A9ee46F0bd304F21A51f".toLowerCase();
 const ETH_CONSTELLATION_WETH_VAULT = "0xBB22d59B73D7a6F3A8a83A214BECc67Eb3b511fE";
 const ETH_CONSTELLATION_RPL_VAULT = "0x1DB1Afd9552eeB28e2e36597082440598B7F1320";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const adminContract = ADMIN_ADDRESSES[api.chain];
   const collAddresses = await api.call({
     abi: "address[]:getValidCollateral",

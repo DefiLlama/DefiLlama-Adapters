@@ -7,7 +7,7 @@ const Contracts = {
   LOCKED_XEN_ETH_LP: "0x57A480007DFbce2803147DCcBeAFAEb50BDe64Fb",
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const { tokens }= await api.call({  abi: 'function getAllAssets() view returns (address[] tokens, bool[])', target: Contracts.Pool})
   return api.sumTokens({ owner: Contracts.Pool, tokens })
 }
