@@ -1,23 +1,20 @@
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const ADDRESSES = require('../helper/coreAssets.json')
+const earnETHVault = '0x9Ed15383940CC380fAEF0a75edacE507cC775f22';
 
-const earnETH = '0x9Ed15383940CC380fAEF0a75edacE507cC775f22';
-const accountant = '0x411c78BC8c36c3c66784514f28c56209e1DF2755';
-const WETH = ADDRESSES.ethereum.WETH;
+const tokens = [
+    '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0', // rswETH
+    '0xf951E335afb289353dc249e82926178EaC7DEd78', // swETH
+    '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', // wstETH
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH
+]
 
-async function tvl(api) {
-    const totalSupply = await api.call({ target: earnETH, abi: 'uint256:totalSupply'});
-    const rate = await api.call({ target: accountant, abi: 'uint256:getRate'});
-    
-    return {
-      [WETH]: (totalSupply * rate)/1e18
-    };
+const tvl = async (api) => {
+    return sumTokens2({ api, tokens, owner: earnETHVault })
 }
 
 module.exports = {
-    methodology: 'earnETH supply multiplied by earnETH rate',
+    methodology: 'TVL represents the sum of tokens deposited in the vault',
     doublecounted: true,
-    ethereum: {
-        tvl,
-    },
+    ethereum : { tvl }
 }
