@@ -1,43 +1,60 @@
-const { aaveChainTvl, aaveExports } = require('../helper/aave');
-const methodologies = require('../helper/methodologies');
-const { mergeExports } = require('../helper/utils');
+const abi = {
+  getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
+  getAllReservesTokens: "function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])",
+  getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+};
 
-const v3params = ["0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654"]]
+const CONFIG = {
+  ethereum: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758'],
+  polygon: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
+  avax: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
+  arbitrum: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
+  optimism: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
+  harmony: ['0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654'],
+  fantom: ['0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654'],
+  metis: ['0xC01372469A17b6716A38F00c277533917B6859c0'],
+  base: ['0xd82a47fdebB5bf5329b09441C3DaB4b5df2153Ad'],
+  xdai: ['0x57038C3e3Fe0a170BB72DE2fD56E98e4d1a69717'],
+  scroll: ['0xe2108b60623C6Dcf7bBd535bD15a451fd0811f7b'],
+  bsc: ['0x23dF2a19384231aFD114b036C14b6b03324D79BC'],
+  era: ['0x5F2A704cE47B373c908fE8A29514249469b52b99']
+};
 
-function v3(chain) {
-  let params = v3params
-  if (chain === 'ethereum')
-    params = ['0xbaA999AC55EAce41CcAE355c77809e68Bb345170', undefined, ['0x7B4EB56E7CD4b454BA8ff71E4518426369a138a3']]
-  else if (chain === 'metis')
-    params = ['0x9E7B73ffD9D2026F3ff4212c29E209E09C8A91F5', undefined, ['0x99411FC17Ad1B56f49719E3850B2CDcc0f9bBFd8']]
-  else if (chain === 'base')
-    params = ['0x2f6571d3Eb9a4e350C68C36bCD2afe39530078E2', undefined, ['0x2d8A3C5677189723C4cB8873CfC9C8976FDF38Ac']]
-  else if (chain === 'xdai')
-    params = ['0x36616cf17557639614c1cdDb356b1B83fc0B2132', undefined, ['0x501B4c19dd9C2e06E94dA7b6D5Ed4ddA013EC741']]
-  else if (chain === 'scroll')
-    params = ['0xFBedc64AeE24921cb43004312B9eF367a4162b57', undefined, ['0xa99F4E69acF23C6838DE90dD1B5c02EA928A53ee']]
-  else if (chain === 'bsc')
-    params = ['0x117684358D990E42Eb1649E7e8C4691951dc1E71', undefined, ['0x41585C50524fb8c3899B43D7D797d9486AAc94DB']]
-  else if (chain === 'era')
-    params = ['0x0753E3637ddC6efc40759D9c347251046644F25F', undefined, ['0x48B96565291d1B23a014bb9f68E07F4B2bb3Cd6D']]
-  const section = borrowed => aaveChainTvl(chain, ...params, borrowed, true);
-  return {
-    tvl: section(false),
-    borrowed: section(true)
-  }
-}
+const fetchReserveData = async (api, poolDatas, dataKey) => {
+  const reserveTokens = await api.multiCall({ calls: poolDatas, abi: abi.getAllReservesTokens });
 
-module.exports = mergeExports({
-  methodology: methodologies.lendingMarket,
-  avax: v3("avax"),
-  ...["optimism", "fantom", "harmony", "arbitrum", "polygon", "ethereum", "metis", "base", "xdai", "scroll", "bsc", "era"].reduce((t, c) => ({ ...t, [c]: v3(c) }), {}),
-}, {
-  // Lido pool
-  ethereum: aaveExports(undefined,  "0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0xa3206d66cF94AA1e93B21a9D8d409d6375309F4A"], { v3: true, }),
+  const tokensWithPools = poolDatas.map((pool, i) => {
+    return { pool, tokens: reserveTokens[i].map(({ tokenAddress }) => tokenAddress) };
+  });
+
+  const reserveBalances = await Promise.all(
+    tokensWithPools.map(({ pool, tokens }) =>
+      api.multiCall({
+        calls: tokens.map((t) => ({ target: pool, params: [t] })),
+        abi: abi.getReserveData,
+      })
+    )
+  );
+
+  tokensWithPools.forEach(({ tokens }, poolIndex) => {
+    tokens.forEach((token, i) => {
+      api.add(token, reserveBalances[poolIndex][i][dataKey]);
+    });
+  });
+};
+
+const tvl = async (api, poolData) => {
+  await fetchReserveData(api, poolData, 'totalAToken');
+};
+
+const borrowed = async (api, poolData) => {
+  await fetchReserveData(api, poolData, 'totalVariableDebt');
+};
+
+Object.keys(CONFIG).forEach((chain) => {
+  const poolDatas = CONFIG[chain];
+  module.exports[chain] = {
+    tvl: (api) => tvl(api, poolDatas),
+    borrowed: (api) => borrowed(api, poolDatas),
+  };
 });
-
-module.exports.hallmarks = [
-  [1659630089, "Start OP Rewards"],
-  [1650471689, "Start AVAX Rewards"]
-]
-// node test.js projects/aave/index.js
