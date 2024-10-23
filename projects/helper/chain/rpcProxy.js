@@ -1,0 +1,23 @@
+const axios = require('axios')
+const { getEnv } = require('../env')
+
+const client = axios.create({
+  baseURL: getEnv('RPC_PROXY_URL'),
+  timeout: 30000,
+})
+
+
+module.exports = {
+  fuel: {
+    query: async ({ contractId, abi, method }) => {
+      const { data } = await client.post('/fuel/query', { contractId, abi, method })
+      return data
+    }
+  },
+  ripple: {
+    gatewayBalances: async ({ account, hotwallet }) => {
+      const { data } = await client.post('/ripple/gateway_balances', { account, hotwallet })
+      return data
+    }
+  },
+}

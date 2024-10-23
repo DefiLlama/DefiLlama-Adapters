@@ -1,6 +1,7 @@
 
 const { GraphQLClient, } = require('graphql-request')
 const { transformBalances } = require('../portedTokens')
+const { fuel: { query }} = require('./rpcProxy')
 const client = new GraphQLClient('https://mainnet.fuel.network/v1/graphql')
 
 async function sumTokens({ api, owner, owners, token, tokens = [], tokensAndOwners = [] }) {
@@ -50,4 +51,5 @@ async function addAllTokenBalances({ api, owners = [] }) {
 
 module.exports = {
   sumTokens,
+  query,
 }
