@@ -115,7 +115,10 @@ const fixBalancesTokens = {
     '0x48b62137EdfA95a428D35C09E44256a739F6B557': { coingeckoId: 'wrapped-apecoin', decimals: 18 },
     '0xA2235d059F80e176D931Ef76b6C51953Eb3fBEf4': { coingeckoId: 'savings-dai', decimals: 18 },
     '0xcF800F4948D16F23333508191B1B1591daF70438': { coingeckoId: 'staked-ether', decimals: 18 },
-  }
+  },
+  zircuit: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

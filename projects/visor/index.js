@@ -5,6 +5,7 @@ const getTotalAmounts =
   "function getTotalAmounts() view returns (uint256 total0, uint256 total1)";
 const { getUniqueAddresses } = require("../helper/utils");
 const config = require("./config");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 module.exports = {
   doublecounted: true,
@@ -53,7 +54,7 @@ Object.keys(config).forEach(chain => {
         api.add(token0s[i], total0);
         api.add(token1s[i], total1);
       });
-      return api.getBalances()
+      return sumTokens2({ api })
     }
   }
 })
