@@ -1,27 +1,31 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { uniV3Export } = require("../helper/uniswapV3")
+const { getLogs2 } = require('../helper/cache/getLogs')
+const { mergeExports } = require("../helper/utils")
+const { nullAddress } = require("../helper/unwrapLPs")
 
-module.exports = {
-    taiko: {
-        tvl: sumTokensExport({ 
-            tokensAndOwners: [
-                // USDC-WETH Pair 
-                ['0x07d83526730c7438048D55A4fc0b850e2aaB6f0b' , '0xde634b8363488Aa49a4A5F69fc66D3cb35962676'],
-                ['0xA51894664A773981C6C112C43ce576f315d5b1B6' , '0xde634b8363488Aa49a4A5F69fc66D3cb35962676'],
+const uniTvl = uniV3Export({
+  taiko: { factory: '0x99960D7076297a1E0C86f3cc60FfA5d6f2B507B5', fromBlock: 433329 }
+})
 
-                // WETH-TAIKO Pair 
-                ['0xA51894664A773981C6C112C43ce576f315d5b1B6' , '0xEb5BE83E5cc05C2158b39B37222b9C44DbE8CaC7'],
-                ['0x07d83526730c7438048D55A4fc0b850e2aaB6f0b' , '0xEb5BE83E5cc05C2158b39B37222b9C44DbE8CaC7'],
+const stableswapConfig = {
+  taiko: { factory: '0x542E849ff47da056c127F35710b01242A59705d2', fromBlock: 433341 }
+}
+const stableTvl = {}
 
-                // WETH-WSXETH
-                ['0xA51894664A773981C6C112C43ce576f315d5b1B6' , '0xc7Cbac1bB6C37570c04609FB70B2959c8b8b4412'],
-                ['0xda9a0fbCE1b8b11fCbd8114354eC266594C0Ff5A' , '0xc7Cbac1bB6C37570c04609FB70B2959c8b8b4412'],
-
-                // USDT-USDC
-                ['0x2DEF195713CF4a606B49D07E520e22C17899a736' , '0x3136Ef69a9E55d7769cFED39700799Bb328d9B46'],
-                ['0x07d83526730c7438048D55A4fc0b850e2aaB6f0b' , '0x3136Ef69a9E55d7769cFED39700799Bb328d9B46'],
-                
-              ],
-        }),
-  
+Object.keys(stableswapConfig).forEach(chain => {
+  const { factory, fromBlock, } = stableswapConfig[chain]
+  stableTvl[chain] = {
+    tvl: async (api) => {
+      const logs = await getLogs2({
+        api,
+        factory,
+        eventAbi: 'event NewStableSwapPair(address  indexed swapContract, address tokenA, address tokenB, address tokenC, address LP)',
+        fromBlock,
+      })
+      const ownerTokens = logs.map(i => [[i.tokenA, i.tokenB, i.tokenC].filter(i => i !== nullAddress), i.swapContract])
+      return api.sumTokens({ ownerTokens })
     }
-};
+  }
+})
+
+module.exports = mergeExports([uniTvl, stableTvl])
