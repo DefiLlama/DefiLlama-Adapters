@@ -3,6 +3,7 @@ const { getTokenSupply } = require('../helper/solana')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const tbill = "0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a"
+const solTbill = '4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6'
 
 function getTimeNow() {
   return Math.floor(Date.now() / 1000);
@@ -19,8 +20,8 @@ async function evmTvl(api) {
 }
 
 async function solTvl (api) {
-  const tvl = (await getTokenSupply('4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6') * 10 ** 6)
-  api.add(tbill, tvl)
+  const tvl = (await getTokenSupply(solTbill) * 10 ** 6)
+  api.add(solTbill, tvl)
 }
 
 async function ripplTvl (api) {
