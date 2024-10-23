@@ -1,9 +1,9 @@
 const { sumTokensExport } = require("../helper/unwrapLPs")
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const defaultPort = '0x6C6d3FB0289039b0FCa2E7244A06Cf9403464646'
+const defaultPort = '0x0000151d008235A6cC00004F00FA2bDF9dF95400'
 const ports = {
-  arbitrum: '0x0c453ef35986E1d8dA22043fF00BF03cEB42e1f7',
+  arbitrum: '0x79f4b04FFCa54BC946aa0ef8E33eE723467f0192',
   ethereum: undefined,
   optimism: undefined,
   base: undefined,
