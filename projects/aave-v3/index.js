@@ -20,43 +20,35 @@ const CONFIG = {
   era: ['0x5F2A704cE47B373c908fE8A29514249469b52b99']
 };
 
-const fetchReserveData = async (api, poolDatas, dataKey) => {
+const fetchReserveData = async (api, poolDatas, isBorrowed) => {
   const reserveTokens = await api.multiCall({ calls: poolDatas, abi: abi.getAllReservesTokens });
+  const calls = []
 
-  const tokensWithPools = poolDatas.map((pool, i) => {
-    return { pool, tokens: reserveTokens[i].map(({ tokenAddress }) => tokenAddress) };
+  poolDatas.map((pool, i) => {
+    reserveTokens[i].forEach(({ tokenAddress }) => calls.push({ target: pool, params: tokenAddress }));
   });
+  const reserveData = await api.multiCall({ abi: isBorrowed ? abi.getReserveData : abi.getReserveTokensAddresses, calls, })
+  const tokensAndOwners = []
+  reserveData.forEach((data, i) => {
+    const token = calls[i].params
+    if (isBorrowed) {
+      api.add(token, data.totalVariableDebt)
+      api.add(token, data.totalStableDebt)
+    } else
+      tokensAndOwners.push([token, data.aTokenAddress])
+  })
 
-  const reserveBalances = await Promise.all(
-    tokensWithPools.map(({ pool, tokens }) =>
-      api.multiCall({
-        calls: tokens.map((t) => ({ target: pool, params: [t] })),
-        abi: abi.getReserveData,
-      })
-    )
-  );
+  if (isBorrowed) return api.getBalances()
+  return api.sumTokens({ tokensAndOwners })
+}
 
-  tokensWithPools.forEach(({ tokens }, poolIndex) => {
-    tokens.forEach((token, i) => {
-      api.add(token, reserveBalances[poolIndex][i][dataKey]);
-    });
-  });
-};
-
-const tvl = async (api, poolData) => {
-  await fetchReserveData(api, poolData, 'totalAToken');
-};
-
-const borrowed = async (api, poolData) => {
-  await fetchReserveData(api, poolData, 'totalVariableDebt');
-};
+module.exports.methodology = "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending."
 
 Object.keys(CONFIG).forEach((chain) => {
   const poolDatas = CONFIG[chain];
   module.exports[chain] = {
-    methodology: "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
-    tvl: (api) => tvl(api, poolDatas),
-    borrowed: (api) => borrowed(api, poolDatas),
+    tvl: (api) => fetchReserveData(api, poolDatas),
+    borrowed: (api) => fetchReserveData(api, poolDatas, true),
   };
 });
 
