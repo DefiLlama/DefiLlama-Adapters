@@ -439,6 +439,7 @@
   },
   "klaytn": {
     "WKLAY": "0x57d1a61e4fd09fbf16e35b04959e94dcf2032974",
+    "WKLAY_1": "0x19aac5f612f524b754ca7e7c41cbfa2e981a4432",
     "BORA": "0x02cbe46fb8a1f579254a9b485788f2d86cad51aa",
     "DAI": "0xcb2c7998696ef7a582dfd0aafadcd008d03e791a",
     "USDC": "0x608792deb376cce1c9fa4d0e6b7b44f507cffa6a",
