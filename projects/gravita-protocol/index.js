@@ -1,5 +1,5 @@
-const BigNumber = require("bignumber.js");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumERC4626Vaults } = require("../helper/erc4626");
 
 const ADMIN_ADDRESSES = {
   arbitrum: "0x4928c8F8c20A1E3C295DddBe05095A9aBBdB3d14",
@@ -11,39 +11,20 @@ const ADMIN_ADDRESSES = {
   mantle: "0x4F39F12064D83F6Dd7A2BDb0D53aF8be560356A6",
 };
 
-const ETH_WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase();
-const ETH_RPL = "0xD33526068D116cE69F19A9ee46F0bd304F21A51f".toLowerCase();
-const ETH_CONSTELLATION_WETH_VAULT = "0xBB22d59B73D7a6F3A8a83A214BECc67Eb3b511fE";
-const ETH_CONSTELLATION_RPL_VAULT = "0x1DB1Afd9552eeB28e2e36597082440598B7F1320";
+const erc4626Vaults = {
+  ethereum: [
+    "0xBB22d59B73D7a6F3A8a83A214BECc67Eb3b511fE", // WETH Vault - constellation
+    "0x1DB1Afd9552eeB28e2e36597082440598B7F1320",  // RPL Vault - constellation
+  ]
+}
 
 async function tvl(api) {
   const adminContract = ADMIN_ADDRESSES[api.chain];
-  const collAddresses = await api.call({
-    abi: "address[]:getValidCollateral",
-    target: adminContract,
-  });
-  const activePool = await api.call({
-    abi: "address:activePool",
-    target: adminContract,
-  });
-  const balances = await sumTokens2({
-    api,
-    tokens: collAddresses,
-    owner: activePool,
-  });
-  if (api.chain == "ethereum") {
-    const wethOnConstallation = await api.call({
-      abi: "uint256:totalAssets",
-      target: ETH_CONSTELLATION_WETH_VAULT,
-    });
-    balances[`ethereum:${ETH_WETH}`] = BigNumber(balances[`ethereum:${ETH_WETH}`] || 0).plus(wethOnConstallation).toString()
-    const rplOnConstellation = await api.call({
-      abi: "uint256:totalAssets",
-      target: ETH_CONSTELLATION_RPL_VAULT,
-    });
-    balances[`ethereum:${ETH_RPL}`] = rplOnConstellation
-  }
-  return balances;
+  const vaults = erc4626Vaults[api.chain] ?? []
+  const collAddresses = await api.call({ abi: "address[]:getValidCollateral", target: adminContract, });
+  const activePool = await api.call({ abi: "address:activePool", target: adminContract, });
+  await sumTokens2({ api, tokens: collAddresses, owner: activePool, });
+  await sumERC4626Vaults({ api, calls: vaults, isOG4626: true,});
 }
 
 module.exports = {
