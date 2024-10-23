@@ -23,8 +23,8 @@ async function tvl(api) {
 
 module.exports = {
     methodology: "Uses factory(0x888099De8EA8068D92bB04b47A743B82195c4aD2) address find and price Liquidity Pool pairs",
+    start: 1729159200,
     sapphire: {
-        fromBlock: 2146977,
         timetravel: false,
         tvl,
     },
