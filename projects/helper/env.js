@@ -21,7 +21,8 @@ const DEFAULTS = {
   SHAPE_RPC:'https://mainnet.shape.network',
   SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public",
-  APECHAIN_RPC: "https://rpc.apechain.com"
+  APECHAIN_RPC: "https://rpc.apechain.com",
+  RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
 }
 
 const ENV_KEYS = [
