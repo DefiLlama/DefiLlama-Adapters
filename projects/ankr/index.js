@@ -29,6 +29,12 @@ async function getAvaxTvl() {
   }
 }
 
+async function getFlowTvl() {
+  return {
+    'flow': await getTvls("flowevm", "totalStaked"),
+  }
+}
+
 async function polkadot() {
   return {
     polkadot: await getTvls("dot", "totalStaked"),
@@ -47,7 +53,7 @@ async function getFantomTvl() {
   }
 }
 
-async function getGnosisTvl(timestamp, block, chainBlocks, { api}) {
+async function getGnosisTvl(api) {
   
   //Current Ankr Provider Address, there is a hard cap on how much mGNO each address can stake, other addresses might appear*/
   const ankrProviderAddress = "0x4069D8A3dE3A72EcA86CA5e0a4B94619085E7362"
@@ -90,6 +96,9 @@ module.exports = {
   },
   fantom: {
     tvl: getFantomTvl,
+  },
+  flow: {
+    tvl: getFlowTvl,
   },
   polkadot: {
     tvl: polkadot,

@@ -5,7 +5,7 @@ const factories = {
   arbitrum: '0x1886d09c9ade0c5db822d85d21678db67b6c2982',
   bsc: '0x43646a8e839b2f2766392c1bf8f60f6e587b6960',
 }
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const pools = await api.fetchList({
     target: factories[api.chain],
     itemAbi: 'function allLBPairs(uint256) view returns (address)',

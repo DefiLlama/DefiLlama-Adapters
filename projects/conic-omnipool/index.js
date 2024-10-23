@@ -6,7 +6,7 @@ module.exports = {
     [1689937200,"ETH Omnipool Hacked"]
   ],
   ethereum: {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       const poolsV1 = (await api.call({ abi: 'address[]:listPools', target: '0x013A3Da6591d3427F164862793ab4e388F9B587e' })).filter(i => i !== '0xb652710eab40B6Ed32D6c32053fC37eF234562c2')
       const poolsV2 = (await api.call({ abi: 'address[]:listPools', target: '0x2790EC478f150a98F5D96755601a26403DF57EaE' }))

@@ -5,8 +5,7 @@ const stakingContract = "0x99a2278ab93Ee6F590a87D8F37a16EE8f53F97Cc"
 const arthswapValUsdcPool = "0x56Ce6643eDD621EcD904d9b6C9e88745A125AF6d"
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology: "TVL is calculated by getting value of staked VAL using Arthswap DEX value of VAL.",
     astar: {
         tvl: () => ({}),

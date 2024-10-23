@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const config = require("./config");
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
     const balances = {};
 
     const totalAssets = await api.call({

@@ -13,7 +13,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -25,12 +25,15 @@ Object.keys(config).forEach(chain => {
       const areStrategiesEnabled = await api.multiCall({ abi: factory_abi.isStrategyEnabled, calls: strategies, target: factory });
       const enabledStrategies = strategies.filter((s, index) => areStrategiesEnabled[index]);
 
-      const balances = await api.multiCall({ abi: abi.vaultAmounts, calls: enabledStrategies, });
-      const summaries = await api.multiCall({ abi: abi.vaultSummary, calls: enabledStrategies, });
+      const balances = await api.multiCall({ abi: abi.vaultAmounts, calls: enabledStrategies, permitFailure: true });
+      const summaries = await api.multiCall({ abi: abi.vaultSummary, calls: enabledStrategies, permitFailure: true, });
 
       for (let i = 0; i < balances.length; i++) {
-        api.add(summaries[i].baseToken_, balances[i].baseTotal_);
-        api.add(summaries[i].scarceToken_, balances[i].scarceTotal_);
+        const balance = balances[i]
+        const summary = summaries[i]
+        if (!balance || !summary) continue;
+        api.add(summary.baseToken_, balance.baseTotal_);
+        api.add(summary.scarceToken_, balance.scarceTotal_);
       }
     }
   }

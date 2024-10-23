@@ -1,3 +1,0 @@
-{
-  "poolSettingInfo": "function poolSettingInfo(uint256) view returns (address lpToken, address tokenAddr, address projectAddr, uint256 tokenAmount, uint256 startBlock, uint256 endBlock, uint256 tokenPerBlock, uint256 tokenBonusEndBlock, uint256 tokenBonusMultipler)"
-}
