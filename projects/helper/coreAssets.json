@@ -468,7 +468,8 @@
     "aDAI": "0x2ff5371dad5c6ef76d55213b7c5a519f6654ba17",
     "aDAI_Wormhole_": "0xe9a88c33abf71c902f7581321d05e6516cbca761",
     "USDK": "0xd2137fdf10bd9e4e850c17539eb24cfe28777753",
-    "NPT": "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815"
+    "NPT": "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815",
+    "stKaia": "0x42952B873ed6f7f0A7E4992E2a9818E3A9001995"
   },
   "nova": {
     "NUSD": "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff"
