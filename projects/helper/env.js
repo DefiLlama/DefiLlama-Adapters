@@ -18,6 +18,10 @@ const DEFAULTS = {
   ETN_RPC: "https://rpc.ankr.com/electroneum",
   MATCHAIN_RPC: "https://rpc.matchscan.io,https://rpc.matchain.io",
   MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
+  SHAPE_RPC:'https://mainnet.shape.network',
+  SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public",
+  APECHAIN_RPC: "https://rpc.apechain.com"
 }
 
 const ENV_KEYS = [
