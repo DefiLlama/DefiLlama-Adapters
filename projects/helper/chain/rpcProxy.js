@@ -20,4 +20,10 @@ module.exports = {
       return data
     }
   },
+  injective: {
+    mitoVaultQuery: async ({ address }) => {
+      const { data } = await client.get('/injective/mito-vault/' + address)
+      return data
+    }
+  },
 }
