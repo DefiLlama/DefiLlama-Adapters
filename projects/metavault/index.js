@@ -23,6 +23,10 @@ const READER_CONTRACT = "0x01dd8B434A83cbdDFa24f2ef1fe2D6920ca03734"; // getToke
 
 const stakingAddress = "0x42162457006DB4DA3a7af5B53DFee5A891243b4D"; // Governance Staking
 const stakingTokenAddress = "0x788B6D2B37Aa51D916F2837Ae25b05f0e61339d1"; // MVD
+
+const mvdStakingAddressArbitrum = "0xFA69292726A53d62111c9485C03ac551Ba05679b"; // gMVD Staking
+const mvdTokenAddressArbitrum="0x15a808ed3846D25e88AE868DE79F1bcB1Ac382B5"; // MVD
+
 const ADDRESS_ZERO = ADDRESSES.null;
 
 async function getTvl(timestamp, block) {
@@ -79,7 +83,13 @@ async function polygon(_, _b, { polygon: block }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1676592000,"Launch on Arbitrum"]
+  ],
   misrepresentedTokens: true,
+    arbitrum: {
+    staking: staking(mvdStakingAddressArbitrum, mvdTokenAddressArbitrum,),
+  },
   ethereum: {
     tvl: getTvl,
     staking: staking(stakingAddress, stakingTokenAddress,),
