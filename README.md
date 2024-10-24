@@ -25,8 +25,10 @@ This is a work in progress. The goal is to eventually handle historical data. De
 If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.defillama.com/) and drop a message.
 
 ## Testing adapters
-```
+```bash
 node test.js projects/pangolin/index.js
+# Add a timestamp at the end to run the adapter at a historical timestamp
+node test.js projects/aave/v3.js 1729080692
 ```
 
 ## Changing RPC providers

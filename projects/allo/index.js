@@ -12,6 +12,7 @@ const owner = [
 
 module.exports = {
   methodology: `Total amount of BTC in restaked on babylon`,
+  doublecounted:true,
   bitcoin: {
     tvl: sumTokensExport({ owner }),
   },
