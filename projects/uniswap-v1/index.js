@@ -26,6 +26,6 @@ const tvl = async (api) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `Counts the tokens locked on AMM pools, pulling`,
+  methodology: `Counts the tokens in ETH value locked in AMM pools`,
   ethereum: { tvl }
 }
