@@ -61,8 +61,6 @@ const fixBalancesTokens = {
     [ADDRESSES.defiverse.USDC]: { coingeckoId: 'binance-bitcoin', decimals: 18 },
   },
   lac: {
-    [ADDRESSES.null]: { coingeckoId: "la-coin", decimals: 18 },
-    [ADDRESSES.lac.LAC]: { coingeckoId: "la-coin", decimals: 18 },
     '0x7dc8b9e3b083c26c68f0b124ca923aaec7fbee39': { coingeckoId: 'tether', decimals: 6 },
     '0x51115241c7b8361eee88d8610f71d0a92cee5323': { coingeckoId: 'usd-coin', decimals: 6 },
   },
