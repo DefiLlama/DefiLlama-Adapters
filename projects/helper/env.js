@@ -20,6 +20,9 @@ const DEFAULTS = {
   MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
   SHAPE_RPC:'https://mainnet.shape.network',
   SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public",
+  APECHAIN_RPC: "https://rpc.apechain.com",
+  RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
 }
 
 const ENV_KEYS = [
@@ -33,6 +36,7 @@ const ENV_KEYS = [
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
   'ETHEREUM_TOKENS_ENDPOINT',
+  'FBTC_ACCESS_TOKEN',
   'UNISAT_AUTH'
 ]
 

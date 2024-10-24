@@ -3,11 +3,14 @@ const sui = require("../helper/chain/sui");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
-  const SUI = ADDRESSES.sui.SUI;
+// Token
+const SUI = ADDRESSES.sui.SUI;
 const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 const USDC_CIRCLE= ADDRESSES.sui.USDC_CIRCLE
+const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC"
+const SCALLOP_sUSDC = "0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC"
 
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
@@ -141,7 +144,11 @@ async function tvl(api) {
   for (const bucket of bucketList) {
     //AF_LP doesn't have price, need to split the tokens
     if (bucket.type.includes("AF_LP")) continue;
-    const coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
+    let coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
+
+    /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
+    if(coin === SCALLOP_swUSDC) coin = ADDRESSES.sui.USDC
+    if(coin === SCALLOP_sUSDC) coin = ADDRESSES.sui.USDC_CIRCLE
     api.add(coin, bucket.fields.collateral_vault);
   }
 

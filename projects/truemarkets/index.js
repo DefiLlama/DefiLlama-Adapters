@@ -1,5 +1,4 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
-const { base } = require('../radiant-v2')
 
 const config = {
   base: { factory: '0x288025b60330e01d793B6e83c1a0dE22bb943459', fromBlock: 21180486 },
