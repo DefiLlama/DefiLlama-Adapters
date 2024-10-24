@@ -1,6 +1,5 @@
 const abi = require('./abi')
 const { staking } = require("../helper/staking");
-const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const polygonVault = "0x32848E2d3aeCFA7364595609FB050A301050A6B4";
 const polygonStaking = "0xE8e2E78D8cA52f238CAf69f020fA961f8A7632e9"; // Staked MVX, sMVX
@@ -12,18 +11,9 @@ const polygonTVL = async (api) => {
   return api.sumTokens({ tokens, owner: polygonVault })
 };
 
-async function getStaking(timestamp, block) {
-  const toa = [
-    [polygonMVX, polygonStaking,],
-    [polygonMVX, polygonMvxVester,],
-  ]
-
-  return sumTokens2({ tokensAndOwners: toa, block, chain: "polygon" })
-}
-
 module.exports = {
   polygon: {
-    staking: getStaking,
+    staking: staking([polygonStaking, polygonMvxVester], polygonMVX, ),
     tvl: polygonTVL,
   },
 };
