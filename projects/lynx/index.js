@@ -12,8 +12,24 @@ const config = {
       ],
     ],
   },
+  mode: {
+    tokenAndOwnerPair: [
+      [
+        // MODE Token
+        "0xDfc7C877a950e49D2610114102175A06C2e3167a",
+        // OFTChipAdapter (owner)
+        "0x3b7ED1cDF0Fc64d95c0D0428b9Cc99b6A9a5CB94",
+      ],
+    ],
+  },
   fantom: {
     tokenAndOwnerPair: [
+      [
+        // WFTM Token
+        ADDRESSES.fantom.WFTM,
+        // OFTChipAdapter (owner)
+        "0x614aA983f54409D475aeC5D18120FECFD6320eF4"
+      ],
       [
         // FTM Token
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
@@ -22,11 +38,11 @@ const config = {
       ],
       [
         // USDC Token
-        "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+        ADDRESSES.fantom.USDC,
         // OFTChipAdapter (owner)
         "0x194609ea1C1D77e66eaB28C48CE266A48f3bC30a",
       ],
-       [
+      [
         // FSONIC Token
         "0x05e31a691405d06708a355c029599c12d5da8b28",
         // OFTChipAdapter (owner)
@@ -90,7 +106,7 @@ const config = {
     tokenAndOwnerPair: [
       [
         // stEUR Token
-        "0x004626a008b1acdc4c74ab51644093b155e59a23",
+        ADDRESSES.celo.STEUR,
         // OFTChipAdapter (owner)
         "0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90",
       ],
