@@ -118,6 +118,10 @@ const fixBalancesTokens = {
     '0xA2235d059F80e176D931Ef76b6C51953Eb3fBEf4': { coingeckoId: 'savings-dai', decimals: 18 },
     '0xcF800F4948D16F23333508191B1B1591daF70438': { coingeckoId: 'staked-ether', decimals: 18 },
   },
+  lac: {
+    '0x7dc8b9e3b083c26c68f0b124ca923aaec7fbee39': { coingeckoId: 'tether', decimals: 6 },
+    '0x51115241c7b8361eee88d8610f71d0a92cee5323': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
   zircuit: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
   },
