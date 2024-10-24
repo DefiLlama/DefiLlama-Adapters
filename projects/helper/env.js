@@ -15,7 +15,14 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   IDEX_RPC: "https://xchain-rpc.idex.io",
-  ETN_RPC: "https://rpc.ankr.com/electroneum"
+  ETN_RPC: "https://rpc.ankr.com/electroneum",
+  MATCHAIN_RPC: "https://rpc.matchscan.io,https://rpc.matchain.io",
+  MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
+  SHAPE_RPC:'https://mainnet.shape.network',
+  SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public",
+  APECHAIN_RPC: "https://rpc.apechain.com",
+  RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
 }
 
 const ENV_KEYS = [
@@ -29,6 +36,7 @@ const ENV_KEYS = [
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
   'ETHEREUM_TOKENS_ENDPOINT',
+  'FBTC_ACCESS_TOKEN',
   'UNISAT_AUTH'
 ]
 
