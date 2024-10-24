@@ -63,6 +63,8 @@ const fixBalancesTokens = {
   lac: {
     [ADDRESSES.null]: { coingeckoId: "la-coin", decimals: 18 },
     [ADDRESSES.lac.LAC]: { coingeckoId: "la-coin", decimals: 18 },
+    '0x7dc8b9e3b083c26c68f0b124ca923aaec7fbee39': { coingeckoId: 'tether', decimals: 6 },
+    '0x51115241c7b8361eee88d8610f71d0a92cee5323': { coingeckoId: 'usd-coin', decimals: 6 },
   },
   lisk: {
     '0x05d032ac25d322df992303dca074ee7392c117b9': { coingeckoId: 'tether', decimals: 6 },
