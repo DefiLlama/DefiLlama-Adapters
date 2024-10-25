@@ -1,6 +1,6 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens } = require('./helper/chain/near');
-const { calculateTVL } = require('./helper/chain/delta-trade')
+// const { calculateTVL } = require('./helper/chain/delta-trade')
 
 const GRID_CONTRACT_ID = 'grid.deltatrade.near';
 const DCA_CONTRACT_ID = 'dca.deltatrade.near';
