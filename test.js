@@ -10,7 +10,7 @@ const path = require("path");
 require("dotenv").config();
 const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
-  blocks: { getCurrentBlocks },
+  blocks: { getBlocks },
   humanizeNumber: { humanizeNumber },
 } } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
@@ -142,9 +142,15 @@ function validateHallmarks(hallmark) {
   // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
-  const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  // const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
-  const chainBlocks = {}
+
+  let unixTimestamp = Math.round(Date.now() / 1000) - 60;
+  let chainBlocks = {}
+  const passedTimestamp = process.argv[3]
+  if(passedTimestamp !== undefined){
+    unixTimestamp = Number(passedTimestamp)
+    const res = await getBlocks(unixTimestamp, chains)
+    chainBlocks = res.chainBlocks
+  }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
