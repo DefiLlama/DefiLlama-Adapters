@@ -18,6 +18,7 @@ const tokens = [
   'edge-fast.near',
   '802d89b6e511b335f05024a65161bce7efc3f311.factory.bridge.near',
 ]
+// console.log( sumTokens({ tokens, owners: [GRID_CONTRACT_ID, DCA_CONTRACT_ID] }))
 
 module.exports = {
   timetravel: false,
@@ -25,6 +26,6 @@ module.exports = {
     tvl: () => sumTokens({ tokens, owners: [GRID_CONTRACT_ID, DCA_CONTRACT_ID] }),
   },
   solana: {
-    tvl: async () => await calculateTVL(),
+    tvl: () => calculateTVL(),
   }
 }
