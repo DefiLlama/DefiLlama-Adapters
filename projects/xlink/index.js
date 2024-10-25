@@ -58,6 +58,14 @@ const config = {
         'SP102V8P0F7JX67ARQ77WEA3D3CFB5XW39REDT0AM.token-alex::alex',
       ] 
     },
+  bsquared: {
+    owners: [
+      '0x10eeCCc43172458F0ff9Cc3E9730aB256fAEE32e'
+    ],
+    tokens: [
+      '0x796e4D53067FF374B89b2Ac101ce0c1f72ccaAc2' // uBTC
+    ]
+  }
 }
 
 Object.keys(config).forEach(chain => {
