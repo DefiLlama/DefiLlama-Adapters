@@ -118,14 +118,17 @@ async function calculateTVL() {
     const baseToken = await getGlobalBalanceUser(pair.base_token.code);
     const quoteToken =await getGlobalBalanceUser(pair.quote_token.code);
     const { baseTokenBalance, quoteTokenBalance } = await getTokenBalanceForPair(baseToken, quoteToken);
-    const baseTokenTVL = (baseTokenBalance / Math.pow(10, pair.base_token.decimals)) * priceList[pair.base_token.code];
-    const quoteTokenTVL = (quoteTokenBalance / Math.pow(10, pair.quote_token.decimals))* priceList[pair.quote_token.code];
-    balances[baseToken] = baseTokenTVL;
-    balances[quoteToken] = quoteTokenTVL;
-    totalTVL += baseTokenTVL + quoteTokenTVL;
+    // const baseTokenTVL = (baseTokenBalance / Math.pow(10, pair.base_token.decimals)) * priceList[pair.base_token.code];
+    // const quoteTokenTVL = (quoteTokenBalance / Math.pow(10, pair.quote_token.decimals))* priceList[pair.quote_token.code];
+    // balances[baseToken] = baseTokenTVL;
+    // balances[quoteToken] = quoteTokenTVL;
+    // totalTVL += baseTokenTVL + quoteTokenTVL;
+    balances[baseToken] = baseTokenBalance;
+    balances[quoteToken] = quoteTokenBalance;
   }
 
-  return Object.values(balances).reduce((pre,current)=> pre + current);
+  // return Object.values(balances).reduce((pre,current)=> pre + current);
+    return balances;
 }
 
 
