@@ -5,7 +5,6 @@ const sdk = require('@defillama/sdk');
 const { PublicKey } = require('@solana/web3.js');
 const { Token } = require("@solana/spl-token");
 const { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID } = require("@solana/spl-token");
-
 const solanaRpcUrl = "https://solana-mainnet.core.chainstack.com/e814e86f51bba369ccf5318ae77146a5";
 const state = new PublicKey('FRcbUFpGHQppvXAyJrNYLKME1BQfowh4xKZB2vt9j6yn');
 const programId = new PublicKey('CNLGhYQgNwjyDfHZTEjHfk1MPkqwP96qZahWN82UfcLM');
@@ -14,7 +13,6 @@ const getTokenInfo = async () => {
   const info = await axios.get("https://solapi.deltatrade.ai/api/prices");
   return info?.data?.data;
 };
-
 
 async function getPairs() {
   try {
@@ -48,7 +46,6 @@ async function getGlobalBalanceUser(tokenInfo) {
     new PublicKey(globalBalPda.toString()),
     true
   );
-
   return globalBalTokenAccount.toString();
 }
 
@@ -84,18 +81,14 @@ async function calculateTVL() {
   let stableToken = ''
   const pairs = await getPairs();
   // const priceList = await getTokenInfo();
-
   for (const pair of pairs) {
     const baseToken = await getGlobalBalanceUser(pair.base_token.code);
     const quoteToken = await getGlobalBalanceUser(pair.quote_token.code);
     stableToken = pair.quote_token.code;
     const { baseTokenBalance, quoteTokenBalance } = await getTokenBalanceForPair(baseToken, quoteToken);
-
     // const baseTokenTVL = (baseTokenBalance / Math.pow(10, pair.base_token.decimals)) * (priceList[pair.base_token.code] || 0);
     // const quoteTokenTVL = (quoteTokenBalance / Math.pow(10, pair.quote_token.decimals)) * (priceList[pair.quote_token.code] || 0);
-    
     sdk.util.sumSingleBalance(balances, pair.base_token.code, baseTokenBalance, 'solana');
-
     if (!balances[`solana:${stableToken}`]) {
       quoteTokenTotalBalance = quoteTokenBalance;
     }
