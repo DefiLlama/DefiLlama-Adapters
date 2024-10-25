@@ -63,6 +63,8 @@ const fixBalancesTokens = {
   lac: {
     [ADDRESSES.null]: { coingeckoId: "la-coin", decimals: 18 },
     [ADDRESSES.lac.LAC]: { coingeckoId: "la-coin", decimals: 18 },
+    '0x7dc8b9e3b083c26c68f0b124ca923aaec7fbee39': { coingeckoId: 'tether', decimals: 6 },
+    '0x51115241c7b8361eee88d8610f71d0a92cee5323': { coingeckoId: 'usd-coin', decimals: 6 },
   },
   lisk: {
     '0x05d032ac25d322df992303dca074ee7392c117b9': { coingeckoId: 'tether', decimals: 6 },
@@ -88,6 +90,8 @@ const fixBalancesTokens = {
   },
   rollux: {
     '0x570baA32dB74279a50491E88D712C957F4C9E409': { coingeckoId: 'uno-re', decimals: 18 },
+    '0xaa1c53afd099e415208f47fcfa2c880f659e6904': { coingeckoId: 'weth', decimals: 18 },
+    '0x2a4dc2e946b92ab4a1f7d62844eb237788f9056c': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
   taiko: {
     '0xd347949f8c85d9f3d6b06bfc4f8c2e07c161f064': { coingeckoId: "loopring", decimals: 18 },
@@ -118,6 +122,9 @@ const fixBalancesTokens = {
   },
   zircuit: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  bsquared: {
+    '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3': { coingeckoId: 'lorenzo-stbtc', decimals: 18 }
   },
 }
 
