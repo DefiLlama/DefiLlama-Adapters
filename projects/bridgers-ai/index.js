@@ -137,7 +137,7 @@ const tokensConf = {
     TON: ADDRESSES.ton.TON,
     USDT: ADDRESSES.ton.USDT,
     USDC: ADDRESSES.ton.USDC,
-    NOT: 'EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT',
+    NOT: ADDRESSES.ton.NOT,
   },
   era: {
     ETH: nullAddress,
