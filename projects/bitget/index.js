@@ -132,6 +132,9 @@ const config = {
   kava: {
     owners: ['0x97b9d2102a9a65a26e1ee82d59e42d1b73b68689']
   },
+  starknet: {
+    owners: ['0x0299b9008e2d3fa88de6d06781fc9f32f601b2626cb0efa8e8c19f2b17837ed1']
+  },
 }
 
 module.exports = cexExports(config)
