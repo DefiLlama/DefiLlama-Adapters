@@ -73,8 +73,9 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
 async function call(method, params, { withMetadata = false } = {}) {
   if (!Array.isArray(params)) params = [params]
   const {
-    result
+    result, error
   } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method, params, })
+  if (!result && error) throw new Error(`[sui] ${error.message}`)
   if (['suix_getAllBalances'].includes(method)) return result
   return withMetadata ? result : result.data
 }
