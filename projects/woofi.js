@@ -57,6 +57,7 @@ const wooPPConfig = {
 	ethereum: [],
 	era: [
 		ADDRESSES.era.WETH, // WETH
+		ADDRESSES.era.ZK, // ZK
 		ADDRESSES.era.USDC, // USDC.e
 		'0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4', // native USDC
 	],
@@ -66,16 +67,20 @@ const wooPPConfig = {
 	],
 	linea: [
 		ADDRESSES.linea.WETH, // WETH
+		'0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4', // WBTC
 		ADDRESSES.linea.USDC, // native USDC
+		ADDRESSES.linea.USDT, // USDT
 	],
 	base: [
 		ADDRESSES.base.WETH, // WETH
+		'0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC
 		ADDRESSES.base.USDbC, // USDbC
 		ADDRESSES.base.USDC, // native USDC
 	],
 	mantle: [
 		ADDRESSES.mantle.WMNT, // WMNT
 		ADDRESSES.mantle.WETH, // WETH
+		'0xcDA86A272531e8640cD7F1a92c01839911B90bb0', // mETH
 		ADDRESSES.mantle.USDT, // USDT
 		ADDRESSES.mantle.USDC, // USDC
 	],
