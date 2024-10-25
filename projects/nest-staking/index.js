@@ -15,23 +15,17 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     abi: 'function getAllowedStablecoins() view returns (address[])',
   })
 
-  // Get SBTC and STONE total staked from Reserve Staking
-  const sbtcStaked = await api.call({
-    target: RESERVE_STAKING,
-    abi: 'function getSBTCTotalAmountStaked() view returns (uint256)',
-  })
-  
-  const stoneStaked = await api.call({
-    target: RESERVE_STAKING,
-    abi: 'function getSTONETotalAmountStaked() view returns (uint256)',
-  })
+  // Get all token balances using sumTokens2
+  const tokensAndOwners = [
+    
+    // RWA Staking stablecoins
+    ...stablecoins.map(i => ([i, RWA_STAKING])),
 
-  // Add SBTC and STONE balances
-  balances[SBTC] = sbtcStaked
-  balances[STONE] = stoneStaked
+    // Reserve Staking tokens
+    [SBTC, RESERVE_STAKING],
+    [STONE, RESERVE_STAKING]
+  ]
 
-  // Get stablecoin balances from RWA Staking
-  const tokensAndOwners = stablecoins.map(i => ([i, RWA_STAKING]))
   await sumTokens2({ balances, tokensAndOwners, api })
 
   return balances
