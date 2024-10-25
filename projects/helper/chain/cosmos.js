@@ -42,7 +42,8 @@ const endPoints = {
   nolus: "https://pirin-cl.nolus.network:1317",
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
-  joltify: "https://lcd.joltify.io"
+  joltify: "https://lcd.joltify.io",
+  noble: "https://api.noble.xyz"
 };
 
 const chainSubpaths = {
@@ -75,7 +76,10 @@ async function query(url, block, chain) {
   return (await get(endpoint)).result;
 }
 
-async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
+async function queryV1Beta1({ chain, paginationKey, block, url, api } = {}) {
+  if (api) {
+    chain = api.chain
+  }
   const subpath = chainSubpaths[chain] || "cosmos";
   let endpoint = `${getEndpoint(chain)}/${subpath}/${url}`;
   if (block !== undefined) {
@@ -185,7 +189,8 @@ async function lpMinter({ token, block, chain } = {}) {
   return data.minter;
 }
 
-async function queryContract({ contract, chain, data }) {
+async function queryContract({ contract, chain, data, api }) {
+  if (api) chain = api.chain;
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
   return (

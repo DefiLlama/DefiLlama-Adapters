@@ -29,12 +29,25 @@ module.exports = {
       const jitoSol = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
       const jupSolProgram = "6j6Fwxf7UzfaXqQA2QraWGEAYUYzjjZP3t6ChzjzkmL9";
       const jitoSolProgram = "6MAnq2z4ww8nnvfd8sec4sRMhTEdsdZXB1FLgqaYsg4d";
+      const jlpUsdtStrategy = "9vuDo8ZQsmMMe3qsiFCYoxsjhHieQVMNXLsfcfpC4SrX"
+
+
+      const lendingUsdc = "DefkwTSvkHeZASCuaVJ8AxUWS6zvBCwrLFpW2FniLSWo";  //change it to token account 
+      const lendingUsdt = "HDNrMywo5z84uBLdbcdHpgVP3bao8bw2PDiUwtM4hvHk"
+      const usdc = ADDRESSES.solana.USDC;
+      const usdt = ADDRESSES.solana.USDT;
+      const jlp = "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4"
+      const strategyJlp = "5852AnvCSV2GDzgpRVG4ZQ5cNn7abR7pPty5FaBxHLzW" 
 
       return sumTokens2({
         owner: lendingSol,
         tokensAndOwners: [
           [jupSol, jupSolProgram],
           [jitoSol, jitoSolProgram],
+          [jlp, strategyJlp],
+          [usdc, lendingUsdc],
+          [usdt, lendingUsdt],
+          [jlp, jlpUsdtStrategy],   
         ],
         solOwners: [lendingSol],
       });
@@ -50,8 +63,9 @@ module.exports = {
       const bals = await api.multiCall({
         abi: "int256:getVaultMarketValue",
         calls: vaults,
+        permitFailure: true
       });
-      bals.forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
+      bals.filter((bal) => bal !== null).forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
 
       const addresses = {
         wSol: "0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07",
@@ -135,7 +149,7 @@ module.exports = {
       });
 
       const contractAbis = {
-        stakedVlpBalance: "function getStakedVlpBalance() public view returns (uint256)",
+        stakedVlpBalance: "function getStakedVlpBalance() public view returns ( uint256)",
         stakedHlpBalance: "function userTokenAmount(address user) public view returns (uint256)",
         stakedAlpBalance: "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //
