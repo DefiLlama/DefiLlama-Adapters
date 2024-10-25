@@ -21,10 +21,10 @@ const tokens = [
 
 module.exports = {
   timetravel: false,
-  // near: {
-  //   tvl: () => sumTokens({ tokens, owners: [GRID_CONTRACT_ID, DCA_CONTRACT_ID] }),
-  // },
-  solana: {
-    tvl: async () => await calculateTVL(),
-  }
+  near: {
+    tvl: () => sumTokens({ tokens, owners: [GRID_CONTRACT_ID, DCA_CONTRACT_ID] }),
+  },
+  // solana: {
+  //   tvl: async () => await calculateTVL(),
+  // }
 }
