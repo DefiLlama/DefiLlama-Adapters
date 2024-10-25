@@ -7,7 +7,6 @@ module.exports = {
 
 const config = {
   merlin: { factory: '0x790b4ee7998A93702f29e56f8b615eF35BE5af43', fromBlock: 11260440},
-  core: { factory: '0x5C3027D8Cb28A712413553206A094213337E88c5', fromBlock: 17552799}
 }
 
 Object.keys(config).forEach(chain => {
