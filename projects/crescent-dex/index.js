@@ -26,5 +26,7 @@ module.exports = {
   methodology: "Counts the liquidity on all pools. ",
   crescent: {
     tvl
-  }
+  },
+  deadFrom: '2024-05-01',
+  hallmarks: [[1713052800, 'Sunset of Crescent Network']]
 }

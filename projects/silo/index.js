@@ -10,7 +10,7 @@ const config = {
     factories: [
       {
         START_BLOCK: 15307294,
-        SILO_FACTORY: '0x4D919CEcfD4793c0D47866C8d0a02a0950737589', // Silo Ethereum (Original)
+        SILO_FACTORY: '0x4D919CEcfD4793c0D47866C8d0a02a0950737589', // Silo Ethereum (Legacy)
       },
       {
         START_BLOCK: 17391885,
@@ -19,6 +19,10 @@ const config = {
       {
         START_BLOCK: 17782576,
         SILO_FACTORY: '0x2c0fA05281730EFd3ef71172d8992500B36b56eA' // Silo Ethereum (LLAMA Edition)
+      },
+      {
+        START_BLOCK: 20367992,
+        SILO_FACTORY: '0xB7d391192080674281bAAB8B3083154a5f64cd0a', // Silo Ethereum (Main)
       }
     ]
   },
@@ -26,7 +30,7 @@ const config = {
     factories: [
       {
         START_BLOCK: 51894508,
-        SILO_FACTORY: '0x4166487056A922D784b073d4d928a516B074b719', // Silo Arbitrum (Original)
+        SILO_FACTORY: '0x4166487056A922D784b073d4d928a516B074b719', // Silo Arbitrum (Main)
       }
     ]
   },
@@ -34,7 +38,15 @@ const config = {
     factories: [
       {
         START_BLOCK: 120480601,
-        SILO_FACTORY: '0x6B14c4450a29Dd9562c20259eBFF67a577b540b9', // Silo Optimism (Original)
+        SILO_FACTORY: '0x6B14c4450a29Dd9562c20259eBFF67a577b540b9', // Silo Optimism (Main)
+      }
+    ]
+  },
+  base: {
+    factories: [
+      {
+        START_BLOCK: 16262586,
+        SILO_FACTORY: '0x408822E4E8682413666809b0655161093cd36f2b', // Silo Base (Main)
       }
     ]
   },
@@ -88,10 +100,11 @@ async function getSilos(api) {
 
 
 module.exports = {
-  methodology: `We calculate TVL by interacting with Silo Factory smart contracts on Ethereum and Arbitrum. For Ethereum, it queries Silo(Original)(0x4D919CEcfD4793c0D47866C8d0a02a0950737589), (Convex Factory)(0x6d4A256695586F61b77B09bc3D28333A91114d5a), and (LLAMA Edition)(0x2c0fA05281730EFd3ef71172d8992500B36b56eA). On Arbitrum, we query the Silo Arbitrum factory(0x4166487056A922D784b073d4d928a516B074b719) to obtain the addresses of Silos, retrieve the assets of each Silo, and then calculates the sum of the deposited tokens, borrowed amount are exported separately`,
+  methodology: `We calculate TVL by interacting with Silo Factory smart contracts on Ethereum and Arbitrum. For Ethereum, it queries Silo(Main)(0xB7d391192080674281bAAB8B3083154a5f64cd0a), (Legacy)(0x4D919CEcfD4793c0D47866C8d0a02a0950737589), (Convex Factory)(0x6d4A256695586F61b77B09bc3D28333A91114d5a), and (LLAMA Edition)(0x2c0fA05281730EFd3ef71172d8992500B36b56eA). On Arbitrum, we query the Silo Arbitrum factory(0x4166487056A922D784b073d4d928a516B074b719), On Optimism, we query the Silo Optimism factory(0x6B14c4450a29Dd9562c20259eBFF67a577b540b9), On Base, we query the Silo Base factory(0x408822E4E8682413666809b0655161093cd36f2b), we query the  to obtain the addresses of Silos, retrieve the assets of each Silo, and then calculates the sum of the deposited tokens, borrowed amount are exported separately`,
   ethereum: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, },
   optimism: { tvl, borrowed, },
+  base: { tvl, borrowed, },
   hallmarks: [
     [1692968400, "Launch CRV market"]
   ]

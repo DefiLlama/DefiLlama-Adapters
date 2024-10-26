@@ -78,13 +78,14 @@ function waterloan(chain, borrowed) {
 }
 
 module.exports = {
+  deadFrom: '2022-10-23',
     methodology: `Counts all tokens locked in the contracts to be used as collateral in lending pool. Borrowed coins are not counted towards the TVL, only the coins actually locked in the contracts are counted.`,
   csc: {
     tvl: waterloan("csc", false),
-    borrowed: waterloan("csc", true),
+    borrowed: () => ({}) // bad debt waterloan("csc", true),
   },
   smartbch: {
     tvl: waterloan("smartbch", false),
-    borrowed: waterloan("smartbch", true),
+    borrowed: () => ({}) // bad debt waterloan("smartbch", true),
   },
 };

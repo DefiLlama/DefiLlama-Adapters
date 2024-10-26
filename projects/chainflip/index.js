@@ -23,13 +23,25 @@ const poolsDataQuery = `{
             unavailableAmount
         }
     }
+    allDepositBalances {
+        groupedAggregates(groupBy: ASSET) {
+            sum {
+                amount
+            }
+            keys
+        }
+    }
 }`
 
 const endpoint = 'https://cache-service.chainflip.io/graphql'
 
 async function tvl(api) {
   // Call GraphQL and get tokens, add each to balance
-  const { allPools: { nodes }, allBoostPools: { nodes: bNodes } } = await graphQuery(endpoint, poolsDataQuery);
+  const { 
+    allPools: { nodes }, 
+    allBoostPools: { nodes: bNodes }, 
+    allDepositBalances: { groupedAggregates: uNodes } 
+  } = await graphQuery(endpoint, poolsDataQuery);
 
   nodes.forEach(i => {
     api.add(i.baseAsset, i.baseLiquidityAmount)
@@ -39,11 +51,14 @@ async function tvl(api) {
     api.add(i.asset, i.availableAmount)
     api.add(i.asset, i.unavailableAmount)
   })
+  uNodes.forEach(i => {
+    api.add(i.keys[0], i.sum.amount)
+  })
   return sumTokens2({ api })
 }
 
 module.exports = {
-  methodology: 'The number of FLIP tokens in the Chainflip State Chain Gateway Contract, as well as the total deployed liquidity.',
+  methodology: 'The number of FLIP tokens in the Chainflip State Chain Gateway Contract, as well as the total liquidity.',
   start: 1700740800, // FLIP went live on 2023-11-23 12:00 UTC
   ethereum: {
     tvl: () => ({}),

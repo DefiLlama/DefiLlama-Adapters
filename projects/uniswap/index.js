@@ -88,6 +88,10 @@ module.exports = {
     sei: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 79245151 },
     mantle: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 63795918 },
     polygon_zkevm: { factory: "0xff83c3c800Fec21de45C5Ec30B69ddd5Ee60DFC2", fromBlock: 8466867 },
+    xdai: { factory: "0xe32F7dD7e3f098D518ff19A22d5f028e076489B1", fromBlock: 27416614 },
+    bob: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 5188280 },
+    lisk: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 577168 },
+    wc: { factory: "0x7a5028BDa40e7B173C278C5342087826455ea25a", fromBlock: 1603366 },
   }),
   filecoin: { tvl: filecoinTvl },
 }

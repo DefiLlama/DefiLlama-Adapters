@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unknownTokens");
+const { deadFrom } = require('../mosquitos-finance');
 const lps = [
   '0xF65af1E61D7aC87d73E347D17E369Dc2118E9517',
 ]
@@ -8,6 +9,7 @@ module.exports = {
   hallmarks: [
     [1676332800, "Rug Pull"]
   ],
+  deadFrom: 1676332800,
   misrepresentedTokens: true,
   canto: {
     tvl: sumTokensExport({

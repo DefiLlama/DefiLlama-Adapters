@@ -4,7 +4,7 @@ const contracts = {
 }
 
 async function tvl(api) {
-  const tvl = await api.call({ target: contracts.node, abi: "uint256:getTotalStakingAmount" })
+  const tvl = await api.call({ target: contracts.node, abi: "uint256:getTotalClaimable" })
   api.addGasToken(tvl)
 }
 

@@ -35,8 +35,10 @@ let allControllers = {
   ],
   arbitrum: [
     "0x50210A88217d1dD9e7FBc3E4a927Cc55829a38eB", // dForce vault pool: USX/2CRV
+    "0xcfe6d1b2BE777f20AD6F98f1c12C6436652F2031", // dForce vault pool: iwstETH
+    "0xB5b3da79789dE012Fd75108138b2315E5645715A", // dForce vault pool: saETH
   ],
-  optimism: [],
+  optimism: ["0xdF0e115aA822443df9200Cc5d0260FA8E1aF06F5"], // dForce vault pool: iwstETH
   polygon: [],
   avax: ["0x078ad8d6faeD9DAeE55f5d446C80E0C81230DE6b"],
   kava: ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"],

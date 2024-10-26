@@ -1,5 +1,4 @@
-const { pool2BalanceFromMasterChefExports} = require("../helper/pool2.js");
-const masterchefAbi = require("../helper/abis/masterchef.json");
+const { sumTokens2 } = require("../helper/unwrapLPs.js");
 
 //Polygon and BSC staking contracts
 const polygonContract = "0xefa4aED9Cf41A8A0FcdA4e88EfA2F60675bAeC9F";
@@ -12,11 +11,16 @@ module.exports = {
     methodology: 'Pool2 TVL in Polygon and BSC LPs',
     polygon: {
         tvl: async ()=>({}),
-        pool2: pool2BalanceFromMasterChefExports(polygonContract, ban, "polygon", addr=>`polygon:${addr}`, masterchefAbi.poolInfo)
+        pool2: tvl,
     },   
     bsc: {
         tvl: async ()=>({}),
-        pool2: pool2BalanceFromMasterChefExports(bscContract, ban, "bsc", addr=>`bsc:${addr}`, masterchefAbi.poolInfo)
+        pool2: tvl,
     },
 }
 
+async function tvl(api) {
+  const contract = api.chain === 'bsc' ? bscContract : polygonContract;
+  const tokens = await api.fetchList({  lengthAbi: 'poolLength', itemAbi:'function poolInfo(uint256) view returns (address stakingToken , uint256 stakingTokenTotalAmount , uint256 accWBANPerShare , uint32 lastRewardTime , uint16 allocPoint )' , target: contract})
+  return sumTokens2({ api, tokens: tokens.map(i => i.stakingToken), owner: contract, resolveLP: true})
+}   

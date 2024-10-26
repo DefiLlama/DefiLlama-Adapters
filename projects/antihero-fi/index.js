@@ -7,7 +7,7 @@ module.exports = {
   methodology:
     "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
   arbitrum: {
-    ...compoundExports(unitroller, "arbitrum"),
+    ...compoundExports(unitroller),
     staking: staking(
       [
         "0x2117E6449b3C50B70705bF1566383b1a94bd5192",
@@ -15,4 +15,7 @@ module.exports = {
       "0x9d15bb4351E95A3FE213E48B410BA1aB7CF8Ce45"
     ),
   },
+  deadFrom: "2023-08-27"
 };
+
+module.exports.arbitrum.borrowed = () => ({}) // bad debt

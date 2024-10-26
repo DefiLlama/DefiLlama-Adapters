@@ -1,66 +1,44 @@
 const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
 const { get } = require("../helper/http");
+
+const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' };
 let _res;
 
 async function getData() {
-  if (!_res) _res = get("https://universe.staderlabs.com/common/tvl");
+  if (!_res) _res = await get('https://universe.staderlabs.com/common/tvl', { headers })
   return _res;
 }
 
 async function hbarTvl() {
-  const res = await get("https://universe.staderlabs.com/common/tvl");
-  return {
-    "hedera-hashgraph": res.hedera.native,
-  };
+  const res = await get('https://universe.staderlabs.com/common/tvl', { headers })
+  return { "hedera-hashgraph": res.hedera.native };
 }
 
 async function maticTvl() {
   const res = await getData();
-  return {
-    "matic-network": res.polygon.native,
-  };
+  return { "matic-network": res.polygon.native };
 }
 
 async function bscTvl() {
   const res = await getData();
-  return {
-    binancecoin: res.bnb.native,
-  };
+  return { binancecoin: res.bnb.native };
 }
 
 async function ethTvl(api) {
-  return await api.call({
-    abi: "uint256:totalAssets",
-    target: "0xcf5ea1b38380f6af39068375516daf40ed70d299",
-  });
+  return await api.call({ abi: "uint256:totalAssets", target: "0xcf5ea1b38380f6af39068375516daf40ed70d299" });
 }
 
 module.exports = {
   timetravel: false,
-  methodology:
-    "We aggregated the assets staked across Stader staking protocols",
-  /*terra: {
-    tvl,
-  },*/
-  hedera: {
-    tvl: hbarTvl,
-  },
+  methodology: "We aggregated the assets staked across Stader staking protocols",
+  /*terra: { tvl },*/
+  hedera: { tvl: hbarTvl },
   // its on ethereum because funds are locked there
-  /* ethereum: {
-    tvl: maticTvl
-  }, */
-  fantom: {
-    tvl: () => ({}),
-  },
-  terra2: {
-    tvl: () => ({}),
-  },
-  bsc: {
-    tvl: bscTvl,
-  },
-  near: {
-    tvl: () => ({}),
-  },
+  //  ethereum: { tvl: maticTvl },
+  fantom: { tvl: () => ({}) },
+  terra2: { tvl: () => ({}) },
+  bsc: { tvl: bscTvl },
+  near: { tvl: () => ({}) },
   ethereum: {
     tvl: async (api) => {
       const res = await getData();

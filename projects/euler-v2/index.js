@@ -1,3 +1,5 @@
+const { sumTokens2 } = require("../helper/unwrapLPs")
+
 module.exports = {
   methodology: `TVL is supply balance minus borrows the euler contract.`,
 }
@@ -18,7 +20,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { vaults, tokens } = await getVaults(api)
-      return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
+      return sumTokens2({ api, tokensAndOwners2: [tokens, vaults], permitFailure: true })
     },
     borrowed: async (api) => {
       const { vaults, tokens } = await getVaults(api)

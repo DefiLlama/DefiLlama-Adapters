@@ -5,7 +5,7 @@ const freestyleConfig = {
   base: {
       token: ADDRESSES.base.USDC,
       start: 1700006400,
-      graphUrl: "https://api.studio.thegraph.com/query/62454/analytics_base_8_2/version/latest",
+      graphUrl: "https://api-v2.morphex.trade/subgraph/3KhmYXgsM3CM1bbUCX8ejhcxQCtWwpUGhP7p9aDKZ94Z",
       accountSource: '0x6D63921D8203044f6AbaD8F346d3AEa9A2719dDD'
   },
 }

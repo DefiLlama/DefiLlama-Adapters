@@ -41,6 +41,7 @@ module.exports = treasuryExports({
       "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL      
       "0x0a6B1d9F920019BAbc4De3F10c94ECB822106104",
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352",
+      "0xbD1F921786e12a80F2184E4d6A5cAcB25dc673c9", // dola-inv uni
     ],
     owners: [anchorTreasury, treasurymultisig, pcmultisig, bugbountymultisig, fedchair],
     ownTokens: [
@@ -54,6 +55,16 @@ module.exports = treasuryExports({
     blacklistedTokens: [
       '0x21e83dbfd8f11d885eba9f9ba126da11ae0671b7',
       '0x265befe2b1a0f4f646dea96ba09c1656b74bda91',
+    ],
+    convexRewardPools: [
+      "0x9a2d1b49b7c8783E37780AcE4ffA3416Eea64357",// DBR tripool CVX
+      "0x21E2d7f66DF6F4e8199210b9490a51831C9847C7",// inv tripool CVX
+      "0xE8cBdBFD4A1D776AB1146B63ABD1718b2F92a823",// dola-fraxpyusd lp CVX
+      "0x2ef1dA0368470B2603BAb392932E70205eEb9046",// dola-fxusd lp CVX
+      "0x0404d05F3992347d2f0dC3a97bdd147D77C85c1c",// dola-fraxusdc lp CVX
+    ],
+    auraPools: [
+      "0xA36d3799eA28f4B75653EBF9D91DDA4519578086", // sDOLA-DOLA aura pool
     ]
   },
   optimism: {

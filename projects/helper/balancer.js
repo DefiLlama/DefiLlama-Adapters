@@ -1,5 +1,6 @@
 const { sumTokens2 } = require('./unwrapLPs');
-const { getLogs } = require('./cache/getLogs')
+const { getLogs } = require('./cache/getLogs');
+const { cachedGraphQuery } = require('./cache');
 
 function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], onlyUseExistingCache, permitFailure } = {}) {
   return async (api) => {
@@ -51,7 +52,22 @@ function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
   }
 }
 
+function balV2GraphExport({ vault,  blacklistedTokens = [], graphURL, name, permitFailure, }) {
+  return async (api) => {
+    if (!graphURL) {
+      throw new Error('graphURL is required')
+    }
+    if (!name) {
+      throw new Error('name is required (it is used as id for caching)')
+    }
+    const query = `{ tokens(first: 1000) { address } }`
+    const tokens  = (await cachedGraphQuery(name, graphURL, query)).tokens.map(t => t.address)
+    return sumTokens2({ api, owner: vault, tokens, blacklistedTokens, permitFailure })
+  }
+}
+
 module.exports = {
   onChainTvl,
   v1Tvl,
+  balV2GraphExport,
 };
