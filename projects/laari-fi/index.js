@@ -13,4 +13,5 @@ module.exports = yieldHelper({
     poolInfo: 'function poolInfo(uint256) view returns (address want, uint256, uint256, uint256, uint256, uint256, uint256, uint256 amount, uint256, address strat)',
   },
 })
-module.exports.hallmarks=[[1697068800, "Rug Pull"]]
+module.exports.hallmarks=[[1697068800, "Rug Pull"]],
+module.exports.deadFrom='2023-10-12'

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const blastKalax = "0x2F67F59b3629Bf24962290DB9edE0CD4127e606D"
@@ -18,8 +19,8 @@ async function tvl(api) {
     pools
     .filter((i) => i.assets !== kalax)
     .forEach((i)=>{
-      if(i.assets === '0x0000000000000000000000000000000000000001'){
-        i.assets ='0x0000000000000000000000000000000000000000'
+      if(i.assets === ADDRESSES.linea.WETH_1){
+        i.assets =ADDRESSES.null
       }
       api.add(i.assets, i.tvl)
     })
@@ -29,7 +30,7 @@ async function tvl(api) {
 }
 
 
-const usdt = "0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df"
+const usdt = ADDRESSES.scroll.USDT
 const scrollKalaLp = "0x4fc09BE6eB49764CcAE4e95Bd2B93f67a34c0188"
 async function staking(api) {
   let farms = api.chain === 'blast'?blastfarms:scrollFarms
@@ -53,6 +54,9 @@ async function staking(api) {
 }
 
 module.exports = {
+  hallmarks:[
+    [1728777600,'Rugpull']
+  ],
   blast: {
     tvl,
     staking,

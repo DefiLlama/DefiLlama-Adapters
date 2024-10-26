@@ -43,6 +43,7 @@ async function getData() {
 
 
 module.exports = {
+  deadFrom: "2024-09-17",
   timetravel: false,
   comdex: {
     tvl: async () => transformBalances('comdex', (await getData()).tvl),

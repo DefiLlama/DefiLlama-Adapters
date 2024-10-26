@@ -1,4 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs');
+const { get } = require('../helper/http');
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs');
 
 const config = require('./config');
@@ -322,7 +323,20 @@ Object.keys(config).forEach(chain => {
       tvl = genericTvl
   }
 
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl: tvl2 }
 })
 
-module.exports.isHeavyProtocol = true
+// module.exports.isHeavyProtocol = true
+module.exports.misrepresentedTokens = true
+let _get
+
+async function tvl2(api) {
+  if (!_get) 
+    _get = get(`https://api.vfat.io/v1/sickle-stats`)
+  
+  const { chainStats } = await _get
+  chainStats.filter(chain => chain.chainId === api.chainId).forEach(chain => {
+    api.addUSDValue(chain.tvl)
+  })
+
+}
