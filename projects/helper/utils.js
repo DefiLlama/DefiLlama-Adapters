@@ -306,12 +306,16 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   sdk.log('Balance table for [%s] %s', chain, tableLabel)
-  const filtered = logObj.filter(i => {
+  let filtered = logObj.filter(i => {
     const symbol = i.symbol?.toLowerCase() ?? ''
     if (/\.(com|net|org|xyz|site|io)/.test(symbol)) return false
     if (/claim|access|airdrop/.test(symbol)) return false
     return true
   })
+  if (filtered.length > 300) {
+    sdk.log('Too many unknowns to display #'+filtered.length, 'displaying first 100')
+    filtered = filtered.slice(0, 100)
+  }
   if (filtered.length)
     console.table(filtered)
 }
