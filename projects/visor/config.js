@@ -34,6 +34,7 @@ const HYPE_REGISTRY = {
   ],
   optimism: [
     ["0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599", 6538026], // Uniswap
+    ["0x617BA5fcB4e74758795DceBecA420116e50bD289", 126667774], // Sushiswap
     ["0xF802D5c44dC4E3bB0eCcf680a6bA82Cbd24B9F33", 125319599], // Velodrome
   ],
   arbitrum: [
@@ -149,6 +150,13 @@ const HYPE_REGISTRY = {
   zircuit: [
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 1216191], // Gmeow 
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 1216165], // Circuit
+    ["0x17307DaC1384719d263556aAcC3e62c0053FE25D", 4826564], // Ocelex
+  ],
+  wc: [
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 4799965], // Uniswap
+  ],
+  apechain: [
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 476343], // Camelot
   ],
 };
 

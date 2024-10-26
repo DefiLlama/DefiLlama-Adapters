@@ -16,6 +16,7 @@ async function transformInjectiveAddress() {
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
+    if (addr.startsWith('injective:') || addr.startsWith('ethereum:')) return addr
     return `injective:${addr}`;
   };
 }
