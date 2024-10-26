@@ -8,7 +8,7 @@ async function tvl(api) {
     ])
 
   const ownerTokens = tokens.map((tokens, i) => [tokens, vaults[i]]);
-  return sumTokens2({ api, ownerTokens, resolveLP: true });
+  return sumTokens2({ api, ownerTokens, resolveLP: true, blacklistedTokens: ['0x55d398326f99059ff775485246999027b3197955'] });
 }
 
 module.exports = {
