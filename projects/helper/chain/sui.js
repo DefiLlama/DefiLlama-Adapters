@@ -9,6 +9,7 @@ const { sliceIntoChunks, getUniqueAddresses } = require('../utils')
 //https://docs.sui.io/sui-jsonrpc
 
 const endpoint = () => getEnv('SUI_RPC')
+const graphEndpoint = () => getEnv('SUI_GRAPH_RPC')
 
 async function getObject(objectId) {
   return (await call('sui_getObject', [objectId, {
@@ -140,6 +141,28 @@ async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], t
   return api.getBalances()
 }
 
+async function queryEventsByType({ eventType, transform = i => i }) {
+  const query = `query GetEvents($after: String, $eventType: String!) {
+  events(first: 50, after: $after, filter: { eventType: $eventType }) {
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    nodes {
+      json
+    }
+  }
+}`
+  const items = []
+  let after = null
+  do {
+    const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
+    after = hasNextPage ? endCursor : null
+    items.push(...nodes.map(i => i.json).map(transform))
+  } while (after)
+  return items
+}
+
 module.exports = {
   endpoint: endpoint(),
   call,
@@ -151,4 +174,5 @@ module.exports = {
   getDynamicFieldObjects,
   dexExport,
   sumTokens,
+  queryEventsByType,
 };
