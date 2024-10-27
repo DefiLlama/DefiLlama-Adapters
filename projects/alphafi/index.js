@@ -91,6 +91,30 @@ const ALPHAFI_CETUS_TVL_IDS = [
     token0Type: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
     token1Type: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN"
   },
+  // usdc eth
+  {
+    poolID: "0xc04f71f32a65ddf9ebf6fb69f39261457da28918bfda5d3760013f3ea782a594",
+    cetusPoolID: "0x9e59de50d9e5979fc03ac5bcacdb581c823dbd27d63a036131e17b391f2fac88",
+    investorID: "0xb0bff60783536f9dc0b38e43150a73b73b8a4f1969446f7721e187821915bd00",
+    token0Type: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+    token1Type: "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH"
+  },
+  // deep sui
+  {
+    poolID: "0xff496f73a1f9bf7461882fbdad0c6c6c73d301d3137932f7fce2428244359eaa",
+    cetusPoolID: "0xe01243f37f712ef87e556afb9b1d03d0fae13f96d324ec912daffc339dfdcbd2",
+    investorID: "0x5e195363175e4b5139749d901ddd5ef1ffc751777a7051b558c45fa12f24abc3",
+    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
+    token1Type: ADDRESSES.sui.SUI
+  },
+  // buck sui
+  {
+    poolID: "0xeb44ecef39cc7873de0c418311557c6b8a60a0af4f1fe1fecece85d5fbe02ab5",
+    cetusPoolID: "0x59cf0d333464ad29443d92bfd2ddfd1f794c5830141a5ee4a815d1ef3395bf6c",
+    investorID: "0x9b7c9b6086d3baf413bccdfbb6f60f04dedd5f5387dee531eef5b811afdfaedc",
+    token0Type: "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
+    token1Type: ADDRESSES.sui.SUI
+  },
 ]
 
 const ALPHAFI_NAVI_TVL_IDS = [
@@ -124,6 +148,21 @@ const ALPHAFI_NAVI_TVL_IDS = [
     tokenType: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
     expo: 6
   },
+  {
+    poolID: "0xea3c2a2d29144bf8f22e412ca5e2954c5d3021d3259ff276e3b62424a624ad1f",
+    tokenType: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY",
+    expo: 6
+  },
+  {
+    poolID: "0x8ebe04b51e8a272d4db107ad19cfbc184d1dafeeaab0b61c26e613b804e7777a",
+    tokenType: "0x2053d08c1e2bd02791056171aab0fd12bd7cd7efad2ab8f6b9c8902f14df2ff2::ausd::AUSD",
+    expo: 6
+  },
+  {
+    poolID: "0xc37ec956fdef6c217505e62444ab93f833c20923755d67d1c8588c9b093ae00e",
+    tokenType: "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH",
+    expo: 8
+  },
 ]
 const ALPHAFI_NAVI_LOOP_TVL_IDS = [
   {
@@ -132,6 +171,13 @@ const ALPHAFI_NAVI_LOOP_TVL_IDS = [
     tokenType: "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
     expo: 9
   },
+]
+const ALPHAFI_BUCKET_TVL_IDS = [
+  {
+    poolID: "0x2c5c14b9fb21f93f36cac0f363acf59ecb21f34c4c9b1a1b383f635ecdc7b507",
+    tokenType: "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
+  },
+  
 ]
 const ALPHAFI_POOL2_IDS = [{
   poolID: "0x594f13b8f287003fd48e4264e7056e274b84709ada31e3657f00eeedc1547e37",
@@ -213,9 +259,18 @@ async function addPoolTVL3(api, alphafiNaviLoopPools){
   }
 }
 
+async function addPoolTVL4(api, alphafiBucketPools){
+ 
+  for (const { poolID, tokenType } of alphafiBucketPools){
+    let poolObject = await sui.getObject(poolID);
+    let tokensInvested = poolObject.fields.tokensInvested;
+    api.add(tokenType, tokensInvested);
+  }
+}
+
 async function tvl(api) {
   
-  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS)])
+  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS), addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS)])
 
 }
 async function pool2(api) {
