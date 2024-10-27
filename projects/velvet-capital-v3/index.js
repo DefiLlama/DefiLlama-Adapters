@@ -7,8 +7,20 @@ async function tvl(api) {
       api.multiCall({ abi: 'address:vault', calls: indexes }),
     ])
 
+    const blacklistsByChain = {
+      base: [
+        "0x55d398326f99059ff775485246999027b3197955"
+      ],
+      bsc: [
+        "0x4200000000000000000000000000000000000006"
+      ]
+    }
+
+    const blacklistedTokens = blacklistsByChain[api.chain] || []
+
+
   const ownerTokens = tokens.map((tokens, i) => [tokens, vaults[i]]);
-  return sumTokens2({ api, ownerTokens, resolveLP: true, blacklistedTokens: ['0x55d398326f99059ff775485246999027b3197955'] });
+  return sumTokens2({ api, ownerTokens, resolveLP: true, blacklistedTokens});
 }
 
 module.exports = {
@@ -16,7 +28,8 @@ module.exports = {
 }
 
 const config = {
-  base : '0xf93659fb357899e092813bc3a2959ceDb3282a7f'
+  base : '0xf93659fb357899e092813bc3a2959ceDb3282a7f',
+  bsc: '0xA1fe1C37Bf899C7F7521082C002dFA4fEbAaA8dd'
 }
 
 Object.keys(config).forEach(chain => {
