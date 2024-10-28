@@ -25,8 +25,9 @@ Object.keys(config).forEach(chain => {
       })
 
       const balances = {}
-      const pools = logs.map(i=>i.pool)
-      const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', target: pools})
+
+      let pools = logs.map((poolLog) => `0x${poolLog.topics[2].slice(26)}`)
+      const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
 
       tokens.forEach(async (token, index) => {
         const accountBalances =  await api.multiCall({  abi: 'address:getBalance', calls: token})
