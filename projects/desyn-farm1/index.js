@@ -30,13 +30,10 @@ Object.keys(config).forEach(chain => {
 
       const balances = {}
       const pools = logs.map(i=>i.pool)
-      const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
+      await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
+      const alkBalances = await api.multiCall({  abi: abi['getBalance'], calls: tokens })
 
-      tokens.forEach(async (token, index) => {
-        const accountBalances = (await api.multiCall({  abi: abi['getBalance'], calls: token, params: token})).output
-        sdk.util.sumSingleBalance(balances, tokens[index].toString(), accountBalances)
-      })
-   
+      sdk.util.sumMultiBalanceOf(balances, alkBalances) 
       return balances
     }
   }
