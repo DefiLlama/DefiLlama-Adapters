@@ -35,6 +35,7 @@ const LorenzoOwners = [
 
 module.exports = {
   methodology: "Lorenzo, As the Bitcoin Liquidity Finance Layer",
+  doublecounted:true,
   bitcoin: {
       tvl: sumTokensExport({ owners : LorenzoOwners }),
   }

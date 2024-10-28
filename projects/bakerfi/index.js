@@ -5,6 +5,9 @@ const config = {
   base: {
     vaults: ["0x37327c99bBc522e677a97d01021dB20227faF60A"]
   },
+  ethereum: {
+    vaults: ["0x01280b3683fE20Dc9cCF4D9526418F252871E4F7"]
+  },
 }
 
 async function getVaultTVL(api, vaults) {

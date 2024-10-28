@@ -13,6 +13,7 @@ function transformAddress(addr) {
 }
 
 const endpoint = "https://rpc.mainnet.near.org"
+// const endpoint = "https://near.lava.build"
 
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },

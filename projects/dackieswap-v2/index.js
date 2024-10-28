@@ -16,6 +16,7 @@ const config = {
   mode: '0x757cd583004400ee67e5cc3c7a60c6a62e3f6d30',
   base: '0x591f122D1df761E616c13d265006fcbf4c6d6551',
   linea: '0x9790713770039CeFcf4FAaf076E2846c9B7a4630',
+  wc: '0x757cD583004400ee67e5cC3c7A60C6a62E3F6d30',
 }
 
 module.exports = {
