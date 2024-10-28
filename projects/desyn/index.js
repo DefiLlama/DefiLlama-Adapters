@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
@@ -30,10 +31,18 @@ Object.keys(config).forEach(chain => {
         onlyArgs: true,
         fromBlock,
       })
+
+      const balances = {}
+
       const pools = logs.map(i=>i.pool)
       const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
-      await api.sumTokens({ ownerTokens: tokens.map((tokens, i) => [tokens, pools[i]])})
-      return api.getBalances()
+      tokens.forEach( async (b, i) => {
+        const accountBalances = await api.multiCall({  abi: 'address:getBalance', b})
+        await sdk.util.sumSingleBalance(balances, tokens[i].toString(), accountBalances)
+      })
+    
+      return balances
+
     }
   }
 })
