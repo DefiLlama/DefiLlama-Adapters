@@ -105,17 +105,20 @@ async function positionsTvl(
     target: contangoLens,
     calls: parts.map(([id]) => id),
     abi: abis.balances,
+    permitFailure: true
   });
 
-  balances.forEach(([collateral, debt], i) => {
-    const [base, quote] = parts[i][1];
+  parts.forEach(([_, [base, quote]], i) => {
+    const balance = balances[i]
+    if (!balance) return
+    const [collateral, debt] = balance
     if (borrowed) {
-      api.add(quote, debt);
+      api.add(quote, debt)
     } else {
-      api.add(quote, -debt);
-      api.add(base, collateral);
+      api.add(quote, -debt)
+      api.add(base, collateral)
     }
-  });
+  })
 }
 
 async function vaultTvl(api, contango, graphUrl) {
