@@ -1,10 +1,5 @@
-const { getUniTVL } = require('../helper/unknownTokens')
-
+const { aaveV2Export, methodology } = require("../helper/aave")
 module.exports = {
-  misrepresentedTokens: true,
-  methodology:
-    "Factory address (0x6402613eE4167832a29531ca67170c91a3304A1d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-  hedera: {
-    tvl: getUniTVL({ factory: '0x6402613eE4167832a29531ca67170c91a3304A1d', useDefaultCoreAssets: true }),
-  },
-}
+  timetravel: false,
+  methodology,
+  hedera: aaveV2Export('0x6402613eE4167832a29531ca67170c91a3304A1d'),
