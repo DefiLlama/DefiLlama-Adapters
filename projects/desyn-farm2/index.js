@@ -13,9 +13,9 @@ async function tvl(api) {
     let pools = poolLogs.map((poolLog) => `0x${poolLog.topics[2].slice(26)}`)
 
     const poolTokenData = await api.multiCall({ calls: pools, abi: "address[]:getCurrentTokens", })
-    poolTokenData.forEach( async (b, i) => {
-        const accountBalances = await api.multiCall({  abi: 'address:getBalance', b})
-        await sdk.util.sumSingleBalance(balances, poolTokenData[i].toString(), accountBalances)
+    poolTokenData.forEach( async (token, index) => {
+        const accountBalances = await api.multiCall({  abi: 'address:getBalance', token})
+        await sdk.util.sumSingleBalance(balances, poolTokenData[index].toString(), accountBalances)
     })
    
     return balances
