@@ -7,7 +7,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const tokens = await api.call({ abi: 'address[]:getSupportedTokenList', target: exchange })
-      return api.sumTokens({ owner: exchange, tokens })
+      return api.sumTokens({ owner: exchange, tokens, blacklistedTokens: ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'] })
     }
   }
 })
