@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
   methodology: 'On-chain restaking',
-  doublecounted: true,
+  doublecounted: true
 }
 
 const config = {
@@ -29,13 +29,20 @@ Object.keys(config).forEach(chain => {
         fromBlock,
       })
 
-      const balances = {}
-      const pools = logs.map(i=>i.pool)
-      const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
-      const alkBalances = await api.multiCall({  abi: abi['getBalance'], calls: tokens })
-
-      sdk.util.sumMultiBalanceOf(balances, alkBalances) 
-      return balances
+      const pools = logs.map(i => i.pool)
+      const tokens = await api.multiCall({ abi: 'address[]:getCurrentTokens', calls: pools })
+      const calls = []
+      const allTokens = []
+      let i = 0
+      for (const pool of pools) {
+        for (const token of tokens[i]) {
+          calls.push({ target: pool, params: token })
+          allTokens.push(token)
+        }
+        i++
+      }
+      const allBals = await api.multiCall({ abi: abi.getBalance, calls })
+      api.add(allTokens, allBals)
     }
   }
 })
