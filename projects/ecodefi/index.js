@@ -2,6 +2,7 @@ const { staking } = require('../helper/staking')
 const { compoundExports2 } = require('../helper/compound')
 
 module.exports = {
+  deadFrom: '2022-08-02',
   methodology: 'counts the number of Total value locked in ESG protocol.',
   bsc: {
     ...compoundExports2({ comptroller: '0xfd1f241ba25b8966a14865cb22a4ea3d24c92451'}),
@@ -9,3 +10,5 @@ module.exports = {
   },
   start: 15307794, // Feb-16-2022 01:49:31 PM +UTC
 }
+
+module.exports.bsc.borrowed = () => ({}) // bad debt

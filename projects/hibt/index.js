@@ -13,7 +13,8 @@ const config = {
   },
   tron: {
     owners: [
-        'TWVCro8i15sJjmwRKfV53gPnCsgz2ThQSc'
+        'TWVCro8i15sJjmwRKfV53gPnCsgz2ThQSc',
+        'TGoPfFBjoZ6wFFia1NAFio21Pi9Sc8KFw5'
     ]
   },
 }

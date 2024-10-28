@@ -1,13 +1,17 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
+const { sumTokens } = require('../helper/chain/bitcoin')
+const { getConfig } = require('../helper/cache')
 
-async function tvl(ts, block, _) {
-  return {
-    [ADDRESSES.ethereum.tBTC]: (await sdk.api.erc20.totalSupply({ target: ADDRESSES.ethereum.tBTC, block })).output
-  }
+async function tvl(api) {
+  const { wallets } = await getConfig('tbtc/wallets', 'https://api.threshold.network/tbtc/wallets/pof')
+  const owners = wallets.filter(i => +i.walletBitcoinBalance > 0).map(wallet => wallet.walletBitcoinAddress)
+  return sumTokens({ owners, })
 }
 
 module.exports = {
-  ethereum: { tvl },
-  methodology: `TVL for tBTC consists of the BTC deposits in custody that were used to mint tBTC`
-}
+  timetravel: false,
+  methodology: "BTC on btc chain",
+  ethereum: { tvl: () => ({}) },
+  bitcoin: {
+    tvl,
+  },
+};

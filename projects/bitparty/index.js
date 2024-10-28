@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 
 module.exports = {
@@ -6,10 +7,10 @@ module.exports = {
       owners: ['0xb002b938d63fe8762f2a0eff9e49a8e20a0078e8',],
       tokens: [
         nullAddress,
-        '0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2',
+        ADDRESSES.btr.ETH,
         '0xfe9f969faf8ad72a83b761138bf25de87eff9dd2',
-        '0x9827431e8b77e87c9894bd50b055d6be56be0030',
-        '0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F',
+        '0xf8c374ce88a3be3d374e8888349c7768b607c755',
+        ADDRESSES.btr.WBTC,
         '0x07373d112edc4570b46996ad1187bc4ac9fb5ed0',
         '0x2729868df87d062020e4a4867ff507fb52ee697c',
         '0x68879ca2af24941fc3b6eb89fdb26a98aa001fc1',

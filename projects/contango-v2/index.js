@@ -1,40 +1,62 @@
-const { blockQuery } = require("../helper/http");
 const { cachedGraphQuery } = require("../helper/cache");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const CONTANGO_PROXY = "0x6Cae28b3D09D8f8Fc74ccD496AC986FC84C0C24E";
 const CONTANGO_LENS_PROXY = "0xe03835Dfae2644F37049c1feF13E8ceD6b1Bb72a";
+const alchemyGraphUrl = (chain) =>
+  `https://subgraph.satsuma-prod.com/773bd6dfe1c6/egills-team/v2-${chain}/api`
 
 const config = {
   arbitrum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-arbitrum",
+    graphUrl: alchemyGraphUrl('arbitrum'),
   },
   optimism: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-optimism",
+    graphUrl: alchemyGraphUrl('optimism'),
   },
   ethereum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-mainnet",
+    graphUrl: alchemyGraphUrl('mainnet'),
   },
   polygon: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-polygon",
+    graphUrl: alchemyGraphUrl('polygon'),
   },
   xdai: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-gnosis",
+    graphUrl: alchemyGraphUrl('gnosis'),
   },
   base: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    grapUrl:
-      "https://graph.contango.xyz:18000/subgraphs/name/contango-xyz/v2-base",
+    graphUrl: alchemyGraphUrl('base'),
+  },
+  avax: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    graphUrl: alchemyGraphUrl('avalanche'),
+  },
+  bsc: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    graphUrl: alchemyGraphUrl('bsc'),
+  },
+  linea: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    graphUrl: alchemyGraphUrl('linea'),
+  },
+  scroll: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    graphUrl:
+      "https://graph.contango.xyz:18000/subgraphs/name/contango-xyz/v2-scroll",
   },
 };
 
@@ -44,28 +66,31 @@ module.exports = {
 };
 
 Object.keys(config).forEach((chain) => {
-  const { contango, contango_lens, grapUrl } = config[chain];
+  const { contango, contango_lens, graphUrl } = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
       await Promise.all([
-        positionsTvl(api, contango_lens, grapUrl, false),
-        vaultTvl(api, contango, grapUrl),
+        positionsTvl(api, contango_lens, graphUrl, false),
+        vaultTvl(api, contango, graphUrl),
       ]);
-      return api.getBalances();
+      return sumTokens2({ api })
     },
-    borrowed: async (api) =>
-      positionsTvl(api, contango_lens, grapUrl, true),
+    borrowed: async (api) => {
+
+      await positionsTvl(api, contango_lens, graphUrl, true)
+      return sumTokens2({ api })
+    }
   };
 });
 
 async function positionsTvl(
   api,
   contangoLens,
-  grapUrl,
+  graphUrl,
   borrowed,
 ) {
   const cacheKey = `contango-positions-${api.chain}`;
-  const positions = await cachedGraphQuery(cacheKey, grapUrl, graphQueries.position, {
+  const positions = await cachedGraphQuery(cacheKey, graphUrl, graphQueries.position, {
     api,
     useBlock: true,
     fetchById: true,
@@ -93,9 +118,9 @@ async function positionsTvl(
   });
 }
 
-async function vaultTvl(api, contango, grapUrl) {
+async function vaultTvl(api, contango, graphUrl) {
   const cacheKey = `contango-vaultAssets-${api.chain}`;
-  const assets = await cachedGraphQuery(cacheKey, grapUrl, graphQueries.asset, {
+  const assets = await cachedGraphQuery(cacheKey, graphUrl, graphQueries.asset, {
     api,
     useBlock: true,
     fetchById: true,

@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { uniV3Export } = require('../helper/uniswapV3')
 
 const ownTokens = [
   '0xaec9e50e3397f9ddc635c6c429c8c7eca418a143',
-  '0x4644066f535ead0cde82d209df78d94572fcbf14',
+  ADDRESSES.real.RWA,
   '0x25ea98ac87a38142561ea70143fd44c4772a16b6',
 ]
 

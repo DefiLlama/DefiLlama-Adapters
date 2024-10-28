@@ -171,5 +171,10 @@
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "metapoolBases": {},
     "CurveStableswapFactoryNG": "0xd7e72f3615aa65b92a4dbdc211e296a35512988b"
+  },
+  "mantle": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e"
   }
 }

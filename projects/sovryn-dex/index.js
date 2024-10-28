@@ -47,10 +47,8 @@ module.exports = {
         {
           pools {    base    quote  }
         }
-        `
-      // eslint-disable-next-line no-undef
-      pools = await request(`https://bob-ambient-subgraph.sovryn.app/subgraphs/name/DistributedCollective/bob-ambient-subgraph`, query)
-      // eslint-disable-next-line no-undef
+        `;
+      const pools = await request(`https://bob-ambient-subgraph.sovryn.app/subgraphs/name/DistributedCollective/bob-ambient-subgraph`, query)
       const tokens = pools.pools.map(i => [i.base, i.quote]).flat()
       return sumTokens2({ chain: "bob", owner: '0xe5bc234A484A912A61Aa74501960cFc202e773dA', tokens,  });
     },

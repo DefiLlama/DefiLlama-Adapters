@@ -1,9 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/sumTokens')
+const {sumTokensExport} = require('../helper/sumTokens')
 
 const config = {
   bsc: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       USDT: ADDRESSES.bsc.USDT,
       USDC: ADDRESSES.bsc.USDC,
@@ -13,7 +15,9 @@ const config = {
     }
   },
   polygon: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       USDT: ADDRESSES.polygon.USDT,
       USDC: ADDRESSES.polygon.USDC,
@@ -23,7 +27,9 @@ const config = {
     }
   },
   ethereum: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       USDT: ADDRESSES.ethereum.USDT,
       USDC: ADDRESSES.ethereum.USDC,
@@ -33,7 +39,9 @@ const config = {
     }
   },
   near: {
-    mosContract: "mosv21.mfac.butternetwork.near",
+    mosContract: {
+      v2: "mosv21.mfac.butternetwork.near",
+    },
     tokens: {
       USDT: "dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near",
       USDC: "a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near",
@@ -43,7 +51,10 @@ const config = {
     }
   },
   map: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+      v3: "0x1ad1a4a19bc9983a98f5d9ac8442c6dfc4276167"
+    },
     tokens: {
       // USDT: "0x33daba9618a75a7aff103e53afe530fbacf4a3dd",
       // USDC: ADDRESSES.map.USDC,
@@ -53,7 +64,9 @@ const config = {
     }
   },
   merlin: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       WBTC: ADDRESSES.merlin.WBTC,
       WBTC_1: ADDRESSES.merlin.WBTC_1,
@@ -62,7 +75,9 @@ const config = {
     }
   },
   klaytn: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       WKLAY: ADDRESSES.klaytn.WKLAY,
       oETH: ADDRESSES.klaytn.oETH,
@@ -92,7 +107,9 @@ const config = {
     }
   },
   base: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       WETH: ADDRESSES.base.WETH,
       USDbC: ADDRESSES.base.USDbC,
@@ -115,11 +132,12 @@ const config = {
       "USD+": "0xb79dd08ea68a908a97220c76d19a6aa9cbde4376",
       ZRX: "0x3bb4445d30ac020a84c1b5a8a2c6248ebc9779d0",
       USDC: ADDRESSES.base.USDC
-
     }
   },
   conflux: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       USDT: ADDRESSES.conflux.USDT,
       USDC: ADDRESSES.conflux.USDC,
@@ -135,12 +153,98 @@ const config = {
     }
   },
   blast: {
-    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
     tokens: {
       MIM: "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1",
       OMNI: "0x9e20461bc2c4c980f62f1B279D71734207a6A356",
       USDB: ADDRESSES.blast.USDB,
+      WBTC: "0xF7bc58b8D8f97ADC129cfC4c9f45Ce3C0E1D2692",
       WETH: ADDRESSES.blast.WETH
+    }
+  },
+  arbitrum: {
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
+    tokens: {
+      USDT: ADDRESSES.arbitrum.USDT,
+      USDC: ADDRESSES.arbitrum.USDC,
+      WBTC: ADDRESSES.arbitrum.WBTC,
+      WETH: ADDRESSES.arbitrum.WETH,
+      DAI: ADDRESSES.arbitrum.DAI,
+    }
+  },
+  optimism: {
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
+    tokens: {
+      USDT: ADDRESSES.optimism.USDT,
+      USDC: ADDRESSES.optimism.USDC,
+      WBTC: ADDRESSES.optimism.WBTC,
+      WETH: ADDRESSES.optimism.WETH_1,
+      DAI: ADDRESSES.optimism.DAI,
+    }
+  },
+  era: {
+    mosContract: {
+      v2: "0xBEf06a32166C4B819fF04cCfa887733B8bb67eB5",
+    },
+    tokens: {
+      USDT: ADDRESSES.era.USDT,
+      USDC: ADDRESSES.era.USDC,
+      WETH: ADDRESSES.era.WETH
+    },
+  },
+  // ainn: {
+  //     mosContract: {
+  //         v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+  //     },
+  //     tokens: {
+  //         USDT: "0x0663C09Bd0911181B39D66ec4bfAC9d89c8516BA",
+  //         USDC: "0xfaBc451eA1Fd9707c6Ba1769F570E760101C7f22",
+  //     }
+  // },
+  mantle: {
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
+    tokens: {
+      USDT: ADDRESSES.mantle.USDT,
+      USDC: ADDRESSES.mantle.USDC,
+    }
+  },
+  tron: {
+    mosContract: {
+      v2: "TYMpgB8Q9vSoGtkyE3hXsvUrpte3KCDGj6",
+    },
+    tokens: {
+      USDT: ADDRESSES.tron.USDT,
+      USDC: ADDRESSES.tron.USDC,
+    }
+  },
+  scroll: {
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
+    tokens: {
+      USDT: ADDRESSES.scroll.USDT,
+      USDC: ADDRESSES.scroll.USDC,
+      WBTC: "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
+      WETH: ADDRESSES.scroll.WETH,
+      DAI: "0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97",
+    }
+  },
+  linea: {
+    mosContract: {
+      v2: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    },
+    tokens: {
+      USDT: ADDRESSES.linea.USDT,
+      USDC: ADDRESSES.linea.USDC,
+      WETH: ADDRESSES.linea.WETH,
     }
   }
 }
@@ -150,8 +254,8 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  const { mosContract, tokens } = config[chain]
+  const {mosContract, tokens} = config[chain]
   module.exports[chain] = {
-    tvl:sumTokensExport({ owner: mosContract, tokens: Object.values(tokens), logCalls: true })
+    tvl: sumTokensExport({owners: Object.values(mosContract), tokens: Object.values(tokens), logCalls: true})
   }
 })
