@@ -1,5 +1,49 @@
-const { aaveV2Export, methodology } = require("../helper/aave")
+async function getLiquidityFromEtaswap(tokenIdFrom, tokenIdTo, amount) {
+  try {
+      const urlGet = `https://api.etaswap.com/v1/rates?tokenFrom=${tokenIdFrom}&tokenTo=${tokenIdTo}&amount=${amount}&isReverse=false`;
+
+      const response = await axios.get(urlGet);
+      return response.data;
+  } catch (error) {
+      console.error('Error al consultar Etaswap', error);
+      return null;
+  }
+}
+
+const orderOptions = (options) => {
+  let biggest = 0;
+  let ret_option;
+  for (let i = 0; i < options.length; i++) {
+    if (options[i].transactionType === "SPLIT_SWAP")  {
+      let sumTo = summAmount(options[i].amountTo)
+      if (sumTo > biggest) {
+        biggest = sumTo;
+        ret_option = options[i]
+      } 
+    } else {
+      if (parseFloat(options[i].amountTo) > biggest) {
+        biggest = parseFloat(options[i].amountTo);
+        ret_option = options[i];
+      } 
+    }
+  }
+  return ret_option
+}
+
+async function getTokenPrice{
+    const res = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd");
+
+    const priceHbar = res.data['hedera-hashgraph'].usd;
+
+    
+    const ratesHTAI = await getLiquidityFromEtaswap("0x0000000000000000000000000000000000628107", "0x0000000000000000000000000000000000000000", "10");
+    const actualRateHTAI = orderOptions(ratesHTAI);
+    const priceHTAI = (((actualRateHTAI.amountTo / 1000000000) * priceHbar) * 0.91);
+    return priceHTAI;
+}
+
 module.exports = {
   timetravel: false,
-  methodology,
-  hedera: aaveV2Export('0x6402613eE4167832a29531ca67170c91a3304A1d'),
+  methodology: "We fetch the best exchange rate for our token and calculate the estimated price",
+  getTokenPrice
+}
