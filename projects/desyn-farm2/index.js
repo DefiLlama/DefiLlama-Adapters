@@ -12,8 +12,9 @@ async function tvl(api) {
 
     const poolTokenData = await api.multiCall({ calls: pools, abi: "address[]:getCurrentTokens", })
     const ownerTokens = poolTokenData.map((v, i) => [v, pools[i]])
-   
-    return sumTokens2({ ownerTokens, api })
+    console.log('ownerTokens', ownerTokens)
+    await sumTokens2({ ownerTokens, api })
+    return api.getBalances()
 }
 
 module.exports = {
