@@ -22,6 +22,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   const {factory, fromBlock, } = config[chain]
+  
   module.exports[chain] = {
     tvl: async (api) => {
       const logs = await getLogs({
