@@ -36,7 +36,6 @@ module.exports = {
   injective: {
     tvl: sdk.util.sumChainTvls([
       getOrderBookTvl(TYPES.SPOT),
-      getOrderBookTvl(TYPES.DERIVATIVES),
     ])
   }
 }
