@@ -1,6 +1,8 @@
-const { getExports } = require('../helper/heroku-api')
+const { getOrderBookTvl, TYPES } = require('./util')
 
 module.exports = {
   timetravel: false,
-  ...getExports("injective-orderbook", ['injective']),
+  injective: {
+    tvl: getOrderBookTvl(TYPES.SPOT),
+  }
 }
