@@ -12,6 +12,10 @@ const config = {
   
 }
 
+const abi = {
+  getBalance: "function getBalance(address) view returns (uint256)"
+}
+
 Object.keys(config).forEach(chain => {
   const {factory, fromBlock, } = config[chain]
   module.exports[chain] = {
@@ -29,7 +33,7 @@ Object.keys(config).forEach(chain => {
       const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
 
       tokens.forEach(async (token, index) => {
-        const accountBalances =  (await api.multiCall({  abi: 'address:getBalance', calls: token})).output
+        const accountBalances =  (await api.multiCall({  abi: abi.getBalance, calls: token})).output
         sdk.util.sumSingleBalance(balances, tokens[index].toString(), accountBalances)
       })
    
