@@ -6,13 +6,14 @@ const bitcoinOwnersUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slo
 async function tvl() {
   let bitcoinOwners = (await getConfig('solv-protocol/solv-btc-lst', bitcoinOwnersUrl));
 
-  const owners = [].concat(bitcoinOwners.core, bitcoinOwners.bbn);
+  const owners = Object.values(bitcoinOwners).flat();
 
   return sumTokens({ owners })
 }
 
 module.exports = {
   methodology: 'Staked tokens via Babylon and Core are counted towards TVL, as they represent the underlying BTC assets securing their respective networks.',
+  doublecounted:true,
   bitcoin: {
     tvl
   }

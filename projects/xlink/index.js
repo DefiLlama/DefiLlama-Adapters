@@ -60,4 +60,14 @@ module.exports = {
       ],
     }),
   },
+  bsquared: {
+    tvl: sumTokensExport({
+      owners: [
+      '0x10eeCCc43172458F0ff9Cc3E9730aB256fAEE32e'
+      ],
+      tokens: [
+        ADDRESSES.bsquared.UBTC
+      ]
+    }),
+  }  
 };
