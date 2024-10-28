@@ -29,7 +29,7 @@ Object.keys(config).forEach(chain => {
       const tokens = api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
 
       tokens.forEach((token, index) => {
-        const accountBalances = api.multiCall({  abi: 'address:getBalance', token})
+        const accountBalances = api.multiCall({  abi: 'address:getBalance', calls: token})
         sdk.util.sumSingleBalance(balances, tokens[index].toString(), accountBalances)
       })
    
