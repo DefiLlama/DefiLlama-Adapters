@@ -1,4 +1,0 @@
-{
-  "balance": "uint256:balance",
-  "token": "address:token"
-}
