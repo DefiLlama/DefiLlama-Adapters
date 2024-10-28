@@ -104,18 +104,13 @@ async function retrieveSupertokensBalances(
   graphUrl
 ) {
   const blockNum = await getBlock(ts, chain, { [chain]: block });
-  const gblock = blockNum - 5000;
-
-  console.log(chain, blockNum, gblock);
-
-  // Retrieve supertokens from graphql API
   const { tokens } = await blockQuery(graphUrl, supertokensQuery, {
-    api: {
-      getBlock: () => gblock,
-      block: gblock,
-    },
+    api: { getBlock: () => blockNum, block: blockNum },
   });
-  const allTokens = tokens.filter((t) => t.isSuperToken);
+  const allTokens = tokens.filter((t) => t.isSuperToken && t.isListed);
+
+  sdk.log("Balance table for [%s]", chain);
+  console.table(allTokens);
 
   return getChainBalances(allTokens, chain, block, isVesting);
 }
