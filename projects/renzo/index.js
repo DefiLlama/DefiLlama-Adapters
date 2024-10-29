@@ -6,7 +6,7 @@ const L1_PZ_ETH_ADDRESS = "0x8c9532a60E0E7C6BbD2B2c1303F63aCE1c3E9811";
 const SEI_EZ_ETH_ADDRESS = "0x6DCfbF4729890043DFd34A93A2694E5303BA2703";
 
 async function L2Tvl(api) {
-  const targetAddress = chain === "sei" ? SEI_EZ_ETH_ADDRESS : L2_EZ_ETH_ADDRESS;
+  const targetAddress = api.chain === "sei" ? SEI_EZ_ETH_ADDRESS : L2_EZ_ETH_ADDRESS;
   const supply = await api.call({ target: targetAddress, abi: "erc20:totalSupply" });
   return { [L1_EZ_ETH_ADDRESS]: supply };
 }
