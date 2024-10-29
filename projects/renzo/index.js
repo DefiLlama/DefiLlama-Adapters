@@ -18,7 +18,7 @@ async function ethTvl(api) {
   api.add(L1_PZ_ETH_ADDRESS, pzEthBalance);
 }
 
-const chains = ["mode", "blast", "bsc", "linea", "arbitrum", "base", "optimism", "fraxtal" ]
+const chains = ["mode", "blast", "bsc", "linea", "arbitrum", "base", "optimism", "fraxtal","zircuit" ]
 
 module.exports = {
   doublecounted: true,
