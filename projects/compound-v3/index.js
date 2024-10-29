@@ -6,6 +6,8 @@ module.exports = compoundV3Exports({
       '0xc3d688B66703497DAA19211EEdff47f25384cdc3', // USDC Market
       '0xa17581a9e3356d9a858b789d68b4d866e593ae94', // ETH Market
       '0x3Afdc9BCA9213A35503b077a6072F3D0d5AB0840', // USDT Market
+      '0x3D0bb1ccaB520A66e607822fC55BC921738fAFE3', // wstETH Market
+      '0x5D409e56D886231aDAf00c8775665AD0f9897b56', // USDS Market
     ],
   },
   arbitrum: {
@@ -27,6 +29,7 @@ module.exports = compoundV3Exports({
       '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf', // USDbC Market
       '0x46e6b214b524310239732D51387075E0e70970bf', // ETH Market
       '0xb125E6687d4313864e53df431d5425969c15Eb2F', // USDC Market
+      '0x784efeB622244d2348d4F2522f8860B96fbEcE89', // AERO Market
     ],
   },
   scroll: {
