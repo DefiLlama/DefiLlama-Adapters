@@ -1,4 +1,3 @@
-const { hallmarks } = require("../dough-finance");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
