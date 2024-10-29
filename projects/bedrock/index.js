@@ -12,6 +12,7 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  doublecounted:true,
   bitcoin: {
     tvl
   }
