@@ -1,37 +1,32 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { graphQuery } = require('../helper/http')
 
 
-const arbEndpoint = "https://subgraph.satsuma-prod.com/9b84d9926bf3/nabla-finance--3958960/nabla-mainnetAlpha/api";
-const baseEndpoint = "https://subgraph.satsuma-prod.com/9b84d9926bf3/nabla-finance--3958960/nabla-mainnetAlpha-base/api";
-const query = `{
-    backstopPools {
-      id
-	  reserves
-      token {
-        id
-      }
-      coveredSwapPools(orderBy: coveredIndex) {
-        id
-        reserves
-        token {
-          id
-        }
-      }
-    }
-}`;
-const tvlFactory = endpoint => async function tvl(api) {
-        const { backstopPools } = await graphQuery(endpoint, query, {}, {api});
+const abis = {
+  backstopPool: {
+    token: "function token() external view returns (address)", 
+    getPoolState: "function getPoolState(uint256[] calldata _allTokenPrices) external view returns (uint256 reserves_, int256 totalPoolWorth_, uint256 totalSupply_)",
+    getBackedPoolCount: "function getBackedPoolCount() external view returns (uint256 count_)",
+    getBackedPool: "function getBackedPool(uint256 index) external view returns (address pool_)",
+  },
+  swapPool: {
+    token: "function token() external view returns (address)", 
+    reserve: "function reserve() external view returns (uint256)",
+  }
+}
 
-        backstopPools.forEach(bp => {
-            api.add(bp.token.id, bp.reserves)
-            bp.coveredSwapPools.forEach(pool => {
-                api.add(pool.token.id, pool.reserves)
-            });
-        });
-    }
+const ARB_PORTAL = "0xcB94Eee869a2041F3B44da423F78134aFb6b676B";
+
+
+
+async function tvl(api) {
+  const routers = await api.call({
+    abi: 'erc20:balanceOf',
+    target: ARB_PORTAL,
+  });
+
+  api.add(pool.token.id, pool.reserves)
+}
 
 module.exports = {
-    arbitrum: { tvl: tvlFactory(arbEndpoint) },
-    base: { tvl: tvlFactory(baseEndpoint) },
+    arbitrum: { tvl },
+    base: { tvl },
 }
