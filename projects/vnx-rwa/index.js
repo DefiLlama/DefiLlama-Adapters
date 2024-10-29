@@ -1,4 +1,4 @@
-const { getTokenSupply } = require("../helper/solana");
+const { getTokenSupplies } = require("../helper/solana");
 const fetch = require('node-fetch');
 
 const ASSETS = {
@@ -58,9 +58,8 @@ const fetchStellarSupply = async (asset) => {
 };
 
 const solanaTvl = async (api, assets) => {
-  const supplies = await Promise.all(assets.map(getTokenSupply));
-  const scaledSupplies = supplies.map((supply) => supply * 1e9);
-  api.add(assets, scaledSupplies);
+  const supplies = await getTokenSupplies(assets)
+  api.addTokens(Object.keys(supplies), Object.values(supplies));
 };
 
 const stellarTvl = async (api, assets) => {
