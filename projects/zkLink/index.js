@@ -1,5 +1,6 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking.js");
 
 const config = {
   ethereum: {
@@ -134,3 +135,7 @@ async function tvl(api) {
 Object.keys(config).forEach(async chain => {
   module.exports[chain] = { tvl }
 })
+module.exports.ethereum.staking = staking(
+  '0xAd16eDCF7DEB7e90096A259c81269d811544B6B6', 
+  '0xfC385A1dF85660a7e041423DB512f779070FCede'
+);

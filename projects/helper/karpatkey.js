@@ -1,28 +1,13 @@
 const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil")
 const { fetchURL } = require("./utils")
 
-const symbolToId = {
-    "BAL":"balancer",
-    "DAI":"dai",
-    "ETH":"ethereum",
-    "USDC":"usd-coin",
-    "USDT":"tether",
-    "WBTC":"bitcoin",
-    "WETH":"ethereum",
-    "rETH2":"reth2",
-    "stETH":"staked-ether",
-    "sETH2":"seth2",
-    "rETH": "rocket-pool-eth",
-    "ankrETH":"ankreth",
-    "cbETH":"coinbase-wrapped-staked-eth",
-    "ETHx": "stader-ethx",
-    "GNO": "gnosis",
-    wstETH: "wrapped-steth",
-    WXDAI: "dai",
-    XDAI: "dai"
-}
-
 const MONTH = 30*24*3600e3
+
+const chainMapping = {
+  "Gnosis": "xdai",
+  "Avalanche": "avax",
+  "Binance": "bsc"
+}
 
 async function karpatKeyTvl({timestamp}, daoName, tokenToExclude) {
   const {data} = await fetchURL("https://aumapi.karpatkey.dev/our_daos_token_details")
@@ -37,8 +22,9 @@ async function karpatKeyTvl({timestamp}, daoName, tokenToExclude) {
   }
   const balances = {}
   monthlyData.forEach(bal=>{
-    if(symbolToId[bal.token_symbol] && tokenToExclude !== bal.token_symbol){
-        sumSingleBalance(balances, symbolToId[bal.token_symbol], bal.token_balance)
+    if(tokenToExclude !== bal.token_symbol){
+        const chain = chainMapping[bal.blockchain] ?? bal.blockchain.toLowerCase()
+        sumSingleBalance(balances, chain +':' + bal.token_address, bal.value)
     } else {
         console.log(`Skipping ${bal.token_symbol}`)
     }

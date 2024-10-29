@@ -99,7 +99,9 @@ async function tvl() {
     tokensAndOwners.push([i.tokenAMint, i.aVault])
     tokensAndOwners.push([i.tokenBMint, i.bVault])
   })
-  return sumTokens2({ tokensAndOwners })
+  const balances = await sumTokens2({ tokensAndOwners })
+  delete balances['solana:AwRErBEFGTnohzfLeRSBH9HddQEy2oeRxnWLrbvFFh95']
+  return balances
 }
 
 module.exports = {
