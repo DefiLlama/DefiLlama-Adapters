@@ -8,6 +8,7 @@ const TOKENS = [
 
 module.exports = {
   ethereum: {
-    tvl: staking(CONTRACT_ADDRESS, TOKENS),
+    tvl: () => ({}),
+    staking: staking(CONTRACT_ADDRESS, TOKENS),
   },
 };
