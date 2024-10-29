@@ -22,7 +22,8 @@ const blacklistedTokens_default = [
   '5fTwKZP2AK39LtFN9Ayppu6hdCVKfMGVm79F2EgHCtsi', //WHEY
 ]
 
-let connection, provider
+let connection = {}
+let provider = {}
 
 const endpoint = (isClient) => {
   if (isClient) return getEnv('SOLANA_RPC_CLIENT') ?? getEnv('SOLANA_RPC')
@@ -36,18 +37,18 @@ const endpointMap = {
 }
 
 function getConnection(chain = 'solana') {
-  if (!connection) connection = new Connection(endpointMap[chain](true))
-  return connection
+  if (!connection[chain]) connection[chain] = new Connection(endpointMap[chain](true))
+  return connection[chain]
 }
 
 function getProvider(chain = 'solana') {
-  if (!provider) {
+  if (!provider[chain]) {
     const dummy_keypair = Keypair.generate();
     const wallet = new Wallet(dummy_keypair);
 
-    provider = new Provider(getConnection(chain), wallet)
+    provider[chain] = new Provider(getConnection(chain), wallet)
   }
-  return provider;
+  return provider[chain]
 }
 
 async function getTokenSupplies(tokens) {
