@@ -20,7 +20,7 @@ const karak_v1_tvl = async (api, { factory }) => {
 }
 
 const karak_v2_tvl = async (api, { factory, block }) => {
-  const logs = await getLogs2({ api, target: factory, topic: '0x754c0ba87ea068d6b27ef93ca2981913e3a5d0d09ac8fa485b7691e0dd55f180', fromBlock: block, eventAbi })
+  const logs = await getLogs2({ api, target: factory, fromBlock: block, eventAbi })
   const vaults = logs.map(log => log[1])
   const tokens = logs.map(log => log[2])
   return sumTokens2({ api, tokensAndOwners2: [tokens, vaults] })
