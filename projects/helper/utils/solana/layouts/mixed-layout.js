@@ -269,18 +269,8 @@ const HH_PARI_LAYOUT_PARTIAL = BufferLayout.struct([
   BufferLayout.seq(u64(), u8().span, 'amounts'), 
 ]);
 
-const TOKEN_MINT_LAYOUT = struct([
-  u8('mintAuthorityOption'),
-  u8('mintAuthority'),
-  u64('supply'),
-  u8('decimals'),
-  u8('isInitialized'),
-  u8('freezeAuthorityOption'),
-  u8('freezeAuthority'),
-]);
-
 module.exports = {
   ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
-  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, TOKEN_MINT_LAYOUT,
+  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL,
 }
 
