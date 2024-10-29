@@ -1,0 +1,4 @@
+{
+  "checkContract": "function checkContract(uint16,bytes32) view returns (uint256)",
+  "nodeStates": "function nodeStates(uint256,bytes32) view returns (uint256,uint256,uint256)"
+}
