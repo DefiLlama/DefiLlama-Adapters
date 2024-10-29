@@ -50,14 +50,25 @@ function getProvider(chain = 'solana') {
   return provider;
 }
 
-async function getTokenSupply(token) {
-  const tokenSupply = await http.post(endpoint(), {
-    jsonrpc: "2.0",
-    id: 1,
-    method: "getTokenSupply",
-    params: [token],
-  });
-  return tokenSupply.result.value.uiAmount;
+async function getTokenSupplies(tokens) {
+  const sleepTime = tokens.length > 2000 ? 2000 : 200
+  const connection = getConnection()
+  tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
+  const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
+  const response = {}
+  res.forEach((data, idx) => {
+    if (!data) {
+      sdk.log(`Invalid account: ${tokens[idx]}`)
+      return;
+    }
+    try {
+      data = decodeAccount('mint', data)
+      response[tokens[idx].toString()] = data.supply.toString()
+    } catch (e) {
+      sdk.log(`Error decoding account: ${tokens[idx]}`)
+    }
+  })
+  return response
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
@@ -355,7 +366,6 @@ async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
 
 module.exports = {
   endpoint: endpoint(),
-  getTokenSupply,
   getMultipleAccounts,
   exportDexTVL,
   getProvider,
@@ -368,4 +378,5 @@ module.exports = {
   blacklistedTokens_default,
   getStakedSol,
   getSolBalanceFromStakePool,
+  getTokenSupplies,
 };
