@@ -6,7 +6,7 @@ const bitcoinOwnersUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slo
 async function tvl() {
   let bitcoinOwners = (await getConfig('solv-protocol/solv-btc-lst', bitcoinOwnersUrl));
 
-  const owners = [].concat(bitcoinOwners.core, bitcoinOwners.bbn);
+  const owners = Object.values(bitcoinOwners).flat();
 
   return sumTokens({ owners })
 }

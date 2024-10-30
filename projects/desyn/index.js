@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
@@ -29,6 +30,7 @@ const abi = {
 
 Object.keys(config).forEach(chain => {
   const {factory, fromBlock, } = config[chain]
+  
   module.exports[chain] = {
     tvl: async (api) => {
       const logs = await getLogs({
