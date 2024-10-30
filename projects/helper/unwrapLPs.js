@@ -192,7 +192,7 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
 
   let positionIds = uniV3ExtraConfig.positionIds
   if (!positionIds) {
-    if (!owners && owner) owners = [owner]
+    if (!owners.length && owner) owners = [owner]
     owners = getUniqueAddresses(owners, chain)
     const { output: lengths } = await sdk.api.abi.multiCall({
       block, chain, abi: wildCreditABI.balanceOf,
@@ -214,7 +214,6 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
     block, chain, abi: wildCreditABI.positions, target: nftAddress,
     calls: positionIds.map((position) => ({ params: [position] })),
   })).output.map(positionsCall => positionsCall.output)
-
   const lpInfo = {}
   positions.forEach(position => lpInfo[getKey(position)] = position)
   const lpInfoArray = Object.values(lpInfo)
