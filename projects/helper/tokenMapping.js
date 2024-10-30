@@ -137,7 +137,12 @@ const fixBalancesTokens = {
     '0x00000000000000000000000000000000000ec585': { coingeckoId: 'headstarter', decimals: 8 },
     '0x0000000000000000000000000000000000492a28': { coingeckoId: 'hashpack', decimals: 6 },
     '0x000000000000000000000000000000000030fb8b': { coingeckoId: 'steam', decimals: 2 },
-  }
+  },
+  morph: {
+    '0x5300000000000000000000000000000000000011': { coingeckoId: 'ethereum', decimals: 18 },
+    '0xc7d67a9cbb121b3b0b9c053dd9f469523243379a': { coingeckoId: 'tether', decimals: 6 },
+    '0x803dce4d3f4ae2e17af6c51343040dee320c149d': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
