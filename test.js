@@ -236,9 +236,14 @@ function validateHallmarks(hallmark) {
 
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
     console.log(`--- ${chain} ---`);
-    Object.entries(balances)
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([symbol, balance]) => {
+    let entries = Object.entries(balances)
+    entries.sort((a, b) => b[1] - a[1])
+
+    if (entries.length > 30) {
+      console.log("Showing top 30 tokens, total tokens:", entries.length)
+      entries = entries.slice(0, 30)
+    }
+    entries.forEach(([symbol, balance]) => {
         console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
       });
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");

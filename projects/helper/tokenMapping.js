@@ -63,6 +63,8 @@ const fixBalancesTokens = {
   lac: {
     [ADDRESSES.null]: { coingeckoId: "la-coin", decimals: 18 },
     [ADDRESSES.lac.LAC]: { coingeckoId: "la-coin", decimals: 18 },
+    '0x7dc8b9e3b083c26c68f0b124ca923aaec7fbee39': { coingeckoId: 'tether', decimals: 6 },
+    '0x51115241c7b8361eee88d8610f71d0a92cee5323': { coingeckoId: 'usd-coin', decimals: 6 },
   },
   lisk: {
     '0x05d032ac25d322df992303dca074ee7392c117b9': { coingeckoId: 'tether', decimals: 6 },
@@ -88,6 +90,8 @@ const fixBalancesTokens = {
   },
   rollux: {
     '0x570baA32dB74279a50491E88D712C957F4C9E409': { coingeckoId: 'uno-re', decimals: 18 },
+    '0xaa1c53afd099e415208f47fcfa2c880f659e6904': { coingeckoId: 'weth', decimals: 18 },
+    '0x2a4dc2e946b92ab4a1f7d62844eb237788f9056c': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
   taiko: {
     '0xd347949f8c85d9f3d6b06bfc4f8c2e07c161f064': { coingeckoId: "loopring", decimals: 18 },
@@ -119,6 +123,21 @@ const fixBalancesTokens = {
   zircuit: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
   },
+  bsquared: {
+    '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3': { coingeckoId: 'lorenzo-stbtc', decimals: 18 }
+  },
+  hedera: {
+    '0x00000000000000000000000000000000001647e8': { coingeckoId: 'xsauce', decimals: 6 },
+    '0x000000000000000000000000000000000006f89a': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x000000000000000000000000000000000022d6de': { coingeckoId: 'karate-combat', decimals: 8},
+    '0x00000000000000000000000000000000000cba44': { coingeckoId: 'hbarx', decimals: 8 },
+    '0x00000000000000000000000000000000000b2ad5': { coingeckoId: 'saucerswap', decimals: 6 },
+    '0x0000000000000000000000000000000000163b5a': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
+    '0x000000000000000000000000000000000038b3db': { coingeckoId: 'dovu-2', decimals: 8 },
+    '0x00000000000000000000000000000000000ec585': { coingeckoId: 'headstarter', decimals: 8 },
+    '0x0000000000000000000000000000000000492a28': { coingeckoId: 'hashpack', decimals: 6 },
+    '0x000000000000000000000000000000000030fb8b': { coingeckoId: 'steam', decimals: 2 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
