@@ -8,8 +8,6 @@ const LLAMAPAY_ROUTER_ORACLE_NAME = 'LlamaPayRouterOracle'
 const GEARBOX_TOKEN_PREFIX = 'Farming of'
 const ARRAKIS_TOKEN_PREFIX = 'Arrakis Vault V2'
 
-const MAKER_ADDRESS = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'
-
 const config = {
   polygon: {
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
@@ -163,8 +161,8 @@ Object.keys(config).forEach(chain => {
       })
 
       const assets = await api.multiCall({ abi: abi.assets, calls: assetRegistries })
-      const uniqueAssets = [...new Set(assets.flatMap(x => x.map(y => y.asset)))].filter(x => x.toLowerCase() !== MAKER_ADDRESS.toLowerCase())
-      const assetNames = await api.multiCall({ abi: 'string:name', calls: uniqueAssets })
+      const uniqueAssets = [...new Set(assets.flatMap(x => x.map(y => y.asset)))]
+      const assetNames = await api.multiCall({ abi: 'string:name', calls: uniqueAssets, permitFailure: true })
 
       const erc4626sAndOwners = []
       const tokensAndOwners = []
