@@ -74,7 +74,8 @@ const config = {
   },
   real: {
     factories: [
-      '0x3b1f3a48a70e372144307a4b126a5cda46e169ad'
+      '0x3b1f3a48a70e372144307a4b126a5cda46e169ad',
+      '0x2944e1544cE201ae19e6385490bBA13DaA5f44e4'
     ]
   }
 }
