@@ -12,7 +12,10 @@ async function tvl() {
         ['bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1', '2DRZbbse5b5souvMQkifpS8CRBsDeLt6a9xDqqVJvmdw'],
         ['5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm', 'GF8jvNGY44tnCfhnzdoSUBpgfog9YnLc6BRBCnt8j9do'],
         ['HUBsveNpjo5pWqNkH57QzxjQASdTVXcSK7bVKTSZtcSX', '49EXLuCxc2ArgFfpJBeuci6DgULxMzrETAHpAGvsFBf1'],
-        ['Gwa3a4VJbAyorLhn6TEeWLbQ4tWyup4E6oL3WjAga7tx', '2DriEN733SMxEzqDBVSGwev7KwcdHPXVy65sw9u5mR14']
+        ['Gwa3a4VJbAyorLhn6TEeWLbQ4tWyup4E6oL3WjAga7tx', '2DriEN733SMxEzqDBVSGwev7KwcdHPXVy65sw9u5mR14'],
+        ['he1iusmfkpAdwvxLNGV8Y1iSbj4rUy6yMhEA3fotn9A', '2DriEN733SMxEzqDBVSGwev7KwcdHPXVy65sw9u5mR14'],
+        ['Bybit2vBJGhPF52GBdNaQfUJ6ZpThSgHBobjWZpLPb4B', 'FXz4ToVamCcPphADQ4bXvRuk15HP63r6hsKycojVEoT8'],
+        ['BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85', '7RJPqA2b4SicEzLSyUVhGZUdH2rGrTaXV1t7Z4ga2Kpg']
       ],
     })
   ]);
