@@ -250,7 +250,27 @@ const ESOLStakePoolLayout = BufferLayout.struct([
   u32("maxValidatorYieldPerEpochNumerator")
 ]);
 
+
+const PARLAY_LAYOUT_PARTIAL = BufferLayout.struct([
+  publicKey('mint'),
+  u32("entryCount"),
+  u64('entryCost'),
+]);
+
+const HH_PARI_LAYOUT_PARTIAL = BufferLayout.struct([
+  publicKey('mint'),
+  u64("closeTimestamp"),
+  u64("resolveTimestamp"),
+  u64("outcomeTimestamp"),
+  u16("creatorFee"),
+  u16("platformFee"),
+  u8('state'),
+  u8('outcome'),
+  BufferLayout.seq(u64(), u8().span, 'amounts'), 
+]);
+
 module.exports = {
-  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout,
+  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
+  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL,
 }
 

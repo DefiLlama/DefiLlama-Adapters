@@ -1,50 +1,28 @@
-const { sumTokensExport } = require('../helper/unwrapLPs')
-const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
-module.exports = {
-  ethereum: {
-    tvl: sumTokensExport({ tokensAndOwners: [
-      [ADDRESSES.ethereum.USDC, '0x6d303cee7959f814042d31e0624fb88ec6fbcc1d'],
-      [ADDRESSES.ethereum.WETH, '0xD4efe33C66B8CdE33B8896a2126E41e5dB571b7e'],
-      [ADDRESSES.ethereum.WBTC, '0x3Eec7c855aF33280F1eD38b93059F5aa5862E3ab'],
-      [ADDRESSES.ethereum.USDT, '0x5e98A25d8d6FF69A8992d6Aa57948dFB77D4ECBa'],
-      [ADDRESSES.ethereum.SNX, '0x7D7aC8d55A9bD4152b703011f3E61AB3bB0A5592'],
-      [ADDRESSES.ethereum.WSTETH, '0xeBB5D642aA8ccDeE98373D6aC3ee0602b63824b3'],
-      ['0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', '0x8180EcCC825b692ef65FF099a0A387743788bf78'], // weETH
-      ['0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0', '0x4BB4C3CDc7562f08e9910A0C7D8bB7e108861eB4'] // rswETH
-    ], 
-    })
-  },
-  optimism: {
-    tvl: sumTokensExport({ tokensAndOwners: [
-      [ADDRESSES.optimism.USDC_CIRCLE, '0xDEf0bfBdf7530C75AB3C73f8d2F64d9eaA7aA98e'],
-      [ADDRESSES.optimism.USDC, '0xBb9CF28Bc1B41c5c7c76Ee1B2722C33eBB8fbD8C'],
-      [ADDRESSES.optimism.WETH, '0xdD4c717a69763176d8B7A687728e228597eAB86d'],
-      [ADDRESSES.optimism.WBTC, '0xE5967877065f111a556850d8f05b8DaD88edCEc9'],
-      [ADDRESSES.optimism.USDT, '0x44343AE5e9319b61c9DaD7876919eFdB03241b02'],
-      ['0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4', '0x8574CBC539c26Df9ec11bA283218268101ff10e1'], // snx
-      [ADDRESSES.optimism.WSTETH, '0xAA8f9D05599F1a5d5929c40342c06a5Da063a4dE']
-    ]
-    })
-  },
-  base: {
-    tvl: sumTokensExport({ tokensAndOwners: [
-      [ADDRESSES.base.USDC, '0x4e798659b9846F1da7B6D6B5d09d581270aB6FEC'],
-      ['0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452', '0x2805B908a0F9CA58a2b3b7900341b4EBd0B994e9'], //wstETH
-      [ADDRESSES.base.WETH, '0xBd282333710B9C7e33E8a37d027885A7C079Ae23'],
-    ]
-    })
-  },
-  arbitrum: {
-    tvl: sumTokensExport({ tokensAndOwners: [
-      [ADDRESSES.arbitrum.USDC_CIRCLE, '0x5e027ad442e031424b5a2C0ad6f656662Be32882'],
-      [ADDRESSES.arbitrum.USDC, '0xFB7B06538d837e4212D72E2A38e6c074F9076E0B'],
-      [ADDRESSES.arbitrum.WETH, '0x8e9f58E6c206CB9C98aBb9F235E0f02D65dFc922'],
-      [ADDRESSES.arbitrum.WBTC, '0x3D20c6A2b719129af175E0ff7B1875DEb360896f'],
-      [ADDRESSES.arbitrum.USDT, '0xb2Cb9aDA6e00118dA8E83a6A53dF1EC6331A60a6'],
-      [ADDRESSES.arbitrum.WSTETH, '0x8574CBC539c26Df9ec11bA283218268101ff10e1'],
-      ['0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe', '0x3FBFD80EF7591658d1D7DdEC067F413eFd6f985c']
-    ]
-    })
-  },
+const chains = ['ethereum', 'base', 'arbitrum', 'optimism', 'mode', 'blast']
+
+async function getOldToA(api) {
+  const data = await getConfig('lyra-v2/old-contracts', 'https://raw.githubusercontent.com/0xdomrom/socket-plugs/main/deployments/superbridge/prod_lyra-old_addresses.json')
+  const vaults = Object.values(data[api.chainId+'']?? {}).map(i => i.Vault)
+  const tokens = await api.multiCall({  abi: 'address:token__', calls: vaults})
+  return vaults.map((vault, i) => [tokens[i], vault])
 }
+async function getToA(api) {
+  const data = await getConfig('lyra-v2/contracts', 'https://raw.githubusercontent.com/0xdomrom/socket-plugs/main/deployments/superbridge/prod_lyra_addresses.json')
+  const vaults = Object.values(data[api.chainId+'']?? {}).map(i => i.Vault)
+  const tokens = await api.multiCall({  abi: 'address:token', calls: vaults})
+  return vaults.map((vault, i) => [tokens[i], vault])
+}
+
+chains.forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const oldToA = await getOldToA(api)
+      const toa = await getToA(api)
+      console.log(chain, oldToA.concat(toa))
+      return sumTokens2({ tokensAndOwners: oldToA.concat(toa), api })
+    }
+  }
+})

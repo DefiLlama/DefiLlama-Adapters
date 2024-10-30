@@ -68,6 +68,7 @@ const config = {
   xdai: { factory: '0x83E443EF4f9963C77bd860f94500075556668cb8', fromBlock: 27088527, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
   polygon_zkevm: { factory: '0x2498A2B0d6462d2260EAC50aE1C3e03F4829BA95', fromBlock: 203652, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
   avax: { factory: '0xf23b4DB826DbA14c0e857029dfF076b1c0264843', fromBlock: 32558551, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  fraxtal: { factory: '0xc3ccacE87f6d3A81724075ADcb5ddd85a8A1bB68', fromBlock: 4712390, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
 }
 
 module.exports = {

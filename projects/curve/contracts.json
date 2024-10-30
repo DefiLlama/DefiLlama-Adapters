@@ -124,9 +124,6 @@
       "stableFactory": "0x3093f9B57A428F3EB6285a589cb35bEA6e78c336",
       "cryptoFactory": "0x5EF72230578b3e399E6C6F4F6360edF95e83BBfd"
     },
-    "blacklist": [
-      "0x417Ac0e078398C154EdFadD9Ef675d30Be60Af93"
-    ],
     "CurveStableswapFactoryNG": "0xd2002373543Ce3527023C75e7518C274A51ce712"
   },
   "optimism": {
@@ -164,5 +161,20 @@
     "wrapped": "0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b",
     "metapoolBases": {},
     "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
+  },
+  "xlayer": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e"
+  },
+  "bsc": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0xd7e72f3615aa65b92a4dbdc211e296a35512988b"
+  },
+  "mantle": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e"
   }
 }

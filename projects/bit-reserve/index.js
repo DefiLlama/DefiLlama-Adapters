@@ -1,4 +1,4 @@
-const rBTC_CONTRACT = '0xBf4df43f72d27a7b1D2fC295aeca58e0853f922F';
+const rBTC_CONTRACT = '0x473286faD076c050FB48a449c77d7434d947cE00';
 
 async function tvl(api) {
   const tokens = await api.fetchList({ lengthAbi: 'approvedTokens', itemAbi: 'approvedRestakedLSTs', target: rBTC_CONTRACT })
