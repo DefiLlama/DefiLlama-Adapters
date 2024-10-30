@@ -1,6 +1,7 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
 
 const earnETHVault = '0x9Ed15383940CC380fAEF0a75edacE507cC775f22';
+const pancakeswapMasterChef = '0x556B9306565093C855AEA9AE92A594704c2Cd59e'
 
 const ethTokens = [
     '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0', // rswETH
@@ -14,6 +15,10 @@ const pendleLPTokens = [
     "0x0e1C5509B503358eA1Dac119C1D413e28Cc4b303", //swETH 26December2024
 ]
 
+const LPTokens = [
+    "0x7B94A5622035207d3f527d236d47B7714Ee0acBa", // Pancakeswap rswETH/WETH 0.05%
+]
+
 const vaultTokens = [
     "0x78Fc2c2eD1A4cDb5402365934aE5648aDAd094d0", // Re7 WETH
 ]
@@ -21,11 +26,21 @@ const vaultTokens = [
 const tokens = [
     ...ethTokens,
     ...pendleLPTokens,
-    ...vaultTokens
+    ...vaultTokens,
 ]
 
+const tokensAndOwners = tokens.map(token => [token, earnETHVault])
+
 const tvl = async (api) => {
-    return sumTokens2({ api, tokens, owner: earnETHVault })
+    // return sumTokens2({ api, tokens, resolveLP:true, owner: earnETHVault })
+
+    
+    return sumTokens2({ 
+            api, 
+            tokensAndOwners: tokensAndOwners,
+            uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, earnETHVault]], 
+            uniV3ExtraConfig: { nftIdFetcher: pancakeswapMasterChef } 
+        })
 }
 
 module.exports = {
