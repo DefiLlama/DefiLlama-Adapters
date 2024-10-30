@@ -289,62 +289,63 @@ async function processLlamaPayTvl(llamaPayRouters, api) {
 }
 
 async function processCompoundTvl(compoundVaults, api, COMETS, vaults, COMET_REWARD) {
-  if (compoundVaults.length) {
-    const numAssets = await api.multiCall({ abi: 'uint8:numAssets', calls: COMETS.map(x => x.address) });
+  if (compoundVaults.length === 0 || !COMETS || !COMET_REWARD) return
+
+  const numAssets = await api.multiCall({ abi: 'uint8:numAssets', calls: COMETS.map(x => x.address) });
 
 
-    const collateralCalls = [];
-    COMETS.forEach((comet, i) => [...Array(parseInt(numAssets[i])).keys()].forEach(assetIndex => collateralCalls.push({ target: comet.address, params: assetIndex })));
-    const balanceOfCalls = [];
-    vaults.forEach(vault => COMETS.forEach(comet => balanceOfCalls.push({ target: comet.address, params: vault, baseToken: comet.baseToken })));
-    const rewardOwedCalls = [];
-    vaults.forEach(vault => COMETS.forEach(comet => rewardOwedCalls.push({ target: COMET_REWARD, params: [comet.address, vault] })));
+  const collateralCalls = [];
+  COMETS.forEach((comet, i) => [...Array(parseInt(numAssets[i])).keys()].forEach(assetIndex => collateralCalls.push({ target: comet.address, params: assetIndex })));
+  const balanceOfCalls = [];
+  vaults.forEach(vault => COMETS.forEach(comet => balanceOfCalls.push({ target: comet.address, params: vault, baseToken: comet.baseToken })));
+  const rewardOwedCalls = [];
+  vaults.forEach(vault => COMETS.forEach(comet => rewardOwedCalls.push({ target: COMET_REWARD, params: [comet.address, vault] })));
 
-    const [collateralInfos, balanceOfs, borrowBalanceOfs, rewardOwed] = await Promise.all([
-      api.multiCall({ abi: abi.getAssetInfo, calls: collateralCalls }),
-      api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
-      api.multiCall({ abi: abi.borrowBalanceOf, calls: balanceOfCalls }),
-      api.multiCall({ abi: abi.getRewardOwed, calls: rewardOwedCalls })
-    ]);
+  const [collateralInfos, balanceOfs, borrowBalanceOfs, rewardOwed] = await Promise.all([
+    api.multiCall({ abi: abi.getAssetInfo, calls: collateralCalls }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
+    api.multiCall({ abi: abi.borrowBalanceOf, calls: balanceOfCalls }),
+    api.multiCall({ abi: abi.getRewardOwed, calls: rewardOwedCalls })
+  ]);
 
-    balanceOfs.forEach((balance, i) => {
-      const sum = (BigInt(balance) - BigInt(borrowBalanceOfs[i])).toString();
-      api.addToken(balanceOfCalls[i].baseToken, sum);
-    });
+  balanceOfs.forEach((balance, i) => {
+    const sum = (BigInt(balance) - BigInt(borrowBalanceOfs[i])).toString();
+    api.addToken(balanceOfCalls[i].baseToken, sum);
+  });
 
-    rewardOwed.forEach(reward => {
-      api.addToken(reward.token, reward.owed);
-    });
+  rewardOwed.forEach(reward => {
+    api.addToken(reward.token, reward.owed);
+  });
 
-    const collateralBalanceOfCalls = [];
-    vaults.forEach(vault => collateralInfos.forEach((collateral, i) => collateralBalanceOfCalls.push({ target: collateralCalls[i].target, params: [vault, collateral.asset] })));
-    const collateralBalanceOfs = await api.multiCall({ abi: abi.collateralBalanceOf, calls: collateralBalanceOfCalls });
+  const collateralBalanceOfCalls = [];
+  vaults.forEach(vault => collateralInfos.forEach((collateral, i) => collateralBalanceOfCalls.push({ target: collateralCalls[i].target, params: [vault, collateral.asset] })));
+  const collateralBalanceOfs = await api.multiCall({ abi: abi.collateralBalanceOf, calls: collateralBalanceOfCalls });
 
-    collateralBalanceOfs.forEach((balance, i) => {
-      api.addToken(collateralBalanceOfCalls[i].params[1], balance);
-    });
-  }
+  collateralBalanceOfs.forEach((balance, i) => {
+    api.addToken(collateralBalanceOfCalls[i].params[1], balance);
+  });
 }
 
 async function processAaveTvl(aaveVaults, api, AAVE_POOL, AAVE_POOL_DATA_PROVIDER) {
-  if (aaveVaults.length) {
-    const aaveReservesList = await api.call({ abi: abi.getReservesList, target: AAVE_POOL });
+  if (aaveVaults.length === 0 || !AAVE_POOL || !AAVE_POOL_DATA_PROVIDER) return
 
-    const aaveReserveDetails = await api.multiCall({ abi: abi.getReserveData, target: AAVE_POOL, calls: aaveReservesList });
+  const aaveReservesList = await api.call({ abi: abi.getReservesList, target: AAVE_POOL });
 
-    const aaveQueryParams = [];
-    aaveReservesList.forEach(asset => aaveVaults.forEach(vault => aaveQueryParams.push({ params: [asset, vault], })));
-    const aavePositions = await api.multiCall({ abi: abi.getUserReserveData, target: AAVE_POOL_DATA_PROVIDER, calls: aaveQueryParams });
+  const aaveReserveDetails = await api.multiCall({ abi: abi.getReserveData, target: AAVE_POOL, calls: aaveReservesList });
 
-    for (const i in aavePositions) {
-      const aavePosition = aavePositions[i];
-      const reserveIdx = aaveReservesList.findIndex(x => x === aaveQueryParams[i].params[0]);
+  const aaveQueryParams = [];
+  aaveReservesList.forEach(asset => aaveVaults.forEach(vault => aaveQueryParams.push({ params: [asset, vault], })));
+  const aavePositions = await api.multiCall({ abi: abi.getUserReserveData, target: AAVE_POOL_DATA_PROVIDER, calls: aaveQueryParams });
 
-      api.addToken(aaveReserveDetails[reserveIdx].aTokenAddress, aavePosition.currentATokenBalance);
-      api.addToken(aaveReserveDetails[reserveIdx].stableDebtTokenAddress, aavePosition.currentStableDebt);
-      api.addToken(aaveReserveDetails[reserveIdx].variableDebtTokenAddress, aavePosition.currentVariableDebt);
-    }
+  for (const i in aavePositions) {
+    const aavePosition = aavePositions[i];
+    const reserveIdx = aaveReservesList.findIndex(x => x === aaveQueryParams[i].params[0]);
+
+    api.addToken(aaveReserveDetails[reserveIdx].aTokenAddress, aavePosition.currentATokenBalance);
+    api.addToken(aaveReserveDetails[reserveIdx].stableDebtTokenAddress, aavePosition.currentStableDebt);
+    api.addToken(aaveReserveDetails[reserveIdx].variableDebtTokenAddress, aavePosition.currentVariableDebt);
   }
+  
 }
 
 const abi = {
