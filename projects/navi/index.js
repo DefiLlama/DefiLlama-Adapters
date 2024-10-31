@@ -6,7 +6,7 @@ const decimalShift = {
   [ADDRESSES.sui.USDT]: -3, // USDT
   [ADDRESSES.sui.WETH]: -1,  // WETH
   ["0x2053d08c1e2bd02791056171aab0fd12bd7cd7efad2ab8f6b9c8902f14df2ff2::ausd::AUSD"]: -3, // AUSD
-  ['0x027792d9fed7f9844eb4839566001bb6f6cb4804f66aa2da6fe1ee242d896881::coin::COIN']: -1, // WBTC
+  [ADDRESSES.sui.WBTC]: -1, // WBTC
   [ADDRESSES.sui.USDC_CIRCLE]: -3, // native USDC
   ['0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH']: -1, // native ETH
   ['0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY']: -3, // USDY
