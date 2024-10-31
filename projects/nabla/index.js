@@ -17,7 +17,6 @@ Object.keys(config).forEach(chain => {
       backstops = [...new Set(backstops)]
       const bTokens = await api.multiCall({ abi: 'address:asset', calls: backstops })
       backstops.forEach((backstop, i) => tokensAndOwners.push([bTokens[i], backstop]))
-      console.log(tokensAndOwners)
       return api.sumTokens({ tokensAndOwners })
     }
   }
