@@ -43,4 +43,4 @@ module.exports = {
       tokens: ["0xf8C374CE88A3BE3d374e8888349C7768B607c755"]
     }),
   },
-};
+}
