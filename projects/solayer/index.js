@@ -15,7 +15,10 @@ async function tvl() {
         ['Gwa3a4VJbAyorLhn6TEeWLbQ4tWyup4E6oL3WjAga7tx', '2DriEN733SMxEzqDBVSGwev7KwcdHPXVy65sw9u5mR14'],
         ['he1iusmfkpAdwvxLNGV8Y1iSbj4rUy6yMhEA3fotn9A', '2DriEN733SMxEzqDBVSGwev7KwcdHPXVy65sw9u5mR14'],
         ['Bybit2vBJGhPF52GBdNaQfUJ6ZpThSgHBobjWZpLPb4B', 'FXz4ToVamCcPphADQ4bXvRuk15HP63r6hsKycojVEoT8'],
-        ['BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85', '7RJPqA2b4SicEzLSyUVhGZUdH2rGrTaXV1t7Z4ga2Kpg']
+        ['BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85', '7RJPqA2b4SicEzLSyUVhGZUdH2rGrTaXV1t7Z4ga2Kpg'],
+        // Add sUSD vault tracking
+        ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'], // USDC token and vault
+        ['4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'], // TBILL token and vault
       ],
     })
   ]);
