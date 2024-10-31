@@ -41,7 +41,7 @@ module.exports = {
   btr: {
     tvl: sumTokensExport({
       owners: ["0x92CdC3a149A6bc3f39136eF4A94292cDC2Cc4b9b"],
-      tokens: ["0x9827431e8b77e87c9894bd50b055d6be56be0030"]
+      tokens: ["0xf8c374ce88a3be3d374e8888349c7768b607c755"]
     }),
   },
 }

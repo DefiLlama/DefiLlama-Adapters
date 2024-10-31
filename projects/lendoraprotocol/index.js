@@ -8,8 +8,13 @@ module.exports = {
   }),
 };
 
+
+module.exports.deadFrom = '2023-12-04',
+
 module.exports.scroll.staking = staking(
   ['0xca4fb5541D0f2899549e5f454155E1B34acc9379', '0x578E4f84663260e5C5c64d5310Dd76aA3CEC633c'],
   '0x3e6c99915803631D200441CdF6D84786912b0871',
   'scroll'
 )
+
+module.exports.scroll.borrowed = () => ({}) // bad debt

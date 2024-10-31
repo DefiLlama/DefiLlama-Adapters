@@ -16,3 +16,5 @@ module.exports = {
   ],
   deadFrom: '2022-07-10',
 };
+
+module.exports.ethereum.borrowed = () => ({}) // bad debt

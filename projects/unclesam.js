@@ -5,3 +5,4 @@ module.exports = {
   base: compoundExports(unitroller),
   deadFrom: "2023-08-27"
 };
+module.exports.base.borrowed = () => ({}) // bad debt
