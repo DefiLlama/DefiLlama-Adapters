@@ -1,5 +1,4 @@
 const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const earnETHVault = '0x9Ed15383940CC380fAEF0a75edacE507cC775f22';
 const pancakeswapMasterChef = '0x556B9306565093C855AEA9AE92A594704c2Cd59e'
