@@ -3,7 +3,7 @@ const { PublicKey } = require("@solana/web3.js");
 
 async function tvl() {
   const connection = getConnection();
-  const [account, lst] = await Promise.all([
+  const [account, lst, susd] = await Promise.all([
     connection.getAccountInfo(new PublicKey('po1osKDWYF9oiVEGmzKA4eTs8eMveFRMox3bUKazGN2')),
     sumTokens2({
       tokensAndOwners: [
@@ -16,15 +16,14 @@ async function tvl() {
         ['he1iusmfkpAdwvxLNGV8Y1iSbj4rUy6yMhEA3fotn9A', '2DriEN733SMxEzqDBVSGwev7KwcdHPXVy65sw9u5mR14'],
         ['Bybit2vBJGhPF52GBdNaQfUJ6ZpThSgHBobjWZpLPb4B', 'FXz4ToVamCcPphADQ4bXvRuk15HP63r6hsKycojVEoT8'],
         ['BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85', '7RJPqA2b4SicEzLSyUVhGZUdH2rGrTaXV1t7Z4ga2Kpg'],
-        // Add sUSD vault tracking
-        ['EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'], // USDC token and vault
-        ['4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'], // TBILL token and vault
       ],
-    })
+    }),
+    connection.getTokenSupply(new PublicKey('susdabGDNbhrnCa6ncrYo81u4s9GM8ecK2UwMyZiq4X'))
   ]);
 
   return {
     solana: Number(account.data.readBigUint64LE(258)) / 1e9,
+    'sUSD': Number(susd.value.amount) / 1e6,
     ...lst
   };
 }
