@@ -17,7 +17,7 @@ const pools = [
   },
   {
     pool: 'component_rdx1cr87dx5laxnffdkyv4fsrwms3m62vexgye9x9xpxyrv63gzpgwt97d',
-    resource: 'resource_rdx1th88qcj5syl9ghka2g9l7tw497vy5x6zaatyvgfkwcfe8n9jt2npww',
+    resource: ADDRESSES.radixdlt.WETH,
   },
   {
     pool: 'component_rdx1czuk76y4vhgd44sxly0un2tqegws670dqp0usl2tlsgfkhmdl8dad3',
