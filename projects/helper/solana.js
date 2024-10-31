@@ -51,7 +51,7 @@ function getProvider(chain = 'solana') {
   return provider[chain]
 }
 
-async function getTokenSupplies(tokens) {
+async function getTokenSupplies(tokens, { api } = {}) {
   const sleepTime = tokens.length > 2000 ? 2000 : 200
   const connection = getConnection()
   tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
@@ -65,6 +65,7 @@ async function getTokenSupplies(tokens) {
     try {
       data = decodeAccount('mint', data)
       response[tokens[idx].toString()] = data.supply.toString()
+      if (api) api.add(tokens[idx].toString(), data.supply.toString())
     } catch (e) {
       sdk.log(`Error decoding account: ${tokens[idx]}`)
     }
