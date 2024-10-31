@@ -2,6 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
   methodology: 'On-chain restaking',
+  doublecounted: true
 }
 
 const config = {
