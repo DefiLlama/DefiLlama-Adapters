@@ -4,7 +4,6 @@ const BigNumber = require("bignumber.js");
 const token0 = 'address:token0'
 const symbol = 'string:symbol'
 const { getPoolTokens, getPoolId, bPool, getCurrentTokens, } = require('./abis/balancer.json')
-const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
 const creamAbi = require('./abis/cream.json')
@@ -192,7 +191,7 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
 
   let positionIds = uniV3ExtraConfig.positionIds
   if (!positionIds) {
-    if (!owners.length && owner) owners = [owner]
+    if (!owners?.length && owner) owners = [owner]
     owners = getUniqueAddresses(owners, chain)
     const { output: lengths } = await sdk.api.abi.multiCall({
       block, chain, abi: wildCreditABI.balanceOf,
