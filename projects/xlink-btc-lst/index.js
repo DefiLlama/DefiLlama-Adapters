@@ -7,6 +7,7 @@ const owners = [
 
 module.exports = {
   methodology: "Staking tokens via Babylon counts as TVL",
+  doublecounted:true,
   bitcoin: {
     tvl: sdk.util.sumChainTvls([sumTokensExport({ owners })]),
   }}
