@@ -9,14 +9,11 @@ module.exports = {
 
 const config = {
   ethereum: {
-    safePools: [
-      "0x231be62bcFCEfF4f5A7580077543BF9607722c31"     // IBTC-ETF-BLACKROCK
-	  ]
+    safePools: ["0x231be62bcFCEfF4f5A7580077543BF9607722c31"]     // IBTC-ETF-BLACKROCK
   },
   arbitrum: {
-    safePools: [
-      "0x73c66EC16721b25aF025E280a6353e9f17dd3ceA"     // SolvBTC Deposit Fund I
-    ]
+    safePools: ["0x73c66EC16721b25aF025E280a6353e9f17dd3ceA"]     // SolvBTC Deposit Fund I
+   
   },
   merlin: {
     safePools: [
@@ -50,9 +47,8 @@ const config = {
     ]
   },
   core: {
-    safePools: [
-      "0x9CA0106B58ADE2368cB6bfdb524D92eFBF9a5A72"     // dOBTC
-    ]
+    safePools: ["0x9CA0106B58ADE2368cB6bfdb524D92eFBF9a5A72"]     // dOBTC
+   
   },
   ailayer: {
     safePools: [

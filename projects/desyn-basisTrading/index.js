@@ -5,9 +5,8 @@ module.exports = {
   
   const config = {
     ethereum: {
-      safePools: [
-        "0x5913F1C0Cbcbace8De647a64489D7a4f7319278F"            // PUSDT2
-      ]
+      safePools: ["0x5913F1C0Cbcbace8De647a64489D7a4f7319278F"]            // PUSDT2
+     
     },
     arbitrum: {
       safePools: []

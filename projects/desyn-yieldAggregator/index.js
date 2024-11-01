@@ -24,21 +24,14 @@ const config = {
 	]
   },
   arbitrum: {
-    safePools: [
-      "0xAE4eDB90324C56D893d13140D1F65e3DB156d3bF",          // Kelp DAO ETH Restaking Fund I- ARB(3x Points)
-      "0xBdBF12b113Fd66296Eb0B82fA68a8ee5e6E8dAab",          // Ether.fi ETH Restaking Fund I -ARB(3x Points)
-    ]
+    safePools: ["0xAE4eDB90324C56D893d13140D1F65e3DB156d3bF", "0xBdBF12b113Fd66296Eb0B82fA68a8ee5e6E8dAab"]      // Ether.fi ETH Restaking Fund I -ARB(3x Points)]        // Kelp DAO ETH Restaking Fund I- ARB(3x Points)
   },
   merlin: {
-    safePools: [
-      "0xA939D2815a1a90f9Dc66Cab1fdb3F8271E4004Fb",         // Merlinswap LP Fund II - SolvBTC
-      "0xA38E07DEe7E1383218Fe14C556ebAf6b0f48B1D6"          // Merlinswap LP Fund I- MBTC
-    ]
+    safePools: ["0xA939D2815a1a90f9Dc66Cab1fdb3F8271E4004Fb", "0xA38E07DEe7E1383218Fe14C556ebAf6b0f48B1D6"]         // Merlinswap LP Fund II - SolvBTC                // Merlinswap LP Fund I- MBTC
   },
   btr: {
-    safePools:[
-      "0xBDFFCBE93309cF6C4BCBA816dDA68B88Aa8F66Ef"          // dwbtc2
-    ]
+    safePools:["0xBDFFCBE93309cF6C4BCBA816dDA68B88Aa8F66Ef"]          // dwbtc2
+   
   },
   mode: {
     safePools: []
