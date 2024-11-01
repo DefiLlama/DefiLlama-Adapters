@@ -40,6 +40,11 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  stellar: {
+    "CDTKPWPLOURQA2SGTKTUQOWRCBZEORB4BWBOMJ3D3ZTQQSGE5F6JBQLV": { coingeckoId: "euro-coin", decimals: 7},
+    "CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK": { coingeckoId: "aquarius", decimals: 7},
+
+  },
   shape: {
     [ADDRESSES.optimism.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
     '0x48A9B22b80F566E88f0f1DcC90Ea15A8A3bAE8a4': { coingeckoId: 'ethereum', decimals: 18 },
