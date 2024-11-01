@@ -11,10 +11,25 @@ async function tvl(api) {
   api.add(tokens, tokenSupplies)
 }
 
-Object.keys(config).forEach((chain) => {
-  module.exports[chain] = {
-    tvl,
-  };
-});
+async function tvl_zircuit(api) {
+  const { msteth,egeth,wsteth,weth } = config[api.chain];
+  mlrttokens=[msteth,egeth]
+  tokens=[wsteth,egeth]  
+  const tokenSupplies = await api.multiCall({  abi: 'uint256:totalSupply', calls: mlrttokens})  
+  console.log(tokenSupplies,tokens)
+  api.add(tokens, tokenSupplies)
+}
+
+module.exports = {
+  ethereum: {
+    tvl:tvl,
+
+  },
+  zircuit: {
+      tvl:tvl_zircuit,
+  }
+}
+
+
 
 module.exports.doublecounted = true
