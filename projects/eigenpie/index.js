@@ -14,7 +14,7 @@ async function tvl(api) {
 async function tvl_zircuit(api) {
   const { msteth,egeth,wsteth,weth } = config[api.chain];
   mlrttokens=[msteth,egeth]
-  tokens=[wsteth,egeth]  
+  tokens=[wsteth,weth]  
   const tokenSupplies = await api.multiCall({  abi: 'uint256:totalSupply', calls: mlrttokens})  
   console.log(tokenSupplies,tokens)
   api.add(tokens, tokenSupplies)
