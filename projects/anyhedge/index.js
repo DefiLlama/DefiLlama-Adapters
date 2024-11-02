@@ -51,18 +51,9 @@ module.exports = {
   start: 1654787405,
   bitcoincash: { tvl },
   hallmarks: [
-    [1654787405, "First AnyHedge v0.11 contract"],
-    [1663106400, "AnyHedge alpha frontend goes live"],
-    [1666585080, "AnyHedge beta frontend (BCH Bull) goes live"],
-    [1666785960, "Paytaca wallet integrates AnyHedge"],
-    [1680356040, "BCH Bull trials P2P contracts"],
-    [1681725240, "BCH Bull is released"],
-    [1683634380, "BCH Bull adds achievements"],
-    [1686651480, "BCH Bull increases max. contract size to $100k"],
-    [1687330080, "BCH Bull increases max. leverage to 7.77x"],
-    [1700073715, "First AnyHedge v0.12 Contract"],
+    [1681725240, "BCH Bull public release (AnyHedge v0.11 contract)"],
     [1703054100, "BCH Bull enables early settlement feture"],
-    [1720612800, "BCH Bull enables leveraged shorting feature"],
+    [1720612800, "BCH Bull enables leveraged shorting feature (AnyHedge v0.12 contract)"]
   ]
 };
 
