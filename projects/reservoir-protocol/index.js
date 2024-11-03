@@ -20,6 +20,12 @@ module.exports = {
     ethereum: {
         tvl,
         borrowed: async (api) => {
+            const borrows = await api.call({
+                target: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+                abi: 'function balanceOf(address) external view returns (uint256)',
+                params: ['0x4809010926aec940b550D34a46A52739f996D75D']
+            });
+            api.add('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', borrows)
         }
     }
 };
