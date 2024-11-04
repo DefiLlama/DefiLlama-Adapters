@@ -18,11 +18,11 @@ async function getStakingAddresses() {
 async function bitcoinTvl(api) {
   const addresses = await getConfig('pumpbtc-new', undefined, { fetcher: getStakingAddresses })
 
-  if (!addresses.btc?.owners) {
+  if (!addresses.bitcoin?.owners) {
     return;
   }
 
-  const btcAddresses = addresses.btc.owners
+  const btcAddresses = addresses.bitcoin.owners
   return sumTokens({ api, owners: btcAddresses })
 }
 
