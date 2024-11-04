@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const ADDR = {
   ethereum: {
     BEANSTALK: "0xc1e088fc1323b20bcbee9bd1b9fc9546db5624c5",
@@ -11,9 +12,9 @@ const ADDR = {
     BEAN3CRV_V2: "0xc9c32cd16bf7efb85ff14e0c8603cc90f6f2ee49",
     BEANETH_V2: "0xbea0e11282e2bb5893bece110cf199501e872bad",
     // Underlying non-bean tokens
-    WETH: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    WETH: ADDRESSES.ethereum.WETH,
     CRV3: "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
-    LUSD: "0x5f98805a4e8be255a32880fdec7f6728c6568ba0"
+    LUSD: ADDRESSES.ethereum.LUSD
   },
   arbitrum: {
     BEANSTALK: "0xd1a0060ba708bc4bcd3da6c37efa8dedf015fb70",
@@ -27,12 +28,12 @@ const ADDR = {
     UNRIPE_BEAN_ERC20: "0x1bea054dddbca12889e07b3e076f511bf1d27543",
     UNRIPE_LP_ERC20: "0x1bea059c3ea15f6c10be1c53d70c75fd1266d788",
     // Underlying non-bean tokens
-    WETH: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
-    WSTETH: "0x5979d7b546e38e414f7e9822514be443a4800529",
+    WETH: ADDRESSES.arbitrum.WETH,
+    WSTETH: ADDRESSES.arbitrum.WSTETH,
     WEETH: "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
-    WBTC: "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
-    USDC: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
-    USDT: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+    WBTC: ADDRESSES.arbitrum.WBTC,
+    USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
+    USDT: ADDRESSES.arbitrum.USDT
   }
 };
 
