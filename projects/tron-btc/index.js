@@ -27,7 +27,7 @@ module.exports = {
   merlin: {
     tvl: sumTokensExport({
       owners: ["0x06fe862f2eefe9a5e9a2cf9799941706665e833a"],
-      tokens: ["0xb880fd278198bd590252621d4cd071b1842e9bcd", "0x93919784c523f39cacaa98ee0a9d96c3f32b593e"] // M-BTC AND UNIBTC
+      tokens: [ADDRESSES.merlin.WBTC_1, "0x93919784c523f39cacaa98ee0a9d96c3f32b593e"] // M-BTC AND UNIBTC
     }),
   },
   zklink: {
@@ -69,7 +69,7 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       owners: ["0x533806b821ec94091228d7d34e697b93bb79f8f6"],
-      tokens: ["0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", ] // BTCB
+      tokens: [ADDRESSES.bsc.BTCB, ] // BTCB
     }),
   },
 };

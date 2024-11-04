@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { uniV3Export } = require('../helper/uniswapV3')
 
 module.exports = uniV3Export({
