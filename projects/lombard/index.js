@@ -35,6 +35,7 @@ async function tvl() {
 }
 
 module.exports = {
+  doublecounted:true,
   timetravel: false,
   isHeavyProtocol: true,
   bitcoin: {
