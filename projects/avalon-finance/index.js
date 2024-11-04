@@ -10,6 +10,7 @@ const mainMarket = {
 	scroll: aaveExports('', '0xFBb77A68ee35e7902F1ABE0Bd34B263023e90c70', undefined, ['0x18cbe70602Ee17f79D56971F685E9EaF49DA53F2'], { v3: true }),
 	iotex: aaveExports('', '', undefined, ['0xBa77520d38953BF6a8395D118CfF714Ed672533f'], { v3: true }),
 	bsquared: aaveExports('', '', undefined, ['0x4Ea93E846b8C6E7b3D5a5BEDF4fe6B8AED58FCEe'], { v3: true }),
+	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }),
 }
 
 const innovativeMarket = {
@@ -45,6 +46,8 @@ const stbtcMarkets = {
 const otherProtocolTokenMarkets = {
 	// ETH - Swell BTC
 	ethereum: aaveExports('', '0x3975BE5E668b189b8Ac9049B96A9D9561c4F5273', undefined, ['0x87Ed94868f6fbaA834Db81a1C5854c445caCaB67'], { v3: true }),
+	// BSC - WBTC
+	bsc: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }),
 }
 
 module.exports = mergeExports(
