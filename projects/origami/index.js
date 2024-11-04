@@ -6,6 +6,8 @@ const GRAPH_URLS = {
   arbitrum: sdk.graph.modifyEndpoint('https://subgraph.satsuma-prod.com/a912521dd162/templedao/origami-arbitrum/api'), // arbitrum
 }
 
+const osUSDS = '0x0f90a6962e86b5587b4c11ba2b9697dc3ba84800'
+
 module.exports = {
   doublecounted: true,
 }
@@ -51,4 +53,12 @@ async function tvl(api) {
     const levBal = assetsAndLiability.assets - assetsAndLiability.liabilities
     api.add(levReserveToken, levBal)
   })
+
+  if (api.chain ==='ethereum') {
+    const [asset, totalAssets] = await Promise.all([
+      api.call({ target: osUSDS, abi: 'address:asset' }),
+      api.call({ target: osUSDS, abi: 'uint256:totalAssets' })
+    ])
+    api.add(asset, totalAssets)
+  }
 }
