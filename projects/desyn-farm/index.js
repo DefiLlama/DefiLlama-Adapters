@@ -14,6 +14,16 @@ const APIs = {
   farm: 'https://api.desyn.io/etf/defillama/get_pool_list?strategy_type=StrategyType1',
 }
 
+const chains = {
+  ethereum: 'ethereum',
+  arbitrum: 'arbitrum',
+  btr: 'btr',
+  mode: 'mode',
+  zklink: 'zklink',
+  core: 'core',
+  ailayer: 'ailayer',
+}
+
 const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
 }
@@ -23,26 +33,27 @@ async function tvl(api) {
       const config = data.data.config
       console.log(config)
       Object.keys(config).forEach(async chain => {
+        console.log(chain)
         const { safePools } = config[chain]
         const pools = safePools
-        module.exports[chain] = {
-          tvl: async (api) => {
-            const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
-            const calls = []
-            const allTokens = []
-            let i = 0
-            for (const pool of pools) {
-              for (const token of tokens[i]) {
-                calls.push({ target: pool, params: token })
-                allTokens.push(token)
-              }
-              i++
-            }
-            const allBals = await api.multiCall({ abi: abi.getBalance, calls })
-            api.add(allTokens, allBals)
+        console.log(pools)
+        const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
+        const calls = []
+        const allTokens = []
+        let i = 0
+        for (const pool of pools) {
+          for (const token of tokens[i]) {
+            calls.push({ target: pool, params: token })
+            allTokens.push(token)
           }
+          i++
         }
+        const allBals = await api.multiCall({ abi: abi.getBalance, calls })
+        api.add(allTokens, allBals)
       })
 }
 
-tvl()
+
+Object.keys(chains).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
