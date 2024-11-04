@@ -73,6 +73,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const pools = safePools
+      console.log(pools)
       const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
       const calls = []
       const allTokens = []
