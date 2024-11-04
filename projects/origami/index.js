@@ -40,10 +40,15 @@ async function tvl(api) {
   }))
 
   const [levReserveTokens, assetsAndLiabilities] = await Promise.all([
-    api.multiCall({ calls: levVaults, abi: 'address:reserveToken' }),
-    api.multiCall({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', calls: levVaults })
+    api.multiCall({ calls: levVaults, abi: 'address:reserveToken', permitFailure: true }),
+    api.multiCall({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', calls: levVaults, permitFailure: true })
   ])
 
-  const levBals = assetsAndLiabilities.map(({ assets, liabilities }) => assets - liabilities)
-  api.add(levReserveTokens, levBals)
+  levVaults.forEach((_vault, i) => {
+    const levReserveToken = levReserveTokens[i]
+    const assetsAndLiability = assetsAndLiabilities[i]
+    if(!levReserveToken || !assetsAndLiability) return
+    const levBal = assetsAndLiability.assets - assetsAndLiability.liabilities
+    api.add(levReserveToken, levBal)
+  })
 }
