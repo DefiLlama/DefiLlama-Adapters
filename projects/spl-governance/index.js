@@ -1,22 +1,13 @@
 const { getCache } = require('../helper/http')
-const url = 'https://api.realms.today/stats/tvl'
+const url = 'https://realms-tvl.vercel.app/tvl/latest'
 
 async function tvl() {
-  const { tvl } = await getCache(url)
-  return tvlObject(tvl)
-}
-
-async function staking() {
-  const { ownTokens } = await getCache(url)
-  return tvlObject(ownTokens)
-}
-
-function tvlObject(obj) {
-  return Object.fromEntries(Object.entries(obj).filter(([_, i]) => +i > 1).map(([a, b]) => ['solana:'+a, b]))
+  const {totalValueUsd} = await getCache(url)
+  return {usd:  parseFloat(totalValueUsd)}
 }
 
 module.exports = {
-  methodology: 'SOL token and stables held in the contracts are counted under tvl, gov tokens are counted under staking', 
+  methodology: 'SOL, SPL tokens and stables held in the contracts are counted under tvl', 
   timetravel: false,
-  solana: { tvl, staking,  }
+  solana: { tvl }
 }
