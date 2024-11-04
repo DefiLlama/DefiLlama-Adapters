@@ -13,29 +13,20 @@ async function getCurrentBlock() {
 
 async function tvl(api) {
   const block = await getCurrentBlock()
+  const balances = await Promise.all(
+    IDO_CONTRACTS.map(async (contract) => {      
+      const contractBalance = await api.call({
+        abi: 'erc20:balanceOf',
+        target: HST_TOKEN_CONTRACT,
+        params: contract,
+        block,
+      });
 
-  const ido1ContractBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: HST_TOKEN_CONTRACT,
-    params: IDO_CONTRACTS[0],
-    block
-  });
+      return Number(contractBalance);
+    })
+  );
 
-  const ido2ContractBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: HST_TOKEN_CONTRACT,
-    params: IDO_CONTRACTS[1],
-    block
-  });
-
-  const ido3ContractBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: HST_TOKEN_CONTRACT,
-    params: IDO_CONTRACTS[2],
-    block
-  });
-
-  const totalBalance = Number(ido1ContractBalance) + Number(ido2ContractBalance) + Number(ido3ContractBalance);
+  const totalBalance = balances.reduce((acc, balance) => acc + balance, 0);
 
   api.add(HST_TOKEN_CONTRACT, totalBalance)
 }
