@@ -115,30 +115,6 @@ const ALPHAFI_CETUS_TVL_IDS = [
     token0Type: ADDRESSES.sui.BUCK,
     token1Type: ADDRESSES.sui.SUI
   },
-  // usdc eth
-  {
-    poolID: "0xc04f71f32a65ddf9ebf6fb69f39261457da28918bfda5d3760013f3ea782a594",
-    cetusPoolID: "0x9e59de50d9e5979fc03ac5bcacdb581c823dbd27d63a036131e17b391f2fac88",
-    investorID: "0xb0bff60783536f9dc0b38e43150a73b73b8a4f1969446f7721e187821915bd00",
-    token0Type: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
-    token1Type: "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH"
-  },
-  // deep sui
-  {
-    poolID: "0xff496f73a1f9bf7461882fbdad0c6c6c73d301d3137932f7fce2428244359eaa",
-    cetusPoolID: "0xe01243f37f712ef87e556afb9b1d03d0fae13f96d324ec912daffc339dfdcbd2",
-    investorID: "0x5e195363175e4b5139749d901ddd5ef1ffc751777a7051b558c45fa12f24abc3",
-    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
-    token1Type: ADDRESSES.sui.SUI
-  },
-  // buck sui
-  {
-    poolID: "0xeb44ecef39cc7873de0c418311557c6b8a60a0af4f1fe1fecece85d5fbe02ab5",
-    cetusPoolID: "0x59cf0d333464ad29443d92bfd2ddfd1f794c5830141a5ee4a815d1ef3395bf6c",
-    investorID: "0x9b7c9b6086d3baf413bccdfbb6f60f04dedd5f5387dee531eef5b811afdfaedc",
-    token0Type: "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
-    token1Type: ADDRESSES.sui.SUI
-  },
   // fud sui
   {
     poolID: "0x005a2ebeb982a1e569a54795bce1eeb4d88900b674440f8487c2846da1706182",
