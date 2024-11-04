@@ -1,8 +1,46 @@
 const { get } = require('../helper/http')
-const HST_TOKEN_CONTRACT = "0x00000000000000000000000000000000000ec585"
-const IDO_CONTRACTS = ["0x00000000000000000000000000000000000f5ad1", "0x00000000000000000000000000000000000fc16c", "0x0000000000000000000000000000000000101201"]
-const STAKING_CONTRACT = "0x00000000000000000000000000000000000ec553"
 
+const ENTITIES = [
+{
+    token: "0x00000000000000000000000000000000000ec585",
+    contracts: [
+      "0x00000000000000000000000000000000000f5ad1",
+      "0x00000000000000000000000000000000000fc16c",
+      "0x0000000000000000000000000000000000101201",
+      "0x0000000000000000000000000000000000575c04"
+    ]
+  },
+ {
+    token: "0x000000000000000000000000000000000048fda4",
+    contracts: [
+      "0x00000000000000000000000000000000004e3387",
+      "0x00000000000000000000000000000000004e3395",
+      "0x00000000000000000000000000000000004d6daa",
+      "0x0000000000000000000000000000000000575c04"
+    ]
+  },
+  {
+    token: "0x000000000000000000000000000000000030fb8b",
+    contracts: [
+      "0x00000000000000000000000000000000005737f0",
+      "0x00000000000000000000000000000000005737e1",
+      "0x0000000000000000000000000000000000571a8d",
+      "0x0000000000000000000000000000000000571a8a",
+      "0x000000000000000000000000000000000056d9ea",
+      "0x0000000000000000000000000000000000575c04"
+    ]
+  },
+  {
+    token: "0x00000000000000000000000000000000005c9f70",
+    contracts: [
+      "0x00000000000000000000000000000000005cb45b",
+      "0x00000000000000000000000000000000005cb45f",
+      "0x0000000000000000000000000000000000575c04"
+    ]
+  },
+]
+
+const STAKING_CONTRACT = "0x00000000000000000000000000000000000ec553"
 const MIRROR_NODE_API_V1 = 'https://mainnet-public.mirrornode.hedera.com/api/v1'
 
 async function getCurrentBlock() {
@@ -10,15 +48,13 @@ async function getCurrentBlock() {
   return number
 }
 
-
-async function tvl(api) {
-  const block = await getCurrentBlock()
+async function getTVLForToken(api, tokenContract, addresses, block) {
   const balances = await Promise.all(
-    IDO_CONTRACTS.map(async (contract) => {      
+    addresses.map(async (address) => {      
       const contractBalance = await api.call({
         abi: 'erc20:balanceOf',
-        target: HST_TOKEN_CONTRACT,
-        params: contract,
+        target: tokenContract,
+        params: address,
         block,
       });
 
@@ -26,21 +62,33 @@ async function tvl(api) {
     })
   );
 
-  const totalBalance = balances.reduce((acc, balance) => acc + balance, 0);
+  return await balances.reduce((acc, balance) => acc + balance, 0);
+}
 
-  api.add(HST_TOKEN_CONTRACT, totalBalance)
+
+async function tvl(api) { 
+  const block = await getCurrentBlock();
+  
+  const tokens = ENTITIES.map(entity => entity.token);
+  const balances = await Promise.all(
+    ENTITIES.map(entity => getTVLForToken(api, entity.token, entity.contracts, block))
+  );
+
+  api.addTokens(tokens, balances);
 }
 
 async function staking(api) {
   const block = await getCurrentBlock()
   const stakingBalances = await api.call({
     abi: 'erc20:balanceOf',
-    target: HST_TOKEN_CONTRACT,
+    target: ENTITIES[0].token,
     params: STAKING_CONTRACT,
     block
   });
 
-  api.add(HST_TOKEN_CONTRACT, stakingBalances)
+
+  api.add(ENTITIES[0].token, stakingBalances)
+  
 }
 
 module.exports = {
