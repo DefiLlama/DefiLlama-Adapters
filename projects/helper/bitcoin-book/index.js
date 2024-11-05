@@ -49,8 +49,30 @@ const coinw = require('./coinw.js')
 const cryptoCom = require('./crypto-com.js')
 const deribit = require('./deribit.js')
 const fbiDprk = require('./fbi-dprk.js')
+const mtGoxEntities = require('./mt-gox-entities.js')
+const silkroadFBIEntities = require('./silkroad-fbifunds-entities.js')
+const fastex = require('./fastex.js')
+const fire = require('./fire.js')
+const flipster = require('./flipster.js')
+const gateIo = require('./gate-io.js')
+const hashkey = require('./hashkey.js')
+const hashkeyExchange = require('./hashkey-exchange.js')
+const hibt = require('./hibt.js')
+const hotbit = require('./hotbit.js')
+const huobi = require('./huobi.js')
+const kleverExchange = require('./klever-exchange.js')
+const korbit = require('./korbit.js')
+const kraken = require('./kraken.js')
+const kucoin = require('./kucoin.js')
+const latoken = require('./latoken.js')
+const maskex = require('./maskex.js')
+const mento = require('./mento.js')
+const mexcCex = require('./mexc-cex.js')
 const mtGox = require('./mt-gox.js')
-const silkroadFBI = require('./silkroad-fbifunds.js')
+const nbx = require('./nbx.js')
+const nonkyc = require('./nonkyc.js')
+const okcoin = require('./okcoin.js')
+const okex = require('./okex.js')
 
 module.exports = {
   ...fetchers,
@@ -104,6 +126,28 @@ module.exports = {
   cryptoCom,
   deribit,
   fbiDprk,
+  mtGoxEntities,
+  silkroadFBIEntities,
+  fastex,
+  fire,
+  flipster,
+  gateIo,
+  hashkey,
+  hashkeyExchange,
+  hibt,
+  hotbit,
+  huobi,
+  kleverExchange,
+  korbit,
+  kraken,
+  kucoin,
+  latoken,
+  maskex,
+  mento,
+  mexcCex,
   mtGox,
-  silkroadFBI,
+  nbx,
+  nonkyc,
+  okcoin,
+  okex
 }
