@@ -174,7 +174,7 @@ const supportedChains = [
   // },
   {
     name: 'Filecoin',
-    subgraphEndpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin',
+    subgraphEndpoint:  'https://fil.subgraph.laconic.com/v1/steer-protocol/iRoheeEh2g6CdZ9OnunLwNCFHG8a7TAdtIYNNxboRSKVxgZfjq',
     chainId: 314,
     identifier: 'filecoin'
   },
