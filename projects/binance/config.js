@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 const { getUniqueAddresses } = require('../helper/utils')
 
 // taken from https://www.binance.com/en/blog/community/our-commitment-to-transparency-2895840147147652626
@@ -65,41 +65,6 @@ const assetList = [
   ['BTC', 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
   ['BTC', 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
   ['BTC', 'BEP20', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  ['BTC', 'BTC', '1PJiGp2yDLvUgqeBsuZVCBADArNsk6XEiw'],
-  ['BTC', 'BTC', '1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7'],
-  ['BTC', 'BTC', '32bhzEniykYRFADVaRM5PYswsjC23cxtes'],
-  ['BTC', 'BTC', '34GUzCVLbdkMQ2UdVTaA4nxPwoovVS7y2J'],
-  ['BTC', 'BTC', '34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP'],
-  ['BTC', 'BTC', '34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo'],
-  ['BTC', 'BTC', '36zSLdRv1jyewjaC12fqK5fptn7PqewunL'],
-  ['BTC', 'BTC', '38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn'],
-  ['BTC', 'BTC', '38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE'],
-  ['BTC', 'BTC', '395vnFScKQ1ay695C6v7gf89UzoFpx3WuJ'],
-  ['BTC', 'BTC', '39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v'],
-  ['BTC', 'BTC', '3AQ8bAh88TQU7JV1H3ovXrwsuV6s3zYZuN'],
-  ['BTC', 'BTC', '3AeUiDpPPUrUBS377584sFCpx8KLfpX9Ry'],
-  ['BTC', 'BTC', '3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN'],
-  ['BTC', 'BTC', '3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2'],
-  ['BTC', 'BTC', '3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B'],
-  ['BTC', 'BTC', '3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA'],
-  ['BTC', 'BTC', '3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ'],
-  ['BTC', 'BTC', '3JJmF63ifcamPLiAmLgG96RA599yNtY3EQ'],
-  ['BTC', 'BTC', '3JqPhvKkAPcFB3oLELBT7z2tQdjpnxuDi9'],
-  ['BTC', 'BTC', '3Jy7A2rThtU9xm4o8gR3a9pvQuxXnRNuNF'],
-  ['BTC', 'BTC', '3LQUu4v9z6KNch71j7kbj8GPeAGUo1FW6a'],
-  ['BTC', 'BTC', '3LcgLHzTvjLKBixBvkKGiadtiw2GBSKKqH'],
-  ['BTC', 'BTC', '3LtrsjtyLsHoG8WQMe2RFw3de4pLTQZNcY'],
-  ['BTC', 'BTC', '3M219KR5vEneNb47ewrPfWyb5jQ2DjxRP6'],
-  ['BTC', 'BTC', '3Me9QACjioepv2L2oKTC9QQ87NH6vFe1Zj'],
-  ['BTC', 'BTC', '3NPL82eaehTFh4r3StpHqVQBTnZJFaGsyy'],
-  ['BTC', 'BTC', '3NXCvmLGz9SxYi6TnjbBQfQMcwiZ1iQETa'],
-  ['BTC', 'BTC', '3NjHh71XgjikBoTNYdWgXiNeZcLaKNThgb'],
-  ['BTC', 'BTC', '3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA'],
-  ['BTC', 'BTC', 'bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72'],
-  ['BTC', 'BTC', 'bc1q32lyrhp9zpww22phqjwwmelta0c8a5q990ghs6'],
-  ['BTC', 'BTC', 'bc1q78ufzeu8w8fwvxuphrdlg446xhyptf28fkatu5'],
-  ['BTC', 'BTC', 'bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h'],
-  ['BTC', 'BTC', 'bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h'],
   ['BTC', 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
   ['BTC', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
   ['BTC', 'ETH', '0xdfd5293d8e347dfe59e90efd55b2956a1343963d'],
@@ -626,9 +591,6 @@ const assetList = [
   ['MATIC', 'MATIC', '0x505e71695e9bc45943c58adec1650577bca68fd9'],
   ['USDT', 'MATIC', '0x505e71695e9bc45943c58adec1650577bca68fd9'],
   ['USDT', 'TRX', 'TRGCqsUXeynKTgynp2j9g3sg7Nux2KtB3u'],
-  // added on the 27/08/2024
-  ['BTC', 'BTC', '3PXBET2GrTwCamkeDzKCx8DeGDyrbuGKoc'],
-  ['BTC', 'BTC', '3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud'],
 ]
 
 function getAddresses(chain) {
@@ -641,7 +603,7 @@ function getOwners(chain) {
 
 module.exports = {
   bitcoin: {
-    owners: getAddresses('BTC'),
+     owners: bitcoinAddressBook.binance,
   },
   ethereum: {
     owners: getOwners('ETH'),
