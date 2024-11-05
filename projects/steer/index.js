@@ -160,6 +160,24 @@ const supportedChains = [
     chainId: 14,
     identifier: 'flare'
   },
+  {
+    name: 'ApeChain',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-apechain/1.1.1/gn',
+    chainId: 33139,
+    identifier: 'apechain'
+  },
+  // {
+  //   name: 'Bittorrent',
+  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-btt/1.1.1/gn',
+  //   chainId: 199,
+  //   identifier: 'bittorrent'
+  // },
+  {
+    name: 'Filecoin',
+    subgraphEndpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin',
+    chainId: 314,
+    identifier: 'filecoin'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
