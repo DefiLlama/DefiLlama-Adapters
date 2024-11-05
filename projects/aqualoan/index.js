@@ -5,7 +5,7 @@ const abi = {
 };
 
 const CONFIG = {
-  bsc: ['P0xDc33eAA50B8707f791478Cec324e451E20FDa7ed']
+  bsc: ['0xDc33eAA50B8707f791478Cec324e451E20FDa7ed']
 };
 
 const fetchReserveData = async (api, poolDatas, isBorrowed) => {
@@ -41,6 +41,4 @@ Object.keys(CONFIG).forEach((chain) => {
 });
 
 module.exports.hallmarks = [
-  [1659630089, "Start OP Rewards"],
-  [1650471689, "Start AVAX Rewards"]
 ]
