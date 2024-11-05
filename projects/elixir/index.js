@@ -37,8 +37,8 @@ const integration = async (api, manager, poolIds, tokens) => {
 module.exports = {
   ethereum: {
     tvl: async (api) => {
-      const deusdSupply = await api.call({ target: deUSD, abi: "erc20:totalSupply" })
-      api.add(deUSD, deusdSupply);
+      // const deusdSupply = await api.call({ target: deUSD, abi: "erc20:totalSupply" })
+      // api.add(deUSD, deusdSupply);
       await api.sumTokens({ owners: [COMMITS, FOUNDATION, FOUNDATION_2], tokens: [ADDRESSES.ethereum.STETH, ADDRESSES.null, ADDRESSES.ethereum.SDAI] })
     },
     pool2: sumTokensExport({ owner: DEUSD_LP_STAKING, tokens: LP_TOKENS })

@@ -52,6 +52,7 @@ const config = {
       'Cet3t77x2BBVSmiEFm8ZPoDSngbpso2RuWPL79Ky7SpA',
       '9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL',
       'Fe7SEekiKygziaEGKxsDsgLVzrCfNvVBvAYsaJBwFA8s',
+      'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
     ],
   },
   polkadot: {
