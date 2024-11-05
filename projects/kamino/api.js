@@ -1,4 +1,4 @@
-const { Kamino } = require('@hubbleprotocol/kamino-sdk')
+const { Kamino } = require('@kamino-finance/kliquidity-sdk')
 const { getConnection, } = require('../helper/solana')
 
 async function tvl() {
