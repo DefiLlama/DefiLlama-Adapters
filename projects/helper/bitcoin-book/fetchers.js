@@ -4,6 +4,8 @@ const { getEnv } = require('../env')
 const { get } = require('../http')
 const sdk = require('@defillama/sdk')
 
+const abi = { getQualifiedUserInfo: 'function getQualifiedUserInfo(address _user) view returns ((bool locked, string depositAddress, string withdrawalAddress) info)' }
+
 module.exports = {
   bedrock: async () => {
     const API_URL = 'https://bedrock-datacenter.rockx.com/uniBTC/reserve/address'
@@ -22,7 +24,8 @@ module.exports = {
     return response.rows.map(row => row.data.btc_address);
   },
   fbtc: async () => {
-    return getConfig('fbtc', undefined, {
+    const api = new sdk.ChainApi({ chain: 'ethereum' })
+    const staticAddresses = await getConfig('fbtc', undefined, {
       fetcher: async () => {
         const token = getEnv('FBTC_ACCESS_TOKEN')
         const { result } = await get('https://fbtc.phalcon.blocksec.com/api/v1/extension/fbtc-reserved-addr', {
@@ -33,6 +36,11 @@ module.exports = {
         return result.map(r => r.address)
       }
     })
+
+    const users = await api.call({ abi: 'address[]:getQualifiedUsers', target: '0xbee335BB44e75C4794a0b9B54E8027b111395943' })
+    const userInfos = await api.multiCall({ abi: abi.getQualifiedUserInfo, target: '0xbee335BB44e75C4794a0b9B54E8027b111395943', calls: users })
+    userInfos.forEach(i => staticAddresses.push(i.depositAddress))
+    return staticAddresses
   },
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'

@@ -13,8 +13,8 @@ module.exports = {
   methodology: "Staking tokens via BSquared Network Buzz counts as TVL",
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
-      sumTokensExport({ owners: bitcoinAddressBook.bsquared.BTC }),
-      sumBRC20TokensExport({ owners: bitcoinAddressBook.bsquared.BRC20 }),
+      sumTokensExport({ owners: bitcoinAddressBook.bsquaredBTC }),
+      sumBRC20TokensExport({ owners: bitcoinAddressBook.bsquaredBRC20 }),
     ]),
   },
   ethereum: {

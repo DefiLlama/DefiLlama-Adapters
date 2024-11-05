@@ -7,7 +7,8 @@ const binance = require('./binance.js')
 const binance2 = require('./binance-btc.js')
 const bitstable = require('./bitstable-finance.js')
 const boringdao = require('./boringdao.js')
-const bsquared = require('./bsquared.js')
+const bsquaredBTC = require('./bsquaredBTC.js')
+const bsquaredBRC20 = require('./bsquaredBRC20.js')
 const elSalvador = require('./elSalvador.js')
 const garden = require('./garden.js')
 const hopeMoney = require('./hope-money.js')
@@ -38,7 +39,8 @@ module.exports = {
   binance2,
   bitstable,
   boringdao,
-  bsquared,
+  bsquaredBTC,
+  bsquaredBRC20,
   elSalvador,
   garden,
   hopeMoney,
