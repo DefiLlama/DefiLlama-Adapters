@@ -79,6 +79,11 @@ const config = {
       { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
+  /* europa: {
+    vaultConfigs: [
+      { factory: '0x1B0ef045830466171D617dD0F1142aD699A4Cd63', fromBlock: 5607229, isAlgebra: false, }, // Sushi
+    ]
+  }, */
   evmos: {
     vaultConfigs: [
       { factory: '0x7c6389714719c68caac8ae06bae6e878b3605f6d', fromBlock: 19029984, isAlgebra: false, }, // Forge
@@ -90,16 +95,26 @@ const config = {
       { factory: '0x89FFdaa18b296d9F0CF02fBD88e5c633FEFA5f34', fromBlock: 79156621, isAlgebra: true, }, // Spiritswap 
     ]
   },
-  // hedera: {
-  //   vaultConfigs: [
-  //     { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
-  //   ]
-  // },
-  // kava: {
-  //   vaultConfigs: [
-  //     { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
-  //   ]
-  // },
+  flare: {
+    vaultConfigs: [
+      { factory: '0x85a4dd4ed356A7976a8302b1b690202d58583c55', fromBlock: 30879155, isAlgebra: false, }, // SparkDex
+    ]
+  },
+  fuse: {
+    vaultConfigs: [
+      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 30026180, isAlgebra: false, }, // Voltage
+    ]
+  },
+  /* hedera: {
+    vaultConfigs: [
+      { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
+    ]
+  }, */
+  kava: {
+    vaultConfigs: [
+      { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
+    ]
+  },
   linea: {
     vaultConfigs: [
       { factory: '0xb0e7871d53BE1b1d746bBfD9511e2eF3cD70a6E7', fromBlock: 4722347, isAlgebra: false, }, // Linehub
@@ -112,6 +127,11 @@ const config = {
   mantle: {
     vaultConfigs: [
       { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
+    ]
+  },
+  mode: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 12395812, isAlgebra: true, }, // Kim
     ]
   },
   op_bnb: {
@@ -131,6 +151,22 @@ const config = {
     vaultConfigs: [
       { factory: '0xe8532Db60408f2d47693dA5b9093D71580B8C23F', fromBlock: 10890417, isAlgebra: false, }, // PancakeSwap
       { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
+    ]
+  },
+  real: {
+    vaultConfigs: [
+      { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
+    ]
+  },
+  scroll: {
+    vaultConfigs: [
+      { factory: '0xb42D5956cDe4386B65C087CfCD16910aB6114F15', fromBlock: 5264782, isAlgebra: false, }, // Metavault
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4728729, isAlgebra: false, }, // Uniswap
+    ]
+  },
+  taiko: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 11578, isAlgebra: true, }, // Henjin
     ]
   },
 }
@@ -179,8 +215,9 @@ Object.keys(config).forEach(chain => {
           onlyArgs: true,
           fromBlock,
         })
-        const vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls: logs.map(l => l.ichiVault) })
+        const vaultBalances = await api.multiCall({ abi: abi.getTotalAmounts, calls: logs.map(l => l.ichiVault), permitFailure: true })
         vaultBalances.forEach((b, i) => {
+          if (!b) return
           const { tokenA, tokenB } = logs[i]
           if (!blacklistedTokens.includes(tokenA.toLowerCase())) api.add(tokenA, b.total0)
           if (!blacklistedTokens.includes(tokenB.toLowerCase())) api.add(tokenB, b.total1)

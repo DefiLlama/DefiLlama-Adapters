@@ -13,6 +13,10 @@ const config = {
   kinto: {
     factory: "0xE4Daa69e99F48AD0C4D4843deF4447253248A906",
     usdplus: "0x6F086dB0f6A621a915bC90295175065c9e5d9b8c"
+  },
+  base: {
+    factory: "0xBCE6410A175a1C9B1a25D38d7e1A900F8393BC4D",
+    usdplus: "0x98C6616F1CC0D3E938A16200830DD55663dd7DD3"
   }
 }
 

@@ -10,11 +10,14 @@ async function tvl() {
     account: {
       validatorSystem: { totalActiveBalance },
       availableReserveBalance,
+      emergencyCoolingDown,
     },
   },] = await program.account.state.all()
+  
   const balances = {
-    solana: (+totalActiveBalance + +availableReserveBalance) / 1e9
+    solana: (+totalActiveBalance + +availableReserveBalance + +emergencyCoolingDown) / 1e9
   }
+  
   return sumTokens2({ balances, solOwners: ['UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q'] }) // Liq Pool Sol Leg Pda
 }
 
@@ -24,5 +27,5 @@ module.exports = {
   ],
   timetravel: false,
   solana: { tvl },
-  methodology: `We sum the amount of SOL staked, SOL in reserve address: Du3Ysj1wKbxPKkuPPnvzQLQh8oMSVifs3jGZjJWXFmHN and SOL in the Liquidity pool: UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q`,
+  methodology: `We sum the amount of SOL staked, SOL in reserve address: Du3Ysj1wKbxPKkuPPnvzQLQh8oMSVifs3jGZjJWXFmHN, SOL in the Liquidity pool: UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q, and the emergency cooling down balance.`,
 }

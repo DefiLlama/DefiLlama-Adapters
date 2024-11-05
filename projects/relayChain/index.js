@@ -104,7 +104,7 @@ const wbtcCronos = ADDRESSES.cronos.WBTC;
 const wethCronos = "0xe44fd7fcb2b1581822d0c862b68222998a0c299a";
 const relayCronos = "0x9C29650a1B273A031A35F3121914aae882B144A4";
 const busdCronos = ADDRESSES.oasis.USDT;
-const wCronos = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
+const wCronos = ADDRESSES.cronos.WCRO_1;
 
 
 

@@ -16,22 +16,29 @@ module.exports = uniV3Export({
     fromBlock: 301362984,
     isAlgebra: true,
   },
+  taiko: {
+    factory: "0xBa90FC740a95A6997306255853959Bb284cb748a",
+    fromBlock: 338445,
+    isAlgebra: true,
+  },
 });
 
 const contracts = {
   telos: {
     stakingContract_iceCreamVan: "0xA234Bb3BEb60e654601BEa72Ff3fB130f9ed2aa7",
     stakingContract_zombieVan: "0x67275189e0deb3ce9eb918928c0011a0a582bd0e",
-    stakingContract_iceCreamZombies:
-      "0x581b6d860aa138c46dcaf6d5c709cd070cd77eb8",
+    stakingContract_iceCreamZombies: "0x581b6d860aa138c46dcaf6d5c709cd070cd77eb8",
     slush: "0xac45ede2098bc989dfe0798b4630872006e24c3f",
   },
   mantle: {
     stakingContract_iceCreamVan: "0xe0ac81c7692b9119658e01edc1d743bf4c2ec21a",
     stakingContract_zombieVan: "0x049a58a2aa1b15628aa0cda0433d716f6f63cbba",
-    stakingContract_iceCreamZombies:
-      "0x21b276de139ce8c75a7b4f750328dbf356195b49",
+    stakingContract_iceCreamZombies: "0x21b276de139ce8c75a7b4f750328dbf356195b49",
     slush: "0x8309bc8bb43fb54db02da7d8bf87192355532829",
+  },
+  taiko: {
+    stakingContract_iceCreamVan: "0x0cdde1dead51b156bd62113664d60b354b4df4ab",
+    slush: "0x36bfe1f1b36cfdb4fe75cc592ff5dc6200ad3e0f",
   },
 };
 
@@ -42,17 +49,13 @@ const config = {
   },
   telos: {
     endpoint:
-      "https://telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics",
+      "https://test.telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics",
+  },
+  taiko: {
+    endpoint:
+      "https://api.goldsky.com/api/public/project_clr6mlufzbtuy01vd012wgt5k/subgraphs/swapsicle-analytics-taiko/prod/gn",
   },
 };
-
-const query = `{
-  pools {
-    id
-    token0 { id }
-    token1 { id }
-  }
-}`;
 
 const slushPriceQuery = `{
     token(id: "TOKENID") {
@@ -60,112 +63,61 @@ const slushPriceQuery = `{
     }
 }`;
 
-const WTLOS = ADDRESSES.telos.WTLOS;
-const WMNT = ADDRESSES.mantle.WMNT;
+const nativeTokenAddresses = {
+  telos: `telos:${ADDRESSES.telos.WTLOS}`,
+  mantle: `mantle:${ADDRESSES.mantle.WMNT}`,
+  taiko: `taiko:${ADDRESSES.taiko.WETH}`,
+};
 
-function getTLOSAddress(address) {
-  return `telos:${address}`;
-}
-
-function getMantleAddress(address) {
-  return `mantle:${address}`;
-}
-
-async function slushToEthConvert(slushAmount, chain) {
-  const slushETH = await cachedGraphQuery(
+async function slushToNativeConvert(slushAmount, chain) {
+  const slushNativePrice = await cachedGraphQuery(
     "swapsicle-slush-eth-price/" + chain,
-    chain == "telos" ? config.telos.endpoint : config.mantle.endpoint,
+    config[chain].endpoint,
     slushPriceQuery.replace(
       "TOKENID",
-      chain == "telos" ? contracts.telos.slush : contracts.mantle.slush
+      contracts[chain].slush
     )
   );
-
-  const slushStaked = slushAmount / 10 ** 18;
-  return slushStaked * slushETH.token.derivedMatic;
+  return slushAmount / 10 ** 18 * slushNativePrice.token.derivedMatic;
 }
 
-async function iceCreamVanStake({ chain, telos: block }) {
-  const tokenBalance =
-    chain == "telos"
-      ? await sdk.api.abi.call({
-          target: contracts.telos.stakingContract_iceCreamVan,
-          abi: iceCreamVanABI.totalShares,
-          chain: "telos",
-          block,
-        })
-      : await sdk.api.abi.call({
-          target: contracts.mantle.stakingContract_iceCreamVan,
-          abi: iceCreamVanABI.totalShares,
-          chain: "mantle",
-          block,
-        });
-
-  const ETHBalance = await slushToEthConvert(tokenBalance.output, chain);
-
-  const balances = {};
-  balances[chain == "telos" ? getTLOSAddress(WTLOS) : getMantleAddress(WMNT)] =
-    ETHBalance * 10 ** 18;
-
-  return balances;
+/** Returns an object as follows { `chainName:nativeTokenAddress`: slushBalanceInNativeToken } */
+async function getStakeBalance(slushBalance, chain) {
+  const nativeBalance = await slushToNativeConvert(slushBalance, chain);
+  return {
+    [nativeTokenAddresses[chain]]: nativeBalance * 10 ** 18
+  };
 }
 
-async function ZombieVanStake({ chain, telos: block }) {
-  const tokenBalance =
-    chain == "telos"
-      ? await sdk.api.abi.call({
-          target: contracts.telos.stakingContract_zombieVan,
-          abi: zombieVanABI.totalStaked,
-          chain: "telos",
-          block,
-        })
-      : await sdk.api.abi.call({
-          target: contracts.mantle.stakingContract_zombieVan,
-          abi: zombieVanABI.totalStaked,
-          chain: "mantle",
-          block,
-        });
-
-  const ETHBalance = await slushToEthConvert(tokenBalance.output, chain);
-
-  const balances = {};
-  balances[chain == "telos" ? getTLOSAddress(WTLOS) : getMantleAddress(WMNT)] =
-    ETHBalance * 10 ** 18;
-
-  return balances;
+async function iceCreamVanStake(api) {
+  const response = await api.call({
+    target: contracts[api.chain].stakingContract_iceCreamVan,
+    abi: iceCreamVanABI.totalShares,
+  })
+  return getStakeBalance(response, api.chain);
 }
 
-async function ICZStake({ chain, telos: block }) {
-  const tokenBalance =
-    chain == "telos"
-      ? await sdk.api.erc20.balanceOf({
-          target: contracts.telos.slush,
-          owner: contracts.telos.stakingContract_iceCreamZombies,
-          chain: "telos",
-          block,
-        })
-      : await sdk.api.erc20.balanceOf({
-          target: contracts.mantle.slush,
-          owner: contracts.mantle.stakingContract_iceCreamZombies,
-          chain: "mantle",
-          block,
-        });
+async function ZombieVanStake(api) {
+  const response = await api.call({
+    target: contracts[api.chain].stakingContract_zombieVan,
+    abi: zombieVanABI.totalStaked,
+  })
+  return getStakeBalance(response, api.chain);
+}
 
-  const ETHBalance = await slushToEthConvert(tokenBalance.output, chain);
-
-  const balances = {};
-  balances[chain == "telos" ? getTLOSAddress(WTLOS) : getMantleAddress(WMNT)] =
-    ETHBalance * 10 ** 18;
-
-  return balances;
+async function ICZStake(api) {
+  const response = await api.call({
+    abi: 'erc20:balanceOf',
+    target: contracts[api.chain].slush,
+    params: contracts[api.chain].stakingContract_iceCreamZombies,
+  })
+  return getStakeBalance(response, api.chain);
 }
 
 Object.keys(config).forEach((chain) => {
-  const { endpoint } = config[chain];
   module.exports[chain].staking = sdk.util.sumChainTvls([
-      () => iceCreamVanStake({ chain }),
-      () => ZombieVanStake({ chain }),
-      // NFT's
-      () => ICZStake({ chain }),
-    ])
+    (api) => iceCreamVanStake(api),
+    (api) => (chain !== 'taiko' ? ZombieVanStake(api) : 0),
+    (api) => (chain !== 'taiko' ? ICZStake(api) : 0),
+  ]);
 });
