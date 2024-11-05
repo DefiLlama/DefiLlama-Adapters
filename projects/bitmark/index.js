@@ -20,6 +20,9 @@ const config = {
   bitcoin: {
     owners: ['37RJkdkzPXCMYSTq74berJYj9FmNn7wFP5']
   },
+  starknet: {
+    owners: ['0x04de639e634c071c3ce8b1c69fac0500aab5ddb25a08fd0f757176243e4c0467']
+  },
 }
 
 module.exports = cexExports(config)

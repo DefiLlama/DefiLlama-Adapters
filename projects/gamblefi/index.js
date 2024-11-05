@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 
 const betifystaking = "0x335CAC92af7015BE7802170B62Ebc4C74900484d";
@@ -11,7 +12,7 @@ async function tvl(api) {
     "0xf2001b145b43032aaf5ee2884e456ccd805f677d", 
     "0x76f0adfff61fd9a542a36a98b96909ec7d3a8c53", 
     "0xe2c5275d86D2fB860F19a2CbBED9967d39AA73e8", 
-    "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
+    ADDRESSES.cronos.WCRO_1,
     "0x3e7dfdd82965515e9b6398d91b991f5d4c830ef6",
   ] })
 }

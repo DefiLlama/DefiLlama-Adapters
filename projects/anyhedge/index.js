@@ -23,15 +23,15 @@ async function tvl({timestamp}) {
   // tvl data lags by contract duration since contracts are secret until settled
   // so tvl at current time will always be 0, and only later when contracts are revealed
   // can it be calculated in retrospect and stats back-filled
-  // for this reason, we cut-off the data at (today-31d)
-  const lastTimestamp = Math.floor(new Date().getTime() / 1000 - 31*86400);
+  // for this reason, we cut-off the data at (today-91d)
+  const lastTimestamp = Math.floor(new Date().getTime() / 1000 - 91*86400);
   if (timestamp > lastTimestamp)
     throw "Data for the date is incomplete, awaiting contract reveals."
 
   tvlAnyHedge = await getTVLAnyHedge(timestamp)
-  testDataSource = await getTVLAnyHedge(timestamp + 31*86400)
+  testDataSource = await getTVLAnyHedge(timestamp + 91*86400)
 
-  // if we're querying data for `timestamp`, a row for `timestamp+31d` should exist
+  // if we're querying data for `timestamp`, a row for `timestamp+91d` should exist
   if (testDataSource == null)
     throw "Data source hasn't been updated yet."
 
@@ -47,20 +47,13 @@ async function tvl({timestamp}) {
 }
 
 module.exports = {
-  methodology: "Scrape the blockchain and filter for spent transaction outputs that match the contract's input script template. Aggregate them to compute TVL. The TVL data lags by contract duration since contracts are secret until settled. So, TVL at the current time will always be 0 and can only be calculated in retrospect and stats back-filled when contracts are revealed. For this reason, the code cuts-off the data at 31 days ago. See here for more details: https://gitlab.com/0353F40E/anyhedge-stats/-/blob/master/readme.md",
+  methodology: "Scrape the blockchain and filter for spent transaction outputs that match the contract's input script template. Aggregate them to compute TVL. The TVL data lags by contract duration since contracts are secret until settled. So, TVL at the current time will always be 0 and can only be calculated in retrospect and stats back-filled when contracts are revealed. For this reason, the code cuts-off the data at 91 days ago. See here for more details: https://gitlab.com/0353F40E/anyhedge-stats/-/blob/master/readme.md",
   start: 1654787405,
   bitcoincash: { tvl },
   hallmarks: [
-    [1654787405, "First AnyHedge v0.11 Contract"],
-    [1663106400, "AnyHedge Alpha is live and available"],
-    [1666585080, "The BCH Bull (Beta) goes live"],
-    [1666785960, "Paytaca wallet's product live"],
-    [1680356040, "BCH Bull trials P2P contracts"],
-    [1681725240, "BCH Bull is released"],
-    [1683634380, "BCH Bull adds Achievements"],
-    [1686651480, "BCH Bull raise max contract to $100k"],
-    [1687330080, "BCH Bull raise max leverage to 7.77x"],
-    [1703054100, "BCH Bull enables Early Settlements"],
+    [1681725240, "BCH Bull public release (AnyHedge v0.11 contract)"],
+    [1703054100, "BCH Bull enables early settlement feture"],
+    [1720612800, "BCH Bull enables leveraged shorting feature (AnyHedge v0.12 contract)"]
   ]
 };
 

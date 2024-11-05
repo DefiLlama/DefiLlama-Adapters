@@ -22,6 +22,21 @@ const eth = {
   zaiUsdcCurveStaking: "0x154F52B347D8E48b8DbD8D8325Fe5bb45AAdCCDa",
 };
 
+
+const base = {
+  usdc: ADDRESSES.base.USDC,
+  maha: '0x554bba833518793056CF105E66aBEA330672c0dE',
+  usdz: '0x0A27E060C0406f8Ab7B64e3BEE036a37e5a62853',
+
+  // pools
+  zaiUsdcAerodrome: "0x72d509aff75753aaad6a10d3eb98f2dbc58c480d",
+  zaiMahaAerodrome: "0x6B22E989E1D74621ac4c8bcb62bcC7EE7c25b45A",
+
+  // staking contracts
+  zaiUsdcStaking: "0x1097dFe9539350cb466dF9CA89A5e61195A520B0",
+  zaiMahaStaking: "0x7D5a39744608A809c850f63CB1A3d3f9b4cAc586",
+}
+
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
 const collaterals = [eth.usdc, eth.usdt, eth.dai];
@@ -36,5 +51,14 @@ module.exports = {
       ]
     }),
     tvl: sumTokensExport({ owners: pegStabilityModules, tokens: collaterals }),
+  },
+  base: {
+    pool2: sumTokensExport({
+      tokensAndOwners: [
+        [base.zaiMahaAerodrome, base.zaiMahaStaking],
+        [base.zaiUsdcAerodrome, base.zaiUsdcStaking],
+      ],
+      resolveLP: true,
+    }),
   }
 };

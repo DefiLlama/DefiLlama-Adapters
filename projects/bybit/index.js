@@ -148,6 +148,11 @@ const config = {
       "kcwo3rimcnqf"
     ],
   },
+  starknet: {
+    owners: [
+      "0x076601136372fcdbbd914eea797082f7504f828e122288ad45748b0c8b0c9696"
+    ],
+  },
 };
 
 module.exports = cexExports(config);

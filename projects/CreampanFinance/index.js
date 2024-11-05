@@ -13,7 +13,7 @@ async function tvl(api) {
   const data = await Promise.all(accounts.map(account => queryV1Beta1({ chain: 'cronos', url: `/staking/v1beta1/delegations/${account}`, })));
   const factroy_contract_address = '0x66f5997b7810723aceeeb8a880846fc117081bd0';
   data.map(i => i.delegation_responses).flat().forEach(i => api.add(ADDRESSES.cronos.WCRO, i.balance.amount * 1e10))
-  return api.sumTokens({ owner: factroy_contract_address, tokens: ['0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23']})
+  return api.sumTokens({ owner: factroy_contract_address, tokens: [ADDRESSES.cronos.WCRO_1]})
 }
 
 module.exports = {
