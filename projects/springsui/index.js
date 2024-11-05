@@ -9,7 +9,7 @@ async function tvl() {
 }
 
 module.exports = {
-            methodology: "Calculates the amount of SUI staked in Spring Sui liquid staking contracts.",
+            methodology: "Calculates the amount of SUI staked in SpringSui liquid staking contracts.",
     sui: {
         tvl,
     }
