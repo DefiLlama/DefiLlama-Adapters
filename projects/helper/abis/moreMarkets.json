@@ -1,6 +1,0 @@
-{
-  "moreMarketsFunctions": {
-    "idToMarketParams": "function idToMarketParams(bytes32 Id) returns (bool isPremiumMarket, address loanToken, address collateralToken, address oracle, address irm, uint256 lltv, address creditAttestationService, uint96 irxMaxLltv, uint256[] categoryLltv)",
-    "market": "function market(bytes32 input) returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee, uint256 premiumFee)"
-  }
-}
