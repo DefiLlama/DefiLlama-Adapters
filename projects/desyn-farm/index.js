@@ -1,6 +1,5 @@
 const axios = require("axios");
-const { get } = require('../helper/http')
-const { getConfig } = require('../helper/cache')
+
 module.exports = {
   hallmarks: [
     [1719734400, "Launched on Merlin Chain"],
@@ -14,29 +13,23 @@ const APIs = {
   farm: 'https://api.desyn.io/etf/defillama/get_pool_list?strategy_type=StrategyType1',
 }
 
-const chains = {
-  ethereum: 'ethereum',
-  arbitrum: 'arbitrum',
-  btr: 'btr',
-  mode: 'mode',
-  zklink: 'zklink',
-  core: 'core',
-  ailayer: 'ailayer',
-}
-
 const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
 }
 
-async function tvl(api) {
-      const {data} = await axios.get(APIs.farm)
-      const config = data.data.config
-      console.log(config)
-      Object.keys(config).forEach(async chain => {
-        console.log(chain)
-        const { safePools } = config[chain]
+const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll"];
+
+async function getInfoListPool() {
+  const { data } = await axios.get(APIs.farm)
+  return data.data.config
+}
+
+chains.forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+        const poolLists =  await getInfoListPool()
+        const { safePools } = poolLists[chain]
         const pools = safePools
-        console.log(pools)
         const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
         const calls = []
         const allTokens = []
@@ -50,10 +43,7 @@ async function tvl(api) {
         }
         const allBals = await api.multiCall({ abi: abi.getBalance, calls })
         api.add(allTokens, allBals)
-      })
-}
-
-
-Object.keys(chains).forEach(chain => {
-  module.exports[chain] = { tvl }
+    }
+    
+  }
 })
