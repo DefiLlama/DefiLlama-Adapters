@@ -137,6 +137,7 @@ const fixBalancesTokens = {
     '0x000000000000000000000000000000000022d6de': { coingeckoId: 'karate-combat', decimals: 8},
     '0x00000000000000000000000000000000000cba44': { coingeckoId: 'hbarx', decimals: 8 },
     '0x00000000000000000000000000000000000b2ad5': { coingeckoId: 'saucerswap', decimals: 6 },
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'hedera-hashgraph', decimals: 18 },
     '0x0000000000000000000000000000000000163b5a': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
     '0x000000000000000000000000000000000038b3db': { coingeckoId: 'dovu-2', decimals: 8 },
     '0x00000000000000000000000000000000000ec585': { coingeckoId: 'headstarter', decimals: 8 },
