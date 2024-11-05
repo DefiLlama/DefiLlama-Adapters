@@ -59,6 +59,8 @@ module.exports = {
       ADDRESSES.base.USDC, //USDC
       '0x3b86ad95859b6ab773f55f8d94b4b9d443ee931f', //SolvBTC
       '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',//cbBTC
+      '0x04c0599ae5a44757c0af6f9ec3b93da8976c150a',//weETH
+      '0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452',//wstETH
       ] })
   },
 };
