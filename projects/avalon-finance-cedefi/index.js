@@ -12,7 +12,7 @@ const config = {
 }
 
 // @dev btcOwnersOfCedefi: Bitcoin owners of the Avalon CeDefi pool contract.
-const btcOwnersOfCedefi = bitcoinAddressBook['avalon-cedefi']
+const btcOwnersOfCedefi = bitcoinAddressBook.avalonCedefi
 
 // @dev getMetrics: call to get the collateral and debt of the Avalon CeDefi pool contract.
 const getMetrics = async (api, borrowed) => {
