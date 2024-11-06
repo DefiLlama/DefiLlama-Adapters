@@ -1,4 +1,4 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs, getLogs2 } = require('../helper/cache/getLogs')
 const { mergeExports } = require('../helper/utils')
 const { uniV3Export } = require('../helper/uniswapV3')
 
@@ -12,56 +12,24 @@ const abi = {
 }
 
 const config = {
-  mantle: {
-    factories: [{ target: '0xB375DfF90F8dafeA50E2EA7a0666B426Ed786C5D', fromBlock: 69177970 },],
-  }
+  mantle: { factory: '0xB375DfF90F8dafeA50E2EA7a0666B426Ed786C5D', fromBlock: 69177970 }
 }
 
 Object.keys(config).forEach(chain => {
-  const { factories } = config[chain];
+  const { factory, fromBlock } = config[chain];
 
   module.exports[chain] = {
     tvl: async (api) => {
-      const { target, fromBlock } = factories[0];
+      const logArgs = { api, target: factory, fromBlock };
 
-      const strategyChanges = await getLogs(
-        {
-          api,
-          target,
-          fromBlock,
-          onlyArgs: true,
-          eventAbi: abi.evt_Strategy
-        }
-      );
+      const strategies = (await getLogs2({ ...logArgs, eventAbi: abi.evt_Strategy, extraKey: 'strategy' })).map(log => log.strategy);
+      const vaults = (await getLogs2({ ...logArgs, eventAbi: abi.evt_VaultAdded, extraKey: 'vault' })).map(log => log.vault);
+      const loans = (await getLogs2({ ...logArgs, eventAbi: abi.evt_LoanAdded, extraKey: 'loan' })).map(log => log.loan);
 
-
-      const vaults = (await getLogs(
-        {
-          api,
-          target,
-          fromBlock,
-          onlyArgs: true,
-          eventAbi: abi.evt_VaultAdded
-        }
-      )).map(log => log.vault);
-
-
-      const loans = (await getLogs({
-        api,
-        target,
-        fromBlock,
-        onlyArgs: true,
-        eventAbi: abi.evt_LoanAdded
-      })).map(log => log.loan);
-
-      const strategies = [...new Set(strategyChanges.map(log => log.strategy))];
       const collTokens = await api.multiCall({ abi: abi.strategy_collToken, calls: strategies });
       const borrowTokens = await api.multiCall({ abi: abi.strategy_borrowToken, calls: strategies });
-
-      const tokens = [...new Set([...collTokens, ...borrowTokens])];
-
-
-      return api.sumTokens({ tokens, owners: [...vaults, ...loans] });
+      const tokens = collTokens.concat(borrowTokens)
+      return api.sumTokens({ tokens, owners: loans.concat(vaults), blacklistedTokens: ['0x401307732d732dd3b05ac1138b8661c0f55830ea'] });
     }
   }
 });
