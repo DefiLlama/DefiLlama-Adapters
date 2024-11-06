@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 // https://support.bitmart.com/hc/en-us/articles/18473693031451-Enhancing-Transparency-and-Trust-at-BitMart
 const owners = [
@@ -18,7 +19,7 @@ const config = {
     owners: ['CgANddXc7FKSsdLSdFv67X8faZqQaRTeLMXkAVANkZD4']
   },
   bitcoin: {
-    owners: ['37RJkdkzPXCMYSTq74berJYj9FmNn7wFP5']
+    owners: bitcoinAddressBook.bitmark
   },
   starknet: {
     owners: ['0x04de639e634c071c3ce8b1c69fac0500aab5ddb25a08fd0f757176243e4c0467']

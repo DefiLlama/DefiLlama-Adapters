@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/sumTokens');
-const utils = require('../helper/utils');
-const { getConfig } = require('../helper/cache')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
   methodology: 'TVL for pumpBTC is calculated based on the total value of WBTC, FBTC, BTCB held in the contract that were utilized in the minting process of pumpBTC.',
@@ -19,11 +18,7 @@ Object.keys(config).forEach(chain => {
 
   if (chain === 'bitcoin') {
     module.exports[chain] = {
-      tvl:
-        async (api) => {
-          const addresses = await getConfig('pumpbtc', undefined, { fetcher: getStakingAddresses })
-          return sumTokens({ api, owners: addresses })
-        }
+      tvl: async (api) => { return sumTokens({ api, owners: await bitcoinAddressBook.pumpBTC() }) }
     }
   } else {
     module.exports[chain] = {
@@ -31,13 +26,5 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
-
-async function getStakingAddresses() {
-  let res = await utils.fetchURL('https://dashboard.pumpbtc.xyz/api/dashboard/btc/addresses')
-
-  const btcAddresses = res.data.data || []
-  //console.log('>>', btcAddresses.length) 
-  return btcAddresses
-}
 
 module.exports.isHeavyProtocol = true
