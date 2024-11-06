@@ -62,7 +62,7 @@ const tokenMapping = {
   Ada: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
   DAI: 'dai',
-
+  USDM: 'c48cbb3d5e57ed56e276bc45f99ab39abe94e6cd7ac39fb402da47ad0014df105553444d'
 }
 
 const getToken = (market) => tokenMapping[market.id] ?? market.asset.currencySymbol + toHex(market.asset.name)
