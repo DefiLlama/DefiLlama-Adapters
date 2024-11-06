@@ -74,6 +74,11 @@ const config = {
       '0xb6193DF61351736e5190bF1DEB2E4f0769bd1BF2', // Tarot Leyline
     ]
   },
+  scroll: {
+    factories: [
+      '0x2217AEC3440E8FD6d49A118B1502e539f88Dba55', // Tarot Osirion
+    ]
+  },
 }
 
 tarotHelper(module.exports, config)

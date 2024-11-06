@@ -1,4 +1,0 @@
-{
-  "tvlOfPool": "function tvlOfPool(address vault) view returns (uint256)",
-  "tvlOfVault": "function tvlOfVault(address _vault, bool isLp, address tokenRouter) view returns (uint256)"
-}

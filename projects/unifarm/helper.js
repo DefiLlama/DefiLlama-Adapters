@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { graphQuery, } = require('../helper/http')
 const { sleep, log } = require('../helper/utils')
@@ -78,9 +79,9 @@ query MyQuery {
 `;
 
 const v2EndPoints = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-eth",
-  polygon: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-polygon",
-  bsc: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-bsc",
+  ethereum: sdk.graph.modifyEndpoint('Cquw1hbmvNrSvUjaqoRhu9nWv7AX1Mz2gEb9sapYdMA5'),
+  polygon: sdk.graph.modifyEndpoint('Ami8CcwigwYViJsUrwqK8DWwDPtFVAKbeYfii6ANahax'),
+  bsc: sdk.graph.modifyEndpoint('EsA5LyABgi7ibZJGNr5PQsQ2L8QDPZxNdDvd5qPs5CJj'),
 }
 
 const getV1Calls = async (chain) => {

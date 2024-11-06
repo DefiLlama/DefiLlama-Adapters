@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const query = `query FundsTVL{ funds { id  } }`
 
@@ -6,7 +7,8 @@ module.exports = {
 }
 
 const config = {
-  arbitrum: { endpoint: 'https://api.thegraph.com/subgraphs/name/borelien/swaap-earn-arbitrum-test', },
+  arbitrum: { endpoint: 'https://api.goldsky.com/api/public/project_clws2t7g7ae9c01xsbnu80a51/subgraphs/swaap-earn-arbitrum/1.0.0/gn', },
+  ethereum: { endpoint: 'https://api.goldsky.com/api/public/project_clws2t7g7ae9c01xsbnu80a51/subgraphs/swaap-earn-ethereum/1.0.0/gn', },
 }
 
 Object.keys(config).forEach(chain => {

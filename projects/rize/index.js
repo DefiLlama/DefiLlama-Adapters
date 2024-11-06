@@ -5,7 +5,7 @@ const suiScallopPools = {
   usdc: {
     poolId: "0x4ace6648ddc64e646ba47a957c562c32c9599b3bba8f5ac1aadb2ae23a2f8ca0",
     rewardPoolId: "0xf4268cc9b9413b9bfe09e8966b8de650494c9e5784bf0930759cfef4904daff8",
-    type: "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN",
+    type: ADDRESSES.sui.USDC,
     stakeType: "0xefe8b36d5b2e43728cc323298626b83177803521d195cfb11e15b910e892fddf::reserve::MarketCoin<0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN>",
     balanceSheet: '0x2f4df5e1368fbbdaa5c712d28b837b3d41c2d3872979ccededcdfdac55ff8a93',
     spoolAccount: 'a5a2d2afe12ed353ca32a3d5f7592a7a57945040ee7beacab6d82a5fe5b34734',
@@ -14,7 +14,7 @@ const suiScallopPools = {
   usdt: {
     poolId: "0xcb328f7ffa7f9342ed85af3fdb2f22919e1a06dfb2f713c04c73543870d7548f",
     rewardPoolId: "0x2c9f934d67a5baa586ceec2cc24163a2f049a6af3d5ba36b84d8ac40f25c4080",
-    type: "0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN",
+    type: ADDRESSES.sui.USDT,
     stakeType: "0xefe8b36d5b2e43728cc323298626b83177803521d195cfb11e15b910e892fddf::reserve::MarketCoin<0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN>",
     balanceSheet: '0xfbc056f126dd35adc1f8fe985e2cedc8010e687e8e851e1c5b99fdf63cd1c879',
     spoolAccount: '775206c05243da6b1a29a45c74bd3d3e7db4b3f8303342cbf34c3d12725eac70',
@@ -23,7 +23,7 @@ const suiScallopPools = {
   weth: {
     poolId: "0xeec40beccb07c575bebd842eeaabb835f77cd3dab73add433477e57f583a6787",
     rewardPoolId: "0x957de68a18d87817de8309b30c1ec269a4d87ae513abbeed86b5619cb9ce1077",
-    type: "0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN",
+    type: ADDRESSES.sui.WETH,
     stakeType: "0xefe8b36d5b2e43728cc323298626b83177803521d195cfb11e15b910e892fddf::reserve::MarketCoin<0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN>",
     balanceSheet: '0xc8fcdff48efc265740ae0b74aae3faccae9ec00034039a113f3339798035108c',
     spoolAccount: '3865596e3ea8860e4d479b91d2b9f5c57adab00d70b13ac6c7eb410fd092d2cc',

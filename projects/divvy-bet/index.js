@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { Program } = require("@project-serum/anchor");
 const { PublicKey } = require("@solana/web3.js");
 const { getProvider, sumTokens2 } = require("../helper/solana");
@@ -10,7 +11,7 @@ async function tvl() {
     )[0];
   }
 
-  const NATIVE_MINT = "So11111111111111111111111111111111111111112";
+  const NATIVE_MINT = ADDRESSES.solana.SOL;
   const DIVVY_ADMIN = "AHf1MX99d31ebLfAydVPe2vVdgzZGuUaW972znWPNzZY";
 
   const programId = new PublicKey("dvyFwAPniptQNb1ey4eM12L8iLHrzdiDsPPDndd6xAR");

@@ -16,7 +16,11 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'Calculates TVL based on stETH deposits in the project contract.',
+  start: 1707378815,  // Feb-08-2024 07:33:35 AM UTC in Unix timestamp
   ethereum: {
-    tvl,
+    tvl
   },
+  hallmarks: [
+    [1712400000, "MOR token launch"],  // May-08-2024 12:00:00 AM UTC in Unix timestamp
+  ],
 };

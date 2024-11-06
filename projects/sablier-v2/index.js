@@ -31,14 +31,18 @@ async function vesting(api) {
 
 const config = {
   ethereum: { endpoints: ['5EgaXheiBXZBCkepyGUYAu8pN31Dkbh7bpGtnLPqaT5m'], },
-  arbitrum: { endpoints: ['AR77w8PwmkAG7c9DJSsfW6yTrC5UdvdQ1Hz5ZTCuaUWz'], },
+  arbitrum: { endpoints: ['8BnGPBojHycDxVo83LP468pUo4xDyCQbtTpHGZXR6SiB'], },
   bsc: { endpoints: ['BVyi15zcH5eUg5PPKfRDDesezMezh6cAkn8LPvh7MVAF'], },
-  xdai: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-gnosis'], },
-  optimism: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-optimism'], },
-  polygon: { endpoints: ['J8XJaFtxcz7xowzVJ5LwZhi35N5Lbtwfrt4sea6G1ysJ'], },
-  avax: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-avalanche'], },
-  base: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-base'], },
-  blast: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-v2-blast/version/latest'], },
+  xdai: { endpoints: ['EXhNLbhCbsewJPx4jx5tutNXpxwdgng2kmX1J7w1bFyu'], },
+  optimism: { endpoints: ['6e6Dvs1yDpsWDDREZRqxGi54SVdvTNzUdKpKJxniKVrp'], },
+  polygon: { endpoints: ['CsDNYv9XPUMP8vufuwDVKQrVhsxhzzRHezjLFFKZZbrx'], },
+  avax: { endpoints: ['FdVwZuMV43yCb1nPmjnLQwmzS58wvKuLMPzcZ4UWgWAc'], },
+  base: { endpoints: ['3pxjsW9rbDjmZpoQWzc5CAo4vzcyYE9YQyTghntmnb1K'], },
+  blast: { endpoints: ['BXoC2ToMZXnTmCjWftQRPh9zMyM7ysijMN54Nxzb2CEY'], },
+  scroll: { endpoints: ['HVcngokCByfveLwguuafrBC34xB65Ne6tpGrXHmqDSrh'], },
+  era: { endpoints: ['GY2fGozmfZiZ3xF2MfevohLR4YGnyxGxAyxzi9zmU5bY'], },
+  mode: { endpoints: ['5ezGnVwNucVTW45WCb91VBiKBEdiqT4ceHDhh1KGigYG'], },
+  linea: { endpoints: ['FoJnatzCZKyp9XjZyUBaw1juTb5ydnFvJvWUxS3oRCHZ'], },
 }
 
 Object.keys(config).forEach(chain => {

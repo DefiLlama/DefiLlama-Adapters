@@ -13,7 +13,7 @@ async function getData() {
   async function getAllData() {
     const programId = '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt'
     const provider = getProvider()
-    const idl = await getConfig('banx-idl', 'https://raw.githubusercontent.com/frakt-solana/banx-public-sdk/master/src/fbond-protocol/idl/bonds.json')
+    const idl = await getConfig('banx-idl', 'https://api.banx.gg/idl')
     const program = new Program(idl, programId, provider)
 
     const bondOfferOffset = 32 + 8;
@@ -22,7 +22,7 @@ async function getData() {
       bondOffers,
       bondTradeTxn,
     ] = await Promise.all([
-      getFilteredAccounts(program, 'bondOfferV2', bondOfferOffset, [5, 7,]),
+      getFilteredAccounts(program, 'bondOfferV3', bondOfferOffset, [5, 7,]),
       getFilteredAccounts(program, 'bondTradeTransactionV3', bondTradeTxnOffset, [2, 6, 9]),
     ])
 

@@ -3,6 +3,7 @@ const { getTvlForLooperWithOrbit } = require('./strategies/looper')
 const { getTvlForDexBalancer } = require('./strategies/dex-balancer')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const { getAllAgent } = require("./utils");
+const { getTvlForBladeSwapCLM } = require("./strategies/bladeswap");
 
 
 async function tvl(api) {
@@ -10,6 +11,7 @@ async function tvl(api) {
     const allAgentsAddress = allAgents.map(i => i.agentAddress)
     const dexBalancerAgents = allAgents.filter(i => i.moduleType === "DexBalancer")
     const concentratedLiquidityAgents = allAgents.filter(i => i.moduleType === "ConcentratedLiquidity")
+    const bladeSwapConcentratedLiquidityAgentAddresses = allAgents.filter(i => i.moduleType === "BladeSwapLiquidityManager").map(i => i.agentAddress)
     const looperAgentsAddresses = allAgents.filter(i => i.moduleType === "Looper").map(i => i.agentAddress)
 
 
@@ -17,23 +19,17 @@ async function tvl(api) {
     const blasterswapv2 = dexBalancerAgents.map(i => [uniV2Lp.blasterswap, i.agentAddress])
     const ringv2 = dexBalancerAgents.map(i => [uniV2Lp.ring, i.agentAddress])
 
-    const blasterswapV3 = concentratedLiquidityAgents.map(i => [uniV3NftManager.blasterswap, i.agentAddress])
-    const blasterswap2V3 = concentratedLiquidityAgents.map(i => [uniV3NftManager.blasterswap2, i.agentAddress])
-    const thrusterV3 = concentratedLiquidityAgents.map(i => [uniV3NftManager.thruster, i.agentAddress])
-
+    const agents = concentratedLiquidityAgents.map(i => i.agentAddress)
+    await sumTokens2({ api, owners: agents, uniV3ExtraConfig: { nftAddress: [uniV3NftManager.blasterswap, uniV3NftManager.blasterswap2, uniV3NftManager.thruster]}})
 
     await getTvlForDexBalancer(dexBalancerAgents.map(i => i.agentAddress), api)
-    await  getTvlForLooperWithOrbit(looperAgentsAddresses, api)
+    await getTvlForLooperWithOrbit(looperAgentsAddresses, api)
+    await getTvlForBladeSwapCLM(bladeSwapConcentratedLiquidityAgentAddresses, api)
     await sumTokens2({
         tokensAndOwners: [
             ...thrusterv2,
             ...blasterswapv2,
             ...ringv2,
-        ],
-        uniV3nftsAndOwners: [
-            ...blasterswapV3,
-            ...blasterswap2V3,
-            ...thrusterV3
         ],
         resolveLP: true,
         api,

@@ -19,7 +19,7 @@ async function tvl(api) {
 // https://github.com/balancednetwork/balanced-java-contracts/wiki/Contract-Addresses
 // https://github.com/DefiLlama/DefiLlama-Adapters/pull/9857#issuecomment-2060842344
 module.exports = {
-  methodology: 'TVL consists of liquidity on the DEX, deposits made to the lending program and the stability fund. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3" and Balanced stats API "https://balanced.sudoblock.io/api/v1/docs',
+  methodology: "TVL: The total liquidity held on the Balanced exchange and in the Stability Fund. Fees: Collected from traders",
   icon: {
     tvl
   },
@@ -40,5 +40,8 @@ module.exports = {
   },
   arbitrum: {
     tvl: async () => await computeTVL("arbitrum"),
+  },
+  sui: {
+    tvl: async () => await computeTVL("sui"),
   },
 };

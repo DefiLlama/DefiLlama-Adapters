@@ -11,6 +11,17 @@ async function getTonBalance(addr) {
   return res.balance
 }
 
+async function getJettonBalances(addr) {
+  const response = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
+
+  const res = { }
+  response.balances.forEach(val => {
+    res[val.jetton.address] = { balance: val.balance, price: val.price.prices.USD, decimals: val.jetton.decimals }
+  })
+
+  return res
+}
+
 async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false }) {
   if (tokens.includes(ADDRESSES.null)) {
     const balance = await getTonBalance(addr)
@@ -26,6 +37,23 @@ async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens
     const bal = balance * price / 10 ** decimals
     api.add('tether', bal, { skipChain: true })
   })
+}
+
+async function getTokenRates({ tokens = [] }) {
+  const { rates } = await get(`https://tonapi.io/v2/rates?` + (
+    new URLSearchParams({ tokens: tokens.join(','), currencies: "usd" })
+  ).toString());
+  
+  const tokenPrices = {};
+  
+  tokens.forEach(tokenAddress => {
+    if (rates[tokenAddress]) {
+      const usdPrice = rates[tokenAddress].prices.USD;
+      tokenPrices[tokenAddress] = usdPrice;
+    }
+  });
+  
+  return tokenPrices
 }
 
 const sumTokensAccount = rateLimited(_sumTokensAccount)
@@ -70,7 +98,9 @@ async function call({ target, abi, params = [] }) {
 
 module.exports = {
   getTonBalance,
+  getTokenRates,
   sumTokens,
   sumTokensExport,
   call,
+  getJettonBalances,
 }
