@@ -72,5 +72,19 @@ module.exports = {
   solvBTC: async () => {
     const API_URL = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/refs/heads/main/bitcoin.json'
     return Object.values(await getConfig('solv-protocol/solv-btc-lst', API_URL)).flat();
+  },
+  pumpBTC: async () => {
+    const API_URL = 'https://dashboard.pumpbtc.xyz/api/dashboard/btc/addresses'
+    return getConfig('pumpbtc', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get(API_URL)
+        return data.data || []
+      }
+    })
+  },
+  tBTC: async () => {
+    const API_URL = 'https://api.threshold.network/tbtc/wallets/pof'
+    const { wallets } = await getConfig('tbtc/wallets', API_URL)
+    return wallets.filter(i => +i.walletBitcoinBalance > 0).map(wallet => wallet.walletBitcoinAddress)
   }
 }

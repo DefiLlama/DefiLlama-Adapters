@@ -73,6 +73,16 @@ const nbx = require('./nbx.js')
 const nonkyc = require('./nonkyc.js')
 const okcoin = require('./okcoin.js')
 const okex = require('./okex.js')
+const phemex = require('./phemex.js')
+const pionexCex = require('./pionex-cex.js')
+const probit = require('./probit.js')
+const robinhood = require('./robinhood.js')
+const rosenBridge = require('./rosen-bridge.js')
+const silkroad = require('./silkroad.js')
+const swissborg = require('./swissborg.js')
+const toobit = require('./toobit.js')
+const indiaCovid = require('./india-covid.js')
+const wooCEX = require('./woo-cex.js')
 
 module.exports = {
   ...fetchers,
@@ -149,5 +159,15 @@ module.exports = {
   nbx,
   nonkyc,
   okcoin,
-  okex
+  okex,
+  phemex,
+  pionexCex,
+  probit,
+  robinhood,
+  rosenBridge,
+  silkroad,
+  swissborg,
+  toobit,
+  indiaCovid,
+  wooCEX
 }
