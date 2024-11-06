@@ -32,7 +32,7 @@ const HubPools = {
     },
     { // SolvBTC      
       poolAddress: "0x307bCEC89624660Ed06C97033EDb7eF49Ab0EB2D",
-      tokenAddress: ADDRESSES.avax.SolvBTC,
+      tokenAddress: '0xbc78D84Ba0c46dFe32cf2895a19939c86b81a777',
     },
   ],
   'ethereum': [
