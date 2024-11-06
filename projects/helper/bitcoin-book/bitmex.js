@@ -1,4 +1,4 @@
-[
+module.exports = [
   "3BMEXqGpG4FxBA1KWhRFufXfSTRgzfDBhJ",
   "3BMEXxSMT2b2kvsnC4Q35d2kKJZ4u9bSLh",
   "3BMEXfK7c3STqJjYmy2VQTGtzD3QAXNz3T",
