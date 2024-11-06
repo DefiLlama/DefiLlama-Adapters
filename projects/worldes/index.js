@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const config = {
     arbitrum: { WES:'0xcEab5Af10D5376016c8C352ea77F8Bc6a88bDa11',dvmFactory: '0x3bA0388E64900e274f2C6fCfaE34Eed65c01282A', fromBlock: 228710000, dspFactory: '0xf3AadDd00C2E263d760BE52BB7142276B74E8b47', WorldesRWATokenFactory: '0x4Ef31B45919aE1874840B9563D46FCD57E2Ae0b7', WorldesDvmProxy: '0x7e93ED796aFD3D9a6e9a24c668153fBb981bE60E', WorldesDspProxy: '0xE6933Fb2dc110a43fdeC6bB83d6ae99aC557c452', WorldesMineProxy: '0x2eFda50249176e3ee1A26964Ad6496DC5aA2aCE7' },
 }
-//Increase the underlying asset value of RWA
+//WES RWA backed by real estate,and the property detail link https://www.worldes.io/project/detail-15
 async function addRwaAssetTVL(api, target) {
     const tokens = await api.call({abi: 'erc20:totalSupply', target: target})
     api.addToken(target.toLowerCase(),tokens)
