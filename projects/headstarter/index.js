@@ -40,7 +40,7 @@ const ENTITIES = [
   },
 ]
 
-const STAKING_CONTRACT = "0x00000000000000000000000000000000000ec553"
+const STAKING_CONTRACT = "0x000000000000000000000000000000000070eac5"
 const MIRROR_NODE_API_V1 = 'https://mainnet-public.mirrornode.hedera.com/api/v1'
 
 async function getCurrentBlock() {
@@ -88,7 +88,6 @@ async function staking(api) {
 
 
   api.add(ENTITIES[0].token, stakingBalances)
-  
 }
 
 module.exports = {
