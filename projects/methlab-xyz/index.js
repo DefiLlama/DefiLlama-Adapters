@@ -1,4 +1,4 @@
-const { getLogs, getLogs2 } = require('../helper/cache/getLogs')
+const { getLogs2 } = require('../helper/cache/getLogs')
 const { mergeExports } = require('../helper/utils')
 const { uniV3Export } = require('../helper/uniswapV3')
 
