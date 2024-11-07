@@ -7,8 +7,9 @@ const sdk = require("@defillama/sdk")
 // Firm
 const firmStart = 16159015;
 const DBR = '0xAD038Eb671c44b853887A7E32528FaB35dC5D710';
+const DOLA = '0x865377367054516e17014CcdED1e7d814EDC9ce4';
 
-async function tvl(api) {
+async function getMarketAddresses (api) {
   const logs = await getLogs({
     api,
     target: DBR,
@@ -19,7 +20,11 @@ async function tvl(api) {
   })
   
   // unique markets
-  const markets = [...new Set(logs.map(i => i.args.market))]
+  return [...new Set(logs.map(i => i.args.market))];
+}
+
+async function tvl(api) {
+  const markets = await getMarketAddresses(api);
 
   let escrows = await Promise.all(
     markets.map(async m => {
@@ -43,6 +48,17 @@ async function tvl(api) {
   return balances
 }
 
+async function borrowed(api) {
+  const markets = await getMarketAddresses(api);
+
+  const marketDebts = await api.multiCall({  abi: 'uint256:totalDebt', calls: markets})
+  const balances = {}
+  marketDebts.forEach((t,i)=>{
+    sdk.util.sumSingleBalance(balances, DOLA, marketDebts[i])
+  })
+  return balances
+}
+
 module.exports = {
   methodology: "Get collateral balances from users personal escrows",
   hallmarks: [    
@@ -51,5 +67,8 @@ module.exports = {
     [1718236800, "CRV liquidation"]    
   ],
   start: 1670701200, // Dec 10 2022
-  ethereum: { tvl }
+  ethereum: { 
+    tvl,
+    borrowed,
+   }
 };
