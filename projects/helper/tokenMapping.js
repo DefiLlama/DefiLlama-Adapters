@@ -83,7 +83,7 @@ const fixBalancesTokens = {
   },
   flow: {
     '0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e': { coingeckoId: 'flow', decimals: 18 },
-    '0x1b97100ea1d7126c4d60027e231ea4cb25314bdb': { coingeckoId: 'ankr-staked-flow', decimals: 18 },
+    '0x1b97100eA1D7126C4d60027e231EA4CB25314bdb': { coingeckoId: 'ankr-staked-flow', decimals: 18 },
     [ADDRESSES.milkomeda.BNB]: { coingeckoId: 'usd-coin', decimals: 6 },
   },
   core: {
@@ -137,6 +137,7 @@ const fixBalancesTokens = {
     '0x000000000000000000000000000000000022d6de': { coingeckoId: 'karate-combat', decimals: 8},
     '0x00000000000000000000000000000000000cba44': { coingeckoId: 'hbarx', decimals: 8 },
     '0x00000000000000000000000000000000000b2ad5': { coingeckoId: 'saucerswap', decimals: 6 },
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'hedera-hashgraph', decimals: 18 },
     '0x0000000000000000000000000000000000163b5a': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
     '0x000000000000000000000000000000000038b3db': { coingeckoId: 'dovu-2', decimals: 8 },
     '0x00000000000000000000000000000000000ec585': { coingeckoId: 'headstarter', decimals: 8 },

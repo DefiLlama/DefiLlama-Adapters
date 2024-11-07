@@ -2,6 +2,8 @@ const ADDRESS = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/sumTokens");
 const sdk = require('@defillama/sdk')
 const { sumTokensExport: sumBRC20TokensExport } = require("../helper/chain/brc20");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+
 
 const BB_STAKE_CONTRACT = '0x8816353DA8A4D45E81C509A54AdbA8E57908958f'
 const BB_STAKE_ABI = 'function totalStakedAmount() view returns (uint256)'
@@ -23,17 +25,17 @@ module.exports = {
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
       // Native(BTC)
-      sumTokensExport({ owners: ["bc1p36wvtxursam9cq8zmc9ppvsqf9ulefm7grvlfc4tzc5j83rcggsqh6nxw5"] }),
+      sumTokensExport({ owner: bitcoinAddressBook.bitstable[0] }),
       // BRC20
       sumBRC20TokensExport({
         // Deposit Address
-        owners: ["bc1p0uw83vg0h32v7kypyvjn9nextku2h7axjdeefy2ewstevnqffaksjzhrdf"],
+        owner: bitcoinAddressBook.bitstable[1],
         blacklistedTokens: ["BSSB", "DAII"],
       }),
     ]),
     staking: sumBRC20TokensExport({
       // Farm Address
-      owners: ["bc1pvngqf24g3hhr5s4ptv472prz576uye8qmagy880ydq5gzpd30pdqtua3rd"],
+      owner: bitcoinAddressBook.bitstable[2],
       blacklistedTokens: ["DAII"],
     }),
   },
