@@ -1,6 +1,6 @@
-const axios = require('axios');
 const sdk = require('@defillama/sdk');
 const { nullAddress, treasuryExports } = require("../helper/treasury");
+const { getConfig } = require('../helper/cache')
 
 const API_URL = 'https://api.mantle.xyz/api/v2/treasury/tokens';
 const MNT = '0x3c3a81e81dc49a522a592e7622a7e711c06bf354';
@@ -18,7 +18,7 @@ const getEthenaFarmingBalance = async (api, wallet) => {
 };
 
 const getTvlData = async (api, key) => {
-  const { data } = await axios.get(API_URL);
+  const data = await getConfig('mantle-treasury', API_URL)
   const rawDatas = data.filter(({ chain }) => key === chain);
   const datas = rawDatas.map(({ id, walletAddress, amount }) => ({ id, walletAddress, amount }));
 
