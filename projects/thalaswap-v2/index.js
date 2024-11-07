@@ -13,8 +13,7 @@ async function _getResource(address, key) {
 async function getBalance(poolAddress, assetMetadata) {
   return function_view({ functionStr: "0x1::primary_fungible_store::balance", type_arguments: ["0x1::fungible_asset::Metadata"], args: [poolAddress, assetMetadata] });
 }
-const extractCoinAddress = resource => resource.type.split('<')[1].replace('>', '').split(', ');
-const poolsFilter = resource => resource.type.includes(`${thalaswapAddress}::stable_pool::StablePool<`) || resource.type.includes(`${thalaswapAddress}::weighted_pool::WeightedPool<`)
+
 module.exports = {
   timetravel: false,
   methodology:
@@ -23,10 +22,8 @@ module.exports = {
     tvl: async () => {
       const balances = {};
       const controller = await _getResource(thalaswapAddress, thalaswapControllerResource)
-      console.log(controller)
       
       const poolObjects = controller.pools.inline_vec.map(pool => (pool.inner))
-      console.log(poolObjects)
 
       for (const poolAddress of poolObjects) {
         const pool = await getResource(poolAddress, `${thalaswapAddress}::pool::Pool`)
@@ -36,7 +33,7 @@ module.exports = {
           sdk.util.sumSingleBalance(balances, asset, balance);
         }
       }
-      console.log(balances)
+
       return transformBalances("aptos", balances);
     },
   },
