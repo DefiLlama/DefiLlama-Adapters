@@ -5,17 +5,21 @@ const { sumTokensExport: sumTokensExportOfTon } = require("../helper/chain/ton")
 const USDT_TOKEN_CONTRACT = ADDRESSES.astarzk.USDT;
 const EZETH_BASE = ADDRESSES.blast.ezETH;
 const EZETH_LINEA = ADDRESSES.blast.ezETH;
-const ZK = ADDRESSES.era.ZK;
-const WALLET_ADDR = [
-  "0x62e724cB4d6C6C7317e2FADe4A03001Fe7856940",
-  "0xA59a2365D555b24491B19A5093D3c99b119c2aBb",
-];
+const ZK = "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E";
+const ethereum_LBTC = "0x8236a87084f8B84306f72007F36F2618A5634494";
+const ethereum_PumpBTC = "0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e";
+const base_PumpBTC = "0x23dA5F2d509cb43A59d43C108a43eDf34510eff1";
+const stBTC = "0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3";
+
 module.exports = {
   methodology:
     "Counts Satori smartcontract balance as TVL..",
   polygon_zkevm: {
     tvl: sumTokensExport({
-      owners: WALLET_ADDR,
+      owners: [
+        "0x62e724cB4d6C6C7317e2FADe4A03001Fe7856940",
+        "0xA59a2365D555b24491B19A5093D3c99b119c2aBb",
+      ],
       tokens: [USDT_TOKEN_CONTRACT],
     }),
   },
@@ -52,7 +56,7 @@ module.exports = {
         "0x668a9711b8d04362876dc5b6177ed362084d5aed",
         "0x5f075a6a11B2e25DF664Ce7419c274943017B595",
       ],
-      tokens: [ADDRESSES.base.USDC, EZETH_BASE],
+      tokens: [ADDRESSES.base.USDC, EZETH_BASE,base_PumpBTC],
     }),
   },
   xlayer: {
@@ -73,6 +77,15 @@ module.exports = {
       tokens: [ADDRESSES.arbitrum.USDC_CIRCLE],
     }),
   },
+  xlayer:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x80DD5bC934122e56B9536a9F19F2Ea95a38E98c8",
+        "0xf915391346Fad5a75F31CD00218BB1EFC13e01f2",
+      ],
+      tokens: [ADDRESSES.xlayer.USDC],
+    }),
+  },
   ton:{
     tvl: sumTokensExportOfTon({
       owners: [
@@ -80,6 +93,23 @@ module.exports = {
       ],
       tokens: [ADDRESSES.ton.USDT],
     }),
+  },
+  bsc:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x3b6F3f7F0e3e8cCa7bC11dFA4a8567A6479Ece54",
+        "0xD2F244164cd09e5cBb6360c4a17aAF976a34562a"
+      ],
+      tokens: [ADDRESSES.bsc.USDC,stBTC],
+    }),
+  },
+  ethereum:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x0857f8a6e41e1c71f4065daebfe7ddb825cbffde",
+        "0xA394080628F175472Fee9eB316BD104fAB63FE40"
+      ],
+      tokens: [ADDRESSES.ethereum.USDC,ethereum_LBTC,stBTC,ethereum_PumpBTC],
+    }),
   }
-
 };
