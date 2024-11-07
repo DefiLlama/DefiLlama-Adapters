@@ -115,8 +115,8 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   return individual ? balancesIndividual : balances
 }
 
-async function getMultipleAccounts(accountsArray) {
-  const connection = getConnection()
+async function getMultipleAccounts(accountsArray, chain = 'solana') {
+  const connection = getConnection(chain)
   if (!accountsArray.length) return []
   accountsArray.forEach((val, i) => {
     if (typeof val === 'string') accountsArray[i] = new PublicKey(val)

@@ -26,6 +26,28 @@ async function borrowed(api) {
   })
 }
 
+async function borrowedRenec(api) {
+  const connection = await getConnection('renec');
+  const reserves = await connection.getProgramAccounts(
+    RENEC_LEND_RENEC_PROGRAM_ID,
+    {
+      filters: [{
+        dataSize: 619,
+      }],
+    }
+  );
+  const reserveAddresses = reserves.map((account) => account.pubkey.toBase58());
+
+  const infos = await getMultipleAccounts(reserveAddresses, 'renec')
+  infos.forEach(i => {
+    const decoded = decodeAccount('reserve', i);
+    if (decoded === null) return;
+    const { info: { liquidity } } = decoded;
+    const amount = liquidity.borrowedAmountWads.toString() / 1e18
+    api.add(liquidity.mintPubkey.toString(), amount)
+  })
+}
+
 async function tvl() {
   const connection = await getConnection();
   const marketAccounts = await connection.getProgramAccounts(
@@ -62,6 +84,7 @@ module.exports = {
   },
   renec: {
     tvl: tvlRenec,
+    borrowed: borrowedRenec,
   },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
