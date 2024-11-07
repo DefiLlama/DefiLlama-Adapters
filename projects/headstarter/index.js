@@ -1,3 +1,5 @@
+const { sumTokens2 } = require("../helper/unwrapLPs");
+
 const STAKING_CONTRACT = "0x000000000000000000000000000000000070eac5";
 const HST = "0x00000000000000000000000000000000000ec585";
 
@@ -46,20 +48,17 @@ const HST_ENTITIES = [
 ];
 
 const getTokensAndOwners = (entities) => {
-  return {
-    tokens: entities.map((entity) => entity.token),
-    owners: entities.flatMap((entity) => entity.contracts),
-  };
+  return entities.map(({ token, contracts}) => contracts.map(i => [token, i])).flat();
 };
 
 const tvl = async (api) => {
-  const { tokens, owners } = getTokensAndOwners(ENTITIES);
-  return api.sumTokens({ tokens, owners });
+  const tokensAndOwners = getTokensAndOwners(ENTITIES);
+  return sumTokens2({api,  tokensAndOwners });
 };
 
 const staking = async (api) => {
-  const { tokens, owners } = getTokensAndOwners(HST_ENTITIES);
-  return api.sumTokens({ tokens, owners });
+  const  tokensAndOwners = getTokensAndOwners(HST_ENTITIES);
+  return sumTokens2({api,  tokensAndOwners });
 };
 
 module.exports = {
