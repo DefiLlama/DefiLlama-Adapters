@@ -44,12 +44,12 @@ const gravUSDC = ADDRESSES.functionx.PURSE;
 const gravUSDT = ADDRESSES.functionx.USDT;
 
 module.exports = {
+  deadFrom: ['2023-03-01'],
+  methodology: "Counts as TVL all the Assets deposited on EVMOS through different Pool Contracts",
   evmos: {
     tvl: sumTokensExport({
       owners: poolAddresses_evmos, 
       tokens: [madUSDC, madUSDT, axlDAI, axlUSDC, axlUSDT, ceDAI, ceUSDC, ceUSDT, gravDAI, gravUSDC, gravUSDT, FRAX],
     }),
   },
-  methodology:
-    "Counts as TVL all the Assets deposited on EVMOS through different Pool Contracts",
 };
