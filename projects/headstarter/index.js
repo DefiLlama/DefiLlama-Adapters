@@ -1,23 +1,15 @@
-const { get } = require('../helper/http')
+const STAKING_CONTRACT = "0x000000000000000000000000000000000070eac5";
+const HST = "0x00000000000000000000000000000000000ec585";
 
 const ENTITIES = [
-{
-    token: "0x00000000000000000000000000000000000ec585",
-    contracts: [
-      "0x00000000000000000000000000000000000f5ad1",
-      "0x00000000000000000000000000000000000fc16c",
-      "0x0000000000000000000000000000000000101201",
-      "0x0000000000000000000000000000000000575c04"
-    ]
-  },
- {
+  {
     token: "0x000000000000000000000000000000000048fda4",
     contracts: [
       "0x00000000000000000000000000000000004e3387",
       "0x00000000000000000000000000000000004e3395",
       "0x00000000000000000000000000000000004d6daa",
-      "0x0000000000000000000000000000000000575c04"
-    ]
+      "0x0000000000000000000000000000000000575c04",
+    ],
   },
   {
     token: "0x000000000000000000000000000000000030fb8b",
@@ -27,73 +19,53 @@ const ENTITIES = [
       "0x0000000000000000000000000000000000571a8d",
       "0x0000000000000000000000000000000000571a8a",
       "0x000000000000000000000000000000000056d9ea",
-      "0x0000000000000000000000000000000000575c04"
-    ]
+      "0x0000000000000000000000000000000000575c04",
+    ],
   },
   {
     token: "0x00000000000000000000000000000000005c9f70",
     contracts: [
       "0x00000000000000000000000000000000005cb45b",
       "0x00000000000000000000000000000000005cb45f",
-      "0x0000000000000000000000000000000000575c04"
-    ]
+      "0x0000000000000000000000000000000000575c04",
+    ],
   },
-]
+];
 
-const STAKING_CONTRACT = "0x000000000000000000000000000000000070eac5"
-const MIRROR_NODE_API_V1 = 'https://mainnet-public.mirrornode.hedera.com/api/v1'
+const HST_ENTITIES = [
+  {
+    token: HST,
+    contracts: [
+      STAKING_CONTRACT,
+      "0x00000000000000000000000000000000000f5ad1",
+      "0x00000000000000000000000000000000000fc16c",
+      "0x0000000000000000000000000000000000101201",
+      "0x0000000000000000000000000000000000575c04",
+    ],
+  },
+];
 
-async function getCurrentBlock() {
-  const { blocks: [{ number }]} = await get(MIRROR_NODE_API_V1+'/blocks?limit=1&order=desc')
-  return number
-}
+const getTokensAndOwners = (entities) => {
+  return {
+    tokens: entities.map((entity) => entity.token),
+    owners: entities.flatMap((entity) => entity.contracts),
+  };
+};
 
-async function getTVLForToken(api, tokenContract, addresses, block) {
-  const balances = await Promise.all(
-    addresses.map(async (address) => {      
-      const contractBalance = await api.call({
-        abi: 'erc20:balanceOf',
-        target: tokenContract,
-        params: address,
-        block,
-      });
+const tvl = async (api) => {
+  const { tokens, owners } = getTokensAndOwners(ENTITIES);
+  return api.sumTokens({ tokens, owners });
+};
 
-      return Number(contractBalance);
-    })
-  );
-
-  return await balances.reduce((acc, balance) => acc + balance, 0);
-}
-
-
-async function tvl(api) { 
-  const block = await getCurrentBlock();
-  
-  const tokens = ENTITIES.map(entity => entity.token);
-  const balances = await Promise.all(
-    ENTITIES.map(entity => getTVLForToken(api, entity.token, entity.contracts, block))
-  );
-
-  api.addTokens(tokens, balances);
-}
-
-async function staking(api) {
-  const block = await getCurrentBlock()
-  const stakingBalances = await api.call({
-    abi: 'erc20:balanceOf',
-    target: ENTITIES[0].token,
-    params: STAKING_CONTRACT,
-    block
-  });
-
-
-  api.add(ENTITIES[0].token, stakingBalances)
-}
+const staking = async (api) => {
+  const { tokens, owners } = getTokensAndOwners(HST_ENTITIES);
+  return api.sumTokens({ tokens, owners });
+};
 
 module.exports = {
   methodology: "We count the HST tokens locked in the HeadStarter contracts.",
   hedera: {
     tvl,
-    staking
-  }
-}; 
+    staking,
+  },
+};
