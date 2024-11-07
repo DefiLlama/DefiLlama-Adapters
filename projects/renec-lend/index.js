@@ -2,6 +2,7 @@ const { sumTokens2, decodeAccount, getMultipleAccounts, getConnection, } = requi
 const { PublicKey } = require("@solana/web3.js");
 
 const RENEC_LEND_SOLANA_PROGRAM_ID = new PublicKey("9L193MV4yakKcgNT2tN4Kvf1ypn9c1sVMvsRn1Amw2Au");
+const RENEC_LEND_RENEC_PROGRAM_ID = new PublicKey("AqR1WSUwNeVsz66ayH2J8iTyiGMgouRwPqzzMaxx49ba");
 
 async function borrowed(api) {
   const connection = await getConnection();
@@ -39,11 +40,28 @@ async function tvl() {
   return sumTokens2({ owners: marketAuthorities });
 }
 
+async function tvlRenec() {
+  const connection = await getConnection('renec');
+  const marketAccounts = await connection.getProgramAccounts(
+    RENEC_LEND_RENEC_PROGRAM_ID,
+    {
+      filters: [{
+        dataSize: 290,
+      }],
+    }
+  );
+  const marketAuthorities = marketAccounts.map((account) => PublicKey.findProgramAddressSync([account.pubkey.toBytes()], RENEC_LEND_RENEC_PROGRAM_ID)[0]);
+  return sumTokens2({ owners: marketAuthorities, chain: 'renec' });
+}
+
 module.exports = {
   timetravel: false,
   solana: {
     tvl,
     borrowed,
+  },
+  renec: {
+    tvl: tvlRenec,
   },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",

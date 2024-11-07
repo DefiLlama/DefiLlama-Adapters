@@ -178,6 +178,7 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
   computeTokenAccount = false,
+  chain = 'solana',
 }) {
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
@@ -185,12 +186,12 @@ async function sumTokens2({
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
   if (!tokensAndOwners.length) {
-    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
+    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), chain)
 
-    const data = await getOwnerAllAccounts(_owners)
+    const data = await getOwnerAllAccounts(_owners, chain)
     for (const item of data) {
       if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
-      sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
+      sdk.util.sumSingleBalance(balances, `${chain}:` + item.mint, item.amount)
     }
   }
 
@@ -233,11 +234,11 @@ async function sumTokens2({
     return [...set].map(i => i.split('$'))
   }
 
-  async function getOwnerAllAccounts(owners) {
+  async function getOwnerAllAccounts(owners, chain = 'solana') {
     console.log('fetching sol token balances for', owners.length, 'owners')
     return runInChunks(owners, async (chunk) => {
       const body = chunk.map(i => formOwnerBalanceQuery(i))
-      const tokenBalances = await http.post(endpoint(), body)
+      const tokenBalances = await http.post(chain === 'solana' ? endpoint() : renecEndpoint(), body)
       return tokenBalances.map(i => i.result.value).flat().map(i => ({
         account: i.pubkey,
         mint: i.account.data.parsed.info.mint,
