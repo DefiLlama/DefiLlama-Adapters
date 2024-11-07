@@ -40,11 +40,11 @@ module.exports = {
     tvl: (api) => getMetrics(api, false),
     borrowed: (api) => getMetrics(api, true),
   },
-  bitcoin: {
-    tvl: sdk.util.sumChainTvls([
-      sumTokensExport({ owners: btcOwnersOfCedefi }),
-    ]),
-  },
+  // bitcoin: {
+  //   tvl: sdk.util.sumChainTvls([
+  //     sumTokensExport({ owners: btcOwnersOfCedefi }),
+  //   ]),
+  // },
 }
 
 delete module.exports.bitcoin
