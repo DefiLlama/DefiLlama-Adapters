@@ -22,9 +22,9 @@ const getMetrics = async (api, borrowed) => {
   // const balanceOfCollateral = marketData.collateral;
   const balanceOfDebt = marketData.debt;
   if (!borrowed) {
-    const supply= await api.call({  abi: 'erc20:totalSupply', target: '0x3119a1AD5B63A000aB9CA3F2470611eB997B93B9'})
-    api.add('0x3119a1AD5B63A000aB9CA3F2470611eB997B93B9', supply)
-
+    // pool balance of lfbtc
+    const balance = await api.call({  abi: 'erc20:balanceOf', target: config[api.chain].lfbtcAddress, params: poolAddress})
+    api.add(config[api.chain].lfbtcAddress, balance)
   }
 
   if (borrowed)
