@@ -1,19 +1,13 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const { sumTokensExport: sumBRC20TokensExport } = require("../helper/chain/brc20");
 const { sumTokensExport } = require('../helper/sumTokens');
-
-// On the 23/10/2024 , defillma receive a PoR from Tron/HTX team with the respective BTC collateral backing BTC on tron chain 
-const owners = [
-  "1NBX1UZE3EFPTnYNkDfVhRADvVc8v6pRYu",
-  "14NEbSYdjumn9h4spMjbp3PdUpeXuM5PBZ"
-]
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
   methodology: "Collateral for BTC on tron chain",
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
-      sumTokensExport({ owners }),
+      sumTokensExport({ owners: bitcoinAddressBook.tronBTC }),
     ]),
   },
   ethereum: {
