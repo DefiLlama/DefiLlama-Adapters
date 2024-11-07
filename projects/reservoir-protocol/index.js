@@ -1,31 +1,32 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 
-const rUSD = '0x09D4214C03D01F49544C0448DBE3A27f768F2b34';
-const srUSD = '0x738d1115B90efa71AE468F1287fc864775e23a31';
-const termIssuer = '0x128D86A9e854a709Df06b884f81EeE7240F6cCf7';
+const USDC = ADDRESSES['ethereum'].USDC;
+const abi = 'function fundTotalValue() external view returns (uint256)';
 
 const tvl = async (api) => {
+    let target;
 
-    const trUSDTotalDebt = await api.call({ target: termIssuer, abi: 'function totalDebt() external view returns (uint256)' });
-    api.add(termIssuer, trUSDTotalDebt);
+    target = '0x0c7e4342534e6e8783311dCF17828a2aa0951CC7';
+    const ifHV1 = await api.call({ target, abi });
 
-    const rUSDTotalSupply = await api.call({ target: rUSD, abi: 'function totalSupply() external view returns (uint256)' });
-    api.add(rUSD, rUSDTotalSupply);
+    target = '0x9BB2c38F57883E5285b7c296c66B9eEA4769eF80';
+    const ifBill = await api.call({ target, abi });
 
-    const srUSDTotalSupply = await api.call({ target: srUSD, abi: 'function totalSupply() external view returns (uint256)' });
-    api.add(srUSD, srUSDTotalSupply / 1e12);
+    target = '0x99A95a9E38e927486fC878f41Ff8b118Eb632b10';
+    const steakUSDC = await api.call({ target, abi });
+
+    target = '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61';
+    const steakRUSD = await api.call({ target, abi });
+
+    api.add(USDC, ifHV1 / 1e12);
+    api.add(USDC, ifBill / 1e12);
+
+    api.add(USDC, steakUSDC / 1e12);
+    api.add(USDC, steakRUSD / 1e12);
 }
 
 module.exports = {
     ethereum: {
-        tvl,
-        borrowed: async (api) => {
-            const borrows = await api.call({
-                target: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-                abi: 'function balanceOf(address) external view returns (uint256)',
-                params: ['0x4809010926aec940b550D34a46A52739f996D75D']
-            });
-            api.add('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', borrows)
-        }
+        tvl
     }
 };
