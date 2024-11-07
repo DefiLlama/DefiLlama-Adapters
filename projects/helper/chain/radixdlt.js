@@ -30,11 +30,12 @@ async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
   return fixBalances(api.getBalances())
 }
 
-async function queryAddresses({ addresses = [], }) {
+async function queryAddresses({ addresses = [], miscQuery = {}}) {
   let items = []
   const chunks  = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     const body = {
+      ...miscQuery,
       "addresses": chunk,
       "opt_ins": { "explicit_metadata": ["name"] }
     }

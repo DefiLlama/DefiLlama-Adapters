@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { zombiTvl } = require("../zombi/zombi");
+const { zombiTvl } = require("../zomb2/zombi");
 
 const token = "0xA87bcE04d4a396DF40cC1be3a21CF04592C08290";
 const share = "0x9E594379bC7e2034fCc8607Fb8C57F149Fb68284";
