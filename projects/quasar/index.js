@@ -16,7 +16,6 @@ async function tvlEthereum(api) {
   const vaults = data.filter(i => i.chainId === 1)
   let tvlAmount = 0
   for (const vault of vaults) {
-    console.log(vault)
     tvlAmount += vault.tvl.usd
   }
   return tvlAmount
