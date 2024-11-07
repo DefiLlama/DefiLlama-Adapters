@@ -27,7 +27,7 @@ module.exports = {
   osmosis: {
     tvl: tvlOsmosis,
   },
-  ethreum: {
+  ethereum: {
     tvl: tvlEthereum
   }
 }
