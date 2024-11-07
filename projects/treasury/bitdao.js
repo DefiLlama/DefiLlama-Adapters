@@ -1,10 +1,11 @@
 const sdk = require('@defillama/sdk');
-const { nullAddress, treasuryExports } = require("../helper/treasury");
+const { nullAddress } = require("../helper/treasury");
 const { getConfig } = require('../helper/cache')
 
 const API_URL = 'https://api.mantle.xyz/api/v2/treasury/tokens';
 const MNT = '0x3c3a81e81dc49a522a592e7622a7e711c06bf354';
 const USDe = '0x4c9edd5852cd905f086c759e8383e09bff1e68b3';
+const COOK = '0x9f0c013016e8656bc256f948cd4b79ab25c7b94d'
 const ethenaFarm = '0x8707f238936c12c309bfc2b9959c35828acfc512';
 const SPECIFIC_TOKENS = ['eth', 'ethena-farming-usde', 'eigen-layer-eth', 'mnt'];
 
@@ -50,39 +51,25 @@ const getTvlData = async (api, key) => {
   return { owners: Array.from(uniqueOwners), tokens: Array.from(uniqueTokens) };
 };
 
-const generateExports = async (api, chain, { tokens, owners }) => {
-  if (chain === 'ethereum') {
-    return treasuryExports({
-      [chain]: {
-        tokens: tokens,
-        owners: owners,
-        ownTokens: [MNT]
-      }
-    })
-  }
-  
-  if (chain === 'mantle') {
-    return api.sumTokens({ tokens, owners, blacklistedTokens: [nullAddress] })
-  }
-};
-
 module.exports = {
   ethereum: {
     tvl: sdk.util.sumChainTvls([async ({ api }) => {
-      const datas = await getTvlData(api, 'eth')
-      const treasury = await generateExports(api, 'ethereum', datas)
-      return treasury.ethereum.tvl()
+      const { owners, tokens } = await getTvlData(api, 'eth')
+      return api.sumTokens({ owners, tokens, blacklistedTokens: [MNT] });
     }]),
     ownTokens: async ({ api }) => {
-      const datas = await getTvlData(api, 'eth')
-      const treasury = await generateExports(api, 'ethereum', datas)
-      return treasury.ethereum.ownTokens()
+      const { owners } = await getTvlData(api, 'eth')
+      return api.sumTokens({ ownerTokens: owners.map(owner => [[MNT], owner]) });
     }
   },
   mantle: {
     tvl: async (api) => {
-      const datas = await getTvlData(api, 'mnt')
-      return generateExports(api, 'mantle', datas)
+      const { owners, tokens } = await getTvlData(api, 'mnt')
+      return api.sumTokens({ owners, tokens, blacklistedTokens: [COOK] }); 
+    },
+    ownTokens: async ({ api }) => {
+      const { owners } = await getTvlData(api, 'mnt')
+      return api.sumTokens({ ownerTokens: owners.map(owner => [[COOK], owner]) });
     }
   },
 }
