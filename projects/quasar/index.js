@@ -13,9 +13,10 @@ async function tvlOsmosis(api) {
 
 async function tvlEthereum(api) {
   const data = await getConfig('quasar-vaults', 'https://api.quasar.fi/vaults')
-  const vaults = data.filter(i => i.chainId === 1).map(i => i.address)
+  const vaults = data.filter(i => i.chainId === 1)
   let tvlAmount = 0
   for (const vault of vaults) {
+    console.log(vault)
     tvlAmount += vault.tvl.usd
   }
   return tvlAmount
