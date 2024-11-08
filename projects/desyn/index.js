@@ -1,11 +1,10 @@
+const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
   doublecounted: true,
   hallmarks: [
     [1719734400, "Launched on Merlin Chain"],
-    [1718092800, "DeSyn KelpDAO Restaking Fund Launched"],
-    [1713340800, "Restaking Fund Series Launched"],
   ],
   methodology: 'Liquid restaking strategy',
 }
@@ -21,6 +20,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   const {factory, fromBlock, } = config[chain]
+  
   module.exports[chain] = {
     tvl: async (api) => {
       const logs = await getLogs({
@@ -30,6 +30,7 @@ Object.keys(config).forEach(chain => {
         onlyArgs: true,
         fromBlock,
       })
+
       const pools = logs.map(i=>i.pool)
       const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
       return api.sumTokens({ ownerTokens: tokens.map((tokens, i) => [tokens, pools[i]])})

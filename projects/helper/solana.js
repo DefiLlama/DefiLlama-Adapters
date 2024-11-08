@@ -22,7 +22,8 @@ const blacklistedTokens_default = [
   '5fTwKZP2AK39LtFN9Ayppu6hdCVKfMGVm79F2EgHCtsi', //WHEY
 ]
 
-let connection, provider
+let connection = {}
+let provider = {}
 
 const endpoint = (isClient) => {
   if (isClient) return getEnv('SOLANA_RPC_CLIENT') ?? getEnv('SOLANA_RPC')
@@ -36,28 +37,40 @@ const endpointMap = {
 }
 
 function getConnection(chain = 'solana') {
-  if (!connection) connection = new Connection(endpointMap[chain](true))
-  return connection
+  if (!connection[chain]) connection[chain] = new Connection(endpointMap[chain](true))
+  return connection[chain]
 }
 
 function getProvider(chain = 'solana') {
-  if (!provider) {
+  if (!provider[chain]) {
     const dummy_keypair = Keypair.generate();
     const wallet = new Wallet(dummy_keypair);
 
-    provider = new Provider(getConnection(chain), wallet)
+    provider[chain] = new Provider(getConnection(chain), wallet)
   }
-  return provider;
+  return provider[chain]
 }
 
-async function getTokenSupply(token) {
-  const tokenSupply = await http.post(endpoint(), {
-    jsonrpc: "2.0",
-    id: 1,
-    method: "getTokenSupply",
-    params: [token],
-  });
-  return tokenSupply.result.value.uiAmount;
+async function getTokenSupplies(tokens, { api } = {}) {
+  const sleepTime = tokens.length > 2000 ? 2000 : 200
+  const connection = getConnection()
+  tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
+  const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
+  const response = {}
+  res.forEach((data, idx) => {
+    if (!data) {
+      sdk.log(`Invalid account: ${tokens[idx]}`)
+      return;
+    }
+    try {
+      data = decodeAccount('mint', data)
+      response[tokens[idx].toString()] = data.supply.toString()
+      if (api) api.add(tokens[idx].toString(), data.supply.toString())
+    } catch (e) {
+      sdk.log(`Error decoding account: ${tokens[idx]}`)
+    }
+  })
+  return response
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
@@ -355,7 +368,6 @@ async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
 
 module.exports = {
   endpoint: endpoint(),
-  getTokenSupply,
   getMultipleAccounts,
   exportDexTVL,
   getProvider,
@@ -368,4 +380,5 @@ module.exports = {
   blacklistedTokens_default,
   getStakedSol,
   getSolBalanceFromStakePool,
+  getTokenSupplies,
 };

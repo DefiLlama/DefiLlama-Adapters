@@ -34,6 +34,7 @@ const chains = {
   ethereum: 1,
   optimism: 10,
   cronos: 25,
+  rsk: 30,
   bsc: 56,
   xdai: 100,
   fuse: 122,
@@ -59,6 +60,7 @@ const chains = {
   avax: 43114,
   linea: 59144,
   real: 111188,
+  scroll: 534352,
   aurora: 1313161554,
   harmony: 1666600000
 }
