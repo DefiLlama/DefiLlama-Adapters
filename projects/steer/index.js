@@ -28,12 +28,12 @@ const supportedChains = [
     chainId: 56,
     identifier: 'bsc'
   },
-  // {
-  //   name: 'Evmos',
-  //   subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
-  //   chainId: 9001,
-  //   identifier: 'evmos'
-  // },
+  {
+    name: 'Evmos',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
+    chainId: 9001,
+    identifier: 'evmos'
+  },
   {
     name: 'Avalanche',
     subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
