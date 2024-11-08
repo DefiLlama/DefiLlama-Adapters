@@ -1,7 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/sumTokens');
 const utils = require('../helper/utils');
-const { getConfig } = require('../helper/cache')
+const { getConfig } = require('../helper/cache');
+const bitcoinBook = require('../helper/bitcoin-book');
 
 module.exports = {
   methodology: 'TVL for pumpBTC is calculated based on the total value of WBTC, FBTC, BTCB held in the contract that were utilized in the minting process of pumpBTC.',
@@ -16,32 +16,24 @@ async function getStakingAddresses() {
 }
 
 async function bitcoinTvl(api) {
-  const addresses = await getConfig('pumpbtc-new', undefined, { fetcher: getStakingAddresses })
-
-  if (!addresses.bitcoin?.owners) {
-    return;
-  }
-
-  const btcAddresses = addresses.bitcoin.owners
-  return sumTokens({ api, owners: btcAddresses })
+  const owners = await bitcoinBook.pumpBTC()
+  return sumTokens({ api, owners })
 }
 
 async function otherTvl(api) {
-  const addresses = await getConfig('pumpbtc-new', undefined, { fetcher: getStakingAddresses })
+  const addresses = await getConfig('pumpbtc/v2', undefined, { fetcher: getStakingAddresses })
 
   if (!addresses[api.chain]) {
     return;
   }
 
-  const chainData = addresses[api.chain]
-  const owners = chainData['owners']
-  const tokens = chainData['tokens']
+  const { owners, tokens } = addresses[api.chain]
   return api.sumTokens({ owners, tokens })
 }
 
 module.exports.isHeavyProtocol = true;
 
-['bitcoin', 'ethereum', 'bsc', 'mantle',  'base'].forEach(chain => {
+['bitcoin', 'ethereum', 'bsc', 'mantle', 'base'].forEach(chain => {
   if (chain == 'bitcoin') {
     module.exports[chain] = {
       tvl: bitcoinTvl,
