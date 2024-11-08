@@ -28,12 +28,12 @@ const supportedChains = [
     chainId: 56,
     identifier: 'bsc'
   },
-  {
-    name: 'Evmos',
-    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
-    chainId: 9001,
-    identifier: 'evmos'
-  },
+  // {
+  //   name: 'Evmos',
+  //   subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
+  //   chainId: 9001,
+  //   identifier: 'evmos'
+  // },
   {
     name: 'Avalanche',
     subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
@@ -159,6 +159,24 @@ const supportedChains = [
     subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-flare/1.1.1/gn',
     chainId: 14,
     identifier: 'flare'
+  },
+  {
+    name: 'ApeChain',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-apechain/1.1.1/gn',
+    chainId: 33139,
+    identifier: 'apechain'
+  },
+  // {
+  //   name: 'Bittorrent',
+  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-btt/1.1.1/gn',
+  //   chainId: 199,
+  //   identifier: 'bittorrent'
+  // },
+  {
+    name: 'Filecoin',
+    subgraphEndpoint:  'https://fil.subgraph.laconic.com/v1/steer-protocol/iRoheeEh2g6CdZ9OnunLwNCFHG8a7TAdtIYNNxboRSKVxgZfjq',
+    chainId: 314,
+    identifier: 'filecoin'
   },
 ]
 
