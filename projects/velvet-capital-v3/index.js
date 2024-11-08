@@ -12,18 +12,13 @@ const abi = {
 }
 
 async function tvl(api, address, blacklistedTokens) {
-    const indexes = await api.fetchList({ lengthAbi: 'uint256:portfolioId', itemAbi: 'function getPortfolioList(uint256) view returns (address)', target: address })
-    const [tokens, vaults] = await Promise.all([
-      api.multiCall({ abi: abi.getTokens, calls: indexes }),
-      api.multiCall({ abi: abi.vault, calls: indexes }),
-    ])
+  const indexes = await api.fetchList({ lengthAbi: 'uint256:portfolioId', itemAbi: 'function getPortfolioList(uint256) view returns (address)', target: address })
+  const [tokens, vaults] = await Promise.all([
+    api.multiCall({ abi: abi.getTokens, calls: indexes }),
+    api.multiCall({ abi: abi.vault, calls: indexes }),
+  ])
 
-    const ownerTokens = vaults.map((vault, i) => {
-      const token = tokens[i]
-      if (token.length === 0) return null
-      return [token, vault]
-    }).filter(Boolean)
-
+  const ownerTokens = vaults.map((vault, i) => ([tokens[i], vault]))
   return sumTokens2({ api, ownerTokens, resolveLP: true, blacklistedTokens});
 }
 
