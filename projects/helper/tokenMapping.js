@@ -139,7 +139,6 @@ const fixBalancesTokens = {
     '0x00000000000000000000000000000000000b2ad5': { coingeckoId: 'saucerswap', decimals: 6 },
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'hedera-hashgraph', decimals: 18 },
     '0x0000000000000000000000000000000000163b5a': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
-    '0x0000000000000000000000000000000000000000': { coingeckoId: 'hedera-hashgraph', decimals: 18 },
     '0x000000000000000000000000000000000038b3db': { coingeckoId: 'dovu-2', decimals: 8 },
     '0x00000000000000000000000000000000005c9f70': { coingeckoId: 'hedera-liquity', decimals: 8 },
     '0x00000000000000000000000000000000000ec585': { coingeckoId: 'headstarter', decimals: 8 },
