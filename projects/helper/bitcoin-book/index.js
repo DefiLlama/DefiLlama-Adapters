@@ -84,6 +84,8 @@ const toobit = require('./toobit.js')
 const indiaCovid = require('./india-covid.js')
 const wooCEX = require('./woo-cex.js')
 
+const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
+
 module.exports = {
   ...fetchers,
   ainn,
@@ -169,5 +171,6 @@ module.exports = {
   swissborg,
   toobit,
   indiaCovid,
-  wooCEX
+  wooCEX,
+  p2pb2b,
 }
