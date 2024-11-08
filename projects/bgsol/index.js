@@ -1,21 +1,12 @@
 const { sumTokens2 } = require("../helper/solana");
 
 async function tvl() {
-  const [lst] = await Promise.all([
-    sumTokens2({
-      tokensAndOwners: [
-        ['susdabGDNbhrnCa6ncrYo81u4s9GM8ecK2UwMyZiq4X', '9PKigVr684uDNBfQKvGBrwGQ5KYjHQspTPcmLDv8aqS2']
-      ],
-    })
-  ]);
-
-  return {
-    ...lst
-  };
+  return sumTokens2({ tokenAccounts: ['Ejg5vqsthntG8wJDijzgEWvdvhoAh8pzu4Q4r4MqsdkR'] })
 }
 
 module.exports = {
   timetravel: false,
-  methodology: "Bitget Staked SOL (BGSOL) is a tokenized representation on your staked SOL",
+  doublecounted: true,
+  methodology: "Bitget Staked SOL (BGSOL) is a tokenized representation on your staked sSOL",
   solana: { tvl },
 };
