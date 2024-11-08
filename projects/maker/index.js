@@ -60,10 +60,36 @@ const tvl = async (api) => {
   }).filter(Boolean)
 
   toas = toas.filter(i => i[0].toLowerCase() !== ADDRESSES.ethereum.SAI.toLowerCase())
-  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toas.map(([token]) => ({ target: token })) })
-  toas = toas.filter((_, i) => !symbols[i].startsWith('RWA'))
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toas.map(([token]) => token) })
+  const gUNIToa = toas.filter((_, i) => symbols[i] === 'G-UNI')
+  toas = toas.filter((_, i) => symbols[i] !== 'G-UNI' && !symbols[i].startsWith('RWA'))
+  await unwrapGunis({ api, toa: gUNIToa, })
   return sumTokens2({ api, tokensAndOwners: toas, resolveLP: true})
 }
+
+async function unwrapGunis({ api, toa, }) {
+  const lps = toa.map(i => i[0])
+  const balanceOfCalls = toa.map(t => ({ params: t[1], target: t[0] }))
+  const [
+    token0s, token1s, supplies, uBalances, tokenBalances
+  ] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: lps }),
+    api.multiCall({ abi: 'address:token1', calls: lps }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: lps }),
+    api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 token0Bal, uint256 token1Bal)', calls: lps }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
+  ])
+
+  tokenBalances.forEach((bal, i) => {
+    const ratio = bal / supplies[i]
+    const token0Bal = uBalances[i][0] * ratio
+    const token1Bal = uBalances[i][1] * ratio
+    api.add(token0s[i], token0Bal)
+    api.add(token1s[i], token1Bal)
+  })
+  api.removeTokenBalance(ADDRESSES.ethereum.DAI) // remove dai balances
+}
+
 
 module.exports = {
   methodology: `Counts all the tokens being used as collateral of CDPs. On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
