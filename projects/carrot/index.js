@@ -1,6 +1,6 @@
 const { PublicKey } = require('@solana/web3.js');
-const { getConnection, getTokenSupplies } = require('../helper/solana')
-const { decodeCarrotVault } = require('../helper/utils/solana/layouts/carrot');
+const { Program } = require("@project-serum/anchor");
+const { getConnection, getProvider, getTokenSupplies } = require('../helper/solana')
 
 async function tvl(api) {
 
@@ -22,9 +22,16 @@ async function tvl(api) {
     },]
   });
 
+  const provider = getProvider();
+  const idl = await Program.fetchIdl(programId, provider)
+  const program = new Program(idl, programId, provider)
+
   programAccounts.forEach(({ account, pubkey }, i) => {
     if(pubkey.toBase58() !== testVaultExclusion) {
-      const { assets, strategies} = decodeCarrotVault(account.data)
+      const { assets, strategies } = program.coder.accounts.decode(
+        "Vault",
+        account.data
+      );
       const assetMap = {}
       assets.forEach(({assetId, mint }) => assetMap[assetId] = mint.toString())
 
