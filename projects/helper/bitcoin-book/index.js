@@ -1,6 +1,6 @@
 const ainn = require('./ainn-layer2.js')
 const allo = require('./allo.js')
-const avalance = require('./avalanche-btc.js')
+const avalanche = require('./avalanche-btc.js')
 const fetchers = require('./fetchers.js')
 const bevm = require('./bevm.js')
 const binance = require('./binance.js')
@@ -88,7 +88,7 @@ module.exports = {
   ...fetchers,
   ainn,
   allo,
-  avalance,
+  avalanche,
   bevm,
   binance,
   binance2,
