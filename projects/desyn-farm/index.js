@@ -1,4 +1,4 @@
-const { getTvlFunction } = require("./helper");
+const { getTvlFunction, chains } = require("./helper");
 
 module.exports = {
   hallmarks: [
@@ -8,8 +8,6 @@ module.exports = {
   ],
   methodology: 'Focused on airdrops from DeSyn and new chains.',
 }
-
-const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll"];
 
 chains.forEach(chain => {
   module.exports[chain] = {

@@ -4,6 +4,7 @@ const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
 }
 
+const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll"];
 
 async function getInfoListPool(strategy_type, chain) {
   const data = await getConfig('desyn/' + strategy_type, `https://api.desyn.io/etf/defillama/get_pool_list?strategy_type=${strategy_type}`)
@@ -53,5 +54,6 @@ function getTvlFunction(strategy_type, isDoubleCounted) {
 
 
 module.exports = {
-  getTvlFunction
+  getTvlFunction,
+  chains
 }
