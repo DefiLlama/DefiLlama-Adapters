@@ -1,7 +1,5 @@
-const { getCache, } = require("../helper/cache");
-const { getTokenSupply } = require('../helper/solana')
+const { getTokenSupplies } = require('../helper/solana')
 const { ripple } = require('../helper/chain/rpcProxy')
-const ADDRESSES = require('../helper/coreAssets.json')
 
 const tbill = "0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a"
 const solTbill = '4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6'
@@ -17,8 +15,11 @@ async function evmTvl(api) {
 }
 
 async function solTvl (api) {
-  const tvl = (await getTokenSupply(solTbill) * 10 ** 6)
-  api.add(solTbill, tvl)
+  const res = await getTokenSupplies([solTbill])
+  console.log(res)
+  Object.entries(res).forEach(([token, balance]) => {
+    api.add(token, balance)
+  })
 }
 
 async function ripplTvl (api) {

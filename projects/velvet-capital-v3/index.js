@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function tvl(api) {
@@ -9,10 +10,10 @@ async function tvl(api) {
 
     const blacklistsByChain = {
       base: [
-        "0x55d398326f99059ff775485246999027b3197955"
+        ADDRESSES.bsc.USDT
       ],
       bsc: [
-        "0x4200000000000000000000000000000000000006"
+        ADDRESSES.optimism.WETH_1
       ]
     }
 
