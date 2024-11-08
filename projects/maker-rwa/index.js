@@ -31,7 +31,7 @@ const getJoins = async (api) => {
 }
 
 const getDogs = async (api) => {
-  const logs = (await getLogs2({ api, target: MCD_DOG, fromBlock: START_DOG_BLOCK, topics: [DOG_topic], skipCache: true, skipCacheRead: true })).map(log => {
+  const logs = (await getLogs2({ api, target: MCD_DOG, fromBlock: START_DOG_BLOCK, topics: [DOG_topic], })).map(log => {
     return '0x' + log.data.slice(-40);
   })
 
