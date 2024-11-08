@@ -18,7 +18,7 @@ const abi = {
 }
 
 const getJoins = async (api) => {
-  const logs = (await getLogs2({ api, target: MCD_VAT, fromBlock: START_VAT_BLOCK, topics: [VAT_topic], skipCache: true, skipCacheRead: true })).map(log => {
+  const logs = (await getLogs2({ api, target: MCD_VAT, fromBlock: START_VAT_BLOCK, topics: [VAT_topic] })).map(log => {
     return '0x' + log.topics[1].slice(-40);
   })
 
