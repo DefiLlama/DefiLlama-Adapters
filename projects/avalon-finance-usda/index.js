@@ -22,7 +22,7 @@ const config = {
 }
 
 module.exports = {
-  methodology: `FBTC and LFFBTC as collateral`,
+  methodology: `FBTC and LFBTC as collateral`,
 }
 
 Object.keys(config).forEach(chain => {
