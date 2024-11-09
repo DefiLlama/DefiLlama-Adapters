@@ -2,7 +2,7 @@ const { unwrapLPsAuto, nullAddress, sumTokensExport } = require('../helper/unwra
 
 const masterchef = '0x652a63c4df14e29080Ab058d6f151aBa61F86c10'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const pools = await api.fetchList({ lengthAbi: 'uint256:poolLength', itemAbi: 'function registeredToken(uint256) view returns (address)', target: masterchef })
   const poolInfo = await api.multiCall({ abi: 'function getPoolInfo(address) view returns ( uint256 emission, uint256 allocpoint, uint256 sizeOfPool, uint256 totalPoint)', calls: pools, target: masterchef })
   const poolInfo2 = await api.multiCall({ abi: 'function  addressToPoolInfo(address) view returns ( address lpToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accATHPerShare, address rewarder, address helper, address locker)', calls: pools, target: masterchef })

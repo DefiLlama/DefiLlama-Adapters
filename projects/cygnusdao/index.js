@@ -2,13 +2,13 @@ const FACTORY_CONTRACT = "0x8796747946871B6b8ea495CCE8d7814b17959296";
 const vaultAbi = require('../charmfinance/vaultAbi.json')
 const { getLogs } = require('../helper/cache/getLogs');
 const { getUniqueAddresses } = require("@defillama/sdk/build/generalUtil");
-const ADDRESSES = require('../helper/coreAssets.json')
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   let fromBlock = 0;
   switch (api.chain) {
     case 'polygon': fromBlock = 49831226; break
     case 'arbitrum': fromBlock = 150521724; break;
+    case 'polygon_zkevm': fromBlock = 9120630; break;
   }
 
   const logs = await getLogs({
@@ -40,24 +40,18 @@ async function tvl(timestamp, block, _, { api }) {
     api.add(tokens0s[idx], hypervisorBals[idx][0] * ratio)
     api.add(tokens1s[idx], hypervisorBals[idx][1] * ratio)
   })
-  // const tvls= await api.fetchList({  lengthAbi: abi.shuttlesDeployed, itemAbi: abi.shuttleTvlUsd, target: FACTORY_CONTRACT, startFrom: 2, })
-  // tvls.forEach(i => api.add(ADDRESSES.polygon.USDC, i))
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
-  api.add(ADDRESSES.polygon.USDC, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))
-  api.add(ADDRESSES.arbitrum.USDC, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))
+async function borrowed(api) {
+  api.addCGToken('tether', (await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))/1e6)
   return api.getBalances()
 }
 
 module.exports = {
   doublecounted: true,
   methodology: "TVL of all shuttles (borrowable + collateral).",
-  arbitrum: {
-    tvl, borrowed,
-  },
-  polygon: {
-    tvl, borrowed,
-  },
+  arbitrum: { tvl, borrowed, },
+  polygon: { tvl, borrowed, },
+  polygon_zkevm: { tvl, borrowed, }
 };
 

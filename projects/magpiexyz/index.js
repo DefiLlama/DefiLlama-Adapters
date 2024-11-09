@@ -14,7 +14,7 @@ async function getPoolList(api, MasterMagpieAddress, VlMGPAddress, MWOMAddress, 
   return [poolTokens, depositTokens]
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const { MasterMagpieAddress, VlMGPAddress, MWOMSVAddress, WOMAddress, MWOMAddress } = config[api.chain];
   const [poolTokens, depositTokens] = await getPoolList(api, MasterMagpieAddress, VlMGPAddress, MWOMAddress, MWOMSVAddress);
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: depositTokens })

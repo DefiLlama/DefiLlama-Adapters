@@ -1,8 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const {
   sumTokens2,
-  genericUnwrapCvxDeposit,
-  unwrapCreamTokens,
 } = require("../helper/unwrapLPs.js");
 const {
   getStargateLpValues,
@@ -33,23 +31,24 @@ const chainConfigs = {
   },
 };
 
-async function tvl(_time, block, _, { api, chain }) {
+async function tvl(api) {
+  const chain = api.chain;
   const config = chainConfigs[chain];
   let { erc4626Wrapped = [] } = config;
   erc4626Wrapped = erc4626Wrapped.map((i) => i.toLowerCase());
   // Common logic for calculating TVL (only mainnet has vault)
   const ownerTokens = config.vault
     ? [
+      [
         [
-          [
-            ADDRESSES.ethereum.USDC, //usdc
-            "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
-            ADDRESSES.ethereum.TUSD, //tusd
-            ADDRESSES.ethereum.BUSD, //busd
-          ],
-          config.vault,
+          ADDRESSES.ethereum.USDC, //usdc
+          "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
+          ADDRESSES.ethereum.TUSD, //tusd
+          ADDRESSES.ethereum.BUSD, //busd
         ],
-      ]
+        config.vault,
+      ],
+    ]
     : [];
   const blacklistedTokens = [config.rsr];
   const fluxListWithOwner = [];
@@ -84,26 +83,14 @@ async function tvl(_time, block, _, { api, chain }) {
   const allManagers = basketRes.flatMap(([tokens], i) =>
     tokens.map(() => backingManagers[i])
   );
-  const allNames = await api.multiCall({
-    abi: "string:name",
-    calls: allTokens,
-  });
+  const allNames = await api.multiCall({ abi: "string:name", calls: allTokens, });
 
-  const aTokenWrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Static Aave")
-  );
 
-  const cUsdcV3Wrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Wrapped cUSDCv3")
-  );
-
-  const morphoWrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Tokenised Morpho")
-  );
-
-  const stargateLpWrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Wrapped Stargate")
-  );
+  const aTokenWrappersV2 = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave") && allNames[i].includes("interest"));
+  const aTokenWrappersV3 = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave") && !allNames[i].includes("interest"));
+  const cUsdcV3Wrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped cUSDCv3"));
+  const morphoWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Tokenised Morpho"));
+  const stargateLpWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped Stargate"));
   const cTokenWrappers = allTokens.filter(
     (_, i) => /^Compound.*Vault$/.test(allNames[i]) // Starts with Compound, ends with Vault
   );
@@ -124,35 +111,24 @@ async function tvl(_time, block, _, { api, chain }) {
     convexTokensAndOwners.push([token, allManagers[i]]);
   });
 
-  let cTokens = await api.multiCall({
-    abi: "address:underlying",
-    calls: cTokenWrappers,
-  });
-
-  let aTokens = await api.multiCall({
-    abi: api.chain === "base" ? "address:aToken" : "address:ATOKEN",
-    calls: aTokenWrappers,
-  });
-
-  let morphoUnderlyingTokens = await api.multiCall({
-    abi: "address:asset",
-    calls: morphoWrappers,
-  });
-
-  let morphoUnderlyingBalances = await api.multiCall({
-    abi: "uint256:totalAssets",
-    calls: morphoWrappers,
-  });
+  let cTokens = await api.multiCall({ abi: "address:underlying", calls: cTokenWrappers, });
+  let aTokensV2 = await api.multiCall({ abi: "address:ATOKEN", calls: aTokenWrappersV2, });
+  let aTokensV3 = await api.multiCall({ abi: "address:aToken", calls: aTokenWrappersV3, });
+  let morphoUnderlyingTokens = await api.multiCall({ abi: "address:asset", calls: morphoWrappers, });
+  let morphoUnderlyingBalances = await api.multiCall({ abi: "uint256:totalAssets", calls: morphoWrappers, });
 
   blacklistedTokens.push(
-    ...aTokenWrappers,
+    ...aTokenWrappersV2,
+    ...aTokenWrappersV3,
     ...stargateLpWrappers,
     ...cTokenWrappers,
     ...cUsdcV3Wrappers,
     ...morphoWrappers
   );
+
   cTokens.forEach((v, i) => ownerTokens.push([[v], cTokenWrappers[i]]));
-  aTokens.forEach((v, i) => ownerTokens.push([[v], aTokenWrappers[i]]));
+  aTokensV2.forEach((v, i) => ownerTokens.push([[v], aTokenWrappersV2[i]]));
+  aTokensV3.forEach((v, i) => ownerTokens.push([[v], aTokenWrappersV3[i]]));
   morphoUnderlyingTokens.forEach((v, i) =>
     api.add(v, morphoUnderlyingBalances[i])
   );
@@ -174,18 +150,14 @@ async function tvl(_time, block, _, { api, chain }) {
     );
   }
 
-  await Promise.all(
-    convexTokensAndOwners.map(([token, owner]) =>
-      genericUnwrapCvxDeposit({ api, token, owner })
-    )
-  );
-
-  await unwrapCreamTokens(api.getBalances(), fluxListWithOwner, api.block);
+  await genericUnwrapCvxDeposit(api, convexTokensAndOwners)
+  await unwrapCreamTokens(api, fluxListWithOwner);
 
   await sumTokens2({ api, ownerTokens, blacklistedTokens });
 }
 
-async function staking(_time, block, _, { api, chain }) {
+async function staking(api) {
+  const chain = api.chain;
   const config = chainConfigs[chain]; // Load the config for the specified chain
   const creationLogs = await _getLogs(api, config);
   const stRsrs = creationLogs.map((i) => i.stRSR);
@@ -203,3 +175,50 @@ module.exports = {
   },
   methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens.`,
 };
+
+
+async function unwrapCreamTokens(api, tokensAndOwners,) {
+  const [balanceOfTokens, exchangeRates, underlyingTokens] = await Promise.all([
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+        params: t[1]
+      })),
+      abi: 'erc20:balanceOf',
+    }),
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+      })),
+      abi: "uint256:exchangeRateStored",
+    }),
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+      })),
+      abi: "address:underlying",
+    })
+  ])
+  balanceOfTokens.forEach((balanceCall, i) => {
+    api.add(underlyingTokens[i], balanceCall * exchangeRates[i] / 1e18)
+  })
+}
+
+async function genericUnwrapCvxDeposit(api, tokensAndOwners) {
+  const tokens = [...new Set(tokensAndOwners.map(t => t[0]))]
+  const uTokens = await api.multiCall({ abi: 'address:curveToken', calls: tokens })
+  const tokenMapping = {}
+  tokens.forEach((token, i) => {
+    tokenMapping[token] = uTokens[i]
+  })
+  const balances = await api.multiCall({
+    calls: tokensAndOwners.map(t => ({
+      target: t[0],
+      params: t[1]
+    })),
+    abi: 'erc20:balanceOf',
+  })
+  balances.forEach((balance, i) => {
+    api.add(tokenMapping[tokensAndOwners[i][0]], balance)
+  })
+}

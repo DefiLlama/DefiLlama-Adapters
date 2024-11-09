@@ -35,7 +35,6 @@ module.exports = {
     staking: staking(MON_STAKING_POOL, MON_TOKEN),
   },
   start: 1664074800,
-  timetravel: true,
-  methodology:
+    methodology:
     "Total deposits of ETH and wBTC for borrowed DCHF.",
 };

@@ -1,45 +1,21 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const { default: BigNumber } = require("bignumber.js");
-const { getVaults } = require("./getVaults.js");
+const APERTURE_MANAGER_ADDRESS = "0xeD380115259FcC9088c187Be1279678e23a6E565";
 
-async function avax_tvl(timestamp, _, { avax: block }) {
-  const chain = "avax";
-  const vaultContracts = await getVaults(chain, block);
-  const calls = vaultContracts.map((i) => ({ target: i }));
-  const equityETHValues = (
-    await sdk.api.abi.multiCall({
-      abi: abi.getEquityETHValue,
-      calls,
-      chain,
-      block,
-    })
-  ).output;
+const abis = {
+  strategyIdToMetadata: "function strategyIdToMetadata(uint64 arg0) view returns (string, string, address strategy)",
+  "getStrategyId": "uint64:nextStrategyId",
+  "getLeverage": "uint256:leverageLevel",
+  "getEquityETHValue": "uint256:getEquityETHValue",
+  "getETHPx": "function getETHPx(address oracle, address token) view returns (uint256)"
+}
 
-  const vaultLeverage = (
-    await sdk.api.abi.multiCall({
-      abi: abi.getLeverage,
-      calls,
-      chain,
-      block,
-    })
-  ).output;
-
-  let balances = {};
-  for (let i = 0; i < vaultContracts.length; i++) {
-    const bal = (vaultLeverage[i].output * equityETHValues[i].output) / 1e22;
-    sdk.util.sumSingleBalance(
-      balances,
-      `coingecko:avalanche-2`,
-      BigNumber(bal).toFixed(0)
-    );
-  }
-
-  return balances;
+async function avax_tvl(api) {
+  const strategies = (await api.fetchList({ lengthAbi: 'nextStrategyId', itemAbi: abis.strategyIdToMetadata, target: APERTURE_MANAGER_ADDRESS, })).map(i => i.strategy)
+  const equityETHValues = await api.multiCall({ abi: abis.getEquityETHValue, calls: strategies })
+  const vaultLeverage = await api.multiCall({ abi: abis.getLeverage, calls: strategies })
+  vaultLeverage.map((v, i) => api.addCGToken(`avalanche-2`, equityETHValues[i] * v / 1e22))
 }
 
 module.exports = {
-  timetravel: false,
   avax: {
     tvl: avax_tvl,
   },

@@ -7,7 +7,8 @@ const START_BLOCK = 6627917;
 const FACTORY = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95';
 const ETH = ADDRESSES.null.toLowerCase();
 
-async function tvl(timestamp, block, _1, { api }) {
+async function tvl(api) {
+  const block = api.block
   const logs = (await getLogs({
       api,
       target: FACTORY,

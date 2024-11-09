@@ -1,7 +1,7 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const MAFFIN_HUB = "0x6690384822afF0B65fE0C21a809F187F5c3fcdd8";
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: MAFFIN_HUB,

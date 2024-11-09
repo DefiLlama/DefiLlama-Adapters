@@ -9,6 +9,7 @@ const poolContract = "0xa0ee789a8f581cb92dd9742ed0b5d54a0916976c";
 const stakingContractV2 = "0x60d910f9dE5c6Fd2171716042AF2Fd3D2Aa9D942";
 const poolContractV2 = "0xAf839f4D3620a1EED00cCc21dDC01119C26a75E1";
 const treasureContract = "0xe2e912f0b1b5961be7cb0d6dbb4a920ace06cd99";
+const treasureContractV2 = "0xcEF2dD45Da08b37fB1c2f441d33c2eBb424866A4";
 const daoContract = "0x7f878994507F5B0588cF0EBEE07128d9A742ad9d";
 const ALPContract = "0x1b6F2d3844C6ae7D56ceb3C3643b9060ba28FEb0";
 
@@ -57,6 +58,7 @@ const ALPTokens = [
 async function bscTVL(timestamp, _block, { bsc: block }) {
   const toa = [
     ...TreasureTokens.map((t) => [t, treasureContract]),
+    ...TreasureTokens.map((t) => [t, treasureContractV2]),
     ...ALPTokens.map((t) => [t, ALPContract]),
   ]
   return sumTokens({}, toa, block, "bsc");
@@ -66,8 +68,8 @@ module.exports = {
   start: 1640100600, // 12/21/2021 @ 15:30pm (UTC)
   bsc: {
     tvl: bscTVL,
-    staking: stakings([stakingContract_APX, daoContract], TOKEN_APX, "bsc"),
-    pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2], "bsc"),
+    staking: stakings([stakingContract_APX, daoContract], TOKEN_APX),
+    pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2]),
   },
   ethereum: {
     tvl: sumTokensExport({
@@ -117,7 +119,7 @@ module.exports = {
     tvl: sumTokensExport({
       owner: '0x5A5454A6030FB50ceb3eb78977D140198A27be5e', tokens: [
         nullAddress,
-        ADDRESSES.op_bnb.USDC,
+        ADDRESSES.op_bnb.USDT,
         ADDRESSES.op_bnb.WBNB,
       ]
     })

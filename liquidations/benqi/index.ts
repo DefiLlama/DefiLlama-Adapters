@@ -1,3 +1,4 @@
+import * as sdk from "@defillama/sdk";
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
@@ -12,7 +13,7 @@ import {
   totalCollateralValueInUsd,
 } from "../utils/compound-helpers";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/yhayun/benqi";
+const subgraphUrl = sdk.graph.modifyEndpoint('HcTvZi3fwucvRJvVmtFzNDTnomvMBk64xCLNQQg6GPAV');
 
 const accountsQuery = gql`
   query accounts($lastId: ID, $pageSize: Int) {

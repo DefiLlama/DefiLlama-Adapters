@@ -14,7 +14,7 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
     tvl: () => ({}),
-    staking: async (_, _b, _cb, { api, }) => {
+    staking: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,

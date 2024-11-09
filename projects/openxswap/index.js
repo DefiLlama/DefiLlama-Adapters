@@ -11,7 +11,7 @@ module.exports = {
       factory: '0xf3C7978Ddd70B4158b53e897f980093183cA5c52',
       useDefaultCoreAssets: true,
     }),
-    staking: staking(OpenXStaking, OpenX, 'optimism')
+    staking: staking(OpenXStaking, OpenX)
   },
 }
 

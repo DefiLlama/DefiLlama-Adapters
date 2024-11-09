@@ -8,6 +8,6 @@ const xlevin = "0xafa57Fb9d8D63Ff8124E17c1495C73bc3a7678D0";
 module.exports = {
   xdai: {
     tvl: uniTvlExport(factory, 'xdai', true),
-    staking: staking(xlevin, levin, "xdai")
+    staking: staking(xlevin, levin)
   }
 }

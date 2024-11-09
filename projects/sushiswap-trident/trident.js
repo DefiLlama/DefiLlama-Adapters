@@ -1,25 +1,26 @@
+const sdk = require("@defillama/sdk");
 const { blockQuery } = require('../helper/http')
 
 const graphUrls = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
+  polygon: sdk.graph.modifyEndpoint('BSdbRfU6PjWSdKjhpfUQ6EgUpzMxgpf5c1ugaVwBJFsQ'),
   polygonOldRouter:
-    "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-optimism",
+    sdk.graph.modifyEndpoint('5LBvcUQthQDZTMe6cyJ7DbeokFkYeVpYYBZruHPUjMG5'),
+  optimism: sdk.graph.modifyEndpoint('FEgRuH9zeTRMZgpVv5YavoFEcisoK6KHk3zgQRRBqt51'),
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
   bittorrent:
     "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-arbitrum",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-avalanche",
+  arbitrum: sdk.graph.modifyEndpoint('4x8H6ZoGfJykyZqAe2Kx2g5afsp17S9pn8GroRkpezhx'),
+  bsc: sdk.graph.modifyEndpoint('9TQaBw1sU3wi2kdevuygKhfhjP3STnwBe1jUnKxmNhmn'),
+  avax: sdk.graph.modifyEndpoint('NNTV3MgqSGtHMBGdMVLXzzDbKDKmsY87k3PsQ2knmC1'),
 };
 
 const tridentQueryWithBlock = `
   query get_tokens($block: Int) {
     tokens(
       block: { number: $block }
-      first: 1000
+      first: 100
       orderBy: liquidityUSD
       orderDirection: desc
       where: { liquidityUSD_gt: 0 }
@@ -34,7 +35,7 @@ const tridentQueryWithBlock = `
 const tridentQuery = `
   query get_tokens {
     tokens(
-      first: 1000
+      first: 100
       orderBy: liquidityUSD
       orderDirection: desc
       where: { liquidityUSD_gt: 0 }
@@ -47,7 +48,7 @@ const tridentQuery = `
 `;
 
 function trident(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const graphUrl = graphUrls[chain];
     // Query graphql endpoint
     let result;
@@ -63,7 +64,7 @@ function trident(chain) {
     result.tokens.forEach((token) => {
       api.add(token.id, token.liquidity);
     });
-
+    return api.getBalances()
   };
 }
 

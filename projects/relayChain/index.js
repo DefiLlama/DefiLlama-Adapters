@@ -25,7 +25,7 @@ const relayBsc = "0xE338D4250A4d959F88Ff8789EaaE8c32700BD175";
 
 const daiAvax = ADDRESSES.avax.DAI;
 const wavax = ADDRESSES.avax.WAVAX;
-const wbtcAvax = "0x50b7545627a5162F82A992c33b87aDc75187B218";
+const wbtcAvax = ADDRESSES.avax.WBTC_e;
 const usdcAvax = ADDRESSES.avax.USDC_e;
 const usdtAvax = ADDRESSES.avax.USDT_e;
 
@@ -104,7 +104,7 @@ const wbtcCronos = ADDRESSES.cronos.WBTC;
 const wethCronos = "0xe44fd7fcb2b1581822d0c862b68222998a0c299a";
 const relayCronos = "0x9C29650a1B273A031A35F3121914aae882B144A4";
 const busdCronos = ADDRESSES.oasis.USDT;
-const wCronos = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
+const wCronos = ADDRESSES.cronos.WCRO_1;
 
 
 
@@ -119,7 +119,7 @@ const wIotex = ADDRESSES.iotex.WIOTX;
 
 const usdtOptimism = ADDRESSES.optimism.USDT;
 const daiOptimism = ADDRESSES.optimism.DAI;
-const wbtcOptimism = "0x68f180fcCe6836688e9084f035309E29Bf0A2095";
+const wbtcOptimism = ADDRESSES.optimism.WBTC;
 
 const wbtcArbitrum = ADDRESSES.arbitrum.WBTC;
 const usdtArbitrum = ADDRESSES.arbitrum.USDT;

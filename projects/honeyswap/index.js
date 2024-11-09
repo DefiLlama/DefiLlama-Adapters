@@ -9,12 +9,6 @@ module.exports = {
       blacklist: [
         '0x4f4f9b8d5b4d0dc10506e5551b0513b61fd59e75', 
       ],
-      log_minTokenValue: 1e5,
-      log_coreAssetPrices: [
-        1/1e18,
-        197/1e18,
-        1824/1e18,
-      ]
     })
   },
   polygon: {

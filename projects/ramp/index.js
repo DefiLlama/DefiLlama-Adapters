@@ -1,8 +1,9 @@
 const abi = require('./abi.json');
 const { getConfig } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 function getChainTVL(chain) {
-  return async (timestamp, ethBlock, _, { api }) => {
+  return async (api) => {
     const key = chain === 'ethereum' ? 'eth' : chain;
     const { [key]: config } = await getConfig('ramp', 'https://config.rampdefi.com/config/appv2/priceInfo');
     const tokens = config.tokens;
@@ -18,9 +19,9 @@ function getChainTVL(chain) {
       calls.push({ target: token.strategy.address, params: tokenAddress })
     }
 
-    const res = await api.multiCall({ abi: abi.getPoolAmount, calls, })
+    const res = (await api.multiCall({ abi: abi.getPoolAmount, calls, permitFailure: true})).map(i => i ?? 0)
     api.addTokens(iTokens, res)
-    return api.getBalances()
+    return sumTokens2({ api, resolveLP: true, })
   }
 }
 

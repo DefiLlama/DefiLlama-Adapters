@@ -9,7 +9,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, v2PoolFactory, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       if (factory) {
         const logs = await getLogs({ api, target: factory, eventAbi: 'event GeyserCreated (address indexed user, address geyser)', onlyArgs: true, fromBlock, })
         const geysers = logs.map(log => log.geyser)

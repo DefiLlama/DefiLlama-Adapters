@@ -1,14 +1,14 @@
 const {staking} = require('../helper/staking')
 const { gmxExports } = require('../helper/gmx')
 
-//Cronos
-const phoenixVaultAddress = '0x976156BE19D35ac616c67737258EEc973202E6D6';
-const phoenixStakingAddress = '0x48f206bED002fae4EcB522Dfe36e5A10F15e9f47';
-const phoenixAlpAddress = '0x6c6647B3E6AfA27B8Fb9BEDe728A3603eB6c0fC7';
+const phoenixVaultAddress = '0xa6b88069EDC7a0C2F062226743C8985FF72bB2Eb';
+const phoenixStakingAddress = '0x3c9586567a429BA0467Bc63FD38ea71bB6B912E0';
+const phoenixAmpAddress = '0xca7F14F14d975bEFfEe190Cd3cD232a3a988Ab9C';
 
 module.exports = {
+  start: 1717674114,
   lightlink_phoenix: {
-    staking: staking(phoenixStakingAddress, phoenixAlpAddress),
+    staking: staking(phoenixStakingAddress, phoenixAmpAddress),
     tvl: gmxExports({ vault: phoenixVaultAddress, })
   },
 };

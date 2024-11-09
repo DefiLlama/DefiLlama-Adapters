@@ -14,6 +14,7 @@ module.exports = {
   hallmarks: [
     [1681516800, "Rug Pull"]
   ],
+  deadFrom: '2023-04-15',
   arbitrum: {
     tvl: sumTokensExport({ tokensAndOwners }),
     pool2: pool2({ stakingContract: '0x0F6f73c7ecCE4FB9861E25dabde79CBA112550b3', lpToken, useDefaultCoreAssets: true, }),

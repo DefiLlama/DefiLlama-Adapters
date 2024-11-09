@@ -13,7 +13,7 @@ const guageAbi = "function gaugeListExtended() view returns (address[], address[
 Object.keys(config).forEach(chain => {
   const { voters } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const res = await api.multiCall({ abi: chain === 'bsc' ? guageAbiBsc : guageAbi, calls: voters })
       let gauges = res.flatMap(i => i[0])
       gauges = [...new Set(gauges.map(i => i.toLowerCase()))]

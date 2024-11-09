@@ -16,13 +16,13 @@ module.exports = {
     staking: staking(ETH_STAKING_ADDRESS, ETH_TOKEN_ADDRESS),
   },
   bsc: {
-    staking: staking(BSC_STAKING_ADDRESS, BSC_TOKEN_ADDRESS, 'bsc'),
+    staking: staking(BSC_STAKING_ADDRESS, BSC_TOKEN_ADDRESS),
   },
   polygon: {
-    staking: staking(POLY_STAKING_ADDRESS, POLY_TOKEN_ADDRESS, 'polygon')
+    staking: staking(POLY_STAKING_ADDRESS, POLY_TOKEN_ADDRESS)
   },
   avax: {
-    staking: staking(AVAX_STAKING_ADDRESS, AVAX_TOKEN_ADDRESS, 'avax')
+    staking: staking(AVAX_STAKING_ADDRESS, AVAX_TOKEN_ADDRESS)
   }
 };
 

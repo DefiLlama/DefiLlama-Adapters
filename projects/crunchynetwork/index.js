@@ -10,6 +10,14 @@ async function fetchFarmsTvl() {
     return getAllLPToTez(items);
 }
 
+// crunchy farm v2 address KT1L1WZgdsfjEyP5T4ZCYVvN5vgzrNbu18kX
+// TVL = sum(crunchFarm.poolBalance / quipuLP.total_supply * quipuLP.tez_pool * 2 * XTZUSD)
+async function fetchFarmsV2Tvl() {
+    const farms = await get(RPC_ENDPOINT + '/v1/contracts/KT1L1WZgdsfjEyP5T4ZCYVvN5vgzrNbu18kX/bigmaps/farms/keys?limit=1000')
+    const items = farms.map(farm => [farm.value.poolToken.address, farm.value.poolBalance]).filter(item => item[1] !== "0")
+    return getAllLPToTez(items);
+}
+
 // crunchy freezer address KT1LjcQ4h5hCy9RcveFz9Pq8LtmF6oun7vNd
 // TVL = sum(cruchFreezer.amountLocked / quipuLP.total_supply * quipuLP.tez_pool * 2 * XTZUSD)
 async function fetchDeepFreezersTvl() {
@@ -48,9 +56,10 @@ async function lpToTez(lpTokenAddress, lpTokens) {
 
 async function tvl() {
     const farmsTvl = await fetchFarmsTvl();
+    const farmsV2Tvl = await fetchFarmsV2Tvl();
     const deepFreezersTvl = await fetchDeepFreezersTvl();
     return {
-        tezos: (farmsTvl + deepFreezersTvl ) / 1e6
+        tezos: (farmsTvl + farmsV2Tvl + deepFreezersTvl ) / 1e6
     };
 }
 

@@ -18,8 +18,8 @@ const BSC_VFOX_STAKINGS = [
 
 const calculateBscStakings = async function(...params) {
   const [rfoxData, vfoxData] = await Promise.all([
-    stakings(BSC_RFOX_STAKINGS, BSC_RFOX, "bsc")(...params),
-    stakings(BSC_VFOX_STAKINGS, BSC_VFOX, "bsc")(...params)
+    stakings(BSC_RFOX_STAKINGS, BSC_RFOX)(...params),
+    stakings(BSC_VFOX_STAKINGS, BSC_VFOX)(...params)
   ]);
 
   return {

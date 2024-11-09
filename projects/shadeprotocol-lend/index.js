@@ -1,7 +1,7 @@
 const { get } = require("../helper/http")
 
 // Total Collateral Deposited in Vaults 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = await get('https://ruvzuawwz7.execute-api.us-east-1.amazonaws.com/prod-analytics-v1/lend')
 
   let totalValue = 0;

@@ -27,12 +27,10 @@ const lpStaking = [
 ]
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: 'Counts liquidty on the token staking and lp staking contracts',
+            methodology: 'Counts liquidty on the token staking and lp staking contracts',
     bsc: {
         tvl: collateral,
-        staking: staking(tokenStaking.map(i => i.stakingContract), tokenStaking.map(i => i.stakingToken), 'bsc'),
-        pool2: staking(lpStaking.map(i => i.stakingContract), lpStaking.map(i => i.stakingLPToken), 'bsc')
+        staking: staking(tokenStaking.map(i => i.stakingContract), tokenStaking.map(i => i.stakingToken)),
+        pool2: staking(lpStaking.map(i => i.stakingContract), lpStaking.map(i => i.stakingLPToken))
     },
 };

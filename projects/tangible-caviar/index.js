@@ -4,7 +4,7 @@ const {  getPearlBalanceCaviar } = require("../tangible/abi.js");
 
 const CAVIAR_STRATEGY = "0x4626E247390c82FA3b72A913d3d8fe079FFb84Ff";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   // now fetch locked pearl in Caviar
   const pearlAmountInCaviar = await api.call({ abi: getPearlBalanceCaviar, target: CAVIAR_STRATEGY, })
 

@@ -21,6 +21,7 @@ function formatTokenAmount(amount, tokenSymbol) {
     case "MOVR":
     case "FIL":
     case "ASTR":
+    case "MANTA":
       decimals = 18;
       break;
   }
@@ -36,7 +37,8 @@ const tokenToCoingecko = {
   GLMR: "moonbeam",
   ETH: "ethereum",
   FIL: "filecoin",
-  ASTR: "astar"
+  ASTR: "astar",
+  MANTA: "manta-network"
 };
 
 function formatToken(token) {
@@ -49,6 +51,8 @@ function formatToken(token) {
       return "FIL";
     case '3':
       return "ASTR";
+    case '8':
+      return "MANTA";
     default :
       return null;
   }

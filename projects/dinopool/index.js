@@ -15,3 +15,5 @@ const lps = [
 module.exports = {
     ...tombTvl(bond, share, rewardPool, boardroom, lps, "cronos", undefined, false, lps[1])
 };
+
+module.exports.deadFrom = "2023-05-30"

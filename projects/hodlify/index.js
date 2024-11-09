@@ -44,7 +44,7 @@ const aggregateVaultTvl = async (api) => {
   await getStrategyVaultsLpValue(api, strategies);
 }
 
-const tvl = async (_, _1, _2, { api }) => {
+const tvl = async (api) => {
   await aggregateVaultTvl(api);
   return api.getBalances();
 }

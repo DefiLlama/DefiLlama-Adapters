@@ -1,5 +1,5 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { fetchURL } = require("../helper/utils");
+const { getConfig } = require("../helper/cache");
 
 const chainKeys = {
   ethereum: {
@@ -12,9 +12,9 @@ const chainKeys = {
   },
 };
 
-function tvl(chain, get) {
+function tvl(chain) {
   return async (_t, _e, { [chain]: block }) => {
-    const assets = (await get).data;
+    const assets = await getConfig('hotcross', "https://api.hotcross.com/bridges");
     const tokensAndOwners = assets.map((data) => [
       data[chainKeys[chain].asset],
       data[`${chainKeys[chain].chain}BridgeAddress`],
@@ -24,9 +24,8 @@ function tvl(chain, get) {
 }
 
 const chainTypeExports = () => {
-  const get = fetchURL("https://api.hotcross.com/bridges");
   return Object.keys(chainKeys).reduce(
-    (obj, chain) => ({ ...obj, [chain]: { tvl: tvl(chain, get) } }),
+    (obj, chain) => ({ ...obj, [chain]: { tvl: tvl(chain) } }),
     {}
   );
 };

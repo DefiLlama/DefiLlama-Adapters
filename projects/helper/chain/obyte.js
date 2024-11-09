@@ -10,6 +10,7 @@ const TOKEN_REGISTRY_AA_ADDRESS = "O6H6ZIFI57X3PLTYHOCVYPP5A553CYFQ";
  * @return {Promise<object>} the balances of all assets of all AAs that are based on the base AA identified by address
  */
 async function fetchBaseAABalances(timestamp, address) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   /*
    * {
    *   "subject": "GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA",

@@ -17,8 +17,8 @@ module.exports = {
     pool2: pool2(farmContract, USDC_NUM_UNIV2),   
   },
   bsc: {
-    staking: staking(farmContract_bsc, NUM_bsc, "bsc"),
-    pool2: pool2(farmContract_bsc, BUSD_NUM_CakeLP, "bsc"),
+    staking: staking(farmContract_bsc, NUM_bsc),
+    pool2: pool2(farmContract_bsc, BUSD_NUM_CakeLP),
   },
   methodology: "Counts liquidty on the staking and pool2 only",
 };

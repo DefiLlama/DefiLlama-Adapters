@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { dexExport, getResources } = require('../helper/chain/aptos')
 const sui = require('../helper/chain/sui')
 const { transformDexBalances } = require('../helper/portedTokens')
@@ -28,8 +29,7 @@ async function tvl() {
   }
 }
 
-async function suiTVL() {
-  const { api } = arguments[3]
+async function suiTVL(api) {
   const poolObjectID = '0xf699e7f2276f5c9a75944b37a0c5b5d9ddfd2471bf6242483b03ab2887d198d0'
   const { fields: { list: { fields: listObject } } } = await sui.getObject(poolObjectID)
   const items = (await sui.getDynamicFieldObjects({ parent: listObject.id.id })).map(i => i.fields.value.fields.value)
@@ -39,6 +39,20 @@ async function suiTVL() {
     api.add(coinA, fields.coin_a)
     api.add(coinB, fields.coin_b)
   })
+}
+
+async function staking(api) {
+  const xCetusManager = '0x838b3dbade12b1e602efcaf8c8b818fae643e43176462bf14fd196afa59d1d9d'
+  const xCetusManagerInfo  = await sui.getObject(xCetusManager)
+  const xCetusPool = {
+    type: '0x9e69acc50ca03bc943c4f7c5304c2a6002d507b51c11913b247159c60422c606::xcetus::XcetusManager<0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS, 0x2::sui::SUI>',
+    fields: {
+      coin_a: xCetusManagerInfo.fields.treasury.fields.total_supply.fields.value,
+      coin_b: '0',
+    }
+  }
+  api.add('0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS', xCetusPool.fields.coin_a)
+  return api.getBalances()
 }
 
 module.exports = dexExport({
@@ -54,5 +68,6 @@ module.exports = {
   },
   sui: {
     tvl: suiTVL,
+    staking,
   }
 }

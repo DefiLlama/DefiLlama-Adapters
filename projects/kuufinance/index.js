@@ -15,7 +15,7 @@ module.exports = {
       tokens: [
         '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
         ADDRESSES.avax.WETH_e,
-        '0x50b7545627a5162F82A992c33b87aDc75187B218',
+        ADDRESSES.avax.WBTC_e,
         ADDRESSES.avax.USDT_e,
         ADDRESSES.avax.DAI,
         '0x5947BB275c521040051D82396192181b413227A3'

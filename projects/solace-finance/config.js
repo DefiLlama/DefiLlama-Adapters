@@ -40,7 +40,7 @@ module.exports = {
         TokenTicker: "WMATIC",
       },
       {
-        PoolToken: "0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89",
+        PoolToken: ADDRESSES.polygon.FRAX,
         TokenTicker: "FRAX",
       },
       {

@@ -4,7 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const vault = '0xee1c8dbfbf958484c6a4571f5fb7b99b74a54aa7'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = await getLogs({
     api,
     target: vault,

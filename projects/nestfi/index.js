@@ -41,9 +41,7 @@ async function ethtvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: 'TVL counts NEST tokens used as collateral by the protocol.',
+            methodology: 'TVL counts NEST tokens used as collateral by the protocol.',
     bsc: {
         tvl: bsctvl 
     },

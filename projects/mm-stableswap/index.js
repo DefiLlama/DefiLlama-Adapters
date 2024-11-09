@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 
 const MM3BasePool = "0x61bB2F4a4763114268a47fB990e633Cb40f045F8";
@@ -8,29 +8,10 @@ const USDT = ADDRESSES.cronos.USDT;
 const USDC = ADDRESSES.cronos.USDC;
 
 
-async function tvl(timestamp, block, chainBlocks) {
-    const balances = {};
-
-    await sumTokensAndLPsSharedOwners(
-        balances,
-        [
-            [USDT, false],
-            [USDC, false],
-            [DAI, false],
-        ],
-        [MM3BasePool],
-        chainBlocks["cronos"],
-        'cronos',
-        addr=>`cronos:${addr}`,
-    );
-
-    return balances;
-}
-
 module.exports = {
-    doublecounted: true,
-    cronos:{
-        tvl,
-    },
-    methodology: "Counts DAI, USDC, & USDT tokens on the 3MM Base Pool for tvl",
+  doublecounted: true,
+  cronos: {
+    tvl: sumTokensExport({ tokens: [DAI, USDC, USDT], owner: MM3BasePool }),
+  },
+  methodology: "Counts DAI, USDC, & USDT tokens on the 3MM Base Pool for tvl",
 };

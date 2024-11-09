@@ -42,7 +42,7 @@ const tokenGeckoMapping = {
 
 const blacklistedPools = []
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const pools = await getCache('https://midgard.ninerealms.com/v2/pools')
   const aChain = api.chain
 

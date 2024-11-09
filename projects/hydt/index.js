@@ -16,7 +16,7 @@ async function tvl(_, _b, _cb) {
     return sumTokens2({ chain, owner: reserve, tokens: [bnb] });
 }
 
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
     // earn
     const shydtBal = await api.call({ abi: 'erc20:balanceOf', target: shydt, params: earn, });
     api.add(hydt, shydtBal);

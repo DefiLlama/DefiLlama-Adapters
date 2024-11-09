@@ -44,7 +44,7 @@ module.exports = {
 Object.keys(contracts).forEach(chain => {
   const {KROM, position} = contracts[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       if (chain === 'optimism') return opTvl(api, position)
       const orderIds = []
       const monitors = await api.fetchList({  lengthAbi: 'uint256:monitorsLength', target: position, itemAbi: abi.monitors })

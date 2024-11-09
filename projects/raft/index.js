@@ -10,7 +10,7 @@ const WRAPPED_RETH = "0xb69e35fb4a157028b92f42655090b984609ae598";
 const CHAI = "0x06af07097c9eeb7fd685c692751d5c66db49c215";
 const SWETH = '0xf951E335afb289353dc249e82926178EaC7DEd78'
 
-async function tvl(_, ethBlock, _1, { api }) {
+async function tvl(api) {
   const rEthBalanceV1 = await api.call({ target: WRAPPED_RETH, abi: "erc20:balanceOf", params: RAFT_POSITION_MANAGER, });
   const chaiBalance = await api.call({ target: CHAI, abi: "erc20:balanceOf", params: RAFT_PSM, });
   const potAddress = await api.call({ target: CHAI, abi: "address:pot", });

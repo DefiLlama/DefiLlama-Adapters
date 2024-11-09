@@ -15,7 +15,7 @@ const vaultsList = [
   "0x53ff774ebE8Bf7E03df8D73D3E9915b2Ca4eC40E",
 ]
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   return api.erc4626Sum({ calls: vaultsList })
 }
 

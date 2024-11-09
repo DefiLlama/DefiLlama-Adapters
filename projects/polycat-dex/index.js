@@ -9,7 +9,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "TVL are from the pools created by the factory and TVL in vaults",
   polygon: {
-    tvl: getUniTVL({ factory, chain: 'polygon', useDefaultCoreAssets: true }),
-    staking: staking(tankchef, paw, 'polygon'),
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
+    staking: staking(tankchef, paw),
   }
 }

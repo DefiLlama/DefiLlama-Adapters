@@ -17,7 +17,7 @@ function getProvider(network) {
   return chainApi.provider
 }
 
-async function tvl(ts, block, _, { api}) {
+async function tvl(api) {
   // const fromBlock = await getBlock(ts - (15 * ONE_DAY), 'ethereum', {}, false) //33 days ago
   // const usdcContract = new Contract(USDC, [usdcABI], getProvider('ethereum'))
   // const eventFilter = usdcContract.filters.Transfer(LOGIUM_CORE);
@@ -38,7 +38,7 @@ async function tvl(ts, block, _, { api}) {
   //   if (e.args.from.toLowerCase() !== LOGIUM_CORE)  return;
   //   owners.push(e.args.to)
   // })
-  return sumTokens2({ owners, tokens: [USDC] })
+  return sumTokens2({ api, owners, tokens: [USDC] })
 }
 
 module.exports = {

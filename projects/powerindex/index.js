@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const abi = require('./abi');
 
-async function getBscTvl(time, ethBlock, chainBlocks, { api }) {
+async function getBscTvl(api) {
   const poolAddress = "0x40E46dE174dfB776BB89E04dF1C47d8a66855EB3"
   const tokens = await api.call({
     target: poolAddress,
@@ -12,7 +12,7 @@ async function getBscTvl(time, ethBlock, chainBlocks, { api }) {
   return sumTokens2({ api, tokens, owner: poolAddress })
 }
 
-async function eth(timestamp, block, _1, { api }) {
+async function eth(api) {
   let poolLogs = await getLogs({
     target: '0x0Ba2e75FE1368d8d517BE1Db5C39ca50a1429441',
     topic: 'LOG_NEW_POOL(address,address)',

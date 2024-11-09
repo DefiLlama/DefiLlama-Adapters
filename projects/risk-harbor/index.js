@@ -203,7 +203,7 @@ async function getManagedVaults(vaultManager, block, chain) {
   return res;
 }
 
-async function terra2(timestamp, ethBlock, chainBlocks, { api }) {
+async function terra2(api) {
   const { addresses } = await queryContract({
     contract: networks.terra2.factory,
     chain: "terra2",
@@ -233,7 +233,7 @@ async function terra(timestamp, ethBlock, chainBlocks) {
 }
 
 function evm(chainName) {
-  return async (timestamp, block, chainBlocks, { api }) => {
+  return async (api) => {
     const network = networks[chainName];
 
     if (network.vaultManager) {

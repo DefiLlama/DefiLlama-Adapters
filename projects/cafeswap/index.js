@@ -16,7 +16,7 @@ module.exports = {
       useDefaultCoreAssets: true,
       factory: BSC_DEX_FACTORY,
     }),
-    staking: staking(BSC_MASTER_CHEF, BSC_BREW_ADDRESS, 'bsc')
+    staking: staking(BSC_MASTER_CHEF, BSC_BREW_ADDRESS)
   },
   polygon: {
     tvl: getUniTVL({

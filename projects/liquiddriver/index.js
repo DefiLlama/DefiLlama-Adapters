@@ -54,7 +54,7 @@ const shadowChefAddresses = [
   "0xD354908d297ce9a348b417d2e0F561EE7D11de5E", // wsHEC/FTM
 ];
 
-const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
+const masterchefTvl = async (_ts, ethBlock, chainBlocks) => {
   const balances = {};
 
   const transformAddress = i => `fantom:${i}`;
@@ -71,7 +71,7 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const hundredchefTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const hundredchefTvl = async (api) => {
   const balances = {};
   const transformAddress = i => `fantom:${i}`;
 
@@ -151,7 +151,7 @@ async function getMinichefTvl(api, minichef, balances = {}) {
     resolveLP: true, })
 }
 
-async function shadowChefTvl(_, _1, _2, { api, }) {
+async function shadowChefTvl(api) {
   const balances = {}
   const  [lpTokens, strategies] = await Promise.all([
     api.multiCall({  abi: abi.shadowLpToken, calls: shadowChefAddresses}),
@@ -236,12 +236,12 @@ module.exports = {
     staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
     tvl: sdk.util.sumChainTvls([
       masterchefTvl,
-      (_, _1, _2, { api }) => getMinichefTvl(api, MINICHEF),
+      (api) => getMinichefTvl(api, MINICHEF),
       hundredchefTvl,
       shadowChefTvl,
     ]),
   },
   bsc: {
-    tvl: (_, _1, _2, { api }) => getMinichefTvl(api, BSCMINICHEF),
+    tvl: (api) => getMinichefTvl(api, BSCMINICHEF),
   }
 }; // node test.js projects/liquiddriver/index.js

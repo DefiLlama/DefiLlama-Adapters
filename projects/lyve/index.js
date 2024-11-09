@@ -1,10 +1,11 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ADMIN_ADDRESSES = {
-  linea: "0xcFcd25b5E200d8829c383d293B456a608777a1D8"
+  linea: "0xcFcd25b5E200d8829c383d293B456a608777a1D8",
+  ethereum: "0x624ceD7034DFF45D439cDe1f443448A49F067715"
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const chainAddress = ADMIN_ADDRESSES[api.chain];
   const collAddresses = await api.call({ abi: "address[]:getValidCollateral", target: chainAddress, });
   const pool = await api.call({ abi: 'address:activePool', target: chainAddress })

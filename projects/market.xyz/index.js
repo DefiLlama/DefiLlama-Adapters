@@ -15,7 +15,6 @@ async function getFusePools(
   balances,
   borrowed,
   chain,
-  transform = (a) => a
 ) {
   const data = (
     await sdk.api.abi.call({
@@ -70,8 +69,7 @@ async function fantomBorrowed(timestamp, _, {fantom: block}) {
   return balances;
 }
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   polygon: {
     tvl: polygonTvl,
     borrowed: polygonBorrowed,
