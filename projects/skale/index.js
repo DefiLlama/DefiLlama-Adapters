@@ -31,6 +31,7 @@ async function tvl(_, block, _c) {
         '0x0E186357c323c806C1efdad36D217F7a54b63D18', // CGT2.0
         '0x6982508145454ce325ddbe47a25d4ec3d2311933', // PEPE
         '0xfdcdfa378818ac358739621ddfa8582e6ac1adcb', // CSC
+        '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2', // SUSHI
     ];
 
     erc20Tokens.map(i => {
