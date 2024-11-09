@@ -5,8 +5,7 @@ const { getUniTVL } = require('../helper/unknownTokens')
 module.exports = {
   start: 1621220505, //2021-05-17 00:00:00 +UTC
   misrepresentedTokens: true,
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: getUniTVL({
       factory: ETH_FACTORY,
       useDefaultCoreAssets: true,

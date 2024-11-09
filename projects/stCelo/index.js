@@ -30,9 +30,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: 'TVL counts Celo staked by the protocol.',
+            methodology: 'TVL counts Celo staked by the protocol.',
     start: 14330000,
     celo: {
         tvl 

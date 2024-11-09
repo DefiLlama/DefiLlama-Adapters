@@ -5,7 +5,7 @@ const abi = {
   colBalance: "function colBalance() view returns (uint256)"
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const { factory, fromBlock } = config[api.chain]
   const logs = await getLogs({
     api,

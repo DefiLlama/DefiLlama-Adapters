@@ -1,7 +1,7 @@
 const { queryContract } = require("../helper/chain/cosmos");
 const { transformDexBalances } = require("../helper/portedTokens");
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const contract = 'persistence1k8re7jwz6rnnwrktnejdwkwnncte7ek7gt29gvnl3sdrg9mtnqkstujtpg'
   const chain = api.chain
   const config = await queryContract({ chain, contract, data: { config: {} }, });

@@ -1,19 +1,36 @@
 const { get, post, } = require('../http')
 const ADDRESSES = require('../coreAssets.json')
-const { getUniqueAddresses } = require('../utils')
+const plimit = require('p-limit')
+const _rateLimited = plimit(1)
+const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
+
+const { getUniqueAddresses, sleep } = require('../utils')
 
 async function getTonBalance(addr) {
-  const res = await get(`https://tonapi.io/v2/accounts/${addr}`)
+  const res = await get(`https://toncenter.com/api/v3/account?address=${addr}`)
   return res.balance
 }
 
-async function sumTokensAccount({ api, addr, tokens = [] }) {
+async function getJettonBalances(addr) {
+  const response = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
+
+  const res = { }
+  response.balances.forEach(val => {
+    res[val.jetton.address] = { balance: val.balance, price: val.price.prices.USD, decimals: val.jetton.decimals }
+  })
+
+  return res
+}
+
+async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false }) {
   if (tokens.includes(ADDRESSES.null)) {
     const balance = await getTonBalance(addr)
     api.add(ADDRESSES.null, balance)
   }
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
+  await sleep(1000 * (3 * Math.random() + 3))
   balances.forEach(({ balance, price, jetton }) => {
+    if (onlyWhitelistedTokens && !tokens.includes(jetton.address)) return;
     const decimals = jetton.decimals
     price = price?.prices?.USD
     if (!decimals || !price) return;
@@ -22,17 +39,38 @@ async function sumTokensAccount({ api, addr, tokens = [] }) {
   })
 }
 
-async function sumTokens({ api, tokens, owners = [], owner }) {
+async function getTokenRates({ tokens = [] }) {
+  const { rates } = await get(`https://tonapi.io/v2/rates?` + (
+    new URLSearchParams({ tokens: tokens.join(','), currencies: "usd" })
+  ).toString());
+  
+  const tokenPrices = {};
+  
+  tokens.forEach(tokenAddress => {
+    if (rates[tokenAddress]) {
+      const usdPrice = rates[tokenAddress].prices.USD;
+      tokenPrices[tokenAddress] = usdPrice;
+    }
+  });
+  
+  return tokenPrices
+}
+
+const sumTokensAccount = rateLimited(_sumTokensAccount)
+
+async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false }) {
   if (!api) throw new Error('api is required')
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners, api.chain)
-  await Promise.all(owners.map(i => sumTokensAccount({ api, addr: i, tokens })))
+  for (const addr of owners) {
+    await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens })
+  }
   return api.getBalances()
 }
 
 function sumTokensExport({ ...args }) {
-  return (_, _1, _2, { api }) => sumTokens({ api, ...args })
+  return (api) => sumTokens({ api, ...args })
 }
 
 async function call({ target, abi, params = [] }) {
@@ -60,7 +98,9 @@ async function call({ target, abi, params = [] }) {
 
 module.exports = {
   getTonBalance,
+  getTokenRates,
   sumTokens,
   sumTokensExport,
   call,
+  getJettonBalances,
 }

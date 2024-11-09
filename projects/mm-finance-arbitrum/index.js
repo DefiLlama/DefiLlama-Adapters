@@ -10,7 +10,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://arbimm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa73Ae666CEB460D5E884a20fb30DE2909604557A)',
   arbitrum: {
-    staking: staking(masterChef, mmfToken, 'arbitrum'),
+    staking: staking(masterChef, mmfToken),
     tvl: getUniTVL({
       factory,
       useDefaultCoreAssets: true,

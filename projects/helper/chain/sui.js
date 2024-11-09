@@ -4,11 +4,12 @@ const sdk = require('@defillama/sdk')
 const http = require('../http')
 const { getEnv } = require('../env')
 const { transformDexBalances } = require('../portedTokens')
-const { sliceIntoChunks } = require('../utils')
+const { sliceIntoChunks, getUniqueAddresses } = require('../utils')
 
 //https://docs.sui.io/sui-jsonrpc
 
 const endpoint = () => getEnv('SUI_RPC')
+const graphEndpoint = () => getEnv('SUI_GRAPH_RPC')
 
 async function getObject(objectId) {
   return (await call('sui_getObject', [objectId, {
@@ -20,20 +21,20 @@ async function getObject(objectId) {
 
 async function queryEvents({ eventType, transform = i => i }) {
   let filter = {}
-  if (eventType) filter.MoveEventType = eventType 
+  if (eventType) filter.MoveEventType = eventType
   const items = []
   let cursor = null
   do {
-    const { data , nextCursor, hasNextPage } = await call('suix_queryEvents', [filter, cursor], { withMetadata: true, })
-     cursor = hasNextPage ? nextCursor : null
-     items.push(...data)
+    const { data, nextCursor, hasNextPage } = await call('suix_queryEvents', [filter, cursor], { withMetadata: true, })
+    cursor = hasNextPage ? nextCursor : null
+    items.push(...data)
   } while (cursor)
   return items.map(i => i.parsedJson).map(transform)
 }
 
 async function getObjects(objectIds) {
-  if (objectIds.length > 49) {
-    const chunks = sliceIntoChunks(objectIds, 49)
+  if (objectIds.length > 9) {
+    const chunks = sliceIntoChunks(objectIds, 9)
     const res = []
     for (const chunk of chunks) res.push(...(await getObjects(chunk)))
     return res
@@ -70,11 +71,13 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
   return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds })
 }
 
-async function call(method, params,  { withMetadata = false} = {}) {
+async function call(method, params, { withMetadata = false } = {}) {
   if (!Array.isArray(params)) params = [params]
   const {
-    result
+    result, error
   } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method, params, })
+  if (!result && error) throw new Error(`[sui] ${error.message}`)
+  if (['suix_getAllBalances'].includes(method)) return result
   return withMetadata ? result : result.data
 }
 
@@ -97,7 +100,7 @@ function dexExport({
     timetravel: false,
     misrepresentedTokens: true,
     sui: {
-      tvl: async (_, _1, _2, { api }) => {
+      tvl: async (api) => {
         const data = []
         let pools
         if (!eventType) {
@@ -130,6 +133,36 @@ function dexExport({
   }
 }
 
+
+async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api }) {
+  owners = getUniqueAddresses(owners, true)
+  const bals = await call('suix_getAllBalances', owners)
+  bals.forEach(i => api.add(i.coinType, i.totalBalance))
+  return api.getBalances()
+}
+
+async function queryEventsByType({ eventType, transform = i => i }) {
+  const query = `query GetEvents($after: String, $eventType: String!) {
+  events(first: 50, after: $after, filter: { eventType: $eventType }) {
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    nodes {
+      json
+    }
+  }
+}`
+  const items = []
+  let after = null
+  do {
+    const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
+    after = hasNextPage ? endCursor : null
+    items.push(...nodes.map(i => i.json).map(transform))
+  } while (after)
+  return items
+}
+
 module.exports = {
   endpoint: endpoint(),
   call,
@@ -140,4 +173,6 @@ module.exports = {
   getDynamicFieldObject,
   getDynamicFieldObjects,
   dexExport,
+  sumTokens,
+  queryEventsByType,
 };

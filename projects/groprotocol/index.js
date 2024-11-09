@@ -22,7 +22,7 @@ const P5_BAL_GRO_WETH = "0x702605f43471183158938c1a3e5f5a359d7b31ba"; // Count o
 const GROTokenStaker1 = "0x001C249c09090D79Dc350A286247479F08c7aaD7";
 const GROTokenStaker2 = "0x2E32bAd45a1C29c1EA27cf4dD588DF9e68ED376C";
 
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
   let balances = {};
 
   // Assets held within PWRD and GVT directly
@@ -37,7 +37,7 @@ async function tvl(timestamp, ethBlock, _, { api }) {
   return balances
 }
 
-async function pool2(timestamp, ethBlock, _, { api }) {
+async function pool2(api) {
   return sumTokens2({
     api,
     owners: [GROTokenStaker1,GROTokenStaker2 ],

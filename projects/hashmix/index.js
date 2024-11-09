@@ -4,7 +4,7 @@ const { get } = require("../helper/http");
 const BigNumber = require("bignumber.js");
 const { sdk } = require("@defillama/sdk");
 
-// async function tvl(_, _1, _2, { api }) {
+// async function tvl(api) {
 //   const totalBorrows = await api.call({
 //     target: POOL,
 //     abi: "uint256:totalBorrows",
@@ -19,13 +19,13 @@ const { sdk } = require("@defillama/sdk");
 //   return sumTokens2({ api, owner: POOL, tokens: [nullAddress] });
 // }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let tvl = await get("https://fvm.hashmix.org/fevmapi/tvl");
   api.add(nullAddress, tvl.data);
   return sumTokens2({ api, owner: POOL, tokens: [nullAddress] });
 }
 
-/* async function tvl1(_, _1, _2, { api }) {
+/* async function tvl1(api) {
 
   const balances = {};
   const bal = await sdk.api2.eth.getBalance({ target: POOL, chain: api.chain, decimals: api.decimals });

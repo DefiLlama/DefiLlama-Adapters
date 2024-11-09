@@ -1,7 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const abi = require('./abi.json')
-const { dodoPool2 } = require('../helper/pool2')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const ethMarketsManager = "0x5ed98Ebb66A929758C7Fe5Ac60c979aDF0F4040a"
@@ -48,7 +47,7 @@ const bscMarketManager = "0xc62E56E756a3D14ffF838e820F38d845a16D49dE"
 const bscRangedAMM = "0xda5Bd4aBAFbE249bdC5684eAD594B0ac379687fd"
 const bscThalesAMM = "0x465B66A3e33088F0666dB1836652fBcF037c7319"
 
-async function guniPool2(_timestamp, _ethBlock, chainBlocks, { api }) {
+async function guniPool2(api) {
   const [lp, token0, token1] = await api.batchCall([
     { target: opThalesLpToken, abi: abi.getUnderlyingBalance, },
     { target: opThalesLpToken, abi: 'address:token0', },
@@ -77,13 +76,13 @@ const speedMarkets = {
 module.exports = {
   methodology: "sUSD/USDC locked on markets",
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       return sumTokens2({ api, owners: await getMarkets(api, ethMarketsManager), tokens: [ADDRESSES.ethereum.sUSD] })
     },
     pool2: dodoPool2("0x136829c258e31b3ab1975fe7d03d3870c3311651", "0x031816fd297228e4fd537c1789d51509247d0b43"),
   },
   polygon: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const markets = await getMarkets(api, polygonMarketsManager)
       markets.push(polygonThalesAmm, polygonRangedAMM)
       if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
@@ -91,7 +90,7 @@ module.exports = {
     },
   },
   optimism: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       await addSportsLPTvl(api, opSportsLp, OP_SUSD)
       const markets = (await Promise.all([opMarketsManager, opSportsMarketsManager,].map(i => getMarkets(api, i)))).flat()
       markets.push(opThalesAmm, opParlayAmm, opRangedAmm, ...opSportsVault, ...opAmmVault)
@@ -102,7 +101,7 @@ module.exports = {
     pool2: guniPool2,
   },
   arbitrum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       await addSportsLPTvl(api, arbSportsLp, arbitrum_USDC)
       const markets = (await Promise.all([arbitrumMarketsManager, arbSportsMarketsManager,].map(i => getMarkets(api, i)))).flat()
       markets.push(arbitrumThalesAMM, arbParlayAmm, ...arbSportsVault, ...arbAmmVault)
@@ -112,7 +111,7 @@ module.exports = {
     staking: staking(arbThalesStaking, arbThalesToken),
   },
   base: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const markets = (await Promise.all([baseMarketManager, baseSportsMarketManager,].map(i => getMarkets(api, i)))).flat()
       markets.push(baseParlayAMM, baseRangedAMM, baseSportsAMM, baseThalesAMM)
       if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
@@ -121,11 +120,33 @@ module.exports = {
     staking: staking('0x84aB38e42D8Da33b480762cCa543eEcA6135E040', '0xf34e0cff046e154cafcae502c7541b9e5fd8c249'),
   },
   bsc: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const markets = (await Promise.all([bscMarketManager,].map(i => getMarkets(api, i)))).flat()
-      markets.push( bscRangedAMM,  bscThalesAMM)
+      markets.push(bscRangedAMM, bscThalesAMM)
       if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
       return sumTokens2({ api, tokens: [ADDRESSES.bsc.BUSD], owners: markets })
     },
   },
+}
+
+
+function dodoPool2(stakingContract, lpToken) {
+  return async (api) => {
+    const [baseToken, quoteToken, totalSupply] = await Promise.all(["address:_BASE_TOKEN_", "address:_QUOTE_TOKEN_", "erc20:totalSupply"].map(abi => api.call({
+      target: lpToken,
+      abi
+    })))
+    const [baseTokenBalance, quoteTokenBalance, stakedLPBalance] = await api.multiCall({
+      calls: [
+        [baseToken, lpToken], [quoteToken, lpToken], [lpToken, stakingContract]
+      ].map(token => ({
+        target: token[0],
+        params: [token[1]],
+      })),
+      abi: 'erc20:balanceOf'
+    })
+    const ratio = stakedLPBalance/totalSupply
+    api.add(baseToken, baseTokenBalance * ratio)
+    api.add(quoteToken, quoteTokenBalance * ratio)
+  }
 }

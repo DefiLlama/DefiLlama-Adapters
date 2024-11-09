@@ -18,6 +18,6 @@ module.exports = {
   },
   ethereum: {
     tvl: () => ({}),
-    pool2: (_, __, ___, { api }) => sumTokens2({ api, owners: ['0xaeaF7948C38973908fFA97c92F3384595d057135'], tokens: ['0x26cc136e9b8fd65466f193a8e5710661ed9a9827'] }),
+    pool2: (api) => sumTokens2({ api, owners: ['0xaeaF7948C38973908fFA97c92F3384595d057135'], tokens: ['0x26cc136e9b8fd65466f193a8e5710661ed9a9827'] }),
   },
 };

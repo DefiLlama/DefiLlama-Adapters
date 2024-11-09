@@ -62,7 +62,7 @@ async function getTokens(chain, version) {
   return addresses;
 }
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   const { chain } = api
   const ownerTokens = []
 

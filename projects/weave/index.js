@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const WKAVA = ADDRESSES.kava.WKAVA;
 const STRATEGY_CONTRACT = '0x9633a42E4f73F465DD421b22C09E2787493DaAdA'
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const strategyBalance = await api.call({
     abi: 'erc20:balanceOf',
     target: WKAVA,
@@ -14,9 +14,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'gets the balance of the strategy contract',
+      methodology: 'gets the balance of the strategy contract',
   start: 5793963,
   kava: {
     tvl,

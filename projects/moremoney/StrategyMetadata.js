@@ -12,7 +12,7 @@ async function useStrategyMetadata(block) {
       curAddresses.YieldYakStrategy2,
     [ADDRESSES.avax.BTC_b]:
       curAddresses.YieldYakStrategy2,
-    ["0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE"]:
+    [ADDRESSES.avax.SAVAX]:
       curAddresses.YieldYakStrategy2,
     [ADDRESSES.avax.WAVAX]:
       curAddresses.YieldYakAVAXStrategy2,
@@ -30,7 +30,7 @@ async function useStrategyMetadata(block) {
   strats.push(curAddresses.OldYieldYakAVAXStrategy2);
   // tokens.push(ADDRESSES.avax.BTC_b);
   // strats.push(curAddresses.AltYieldYakStrategy2);
-  // tokens.push("0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE");
+  // tokens.push(ADDRESSES.avax.SAVAX);
   // strats.push(curAddresses.AltYieldYakStrategy2);
   // tokens.push("0xF7D9281e8e363584973F946201b82ba72C965D27");
   // strats.push(curAddresses.YieldYakStrategy2);

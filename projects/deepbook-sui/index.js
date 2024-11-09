@@ -5,7 +5,7 @@ async function tvl(ts) {
   const data = await get(
     "https://kx58j6x5me.execute-api.us-east-1.amazonaws.com/sui/deepbook?interval=day&timeFrame=all&dataType=tvl"
   );
-  return toUSDTBalances(findClosestTvl(data, ts));
+  return toUSDTBalances(findClosestTvl(data, ts.timestamp));
 }
 
 module.exports = {
@@ -34,6 +34,7 @@ function findClosestTvl(data, ts) {
 
   // Sum all unique values together
   let totalTvl = Object.values(aggregatedTvl).reduce((acc, current) => acc + current, 0);
+  if (+totalTvl<0) return 0
 
   return totalTvl;
 }

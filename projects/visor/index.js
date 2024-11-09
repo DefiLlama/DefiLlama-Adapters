@@ -5,6 +5,7 @@ const getTotalAmounts =
   "function getTotalAmounts() view returns (uint256 total0, uint256 total1)";
 const { getUniqueAddresses } = require("../helper/utils");
 const config = require("./config");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 module.exports = {
   doublecounted: true,
@@ -14,7 +15,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   let { blacklistedHypes = [], registries, LIQUIDITY_MINING_POOLS } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       if (LIQUIDITY_MINING_POOLS) {
         const bals = await api.multiCall({ abi: hypervisorAbi.getHyperVisorData, calls: LIQUIDITY_MINING_POOLS, });
@@ -53,7 +54,7 @@ Object.keys(config).forEach(chain => {
         api.add(token0s[i], total0);
         api.add(token1s[i], total1);
       });
-      return api.getBalances()
+      return sumTokens2({ api })
     }
   }
 })

@@ -67,7 +67,7 @@ module.exports = {
   }
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const bals = await getBalance2({ chain: 'gravitybridge', owner: 'gravity16n3lc7cywa68mg50qhp847034w88pntqzx3ksm'})
   Object.entries(bals).forEach(([key, val]) => {
     if (key.startsWith('gravity0x')) {

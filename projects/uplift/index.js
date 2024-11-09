@@ -27,9 +27,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: "Counts the number of LIFT tokens in the Staking contract",
+      methodology: "Counts the number of LIFT tokens in the Staking contract",
   start: 1637191200,
   bsc: {
     tvl: () => ({}),

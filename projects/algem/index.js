@@ -12,9 +12,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: 'counts the number of ASTR tokens locked in Liquid Staking contract',
+            methodology: 'counts the number of ASTR tokens locked in Liquid Staking contract',
     start: 1502025,
     astar: {
       tvl,

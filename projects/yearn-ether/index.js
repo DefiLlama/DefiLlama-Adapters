@@ -1,6 +1,6 @@
 const YETH_POOL = '0x2cced4ffA804ADbe1269cDFc22D7904471aBdE63';
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const tokens = await api.fetchList({  lengthAbi: 'num_assets', itemAbi: 'assets', target: YETH_POOL})
   return api.sumTokens({ tokens, owner: YETH_POOL })
 }

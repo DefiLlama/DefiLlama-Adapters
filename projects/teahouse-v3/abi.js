@@ -1,0 +1,32 @@
+module.exports = {
+  assetToken0: "function assetToken0() view returns (address)",
+  assetToken1: "function assetToken1() view returns (address)",
+  vaultAllUnderlyingAssets: "function vaultAllUnderlyingAssets() view returns (uint256 amount0, uint256 amount1)",
+  getAssets: "function getAssets() view returns (address[])",
+  getAssetsBalance: "function getAssetsBalance() view returns (uint256[])",
+  assetType: "function assetType(address) external returns (uint8)",
+  underlyingAsset: "function UNDERLYING_ASSET_ADDRESS() returns (address)",
+  asset_token0: {
+    type: "function",
+    state_mutability: "view",
+    name: "asset_token0",
+    inputs: [],
+    outputs: [{ name: "address", type: "felt" }],
+    customType: "address",
+  },
+  asset_token1: {
+    type: "function",
+    state_mutability: "view",
+    name: "asset_token1",
+    inputs: [],
+    outputs: [{ name: "address", type: "felt" }],
+    customType: "address",
+  },
+  vault_all_underlying_assets: {
+    type: "function",
+    state_mutability: "view",
+    name: "vault_all_underlying_assets",
+    inputs: [],
+    outputs: [{ name: "amount", "type": "(core::integer::u256, core::integer::u256)" }],
+  },
+};

@@ -25,7 +25,7 @@ const DCA_PORTFOLIO_CONTRACTS = {
   ]
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const indexTokens = INDEX_TOKEN_CONTRACT[api.chain]
   const dcas = DCA_PORTFOLIO_CONTRACTS[api.chain]
   const ownerTokens = []
@@ -53,11 +53,14 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 async function addEquityValuationToBalances(address, api) {
-  var usdc_balance = await api.call({
+  var [usdc_balance] = await api.multiCall({
     target: address,
     abi: "function getEquityValuation(bool startIndex_, bool endIndex_) view returns (uint256)",
-    params: [true, false],
+    calls: [{ params: [true, false] }],
+    permitFailure: true,
   })
+  if (!usdc_balance)
+    return
   api.add(USDC_TOKEN_CONTRACT, usdc_balance)
 }
 

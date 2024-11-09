@@ -24,7 +24,7 @@ const SSOVS = [
   "0x32449DF9c617C59f576dfC461D03f261F617aD5a",
 ];
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const tokens = await api.multiCall({  abi: 'address:collateralToken', calls: SSOVS})
   return api.sumTokens({ tokensAndOwners2: [tokens, SSOVS]})
 }

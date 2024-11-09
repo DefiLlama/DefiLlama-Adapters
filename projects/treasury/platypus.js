@@ -6,7 +6,7 @@ const treasury = "0x068e297e8FF74115C9E1C4b5B83B700FdA5aFdEB";
 const tokens = [
   nullAddress,
   ADDRESSES.avax.DAI, // DAI
-  "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE", // sAVAX
+  ADDRESSES.avax.SAVAX, // sAVAX
   ADDRESSES.avax.USDC, // USDC
   ADDRESSES.avax.USDT_e, // USDT.e
   ADDRESSES.polygon.BUSD, // BUSD

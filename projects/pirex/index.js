@@ -10,7 +10,7 @@ const GLP = "0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258";
 const BTRFLY = "0xc55126051B22eBb829D00368f4B12Bde432de5Da";
 const pxBTRFLY = "0x10978Db3885bA79Bf1Bc823E108085FB88e6F02f";
 
-async function ethereum(ts, block, _, { api }) {
+async function ethereum(api) {
   const balances = {};
   const chain = "ethereum";
 
@@ -50,8 +50,7 @@ async function arbitrum() {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: "TVL = Total value of tokens locked in Pirex Vaults",
+    methodology: "TVL = Total value of tokens locked in Pirex Vaults",
   ethereum: {
     tvl: ethereum,
   },

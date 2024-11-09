@@ -8,7 +8,7 @@ const abis = {
 
 module.exports = {
   base: {
-    tvl: async (_, _b, _c, { api }) => {
+    tvl: async (api) => {
       const vaults = await api.fetchList({ target: MiniChefV2, lengthAbi: abis.poolLength, itemAbi: abis.lpToken, })
       const tokens = await api.multiCall({ abi: 'address:want', calls: vaults })
       const bals = await api.multiCall({ abi: 'uint256:balance', calls: vaults })

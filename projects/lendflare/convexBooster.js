@@ -60,7 +60,7 @@ const convexPools = {
     27: { lpToken: "0xDE5331AC4B3630f94853Ff322B66407e0D6331E8", virtualBalance: "0x0D66b49A68AffdDcDaDDdfE06CD6369307B2BA46", coinId: 2, coinName: "wrapped-bitcoin", decimals: 8 }
 }
 
-async function getTotalSupply(pools, timestamp, block, chainBlocks) {
+async function getTotalSupply(pools, chainBlocks) {
     const output = (await sdk.api.abi.multiCall({
         block: chainBlocks.ethereum,
         chain: "ethereum",
@@ -82,7 +82,7 @@ async function getTotalSupply(pools, timestamp, block, chainBlocks) {
     return pools;
 }
 
-async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
+async function calculateTokenAmount(pools, chainBlocks) {
     for (let pid of Object.keys(pools)) {
         await sdk.api.abi.call({
             block: chainBlocks.ethereum,
@@ -102,8 +102,8 @@ async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {}
-    const pools = await getTotalSupply(convexPools, timestamp, block, chainBlocks).then(pools => {
-        return calculateTokenAmount(pools, timestamp, block, chainBlocks);
+    const pools = await getTotalSupply(convexPools, chainBlocks).then(pools => {
+        return calculateTokenAmount(pools, chainBlocks);
     });
     Object.keys(pools).map((pid, _) => {
         if (convexPools[pid].calculateTokenAmount.isGreaterThan(new BN(0))) {

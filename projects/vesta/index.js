@@ -23,39 +23,32 @@ const LP_VST_FRAX_ADDRESS = "0x59bF0545FCa0E5Ad48E13DA269faCD2E8C886Ba4";
 const TROVE_MANAGER_ADDRESS = "0x100EC08129e0FD59959df93a8b914944A3BbD5df";
 
 
-const chain = "arbitrum";
 
-async function tvl(_, block, chainBlocks) {
-  block = chainBlocks.arbitrum;
-  const transform = i => `arbitrum:${i}`
+async function tvl(api) {
   const balances = {}
-  const calls = Object.values(VaultTokens).map(token => ({ params: [token] }))
-  const { output } = await sdk.api.abi.multiCall({
-    calls, block, chain: 'arbitrum', target: TROVE_MANAGER_ADDRESS, abi: "function getEntireSystemColl(address _asset) view returns (uint256 entireSystemColl)"
-    ,
+  const calls = Object.values(VaultTokens)
+  const output = await api.multiCall({
+    calls, target: TROVE_MANAGER_ADDRESS, abi: "function getEntireSystemColl(address _asset) view returns (uint256 entireSystemColl)",
   })
 
-  output.forEach(({ input: { params: [token] }, output }) => {
+  output.forEach((output, i) => {
+    const token = calls[i].toLowerCase()
     if (token.toLowerCase() === VaultTokens.renBTC) output /= 1e10 // fix renBTC balance
 
-    const llamaTokenAddress = transform(token.toLowerCase() === VaultTokens.GLP ? FEGLP_ADDRESS : token) // convert sGLP to feGLP address for price api
-   
-    sdk.util.sumSingleBalance(balances, llamaTokenAddress, output)
+    const llamaTokenAddress = token.toLowerCase() === VaultTokens.GLP ? FEGLP_ADDRESS : token // convert sGLP to feGLP address for price api
+
+    sdk.util.sumSingleBalance(balances, llamaTokenAddress, output, api.chain)
   })
 
   return balances;
 }
 
-async function pool2(_timestamp, block, chainBlocks, { api }) {  
-  block = chainBlocks.arbitrum;
-  const balances = {};
-  const transform = i => `arbitrum:${i}`
-  await sumBalancerLps(balances, [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]], chainBlocks.arbitrum, chain, transform);
+async function pool2(api) {
+  const balances = {}
+  await sumBalancerLps(balances, [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]], api.block, api.chain);
 
-  const curveBalances = (
-    await sdk.api.abi.call({ target: VST_FARMING_ADDRESS, abi: "uint256:totalStaked", block, params: [], chain, })
-  ).output;
-  sdk.util.sumSingleBalance(balances,LP_VST_FRAX_ADDRESS,curveBalances, api.chain)
+  const curveBalances = await api.call({ target: VST_FARMING_ADDRESS, abi: "uint256:totalStaked" })
+  sdk.util.sumSingleBalance(balances, LP_VST_FRAX_ADDRESS, curveBalances, api.chain)
   return balances;
 }
 
@@ -65,7 +58,6 @@ module.exports = {
     pool2,
   },
   start: 1644339600,
-  timetravel: true,
-  methodology:
+    methodology:
     "Total Value Locked includes all stability pools, troves, and vst pairs",
 };

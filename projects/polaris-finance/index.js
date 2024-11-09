@@ -35,12 +35,14 @@ const staking = async (_timestamp, _ethBlock, { [chain]: block }) => {
 };
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   methodology:
     "Pool2 TVL accounts for all LPs staked in Dawn, Staking TVL accounts for all tokens staked in Sunrise.",
   aurora: {
-    tvl: onChainTvl('0x6985436a0E5247A3E1dc29cdA9e1D89C5b59e26b', 71729132),
+    tvl: onChainTvl("0x6985436a0E5247A3E1dc29cdA9e1D89C5b59e26b", 71729132),
     staking,
+  },
+  telos: {
+    tvl: onChainTvl("0x9Ced3B4E4DC978265484d1F1f569010E13f911c9", 319760799),
   },
 };
