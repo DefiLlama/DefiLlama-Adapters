@@ -40,6 +40,9 @@ const TOKENS = {
   gravity: {
     USDC_e: ADDRESSES.gravity.USDC_e,
     wG: ADDRESSES.gravity.wG
+  },
+  bsquared: {
+    WBTC: ADDRESSES.bsquared.WBTC,
   }
 }
 
@@ -423,6 +426,15 @@ module.exports = {
        tokens: [
          TOKENS.gravity.USDC_e,
          TOKENS.gravity.wG,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'bsquared',
+       tokens: [
+         TOKENS.bsquared.WBTC,
        ],
        holders: [
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
