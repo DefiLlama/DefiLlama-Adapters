@@ -25,8 +25,8 @@ async function tvl(api) {
     const stabXrdPoolXrdVault = await queryAddresses({ addresses: [STAB_XRD_POOL_XRD_VAULT] });
     const xrdAmountPool = stabXrdPoolXrdVault[0].details.balance.amount;
 
-    //add twice XRD value of pool to tvl (once for actual XRD side, and once to represent the STAB side which we can't properly get the value of otherwise)
-    api.add('resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd', xrdAmountPool * 2)
+    //add only XRD value of pool to tvl (STAB value is excluded as backing of STAB tokens are already included in tvl)
+    api.add('resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd', xrdAmountPool)
 }
 
 module.exports = {
