@@ -30,6 +30,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  methodology: 'Calculates TVL using the amount of collateral locked to borrow STAB using CDPs, and amount of STAB and XRD locked in the protocol-native STAB/XRD pool.',
   radixdlt: { tvl },
   misrepresentedTokens: true,
   timetravel: false,
