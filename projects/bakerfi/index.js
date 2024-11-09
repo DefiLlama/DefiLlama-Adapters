@@ -3,7 +3,7 @@ const config = {
     vaults: ["0x4c6d58749126FEBb1D28E8B8FdE97DC3107996d3"]
   },
   base: {
-    vaults: ["0x37327c99bBc522e677a97d01021dB20227faF60A"]
+    vaults: ["0x37327c99bBc522e677a97d01021dB20227faF60A", "0x892022FE1431fdE03836725BBD0f0380e21E2095"]
   },
   ethereum: {
     vaults: ["0x01280b3683fE20Dc9cCF4D9526418F252871E4F7"]
