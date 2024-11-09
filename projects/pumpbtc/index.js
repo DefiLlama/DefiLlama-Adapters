@@ -21,7 +21,7 @@ async function bitcoinTvl(api) {
 }
 
 async function otherTvl(api) {
-  const addresses = await getConfig('pumpbtc/v2', undefined, { fetcher: getStakingAddresses })
+  const addresses = await getConfig('pumpbtc/v2-other', undefined, { fetcher: getStakingAddresses })
 
   if (!addresses[api.chain]) {
     return;
