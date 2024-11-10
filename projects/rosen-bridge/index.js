@@ -1,5 +1,6 @@
 const { sumTokensExport } = require("../helper/sumTokens");
 const ADDRESSES = require('../helper/coreAssets.json');
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
   timetravel: false,
@@ -40,6 +41,6 @@ module.exports = {
     }),
   },
   bitcoin: {
-    tvl: sumTokensExport({ owners: ['bc1qs0852en99dfctv0egj2qxnmc79mhjgn9ap975t']})
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.rosenBridge })
   }
 };
