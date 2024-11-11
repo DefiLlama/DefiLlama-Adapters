@@ -11,7 +11,6 @@ async function getStakingAddresses() {
   let res = await utils.fetchURL('https://dashboard.pumpbtc.xyz/api/dashboard/asset/tokenowners')
 
   const btcAddresses = res.data.data || {}
-  //console.log('>>', btcAddresses.length) 
   return btcAddresses
 }
 
@@ -33,7 +32,8 @@ async function otherTvl(api) {
 
 module.exports.isHeavyProtocol = true;
 
-['bitcoin', 'ethereum', 'bsc', 'mantle', 'base'].forEach(chain => {
+// 添加 arbitrum 支持
+['bitcoin', 'ethereum', 'bsc', 'mantle', 'base', 'arbitrum'].forEach(chain => {
   if (chain == 'bitcoin') {
     module.exports[chain] = {
       tvl: bitcoinTvl,
