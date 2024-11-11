@@ -8,9 +8,9 @@ const abi = { getQualifiedUserInfo: 'function getQualifiedUserInfo(address _user
 
 module.exports = {
   bedrock: async () => {
-    const API_URL = 'https://bedrock-datacenter.rockx.com/uniBTC/reserve/address'
-    const { btc } = await getConfig('bedrock.btc_address', API_URL)
-    return btc
+    const API_URL = 'https://raw.githubusercontent.com/Bedrock-Technology/uniBTC/refs/heads/main/data/tvl/reserve_address.json'
+    const { btc, evm } = await getConfig('bedrock.btc_address', API_URL)
+    return { btc, evm }
   },
   exsatCreditStaking: async () => {
     const { data: response } = await axios.post('https://rpc-us.exsat.network/v1/chain/get_table_rows', {
