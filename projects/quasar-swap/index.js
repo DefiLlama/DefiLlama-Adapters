@@ -31,7 +31,7 @@ module.exports = {
         block,
       }),
   }, */
-  //deadFrom: "2024-01-01",
+  deadFrom: "2024-01-01",
   nova: {
     tvl: () => ({}),
     staking: () => ({}),

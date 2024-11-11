@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens, sumTokensExport } = require('../helper/sumTokens');
 
 const BBTC = '0xF5e11df1ebCf78b6b6D26E04FF19cD786a1e81dC'
-const BBUSD = '0x77776b40C3d75cb07ce54dEA4b2Fd1D07F865222'
+const BBUSD = ADDRESSES.bouncebit.BBUSD
 // const stBBTC = '0x7F150c293c97172C75983BD8ac084c187107eA19'
 
 const stBBTC_STAKE_ABI =
@@ -23,7 +24,7 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: ["0x1ddD6E5eA766511CC0f348DC8d17578a821B680F", "0xa2B283e4dbdFEA5461C36a59E3B94b3ef2883085"],
-      tokens: [BBTC, BBUSD]
+      tokens: [BBTC] // removed BBUSD because its tracked on bouncebit ethena listing
     }),
   },
   bsc: {
