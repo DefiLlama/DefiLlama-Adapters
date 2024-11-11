@@ -74,11 +74,11 @@ module.exports = {
     return Object.values(await getConfig('solv-protocol/solv-btc-lst', API_URL)).flat();
   },
   pumpBTC: async () => {
-    const API_URL = 'https://dashboard.pumpbtc.xyz/api/dashboard/btc/addresses'
-    return getConfig('pumpbtc', undefined, {
+    const API_URL = 'https://dashboard.pumpbtc.xyz/api/dashboard/asset/tokenowners'
+    return getConfig('pumpbtc/v2', undefined, {
       fetcher: async () => {
         const { data } = await axios.get(API_URL)
-        return data.data || []
+        return data.data.bitcoin.owners
       }
     })
   },

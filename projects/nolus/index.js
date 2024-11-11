@@ -12,6 +12,26 @@ const osmosisAxlOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxq
 const osmosisAxlLeaserAddr = 'nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f'
 const osmosisAxlLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
 
+// Osmosis stATOM Protocol Contracts (OSMOSIS-OSMOSIS-ST_ATOM) pirin-1
+const osmosisStAtomOracleAddr = 'nolus1mtcv0vhpt94s82mcemj5sc3v94pq3k2g62yfa5p82npfnd3xqx8q2w8c5f'
+const osmosisStAtomLeaserAddr = 'nolus1xv0erzdcphnpkf8tr76uynldqx6sspw7782zg9wthz8xpemh7rnsv4nske'
+const osmosisStAtomLppAddr = 'nolus1jufcaqm6657xmfltdezzz85quz92rmtd88jk5x0hq9zqseem32ysjdm990'
+
+// Osmosis allBTC Protocol Contracts (OSMOSIS-OSMOSIS-ALL_BTC) pirin-1
+const osmosisBtcOracleAddr = 'nolus1y0nlrnw25mh2vxhaupamwca4wdvuxs26tq4tnxgjk8pw0gxevwfq5ry07c'
+const osmosisBtcLeaserAddr = 'nolus1dzwc9hu9aqlmm7ua4lfs2lyafmy544dd8vefsmjw57qzcanhsvgsf4u3ld'
+const osmosisBtcLppAddr = 'nolus1w2yz345pqheuk85f0rj687q6ny79vlj9sd6kxwwex696act6qgkqfz7jy3'
+
+// Osmosis allSOL Protocol Contracts (OSMOSIS-OSMOSIS-ALL_SOL) pirin-1
+const osmosisSolOracleAddr = 'nolus153kmhl85vavd03r9c7ardw4fgydge6kvvhrx5v2uvec4eyrlwthsejc6ce'
+const osmosisSolLeaserAddr = 'nolus1lj3az53avjf8s9pzwvfe86d765kd7cmnhjt76vtqxjvn08xu0c6saumtza'
+const osmosisSolLppAddr = 'nolus1qufnnuwj0dcerhkhuxefda6h5m24e64v2hfp9pac5lglwclxz9dsva77wm'
+
+// Osmosis AKT Protocol Contracts (OSMOSIS-OSMOSIS-AKT) pirin-1
+const osmosisAktOracleAddr = 'nolus12sx0kr60rptp846z2wvuwyxn47spg55dcnzwrhl4f7nfdduzsrxq7rfetn'
+const osmosisAktLeaserAddr = 'nolus1shyx34xzu5snjfukng323u5schaqcj4sgepdfcv7lqfnvntmq55sj94hqt'
+const osmosisAktLppAddr = 'nolus1lxr7f5xe02jq6cce4puk6540mtu9sg36at2dms5sk69wdtzdrg9qq0t67z'
+
 // Astroport Protocol Contracts (NEUTRON-ASTROPORT-USDC_AXELAR) pirin-1
 const astroportOracleAddr = 'nolus1jew4l5nq7m3xhkqzy8j7cc99083m5j8d9w004ayyv8xl3yv4h0dql2dd4e'
 const astroportLppAddr = 'nolus1qqcr7exupnymvg6m63eqwu8pd4n5x6r5t3pyyxdy7r97rcgajmhqy3gn94'
@@ -51,11 +71,20 @@ async function getLppTvl(lppAddresses) {
   const lpps = await queryManyContracts({ contracts: lppAddresses, chain: 'nolus', data: { 'lpp_balance': [] } })
   
   let totalLpp = 0
+  let divisor = _6Zeros; // Default 6 decimals
+
+  // Adjust divisor based on specific addresses for allBTC and allSOL
+  if (lppAddresses.includes(osmosisBtcLppAddr)) {
+    divisor = 100000000; // 8 decimals for BTC
+  } else if (lppAddresses.includes(osmosisSolLppAddr)) {
+    divisor = 1000000000; // 9 decimals for SOL
+  }
+
   lpps.forEach(v => {
     totalLpp += Number(v.balance.amount)
   })
 
-  return totalLpp / _6Zeros
+  return totalLpp / divisor;
 }
 
 function sumAssests(balances, leases, currencies) {
@@ -103,7 +132,11 @@ module.exports = {
     tvl: async () => {
       return {
         'axlusdc': await getLppTvl([osmosisAxlLppAddr, astroportLppAddr]),
-        'usd-coin': await getLppTvl([osmosisNobleLppAddr, astroportNobleLppAddr])
+        'usd-coin': await getLppTvl([osmosisNobleLppAddr, astroportNobleLppAddr]),
+        'stride-staked-atom': await getLppTvl([osmosisStAtomLppAddr]),
+        'osmosis-allbtc': await getLppTvl([osmosisBtcLppAddr]),
+        'osmosis-allsol': await getLppTvl([osmosisSolLppAddr]),
+        'akash-network': await getLppTvl([osmosisAktLppAddr])
       }
     }
   },
@@ -120,6 +153,10 @@ module.exports = {
       return await tvl([
         { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
         { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
+        { leaser: osmosisStAtomLeaserAddr, oracle: osmosisStAtomOracleAddr },
+        { leaser: osmosisBtcLeaserAddr, oracle: osmosisBtcOracleAddr },
+        { leaser: osmosisSolLeaserAddr, oracle: osmosisSolOracleAddr },
+        { leaser: osmosisAktLeaserAddr, oracle: osmosisAktOracleAddr }
       ])
     }
   }

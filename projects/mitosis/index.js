@@ -20,6 +20,48 @@ const UNIETH_ADDRESS = {
   },
 };
 
+const uniBTC_ADDRESS = {
+  ethereum: { 
+    asset: "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568", 
+    vault: "0xA1eBd23c4364e7491633237A0d9359D82c629182",
+  },
+  arbitrum: { 
+    asset: "0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a", 
+    vault: "0x73981B0496fC08e9136BAF74b79d32A4d4F2a007",
+  },
+  optimism: { 
+    asset: "0x93919784C523f39CACaa98Ee0a9d96c3F32b593e", 
+    vault: "0x5616Fe2762687Cd8a9158c27F62aff84E36821Be",
+  },
+  bsc: { 
+    asset: "0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a", 
+    vault: "0xaDd58517c5D45c8ed361986f193785F8Ed1ABFc2",
+  },
+};
+
+const ezETH_ADDRESS = {
+  ethereum: { 
+    asset: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110", 
+    vault: "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
+  },
+  arbitrum: { 
+    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    vault: "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
+  },
+  blast: { 
+    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    vault: "0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0",
+  },
+  linea: { 
+    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    vault: "0x96d6cE4e83dB947fF6bD1Ab0B377F23cd5D9ec2D",
+  },
+  mode: {
+    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    vault: "0xbEd575b0FeDa4F84b71144634693DaCc07749471"
+  }
+};
+
 const WEETH_ADDRESS = {
   ethereum: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
   arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
@@ -88,6 +130,8 @@ module.exports = {
         { type: 'cap', data: { asset: WEETH_ADDRESS.ethereum, cap: CAP_ADDRESS.ethereum }},
         { type: 'vault', data: { asset: VAULT_weETHs.ethereum, vault: vaults.ethereum }},
         { type: 'vault', data: UNIETH_ADDRESS.ethereum },
+        { type: 'vault', data: uniBTC_ADDRESS.ethereum },
+        { type: 'vault', data: ezETH_ADDRESS.ethereum },
       ],
     ),
   },
@@ -104,6 +148,8 @@ module.exports = {
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.arbitrum, cap: CAP_ADDRESS.arbitrum }},
         { type: 'vault', data: UNIETH_ADDRESS.arbitrum },
+        { type: 'vault', data: uniBTC_ADDRESS.arbitrum },
+        { type: 'vault', data: ezETH_ADDRESS.arbitrum },
       ]
     ),
   },
@@ -111,6 +157,7 @@ module.exports = {
     tvl: chainTVL(
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.optimism, cap: CAP_ADDRESS.optimism }},
+        { type: 'vault', data: uniBTC_ADDRESS.optimism },
       ],
     ),
   },
@@ -118,6 +165,7 @@ module.exports = {
     tvl: chainTVL(
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.mode, cap: CAP_ADDRESS.mode }},
+        { type: 'vault', data: ezETH_ADDRESS.mode },
       ],
     ),
   },
@@ -132,6 +180,7 @@ module.exports = {
     tvl: chainTVL(
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.blast, cap: CAP_ADDRESS.blast }},
+        { type: 'vault', data: ezETH_ADDRESS.blast },
       ],
     ),
   },
@@ -140,7 +189,15 @@ module.exports = {
       [
         { type: 'cap', data: { asset: WEETH_ADDRESS.linea, cap: CAP_ADDRESS.linea }},
         { type: 'vault', data: UNIETH_ADDRESS.linea },
+        { type: 'vault', data: ezETH_ADDRESS.linea },
       ],
     ),
   },
+  bsc: {
+    tvl: chainTVL(
+      [
+        { type: 'vault', data: uniBTC_ADDRESS.bsc },
+      ]
+    )
+  }
 };
