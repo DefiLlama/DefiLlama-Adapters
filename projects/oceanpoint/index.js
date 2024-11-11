@@ -8,13 +8,13 @@ const CONTRACTS = [
 ];
 
 const ERC20_TOKENS = [
-  "0x0E85fB1be698E777F2185350b4A52E5eE8DF51A6",
   "0x509A38b7a1cC0dcd83Aa9d06214663D9eC7c7F4a"
 ];
 
 module.exports = {
   ethereum: {
     tvl: () => ({}),
-    staking: staking(CONTRACTS, ERC20_TOKENS)
+    pool2: staking(CONTRACTS, '0x0E85fB1be698E777F2185350b4A52E5eE8DF51A6'),
+    staking: staking(CONTRACTS, ERC20_TOKENS),
   }
 };
