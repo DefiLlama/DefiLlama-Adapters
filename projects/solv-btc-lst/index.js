@@ -1,5 +1,6 @@
 const { sumTokens } = require('../helper/chain/bitcoin');
-const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
+const { getConfig } = require('../helper/cache.js');
 
 async function tvl() {
   return sumTokens({ owners: await bitcoinAddressBook.solvBTC() })
