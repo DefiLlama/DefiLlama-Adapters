@@ -12,7 +12,7 @@ const solvbtclstListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/sl
 async function evmTVL(api) {
   let solvbtclst = await getConfig('solv-protocol/solv-btc-lst', solvbtclstListUrl)
   let { depositAddress: owners, tokens } = solvbtclst[api.chain]?.otherDeposit ?? {}
-  api.sumTokens({ owners, tokens })
+  return api.sumTokens({ owners, tokens })
 }
 
 module.exports = {
