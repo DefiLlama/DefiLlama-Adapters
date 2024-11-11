@@ -5,6 +5,8 @@ const sdk = require('@defillama/sdk')
 module.exports = {
   iotex: {
     tvl: sdk.util.sumChainTvls([
+      getLiquityTvl('0x21d81DABF6985587CE64C2E8EB12F69DF2178fe2'),
+      getLiquityTvl('0xAeB0B38040aDdc4a2b520919f13944D9bC944435'),
       getLiquityTvl('0x4315BcE6076953571caf1903d15D682727FBD935'),
       getLiquityTvl('0xFF5F4bA96586EDae7E7D838D8770dFB3376Ec245', { nonNativeCollateralToken: true, collateralToken: "0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894" })
     ]),
