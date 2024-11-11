@@ -8,7 +8,7 @@ const abi = { getQualifiedUserInfo: 'function getQualifiedUserInfo(address _user
 
 module.exports = {
   bedrock: async () => {
-    const API_URL = 'https://bedrock-datacenter.rockx.com/uniBTC/reserve/address'
+    const API_URL = 'https://raw.githubusercontent.com/Bedrock-Technology/uniBTC/refs/heads/main/data/tvl/reserve_address.json'
     const { btc } = await getConfig('bedrock.btc_address', API_URL)
     return btc
   },
@@ -52,19 +52,19 @@ module.exports = {
         let offset = 0;
         let batchNumber = 1;
         let hasMore = true;
-      
+
         while (hasMore) {
           const { addresses: data, has_more } = await get(`${API_URL}?limit=${BATCH_SIZE}&offset=${offset}`);
           const newAddresses = data.map(a => a.btc_address);
-          
+
           allAddresses.push(...newAddresses);
           sdk.log(`Batch ${batchNumber} completed: ${newAddresses.length} addresses`);
-      
+
           hasMore = has_more;
           offset += BATCH_SIZE;
           batchNumber++;
         }
-        
+
         return allAddresses;
       }
     })
@@ -101,25 +101,25 @@ module.exports = {
       let hasMore = true;
 
       while (hasMore) {
-          const { data: response } = await axios.post(API2_URL, {
-              "json": true,
-              "code": "brdgmng.xsat",
-              "scope": custody_id,
-              "table": "addrmappings",
-              "lower_bound": lower_bound,
-              "upper_bound": null,
-              "index_position": 1,
-              "key_type": "",
-              "limit": "100",
-              "reverse": false,
-              "show_payer": true
-          });
+        const { data: response } = await axios.post(API2_URL, {
+          "json": true,
+          "code": "brdgmng.xsat",
+          "scope": custody_id,
+          "table": "addrmappings",
+          "lower_bound": lower_bound,
+          "upper_bound": null,
+          "index_position": 1,
+          "key_type": "",
+          "limit": "100",
+          "reverse": false,
+          "show_payer": true
+        });
 
-          const addrs = response.rows.map(row => row.data.btc_address);
-          owners.push(...addrs);
+        const addrs = response.rows.map(row => row.data.btc_address);
+        owners.push(...addrs);
 
-          hasMore = response.more;
-          lower_bound = response.next_key;
+        hasMore = response.more;
+        lower_bound = response.next_key;
       }
     }
     return owners
