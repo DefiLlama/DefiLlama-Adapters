@@ -205,24 +205,24 @@ async function sumTokens2({
     tokensAndOwners = getUnique(tokensAndOwners)
     log('total balance queries: ', tokensAndOwners.length)
     await runInChunks(tokensAndOwners, async (chunk) => {
-      const tokenBalances = await getTokenBalances(chunk)
+      const tokenBalances = await getTokenBalances(chunk, chain)
       transformBalances({ tokenBalances, balances, })
     }, { sleepTime: 400 })
   }
 
   if (tokenAccounts.length) {
-    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
+    tokenAccounts = getUniqueAddresses(tokenAccounts, chain)
 
-    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError }, chain)
     await transformBalances({ tokenBalances, balances, })
   }
 
   if (solOwners.length) {
-    const solBalance = await getSolBalances(solOwners)
-    sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
+    const solBalance = await getSolBalances(solOwners, chain)
+    sdk.util.sumSingleBalance(balances, `${chain}:` + ADDRESSES.solana.SOL, solBalance)
   }
 
-  blacklistedTokens.forEach(i => delete balances['solana:' + i])
+  blacklistedTokens.forEach(i => delete balances[`${chain}:` + i])
 
   return balances
 
@@ -263,8 +263,8 @@ async function sumTokens2({
     }
   }
 
-  async function getSolBalances(accounts) {
-    const connection = getConnection()
+  async function getSolBalances(accounts, chain = 'solana') {
+    const connection = getConnection(chain)
 
     const balances = await runInChunks(accounts, async (chunk) => {
       chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
@@ -288,9 +288,9 @@ async function sumTokens2({
     })
   }
 
-  async function getTokenBalances(tokensAndAccounts) {
+  async function getTokenBalances(tokensAndAccounts, chain = 'solana') {
     const body = tokensAndAccounts.map(([token, account], i) => formTokenBalanceQuery(token, account, i))
-    const tokenBalances = await http.post(endpoint(), body);
+    const tokenBalances = await http.post(chain === 'solana' ? endpoint() : renecEndpoint(), body);
     const balances = {}
     tokenBalances.forEach(({ result: { value } = {} } = {}) => {
       if (!value) return;
