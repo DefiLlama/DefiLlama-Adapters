@@ -26,7 +26,7 @@ Object.keys(config).forEach(chain => {
       const tokens = poolInfos.map(i => i.stakeToken)
       const bals = await api.multiCall({  abi: abi.totalStakeTokens, calls: strategies})
       api.add(tokens, bals)
-      blacklistedTokens.forEach(token => api.removeTokenBalances(token))
+      blacklistedTokens.forEach(token => api.removeTokenBalance(token))
       return sumTokens2({ api, resolveLP: true })
     }
   }
