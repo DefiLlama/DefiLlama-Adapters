@@ -34,7 +34,7 @@ async function tvl(api) {
     target: liquidAccountants[0],
     abi: 'function getRate() view returns (uint256)'
   });
-  if (api.timestamp - updatedTimestamp > 12 * 60 * 60 || updatedTimestamp > api.timestamp) {
+  if (api.timestamp - updatedTimestamp > 12 * 60 * 60) {
     throw new Error('Data is outdated')
   }
   api.add(ADDRESSES.ethereum.EETH, BigInt(balETH) * BigInt(ethQuote) / BigInt(1e18) - BigInt(wethBal));
