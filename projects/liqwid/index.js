@@ -65,7 +65,7 @@ const tokenMapping = {
   USDM: 'c48cbb3d5e57ed56e276bc45f99ab39abe94e6cd7ac39fb402da47ad0014df105553444d'
 }
 
-const getToken = (market) => tokenMapping[market.id] ?? market.asset.currencySymbol + toHex(market.asset.name)
+const getToken = (market) => tokenMapping[market.id] ?? market.asset.currencySymbol + market.asset.name
 
 const getOptimBondTVL = async () => {
   const getLoans = async (pageIndex = 0, collectedLoans = []) => {
@@ -165,12 +165,4 @@ async function borrowed(api) {
   markets.forEach((market) => {
     add(api, market, market.borrow * 10 ** market.asset.decimals)
   })
-}
-
-function toHex(str) {
-  let hex = ''
-  for (let i = 0; i < str.length; i++) {
-    hex += str.charCodeAt(i).toString(16);
-  }
-  return hex
 }
