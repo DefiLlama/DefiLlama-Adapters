@@ -10,7 +10,7 @@ async function tvl() {
 const solvbtclstListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc-lst.json';
 
 async function evmTVL(api) {
-  let solvbtclst = await getConfig('solv-protocol/solv-btc-lst', solvbtclstListUrl)
+  let solvbtclst = await getConfig('solv-protocol/solv-btc-lst-evm', solvbtclstListUrl)
   let { depositAddress: owners, tokens } = solvbtclst[api.chain]?.otherDeposit ?? {}
   return api.sumTokens({ owners, tokens })
 }
