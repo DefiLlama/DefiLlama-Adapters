@@ -9,7 +9,15 @@ const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk');
-const { TOKEN_PROGRAM_ID, ASSOCIATED_PROGRAM_ID, } = require('@project-serum/anchor/dist/cjs/utils/token');
+
+/** Address of the SPL Token program */
+const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+
+/** Address of the SPL Token 2022 program */
+const TOKEN_2022_PROGRAM_ID = new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb')
+
+/** Address of the SPL Associated Token Account program */
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL')
 
 const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
@@ -282,7 +290,7 @@ async function sumTokens2({
     return tokensAndOwners.map(([mint, owner]) => {
       return PublicKey.findProgramAddressSync(
         [owner.toBuffer(), programBuffer, mint.toBuffer(),],
-        ASSOCIATED_PROGRAM_ID
+        ASSOCIATED_TOKEN_PROGRAM_ID
       )[0]
     })
   }
@@ -381,4 +389,7 @@ module.exports = {
   getStakedSol,
   getSolBalanceFromStakePool,
   getTokenSupplies,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
 };
