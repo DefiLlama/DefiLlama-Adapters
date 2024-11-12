@@ -39,9 +39,12 @@ const endpoint = (isClient) => {
 }
 
 const renecEndpoint = () => getEnv('RENEC_RPC')
+const eclipseEndpoint = () => getEnv('ECLIPSE_RPC')
+
 const endpointMap = {
   solana: endpoint,
   renec: renecEndpoint,
+  eclipse: eclipseEndpoint,
 }
 
 function getConnection(chain = 'solana') {
@@ -175,7 +178,12 @@ function sumTokensExport({ tokenAccounts, owner, owners, tokens, solOwners, blac
   return (api) => sumTokens2({ api, chain: api.chain, tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest })
 }
 
+function getEndpoint(chain) {
+  return endpointMap[chain]()
+}
+
 async function sumTokens2({
+  api,
   balances = {},
   tokensAndOwners = [],
   tokens = [],
@@ -186,7 +194,10 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
   computeTokenAccount = false,
+  chain = 'solana',
 }) {
+  if (api) chain = api.chain
+  const endpoint = getEndpoint(chain)
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
@@ -198,8 +209,9 @@ async function sumTokens2({
     const data = await getOwnerAllAccounts(_owners)
     for (const item of data) {
       if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
-      sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
+      sdk.util.sumSingleBalance(balances, chain + ':' + item.mint, item.amount)
     }
+    await transformBalancesOrig(chain, balances)
   }
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
@@ -212,20 +224,20 @@ async function sumTokens2({
     tokensAndOwners = getUnique(tokensAndOwners)
     log('total balance queries: ', tokensAndOwners.length)
     await runInChunks(tokensAndOwners, async (chunk) => {
-      const tokenBalances = await getTokenBalances(chunk)
-      transformBalances({ tokenBalances, balances, })
+      const tokenBalances = await getTokenBalances(chunk, chain)
+      transformBalances({ tokenBalances, balances, chain, })
     }, { sleepTime: 400 })
   }
 
   if (tokenAccounts.length) {
     tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
 
-    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
-    await transformBalances({ tokenBalances, balances, })
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError, chain })
+    await transformBalances({ tokenBalances, balances, chain, })
   }
 
   if (solOwners.length) {
-    const solBalance = await getSolBalances(solOwners)
+    const solBalance = await getSolBalances(solOwners, { chain })
     sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
   }
 
@@ -242,10 +254,10 @@ async function sumTokens2({
   }
 
   async function getOwnerAllAccounts(owners) {
-    console.log('fetching sol token balances for', owners.length, 'owners')
+    sdk.log('fetching sol token balances for', owners.length, 'owners', chain,)
     return runInChunks(owners, async (chunk) => {
       const body = chunk.map(i => formOwnerBalanceQuery(i))
-      const tokenBalances = await http.post(endpoint(), body)
+      const tokenBalances = await http.post(endpoint, body)
       return tokenBalances.map(i => i.result.value).flat().map(i => ({
         account: i.pubkey,
         mint: i.account.data.parsed.info.mint,
@@ -270,8 +282,8 @@ async function sumTokens2({
     }
   }
 
-  async function getSolBalances(accounts) {
-    const connection = getConnection()
+  async function getSolBalances(accounts, { chain} = {}) {
+    const connection = getConnection(chain)
 
     const balances = await runInChunks(accounts, async (chunk) => {
       chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
@@ -295,9 +307,10 @@ async function sumTokens2({
     })
   }
 
-  async function getTokenBalances(tokensAndAccounts) {
+  async function getTokenBalances(tokensAndAccounts, chain) {
+    const endpoint = getEndpoint(chain)
     const body = tokensAndAccounts.map(([token, account], i) => formTokenBalanceQuery(token, account, i))
-    const tokenBalances = await http.post(endpoint(), body);
+    const tokenBalances = await http.post(endpoint, body);
     const balances = {}
     tokenBalances.forEach(({ result: { value } = {} } = {}) => {
       if (!value) return;
@@ -322,8 +335,8 @@ async function sumTokens2({
   }
 }
 
-async function transformBalances({ tokenBalances, balances = {}, }) {
-  await transformBalancesOrig('solana', tokenBalances)
+async function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
+  await transformBalancesOrig(chain, tokenBalances)
   for (const [token, balance] of Object.entries(tokenBalances))
     sdk.util.sumSingleBalance(balances, token, balance)
   return balances
