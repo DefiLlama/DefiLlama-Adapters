@@ -1,12 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
-liquidVaults = [
+const liquidVaults = [
   "0xf0bb20865277aBd641a307eCe5Ee04E79073416C",
   "0x08c6F91e2B681FaF5e17227F2a44C307b3C1364C"
 ]
 
-liquidAccountants = [
+const liquidAccountants = [
   "0x0d05D94a5F1E76C18fbeB7A13d17C8a314088198",
   "0xc315D6e14DDCDC7407784e2Caf815d131Bc1D3E7"
 ]
