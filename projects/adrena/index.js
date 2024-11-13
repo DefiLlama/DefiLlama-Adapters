@@ -6,20 +6,11 @@ const ADDRESSES = require('../helper/coreAssets.json')
 async function staking() {
   const connection = getConnection("solana");
 
-  const res = await connection.getMultipleAccountsInfo([
-    // ADX Staked Tokens
-    new PublicKey('9nD5AenzdbhRqWo7JufdNBbC4VjZ5QH7jzLuvPZy2rhb'),
-
-    // ALP Staked Tokens
-    new PublicKey('HYDnBK56NXcdaeKzVqTRBbm4aaRmfy2oErjrb1YfH7Zg'),
-  ]);
+  const res = await connection.getAccountInfo(new PublicKey('9nD5AenzdbhRqWo7JufdNBbC4VjZ5QH7jzLuvPZy2rhb'));
 
   return {
     // ADX
-    'solana:AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw': decodeAccount('tokenAccount', res[0]).amount.toString(),
-    
-    // ALP
-    'solana:4yCLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj': decodeAccount('tokenAccount', res[1]).amount.toString(),
+    'solana:AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw': decodeAccount('tokenAccount', res).amount.toString(),
   };
 }
 
