@@ -1493,7 +1493,8 @@
     "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
     "USDT": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
-    "rETH": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c"
+    "rETH": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c",
+    "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"
   },
   "sei": {
     "SEI": "usei",
