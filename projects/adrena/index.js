@@ -4,14 +4,7 @@ const { decodeAccount } = require('../helper/utils/solana/layout')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 async function staking() {
-  const connection = getConnection("solana");
-
-  const res = await connection.getAccountInfo(new PublicKey('9nD5AenzdbhRqWo7JufdNBbC4VjZ5QH7jzLuvPZy2rhb'));
-
-  return {
-    // ADX
-    'solana:AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw': decodeAccount('tokenAccount', res).amount.toString(),
-  };
+  return sumTokens2({ tokenAccounts: ['9nD5AenzdbhRqWo7JufdNBbC4VjZ5QH7jzLuvPZy2rhb']})
 }
 
 async function tvl(api) {
