@@ -1,7 +1,7 @@
 const { sumTokens2, getConnection } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js")
 const { decodeAccount } = require('../helper/utils/solana/layout')
-const BN = require("bn.js");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 async function staking() {
   const connection = getConnection("solana");
@@ -23,27 +23,22 @@ async function staking() {
   };
 }
 
-async function tvl() {
+async function tvl(api) {
   const connection = getConnection("solana");
 
-  const [aum, rewards] = await Promise.all([
-    // Load all tokens belonging to the vault
-    sumTokens2({ 
-      owner: '4o3qAErcapJ6gRLh1m1x4saoLLieWDu7Rx3wpwLc7Zk9',
+  await sumTokens2({ 
+    owner: '4o3qAErcapJ6gRLh1m1x4saoLLieWDu7Rx3wpwLc7Zk9',
+    balances: api.getBalances(),
+    blacklistedTokens: [
+      'AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw',  // ADX
+      '4yCLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj',  // ALP
+    ],
+  });
 
-      // Do not consider ADX and ALP as AUM
-      blacklistedTokens: ['AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw', '4yCLi5yWGzpTWMQ1iWHG5CrGYAdBkhyEdsuSugjDUqwj'], 
-    }),
-
-    // Load rewards
-    connection.getAccountInfo(new PublicKey('5GAFPnocJ4GUDJJxtExBDsH5wXzJd3RYzG8goGGCneJi')),
-  ]);
+  const rewards = await connection.getAccountInfo(new PublicKey('5GAFPnocJ4GUDJJxtExBDsH5wXzJd3RYzG8goGGCneJi'));
 
   // Remove rewards from AUM
-  aum['solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'] = new BN(aum['solana:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'])
-                                                                    .sub(decodeAccount('tokenAccount', rewards).amount).toString();
-
-  return aum ;
+  api.add(ADDRESSES.solana.USDC, +decodeAccount('tokenAccount', rewards).amount.toString() * -1)
 }
 
 module.exports = {
