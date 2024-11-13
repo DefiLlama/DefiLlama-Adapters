@@ -8,6 +8,9 @@ const srxToken = "0xdef49c195099e30e41b2df7dad55e0bbbe60a0c5";
 
 
 module.exports = {
+  hallmarks: [
+    [1675209600, "Rug Pull"]
+  ],
   bsc: {
     staking: staking(bscStaking, srxToken, "bsc", undefined, undefined),
     tvl: gmxExports({ vault: bscVault })

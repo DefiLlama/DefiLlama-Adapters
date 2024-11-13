@@ -1,4 +1,5 @@
-const { sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
@@ -20,7 +21,12 @@ const chains = [
   "xdai", //G
   "moonbeam",
   "celo",
-  "kava"
+  "kava",
+  "base",
+  "fraxtal",
+  "xlayer",
+  "bsc",
+  "mantle"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -41,7 +47,7 @@ async function getDecimals(chain, token) {
 
 const gasTokens = [
   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-  '0x0000000000000000000000000000000000000000',
+  ADDRESSES.null,
 ]
 
 async function getNames(chain, tokens) {
@@ -83,17 +89,25 @@ function getRegistryType(registryId) {
 }
 
 async function getPools(block, chain) {
-  let { registriesMapping } = contracts[chain]
+  let { registriesMapping, addressProvider } = contracts[chain]
   if (!registriesMapping) {
     registriesMapping = {};
-    (await sdk.api.abi.multiCall({
-      block, chain,
-      calls: Object.values(registryIds).map(r => ({ params: r })),
-      target: contracts[chain].addressProvider,
-      abi: abi.get_id_info
-    })).output
-      .filter(r => r.output.addr !== nullAddress)
-      .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    if(addressProvider){
+      (await sdk.api.abi.multiCall({
+        block, chain,
+        calls: Object.values(registryIds).map(r => ({ params: r })),
+        target: addressProvider,
+        abi: abi.get_id_info
+      })).output
+        .filter(r => r.output.addr !== nullAddress)
+        .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    }
+  }
+  if (contracts[chain].CurveStableswapFactoryNG) {
+    registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
+  }
+  if (contracts[chain].CurveL2TricryptoFactory) {
+    registriesMapping.CurveL2TricryptoFactory = contracts[chain].CurveL2TricryptoFactory
   }
   const poolList = {}
   await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
@@ -151,7 +165,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
   const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
   let nCoins = {}
-  if (registry !== 'cryptoFactory')
+  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory'].includes(registry))
     nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
 
   let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
@@ -170,7 +184,8 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 }
 
 const blacklists = {
-  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7', '0xEf1385D2b5dc6D14d5fecB86D53CdBefeCA20fcC'],
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
+  arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378'],
 }
 
 const config = {
@@ -178,6 +193,7 @@ const config = {
     plainFactoryConfig: [
       { plainFactory: '0x528baca578523855a64ee9c276826f934c86a54c', fromBlock: 17182168 },
       { plainFactory: '0x0145fd99f1dd6e2491e44fca608c481c9c5b97a9', fromBlock: 17182168 },
+      { plainFactory: '0x6a8cbed756804b16e05e741edabd5cb544ae21bf', fromBlock: 17182168 },
     ]
   },
 }
@@ -203,7 +219,8 @@ async function addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig 
 
 function tvl(chain) {
   const { plainFactoryConfig = [] } = config[chain] ?? {}
-  return async (_t, _e, { [chain]: block }, { api }) => {
+  return async (api) => {
+    const { block } = api
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolLists = await getPools(block, chain);
@@ -234,32 +251,21 @@ const chainTypeExports = chains => {
 
 module.exports = chainTypeExports(chains);
 
-
 module.exports.ethereum["staking"] = staking(
   contracts.ethereum.veCRV,
   contracts.ethereum.CRV
 );
 
 module.exports.harmony = {
-  tvl: async (ts, ethB, chainB) => {
-    if (ts > 1655989200) {
+  tvl: async (api) => {
+    if (api.timestamp > 1655989200) {
       // harmony hack
       return {};
     }
-    const block = chainB.harmony
-    const balances = {};
-    await sumTokensSharedOwners(
-      balances,
-      [
-        "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
-        "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
-      ],
-      ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
-      block,
-      "harmony",
-      addr => `harmony:${addr}`
-    );
-    return balances;
+    return api.sumTokens({ owner: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023', tokens:  [
+      "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
+      "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
+    ]})
   }
 };
 
@@ -269,5 +275,6 @@ module.exports.hallmarks = [
   [1642374675, "MIM depeg"],
   [1651881600, "UST depeg"],
   [1654822801, "stETH depeg"],
-  [1667692800, "FTX collapse"]
+  [1667692800, "FTX collapse"],
+  [1690715622, "Reentrancy hack"]
 ];

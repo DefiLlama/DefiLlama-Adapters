@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -123,14 +124,14 @@ async function getBorrowed(block, chain, kMcd) {
     chain
   })).output;
 
-  sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", BigNumber(totalBorrows).div(1e12).toFixed(0));
+  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDT, BigNumber(totalBorrows).div(1e12).toFixed(0));
 
   return balances;
 }
 
 const ethUnitroller = "0xbb7d94a423f4978545ecf73161f0678e8afd1a92";
 const keth = "0xa58e822de1517aae7114714fb354ee853cd35780";
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const weth = ADDRESSES.ethereum.WETH;
 const ethXKine = "0xa8d7643324df0f38764f514eb1a99d8f379cc692";
 const ethKine = "0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d";
 const ethkMcd = "0xaf2617aa6fd98581bb8cb099a16af74510b6555f";
@@ -145,7 +146,7 @@ async function ethBorrow(timestamp, block) {
 
 const bscUnitroller = "0x3c2ddd486c07343b711a4415cdc9ab90ed32b571";
 const kbnb = "0x5fbe4eb536dadbcee54d5b55ed6559e29c60b055";
-const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+const wbnb = ADDRESSES.bsc.WBNB;
 const bscXKine = "0x8f5abd0d891d293b13f854700ff89210da3d5ba3";
 const bscKine = "0xbfa9df9ed8805e657d0feab5d186c6a567752d7f";
 const bsckMcd = "0x4f1ab95b798084e44d512b8b0fed3ef933177986";
@@ -160,7 +161,7 @@ async function bscBorrowed(timestamp, block, chainBlocks) {
 
 const polygonUnitroller = "0xdff18ac4146d67bf2ccbe98e7db1e4fa32b96881";
 const kmatic = "0xf186a66c2bd0509beaafca2a16d6c39ba02425f9";
-const wmatic = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
+const wmatic = ADDRESSES.polygon.WMATIC_2;
 const polygonXKine = "0x66a782c9a077f5adc988cc0b5fb1cdcc9d7adeda";
 const polygonKine = "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87";
 const polygonkMcd = "0xcd6b46443becad4996a70ee3d8665c0b86a0c54c";
@@ -175,7 +176,7 @@ async function polygonBorrowed(timestamp, block, chainBlocks) {
 
 const avaxUnitroller = "0x0ec3126390c606be63a0fa6585e68075f06679c6";
 const kavax = "0x0544be6693763d64c02f49f16986ba1390a2fc39";
-const wavax = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
+const wavax = ADDRESSES.avax.WAVAX;
 const avaxXKine = "0x68b9737ae74cf1a169890042f1aa359647aa3e47";
 const avaxKine = "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87";
 const avaxkMcd = "0xcd6b46443becad4996a70ee3d8665c0b86a0c54c";

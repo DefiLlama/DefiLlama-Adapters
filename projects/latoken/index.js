@@ -1,6 +1,10 @@
 const { cexExports } = require("../helper/cex");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
+  bitcoin: {
+    owners: bitcoinAddressBook.latoken
+  },
   ethereum: {
     owners: [
       "0x8D056D457a52c4dAF71CEf45F540a040c143Ea05", //eth hot wallet
@@ -49,9 +53,9 @@ const config = {
       "0xd76D939B455743e96adbCdf800627b11F3446780", //token swap wallet
     ],
   },
-  celo: {
-    owners: ["0xEeC02a6D1a7F9f534b9609c8EE30B9cF9A7fe1B3"],
-  },
+  // celo: {
+  //   owners: ["0xEeC02a6D1a7F9f534b9609c8EE30B9cF9A7fe1B3"],
+  // },
   elrond: {
     owners: ["erd1z5xjeu4xw32jkckhj9jpc9dymj6a9h8yxtch96e43ncp6fhuzpnqshqutj"],
   },
@@ -70,6 +74,9 @@ const config = {
       "0xE69963CE13ED742639C8287913682bC008B3e622", //hot wallet
     ],
   },
+  // lachain: {
+  //   owners: ["0xEFf6E17Fdc68d56812DA40f7d05FC8cDfd212440"],
+  // },
   // filecoin: {
   //   owners: ["f1iy5dvp6ggzhtraxodbfdkbiw5s67mhff4w43pai"], //hot wallet
   // },

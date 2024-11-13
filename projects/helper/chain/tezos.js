@@ -1,11 +1,12 @@
+const ADDRESSES = require('../coreAssets.json')
 const http = require('../http')
 const sdk = require('@defillama/sdk')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const RPC_ENDPOINT = 'https://api.tzkt.io'
 
-const usdtAddressTezos = 'KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'
-const transformAddressDefault = t => 'tezos:' + t
+const usdtAddressTezos = ADDRESSES.tezos.USDt
+const transformAddressDefault = t => t == "tezos" ? "coingecko:tezos" : 'tezos:' + t
 
 const tokenBlacklist = [
   'KT18quSVkqhbJS38d5sbRAEkXd5GoNqmAoro',
@@ -55,6 +56,7 @@ async function getBigMapById(id, limit = 1000, offset = 0, key, value) {
   let map_entry;
   const mapping = {};
   for (map_entry of response) {
+    if (typeof map_entry.key === 'object' && map_entry.hash) map_entry.key = map_entry.hash;
     mapping[map_entry.key] = map_entry.value;
   }
   return mapping;
@@ -110,4 +112,5 @@ module.exports = {
   addDexPosition,
   resolveLPPosition,
   getBigMapById,
+  getTezosBalance,
 }

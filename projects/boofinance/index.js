@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const token0Abi = 'address:token0'
@@ -11,12 +12,12 @@ const stakingAddress = "0x67712c62d1DEAEbDeF7401E59a9E34422e2Ea87c";
 const hauntedHouse = "0xB178bD23876Dd9f8aA60E7FdB0A2209Fe2D7a9AB";
 
 const transform = {
-  "0x4f60a160d8c2dddaafe16fcc57566db84d674bd6": "harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f",
-  "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e": "avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664"
+  "0x4f60a160d8c2dddaafe16fcc57566db84d674bd6": "harmony:" + ADDRESSES.harmony.JEWEL,
+  [ADDRESSES.avax.USDC]: "avax:" + ADDRESSES.avax.USDC_e
 }
 
-const joe = "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd";
-const xjoe = "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33";
+const joe = ADDRESSES.avax.JOE;
+const xjoe = ADDRESSES.avax.xJOE;
 
 async function calcTvl(block, chain, pool2, api) {
   let balances = {};
@@ -73,18 +74,18 @@ async function calcTvl(block, chain, pool2, api) {
   return balances;
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
-  return await calcTvl(chainBlocks.avax, "avax", false, api);
+async function tvl(api) {
+  return await calcTvl(api.block, "avax", false, api);
 }
 
-async function pool2(timestamp, block, chainBlocks, { api }) {
-  return await calcTvl(chainBlocks.avax, "avax", true, api);
+async function pool2(api) {
+  return await calcTvl(api.block, "avax", true, api);
 }
 
 module.exports = {
   avax: {
     tvl,
     pool2,
-    staking: staking(stakingAddress, boofi, "avax")
+    staking: staking(stakingAddress, boofi)
   }
 }

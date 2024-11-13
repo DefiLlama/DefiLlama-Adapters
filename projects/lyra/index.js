@@ -1,5 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
-const { sumTokens } = require('../helper/unwrapLPs')
 
 const v1_0_Pools = ['0x7Af4e1cE484f40D927b9C90fB6905Df4376fc3F6', '0xd7d974E81382D05E8D9fc6d0d17d0d852e9806dd']
 const v1_1_LiquidityPool = [
@@ -34,36 +34,44 @@ const v1_3_arb_LiquidityPool = [
     '0xec6f3ef9481e7b8484290edbae2cedcdb0ce790e', //WBTC
     ]
 
-const op_pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral].map(t=>t.toLowerCase()))]
+const v2_op_ShortCollateral = [
+    '0x8512028339bb67aee47c06a298031d91bb7d15ba', //WETH
+    '0xa95c6d6a2765627a854960e9ee96f607b857385a', //WBTC
+    '0x292a5929bd150d28eda3c17d9b7c754968b2899d', //OP
+    '0xa49f2ea43b445f9a2467b7279cfa1f6a0c2e3f4f', //ARB
+    ]
+const v2_op_LiquidityPool = [
+    '0xb8e90fd247700de65450aacd4a47b2948dc59fc1', //WETH
+    '0xacacff03241256304e841e89c13319eae09f14b3', //WBTC
+    '0x12a4fd54aa321eb16b45310ccb177bd87c6ae447', //OP
+    '0xdd0d125475453767e65f1a4dd30b62699fdcc9f5', //ARB
+    ]
+
+const op_pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral, ...v2_op_ShortCollateral, ...v2_op_LiquidityPool].map(t=>t.toLowerCase()))]
 
 const arb_pools = [...new Set([...v1_3_arb_ShortCollateral, ...v1_3_arb_LiquidityPool].map(t=>t.toLowerCase()))]
 
-const op_tokens = ['0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9', '0xe405de8f52ba7559f9df3c368500b6e6ae6cee49',
-    '0xc5db22719a06418028a40a9b5e9a7c02959d0d08', '0x298b9b95708152ff6968aafd889c6586e9169f1d']
+const op_tokens = [ADDRESSES.optimism.sUSD, ADDRESSES.optimism.sETH,
+    '0xc5db22719a06418028a40a9b5e9a7c02959d0d08', '0x298b9b95708152ff6968aafd889c6586e9169f1d', 
+    ADDRESSES.optimism.OP, ADDRESSES.optimism.WBTC, 
+    ADDRESSES.optimism.WETH, ADDRESSES.optimism.USDC]
 
-const arb_tokens = ['0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-    '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f']
+const arb_tokens = [ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.WETH,
+    ADDRESSES.arbitrum.WBTC]
 
 const L2toL1Synths = {
-    '0xe405de8f52ba7559f9df3c368500b6e6ae6cee49': '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
-    '0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9': '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+    [ADDRESSES.optimism.sETH]: '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
+    [ADDRESSES.optimism.sUSD]: ADDRESSES.ethereum.sUSD,
     '0x298b9b95708152ff6968aafd889c6586e9169f1d': '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6',
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08': '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6'
 }
 
-async function tvlOptimism(ttimestamp, _b, {optimism: block}){
-    const balances = {}
-    const transform = (addr)=>{
-        return L2toL1Synths[addr] || addr;
-    }
-    await sumTokens(balances, op_tokens.map(t=>op_pools.map(p=>[t,p])).flat(), block, 'optimism', transform)
-    return balances
+async function tvlOptimism(api){
+    return api.sumTokens({ owners: op_pools, tokens: op_tokens  })
 }
 
-async function tvlArbitrum(ttimestamp, _b, {arbitrum: block}){
-    const balances = {}
-    await sumTokens(balances, arb_tokens.map(t=>arb_pools.map(p=>[t,p])).flat(), block, 'arbitrum')
-    return balances
+async function tvlArbitrum(api){
+    return api.sumTokens({ owners: arb_pools, tokens: arb_tokens  })
 }
 
 module.exports = {
@@ -75,8 +83,8 @@ module.exports = {
         tvl:tvlArbitrum
     },
     ethereum:{
-        tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "ethereum"),
-        staking: staking("0xcb9f85730f57732fc899fb158164b9ed60c77d49", "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf", "ethereum")
+        tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", ADDRESSES.ethereum.USDC),
+        staking: staking("0xcb9f85730f57732fc899fb158164b9ed60c77d49", "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf")
     },
  hallmarks:[
     [1635218174, "Lyra Token"],

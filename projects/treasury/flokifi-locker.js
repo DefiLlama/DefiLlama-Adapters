@@ -1,6 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasuryETH = "0x2b9d5c7f2EAD1A221d771Fb6bb5E35Df04D60AB0";
+const treasuryETH2 = "0xea9a5a3Ac7545E1Ddce79fC5803Df0f317A3D0f6"
 const flokiETH = "0xcf0C122c6b73ff809C693DB761e7BaeBe62b6a2E"
 
 const treasuryBSC = "0x17e98a24f992BB7bcd62d6722d714A3C74814B94"
@@ -11,18 +13,18 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         "0xca7c2771D248dCBe09EABE0CE57A62e18dA178c0",
-        "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.USDC,
         "0x1BD708E01E96d426652b0D50b8c896eaeefee36d"
      ],
-    owners: [treasuryETH],
-    ownTokens: [flokiETH],
+    owners: [treasuryETH, treasuryETH2],
+    ownTokens: [flokiETH, '0x4507cef57c46789ef8d1a19ea45f4216bae2b528'],
   },
   bsc: {
     tokens: [ 
         nullAddress,
      ],
     owners: [treasuryBSC],
-    ownTokens: [flokiBSC],
+    ownTokens: [flokiBSC, '0x4507cef57c46789ef8d1a19ea45f4216bae2b528'],
   },
 })

@@ -12,6 +12,7 @@ const {
 function bentobox(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
+    if (chain === 'moonriver') return {}
     const transform = await getChainTransform(chain);
     let block = await getBlock(timestamp, chain, chainBlocks)
     block = block - 1000;

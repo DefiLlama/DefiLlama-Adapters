@@ -1,16 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
-const { getTokenSupply } = require('../helper/solana')
 
-const ethGraphUrl = "https://api.thegraph.com/subgraphs/name/renproject/renvm";
+const ethGraphUrl = sdk.graph.modifyEndpoint('AJaQdD8DUunuwHCbAsZk5h62AfyNG1etRtK9EcDH7gwH');
 const bscGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-binance-smart-chain";
+    sdk.graph.modifyEndpoint('6UCMxzH5LPvZrLhcpSVrSDhoKRYJchvHM7vnTUo2bBp2');
 const avalancheGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-avalanche";
+    sdk.graph.modifyEndpoint('GBRcEpUZTHMyjmtkPsHMYmHuPtcLFqnU5SPvpaLdfmau');
 const fantomGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-fantom";
+    sdk.graph.modifyEndpoint('2TV9sKK7fLvfsbnUox6irt3XbiHAzw1fvbh9j8vnBXmH');
 const polygonGraphUrl =
-    "https://api.thegraph.com/subgraphs/name/renproject/renvm-polygon";
+    sdk.graph.modifyEndpoint('GQCGcDW16JfawMXegTemUte8PPyJQVvtF6kACvMYwX8V');
 const graphQuery = gql`
   {
     assets {
@@ -96,7 +96,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
 async function arbitrum(timestamp, ethBlock, chainBlocks) {
     return {
         "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": (await sdk.api.erc20.totalSupply({
-            target: "0xdbf31df14b66535af65aac99c32e9ea844e14501",
+            target: ADDRESSES.fantom.renBTC,
             chain: "arbitrum",
             block: chainBlocks.arbitrum
         })).output
@@ -151,21 +151,17 @@ async function solana() {
         ["renLUNA", "8wv2KAykQstNAj2oW6AHANGBiFKVFhvMiyyzzjhkmGvE"],
     ]
     const balances = {}
-    await Promise.all(tokens.map(async token => {
-        balances[symbol(token[0])] = await getTokenSupply(token[1])
-    }))
     return balances
 }
 
 module.exports = {
-    timetravel: true,
     solana: {
         tvl: solana
     },
     ethereum: {
         tvl: eth,
     },
-    avax:{
+    avax: {
         tvl: avax,
     },
     bsc: {
@@ -187,3 +183,6 @@ module.exports = {
         tvl: optimism
     },
 };
+
+
+Object.values(module.exports).forEach(chainExports => chainExports.tvl = () => ({}))

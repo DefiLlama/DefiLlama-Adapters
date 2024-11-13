@@ -1,30 +1,55 @@
 //20230428 initial release: simple and clear
+//20230606 update: add chain: zkSync Era
+//20240321 update: add chain: scroll, base, mantle, manta, polygon_zkevm
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
-
-const ownerArbitrum = '0x7a08b29A7Ad4A19A5ECa0c82F5F082872488D135'; // contract address
-const tokensArbitrum = [
-  '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', // USDC
-  '0x0000000000000000000000000000000000000000', // ETH
-  '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', // USDT
-  '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f', // WBTC
-];
-
-const ownerAvalanche = '0xd8b0D18faE7eA29F2AD95d01FFb479E0021a9A5e'; // contract address
-const tokensAvalanche = [
-  '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC
-  '0x0000000000000000000000000000000000000000', // AVAX
-  '0x152b9d0FdC40C096757F570A51E494bd4b943E50', // BTC.b
-  '0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB', // WETH.e
-  '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7', // USDt
-];
 
 module.exports = {
   methodology: "TVL is equal to users' deposits minus withdrawals",
   start: 1641625200, // Jan-08-2022 07:00:00 AM +UTC
-  arbitrum: {
-    tvl: sumTokensExport({ owner:ownerArbitrum, tokens:tokensArbitrum })
-  },
-  avax: {
-    tvl: sumTokensExport({ owner:ownerAvalanche, tokens:tokensAvalanche })
-  },
-};
+}
+
+const config = {
+  arbitrum: { owner: '0x7a08b29A7Ad4A19A5ECa0c82F5F082872488D135', tokens: [
+    ADDRESSES.arbitrum.USDC, // USDC.e
+    ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
+    ADDRESSES.null, // ETH
+    ADDRESSES.arbitrum.USDT, // USDT
+    ADDRESSES.arbitrum.WBTC, // WBTC
+  ] },
+  avax: { owner: '0xd8b0D18faE7eA29F2AD95d01FFb479E0021a9A5e', tokens: [
+    ADDRESSES.avax.USDC, // USDC
+    ADDRESSES.null, // AVAX
+    ADDRESSES.avax.BTC_b, // BTC.b
+    ADDRESSES.avax.WETH_e, // WETH.e
+    ADDRESSES.avax.USDt, // USDt
+  ] },
+  era: { owner: '0xa1795B95C543428AFf866dA613e43895457bf1C1', tokens: [
+    ADDRESSES.era.USDC, // USDC
+    ADDRESSES.null, // ETH
+  ] },
+  scroll: { owner: '0xaA830eA4Ca3C7b13be85a8D3ab8441db5cA0Cc5F', tokens: [
+    ADDRESSES.scroll.USDC, // USDC
+    ADDRESSES.null, // ETH
+  ] },
+  base: { owner: '0xaA830eA4Ca3C7b13be85a8D3ab8441db5cA0Cc5F', tokens: [
+    ADDRESSES.base.USDC, // USDC
+    ADDRESSES.null, // ETH
+  ] },
+  mantle: { owner: '0x8712FA9569658c27556d95C820f775939513faEf', tokens: [
+    ADDRESSES.mantle.USDC, // USDC
+  ] },
+  manta: { owner: '0xaA830eA4Ca3C7b13be85a8D3ab8441db5cA0Cc5F', tokens: [
+    ADDRESSES.manta.USDC, // USDC
+    "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5", // MANTA
+    "0xEc901DA9c68E90798BbBb74c11406A32A70652C3", // STONE
+  ] },
+  polygon_zkevm: { owner: '0xaA830eA4Ca3C7b13be85a8D3ab8441db5cA0Cc5F', tokens: [
+    ADDRESSES.polygon_zkevm.USDC, // USDC
+    ADDRESSES.polygon_zkevm.USDC_CIRCLE, //USDC.E
+  ] },
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl: sumTokensExport(config[chain]) }
+})

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const { default: BigNumber } = require("bignumber.js");
 const { getResource, getResources, coreTokens } = require("../helper/chain/aptos");
@@ -136,7 +137,11 @@ async function staking() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1678320000, "Rug Pull"]
+  ],
   timetravel: false,
+  deadFrom: 1678320000,
   aptos: {
     tvl,
     staking

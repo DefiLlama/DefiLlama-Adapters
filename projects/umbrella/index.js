@@ -17,7 +17,7 @@ module.exports = {
     pool2: staking(pool2StakingContract, UMB_WETH_UNIV2),
   },
   bsc: {
-    staking: staking(stakingContract_bsc, UMB_bsc, "bsc"),
+    staking: staking(stakingContract_bsc, UMB_bsc),
   },
   methodology: "Counts liquidty on the staking and pool2 only",
 };

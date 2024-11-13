@@ -6,16 +6,14 @@ const {
   MAYC_VAULTS,
   BAYC_APE_STAKING_STRATEGY,
   MAYC_APE_STAKING_STRATEGY,
-  BAKC_BAYC_STAKING_STRATEGY,
-  BAKC_MAYC_STAKING_STRATEGY,
   APE_STAKING,
+  P2P_APE_STAKING,
   STAKING_CONTRACT,
   APE,
-  BAKC,
   JPEG,
   PETH_POOL,
   USD_POOL,
-  PETH_ETH_F,
+  PETH_WETH_F,
   PUSD_USD_F,
   artBlockOwners,
   LP_STAKING,
@@ -88,123 +86,97 @@ async function getApeDepositAddresses(api) {
 /**
  * @returns the amount of JPEG locked on JPEG'd (trait or ltv boosts)
  */
-async function stakingJPEGD(_, _1, _2, { api }) {
+async function stakingJPEGD(api) {
   const providersAddresses = await api.multiCall({
     abi: "address:nftValueProvider",
     calls: VAULTS_ADDRESSES,
   });
 
-  providersAddresses.push(STAKING_CONTRACT)
+  providersAddresses.push(STAKING_CONTRACT);
 
-  return sumTokens2({ owners: providersAddresses, tokens: [JPEG], api })
+  return sumTokens2({ owners: providersAddresses, tokens: [JPEG], api });
 }
 
 /**
  * @returns the amount of $APE tokens staked on JPEG'd
  */
 async function getStakedApeAmount(api) {
-  const apeDepositAddresses = await getApeDepositAddresses(api);
-  const apeStakes = await api.multiCall({
-    abi: abi.APE_STAKING.stakedTotal,
-    target: APE_STAKING,
-    calls: apeDepositAddresses,
-  })
-  apeStakes.forEach(v => api.add(APE, v))
-}
-
-/**
- * @returns the amount of wallet staked BAKC NFTs on JPEG'd
- */
-async function getWalletStakedBakcCount(api) {
-  const apeDepositAddresses = await getApeDepositAddresses(api);
-
-  const bakcBalances = await api.multiCall({
-    abi: "erc20:balanceOf",
-    target: BAKC,
-    calls: apeDepositAddresses,
-  });
-
-  const bakcIdsBN = await api.multiCall({
-    abi: abi.ERC721.tokenOfOwnerByIndex,
-    target: BAKC,
-    calls: apeDepositAddresses
-      .map((owner, i) =>
-        Array.from({ length: bakcBalances[i].toString() }).map((_, j) => ({
-          params: [owner, j],
-        }))
-      )
-      .flat(),
-  });
-
-  const bakcIds = Array.from(new Set(bakcIdsBN.map((id) => id.toString())));
-  const ownerBakcIndexTuples = bakcIds.map((bakcId) => [
-    "0x0000000000000000000000000000000000000000", // random owner address, it's not used. just for consistent parameters
-    bakcId.toString(),
-  ]);
-
-  const [isNonLegacyBaycStaked, isNonLegacyMaycStaked] = await Promise.all([
-    api.multiCall({
-      abi: abi.STRATEGY_ABI.isDeposited,
-      calls: ownerBakcIndexTuples.map((params) => ({
-        target: BAKC_BAYC_STAKING_STRATEGY,
-        params,
-      })),
-    }),
-    api.multiCall({
-      abi: abi.STRATEGY_ABI.isDeposited,
-      calls: ownerBakcIndexTuples.map((params) => ({
-        target: BAKC_MAYC_STAKING_STRATEGY,
-        params,
-      })),
+  const [apeDepositAddresses, lastNonce] = await Promise.all([
+    getApeDepositAddresses(api),
+    api.call({
+      target: P2P_APE_STAKING,
+      abi: abi.P2P_APE_STAKING_ABI.nextNonce,
     }),
   ]);
 
-  bakcIds.forEach((_, i) => {
-    const legacyBakc = !isNonLegacyBaycStaked[i] && !isNonLegacyMaycStaked[i];
-    if (legacyBakc) api.add(BAKC, 1)
-  });
+  const [apeStakes, offers] = await Promise.all([
+    api.multiCall({
+      abi: abi.APE_STAKING.stakedTotal,
+      target: APE_STAKING,
+      calls: apeDepositAddresses,
+    }),
+    api.multiCall({
+      abi: abi.P2P_APE_STAKING_ABI.offers,
+      target: P2P_APE_STAKING,
+      calls: new Array(Number(lastNonce)).fill(null).map((_, i) => i),
+    }),
+  ]);
+
+  apeStakes.forEach((v) => api.add(APE, v));
+  offers.forEach((v) => api.add(APE, v.apeAmount));
 }
 
 async function vaultsTvl(api) {
   // Fetch positions from vaults
-  const positions = await api.multiCall({ calls: VAULTS_ADDRESSES, abi: abi.VAULT_ABI.totalPositions, })
-  let tokens = await api.multiCall({ abi: 'address:nftContract', calls: VAULTS_ADDRESSES })
-  tokens = tokens.map(i => i.toLowerCase())
-  const transform = t => helperToNftMapping[t.toLowerCase()] || t
+  const positions = await api.multiCall({
+    calls: VAULTS_ADDRESSES,
+    abi: abi.VAULT_ABI.totalPositions,
+  });
+  let tokens = await api.multiCall({
+    abi: "address:nftContract",
+    calls: VAULTS_ADDRESSES,
+  });
+  tokens = tokens.map((i) => i.toLowerCase());
+  const transform = (t) => helperToNftMapping[t.toLowerCase()] || t;
 
   tokens.forEach((v, i) => {
     if (artBlockOwners.has(v)) return;
-    api.add(transform(v), positions[i])
-  })
+    api.add(transform(v), positions[i]);
+  });
 }
-
 
 async function autocompoundingTvl(api) {
-  const curveBalApi = 'function balances(uint256) view returns (uint256)'
+  const curveBalApi = "function balances(uint256) view returns (uint256)";
   const [
-    ethInPETHFactory, pethGaugeSupply, pethGaugeBalance,
-    usdInPUSDFactory, pusdGaugeSupply, pusdGaugeBalance,
-   ] = await api.batchCall([
-    { target: PETH_POOL, abi: curveBalApi, params: [0]},
-    { target: PETH_POOL, abi: 'erc20:totalSupply'},
-    { target: PETH_ETH_F, abi: 'erc20:balanceOf', params: [LP_STAKING]},
-    { target: USD_POOL, abi: curveBalApi, params: [1]},
-    { target: USD_POOL, abi: 'erc20:totalSupply'},
-    { target: PUSD_USD_F, abi: 'erc20:balanceOf', params: [LP_STAKING]},
-   ])
-   
-   api.add(nullAddress, ethInPETHFactory * pethGaugeSupply / pethGaugeSupply)
-   api.add('0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490', usdInPUSDFactory * pusdGaugeBalance / pusdGaugeSupply)
+    ethInPETHFactory,
+    pethGaugeSupply,
+    pethGaugeBalance,
+    usdInPUSDFactory,
+    pusdGaugeSupply,
+    pusdGaugeBalance,
+  ] = await api.batchCall([
+    { target: PETH_POOL, abi: curveBalApi, params: [0] },
+    { target: PETH_POOL, abi: "erc20:totalSupply" },
+    { target: PETH_WETH_F, abi: "erc20:balanceOf", params: [LP_STAKING] },
+    { target: USD_POOL, abi: curveBalApi, params: [1] },
+    { target: USD_POOL, abi: "erc20:totalSupply" },
+    { target: PUSD_USD_F, abi: "erc20:balanceOf", params: [LP_STAKING] },
+  ]);
+
+  api.add(nullAddress, (ethInPETHFactory * pethGaugeSupply) / pethGaugeSupply);
+  api.add(
+    "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+    (usdInPUSDFactory * pusdGaugeBalance) / pusdGaugeSupply
+  );
 }
 
-async function tvl(ts, b, cb, { api }) {
+async function tvl(api) {
   await Promise.all([
     getStakedApeAmount(api),
-    getWalletStakedBakcCount(api),
     vaultsTvl(api),
     autocompoundingTvl(api),
-    sumTokens2({ api, resolveArtBlocks: true, owners: [...artBlockOwners], }),
+    sumTokens2({ api, resolveArtBlocks: true, owners: [...artBlockOwners] }),
   ]);
 }
 
-module.exports = { tvl, stakingJPEGD, };
+module.exports = { tvl, stakingJPEGD };

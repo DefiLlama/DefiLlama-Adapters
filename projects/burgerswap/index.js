@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { getUniTVL } = require('../helper/unknownTokens')
@@ -7,7 +8,7 @@ const stakingContract = "0x9154c2684aeF8d106babcB19Aa81d4FabF7581ec";
 const BURGER = "0xae9269f27437f0fcbc232d39ec814844a51d6b8f";
 
 const Factory = "0x8a1E9d3aEbBBd5bA2A64d3355A48dD5E9b511256";
-const WBNB = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const WBNB = ADDRESSES.bsc.WBNB;
 
 const shackChef = "0x07dE034A0Fc0DA7a0bf703F6DcA7025bcD61BA3e";
 
@@ -54,13 +55,13 @@ async function bscShackTvl(timestamp, ethBlock, chainBlocks) {
   return balances;
 }
 
-const bscDexTvl = getUniTVL({ factory: Factory, chain: 'bsc', useDefaultCoreAssets: true, })
+const bscDexTvl = getUniTVL({ factory: Factory, useDefaultCoreAssets: true, })
 
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: sdk.util.sumChainTvls([bscDexTvl, bscShackTvl]),
-    staking: staking(stakingContract, BURGER, "bsc"),
+    staking: staking(stakingContract, BURGER),
   },
   methodology:
     "TVL is equal to AMMs liquidity plus the Assets deposited on Burger Shack",

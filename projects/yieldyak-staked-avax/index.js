@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const yieldYak_id = "45756385483164763772015628191198800763712771278583181747295544980036831301432";
 
-async function avax(timestamp, ethBlock, chainBlocks, { api }) {
+async function avax(api) {
 
     const supply = await api.call({
         abi: "function totalSupply(uint256 id) view returns (uint256)",
@@ -16,7 +17,7 @@ async function avax(timestamp, ethBlock, chainBlocks, { api }) {
     })
 
     return {
-        "avax:0x0000000000000000000000000000000000000000": supply * price / 1e18
+        ["avax:" + ADDRESSES.null]: supply * price / 1e18
     };
 }
 

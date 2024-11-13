@@ -16,7 +16,7 @@ async function main() {
         body = `The adapter at ${path} exports TVL: 
         \n \n ${file.substring(summaryIndex + 17).replaceAll('\n', '\n    ')}`;
     } else if (errorIndex != -1) {
-        body = `Error while running adapter at ${path}: 
+        body = `Error while running adapter at ${path ?? ''}: 
         \n \n ${file.split(errorString)[1].replaceAll('\n', '\n    ')}`;
     } else
         return;

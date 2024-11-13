@@ -1,6 +1,6 @@
 const { sumTokens2 } = require('./unwrapLPs')
 const { getLogs } = require('./cache/getLogs')
-const { request, } = require('graphql-request')
+const { cachedGraphQuery } = require('./cache')
 
 const uniswapConfig = {
   eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)',
@@ -16,12 +16,12 @@ function uniV3Export(config) {
   const exports = {}
 
   Object.keys(config).forEach(chain => {
-    let { factory: target, fromBlock, topics, eventAbi, isAlgebra } = config[chain]
+    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, blacklistedTokens = [], permitFailure, sumChunkSize, filterFn, } = config[chain]
     if (!topics) topics = isAlgebra ? algebraConfig.topics : uniswapConfig.topics
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
 
     exports[chain] = {
-      tvl: async (_, _b, _cb, { api, }) => {
+      tvl: async (api) => {
         const logs = await getLogs({
           api,
           target,
@@ -31,7 +31,11 @@ function uniV3Export(config) {
           onlyArgs: true,
         })
 
-        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), })
+        if (filterFn) 
+          blacklistedTokens.push(... await filterFn(api, logs))
+        
+
+        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, permitFailure: permitFailure || logs.length > 2000, sumChunkSize, })
       }
     }
   })
@@ -40,15 +44,17 @@ function uniV3Export(config) {
   return exports
 }
 
-function uniV3GraphExport({ blacklistedTokens = [], graphURL }) {
-  return async (_, _b, _cb, { api }) => {
+function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0,}) {
+  return async (api) => {
     const size = 1000
-    let lastId = ''
-    let pools
+    // let lastId = ''
+    // let pools
+
+    const minTvlFilter = minTVLUSD ? `totalValueLockedUSD_gt: ${minTVLUSD}` : ''
 
     const graphQueryPagedWithBlock = `
     query poolQuery($lastId: String, $block: Int) {
-      pools(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+      pools(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: ${minTVLUSD}}) {
         id
         token0 { id }
         token1 { id }
@@ -57,23 +63,17 @@ function uniV3GraphExport({ blacklistedTokens = [], graphURL }) {
   `
     const graphQueryPagedWithoutBlock = `
     query poolQuery($lastId: String) {
-      pools(first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+      pools(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
         id
         token0 { id }
         token1 { id }
       }
     }
   `
-    const graphQueryPaged = api.block ? graphQueryPagedWithBlock : graphQueryPagedWithoutBlock
-
-    do {
-      const params = { lastId, block: api.block }
-      const res = await request(graphURL, graphQueryPaged, params);
-      pools = res.pools
-      const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
-      await sumTokens2({ api, tokensAndOwners, blacklistedTokens })
-      lastId = pools[pools.length - 1]?.id
-    } while (pools.length === size)
+    // const graphQueryPaged = api.block ? graphQueryPagedWithBlock : graphQueryPagedWithoutBlock
+    const pools  = await cachedGraphQuery(name, graphURL, graphQueryPagedWithoutBlock, { api, useBlock: false, fetchById: true, })
+    const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
+    await sumTokens2({ api, ownerTokens, blacklistedTokens })
   }
 }
 

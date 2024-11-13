@@ -2,6 +2,6 @@ const { getUniTVL } = require("../helper/unknownTokens");
 module.exports = {
   misrepresentedTokens: true,
   kava: {
-    tvl: getUniTVL({ factory: "0xd72441aCa423dE457cF866aAD8083A403b11b08B", useDefaultCoreAssets: true, fetchBalances: true, }),
+    tvl: getUniTVL({ factory: "0x266F951c525130a4E230bB40F0e3525C6C99B9c5", useDefaultCoreAssets: true,  }),
   },
 };

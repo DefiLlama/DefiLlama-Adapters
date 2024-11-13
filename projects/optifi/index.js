@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { Program } = require("@project-serum/anchor");
 const { getProvider, sumTokens2, } = require("../helper/solana");
 const idl = require('./idl.json')
@@ -14,7 +15,7 @@ async function tvl() {
   }
 
   const tokens = [
-    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',  // USDC
+    ADDRESSES.solana.USDC,  // USDC
   ]
 
   const serumPCVaults = [
@@ -66,3 +67,5 @@ module.exports = {
     [Math.floor(new Date('2022-08-30')/1e3), 'OptiFi mainnet program was closed by mistake'],
   ],
 };
+
+module.exports.deadFrom = '2022-09-02'

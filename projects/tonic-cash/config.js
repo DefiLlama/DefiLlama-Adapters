@@ -1,6 +1,19 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require('../helper/unwrapLPs');
 
 module.exports = {
+  base: [
+    {
+      tokens: [nullAddress], // KLAY
+      holders: [
+        '0x86D5CF69842BBe4bdE06331C5480FFE8179EF6fB',
+        '0x713C3e59309CA047A7c8AA7201D302adceb79861',
+        '0x923815bBb945e96e5BF9240f612b41C3708529fd',
+        '0x9f9D6152bDA66265B31c9c0e90116E11481Afa70',
+        '0x60F7f382B2fe949c91c5b302A9E0fF9BF7E9158d',
+      ],
+    },
+  ],
   klaytn: [
     {
       tokens: [nullAddress], // KLAY
@@ -41,7 +54,7 @@ module.exports = {
       ],
     },
     {
-      tokens: ['0x8E81fCc2d4A3bAa0eE9044E0D7E36F59C9BbA9c1'], // WEMIXDollar
+      tokens: [ADDRESSES.wemix.WEMIX_], // WEMIXDollar
       holders: [
         '0x144120Ef18d4223Ab3f4695653a5755C23FBF469',
         '0xc978f195C838d3344f74DDBA84235130B3091847',
@@ -50,7 +63,7 @@ module.exports = {
       ],
     },
     {
-      tokens: ['0x765277EebeCA2e31912C9946eAe1021199B39C61'], // ETH
+      tokens: [ADDRESSES.shiden.ETH], // ETH
       holders: [
         '0x2D3bAeBa85D78D202887D34f5618380e90F3c272',
         '0xD2510D275dbca0fe333dAff8Eb51b9105f6aC212',

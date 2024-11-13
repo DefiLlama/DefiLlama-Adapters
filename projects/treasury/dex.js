@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
@@ -9,8 +10,8 @@ const TOKENS = {
   DEXSHARE: '0xf4914e6d97a75f014acfcf4072f11be5cffc4ca6',
   DEXIRA: '0x147e07976e1ae78287c33aafaab87760d32e50a5',
   WDHEX_DEXSARE: '0x6647047433df4cfc9912d092fd155b9d972a4a85',
-  BNB: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-  USDC: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'
+  BNB: ADDRESSES.bsc.WBNB,
+  USDC: ADDRESSES.bsc.USDC
 };
 
 

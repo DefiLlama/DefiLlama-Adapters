@@ -1,11 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const CHAIN = 'bittorrent'
 
 // Tokens
-const ETH = '0x1249C65AfB11D179FFB3CE7D4eEDd1D9b98AD006'
-const USDC_T = '0x935faA2FCec6Ab81265B301a30467Bbc804b43d3'
-const TRX = '0xEdf53026aeA60f8F75FcA25f8830b7e2d6200662'
+const ETH = ADDRESSES.bittorrent.ETH
+const USDC_T = ADDRESSES.bittorrent.USDC_t
+const TRX = ADDRESSES.bittorrent.TRX
 
 // Bitlend Markets
 const bETH = '0xb65103C4B2Af563F9bBD8ad8CA8387d700673B6E'

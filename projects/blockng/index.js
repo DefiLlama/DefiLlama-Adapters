@@ -1,23 +1,27 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens, getUniTVL, sumTokensExport } = require('../helper/unknownTokens');
 const { staking, } = require('../helper/staking')
 const sdk = require('@defillama/sdk')
-const blockng = require('../helper/abis/blockng.json');
+const blockng = {
+  "getPoolInfo": "function getPoolInfo(address, address, uint256, uint256) view returns (tuple(address lpTokenAddress, address subTokenAddress, string subTokenSymbol, address dexFactory, address gaugeAddress, uint256 gaugeTotalSupply, uint256 lpPrice, uint256 gaugeAPR, address bribeAddress, int256 weights, uint256 punkId)[] beams)",
+  "numberOfPool": "function numberOfPool(address voter) view returns (uint256 len)"
+}
 
 const chain = 'smartbch'
-const WBCH = "0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04"
-const LAW = "0x0b00366fBF7037E9d75E4A569ab27dAB84759302"
+const WBCH = ADDRESSES.smartbch.WBCH
+const LAW = ADDRESSES.smartbch.LAW
 
 const coreAssets = [
   WBCH,
   LAW,
-  '0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72',  // FlexUSD
-  '0xBc2F884680c95A02cea099dA2F524b366d9028Ba',  // BlockNG pegged USDT
+  ADDRESSES.smartbch.flexUSD,  // FlexUSD
+  ADDRESSES.smartbch.bcUSDT,  // BlockNG pegged USDT
 ]
 
 const masterchefTvl = async (timestamp, ethBlock, { [chain]: block }) => {
   const toa = [
-    ['0x0000000000000000000000000000000000000000', '0x896a8ddb5B870E431893EDa869feAA5C64f85978'], // BCH
-    ['0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b', '0x82112e12533A101cf442ee57899249C719dc3D4c'], // DAIQUIRI
+    [ADDRESSES.null, '0x896a8ddb5B870E431893EDa869feAA5C64f85978'], // BCH
+    [ADDRESSES.smartbch.DAIQUIRI, '0x82112e12533A101cf442ee57899249C719dc3D4c'], // DAIQUIRI
   ]
 
   return sumUnknownTokens({ chain, block, useDefaultCoreAssets: true, tokensAndOwners: toa, });
@@ -53,7 +57,6 @@ const LAW_RIGHTS = "0xe24Ed1C92feab3Bb87cE7c97Df030f83E28d9667" // DAO address
 
 
 const lawSwapTVL = getUniTVL({
-  chain,
   factory: lawswapFactory,
   useDefaultCoreAssets: true,
 })

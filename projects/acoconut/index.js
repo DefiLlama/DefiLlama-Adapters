@@ -1,9 +1,7 @@
-const sdk = require('@defillama/sdk');
-const singlePlusAbi = require('./abis/singlePlus');
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const tokensInacBTC = [
-  '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+  ADDRESSES.ethereum.WBTC,
   '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D'
 ]
 
@@ -16,30 +14,15 @@ const bscSingleTokens = [
   '0x02827D495B2bBe37e1C021eB91BCdCc92cD3b604', //autoBTC+
 ]
 
-const btcb = 'bsc:0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c'
+const btcb = 'bsc:' + ADDRESSES.bsc.BTCB
 
-async function eth(timestamp, block) {
-  return sumTokens2({ block, owner: acBTCTokenHolder, tokens: tokensInacBTC})
+async function eth(api) {
+  return api.sumTokens({ owner: acBTCTokenHolder, tokens: tokensInacBTC})
 }
 
-async function bsc(timestamp, _, {bsc: block}) {
-  const balances = {};
-
-  const totalUnderlyingResults = await sdk.api.abi.multiCall({
-    block,
-    calls: bscSingleTokens.map((address) => ({
-      target: address
-    })),
-    abi: singlePlusAbi["totalUnderlying"],
-    chain: 'bsc'
-  });
-
-  totalUnderlyingResults.output.forEach((tokenBalanceResult) => {
-      const valueInToken = tokenBalanceResult.output;
-      sdk.util.sumSingleBalance(balances, btcb, valueInToken)
-  });
-
-  return balances;
+async function bsc(api) {
+  const tokens = await api.multiCall({  abi: 'address:token', calls: bscSingleTokens})
+  return api.sumTokens({ tokensAndOwners2: [tokens, bscSingleTokens]})
 }
 
 module.exports = {

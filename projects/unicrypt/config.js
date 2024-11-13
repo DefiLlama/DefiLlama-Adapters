@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // const { ethereum } = require(".")
 
 const { getNumLockedTokens, getLockedTokenAtIndex,
@@ -24,7 +25,7 @@ const { getNumLockedTokens, getLockedTokenAtIndex,
   
   const tokens = {
     uncx_eth: '0xaDB2437e6F65682B85F814fBc12FeC0508A7B1D0',
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+    weth: ADDRESSES.ethereum.WETH
   }
   
   const governanceTokens = { // UNCX
@@ -106,6 +107,18 @@ const config = {
     locker: '0xe3D32266974f1E8f8549cAf9F54977040e7D1c07',
     factory: '0xa818b4f111ccac7aa31d0bcc0806d64f2e0737d7',
     startBlock: 14476818
+  },
+  uniswapV2_base: {
+    chain: 'base',
+    locker: '0xc4E637D37113192F4F1F060DaEbD7758De7F4131',
+    factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
+    startBlock: 12110643
+  },
+  sushiswapV2_base: {
+    chain: 'base',
+    locker: '0xBeddF48499788607B4c2e704e9099561ab38Aae8',
+    factory: '0x71524B4f93c58fcbF659783284E38825f0622859',
+    startBlock: 10577634
   }
 }
 
@@ -135,6 +148,23 @@ const ethereumContractData = [
     isMixedTokenContract: true,
     factory: config.pol.factory
   }
+]
+
+const baseContractData = [
+  { // Uniswap v2
+    chain: config.uniswapV2_base.chain,
+    contract: config.uniswapV2_base.locker, 
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    factory: config.uniswapV2_base.factory
+  },
+  { // Sushiswap
+    chain: config.sushiswapV2_base.chain,
+    contract: config.sushiswapV2_base.locker, 
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    factory: config.sushiswapV2_base.factory
+  },
 ]
 
 const bscContractData = [
@@ -222,14 +252,26 @@ const gnosisContractData = [
   }
 
 ]
+const arbitrumContractData = [
+  {
+    chain: 'arbitrum',
+    contract: '0x275720567E5955F5f2D53A7A1Ab8a0Fc643dE50E', 
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  }
+
+]
 
 
 module.exports = {
+  baseContractData,
   ethereumContractData,
   bscContractData,
   polygonContractData,
   avalancheContractData,
   gnosisContractData,
+  arbitrumContractData,
   governanceTokens,
   stakingContracts,
   protocolPairs,

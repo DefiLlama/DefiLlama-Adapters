@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
-const WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
+const USDC = ADDRESSES.polygon.USDC;
+const WETH = ADDRESSES.polygon.WETH_1
 
 const ROCI_POOLS = [
   '0x883F10Dc3960493f38F69b8696dC331D22fdEd76',
@@ -16,7 +17,7 @@ const RociRevenueManagerABI = 'function balanceAvailable(address _poolAddress) v
 const poolValueAbi = "uint256:poolValue"
 
 
-async function tvl(timestamp, _, _1, { api }) {
+async function tvl(api) {
   return sumTokens2({
     api, tokensAndOwners: [
       [WETH, ROCI_COLLATERAL_MANAGER],
@@ -25,7 +26,7 @@ async function tvl(timestamp, _, _1, { api }) {
   })
 }
 
-async function borrowed(timestamp, _, _1, { api }) {
+async function borrowed(api) {
   const poolValues = await api.multiCall({
     abi: poolValueAbi,
     calls: ROCI_POOLS,

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const abi = require('./abi.json')
 
@@ -5,7 +6,7 @@ const rocketMinipoolManager = '0x6293B8abC1F36aFB22406Be5f96D893072A8cF3a'
 const rocketVault = '0x3bDC69C4E5e13E52A65f5583c23EFB9636b469d6'
 const rocketNodeStaking_contract = '0x3019227b2b8493e45Bf5d25302139c9a2713BF15'
 
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const weth = ADDRESSES.ethereum.WETH
 const rpl = '0xd33526068d116ce69f19a9ee46f0bd304f21a51f'
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
@@ -26,11 +27,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
     const activeMinipoolCount_arr = [...Array(statusesCount).keys()].map(i => activeMinipoolCount[i.toString()])
     minipool_count_per_status = minipool_count_per_status.map((sum, idx) => sum + parseInt(activeMinipoolCount[idx]))
-    // console.log('offset', offset, 'activeMinipoolCount', activeMinipoolCount, 'activeMinipoolCount_arr', activeMinipoolCount_arr)
     if (activeMinipoolCount_arr.reduce((a, b)=> a + parseInt(b), 0) < limit) { break; }
     offset += limit
   }
-  // console.log(`minipool_count_per_status / [unmatched*16, pending*32, staking*32, withdrawable*32] ${minipool_count_per_status}\n`)
   
   // Get ETH and RPL balance of multiple rocketpool contracts as well as RPL staked
   const [
@@ -99,7 +98,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   // rpl_tvl += solidity.to_float(rp.call("rocketVault.balanceOfToken", "rocketAuctionManager", rpl)) // slashed RPL that hasn't been auctioned off yet
   const RPL_tvl = parseFloat(totalRPLStake) + parseFloat(rocketDAONodeTrustedActions_rplBalance) + parseFloat(rocketAuctionManager_rplBalance)
 
-//   console.log(`staking_minipools: ${staking_minipools}
 // pending_minipools: ${pending_minipools}
 // unmatched_minipools: ${unmatched_minipools}
 // withdrawable_minipools: ${withdrawable_minipools}

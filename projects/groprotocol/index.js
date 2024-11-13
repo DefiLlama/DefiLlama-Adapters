@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // Adapter for Gro Protocol : https://gro.xyz
 
 const sdk = require("@defillama/sdk");
@@ -21,7 +22,7 @@ const P5_BAL_GRO_WETH = "0x702605f43471183158938c1a3e5f5a359d7b31ba"; // Count o
 const GROTokenStaker1 = "0x001C249c09090D79Dc350A286247479F08c7aaD7";
 const GROTokenStaker2 = "0x2E32bAd45a1C29c1EA27cf4dD588DF9e68ED376C";
 
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
   let balances = {};
 
   // Assets held within PWRD and GVT directly
@@ -36,7 +37,7 @@ async function tvl(timestamp, ethBlock, _, { api }) {
   return balances
 }
 
-async function pool2(timestamp, ethBlock, _, { api }) {
+async function pool2(api) {
   return sumTokens2({
     api,
     owners: [GROTokenStaker1,GROTokenStaker2 ],
@@ -54,32 +55,32 @@ const labs = [
   {
     // USDC
     vault: "0x57DaED1ee021BE9991F5d30CF494b6B09B5B449E",
-    baseToken: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    baseToken: ADDRESSES.avax.USDC_e,
   },
   {
     // DAI
     vault: "0x5E57E11483A3F60A76af3045303604522059dA2a",
-    baseToken: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+    baseToken: ADDRESSES.avax.DAI,
   },
   {
     // USDT
     vault: "0x471F4B4b9A97F82C3a25b034B33A8E306eE9Beb5",
-    baseToken: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+    baseToken: ADDRESSES.avax.USDT_e,
   },
   {
     // USDC
     vault: "0x2Eb05cfFA24309b9aaf300392A4D8Db745d4E592",
-    baseToken: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    baseToken: ADDRESSES.avax.USDC_e,
   },
   {
     // DAI
     vault: "0x6063597B9356B246E706Fd6A48C780F897e3ef55",
-    baseToken: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+    baseToken: ADDRESSES.avax.DAI,
   },
   {
     // USDT
     vault: "0x6EF44077a1F5e10cDfcCc30EFb7dCdb1d5475581",
-    baseToken: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+    baseToken: ADDRESSES.avax.USDT_e,
   },
 ];
 

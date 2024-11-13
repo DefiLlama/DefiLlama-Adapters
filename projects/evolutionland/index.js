@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const ring = {
@@ -7,10 +8,10 @@ const ring = {
   "crab": "0x7399Ea6C9d35124d893B8d9808930e9d3F211501",
 }
 const weth = {
-  "ethereum": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "heco": "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
-  "polygon": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-  "crab": "0x2D2b97EA380b0185e9fDF8271d1AFB5d2Bf18329",
+  "ethereum": ADDRESSES.ethereum.WETH,
+  "heco": ADDRESSES.heco.WHT,
+  "polygon": ADDRESSES.polygon.WMATIC_2,
+  "crab": ADDRESSES.crab.WCRAB,
 }
 
 const lpGOLD = {
@@ -50,7 +51,7 @@ const lpETH = {
   "crab": "0xF157c9393255Db1728bC6483c3545Ca8a1655a0F",
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const owners = [lpETH].map(i => i[api.chain])
   const balances = await sumTokens2({ api, owners, tokens: [weth[api.chain]] })
   const owners1 = [lpGOLD, lpWOOD, lpHOO, lpFIRE, lpSIOO, lpETH].map(i => i[api.chain])

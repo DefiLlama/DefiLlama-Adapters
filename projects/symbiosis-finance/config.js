@@ -1,25 +1,95 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+
+const TOKENS = {
+  ethereum: {
+    pufETH: "0xD9A442856C234a39a81a089C06451EBAa4306a72",
+    LADYS: "0x12970E6868f88f6557B76120662c1B3E50A646bf",
+    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28",
+    G: "0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649"
+  },
+  bsc: {
+    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28",
+    G: "0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649"
+  },
+  polygon: {
+    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28"
+  },
+  arbitrum: {
+    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28",
+    LADYS: "0x3b60FF35D3f7F62d636b067dD0dC0dFdAd670E4E"
+  },
+  manta: {
+    pufETH: "0xA53E005Cecd3D7C89A4AE814617cC14828b6527E"
+  },
+  scroll: {
+    pufETH: "0xc4d46E8402F476F269c379677C99F18E22Ea030e"
+  },
+  zeta: {
+    pufETH: "0x1e4bF3CaBD7707089138dD5a545B077413FA83Fc"
+  },
+  zklink: {
+    pufETH: "0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC"
+  },
+  cronos: {
+    USDC: ADDRESSES.cronos.USDC
+  },
+  fraxtal: {
+    WETH: ADDRESSES.fraxtal.WETH,
+    FRAX: ADDRESSES.fraxtal.FRAX
+  },
+  gravity: {
+    USDC_e: ADDRESSES.gravity.USDC_e,
+    wG: ADDRESSES.gravity.wG
+  },
+  bsquared: {
+    WBTC: ADDRESSES.bsquared.WBTC,
+  }
+}
+
 module.exports = {
   chains: [
     {
       name: 'ethereum',
-      stable: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+      tokens: [
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.WETH,
+        ADDRESSES.ethereum.WBTC,
+        ADDRESSES.ethereum.FRAX,
+        TOKENS.ethereum.XDAO,
+        TOKENS.ethereum.LADYS,
+        TOKENS.ethereum.pufETH,
+        TOKENS.ethereum.G,
+      ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8', // portal v2
+        '0x42Cd64f48496dDdfEfF8F3704df9175dbe20d325', // portal Teleport
       ]
     },
     {
       name: 'bsc',
-      stable: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
+      tokens: [
+        ADDRESSES.bsc.BUSD,
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.ETH,
+        ADDRESSES.bsc.BTCB,
+        TOKENS.bsc.XDAO,
+        TOKENS.bsc.G,
+      ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+        '0xb91d3060C90aac7c4c706aef2B37997b3b2a1DcF', // portal Teleport
         '0xab0738320A21741f12797Ee921461C691673E276', // v1 pool with Ethereum
       ]
     },
     {
       name: 'avax',
-      stable: '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664', // USDC.e
+      tokens: [
+        ADDRESSES.avax.USDC_e,
+        ADDRESSES.avax.USDC,
+      ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
         '0xE75C7E85FE6ADd07077467064aD15847E6ba9877', // portal v2
@@ -29,10 +99,16 @@ module.exports = {
     },
     {
       name: 'polygon',
-      stable: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+      tokens: [
+        ADDRESSES.polygon.USDC,
+        ADDRESSES.polygon.WETH_1,
+        ADDRESSES.polygon.FRAX,
+        TOKENS.polygon.XDAO,
+      ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8', // portal v2
+        '0x3338BE49A5f60e2593337919F9aD7098e9a7Dd7E', // portal Teleport
         '0xab0738320A21741f12797Ee921461C691673E276', // v1 pool with Ethereum
         '0xF4BFF06E02cdF55918e0ec98082bDE1DA85d33Db', // v1 pool with BNB chain
         '0x3F1bfa6FA3B6D03202538Bf0cdE92BbE551104ac', // v1 pool with Avalanche
@@ -40,7 +116,9 @@ module.exports = {
     },
     {
       name: 'telos',
-      stable: '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b', // USDC
+      tokens: [
+        ADDRESSES.telos.syUSDC,
+      ],
       holders: [
         '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F', // portal v1
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8', // portal v2
@@ -49,23 +127,20 @@ module.exports = {
     },
     {
       name: 'aurora',
-      stable: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802', // USDC
+      tokens: [
+        ADDRESSES.aurora.USDC_e,
+      ],
       holders: [
         '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F', // portal v1
         '0x7Ff7AdE2A214F9A4634bBAA4E870A5125dA521B8', // v1 pool with BNB chain
         '0x7F1245B61Ba0b7D4C41f28cAc9F8637fc6Bec9E4', // v1 pool with Polygon
       ]
     },
-    // {
-    //   name: 'milkomeda',
-    //   stable: '0x42110A5133F91B49E32B671Db86E2C44Edc13832', // sUSDC
-    //   holders: [
-    //     '0x3Cd5343546837B958a70B82E3F9a0E857d0b5fea', // portal v1
-    //   ]
-    // },
     {
       name: 'boba',
-      stable: '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc', // USDC
+      tokens: [
+        ADDRESSES.boba.USDC,
+      ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8', // portal v2
@@ -75,45 +150,295 @@ module.exports = {
     },
     {
       name: 'boba_avax',
-      stable: '0x126969743a6d300bab08F303f104f0f7DBAfbe20', // USDC.e
+      tokens: [
+        ADDRESSES.boba_avax.USDC_e,
+      ],
       holders: [
         '0xd8db4fb1fEf63045A443202d506Bcf30ef404160', // portal v2
       ]
     },
     {
       name: 'boba_bnb',
-      stable: '0x9F98f9F312D23d078061962837042b8918e6aff2', // USDC
+      tokens: [
+        ADDRESSES.boba_bnb.USDC,
+      ],
       holders: [
         '0x6148FD6C649866596C3d8a971fC313E5eCE84882', // pool v2
       ]
     },
     {
       name: 'kava',
-      stable: '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
+      tokens: [
+        ADDRESSES.kava.USDC,
+        ADDRESSES.kava.USDt,
+      ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
       ]
     },
     {
       name: 'era',
-      stable: '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4', // USDC
+      tokens: [
+        ADDRESSES.era.USDC,
+        ADDRESSES.era.WETH,
+        ADDRESSES.era.WBTC,
+      ],
       holders: [
         '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
+        '0x4f5456d4d0764473DfCA1ffBB8524C151c4F19b9', // new portal v2
+        '0x97b99f47b086a074f214f4A62A3b041599726DC2', // portal Teleport
       ]
     },
     {
       name: 'arbitrum',
-      stable: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', // USDC
+      tokens: [
+        ADDRESSES.arbitrum.USDC, // USDC.e
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+        ADDRESSES.arbitrum.WETH,
+        ADDRESSES.arbitrum.FRAX,
+        TOKENS.arbitrum.XDAO,
+        TOKENS.arbitrum.LADYS,
+      ],
       holders: [
         '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9', // portal v2
+        '0x0425841529882628880fBD228AC90606e0c2e09A', // portal Teleport
       ]
     },
     {
       name: 'optimism',
-      stable: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607', // USDC
+      tokens: [
+        ADDRESSES.optimism.USDC,
+        ADDRESSES.optimism.WETH_1,
+      ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
       ]
     },
+    {
+      name: 'arbitrum_nova',
+      tokens: [
+        ADDRESSES.arbitrum_nova.USDC,
+        ADDRESSES.arbitrum_nova.WETH,
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
+    {
+      name: 'polygon_zkevm',
+      tokens: [
+        ADDRESSES.polygon_zkevm.USDC,
+        ADDRESSES.polygon_zkevm.USDC_CIRCLE,
+        ADDRESSES.polygon_zkevm.WETH,
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
+    {
+      name: 'mantle',
+      tokens: [
+        ADDRESSES.mantle.USDC,
+        ADDRESSES.mantle.WETH,
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
+    {
+       name: 'linea',
+       tokens: [
+         ADDRESSES.linea.WETH,
+         ADDRESSES.linea.USDC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+         '0x7f6fb9f3ce785F3d85772c038Fda58eC9432D421', // portal Teleport
+       ]
+     },
+     {
+       name: 'base',
+       tokens: [
+         ADDRESSES.base.WETH,
+         ADDRESSES.base.USDbC,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+         '0xEE981B2459331AD268cc63CE6167b446AF4161f8', // portal v2 new
+       ]
+     },
+     {
+       name: 'tron',
+       tokens: [
+         ADDRESSES.tron.USDT,
+       ],
+       holders: [
+         'TVgY3ayqTGUoe7th84ZNL5peVfRNdLFDjf', // portal v2
+       ]
+     },
+     {
+       name: 'scroll',
+       tokens: [
+         ADDRESSES.scroll.WETH,
+         ADDRESSES.scroll.USDC,
+         TOKENS.scroll.pufETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+         '0x9b1c1949995E43E6d391A4FDA207bf4386Ee5a32', // portal Teleport
+       ]
+     },
+     {
+       name: 'manta',
+       tokens: [
+         ADDRESSES.manta.WETH,
+         ADDRESSES.manta.USDC,
+         TOKENS.manta.pufETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
+     {
+       name: 'metis',
+       tokens: [
+         ADDRESSES.metis.WETH,
+       ],
+       holders: [
+         '0xd8db4fb1fEf63045A443202d506Bcf30ef404160', // portal v2
+       ]
+     },
+     {
+       name: 'mode',
+       tokens: [
+         ADDRESSES.mode.WETH,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'rsk',
+       tokens: [
+         ADDRESSES.rsk.rUSDT,
+         ADDRESSES.rsk.WRBTC1,
+       ],
+       holders: [
+         '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4', // portal v2
+       ]
+     },
+     {
+       name: 'blast',
+       tokens: [
+         ADDRESSES.blast.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
+     {
+       name: 'merlin',
+       tokens: [
+         ADDRESSES.merlin.WBTC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'ftn',
+       tokens: [
+         ADDRESSES.ftn.USDC,
+       ],
+       holders: [
+         '0x318C2B9a03C37702742C3d40C72e4056e430135A', // portal v2
+       ]
+     },
+     {
+       name: 'zklink',
+       tokens: [
+         ADDRESSES.zklink.WETH,
+         TOKENS.zklink.pufETH,
+       ],
+       holders: [
+         '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189', // portal v2
+       ]
+     },
+     {
+       name: 'core',
+       tokens: [
+         ADDRESSES.core.coreBTC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'taiko',
+       tokens: [
+         ADDRESSES.taiko.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
+     {
+       name: 'sei',
+       tokens: [
+         ADDRESSES.sei.USDC,
+         ADDRESSES.sei.USDT,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'zeta',
+       tokens: [
+         TOKENS.zeta.pufETH,
+         ADDRESSES.zeta.USDC_1,
+       ],
+       holders: [
+         '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf', // portal v2
+       ]
+     },
+     {
+       name: 'cronos',
+       tokens: [
+         TOKENS.cronos.USDC,
+       ],
+       holders: [
+         '0xE75C7E85FE6ADd07077467064aD15847E6ba9877', // portal v2
+       ]
+     },
+     {
+       name: 'fraxtal',
+       tokens: [
+         TOKENS.fraxtal.WETH,
+         TOKENS.fraxtal.FRAX,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'gravity',
+       tokens: [
+         TOKENS.gravity.USDC_e,
+         TOKENS.gravity.wG,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'bsquared',
+       tokens: [
+         TOKENS.bsquared.WBTC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
   ]
 }

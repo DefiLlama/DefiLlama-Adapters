@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
-const validatorContract = "0x0000000000000000000000000000000000001000";
+const validatorContract = ADDRESSES.findora.FRA;
 const validatorAddress = "0xb0dC7A676Ab09868eBef78E16e6AEA9e79F0f9Cf";
 const CHAIN = "csc";
 

@@ -7,7 +7,7 @@ const FACTORY_DINO = "0x35E9455c410EacD6B4Dc1D0ca3144031f6251Dc2";
 
 module.exports = {
   bsc:{
-    tvl: uniTvlExport(FACTORY_DINO, 'bsc'),
-    staking: staking(MASTER_DINO, DINO_TOKEN, "bsc")
+    tvl: uniTvlExport(FACTORY_DINO, 'bsc', true),
+    staking: staking(MASTER_DINO, DINO_TOKEN)
   },
 }

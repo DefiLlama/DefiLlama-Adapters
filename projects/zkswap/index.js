@@ -1,29 +1,22 @@
-const BigNumber = require('bignumber.js')
+const { getLogs } = require('../helper/cache/getLogs')
+const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const v1TVL = require('./v1');
-const v2TVL = require('./v2');
-
-async function tvl(timestamp, block, _1, { api }) {
-  const [v1, v2] = await Promise.all([v1TVL(timestamp, block, _1, { api }), v2TVL(timestamp, block, _1, { api })]);
-
-  const tokenAddresses = new Set(Object.keys(v1).concat(Object.keys(v2)));
-
-  const balances = (
-    Array
-      .from(tokenAddresses)
-      .reduce((accumulator, tokenAddress) => {
-        const v1Balance = new BigNumber(v1[tokenAddress] || '0');
-        const v2Balance = new BigNumber(v2[tokenAddress] || '0');
-        accumulator[tokenAddress] = v1Balance.plus(v2Balance).toFixed();
-
-        return accumulator
-      }, {})
-  );
-
-  return balances;
-}
+const configs = [
+  { governance: '0x02ecef526f806f06357659fFD14834fe82Ef4B04', main: '0x8ECa806Aecc86CE90Da803b080Ca4E3A9b8097ad', fromBlock: 11841962, },
+  { governance: '0x86E527BC3C43E6Ba3eFf3A8CAd54A7Ed09cD8E8B', main: '0x6dE5bDC580f55Bc9dAcaFCB67b91674040A247e3', fromBlock: 12810001, },
+]
 
 module.exports = {
   start: 1613135160, // 02/12/2021 @ 01:06pm UTC
-  ethereum: { tvl },
+  ethereum: {
+    tvl: sdk.util.sumChainTvls(configs.map(i => {
+      return async function tvl(api) {
+        const logs = await getLogs({ api, target: i.governance, eventAbi: 'event NewToken (address indexed token, uint16 indexed tokenId)', onlyArgs: true, fromBlock: i.fromBlock, })
+        const tokens = logs.map(log => log.token)
+        tokens.push(ADDRESSES.null)
+        return api.sumTokens({ owner: i.main, tokens })
+      }
+    }))
+  },
 };

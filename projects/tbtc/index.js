@@ -1,12 +1,13 @@
-const sdk = require('@defillama/sdk')
+const { sumTokens } = require('../helper/chain/bitcoin')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
-async function tvl(ts, block) {
-  return {
-    '0x18084fba666a33d37592fa2633fd49a74dd93a88': (await sdk.api.erc20.totalSupply({ target: '0x18084fba666a33d37592fa2633fd49a74dd93a88', block })).output
-  }
+async function tvl() {
+  return sumTokens({ owners: await bitcoinAddressBook.tBTC() })
 }
 
 module.exports = {
-  ethereum: { tvl },
-  methodology: `TVL for tBTC consists of the BTC deposits in custody that were used to mint tBTC`
-}
+  timetravel: false,
+  methodology: "BTC on btc chain",
+  ethereum: { tvl: () => ({}) },
+  bitcoin: { tvl },
+};

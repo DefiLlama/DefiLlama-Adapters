@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const treasuryContractsBSC = [
@@ -6,6 +7,6 @@ const treasuryContractsBSC = [
 
 module.exports = {
     bsc: {
-      tvl: sumTokensExport({ owners: treasuryContractsBSC, tokens: ['0x2170ed0880ac9a755fd29b2688956bd959f933f8']}),
+      tvl: sumTokensExport({ owners: treasuryContractsBSC, tokens: [ADDRESSES.bsc.ETH]}),
     },
 };

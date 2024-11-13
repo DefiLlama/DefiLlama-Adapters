@@ -1,30 +1,36 @@
-const {sumTokens2} = require('../helper/unwrapLPs');
-const {utils} = require("ethers");
-const {get} = require('../helper/http');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { getConfig } = require('../helper/cache');
 
 const tokens = [
-    '0x0000000000000000000000000000000000000000', // FIL
+    ADDRESSES.null, // FIL
 ]
 
+const LENDING_POOL_ADDRESS = "0x147122D1EBdA76E4910ccdC53aEb6a58605Eb58E";
+
 const getActiveMinersFromRPC = async () => {
-    const resp = await get('https://api.sftproject.io/api/v1/public/dashboard/info')
+    const resp = await getConfig('sft-protocol', 'https://ww8.sftproject.io/api/c/api/v1/public/dashboard/info')
     let nodes = []
     let node_i = []
-    nodes = resp.data.combined.map(({ miner }) => {
+    nodes = resp.data.combined
+    .filter(i => i.miner && i.miner !== '')
+    .map(({ miner }) => {
         let node = parseInt(miner.slice(2,))
         let bytes = Buffer.alloc(20);
         bytes.writeUint8(0xff, 0);
         bytes.writeBigUint64BE(BigInt(node), 12);
-        return utils.getAddress('0x' + bytes.toString('hex'));
+        return '0x' + bytes.toString('hex')
     });
-    
+
     if (resp.data.independent !== null) {
-        node_i = resp.data.independent.map(({ miner }) => {
+        node_i = resp.data.independent
+        .filter(i => i.miner && i.miner !== '')
+        .map(({ miner }) => {
             let node = parseInt(miner.slice(2,))
             let bytes = Buffer.alloc(20);
             bytes.writeUint8(0xff, 0);
             bytes.writeBigUint64BE(BigInt(node), 12);
-            return utils.getAddress('0x' + bytes.toString('hex'));
+            return '0x' + bytes.toString('hex')
         });
     }
     nodes = nodes.concat(node_i)
@@ -33,12 +39,12 @@ const getActiveMinersFromRPC = async () => {
 
 module.exports = {
     filecoin: {
-        tvl: async (_, _1, _2, {api}) => {
+        tvl: async (api) => {
 
-            let balances = {};
+            let balances = await sumTokens2({ owner: LENDING_POOL_ADDRESS, tokens, api });
 
             let minerAddrs = await getActiveMinersFromRPC();
-            await sumTokens2({balances, owners: minerAddrs, tokens, api, });
+            await sumTokens2({ balances, owners: minerAddrs, tokens, api, });
 
             return balances;
         }

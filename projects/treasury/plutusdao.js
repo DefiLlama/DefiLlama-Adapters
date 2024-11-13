@@ -2,7 +2,10 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury = "0xBbE98D590d7eB99F4a236587f2441826396053d3";
 
-const tokens = [nullAddress];
+const tokens = [
+  nullAddress,
+  "0x10393c20975cF177a3513071bC110f7962CD67da"
+];
 
 const ownTokens = [
   "0x51318B7D00db7ACc4026C88c3952B66278B6A67F", // PLS

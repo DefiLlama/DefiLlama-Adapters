@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require("../helper/ohm");
 
 const treasuryAddress = "0x935AEf514141B0CA32849e9686d22CB8b6f1dCAF";
@@ -5,7 +6,7 @@ module.exports = ohmTvl(treasuryAddress, [
 //MIM
   ["0x130966628846bfd36ff31a822705796e8cb8c18d", false],
 //WAVAX
-  ["0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", false],
+  [ADDRESSES.avax.WAVAX, false],
 // ICY MIM JLP
   ["0x453B5415Fe883f15686A5fF2aC6FF35ca6702628", true],
 // MEMO

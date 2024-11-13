@@ -3,4 +3,5 @@ module.exports = {
   bsc: {
     tvl: () => 0
   },
+  deadFrom: 1680328420,
 }

@@ -16,7 +16,8 @@ async function vestingHelper({
   tokens = getUniqueAddresses(tokens)
   blacklist = getUniqueAddresses(blacklist)
   tokens = tokens.filter(t => !blacklist.includes(t))
-  const chunks = sliceIntoChunks(tokens, 4000)
+  const chunkSize = chain === 'polygon' ? 250 : 500  // polygon has a lower gas limit
+  const chunks = sliceIntoChunks(tokens, chunkSize)
   const finalBalances = {}
   for (let i = 0; i < chunks.length; i++) {
     log('resolving for %s/%s of total tokens: %s (chain: %s)', i + 1, chunks.length, tokens.length, chain)

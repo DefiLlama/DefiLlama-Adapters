@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
@@ -46,7 +47,7 @@ async function getLiquidity(data, chain, block) {
 }
 
 async function getStakedLiquidity(chain, block) {
-  if (chains[chain].WOWLP === "0x0000000000000000000000000000000000000000") {
+  if (chains[chain].WOWLP === ADDRESSES.null) {
     const stakedLiquidity = await getLiquidity(
         { [chains[chain].WOW]: chains[chain].xWOW },
         chain,

@@ -3,7 +3,7 @@ const { get_account_tvl } = require("../helper/chain/eos");
 // Alcor
 // https://eos.alcor.exchange/
 async function eos() {
-  const accounts = ["alcorammswap", "eostokensdex"];
+  const accounts = ["swap.alcor", "eostokensdex"];
   const tokens = [
       ["eosio.token", "EOS", "eos"],
       ["tethertether", "USDT", "tether"],
@@ -14,11 +14,12 @@ async function eos() {
 // Alcor
 // https://wax.alcor.exchange
 async function wax() {
-  const accounts = ["alcorammswap", "alcordexmain"];
+  const accounts = ["swap.alcor", "alcordexmain", "liquid.alcor"];
   const tokens = [
       ["eosio.token", "WAX", "wax"],
       ["alien.worlds", "TLM", "alien-worlds"],
-      ["token.rfox", "TLM", "redfox-labs"],
+      ["token.rfox", "USD", "redfox-labs"],
+      ["usdt.alcor", "USDT", "usdt-alcor"],
   ];
   return await get_account_tvl(accounts, tokens, "wax");
 }

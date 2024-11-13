@@ -1,13 +1,15 @@
+const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { cachedGraphQuery } = require('../helper/cache');
 
 const FCTR = "0x6dD963C510c2D2f09d5eDdB48Ede45FeD063Eb36"
 const veFCTR = "0xA032082B08B2EF5A6C3Ea80DaEac58300F68FB73"
-const FCTR_RNDTX = "0x95C34a4efFc5eEF480c65E2865C63EE28F2f9C7e" // Factor Roundtable Index
 
-const indices = [FCTR_RNDTX]
-
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
+  const endpoint = sdk.graph.modifyEndpoint('2ZavYD1JPYUy8HMheuYcyKCswHR5djpEq2xuWs7PzPRe')
+  const res = await cachedGraphQuery('factor-v1', endpoint,  `{vaultGeneses { id }}`)
+  const indices = res.vaultGeneses.map(v => v.id)
   const uBalances = await api.multiCall({ abi: 'uint256[]:underlyingAssetsBalance', calls: indices })
   const calls = []
   uBalances.forEach((v, i) => {

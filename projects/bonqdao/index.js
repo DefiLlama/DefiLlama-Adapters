@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { stakings } = require("../helper/staking");
 const TROVE_FACTORY_CONTRACT = '0x3bB7fFD08f46620beA3a9Ae7F096cF2b213768B3'
@@ -7,11 +8,11 @@ const BNQ = '0x91eFbe97e08D0ffC7d31381c032D05FAd8E25aAA' // BONQ Utility Token
 const BNQ_STAKING_CONTRACT = '0xb1b72B3579b03dFdCfF3195486277605e55Cf703'
 const BNQ_BEUR_UNIV3_POOL = '0xA96373C7a591fd21b86E0c9b8E156CC81E6cBb5e'
 const TOKEN_COLLATERAL = [
-  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // WMATIC
-  '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+  ADDRESSES.polygon.WMATIC_2, // WMATIC
+  ADDRESSES.polygon.USDC, // USDC
   '0x35b2ece5b1ed6a7a99b83508f8ceeab8661e0632', // WALBT (Wrapped AllianceBlock Token)
-  '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
-  '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', // DAI
+  ADDRESSES.polygon.WETH_1, // WETH
+  ADDRESSES.polygon.DAI, // DAI
 ]
 const LP_COLLATERAL = [
   '0xa1dd21527c76bb1a3b667149e741a8b0f445fae2', // Arrakis Vault V1 BEUR/DAI
@@ -41,7 +42,7 @@ async function getPairTVL(balances, contract, api) {
     sdk.util.sumSingleBalance(balances, token1, uBals[1] * ratio, api.chain)
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const balances = {};
 
   const tokenUnderlying = await api.multiCall({
@@ -66,6 +67,7 @@ module.exports = {
   hallmarks: [
     [1675252800,"Oracle Hack"]
   ],
+  deadFrom: '2023-02-01',
   methodology: 'Summation of the collateral deposited in BonqDAO Troves (personal lending vaults)',
   start: 36884903,
   polygon: {

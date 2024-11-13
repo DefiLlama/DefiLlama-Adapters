@@ -157,7 +157,7 @@ module.exports = {
   },
   avax: {
     tvl: avaTvl,
-    pool2: staking(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs, "avax"),
+    pool2: staking(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs),
     staking: staking(
       "0x35bE7982bC5E40A8C9aF39A639bDDcE32081102e",
       "0x637afeff75ca669ff92e4570b14d6399a658902f",
@@ -179,7 +179,7 @@ module.exports = {
     tvl: bscTvl,
   },
   heco: {
-    staking: staking(stakingContractHeco, COOK_heco, "heco"),
-    pool2: pool2(stakingPool2ContractHeco, ETH_COOK_HMDXLP, "heco"),
+    staking: staking(stakingContractHeco, COOK_heco),
+    pool2: pool2(stakingPool2ContractHeco, ETH_COOK_HMDXLP),
   },
 };

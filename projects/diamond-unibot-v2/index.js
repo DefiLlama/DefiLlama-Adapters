@@ -1,78 +1,78 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const config = {
   arbitrum: {
+    proxyDeployer: "0x8a908ec03e2610fa8dcaec93bb010560780ec860",
     lendingPools: [
       [
-        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        ADDRESSES.arbitrum.WETH,
         "0xedd1efa76fe59e9106067d824b89b59157c5223c",
       ], // WETH
       [
-        "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+        ADDRESSES.arbitrum.USDC,
         "0xFEaDE428e2Fe0F547d560B540a7617087505538B",
       ], // USDC
       [
-        "0x912ce59144191c1204e64559fe8253a0e49e6548",
+        ADDRESSES.arbitrum.ARB,
         "0x4d5043d90f13ac2E6318B3aF9C3423A5224b920C",
       ], // ARB
     ],
-    vaults: [
+    balanceVault: [
       [
         [
-          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", // USDC
-          "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a", // GMX
-          "0x912ce59144191c1204e64559fe8253a0e49e6548", // ARB
+          ADDRESSES.arbitrum.USDC, // USDC
+          ADDRESSES.arbitrum.GMX, // GMX
+          ADDRESSES.arbitrum.ARB, // ARB
         ],
         "0x8610D60f5329B0560c8F0CEb80175F342fe943F3", // vault
       ],
     ],
     fromBlock: 49135720,
   },
-  polygon: {
+  bsc: {
+    proxyDeployer: "0xD8006420c1b2901849505eb3517cc36a169AE0A7",
     lendingPools: [
       [
-        "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
         "0x8610D60f5329B0560c8F0CEb80175F342fe943F3",
-      ], // WETH
-      [
-        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-        "0xEdD1efA76fe59e9106067D824b89B59157C5223C",
-      ], // WMATIC
+      ], // CAKE
     ],
-    vaults: [
+    balanceVault: [
       [
         [
-          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // USDC
-          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619", // WETH
+          ADDRESSES.bsc.USDT, // USDT
+          ADDRESSES.bsc.BUSD, // BUSD
+          ADDRESSES.bsc.WBNB, // WBNB
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", // CAKE
         ],
         "0xD576bE0d3CC1c0184d1ea3F1778A4A9Dec523859", // vault
       ],
     ],
-    fromBlock: 49135720,
+    fromBlock: 28688279,
   }
 }
 
-async function tvl(_, _b, _cb, { api }) {
-  const { vaults, lendingPools, fromBlock, } = config[api.chain]
-
+async function tvl(api) {
+  const { balanceVault, lendingPools, fromBlock, proxyDeployer } = config[api.chain]
   const logs = await getLogs({
     api, fromBlock,
-    target: "0x8a908ec03e2610fa8dcaec93bb010560780ec860",
+    target: proxyDeployer,
     topics: ["0x647c6c21d1279361153a5cf7618a50b9573a9729986f26d91c8a7e6501750f6f",],
   });
 
-  const pools = logs.map((i) => getAddress(i.topics[1]));
+  const factories = logs.map((i) => getAddress(i.topics[1]));
   const wantTokens = logs.map((i) => getAddress(i.data));
 
-  await sumTokens2({ api, owners: pools, resolveUniV3: true });
-  const tokensAndOwners = wantTokens.map((i, idx) => [i, pools[idx]]);
+  await sumTokens2({ api, owners: factories, resolveUniV3: true });
+  const tokensAndOwners = wantTokens.map((i, idx) => [i, factories[idx]]);
   tokensAndOwners.push(...lendingPools)
-  vaults.forEach(([tokens, vault]) => tokens.forEach(i => tokensAndOwners.push([i, vault])))
+  balanceVault.forEach(([tokens, vault]) => tokens.forEach(i => tokensAndOwners.push([i, vault])))
   return sumTokens2({ api, tokensAndOwners });
 }
 
 module.exports = {
   doublecounted: true,
   arbitrum: { tvl },
-  polygon: { tvl },
+  bsc: { tvl }
 }

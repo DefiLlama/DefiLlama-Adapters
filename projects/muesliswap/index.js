@@ -6,7 +6,10 @@ const { fetchURL } = require('../helper/utils')
 async function staking() {
     let totalAda = 0
     // Milk locked
-    const tvlMilk = (await fetchURL("https://staking.muesliswap.com/milk-locked")).data
+    const tvlMilk = (
+        (await fetchURL("https://staking.muesliswap.com/milk-locked")).data +
+        (await fetchURL("https://staking.muesliswap.com/milk-vault-locked")).data
+    )
     if (tvlMilk.data <= 0) {
         throw new Error("muesliswap tvl is below 0")
     }
@@ -30,15 +33,9 @@ async function adaTvl() {
     let totalAda = 0
 
     // fetch the prices of each traded token first
-    const tokenlistV2 = (await fetchURL("https://api.muesliswap.com/list?base-policy-id=&base-tokenname=")).data
-    const adaPrices = new Map(tokenlistV2.map(d => {
-        const ident = d.info.address.policyId + '.' + d.info.address.name
-        const bidPrice = parseFloat(d.price.bidPrice)
-        const price = parseFloat(d.price.price)
-        return [ident, { bidPrice, price }]
-    }))
+    const adaPrices = new Map(Object.entries((await fetchURL("https://api.muesliswap.com/defillama/prices")).data))
 
-    // then first accumulate over the legacy orderbook
+   /*  // then first accumulate over the legacy orderbook
     const orderbookV1 = (await fetchURL("https://orders.muesliswap.com/all-orderbooks")).data
     const vOrderbookV1 = orderbookV1.map(ob => {
         if (ob.fromToken === ".") {
@@ -62,7 +59,7 @@ async function adaTvl() {
             return (totalBuy * fromPrice + totalSell * toPrice)
         }
     })
-    totalAda += vOrderbookV1.reduce((p, c) => p + c, 0)
+    totalAda += vOrderbookV1.reduce((p, c) => p + c, 0) */
 
     // then accumulate over the orderbooks
     const orderbookV2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
@@ -102,15 +99,11 @@ module.exports = {
     misrepresentedTokens: true,
     timetravel: false,
     methodology: "The factory addresses are used to find the LP pairs on Smart BCH and Milkomeda. For Cardano we calculate the tokens on resting orders on the order book contracts. TVL is equal to the liquidity on the AMM plus the open orders in the order book",
-    smartbch: {
-        tvl: getUniTVL({ factory: '0x72cd8c0B5169Ff1f337E2b8F5b121f8510b52117', chain: 'smartbch', useDefaultCoreAssets: true }),
-        staking: stakingPricedLP("0x4856BB1a11AF5514dAA0B0DC8Ca630671eA9bf56", "0xc8E09AEdB3c949a875e1FD571dC4b3E48FB221f0", "smartbch", "0x599061437d8455df1f86d401FCC2211baaBC632D", "bitcoin-cash", false, 18)
-    },
     cardano: {
         tvl: adaTvl,
-        staking
+        // staking
     },
     milkomeda: {
-        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', chain: 'milkomeda', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', useDefaultCoreAssets: true }),
     }
 }

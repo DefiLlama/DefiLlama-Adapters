@@ -1,4 +1,5 @@
-const { compoundExports } = require("../helper/compound");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { compoundExports, methodology, } = require("../helper/compound");
 
 const blacklist = [
   '0x4002a65e13f87C897B8018Fd7329af17339346ba',
@@ -7,8 +8,11 @@ const blacklist = [
   '0x1611Ac5e87aC082e016d60dB63eccb50F45B8b4e',
   '0x438DDA002CaDBe95F72b7b9acB1FEf4782418566',
 ];
-  
+
 module.exports = {
-    methodology: `As in Compound Finance, TVL counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are counted as "Borrowed" TVL and can be toggled towards the regular TVL.`,
-    ethpow: compoundExports("0x5e496e7F241B13c514A78B7E840bc3cC744D7215", "ethpow", "0xb9e008f2C039fB994C8adD806F8aF709899aA95e", '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' , undefined, undefined, {blacklistedTokens: blacklist})
+  methodology,
+  ethpow: compoundExports("0x5e496e7F241B13c514A78B7E840bc3cC744D7215",  "0xb9e008f2C039fB994C8adD806F8aF709899aA95e", ADDRESSES.ethereum.WETH, { blacklistedTokens: blacklist })
 } 
+
+module.exports.deadFrom='2023-05-01',
+module.exports.ethpow.borrowed = () => ({}) // bad debt

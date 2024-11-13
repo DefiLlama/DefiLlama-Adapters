@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
 const { request, } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
 const { getBlock } = require('./helper/http')
@@ -7,8 +6,8 @@ const { transformBalances } = require('./helper/portedTokens')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
-// const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
-// const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
+// const polygonGraphUrl = sdk.graph.modifyEndpoint('BoiJR4mfVpVthWjTcansrCUFCjKY9MfDxgTfzkf4YpAN')
+// const xdaiGraphUrl = sdk.graph.modifyEndpoint('A3LhWnFQR13mxQPFGUZML9vyBrLLKhLJBhfFsrdShxBU')
 
 const supertokensQuery = `
 query get_supertokens($block: Int) {
@@ -72,10 +71,10 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
       symbol,
       isNativeAssetSuperToken,
     } = allTokens[i]
-    let underlyingTokenBalance = BigNumber(totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)).toFixed(0)
+    let underlyingTokenBalance = totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = underlyingAddress
-    // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
+    // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) sdk.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
     // if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
     if (!underlyingToken || blacklist.has(underlyingAddress.toLowerCase())) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
@@ -100,12 +99,12 @@ async function retrieveSupertokensBalances(chain, block, isVesting, ts, graphUrl
 }
 
 const config = {
-  avax: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c', },
-  polygon: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic', },
-  xdai: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai', },
-  optimism: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet', },
-  arbitrum: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one', },
-  bsc: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet', },
+  avax: { graph: sdk.graph.modifyEndpoint('CtYR3ng4ED64HVEzDo49eKQgEf78RERiC8mDUtwLxda'), },
+  polygon: { graph: sdk.graph.modifyEndpoint('7d9iBvDoM43SZiZhRR2pnpW8z3ujSEy9nC6RuqnufRU9'), },
+  xdai: { graph: sdk.graph.modifyEndpoint('DE6fybqxjXLNvqGpd4QLAD92kAZNEmha1ZfKvS2qM376'), },
+  optimism: { graph: sdk.graph.modifyEndpoint('S48f1C3KhNB2YbEMDxYHPzZ3FYt27fQZdruKfSTeEdZ'), },
+  arbitrum: { graph: sdk.graph.modifyEndpoint('ES5GNHtiaqP6jFydhUyD9R4RackYrbGr6LEL1ZDauktd'), },
+  bsc: { graph: sdk.graph.modifyEndpoint('FzYUiDH968QKbjURULGE5Pwh1ZRvcBNjDcut5YSiMYnj'), },
 }
 
 module.exports = {

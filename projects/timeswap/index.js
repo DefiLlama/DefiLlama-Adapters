@@ -1,14 +1,15 @@
-const { request, gql } = require("graphql-request");
+const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
   polygon:
-    "https://api.thegraph.com/subgraphs/name/timeswap-labs/timeswap-defi-llama",
+    sdk.graph.modifyEndpoint('CjoTTVotweY5YZYjGbskVMZvJi8oD6urLnP1N7rWVFun'),
 };
 
 function chainTvl(chain) {
-  return async (timestamp, _ethBlock, chainBlocks, { api }) => {
-    const query = gql`
+  return async (api) => {
+    const query = `
       {
         pairs {
           id
@@ -23,7 +24,7 @@ function chainTvl(chain) {
     `;
 
     const pairs = (
-      await request(GRAPH_URLS[chain], query)
+      await cachedGraphQuery('timeswap/'+api.chain, GRAPH_URLS[chain], query)
     ).pairs.map((pair) => ({
       address: pair.id,
       asset: pair.asset.id,

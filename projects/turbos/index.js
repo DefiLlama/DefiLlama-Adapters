@@ -1,15 +1,6 @@
 const sui = require("../helper/chain/sui");
-const axios = require("axios");
 
-async function getPoolFactoryConfig() {
-  const result = await axios.get(
-    "https://s3.amazonaws.com/app.turbos.finance/sdk/contract.json"
-  );
-  return result.data.mainnet.contract.PoolConfig;
-}
-
-async function tvl(_timestamp, _block, _chainBlocks, { api }) {
-  // const poolFactoryConfig = await getPoolFactoryConfig();
+async function tvl(api) {
   const poolFactoryConfig = '0xc294552b2765353bcafa7c359cd28fd6bc237662e5db8f09877558d81669170c';
   const parent = await sui.getObject(poolFactoryConfig);
   const poolFields = await sui.getDynamicFieldObjects({

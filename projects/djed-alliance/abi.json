@@ -1,0 +1,5 @@
+{
+  "Djed": {
+    "reserve": "function R(uint256 cpa) view returns (uint256 balance)"
+  }
+}

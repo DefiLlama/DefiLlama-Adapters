@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs")
@@ -7,7 +8,7 @@ const { pool2s } = require('../helper/pool2')
 const tokens = {
   dai: {
     token:'DAI',
-    address:'0x6b175474e89094c44da98b954eedeac495271d0f',
+    address:ADDRESSES.ethereum.DAI,
     decimals:18,
     correspondingMintableToken: 'waUSD'
   },
@@ -19,13 +20,13 @@ const tokens = {
   },
   wbtc: {
     token:'wBTC',
-    address:'0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+    address:ADDRESSES.ethereum.WBTC,
     decimals:8,
     correspondingMintableToken: 'waBTC'
   },
   lusd: {
     token:'LUSD',
-    address:'0x5f98805a4e8be255a32880fdec7f6728c6568ba0',
+    address:ADDRESSES.ethereum.LUSD,
     decimals:18,
     correspondingMintableToken: 'waLUSD'
   },
@@ -48,7 +49,7 @@ const tokens = {
   },
   weth: {
     token:'WETH',
-    address:'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    address:ADDRESSES.ethereum.WETH,
     decimals:18,
     correspondingMintableToken: 'waETH'
   },
@@ -65,7 +66,7 @@ const tokens = {
   },
   usdc: {
     token: 'usdc',
-    address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    address: ADDRESSES.ethereum.USDC,
     decimals: 6
   }
 }
@@ -221,7 +222,7 @@ const tokensPolygon = {
   },
   usdc: {
     token: 'USDC',
-    address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+    address: ADDRESSES.polygon.USDC,
     decimals: 6,
   },
   pusd: {
@@ -335,7 +336,7 @@ const tokensBSC = {
   },
   wbnb: {
     token:'WBNB',
-    address:'0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+    address:ADDRESSES.bsc.WBNB,
     decimals:18,
     correspondingMintableToken: 'waBNB'
   },
@@ -347,7 +348,7 @@ const tokensBSC = {
   },
   busd: {
     token: 'BUSD',
-    address: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+    address: ADDRESSES.bsc.BUSD,
     decimals: 18,
     correspondingMintableToken: 'waBUSD'
   }
@@ -371,7 +372,7 @@ const collectorsBSC = [
   },
 ]
 
-const busd = 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56'
+const busd = 'bsc:' + ADDRESSES.bsc.BUSD
 
 async function bsc(timestamp, block, chainBlocks) {
     let balances = {};
@@ -482,14 +483,14 @@ module.exports = {
     },
     bsc:{
         tvl: bsc,
-        staking: stakings([contractsBSC.votingEscrow.address], tokensBSC.wasabi.address, 'bsc'),
+        staking: stakings([contractsBSC.votingEscrow.address], tokensBSC.wasabi.address),
         pool2: pool2s([
           contractsBSC.stakingPools.address,
         ], [contractsBSC.wasabiWBNBLp.address, contractsBSC.wabusdBusdLp.address], 'bsc'),
     },
     polygon:{
         tvl: polygon,
-        staking: stakings([contractsPolygon.votingEscrow.address], tokensPolygon.wasabi.address, 'polygon'),
+        staking: stakings([contractsPolygon.votingEscrow.address], tokensPolygon.wasabi.address),
         pool2: pool2s([
           contractsPolygon.stakingPools.address,
         ], [contractsPolygon.wasabiUSDCLp.address, contractsPolygon.wapusdPusdSLp.address], 'polygon'),

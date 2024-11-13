@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformFantomAddress } = require("../helper/portedTokens");
 const fantomYields = require("./fantom-yields");
 const { routerAbi } = require("./router-abi");
 
@@ -30,7 +29,7 @@ async function getBalance(balances, fyield, chainBlocks, transform) {
 
 async function getBalanceIn(chainBlocks, balances, chainName) {
   if (chainName == "fantom") {
-    const transform = await transformFantomAddress();
+    const transform = i => `fantom:${i}`;
     const { fyields } = fantomYields;
     await getTotalBalance(balances, fyields, chainBlocks, transform);
   }
@@ -45,9 +44,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
+      methodology:
     "Accross different vaults, counts the total number of assets accumulated on each of them",
   start: 33000000,
   fantom: {

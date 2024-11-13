@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 const { stakings } = require("../helper/staking");
 const chain = 'fantom'
@@ -5,8 +6,8 @@ const chain = 'fantom'
 //BASED V2
 const smelt = "0x141FaA507855E56396EAdBD25EC82656755CD61e";
 const BoardroomV2 = "0x8ff9eFB99D522fAC6a21363b7Ca54d25477637F6";
-const usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
-const wftm = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
+const usdc = ADDRESSES.fantom.USDC;
+const wftm = ADDRESSES.fantom.WFTM;
 const treasuryAddress = '0x0A10daD90b9C6FB8B87BFf3857A4B012890C53A5';
 
 //BASED V2 Twisted Nodes
@@ -26,6 +27,6 @@ module.exports = {
   fantom: {
     tvl: async () => ({}),
     treasury,
-    staking: stakings([BoardroomV2, shortNodes, mediumNodes, longNodes, ], smelt, "fantom"),
+    staking: stakings([BoardroomV2, shortNodes, mediumNodes, longNodes, ], smelt),
   },
 };

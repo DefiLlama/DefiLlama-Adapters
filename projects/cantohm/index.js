@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unknownTokens");
 const lps = [
   '0x2382994D8A15d2dd2aAE10561688Ef6cbe10CB8C',
@@ -11,8 +12,8 @@ module.exports = {
     tvl: sumTokensExport({
       owner: '0xB8Ce90A08bdAdd3e6e6cD3173c0661FA94Aa81c5',
       tokens: [
-        '0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503',
-        '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
+        ADDRESSES.canto.NOTE,
+        ADDRESSES.canto.WCANTO,
         ...lps,
       ],
       useDefaultCoreAssets: true,

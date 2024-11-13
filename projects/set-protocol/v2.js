@@ -4,7 +4,6 @@ const BigNumber = require('bignumber.js');
 
 const SUPPLY_SCALE = BigNumber("10").pow(18)
 const START_BLOCK = 10830496;
-const EXTERNAL_POSITION = '1';
 
 const getSets = "address[]:getSets"
 const getPositions = 'function getPositions() view returns (tuple(address component, address module, int256 unit, uint8 positionState, bytes data)[])';
@@ -48,7 +47,6 @@ module.exports = async function tvl(timestamp, block) {
     }),
   })).output;
 
-  let uniswapPositions = {};
   positionsForSets.forEach(function(positionForSet, i) {
     const setSupply = BigNumber(supplies[i].output);
     if(positionForSet.output === null){
@@ -58,7 +56,6 @@ module.exports = async function tvl(timestamp, block) {
       const componentAddress = position[0];
       const positionUnits = BigNumber(position[2]);
       
-      const isExternalPosition = position[3] == EXTERNAL_POSITION;
       balances[componentAddress] = BigNumber(balances[componentAddress] || 0).plus((positionUnits).times(setSupply).div(SUPPLY_SCALE)).toFixed(0);
     });    
   });

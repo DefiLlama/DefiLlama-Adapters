@@ -1,49 +1,26 @@
-const BigNumber = require('bignumber.js')
-const { request, gql } = require("graphql-request");
+const { sumTokens, getStorage } = require("../helper/chain/tezos")
+const SIRS = 'KT1TxqZ8QtKvLu3V3JH7Gx58n7Co8pgtpQU5'
 
-const graphUrl = 'https://back-mainnet.kord.fi/v1/graphql';
-const tvlDataQuery = gql`
-query TvlDataQuery {
-    contractInfo {
-        tzbtcDeposit
-        tzbtcDepositIndex
-        xtzDeposit
-        xtzDepositIndex
-        xtzLbShares
-        tzbtcLbShares
-    }
-    externalInfo {
-        tzbtcRate
-        xtzRate
-        lbXtzRate
-        lbTzbtcRate
-    }
+async function tvl(api) {
+  const { lqtAddress, tokenAddress, xtzPool, lqtTotal, tokenPool } = await getStorage(SIRS)
+  await sumTokens({
+    includeTezos: true, balances: api.getBalances(), owners: [
+      'KT1WL6sHt8syFT2ts7NCmb5gPcS2tyfRxSyi',
+      'KT19qWdPBRtkWrsQnDvVfsqJgJB19keBhhMX'
+    ]
+  })
+
+  const LPtoken = 'tezos:' + lqtAddress
+  const lqtBal = api.getBalances()[LPtoken] ?? 0
+  const ratio = lqtBal / lqtTotal
+  api.add(tokenAddress, tokenPool * ratio)
+  api.add("coingecko:tezos", xtzPool * ratio / 1e6, { skipChain: true })
+
+  api.removeTokenBalance(LPtoken)
+  api.removeTokenBalance('KT18j785rB3G4wXxEpqwwG2hJ2iZrjLAbeo7')
+
+  return api.getBalances()
 }
-`
-
-async function fetch() {
-    const data = (await request(graphUrl, tvlDataQuery));
-    const depositTvl = (
-        BigNumber(data['contractInfo'][0]['tzbtcDeposit'])
-        .times(data['contractInfo'][0]['tzbtcDepositIndex'])
-        .dividedBy(100000000)
-        .times(data['externalInfo'][0]['tzbtcRate'])
-        .plus(BigNumber(data['contractInfo'][0]['xtzDeposit'])
-              .times(data['contractInfo'][0]['xtzDepositIndex'])
-              .dividedBy(1000000)
-              .times(data['externalInfo'][0]['xtzRate']))
-    );
-    const farmTvl = (
-        BigNumber(data['contractInfo'][0]['tzbtcLbShares'])
-        .times(data['externalInfo'][0]['lbTzbtcRate'])
-        .times(data['externalInfo'][0]['tzbtcRate'])
-        .plus(BigNumber(data['contractInfo'][0]['xtzLbShares'])
-              .times(data['externalInfo'][0]['lbXtzRate'])
-              .times(data['externalInfo'][0]['xtzRate']))
-    );
-    return parseFloat(depositTvl.plus(farmTvl).toFixed(2));
-}
-
 module.exports = {
-    fetch,
+  tezos: { tvl },
 }

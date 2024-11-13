@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasuryContractsETH = ["0x8739f0EeF3163C3db7b994d0e301BC375d757aF6"];
@@ -19,7 +20,7 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+        ADDRESSES.ethereum.DAI,
      ],
     owners: treasuryContractsETH,
     ownTokens: [USV],
@@ -28,7 +29,7 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1', //mimatic
-      '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063', //DAI
+      ADDRESSES.polygon.DAI, //DAI
       '0x104592a158490a9228070E0A8e5343B499e125D0', // frax
     ],
     owners: treasuryContractsMATIC,
@@ -36,7 +37,7 @@ module.exports = treasuryExports({
   },
   avax: {
     tokens: [
-      '0xd586e7f844cea2f87f50152665bcbc2c279d8d70', // DAI
+      ADDRESSES.avax.DAI, // DAI
     ],
     owners: treasuryContractsAvax,
     ownTokens: [USVAVAX],
@@ -44,7 +45,7 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [
       '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3', //DAI
-      '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', //busd
+      ADDRESSES.bsc.BUSD, //busd
     ],
     owners: treasuryContractsBSC,
     ownTokens: [USVBSC],

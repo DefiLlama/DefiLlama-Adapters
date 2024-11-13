@@ -1,4 +1,3 @@
-const axios = require("axios");
 const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const network = (chainId) => `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;

@@ -1,11 +1,23 @@
+const ADDRESSES = require('./coreAssets.json')
+const { getUniqueAddresses } = require('./tokenMapping')
 let stableTokens = ['USDC', 'USDT', 'DAI', 'WETH', 'WFTM', 'WGLMR', 'WBNB', 'WAVAX', 'JCHF', 'JEUR', 'WBTC', 'AGDAI', 'JPYC',
   'MIMATIC', 'WXDAI', 'EURS', 'JGBP', 'CNT', 'USD+', 'AMUSDC', 'RAI', 'SLP', 'SDAM3CRV', 'AMDAI', 'TUSD', 'RAI', 'UNI-V2', 'SLP', 'ScUSDC',
   'cUSDC', 'iDAI', 'FTM', 'yUSDC', 'cDAI', 'MATIC', 'UST', 'stETH', 'USD', 'mUSD', 'iUSDC', 'aDAI', 'AGEUR', 'BCT', 'WMATIC', 
-  'DAI.e', 'USDC.e', 'USDT.e', 'BUSD',
+  'DAI.e', 'USDC.e', 'USDT.e', 'BUSD', 'WKAVA', 'axlUSDC',
 ].map(i => i.toUpperCase())
 
 function isStableToken(symbol = '', address = '') {
   return stableTokenAddresses.includes(address.toLowerCase()) || stableTokens.includes(symbol.toUpperCase())
+}
+
+async function getWhitelistedTokens({ api, tokens, isVesting  }) {
+  tokens = getUniqueAddresses(tokens, api.chain)
+  let symbols = []
+  if (!['solana', 'sui', 'aptos'].includes(api.chain)) {
+    symbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true})
+  }
+  tokens = tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
+  return tokens
 }
 
 function isWhitelistedToken(symbol, address, isVesting) {
@@ -15,69 +27,87 @@ function isWhitelistedToken(symbol, address, isVesting) {
 
 const stableTokenAddresses = [
   // native token
-  '0x0000000000000000000000000000000000000000',
+  ADDRESSES.null,
 
   // metis
-  '0xEA32A96608495e54156Ae48931A7c20f0dcc1a21',
-  '0x12D84f1CFe870cA9C9dF9785f8954341d7fbb249',
+  ADDRESSES.metis.m_USDC,
+  ADDRESSES.metis.BUSD,
 
   // avax
-  '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70',
-  '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',
-  '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+  ADDRESSES.avax.DAI,
+  ADDRESSES.avax.USDC_e,
+  ADDRESSES.avax.USDC,
   '0x0f577433Bf59560Ef2a79c124E9Ff99fCa258948',
 
   // xdai
-  '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d',
-  '0x4ECaBa5870353805a9F068101A40E0f32ed605C6',
+  ADDRESSES.xdai.WXDAI,
+  ADDRESSES.xdai.USDT,
   '0x91f8490eC27cbB1b2FaEdd29c2eC23011d7355FB',
 
   // fantom
-  '0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E',
+  ADDRESSES.fantom.DAI,
   '0x6Fc9383486c163fA48becdEC79d6058f984f62cA',
-  '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
-  '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
+  ADDRESSES.fantom.USDC,
+  ADDRESSES.fantom.WFTM,
 
   // ethereum
-  '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-  '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-  '0x853d955aCEf822Db058eb8505911ED77F175b99e',
+  ADDRESSES.ethereum.DAI,
+  ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.FRAX,
   '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5',
-  '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+  ADDRESSES.ethereum.WETH,
 
   // polygon
-  '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
-  '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-  '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+  ADDRESSES.polygon.DAI,
+  ADDRESSES.polygon.USDT,
+  ADDRESSES.polygon.USDC,
   '0xC2DbaAEA2EfA47EBda3E572aa0e55B742E408BF6',
-  '0x0000000000000000000000000000000000001010',
+  ADDRESSES.polygon.WMATIC_1,
   '0x4198A31A98dB56b48AEBa6103F7C23679B9794F3',
 
   // bsc
   '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
-  '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-  '0x55d398326f99059fF775485246999027B3197955',
-  '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+  ADDRESSES.bsc.BUSD,
+  ADDRESSES.bsc.USDT,
+  ADDRESSES.bsc.USDC,
 
   // arbitrum
-  '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
-  '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+  ADDRESSES.optimism.DAI,
+  ADDRESSES.arbitrum.WETH,
   '0x662d0f9Ff837A51cF89A1FE7E0882a906dAC08a3',
-  '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+  ADDRESSES.arbitrum.USDC,
   '0x64343594Ab9b56e99087BfA6F2335Db24c2d1F17',
-  '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+  ADDRESSES.arbitrum.USDT,
 
   // optimism
-  '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
-  '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
+  ADDRESSES.optimism.DAI,
+  ADDRESSES.optimism.USDC,
 
   // meter
-  '0x6ABAEDAB0Ba368F1DF52D857f24154CC76c8c972',
-  '0xD86e243FC0007e6226B07c9A50C9d70D78299EB5',
-  '0x24aA189DfAa76c671c279262F94434770F557c35',
-  '0x5Fa41671c48e3C951AfC30816947126CCC8C162e',
+  ADDRESSES.meter.MTR,
+  ADDRESSES.meter.USDC_eth,
+  ADDRESSES.meter.BUSD_bsc,
+  ADDRESSES.meter.USDT_eth,
   '0x687A6294D0D6d63e751A059bf1ca68E4AE7B13E2',
+
+  ADDRESSES.solana.SOL,
+  ADDRESSES.solana.USDC,
+  ADDRESSES.solana.USDT,
+
+  ADDRESSES.sui.SUI,
+  ADDRESSES.sui.USDC,
+  ADDRESSES.sui.WETH,
+  ADDRESSES.sui.USDT,
+
+  ADDRESSES.aptos.APT,
+  ADDRESSES.aptos.USDC,
+  ADDRESSES.aptos.USDC_1,
+  ADDRESSES.aptos.USDC_2,
+  ADDRESSES.aptos.USDT,
+  ADDRESSES.aptos.USDT_2,
+
+
 ].map(i => i.toLowerCase())
 
 module.exports = {
@@ -85,4 +115,5 @@ module.exports = {
   stableTokenAddresses,
   isStableToken,
   isWhitelistedToken,
+  getWhitelistedTokens,
 }

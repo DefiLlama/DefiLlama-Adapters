@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -6,7 +7,7 @@ const config = {
       '0x0d0707963952f2fba59dd06f2b425ace40b492fe',
       '0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c',
       '0x234ee9e35f8e9749a002fc42970d570db716453b',
-      '0x925206b8a707096Ed26ae47C84747fE0bb734F59',
+      //'0x925206b8a707096Ed26ae47C84747fE0bb734F59', //this should never be here, its the WBT token wallet
       '0xD793281182A0e3E023116004778F45c29fc14F19',
       '0xc882b111a75c0c657fc507c04fbfcd2cc984f071',
     ],
@@ -59,15 +60,20 @@ const config = {
       '0xc882b111a75c0c657fc507c04fbfcd2cc984f071',
     ]
   },
-  bitcoin: {
+  era: {
     owners: [
-      '14kmvhQrWrNEHbrSKBySj4qHGjemDtS3SF',
-      '162bzZT2hJfv5Gm3ZmWfWfHJjCtMD6rHhw',
-      '1EkkGXR7dTbZbrKFKoe6YEP4gj4GzMeKvw',
-      '1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9',
-      '1HpED69tpKSaEaWpY3Udt1DtcVcuCUoh2Y',
-      '3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M',
+      '0x0d0707963952f2fba59dd06f2b425ace40b492fe',
+      '0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c',
+      '0x234ee9e35f8e9749a002fc42970d570db716453b',
+   //   '0x925206b8a707096Ed26ae47C84747fE0bb734F59',
+      '0xD793281182A0e3E023116004778F45c29fc14F19',
+      '0xc882b111a75c0c657fc507c04fbfcd2cc984f071',
+      '0x85FAa6C1F2450b9caEA300838981C2e6E120C35c',
+      '0xeb01f8cdae433e7b55023ff0b2da44c4c712dce2',
     ]
+  },
+  bitcoin: {
+    owners: bitcoinAddressBook.gateIo
   },
   tron: {
     owners: [
@@ -95,6 +101,11 @@ const config = {
       'rLzxZuZuAHM7k3FzfmhGkXVwScM4QSxoY7',
       'rNnWmrc1EtNRe5SEQEs9pFibcjhpvAiVKF',
       'rNu9U5sSouNoFunHp9e9trsLV6pvsSf54z',   
+    ]
+  },
+  starknet: {
+    owners: [
+      '0x00e91830f84747f37692127b20d4e4f9b96482b1007592fee1d7c0136ee60e6d'  
     ]
   }
 }

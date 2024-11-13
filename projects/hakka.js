@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens2, nullAddress, sumTokensExport } = require('./helper/unwrapLPs')
 
 const HAKKA_ADDRESSES = {
@@ -15,26 +16,25 @@ const intelligenceETH = ['0x0F2fd95c221770d108aCD5363D25b06Bdc43140B']
 const intelligenceBSC = ['0xD8B3fF98025Cf203Ba6D7Bb2d25DBeEF9539E6FB', '0x517Ef6281a9b3dc4Ef6B0318Bc5EDFDCf677d29D', '0x0A3e364eE37bac9E6aFF9E864E65B4603D5BC5D4']
 const BSC_BHS_ADDRESS = '0x75192D6f3d51554CC2eE7B40C3aAc5f97934ce7E'
 
-async function ethereum(_, block) {
+async function ethereum(api) {
   const toa = [
     [nullAddress, thirdFloorAddress], // thirdFloor
     // guild bank
     [nullAddress, hakkaGuildBank],
-    ['0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2', hakkaGuildBank],
+    [ADDRESSES.ethereum.MKR, hakkaGuildBank],
     ['0x35101c731b1548B5e48bb23F99eDBc2f5c341935', hakkaGuildBank],
-    ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', hakkaGuildBank],
+    [ADDRESSES.ethereum.USDC, hakkaGuildBank],
   ]
 
-  return sumTokens2({ tokensAndOwners: toa, block, })
+  return sumTokens2({ tokensAndOwners: toa, api, })
 }
-async function bsc(_, _b, { bsc: block }) {
-  const chain = 'bsc'
+async function bsc(api) {
   const toa = [
-    ['0xe9e7cea3dedca5984780bafc599bd69add087d56', BSC_BHS_ADDRESS], // thirdFloor
-    ['0x55d398326f99059ff775485246999027b3197955', BSC_BHS_ADDRESS], // thirdFloor
+    [ADDRESSES.bsc.BUSD, BSC_BHS_ADDRESS], // thirdFloor
+    [ADDRESSES.bsc.USDT, BSC_BHS_ADDRESS], // thirdFloor
   ]
 
-  return sumTokens2({ tokensAndOwners: toa, block, chain })
+  return sumTokens2({ tokensAndOwners: toa, api })
 }
 
 module.exports = {
@@ -50,6 +50,6 @@ module.exports = {
   },
   bsc: {
     tvl: bsc,
-    staking: sumTokensExport({ owners: intelligenceBSC, tokens: [HAKKA_ADDRESSES[56]], chain: 'bsc' }),
+    staking: sumTokensExport({ owners: intelligenceBSC, tokens: [HAKKA_ADDRESSES[56]], }),
   }
 }

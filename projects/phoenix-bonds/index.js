@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { call } = require('../helper/chain/near')
 
 async function tvl() {
   const linear_price = await call(
-    'linear-protocol.near', 
+    ADDRESSES.near.LINA, 
     'ft_price', 
     {}
   );

@@ -1,24 +1,33 @@
-const axios = require('axios');
-const dataUrl = 'https://spicya.sdaotools.xyz/api/rest/SpicyDailyMetrics';
+const { sumTokens2, getStorage, getBigMapById, } = require('../helper/chain/tezos')
+const { transformDexBalances, } = require('../helper/portedTokens')
 
-async function tvl() {
-    const data = (await axios(dataUrl)).data;
-    const totalLiquidity = data.spicy_day_data[0].totalliquidityxtz;
-    return {
-        "tezos": totalLiquidity
-    }
+async function staking() {
+  return sumTokens2({ owners: ['KT1DUwNeGHVHVW3RqjdfrGgucZHTxy228c68'] })
 }
 
 module.exports = {
-    methodology: `TVL counts the liquidity of SpicySwap farms. Data is pulled from:"${dataUrl}".`,
-    misrepresentedTokens: true,
-    timetravel: false,
-    tezos: {
-        tvl,
-        staking: async () => {
-            const data = (await axios(dataUrl)).data;
-            const tether = data.spicy_day_data[0].totalstakedfarmusdspi;
-            return { tether }
-        },
-    }
+  tezos: {
+    tvl: async () => {
+      const balances = await sumTokens2({ owners: ['KT1Uq1nmWrnEuBtqMg3FP5nBxfhyHR62y2U3'] }) // limit order tvl
+      const data = await getStorage('KT1PwoZxyv4XkPEGnTqWYvjA1UYiPTgAGyqL')
+      const swaps = await getBigMapById(data.pairs);
+      const pairs = Object.values(swaps).map(i => i.contract)
+      const data1 = []
+      for (const pair of pairs) {
+        const data = await getStorage(pair)
+        data1.push({
+          token0: getToken(data.token0),
+          token1: getToken(data.token1),
+          token0Bal: data.reserve0,
+          token1Bal: data.reserve1
+        })
+      }
+      return transformDexBalances({ balances, chain: 'tezos', data: data1})
+    },
+    staking,
+  }
+}
+
+function getToken({ token_id, fa2_address }) {
+  return fa2_address + (token_id && token_id !== '0' ? `-${token_id}` : '')
 }

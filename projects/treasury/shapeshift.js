@@ -1,24 +1,79 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 const shaTreasury = "0x90A48D5CF7343B08dA12E067680B4C6dbfE551Be";
+const safeOptimism = "0x6268d07327f4fb7380732dc6d63d95F88c0E083b"; 
 
+const safeAvalanche = "0x74d63F31C2335b5b3BA7ad2812357672b2624cEd" ;
 
+const safePolygon = "0xB5F944600785724e31Edb90F9DFa16dBF01Af000" ;
+
+const safeGnosis = "0xb0E3175341794D1dc8E5F02a02F9D26989EbedB3" ;
+
+const safeBSC = "0x8b92b1698b57bEDF2142297e9397875ADBb2297E" ;
+
+const safeArbitrum = "0x38276553F8fbf2A027D901F8be45f00373d8Dd48" ;
+
+const LP = "0x470e8de2eBaef52014A47Cb5E6aF86884947F08c"
 const FOX = "0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d";
+const tFOX = "0x808D3E6b23516967ceAE4f17a5F9038383ED5311"
 
 
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F',//DAI
-        '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',//LUSD
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',//WETH
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7',//USDT
+        ADDRESSES.ethereum.USDC,//USDC
+        ADDRESSES.ethereum.DAI,//DAI
+        ADDRESSES.ethereum.LUSD,//LUSD
+        ADDRESSES.ethereum.WETH,//WETH
+        ADDRESSES.ethereum.USDT,//USDT
         '0x6f80310CA7F2C654691D1383149Fa1A57d8AB1f8',//SILO
-        '0x2e9d63788249371f1DFC918a52f8d799F4a38C94',//TOKE
+        ADDRESSES.ethereum.TOKE,//TOKE
      ],
     owners: [shaTreasury],
-    ownTokens: [FOX],
+    ownTokens: [FOX, LP, tFOX],
+  },
+  arbitrum: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [safeArbitrum],
+    ownTokens: [],
+  },
+  bsc: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [safeBSC],
+    ownTokens: [],
+  },
+  xdai: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [safeGnosis],
+    ownTokens: ["0x21a42669643f45Bc0e086b8Fc2ed70c23D67509d"],
+  },
+  polygon: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [safePolygon],
+    ownTokens: [],
+  },
+  avax: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [safeAvalanche],
+    ownTokens: [],
+  },
+  optimism: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [safeOptimism],
+    ownTokens: ["0xF1a0DA3367BC7aa04F8D94BA57B862ff37CeD174"],
   },
 })

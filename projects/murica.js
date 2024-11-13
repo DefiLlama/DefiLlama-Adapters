@@ -12,3 +12,4 @@ const pool2lps = [
 module.exports = {
     ...tombTvl(bond, share, rewardPool, boardroom, pool2lps, "fantom", undefined, false, pool2lps[1])
 };
+module.exports.deadFrom = '2023-04-09'

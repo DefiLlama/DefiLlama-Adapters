@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unknownTokens')
 
 const WkavaBeekLpAddress = "0x6F95ff58Cdbf17594882E7EF948687aC81c2fEE0";
 
-const ERC20ContractWkavaAddress = "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b";
+const ERC20ContractWkavaAddress = ADDRESSES.kava.WKAVA;
 const ERC20ContractBeekAddress = "0xb520e9C5123A450828c190cb6073583a5ecd0d74";
 
 const POL_Pool_One = "0x00635507895D30801f60a2859990420013068ee0";

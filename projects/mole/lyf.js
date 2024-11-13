@@ -4,25 +4,36 @@ const BigNumber = require("bignumber.js");
 const { coreTokens } = require("../helper/chain/aptos");
 const { getResources } = require("../helper/chain/aptos");
 const { getConfig } = require('../helper/cache')
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, addUniV3LikePosition } = require("../helper/unwrapLPs");
+const sui = require('../helper/chain/sui')
 const { transformBalances } = require("../helper/portedTokens");
 
 async function getProcolAddresses(chain) {
-  if (chain === 'avax') {
-    return (
-      await getConfig('mole/'+chain,
-        "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.avalanche_mainnet.json"
-      )
-    );
-  }else if(chain === 'aptos') {
+  // if (chain === 'avax') {
+  //   return (
+  //     await getConfig('mole/'+chain,
+  //       "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.avalanche_mainnet.json"
+  //     )
+  //   );
+  // }
+  
+  if(chain === 'aptos') {
     return (
       await getConfig('mole/'+chain,
         "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.aptos_mainnet.json"
       )
     );
+  }else if(chain === 'sui') {
+    return (
+      // modify the hosts for raw.githubusercontent.com ip if it cannot be retrieved.
+      await getConfig('mole/'+chain,
+        "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.sui_mainnet.json"
+      )
+    );
   }
 }
 
+// avax
 async function calLyfTvl(chain, block) {
   /// @dev Initialized variables
   const balances = {};
@@ -93,6 +104,7 @@ async function calLyfTvl(chain, block) {
   return balances;
 }
 
+// aptos
 async function calLyfTvlAptos() {
   /// @dev Initialized variables
   const balances = {};
@@ -215,8 +227,65 @@ async function unwrapPancakeSwapLps({
   })
 }
 
+// sui
+async function calLyfTvlSui(api) {
+
+  // calculate the Farming TVL.
+
+  /// @dev Getting all resources
+  const addresses = await getProcolAddresses('sui');
+  const workerInfoIds = addresses.Vaults.flatMap(valut => valut.workers).map(worker => worker.workerInfo)
+  const workerInfos = await sui.getObjects(workerInfoIds)
+
+  let poolIds = []
+  workerInfos.forEach(workerInfo => 
+    {
+      let poolId = workerInfo.fields.position_nft.fields.pool
+      // poolId = poolId.replace('0x0', '0x')
+      if (!poolIds.includes(poolId)) {
+        poolIds.push(poolId)
+      }
+    }
+  )
+
+  const poolInfos =  await sui.getObjects(poolIds)
+  let poolMap = new Map()
+  poolInfos.forEach(poolInfo =>
+    {
+      // const poolId = poolInfo.fields.id.id.replace('0x0', '0x')
+      poolMap.set(poolInfo.fields.id.id, poolInfo)
+    }
+  )
+
+  for (const workerInfo of workerInfos) {
+    const liquidity = workerInfo.fields.position_nft.fields.liquidity
+    const tickLower = workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits
+    const tickUpper = workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits
+    const poolId = workerInfo.fields.position_nft.fields.pool
+    const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
+    const tick = Math.floor(Math.log(currentSqrtPrice ** 2) / Math.log(1.0001));
+    const [token0, token1] = poolMap.get(poolId).type.replace('>', '').split('<')[1].split(', ')
+    addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick })
+  }
+
+  // calculate the Vault TVL.
+
+  const vaultInfoIds = addresses.Vaults.map(valut => valut.vaultInfo)
+  const vaultInfos = await sui.getObjects(vaultInfoIds)
+  
+  for (let i = 0; i < vaultInfos.length; i++) {
+    const baseToken = addresses.Vaults[i].baseToken
+    const tokenAmount = vaultInfos[i].fields.value.fields.coin
+    const vaultDebtVal  = vaultInfos[i].fields.value.fields.vault_debt_val
+    const vaultAmount = parseInt(tokenAmount) + parseInt(vaultDebtVal)
+    api.add(baseToken, vaultAmount.toString())
+  }
+}
+
+
 module.exports = {
   calLyfTvl,
-  calLyfTvlAptos
+  calLyfTvlAptos,
+  calLyfTvlSui,
 }
   
