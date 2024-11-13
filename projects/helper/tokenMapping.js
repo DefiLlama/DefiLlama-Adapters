@@ -19,7 +19,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+  'eclipse',
+]
 
 const transformTokens = {
   // Sample Code
@@ -140,6 +142,7 @@ const fixBalancesTokens = {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'hedera-hashgraph', decimals: 18 },
     '0x0000000000000000000000000000000000163b5a': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
     '0x000000000000000000000000000000000038b3db': { coingeckoId: 'dovu-2', decimals: 8 },
+    '0x00000000000000000000000000000000005c9f70': { coingeckoId: 'hedera-liquity', decimals: 8 },
     '0x00000000000000000000000000000000000ec585': { coingeckoId: 'headstarter', decimals: 8 },
     '0x0000000000000000000000000000000000492a28': { coingeckoId: 'hashpack', decimals: 6 },
     '0x000000000000000000000000000000000030fb8b': { coingeckoId: 'steam', decimals: 2 },
@@ -149,6 +152,30 @@ const fixBalancesTokens = {
     '0xc7d67a9cbb121b3b0b9c053dd9f469523243379a': { coingeckoId: 'tether', decimals: 6 },
     '0x803dce4d3f4ae2e17af6c51343040dee320c149d': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
+  btr: {
+    '0xC39E757dCb2b17B79A411eA1C2810735dc9032F8': { coingeckoId: 'solv-protocol-solvbtc', decimals: 18 },
+  },
+  iotex: {
+    '0x236f8c0a61da474db21b693fb2ea7aab0c803894': { coingeckoId: 'iotex', decimals: 18 },
+  },
+  mantle: {
+    '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e': { coingeckoId: 'universal-btc', decimals: 18 },
+    '0xC75D7767F2EdFbc6a5b18Fc1fA5d51ffB57c2B37': { coingeckoId: 'pumpbtc', decimals: 18 },
+    '0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+  },
+  bsc: {
+    '0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a': { coingeckoId: 'universal-btc', decimals: 8 },
+  },
+  arbitrum: {
+    '0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a': { coingeckoId: 'universal-btc', decimals: 8 },
+  },
+  eclipse: {
+    'So11111111111111111111111111111111111111112': { coingeckoId: 'ethereum', decimals: 9 },
+    '9pan9bMn5HatX4EJdBwg9VgCa7Uz5HL8N1m5D3NdXejP': { coingeckoId: 'ethereum', decimals: 9 },
+    'BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL': { coingeckoId: 'solana', decimals: 9 },
+    'AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE': { coingeckoId: 'usd-coin', decimals: 6 },
+    '841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH': { coingeckoId: 'dogwifcoin', decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

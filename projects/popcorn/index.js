@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 const { getConfig } = require('../helper/cache')
 
 const { addFraxVaultToTVL } = require("./fraxVault");
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const getVaultsAbi = 'address[]:getRegisteredAddresses';
@@ -36,11 +36,13 @@ async function tvl(api) {
 
 const veVCX = "0x0aB4bC35Ef33089B9082Ca7BB8657D7c4E819a1A";
 const WETH_VCX_BAL_LP_TOKEN = "0x577A7f7EE659Aa14Dc16FD384B3F8078E23F1920";
+const stVCX = "0xE5d383FC43F6c370DdD3975cf9e363Ad42367697";
+const VCX = "0xce246eea10988c495b4a90a905ee9237a0f91543";
 
 module.exports = {
   ethereum: {
     start: 12237585,
-    staking: staking(veVCX, WETH_VCX_BAL_LP_TOKEN),
+    staking: stakings([stVCX, veVCX], [VCX, WETH_VCX_BAL_LP_TOKEN]),
     tvl,
   },
   bsc: { tvl, },
