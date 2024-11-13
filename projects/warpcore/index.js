@@ -20,5 +20,5 @@ module.exports = {
     base: {
         tvl,
     },
-    methodology: 'The TVL encompasses the total value of Warpcore ($CORE) that are in the Velvet.Capital Warpspeed Vault on Base.'
+    methodology: 'The TVL encompasses the total value of WarpCore ($Core) that are in the Velvet.Capital Warpspeed Vault on Base.'
 }
