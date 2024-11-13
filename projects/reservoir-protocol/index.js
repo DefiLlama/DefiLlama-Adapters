@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const config = {
   ethereum: [
     // https://docs.reservoir.xyz/products/proof-of-reserves
@@ -17,6 +19,9 @@ Object.keys(config).forEach(chain => {
       const decimals  = await api.multiCall({  abi: 'uint8:decimals', calls: tokens })
       bals.forEach((v, i) => bals[i] = v * 10 ** (decimals[i] - 18))
       api.add(tokens, bals)
+      return api.sumTokens({
+        owner: '0x4809010926aec940b550D34a46A52739f996D75D', token: ADDRESSES.ethereum.USDC
+      })
     }
   }
 })
