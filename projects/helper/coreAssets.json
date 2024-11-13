@@ -1938,7 +1938,8 @@
   },
   "cronos_zkevm": {
     "wzkCRO": "0xc1bf55ee54e16229d9b369a5502bfe5fc9f20b6d",
-    "ETH": "0x898b3560affd6d955b1574d87ee09e46669c60ea"
+    "ETH": "0x898b3560affd6d955b1574d87ee09e46669c60ea",
+    "USDC": "0xaa5b845f8c9c047779bedf64829601d8b264076c"
   },
   "neox": {
     "WGAS": "0x008cd7f573998cb841a5d82a857ed1f0ce03a653",
