@@ -2,7 +2,7 @@ const { getProvider, sumTokens2, } = require("./helper/solana")
 const { Program, } = require("@project-serum/anchor");
 const ADDRESSES = require('./helper/coreAssets.json')
 
-async function tvl() {
+async function tvl(api) {
   const provider = getProvider()
   const programId = 'MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD'
   const idl = await Program.fetchIdl(programId, provider)
@@ -14,12 +14,12 @@ async function tvl() {
       emergencyCoolingDown,
     },
   },] = await program.account.state.all()
+
+  api.add(ADDRESSES.solana.SOL, totalActiveBalance)
+  api.add(ADDRESSES.solana.SOL, availableReserveBalance)
+  api.add(ADDRESSES.solana.SOL, emergencyCoolingDown)
   
-  const balances = {
-    [ADDRESSES.solana.SOL]: +totalActiveBalance + +availableReserveBalance + +emergencyCoolingDown
-  }
-  
-  return sumTokens2({ balances, solOwners: ['UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q'] }) // Liq Pool Sol Leg Pda
+  return sumTokens2({ api, solOwners: ['UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q'] }) // Liq Pool Sol Leg Pda
 }
 
 module.exports = {
