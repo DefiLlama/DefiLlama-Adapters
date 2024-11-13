@@ -4,8 +4,6 @@ const sdk = require('@defillama/sdk')
 async function getZircuitSupplies(api) {
   const { msteth, egeth } = config[api.chain];
   const mlrttokens = [msteth, egeth];
-  console.log(api.chain)
-  // Fetch the supplies and cache them
   const tokenSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: mlrttokens, });
   return {
     zircuitMstethSupply: tokenSupplies[0],
