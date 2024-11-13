@@ -39,6 +39,31 @@ async function tvlArbitrum(api) {
     return api.getBalances();
 }
 
+async function tvlBase(api) {
+    const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
+
+    const assets = [
+        ADDRESSES.base.USDC,   // USDC
+    ]
+
+    const res = await api.multiCall({ abi: abi.getBalancesForOpenSwap, calls: assets, target: addresses.base.IporProtocolRouter })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: assets })
+
+    res.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
+        const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
+        const decimal = 18 - decimals[i]
+        api.add(assets[i], balance / (10 ** decimal))
+    });
+
+    for (const pool of addresses.base.pools) {
+        if (assets.includes(pool.asset)) {
+            continue;
+        }
+        await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
+    }
+    return api.getBalances();
+}
+
 async function calculateTvlForV2(api) {
   const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL)
 
@@ -93,6 +118,9 @@ module.exports = {
   },
   arbitrum: {
     tvl: tvlArbitrum
+  },
+  base: {
+    tvl: tvlBase
   },
   hallmarks:[
     [1674648000, "Liquidity Mining Start"]
