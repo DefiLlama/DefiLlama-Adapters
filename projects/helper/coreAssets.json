@@ -423,6 +423,9 @@
     "BUSD": "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e",
     "BLUES": "0x8c008bba2dd56b99f4a6ab276be3a478cb075f0c"
   },
+  "mintlayer": {
+    "ML": "ML"
+  },
   "bittorrent": {
     "USDT_t": "0xdb28719f7f938507dbfe4f0eae55668903d34a15",
     "USDC_t": "0x935faa2fcec6ab81265b301a30467bbc804b43d3",
