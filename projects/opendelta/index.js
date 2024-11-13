@@ -13,7 +13,6 @@ async function tvl(api) {
     // Compute the supply based on the interest-bearing extension
     const { currentRate, initializationTimestamp, preUpdateAverageRate, lastUpdateTimestamp, } = extensionData
 
-    // Example computation (adjust as needed)
     const currentTimestamp = Math.floor(Date.now() / 1000)
     const timeElapsed = lastUpdateTimestamp - initializationTimestamp
     const timeElapsedSinceLastUpdate = currentTimestamp - lastUpdateTimestamp
