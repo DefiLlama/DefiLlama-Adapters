@@ -42,13 +42,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1727253403, // Wed Sep 25 2024 08:36:43 GMT+0
+  timetravel: false,
   methodology: "TVL counts tokens deposited in the Liquidity Pool.",
-  hallmarks: [
-    [1727253403, "Launch"], // Wed Sep 25 2024 08:36:43 GMT+0
-    [1731326400, "Ranked Pre-season Launch"], // Mon Nov 11 2024 12:00:00 GMT+0
-    [1734955200, "Ranked Pre-season End"], // Mon Dec 23 2024 12:00:00 GMT+0
-  ],
   solana: {
     tvl,
     staking,
