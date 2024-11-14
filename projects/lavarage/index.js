@@ -1,13 +1,12 @@
-const { getConnection, getProvider, sumTokens2 } = require("../helper/solana");
+const { getConnection, getProvider } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
 const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
 const solProgramId = "CRSeeBqjDnm3UPefJ9gxrtngTsnQRhEJiTA345Q83X3v";
-const usdcProgramId = "1avaAUcjccXCjSZzwUvB2gS3DzkkieV2Mw8CjdN65uu";
 const stakingProgramId = "85vAnW1P89t9tdNddRGk6fo5bDxhYAY854NfVJDqzf7h";
 
-const EDGE_CASE_TIMESTAMPS = [
+const edgeCaseTimestamps = [
   { start: 1713880000, end: 1713885480 }, // 10:32 AM - 10:58 AM ET on April 23, 2024
   { start: 1713874500, end: 1713876060 }, // 8:15 AM - 8:41 AM ET on April 23, 2024
 ];
@@ -23,6 +22,12 @@ const multisigAccount = new PublicKey(
 );
 const pendingUnstakeAccount = new PublicKey(
   "HTnwdgfXrA6gZRiQsnfxLKbvdcqnxdbuC2FJsmCCVMw9"
+);
+const usdcPoolAccount = new PublicKey(
+  "9m3wEeK3v5yyqDGMnDiDRR3FjCwZjRVB4n92pieGtTbP"
+);
+const iscPoolAccount = new PublicKey(
+  "CrsxVEF7YNGAk9QwwbB2vuesUWoDopfgFAhA9apoCJ2z"
 );
 
 async function tvl() {
@@ -57,13 +62,8 @@ async function tvl() {
     const sumPendingUnstake = await connection.getBalance(
       pendingUnstakeAccount
     );
-
-    const usdcProgram = new anchor.Program(
-      lavarageIDL,
-      usdcProgramId,
-      provider
-    );
-    const sumUsdcOpenedPositions = await getSumOpenedPositions(usdcProgram);
+    const sumUSDC = await connection.getBalance(usdcPoolAccount);
+    const sumISC = await connection.getBalance(iscPoolAccount);
 
     const total =
       sumOpenedPositions +
@@ -72,7 +72,8 @@ async function tvl() {
       sumMultisig +
       sumPendingUnstake +
       sumStaked +
-      sumUsdcOpenedPositions;
+      sumUSDC +
+      sumISC;
 
     return { solana: total / 1e9 };
   } catch (error) {
@@ -100,7 +101,7 @@ async function getSumOpenedPositions(anchor) {
 }
 
 function isWithinEdgeCaseTimeRange(closeTimestamp) {
-  return EDGE_CASE_TIMESTAMPS.some(
+  return edgeCaseTimestamps.some(
     ({ start, end }) => closeTimestamp >= start && closeTimestamp <= end
   );
 }
