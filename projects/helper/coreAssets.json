@@ -1493,7 +1493,8 @@
     "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
     "USDT": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
-    "rETH": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c"
+    "rETH": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c",
+    "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"
   },
   "sei": {
     "SEI": "usei",
@@ -1937,7 +1938,8 @@
   },
   "cronos_zkevm": {
     "wzkCRO": "0xc1bf55ee54e16229d9b369a5502bfe5fc9f20b6d",
-    "ETH": "0x898b3560affd6d955b1574d87ee09e46669c60ea"
+    "ETH": "0x898b3560affd6d955b1574d87ee09e46669c60ea",
+    "USDC": "0xaa5b845f8c9c047779bedf64829601d8b264076c"
   },
   "neox": {
     "WGAS": "0x008cd7f573998cb841a5d82a857ed1f0ce03a653",
