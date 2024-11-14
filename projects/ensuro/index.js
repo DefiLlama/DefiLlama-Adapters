@@ -4,7 +4,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const addressBook = {
   polygon: {
     usdc: ADDRESSES.polygon.USDC,
-    aave_v3_usdc: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",  // aPolUSDC
+    aave_v3_usdc: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",  // aPolUSDC - AAVE USDC (Bridged)
+    aave_v3_native_usdc: "0xA4D94019934D8333Ef880ABFFbF2FDd611C762BD",  // aPolUSDCn - AAVE USDC (Native)
     compound_v3_usdc: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",  // Compound USDC
     mountain_usdm: ADDRESSES.ethereum.USDM,  // Mountain USDM
     reserves: [
@@ -54,7 +55,7 @@ const addressBook = {
 
 async function tvl(api) {
   const addresses = addressBook[api.chain];
-  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.aave_v3_usdc, addresses.compound_v3_usdc, addresses.mountain_usdm], i.address])
+  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.aave_v3_usdc, addresses.aave_v3_native_usdc, addresses.compound_v3_usdc, addresses.mountain_usdm], i.address])
 
   return sumTokens2({ api, ownerTokens, });
 }
