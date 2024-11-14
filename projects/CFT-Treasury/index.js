@@ -11,7 +11,7 @@ async function getStakedTron(account) {
 // Function to get TRX balance (unstaked + frozen balance)
 async function getTrxBalance(account) {
   const data = await post('https://api.trongrid.io/wallet/getaccount', {
-    address: account,
+    address: TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq,
     visible: true,
   });
   return data.balance + (data.frozen?.reduce((t, { frozen_balance }) => t + frozen_balance, 0) ?? 0);
