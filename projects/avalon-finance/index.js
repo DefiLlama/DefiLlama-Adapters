@@ -11,6 +11,7 @@ const mainMarket = {
 	iotex: aaveExports('', '', undefined, ['0xBa77520d38953BF6a8395D118CfF714Ed672533f'], { v3: true }),
 	bsquared: aaveExports('', '', undefined, ['0x4Ea93E846b8C6E7b3D5a5BEDF4fe6B8AED58FCEe'], { v3: true }),
 	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }),
+	mode: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
 }
 
 const innovativeMarket = {
