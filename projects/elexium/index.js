@@ -1,7 +1,7 @@
 const alephium = require("../helper/chain/alephium");
 
-const elexiumTokenId =
-	"cad22f7c98f13fe249c25199c61190a9fb4341f8af9b1c17fcff4cd4b2c3d200";
+const elexiumTokenId = "cad22f7c98f13fe249c25199c61190a9fb4341f8af9b1c17fcff4cd4b2c3d200";
+const alephId = '0000000000000000000000000000000000000000000000000000000000000000'
 const veAddress = "23XEjbtTNN2FtcJryavvfMf6VwgVK22uiw5T6N85kjFzX";
 const pairFactoryAddress = "22oTtDJEMjNc9QAdmcZarnEzgkAooJp9gZy7RYBisniR5";
 
@@ -32,63 +32,29 @@ async function getAllPools() {
 	return poolIds;
 }
 
-async function getPoolTokens(poolId) {
+async function addPoolTokens(poolId, api) {
 	const poolAddress = alephium.addressFromContractId(poolId);
 
 	const tokenBalance = (await alephium.getTokensBalance(poolAddress)).filter(
 		(t) => t.tokenId !== poolId,
 	);
 
+	tokenBalance.forEach(i => api.add(i.tokenId, i.balance));
+
 	const alphBalance = (await alephium.getAlphBalance(poolAddress)).balance;
-
-	return {
-		alph: Number(alphBalance) / 1e18,
-		tokens: tokenBalance,
-	};
+	api.add(alephId, alphBalance);
 }
 
-async function poolsTvl() {
-	const allPools = await getAllPools();
+async function poolsTvl(api) {
+	const allPools = await getAllPools()
 
-	const tokensMetadata = {};
-
-	const tokensTvl = {
-		ALPH: 0,
-	};
-
-	for (const pool of allPools) {
-		const { alph, tokens } = await getPoolTokens(pool);
-
-		tokensTvl["ALPH"] += alph;
-
-		for (const token of tokens) {
-			if (tokensMetadata[token.tokenId] === undefined) {
-				const metadata = await alephium.getTokenInfo(token.tokenId);
-				tokensMetadata[token.tokenId] = metadata;
-			}
-
-			const metadata = tokensMetadata[token.tokenId];
-
-			const tokenAmount =
-				Number(token.balance) / 10 ** Number(metadata.decimals);
-
-			if (tokensTvl[metadata.symbol] === undefined) {
-				tokensTvl[metadata.symbol] = tokenAmount;
-			} else {
-				tokensTvl[metadata.symbol] += tokenAmount;
-			}
-		}
-	}
-
-	return tokensTvl;
+	for (const pool of allPools)
+		await addPoolTokens(pool, api);
 }
 
-async function veTVL() {
-	const tokenBalance = (await alephium.getTokensBalance(veAddress)).find(
-		(t) => t.tokenId === elexiumTokenId,
-	);
-
-	return { ex: Number(tokenBalance.balance) / 1e18 };
+async function veTVL(api) {
+	const tokenBalance = (await alephium.getTokensBalance(veAddress)).find((t) => t.tokenId === elexiumTokenId,) ?? { balance: 0 };
+	api.add(elexiumTokenId, tokenBalance.balance);
 }
 
 module.exports = {
