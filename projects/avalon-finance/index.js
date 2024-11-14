@@ -60,6 +60,14 @@ const ubtcMarkets = {
 	core: aaveExports('', '', undefined, ['0x2752237ccC6aB5e4B9e9BFca57D7a6956aF4FE3d'], { v3: true }),
 }
 
+const xaumMarkets = {
+	bsc: aaveExports('', '', undefined, ['0x2c4aEB7C9f0D196a51136B3c7bec49cB2DBD1966'], { v3: true }),
+}
+
+const lbtcMarkets = {
+	bsc: aaveExports('', '', undefined, ['0x5b9b3C211B81627Cc6b46824CB26829F31A587dc'], { v3: true }),
+}
+
 module.exports = mergeExports(
 	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets
 )
