@@ -1,4 +1,3 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const alephium = require('../helper/chain/alephium')
 
 const Addresses = {
@@ -16,6 +15,7 @@ const Addresses = {
   ayinApadPool: '247rZysrruj8pj2GnFyK2bqB2nU4JsUj7k2idksAp4XMy',
   usdtUsdcPool: '27C75V9K5o9CkkGTMDQZ3x2eP82xnacraEqTYXA35Xuw5',
 }
+const alephId = '0000000000000000000000000000000000000000000000000000000000000000'
 
 const XAyinAddress = 'zst5zMzizEeFYFis6DNSknY5GCYTpM85D3yXeRLe2ug3'
 
@@ -35,7 +35,7 @@ async function tvl(api) {
     Addresses.alphAyinPool, Addresses.alphUsdtPool, Addresses.alphUsdcPool, Addresses.alphWethPool, Addresses.alphApadPool, Addresses.alphChengPool, Addresses.alphAnsdPool, Addresses.alphAlphagaPool
   ].map(poolAddress => alephium.getAlphBalance(poolAddress)))
   const alphTvl = alphTvls.reduce((tvl, res) => tvl + Number(res.balance), 0)
-  api.addGasToken(alphTvl)
+  api.add(alephId, alphTvl)
   const tokensTvls = await Promise.all([
     Addresses.alphAyinPool, Addresses.alphUsdtPool, Addresses.alphWethPool, Addresses.ayinUsdtPool,
      Addresses.ayinUsdcPool,Addresses.alphWbtcPool, Addresses.usdtUsdcPool,Addresses.alphApadPool, Addresses.alphChengPool, Addresses.ayinApadPool, Addresses.alphAnsdPool,  Addresses.alphAlphagaPool
@@ -45,7 +45,6 @@ async function tvl(api) {
       api.add(tokenTvl.tokenId, tokenTvl.balance)
     });
   })
-  return sumTokens2({ api, })
 }
 
 async function staking() {

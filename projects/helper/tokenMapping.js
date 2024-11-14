@@ -176,16 +176,6 @@ const fixBalancesTokens = {
     'AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE': { coingeckoId: 'usd-coin', decimals: 6 },
     '841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH': { coingeckoId: 'dogwifcoin', decimals: 6 },
   },
-  alephium: {
-    [ADDRESSES.null]: { coingeckoId: 'alephium', decimals: 18 },
-    '556d9582463fe44fbd108aedc9f409f69086dc78d994b88ea6c9e65f8bf98e00': { coingeckoId: 'tether', decimals: 6},
-    '19246e8c2899bc258a1156e08466e3cdd3323da756d8a543c7fc911847b96f00': { coingeckoId: 'ethereum', decimals: 18},
-    '1a281053ba8601a658368594da034c2e99a0fb951b86498d05e76aedfe666800': { coingeckoId: 'ayin', decimals: 18},
-    '383bc735a4de6722af80546ec9eeb3cff508f2f68e97da19489ce69f3e703200': { coingeckoId: 'wrapped-bitcoin', decimals: 8},
-    '722954d9067c5a5ad532746a024f2a9d7a18ed9b90e27d0a3a504962160b5600': { coingeckoId: 'usd-coin', decimals:6},
-    'bb440a66dcffdb75862b6ad6df14d659aa6d1ba8490f6282708aa44ebc80a100': { coingeckoId: 'alphpad', decimals: 18},
-  }
-
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
