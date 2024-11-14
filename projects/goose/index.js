@@ -6,7 +6,7 @@ const graphUrl = "https://api.studio.thegraph.com/query/93229/goose-bsc-usdt-vau
 const graphQuery = gql`
   query {
     deposits(first: 1, orderBy: lockId, orderDirection: desc) {
-      depositShare
+      totalShares
       price
     }
   }
@@ -20,9 +20,9 @@ module.exports = {
       if (deposits.length > 0) {
         const latestDeposit = deposits[0];
         
-        const depositShare = new BigNumber(latestDeposit.depositShare);
+        const totalShares = new BigNumber(latestDeposit.totalShares);
         const price = new BigNumber(latestDeposit.price);
-        const tvlInUSD = depositShare.times(price).div(new BigNumber(10).pow(36));
+        const tvlInUSD = totalShares.times(price).div(new BigNumber(10).pow(36));
 
         api.addTokens(ADDRESSES.bsc.USDT, tvlInUSD.toFixed(0));
       }
