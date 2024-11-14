@@ -7,7 +7,7 @@ const CONTRACT_ADDRESSES = {
     UNISWAP_PAIR: '0x5B4Cd326A33467532a0f4C3BF947561bcE1FAE92'
 };
 
-// Calculate TVL of Warpcore (WARP) on Velvet.Capital
+// Calculate TVL of Warpcore (Core)
 async function tvl(api) {
     const warpcoreCollateral = await api.call({
         abi: 'erc20:balanceOf',
