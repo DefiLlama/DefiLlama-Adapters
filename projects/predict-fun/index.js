@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
 module.exports = {
-  polygon: {
+  blast: {
     tvl: sumTokensExport({ owners: [
       '0xE1A2E68C401378050fdba9704FA8BCb1f72b98f4',
       '0x8F9C9f888A4268Ab0E2DDa03A291769479bAc285'
