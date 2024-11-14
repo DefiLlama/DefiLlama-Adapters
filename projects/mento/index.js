@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, } = require('../helper/unwrapLPs')
 const { sumTokensExport, } = require('../helper/sumTokens')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
   methodology: 'TVL counts all assets deposited as collateral to mint Mento stablecoins.',
@@ -19,6 +20,6 @@ module.exports = {
     })
   },
   bitcoin: {
-    tvl: sumTokensExport({ owners: ['38EPdP4SPshc5CiUCzKcLP9v7Vqo5u1HBL', '3KWX93e2zPPQ2eWCsUwPAB6VhAKKPLACou'], })
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.mento })
   }
 }
