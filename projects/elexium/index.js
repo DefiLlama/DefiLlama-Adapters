@@ -88,7 +88,7 @@ async function veTVL() {
 		(t) => t.tokenId === elexiumTokenId,
 	);
 
-	return Number(tokenBalance.balance) / 1e18;
+	return { ex: Number(tokenBalance.balance) / 1e18 };
 }
 
 module.exports = {
