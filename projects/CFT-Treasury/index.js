@@ -6,9 +6,9 @@ module.exports = {
     tvl: sumTokensExport({
       tokensAndOwners: [
         [nullAddress, 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq'],
-        [ADDRESSES.tron.JST, 'TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9'],
-        [ADDRESSES.tron.SUN, 'TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S'],
-        [ADDRESSES.tron.JM, 'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR'],
+        [ADDRESSES.tron.JST, 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq'],
+        [ADDRESSES.tron.SUN, 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq'],
+        [ADDRESSES.tron.JM, 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq'],
       ]
     }),
   },
