@@ -1,15 +1,9 @@
-const { getResource, function_view } = require("../helper/chain/aptos");
+const { function_view } = require("../helper/chain/aptos");
 
-const thalaswapAddress = "0x007730cd28ee1cdc9e999336cbc430f99e7c44397c0aa77516f6f23a78559bb5";
-const thalaswapControllerResource = `${thalaswapAddress}::pool::ThalaSwap`;
-let resourcesCache;
+const thalaswapLensAddress = "ff1ac437457a839f7d07212d789b85dd77b3df00f59613fcba02388464bfcacb";
 
-async function _getResource(address, key) {
-  if (!resourcesCache) resourcesCache = getResource(address, key)
-  return resourcesCache
-}
-async function getBalance(poolAddress, assetMetadata) {
-  return function_view({ functionStr: "0x1::primary_fungible_store::balance", type_arguments: ["0x1::fungible_asset::Metadata"], args: [poolAddress, assetMetadata] });
+async function getPools(lensAddress) {
+  return function_view({ functionStr: `${lensAddress}::lens::get_all_pools_info`})
 }
 
 module.exports = {
@@ -18,16 +12,13 @@ module.exports = {
     "Aggregates TVL in all pools in Thalaswap, Thala Labs' AMM.",
   aptos: {
     tvl: async (api) => {
-      const controller = await _getResource(thalaswapAddress, thalaswapControllerResource)
+      const poolInfos = await getPools(thalaswapLensAddress)
       
-      const poolObjects = controller.pools.inline_vec.map(pool => (pool.inner))
-
-      for (const poolAddress of poolObjects) {
-        const pool = await getResource(poolAddress, `${thalaswapAddress}::pool::Pool`)
-        const assets = pool.assets_metadata.map(asset => asset.inner)
-        for (const asset of assets) {
-          const balance = await getBalance(poolAddress, asset)
-          api.add(asset, balance)
+      for (const poolInfo of poolInfos) {
+        const assets = poolInfo.assets_metadata.map(asset => asset.inner)
+        const balances = poolInfo.balances
+        for (let i = 0; i < assets.length; i++) {
+          api.add(assets[i], balances[i])
         }
       }
     },
