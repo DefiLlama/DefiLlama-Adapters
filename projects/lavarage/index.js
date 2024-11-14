@@ -1,3 +1,4 @@
+const axios = require("axios");
 const { getConnection, getProvider } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
@@ -5,6 +6,12 @@ const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
 const solProgramId = "CRSeeBqjDnm3UPefJ9gxrtngTsnQRhEJiTA345Q83X3v";
 const stakingProgramId = "85vAnW1P89t9tdNddRGk6fo5bDxhYAY854NfVJDqzf7h";
+const TOKEN_PROGRAM_ID = new PublicKey(
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+);
+const SPL_ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+);
 
 const edgeCaseTimestamps = [
   { start: 1713880000, end: 1713885480 }, // 10:32 AM - 10:58 AM ET on April 23, 2024
@@ -22,6 +29,12 @@ const multisigAccount = new PublicKey(
 );
 const pendingUnstakeAccount = new PublicKey(
   "HTnwdgfXrA6gZRiQsnfxLKbvdcqnxdbuC2FJsmCCVMw9"
+);
+const usdcAddress = new PublicKey(
+  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+);
+const iscAddress = new PublicKey(
+  "J9BcrQfX4p9D1bvLzRNCbMDv8f44a9LFdeqNE4Yk2WMD"
 );
 const usdcPoolAccount = new PublicKey(
   "9m3wEeK3v5yyqDGMnDiDRR3FjCwZjRVB4n92pieGtTbP"
@@ -42,8 +55,15 @@ async function tvl() {
       provider
     );
 
-    const sumOpenedPositions = await getSumOpenedPositions(program);
+    // Fetch collateral prices
+    const positions = await fetchUserPositions(program);
+    const collateralTokenIds = [
+      ...new Set(positions.map((pos) => pos.account.pool.toBase58())),
+    ];
+    const prices = await fetchCollateralPrices(collateralTokenIds);
 
+    // Calculate sum of opened positions based on collateral amount * price
+    const sumOpenedPositions = await getSumOpenedPositions(program, prices);
     const stakingAccounts = await getStakingAccounts(stakingProgram);
 
     const sumStaked = (
@@ -62,8 +82,27 @@ async function tvl() {
     const sumPendingUnstake = await connection.getBalance(
       pendingUnstakeAccount
     );
-    const sumUSDC = await connection.getBalance(usdcPoolAccount);
-    const sumISC = await connection.getBalance(iscPoolAccount);
+
+    const usdcTokenAccount = await getAssociatedTokenAddress(
+      usdcAddress,
+      usdcPoolAccount,
+      true
+    );
+    const iscTokenAccount = await getAssociatedTokenAddress(
+      iscAddress,
+      iscPoolAccount,
+      true
+    );
+
+    const usdcBalance = (
+      await connection.getTokenAccountBalance(usdcTokenAccount)
+    ).value.uiAmount;
+    const iscBalance = (
+      await connection.getTokenAccountBalance(iscTokenAccount)
+    ).value.uiAmount;
+
+    const usdcBalanceInLamports = usdcBalance * 1e6;
+    const iscBalanceInLamports = iscBalance * 1e6;
 
     const total =
       sumOpenedPositions +
@@ -72,14 +111,65 @@ async function tvl() {
       sumMultisig +
       sumPendingUnstake +
       sumStaked +
-      sumUSDC +
-      sumISC;
+      usdcBalanceInLamports +
+      iscBalanceInLamports;
 
     return { solana: total / 1e9 };
   } catch (error) {
     console.error("Error fetching TVL:", error);
     return { solana: 0 };
   }
+}
+
+async function getAssociatedTokenAddress(
+  mint,
+  owner,
+  allowOwnerOffCurve = false
+) {
+  if (!allowOwnerOffCurve && !PublicKey.isOnCurve(owner.toBuffer())) {
+    throw new Error("Owner must be on curve");
+  }
+  const [associatedTokenAddress] = await PublicKey.findProgramAddressSync(
+    [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    SPL_ASSOCIATED_TOKEN_PROGRAM_ID
+  );
+  return associatedTokenAddress;
+}
+
+function chunk(array, size) {
+  const chunkedArray = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunkedArray.push(array.slice(i, i + size));
+  }
+  return chunkedArray;
+}
+
+function generateListOfPriceURLs(chunkedPairs) {
+  return chunkedPairs.map((chunk) => {
+    return `https://api.jup.ag/price/v2?ids=${chunk.join(
+      ","
+    )}&vsToken=${"EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"}`;
+  });
+}
+
+async function fetchCollateralPrices(collateralTokenIds) {
+  const chunks = chunk(collateralTokenIds, 100);
+  const priceUrls = generateListOfPriceURLs(chunks);
+  const prices = (
+    await Promise.all(
+      priceUrls.map(async (url) => {
+        const response = await axios.get(url);
+        return response.data.data;
+      })
+    )
+  ).reduce((acc, priceData) => {
+    Object.keys(priceData).forEach((key) => {
+      acc[key] = priceData[key]?.price || 0;
+    });
+    return acc;
+  }, {});
+
+  return prices;
 }
 
 async function getStakingAccounts(anchor) {
@@ -89,7 +179,7 @@ async function getStakingAccounts(anchor) {
   });
 }
 
-async function getSumOpenedPositions(anchor) {
+async function getSumOpenedPositions(anchor, prices) {
   const positionsRaw = await fetchUserPositions(anchor);
   const userPositions = positionsRaw.map(deserializePosition).filter((p) => p);
   const activePositions = userPositions.filter(
@@ -97,7 +187,12 @@ async function getSumOpenedPositions(anchor) {
       p.closeStatusRecallTimestamp === "0" ||
       isWithinEdgeCaseTimeRange(p.timestamp)
   );
-  return activePositions.reduce((acc, now) => acc + Number(now.amount), 0);
+
+  return activePositions.reduce((total, position) => {
+    const collateralAmount = position.collateralAmount;
+    const collateralPrice = prices[position.pool];
+    return total + collateralAmount * collateralPrice;
+  }, 0);
 }
 
 function isWithinEdgeCaseTimeRange(closeTimestamp) {
@@ -158,7 +253,6 @@ const deserializePosition = (position) => {
     trader,
   } = position.account;
   const publicKey = position.publicKey;
-
   return {
     amount,
     collateralAmount: collateralAmount.toString(),
