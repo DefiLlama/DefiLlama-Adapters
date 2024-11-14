@@ -1,5 +1,3 @@
-// Import the helper functions from DefiLlama's http module
-const { getTrxBalance } = require('../http'); // Adjust the path as necessary based on the repo structure
 
 // Treasury wallet address to monitor
 const treasuryWallet = 'TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq';
