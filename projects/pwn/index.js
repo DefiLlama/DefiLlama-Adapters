@@ -14,6 +14,7 @@ const PWN_BUNDLER_BSC = "0x4A75a527E97d853109aA6998a2B9E45a87A31e9f";
 const PWN_V1_SIMPLE_LOAN = "0x50160ff9c19fbE2B5643449e1A321cAc15af2b2C";
 const PWN_V1_1_SIMPLE_LOAN_A = "0x57c88D78f6D08b5c88b4A3b7BbB0C1AA34c3280A"; // Mainnet, Polygon, Arbitrum, BSC
 const PWN_V1_1_SIMPLE_LOAN_B = "0x4188C513fd94B0458715287570c832d9560bc08a"; // Cronos, Base, Optimism
+const PWN_V1_2_SIMPLE_LOAN = "0x9A93AE395F09C6F350E3306aec592763c517072e";
 
 module.exports = {
   misrepresentedTokens: true,
@@ -26,6 +27,7 @@ module.exports = {
         PWN_BUNDLER_MAINNET,
         PWN_V1_SIMPLE_LOAN,
         PWN_V1_1_SIMPLE_LOAN_A,
+        PWN_V1_2_SIMPLE_LOAN,
       ],
       resolveNFTs: true,
       resolveArtBlocks: true,
@@ -40,6 +42,7 @@ module.exports = {
         PWN_BUNDLER_POLYGON,
         PWN_V1_SIMPLE_LOAN,
         PWN_V1_1_SIMPLE_LOAN_A,
+        PWN_V1_2_SIMPLE_LOAN,
       ],
       fetchCoValentTokens: true,
     }),
@@ -51,22 +54,32 @@ module.exports = {
   },
   base: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_BASE, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true,
+      owners: [PWN_BUNDLER_BASE, PWN_V1_1_SIMPLE_LOAN_B, PWN_V1_2_SIMPLE_LOAN], fetchCoValentTokens: true,
     }),
   },
   arbitrum: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_ARBITRUM, PWN_V1_1_SIMPLE_LOAN_A], fetchCoValentTokens: true,
+      owners: [PWN_BUNDLER_ARBITRUM, PWN_V1_1_SIMPLE_LOAN_A, PWN_V1_2_SIMPLE_LOAN], fetchCoValentTokens: true,
     }),
   },
   optimism: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_OPTIMISM, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true,
+      owners: [PWN_BUNDLER_OPTIMISM, PWN_V1_1_SIMPLE_LOAN_B, PWN_V1_2_SIMPLE_LOAN], fetchCoValentTokens: true,
     }),
   },
   bsc: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_BSC, PWN_V1_1_SIMPLE_LOAN_A], fetchCoValentTokens: true,
+      owners: [PWN_BUNDLER_BSC, PWN_V1_1_SIMPLE_LOAN_A, PWN_V1_2_SIMPLE_LOAN], fetchCoValentTokens: true,
+    }),
+  },
+  linea: {
+    tvl: sumTokensExport({
+      owners: [PWN_V1_2_SIMPLE_LOAN], fetchCoValentTokens: true,
+    }),
+  },
+  xdai: {
+    tvl: sumTokensExport({
+      owners: [PWN_V1_2_SIMPLE_LOAN], fetchCoValentTokens: true,
     }),
   },
   mantle: { tvl: () => ({}) },

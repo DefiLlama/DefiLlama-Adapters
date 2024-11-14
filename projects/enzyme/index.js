@@ -5,6 +5,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = {
   polygon: { endpoint: sdk.graph.modifyEndpoint('GCAHDyqvZBLMwqdb9U7AqWAN4t4TSwR3aXMHDoUUFuRV') },
   ethereum: { endpoint: sdk.graph.modifyEndpoint('9DLBBLep5UyU16kUQRvxBCMqko4q9XzuE4XsMMpARhKK') },
+  arbitrum: { endpoint: sdk.graph.modifyEndpoint('8UJ5Bkf2eazZhXsAshhzQ2Keibcb8NFHBvXis9pb2C2Y') },
 }
 const query = `query get_accounts($lastId: String!) {
   vaults(
