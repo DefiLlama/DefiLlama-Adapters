@@ -36,10 +36,7 @@ async function tvl(api) {
   ].map(poolAddress => alephium.getAlphBalance(poolAddress)))
   const alphTvl = alphTvls.reduce((tvl, res) => tvl + Number(res.balance), 0)
   api.add(alephId, alphTvl)
-  const tokensTvls = await Promise.all([
-    Addresses.alphAyinPool, Addresses.alphUsdtPool, Addresses.alphWethPool, Addresses.ayinUsdtPool,
-     Addresses.ayinUsdcPool,Addresses.alphWbtcPool, Addresses.usdtUsdcPool,Addresses.alphApadPool, Addresses.alphChengPool, Addresses.ayinApadPool, Addresses.alphAnsdPool,  Addresses.alphAlphagaPool
-  ].map(poolAddress => alephium.getTokensBalance(poolAddress)))
+  const tokensTvls = await Promise.all(Object.values(Addresses).map(poolAddress => alephium.getTokensBalance(poolAddress)))
   tokensTvls.forEach((tokenTvls) => {
     tokenTvls.forEach(tokenTvl => {
       api.add(tokenTvl.tokenId, tokenTvl.balance)
