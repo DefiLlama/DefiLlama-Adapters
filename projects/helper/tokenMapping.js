@@ -175,6 +175,9 @@ const fixBalancesTokens = {
     'BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL': { coingeckoId: 'solana', decimals: 9 },
     'AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE': { coingeckoId: 'usd-coin', decimals: 6 },
     '841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH': { coingeckoId: 'dogwifcoin', decimals: 6 },
+  },
+  unit0: {
+    '0xcf43f7703d9b4e8835f977ef364b4014fa7e856e': { coingeckoId: 'unit0', decimals: 18 },
   }
 }
 
