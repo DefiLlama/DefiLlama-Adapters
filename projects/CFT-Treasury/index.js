@@ -1,32 +1,15 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-const { getStakedTron } = require("../helper/chain/tron");
-const { staking } = require("../helper/staking");
-const { sumTokensExport } = require("../helper/sumTokens");
-const { nullAddress } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
 
 module.exports = {
-  klaytn: {
-    tvl: sumTokensExport({
-      owners: [
-        "0xf9d92BAd7b1410dfFB0a204B7aa418C9fd5A898F",
-        "0xf20816C9bdcb25da3ba79b206e9b7107ae02ae10",
-        "0x489d6d679F1CA4cFE6976C55B54427D1AaDb8057",
-        "0x184E039D35cce96511E32c1aF85907664fb0e646"
-      ],
-      tokens: [nullAddress],
-    }),
-    staking: staking(
-      "0x306ee01a6ba3b4a8e993fa2c1adc7ea24462000c",
-      ADDRESSES.klaytn.NPT,
-      "klaytn",
-    ),
-  },
   tron: {
-    tvl: async () => {
-      return {
-        tron: await getStakedTron("TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq"),
-      };
-    },
+    tvl: sumTokensExport({
+      tokensAndOwners: [
+        [nullAddress, 'TCdY8kA7XsZ5UUw8jEgbVRbS2MVttrY9AC'],
+        [ADDRESSES.tron.JST, 'TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9'],
+        [ADDRESSES.tron.SUN, 'TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S'],
+        [ADDRESSES.tron.JM, 'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR'],
+      ]
+    }),
   },
-  timetravel: false,
 };
