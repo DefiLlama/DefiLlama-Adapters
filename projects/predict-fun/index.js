@@ -1,5 +1,5 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const { sumTokensExport } = require('./helper/unwrapLPs');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs');
 
 module.exports = {
   polygon: {
