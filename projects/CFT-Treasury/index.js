@@ -1,10 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokensExport, nullAddress } = require('../helper/sumTokens');
 const { get, post } = require('../helper/http'); // Assuming these are available
+const Account = TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq
 
 // Function to get staked TRX by account
 async function getStakedTron(account) {
-  const data = await get(`https://apilist.tronscan.org/api/vote?candidate=${account}`);
+  const data = await get(`https://apilist.tronscan.org/api/vote?candidate=${TFvHNqDqttkXSS8ZTdC4c4W7q97SFW3iKq}`);
   return data.totalVotes ?? 0;
 }
 
