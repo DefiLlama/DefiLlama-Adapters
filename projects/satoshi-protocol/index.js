@@ -73,4 +73,10 @@ module.exports = {
       fromBlock: 4614620,
     }
   }),
+  bsquared: createExports({
+    troveList: [
+      '0xa79241206c3008bE4EB4B62A48A4F98303060D4f', // BSquare WBTC Collateral
+      '0xc6F361db5eC432E95D0A08A9Fbe0d7412971cE6c', // BSquare uBTC Collateral
+    ],
+  }),
 }
