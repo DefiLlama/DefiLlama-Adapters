@@ -5,6 +5,7 @@ const anchor = require("@project-serum/anchor");
 const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
 const solProgramId = "CRSeeBqjDnm3UPefJ9gxrtngTsnQRhEJiTA345Q83X3v";
+const usdcProgramId = "1avaAUcjccXCjSZzwUvB2gS3DzkkieV2Mw8CjdN65uu";
 const stakingProgramId = "85vAnW1P89t9tdNddRGk6fo5bDxhYAY854NfVJDqzf7h";
 const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
@@ -48,28 +49,33 @@ async function tvl() {
   const connection = getConnection();
 
   try {
-    const program = new anchor.Program(lavarageIDL, solProgramId, provider);
+    const solProgram = new anchor.Program(lavarageIDL, solProgramId, provider);
+    const usdcProgram = new anchor.Program(
+      lavarageIDL,
+      usdcProgramId,
+      provider
+    );
     const stakingProgram = new anchor.Program(
       stakingIDL,
       stakingProgramId,
       provider
     );
 
-    // Fetch collateral prices
-    const positions = await fetchUserPositions(program);
-    const collateralTokenIds = [
-      ...new Set(positions.map((pos) => pos.account.pool.toBase58())),
-    ];
-    const prices = await fetchCollateralPrices(collateralTokenIds);
+    const { prices, collateralMap } = await fetchCollateralPricesFromPools();
 
     // Calculate sum of opened positions based on collateral amount * price
-    const sumOpenedPositions = await getSumOpenedPositions(program, prices);
+    const sumOpenedPositions = await getSumOpenedPositions(
+      solProgram,
+      usdcProgram,
+      prices,
+      collateralMap
+    );
     const stakingAccounts = await getStakingAccounts(stakingProgram);
 
     const sumStaked = (
       await Promise.all(
         stakingAccounts.map((sa) =>
-          program.provider.connection.getBalance(sa.pubkey)
+          solProgram.provider.connection.getBalance(sa.pubkey)
         )
       )
     ).reduce((acc, cur) => acc + cur, 0);
@@ -164,12 +170,52 @@ async function fetchCollateralPrices(collateralTokenIds) {
     )
   ).reduce((acc, priceData) => {
     Object.keys(priceData).forEach((key) => {
-      acc[key] = priceData[key]?.price || 0;
+      acc[key] = priceData[key]?.price || 1;
     });
     return acc;
   }, {});
 
   return prices;
+}
+
+async function getPoolCollateralMap(programId) {
+  // Initialize the program with the specific program ID
+  const programWithId = new anchor.Program(
+    lavarageIDL,
+    programId,
+    getProvider()
+  );
+
+  // Fetch all pool accounts for the given program ID
+  const pools = await programWithId.account.pool.all([]);
+
+  // Create a map of collateralType to pool ID
+  const collateralMap = {};
+  pools.forEach((pool) => {
+    const collateralType = pool.account.collateralType?.toBase58();
+    const poolId = pool.publicKey.toBase58();
+    if (collateralType) {
+      collateralMap[collateralType] = poolId;
+    }
+  });
+  return collateralMap;
+}
+
+async function fetchCollateralPricesFromPools() {
+  // Fetch pool maps for both SOL and USDC program IDs
+  const solCollateralMap = await getPoolCollateralMap(solProgramId);
+  const usdcCollateralMap = await getPoolCollateralMap(usdcProgramId);
+
+  // Merge the two collateral maps
+  const collateralMap = { ...solCollateralMap, ...usdcCollateralMap };
+
+  // Extract unique collateralToken IDs
+  const collateralTokenIds = Object.keys(collateralMap);
+
+  // Fetch prices for these collateral tokens
+  const prices = await fetchCollateralPrices(collateralTokenIds);
+
+  return { prices, collateralMap };
 }
 
 async function getStakingAccounts(anchor) {
@@ -179,8 +225,15 @@ async function getStakingAccounts(anchor) {
   });
 }
 
-async function getSumOpenedPositions(anchor, prices) {
-  const positionsRaw = await fetchUserPositions(anchor);
+async function getSumOpenedPositions(
+  solProgram,
+  usdcProgram,
+  prices,
+  collateralMap
+) {
+  const solPositions = await fetchUserPositions(solProgram);
+  const usdcPositions = await fetchUserPositions(usdcProgram);
+  const positionsRaw = [...solPositions, ...usdcPositions];
   const userPositions = positionsRaw.map(deserializePosition).filter((p) => p);
   const activePositions = userPositions.filter(
     (p) =>
@@ -189,8 +242,9 @@ async function getSumOpenedPositions(anchor, prices) {
   );
 
   return activePositions.reduce((total, position) => {
-    const collateralAmount = position.collateralAmount;
-    const collateralPrice = prices[position.pool];
+    const collateralType = position.pool;
+    const collateralPrice = prices[collateralMap[collateralType]] || 1;
+    const collateralAmount = parseFloat(position.collateralAmount);
     return total + collateralAmount * collateralPrice;
   }, 0);
 }
