@@ -31,7 +31,10 @@ module.exports = {
       return sumTokens2({
         api,
         chain: "bob",
-        tokens: Object.values(ADDRESSES.bob),
+        tokens: [
+          ADDRESSES.bob.WBTC,
+          ADDRESSES.bob.TBTC,
+        ],
         owners: gateways,
       });
     },
