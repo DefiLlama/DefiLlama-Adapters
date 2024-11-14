@@ -4,9 +4,9 @@ const { sumTokens2 } = require("../helper/unwrapLPs")
 const config = {
   ethereum: { v1: { factory: '0x54e44dbb92dba848ace27f44c0cb4268981ef1cc' } },
   arbitrum: { v1: { factory: '0x399f22ae52a18382a67542b3de9bed52b7b9a4ad' }, v2: { factory: '0xc4B3D494c166eBbFF9C716Da4cec39B579795A0d', block: 261874079 }},
-  karak: { v1: { factory:'0xB308474350D75447cA8731B7Ce87c9ee9DA03B1C' } },
-  mantle: { v1: { factory: '0x4a2b015CcB8658998692Db9eD4522B8e846962eD'} },
-  bsc: { v1: { factory: '0x4a2b015CcB8658998692Db9eD4522B8e846962eD'} },
+  karak: { v1: { factory:'0xB308474350D75447cA8731B7Ce87c9ee9DA03B1C' }, v2: { factory: '0x1368AE21e85c9FA25f1aB579b6D3C6e20Ad6db04', block: 13814008 }},
+  mantle: { v1: { factory: '0x4a2b015CcB8658998692Db9eD4522B8e846962eD'}, v2: { factory: '0x993E140Ba530E8Ffe1135ecef07ce7484f26CAA3', block: 71616200 }},
+  bsc: { v1: { factory: '0x4a2b015CcB8658998692Db9eD4522B8e846962eD'}, v2: { factory: '0x93036971877E084DD303463628494c150572856D', block: 43813383 }},
   blast: { v1: { factory: '0x58b5dc145ca2BE84fe087614CFe36055be609BB3'} },
   fraxtal: { v1: { factory: '0xdF922c74CC0dc394022ea002Af5aFaa32348670e'}, v2: { factory: '0x04962047B6a9E8c99C8Da874D34c4285a87d541E', block: 11669871 } },
 }

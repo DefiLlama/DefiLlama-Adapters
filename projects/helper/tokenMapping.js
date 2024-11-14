@@ -19,7 +19,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+  'eclipse',
+]
 
 const transformTokens = {
   // Sample Code
@@ -41,8 +43,8 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   stellar: {
-    "CDTKPWPLOURQA2SGTKTUQOWRCBZEORB4BWBOMJ3D3ZTQQSGE5F6JBQLV": { coingeckoId: "euro-coin", decimals: 7},
-    "CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK": { coingeckoId: "aquarius", decimals: 7},
+    "CDTKPWPLOURQA2SGTKTUQOWRCBZEORB4BWBOMJ3D3ZTQQSGE5F6JBQLV": { coingeckoId: "euro-coin", decimals: 7 },
+    "CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK": { coingeckoId: "aquarius", decimals: 7 },
 
   },
   shape: {
@@ -60,7 +62,7 @@ const fixBalancesTokens = {
   base: {
     [ADDRESSES.base.rETH]: { coingeckoId: 'rocket-pool-eth', decimals: 18 },
     '0x0a27e060c0406f8ab7b64e3bee036a37e5a62853': { coingeckoId: 'zai-stablecoin', decimals: 18 },
-    '0xc26c9099bd3789107888c35bb41178079b282561': { coingeckoId: 'solv-protocol-solvbtc-bbn', decimals: 18},
+    '0xc26c9099bd3789107888c35bb41178079b282561': { coingeckoId: 'solv-protocol-solvbtc-bbn', decimals: 18 },
   },
   op_bnb: {
     [ADDRESSES.defiverse.USDC]: { coingeckoId: 'binance-bitcoin', decimals: 18 },
@@ -77,9 +79,9 @@ const fixBalancesTokens = {
     '0xac485391eb2d7d88253a7f1ef18c37f4242d1a24': { coingeckoId: 'lisk', decimals: 18 },
   },
   bob: {
-    "0x541fd749419ca806a8bc7da8ac23d346f2df8b77": { coingeckoId: "solv-btc", decimals: 18 },
-    "0xcc0966d8418d412c599a6421b760a847eb169a8c": { coingeckoId: "solv-btc", decimals: 18 },
-    "0x236f8c0a61da474db21b693fb2ea7aab0c803894": { coingeckoId: "universal-btc", decimals: 8 },
+    [ADDRESSES.bob.SolvBTC]: { coingeckoId: "solv-btc", decimals: 18 },
+    [ADDRESSES.bob.SolvBTC_BBN]: { coingeckoId: "solv-protocol-solvbtc-bbn", decimals: 18 },
+    [ADDRESSES.bob.uniBTC]: { coingeckoId: "universal-btc", decimals: 8 }
   },
   flow: {
     '0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e': { coingeckoId: 'flow', decimals: 18 },
@@ -134,7 +136,7 @@ const fixBalancesTokens = {
   hedera: {
     '0x00000000000000000000000000000000001647e8': { coingeckoId: 'xsauce', decimals: 6 },
     '0x000000000000000000000000000000000006f89a': { coingeckoId: 'usd-coin', decimals: 6 },
-    '0x000000000000000000000000000000000022d6de': { coingeckoId: 'karate-combat', decimals: 8},
+    '0x000000000000000000000000000000000022d6de': { coingeckoId: 'karate-combat', decimals: 8 },
     '0x00000000000000000000000000000000000cba44': { coingeckoId: 'hbarx', decimals: 8 },
     '0x00000000000000000000000000000000000b2ad5': { coingeckoId: 'saucerswap', decimals: 6 },
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'hedera-hashgraph', decimals: 18 },
@@ -166,6 +168,16 @@ const fixBalancesTokens = {
   },
   arbitrum: {
     '0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a': { coingeckoId: 'universal-btc', decimals: 8 },
+  },
+  eclipse: {
+    'So11111111111111111111111111111111111111112': { coingeckoId: 'ethereum', decimals: 9 },
+    '9pan9bMn5HatX4EJdBwg9VgCa7Uz5HL8N1m5D3NdXejP': { coingeckoId: 'ethereum', decimals: 9 },
+    'BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL': { coingeckoId: 'solana', decimals: 9 },
+    'AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE': { coingeckoId: 'usd-coin', decimals: 6 },
+    '841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH': { coingeckoId: 'dogwifcoin', decimals: 6 },
+  },
+  unit0: {
+    '0xcf43f7703d9b4e8835f977ef364b4014fa7e856e': { coingeckoId: 'unit0', decimals: 18 },
   },
 }
 
