@@ -69,6 +69,6 @@ const lbtcMarkets = {
 }
 
 module.exports = mergeExports(
-	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets
+	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets
 )
 module.exports.methodology = methodologies.lendingMarket
