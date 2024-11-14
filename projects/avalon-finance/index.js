@@ -37,6 +37,7 @@ const unibtcMarkets = {
 	merlin: aaveExports('', '0x0024818043D04B1Cc9685233D47eF7eea6Df0A5E', undefined, ['0x623700Fee1dF64088f258e2c4DAB4D6aEac4dDA6'], { v3: true }),
 	btr: aaveExports('', '', undefined, ['0x898D0EF6E20B7597728AEB41169c22608Fe4b234'], { v3: true }),
 	bsc: aaveExports('', '', undefined, ['0xF828A73cB00072843241C6294ed778F26854fe5C'], { v3: true }),
+	mode: aaveExports('', '', undefined, ['0x8F016F5dac399F20B34E35CBaF1dFf12eeE2dE74'], { v3: true }),
 }
 
 const stbtcMarkets = {
