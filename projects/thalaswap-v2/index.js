@@ -17,9 +17,7 @@ module.exports = {
       for (const poolInfo of poolInfos) {
         const assets = poolInfo.assets_metadata.map(asset => asset.inner)
         const balances = poolInfo.balances
-        for (let i = 0; i < assets.length; i++) {
-          api.add(assets[i], balances[i])
-        }
+        api.add(assets, balances)
       }
     },
   },
