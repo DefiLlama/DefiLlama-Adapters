@@ -27,6 +27,7 @@ const DEFAULTS = {
   WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public",
   APECHAIN_RPC: "https://rpc.apechain.com",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
+  UNIT0_RPC: "https://rpc.unit0.dev",
 }
 
 const ENV_KEYS = [
