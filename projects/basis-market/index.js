@@ -1,13 +1,10 @@
-const {getTokenAccountBalance} = require('../helper/solana')
+const {sumTokens2} = require('../helper/solana')
 
-const basis = "Basis9oJw9j8cw53oMV7iqsgo6ihi9ALw4QR31rcjUJa";
 const basis_staking = "3sBX8hj4URsiBCSRV26fEHkake295fQnM44EYKKsSs51";
 
 async function stakingTVL(){
-  const stakedBasis = await getTokenAccountBalance(basis_staking)
-  return {"basis-markets": stakedBasis}
+  return sumTokens2({tokenAccounts: [basis_staking]})
 }
-
 
 module.exports = {
   methodology: `TVL for basis market is staking for now`, 

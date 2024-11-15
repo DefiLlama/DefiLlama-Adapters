@@ -1,5 +1,6 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking.js");
 
 const config = {
   ethereum: {
@@ -108,13 +109,33 @@ const config = {
       "0x5Bd51296423A9079b931414C1De65e7057326EaA",
     ],
   },
+  tron: {
+    owners: [
+      "TXZFj3Eo7xLArr32SYea2GtWmG1BekdpDq", // nova bridge address
+    ],
+    tokens: [ADDRESSES.tron.BTC],
+  },
+  merlin: {
+    owners: [
+      "0xf5b90fE755Aa2e3CcC69d9548cbeB7b38c661D73", // nova bridge address
+    ],
+    tokens: [
+      ADDRESSES.merlin.WBTC_1, //MBTC
+      "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71", //Solv BTC
+    ],
+
+  },
 }
 
 async function tvl(api) {
-  const fetchCoValentTokens = !['manta', 'mantle', 'blast'].includes(api.chain)
+  const fetchCoValentTokens = !['manta', 'mantle', 'blast', 'tron', 'merlin'].includes(api.chain)
   return sumTokens2({ api, ...config[api.chain], fetchCoValentTokens, })
 }
 
 Object.keys(config).forEach(async chain => {
   module.exports[chain] = { tvl }
 })
+module.exports.ethereum.staking = staking(
+  '0xAd16eDCF7DEB7e90096A259c81269d811544B6B6', 
+  '0xfC385A1dF85660a7e041423DB512f779070FCede'
+);

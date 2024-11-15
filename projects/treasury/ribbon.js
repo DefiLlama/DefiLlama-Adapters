@@ -6,6 +6,7 @@ const treasury = "0xDAEada3d210D2f45874724BeEa03C7d4BBD41674";
 const treasury2 = "0x42c1357aaa3243ea30c713cdfed115d09f10a71d"
 const treasury3 = "0x6adeb4fddb63f08e03d6f5b9f653be8b65341b35"
 const RBN = "0x6123B0049F904d730dB3C36a31167D9d4121fA6B";
+const AEVO = ADDRESSES.ethereum.AEVO
 
 module.exports = treasuryExports({
   ethereum: {
@@ -31,6 +32,7 @@ module.exports = treasuryExports({
     ownTokens: [
       RBN,
       "0xd590931466cdD6d488A25da1E89dD0539723800c", // 50RBN-50USDC
+      AEVO
     ],
   },
 });

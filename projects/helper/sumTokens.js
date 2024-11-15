@@ -13,6 +13,7 @@ const helpers = {
   "cosmos": require("./chain/cosmos"),
   "solana": require("./solana"),
   "aptos": require("./chain/aptos"),
+  "sui": require("./chain/sui"),
   "tezos": require("./chain/tezos"),
   "zilliqa": require("./chain/zilliqa"),
   "near": require("./chain/near"),
@@ -23,6 +24,7 @@ const helpers = {
   "stacks": require("./chain/stacks"),
   "starknet": require("./chain/starknet"),
   "brc20": require("./chain/brc20"),
+  "doge": require("./chain/doge"),
 }
 
 const geckoMapping = {

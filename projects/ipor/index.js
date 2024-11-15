@@ -14,12 +14,48 @@ async function tvlEthereum(api) {
     return await calculateTvlForV1(api);
   }
 }
-async function tvlArbitrum(_, block, _1, {api}) {
+async function tvlArbitrum(api) {
     const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
+
+    const assets = [
+      ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
+    ]
+
+    const res = await api.multiCall({ abi: abi.getBalancesForOpenSwap, calls: assets, target: addresses.arbitrum.IporProtocolRouter })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: assets })
+
+    res.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
+      const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
+      const decimal = 18 - decimals[i]
+      api.add(assets[i], balance / (10 ** decimal))
+    });
+
     for (const pool of addresses.arbitrum.pools) {
+        if (assets.includes(pool.asset)) {
+            continue;
+        }
         await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
     }
     return api.getBalances();
+}
+
+async function tvlBase(api) {
+    const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
+
+    const assets = [
+        ADDRESSES.base.USDC,   // USDC
+    ]
+
+    const res = await api.multiCall({ abi: abi.getBalancesForOpenSwap, calls: assets, target: addresses.base.IporProtocolRouter })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: assets })
+
+    res.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
+        const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
+        const decimal = 18 - decimals[i]
+        api.add(assets[i], balance / (10 ** decimal))
+    });
+    const tokensAndOwners = addresses.base.pools.map(pool => [pool.asset, pool.AmmTreasury]);
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens: assets });
 }
 
 async function calculateTvlForV2(api) {
@@ -31,20 +67,16 @@ async function calculateTvlForV2(api) {
     ADDRESSES.ethereum.DAI, // DAI
   ]
 
-  const output = await api.multiCall({ abi: abi.getAmmBalance, calls: assets, target: addresses.ethereum.IporProtocolRouter })
+  const res = await api.multiCall({ abi: abi.getAmmBalance, calls: assets, target: addresses.ethereum.IporProtocolRouter })
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: assets })
 
-  output.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
+  res.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool, vault }, i) => {
     const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
     const decimal = 18 - decimals[i]
     api.add(assets[i], balance / (10 ** decimal))
   });
-
-  for (const pool of addresses.ethereum.pools) {
-    await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
-  }
-
-  return api.getBalances();
+  const tokensAndOwners = addresses.ethereum.pools.map(pool => [pool.asset, pool.AmmTreasury]);
+  return api.sumTokens({ tokensAndOwners, blacklistedTokens: assets });
 }
 
 async function calculateTvlForV1(api) {
@@ -53,11 +85,11 @@ async function calculateTvlForV1(api) {
     '0x137000352B4ed784e8fa8815d225c713AB2e7Dc9', // USDC
     '0xEd7d74AA7eB1f12F83dA36DFaC1de2257b4e7523', // DAI
   ]
-  const output = await api.multiCall({ abi: abi.getAccruedBalance, calls: miltonAddresses, })
+  const res = await api.multiCall({ abi: abi.getAccruedBalance, calls: miltonAddresses, })
   const tokens = await api.multiCall({ abi: abi.getAsset, calls: miltonAddresses, })
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
 
-  output.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool }, i) => {
+  res.forEach(({ totalCollateralPayFixed, totalCollateralReceiveFixed, liquidityPool }, i) => {
     const balance = +totalCollateralPayFixed + +totalCollateralReceiveFixed + +liquidityPool
     const decimal = 18 - decimals[i]
     api.add(tokens[i], balance / (10 ** decimal))
@@ -73,5 +105,11 @@ module.exports = {
   },
   arbitrum: {
     tvl: tvlArbitrum
-  }
+  },
+  base: {
+    tvl: tvlBase
+  },
+  hallmarks:[
+    [1674648000, "Liquidity Mining Start"]
+  ],
 };

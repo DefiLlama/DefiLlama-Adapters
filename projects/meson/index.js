@@ -8,8 +8,8 @@ const config = {
     tokens: [
       ADDRESSES.bsc.iUSD,
       '0x480E158395cC5b41e5584347c495584cA2cAf78d',
-      '0x6b4eCAdA640F1B30dBdB68f77821A03A5f282EbE',
-      '0x967aEC3276b63c5E2262da9641DB9dbeBB07dC0d',
+      ADDRESSES.merlin.USDC,
+      ADDRESSES.merlin.USDT,
       '0x9bd60d6FC99843207B8149f9190438C1F81BDdcD',
       '0xB5d8b1e73c79483d7750C5b8DF8db45A0d24e2cf',
       ADDRESSES.merlin.WBTC_1,
@@ -19,12 +19,12 @@ const config = {
   },
   bsquared: {
     tokens: [
-      '0x681202351a488040Fa4FdCc24188AfB582c9DD62',
-      '0x7537C1F80c9E157ED7AFD93a494be3e1f04f1462',
+      ADDRESSES.bsquared.USDT,
+      ADDRESSES.bsquared.BSTONE,
       '0xa793740863F1710A87070a5918820976ff32B758',
-      '0xC2Fe4f673455Ef92299770a09CDB5E8756A525D5',
-      '0xD48d3A551757ac47655fCe25BDE1B0B6b1Cb2a5A',
-      '0xE544e8a38aDD9B1ABF21922090445Ba93f74B9E5',
+      ADDRESSES.bsquared.FDUSD,
+      ADDRESSES.bsquared.ETH,
+      ADDRESSES.bsquared.USDC,
     ],
     id: 'b2',
   },
@@ -65,6 +65,7 @@ const config = {
       ADDRESSES.tron.WTRX,
     ],
   },
+  taiko: { id: 'taiko' },
   ancient8: { id: 'ancient8' },
   arbitrum: { id: 'arb' },
   aurora: {},
@@ -98,6 +99,9 @@ const config = {
   optimism: { id: 'opt'},
   polygon_zkevm: { id: 'zkevm'},
   era: { id: 'zksync'},
+  btr: { id: 'bitlayer'},
+  bouncebit: { id: 'bb'},
+  europa: { id: 'skale-europa' }
 }
 
 async function addCoinfg(id, ownerTokens) {

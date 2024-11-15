@@ -4,7 +4,7 @@ function handleError(error){
   console.log('\n',errorString, '\n\n')
   const isGraphError = error.stack?.includes('graphql-request') && error.response?.errors?.length
   if (isGraphError)
-    console.error(error.response.errors.map(e => e.message).join('\n'))
+    console.error(`On chain ${error.chain ?? "Unknown"}:` + error.response.errors.map(e => e.message).join('\n'))
   else
     console.error(error.toString())
   const axiosError  = error?.response?.data?.message

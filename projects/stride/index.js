@@ -67,7 +67,7 @@ const chains = {
     denom: "adydx",
     coinGeckoId: "dydx-chain",
   },
-  
+
   celestia: {
     chainId: "celestia",
     denom: "utia",
@@ -78,33 +78,44 @@ const chains = {
     chainId: "dymension_1100-1",
     denom: "adym",
     coinGeckoId: "dymension",
+  },
+
+  islm: {
+    chainId: "haqq_11235-1",
+    denom: "aISLM",
+    coinGeckoId: "islamic-coin",
+  },
+
+  band: {
+    chainId: "laozi-mainnet",
+    denom: "uband",
+    coinGeckoId: "band-protocol",
   }
 };
 
 // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
 function getCoinDenimals(denom) {
-  return ["aevmos", "inj", "adydx", "adym"].includes(denom) ? 1e18 : 1e6;
+  return ["aevmos", "inj", "adydx", "adym", "aISLM"].includes(denom)
+    ? 1e18
+    : 1e6;
 }
 
 function makeTvlFn(chain) {
   return async () => {
-    
     // Define the URL for host_zone based on chainId
-    let hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
-    if (chain.chainId === 'celestia') {
-      hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/staketia/host_zone`;
-    } else if (chain.chainId === 'dymension_1100-1') {
-      hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakedym/host_zone`;
-    }
+    const hostZoneUrl =
+      chain.chainId === "celestia"
+        ? "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/staketia/host_zone"
+        : chain.chainId === "dymension_1100-1"
+        ? "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakedym/host_zone"
+        : `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
 
     const [{ amount: assetBalances }, { host_zone: hostZone }] =
       await Promise.all([
         await get(
           `https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply/by_denom?denom=st${chain.denom}`
         ),
-        await get(
-          hostZoneUrl
-        ),
+        await get(hostZoneUrl),
       ]);
 
     const assetBalance = assetBalances["amount"];
