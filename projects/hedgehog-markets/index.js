@@ -6,8 +6,6 @@ const { getConnection } = require("../helper/solana");
 const { sliceIntoChunks } = require("../helper/utils");
 
 const owners = [
-  // P2P.
-  "DNUJgFFjx6CF3kewedoafgbCF2iTVZZ7vNNHaNX3UDSF",
   // P2P (LULO).
   "J9EH18EWSo8s69gouHGNy5zFHkhcHRbb9zBZXwSG4cHy",
   // Parimutuel.
