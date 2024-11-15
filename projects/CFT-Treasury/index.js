@@ -2,10 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
 
 
-async function getStakedTron(account) {
-  const data = await get(`https://apilist.tronscan.org/api/vote?candidate=${account}`)
-  return data.totalVotes
-}
+
 
 async function getTrxBalance(account) {
   const data = await post('https://api.trongrid.io/wallet/getaccount', {
@@ -16,6 +13,6 @@ async function getTrxBalance(account) {
 }
 
 module.exports = {
-  getStakedTron,
+ 
   getTrxBalance,
 }
