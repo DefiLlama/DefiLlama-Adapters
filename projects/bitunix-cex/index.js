@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -7,11 +8,7 @@ const config = {
     ],
   },
   bitcoin: {
-    owners: [
-        "bc1qxh9ruwejxz7ztzxejafd74tyxg4sgfeqxun42f",
-        "bc1qhjfnumgcsqsx6grxa7mfl7rr5g3u8xl4gtt7tr",
-        "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37"
-    ],
+    owners: bitcoinAddressBook.bitunixCex,
   },
   tron: {
     owners: [
@@ -26,7 +23,18 @@ const config = {
         "TYVAHVXixkL2dnaPfyjZz6J7hF6J4WW3Qx",
         "TCxBM3QPZCebzCuXtzzBA7Vet5mCcruHdN",
         "TLnMjGrgWTZLadqNRzbQPTzDPWbH6Dc1HA",
-        "TRcvGsNpzkm8LdhLYmqBWESRrTUv7BPQ8t"
+        "TRcvGsNpzkm8LdhLYmqBWESRrTUv7BPQ8t",
+        "TWJ6R2EbFC5KdZFwLNj9GDiENn7WyAUjQE",
+        'TJqCunxn9xYtnXtP8v5t54W7uR2huUbFvS',
+        'THY84dJ4EPsPddwJP2URsqkDzHwVB9uk48',
+        'TQTn7XQmZ9p2jToTV2rPbrVLZSftaZjK9y',
+        'TLvpkJy9cn695PZLU2fEKYbfVDDpUymZvR',
+        'TGmri3M7L5bhMVZdEViUX9tdARpJ4ANdNb',
+        'TQTgNHaHLPEcCsvfFciriXLvQDktWNQ7yM',
+        'TVaRQRPJh3MT3AfGLVZuaTdJL8nd176tpB',
+        'TXP66hCnRzRP4ZNbQcNSWcBV4C5JnHK51F',
+        'TP5UzNzk4tL2Jo6twHavUM9s9NjUPSgrvN',
+        'TJRkfdgdQTSTmfQQzFy8RR6o73eLCEorSH'
     ],
   },
 }

@@ -1,4 +1,5 @@
-const { getTokenSupply } = require("../helper/solana");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getTokenSupplies } = require("../helper/solana");
 const sui = require("../helper/chain/sui");
 const { aQuery } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
@@ -30,7 +31,7 @@ const config = {
     USDY: "0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc",
   },
   noble: {
-    USDY: "ausdy",
+    USDY: ADDRESSES.noble.USDY,
   },
   arbitrum: {
     USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
@@ -52,14 +53,8 @@ Object.keys(config).forEach((chain) => {
     tvl: async (api) => {
       let supplies;
       if (chain === "solana") {
-        supplies = await Promise.all(fundAddresses.map(getTokenSupply)).catch(
-          (error) => {
-            throw error;
-          }
-        );
-
-        const scaledSupplies = supplies.map((supply) => supply * 1_000_000);
-        api.addTokens(fundAddresses, scaledSupplies);
+        supplies = await getTokenSupplies(fundAddresses)
+        api.addTokens(Object.keys(supplies), Object.values(supplies));
       } else if (chain === "sui") {
         let usdySupply = await getUSDYTotalSupplySUI();
         api.addTokens(fundAddresses, [usdySupply]);

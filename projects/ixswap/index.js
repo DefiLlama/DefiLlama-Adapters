@@ -8,7 +8,7 @@ const STAKING_CONTRACTS = [
 
 module.exports = {
   polygon:{
-    tvl: getUniTVL({ factory: '0xc2D0e0bc81494adB71Ce9Aa350cC875DaE12D81D', fetchBalances: true, blacklistedTokens: [IXS_POLYGON] }),
+    tvl: getUniTVL({ factory: '0xc2D0e0bc81494adB71Ce9Aa350cC875DaE12D81D', blacklistedTokens: [IXS_POLYGON] }),
     staking: staking(STAKING_CONTRACTS, IXS_POLYGON),
   },
 }
