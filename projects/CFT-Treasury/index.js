@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
-const { get, post, } = require('../http')
+
 
 async function getStakedTron(account) {
   const data = await get(`https://apilist.tronscan.org/api/vote?candidate=${account}`)
