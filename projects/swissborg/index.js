@@ -47,6 +47,7 @@ const config = {
       '9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL',
       'Fe7SEekiKygziaEGKxsDsgLVzrCfNvVBvAYsaJBwFA8s',
       'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
+      '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
     ],
   },
   polkadot: {
@@ -108,6 +109,11 @@ const config = {
   arbitrum: {
     owners: [
       '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+    ]
+  },
+  injective: {
+    owners: [
+      'inj1wvhk7xhzf9kus9a4tpa6v8vhuqvm265rz7zd6n',
     ]
   }
 }
