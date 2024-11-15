@@ -1,4 +1,4 @@
-//@ts-check
+// @ts-check
 
 const base58 = require("bs58");
 const { PublicKey } = require("@solana/web3.js");
@@ -15,7 +15,8 @@ const owners = [
 ];
 
 const classicMarketsId = "D8vMVKonxkbBtAXAxBwPPWyTfon8337ARJmHvwtsF98G";
-const p2pId = "P2PzLraW8YF87BxqZTZ5kgrfvzcrKGPnqUBNhqmcV9B";
+const p2pId = "P2PototC41acvjMc9cvAoRjFjtaRD5Keo9PvNJfRwf3";
+const p2pLuloId = "P2PzLraW8YF87BxqZTZ5kgrfvzcrKGPnqUBNhqmcV9B";
 const parimutuelId = "PARrVs6F5egaNuz8g6pKJyU4ze3eX5xGZCFb3GLiVvu";
 const parlayId = "PLYaNRbQs9GWyVQdcLrzPvvZu7NH4W2sneyHcEimLr7";
 
@@ -123,9 +124,10 @@ async function getClassicMarketsTokenAccounts(api, connection, tokenAccounts) {
 /**
  * @param {ChainApi} api
  * @param {Connection} connection
+ * @param {"lulo" | "no-lulo"} version
  */
-async function addP2PDeposits(api, connection) {
-  const programId = new PublicKey(p2pId);
+async function addP2PDeposits(api, connection, version) {
+  const programId = new PublicKey(version == "lulo" ? p2pLuloId : p2pId);
 
   const result = await connection.getProgramAccounts(programId, {
     encoding: "base64",
@@ -142,7 +144,7 @@ async function addP2PDeposits(api, connection) {
     ],
   });
 
-  api.log(`p2p markets: ${result.length}`);
+  api.log(`p2p (${version}) markets: ${result.length}`);
 
   for (const { account } of result) {
     const { data } = account;
@@ -245,13 +247,12 @@ async function tvl(api) {
 
   await getClassicMarketsTokenAccounts(api, connection, tokenAccounts);
 
-  await addP2PDeposits(api, connection);
+  await addP2PDeposits(api, connection, "lulo");
+  await addP2PDeposits(api, connection, "no-lulo");
   await addParimutuelDeposits(api, connection);
   await addParlayDeposits(api, connection);
 
-  const owners_ = owners.map((k) => new PublicKey(k));
-
-  await addOwnerBalances(api, connection, owners_);
+  await addOwnerBalances(api, connection, owners.map((k) => new PublicKey(k)));
   await addTokenAccountBalances(api, connection, tokenAccounts);
 
   return api.getBalances();
