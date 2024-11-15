@@ -160,6 +160,24 @@ const supportedChains = [
     chainId: 14,
     identifier: 'flare'
   },
+  {
+    name: 'ApeChain',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-apechain/1.1.1/gn',
+    chainId: 33139,
+    identifier: 'apechain'
+  },
+  // {
+  //   name: 'Bittorrent',
+  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-btt/1.1.1/gn',
+  //   chainId: 199,
+  //   identifier: 'bittorrent'
+  // },
+  {
+    name: 'Filecoin',
+    subgraphEndpoint:  'https://fil.subgraph.laconic.com/v1/steer-protocol/iRoheeEh2g6CdZ9OnunLwNCFHG8a7TAdtIYNNxboRSKVxgZfjq',
+    chainId: 314,
+    identifier: 'filecoin'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
@@ -194,7 +212,8 @@ module.exports.arbitrum.staking = stakings(
     "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
     "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4",
     "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B",
-    "0x3338B85fB1607C519962571B67061e02408475Bb"
+    "0x3338B85fB1607C519962571B67061e02408475Bb",
+    "0x6519A921d0E6F06524eff5DF976abc9A3ABF36cF"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"

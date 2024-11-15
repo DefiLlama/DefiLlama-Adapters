@@ -14,4 +14,11 @@ module.exports = {
       api.add(lsds, bals)
     }
   },
+  bsc: {
+    tvl: async (api) => {
+      const ynBNB = '0x304B5845b9114182ECb4495Be4C91a273b74B509'
+      const ynBnbBalance = await api.call({ abi: 'uint256:totalAssets', target: ynBNB })
+      api.add(ADDRESSES.null, ynBnbBalance)
+    }
+  },
 }
