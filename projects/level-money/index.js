@@ -40,7 +40,7 @@ module.exports = {
         tvl: sumTokensExport({ 
           owners: [LEVEL_STAKING_CONTRACT, ...LEVEL_RESERVE_MANAGERS, ...LEVEL_WRAPPED_TOKENS], 
           tokens: TOKEN_CONTRACTS,
-          tokensAndOwners: [[LEVEL_USD_USDC_CURVE_LP_TOKEN, LEVEL_USD_POINTS_FARM]]
         }),
+        pool2: sumTokensExport({ owner: LEVEL_USD_POINTS_FARM, tokens: [LEVEL_USD_USDC_CURVE_LP_TOKEN] })
     }
 };
