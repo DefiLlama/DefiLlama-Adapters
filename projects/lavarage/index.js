@@ -2,6 +2,8 @@ const axios = require("axios");
 const { getConnection, getProvider } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
+const splToken = require("@solana/spl-token");
+
 const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
 
 const solProgramId = "CRSeeBqjDnm3UPefJ9gxrtngTsnQRhEJiTA345Q83X3v";
@@ -44,7 +46,7 @@ const iscPoolAccount = new PublicKey(
   "CrsxVEF7YNGAk9QwwbB2vuesUWoDopfgFAhA9apoCJ2z"
 );
 
-async function tvl() {
+async function tvl(api) {
   const provider = getProvider();
   const connection = getConnection();
 
@@ -61,14 +63,15 @@ async function tvl() {
       provider
     );
 
-    const { prices, collateralMap } = await fetchCollateralPricesFromPools();
+    const { prices, collateralMap, decimalPlacesMap } = await fetchCollateralPricesFromPools();
 
     // Calculate sum of opened positions based on collateral amount * price
     const sumOpenedPositions = await getSumOpenedPositions(
       solProgram,
       usdcProgram,
       prices,
-      collateralMap
+      collateralMap,
+      decimalPlacesMap
     );
     const stakingAccounts = await getStakingAccounts(stakingProgram);
 
@@ -107,20 +110,10 @@ async function tvl() {
       await connection.getTokenAccountBalance(iscTokenAccount)
     ).value.uiAmount;
 
-    const usdcBalanceInLamports = usdcBalance * 1e6;
-    const iscBalanceInLamports = iscBalance * 1e6;
-
-    const total =
-      sumOpenedPositions +
-      sumIdle +
-      sumDeployed +
-      sumMultisig +
-      sumPendingUnstake +
-      sumStaked +
-      usdcBalanceInLamports +
-      iscBalanceInLamports;
-
-    return { solana: total / 1e9 };
+    api.add("So11111111111111111111111111111111111111112", sumDeployed);
+    api.add("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", usdcBalance * 1e6 + sumOpenedPositions * 1e6);
+    api.add("J9BcrQfX4p9D1bvLzRNCbMDv8f44a9LFdeqNE4Yk2WMD", iscBalance * 1e6);
+    //return { solana: sumOpenedPositions };
   } catch (error) {
     console.error("Error fetching TVL:", error);
     return { solana: 0 };
@@ -195,7 +188,7 @@ async function getPoolCollateralMap(programId) {
     const collateralType = pool.account.collateralType?.toBase58();
     const poolId = pool.publicKey.toBase58();
     if (collateralType) {
-      collateralMap[collateralType] = poolId;
+      collateralMap[poolId] = collateralType;
     }
   });
   return collateralMap;
@@ -210,12 +203,41 @@ async function fetchCollateralPricesFromPools() {
   const collateralMap = { ...solCollateralMap, ...usdcCollateralMap };
 
   // Extract unique collateralToken IDs
-  const collateralTokenIds = Object.keys(collateralMap);
+  const collateralTokenIds = Object.values(collateralMap);
 
   // Fetch prices for these collateral tokens
   const prices = await fetchCollateralPrices(collateralTokenIds);
 
-  return { prices, collateralMap };
+  // Create a map of decimal places for each collateral token
+  const decimalPlacesMap = {};
+  const connection = getConnection();
+  
+  // Fetch mint info for all collateral tokens
+  const mintInfos = await Promise.all(
+    collateralTokenIds.map(async (tokenId) => {
+      try {
+        const token = new splToken.Token(connection, new PublicKey(tokenId), TOKEN_PROGRAM_ID, getProvider().wallet);
+        const mintInfo = await token.getMintInfo();
+        return {
+          tokenId,
+          decimals: mintInfo.decimals
+        };
+      } catch (e) {
+        console.log(`Error fetching decimals for token ${tokenId}`, e);
+        return {
+          tokenId,
+          decimals: 0
+        };
+      }
+    })
+  );
+
+  // Populate the decimals map
+  mintInfos.forEach(({ tokenId, decimals }) => {
+    decimalPlacesMap[tokenId] = decimals;
+  });
+
+  return { prices, collateralMap, decimalPlacesMap };
 }
 
 async function getStakingAccounts(anchor) {
@@ -229,7 +251,8 @@ async function getSumOpenedPositions(
   solProgram,
   usdcProgram,
   prices,
-  collateralMap
+  collateralMap,
+  decimalPlacesMap
 ) {
   const solPositions = await fetchUserPositions(solProgram);
   const usdcPositions = await fetchUserPositions(usdcProgram);
@@ -242,10 +265,11 @@ async function getSumOpenedPositions(
   );
 
   return activePositions.reduce((total, position) => {
-    const collateralType = position.pool;
-    const collateralPrice = prices[collateralMap[collateralType]] || 1;
+    const poolAddress = position.pool;
+    const collateralPrice = prices[collateralMap[poolAddress]] || 1;
     const collateralAmount = parseFloat(position.collateralAmount);
-    return total + collateralAmount * collateralPrice;
+    const decimals = decimalPlacesMap[collateralMap[poolAddress]] || 0;
+    return total + (collateralAmount * collateralPrice / 10 ** decimals);
   }, 0);
 }
 
