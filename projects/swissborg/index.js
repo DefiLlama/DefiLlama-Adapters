@@ -111,11 +111,11 @@ const config = {
       '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
     ]
   },
-  injective: {
-    owners: [
-      'inj1wvhk7xhzf9kus9a4tpa6v8vhuqvm265rz7zd6n',
-    ]
-  }
+  // injective: {
+  //   owners: [
+  //     'inj1wvhk7xhzf9kus9a4tpa6v8vhuqvm265rz7zd6n',
+  //   ]
+  // }
 }
 
 module.exports = cexExports(config)
