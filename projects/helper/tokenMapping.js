@@ -182,6 +182,9 @@ const fixBalancesTokens = {
   shido: {
     '0x8cbaffd9b658997e7bf87e98febf6ea6917166f7': { coingeckoId: 'shido', decimals: 18 },
     '0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
+  solana: {
+    'AZsHEMXd36Bj1EMNXhowJajpUXzrKcK57wW4ZGXVa7yR': { coingeckoId: 'guacamole', decimals: 5 }
   }
 }
 
