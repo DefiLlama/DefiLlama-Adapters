@@ -7,6 +7,8 @@ const { sliceIntoChunks } = require("../helper/utils");
 
 const owners = [
   // P2P.
+  "DNUJgFFjx6CF3kewedoafgbCF2iTVZZ7vNNHaNX3UDSF",
+  // P2P (LULO).
   "J9EH18EWSo8s69gouHGNy5zFHkhcHRbb9zBZXwSG4cHy",
   // Parimutuel.
   "3SAUPiGiATqv8TBgvzSJqpLxLGF6LbJamvimueJQT7WT",
@@ -124,10 +126,40 @@ async function getClassicMarketsTokenAccounts(api, connection, tokenAccounts) {
 /**
  * @param {ChainApi} api
  * @param {Connection} connection
- * @param {"lulo" | "no-lulo"} version
+ * @param {Array<PublicKey>} tokenAccounts
  */
-async function addP2PDeposits(api, connection, version) {
-  const programId = new PublicKey(version == "lulo" ? p2pLuloId : p2pId);
+async function addP2PDeposits(api, connection, tokenAccounts) {
+  const programId = new PublicKey(p2pId);
+
+  const result = await connection.getProgramAccounts(programId, {
+    encoding: "base64",
+    // We only care about the market addresses.
+    dataSlice: { offset: 0, length: 0 },
+    filters: [
+      // Market accounts have a discriminator of 3 at offset 0.
+      { memcmp: { offset: 0, bytes: "4" } },
+    ],
+  });
+
+  api.log(`p2p (no-lulo) markets: ${result.length}`);
+
+  for (const { pubkey } of result) {
+    // Market deposit account.
+    const [deposit] = PublicKey.findProgramAddressSync(
+      [Buffer.from("deposit"), pubkey.toBuffer()],
+      programId,
+    );
+
+    tokenAccounts.push(deposit);
+  }
+}
+
+/**
+ * @param {ChainApi} api
+ * @param {Connection} connection
+ */
+async function addP2PLuloDeposits(api, connection) {
+  const programId = new PublicKey(p2pLuloId);
 
   const result = await connection.getProgramAccounts(programId, {
     encoding: "base64",
@@ -144,7 +176,7 @@ async function addP2PDeposits(api, connection, version) {
     ],
   });
 
-  api.log(`p2p (${version}) markets: ${result.length}`);
+  api.log(`p2p (lulo) markets: ${result.length}`);
 
   for (const { account } of result) {
     const { data } = account;
@@ -247,8 +279,9 @@ async function tvl(api) {
 
   await getClassicMarketsTokenAccounts(api, connection, tokenAccounts);
 
-  await addP2PDeposits(api, connection, "lulo");
-  await addP2PDeposits(api, connection, "no-lulo");
+  await addP2PDeposits(api, connection, tokenAccounts);
+
+  await addP2PLuloDeposits(api, connection);
   await addParimutuelDeposits(api, connection);
   await addParlayDeposits(api, connection);
 
