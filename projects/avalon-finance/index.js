@@ -11,6 +11,7 @@ const mainMarket = {
 	iotex: aaveExports('', '', undefined, ['0xBa77520d38953BF6a8395D118CfF714Ed672533f'], { v3: true }),
 	bsquared: aaveExports('', '', undefined, ['0x4Ea93E846b8C6E7b3D5a5BEDF4fe6B8AED58FCEe'], { v3: true }),
 	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }),
+	mode: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
 }
 
 const innovativeMarket = {
@@ -36,6 +37,7 @@ const unibtcMarkets = {
 	merlin: aaveExports('', '0x0024818043D04B1Cc9685233D47eF7eea6Df0A5E', undefined, ['0x623700Fee1dF64088f258e2c4DAB4D6aEac4dDA6'], { v3: true }),
 	btr: aaveExports('', '', undefined, ['0x898D0EF6E20B7597728AEB41169c22608Fe4b234'], { v3: true }),
 	bsc: aaveExports('', '', undefined, ['0xF828A73cB00072843241C6294ed778F26854fe5C'], { v3: true }),
+	mode: aaveExports('', '', undefined, ['0x8F016F5dac399F20B34E35CBaF1dFf12eeE2dE74'], { v3: true }),
 }
 
 const stbtcMarkets = {
@@ -50,7 +52,23 @@ const otherProtocolTokenMarkets = {
 	bsc: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }),
 }
 
+const obtcMarkets = {
+	core: aaveExports('', '', undefined, ['0x5c78EbB34cC5b52146D107365A66E37a677Fcf50'], { v3: true }),
+}
+
+const ubtcMarkets = {
+	core: aaveExports('', '', undefined, ['0x2752237ccC6aB5e4B9e9BFca57D7a6956aF4FE3d'], { v3: true }),
+}
+
+const xaumMarkets = {
+	bsc: aaveExports('', '', undefined, ['0x2c4aEB7C9f0D196a51136B3c7bec49cB2DBD1966'], { v3: true }),
+}
+
+const lbtcMarkets = {
+	bsc: aaveExports('', '', undefined, ['0x5b9b3C211B81627Cc6b46824CB26829F31A587dc'], { v3: true }),
+}
+
 module.exports = mergeExports(
-	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets
+	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets
 )
 module.exports.methodology = methodologies.lendingMarket
