@@ -28,6 +28,7 @@ const DEFAULTS = {
   APECHAIN_RPC: "https://rpc.apechain.com",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
   UNIT0_RPC: "https://rpc.unit0.dev",
+  RBN_RPC: "https://governors.mainnet.redbelly.network",
 }
 
 const ENV_KEYS = [

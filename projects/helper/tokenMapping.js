@@ -179,10 +179,13 @@ const fixBalancesTokens = {
   unit0: {
     '0xcf43f7703d9b4e8835f977ef364b4014fa7e856e': { coingeckoId: 'unit0', decimals: 18 },
   },
+  rbn: {
+    '0x6ed1f491e2d31536d6561f6bdb2adc8f092a6076': { coingeckoId: 'redbelly-network-token', decimals: 18 },
+  },
   shido: {
     '0x8cbaffd9b658997e7bf87e98febf6ea6917166f7': { coingeckoId: 'shido', decimals: 18 },
     '0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd': { coingeckoId: 'usd-coin', decimals: 6 },
-  }
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
