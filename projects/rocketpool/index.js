@@ -11,12 +11,15 @@ const abi = {
   getNodeAddresses: "function getNodeAddresses(uint256 _offset, uint256 _limit) view returns (address[])",
   getNodeDetails: "function getNodeDetails(address _nodeAddress) view returns ((bool exists, uint256 registrationTime, string timezoneLocation, bool feeDistributorInitialised, address feeDistributorAddress, uint256 rewardNetwork, uint256 rplStake, uint256 effectiveRPLStake, uint256 minimumRPLStake, uint256 maximumRPLStake, uint256 ethMatched, uint256 ethMatchedLimit, uint256 minipoolCount, uint256 balanceETH, uint256 balanceRETH, uint256 balanceRPL, uint256 balanceOldRPL, uint256 depositCreditBalance, uint256 distributorBalanceUserETH, uint256 distributorBalanceNodeETH, address withdrawalAddress, address pendingWithdrawalAddress, bool smoothingPoolRegistrationState, uint256 smoothingPoolRegistrationChanged, address nodeAddress))",
   getPendingETHRewards: "function getPendingETHRewards() view returns (uint256)",
+  balanceOf: "function balanceOf(string _networkContractName) view returns (uint256)",
+  balanceOfToken: "function balanceOfToken(string _networkContractName, address _tokenAddress) view returns (uint256)"
 };
 
 const tvl = async (api) => {
-  const [nodeLength, pendingETHRewards] = await Promise.all([
+  const [nodeLength, pendingETHRewards, depositPoolBalance] = await Promise.all([
     api.call({ target: rocketNodeManager, abi: abi.getNodeCount }),
     api.call({ target: rocketRewardsPool, abi: abi.getPendingETHRewards }),
+    api.call({ target: rocketVault, abi: abi.balanceOf, params: ['rocketDepositPool'] }),
   ])
 
   const addresses = await api.call({ target: rocketNodeManager, abi: abi.getNodeAddresses, params: [0, nodeLength] });
@@ -45,6 +48,7 @@ const tvl = async (api) => {
   );
 
   api.add(ETH, pendingETHRewards)
+  api.add(ETH, depositPoolBalance)
   api.add(ETH, ethMatched)
 }
 
