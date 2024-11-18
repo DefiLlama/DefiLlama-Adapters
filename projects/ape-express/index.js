@@ -1,7 +1,6 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const { ZERO_ADDRESS } = require('../domfi/registry');
+const { getLogs } = require('../helper/cache/getLogs');
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { nullAddress } = require('../helper/tokenMapping');
 
 const configs = [
   {factory: "0xCd7a0227Bc48b1c14C5a1A6a4851010f80943476", fromBlock: 63905},
@@ -21,17 +20,7 @@ const tvl = async (api) => {
     }))
   }
   let pools = logs.flat().map(log => log.bondingCurve)
-  const calls = pools.map(pool => [{ target: pool }, { target: pool }]).flat()
-
-  const ethBalances = await sdk.api.eth.getBalances({
-    targets: pools,
-    chain: 'apechain',
-  });
-  let balance = new BigNumber(0);
-  ethBalances.output.forEach((ethBalance) => {
-    balance = balance.plus(ethBalance.balance);
-  });
-  return { ['apecoin']: balance / 1e18 };
+  return sumTokens2({ api, owners: pools, token: nullAddress})
 }
 
 module.exports = {
