@@ -1,8 +1,7 @@
 const { getProvider, sumTokens2 } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
-
-const { bs58 } = require("@project-serum/anchor/dist/cjs/utils/bytes");
+const bs58 = require('bs58');
 
 const solProgramId = "CRSeeBqjDnm3UPefJ9gxrtngTsnQRhEJiTA345Q83X3v";
 const usdcProgramId = "1avaAUcjccXCjSZzwUvB2gS3DzkkieV2Mw8CjdN65uu";
@@ -59,7 +58,6 @@ async function tvl(api) {
     })
     for (const filter of getPositionFilters()) {
       const positions = await program.account.position.all(filter)
-      console.log(programId, positions.length)
       positions.forEach(({ account }) => {
         let { closeStatusRecallTimestamp, pool, collateralAmount, timestamp } = account
         const token = poolMap[pool.toBase58()]
@@ -71,7 +69,7 @@ async function tvl(api) {
     }
   }
   return sumTokens2({
-    api, tokenAccounts: [
+    balances: api.getBalances(), tokenAccounts: [
       getAssociatedTokenAddress(usdcAddress, usdcPoolAccount),
       getAssociatedTokenAddress(iscAddress, iscPoolAccount),
     ], solOwners: [
