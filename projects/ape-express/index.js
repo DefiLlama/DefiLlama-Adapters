@@ -3,8 +3,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const { nullAddress } = require('../helper/tokenMapping');
 
 const configs = [
-  {factory: "0xCd7a0227Bc48b1c14C5a1A6a4851010f80943476", fromBlock: 63905},
-  {factory: "0xBcace40e446b06E6A530D945eFbae222f84fA836", fromBlock: 3633933}
+  { factory: "0xCd7a0227Bc48b1c14C5a1A6a4851010f80943476", fromBlock: 63905 },
+  { factory: "0xBcace40e446b06E6A530D945eFbae222f84fA836", fromBlock: 3633933 }
 ]
 
 const tvl = async (api) => {
@@ -20,7 +20,7 @@ const tvl = async (api) => {
     }))
   }
   let pools = logs.flat().map(log => log.bondingCurve)
-  return sumTokens2({ api, owners: pools, token: nullAddress})
+  return sumTokens2({ api, owners: pools, token: nullAddress })
 }
 
 module.exports = {
