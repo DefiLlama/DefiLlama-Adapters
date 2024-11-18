@@ -40,7 +40,7 @@ async function tvl(api) {
 
 async function borrowed(api) {
   await Promise.all(POOLS.map(async (poolAddr, i) => {
-    return getPoolJettonsRateLimited(api, poolAddr, UNDERLYING_JETTONS[i, true]);
+    return getPoolJettonsRateLimited(api, poolAddr, UNDERLYING_JETTONS[i], true);
   }))
 }
 
