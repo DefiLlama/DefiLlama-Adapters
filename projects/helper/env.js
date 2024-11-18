@@ -30,6 +30,7 @@ const DEFAULTS = {
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
   UNIT0_RPC: "https://rpc.unit0.dev",
   RBN_RPC: "https://governors.mainnet.redbelly.network",
+  REEF_RPC: "wss://rpc.reefscan.com/ws",
 }
 
 const ENV_KEYS = [
