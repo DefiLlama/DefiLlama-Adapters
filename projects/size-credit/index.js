@@ -1,7 +1,7 @@
-const SIZE_REGISTRY = '0x'
+const SIZE_FACTORY = '0x330Dc31dB45672c1F565cf3EC91F9a01f8f3DF0b'
 
 const abis = {
-  SizeRegistry: {
+  SizeFactory: {
     getMarkets: 'function getMarkets() view returns (address[])',
   },
   Size: {
@@ -9,9 +9,8 @@ const abis = {
   },
 }
 
-
 async function tvl(api) {
-  const markets = await api.call({ abi: abis.SizeRegistry.getMarkets, target: SIZE_REGISTRY })
+  const markets = await api.call({ abi: abis.SizeFactory.getMarkets, target: SIZE_FACTORY })
   const datas = await api.multiCall({ abi: abis.Size.data, calls: markets })
 
   const borrowATokens = [...new Set(datas.map(data => data.borrowAToken))]
@@ -25,7 +24,7 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  const markets = await api.call({ abi: abis.SizeRegistry.getMarkets, target: SIZE_REGISTRY })
+  const markets = await api.call({ abi: abis.SizeFactory.getMarkets, target: SIZE_FACTORY })
   const datas = await api.multiCall({ abi: abis.Size.data, calls: markets })
 
   const debtTokens = datas.map(data => data.debtToken)
