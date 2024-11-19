@@ -184,7 +184,7 @@ function getEndpoint(chain) {
 
 async function sumTokens2({
   api,
-  balances = {},
+  balances,
   tokensAndOwners = [],
   tokens = [],
   owners = [],
@@ -196,7 +196,13 @@ async function sumTokens2({
   computeTokenAccount = false,
   chain = 'solana',
 }) {
+
   if (api) chain = api.chain
+  if (!balances) {
+    if (api) balances = api.getBalances()
+    else balances = {}
+  }
+
   const endpoint = getEndpoint(chain)
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
@@ -206,12 +212,15 @@ async function sumTokens2({
   if (!tokensAndOwners.length) {
     const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
 
-    const data = await getOwnerAllAccounts(_owners)
-    for (const item of data) {
-      if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
-      sdk.util.sumSingleBalance(balances, chain + ':' + item.mint, item.amount)
+    if (_owners.length) {
+      const data = await getOwnerAllAccounts(_owners)
+      const tokenBalances = {}
+      for (const item of data) {
+        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+        sdk.util.sumSingleBalance(tokenBalances,item.mint, item.amount)
+      }
+      await transformBalances({ tokenBalances, balances, chain, })
     }
-    await transformBalancesOrig(chain, balances)
   }
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
