@@ -7,7 +7,7 @@ async function tvl() {
 }
 
 
-const solvbtclstListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc-lst.json';
+const solvbtclstListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc-lst.json';
 
 async function evmTVL(api) {
   let solvbtclst = await getConfig('solv-protocol/solv-btc-lst-evm', solvbtclstListUrl)
