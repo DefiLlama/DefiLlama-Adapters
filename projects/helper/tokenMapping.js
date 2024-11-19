@@ -44,6 +44,11 @@ const fixBalancesTokens = {
   },
   apechain: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: "apecoin", decimals: 18 },
+  },
+  etlk: {
+    '0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x2c03058c8afc06713be23e58d2febc8337dbfe6a': { coingeckoId: "tether", decimals: 6 },
+    '0xfc24f770f94edbca6d6f885e12d4317320bcb401': { coingeckoId: "weth", decimals: 18 },
   }
 }
 
