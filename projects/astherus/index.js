@@ -27,3 +27,18 @@ module.exports['solana'] = {
     return sumTokens2({ tokenAccounts: tokens.map(({ tokenVault }) => [tokenVault]).flat() })
   }
 }
+
+const getAssBTCTVL = async () => {
+  const { data: asTokensPrice } = await getConfig(`astherus/token-price`, `https://www.astherus.finance/bapi/futures/v1/public/future/earn/getAssTokenPrice`)
+  
+  const assetIndexs = await getConfig(`astherus/asset-index`, `https://fapi.apollox.finance/fapi/v1/assetIndex`)
+  const { assTokenPrice, assTokenTotalSupply} = asTokensPrice?.find(token => token.assTokenName === 'asBTC') ?? {}
+  const btcPrice = assetIndexs?.find(asset => asset.symbol === 'BTCUSD')?.index
+  return assTokenPrice * assTokenTotalSupply * btcPrice
+}
+
+module.exports['asBTC'] = {
+  tvl: getAssBTCTVL
+}
+
+
