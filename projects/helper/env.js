@@ -8,6 +8,7 @@ const DEFAULTS = {
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
+  ECLIPSE_RPC: 'https://eclipse.lgns.net',
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
@@ -22,10 +23,13 @@ const DEFAULTS = {
   MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
   SHAPE_RPC:'https://mainnet.shape.network',
   SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  APECHAIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   MORPH_RPC_MULTICALL: "0x33A213b1049D5AD2eeE6e61dAe040955e60383D4",
   WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public",
   APECHAIN_RPC: "https://rpc.apechain.com",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
+  UNIT0_RPC: "https://rpc.unit0.dev",
+  RBN_RPC: "https://governors.mainnet.redbelly.network",
 }
 
 const ENV_KEYS = [
