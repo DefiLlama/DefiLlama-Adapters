@@ -1,22 +1,23 @@
 const { sumTokens2 } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js");
+const { getConnection } = require("../helper/solana");
 
 async function tvl(api) {
+  const connection = getConnection();
+  const lookupTableAddress = new PublicKey("eP8LuPmLaF1wavSbaB4gbDAZ8vENqfWCL5KaJ2BRVyV");
+ 
+  const lookupTableAccount = (
+    await connection.getAddressLookupTable(lookupTableAddress)
+  ).value;
+
+  const tokenAccounts = []
+  for (let i = 0; i < lookupTableAccount.state.addresses.length; i++) {
+    const address = lookupTableAccount.state.addresses[i];
+    tokenAccounts.push(address.toBase58());
+  }
+
   return sumTokens2({
-    tokenAccounts: [
-      'EmLhAPj7J6LTAnomsLfZUKDtb4t2A8e6eofDSfTwMgkY',
-      'DY3Rw6BZwf6epvWnVo8DSV6kYptEdCh7HbYmFRpdPxuH',
-      '3CppdkMFxuz7ASS27pB35EDbwgfUhwrarFYuWDBWWwHB',
-      'Grk7mshVug1TafphUvuYBrzwRqadtmCcf7GGPoPKkgs6',
-      'BpYbhwDZGpPvcKw3cSh5f9UqRaHfuxgz3avW9g324LUz',
-      '4nyfJ4JBsRJLij7VGCVUeHwKSLAAku66ptJamoodY29L',
-      '6opMSfkHgWsvG5KmZo8y2DuShaDHwXfB6VUuTx6W4Age',
-      '4Ejjk5w7HAWvmXYT57s5uwn8rs7i61nbpcTRQ9ABB11M',
-      '4xq7VjrJCU2Smk5JcJToik5hiEJ8RCvECReePP8Jg6q8',
-      'B2YeVM6Kf3SKYLuH2nfucCmZwy8KJcQpd9e9JEuwv9mt',
-      '8DeQth4AWPXauRfgAEUy9WpHuyKKyYuNNsH76C5v1Hv7',
-      'FS7TTuJejy7zjkdJXD9BjeLFZ44ipxxr2qmMMUKMZv6y',
-      '6K8yrdpm2dVaLSLpqoRJKv7SNuP54xmbv5KULcJzKTHc'
-    ],
+    tokenAccounts,
     balances: api.getBalances()
   })
 }
