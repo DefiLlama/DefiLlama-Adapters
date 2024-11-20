@@ -1,8 +1,8 @@
 const chains = require("./chains");
 const axios = require("axios");
 
-async function tvl(api, chainId) {
-    const response = await axios.get(`https://protocol-service-api.tempestfinance.xyz/api/v1/vaults?chainId=${chainId}`)
+async function tvl(api) {
+    const response = await axios.get(`https://protocol-service-api.tempestfinance.xyz/api/v1/vaults?chainId=${chains[api.chain]}`)
     const vaults = response.data.data.vaults;
 
     const tokens = vaults.map(vault => vault.mainAsset);
@@ -14,7 +14,7 @@ async function tvl(api, chainId) {
 Object.keys(chains).forEach(chain => {
     module.exports[chain] = {
         tvl: async (api) => {
-            return await tvl(api, chains[chain])
+            return await tvl(api)
         }
     }
 })
