@@ -6,6 +6,7 @@ const rocketNodeManager = '0x2b52479F6ea009907e46fc43e91064D1b92Fdc86'
 const rocketVault = '0x3bDC69C4E5e13E52A65f5583c23EFB9636b469d6'
 const rocketRewardsPool = '0xEE4d2A71cF479e0D3d0c3c2C923dbfEB57E73111'
 const trustedNodeManager = '0xb8e783882b11Ff4f6Cef3C501EA0f4b960152cc9'
+const rocketNodeStaking = '0xF18Dc176C10Ff6D8b5A17974126D43301F8EEB95'
 
 const abi = {
   getNodeCount: "function getNodeCount() view returns (uint256)",
@@ -16,7 +17,8 @@ const abi = {
   balanceOfToken: "function balanceOfToken(string _networkContractName, address _tokenAddress) view returns (uint256)",
   getMemberAt: "function getMemberAt(uint256 _index) view returns (address)",
   getMemberCount: "function getMemberCount() view returns (uint256)",
-  getMemberRPLBondAmount: "function getMemberRPLBondAmount(address _nodeAddress) view returns (uint256)"
+  getMemberRPLBondAmount: "function getMemberRPLBondAmount(address _nodeAddress) view returns (uint256)",
+  getNodeETHProvided: "function getNodeETHProvided(address _nodeAddress) view returns (uint256)",
 };
 
 const tvl = async (api) => {
@@ -34,24 +36,29 @@ const tvl = async (api) => {
     batchedAddresses.push(addresses.slice(i, i + batchSize));
   }
 
-  const nodeDetails = await Promise.all(
+  const results = await Promise.all(
     batchedAddresses.map(async (batch) => {
-      const results = await api.multiCall({ calls: batch.map((address) => ({ target: rocketNodeManager, params: [address] })), abi: abi.getNodeDetails, permitFailure: true })
-      return results ? results.filter((result) => result && result.exists) : []
+      const details = await api.multiCall({ calls: batch.map((address) => ({ target: rocketNodeManager, params: [address] })), abi: abi.getNodeDetails, permitFailure: true })
+      const ethProvided = await api.multiCall({ calls: batch.map((address) => ({ target: rocketNodeStaking, params: [address] })), abi: abi.getNodeETHProvided, permitFailure: true })
+      return { details: details ? details.filter((result) => result && result.exists) : [], ethProvided: ethProvided || [] };
     })
   )
 
-  const { minipoolCount, ethMatched } = nodeDetails.flat().reduce(
-    (acc, curr) => {
+  const flattenedDetails = results.flatMap((result) => result.details);
+  const flattenedEthProvided = results.flatMap((result) => result.ethProvided);
+
+  const { minipoolCount, ethMatched, nodeEthProvided } = flattenedDetails.reduce(
+    (acc, curr, index) => {
       if (!curr) return acc;
       acc.minipoolCount += Number(curr.minipoolCount) || 0;
       acc.ethMatched += Number(curr.ethMatched) || 0;
+      acc.nodeEthProvided += Number(flattenedEthProvided[index]) || 0;
       return acc;
     },
-    { minipoolCount: 0, ethMatched: 0 }
+    { minipoolCount: 0, ethMatched: 0, nodeEthProvided: 0 }
   );
 
-  api.add(ETH, [pendingETHRewards, depositPoolBalance, ethMatched])
+  api.add(ETH, [pendingETHRewards, depositPoolBalance, ethMatched, nodeEthProvided])
 }
 
 const staking = async (api) => {
