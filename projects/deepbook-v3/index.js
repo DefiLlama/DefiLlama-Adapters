@@ -8,6 +8,8 @@ const coins = {
   bethType: "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH",
   wusdtType: ADDRESSES.sui.USDT,
   wusdcType: ADDRESSES.sui.USDC,
+  nsType: "0x5145494a5f5100e645e4b0aa950fa6b68f614e8c59e17bc5ded3495123a79178::ns::NS",
+  typusType: "0xf82dc05634970553615eef6112a1ac4fb7bf10272bf6cbe0f80ef44a6c489385::typus::TYPUS",
 }
 
 const endpointUrl = "https://deepbook-indexer.mainnet.mystenlabs.com"
