@@ -1,20 +1,20 @@
 const chains = require("./chains");
-const {sumTokens} = require("../helper/sumTokens");
+const axios = require("axios");
 
-async function tvl(api, chain) {
-    let vaults = chains[chain];
-    const tokens = vaults.map(vault => vault.asset);
+async function tvl(api, chainId) {
+    const response = await axios.get(`https://protocol-service-api.tempestfinance.xyz/api/v1/vaults?chainId=${chainId}`)
+    const vaults = response.data.data.vaults;
+
+    const tokens = vaults.map(vault => vault.mainAsset);
     const balances = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults.map(vault => vault.address) });
 
     api.addTokens(tokens, balances)
-
-    return sumTokens({ api,chain })
 }
 
 Object.keys(chains).forEach(chain => {
     module.exports[chain] = {
         tvl: async (api) => {
-            return await tvl(api, chain)
+            return await tvl(api, chains[chain])
         }
     }
 })
