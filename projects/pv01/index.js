@@ -18,11 +18,11 @@ async function tvl(api) {
       target: vaultAddress
     });
     if (symbol.startsWith("rTBL")) {
-      const collateralBalance = await api.call({
+      const totalSupply = await api.call({
         abi: 'erc20:totalSupply',
         target: vaultAddress
       });
-      api.add(vaultAddress, collateralBalance);
+      api.add(vaultAddress, totalSupply);
     }
   }
 }
