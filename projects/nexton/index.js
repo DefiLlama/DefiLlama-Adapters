@@ -26,10 +26,7 @@ const getTVL = async (api)=> {
 }
 
 module.exports = {
-    // timetravel: false,
-    // misrepresentedTokens: true,
     ton: {
-        staking: getTVL,
-        tvl : ()=> {}
+        tvl : getTVL
     }
 }
