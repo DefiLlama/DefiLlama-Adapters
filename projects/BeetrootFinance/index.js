@@ -53,15 +53,14 @@ async function calculateTvl() {
   const USDT_SLP_BALANCE = balances[USDT_SLP_ADDRESS].balance / 1e9;
   const USDT_TLP_BALANCE = balances[USDT_TLP_ADDRESS].balance / 1e9;
 
-  const tvl = ((USDT_TLP_PRICE * USDT_TLP_BALANCE) + (USDT_SLP_PRICE * USDT_SLP_BALANCE)) / 1e6;
+  const tvl = ((USDT_TLP_PRICE * USDT_TLP_BALANCE) + (USDT_SLP_PRICE * USDT_SLP_BALANCE)) * 1e6;
   return tvl;
 }
 
 
 async function tvl(api) {
-  tvl = await calculateTvl();
-
-  api.add(ADDRESSES.ton.USDT, tvl)
+  const calculatedTvl = await calculateTvl();
+  api.add(ADDRESSES.ton.USDT, calculatedTvl);
 }
 
 module.exports = {
