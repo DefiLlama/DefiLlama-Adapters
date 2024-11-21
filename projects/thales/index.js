@@ -1,7 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const abi = require('./abi.json')
-const { dodoPool2 } = require('../helper/pool2')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const ethMarketsManager = "0x5ed98Ebb66A929758C7Fe5Ac60c979aDF0F4040a"
@@ -123,9 +122,31 @@ module.exports = {
   bsc: {
     tvl: async (api) => {
       const markets = (await Promise.all([bscMarketManager,].map(i => getMarkets(api, i)))).flat()
-      markets.push( bscRangedAMM,  bscThalesAMM)
+      markets.push(bscRangedAMM, bscThalesAMM)
       if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
       return sumTokens2({ api, tokens: [ADDRESSES.bsc.BUSD], owners: markets })
     },
   },
+}
+
+
+function dodoPool2(stakingContract, lpToken) {
+  return async (api) => {
+    const [baseToken, quoteToken, totalSupply] = await Promise.all(["address:_BASE_TOKEN_", "address:_QUOTE_TOKEN_", "erc20:totalSupply"].map(abi => api.call({
+      target: lpToken,
+      abi
+    })))
+    const [baseTokenBalance, quoteTokenBalance, stakedLPBalance] = await api.multiCall({
+      calls: [
+        [baseToken, lpToken], [quoteToken, lpToken], [lpToken, stakingContract]
+      ].map(token => ({
+        target: token[0],
+        params: [token[1]],
+      })),
+      abi: 'erc20:balanceOf'
+    })
+    const ratio = stakedLPBalance/totalSupply
+    api.add(baseToken, baseTokenBalance * ratio)
+    api.add(quoteToken, quoteTokenBalance * ratio)
+  }
 }

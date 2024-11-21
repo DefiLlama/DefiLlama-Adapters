@@ -1,18 +1,16 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const {get} = require('../helper/http');
-const BN = require("bn.js");
+const ADDRESSES = require("../helper/coreAssets.json");
 
+const stFIL = "0x3C3501E6c353DbaEDDFA90376975Ce7aCe4Ac7a8";
+const WFIL = ADDRESSES.filecoin.WFIL;
+
+const tvl = async (api) => {
+    const stFILSupply = await api.call({ target: stFIL, abi: 'erc20:totalSupply' })
+    api.add(WFIL, stFILSupply)
+};
 
 module.exports = {
-    filecoin: {
-        tvl: async (_, _1, _2, {api}) => {
-
-            const {data: {allMinerValue, poolStFilBalance}} = await get("https://api.stfil.io/v1/info");
-            const allMinerValueBN = new BN(allMinerValue);
-            const poolStFilBalanceBN = new BN(poolStFilBalance);
-
-            return api.add(ADDRESSES.null, allMinerValueBN.add(poolStFilBalanceBN));
-        }
-    }
-}
-
+  methodology: 'stFIL tokens are minted upon filecoin deposit at 1:1 ratio',
+  filecoin: {
+    tvl,
+  },
+};

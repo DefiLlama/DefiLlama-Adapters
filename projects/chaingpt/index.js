@@ -29,7 +29,7 @@ const config = {
     { factory: '0x2D47310bB0C6A9D4ae2a1d6625eC0BEe4F473Bb6', fromBlock: 46082883 },
   ],
   core: [
-    { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98', fromBlock: 15191500 },
+    { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98', fromBlock: 15191500, blacklistedTokens: ['0xcE87100A1dBAf576ebd063EB0890840346338689'] },
   ],
   base: [
     { factory: '0xFB5cd8426FBC3b1f2ea4B113A5A37752B3098C79', fromBlock: 15137100 },
@@ -49,22 +49,29 @@ async function tvl(api) {
   const chainConfigs = config[api.chain]
   const ownerTokens = []
   const poolTokenMapping = {}
+  let blacklistedTokens = []
+
   for (const chainConfig of chainConfigs) {
-    const { factory, fromBlock } = chainConfig
+    const { factory, fromBlock, blacklistedTokens: configBlacklistedTokens  } = chainConfig
+
+    if (configBlacklistedTokens) {
+      blacklistedTokens = blacklistedTokens.concat(configBlacklistedTokens)
+    }
 
     const logs2 = await getLogs({
       api,
       target: factory,
       eventAbi: 'event PresalePoolCreated (address registedBy, address indexed token, address indexed pool, uint256 poolId)',
       fromBlock: fromBlock,
-
     })
+
     const pools = []
     const poolFromBlocks = {}
     logs2.forEach((i) => {
       pools.push(i.args.pool)
       poolFromBlocks[i.args.pool] = i.blockNumber
     })
+
     await PromisePool
       .withConcurrency(7)
       .for(pools)
@@ -79,6 +86,7 @@ async function tvl(api) {
         })
         logs.forEach(({ args: i }) => {
           const key = i.token + '-' + i.owner
+
           if (!poolTokenMapping[key]) poolTokenMapping[key] = []
           poolTokenMapping[key].push(i.offeredCurrency)
         })
@@ -91,7 +99,8 @@ async function tvl(api) {
       ownerTokens.push([poolTokenMapping[key], i.pool])
     })
   }
-  return api.sumTokens({ ownerTokens })
+
+  return api.sumTokens({ ownerTokens, blacklistedTokens })
 
 }
 

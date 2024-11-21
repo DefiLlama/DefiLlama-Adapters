@@ -4,10 +4,12 @@ const TOKENS = {
   ethereum: {
     pufETH: "0xD9A442856C234a39a81a089C06451EBAa4306a72",
     LADYS: "0x12970E6868f88f6557B76120662c1B3E50A646bf",
-    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28"
+    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28",
+    G: "0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649"
   },
   bsc: {
-    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28"
+    XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28",
+    G: "0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649"
   },
   polygon: {
     XDAO: "0x71eebA415A523F5C952Cc2f06361D5443545Ad28"
@@ -32,7 +34,18 @@ const TOKENS = {
     USDC: ADDRESSES.cronos.USDC
   },
   fraxtal: {
-    WETH: ADDRESSES.fraxtal.WETH
+    WETH: ADDRESSES.fraxtal.WETH,
+    FRAX: ADDRESSES.fraxtal.FRAX
+  },
+  gravity: {
+    USDC_e: ADDRESSES.gravity.USDC_e,
+    wG: ADDRESSES.gravity.wG
+  },
+  bsquared: {
+    WBTC: ADDRESSES.bsquared.WBTC,
+  },
+  cronos_zkevm: {
+    USDC: ADDRESSES.cronos_zkevm.USDC,
   }
 }
 
@@ -45,9 +58,11 @@ module.exports = {
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.WBTC,
+        ADDRESSES.ethereum.FRAX,
         TOKENS.ethereum.XDAO,
         TOKENS.ethereum.LADYS,
         TOKENS.ethereum.pufETH,
+        TOKENS.ethereum.G,
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
@@ -63,6 +78,7 @@ module.exports = {
         ADDRESSES.bsc.ETH,
         ADDRESSES.bsc.BTCB,
         TOKENS.bsc.XDAO,
+        TOKENS.bsc.G,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
@@ -89,6 +105,7 @@ module.exports = {
       tokens: [
         ADDRESSES.polygon.USDC,
         ADDRESSES.polygon.WETH_1,
+        ADDRESSES.polygon.FRAX,
         TOKENS.polygon.XDAO,
       ],
       holders: [
@@ -181,6 +198,7 @@ module.exports = {
         ADDRESSES.arbitrum.USDC, // USDC.e
         ADDRESSES.arbitrum.USDC_CIRCLE,
         ADDRESSES.arbitrum.WETH,
+        ADDRESSES.arbitrum.FRAX,
         TOKENS.arbitrum.XDAO,
         TOKENS.arbitrum.LADYS,
       ],
@@ -381,6 +399,7 @@ module.exports = {
        name: 'zeta',
        tokens: [
          TOKENS.zeta.pufETH,
+         ADDRESSES.zeta.USDC_1,
        ],
        holders: [
          '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf', // portal v2
@@ -399,9 +418,38 @@ module.exports = {
        name: 'fraxtal',
        tokens: [
          TOKENS.fraxtal.WETH,
+         TOKENS.fraxtal.FRAX,
        ],
        holders: [
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'gravity',
+       tokens: [
+         TOKENS.gravity.USDC_e,
+         TOKENS.gravity.wG,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'bsquared',
+       tokens: [
+         TOKENS.bsquared.WBTC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'cronos_zkevm',
+       tokens: [
+         TOKENS.cronos_zkevm.USDC,
+       ],
+       holders: [
+         '0x2E818E50b913457015E1277B43E469b63AC5D3d7', // portal v2
        ]
      },
   ]

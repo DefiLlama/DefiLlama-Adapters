@@ -19,7 +19,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa', ]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+  'eclipse',
+]
 
 const transformTokens = {
   // Sample Code
@@ -40,17 +42,19 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-
-  real: {
-    '0x4644066f535ead0cde82d209df78d94572fcbf14': { coingeckoId: 're-al', decimals: 18 },
-    '0xaec9e50e3397f9ddc635c6c429c8c7eca418a143': { coingeckoId: 'arcana-2', decimals: 18 },
-    '0xce1581d7b4ba40176f0e219b2cac30088ad50c7a': { coingeckoId: 'pearl', decimals: 18 },
+  apechain: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "apecoin", decimals: 18 },
   },
+  etlk: {
+    '0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x2c03058c8afc06713be23e58d2febc8337dbfe6a': { coingeckoId: "tether", decimals: 6 },
+    '0xfc24f770f94edbca6d6f885e12d4317320bcb401': { coingeckoId: "weth", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
-function getUniqueAddresses(addresses, chain) {
+function getUniqueAddresses(addresses, chain = 'ethereum') {
   const toLowerCase = !caseSensitiveChains.includes(chain)
   const set = new Set()
   addresses.forEach(i => set.add(toLowerCase ? i.toLowerCase() : i))

@@ -29,7 +29,6 @@ function _tvl() {
 
   const colonyDexTVL = getUniTVL({
     factory: colonyDexFactory,
-    fetchBalances: true,
     useDefaultCoreAssets: true
   })
 
@@ -56,6 +55,7 @@ module.exports = {
   hallmarks: [
       [1651241728, "Staking V2 Launch"],
       [1711370069, "Staking V3 Launch"],
-      [1715688000, "EarlyStage Launch"]
+      [1715688000, "EarlyStage Launch"],
+      [1719792000, "Liquid Vesting DEX Launch"]
   ],
 };

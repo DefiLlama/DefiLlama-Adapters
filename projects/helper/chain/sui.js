@@ -9,6 +9,7 @@ const { sliceIntoChunks, getUniqueAddresses } = require('../utils')
 //https://docs.sui.io/sui-jsonrpc
 
 const endpoint = () => getEnv('SUI_RPC')
+const graphEndpoint = () => getEnv('SUI_GRAPH_RPC')
 
 async function getObject(objectId) {
   return (await call('sui_getObject', [objectId, {
@@ -32,8 +33,8 @@ async function queryEvents({ eventType, transform = i => i }) {
 }
 
 async function getObjects(objectIds) {
-  if (objectIds.length > 49) {
-    const chunks = sliceIntoChunks(objectIds, 49)
+  if (objectIds.length > 9) {
+    const chunks = sliceIntoChunks(objectIds, 9)
     const res = []
     for (const chunk of chunks) res.push(...(await getObjects(chunk)))
     return res
@@ -73,8 +74,9 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
 async function call(method, params, { withMetadata = false } = {}) {
   if (!Array.isArray(params)) params = [params]
   const {
-    result
+    result, error
   } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method, params, })
+  if (!result && error) throw new Error(`[sui] ${error.message}`)
   if (['suix_getAllBalances'].includes(method)) return result
   return withMetadata ? result : result.data
 }
@@ -139,6 +141,28 @@ async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], t
   return api.getBalances()
 }
 
+async function queryEventsByType({ eventType, transform = i => i }) {
+  const query = `query GetEvents($after: String, $eventType: String!) {
+  events(first: 50, after: $after, filter: { eventType: $eventType }) {
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    nodes {
+      json
+    }
+  }
+}`
+  const items = []
+  let after = null
+  do {
+    const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
+    after = hasNextPage ? endCursor : null
+    items.push(...nodes.map(i => i.json).map(transform))
+  } while (after)
+  return items
+}
+
 module.exports = {
   endpoint: endpoint(),
   call,
@@ -150,4 +174,5 @@ module.exports = {
   getDynamicFieldObjects,
   dexExport,
   sumTokens,
+  queryEventsByType,
 };

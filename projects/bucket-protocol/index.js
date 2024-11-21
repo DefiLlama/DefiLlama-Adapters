@@ -3,9 +3,14 @@ const sui = require("../helper/chain/sui");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
+// Token
+const SUI = ADDRESSES.sui.SUI;
 const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
+const USDC_CIRCLE= ADDRESSES.sui.USDC_CIRCLE
+const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC"
+const SCALLOP_sUSDC = "0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC"
 
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
@@ -34,6 +39,9 @@ const KRIYA_POOL_IDs = [
 
 const CETUS_LP_ID =
   "0xb9d46d57d933fabaf9c81f4fc6f54f9c1570d3ef49785c6b7200cad6fe302909";
+
+const USDC_CIRCLE_PSM =
+  "0xd22388010d7bdb9f02f14805a279322a3fa3fbde42896b7fb3d1214af404c455";
 
 const USDC_PSM =
   "0x0c2e5fbfeb5caa4c2f7c8645ffe9eca7e3c783536efef859be03146b235f9e04";
@@ -67,6 +75,13 @@ const scallop_sUSDC_LP_ID =
 
 const scallop_sUSDT_LP_ID =
   "0x6b68b42cbb4efccd9df30466c21fff3c090279992c005c45154bd1a0d87ac725";
+
+const scallop_sCircleUSDC_LP_ID =
+  "0xdf91ef19f6038e662e9c89f111ffe19e808cdfb891d080208d15141932f9513b";
+
+const haSUI_Navi_Pond_ID = "0xef1ff1334c1757d8e841035090d34b17b7aa3d491a3cb611319209169617518e"
+
+const SUI_Navi_Pond_ID = "0xcf887d7201c259496a191348da86b4772a2e2ae3f798ca50d1247194e30b7656";
 
 async function getStakingLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
@@ -102,6 +117,9 @@ async function tvl(api) {
   const cetusLpObj = await sui.getObject(CETUS_LP_ID);
   const stakedBucketus = cetusLpObj.fields.staked;
 
+  const usdcCirclePSMObj = await sui.getObject(USDC_CIRCLE_PSM);
+  const usdcCirclePSMAmount = usdcCirclePSMObj.fields.pool;
+
   const usdcPSMObj = await sui.getObject(USDC_PSM);
   const usdcPSMAmount = usdcPSMObj.fields.pool;
 
@@ -126,7 +144,11 @@ async function tvl(api) {
   for (const bucket of bucketList) {
     //AF_LP doesn't have price, need to split the tokens
     if (bucket.type.includes("AF_LP")) continue;
-    const coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
+    let coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
+
+    /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
+    if(coin === SCALLOP_swUSDC) coin = ADDRESSES.sui.USDC
+    if(coin === SCALLOP_sUSDC) coin = ADDRESSES.sui.USDC_CIRCLE
     api.add(coin, bucket.fields.collateral_vault);
   }
 
@@ -179,6 +201,7 @@ async function tvl(api) {
   const halfStakedBucketus = Math.floor(stakedBucketus / 2);
   api.add(USDC, Math.floor(halfStakedBucketus / 1000));
 
+  api.add(USDC_CIRCLE, Math.floor(usdcCirclePSMAmount));
   api.add(USDC, Math.floor(usdcPSMAmount));
   api.add(USDT, Math.floor(usdtPSMAmount));
 
@@ -238,11 +261,26 @@ async function tvl(api) {
     snaviLPAmount
   );
 
+  const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
+  api.add(
+    "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
+    haSuiNaviPondAmount
+  );
+
+  const suiNaviPondAmount = await getStakingLPAmount(SUI_Navi_Pond_ID);
+  api.add(
+    SUI,
+    suiNaviPondAmount
+  );
+
   const scallopUSDC_LPAmount = await getScallopsLPAmount(scallop_sUSDC_LP_ID);
   api.add(USDC, scallopUSDC_LPAmount);
 
   const scallopUSDT_LPAmount = await getScallopsLPAmount(scallop_sUSDT_LP_ID);
   api.add(USDT, scallopUSDT_LPAmount);
+
+  const scallopCircleUSDC_LPAmount = await getScallopsLPAmount(scallop_sCircleUSDC_LP_ID);
+  api.add(USDC_CIRCLE, scallopCircleUSDC_LPAmount)
 }
 
 module.exports = {
