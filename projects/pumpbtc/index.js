@@ -2,6 +2,7 @@ const { sumTokens } = require('../helper/sumTokens');
 const utils = require('../helper/utils');
 const { getConfig } = require('../helper/cache');
 const bitcoinBook = require('../helper/bitcoin-book');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 module.exports = {
   methodology: 'TVL for pumpBTC is calculated based on the total value of WBTC, FBTC, BTCB held in the contract that were utilized in the minting process of pumpBTC.',
@@ -11,7 +12,6 @@ async function getStakingAddresses() {
   let res = await utils.fetchURL('https://dashboard.pumpbtc.xyz/api/dashboard/asset/tokenowners')
 
   const btcAddresses = res.data.data || {}
-  //console.log('>>', btcAddresses.length)
   return btcAddresses
 }
 
@@ -28,7 +28,7 @@ async function otherTvl(api) {
   }
 
   const { owners, tokens } = addresses[api.chain]
-  return api.sumTokens({ owners, tokens })
+  return sumTokens2({ api, owners, tokens })
 }
 
 module.exports.isHeavyProtocol = true;
