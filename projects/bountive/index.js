@@ -4,15 +4,13 @@ const { multiCall } = require('../helper/chain/starknet')
 
 const bountiveTokens = [
     // BoSTRK: Bountive STRK
-    "0x05a0fff20829d60a0cdae2da18a32bd3de5c32f8d0109d2a0b59a88a7a77176e",
+    "0x018e009bbb035c506234e7a8eca6a7229adfd59a278ba3845285d28b03ed6d53",
     // BoETH: Bountive ETH
-    "0x00d91e36ff68918b392c9cfc2e3f575526f69e04b97eb28142856fae3611fcf7",
+    "0x02fcaebd41710024e25b6dc646a62acb6560125a699a3f695b6adb54a180aaee",
     // BoUSDC: Bountive USDC
-    "0x04ed6784fa5c11889851c2d13bbd80464e55605a90b5b664f9400df0fd6ef4a5",
+    "0x028a88bf75f1b10dc8552051a56fbdc732084af514f6065f4c67ea6d50204720",
     // BoUSDT: Bountive USDT
-    "0x0753dc6f8fee7487fe3f32728c0f1af9df1f7a3d0443ef507eb79a974697be12",
-    // BoDAI: Bountive DAI
-    "0x06e32d47c49efb0243da8d456dc413f1dcf50ceea7be28ef520492eccfff2b43",
+    "0x0243d9a1cffc0b5ebbf549efd1232a96b1ef392fe595e91dd72103d5a8e7d847",
 ]
 
 const underlyingsTokens = [
@@ -24,8 +22,6 @@ const underlyingsTokens = [
     ADDRESSES.starknet.USDC,
     // USDT
     ADDRESSES.starknet.USDT,
-    // DAI
-    ADDRESSES.starknet.DAI,
 ]
 
 async function tvl(api) {
