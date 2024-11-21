@@ -27,6 +27,7 @@ async function otherTvl(api) {
   }
 
   const { owners, tokens } = addresses[api.chain]
+  
   return api.sumTokens({ owners, tokens })
 }
 
