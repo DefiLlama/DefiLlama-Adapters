@@ -54,14 +54,8 @@ async function tvlBase(api) {
         const decimal = 18 - decimals[i]
         api.add(assets[i], balance / (10 ** decimal))
     });
-
-    for (const pool of addresses.base.pools) {
-        if (assets.includes(pool.asset)) {
-            continue;
-        }
-        await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
-    }
-    return api.getBalances();
+    const tokensAndOwners = addresses.base.pools.map(pool => [pool.asset, pool.AmmTreasury]);
+    return api.sumTokens({ tokensAndOwners, blacklistedTokens: assets });
 }
 
 async function calculateTvlForV2(api) {
@@ -81,15 +75,8 @@ async function calculateTvlForV2(api) {
     const decimal = 18 - decimals[i]
     api.add(assets[i], balance / (10 ** decimal))
   });
-
-  for (const pool of addresses.ethereum.pools) {
-    if (assets.includes(pool.asset)) {
-      continue;
-    }
-    await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
-  }
-
-  return api.getBalances();
+  const tokensAndOwners = addresses.ethereum.pools.map(pool => [pool.asset, pool.AmmTreasury]);
+  return api.sumTokens({ tokensAndOwners, blacklistedTokens: assets });
 }
 
 async function calculateTvlForV1(api) {

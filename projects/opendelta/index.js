@@ -18,11 +18,11 @@ async function tvl(api) {
     const timeElapsedSinceLastUpdate = currentTimestamp - lastUpdateTimestamp
     const interestRate = currentRate / 1e4
     const interestRatePre = preUpdateAverageRate / 1e4
-    const ONE_YEAR = 365 * 24 * 60 * 60
-    const interestAccruedCurrent = interestRate * timeElapsedSinceLastUpdate / ONE_YEAR
-    const interestAccruedPre = interestRatePre * timeElapsed / ONE_YEAR
+    const ONE_YEAR = 365.24 * 24 * 60 * 60
+    const interestAccruedCurrent = Math.exp(interestRate * timeElapsedSinceLastUpdate / ONE_YEAR)
+    const interestAccruedPre = Math.exp(interestRatePre * timeElapsed / ONE_YEAR)
 
-    const computedSupply = supply * (1 + interestAccruedCurrent + interestAccruedPre)
+    const computedSupply = supply * (interestAccruedCurrent * interestAccruedPre)
     return computedSupply / Math.pow(10, decimals)
   }
 
@@ -31,7 +31,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: "TVL is calculated by multiplying OPB token supply by the current USD value of 1.0 OPB. Initially worth $1.0, 1.0 OPB now reflects its increased value from accrued interest, derived via amountToUiAmount using the Interest Bearing extension.",
+  methodology: "TVL is calculated by multiplying the OPB token supply by the current USD value of 1.0 OPB. Initially worth $1.0, 1.0 OPB now reflects its increased value from accrued interest, derived using amountToUiAmount approach of Solana Token2022 Interest Bearing extension.",
   solana: {
     tvl,
   },
