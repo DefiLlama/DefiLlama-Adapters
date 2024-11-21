@@ -9,4 +9,5 @@ module.exports = [
   'bc1quxgdtm6n9zau50n6aptcyn55gm0r5xjhvl8399',
   'bc1qt887udazek8rl89ck43nar4397a8qkp9qe9qdp',
   'bc1qunzwmk6gkx3ugxd4kmult6vl8vlws0w2jfume8jhnyxmz47ucy4qkhqwu6'
+  'bc1qjnhtrjgr4y0new266twr6x6703lshszuey8zwm'
 ]
