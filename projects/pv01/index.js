@@ -10,27 +10,26 @@ async function tvl(api) {
     target: PV01_VAULT_FACTORY_ETHEREUM,
     params: ['BondPerpetualVault']
   });
-
-  // Get total supply for each vault
-  for (const vaultAddress of listOfVaults) {
-    const symbol = await api.call({
-      abi: 'erc20:symbol',
-      target: vaultAddress
-    });
-    if (symbol.startsWith("rTBL")) {
-      const totalSupply = await api.call({
-        abi: 'erc20:totalSupply',
-        target: vaultAddress
-      });
-      api.add(vaultAddress, totalSupply);
-    }
+  if (!listOfVaults || listOfVaults.length === 0) {
+    return;
   }
+
+  // Fetch total supply for each vault
+  const totalSupplies = await api.multiCall({
+    abi: "erc20:totalSupply",
+    calls: listOfVaults,
+  });
+  
+  listOfVaults.forEach((vaultAddress, index) => {
+    api.add(vaultAddress, totalSupplies[index]);
+  });
 }
 
 module.exports = {
-  methodology: 'Counts the number of rTBL (Rolling T-bill) tokens issued by the PV01 perpetual bond vaults. TBL (T-bill) tokens not in a vault are not counted.',
+  methodology:
+    "Counts the total supply of rTBL (Rolling T-bill) tokens across all PV01 perpetual bond vaults.",
   start: 20377028,
   ethereum: {
     tvl,
-  }
+  },
 };
