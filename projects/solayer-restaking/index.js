@@ -13,14 +13,17 @@ async function tvl(api) {
   const data = await connection.getProgramAccounts(new PublicKey('sSo1iU21jBrU9VaJ8PJib1MtorefUV4fzC9GURa2KNn'), {
     filters: [{ dataSize: 74, },],
   })
-  const tokensAndOwners = data.map((i) => {
+  
+  const tokenAccounts = data.map((i) => {
     const offset = 8
     const lstMint = new PublicKey(i.account.data.slice(offset + 0, offset + 32));
     return [lstMint.toString(), i.pubkey.toString()]
   })
 
   return sumTokens2({
-    balances: api.getBalances(), tokensAndOwners, blacklistedTokens: [
+    balances: api.getBalances(), 
+    tokenAccounts, 
+    blacklistedTokens: [
       'sSo1wxKKr6zW2hqf5hZrp2CawLibcwi1pMBqk5bg2G4',
       'testqcAoCvfFpuFNtdmrBnBMSfFoXKkSTJ3ky6cPKjx',
     ]
