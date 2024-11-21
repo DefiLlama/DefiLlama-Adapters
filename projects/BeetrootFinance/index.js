@@ -59,9 +59,8 @@ async function calculateTvl() {
 
 
 async function tvl(api) {
-  tvl = await calculateTvl();
-
-  api.add(ADDRESSES.ton.USDT, tvl)
+  const calculatedTvl = await calculateTvl();
+  api.add(ADDRESSES.ton.USDT, calculatedTvl)
 }
 
 module.exports = {
