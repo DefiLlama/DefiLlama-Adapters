@@ -11,7 +11,6 @@ async function getStakingAddresses() {
   let res = await utils.fetchURL('https://dashboard.pumpbtc.xyz/api/dashboard/asset/tokenowners')
 
   const btcAddresses = res.data.data || {}
-  //console.log('>>', btcAddresses.length)
   return btcAddresses
 }
 
