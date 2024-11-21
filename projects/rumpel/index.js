@@ -7,6 +7,7 @@ const CONTRACTS = {
   ETHENA_LP_STAKING: "0x8707f238936c12c309bfc2B9959C35828AcFc512",
   MORPHO_BLUE: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
   ZIRCUIT_RESTAKING_POOL: "0xF047ab4c75cebf0eB9ed34Ae2c186f3611aEAfa6",
+  FLUID_POSITION_RESOLVER: "0x3E3dae4F30347782089d398D462546eb5276801C",
 };
 
 const DEPLOYMENT = {
@@ -47,13 +48,21 @@ const TOKENS = {
   YT_AMPHRETH: "0x5dB8a2391a72F1114BbaE30eFc9CD89f4a29F988",
 };
 
+const FLUID_VAULTS = [
+  { VAULT: "0xeAEf563015634a9d0EE6CF1357A3b205C35e028D", TOKEN: TOKENS.WEETH },
+  { VAULT: "0x1c6068eC051f0Ac1688cA1FE76810FA9c8644278", TOKEN: TOKENS.WEETHS },
+  { VAULT: "0x3996464c0fCCa8183e13ea5E5e74375e2c8744Dd", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0xBc345229C1b52e4c30530C614BB487323BA38Da5", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0xe210d8ded13Abe836a10E8Aa956dd424658d0034", TOKEN: TOKENS.SUSDE },
+]
+
 const MORPHO_SUSDE_MARKET_ID =
   "0x39d11026eae1c6ec02aa4c0910778664089cdd97c3fd23f68f7cd05e2e95af48";
 
 async function tvl(api) {
   const owners = await getOwners(api);
 
-  await Promise.all([sumBaseTokens, handleLockedUSDE, handleMorphoSuppliedSUSDE, handleZircuitAssets, handleStrategyTokenBalances].map(async (fn) => fn()));
+  await Promise.all([sumBaseTokens, handleLockedUSDE, handleMorphoSuppliedSUSDE, handleZircuitAssets, handleStrategyTokenBalances, handleFluidPositions].map(async (fn) => fn()));
 
   async function sumBaseTokens() {
     return api.sumTokens({
@@ -78,6 +87,19 @@ async function tvl(api) {
       calls: owners.map((owner) => ({ params: [MORPHO_SUSDE_MARKET_ID, owner] })),
     });
     api.add(TOKENS.USDE, positions.map(i => i.amount))
+  }
+
+  async function handleFluidPositions() {
+    const positions = await api.multiCall({
+      target: CONTRACTS.FLUID_POSITION_RESOLVER,
+      abi: "function getAllVaultPositions(address) view returns ((uint256,address owner,uint256 supply,uint256)[])",
+      calls: FLUID_VAULTS.map(({ VAULT }) => ({ params: [VAULT] })),
+    });
+
+    for (let i = 0; i < positions.length; i++) {
+      const rumpelPositions = positions[i].filter(i => owners.includes(i.owner));
+      api.add(FLUID_VAULTS[i].TOKEN, rumpelPositions.map(i => i.supply))
+    }
   }
 
   async function handleZircuitAssets() {
