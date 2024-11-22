@@ -74,11 +74,7 @@ const listaMarkets = {
 	bsc: aaveExports('', '', undefined, ['0x5157f63bE7808DEB090Eee7762e917745896A09E'], { v3: true }), // BSC - ListaDAO
 }
 
-const usdaDefiMarkets = {
-	iotex: aaveExports('', '', undefined, ['0xDB52DD393e3a5e95d3B7C7e1C42cC06bb807A369'], { v3: true }),
-}
-
 module.exports = mergeExports(
-	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets, usdaDefiMarkets,
+	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets,
 )
 module.exports.methodology = methodologies.lendingMarket
