@@ -9,6 +9,11 @@ const ggAVAXBalancerBalanceAbi = "function balancerGgAvaxBalance() view returns 
 const yyAVAXBalancerBalanceAbi = "function balancerYyAvaxBalance() view returns (uint256)"
 const sAVAXBalancerBalanceAbi = "function balancerSAvaxBalance() view returns (uint256)"
 
+const yieldYakWombatAvaxBalanceInWombatAvaxSavaxLP = "function avaxBalanceAvaxSavaxYY() view returns (uint256)"
+const yieldYakWombatSAvaxBalanceInWombatAvaxSavaxLP = "function sAvaxBalanceAvaxSavaxYY() view returns (uint256)"
+const yieldYakWombatsAvaxBalanceInWombatAvaxGgavaxLP = "function avaxBalanceAvaxGgavaxYY() view returns (uint256)"
+const yieldYakWombatsGgavaxBalanceInWombatAvaxGgavaxLP = "function ggAvaxBalanceAvaxGgavaxYY() view returns (uint256)"
+
 const assetToAddressMappingAvalanche = require('./mappings/assetToAddressMappingAvalanche.json')
 const assetToAddressMappingArbitrum = require('./mappings/assetToAddressMappingArbitrum.json')
 
@@ -76,9 +81,20 @@ async function tvlAvalanche(api) {
   let yyAvaxBalancerBalances = await api.multiCall({ abi: yyAVAXBalancerBalanceAbi, calls: accounts })
   let sAvaxBalancerBalances = await api.multiCall({ abi: sAVAXBalancerBalanceAbi, calls: accounts })
 
+  let avaxYYWombatAvaxSAvaxLPBalances = await api.multiCall({ abi: yieldYakWombatAvaxBalanceInWombatAvaxSavaxLP, calls: accounts })
+  let savaxYYWombatAvaxSAvaxLPBalances = await api.multiCall({ abi: yieldYakWombatSAvaxBalanceInWombatAvaxSavaxLP, calls: accounts })
+  let avaxYYWombatAvaxGgavaxLPBalances = await api.multiCall({ abi: yieldYakWombatsAvaxBalanceInWombatAvaxGgavaxLP, calls: accounts })
+  let ggAaxYYWombatAvaxGgavaxLPBalances = await api.multiCall({ abi: yieldYakWombatsGgavaxBalanceInWombatAvaxGgavaxLP, calls: accounts })
+
   ggAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_ggAVAX_AVAX"], i, api.chain))
   yyAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_yyAVAX_AVAX"], i, api.chain))
   sAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_sAVAX_AVAX"], i, api.chain))
+
+  avaxYYWombatAvaxSAvaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_sAVAX_AVAX_LP_AVAX"], i, api.chain))
+  savaxYYWombatAvaxSAvaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_sAVAX_AVAX_LP_sAVAX"], i, api.chain))
+  avaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_AVAX"], i, api.chain))
+  ggAaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_ggAVAX"], i, api.chain))
+
   return balances;
 }
 

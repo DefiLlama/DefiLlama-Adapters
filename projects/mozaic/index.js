@@ -7,7 +7,21 @@ const vaults = {
   kava: "0x5712ab97A299a8A4544BCc728B7f3E9663965443",
 }
 
+const theseusVaults = {
+  arbitrum: { vault: '0x6D8E0Ac94fb79Cd3520f546ce1c23A6F27F16EaC', gmxPlugin: '0xD4497259a3535ae311AB0F6ad68Da43a676919Db' },
+}
+
 async function tvl(api) {
+  if (theseusVaults[api.chain]) {
+    const { vault, gmxPlugin } = theseusVaults[api.chain]
+    const tokens = await api.call({ abi: 'address[]:getAcceptedTokens', target: vault })
+    const gmxPoolAbi = "function getPools() view returns ((uint8 poolId, address indexToken, address longToken, address shortToken, address marketToken)[])"
+    const gmxTokens = await api.call({ abi: gmxPoolAbi, target: gmxPlugin })
+    const ownerTokens = [[tokens, vault], [gmxTokens.map(t => t.marketToken), gmxPlugin]]
+    await api.sumTokens({ ownerTokens })
+  }
+
+
   const vault = vaults[api.chain];
   const tokens = await api.call({ abi: 'function getAcceptingTokens () view returns (address[])', target: vault, });
   const bals = await api.multiCall({ abi: 'function getStakedAmountPerToken(address token) view returns (uint256)', calls: tokens, target: vault })

@@ -28,6 +28,9 @@ const config = {
   scroll: { fromBlock: 1384607, factory: '0x7B56Af65Da221A40B48bEDcCb67410D6C0bE771D', },
   manta: { fromBlock: 1132047, factory: '0xc8fa78f6b68ab22239222b4249b1ff968d154ae9', },
   polygon_zkevm: { fromBlock: 8978690, factory: '0xc7e484c20d5dc5d33299afb430bfb5d17085ee98', },
+  taiko: { fromBlock: 130174, factory: '0xd4E08C940dDeC162c2D8f3034c75c3e08f1f6032', },
+  bsc: { fromBlock: 37069498, factory: '0x2c2E1eE20C633EAe18239c0BF59cEf1FC44939aC', },
+  blast: { fromBlock: 2304573, factory: '0x60138081198b75aAF15ACA3A17Ec7f5Ffc5D4605', },
 }
 
 Object.keys(config).forEach(chain => {

@@ -25,7 +25,7 @@ const tokens = {
     SWAP_LCRO_WCRO_ADDRESSES,
   ],
   // WCRO
-  "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23": [
+  [ADDRESSES.cronos.WCRO_1]: [
     SWAP_LCRO_WCRO_ADDRESSES,
   ],
   // LATOM-ATOM

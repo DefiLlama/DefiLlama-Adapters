@@ -6,10 +6,10 @@ const {
 } = require("./dolomite-margin.json");
 const BigNumber = require("bignumber.js");
 
-const dolomiteMargin = "0x6bd780e7fdf01d77e4d475c821f1e7ae05409072";
 const basePar = '1000000000000000000'
 
 async function getTokensAndBalances(api, supplyOrBorrow) {
+  const dolomiteMargin = config[api.chain].margin
   const tokens = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTokenAddress, target: dolomiteMargin })
   const underlyingTokens = await api.multiCall({ abi: 'address:UNDERLYING_TOKEN', calls: tokens, permitFailure: true, })
   let bals
@@ -35,8 +35,16 @@ async function borrowed(api) {
 
 module.exports = {
   start: 1664856000,  // 10/4/2022 @ 00:00am (UTC)
-  arbitrum: {
-    tvl,
-    borrowed
-  },
 };
+
+const config = {
+  arbitrum: { margin: '0x6bd780e7fdf01d77e4d475c821f1e7ae05409072', },
+  polygon_zkevm: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },
+  mantle: { margin: '0xE6Ef4f0B2455bAB92ce7cC78E35324ab58917De8', },
+  xlayer: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },
+  // base: { margin: '0x43C2FDB89A1C491F9FE86E1Ff05bd2BE204Ab4aE', },
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl, borrowed, }
+})

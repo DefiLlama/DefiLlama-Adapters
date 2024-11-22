@@ -3,5 +3,7 @@
   "balanceOf": "function balanceOf(address arg0) view returns (uint256)",
   "collateralMap": "function collateralMap(address) view returns (address token, address sanToken, address perpetualManager, address oracle, uint256 stocksUsers, uint256 sanRate, uint256 collatBase, tuple(uint256 lastBlockUpdated, uint256 lockedInterests, uint256 maxInterestsDistributed, uint256 feesAside, uint64 slippageFee, uint64 feesForSLPs, uint64 slippage, uint64 interestsForSLPs) slpData, tuple(uint64[] xFeeMint, uint64[] yFeeMint, uint64[] xFeeBurn, uint64[] yFeeBurn, uint64 targetHAHedge, uint64 bonusMalusMint, uint64 bonusMalusBurn, uint256 capOnStableMinted) feeData)",
   "bal": "uint256:bal",
-  "locked": "function locked(address arg0) view returns (int128 amount, uint256 end)"
+  "locked": "function locked(address arg0) view returns (int128 amount, uint256 end)",
+  "locks": "function locks(address arg0) view returns (int128 amount, uint256 end)"
+
 }

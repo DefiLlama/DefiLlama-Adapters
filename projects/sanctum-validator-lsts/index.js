@@ -24,7 +24,7 @@ async function tvl() {
     })
 
   // join SVSP and MVSP and decode pool data
-  const allValidatorStakePoolAccounts = singleValidatorStakePoolAccounts.push(...multipleValidatorStakePoolAccounts).map(poolAccount => decodeAccount("scnStakePool", poolAccount.account))
+  const allValidatorStakePoolAccounts = [...singleValidatorStakePoolAccounts,...multipleValidatorStakePoolAccounts].map(poolAccount => decodeAccount("stakePoolPartial", poolAccount.account))
 
   // get sanctum LSTs mints
   const poolMints = allValidatorStakePoolAccounts.map(value => value.poolMint)
