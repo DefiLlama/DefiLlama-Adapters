@@ -27,6 +27,8 @@
     "@solana/web3.js": "^1.87.6",
     "@solendprotocol/solend-sdk": "^0.4.3",
     "@supercharge/promise-pool": "^2.1.0",
+    "@ton/core": "^0.59.0",
+    "@ton/crypto": "^3.3.0",
     "axios": "^1.6.5",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
