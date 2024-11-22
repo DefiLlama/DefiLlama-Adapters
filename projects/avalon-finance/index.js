@@ -12,8 +12,8 @@ const mainMarket = {
 	bsquared: aaveExports('', '', undefined, ['0x4Ea93E846b8C6E7b3D5a5BEDF4fe6B8AED58FCEe'], { v3: true }),
 	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }),
 	mode: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
-	kaia: aaveExports('', '', undefined, [''], { v3: true }), // Kaia V3 Main
-	zetachain: aaveExports('', '', undefined, [''], { v3: true }), // Zetachain V3 Main
+	kaia: aaveExports('', '', undefined, ['0xddD3D480521bc027596e078BCd1b838d50Daa076'], { v3: true }), // Kaia V3 Main
+	zetachain: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }), // Zetachain V3 Main
 }
 
 const innovativeMarket = {
@@ -71,10 +71,10 @@ const lbtcMarkets = {
 }
 
 const listaMarkets = {
-	bsc: aaveExports('', '', undefined, [''], { v3: true }), // BSC - ListaDAO
+	bsc: aaveExports('', '', undefined, ['0x5157f63bE7808DEB090Eee7762e917745896A09E'], { v3: true }), // BSC - ListaDAO
 }
 
 module.exports = mergeExports(
-	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets
+	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets,
 )
 module.exports.methodology = methodologies.lendingMarket
