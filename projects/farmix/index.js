@@ -28,7 +28,7 @@ async function getPoolCurrentJettons(api, poolAddr, underlyingJettonAddr, isBorr
     params: [['num', 0]]
   });
   await sleep(1000 * (2 * Math.random() + 3));
-  const jettonCurrentAmount = isBorrowed ? result[6] : result[5];
+  const jettonCurrentAmount = isBorrowed ? result[6] : result[5] + result[6];
   api.add(underlyingJettonAddr, jettonCurrentAmount);
 }
 
@@ -45,7 +45,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is counted only as current available pool liquidity. Borrowed jettons not included in the tvl',
+  methodology: 'TVL is counted as current available jetton plus borrowed jettons principals.',
   timetravel: false,
   ton: {
     tvl,
