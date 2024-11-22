@@ -62,6 +62,15 @@ function getProvider(chain = 'solana') {
   return provider[chain]
 }
 
+
+function getAssociatedTokenAddress(mint, owner,) {
+  if (typeof mint === 'string') mint = new PublicKey(mint)
+  if (typeof owner === 'string') owner = new PublicKey(owner)
+  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
+  return associatedTokenAddress;
+}
+
+
 async function getTokenSupplies(tokens, { api } = {}) {
   const sleepTime = tokens.length > 2000 ? 2000 : 200
   const connection = getConnection()
@@ -414,4 +423,5 @@ module.exports = {
   TOKEN_PROGRAM_ID,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
+  getAssociatedTokenAddress,
 };
