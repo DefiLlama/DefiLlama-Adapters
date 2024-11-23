@@ -6,6 +6,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 module.exports = {
   methodology: 'TVL for pumpBTC is calculated based on the total value of WBTC, FBTC, BTCB held in the contract that were utilized in the minting process of pumpBTC.',
+  doublecounted: true,
 }
 
 async function getStakingAddresses() {
@@ -40,7 +41,7 @@ module.exports.isHeavyProtocol = true;
     }
   } else {
     module.exports[chain] = {
-      tvl: otherTvl
+      tvl: otherTvl,
     }
   }
 })
