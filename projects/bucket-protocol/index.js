@@ -11,7 +11,12 @@ const USDT = ADDRESSES.sui.USDT;
 const USDC_CIRCLE= ADDRESSES.sui.USDC_CIRCLE
 const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC"
 const SCALLOP_sUSDC = "0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC"
-
+const SCALLOP_sUSDT = "0xe6e5a012ec20a49a3d1d57bd2b67140b96cd4d3400b9d79e541f7bdbab661f95::scallop_wormhole_usdt::SCALLOP_WORMHOLE_USDT"
+const SCALLOP_sSUI = "0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b::scallop_sui::SCALLOP_SUI"
+const SCALLOP_sSB_ETH = "0xb14f82d8506d139eacef109688d1b71e7236bcce9b2c0ad526abcd6aa5be7de0::scallop_sb_eth::SCALLOP_SB_ETH"
+const SCALLOP_sSCA = "0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e::scallop_sca::SCALLOP_SCA"
+const SPRING_SUI = "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI"
+const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA"
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
   "0x885e09419b395fcf5c8ee5e2b7c77e23b590e58ef3d61260b6b4eb44bbcc8c62",
@@ -93,6 +98,21 @@ async function getScallopsLPAmount(id) {
   return stakingLPObject.fields.coin_balance;
 }
 
+function convertUnderlyingAssets(coin){
+  // USDC
+  if(coin === SCALLOP_swUSDC) return ADDRESSES.sui.USDC
+  if(coin === SCALLOP_sUSDC) return ADDRESSES.sui.USDC_CIRCLE
+  // USDT
+  if(coin === SCALLOP_sUSDT) return ADDRESSES.sui.USDT
+  // sSUI
+  if(coin === SCALLOP_sSUI) return ADDRESSES.sui.SUI
+  // sbETH
+  if(coin === SCALLOP_sSB_ETH) return ADDRESSES.sui.WETH
+  // sSCA
+  if(coin === SCALLOP_sSCA) return SCA_ADDRESS
+  return coin
+}
+
 async function tvl(api) {
   const protocolFields = await sui.getDynamicFieldObjects({
     parent: MAINNET_PROTOCOL_ID,
@@ -144,11 +164,11 @@ async function tvl(api) {
   for (const bucket of bucketList) {
     //AF_LP doesn't have price, need to split the tokens
     if (bucket.type.includes("AF_LP")) continue;
-    let coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
+    const coin_address = bucket.type.split("<").pop()?.replace(">", "") ?? "";
 
     /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
-    if(coin === SCALLOP_swUSDC) coin = ADDRESSES.sui.USDC
-    if(coin === SCALLOP_sUSDC) coin = ADDRESSES.sui.USDC_CIRCLE
+    const coin = convertUnderlyingAssets(coin_address)
+   
     api.add(coin, bucket.fields.collateral_vault);
   }
 
