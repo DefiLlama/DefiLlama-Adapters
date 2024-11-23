@@ -6,6 +6,6 @@ const FILAMENT_DEPOSIT_CONTRACT = '0x894DE0011C0d69BCa2e19c21CD246C17A8A4252e';
 
 module.exports = {
   sei: {
-    tvl: sumTokensExport({ owner: [FILAMENT_VAULT_CONTRACT, FILAMENT_DEPOSIT_CONTRACT], tokens: [USDC_CONTRACT] }),
+    tvl: sumTokensExport({ owners: [FILAMENT_VAULT_CONTRACT, FILAMENT_DEPOSIT_CONTRACT], tokens: [USDC_CONTRACT] }),
   },
 }
