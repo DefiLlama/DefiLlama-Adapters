@@ -9,27 +9,6 @@ const CTUSDT_ADDRESS = "0:9fb449ce8fb43d0f682c713c01d9d8357c7cd0d4a49dd64dd58592
 const USDT_ADDRESS = "0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe"
 
 async function tvl(api) {
-
- /*  const vault = await call({ target: "UQDFlyZ5zsWyowbZvZjZwIW_Vzm-1uvf8z_PUfvQtHrV14dp", abi: "get_vault_data" })
-  let tonTVL = +vault[1] + +vault[8]
-  console.log('tonTVL', tonTVL, vault[1], vault[8])
-  await sleep(1000 * (3 * Math.random() + 3))
-
-  const tonBalanceInTonPool = await getTonBalance(TON_POOL_ADDRESS)
-  console.log('tonBalanceInTonPool', tonBalanceInTonPool)
-  tonTVL += +tonBalanceInTonPool
-  await sleep(1000 * (3 * Math.random() + 3))
-  const ctonInPool = await getJettonBalances(TON_POOL_ADDRESS)
-  const cTonValue = ctonInPool[CTON_ADDRESS]?.balance ?? 0
-  tonTVL += +cTonValue;
-  await sleep(1000 * (3 * Math.random() + 3))
-  const usdInPool = await getJettonBalances(USD_POOL_ADDRESS)
-  const usdtValue = +usdInPool[USDT_ADDRESS]?.balance ?? 0
-  const ctUsdtValue = +usdInPool[CTUSDT_ADDRESS]?.balance ?? 0
-
-  api.addCGToken('the-open-network', tonTVL / 1e9)
-  api.addCGToken('tether', (usdtValue + ctUsdtValue) / 1e6) */
-
   return sumTokens({ owners: [TON_POOL_ADDRESS, USD_POOL_ADDRESS, "UQDFlyZ5zsWyowbZvZjZwIW_Vzm-1uvf8z_PUfvQtHrV14dp"], tokens: [ADDRESSES.null, USDT_ADDRESS], api, onlyWhitelistedTokens: true })
 }
 
