@@ -16,7 +16,7 @@ const graphUrlList = {
 
 const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-protocol-rwa-slot/main/slot.json';
 
-const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
+const addressUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-funds.json';
 
 async function tvl(api) {
   const address = (await getConfig('solv-protocol/funds', addressUrl));
@@ -32,7 +32,7 @@ async function tvl(api) {
   await ceffuBalance(api, address, graphData);
 }
 
-const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
+const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
 async function getSolvBTCVAddresses(api) {
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
 
@@ -221,7 +221,6 @@ async function lendle(api, address) {
 async function vaultBalance(api, graphData) {
   const network = api.chain;
 
-  const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;

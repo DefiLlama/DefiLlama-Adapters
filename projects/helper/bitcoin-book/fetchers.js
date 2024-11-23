@@ -70,7 +70,7 @@ module.exports = {
     })
   },
   solvBTC: async () => {
-    const API_URL = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/refs/heads/main/bitcoin.json'
+    const API_URL = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/bitcoin.json'
     return Object.values(await getConfig('solv-protocol/solv-btc-lst', API_URL)).flat();
   },
   pumpBTC: async () => {
