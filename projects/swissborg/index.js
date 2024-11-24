@@ -19,7 +19,8 @@ const config = {
       '0x178Fb204c1ff2Ed7d0651C522A3a5B15480Eb76d',
       '0xFbA64167e4f091Ca625FA79aa6f83665856f8Bf2',
       '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
-      '0xe2484A7Ac1b9Cb6D8E55fd00e129aB913172bea6'
+      '0xe2484A7Ac1b9Cb6D8E55fd00e129aB913172bea6',
+      '0xdbe15F6573108B6736c70779C683Ca633c18aFe2',
     ],
   },
   bitcoin: {
@@ -47,6 +48,7 @@ const config = {
       '9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL',
       'Fe7SEekiKygziaEGKxsDsgLVzrCfNvVBvAYsaJBwFA8s',
       'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
+      '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
     ],
   },
   polkadot: {
@@ -109,7 +111,12 @@ const config = {
     owners: [
       '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
     ]
-  }
+  },
+  // injective: {
+  //   owners: [
+  //     'inj1wvhk7xhzf9kus9a4tpa6v8vhuqvm265rz7zd6n',
+  //   ]
+  // }
 }
 
 module.exports = cexExports(config)
