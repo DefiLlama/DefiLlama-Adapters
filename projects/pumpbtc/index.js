@@ -32,6 +32,7 @@ async function otherTvl(api) {
 }
 
 module.exports.isHeavyProtocol = true;
+module.exports.doublecounted = true;
 
 ['bitcoin', 'ethereum', 'bsc', 'mantle', 'base', 'arbitrum', 'bob'].forEach(chain => {
   if (chain == 'bitcoin') {
