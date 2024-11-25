@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { blacklistedTokens_default } = require('../helper/solana');
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 module.exports = treasuryExports({
