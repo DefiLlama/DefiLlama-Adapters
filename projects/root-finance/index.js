@@ -26,8 +26,13 @@ const pools = [
   {
     pool: 'component_rdx1cqlfmwmhdmp0ln4gaera4skn3yz30p4k5ssv7lqflgh0rjeakwzs9f',
     resource: 'resource_rdx1t4upr78guuapv5ept7d7ptekk9mqhy605zgms33mcszen8l9fac8vf',
+  },
+  // Adding the LSULP Pool
+  {
+    pool: 'component_rdx1czmq3me09q7p7g7hgsyaqctfw3he4hl6ypg6em2h7nyd2umk0dhhnq',
+    resource: 'resource_rdx1thksg5ng70g9mmy9ne7wz0sc7auzrrwy7fmgcxzel2gvp8pj0xxfmf',
   }
-]
+];
 
 async function fetchData(addresses) {
   return await queryAddresses({ addresses });
