@@ -50,6 +50,9 @@ const fixBalancesTokens = {
     '0x2c03058c8afc06713be23e58d2febc8337dbfe6a': { coingeckoId: "tether", decimals: 6 },
     '0xfc24f770f94edbca6d6f885e12d4317320bcb401': { coingeckoId: "weth", decimals: 18 },
   },
+  ace: {
+    '0x71ee6485cf72b9c3bf183528a2241474f21b2efa': { coingeckoId: "usd-coin", decimals: 6 },
+  },
   shido: {
     '0x8cbaffd9b658997e7bf87e98febf6ea6917166f7': { coingeckoId: "shido-2", decimals: 18 } // WSHIDO
   },
@@ -68,6 +71,9 @@ const fixBalancesTokens = {
   bob: {
     '0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
+  hela: {
+    '0x3a035615e101373fa9ba21c5bea7fe4026fc40b4': { coingeckoId: "hela-usd", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
