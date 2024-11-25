@@ -1,23 +1,13 @@
 const { post } = require('../helper/http')
+const {sumTokens} = require("../helper/chain/bitcoin");
+const bitcoinBook = require("../helper/bitcoin-book");
 
 async function tvl() {
-    return post('https://eos.greymass.com/v1/chain/get_table_rows', {
-        json: true,
-        code: "btc.xsat",
-        scope: "BTC",
-        table: "stat",
-        limit: "1",
-        reverse: false,
-        show_payer: false
-    }).then(response => {
-        return {
-            bitcoin: parseFloat(response.rows[0].supply.split(" ")[0])
-        }
-    })
+    return sumTokens({ owners: await bitcoinBook.exsatBridge() });
 }
 
 module.exports = {
-    methodology: `EOS ExSAT EVM TVL is achieved by querying the total available supply from the [btc.xsat] account. This supply fluctuates as users deposit and withdraw funds from the ExSAT EVM.`,
+    methodology: `EOS ExSAT EVM TVL is achieved by querying the total balance held in custody addresses on the BTC network that are bridged to the EOS ExSAT EVM network.`,
     eos: {
         tvl
     },
