@@ -1,6 +1,5 @@
 const sui = require("../helper/chain/sui");
 const { GraphQLClient } = require("graphql-request");
-const {TransactionBlock} = require("@mysten/sui.js/transactions");
   
 const graphQLClientMainnet = new GraphQLClient(
     "https://5lox8etck8.execute-api.eu-central-1.amazonaws.com/api/v1"
