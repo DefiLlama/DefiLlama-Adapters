@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, } = require('../helper/unwrapLPs')
 const { sumTokens } = require("../helper/chain/bitcoin");
-const { ethers } = require("ethers");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const chainPools = {
   bfc: {
@@ -10,23 +10,8 @@ const chainPools = {
   },
 }
 
-const targetContract = "0x0000000000000000000000000000000000000100";
-const rpc = "https://public-01.mainnet.bifrostnetwork.com/rpc";
-
-async function fetchVaultAddresses() {
-  const vaultContract = new ethers.Contract(
-    targetContract,
-    ["function vault_addresses(uint32 pool_round) view returns (string[])"],
-    new ethers.JsonRpcProvider(rpc)
-  );
-
-  const vaultAddresses = await vaultContract.vault_addresses(0);
-
-  return vaultAddresses
-}
-
 async function bitcoinTvl() {
-  return sumTokens({ owners: await fetchVaultAddresses() })
+  return sumTokens({ owners: await bitcoinAddressBook.btcfi_cdp() })
 }
 
 Object.keys(chainPools).forEach(chain => {
@@ -37,6 +22,4 @@ Object.keys(chainPools).forEach(chain => {
   }
 })
 
-module.exports["bitcoin"] = {
-  tvl: bitcoinTvl,
-}
+module.exports["bitcoin"] = { tvl: bitcoinTvl }
