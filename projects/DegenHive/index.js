@@ -62,27 +62,8 @@ async function tvl(api) {
     api.add( "0x2::sui::SUI", sui_staked) 
 
 }
-
-// Add a mock api for local testing
-class MockApi {
-    constructor() {
-      this.balances = {};
-    }
-  
-    add(token, amount) {
-      if (!this.balances[token]) this.balances[token] = 0;
-      this.balances[token] += amount;
-    }
-  }
-  
-
-// Add this section for local testing
-if (require.main === module) {
-    const mockApi = new MockApi();
-    tvl(mockApi)
-      .then(result =>{ console.log('TVL calculation completed:', result); console.log(mockApi.balances)})
-      .catch(error => console.error('TVL calculation failed:', error));
-  }
+ 
+ 
    
 module.exports = {
   timetravel: false,
