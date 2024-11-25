@@ -1496,8 +1496,7 @@
     "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
     "USDT": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
     "rETH": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c",
-    "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",
-    "cbBTC": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf"
+    "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"
   },
   "sei": {
     "SEI": "usei",
