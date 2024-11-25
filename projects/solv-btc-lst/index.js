@@ -7,7 +7,7 @@ async function tvl() {
 }
 
 
-const solvbtclstListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc-lst.json';
+const solvbtclstListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc-lst.json';
 
 async function evmTVL(api) {
   let solvbtclst = await getConfig('solv-protocol/solv-btc-lst-evm', solvbtclstListUrl)
@@ -18,6 +18,7 @@ async function evmTVL(api) {
 module.exports = {
   methodology: 'Staked tokens via Babylon and Core are counted towards TVL, as they represent the underlying BTC assets securing their respective networks.',
   doublecounted: true,
+  timetravel: false,
   bitcoin: { tvl }
 }
 
