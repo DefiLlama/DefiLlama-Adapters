@@ -4,14 +4,12 @@
 
 const {multiCall} = require("../helper/chain/starknet");
 const ADDRESSES = require('../helper/coreAssets.json');
-const ERC4626AbiMap = require('./erc4626abi')
+const { ERC4626AbiMap } = require('./erc4626abi')
 
 const LSTDATA = [{ //data of an LST contract; currently only xSTRK 
-    address: "xSTRK DEPOSIT CONTRACT ADDRESS",
+    address: "0x28d709c875c0ceac3dce7065bec5328186dc89fe254527084d1689910954b0a", // address of xSTRK vault contract
     token: ADDRESSES.starknet.STRK
 }]
-
-console.log(LSTDATA.map(c =>c.address));
 
 // returns the tvl of the all LST tokens in terms of their native token 
 async function tvl(api) {
