@@ -55,7 +55,8 @@ module.exports = {
         [eth.zaiMahaCurve, eth.zaiMahaCurveStaking],
         [eth.zaiUsdcCurve, eth.zaiUsdcCurveStaking],
         [eth.zaiSzaiCurve, eth.zaiSzaiCurveStaking]
-      ]
+      ],
+      resolveLP: true,
     }),
     tvl: sumTokensExport({ owners: pegStabilityModules, tokens: collaterals }),
   },
@@ -63,8 +64,9 @@ module.exports = {
     pool2: sumTokensExport({
       tokensAndOwners: [
         [base.zaiMahaAerodrome, base.zaiMahaStaking],
-        [base.zaiUsdcAerodrome, base.zaiUsdcStaking]
-      ]
+        [base.zaiUsdcAerodrome, base.zaiUsdcStaking],
+      ],
+      resolveLP: true,
     }),
   }
 };

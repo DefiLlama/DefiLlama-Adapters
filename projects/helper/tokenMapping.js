@@ -19,7 +19,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+  'eclipse',
+]
 
 const transformTokens = {
   // Sample Code
@@ -40,46 +42,38 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  hela: {
-    '0xf5b85320a772b436cb8105441a3db9ba29437b4a': { coingeckoId: "usd-coin", decimals: 6 },
-    '0xd3442073fa7ccf8a7c39d95dc125cd59497aa078': { coingeckoId: "tether", decimals: 6 },
-    '0x3a035615e101373fa9ba21c5bea7fe4026fc40b4': { coingeckoId: "hela-usd", decimals: 18 },
+  apechain: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "apecoin", decimals: 18 },
   },
-  heco: {
-    [ADDRESSES.heco.WHT]: { coingeckoId: 'huobi-token', decimals: 18 },
+  etlk: {
+    '0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x2c03058c8afc06713be23e58d2febc8337dbfe6a': { coingeckoId: "tether", decimals: 6 },
+    '0xfc24f770f94edbca6d6f885e12d4317320bcb401': { coingeckoId: "weth", decimals: 18 },
   },
-  base: {
-    [ADDRESSES.base.rETH]: { coingeckoId: 'rocket-pool-eth', decimals: 18 },
+  ace: {
+    '0x71ee6485cf72b9c3bf183528a2241474f21b2efa': { coingeckoId: "usd-coin", decimals: 6 },
   },
-  op_bnb: {
-    [ADDRESSES.defiverse.USDC]: { coingeckoId: 'binance-bitcoin', decimals: 18 },
+  shido: {
+    '0x8cbaffd9b658997e7bf87e98febf6ea6917166f7': { coingeckoId: "shido-2", decimals: 18 } // WSHIDO
   },
-  lac: {
-    [ADDRESSES.null]: { coingeckoId: "la-coin", decimals: 18 },
-    [ADDRESSES.lac.LAC]: { coingeckoId: "la-coin", decimals: 18 },
+  ethereum: {
+    '0x777B2913b1BB171A83cA3cdf79CB40523Ac76fDb': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
-  lisk: {
-    '0x05d032ac25d322df992303dca074ee7392c117b9': { coingeckoId: 'tether', decimals: 6 },
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
-    '0xac485391eb2d7d88253a7f1ef18c37f4242d1a24': { coingeckoId: 'lisk', decimals: 18 },
+  arbitrum: {
+    '0xbbeb34F9d50e0BABe1bd03Fd4120296354510529': { coingeckoId: "ignition-fbtc", decimals: 8 },
+  },
+  bsc: {
+    '0x2B25f4F134a56054b2b6388C2750F1eA3877e02b': { coingeckoId: "ignition-fbtc", decimals: 8 },
+  },
+  mantle: {
+    '0x93C6afA1882ea5E5bF403cA8fcb5aF87409EeCd0': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
   bob: {
-    "0x541fd749419ca806a8bc7da8ac23d346f2df8b77": { coingeckoId: "solv-btc", decimals: 18 },
-    "0xcc0966d8418d412c599a6421b760a847eb169a8c": { coingeckoId: "solv-btc", decimals: 18 },
-    "0x236f8c0a61da474db21b693fb2ea7aab0c803894": { coingeckoId: "universal-btc", decimals: 8 },
+    '0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
-  flow: {
-    '0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e': { coingeckoId: 'flow', decimals: 18 },
-    '0x1b97100ea1d7126c4d60027e231ea4cb25314bdb': { coingeckoId: 'ankr-staked-flow', decimals: 18 },
-    '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': { coingeckoId: 'usd-coin', decimals: 6 },
-  },
-  core: {
-    '0x782e2b85fda9a8224c17b191fc5de1e085a962b2': { coingeckoId: "wrapped-bitcoin-universal", decimals: 18 },
-  },
-  matchain: {
-    [ADDRESSES.null]: { coingeckoId: 'binancecoin', decimals: 18 },
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'binancecoin', decimals: 18 },
-  },
+  hela: {
+    '0x3a035615e101373fa9ba21c5bea7fe4026fc40b4': { coingeckoId: "hela-usd", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

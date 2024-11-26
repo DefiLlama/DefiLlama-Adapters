@@ -17,5 +17,11 @@ module.exports = {
   },
   reya: {
     tvl: getUniTVL({factory: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4', useDefaultCoreAssets: true})
+  },
+  gravity: {
+    tvl: getUniTVL({factory: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4', useDefaultCoreAssets: true})
+  },
+  apechain: {
+    tvl: getUniTVL({factory: '0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4', useDefaultCoreAssets: true})
   }
 };
