@@ -1,4 +1,5 @@
 const sui = require("../helper/chain/sui");
+const { cachedGraphQuery } = require('./helper/cache');
 const { GraphQLClient } = require("graphql-request");
   
 const graphQLClientMainnet = new GraphQLClient(
