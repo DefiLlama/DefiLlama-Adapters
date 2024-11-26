@@ -11,7 +11,7 @@ const config = {
 
 async function tvl(api) {
   const { factory, fromBlock } = config[api.chain]
-  const logs = await getLogs2({ api, factory, eventAbi: abi.openEvent, fromBlock, })
+  const logs = await getLogs2({ api, factory, eventAbi: abi.openEvent, fromBlock, extraKey: 'open-address',  })
   const tokens = logs.map(({ base, quote }) => [base, quote]).flat()
   return api.sumTokens({ owner: factory, tokens, })
 }
