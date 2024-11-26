@@ -40,6 +40,7 @@ const tokenGeckoMapping = {
   "ARB.WBTC": "wrapped-bitcoin",
   "ARB.WSTETH": "wrapped-steth",
   "XRD.XRD": "radix",
+  "XRD.XRD": "xrd",
 };
 
 const tokenToDecimalMapping = {
