@@ -71,6 +71,9 @@ const fixBalancesTokens = {
   bob: {
     '0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
+  hela: {
+    '0x3a035615e101373fa9ba21c5bea7fe4026fc40b4': { coingeckoId: "hela-usd", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
