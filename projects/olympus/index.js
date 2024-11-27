@@ -176,7 +176,7 @@ async function ownTokens(api) {
 }
 
 module.exports = {
-  start: 1616569200, // March 24th, 2021
+  start: '2021-03-24', // March 24th, 2021
   timetravel: false,
   methodology:
     "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",
