@@ -17,8 +17,11 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge']
+
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+  'eclipse',
+]
 
 const transformTokens = {
   // Sample Code
@@ -35,67 +38,50 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  ace: {
-    [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
-    '0x85119527cf38f6ccf7b1b8f8fad05145358aaa81': { coingeckoId: "endurance", decimals: 18 },
-  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  scroll: {
-    [ADDRESSES.mode.STONE]: { coingeckoId: "ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c", decimals: 0 },
+  apechain: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "apecoin", decimals: 18 },
   },
-  tezos: {
-    "KT1PnUZCp3u2KzWr93pn4DD7HAJnm3rWVrgn": { coingeckoId: "tezos", decimals: 6 },
-    "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17": { coingeckoId: "usd-coin", decimals: 6 },
-    "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-18": { coingeckoId: "tether", decimals: 6 },
+  etlk: {
+    '0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x2c03058c8afc06713be23e58d2febc8337dbfe6a': { coingeckoId: "tether", decimals: 6 },
+    '0xfc24f770f94edbca6d6f885e12d4317320bcb401': { coingeckoId: "weth", decimals: 18 },
   },
-  
-  acala: {
-    ACA: { coingeckoId: "acala", decimals: 12 },
-    LDOT: { coingeckoId: "liquid-staking-dot", decimals: 10 },
-    DOT: { coingeckoId: "polkadot", decimals: 10 },
+  ace: {
+    '0x71ee6485cf72b9c3bf183528a2241474f21b2efa': { coingeckoId: "usd-coin", decimals: 6 },
   },
-  karura: {
-    KSM: { coingeckoId: "kusama", decimals: 12 },
-    LKSM: { coingeckoId: "liquid-ksm", decimals: 12 },
-    KAR: { coingeckoId: "karura", decimals: 12 },
-    BNC: { coingeckoId: "bifrost-native-coin", decimals: 12 },
-    PHA: { coingeckoId: "pha", decimals: 12 },
-    KINT: { coingeckoId: "kintsugi", decimals: 12 },
-    KBTC: { coingeckoId: "kintsugi-btc", decimals: 8 },
+  shido: {
+    '0x8cbaffd9b658997e7bf87e98febf6ea6917166f7': { coingeckoId: "shido-2", decimals: 18 } // WSHIDO
   },
-  blast: {
-    '0xf7bc58b8d8f97adc129cfc4c9f45ce3c0e1d2692': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+  ethereum: {
+    '0x777B2913b1BB171A83cA3cdf79CB40523Ac76fDb': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
-  solana: {
-    'AZsHEMXd36Bj1EMNXhowJajpUXzrKcK57wW4ZGXVa7yR': { coingeckoId: "guacamole", decimals: 5 },
+  arbitrum: {
+    '0xbbeb34F9d50e0BABe1bd03Fd4120296354510529': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
-  chz: {
-    '0x677F7e16C7Dd57be1D4C8aD1244883214953DC47': { coingeckoId: "wrapped-chiliz", decimals: 18 }
+  bsc: {
+    '0x2B25f4F134a56054b2b6388C2750F1eA3877e02b': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
-  zklink: {
-    '0xbEAf16cFD8eFe0FC97C2a07E349B9411F5dC272C': { coingeckoId: "solv-btc", decimals: 18 },
-    '0xFb8dBdc644eb54dAe0D7A9757f1e6444a07F8067': { coingeckoId: "bitcoin-trc20", decimals: 18 },
-    '0x85D431A3a56FDf2d2970635fF627f386b4ae49CC': { coingeckoId: "merlin-s-seal-btc", decimals: 18 },
+  mantle: {
+    '0x93C6afA1882ea5E5bF403cA8fcb5aF87409EeCd0': { coingeckoId: "ignition-fbtc", decimals: 8 },
   },
-	btr: {
-		'0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
-		'0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
-		'0xfe9f969faf8ad72a83b761138bf25de87eff9dd2': { coingeckoId: 'tether', decimals: 6 },
-		'0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2': { coingeckoId: 'ethereum', decimals: 18 },
-		'0x9827431e8b77e87c9894bd50b055d6be56be0030': { coingeckoId: 'usd-coin', decimals: 6 },
-		'0x07373d112edc4570b46996ad1187bc4ac9fb5ed0': { coingeckoId: 'tether', decimals: 18 }, // bitUSD
-	},
-  cyeth: {
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+  bob: {
+    '0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c': { coingeckoId: "ignition-fbtc", decimals: 8 },
+  },
+  hela: {
+    '0x3a035615e101373fa9ba21c5bea7fe4026fc40b4': { coingeckoId: "hela-usd", decimals: 18 },
+  },
+  bfc: {
+    '0x74B73Fd2eE237e9219dF30dfFDB206D237cbFC00': { coingeckoId: "coinbase-wrapped-btc", decimals: 8 },
   }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
-function getUniqueAddresses(addresses, chain) {
+function getUniqueAddresses(addresses, chain = 'ethereum') {
   const toLowerCase = !caseSensitiveChains.includes(chain)
   const set = new Set()
   addresses.forEach(i => set.add(toLowerCase ? i.toLowerCase() : i))
@@ -132,6 +118,7 @@ function getCoreAssets(chain = 'ethereum') {
 
 function normalizeAddress(address, chain, extractChain = false) {
   if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
+  if (chain === 'sei' && address?.startsWith('0x')) return address.toLowerCase()
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }

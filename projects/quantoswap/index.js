@@ -11,6 +11,6 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: stakings(pools, QNS,),
-    tvl: getUniTVL({ useDefaultCoreAssets: true, factory, fetchBalances: true })
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory})
   },
 };

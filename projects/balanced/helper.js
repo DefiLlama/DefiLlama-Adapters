@@ -40,6 +40,11 @@ const networkIdentifiers = {
   "0xa86a.avax": "avalanche",
   "archway-1": "archway",
   "injective-1/inj": "injective",
+  "0xa4b1.arbitrum": "arbitrum",
+  "0x2105.base": "base",
+  "sui/0000000000000000000000000000000000000000000000000000000000000002::sui::SUI": "sui",
+  "solana/11111111111111111111111111111111" : "solana",
+  "stellar/CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA" : "stellar"
 }
 
 // Get decimals of cross-chain Balanced assets in balancedAssetManagerContract
@@ -71,7 +76,7 @@ async function getExternalChainDeposits() {
       try {
         const priceData = await call(balancedOracle, "getPriceDataInUSD", { symbol: tokenSymbol, })
         const rateHex = priceData.rate
-        rateDecimal = parseInt(rateHex, 16) / decimals[tokenNetworkAddress]
+        rateDecimal = parseInt(rateHex, 16) / 1e18 // price value always has 18 decimals no matter the token decimals
       } catch (error) {
         // console.log(
         //   `No price data available for ${tokenSymbol}, moving to Peg Stability pricing`

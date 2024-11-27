@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -12,9 +13,7 @@ const config = {
     ]
   },  
   bitcoin: {
-    owners: [
-        '31iAUikiV7yKEYBzbA1iHPcanHNsLBFe8C'
-    ]
+    owners: bitcoinAddressBook.flipster
   },  
   arbitrum: {
     owners: [
@@ -54,6 +53,12 @@ const config = {
   polygon: {
     owners: [
         '0xfA705a98FA89134F460Bf79457D4fbd3d8E118d9'
+    ]
+  }, 
+  ton: {
+    owners: [
+        'EQDQpuuVQI6Vzpewyll_xSP_SAlSNjXo9RngD9y99C8MVJri',
+        'EQBlnb9GCDGnJ5XEqamHL7Sj5_0wJ4MGja5T6PKlwVAISgrW',
     ]
   }, 
 }

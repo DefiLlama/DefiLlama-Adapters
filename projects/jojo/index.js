@@ -20,7 +20,7 @@ module.exports = {
     tvl: sumTokensExport(
       {
         tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH, cbethBase, degenBase, mUsdcBase, ],
-        owners: ['0x2f7c3cf9d9280b165981311b822becc4e05fe635', '0xf8192489A8015cA1690a556D42F7328Ea1Bb53D0']
+        owners: ['0x2f7c3cf9d9280b165981311b822becc4e05fe635', '0xf8192489A8015cA1690a556D42F7328Ea1Bb53D0', '0x8B7e1924fF57EEc8EbD87254E4de6Ff397f039D3']
       }
     )
   },

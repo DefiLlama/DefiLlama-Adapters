@@ -9,7 +9,7 @@ const config = {
 
 module.exports = {
   methodology: methodologies.lendingMarket,
-  // deadFrom: 2024-02-22
+  deadFrom: "2024-02-22"
 };
 
 Object.keys(config).forEach(chain => {
