@@ -11,7 +11,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Calculates total liquidity from all NFT ranges in the given pools.",
-  start: 1717239410,
+  start: '2024-06-01',
   arbitrum: {
     tvl,
   },

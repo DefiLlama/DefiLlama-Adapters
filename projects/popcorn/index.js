@@ -41,7 +41,6 @@ const VCX = "0xce246eea10988c495b4a90a905ee9237a0f91543";
 
 module.exports = {
   ethereum: {
-    start: 12237585,
     staking: stakings([stVCX, veVCX], [VCX, WETH_VCX_BAL_LP_TOKEN]),
     tvl,
   },

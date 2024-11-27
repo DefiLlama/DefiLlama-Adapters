@@ -73,6 +73,9 @@ const fixBalancesTokens = {
   },
   hela: {
     '0x3a035615e101373fa9ba21c5bea7fe4026fc40b4': { coingeckoId: "hela-usd", decimals: 18 },
+  },
+  bfc: {
+    '0x74B73Fd2eE237e9219dF30dfFDB206D237cbFC00': { coingeckoId: "coinbase-wrapped-btc", decimals: 8 },
   }
 }
 

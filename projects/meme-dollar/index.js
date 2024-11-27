@@ -10,7 +10,7 @@ const PINA_MEME_LP_CONTRACT = "0x713afa49478f1a33c3194ff65dbf3c8058406670";
 
 module.exports = {
   methodology: "counts the number of tokens in Pina pool",
-  start: 1673928000,
+  start: '2023-01-17',
   ethereum: {
     tvl: () => 0,
     staking: staking(

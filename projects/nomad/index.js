@@ -87,6 +87,5 @@ module.exports = {
     [1659312000,"trusted root exploit"]
   ],
       methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
-  start: 13983843,
   ...chainExports(tvl, Object.keys(HOME_CHAINS))
 }; 

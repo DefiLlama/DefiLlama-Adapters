@@ -17,7 +17,7 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: "Determined by querying from our public TheGraph the total USD value of all active loans",
-  start: 1707874007,
+  start: '2024-02-14',
   polygon: {
     tvl: () => ({}),
     borrowed,

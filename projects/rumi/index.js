@@ -16,7 +16,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Total asset value held in the Rumi lend vault and Rumi strategies',
-  start: 143884813,
   arbitrum: {
     tvl: () => ({}),
   },
