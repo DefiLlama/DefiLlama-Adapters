@@ -70,5 +70,4 @@ module.exports = {
   },
   methodology:
     "TVL is calculated by summing the value of token balances and NFTs across all MetaStreet pools. Total borrowed is calculated by subtracting the tokens available from the total value of all liquidity nodes across all pools.",
-  start: 17497132, // Block number of PoolFactory creation
 };
