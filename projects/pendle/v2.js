@@ -56,6 +56,11 @@ const config = {
       { factory: "0xcb02435716b0143d4ac1bdf370302d619e714126", fromBlock: 67661738 },  // v5
     ],
   },
+  base: {
+    factories: [
+      { factory: "0x5202F7477685686284b3F47B0A5334b15ea0393D", fromBlock: 22350099 },  // v3
+    ],
+  }
 };
 
 module.exports = {};
