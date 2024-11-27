@@ -34,6 +34,6 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   methodology: 'We count USDC that has been staked into the contracts (staking pool). Periodically USDC is swept into Aave, so we also count the aUSDC that is held (in a separate contract from the main contract).',
-  start: 1632861292,            // 9/28/2020 @ 8:00pm (UTC)
+  start: '2021-09-28',            // 9/28/2020 @ 8:00pm (UTC)
   ethereum: { tvl }                           // tvl adapter
 }
