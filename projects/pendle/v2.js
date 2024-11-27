@@ -36,6 +36,8 @@ const config = {
       "0x5ec2ae0afdec891e7702344dc2a31c636b3627eb",
       "0x70c1138b54ba212776d3a9d29b6160c54c31cd5d",
       "0x04eb6b56ff53f457c8e857ca8d4fbc8d9a531c0c",
+      "0x541b5eeac7d4434c8f87e2d32019d67611179606",
+      "0x5d1735b8e33bae069708cea245066de1a12cd38d"
     ],
   },
   optimism: {
@@ -118,7 +120,9 @@ Object.keys(config).forEach((chain) => {
       });
 
       data.forEach((v, i) => {
-        let value = supply[i] * 10 ** (v.decimals - decimals[i]);
+        let value = supply[i] * 10 ** (v.decimals - 
+          (sy[i].toLowerCase() == '0x7b5a43070bd97c2814f0d8b3b31ed53450375c19' // case for vbnb
+           ? 18 : decimals[i]));
         let index = tokenAssetTypeSy.indexOf(sy[i]);
         if (index !== -1) {
           value = (value * exchangeRates[index]) / 10 ** 18;
