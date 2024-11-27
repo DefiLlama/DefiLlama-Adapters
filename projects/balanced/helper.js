@@ -43,6 +43,8 @@ const networkIdentifiers = {
   "0xa4b1.arbitrum": "arbitrum",
   "0x2105.base": "base",
   "sui/0000000000000000000000000000000000000000000000000000000000000002::sui::SUI": "sui",
+  "solana/11111111111111111111111111111111" : "solana",
+  "stellar/CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA" : "stellar"
 }
 
 // Get decimals of cross-chain Balanced assets in balancedAssetManagerContract
