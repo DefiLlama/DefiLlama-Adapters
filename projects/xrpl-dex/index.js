@@ -1,12 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, } = require("../helper/cache");
 
 
 module.exports = {
-  methodology:
-    "Finds all AMM pools on XRPL, checks their reserves, calculates TVL (in XRP) for each pool and sums them up.",
-  ripple: {
-    tvl,
-  },
+  methodology: "Finds all AMM pools on XRPL, checks their reserves, calculates TVL (in XRP) for each pool and sums them up.",
+  ripple: { tvl },
   misrepresentedTokens: true,
 };
 

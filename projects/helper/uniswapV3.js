@@ -44,11 +44,13 @@ function uniV3Export(config) {
   return exports
 }
 
-function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 10,}) {
+function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0,}) {
   return async (api) => {
     const size = 1000
     // let lastId = ''
     // let pools
+
+    const minTvlFilter = minTVLUSD ? `totalValueLockedUSD_gt: ${minTVLUSD}` : ''
 
     const graphQueryPagedWithBlock = `
     query poolQuery($lastId: String, $block: Int) {
@@ -61,7 +63,7 @@ function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 
   `
     const graphQueryPagedWithoutBlock = `
     query poolQuery($lastId: String) {
-      pools(first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt:  ${minTVLUSD}}) {
+      pools(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
         id
         token0 { id }
         token1 { id }

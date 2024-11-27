@@ -1,6 +1,5 @@
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const { sumTokens2, sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking");
 
 const APE = "0x4d224452801ACEd8B2F0aebE155379bb5D594381";
 const crvFRAX = "0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC";
@@ -12,31 +11,10 @@ const fraxStakingWrapper = "0x6a20FC1654A2167d00614332A5aFbB7EBcD9d414";
 
 const apeAPE = "0xcaB90816f91CC25b04251857ED6002891Eb0D6Fa";
 
-const tvl = async (timestamp, block) => {
-  const toa = [
-    [APE, apeAPE],
-  ]
+const tvl = async (api) => {
+  const apeUSDCrvFraxTotalSupply = await api.call({ abi: 'erc20:totalSupply', target: apeUSDCrvFrax })
 
-  const balances = await sumTokens2({ block, tokensAndOwners: toa })
-
-  const {
-    output: [
-      { output: apeUSDCrvFraxTotalSupply },
-    ]
-  } = await sdk.api.abi.multiCall({
-    calls: [apeUSDCrvFrax].map((target) => ({ target })),
-    abi: "erc20:totalSupply",
-    block,
-  });
-
-  const {
-    output: [
-      { output: amoV2LPBalance },
-      { output: multisigLPBalance },
-      { output: stakedLPBalance },
-      { output: crvFraxBalance },
-    ]
-  } = await sdk.api.abi.multiCall({
+  const [amoV2LPBalance, multisigLPBalance, stakedLPBalance, crvFraxBalance,] = await api.multiCall({
     calls: [
       { target: convexRewardPool, params: amoV2, },
       { target: convexRewardPool, params: multisig, },
@@ -44,13 +22,10 @@ const tvl = async (timestamp, block) => {
       { target: crvFRAX, params: apeUSDCrvFrax, },
     ],
     abi: "erc20:balanceOf",
-    block: block,
   });
 
-  const apeUSDCrvFraxShare = BigNumber((+stakedLPBalance + +multisigLPBalance + +amoV2LPBalance) /apeUSDCrvFraxTotalSupply ).toFixed(0)
-  const crvFraxShare = BigNumber(crvFraxBalance * apeUSDCrvFraxShare).toFixed(0)
-  sdk.util.sumSingleBalance(balances, crvFRAX, crvFraxShare)
-  return balances
+  const apeUSDCrvFraxShare = (+stakedLPBalance + +multisigLPBalance + +amoV2LPBalance) / apeUSDCrvFraxTotalSupply
+  api.add(crvFRAX, crvFraxBalance * apeUSDCrvFraxShare)
 };
 
 module.exports = {
@@ -61,9 +36,11 @@ module.exports = {
         ['0xfb7a3798c6fff187c8cf08c0b1322b52cfa70ace', '0xbcc28F6BA03642B9B5a3E7ad5C8f27991576796c'],  // uni v2
         ['0x84ab278a8140a8a9759de17895a8da8d756618f3', '0x0a2c0a2033eccc7cc57e42901f04b96972131579'], // uni v2
         ['0x04b727C7e246CA70d496ecF52E6b6280f3c8077D', '0x0C63197017970596044f80778282BB5B2208f018'],  // curve
-      ]
+      ],
+      resolveLP: true,
     }),
     tvl,
+    staking: staking(apeAPE, APE),
   },
   start: 15688276,
   methodology:

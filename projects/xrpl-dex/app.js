@@ -1,9 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const rippleCodec = require("ripple-binary-codec");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { getCache, setCache } = require("../helper/cache");
 const { transformDexBalances } = require("../helper/portedTokens");
+const xrpl = require("xrpl");
+
 
 const NODE_URL = "https://xrplcluster.com";
+// const xrpTBILL = 'rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn'
 
 const fetchLedgerData = async (binary, marker, atLedgerIndex) => {
   const xrplResponse = await fetch(NODE_URL, {
@@ -92,7 +96,7 @@ const parseReserve = (reserveData) => {
   if (!reserveData) return null;
   const reserveIsXrp = typeof reserveData === "string";
   return {
-    currency: reserveIsXrp ? "XRP" : reserveData.currency,
+    currency: reserveIsXrp ? [ADDRESSES.ripple.XRP]: reserveData.currency,
     issuer: reserveIsXrp ? null : reserveData.issuer,
     amount: reserveIsXrp ? reserveData : reserveData.value,
   };
@@ -125,7 +129,7 @@ function getTimeNow() {
   return Math.floor(Date.now() / 1000);
 }
 
-async function main() {
+async function xrplDex () {
   const timeNow = getTimeNow()
   const aDayInSeconds = 60 * 60 * 24;
   const projectKey = 'xrpl-dex'
@@ -162,4 +166,38 @@ async function main() {
   await setCache(projectKey, cacheKey, {
     allPools, lastPoolUpdate, lastDataUpdate: getTimeNow(), tvl,
   })
+}
+
+async function openedenRippleTvl() {
+  const timeNow = getTimeNow()
+  const aDayInSeconds = 60 * 60 * 24;
+  const projectKey = 'openeden-tbill'
+  const cacheKey = 'cache'
+  let { lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
+  if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds) {
+    lastDataUpdate = getTimeNow()
+
+    const client = new xrpl.Client('wss://xrplcluster.com/');
+    await client.connect();
+  
+    const issuerAddress = "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn";
+    const subscriptionOperatorAddress = "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM";
+  
+    const issuerAccountInfo = await client.request({
+      command: 'gateway_balances',
+      account: issuerAddress,
+      hotwallet: [subscriptionOperatorAddress],
+    });
+  
+    tvl = Math.round(Number(issuerAccountInfo.result.obligations?.TBL)) || 0;
+    await setCache(projectKey, cacheKey, { lastDataUpdate, tvl })
+    client.disconnect();
+  }
+}
+
+async function main() {
+  return  Promise.allSettled([
+    // openedenRippleTvl(),
+    xrplDex()
+  ])
 }

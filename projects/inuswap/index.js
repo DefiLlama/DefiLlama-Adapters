@@ -8,6 +8,7 @@ module.exports = {
     hallmarks: [
         [1663200000, "Rug Pull"]
     ],
+    deadFrom: '2022-09-15',
     dogechain: {
         tvl: getUniTVL({
             useDefaultCoreAssets: true,
