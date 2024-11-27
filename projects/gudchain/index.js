@@ -7,7 +7,6 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owner: launchBridge,
-      start: 20203960,
       tokens: [
         ADDRESSES.null,
         ADDRESSES.ethereum.STETH,

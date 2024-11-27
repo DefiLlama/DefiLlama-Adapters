@@ -31,7 +31,6 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   methodology: "Calculates the TVL of all Stream vaults",
-  start: 16685700,
   ethereum: {
     tvl,
   },

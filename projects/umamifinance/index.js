@@ -32,7 +32,7 @@ const gmVaultsAvax = [
 
 module.exports = {
   doublecounted: true,
-  start: 1657027865, // UMAMI deployment block ts
+  start: '2022-07-05', // UMAMI deployment block ts
   arbitrum: {
     staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI),
     tvl: sumERC4626VaultsExport({ vaults: glpVaults.concat(gmVaultsArbitrum), isOG4626: true }),

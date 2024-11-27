@@ -20,7 +20,7 @@ async function blastTvl(api) {
 }
 
 module.exports = {
-  start: 1668684025,
+  start: '2022-11-17',
   polygon: {
     tvl: sumTokensExport({
       owner: POOL_DIAMOND_CONTRACT,
