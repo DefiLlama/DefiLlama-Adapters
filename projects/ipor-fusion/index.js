@@ -12,4 +12,5 @@ module.exports = {
   methodology: `Counts the tokens deposited into IPOR Fusion Vaults.`,
   ethereum: { tvl },
   arbitrum: { tvl },
+  base: { tvl },
 };

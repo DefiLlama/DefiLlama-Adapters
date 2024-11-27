@@ -12,6 +12,7 @@ const coinGeckoIds = {
   ustars: "stargaze",
   usaga: "saga-2",
   ubld: "agoric",
+  utia: "celestia",
 };
 
 async function tvl() {

@@ -24,6 +24,14 @@ module.exports = {
     mitoVaultQuery: async ({ address }) => {
       const { data } = await client.get('/injective/mito-vault/' + address)
       return data
-    }
+    },
+    getMarkets: async (body) => {
+      const { data } = await client.post('/injective/orderbook/markets', body)
+      return data
+    },
+    getOrders: async (body) => {
+      const { data } = await client.post('/injective/orderbook/orders', body)
+      return data
+    },
   },
 }

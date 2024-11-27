@@ -67,7 +67,16 @@ const config = {
     {
       "sapphire": {
         "LST": "0xed57966f1566de1a90042d07403021ea52ad4724"
-    }}
+      }
+    }
+  ],
+  "stETH": [
+    {
+      "ethereum": {
+        "baseToken": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+        "LST": "0x684d7fd1067ed8e9686e6fd764d048b9bf92dfa9"
+      }
+    },
   ]
 }
 

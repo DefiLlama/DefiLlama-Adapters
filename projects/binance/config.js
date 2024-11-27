@@ -175,7 +175,6 @@ const assetList = [
   ['DOGE', 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
   ['DOGE', 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
   ['DOGE', 'BEP20', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  /*
   ['DOGE', 'DOGE', 'D73RQLGWW9TBT2AKspEP24wLiXFrXvnTqX'],
   ['DOGE', 'DOGE', 'D7BrtudMAdwz2U7vSGumVDuxZsZNibJuzw'],
   ['DOGE', 'DOGE', 'D7D2f2WuEkwhTWqBkisZ5sM3JagaBcNWBs'],
@@ -213,7 +212,6 @@ const assetList = [
   ['DOGE', 'DOGE', 'DTSop4ycWkpmDqpncVZ3jwKp3z7B4kW4T3'],
   ['DOGE', 'DOGE', 'DTbG3RJRejnM99g8MSnhSbJxJVW8X7YXy9'],
   ['DOGE', 'DOGE', 'DU8gPC5mh4KxWJARQRxoESFark2jAguBr5'],
-  */
   ['DOT', 'BEP2', 'bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz'],
   ['DOT', 'BEP2', 'bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn'],
   ['DOT', 'BEP20', '0x0e4158c85ff724526233c1aeb4ff6f0c46827fbe'],
@@ -715,9 +713,7 @@ module.exports = {
   near: {
     owners: getOwners('NEAR')
   },
-  /*
   doge: {
     owners: getOwners('DOGE')
   },
-  */
 }

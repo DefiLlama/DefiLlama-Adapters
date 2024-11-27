@@ -4,8 +4,7 @@ const { getConfig } = require('./helper/cache')
 const { get } = require('./helper/http')
 
 const { PublicKey } = require('@solana/web3.js');
-const { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, } = require("@solana/spl-token");
-const { sumTokens2 } = require('./helper/solana')
+const { sumTokens2, ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, } = require('./helper/solana')
 
 const state = new PublicKey('FRcbUFpGHQppvXAyJrNYLKME1BQfowh4xKZB2vt9j6yn');
 const programId = new PublicKey('CNLGhYQgNwjyDfHZTEjHfk1MPkqwP96qZahWN82UfcLM');

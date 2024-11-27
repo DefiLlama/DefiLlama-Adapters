@@ -51,7 +51,7 @@ const config ={
 module.exports = {
   methodology: 'assets deployed on DEX as LP + asset balance of vaults',
   doublecounted: true,
-  start: 1683965157,
+  start: '2023-05-13',
 };
 
 // vaults that were deployed through factory but are uninitialized and unused

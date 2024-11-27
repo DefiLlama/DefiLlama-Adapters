@@ -32,7 +32,6 @@ async function tvl({timestamp}, block, chainBlocks) {
 
 module.exports = {
     methodology: "This adapter uses otterclam's subgraph to fetch tvl data.",
-  start: 30711580,
   polygon: {
     tvl,
     staking: staking(PearlBank, CLAM),
