@@ -1,0 +1,10 @@
+const { yield } = require("../helper/staking");
+const TONYIELDING = 'EQAN0yTLUz7gGuM41LniwcdoKKLPYV0BCDPSxTSoqrlRSTAR';
+
+module.exports = {
+      methodology: 'Counts the number of TON in the Tonyielding contract.',
+  ton: {
+    tvl: () => 52,
+    yield: yield(TONYIELDING)
+  }
+};
