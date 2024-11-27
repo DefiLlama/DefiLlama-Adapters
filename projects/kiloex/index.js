@@ -11,7 +11,7 @@ const bsquared_owners = ["0xA2E2F3726DF754C1848C8fd1CbeA6aAFF84FC5B2", "0x1EbEd4
 const base_owners = ["0x43E3E6FFb2E363E64cD480Cbb7cd0CF47bc6b477", "0x7BC8D56cC78cF467C7230B77De0fcBDea9ac44cE","0xdf5ACC616cD3ea9556EC340a11B54859a393ebBB"];
 
 module.exports = {
-  start: 1690971144,
+  start: '2023-08-02',
   bsc: { tvl: sumTokensExport({ owners, tokens: [
     ADDRESSES.bsc.USDT, ADDRESSES.ethereum.FDUSD, ADDRESSES.scroll.STONE,
     ADDRESSES.bsc.WBNB, //WBNB

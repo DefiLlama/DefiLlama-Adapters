@@ -13,7 +13,7 @@ const abi = "function getDepositBalance(address user, address vault) view return
 
 module.exports = {
   methodology: "TVL displays the total amount of assets stored in the REBALANCE vault contracts.",
-  start: 1712143874,
+  start: '2024-04-03',
   hallmarks: [[1712143874, "Profitable vaults deployment"]],
 };
 

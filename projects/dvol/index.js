@@ -58,7 +58,6 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  start: 33674950,
   timetravel: false,
   bsc: {
     tvl, borrowed,

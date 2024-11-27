@@ -16,6 +16,7 @@
     "useTokenLabels": "node utils/scripts/useTokenLabels.js",
     "biggest-files": "find ./projects -name '*.js' -not -path './projects/helper/*' -not -path './projects/curve/*' -not -path './projects/sigmao/*' -exec du -sh {} \\; | sort -rh | head -n 100",
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
+    "string-timestamp": "node utils/scripts/stringTimestamp.js",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
   "author": "",

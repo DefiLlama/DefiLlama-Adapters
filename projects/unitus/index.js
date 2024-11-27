@@ -64,5 +64,5 @@ function chainTvl(chain) {
 
 module.exports = {
   ...generalizedChainExports(chainTvl, Object.keys(allControllers)),
-  start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
+  start: '2019-07-26', // Jul-27-2019 02:17:24 AM +UTC
 }
