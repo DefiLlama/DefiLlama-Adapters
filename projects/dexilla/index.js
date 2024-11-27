@@ -51,7 +51,7 @@ const config = {
 
 module.exports = {
   methodology: 'TVL counts the ERC20 tokens on the exchange contracts.',
-  start: 1685610580, // June 1, 2023 @ 9:09:40 (UTC +0)
+  start: '2023-06-01', // June 1, 2023 @ 9:09:40 (UTC +0)
 }
 
 Object.keys(config).forEach(chain => {

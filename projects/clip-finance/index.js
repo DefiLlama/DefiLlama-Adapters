@@ -140,7 +140,7 @@ module.exports = {
   methodology:
     "Clip Finance TVL is achieved by summing total values of assets deposited in other protocols through our vaults and vaults balances.",
   doublecounted: true,
-  start: 1697627757, // (Oct-18-2023 11:15:57 AM +UTC) deployed on the BSC network
+  start: '2023-10-18', // (Oct-18-2023 11:15:57 AM +UTC) deployed on the BSC network
 };
 
 Object.keys(config).forEach((chain) => {

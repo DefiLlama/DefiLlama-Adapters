@@ -25,7 +25,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "TVL displays the total amount of assets stored in the Promethium contracts, excluding not claimed fees.",
-  start: 1696164866,
+  start: '2023-10-01',
   arbitrum: { tvl },
   hallmarks: [[1696164866, "Profitable pools deployment"]],
 };

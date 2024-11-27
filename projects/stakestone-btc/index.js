@@ -16,7 +16,6 @@ const ethTvl = async (api) => {
 }
 
 module.exports = {
-  start: 42326440,
   bsc: {
     tvl: bscTvl,
   },

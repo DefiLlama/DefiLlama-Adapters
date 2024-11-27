@@ -12,7 +12,7 @@ async function addV3Balance(api) {
 }
 
 module.exports = {
-  start: 1650283200,  // 18/04/2022 @ 1:00pm (UTC)
+  start: '2022-04-18',  // 18/04/2022 @ 1:00pm (UTC)
   methodology: `Counts the tokens in the Master Vault Contract.`,
   ethereum: {
     tvl: addV3Balance,

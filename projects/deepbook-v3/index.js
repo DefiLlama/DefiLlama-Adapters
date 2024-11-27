@@ -25,7 +25,7 @@ const tvl = async (api) => {
 
 module.exports = {
   methodology: "All deposits into all BalanceManagers minutes all withdrawals from all BalanceManagers",
-  start: 1728858752,
+  start: '2024-10-14',
   sui: {
     tvl,
   }
