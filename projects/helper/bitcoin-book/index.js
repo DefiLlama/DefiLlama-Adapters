@@ -83,6 +83,8 @@ const swissborg = require('./swissborg.js')
 const toobit = require('./toobit.js')
 const indiaCovid = require('./india-covid.js')
 const wooCEX = require('./woo-cex.js')
+const bitlayerBridge = require('./bitlayer-bridge.js')
+const arkhamExchange = require('./arkham-exchange.js')
 const chakra = require('./chakra.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
@@ -96,6 +98,7 @@ const teleswap = [
 
 module.exports = {
   ...fetchers,
+  bitlayerBridge,
   teleswap,
   ainn,
   allo,
@@ -182,5 +185,6 @@ module.exports = {
   indiaCovid,
   wooCEX,
   p2pb2b,
+  arkhamExchange,
   chakra,
 }

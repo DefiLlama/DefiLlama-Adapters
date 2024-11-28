@@ -3,7 +3,7 @@ const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 
 module.exports.avax = {
-  start: 1683411200,
+  start: '2023-05-07',
   hallmarks: [
     [1702501200, "Salvor Lending Launch"]
   ],

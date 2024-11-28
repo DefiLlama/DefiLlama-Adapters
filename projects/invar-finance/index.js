@@ -10,5 +10,4 @@ module.exports = {
     tvl: sumTokensExport({ owner:INVARIA2222, token: ADDRESSES.ethereum.USDC}),
   },
   deadFrom: '2023-11-12',
-  start: 15389792,
 };
