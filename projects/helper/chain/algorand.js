@@ -99,6 +99,17 @@ async function getAssetInfo(assetId) {
   }
 }
 
+async function getAssetInfoWithoutReserve(assetId) {
+  if (!assetCache[assetId]) assetCache[assetId] = _getAssetInfo()
+  return assetCache[assetId]
+
+  async function _getAssetInfo() {
+    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
+    const assetObj = { ...asset.params, ...asset, }
+    return assetObj
+  }
+}
+
 async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedTokens, }) {
   const lpBalance = balances['algorand:' + lpId]
   if (lpBalance && lpBalance !== '0') {
@@ -201,15 +212,22 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   throw new Error('Not mapped with any whitelisted assets')
 }
 
+async function lookupTransactionsByID(searchParams = {}) {
+  const urlParams = new URLSearchParams(searchParams).toString();
+  return (await axiosObj.get(`/v2/transactions?${urlParams}`)).data
+}
+
 module.exports = {
   tokens,
   getAssetInfo: withLimiter(getAssetInfo),
+  getAssetInfoWithoutReserve: withLimiter(getAssetInfoWithoutReserve),
   searchAccountsAll,
   getAccountInfo,
   sumTokens,
   getApplicationAddress,
   lookupApplications: withLimiter(lookupApplications),
   lookupAccountByID: withLimiter(lookupAccountByID),
+  lookupTransactionsByID: withLimiter(lookupTransactionsByID),
   searchAccounts: withLimiter(searchAccounts),
   getAppGlobalState: getAppGlobalState,
   getPriceFromAlgoFiLP,
