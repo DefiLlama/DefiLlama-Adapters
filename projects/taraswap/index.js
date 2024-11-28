@@ -1,20 +1,5 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { uniV3Export } = require('../helper/uniswapV3');
 
-const graphUrls = {
-  tara: 'https://indexer.lswap.app/subgraphs/name/taraxa/uniswap-v3'
-}
-
-const factoriesName = 'factories'
-const tvlName = 'totalValueLockedUSD'
-
-const v2graph = getChainTvl(graphUrls, factoriesName, tvlName)
-
-
-
-module.exports = {
-  misrepresentedTokens: true,
-  methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'taraxa/uniswap-v3' subgraph`,
-  tara: {
-    tvl: v2graph('tara'),
-  },
-}
+module.exports = uniV3Export({
+  tara: { factory: '0x5EFAc029721023DD6859AFc8300d536a2d6d4c82', fromBlock: 10674828 },
+})
