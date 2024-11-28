@@ -40,7 +40,6 @@ const tokenGeckoMapping = {
   "ARB.WBTC": "wrapped-bitcoin",
   "ARB.WSTETH": "wrapped-steth",
   "XRD.XRD": "radix",
-  "XRD.XRD": "xrd",
 };
 
 const tokenToDecimalMapping = {
@@ -120,7 +119,7 @@ async function tvl(api) {
       }
     } else {
       // e.g KUJI.KUJI
-      if (chainStr === baseToken) {
+      if (['KUJI'].includes(baseToken)) {
         sdk.util.sumSingleBalance(balances, chain, assetDepth / 1e8);
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(
