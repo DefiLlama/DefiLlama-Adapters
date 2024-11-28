@@ -1,10 +1,7 @@
-const {sumTokensExport} = require("../helper/sumTokens");
-const sdk = require("@defillama/sdk");
+const { sumTokensExport } = require("../helper/sumTokens");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
-
 module.exports = {
-    // methodology: `Total amount of BTC in ${bitcoinAddressBook.chakra.join(", ")}. Restaked on babylon`,
     doublecounted: true,
-    bitcoin: {tvl: sdk.util.sumChainTvls([sumTokensExport({owners: bitcoinAddressBook.chakra})])},
+    bitcoin: { tvl: sumTokensExport({ owners: bitcoinAddressBook.chakra }) },
 };
