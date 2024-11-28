@@ -89,6 +89,9 @@ module.exports = {
                     "0x26c5e01524d2E6280A48F2c50fF6De7e52E9611C",
                     "0xf8Ca8D2B59A97125751af1069d4a5C4F7eB7A677",
                 ],
+
+                // lisUSD, LSR
+                ["0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5", "0x37DB1AE9B24055D1F9fE973Aea40B7EB2995D0Bf"],
             ],
         }),
         pool2,
