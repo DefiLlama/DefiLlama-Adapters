@@ -89,6 +89,9 @@ module.exports = {
                     "0x26c5e01524d2E6280A48F2c50fF6De7e52E9611C",
                     "0xf8Ca8D2B59A97125751af1069d4a5C4F7eB7A677",
                 ],
+
+                // USDT, PSM - LSR
+                // ["0x55d398326f99059ff775485246999027b3197955", "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
             ],
         }),
         pool2,
