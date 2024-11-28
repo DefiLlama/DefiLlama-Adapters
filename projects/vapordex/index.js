@@ -16,12 +16,13 @@ module.exports = {
       factory: FACTORY_AVAX,
       useDefaultCoreAssets: true,
     }),
-    apechain: {
-      tvl: getUniTVL({
-        factory: FACTORY_APECHAIN,
-        useDefaultCoreAssets: true,
-      }),
-    },
+  },
+
+  apechain: {
+    tvl: getUniTVL({
+      factory: FACTORY_APECHAIN,
+      useDefaultCoreAssets: true,
+    }),
   },
 
   methodology:
