@@ -60,7 +60,7 @@ module.exports = {
     [1672531200,"Launch on Arbitrum"],
     [1705553229,"Launched gETH and gUSDC"],
     [1727650801,"Launch on Base"],
-    [1727650801,"Launch on ApeChain"],
+    [1732233600,"Launch on ApeChain"],
   ],
   polygon: {
     tvl: polyTvl,
