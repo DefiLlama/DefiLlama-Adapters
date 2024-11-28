@@ -83,6 +83,7 @@ const swissborg = require('./swissborg.js')
 const toobit = require('./toobit.js')
 const indiaCovid = require('./india-covid.js')
 const wooCEX = require('./woo-cex.js')
+const chakra = require('./chakra.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -181,4 +182,5 @@ module.exports = {
   indiaCovid,
   wooCEX,
   p2pb2b,
+  chakra,
 }
