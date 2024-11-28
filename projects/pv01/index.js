@@ -14,7 +14,6 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "Counts the total supply of rTBL (Rolling T-bill) tokens across all PV01 perpetual bond vaults.",
-  start: 20377028,
   ethereum: {
     tvl,
   },

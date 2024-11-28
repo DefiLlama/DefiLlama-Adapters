@@ -10,8 +10,8 @@ const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ
 const SPL_ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
 const edgeCaseTimestamps = [
-  { start: 1713880000, end: 1713885480 }, // 10:32 AM - 10:58 AM ET on April 23, 2024
-  { start: 1713874500, end: 1713876060 }, // 8:15 AM - 8:41 AM ET on April 23, 2024
+  { start: '2024-04-23', end: 1713885480 }, // 10:32 AM - 10:58 AM ET on April 23, 2024
+  { start: '2024-04-23', end: 1713876060 }, // 8:15 AM - 8:41 AM ET on April 23, 2024
 ];
 
 const idleAccount = new PublicKey("bkhAyULeiXwju7Zmy4t3paDHtVZjNaofVQ4VgEdTWiE");
