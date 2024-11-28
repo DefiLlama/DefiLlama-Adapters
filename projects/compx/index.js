@@ -39,7 +39,9 @@ async function staking() {
   const algoAssetId = 0;
   const algoFeeTVL = priceData[algoAssetId].max * algoFeeTotal / 10 ** 6;
 
-  return totalUSD + algoFeeTVL;
+  return {
+    tether: totalUSD + algoFeeTVL
+  };
 }
 
 module.exports = {
