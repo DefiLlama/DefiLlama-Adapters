@@ -6,7 +6,6 @@ const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 const { GraphQLClient } = require("graphql-request");
-const utils = require("../utils");
 
 const coreTokens = Object.values(coreTokensAll.aptos)
 
@@ -36,11 +35,6 @@ async function getResource(account, key) {
   let url = `${endpoint()}/v1/accounts/${account}/resource/${key}`
   const { data } = await http.get(url)
   return data
-}
-
-async function getCoinInfo(address) {
-  if (address === '0x1') return { data: { decimals: 8, name: 'Aptos' } }
-  return http.get(`${endpoint()}/v1/accounts/${address}/resource/0x1::coin::CoinInfo%3C${address}::coin::T%3E`)
 }
 
 function dexExport({
