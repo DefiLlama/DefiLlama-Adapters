@@ -43,6 +43,10 @@ const networkIdentifiers = {
   "0xa4b1.arbitrum": "arbitrum",
   "0x2105.base": "base",
   "sui/0000000000000000000000000000000000000000000000000000000000000002::sui::SUI": "sui",
+  "sui/549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT": "sui",
+  "sui/bde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI": "sui",
+  "sui/dba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC": "sui",
+  "sui/f325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI": "sui",
   "solana/11111111111111111111111111111111" : "solana",
   "stellar/CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA" : "stellar"
 }
