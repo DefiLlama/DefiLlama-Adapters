@@ -1,18 +1,15 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { fetchURL } = require('../helper/utils');
+const { sumTokensExport } = require("../helper/sumTokens");
 
 async function fetchTvl(api) {
-  const response = await fetchURL("https://tonfunstats-eqnd7.ondigitalocean.app/api/v1/getBondingCurveBalanceSum") 
-  api.add(ADDRESSES.ton.TON, response.data.balance)
+    const res = await fetchURL('https://tonfunstats-eqnd7.ondigitalocean.app/api/v1/getServiceTokens?service=bigpump')
+    await sumTokensExport({ tokens: [ADDRESSES.ton.TON], owners: res.data })(api)
 }
 
-
 module.exports = {
-  methodology: `
-  TVL is calculated on the backend by summing up all the balances of the bonding curves that have not gone to the DEX yet.
-  `.trim(),
-  timetravel: false,
-  ton: {
-    tvl: fetchTvl
-  }
+    timetravel: false,
+    ton: {
+        tvl: fetchTvl
+    }
 }
