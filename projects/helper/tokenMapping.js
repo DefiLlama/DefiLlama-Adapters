@@ -76,7 +76,12 @@ const fixBalancesTokens = {
   },
   bfc: {
     '0x74B73Fd2eE237e9219dF30dfFDB206D237cbFC00': { coingeckoId: "coinbase-wrapped-btc", decimals: 8 },
-  }
+  },
+  tara: {
+    [ADDRESSES.null]: { coingeckoId: "taraxa", decimals: 18 },
+    '0x5d0fa4c5668e5809c83c95a7cef3a9dd7c68d4fe': { coingeckoId: "taraxa", decimals: 18 },
+    '0xc26b690773828999c2612549cc815d1f252ea15e': { coingeckoId: "mountain-protocol-usdm", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
