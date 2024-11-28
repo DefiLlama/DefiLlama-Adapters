@@ -119,7 +119,7 @@ async function tvl(api) {
       }
     } else {
       // e.g KUJI.KUJI
-      if (chainStr === baseToken) {
+      if (['KUJI'].includes(baseToken)) {
         sdk.util.sumSingleBalance(balances, chain, assetDepth / 1e8);
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(
