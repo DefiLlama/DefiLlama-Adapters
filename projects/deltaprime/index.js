@@ -178,8 +178,6 @@ async function addTraderJoeLPs({ api, accounts }) {
 
 module.exports = {
   methodology: 'Counts TVL of DeltaPrime\'s lending pools and individual PrimeAccount contracts\'',
-  start:
-    24753316,
   avax: {
     tvl: tvlAvalanche,
   },
