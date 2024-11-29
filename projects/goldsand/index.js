@@ -1,4 +1,5 @@
 const { getLogs } = require("../helper/cache/getLogs");
+const sdk = require("@defillama/sdk")
 
 module.exports = {
   ethereum: {
@@ -81,8 +82,10 @@ module.exports = {
       console.log('Total withdrawn for users:', totalWithdrawnForUser.toString())
       console.log('Total emergency withdrawn:', totalEmergencyWithdrawn.toString())
 
-      // Calculate final TVL by subtracting withdrawals
-      const finalTVL = (totalFunds + totalFundsOnBehalf) - (totalWithdrawnForUser + totalEmergencyWithdrawn);
+      const { output: withdrawlVaultBalance } = await sdk.api.eth.getBalance({ target: '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13' })
+
+      // Convert withdrawlVaultBalance to BigInt
+      const finalTVL = (totalFunds + totalFundsOnBehalf) - (totalWithdrawnForUser + totalEmergencyWithdrawn) + BigInt(withdrawlVaultBalance);
       console.log('Final TVL:', finalTVL.toString())
 
       // api.add('0x0000000000000000000000000000000000000000', finalTVL);
