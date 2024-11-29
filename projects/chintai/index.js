@@ -1,4 +1,4 @@
-async function eos() {
+function eos() {
   return 0;
 }
 
