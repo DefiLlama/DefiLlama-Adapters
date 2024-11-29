@@ -7,6 +7,7 @@ const AAVE_ORACLE_NAME = 'AaveV3PositionOracle'
 const LLAMAPAY_ROUTER_ORACLE_NAME = 'LlamaPayRouterOracle'
 const GEARBOX_TOKEN_PREFIX = 'Farming of'
 const ARRAKIS_TOKEN_PREFIX = 'Arrakis Vault V2'
+const ESXAI_POSITION_ORACLE_NAME = 'EsXai Position Oracle'
 
 const config = {
   polygon: {
@@ -92,6 +93,9 @@ const config = {
     ],
     cometReward: '0x88730d254A2f7e6AC8388c3198aFd694bA9f7fae',
     arrakisHelper: '0x89E4bE1F999E3a58D16096FBe405Fc2a1d7F07D6',
+    esXaiPoolFactory: '0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5',
+    xai: '0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66',
+    esXai: '0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c',
     vaultFactories: [
       {
         address: "0xaF2762E1F75DeCdb8d240576e7A2CEc1A365cD46",
@@ -131,7 +135,7 @@ const config = {
   },
 }
 
-module.exports.methodology = 'Counts tokens held directly in vaults, as well as aave and compound positions.'
+module.exports.methodology = 'Counts tokens held directly in vaults, as well as all managed DeFi positions.'
 module.exports.start = 1682619377
 
 Object.keys(config).forEach(chain => {
@@ -143,6 +147,9 @@ Object.keys(config).forEach(chain => {
       const COMET_REWARD = config[chain].cometReward
       const ARRAKIS_HELPER = config[chain].arrakisHelper
       const vaultFactories = config[chain].vaultFactories
+      const ESXAI_POOL_FACTORY = config[chain].esXaiPoolFactory
+      const XAI = config[chain].xai
+      const ESXAI = config[chain].esXai
 
       const vaultCreateds = []
       for (const { address, fromBlock } of vaultFactories) {
@@ -177,6 +184,8 @@ Object.keys(config).forEach(chain => {
       const llamapayRouters = []
       const gearboxFarmingPools = []
       const arrakisVaults = []
+      const xaiPositionVaults = []
+      const esXaiVaults = []
 
       for (let i = 0; i < vaults.length; ++i) {
         const vault = vaults[i]
@@ -187,19 +196,34 @@ Object.keys(config).forEach(chain => {
           if (assetName) {
             if (assetName === COMPOUND_ORACLE_NAME) {
               compoundVaults.push(vault)
+              continue
             }
             if (assetName === AAVE_ORACLE_NAME) {
               aaveVaults.push(vault)
+              continue
             }
             if (assetName === LLAMAPAY_ROUTER_ORACLE_NAME) {
               llamapayRouters.push(assetInfo.asset)
+              continue
             }
             if (assetName.startsWith(GEARBOX_TOKEN_PREFIX)) {
               gearboxFarmingPools.push([vault, assetInfo.asset])
+              continue
             }
             if (assetName.startsWith(ARRAKIS_TOKEN_PREFIX)) {
               arrakisVaults.push(assetInfo.asset)
+              continue
             }
+            if (assetName === ESXAI_POSITION_ORACLE_NAME) {
+              xaiPositionVaults.push(vault)
+              continue
+            }
+          }
+
+
+          if (ESXAI && assetInfo.asset.toLowerCase() === ESXAI.toLowerCase()) {
+            esXaiVaults.push(vault)
+            continue
           }
 
 
@@ -212,16 +236,23 @@ Object.keys(config).forEach(chain => {
         }
       }
 
-      const [underlyingTokens, vaultErc4626Balances] = await Promise.all([
+      const [underlyingTokens, vaultErc4626Balances, esXaiVaultBalances] = await Promise.all([
         api.multiCall({ abi: 'address:asset', calls: Object.keys(erc4626UnderylingMap) }),
         api.multiCall({ abi: 'erc20:balanceOf', calls: erc4626sAndOwners.map(x => ({ target: x[0], params: x[1] })) }),
+        api.multiCall({ abi: 'erc20:balanceOf', calls: esXaiVaults.map(x => ({target: ESXAI, params: [x]}))})
       ])
+
+      esXaiVaultBalances.forEach(x => {
+        api.addToken(XAI, x)
+      })
+
       await Promise.all([
         processAaveTvl(aaveVaults, api, AAVE_POOL, AAVE_POOL_DATA_PROVIDER),
         processCompoundTvl(compoundVaults, api, COMETS, vaults, COMET_REWARD),
         processLlamaPayTvl(llamapayRouters, api),
         processGearboxTvl(gearboxFarmingPools, api),
-        processArrakisTvl(arrakisVaults, api, ARRAKIS_HELPER)
+        processArrakisTvl(arrakisVaults, api, ARRAKIS_HELPER),
+        processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI)
       ])
 
       Object.keys(erc4626UnderylingMap).forEach((erc4626Asset, i) => erc4626UnderylingMap[erc4626Asset] = underlyingTokens[i])
@@ -237,6 +268,28 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+async function processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI) {
+  if (xaiPositionVaults.length === 0) return
+  
+  const pools = await api.multiCall({ abi: abi.getPoolIndicesOfUser, calls: xaiPositionVaults.map(x => ({target: ESXAI_POOL_FACTORY, params: [x]}))})
+  const vaultPools = xaiPositionVaults.flatMap((vault, i) => pools[i].map(pool => ([vault, pool])))
+
+  const [bucketTrackers, stakedAmounts] = await Promise.all([
+    api.multiCall({ abi: abi.esXaiStakeBucket, calls: vaultPools.map(x => x[1]) }),
+    api.multiCall({ abi: abi.getStakedAmounts, calls: vaultPools.map(x => ({target: x[1], params: [x[0]]}))})
+  ])
+
+  stakedAmounts.forEach(x => {
+    api.addToken(XAI, x)
+  })
+
+  const bucketWithdrawables = await api.multiCall({ abi: abi.withdrawableDividendOf, calls: vaultPools.map((x, i) => ({target: bucketTrackers[i], params: [x[0]]}))})
+
+  bucketWithdrawables.forEach(x => {
+    api.addToken(XAI, x)
+  })
+}
 
 async function processArrakisTvl(arrakisVaults, api, arrakisHelper) {
   if (arrakisVaults.length === 0) return
@@ -377,5 +430,9 @@ const abi = {
   "strategy": "function stakerStrategyShares() returns (address)",
   "underlyingToken": "function underlyingToken() returns (address)",
   "sharesToUnderlyingView": "function sharesToUnderlyingView(uint256) returns (uint256)",
-  "queuedWithdrawals": "function queuedWithdrawals(uint256) returns (bytes32 root, uint256 shares)"
+  "queuedWithdrawals": "function queuedWithdrawals(uint256) returns (bytes32 root, uint256 shares)",
+  "getPoolIndicesOfUser": "function getPoolIndicesOfUser(address user) returns (address[])",
+  "esXaiStakeBucket": "function esXaiStakeBucket() returns (address)",
+  "getStakedAmounts": "function getStakedAmounts(address) returns (uint256)",
+  "withdrawableDividendOf": "function withdrawableDividendOf(address) returns (uint256)"
 }
