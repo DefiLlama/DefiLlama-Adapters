@@ -13,16 +13,11 @@ const getTVL = async (api)=> {
         target: contractAddress,
         abi: "tonStaked"
     }))[0];
-    const nxtonStaked = (await call({
-        target: contractAddress,
-        abi: "nxtonStaked"
-    }))[0];
 
     const tokens = ["TON", nxton.token];
     const priceRates = await getTokenRates({tokens});
     
     api.addUSDValue(tonStaked * (priceRates["TON"]/1e9 || 0));
-    api.addUSDValue(nxtonStaked * (priceRates[nxton.token]/Math.pow(10, nxton.decimals) || 0));
 }
 
 module.exports = {
