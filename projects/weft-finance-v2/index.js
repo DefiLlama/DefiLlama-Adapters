@@ -12,7 +12,7 @@ const lendingMarket = 'component_rdx1cpy6putj5p7937clqgcgutza7k53zpha039n9u5hkk0
 const resourcePoolsKVS = 'internal_keyvaluestore_rdx1kzjr763caq96j0kv883vy8gnf3jvrrp7dfm9zr5n0akryvzsxvyujc'
 
 async function tvl(api) {
-  return sumTokens({ owners: [lendingPool, lendingMarket], api });
+  return sumTokens({ owners: [lendingPool, lendingMarket], api, transformLSU: true });
 }
 
 async function borrowed(api) {
