@@ -13,8 +13,13 @@ async function tvl() {
 
     let suiAmount = 0;
     for (const poolId of poolIds) {
-        const pool = await sui.getObject(poolId);
-        suiAmount += pool.fields.storage.fields.total_sui_supply / 10 ** 9
+        try {
+            const pool = await sui.getObject(poolId);
+            suiAmount += pool.fields.storage.fields.total_sui_supply / 10 ** 9
+        }
+        catch(e) {
+            continue
+        }
     }
     return {
         sui: suiAmount,
