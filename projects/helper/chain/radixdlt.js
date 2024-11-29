@@ -30,9 +30,9 @@ async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
   return fixBalances(api.getBalances())
 }
 
-async function queryAddresses({ addresses = [], miscQuery = {}}) {
+async function queryAddresses({ addresses = [], miscQuery = {} }) {
   let items = []
-  const chunks  = sliceIntoChunks(addresses, 20)
+  const chunks = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     const body = {
       ...miscQuery,
@@ -70,7 +70,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
   addresses = addresses.filter(i => i !== ADDRESSES.radixdlt.XRD)
   let lsuRedemptionValues = {}
 
-  const chunks  = sliceIntoChunks(addresses, 20)
+  const chunks = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     let body = {
       "addresses": chunk,
@@ -82,7 +82,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
       let validators = []
       for (const lsuResource of data.items) {
         let v = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")
-        if (v !== undefined) {
+        if (v !== undefined && v.length > 0) {
           let validator = v[0]
           if (validator.value.typed.type === "GlobalAddress" && validator.value.typed.value.startsWith("validator_")) {
             lsuRedemptionValues[lsuResource.address] = {
@@ -112,10 +112,10 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
         let xrdStakeVaultBalance = new BigNumber(xrdStakeVault[0].amount)
 
         let totalSupplyOfStakeUnits = new BigNumber(lsuRedemptionValues[stakeUnitResourceAddress]["totalSupplyOfStakeUnits"])
-        let xrdRedemptionValue =  xrdStakeVaultBalance / totalSupplyOfStakeUnits
+        let xrdRedemptionValue = xrdStakeVaultBalance / totalSupplyOfStakeUnits
         lsuRedemptionValues[stakeUnitResourceAddress]["xrdRedemptionValue"] = xrdRedemptionValue
       }
-    } catch(error) {
+    } catch (error) {
       console.log("There was an error getting the xrd redemption value. Check that all addressed used are LSU resource addresses")
       return {}
     }
@@ -123,7 +123,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
   return lsuRedemptionValues
 }
 
-function sumTokensExport({...args}) {
+function sumTokensExport({ ...args }) {
   return async (api) => sumTokens({ ...args, api, })
 }
 
