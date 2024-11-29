@@ -4,8 +4,6 @@ const sdk = require("@defillama/sdk")
 module.exports = {
   ethereum: {
     tvl: async (api) => {
-      // const balances = [] 
-
       // Get Funded events
       const fundedLogs = await getLogs({
         api,
@@ -60,35 +58,18 @@ module.exports = {
         skipCache: true,
       })
 
-      // console.log(fundedLogs)
-
       const totalFunds = fundedLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
       const totalFundsOnBehalf = fundedOnBehalfLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
-      console.log('Individual funds:', fundedLogs)
-      console.log('Individual fundsOnBehalf:', fundedOnBehalfLogs)
-      console.log('Total funds:', totalFunds.toString())
-      console.log('Total fundsOnBehalf:', totalFundsOnBehalf.toString())
-
-      // Verify sums match
-      // TODO: Remove this when pushing to prod.
-      const manualSum = fundedLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n) +
-        fundedOnBehalfLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n)
-      console.log('Sum verification:', manualSum === (totalFunds + totalFundsOnBehalf) ? 'PASS' : 'FAIL')
 
       // Calculate total withdrawals
       const totalWithdrawnForUser = withdrawnForUserLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
       const totalEmergencyWithdrawn = emergencyWithdrawnLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
-      
-      console.log('Total withdrawn for users:', totalWithdrawnForUser.toString())
-      console.log('Total emergency withdrawn:', totalEmergencyWithdrawn.toString())
 
       const { output: withdrawlVaultBalance } = await sdk.api.eth.getBalance({ target: '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13' })
 
       // Convert withdrawlVaultBalance to BigInt
       const finalTVL = (totalFunds + totalFundsOnBehalf) - (totalWithdrawnForUser + totalEmergencyWithdrawn) + BigInt(withdrawlVaultBalance);
-      console.log('Final TVL:', finalTVL.toString())
 
-      // api.add('0x0000000000000000000000000000000000000000', finalTVL);
       return { '0x0000000000000000000000000000000000000000': finalTVL };
     },
   },
