@@ -3,9 +3,7 @@ const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
 
 const config = {
   bitcoin: {
-    owners: [
-      'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9', // Bitcoin address for Bitomato
-    ],
+    owners: bitcoinAddressBook.bitomato,
   },
   ethereum: {
     owners: [
