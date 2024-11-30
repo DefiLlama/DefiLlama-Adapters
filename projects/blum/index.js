@@ -1,11 +1,12 @@
 const ADDRESSES = require("../helper/coreAssets.json")
 
-const { fetchURL } = require('../helper/utils')
-const { sumTokensExport } = require("../helper/sumTokens")
+const { sumTokens } = require("../helper/chain/ton")
+const { getConfig } = require("../helper/cache")
 
 async function fetchTvl(api) {
-  const res = await fetchURL('https://tonfunstats-eqnd7.ondigitalocean.app/api/v1/getServiceTokens?service=blum')
-  await sumTokensExport({ tokens: [ADDRESSES.ton.TON], owners: res.data })(api)
+  const res = await getConfig('blum', 'https://tonfunstats-eqnd7.ondigitalocean.app/api/v1/getServiceTokens?service=blum')
+  console.log(res)
+  await sumTokens({ api, tokens: [ADDRESSES.ton.TON], owners: res, onlyWhitelistedTokens: true, })
 }
 
 module.exports = {
