@@ -1,96 +1,60 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { cachedGraphQuery } = require('../helper/cache')
 
 const config = {
   ethereum: {
-    addr: '0xb16df6f4a58ecb26fab8e09a5195c062a08e21bc',
-    fromBlock: 21128067,
+    subgraphUrl: 'https://api.studio.thegraph.com/query/96517/bb-defillama-eth/v0.0.4'
   },
   bsc: {
-    addr: '0x777ba19c9480c158941419c5d046832a120d42c8',
-    fromBlock: 43769537,
+    subgraphUrl: 'https://api.studio.thegraph.com/query/96517/bb-defillama-bsc/v0.0.2'
   },
   bouncebit: {
-    addr: '0xc4F65Bbdd0B9eCFeaA253a65DC0601C97061a02C',
-    fromBlock: 5114582,
+    main: { url: 'https://bitswap-subgraph.bouncebit.io/subgraphs/name/bb-defillama-bb' },
+    boyya: { url: 'https://bitswap-subgraph.bouncebit.io/subgraphs/name/bb-defillama-boyya-bb' }
   }
 }
 
+const query = `{
+  tokens {
+    id
+    tvl
+  }
+}`
+
+// stbbtc to bbtc
+const TOKEN_MAPPINGS = {
+  '0x7f150c293c97172c75983bd8ac084c187107ea19': '0xf5e11df1ebcf78b6b6d26e04ff19cd786a1e81dc', // stBBTC -> bbtc
+}
+
+async function fetchTokens(chain, subgraphUrl) {
+  const prefix = chain === 'bouncebit' ? `bouncebit-cedefi${subgraphUrl.includes('boyya') ? '-boyya' : ''}` : 'bouncebit-cedefi'
+  return cachedGraphQuery(`${prefix}/${chain}`, subgraphUrl, query)
+}
+
 async function tvl(api) {
-  const { chain } = api
-  const contract = config[chain]
+  const chain = api.chain
+  
+  const tokenLists = await Promise.all(
+    chain === 'bouncebit'
+      ? [
+          fetchTokens(chain, config[chain].main.url),
+          fetchTokens(chain, config[chain].boyya.url)
+        ]
+      : [fetchTokens(chain, config[chain].subgraphUrl)]
+  )
 
-  const openedLogs = await getLogs({
-    extraKey: 'bouncebit-cedefi-01',
-    api,
-    target: contract.addr,
-    fromBlock: contract.fromBlock,
-    topics: ['0x0267b5ba596625864ff2ea09bacaa5d24b6089a4cbd9e727316aa2d32e8ed360'],
-    eventAbi: 'event Opened(address indexed token, uint256 indexed strategyId, address indexed account, uint256, uint256, uint128 assets)',
-    onlyArgs: true,
-  })
-
-  const rebasedLogs = await getLogs({
-    extraKey: 'bouncebit-cedefi-02',
-    api, 
-    target: contract.addr,
-    fromBlock: contract.fromBlock,
-    topics: ['0x9ba01bfbd1abdae22ef89e290397b701f17fabada181012fb5175c674dc6f4a2'],
-    eventAbi: 'event Rebased(address indexed token, address indexed account, uint256 indexed strategy, uint256, uint256 amount)',
-    onlyArgs: true,
-  })
-
-  const normalClosedLogs = await getLogs({
-    extraKey: 'bouncebit-cedefi-03',
-    api,
-    target: contract.addr,
-    fromBlock: contract.fromBlock,
-    topics: ['0x224282f8be4992654d94d4c85ac7cb330e5816984a67e566004978248b571453'],
-    eventAbi: 'event NormalClosed(address indexed token, uint256 indexed strategyId, address indexed account, uint256, uint256, uint128, uint128 sharesAmount)',
-    onlyArgs: true,
-  })
-
-  const fastClosedLogs = await getLogs({
-    extraKey: 'bouncebit-cedefi-04',
-    api,
-    target: contract.addr,
-    fromBlock: contract.fromBlock,
-    topics: ['0xfce6a69a0d23d783f8e99b9474c89e1fb73305c9deffb4076c31c24e52c04af9'],
-    eventAbi: 'event FastClosed(address indexed token, uint256 indexed strategyId, address indexed account, uint256, uint256, uint128 assets, uint128, uint128 fee)',
-    onlyArgs: true,
-  })
-
-  const tokenBalances = {}
-  openedLogs.forEach(log => {
-    const token = log.token.toLowerCase()
-    tokenBalances[token] = (tokenBalances[token] || 0) + Number(log.assets)
-  })
-
-  rebasedLogs.forEach(log => {
-    const token = log.token.toLowerCase() 
-    tokenBalances[token] = (tokenBalances[token] || 0) + Number(log.amount)
-  })
-
-  normalClosedLogs.forEach(log => {
-    const token = log.token.toLowerCase()
-    tokenBalances[token] = (tokenBalances[token] || 0) - Number(log.sharesAmount) 
-  })
-
-  fastClosedLogs.forEach(log => {
-    const token = log.token.toLowerCase()
-    tokenBalances[token] = (tokenBalances[token] || 0) - Number(log.assets) - Number(log.fee)
-  })
-
-  Object.entries(tokenBalances).forEach(([token, balance]) => {
-    if(balance > 0) {
-      api.add(token, balance)
-    }
+  const allTokens = tokenLists.flatMap(result => result.tokens)
+  
+  allTokens.forEach(token => {
+    if (token.tvl <= 0) return
+    const targetToken = TOKEN_MAPPINGS[token.id] || token.id
+    api.add(targetToken, token.tvl)
   })
 
   return api.getBalances()
 }
 
 module.exports = {
-  methodology: "Calculate TVL by BounceBit Cedefi events"
+  methodology: "Calculate TVL by querying BounceBit Cedefi subgraph"
 }
 
 Object.keys(config).forEach(chain => {
