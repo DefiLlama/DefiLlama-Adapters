@@ -2,6 +2,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const YN_ETH = '0x09db87a538bd693e9d08544577d5ccfaa6373a48'
+const yn_ETHx = '0x657d9ABA1DBb59e53f9F3eCAA878447dCfC96dCb'
 
 module.exports = {
   ethereum: {
@@ -12,6 +13,9 @@ module.exports = {
       const lsds = await api.call({ abi: 'address[]:getAssets', target: lsdRegistry })
       const bals = await api.call({ abi: 'function getAllAssetBalances() view returns (uint256[])', target: lsdRegistry })
       api.add(lsds, bals)
+      const maxethBalance = await api.call({ abi: 'uint256:totalAssets', target: yn_ETHx })
+      api.add(ADDRESSES.null, maxethBalance)
+      
     }
   },
   bsc: {
