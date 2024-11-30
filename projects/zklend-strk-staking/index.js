@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { call } = require('../helper/chain/starknet')
 const { strkStakingAbi } = require('./abi');
 
-const stakingContract = '0x00ca1702e64c81d9a07b86bd2c540188d92a2c73cf5cc0e508d949015e7e84a7'
+const stakingContract = '0x057ea05c22d6b162d0f2ef4b3d1e1edf3c065d81cf0f41950f716a71e9ad6bae'
 
 async function tvl(api) {
   const stakedAmount = await call({ target: stakingContract, abi: strkStakingAbi.get_total_stake })
