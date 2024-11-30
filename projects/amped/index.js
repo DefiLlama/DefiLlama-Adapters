@@ -6,7 +6,7 @@ const phoenixStakingAddress = '0x3c9586567a429BA0467Bc63FD38ea71bB6B912E0';
 const phoenixAmpAddress = '0xca7F14F14d975bEFfEe190Cd3cD232a3a988Ab9C';
 
 module.exports = {
-  start: 1717674114,
+  start: '2024-06-06',
   lightlink_phoenix: {
     staking: staking(phoenixStakingAddress, phoenixAmpAddress),
     tvl: gmxExports({ vault: phoenixVaultAddress, })

@@ -93,7 +93,7 @@ function tvl(chain) {
 }
 
 module.exports = {
-  start: 1621340071,
+  start: '2021-05-18',
   ethereum: tvl('ethereum'),
   fantom: tvl('fantom'),
   avax: tvl('avax'),

@@ -83,11 +83,23 @@ const swissborg = require('./swissborg.js')
 const toobit = require('./toobit.js')
 const indiaCovid = require('./india-covid.js')
 const wooCEX = require('./woo-cex.js')
+const bitlayerBridge = require('./bitlayer-bridge.js')
+const arkhamExchange = require('./arkham-exchange.js')
+const chakra = require('./chakra.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
+const teleswap = [
+  '3CAQAw7m95axbY761Xq8d9DADhjNaX9b8o', // POLYGON_LOCKER
+  '3KLdeu9maZAfccm3TeRWEmUMuw2e8SLo4v', // BNB_LOCKER
+  '3E2hwnq5BsmP1ea6JUhjdKZjh2wy4NuQ8T', // BSQUARED_LOCKER
+  '31uHNFfbejkbUD2B26o2CARfU1ALJ6x6Ag', // BOB_LOCKER
+  '3LNsey3ceG9ZHkQ7bcfAjwnew7KVujHt29', // BRC20_LOCKER
+]
 
 module.exports = {
   ...fetchers,
+  bitlayerBridge,
+  teleswap,
   ainn,
   allo,
   avalanche,
@@ -173,4 +185,6 @@ module.exports = {
   indiaCovid,
   wooCEX,
   p2pb2b,
+  arkhamExchange,
+  chakra,
 }

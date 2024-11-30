@@ -10,7 +10,8 @@ async function wax() {
       ["alien.worlds", "TLM", "alien-worlds"],
       ["usdt.alcor", "USDT", "alcor-ibc-bridged-usdt-wax"],
       ["wombattokens", "WOMBAT", "wombat"],
-      ["wuffi", "WUF", "wuffi"]
+      ["wuffi", "WUF", "wuffi"],
+      ["token.fusion", "LSWAX", "waxfusion-staked-wax"],
   ];
   return await get_account_tvl(accounts, tokens, "wax");
 }

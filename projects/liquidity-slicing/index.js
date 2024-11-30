@@ -50,7 +50,6 @@ async function tvl(api) {
 
 module.exports = {
   arbitrum: {
-    start: 224198345,
     tvl,
   }
 }

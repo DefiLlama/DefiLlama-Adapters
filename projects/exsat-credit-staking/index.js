@@ -7,6 +7,6 @@ async function tvl() {
 
 module.exports = {
     methodology: 'TVL is based on Bitcoin addresses in the exSat credit staking contract, summing their associated Bitcoin balances.',
-    start: 1729684800,
+    start: '2024-10-23',
     bitcoin: { tvl },
 };
