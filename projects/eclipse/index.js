@@ -59,16 +59,10 @@ async function eclipStaking(api){
     api.add(tokens["ECLIP"], ((Number(eclipStakingBalance.stake_state.total_bond_amount) )));
 }
 
-async function tvl(api) {
-    await Promise.all([
-        singleSideStaking(api),
-        lpStaking(api),
-        eclipStaking(api)
-    ])
-}
-
 module.exports = {
     neutron: {
-        tvl,
+        tvl: singleSideStaking,
+        pool2: lpStaking,
+        staking: eclipStaking,
     },
 }
