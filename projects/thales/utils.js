@@ -41,16 +41,6 @@ const utils = {
     return [...digitalMarkets.flat(), ...sportsMarkets.flat()]
   },
 
-  // Calculate pool2 TVL
-  getPool2Tvl: async (api, chain) => {
-    const config = CHAIN_CONFIG[chain].pool2
-    return sumTokens2({
-      api,
-      owner: config.lpToken,
-      tokens: [config.baseToken, config.pairedToken]
-    })
-  },
-
   // Calculate chain TVL
   calculateChainTVL: async (api, chain) => {
     const config = CHAIN_CONFIG[chain]

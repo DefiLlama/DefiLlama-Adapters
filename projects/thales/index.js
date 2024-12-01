@@ -17,11 +17,6 @@ const createChainModule = (chain) => {
     )
   }
 
-  // Add pool2 if configured
-  if (config.pool2) {
-    module.pool2 = (api) => helpers.getPool2Tvl(api, chain)
-  }
-
   return module
 }
 

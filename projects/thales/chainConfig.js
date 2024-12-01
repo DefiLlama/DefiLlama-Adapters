@@ -4,11 +4,6 @@ const CONTRACTS = require('./constants')
 const CHAIN_CONFIG = {
   optimism: {
     tokens: CHAIN_TOKENS.optimism,
-    pool2: {
-      lpToken: CONTRACTS.optimism.LP_TOKEN,
-      baseToken: CHAIN_TOKENS.optimism.THALES,
-      pairedToken: CHAIN_TOKENS.optimism.ETH
-    },
     staking: {
       contract: CONTRACTS.optimism.STAKING_CONTRACT,
       token: CHAIN_TOKENS.optimism.THALES
@@ -28,11 +23,6 @@ const CHAIN_CONFIG = {
   },
   arbitrum: {
     tokens: CHAIN_TOKENS.arbitrum,
-    pool2: {
-      lpToken: CONTRACTS.arbitrum.LP_TOKEN,
-      baseToken: CHAIN_TOKENS.arbitrum.THALES,
-      pairedToken: CHAIN_TOKENS.arbitrum.WETH
-    },
     staking: {
       contract: CONTRACTS.arbitrum.STAKING_CONTRACT,
       token: CHAIN_TOKENS.arbitrum.THALES
@@ -56,11 +46,6 @@ const CHAIN_CONFIG = {
   },
   base: {
     tokens: CHAIN_TOKENS.base,
-    pool2: {
-      lpToken: CONTRACTS.base.LP_TOKEN,
-      baseToken: CHAIN_TOKENS.base.THALES,
-      pairedToken: CHAIN_TOKENS.base.WETH
-    },
     staking: {
       contract: CONTRACTS.base.STAKING_CONTRACT,
       token: CHAIN_TOKENS.base.THALES
