@@ -98,6 +98,11 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
         }
 
       }
+
+      if (validators.length == 0) {
+        continue
+      }
+
       let validatorsDetailsBody = {
         "addresses": validators,
         "aggregation_level": "Vault"
