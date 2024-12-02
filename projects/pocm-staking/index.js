@@ -1,14 +1,10 @@
 const http = require("../helper/http");
 
 async function staking() {
+  const data = (await http.get("https://pocm.nuls.io/api/pocm/info")).data;
   return {
-    'nuls': Number((await http.get("https://pocm.nuls.io/api/pocm/info")).data.totalStaking).toFixed(0)
-  };
-}
-
-async function stakingBTC() {
-  return {
-    'btc': Number((await http.get("https://pocm.nuls.io/api/pocm/info")).data.totalStakingBTC).toFixed(8)
+    'nuls': Number(data.totalStaking).toFixed(0),
+    'btc': Number(data.totalStakingBTC).toFixed(8)
   };
 }
 
@@ -18,9 +14,5 @@ module.exports = {
   nuls: {
     tvl: async ()=> ({}),
     staking,
-  },
-  bitcoin: {
-    tvl: async ()=> ({}),
-    stakingBTC,
   }
 };
