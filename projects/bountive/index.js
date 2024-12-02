@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { bountiveTokenAbi } = require("./abi");
-const { multiCall } = require('../helper/chain/starknet')
+const { multiCall } = require('../helper/chain/starknet');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const bountiveTokens = [
     // BoSTRK: Bountive STRK
@@ -38,6 +39,7 @@ async function tvl(api) {
         abi: bountiveTokenAbi.total_supply,
     });
     api.addTokens(underlyingsTokens, supplied)
+    return sumTokens2({ api })
 
 }
   
