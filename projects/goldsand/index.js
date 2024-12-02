@@ -2,6 +2,10 @@ const { getLogs } = require("../helper/cache/getLogs");
 const sdk = require("@defillama/sdk")
 
 module.exports = {
+  methodology: 'TVL is the sum of deposits minus the sum of withdrawals. Since there is no liquid staking token (yet) and deposited ETH greater than 32 is automatically staked in the beacon chain, the contract balance itself is not the TVL.',
+  hallmarks: [
+    [1732231247, "Privately staked funds deposited to contract."],
+  ],
   ethereum: {
     tvl: async (api) => {
       // Get Funded events
@@ -45,30 +49,16 @@ module.exports = {
         skipCache: true,
       })
 
-      // Get EmergencyWithdrawn events
-      const emergencyWithdrawnLogs = await getLogs({
-        api,
-        target: '0x6659423929E1a00119fc3F79C8e4F443cc6fd36f',
-        eventAbi: 'event EmergencyWithdrawn(address recipient, uint256 amount)',
-        topics: [
-          "0x46028b2ed7ba45b83543eb4f43090c1511ee37d94f26792582213afa88b75b67"
-        ],
-        fromBlock: 20966151,
-        onlyArgs: true,
-        skipCache: true,
-      })
-
       const totalFunds = fundedLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
       const totalFundsOnBehalf = fundedOnBehalfLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
 
       // Calculate total withdrawals
       const totalWithdrawnForUser = withdrawnForUserLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
-      const totalEmergencyWithdrawn = emergencyWithdrawnLogs.reduce((acc, curr) => acc + BigInt(curr.amount), 0n);
 
+      // The withdrawl vault holds validator rewards until withdrawn.
       const { output: withdrawlVaultBalance } = await sdk.api.eth.getBalance({ target: '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13' })
 
-      // Convert withdrawlVaultBalance to BigInt
-      const finalTVL = (totalFunds + totalFundsOnBehalf) - (totalWithdrawnForUser + totalEmergencyWithdrawn) + BigInt(withdrawlVaultBalance);
+      const finalTVL = (totalFunds + totalFundsOnBehalf) - (totalWithdrawnForUser) + BigInt(withdrawlVaultBalance);
 
       return { '0x0000000000000000000000000000000000000000': finalTVL };
     },
