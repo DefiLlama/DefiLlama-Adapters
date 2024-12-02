@@ -26,5 +26,6 @@ module.exports = {
   optimism: createChainModule('optimism'),
   arbitrum: createChainModule('arbitrum'),
   polygon: createChainModule('polygon'),
-  base: createChainModule('base')
+  base: createChainModule('base'),
+  ethereum: {tvl: async ()=>({})},
 }
