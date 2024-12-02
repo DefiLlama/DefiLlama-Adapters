@@ -4,7 +4,7 @@ async function staking() {
   const data = (await http.get("https://pocm.nuls.io/api/pocm/info")).data;
   return {
     'nuls': Number(data.totalStaking).toFixed(0),
-    'btc': Number(data.totalStakingBTC).toFixed(8)
+    'bitcoin': Number(data.totalStakingBTC).toFixed(8)
   };
 }
 
