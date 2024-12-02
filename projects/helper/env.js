@@ -9,7 +9,7 @@ const DEFAULTS = {
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   ECLIPSE_RPC: 'https://eclipse.lgns.net',
-  APTOS_RPC: 'https://aptos-mainnet.pontem.network',
+  APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
