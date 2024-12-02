@@ -7,8 +7,14 @@ const sdk = require('@defillama/sdk')
 const abi = { getQualifiedUserInfo: 'function getQualifiedUserInfo(address _user) view returns ((bool locked, string depositAddress, string withdrawalAddress) info)' }
 
 module.exports = {
+  btcfi_cdp: async () => {
+    const target = "0x0000000000000000000000000000000000000100";
+    const api = new sdk.ChainApi({ chain: 'bfc' })
+    const round = await api.call({  abi: 'uint32:current_round', target})
+    return api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round })
+  },
   bedrock: async () => {
-    const API_URL = 'https://bedrock-datacenter.rockx.com/uniBTC/reserve/address'
+    const API_URL = 'https://raw.githubusercontent.com/Bedrock-Technology/uniBTC/refs/heads/main/data/tvl/reserve_address.json'
     const { btc } = await getConfig('bedrock.btc_address', API_URL)
     return btc
   },
@@ -52,33 +58,33 @@ module.exports = {
         let offset = 0;
         let batchNumber = 1;
         let hasMore = true;
-      
+
         while (hasMore) {
           const { addresses: data, has_more } = await get(`${API_URL}?limit=${BATCH_SIZE}&offset=${offset}`);
           const newAddresses = data.map(a => a.btc_address);
-          
+
           allAddresses.push(...newAddresses);
           sdk.log(`Batch ${batchNumber} completed: ${newAddresses.length} addresses`);
-      
+
           hasMore = has_more;
           offset += BATCH_SIZE;
           batchNumber++;
         }
-        
+
         return allAddresses;
       }
     })
   },
   solvBTC: async () => {
-    const API_URL = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/refs/heads/main/bitcoin.json'
+    const API_URL = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/bitcoin.json'
     return Object.values(await getConfig('solv-protocol/solv-btc-lst', API_URL)).flat();
   },
   pumpBTC: async () => {
-    const API_URL = 'https://dashboard.pumpbtc.xyz/api/dashboard/btc/addresses'
-    return getConfig('pumpbtc', undefined, {
+    const API_URL = 'https://dashboard.pumpbtc.xyz/api/dashboard/asset/tokenowners'
+    return getConfig('pumpbtc/v2', undefined, {
       fetcher: async () => {
         const { data } = await axios.get(API_URL)
-        return data.data || []
+        return data.data.bitcoin.owners
       }
     })
   },
@@ -101,25 +107,25 @@ module.exports = {
       let hasMore = true;
 
       while (hasMore) {
-          const { data: response } = await axios.post(API2_URL, {
-              "json": true,
-              "code": "brdgmng.xsat",
-              "scope": custody_id,
-              "table": "addrmappings",
-              "lower_bound": lower_bound,
-              "upper_bound": null,
-              "index_position": 1,
-              "key_type": "",
-              "limit": "100",
-              "reverse": false,
-              "show_payer": true
-          });
+        const { data: response } = await axios.post(API2_URL, {
+          "json": true,
+          "code": "brdgmng.xsat",
+          "scope": custody_id,
+          "table": "addrmappings",
+          "lower_bound": lower_bound,
+          "upper_bound": null,
+          "index_position": 1,
+          "key_type": "",
+          "limit": "100",
+          "reverse": false,
+          "show_payer": true
+        });
 
-          const addrs = response.rows.map(row => row.data.btc_address);
-          owners.push(...addrs);
+        const addrs = response.rows.map(row => row.data.btc_address);
+        owners.push(...addrs);
 
-          hasMore = response.more;
-          lower_bound = response.next_key;
+        hasMore = response.more;
+        lower_bound = response.next_key;
       }
     }
     return owners
