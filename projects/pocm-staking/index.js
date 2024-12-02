@@ -6,10 +6,20 @@ async function staking() {
   };
 }
 
+async function stakingBTC() {
+  return {
+    'btc': Number((await http.get("https://pocm.nuls.io/api/pocm/info")).data.totalStakingBTC).toFixed(8)
+  };
+}
+
 module.exports = {
   timetravel: false,
   nuls: {
     tvl: async ()=> ({}),
     staking,
+  },
+  bitcoin: {
+    tvl: async ()=> ({}),
+    stakingBTC,
   }
 };
