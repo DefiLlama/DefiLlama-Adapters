@@ -8,17 +8,17 @@ async function getAllMarkets(ledgerVersion) {
     type_arguments: [],
     ledgerVersion,
   })
-  return registry.total_value_locked.value
+  return registry.total_quote_locked.value
 }
 
 async function tvl(api) {
-  const version = await timestampToVersion(api.timestamp, 1962588495);
-  const tvl_amount = await getAllMarkets(version);
+  // const version = await timestampToVersion(api.timestamp, 1962588495); // this query is not working
+  const tvl_amount = await getAllMarkets();
   api.add("0x1::aptos_coin::AptosCoin", tvl_amount);
 }
 
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   methodology:
     "Aggregates TVL in all pools in Emojicoin.fun",
   aptos: {
