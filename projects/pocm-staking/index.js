@@ -13,6 +13,7 @@ async function stakingBTC() {
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
   nuls: {
     tvl: async ()=> ({}),
