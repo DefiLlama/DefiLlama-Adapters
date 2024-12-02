@@ -50,7 +50,6 @@ async function tvlMantle(api) {
 module.exports = {
   methodology: 'Token balance in vault and strategy contracts',
   start: '2024-09-10', // Tuesday, September 10, 2024 12:00:00 AM,
-  hallmarks: [[1727218691, "TVL Cap Raise 1"],[1729045223, "TVL Cap Raise 2"]],
   ethereum: {
     tvl,
   },
