@@ -11,6 +11,10 @@ const bountiveTokens = [
     "0x028a88bf75f1b10dc8552051a56fbdc732084af514f6065f4c67ea6d50204720",
     // BoUSDT: Bountive USDT
     "0x0243d9a1cffc0b5ebbf549efd1232a96b1ef392fe595e91dd72103d5a8e7d847",
+    // BoDAI: Bountive DAI
+    "0x00c359a6eb59a7cd68bfc3d7a44d05b15ba3fbbb4eebc2d59d52d37f123bea00",
+    // BoBROTHER: Bountive BROTHER
+    "0x067c176764a49143e405fadb3e35b2a18a16cc00527e53fed92267c1be1c53a5",
 ]
 
 const underlyingsTokens = [
@@ -22,6 +26,10 @@ const underlyingsTokens = [
     ADDRESSES.starknet.USDC,
     // USDT
     ADDRESSES.starknet.USDT,
+    // DAI
+    ADDRESSES.starknet.DAI,
+    // BROTHER
+    ADDRESSES.starknet.BROTHER,
 ]
 
 async function tvl(api) {
