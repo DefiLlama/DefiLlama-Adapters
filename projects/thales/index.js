@@ -28,4 +28,5 @@ module.exports = {
   polygon: createChainModule('polygon'),
   base: createChainModule('base'),
   ethereum: {tvl: async ()=>({})},
+  bsc: {tvl: async ()=>({})},
 }
