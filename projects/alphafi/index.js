@@ -115,6 +115,14 @@ const ALPHAFI_CETUS_TVL_IDS = [
     token0Type: ADDRESSES.sui.BUCK,
     token1Type: ADDRESSES.sui.SUI
   },
+  // fud sui
+  {
+    poolID: "0x005a2ebeb982a1e569a54795bce1eeb4d88900b674440f8487c2846da1706182",
+    cetusPoolID: "0xfc6a11998f1acf1dd55acb58acd7716564049cfd5fd95e754b0b4fe9444f4c9d",
+    investorID: "0xaa17ff01024678a94381fee24d0021a96d4f3a11855b0745facbb5d2eb9df730",
+    token0Type: "0x76cb819b01abed502bee8a702b4c2d547532c12f25001c9dea795a5e631c26f1::fud::FUD",
+    token1Type: ADDRESSES.sui.SUI
+  },
 ]
 
 const ALPHAFI_NAVI_TVL_IDS = [
