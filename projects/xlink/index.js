@@ -1,11 +1,10 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const sdk = require("@defillama/sdk");
 const { sumTokensExport } = require("../helper/sumTokens");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
   methodology: "Staking tokens via AlexLab counts as TVL",
-  bitcoin: { tvl: sdk.util.sumChainTvls([sumTokensExport({ owners: bitcoinAddressBook.xlink })]) },
+  bitcoin: { tvl: sumTokensExport({ owners: bitcoinAddressBook.xlink }) },
   ethereum: {
     tvl: sumTokensExport({
       owners: [

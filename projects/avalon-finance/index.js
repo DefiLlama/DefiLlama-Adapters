@@ -12,6 +12,8 @@ const mainMarket = {
 	bsquared: aaveExports('', '', undefined, ['0x4Ea93E846b8C6E7b3D5a5BEDF4fe6B8AED58FCEe'], { v3: true }),
 	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }),
 	mode: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
+	klaytn: aaveExports('', '', undefined, ['0xddD3D480521bc027596e078BCd1b838d50Daa076'], { v3: true }), // Kaia V3 Main
+	zeta: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }), // Zetachain V3 Main
 }
 
 const innovativeMarket = {
@@ -31,6 +33,7 @@ const solvMarkets = {
 const pumpBTCMarkets = {
 	ethereum: aaveExports('', '0xE00A3FE97714765A1a2054E850724Fd1320FaCc0', undefined, ['0x2eE0438BCC1876cEA2c6fc43dD21417cF3D1c2eF'], { v3: true }),
 	bsc: aaveExports('', '0xb1C93Ba1286b6CCA1496C266f0eBfCe94b0C0cc0', undefined, ['0x58c937fa2D147117dB43d187f9411151edfFf03c'], { v3: true }),
+	zeta: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
 }
 
 const unibtcMarkets = {
@@ -68,7 +71,17 @@ const lbtcMarkets = {
 	bsc: aaveExports('', '', undefined, ['0x5b9b3C211B81627Cc6b46824CB26829F31A587dc'], { v3: true }),
 }
 
+const listaMarkets = {
+	bsc: aaveExports('', '', undefined, ['0x5157f63bE7808DEB090Eee7762e917745896A09E'], { v3: true }), // BSC - ListaDAO
+}
+
+// @note USDa Defi Lending Markets, not USDaLend
+const usdaDefiLendingMarkets = {
+	taiko: aaveExports('', '', undefined, ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], { v3: true }),
+}
+
 module.exports = mergeExports(
-	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets
+	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets,
+	usdaDefiLendingMarkets,
 )
 module.exports.methodology = methodologies.lendingMarket

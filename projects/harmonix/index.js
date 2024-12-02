@@ -1,6 +1,6 @@
 module.exports = {
   misrepresentedTokens: true,
-  start: 1709251200, // Friday, March 1, 2024 12:00:00 AM
+  start: '2024-03-01', // Friday, March 1, 2024 12:00:00 AM
   methodology: "Aggregates total value of each Harmonix vault"
 }
 
