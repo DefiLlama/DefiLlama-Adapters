@@ -27,6 +27,5 @@ async function tvl(api) {
 module.exports = {
   doublecounted: true,
   methodology: "We calculate TVL based on the Total Supply of our proxy contracts through which users interact with vault's contracts",
-  start: 1000235,
   blast: { tvl },
 };
