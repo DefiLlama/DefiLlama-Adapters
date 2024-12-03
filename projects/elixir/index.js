@@ -6,10 +6,10 @@ const MANAGER_ABI = {
 }
 
 const DEUSD_LP_STAKING = "0xC7963974280261736868f962e3959Ee1E1B99712";
-const COMMITS = "0x4265f5D6c0cF127d733EeFA16D66d0df4b650D53";
-const FOUNDATION = "0x4B4EEC1DDC9420a5cc35a25F5899dC5993f9e586";
-const FOUNDATION_2 = "0x738744237b7Fd97AF670d9ddF54390c24263CeA8";
-const deUSD = "0x15700b564ca08d9439c58ca5053166e8317aa138"
+const COMMITS_CONTRACT = "0x4265f5D6c0cF127d733EeFA16D66d0df4b650D53";
+const COMMITS_VAULT = "0x4B4EEC1DDC9420a5cc35a25F5899dC5993f9e586";
+const COMMITS_VAULT_2 = "0x704377f719651C3eE6902Ff3C9D5522e5054d429";
+const deUSD = "0x15700b564ca08d9439c58ca5053166e8317aa138";
 
 const LP_TOKENS = [
   "0xb478Bf40dD622086E0d0889eeBbAdCb63806ADde", // DEUSD/DAI Curve LP
@@ -37,9 +37,9 @@ const integration = async (api, manager, poolIds, tokens) => {
 module.exports = {
   ethereum: {
     tvl: async (api) => {
-      // const deusdSupply = await api.call({ target: deUSD, abi: "erc20:totalSupply" })
-      // api.add(deUSD, deusdSupply);
-      await api.sumTokens({ owners: [COMMITS, FOUNDATION, FOUNDATION_2], tokens: [ADDRESSES.ethereum.STETH, ADDRESSES.null, ADDRESSES.ethereum.SDAI, ADDRESSES.ethereum.sUSDS] })
+      const deusdSupply = await api.call({ target: deUSD, abi: "erc20:totalSupply" })
+      api.add(deUSD, deusdSupply);
+      await api.sumTokens({ owners: [COMMITS_CONTRACT, COMMITS_VAULT, COMMITS_VAULT_2], tokens: [ADDRESSES.ethereum.STETH, ADDRESSES.null] })
     },
     pool2: sumTokensExport({ owner: DEUSD_LP_STAKING, tokens: LP_TOKENS })
   },
