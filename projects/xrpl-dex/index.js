@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache } = require("../helper/cache");
 const { transformDexBalances } = require("../helper/portedTokens");
 
@@ -16,7 +15,6 @@ const tvl = async (api) => {
         token1Bal: i.token1Reserve.amount,
       }))
   })
-  console.log(tvl?.XRP)
   api.addCGToken('ripple', tvl?.XRP / Math.pow(10, 6))
 }
 
