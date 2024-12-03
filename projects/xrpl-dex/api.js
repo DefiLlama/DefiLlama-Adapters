@@ -7,10 +7,11 @@ const axios = require('axios')
 const NODE_URL = "https://xrplcluster.com";
 const API_XRP = "https://api.xrpscan.com/api/v1/amm/"
 const RATE_LIMIT_DELAY_MS = 500;
+const MIN_POOL_SIZE = 3600
 const getTimeNow = () => Math.floor(Date.now() / 1000);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const retry = async (fn, retries = 3, delay = 1000) => {
+const retry = async (fn, retries = 7, delay) => {
   let attempts = 0;
   while (attempts < retries) {
     try {
@@ -18,8 +19,10 @@ const retry = async (fn, retries = 3, delay = 1000) => {
     } catch (error) {
       attempts++;
       console.error(`Attempt ${attempts} failed. Retrying...`);
+      const currentDelay = delay ? delay : attempts * 1000;
       if (attempts >= retries) throw error;
-      await sleep(delay);
+
+      await sleep(currentDelay);
     }
   }
 };
@@ -51,15 +54,11 @@ const getLedgerDatas = async (binary, marker, atLedgerIndex) => {
   });
 };
 
+let poolIndex = 0;
 const getPools = async (nextMarker, isBinary, atLedgerIndex, poolsFound = []) => {
   try {
-    console.log(`Fetching pools... Marker: ${nextMarker || 'start'}, Pools found so far: ${poolsFound.length}`);
+    console.log(`${++poolIndex} Fetching pools... Marker: ${nextMarker || 'start'}, Pools found so far: ${poolsFound.length}`);
     const { state, marker } = await getLedgerDatas(isBinary, nextMarker, atLedgerIndex);
-
-    if (!state || state.length === 0) {
-      console.log("No more pools to fetch.");
-      return poolsFound;
-    }
 
     if (state && state.length > 0) {
       const decodedState = isBinary
@@ -74,7 +73,6 @@ const getPools = async (nextMarker, isBinary, atLedgerIndex, poolsFound = []) =>
         }))
       );
 
-      await setCache('xrpl-dex', 'pools', { pools: poolsFound, marker });
     }
 
     if (marker) {
@@ -82,10 +80,11 @@ const getPools = async (nextMarker, isBinary, atLedgerIndex, poolsFound = []) =>
       return getPools(marker, isBinary, atLedgerIndex, poolsFound);
     }
 
-    return poolsFound;
   } catch (error) {
     console.error("Failed to fetch pools:", error.message);
   }
+  
+  return poolsFound;
 };
 
 const parseReserve = (reserveData) => {
@@ -130,23 +129,26 @@ const getAllReservesDatas = async (poolAddresses, atLedgerIndex) => {
       }
     });
 
+  if (errors?.length) console.log(errors)
+  if (errors.length > 0) throw errors[0]
+
   return poolsWithReserves;
 };
 
 const getXrplPools = async () => {
   const timeNow = getTimeNow()
   const startOfDay = Math.floor(new Date().setUTCHours(0, 0, 0, 0) / 1000);
-  const { pools: cachedPools = [], marker: lastMarker = null, lastUpdate = 0 } = await getCache('xrpl-dex', 'pools');
-  
-  if (lastUpdate >= startOfDay) {
+  let { pools: cachedPools = [], marker: lastMarker = null, lastUpdate = 0 } = await getCache('xrpl-dex', 'pools');
+
+  if (lastUpdate >= startOfDay && cachedPools?.length > MIN_POOL_SIZE) {
     console.log(`Pools have already been updated today. Last update: ${new Date(lastUpdate * 1000).toISOString()}`);
     return;
   }
-  
+
   console.time("xrpl-dex fetch pool list")
 
   try {
-    const pools = await getPools(lastMarker, false, undefined, cachedPools);
+    const pools = await getPools(null, 1);
     console.timeEnd("xrpl-dex fetch pool list");
     console.log("Total pools fetched:", pools.length);
     const finalMarker = pools.marker || lastMarker
@@ -161,11 +163,11 @@ const getXrplPools = async () => {
 const getXrplBalances = async (pools) => {
   const timeNow = getTimeNow();
   const startOfDay = Math.floor(new Date().setUTCHours(0, 0, 0, 0) / 1000);
-  const { balances: cachedBalances = [], lastUpdate = 0 } = await getCache('xrpl-dex', 'balances') || {};
+  const { balanaces: _preBalances, lastUpdate = 0 } = await getCache('xrpl-dex', 'balances') || {};
 
-  if (lastUpdate >= startOfDay) {
+  if (lastUpdate >= startOfDay && _preBalances?.length > MIN_POOL_SIZE) {
     console.log(`Balances have already been updated today. Last update: ${new Date(lastUpdate * 1000).toISOString()}`);
-    return cachedBalances;
+    return;
   }
 
   console.time("Fetching balances for pools");
