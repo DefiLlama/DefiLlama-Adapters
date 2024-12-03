@@ -1917,7 +1917,8 @@
     "USDC_e": "0xfbda5f676cb37624f28265a144a48b0d6e87d3b6"
   },
   "real": {
-    "RWA": "0x4644066f535ead0cde82d209df78d94572fcbf14"
+    "RWA": "0x4644066f535ead0cde82d209df78d94572fcbf14",
+    "USDC": "0xc518A88c67CECA8B3f24c4562CB71deeB2AF86B7"
   },
   "saakuru": {
     "WOAS": "0x557a526472372f1F222EcC6af8818C1e6e78A85f",
