@@ -34,5 +34,18 @@ module.exports = {
         "0x539505dde2b9771debe0898a84441c5e7fdf6bc0",
       ]
     }),
+  },
+  base: {
+    tvl: sumTokensExport({
+      owner: '0xAeDF96597338FE03E8c07a1077A296df5422320e',
+      tokens: [
+        ADDRESSES.base.USDC,
+        ADDRESSES.base.WETH,
+        "0x1e41238aCd3A9fF90b0DCB9ea96Cf45F104e09Ef",
+        "0x82562507429876486B60AF4F32390ef0947b3d13",
+        "0x82562507429876486B60AF4F32390ef0947b3d13",
+        "0x46fb68Eb2b1Fc43654AbaE5691D39D18D933E4b4",
+      ]
+    }),
   }
 }
