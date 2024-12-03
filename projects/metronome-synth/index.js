@@ -35,7 +35,7 @@ module.exports = {
       ]
     }),
   },
-    base: {
+  base: {
     tvl: sumTokensExport({
       owner: '0xAeDF96597338FE03E8c07a1077A296df5422320e',
       tokens: [
@@ -47,4 +47,5 @@ module.exports = {
         "0x46fb68Eb2b1Fc43654AbaE5691D39D18D933E4b4",
       ]
     }),
+  }
 }
