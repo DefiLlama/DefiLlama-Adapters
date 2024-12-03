@@ -1,25 +1,25 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { getCache, } = require("../helper/cache");
+const { getCache } = require("../helper/cache");
+const { transformDexBalances } = require("../helper/portedTokens");
 
+const tvl = async (api) => {
+  const { balances = [] } = await getCache('xrpl-dex', 'balances');
+
+  const tvl = await transformDexBalances({
+    chain: 'ripple',
+    data: balances
+      .filter(i => i.token0Reserve && i .token1Reserve)
+      .map(i => ({
+        token0: i.token0Reserve.currency,
+        token0Bal: i.token0Reserve.amount,
+        token1: i.token1Reserve.currency,
+        token1Bal: i.token1Reserve.amount,
+      }))
+  })
+  api.addCGToken('ripple', tvl?.XRP / Math.pow(10, 6))
+}
 
 module.exports = {
   methodology: "Finds all AMM pools on XRPL, checks their reserves, calculates TVL (in XRP) for each pool and sums them up.",
   ripple: { tvl },
   misrepresentedTokens: true,
 };
-
-function getTimeNow() {
-  return Math.floor(Date.now() / 1000);
-}
-
-async function tvl(api) {
-  const timeNow = getTimeNow()
-  const aDayInSeconds = 60 * 60 * 24;
-  const projectKey = 'xrpl-dex'
-  const cacheKey = 'cache'
-  let { lastDataUpdate, tvl } = await getCache(projectKey, cacheKey)
-  const val = tvl?.XRP
-  if (!lastDataUpdate || timeNow - lastDataUpdate > aDayInSeconds || !val) 
-    throw new Error("stale/missing tvl data");
-  api.addCGToken('ripple', val/1e6)
-}

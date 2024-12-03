@@ -84,7 +84,10 @@ const fixBalancesTokens = {
   },
   xlayer: {
     [ADDRESSES.null]: { coingeckoId: "okb", decimals: 18 },
-  }
+  },
+  starknet: {
+    [ADDRESSES.starknet.BROTHER]: { coingeckoId: "starknet-brother", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
