@@ -1,10 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { getResource, } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
+const { get } = require("../helper/http");
 
 const mainLendingContract = "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba";
 const isolatedLendingContract = "0x024c90c44edf46aa02c3e370725b918a59c52b5aa551388feb258bd5a1e82271";
-
+const coinAssetType = '300';
 // main pool
 
 async function getMarketAddresses() {
@@ -13,11 +14,16 @@ async function getMarketAddresses() {
 }
 
 async function getMarket(marketAddress) {
-  const [market, coinInfo] = await Promise.all([
-    getResource(marketAddress, `${mainLendingContract}::lending::Market`),
-    getResource(marketAddress, `${mainLendingContract}::lending::CoinInfo`)
-  ])
-  return { cash: market.total_cash, liability: market.total_liability, fee: market.total_reserve, coin: coinInfo.type_name };
+  const market = await getResource(marketAddress, `${mainLendingContract}::lending::Market`)
+  var coinInfo = null;
+  if (market.asset_type === coinAssetType) {
+    coinInfo = (await getResource(marketAddress, `${mainLendingContract}::lending::CoinInfo`)).type_name
+  } else {
+    coinInfo = (await getResource(marketAddress, `${mainLendingContract}::lending::FungibleAssetInfo`)).metadata.inner; 
+  }
+  
+  
+  return { cash: market.total_cash, liability: market.total_liability, fee: market.total_reserve, coin: coinInfo };
 }
 
 // isolated pairs
