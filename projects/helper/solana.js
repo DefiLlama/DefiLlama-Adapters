@@ -135,8 +135,9 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   return individual ? balancesIndividual : balances
 }
 
-async function getMultipleAccounts(accountsArray) {
-  const connection = getConnection()
+async function getMultipleAccounts(accountsArray, {api} = {}) {
+  const chain = api?.chain ?? 'solana'
+  const connection = getConnection(chain)
   if (!accountsArray.length) return []
   accountsArray.forEach((val, i) => {
     if (typeof val === 'string') accountsArray[i] = new PublicKey(val)
@@ -219,7 +220,7 @@ async function sumTokens2({
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
   if (!tokensAndOwners.length) {
-    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
+    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), chain)
 
     if (_owners.length) {
       const data = await getOwnerAllAccounts(_owners)
@@ -248,18 +249,18 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
-    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
+    tokenAccounts = getUniqueAddresses(tokenAccounts, chain)
 
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError, chain })
     await transformBalances({ tokenBalances, balances, chain, })
   }
 
   if (solOwners.length) {
-    const solBalance = await getSolBalances(solOwners, { chain })
-    sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
+    const solBalance = await getSolBalances(solOwners)
+    sdk.util.sumSingleBalance(balances, `${chain}:` + ADDRESSES.solana.SOL, solBalance)
   }
 
-  blacklistedTokens.forEach(i => delete balances['solana:' + i])
+  blacklistedTokens.forEach(i => delete balances[`${chain}:` + i])
 
   return balances
 
