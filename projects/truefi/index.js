@@ -81,7 +81,7 @@ async function tvlArbitrum(api) {
 }
 
 module.exports = {
-  start: 1605830400,            // 11/20/2020 @ 12:00am (UTC)
+  start: '2020-11-20',            // 11/20/2020 @ 12:00am (UTC)
   ethereum: {
     tvl,
     staking: staking(stkTRU, TRU),

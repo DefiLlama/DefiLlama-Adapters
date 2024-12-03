@@ -1,21 +1,28 @@
 const { getProvider, sumTokens2, } = require('../helper/solana')
 const { Program } = require("@project-serum/anchor");
 
-async function getTokenAccounts(programId, idl) {
-  const provider = getProvider()
+async function getTokenAccounts(programId, idl, chain) {
+  const provider = getProvider(chain)
+  console.log(programId, chain)
   const program = new Program(idl, programId, provider)
   const data = await program.account.amm.all()
   return data.map(({ account: { tokenAAccount, tokenBAccount }}) => ([tokenAAccount, tokenBAccount,])).flat()
 }
 
-async function tvl() {
-  const tokenAccounts = await getTokenAccounts('2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c', v2Idl)
-  return sumTokens2({ tokenAccounts, })
+const config = {
+  solana: '2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c',
+  eclipse: '4UsSbJQZJTfZDFrgvcPBRCSg5BbcQE6dobnriCafzj12',
+}
+
+async function tvl(api) {
+  const tokenAccounts = await getTokenAccounts(config[api.chain], v2Idl, api.chain)
+  return sumTokens2({ tokenAccounts, api, })
 }
 
 module.exports = {
   timetravel: false,
   solana: { tvl, },
+  eclipse: { tvl, },
 }
 
 const v2Idl = {

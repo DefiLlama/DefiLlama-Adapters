@@ -43,6 +43,9 @@ const TOKENS = {
   },
   bsquared: {
     WBTC: ADDRESSES.bsquared.WBTC,
+  },
+  cronos_zkevm: {
+    USDC: ADDRESSES.cronos_zkevm.USDC,
   }
 }
 
@@ -438,6 +441,15 @@ module.exports = {
        ],
        holders: [
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'cronos_zkevm',
+       tokens: [
+         TOKENS.cronos_zkevm.USDC,
+       ],
+       holders: [
+         '0x2E818E50b913457015E1277B43E469b63AC5D3d7', // portal v2
        ]
      },
   ]

@@ -97,5 +97,5 @@ module.exports = {
         tvl,
         pool2,
     },
-    start: 1621939189, // May-25-2021 10:39:49 AM +UTC
+    start: '2021-05-25', // May-25-2021 10:39:49 AM +UTC
 };

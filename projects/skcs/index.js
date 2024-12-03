@@ -16,7 +16,6 @@ async function tvl(timestamp, ethBlock, {kcc: block}) {
 
 module.exports = {
       methodology: 'Staked token and staking rewards are counted as TVL',
-  start: 12145436,
   kcc:{
     tvl:tvl,
   }

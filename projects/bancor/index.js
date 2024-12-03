@@ -42,7 +42,7 @@ async function generateCallsByBlockchain(api) {
 }
 
 module.exports = {
-  start: 1501632000,  // 08/02/2017 @ 12:00am (UTC)
+  start: '2017-08-02',  // 08/02/2017 @ 12:00am (UTC)
   ethereum: {
     tvl: generateCallsByBlockchain,
   },

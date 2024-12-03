@@ -2,40 +2,18 @@ const sdk = require("@defillama/sdk")
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const chains = {
-  ethereum: {
-    graphId: "mainnet",
-  },
-  arbitrum: {
-    graphId: "arbitrum-one",
-  },
-  polygon: {
-    graphId: "matic",
-  },
-  avax: {
-    graphId: "avalanche",
-  },
-  bsc: {
-    graphId: "bsc",
-  },
-  fantom: {
-    graphId: "fantom",
-  },
-  cronos: {
-    graphId: "cronos",
-  },
-  optimism: {
-    graphId: "optimism",
-  },
-  linea: {
-    graphId: 'linea'
-  },
-  base: {
-    graphId: 'base'
-  },
-  scroll: {
-    graphId: 'scroll'
-  }
+const CONFIG = {
+  ethereum: { graphId: "mainnet" },
+  arbitrum: { graphId: "arbitrum-one", blacklistedTokens: ['0x0df5dfd95966753f01cb80e76dc20ea958238c46'] }, // rWETH
+  polygon: { graphId: "matic" },
+  avax: { graphId: "avalanche" },
+  bsc: { graphId: "bsc" },
+  fantom: { graphId: "fantom" },
+  cronos: { graphId: "cronos" },
+  optimism: { graphId: "optimism" },
+  linea: { graphId: 'linea' },
+  base: { graphId: 'base' },
+  scroll: { graphId: 'scroll' }
 };
 
 async function fetchPools(chain) {
@@ -76,12 +54,11 @@ async function fetchPools(chain) {
   return toa;
 }
 
-function elastic(chain) {
+function elastic(graphId, blacklistedTokens = []) {
   return async (api) => {
-    if (!("graphId" in chains[chain])) return {};
-
-    const pools = await fetchPools(chains[chain].graphId);
-    return sumTokens2({ api, tokensAndOwners: pools })
+    if (!graphId) return
+    const pools = await fetchPools(graphId);
+    return sumTokens2({ api, tokensAndOwners: pools, blacklistedTokens })
   }
 }
 
@@ -92,10 +69,10 @@ module.exports = {
     [1700611200,'Protocol exploit'],
   ],
 };
-Object.keys(chains).forEach(chain => {
-  module.exports[chain] = {
-    tvl: elastic(chain)
-  };
-});
+
+Object.keys(CONFIG).forEach((chain) => {
+  const { graphId, blacklistedTokens } = CONFIG[chain]
+  module.exports[chain] = { tvl: elastic(graphId, blacklistedTokens)}
+})
 
 module.exports.base.tvl = () => ({})  // setting base to 0 for now as I could not find the graph endpoint

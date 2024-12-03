@@ -11,7 +11,7 @@ const bsquared_owners = ["0xA2E2F3726DF754C1848C8fd1CbeA6aAFF84FC5B2", "0x1EbEd4
 const base_owners = ["0x43E3E6FFb2E363E64cD480Cbb7cd0CF47bc6b477", "0x7BC8D56cC78cF467C7230B77De0fcBDea9ac44cE","0xdf5ACC616cD3ea9556EC340a11B54859a393ebBB"];
 
 module.exports = {
-  start: 1690971144,
+  start: '2023-08-02',
   bsc: { tvl: sumTokensExport({ owners, tokens: [
     ADDRESSES.bsc.USDT, ADDRESSES.ethereum.FDUSD, ADDRESSES.scroll.STONE,
     ADDRESSES.bsc.WBNB, //WBNB
@@ -20,7 +20,8 @@ module.exports = {
     '0xb0b84d294e0c75a6abe60171b70edeb2efd14a1b',//slisBNB
     '0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5',//lisUSD
     ADDRESSES.bsc.USDC, //usdc
-    
+    '0xf6718b2701d4a6498ef77d7c152b2137ab28b8a3', //stBTC
+    '0x4aae823a6a0b376de6a78e74ecc5b079d38cbcf7', //SolvBTC
   ], }) },
   op_bnb: {
     tvl: sumTokensExport({ owners: opbnb_owners, tokens: [
@@ -29,6 +30,7 @@ module.exports = {
       ADDRESSES.optimism.WETH_1, //WBNB
       ADDRESSES.defiverse.USDC, //BTCB
       ADDRESSES.defiverse.ETH, //ETH
+      
     ] })
   },
   manta: {
@@ -57,6 +59,8 @@ module.exports = {
       ADDRESSES.base.USDC, //USDC
       '0x3b86ad95859b6ab773f55f8d94b4b9d443ee931f', //SolvBTC
       '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',//cbBTC
+      '0x04c0599ae5a44757c0af6f9ec3b93da8976c150a',//weETH
+      '0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452',//wstETH
       ] })
   },
 };

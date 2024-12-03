@@ -41,6 +41,8 @@ const config = {
   blast: { endpoints: ['BXoC2ToMZXnTmCjWftQRPh9zMyM7ysijMN54Nxzb2CEY'], },
   scroll: { endpoints: ['HVcngokCByfveLwguuafrBC34xB65Ne6tpGrXHmqDSrh'], },
   era: { endpoints: ['GY2fGozmfZiZ3xF2MfevohLR4YGnyxGxAyxzi9zmU5bY'], },
+  mode: { endpoints: ['5ezGnVwNucVTW45WCb91VBiKBEdiqT4ceHDhh1KGigYG'], },
+  linea: { endpoints: ['FoJnatzCZKyp9XjZyUBaw1juTb5ydnFvJvWUxS3oRCHZ'], },
 }
 
 Object.keys(config).forEach(chain => {

@@ -17,6 +17,9 @@ const base = {
 
 
 module.exports = {
+  hallmarks: [
+    [1731715200,"Price Oracle Exploit"]
+  ],
   fantom: aaveV2Export(fantom.POLTER_LENDINGPOOL_CONTRACT),
   base: aaveV2Export(base.POLTER_LENDINGPOOL_CONTRACT),  
 }

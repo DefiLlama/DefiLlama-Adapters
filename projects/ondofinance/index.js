@@ -70,7 +70,7 @@ Object.keys(config).forEach((chain) => {
 
         api.addTokens(config.ethereum.USDY, aptosSupply * 1e18, { skipChain: true, });
       } else if (chain === "noble") {
-        const res = await get(`https://noble-api.polkachu.com/cosmos/bank/v1beta1/supply/${config.noble.USDY}`);
+        const res = await get(`https://rest.cosmos.directory/noble/cosmos/bank/v1beta1/supply/by_denom?denom=ausdy`);
         api.addTokens(config.ethereum.USDY, parseInt(res.amount.amount), { skipChain: true, });
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })

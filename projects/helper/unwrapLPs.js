@@ -465,7 +465,9 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
 }
 
 const nullAddress = ADDRESSES.null
-const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
+const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+  '0x000000000000000000000000000000000000800a', // zksync era gas token
+]
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
