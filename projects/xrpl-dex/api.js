@@ -7,7 +7,7 @@ const axios = require('axios')
 const NODE_URL = "https://xrplcluster.com";
 const API_XRP = "https://api.xrpscan.com/api/v1/amm/"
 const RATE_LIMIT_DELAY_MS = 500;
-const MIN_POOL_SIZE = 3600
+const MIN_POOL_SIZE = 9500
 const getTimeNow = () => Math.floor(Date.now() / 1000);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

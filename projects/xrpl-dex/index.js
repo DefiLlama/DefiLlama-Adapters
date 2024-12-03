@@ -3,8 +3,7 @@ const { transformDexBalances } = require("../helper/portedTokens");
 
 const tvl = async (api) => {
   const { balances = [] } = await getCache('xrpl-dex', 'balances');
-  console.log('balances', balances.length)
-  if (balances.length < 3600) throw new Error('No balances found')
+  if (balances.length < 9500) throw new Error('No balances found')
 
   const tvl = await transformDexBalances({
     chain: 'ripple',
