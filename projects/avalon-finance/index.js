@@ -75,13 +75,7 @@ const listaMarkets = {
 	bsc: aaveExports('', '', undefined, ['0x5157f63bE7808DEB090Eee7762e917745896A09E'], { v3: true }), // BSC - ListaDAO
 }
 
-// @note USDa Defi Lending Markets, not USDaLend
-const usdaDefiLendingMarkets = {
-	taiko: aaveExports('', '', undefined, ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], { v3: true }),
-}
-
 module.exports = mergeExports(
 	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets,
-	usdaDefiLendingMarkets,
 )
 module.exports.methodology = methodologies.lendingMarket
