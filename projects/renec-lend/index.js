@@ -4,10 +4,13 @@ const { PublicKey } = require("@solana/web3.js");
 const RENEC_LEND_SOLANA_PROGRAM_ID = new PublicKey("9L193MV4yakKcgNT2tN4Kvf1ypn9c1sVMvsRn1Amw2Au");
 const RENEC_LEND_RENEC_PROGRAM_ID = new PublicKey("AqR1WSUwNeVsz66ayH2J8iTyiGMgouRwPqzzMaxx49ba");
 
+const getProgram = (api) => api.chain === 'solana' ? RENEC_LEND_SOLANA_PROGRAM_ID : RENEC_LEND_RENEC_PROGRAM_ID;
+
 async function borrowed(api) {
-  const connection = await getConnection();
+  const connection = await getConnection(api.chain);
+  const programId = getProgram(api);
   const reserves = await connection.getProgramAccounts(
-    RENEC_LEND_SOLANA_PROGRAM_ID,
+    programId,
     {
       filters: [{
         dataSize: 619,
@@ -16,7 +19,7 @@ async function borrowed(api) {
   );
   const reserveAddresses = reserves.map((account) => account.pubkey.toBase58());
 
-  const infos = await getMultipleAccounts(reserveAddresses)
+  const infos = await getMultipleAccounts(reserveAddresses, { api })
   infos.forEach(i => {
     const decoded = decodeAccount('reserve', i);
     if (decoded === null) return;
@@ -26,72 +29,27 @@ async function borrowed(api) {
   })
 }
 
-async function borrowedRenec(api) {
-  const connection = await getConnection('renec');
-  const reserves = await connection.getProgramAccounts(
-    RENEC_LEND_RENEC_PROGRAM_ID,
-    {
-      filters: [{
-        dataSize: 619,
-      }],
-    }
-  );
-  const reserveAddresses = reserves.map((account) => account.pubkey.toBase58());
+async function tvl(api) {
+  const connection = await getConnection(api.chain);
+  const programId = getProgram(api);
 
-  const infos = await getMultipleAccounts(reserveAddresses, 'renec')
-  infos.forEach(i => {
-    const decoded = decodeAccount('reserve', i);
-    if (decoded === null) return;
-    const { info: { liquidity } } = decoded;
-    const amount = liquidity.borrowedAmountWads.toString() / 1e18
-    api.add(liquidity.mintPubkey.toString(), amount)
-  })
-}
-
-async function tvl() {
-  const connection = await getConnection();
   const marketAccounts = await connection.getProgramAccounts(
-    RENEC_LEND_SOLANA_PROGRAM_ID,
+    programId,
     {
       filters: [{
         dataSize: 290,
       }],
     }
   );
-  const marketAuthorities = marketAccounts.map((account) => PublicKey.findProgramAddressSync([account.pubkey.toBytes()], RENEC_LEND_SOLANA_PROGRAM_ID)[0]);
-  return sumTokens2({ owners: marketAuthorities });
-}
-
-async function tvlRenec() {
-  const connection = await getConnection('renec');
-  const marketAccounts = await connection.getProgramAccounts(
-    RENEC_LEND_RENEC_PROGRAM_ID,
-    {
-      filters: [{
-        dataSize: 290,
-      }],
-    }
-  );
-  const marketAuthorities = marketAccounts.map((account) => PublicKey.findProgramAddressSync([account.pubkey.toBytes()], RENEC_LEND_RENEC_PROGRAM_ID)[0]);
-  return sumTokens2({ owners: marketAuthorities, chain: 'renec' });
+  const marketAuthorities = marketAccounts.map((account) => PublicKey.findProgramAddressSync([account.pubkey.toBytes()], programId)[0]);
+  return sumTokens2({ owners: marketAuthorities, api });
 }
 
 module.exports = {
   timetravel: false,
-  solana: {
-    tvl,
-    borrowed,
-  },
-  renec: {
-    tvl: tvlRenec,
-    borrowed: borrowedRenec,
-  },
+  solana: { tvl, borrowed, },
+  renec: { tvl, borrowed, },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
-  hallmarks: [
-    [1697414400, "Reneclend launch on renec mainnet"],
-    [1694217600, "Reneclend launch on solana mainnet"],
-    [1696032000, "Release REL token"],
-  ],
 };
 

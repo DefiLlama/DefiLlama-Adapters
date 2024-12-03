@@ -135,7 +135,8 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   return individual ? balancesIndividual : balances
 }
 
-async function getMultipleAccounts(accountsArray, chain = 'solana') {
+async function getMultipleAccounts(accountsArray, {api} = {}) {
+  const chain = api?.chain ?? 'solana'
   const connection = getConnection(chain)
   if (!accountsArray.length) return []
   accountsArray.forEach((val, i) => {
