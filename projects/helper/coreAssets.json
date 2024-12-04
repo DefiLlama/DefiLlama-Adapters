@@ -1141,7 +1141,14 @@
     "BNB_bsc": "0x97e6c48867fdc391a8dfe9d169ecd005d1d90283",
     "ZOOM": "0x86702a7f8898b172de396eb304d7d81207127915",
     "WMATIC": "0x8e66c0d6b70c0b23d39f4b21a1eac52bba8ed89a",
-    "CIOTX": "0x99b2b0efb56e62e36960c20cd5ca8ec6abd5557a"
+    "CIOTX": "0x99b2b0efb56e62e36960c20cd5ca8ec6abd5557a",
+    "uniIOTX":"0x236f8c0a61da474db21b693fb2ea7aab0c803894",
+    "USDC.e":"0xcdf79194c6c285077a58da47641d4dbe51f63542",
+    "WEN": "0x6c0bf4b53696b5434a0d21c7d13aa3cbf754913e",
+    "ioUSD": "0xa1a1531f6ae90192edcc32e9f38e98f303708144",
+    "DEPINS": "0x2716789482ea21b15ee9bb6c07dc8251150f36f6",
+    "USDa":"0x2d9526e2cabd30c6e8f89ea60d230503c59c6603",
+    "DIMO":"0x61db9b084326d2251ccb0252c18fd9b0e887ca4f"
   },
   "ronin": {
     "WRON": "0xe514d9deb7966c8be0ca922de8a064264ea6bcd4",
