@@ -27,7 +27,8 @@ const chains = [
   "xlayer",
   "bsc",
   "mantle",
-  "taiko"
+  "taiko",
+  "corn",
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
