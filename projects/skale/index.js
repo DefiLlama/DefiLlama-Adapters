@@ -4,7 +4,7 @@ const depositBoxERC20 = '0x8fB1A35bB6fB9c47Fb5065BE5062cB8dC1687669';
 
 module.exports = {
   start: '2021-07-19', // Mon July 19 06:38:20 PM UTC 2021
-  europa: {
+  "skale-europa": {
     tvl: sumTokensExport({ owners: [depositBoxETH, depositBoxERC20], fetchCoValentTokens: true, permitFailure: true }),
   }
 }
