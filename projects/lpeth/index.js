@@ -1,4 +1,4 @@
-const LPETH_CONTRACT = ""
+const LPETH_CONTRACT = "0xF3a75E087A92770b4150fFF14c6d36FB07796252"
 
 async function tvl(api) {
     const liabilities = await api.call({
