@@ -2,8 +2,18 @@ const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
-  optimism: { factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd', fromBlock: 96265067, vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b', positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055' },
-  base: {factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd', fromBlock: 1960257, vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b', positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055' },
+  optimism: {
+    factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd',
+    fromBlock: 96265067,
+    vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b',
+    positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055',
+  },
+  base: {
+    factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd',
+    fromBlock: 1960257,
+    vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b',
+    positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055',
+  },
 }
 
 module.exports = {};
@@ -12,7 +22,7 @@ const getVaultAbi = "function getVault(uint256 vaultId) view returns (tuple(addr
 
 
 Object.keys(config).forEach(chain => {
-  const { factory, fromBlock, vaultFactory, positionViewer, } = config[chain]
+  const { factory, fromBlock, vaultFactory, positionViewer } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const logs = await getLogs({
@@ -40,6 +50,26 @@ Object.keys(config).forEach(chain => {
       const tokensAndOwners = logs.map(i => [i.reserve, i.eTokenAddress])
 
       return sumTokens2({ api, tokensAndOwners, resolveLP: true, })
+    },
+    borrowed: async (api) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        topics: ['0x857d20297bde4478f678d3aafbfdf7fbfc90a4200b62eb053a32b2c50335676f'],
+        eventAbi: 'event InitReserve (address indexed reserve, address indexed eTokenAddress, address stakingAddress, uint256 id)',
+        onlyArgs: true,
+        fromBlock,
+      })
+      const ids = logs.map(i => i.id)
+      const lendingPoolData = await api.call({
+        target: factory,
+        abi: `function getReserveStatus(uint256[] reserveIds) view returns ((tuple(uint256 reserveId, address underlyingTokenAddress, address eTokenAddress, address stakingAddress, uint256 totalLiquidity, uint256 totalBorrows, uint256 exchangeRate, uint256 borrowingRate) poolData )[])`,
+        params: [ids]
+      })
+      lendingPoolData.forEach(({ poolData }) => {
+        api.add(poolData.underlyingTokenAddress, poolData.totalBorrows)
+      })
+      return sumTokens2({ api })
     }
   }
 })
