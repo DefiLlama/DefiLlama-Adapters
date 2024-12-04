@@ -19,7 +19,7 @@ const data = {
     hybridFactory:
       "neutron16yn2gcz24s9qwpuxvrhl3xed0pmhrgwx2mz40zrazfc0pt5kq0psucs6xl",
   },
-  
+
   nibiru: {
     stableFactory:
       "nibi143hmeallpaasdyull3gjcmasrcg63yl8f4cumah7xmcmjnqewa9s5jkan2",
@@ -32,7 +32,7 @@ const data = {
 
 async function tvl(api) {
   const { chain } = api
-  for (const factory of [ 
+  for (const factory of [
     data[chain].stableFactory,
     data[chain].standardFactory,
     data[chain].hybridFactory,
@@ -72,7 +72,7 @@ async function tvl(api) {
     })
 
     await PromisePool
-      .withConcurrency(20)
+      .withConcurrency(3)
       .for(allPools)
       .process(getPoolAssetsState)
 
@@ -99,3 +99,5 @@ module.exports = {
     tvl,
   },
 }
+
+module.exports = { nibiru: { tvl } }
