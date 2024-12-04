@@ -1,0 +1,4 @@
+{
+  "getSchainToAllERC20Length": "function getSchainToAllERC20Length(string schainName) view returns (uint256)",
+  "getSchainToAllERC20": "function getSchainToAllERC20(string schainName, uint256 from, uint256 to) view returns (address[])"
+}
