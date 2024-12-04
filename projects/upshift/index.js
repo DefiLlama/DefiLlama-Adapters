@@ -30,8 +30,12 @@ async function eth(api) {
     });
 
 
-    pools.forEach((_token, idx) => {
-        balances[`ethereum:${underlyingToken[idx]}`] = totalAssets[idx]
+    underlyingToken.forEach((token, idx) => {
+        if (balances[`ethereum:${token}`] === undefined) {
+            balances[`ethereum:${token}`] = totalAssets[idx]
+        } else {
+            balances[`ethereum:${token}`] = (sdk.util.convertToBigInt(balances[`ethereum:${token}`]) + sdk.util.convertToBigInt(totalAssets[idx])).toString()
+        }
     });
 
     return balances;
@@ -55,8 +59,12 @@ async function avax(api) {
         abi: upshiftPoolABI.asset
     });
 
-    pools.forEach((_token, idx) => {
-        balances[`avax:${underlyingToken[idx]}`] = totalAssets[idx]
+    underlyingToken.forEach((token, idx) => {
+        if (balances[`avax:${token}`] === undefined) {
+            balances[`avax:${token}`] = totalAssets[idx]
+        } else {
+            balances[`ethereum:${token}`] = (sdk.util.convertToBigInt(balances[`ethereum:${token}`]) + sdk.util.convertToBigInt(totalAssets[idx])).toString()
+        }
     });
 
     return balances;
@@ -80,8 +88,12 @@ async function base(api) {
         abi: upshiftPoolABI.asset
     });
 
-    pools.forEach((_token, idx) => {
-        balances[`base:${underlyingToken[idx]}`] = totalAssets[idx]
+    underlyingToken.forEach((token, idx) => {
+        if (balances[`base:${token}`] === undefined) {
+            balances[`base:${token}`] = totalAssets[idx]
+        } else {
+            balances[`ethereum:${token}`] = (sdk.util.convertToBigInt(balances[`ethereum:${token}`]) + sdk.util.convertToBigInt(totalAssets[idx])).toString()
+        }
     });
 
     return balances;
