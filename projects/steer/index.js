@@ -1,6 +1,9 @@
 const sdk = require("@defillama/sdk");
-const { cachedGraphQuery } = require('../helper/cache')
+// const { cachedGraphQuery } = require('../helper/cache')
 const { stakings } = require("../helper/staking");
+const Bucket = "tvl-adapter-cache";
+const axios = require('axios')
+const graphql = require('../helper/utils/graphql')
 
 
 const supportedChains = [
@@ -178,15 +181,28 @@ const supportedChains = [
     chainId: 314,
     identifier: 'filecoin'
   },
+  {
+    name: 'Zircuit',
+    subgraphEndpoint:  'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit',
+    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'
+    },
+    chainId: 48900,
+    identifier: 'zircuit'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
 const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {id}}`
+const z_query = `{
+  vaults(first: 1000, where: {lastSnapshot_gte: "0", totalLPTokensIssued_gt: "0"}) {
+    id
+  }
+}`
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
     tvl: async (api) => {
-      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, chain.chainId == 48900 ? z_query : query, {headers: chain.headers || {}},)
 
       const vaults = data.vaults.map((vault) => vault.id)
       const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
@@ -204,6 +220,59 @@ supportedChains.forEach(chain => {
   }
 })
 
+
+async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, headers = {} } = {}) {
+  if (!project || !endpoint) throw new Error('Missing parameters');
+  endpoint = sdk.graph.modifyEndpoint(endpoint);
+  const key = 'config-cache';
+  const cacheKey = getKey(key, project);
+  if (!configCache[cacheKey]) configCache[cacheKey] = _cachedGraphQuery();
+  return configCache[cacheKey];
+
+  async function _cachedGraphQuery() {
+    try {
+      let json;
+      if (useBlock && !variables.block && !fetchById) {
+        if (!api) throw new Error('Missing parameters');
+        variables.block = await api.getBlock();
+      }
+
+      if (!fetchById) {
+        const rawRequest = {
+          url: endpoint,
+          method: 'POST',
+          headers,
+          body: { query, variables },
+        };
+        const { data: result } = await axios.post(
+          endpoint,
+          { query, variables },
+          { headers }
+        );
+
+        if (result.errors) throw new Error(result.errors[0].message);
+        json = result.data;
+      } else {
+        json = await graphFetchById({
+          endpoint,
+          query,
+          params: variables,
+          api,
+          headers,
+          options: { useBlock, safeBlockLimit },
+        });
+      }
+
+      if (!json) throw new Error('Empty JSON');
+      await _setCache(key, project, json);
+      return json;
+    } catch (e) {
+      sdk.log(project, 'trying to fetch from cache, failed to fetch data from endpoint:', endpoint);
+      return getCache(key, project, { headers });
+    }
+  }
+}
+
 module.exports.arbitrum.staking = stakings(
   [
     "0xB10aB1a1C0E3E9697928F05dA842a292310b37f1",
@@ -218,3 +287,155 @@ module.exports.arbitrum.staking = stakings(
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"
 )
+
+// Imported cache 
+
+function getKey(project, chain) {
+  return `cache/${project}/${chain}.json`
+}
+
+function getFileKey(project, chain) {
+  return `${Bucket}/${getKey(project, chain)}`
+}
+
+function getLink(project, chain) {
+  return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
+}
+
+async function getCache(project, chain, { _ } = {}) {
+  const Key = getKey(project, chain)
+  const fileKey = getFileKey(project, chain)
+
+  try {
+    const json = await sdk.cache.readCache(fileKey)
+    if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
+    return json
+  } catch (e) {
+    try {
+      const { data: json } = await axios.get(getLink(project, chain))
+      await sdk.cache.writeCache(fileKey, json)
+      return json
+    } catch (e) {
+      sdk.log('failed to fetch data from s3 bucket:', Key)
+      // sdk.log(e)
+      return {}
+    }
+  }
+}
+
+async function setCache(project, chain, cache) {
+  const Key = getKey(project, chain)
+
+  try {
+    await sdk.cache.writeCache(getFileKey(project, chain), cache)
+  } catch (e) {
+    sdk.log('failed to write data to s3 bucket: ', Key)
+    sdk.log(e)
+  }
+}
+
+const configCache = {}
+
+async function _setCache(project, chain, json) {
+  if (!json || json?.error?.message) return;
+  const strData = typeof json === 'string' ? json : JSON.stringify(json)
+  let isValidData = strData.length > 42
+  if (isValidData) // sometimes we get bad data/empty object, we dont overwrite cache with it
+    await setCache(project, chain, json)
+}
+
+async function getConfig(project, endpoint, { fetcher } = {}) {
+  if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
+  const key = 'config-cache'
+  const cacheKey = getKey(key, project)
+  if (!configCache[cacheKey]) configCache[cacheKey] = _getConfig()
+  return configCache[cacheKey]
+
+  async function _getConfig() {
+    try {
+      let json
+      if (endpoint) {
+        json = (await axios.get(endpoint)).data
+      } else {
+        json = await fetcher()
+      }
+      if (!json) throw new Error('Invalid data')
+      await _setCache(key, project, json)
+      return json
+    } catch (e) {
+      // sdk.log(e)
+      sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+      return getCache(key, project)
+    }
+  }
+}
+
+async function configPost(project, endpoint, data) {
+  if (!project || !endpoint) throw new Error('Missing parameters')
+  const key = 'config-cache'
+  const cacheKey = getKey(key, project)
+  if (!configCache[cacheKey]) configCache[cacheKey] = _configPost()
+  return configCache[cacheKey]
+
+  async function _configPost() {
+    try {
+      const { data: json } = await axios.post(endpoint, data)
+      await _setCache(key, project, json)
+      return json
+    } catch (e) {
+      // sdk.log(e)
+      sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+      return getCache(key, project)
+    }
+  }
+}
+
+
+// async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, } = {}) {
+//   if (!project || !endpoint) throw new Error('Missing parameters')
+//   endpoint = sdk.graph.modifyEndpoint(endpoint)
+//   const key = 'config-cache'
+//   const cacheKey = getKey(key, project)
+//   if (!configCache[cacheKey]) configCache[cacheKey] = _cachedGraphQuery()
+//   return configCache[cacheKey]
+
+//   async function _cachedGraphQuery() {
+//     try {
+//       let json
+//       if (useBlock && !variables.block  && !fetchById) {
+//         if (!api) throw new Error('Missing parameters')
+//         variables.block = await api.getBlock()
+//       }
+//       if (!fetchById)
+//         json = await graphql.request(endpoint, query, { variables })
+//       else 
+//         json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit } })
+//       if (!json) throw new Error('Empty JSON')
+//       await _setCache(key, project, json)
+//       return json
+//     } catch (e) {
+//       // sdk.log(e)
+//       sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+//       return getCache(key, project)
+//     }
+//   }
+// }
+
+
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500 } = {} }) {
+  if (useBlock && !params.block)
+    params.block = await api.getBlock() - safeBlockLimit
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
+
+  let data = []
+  let lastId = ""
+  let response;
+  do {
+    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }})
+    Object.keys(res).forEach(key => response = res[key])
+    data.push(...response)
+    lastId = response[response.length - 1]?.id
+    sdk.log(data.length, response.length)
+  } while (lastId)
+  return data
+}
