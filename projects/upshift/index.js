@@ -88,7 +88,7 @@ async function base(api) {
 }
 
 module.exports = {
-    methodology: "TVL is calculated by summing the total assets of all pools",
+    methodology: "TVL is the sum of totalAssets for each erc4626 vault, meaning the sum of user deposits in all vaults.",
     ethereum: {
         tvl: eth
     },
