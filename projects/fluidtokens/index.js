@@ -115,7 +115,7 @@ module.exports = {
   },
   bitcoin:{
   bitcoin_tvl
-  }
+  },
   hallmarks: [
     [Math.floor(new Date("2023-01-01") / 1e3), "Count only active loans"],
     [Math.floor(new Date("2023-06-27") / 1e3), "ADA loaned out is counted under borrowed"],
