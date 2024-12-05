@@ -1,0 +1,22 @@
+Name (to be shown on DefiLlama): Matrixdock Gold
+Twitter Link: https://x.com/matrixdock
+List of audit links if any:
+Website Link: https://www.matrixdock.com/xaum
+Logo (High resolution, will be shown with rounded borders): https://app.matrixdock.com/images/xaum/xaum-48x48-icon.png
+Current TVL: $592K
+Treasury Addresses (if the protocol has treasury)
+Chain: Binance Smart Chain & Ethereum
+Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): 29470
+Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): 34212
+Short Description (to be shown on DefiLlama): Launched in 2024, XAUm is a digital gold token issued by Matrixdock, a Singapore-based fintech company focused on tokenizing real-world assets (RWAs). XAUm provides investors with a secure and efficient way to own and trade gold digitally, with each token representing one gram of LBMA-certified physical gold securely stored in vaults.
+Token address and ticker if any: 
+Ethereum:0x2103E845C5E135493Bb6c2A4f0B8651956eA8682
+BSC:0x23AE4fd8E7844cdBc97775496eBd0E8248656028
+Ticker: XAUm
+Category (full list at https://defillama.com/categories) *Please choose only one: RWA
+Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
+Implementation Details: Briefly describe how the oracle is integrated into your project:
+Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+forkedFrom (Does your project originate from another project):
+methodology (what is being counted as tvl, how is tvl being calculated): Number of XAUm minted * XAUm price
+Github org/user (Optional, if your code is open source, we can track activity):
