@@ -1,5 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport, } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const { getProvider, Program } = require("@project-serum/anchor");
+const { Connection, PublicKey } = require("@solana/web3.js");
 
 const config = {
   ethereum: {
@@ -14,7 +16,11 @@ const config = {
       predictionPROV2: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
       predictionPROV3: "0xe2ca0a434effea151d5b2c649b754acd3c8a20f0",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
+    tokens: [
+      ADDRESSES.null,
+      ADDRESSES.arbitrum.USDT,
+      ADDRESSES.arbitrum.USDC_CIRCLE,
+    ],
   },
   bsc: {
     owners: Object.values({
@@ -26,7 +32,12 @@ const config = {
       predictionclassicV3: "0x00199E444155f6a06d74CF36315419d39b874f5c",
       predictionPROV3: "0x49eFb44831aD88A9cFFB183d48C0c60bF4028da8",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, ADDRESSES.bsc.ETH],
+    tokens: [
+      ADDRESSES.null,
+      ADDRESSES.bsc.USDT,
+      ADDRESSES.bsc.USDC,
+      ADDRESSES.bsc.ETH,
+    ],
   },
   polygon: {
     owners: Object.values({
@@ -37,11 +48,77 @@ const config = {
       predictionclassicv3: "0x9f9564BE7b566dfE4B091a83a591752102aF3F33",
       predictionPROV3: "0x0b9c8c0a04354f41b985c10daf7db30bc66998f5",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.polygon.USDT, ADDRESSES.polygon.USDC_CIRCLE, ADDRESSES.polygon.WETH],
+    tokens: [
+      ADDRESSES.null,
+      ADDRESSES.polygon.USDT,
+      ADDRESSES.polygon.USDC_CIRCLE,
+      ADDRESSES.polygon.WETH,
+    ],
   },
+  solana: {},
 };
 
+const tokenMapping = {
+  So11111111111111111111111111111111111111112: "solana", // Native SOL
+  Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB: "tether", // USDT
+  EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: "usd-coin", // USDC
+};
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: sumTokensExport(config[chain]) }
-})
+Object.keys(config).forEach((chain) => {
+  if (chain === "solana") {
+    module.exports[chain] = {
+      tvl: async (_, _1, _2, { api }) => {
+        try {
+          const connection = new Connection(
+            "https://api.mainnet-beta.solana.com",
+            "confirmed"
+          );
+          const owner = new PublicKey(
+            "CcccPbvfmpNE5q4JFS5qU3mszP8obUy5Fp2BQ6Hm9Mnp"
+          );
+
+          // Get SOL balance in lamports and convert to SOL
+          const solBalanceLamports = await connection.getBalance(owner);
+          const solBalance = solBalanceLamports / 1e9; // Convert lamports to SOL
+
+          const balances = {};
+          // Add SOL balance with coingecko ID
+          balances[
+            tokenMapping["So11111111111111111111111111111111111111112"]
+          ] = solBalance;
+
+          // Get token accounts
+          const accounts = await connection.getParsedTokenAccountsByOwner(
+            owner,
+            {
+              programId: new PublicKey(
+                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+              ),
+            }
+          );
+
+          // Add token balances with coingecko IDs
+          accounts.value.forEach(({ account }) => {
+            const parsedInfo = account.data.parsed.info;
+            const mintAddress = parsedInfo.mint;
+            const balance =
+              Number(parsedInfo.tokenAmount.amount) /
+              10 ** (parsedInfo.tokenAmount.decimals || 0);
+
+            if (balance > 0 && tokenMapping[mintAddress]) {
+              balances[tokenMapping[mintAddress]] =
+                (balances[tokenMapping[mintAddress]] || 0) + balance;
+            }
+          });
+
+          return balances;
+        } catch (e) {
+          console.error("Solana TVL error:", e);
+          return {};
+        }
+      },
+    };
+  } else {
+    module.exports[chain] = { tvl: sumTokensExport(config[chain]) };
+  }
+});
