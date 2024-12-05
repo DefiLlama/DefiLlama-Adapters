@@ -24,6 +24,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "The sum of all TALOS strategies' Uniswap V3 NFTs.",
   arbitrum: {
-    tvl: stakedLPsTVL,
+    tvl: () => 0,
+    staking: stakedLPsTVL,
   },
 };

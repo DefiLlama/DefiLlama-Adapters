@@ -14,6 +14,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'Total Maia staked in VoteMaia.',
   arbitrum: {
-    tvl: voteMaiaTVL,
+    tvl: () => 0,
+    staking: voteMaiaTVL,
   },
 };
