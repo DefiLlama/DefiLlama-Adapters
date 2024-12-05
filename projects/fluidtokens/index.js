@@ -57,10 +57,24 @@ async function tvl() {
   const boosted_tvl= await get("https://api.fluidtokens.com/get-ft-stats");
 
   const boosted=parseInt(boosted_tvl.bs_available_volume)+parseInt(boosted_tvl.bs_active_volume);
+
+   
   
   return {
     // cardano: (SC_offers_tvl+repay_tvl+pools_tvl+boosted) / 1e6,
     cardano: (SC_offers_tvl+pools_tvl+boosted) / 1e6,
+
+  };
+}
+
+async function bitcoin_tvl() {
+
+//Bitcoin TVL since now we launched staking on Bitcoin layer 1
+ const btc_staking = await get("https://api2.fluidtokens.com/get-staking-stats");
+const btc_satoshi=parseInt(btc_staking.totalTvl)
+  return {
+
+    bitcoin:  btc_satoshi / 1e8;
   };
 }
 
@@ -92,13 +106,16 @@ async function borrowed() {
 
 
 module.exports = {
-  methodology: "Count active loaned out ADA as tvl",
+  methodology: "Count active liquidity as TVL",
   timetravel: false,
   cardano: {
     tvl,
     borrowed,
     staking
   },
+  bitcoin:{
+  bitcoin_tvl
+  }
   hallmarks: [
     [Math.floor(new Date("2023-01-01") / 1e3), "Count only active loans"],
     [Math.floor(new Date("2023-06-27") / 1e3), "ADA loaned out is counted under borrowed"],
