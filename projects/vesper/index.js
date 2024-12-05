@@ -54,6 +54,6 @@ function getChainExports(chain) {
 }
 
 module.exports = {
-  start: 1608667205, // December 22 2020 at 8:00 PM UTC
+  start: '2020-12-22', // December 22 2020 at 8:00 PM UTC
   ...['ethereum', 'avax', 'polygon', 'optimism', 'base'].reduce((acc, chain) => ({ ...acc, ...getChainExports(chain) }), {})
 };

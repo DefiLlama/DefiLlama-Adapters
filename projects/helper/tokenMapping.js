@@ -18,7 +18,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru']
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse',
 ]
@@ -70,6 +70,29 @@ const fixBalancesTokens = {
   },
   bob: {
     '0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c': { coingeckoId: "ignition-fbtc", decimals: 8 },
+  },
+  hela: {
+    '0x3a035615e101373fa9ba21c5bea7fe4026fc40b4': { coingeckoId: "hela-usd", decimals: 18 },
+  },
+  bfc: {
+    '0x74B73Fd2eE237e9219dF30dfFDB206D237cbFC00': { coingeckoId: "coinbase-wrapped-btc", decimals: 8 },
+  },
+  tara: {
+    [ADDRESSES.null]: { coingeckoId: "taraxa", decimals: 18 },
+    '0x5d0fa4c5668e5809c83c95a7cef3a9dd7c68d4fe': { coingeckoId: "taraxa", decimals: 18 },
+    '0xc26b690773828999c2612549cc815d1f252ea15e': { coingeckoId: "mountain-protocol-usdm", decimals: 18 },
+  },
+  xlayer: {
+    [ADDRESSES.null]: { coingeckoId: "okb", decimals: 18 },
+  },
+  starknet: {
+    [ADDRESSES.starknet.BROTHER]: { coingeckoId: "starknet-brother", decimals: 18 },
+  },
+  corn:{
+    '0xda5ddd7270381a7c2717ad10d1c0ecb19e3cdfb2': { coingeckoId: "bitcoin", decimals: 18 },
+  },
+  nibiru: {
+    'unibi': { coingeckoId: "nibiru", decimals: 6 },
   },
 }
 

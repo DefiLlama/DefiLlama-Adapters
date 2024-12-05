@@ -10,7 +10,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Value of ETH and LSD tokens in VETH contract',
-  start: 19067821,
   ethereum: {
     tvl,
     pool2: staking(['0x2dd568028682ff2961cc341a4849f1b32f371064'], ['0xB6B0C651C37EC4ca81C0a128420e02001A57Fac2', '0x6685fcFCe05e7502bf9f0AA03B36025b09374726']),

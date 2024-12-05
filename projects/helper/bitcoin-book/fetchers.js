@@ -7,6 +7,12 @@ const sdk = require('@defillama/sdk')
 const abi = { getQualifiedUserInfo: 'function getQualifiedUserInfo(address _user) view returns ((bool locked, string depositAddress, string withdrawalAddress) info)' }
 
 module.exports = {
+  btcfi_cdp: async () => {
+    const target = "0x0000000000000000000000000000000000000100";
+    const api = new sdk.ChainApi({ chain: 'bfc' })
+    const round = await api.call({  abi: 'uint32:current_round', target})
+    return api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round })
+  },
   bedrock: async () => {
     const API_URL = 'https://raw.githubusercontent.com/Bedrock-Technology/uniBTC/refs/heads/main/data/tvl/reserve_address.json'
     const { btc } = await getConfig('bedrock.btc_address', API_URL)

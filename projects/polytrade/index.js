@@ -5,7 +5,7 @@ const chain = 'polygon'
 
 module.exports = {
   methodology: 'gets the amount in liquidity pool',
-  start: 1657074185,
+  start: '2022-07-06',
   polygon: {
     tvl: async (_,_b , {polygon: block}) => {
       const strategy = await sdk.api2.abi.call({
