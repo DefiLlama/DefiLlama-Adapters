@@ -13,7 +13,7 @@ async function tvl(api) {
 module.exports = {
     methodology: 'Counts the amount of deposited ETH in the LPETH contract.',
     start: '21022294',
-    arbitrum: {
+    ethereum: {
         tvl
     }
 }
