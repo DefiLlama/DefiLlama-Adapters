@@ -74,7 +74,7 @@ async function bitcoin_tvl() {
 const btc_satoshi=parseInt(btc_staking.totalTvl)
   return {
 
-    bitcoin:  btc_satoshi / 1e8;
+    bitcoin:  btc_satoshi / 1e8,
   };
 }
 
