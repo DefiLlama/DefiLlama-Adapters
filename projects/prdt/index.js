@@ -1,7 +1,7 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { getProvider, Program } = require("@project-serum/anchor");
-const { Connection, PublicKey } = require("@solana/web3.js");
+const { sumTokensExport: solExports } = require("../helper/solana");
+
 
 const config = {
   ethereum: {
@@ -58,67 +58,11 @@ const config = {
   solana: {},
 };
 
-const tokenMapping = {
-  So11111111111111111111111111111111111111112: "solana", // Native SOL
-  Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB: "tether", // USDT
-  EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: "usd-coin", // USDC
-};
-
 Object.keys(config).forEach((chain) => {
-  if (chain === "solana") {
-    module.exports[chain] = {
-      tvl: async (_, _1, _2, { api }) => {
-        try {
-          const connection = new Connection(
-            "https://api.mainnet-beta.solana.com",
-            "confirmed"
-          );
-          const owner = new PublicKey(
-            "CcccPbvfmpNE5q4JFS5qU3mszP8obUy5Fp2BQ6Hm9Mnp"
-          );
-
-          // Get SOL balance in lamports and convert to SOL
-          const solBalanceLamports = await connection.getBalance(owner);
-          const solBalance = solBalanceLamports / 1e9; // Convert lamports to SOL
-
-          const balances = {};
-          // Add SOL balance with coingecko ID
-          balances[
-            tokenMapping["So11111111111111111111111111111111111111112"]
-          ] = solBalance;
-
-          // Get token accounts
-          const accounts = await connection.getParsedTokenAccountsByOwner(
-            owner,
-            {
-              programId: new PublicKey(
-                "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-              ),
-            }
-          );
-
-          // Add token balances with coingecko IDs
-          accounts.value.forEach(({ account }) => {
-            const parsedInfo = account.data.parsed.info;
-            const mintAddress = parsedInfo.mint;
-            const balance =
-              Number(parsedInfo.tokenAmount.amount) /
-              10 ** (parsedInfo.tokenAmount.decimals || 0);
-
-            if (balance > 0 && tokenMapping[mintAddress]) {
-              balances[tokenMapping[mintAddress]] =
-                (balances[tokenMapping[mintAddress]] || 0) + balance;
-            }
-          });
-
-          return balances;
-        } catch (e) {
-          console.error("Solana TVL error:", e);
-          return {};
-        }
-      },
-    };
-  } else {
-    module.exports[chain] = { tvl: sumTokensExport(config[chain]) };
-  }
+  module.exports[chain] = { tvl: sumTokensExport(config[chain]) };
 });
+
+const solOwners = ["CcccPbvfmpNE5q4JFS5qU3mszP8obUy5Fp2BQ6Hm9Mnp"]
+module.exports.solana = {
+  tvl: solExports({ owners: solOwners, solOwners })
+}
