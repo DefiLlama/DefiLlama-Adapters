@@ -1,21 +1,23 @@
-const {PublicKey } = require("@solana/web3.js");
-const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex   } = require("./spotMarkets");
-const { fetchAndDeserializeUserPositions } = require("./helpers");
+const { PublicKey } = require("@solana/web3.js");
+const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey } = require("./spotMarkets");
+const { deserializeUserPositions } = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
+const { getMultipleAccounts } = require('../helper/solana')
 
 
 module.exports = {
-    timetravel: false,
-    methodology: "Calculate sum of spot positions",
-    solana: {
-        tvl,
-    },
+  timetravel: false,
+  doublecounted: true,
+  methodology: "Calculate sum of spot positions",
+  solana: {
+    tvl,
+  },
 };
 
 
 const vaultAddresses = [
-    new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"),
-    new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE")
+  new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"),
+  new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE")
 ];
 /**
  * Vault Equity Calculation Formula:
@@ -35,58 +37,49 @@ const vaultAddresses = [
  * 
  */
 async function tvl(api) {
-    try {
-        for (const vaultAddress of vaultAddresses) {
-            const positions = await fetchAndDeserializeUserPositions(vaultAddress);
-      
-// 
-            // Process spot positions
-            if (positions?.spotPositions?.length) {
-                positions.spotPositions.forEach(position => {
-                    const tokenMint = getTokenMintFromMarketIndex(position.market_index);
-                    const adjustedBalance = processSpotPosition(position);
+  const accounts = await getMultipleAccounts(vaultAddresses)
+  const deserializedData = accounts.map(deserializeUserPositions)
+  const perpIndices = deserializedData.map(data => data.perpPositions.map(position => position.market_index)).flat()
+  const perpKeys = perpIndices.map(index => getVaultPublicKey('perp_market', index))
+  const perpAccounts = await getMultipleAccounts(perpKeys)
+  const perpAccountMap = {}
+  perpIndices.forEach((v, i) => perpAccountMap[v] = perpAccounts[i])
 
-                    api.add(tokenMint, adjustedBalance);
-                });
-            }
-            // Process perp positions
-            if (positions?.perpPositions?.length) {
-  
-                await Promise.all(positions.perpPositions.map(async position => {
-                    // Handle base asset
-                    const baseTokenMint = getPerpTokenMintFromMarketIndex(position.market_index);
-                    const { baseBalance, quoteBalance } = processPerpPosition(position);
-                    api.add(baseTokenMint, baseBalance);
-                    // 
-                    // Handle quote asset (always USDC)
-                    const quoteTokenMint = getTokenMintFromMarketIndex(0);
-                    //
-                    api.add(quoteTokenMint, quoteBalance);
 
-                    const { cumulativeFundingRateLong, cumulativeFundingRateShort,} = await getPerpMarketFundingRates(position.market_index);
-                    const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort;
-                    const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6);
-                    const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6));
-              
-// 
-                    
-                    
-                    api.add(quoteTokenMint, fundingRatePnl);
-                }));
-            }
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
+  for (const { spotPositions, perpPositions } of deserializedData) {
+    // 
+    // Process spot positions
+    if (spotPositions?.length) {
+      spotPositions.forEach(position => {
+        const tokenMint = getTokenMintFromMarketIndex(position.market_index);
+        const adjustedBalance = processSpotPosition(position);
+
+        api.add(tokenMint, adjustedBalance);
+      });
     }
 
+    // Process perp positions
+    if (perpPositions?.length) {
 
+      perpPositions.map(async position => {
+        // Handle base asset
+        const baseTokenMint = getPerpTokenMintFromMarketIndex(position.market_index);
+        const { baseBalance, quoteBalance } = processPerpPosition(position);
+        api.add(baseTokenMint, baseBalance);
+        // 
+        // Handle quote asset (always USDC)
+        const quoteTokenMint = getTokenMintFromMarketIndex(0);
+        //
+        api.add(quoteTokenMint, quoteBalance);
 
+        const { cumulativeFundingRateLong, cumulativeFundingRateShort, } = getPerpMarketFundingRates(perpAccountMap[position.market_index]);
+        const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort;
+        const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6);
+        const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6));
 
-}
-
-// For testing
-if (require.main === module) {
-    tvl().catch(console.error);
+        api.add(quoteTokenMint, fundingRatePnl);
+      })
+    }
+  }
 }
 
