@@ -6,7 +6,7 @@ const config = {
 }
 
 module.exports = {
-  start: 1707300000,
+  start: '2024-02-07',
   methodology: "The TVL including total values of assets locked in the tokens which are deployed by BurveProtocol",
 }
 
