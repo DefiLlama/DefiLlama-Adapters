@@ -102,7 +102,7 @@ function processPerpPosition(position) {
 
 function getPerpMarketFundingRates(accountInfo) {
   if (!accountInfo) {
-    throw new Error(`No account info found for market ${marketIndex}`);
+    throw new Error(`No account info found for market`);
   }
   let factorToPrecision = 1n;
 
