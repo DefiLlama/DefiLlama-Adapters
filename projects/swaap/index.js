@@ -7,7 +7,7 @@ const configV1 = {
     startBlock: 29520285,
     blockDelay: 30,
     theGraph: {
-      endpoint: sdk.graph.modifyEndpoint('A1ibaGVUkqdLeBG7VeeSB8jm9QNmS8phSz8iooXR8puv'),
+      endpoint: 'https://api.goldsky.com/api/public/project_clws2t7g7ae9c01xsbnu80a51/subgraphs/swaapv1/1.0.0/gn',
       query: `pools: pools(orderBy: liquidity, orderDirection: desc) {
         id
         tokens {
@@ -29,7 +29,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1655130642, // Jun-13-2022 02:30:42 PM +UTC
+  start: '2022-06-13', // Jun-13-2022 02:30:42 PM +UTC
   polygon: {
     tvl,
   },

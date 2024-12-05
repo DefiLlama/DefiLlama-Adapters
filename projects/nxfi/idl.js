@@ -511,6 +511,9 @@ module.exports = {
           },
           {
             "name": "SwitchboardV2"
+          },
+          {
+            "name": "PythV2"
           }
         ]
       }

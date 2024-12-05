@@ -62,7 +62,13 @@ async function getAllAgent(api) {
         const DexBalancerModules = ["0x7e8280f5Ee5137f89d09FA61B356fa322a93415a", "0x35a4B9B95bc1D93Bf8e3CA9c030fc15726b83E6F", "0x067299A9C3F7E8d4A9d9dD06E2C1Fe3240144389"]
         const MultioliooorModule = ["0x54D588243976F7fA4eaf68d77122Da4e6C811167"]
         const ConcentratedLiquidityModule = ["0x10C02a975a748Db5B749Dc420154dD945e2e8657", "0x41D68d86545D6b931c1232f1E0aBB5844Ada4967", "0xa11D4dcD5a9ad75c609E1786cf1FD88b53C83A5E"]
-        const Looper = ["0x6A9D21A09A76808C444a89fE5fCc0a5f38dc0523", "0xe5fe6f280CEadc5c4DDE69eF2DF6234dd7Bd82E2"]
+        const BladeSwapConcentratedLiquidityModule = [
+            "0x5dBC01F3F1310E36454C43cA1d2c84F44b8094F2",
+            "0xa28299bfbf44450CbA73a1eAdcE461AF62181a02",
+            "0xD18eD95286316a359291b21d02e8d46C59986302",
+        ]
+        const pacLooperModule = '0x5E38765FF50D9b8932441Cd668c1fDA365D358b5'
+        const Looper = ["0x6A9D21A09A76808C444a89fE5fCc0a5f38dc0523", "0xe5fe6f280CEadc5c4DDE69eF2DF6234dd7Bd82E2", "0x8220512520db5D3295EA41308601FD0974405975", pacLooperModule]
         if (modules.some(i => DexBalancerModules.includes(i))) {
             return {
                 ...i,
@@ -77,6 +83,11 @@ async function getAllAgent(api) {
             return {
                 ...i,
                 moduleType: "ConcentratedLiquidity"
+            }
+        } else if (modules.some(i => BladeSwapConcentratedLiquidityModule.includes(i))) {
+            return {
+                ...i,
+                moduleType: "BladeSwapLiquidityManager"
             }
         } else if (modules.some(i => Looper.includes(i))) {
             return {

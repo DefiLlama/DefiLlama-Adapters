@@ -73,6 +73,7 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
     const results = await graphQLClient.request(query, { block })
     return results
   } catch (e) {
+    e.chain = api.chain
     if (!block) throw e
     const errorString = e.toString()
     const isBlockCatchupIssue = /Failed to decode.*block.number.*has only indexed up to block number \d+/.test(errorString)

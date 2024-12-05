@@ -29,7 +29,7 @@ const TOKEN_ADDRESSES = [
   },
   {
     // FXS
-    'ethereum': '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0'
+    'ethereum': ADDRESSES.ethereum.FXS
   },
   {
     'ethereum': ADDRESSES.ethereum.WETH
@@ -87,6 +87,5 @@ module.exports = {
     [1659312000,"trusted root exploit"]
   ],
       methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
-  start: 13983843,
   ...chainExports(tvl, Object.keys(HOME_CHAINS))
 }; 

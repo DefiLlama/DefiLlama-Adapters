@@ -57,8 +57,8 @@ async function getTvlForDexBalancer(agentAddresses, api) {
             const reserve1BigN = BigNumber(reserve1)
             const token0Balance = lpBalanceBigN.times(reserve0BigN).div(totalBigN)
             const token1Balance = lpBalanceBigN.times(reserve1BigN).div(totalBigN)
-            api.add(RingTokenMappings[address0], token0Balance.toFixed(0))
-            api.add(RingTokenMappings[address1], token1Balance.toFixed(0))
+            api.add(RingTokenMappings[address0.toLowerCase()], token0Balance.toFixed(0))
+            api.add(RingTokenMappings[address1.toLowerCase()], token1Balance.toFixed(0))
         }
         const hyperlocklpBalance = hyperlocklpBalances.find(b => b.input.params[0] === address)
         if (hyperlocklpBalance.success) {

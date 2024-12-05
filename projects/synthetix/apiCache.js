@@ -29,7 +29,7 @@ const synthetixs = {
   optimism: '0x8700daec35af8ff88c16bdf0418774cb3d7599b4'
 }
 const snxGraphEndpoints = {
-  ethereum: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-ethereum',
+  ethereum: sdk.graph.modifyEndpoint('2chLKUMdvBJEbrceCdvCF8VGB1xQ3Ytbyujj9Rw3WyKY'),
   optimism: sdk.graph.modifyEndpoint('5NQi9n4ztd8M6EEDFKA6gwcCnbLdmzZRymiDbPkbjEWN')
 }
 const ethStaking = "0xc1aae9d18bbe386b102435a8632c8063d31e747c"
@@ -149,7 +149,7 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
 }
 
 module.exports = {
-  start: 1565287200,  // Fri Aug 09 2019 00:00:00
+  start: '2019-08-08',  // Fri Aug 09 2019 00:00:00
   optimism: {
     tvl: chainTvl("optimism")
   },

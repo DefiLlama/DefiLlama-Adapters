@@ -13,7 +13,7 @@ async function getDexes() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  start: 1672531200,
+  start: '2023-01-01',
   tezos: {
     tvl,
   },

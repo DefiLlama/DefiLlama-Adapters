@@ -65,6 +65,7 @@ const config = {
       ADDRESSES.tron.WTRX,
     ],
   },
+  taiko: { id: 'taiko' },
   ancient8: { id: 'ancient8' },
   arbitrum: { id: 'arb' },
   aurora: {},
@@ -99,7 +100,8 @@ const config = {
   polygon_zkevm: { id: 'zkevm'},
   era: { id: 'zksync'},
   btr: { id: 'bitlayer'},
-  bouncebit: { id: 'bb'}
+  bouncebit: { id: 'bb'},
+  europa: { id: 'skale-europa' }
 }
 
 async function addCoinfg(id, ownerTokens) {

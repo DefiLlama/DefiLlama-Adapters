@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -16,17 +17,14 @@ const config = {
       '0x11444C6389A26C8E41d7FD5CafBfCC511303b7d3',
       '0x67FE3293FC4e877F3CDc3F0ed93721a600f72BdE',
       '0x178Fb204c1ff2Ed7d0651C522A3a5B15480Eb76d',
+      '0xFbA64167e4f091Ca625FA79aa6f83665856f8Bf2',
+      '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+      '0xe2484A7Ac1b9Cb6D8E55fd00e129aB913172bea6',
+      '0xdbe15F6573108B6736c70779C683Ca633c18aFe2',
     ],
   },
   bitcoin: {
-    owners: [
-      '18DowXoMUQT5EU8zPTDTrq4hrwmi8ddCcc',
-      'bc1qfu6su3qz4tn0et634mv7p090a0cgameq6rdvuc',
-      'bc1qutkfwnuq4v0zdkenqt5vyuxlrmsezldzue5znc',
-      '1Mgs8zLJ7JyngcNRUscayyPHnnYJpJS5x2',
-      'bc1qc8ee9860cdnkyej0ag5hf49pcx7uvz89lkwpr9',
-      '1JgXCkk3gjmgfgjT2vvnjpvqfvNNTFCRpM',
-    ]
+    owners: bitcoinAddressBook.swissborg
   },
   ripple: {
     owners: [
@@ -49,6 +47,8 @@ const config = {
       'Cet3t77x2BBVSmiEFm8ZPoDSngbpso2RuWPL79Ky7SpA',
       '9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL',
       'Fe7SEekiKygziaEGKxsDsgLVzrCfNvVBvAYsaJBwFA8s',
+      'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
+      '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
     ],
   },
   polkadot: {
@@ -106,7 +106,17 @@ const config = {
     owners: [
         'cosmos10dfzd2wpnpeuy2lgan35ah8dg5p4l298v0n8e8',
     ]
-  }
+  },
+  arbitrum: {
+    owners: [
+      '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+    ]
+  },
+  // injective: {
+  //   owners: [
+  //     'inj1wvhk7xhzf9kus9a4tpa6v8vhuqvm265rz7zd6n',
+  //   ]
+  // }
 }
 
 module.exports = cexExports(config)
