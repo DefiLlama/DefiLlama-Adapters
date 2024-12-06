@@ -1,18 +1,16 @@
 const { get } = require("../helper/http");
-
 async function tvl() {
-  const analyticsData = await get("https://api-general.compx.io/api/analytics");
-  
-  // Extract relevant TVL data from the new API response
-  const tokenStreamTvl = analyticsData.tokenStreamTVL.amount || 0;
-  const farmsTvl = analyticsData.farmsTVL || 0;
-  const cdpTvl = analyticsData.cdpAnalytics.tvl || 0;
-  const stakingTvl = analyticsData.stakingAnalytics.totalTvl || 0;
-
-  // Calculate total TVL in USD
-  const totalTvlUsd = tokenStreamTvl + farmsTvl + cdpTvl + stakingTvl;
-
-  return { tether: totalTvlUsd };
+  const compxTvlData = await get(
+    "https://compx-backend-e899c.ondigitalocean.app/get-compx-tvl"
+  );
+  //Calculating user tvl:
+  //usersFarmPosition = userLpBalance / farmTotalTvlLp
+  //userDollarTvl = farmTvl * usersFarmPosition
+  const tvlUsd = compxTvlData.data.tvlDetails.reduce((total, userTvl) =>{
+    const usersDollarTvl = Number((Number(userTvl.farmTvl) * Number(userTvl.usersFarmPosition)).toFixed(3));
+    return total + usersDollarTvl;
+  }, 0)
+  return { tether: tvlUsd };
 }
 
 module.exports = {
