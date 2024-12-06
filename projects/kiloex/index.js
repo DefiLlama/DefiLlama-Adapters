@@ -22,6 +22,7 @@ module.exports = {
     ADDRESSES.bsc.USDC, //usdc
     '0xf6718b2701d4a6498ef77d7c152b2137ab28b8a3', //stBTC
     '0x4aae823a6a0b376de6a78e74ecc5b079d38cbcf7', //SolvBTC
+    '0x2a3dc2d5daf9c8c46c954b8669f4643c6b1c081a', //uBTC
   ], }) },
   op_bnb: {
     tvl: sumTokensExport({ owners: opbnb_owners, tokens: [
