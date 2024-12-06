@@ -14,9 +14,14 @@ module.exports = {
   },
 };
 
-const vaultAddresses = [
-  new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"),
-  new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE")
+const vaultUserAddresses = [
+  new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"), //Vault A
+  new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE"), //Vault B
+  new PublicKey("Hcs63usAc6cxWccycrVwx1mrNgNSpUZaUgFm7Lw9tSkR"), //Vault C
+  new PublicKey("MzEPFp2LwCSMMPHLQsqfE7SN6xkPHZ8Uym2HfrH7g5P"), //Yield Compress A
+  new PublicKey("CMiyE7M98DSPBEhQGTA6CzNodWkNuuW4y9HoocfK75nG") //Yield Compress B
+
+
 ];
 /**
  * Vault Equity Calculation Formula:
@@ -36,7 +41,7 @@ const vaultAddresses = [
  * 
  */
 async function tvl(api) {
-  const accounts = await getMultipleAccounts(vaultAddresses)
+  const accounts = await getMultipleAccounts(vaultUserAddresses)
   const deserializedData = accounts.map(deserializeUserPositions)
   const perpIndices = deserializedData.map(data => data.perpPositions.map(position => position.market_index)).flat()
   const perpKeys = perpIndices.map(index => getVaultPublicKey('perp_market', index))
