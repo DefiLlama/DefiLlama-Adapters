@@ -1,7 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accIrisPerShare, uint16 depositFeeBP, uint256 lpSupply)",
-  "balance": "uint256:balance",
-  "balanceof": "function balanceOf(address) view returns (uint256)",
-  "token0": "address:token0",
-  "token1": "address:token1"
-}
