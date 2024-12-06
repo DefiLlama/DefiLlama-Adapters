@@ -89,9 +89,25 @@ module.exports = {
                     "0x26c5e01524d2E6280A48F2c50fF6De7e52E9611C",
                     "0xf8Ca8D2B59A97125751af1069d4a5C4F7eB7A677",
                 ],
+                //solvBTC.BBNB
+                ["0x1346b618dC92810EC74163e4c27004c921D446a5","0x03DB750d6212C6a0BCa9258E8cB7cf46dfD63067"],
+
+                // USDT
+["0x55d398326f99059ff775485246999027b3197955", "0xAd406CcF75f9E6216fA4349635B0cD77D0059b1f"],
+
+                //FDUSD
+                ["0xc5f0f7b66764f6ec8c8dff7ba683102295e16409","0x2202a491752Fee0E616F06A89E2eF416E2Fcd7e9"],
+
+
+
+                // vUSDT, PSM - LSR
+                // ["0x55d398326f99059ff775485246999027b3197955", "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
+                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"]
             ],
         }),
         pool2,
         staking: staking('0xd0C380D31DB43CD291E2bbE2Da2fD6dc877b87b3','0xFceB31A79F71AC9CBDCF853519c1b12D379EdC46')
     },
 };
+
+// execute with `node test.js projects/helio-money`

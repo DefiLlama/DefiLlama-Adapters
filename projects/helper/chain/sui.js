@@ -48,7 +48,7 @@ async function getObjects(objectIds) {
       "showContent": true,
     }],
   })
-  return objectIds.map(i => result.find(j => j.data.objectId === i)?.data?.content)
+  return objectIds.map(i => result.find(j => j.data?.objectId === i)?.data?.content)
 }
 
 async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } = {}) {

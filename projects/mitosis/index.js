@@ -39,6 +39,13 @@ const uniBTC_ADDRESS = {
   },
 };
 
+const cmETH_ADDRESS = {
+  mantle: { 
+    asset: "0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA", 
+    vault: "0x6FF000453a9c14f7d3bf381925c8cde565DbCe55",
+  }
+};
+
 const ezETH_ADDRESS = {
   ethereum: { 
     asset: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110", 
@@ -199,5 +206,12 @@ module.exports = {
         { type: 'vault', data: uniBTC_ADDRESS.bsc },
       ]
     )
-  }
+  },
+  mantle: {
+    tvl: chainTVL(
+      [
+        { type: 'vault', data: cmETH_ADDRESS.mantle },
+      ]
+    )
+  },
 };
