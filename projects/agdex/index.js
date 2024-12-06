@@ -32,43 +32,43 @@ const apt_metadata = "0xa";
 
 async function tvl(api) {
   const usdc_value  = 
-    await function_view(
-        primary_fungible_asset_balance,
-        ["0x1::fungible_asset::Metadata"],
-        [usdc_resource_account, usdc_metadata]
-    );
-  api.add(lzUSDC, usdc_value);
+    await function_view({
+        "functionStr": primary_fungible_asset_balance,
+        "type_arguments": ["0x1::fungible_asset::Metadata"],
+        "args": [usdc_resource_account, usdc_metadata]
+    });
+    api.add(lzUSDC, usdc_value);
 
   const usdt_value  = 
-    await function_view(
-        primary_fungible_asset_balance,
-        ["0x1::fungible_asset::Metadata"],
-        [usdt_resource_account, usdt_metadata]
-    );
+    await function_view({
+        "functionStr": primary_fungible_asset_balance,
+        "type_arguments": ["0x1::fungible_asset::Metadata"],
+        "args": [usdt_resource_account, usdt_metadata]
+    });
   api.add(lzUSDC, usdc_value);
 
   const eth_value  = 
-    await function_view(
-        primary_fungible_asset_balance,
-        ["0x1::fungible_asset::Metadata"],
-        [eth_resource_account, eth_metadata]
-    );
+    await function_view({
+       "functionStr": primary_fungible_asset_balance,
+        "type_arguments": ["0x1::fungible_asset::Metadata"],
+        "args": [eth_resource_account, eth_metadata]
+      });
   api.add(lzUSDC, eth_value);
 
   const btc_value  = 
-    await function_view(
-        primary_fungible_asset_balance,
-        ["0x1::fungible_asset::Metadata"],
-        [btc_resource_account, btc_metadata]
-    );
+    await function_view({
+        "functionStr": primary_fungible_asset_balance,
+        "type_arguments": ["0x1::fungible_asset::Metadata"],
+        "args": [btc_resource_account, btc_metadata]
+      });
   api.add(lzUSDC, btc_value);
 
   const apt_value  = 
-    await function_view(
-        primary_fungible_asset_balance,
-        ["0x1::fungible_asset::Metadata"],
-        [apt_resource_account, apt_metadata]
-    );
+    await function_view({
+        "functionStr": primary_fungible_asset_balance,
+        "type_arguments": ["0x1::fungible_asset::Metadata"],
+        "args": [apt_resource_account, apt_metadata]
+    });
   api.add(lzUSDC, usdc_value);
   api.add(BTC, btc_value);
   api.add(ETH, eth_value);
