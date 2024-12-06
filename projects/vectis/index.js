@@ -50,10 +50,15 @@ async function tvl(api) {
     // 
     // Process spot positions
     if (spotPositions?.length) {
+      const spotIndices = spotPositions.map(position => position.market_index)
+      const spotKeys = spotIndices.map(index => getVaultPublicKey('spot_market', index))
+      const spotAccounts = await getMultipleAccounts(spotKeys)
+      const spotAccountMap = {}
+      spotIndices.forEach((v, i) => spotAccountMap[v] = spotAccounts[i])
+
       spotPositions.forEach(position => {
         const tokenMint = getTokenMintFromMarketIndex(position.market_index);
-        const adjustedBalance = processSpotPosition(position);
-
+        const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index]);
         api.add(tokenMint, adjustedBalance);
       });
     }
