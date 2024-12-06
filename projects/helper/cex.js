@@ -86,7 +86,7 @@ const defaultTokens = {
     '0xaaef88cea01475125522e117bfe45cf32044e238', // GF
     '0x949d48eca67b17269629c7194f4b727d4ef9e5d6', // MC
     '0xbb0e17ef65f82ab018d8edd776e8dd940327b28b', // AXS
-    '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // FXS
+    ADDRESSES.ethereum.FXS, // FXS
     '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
@@ -175,6 +175,7 @@ const defaultTokens = {
      '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
      '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
      '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],

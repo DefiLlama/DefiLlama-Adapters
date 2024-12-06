@@ -40,7 +40,7 @@ module.exports = {
   hallmarks: [
     [Math.floor(new Date('2022-10-03') / 1e3), 'Vesting tokens are not included in tvl'],
   ],
-  start: 1573582731,
+  start: '2019-11-12',
   timetravel: false,
   ronin: {
     tvl: sumTokensExport({

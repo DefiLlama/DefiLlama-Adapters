@@ -6,6 +6,7 @@ const config = {
     pools: {
       wethPool: "0x803ea69c7e87D1d6C86adeB40CB636cC0E6B98E2",
       usdcPool: "0x3ec4a293Fb906DD2Cd440c20dECB250DeF141dF1",
+      cbbtcPool: "0xa37E9b4369dc20940009030BfbC2088F09645e3B"
     },
     uniNFT: "0x03a520b32c04bf3beef7beb72e919cf822ed34f1",
     slipNFT: "0x827922686190790b37229fd06084350e74485b72",
@@ -90,7 +91,7 @@ module.exports = {
   methodology:
     "TVL is calculated as the sum of all Account values and the available balance in the liquidity pools. Assets are not double counted.",
   base: { tvl },
-  start: 1711389600, // Mon Mar 25 2024 18:00:00 GMT+0000
+  start: '2024-03-25', // Mon Mar 25 2024 18:00:00 GMT+0000
   hallmarks: [
     [Math.floor(new Date("2024-04-03") / 1e3), "Points program announced."],
   ],

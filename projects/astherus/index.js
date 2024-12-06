@@ -1,4 +1,5 @@
 const { getConfig } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/solana')
 
 const config = {
   bsc: '0x128463A60784c4D3f46c23Af3f65Ed859Ba87974',
@@ -6,7 +7,7 @@ const config = {
 }
 
 module.exports = {
-  start: 1706716800, // 02/01/2024 @ 00:00:00pm (UTC)
+  start: '2024-01-31', // 02/01/2024 @ 00:00:00pm (UTC)
 }
 
 Object.keys(config).forEach(chain => {
@@ -19,3 +20,10 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports['solana'] = {
+  tvl: async function (...rest) {
+    const { data: tokens } = await getConfig(`astherus/solana`, `https://astherus.finance/bapi/futures/v1/public/future/web3/ae-deposit-asset?network=SOL`)
+    return sumTokens2({ tokenAccounts: tokens.map(({ tokenVault }) => [tokenVault]).flat() })
+  }
+}

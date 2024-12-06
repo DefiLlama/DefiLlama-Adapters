@@ -2,11 +2,12 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 const config = {
   bsc: { fromBlock: 35953570 },
   arbitrum: { fromBlock: 184614246 },
+  base: { fromBlock: 15653766 },
 }
 
 module.exports = {
-  start: 1707300000,
-  methodology: "BurveProtocol TVL including total values of assets locked in the tokens which is deployed by BurveProtocol",
+  start: '2024-02-07',
+  methodology: "The TVL including total values of assets locked in the tokens which are deployed by BurveProtocol",
 }
 
 Object.keys(config).forEach(chain => {

@@ -21,6 +21,16 @@ const mantleConfig = {
   "perpEngine": "0x38080ee5fb939d045A9e533dF355e85Ff4f7e13D"
 }
 
+const seiConfig = {
+  "querier": "0xecc3dE1cD86CB07c3763D21A45041791574964C2",
+  //"feeCalculator": "",
+  "clearinghouse": "0xaE1510367aA8d500bdF507E251147Ea50B22307F",
+  "clearinghouseLiq": "0xa1a457b7bba489c3434D9Cb44b88101354CCF192",
+  "endpoint": "0x2777268EeE0d224F99013Bc4af24ec756007f1a6",
+  "spotEngine": "0x3E113cde3D6309e9bd45Bf7E273ecBB8b50ca127",
+  "perpEngine": "0x0F54f46979C62aB73D03Da60eBE044c8D63F724f"
+}
+
 
 module.exports = {
   arbitrum: {
@@ -33,6 +43,12 @@ module.exports = {
     tvl: sumTokensExport({
       owners: [mantleConfig.clearinghouse, mantleConfig.endpoint],
       tokens: ["0xcDA86A272531e8640cD7F1a92c01839911B90bb0", ADDRESSES.mantle.USDC, ADDRESSES.mantle.WETH, ADDRESSES.mantle.WMNT],
+    })
+  },
+  sei: {
+    tvl: sumTokensExport({
+      owners: [seiConfig.clearinghouse, seiConfig.endpoint],
+      tokens: [ADDRESSES.sei.USDC, ADDRESSES.sei.USDT],
     })
   }
 }

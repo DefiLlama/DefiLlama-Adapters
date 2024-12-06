@@ -160,15 +160,43 @@ const supportedChains = [
     chainId: 14,
     identifier: 'flare'
   },
+  {
+    name: 'ApeChain',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-apechain/1.1.1/gn',
+    chainId: 33139,
+    identifier: 'apechain'
+  },
+  // {
+  //   name: 'Bittorrent',
+  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-btt/1.1.1/gn',
+  //   chainId: 199,
+  //   identifier: 'bittorrent'
+  // },
+  {
+    name: 'Filecoin',
+    subgraphEndpoint:  'https://fil.subgraph.laconic.com/v1/steer-protocol/iRoheeEh2g6CdZ9OnunLwNCFHG8a7TAdtIYNNxboRSKVxgZfjq',
+    chainId: 314,
+    identifier: 'filecoin'
+  },
+  {
+    name: 'Zircuit',
+    subgraphEndpoint:  'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit',
+    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'
+    },
+    chainId: 48900,
+    identifier: 'zircuit'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
 const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {id}}`
+const z_query = `{  vaults(first: 1000, where: {lastSnapshot_gte: "0", totalLPTokensIssued_gt: "0"}) {    id  }}`
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
     tvl: async (api) => {
-      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
+      let _query = api.chain === 'zircuit' ? z_query : query
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, _query, { headers: chain.headers })
 
       const vaults = data.vaults.map((vault) => vault.id)
       const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
@@ -194,7 +222,8 @@ module.exports.arbitrum.staking = stakings(
     "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
     "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4",
     "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B",
-    "0x3338B85fB1607C519962571B67061e02408475Bb"
+    "0x3338B85fB1607C519962571B67061e02408475Bb",
+    "0x6519A921d0E6F06524eff5DF976abc9A3ABF36cF"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"
