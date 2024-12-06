@@ -5,7 +5,8 @@ const config = {
     subgraphUrl: 'https://api.studio.thegraph.com/query/96517/bb-defillama-eth/v0.0.4'
   },
   bsc: {
-    subgraphUrl: 'https://api.studio.thegraph.com/query/96517/bb-defillama-bsc/v0.0.2'
+    subgraphUrl: 'https://api.studio.thegraph.com/query/96517/bb-defillama-bsc/v0.0.2',
+    subgraphUrl2: 'https://api.studio.thegraph.com/query/96517/bb-vip-defillama-bsc/v0.0.1'
   },
   bouncebit: {
     main: { url: 'https://bitswap-subgraph.bouncebit.io/subgraphs/name/bb-defillama-bb' },
@@ -38,6 +39,11 @@ async function tvl(api) {
       ? [
           fetchTokens(chain, config[chain].main.url),
           fetchTokens(chain, config[chain].boyya.url)
+        ]
+      : chain === 'bsc'
+      ? [
+          fetchTokens(chain, config[chain].subgraphUrl),
+          fetchTokens(chain, config[chain].subgraphUrl2)
         ]
       : [fetchTokens(chain, config[chain].subgraphUrl)]
   )

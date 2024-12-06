@@ -18,7 +18,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru']
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse',
 ]
@@ -87,6 +87,12 @@ const fixBalancesTokens = {
   },
   starknet: {
     [ADDRESSES.starknet.BROTHER]: { coingeckoId: "starknet-brother", decimals: 18 },
+  },
+  corn:{
+    '0xda5ddd7270381a7c2717ad10d1c0ecb19e3cdfb2': { coingeckoId: "bitcoin", decimals: 18 },
+  },
+  nibiru: {
+    'unibi': { coingeckoId: "nibiru", decimals: 6 },
   },
 }
 

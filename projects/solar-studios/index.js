@@ -9,7 +9,6 @@ async function tvl(api) {
   const idl = await Program.fetchIdl(programId, provider)
   const program = new Program(idl, programId, provider)
   const data = await program.account.poolState.all()
-  console.log(data.length)
   const tokenAccounts = data.map(({ account: { token0Vault, token1Vault }}) => ([token0Vault, token1Vault,])).flat()
   return sumTokens2({ tokenAccounts, api, })
 }
