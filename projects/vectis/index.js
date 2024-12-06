@@ -8,12 +8,11 @@ const { getMultipleAccounts } = require('../helper/solana')
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: "Calculate sum of spot positions",
+  methodology: "Calculate sum of spot positions in vaults with unrealized profit and loss",
   solana: {
     tvl,
   },
 };
-
 
 const vaultAddresses = [
   new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"),
