@@ -97,8 +97,11 @@ async function call({ target, abi, params = [] }) {
 }
 
 async function addTonBalances({ api, addresses }) {
+  api.log('Fetching TON balances', { addresses: addresses.length })
   const chunks = sliceIntoChunks(addresses, 399)
+  let i = 0
   for (const chunk of chunks) {
+    api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
     const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
     accounts.forEach(({ balance }) => {
       api.add(ADDRESSES.null, balance)

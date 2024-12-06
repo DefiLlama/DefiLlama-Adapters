@@ -107,9 +107,10 @@ function convertUnderlyingAssets(coin){
   // sSUI
   if(coin === SCALLOP_sSUI) return ADDRESSES.sui.SUI
   // sbETH
-  if(coin === SCALLOP_sSB_ETH) return ADDRESSES.sui.WETH
+  if(coin === SCALLOP_sSB_ETH) return ADDRESSES.sui.ETH
   // sSCA
   if(coin === SCALLOP_sSCA) return SCA_ADDRESS
+
   return coin
 }
 
@@ -168,7 +169,6 @@ async function tvl(api) {
 
     /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
     const coin = convertUnderlyingAssets(coin_address)
-   
     api.add(coin, bucket.fields.collateral_vault);
   }
 
