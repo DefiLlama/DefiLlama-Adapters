@@ -1,7 +1,7 @@
 const { get } = require("../helper/http");
 
 async function tvl() {
-  const analyticsData = await get("https://api-general.compx.io/api/analytics/");
+  const analyticsData = await get("https://api-general.compx.io/api/analytics");
   
   // Extract relevant TVL data from the new API response
   const tokenStreamTvl = analyticsData.tokenStreamTVL.amount || 0;
