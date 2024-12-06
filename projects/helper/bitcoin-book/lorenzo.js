@@ -28,5 +28,7 @@ module.exports = [
   "bc1pw8za3k5upa565n0kv55e89a8l0hkzpnfenj767j0cwfu7rn83yhqvuehcd",
   
   //cap2, Delegate to Lombard FP(609b4b8e27e214fd830e69a83a8270a03f7af356f64dde433a7e4b81b2399806)
-  "bc1pa56692v3hxguvu8vgu5d7dh9twlj7wm87qvzvxdru3rnluv8nmdqk58ewz"
+  "bc1pa56692v3hxguvu8vgu5d7dh9twlj7wm87qvzvxdru3rnluv8nmdqk58ewz",
+  //other vault bitcoin address
+  "bc1pu2e56xlz284s5lh9am2k2ys2lhtau5mgq6j9fgljxt7tegsgtp3spmvk0w"
 ]

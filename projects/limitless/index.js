@@ -108,7 +108,6 @@ Object.keys(config).forEach(chain => {
           }
         })
       
-        console.log(provided.length, withdrawn.length)
         const pools = getUniqueAddresses(provided.map(entry => entry.pool).concat(withdrawn.map(entry => entry.pool)))
         const token0s = await api.multiCall({  abi: 'address:token0', calls: pools})
         const token1s = await api.multiCall({  abi: 'address:token1', calls: pools})
