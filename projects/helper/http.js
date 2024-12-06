@@ -44,6 +44,7 @@ async function post(endpoint, body, options) {
     return data
   } catch (e) {
     sdk.log(e.message)
+    console.log(e)
     throw new Error(`Failed to post ${endpoint}`)
   }
 }
