@@ -88,11 +88,17 @@ const fixBalancesTokens = {
   starknet: {
     [ADDRESSES.starknet.BROTHER]: { coingeckoId: "starknet-brother", decimals: 18 },
   },
-  corn:{
+  corn: {
     '0xda5ddd7270381a7c2717ad10d1c0ecb19e3cdfb2': { coingeckoId: "bitcoin", decimals: 18 },
   },
   nibiru: {
     'unibi': { coingeckoId: "nibiru", decimals: 6 },
+  },
+  zilliqa: {
+    '0x097c26f8a93009fd9d98561384b5014d64ae17c2': { coingeckoId: "stzil", decimals: 12 },
+    '0x03a79429acc808e4261a68b0117acd43cb0fdbfa': { coingeckoId: "governance-zil", decimals: 15 },
+    '0xccf3ea256d42aeef0ee0e39bfc94baa9fa14b0ba': { coingeckoId: "xcad-network", decimals: 18 },
+    '0xe64ca52ef34fdd7e20c0c7fb2e392cc9b4f6d049': { coingeckoId: "kalijo", decimals: 18 },
   },
 }
 
