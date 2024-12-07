@@ -1,8 +1,21 @@
-const { uniTvlExport, } = require('../helper/unknownTokens')
-const { uniV3Export } = require('../helper/uniswapV3')
+const utils = require('../helper/utils')
 
-module.exports = uniTvlExport('zilliqa', '0xf42d1058f233329185A36B04B7f96105afa1adD2')
-module.exports = uniV3Export({
-    zilliqa: { factory: '0x000A3ED861B2cC98Cc5f1C0Eb4d1B53904c0c93a', fromBlock: 3862851, },
-  })
+async function tvl() {
+  const poolPrices = await utils.fetchURL('https://static.plunderswap.com/PlunderswapPoolPrices.json')
+  
+  // Sum up tvlZIL from all pools
+  var totalTvl = poolPrices?.data?.reduce((prev, curr) => prev + (Number(curr?.tvlZIL) ?? 0), 0)
+  
+  return {
+    zilliqa: totalTvl
+  }
+}
 
+module.exports = {
+  zilliqa: {
+    tvl,
+  },
+  timetravel: false,
+  misrepresentedTokens: true,
+  methodology: "Counts the tokens locked in PlunderSwap AMM pools to calculate TVL using pool prices from PlunderSwap API. TVL is calculated in ZIL. the https://static.plunderswap.com/PlunderswapPoolPrices.json is updated every 5 mins"
+}
