@@ -1,3 +1,4 @@
+
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
@@ -33,6 +34,7 @@ const DEFAULTS = {
   RBN_RPC: "https://governors.mainnet.redbelly.network",
   CORN_RPC: "https://rpc.ankr.com/corn_maizenet",
   ACE_RPC_MULTICALL: "0x025A2B4fCE1E0bD736D5cebe6C8a52229795376B",
+  ZILLIQA_RPC_MULTICALL: "0x38899efb93d5106d3adb86662c557f237f6ecf57",
 }
 
 const ENV_KEYS = [
