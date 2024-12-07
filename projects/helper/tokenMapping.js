@@ -61,6 +61,7 @@ const fixBalancesTokens = {
   },
   arbitrum: {
     '0xbbeb34F9d50e0BABe1bd03Fd4120296354510529': { coingeckoId: "ignition-fbtc", decimals: 8 },
+    '0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2': { coingeckoId: "ethena-staked-usde", decimals: 18 },
   },
   bsc: {
     '0x2B25f4F134a56054b2b6388C2750F1eA3877e02b': { coingeckoId: "ignition-fbtc", decimals: 8 },
