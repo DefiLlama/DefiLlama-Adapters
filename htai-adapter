@@ -1,0 +1,13 @@
+const { fetchURL } = require("../helper/utils")
+
+async function calculateTVL() {
+  const response = await fetchURL("https://api.saucerswap.finance/pools/conversionRates/latest/0.0.6593244?interval=HOUR")
+  return(response.data.tvlUsd);
+}
+
+module.exports = {
+  timetravel: false,
+  hedera: {
+    tvl: calculateTVL,
+  },
+};
