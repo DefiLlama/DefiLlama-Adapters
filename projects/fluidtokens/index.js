@@ -42,7 +42,7 @@ async function staking() {
   let staking = parseInt(data.staking_tvl);
 
   return {
-    cardano: staking / 1e6,
+    cardano: staking / 1e6 ,
   };
 }
 
