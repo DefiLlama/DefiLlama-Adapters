@@ -43,7 +43,7 @@ const endPoints = {
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
-  noble: "https://api.noble.xyz"
+  noble: "https://noble-api.polkachu.com"
 };
 
 const chainSubpaths = {

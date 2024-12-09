@@ -4,7 +4,7 @@ const { transformBalances } = require("../helper/portedTokens");
 const { get } = require("../helper/http");
 
 const mainLendingContract = "0xc6bc659f1649553c1a3fa05d9727433dc03843baac29473c817d06d39e7621ba";
-const isolatedLendingContract = "0x024c90c44edf46aa02c3e370725b918a59c52b5aa551388feb258bd5a1e82271";
+const isolatedLendingContract = "0x5d22fc881144fb4bbaa40b2abf954348082e133fdcd01f7531574df421bde71d";
 const coinAssetType = '300';
 // main pool
 
@@ -56,7 +56,7 @@ module.exports = {
       markets.forEach(({ cash, coin }) => {
         sdk.util.sumSingleBalance(balances, coin, cash);
       });
-
+/* 
       const isolatedPairAddresses = await getIsolatedPairAddresses();
       const pairs = await Promise.all(isolatedPairAddresses.map(pairAddress => getPair(pairAddress)));
       pairs.forEach(({ collateral_token, total_collateral_amount, asset_token, total_supply_amount, total_borrow_amount }) => {
@@ -64,7 +64,7 @@ module.exports = {
         sdk.util.sumSingleBalance(balances, collateral_token, total_collateral_amount);
         // isolated pair asset tvl (supply - borrow)
         sdk.util.sumSingleBalance(balances, asset_token, Number(total_supply_amount) - Number(total_borrow_amount));
-      });
+      }); */
       
       return transformBalances("aptos", balances);
     },
@@ -77,11 +77,11 @@ module.exports = {
         sdk.util.sumSingleBalance(balances, coin, liability);
       });
 
-      const isolatedPairAddresses = await getIsolatedPairAddresses();
+  /*     const isolatedPairAddresses = await getIsolatedPairAddresses();
       const pairs = await Promise.all(isolatedPairAddresses.map(pairAddress => getPair(pairAddress)));
       pairs.forEach(({ asset_token, total_borrow_amount }) => {
         sdk.util.sumSingleBalance(balances, asset_token, total_borrow_amount);
-      });
+      }); */
 
       return transformBalances("aptos", balances);
     }
