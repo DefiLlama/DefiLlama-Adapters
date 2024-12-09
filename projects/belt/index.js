@@ -24,7 +24,7 @@ const staking = async (api) => {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL includes the liquidity of all the Vaults, 3Tether LP and staking counts the BELT that has been staked in BSC. Data is pulled from:"https://ss.belt.fi/info/all.json".',
+  methodology: 'TVL includes the liquidity of all the Vaults, 3Tether LP and staking counts the BELT that has been staked in BSC.',
   bsc: { tvl, staking },
   heco: { tvl, staking },
   klaytn: { tvl }
