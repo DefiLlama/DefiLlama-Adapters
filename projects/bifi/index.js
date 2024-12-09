@@ -66,14 +66,7 @@ Object.keys(chainPools).forEach(chain => {
   const pools = chainPools[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const tvl = await sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) });
-
-      if(chain === 'bfc') {
-        const wstBfcTvl = await wstBfc(api);
-        tvl[`bfc:${ADDRESSES.null}`] = String(Number(tvl[`bfc:${ADDRESSES.null}`]) + Number(wstBfcTvl));
-      }
-      
-      return tvl
+      return sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) })
     }
   }
 })
