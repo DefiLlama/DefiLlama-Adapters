@@ -10,7 +10,6 @@ const Tvl = async (api) => {
 }
 
 module.exports = {
-  start: 21363649,
   ethereum: {
     tvl: Tvl,
   }
