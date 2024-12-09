@@ -4,6 +4,7 @@ const CEL_ADDRESS = "0x8b83ECC4EF8FaEc5c05b7D6EC002B659BE137120";
 
 async function tvl(api) {
   let pools = await api.call({ abi: abiInfo.poolTvls, target: FARM_IONIC_ADDRESS });
+  
   pools.forEach(i => api.add(i.assets, i.tvl));
 }
 
