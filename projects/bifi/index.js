@@ -51,21 +51,22 @@ const chainPools = {
     UnifiedDAI: { pool: '0x2168dAb12A6A93181bbAD9C9dc769307C36fB45C', token: ADDRESSES.bfc.UnifiedDAI },
     UnifiedWBTC: { pool: '0xEa3b4a2dA5DbE8379AD4c60aaD5184df69D7C9AD', token: ADDRESSES.bfc.WBTC},
     UnifiedBTCB: { pool: '0x0B31FeE8bF53bFe2f5F7083B73A4c9C8B517E32F', token: ADDRESSES.bfc.BTCB},
-    BitcoinUSD: { pool: '0xcF2FC1d354018A39D5Ef036aA865Ad8cbF7B611E', token: ADDRESSES.bfc.BitcoinUSD }
+    BitcoinUSD: { pool: '0xcF2FC1d354018A39D5Ef036aA865Ad8cbF7B611E', token: ADDRESSES.bfc.BitcoinUSD },
+    wstBfc: { pool: '0xf9B2f6D2a61923E61aD9F6DAA78f52b7e1722b12', token: '0x386f2F5d9A97659C86f3cA9B8B11fc3F76eFDdaE' },
   },
 }
 
 module.exports = {
   bitcoin: {
     tvl: bitcoin
-  },
+  }
 };
 
 Object.keys(chainPools).forEach(chain => {
   const pools = chainPools[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      return sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) })
+      return sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) });
     }
   }
 })
