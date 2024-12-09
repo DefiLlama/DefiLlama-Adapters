@@ -100,6 +100,10 @@ const fixBalancesTokens = {
     '0x03a79429acc808e4261a68b0117acd43cb0fdbfa': { coingeckoId: "governance-zil", decimals: 15 },
     '0xccf3ea256d42aeef0ee0e39bfc94baa9fa14b0ba': { coingeckoId: "xcad-network", decimals: 18 },
     '0xe64ca52ef34fdd7e20c0c7fb2e392cc9b4f6d049': { coingeckoId: "kalijo", decimals: 18 },
+    '0xe9d47623bb2b3c497668b34fcf61e101a7ea4058': { coingeckoId: "lunr-token", decimals: 4 },
+    '0x9c3fe3f471d8380297e4fb222efb313ee94dfa0f': { coingeckoId: "zilpepe", decimals: 18 },
+    '0x7d2ff48c6b59229d448473d267a714d29f078d3e': { coingeckoId: "zilstream", decimals: 8 },
+    '0x241c677d9969419800402521ae87c411897a029f': { coingeckoId: "web3war", decimals: 12 },
   },
 }
 
