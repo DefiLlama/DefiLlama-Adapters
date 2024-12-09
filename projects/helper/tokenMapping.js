@@ -18,7 +18,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru']
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse',
 ]
@@ -61,6 +61,7 @@ const fixBalancesTokens = {
   },
   arbitrum: {
     '0xbbeb34F9d50e0BABe1bd03Fd4120296354510529': { coingeckoId: "ignition-fbtc", decimals: 8 },
+    '0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2': { coingeckoId: "ethena-staked-usde", decimals: 18 },
   },
   bsc: {
     '0x2B25f4F134a56054b2b6388C2750F1eA3877e02b': { coingeckoId: "ignition-fbtc", decimals: 8 },
@@ -84,7 +85,22 @@ const fixBalancesTokens = {
   },
   xlayer: {
     [ADDRESSES.null]: { coingeckoId: "okb", decimals: 18 },
-  }
+  },
+  starknet: {
+    [ADDRESSES.starknet.BROTHER]: { coingeckoId: "starknet-brother", decimals: 18 },
+  },
+  corn: {
+    '0xda5ddd7270381a7c2717ad10d1c0ecb19e3cdfb2': { coingeckoId: "bitcoin", decimals: 18 },
+  },
+  nibiru: {
+    'unibi': { coingeckoId: "nibiru", decimals: 6 },
+  },
+  zilliqa: {
+    '0x097c26f8a93009fd9d98561384b5014d64ae17c2': { coingeckoId: "stzil", decimals: 12 },
+    '0x03a79429acc808e4261a68b0117acd43cb0fdbfa': { coingeckoId: "governance-zil", decimals: 15 },
+    '0xccf3ea256d42aeef0ee0e39bfc94baa9fa14b0ba': { coingeckoId: "xcad-network", decimals: 18 },
+    '0xe64ca52ef34fdd7e20c0c7fb2e392cc9b4f6d049': { coingeckoId: "kalijo", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

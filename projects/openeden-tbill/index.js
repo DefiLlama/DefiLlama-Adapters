@@ -16,7 +16,6 @@ async function evmTvl(api) {
 
 async function solTvl (api) {
   const res = await getTokenSupplies([solTbill])
-  console.log(res)
   Object.entries(res).forEach(([token, balance]) => {
     api.add(token, balance)
   })
