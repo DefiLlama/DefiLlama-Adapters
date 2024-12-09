@@ -14,15 +14,15 @@ module.exports = {
     methodology: "Counts swap.coffee smartcontract balance as TVL.",
     timetravel: false,
     ton: {
-        tvl: sumTokensExport({
-            owners: [XROCK_STAKING_CONTRACT],
-            tokens: [XROCK_MASTER, DEDUST_XROCK_USDT_POOL, STONFI_XROCK_USDT_POOL],
+        tvl: () => { },
+        staking: sumTokensExport({
+            owners: [CES_STAKING_CONTRACT, XROCK_STAKING_CONTRACT],
+            tokens: [XROCK_MASTER, CES_MASTER],
             onlyWhitelistedTokens: true
         }),
-        staking: sumTokensExport({owners: [CES_STAKING_CONTRACT], tokens: [CES_MASTER], onlyWhitelistedTokens: true}),
         pool2: sumTokensExport({
-            owners: [CES_STAKING_CONTRACT],
-            tokens: [DEDUST_TON_CES_POOL, STONFI_CES_TON_POOL],
+            owners: [CES_STAKING_CONTRACT, XROCK_STAKING_CONTRACT],
+            tokens: [DEDUST_TON_CES_POOL, STONFI_CES_TON_POOL, DEDUST_XROCK_USDT_POOL, STONFI_XROCK_USDT_POOL],
             onlyWhitelistedTokens: true
         })
     }
