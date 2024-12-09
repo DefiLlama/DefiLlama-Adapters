@@ -56,6 +56,8 @@ const chainPools = {
 }
 
 async function wstBfc(api) {
+  if(api.chain !== 'bfc') return;
+
   const wstBfc = await api.call({
     target: '0x386f2F5d9A97659C86f3cA9B8B11fc3F76eFDdaE',
     abi: "erc20:balanceOf",
@@ -68,7 +70,7 @@ async function wstBfc(api) {
     params: [wstBfc],
   });
 
-  return bfcAmount
+  api.addGasToken(bfcAmount)
 }
 
 
@@ -82,14 +84,8 @@ Object.keys(chainPools).forEach(chain => {
   const pools = chainPools[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const tvl = await sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) });
-
-      if(chain === 'bfc') {
-        const wstBfcTvl = await wstBfc(api);
-        tvl[`bfc:${ADDRESSES.null}`] = String(Number(tvl[`bfc:${ADDRESSES.null}`]) + Number(wstBfcTvl));
-      }
-      
-      return tvl
+      await wstBfc(api)
+      return sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) });
     }
   }
 })
