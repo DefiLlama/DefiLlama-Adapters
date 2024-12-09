@@ -114,11 +114,6 @@ const config = {
       '0x5509Be53b2dD0CD6fb8473B0EdA94e0a3059b73a',
     ]
   },
-  // injective: {
-  //   owners: [
-  //     'inj1wvhk7xhzf9kus9a4tpa6v8vhuqvm265rz7zd6n',
-  //   ]
-  // }
 }
 
 module.exports = cexExports(config)
