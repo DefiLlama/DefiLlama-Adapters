@@ -7,7 +7,6 @@ const SPRINGSUI_COIN_TYPE = '0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2c
 
 async function tvl(api) {  
   const redemptionRates = await getRedemtionRates()
-  console.log(redemptionRates)
   const object = await sui.getObject(SUILEND_LENDING_MARKET_ID)
 
   for (const reserve of object.fields.reserves) {
