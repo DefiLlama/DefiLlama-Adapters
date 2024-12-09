@@ -55,17 +55,41 @@ const chainPools = {
   },
 }
 
+async function wstBfc(api) {
+  const wstBfc = await api.call({
+    target: '0x386f2F5d9A97659C86f3cA9B8B11fc3F76eFDdaE',
+    abi: "erc20:balanceOf",
+    params: ['0xf9B2f6D2a61923E61aD9F6DAA78f52b7e1722b12'],
+  });
+
+  const bfcAmount = await api.call({
+    target: '0x386f2F5d9A97659C86f3cA9B8B11fc3F76eFDdaE',
+    abi: "function getStBFCByWstBFC(uint256 _wstBFCAmount) external view returns (uint256)",
+    params: [wstBfc],
+  });
+
+  return bfcAmount
+}
+
+
 module.exports = {
   bitcoin: {
     tvl: bitcoin
-  },
+  }
 };
 
 Object.keys(chainPools).forEach(chain => {
   const pools = chainPools[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      return sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) })
+      const tvl = await sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) });
+
+      if(chain === 'bfc') {
+        const wstBfcTvl = await wstBfc(api);
+        tvl[`bfc:${ADDRESSES.null}`] = String(Number(tvl[`bfc:${ADDRESSES.null}`]) + Number(wstBfcTvl));
+      }
+      
+      return tvl
     }
   }
 })
