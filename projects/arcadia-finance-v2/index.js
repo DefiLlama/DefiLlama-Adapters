@@ -10,6 +10,7 @@ const config = {
     },
     uniNFT: "0x03a520b32c04bf3beef7beb72e919cf822ed34f1",
     slipNFT: "0x827922686190790b37229fd06084350e74485b72",
+    abNFT: "0xB7996D1ECD07fB227e8DcA8CD5214bDfb04534E5",
     wAeroNFT: "0x17B5826382e3a5257b829cF0546A08Bd77409270".toLowerCase(),
     sAeroNFT: "0x9f42361B7602Df1A8Ae28Bf63E6cb1883CD44C27".toLowerCase(),
     sSlipNFT: "0x1Dc7A0f5336F52724B650E39174cfcbbEdD67bF1".toLowerCase(),
@@ -62,7 +63,7 @@ async function uwrapStakedSlipstreamLP( {api, sSlipNftIds, }) {
   }
 
 async function tvl(api) {
-  let { factory, pools, uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT } =
+  let { factory, pools, uniNFT, slipNFT, abNFT, wAeroNFT, sAeroNFT, sSlipNFT } =
     config[api.chain];
   pools = Object.values(pools);
   const uTokens = await api.multiCall({ abi: "address:asset", calls: pools });
@@ -77,7 +78,7 @@ async function tvl(api) {
     account,
   ]);
   // add all simple ERC20s
-  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT], });
+  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, abNFT,wAeroNFT, sAeroNFT, sSlipNFT], });
 
   // add all Arcadia-wrapped LP positions
   await unwrapArcadiaAeroLP({ api, ownerIds });
