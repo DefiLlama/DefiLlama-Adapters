@@ -105,6 +105,10 @@ const fixBalancesTokens = {
     '0x7d2ff48c6b59229d448473d267a714d29f078d3e': { coingeckoId: "zilstream", decimals: 8 },
     '0x241c677d9969419800402521ae87c411897a029f': { coingeckoId: "web3war", decimals: 12 },
   },
+  polynomial: {
+    '0x6224dc817dc4d5c53fcf3eb08a4f84c456f9f38f': { coingeckoId: "usual-usd", decimals: 18 },
+    '0x2369eb4a76d80fbeaa7aa73e1e1f9eaee88c07f4': { coingeckoId: "ethereum:0x4f460bb11cf958606c69a963b4a17f9daeeea8b6", decimals: 0 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
