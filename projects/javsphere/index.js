@@ -1,32 +1,128 @@
-const { get } = require('../helper/http')
 const { staking } = require("../helper/staking.js");
 const {stakings} = require("../helper/staking");
-const vaultUrl = "https://mainnet.ocean.jellyfishsdk.com/v0/mainnet/address/df1q7zkdpw6hd5wzcxudx28k72vjvpefa4pyqls2grnahhyw4u8kf0zqu2cnz6/vaults";
+const ethers = require("ethers");
+const BigNumber = require("bignumber.js");
 
-const ONE_YEAR_LOCKING_MAINNET = '0xD88Bb8359D694c974C9726b6201479a123212333'
-const TWO_YEARS_LOCKING_MAINNET = '0xc5B7aAc761aa3C3f34A3cEB1333f6431d811d638'
+const STAKING_BASE = '0xE420BBb4C2454f305a3335BBdCE069326985fb5b'
+const FREEZER_BASE = '0x03e225D2bd32F5ecE539005B57F9B94A743ADBFB'
+const VESTING_BASE = '0x42a40321843220e9811A1385D74d9798436f7002'
+const JAV_BASE = '0xEdC68c4c54228D273ed50Fc450E253F685a2c6b9'
+const abiStaking = [{
+  "inputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "name": "poolInfo",
+  "outputs": [
+    {
+      "internalType": "contract IERC20",
+      "name": "baseToken",
+      "type": "address"
+    },
+    {
+      "internalType": "contract IERC20",
+      "name": "rewardToken",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "totalShares",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "lastRewardBlock",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "accRewardPerShare",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "rewardsAmount",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "rewardsPerShare",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "minStakeAmount",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}]
+const abiFreezer = [{
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "poolInfo",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "baseToken",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "rewardToken",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalShares",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastRewardBlock",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "accRewardPerShare",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+}]
+
+const provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
+const contractStaking = new ethers.Contract(STAKING_BASE, abiStaking, provider);
+const contractFreezer = new ethers.Contract(FREEZER_BASE, abiFreezer, provider);
 
 async function tvl(api) {
-  const tvls = await api.multiCall({ abi: 'uint256:currentTvl', calls: [ONE_YEAR_LOCKING_MAINNET, TWO_YEARS_LOCKING_MAINNET] })
-  const dusdTVL = tvls.reduce((agg, i) => agg + i / 1e18, 0)
-  api.addCGToken('decentralized-usd', dusdTVL)
-}
-
-async function defichainTvl(api) {
-  const { data: [vault] } = await get(vaultUrl)
-  const vaultTvl = +vault.collateralValue - +vault.loanValue
-  api.addCGToken('decentralized-usd', vaultTvl)
+  const [stakingTvl, freezerTvl] = await Promise.all([
+    contractStaking.poolInfo(0),
+    contractFreezer.poolInfo(0)
+  ]);
+  const javTVL = new BigNumber(stakingTvl.totalShares).toNumber() / 1e18 + new BigNumber(freezerTvl.totalShares).toNumber() / 1e18;
+  api.addCGToken('javsphere', javTVL)
 }
 
 module.exports = {
-  methodology: `We count the total value locked in DUSD from all current products (dusd staking is a vault in defichain L1, 
-    1 year bond and 2 year bond are smart contracts on defimetachain L2. We also track staking and freezer of javsphers native token JAV). `,
-  defichain_evm: {
+  methodology: `We count the total value locked from staking and freezer of javsphers native token JAV). `,
+  hallmarks: [
+    [1733837635, "Migration to BASE"],
+  ],
+  base: {
     tvl,
-    staking: stakings( ['0x4e15D4225623D07Adb43e9D546E57E1E6097e869', '0xF923f0828c56b27C8f57bc698c99543f63091E9A'],
-      '0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E'),
-    vesting: staking('0x7246ad1ac72715c5fd6c1FD7460A63afB8289104','0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E')
-  }, defichain: {
-    tvl: defichainTvl
+    staking: stakings( [STAKING_BASE, FREEZER_BASE],
+        JAV_BASE),
+    vesting: staking(VESTING_BASE,JAV_BASE)
   },
 }
