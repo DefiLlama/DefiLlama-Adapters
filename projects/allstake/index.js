@@ -57,7 +57,7 @@ module.exports = {
     tvl: nearTvl,
   },
   solana: {
-    tvl: solanaTvl,
+    tvl: () => ({})
   },
   ethereum: {
     tvl: ethereumTvl,
