@@ -1,6 +1,7 @@
 const sui = require("../helper/chain/sui");
 
 const SINGLE_DEPOSIT_VAULT_REGISTRY = "0xd67cf93a0df61b4b3bbf6170511e0b28b21578d9b87a8f4adafec96322dd284d";
+const REFUND_VAULT_REGISTRY ="0xf9acfc0a06094f6515c4392ffef84d40cd5f1d72bc74cbde3ee99dd7bca6cf3f"
 const fud_token = "0x76cb819b01abed502bee8a702b4c2d547532c12f25001c9dea795a5e631c26f1::fud::FUD";
 const V1_SINGLE_DEPOSIT_VAULT_REGISTRY = "0x4ae62c4d67f9f5d7077626fcc6d450535c4df710da455a0a2bd2226558832629";
 const V1_SINGLE_BID_VAULT_REGISTRY = "0x2c8cdd00ced47e717420cd2fc54990b3b38e115e34a9209271063a59ddeeb059";
@@ -37,10 +38,7 @@ async function tvl(api) {
     parent: V1_SINGLE_DEPOSIT_VAULT_REGISTRY,
   });
 
-  const v1depositVaultIds = v1depositVaultFields.map((item) => item.fields.id.id);
-  const v1depositVaults = await sui.getObjects(v1depositVaultIds);
-
-  v1depositVaults.forEach(
+  v1depositVaultFields.forEach(
     ({
       type,
       fields: {
@@ -59,11 +57,7 @@ async function tvl(api) {
     parent: V1_SINGLE_BID_VAULT_REGISTRY,
   });
 
-  const v1bidVaultIds = v1bidVaultFields.map((item) => item.fields.id.id);
-
-  const v1bidVaults = await sui.getObjects(v1bidVaultIds);
-
-  v1bidVaults.forEach(
+  v1bidVaultFields.forEach(
     ({
       type,
       fields: {
@@ -76,6 +70,16 @@ async function tvl(api) {
       api.add(coin, fields.performance_fee_sub_vault.fields.balance);
     }
   );
+
+  // Add Refund Vaults TVL
+  const refundVaultFields = await sui.getDynamicFieldObjects({
+    parent: REFUND_VAULT_REGISTRY,
+  });
+
+  refundVaultFields.forEach(({ fields }) => {
+    const token = "0x" + fields.token.fields.name;
+    api.add(token, fields.share_supply);
+  });
 }
 
 module.exports = {
