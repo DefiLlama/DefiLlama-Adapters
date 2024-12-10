@@ -61,6 +61,7 @@ async function tvl(api) {
         "type_arguments": ["0x1::fungible_asset::Metadata"],
         "args": [eth_resource_account, eth_metadata]
       });
+<<<<<<< HEAD
   const eth_r = await getResource(
       AGDEX,
       `${AGDEX}::pool::Vault<0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WETH>`
@@ -68,11 +69,17 @@ async function tvl(api) {
   const eth_value = parseInt(eth_balance) + parseInt(eth_r.reserved_amount);
 
   const btc_balance  = 
+=======
+  api.add(lzUSDC, eth_value);
+
+  const btc_value  = 
+>>>>>>> main
     await function_view({
         "functionStr": primary_fungible_asset_balance,
         "type_arguments": ["0x1::fungible_asset::Metadata"],
         "args": [btc_resource_account, btc_metadata]
       });
+<<<<<<< HEAD
   const btc_r = await getResource(
       AGDEX,
       `${AGDEX}::pool::Vault<0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WBTC>`
@@ -80,16 +87,24 @@ async function tvl(api) {
   const btc_value = parseInt(btc_balance) + parseInt(btc_r.reserved_amount);
 
   const apt_balance  = 
+=======
+  api.add(lzUSDC, btc_value);
+
+  const apt_value  = 
+>>>>>>> main
     await function_view({
         "functionStr": primary_fungible_asset_balance,
         "type_arguments": ["0x1::fungible_asset::Metadata"],
         "args": [apt_resource_account, apt_metadata]
     });
+<<<<<<< HEAD
   const apt_r = await getResource(
       AGDEX,
       `${AGDEX}::pool::Vault<0x1::aptos_coin::AptosCoin>`
   );
   const apt_value = parseInt(apt_balance) + parseInt(apt_r.reserved_amount);
+=======
+>>>>>>> main
   api.add(lzUSDC, usdc_value);
   api.add(BTC, btc_value);
   api.add(ETH, eth_value);

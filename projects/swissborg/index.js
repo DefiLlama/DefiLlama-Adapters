@@ -88,6 +88,7 @@ const config = {
       '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
       '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
+      '0x9531AA9883bF11f2a63d86caD7e826f37Acec3c4',
     ]
   },
   polygon: {
@@ -110,13 +111,9 @@ const config = {
   arbitrum: {
     owners: [
       '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+      '0x5509Be53b2dD0CD6fb8473B0EdA94e0a3059b73a',
     ]
   },
-  // injective: {
-  //   owners: [
-  //     'inj1wvhk7xhzf9kus9a4tpa6v8vhuqvm265rz7zd6n',
-  //   ]
-  // }
 }
 
 module.exports = cexExports(config)
