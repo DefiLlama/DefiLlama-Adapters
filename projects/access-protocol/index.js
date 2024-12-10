@@ -1,13 +1,16 @@
-const { CentralStateV2, ACCESS_PROGRAM_ID } = require("@accessprotocol/js");
-const { getConnection } = require("../helper/solana");
+const { getMultipleAccounts, decodeAccount } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js");
 
-async function staking() {
-  const connection = getConnection();
-  const [centralKey] = CentralStateV2.getKey(ACCESS_PROGRAM_ID);
-  const centralState = await CentralStateV2.retrieve(connection, centralKey);
-  return {
-    [`solana:${centralState.tokenMint.toString()}`]: Number(centralState.totalStaked.toString())
-  }
+async function staking(api) {
+  const programId = new PublicKey('6HW8dXjtiTGkD4jzXs7igdFmZExPpmwUrRN5195xGup')
+  const accountKey = getKey(programId);
+  const [account] = await getMultipleAccounts([accountKey]);
+  const decoded = decodeAccount('access', account);
+  api.add(decoded.tokenMint.toBase58(), decoded.totalStaked);
+}
+
+const getKey = (address) => {
+  return PublicKey.findProgramAddressSync([address.toBuffer()], address)[0].toBase58();
 }
 
 module.exports = {
