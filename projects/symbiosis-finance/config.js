@@ -15,7 +15,7 @@ module.exports = {
           '0x582d872A1B094FC48F5DE31D3B73F2D9bE47def1', // WTON
         ],
         holders: [
-            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal v2 address
+            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal
         ]
     },
     {
@@ -30,7 +30,7 @@ module.exports = {
           '0x76A797A59Ba2C17726896976B7B3747BfD1d220f', // WTON
         ],
         holders: [
-            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal v2 address
+            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
         ]
     },
     {
@@ -40,7 +40,7 @@ module.exports = {
           '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664', // USDC.e
         ],
         holders: [
-            '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal v2 address
+            '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal
         ]
     },
     {
@@ -51,7 +51,7 @@ module.exports = {
           '0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89', // FRAX
         ],
         holders: [
-            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal v2 address
+            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal
         ]
     },
     {
@@ -62,7 +62,7 @@ module.exports = {
           '0x7bD3ffe9f0C9CF08FD60e102FEa455A6EA580276', // USDT
         ],
         holders: [
-            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal v2 address
+            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal
         ]
     },
     {
@@ -71,7 +71,7 @@ module.exports = {
           '0x919C1c267BC06a7039e03fcc2eF738525769109c', // USDt
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -80,7 +80,7 @@ module.exports = {
           '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc', // USDC
         ],
         holders: [
-            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal v2 address
+            '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8' // portal
         ]
     },
     {
@@ -94,7 +94,7 @@ module.exports = {
           '0xED0c95EBe5a3E687cB2224687024FeC6518E683e', // syBTC
         ],
         holders: [
-            '0x4f5456d4d0764473DfCA1ffBB8524C151c4F19b9' // portal v2 address
+            '0x4f5456d4d0764473DfCA1ffBB8524C151c4F19b9' // portal
         ]
     },
     {
@@ -109,7 +109,7 @@ module.exports = {
           '0x1A6B3A62391ECcaaa992ade44cd4AFe6bEC8CfF1', // UXLINK
         ],
         holders: [
-            '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9' // portal v2 address
+            '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9' // portal
         ]
     },
     {
@@ -119,7 +119,7 @@ module.exports = {
           '0x4200000000000000000000000000000000000006', // WETH
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -129,7 +129,7 @@ module.exports = {
           '0x722E8BdD2ce80A4422E880164f2079488e115365', // WETH
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -140,7 +140,7 @@ module.exports = {
           '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9', // WETH
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -151,7 +151,7 @@ module.exports = {
           '0x6EF95B6f3b0F39508e3E04054Be96D5eE39eDE0d', // SIS
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -162,7 +162,7 @@ module.exports = {
           '0x1Bdd8878252DaddD3Af2ba30628813271294eDc0', // CATI
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -173,7 +173,7 @@ module.exports = {
           '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G
         ],
         holders: [
-            '0xEE981B2459331AD268cc63CE6167b446AF4161f8' // portal v2 address
+            '0xEE981B2459331AD268cc63CE6167b446AF4161f8' // portal
         ]
     },
     {
@@ -182,7 +182,7 @@ module.exports = {
           'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
         ],
         holders: [
-            'TVgY3ayqTGUoe7th84ZNL5peVfRNdLFDjf' // portal v2 address
+            'TVgY3ayqTGUoe7th84ZNL5peVfRNdLFDjf' // portal
         ]
     },
     {
@@ -194,7 +194,7 @@ module.exports = {
           '0xc4d46E8402F476F269c379677C99F18E22Ea030e', // pufETH
         ],
         holders: [
-            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal v2 address
+            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
         ]
     },
     {
@@ -205,7 +205,7 @@ module.exports = {
           '0xA53E005Cecd3D7C89A4AE814617cC14828b6527E', // pufETH
         ],
         holders: [
-            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal v2 address
+            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
         ]
     },
     {
@@ -214,7 +214,7 @@ module.exports = {
           '0x420000000000000000000000000000000000000A', // WETH
         ],
         holders: [
-            '0xd8db4fb1fEf63045A443202d506Bcf30ef404160' // portal v2 address
+            '0xd8db4fb1fEf63045A443202d506Bcf30ef404160' // portal
         ]
     },
     {
@@ -225,7 +225,7 @@ module.exports = {
           '0xDeF886C55a79830C47108eeb9c37e78a49684e41', // USDT
         ],
         holders: [
-            '0x318C2B9a03C37702742C3d40C72e4056e430135A' // portal v2 address
+            '0x318C2B9a03C37702742C3d40C72e4056e430135A' // portal
         ]
     },
     {
@@ -234,7 +234,7 @@ module.exports = {
           '0x4200000000000000000000000000000000000006', // WETH
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -244,7 +244,7 @@ module.exports = {
           '0x542fDA317318eBF1d3DEAf76E0b632741A7e677d', // WRBTC
         ],
         holders: [
-            '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4' // portal v2 address
+            '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4' // portal
         ]
     },
     {
@@ -253,7 +253,7 @@ module.exports = {
           '0x4300000000000000000000000000000000000004', // WETH
         ],
         holders: [
-            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal v2 address
+            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
         ]
     },
     {
@@ -262,7 +262,7 @@ module.exports = {
           '0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA', // WBTC
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -272,7 +272,7 @@ module.exports = {
           '0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC', // pufETH
         ],
         holders: [
-            '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189' // portal v2 address
+            '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189' // portal
         ]
     },
     {
@@ -281,7 +281,7 @@ module.exports = {
           '0x8034aB88C3512246Bf7894f57C834DdDBd1De01F', // coreBTC
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -290,7 +290,7 @@ module.exports = {
           '0xA51894664A773981C6C112C43ce576f315d5b1B6', // WETH
         ],
         holders: [
-            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal v2 address
+            '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
         ]
     },
     {
@@ -300,7 +300,7 @@ module.exports = {
           '0xB75D0B03c06A926e488e2659DF1A861F860bD3d1', // USDT
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -310,7 +310,7 @@ module.exports = {
           '0x0cbe0dF132a6c6B4a2974Fa1b7Fb953CF0Cc798a', // USDC.ETH
         ],
         holders: [
-            '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf' // portal v2 address
+            '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf' // portal
         ]
     },
     {
@@ -319,7 +319,7 @@ module.exports = {
           '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59', // USDC
         ],
         holders: [
-            '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal v2 address
+            '0xE75C7E85FE6ADd07077467064aD15847E6ba9877' // portal
         ]
     },
     {
@@ -329,7 +329,7 @@ module.exports = {
           '0xFc00000000000000000000000000000000000001', // FRAX
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -339,7 +339,7 @@ module.exports = {
           '0xBB859E225ac8Fb6BE1C7e38D87b767e95Fef0EbD', // wG
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -348,7 +348,7 @@ module.exports = {
           '0x4200000000000000000000000000000000000006', // WBTC
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -360,7 +360,7 @@ module.exports = {
           'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI
         ],
         holders: [
-            'EQDpUHhVl5lJ6Y47DCd0TWdXB_kd-U-N6KyAELePNjfj15HT' // portal v2 address
+            'EQDpUHhVl5lJ6Y47DCd0TWdXB_kd-U-N6KyAELePNjfj15HT' // portal
         ]
     },
     {
@@ -369,7 +369,7 @@ module.exports = {
           '0xaa5b845F8C9c047779bEDf64829601d8B264076c', // USDC
         ],
         holders: [
-            '0x2E818E50b913457015E1277B43E469b63AC5D3d7' // portal v2 address
+            '0x2E818E50b913457015E1277B43E469b63AC5D3d7' // portal
         ]
     },
     {
@@ -378,7 +378,7 @@ module.exports = {
           '0xe34c91815d7fc18A9e2148bcD4241d0a5848b693', // USDC
         ],
         holders: [
-            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal v2 address
+            '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
         ]
     },
     {
@@ -387,7 +387,7 @@ module.exports = {
           '0x9f98f9f312d23d078061962837042b8918e6aff2', // USDC
         ],
         holders: [
-            '0x6148FD6C649866596C3d8a971fC313E5eCE84882' // portal v2 address
+            '0x6148FD6C649866596C3d8a971fC313E5eCE84882' // portal
         ]
     }
   ]
