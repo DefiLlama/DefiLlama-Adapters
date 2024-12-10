@@ -1,14 +1,15 @@
-const abi = require("./abi.json");
+const abi = require("./abi.json")
 
-const { stakings } = require("../helper/staking");
-const { getLogs } = require("../helper/cache/getLogs");
+const { stakings } = require("../helper/staking")
+const { getLogs } = require("../helper/cache/getLogs")
+const { sumTokens2 } = require("../helper/unwrapLPs")
 
-const singleStakingContracts = ["0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6"];
-const CPOOL = "0x66761fa41377003622aee3c7675fc7b5c1c2fac5";
+const singleStakingContracts = ["0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6"]
+const CPOOL = "0x66761fa41377003622aee3c7675fc7b5c1c2fac5"
 
 module.exports = {
   methodology: "We count liquidity by Stables deposited on the pools contracts",
-};
+}
 
 const CHAIN = {
   ARBITRUM: "arbitrum",
@@ -20,7 +21,11 @@ const CHAIN = {
   FLARE: "flare",
   BASE: "base",
   MANTLE: "mantle",
-};
+}
+
+const blacklistedTokens = {
+  flare: ['0x4a771cc1a39fdd8aa08b8ea51f7fd412e73b3d2b'],
+}
 
 const config = {
   [CHAIN.ETHEREUM]: {
@@ -60,6 +65,14 @@ const config = {
       factory: "0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80",
       fromBlock: 113112037,
     },
+    prime: {
+      factory: "0x44fEF0fAB3A96CA34b06d5142350Ef9223F65A7e",
+      fromBlock: 226174706,
+    },
+    vaults: {
+      factory: "0xA8e8AccabCf29e7d8b33D086085D87F9F38a6Ed7",
+      fromBlock: 226193395
+    }
   },
   [CHAIN.MANTLE]: {
     dynamic: {
@@ -69,6 +82,10 @@ const config = {
     vaults: {
       factory: "0xF041A2838794266d19f79709F416A2977F896A9B",
       fromBlock: 59594636
+    },
+    prime: {
+      factory: "0x29157e2B6A34Ae1787CDdD05Ad54DD4aa9783A5c",
+      fromBlock: 68483768
     }
   },
   [CHAIN.BASE]: {
@@ -97,55 +114,47 @@ const config = {
       fromBlock: 23711495,
     },
   },
-};
+}
 
 const getEventAndABI = (protocol) => {
-  let borrowFn = "";
-  let abi = "";
+  let borrowFn
+  let abi
   switch (protocol) {
     case "dynamic":
-      (abi =
-        "event PoolCreated(address indexed pool, address indexed owner, address indexed token)"),
-        (borrowFn = "uint256:borrows");
-      break;
+      abi = "event PoolCreated(address indexed pool, address indexed owner, address indexed token)";
+      borrowFn = "uint256:borrows"; break;
     case "vaults":
-      (abi =
-        "event PoolCreated(uint256 depositCap, uint256 repaymentFrequency, uint256 minimumNoticePeriod, uint256 minDeposit, uint256 lendAPR, address indexed asset, address indexed borrower, address pool, address bondNft, bool indexed kycRequired)"),
-        (borrowFn = "uint256:poolSize");
-      break;
+      abi = "event PoolCreated(uint256 depositCap, uint256 repaymentFrequency, uint256 minimumNoticePeriod, uint256 minDeposit, uint256 lendAPR, address indexed asset, address indexed borrower, address pool, address bondNft, bool indexed kycRequired)";
+      borrowFn = "uint256:poolSize"; break;
     case "treasury":
-      (abi =
-        "event PoolCreated(address asset, address treasuryYieldAddress, address manager, bool kycRequired)"),
-        (borrowFn = "uint256:cash");
-        break;
+      abi = "event PoolCreated(address asset, address treasuryYieldAddress, address manager, bool kycRequired)";
+      borrowFn = "uint256:cash"; break;
     case "prime":
-      abi =
-        "event PoolCreated(address pool, address indexed borrower, bool isBulletLoan, address indexed asset, uint256 size, uint256 rateMantissa, uint256 tenor, uint256 depositWindow, uint256 spreadRate, uint256 originationRate, uint256 incrementPerRoll, uint256 penaltyRatePerYear)";
-      borrowFn = "uint256:currentSize";
-      break;
+      abi = "event PoolCreated(address pool, address indexed borrower, bool isBulletLoan, address indexed asset, uint256 size, uint256 rateMantissa, uint256 tenor, uint256 depositWindow, uint256 spreadRate, uint256 originationRate, uint256 incrementPerRoll, uint256 penaltyRatePerYear)"
+      borrowFn = "uint256:currentSize"; break;
   }
-  return { borrowFn, abi };
-};
+  return { borrowFn, abi }
+}
 
 const prepareProtocolsPerChain = (chain) => {
-  let contracts = [];
-  const protocols = Object.keys(config[chain]);
+  let contracts = []
+  const protocols = Object.keys(config[chain])
   protocols.forEach((protocol) => {
-    const { fromBlock, factory } = config[chain][protocol];
-    const { abi, borrowFn } = getEventAndABI(protocol);
+    const { fromBlock, factory } = config[chain][protocol]
+    const { abi, borrowFn } = getEventAndABI(protocol)
     contracts.push({
       fromBlock,
       factory,
       abi,
       borrowFn,
       protocol,
-    });
-  });
-  return contracts;
-};
+    })
+  })
+  return contracts
+}
 
 Object.keys(config).forEach((chain) => {
-  const dataPerChain = prepareProtocolsPerChain(chain);
+  const dataPerChain = prepareProtocolsPerChain(chain)
   const _getLogs = async (api, factory, fromBlock, abi, protocol) => {
     const logs = await getLogs({
       api,
@@ -153,43 +162,43 @@ Object.keys(config).forEach((chain) => {
       fromBlock,
       eventAbi: abi,
       onlyArgs: true,
-    });
+    })
 
     const pools = logs.map((log) =>
       protocol == "treasury" ? log.treasuryYieldAddress : log.pool
-    );
+    )
     const tokens = logs.map((log) =>
       protocol == "dynamic" ? log.token : log.asset
-    );
-    return { pools, tokens };
-  };
+    )
+    return { pools, tokens }
+  }
 
   const tvl = async (api) => {
-    let allTokens = [];
-    let allPools = [];
+    let allTokens = []
+    let allPools = []
 
     const promiseArray = dataPerChain.map(
-      async ({ factory, fromBlock, abi, borrowFn, protocol }) => {
+      async ({ factory, fromBlock, abi, protocol }) => {
         const { pools, tokens } = await _getLogs(
           api,
           factory,
           fromBlock,
           abi,
           protocol
-        );
-        allTokens.push(...tokens);
-        allPools.push(...pools);
+        )
+        allTokens.push(...tokens)
+        allPools.push(...pools)
       }
-    );
+    )
 
-    await Promise.all(promiseArray);
+    await Promise.all(promiseArray)
 
-    return api.sumTokens({ tokensAndOwners2: [allTokens, allPools] });
-  };
+    return sumTokens2({ api, tokensAndOwners2: [allTokens, allPools], blacklistedTokens: blacklistedTokens[chain] })
+  }
 
   const borrowed = async (api) => {
-    const balances = [];
-    const allTokens = [];
+    const balances = []
+    const allTokens = []
 
     const promiseArray = dataPerChain.map(
       async ({ factory, fromBlock, abi, borrowFn, protocol }) => {
@@ -199,17 +208,20 @@ Object.keys(config).forEach((chain) => {
           fromBlock,
           abi,
           protocol
-        );
-        const bals = await api.multiCall({ abi: borrowFn, calls: pools });
-        balances.push(...bals);
-        allTokens.push(...tokens);
+        )
+        const bals = await api.multiCall({ abi: borrowFn, calls: pools })
+        balances.push(...bals)
+        allTokens.push(...tokens)
       }
-    );
-    await Promise.all(promiseArray);
+    )
+    await Promise.all(promiseArray)
 
-    return api.addTokens(allTokens, balances);
-  };
-  module.exports[chain] = { tvl, borrowed };
-});
+    api.addTokens(allTokens, balances)
+    if (blacklistedTokens[chain]) {
+      blacklistedTokens[chain].forEach((token) => api.removeTokenBalance(token))
+    }
+  }
+  module.exports[chain] = { tvl, borrowed }
+})
 
-module.exports.ethereum.staking = stakings(singleStakingContracts, CPOOL);
+module.exports.ethereum.staking = stakings(singleStakingContracts, CPOOL)

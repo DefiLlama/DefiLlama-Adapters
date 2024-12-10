@@ -28,9 +28,12 @@ const config = {
     },
   },
   taiko: {
-    vaults: ["0xdA6a745740Bbdbe5F588b79FEe57f2e10ad4Da11"],
+    vaults: [
+      "0xdA6a745740Bbdbe5F588b79FEe57f2e10ad4Da11",
+      "0xE3e6818bbC193D454f38772D34FA4cf8C19684d5",
+    ],
     tokenConfig: {
-      tokens: ["0xa51894664a773981c6c112c43ce576f315d5b1b6"],
+      tokens: [ADDRESSES.taiko.USDC, ADDRESSES.taiko.WETH],
       owners: [
         "0xc0ab776604059D10880dbD219758FF7B82997cc0",
         "0xB00231B308B01Dbb90f16F966F62d86fBc78c450",
@@ -45,7 +48,7 @@ Object.keys(config).forEach((chain) => {
   const otherTvl = sumTokensExport(tokenConfig)
 
   let tvlCalculators = [vaultTvl, otherTvl]
-  
+
   module.exports[chain] = {
     tvl: sdk.util.sumChainTvls(tvlCalculators),
   }

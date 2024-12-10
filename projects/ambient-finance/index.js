@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { cachedGraphQuery, getConfig } = require("../helper/cache");
 
@@ -13,7 +14,7 @@ const subgraphs = {
   scroll: 'https://ambindexer.net/scroll-gcgo/pool_list?chainId=0x82750',
   blast: 'https://ambindexer.net/blast-gcgo/pool_list?chainId=0x13e31',
   canto: "https://ambient-graphcache.fly.dev/gcgo/pool_list?chainId=0x1e14",
-  ethereum: `https://api.thegraph.com/subgraphs/name/crocswap/croc-mainnet`
+  ethereum: sdk.graph.modifyEndpoint('DyHaLYK1keqcv3YD3VczKGYvxQGfGgV6bGTbZLMj5xME')
 }
 
 async function tvl(api) {
