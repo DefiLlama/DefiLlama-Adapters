@@ -98,7 +98,11 @@ module.exports = {
                 //FDUSD
                 ["0xc5f0f7b66764f6ec8c8dff7ba683102295e16409","0x2202a491752Fee0E616F06A89E2eF416E2Fcd7e9"],
 
-
+                // sUSDX
+                [
+                    "0x7788A3538C5fc7F9c7C8A74EAC4c898fC8d87d92",
+                    "0x98b167359566c1ea05335D52794C7Eb6f8E6739a",
+                ],
 
                 // vUSDT, PSM - LSR
                 // ["0x55d398326f99059ff775485246999027b3197955", "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
