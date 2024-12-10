@@ -49,6 +49,7 @@ module.exports = {
         "0xa70af99bff6b168327f9d1480e29173e757c7904", // crvUSDT
         "0xdad97f7713ae9437fa9249920ec8507e5fbb23d3", // crv3crypto
         ADDRESSES.polygon.WBTC, // WBTC
+        "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619", // WETH
       ],
     }),
   },
@@ -64,6 +65,7 @@ module.exports = {
         "0xA5E0E46462970C9Ee8C2ECadcde254c483748Ec4", // b3pool
         "0xae87e5fa20f335ce14aa3b9e0616308d9ac7d4ce", // crvUSDT
         ADDRESSES.bsc.BTCB, // BTCB
+        "0x2170Ed0880ac9A755fd29B2688956BD959F933F8", // ETH
       ],
     }),
   },
@@ -94,6 +96,7 @@ module.exports = {
         "0x1337BedC9D22ecbe766dF105c9623922A27963EC", // av3crv
         "0x1daB6560494B04473A0BE3E7D83CF3Fdf3a51828", // crv3crypto
         ADDRESSES.avax.BTC_b, // BTC.b
+        "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB", // WETH.e
       ],
     }),
   },
@@ -112,6 +115,7 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         "0x1337bedc9d22ecbe766df105c9623922a27963ec", // x3CRV
+        "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1", // WETH
       ],
     }),
   },
@@ -165,6 +169,7 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         "0xcaef324bea3ff5c7a08710081294f3344ffadc54", // FRAX/USDT
+        "0xfc00000000000000000000000000000000000006", // wfrxETH
       ],
     }),
   },
@@ -173,6 +178,22 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         "0x919C1c267BC06a7039e03fcc2eF738525769109c", // USDt
+      ],
+    }),
+  },
+  metis: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0x420000000000000000000000000000000000000a", // WETH
+      ],
+    }),
+  },
+  mode: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0x4200000000000000000000000000000000000006", // WETH
       ],
     }),
   },
