@@ -12,8 +12,8 @@ const BENJI = {
 const stellarTvl = async (api) => {
     const stellarApi = `https://api.stellar.expert/explorer/public/asset/${BENJI[api.chain].ticker}-${BENJI[api.chain].address}`
     const response = await fetch(stellarApi)
-    const {supply, toml_info} = await response.json()
-    const adjustedSupply = toUSDTBalances((supply / Math.pow(10, toml_info.decimals)))
+    const {supply} = await response.json()
+    const adjustedSupply = toUSDTBalances((supply / Math.pow(10, 7)))
     const [[tokenAddress, tokenBalance]] = Object.entries(adjustedSupply);
     return api.add(tokenAddress, tokenBalance, { skipChain: true })
 }
