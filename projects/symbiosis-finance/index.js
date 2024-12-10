@@ -19,3 +19,7 @@ config.chains.forEach(chainInfo => {
     }
   }
 })
+
+module.exports.boba_avax = {
+  tvl: () => ({})
+}
