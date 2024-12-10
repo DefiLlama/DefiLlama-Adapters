@@ -279,7 +279,8 @@
     "WSTETH": "0x5979D7b546E38E414F7E9822514be443A4800529",
     "plvGLP": "0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1",
     "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
-    "FRAX": "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F"
+    "FRAX": "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
+    "sUSDe": "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2"
   },
   "fuse": {
     "WFUSE": "0x0be9e53fd7edac9f859882afdda116645287c629",
@@ -1657,7 +1658,10 @@
   },
   "zilliqa": {
     "WZIL": "0x94e18ae7dd5ee57b55f30c4b63e2760c09efb192",
-    "USDT": "0x2274005778063684fbb1bfa96a2b725dc37d75f9"
+    "USDT": "0x2274005778063684fbb1bfa96a2b725dc37d75f9",
+    "stZIL": "0x097c26f8a93009fd9d98561384b5014d64ae17c2",
+    "gZIL": "0x03a79429acc808e4261a68b0117acd43cb0fdbfa",
+    "XCAD": "0xccf3ea256d42aeef0ee0e39bfc94baa9fa14b0ba"
   },
   "fsc": {
     "WFSC": "0xb582fD9d0D5C3515EEB6b02fF2d6eE0b6E45E7A7"
@@ -1916,7 +1920,10 @@
   },
   "etlk": {
     "OGV1WXTZ": "0x3571aed54ccea5b69b00516d5a149a6baea77118",
-    "WXTZ": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb"
+    "WXTZ": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
+    "USDC": "0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9",
+    "USDT": "0x2c03058c8afc06713be23e58d2febc8337dbfe6a",
+    "WETH": "0xfc24f770f94edbca6d6f885e12d4317320bcb401"
   },
   "rari": {
     "WETH": "0xf037540e51d71b2d2b1120e8432ba49f29edfbd0",
@@ -1953,7 +1960,7 @@
   },
   "polynomial": {
     "USDC": "0x17C9D8Cef7Ef072844EEaEdE1F9f54C7E3fa8743",
-    "fxUSDC": "0x2369EB4a76d80fBeAa7Aa73e1e1f9EAeE88C07F4",
+    "fxUSDC": "0x2369eb4a76d80fbeaa7aa73e1e1f9eaee88c07f4",
     "SDAI": "0x615172e47c0C5A6dA8ea959632Ac0166f7a59eDc",
     "sUSDe": "0x2A06DEAc3E863c23DD6a89Eeacd80aBA9E08B77B",
     "USD0": "0x6224dC817dC4D5c53fcF3eb08A4f84C456F9f38f"
@@ -2060,5 +2067,15 @@
   "shido": {
     "WSHIDO": "0x8cbaffd9b658997e7bf87e98febf6ea6917166f7",
     "USDC": "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd"
+  },
+  "ace": {
+    "USDC_e": "0x71ee6485cf72b9c3bf183528a2241474f21b2efa"
+  },
+  "tara": {
+    "WTARA": "0x5d0fa4c5668e5809c83c95a7cef3a9dd7c68d4fe",
+    "USDM": "0xc26b690773828999c2612549cc815d1f252ea15e"
+  },
+  "corn": {
+    "BTCN": "0xda5ddd7270381a7c2717ad10d1c0ecb19e3cdfb2"
   }
 }
