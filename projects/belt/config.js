@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const CONFIG = {
   bsc: [
-    '0x51bd63f240fb13870550423d208452ca87c44444',
-    '0xa8bb71facdd46445644c277f9499dd22f6f0a30c',
+    ADDRESSES.bsc.beltBTC,
+    ADDRESSES.bsc.beltBNB,
     '0xcb3346ad40c947a2228b2e224c3931a5224ba7ad',
     '0xecb589831eefbdbbc48d1f86294724c76acd3314',
-    '0xaa20e8cb61299df2357561c2ac2e1172bc68bc25',
+    ADDRESSES.bsc.beltETH,
     '0x9a144edd7309bcc4e106a1a04e7fc402115a0980',
     '0x5142f6857f029bed5ddf6247d8a1f75984a3a380',
     '0x1794bb186c15fddbf4aac4a3b0e2f40659e9b841',
