@@ -1,57 +1,69 @@
-const { ethers } = require("ethers");
+const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const ethereumProvider = new ethers.JsonRpcProvider('https://ethereum-rpc.publicnode.com');
-const mantaProvider = new ethers.JsonRpcProvider('https://manta-pacific.drpc.org');
 
-const ERC20_ABI = [
-  "function totalSupply() view returns (uint256)"
-];
-const MantaToken = '0x8497e571B655C50eAA2E0E8BF079cd07140C0B9C';
-const ZeUSD = '0xe7d58E0300f628f80341b74e3664e320FB3235f3';
+const ZeUSD = '0xf9Cb28aca07B76941c461833AA7CBD2909F24640';
 
-async function tvlZeUSD() {
-  try {
-    const zeUSDContract = new ethers.Contract(ZeUSD, ERC20_ABI, ethereumProvider);
-    const supplyZeUSD = await zeUSDContract.totalSupply();
+// async function tvl(api) {
+//   const strategyBalance = await api.call({
+//     abi: 'erc20:totalSupply',
+//     target: ZeUSD,
+//     chain: "ethereum",
+//   });
 
-    const mantaContract = new ethers.Contract(MantaToken, ERC20_ABI, mantaProvider);
-    const supplyManta = await mantaContract.totalSupply();
 
-    const supplyZeUSDInEther = parseFloat(ethers.formatUnits(supplyZeUSD, 18));
-    const supplyMantaInEther = parseFloat(ethers.formatUnits(supplyManta, 18));
+//  api.add(ADDRESSES.ethereum.USDC, strategyBalance)
 
-    // console.log(`ZeUSD Total Supply (in ether): ${supplyZeUSDInEther}`);
-    // console.log(`Manta Token Total Supply (in ether): ${supplyMantaInEther}`);
+// }
 
-    const totalTvlZeUSD = supplyZeUSDInEther - supplyMantaInEther;
+async function tvlEth(api) {
+  const balances = {}
 
-    return totalTvlZeUSD;
-  } catch (error) {
-    console.error("Failed to calculate total supply for ZeUSD:", error);
-  }
+    const totalSupply = (
+      await sdk.api.abi.call({
+        abi: 'erc20:totalSupply',
+        target: ZeUSD,
+        chain: "ethereum",
+      })
+    ).output;
+
+    
+    const totalSupplyManta = (
+      await sdk.api.abi.call({
+        abi: 'erc20:totalSupply',
+        target: ZeUSD,
+        chain: "manta",
+      })
+    ).output;
+
+    const total = (totalSupply - totalSupplyManta)/10**18;
+    // balances[ ZeUSD] = total
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDC, total,"ethereum")
+    return  balances
 }
 
 async function tvlManta() {
-  try {
-    const mantaContract = new ethers.Contract(MantaToken, ERC20_ABI, mantaProvider);
-    const supplyManta = await mantaContract.totalSupply();
+    const balances = {}
 
-    const supplyMantaInEther = parseFloat(ethers.formatUnits(supplyManta, 18));
+    const total = (
+      await sdk.api.abi.call({
+        abi: 'erc20:totalSupply',
+        target: ZeUSD,
+        chain: "manta",
+      })
+    ).output;
 
-    // console.log(`Manta Token Total Supply (in ether): ${supplyMantaInEther}`);
-
-    return supplyMantaInEther;
-  } catch (error) {
-    console.error("Failed to calculate total supply for Manta:", error);
-  }
+    // balances[ADDRESSES.manta.ZeUSD] = total/10**18
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDC, total/10**18,"manta")
+    return  balances
 }
 
 module.exports = {
-  methodology: "Total ZeUSD Supply on all chains",
+  methodology: "Total ZeUSD Supply",
   ethereum: {
-    tvl: tvlZeUSD,
+    tvl:tvlEth,
   },
   manta: {
-    tvl: tvlManta,
+    tvl:tvlManta,
   },
 };
