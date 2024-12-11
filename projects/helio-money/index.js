@@ -93,10 +93,10 @@ module.exports = {
                 ["0x1346b618dC92810EC74163e4c27004c921D446a5","0x03DB750d6212C6a0BCa9258E8cB7cf46dfD63067"],
 
                 // USDT
-["0x55d398326f99059ff775485246999027b3197955", "0xAd406CcF75f9E6216fA4349635B0cD77D0059b1f"],
+[ADDRESSES.bsc.USDT, "0xAd406CcF75f9E6216fA4349635B0cD77D0059b1f"],
 
                 //FDUSD
-                ["0xc5f0f7b66764f6ec8c8dff7ba683102295e16409","0x2202a491752Fee0E616F06A89E2eF416E2Fcd7e9"],
+                [ADDRESSES.ethereum.FDUSD,"0x2202a491752Fee0E616F06A89E2eF416E2Fcd7e9"],
 
                 // sUSDX
                 [
@@ -105,7 +105,7 @@ module.exports = {
                 ],
 
                 // vUSDT, PSM - LSR
-                // ["0x55d398326f99059ff775485246999027b3197955", "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
+                // [ADDRESSES.bsc.USDT, "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
                 ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"]
             ],
         }),
