@@ -1,4 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const { karpatKeyTvl } = require("../helper/karpatkey");
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury addresses per chain
@@ -34,8 +35,8 @@ const ethTokens = [
   ADDRESSES.ethereum.SAFE, // SAFE
   "0x4da27a545c0c5B758a6BA100e3a049001de870f5", // stAAVE
   ADDRESSES.ethereum.SDAI, // sDAI
-  ADDRESSES.ethereum.GNO, // GNO
   "0xc3d688B66703497DAA19211EEdff47f25384cdc3" // Compound USDC
+
 ];
 
 const ethOwnTokens = [
@@ -89,9 +90,7 @@ const baseOwnTokens = [
   bal_base
 ];
 
-const xdaiTokens = [
-  ADDRESSES.xdai.GNO,
-];
+const xdaiTokens = [];
 
 const xdaiOwnTokens = [
   bal_xdai // BAL
@@ -106,46 +105,48 @@ const avaxOwnTokens = [
   "0xA39d8651689c8b6e5a9e0AA4362629aeF2c58F55" // 80BAL-20WAVAX BPT
 ];
 
-
+// Keeping old code because karpatkey's api tends to break
 module.exports = treasuryExports({
   ethereum: {
     owners: [eth, eth2],
-    tokens: ethTokens,
+    //tokens: ethTokens,
     ownTokens: ethOwnTokens
   },
   arbitrum: {
     owners: [arb],
-    tokens: arbTokens,
+    //tokens: arbTokens,
     ownTokens: arbOwnTokens
   },
   polygon: {
     owners: [pol],
-    tokens: polTokens,
+    //tokens: polTokens,
     ownTokens: polOwnTokens
   },
   polygon_zkevm: {
     owners: [zkevm],
-    tokens: zkevmTokens,
+    //tokens: zkevmTokens,
     ownTokens: zkevmOwnTokens
   },
   optimism: {
     owners: [op],
-    tokens: opTokens,
+    //tokens: opTokens,
     ownTokens: opOwnTokens
   },
   base: {
     owners: [base],
-    tokens: baseTokens,
+    //tokens: baseTokens,
     ownTokens: baseOwnTokens
   },
   xdai: {
     owners: [xdai],
-    tokens: xdaiTokens,
+    //tokens: xdaiTokens,
     ownTokens: xdaiOwnTokens
   },
   avax: {
     owners: [avax],
-    tokens: avaxTokens,
+    //tokens: avaxTokens,
     ownTokens: avaxOwnTokens
   }
 });
+
+module.exports.ethereum.tvl = async (api)=>karpatKeyTvl(api, "Balancer DAO", "BAL")
