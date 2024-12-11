@@ -10,7 +10,7 @@ const CONFIG = {
     blacklist: ['0x09e84205df7c68907e619d07afd90143c5763605']
   },
   xdai: {
-    GNO: '0x9c58bacc331c9aa871afd802db6379a98e80cedb',
+    GNO: ADDRESSES.xdai.GNO,
     sGNO: '0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445'
   }
 }
