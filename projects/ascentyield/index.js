@@ -1,38 +1,48 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require("../helper/solana");
-const { post } = require('../helper/http');
-const { sumTokensExport } = require("../helper/unwrapLPs")
+const { getLogs2 } = require('../helper/cache/getLogs')
 
+const hedgeMinter = '0x1f05c0532c8fa1658bc90e9c0f16ef9d98329d4f'
+const jlpMinter = '0xa6Ff9a77D6bD8B0a759055Cd8885e23228bc10Ec'
 
-const hyperliquidSubAccount = "0x75b2e5c67d2116bcf1b77c5e6444fc18bc5d38a4" // for trading at hyperliquid
-const jlpholder = "9nAgg9wAnuiPv57dXkmCwoGhhbTHS1RRzvYLjnRGZtXp" // for keeping JLP and USDC(buy JLP)
-const arbiusdcholder = "0xa6Ff9a77D6bD8B0a759055Cd8885e23228bc10Ec" // USDC on arbi(will bridge to solana)
-const hyperliquidMainAccount = "0x7151609Fdc7E0Cac89FB9720F0957AF9d552f8f9" // will transfer USDC to sub account
+const eventAbi = {
+  mint: 'event Mint(address indexed minter, address indexed benefactor, address indexed beneficiary, address collateral_asset, uint256 collateral_amount, uint256 hedgeplus_amount)',
+  redeemSettle: 'event RedeemSettle(address indexed redeemer, address collateral_asset, uint256 collateral_amount, uint256 hedgeplus_amount)',
+}
 
+const tvl = async (api) => {
+  const hedgePlusMints = await getLogs2({ extraKey: 'ascent-hedgeMint', api, target: hedgeMinter, eventAbi: eventAbi.mint, fromBlock: 271494400 })
+  const hedgePlusRedeems = await getLogs2({ extraKey: 'ascent-hedgeRedeem', api, target: hedgeMinter, eventAbi: eventAbi.redeemSettle, fromBlock: 271494400 })
+  const jlpPlusMints = await getLogs2({ extraKey: 'ascent-jlpMint', api, target: jlpMinter, eventAbi: eventAbi.mint, fromBlock: 258855781 })
+  const jlpPlusRedeems = await getLogs2({ extraKey: 'ascent-jlpRedeem', api, target: jlpMinter, eventAbi: eventAbi.redeemSettle, fromBlock: 258855781 })
+
+  const parseLogs = (logs, mints, redeems) => {
+    return logs.reduce((acc, log) => {
+      let collateral_asset, collateral_amount;
+
+      if (mints.includes(log)) {
+        [, , , collateral_asset, collateral_amount] = log;
+        collateral_amount = Number(collateral_amount);
+      } 
+      if (redeems.includes(log)) {
+        [, collateral_asset, collateral_amount] = log;
+        collateral_amount = -Number(collateral_amount);
+      }
+
+      if (!acc[collateral_asset]) {
+        acc[collateral_asset] = { asset: collateral_asset, balance: 0 };
+      }
+
+      acc[collateral_asset].balance += collateral_amount;
+      return acc;
+    }, {});
+  };
+
+  const hedgeBalances = parseLogs([...hedgePlusMints, ...hedgePlusRedeems], hedgePlusMints, hedgePlusRedeems);
+  const jlpBalances = parseLogs([...jlpPlusMints, ...jlpPlusRedeems], jlpPlusMints, jlpPlusRedeems);
+
+  Object.values(hedgeBalances).forEach(({ asset, balance }) => api.add(asset, balance));
+  Object.values(jlpBalances).forEach(({ asset, balance }) => api.add(asset, balance));
+}
 
 module.exports = {
-    methodology: "Aggregate trading account margins in HyperLiquid and JLP, USDC on the solana network.",
-    solana: {
-        tvl: async (api) => {
-            return sumTokens2({
-                owner: jlpholder
-            });
-        },
-    },
-    hyperliquid: {
-        tvl: async (api) => {
-            let data = await post('https://api.hyperliquid.xyz/info', {
-                type: "clearinghouseState",
-                user: hyperliquidSubAccount
-            })
-            data = parseInt(data.marginSummary.accountValue)
-            api.addCGToken('usd-coin', data)
-        }
-    },
-    arbitrum: {
-        tvl: sumTokensExport({
-            owners: [arbiusdcholder, hyperliquidMainAccount],
-            tokens: [ADDRESSES.arbitrum.USDC_CIRCLE,]
-        })
-    },
-};
+  arbitrum: { tvl }
+}
