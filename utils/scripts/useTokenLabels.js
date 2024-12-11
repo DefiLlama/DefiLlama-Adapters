@@ -28,7 +28,10 @@ function run() {
 
 run()
 
+const ignoredFolders = ['symbiosis-finance', 'node_modules']
+
 function updateFile(file) {
+  if (ignoredFolders.some(s => file.includes(s))) return;
   let relativePath = path.relative(file + '/..', allLabelsFile)
   if (relativePath.startsWith('coreAssets')) relativePath = './' + relativePath
   const requireStr = `const ADDRESSES = require('${relativePath}')\n`
