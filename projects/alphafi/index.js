@@ -102,7 +102,7 @@ const ALPHAFI_CETUS_TVL_IDS = [
     parentPoolID: "0x9e59de50d9e5979fc03ac5bcacdb581c823dbd27d63a036131e17b391f2fac88",
     investorID: "0xb0bff60783536f9dc0b38e43150a73b73b8a4f1969446f7721e187821915bd00",
     token0Type: ADDRESSES.sui.USDC_CIRCLE,
-    token1Type: "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH"
+    token1Type: ADDRESSES.sui.ETH
   },
   // deep sui
   {
@@ -205,7 +205,7 @@ const ALPHAFI_NAVI_TVL_IDS = [
   },
   {
     poolID: "0xc37ec956fdef6c217505e62444ab93f833c20923755d67d1c8588c9b093ae00e",
-    tokenType: "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH",
+    tokenType: ADDRESSES.sui.ETH,
     expo: 8
   },
 ]
