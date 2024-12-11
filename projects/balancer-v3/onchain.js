@@ -1,10 +1,10 @@
 const { onChainTvl } = require('../helper/balancer')
 
-const V3_ADDRESS = '0xBA12222222228d8Ba445958a75a0704d566BF2C8'; // TODO: update with V3 Vault address
+const V3_ADDRESS = '0xbA1333333333a1BA1108E8412f11850A5C319bA9';
 
 const config = {
-  ethereum: { fromBlock: 12272146, },
-  xdai: { fromBlock: 24821598, }
+  ethereum: { fromBlock: 21332121, },
+  xdai: { fromBlock: 37360338, }
 }
 
 module.exports = {};

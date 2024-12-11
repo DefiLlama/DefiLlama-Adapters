@@ -34,8 +34,8 @@ const ethTokens = [
   ADDRESSES.ethereum.SAFE, // SAFE
   "0x4da27a545c0c5B758a6BA100e3a049001de870f5", // stAAVE
   ADDRESSES.ethereum.SDAI, // sDAI
+  ADDRESSES.ethereum.GNO, // GNO
   "0xc3d688B66703497DAA19211EEdff47f25384cdc3" // Compound USDC
-
 ];
 
 const ethOwnTokens = [
@@ -89,7 +89,9 @@ const baseOwnTokens = [
   bal_base
 ];
 
-const xdaiTokens = [];
+const xdaiTokens = [
+  ADDRESSES.xdai.GNO,
+];
 
 const xdaiOwnTokens = [
   bal_xdai // BAL
