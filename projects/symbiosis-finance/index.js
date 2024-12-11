@@ -19,3 +19,10 @@ config.chains.forEach(chainInfo => {
     }
   }
 })
+
+const deprecatedChains = ['aurora', 'boba_avax']
+deprecatedChains.forEach(chain => {
+  module.exports[chain] = {
+    tvl: () => ({})
+  }
+})
