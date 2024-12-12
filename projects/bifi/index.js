@@ -56,12 +56,6 @@ const chainPools = {
   },
 }
 
-module.exports = {
-  bitcoin: {
-    tvl: bitcoin
-  }
-};
-
 Object.keys(chainPools).forEach(chain => {
   const pools = chainPools[chain]
   module.exports[chain] = {
@@ -70,21 +64,5 @@ Object.keys(chainPools).forEach(chain => {
     }
   }
 })
-
-const wbtc = ADDRESSES.ethereum.WBTC
-async function bitcoin(timestamp, ethBlock) {
-  const tokenPool = {
-    pool: '0x986Eb51E67e154901ff9B482835788B8f3054076',
-    token: '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
-  }
-  let tokenLocked = await sdk.api.erc20.balanceOf({
-    owner: tokenPool.pool,
-    target: tokenPool.token,
-    block: ethBlock
-  });
-  return {
-    [wbtc]: tokenLocked.output
-  }
-}
 
 module.exports.ethereum.staking = stakings(stakingPool, bfcAddr)
