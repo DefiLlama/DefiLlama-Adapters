@@ -11,7 +11,9 @@ async function fetchHistoricalTvl(vault, date) {
     });
     usd = atDate?.TVL_USD || 0;
     token = atDate?.TVL_TOKEN || 0;
-  } catch (_e) { }
+  } catch (_e) {
+    console.log(_e);
+  }
   return { usd, token };
 }
 
