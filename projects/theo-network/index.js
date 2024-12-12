@@ -3,7 +3,7 @@ const axios = require("axios");
 
 async function fetchVaultInfo() {
     try {
-        const response = await axios.get("https://vaults.theo.xyz/vaults/vaultInfo");
+        const response = await axios.get("https://staging-vaults.theo.xyz/vaults/vaultInfo");
         return response.data
     } catch (error) {
         console.error("Error fetching vault info:", error);
