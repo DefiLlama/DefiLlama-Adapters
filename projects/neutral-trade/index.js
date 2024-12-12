@@ -1,20 +1,25 @@
 const { VAULTS, START_TIMESTAMP } = require("./constants");
 
 async function fetchHistoricalTvl(vault, date) {
-  let usd = 0;
-  let token = 0;
+  let usd_tvl = 0;
+  let token_tvl = 0;
   try {
     const response = await fetch(vault.dataUrl);
-    const all = await response.json();
-    const [, atDate] = Object.entries(all).find(([entryDate,]) => {
-      return entryDate.startsWith(date);
-    });
-    usd = atDate?.TVL_USD || 0;
-    token = atDate?.TVL_TOKEN || 0;
+    const all = Object.entries(await response.json());
+    for (let i = 0; i < all.length; i++) {
+      const [entryTime, entryData] = all[i];
+      usd_tvl = entryData?.TVL_USD;
+      token_tvl = entryData?.TVL_TOKEN;
+      if (entryTime?.startsWith(date)) {
+        break;
+      }
+    }
+    usd_tvl = usd_tvl || 0;
+    token_tvl = (token_tvl || 0) * Math.pow(10, vault.token.decimals);
   } catch (_e) {
     console.log(_e);
   }
-  return { usd, token };
+  return { usd_tvl, token_tvl };
 }
 
 async function tvl(api) {
@@ -25,8 +30,8 @@ async function tvl(api) {
   const date = `${year}-${month}-${day}`;
 
   for (let i = 0; i < VAULTS.length; i++) {
-    const { token } = await fetchHistoricalTvl(VAULTS[i], date);
-    api.add(VAULTS[i].token.mint, token * Math.pow(10, VAULTS[i].token.decimals));
+    const { token_tvl } = await fetchHistoricalTvl(VAULTS[i], date);
+    api.add(VAULTS[i].token.mint, token_tvl);
   }
 }
 
