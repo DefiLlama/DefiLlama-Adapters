@@ -1952,8 +1952,10 @@
   "noble": {
     "USDC": "uusdc",
     "USDY": "ausdy",
+    "USYC": "uusyc",
     "uusdc": "uusdc",
-    "ausdy": "ausdy"
+    "ausdy": "ausdy",
+    "uusyc": "uusyc"
   },
   "ripple": {
     "XRP": "XRP"
