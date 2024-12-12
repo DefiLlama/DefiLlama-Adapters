@@ -9,6 +9,7 @@ module.exports = {
   hallmarks: [
     [1656806400, "Rug Pull"]
   ],
+  deadFrom: '2022-07-03',
   methodology: "Count TVL as liquidity on the dex",
   misrepresentedTokens: true,
   kava: {

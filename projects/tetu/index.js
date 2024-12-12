@@ -17,7 +17,7 @@ const EXCLUDED_VAULTS = {
 }
 
 module.exports = {
-  start: 1628024400,  //Tue Aug 03 2021 21:00:00 GMT+0000
+  start: '2021-08-03',  //Tue Aug 03 2021 21:00:00 GMT+0000
   misrepresentedTokens: true,
 };
 

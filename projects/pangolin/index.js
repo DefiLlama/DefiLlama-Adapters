@@ -56,5 +56,5 @@ module.exports = {
       return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
     }
   },
-  start: 1612715300, // 7th-Feb-2021
+  start: '2021-02-07', // 7th-Feb-2021
 };
