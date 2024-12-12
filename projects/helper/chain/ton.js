@@ -4,7 +4,7 @@ const plimit = require('p-limit')
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 
-const { getUniqueAddresses, sleep } = require('../utils')
+const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
 
 async function getTonBalance(addr) {
   const res = await get(`https://toncenter.com/api/v3/account?address=${addr}`)
@@ -14,7 +14,7 @@ async function getTonBalance(addr) {
 async function getJettonBalances(addr) {
   const response = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
 
-  const res = { }
+  const res = {}
   response.balances.forEach(val => {
     res[val.jetton.address] = { balance: val.balance, price: val.price.prices.USD, decimals: val.jetton.decimals }
   })
@@ -23,10 +23,7 @@ async function getJettonBalances(addr) {
 }
 
 async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false }) {
-  if (tokens.includes(ADDRESSES.null)) {
-    const balance = await getTonBalance(addr)
-    api.add(ADDRESSES.null, balance)
-  }
+  if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return;
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
   await sleep(1000 * (3 * Math.random() + 3))
   balances.forEach(({ balance, price, jetton }) => {
@@ -43,16 +40,16 @@ async function getTokenRates({ tokens = [] }) {
   const { rates } = await get(`https://tonapi.io/v2/rates?` + (
     new URLSearchParams({ tokens: tokens.join(','), currencies: "usd" })
   ).toString());
-  
+
   const tokenPrices = {};
-  
+
   tokens.forEach(tokenAddress => {
     if (rates[tokenAddress]) {
       const usdPrice = rates[tokenAddress].prices.USD;
       tokenPrices[tokenAddress] = usdPrice;
     }
   });
-  
+
   return tokenPrices
 }
 
@@ -63,6 +60,9 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners, api.chain)
+
+  if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
+
   for (const addr of owners) {
     await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens })
   }
@@ -96,7 +96,21 @@ async function call({ target, abi, params = [] }) {
   return stack
 }
 
+async function addTonBalances({ api, addresses }) {
+  const chunks = sliceIntoChunks(addresses, 399)
+  for (const chunk of chunks) {
+    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
+    accounts.forEach(({ balance }) => {
+      api.add(ADDRESSES.null, balance)
+    })
+    if (addresses.length > 199) {
+      await sleep(3000)
+    }
+  }
+}
+
 module.exports = {
+  addTonBalances,
   getTonBalance,
   getTokenRates,
   sumTokens,
