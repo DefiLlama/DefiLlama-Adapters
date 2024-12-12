@@ -29,7 +29,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1655130642, // Jun-13-2022 02:30:42 PM +UTC
+  start: '2022-06-13', // Jun-13-2022 02:30:42 PM +UTC
   polygon: {
     tvl,
   },

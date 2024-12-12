@@ -58,7 +58,6 @@ const GRAVITY_BRIDGE_CONTRACT = "0xa4108aa1ec4967f8b52220a4f7e94a8201f2d906";
 
 module.exports = {
   methodology: 'Counts the tokens locked in the Gravity Bridge contract on Ethereum chain.',
-  start: 13798211,
   ethereum: {
     tvl: sumTokensExport({ owner: GRAVITY_BRIDGE_CONTRACT, tokens: erc20Contracts, }),
   },

@@ -49,7 +49,7 @@ async function pool2X(...args) {
 }
 
 module.exports = {
-        start: 1638388550,
+        start: '2021-12-01',
     polygon: {
         staking: stakingX,
         pool2: pool2X,

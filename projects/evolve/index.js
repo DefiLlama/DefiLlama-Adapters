@@ -6,6 +6,10 @@ const config = {
   },
 };
 
-module.exports = {}
+module.exports = {
+  deadFrom: '2023-02-27',
+}
 
 tarotHelper(module.exports, config, { tarotSymbol: 'vEvolve'})
+
+module.exports.cronos.borrowed = () => ({}) // bad debt
