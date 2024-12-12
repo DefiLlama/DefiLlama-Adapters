@@ -1,4 +1,3 @@
-
 const sdk = require('@defillama/sdk')
 
 const http = require('../http')
@@ -6,6 +5,7 @@ const { getEnv } = require('../env')
 const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
+const { GraphQLClient } = require("graphql-request");
 
 const coreTokens = Object.values(coreTokensAll.aptos)
 
@@ -14,6 +14,7 @@ const endpoint = () => getEnv('APTOS_RPC')
 async function aQuery(api) {
   return http.get(`${endpoint()}${api}`)
 }
+
 async function getResources(account) {
   const data = []
   let lastData
@@ -34,11 +35,6 @@ async function getResource(account, key) {
   let url = `${endpoint()}/v1/accounts/${account}/resource/${key}`
   const { data } = await http.get(url)
   return data
-}
-
-async function getCoinInfo(address) {
-  if (address === '0x1') return { data: { decimals: 8, name: 'Aptos' } }
-  return http.get(`${endpoint()}/v1/accounts/${address}/resource/0x1::coin::CoinInfo%3C${address}::coin::T%3E`)
 }
 
 function dexExport({
@@ -101,8 +97,10 @@ async function getTableData({ table, data }) {
   return response
 }
 
-async function function_view({ functionStr, type_arguments = [], args = [] }) {
-  const response = await http.post(`${endpoint()}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments: args })
+async function function_view({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined }) {
+  let path = `${endpoint()}/v1/view`
+  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
+  const response = await http.post(path, { "function": functionStr, "type_arguments": type_arguments, arguments: args })
   return response.length === 1 ? response[0] : response
 }
 
@@ -126,11 +124,52 @@ function sumTokensExport(options) {
   return async (api) => sumTokens({ ...api, api, ...options })
 }
 
+const VERSION_GROUPING = 1000000
+
+// If I can get this timestampQuery to work... everything will work seamlessly
+async function timestampToVersion(timestamp, start_version = 1962588495, end_version = 1962588495 + VERSION_GROUPING) {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    let closestTransactions = await findClosestTransaction(timestamp, start_version, end_version)
+    if (closestTransactions.length < 1) {
+      start_version += VERSION_GROUPING
+      end_version += VERSION_GROUPING
+    } else {
+      return closestTransactions[0].version
+    }
+  }
+}
+
+const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql")
+const timestampQuery = `query TimestampToVersion($timestamp: timestamp, $start_version: bigint, $end_version: bigint) {
+block_metadata_transactions(
+  where: {timestamp: {_gte: $timestamp }, version: {_gte: $start_version, _lte: $end_version}}
+  limit: 1
+  order_by: {version: asc}
+) {
+    timestamp
+    version
+  }
+}`;
+async function findClosestTransaction(timestamp, start_version, end_version) {
+  let date = new Date(timestamp * 1000).toISOString()
+
+  const results = await graphQLClient.request(
+    timestampQuery,
+    {
+      timestamp: date,
+      start_version,
+      end_version,
+    }
+  )
+
+  return results.block_metadata_transactions
+}
+
 module.exports = {
   endpoint: endpoint(),
   dexExport,
   aQuery,
-  getCoinInfo,
   getResources,
   getResource,
   coreTokens,
@@ -139,4 +178,5 @@ module.exports = {
   getTableData,
   function_view,
   hexToString,
+  timestampToVersion
 };

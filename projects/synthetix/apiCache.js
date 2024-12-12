@@ -149,7 +149,7 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
 }
 
 module.exports = {
-  start: 1565287200,  // Fri Aug 09 2019 00:00:00
+  start: '2019-08-08',  // Fri Aug 09 2019 00:00:00
   optimism: {
     tvl: chainTvl("optimism")
   },
