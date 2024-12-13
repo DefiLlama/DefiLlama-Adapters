@@ -1,14 +1,14 @@
 const { getConfig } = require('../helper/cache')
 
-const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll"];
+const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared"];
 
 const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
 }
 
 async function getInfoListPool(strategy_type, chain) {
-  const data = await getConfig('desyn/' + strategy_type, `https://api.desyn.io/etf/defillama/get_pool_list?strategy_type=${strategy_type}`)
-  return data.data.config[chain]?.safePools
+  const data = await getConfig('desyn/' + strategy_type, `https://raw.githubusercontent.com/Meta-DesynLab/strategy-asset/refs/heads/main/main/${strategy_type}.json`)
+  return data.config[chain]?.safePools
 }
 
 // This is aSTETH, 
@@ -47,7 +47,7 @@ function getTvlFunction(strategy_type, isDoubleCounted) {
     const allBals = await api.multiCall({ abi: abi.getBalance, calls })
     api.add(allTokens, allBals)
 
-    if (strategy_type === 'StrategyType2')
+    if (strategy_type === 'strategy2')
       api.removeTokenBalance(leverageStaking)
   }
 }

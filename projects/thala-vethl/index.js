@@ -8,7 +8,7 @@ const thlDecimals = 8;
 
 module.exports = {
   timetravel: false,
-  start: 1692598825,
+  start: '2023-08-21',
   methodology:
     `TVL data is pulled from the Thala's API "https://app.thala.fi/api/vethl-tvl".`,
   aptos: {

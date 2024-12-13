@@ -65,7 +65,7 @@ module.exports = {
   polygon: {
     tvl
   },
-  start: 1643673600,
+  start: '2022-02-01',
   hallmarks: [
     [1669852800, "Ensuro V2 Launch"]
   ]
