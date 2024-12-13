@@ -1,5 +1,7 @@
+const { getAssetSupply } = require("../helper/chain/stellar")
+
 const BENJI = {
-  stellar: { ticker: "BENJI", address: 'GBHNGLLIE3KWGKCHIKMHJ5HVZHYIK7WTBE4QF5PLAKL4CJGSEU7HZIW5' },
+  stellar: '',
   arbitrum: '0xb9e4765bce2609bc1949592059b17ea72fee6c6a',
   polygon: '0x408a634b8a8f0de729b48574a3a7ec3fe820b00a',
   avax: '0xe08b4c1005603427420e64252a8b120cace4d122',
@@ -8,10 +10,7 @@ const BENJI = {
 }
 
 const stellarTvl = async (api) => {
-  const stellarApi = `https://api.stellar.expert/explorer/public/asset/${BENJI[api.chain].ticker}-${BENJI[api.chain].address}`
-  const response = await fetch(stellarApi)
-  const { supply } = await response.json()
-  api.addUSDValue(supply / 1e7)
+  api.addUSDValue(await getAssetSupply('BENJI-GBHNGLLIE3KWGKCHIKMHJ5HVZHYIK7WTBE4QF5PLAKL4CJGSEU7HZIW5'))
 }
 
 const evmTVL = async (api) => {
