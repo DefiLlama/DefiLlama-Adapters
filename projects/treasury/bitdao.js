@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { nullAddress } = require("../helper/treasury");
 const { getConfig } = require('../helper/cache')
 
 const API_URL = 'https://api.mantle.xyz/api/v2/treasury/tokens';
 const MNT = '0x3c3a81e81dc49a522a592e7622a7e711c06bf354';
-const USDe = '0x4c9edd5852cd905f086c759e8383e09bff1e68b3';
+const USDe = ADDRESSES.ethereum.USDe;
 const COOK = '0x9f0c013016e8656bc256f948cd4b79ab25c7b94d'
 const ethenaFarm = '0x8707f238936c12c309bfc2b9959c35828acfc512';
 const SPECIFIC_TOKENS = ['eth', 'ethena-farming-usde', 'eigen-layer-eth', 'mnt'];

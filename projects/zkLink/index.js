@@ -100,7 +100,7 @@ const config = {
       "0x80d12A78EfE7604F00ed07aB2f16F643301674D5",
     ],
     tokens: [
-      "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",  // wstETH
+      ADDRESSES.base.wstETH,  // wstETH
     ],
   },
   optimism: {

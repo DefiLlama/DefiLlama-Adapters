@@ -52,19 +52,19 @@ const ezETH_ADDRESS = {
     vault: "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
   },
   arbitrum: { 
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    asset: ADDRESSES.optimism.ezETH, 
     vault: "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
   },
   blast: { 
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    asset: ADDRESSES.optimism.ezETH, 
     vault: "0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0",
   },
   linea: { 
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    asset: ADDRESSES.optimism.ezETH, 
     vault: "0x96d6cE4e83dB947fF6bD1Ab0B377F23cd5D9ec2D",
   },
   mode: {
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    asset: ADDRESSES.optimism.ezETH,
     vault: "0xbEd575b0FeDa4F84b71144634693DaCc07749471"
   }
 };

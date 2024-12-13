@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view, timestampToVersion } = require("../helper/chain/aptos");
 
 async function getAllMarkets(ledgerVersion) {
@@ -14,7 +15,7 @@ async function getAllMarkets(ledgerVersion) {
 async function tvl(api) {
   // const version = await timestampToVersion(api.timestamp, 1962588495); // this query is not working
   const tvl_amount = await getAllMarkets();
-  api.add("0x1::aptos_coin::AptosCoin", tvl_amount);
+  api.add(ADDRESSES.aptos.APT, tvl_amount);
 }
 
 module.exports = {

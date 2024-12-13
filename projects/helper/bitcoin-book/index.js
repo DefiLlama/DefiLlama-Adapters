@@ -88,6 +88,8 @@ const arkhamExchange = require('./arkham-exchange.js')
 const chakra = require('./chakra.js')
 const nerveNetworkBridge = require('./nervenetworkbridge.js')
 const nexusbtc = require('./nexusbtc')
+const tapbit = require('./tapbit-cex.js')
+const jbtc = require('./jbtc')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -194,5 +196,7 @@ module.exports = {
   arkhamExchange,
   chakra,
   nerveNetworkBridge,
-  nexusbtc
+  nexusbtc,
+  tapbit,
+  jbtc
 }

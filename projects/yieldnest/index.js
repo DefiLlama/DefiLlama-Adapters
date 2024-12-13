@@ -5,6 +5,7 @@ const YN_ETH = '0x09db87a538bd693e9d08544577d5ccfaa6373a48'
 const yn_ETHx = '0x657d9ABA1DBb59e53f9F3eCAA878447dCfC96dCb'
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: async (api) => {
       const ynethBalance = await api.call({ abi: 'uint256:totalAssets', target: YN_ETH })

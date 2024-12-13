@@ -34,4 +34,10 @@ module.exports = {
       return data
     },
   },
+  kamino: {
+    tvl: async () => {
+      const { data } = await client.get('/kamino/tvl')
+      return data
+    },
+  },
 }

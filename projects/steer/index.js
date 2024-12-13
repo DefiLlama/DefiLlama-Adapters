@@ -178,15 +178,25 @@ const supportedChains = [
     chainId: 314,
     identifier: 'filecoin'
   },
+  {
+    name: 'Zircuit',
+    subgraphEndpoint:  'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit',
+    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'
+    },
+    chainId: 48900,
+    identifier: 'zircuit'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
 const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {id}}`
+const z_query = `{  vaults(first: 1000, where: {lastSnapshot_gte: "0", totalLPTokensIssued_gt: "0"}) {    id  }}`
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
     tvl: async (api) => {
-      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
+      let _query = api.chain === 'zircuit' ? z_query : query
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, _query, { headers: chain.headers })
 
       const vaults = data.vaults.map((vault) => vault.id)
       const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })

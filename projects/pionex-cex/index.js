@@ -12,7 +12,11 @@ const config = {
       "0x5e483d7803a8b39f0d6792a0431176a91fde6e31",
       "0x7175a01564ac4a83dd396e288a2707dee86caf63",
       "0x4998cb57364531560f4048213ba9b529ec27f14f",
-      "0x02104cae462af17739cc4315ef9ac710a9ed22a7"
+      "0x02104cae462af17739cc4315ef9ac710a9ed22a7",
+      "0x3c22c17501047d862b3a98e296079966aefd8df7",
+      "0xbbb72ba600d8493fea284d5fe44919f7b60d53f5",
+      "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9",
+      "0xee5b5b923ffce93a870b3104b7ca09c3db80047a"
     ],
   },
   bitcoin: {
@@ -28,9 +32,35 @@ const config = {
       "TJZj4RS6v6U3HCpTSJ7CwNycRcoi7BREGx",
       "TLK8GVBqJNmcyaN5mpSPSzQfTjsSxb7sC9",
       "TGgMNPxdyUgdYwMSbMkpTPvaSkrRakKqcK",
-      "TAA7sxJ259JgstGPjanb5sB6ZJuCPtCobs"
+      "TAA7sxJ259JgstGPjanb5sB6ZJuCPtCobs",
+      "TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe",
+      "TKRksVBKDBATKcifm4FXFHcD1FmJQ2bp3x"
     ],
   },
+  solana: {
+    owners:[
+      "DGFW1Effv88XzXkgfgyoFfmefzEU5Pp9zWJACBmCSh8K",
+      "FXv8hUveo3Di254W5vycvouxrmTJG4oQ5QMm1tLhY3NF"
+    ]
+  },
+  bsc: {
+    owners:[
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554",
+      "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9"
+    ]
+  },
+  optimism:{
+    owners: [
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554"
+    ]
+  },
+  arbitrum: {
+    owners: [
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554",
+      "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9"
+    ]
+  },
+
 }
 
 module.exports = cexExports(config)

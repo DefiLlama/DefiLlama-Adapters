@@ -1,7 +1,7 @@
 const { abi } = require("./abi");
 const { getConfig } = require('../helper/cache')
 
-const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/refs/heads/defillama/mainnet/addresses.json";
+const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/refs/heads/main/mainnet/addresses.json";
 
 const V2DeploymentBlockNumber = 18333744
 async function tvlEthereum(api) {

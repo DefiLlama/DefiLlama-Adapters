@@ -1,3 +1,4 @@
+
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
@@ -7,7 +8,8 @@ const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
-  SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
+  // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
+  SOLANA_RPC: "https://api.mainnet-beta.solana.com",
   ECLIPSE_RPC: 'https://eclipse.lgns.net',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
@@ -30,7 +32,9 @@ const DEFAULTS = {
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
   UNIT0_RPC: "https://rpc.unit0.dev",
   RBN_RPC: "https://governors.mainnet.redbelly.network",
+  CORN_RPC: "https://rpc.ankr.com/corn_maizenet",
   ACE_RPC_MULTICALL: "0x025A2B4fCE1E0bD736D5cebe6C8a52229795376B",
+  ZILLIQA_RPC_MULTICALL: "0x38899efb93d5106d3adb86662c557f237f6ecf57",
 }
 
 const ENV_KEYS = [
