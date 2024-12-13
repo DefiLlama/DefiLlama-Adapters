@@ -10,6 +10,7 @@ const contractAddresses = {
   neutron: {
     params: 'neutron1x4rgd7ry23v2n49y7xdzje0743c5tgrnqrqsvwyya2h6m48tz4jqqex06x',
     redBank: 'neutron1n97wnm7q6d2hrcna3rqlnyqw2we6k0l8uqvmyqq6gsml92epdu7quugyph',
+    perps: 'neutron1g3catxyv0fk8zzsra2mjc0v4s69a7xygdjt85t54l7ym3gv0un4q2xhaf6'
   },
 };
 
@@ -17,6 +18,11 @@ const poolsApis = {
   osmosis: 'https://api.astroport.fi/api/pools?chainId=osmosis-1',
   neutron: 'https://api.astroport.fi/api/pools?chainId=neutron-1',
 };
+
+const perpsDenom = {
+  osmosis: 'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4',
+  neutron: 'ibc/B559A80D62249C8AA07A380E2A2BEA6E5CA9A6F079C912C3A9E9B494105E4F81',
+}
 
 async function tvl(api) {
   const chain = api.chain;
@@ -49,6 +55,18 @@ async function tvl(api) {
 
     await deductCoinsFromMarkets(markets);
   } while (startAfter);
+
+
+  // query the perps contract for the counter party vault TVL
+  if(contractAddresses[chain].perps) {
+  const perpsVault = await queryContract({
+    contract: contractAddresses[chain].perps,
+    chain,
+    data: { 'vault': {} },
+  });
+
+    if(perpsVault) api.add(perpsDenom[chain], perpsVault['total_balance']);
+  }
 
   async function addCoinsFromAssetParams(assetParams) {
     const assetDenoms = assetParams.map((asset) => asset.denom);
@@ -122,5 +140,6 @@ module.exports = {
     [1690945200, 'Launch on Neutron'],
     [1696906800, 'Mars v2 launch on Osmosis'],
     [1724166000, 'Mars v2 launch on Neutron'],
+    [1734098400, 'Perps launch on Neutron']
   ],
 };
