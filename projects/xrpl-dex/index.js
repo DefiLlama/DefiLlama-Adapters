@@ -3,11 +3,12 @@ const { transformDexBalances } = require("../helper/portedTokens");
 
 const tvl = async (api) => {
   const { balances = [] } = await getCache('xrpl-dex', 'balances');
+  if (balances.length < 9500) throw new Error('No balances found')
 
   const tvl = await transformDexBalances({
     chain: 'ripple',
     data: balances
-      .filter(i => i.token0Reserve && i .token1Reserve)
+      .filter(i => i.token0Reserve && i.token1Reserve)
       .map(i => ({
         token0: i.token0Reserve.currency,
         token0Bal: i.token0Reserve.amount,
@@ -15,7 +16,7 @@ const tvl = async (api) => {
         token1Bal: i.token1Reserve.amount,
       }))
   })
-  api.addCGToken('ripple', tvl?.XRP / Math.pow(10, 6))
+  api.addCGToken('ripple', tvl?.XRP / 1e6)
 }
 
 module.exports = {
