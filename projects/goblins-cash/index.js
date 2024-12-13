@@ -56,7 +56,7 @@ async function getTokenUSDPrice(subgraphUrl, id) {
     } catch (error) {
         throw new Error(`Error fetching data: ${error.message}`);
     }
-};
+}
 
 async function stakedToken(chain, stakingContract) {
     const abi = "function totalSupply() external view returns (uint)"
