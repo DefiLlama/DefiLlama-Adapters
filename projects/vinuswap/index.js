@@ -1,6 +1,6 @@
 const { default: BigNumber } = require('bignumber.js')
 const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens, nullAddress } = require('../helper/sumTokens')
+const { sumTokens } = require('../helper/sumTokens')
 
 // On-chain tokens
 const TOKENS = {
@@ -17,7 +17,7 @@ const TOKENS = {
         decimals: 18
     },
     vinuchain: {
-        address: nullAddress,
+        address: '0xEd8c5530a0A086a12f57275728128a60DFf04230',
         decimals: 18
     }
 }
