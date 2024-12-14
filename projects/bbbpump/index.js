@@ -1,5 +1,10 @@
 const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs');
-const { stakings } = require("../helper/staking");
+const { stakingPricedLP } = require("../helper/staking");
+
+// Contract addresses
+const MegadropBBB = "0x37c00AE5C4b49Ab0F5fD2FFB1033588e9bC33B08";  // Megadrop BBB
+const BBB = "0xfa4ddcfa8e3d0475f544d0de469277cf6e0a6fd1";          // BBB Token
+const XDC_BBB_LP = "0xf8ca0db7eba5e0760b66d77cb83a15fde9ad0e20";   // XDC-BBB LP Token
 
 module.exports = {
     start: '2024-10-10',
@@ -12,9 +17,6 @@ module.exports = {
                 nullAddress
             ]
         }),
-        staking: stakings(
-            ['0x37c00AE5C4b49Ab0F5fD2FFB1033588e9bC33B08'], // Megadrop BBB
-            "0xfa4ddcfa8e3d0475f544d0de469277cf6e0a6fd1" ///BBB
-        ),
+        staking: stakingPricedLP(MegadropBBB, BBB, "xdc", XDC_BBB_LP, "wrapped-xdc"),
     },
 };
