@@ -1,8 +1,7 @@
 
-const fetchURL = require("../../utils/fetchURL");
+const fetchURL = require("../utils/fetchURL");
 const { queryContract } = require('../helper/chain/cosmos');
 const BigNumber = require('bignumber.js');
-const axios = require('axios');
 
 const contractAddresses = {
   neutron: {
