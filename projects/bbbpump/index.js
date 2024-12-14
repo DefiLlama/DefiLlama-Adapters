@@ -1,5 +1,4 @@
 const { sumTokensExport,nullAddress } = require('../helper/unwrapLPs');
-const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
     start: '2024-10-10',
     xdc: { tvl: sumTokensExport({ owners: [
