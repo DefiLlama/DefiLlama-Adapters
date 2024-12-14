@@ -19,8 +19,8 @@ async function tvl(api) {
   if (perpsVault) api.add(info.base_denom, perpsVault['total_balance']);
 }
 
-async function fetch(api, timestamp) {
-const perpsInfoApi = `https://backend.prod.mars-dev.net/v2/perps_overview?chain=${api.chain}&days=2&response_type=global`
+async function fetch(timestamp) {
+const perpsInfoApi = `https://backend.prod.mars-dev.net/v2/perps_overview?chain=neutron&days=2&response_type=global`
   const fetchedData = (
     await axios.get(perpsInfoApi)
   );
