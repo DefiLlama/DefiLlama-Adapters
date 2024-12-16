@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const anchor = require('@coral-xyz/anchor');
 const { PublicKey } = require("@solana/web3.js");
 const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
@@ -5,12 +6,12 @@ const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn3
 const SPOT_MARKETS = {
   0: {
     name: 'USDC',
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6
   },
   1: {
     name: 'SOL',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     decimals: 9
   },
   19: {
@@ -28,7 +29,7 @@ const SPOT_MARKETS = {
 const PERP_MARKETS = {
   0: {
     name: 'SOL-PERP',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     baseDecimals: 9,
     quoteDecimals: 6
   },
@@ -74,7 +75,7 @@ function getDecimalsByMarketIndex(marketIndex, isPerp = false) {
   return SPOT_MARKETS[marketIndex].decimals;
 }
 
-function processSpotPosition(position) {
+function processSpotPosition(position, spotMarketAccountInfo) {
   const decimals = getDecimalsByMarketIndex(position.market_index);
   const decimalAdjustment = 9 - decimals;
   let balance = position.scaled_balance;
@@ -84,9 +85,30 @@ function processSpotPosition(position) {
     balance /= BigInt(10 ** decimalAdjustment);
   }
 
-  // Apply sign based on balance_type
-  return position.balance_type === 1 ? -balance : balance;
+  // For borrowed positions (balance_type === 1), apply interest rate
+  if (position.balance_type === 1) {
+    const cumulativeBorrowInterest = getSpotMarketCumulativeBorrowInterest(spotMarketAccountInfo);
+    // Apply interest rate to the balance
+    balance = (balance * cumulativeBorrowInterest) / BigInt(10 ** 10); 
+    return -balance;  // Return negative for borrows
+  }
+
+  return balance;  // Return positive for deposits
 }
+
+function getSpotMarketCumulativeBorrowInterest(accountInfo) {
+    if (!accountInfo) { 
+      throw new Error(`No account info found for market`);
+    }
+  
+    const CUMULATIVE_BORROW_INTEREST_OFFSET = 8 + 48 + 32 + 256 + (16 * 8) + 8;
+  
+    const lower64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET);
+    const upper64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET + 8);
+    
+    return (upper64Bits << 64n) + lower64Bits;
+  }
+
 
 function processPerpPosition(position) {
 
