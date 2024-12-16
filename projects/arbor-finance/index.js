@@ -18,7 +18,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Sum the collateral value of active Arbor Finance bonds.",
-  start: 14906553,
   ethereum: {
     tvl,
   },

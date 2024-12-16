@@ -35,7 +35,6 @@ module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
     methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
-    start: 11251616,
     polygon_zkevm: {
         tvl,
     }
