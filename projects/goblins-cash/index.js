@@ -45,14 +45,14 @@ async function getTokenUSDPrice(subgraphUrl, id) {
                     volumeUSD,
                     totalValueLocked,
                     tokenDayData(orderBy: date  , orderDirection: desc){
-                    open
+                    close
                     date
                     }    
                 }
             }`)
 
         const { token } = response
-        return token?.tokenDayData[0]?.open
+        return token?.tokenDayData[0]?.close
     } catch (error) {
         throw new Error(`Error fetching data: ${error.message}`);
     }
