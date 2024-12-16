@@ -6,6 +6,7 @@ const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
 }
 
+
 async function getInfoListPool(strategy_type, chain) {
   const data = await getConfig('desyn/' + strategy_type, `https://raw.githubusercontent.com/Meta-DesynLab/strategy-asset/refs/heads/main/main/${strategy_type}.json`)
   return data.config[chain]?.safePools
