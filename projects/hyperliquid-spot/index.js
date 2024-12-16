@@ -1,40 +1,39 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const axios = require('axios')
 
-const USDC = ADDRESSES.ethereum.USDC
 const API_URL = 'https://api.hyperliquid.xyz/info'
 
 const assetsInfos = async () => {
   const payload = { "type": "spotMetaAndAssetCtxs" }
   const { data } = await axios.post(API_URL, payload)
 
-  return data[0].tokens.map((token) => {
-    const ctxToken = data[1].find((item) => item.coin.replace("@", "") == token.index);
-    return { ...token, ...ctxToken };
+  return data[0].universe.map((item) => {
+    const matchingTokens = item.tokens
+      .map((i) => data[0].tokens.find((token) => token.index === i))
+      .filter(Boolean);
+  
+    const matchingCtx = data[1].find((ctx) => ctx.coin === item.name);
+    return { ...item, tokens: matchingTokens, ...(matchingCtx || {}) };
   });
 }
 
 const tvl = async (api) => {
-  const assets = await assetsInfos()
+  const pools = await assetsInfos()
   const payload = { "type": "spotClearinghouseState", "user": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF" }
   const { data } = await axios.post(API_URL, payload)
 
-  const tokens = data.balances.map((token) => {
-    const tokenHold = assets.find((item) => item.index == token.token)
-    return { ...token, ...tokenHold }
-  })
+  const totalSum = data.balances.reduce((sum, token) => {
+    const match = pools.find((asset) => asset.tokens[0].name === token.coin)
+    const midPx = token.coin === 'USDC' ? 1 : parseFloat(match?.midPx || 0)
+    const balance = parseFloat(token.total || 0)
+    return sum + midPx * balance
+  }, 0)
 
-  const totalBalance = tokens.reduce((sum, token) => {
-    const total = parseFloat(token.hold || 0);
-    const markPx = parseFloat(token.markPx || 0);
-    return sum + (total * markPx);
-  }, 0);
-
-  return api.add(USDC, totalBalance * 1e6, { skipChain: true })
+  return api.addUSDValue(totalSum)
 }
 
 module.exports = {
-  methodology: 'TVL represents assets locked in limit order on the spot order book',
+  timetravel: false,
+  methodology: 'TVL represents assets in HIP-2',
   misrepresentedTokens: true,
   hyperliquid: { tvl }
 }
