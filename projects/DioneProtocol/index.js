@@ -7,37 +7,31 @@ const { fetchURL } = require("../helper/utils");
  */
 async function tvl() {
   try {
-    // Calculate the Unix timestamp for the start of the previous day
     const now = Math.floor(Date.now() / 1000);
     const oneDayAgo = now - 86400;
 
-    // Fetch TVL data for the last 24 hours from DiamondSwap API
     const response = await fetchURL(`https://prod-api.diamondswap.com/v6/dione/analytics/daily-tvl/1/${oneDayAgo}/${now}`);
 
-    // Check if response contains valid data
     if (!response.data || !response.data.uniswapDayDatas || response.data.uniswapDayDatas.length === 0) {
       console.warn("No TVL data available from DiamondSwap API.");
-      return { 'dione': 0 }; // Return zero TVL if no data
+      return { 'dione': 0 };
     }
 
-    // Extract the most recent TVL data from the response
     const latestTvlData = response.data.uniswapDayDatas[response.data.uniswapDayDatas.length - 1];
     const tvlValue = parseFloat(latestTvlData.totalLiquidityUSD);
 
-    // Validate the TVL value to ensure it's a number
     if (isNaN(tvlValue)) {
       console.warn("Invalid TVL value received.");
-      return { 'dione': 0 }; // Return zero if the value is not a number
+      return { 'dione': 0 };
     }
 
-    return { 'dione': tvlValue }; // Return the TVL in Dione token
+    return { 'dione': tvlValue };
   } catch (error) {
     console.error("Failed to fetch TVL:", error);
-    return { 'dione': 0 }; // Return zero TVL in case of any error
+    return { 'dione': 0 };
   }
 }
 
-// Export the TVL function
 module.exports = {
   methodology: "TVL is calculated using the latest data from DiamondSwap's API, representing liquidity in pools. Updates are based on daily data points.",
   
