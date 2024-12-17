@@ -2076,5 +2076,15 @@
   },
   "corn": {
     "BTCN": "0xda5ddd7270381a7c2717ad10d1c0ecb19e3cdfb2"
+  },
+  "sonic": {
+    "wS": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+    "WS_1": "0x832497895f05100e53f42dfa8fc758b4866b183a"
+  },
+  "vinu": {
+    "USDT": "0xC0264277fcCa5FCfabd41a8bC01c1FcAF8383E41",
+    "ETH": "0xDd4b9b3Ce03faAbA4a3839c8B5023b7792be6e2C",
+    "VINU": "0x00c1E515EA9579856304198EFb15f525A0bb50f6",
+    "WVC": "0xEd8c5530a0A086a12f57275728128a60DFf04230"
   }
 }
