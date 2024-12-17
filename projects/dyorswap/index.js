@@ -8,6 +8,7 @@ const config = {
   degen: '0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09',
   xlayer: '0x2ccadb1e437aa9cdc741574bda154686b1f04c09',
   bob: '0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09',
+  ink: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
 }
 
 module.exports = {
