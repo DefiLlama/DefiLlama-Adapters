@@ -39,6 +39,7 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   sonic: {
+    [ADDRESSES.null]: { coingeckoId: "fantom", decimals: 18 },
     '0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38': { coingeckoId: "fantom", decimals: 18 },
   },
   // Sample Code
