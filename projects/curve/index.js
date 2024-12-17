@@ -240,7 +240,7 @@ function tvl(chain) {
     if (blacklists[chain])
       blacklistedTokens.push(...blacklists[chain])
     await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
-    await sumTokens2({ balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
+    await sumTokens2({ balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens, ...(chain === "corn" && { permitFailure: true }) })
     await handleUnlistedFxTokens(balances, chain);
     return balances;
   };
