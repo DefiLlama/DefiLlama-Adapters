@@ -19,6 +19,8 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
+  INK_RPC: "https://rpc-gel.inkonchain.com/",
+  INK_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
 }
 
 const ENV_KEYS = [
