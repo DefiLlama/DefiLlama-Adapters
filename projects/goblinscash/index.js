@@ -1,24 +1,104 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumUnknownTokens } = require('../helper/unknownTokens')
-const { stakingPricedLP } = require("../helper/staking");
+const { graphQuery } = require("../helper/http");
+const { toUSDTBalances } = require('../helper/balances');
+const sdk = require('@defillama/sdk')
 
-const goblinStaking = "0x48B8aCe692ad8BD2E3139C65bFf7d28c048F8f00";
-const GOB = "0x56381cB87C8990971f3e9d948939e1a95eA113a3";
+const contracts = {
+    smartbch: {
+        gob: "0x56381cb87c8990971f3e9d948939e1a95ea113a3",
+        stakingContract: "0xfA3D02c971F6D97076b8405500c2210476C6A5E8",
+        graph: "https://graph.dfd.cash/subgraphs/name/goblins/subgraph-v3",
+    },
+    bsc: {
+        gob: "0x701aca29ae0f5d24555f1e8a6cf007541291d110",
+        stakingContract: "0xb4d117f9c404652030f3d12f6de58172317a2eda",
+        graph: "https://graph-bsc.goblins.cash/subgraphs/name/goblins/bsc-subgraph-v3",
+    },
+    base: {
+        gob: "0xcdba3e4c5c505f37cfbbb7accf20d57e793568e3",
+        stakingContract: "0xAAFa8A16121939414B529289fA69F08aefE51769",
+        graph: "https://graph-base.goblins.cash/subgraphs/name/goblins/base-subgraph-v3",
 
-const treasuryAddress = "0x259D4CBA522A15AA5Db641D0E06d6f7Aa040D89f";
-const flexUSD = ADDRESSES.smartbch.flexUSD;
-const GOB_flexUSD_MLP = "0xC20A4f3012bA2Df47544d4926B19604Fa777FB01";
-const GOB_BCH_MLP = "0x86b0fd64234a747681f0235b6cc5fe04a4d95b31";
-const chain = "smartbch"
+    },
+};
+
+
+async function v3TvlPaged(chain) {
+    const data1 = await graphQuery(contracts[chain].graph, `{
+        pools{
+        totalValueLockedUSD
+        }
+    }`)
+    const total = data1.pools.reduce(
+        (sum, item) => sum + parseFloat(item.totalValueLockedUSD),
+        0
+    );
+    return toUSDTBalances(total)
+}
+
+async function getTokenUSDPrice(subgraphUrl, id) {
+    try {
+        const response = await graphQuery(subgraphUrl, `
+            query {
+                token(id: "${id}"){
+                    id,
+                    name,
+                    volumeUSD,
+                    totalValueLocked,
+                    tokenDayData(orderBy: date  , orderDirection: desc){
+                    close
+                    date
+                    }    
+                }
+            }`)
+
+        const { token } = response
+        return token?.tokenDayData[0]?.close
+    } catch (error) {
+        throw new Error(`Error fetching data: ${error.message}`);
+    }
+}
+
+async function stakedToken(chain, stakingContract) {
+    const abi = "function totalSupply() external view returns (uint)"
+    const supply = await sdk.api.abi.call({
+        target: stakingContract,
+        abi,
+        chain
+    })
+
+    const gobPrice = await getTokenUSDPrice(contracts[chain].graph, contracts[chain].gob)
+    let amount = (supply.output.toString() / 10 ** 9) * gobPrice
+
+    return toUSDTBalances(amount)
+}
 
 module.exports = {
-  misrepresentedTokens: true,
-  smartbch: {
-    staking: stakingPricedLP(goblinStaking, GOB, chain, GOB_flexUSD_MLP, "flex-usd", false, 18),
-    tvl: async (_, _b, { [chain]: block }) => {
-      return sumUnknownTokens({ chain, block, owner:treasuryAddress, tokens: [GOB_flexUSD_MLP, GOB_BCH_MLP, flexUSD], useDefaultCoreAssets: true })
-    }
-  },
-  methodology:
-    "Counts flexUSD and MistSwap's LP tokens (GOB-flexUSD, GOB-WBCH) on the treasury contract towards TVL and staked GOB tokens towards staking",
+    misrepresentedTokens: true,
+    timetravel: false,
+    methodology: "TVL and staked GOB tokens towards staking",
+    smartbch: {
+        staking: async () => {
+            return await stakedToken("smartbch", contracts.smartbch.stakingContract)
+        },
+        tvl: async () => {
+            return await v3TvlPaged("smartbch")
+        }
+    },
+    binance: {
+        tvl: async () => {
+            return await v3TvlPaged("bsc")
+        },
+        staking: async () => {
+            return await stakedToken("bsc", contracts.bsc.stakingContract)
+        },
+    },
+    base: {
+        staking: async () => {
+            return await stakedToken("base", contracts.base.stakingContract)
+        },
+        tvl: async () => {
+            return await v3TvlPaged("base")
+        }
+    },
+    start: '2024-07-07'
 };
