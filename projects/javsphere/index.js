@@ -14,7 +14,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: `We count the total value locked from staking and freezer of javsphers native token JAV). `,
+  methodology: `We count the TVL of LeverageX Trading platform leveragex.trade (LPs and Traders). And TVL from staking and freezer of javsphers native token JAV.`,
   hallmarks: [
     [1733837635, "Migration to BASE"],
   ],
