@@ -90,6 +90,7 @@ const nerveNetworkBridge = require('./nervenetworkbridge.js')
 const nexusbtc = require('./nexusbtc')
 const tapbit = require('./tapbit-cex.js')
 const jbtc = require('./jbtc')
+const bitkub = require('./bitkub-cex.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -198,5 +199,6 @@ module.exports = {
   nerveNetworkBridge,
   nexusbtc,
   tapbit,
-  jbtc
+  jbtc,
+  bitkub
 }
