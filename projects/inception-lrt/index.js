@@ -12,8 +12,11 @@ async function tvl_eth(api) {
 
 module.exports = {
   hallmarks: [
-    [1714953600,"Genesis Merges with InceptionLRT"],
-    [1734530420,"https://x.com/Amphor_io/status/1869416042323120254"]
+    [1714953600, "Genesis Merges with InceptionLRT"],
+    [1734530420, {
+      text: "Amphor Labs Merges with InceptionLRT",
+      link: "https://x.com/Amphor_io/status/1869419216383918258"
+    }]
   ],
   doublecounted: true,
   ethereum: { tvl: tvl_eth, } ,
