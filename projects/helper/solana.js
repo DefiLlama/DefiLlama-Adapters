@@ -175,6 +175,9 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
     const tokenAccounts = []
 
     programAccounts.forEach((account) => {
+      if (DEX_PROGRAM_ID === '9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP' && account.account.space < 324) {
+        return;
+      }
       const tokenSwap = decodeAccount('tokenSwap', account.account);
       tokenAccounts.push(tokenSwap.tokenAccountA.toString())
       tokenAccounts.push(tokenSwap.tokenAccountB.toString())

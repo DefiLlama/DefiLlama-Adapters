@@ -130,6 +130,10 @@ const config = {
       {
         address: "0x5CD0Cb0DcDEF98a8d07a8D44054a13F2c35C53E1",
         fromBlock: 13582859
+      },
+      {
+        address: "0x1395C314782bba704ca984ad41e57275f6E77b09",
+        fromBlock: 23294637
       }
     ]
   },

@@ -8,16 +8,20 @@ const { getMultipleAccounts } = require('../helper/solana')
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: "Calculate sum of spot positions",
+  methodology: "Calculate sum of spot positions in vaults with unrealized profit and loss",
   solana: {
     tvl,
   },
 };
 
+const vaultUserAddresses = [
+  new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"), //Vault A
+  new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE"), //Vault B
+  new PublicKey("Hcs63usAc6cxWccycrVwx1mrNgNSpUZaUgFm7Lw9tSkR"), //Vault C
+  new PublicKey("MzEPFp2LwCSMMPHLQsqfE7SN6xkPHZ8Uym2HfrH7g5P"), //Yield Compress A
+  new PublicKey("CMiyE7M98DSPBEhQGTA6CzNodWkNuuW4y9HoocfK75nG") //Yield Compress B
 
-const vaultAddresses = [
-  new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"),
-  new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE")
+
 ];
 /**
  * Vault Equity Calculation Formula:
@@ -37,7 +41,7 @@ const vaultAddresses = [
  * 
  */
 async function tvl(api) {
-  const accounts = await getMultipleAccounts(vaultAddresses)
+  const accounts = await getMultipleAccounts(vaultUserAddresses)
   const deserializedData = accounts.map(deserializeUserPositions)
   const perpIndices = deserializedData.map(data => data.perpPositions.map(position => position.market_index)).flat()
   const perpKeys = perpIndices.map(index => getVaultPublicKey('perp_market', index))
@@ -50,10 +54,15 @@ async function tvl(api) {
     // 
     // Process spot positions
     if (spotPositions?.length) {
+      const spotIndices = spotPositions.map(position => position.market_index)
+      const spotKeys = spotIndices.map(index => getVaultPublicKey('spot_market', index))
+      const spotAccounts = await getMultipleAccounts(spotKeys)
+      const spotAccountMap = {}
+      spotIndices.forEach((v, i) => spotAccountMap[v] = spotAccounts[i])
+
       spotPositions.forEach(position => {
         const tokenMint = getTokenMintFromMarketIndex(position.market_index);
-        const adjustedBalance = processSpotPosition(position);
-
+        const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index]);
         api.add(tokenMint, adjustedBalance);
       });
     }

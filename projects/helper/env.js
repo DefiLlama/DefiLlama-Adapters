@@ -1,3 +1,4 @@
+
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
@@ -14,25 +15,12 @@ const DEFAULTS = {
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
-  FLOW_EVM_RPC: 'https://mainnet.evm.nodes.onflow.org',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  IDEX_RPC: "https://xchain-rpc.idex.io",
-  ETN_RPC: "https://rpc.ankr.com/electroneum",
-  MATCHAIN_RPC: "https://rpc.matchscan.io,https://rpc.matchain.io",
-  MATCHAIN_RPC_MULTICALL: "0xDa91510Bd8c50bfa54FC2BE2dD6dAbE03eA8496c",
-  SHAPE_RPC:'https://mainnet.shape.network',
-  SHAPE_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  APECHAIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  MORPH_RPC_MULTICALL: "0x33A213b1049D5AD2eeE6e61dAe040955e60383D4",
-  WC_RPC: "https://worldchain-mainnet.g.alchemy.com/public",
-  APECHAIN_RPC: "https://rpc.apechain.com",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
-  UNIT0_RPC: "https://rpc.unit0.dev",
-  RBN_RPC: "https://governors.mainnet.redbelly.network",
-  CORN_RPC: "https://rpc.ankr.com/corn_maizenet",
-  ACE_RPC_MULTICALL: "0x025A2B4fCE1E0bD736D5cebe6C8a52229795376B",
+  INK_RPC: "https://rpc-gel.inkonchain.com/",
+  INK_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
 }
 
 const ENV_KEYS = [
