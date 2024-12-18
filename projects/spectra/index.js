@@ -2,16 +2,13 @@ const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("./abi.json");
 const config = require("./config.json");
 const sdk = require("@defillama/sdk");
-const {staking} = require("../helper/staking.js")
+const { staking } = require("../helper/staking.js")
 
 // staking - SPECTRA token
 const SPECTRA = "0x64fcc3a02eeeba05ef701b7eed066c6ebd5d4e51"
 const veSPECTRA = "0x6a89228055c7c28430692e342f149f37462b478b"
 
 module.exports = {
-  base: {
-    staking: staking(veSPECTRA,SPECTRA), 
-  },
   methodology: `All deposited underlying in Spectra Principal Tokens and all underlying supplied as liquidity in Spectra Markets`,
   hallmarks: [
     [1717074000, "V2 Launch"]
@@ -129,3 +126,5 @@ Object.keys(config).forEach((chain) => {
     return logs.map((i) => i.pt);
   }
 });
+
+module.exports.base.staking = staking(veSPECTRA, SPECTRA)
