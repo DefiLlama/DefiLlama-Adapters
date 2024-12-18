@@ -38,9 +38,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  sonic: {
-    '0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38': { coingeckoId: "fantom", decimals: 18 },
-  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
@@ -48,11 +45,8 @@ const fixBalancesTokens = {
   apechain: {
     [ADDRESSES.null]: { coingeckoId: "apecoin", decimals: 18 },
   },
-  vinu: {
-    '0xC0264277fcCa5FCfabd41a8bC01c1FcAF8383E41': { coingeckoId: "tether", decimals: 6 },
-    '0xDd4b9b3Ce03faAbA4a3839c8B5023b7792be6e2C': { coingeckoId: "ethereum", decimals: 18},
-    '0x00c1E515EA9579856304198EFb15f525A0bb50f6': { coingeckoId: "vita-inu", decimals: 18},
-    '0xEd8c5530a0A086a12f57275728128a60DFf04230': { coingeckoId: "vinuchain", decimals: 18},
+  ink: {
+    [ADDRESSES.optimism.WETH_1]: { coingeckoId: "ethereum", decimals: 18 },
   },
 }
 
