@@ -5,6 +5,9 @@ const sdk = require("@defillama/sdk");
 
 module.exports = {
   methodology: `All deposited underlying in Spectra Principal Tokens and all underlying supplied as liquidity in Spectra Markets`,
+  hallmarks: [
+    [1717074000, "V2 Launch"]
+  ],
 };
 
 const curvePoolDeployedTopic =

@@ -21,4 +21,5 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   solana: { tvl, },
+  isHeavyProtocol: true,
 }
