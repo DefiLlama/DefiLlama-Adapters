@@ -45,6 +45,12 @@ const fixBalancesTokens = {
   apechain: {
     [ADDRESSES.null]: { coingeckoId: "apecoin", decimals: 18 },
   },
+  ink: {
+    [ADDRESSES.optimism.WETH_1]: { coingeckoId: "ethereum", decimals: 18 },
+  },
+  duckchain: {
+    ["0x7F9308E8d724e724EC31395f3af52e0593BB2e3f"]: { coingeckoId: "wrapped-ton", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
