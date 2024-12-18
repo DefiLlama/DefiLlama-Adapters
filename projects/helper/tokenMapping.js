@@ -58,6 +58,9 @@ const fixBalancesTokens = {
     [ADDRESSES.sophon.DAI]: { coingeckoId: "dai", decimals: 18 },
     [ADDRESSES.sophon.SDAI]: { coingeckoId: "savings-dai", decimals: 18 },
   },
+  duckchain: {
+    ["0x7F9308E8d724e724EC31395f3af52e0593BB2e3f"]: { coingeckoId: "wrapped-ton", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
