@@ -63,7 +63,12 @@ const fixBalancesTokens = {
   },
   qom: {
     '0xa26dfBF98Dd1A32FAe56A3D2B2D60A8a41b0bDF0': { coingeckoId: "wrapped-qom", decimals: 18 },
-  }
+  },
+  vana: {
+    [ADDRESSES.null]: { coingeckoId: 'vana', decimals: 18 },
+    '0x00eddd9621fb08436d0331c149d1690909a5906d': { coingeckoId: 'vana', decimals: 18 },
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
