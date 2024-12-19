@@ -6,9 +6,12 @@ const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint2
 function createExports({
   troveList,
   nymInformation, // { address, fromBlock }
+  aaveStrategyVaults, // { address, asset, aToken }[]
+  pellStrategyVaults, // { address, asset }[]
 }) {
   return {
-    tvl: async (api) => {
+    tvl: async (api,_a,_b,chain) => {
+      const chainKey = chain.storedKey;
       const tokens = [];
       const owners = [];
       if(troveList) {
@@ -25,7 +28,50 @@ function createExports({
         })
       }
 
-      return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
+      let otherAssets = []; // { key, amount }[]
+      if(aaveStrategyVaults) {
+        for(let index = 0; index < aaveStrategyVaults.length; index++) {
+          const { address: vault, aToken, asset } = aaveStrategyVaults[index];
+          const assetAmount = await api.call({
+            abi: "erc20:balanceOf",
+            target: aToken,
+            params: [vault],
+          });
+          otherAssets.push({
+            key: `${chainKey}:${asset}`,
+            amount: assetAmount,
+          });
+        }
+      }
+
+      if(pellStrategyVaults) {
+        for (let index = 0; index < pellStrategyVaults.length; index++) {
+          const { address: vault, asset } = pellStrategyVaults[index];
+          const pellStrategy = await api.call({
+            abi: "function pellStrategy() external view returns (address)",
+            target: vault,
+          });
+          const assetAmount = await api.call({
+            abi: "function userUnderlyingView(address) external view returns (uint256)",
+            target: pellStrategy,
+            params: [vault],
+          });
+          otherAssets.push({
+            key: `${chainKey}:${asset}`,
+            amount: assetAmount,
+          });
+        }
+      }
+
+      const result = await sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
+      otherAssets.forEach(({ key, amount }) => {
+        if(result[key]) {
+          result[key] = (BigInt(result[key]) + BigInt(amount)).toString();
+        } else {
+          result[key] = amount;
+        }
+      });
+      return result;
     },
   }
 }
@@ -71,7 +117,20 @@ module.exports = {
     nymInformation: {
       address: '0x7253493c3259137431a120752e410b38d0c715C2',
       fromBlock: 4614620,
-    }
+    },
+    aaveStrategyVaults: [
+      {
+        address: '0x713dD0E14376a6d34D0Fde2783dca52c9fD852bA',
+        aToken: '0xd6890176e8d912142AC489e8B5D8D93F8dE74D60', // aBOBWBTC
+        asset: '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3', // BOB WBTC
+      }
+    ],
+    pellStrategyVaults: [
+      {
+        address: '0x04485140d6618be431D8841de4365510717df4fd',
+        asset: '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3', // BOB WBTC
+      }
+    ],
   }),
   bsquared: createExports({
     troveList: [
