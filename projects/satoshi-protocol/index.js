@@ -10,17 +10,16 @@ function createExports({
   pellStrategyVaults, // { address, asset }[]
 }) {
   return {
-    tvl: async (api,_a,_b,chain) => {
-      const chainKey = chain.storedKey;
+    tvl: async (api) => {
       const tokens = [];
       const owners = [];
-      if(troveList) {
+      if (troveList) {
         owners.push(...troveList);
         const collaterals = await getCollateralsFromTrove(api, troveList);
         tokens.push(...collaterals);
       }
 
-      if(nymInformation) {
+      if (nymInformation) {
         const assetList = await getAssetListFromNymContract(api, nymInformation.address, nymInformation.fromBlock);
         assetList.forEach(asset => {
           owners.push(nymInformation.address);
@@ -28,50 +27,28 @@ function createExports({
         })
       }
 
-      let otherAssets = []; // { key, amount }[]
-      if(aaveStrategyVaults) {
-        for(let index = 0; index < aaveStrategyVaults.length; index++) {
+      if (aaveStrategyVaults) {
+        const calls = []
+        const tokens = []
+        for (let index = 0; index < aaveStrategyVaults.length; index++) {
           const { address: vault, aToken, asset } = aaveStrategyVaults[index];
-          const assetAmount = await api.call({
-            abi: "erc20:balanceOf",
-            target: aToken,
-            params: [vault],
-          });
-          otherAssets.push({
-            key: `${chainKey}:${asset}`,
-            amount: assetAmount,
-          });
+          tokens.push(asset)
+          calls.push({ target: aToken, params: vault })
         }
+        const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls })
+        api.add(tokens, bals)
       }
 
-      if(pellStrategyVaults) {
-        for (let index = 0; index < pellStrategyVaults.length; index++) {
-          const { address: vault, asset } = pellStrategyVaults[index];
-          const pellStrategy = await api.call({
-            abi: "function pellStrategy() external view returns (address)",
-            target: vault,
-          });
-          const assetAmount = await api.call({
-            abi: "function userUnderlyingView(address) external view returns (uint256)",
-            target: pellStrategy,
-            params: [vault],
-          });
-          otherAssets.push({
-            key: `${chainKey}:${asset}`,
-            amount: assetAmount,
-          });
-        }
+      if (pellStrategyVaults) {
+        const vaults = pellStrategyVaults.map(i => i.address)
+        const tokens = pellStrategyVaults.map(i => i.asset)
+        const strategies = await api.multiCall({ abi: 'address:pellStrategy', calls: vaults })
+        const calls2 = strategies.map((v, i) => ({ target: v, params: vaults[i] }))
+        const bals = await api.multiCall({ abi: "function userUnderlyingView(address) external view returns (uint256)", calls: calls2 })
+        api.add(tokens, bals)
       }
 
-      const result = await sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
-      otherAssets.forEach(({ key, amount }) => {
-        if(result[key]) {
-          result[key] = (BigInt(result[key]) + BigInt(amount)).toString();
-        } else {
-          result[key] = amount;
-        }
-      });
-      return result;
+      return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
     },
   }
 }
@@ -82,7 +59,7 @@ async function getCollateralsFromTrove(api, troveList) {
 }
 
 async function getAssetListFromNymContract(api, nymContractAddress, fromBlock) {
-  const logs = await getLogs({api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventABI, onlyArgs: true});
+  const logs = await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventABI, onlyArgs: true });
   const assetList = logs.map(item => item.asset);
   return assetList;
 }
