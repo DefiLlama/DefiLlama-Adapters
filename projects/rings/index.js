@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
@@ -37,17 +38,6 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { vaults, supportedAssets } = config[chain]
   module.exports[chain] = {
-    tvl: async (api) => {
-      const balances = {}
-      const calls = supportedAssets.flatMap(asset => vaults.map(vault => ({ target: asset, params: [vault] })))
-      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls })
-      supportedAssets.forEach((asset, i) => {
-        vaults.forEach((_, j) => {
-          sdk.util.sumSingleBalance(balances, asset, bals[i * vaults.length + j])
-        })
-
-      })
-      return balances;
-    }
+    tvl: sumTokensExport({ owners: vaults, tokens: supportedAssets})
   }
 })

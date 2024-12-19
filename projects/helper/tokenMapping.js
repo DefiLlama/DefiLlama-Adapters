@@ -61,6 +61,10 @@ const fixBalancesTokens = {
   duckchain: {
     ["0x7F9308E8d724e724EC31395f3af52e0593BB2e3f"]: { coingeckoId: "wrapped-ton", decimals: 18 },
   },
+  sonic: {
+    '0x29219dd400f2Bf60E5a23d13Be72B486D4038894': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x309C92261178fA0CF748A855e90Ae73FDb79EBc7': { coingeckoId: "ethereum", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
