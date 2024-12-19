@@ -43,36 +43,6 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  apechain: {
-    [ADDRESSES.null]: { coingeckoId: "apecoin", decimals: 18 },
-  },
-  ink: {
-    [ADDRESSES.optimism.WETH_1]: { coingeckoId: "ethereum", decimals: 18 },
-  },
-  sophon: {
-    [ADDRESSES.sophon.ETH]: { coingeckoId: "ethereum", decimals: 18 },
-    [ADDRESSES.sophon.USDT]: { coingeckoId: "tether", decimals: 6 },
-    [ADDRESSES.sophon.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
-    [ADDRESSES.sophon.WSTETH]: { coingeckoId: "wrapped-steth", decimals: 18 },
-    [ADDRESSES.sophon.WEETH]: { coingeckoId: "wrapped-eeth", decimals: 18 },
-    [ADDRESSES.sophon.DAI]: { coingeckoId: "dai", decimals: 18 },
-    [ADDRESSES.sophon.SDAI]: { coingeckoId: "savings-dai", decimals: 18 },
-  },
-  duckchain: {
-    "0x7F9308E8d724e724EC31395f3af52e0593BB2e3f": { coingeckoId: "the-open-network", decimals: 18 },
-  },
-  qom: {
-    '0xa26dfBF98Dd1A32FAe56A3D2B2D60A8a41b0bDF0': { coingeckoId: "wrapped-qom", decimals: 18 },
-  },
-  vana: {
-    [ADDRESSES.null]: { coingeckoId: 'vana', decimals: 18 },
-    '0x00eddd9621fb08436d0331c149d1690909a5906d': { coingeckoId: 'vana', decimals: 18 },
-    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: 'usd-coin', decimals: 6 },
-  },
-  sonic: {
-    '0x29219dd400f2Bf60E5a23d13Be72B486D4038894': { coingeckoId: "usd-coin", decimals: 6 },
-    '0x309C92261178fA0CF748A855e90Ae73FDb79EBc7': { coingeckoId: "ethereum", decimals: 18 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
