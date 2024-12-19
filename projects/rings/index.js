@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { getLogs } = require('../helper/cache/getLogs');
+const { ZeroAddress } = require("ethers");
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
@@ -60,7 +61,7 @@ Object.keys(config).forEach(chain => {
         // Compute balances based on the enter and exit logs for each asset
         depositLogs.forEach(log => {
           const { to, amount, asset } = log
-          if (amount == 0) {
+          if (amount == 0 || asset == ZeroAddress || to == ZeroAddress) {
             return;
           }
           if (!balances[asset]) {
@@ -72,10 +73,9 @@ Object.keys(config).forEach(chain => {
             balances[asset][to] += amount;
           }
         })
-
         withdrawLogs.forEach(log => {
           const { from, amount, asset } = log
-          if (amount == 0) {
+          if (amount == 0 || asset == ZeroAddress || from == ZeroAddress) {
             return;
           }
           if (!balances[asset]) {
