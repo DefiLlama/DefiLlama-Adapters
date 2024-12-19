@@ -1,7 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
-const JSBI = require('jsbi');
-
 
 const FACTORY = '0x000000000000010a1DEc6c46371A28A071F8bb01'
 const SFPM = '0x0000000000000DEdEDdD16227aA3D836C5753194'
@@ -119,8 +117,8 @@ function chainTvl(chain) {
       let extraTokens1 = 0n
 
       for (let [key, liquidity] of Object.entries(sfpmOwnedLiquiditiesForMarket)) {
-        const sqrtLower = BigInt(getSqrtRatioAtTick(Number(key.split("-")[0])).toString())
-        const sqrtUpper = BigInt(getSqrtRatioAtTick(Number(key.split("-")[1])).toString())
+        const sqrtLower = getSqrtRatioAtTick(Number(key.split("-")[0]))
+        const sqrtUpper = getSqrtRatioAtTick(Number(key.split("-")[1]))
 
         const [amount0, amount1] = getAmountsForLiquidity(BigInt(sqrtPriceX96), liquidity, sqrtLower, sqrtUpper)
         extraTokens0 += amount0
@@ -206,12 +204,12 @@ function getAmountsForLiquidity(
 }
 
 function getSqrtRatioAtTick(tick) {
-  const MaxUint256 = JSBI.BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
-  const Q32 = JSBI.BigInt('0x100000000');
-  const ZERO = JSBI.BigInt(0);
-  const ONE = JSBI.BigInt(1);
+  const MaxUint256 = BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
+  const Q32 = BigInt('0x100000000');
+  const ZERO = BigInt(0);
+  const ONE = BigInt(1);
   var absTick = tick < 0 ? tick * -1 : tick;
-  var ratio = (absTick & 0x1) !== 0 ? JSBI.BigInt('0xfffcb933bd6fad37aa2d162d1a594001') : JSBI.BigInt('0x100000000000000000000000000000000');
+  var ratio = (absTick & 0x1) !== 0 ? BigInt('0xfffcb933bd6fad37aa2d162d1a594001') : BigInt('0x100000000000000000000000000000000');
   if ((absTick & 0x2) !== 0) ratio = mulShift(ratio, '0xfff97272373d413259a46990580e213a');
   if ((absTick & 0x4) !== 0) ratio = mulShift(ratio, '0xfff2e50f5f656932ef12357cf3c7fdcc');
   if ((absTick & 0x8) !== 0) ratio = mulShift(ratio, '0xffe5caca7e10e4e61c3624eaa0941cd0');
@@ -231,13 +229,13 @@ function getSqrtRatioAtTick(tick) {
   if ((absTick & 0x20000) !== 0) ratio = mulShift(ratio, '0x5d6af8dedb81196699c329225ee604');
   if ((absTick & 0x40000) !== 0) ratio = mulShift(ratio, '0x2216e584f5fa1ea926041bedfe98');
   if ((absTick & 0x80000) !== 0) ratio = mulShift(ratio, '0x48a170391f7dc42444e8fa2');
-  if (tick > 0) ratio = JSBI.divide(MaxUint256, ratio);
+  if (tick > 0) ratio = MaxUint256 /ratio;
   // back to Q96
-  return JSBI.greaterThan(JSBI.remainder(ratio, Q32), ZERO) ? JSBI.add(JSBI.divide(ratio, Q32), ONE) : JSBI.divide(ratio, Q32);
+  return ratio % Q32 > ZERO ? ratio / Q32 + ONE : ratio / Q32;
 }
 
 function mulShift(val, mulBy) {
-  return JSBI.signedRightShift(JSBI.multiply(val, JSBI.BigInt(mulBy)), JSBI.BigInt(128));
+  return (val * BigInt(mulBy)) >> BigInt(128);
 }
 
 module.exports = {
