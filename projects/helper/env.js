@@ -19,10 +19,6 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
-<<<<<<< HEAD
-  DUCKCHAIN_RPC: "https://rpc.duckchain.io,https://rpc-hk.duckchain.io",
-  SOPHON_RPC_MULTICALL: "0x5f4867441d2416cA88B1b3fd38f21811680CD2C8",
-=======
   UNIT0_RPC: "https://rpc.unit0.dev",
   RBN_RPC: "https://governors.mainnet.redbelly.network",
   CORN_RPC: "https://rpc.ankr.com/corn_maizenet",
@@ -30,7 +26,6 @@ const DEFAULTS = {
   ACE_RPC_MULTICALL: "0x025A2B4fCE1E0bD736D5cebe6C8a52229795376B",
   ZILLIQA_RPC_MULTICALL: "0x38899efb93d5106d3adb86662c557f237f6ecf57",
   VINU_RPC_MULTICALL: "0x63CE2062281fb85fE5BC407799A455C21f35F355",
->>>>>>> 5ecba31e2 (adding QL1 and qomswap)
 }
 
 const ENV_KEYS = [
