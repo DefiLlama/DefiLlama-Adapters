@@ -39,7 +39,7 @@ async function uniTvl(api, factory, isStable = false) {
         token1Bal: reserve1?.value,
       })
     sdk.log(`velar-amm: ${i}/${pairCount}`)
-    await sleep(1100)
+    await sleep(3100)
   }
   return transformDexBalances({ chain: 'stacks', data, balances: api.getBalances() })
 }
