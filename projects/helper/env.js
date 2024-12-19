@@ -19,6 +19,9 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
+  DUCKCHAIN_RPC: "https://rpc.duckchain.io,https://rpc-hk.duckchain.io",
+  SOPHON_RPC_MULTICALL: "0x5f4867441d2416cA88B1b3fd38f21811680CD2C8",
+  VANA_RPC_MULTICALL: "0xFe92b91F3326e58557478c28EeAe1936E0c7148a",
 }
 
 const ENV_KEYS = [
