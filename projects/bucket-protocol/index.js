@@ -203,7 +203,9 @@ async function tvl(api) {
 
     if(assetType == "0x922d15d7f55c13fd790f6e54397470ec592caa2b508df292a2e8553f3d3b274f::msui::MSUI" || assetType == "0x41ff228bfd566f0c707173ee6413962a77e3929588d010250e4e76f0d1cc0ad4::ksui::KSUI") assetType = ADDRESSES.sui.SUI
 
-    api.add(assetType, degenPool.fields.balance)
+    const credits = degenPool.fields.sheet.fields.credits.fields.contents.reduce((acc,content)=> acc + Number(content.fields.value.fields.pos0),0)
+    
+    api.add(assetType, Number(degenPool.fields.balance) + credits)
   }
 
   // const tankList = protocolFields.filter((item) => item.type.includes("Tank"));
