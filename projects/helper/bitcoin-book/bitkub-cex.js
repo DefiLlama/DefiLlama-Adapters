@@ -1,0 +1,17 @@
+module.exports = [
+  "15ZAumgvBkRBpBkvuB699FszE8KW7sUqof",
+  "3JgjA1xMGhjfwuS2RK7zomuesTbCt4bLyE",
+  "3Q4Yt1QPe3hfyHok78PCowKd5rJG1hUvjH",
+  "36u1EMxV4NGMwEoS6WLSHHqww7kM2AGfVR",
+  "bc1qnh70mytjrnykrlufhz4tsgc3dfphrgsefwm0zx",
+  "1VHhZ3vZ2rhrT8a5QCt5Sd23Y5APBk9QU",
+  "bc1qlsg4ph439lemctx2vx6ydpc5sx8d2trv8ry25u",
+  "1iqw8qwMDcwkkw7AiEXqsxwQQ4qgmRpoP",
+  "bc1qxj30n45488xf7jc8lrx0val5d36ty7dql495j8",
+  "12ken5PwHeA6YnD3272S1beaSdGN46cEBh",
+  "bc1q85sqvgccu9d26mfw8j50y6evmyund0d7sg7rc89csyu3uh0c7f6s5g30nw",
+  "3AavzRkkbhtQjFJ3CLwA3FPoazxsFZM5go",
+  "bc1que2ellarxvz4f9pa88f6etejvj9mtsmlse22k8nzygnht6h4tlvqtpk9lf",
+  "33PkD3DjT6YYao2NbAS7bqFRy6nCTdGXBf",
+  "18DDXRwzkWvjg87P4fk9CB5k3AC25kxBsU",
+];

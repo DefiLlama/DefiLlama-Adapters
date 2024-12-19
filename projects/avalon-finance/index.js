@@ -33,6 +33,7 @@ const solvMarkets = {
 const pumpBTCMarkets = {
 	ethereum: aaveExports('', '0xE00A3FE97714765A1a2054E850724Fd1320FaCc0', undefined, ['0x2eE0438BCC1876cEA2c6fc43dD21417cF3D1c2eF'], { v3: true }),
 	bsc: aaveExports('', '0xb1C93Ba1286b6CCA1496C266f0eBfCe94b0C0cc0', undefined, ['0x58c937fa2D147117dB43d187f9411151edfFf03c'], { v3: true }),
+	zeta: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
 }
 
 const unibtcMarkets = {
