@@ -21,6 +21,7 @@ const DEFAULTS = {
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
   DUCKCHAIN_RPC: "https://rpc.duckchain.io,https://rpc-hk.duckchain.io",
   SOPHON_RPC_MULTICALL: "0x5f4867441d2416cA88B1b3fd38f21811680CD2C8",
+  VANA_RPC_MULTICALL: "0xFe92b91F3326e58557478c28EeAe1936E0c7148a",
 }
 
 const ENV_KEYS = [

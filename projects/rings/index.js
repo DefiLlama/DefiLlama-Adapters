@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { getLogs } = require('../helper/cache/getLogs');
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',

@@ -205,6 +205,25 @@ const config = {
       "UQDByM-88YEJtGq4UTZx3FOgZFZ6URHPYD11wf9AcBrajchg",
     ],
   },
+  doge: {
+    owners: [
+      'DTqm2UCi6AS1nSCo9jZ8AejZ3k1ZcF8qix',
+      'A2is3pqH2jz8jcRNV2QEFnLF3FAP5hBEoB',
+      'DBrNiTbgpHHeveemLNnKwNDEJwXRGGRb1L',
+      'D788kYSZYsVWSoLVejipE1Q4cN8Spom5eU',
+      'DNvZftCnAsfrzzfe6R3dF6Sugz7W4Qgs6b',
+      'DPYV66VirzChkotHXPryAhcfvyQmeArV2y',
+      'DHBERwF4LVLVwQzDtfPz9zEtKPnWW9NSDH',
+      'DTWmAfdTkrtqv7GmN2vE74VTkXkgQUFRSn',
+      'DDm2XmWXhq3fxHd9fUaqnbmxanaFuKSG1s',
+      'DHt3teN3iNSG7rJ8GaGz5EeHYFieCf8Qin',
+      'D5GmmrSZ1xDut5Nj1s4C4ncA1v3EGfbk15',
+      'DNpbFixXn611Qd9SZDBDjS4NhFPAXG8t1X',
+      'D7pEtDnFU3ZgTykZt54SXvGeF1YSt2PVbe',
+      'DCWvgKHcs1KUDqYe55rTX8m6uaJ67gaAp5',
+      'DBdkivVhGhmbBRSsbt2s55MtZ38ngs86nS',
+    ]
+  }
 };
 
 module.exports = cexExports(config);
