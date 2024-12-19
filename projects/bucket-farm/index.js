@@ -31,7 +31,7 @@ const Degen_Pool_IDs = [
 
 async function tvl(api) {
   const degenPools = await sui.getObjects(Degen_Pool_IDs);
-  for(degenPool of degenPools){
+  for(let degenPool of degenPools){
     const type = degenPool.type
     let assetType = type.slice(type.indexOf("<"), type.indexOf(">")).split(",")[1].trim()
 
