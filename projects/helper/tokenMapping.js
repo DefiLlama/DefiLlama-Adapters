@@ -38,15 +38,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  },
-  apechain: {
-    [ADDRESSES.null]: { coingeckoId: "apecoin", decimals: 18 },
-  },
-  ink: {
-    [ADDRESSES.optimism.WETH_1]: { coingeckoId: "ethereum", decimals: 18 },
   },
 }
 
