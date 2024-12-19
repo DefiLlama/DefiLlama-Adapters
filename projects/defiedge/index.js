@@ -20,6 +20,7 @@ async function getTvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2024-10-31',
   doublecounted: true,
   misrepresentedTokens: true,
   timetravel: false,
