@@ -38,7 +38,7 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  
+
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
@@ -59,8 +59,11 @@ const fixBalancesTokens = {
     [ADDRESSES.sophon.SDAI]: { coingeckoId: "savings-dai", decimals: 18 },
   },
   duckchain: {
-    ["0x7F9308E8d724e724EC31395f3af52e0593BB2e3f"]: { coingeckoId: "wrapped-ton", decimals: 18 },
+    "0x7F9308E8d724e724EC31395f3af52e0593BB2e3f": { coingeckoId: "the-open-network", decimals: 18 },
   },
+  qom: {
+    '0xa26dfBF98Dd1A32FAe56A3D2B2D60A8a41b0bDF0': { coingeckoId: "wrapped-qom", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
