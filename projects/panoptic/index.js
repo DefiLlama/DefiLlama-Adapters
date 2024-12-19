@@ -12,7 +12,7 @@ const Q96 = BigInt(2) ** BigInt(96)
 
 const SFPMChunksQuery = `
 query SFPMChunks($V3Pool: String) {
-  chunks(where: {pool: $V3Pool}) {
+  chunks(first: 1000, where: {pool: $V3Pool}) {
     netLiquidity
     tickLower
     tickUpper
@@ -91,6 +91,7 @@ function chainTvl(chain) {
     
     // Iterate through markets array directly
     for (let [V3Pool, poolDataEntry] of Object.entries(poolData)) {
+      // @TODO in the unlikely event that we have >1000 unique chunks on a single pool, this query can be paginated so the TVL isn't underestimated
       const chunks = await cachedGraphQuery(`panoptic/sfpm-chunks/${V3Pool}`, config[chain].graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit: config[chain].safeBlockLimit, variables: { V3Pool } })
 
       const sqrtPriceX96 = (
