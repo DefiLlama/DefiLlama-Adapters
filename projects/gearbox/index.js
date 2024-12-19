@@ -3,7 +3,7 @@
  **
  **
  ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
- ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.4.1
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.4.3
  **
  **
  **
@@ -484,7 +484,7 @@ var adapter_default = {
   optimism: {
     tvl,
   },
-  methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
+  methodology: `Retrieves the tokens in each Gearbox pool & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
   misrepresentedTokens: true,
 };
 
