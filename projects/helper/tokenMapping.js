@@ -69,6 +69,10 @@ const fixBalancesTokens = {
     '0x00eddd9621fb08436d0331c149d1690909a5906d': { coingeckoId: 'vana', decimals: 18 },
     '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: 'usd-coin', decimals: 6 },
   },
+  sonic: {
+    '0x29219dd400f2Bf60E5a23d13Be72B486D4038894': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x309C92261178fA0CF748A855e90Ae73FDb79EBc7': { coingeckoId: "ethereum", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
