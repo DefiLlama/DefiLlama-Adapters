@@ -124,46 +124,59 @@ function sumTokensExport(options) {
   return async (api) => sumTokens({ ...api, api, ...options })
 }
 
-const VERSION_GROUPING = 1000000
+const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql");
 
-// If I can get this timestampQuery to work... everything will work seamlessly
-async function timestampToVersion(timestamp, start_version = 1962588495, end_version = 1962588495 + VERSION_GROUPING) {
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    let closestTransactions = await findClosestTransaction(timestamp, start_version, end_version)
-    if (closestTransactions.length < 1) {
-      start_version += VERSION_GROUPING
-      end_version += VERSION_GROUPING
-    } else {
-      return closestTransactions[0].version
-    }
+// Query to get the latest block.
+const latestBlockQuery = `query LatestBlock {
+  block_metadata_transactions(order_by: {version: desc}, limit: 1) {
+    block_height
   }
-}
+}`;
 
-const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql")
-const timestampQuery = `query TimestampToVersion($timestamp: timestamp, $start_version: bigint, $end_version: bigint) {
-block_metadata_transactions(
-  where: {timestamp: {_gte: $timestamp }, version: {_gte: $start_version, _lte: $end_version}}
-  limit: 1
-  order_by: {version: asc}
-) {
+// Query to get a block.
+const blockQuery = `query Block($block: bigint) {
+  block_metadata_transactions(limit: 1, where: {block_height: {_eq: $block}}) {
     timestamp
     version
   }
 }`;
-async function findClosestTransaction(timestamp, start_version, end_version) {
-  let date = new Date(timestamp * 1000).toISOString()
 
-  const results = await graphQLClient.request(
-    timestampQuery,
-    {
-      timestamp: date,
-      start_version,
-      end_version,
+// Query to get a block range.
+const blockRangeQuery = `query Block($firstBlock: bigint, $limit: Int) {
+  block_metadata_transactions(limit: $limit, where: {block_height: {_gte: $firstBlock}}, order_by: {block_height: asc}) {
+    timestamp
+    version
+  }
+}`;
+
+// Given a timestamp, returns the transaction version that is closest to that timestamp.
+const timestampToVersion = async (timestamp, minBlock = 0) => {
+  let left = minBlock;
+  let right = await graphQLClient.request(latestBlockQuery).then(r => Number(r.block_metadata_transactions[0].block_height));
+  let middle;
+  while (left + 100 < right) {
+    middle = Math.round((left + right) / 2);
+    const middleBlock = await graphQLClient.request(blockQuery, { block: middle }).then(r => r.block_metadata_transactions[0]);
+    const middleBlockDate = new Date(middleBlock.timestamp);
+    if (middleBlockDate.getTime() === timestamp.getTime()) {
+      return Number(middleBlock.version);
     }
-  )
-
-  return results.block_metadata_transactions
+    if (timestamp.getTime() < middleBlockDate.getTime()) {
+      right = middle;
+    } else {
+      left = middle + 1;
+    }
+  }
+  const blocks = await graphQLClient.request(
+    blockRangeQuery,
+    { firstBlock: left, limit: right - left }
+  ).then(r => r.block_metadata_transactions);
+  const mappedBlocks = blocks.map((e) => ({
+    version: Number(e.version),
+    delta: Math.abs(timestamp.getTime() - new Date(e.timestamp).getTime())
+  }));
+  mappedBlocks.sort((a, b) => a.delta - b.delta);
+  return mappedBlocks[0].version;
 }
 
 module.exports = {
