@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
+const { cachedGraphQuery } = require("../helper/cache");
 
 const FACTORY = '0x000000000000010a1DEc6c46371A28A071F8bb01'
 const SFPM = '0x0000000000000DEdEDdD16227aA3D836C5753194'
@@ -9,9 +10,27 @@ const startBlocks = {
 
 const Q96 = BigInt(2) ** BigInt(96)
 
+const SFPMChunksQuery = `
+query SFPMChunks($V3Pool: String) {
+  chunks(where: {pool: $V3Pool}) {
+    netLiquidity
+    tickLower
+    tickUpper
+  }
+}`
+
+const config = {
+  ethereum: {
+    graphUrl: 'https://api.goldsky.com/api/public/project_cl9gc21q105380hxuh8ks53k3/subgraphs/panoptic-subgraph-mainnet/1.0.2/gn',
+    startBlock: 21389983,
+    safeBlockLimit: 50
+  }
+}
+
 function chainTvl(chain) {
   return async (api) => {
-    const START_BLOCK = startBlocks[chain]
+    const START_BLOCK = config[chain].startBlock
+
     const poolDeployedLogs = (
       await getLogs({
         api,
@@ -54,9 +73,7 @@ function chainTvl(chain) {
       chain,
     })
     
-    token0Results.output.forEach((call, i) => {
-      poolData[call.input.target].token0 = call.output
-    })
+    token0Results.output.forEach((call) => poolData[call.input.target].token0 = call.output)
 
     const token1Results = await sdk.api.abi.multiCall({
       abi: "function token1() view returns (address)",
@@ -65,9 +82,7 @@ function chainTvl(chain) {
       chain,
     })
     
-    token1Results.output.forEach((call, i) => {
-      poolData[call.input.target].token1 = call.output
-    })
+    token1Results.output.forEach((call) => poolData[call.input.target].token1 = call.output)
 
     // Create balance calls for both tokens of each market
     const balanceCalls = []
@@ -76,34 +91,8 @@ function chainTvl(chain) {
     
     // Iterate through markets array directly
     for (let [V3Pool, poolDataEntry] of Object.entries(poolData)) {
-      const mintLogs = (
-        await getLogs({
-          api,
-          target: V3Pool,
-          fromBlock: START_BLOCK,
-          extraKey: "mintCache",
-          eventAbi: `event Mint(address sender,address indexed owner,int24 indexed tickLower,int24 indexed tickUpper,uint128 amount,uint256 amount0,uint256 amount1)`,
-          topics: ["0x7a53080ba414158be7ec69b987b5fb7d07dee101fe85488f0853ae16239d0bde","0x"+"000000000000000000000000"+SFPM.slice(2)]
-        })
-      )
-      const burnLogs = (
-        await getLogs({
-          api,
-          target: V3Pool,
-          fromBlock: START_BLOCK,
-          extraKey: "burnCache",
-          eventAbi: `event Burn(address indexed owner,int24 indexed tickLower,int24 indexed tickUpper,uint128 amount,uint256 amount0,uint256 amount1)`,
-          topics: ["0x0c396cd989a39f4459b5fa1aed6a9a8dcdbc45908acfd67e028cd568da98982c","0x"+"000000000000000000000000"+SFPM.slice(2)]
-        })
-      )
+      const chunks = await cachedGraphQuery(`panoptic/sfpm-chunks/${V3Pool}`, config[chain].graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit: config[chain].safeBlockLimit, variables: { V3Pool } })
 
-      let sfpmOwnedLiquiditiesForMarket = {}
-
-      mintLogs.forEach((log) => {
-        const key = log.args.tickLower.toString()+"-"+log.args.tickUpper.toString()
-        sfpmOwnedLiquiditiesForMarket[key] = (sfpmOwnedLiquiditiesForMarket?.[key] ?? 0n) + log.args.amount})
-      burnLogs.forEach((log) => sfpmOwnedLiquiditiesForMarket[log.args.tickLower.toString()+"-"+log.args.tickUpper.toString()] -= log.args.amount)
-      
       const sqrtPriceX96 = (
         await sdk.api.abi.call({
           target: V3Pool,
@@ -116,14 +105,15 @@ function chainTvl(chain) {
       let extraTokens0 = 0n
       let extraTokens1 = 0n
 
-      for (let [key, liquidity] of Object.entries(sfpmOwnedLiquiditiesForMarket)) {
-        const sqrtLower = getSqrtRatioAtTick(Number(key.split("-")[0]))
-        const sqrtUpper = getSqrtRatioAtTick(Number(key.split("-")[1]))
+      chunks.forEach((chunk) => {
+        const sqrtLower = getSqrtRatioAtTick(Number(chunk.tickLower))
+        const sqrtUpper = getSqrtRatioAtTick(Number(chunk.tickUpper))
 
-        const [amount0, amount1] = getAmountsForLiquidity(BigInt(sqrtPriceX96), liquidity, sqrtLower, sqrtUpper)
+        const [amount0, amount1] = getAmountsForLiquidity(BigInt(sqrtPriceX96), BigInt(chunk.netLiquidity), sqrtLower, sqrtUpper)
+
         extraTokens0 += amount0
         extraTokens1 += amount1
-      }
+      })
       
       LiquidityOwnedTokens.push(extraTokens0)
       LiquidityOwnedTokens.push(extraTokens1)
@@ -242,6 +232,6 @@ module.exports = {
   ethereum: {
     tvl: chainTvl('ethereum'),
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-    start: 1734049391,
+    start: 1734049991,
   },
 }
