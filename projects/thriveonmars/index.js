@@ -1,7 +1,7 @@
 const { get_account_tvl } = require("../helper/chain/eos");
 
-// Colonize Mars
-// https://colonizemars.com
+// Thrive On Mars
+// https://thriveonmars.com
 async function wax() {
   const accounts = ["play.mars"];
   const tokens = [
@@ -11,7 +11,7 @@ async function wax() {
 }
 
 module.exports = {
-  methodology: `Colonize Mars TVL is achieved by querying token balances from NFT gaming contracts`,
+  methodology: `Thrive On Mars TVL is achieved by querying token balances from NFT gaming contracts`,
   wax: {
     tvl: wax
   },
