@@ -7,6 +7,7 @@ async function tvl() {
 }
 
 module.exports = {
+  deadFrom: '2024-12-01',
   timetravel: false,
   misrepresentedTokens: true,
   vite:{
