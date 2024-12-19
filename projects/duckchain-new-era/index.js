@@ -80,3 +80,7 @@ module.exports = {
     }
   },
 };
+
+
+// Excluding merlin tvl as it feels inorganic
+delete module.exports.merlin
