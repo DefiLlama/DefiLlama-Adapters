@@ -7,8 +7,7 @@ const abi = {
 }
 
 const config = {
-  base: { factory: '0x382CCccbD3b142D7DA063bF68cd0c89634767F76', fromBlock: 14528050, },
-  era: { factory: '0xAaA0e933e1EcC812fc075A81c116Aa0a82A5bbb8', fromBlock: 34448160, },
+  sonic: { factory: '0xD4aD5Ed9E1436904624b6dB8B1BE31f36317C636', fromBlock: 297198, },
 }
 
 function customCacheFunction({ cache, logs }) {
@@ -26,7 +25,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "TVL consists of assets deposited into the Clober Book Manager contract",
+  methodology: "TVL consists of assets deposited into the Sonic Market Book Manager contract",
 };
 
 Object.keys(config).forEach(chain => {
