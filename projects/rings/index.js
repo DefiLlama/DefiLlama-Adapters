@@ -45,16 +45,16 @@ Object.keys(config).forEach(chain => {
         const depositLogs = await getLogs({
           api,
           target: token,
-          eventAbi: 'event Exit(address indexed to, address indexed asset, uint256 amount, address indexed from, uint256 shares)',
+          eventAbi: 'event Enter(address indexed from, address indexed asset, uint256 amount, address indexed to, uint256 shares)',
           onlyArgs: true,
           fromBlock: fromBlock,
         })
         const withdrawLogs = await getLogs({
           api,
-          target: vaults.scETH.token,
+          target: token,
           eventAbi: 'event Exit(address indexed to, address indexed asset, uint256 amount, address indexed from, uint256 shares)',
           onlyArgs: true,
-          fromBlock: vaults.scETH.fromBlock,
+          fromBlock: fromBlock,
         })
 
         // Compute balances based on the enter and exit logs for each asset
