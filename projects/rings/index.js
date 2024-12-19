@@ -1,4 +1,6 @@
 const sdk = require("@defillama/sdk");
+const { getLogs } = require('../helper/cache/getLogs');
+const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
@@ -7,47 +9,96 @@ module.exports = {
 
 const config = {
   ethereum: {
-    vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
-    ],
-    supportedAssets: [
-      '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-      '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-      '0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f', // GHO
-      '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-      '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
-      '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
-      '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', // WSTETH
-      '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', // WEETH
-    ]
+    vaults: {
+      scUSD: {
+        token: '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
+        fromBlock: 21363111
+      },
+      scETH: {
+        token: '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
+        fromBlock: 21363247
+      },
+    },
   },
   sonic: {
-    vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812'
-    ],
-    supportedAssets: [
-      '0x29219dd400f2Bf60E5a23d13Be72B486D4038894', // USDC
-      '0x309C92261178fA0CF748A855e90Ae73FDb79EBc7', // WETH
-    ]
+    vaults: {
+      scUSD: {
+        token: '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
+        fromBlock: 588028
+      },
+      scETH: {
+        token: '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
+        fromBlock: 591868
+      },
+    },
   },
 }
 
 Object.keys(config).forEach(chain => {
-  const { vaults, supportedAssets } = config[chain]
+  const { vaults } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const balances = {}
-      const calls = supportedAssets.flatMap(asset => vaults.map(vault => ({ target: asset, params: [vault] })))
-      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls })
-      supportedAssets.forEach((asset, i) => {
-        vaults.forEach((_, j) => {
-          sdk.util.sumSingleBalance(balances, asset, bals[i * vaults.length + j])
+
+      await Promise.all(Object.keys(vaults).map(async vault => {
+        const { token, fromBlock } = vaults[vault]
+
+        const depositLogs = await getLogs({
+          api,
+          target: token,
+          eventAbi: 'event Exit(address indexed to, address indexed asset, uint256 amount, address indexed from, uint256 shares)',
+          onlyArgs: true,
+          fromBlock: fromBlock,
+        })
+        const withdrawLogs = await getLogs({
+          api,
+          target: vaults.scETH.token,
+          eventAbi: 'event Exit(address indexed to, address indexed asset, uint256 amount, address indexed from, uint256 shares)',
+          onlyArgs: true,
+          fromBlock: vaults.scETH.fromBlock,
         })
 
+        // Compute balances based on the enter and exit logs for each asset
+        depositLogs.forEach(log => {
+          const { to, amount, asset } = log
+          if (amount == 0) {
+            return;
+          }
+          if (!balances[asset]) {
+            balances[asset] = {}
+          }
+          if (!balances[asset][to]) {
+            balances[asset][to] = amount
+          } else {
+            balances[asset][to] += amount;
+          }
+        })
+
+        withdrawLogs.forEach(log => {
+          const { from, amount, asset } = log
+          if (amount == 0) {
+            return;
+          }
+          if (!balances[asset]) {
+            balances[asset] = {}
+          }
+          if (!balances[asset][from]) {
+            balances[asset][from] = -amount
+          } else {
+            balances[asset][from] -= amount;
+          }
+        });
+      }))
+
+      const protocolBalances = {}
+      Object.keys(balances).forEach(asset => {
+        Object.keys(balances[asset]).forEach(user => {
+          if (balances[asset][user] != 0) {
+            sdk.util.sumSingleBalance(protocolBalances, asset, balances[asset][user])
+          }
+        })
       })
-      return balances;
+      return protocolBalances;
     }
   }
 })
