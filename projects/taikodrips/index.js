@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking")
 
-const TaikoToken = "0xA9d23408b9bA935c230493c40C73824Df71A0975"
+const TaikoToken = ADDRESSES.taiko.TAIKO
 const FarmingContract = '0xf90209C44dBf5Fa3d40ac85a008206b5A8c24899'
 
 module.exports = {

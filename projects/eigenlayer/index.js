@@ -48,6 +48,7 @@ const fetchLogs = async (api, eventAbi) => getLogs2({
   target: "0x858646372cc42e1a627fce94aa7a7033e7cf075a",
   eventAbi,
   fromBlock: 17445564,
+  skipCacheRead: true
 });
 
 const tvl = async ({ timestamp }, _b, _cb, { api }) => {

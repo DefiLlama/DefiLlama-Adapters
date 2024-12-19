@@ -6,7 +6,6 @@ const StakingContract2 = '0xe0Ceee33e1CE1EF4EA322B50D55d99E714B7BB6d';
 
 module.exports = {
   methodology: 'This is the total value locked in y24 staking',
-  start: 35011373,
   bsc: {
     tvl: () => ({}),
     staking: sumTokensExport({owners: [StakingContract1, StakingContract2], tokens: [TOKEN_ADDRESS], lps: ['0x44628669C0F888b2884d20b94C22af465AA11f05'], useDefaultCoreAssets: true,})
