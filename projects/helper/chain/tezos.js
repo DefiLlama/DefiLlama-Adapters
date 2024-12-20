@@ -3,7 +3,7 @@ const http = require('../http')
 const sdk = require('@defillama/sdk')
 const { PromisePool } = require('@supercharge/promise-pool')
 
-const RPC_ENDPOINT = 'https://api.tzkt.io'
+const RPC_ENDPOINT = 'https://api.mainnet.tzkt.io'
 
 const usdtAddressTezos = ADDRESSES.tezos.USDt
 const transformAddressDefault = t => t == "tezos" ? "coingecko:tezos" : 'tezos:' + t
