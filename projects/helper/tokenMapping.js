@@ -43,6 +43,103 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  swellchain: {
+    "0xb5668713E9BA8bC96f97D691663E70b54CE90b0A" : {
+          // "uBTC"    
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3" : {
+          // "stBTC"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x2826D136F5630adA89C1678b64A61620Aab77Aea" : {
+          // "SWELL"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x939f1cC163fDc38a77571019eb4Ad1794873bf8c" : {
+          // "rSWELL"  
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B" : {
+          // "swBTC"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x9Ed15383940CC380fAEF0a75edacE507cC775f22" : {
+          // "earnETH" 
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0xb89c6ED617f5F46175E41551350725A09110bbCE" : {
+          // "USDT"    
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x99a38322cAF878Ef55AE4d0Eda535535eF8C7960" : {
+          // "USDC"    
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0xda1F8EA667dc5600F5f654DF44b47F1639a83DD1" : {
+          // "wSWELL"  
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0xA6cB988942610f6731e664379D15fFcfBf282b44" : {
+          // "weETH"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x18d33689AE5d02649a859A1CF16c9f0563975258" : {
+          // "rswETH"  
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7" : {
+          // "swETH"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x9cb41CD74D01ae4b4f640EC40f7A60cA1bCF83E7" : {
+          // "pzETH"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x2416092f143378750bb29b79eD961ab195CcEea5" : {
+          // "ezETH"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0xc3eACf0612346366Db554C991D7858716db09f58" : {
+          // "rsETH"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x7c98E0779EB5924b3ba8cE3B17648539ed5b0Ecc" : {
+          // "wstETH"  
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34" : {
+          // "USDe"    
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2" : {
+          // "sUSDe"   
+        "coingeckoId": "",
+        "decimals": 18
+    },
+    "0x58538e6A46E07434d7E7375Bc268D3cb839C0133" : {
+          // "ENA"     
+        "coingeckoId": "",
+        "decimals": 18
+    },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
