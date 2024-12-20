@@ -45,6 +45,7 @@ const endPoints = {
   joltify: "https://lcd.joltify.io",
   kopi: "https://rest.kopi.money",
   noble: "https://noble-api.polkachu.com",
+  elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
 };
 
 const chainSubpaths = {
