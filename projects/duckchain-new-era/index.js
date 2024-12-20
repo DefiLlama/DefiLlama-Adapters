@@ -3,6 +3,7 @@ const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/sumTokens');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getConfig } = require('../helper/cache');
+const { nullAddress } = require('../helper/tokenMapping');
 
 const defaultOwner = '0x6b0e12Cb3D78a931b74F51D09F3D34E3047c0E49'; // meson
 
