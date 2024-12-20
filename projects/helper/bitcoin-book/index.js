@@ -104,8 +104,14 @@ const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
 ]
 
+const stacksSBTC = [
+  // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
+  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
+]
+
 module.exports = {
   ...fetchers,
+  stacksSBTC,
   bitomato,
   bitlayerBridge,
   teleswap,
