@@ -43,6 +43,7 @@ const endPoints = {
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
+  kopi: "https://rest.kopi.money",
   noble: "https://api.noble.xyz"
 };
 
