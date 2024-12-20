@@ -24,6 +24,9 @@ module.exports = {
       const ynBNB = '0x304B5845b9114182ECb4495Be4C91a273b74B509'
       const ynBnbBalance = await api.call({ abi: 'uint256:totalAssets', target: ynBNB })
       api.add(ADDRESSES.null, ynBnbBalance)
+      const ynBTCk = '0x78839cE14a8213779128Ee4da6D75E1326606A56'
+      const ynBTCkBalance = await api.call({ abi: 'uint256:totalAssets', target: ynBTCk })
+      api.add(ADDRESSES.null, ynBTCkBalance)
     }
   },
 }
