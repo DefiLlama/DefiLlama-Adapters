@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/sumTokens');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getConfig } = require('../helper/cache');
@@ -19,7 +18,7 @@ async function addCoinfg(id, ownerTokens) {
   const { result } = await getConfig('meson', 'https://relayer.meson.fi/api/v1/list');
   const { address, tokens } = result.find(c => c.id === id) ?? {};
   if (!address) return;
-  ownerTokens.push([tokens.map(i => i.addr ?? nullAddress).filter(i => i), address]);
+  ownerTokens.push([tokens.map(i => i.addr ?? ADDRESSES.null).filter(i => i), address]);
   return ownerTokens;
 }
 
