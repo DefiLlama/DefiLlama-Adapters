@@ -27,13 +27,10 @@ module.exports = {
                 fromBlock: 19942300,
             })
             const receiverRewards = logs.map(i => i[1])
-
-
             const coreStakeAmounts = (await api.multiCall({
                 abi: 'function totalCoreStake() external view returns (uint256)',
                 calls: receiverRewards
             })).flat()
-
 
             const totalCoreStake = coreStakeAmounts.reduce((acc, cur) => convertToBigInt(cur) + acc, BigInt(0))
             const response = await fetch(btcTxHashLockApi)
