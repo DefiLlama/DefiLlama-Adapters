@@ -38,28 +38,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  
+
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  },
-  apechain: {
-    [ADDRESSES.null]: { coingeckoId: "apecoin", decimals: 18 },
-  },
-  ink: {
-    [ADDRESSES.optimism.WETH_1]: { coingeckoId: "ethereum", decimals: 18 },
-  },
-  sophon: {
-    [ADDRESSES.sophon.ETH]: { coingeckoId: "ethereum", decimals: 18 },
-    [ADDRESSES.sophon.USDT]: { coingeckoId: "tether", decimals: 6 },
-    [ADDRESSES.sophon.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
-    [ADDRESSES.sophon.WSTETH]: { coingeckoId: "wrapped-steth", decimals: 18 },
-    [ADDRESSES.sophon.WEETH]: { coingeckoId: "wrapped-eeth", decimals: 18 },
-    [ADDRESSES.sophon.DAI]: { coingeckoId: "dai", decimals: 18 },
-    [ADDRESSES.sophon.SDAI]: { coingeckoId: "savings-dai", decimals: 18 },
-  },
-  duckchain: {
-    ["0x7F9308E8d724e724EC31395f3af52e0593BB2e3f"]: { coingeckoId: "wrapped-ton", decimals: 18 },
   },
 }
 
