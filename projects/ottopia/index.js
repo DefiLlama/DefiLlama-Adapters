@@ -26,6 +26,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2024-08-14',
   methodology: "This adapter uses otterclam's subgraph to fetch tvl data.",
   polygon: {
     tvl,
