@@ -124,6 +124,7 @@ module.exports = {
     tvl: getUniTVL({ factory: '0x33d91116e0370970444B0281AB117e161fEbFcdD', useDefaultCoreAssets: true, }),
   },
   blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b', useDefaultCoreAssets: true, }) },
+  sonic: { tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true }) },
   core: { tvl: tvl2 },
   rsk: { tvl: tvl2 },
   europa: { tvl: getUniTVL({ factory: '0x1aaF6eB4F85F8775400C1B10E6BbbD98b2FF8483', useDefaultCoreAssets: true, }) },
