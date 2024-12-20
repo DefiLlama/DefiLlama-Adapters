@@ -36,7 +36,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "Sums the total staked in baton farms and the total amount of tokens deposited as yield farming rewards.",
-  start: 17411300,
   ethereum: {
     tvl
   }

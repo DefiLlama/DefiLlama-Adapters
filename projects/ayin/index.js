@@ -14,29 +14,10 @@ const Addresses = {
   ayinUsdcPool: '2961aauvprhETv6TXGQRc3zZY4FbLnqKon2a4wK6ABH9q',
   ayinApadPool: '247rZysrruj8pj2GnFyK2bqB2nU4JsUj7k2idksAp4XMy',
   usdtUsdcPool: '27C75V9K5o9CkkGTMDQZ3x2eP82xnacraEqTYXA35Xuw5',
-  usdt: 'zSRgc7goAYUgYsEBYdAzogyyeKv3ne3uvWb3VDtxnaEK',
-  weth: 'vP6XSUyjmgWCB2B9tD5Rqun56WJqDdExWnfwZVEqzhQb',
-  ayin: 'vT49PY8ksoUL6NcXiZ1t2wAmC7tTPRfFfER8n3UCLvXy',
-  wbtc: 'xUTp3RXGJ1fJpCGqsAY6GgyfRQ3WQ1MdcYR1SiwndAbR',
-  usdc: '22Nb9JajRpAh9A2fWNgoKt867PA6zNyi541rtoraDfKXV',
-  apad: '27HxXZJBTPjhHXwoF1Ue8sLMcSxYdxefoN2U6d8TKmZsm',
-  cheng: '27DP28mGQzSrHGZgnRvYQH1VAWYZVVLUjGALazLrtrRJF',
-  ansd: '2AhEaQiUYtAF6g1vtRQHsPR7xTkMY1PRr3k7QkXuisynF',
-  alphaga: '26Mirs33zojnVMRkqVDJtMZvVZcbAFVyxGojGw7UtWp2K'
 }
+const alephId = '0000000000000000000000000000000000000000000000000000000000000000'
 
 const XAyinAddress = 'zst5zMzizEeFYFis6DNSknY5GCYTpM85D3yXeRLe2ug3'
-
-const TokenIds = {
-  usdt: alephium.contractIdFromAddress(Addresses.usdt),
-  weth: alephium.contractIdFromAddress(Addresses.weth),
-  ayin: alephium.contractIdFromAddress(Addresses.ayin),
-  wbtc: alephium.contractIdFromAddress(Addresses.wbtc),
-  usdc: alephium.contractIdFromAddress(Addresses.usdc),
-  apad: alephium.contractIdFromAddress(Addresses.apad),
-  cheng: alephium.contractIdFromAddress(Addresses.cheng),
-  ansd: alephium.contractIdFromAddress(Addresses.ansd)
-}
 
 async function ayinTvlForXAyin() {
   const results = await alephium.contractMultiCall([
@@ -49,35 +30,18 @@ async function ayinTvlForXAyin() {
   return (Number(totalSupply) / 1e18) * (Number(currentPrice) / 1e18)
 }
 
-async function tvl() {
+async function tvl(api) {
   const alphTvls = await Promise.all([
     Addresses.alphAyinPool, Addresses.alphUsdtPool, Addresses.alphUsdcPool, Addresses.alphWethPool, Addresses.alphApadPool, Addresses.alphChengPool, Addresses.alphAnsdPool, Addresses.alphAlphagaPool
   ].map(poolAddress => alephium.getAlphBalance(poolAddress)))
   const alphTvl = alphTvls.reduce((tvl, res) => tvl + Number(res.balance), 0)
-  const tokensTvls = await Promise.all([
-    Addresses.alphAyinPool, Addresses.alphUsdtPool, Addresses.alphWethPool, Addresses.ayinUsdtPool,
-     Addresses.ayinUsdcPool,Addresses.alphWbtcPool, Addresses.usdtUsdcPool,Addresses.alphApadPool, Addresses.alphChengPool, Addresses.ayinApadPool, Addresses.alphAnsdPool,  Addresses.alphAlphagaPool
-  ].map(poolAddress => alephium.getTokensBalance(poolAddress)))
-  const tokensTvl = tokensTvls.reduce((res, tokenTvls) => {
+  api.add(alephId, alphTvl)
+  const tokensTvls = await Promise.all(Object.values(Addresses).map(poolAddress => alephium.getTokensBalance(poolAddress)))
+  tokensTvls.forEach((tokenTvls) => {
     tokenTvls.forEach(tokenTvl => {
-      if (res[tokenTvl.tokenId] !== undefined) {
-        res[tokenTvl.tokenId] = Number(res[tokenTvl.tokenId]) + Number(tokenTvl.balance)
-      }
+      api.add(tokenTvl.tokenId, tokenTvl.balance)
     });
-    return res
-  }, { [TokenIds.ayin]: 0, [TokenIds.usdt]: 0, [TokenIds.weth]: 0, [TokenIds.wbtc]: 0, [TokenIds.usdc]: 0, [TokenIds.apad]: 0, [TokenIds.cheng]: 0, [TokenIds.ansd]: 0, [TokenIds.ansd]: 0, [TokenIds.alphaga]: 0 })
-  return {
-    alephium: alphTvl / 1e18,
-    ayin: tokensTvl[TokenIds.ayin] / 1e18,
-    weth: tokensTvl[TokenIds.weth] / 1e18,
-    tether: tokensTvl[TokenIds.usdt] / 1e6,
-    usdc: tokensTvl[TokenIds.usdc] / 1e6,
-    bitcoin: tokensTvl[TokenIds.wbtc] / 1e8,
-    alphpad: tokensTvl[TokenIds.apad] / 1e18,
-    gigacheng: tokensTvl[TokenIds.cheng] / 1e6,
-    alephiumdomains: tokensTvl[TokenIds.ansd] / 1e18,
-    alphaga: tokensTvl[TokenIds.alphaga] / 1e18
-  }
+  })
 }
 
 async function staking() {
