@@ -5,6 +5,7 @@ const YN_ETH = '0x09db87a538bd693e9d08544577d5ccfaa6373a48'
 const yn_ETHx = '0x657d9ABA1DBb59e53f9F3eCAA878447dCfC96dCb'
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: async (api) => {
       const ynethBalance = await api.call({ abi: 'uint256:totalAssets', target: YN_ETH })
@@ -21,8 +22,8 @@ module.exports = {
   bsc: {
     tvl: async (api) => {
       const ynBNB = '0x304B5845b9114182ECb4495Be4C91a273b74B509'
-      const ynBnbBalance = await api.call({ abi: 'uint256:totalAssets', target: ynBNB })
-      api.add(ADDRESSES.null, ynBnbBalance)
+      const ynBTCk = '0x78839cE14a8213779128Ee4da6D75E1326606A56'
+      return api.erc4626Sum({ calls: [ynBNB, ynBTCk], isOG4626: true})
     }
   },
 }
