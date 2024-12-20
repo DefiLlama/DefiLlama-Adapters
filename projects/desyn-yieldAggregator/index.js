@@ -7,6 +7,6 @@ module.exports = {
 
 chains.forEach(chain => {
   module.exports[chain] = {
-    tvl: getTvlFunction('StrategyType2', true)
+    tvl: getTvlFunction('strategy2', true)
   }
 })

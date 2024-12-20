@@ -86,7 +86,7 @@ async function resolveLPPosition({ balances = {}, owner, lpToken, transformAddre
 }
 
 async function sumTokens({ owners = [], balances = {}, includeTezos = false }) {
-  const { errors } = await PromisePool.withConcurrency(10)
+  const { errors } = await PromisePool.withConcurrency(5)
     .for(owners)
     .process(async item => {
       await getTokenBalances(item, includeTezos, { balances })
