@@ -13,6 +13,7 @@ const export2 = uniV3Export({
   reya: { factory: '0x10aA510d94E094Bd643677bd2964c3EE085Daffc', fromBlock: 2932166, isAlgebra: true, },
   gravity: { factory: '0x10aA510d94E094Bd643677bd2964c3EE085Daffc', fromBlock: 11988, isAlgebra: true, },
   apechain: { factory: '0x10aA510d94E094Bd643677bd2964c3EE085Daffc', fromBlock: 60224, isAlgebra: true, },
+  duckchain: { factory: '0xCf4062Ee235BbeB4C7c0336ada689ed1c17547b6', fromBlock: 1530060, isAlgebra: true, },
 })
 
 module.exports = mergeExports([export1, export2 ])

@@ -13,9 +13,29 @@ const SPOT_MARKETS = {
     mint: 'So11111111111111111111111111111111111111112',
     decimals: 9
   },
+  6: {
+    name: 'jitoSOL',
+    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    decimals: 9
+  },
+  16:{
+    name:'INF',
+    mint:'5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm', 
+    decimals: 9
+  },
+  17:{
+    name:'dSOL',
+    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
+    decimals: 9
+  },
   19: {
     name: 'JLP',
     mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6
+  },
+  22: {
+    name: 'PYUSD',
+    mint: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo',
     decimals: 6
   },
   28: {
@@ -74,7 +94,7 @@ function getDecimalsByMarketIndex(marketIndex, isPerp = false) {
   return SPOT_MARKETS[marketIndex].decimals;
 }
 
-function processSpotPosition(position) {
+function processSpotPosition(position, spotMarketAccountInfo) {
   const decimals = getDecimalsByMarketIndex(position.market_index);
   const decimalAdjustment = 9 - decimals;
   let balance = position.scaled_balance;
@@ -84,9 +104,30 @@ function processSpotPosition(position) {
     balance /= BigInt(10 ** decimalAdjustment);
   }
 
-  // Apply sign based on balance_type
-  return position.balance_type === 1 ? -balance : balance;
+  // For borrowed positions (balance_type === 1), apply interest rate
+  if (position.balance_type === 1) {
+    const cumulativeBorrowInterest = getSpotMarketCumulativeBorrowInterest(spotMarketAccountInfo);
+    // Apply interest rate to the balance
+    balance = (balance * cumulativeBorrowInterest) / BigInt(10 ** 10); 
+    return -balance;  // Return negative for borrows
+  }
+
+  return balance;  // Return positive for deposits
 }
+
+function getSpotMarketCumulativeBorrowInterest(accountInfo) {
+    if (!accountInfo) { 
+      throw new Error(`No account info found for market`);
+    }
+  
+    const CUMULATIVE_BORROW_INTEREST_OFFSET = 8 + 48 + 32 + 256 + (16 * 8) + 8;
+  
+    const lower64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET);
+    const upper64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET + 8);
+    
+    return (upper64Bits << 64n) + lower64Bits;
+  }
+
 
 function processPerpPosition(position) {
 
