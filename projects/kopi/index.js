@@ -1,4 +1,3 @@
-const { get } = require('../helper/http');
 const { sumTokens } = require('../helper/chain/cosmos');
 
 async function tvl(api) {
@@ -8,7 +7,6 @@ async function tvl(api) {
     'ukusd',
   ]})
 }
-
 
 module.exports = {
   kopi: {
