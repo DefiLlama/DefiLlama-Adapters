@@ -1,4 +1,4 @@
-const { getConfig } = require('../cache')
+const { getConfig, getCache, setCache, } = require('../cache')
 const axios = require('axios');
 const { getEnv } = require('../env')
 const { get } = require('../http')
@@ -10,7 +10,7 @@ module.exports = {
   btcfi_cdp: async () => {
     const target = "0x0000000000000000000000000000000000000100";
     const api = new sdk.ChainApi({ chain: 'bfc' })
-    const round = await api.call({  abi: 'uint32:current_round', target})
+    const round = await api.call({ abi: 'uint32:current_round', target })
     return api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round })
   },
   bedrock: async () => {
@@ -48,6 +48,45 @@ module.exports = {
     userInfos.forEach(i => staticAddresses.push(i.depositAddress))
     return staticAddresses
   },
+
+  b14g: async () => {
+
+    return getConfig('b14g/bit-addresses', undefined, {
+      fetcher: async () => {
+        const btcTxHashLockApi = 'https://api.b14g.xyz/restake/marketplace/defillama/btc-tx-hash'
+        const { data: { result } } = await get(btcTxHashLockApi)
+        const hashes = result.map(r => r.txHash)
+        const hashMap = await getCache('b14g/hash-map', 'core',) ?? {}
+        for (const hash of hashes) {
+          if (hashMap[hash]) continue;
+          const addresses = []
+          const tx = await get(`https://mempool.space/api/tx/${reserveBytes(hash.slice(2))}`)
+          let vinAddress = tx.vin.map(el => el.prevout.scriptpubkey_address);
+          tx.vout.forEach(el => {
+            if (el.scriptpubkey_type !== "op_return" && !vinAddress.includes(el.scriptpubkey_address)) {
+              addresses.push(el.scriptpubkey_address)
+            }
+          })
+          hashMap[hash] = addresses
+        }
+        await setCache('b14g/hash-map', 'core', hashMap)
+        return [...new Set(Object.values(hashMap).flat())]
+      }
+    })
+
+    function reserveBytes(txHashTemp) {
+      let txHash = ''
+      if (txHashTemp.length % 2 === 1) {
+        txHashTemp = '0' + txHashTemp
+      }
+      txHashTemp = txHashTemp.split('').reverse().join('')
+      for (let i = 0; i < txHashTemp.length - 1; i += 2) {
+        txHash += txHashTemp[i + 1] + txHashTemp[i]
+      }
+      return txHash
+    }
+  },
+
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
     const BATCH_SIZE = 1000
