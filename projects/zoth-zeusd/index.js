@@ -1,30 +1,44 @@
-const ZeUSD = '0x7DC9748DA8E762e569F9269f48F69A1a9F8Ea761';
-
-const mainnet_tvl = async (api) => {
-    // Get the total supply of ZeUSD on Ethereum
-    const supply_ethereum = await api.call({ abi: 'erc20:totalSupply', target: ZeUSD, chain: "ethereum" })
-
-    // Get the total supply of ZeUSD on Manta
-    const supply_manta = await api.call({ abi: 'erc20:totalSupply', target: ZeUSD, chain: "manta" })
-
-    //Subtract the Manta supply from the Ethereum supply to get the total supply of Ethereum. 
-    //This is done because ZeUSD is bridged from Ethereum to Manta using LayerZero OFT Adapter.
-    const supply = supply_ethereum - supply_manta
-    api.add(ZeUSD, supply - supply_manta)
-
+const getData = async () => {
+    const response = await fetch('https://app.zoth.io/api/defillama')
+    const data = await response.json()
+    return data
 }
 
-const manta_tvl = async (api) => {
-    const supply = await api.call({ abi: 'erc20:totalSupply', target: ZeUSD })
-    api.add(ZeUSD, supply)
+const eth_tvl = async () => {
+    try {
+        const data = await getData()
+        return Number(data.ethereum) / 1e6
+    } catch (error) {
+        return 0
+    }
+}
+
+const manta_tvl = async () => {
+    try {
+        const data = await getData()
+        return Number(data.manta) / 1e6
+    } catch (error) {
+        return 0
+    }
+}
+
+const tvl = async () => {
+    try {
+        const data = await getData()
+        return (Number(data.ethereum) + Number(data.manta)) / 1e6
+    } catch (error) {
+        return 0
+    }
 }
 
 module.exports = {
+    timetravel: false,
     methodology: "Sums total ZeUSD in circulation across all chains",
     ethereum: {
-        tvl: mainnet_tvl,
+        fetch: eth_tvl,
     },
     manta: {
-        tvl: manta_tvl,
+        fetch: manta_tvl,
     },
+    fetch: tvl
 };
