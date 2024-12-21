@@ -34,8 +34,11 @@ async function getTokens(api, owners, isVesting) {
     const symbol = symbols[index];
     return symbol ? { token, symbol } : null;
   }).filter(pair => pair !== null);
-
-  return validTokens.filter(token => isWhitelistedToken(token.symbol, token.token, isVesting)).map(token => token.token);
+  // Filter vesting tokens
+  const whitelistedTokens = validTokens.filter(token => {
+    return isWhitelistedToken(token.symbol, token.token, isVesting);
+  });
+  return whitelistedTokens.map(token => token.token);
 }
 
 async function tvl(api) {

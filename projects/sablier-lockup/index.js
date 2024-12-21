@@ -31,6 +31,7 @@ async function getTokensConfig(api, isVesting) {
     const owners = contracts.map(i => i.address)
     let tokens = assets.map(i => i.id)
     const symbols = assets.map(i => i.symbol)
+    // Filter vesting tokens
     tokens = tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
     owners.forEach(owner => ownerTokens.push([tokens, owner]))
   }
