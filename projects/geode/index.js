@@ -84,7 +84,6 @@ async function avax(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  start: 16328353,
     methodology:
     "All Staking Derivatives are included to the TVL with relative underlying price. Also counted the Avax within the Dynamic Withdrawal Pools.",
     doublecounted: true,

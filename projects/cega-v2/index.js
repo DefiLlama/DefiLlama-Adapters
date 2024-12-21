@@ -27,7 +27,7 @@ module.exports = {
         ADDRESSES.arbitrum.WBTC,
         ADDRESSES.arbitrum.DAI,
         ADDRESSES.arbitrum.USDe,
-        '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
+        ADDRESSES.arbitrum.sUSDe,
       ],
       owners: ["0x475c4af369b28997b25bd756ef92797ad3f69593"],
     }),
