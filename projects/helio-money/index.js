@@ -106,7 +106,13 @@ module.exports = {
 
                 // vUSDT, PSM - LSR
                 // [ADDRESSES.bsc.USDT, "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
-                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"]
+                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"],
+
+                // pumpBTC
+                [
+                    "0xf9C4FF105803A77eCB5DAE300871Ad76c2794fa4",
+                    "0xEA44dDC58eC6b4902E19A353c554B6A4F32b9e6E",
+                ],
             ],
         }),
         pool2,
