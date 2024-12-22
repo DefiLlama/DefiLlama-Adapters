@@ -82,6 +82,10 @@ const fixBalancesTokens = {
   wc: {
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
   },
+  odyssey: {
+    [ADDRESSES.null]: { coingeckoId: 'dione', decimals: 18 },
+    '0xf21cbaf7bd040d686bd390957770d2ea652e4013': { coingeckoId: 'dione', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
