@@ -33,7 +33,6 @@ const config = {
       "TLK8GVBqJNmcyaN5mpSPSzQfTjsSxb7sC9",
       "TGgMNPxdyUgdYwMSbMkpTPvaSkrRakKqcK",
       "TAA7sxJ259JgstGPjanb5sB6ZJuCPtCobs",
-      "TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe",
       "TKRksVBKDBATKcifm4FXFHcD1FmJQ2bp3x"
     ],
   },
