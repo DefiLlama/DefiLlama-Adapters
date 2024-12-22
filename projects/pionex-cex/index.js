@@ -60,7 +60,11 @@ const config = {
       "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9"
     ]
   },
-
+  avax: {
+    owners: [
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554",
+    ]
+  },
 }
 
 module.exports = cexExports(config)
