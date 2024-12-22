@@ -79,6 +79,9 @@ const fixBalancesTokens = {
   elys: {
     'uelys': { coingeckoId: 'elys-network', decimals: 6 },
   },
+  wc: {
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
