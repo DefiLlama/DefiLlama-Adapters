@@ -58,7 +58,7 @@ const config = {
   },
   base: {
     factories: [
-      { factory: "0x5202F7477685686284b3F47B0A5334b15ea0393D", fromBlock: 22350099 },  // v3
+      { factory: "0x59968008a703dC13E6beaECed644bdCe4ee45d13", fromBlock: 22350352 },  // v3
     ],
   }
 };
