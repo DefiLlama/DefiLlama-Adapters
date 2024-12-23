@@ -1,5 +1,4 @@
 const SSL_CONTRACT = '0xDC4a311f0D852934d9b51C0eAc7c7e13EA1DF11b'; 
-const SSL_PRICE = 0.04;
 
 async function tvl(api) {
   const totalSupply = await api.call({
@@ -12,11 +11,12 @@ async function tvl(api) {
     target: SSL_CONTRACT,
   });
 
-  const rewardValuePerYear =
-    (rewardRate / 1e18) * SSL_PRICE * 365 * 24 * 60 * 60;
+  const price = 0.04;
 
-  const stakedValue = (totalSupply / 1e18) * SSL_PRICE;
+  const rewardValuePerYear = 
+    (Number(rewardRate) / 1e18) * price * 365 * 24 * 60 * 60;
 
+  const stakedValue = (Number(totalSupply) / 1e18) * price;
   const apy = (rewardValuePerYear / stakedValue) * 100;
 
   return [
@@ -32,7 +32,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'TVL is calculated by fetching the total supply of the SSL contract and multiplying it by the price of SSL.',
   arbitrum: {
     tvl,
   },
