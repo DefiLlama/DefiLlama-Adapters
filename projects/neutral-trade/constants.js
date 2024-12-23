@@ -45,12 +45,13 @@ const VAULTS = [
     token: TOKENS.WETH,
     dataUrl: `${DATA_URL}/ethjlpnl.json`
   },
-  {
-    name: "USDC Staking (JLP Delta Neutral)",
-    address: "9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj",
-    token: TOKENS.USDC,
-    dataUrl: `${DATA_URL}/jlpdn.json`
-  },
+  // {
+  //   name: "USDC Staking (JLP Delta Neutral)",
+  //   address: "9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj",
+  //   token: TOKENS.USDC,
+  //   dataUrl: `${DATA_URL}/jlpdn.json`,
+  //   version: 1,
+  // },
   {
     name: "USDC Staking (JLP Delta Neutral) v2",
     address: "41Y8C4oxk4zgJT1KXyQr35UhZcfsp5mP86Z2G7UUzojU",
