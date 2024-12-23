@@ -31,6 +31,16 @@ const pools = [
   {
     pool: 'component_rdx1czmq3me09q7p7g7hgsyaqctfw3he4hl6ypg6em2h7nyd2umk0dhhnq',
     resource: 'resource_rdx1thksg5ng70g9mmy9ne7wz0sc7auzrrwy7fmgcxzel2gvp8pj0xxfmf',
+  },   
+ // Adding WOWO Pool
+  {
+    pool: 'component_rdx1crsgd3yqvfh49599yrfpw08ezjwjuns04970mz2l4dnyxxhwzuecy5',
+    resource: 'resource_rdx1t4kc5ljyrwlxvg54s6gnctt7nwwgx89h9r2gvrpm369s23yhzyyzlx',
+  },
+  // Adding EARLY Pool
+  {
+    pool: 'component_rdx1cr0pr68zxqvmfq2whn4nh22qcg2q5skdm7lt3qwvm6nfr2ccaryjsz',
+    resource: 'resource_rdx1t5xv44c0u99z096q00mv74emwmxwjw26m98lwlzq6ddlpe9f5cuc7s',
   }
 ];
 
