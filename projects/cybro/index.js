@@ -55,13 +55,13 @@ async function tvlBlast(api) {
   return api.erc4626Sum2({ calls: vaultsBlast });
 }
 
-async function tvlArbitrum {
+async function tvlArbitrum(api) {
   return api.erc4626Sum2({ calls: vaultsArbitrum });
 }
 
 module.exports = {
   doublecounted: true,
   methodology: "We calculate TVL based on the Total Supply of our proxy contracts through which users interact with vault's contracts",
-  blast: { tvlBlast },
-  arbitrum: { tvlArbitrum },
+  blast: { tvl: tvlBlast },
+  arbitrum: { tvl: tvlArbitrum },
 };
