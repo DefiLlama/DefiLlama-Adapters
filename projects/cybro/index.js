@@ -23,41 +23,30 @@ const vaults = [
 ]
 
 const dexes = [
-  { address: '0xe9041d3483a760c7d5f8762ad407ac526fbe144f', tokenType: 'WETH' },
-  { address: '0xbfb18eda8961ee33e38678caf2bceb2d23aedfea', tokenType: 'WETH' },
-  { address: '0xe472ccb182a51c589034957cd6291d0b64eaaab2', tokenType: 'WETH' },
-  { address: '0x370498c028564de4491b8aa2df437fb772a39ec5', tokenType: 'BLAST' },
-  { address: '0xc95317e48451a97602e3ae09c237d1dd8ee83cd0', tokenType: 'WETH' },
-  { address: '0x66e1bea0a5a934b96e2d7d54eddd6580c485521b', tokenType: 'WETH' },
+  '0xe9041d3483a760c7d5f8762ad407ac526fbe144f',
+  '0xbfb18eda8961ee33e38678caf2bceb2d23aedfea',
+  '0xe472ccb182a51c589034957cd6291d0b64eaaab2',
+  '0x370498c028564de4491b8aa2df437fb772a39ec5',
+  '0xc95317e48451a97602e3ae09c237d1dd8ee83cd0',
+  '0x66e1bea0a5a934b96e2d7d54eddd6580c485521b',
 ]
 
 async function tvl(api) {
-  const weth_address = "0x4300000000000000000000000000000000000004"
-  const blast_address = "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad"
+  const token0s = await api.multiCall({  abi: 'address:token0', calls: dexes})
+  const token1s = await api.multiCall({  abi: 'address:token1', calls: dexes})
+  const positionData = await api.multiCall({  abi: 'function getPositionAmounts() view returns (uint256 amount0, uint256 amount1)', calls: dexes})
+  const ownerTokens = []
+  dexes.forEach((dex, idx) => {
+    const token0 = token0s[idx]
+    const token1 = token1s[idx]
+    const { amount0, amount1 } = positionData[idx]
+    api.add(token0, amount0)
+    api.add(token1, amount1)
+    ownerTokens.push([[token0, token1], dex])
+  })
 
-  let totalTVL = {
-    weth_address: 0,
-    blast_address: 0
-  }
-
-  const vaultTVL = await api.erc4626Sum2({ calls: vaults });
-  totalTVL[weth_address] += vaultTVL;
-
-  for (const dex of dexes) {
-    const totalSupply = await api.call({
-      target: dex.address,
-      params: [],
-      abi: 'function totalSupply() view returns (uint256)'
-    });
-
-    if (dex.tokenType === 'WETH') {
-      totalTVL[weth_address] += totalSupply;
-    } else if (dex.tokenType === 'BLAST') {
-      totalTVL[blast_address] += totalSupply;
-    }
-  }
-
-  return totalTVL;
+  await api.sumTokens({ ownerTokens })
+  return api.erc4626Sum2({ calls: vaults });
 }
 
 module.exports = {
