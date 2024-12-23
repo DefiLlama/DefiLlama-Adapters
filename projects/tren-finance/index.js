@@ -6,32 +6,12 @@ async function tvl(api) {
     target: SSL_CONTRACT,
   });
 
-  const rewardRate = await api.call({
-    abi: 'function allocationPerSecond() view returns (uint256)',
-    target: SSL_CONTRACT,
-  });
-
-  const price = 0.04;
-
-  const rewardValuePerYear = 
-    (Number(rewardRate) / 1e18) * price * 365 * 24 * 60 * 60;
-
-  const stakedValue = (Number(totalSupply) / 1e18) * price;
-  const apy = (rewardValuePerYear / stakedValue) * 100;
-
-  return [
-    {
-      pool: SSL_CONTRACT,
-      chain: 'arbitrum',
-      project: 'tren-finance',
-      symbol: 'USDT/SSL',
-      tvlUsd: stakedValue,
-      apy: apy,
-    }
-  ]
+  api.add(SSL_CONTRACT, totalSupply);
 }
 
 module.exports = {
+  methodology: 'We count the total supply of the SSL token on Arbitrum.',
+  start: 1000235,
   arbitrum: {
     tvl,
   },
