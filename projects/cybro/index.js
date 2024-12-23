@@ -18,12 +18,44 @@ const vaults = [
   '0xc9434fbee4ec9e0bad7d067b35d2329e5f1d8915',
   '0x18e22f3f9a9652ee3a667d78911bac55bc2249af',
   '0x6654cddf2a14a06307af6a8d7731dd4e059962a1',
-  '0x4caec64454893c7912e6beb1e19b4714dd353748',
-  '0x24e72c2c7be9b07942f6f8d3cdce995df699514d',
+]
+
+const dexes = [
+  { address: '0xe9041d3483a760c7d5f8762ad407ac526fbe144f', tokenType: 'WETH' },
+  { address: '0xbfb18eda8961ee33e38678caf2bceb2d23aedfea', tokenType: 'WETH' },
+  { address: '0xe472ccb182a51c589034957cd6291d0b64eaaab2', tokenType: 'WETH' },
+  { address: '0x370498c028564de4491b8aa2df437fb772a39ec5', tokenType: 'BLAST' },
+  { address: '0xc95317e48451a97602e3ae09c237d1dd8ee83cd0', tokenType: 'WETH' },
+  { address: '0x66e1bea0a5a934b96e2d7d54eddd6580c485521b', tokenType: 'WETH' },
 ]
 
 async function tvl(api) {
-  return api.erc4626Sum2({ calls: vaults })
+  const weth_address = "0x4300000000000000000000000000000000000004"
+  const blast_address = "0xb1a5700fA2358173Fe465e6eA4Ff52E36e88E2ad"
+
+  let totalTVL = {
+    weth_address: 0,
+    blast_address: 0
+  }
+
+  const vaultTVL = await api.erc4626Sum2({ calls: vaults });
+  totalTVL[weth_address] += vaultTVL;
+
+  for (const dex of dexes) {
+    const totalSupply = await api.call({
+      target: dex.address,
+      params: [],
+      abi: 'function totalSupply() view returns (uint256)'
+    });
+
+    if (dex.tokenType === 'WETH') {
+      totalTVL[weth_address] += totalSupply;
+    } else if (dex.tokenType === 'BLAST') {
+      totalTVL[blast_address] += totalSupply;
+    }
+  }
+
+  return totalTVL;
 }
 
 module.exports = {
