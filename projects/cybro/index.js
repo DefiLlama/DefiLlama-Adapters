@@ -18,6 +18,8 @@ const vaults = [
   '0xc9434fbee4ec9e0bad7d067b35d2329e5f1d8915',
   '0x18e22f3f9a9652ee3a667d78911bac55bc2249af',
   '0x6654cddf2a14a06307af6a8d7731dd4e059962a1',
+  '0x4caec64454893c7912e6beb1e19b4714dd353748',
+  '0x24e72c2c7be9b07942f6f8d3cdce995df699514d',
 ]
 
 const dexes = [
