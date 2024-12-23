@@ -1,4 +1,4 @@
-const vaults = [
+const vaultsBlast = [
   '0xe922bccf90d74f02a9d4203b377399314e008e41',
   '0xdccde9c6800bea86e2e91cf54a870ba3ff6faf9f',
   '0x0667ac28015ed7146f19b2d218f81218abf32951',
@@ -22,6 +22,12 @@ const vaults = [
   '0x24e72c2c7be9b07942f6f8d3cdce995df699514d',
 ]
 
+const vaultsArbitrum = [
+  '0x320cd9d00961fb45857a043efea77dc6b9db5d95',
+  '0x6f0acbaac51f3c72ddaa4edc6e20fc388d20adbc',
+  '0x951c846aa10cc3da45defed784c3802605f71769',
+]
+
 const dexes = [
   '0xe9041d3483a760c7d5f8762ad407ac526fbe144f',
   '0xbfb18eda8961ee33e38678caf2bceb2d23aedfea',
@@ -31,7 +37,7 @@ const dexes = [
   '0x66e1bea0a5a934b96e2d7d54eddd6580c485521b',
 ]
 
-async function tvl(api) {
+async function tvlBlast(api) {
   const token0s = await api.multiCall({  abi: 'address:token0', calls: dexes})
   const token1s = await api.multiCall({  abi: 'address:token1', calls: dexes})
   const positionData = await api.multiCall({  abi: 'function getPositionAmounts() view returns (uint256 amount0, uint256 amount1)', calls: dexes})
@@ -46,11 +52,16 @@ async function tvl(api) {
   })
 
   await api.sumTokens({ ownerTokens })
-  return api.erc4626Sum2({ calls: vaults });
+  return api.erc4626Sum2({ calls: vaultsBlast });
+}
+
+async function tvlArbitrum(api) {
+  return api.erc4626Sum2({ calls: vaultsArbitrum });
 }
 
 module.exports = {
   doublecounted: true,
   methodology: "We calculate TVL based on the Total Supply of our proxy contracts through which users interact with vault's contracts",
-  blast: { tvl },
+  blast: { tvl: tvlBlast },
+  arbitrum: { tvl: tvlArbitrum },
 };
