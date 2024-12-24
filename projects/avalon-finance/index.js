@@ -53,6 +53,8 @@ const otherProtocolTokenMarkets = {
 	ethereum: aaveExports('', '0x3975BE5E668b189b8Ac9049B96A9D9561c4F5273', undefined, ['0x87Ed94868f6fbaA834Db81a1C5854c445caCaB67'], { v3: true }),
 	// BSC - WBTC
 	bsc: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }),
+	// Kaia - stKaia
+	klaytn: aaveExports('', '', undefined, ['0x276c5119f63119921667842dA3B71EE10Ac486eA'], { v3: true }),
 }
 
 const obtcMarkets = {
