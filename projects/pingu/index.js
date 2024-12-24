@@ -12,3 +12,4 @@ module.exports = {
 		staking: sumTokensExport({ owners: [fundStore], tokens: [PINGU] }),
 	},
 }
+
