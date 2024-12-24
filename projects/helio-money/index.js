@@ -89,9 +89,35 @@ module.exports = {
                     "0x26c5e01524d2E6280A48F2c50fF6De7e52E9611C",
                     "0xf8Ca8D2B59A97125751af1069d4a5C4F7eB7A677",
                 ],
+                //solvBTC.BBNB
+                ["0x1346b618dC92810EC74163e4c27004c921D446a5","0x03DB750d6212C6a0BCa9258E8cB7cf46dfD63067"],
+
+                // USDT
+[ADDRESSES.bsc.USDT, "0xAd406CcF75f9E6216fA4349635B0cD77D0059b1f"],
+
+                //FDUSD
+                [ADDRESSES.ethereum.FDUSD,"0x2202a491752Fee0E616F06A89E2eF416E2Fcd7e9"],
+
+                // sUSDX
+                [
+                    "0x7788A3538C5fc7F9c7C8A74EAC4c898fC8d87d92",
+                    "0x98b167359566c1ea05335D52794C7Eb6f8E6739a",
+                ],
+
+                // vUSDT, PSM - LSR
+                // [ADDRESSES.bsc.USDT, "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
+                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"],
+
+                // pumpBTC
+                [
+                    "0xf9C4FF105803A77eCB5DAE300871Ad76c2794fa4",
+                    "0xEA44dDC58eC6b4902E19A353c554B6A4F32b9e6E",
+                ],
             ],
         }),
         pool2,
         staking: staking('0xd0C380D31DB43CD291E2bbE2Da2fD6dc877b87b3','0xFceB31A79F71AC9CBDCF853519c1b12D379EdC46')
     },
 };
+
+// execute with `node test.js projects/helio-money`
