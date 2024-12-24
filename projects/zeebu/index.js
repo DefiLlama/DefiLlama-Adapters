@@ -19,3 +19,5 @@ Object.keys(VOTING_ESCROW_ADDRESSES).forEach(chain => {
     staking: staking(VOTING_ESCROW_ADDRESSES[chain], ZBU_ADDRESSES[chain])
   }
 })
+
+module.exports.base.pool2 = staking('0x45dd22aCe398002b34cB37b363B2F02C7dd47842', '0xC3889F9764d68BDF2e16f237206746344172A147')
