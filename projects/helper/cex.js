@@ -256,6 +256,8 @@ const defaultTokens = {
     ADDRESSES.ton.TON_2,
     ADDRESSES.ton.TON_3,
   ],
+  sui: [],
+  aptos: [],
 }
 
 function cexExports(config) {

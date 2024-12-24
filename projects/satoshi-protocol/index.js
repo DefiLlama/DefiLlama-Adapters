@@ -6,23 +6,46 @@ const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint2
 function createExports({
   troveList,
   nymInformation, // { address, fromBlock }
+  aaveStrategyVaults, // { address, asset, aToken }[]
+  pellStrategyVaults, // { address, asset }[]
 }) {
   return {
     tvl: async (api) => {
       const tokens = [];
       const owners = [];
-      if(troveList) {
+      if (troveList) {
         owners.push(...troveList);
         const collaterals = await getCollateralsFromTrove(api, troveList);
         tokens.push(...collaterals);
       }
 
-      if(nymInformation) {
+      if (nymInformation) {
         const assetList = await getAssetListFromNymContract(api, nymInformation.address, nymInformation.fromBlock);
         assetList.forEach(asset => {
           owners.push(nymInformation.address);
           tokens.push(asset);
         })
+      }
+
+      if (aaveStrategyVaults) {
+        const calls = []
+        const tokens = []
+        for (let index = 0; index < aaveStrategyVaults.length; index++) {
+          const { address: vault, aToken, asset } = aaveStrategyVaults[index];
+          tokens.push(asset)
+          calls.push({ target: aToken, params: vault })
+        }
+        const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls })
+        api.add(tokens, bals)
+      }
+
+      if (pellStrategyVaults) {
+        const vaults = pellStrategyVaults.map(i => i.address)
+        const tokens = pellStrategyVaults.map(i => i.asset)
+        const strategies = await api.multiCall({ abi: 'address:pellStrategy', calls: vaults })
+        const calls2 = strategies.map((v, i) => ({ target: v, params: vaults[i] }))
+        const bals = await api.multiCall({ abi: "function userUnderlyingView(address) external view returns (uint256)", calls: calls2 })
+        api.add(tokens, bals)
       }
 
       return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
@@ -36,7 +59,7 @@ async function getCollateralsFromTrove(api, troveList) {
 }
 
 async function getAssetListFromNymContract(api, nymContractAddress, fromBlock) {
-  const logs = await getLogs({api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventABI, onlyArgs: true});
+  const logs = await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventABI, onlyArgs: true });
   const assetList = logs.map(item => item.asset);
   return assetList;
 }
@@ -71,7 +94,20 @@ module.exports = {
     nymInformation: {
       address: '0x7253493c3259137431a120752e410b38d0c715C2',
       fromBlock: 4614620,
-    }
+    },
+    aaveStrategyVaults: [
+      {
+        address: '0x713dD0E14376a6d34D0Fde2783dca52c9fD852bA',
+        aToken: '0xd6890176e8d912142AC489e8B5D8D93F8dE74D60', // aBOBWBTC
+        asset: '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3', // BOB WBTC
+      }
+    ],
+    pellStrategyVaults: [
+      {
+        address: '0x04485140d6618be431D8841de4365510717df4fd',
+        asset: '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3', // BOB WBTC
+      }
+    ],
   }),
   bsquared: createExports({
     troveList: [
