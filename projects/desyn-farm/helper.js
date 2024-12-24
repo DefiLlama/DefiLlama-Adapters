@@ -48,6 +48,7 @@ function getTvlFunction(strategy_type, isDoubleCounted) {
     const allBals = await api.multiCall({ abi: abi.getBalance, calls })
     api.add(allTokens, allBals)
 
+    // rest api type:: StrategyType2
     if (strategy_type === 'StrategyType2')
       api.removeTokenBalance(leverageStaking)
   }
