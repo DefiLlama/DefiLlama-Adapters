@@ -12,6 +12,7 @@ const ownersList = [
 
 module.exports = {
   methodology: 'Counts Delea smartcontract balance as TVL.',
+  misrepresentedTokens: true,
   ton: {
     tvl: sumTokensExport({ owners: ownersList, tokens: [ADDRESSES.null]}),
   }
