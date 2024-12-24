@@ -41,6 +41,7 @@ const config = {
       "addr1q9czs903atc9hmz9vf8sdrqgk33dz9hnwdgpgx98q4fsnj9t3n4wl5p8j9uqg4ewj740uupwjsv4c8p0eckuh3p0tjasl8v77f",
       "addr1q9xfm9pxac0vhxym802eagwmtc0aus5w5uhc0tg9rslzzhfcj99akd57ewpta8ww9wf3vp9af3psmyw62vy00tvk3yaq9c3yw6",
       "addr1q98xhywsa3xgu79ftrjyrfg6e2wrxfgqvepnudusw58ee6vmw0j8gzw6hmyuefah02purkfvqj6x2pz2wpjr26mr8r7qv6v2qa",
+      "addr1qxpah9ck505d7dvxvkvh33v5awrxv89vvjcduhfu29fr7dns6jxls0ngn2qadghy4h7dterk0gzm3y7czmh8zlsfvmesxrkkg7",
     ],
   },
   base: {
@@ -207,23 +208,16 @@ const config = {
   },
   doge: {
     owners: [
-      'DTqm2UCi6AS1nSCo9jZ8AejZ3k1ZcF8qix',
-      'A2is3pqH2jz8jcRNV2QEFnLF3FAP5hBEoB',
-      'DBrNiTbgpHHeveemLNnKwNDEJwXRGGRb1L',
-      'D788kYSZYsVWSoLVejipE1Q4cN8Spom5eU',
-      'DNvZftCnAsfrzzfe6R3dF6Sugz7W4Qgs6b',
-      'DPYV66VirzChkotHXPryAhcfvyQmeArV2y',
-      'DHBERwF4LVLVwQzDtfPz9zEtKPnWW9NSDH',
-      'DTWmAfdTkrtqv7GmN2vE74VTkXkgQUFRSn',
-      'DDm2XmWXhq3fxHd9fUaqnbmxanaFuKSG1s',
-      'DHt3teN3iNSG7rJ8GaGz5EeHYFieCf8Qin',
-      'D5GmmrSZ1xDut5Nj1s4C4ncA1v3EGfbk15',
-      'DNpbFixXn611Qd9SZDBDjS4NhFPAXG8t1X',
-      'D7pEtDnFU3ZgTykZt54SXvGeF1YSt2PVbe',
-      'DCWvgKHcs1KUDqYe55rTX8m6uaJ67gaAp5',
-      'DBdkivVhGhmbBRSsbt2s55MtZ38ngs86nS',
-    ]
-  }
+      "A3UdEKpx5HR1hJvKKw7iVbwp6MRn3yZAiK",
+      "ACkC8PjakegrmPFaL12FVDPCn8HwdKzSCY",
+      "AAuxfoiADXxMgbZPZ42xE6TCnFnz2FK33e",
+      "A5XHmCEG2TbaUnCiZnganw29EsDDnUQXjj",
+      "A59WR7LTBiBbSx3QZbf7SwQ6q3PHnP33wK",
+      "A4RZ3WfKxyWDPvMkFGM2Uzo8rDd6wwBqK5",
+      "9tAKQbiRPJxosnuUFGivL2kP3UEEeqdnd1",
+      "AD7E3QXB5go9AtE2uueMr3Dw767eWi5ruy",
+    ],
+  },
 };
 
 module.exports = cexExports(config);
