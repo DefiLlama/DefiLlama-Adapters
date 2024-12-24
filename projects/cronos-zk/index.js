@@ -3,7 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const target = "0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB"
 const gasQuery = '0x0000000000000000000000000000000000000001'
 const gasAddress = '0x0000000000000000000000000000000000000000'
-const chainId = 324
+const chainId = 388
 
 module.exports = {
   ethereum: {
