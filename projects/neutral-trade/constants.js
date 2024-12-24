@@ -45,13 +45,13 @@ const VAULTS = [
     token: TOKENS.WETH,
     dataUrl: `${DATA_URL}/ethjlpnl.json`
   },
-  // {
-  //   name: "USDC Staking (JLP Delta Neutral)",
-  //   address: "9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj",
-  //   token: TOKENS.USDC,
-  //   dataUrl: `${DATA_URL}/jlpdn.json`,
-  //   version: 1,
-  // },
+  {
+    name: "USDC Staking (JLP Delta Neutral) v1",
+    //programId: "9Fcn3Fd4d5ocrb12xCUtEvezxcjFEAyHBPfrZDiPt9Qj",
+    address: "3Nkctq19AW7gs5hkxixUDjS9UVjmCwcNCo7rqPpub87c",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/jlpdn.json`,
+  },
   {
     name: "USDC Staking (JLP Delta Neutral) v2",
     address: "41Y8C4oxk4zgJT1KXyQr35UhZcfsp5mP86Z2G7UUzojU",
@@ -113,6 +113,12 @@ const VAULTS = [
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/vip06.json`
   },
+  {
+    name: "vip07",
+    address: "HTLvAjqc6Wkzh4i4QNLHhQHZAnrtVvkGyYeyCiUWLe9b",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip07.json`
+  }
 ];
 
 module.exports = {
