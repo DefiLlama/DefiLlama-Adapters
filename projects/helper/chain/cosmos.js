@@ -43,7 +43,9 @@ const endPoints = {
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
-  noble: "https://noble-api.polkachu.com"
+  kopi: "https://rest.kopi.money",
+  noble: "https://noble-api.polkachu.com",
+  elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
 };
 
 const chainSubpaths = {
