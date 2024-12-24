@@ -1,5 +1,6 @@
 const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs');
 const { stakings } = require("../helper/staking");
+const { pool2s } = require("../helper/pool2");
 
 const VOTING_ESCROW_ADDRESSES = {
   ethereum: '0x8e76Cdf3b14c540aB54aFa7f8492AC1d16Ecfb35',
@@ -25,6 +26,14 @@ const POOLS = {
 };
 
 const BALANCER_VAULT_ADDRESS = '0xba12222222228d8ba445958a75a0704d566bf2c8';
+
+const lpTokens = [
+  '0xC3889F9764d68BDF2e16f237206746344172A147'
+];
+
+const stackingcontract = [
+  '0x45dd22aCe398002b34cB37b363B2F02C7dd47842'
+];
 
 /**
  * Helper function to calculate TVL for a specific pool type
@@ -88,7 +97,8 @@ module.exports = {
   },
   base: {
    staking :  stakings([VOTING_ESCROW_ADDRESSES["base"]],ZBU_ADDRESSES["base"]),
-    tvl: () => ({})
+    tvl: () => ({}),
+    pool2: pool2s(stackingcontract,lpTokens),
     
   },
   bsc: {
