@@ -115,10 +115,10 @@ const VAULTS = [
   },
   {
     name: "vip07",
-    address: "6DFDj66PbPoTC16Sh51MJijoTTMYCbMCVC85tnc5UfQ3",
+    address: "HTLvAjqc6Wkzh4i4QNLHhQHZAnrtVvkGyYeyCiUWLe9b",
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/vip07.json`
-  },
+  }
 ];
 
 module.exports = {
