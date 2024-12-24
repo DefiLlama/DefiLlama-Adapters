@@ -83,6 +83,12 @@ const CONFIG = {
       '0x81F6138153d473E8c5EcebD3DC8Cd4903506B075',
     ],
   },
+  sei: {
+    pools: [
+      '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //usdc pool
+      '0x0dB9afb4C33be43a0a0e396Fd1383B4ea97aB10a'
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {

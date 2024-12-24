@@ -45,22 +45,22 @@ module.exports = {
     tvl: async (api) => {
       const KUSDC = {
         vault: "0x4c18E80b801AA24066D8B1C6E65ee245497Cb741",
-        token: "0xa415021bC5c4C3b5B989116DC35Ae95D9C962c8D",
+        token: ADDRESSES.karak.USDC,
       };
 
       const KWETH = {
         vault: "0x9a9631F7BEcE5C6E0aBA1f73f0e5796c534dc4db",
-        token: "0x4200000000000000000000000000000000000006",
+        token: ADDRESSES.optimism.WETH_1,
       };
 
       const wethLending = {
         vault: "0xd6034F9147CF7528e857403Dea93bc45743295eb",
-        token: "0x4200000000000000000000000000000000000006",
+        token: ADDRESSES.optimism.WETH_1,
       };
 
       const usdcLending = {
         vault: "0x475820E4bCE0E3d233Ad7f6A8c9DD1f66974c5d6",
-        token: "0xa415021bC5c4C3b5B989116DC35Ae95D9C962c8D",
+        token: ADDRESSES.karak.USDC,
       };
 
       const KarakUSDCBal = await api.call({ target: KUSDC.vault, abi: contractAbis.getTotalSupply });
@@ -222,7 +222,11 @@ module.exports = {
         reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
         oracle: "0xb09cbB6Aa95A004F9aeE4349DF431aF5ad03ECe4",
       };
+
+
       tokensAndOwners.push([eETH.reStakingToken, eETH.vault]);
+
+    
 
       // leverage users
       const ezETH = {
@@ -334,6 +338,11 @@ module.exports = {
         pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
       };
 
+      const bptrswETH1x2 = {
+        vault: "0x76338fca82925Fe2Df2C4F2c6e9545247617C634",
+        pendleAddress: "0x7bAf258049cc8B9A78097723dc19a8b103D4098F"
+      };
+
       //new 1x strats on pendle v2
 
       //PT Tensorplex Staked TAO 27JUN2024 (PT-stTAO-...)
@@ -388,6 +397,7 @@ module.exports = {
         bptzrsETH1x,
         bptzUSDe1x,
         bptrswETH1x,
+        bptrswETH1x2,
         pTEzETHDEC30,
       ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);

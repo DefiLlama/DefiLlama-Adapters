@@ -1,38 +1,29 @@
+
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
 ]
 
 const DEFAULTS = {
+  EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
-  SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
-  APTOS_RPC: 'https://aptos-mainnet.pontem.network',
+  // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
+  SOLANA_RPC: "https://api.mainnet-beta.solana.com",
+  ECLIPSE_RPC: 'https://eclipse.lgns.net',
+  APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
+  SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
+  FLOW_RPC: 'https://rest-mainnet.onflow.org',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology", // add manually, short name is b2-mainnet
-  BTR_RPC_MULTICALL: '0xc8818aaeaBF0dF9f3f3ffF54Ab185705177A6234',
-  DEFICHAIN_EVM_RPC_MULTICALL: '0x7fEf77CDe3B41221Cff54B84Ea89D2EBc6b53352',
-  BOUNCEBIT_RPC_MULTICALL: '0x493d616f5F9a64e5B3D527120E406439bdF29272',
-  ZKLINK_RPC_MULTICALL: '0xa8738F57538E3Bb73872d1133F2358c7Fe56FD35',
-  REAL_RPC: 'https://real.drpc.org', // added manually short name is re-al
-  TAIKO_RPC: 'https://rpc.taiko.xyz', // added manually short name is tko-mainnet
-  REAL_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
-  SEI_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
-  TAIKO_RPC_MULTICALL: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D',
-  SEI_RPC: 'https://evm-rpc.sei-apis.com/',
-  LUKSO_RPC: 'https://rpc.lukso.sigmacore.io',
-  HAM_RPC: 'https://rpc.ham.fun',
-  HAM_RPC_MULTICALL: '0xB7c3Ea932649fBD594C881aDCb3F19415e2EA2d5',
-  SANKO_RPC_MULTICALL: '0xB32d192e07727A0F6f48e721791aa4e02cd292e1',
-  AILAYER_RPC: "https://mainnet-rpc.ailayer.xyz",
-  OX_CHAIN_RPC: "https://rpc.oxscan.io",
-  OX_CHAIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  ETLK_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  MINT_RPC_MULTICALL: "0xf8ac4BEB2F75d2cFFb588c63251347fdD629B92c",
-  AETERNITY_HTTP_ENDPOINT: 'https://mainnet.aeternity.io',
+  RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
+  DUCKCHAIN_RPC: "https://rpc.duckchain.io,https://rpc-hk.duckchain.io",
+  SOPHON_RPC_MULTICALL: "0x5f4867441d2416cA88B1b3fd38f21811680CD2C8",
+  VANA_RPC_MULTICALL: "0xFe92b91F3326e58557478c28EeAe1936E0c7148a",
+  FILECOIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  ODYSSEY_RPC_MULTICALL: "0xD5F04861e1249F488ef8898607cF7ad0F334d823",
 }
 
 const ENV_KEYS = [
@@ -46,6 +37,7 @@ const ENV_KEYS = [
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
   'ETHEREUM_TOKENS_ENDPOINT',
+  'FBTC_ACCESS_TOKEN',
   'UNISAT_AUTH'
 ]
 

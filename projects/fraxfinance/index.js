@@ -4,7 +4,7 @@ const { staking, } = require("../helper/staking");
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 
 const USDC = ADDRESSES.ethereum.USDC;
-const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
+const FXS = ADDRESSES.ethereum.FXS;
 const FRAX_3CRV = '0xd632f22692fac7611d2aa1c0d552930d43caed3b'
 const T_3CRV = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
 

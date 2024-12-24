@@ -3,20 +3,11 @@ const abi = require("./abi.json")
 
 const { unwrapLPsAuto, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const BoosterStakingChef_Heco = "0x7970234cDfa8898853Eaa1e2586cE933d9054af8";
 const MdexStakingChef_Heco = "0x44aEfA01E92d170C915D87C2AB03D03cA49D5cb5";
 const LavaStakingChef_heco = "0x9B948c946BE7F062D2075744142896F08D32a8A5";
 const SushiStakingChef_Ethereum = "0x0503866eD9F304Ec564F145d22994F7f11838596";
-
-const treasuryAddress = "0xB3FC6B9be3AD6b2917d304d4F5645a311bCFd0A8";
-const erc20Tokens = [
-  //MDX
-  "0x25d2e80cb6b86881fd7e07dd263fb79f4abe033c",
-  //BOO
-  "0xff96dccf2763d512b6038dc60b7e96d1a9142507",
-];
 
 const calcTvl = async (balances, chain, block, poolInfo, StakingChef, transform) => {
   const lengthOfPool = (
@@ -40,14 +31,6 @@ const calcTvl = async (balances, chain, block, poolInfo, StakingChef, transform)
   data.forEach(({ output }) => {
     sdk.util.sumSingleBalance(balances, transform(output.lpToken), output.lpBalance)
   })
-};
-
-/*** Treasury ***/
-const Treasury = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-  let transformAddress = await getChainTransform('heco')
-  await sumTokensAndLPsSharedOwners(balances, erc20Tokens.map(t => [t, false]), [treasuryAddress], chainBlocks["heco"], "heco", transformAddress);
-  return balances;
 };
 
 /*** Heco TVL Portion ***/

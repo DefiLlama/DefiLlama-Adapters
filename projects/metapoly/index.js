@@ -1,7 +1,4 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getChainTransform } = require('../helper/portedTokens')
 
 const config = {
   kava: {
@@ -17,59 +14,18 @@ const config = {
 };
 
 module.exports = {
-  misrepresentedTokens: true,
+  deadFrom: '2023-07-21',
   methodology:
     "We use the totalSupply() method which includes the interest accrued on the deposited USDC.",
 };
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
+    tvl: async (api) => {
       const vaults = Object.values(config[chain].vaults);
-      const tokensAndOwners = []
-      const { output: underlyingAssets } = await sdk.api.abi.multiCall({
-        abi: abi.UNDERLYING_ASSET_ADDRESS,
-        calls: vaults.map((i) => ({ target: i })),
-        chain,
-        block,
-      });
-      underlyingAssets.forEach(i => tokensAndOwners.push([i.output, i.input.target]))
-      return sumTokens2({ chain, block, tokensAndOwners })
+      const tokens = await api.multiCall({  abi: abi.UNDERLYING_ASSET_ADDRESS, calls: vaults})
+      return api.sumTokens({ tokensAndOwners2: [tokens, vaults]})
     },
-    borrowed: async (_, _b, { [chain]: block }) => {
-      const vaults = Object.values(config[chain].vaults);
-      const [
-        { output: decimals },
-        { output: tokenBalances },
-        { output: underlyingAssets },
-      ] = await Promise.all([
-        'erc20:decimals',
-        abi.totalSupply,
-        abi.UNDERLYING_ASSET_ADDRESS
-      ].map(abi => sdk.api.abi.multiCall({ abi, calls: vaults.map((i) => ({ target: i })), chain, block, })))
-      
-      const { output: underlyingDecimals } = await sdk.api.abi.multiCall({
-        abi: 'erc20:decimals',
-        calls: underlyingAssets.map((i) => ({ target: i.output })),
-        chain,
-        block,
-      });
-      const { output: underlyingBalances } = await sdk.api.abi.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: underlyingAssets.map((i, j) => ({ target: i.output, params: vaults[j] })),
-        chain,
-        block,
-      });
-      const transformAddress = await getChainTransform(chain)
-      const balances = {}
-      tokenBalances.forEach(({ output: total }, i) => {
-        const token = transformAddress(underlyingAssets[i].output)
-        const decimalChange = underlyingDecimals[i].output - decimals[i].output
-        const amountInPool = underlyingBalances[i].output
-        const debt = (total * (10 ** decimalChange)) - amountInPool
-        if (debt > 0) sdk.util.sumSingleBalance(balances, token, Number(debt).toFixed(0))
-      })
-      return balances;
-    },
+    borrowed: () => ({}),
   };
 });

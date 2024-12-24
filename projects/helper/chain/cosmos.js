@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../portedTokens");
 const { get, post } = require("../http");
 const { PromisePool } = require("@supercharge/promise-pool");
-const { log } = require("../utils");
+const { log, sleep } = require("../utils");
 const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
@@ -11,7 +11,7 @@ const ADDRESSES = require('../coreAssets.json')
 // https://cosmos-chain.directory/chains
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
-  osmosis: "https://rest.cosmos.directory/osmosis",
+  osmosis: "https://lcd.osmosis.zone",
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
@@ -42,7 +42,10 @@ const endPoints = {
   nolus: "https://pirin-cl.nolus.network:1317",
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
-  joltify: "https://lcd.joltify.io"
+  joltify: "https://lcd.joltify.io",
+  kopi: "https://rest.kopi.money",
+  noble: "https://noble-api.polkachu.com",
+  elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
 };
 
 const chainSubpaths = {
@@ -75,7 +78,10 @@ async function query(url, block, chain) {
   return (await get(endpoint)).result;
 }
 
-async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
+async function queryV1Beta1({ chain, paginationKey, block, url, api } = {}) {
+  if (api) {
+    chain = api.chain
+  }
   const subpath = chainSubpaths[chain] || "cosmos";
   let endpoint = `${getEndpoint(chain)}/${subpath}/${url}`;
   if (block !== undefined) {
@@ -118,7 +124,13 @@ async function getBalance({ token, owner, block, chain } = {}) {
   return Number(data.balance);
 }
 
-async function sumCW20Tokens({ balances = {}, tokens, owner, block, chain } = {}) {
+async function sumCW20Tokens({ balances, tokens, owner, block, chain, api, } = {}) {
+  if (api) {
+    if (!chain) chain = api.chain;
+    if (!balances) balances = api.getBalances();
+  } else {
+    if (!balances) balances = {};
+  }
   await Promise.all(
     tokens.map(async (token) => {
       const balance = await getBalance({ token, owner, block, chain, });
@@ -139,7 +151,7 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
   return balance ? Number(balance.amount) : 0;
 }
 
-async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, } = {}) {
+async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, api, } = {}) {
   const subpath = "cosmos";
   let endpoint = `${getEndpoint(
     chain
@@ -153,7 +165,9 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
   for (const { denom, amount } of data) {
     if (blacklistedTokens?.includes(denom)) continue;
     if (tokens && !tokens.includes(denom)) continue;
-    sdk.util.sumSingleBalance(balances, denom.replaceAll('/', ':'), amount);
+    if (api) api.add(denom, amount);
+    else
+      sdk.util.sumSingleBalance(balances, denom.replaceAll('/', ':'), amount);
   }
   return balances;
 }
@@ -177,7 +191,8 @@ async function lpMinter({ token, block, chain } = {}) {
   return data.minter;
 }
 
-async function queryContract({ contract, chain, data }) {
+async function queryContract({ contract, chain, data, api }) {
+  if (api) chain = api.chain;
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
   return (
@@ -195,7 +210,7 @@ const multipleEndpoints = {
     "https://sei-m.api.n0ok.net",
     "https://sei-api.lavenderfive.com",
     "https://api-sei.stingray.plus"
-  ]
+  ],
 }
 
 async function queryContractWithRetries({ contract, chain, data }) {
@@ -220,7 +235,7 @@ async function queryContractWithRetries({ contract, chain, data }) {
   }
 }
 
-async function queryManyContracts({ contracts = [], chain, data, permitFailure = false}) {
+async function queryManyContracts({ contracts = [], chain, data, permitFailure = false }) {
   const parallelLimit = 25
   const { results, errors } = await PromisePool
     .withConcurrency(parallelLimit)
@@ -280,15 +295,26 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain, owner, tokens, blacklistedTokens, }) {
+async function sumTokens({ balances, owners = [], chain, owner, tokens, blacklistedTokens, api, }) {
+  if (api) {
+    if (!chain) chain = api.chain;
+    if (!balances) balances = api.getBalances();
+  } else {
+    if (!balances) balances = {};
+  }
   if (!tokens?.length || (tokens?.length === 1 && tokens[0] === ADDRESSES.null)) tokens = undefined;
   if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
+  if (chain === 'osmosis') parallelLimit = 5;
 
   const { errors } = await PromisePool.withConcurrency(parallelLimit)
     .for(owners)
-    .process(async (owner) => getBalance2({ balances, owner, chain, tokens, blacklistedTokens, }));
+    .process(async (owner, i) => {
+      await getBalance2({ balances, owner, chain, tokens, blacklistedTokens, api, })
+      if (chain === 'osmosis' && owners.length > 100) 
+        await sleep(3000)
+    });
 
   if (errors && errors.length) throw errors[0];
   return transformBalances(chain, balances);
@@ -311,5 +337,5 @@ module.exports = {
   getTokenBalance,
   getToken,
   sumCW20Tokens,
-  queryContractWithRetries
+  queryContractWithRetries,
 };
