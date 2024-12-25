@@ -17,6 +17,7 @@ const mainMarket = {
 	klaytn: aaveExports('', '', undefined, ['0xddD3D480521bc027596e078BCd1b838d50Daa076'], { v3: true }), // Kaia V3 Main
 	zeta: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }), // Zetachain V3 Main
 	corn: aaveExports('', '', undefined, ['0x56552f4407113894Bfce34b5b88C57b941AFc519'], { v3: true }), // Corn V3 Main
+	duckchain: aaveExports('', '', undefined, ['0x100AC26ad2c253B18375f1dC4BC0EeeB66DEBc88'], { v3: true }), // Duckchain V3 Main
 }
 
 const innovativeMarket = {
@@ -63,6 +64,8 @@ const otherProtocolTokenMarkets = {
 	klaytn: aaveExports('', '', undefined, ['0x276c5119f63119921667842dA3B71EE10Ac486eA'], { v3: true }),
 	// Sonic - beetSonic
 	sonic: aaveExports('', '', undefined, ['0x28350E38f241d7F24106CE5eaB1684D6ebEB4700'], { v3: true }),
+	// Duckchain - MBTC
+	duckchain: aaveExports('', '', undefined, ['0x912b425D867a09608A884C83b3D5075E9037Aa6a'], { v3: true }),
 }
 
 const obtcMarkets = {
