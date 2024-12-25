@@ -3,7 +3,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
   base: { address: '0xf93659fb357899e092813bc3a2959ceDb3282a7f', blacklistedTokens: [ADDRESSES.bsc.USDT, "0x96af5739ca66ca55ab71ac9f308720d5044995ee","0xca4f1536cd29d42bcbc8211f1b621ba9e817433f"]},
-  bsc: { address: '0xA1fe1C37Bf899C7F7521082C002dFA4fEbAaA8dd', blacklistedTokens: [ADDRESSES.optimism.WETH_1] }
+  bsc: { address: '0xA1fe1C37Bf899C7F7521082C002dFA4fEbAaA8dd', blacklistedTokens: [ADDRESSES.optimism.WETH_1] },
+  ethereum: { address: '0x7c530c9ED5E734964453Ce62Ae9C4e31a247738B'}
 }
 
 const abi = {
