@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../portedTokens");
 const { get, post } = require("../http");
 const { PromisePool } = require("@supercharge/promise-pool");
-const { log } = require("../utils");
+const { log, sleep } = require("../utils");
 const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
@@ -11,7 +11,7 @@ const ADDRESSES = require('../coreAssets.json')
 // https://cosmos-chain.directory/chains
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
-  osmosis: "https://rest.cosmos.directory/osmosis",
+  osmosis: "https://lcd.osmosis.zone",
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
@@ -43,7 +43,9 @@ const endPoints = {
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
-  noble: "https://api.noble.xyz"
+  kopi: "https://rest.kopi.money",
+  noble: "https://noble-api.polkachu.com",
+  elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
 };
 
 const chainSubpaths = {
@@ -189,7 +191,8 @@ async function lpMinter({ token, block, chain } = {}) {
   return data.minter;
 }
 
-async function queryContract({ contract, chain, data }) {
+async function queryContract({ contract, chain, data, api }) {
+  if (api) chain = api.chain;
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
   return (
@@ -303,10 +306,15 @@ async function sumTokens({ balances, owners = [], chain, owner, tokens, blacklis
   if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
+  if (chain === 'osmosis') parallelLimit = 5;
 
   const { errors } = await PromisePool.withConcurrency(parallelLimit)
     .for(owners)
-    .process(async (owner) => getBalance2({ balances, owner, chain, tokens, blacklistedTokens, api, }));
+    .process(async (owner, i) => {
+      await getBalance2({ balances, owner, chain, tokens, blacklistedTokens, api, })
+      if (chain === 'osmosis' && owners.length > 100) 
+        await sleep(3000)
+    });
 
   if (errors && errors.length) throw errors[0];
   return transformBalances(chain, balances);

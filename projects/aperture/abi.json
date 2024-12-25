@@ -1,6 +1,0 @@
-{
-  "getStrategyId": "uint64:nextStrategyId",
-  "getLeverage": "uint256:leverageLevel",
-  "getEquityETHValue": "uint256:getEquityETHValue",
-  "getETHPx": "function getETHPx(address oracle, address token) view returns (uint256)"
-}

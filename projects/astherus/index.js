@@ -7,7 +7,7 @@ const config = {
 }
 
 module.exports = {
-  start: 1706716800, // 02/01/2024 @ 00:00:00pm (UTC)
+  start: '2024-01-31', // 02/01/2024 @ 00:00:00pm (UTC)
 }
 
 Object.keys(config).forEach(chain => {

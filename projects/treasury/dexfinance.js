@@ -56,7 +56,7 @@ module.exports = treasuryExports({
 	// 	tokens: [
 	// 		ADDRESSES.pulse.WETH,
 	// 		ADDRESSES.ethereum.USDC, //usdc(fork)
-	// 		'0x30fcb23a906493371b1721c8feb8815804808d74', //sdai
+	// 		ADDRESSES.pulse.sDAI, //sdai
 	// 		'0xaa2c47a35c1298795b5271490971ec4874c8e53d', //usdex
 	// 		'0x6386704cd6f7a584ea9d23ccca66af7eba5a727e', //spark
 	// 	]
@@ -77,7 +77,7 @@ module.exports = treasuryExports({
 			'0x940181a94a35a4569e4529a3cdfb74e38fd98631', //aero
 			'0x7f62ac1e974d65fab4a81821ca6af659a5f46298', //wels
 			'0x78b3c724a2f663d11373c4a1978689271895256f', //tkn
-			'0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452', //wsteth
+			ADDRESSES.base.wstETH, //wsteth
 			'0x373504da48418c67e6fcd071f33cb0b3b47613c7', //wbasedoge
 		]
 	},
