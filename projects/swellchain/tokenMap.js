@@ -1,0 +1,26 @@
+const tokens = [
+     '0x18d33689AE5d02649a859A1CF16c9f0563975258', // LayerZero rswETH
+     '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7', // LayerZero swETH
+     '0xA6cB988942610f6731e664379D15fFcfBf282b44', // LayerZero weETH
+     '0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B', // LayerZero swBTC
+     '0x939f1cC163fDc38a77571019eb4Ad1794873bf8c',  // LayerZero rSWELL
+     '0x939f1cC163fDc38a77571019eb4Ad1794873bf8c', // LayerZero rSWELL
+     '0x2826D136F5630adA89C1678b64A61620Aab77Aea', // LayerZero SWELL
+     '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3', // LayerZero stBTC // using WBTC price feed
+     '0xc3eACf0612346366Db554C991D7858716db09f58', // LayerZero rsETH
+     '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2', // LayerZero sUSDe
+     '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34', // LayerZero USDe
+     '0x58538e6A46E07434d7E7375Bc268D3cb839C0133', // LayerZero ENA
+    // 0xe786314c7ee33bb45aaf72dd374d715da1c414e7, // LayerZero swBTC
+     '0x2416092f143378750bb29b79eD961ab195CcEea5', // HyperLane ezETH
+     '0x9cb41CD74D01ae4b4f640EC40f7A60cA1bCF83E7', // HyperLane pzETH
+     '0xFA3198ecF05303a6d96E57a45E6c815055D255b1', // HyperLane uBTC  // using WBTC price feed
+    // 0xbce9988376c6b9c0c035bdbc9060568031d51130, // lorenzo stBTC
+     '0x99a38322cAF878Ef55AE4d0Eda535535eF8C7960', // HyperLane USDC
+     '0xb89c6ed617f5f46175e41551350725a09110bbce', // HyperLane USDT
+
+]
+
+module.exports = {
+    tokens
+}

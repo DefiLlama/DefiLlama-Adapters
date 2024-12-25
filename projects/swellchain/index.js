@@ -1,4 +1,16 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const {tokens} = require("../swellchain/tokenMap")
+
+async function otherTvl(api) {
+
+  const supplys = await api.multiCall({ 
+    abi: "uint256:totalSupply",
+    calls: tokens
+  })
+
+  api.add(tokens, supplys)
+}
+
 
 module.exports = {
   ethereum: {
@@ -10,5 +22,7 @@ module.exports = {
       ],
       fetchCoValentTokens: true,
     }),
-  }
+    methodology: "Assets locked in Mainnet Canonical Bridges (ETH, wstETH) and Onchain Supply of LayerZero OFTs and HyperLane HypERC20s",
+  },
+  swellchain : { tvl: otherTvl }
 };
