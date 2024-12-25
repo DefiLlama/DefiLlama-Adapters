@@ -1,5 +1,6 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const {tokens} = require("../swellchain/tokenMap")
+const { sumUnknownTokens } = require('../helper/unknownTokens')
 
 async function otherTvl(api) {
 
@@ -9,6 +10,7 @@ async function otherTvl(api) {
   })
 
   api.add(tokens, supplys)
+  return sumUnknownTokens({ api, useDefaultCoreAssets: true, resolveLP: true, })
 }
 
 
