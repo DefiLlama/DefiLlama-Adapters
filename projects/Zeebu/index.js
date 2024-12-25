@@ -20,8 +20,8 @@ const POOLS = {
       '0x59501a303b1bdf5217617745acec4d99107383f0',
       '0xC3889F9764d68BDF2e16f237206746344172A147',
     ],
-    uniswap: ['0x021235b92A4F52C789F43a1B01453c237C265861'],
-    pancakeswap: ['0x6D5f64FB9c634b3cE3Ffd67035D9B70654fE1442'],
+    uniswap: ['0x021235b92A4F52C789F43a1B01453c237C265861','0xbF6eF625DE5DF898CC1d0f91868AaE03976A2E2d','0xd5A6f9ee3BC59D5ab4D2638c30B70dBD89DD740D'],
+    pancakeswap: ['0x6D5f64FB9c634b3cE3Ffd67035D9B70654fE1442','0x6bC87443d501f7413F43Ce59428cE360034D64A6'],
   },
 };
 
@@ -89,6 +89,16 @@ async function calculateTvl({ chain, api }) {
   return votingEscrowTvl;
 }
 
+async function calculatePool2Tvl({ api, pools, tokens, owner }) {
+  // Sum tokens across multiple pools
+  return sumTokens2({
+    api,
+    owner,
+    owners: pools,
+    tokens,
+  });
+}
+
 module.exports = {
   ethereum: {
     staking :  stakings([VOTING_ESCROW_ADDRESSES["ethereum"]],ZBU_ADDRESSES["ethereum"]),
@@ -98,7 +108,13 @@ module.exports = {
   base: {
    staking :  stakings([VOTING_ESCROW_ADDRESSES["base"]],ZBU_ADDRESSES["base"]),
     tvl: () => ({}),
-    pool2: pool2s(stackingcontract,lpTokens),
+    pool2: pool2: async (_, _1, _2, { api }) =>
+      calculatePool2Tvl({
+        api,
+        pools: [...POOLS.base.balancer, ...POOLS.base.uniswap, ...POOLS.base.pancakeswap],
+        tokens: [ZBU_ADDRESSES.base],
+        owner: BALANCER_VAULT_ADDRESS,
+      }),
     
   },
   bsc: {
