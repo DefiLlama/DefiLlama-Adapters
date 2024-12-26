@@ -89,6 +89,22 @@ const config = {
       ],
     ],
   },
+  boba: {
+    tokenAndOwnerPair: [
+      [
+        // BOBA Token
+        ADDRESSES.boba.BOBA,
+        // EngineChip (owner)
+        "0x9beABD8699E2306c5632C80E663dE9953e104C3f"
+      ],
+      [
+        // USDC Token
+        ADDRESSES.boba.USDC,
+        // EngineChip (owner)
+        "0xcDD339d704Fb8f35A3a2f7d9B064238D33DC7550"
+      ],
+    ]
+  },
 
   // OFT Chips
   fuse: {
