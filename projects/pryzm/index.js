@@ -61,7 +61,7 @@ async function tvl(api) {
     ) {
       continue
     }
-    if (denom === 'ibc/DA59C009A0B3B95E0549E6BF7B075C8239285989FF457A8EDDBB56F10B2A6986')
+    if (denom === 'ibc/B8AF5D92165F35AB31F3FC7C7B444B9D240760FA5D406C49D24862BD0284E395')
       api.addCGToken('terra-luna-2', amount/1e6)
     else
       api.add(denom, amount);
