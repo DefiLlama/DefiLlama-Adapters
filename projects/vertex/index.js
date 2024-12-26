@@ -48,7 +48,7 @@ module.exports = {
   sei: {
     tvl: sumTokensExport({
       owners: [seiConfig.clearinghouse, seiConfig.endpoint],
-      tokens: [ADDRESSES.sei.USDC, ADDRESSES.sei.USDT],
+      tokens: [ADDRESSES.sei.USDC, ADDRESSES.sei.WSEI],
     })
   }
 }
