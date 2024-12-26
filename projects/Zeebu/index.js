@@ -108,13 +108,14 @@ module.exports = {
   base: {
    staking :  stakings([VOTING_ESCROW_ADDRESSES["base"]],ZBU_ADDRESSES["base"]),
     tvl: () => ({}),
-    pool2: async (_, _1, _2, { api }) =>
+    pool2: pool2s(stackingcontract,lpTokens),
+    /*pool2: async (_, _1, _2, { api }) =>
       calculatePool2Tvl({
         api,
         pools: [...POOLS.base.balancer, ...POOLS.base.uniswap, ...POOLS.base.pancakeswap],
         tokens: [ZBU_ADDRESSES.base],
         owner: BALANCER_VAULT_ADDRESS,
-      }),
+      }),*/
     
   },
   bsc: {
