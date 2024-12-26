@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 
 const vaults = [
   '0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88',
@@ -18,33 +17,24 @@ const vaultAccountant = [
 ]
 
 async function vaultsTvl(api) {
+  const supplies = await api.multiCall({ calls: vaults, abi: 'uint256:totalSupply' })
+  const quotes = await api.multiCall({ calls: vaultAccountant, abi: 'uint256:getRate' })
+  const bases = await api.multiCall({ calls: vaultAccountant, abi: 'address:base' })
   for (let i = 0; i < vaults.length; i++) {
-    const bv = vaults[i]
-    const ba = vaultAccountant[i]
-    const bvSupply = await api.call({
-      target: bv,
-      abi: 'uint256:totalSupply',
-    });
-    let [base, quote] = await Promise.all([
-      api.call({
-        target: ba,
-        abi: "function base() external view returns (address)",
-      }),
-      api.call({
-        target: ba,
-        abi: "function getRate() external view returns (uint256 rate)",
-      }),
-    ]);
-    if(base.toLowerCase() === String(ADDRESSES.ethereum.WETH).toLowerCase()) {
+    const bvSupply = supplies[i]
+    let base = bases[i]
+    const quote = quotes[i]
+    if (base.toLowerCase() === ADDRESSES.ethereum.WETH.toLowerCase())
       base = ADDRESSES.ethereum.EETH
-    } 
-    const denominator = Math.pow(10, (String(quote).length-1))
-    api.add(base, bvSupply * quote / denominator ) 
+
+    const denominator = Math.pow(10, (String(quote).length - 1))
+    api.add(base, bvSupply * quote / denominator)
   }
 }
 
 module.exports = {
   doublecounted: true,
+  misrepresentedTokens: true,
   ethereum: {
     tvl: vaultsTvl,
   },
