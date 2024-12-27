@@ -65,8 +65,7 @@ const config = {
   scroll: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    graphUrl:
-      "https://graph.contango.xyz:18000/subgraphs/name/contango-xyz/v2-scroll",
+    graphUrl: alchemyGraphUrl('scroll'),
   },
 };
 
