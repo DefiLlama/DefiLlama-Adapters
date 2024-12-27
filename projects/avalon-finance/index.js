@@ -3,6 +3,8 @@ const { aaveExports } = require('../helper/aave')
 const methodologies = require('../helper/methodologies')
 const { mergeExports } = require('../helper/utils')
 
+
+
 //@note Main & Innovative Markets
 const mainMarket = {
 	merlin: aaveExports('', '0x6aB5d5E96aC59f66baB57450275cc16961219796', undefined, ['0x5F314b36412765f3E1016632fD1Ad528929536CA'], {v3: true}),
@@ -14,6 +16,8 @@ const mainMarket = {
 	mode: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
 	klaytn: aaveExports('', '', undefined, ['0xddD3D480521bc027596e078BCd1b838d50Daa076'], { v3: true }), // Kaia V3 Main
 	zeta: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }), // Zetachain V3 Main
+	corn: aaveExports('', '', undefined, ['0x56552f4407113894Bfce34b5b88C57b941AFc519'], { v3: true }), // Corn V3 Main
+	duckchain: aaveExports('', '', undefined, ['0x100AC26ad2c253B18375f1dC4BC0EeeB66DEBc88'], { v3: true }), // Duckchain V3 Main
 }
 
 const innovativeMarket = {
@@ -34,6 +38,8 @@ const pumpBTCMarkets = {
 	ethereum: aaveExports('', '0xE00A3FE97714765A1a2054E850724Fd1320FaCc0', undefined, ['0x2eE0438BCC1876cEA2c6fc43dD21417cF3D1c2eF'], { v3: true }),
 	bsc: aaveExports('', '0xb1C93Ba1286b6CCA1496C266f0eBfCe94b0C0cc0', undefined, ['0x58c937fa2D147117dB43d187f9411151edfFf03c'], { v3: true }),
 	zeta: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
+	arbitrum: aaveExports('', '', undefined, ['0x2c4aEB7C9f0D196a51136B3c7bec49cB2DBD1966'], { v3: true }),
+	corn: aaveExports('', '', undefined, ['0x867885c1dB3020E25A86Db7e20E35dC7b81d76A2'], { v3: true }),
 }
 
 const unibtcMarkets = {
@@ -41,6 +47,7 @@ const unibtcMarkets = {
 	btr: aaveExports('', '', undefined, ['0x898D0EF6E20B7597728AEB41169c22608Fe4b234'], { v3: true }),
 	bsc: aaveExports('', '', undefined, ['0xF828A73cB00072843241C6294ed778F26854fe5C'], { v3: true }),
 	mode: aaveExports('', '', undefined, ['0x8F016F5dac399F20B34E35CBaF1dFf12eeE2dE74'], { v3: true }),
+	iotex: aaveExports('', '', undefined, ['0x28292e1ca36e400FB7d0B66AaA99EB808E3Cb8cB'], { v3: true }),
 }
 
 const stbtcMarkets = {
@@ -53,6 +60,12 @@ const otherProtocolTokenMarkets = {
 	ethereum: aaveExports('', '0x3975BE5E668b189b8Ac9049B96A9D9561c4F5273', undefined, ['0x87Ed94868f6fbaA834Db81a1C5854c445caCaB67'], { v3: true }),
 	// BSC - WBTC
 	bsc: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }),
+	// Kaia - stKaia
+	klaytn: aaveExports('', '', undefined, ['0x276c5119f63119921667842dA3B71EE10Ac486eA'], { v3: true }),
+	// Sonic - beetSonic
+	sonic: aaveExports('', '', undefined, ['0x28350E38f241d7F24106CE5eaB1684D6ebEB4700'], { v3: true }),
+	// Duckchain - MBTC
+	duckchain: aaveExports('', '', undefined, ['0x912b425D867a09608A884C83b3D5075E9037Aa6a'], { v3: true }),
 }
 
 const obtcMarkets = {
@@ -69,13 +82,18 @@ const xaumMarkets = {
 
 const lbtcMarkets = {
 	bsc: aaveExports('', '', undefined, ['0x5b9b3C211B81627Cc6b46824CB26829F31A587dc'], { v3: true }),
+	corn: aaveExports('', '', undefined, ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], { v3: true }),
 }
 
 const listaMarkets = {
 	bsc: aaveExports('', '', undefined, ['0x5157f63bE7808DEB090Eee7762e917745896A09E'], { v3: true }), // BSC - ListaDAO
 }
 
+const uniIotxMarkets = {
+	iotex: aaveExports('', '', undefined, ['0x2c4aEB7C9f0D196a51136B3c7bec49cB2DBD1966'], { v3: true }),
+}
+
 module.exports = mergeExports(
-	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets,
+	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets, uniIotxMarkets
 )
 module.exports.methodology = methodologies.lendingMarket

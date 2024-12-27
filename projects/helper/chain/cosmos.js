@@ -46,6 +46,7 @@ const endPoints = {
   kopi: "https://rest.kopi.money",
   noble: "https://noble-api.polkachu.com",
   elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
+  pryzm: "https://api.pryzm.zone"
 };
 
 const chainSubpaths = {
