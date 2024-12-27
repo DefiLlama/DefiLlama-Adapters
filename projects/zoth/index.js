@@ -6,9 +6,7 @@ Object.keys(vaultManagers).forEach(chain => {
     module.exports[chain] = {
         tvl: async (api) => {
             const { details } = await api.call({ abi, target: vaultManagers[chain], })
-            details.map(({ collateralAddress, subVaultAddress }) => {
-                api.add(collateralAddress, subVaultAddress)
-            })
+            await api.sumTokens({ tokensAndOwners: details.map(({ collateralAddress, subVaultAddress }) => [collateralAddress, subVaultAddress]) })
         }
     }
 })
