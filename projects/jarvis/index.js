@@ -36,64 +36,34 @@ async function tvl(api) {
   const { synthpoolRegistry, version } = contracts[chain]
   const { fixedRateRegistry, fixedRateVersion } = contracts[chain]
   const { selfMintingRegistry, creditLineVersion } = contracts[chain]
-  const block = api.block
-  const balances = {}
 
   // Get liquidityPools by calling getElements(synth, collateral, version)
   // For v5, the collateral is stored in the liquidity pools directly
   // Get collaterals, usually single collat, USDC on polygon, BUSD on BSC, but might be multiple collats later on
 
-  const collaterals = await api.call({
-    abi: abi["SynthereumPoolRegistry_getCollaterals"],
-    target: synthpoolRegistry,
-  })
+  const collaterals = await api.call({ abi: abi["SynthereumPoolRegistry_getCollaterals"], target: synthpoolRegistry, })
   // Get synth token symbols - jEUR, jCHF etc
-  const syntheticTokens = await api.call({
-    abi: abi["SynthereumPoolRegistry_getSyntheticTokens"],
-    target: synthpoolRegistry,
-  })
+  const syntheticTokens = await api.call({ abi: abi["SynthereumPoolRegistry_getSyntheticTokens"], target: synthpoolRegistry, })
   if (chain === 'polygon' || chain === 'bsc') {
     // Get collateral for SynthereumFixedRate Wrappers
-    const fixedRateCollaterals = await api.call({
-      abi: abi["SynthereumFixedRateRegistry_getCollaterals"],
-      target: fixedRateRegistry,
-    })
+    const fixedRateCollaterals = await api.call({ abi: abi["SynthereumFixedRateRegistry_getCollaterals"], target: fixedRateRegistry, })
 
     // Get synthTokens for SynthereumFixedRate Wrappers - jEUR, jCHF etc.
-    const fixedRateSynthTokens = await api.call({
-      abi: abi["SynthereumFixedRateRegistry_getSyntheticTokens"],
-      target: fixedRateRegistry,
-    })
+    const fixedRateSynthTokens = await api.call({ abi: abi["SynthereumFixedRateRegistry_getSyntheticTokens"], target: fixedRateRegistry, })
 
     // Get fixedRateWrappers by calling SynthereumFixedRateRegistry_getElements
     const params_list_fixedRate = fixedRateCollaterals.map(fixedRateCollateral => fixedRateSynthTokens.map(fixedRateSynth => [fixedRateSynth, fixedRateCollateral, fixedRateVersion])).flat().map(i => ({ params: i }))
-    const elements_obj_fixedRate = await api.multiCall({
-      abi: abi["SynthereumFixedRateRegistry_getElements"],
-      target: fixedRateRegistry,
-      calls: params_list_fixedRate
-    })
+    const elements_obj_fixedRate = await api.multiCall({ abi: abi["SynthereumFixedRateRegistry_getElements"], target: fixedRateRegistry, calls: params_list_fixedRate })
     const fixedRateWrappers = elements_obj_fixedRate.flat(2)
     const fixedRateCalls = fixedRateWrappers
-    const fixedRateCollateralTokens = await api.multiCall({
-      abi: abi.collateralToken,
-      calls: fixedRateCalls,
-    })
-    const fixedRateTotalCollateralAmounts = await api.multiCall({
-      abi: abi.totalPegCollateral,
-      calls: fixedRateCalls,
-    })
-    fixedRateCollateralTokens.forEach((data, i) => {
-      sdk.util.sumSingleBalance(balances, chain + ':' + data, fixedRateTotalCollateralAmounts[i])
-    })
+    const fixedRateCollateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: fixedRateCalls, })
+    const fixedRateTotalCollateralAmounts = await api.multiCall({ abi: abi.totalPegCollateral, calls: fixedRateCalls, })
+    api.add(fixedRateCollateralTokens, fixedRateTotalCollateralAmounts)
   }
 
   // Get synthereumPools by calling SynthereumPoolRegistry_getElements
-  const params_list = collaterals.map(collateral => syntheticTokens.map(synth => [synth, collateral, version])).flat().map(i => ({ params: i }))
-  const elements_obj = await api.multiCall({
-    abi: abi["SynthereumPoolRegistry_getElements"],
-    target: synthpoolRegistry,
-    calls: params_list
-  })
+  const params_list = collaterals.map(collateral => syntheticTokens.map(synth => ({ params: [synth, collateral, version]}))).flat()
+  const elements_obj = await api.multiCall({ abi: abi["SynthereumPoolRegistry_getElements"], target: synthpoolRegistry, calls: params_list })
   const liquidityPools = elements_obj.flat(2)
 
   if (version === 6) {
@@ -103,66 +73,39 @@ async function tvl(api) {
       '0xBC988A0146178825C26c255989cfd5083Bae672C',
       '0x8FEceC5629EED60D18Fd3438aae4a8E69723D190',
     ].map(i => i.toLowerCase())
-    const calls = liquidityPools.filter(i => !blacklistedPools.includes(i.toLowerCase())).map(a => ({ target: a }))
-    const collateralTokens = await api.multiCall({
-      abi: abi.collateralToken,
-      calls
-    })
-    const totalCollateralAmounts = await api.multiCall({
-      abi: abi.totalCollateralAmount,
-      calls
-    })
+    const calls = liquidityPools.filter(i => !blacklistedPools.includes(i.toLowerCase()))
+    const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls })
+    const totalCollateralAmounts = await api.multiCall({ abi: abi.totalCollateralAmount, calls, permitFailure: true })
     collateralTokens.forEach((data, i) => {
-      sdk.util.sumSingleBalance(balances, chain + ':' + data, totalCollateralAmounts[i].totalCollateral)
+      const totalCollateralAmount = totalCollateralAmounts[i]
+      if (!totalCollateralAmount) return
+      api.add(data, totalCollateralAmount.totalCollateral)
     })
   } else if (version === 5) {
     // Get balances of every LiquidityPool and SynthToken Contracts
-    await sumTokens2({ api, balances, owners: liquidityPools, tokens: collaterals })
+    await sumTokens2({ api, owners: liquidityPools, tokens: collaterals })
   }
 
   if (chain === 'polygon' || chain === 'bsc' || chain === 'optimism' || chain === 'arbitrum') {
     // Get collateral token addresses from self minting registry
-    const { output: selfMintingCollaterals } = await sdk.api.abi.call({
-      abi: abi["SynthereumSelfMintingRegistry_getCollaterals"],
-      target: selfMintingRegistry,
-      block,
-      chain
-    })
+    const selfMintingCollaterals = await api.call({ abi: abi["SynthereumSelfMintingRegistry_getCollaterals"], target: selfMintingRegistry, })
     // Get synth token symbols - jEUR, jCHF etc
-    const { output: selfMintingSyntheticTokens } = await sdk.api.abi.call({
-      abi: abi["SynthereumSelfMintingRegistry_getSyntheticTokens"],
-      target: selfMintingRegistry,
-      block,
-      chain
-    })
+    const selfMintingSyntheticTokens = await api.call({ abi: abi["SynthereumSelfMintingRegistry_getSyntheticTokens"], target: selfMintingRegistry, })
     // Get creditLineDerivatives by calling SynthereumSelfMintingRegistry_getElements
-    const params_list_creditline = selfMintingCollaterals.map(selfMintingCollateral => selfMintingSyntheticTokens.map(selfMintingSynth => [selfMintingSynth, selfMintingCollateral, creditLineVersion])).flat()
-    const { output: elements_obj_creditline } = await sdk.api.abi.multiCall({
-      abi: abi["SynthereumSelfMintingRegistry_getElements"],
-      calls: params_list_creditline.map(params => ({
-        target: selfMintingRegistry,
-        params: params
-      })),
-      block,
-      chain
+    const params_list_creditline = selfMintingCollaterals.map(selfMintingCollateral => selfMintingSyntheticTokens.map(selfMintingSynth => ({ params: [selfMintingSynth, selfMintingCollateral, creditLineVersion]}))).flat()
+    const elements_obj_creditline = await api.multiCall({
+      abi: abi["SynthereumSelfMintingRegistry_getElements"], target: selfMintingRegistry, calls: params_list_creditline,
     })
 
-    const creditLineDerivatives = elements_obj_creditline.map(e => e.output).flat(2)
+    const creditLineDerivatives = elements_obj_creditline.flat(2)
 
-    const creditLineCalls = creditLineDerivatives.map(f => ({ target: f }))
-    const { output: creditLineCollateralTokens } = await sdk.api.abi.multiCall({
-      abi: abi.collateralToken,
-      chain, block, calls: creditLineCalls,
-    })
-    const { output: creditLineTotalCollateralAmounts } = await sdk.api.abi.multiCall({
-      abi: abi.getGlobalPositionData,
-      chain, block, calls: creditLineCalls,
-    })
+    const creditLineCalls = creditLineDerivatives
+    const creditLineCollateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: creditLineCalls, })
+    const creditLineTotalCollateralAmounts = await api.multiCall({ abi: abi.getGlobalPositionData, calls: creditLineCalls, })
     creditLineCollateralTokens.forEach((data, i) => {
-      sdk.util.sumSingleBalance(balances, chain + ':' + data.output, creditLineTotalCollateralAmounts[i].output.totCollateral)
+      api.add(data, creditLineTotalCollateralAmounts[i].totCollateral)
     })
   }
-  return balances
 }
 
 module.exports = {

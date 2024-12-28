@@ -6,6 +6,5 @@ module.exports = {
   era: compoundExports2({
     comptroller: zksyncComptroller,
     cether: zkEther,
-    fetchBalances: true,
   }),
 };

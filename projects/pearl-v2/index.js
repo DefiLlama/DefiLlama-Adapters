@@ -1,11 +1,8 @@
 const { uniV3Export } = require('../helper/uniswapV3')
-
-const ownTokens = [
-  '0xaec9e50e3397f9ddc635c6c429c8c7eca418a143',
-  '0x4644066f535ead0cde82d209df78d94572fcbf14',
-  '0x25ea98ac87a38142561ea70143fd44c4772a16b6',
-]
+const { staking } = require('../helper/staking')
 
 module.exports = uniV3Export({
-  'real': { factory: '0xeF0b0a33815146b599A8D4d3215B18447F2A8101', fromBlock: 33062, blacklistedTokens: ownTokens,}
+  'real': { factory: '0xeF0b0a33815146b599A8D4d3215B18447F2A8101', fromBlock: 33062, },
 })
+
+module.exports.real.staking = staking('0x7f8F92C2446E044af45DCf15476Bc931Fd1d0020', '0xB08F026f8a096E6d92eb5BcbE102c273A7a2d51C')

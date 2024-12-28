@@ -196,7 +196,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   ...generalizedChainExports(chainTvl, ['ethereum', "bsc", "arbitrum", "optimism", "polygon", "avax", "kava", "conflux"]),
-  start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
+  start: '2019-07-26', // Jul-27-2019 02:17:24 AM +UTC
   hallmarks: [
     [Math.floor(new Date('2023-12-19')/1e3), 'Unitus spin-off'],
   ],

@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
-const RWAToken = '0x4644066f535Ead0cde82D209dF78d94572fCbf14'
+const RWAToken = ADDRESSES.real.RWA
 const veRWA = '0xa7B4E29BdFf073641991b44B283FD77be9D7c0F4'
 
 module.exports = {

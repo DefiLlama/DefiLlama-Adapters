@@ -30,13 +30,13 @@ async function getPools(api) {
 async function tvl(...args) {
   const [api] = args
   const pools = await getPools(api)
-  const tvls = pools.map(i => compoundExports2({ comptroller: i, fetchBalances: true, }))
+  const tvls = pools.map(i => compoundExports2({ comptroller: i}))
   return sdk.util.sumChainTvls(tvls.map(i => i.tvl))(...args)
 }
 
 async function borrowed(...args) {
   const [api] = args
   const pools = await getPools(api)
-  const tvls = pools.map(i => compoundExports2({ comptroller: i, fetchBalances: true, }))
+  const tvls = pools.map(i => compoundExports2({ comptroller: i}))
   return sdk.util.sumChainTvls(tvls.map(i => i.borrowed))(...args)
 }

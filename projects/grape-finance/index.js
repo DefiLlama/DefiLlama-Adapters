@@ -1,4 +1,4 @@
-const { pool2Exports } = require("../helper/pool2");
+const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
 const grape = "0x5541D83EFaD1f281571B343977648B75d95cdAC2";
@@ -15,7 +15,7 @@ const LPTokens = [
 module.exports = {
     avax:{
         tvl: async () => ({}),
-        pool2: pool2Exports(rewardpool, LPTokens, "avax"),
+        pool2: pool2(rewardpool, LPTokens, "avax"),
         staking: staking(boardroom, wine)
     }
 }

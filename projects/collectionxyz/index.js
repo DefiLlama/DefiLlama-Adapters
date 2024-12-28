@@ -35,7 +35,6 @@ async function getTotalValueLocked(api) {
 }
 
 module.exports = {
-  start: 16945809,
   ethereum: {
     tvl: getTotalValueLocked,
   },

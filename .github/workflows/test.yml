@@ -56,4 +56,6 @@ jobs:
           done
         
       - name: Run ESLint
-        uses: eslint/github-action@v0
+        run: |
+          npm ci
+          npm run lint

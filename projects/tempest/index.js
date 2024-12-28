@@ -10,3 +10,7 @@ module.exports = {
         cether: '0x6283829589A6A02981B425fd2e86D22F012191aC',
     })
 }; 
+
+module.exports.deadFrom='2023-09-08',
+module.exports.optimism.borrowed = () => ({}) // bad debt
+module.exports.base.borrowed = () => ({}) // bad debt

@@ -6,8 +6,11 @@ const TOREUS = "0x8549724fcC84ee9ee6c7A676F1Ba2Cc2f43AAF5B";
 
 module.exports = {
   methodology,
+  deadFrom: '2023-07-18',
   kava: {
     ...aaveExports("kava", "0xcCe311383b0f4A41c82D8d03a1f4214A3c8E70Bd"),
     staking: staking(stakingContract, TOREUS),
   },
 };
+
+module.exports.kava.borrowed = () => ({}) // bad debt

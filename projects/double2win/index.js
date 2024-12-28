@@ -1,12 +1,7 @@
-const config = require("./config")
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens2 } = require("../helper/unwrapLPs")
 
-const subgraphs = {
-  "arbitrum": "https://api.studio.thegraph.com/query/16975/double-arbitrum/version/latest",
-}
-
-async function getTokens(chain) {
+async function getTokens(chain, subgraph) {
   const graphQuery = `
     {
       assetTokens(where: {amount_gt: "0"}) {
@@ -23,45 +18,38 @@ async function getTokens(chain) {
     }
   `
 
-  const { assetTokens, migrations, liquidities } = await cachedGraphQuery(`double2win/${chain}`, subgraphs[chain], graphQuery)
+  const { assetTokens, migrations, liquidities } = await cachedGraphQuery(`double2win/${chain}`, subgraph, graphQuery)
+  const tokens = []
 
-  return { assets: assetTokens.map(i => i.tokenAddress), v2Tokens: migrations.concat(liquidities).filter(i => i.ammType === 'UniswapV2').map(i => i.pair) }
+  migrations.forEach(migration => { tokens.push(migration.pair.toLowerCase()) })
+  liquidities.forEach(liquidity => { tokens.push(liquidity.pair.toLowerCase()) })
+  assetTokens.forEach(assetToken => { tokens.push(assetToken.tokenAddress.toLowerCase()) })
+
+  return tokens
+}
+
+async function arbitrumTvl(api) {
+  const chain = api.chain
+  const subgraph = "https://api.studio.thegraph.com/query/16975/double-arbitrum/version/latest"
+  const addresses = {
+    uniswapV2Vault: '0xBf212dEE0aea6531dEb0B02be6E70b527dDF8246',
+    uniswapV2Migration: '0x1c6E7CE03ae7a9A252BcE0C9F871654dBB0C7ca5',
+    uniswapV3Vault: '0x07116C5ED5cBb49464f64926Ba152B8985fe3AFf',
+    uniswapV3Migration: '0x99F980fa0b1939A0A1033092EF2a668df8D8b70D',
+    assetVault: '0x7C09A9c30736F17043Fe6D0C0A3D03a7Cf6e78FD',
+  }
+  
+  const tokens = await getTokens(chain, subgraph)
+
+  const blacklistedTokens = ['0x13654df31871b5d01e5fba8e6c21a5d0344820f5']
+  await sumTokens2({ api, owners: [addresses.uniswapV3Vault, addresses.uniswapV3Migration,], resolveUniV3: true, blacklistedTokens, })
+  await sumTokens2({ api, owners: [addresses.uniswapV2Migration, addresses.assetVault, addresses.uniswapV2Vault], tokens, resolveLP: true, blacklistedTokens, })
+  
 }
 
 module.exports = {
   doublecounted: true,
+  arbitrum: {
+    tvl: arbitrumTvl,
+  },
 }
-
-Object.keys(config).forEach((chain) => {
-  const configs = Object.values(config[chain])
-
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const v2Vaults = []
-      const v3Vaults = []
-      const assetVaults = []
-      configs.forEach((config) => {
-        switch (config.type) {
-          case 'v2-vault':
-            v2Vaults.push(config.doubleContract)
-            break
-          case 'v3-vault':
-            v3Vaults.push(config.doubleContract)
-            break
-          case 'asset-vault':
-            assetVaults.push(config.doubleContract)
-            break
-        }
-      })
-      const { assets, v2Tokens } = await getTokens(chain)
-      await sumTokens2({ resolveUniV3: true, api, owners: v3Vaults })
-      await sumTokens2({
-        owners: assetVaults, tokens: assets, api, blacklistedTokens: [
-          '0x13654df31871b5d01e5fba8e6c21a5d0344820f5'
-        ]
-      })
-      return sumTokens2({ owners: v2Vaults, tokens: v2Tokens, resolveLP: true, api })
-    }
-  }
-
-})

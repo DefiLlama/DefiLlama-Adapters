@@ -29,7 +29,7 @@ module.exports = {
   timetravel: false,
   // misrepresentedTokens: true,
   methodology: `Counts the liquidity on all AMM pools`,
-  start: 1679788800, // "2023-03-26" UTC
+  start: '2023-03-26', // "2023-03-26" UTC
   persistence: {
     tvl
   }

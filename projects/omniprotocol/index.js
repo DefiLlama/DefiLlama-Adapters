@@ -14,4 +14,7 @@ module.exports = {
   hallmarks: [
     [Math.floor(new Date('2022-07-10')/1e3), 'reentrancy hack'],
   ],
+  deadFrom: '2022-07-10',
 };
+
+module.exports.ethereum.borrowed = () => ({}) // bad debt

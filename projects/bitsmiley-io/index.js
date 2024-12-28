@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 
 async function tvl(api) {
   
   return sumTokens2({ owners: [
     '0x37fc73b4dda9f7263926590838e32e05e4e051e9',
-  ], tokens: ['0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f', '0xfe9f969faf8ad72a83b761138bf25de87eff9dd2'], api, }) //wbtc and usdt
+  ], tokens: [ADDRESSES.btr.WBTC, '0xfe9f969faf8ad72a83b761138bf25de87eff9dd2'], api, }) //wbtc and usdt
 }
 
 module.exports = {

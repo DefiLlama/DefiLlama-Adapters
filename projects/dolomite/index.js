@@ -34,7 +34,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  start: 1664856000,  // 10/4/2022 @ 00:00am (UTC)
+  start: '2022-10-04',  // 10/4/2022 @ 00:00am (UTC)
 };
 
 const config = {

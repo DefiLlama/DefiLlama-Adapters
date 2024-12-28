@@ -23,7 +23,6 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
-  start: 154577707,
   arbitrum: {
     tvl,
   },

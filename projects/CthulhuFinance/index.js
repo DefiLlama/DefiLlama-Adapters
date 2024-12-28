@@ -15,6 +15,7 @@ module.exports = {
   hallmarks: [
     [1679788800, "Rug Pull"]
   ],
+  deadFrom: 1679788800,
   optimism: {
     tvl: vaultTvl([
       "0xF6a6C4573099E6F6b9D8E1186a2C089B4d0fDf91",

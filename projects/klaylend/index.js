@@ -12,4 +12,5 @@ module.exports = masterchefExports({
 })
 module.exports.hallmarks = [
     [1662336000, "Rug Pull"]
-]
+],
+module.exports.deadFrom = 1662336000

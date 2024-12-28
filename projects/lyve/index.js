@@ -15,7 +15,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral on the Lyve platform",
-  start: 1699459200, 
+  start: '2023-11-08', 
 };
 
 Object.keys(ADMIN_ADDRESSES).forEach(chain => {

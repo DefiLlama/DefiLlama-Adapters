@@ -36,6 +36,8 @@ const config = {
       "0x5ec2ae0afdec891e7702344dc2a31c636b3627eb",
       "0x70c1138b54ba212776d3a9d29b6160c54c31cd5d",
       "0x04eb6b56ff53f457c8e857ca8d4fbc8d9a531c0c",
+      "0x541b5eeac7d4434c8f87e2d32019d67611179606",
+      "0x5d1735b8e33bae069708cea245066de1a12cd38d"
     ],
   },
   optimism: {
@@ -54,6 +56,11 @@ const config = {
       { factory: "0xcb02435716b0143d4ac1bdf370302d619e714126", fromBlock: 67661738 },  // v5
     ],
   },
+  base: {
+    factories: [
+      { factory: "0x59968008a703dC13E6beaECed644bdCe4ee45d13", fromBlock: 22350352 },  // v3
+    ],
+  }
 };
 
 module.exports = {};
@@ -118,10 +125,16 @@ Object.keys(config).forEach((chain) => {
       });
 
       data.forEach((v, i) => {
-        let value = supply[i] * 10 ** (v.decimals - decimals[i]);
+        let value = supply[i] * 10 ** (v.decimals - 
+          (sy[i].toLowerCase() == '0x7b5a43070bd97c2814f0d8b3b31ed53450375c19' // case for vbnb
+           ? 18 : decimals[i]));
         let index = tokenAssetTypeSy.indexOf(sy[i]);
         if (index !== -1) {
-          value = (value * exchangeRates[index]) / 10 ** 18;
+          value = (value * exchangeRates[index]) / 10 ** ([
+            '0x141ec2d606f12ff959d7d07cde6811e5fdff2831',
+            '0xec30e55b51d9518cfcf5e870bcf89c73f5708f72', 
+            '0xd5cf704dc17403343965b4f9cd4d7b5e9b20cc52'
+          ].includes(sy[i].toLowerCase()) ? v.decimals : 18);
         }
         api.add(v.uAsset.toLowerCase(), value);
       });

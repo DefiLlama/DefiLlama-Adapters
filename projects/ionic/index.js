@@ -12,4 +12,8 @@ module.exports = mergeExports([{
     bob: compoundExports2({ comptroller: '0x9cFEe81970AA10CC593B83fB96eAA9880a6DF715' })
   }, {
     fraxtal: compoundExports2({ comptroller: '0xB5141403e811fFFE02f4d49Ea8d4a7B0b9590658' })
+  }, {
+    optimism: compoundExports2({ comptroller: '0xaFB4A254D125B0395610fdc8f1D022936c7b166B' })
+  }, {
+    lisk: compoundExports2({ comptroller: '0xF448A36feFb223B8E46e36FF12091baBa97bdF60' })
 }])
