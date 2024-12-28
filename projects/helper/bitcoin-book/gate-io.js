@@ -5,4 +5,5 @@ module.exports = [
   '1G47mSr3oANXMafVrR8UC4pzV7FEAzo3r9',
   '1HpED69tpKSaEaWpY3Udt1DtcVcuCUoh2Y',
   '3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M',
+  '1ECeVF6wfbiihCRrrpRnkbwrWsZfYmixMG'
 ]

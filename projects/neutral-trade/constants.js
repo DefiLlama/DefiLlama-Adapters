@@ -59,6 +59,12 @@ const VAULTS = [
     dataUrl: `${DATA_URL}/jlpdnv2.json`
   },
   {
+    name: "USDC Staking (JLP Delta Neutral) v3",
+    address: "7ngzeBygEksaBvKzHEeihqoLpDpWqTNRMVh2wCyb6NP8",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/jlpdnv3.json`
+  },
+  {
     name: "USDC Basis (Sanctum-INF)",
     address: "CxL8eQmGhN9LKSoHj7bU95JekFPtyZoUc57mbehb5A56",
     token: TOKENS.USDC,
@@ -118,6 +124,12 @@ const VAULTS = [
     address: "HTLvAjqc6Wkzh4i4QNLHhQHZAnrtVvkGyYeyCiUWLe9b",
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/vip07.json`
+  },
+  {
+    name: "vip08",
+    address: "CYUyHzu6Z3JyBhfkQpZZwWqa2zpcmzaK1xXS96n8ea1U",
+    token: TOKENS.SOL,
+    dataUrl: `${DATA_URL}/vip08.json`
   }
 ];
 
