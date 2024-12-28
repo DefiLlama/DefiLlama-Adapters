@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 const { staking} = require('../helper/staking')
 
@@ -9,13 +10,13 @@ const config = {
     ],
     tokens: {
       eth: nullAddress,
-      usdc: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-      usdt: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-      DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
-      frax: '0x853d955acef822db058eb8505911ed77f175b99e',
-      fxs: '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0',
-      maker: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
-      aave: '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
+      usdc: ADDRESSES.ethereum.USDC,
+      usdt: ADDRESSES.ethereum.USDT,
+      DAI: ADDRESSES.ethereum.DAI,
+      frax: ADDRESSES.ethereum.FRAX,
+      fxs: ADDRESSES.ethereum.FXS,
+      maker: ADDRESSES.ethereum.MKR,
+      aave: ADDRESSES.ethereum.AAVE,
     }
   },
   avax: {
@@ -33,7 +34,7 @@ const config = {
     ],
     tokens: {
       bsc: nullAddress,
-      busd: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+      busd: ADDRESSES.bsc.BUSD,
     }
   },
   okexchain: {
@@ -61,7 +62,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: (_, _b, {[chain]: block}) => {
       const { bridges: owners, tokens } = config[chain]
-      return sumTokens2({ tokens: Object.values(tokens), owners, chain, block, })
+      return sumTokens2({ tokens: Object.values(tokens), owners, chain, block })
     }
   }
 })

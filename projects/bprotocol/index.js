@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
@@ -22,17 +23,17 @@
   const bKeeperAddress = "0xeaE019ef845A4Ffdb8829210De5D30aC6FbB5371";
   const stabilityPoolAddress = "0x66017D22b0f8556afDd19FC67041899Eb65a21bb";
 
-  const usdcEth = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-  const usdcFantom = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
-  const usdcArbitrum = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+  const usdcEth = ADDRESSES.ethereum.USDC
+  const usdcFantom = ADDRESSES.fantom.USDC
+  const usdcArbitrum = ADDRESSES.arbitrum.USDC
   
-  const daiEth = "0x6b175474e89094c44da98b954eedeac495271d0f"
-  const daiFantom = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
+  const daiEth = ADDRESSES.ethereum.DAI
+  const daiFantom = ADDRESSES.fantom.DAI
   
-  const usdtEth = "0xdac17f958d2ee523a2206206994597c13d831ec7"
-  const usdtArbitrum = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+  const usdtEth = ADDRESSES.ethereum.USDT
+  const usdtArbitrum = ADDRESSES.arbitrum.USDT
 
-  const fraxEth = "0x853d955aCEf822Db058eb8505911ED77F175b99e"
+  const fraxEth = ADDRESSES.ethereum.FRAX
   
   const usdcFantomBAMM = "0xEDC7905a491fF335685e2F2F1552541705138A3D"
   const daiFantomBAMM = "0x6d62d6Af9b82CDfA3A7d16601DDbCF8970634d22"
@@ -58,7 +59,7 @@
   ==================================================*/
 
   async function compoundTvl(timestamp, block) {
-    if (block < cFirstBlock) return { '0x0000000000000000000000000000000000000000': '0' };
+    if (block < cFirstBlock) return { [ADDRESSES.null]: '0' };
 
     // number of accounts
     const { output: avatarLength } = await sdk.api.abi.call(
@@ -101,7 +102,7 @@
         // get the underlying token address
         const isCEth = cTokenAddress.toLowerCase() === "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5"
         const { output: token } = isCEth
-          ? { output: '0x0000000000000000000000000000000000000000' } // ETH has no underlying asset on Compound
+          ? { output: ADDRESSES.null } // ETH has no underlying asset on Compound
           : await sdk.api.abi.call(
             {
               block,
@@ -141,7 +142,7 @@
   }
 
   async function makerTvl(timestamp, block) {
-    if (block < mFirstBlock) return { '0x0000000000000000000000000000000000000000': '0' };
+    if (block < mFirstBlock) return { [ADDRESSES.null]: '0' };
 
     const cdpiRes = await sdk.api.abi.call(
       {
@@ -166,13 +167,13 @@
 
     let totalBalance = new BigNumber(0);
     ethBalances.forEach(balance => totalBalance = totalBalance.plus(new BigNumber(balance)));
-    const balances = { '0x0000000000000000000000000000000000000000': totalBalance.toString(10) };
+    const balances = { [ADDRESSES.null]: totalBalance.toString(10) };
 
     return balances
   }
 
   async function liquityTvl(timestamp, block) {
-    if (block < lFirstBlock) return { '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0': '0' };
+    if (block < lFirstBlock) return { [ADDRESSES.ethereum.LUSD]: '0' };
 
     let totalBalance = new BigNumber(0);
 
@@ -201,7 +202,7 @@
     }
 
     // all balance is lusd
-    return {'0x5f98805A4E8be255a32880FDeC7F6728C6568bA0' : totalBalance.toString(10)}
+    return {[ADDRESSES.ethereum.LUSD]: totalBalance.toString(10)}
   }
 
   async function tvlEth(timestamp, block) {

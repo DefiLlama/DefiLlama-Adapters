@@ -1,34 +1,5 @@
 {
-  "balanceOf": {
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
-    ],
-    "name": "balanceOf",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "symbol": {
-    "type": "function",
-    "stateMutability": "view",
-    "payable": false,
-    "outputs": [{ "type": "string", "name": "" }],
-    "name": "symbol",
-    "inputs": [],
-    "constant": true
-  },
-  "name":  {
-    "type": "function",
-    "stateMutability": "view",
-    "payable": false,
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ],
-    "name": "name",
-    "inputs": [],
-    "constant": true
-  }
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "symbol": "string:symbol",
+  "name": "string:name"
 }

@@ -1,12 +1,16 @@
-const utils = require("../helper/utils");
+const sdk = require('@defillama/sdk')
+const { getUniTVL } = require('../helper/unknownTokens.js')
 
-// There are staking and pool2 parts, but the Social Swap Token (SST) is not on coingecko yet. It'll be updated !!
-
-async function fetch(timestamp, chainBlocks) {
-  const tvl = await utils.fetchURL("https://backend.socialswap.io/api/v1/tlv");
-  return tvl.data.total_usdt;
-}
+const TRON_FACTORY_V1 = 'TN57jo2jGQz3v5YDybyLFHFtvkmRQvCNFz'
+const TRON_FACTORY_V2 = 'TSzrq5j2Btn27eVcBAvZj9WQK3FhURamDQ'
 
 module.exports = {
-  fetch,
-};
+  timetravel: false,
+  misrepresentedTokens: true,
+  tron: {
+    tvl: sdk.util.sumChainTvls([
+      getUniTVL({ factory: TRON_FACTORY_V1, useDefaultCoreAssets: true, }),
+      getUniTVL({ factory: TRON_FACTORY_V2, useDefaultCoreAssets: true, }),
+    ])
+  }
+}

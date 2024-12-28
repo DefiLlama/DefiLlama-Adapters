@@ -1,86 +1,81 @@
-const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
-const { get } = require("../helper/http")
-const { default: BigNumber } = require('bignumber.js')
-
-const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4"
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-
-async function addEthBalances(addresses, block, balances) {
-    await Promise.all(addresses.map(async (target) => {
-        const ethBalance = (
-            await sdk.api.eth.getBalance({
-                target,
-                block,
-            })
-        ).output;
-
-        sdk.util.sumSingleBalance(
-            balances,
-            WETH,
-            ethBalance
-        )
-    }))
-}
-const data = {"ondo_lps":["0x9241943c29eb0B1Fc0f8E5B464fbc14915Da9A57","0x5d62134DBD7D56faE9Bc0b7DF3788f5f8DADE62d"],"ondo_all_pair_vaults":{"contracts":["0xeF970A111dd6c281C40Eee6c40b43f24435833c2","0x2bb8de958134afd7543d4063cafad0b7c6de08bc"],"ignored_vault_ids":["25353739650153436290862732054545997422315472318522956085559001114575751243902"]},"ondo_multisigs":["0xBD9495E42ec4a2F5DF1370A6DA42Ec9a4656E963","0xb230B535D2cf009Bdc9D7579782DE160b795d5E8","0x7EBa8a9cAcb4bFbf7e1258b402A8e7aA004ED9FD","0x5A16e6dD9aB0bEa9a247f92c5aa0b349f2A4E4c6"],"supported_tokens":["0x4Eb8b4C65D8430647586cf44af4Bf23dEd2Bb794","0x36784d3B5aa8A807698475b3437a13fA20B7E9e1","0x853d955aCEf822Db058eb8505911ED77F175b99e","0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0","0x956F47F50A910163D8BF957Cf5846D573E7f87CA","0x0f2D719407FdBeFF09D87557AbB7232601FD9F29","0x3Ec8798B81485A254928B70CDA1cf0A2BB0B74D7","0x67B6D479c7bB412C54e03dCA8E1Bc6740ce6b99C","0x0cEC1A9154Ff802e7934Fc916Ed7Ca50bDE6844e","0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828","0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B","0xff20817765cb7f73d4bde2e66e067e58d11095c2","0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2","0x470ebf5f030ed85fc1ed4c2d36b9dd02e77cf1b7","0x758b4684be769e92eefea93f60dda0181ea303ec","0xc770eefad204b5180df6a14ee197d99d808ee52d","0xc7283b66eb1eb5fb86327f08e1b5816b0720212b","0xa693B19d2931d498c5B318dF961919BB4aee87a5","0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4"]};
-
-async function tvl(timestamp, block, chainBlocks) {
-    const balances = {};
-    const partner_tokens = data["supported_tokens"]
-    let ondo_multisigs = data["ondo_multisigs"]
-    
-    if (block > 15258765)
-      ondo_multisigs = []
-
-    const ondo_lps = data["ondo_lps"]
-
-    await addEthBalances(ondo_multisigs, block, balances)
-
-    const tokens = [
-        ...partner_tokens.map(i => [i, false]),
-        ...ondo_lps.map(i => [i, true]),
-    ];
-
-    await sumTokensAndLPsSharedOwners(
-        balances,
-        tokens,
-        ondo_multisigs,
-        block,
-    );
-
-    if (balances[NEAR_TOKEN]) {
-        balances.near = BigNumber(balances[NEAR_TOKEN]).dividedBy(10 ** 24).toFixed(0)
-        delete balances[NEAR_TOKEN]
-    }
-
-    return balances;
-}
-
-async function tvlForAllPairs(timestamp, block, chainBlocks) {
-    const ondoAllPairVaults = data["ondo_all_pair_vaults"]["contracts"];
-    const ignoredVaultIds = data["ondo_all_pair_vaults"]["ignored_vault_ids"];
-    let { output: vaults } = await sdk.api.abi.multiCall({
-      calls: ondoAllPairVaults.map(i => ({ target: i, params: [0, 9999] })),
-      block,
-      abi: abi.getVaults,
-    })
-    vaults = vaults.map(i => i.output).flat()
-    const balances = {}
-    for (const vault of vaults) {
-        if (!ignoredVaultIds.includes(vault.id) && timestamp > Number(vault.startAt) && timestamp < Number(vault.redeemAt)) {
-            vault.assets.forEach(asset => {
-                sdk.util.sumSingleBalance(balances, asset.token, asset.deposited)
-            })
-        }
-    }
-    return balances
-}
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getTokenSupplies } = require("../helper/solana");
+const sui = require("../helper/chain/sui");
+const { aQuery } = require("../helper/chain/aptos");
+const { get } = require("../helper/http");
 
 module.exports = {
-    methodology: "Counts all tokens in deployed vaults as well as Ondo's LaaS multi-sigs",
-    ethereum: {
-        tvl: sdk.util.sumChainTvls([tvlForAllPairs, tvl])
-    },
+  methodology: "Sums the total supplies of Ondo's issued tokens.",
+};
+
+const config = {
+  solana: {
+    OUSG: "i7u4r16TcsJTgq1kAG8opmVZyVnAKBwLKu6ZPMwzxNc",
+    USDY: "A1KLoBrKBde8Ty9qtNQUtq3C2ortoC3u7twggz7sEto6",
+  },
+  ethereum: {
+    OUSG: "0x1B19C19393e2d034D8Ff31ff34c81252FcBbee92",
+    USDY: "0x96F6eF951840721AdBF46Ac996b59E0235CB985C",
+    USDYc: "0xe86845788d6e3e5c2393ade1a051ae617d974c09",
+  },
+  polygon: {
+    OUSG: "0xbA11C5effA33c4D6F8f593CFA394241CfE925811",
+  },
+  mantle: {
+    USDY: "0x5bE26527e817998A7206475496fDE1E68957c5A6",
+  },
+  sui: {
+    USDY: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY",
+  },
+  aptos: {
+    USDY: "0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc",
+  },
+  noble: {
+    USDY: ADDRESSES.noble.USDY,
+  },
+  arbitrum: {
+    USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
+  },
+};
+
+async function getUSDYTotalSupplySUI() {
+  const USDY_TREASURY_CAP_OBJECT_ID =
+    "0x9dca9f57a78fa7f132f95a0cf5c4d1b796836145ead7337da6b94012db62267a";
+  let treasuryCapInfo = await sui.getObject(USDY_TREASURY_CAP_OBJECT_ID);
+  return treasuryCapInfo.fields.total_supply.fields.value;
 }
 
+Object.keys(config).forEach((chain) => {
+  let fundsMap = config[chain];
+  const fundAddresses = Object.values(fundsMap);
+
+  module.exports[chain] = {
+    tvl: async (api) => {
+      let supplies;
+      if (chain === "solana") {
+        supplies = await getTokenSupplies(fundAddresses)
+        api.addTokens(Object.keys(supplies), Object.values(supplies));
+      } else if (chain === "sui") {
+        let usdySupply = await getUSDYTotalSupplySUI();
+        api.addTokens(fundAddresses, [usdySupply]);
+      } else if (chain === "aptos") {
+        const {
+          data: { supply, decimals },
+        } = await aQuery(
+          `/v1/accounts/${config.aptos.USDY}/resource/0x1::coin::CoinInfo<${config.aptos.USDY}::usdy::USDY>`
+        );
+
+        const aptosSupply =
+          supply.vec[0].integer.vec[0].value / Math.pow(10, decimals);
+
+        api.addTokens(config.ethereum.USDY, aptosSupply * 1e18, { skipChain: true, });
+      } else if (chain === "noble") {
+        const res = await get(`https://rest.cosmos.directory/noble/cosmos/bank/v1beta1/supply/by_denom?denom=ausdy`);
+        api.addTokens(config.ethereum.USDY, parseInt(res.amount.amount), { skipChain: true, });
+      } else {
+        supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
+        api.addTokens(fundAddresses, supplies);
+      }
+    },
+  };
+});

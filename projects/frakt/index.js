@@ -1,7 +1,7 @@
-const { getProvider, getSolBalances, } = require('../helper/solana')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
-const { sliceIntoChunks, } = require('../helper/utils')
-const { get, } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 let data
 
@@ -13,17 +13,17 @@ async function getData() {
   async function getAllData() {
     const programId = 'A66HabVL3DzNzeJgcHYtRRNW1ZRMKwBfrdSR4kLsZ9DJ'
     const provider = getProvider()
-    const idl = await get('https://raw.githubusercontent.com/frakt-solana/frakt-sdk/master/src/loans/idl/nft_lending_v2.json')
+    const idl = await getConfig('frakt-idl', 'https://raw.githubusercontent.com/frakt-solana/frakt-sdk/master/src/loans/idl/nft_lending_v2.json')
     const program = new Program(idl, programId, provider)
     const pbPools = await program.account.priceBasedLiquidityPool.all()
     const liquidityPools = await program.account.liquidityPool.all()
     const solOwners = [...liquidityPools.map(i => i.account.liqOwner), ...pbPools.map(i => i.account.liqOwner)].map(i => i.toString())
-    const poolsTVL = await getSolBalances(solOwners)
+    const poolsTVL = (await sumTokens2({ solOwners }))['solana:' + ADDRESSES.solana.SOL] ?? 0
     const loans = await program.account.loan.all()
 
-    const loanSum = loans.filter(i => i.account.loanStatus.activated).reduce((a, i) => a + +i.account.originalPrice, 0) / 1e9
-    const lpStaked = liquidityPools.reduce((a, i) => a + +i.account.amountOfStaked, 0) / 1e9
-    const pbLPStaked = pbPools.reduce((a, i) => a + +i.account.amountOfStaked, 0) / 1e9
+    const loanSum = loans.filter(i => i.account.loanStatus.activated).reduce((a, i) => a + +i.account.originalPrice, 0)
+    const lpStaked = liquidityPools.reduce((a, i) => a + +i.account.amountOfStaked, 0)
+    const pbLPStaked = pbPools.reduce((a, i) => a + +i.account.amountOfStaked, 0)
 
     const tvl = loanSum + poolsTVL
     const borrowed = lpStaked + pbLPStaked - poolsTVL
@@ -32,11 +32,11 @@ async function getData() {
 }
 
 const tvl = async () => {
-  return { solana: (await getData()).tvl }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).tvl }
 };
 
 const borrowed = async () => {
-  return { solana: (await getData()).borrowed }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).borrowed }
 }
 
 module.exports = {

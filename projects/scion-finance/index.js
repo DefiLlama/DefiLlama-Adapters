@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("../helper/getBlock");
 const ADDRESSES = require("./addresses");
 const scionVaultAbi = require("./abis/scionVaultAbi");
 
 async function getVaultBalance(timestamp, chainBlocks, chain) {
-  const block = await getBlock(timestamp, chain, chainBlocks);
+  const block = chainBlocks[chain];
   const balances = {};
 
   const vaults = ADDRESSES[chain];
@@ -19,7 +18,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
       block,
     });
 
-    await sdk.util.sumSingleBalance(balances, UNDERLYING, totalHoldings.output);
+    sdk.util.sumSingleBalance(balances, UNDERLYING, totalHoldings.output);
   }
 
   return balances;
@@ -34,9 +33,7 @@ async function fantom(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: "Measures the total value deposited in Scion vault contracts",
+      methodology: "Measures the total value deposited in Scion vault contracts",
   moonriver: {
     tvl: moonriver,
   },

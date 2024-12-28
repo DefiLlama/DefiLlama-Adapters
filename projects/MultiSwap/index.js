@@ -2,99 +2,33 @@
 const sdk = require('@defillama/sdk')
 const { createIncrementArray } = require('../helper/utils')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const token0ABI = require('../helper/abis/token0.json')
-const token1ABI = require('../helper/abis/token1.json')
+const token0ABI = 'address:token0'
+const token1ABI = 'address:token1'
 
 const abis = {
-  "poolsCount": {
-    "inputs": [],
-    "name": "poolsCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "poolsAddresses": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "poolsAddresses",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token0:
-  {
-    "inputs": [],
-    "name": "protocolFees",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "token0",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "token1",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token1:
-  {
-    "inputs": [],
-    "name": "token1",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  poolsCount: "uint256:poolsCount",
+  poolsAddresses: "function poolsAddresses(uint256) view returns (address)",
 }
 
 const config = {
   kava: {
-    nativeCoinGeckoId: 'kava',
     positionManager: '0x1Bf12f0650d8065fFCE3Cd9111feDEC21deF6825',
-    customToken: '0xc13791DA84f43525189456CfE2026C60D3B7F706'.toLowerCase(),
   },
   aurora: {
-    nativeCoinGeckoId: 'aurora',
     positionManager: '0x649Da64F6d4F2079156e13b38E95ffBF8EBB1B14',
-    customToken: '0x274d83086C356E0cFc75933FBf838CA10A7E8274'.toLowerCase(),
   },
   polygon: {
-    nativeCoinGeckoId: 'polygon',
     positionManager: '0xc130807A61D5fE62F2cE3A38B14c61D658CE73F3',
-    customToken: '0x6CAcfaF65b1B1f9979aCF463a393A112D0980982'.toLowerCase(),
+  },
+  bsc: {
+    positionManager: '0x4eDeDaDFc96E44570b627bbB5c169d91304cF417',
   },
 }
 
 module.exports = {}
 
 Object.keys(config).forEach(chain => {
-  const { nativeCoinGeckoId, positionManager, customToken } = config[chain]
+  const { positionManager } = config[chain]
   module.exports[chain] = {
     tvl: async function tvl(_, _b, { [chain]: block }) {
 
@@ -125,11 +59,7 @@ Object.keys(config).forEach(chain => {
       const toa = []
       token0s.forEach(({ input: { target }, output }) => toa.push([output, target]))
       token1s.forEach(({ input: { target }, output }) => toa.push([output, target]))
-      const balances = await sumTokens2({ chain, block, tokensAndOwners: toa })
-      const customKey = chain + ':' + customToken
-      sdk.util.sumSingleBalance(balances, nativeCoinGeckoId, (balances[customKey] || 0) / 1e18)
-      delete balances[customKey]
-      return balances
+      return sumTokens2({ chain, block, tokensAndOwners: toa })
     }
   }
 })

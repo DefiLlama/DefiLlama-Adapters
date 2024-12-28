@@ -1,42 +1,17 @@
-const sdk = require('@defillama/sdk');
-const { getCompoundV2Tvl } = require('../helper/compound');
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking');
-const joeBar = "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33";
-const joeToken = "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd";
-const comptroller = "0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC";
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const graphUrls = {
-  avax: 'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange',
-};
+const joeBar = ADDRESSES.avax.xJOE;
+const joeToken = ADDRESSES.avax.JOE;
+const { getUniTVL } = require('../helper/unknownTokens');
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
   misrepresentedTokens: true,
   methodology: 'We count liquidity on the pairs and we get that information from the "traderjoe-xyz/exchange" subgraph. The staking portion of TVL includes the JoeTokens within the JoeBar contract.',
   avax:{
-    tvl: sdk.util.sumChainTvls([
-      getChainTvl(
-        graphUrls, 
-        "factories", 
-        "liquidityUSD"
-      )('avax'),
-      getCompoundV2Tvl(
-        comptroller, 
-        "avax", 
-        addr => `avax:${addr}`, 
-        "0xC22F01ddc8010Ee05574028528614634684EC29e", 
-        "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
-        )
-    ]),
-    borrowed: getCompoundV2Tvl(
-      comptroller, 
-      "avax", 
-      addr => `avax:${addr}`, 
-      "0xC22F01ddc8010Ee05574028528614634684EC29e", 
-      "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
-      true
-      ),
-    staking: staking(joeBar, joeToken, "avax"),
+    tvl: getUniTVL({ factory: '0x9ad6c38be94206ca50bb0d90783181662f0cfa10', useDefaultCoreAssets: true, }),
+    staking: staking(joeBar, joeToken),
+  },
+  bsc: {
+    tvl: getUniTVL({ factory: '0x4f8bdc85e3eec5b9de67097c3f59b6db025d9986', useDefaultCoreAssets: true, })
   }
 };

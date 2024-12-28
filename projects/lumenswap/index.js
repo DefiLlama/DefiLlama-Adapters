@@ -27,5 +27,5 @@ function tvl(time) {
 module.exports = {
   methodology:
     'TVL counts the liquidity of the Pools on AMM, data is pulled from the Lumenswap API:"https://api.lumenswap.io/amm/known-pools".',
-  tvl,
+  stellar: {tvl},
 };

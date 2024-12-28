@@ -1,69 +1,7 @@
 {
-  "userInfo": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "userInfo",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rewardDebt",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "wMEMOToMEMO": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "wMEMOToMEMO",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "xBTRFLYValue": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "xBTRFLYValue",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)",
+  "wMEMOToMEMO": "function wMEMOToMEMO(uint256 _amount) view returns (uint256)",
+  "xBTRFLYValue": "function xBTRFLYValue(uint256 _amount) view returns (uint256)",
+  "assetInfo": "function assetInfo() view returns (uint8 assetType, address assetAddress, uint8 assetDecimals)",
+  "exchangeRate": "uint256:exchangeRate"
 }

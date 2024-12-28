@@ -1,6 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
   const sdk = require('@defillama/sdk');
-
-  const BigNumber = require("bignumber.js");
 
   const contracts = [
     '0x5199071825CC1d6cd019B0D7D42B08106f6CF16D',
@@ -9,10 +8,10 @@
   ];
 
   const tokens = [
-    '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359',
-    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+    ADDRESSES.ethereum.SAI,
+    ADDRESSES.ethereum.WETH,
+    ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.DAI
   ];
 
   async function tvl (timestamp, block) {
@@ -41,7 +40,7 @@
   }
 
   module.exports = {
-    start: 1538179200,  // 09/29/2018 @ 12:00am (UTC)
+    start: '2018-09-29',  // 09/29/2018 @ 12:00am (UTC)
     ethereum: { tvl },
    hallmarks:[
     [1611630974, "Series B $10M"],

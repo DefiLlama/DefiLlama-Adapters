@@ -1,42 +1,15 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
-const { staking, stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
-const { sumTokens } = require("../helper/unwrapLPs");
+const { staking, } = require("../helper/staking");
+const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
-
-const FEI3CRVs = [
-  "0x70F55767B11c047C8397285E852919F5f6c8DC60",
-  "0xE4BD0461AE7fdc76c61CE286a80c9B55d83B204a",
-];
-
-const contractAddresses = [
-  //FRAX3CRV
-  "0x49ee75278820f409ecd67063D8D717B38d66bd71",
-  //CURVE_AMO
-  "0x72170Cdc48C33a6AE6B3E83CD387ca3Fb9105da2",
-  //FRAX_AMO_MINTER
-  "0xcf37B62109b537fa0Cb9A90Af4CA72f6fb85E241",
-  //LENDING_AMO
-  "0x9507189f5B6D820cd93d970d67893006968825ef",
-  //MANUAL_AMO
-  "0x1Be588641Fb28Eb8C2A51f1129707FB1E2683f5a",
-  //USDC_POOL_V1
-  "0x3C2982CA260e870eee70c423818010DfeF212659",
-  //USDC_POOL_V2
-  "0x1864Ca3d47AaB98Ee78D11fc9DCC5E7bADdA1c0d",
-  //USDC_POOL_V3
-  "0x2fE065e6FFEf9ac95ab39E5042744d695F560729",
-  //INVESTOR_COLLATERAL_POOL
-  "0xEE5825d5185a1D512706f9068E69146A54B6e076",
-  //INVESTOR_AMO_V2
-  "0xB8315Af919729c823B2d996B1A6DDE381E7444f1",
-];
+const USDC = ADDRESSES.ethereum.USDC;
+const FXS = ADDRESSES.ethereum.FXS;
+const FRAX_3CRV = '0xd632f22692fac7611d2aa1c0d552930d43caed3b'
+const T_3CRV = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
 
 const veFXS_StakingContract = "0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0";
+const INVESTOR_AMO = '0xb1748c79709f4ba2dd82834b8c82d4a505003f27'
 
 const POOL_STAKING_CONTRACTS = [
   "0xD875628B942f8970De3CcEaf6417005F68540d4f",
@@ -55,117 +28,143 @@ const LP_ADDRESSES = [
   "0xecBa967D84fCF0405F6b32Bc45F4d36BfDBB2E81",
 ];
 
-const treasuryContracts = [
-  "0x63278bF9AcdFC9fA65CFa2940b89A34ADfbCb4A1",
-  "0x8D4392F55bC76A046E443eb3bab99887F4366BB0",
-  "0xa95f86fE0409030136D6b82491822B3D70F890b3",
-  "0x9AA7Db8E488eE3ffCC9CdFD4f2EaECC8ABeDCB48",
-  "0x874a873e4891fB760EdFDae0D26cA2c00922C404",
-];
+async function get3CRVRatio(api) {
+  const [
+    frax3crvSupply,
+    bal_3crv,
+  ] = await Promise.all([
+    api.call({ abi: 'erc20:totalSupply', target: FRAX_3CRV, }),
+    api.call({ abi: 'erc20:balanceOf', target: T_3CRV, params: FRAX_3CRV, }),
+  ])
+  return bal_3crv / frax3crvSupply
+}
 
-const ethereumTvl = async (timestamp, block) => {
+async function addFrax3CRV(api, balances) {
+  const vault = '0x49ee75278820f409ecd67063D8D717B38d66bd71'
+  const [
+    frax3crvBal,
+    ratio3CRV,
+  ] = await Promise.all([
+    api.call({ abi: 'uint256:FRAX3CRVInVault', target: vault }),
+    get3CRVRatio(api),
+  ])
+  sdk.util.sumSingleBalance(balances, T_3CRV, ratio3CRV * frax3crvBal, api.chain)
+}
+
+async function addyFrax3CRV(api, balances) {
+  const vault = '0x72170Cdc48C33a6AE6B3E83CD387ca3Fb9105da2'
+  const yFRAX3CRV = '0xB4AdA607B9d6b2c9Ee07A275e9616B84AC560139'
+  const [
+    yfrax3crvBal,
+    pricePerShare,
+    ratio3CRV,
+  ] = await Promise.all([
+    api.call({ abi: 'uint256:yvCurveFRAXBalance', target: vault }),
+    api.call({ abi: 'uint256:pricePerShare', target: yFRAX3CRV }),
+    get3CRVRatio(api),
+  ])
+  sdk.util.sumSingleBalance(balances, T_3CRV, yfrax3crvBal * ratio3CRV * (pricePerShare / 1e18), api.chain)
+  return sumTokens2({ balances, api, owner: vault, tokens: [USDC] })
+}
+
+
+async function addCvxFRAX_BP(api, balances) {
+  const convexFRAXBP = '0x7e880867363A7e321f5d260Cade2B0Bb2F717B02'
+  const crvFRAX = '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'
+  const crvFRAXPool = '0xdcef968d416a41cdac0ed8702fac8128a64241a2'
+  const [
+    cvxFraxBal,
+    usdcBal,
+    poolSupply,
+  ] = await Promise.all([
+    
+    api.call({ abi: 'erc20:balanceOf', target: convexFRAXBP, params: INVESTOR_AMO }),
+    api.call({ abi: 'erc20:balanceOf', target: USDC, params: crvFRAXPool }),
+    api.call({ abi: 'erc20:totalSupply', target: crvFRAX }),
+  ])
+  sdk.util.sumSingleBalance(balances, USDC, usdcBal * cvxFraxBal / poolSupply, api.chain)
+}
+
+async function addCvxFXSFRAX_BP(api, balances) {
+  const userAccount = '0x2AA609715488B09EFA93883759e8B089FBa11296'
+  const vault = '0x963f487796d54d2f27ba6f3fbe91154ca103b199'
+  const crvFRAX = '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'
+  const crvFRAXPool = '0xdcef968d416a41cdac0ed8702fac8128a64241a2'
+  const [
+    cvxFraxBal,
+    usdcBal,
+    poolSupply,
+  ] = await Promise.all([
+    api.call({ abi: 'function lockedLiquidityOf(address) view returns (uint256)', target: vault, params: userAccount }),
+    api.call({ abi: 'erc20:balanceOf', target: USDC, params: crvFRAXPool }),
+    api.call({ abi: 'erc20:totalSupply', target: crvFRAX }),
+  ])
+  sdk.util.sumSingleBalance(balances, USDC, usdcBal * cvxFraxBal / poolSupply, api.chain)
+}
+
+
+async function addUSDCPools(api, balances) {
+  return sumTokens2({
+    balances, api, owners: [
+      '0x3C2982CA260e870eee70c423818010DfeF212659',
+      '0x1864Ca3d47AaB98Ee78D11fc9DCC5E7bADdA1c0d',
+      '0x2fE065e6FFEf9ac95ab39E5042744d695F560729',
+    ], tokens: [USDC]
+  })
+}
+
+async function addInvestorAMO(api, balances) {
+  return sumTokens2({
+    balances,
+    api, owner: INVESTOR_AMO,
+    tokens: Object.values({
+      Synapse: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
+      'Wrapped BTC': ADDRESSES.ethereum.WBTC,
+      'USD Coin': ADDRESSES.ethereum.USDC,
+      'PAX': '0x8e870d67f660d95d5be530380d0ec0bd388289e1',
+      ZigZag: '0xc91a71a1ffa3d8b22ba615ba1b9c01b2bbbf55ad',
+      'Governance OHM': '0x0ab87046fbb341d058f17cbc4c1133f25a20a52f',
+      'Aave interest bearing USDC': '0xbcca60bb61934080951369a648fb03df4f96263c',
+      Perpetual: '0xbc396689893d065f41bc2c6ecbee5e0085233447',
+      Hop: '0xc5102fe9359fd9a28f877a67e36b0f050d81a3cc',
+      'Ethereum Name Service': '0xc18360217d8f7ab5e7c516566761ea12ce7f9d72',
+      'Curve.fi DAI/USDC/USDT': '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490',
+      'Saddle DAO': '0xf1dc500fde233a4055e25e5bbf516372bc4f6871',
+      Ether: nullAddress,
+      TrueUSD: ADDRESSES.ethereum.TUSD,
+      'Gelato Network Token': '0x15b7c0c907e4c6b9adaaaabc300c08991d6cea05',
+      'Staked Aave': '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
+      'Convex Token': ADDRESSES.ethereum.CVX,
+      'Curve DAO Token': ADDRESSES.ethereum.CRV,
+      'Bend Token': '0x0d02755a5700414b26ff040e1de35d337df56218',
+      'Binance USD': ADDRESSES.ethereum.BUSD,
+      'Alchemix USD': '0xbc6da0fe9ad5f3b0d58160288917aa56653660e9',
+      'Staked CvxCrv': '0xaa0c3f5f7dfd688c6e646f66cd2a6b66acdbe434',
+    }),
+  })
+}
+
+const ethereumTvl = async (api) => {
   let balances = {};
 
-  // --- CurveMetapoolLockerAMOs USDC TVL ---
-  const usdValueInVault = (
-    await sdk.api.abi.multiCall({
-      calls: FEI3CRVs.map((addr) => ({ target: addr })),
-      abi: abi.usdValueInVault,
-      block,
-    })
-  ).output.map((value) => value.output);
-
-  usdValueInVault.forEach((value) => {
-    sdk.util.sumSingleBalance(
-      balances,
-      USDC,
-      BigNumber(value)
-        .dividedBy(10 ** 12)
-        .toFixed(0)
-    );
-  });
-
-  // --- USDC POOLs + AMOs + FRAX3CRV and FEI3CRVs ---
-  const usdcTvls = (
-    await sdk.api.abi.multiCall({
-      calls: contractAddresses.map((addr) => ({ target: addr })),
-      abi: abi.collatDollarBalance,
-      block,
-    })
-  ).output.map((response) => response.output);
-
-  usdcTvls.forEach((usdcTvl) => {
-    sdk.util.sumSingleBalance(
-      balances,
-      USDC,
-      BigNumber(usdcTvl)
-        .dividedBy(10 ** 12)
-        .toFixed(0)
-    );
-  });
-
-  return balances;
+  await Promise.all([
+    addFrax3CRV(api, balances),
+    addyFrax3CRV(api, balances),
+    addUSDCPools(api, balances),
+    addInvestorAMO(api, balances),
+    addCvxFXSFRAX_BP(api, balances),
+  ])
+  return balances
 };
-
-
-// Fantom
-const contractAddressesFantom = [
-  //Spirit/Ola Lending AMO Fantom
-  "0x8dbc48743a05A6e615D9C39aEBf8C2b157aa31eA",
-  //Scream Lending AMO Fantom
-  "0x51E6D09d5A1EcF8BE035BBCa82F77BfeC3c7672A",
-  //SpiritSwap Liquidity AMO Fantom
-  "0x48F0856e0E2D06fBCed5FDA10DD69092a500646B",
-];
-
-const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-  const chain = "fantom"
-  const block = chainBlocks[chain]
-  // --- AMO's ---
-  const usdcTvls = (
-    await sdk.api.abi.multiCall({
-      calls: contractAddressesFantom.map((addr) => ({ target: addr })),
-      abi: abi.borrowed_frax,
-      block,
-      chain,
-    })
-  ).output.map((response) => response.output);
-
-  usdcTvls.forEach((usdcTvl) => {
-    sdk.util.sumSingleBalance(
-      balances,
-      USDC,
-      BigNumber(usdcTvl)
-        .dividedBy(10 ** 12) // // Convert to 6 decimal USDC values
-        .toFixed(0)
-    );
-  });
-
-  // --- Liquidity staking ---
-
-  // Curve FRAX2Pool
-  await sumTokens(balances, [
-    ["0x8866414733f22295b7563f9c5299715d2d76caf4", "0x7a656b342e14f745e2b164890e88017e27ae7320"],
-    ["0x04068da6c83afcfa0e13ba15a6696662335d5b75", "0xbea9f78090bdb9e662d8cb301a00ad09a5b756e9"]
-  ], block, chain, addr => addr === "0x8866414733f22295b7563f9c5299715d2d76caf4" ? "0x6b175474e89094c44da98b954eedeac495271d0f" : `${chain}:${addr}`)
-
-  return balances;
-}
 
 module.exports = {
   doublecounted: true,
-  misrepresentedTokens: true,
   ethereum: {
-    treasury: stakings(treasuryContracts, FXS),
     staking: staking(veFXS_StakingContract, FXS),
-    pool2: pool2s(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
+    pool2: staking(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
     tvl: ethereumTvl,
   },
-  fantom: {
-    tvl: fantomTvl
-  },
-  hallmarks:[
+  hallmarks: [
     [1651881600, "UST depeg"],
   ],
   methodology:

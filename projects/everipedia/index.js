@@ -6,8 +6,8 @@ const IQ = "0x579cea1889991f68acc35ff5c3dd0621ff29b0c9";
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
+    tvl: (async) => ({}),
     staking: staking(stakingContracthiIQ, IQ), 
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking only",
 };

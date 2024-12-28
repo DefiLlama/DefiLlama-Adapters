@@ -1,16 +1,9 @@
-const sdk = require('@defillama/sdk')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const contract = "0xce93F9827813761665CE348e33768Cb1875a9704"
 
-async function tvl(time, ethBlock, chainBlocks) {
-  const bnb = await sdk.api.eth.getBalance({
-    target: contract,
-    chain: 'bsc',
-    block: chainBlocks.bsc
-  })
-  return {
-    "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": bnb.output
-  }
+async function tvl(time, ethBlock, { bsc: block }) {
+  return sumTokens2({ tokens: [nullAddress], owner: contract, block, chain: 'bsc', })
 }
 
 module.exports = {

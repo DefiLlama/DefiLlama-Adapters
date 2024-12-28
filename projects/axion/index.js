@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
@@ -17,7 +18,7 @@ async function staking(timestamp, block, chainBlocks) {
   };
 }
 
-const BTC = "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6";
+const BTC = ADDRESSES.polygon.WBTC;
 const VC = "0x660B71C03C15B24EFa800F2454540CD9011E40cB";
 async function tvl(timestamp, block, chainBlocks) {
   const stats = await sdk.api.abi.call({

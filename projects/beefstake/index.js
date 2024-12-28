@@ -1,8 +1,7 @@
-const retry = require('async-retry')
 const utils = require('../helper/utils');
 
 async function getData() {
-  const res = await retry(async bail => await utils.fetchURL('https://vite-api.thomiz.dev/tvl/beefstake'))
+  const res = await utils.fetchURL('https://vite-api.thomiz.dev/tvl/beefstake')
   return res.data;
 }
 
@@ -12,6 +11,7 @@ async function fetch() {
 }
 
 module.exports = {
+  deadFrom: "2024-06-01",
   timetravel: false,
   misrepresentedTokens: true,
   vite:{

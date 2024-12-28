@@ -7,3 +7,6 @@ module.exports = {
   misrepresentedTokens: true,
   ...getExports("dexpad", chainKeys),
 }
+
+module.exports = indexExports
+module.exports.misrepresentedTokens = true

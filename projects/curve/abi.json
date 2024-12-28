@@ -1,227 +1,24 @@
 {
-    "get_registry": {
-        "name": "get_registry",
-        "outputs": [
-            {
-                "type": "address",
-                "name": ""
-            }
-        ],
-        "inputs": [],
-        "stateMutability": "view",
-        "type": "function",
-        "gas": 1061
-    },
-    "pool_list": {
-        "stateMutability": "view",
-        "type": "function",
-        "name": "pool_list",
-        "inputs": [
-            {
-                "name": "arg0",
-                "type": "uint256"
-            }
-        ],
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "gas": 2217
-    },
-    "pool_count": {
-        "stateMutability": "view",
-        "type": "function",
-        "name": "pool_count",
-        "inputs": [],
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "gas": 2138
-    },
-    "get_n_coins": {
-        "stableswap": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_n_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256[2]"
-                }
-            ],
-            "gas": 1521
-        },
-        "stableFactory": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_n_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "gas": 2699
-        },
-        "crypto": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_n_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "gas": 2834
-        },
-        "cryptoFactory": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_n_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "gas": 2834
-        }
-    },
-    "get_coins": {
-        "stableswap": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address[8]"
-                }
-            ],
-            "gas": 12102
-        },
-        "stableFactory": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address[4]"
-                }
-            ],
-            "gas": 9164
-        },
-        "crypto": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address[8]"
-                }
-            ],
-            "gas": 22975
-        },
-        "cryptoFactory": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "get_coins",
-            "inputs": [
-                {
-                    "name": "_pool",
-                    "type": "address"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "address[2]"
-                }
-            ]
-        }
-    },
-    "get_id_info": {
-        "name": "get_id_info",
-        "outputs": [
-            {
-                "type": "address",
-                "name": "addr"
-            },
-            {
-                "type": "bool",
-                "name": "is_active"
-            },
-            {
-                "type": "uint256",
-                "name": "version"
-            },
-            {
-                "type": "uint256",
-                "name": "last_modified"
-            },
-            {
-                "type": "string",
-                "name": "description"
-            }
-        ],
-        "inputs": [
-            {
-                "type": "uint256",
-                "name": "arg0"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "gas": 12168
-    }
+  "get_registry": "address:get_registry",
+  "pool_list": "function pool_list(uint256 arg0) view returns (address)",
+  "pool_count": "uint256:pool_count",
+  "get_id_info": "function get_id_info(uint256 arg0) view returns (address addr, bool is_active, uint256 version, uint256 last_modified, string description)",
+  "get_n_coins": {
+    "stableswap": "function get_n_coins(address _pool) view returns (uint256[2])",
+    "stableFactory": "function get_n_coins(address _pool) view returns (uint256)",
+    "crypto": "function get_n_coins(address _pool) view returns (uint256)",
+    "cryptoFactory": "function get_n_coins(address _pool) view returns (uint256)",
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])",
+    "CurveStableswapFactoryNG": "function get_n_coins(address _pool) view returns (uint256)"
+  },
+  "get_coins": {
+    "stableswap": "function get_coins(address _pool) view returns (address[8])",
+    "stableFactory": "function get_coins(address _pool) view returns (address[4])",
+    "crypto": "function get_coins(address _pool) view returns (address[8])",
+    "cryptoFactory": "function get_coins(address _pool) view returns (address[2])",
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])",
+    "CurveStableswapFactoryNG": "function get_coins(address _pool) view returns (address[])",
+    "CurveTwocryptoFactoryNG": "function get_coins(address _pool) view returns (address[2])",
+    "CurveTricryptoFactoryNG": "function get_coins(address _pool) view returns (address[3])"
+  }
 }

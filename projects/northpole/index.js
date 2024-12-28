@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json')
 
@@ -15,7 +16,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   })).output.map(t => t.output);
 
   return {
-    "0xdac17f958d2ee523a2206206994597c13d831ec7": Number(tvl) / 10 ** 12
+    [ADDRESSES.ethereum.USDT]: Number(tvl) / 10 ** 12
   }
 }
 

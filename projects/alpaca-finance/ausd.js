@@ -1,99 +1,58 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 async function getProcolAUSDAddresses(chain) {
   if (chain == "bsc") {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/ausd-bsc',
         "https://raw.githubusercontent.com/alpaca-finance/alpaca-stablecoin/main/.mainnet.json"
       )
-    ).data;
+    );
   }
 }
 
 async function getProcolLYFAddresses(chain) {
   if (chain == "bsc") {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/lyf-bsc',
         "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.mainnet.json"
       )
-    ).data;
+    );
   }
   if (chain == "fantom") {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/lyf-fantom',
         "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.fantom_mainnet.json"
       )
-    ).data;
+    );
   }
 }
 
-async function calAusdTvl(chain, block) {
-  /// @dev Initialized variables
-  const balances = {};
+async function calAusdTvl(api) {
+  const chain = api.chain;
 
   const ausdAddresses = await getProcolAUSDAddresses(chain);
   const lyfAddresses = await getProcolLYFAddresses(chain);
-
-  const pids = await sdk.api.abi.multiCall({
-    block,
-    abi: abi.pid,
-    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
-      return {
-        target: each.address,
-      };
-    }),
-    chain,
-  });
-  const failaunchUserInfos = await sdk.api.abi.multiCall({
-    block,
+  const ibTokens = ausdAddresses["IbTokenAdapters"].map((i) => i.address)
+  const pids = await api.multiCall({ abi: abi.pid, calls: ibTokens });
+  const failaunchUserInfos = await api.multiCall({
     abi: abi.userInfo,
-    calls: pids.output.map((each) => {
+    target: lyfAddresses["FairLaunch"].address,
+    calls: pids.map((each, i) => {
       return {
-        target: lyfAddresses["FairLaunch"].address,
-        params: [each.output, each.input.target],
+        params: [each, ibTokens[i]],
       };
     }),
-    chain,
   });
-  const totalTokens = await sdk.api.abi.multiCall({
-    block,
-    abi: abi.totalToken,
-    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
-      return {
-        target: each.collateralToken,
-      };
-    }),
-    chain,
-  });
-  const totalSupplys = await sdk.api.abi.multiCall({
-    block,
-    abi: abi.totalSupply,
-    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
-      return {
-        target: each.collateralToken,
-      };
-    }),
-    chain,
-  });
-  const vaultTokens = await sdk.api.abi.multiCall({
-    block,
-    abi: abi.token,
-    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
-      return {
-        target: each.collateralToken,
-      };
-    }),
-    chain,
-  });
-  
-  failaunchUserInfos.output.forEach((eachUserInfo, i) => {
-    const balance = new BigNumber(eachUserInfo.output.amount).multipliedBy(totalTokens.output[i].output).dividedBy(totalSupplys.output[i].output)
-    balances[`${chain}:${vaultTokens.output[i].output}`] = balance.toFixed(0);
+  const collateralTokens = ausdAddresses.IbTokenAdapters.map((each) => each.collateralToken);
+  const totalTokens = await api.multiCall({ abi: abi.totalToken, calls: collateralTokens });
+  const totalSupplys = await api.multiCall({ abi: abi.totalSupply, calls: collateralTokens, });
+  const vaultTokens = await api.multiCall({ abi: abi.token, calls: collateralTokens, });
+
+  failaunchUserInfos.forEach((eachUserInfo, i) => {
+    api.add(vaultTokens[i], eachUserInfo.amount * totalTokens[i] / totalSupplys[i]);
   })
-  return balances;
+  return api.getBalances()
 }
 
 module.exports = {

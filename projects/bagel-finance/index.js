@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
@@ -5,13 +6,13 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const bankAddress = "0x18C32E273D0F13D5b8268B3Bc5acD30f26A8F91a";
 const tokens = [
-  "0x55d398326f99059ff775485246999027b3197955",
-  "0xe9e7cea3dedca5984780bafc599bd69add087d56",
-  "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
-  "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+  ADDRESSES.bsc.USDT,
+  ADDRESSES.bsc.BUSD,
+  ADDRESSES.bsc.BTCB,
+  ADDRESSES.bsc.ETH,
   "0x9c65ab58d8d978db963e63f2bfb7121627e3a739",
   "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
-  "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+  ADDRESSES.bsc.USDC,
   "0xbb238fce6e2ee90781cd160c9c6eaf3a4cfad801",
 ];
 
@@ -135,7 +136,7 @@ const lps = [
 ];
 async function bnbTvl(bankAddress, block) {
   let balances = {
-    "0x0000000000000000000000000000000000000000": (
+    [ADDRESSES.null]: (
       await sdk.api.eth.getBalance({ target: bankAddress, block, chain: "bsc" })
     ).output,
   };
@@ -186,8 +187,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   /// @dev bnb
   const bnbBalance = await bnbTvl(bankAddress, block);
-  balances[getBSCAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")] =
-    BigNumber(bnbBalance["0x0000000000000000000000000000000000000000"]);
+  balances[getBSCAddress(ADDRESSES.bsc.WBNB)] =
+    BigNumber(bnbBalance[ADDRESSES.null]);
 
   const lpTotalSupplys = (
     await sdk.api.abi.multiCall({
@@ -220,6 +221,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  start: 1602054167,
-  tvl,
+  start: '2020-10-07',
+  bsc: { tvl },
 };

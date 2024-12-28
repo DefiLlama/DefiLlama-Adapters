@@ -1,184 +1,56 @@
-const sdk = require("@defillama/sdk");
-const { BigNumber } = require("bignumber.js");
-const utils = require('./helper/utils');
+const { getLogs } = require('./helper/cache/getLogs')
+const { sumTokens2 } = require('./helper/unwrapLPs')
+const { isArtBlocks } = require('./helper/nft')
 
-
-// Retrieve needed vaults attributes from REST API
-const fractional_api_url = 'https://mainnet-api.fractional.art/vaults?perPage=12' // &page=1' 
-async function retrieveVaultsAPI() {
-  // Get page count
-  const page1 = await utils.fetchURL(fractional_api_url + '&page=1')
-  let pageCount = page1.data.metadata.pagination.total_pages;
-  //pageCount = 1 // uncomment for for debug
-
-  const vaults = []
-  let openedVaultsCount = 0
-  for (let i = 0; i < pageCount; i++) {
-    let vaults_i = await utils.fetchURL(fractional_api_url + `&page=${i+1}`)
-    // Filter out unwanted attributes: keep analytics.tvlUsd, pools, contractAddress, symbol, slug, collectables
-    vaults_i = vaults_i.data.data.map(({ analytics, pools, contractAddress, symbol, slug, collectables, isClosed, tokenAddress }) => ({analytics, pools, contractAddress, symbol, slug, collectables, isClosed, tokenAddress}))
-
-    // Note : Could filter out closed vaults, but their tokens can still be provided to pools, so not filtering
-    openedVaultsCount += vaults_i.filter(vault => !vault.isClosed).length
-
-    // Append to complete vaults array
-    vaults.push(...vaults_i)
-  }
-  return {vaults, openedVaultsCount}
-}
-
-// This API returns a list of vaults similar to the following exampleVaultDebug
-function exampleVaultDebug() {
-  return {
-    "symbol":	"DOG",
-    "contractAddress":	"0xbaac2b4491727d78d2b78815144570b9f2fe8899",
-    "pools":	[ {
-      "pool":	"0x7731CA4d00800b6a681D031F565DeB355c5b77dA",
-      "token0":	"0xBAac2B4491727D78D2b78815144570b9f2Fe8899",
-      "token1":	"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "provider":	"UNISWAP_V3"
-    }],
-    "tokenAddress":	"0xabEFBc9fD2F806065b4f3C237d4b59D9A97Bcac7",
-    "analytics": {
-      "tvlUsd": 21790624
-    },
-    "slug":	"the-doge-nft",
-    "isClosed":	false,
-  }
-}
-
-// Get Fractional.art TVL
-async function tvl(timestamp, block, chainBlocks, chain) {
-  // Get vaults and Compute vaults TVL (trusting fractional rest api)
-  const {vaults, openedVaultsCount} = await retrieveVaultsAPI()
-  const vaulstTVL_api = getVaultsTvlApi(vaults)
-  // note: vault with slug fractional-dream-930 has null analytics and symbol, because it is an ERC1155 not listed on any DEXes
-  
-  // Or try to find all pools associated to vault and account for tokens locked against vault token
-  // In pool: provider, pool, token0, token1
-  const univ2_sushiv1_pools = []
-  const univ3_pools = []
-  vaults.forEach(vault => {
-    vault.pools.forEach(pool => {
-      // Swap token0 and token1 if needed so token0 is always vault token
-      if (vault.contractAddress.toLowerCase() === pool.token1.toLowerCase()) {
-        const tmp = pool.token1
-        pool.token1 = pool.token0
-        pool.token0 = tmp
-      }
-      // Pool provider can be any of ['UNISWAP_V3', 'SUSHISWAP_V1', 'UNISWAP_V2']
-      const provider = pool.provider
-      if ((provider === 'UNISWAP_V2') || (provider === 'SUSHISWAP_V1')) {
-        univ2_sushiv1_pools.push(pool)
-      } else if (provider === 'UNISWAP_V3') {
-        univ3_pools.push(pool)
-      }
-    })
+async function tvl(api) {
+  const factory = '0x85aa7f78bdb2de8f3e0c0010d99ad5853ffcfc63'
+  const logs = await getLogs({
+    api,
+    target: factory,
+    topics: ['0xf9c32fbc56ff04f32a233ebc26e388564223745e28abd8d0781dd906537f563e'],
+    eventAbi: 'event Mint (address indexed token, uint256 id, uint256 price, address vault, uint256 vaultId)',
+    onlyArgs: true,
+    fromBlock: 12743932,
   })
-  // Concat v2 and v3 pools
-  const v2_v3_pools = univ3_pools.concat(univ2_sushiv1_pools)
-
-  // Retrieve balances from onchain calls
-  let balances = {}
-
-  // Get UNISWAP_V3 LPs
-  // Simply get amount of token0 and token1 allocated to pool contract. And since we only need the token1 it is even more efficient
-  const calls_v3_v2_t0_t1 = v2_v3_pools.map((pool) => ({ 
-      target: pool.token1,
-      params: pool.pool
-    }))
-  /*
-  const calls_v3_t1 = univ3_pools.map((pool) => ({ // 33.67 // 20.69
-      target: pool.token1,
-      params: pool.pool
-    }))
-  const calls_v3_t0_t1 = univ3_pools.map((pool) => ({ // 69.12 // 20.69 univ2_sushiv1_pools
-    target: pool.token1,
-    params: pool.pool
-  })).concat(univ3_pools.map((pool) => ({
-      target: pool.token0,
-      params: pool.pool
-    })))
-  */
-  
-  const poolBalance = await sdk.api.abi.multiCall({ 
-    block,
-    calls: calls_v3_v2_t0_t1, // calls_v3_t0_t1
-    abi: 'erc20:balanceOf'
+  const artBlockOwners = []
+  const tokensAndOwners = logs.map(log => [log.token, log.vault]).filter(([token, vault]) => {
+    if (isArtBlocks(token)) {
+      artBlockOwners.push(vault)
+      return false
+    }
+    return true
   })
-  balances = {}
-  sdk.util.sumMultiBalanceOf(balances, poolBalance)
 
-  // Remove vaults tokens balances as they should not account for TVL. 
-  // TODO: Choose if we remove the vaults tokens from pooled balances or not
+  await sumTokens2({ api, owners: artBlockOwners, resolveArtBlocks: true, })
 
-  return balances
+  return sumTokens2({
+    api, tokensAndOwners, blacklistedTokens: [
+      '0x9ef27de616154ff8b38893c59522b69c7ba8a81c',
+      '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85',
+    ]
+  })
 }
-
-// Using fractional REST API, a TVL is returned in USD, stored as USDC
-function getVaultsTvlApi(vaults) {
-  return vaults.reduce((acc, vault) => acc.plus(BigNumber(vault.analytics ? vault.analytics.tvlUsd : 0)), BigNumber(0))
-}
-
-const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
-async function tvl_api(timestamp, block, chainBlocks, chain) {
-  const {vaults, openedVaultsCount} = await retrieveVaultsAPI()
-  return {[usdc]: getVaultsTvlApi(vaults).times(1e6)} 
+async function tvlLPDA(api) {
+  const factory = '0x32e8ab1e243d8d912a5ae937635e07e7e451d2ae'
+  const logs = await getLogs({
+    api,
+    target: factory,
+    topics: ['0x4a08e09eb1f4b221a4d4faff944c52d3bb85486dd0f7e647977d35b406e16e43'],
+    eventAbi: 'event CreatedLPDA(address indexed vault, address indexed token, uint256 _id, tuple(uint32 startTime, uint32 endTime, uint64 dropPerSecond, uint128 startPrice, uint128 endPrice, uint128 minBid, uint16 supply, uint16 numSold, uint128 curatorClaimed, address curator) _lpdaInfo)',
+    onlyArgs: true,
+    fromBlock: 16125170,
+  })
+  
+  return sumTokens2({
+    api, tokensAndOwners: logs.map(log => [log.token, log.vault]), blacklistedTokens: [
+      '0x9ef27de616154ff8b38893c59522b69c7ba8a81c',
+    ],
+  })
 }
 
 module.exports = {
-  ethereum: { tvl },
-  methodology: `TVL is the total quantity of tokens held in LPs against any vault token. Each vault has a token, which is provided as LP in several pools returned by fractional REST API. Do not account for vault token locked in pools as contributing to TVL.`
+  ethereum: { tvl: tvl },
+  methodology: `TVL is value of nfts in the vaults`
 }
 
 
-
-// ------------
-// Alternatives
-// ------------
-
-// 1. COULD USE unwrapUniswapLPs with lpPositions set to erc20:totalSupply of pool but does not work for uni_v3
-/*
-  // Get UNISWAP_V2 and SUSHISWAP_V1 LPs
-  // Call unwrapUniswapLPs with lpPositions set to totalSupply of LP token. So you unwrap the whole pool without needing to pull reserves of token1 - only pull totalSupply of LP token
-  const univ2_sushiv1_pairAddresses = univ2_sushiv1_pools.map(p => p.pool)
-  const univ3_pairAddresses = univ3_pools.map(p => p.pool)
-  const lpSupply = (await sdk.api.abi.multiCall({
-    block,
-    abi: 'erc20:totalSupply',
-    calls: univ2_sushiv1_pairAddresses.map(address=>({ // cannot retrieve uni_v3 balances
-        target: address
-    })),
-    chain
-  })).output
-  // Format the way unwrapUniswapLPs function requires the token/balance pairs
-  const lpPositions = lpSupply.map(call => ({
-    token: call.input.target,
-    balance: call.output
-  }))
-  // Accumulate to balances
-  await unwrapUniswapLPs(balances, lpPositions, block, chain=chain)
-  */
-
-// 2. COULD USE staking contract, but too slow to retrieve call by call the amount of tokens
-/*
-const { staking } = require("./helper/staking.js");
-balances = {}
-for (const pool of v2_v3_pools) { // univ3_pools
-  const token1_locked = staking(pool.pool, pool.token1, chain="ethereum")
-  token1_pool_balance = await token1_locked(timestamp, block, chainBlocks)
-
-  sdk.util.sumSingleBalance(balances, pool.token1, token1_pool_balance[pool.token1]);
-  // sdk.util.sumMultiBalanceOf(balances, [token1_pool_balance], true);
-}
-*/
-
-
-// 3. COULD USE core/index.js functions to get TL locked in given Uniswap pools, but too much to copy-paste from ./CORE/INDEX.JS
-/*
-const {getUniswapPairInfo, getPairUnderlyingReserves, flattenUnderlyingReserves} = require('./core/index.js');
-Would need to copy-paste these functions are export them by module
-const pairInfo = await getUniswapPairInfo(univ2_sushiv1_pairAddresses, timestamp, block);
-const underlyingReserves = await Promise.all(pairInfo.map(info => getPairUnderlyingReserves(info, timestamp, block)));
-let balances = flattenUnderlyingReserves(underlyingReserves);
-*/

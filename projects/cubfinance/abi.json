@@ -1,54 +1,6 @@
 {
-    "wantLockedTotal": {
-        "inputs": [],
-        "name": "wantLockedTotal",
-        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-        "stateMutability": "view",
-        "type": "function"
-      },
-    "poolLength": {
-      "inputs": [],
-      "name": "poolLength",
-      "outputs": [
-        { 
-          "internalType": "uint256",
-          "name": "", 
-          "type": "uint256" 
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    "poolInfo": {
-      "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "name": "poolInfo",
-      "outputs": [
-        { "internalType": "address", "name": "lpToken", "type": "address" },
-        { "internalType": "uint256", "name": "allocPoint", "type": "uint256" },
-        {
-          "internalType": "uint256",
-          "name": "lastRewardBlock",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "accCubPerShare",
-          "type": "uint256"
-        },
-        { "internalType": "unit16", "name": "depositFeeBP", "type": "uint16" }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-	
-	"balanceOf": {
-      "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "name": "balanceOf",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    }
-  }
-  
-  
-  
+  "wantLockedTotal": "uint256:wantLockedTotal",
+  "poolLength": "uint256:poolLength",
+  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCubPerShare, uint16 depositFeeBP)",
+  "balanceOf": "function balanceOf(address) view returns (uint256)"
+}

@@ -12,3 +12,4 @@ const usdcLPs = [
 module.exports = {
     ...tombTvl(elfTokenAddress, giftTokenAddress, giftRewardPoolAddress, boardroomAddress, usdcLPs, "fantom", undefined, false, usdcLPs[1])
 }
+module.exports.deadFrom = '2023-08-09'

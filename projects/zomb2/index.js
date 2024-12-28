@@ -1,4 +1,5 @@
-const { zombiTvl } = require("../zombi/zombi");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { zombiTvl } = require("../zomb2/zombi");
 
 const token = "0xA87bcE04d4a396DF40cC1be3a21CF04592C08290";
 const share = "0x9E594379bC7e2034fCc8607Fb8C57F149Fb68284";
@@ -14,7 +15,7 @@ const pool2LPs = [
 ];
 
 const listedTokenGeneris = [
-  '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',//wftm
+  ADDRESSES.fantom.WFTM,//wftm
   '0x74b23882a30290451A17c44f4F05243b6b58C76d',//weth
   '0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE',//boo
   '0xaD996A45fd2373ed0B10Efa4A8eCB9de445A4302',//alpaca

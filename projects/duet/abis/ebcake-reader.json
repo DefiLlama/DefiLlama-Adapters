@@ -1,0 +1,3 @@
+{
+  "extendableBondGroupInfo": "function extendableBondGroupInfo(string calldata groupName_) external view returns ( uint256 allEbStacked, uint256 ebCommonPriceAsUsd, uint256 duetSideAPR, uint256 underlyingSideAPR, uint256 faceUsdValue)"
+}

@@ -1,161 +1,101 @@
-const sdk = require('@defillama/sdk');
-const {lendingMarket} = require('../helper/methodologies')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { lendingMarket } = require('../helper/methodologies');
 
-const VaultController = "0x4aaE9823Fb4C70490F1d802fC697F3ffF8D5CbE3"
+const vaultSummaryAbi = 'function vaultSummaries(uint96 start, uint96 stop) view returns (tuple(uint96 id, uint192 borrowingPower, uint192 vaultLiability, address[] tokenAddresses, uint256[] tokenBalances)[])'
 
-const vaultSummaryAbi = {
-  "inputs":
-  [
-    {
-      "internalType": "uint96",
-      "name": "start",
-      "type": "uint96"
-    },
-    {
-      "internalType": "uint96",
-      "name": "stop",
-      "type": "uint96"
+async function getVaultData(api, vaultController) {
+  const cappedTokens = {}
+  let pullMoreTokens = true
+  let enabledTokenIndex = 0
+  const batchSize = 10
+  const allTokens = []
+  do {
+    let calls = []
+    for (let i = 0; i < 10; i++) {
+      calls.push(enabledTokenIndex + i)
     }
-  ],
-  "name": "vaultSummaries",
-  "outputs":
-  [
-    {
-      "components":
-      [
-        {
-          "internalType": "uint96",
-          "name": "id",
-          "type": "uint96"
-        },
-        {
-          "internalType": "uint192",
-          "name": "borrowingPower",
-          "type": "uint192"
-        },
-        {
-          "internalType": "uint192",
-          "name": "vaultLiability",
-          "type": "uint192"
-        },
-        {
-          "internalType": "address[]",
-          "name": "tokenAddresses",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "tokenBalances",
-          "type": "uint256[]"
-        }
-      ],
-      "internalType": "struct IVaultController.VaultSummary[]",
-      "name": "",
-      "type": "tuple[]"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
+    enabledTokenIndex += batchSize
+    const tokens = await api.multiCall({ abi: 'function _enabledTokens(uint256) view returns (address)', calls, permitFailure: true, target: vaultController })
+    allTokens.push(...tokens.filter(i => i))
+    pullMoreTokens = !tokens.some(token => !token)
+  } while (pullMoreTokens)
+
+  const uTokens = await api.multiCall({ abi: 'address:_underlying', calls: allTokens, permitFailure: true, })
+  uTokens.forEach((token, i) => {
+    if (!token) return;
+    cappedTokens[allTokens[i].toLowerCase()] = token
+  })
+
+  const count = await api.call({ abi: " function vaultsMinted() view returns (uint96)", target: vaultController })
+  const calls = []
+  for (let i = 1; i <= count; i++)
+    calls.push({ params: [i, i] })
+
+  const vaults = (await api.multiCall({ abi: vaultSummaryAbi, target: vaultController, calls, permitFailure: true })).filter(i => i).flat()
+
+  return { cappedTokens, vaults }
 }
 
-const tokens = {
-  "WETH": {
-    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    symbol: 'WETH',
-    decimals: 18,
-  },
-  "USDC": {
-    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    symbol: 'USDC',
-    decimals: 6,
-  },
-  "WTC":{
-    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    symbol: 'WBTC',
-    decimals: 8,
-  },
-  "UNI":{
-    address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-    symbol: 'UNI',
-    decimals: 18,
-  },
-  "USDI":{
-    address: "0x2A54bA2964C8Cd459Dc568853F79813a60761B58",
-    symbol: 'USDI',
-    decimals: 18,
-  },
-}
+async function eth_tvl(api) {
+  const VaultController = "0x4aaE9823Fb4C70490F1d802fC697F3ffF8D5CbE3"
 
-const getVaultCount = async (block) => {
-  return (await sdk.api.abi.call({
-    block,
-    target: VaultController,
-    params: [],
-    abi: {name:"vaultsMinted", type:"function",stateMutability:"view",outputs:[{internalType:"uint96",type:"uint96"}]},
-  })).output;
-}
+  const { cappedTokens, vaults } = await getVaultData(api, VaultController)
 
-const getVaults = async (block) => {
-  return getVaultCount()
-    .then(async (c)=>{
-      return (await sdk.api.abi.call({
-        block,
-        target: VaultController,
-        params: [1,c],
-        abi: vaultSummaryAbi,
-      })).output;
-    })
-}
-
-const getReserve = async (block) =>{
-  return (await sdk.api.abi.call({
-    block,
-    target: tokens.USDC.address,
-    params: [tokens.USDI.address],
-    abi: "erc20:balanceOf",
-  })).output;
-}
-
-const collateral = async (timestamp, block)=>{
-  const balances = {}
-  const vaults = await getVaults()
-  vaults.forEach(x=>{
-    x.tokenAddresses.forEach((token, i)=>{
-      sdk.util.sumSingleBalance(balances, token, x.tokenBalances[i])
+  vaults.map(vault => {
+    vault.tokenAddresses.map((token, i) => {
+      token = cappedTokens[token.toLowerCase()] ?? token
+      api.add(token, vault.tokenBalances[i])
     })
   })
-  return balances
+
+  //get reserves
+  return sumTokens2({ api, owner: '0x2A54bA2964C8Cd459Dc568853F79813a60761B58', tokens: [ADDRESSES.ethereum.USDC] })
 }
-const borrowed = async (timestamp, block) => {
-  const balances = {}
-  const vaults = await getVaults()
-  vaults.forEach(x=>{
-      sdk.util.sumSingleBalance(balances, tokens.USDI.address, x.vaultLiability)
+
+async function op_tvl(api) {
+  //get reserves
+  const USDI = "0x889be273BE5F75a177f9a1D00d84D607d75fB4e1"
+  await api.sumTokens({ owner: USDI, tokens: [ADDRESSES.optimism.USDC, ADDRESSES.optimism.USDC_CIRCLE] })
+
+  //get collaterals
+  const positionWrapper = "0x7131FF92a3604966d7D96CCc9d596F7e9435195c".toLowerCase()
+  const VaultController = "0x05498574BD0Fa99eeCB01e1241661E7eE58F8a85"
+  const { cappedTokens, vaults } = await getVaultData(api, VaultController)
+
+  vaults.map(vault => {
+    vault.tokenAddresses.map((token, i) => {
+      const bal = vault.tokenBalances[i]
+      if (+bal === 0) return;
+      token = cappedTokens[token.toLowerCase()] ?? token
+      token = token.toLowerCase()
+      if (token === ADDRESSES.optimism.WBTC.toLowerCase()) {
+        //scale for wbtc decimals
+        api.add(token, bal / 1e10)
+      } else if (token === positionWrapper) {
+        //total is already in usd 1e18 terms, add as DAI, as this is a stablecoin at 1e18
+        api.add(ADDRESSES.optimism.DAI, bal)
+      } else {
+        api.add(token, bal)
+      }
+    })
   })
-  return balances
-}
-
-
-const tvl = async (timestamp, block) => {
-  const coll = await collateral(timestamp, block)
-  const reserve = await getReserve(block)
-  const balances  = {
-    [tokens.USDC.address]: reserve,
-    ...coll
-  }
-  return balances
 }
 
 module.exports = {
-  timetravel: true,
-  start: 14962974,
   ethereum: {
-    tvl,
-    borrowed
+    tvl: eth_tvl
+  },
+  optimism: {
+    tvl: op_tvl
   },
   methodology: `${lendingMarket}.
-  For Interest Protocol, TVL is Reserve + Total Collateral Value
-  Reserve is found through calling USDC.getBalances(USDI)
+  For Interest Protocol, TVL is USDC Reserve + Total Deposited Collateral Value
+  Reserve is the amount of USDC held by the USDI contract
   Balances are found through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
+  Capped tokens converted 1:1 to underlying
+  Wrapped Uni V3 Positions as implemented report their values to Interest Protocol in USD terms * 1e18,
+  as such, they are currently listed as DAI in the TVL calculation, 
+  therefore DAI numbers in the TVL should be treated as Uniswap V3 position collateral value, as DAI is not otherwise listed on IP. 
   `
 };

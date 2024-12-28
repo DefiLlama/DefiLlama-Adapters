@@ -1,39 +1,9 @@
 const sdk = require("@defillama/sdk");
 const chain = "arbitrum";
 
-const balanceABI = {
-  inputs: [
-    {
-      internalType: "bool",
-      name: "isMax",
-      type: "bool",
-    },
-  ],
-  name: "balance",
-  outputs: [
-    {
-      internalType: "uint256",
-      name: "",
-      type: "uint256",
-    },
-  ],
-  stateMutability: "view",
-  type: "function",
-};
+const balanceABI = 'function balance(bool isMax) view returns (uint256)';
 
-const getGlpPriceABI = {
-  inputs: [],
-  name: "getGlpPrice",
-  outputs: [
-    {
-      internalType: "uint256",
-      name: "",
-      type: "uint256",
-    },
-  ],
-  stateMutability: "view",
-  type: "function",
-};
+const getGlpPriceABI = "uint256:getGlpPrice";
 
 const usdcVaults = [
   "0x9ba57a1D3f6C61Ff500f598F16b97007EB02E346",

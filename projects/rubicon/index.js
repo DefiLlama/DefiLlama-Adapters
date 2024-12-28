@@ -1,44 +1,48 @@
-const { getBlock } = require('../helper/getBlock')
-const {transformOptimismAddress} = require('../helper/portedTokens')
-const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
+const sdk = require("@defillama/sdk");
+const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const tokens = [
-    "0x7f5c764cbc14f9669b88837ca1490cca17c31607", //USDC
-    "0x68f180fcce6836688e9084f035309e29bf0a2095", //WBTC
-    "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //DAI
-    "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", //USDT
-    "0x8700daec35af8ff88c16bdf0418774cb3d7599b4", //SNX
-    "0x4200000000000000000000000000000000000006", //ETH
-    "0x4200000000000000000000000000000000000042"  //OP
-]
+const RUBICON_MARKET_OPTIMISM = '0x7a512d3609211e719737E82c7bb7271eC05Da70d'
+const RUBICON_MARKET_ARBITRUM = '0xC715a30FDe987637A082Cf5F19C74648b67f2db8'
 
-const owners = [
-    "0x7a512d3609211e719737E82c7bb7271eC05Da70d", // Rubicon Market
 
-    // * Bath Tokens * TODO: drive dynamically off of subgraph query
-    "0xB0bE5d911E3BD4Ee2A8706cF1fAc8d767A550497", // bathETH
-    "0x7571CC9895D8E997853B1e0A1521eBd8481aa186", // bathWBTC 
-    "0xe0e112e8f33d3f437D1F895cbb1A456836125952", // bathUSDC
-    "0x60daEC2Fc9d2e0de0577A5C708BcaDBA1458A833", // bathDAI
-    "0xfFBD695bf246c514110f5DAe3Fa88B8c2f42c411", // bathUSDT
-    "0xeb5F29AfaaA3f44eca8559c3e8173003060e919f", // bathSNX
-    "0x574a21fE5ea9666DbCA804C9d69d8Caf21d5322b"  // bathOP
-]
-
-async function tvl(time, ethBlock, chainBlocks){
-    const block = await getBlock(time, "optimism", chainBlocks, true)
-    const balances={}
-    const transform = await transformOptimismAddress()
-    await sumTokensAndLPsSharedOwners(balances, tokens.map(t=>[t, false]), owners, block, "optimism", transform)
-    return balances
+module.exports = {
+  methodology: "Counts the tokens on the market (orders in the orderbook) and in bath pools",
+  hallmarks: [
+    [1657915200, "OP Rewards Start"],
+    [1685073974, "V2 Upgrade"],
+    [1688184374, "OP Rewards for Makers"],
+    [1688616374, "Arbitrum Launch"]
+  ]
 }
 
-module.exports={
-    methodology: "Counts the tokens on the bath pools and on the market (orders in the orderbook)",
-    optimism:{
-        tvl
-    },
-    hallmarks:[
-        [1657915200, "OP Rewards Start"],
-      ]
+const config = {
+  optimism: {
+    endpoint: sdk.graph.modifyEndpoint('AUcAkUd4sJutFD3hYQfvB6uvXrEdYP26qiZwZ5qyrgTw'),
+    owners: [
+      RUBICON_MARKET_OPTIMISM, // Rubicon Market
+      "0xB0bE5d911E3BD4Ee2A8706cF1fAc8d767A550497", // bathETH
+      "0x7571CC9895D8E997853B1e0A1521eBd8481aa186", // bathWBTC 
+      "0xe0e112e8f33d3f437D1F895cbb1A456836125952", // bathUSDC
+      "0x60daEC2Fc9d2e0de0577A5C708BcaDBA1458A833", // bathDAI
+      "0xfFBD695bf246c514110f5DAe3Fa88B8c2f42c411", // bathUSDT
+      "0xeb5F29AfaaA3f44eca8559c3e8173003060e919f", // bathSNX
+      "0x574a21fE5ea9666DbCA804C9d69d8Caf21d5322b"  // bathOP
+    ]
+  },
+  arbitrum: {
+    endpoint: sdk.graph.modifyEndpoint('B4cTJXyWHMLkxAcpLGK7dJfArJdrbyWukCoCLPDT1f7n'),
+    owners: [RUBICON_MARKET_ARBITRUM,]
+  }
 }
+
+Object.keys(config).forEach(chain => {
+  const { endpoint, owners } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const response = await cachedGraphQuery('rubicon/' + chain, endpoint, `{ tokens { address } }`)
+      const tokens = response.tokens.map(i => i.address)
+      return sumTokens2({ api, tokens, owners})
+    }
+  }
+})

@@ -1,15 +1,3 @@
 {
-    "getAums": {
-        "inputs": [],
-        "name": "getAums",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "getAums": "uint256[]:getAums"
 }

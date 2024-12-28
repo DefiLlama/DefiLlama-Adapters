@@ -1,3 +1,5 @@
+// The provided address should be the FujiERC1155 contract that returns
+// totalSupply() for token `ids` indicated.
 const polygonContracts = {
   matic: [{
     name: "PolygonF1155Core_VaultsMATIC",

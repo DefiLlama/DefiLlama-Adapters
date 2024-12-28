@@ -2,8 +2,13 @@ import * as path from "path";
 import * as fs from "fs";
 import { ethers } from "ethers";
 import { providers } from "./utils/ethers";
-import { humanizeNumber } from "@defillama/sdk/build/computeTVL/humanizeNumber";
-import { TOTAL_BINS, Bins, binResults, Liq } from "./utils/binResults";
+import { util } from "@defillama/sdk";
+import { TOTAL_BINS, Bins, binResults } from "./utils/binResults";
+import { Liq } from "./utils/types";
+import { config } from "dotenv";
+import { performance } from "perf_hooks";
+
+config();
 
 const f2 = (n: number) => Number(n.toFixed(2));
 
@@ -45,6 +50,13 @@ async function displayDebugInfo(skippedTokens: Set<string>, liqs: Liq[], bins: B
   const skippedTable = await Promise.all(
     Array.from(skippedTokens).map(async (tokenAddress) => {
       const [chain, address] = tokenAddress.split(":");
+      if (chain.toLowerCase() === "solana") {
+        return {
+          symbol: "UNKNOWN",
+          address: tokenAddress,
+        };
+      }
+
       const tokenContract = new ethers.Contract(address, ["function symbol() view returns (string)"], providers[chain]);
       let symbol: string;
       try {
@@ -77,7 +89,7 @@ async function displayDebugInfo(skippedTokens: Set<string>, liqs: Liq[], bins: B
         ])
         .map((o) => ({
           ...o,
-          totalLiquidableUSD: humanizeNumber(o.totalLiquidableUSD),
+          totalLiquidableUSD: util.humanizeNumber.humanizeNumber(o.totalLiquidableUSD),
         }))
     );
     console.log("If this number is high double check your data!");
@@ -95,7 +107,10 @@ async function main() {
   } catch (e) {
     console.log(e);
   }
+
+  const startTime = performance.now();
   const liqs = (await Promise.all(Object.values(module).map((m) => m.liquidations()))).flat();
+  const endTime = performance.now();
 
   // // write liqs to disk as JSON
   // fs.writeFileSync(path.resolve(process.cwd(), "liquidations2.json"), JSON.stringify(liqs, null, 2));
@@ -104,6 +119,7 @@ async function main() {
   await displayDebugInfo(skippedTokens, liqs, bins);
   //console.log(liqs)
   console.log(`\nSize of all liquidation data: ${JSON.stringify(liqs).length / 10 ** 6} MB`);
+  console.log(`Took ${f2((endTime - startTime) / 1000)} seconds to fetch liquidations`);
   process.exit(0);
 }
 main();

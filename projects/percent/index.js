@@ -1,12 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { default: BigNumber } = require("bignumber.js");
 const { stakings } = require("../helper/staking");
-const { getCompoundV2Tvl } = require("../helper/compound");
+const { compoundExports2 } = require("../helper/compound");
 
 const comptroller = "0xf47dD16553A934064509C40DC5466BBfB999528B";
-const pETH = "0x45F157b3d3d7C415a0e40012D64465e3a0402C64";
-const pETHEquivalent = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 const pool2Contract = "0x23b53026187626Ed8488e119767ACB2Fe5F8de4e";
 const lpOfPool2 = "0xEB85B2E12320a123d447Ca0dA26B49E666b799dB";
@@ -36,62 +33,32 @@ const PCT = "0xbc16da9df0a22f01a16bc0620a27e7d6d6488550";
 
 const stakingContracts = pctPoolContracts.concat([stakingContract, comptroller])
 
-const calc = async (balances, poolContract, lpToken) => {
-  const balanceLPofPool2 = (
-    await sdk.api.abi.call({
-      abi: 'erc20:balanceOf',
-      target: lpToken,
-      params: poolContract,
+async function resolveBalancers({ balances = {}, toa, api }) {
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: toa.map(i => ({ params: i[1], target: i[0] })) })
+  const supply = await api.multiCall({ abi: abi.totalSupply, calls: toa.map(i => i[0]) })
+  const ratio = bals.map((v, i) => v / supply[i])
+  const tokens = await api.multiCall({ abi: abi.getCurrentTokens, calls: toa.map(i => i[0]) })
+  await Promise.all(tokens.map(async (t, i) => {
+    const owner = toa[i][0]
+    const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: t.map(j => ({ target: j, params: owner })) })
+    bals.forEach((bal, j) => {
+      const token = t[j]
+      sdk.util.sumSingleBalance(balances, token, bal * ratio[i], api.chain)
     })
-  ).output;
-
-  const tokensOfLP = (
-    await sdk.api.abi.call({
-      abi: abi.getCurrentTokens,
-      target: lpToken,
-    })
-  ).output;
-
-  for (const token of tokensOfLP) {
-    const getBalance = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: token,
-        params: lpToken,
-      })
-    ).output;
-
-    const totalSupply = (
-      await sdk.api.abi.call({
-        abi: abi.totalSupply,
-        target: lpToken,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(
-      balances,
-      token,
-      BigNumber(getBalance).times(balanceLPofPool2).div(totalSupply).toFixed(0)
-    );
-  }
-};
-
-async function pool2() {
-  const balances = {};
-
-  await calc(balances, pool2Contract, lpOfPool2);
-
-  return balances;
+  }))
+  return balances
 }
 
-async function ethTvl() {
-  const balances = {};
+async function pool2(api) {
+  return resolveBalancers({ toa: [[lpOfPool2, pool2Contract]], api })
+}
 
-  for (let i = 0; i < pctPoolContracts.length; i++) {
-    await calc(balances, pctPoolContracts[i], lpOfPctPools[i]);
-  }
+async function ethTvl(api) {
+  const toa = []
+  for (let i = 0; i < pctPoolContracts.length; i++)
+    toa.push([lpOfPctPools[i], pctPoolContracts[i]])
 
-  return balances;
+  return resolveBalancers({ api, toa });
 }
 
 module.exports = {
@@ -99,26 +66,11 @@ module.exports = {
   ethereum: {
     staking: stakings(stakingContracts, PCT),
     pool2: pool2,
-    borrowed: getCompoundV2Tvl(
-      comptroller,
-      "ethereum",
-      (addr) => addr,
-      pETH,
-      pETHEquivalent,
-      true
-    ),
-    tvl: sdk.util.sumChainTvls([
-      getCompoundV2Tvl(
-        comptroller,
-        "ethereum",
-        (addr) => addr,
-        pETH,
-        pETHEquivalent
-      ),
-      ethTvl,
-    ]),
-  },
+    ...compoundExports2({ comptroller, cether: '0x45f157b3d3d7c415a0e40012d64465e3a0402c64' }),
 
+  },
   methodology:
     "Same as compound, we get all the liquidity and the borrowed part on the lending markets",
 };
+
+module.exports.ethereum.tvl = sdk.util.sumChainTvls([module.exports.ethereum.tvl, ethTvl])

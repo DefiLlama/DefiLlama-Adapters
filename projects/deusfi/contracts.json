@@ -1,0 +1,33 @@
+{
+  "ethereum": [
+    {
+      "address": "0xa0F395aD5df1Fceb319e162CCf1Ef6645dE8508f",
+      "token": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "desc": "minter pool"
+    }
+  ],
+  "polygon": [
+    {
+      "address": "0x00F395ad5dF1FCEB319e162CCF1eF6645De8508F",
+      "token": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "desc": "minter pool"
+    }
+  ],
+  "fantom": [
+    {
+      "address": "0x6E0098A8c651F7A6A9510B270CD02c858C344D94",
+      "token": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+      "desc": "minter pool usdc"
+    },
+    {
+      "address": "0xFb05aedf0caC43C6ce291D2d1be1eab568D155B4",
+      "token": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+      "desc": "migration collateral contract"
+    },
+    {
+      "address": "0x37a7a2a5FCB0DF6B8138fec7730825E92f9D8207",
+      "token": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+      "desc": "migration gnosis"
+    }
+  ]
+}

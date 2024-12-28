@@ -1,7 +1,6 @@
-const retry = require('../helper/retry')
+const sdk = require("@defillama/sdk");
 const { GraphQLClient, gql } = require('graphql-request')
 const { staking } = require("../helper/staking");
-//const { transformPolygonAddress } = require('../helper/portedTokens');
 
 
 const ETH_STAKING_ADDR = '0x94515758819F4D5119f75EEeB7F6bfdCAdc5e835'
@@ -12,7 +11,7 @@ const UNB_POLY = '0xD81F558b71A5323e433729009D55159955F8A7f9'
 
 
 async function ethTvl() {
-    var endpoint = 'https://api.thegraph.com/subgraphs/name/unbound-finance/unbound'
+    var endpoint = sdk.graph.modifyEndpoint('8hYGnnqzaQ98ikvhi9uZ5GRmYjd7C2ykopeNpbA3DXUh')
     var graphQLClient = new GraphQLClient(endpoint)
 
     var query = gql`
@@ -27,7 +26,7 @@ async function ethTvl() {
     }
     `;
 
-    var results = await retry(async bail => await graphQLClient.request(query))
+    var results = await graphQLClient.request(query)
     let t = []
 
     for (let i=0;i<results.vaults.length-1;i++){
@@ -42,7 +41,7 @@ async function ethTvl() {
 }
 
 async function polyTvl() {
-  var endpoint = 'https://api.thegraph.com/subgraphs/name/unbound-finance/unbound-polygon'
+  var endpoint = sdk.graph.modifyEndpoint('EtpUNR2s35iZNRGfQ5vqCSayGf72THHd1duUtkxKreGU')
   var graphQLClient = new GraphQLClient(endpoint)
 
   var query = gql`
@@ -57,7 +56,7 @@ async function polyTvl() {
   }
   `;
 
-  var results = await retry(async bail => await graphQLClient.request(query))
+  var results = await graphQLClient.request(query)
   let t = []
 
   for (let i=0;i<results.vaults.length-1;i++){

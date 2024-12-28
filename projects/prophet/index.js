@@ -8,13 +8,14 @@ const {
     fetchOswapExchangeRates,
     fetchOswapAssets,
     summingBaseAABalancesToTvl,
-} = require('../helper/obyte')
+} = require('../helper/chain/obyte')
 
 async function totalTvl(timestamp) {
     const [assetMetadata, exchangeRates, ...baseAABalances] = await Promise.all([
         fetchOswapAssets(),
         fetchOswapExchangeRates(),
-        fetchBaseAABalances(timestamp, "AXG7G57VBLAHF3WRN5WMQ53KQEQDRONC")
+        fetchBaseAABalances(timestamp, "AXG7G57VBLAHF3WRN5WMQ53KQEQDRONC"),
+        fetchBaseAABalances(timestamp, "A4EH5ZF5L4KEAHQIUSDEQGILHPEFJFPW")
     ])
 
     return {
@@ -24,8 +25,7 @@ async function totalTvl(timestamp) {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Prophet protocol.",
     obyte: {

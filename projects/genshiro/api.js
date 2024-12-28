@@ -263,7 +263,7 @@ const ASSETS = [
 const PRECISION = new BN(1_000_000_000);
 
 async function tvl() {
-	const provider = new WsProvider("wss://node.genshiro.io");
+	const provider = new WsProvider("wss://node5.genshiro.io");
 	const api = await ApiPromise.create({ provider, types });
 
 	const queries = ASSETS.map(({ code }) => {

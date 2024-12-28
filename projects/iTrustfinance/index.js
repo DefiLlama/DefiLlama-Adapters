@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const vaults = [
   // sNXM (Nexus Mutual Strategy Vault)
@@ -22,7 +20,7 @@ const erc20Tokens = [
   //IDLE
   "0x875773784Af8135eA0ef43b5a374AaD105c5D39e",
   //WETH
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  ADDRESSES.ethereum.WETH,
   //VISR
   "0xf938424f7210f31df2aee3011291b658f872e91e",
   //BOND
@@ -30,29 +28,10 @@ const erc20Tokens = [
 ];
 
 /*** Vaults and staking TVL Portions ***/
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  for (const vault of vaults) {
-    const supply = (
-      await sdk.api.abi.call({
-        abi: abi.totalSupply,
-        target: vault,
-        ethBlock,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, NXM, supply);
-  }
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    erc20Tokens.map(token => [token, false]),
-    vaults,
-    chainBlocks["ethereum"]
-  );
-
-  return balances;
+const ethTvl = async (api) => {
+  const supplies = await api.multiCall({  abi: 'erc20:totalSupply', calls: vaults})
+  api.add(NXM, supplies)
+  return api.sumTokens({ owners: vaults, tokens: erc20Tokens})
 };
 
 module.exports = {

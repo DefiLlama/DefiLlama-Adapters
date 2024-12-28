@@ -1,38 +1,31 @@
-const { default: axios } = require('axios');
-async function fetch(){
+const { transformDexBalances } = require('../helper/portedTokens');
+const { post } = require('../helper/http');
+async function tvl() {
+  // addr1w9a3urry4uuwjp2hjawlqfu9lqgvzead3mz3pt7kle5rwng6gu8yl
+  const Pairs = (await post('https://api.meowswap.fi/?method=Info.Pairs', { "jsonrpc": "2.0", "method": "Info.Pairs", "id": 3, "params": {} })).result.data
 
-    const allInfo =  (await axios.get('https://api.meowswap.fi/?method=Exchange.GetAllInfo', {data: {"id":1,"method":"Exchange.GetAllInfo","jsonrpc":"2.0","params":{}}})).data.result
-
-    let allToken = allInfo.pools
-    let adaUsd = allInfo.ADA_USD;
-
-    const Pairs = (await axios.post('https://api.meowswap.fi/?method=Info.Pairs', {"jsonrpc": "2.0","method": "Info.Pairs","id": 3,"params": {}})).data.result.data
-
-    let totalLiquid = 0;
-    await Pairs.forEach((row) => {
-        let rowSt = { ...row };
-        if (rowSt.token1 === 'ADA') {
-            const FindPair = allToken.find((obj) => {
-                return obj.firstAsset.assetId === rowSt.token2;
-            });
-            rowSt.token1_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q1;
-            rowSt.token2_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q2 * FindPair?.exchange ?? 0;
-
-        } else {
-            const FindPair = allToken.find((obj) => {
-                return obj.firstAsset.assetId === rowSt.token1;
-            });
-            rowSt.token2_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q2;
-            rowSt.token1_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q1 * FindPair?.exchange ?? 0;
-        }
-        rowSt.tvl_valid = rowSt.token1_lock_summ_in_usd + rowSt.token2_lock_summ_in_usd;
-        totalLiquid += rowSt.tvl_valid;
-    });
-    return totalLiquid;
+  let totalLiquid = 0;
+  const data = []
+  await Pairs.forEach((row) => {
+    data.push({
+      token0: row.token1,
+      token1: row.token2,
+      token0Bal: row.pair_sum_q1,
+      token1Bal: row.pair_sum_q2,
+    })
+    if (row.token1 === 'ADA') {
+      totalLiquid += row.pair_sum_q1 * 2
+    } else if (row.token2 === 'ADA') {
+      totalLiquid += row.pair_sum_q2 * 2
+    }
+  });
+  return transformDexBalances({ chain: 'cardano', data });
 }
 
 module.exports = {
-    methodology: "Data is retrieved from the api at https://api.meowswap.fi/",
-    timetravel: false,
-    fetch
+  methodology: "Data is retrieved from the api at https://api.meowswap.fi/",
+  timetravel: false,
+  cardano: {
+    tvl: () => ({})
+  }
 }

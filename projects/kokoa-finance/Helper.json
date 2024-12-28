@@ -1,69 +1,9 @@
 {
   "address": "0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0",
-  "abi": [
-    {
-      "inputs": [],
-      "name": "getCollateralTVL",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "collateralTVL",
-          "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getSkokoaTVL",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "tvl",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "pool",
-          "type": "address"
-        }
-      ],
-      "name": "getKlayswapLpFarmTVL",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "tvl",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "pool",
-          "type": "address"
-        }
-      ],
-      "name": "getKokonutLpFarmTVL",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "tvl",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
-  ]
+  "abi":{
+    "getCollateralTVL": "uint256[]:getCollateralTVL",
+    "getSkokoaTVL": "uint256:getSkokoaTVL",
+    "getKlayswapLpFarmTVL": "function getKlayswapLpFarmTVL(address pool) view returns (uint256 tvl)",
+    "getKokonutLpFarmTVL": "function getKokonutLpFarmTVL(address pool) view returns (uint256 tvl)"
+  }
 }

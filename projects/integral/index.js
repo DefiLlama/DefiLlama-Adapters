@@ -1,30 +1,10 @@
-const BigNumber = require('bignumber.js');
-const TVL = require('./utils');
+const { getUniTVL } = require('../helper/unknownTokens')
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)'
 
-async function tvl(timestamp, block) {
-  const [five, size] = await Promise.all([
-    TVL(timestamp, block, 'five'),
-    TVL(timestamp, block, 'size')
-  ]);
-
-  const tokenAddresses = new Set(Object.keys(five).concat(Object.keys(size)));
-
-  const balances = (
-    Array
-      .from(tokenAddresses)
-      .reduce((accumulator, tokenAddress) => {
-        const fiveBalance = new BigNumber(five[tokenAddress] || '0');
-        const sizeBalance = new BigNumber(size[tokenAddress] || '0');
-        accumulator[tokenAddress] = fiveBalance.plus(sizeBalance).toFixed();
-
-        return accumulator;
-      }, {})
-  );
-  return balances;
-}
+const sizeTVL = getUniTVL({ factory: '0xC480b33eE5229DE3FbDFAD1D2DCD3F3BAD0C56c6', abis: { getReserves } })
+const sizeTVLArbi = getUniTVL({ factory: '0x717EF162cf831db83c51134734A15D1EBe9E516a', abis: { getReserves } })
 
 module.exports = {
-  ethereum: {
-    tvl
-  },
+  ethereum: { tvl: sizeTVL },
+  arbitrum: { tvl: sizeTVLArbi },
 };

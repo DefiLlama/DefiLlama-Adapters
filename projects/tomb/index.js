@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getUniTVL } = require("../helper/unknownTokens")
+
 
 const tombTokenAddress = "0x6c021ae822bea943b2e66552bde1d2696a53fbb7";
 const tshareTokenAddress = "0x4cdf39285d7ca8eb3f090fda0c069ba5f4145b37";
@@ -17,7 +18,7 @@ const ftmLPs = [
 
 async function pool2(timestamp, _b, { [chain]: block }) {
   return sumTokens2({
-    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs, resolveLP: true,
+    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs,
   })
 }
 
@@ -41,12 +42,12 @@ async function staking(timestamp, _b, { [chain]: block }) {
 
 async function lif3GenesisTVL(timestamp, _b, { [chain]: block }) {
   const tokens = [
-    '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', // WFTM
-    '0x04068da6c83afcfa0e13ba15a6696662335d5b75', // USDC
+    ADDRESSES.fantom.WFTM, // WFTM
+    ADDRESSES.fantom.USDC, // USDC
     '0x321162Cd933E2Be498Cd2267a90534A804051b11', // BTC
     '0x74b23882a30290451A17c44f4F05243b6b58C76d', // ETH
-    '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e', // DAI
-    '0x82f0b8b456c1a451378467398982d4834b6829c1', // MIM
+    ADDRESSES.fantom.DAI, // DAI
+    ADDRESSES.fantom.MIM, // MIM
     '0x8d7d3409881b51466b483b11ea1b8a03cded89ae', // BASED
     '0x49c290ff692149a4e16611c694fded42c954ab7a', // BSHARE
     '0x09e145a1d53c0045f41aeef25d8ff982ae74dd56', // Zoo
@@ -57,19 +58,11 @@ async function lif3GenesisTVL(timestamp, _b, { [chain]: block }) {
   })
 }
 
-const dexTVL = getUniTVL({
-  factory: '0xE236f6890F1824fa0a7ffc39b1597A5A6077Cfe9',
-  chain: 'fantom',
-  useDefaultCoreAssets: true,
-})
 
 module.exports = {
   methodology: "Pool2 deposits consist of TOMB/FTM and TSHARE/FTM LP tokens deposits while the staking TVL consists of the TSHARES tokens locked within the Masonry contract(0x8764de60236c5843d9faeb1b638fbce962773b67).",
   fantom: {
-    tvl: sdk.util.sumChainTvls([
-      dexTVL, 
-      lif3GenesisTVL,
-    ]),
+    tvl: lif3GenesisTVL,
     pool2,
     staking,
   },

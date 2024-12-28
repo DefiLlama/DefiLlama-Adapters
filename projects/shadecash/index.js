@@ -1,19 +1,19 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const addresses = require('./contracts.json')
-const { transformFantomAddress } = require("../helper/portedTokens");
 const sdk = require('@defillama/sdk');
 const {staking} = require('../helper/staking');
 const {pool2} = require('../helper/pool2')
 
 const tokens = {
-    "USDC": "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+    "USDC": ADDRESSES.fantom.USDC,
     "xBOO": "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
     "SHADE": "0x3A3841f5fa9f2c283EA567d5Aeea3Af022dD2262"
 };
 
 async function tvl(_, _ethBlock, chainBlocks) {
     let balances = {
-        "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83": 0
+        [ADDRESSES.fantom.WFTM]: 0
       }
     let calls = [];
 
@@ -24,11 +24,11 @@ async function tvl(_, _ethBlock, chainBlocks) {
             block: chainBlocks['fantom'],
             chain: "fantom"
         }).then(b => {
-            balances["0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"] = 
+            balances[ADDRESSES.fantom.WFTM] = 
                 Number(b.output) + 
-                Number(balances["0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"]);
+                Number(balances[ADDRESSES.fantom.WFTM]);
         });
-    };
+    }
     // GET ERC20 BALANCES
     Object.entries(addresses).map(([,address]) => {
         Object.entries(tokens).map(([,token]) => {
@@ -38,7 +38,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
     await sumTokens(balances, calls, chainBlocks['fantom'], "fantom");
 
     // TRANSFORM ADDRESSES
-    let transformAddress = await transformFantomAddress();
+    let transformAddress = i => `fantom:${i}`;
     Object.keys(balances).map(k => {
         let transformed = transformAddress(k);
         if(k.toLowerCase() === tokens.xBOO.toLowerCase()){

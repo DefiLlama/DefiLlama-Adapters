@@ -1,15 +1,15 @@
-const { unwrapYearn, sumTokensSharedOwners } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
+const { getCache } = require("../helper/http");
+const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
-const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const creamAbi = require("../helper/abis/cream.json");
+const erc20Abi = require("../helper/abis/erc20.json");
 const contracts = require("./contracts.json");
-const { requery } = require("../helper/requery");
-const { default: axios } = require("axios");
-const retry = require("async-retry");
-const { getBlock } = require("../helper/getBlock");
+const { getLogs } = require('../helper/cache/getLogs')
+
 const chains = [
   "ethereum", //-200M
   "polygon", //-40M
@@ -19,7 +19,16 @@ const chains = [
   "fantom", //-80M
   "optimism", //-6M
   "xdai", //G
-  "moonbeam"
+  "moonbeam",
+  "celo",
+  "kava",
+  "base",
+  "fraxtal",
+  "xlayer",
+  "bsc",
+  "mantle",
+  "taiko",
+  "corn",
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -27,242 +36,108 @@ const registryIds = {
   crypto: 5,
   cryptoFactory: 6
 };
+const decimalsCache = {}
+const nameCache = {}
+
+async function getDecimals(chain, token) {
+  token = token.toLowerCase()
+  const key = chain + '-' + token
+  if (!decimalsCache[key]) decimalsCache[key] = sdk.api.erc20.decimals(token, chain)
+  return decimalsCache[key]
+}
+
+
+const gasTokens = [
+  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+  ADDRESSES.null,
+]
+
+async function getNames(chain, tokens) {
+  tokens = tokens.map(i => i.toLowerCase())
+  const mapping = {}
+  const missing = []
+  tokens.forEach(i => {
+    const key = chain + '-' + i
+    if (key === 'ethereum-0x6b8734ad31d42f5c05a86594314837c416ada984') mapping[i] = ''
+    else if (nameCache[key] || gasTokens.includes(i)) mapping[i] = nameCache[key]
+    else missing.push(i)
+  })
+
+  const res = await sdk.api2.abi.multiCall({
+    abi: erc20Abi.name,
+    calls: missing,
+    chain,
+    permitFailure: true,
+  })
+  res.forEach((name, i) => {
+    const key = chain + '-' + missing[i]
+    nameCache[key] = name ?? ''
+    mapping[missing[i]] = nameCache[key]
+  })
+
+  return mapping
+}
+
+const registryIdsReverse = Object.fromEntries(Object.entries(registryIds).map(i => i.reverse()))
+
+async function getPool({ chain, block, registry }) {
+  const data = await sdk.api2.abi.fetchList({ chain, block, target: registry, itemAbi: abi.pool_list, lengthAbi: abi.pool_count, withMetadata: true, })
+  return data.filter(i => i.output)
+}
+
+function getRegistryType(registryId) {
+  if (!registryIdsReverse[registryId]) throw new Error('Unknown registry id: ' + registryId)
+  return registryIdsReverse[registryId]
+}
 
 async function getPools(block, chain) {
-  const registries = (await sdk.api.abi.multiCall({
-    block,
-    chain,
-    calls: Object.values(registryIds).map(r => ({
-      params: r
-    })),
-    target: contracts[chain].addressProvider,
-    abi: abi.get_id_info
-  })).output.map(r => r.output.addr);
-
-  const poolCounts = (await sdk.api.abi.multiCall({
-    block,
-    chain,
-    calls: registries.map(r => ({
-      target: r
-    })),
-    abi: abi.pool_count
-  })).output;
-
-  const pools = {};
-  for (let i = 0; i < Object.values(registryIds).length; i++) {
-    pools[Object.keys(registryIds)[i]] = (await sdk.api.abi.multiCall({
-      calls: [...Array(Number(poolCounts[i].output)).keys()].map(n => ({
-        target: poolCounts[i].input.target,
-        params: [n]
-      })),
-      block,
-      chain,
-      abi: abi.pool_list
-    })).output;
-  }
-
-  let allPools = {};
-  Object.entries(pools).map(([key, list]) => {
-    pools[key] = list.filter(p => {
-      if (allPools[p.output] === undefined) {
-        allPools[p.output] = true;
-        return true;
-      } else {
-        return false;
-      }
-    });
-  });
-
-  return pools;
-}
-
-function aggregateBalanceCalls(coins, nCoins, poolList, registry) {
-  let calls = [];
-  if (registry == "cryptoFactory") {
-    coins.map((coin, i) =>
-      [...Array(Number(coin.output.length)).keys()].map(n =>
-        calls.push({
-          params: [poolList[i].output],
-          target: coin.output[n]
-        })
-      )
-    );
-  } else {
-    coins.map((coin, i) =>
-      [...Array(Number(nCoins[i].output[0])).keys()].map(n =>
-        calls.push({
-          params: [poolList[i].output],
-          target: coin.output[n]
-        })
-      )
-    );
-  }
-  return calls;
-}
-
-async function fixGasTokenBalances(poolBalances, block, chain) {
-  for (let i = 0; i < poolBalances.output.length; i++) {
-    if (
-      poolBalances.output[i].success == false &&
-      poolBalances.output[i].input.target.toLowerCase() ==
-        contracts[chain].gasTokenDummy
-    ) {
-      const ethBalance = (await sdk.api.eth.getBalance({
-        target: poolBalances.output[i].input.params[0],
-        block,
-        chain
-      })).output;
-
-      poolBalances.output[i].success = true;
-      poolBalances.output[i].output = ethBalance;
-      poolBalances.output[i].input.target = contracts[chain].wrapped;
+  let { registriesMapping, addressProvider } = contracts[chain]
+  if (!registriesMapping) {
+    registriesMapping = {};
+    if(addressProvider){
+      (await sdk.api.abi.multiCall({
+        block, chain,
+        calls: Object.values(registryIds).map(r => ({ params: r })),
+        target: addressProvider,
+        abi: abi.get_id_info
+      })).output
+        .filter(r => r.output.addr !== nullAddress)
+        .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
     }
   }
+  if (contracts[chain].CurveStableswapFactoryNG) {
+    registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
+  }
+  if (contracts[chain].CurveTricryptoFactoryNG) {
+    registriesMapping.CurveTricryptoFactoryNG = contracts[chain].CurveTricryptoFactoryNG
+  }
+  if (contracts[chain].CurveTwocryptoFactoryNG) {
+    registriesMapping.CurveTwocryptoFactoryNG = contracts[chain].CurveTwocryptoFactoryNG
+  }
+  const poolList = {}
+  await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
+    poolList[registry] = await getPool({ chain, block, registry: addr })
+  }))
+
+  return poolList
 }
 
-async function fixWrappedTokenBalances(balances, block, chain, transform) {
-  if ("yearnTokens" in contracts[chain]) {
-    for (let token of Object.values(contracts[chain].yearnTokens)) {
-      if (token in balances) {
-        await unwrapYearn(balances, token, block, chain, transform);
-      }
+function aggregateBalanceCalls({ coins, nCoins, wrapped }) {
+  const toa = []
+  coins.map(({ input, output }, i) => {
+    const owner = input.params[0]
+    const addToken = t => {
+      if (t.toLowerCase() === wrapped.toLowerCase())
+        toa.push([nullAddress, owner])
+      toa.push([t, owner])
     }
-  }
-
-  if ("creamTokens" in contracts[chain]) {
-    const creamTokens = Object.values(contracts[chain].creamTokens);
-    await unwrapCreamTokens(balances, block, chain, creamTokens, transform);
-  }
-
-  if ("sdTokens" in contracts[chain]) {
-    await unwrapSdTokens(balances, contracts[chain].sdTokens, chain);
-  }
-
-  const stDOT = "moonbeam:0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108";
-  if (stDOT in balances) {
-    balances["bsc:0x7083609fce4d1d8dc0c979aab8c869ea2c873402"] = BigNumber(
-      balances[stDOT]
-    )
-      .times(1e8)
-      .toFixed(0);
-    delete balances[stDOT];
-  }
-}
-
-async function unwrapCreamTokens(
-  balances,
-  block,
-  chain,
-  creamTokens,
-  transform
-) {
-  const [exchangeRates, underlyingTokens] = await Promise.all([
-    sdk.api.abi.multiCall({
-      calls: creamTokens.map(t => ({
-        target: t
-      })),
-      abi: creamAbi.exchangeRateStored,
-      block,
-      chain
-    }),
-    sdk.api.abi.multiCall({
-      calls: creamTokens.map(t => ({
-        target: t
-      })),
-      abi: creamAbi.underlying,
-      block,
-      chain
-    })
-  ]);
-  for (let i = 0; i < creamTokens.length; i++) {
-    if (!(creamTokens[i] in balances)) continue;
-    const underlying = underlyingTokens.output[i].output;
-    const balance = BigNumber(balances[creamTokens[i]])
-      .times(exchangeRates.output[i].output)
-      .div(1e18)
-      .toFixed(0);
-    sdk.util.sumSingleBalance(balances, transform(underlying), balance);
-    delete balances[creamTokens[i]];
-    delete balances[`${chain}:${creamTokens[i]}`];
-  }
-}
-
-function deleteMetapoolBaseBalances(balances, chain) {
-  for (let token of Object.values(contracts[chain].metapoolBases)) {
-    if (!(token in balances || `${chain}:${token}` in balances)) continue;
-    delete balances[token];
-    delete balances[`${chain}:${token}`];
-  }
-}
-
-function mapGaugeTokenBalances(calls, chain) {
-  const mapping = {
-    // token listed in coins() mapped to gauge token held in contract
-    //"0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171": "0x19793b454d3afc7b454f206ffe95ade26ca6912c", // maybe not? 4 0s poly
-    "0x7f90122bf0700f9e7e1f688fe926940e8839f353": {
-      to: "0xbf7e49483881c76487b0989cd7d9a8239b20ca41",
-      pools: [],
-      chains: []
-    }, // need a pool conditional - only for (1) ['0x30dF229cefa463e991e29D42DB0bae2e122B2AC7']
-    "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
-      to: "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
-      pools: [],
-      chains: []
-    },
-    "0x1337bedc9d22ecbe766df105c9623922a27963ec": {
-      to: "0x5b5cfe992adac0c9d48e05854b2d91c73a003858",
-      pools: [],
-      chains: ["avax"]
-    },
-    "0x27e611fd27b276acbd5ffd632e5eaebec9761e40": {
-      to: "0x8866414733F22295b7563f9C5299715D2D76CAf4",
-      pools: [],
-      chains: ["fantom"]
-    },
-    "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
-      to: "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
-      pools: [],
-      chains: ["fantom"]
-    }
-  };
-
-  return calls.map(function(c) {
-    let target = c.target;
-    if (
-      c.target.toLowerCase() in mapping &&
-      (mapping[c.target.toLowerCase()].pools.includes(
-        c.params[0].toLowerCase()
-      ) ||
-        mapping[c.target.toLowerCase()].chains.includes(chain))
-    ) {
-      target = mapping[c.target.toLowerCase()].to;
-    }
-    return { target, params: c.params };
-  });
-}
-
-async function unwrapSdTokens(balances, sdTokens, chain) {
-  const apiData = (await retry(
-    async bail => await axios.get("https://lockers.stakedao.org/api/lockers")
-  )).data.map(t => ({
-    address: t.tokenReceipt.address.toLowerCase(),
-    usdPrice: t.tokenPriceUSD,
-    decimals: t.tokenReceipt.decimals
-  }));
-
-  for (let token of Object.values(sdTokens)) {
-    if (token in balances) {
-      const tokenInfo = apiData.filter(t => t.address == token)[0];
-
-      sdk.util.sumSingleBalance(
-        balances,
-        "usd-coin",
-        balances[token] * tokenInfo.usdPrice / 10 ** tokenInfo.decimals
-      );
-      delete balances[token];
-      delete balances[`${chain}:{token}`];
-    }
-  }
+    if (!Object.keys(nCoins).length)
+      output.forEach(token => addToken(token))
+    else
+      for (let index = 0; index < nCoins[i].output[0]; index++)
+        addToken(output[index])
+  })
+  return toa;
 }
 
 async function handleUnlistedFxTokens(balances, chain) {
@@ -270,14 +145,9 @@ async function handleUnlistedFxTokens(balances, chain) {
     const tokens = Object.values(contracts[chain].fxTokens);
     for (let token of tokens) {
       if (token.address in balances) {
-        const [{ data: rate }, { output: decimals }] = await Promise.all([
-          retry(
-            async bail =>
-              await axios.get(
-                `https://api.exchangerate.host/convert?from=${token.currency}&to=USD`
-              )
-          ),
-          sdk.api.erc20.decimals(token.address, chain)
+        const [rate, { output: decimals }] = await Promise.all([
+          getCache(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
+          getDecimals(chain, token.address)
         ]);
 
         sdk.util.sumSingleBalance(
@@ -293,74 +163,85 @@ async function handleUnlistedFxTokens(balances, chain) {
   return;
 }
 
-async function unwrapPools(
-  balances,
-  block,
-  chain,
-  transform,
-  poolList,
-  registry
-) {
-  const [{ output: nCoins }, { output: coins }] = await Promise.all([
-    sdk.api.abi.multiCall({
-      calls: poolList.map(p => ({
-        target: p.input.target,
-        params: [p.output]
-      })),
-      block,
-      chain,
-      abi: abi.get_n_coins[registry]
-    }),
-    sdk.api.abi.multiCall({
-      calls: poolList.map(p => ({
-        target: p.input.target,
-        params: p.output
-      })),
-      block,
-      chain,
-      abi: abi.get_coins[registry]
+async function unwrapPools({ poolList, registry, chain, block }) {
+  if (!poolList.length) return;
+  const registryAddress = poolList[0].input.target
+
+  const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
+  const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
+  let nCoins = {}
+  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory', 'CurveTricryptoFactoryNG', 'CurveTwocryptoFactoryNG'].includes(registry))
+    nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
+
+  let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
+  wrapped = wrapped.toLowerCase()
+  let calls = aggregateBalanceCalls({ coins, nCoins, wrapped });
+  const allTokens = getUniqueAddresses(calls.map(i => i[0]))
+  const tokenNames = await getNames(chain, allTokens)
+  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases))]
+  Object.entries(tokenNames).forEach(([token, name]) => {
+    if ((name ?? '').startsWith('Curve.fi ')) {
+      sdk.log(chain, 'blacklisting', name)
+      blacklistedTokens.push(token)
+    }
+  })
+  return { tokensAndOwners: calls, blacklistedTokens }
+}
+
+const blacklists = {
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
+  arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378'],
+}
+
+const config = {
+  ethereum: {
+    plainFactoryConfig: [
+      { plainFactory: '0x528baca578523855a64ee9c276826f934c86a54c', fromBlock: 17182168 },
+      { plainFactory: '0x0145fd99f1dd6e2491e44fca608c481c9c5b97a9', fromBlock: 17182168 },
+      { plainFactory: '0x6a8cbed756804b16e05e741edabd5cb544ae21bf', fromBlock: 17182168 },
+    ]
+  },
+}
+
+async function addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig = [] }) {
+  return Promise.all(plainFactoryConfig.map(async ({ plainFactory, fromBlock }) => {
+    const logs = await getLogs({
+      api,
+      target: plainFactory,
+      topics: ['0xb8f6972d6e56d21c47621efd7f02fe68f07a17c999c42245b3abd300f34d61eb'],
+      eventAbi: 'event PlainPoolDeployed(address[4] coins, uint256 A, uint256 fee, address deployer, address pool)',
+      onlyArgs: true,
+      fromBlock,
     })
-  ]);
-
-  let calls = aggregateBalanceCalls(coins, nCoins, poolList, registry);
-  calls = mapGaugeTokenBalances(calls, chain);
-
-  let poolBalances = await sdk.api.abi.multiCall({
-    calls,
-    block,
-    chain,
-    abi: "erc20:balanceOf"
-  });
-  requery(poolBalances, chain, block, "erc20:balanceOf");
-  await fixGasTokenBalances(poolBalances, block, chain);
-
-  sdk.util.sumMultiBalanceOf(balances, poolBalances, false, transform);
-
-  await fixWrappedTokenBalances(balances, block, chain, transform);
-  await handleUnlistedFxTokens(balances, chain);
-  deleteMetapoolBaseBalances(balances, chain);
-
-  return balances;
-} // node test.js projects/curve/index.js
+    logs.forEach(log => {
+      log.coins.forEach((coin, i) => {
+        if (i > 1 && coin === nullAddress) return;
+        tokensAndOwners.push([coin, log.pool])
+      })
+    })
+  }))
+}
 
 function tvl(chain) {
-  return async (_t, _e, chainBlocks) => {
+  const { plainFactoryConfig = [] } = config[chain] ?? {}
+  return async (api) => {
+    const { block } = api
     let balances = {};
     const transform = await getChainTransform(chain);
-    const poolList = await getPools(chainBlocks[chain], chain);
-    const block = await getBlock(_t, chain, chainBlocks, true);
+    const poolLists = await getPools(block, chain);
+    const promises = []
 
-    for (let registry of Object.keys(poolList)) {
-      await unwrapPools(
-        balances,
-        block,
-        chain,
-        transform,
-        poolList[registry],
-        registry
-      );
-    }
+    for (const [registry, poolList] of Object.entries(poolLists))
+      promises.push(unwrapPools({ poolList, registry, chain, block }))
 
+    const res = (await Promise.all(promises)).filter(i => i)
+    const tokensAndOwners = res.map(i => i.tokensAndOwners).flat()
+    const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
+    if (blacklists[chain])
+      blacklistedTokens.push(...blacklists[chain])
+    await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
+    await sumTokens2({ balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
+    await handleUnlistedFxTokens(balances, chain);
     return balances;
   };
 }
@@ -370,41 +251,35 @@ const chainTypeExports = chains => {
     (obj, chain) => ({ ...obj, [chain]: { tvl: tvl(chain) } }),
     {}
   );
-  exports.ethereum["staking"] = staking(
-    contracts.ethereum.veCRV,
-    contracts.ethereum.CRV
-  );
-
-  exports.harmony = {
-    tvl: async (ts, ethB, chainB) => {
-      if (ts > 1655989200) {
-        // harmony hack
-        return {};
-      }
-      const block = await getBlock(ts, "harmony", chainB, true);
-      const balances = {};
-      await sumTokensSharedOwners(
-        balances,
-        [
-          "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
-          "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
-        ],
-        ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
-        block,
-        "harmony",
-        addr => `harmony:${addr}`
-      );
-      return balances;
-    }
-  };
-  exports.hallmarks = [
-    [1597446675, "CRV Launch"],
-    [1621213201, "Convex Launch"],
-    [1642374675, "MIM depeg"],
-    [1651881600, "UST depeg"],
-    [1654822801, "stETH depeg"]
-  ];
   return exports;
 };
 
 module.exports = chainTypeExports(chains);
+
+module.exports.ethereum["staking"] = staking(
+  contracts.ethereum.veCRV,
+  contracts.ethereum.CRV
+); 
+
+module.exports.harmony = {
+  tvl: async (api) => {
+    if (api.timestamp > 1655989200) {
+      // harmony hack
+      return {};
+    }
+    return api.sumTokens({ owner: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023', tokens:  [
+      "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
+      "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
+    ]})
+  }
+};
+
+module.exports.hallmarks = [
+  [1597446675, "CRV Launch"],
+  [1621213201, "Convex Launch"],
+  [1642374675, "MIM depeg"],
+  [1651881600, "UST depeg"],
+  [1654822801, "stETH depeg"],
+  [1667692800, "FTX collapse"],
+  [1690715622, "Reentrancy hack"]
+];

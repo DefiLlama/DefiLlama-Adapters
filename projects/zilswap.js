@@ -1,15 +1,17 @@
 const utils = require('./helper/utils');
 
-async function fetch() {
-  var totalTvl = await utils.fetchURL('https://api.zilstream.com/stats');
-  return totalTvl.data.tvl;
+async function tvl() {
+  var totalTvl = (await utils.fetchURL('https://stats.zilswap.org/liquidity'))?.data?.reduce((prev,curr) => prev + (Number(curr?.amount) * 10**-12 ?? 0), 0); 
+  return {
+    zilliqa: totalTvl
+  };
 }
 
 module.exports = {
-  fetch,
-  methodology: `ZilSwap TVL is achieved by making a call to its API: https://api.zilstream.com/stats.`,
+  zilliqa: {
+    tvl,
+  },
+  methodology: `ZilSwap TVL is achieved by making a call to its API: https://stats.zilswap.org/liquidity`,
   misrepresentedTokens: true,
-  doublecounted: false,
   timetravel: false,
-  incentivized: true,
 }

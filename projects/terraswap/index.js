@@ -10,7 +10,7 @@ module.exports = {
     misrepresentedTokens: true,
     methodology: "Liquidity on the DEX",
     terra: { tvl: getFactoryTvl(factory.classic) },
-    terra2: { tvl: getFactoryTvl(factory.terra2, true) },
+    terra2: { tvl: getFactoryTvl(factory.terra2) },
     hallmarks:[
     [1651881600, "UST depeg"],
   ]

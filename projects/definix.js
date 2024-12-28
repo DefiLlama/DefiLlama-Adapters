@@ -1,31 +1,10 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { getUniTVL } = require('./helper/unknownTokens')
 
-async function klaytn() {
-  const response = await retry(
-    async (bail) =>
-      await axios.get(
-        "https://database-s3public-g8ignhbbbk6e.s3.ap-southeast-1.amazonaws.com/definix/tvl.json"
-      )
-  );
-  return response.data.caverTVL;
-}
-async function bsc() {
-  const response = await retry(
-    async (bail) =>
-      await axios.get(
-        "https://database-s3public-g8ignhbbbk6e.s3.ap-southeast-1.amazonaws.com/definix/tvl.json"
-      )
-  );
-  return response.data.web3TVL;
-}
 module.exports = {
-  klaytn: {
-    fetch: klaytn,
-  },
   bsc: {
-    fetch: bsc,
+    tvl: getUniTVL({ factory: '0x43eBb0cb9bD53A3Ed928Dd662095aCE1cef92D19', useDefaultCoreAssets: true, }),
   },
-  fetch: async () => (await bsc()) + (await klaytn()),
+  klaytn: {
+    tvl: getUniTVL({ factory: '0xdee3df2560bceb55d3d7ef12f76dcb01785e6b29', useDefaultCoreAssets: true, }),
+  },
 };
-// node test.js projects/definix.js

@@ -1,5 +1,5 @@
 
-const { sumTokens, unwrapCrv,  sumTokensAndLPs, } = require('../helper/unwrapLPs')
+const { sumTokens2, } = require('../helper/unwrapLPs')
 
 const UNI_CONTRACTS = {
   pntETH: {
@@ -29,32 +29,10 @@ const CURVE_CONTRACTS = [{  // pBTCsBTC curve
   token: '0xDE5331AC4B3630f94853Ff322B66407e0D6331E8',
 }]
 
-const unwrapCurveMetaPool = [
-  '0x075b1bb99792c9e1041ba13afef80c91a1e70fb3' // wBTC-SBTC curve pool
-]
-
-
-async function tvl(timestamp, block) {
-  const balances = {}
-  const curveLPs = {}
-
-  const uniTokens = Object.values(UNI_CONTRACTS).map(({ uniPair, address }) => [uniPair, address, true])
-  // Resolve all Unswap LPs staked
-  await sumTokensAndLPs(balances, uniTokens, block)
-
-  // Resolve pBTC curve pool that was staked
-  await sumTokens(curveLPs, CURVE_CONTRACTS.map(({ token, address }) => [token, address]), block,)
-  const unwarpCurves = Object.keys(curveLPs).map(token => unwrapCrv(balances, token, curveLPs[token], block))
-  await Promise.all(unwarpCurves)
-  for (const unwrapCurveToken of unwrapCurveMetaPool) {
-    if (balances[unwrapCurveToken]) {
-      await unwrapCrv(balances, unwrapCurveToken, balances[unwrapCurveToken], block)
-      delete balances[unwrapCurveToken]
-    }
-  }
-
-  return balances
-}
+async function tvl(api) {
+  const toa = Object.values(UNI_CONTRACTS).map(({ uniPair, address }) => ([uniPair, address]))
+  CURVE_CONTRACTS.forEach(i => toa.push([i.token, i.address]))
+  return sumTokens2({ api, tokensAndOwners: toa})}
 
 
 module.exports = {

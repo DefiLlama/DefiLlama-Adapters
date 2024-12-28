@@ -1,8 +1,6 @@
-const { staking, stakings } = require("../helper/staking");
-const { transformBscAddress } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { stakings } = require("../helper/staking");
 
-const treasuryContract = "0xAd3784cD071602d6c9c2980d8e0933466C3F0a0a";
 const BTCST = "0x78650B139471520656b9E7aA7A5e9276814a38e9";
 
 const vaultContracts = [
@@ -22,7 +20,7 @@ const vaultContracts = [
 
 const listOfTokens = [
   //BTCB
-  "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+  ADDRESSES.bsc.BTCB,
   //sigmaBTC
   "0x2cd1075682b0fccaadd0ca629e138e64015ba11c",
   //sigmaDOGE
@@ -31,34 +29,10 @@ const listOfTokens = [
   "0xba2ae424d960c26247dd6c32edc70b295c744c43",
 ];
 
-async function Treasury(...params) {
-  return staking(treasuryContract, BTCST, "bsc")(...params);
-}
-
-async function bscTvl(chainBlocks) {
-  const balances = {};
-
-  const transformAddress = await transformBscAddress();
-  for (const token of listOfTokens) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[token, false]],
-      vaultContracts,
-      chainBlocks["bsc"],
-      "bsc",
-      transformAddress
-    );
-  }
-
-  return balances;
-}
-
 module.exports = {
-  misrepresentedTokens: true,
   bsc: {
-    treasury: Treasury,
-    staking: stakings(vaultContracts, BTCST, "bsc"),
-    tvl: bscTvl,
+    staking: stakings(vaultContracts, BTCST),
+    tvl: stakings(vaultContracts, listOfTokens),
   },
   methodology: "Counts liquidty on all the Vaults through their Contracts",
 };

@@ -1,0 +1,6 @@
+{
+  "shuttleTvlUsd": "function shuttleTvlUsd(uint256) public view returns (uint256 totalUsd)",
+  "shuttlesDeployed": "function shuttlesDeployed() external view override returns (uint256)",
+  "borrowableTvlUsd": "function borrowableTvlUsd(uint256) public view returns (uint256 totalUsd)",
+  "collateralTvlUsd": "function collateralTvlUsd(uint256) public view returns (uint256 totalUsd)"
+}

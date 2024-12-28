@@ -31,7 +31,7 @@ async function getTvl(chain, block, ethBlock) {
   })
   tokens.forEach(t => toa.push([t.output[0], owner]))
   if (chain !== 'xdai') {
-    return sumTokens({}, toa, block, chain, undefined, { resolveLP: true })
+    return sumTokens({}, toa, block, chain)
   }
 
   const balances = {}
@@ -60,13 +60,13 @@ async function getTvl(chain, block, ethBlock) {
     sdk.util.sumSingleBalance(ethBalances, bareToken, balance)
   })
 
-  // console.log(JSON.stringify(ethBalances, null, 2));
   // resolve LPs
-  await Promise.all([
-    unwrapLPsAuto({ balances, block, chain, }),
-    // disabling resolving ETH balance resolving since we dont know how to resolve bridged LP address
-    // unwrapLPsAuto({ balances: ethBalances, block: ethBlock, chain: 'ethereum', }),
-  ])
+  if (chain === 'xdai')
+    await Promise.all([
+      unwrapLPsAuto({ balances, block, chain, }),
+      // disabling resolving ETH balance resolving since we dont know how to resolve bridged LP address
+      // unwrapLPsAuto({ balances: ethBalances, block: ethBlock, chain: 'ethereum', }),
+    ])
 
   // merge balances
   // Object.entries(ethBalances).forEach(([token, balance]) => {

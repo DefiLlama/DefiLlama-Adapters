@@ -1,62 +1,10 @@
-const axios = require('axios')
-
-const endpoint = 'https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=mainnet.1'
-
-// Very inefficient
-function findClosestToDate(values, date) {
-    let min = values[0];
-    for (const val of values) {
-        const valDate = new Date(val.time).getTime()
-        const minDate = new Date(min.time).getTime()
-        if (Math.abs(valDate - date) < Math.abs(minDate - date)) {
-            min = val
-        }
-    }
-    if(Math.abs(new Date(min.time).getTime()-date) > 24*3600*1000){
-        return {
-            totalDeposits: 0,
-            totalBorrows: 0
-        }
-    }
-    return min
-}
-
-const coingeckoIds = {
-    'ETH': 'ethereum',
-    'BTC': 'bitcoin',
-    'SOL': 'solana',
-    'SRM': 'serum',
-    'USDC': 'usd-coin',
-    'USDT': 'tether',
-    'MNGO': 'mango-markets',
-    'RAY': 'raydium',
-    'COPE': 'cope',
-    'FTT': 'ftx-token',
-    'MSOL': 'msol',
-    'BNB': 'binancecoin',
-    'AVAX': 'avalanche-wormhole',
-    'LUNA': 'terra-luna',
-    'GMT': 'stepn',
-}
-
-
-async function tvl(timestamp) {
-    const balances = {};
-    const stats = await axios.get(endpoint)
-    const date = new Date(timestamp * 1000).getTime()
-    Object.entries(coingeckoIds).map(([mangoId, coingeckoId]) => {
-        const assetDeposits = stats.data.filter(s => s.name === mangoId)
-        if (assetDeposits.length > 0) {
-            const closestVal = findClosestToDate(assetDeposits, date)
-            balances[coingeckoId] = closestVal.totalDeposits - closestVal.totalBorrows
-        }
-    })
-    return balances
-}
-
 module.exports = {
     timetravel: false,
     solana: {
-        tvl,
+        tvl: () => ({}),
     },
+    deadFrom: '2022-10-19',
+    hallmarks:[
+        [1665521360, "Oracle Price Manipulation"],
+      ],
 }

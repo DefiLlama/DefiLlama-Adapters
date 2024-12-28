@@ -3,7 +3,7 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { getUniTVL } = require("../helper/unknownTokens");
 
 const chickenChefContract = "0x87AE4928f6582376a0489E9f70750334BBC2eb35";
 const KFC = "0xE63684BcF2987892CEfB4caA79BD21b34e98A291";
@@ -16,13 +16,9 @@ const kfcVaults = [
     "0x13DfDa244e281Ced094796e0E0d2A1Cf91A1BD13"
 ];
 
-/*** Pools(pairs) TVL Portion ***/
-const ethChainTvl = getChainTvl({
-    ethereum: 'https://api.thegraph.com/subgraphs/name/chickenswap/graph',
-});
 
 /*** Vaults TVL Portion ***/
-const ethTvl = async (timestamp, block, chainBlocks) => {
+const ethTvl = async (_ts, block, chainBlocks) => {
     const balances = {};
 
     await addFundsInMasterChef(
@@ -62,14 +58,13 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
     return balances;
 };
 
+const dexTVL = getUniTVL({ factory: '0x8709Ea9fA0f1839237c9Dd3d59D243C411391970', useDefaultCoreAssets: true, })
+
 module.exports = {
     misrepresentedTokens: true,
     ethereum: {
         staking: staking(chickenChefContract, KFC),
         pool2: pool2(chickenChefContract, WETH_KFC_UNIV2),
-        tvl: sdk.util.sumChainTvls([ethTvl, ethChainTvl('ethereum')]),
+        tvl: sdk.util.sumChainTvls([dexTVL, ethTvl,]),
     },
-    methodology:
-        `We count liquidity on the Vaults (only single tokens) through ChickenChef Contract and the liquuidity on the AMM Pools (only pairs) 
-        pulling data from the subgraph at https://api.thegraph.com/subgraphs/name/chickenswap/graph`,
 };

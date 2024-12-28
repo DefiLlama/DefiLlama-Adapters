@@ -10,5 +10,8 @@ module.exports={
     misrepresentedTokens:true,
     algorand:{
         tvl
-    }
+    },
+    hallmarks: [
+        [1641038400,"Contract Exploit"]
+      ],
 }

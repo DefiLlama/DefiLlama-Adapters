@@ -1,9 +1,9 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
-const { blockQuery } = require('./graph')
+const { blockQuery, getBlock, } = require('./http')
+const sdk = require('@defillama/sdk')
 
-function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD", blockCatchupLimit) {
+function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD", blockCatchupLimit = 500) {
   const graphQuery = gql`
 query get_tvl($block: Int) {
   ${factoriesName}(
@@ -14,14 +14,16 @@ query get_tvl($block: Int) {
 }
 `;
   return (chain) => {
-    return async (timestamp, ethBlock, chainBlocks) => {
-      const block = await getBlock(timestamp, chain, chainBlocks)
+    return async (api) => {
+      await api.getBlock()
+      const block = api.block
       let uniswapFactories
+      const endpoint = sdk.graph.modifyEndpoint(graphUrls[chain])
 
       if (!blockCatchupLimit) {
-        uniswapFactories = (await request(graphUrls[chain], graphQuery, { block, }))[factoriesName];
+        uniswapFactories = (await request(endpoint, graphQuery, { block, }))[factoriesName];
       } else {
-        uniswapFactories = (await blockQuery(graphUrls[chain], graphQuery, block, blockCatchupLimit))[factoriesName];
+        uniswapFactories = (await blockQuery(endpoint, graphQuery, { api, blockCatchupLimit, }))[factoriesName];
       }
 
       const usdTvl = Number(uniswapFactories[0][tvlName])
@@ -30,48 +32,6 @@ query get_tvl($block: Int) {
   }
 }
 
-function getChainTvlBuffered(graphUrls, bufferSeconds, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD") {
-  const chainFn = getChainTvl(graphUrls, factoriesName, tvlName)
-  return (chain) => {
-    const tvl = chainFn(chain)
-    return async (timestamp, ethBlock, chainBlocks) => {
-      timestamp -= bufferSeconds
-      for (const chainName in chainBlocks) {
-        chainBlocks[chainName] = await getBlock(timestamp, chainName, {}, false)
-      }
-      ethBlock = chainBlocks['ethereum']
-      return await tvl(timestamp, ethBlock, chainBlocks)
-    }
-  }
-}
-
-function getAvaxUniswapTvl(graphUrl, factoriesName = "uniswapFactories", tvlName = "totalLiquidityETH") {
-  const graphQuery = gql`
-query get_tvl($block: Int) {
-  ${factoriesName}(
-    block: { number: $block }
-  ) {
-    ${tvlName}
-  }
-}
-`;
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const response = await request(
-      graphUrl,
-      graphQuery,
-      {
-        block: chainBlocks.avax,
-      }
-    );
-
-    return {
-      'avalanche-2': Number(response[factoriesName][0].totalLiquidityETH)
-    }
-  }
-}
-
 module.exports = {
   getChainTvl,
-  getChainTvlBuffered,
-  getAvaxUniswapTvl
 }

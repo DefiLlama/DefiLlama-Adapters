@@ -4,4 +4,5 @@ module.exports = {
   solana: {
     tvl: () =>  ({}), // project is dead
   },
+  deadFrom: "2022-06-19",
 };

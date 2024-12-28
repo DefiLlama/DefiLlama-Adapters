@@ -1,48 +1,8 @@
-const utils = require("../helper/utils");
-
-function fetchChain(chainId) {
-  return async () => {
-    const response = await utils.fetchURL(
-      "https://api-omnisteaks.ocp.finance/tvl/apps?q=1666600000"
-    );
-
-    let tvl = 0;
-    const tradeTvl = response.data["tradeTvl"];
-    const compTvl = response.data["compTvl"];
-    const vaultTvl = response.data["vaultTvl"];
-    const steakTvl = response.data["steakTvl"];
-    const farmTvl = response.data["farmTvl"];
-
-    tvl =
-      Number(tradeTvl) +
-      Number(compTvl) +
-      Number(vaultTvl) +
-      Number(steakTvl) +
-      Number(farmTvl);
-    if (tvl === 0) {
-      throw new Error(`chain ${chainId} tvl is 0`);
-    }
-    return tvl;
-  };
-}
-
-async function fetch() {
-  const response = await utils.fetchURL(
-    "https://api-omnisteaks.ocp.finance/tvl/apps?q=1666600000"
-  );
-
-  let tvl = 0;
-  tvl = response.data["totalTvl"];
-  if (tvl === 0) {
-    throw new Error("tvl is 0");
-  }
-
-  return tvl;
-}
+const { compoundExports } = require('../helper/compound')
 
 module.exports = {
-  bsc: {
-    fetch: fetchChain(56),
-  },
-  fetch,
+  bsc: compoundExports('0xc001c415b7e78ea4a3edf165d8f44b70391f8c3c', undefined, undefined, { blacklistedTokens: ['0x3c70260eee0a2bfc4b375feb810325801f289fbd', '0x5801d0e1c7d977d78e4890880b8e579eb4943276']}),
+  hallmarks: [
+    [Math.floor(new Date('2022-02-14')/1e3), 'Project abandoned by the team'],
+  ],
 };

@@ -1,33 +1,51 @@
-const { unknownTombs } = require("../helper/unknownTokens")
+const { unknownTombs, sumTokensExport } = require("../helper/unknownTokens");
+const { mergeExports } = require("../helper/utils");
 
-const token = "0x49fB98F9b4a3183Cd88e7a115144fdf00fa6fB95"
-const rewardPool = "0x44B4a1e8f34Bb52ed39854aD218FF94D2D5b4800"
+const rewardPool = ["0xC0608A81Fe9850360B899D5eFC9f34D1cCd58D55"];
 const lps = Object.values({
-    'LION-SVN-LP': '0xD440433dAA33b3e3f2b5421046EAf84bEe6F40D0',
-    'TIGER-SVN-LP': '0xaDeC6aaAa0765472EE9eBe524BD3454Fd733BAB9',
-    'USDC-SVN-LP': '0xe7bEEC1046007BBCf7394076C654640F32456453',
-    'USDC-MMF-LP': '0x722f19bd9a1e5ba97b3020c6028c279d27e4293c',
-    'BEAR-MSHARE-LP': '0xcC091518302CBca55897Fc370e722b01D57D397a',
-    'MMF-SVN-LP': '0xB6E1705BfAFcf1efEE83C135C0F0210653bAB8F0',
-    'LION-USDC-MMF-LP': '0x32aaaaadecbb11c474ddbd4c934523bcfecea8dd',
-    'TIGER-USDC-MMF-LP': '0x4f61a3104eb671bd501b78fb49ed713803609bc0',
-    'BEAR-WBTC-MMF-LP': '0x8cc728a1a35665e000b303eda9c1d774445e3d12',
-    'LION-USDC-LP': '0xf2059ed015ec4ecc80f902d9fdbcd2a227bfe037',
-    'TIGER-USDC-LP': '0xf6464c80448d6ec4deb7e8e5ec95b8eb768fbf69',
-    'BEAR-WBTC-LP': '0x3d9e539fa44b970605658e25d18f816ce78c4007',
-})
+  "LION-USDC-LP": "0x59e38a5799B64fE17c5fAb7E0E5396C15E2acb7b",
+  "TIGER-USDC-LP": "0x6Eff7d2D494bc13949523e3504dE1994a6325F0A",
+  "BEAR-WBTC-LP": "0x9e334ce82f7659d2967C92a4a399aD694F63bbCF",
+});
+
+
+const lpsPrice = Object.values({
+  "LION-USDC-LP": "0x09d6561b3795ae237e42f7adf3dc83742e10a2e8",
+  "TIGER-USDC-LP": "0x7f8ed7d31795dc6f5fc5f6685b11419674361501",
+  "BEAR-WBTC-LP": "0xea848151acb1508988e56ee7689f004df2b15ced",
+});
 
 module.exports = unknownTombs({
   lps,
-  token,
   shares: [
-    '0xD6597AA36DD90d7fCcBd7B8A228F2d5CdC88eAd0', //Tiger
-    '0xaa22aebd60c9eb653a0ae0cb8b7367087a9b5dba', //Bear
+    "0x471F79616569343e8e84a66F342B7B433b958154", //Tiger
   ],
   rewardPool,
-  masonry: [
-    '0x05CaB739FDc0A4CE0642604c78F307C6c543cD6d',
-  ],
-  chain: 'cronos',
+  masonry: ["0x0dB75Ef798a12312afd98d1884577664f4DD4411"],
+  chain: "kava",
   useDefaultCoreAssets: true,
-})
+});
+module.exports.misrepresentedTokens = true;
+
+const lionStaking = {
+  misrepresentedTokens: true,
+  cronos: { tvl: () => 0},
+  kava: {
+    staking: sumTokensExport({
+      tokensAndOwners: [
+
+        ['0x990e157fC8a492c28F5B50022F000183131b9026', '0x199A0CD96065f50F9f7978c7BB47869503a9eD1E'], // Lion cave
+        ['0x471F79616569343e8e84a66F342B7B433b958154', '0x67041094c4fc1492A1AB988Fb8De0ab4A0a4A080'], // Tiger staking
+        ['0x990e157fC8a492c28F5B50022F000183131b9026', '0x3367716f07A85C04340B01D95B618d02c681Be2e'], // Lion ±Staking round 2
+        ['0x990e157fC8a492c28F5B50022F000183131b9026', '0x83E315fC68F97EaFf04468D05eb084C9eD36f649'], // Lion Staking round 3
+        ['0x990e157fC8a492c28F5B50022F000183131b9026', '0xBD98813A2F43587CCeC8c0489a5486d1f6Ef9C50'], // Lion Staking round 1
+
+      ],
+      lps: lpsPrice,
+      useDefaultCoreAssets: true,
+      restrictTokenRatio: 100,
+    }),
+  },
+};
+
+module.exports = mergeExports([module.exports, lionStaking]);

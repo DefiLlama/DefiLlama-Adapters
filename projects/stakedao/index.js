@@ -1,334 +1,243 @@
-const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const { unwrapCrv } = require('../helper/unwrapLPs')
-const { transformAvaxAddress, transformBscAddress } = require('../helper/portedTokens');
-const BigNumber = require("bignumber.js");
+const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache');
+const { get } = require('../helper/http');
 
-// Mainnet
-const crv_3crv_vault = {
-  contract: '0xB17640796e4c27a39AF51887aff3F8DC0daF9567',
-  crvToken: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
-  abi: 'balance'
-}
-const crv_eurs_vault = {
-  contract: '0xCD6997334867728ba14d7922f72c893fcee70e84',
-  crvToken: '0x194eBd173F6cDacE046C53eACcE9B953F28411d1',
-  abi: 'balance'
-}
-const crv_btc_vault = {
-  contract: '0x24129B935AfF071c4f0554882C0D9573F4975fEd',
-  crvToken: '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3',
-  abi: 'balance'
-}
-const crv_frax_vault = {
-  contract: '0x5af15DA84A4a6EDf2d9FA6720De921E1026E37b7',
-  crvToken: '0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B',
-  abi: 'balance'
-}
-const crv_frax_vault2 = {
-  contract: '0x99780beAdd209cc3c7282536883Ef58f4ff4E52F',
-  crvToken: '0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B',
-  abi: 'balance'
-}
-const crv_eth_vault = {
-  contract: '0xa2761B0539374EB7AF2155f76eb09864af075250',
-  crvToken: '0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c',
-  abi: 'balance'
-}
-const crv_perpetual_vault = {
-  contract: '0x52f541764E6e90eeBc5c21Ff570De0e2D63766B6',
-  crvToken: '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
-  abi: 'locked'
-}
-const crv_steth_vault = {
-  contract: '0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065',
-  crvToken: '0x06325440D014e39736583c165C2963BA99fAf14E',
-  abi:'balance'
-}
-const angle_vault = {
-  contract: '0x79B738e404208e9607c3B4D4B3800Ed0d4A0e05F',
-  sanUsdcEurGauge: '0x51fE22abAF4a26631b2913E417c0560D547797a7',
-  usdcToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-  stableMasteFront: '0x5adDc89785D75C86aB939E9e15bfBBb7Fc086A87',
-  usdcPoolManager: '0xe9f183FC656656f1F17af1F2b0dF79b8fF9ad8eD',
-  abi:'balanceOf',
-  abiCM: 'collateralMap'
-}
-const fxs_locker_vault = {
-  contract: '0xCd3a267DE09196C48bbB1d9e842D7D7645cE448f',
-  veFxsToken: '0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0',
-  abi: 'locked'
-}
-const angle_locker_vault = {
-  contract: '0xD13F8C25CceD32cdfA79EB5eD654Ce3e484dCAF5',
-  veAngleToken: '0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5',
-  abi: 'locked'
-}
+const STRATEGIES_ENDPOINT = 'https://api.stakedao.org/api/strategies';
+const LOCKERS_ENDPOINT = 'https://api.stakedao.org/api/lockers';
+const PANCAKESWAP_MASTERCHEF_V3 = '0x556B9306565093C855AEA9AE92A594704c2Cd59e'
 
-// Polygon
-const crv_3crv_vault_polygon = {
-  contract: '0x7d60F21072b585351dFd5E8b17109458D97ec120',
-  crvToken: '0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171',
-  abi: 'balance'
-}
-const crv_btc_vault_polygon = {
-  contract: '0x953Cf8f1f097c222015FFa32C7B9e3E96993b8c1',
-  crvToken: '0xf8a57c1d3b9629b77b6726a042ca48990A84Fb49',
-  abi: 'balance'
-}
-
-// Avalanche
-const crv_3crv_vault_avalanche = {
-  contract: '0x0665eF3556520B21368754Fb644eD3ebF1993AD4',
-  crvToken: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
-  abi: 'balance'
-}
-
-// Harmony
-const crv_3crv_vault_harmony = {
-  contract: '0x787C95Fb37FFc32e36121aD49CA27b7E3D45b77e',
-  crvToken: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023',
-  abi: 'balance'
-}
-
-// BSC
-const btcEPS_vault_bsc = {
-  contract: '0xf479e1252481360f67c2b308F998395cA056a77f',
-  crvToken: '0x2a435ecb3fcc0e316492dc1cdd62d0f189be5640',
-  abi: 'balance'
-}
-const EPS3_vault_bsc = {
-  contract: '0x4835BC54e87ff7722a89450dc26D9dc2d3A69F36',
-  crvToken: '0xaf4de8e872131ae328ce21d909c74705d3aaf452',
-  abi: 'balance'
-}
-const fusdt3EPS_vault_bsc = {
-  contract: '0x8E724986B08F2891cD98F7F71b5F52E7CFF420de',
-  crvToken: '0x373410a99b64b089dfe16f1088526d399252dace',
-  abi: 'balance'
-}
-
-const vaults = [
-  crv_3crv_vault, 
-  crv_eurs_vault, 
-  crv_btc_vault, 
-  crv_frax_vault,
-  crv_frax_vault2,
-  crv_eth_vault,
-  crv_steth_vault,
-]
-
-const vaultsPolygon = [
-  crv_3crv_vault_polygon,
-  crv_btc_vault_polygon
-]
-
-const vaultsAvalanche = [
-  crv_3crv_vault_avalanche
-]
-
-const vaultsHarmony = [
-  crv_3crv_vault_harmony
-]
-
-const vaultsBsc = [
-  btcEPS_vault_bsc,
-  EPS3_vault_bsc,
-  fusdt3EPS_vault_bsc
-]
-
-const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
-const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
-const veSdt = '0x0C30476f66034E11782938DF8e4384970B6c9e8a'
-const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
-const crvToken = '0xD533a949740bb3306d119CC777fa900bA034cd52'
-const fxsToken = '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0'
-const angleToken = '0x31429d1856aD1377A8A0079410B297e1a9e214c2'
-
-async function ethereum(timestamp, block) {
-  let balances = {};
-  const crvInPerpetual = sdk.api.abi.call({
-    target: crv_perpetual_vault.crvToken,
-    block,
-    abi: abi[crv_perpetual_vault.abi],
-    params: crv_perpetual_vault.contract
-  })
-  const fxsInLocker = sdk.api.abi.call({
-    target: fxs_locker_vault.veFxsToken,
-    block,
-    abi: abi[fxs_locker_vault.abi],
-    params: fxs_locker_vault.contract
-  })
-  const angleInLocker = sdk.api.abi.call({
-    target: angle_locker_vault.veAngleToken,
-    block,
-    abi: abi[angle_locker_vault.abi],
-    params: angle_locker_vault.contract
-  })
-  const sanUsdcEurInVault = sdk.api.abi.call({
-    target: angle_vault.sanUsdcEurGauge,
-    block,
-    abi: abi[angle_vault.abi],
-    params: angle_vault.contract
-  })
-  const collateralMap = sdk.api.abi.call({
-    target: angle_vault.stableMasteFront,
-    block,
-    abi: abi[angle_vault.abiCM],
-    params: angle_vault.usdcPoolManager
-  })
-  const sanUsdcEurRate = (await collateralMap).output.sanRate
-  const sanUsdcEurVaultBalance = (await sanUsdcEurInVault).output
-  await Promise.all(vaults.map(async vault=>{
-    const crvBalance = await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi]
-    })
-    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block)
-  }))
-  sdk.util.sumSingleBalance(balances, crvToken, (await crvInPerpetual).output.amount)
-  sdk.util.sumSingleBalance(balances, fxsToken, (await fxsInLocker).output.amount)
-  sdk.util.sumSingleBalance(balances, angleToken, (await angleInLocker).output.amount)
-  sdk.util.sumSingleBalance(balances, angle_vault.usdcToken, (sanUsdcEurVaultBalance * sanUsdcEurRate / 10**18).toFixed(0))
-  return balances
-}
-
-async function staking(timestamp, block){
-  const sdtInSactuary = await sdk.api.erc20.balanceOf({
-    target: sdtToken,
-    owner: sanctuary,
-    block
-  })
-
-  const sdtInArbStrategy = await sdk.api.erc20.balanceOf({
-    target: sdtToken,
-    owner: arbStrat,
-    block
-  })
-
-  const sdtInLocker = await sdk.api.erc20.balanceOf({
-    target: sdtToken,
-    owner: veSdt,
-    block
-  })
-
-  const totalSDTStaked = BigNumber(sdtInSactuary.output)
-  .plus(BigNumber(sdtInArbStrategy.output))
-  .plus(BigNumber(sdtInLocker.output))
-  .toFixed()
-
-  return {
-    [sdtToken]:totalSDTStaked
+const LOCKERS = {
+  curve: {
+    1: '0x52f541764E6e90eeBc5c21Ff570De0e2D63766B6',
+    42161: '0x52f541764E6e90eeBc5c21Ff570De0e2D63766B6'
+  },
+  balancer: {
+    1: '0xea79d1A83Da6DB43a85942767C389fE0ACf336A5'
+  },
+  pendle: {
+    1: '0xD8fa8dC5aDeC503AcC5e026a98F32Ca5C1Fa289A'
+  },
+  yearn: {
+    1: '0xF750162fD81F9a436d74d737EF6eE8FC08e98220'
+  },
+  pancakeswap: {
+    1: '0xB7F79090190c297F59A2b7D51D3AEF7AAd0e9Af3',
+    56: '0x1e6f87a9ddf744af31157d8daa1e3025648d042d',
+    42161: '0xE5244b1A263ce45CF1E51DfA97469711E9bAD68d',
   }
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks) {
-  let balances = {};
-  const block = chainBlocks.polygon
-  await Promise.all(vaultsPolygon.map(async vault=>{
-    const crvBalance = await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi], 
-      chain: 'polygon'
-    })  
-    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'polygon', addr=>`polygon:${addr}`)
-  }))
-  return balances
+
+async function getLPStrategiesMainnet(timestamp, block) {
+  const resp = await Promise.all([
+    getConfig('sakedao/eth-curve', `${STRATEGIES_ENDPOINT}/curve/1.json`),
+    getConfig('sakedao/eth-balancer', `${STRATEGIES_ENDPOINT}/balancer/1.json`),
+    getConfig('sakedao/eth-pendle', `${STRATEGIES_ENDPOINT}/pendle/1.json`),
+    getConfig('sakedao/eth-yearn', `${STRATEGIES_ENDPOINT}/yearn/1.json`),
+  ]);
+
+  const curveStrats = resp[0].deployed.map((strat) => [strat.gaugeAddress, LOCKERS.curve[1]])
+  const balancerStrats = resp[1].deployed.map((strat) => [strat.gaugeAddress, LOCKERS.balancer[1]])
+  const pendleStrats = resp[2].deployed.map((strat) => [strat.lpToken.address, LOCKERS.pendle[1]])
+  const yearnStrats = resp[3].deployed.map((strat) => [strat.gaugeAddress, LOCKERS.yearn[1]])
+
+  return [...curveStrats, ...balancerStrats, ...pendleStrats, ...yearnStrats]
 }
 
-async function avax(timestamp, ethBlock, chainBlocks) {
-  const transformAddress = await transformAvaxAddress()
-  let balances = {};
-  const block = chainBlocks.avax
-  await Promise.all(vaultsAvalanche.map(async vault=>{
-    const crvBalance = await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi], 
-      chain: 'avax'
-    })  
-    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'avax', addr=>`avax:${addr}`)
-  }))
+async function tvl(api) {
+  let vaults = [
+    '0xB17640796e4c27a39AF51887aff3F8DC0daF9567', // crv3_vault_v2 
+    '0xCD6997334867728ba14d7922f72c893fcee70e84', // eurs_vault_v2 
+    '0x5af15DA84A4a6EDf2d9FA6720De921E1026E37b7', // frax_vault_v2 
+    '0x99780beAdd209cc3c7282536883Ef58f4ff4E52F', // frax_vault2_v2 
+    '0xa2761B0539374EB7AF2155f76eb09864af075250', // eth_vault_v2 
+    '0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065', // steth_vault_v2 
+  ]
+  await api.erc4626Sum({ calls: vaults })
 
-  // map from avax to ethereum token address 
-  const dai_eth_address = transformAddress('0xbA7dEebBFC5fA1100Fb055a87773e1E99Cd3507a')
-  const usdc_eth_address = transformAddress('0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
-  const usdt_eth_address = transformAddress('0xde3A24028580884448a5397872046a019649b084')
+  const strategies = await getLPStrategiesMainnet()
 
-  // avDAI
-  const avDAI = 'avax:0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a'
-  balances[dai_eth_address] = balances[avDAI]
-  delete balances[avDAI]
-  // avUSDC
-  const avUSDC = 'avax:0x46A51127C3ce23fb7AB1DE06226147F446e4a857'
-  balances[usdc_eth_address] = balances[avUSDC]
-  delete balances[avUSDC]
-  // avUSDT
-  const avUSDT = 'avax:0x532E6537FEA298397212F09A61e03311686f548e'
-  balances[usdt_eth_address] = balances[avUSDT]
-  delete balances[avUSDT]
+  const resp = (await get(LOCKERS_ENDPOINT)).parsed
 
-  return balances
-}
+  let lockersInfos = resp.filter((locker) => locker.chainId === 1).map((locker) => ({ contract: `${locker.modules.locker}`, veToken: `${locker.modules.veToken}`, token: `${locker.token.address}` }))
 
-async function harmony(timestamp, ethBlock, chainBlocks) {
-  let balances = {};
-  const block = chainBlocks.harmony
-  await Promise.all(vaultsHarmony.map(async vault=>{
-    const crvBalance = await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi], 
-      chain: 'harmony'
-    })
-    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'harmony', addr=>`harmony:${addr}`)
-  }))
-
-  return balances
-}
-
-async function bsc(timestamp, ethBlock, chainBlocks) {
-  let balances = {};
-  const block = chainBlocks.bsc;
-  const transform = await transformBscAddress();
-  await Promise.all(vaultsBsc.map(async vault=>{
-
-    const crvBalance = (await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi], 
-      chain: 'bsc'
-    })).output;
-
-    switch(vault.crvToken) {
-      case '0x2a435ecb3fcc0e316492dc1cdd62d0f189be5640':
-        balances['bitcoin'] = crvBalance / 10 ** 18; break;
-      case '0xaf4de8e872131ae328ce21d909c74705d3aaf452':
-        balances['usd-coin'] = crvBalance / 10 ** 18; break;
-      case '0x373410a99b64b089dfe16f1088526d399252dace':
-        balances['tether'] = crvBalance / 10 ** 18; break;
+  // To deal with special vePendle case
+  const vePendle = '0x4f30A9D41B80ecC5B94306AB4364951AE3170210'
+  const veMAV = '0x4949Ac21d5b2A0cCd303C20425eeb29DCcba66D8'.toLowerCase()
+  const calls = []
+  const callsPendle = []
+  const callsMAV = []
+  for (let i = 0; i < lockersInfos.length; ++i) {
+    if (lockersInfos[i].veToken == vePendle) {
+      callsPendle.push({
+        target: lockersInfos[i].veToken,
+        params: lockersInfos[i].contract
+      })
+    } else if (lockersInfos[i].veToken.toLowerCase() == veMAV) {
+      callsMAV.push({
+        veToken: lockersInfos[i].veToken,
+        contract: lockersInfos[i].contract
+      })
+    } else {
+      calls.push({
+        target: lockersInfos[i].veToken,
+        params: lockersInfos[i].contract
+      })
     }
-  }))
-  return balances
+  }
+
+  let lockerBals = await api.multiCall({ abi: abi.locked, calls })
+  let lockerPendleBal = await api.multiCall({ abi: 'function positionData(address arg0) view returns (uint128 amount, uint128 end)', calls: callsPendle })
+  let lockerMAVBal = []
+
+  for (const { contract, veToken } of callsMAV) {
+    const count = await api.call({ abi: 'function lockupCount(address) view returns (uint256)', target: veToken, params: contract })
+    let balance = 0
+    for (let i = 0; i < count; i++) {
+      const lockup = await api.call({ abi: 'function lockups(address,uint256) view returns (uint256 amount, uint256 end, uint256 points)', target: veToken, params: [contract, i] })
+      balance += +lockup.amount.toString()
+    }
+    lockerMAVBal.push({ amount: balance, end: 0 })
+  }
+
+  for (let i = 0; i < lockersInfos.length; ++i) {
+    let amount;
+    if (lockersInfos[i].veToken == vePendle) {
+      amount = lockerPendleBal.shift().amount
+    } else if (lockersInfos[i].veToken.toLowerCase() == veMAV) {
+      amount = lockerMAVBal.shift().amount
+    } else {
+      amount = lockerBals.shift().amount
+    }
+    api.add(lockersInfos[i].token, amount)
+  }
+
+  return sumTokens2({
+    api,
+    tokensAndOwners: strategies,
+    uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, LOCKERS.pancakeswap[1]]],
+    uniV3ExtraConfig: { nftIdFetcher: PANCAKESWAP_MASTERCHEF_V3 }
+  })
 }
-// node test.js projects/stakedao/index.js
+
+async function staking(api) {
+  const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
+  const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
+  const veSdt = '0x0C30476f66034E11782938DF8e4384970B6c9e8a'
+  const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
+  return sumTokens2({
+    api,
+    owners: [sanctuary, arbStrat, veSdt,],
+    tokens: [sdtToken]
+  })
+}
+
+async function polygon(api) {
+  return api.erc4626Sum({ calls: ['0x7d60F21072b585351dFd5E8b17109458D97ec120'] })
+}
+
+async function avax(api) {
+  return api.erc4626Sum({ calls: ['0x0665eF3556520B21368754Fb644eD3ebF1993AD4'] })
+}
+
+async function addPancakeSwapLPStrategiesBsc(api) {
+  const resp = await Promise.all([
+    getConfig('stakedao/bsc-cake', `${STRATEGIES_ENDPOINT}/pancakeswap/56.json`),
+  ]);
+
+  const strats = resp[0].deployed.filter((strat) => strat.version !== '3')
+  const deposits = await api.multiCall({ abi: 'uint256:totalSupply', calls: strats.map((strat) => strat.sdGauge.address) })
+  const stableStrats = []
+  const defaultStrats = []
+  strats.forEach((strat, i) => {
+    strat.deposits = deposits[i]
+    switch (strat.version) {
+      case 'stable': stableStrats.push(strat); break
+      case '2': api.add(strat.lpToken.address, deposits[i]); break
+      default: defaultStrats.push(strat)
+    }
+  })
+
+  const stableLPsupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: stableStrats.map((strat) => strat.lpToken.address) })
+  const stableToken0Bals = await api.multiCall({ abi: 'function balances(uint256) view returns(uint256)', calls: stableStrats.map((strat) => ({ target: strat.pool, params: 0})) })
+  const stableToken1Bals = await api.multiCall({ abi: 'function balances(uint256) view returns(uint256)', calls: stableStrats.map((strat) => ({ target: strat.pool, params: 1})) })
+  stableStrats.forEach((strat, i) => {
+    const ratio =  strat.deposits / stableLPsupplies[i]
+    api.add(strat.coins[0].address, ratio * stableToken0Bals[i])
+    api.add(strat.coins[1].address, ratio * stableToken1Bals[i])
+  })
+
+  const dGauges = defaultStrats.map(i => i.gaugeAddress)
+  const dLpTokens = defaultStrats.map(i => i.lpToken.address)
+  const adapterAddress = await api.multiCall({  abi: 'address:adapterAddr', calls: dGauges})
+  const tokenPerShares = await api.multiCall({ abi: 'function tokenPerShare() view returns(uint256 _token0PerShare, uint256 _token1PerShare)', calls: adapterAddress })
+  const dLpSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: dLpTokens })
+
+  defaultStrats.forEach((strat, i) => {
+    const ratio = strat.deposits / dLpSupplies[i]
+    api.add(strat.coins[0].address, ratio * tokenPerShares[i]._token0PerShare)
+    api.add(strat.coins[1].address, ratio * tokenPerShares[i]._token1PerShare)
+  })
+}
+
+async function bsc(api) {
+  // CAKE LOCKER
+  const VE_CAKE = '0x5692DB8177a81A6c6afc8084C2976C9933EC1bAB'
+
+  const cakeLock = await api.multiCall({ abi: abi.locks, calls: [{ target: VE_CAKE, params: LOCKERS.pancakeswap[56] }] })
+  api.add('0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', cakeLock[0].amount)
+
+
+  // PANCAKE LP STRATEGIES
+  await addPancakeSwapLPStrategiesBsc(api)
+
+  // PANCAKE NFT STRATEGIES
+  return sumTokens2({
+    api,
+    uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, LOCKERS.pancakeswap[56]]],
+    uniV3ExtraConfig: { nftIdFetcher: PANCAKESWAP_MASTERCHEF_V3 },
+    resolveLP: true,
+  })
+}
+
+async function getLPStrategiesArbitrum(timestamp, block) {
+  const resp = await Promise.all([
+    getConfig('sakedao/arb-curve', `${STRATEGIES_ENDPOINT}/curve/42161.json`),
+  ]);
+
+  const stratsCurve = resp[0].deployed.map((strat) => [strat.gaugeAddress, LOCKERS.curve[42161]])
+
+  return [...stratsCurve]
+}
+
+async function arbitrum(api) {
+  const strategies = await getLPStrategiesArbitrum()
+  const PANCAKESWAP_MASTERCHEF_V3_ARBITRUM = '0x5e09ACf80C0296740eC5d6F643005a4ef8DaA694'
+  return sumTokens2({
+    api,
+    tokensAndOwners: strategies,
+    uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, LOCKERS.pancakeswap[42161]]],
+    uniV3ExtraConfig: { nftIdFetcher: PANCAKESWAP_MASTERCHEF_V3_ARBITRUM }
+  })
+}
+
 module.exports = {
-  ethereum:{
-    tvl: ethereum,
-    staking
+  misrepresentedTokens: true,
+  ethereum: {
+    tvl,
+    staking,
   },
-  polygon:{
-    tvl: polygon
+  polygon: {
+    tvl: polygon,
   },
-  avax:{
-    tvl: avax
-  },
-  harmony: {
-    tvl: harmony
+  avax: {
+    tvl: avax,
   },
   bsc: {
     tvl: bsc,
+  },
+  arbitrum: {
+    tvl: arbitrum
   }
 }

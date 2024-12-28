@@ -11,21 +11,18 @@ module.exports = {
   bsc: {
     tvl: getUniTVL({
       factory: FACTORY.bsc,
-      chain: 'bsc',
       useDefaultCoreAssets: true,
     }),
   },
   fantom: {
     tvl: getUniTVL({
       factory: FACTORY.fantom,
-      chain: 'fantom',
       useDefaultCoreAssets: true,
     }),
   },
   metis: {
     tvl: getUniTVL({
       factory: FACTORY.metis,
-      chain: 'metis',
       useDefaultCoreAssets: true,
     }),
   },

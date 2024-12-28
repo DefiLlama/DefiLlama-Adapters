@@ -1,42 +1,25 @@
-const sdk = require('@defillama/sdk')
-const BigNumber = require("bignumber.js");
-const { getBlock } = require('../helper/getBlock');
-
-async function tvl(timestamp, ethBlock, chainBlocks) {
-
-    /*
-        Mento is an automated market maker (AMM) type of decentralized exchange that’s native to the Celo platform. It’s responsible 
-        for helping the Celo Dollar (cUSD) maintain its peg to the USD. When demand for the stablecoin increases the Celo protocol 
-        mints cUSD and ‘sells’ them for CELO (Celo’s native asset) via Mento. The CELO assets are used as cUSD collateral and are 
-        stored in the Celo reserve. This all happens on-chain. If demand for cUSD decreases then the reverse process happens. 
-        Mento arbitrage opportunities arise in cases where there’s cUSD/USD depeg. This incentive for traders should help 
-        restore the cUSD/USD peg.
-        More info here: https://medium.com/celoorg/zooming-in-on-the-celo-expansion-contraction-mechanism-446ca7abe4f
-    */
-
-    const mento_contract_address = '0x9380fA34Fd9e4Fd14c06305fd7B6199089eD4eb9';
-    const mento_locked_contract_address = '0x246f4599eFD3fA67AC44335Ed5e749E518Ffd8bB';
-
-    const block = chainBlocks.celo
-
-    const mento_pooled = await sdk.api.eth.getBalance({
-        target: mento_contract_address,
-        block,
-        chain: 'celo'
-    })
-
-    const mento_locked_pooled = await sdk.api.eth.getBalance({
-        target: mento_locked_contract_address,
-        block,
-        chain: 'celo'
-    })
-
-    return {
-        'celo': Number(mento_pooled.output) / 1e18 + Number(mento_locked_pooled.output) / 1e18
-    };
-}
+const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress, } = require('../helper/unwrapLPs')
+const { sumTokensExport, } = require('../helper/sumTokens')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
-    methodology: 'TVL counts Celo deposited as collateral to mint cUSD.',
-    celo: { tvl },
+  methodology: 'TVL counts all assets deposited as collateral to mint Mento stablecoins.',
+  celo: {
+    tvl: sumTokensExport({
+      owners: ['0x9380fA34Fd9e4Fd14c06305fd7B6199089eD4eb9', '0x246f4599eFD3fA67AC44335Ed5e749E518Ffd8bB', '0x298FbD6dad2Fc2cB56d7E37d8aCad8Bf07324f67', '0x87647780180b8f55980c7d3ffefe08a9b29e9ae1'],
+      tokens: [nullAddress, ADDRESSES.celo.STEUR, ADDRESSES.celo.USDT_1],
+      chain: 'celo',
+    })
+  },
+  ethereum: {
+    tvl: sumTokensExport({
+      owners: ['0xe1955eA2D14e60414eBF5D649699356D8baE98eE', '0x8331C987D9Af7b649055fa9ea7731d2edbD58E6B', '0x26ac3A7b8a675b741560098fff54F94909bE5E73', '0x16B34Ce9A6a6F7FC2DD25Ba59bf7308E7B38E186', '0xd0697f70E79476195B742d5aFAb14BE50f98CC1E'],
+      tokens: [nullAddress, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.DAI, ADDRESSES.ethereum.SDAI, ADDRESSES.ethereum.STETH ],
+      chain: 'ethereum',
+    })
+  },
+  bitcoin: {
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.mento })
+  }
 }

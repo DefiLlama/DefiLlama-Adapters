@@ -1,0 +1,11 @@
+{
+  "factory": "address:factory",
+  "tokenOfOwnerByIndex": "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
+  "liquidities": "function liquidities(uint256) view returns (int24 leftPt, int24 rightPt, uint128 liquidity, uint256 lastFeeScaleX_128, uint256 lastFeeScaleY_128, uint256 remainTokenX, uint256 remainTokenY, uint128 poolId)",
+  "pool": "function pool(address, address, uint24) view returns (address)",
+  "state": "function state() view returns (uint160 sqrtPrice_96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint128 liquidity, uint128 liquidityX)",
+  "poolMetas": "function poolMetas(uint128) view returns (address tokenX, address tokenY, uint24 fee)",
+  "fixRangeMiningInfo": "function getMiningContractInfo() view returns (address tokenX_, address tokenY_, uint24 fee_, tuple(address rewardToken, address provider, uint256 accRewardPerShare, uint256 rewardPerBlock)[] rewardInfos_, address iziTokenAddr_, int24 rewardUpperTick_, int24 rewardLowerTick_, uint256 lastTouchBlock_, uint256 totalVLiquidity_, uint256 startBlock_, uint256 endBlock_)",
+  "totalNIZI": "uint256:totalNIZI",
+  "DynamicRangeMiningInfo": "function getMiningContractInfo() view returns (address tokenX_, address tokenY_, uint24 fee_, address iziTokenAddr_, uint256 lastTouchBlock_, uint256 totalVLiquidity_, uint256 totalTokenX_, uint256 totalTokenY_, uint256 totalNIZI_, uint256 startBlock_, uint256 endBlock_)"
+}

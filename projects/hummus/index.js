@@ -1,46 +1,25 @@
-const sdk = require("@defillama/sdk");
-const { staking } = require("../helper/staking");
-const constants = require("./constants");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-async function balanceOf(owner, target, block) {
-  const chain = "metis";
-  let decimals = (await sdk.api.erc20.decimals(target, chain)).output;
-  let balance = (
-    await sdk.api.erc20.balanceOf({
-      owner,
-      target,
-      block,
-      chain,
-    })
-  ).output;
-  return Number(balance) / 10 ** decimals;
-}
-
-async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  const block = chainBlocks["metis"];
-  let balances = {};
-
-  for (const key in constants) {
-    const { id, addresses } = constants[key];
-    let totalBalance = 0;
-    for (const { token, lpTokens } of addresses) {
-      for (const lpToken of lpTokens) {
-        totalBalance += await balanceOf(lpToken, token, block);
-      }
-    }
-    balances[id] = totalBalance;
-  }
-
-  return balances;
-}
-
-module.exports = {
+const config = {
   metis: {
-    tvl,
-    staking: staking(
-      "0x89351BEAA4AbbA563710864051a8C253E7b3E16d", // veHUM
-      "0x4aAC94985cD83be30164DfE7e9AF7C054D7d2121", // HUM
-      "metis"
-    ),
+    pools: [
+      "0x248fD66e6ED1E0B325d7b80F5A7e7d8AA2b2528b", // main
+      "0x5b7e71F6364DA1716c44a5278098bc46711b9516", // mai
+      "0x9D73ae2Cc55EC84e0005Bd35Fd5ff68ef4fB8aC5", // busd
+      "0x7AA7E41871B06f15Bccd212098DeE98d944786ab", // old
+    ]
   },
-};
+}
+
+async function tvl(api) {
+  const { pools } = config[api.chain]
+  const tokensArray = await api.multiCall({ abi: "address[]:getTokenAddresses", calls: pools })
+  const tokens = tokensArray.flat()
+  const calls = tokensArray.map((t, i) => t.map((token) => ({ target: pools[i], params: token }))).flat()
+  const owners = await api.multiCall({ abi: "function assetOf(address) view returns (address)", calls })
+  return sumTokens2({ api, tokensAndOwners2: [tokens, owners], });
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

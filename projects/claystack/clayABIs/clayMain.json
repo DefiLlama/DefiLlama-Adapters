@@ -1,25 +1,3 @@
 {
-  "funds": {
-    "inputs": [],
-    "name": "funds",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "currentDeposit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "stakedDeposit",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "accruedFees",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "funds": "function funds() view returns (uint256 currentDeposit, uint256 stakedDeposit, uint256 accruedFees)"
 }

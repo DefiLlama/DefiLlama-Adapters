@@ -1,14 +1,15 @@
+import * as sdk from "@defillama/sdk";
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
+import { Liq } from "../utils/types";
 
-const subgraphUrl =
-  "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
+const subgraphUrl = sdk.graph.modifyEndpoint('EQBXhrF4ppZy9cBYnhPdrMCRaVas6seNpqviih5VRGmU');
 
 const accountsQuery = gql`
-  query accounts($lastId: ID) {
+  query accounts($lastId: ID, $pageSize: Int) {
     # subgraph bug - balances_: {amount_not: "0"} filter doesn't work
-    accounts(first: 1000, where: { id_gt: $lastId }) {
+    accounts(first: $pageSize, where: { id_gt: $lastId }) {
       id
       # if account_id != topLevelAccount_id then it's a sub-account, needs to be remapped for "owner" in the end
       topLevelAccount {
@@ -120,12 +121,10 @@ const mapAsset = (asset: Asset): MappedAsset => {
   };
 };
 
+const INSPECTOR_BASE_URL = "https://app.euler.finance/dashboard?spy=";
+
 const positions = async () => {
-  const _accounts = (await getPagedGql(
-    subgraphUrl,
-    accountsQuery,
-    "accounts"
-  )) as Account[];
+  const _accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
 
   const accounts = _accounts.map((x) => {
     const _balances = x.balances.filter((b) => b.amount !== "0");
@@ -147,16 +146,8 @@ const positions = async () => {
       let totalAdjustedCollateral = new BigNumber(0);
       const debts = account.balances.map((balance) => {
         const mappedAsset = mapAsset(balance.asset);
-        const {
-          id,
-          borrowFactor,
-          decimals,
-          borrowIsolated,
-          collateralFactor,
-          currPriceUsd,
-          symbol,
-          tier,
-        } = mappedAsset;
+        const { id, borrowFactor, decimals, borrowIsolated, collateralFactor, currPriceUsd, symbol, tier } =
+          mappedAsset;
         // everything is in WAD on euler
         const amount = new BigNumber(balance.amount).div(1e18);
         let adjustedDebt: BigNumber;
@@ -164,9 +155,7 @@ const positions = async () => {
           adjustedDebt = amount.div(borrowFactor).times(currPriceUsd).negated();
         } else {
           adjustedDebt =
-            tier === "collateral"
-              ? amount.times(collateralFactor).times(currPriceUsd).negated()
-              : new BigNumber(0);
+            tier === "collateral" ? amount.times(collateralFactor).times(currPriceUsd).negated() : new BigNumber(0);
         }
 
         if (adjustedDebt.gt(0)) {
@@ -191,31 +180,31 @@ const positions = async () => {
         .filter(({ adjustedDebt }) => adjustedDebt.lt(0))
         .map((pos) => {
           const usdPosNetAdjustedCollateral = pos.adjustedDebt.negated();
-          const otherAdjustedCollateral = totalAdjustedCollateral.minus(
-            usdPosNetAdjustedCollateral
-          );
-          const diffAdjustedDebt = totalAdjustedDebt.minus(
-            otherAdjustedCollateral
-          );
+          const otherAdjustedCollateral = totalAdjustedCollateral.minus(usdPosNetAdjustedCollateral);
+          const diffAdjustedDebt = totalAdjustedDebt.minus(otherAdjustedCollateral);
 
           if (diffAdjustedDebt.gt(0)) {
-            const amountAdjustedCollateral = usdPosNetAdjustedCollateral.div(
-              pos.currPriceUsd
-            );
-            const liquidationPrice = diffAdjustedDebt.div(
-              amountAdjustedCollateral
-            );
+            const amountAdjustedCollateral = usdPosNetAdjustedCollateral.div(pos.currPriceUsd);
+            const liquidationPrice = diffAdjustedDebt.div(amountAdjustedCollateral);
             return {
               owner: account.topLevelAccount.id,
               liqPrice: liquidationPrice.toNumber(),
               collateral: "ethereum:" + pos.token,
-              collateralAmount: pos.amount
-                .times(10 ** Number(pos.decimals))
-                .toFixed(0),
+              collateralAmount: pos.amount.times(10 ** Number(pos.decimals)).toFixed(0),
+              extra: {
+                url: INSPECTOR_BASE_URL + account.topLevelAccount.id,
+              },
+            } as Liq;
+          } else {
+            return {
+              owner: "",
+              liqPrice: 0,
+              collateral: "",
+              collateralAmount: "",
             };
           }
         })
-        .filter((t) => t !== undefined);
+        .filter((t) => !!t.owner);
 
       return liquidablePositions;
     })

@@ -1,15 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens } = require('../helper/unwrapLPs')
 
-const abi = { 
-  "constant": true, 
-  "inputs": [], 
-  "name": "exchangeRateStored", 
-  "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], 
-  "payable": false, 
-  "stateMutability": "view", 
-  "type": "function" 
-};
+const abi = "uint256:exchangeRateStored"
 
 const cLINK = '0xface851a4921ce59e912d19329929ce6da6eb0c7';
 
@@ -68,7 +61,7 @@ async function getTokenHolderList(chain) {
       ]
     }
   }
-};
+}
 
 function tvl(chain) {
   return {
@@ -89,18 +82,18 @@ function tvl(chain) {
           chain
         })).output;
     
-        balances['0x514910771af9ca656af840dff83e8264ecf986ca'] = 
+        balances[ADDRESSES.ethereum.LINK] = 
           balances[cLINK] * (exchangeRate / 10 ** 28);
         delete balances[cLINK];
-      };
+      }
     
       return balances;
     }
   }
-};
+}
 
 module.exports = {
-  start: 1621340071,
+  start: '2021-05-18',
   ethereum: tvl('ethereum'),
   fantom: tvl('fantom'),
   avax: tvl('avax'),

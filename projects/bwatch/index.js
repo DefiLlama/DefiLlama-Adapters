@@ -1,18 +1,16 @@
-const retry = require('async-retry');
-const axios = require("axios");
+const { get } = require('../helper/http')
 const BigNumber = require("bignumber.js");
 
 const API = 'https://mtg-api.b.watch/api/etfs'
 
 async function fetchBwatch() {
-  const resp = await retry(async bail => await axios.get(API))
-  const etfs = resp.data.data.etfs;
-  let sum = new BigNumber(0);
+  const resp = await get(API)
+  const etfs = resp.data.etfs;
+  let sum = 0;
   for (let ix = 0; ix < etfs.length; ix++) {
-    const etf = etfs[ix];
-    sum = sum.plus(new BigNumber(etf.circulating_supply).times(etf.price))
+    sum += etfs[ix].gems.reduce((acc, i)=>acc+i.price*i.balance, 0);
   }
-  return sum.toFixed(2);
+  return sum;
 }
 
 async function fetch() {
@@ -21,6 +19,9 @@ async function fetch() {
 }
 
 module.exports = {
+  mixin: {
+    fetch
+  },
   fetch
 }
 

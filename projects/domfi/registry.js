@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ZERO_ADDRESS = ADDRESSES.null;
 
 const Chain = {
   ETHEREUM: 'ethereum',
@@ -8,9 +9,9 @@ const Chain = {
 }
 
 const usdc = {
-  [Chain.ETHEREUM]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  [Chain.POLYGON]: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-  [Chain.BOBA]: "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc",
+  [Chain.ETHEREUM]: ADDRESSES.ethereum.USDC,
+  [Chain.POLYGON]: ADDRESSES.polygon.USDC,
+  [Chain.BOBA]: ADDRESSES.boba.USDC,
 }
 
 const lsps = {

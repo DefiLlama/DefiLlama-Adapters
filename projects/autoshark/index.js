@@ -61,6 +61,6 @@ module.exports = {
   methodology: "Liquidity from the finsFactory is counted as TVL",
   bsc: {
     tvl,
-    staking: staking(jawsPool, jaws, "bsc"),
+    staking: staking(jawsPool, jaws),
   },
 };
