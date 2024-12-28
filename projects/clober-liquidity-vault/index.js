@@ -8,7 +8,7 @@ const abi = {
 
 const config = {
   base: {
-    rebalancer: '0x13f2Ff6Cc952f4181D6c316426e9CbdA957c6482',
+    rebalancer: '0x6A0b87D6b74F7D5C92722F6a11714DBeDa9F3895',
     bookManager: '0x382CCccbD3b142D7DA063bF68cd0c89634767F76',
     fromBlock: 21715410,
   },

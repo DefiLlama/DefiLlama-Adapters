@@ -26,7 +26,9 @@ const chains = [
   "fraxtal",
   "xlayer",
   "bsc",
-  "mantle"
+  "mantle",
+  "taiko",
+  "corn",
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -106,8 +108,11 @@ async function getPools(block, chain) {
   if (contracts[chain].CurveStableswapFactoryNG) {
     registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
   }
-  if (contracts[chain].CurveL2TricryptoFactory) {
-    registriesMapping.CurveL2TricryptoFactory = contracts[chain].CurveL2TricryptoFactory
+  if (contracts[chain].CurveTricryptoFactoryNG) {
+    registriesMapping.CurveTricryptoFactoryNG = contracts[chain].CurveTricryptoFactoryNG
+  }
+  if (contracts[chain].CurveTwocryptoFactoryNG) {
+    registriesMapping.CurveTwocryptoFactoryNG = contracts[chain].CurveTwocryptoFactoryNG
   }
   const poolList = {}
   await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
@@ -165,7 +170,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
   const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
   let nCoins = {}
-  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory'].includes(registry))
+  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory', 'CurveTricryptoFactoryNG', 'CurveTwocryptoFactoryNG'].includes(registry))
     nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
 
   let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
@@ -254,7 +259,7 @@ module.exports = chainTypeExports(chains);
 module.exports.ethereum["staking"] = staking(
   contracts.ethereum.veCRV,
   contracts.ethereum.CRV
-);
+); 
 
 module.exports.harmony = {
   tvl: async (api) => {

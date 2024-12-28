@@ -22,6 +22,7 @@ module.exports = {
     ADDRESSES.bsc.USDC, //usdc
     '0xf6718b2701d4a6498ef77d7c152b2137ab28b8a3', //stBTC
     '0x4aae823a6a0b376de6a78e74ecc5b079d38cbcf7', //SolvBTC
+    '0x2a3dc2d5daf9c8c46c954b8669f4643c6b1c081a', //uBTC
   ], }) },
   op_bnb: {
     tvl: sumTokensExport({ owners: opbnb_owners, tokens: [
@@ -59,8 +60,8 @@ module.exports = {
       ADDRESSES.base.USDC, //USDC
       '0x3b86ad95859b6ab773f55f8d94b4b9d443ee931f', //SolvBTC
       '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',//cbBTC
-      '0x04c0599ae5a44757c0af6f9ec3b93da8976c150a',//weETH
-      '0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452',//wstETH
+      ADDRESSES.blast.weETH,//weETH
+      ADDRESSES.base.wstETH,//wstETH
       ] })
   },
 };

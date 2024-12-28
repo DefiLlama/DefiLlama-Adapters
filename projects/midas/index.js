@@ -7,6 +7,9 @@ const config = {
   base: {
     mTBILL: '0xDD629E5241CbC5919847783e6C96B2De4754e438',
     mBASIS: '0x1C2757c1FeF1038428b5bEF062495ce94BBe92b2',
+  },
+  sapphire: {
+    mTBILL: '0xDD629E5241CbC5919847783e6C96B2De4754e438',
   }
 }
 

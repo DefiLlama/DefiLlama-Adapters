@@ -10,6 +10,7 @@ async function tvl() {
 
 module.exports = {
     timetravel: false,
+    doublecounted: true,
     solana: { tvl },
     methodology: 'The TVL is calculated by summing all restaked assets.',
 };
