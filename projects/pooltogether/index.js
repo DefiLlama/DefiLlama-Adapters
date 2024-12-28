@@ -6,9 +6,9 @@ module.exports = {
   doublecounted: true,
   hallmarks: [
     [1_634_320_800, 'V4 Launch'],
-    [1_658_872_800, 'V4 OP Rewards Begin'],
-    [1_669_615_200, 'V4 OP Rewards Extended'],
-    [1_697_738_400, 'V5 Launch']
+    [1_693_453_300, 'V5 Beta Launch'],
+    [1_697_738_400, 'V5 Canary Launch'],
+    [1_713_399_300, 'V5 Launch']
   ],
   methodology: `TVL is the total tokens deposited in PoolTogether`
 }

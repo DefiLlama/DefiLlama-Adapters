@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const abi = require('./abi.json');
 const voterProxy = '0xe96c48C5FddC0DC1Df5Cf21d68A3D8b3aba68046';
 const masterWombat = '0x489833311676B566f888119c29bd997Dc6C95830';
@@ -39,6 +39,7 @@ async function voterProxyBalances(api) {
 }
 
 async function tvl(api) {
+  api.add("0xf4c8e32eadec4bfe97e0f595add0f4450a863a11", await api.call({ abi: 'function balanceOfNFT(uint256) returns (uint256)', target: "0xfbbf371c9b0b994eebfcc977cef603f7f31c070d", params: [16274], }))
   api.add(wom, await api.call({ abi: 'erc20:balanceOf', target: veWom, params: [voterProxy], }))
   await voterProxyBalances(api)
 }
@@ -48,8 +49,8 @@ module.exports = {
     "TVL of Quoll Finance consists of Wombat LP tokens staked in MasterWombat, WOM tokens locked in veWOM, and Quoll tokens locked in QUO Vote Lock contract.",
   bsc: {
     tvl,
-    staking: staking(
-      quoLocker,
+    staking: stakings(
+      [quoLocker, "0xc634c0A24BFF88c015Ff32145CE0F8d578B02F60"],
       quo,
       chain
     ),

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { aaveExports, methodology, } = require("../helper/aave");
@@ -41,12 +42,12 @@ const config = {
     '0x58b0BB56CFDfc5192989461dD43568bcfB2797Db',
     '0x6350e53461c7C95964D699cfa4e84cec993eebb1'
   ] , tokens: [
-    '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
-    '0x55d398326f99059fF775485246999027B3197955',
-    '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-    '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-    '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
-    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    ADDRESSES.bsc.BTCB,
+    ADDRESSES.bsc.USDT,
+    ADDRESSES.bsc.BUSD,
+    ADDRESSES.bsc.USDC,
+    ADDRESSES.bsc.ETH,
+    ADDRESSES.bsc.WBNB,
     '0xa2E3356610840701BDf5611a53974510Ae27E2e1'
   ]},
   arbitrum: {aTokens: [
@@ -63,18 +64,18 @@ const config = {
     '0xd15a6568Dc891Fd04Aa2f64aF56C66C2bede59d6',
     '0x19f0bE6a603967c72bE32a30915a38d52cA31Ae2'
   ] , tokens: [
-    '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
-    '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-    '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-    '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
-    '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-    '0x5979D7b546E38E414F7E9822514be443A4800529',
-    '0x912CE59144191C1204E64559FE8253a0e49E6548',
-    '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    ADDRESSES.arbitrum.WBTC,
+    ADDRESSES.arbitrum.USDT,
+    ADDRESSES.arbitrum.USDC,
+    ADDRESSES.optimism.DAI,
+    ADDRESSES.arbitrum.WETH,
+    ADDRESSES.arbitrum.WSTETH,
+    ADDRESSES.arbitrum.ARB,
+    ADDRESSES.arbitrum.USDC_CIRCLE,
     '0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe',
     '0x47c031236e19d024b42f8AE6780E44A573170703',
     '0x70d95587d40A2caf56bd97485aB3Eec10Bee6336',
-    '0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34'
+    ADDRESSES.arbitrum.USDe
   ]},
 }
 

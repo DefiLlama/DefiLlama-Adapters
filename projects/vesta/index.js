@@ -57,7 +57,7 @@ module.exports = {
     tvl,
     pool2,
   },
-  start: 1644339600,
+  start: '2022-02-08',
     methodology:
     "Total Value Locked includes all stability pools, troves, and vst pairs",
 };

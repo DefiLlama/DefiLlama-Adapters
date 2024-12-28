@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/sumTokens');
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const abi = {
   "getPoolManagerReserveInformation": "function getPoolManagerReserveInformation() view returns (tuple(uint256 userAmount, uint256 collateral, uint256 debt, uint256 claimableUSDT, uint256 claimableBTC) poolManagerReserveInfor)"
@@ -11,14 +12,7 @@ const config = {
 }
 
 // @dev btcOwnersOfCedefi: Bitcoin owners of the Avalon CeDefi pool contract.
-const btcOwnersOfCedefi = [
-'32DgQPVHSV6FSxLnw68nggvchp3ZNKquxA',
-'bc1qr5nz7n8ulcdz0w3s6fska80fawxhvqlh273qypm3rkjequ9wpmhs65ppw7',
-'bc1qhu98nf6ddz6ja73rn72encdr8ezsyhexwpdzap0vcs7lg2wpmrnq5ygfsl',
-'bc1qg6asmzjr7nr5f5upg3xqyrdxl2tq8ef58hha7t0s82mzzx6zjxesyccp4h',
-'bc1qxe3md4lehg8gmrlx3e8xqju5mytt266l4hcy8khl6tm5mahghmeqtxlgqq',
-'bc1qy48h0kuv0r3e330wjfs6r74sk49pkzumnm907t5mhqjxml22r3ss2ucuxc',
-]
+const btcOwnersOfCedefi = bitcoinAddressBook.avalonCedefi
 
 // @dev getMetrics: call to get the collateral and debt of the Avalon CeDefi pool contract.
 const getMetrics = async (api, borrowed) => {
@@ -28,9 +22,9 @@ const getMetrics = async (api, borrowed) => {
   // const balanceOfCollateral = marketData.collateral;
   const balanceOfDebt = marketData.debt;
   if (!borrowed) {
-    const supply= await api.call({  abi: 'erc20:totalSupply', target: '0x3119a1AD5B63A000aB9CA3F2470611eB997B93B9'})
-    api.add('0x3119a1AD5B63A000aB9CA3F2470611eB997B93B9', supply)
-
+    // pool balance of lfbtc
+    const balance = await api.call({  abi: 'erc20:balanceOf', target: config[api.chain].lfbtcAddress, params: poolAddress})
+    api.add(config[api.chain].lfbtcAddress, balance)
   }
 
   if (borrowed)
@@ -46,11 +40,11 @@ module.exports = {
     tvl: (api) => getMetrics(api, false),
     borrowed: (api) => getMetrics(api, true),
   },
-  bitcoin: {
-    tvl: sdk.util.sumChainTvls([
-      sumTokensExport({ owners: btcOwnersOfCedefi }),
-    ]),
-  },
+  // bitcoin: {
+  //   tvl: sdk.util.sumChainTvls([
+  //     sumTokensExport({ owners: btcOwnersOfCedefi }),
+  //   ]),
+  // },
 }
 
 delete module.exports.bitcoin

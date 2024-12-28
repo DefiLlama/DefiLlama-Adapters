@@ -1,6 +1,7 @@
 
 const { GraphQLClient, } = require('graphql-request')
 const { transformBalances } = require('../portedTokens')
+const { fuel: { query }} = require('./rpcProxy')
 const client = new GraphQLClient('https://mainnet.fuel.network/v1/graphql')
 
 async function sumTokens({ api, owner, owners, token, tokens = [], tokensAndOwners = [] }) {
@@ -8,17 +9,23 @@ async function sumTokens({ api, owner, owners, token, tokens = [], tokensAndOwne
     tokens = [token]
   if (owner)
     owners = [owner]
-  if (owners)
+
+  if (owners.length && !tokens.length) {
+    await addAllTokenBalances({ api, owners })
+  } else if (owners.length)
     tokensAndOwners = tokens.map(token => owners.map(owner => [token, owner])).flat()
 
   tokensAndOwners = getUniqueToA(tokensAndOwners)
 
-  const query = tokensAndOwners.map(([token, owner], i) => `q${i}: contractBalance(
-  contract: "${owner}"  asset: "${token}"
-) { contract assetId amount}`).join('\n');
+  if (tokensAndOwners.length) {
+    const query = tokensAndOwners.map(([token, owner], i) => `q${i}: contractBalance(
+    contract: "${owner}"  asset: "${token}"
+  ) { contract assetId amount}`).join('\n');
 
-  const results = await client.request(`{${query}}`)
-  Object.values(results).forEach(i => api.add(i.assetId, i.amount))
+    const results = await client.request(`{${query}}`)
+    Object.values(results).forEach(i => api.add(i.assetId, i.amount))
+  }
+
   return transformBalances('fuel', api.getBalances())
 
   function getUniqueToA(toa) {
@@ -28,22 +35,21 @@ async function sumTokens({ api, owner, owners, token, tokens = [], tokensAndOwne
   }
 }
 
-async function sumAllTokens({ api, owners = [] }) {
-  const query = owners.map((owner, i) => `q${i}: contractBalances(
-    filter: { contract: "${owner}" }, first: 100
-  ) { nodes { assetId amount } }`).join('\n');
+async function addAllTokenBalances({ api, owners = [] }) {
 
-  const results = await client.request(`{${query}}`);
-  Object.values(results).forEach(res => {
-    res.nodes.forEach(node => {
+  for (const owner of owners) {
+    const query = `contractBalances(
+        filter: { contract: "${owner}" }, first: 1000
+      ) { nodes { assetId amount } }`
+
+    const results = await client.request(`{${query}}`)
+    results.contractBalances.nodes.forEach(node => {
       api.add(node.assetId, node.amount);
-    });
-  });
-
-  return transformBalances('fuel', api.getBalances());
+    })
+  }
 }
 
 module.exports = {
   sumTokens,
-  sumAllTokens
+  query,
 }

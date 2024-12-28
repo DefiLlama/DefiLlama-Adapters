@@ -10,7 +10,7 @@ const SALT_CONTRACT = '0x0110B0c3391584Ba24Dbf8017Bf462e9f78A6d9F'
 const STAKING_CONTRACT = '0x7c6f5E73210080b093E724fbdB3EF7bcdd6D468b'
 
 module.exports = {
-  start: 1713700739,
+  start: '2024-04-21',
 }
 
 Object.keys(config).forEach(chain => {

@@ -26,7 +26,7 @@ module.exports = {
   optimism:{
     tvl: tvlV2Onchain
   },
-  start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
+  start: '2020-10-07', // unix timestamp (utc 0) specifying when the project began, or where live data begins
   hallmarks: [
     [1613178000, "37M exploit"], // Feb 13, 2021
     [1626220800, "Upgrade to V2 on ETH"], // July 14, 2021 00:00 UTC

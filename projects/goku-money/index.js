@@ -48,7 +48,7 @@ function getCollateralOwnersAndToken() {
 
 
 module.exports = {
-  start: 1698768000, // 01 Nov 2023
+  start: '2023-10-31', // 01 Nov 2023
   methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked GAI in StabilityPool",
   manta: {
     tvl: sumTokensExport({

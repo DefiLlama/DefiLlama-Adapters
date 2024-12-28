@@ -11,6 +11,7 @@ async function fetch() {
 }
 
 module.exports = {
+  deadFrom: "2024-06-01",
   timetravel: false,
   misrepresentedTokens: true,
   vite:{

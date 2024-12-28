@@ -6,7 +6,6 @@ const TIME_LOCK_CONTRACT = '0x8Bb6CaE3f1CADA07Dd14bA951e02886ea6bBA183';
 
 module.exports = {
   methodology: 'counts the number of (MANTA OR STONE) in the time lock contract.',
-  start: 1497066,
   manta: {
     tvl: sumTokensExport({ owner: TIME_LOCK_CONTRACT, tokens: [MANTA, STONE] }),
   }
