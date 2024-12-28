@@ -4,8 +4,7 @@ const { nullAddress } = require('../helper/tokenMapping')
 const { lendingMarket } = require("../helper/methodologies");
 
 
-const u = undefined
-const { tvl, borrowed } = compoundExports('0x2c7b7A776b5c3517B77D05B9313f4699Fb38a8d3',u,'0x36e66547e27a5953f6ca3d46cc2663d9d6bdc59e', nullAddress, undefined, undefined, { fetchBalances: true, blacklistedTokens: ['0x53011e93f21ec7a74cdfbb7e6548f1abce306833'] })
+const { tvl, borrowed } = compoundExports('0x2c7b7A776b5c3517B77D05B9313f4699Fb38a8d3','0x36e66547e27a5953f6ca3d46cc2663d9d6bdc59e', nullAddress, { blacklistedTokens: ['0x53011e93f21ec7a74cdfbb7e6548f1abce306833'] })
 
 const mapping = {
   [ADDRESSES.ethereum.USDC]: 6,

@@ -8,7 +8,8 @@ const config = {
   zklink: '0x4Ac518DbF0CC730A1c880739CFa98fe0bB284959',
   bsquared: '0x72f7a8eb9F83dE366AE166DC50F16074076C3Ea6',
   bob: '0x77cabFd057Bd7C81c011059F1bf74eC1fBeDa971',
-  btr: '0xf1E25704e75dA0496B46Bf4E3856c5480A3c247F'
+  btr: '0xf1E25704e75dA0496B46Bf4E3856c5480A3c247F',
+  mint: '0x0f225d10dd29D4703D42C5E93440F828bf04D150'
 }
 
 const abis = {
@@ -19,9 +20,9 @@ const abis = {
 
 Object.keys(config).forEach(chain => {
   const comptroller = config[chain]
-  module.exports[chain] = compoundExports2({ comptroller, fetchBalances: true, abis, })
+  module.exports[chain] = compoundExports2({ comptroller, abis, })
 })
 
 module.exports = mergeExports([module.exports, {
-  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', fetchBalances: true, abis, }),
+  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, }),
 }])
