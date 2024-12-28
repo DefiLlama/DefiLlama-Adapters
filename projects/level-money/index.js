@@ -33,6 +33,12 @@ const TOKEN_CONTRACTS = [
     "0x5C5b196aBE0d54485975D1Ec29617D42D9198326", // stdeUSD
     AUSDC,
     AUSDT,
+    "0x437cc33344a0B27A429f795ff6B469C72698B291", // smart M
+    "0x8a60e489004ca22d775c5f2c657598278d17d9c2", // USDa (Avalon)
+    "0x2b66aade1e9c062ff411bd47c44e0ad696d43bd9", // staked USDa (Avalon)
+    "0x4956b52aE2fF65D74CA2d61207523288e4528f96", // RLP
+    "0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110", // USR
+    "0xfd03723a9a3abe0562451496a9a394d2c4bad4ab" // DYAD
 ];
 
 module.exports = {
