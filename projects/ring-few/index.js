@@ -9,7 +9,7 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const fewTokens = await api.fetchList({ lengthAbi: 'allWrappedTokensLength', itemAbi: 'allWrappedTokens', target: config[chain].factory })
       const tokens = await api.multiCall({ abi: 'address:token', calls: fewTokens })
       const symbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true })

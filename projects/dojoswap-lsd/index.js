@@ -6,7 +6,7 @@ const ADDRESSES = {
   MULTICAL_CONTRACT: 'inj1578zx2zmp46l554zlw5jqq3nslth6ss04dv0ee'
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const data = await queryContract({chain: api.chain, contract: ADDRESSES.LSD_CONTRACT,  data: { state: {} }})
 
   return {

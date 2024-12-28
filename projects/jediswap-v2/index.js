@@ -1,9 +1,7 @@
 const { sumTokens } = require('../helper/chain/starknet')
 const { cachedGraphQuery } = require('../helper/cache')
-const factory = '0x04ba0de31008f4e3edd42b3c31db8f49490505885d684b78f5aa1572850b3a5a'
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const query = '{  pools (first: 1000) {    poolAddress    token0 {      tokenAddress    }    token1 {      tokenAddress    }  }}'
   const { pools } = await cachedGraphQuery('starknet-jediswap-v2', 'https://api.v2.jediswap.xyz/graphql', query)
   const t = str => str.replace('0x', '0x0')

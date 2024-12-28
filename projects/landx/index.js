@@ -31,7 +31,7 @@ async function getXTokensTVL(api) {
   })
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   await Promise.all([
     getCTokensTVL(api),
     getXTokensTVL(api),

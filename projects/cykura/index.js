@@ -91,13 +91,7 @@ async function tvl() {
   const provider = getProvider()
   const program = new Program(idl, idl.metadata.address, provider)
   const amms = await program.account.poolState.all()
-  const toa = []
-  amms.forEach(amm => {
-    toa.push([amm.account.token0.toString(), amm.publicKey.toString()])
-    toa.push([amm.account.token1.toString(), amm.publicKey.toString()])
-  })
-
-  return sumTokens2({ tokensAndOwners: toa, });
+  return sumTokens2({ owners: amms.map(i => i.publicKey.toString()), });
 }
 
 module.exports = {

@@ -51,13 +51,13 @@ const config = {
 
 module.exports = {
   methodology: 'TVL counts the ERC20 tokens on the exchange contracts.',
-  start: 1685610580, // June 1, 2023 @ 9:09:40 (UTC +0)
+  start: '2023-06-01', // June 1, 2023 @ 9:09:40 (UTC +0)
 }
 
 Object.keys(config).forEach(chain => {
   const { exchanges } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const baseTokens = await api.multiCall({ abi: 'address:baseToken', calls: exchanges })
       const quoteTokens = await api.multiCall({ abi: 'address:quoteToken', calls: exchanges })
       return sumTokens2({ api, tokensAndOwners: exchanges.map((v, i) => [[baseTokens[i], v], [quoteTokens[i], v]]).flat() })

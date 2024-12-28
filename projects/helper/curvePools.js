@@ -347,7 +347,7 @@ module.exports = {
     swapContract: '0x59bf0545fca0e5ad48e13da269facd2e8c886ba4',
     underlyingTokens: [
       '0x64343594ab9b56e99087bfa6f2335db24c2d1f17',
-      '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F',
+      ADDRESSES.arbitrum.FRAX,
     ]
   },
   // pBTC-sBTC Ethereum
@@ -389,7 +389,7 @@ module.exports = {
   },
   '0x961226b64ad373275130234145b96d100dc0b655': {
     swapContract: '0x961226b64ad373275130234145b96d100dc0b655',
-    underlyingTokens: ['0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0']
+    underlyingTokens: [ADDRESSES.ethereum.FXS]
   },
   // TOKEMAKS END
 

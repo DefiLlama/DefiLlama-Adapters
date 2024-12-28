@@ -9,6 +9,7 @@ const config = {
   manta: { factory: '0x8D2B7e5501Eb6D92F8e349f2FEbe785DD070bE74', },
   avax: { factory: '0x042AF448582d0a3cE3CFa5b65c2675e88610B18d', s: ['0x4C431b568e8baAB20F004BB16E44570e8E0cD6D7', '0x0ebd9537a25f56713e34c45b38f421a1e7191469'], },
   ethereum: { factory: '0x1f8c25f8da3990ecd3632ee4f02c2ea37755c3c6', s: ['0xb99d38eb69214e493b1183ffa3d561fc9f75d519', '0x7778360f035c589fce2f4ea5786cbd8b36e5396b'], },
+  rsk: { factory: '0x6Dd434082EaB5cD134B33719ec1ff05fe985B97b', },
 }
 
 module.exports = { misrepresentedTokens: true }

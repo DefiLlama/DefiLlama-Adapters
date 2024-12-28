@@ -1,12 +1,12 @@
 const { sumUnknownTokens } = require('../helper/unknownTokens')
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
   const data = await api.fetchList({ lengthAbi: 'uint256:poolLength', itemAbi: 'function poolInfo(uint256) view returns ( address want, uint256, uint256, uint256, address strat)', target: '0x55410D946DFab292196462ca9BE9f3E4E4F337Dd' })
   const tokensAndOwners = data.map(pool => [pool.want, pool.strat])
   return api.sumTokens({ tokensAndOwners, blacklistedTokens: ['0xe837d51f5937c450a6d28280ab73b2602cde7735'] })
 }
 
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const v2Vaults = [
     "0xD0CEe0BF1fC137777a8a53f4C99000B5A2269c31",
     "0xD0CEd4bbDdeC0e97fFE579e2f162aecB9383ac6D",

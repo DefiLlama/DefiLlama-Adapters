@@ -35,7 +35,7 @@ const ABI = {
 
 const AUSD = "0xf328ed974e586b6eea7997a87ea2ab1de149b186";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const tokensAndOwners = []
   const [storage, depositorVault] = await api.call({
     abi: ABI["IAddressRegistry"]["getAddresses"],
@@ -54,7 +54,7 @@ async function tvl(_, _1, _2, { api }) {
   return sumTokens2({ api, tokensAndOwners, blacklistedTokens: [AUSD] });
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const [depositorVault, market] = await api.call({
     abi: ABI["IAddressRegistry"]["getAddresses"],
     target: REGISTRY,

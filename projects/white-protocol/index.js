@@ -8,8 +8,7 @@ const LP = '0x177f0bcEF458cb379581A9B8e67E02abfe4a3d08'
 module.exports = {
   misrepresentedTokens: true,
   op_bnb: {
-    tvl: sumTokensExport({ owner: stakingContractAddress, tokens: [nullAddress]}),
-    staking: sumTokensExport({ owner: stakingContractAddress, tokens: [whiteTokenAddress],lps: [LP]}),
-    pool2: sumTokensExport({ owner: '0xdB9320dDE030cEF08C615E7547cee98848Bd297e', tokens: [LP]}),
+    tvl: sumTokensExport({ owner: stakingContractAddress, tokens: [nullAddress] }),
+    pool2: sumTokensExport({ owner: '0xdB9320dDE030cEF08C615E7547cee98848Bd297e', tokens: [LP], useDefaultCoreAssets: true }),
   },
 };

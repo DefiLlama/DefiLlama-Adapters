@@ -17,7 +17,7 @@ Object.keys(config).forEach(chain => {
   }
 
   function tvl(isVesting) {
-    return async (_, _1, _2, { api }) => {
+    return async (api) => {
       const tokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false, })))).flat()
       return api.sumTokens({ owners, tokens: await getWhitelistedTokens({ api, tokens, isVesting})})
     }

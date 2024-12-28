@@ -72,7 +72,7 @@ const CommunityVaultsLLSD = {
   ],
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   /** Hyperstaking Community Vaults */
   const LLSDs = CommunityVaultsLLSD[api.chain]
   /** LP Community Vaults */

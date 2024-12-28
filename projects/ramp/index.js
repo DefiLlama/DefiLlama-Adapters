@@ -3,7 +3,7 @@ const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 function getChainTVL(chain) {
-  return async (timestamp, ethBlock, _, { api }) => {
+  return async (api) => {
     const key = chain === 'ethereum' ? 'eth' : chain;
     const { [key]: config } = await getConfig('ramp', 'https://config.rampdefi.com/config/appv2/priceInfo');
     const tokens = config.tokens;

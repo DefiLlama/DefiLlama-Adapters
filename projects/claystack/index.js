@@ -5,7 +5,7 @@ const clayAddresses = {
   clayEth: "0x331312DAbaf3d69138c047AaC278c9f9e0E8FFf8"
 };
 
-async function getTvlOnEthereum(_, block, _1, { api }) {
+async function getTvlOnEthereum(api) {
   const ethDeposits = await api.call({ target: clayAddresses.clayEth, abi: abi.funds, })
 
   api.add(ADDRESSES.null, ethDeposits.currentDeposit)

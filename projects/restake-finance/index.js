@@ -6,7 +6,7 @@ const StakePools = [
   '0xD5193B851bf7C751BBA862Eca1298D4B4Cb17B81',
 ];
 
-async function tvl(_1, _2, _3, { api }) {
+async function tvl(api) {
   const bals = await api.multiCall({ abi: 'uint256:getTotalUnderlying', calls: StakePools })
   const configs = await api.multiCall({ abi: "function getConfig() view returns ((address underlying, address protocolToken, uint16 maxStakers))", calls: StakePools })
   const tokens = configs.map(i => i.underlying)

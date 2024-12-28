@@ -16,7 +16,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { tokenList, tokenSafe, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_0, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const [_, tokens] = await api.call({ abi: 'function getActiveItems(uint256 offset, uint8 limit) view returns (uint256 count, address[] items)', target: tokenList, params: [0, 99] })
       return sumTokens2({ api, tokens, owner: tokenSafe })
     }

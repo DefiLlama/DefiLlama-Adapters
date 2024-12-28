@@ -1,4 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const { karpatKeyTvl } = require("../helper/karpatkey");
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury addresses per chain
@@ -29,11 +30,11 @@ const ethTokens = [
   ADDRESSES.ethereum.WETH,
   ADDRESSES.ethereum.DAI,
   ADDRESSES.ethereum.GNO,
-  "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", // stETH
+  ADDRESSES.ethereum.STETH, // stETH
   "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F", // GTC
-  "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+  ADDRESSES.ethereum.SAFE, // SAFE
   "0x4da27a545c0c5B758a6BA100e3a049001de870f5", // stAAVE
-  "0x83F20F44975D03b1b09e64809B757c47f942BEeA", // sDAI
+  ADDRESSES.ethereum.SDAI, // sDAI
   "0xc3d688B66703497DAA19211EEdff47f25384cdc3" // Compound USDC
 
 ];
@@ -104,46 +105,48 @@ const avaxOwnTokens = [
   "0xA39d8651689c8b6e5a9e0AA4362629aeF2c58F55" // 80BAL-20WAVAX BPT
 ];
 
-
+// Keeping old code because karpatkey's api tends to break
 module.exports = treasuryExports({
   ethereum: {
     owners: [eth, eth2],
-    tokens: ethTokens,
+    //tokens: ethTokens,
     ownTokens: ethOwnTokens
   },
   arbitrum: {
     owners: [arb],
-    tokens: arbTokens,
+    //tokens: arbTokens,
     ownTokens: arbOwnTokens
   },
   polygon: {
     owners: [pol],
-    tokens: polTokens,
+    //tokens: polTokens,
     ownTokens: polOwnTokens
   },
   polygon_zkevm: {
     owners: [zkevm],
-    tokens: zkevmTokens,
+    //tokens: zkevmTokens,
     ownTokens: zkevmOwnTokens
   },
   optimism: {
     owners: [op],
-    tokens: opTokens,
+    //tokens: opTokens,
     ownTokens: opOwnTokens
   },
   base: {
     owners: [base],
-    tokens: baseTokens,
+    //tokens: baseTokens,
     ownTokens: baseOwnTokens
   },
   xdai: {
     owners: [xdai],
-    tokens: xdaiTokens,
+    //tokens: xdaiTokens,
     ownTokens: xdaiOwnTokens
   },
   avax: {
     owners: [avax],
-    tokens: avaxTokens,
+    //tokens: avaxTokens,
     ownTokens: avaxOwnTokens
   }
 });
+
+module.exports.ethereum.tvl = async (api)=>karpatKeyTvl(api, "Balancer DAO", "BAL")

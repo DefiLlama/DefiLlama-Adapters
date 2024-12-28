@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 module.exports = {
   doublecounted: true,
   methodology: 'Counts the tokens locked in Strategy Vaults in Uniswap v3 Pools.',
-  start: 1667197843, // Mon Oct 31 2022 06:30:43 GMT+0000
+  start: '2022-10-31', // Mon Oct 31 2022 06:30:43 GMT+0000
 };
 
 const config = {
@@ -33,7 +33,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
 
       const logs = await getLogs({

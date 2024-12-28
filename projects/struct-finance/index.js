@@ -9,7 +9,7 @@ const {
   aptFarmABI
 } = require("./constants");
 
-async function tvl(ts, _, __, { api }) {
+async function tvl(api) {
   const vaultsGmx = await api.fetchList({ lengthAbi: "totalProducts", itemAbi: "allProducts", target: addresses.struct.gmx.factory, });
   const vaultsTjap = await api.fetchList({ lengthAbi: "totalProducts", itemAbi: "allProducts", target: addresses.struct.tjap.factory, });
 

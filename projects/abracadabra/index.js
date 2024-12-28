@@ -25,26 +25,15 @@ const underlyingTokens = {
   blast: {},
   bsc: {},
   ethereum: {
-    "0x5958A8DB7dfE0CC49382209069b00F54e17929C2": "0x903C9974aAA431A765e60bC07aF45f0A1B3b61fb",
-    "0x3Ba207c25A278524e1cC7FaAea950753049072A4": "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
-    "0xd92494CB921E5C0d3A39eA88d0147bbd82E51008": "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+    "0x9447c1413DA928aF354A114954BFc9E6114c5646": "0x903C9974aAA431A765e60bC07aF45f0A1B3b61fb",
+    "0x4985cc58C9004772c225aEC9C36Cc9A56EcC8c20": "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
   },
   fantom: {},
   kava: {},
   optimism: {},
 };
 
-const liquidityLaunchEvents = {
-  blast: {
-    contractAddress: "0xa64B73699Cc7334810E382A4C09CAEc53636Ab96",
-    supportedTokens: [
-      "0x4300000000000000000000000000000000000003", // USDb
-      // "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1", // MIM
-    ]
-  },
-};
-
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { chain } = api
   const marketsArray = [];
 
@@ -61,20 +50,13 @@ async function tvl(_, _1, _2, { api }) {
   ).flat()
   const bals = await api.multiCall({ calls, abi: abi.balanceOf, })
   api.addTokens(tokens, bals)
-
-  const liquidityLaunchEvent = liquidityLaunchEvents[chain];
-  if (liquidityLaunchEvent)
-    await api.sumTokens({ owner: liquidityLaunchEvent.contractAddress, tokens: liquidityLaunchEvent.supportedTokens })
-
-
-
-  return api.getBalances()
 }
 
 const chains = ['arbitrum', 'avax', 'blast', 'bsc', 'ethereum', 'fantom', 'kava', 'optimism'];
-chains.forEach(chain => module.exports[chain] = { tvl }),
-  module.exports.hallmarks = [
-    [1651881600, "UST depeg"],
-    [1643245200, "0xSifu revealed as QuadrigaCX founder"],
-    [1667826000, "FTX collapse, Alameda repays FTT loans"],
-  ]
+chains.forEach(chain => module.exports[chain] = { tvl })
+
+module.exports.hallmarks = [
+  [1651881600, "UST depeg"],
+  [1643245200, "0xSifu revealed as QuadrigaCX founder"],
+  [1667826000, "FTX collapse, Alameda repays FTT loans"],
+]

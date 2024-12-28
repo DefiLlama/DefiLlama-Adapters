@@ -5,7 +5,7 @@ const ADMIN_ADDRESSES = {
   ethereum: "0x624ceD7034DFF45D439cDe1f443448A49F067715"
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const chainAddress = ADMIN_ADDRESSES[api.chain];
   const collAddresses = await api.call({ abi: "address[]:getValidCollateral", target: chainAddress, });
   const pool = await api.call({ abi: 'address:activePool', target: chainAddress })
@@ -15,7 +15,7 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral on the Lyve platform",
-  start: 1699459200, 
+  start: '2023-11-08', 
 };
 
 Object.keys(ADMIN_ADDRESSES).forEach(chain => {

@@ -5,8 +5,7 @@ const arbStakingAddr = "0x2e2071180682Ce6C247B1eF93d382D509F5F6A17";
 const SPA = '0x5575552988a3a80504bbaeb1311674fcfd40ad4b';
 const ethSPA = '0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008';
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const vault = '0x6Bbc476Ee35CBA9e9c3A59fc5b10d7a0BC6f74Ca'
   const collateralManager = await api.call({  abi: 'address:collateralManager', target: vault})
   const tokens = await api.call({  abi: 'address[]:getAllCollaterals', target: collateralManager})

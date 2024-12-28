@@ -1,7 +1,7 @@
 const { queryContract } = require("../helper/chain/cosmos");
 const { getConfig } = require("../helper/cache");
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const chain = api.chain
   const contracts = await getConfig("kujira/contracts", "https://raw.githubusercontent.com/Team-Kujira/kujira.js/master/src/resources/contracts.json");
   const vaultContracts = contracts["kaiyo-1"].ghostVault;
@@ -18,7 +18,7 @@ async function tvl(_, _1, _2, { api }) {
   return api.getBalances()
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const contracts = await getConfig("kujira/contracts", "https://raw.githubusercontent.com/Team-Kujira/kujira.js/master/src/resources/contracts.json");
   const vaultContracts = contracts["kaiyo-1"].ghostVault;
   const chain = api.chain

@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 const BTC_ETH_VAULT = '0x1F9b1057cd93fb2d07d18810903B791b56acc2E1'.toLowerCase()
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   await getBasketTvl(api)
   const ownerTokens = [
     [[ADDRESSES.polygon.WETH_1, ADDRESSES.polygon.WBTC], BTC_ETH_VAULT]
@@ -11,7 +11,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return sumTokens2({ api, ownerTokens })
 }
 
-async function ethTvl(_, _b, _cb, { api, }) {
+async function ethTvl(api) {
   return getBasketTvl(api)
 }
 

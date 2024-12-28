@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 function impermaxHelper(exportsObj, config, blacklistedPools) {
-  async function tvl(_, _b, _cb, { api, }) {
+  async function tvl(api) {
     const { factories } = config[api.chain]
     const blacklist = blacklistedPools[api.chain]
     const pools = []
@@ -47,7 +47,7 @@ function impermaxHelper(exportsObj, config, blacklistedPools) {
     })
   }
 
-  async function borrowed(_, _b, _cb, { api, }) {
+  async function borrowed(api) {
     const { factories } = config[api.chain]
     const blacklist = blacklistedPools[api.chain]
     const balances = {}
@@ -92,6 +92,7 @@ function impermaxHelper(exportsObj, config, blacklistedPools) {
 
   async function getUVTokens(rawPools, underlyings, uSymbols, api) {
     var impermaxSymbol;
+    var stableImpermaxSymbol;
     switch (api.chain) {
       case 'ethereum':
         impermaxSymbol = 'UNI-V2'
@@ -104,9 +105,14 @@ function impermaxHelper(exportsObj, config, blacklistedPools) {
       case 'canto':
       case 'era':
       case 'fantom':
+      case 'scroll':
+      case 'base':
+      case 'mantle':
+      case 'optimism':
       default:
         impermaxSymbol = 'STKD-UNI-V2'
-        return underlyings.filter((_, i) => uSymbols[i] === impermaxSymbol)
+        stableImpermaxSymbol = 'STKD-STBL'
+        return underlyings.filter((_, i) => uSymbols[i] === impermaxSymbol || uSymbols[i] === stableImpermaxSymbol)
     }
   }
 
@@ -125,3 +131,4 @@ function impermaxHelper(exportsObj, config, blacklistedPools) {
 module.exports = {
   impermaxHelper
 }
+

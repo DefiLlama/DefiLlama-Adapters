@@ -6,7 +6,7 @@ const CRA = "0xa32608e873f9ddef944b24798db69d80bbb4d1ed";
 module.exports = {
   misrepresentedTokens: true,
   avax: {
-    staking: staking(stakingContract, CRA, "avax"),
+    staking: staking(stakingContract, CRA),
     tvl: () =>({}),
   },
   methodology:

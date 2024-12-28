@@ -5,10 +5,9 @@ const APIs = {
 };
 
 async function fetch() {
-  return 0
-  /* const resp = await get(APIs.optiondance);
+  const resp = await get(APIs.optiondance);
   const tvl = resp.data.total_value;
-  return parseFloat(tvl).toFixed(2); */
+  return parseFloat(tvl).toFixed(2);
 }
 
 module.exports = {

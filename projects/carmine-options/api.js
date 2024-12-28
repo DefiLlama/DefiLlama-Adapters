@@ -4,7 +4,7 @@ const abi = require("./abi");
 const legacyAmm = "0x076dbabc4293db346b0a56b29b6ea9fe18e93742c73f12348c8747ecfc1050aa";
 const amm = "0x047472e6755afc57ada9550b6a3ac93129cc4b5f98f51c73e0644d129fd208d9";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let legacyLpTokens = await call({ abi: abi.get_all_lptoken_addresses, target: legacyAmm, })
   let newLpTokens = await call({ abi: abi.get_all_lptoken_addresses, target: amm, })
   legacyLpTokens = number.bigNumberishArrayToHexadecimalStringArray(legacyLpTokens.array.toString().split(','))

@@ -45,7 +45,7 @@ const cronosTvl = async (_, _b, chainBlocks) => {
 module.exports = {
   misrepresentedTokens: true,
   cronos: {
-    pool2: pool2(pool2Farm, WCRO_CROBLANC_CronaLP[0], "cronos"),
+    pool2: pool2(pool2Farm, WCRO_CROBLANC_CronaLP[0]),
     tvl: cronosTvl,
   },
   methodology:

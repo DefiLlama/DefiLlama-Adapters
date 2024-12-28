@@ -7,6 +7,6 @@ const WETH_OPTIMISM = ADDRESSES.tombchain.FTM;
 module.exports = {
   methodology: "WETH supplied to liquidity pool + leftover weth in treasury",
   optimism: {
-    tvl: staking(LIQUIDITY_POOL_CONTRACT, WETH_OPTIMISM, "optimism"),
+    tvl: staking(LIQUIDITY_POOL_CONTRACT, WETH_OPTIMISM),
   },
 };

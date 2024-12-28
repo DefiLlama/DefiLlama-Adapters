@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unknownTokens')
-const WETH = '0x4300000000000000000000000000000000000004'
+const WETH = ADDRESSES.blast.WETH
 const BLNYAN = '0x9aAC39ca368D27bf03887CCe32f28b44F466072F'
 const BLNYAN_WETH_SLP = '0x0E9309f32881899F6D4aC2711c6E21367A84CA26'
 

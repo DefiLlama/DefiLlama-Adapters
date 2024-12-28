@@ -24,6 +24,12 @@ const config = {
       cether: "0xd773ffa79258F2D7458F1B74d075F4524Ee3CCa0",
     },
   ],
+  astrzk: [
+    {
+      comptroller: "0xcD906c5f632daFCBD23d574f85294B32E7986fD9",
+      cether: "0x79D7c05352a900bE30992D525f946eA939f6FA3E",
+    }
+  ]
 };
 
 const data = [];

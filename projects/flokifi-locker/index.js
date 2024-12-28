@@ -38,7 +38,7 @@ function splitPairs(pairs) {
   return { tokensAndOwners, uniV3NFTHolders };
 }
 
-async function tvl(_, _b, _2, { api }) {
+async function tvl(api) {
   const chain = api.chain
   const pairs = await fetch(chains[chain]);
   let cache = getCache(project, chain) || {}

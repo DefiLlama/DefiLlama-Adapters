@@ -4,7 +4,7 @@ const poolAddresses = [
   '0x836280846adc84f28918Cec30A7dCe791D17b72C', // wsteth
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:collateralAsset', calls: poolAddresses })
   return api.sumTokens({ tokensAndOwners2: [tokens, poolAddresses] })
 }
