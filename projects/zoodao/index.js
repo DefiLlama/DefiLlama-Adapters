@@ -25,14 +25,14 @@ const stakingContracts = [
   X_ZOO_CONTRACT
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const vaultStablecoinStaked = await api.call({ abi: 'erc20:balanceOf', target: VAULT_CONTRACT, params: [BATTLE_ARENA_CONTRACT] });
   // convert m.FRAX to FRAX
   const totalFRAX = await api.call({ abi: battleArenaAbi.sharesToTokens, target: BATTLE_ARENA_CONTRACT, params: [vaultStablecoinStaked] });
   api.add(FRAX_TOKEN, totalFRAX)
 }
 
-async function tvlArbitrum(_, _1, _2, { api }) {
+async function tvlArbitrum(api) {
   const vaultStablecoinStaked = await api.call({ abi: 'erc20:balanceOf', target: VAULT_CONTRACT_ARBITRUM, params: [BATTLE_ARENA_ARBITRUM] });
   let totalMGLP = await api.call({ abi: battleArenaAbi.sharesToTokens, target: BATTLE_ARENA_ARBITRUM, params: [vaultStablecoinStaked] });
   api.addTokens([FSGLP_ARBITRUM], [totalMGLP])

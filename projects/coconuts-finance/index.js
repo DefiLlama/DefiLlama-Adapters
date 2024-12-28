@@ -2,5 +2,5 @@ module.exports = {
     avax: {
         tvl: () => ({})
     },
-    broken: 'Api is down'
+    deadFrom: '2022-04-27',
 }; 

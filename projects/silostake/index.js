@@ -32,11 +32,11 @@ Object.keys(config).forEach(chain => {
   const { coinGeckoId, hub } = config[chain];
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       // Logic for calculating TVL - just get total ustake.
       let state = await getState(chain, hub);
 
-      let total_ustake = state['total_ustake'];
+      let total_ustake = state['total_utoken'];
 
       api.add(coinGeckoId, total_ustake / 10 ** 6, { skipChain: true });
       

@@ -6,13 +6,13 @@ const abi = {
   "poolLength": "uint256:poolLength",
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const masterchef = '0x1aC6332f1f1892B49Fb26aD1934F74F4Cd8C9dB9'
   await addMasterchef(masterchef, api)
 }
 
 
-async function wanTvl(_, _b, _cb, { api, }) {
+async function wanTvl(api) {
   const masterchef = '0x4E4Cb1b0b4953EA657EAF29198eD79C22d1a74A2'
   await addMasterchef(masterchef, api)
   return sumUnknownTokens({ api, useDefaultCoreAssets: true, resolveLP: true })

@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { compoundExports2 } = require("../helper/compound");
+const { compoundExports2, methodology, } = require("../helper/compound");
 const { mergeExports } = require("../helper/utils");
 
 const cetheEquivalent=ADDRESSES.wan.WWAN
@@ -8,6 +8,6 @@ const tvlV2 = compoundExports2(  { comptroller: '0xd6980C52C20Fb106e54cC6c8AE04c
 delete tvlV1.borrowed
 
 module.exports = mergeExports([{
-  methodology: `As in Compound Finance, TVL counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are counted as "Borrowed" TVL and can be toggled towards the regular TVL.`,
+  methodology,
    wan: tvlV1,
 }, { wan: tvlV2}])

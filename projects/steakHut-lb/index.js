@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json')
 
 const _vaults = {
@@ -31,7 +32,18 @@ const _vaults = {
   ],
 }
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
+  //function to grab the tvl of enigma pools
+  async function fetchEnigmaData(factoryAddress) {
+    const enigmas = await api.fetchList({ lengthAbi: 'enigmaPositionNumber', itemAbi: 'enigmaAtIndex', target: factoryAddress })
+    const token0s = await api.multiCall({ abi: 'address:token0', calls: enigmas })
+    const token1s = await api.multiCall({ abi: 'address:token1', calls: enigmas })
+    const bals = await api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 bal0, uint256 bal1)', calls: enigmas })
+    bals.forEach(({ bal0, bal1 }, i) => {
+      api.add(token0s[i], bal0)
+      api.add(token1s[i], bal1)
+    })
+  }
   //get the total shares from all vaults
   const vaults = _vaults[api.chain]
   const depositTokens = await api.multiCall({ abi: abi.want, calls: vaults })
@@ -55,24 +67,23 @@ async function tvl(_, block, _1, { api }) {
 
     // hJOE tvl
     const HJOE_ADDRESS = '0xe7250b05bd8dee615ecc681eda1196add5156f2b'
-    const JOE_ADDRESS = '0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd'
+    const JOE_ADDRESS = ADDRESSES.avax.JOE
 
     api.add(JOE_ADDRESS, await api.call({ target: HJOE_ADDRESS, abi: 'erc20:totalSupply' }))
 
     // engima tvl
+    
     const enigmaFactory_AVAX = `0xD751E0940CfadC35f84e60075d0f940a2545FB8d`;
-    const enigmas = await api.fetchList({ lengthAbi: 'enigmaPositionNumber', itemAbi: 'enigmaAtIndex', target: enigmaFactory_AVAX })
-    const token0s = await api.multiCall({ abi: 'address:token0', calls: enigmas })
-    const token1s = await api.multiCall({ abi: 'address:token1', calls: enigmas })
-    const bals = await api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 bal0, uint256 bal1)', calls: enigmas })
-    bals.forEach(({ bal0, bal1 }, i) => {
-      api.add(token0s[i], bal0)
-      api.add(token1s[i], bal1)
-    })
+    const enigmaFactory_AVAX_PHAR = `0x653b809a4fa6ba0fc0a6dc1b3f92a362fcb6086d`;  // Example BSC address
+
+    // Fetch data for both factories
+    await fetchEnigmaData(enigmaFactory_AVAX);
+    await fetchEnigmaData(enigmaFactory_AVAX_PHAR); 
+   
 
   }
 }
-async function staking(_, block, _1, { api }) {
+async function staking(api) {
   const XSTEAK_ADDRESS = '0x902Aa4cC3b463c84541C9C1DeDF50620C99950B9'
   const STEAK_ADDRESS_AVAX = '0xb279f8dd152b99ec1d84a489d32c35bc0c7f5674'
 

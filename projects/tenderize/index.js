@@ -12,7 +12,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = []
       const tokensAndOwners = []
       const calls = []

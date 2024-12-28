@@ -4,7 +4,7 @@ const sdk = require("@defillama/sdk");
 
 module.exports = {
   ethereum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const balances = {};
 
       const addressMap = address[api.chain];

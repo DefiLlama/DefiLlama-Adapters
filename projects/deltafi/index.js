@@ -6,7 +6,7 @@ const wwemixAddr = ADDRESSES.wemix.WWEMIX;
 const dwemixAddr = "0x531e6Abe1ad0c8313ad7c8f7ad96b8e70c56164E";
 const controllerAddr = "0x334f696FE78623861733444d8476C36B0e9CdfC5";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
     // master vault wemix
     const masterVaultWemix = await api.call({
         abi: 'function balanceOf(address) public view returns (uint256 amount)',

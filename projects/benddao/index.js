@@ -1,11 +1,10 @@
-const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { tvl, borrowed } = require("./helper/index");
 const address = require("./helper/address");
+const methodologies = require("../helper/methodologies");
 
 module.exports = {
-  timetravel: true,
-  methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL`,
+  methodology: methodologies.lendingMarket,
   ethereum: {
     tvl,
     borrowed,

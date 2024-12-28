@@ -18,7 +18,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { OSD, OETH, swapContracts, futureContracts } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = (await api.multiCall({ abi: 'address[]:getPoolTokenList', calls: swapContracts })).flat()
       return api.sumTokens({
         tokensAndOwners: [[ADDRESSES.null, OETH]],

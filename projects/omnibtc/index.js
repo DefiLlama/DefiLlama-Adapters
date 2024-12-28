@@ -57,14 +57,12 @@ function calculateAndAdd(objectsList, type, indexName, api) {
   });
 }
 
-async function suiTvl() {
-  const { api } = arguments[3];
+async function suiTvl(api) {
   const objectsList = await fetchDataBasedOnPoolId();
   calculateAndAdd(objectsList, "tvl", "current_liquidity_index", api);
 }
 
-async function suiBorrow() {
-  const { api } = arguments[3];
+async function suiBorrow(api) {
   const objectsList = await fetchDataBasedOnPoolId();
   calculateAndAdd(objectsList, "borrow", "current_borrow_index", api);
 }

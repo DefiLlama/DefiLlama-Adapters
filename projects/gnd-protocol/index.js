@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const farm = '0xd8769d8826149b137af488b1e9ac0e3afdbc058a'
   await sumTokens2({ api, owner: farm, resolveUniV3: true, })
   const tokens = Object.keys(api.getBalances()).map(i => i.replace(/arbitrum:/gi, ''))

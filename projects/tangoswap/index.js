@@ -9,7 +9,7 @@ module.exports = {
     methodology: "Count TVL as liquidity on the dex",
     misrepresentedTokens: true,
     smartbch: {
-        tvl: getUniTVL({ factory: FACTORY, chain: 'smartbch', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true }),
         staking: staking(xTANGO, TANGO, 'smartbch', 'tangoswap', 18)
     }
 }

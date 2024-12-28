@@ -1,7 +1,8 @@
+const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/http');
 
-const graph_endpoint = 'https://api.thegraph.com/subgraphs/name/rout-horizon/bsc15-issuance'
+const graph_endpoint = sdk.graph.modifyEndpoint('3URCfxZm32CHDYikF3eu93YCVpDKQyofm42FUh7KkRY9')
 const graphQuery = gql`
 query get_tvl($block: Int) {
   snxholders(orderBy:collateral,orderDirection:desc,block: { number: $block },first:1000,skip:0, where: {initialDebtOwnership_gt: 0, debtEntryAtIndex_gt: 0}) {

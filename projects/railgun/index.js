@@ -29,7 +29,7 @@ const blacklistedTokens = [
 ]
 
 function getTVLFunc(contractAddress, chain) {
-  return async function (timestamp, _, { [chain]: block }, { api }) {
+  return async function (api) {
     if (CONTRACTS[chain].RAIL) blacklistedTokens.push(CONTRACTS[chain].RAIL)
     return sumTokens2({ owner: contractAddress, fetchCoValentTokens: true, blacklistedTokens, api })
   }

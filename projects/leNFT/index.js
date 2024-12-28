@@ -1,7 +1,7 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const tradingPoolFactory = "0x197456A4f5c3B3605033270Bc04Bc599916CaBA0";
   const lendingMarket = "0xFAE8371d6b22F6451A64026785e79Bd7B438306F";
 
@@ -46,6 +46,5 @@ async function tvl(_, _b, _cb, { api }) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  ethereum: { tvl },
+    ethereum: { tvl },
 };

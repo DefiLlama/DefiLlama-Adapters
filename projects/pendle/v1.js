@@ -1,8 +1,3 @@
-const {
-  sumTokensAndLPsSharedOwners,
-  unwrapUniswapLPs
-} = require("../helper/unwrapLPs");
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const contracts = require("./contracts");
 const { staking } = require("../helper/staking");
@@ -18,125 +13,82 @@ const avaxFundedContracts = Object.keys(contracts.v1.avax.funded);
 const avaxOtTokens = Object.keys(contracts.v1.avax.otTokens);
 const avaxPool2Contracts = Object.keys(contracts.v1.avax.pool2);
 
-async function ethTvl(timestamp, block) {
-  const balances = {};
-  let lpBalances = [];
+async function ethTvl(api) {
   const masterChefContract = "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd";
 
-  const masterChefDeposits = await sdk.api.abi.call({
+  const masterChefDeposits = await api.call({
     target: masterChefContract,
     abi: abi.userInfo,
     params: [1, ethFundedContracts[4]],
-    block: block
   });
-  lpBalances.push({
-    token: ethTokens.SLP_ETHUSDC,
-    balance: masterChefDeposits.output.amount
-  });
-  await unwrapUniswapLPs(balances, lpBalances, block);
+  api.add(ethTokens.SLP_ETHUSDC, masterChefDeposits.amount);
+  await api.sumTokens({
+    owners: ethFundedContracts, tokens: [
+      ethTokens.USDC,
+      ethTokens.aUSDC,
+      ethTokens.cDAI,
+      ethTokens.SLP_ETHUSDC,
+      ethTokens.SLP_PENDLEETH,
+      ethTokens.SUSHI,
+      ethTokens.COMP,
+      ethTokens.wxBTRFLY,
+      ethTokens.SLP_OT_aUSDC_21,
+      ethTokens.SLP_OT_aUSDC_22,
+      ethTokens.SLP_OT_cDAI_21,
+      ethTokens.SLP_OT_cDAI_22,
+      ethTokens.SLP_OT_ETHUSDC_22,
+      ethTokens.SLP_OT_wxBTRFLY_22,
+    ]
+  })
 
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [ethTokens.USDC, false],
-      [ethTokens.aUSDC, false],
-      [ethTokens.cDAI, false],
-      [ethTokens.SLP_ETHUSDC, false],
-      [ethTokens.SLP_PENDLEETH, false],
-      [ethTokens.SUSHI, false],
-      [ethTokens.COMP, false],
-      [ethTokens.wxBTRFLY, false],
-      [ethTokens.SLP_OT_aUSDC_21, false],
-      [ethTokens.SLP_OT_aUSDC_22, false],
-      [ethTokens.SLP_OT_cDAI_21, false],
-      [ethTokens.SLP_OT_cDAI_22, false],
-      [ethTokens.SLP_OT_ETHUSDC_22, false],
-      [ethTokens.SLP_OT_wxBTRFLY_22, false]
-    ],
-    ethFundedContracts,
-    block
-  );
-  for (let token of ethOtTokens) {
-    delete balances[token.toLowerCase()];
-  }
-  delete balances[ethTokens.PENDLE];
+  ethOtTokens.push(ethTokens.PENDLE);
 
-  return balances;
+  ethOtTokens.map(i => api.removeTokenBalance(i))
+  return api.getBalances()
 }
 
-async function avaxTvl(timestamp, _, { avax: block }) {
-  const transform = addr => 'avax:'+addr
-  const balances = {};
-
+async function avaxTvl(api) {
   const masterChefContract = "0xd6a4F121CA35509aF06A0Be99093d08462f53052";
-  const TIME = "avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3";
 
-  balances[transform(avaxTokens.xJOE)] = (await sdk.api.abi.call({
+  const xJOEBalance = (await api.call({
     target: masterChefContract,
     abi: abi.userInfo,
     params: [24, avaxFundedContracts[0]],
-    block: block,
-    chain: "avax"
-  })).output.amount;
+  })).amount
+  api.add(avaxTokens.xJOE, xJOEBalance);
+  await api.sumTokens({
+    owners: avaxFundedContracts, tokens: [
+      avaxTokens.USDC,
+      avaxTokens.qiAVAX,
+      avaxTokens.qiUSDC,
+      avaxTokens.xJOE,
+      avaxTokens.JLP_PENDLEAVAX,
+      avaxTokens.WAVAX,
+      avaxTokens.JOE,
+      avaxTokens.QI,
+      avaxTokens.MIM,
+      avaxTokens.wMEMO,
+      avaxTokens.JLP_OT_PAP,
+      avaxTokens.JLP_OT_qiUSDC,
+      avaxTokens.JLP_OT_qiAVAX,
+      avaxTokens.JLP_OT_xJOE,
+      avaxTokens.JLP_OT_wMEMO,
+    ]
+  })
 
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [avaxTokens.USDC, false],
-      [avaxTokens.qiAVAX, false],
-      [avaxTokens.qiUSDC, false],
-      [avaxTokens.xJOE, false],
-      [avaxTokens.JLP_PENDLEAVAX, false],
-      [avaxTokens.WAVAX, false],
-      [avaxTokens.JOE, false],
-      [avaxTokens.QI, false],
-      [avaxTokens.MIM, false],
-      [avaxTokens.wMEMO, false],
-      [avaxTokens.JLP_OT_PAP, false],
-      [avaxTokens.JLP_OT_qiUSDC, false],
-      [avaxTokens.JLP_OT_qiAVAX, false],
-      [avaxTokens.JLP_OT_xJOE, false],
-      [avaxTokens.JLP_OT_wMEMO, false]
-    ],
-    avaxFundedContracts,
-    block,
-    "avax",
-    transform
-  );
-
-  balances[TIME] = (await sdk.api.abi.call({
-    target: avaxTokens.wMEMO,
-    abi: abi.wMEMOToMEMO,
-    params: [balances[`avax:${avaxTokens.wMEMO}`]],
-    block: block,
-    chain: "avax"
-  })).output;
-  delete balances[`avax:${avaxTokens.wMEMO}`];
-
-  for (let token of avaxOtTokens) {
-    delete balances[`avax:${token.toLowerCase()}`];
-  }
-
-  return balances;
+  avaxOtTokens.map(i => api.removeTokenBalance(i))
+  return api.getBalances()
 }
-async function avaxPool2(timestamp, _, { avax: block }) {
-  const transform = addr => 'avax:'+addr
-  const pool2 = {};
 
-  await sumTokensAndLPsSharedOwners(
-    pool2,
-    [
-      [avaxTokens.JLP_PENDLEAVAX, false],
-      [avaxTokens.PENDLE, false],
-      [avaxTokens.JOE, false]
-    ],
-    avaxPool2Contracts,
-    block,
-    "avax",
-    transform
-  );
-
-  return pool2;
+async function avaxPool2(api) {
+  await api.sumTokens({
+    owners: avaxPool2Contracts, tokens: [
+      avaxTokens.JLP_PENDLEAVAX,
+      avaxTokens.PENDLE,
+      avaxTokens.JOE,
+    ]
+  })
+  return api.getBalances()
 }
 
 module.exports = {

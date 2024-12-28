@@ -10,7 +10,7 @@ module.exports = {
   methodology:
     "Factory address (0xDcA8EfcDe7F6Cb36904ea204bb7FCC724889b55d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
   songbird: {
-    tvl: getUniTVL({ factory: '0xDcA8EfcDe7F6Cb36904ea204bb7FCC724889b55d', chain: 'songbird', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: '0xDcA8EfcDe7F6Cb36904ea204bb7FCC724889b55d', useDefaultCoreAssets: true }),
     staking: stakingPricedLP(oracleFoundry, oracleToken, 'songbird', ORACLE_SGB_LP, 'songbird')
   },
 }; // node test.js projects/oracleswap/index.js

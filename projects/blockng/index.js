@@ -2,7 +2,10 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens, getUniTVL, sumTokensExport } = require('../helper/unknownTokens');
 const { staking, } = require('../helper/staking')
 const sdk = require('@defillama/sdk')
-const blockng = require('../helper/abis/blockng.json');
+const blockng = {
+  "getPoolInfo": "function getPoolInfo(address, address, uint256, uint256) view returns (tuple(address lpTokenAddress, address subTokenAddress, string subTokenSymbol, address dexFactory, address gaugeAddress, uint256 gaugeTotalSupply, uint256 lpPrice, uint256 gaugeAPR, address bribeAddress, int256 weights, uint256 punkId)[] beams)",
+  "numberOfPool": "function numberOfPool(address voter) view returns (uint256 len)"
+}
 
 const chain = 'smartbch'
 const WBCH = ADDRESSES.smartbch.WBCH

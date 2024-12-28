@@ -31,7 +31,7 @@ Object.keys(config).forEach(chain => {
     return api.getBalances()
   }
 
-  const poolManagerTvl = (isStaking) => async (_, _b, _cb, { api, }) => {
+  const poolManagerTvl = (isStaking) => async (api) => {
     const factory = _config
     const manager = await api.call({ abi: 'address:poolManager', target: factory })
     const allLegacyPools = await api.call({ abi: 'address[]:allLegacyPools', target: manager })
@@ -44,7 +44,7 @@ Object.keys(config).forEach(chain => {
     return getTvl(api, isStaking)
   }
 
-  const logTvl = (isStaking) => async (_, _b, _cb, { api, }) => {
+  const logTvl = (isStaking) => async (api) => {
     const { factory, fromBlock } = _config
     const logs = await getLogs({
       api,

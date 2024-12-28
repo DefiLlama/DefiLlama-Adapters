@@ -1,8 +1,7 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const stakingContract = "0xAcbdB82f07B2653137d3A08A22637121422ae747";
 const KlonX = "0xbf15797BB5E47F6fB094A4abDB2cfC43F77179Ef";
@@ -23,31 +22,12 @@ const fundContracts = [
   "0x3BE908C22D21ab32C5A04CFCa3a9A70d4FEfc098",
 ];
 
-async function ethTvl(block) {
-  const balances = {};
+async function ethTvl(api) {
+  const tokenAddresses = await api.call({ abi: abi.allAllowedTokens, target: fundContracts[0], })
+  tokenAddresses.push(WBTC_KBTC_UNI, KXUSD_DAI_UNI)
+  fundContracts.push(KWBTCWBTCLPKlonXPool, KXUSDDAILPKlonXPool)
 
-  for (const pool of [KWBTCWBTCLPKlonXPool, KXUSDDAILPKlonXPool]) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      pool == KWBTCWBTCLPKlonXPool
-        ? [[WBTC_KBTC_UNI, true]]
-        : [[KXUSD_DAI_UNI, true]],
-      [pool]
-    );
-  }
-
-  const tokenAddresses = (
-    await sdk.api.abi.call({
-      abi: abi.allAllowedTokens,
-      target: fundContracts[0],
-    })
-  ).output;
-
-  for (const token of tokenAddresses) {
-    await sumTokensAndLPsSharedOwners(balances, [[token, false]], fundContracts);
-  }
-
-  return balances;
+  return sumTokens2({ api, tokens: tokenAddresses, owners: fundContracts, resolveLP: true })
 }
 
 module.exports = {

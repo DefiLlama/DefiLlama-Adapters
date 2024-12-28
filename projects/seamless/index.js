@@ -2,12 +2,13 @@ const { aaveExports } = require("../helper/aave");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const abi = require("./abis.json");
 const { mergeExports } = require("../helper/utils");
+const methodologies = require("../helper/methodologies");
 
 const AAVE_ADDRESSES_PROVIDER_REGISTRY = "0x90C5055530C0465AbB077FA016a3699A3F53Ef99";
 const AAVE_POOL_DATA_PROVIDER = "0x2A0979257105834789bC6b9E1B00446DFbA8dFBa";
 const GEYSER_REGISTRY = "0xD5815fC3D736120d07a1fA92bA743c1167dA89d8";
 
-async function geyserTvl(_, _1, _2, { api }) {
+async function geyserTvl(api) {
   const aTokens = await api.call({  abi: "function getAllATokens() view returns (tuple(string symbol, address tokenAddress)[])", target: AAVE_POOL_DATA_PROVIDER })
   const aTokenSet = new Set(aTokens.map(t => t.tokenAddress.toLowerCase()))
   const geysers = await api.fetchList({ lengthAbi: abi.instanceCount, itemAbi: abi.instanceAt, target: GEYSER_REGISTRY })
@@ -44,6 +45,6 @@ async function geyserTvl(_, _1, _2, { api }) {
 const baseAAVE = aaveExports("base", AAVE_ADDRESSES_PROVIDER_REGISTRY, undefined, [AAVE_POOL_DATA_PROVIDER], { v3: true });
 
 module.exports = mergeExports([{
-  methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
+  methodology: methodologies.lendingMarket,
   base: baseAAVE,
 }, { base: { tvl: geyserTvl } }]);

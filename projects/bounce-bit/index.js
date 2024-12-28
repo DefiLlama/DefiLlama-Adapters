@@ -12,7 +12,7 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       owners: ["0x53C58E975f3F72162Fc0509b9742c9b55E24a599", "0x9d0e151414aAA3913f22ac95B9c6377Ea7826F08"],
-      tokens: [ADDRESSES.bsc.BTCB, '0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409'] // BTCB FDUSD
+      tokens: [ADDRESSES.bsc.BTCB, ADDRESSES.ethereum.FDUSD] // BTCB FDUSD
     }),
   },
   tron: {

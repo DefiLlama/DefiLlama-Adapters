@@ -1,9 +1,4 @@
-const sdk = require('@defillama/sdk')
-const { getChainTransform } = require('./helper/portedTokens')
-const chain = 'ethereum'
-
-async function tvl(_, block) {
-  const transform = await getChainTransform(chain)
+async function tvl(api) {
   const vaults = [
     '0x4aD0b81f92B16624BBcF46FC0030cFBBf8d02376',
     '0xBc5991cCd8cAcEba01edC44C2BB9832712c29cAB',
@@ -20,38 +15,15 @@ async function tvl(_, block) {
     '0xDe07f45688cb6CfAaC398c1485860e186D55996D',
   ]
 
-  const { output: minters } = await sdk.api.abi.multiCall({
-    abi: abi.minter,
-    calls: v2Vaults.map(i => ({ target: i })),
-    chain, block,
-  })
-
-  minters.forEach(({ output }) => vaults.push(output))
-
-  const { output: tokens } = await sdk.api.abi.multiCall({
-    abi: abi.token,
-    calls: vaults.map(i => ({ target: i })),
-    chain, block,
-  })
-
-  const { output: totalAssets } = await sdk.api.abi.multiCall({
-    abi: abi.totalAssets,
-    calls: vaults.map(i => ({ target: i })),
-    chain, block,
-  })
-  const balances = {}
-  tokens.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances, transform(output), totalAssets[i].output))
-  return balances
+  const minters = await api.multiCall({  abi: "address:minter", calls: v2Vaults})
+  vaults.push(...minters)
+  const tokens = await api.multiCall({  abi: 'address:token', calls: vaults})
+  const bals = await api.multiCall({  abi: 'uint256:totalAssets', calls: vaults})
+  api.add(tokens, bals)
 }
 
 module.exports = {
   ethereum: {
     tvl
   }
-}
-
-const abi = {
-  minter: "address:minter",
-  token: "address:token",
-  totalAssets: "uint256:totalAssets",
 }

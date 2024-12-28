@@ -14,7 +14,7 @@ const getVaultAbi = "function getVault(uint256 vaultId) view returns (tuple(addr
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, vaultFactory, positionViewer, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -34,7 +34,7 @@ Object.keys(config).forEach(chain => {
       const calls = []
       for (let i = 1; i <= vaultLogs.length; i++)  calls.push(i)
 
-      const data = await api.multiCall({ target: positionViewer, abi: getVaultAbi, calls })
+      const data = (await api.multiCall({ target: positionViewer, abi: getVaultAbi, calls, permitFailure: true })).filter(i => i)
       data.forEach(({ pair, totalLp }) => api.add(pair, totalLp))
 
       const tokensAndOwners = logs.map(i => [i.reserve, i.eTokenAddress])

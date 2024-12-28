@@ -1,6 +1,3 @@
-const { getChainTransform } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-
 const treasuryAddress = "0xB3FC6B9be3AD6b2917d304d4F5645a311bCFd0A8";
 const erc20Tokens = [
   //MDX
@@ -10,11 +7,8 @@ const erc20Tokens = [
 ];
 
 /*** Treasury ***/
-const Treasury = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-  let transformAddress = await getChainTransform('heco')
-  await sumTokensAndLPsSharedOwners(balances, erc20Tokens.map(t => [t, false]), [treasuryAddress], chainBlocks["heco"], "heco", transformAddress);
-  return balances;
+const Treasury = async (api) => {
+  return api.sumTokens({ owner: treasuryAddress, tokens: erc20Tokens });
 };
 
 module.exports = {

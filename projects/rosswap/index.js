@@ -1,7 +1,7 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { transformDexBalances } = require('../helper/portedTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: '0x232bF8d9cED464a75632657Cb2554880Acdcac1B',
@@ -12,7 +12,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const getReservesABI = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
   const pairs = logs.map(log => log.pair)
-  const res = await api.multiCall({ abi: getReservesABI, calls: pairs, permitFailure: true })
+  const res = await api.multiCall({ abi: getReservesABI, calls: pairs,  })
   const data = []
   res.forEach((r, i) => {
     if (!r) return;

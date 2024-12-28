@@ -1,47 +1,31 @@
-const BigNumber = require("bignumber.js");
-const { PublicKey, } = require("@solana/web3.js");
-const { sliceIntoChunks, } = require('../helper/utils')
-const { transformBalances, } = require('../helper/portedTokens')
-const { sumTokens, getConnection, decodeAccount, } = require("../helper/solana");
+const { sumTokens2, decodeAccount, getMultipleAccounts, } = require("../helper/solana");
 const { getConfig } = require('../helper/cache')
-const sdk = require('@defillama/sdk')
 
 const solendConfigEndpoint = "https://api.solend.fi/v1/markets/configs?scope=all&deployment=production";
 
-async function borrowed() {
+async function borrowed(api) {
   const markets = (await getConfig('solend', solendConfigEndpoint))
-  const connection = getConnection()
-  const balances = {};
   const reserves = []
 
   for (const market of markets)
     for (const reserve of market.reserves)
-      reserves.push(new PublicKey(reserve.address))
+      reserves.push(reserve.address)
 
-  const chunks = sliceIntoChunks(reserves, 99)
-  for (const chunk of chunks) {
-    const infos = await connection.getMultipleAccountsInfo(chunk)
-    infos.forEach(i => {
-      const { info: { liquidity } } = decodeAccount('reserve', i)
-      const amount = new BigNumber(liquidity.borrowedAmountWads.toString() / 1e18).toFixed(0);
-      sdk.util.sumSingleBalance(balances, liquidity.mintPubkey.toString(), amount)
-    })
-  }
-
-  return transformBalances('solana', balances);
+  const infos = await getMultipleAccounts(reserves)
+  infos.forEach(i => {
+    const { info: { liquidity } } = decodeAccount('reserve', i)
+    const amount = liquidity.borrowedAmountWads.toString() / 1e18
+    api.add(liquidity.mintPubkey.toString(), amount)
+  })
 }
 
 async function tvl() {
   const markets = (await getConfig('solend', solendConfigEndpoint))
-  const tokensAndOwners = []
+  return sumTokens2({ owners: markets.map(i => i.authorityAddress) });
+}
 
-  for (const market of markets) {
-    for (const reserve of market.reserves) {
-      tokensAndOwners.push([reserve.liquidityToken.mint, market.authorityAddress])
-    }
-  }
-
-  return sumTokens(tokensAndOwners);
+async function eclipseTvl(api) {
+  return sumTokens2({ api, owners: ['5Gk1kTdDqqacmA2UF3UbNhM7eEhVFvF3p8nd9p3HbXxk'] });
 }
 
 module.exports = {
@@ -50,6 +34,7 @@ module.exports = {
     tvl,
     borrowed,
   },
+  eclipse: { tvl: eclipseTvl },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
   hallmarks: [

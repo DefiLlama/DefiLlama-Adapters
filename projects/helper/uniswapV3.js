@@ -1,7 +1,6 @@
 const { sumTokens2 } = require('./unwrapLPs')
 const { getLogs } = require('./cache/getLogs')
 const { cachedGraphQuery } = require('./cache')
-const { request, } = require('graphql-request')
 
 const uniswapConfig = {
   eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)',
@@ -22,7 +21,7 @@ function uniV3Export(config) {
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
 
     exports[chain] = {
-      tvl: async (_, _b, _cb, { api, }) => {
+      tvl: async (api) => {
         const logs = await getLogs({
           api,
           target,
@@ -45,11 +44,13 @@ function uniV3Export(config) {
   return exports
 }
 
-function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 10,}) {
-  return async (_, _b, _cb, { api }) => {
+function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0,}) {
+  return async (api) => {
     const size = 1000
     // let lastId = ''
     // let pools
+
+    const minTvlFilter = minTVLUSD ? `totalValueLockedUSD_gt: ${minTVLUSD}` : ''
 
     const graphQueryPagedWithBlock = `
     query poolQuery($lastId: String, $block: Int) {
@@ -62,7 +63,7 @@ function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 
   `
     const graphQueryPagedWithoutBlock = `
     query poolQuery($lastId: String) {
-      pools(first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt:  ${minTVLUSD}}) {
+      pools(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
         id
         token0 { id }
         token1 { id }

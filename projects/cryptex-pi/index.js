@@ -10,7 +10,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { vaultFactory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({ api, target: vaultFactory, eventAbi: 'event VaultCreated (address indexed vault, address indexed asset, address initialMarket)', onlyArgs: true, fromBlock, })
       const toa = logs.map(l => [l.asset, l.initialMarket])
       return api.sumTokens({ tokensAndOwners: toa })

@@ -1,5 +1,4 @@
 const { staking, stakings } = require("../helper/staking");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 /*** Ethereum Addresses ***/
 const UFI = "0xcDa4e840411C00a614aD9205CAEC807c7458a0E3";
@@ -51,23 +50,8 @@ const farmingStakingContracts_polygon = [
   "0xF1a44C75E4D92f4DA737485f96b0c2a1327d91b2",
 ];
 
-const polygonTvl = async (chainBlocks) => {
-  const balances = {};
-
-  let transformAddress = i => `polygon:${i}`;
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [SAFLE_polygon, false],
-      [SCA_polygon, false],
-    ],
-    farmingStakingContracts_polygon,
-    chainBlocks["polygon"],
-    "polygon",
-    transformAddress
-  );
-
-  return balances;
+const polygonTvl = async (api) => {
+  return api.sumTokens({ owners: farmingStakingContracts_polygon, tokens: [SAFLE_polygon, SCA_polygon,] });
 };
 
 module.exports = {
@@ -76,12 +60,11 @@ module.exports = {
     staking: staking(farmingStakingContract, UFI),
   },
   bsc: {
-    staking: stakings(farmingStakingContracts_bsc, UFI_bsc, "bsc"),
+    staking: stakings(farmingStakingContracts_bsc, UFI_bsc),
   },
   polygon: {
-    staking: stakings(farmingStakingContracts_polygon, UFI_polygon, "polygon"),
+    staking: stakings(farmingStakingContracts_polygon, UFI_polygon),
     tvl: polygonTvl,
   },
-  //tvl: (tvl) => ({}),
   methodology: "Counts tvl of the assets staked on the Farming seccion thgough Farming Contracts",
 };

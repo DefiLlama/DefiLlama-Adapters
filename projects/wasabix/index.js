@@ -483,14 +483,14 @@ module.exports = {
     },
     bsc:{
         tvl: bsc,
-        staking: stakings([contractsBSC.votingEscrow.address], tokensBSC.wasabi.address, 'bsc'),
+        staking: stakings([contractsBSC.votingEscrow.address], tokensBSC.wasabi.address),
         pool2: pool2s([
           contractsBSC.stakingPools.address,
         ], [contractsBSC.wasabiWBNBLp.address, contractsBSC.wabusdBusdLp.address], 'bsc'),
     },
     polygon:{
         tvl: polygon,
-        staking: stakings([contractsPolygon.votingEscrow.address], tokensPolygon.wasabi.address, 'polygon'),
+        staking: stakings([contractsPolygon.votingEscrow.address], tokensPolygon.wasabi.address),
         pool2: pool2s([
           contractsPolygon.stakingPools.address,
         ], [contractsPolygon.wasabiUSDCLp.address, contractsPolygon.wapusdPusdSLp.address], 'polygon'),

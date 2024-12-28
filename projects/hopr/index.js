@@ -6,7 +6,7 @@ const wxHOPR_TOKEN_SMART_CONTRACT_ADDRESS = ADDRESSES.xdai.XHOPR;
 const SAFE_FACTORY = '0x098B275485c406573D042848D66eb9d63fca311C';
 const HOPR_CHANNELS = '0x693Bac5ce61c720dDC68533991Ceb41199D8F8ae';
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: SAFE_FACTORY,

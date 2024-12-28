@@ -19,11 +19,11 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { fromBlock, GRG_TOKEN_ADDRESSES, GRG_VAULT_ADDRESSES } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const { pools, tokens } = await getPoolInfo(api)
       return sumTokens2({ owners: pools, tokens, api, resolveUniV3: true, blacklistedTokens: [GRG_TOKEN_ADDRESSES] })
     },
-    staking: async (_, _b, _cb, { api, }) => {
+    staking: async (api) => {
       const { pools, tokens } = await getPoolInfo(api)
       const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools, target: GRG_VAULT_ADDRESSES })
       bals.forEach(i => api.add(GRG_TOKEN_ADDRESSES, i))

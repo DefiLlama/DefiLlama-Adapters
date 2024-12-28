@@ -16,7 +16,7 @@ let pools = [
   [ADDRESSES.ethereum.DAI, "0x43f133fe6fdfa17c417695c476447dc2a449ba5b"],
 ]
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   const v2Logs = await getLogs({
     api,
     target: hubPoolAddress,
@@ -30,14 +30,13 @@ async function tvl(_, block, _1, { api }) {
     if (pools.some(i => i[1] === pool)) return;
     pools.push([i[0], pool])
   })
-  const { output: supplies } = await sdk.api.abi.multiCall({
+  const supplies = await api.multiCall({
     abi: 'erc20:totalSupply',
-    calls: pools.map(i => ({ target: i[1] })),
-    block,
+    calls: pools.map(i => i[1]),
   })
 
   const balances = {}
-  supplies.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances, pools[i][0], output, 'ethereum'))
+  supplies.forEach((output, i) => sdk.util.sumSingleBalance(balances, pools[i][0], output, 'ethereum'))
   return balances
 }
 

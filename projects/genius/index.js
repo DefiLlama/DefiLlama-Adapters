@@ -52,11 +52,11 @@ const STABILITY_POOL_COLLATERAL_ADDRESSES = {
   }
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, owner: STABILITY_POOL, tokens: Object.values(STABILITY_POOL_COLLATERAL_ADDRESSES[api.chain])})
 }
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   // return sumTokens2({ api, owner: STABILITY_POOL, tokens: [GENIUS_CONTRACT]})
   const balances = {};
   /* Collect Basic miner locked */

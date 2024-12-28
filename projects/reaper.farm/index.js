@@ -12,7 +12,7 @@ const chains = ['optimism', 'arbitrum', 'fantom', 'bsc']
 
 chains.forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const hexId = '0x' + api.chainId.toString(16)
       const { data } = await getConfig('reaper/' + api.chain, REAPER_API + hexId)
       const vaults = Object.values(data).map(i => i.address).filter(i => !['0x85A21D07a3DeEfe58EcD841198D7f774e6444654'].includes(i))

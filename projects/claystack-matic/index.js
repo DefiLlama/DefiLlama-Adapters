@@ -5,7 +5,7 @@ const clayAddresses = {
   clayMatic: "0x91730940DCE63a7C0501cEDfc31D9C28bcF5F905",
 };
 
-async function getTvlOnEthereum(_, block, _1, { api }) {
+async function getTvlOnEthereum(api) {
   const maticDeposits = await api.call({ target: clayAddresses.clayMatic, abi: abi.funds, })
 
   api.add(ADDRESSES.ethereum.MATIC, maticDeposits.currentDeposit)

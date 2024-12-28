@@ -24,9 +24,9 @@ const ownerTokens = [
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 1614556800, // March 1, 2021 00:00 AM (UTC)
+  start: '2021-03-01', // March 1, 2021 00:00 AM (UTC)
   bsc:{
     tvl: sumTokensExport({ ownerTokens }),
-    staking:staking(xnrvAddress, nrv, "bsc")
+    staking:staking(xnrvAddress, nrv)
   }
 }

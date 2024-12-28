@@ -24,10 +24,9 @@ async function tvl(timestamp, _block, { astar: block }) {
 
 module.exports = {
     misrepresentedTokens: true,
-    timetravel: true,
-    methodology: "All locked tokens includes stable and crypto assets in Sirius's pools.",
+        methodology: "All locked tokens includes stable and crypto assets in Sirius's pools.",
     astar: {
-        start: 1650117600, // 2022/04/16 14:00 UTC
+        start: '2022-04-16', // 2022/04/16 14:00 UTC
         tvl, // tvl adapter
         staking: staking(VotingEscrow, SRS, Chain, CoinGeckoID, 18),
     },

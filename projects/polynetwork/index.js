@@ -21,7 +21,7 @@ const blockchainEndpoints = {
     okexchain: 'getTVLOKC',
     neo3: 'getTVLNeo3',
     polygon: 'getTVLPolygon',
-    palette: 'getTVLPalette',
+    //palette: 'getTVLPalette',
     arbitrum: 'getTVLArbitrum',
     xdai: 'getTVLGnosisChain',
     zilliqa: 'getTVLZilliqa',

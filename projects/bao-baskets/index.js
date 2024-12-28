@@ -6,7 +6,7 @@ const { staking } = require("../helper/staking.js");
 const veBaoAddress = "0x8Bf70DFE40F07a5ab715F7e888478d9D3680a2B6";
 const baoAddress = "0xCe391315b414D4c7555956120461D21808A69F3A";
 
-const basketTvl = async (_, _1, _2, { api }) => {
+const basketTvl = async (api) => {
   const baskets = [
     "0x5ee08f40b637417bcC9d2C51B62F4820ec9cF5D8", // bSTBL
   ]
@@ -20,7 +20,7 @@ const basketTvl = async (_, _1, _2, { api }) => {
 }
 
 module.exports = {
-  start: 1640995200, // Jan 1 2022 00:00:00 GMT+0000
+  start: '2022-01-01', // Jan 1 2022 00:00:00 GMT+0000
   ethereum: {
     tvl: basketTvl,
     pool2: sumTokensExport({

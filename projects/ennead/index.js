@@ -20,7 +20,7 @@ const neadSnekLp = '0x82360748aC3D7045812c6783f355b41193d3492E';
 const snekView = '0xe99eadc22747c95c658f41a02F1c6C2CcAefA757';
 const booster = '0xe99ead683Dcf1eF0C7F6612be5098BC5fDF4998d';
 
-async function arbiTvl(timestamp, block, chainBlocks, { api }) {
+async function arbiTvl(api) {
     let poolsAddresses = await api.call({ target: ramsesLens, abi: lensAbi.allPools, })
     let gauges = await api.multiCall({ target: ramsesLens, calls: poolsAddresses, abi: lensAbi.gaugeForPool, })
     poolsAddresses = poolsAddresses.filter((_, i) => gauges[i] !== nullAddress)
@@ -30,7 +30,7 @@ async function arbiTvl(timestamp, block, chainBlocks, { api }) {
     await sumTokens2({ api, uniV3nftsAndOwners: [[nfpManager, neadNfpDepositor],], resolveLP: true, })
 }
 
-async function avaxTvl(timestamp, block, chainBlocks, { api }) {
+async function avaxTvl(api) {
     const poolsAddresses = await api.call({ target: snekView, abi: lensAbi.allActivePools, })
     const gauges = await api.call({ target: snekView, abi: lensAbi.allGauges, })
     const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: gauges.map(i => ({ target: i, params: booster}))})

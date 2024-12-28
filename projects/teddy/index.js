@@ -14,10 +14,10 @@ const TROVE_MANAGER_ADDRESS = "0xd22b04395705144Fd12AfFD854248427A2776194";
 module.exports = {
   avax: {
     staking: sdk.util.sumChainTvls([
-      staking(stakingContract, TEDDY, "avax"),
-      //staking(STABILITY_POOL_ADDRESS, TSD, "avax"),
+      staking(stakingContract, TEDDY),
+      //staking(STABILITY_POOL_ADDRESS, TSD),
     ]),
-    pool2: pool2(stakingPool2Contract, WAVAX_TSD_PGL, "avax"),
+    pool2: pool2(stakingPool2Contract, WAVAX_TSD_PGL),
     tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS),
   },
   methodology:

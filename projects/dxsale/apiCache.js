@@ -1,26 +1,5 @@
 const sdk = require("@defillama/sdk");
-const {
-  polygonArchives,
-  bscArchives,
-  ethereumArchives,
-  fantomArchives,
-  xdaiArchives,
-  avaxArchives,
-  harmonyArchives,
-  arbitrumArchives,
-  celoArchives,
-  kucoinArchives,
-  okexchainArchives,
-  hecoArchives,
-  cronosArchives,
-  moonriverArchives,
-  milkomedaArchives,
-  smartbchArchives,
-  dogeArchives,
-  dexitArchives,
-  coreDaoArchives,
-  bitgertArchives,
-} = require("./config");
+const config = require("./config");
 const {
   getStorageLPLockDataV33,
   getLockCountPerContractV3,
@@ -155,67 +134,8 @@ function getTVLTotal(args) {
   };
 }
 
-module.exports = {
-  polygon: {
-    tvl: getTVLTotal(polygonArchives),
-  },
-  bsc: {
-    tvl: getTVLTotal(bscArchives),
-  },
-  ethereum: {
-    tvl: getTVLTotal(ethereumArchives),
-  },
-  arbitrum: {
-    tvl: getTVLTotal(arbitrumArchives),
-  },
-  celo: {
-    tvl: getTVLTotal(celoArchives),
-  },
-  kcc: {
-    tvl: getTVLTotal(kucoinArchives),
-  },
-  harmony: {
-    tvl: getTVLTotal(harmonyArchives),
-  },
-  avax: {
-    tvl: getTVLTotal(avaxArchives),
-  },
-  xdai: {
-    tvl: getTVLTotal(xdaiArchives),
-  },
-  fantom: {
-    tvl: getTVLTotal(fantomArchives),
-  },
-  heco: {
-    tvl: getTVLTotal(hecoArchives),
-  },
-  okexchain: {
-    tvl: getTVLTotal(okexchainArchives),
-  },
-  cronos: {
-    tvl: getTVLTotal(cronosArchives),
-  },
-  moonriver: {
-    tvl: getTVLTotal(moonriverArchives),
-  },
-  milkomeda: {
-    tvl: getTVLTotal(milkomedaArchives),
-  },
-  smartbch: {
-    tvl: getTVLTotal(smartbchArchives),
-  },
-  dogechain: {
-    tvl: getTVLTotal(dogeArchives),
-  },
-  dexit: {
-    tvl: getTVLTotal(dexitArchives),
-  },
-  core: {
-    tvl: getTVLTotal(coreDaoArchives),
-  },
-  bitgert: {
-    tvl: getTVLTotal(bitgertArchives),
-  }
-};
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl: getTVLTotal(config[chain]) }
+})
 
 module.exports.dexit.tvl = () => ({})

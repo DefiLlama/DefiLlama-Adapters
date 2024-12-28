@@ -24,9 +24,9 @@ module.exports = {
 
 Object.entries(tvlGuru).forEach(([chain, target]) => {
   module.exports[chain] = {
-    // pool2: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.pool2 }))) / 1e18 }),
-    // staking: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.staking}))) / 1e18 }),
-    tvl: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.tvl }))) / 1e18 }),
+    // pool2: async (api) => ({ tether: ((await api.call({ target, abi: ITVL.pool2 }))) / 1e18 }),
+    // staking: async (api) => ({ tether: ((await api.call({ target, abi: ITVL.staking}))) / 1e18 }),
+    tvl: async (api) => ({ tether: ((await api.call({ target, abi: ITVL.tvl }))) / 1e18 }),
   }
 })
 

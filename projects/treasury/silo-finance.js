@@ -38,7 +38,7 @@ module.exports = mergeExports([
         ADDRESSES.ethereum.CRV, // CRV
         ADDRESSES.ethereum.CRVUSD, // crvUSD
         "0xc944E90C64B2c07662A292be6244BDf05Cda44a7", // GRT
-        "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0" // FXS
+        ADDRESSES.ethereum.FXS // FXS
       ],
       owners: ETHEREUM_MAINNET_TREASURIES,
       ownTokens: [SILO_ETHEREUM_MAINNET, XAI_ETHEREUM_MAINNET],
@@ -69,7 +69,7 @@ module.exports = mergeExports([
   }
 ])
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const convexStakingProxy = '0x5754B88287A88dfA3d02cfb87747E340A840c70A'
   const fraxFarm = '0x4edF7C64dAD8c256f6843AcFe56876024b54A1b6'
   const liquidity = await api.call({ abi: 'function lockedLiquidityOf(address) view returns (uint256)', target: fraxFarm, params: convexStakingProxy })

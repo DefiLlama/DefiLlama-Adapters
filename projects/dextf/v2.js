@@ -7,10 +7,7 @@ const config = {
   era: { factory: '0x44E12D14b63806A817B1AA6886215caA6aa136a7', },
 }
 
-module.exports = async function tvl(timestamp, block, _, { api }) {
-  if (block <= START_BLOCK)
-    return {};
-
+module.exports = async function tvl(api) {
   const { factory } = config[api.chain]
 
   const sets = await api.call({

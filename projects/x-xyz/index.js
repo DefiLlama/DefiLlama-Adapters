@@ -7,6 +7,6 @@ module.exports = {
   methodology: `TVL for X.xyz consists of the staking of X into veX.`, 
   ethereum:{
     tvl: () => ({}),
-    staking: staking(veX, X, "ethereum"), 
+    staking: staking(veX, X), 
   }
 }

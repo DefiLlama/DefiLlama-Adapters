@@ -5,7 +5,7 @@ const LP_TOKEN_CONTRACT = '0x4b398fCd7841412610b653B34E89c9b19a42EbFc';
 const BTC_STAKING_CONTRACT = '0x1FDe0d2F44539789256D94D1784a86bF77D66DD0';
 const LP_STAKING_CONTRACT = '0x1e4A10d18698E4450E13b4E8EF361a5841850611';
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   const data = (await api.call({ abi: abi.poolInfo, target: BTC_STAKING_CONTRACT, params: 0, }))
   api.add(data.lpToken, data.totalToken);
   api.add(BTC_TOKEN_CONTRACT, await api.call({ abi: 'erc20:totalSupply', target: ABTC_TOKEN_CONTRACT, }));

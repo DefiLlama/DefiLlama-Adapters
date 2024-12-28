@@ -43,7 +43,7 @@ async function v3Pool(api, pool, bToken) {
 Object.keys(config).forEach(chain => {
   const contracts = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokensAndOwners = []
       for (let { pool, bTokenSymbol, v3, lite } of Object.values(contracts)) {
         if (lite)

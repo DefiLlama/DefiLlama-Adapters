@@ -1,6 +1,7 @@
+const sdk = require("@defillama/sdk");
 const { graphQuery } = require('../helper/http')
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/pacmanfinance/pacman-arbitrum";
+const subgraphUrl = sdk.graph.modifyEndpoint('9xteTELUdzjii1yLASJm6CxSpYuS1bmE6DGWMMhgkq2k');
 
 const vaultsQuery = `
   query {
@@ -18,7 +19,7 @@ const vaultsQuery = `
   }
 `;
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { vaults } = await graphQuery(subgraphUrl, vaultsQuery)
   vaults.forEach(({ baseToken:  { id, decimals }, totalDebt, totalDeposit}) => {
     api.add(id, (totalDeposit - totalDebt) * ( 10 ** decimals))

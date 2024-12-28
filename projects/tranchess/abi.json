@@ -1,9 +1,0 @@
-{
-  "tokenUnderlying": "address:tokenUnderlying",
-  "getPrimaryMarketCount": "uint256:getPrimaryMarketCount",
-  "getPrimaryMarketMember": "function getPrimaryMarketMember(uint256 index) view returns (address)",
-  "currentCreatingUnderlying": "uint256:currentCreatingUnderlying",
-  "getTotalUnderlying": "uint256:getTotalUnderlying",
-  "quoteAddress": "address:quoteAddress",
-  "allBalances": "function allBalances() view returns (uint256, uint256)"
-}

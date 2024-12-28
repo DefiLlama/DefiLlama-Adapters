@@ -3,7 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const farmContract = "0x1aF28E7b1A03fA107961897a28449F4F9768ac75";
 
-const bscTvl = async (_, _1, _2, { api }) => {
+const bscTvl = async (api) => {
   const getAllFarms = (await api.call({ abi: abi.getAllFarms, target: farmContract, })).map((st) => st.stakeToken);
   return sumTokens2({ api, resolveLP: true, owner: farmContract, tokens: getAllFarms})
 };

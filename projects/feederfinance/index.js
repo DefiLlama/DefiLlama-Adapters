@@ -33,8 +33,8 @@ module.exports = yieldHelper({
 module.exports = {
   bsc: {
     tvl:() => ({}),
-    pool2: pool2('0xd90A8878a2277879600AA2cba0CADC7E1a11354D', '0xcF3ED0670C671034C58F6b771757a8529238CA3a', 'bsc'),
-    staking: staking('0xeb9902a19fa1286c8832bf44e9b18e89f682f614', '0x67d66e8ec1fd25d98b3ccd3b19b7dc4b4b7fc493', 'bsc'),
+    pool2: pool2('0xd90A8878a2277879600AA2cba0CADC7E1a11354D', '0xcF3ED0670C671034C58F6b771757a8529238CA3a'),
+    staking: staking('0xeb9902a19fa1286c8832bf44e9b18e89f682f614', '0x67d66e8ec1fd25d98b3ccd3b19b7dc4b4b7fc493'),
   },
   fantom: module.exports.fantom
 };

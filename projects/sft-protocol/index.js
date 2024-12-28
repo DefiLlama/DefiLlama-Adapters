@@ -39,7 +39,7 @@ const getActiveMinersFromRPC = async () => {
 
 module.exports = {
     filecoin: {
-        tvl: async (_, _1, _2, { api }) => {
+        tvl: async (api) => {
 
             let balances = await sumTokens2({ owner: LENDING_POOL_ADDRESS, tokens, api });
 

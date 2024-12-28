@@ -23,7 +23,7 @@ const contractAddresses = {
     akt_osmo: "osmo122ryl7pez7yjprtvjckltu2uvjxrq3kqt4nvclax2la7maj6757qg054ga",
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
     if (api.chain != "osmosis") return {}
     for (const contractName in contractAddresses) {
         let contractAddress = contractAddresses[contractName];
@@ -88,7 +88,7 @@ const neutronVaults = {
     pcl_wstETH_NTRN: "neutron17vedy2clhctw0654k93m375ud7h5jsy8nj9gnlkjnyd4mcfnfrdql226al",
 };
 
-async function neutronTvl(_, _1, _2, { api }) {
+async function neutronTvl(api) {
     if (api.chain != "neutron") return {}
     for (const contractName in neutronVaults) {
         let contractAddress = neutronVaults[contractName];

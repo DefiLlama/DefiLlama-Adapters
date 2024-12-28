@@ -9,7 +9,7 @@ const addresses = {
   NoteUSDCLP: '0x9571997a66D63958e1B3De9647C22bD6b9e7228c',
   CantoETHLP: '0x216400ba362d8FCE640085755e47075109718C8B',
   Comptroller: '0x5E23dC409Fc2F832f83CEc191E245A191a4bCc5C',
-  Note: ADDRESSES.canto.NOTE,
+  Note: '0x4e71a2e537b7f9d9413d3991d37958c0b5e1e503',
   USDC: ADDRESSES.functionx.WFX,
   USDT: ADDRESSES.functionx.PUNDIX,
   ATOM: ADDRESSES.functionx.USDT,
@@ -25,8 +25,7 @@ const addresses = {
 }
 
 const chain = 'canto'
-const checkForLPTokens = i => /vAMM/.test(i)
-const compoundData = compoundExports(addresses.Comptroller, chain, addresses.CCANTO, addresses.WCANTO, undefined, checkForLPTokens, { blacklistedTokens:[ 
+const compoundData = compoundExports(addresses.Comptroller, addresses.CCANTO, addresses.WCANTO, { blacklistedTokens:[ 
   addresses.Note,
   addresses.NOTE_WCANTO,
   addresses.ETH_WCANTO,

@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 
 const getFraction = "function fraction() view returns (uint128 base, uint128 elastic)";
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { elastic } = await api.call({ abi: getFraction, target: '0x24ae2da0f361aa4be46b48eb19c91e02c5e4f27e' })
   api.add(ADDRESSES.null, elastic)
   return api.getBalances()

@@ -14,7 +14,7 @@ const MtrollerABI = {
 
 async function fetch(query) {
   var endpoint =
-    "https://api.thegraph.com/subgraphs/name/ohan8/mmo-finance-active-loans";
+    sdk.graph.modifyEndpoint('DUQF7Lhwu1dzz2GwyNi3eRvjZeUnMNCDFjQRA8BYpoRJ');
   var graphQLClient = new GraphQLClient(endpoint);
 
   const results = await graphQLClient.request(query)

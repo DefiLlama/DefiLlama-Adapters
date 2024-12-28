@@ -9,7 +9,7 @@ const ETHEREUM = {
 }
 
 function chainTvl(chain, config) {
-  return async (timestamp, ethBlock, _, { api }) => {
+  return async (api) => {
     const vaults = config.vaults;
     const tokens = await api.multiCall({  abi: 'address:want', calls: vaults})
     const vals = await api.multiCall({  abi: 'uint256:balance', calls: vaults})

@@ -2,9 +2,10 @@ const { get } = require('../helper/http')
 const {toUSDTBalances} = require('../helper/balances')
 
 async function fetch(chainName) {
-    const {tvlMap} = await get('https://app.earnmos.fi/defi-llama/tvl-map');
+    return 0
+    // const {tvlMap} = await get('https://app.earnmos.fi/defi-llama/tvl-map');
 
-    return toUSDTBalances(tvlMap[chainName]);
+    // return toUSDTBalances(tvlMap[chainName]);
 }
 
 module.exports = {

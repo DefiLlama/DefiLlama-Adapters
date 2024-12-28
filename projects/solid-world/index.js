@@ -5,7 +5,7 @@ const { fetchCategoriesAndBatches } = require("./categories-and-batches");
 const { valuateBatches } = require("./batch-valuation");
 
 // the value of the current on-chain forward credits, based on their exchange rate to CRISP tokens
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
   const batchSupplies = await fetchForwardContractBatchSupplies(api);
   const [categories, batches] = await fetchCategoriesAndBatches(api, Object.keys(batchSupplies));
   const batchesValuation = await valuateBatches(batches, categories, batchSupplies);
@@ -15,7 +15,7 @@ async function tvl(timestamp, ethBlock, _, { api }) {
   });
 }
 
-async function pool2(timestamp, ethBlock, _, { api }) {
+async function pool2(api) {
   const chainConfig = config[api.chain];
   const [token0s, token1s, totalAmounts, totalSupplies, stakedAmounts] = await Promise.all([
     api.multiCall({ calls: chainConfig.pools.map(pool => pool.hypervisor), abi: abi.token0 }),
@@ -47,7 +47,7 @@ async function pool2(timestamp, ethBlock, _, { api }) {
 }
 
 module.exports = {
-  start: 1684477800, // Fri May 19 2023 06:30:00 GMT+0000
+  start: '2023-05-19', // Fri May 19 2023 06:30:00 GMT+0000
   methodology: `TVL is a measure of the health of the Solid World ecosystem. The TVL can be looked at from 2 perspectives. The 1st perspective, "RWA" valuation, represents the total value of the tokenized forward carbon credits, and is computed as the present value of the on-chain forward credits (ERC1155), based on their exchange rate to CRISP tokens (ERC20) and subsequent USDC value, summed-up.The 2nd perspective, "pool2", represents the total value locked up in our staking contract, and it's calculated by adding up the value of all the LP tokens that are staked. The LP tokens represent the amount of liquidity that has been provided to the Solid World platform.`,
   polygon: {
     tvl,

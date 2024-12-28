@@ -23,7 +23,7 @@ const vaults = {
   "VaultBaselinecrvRenWSBTC": "0x483A47247d5cBd420A9c5d2838Ec89776ba8B56B", */
 }
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   const contracts =Object.values(vaults)
   const tokens = await api.multiCall({  abi: abis.token, calls: contracts})
   const bals = await api.multiCall({  abi: abis.balance, calls: contracts})

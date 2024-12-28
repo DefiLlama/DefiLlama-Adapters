@@ -2,7 +2,7 @@ const abi = require("../paraspace-v2/helper/abis");
 const address = require("../paraspace-v2/helper/address");
 const sdk = require("@defillama/sdk");
 
-async function tvl(_, _1, _cb, { api }) {
+async function tvl(api) {
   const {
     UiPoolDataProvider,
     PoolAddressProvider,

@@ -62,7 +62,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const vault = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const bal = await api.call({
         target: vault,
         abi: 'uint256:valueAll',

@@ -45,22 +45,20 @@ const farmContracts = [
   "0xf36e82E42670DB17f08C9731a45689D9190fB8AC" // BUSD-BNB
 ];
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const tokens = await api.multiCall({ abi: abi.stakingToken, calls: farmContracts })
   const bals = (await api.multiCall({ abi: abi.balance, calls: farmContracts, permitFailure: true})).map(i =>i ?? 0)
   api.addTokens(tokens, bals)
   return sumUnknownTokens({ api, resolveLP: true, lps: tokens, useDefaultCoreAssets: true, })
-
 }
 
-async function staking(timestamp, block, chainBlocks, { api }) {
-  block = chainBlocks.bsc;
+async function staking(api) {
   const bals = await api.multiCall({ abi: abi.balance, calls: stakingContracts })
   bals.forEach(i => api.add(hunnyToken, i))
   return api.getBalances();
 }
 
-async function pool2(timestamp, block, chainBlocks, { api }) {
+async function pool2(api) {
   const tokens = await api.multiCall({ abi: 'address:token', calls: [hunnybnblpstaking] })
   const bals = await api.multiCall({ abi: abi.balance, calls: [hunnybnblpstaking] })
   api.addTokens(tokens, bals)
