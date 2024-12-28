@@ -41,7 +41,6 @@ async function staking(api) {
 
 module.exports = {
   methodology: 'Gets v1 total deposits, and v2 staking statistics on-chain.',
-  start: 194344665,
   arbitrum: {
     staking,
     tvl, borrowed,

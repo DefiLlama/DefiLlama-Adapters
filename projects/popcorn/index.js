@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 const { getConfig } = require('../helper/cache')
 
 const { addFraxVaultToTVL } = require("./fraxVault");
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const getVaultsAbi = 'address[]:getRegisteredAddresses';
@@ -16,16 +16,19 @@ const fraxLockVaultsNotRegistered = [
   "0x1F0a3bF1e4Ea8f27449AFa0a3A27eFc3817431fc",
   "0xDc5Ed7b972710594082479AF498B1dA02d03a273",
 ];
+
 async function tvl(api) {
   let balances = {};
-  const data = await getConfig('popcorn/' + api.chain, `https://raw.githubusercontent.com/Popcorn-Limited/defi-db/main/archive/vaults/${api.getChainId()}.json`);
+  const data = await getConfig('popcorn/' + api.chain, `https://raw.githubusercontent.com/Popcorn-Limited/defi-db/main/vaults/${api.getChainId()}.json`);
   let vaultAddresses = Object.keys(data);
+
   if (api.chain === "arbitrum") {
     let fraxLockVaults = await api.call({ target: "0x25172C73958064f9ABc757ffc63EB859D7dc2219", abi: getVaultsAbi });
     fraxLockVaults = fraxLockVaults.concat(fraxLockVaultsNotRegistered);
     vaultAddresses = vaultAddresses.filter((address) => !fraxLockVaults.includes(address));
     await addFraxVaultToTVL(balances, api);
   }
+
   const assets = await api.multiCall({ abi: getAssetAbi, calls: vaultAddresses, });
   const totalAssets = await api.multiCall({ abi: getTotalAssets, calls: vaultAddresses, });
 
@@ -36,11 +39,12 @@ async function tvl(api) {
 
 const veVCX = "0x0aB4bC35Ef33089B9082Ca7BB8657D7c4E819a1A";
 const WETH_VCX_BAL_LP_TOKEN = "0x577A7f7EE659Aa14Dc16FD384B3F8078E23F1920";
+const stVCX = "0xE5d383FC43F6c370DdD3975cf9e363Ad42367697";
+const VCX = "0xce246eea10988c495b4a90a905ee9237a0f91543";
 
 module.exports = {
   ethereum: {
-    start: 12237585,
-    staking: staking(veVCX, WETH_VCX_BAL_LP_TOKEN),
+    staking: stakings([stVCX, veVCX], [VCX, WETH_VCX_BAL_LP_TOKEN]),
     tvl,
   },
   bsc: { tvl, },
