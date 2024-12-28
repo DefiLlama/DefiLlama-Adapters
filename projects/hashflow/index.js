@@ -1,5 +1,5 @@
-const axios = require("axios");
-const retry = require('../helper/retry');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { get } = require('../helper/http') 
 const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
 let dataCache = require('./dataCache.json')
@@ -9,27 +9,31 @@ const chainIds = {
   polygon: 137,
   bsc: 56,
   arbitrum: 42161,
-  avax: 43114
+  avax: 43114,
+  optimism: 10,
 }
 
 let dataCacheUpdating
 
 async function updateDataCache() {
-
-  const http_api_url = 'https://api.hashflow.com/internal/pool/getPools';
-  const null_addr = '0x0000000000000000000000000000000000000000';
+  const null_addr = ADDRESSES.null;
   const allChainData = {}
 
   for (const chain of Object.keys(chainIds)) {
     const chainId = chainIds[chain]
-    const url = `${http_api_url}?networkId=${chainId}&lp=${null_addr}`
-    const pools_response = (await retry(async () => await axios.get(url))).data
+    const url = `https://api.hashflow.com/internal/pools?networkId=${chainId}&lp=${null_addr}`
+    const pools_response = await get(url)
+    // const pools_response = data[chain]
+    pools_response.pools = pools_response.pools.filter(i => !i.name.startsWith('HFT Bridge'))
     allChainData[chain] = pools_response.pools.map(pool =>
     ({
       pool: pool.pool,
       tokens: pool.tokens.map(t => t.token.address)
     })
     )
+
+    // const blacklisted = ['0x5e1fed30b85fcfcd725902bb5de0d50901faa70d', '0xa97a7a07e063bb812e1ae22a98a18d1dbb5176f4', ]
+    // allChainData[chain] = allChainData[chain].filter(i => !blacklisted.includes(i.pool.toLowerCase()))
   }
 
   require('fs').writeFileSync(__dirname + '/dataCache.json', JSON.stringify(allChainData, null, 2))

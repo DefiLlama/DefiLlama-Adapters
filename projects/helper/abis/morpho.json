@@ -1,83 +1,20 @@
 {
   "cToken": {
-    "underlying":   {
-      "constant": true,
-      "inputs": [],
-      "name": "underlying",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }
-
+    "underlying": "address:underlying"
   },
-  "morphoCompoundLens": {
-    "getAllMarkets": {
-      "inputs": [],
-      "name": "getAllMarkets",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "marketsCreated",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    "getTotalMarketSupply": {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_poolTokenAddress",
-          "type": "address"
-        }
-      ],
-      "name": "getTotalMarketSupply",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "p2pSupplyAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "poolSupplyAmount",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    "getTotalMarketBorrow":   {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_poolTokenAddress",
-          "type": "address"
-        }
-      ],
-      "name": "getTotalMarketBorrow",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "p2pBorrowAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "poolBorrowAmount",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
-  }
+  "morphoLens": {
+    "getAllMarkets": "address[]:getAllMarkets",
+    "getTotalMarketSupply": "function getTotalMarketSupply(address _poolTokenAddress) view returns (uint256 p2pSupplyAmount, uint256 poolSupplyAmount)",
+    "getTotalMarketBorrow": "function getTotalMarketBorrow(address _poolTokenAddress) view returns (uint256 p2pBorrowAmount, uint256 poolBorrowAmount)"
+  },
+  "morphoAaveV3": {
+    "marketsCreated": "address[]:marketsCreated",
+    "market": "function market(address underlying) returns (tuple( tuple(uint128 poolIndex, uint128 p2pIndex) supply, tuple(uint128 poolIndex, uint128 p2pIndex) borrow) indexes, tuple( tuple(uint256 scaledDelta, uint256 scaledP2PTotal) supply, tuple(uint256 scaledDelta, uint256 scaledP2PTotal) borrow) deltas, address underlying, tuple( bool isP2PDisabled, bool isSupplyPaused, bool isSupplyCollateralPaused, bool isBorrowPaused, bool isWithdrawPaused, bool isWithdrawCollateralPaused, bool isRepayPaused, bool isLiquidateCollateralPaused, bool isLiquidateBorrowPaused, bool isDeprecated) pauseStatues, bool isCollateral,  address variableDebtToken, uint32 lastUpdateTimestamp, uint16 reserveFactor, uint16 p2pIndexCursor, address aToken, address stableDebtToken, uint256 idleSupply)"
+  },
+  "morphoBlueFunctions": {
+    "underlying": "address:underlying",
+    "idToMarketParams": "function idToMarketParams(bytes32 Id) returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)",
+    "market": "function market(bytes32 input) returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)"
+  },
+  "pool": {}
 }

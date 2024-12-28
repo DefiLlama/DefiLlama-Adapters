@@ -1,67 +1,19 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abis = require("../config/abis");
 const { staking, stakings } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const BigNumber = require("bignumber.js");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const alpacaAdapterAbi = [
-  {
-    inputs: [],
-    name: "totalValue",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
+const alpacaAdapterAbi = "uint256:totalValue";
 
-const AssessorAbi = [
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "seniorDebt",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
-
-const reserveAbi = [
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "totalBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-]
+const AssessorAbi = "uint256:seniorDebt"
 
 // BSC address
 const BSC_NAOS_ADDRESS = "0x758d08864fb6cce3062667225ca10b8f00496cc2";
 const CAKE_BNB_NAOS_LP_ADDRESS = "0xcaa662ad41a662b81be2aea5d59ec0697628665f";
 const BSC_BOOST_POOL = "0x3dcd32dd2b225749aa830ca3b4f2411bfeb03db4";
-const BUSD_CONTRACT_ADDRESS = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+const BUSD_CONTRACT_ADDRESS = ADDRESSES.bsc.BUSD;
 const BUSD_CONTRACT_HOLDER = [
   "0x9591ff9c5070107000155ff6c5ce049aa1443dd3", // Formation
   "0xb9ece39b356d5c0842301b42a716e4385617c871", // Transmuter
@@ -91,7 +43,7 @@ const UNI_ETH_NAOS_LP_ADDRESS = "0x9b577e849b128ee1a69144b218e809b8bb98c35d";
 const NAOS_ADDRESS = "0x4a615bb7166210cce20e6642a6f8fb5d4d044496";
 const NUSD_3CRV_LP_ADDRESS = "0x67d9eAe741944D4402eB0D1cB3bC3a168EC1764c";
 
-const DAI_CONTRACT_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f";
+const DAI_CONTRACT_ADDRESS = ADDRESSES.ethereum.DAI;
 const DAI_CONTRACT_HOLDER = [
   "0x9Ddceb30515eD297C1B72Ff8F848F254104b7A12", // Formation
   "0x3ED6355Ad74605c0b09415d6B0b29a294Fd31265", // Transmuter
@@ -134,7 +86,7 @@ async function tvl(timestamp, block) {
     }),
     sdk.api.abi.call({
       target: YEARN_VAULT_ADDRESS,
-      abi: abis.abis.minYvV2[1], // pricePerShare
+      abi: "uint256:pricePerShare", // pricePerShare
       block,
     }),
     sdk.api.erc20.decimals(YEARN_VAULT_ADDRESS),
@@ -161,7 +113,7 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   // ---- Start ibBUSD (map ibBUSD value to BUSD)
   // formation
   const { output: isBUSDs } = await sdk.api.abi.multiCall({
-    abi: alpacaAdapterAbi[0],
+    abi: alpacaAdapterAbi,
     calls: BSC_ALPACA_ADAPTERS.map(i => ({ target: i })),
     chain, block,
   })
@@ -183,7 +135,7 @@ async function bscBorrowed(timestamp, ethBlock, chainBlocks) {
     const seniorDebt = (
       await sdk.api.abi.call({
         target: borrwer.Assessor,
-        abi: AssessorAbi[0],
+        abi: AssessorAbi,
         chain, block,
       })
     ).output;
@@ -199,7 +151,7 @@ module.exports = {
     tvl: tvl,
     staking: staking(STAKING_POOL_ADDRESS, NAOS_ADDRESS),
     pool2: async (_, block) => {
-      const balances = await sumTokens2({ block, owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS,], resolveLP: true, })
+      const balances = await sumTokens2({ block, owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS,], })
       const [crvBalance, decimals, price,] = (await Promise.all([
         sdk.api.erc20.balanceOf({
           target: NUSD_3CRV_LP_ADDRESS,
@@ -209,19 +161,7 @@ module.exports = {
         sdk.api.erc20.decimals(NUSD_3CRV_LP_ADDRESS),
         sdk.api.abi.call({
           target: NUSD_3CRV_LP_ADDRESS,
-          abi: {
-            "name": "get_virtual_price",
-            "outputs": [
-              {
-                "type": "uint256",
-                "name": ""
-              }
-            ],
-            "inputs": [],
-            "stateMutability": "view",
-            "type": "function",
-            "gas": 1011891
-          },
+          abi: "uint256:get_virtual_price",
           block,
         })
       ])).map(i => i.output)
@@ -233,7 +173,7 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
     borrowed: bscBorrowed,
-    staking: stakings([BSC_BOOST_POOL,], BSC_NAOS_ADDRESS, 'bsc'),
-    pool2: pool2(BSC_STAKING_POOL_WITH_TRANSFER, CAKE_BNB_NAOS_LP_ADDRESS, 'bsc'),
+    staking: stakings([BSC_BOOST_POOL,], BSC_NAOS_ADDRESS),
+    pool2: pool2(BSC_STAKING_POOL_WITH_TRANSFER, CAKE_BNB_NAOS_LP_ADDRESS),
   },
 };

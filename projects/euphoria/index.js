@@ -1,8 +1,5 @@
 const { staking } = require('../helper/staking');
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
-const { transformHarmonyAddress } = require('../helper/portedTokens');
-const { getBlock } = require('../helper/getBlock');
-const { getFixBalances } = require('../helper/portedTokens');
+const { sumTokensExport } = require('../helper/unwrapLPs');
 
 const wagmiAddresses = {
   staking: '0x95066025af40F7f7832f61422802cD1e13C23753',
@@ -24,37 +21,18 @@ const wagmiReserves = {
   },
 };
 
-async function tvl(time, ethBlock, chainBlocks) {
-  const balances = {};
-  const transform = await transformHarmonyAddress();
-  const block = await getBlock(time, 'harmony', chainBlocks, true);
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [wagmiReserves.single.dai, false],
-      [wagmiReserves.lp.wagmiDai, true],
-      [wagmiReserves.single.ust, false],
-      [wagmiReserves.lp.wagmiUst, true],
-      [wagmiReserves.single.usdc, false],
-      [wagmiReserves.single.busd, false],
-      [wagmiReserves.lp.wagmiOne, true],
-    ],
-    [wagmiAddresses.treasury],
-    block,
-    'harmony',
-    transform
-  );
-
-  (await getFixBalances('harmony'))(balances);
-
-  return balances;
-}
-
 module.exports = {
   harmony: {
-    tvl,
-    staking: staking(wagmiAddresses.staking, wagmiAddresses.wagmi, 'harmony'),
+    tvl: sumTokensExport({owners: [wagmiAddresses.treasury], tokens: [
+      wagmiReserves.single.dai,
+      wagmiReserves.lp.wagmiDai,
+      wagmiReserves.single.ust,
+      wagmiReserves.lp.wagmiUst,
+      wagmiReserves.single.usdc,
+      wagmiReserves.single.busd,
+      wagmiReserves.lp.wagmiOne,
+    ], resolveLP: true,}),
+    staking: staking(wagmiAddresses.staking, wagmiAddresses.wagmi),
   },
   methodology:
     'Counts tokens in the treasury for tvl and staked WAGMI for staking',

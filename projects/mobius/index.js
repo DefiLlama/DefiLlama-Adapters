@@ -1,220 +1,234 @@
-/*==================================================
-  Modules
-  ==================================================*/
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-
-/*==================================================
-  Addresses
-  ==================================================*/
-const wBTC = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-const wETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const cUSD = "0x765DE816845861e75A25fCA122bb6898B8B1282a";
-const wBTCO = "0xBe50a3013A1c94768A1ABb78c3cB79AB28fc1aCE";
-const pUSDC = "0xcC82628f6A8dEFA1e2B0aD7ed448bef3647F7941";
-const cUSDC = "0x2A3684e9Dc20B857375EA04235F2F7edBe818FA7";
-const CELO = "0x471EcE3750Da237f93B8E339c536989b8978a438";
-const cUSDC_V2 = "0xef4229c8c3250C675F21BCefa42f58EfbfF6002a";
-const pUSDC_V2 = "0x1bfc26cE035c368503fAE319Cc2596716428ca44";
-const wBTC_V2 = "0xBAAB46E28388d2779e6E31Fd00cF0e5Ad95E327B";
-
-const decimals = {
-  [wBTC]: 8,
-  [wBTCO]: 8,
-  [wBTC_V2]: 8,
-  [cUSDC]: 6,
-  [pUSDC]: 6,
-  [cUSDC_V2]: 6,
-  [pUSDC_V2]: 6,
-  ["celo-dollar"]: 0,
-  ["celo"]: 0,
-};
-
-// {[string: name]: {
-//   address: string,
-//   peggedTo: string
-//   tokens: string[],
-// }}
-const pools = {
-  poof_cusd_v2: {
-    address: "0xa2F0E57d4cEAcF025E81C76f28b9Ad6E9Fbe8735",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0xEadf4A7168A82D30Ba0619e64d5BCf5B30B45226",
+let pools = [
+  {
+    "name": "USDC (Portal)",
+    "address": "0xc0ba93d4aaf90d39924402162ee4a213300d1d60",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0x37f750B7cC259A2f741AF45294f6a16572CF5cAd"
     ],
+    "lp": "0xe10fd4788a76d19ba0110b1bfda5e13d35ed4359"
   },
-  poof_celo_v2: {
-    address: "0xFc9e2C63370D8deb3521922a7B2b60f4Cff7e75a",
-    peggedTo: CELO,
-    tokens: [
-      "0x471EcE3750Da237f93B8E339c536989b8978a438",
-      "0x301a61D01A63c8D670c2B8a43f37d12eF181F997",
+  {
+    "name": "Staked CELO",
+    "address": "0xebf0536356256f8ff2a5eb6c65800839801d8b95",
+    "tokens": [
+      ADDRESSES.celo.CELO,
+      "0xC668583dcbDc9ae6FA3CE46462758188adfdfC24"
     ],
+    "lp": "0x4730ff6bc3008a40cf74d660d3f20d5b51646da3"
   },
-  usdc_optics_v2: {
-    address: "0x9906589Ea8fd27504974b7e8201DF5bBdE986b03",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0xef4229c8c3250C675F21BCefa42f58EfbfF6002a",
+  {
+    "name": "UST (Allbridge)",
+    "address": "0x9f4adbd0af281c69a582eb2e6fa2a594d4204cae",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      ADDRESSES.celo.atUST
     ],
+    "lp": "0x9438e7281d7e3e99a9dd21e0ead9c6a254e17ab2"
   },
-  dai_optics_v2: {
-    address: "0xF3f65dFe0c8c8f2986da0FEc159ABE6fd4E700B4",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0x90Ca507a5D4458a4C6C6249d186b6dCb02a5BCCd",
-    ],
-  },
-  weth_optics_v2: {
-    address: "0x74ef28D635c6C5800DD3Cd62d4c4f8752DaACB09",
-    peggedTo: wETH,
-    tokens: [
+  {
+    "name": "WETH (Optics V2)",
+    "address": "0x74ef28d635c6c5800dd3cd62d4c4f8752daacb09",
+    "tokens": [
       "0x2DEf4285787d58a2f811AF24755A8150622f4361",
-      "0x122013fd7dF1C6F636a5bb8f03108E876548b455",
+      "0x122013fd7dF1C6F636a5bb8f03108E876548b455"
     ],
+    "lp": "0x4ff08e2a4e7114af4b575aef9250144f95790982"
   },
-  wbtc_optics_v2: {
-    address: "0xaEFc4e8cF655a182E8346B24c8AbcE45616eE0d2",
-    peggedTo: wBTC,
-    tokens: [
+  {
+    "name": "USDC (Optics V2)",
+    "address": "0x9906589ea8fd27504974b7e8201df5bbde986b03",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0xef4229c8c3250C675F21BCefa42f58EfbfF6002a"
+    ],
+    "lp": "0x39b6f09ef97db406ab78d869471adb2384c494e3"
+  },
+  {
+    "name": "DAI (Optics V2)",
+    "address": "0xf3f65dfe0c8c8f2986da0fec159abe6fd4e700b4",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      ADDRESSES.celo.DAI
+    ],
+    "lp": "0x274dd2df039f1f6131419c82173d97770e6af6b7"
+  },
+  {
+    "name": "WBTC (Optics V2)",
+    "address": "0xaefc4e8cf655a182e8346b24c8abce45616ee0d2",
+    "tokens": [
       "0xD629eb00dEced2a080B7EC630eF6aC117e614f1b",
-      "0xBAAB46E28388d2779e6E31Fd00cF0e5Ad95E327B",
+      ADDRESSES.celo.WBTC
     ],
+    "lp": "0x20d7274c5af4f9de6e8c93025e44af3979d9ab2b"
   },
-  pusdc_optics_v2: {
-    address: "0xcCe0d62Ce14FB3e4363Eb92Db37Ff3630836c252",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0x1bfc26cE035c368503fAE319Cc2596716428ca44",
+  {
+    "name": "pUSDC (Optics V2)",
+    "address": "0xcce0d62ce14fb3e4363eb92db37ff3630836c252",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0x1bfc26cE035c368503fAE319Cc2596716428ca44"
     ],
+    "lp": "0x68b239b415970dd7a5234a9701cbb5bfab544c7c"
   },
-  usdc_allbridge_avax: {
-    address: "0x0986B42F5f9C42FeEef66fC23eba9ea1164C916D",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0xb70e0a782b058BFdb0d109a3599BEc1f19328E36",
+  {
+    "name": "USDC (Optics V1)",
+    "address": "0xa5037661989789d0310ac2b796fa78f1b01f195d",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      ADDRESSES.celo.USDC
     ],
+    "lp": "0xd7bf6946b740930c60131044bd2f08787e1ddbd4"
   },
-  usdc_allbridge_solana: {
-    address: "0x63C1914bf00A9b395A2bF89aaDa55A5615A3656e",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0xCD7D7Ff64746C1909E44Db8e95331F9316478817",
+  {
+    "name": "aaUSDC (Allbridge)",
+    "address": "0x0986b42f5f9c42feeef66fc23eba9ea1164c916d",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      ADDRESSES.celo.aaUSDC
     ],
+    "lp": "0x730e677f39c4ca96012c394b9da09a025e922f81"
   },
-  usdc_eth_optics: {
-    address: "0xA5037661989789d0310aC2B796fa78F1B01F195D",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0x2A3684e9Dc20B857375EA04235F2F7edBe818FA7",
+  {
+    "name": "Poof cUSD V2",
+    "address": "0xa2f0e57d4ceacf025e81c76f28b9ad6e9fbe8735",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0xEadf4A7168A82D30Ba0619e64d5BCf5B30B45226"
     ],
+    "lp": "0x07e137e5605e15c93f22545868fa70cecfcbbffe"
   },
-  usdc_poly_optics: {
-    address: "0x2080AAa167e2225e1FC9923250bA60E19a180Fb2",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0xcC82628f6A8dEFA1e2B0aD7ed448bef3647F7941",
+  {
+    "name": "Poof CELO V2",
+    "address": "0xfc9e2c63370d8deb3521922a7b2b60f4cff7e75a",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0x301a61D01A63c8D670c2B8a43f37d12eF181F997"
     ],
+    "lp": "0xaffd8d6b5e5a0e25034dd3d075532f9ce01c305c"
   },
-  wbtc: {
-    address: "0x19260b9b573569dDB105780176547875fE9fedA3",
-    peggedTo: wBTC,
-    tokens: [
+  {
+    "name": "Poof cEUR V2",
+    "address": "0x23c95678862a229fac088bd9705622d78130bc3e",
+    "tokens": [
+      "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73",
+      "0xD8761DD6c7cB54febD33adD699F5E4440b62E01B"
+    ],
+    "lp": "0xec8e37876fd9de919b58788b87a078e546149f87"
+  },
+  {
+    "name": "Poof cUSD V1",
+    "address": "0x02db089fb09fda92e05e92afcd41d9aafe9c7c7c",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0xB4aa2986622249B1F45eb93F28Cfca2b2606d809"
+    ],
+    "lp": "0x18d71b8664e69d6dd61c79247dbf12bfaaf66c10"
+  },
+  {
+    "name": "asUSDC (Allbridge)",
+    "address": "0x63c1914bf00a9b395a2bf89aada55a5615a3656e",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      ADDRESSES.celo.asUSDC
+    ],
+    "lp": "0xafee90ab6a2d3b265262f94f6e437e7f6d94e26e"
+  },
+  {
+    "name": "pUSDC (Optics V1)",
+    "address": "0x2080aaa167e2225e1fc9923250ba60e19a180fb2",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0xcC82628f6A8dEFA1e2B0aD7ed448bef3647F7941"
+    ],
+    "lp": "0xf5b454cf47caca418d95930aa03975ee4bf409bc"
+  },
+  {
+    "name": "wBTC (Optics V1)",
+    "address": "0x19260b9b573569ddb105780176547875fe9feda3",
+    "tokens": [
       "0xD629eb00dEced2a080B7EC630eF6aC117e614f1b",
-      "0xBe50a3013A1c94768A1ABb78c3cB79AB28fc1aCE",
+      "0xBe50a3013A1c94768A1ABb78c3cB79AB28fc1aCE"
     ],
+    "lp": "0x8cd0e2f11ed2e896a8307280deeee15b27e46bbe"
   },
-  weth: {
-    address: "0xE0F2cc70E52f05eDb383313393d88Df2937DA55a",
-    peggedTo: wETH,
-    tokens: [
+  {
+    "name": "wETH (Optics V1)",
+    "address": "0xe0f2cc70e52f05edb383313393d88df2937da55a",
+    "tokens": [
       "0x2DEf4285787d58a2f811AF24755A8150622f4361",
-      "0xE919F65739c26a42616b7b8eedC6b5524d1e3aC4",
+      "0xE919F65739c26a42616b7b8eedC6b5524d1e3aC4"
     ],
+    "lp": "0x846b784ab5302155542c1b3952b54305f220fd84"
   },
-  usdt_moss: {
-    address: "0xdBF27fD2a702Cc02ac7aCF0aea376db780D53247",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0xcFFfE0c89a779c09Df3DF5624f54cDf7EF5fDd5D",
+  {
+    "name": "USDT (Moss)",
+    "address": "0xdbf27fd2a702cc02ac7acf0aea376db780d53247",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      ADDRESSES.celo.cUSDT
     ],
+    "lp": "0xc7a4c6ef4a16dc24634cc2a951ba5fec4398f7e0"
   },
-  usdc_moss: {
-    address: "0x0ff04189Ef135b6541E56f7C638489De92E9c778",
-    peggedTo: cUSD,
-    tokens: [
-      "0x765DE816845861e75A25fCA122bb6898B8B1282a",
-      "0x93DB49bE12B864019dA9Cb147ba75cDC0506190e",
+  {
+    "name": "USDC (Moss)",
+    "address": "0x0ff04189ef135b6541e56f7c638489de92e9c778",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      ADDRESSES.celo.cUSDC
     ],
+    "lp": "0x635aec36c4b61bac5eb1c3eee191147d006f8a21"
   },
-};
-/*==================================================
-  TVL
-  ==================================================*/
+  {
+    "name": "Poof Celo V1",
+    "address": "0x413ffcc28e6cdde7e93625ef4742810fe9738578",
+    "tokens": [
+      ADDRESSES.celo.CELO,
+      "0xE74AbF23E1Fdf7ACbec2F3a30a772eF77f1601E1"
+    ],
+    "lp": "0x4d6b17828d0173668e8eb730106444556a98c0f9"
+  },
+  {
+    "name": "Poof cEUR V1",
+    "address": "0x382ed834c6b7dbd10e4798b08889eaed1455e820",
+    "tokens": [
+      "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73",
+      "0x56072D4832642dB29225dA12d6Fd1290E4744682"
+    ],
+    "lp": "0x2642ab16bfb7a8b36ee42c9cba2289c4ca9f33b9"
+  },
+  {
+    "name": "Poof cUSD V1 [DISABLED]",
+    "address": "0x81b6a3d9f725ab5d706d9e552b128bc5bb0b58a1",
+    "tokens": [
+      "0xB4aa2986622249B1F45eb93F28Cfca2b2606d809",
+      "0xd7bf6946b740930c60131044bd2f08787e1ddbd4"
+    ],
+    "lp": "0x57f008172cf89b972db3db7dd032e66be4af1a8c"
+  },
+  {
+    "name": "cUSD (Mento 1:1 Pool)",
+    "address": "0xfa3df877f98ac5ecd87456a7accaa948462412f0",
+    "tokens": [
+      ADDRESSES.celo.cUSD,
+      "0x37f750B7cC259A2f741AF45294f6a16572CF5cAd"
+    ],
+    "lp": "0x552b9aa0eee500c60f09456e49fbc1096322714c"
+  }
+]
 
-async function tvl(timestamp, ethBlock, { celo: block }) {
-  const chain = "celo";
-  const balances = {};
+// pools = []
 
-  const promises = Object.values(pools).map(async (pool) => {
-    const { address, peggedTo, tokens } = pool;
-    const peg =
-      peggedTo === cUSD ? "celo-dollar" : peggedTo === CELO ? "celo" : peggedTo;
-    if (!balances[peg]) {
-      balances[peg] = BigNumber(0);
-    }
-    const tokenBalances = await Promise.all(
-      tokens.map(async (token) => {
-        const balance = await sdk.api.erc20.balanceOf({
-          block,
-          chain,
-          target: token,
-          owner: address,
-        });
-        const baseDecimals = decimals[token] ?? 18;
-        const targetDecimals = decimals[peg] ?? 18;
-        if (baseDecimals === targetDecimals) return BigNumber(balance.output);
-        if (baseDecimals < targetDecimals)
-          return BigNumber(balance.output).multipliedBy(
-            BigNumber(10).exponentiatedBy(
-              BigNumber(targetDecimals - baseDecimals)
-            )
-          );
-        return BigNumber(balance.output).dividedBy(
-          BigNumber(10).exponentiatedBy(
-            BigNumber(baseDecimals - targetDecimals)
-          )
-        );
-      })
-    );
-    balances[peg] = tokenBalances.reduce(
-      (accum, cur) => accum.plus(cur),
-      balances[peg]
-    );
-  });
-
-  await Promise.all(promises);
-
-  return balances;
+const chain = 'celo'
+async function tvl(_, _b, {[chain]: block }) {
+  const tokensAndOwners = pools.map(i => i.tokens.map(t => ([t, i.address]))).flat()
+  const lpTokens = pools.map(i => i.lp)
+  return sumTokens2({ chain, block, tokensAndOwners, blacklistedTokens: lpTokens, })
 }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  start: 8606077, // January 19, 2021 11:51:30 AM
   celo: { tvl }
 };
-
-///

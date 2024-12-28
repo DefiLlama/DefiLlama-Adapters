@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
 
@@ -5,13 +6,13 @@ const STAKING_ADDRESS = '0x2d615795a8bdb804541C69798F13331126BA0c09';
 
 const USDC_TOKEN = {
     symbol: 'USDC',
-    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    address: ADDRESSES.ethereum.USDC,
     decimals: 6,
 };
 
 const AAVE_TOKEN = {
     symbol: 'AAVE',
-    address: '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
+    address: ADDRESSES.ethereum.AAVE,
     decimals: 18,
 };
 
@@ -29,19 +30,19 @@ const COMP_TOKEN = {
 
 const SNX_TOKEN = {
     symbol: 'SNX',
-    address: '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f',
+    address: ADDRESSES.ethereum.SNX,
     decimals: 18,
 };
 
 const SUSHI_TOKEN = {
     symbol: 'SUSHI',
-    address: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
+    address: ADDRESSES.ethereum.SUSHI,
     decimals: 18,
 };
 
 const LINK_TOKEN = {
     symbol: 'LINK',
-    address: '0x514910771af9ca656af840dff83e8264ecf986ca',
+    address: ADDRESSES.ethereum.LINK,
     decimals: 18,
 };
 
@@ -56,23 +57,6 @@ const USDC_XYZ_SUSHI_LP_TOKEN = {
     address: '0xbbbdb106a806173d1eea1640961533ff3114d69a',
     decimals: 18,
 };
-
-// Unused but will leave it because they added it to the PR
-function createAbiViewItemFor(name, inputs, outputs) {
-    return {
-        name,
-        type: 'function',
-        stateMutability: 'view',
-        inputs: inputs.map(input => ({
-            name: '',
-            type: input,
-        })),
-        outputs: outputs.map(output => ({
-            name: '',
-            type: output,
-        })),
-    };
-}
 
 async function pool2(_timestamp, block) {
     const balance = await sdk.api.abi.call({
@@ -113,5 +97,5 @@ module.exports = {
         tvl,
         pool2,
     },
-    start: 1621939189, // May-25-2021 10:39:49 AM +UTC
+    start: '2021-05-25', // May-25-2021 10:39:49 AM +UTC
 };

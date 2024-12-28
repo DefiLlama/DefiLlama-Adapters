@@ -1,63 +1,57 @@
-const anchor = require("@project-serum/anchor");
-const { PublicKey } = require("@solana/web3.js");
-const activePoolBases = require("./active-pools.json");
-const { getConnection } = require("../helper/solana");
-const { MintLayout } = require("@solana/spl-token");
-const sdk = require('@defillama/sdk')
+const sui = require("../helper/chain/sui");
+const BigNumber = require("bignumber.js");
 
-const SCALLOP_PROGRAM_ID = new PublicKey("SCPv1LabixHirZbX6s7Zj3oiBogadWZvGUKRvXD3Zec");
+const SCALLOP_SUI_MARKET_ID = "0xa757975255146dc9686aa823b7838b507f315d704f428cbadad2f4ea061939d9"
 
-// seeds
-const COUPON_SEED = "coupon_seed";
-const POOL_AUTHORITY = "pool_authority_seed";
+async function suiBorrowed(api) {
+  const object = await sui.getObject(SCALLOP_SUI_MARKET_ID)
 
-function getTokenGeckoId(mintAuthority) {
-  for (let i = 0; i < activePoolBases.length; i++) {
-    const pubkey = new PublicKey(activePoolBases[i].base)
-    const [couponMintAuthority, _couponMintAuthorityBump] = PublicKey.findProgramAddressSync([
-      anchor.utils.bytes.utf8.encode(POOL_AUTHORITY),
-      pubkey.toBytes()
-    ], SCALLOP_PROGRAM_ID);
-    if (couponMintAuthority.equals(mintAuthority))
-      return activePoolBases[i].coingeckoId;
-  }
+  const balanceSheetsFields = await sui.getDynamicFieldObjects({
+    parent: object.fields.vault.fields.balance_sheets.fields.table.fields.id.id,
+  });
+
+  const balanceSheets = await sui.getObjects(balanceSheetsFields.map((e) => e.fields.id.id))
+
+  balanceSheets.forEach((e) => {
+    const coinType = '0x' + e.fields.name.fields.name
+    const amount = new BigNumber(e.fields.value.fields.debt).toString()
+    api.add(coinType, amount)
+  })
 }
 
-async function tvl() {
-  const connection = getConnection()
+async function suiTvl(api) {
+  const object = await sui.getObject(SCALLOP_SUI_MARKET_ID)
 
-  // at Scallop, coupon representing deposited amount of a pool
-  let couponAddresses = [];
-  for (let i = 0; i < activePoolBases.length; i++) {
-    const pubkey = new PublicKey(activePoolBases[i].base)
-    const [couponAddress, _couponAddressBump] = PublicKey.findProgramAddressSync([
-      anchor.utils.bytes.utf8.encode(COUPON_SEED),
-      pubkey.toBytes()
-    ], SCALLOP_PROGRAM_ID);
-    couponAddresses.push(couponAddress);
-  }
-
-  const balances = {}
-  const coupons = await connection.getMultipleAccountsInfo(couponAddresses);
-  coupons.forEach((curr) => {
-    if (curr === null)
-      return;
-
-    if (curr.data.length !== MintLayout.span) // invalid mint
-      return;
-
-    const mintInfo = MintLayout.decode(curr.data);
-    const geckoId = getTokenGeckoId(mintInfo.mintAuthority)
-    if (!geckoId) return;
-    const amount = (mintInfo.supply.toString() / Math.pow(10, mintInfo.decimals))
-    sdk.util.sumSingleBalance(balances, geckoId, amount)
+  const balanceSheetsFields = await sui.getDynamicFieldObjects({
+    parent: object.fields.vault.fields.balance_sheets.fields.table.fields.id.id,
   });
-  return balances;
+
+  const balanceSheets = await sui.getObjects(balanceSheetsFields.map((e) => e.fields.id.id))
+
+  balanceSheets.forEach((e) => {
+    const coinType = '0x' + e.fields.name.fields.name
+    const amount = new BigNumber(e.fields.value.fields.cash)
+      .minus(e.fields.value.fields.revenue)
+      .toString()
+    api.add(coinType, amount)
+  })
+
+  const collateralStatsFields = await sui.getDynamicFieldObjects({
+    parent: object.fields.collateral_stats.fields.table.fields.id.id,
+  });
+
+  const collateralStats = await sui.getObjects(collateralStatsFields.map((e) => e.fields.id.id))
+
+  collateralStats.forEach((e) => {
+    const coinType = '0x' + e.fields.name.fields.name
+    api.add(coinType, e.fields.value.fields.amount)
+  })
 }
 
 module.exports = {
   timetravel: false,
-  solana: {
-    tvl,
+  sui: {
+    tvl: suiTvl,
+    borrowed: suiBorrowed,
   },
 }

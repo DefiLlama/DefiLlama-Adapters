@@ -1,8 +1,6 @@
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakingPricedLP } = require("../helper/staking");
-const { transformAvaxAddress  } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { pool2Exports } = require("../helper/pool2");
+const { pool2 } = require("../helper/pool2");
 
 const GRAVE = "0x3700a92dd231F0CaC37D31dBcF4c0f5cCb1db6Ca"
 const GSHARE = "0xffe04bf98c7111360bf7a6c56b343915543cd941"
@@ -14,27 +12,14 @@ const graveAvaxLp = "0x10e882acfae3cf63e96741fabc41c19025e7be2a"
 const gShareAvaxLp = "0xae427ad7a54f5490ef76b3bde3663b0e45c7a102"
 
 
-async function atvl(timestamp, block, chainBlocks) {
-    const balances = {};
-    const transform = await transformAvaxAddress();
-    await sumTokensAndLPsSharedOwners(
-		balances,
-		[
-			["0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", false],
-			["0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", false],
-			["0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd", false],
-			["0x070092b3A985f9E5424351D68730c9A318ad96eb", false],
-			
-		],
-		[GenMasterchef],
-		chainBlocks.avax,
-		"avax",
-		transform,
-	);
-    
-
-    return balances;
-};
+async function atvl(api) {
+    return api.sumTokens({ owner: GenMasterchef, tokens: [
+        ADDRESSES.avax.WAVAX,
+        ADDRESSES.avax.USDC_e,
+        ADDRESSES.avax.JOE,
+        "0x070092b3A985f9E5424351D68730c9A318ad96eb",
+    ]})
+}
 
 const pool2LPs = [
     graveAvaxLp,
@@ -44,7 +29,7 @@ const pool2LPs = [
 module.exports = {
     avax:{
         tvl: atvl,
-        pool2: pool2Exports(GShareRewardPool,pool2LPs,"avax"),
+        pool2: pool2(GShareRewardPool,pool2LPs,"avax"),
         staking: stakingPricedLP(ASYLUM, GSHARE, "avax", gShareAvaxLp, "wrapped-avax")
     }   
 };

@@ -5,4 +5,7 @@ const chainKeys = Object.keys(indexExports).filter(chain => typeof indexExports[
 module.exports = {
   timetravel: false,
   ...getExports("xdao", chainKeys),
+  hallmarks: [
+    [Math.floor(new Date('2022-10-24')/1e3), 'Remove governance tokens from tvl'],
+  ],
 }

@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import BigNumber from "bignumber.js";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 const sdk = require("@defillama/sdk");
 
 // all maker contracts: https://chainlog.makerdao.com/api/mainnet/active.json
@@ -164,6 +164,8 @@ function collateralPriceAtRatio({
   return collateral.isZero() || vaultDebt.isZero() ? new BigNumber("0") : vaultDebt.times(colRatio).div(collateral);
 }
 
+const INSPECTOR_BASE_URL = "https://oasis.app/";
+
 const positions = async (): Promise<Liq[]> => {
   const cdpi = ((await cdpManager.cdpi()) as BigNumber).toNumber();
   const cdps = Array.from(Array(cdpi).keys()).map((x) => x + 1); // starts from 1
@@ -233,7 +235,7 @@ const positions = async (): Promise<Liq[]> => {
     })) as MulticallResponse<Ilk>
   ).output.map((x) => x.output);
 
-  const positions: Liq[] = cdps
+  const positions = cdps
     .map((i) => {
       const urn = urns[i - 1];
       const _collateralAmount = urn.ink;
@@ -261,7 +263,16 @@ const positions = async (): Promise<Liq[]> => {
       const decimal = decimals[i - 1];
       const collateralAmountFormatted = collateralAmount.times(10 ** Number(decimal)).toFixed(0);
 
-      return { collateralAmount: collateralAmountFormatted, collateral, liqPrice, owner };
+      return {
+        collateralAmount: collateralAmountFormatted,
+        collateral,
+        liqPrice,
+        owner,
+        extra: {
+          displayName: `Vault ${i}`,
+          url: INSPECTOR_BASE_URL + i,
+        },
+      } as Liq;
     })
     .filter((x) => x.liqPrice > 0);
 

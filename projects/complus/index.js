@@ -1,29 +1,17 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const sdk = require('@defillama/sdk')
-
-const graphUrls = {
-  avax: 'https://api.thegraph.com/subgraphs/name/complusnetwork/subgraph-ava',
-  bsc: 'https://api.thegraph.com/subgraphs/name/complusnetwork/bsc-subgraph',
-  polygon: 'https://api.thegraph.com/subgraphs/name/complusnetwork/subgraph-matic',
-  heco: 'https://hg2.bitcv.net/subgraphs/name/complusnetwork/subgraph-heco'
-}
-const chainTvl = getChainTvl(graphUrls, "complusFactories")
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "Liquidity on the DEX, data comes from their subgraphs",
-  /* outdated
   polygon: {
-    tvl: chainTvl('polygon'),
-  },
-  bsc: {
-    tvl: chainTvl('bsc'),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0x973c934137dd687eca67bdd1c5a8b74286964ac6', }),
   },
   heco: {
-    tvl: chainTvl('heco'),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0xc32cccf795940ca8491cd4f31161509db28ab719', }),
   },
-  */
+  bsc: {
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0xdf97982bf70be91df4acd3d511c551f06a0d19ec', }),
+  },
   avax:{
-    tvl: chainTvl('avax'),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0x5c02e78a3969d0e64aa2cfa765acc1d671914ac0', }),
   },
 }

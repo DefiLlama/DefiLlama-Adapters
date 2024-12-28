@@ -10,7 +10,7 @@ const {
     fetchOstableExchangeRatesInUSD,
     fetchOstableAssets,
     summingBaseAABalancesToTvl,
-} = require('../helper/obyte')
+} = require('../helper/chain/obyte')
 
 /**
  * Bonding curve autonomous agents that lock in GBYTEs as reserve and issue interest tokens and growth tokens.
@@ -97,8 +97,7 @@ async function totalTvl(timestamp) {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Ostable protocol (v1, v2).",
     obyte: {

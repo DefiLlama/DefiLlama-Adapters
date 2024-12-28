@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens,  } = require("../helper/unwrapLPs")
-const { sumSingleBalance, TOKEN_LIST, getDenomBalance, } = require('../helper/terra')
+const { sumTokens: sumTokensCosmos, } = require('../helper/chain/cosmos')
 const sdk = require("@defillama/sdk")
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
+const { getChainTransform, } = require("../helper/portedTokens")
 const config = require("./config")
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 
 Object.keys(config).forEach(chain => {
   const chainExport = {
@@ -31,7 +32,6 @@ Object.keys(config).forEach(chain => {
         const balance = await sdk.api.eth.getBalance({ target: address, block, chain })
         sdk.util.sumSingleBalance(balances, transform(nullAddress), balance.output)
       }
-      (await getFixBalances(chain))(balances);
       return balances
     }
   })
@@ -40,15 +40,12 @@ Object.keys(config).forEach(chain => {
 module.exports.ethereum.pool2 = async (ts, block) => {
   return sumTokens({}, [
      ['0x4a86c01d67965f8cb3d0aaa2c655705e64097c31', '0xd10ef2a513cee0db54e959ef16cac711470b62cf', ]
-  ], block, undefined, undefined, { resolveLP: true })
+  ], block)
 }
 
 module.exports.terra = {}
 module.exports.terra.tvl = async (timestamp, ethBlock, { terra: block }) => {
-	const balances = {}
-  const balance = await getDenomBalance('uusd', 'terra1qwzdua7928ugklpytdzhua92gnkxp9z4vhelq8', block)
-  sumSingleBalance(balances, TOKEN_LIST.terrausd, balance)
-	return balances
+	return sumTokensCosmos({ owner: 'terra1qwzdua7928ugklpytdzhua92gnkxp9z4vhelq8', chain: 'terra'})
 }
 module.exports.hallmarks = [
         [1651881600, "UST depeg"],

@@ -1,24 +1,21 @@
-const axios = require('axios')
-const retry = require('async-retry')
-const BigNumber = require('bignumber.js')
+const { get } = require('./helper/http')
+const { endPoints } = require('./helper/chain/cosmos')
 
-async function fetch() {
-  const priceFeed = await retry(async bail =>
-    await axios('https://api.coingecko.com/api/v3/simple/price?ids=sifchain&vs_currencies=usd'))
-  const getPoolsRes = await retry(async bail => 
-    await axios('https://api.sifchain.finance/clp/getPools'))
+async function tvl() {
+  // const getPoolsRes = await get('https://api.sifchain.finance/clp/getPools')
+  const getPoolsRes = await get(endPoints.sifchain + '/clp/getPools')
 
-  const tvl = getPoolsRes.data.result.pools
-    .map(pool => BigNumber(pool.native_asset_balance))
-    .reduce((sum, current) => sum.plus(current))
-    .multipliedBy(2)
-    .dividedBy(10 ** 18)
-    .multipliedBy(priceFeed.data.sifchain.usd)
-    .toFixed(2)
+  const total = getPoolsRes.result.pools
+    .map(pool => +pool.native_asset_balance)
+    .reduce((sum, current) => sum + current, 0)
 
-    return Number(tvl)
+  return {
+    sifchain: total * 2 / 1e18
+  }
 }
 
 module.exports = {
-  fetch
+  misrepresentedTokens: true,
+  timetravel: false,
+  sifchain: { tvl }
 }

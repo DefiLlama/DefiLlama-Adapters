@@ -1,7 +1,7 @@
 const { masterchefExports, sumUnknownTokens } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk');
 
-const poolAddressesABI = { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolAddresses", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }
+const poolAddressesABI = 'function poolAddresses(uint256) view returns (address)'
 
 const config = {
   bsc: {

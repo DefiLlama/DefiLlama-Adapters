@@ -1,31 +1,3 @@
 {
-    "stakeableTokens": {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "stakeableTokens",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "totalValueLocked",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "weight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "active",
-                "type": "bool"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "stakeableTokens": "function stakeableTokens(address) view returns (uint256 totalValueLocked, uint256 weight, bool active)"
 }

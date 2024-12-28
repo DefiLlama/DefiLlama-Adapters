@@ -1,0 +1,3 @@
+{
+  "sharesToTokens": "function sharesToTokens(uint256 sharesAmount) public returns (uint256 tokens)"
+}

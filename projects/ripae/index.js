@@ -66,6 +66,17 @@ const chains = [
             "0xB54B196E9FeCcF364c2281da1E11BC498cB5c1C1",
             "0x89A3A5b03f705A10443fB0A93f19F6cBB7ca191A"
         ]
+    },
+    {
+        chain: "optimism",
+        token: "0x6ca558bd3eaB53DA1B25aB97916dd14bf6CFEe4E",
+        share: "0x09448876068907827ec15f49a8f1a58c70b04d45",
+        rewardPool: "0xf5e49b0a960459799F1E9b3f313dFA81D2CE553c",
+        masonry: "0x95F73Fc89F62b42410fC4A4a60edEfC51De0B7B0",
+        pool2: [
+            "0x20d33fF7880f65a3554bBEE9C4E9BF79812C6ef6",
+            "0x9629a694C041f3b10cE974DC37eF4dD4596c4F54"
+        ]
     }
 ];
 

@@ -1,41 +1,40 @@
-const retry = require('async-retry')
-const axios = require('axios')
-const { sumTokens } = require('../helper/unwrapLPs')
-const cwADA_ETH = '0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
-const cwADA_POLY = 'polygon:0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
-const cwDOGE_ETH = '0xf9e293d5d793ddc1ae4f778761e0b3e4aa7cf2dd'
-const cwDOGE_POLY = 'polygon:0x9bd9ad490dd3a52f096d229af4483b94d63be618'
+const sdk = require("@defillama/sdk");
+const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function getData() {
-  return retry(async bail => await axios.get('https://app.enzyme.finance/api/v1/network-asset-balances?network=ethereum'))
+const config = {
+  polygon: { endpoint: sdk.graph.modifyEndpoint('GCAHDyqvZBLMwqdb9U7AqWAN4t4TSwR3aXMHDoUUFuRV') },
+  ethereum: { endpoint: sdk.graph.modifyEndpoint('9DLBBLep5UyU16kUQRvxBCMqko4q9XzuE4XsMMpARhKK') },
+  arbitrum: { endpoint: sdk.graph.modifyEndpoint('8UJ5Bkf2eazZhXsAshhzQ2Keibcb8NFHBvXis9pb2C2Y') },
 }
+const query = `query get_accounts($lastId: String!) {
+  vaults(
+    first: 1000
+    where: {id_gt: $lastId}
+  ) { id trackedAssets { id } }
+}`
 
-async function tvl(ts, block) {
-  const tokens = (await getData()).data
-  const tokensAndOwners = []
-  const balances = {}
-  const vaultsObj = {}
-  tokens.forEach(({ id, vaults }) => {
-    vaults.forEach(vault => {
-      tokensAndOwners.push([id, vault])
-      vaultsObj[vault] = true
+async function tvl(api) {
+  const { endpoint } = config[api.chain]
+  const vaults = await cachedGraphQuery('enzyme/' + api.chain, endpoint, query, { fetchById: true, })
+  const externalPositions = (await api.multiCall({ calls: vaults.map(i => i.id), abi: 'address[]:getActiveExternalPositions', excludeFailed: true, })).flat()
+  const managedAssets = await api.multiCall({ abi: 'function getManagedAssets() external returns (address[] memory assets, uint256[] memory amounts)', calls: externalPositions, excludeFailed: true, })
+  const debtAssets = await api.multiCall({ abi: 'function getDebtAssets() external returns (address[] memory assets, uint256[] memory amounts)', calls: externalPositions, excludeFailed: true, })
+  managedAssets.forEach(i => api.add(i.assets, i.amounts))
+  debtAssets.forEach(i => api.add(i.assets, i.amounts.map(i => -1 * i)))
+
+  return sumTokens2({
+    api, ownerTokens: vaults.map(i => {
+      return [i.trackedAssets.map(i => i.id), i.id]
     })
   })
-  await sumTokens(balances, tokensAndOwners, block, undefined, undefined, { resolveCrv: true, resolveLP: true, resolveYearn: true })
-  
-  if (balances[cwADA_ETH]) {
-    balances[cwADA_POLY] = balances[cwADA_ETH]
-    delete balances[cwADA_ETH]
-  }
-
-  if (balances[cwDOGE_ETH]) {
-    balances[cwDOGE_POLY] = balances[cwDOGE_ETH]
-    delete balances[cwDOGE_ETH]
-  }
-  return balances
 }
+
 
 module.exports = {
   timetravel: false,
-  ethereum: { tvl }
-}
+};
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

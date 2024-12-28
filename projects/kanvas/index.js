@@ -1,17 +1,17 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
 const {staking} = require("../helper/staking");
-const BigNumber = require("bignumber.js");
 
 const kanvas = "0xe005097ad7eea379ce404011eef68359b052cd0a";
 const stakingAddress = "0x34d2Cfb257cCf7EFDC41DB9a824ac314da80Bae8";
 const artStudio = "0xf15Bf479A5711f9411595C6289a9e7C36F24ad2F";
 
 const transform = {
-"0x150410ebbccc3be87997462ea7a44449b7c0dbf2":"kava:0x765277EebeCA2e31912C9946eAe1021199B39C61" 
+"0x150410ebbccc3be87997462ea7a44449b7c0dbf2":"kava:" + ADDRESSES.shiden.ETH 
 }
 
 async function calcTvl(block, chain, pool2) {
@@ -45,7 +45,8 @@ async function calcTvl(block, chain, pool2) {
         })),
         abi: token0Abi,
         block,
-        chain
+        chain,
+        permitFailure: true,
     })).output;
     const token1Address = (await sdk.api.abi.multiCall({
         calls: tokenList.map(p => ({
@@ -53,6 +54,7 @@ async function calcTvl(block, chain, pool2) {
         })),
         abi: token1Abi,
         block,
+        permitFailure: true,
         chain
     })).output;
     
@@ -109,6 +111,6 @@ module.exports = {
     kava:{
         tvl,
         pool2,
-        staking: staking(stakingAddress, kanvas, "kava")
+        staking: staking(stakingAddress, kanvas)
     }
 }

@@ -4,12 +4,12 @@
   "instructions": [],
   "accounts": [
     {
-      "name": "PriceAndExpiration",
+      "name": "DIPState",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "strikePrice",
+            "name": "strike",
             "type": "u64"
           },
           {
@@ -19,40 +19,49 @@
           {
             "name": "splMint",
             "type": "publicKey"
+          },
+          {
+            "name": "vaultMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultMintBump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultSpl",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultSplBump",
+            "type": "u8"
+          },
+          {
+            "name": "optionMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "optionBump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultUsdc",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultUsdcBump",
+            "type": "u8"
+          },
+          {
+            "name": "usdcMint",
+            "type": "publicKey"
           }
         ]
       }
     }
   ],
-  "types": [
-    {
-      "name": "ErrorCode",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "TokensStillLocked"
-          },
-          {
-            "name": "DepositExpirationInPast"
-          },
-          {
-            "name": "ExerciseAfterExpiration"
-          },
-          {
-            "name": "UnauthorizedInitMints"
-          },
-          {
-            "name": "IncorrectAddressForOption"
-          },
-          {
-            "name": "WrongLSOMint"
-          }
-        ]
-      }
-    }
-  ],
+  "errors": [],
   "metadata": {
-    "address": "EFhLFkx6r2NdhFmAraZacRzxX8SFLbM9KuyVpaUUpR5k"
+    "address": "DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki"
   }
 }

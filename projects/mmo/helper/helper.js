@@ -1,18 +1,23 @@
 const sdk = require("@defillama/sdk");
-const retry = require("../../helper/retry");
 
 const { GraphQLClient, gql } = require("graphql-request");
-const mEtherABI = require("./abis/MEtherInterfaceFull.json");
-const MtrollerABI = require("./abis/MtrollerInterfaceFull.json");
+const mEtherABI = {
+  thisFungibleMToken: "function thisFungibleMToken() view returns (uint240)",
+  totalBorrows: "function totalBorrows(uint240) view returns (uint256)",
+  totalCashUnderlying: "function totalCashUnderlying(uint240) view returns (uint256)",
+};
+const MtrollerABI = {
+  oracle: "address:oracle",
+  price: "uint256:price",
+  getUnderlyingPrice: "function getUnderlyingPrice(address underlyingToken, uint256 tokenID) view returns (uint256)",
+}
 
 async function fetch(query) {
   var endpoint =
-    "https://api.thegraph.com/subgraphs/name/ohan8/mmo-finance-active-loans";
+    sdk.graph.modifyEndpoint('DUQF7Lhwu1dzz2GwyNi3eRvjZeUnMNCDFjQRA8BYpoRJ');
   var graphQLClient = new GraphQLClient(endpoint);
 
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
+  const results = await graphQLClient.request(query)
   return results;
 }
 
@@ -26,9 +31,7 @@ async function getTotalCash(block) {
   `;
   const results = await fetch(getTotalSupply);
 
-  const thisFungibleMTokenABI = mEtherABI.find(
-    (i) => i.name === "thisFungibleMToken"
-  );
+  const thisFungibleMTokenABI = mEtherABI.thisFungibleMToken;
   const mEtherIDCalls = results.vaults.map((vaultObj) => ({
     target: vaultObj.id,
   }));
@@ -39,9 +42,7 @@ async function getTotalCash(block) {
     block: block,
   });
 
-  const totalCashUnderlyingABI = mEtherABI.find(
-    (i) => i.name === "totalCashUnderlying"
-  );
+  const totalCashUnderlyingABI = mEtherABI.totalCashUnderlying;
   const totalCashUnderlyingCalls = results.vaults.map((vaultObj, idx) => ({
     target: vaultObj.id,
     params: mEtherIDs.output[idx].output,
@@ -77,7 +78,7 @@ async function getTotalCollateral(block) {
   let totalCollateral = 0;
   for (depositedNFTObj of results.depositedNFTsEntities) {
     if (depositedNFTObj.name === "Glasses") {
-      const getPriceABI = MtrollerABI.find((i) => i.name === "price");
+      const getPriceABI = MtrollerABI.price
 
       const price = await sdk.api.abi.call({
         abi: getPriceABI,
@@ -86,15 +87,13 @@ async function getTotalCollateral(block) {
       });
       totalCollateral += price.output / 10 ** 18;
     } else {
-      const getOracleABI = MtrollerABI.find((i) => i.name === "oracle");
+      const getOracleABI = MtrollerABI.oracle
       const oracle = await sdk.api.abi.call({
         abi: getOracleABI,
         target: depositedNFTObj.mtroller,
         block: block,
       });
-      const getUnderlyingPriceABI = MtrollerABI.find(
-        (i) => i.name === "getUnderlyingPrice"
-      );
+      const getUnderlyingPriceABI = MtrollerABI.getUnderlyingPrice
       const price = await sdk.api.abi.call({
         abi: getUnderlyingPriceABI,
         target: oracle.output,

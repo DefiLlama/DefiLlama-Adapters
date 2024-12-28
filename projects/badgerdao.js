@@ -1,17 +1,18 @@
-const utils = require('./helper/utils');
-const { fetchChainExports } = require('./helper/exports');
+const { getConfig } = require('./helper/cache')
 
+module.exports.hallmarks = [[1638403200, "Front-end attack"]]
 
-function chainTvl(chain) {
+const chains = ["ethereum", "bsc", "arbitrum", "polygon", "fantom"]
+
+chains.forEach(chain => {
+  let oChain = chain
   if (chain === 'bsc')
-    chain = 'binance-smart-chain'
-  // chain = chain === "ethereum" ? "eth" : chain
-  return async () => {
-    let data = await utils.fetchURL(`https://api.badger.com/v2/vaults?chain=${chain}&currency=usd`)
-    return data.data.reduce((acc, i) => acc + i.value, 0)
+  oChain = 'binance-smart-chain'
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const data = await getConfig(`badgerdao/tvl/${chain}`, `https://api.badger.com/v2/vaults?chain=${oChain}&currency=usd`)
+      const calls = data.map(i => i.vaultToken)
+      return api.erc4626Sum({ calls, permitFailure: true, })
+    }
   }
-}
-
-module.exports = fetchChainExports(chainTvl, ["ethereum", "bsc", "arbitrum","polygon", "fantom"]),
-  module.exports.hallmarks = [[1638403200, "Front-end attack"]
-  ]
+})

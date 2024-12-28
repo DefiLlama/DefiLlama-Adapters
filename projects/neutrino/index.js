@@ -1,8 +1,10 @@
-const { wavesAdapter } = require('../helper/wavesAdapter')
+const { sumTokens } = require('../helper/chain/waves')
 
-const endpoint = "http://51.158.191.108:8002/api/v1/history/neutrino"
 
 module.exports = {
-    timetravel: false,
-    waves: { tvl: wavesAdapter(endpoint, item => item.usdnLocked + item.defoLocked) }
+  waves: { tvl }
+}
+
+async function tvl(api) {
+  return sumTokens({ owners: ['3PC9BfRwJWWiw9AREE2B3eWzCks3CYtg4yo',], includeWaves: true, api, blacklistedTokens: ['DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p', '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g'] })
 }

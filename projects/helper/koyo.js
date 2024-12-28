@@ -1,42 +1,21 @@
 const sdk = require("@defillama/sdk");
-const { requery } = require("./requery");
-const { fetchURL } = require("./utils");
+const { getConfig } = require('../helper/cache')
+
 const BigNumber = require("bignumber.js");
 const { usdtAddress, toUSDT } = require("./balances");
 
-const koyoStableSwapVirtualPriceABI = {
-  stateMutability: "view",
-  type: "function",
-  name: "get_virtual_price",
-  inputs: [],
-  outputs: [
-    {
-      name: "",
-      type: "uint256",
-    },
-  ],
-};
+const koyoStableSwapVirtualPriceABI = "uint256:get_virtual_price"
 
-/**
- * @description This function presumes that passed LP Tokens are from USD based stable pools.
- * @param {Object.<string, number>} balances
- * @param {string[]} lpTokens
- * @param {string[]} owners
- * @param {number[]} block
- * @param {string} [chain="boba"]
- * @param {*} transformAddress
- */
 async function sumKoyoLPTokens(
   balances,
   lpTokens,
   owners,
   block,
   chain = "boba",
-  transformAddress = (addr) => addr
 ) {
   const {
-    data: { data: pools },
-  } = await fetchURL(`https://api.exchange.koyo.finance/pools/raw/${chain}`);
+     data: pools
+  } = await getConfig('koyo/'+chain, `https://api.exchange.koyo.finance/pools/raw/${chain}`);
   const lpToSwap = Object.fromEntries(
     Object.entries(pools)
       .filter(([k]) => !["generatedTime"].includes(k))
@@ -70,8 +49,6 @@ async function sumKoyoLPTokens(
     block,
     chain,
   });
-
-  await requery(balanceOfTokens, chain, block, "erc20:balanceOf");
 
   balanceOfTokens.output.forEach((result) => {
     const token = result.input.target.toLowerCase();

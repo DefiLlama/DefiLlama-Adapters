@@ -1,13 +1,10 @@
-const { call, sumSingleBalance, } = require('../helper/near')
-const { getFixBalances } = require('../helper/portedTokens')
+const { call, sumSingleBalance, } = require('../helper/chain/near')
 
 
 const PROJECT_CONTRACT = 'v1.jumbo_exchange.near'
 
 
 async function tvl() {
-  const fixBalances = await getFixBalances('near')
-
   const balances = {}
   let poolIndex = 0
   const numberOfPools = await call(PROJECT_CONTRACT, 'get_number_of_pools', {})
@@ -27,7 +24,6 @@ async function tvl() {
     poolIndex += 100
   } while (poolIndex < numberOfPools)
 
-  await fixBalances(balances)
   return balances
 }
 

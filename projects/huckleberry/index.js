@@ -1,13 +1,8 @@
 const { stakingPricedLP } = require('../helper/staking')
-const sdk = require('@defillama/sdk')
 const { getUniTVL } = require('../helper/unknownTokens')
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
-
-
 
 const dexTVL = getUniTVL({
     factory: '0x017603C8f29F7f6394737628a93c57ffBA1b7256',
-    chain: 'moonriver',
     useDefaultCoreAssets: true,
 })
 
@@ -19,15 +14,7 @@ module.exports = {
         tvl: dexTVL, 
     },
     clv: {
-        tvl: calculateUsdUniTvl(
-          "0x4531e148b55d89212E219F612A459fC65f657d7d",
-          "clv",
-          "0x6d6ad95425fcf315c39fa6f3226471d4f16f27b3",
-          [
-            "0xbea4928632e482a0a1241b38f596a311ad7b98b1", //finn
-            "0x1bbc16260d5d052f1493b8f2aeee7888fed1e9ab"  //usdc
-          ],
-          "clover-finance"
-        ),
+        // tvl: getUniTVL({ factory: '0x4531e148b55d89212E219F612A459fC65f657d7d',  useDefaultCoreAssets: true }),
+        tvl: () => ({}),
       },
 }

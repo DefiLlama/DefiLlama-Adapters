@@ -1,41 +1,5 @@
 {
-    "pmmAddr": {
-        "inputs": [],
-        "name": "pmmAddr",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "ammWrapperAddr": {
-        "inputs": [],
-        "name": "ammWrapperAddr",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "stakingToken": {
-        "inputs": [],
-        "name": "stakingToken",
-        "outputs": [
-            {
-                "internalType": "contract IERC20",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "pmmAddr": "address:pmmAddr",
+  "ammWrapperAddr": "address:ammWrapperAddr",
+  "stakingToken": "address:stakingToken"
 }

@@ -1,10 +1,9 @@
-const retry = require('./helper/retry')
-const { GraphQLClient, gql } = require('graphql-request')
+const sdk = require("@defillama/sdk");
+const { GraphQLClient,  } = require('graphql-request')
 const utils = require('./helper/utils');
-const sdk = require('@defillama/sdk')
 
 async function tvl() {
-  var q2 =  gql`{
+  var q2 =  `{
   totalBondedECDSAKeeps {
       id
       totalAvailable
@@ -14,9 +13,9 @@ async function tvl() {
     }
   }
   `;
-  var endpoint = 'https://api.thegraph.com/subgraphs/name/suntzu93/tbtc';
+  var endpoint = sdk.graph.modifyEndpoint('8vQM7kTwPoW37U5FWgZLRpcoMyYKExMcHr5JGgnvzxk5');
   var graphQLClient = new GraphQLClient(endpoint)
-  const results2 = await retry(async bail => await graphQLClient.request(q2))
+  const results2 = await graphQLClient.request(q2)
   var ethStaked = parseFloat(results2.totalBondedECDSAKeeps[0].totalBonded) + parseFloat(results2.totalBondedECDSAKeeps[0].totalAvailable);
   const balances = {
     ethereum: ethStaked
@@ -26,7 +25,7 @@ async function tvl() {
 }
 
 async function staking() {
-  var q1 =  gql`{
+  var q1 =  `{
       tokenStakings {
         contractAddress
         totalStaker
@@ -40,9 +39,9 @@ async function staking() {
     }
   `;
 
-  var endpoint = 'https://api.thegraph.com/subgraphs/name/suntzu93/keepnetwork';
+  var endpoint = sdk.graph.modifyEndpoint('Pg2cbxfPGJtqRBwMutR69oapbodKmcXuQRsxPRaK57S');
   var graphQLClient = new GraphQLClient(endpoint)
-  const results = await retry(async bail => await graphQLClient.request(q1))
+  const results = await graphQLClient.request(q1)
   const keepPoolStaked = await utils.returnBalance('0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC', '0xCf916681a6F08fa22e9EF3e665F2966Bf3089Ff1')
   var keepStaked = parseFloat(results.tokenStakings[0].totalTokenStaking)+keepPoolStaked
   return {

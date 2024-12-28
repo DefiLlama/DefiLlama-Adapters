@@ -1,26 +1,24 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL, staking } = require('../helper/unknownTokens')
+const xCRX = "0x35AfE95662fdf442762a11E4eD5172C81fBceF7e";
+const CRX = "0xb21Be1Caf592A5DC1e75e418704d1B6d50B0d083";
+const factory = "0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0";
 
-const xCELL = "0xbe334d7208366B3E4Fb40348576227b524d8CBA0";
-const CELL = "0xa685F488DEe49b75469E9e866965daBc8Ed6083d";
-const factory = "0x78f406B41C81eb4144C321ADa5902BBF5de28538";
-const coreAssets = [
-  "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d",
-]
-
-const tvl = getUniTVL({ factory, chain: 'aurora', coreAssets })
+const tvl = getUniTVL({ factory, useDefaultCoreAssets: true, })
 
 module.exports = {
   misrepresentedTokens: true,
   methodology:
-    "Factory address (0x78f406B41C81eb4144C321ADa5902BBF5de28538) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-  aurora: {
+    "Factory address (0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+  arbitrum: {
     tvl,
-    staking: staking({
-      owner: xCELL,
-      tokens: [CELL],
-      chain: 'aurora',
-      coreAssets,
-      lps: ['0xcA5eD5745890C66026400F9b805466fB3984A345']
-    })
+    staking: staking(
+      {
+        owner: xCRX,
+        tokens: [CRX],
+        chain: 'arbitrum',
+        coreAssets: [ADDRESSES.arbitrum.USDC],
+        lps: ['0xf7305D209BFeCF40Bd53ccBdbe5303B3153d0660']
+      })
   },
 };

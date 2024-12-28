@@ -1,0 +1,5 @@
+{
+  "token": "address:token",
+  "getCurrentLockedTokens": "uint256:getCurrentLockedTokens",
+  "lockers": "function lockers(uint256) view returns (address)"
+}

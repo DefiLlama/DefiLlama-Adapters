@@ -1,19 +1,16 @@
-const { toUSDTBalances } = require('../helper/balances');
-const VortexAPI = require("./vortex.api");
+const { sumTokens2, getStorage, getBigMapById, } = require('../helper/chain/tezos')
 
-const tvl = async () => {
-  return toUSDTBalances(await VortexAPI.getDexTvl());
-};
-const staking = async () => {
-  return toUSDTBalances(await VortexAPI.getTotalStakingTvl());
-
-};
+async function staking() {
+  return sumTokens2({ owners: ['KT1Cp18EbxDk2WcbC1YVUyGuwuvtzyujwu4U']})
+}
 
 module.exports = {
-  misrepresentedTokens: true,
-  timetravel: false,
   tezos: {
-    tvl,
-    staking
-  },
-};
+    tvl: async () => {
+      const data = await getStorage('KT1UnRsTyHVGADQWDgvENL3e9i6RMnTVfmia')
+      const swaps = await getBigMapById(data.swaps);
+      return sumTokens2({ owners: Object.values(swaps), includeTezos: true, })
+    },
+    staking,
+  }
+}

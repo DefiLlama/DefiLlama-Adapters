@@ -7,7 +7,7 @@ const stakingPool1 = "0x4f388167F8B52F89C87A4E46706b9C1408F2c137"; // Old Strong
 
 module.exports = {
   bsc: {
-    tvl: getUniTVL({ chain: 'bsc', factory: '0xbEAC7e750728e865A3cb39D5ED6E3A3044ae4B98', }),
-    staking: stakings([stakingPool0, stakingPool1, ], ALMToken, 'bsc'),
+    tvl: getUniTVL({ factory: '0xbEAC7e750728e865A3cb39D5ED6E3A3044ae4B98', useDefaultCoreAssets: true, }),
+    staking: stakings([stakingPool0, stakingPool1, ], ALMToken),
   },
 };

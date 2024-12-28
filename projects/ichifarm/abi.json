@@ -1,174 +1,19 @@
 {
-  "oneTokenCount": {
-    "inputs": [],
-    "name": "oneTokenCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "oneTokenAtIndex": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "oneTokenAtIndex",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "assetCount": {
-    "inputs": [],
-    "name": "assetCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "assetAtIndex": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "assetAtIndex",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "token0": {
-    "inputs": [],
-    "name": "token0",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "token1": {
-    "inputs": [],
-    "name": "token1",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "getTotalAmounts": {
-    "inputs": [],
-    "name": "getTotalAmounts",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "total0",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "total1",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "allVaults": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "allVaults",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "collateralTokenAtIndex": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "collateralTokenAtIndex",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "module",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "collateralTokenCount": {
-    "inputs": [],
-    "name": "collateralTokenCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "pool": {
-    "inputs": [],
-    "name": "pool",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "oneTokenCount": "uint256:oneTokenCount",
+  "oneTokenAtIndex": "function oneTokenAtIndex(uint256 index) view returns (address)",
+  "assetCount": "uint256:assetCount",
+  "assetAtIndex": "function assetAtIndex(uint256 index) view returns (address)",
+  "token0": "address:token0",
+  "token1": "address:token1",
+  "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)",
+  "allVaults": "function allVaults(uint256) view returns (address)",
+  "collateralTokenAtIndex": "function collateralTokenAtIndex(uint256 index) view returns (address module)",
+  "collateralTokenCount": "uint256:collateralTokenCount",
+  "pool": "address:pool",
+  "foreignTokenAtIndex": "function foreignTokenAtIndex(uint256 index) view returns (address)",
+  "foreignTokenCount": "uint256:foreignTokenCount",
+  "moduleCount": "uint256:moduleCount",
+  "moduleAtIndex": "function moduleAtIndex(uint256 index) view returns (address module)",
+  "modules": "function modules(address) view returns (string name, string url, uint8 moduleType)",
+  "owner": "address:owner"
 }

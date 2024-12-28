@@ -1,22 +1,5 @@
 const sdk = require("@defillama/sdk");
-const {
-  polygonArchives,
-  bscArchives,
-  ethereumArchives,
-  fantomArchives,
-  xdaiArchives,
-  avaxArchives,
-  harmonyArchives,
-  arbitrumArchives,
-  celoArchives,
-  kucoinArchives,
-  okexchainArchives,
-  hecoArchives,
-  cronosArchives,
-  moonriverArchives,
-  milkomedaArchives,
-  smartbchArchives,
-} = require("./config");
+const config = require("./config");
 const {
   getStorageLPLockDataV33,
   getLockCountPerContractV3,
@@ -116,60 +99,15 @@ function getTVLTotal(args) {
         lpData.forEach(({ output: { lockedLPTokens, lpLockContract } }) => tokensAndOwners.push([lockedLPTokens, lpLockContract]))
       }
 
-      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners, useDefaultCoreAssets: true, balances, })
+      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners, useDefaultCoreAssets: true, })
 
       Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
     }
   };
 }
 
-module.exports = {
-  polygon: {
-    tvl: getTVLTotal(polygonArchives),
-  },
-  bsc: {
-    tvl: getTVLTotal(bscArchives),
-  },
-  ethereum: {
-    tvl: getTVLTotal(ethereumArchives),
-  },
-  arbitrum: {
-    tvl: getTVLTotal(arbitrumArchives),
-  },
-  celo: {
-    tvl: getTVLTotal(celoArchives),
-  },
-  kcc: {
-    tvl: getTVLTotal(kucoinArchives),
-  },
-  harmony: {
-    tvl: getTVLTotal(harmonyArchives),
-  },
-  avax: {
-    tvl: getTVLTotal(avaxArchives),
-  },
-  xdai: {
-    tvl: getTVLTotal(xdaiArchives),
-  },
-  fantom: {
-    tvl: getTVLTotal(fantomArchives),
-  },
-  heco: {
-    tvl: getTVLTotal(hecoArchives),
-  },
-  okexchain: {
-    tvl: getTVLTotal(okexchainArchives),
-  },
-  cronos: {
-    tvl: getTVLTotal(cronosArchives),
-  },
-  moonriver: {
-    tvl: getTVLTotal(moonriverArchives),
-  },
-  milkomeda: {
-    tvl: getTVLTotal(milkomedaArchives),
-  },
-  smartbch: {
-    tvl: getTVLTotal(smartbchArchives),
-  },
-};
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl: getTVLTotal(config[chain]) }
+})
+
+module.exports.dexit.tvl = () => ({})

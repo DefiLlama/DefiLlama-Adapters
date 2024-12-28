@@ -1,50 +1,102 @@
-const { getBlock } = require("../helper/getBlock");
 const sdk = require("@defillama/sdk");
+const indexAbi = require("./abis/Index.abi.json");
 const vTokenAbi = require("./abis/vToken.abi.json");
-const BigNumber = require("bignumber.js");
+const vTokenFactoryAbi = require("./abis/vTokenFactory.abi.json");
+const savingsVaultAbi = require("./abis/SavingsVault.abi.json");
+const networks = require("./networks.json");
+const { getChainTransform } = require("../helper/portedTokens");
 
-const networks = {
-  ethereum: {
-    vTokenFactory: {
-      address: "0x24aD48f31CAb5E35D0E9CDfa9213b5451f22FB92",
-      blockNumber: 14832754
-    }
+const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
+  const { output: anatomy } = await sdk.api.abi.multiCall({
+    chain,
+    block: chainBlocks[chain],
+    calls: networks[chain]["indexes"].map((target) => ({ target })),
+    abi: indexAbi.anatomy
+  });
+
+  const indexes = Object.fromEntries(
+    anatomy.map(({ input, output: { _assets } }) => [
+      input.target,
+      _assets
+    ]
+    )
+  );
+
+  const { output: inactiveAnatomy } = await sdk.api.abi.multiCall({
+    chain,
+    block: chainBlocks[chain],
+    calls: networks[chain]["indexes"].map((target) => ({ target })),
+    abi: indexAbi.inactiveAnatomy
+  });
+
+  for (const { output, input: { target } } of inactiveAnatomy)
+    indexes[target].push(...output);
+
+  const { output: vTokenFactories } = await sdk.api.abi.multiCall({
+    chain,
+    block: chainBlocks[chain],
+    calls: networks[chain]["indexes"].map((target) => ({ target })),
+    abi: indexAbi.vTokenFactory
+  });
+
+  const vTokens = {};
+  for (const { output, input: { target } } of vTokenFactories) {
+    const { output: vTokenOf } = await sdk.api.abi.multiCall({
+      chain,
+      block: chainBlocks[chain],
+      calls: indexes[target].map((address) => ({ target: output, params: address })),
+      abi: vTokenFactoryAbi.vTokenOf
+    });
+
+    for (const { output, input: { params } } of vTokenOf)
+      vTokens[output] = params[0];
   }
-};
 
-const tvl = (chain) => async (timestamp, block, chainBlocks) => {
-  const vTokenFactory = networks[chain].vTokenFactory;
-  const toBlock = await getBlock(timestamp, chain, chainBlocks);
-  const { output: logs } = await sdk.api.util.getLogs({
-    target: vTokenFactory.address,
-    topic: "VTokenCreated(address,address)",
-    keys: [],
-    fromBlock: vTokenFactory.blockNumber,
-    toBlock,
-    chain
-  });
-
-  const vTokens = logs.map(({ data }) => ({
-    target: `0x${data.substr(26, 40)}`.toLowerCase(),
-    asset: `0x${data.substr(-40)}`.toLowerCase()
-  }));
-
-  const { output } = await sdk.api.abi.multiCall({
+  const { output: virtualTotalAssetSupplies } = await sdk.api.abi.multiCall({
     abi: vTokenAbi.virtualTotalAssetSupply,
-    calls: vTokens.map(({ target }) => ({ target })),
-    block,
+    calls: Object.keys(vTokens).map((target) => ({ target })),
+    block: chainBlocks[chain],
     chain
   });
 
-  return Object.fromEntries(output
-    .filter(({ output }) => output)
-    .map(({ output }, index) => [vTokens[index].asset, output])
+  const chainTransform = await getChainTransform(chain);
+
+  return Object.fromEntries(
+    virtualTotalAssetSupplies.map(({ input: { target }, output }) => [
+      chainTransform(vTokens[target]),
+      output
+    ])
   );
 };
 
+const savingsVaultTvl = (chain) => async (api) => {
+  const calls = networks[chain]["savingsVaults"]
+  const [assets, totalAssets] = await Promise.all([
+    api.multiCall({ abi: savingsVaultAbi.asset, calls }),
+    api.multiCall({ abi: savingsVaultAbi.totalAssets, calls, permitFailure: true })
+  ])
+
+  const balances = {};
+  calls.forEach((call, i) => {
+    const asset = assets[i]
+    const bal = totalAssets[i]
+    if(!bal) return;
+    sdk.util.sumSingleBalance(balances, asset, bal, chain)
+  })
+
+  return balances
+};
+
 module.exports = {
-  methodology: "TVL considers tokens deposited to Phuture Indices",
+  methodology: "TVL considers tokens deposited to Phuture Products",
+    misrepresentedTokens: true,
   ethereum: {
-    tvl: tvl("ethereum")
+    tvl: sdk.util.sumChainTvls([
+      indexTvl("ethereum"),
+      savingsVaultTvl("ethereum")
+    ])
+  },
+  avax: {
+    tvl: indexTvl("avax")
   }
 };

@@ -1,103 +1,69 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs.js");  
-const BigNumber = require("bignumber.js")
 const abi = require('./abi.json')
-
-const position_nft = '0xB410075E1E13c182475b2D0Ece9445f2710AB197'
-const lens_contract = '0x080155C42b0854C3A718B610cC5183e963851Afb'
-
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  // Get number of positions opened by users by querying the supply of ERC721 tokens
-  const erc721_supply = (await sdk.api.abi.call({ target: position_nft, abi: 'erc20:totalSupply', block: ethBlock, chain: 'ethereum' })).output;
-  console.log(`${erc721_supply} position ownership ERC 721 existing`)
-
-  // Get all positions contracts addresses
-  const positionsCalls = [...Array(parseInt(erc721_supply)).keys()].map(t => ({target: position_nft, params: t}))
-  const positionsAddresses = (
-    await sdk.api.abi.multiCall({
-      calls: positionsCalls,
-      abi: abi['tokenByIndex'],
-      block: ethBlock,
-      chain: 'ethereum'
-    })
-  ).output
-
-  
-  // FODL uses flashloans to leverage the user provided collateral. TVL should count only what the user brought in, which is supplyAmount of supplyTokenAddress 
-  // const usersSuppliedBalances = usersPositions.map(t => ({[t.supplyTokenAddress]: t.supplyAmount}))
-  const balances = {}
-
-  // console.log(positionsAddresses.map(t => t.output).slice(0,5))
-  // The call to getPositionsMetadata only accounts for max 192 positions
-  const nParamsMax = 100
-  for (let iSlice = 0; iSlice < positionsAddresses.length / nParamsMax; iSlice++) {
-    // Get all positions paramters using the lens contract
-    const positionsSlice = positionsAddresses.slice(iSlice * nParamsMax, (iSlice+1) * nParamsMax)
-    let params = [positionsSlice.map(t => t.output)]
-    const usersPositions = (
-      await sdk.api.abi.call({
-        target: lens_contract, 
-        params: params,
-        abi: abi['getPositionsMetadata'],
-        block: ethBlock,
-        chain: 'ethereum'
-      })
-    ).output
-    // console.log('first position example', usersPositions[0])
-    
-    usersPositions.forEach(t => {
-      const token = t.supplyTokenAddress
-      //principalValue is capital provided by users, while supplyAmount also accounts for that flashloan'd for the borrow-lend leverage loops 
-      balances[token] = (new BigNumber(balances[token] || "0").plus(new BigNumber(t.principalValue)) ).toString(10)
-    })
-    // console.log(iSlice, balances)
-  }
-  return balances
-}
-
-/* position lens contract getPositionsMetadata returns a struct like this:
-  uint256 supplyAmount;
-  uint256 borrowAmount;
-  uint256 collateralUsageFactor;
-  uint256 principalValue;
-  uint256 positionValue;
-  address positionAddress;
-  address platformAddress;
-  address supplyTokenAddress;
-  address borrowTokenAddress;
-*/
-
-
-const sushiLps = [
-  "0xa5c475167f03b1556c054e0da78192cd2779087f", // FODL-USDC
-  "0xce7e98d4da6ebda6af474ea618c6b175729cd366", // FODL-WETH
-];
-
-async function ethPool2(timestamp, block) {
-  let balances = {};
-
-  let { output: totalSupply } = await sdk.api.abi.multiCall({
-    calls: sushiLps.map(address => ({
-      target: address
-    })),
-    abi: "erc20:totalSupply",
-    block
-  });
-
-  let lpPos = totalSupply.map(result => ({
-    balance: result.output,
-    token: result.input.target
-  }));
-
-  await unwrapUniswapLPs(balances, lpPos, block);
-
-  return balances;  
-}
+const { sumTokensExport } = require('../helper/unwrapLPs');
+const { sliceIntoChunks } = require('../helper/utils');
 
 module.exports = {
-  methodology: "FODL leverages users positions on Aave and Compound. The fodl lens contract is used to get the positions metadata, especially supplyAmount and supplyTokenAddress, which counts as the TVL of the position of the user. Pool2 TVL are the tokens locked in the SUSHI pools",
   ethereum: {
-    tvl: tvl,
-    pool2: ethPool2,
+    tvl: () => ({}),
   },
-};
+  polygon: {
+    tvl: () => ({}),
+  },
+  bsc: {
+    tvl: () => ({}),
+  }
+}
+
+module.exports.deadFrom = '2023-01-01'
+
+// taken from https://app.fodl.finance/config.json
+// const config = {
+//   ethereum: {
+//     position_nft: '0x70febba7d45cfe6d99847ba4ccc393373b1ea8aa',
+//     lens_contract: '0x080155C42b0854C3A718B610cC5183e963851Afb',
+//     pool2: [
+//       ['0xa5c475167f03b1556c054e0da78192cd2779087f', '0xf958a023d5b1e28c32373547bdde001cad17e9b4'],
+//       ['0xce7e98d4da6ebda6af474ea618c6b175729cd366', '0xa7453338ccc29e4541e6c6b0546a99cc6b9eb09a'],
+//     ],
+//     staking: [
+//       ['0x4c2e59d098df7b6cbae0848d66de2f8a4889b9c3', '0x7e05540A61b531793742fde0514e6c136b5fbAfE'],
+//     ],
+//   },
+//   polygon: {
+//     position_nft: '0x7243c51c24b302b01094785f3c826f9311525613',
+//     lens_contract: '0xbfE6971Fc6F195bcacB72beE3427f5b4d8C3dc07',
+//     pool2: [
+//       ['0x2fc4dfcee8c331d54341f5668a6d9bcdd86f8e2f', '0xea7336c408ec8012e6b97368198512597e49c88a'],
+//     ],
+//   },
+//   bsc: {
+//     position_nft: '0x4c2e59d098df7b6cbae0848d66de2f8a4889b9c3',
+//     lens_contract: '0x6032035731c9F0b2E53Da63ca15444375E946559',
+//   },
+// }
+
+// module.exports = {
+//   methodology: "FODL leverages users positions on Aave and Compound. The fodl lens contract is used to get the positions metadata, especially supplyAmount and supplyTokenAddress, which counts as the TVL of the position of the user. Pool2 TVL are the tokens locked in the SUSHI pools",
+// };
+
+// Object.keys(config).forEach(chain => {
+//   const { position_nft, lens_contract, pool2, staking, } = config[chain]
+//   module.exports[chain] = {
+//     tvl: async (_, _b, { [chain]: block }, { api }) => {
+//       const allPositions = await api.fetchList({ lengthAbi: 'erc20:totalSupply', itemAbi: abi.tokenByIndex, target: position_nft, })
+//       for (const positions of sliceIntoChunks(allPositions, 50)) {
+//         const data = await api.multiCall({ abi: abi.getPositionsMetadata, calls: sliceIntoChunks(positions, 10).map(i => ({ params: [i] })), target: lens_contract, })
+//         data.forEach(j => {
+//           j.forEach(i => api.add(i.supplyTokenAddress, i.supplyAmount))
+//         })
+//       }
+//     }
+//   }
+
+//   if (pool2)
+//     module.exports[chain].pool2 = sumTokensExport({ tokensAndOwners: pool2, chain, })
+
+//   if (staking)
+//     module.exports[chain].staking = sumTokensExport({ tokensAndOwners: staking, chain, })
+// })
+

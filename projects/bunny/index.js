@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
-const potABI = require('./pot_abi.json')
-const leverageABI = require('./leverage_abi.json')
+const abi = 'function tvlOfPool(address pool) view returns (uint256 tvl)'
+const potABI = "uint256:totalValueInUSD"
+const leverageABI = 'function getVaultState() view returns (tuple(uint256 balance, uint256 tvl, uint256 debtRatioLimit))'
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'
@@ -54,17 +54,17 @@ const pools = [
     '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD',
     '0xBdd478cF8313240EfDC54108A2ed389d450cD702',
 
-    // qSAV
-    '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',   // CAKE
-    '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',   // BNB
-    '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',   // BUSD
-    '0x53fd20bc5D4d222764B70817810494F1D06f3403',   // USDT
-    '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',   // DAI
-    '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',   // USDC
-    '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',   // BTCB
-    '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',   // ETH
-    '0x33F93897e914a7482A262Ef10A94319840EB8D05',   // bQBT
-    '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',   // bQBT-BNB
+    // // qSAV - disabling these vaults because qubit was hacked and these tokens are no longer there
+    // '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',   // CAKE
+    // '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',   // BNB
+    // '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',   // BUSD
+    // '0x53fd20bc5D4d222764B70817810494F1D06f3403',   // USDT
+    // '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',   // DAI
+    // '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',   // USDC
+    // '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',   // BTCB
+    // '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',   // ETH
+    // '0x33F93897e914a7482A262Ef10A94319840EB8D05',   // bQBT
+    // '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',   // bQBT-BNB
 
     // vSAV v2
     '0xA555443A5eE77f334648eF4F557C0B5070fcb4de',
@@ -93,13 +93,13 @@ const poolsPolygon = [
     // polyBUNNY
     '0x10C8CFCa4953Bc554e71ddE3Fa19c335e163D7Ac',
     '0x7a526d4679cDe16641411cA813eAf7B33422501D',
-    '0x6b86aB330F18E8FcC4FB214C91b1080577df3513',
+    // '0x6b86aB330F18E8FcC4FB214C91b1080577df3513',
     '0xe167Cf12a60f606C4C83bc34F09C4f9D9453690e',
     // qPool
     '0x4beB900C3a642c054CA57EfCA7090464082e904F',
     '0x54E1feE2182d0d96D0D8e592CbFd4debC8EEf7Df',
     '0x3cba7b58b4430794fa7a37F042bd54E3C2A351A8',
-    '0x4964e4d8E17B86e15A2f0a4D8a43D8E4AbeC3E78',
+    // '0x4964e4d8E17B86e15A2f0a4D8a43D8E4AbeC3E78',
     '0xf066208Fb16Dc1A06e31e104bEDb187468206a92',
     '0xB0621a46aFd14C0D1a1F8d3E1021C4aBCcd02F5b',
     '0x95aF402e9751f665617c3F9037f00f91ec00F7b6',
@@ -107,8 +107,8 @@ const poolsPolygon = [
     '0xE94096Fb06f60C7FC0d122A352154842384F80bd',
     '0x58918F94C14dD657f0745f8a5599190f5baDFa05',
     '0x4ee929E9b25d00E6C7FCAa513C01311Da40462F2',
-    '0x560F866fE4e1E6EA20701B9dCc9555486E1B84c2',
-    '0x470Be517cBd063265c1A519aE186ae82d10dD360',
+    // '0x560F866fE4e1E6EA20701B9dCc9555486E1B84c2',
+    // '0x470Be517cBd063265c1A519aE186ae82d10dD360',
 
     // sPool
     '0x87c743C1418864c9799FdE4C8612D1Ba64188ECe',
@@ -158,8 +158,8 @@ async function bsc(timestamp, ethBlock, chainBlock) {
     }
 }
 
-async function polygon(timestamp, ethBlock, chainBlock) {
-    const block = chainBlock.polygon
+async function polygon(api) {
+    const block = api.block
     const total = (await sdk.api.abi.multiCall({
         calls: poolsPolygon.map( address => ({
             target: dashboardPolygon,

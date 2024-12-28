@@ -1,48 +1,50 @@
-const sdk = require("@defillama/sdk");
-const {calculateUniTvl} = require('../helper/calculateUniTvl.js');
 const { staking } = require("../helper/staking.js");
+const { getUniTVL } = require("../helper/unknownTokens");
 
-
-const BANANA_TOKEN = '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95'
-const MASTER_APE = '0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9'
+const BANANA_TOKEN = "0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95";
+const ABOND_TOKEN = "0x34294AfABCbaFfc616ac6614F6d2e17260b78BEd";
+const MASTER_APE = "0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9";
+const MASTER_APE_V2 = "0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B";
 const FACTORY_BSC = "0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6";
 const FACTORY_POLYGON = "0xcf083be4164828f00cae704ec15a36d711491284";
 const FACTORY_ETHEREUM = "0xBAe5dc9B19004883d0377419FeF3c2C8832d7d7B";
-
-
-const SUBGRAPH_BSC = "https://graph2.apeswap.finance/subgraphs/name/ape-swap/apeswap-subgraph"
-const SUBGRAPH_POLYGON = "https://api.thegraph.com/subgraphs/name/apeswapfinance/dex-polygon" 
-
-
-async function bscTvl(timestamp, block, chainBlocks) {
-  const balances = await calculateUniTvl(addr=>`bsc:${addr}`, chainBlocks['bsc'], 'bsc', FACTORY_BSC, 0, true);
-  delete balances["bsc:0x95e7c70b58790a1cbd377bc403cd7e9be7e0afb1"] //YSL - coingecko price broken
-  return balances
-}
-
-async function polygonTvl(timestamp, block, chainBlocks) {
-  return calculateUniTvl(addr=>`polygon:${addr}`, chainBlocks['polygon'], 'polygon', FACTORY_POLYGON, 0, true);
-}
-
-async function ethTvl(timestamp, ethBlock, chainBlocks) {
-  return calculateUniTvl(addr=>`ethereum:${addr}`, ethBlock, 'ethereum', FACTORY_ETHEREUM, 0, true,);
-}
-
-
+const FACTORY_TELOS = "0x411172Dfcd5f68307656A1ff35520841C2F7fAec";
+const FACTORY_ARBITRUM = "0xCf083Be4164828f00cAE704EC15a36D711491284";
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
   misrepresentedTokens: true,
-  bsc:{
-    tvl: bscTvl,
-    staking: staking(MASTER_APE, BANANA_TOKEN, "bsc"),
+  bsc: {
+    tvl: getUniTVL({
+      factory: FACTORY_BSC,
+      useDefaultCoreAssets: true,
+    }),
+    staking: staking(
+      [MASTER_APE, MASTER_APE_V2],
+      [BANANA_TOKEN, ABOND_TOKEN],
+      "bsc"
+    ),
   },
-  polygon:{
-    tvl: polygonTvl,
+  polygon: {
+    tvl: getUniTVL({
+      factory: FACTORY_POLYGON,
+      useDefaultCoreAssets: true,
+    }),
   },
-  ethereum:{
-    tvl: ethTvl
+  ethereum: {
+    tvl: getUniTVL({ factory: FACTORY_ETHEREUM, useDefaultCoreAssets: true }),
   },
-  methodology: "TVL comes from the DEX liquidity pools, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
-}
+  telos: {
+    tvl: getUniTVL({
+      factory: FACTORY_TELOS,
+      useDefaultCoreAssets: true,
+    }),
+  },
+  arbitrum: {
+    tvl: getUniTVL({
+      factory: FACTORY_ARBITRUM,
+      useDefaultCoreAssets: true,
+    }),
+  },
+  methodology:
+    "TVL comes from the DEX liquidity pools, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9 and 0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B",
+};

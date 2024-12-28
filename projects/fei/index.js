@@ -1,10 +1,7 @@
-const sdk = require("@defillama/sdk");
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs');
 
-const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-
-async function tvl(timestamp, block) {
-  const balances = {}
+async function tvl(api) {
   const owners = [
     '0xBFfB152b9392e38CdDc275D818a3Db7FE364596b', // GenesisGroup.sol [OLD]
     '0xa08A721dFB595753FFf335636674D76C455B275C', // EthReserveStabilizer.sol [OLD]
@@ -45,31 +42,24 @@ async function tvl(timestamp, block) {
     // Holders of DPI in Fuse pool 19
     '0x3dD3d945C4253bAc5B4Cc326a001B7d3f9C4DD66', // DpiFusePcvDeposit.sol
   ]
-  await sumTokensAndLPsSharedOwners(balances, [
-    ['0x94b0a3d511b6ecdb17ebf877278ab030acb0a878', true], // FEI-ETH Uni V2 LP (NOTE: this counts both FEI and ETH, but only the FEI doesn't count as PCV)
-    ['0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84', false], // stETH
-    ['0x030ba81f1c18d280636f32af80b9aad02cf0854e', false], // aWETH
-    ['0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5', false], // cETH
-    ['0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', false], // cDAI
-    ['0x0954906da0Bf32d5479e25f46056d22f08464cab', false], // INDEX
-    ['0xc9BC48c72154ef3e5425641a3c747242112a46AF', false], // aRAI
-    ['0x752F119bD4Ee2342CE35E2351648d21962c7CAfE', false], // RAI in Fuse pool 9
-    ['0x8775aE5e83BC5D926b6277579c2B0d40c7D9b528', true], // FEI-DPI Sushi LP (NOTE: this counts both the FEI and the DPI, but only the FEI doesn't count as PCV)
-    ['0xF06f65a6b7D2c401FcB8B3273d036D21Fe2a5963', false], // DPI in Fuse pool 19
-  ], owners, block)
-  const directETH = await sdk.api.eth.getBalances({
-    targets: owners,
-    block
-  })
-  directETH.output.forEach(eth => {
-    sdk.util.sumSingleBalance(balances, weth, eth.balance)
-  })
-  return balances
+  const tokens = [
+    '0x94b0a3d511b6ecdb17ebf877278ab030acb0a878', // FEI-ETH Uni V2 LP (NOTE: this counts both FEI and ETH, but only the FEI doesn't count as PCV)
+    ADDRESSES.ethereum.STETH, // stETH
+    '0x030ba81f1c18d280636f32af80b9aad02cf0854e', // aWETH
+    '0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5', // cETH
+    '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', // cDAI
+    '0x0954906da0Bf32d5479e25f46056d22f08464cab', // INDEX
+    '0xc9BC48c72154ef3e5425641a3c747242112a46AF', // aRAI
+    '0x752F119bD4Ee2342CE35E2351648d21962c7CAfE', // RAI in Fuse pool 9
+    '0x8775aE5e83BC5D926b6277579c2B0d40c7D9b528', // FEI-DPI Sushi LP (NOTE: this counts both the FEI and the DPI, but only the FEI doesn't count as PCV)
+    '0xF06f65a6b7D2c401FcB8B3273d036D21Fe2a5963', // DPI in Fuse pool 19
+    nullAddress
+  ]
+  return sumTokens2({ api, owners, tokens, })
 }
 
 module.exports = {
-  timetravel: true,
-  tvl
+  ethereum: { tvl },
 };
 module.exports.hallmarks = [
   [1651325520, "Exploit $80M FEI"],

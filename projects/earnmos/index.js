@@ -1,12 +1,20 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
+const {toUSDTBalances} = require('../helper/balances')
 
-async function fetch() {
-    const {data: {tvl}} = await retry(async () => await axios.get('https://app.earnmos.fi/defi-llama/tvl'));
+async function fetch(chainName) {
+    return 0
+    // const {tvlMap} = await get('https://app.earnmos.fi/defi-llama/tvl-map');
 
-    return tvl;
+    // return toUSDTBalances(tvlMap[chainName]);
 }
 
 module.exports = {
-    fetch
+    misrepresentedTokens: true,
+    timetravel: false,
+    evmos: {
+        tvl: fetch.bind(null, 'evmos')
+    },
+    kava: {
+        tvl: fetch.bind(null, 'kava')
+    }
 }

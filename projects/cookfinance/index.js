@@ -34,21 +34,8 @@ const ethIndexes = [
   "0x43633bDb2675aDaB99CE3059D734b92a1deDAb2b", // EDI
 ];
 
-const getComponentsABI = {
-  inputs: [],
-  name: "getComponents",
-  outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-  stateMutability: "view",
-  type: "function",
-}
-
-const getCKsABI = {
-  inputs: [],
-  name: "getCKs",
-  outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-  stateMutability: "view",
-  type: "function",
-}
+const getComponentsABI = "address[]:getComponents"
+const getCKsABI = "address[]:getCKs"
 
 async function getTvl({ chain, block, indices }) {
   const indexCalls = indices.map(i => ({ target: i }))
@@ -125,11 +112,11 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   });
 
   const balances = await getTvl({ indices: bscIndexes, chain, block, })
-  const symbols = await getSymbols(chain, Object.keys(balances))
+  // const symbols = await getSymbols(chain, Object.keys(balances))
   const calls = []
-  Object.entries(symbols).forEach(([token, symbol]) => {
-    if (symbol.startsWith('ib')) calls.push({ target: token })
-  })
+  // Object.entries(symbols).forEach(([token, symbol]) => {
+  //   if (symbol.startsWith('ib')) calls.push({ target: token })
+  // })
   const [
     { output: token },
     { output: totalToken },
@@ -161,7 +148,7 @@ module.exports = {
     "TVL are the tokens locked into the index contracts. Pool2 are the tokens locked into DEX LP. Staking are the tokens locked into the active staking contract.",
   ethereum: {
     tvl: ethTvl,
-    pool2: pool2s(
+    pool2: staking(
       ["0x4b21da40dd8d9f4363e69a9a1620d7cdb49123be"],
       ethPool2LPs,
       "ethereum"
@@ -170,7 +157,7 @@ module.exports = {
   },
   avax: {
     tvl: avaTvl,
-    pool2: pool2s(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs, "avax"),
+    pool2: staking(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs),
     staking: staking(
       "0x35bE7982bC5E40A8C9aF39A639bDDcE32081102e",
       "0x637afeff75ca669ff92e4570b14d6399a658902f",
@@ -179,7 +166,7 @@ module.exports = {
     ),
   },
   bsc: {
-    pool2: pool2s(
+    pool2: staking(
       ["0x47b517061841e6bFaaeB6336C939724F47e5E263"],
       bscPool2LPs,
       "bsc"
@@ -192,7 +179,7 @@ module.exports = {
     tvl: bscTvl,
   },
   heco: {
-    staking: staking(stakingContractHeco, COOK_heco, "heco"),
-    pool2: pool2(stakingPool2ContractHeco, ETH_COOK_HMDXLP, "heco"),
+    staking: staking(stakingContractHeco, COOK_heco),
+    pool2: pool2(stakingPool2ContractHeco, ETH_COOK_HMDXLP),
   },
 };

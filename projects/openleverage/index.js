@@ -1,134 +1,36 @@
-const sdk = require('@defillama/sdk');
-const {gql, GraphQLClient} = require("graphql-request");
-const retry = require("../helper/retry");
-const utils = require("../helper/utils");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const openleve_address = {
-    "eth" : '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
-    "bsc" : '0x6A75aC4b8d8E76d15502E69Be4cb6325422833B4',
-    "kcc" : '0xEF6890d740E1244fEa42E3D1B9Ff515C24c004Ce'
+const config = {
+  ethereum: '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
+  bsc: '0x6A75aC4b8d8E76d15502E69Be4cb6325422833B4',
+  kcc: '0xEF6890d740E1244fEa42E3D1B9Ff515C24c004Ce',
+  arbitrum: '0x2925671dc7f2def9e4ad3fa878afd997f0b4db45'
 }
-const subgraph_endpoint = {
-    "eth" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage',
-    "bsc" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage-bsc'
+// openleverage overcollateralized-borrowing-contracts
+const borrowConfig = {
+  bsc: '0xf436f8fe7b26d87eb74e5446acec2e8ad4075e47',
+  arbitrum: '0xe7779ebb5c28ccd6d3dcf13920b06402ca52189c'
 }
-const http_endpoint = {
-    "kcc" : {
-        size: 20,
-        firstPage: 1,
-        getDataURL: (page, size) => `https://kcc.openleverage.finance/api/trade/markets/stat?page=${page}&size=${size}`,
-    },
-}
+module.exports = {};
 
-async function eth_tvl(timestamp, block) {
-    const poolInfo = await getPoolFromSubgraph("eth");
-    const toa = []    
-    for (const pool of poolInfo["poolAddressList"]) {
-        const poolToken = poolInfo["poolToken"][pool]
-        toa.push([poolToken, pool])
+Object.keys(config).forEach(chain => {
+  const openLevAddr = config[chain]
+  const borrowAddr = borrowConfig[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const data = await api.fetchList({ lengthAbi: 'uint256:numPairs', itemAbi: "function markets(uint16) view returns (address pool0, address pool1, address token0, address token1, uint16 marginLimit, uint16 feesRate, uint16 priceDiffientRatio, address priceUpdater, uint256 pool0Insurance, uint256 pool1Insurance)", target: openLevAddr })
+      const tokensAndOwners = data.map(i => {
+        const toa = [
+          [i.token0, openLevAddr],
+          [i.token0, i.pool0],
+          [i.token1, openLevAddr],
+          [i.token1, i.pool1],
+        ]
+        if (borrowAddr)
+          toa.push([i.token0, borrowAddr], [i.token1, borrowAddr],)
+        return toa
+      }).flat()
+      return sumTokens2({ api, tokensAndOwners })
     }
-    for (const token of poolInfo["tokenAddressList"]) {
-        toa.push([token, openleve_address["eth"]])
-    }
-    return sumTokens2({ block, tokensAndOwners: toa, })
-}
-
-async function bsc_tvl(timestamp, _block, { bsc: block }) {
-    const toa = []    
-    const poolInfo = await getPoolFromSubgraph("bsc");
-    for (const pool of poolInfo["poolAddressList"]) {
-        const poolToken = poolInfo["poolToken"][pool]
-        toa.push([poolToken, pool])
-    }
-    for (const token of poolInfo["tokenAddressList"]) {
-        toa.push([token, openleve_address["bsc"]])
-    }
-    return sumTokens2({ chain: 'bsc', block, tokensAndOwners: toa, })
-}
-
-async function getPoolFromSubgraph(chain) {
-    var sql =  gql`{
-        pairs(first: 1000) {
-            id
-            token0 {
-            id
-            }
-            token1 {
-            id
-            }
-            pool0
-            pool1
-        }
-    }
-  `;
-    var graphQLClient = new GraphQLClient(subgraph_endpoint[chain])
-    const results = await retry(async bail => await graphQLClient.request(sql))
-    const tokenAddressList = []
-    const poolAddressList = []
-    const poolToken = {}
-    for (const s of results["pairs"]) {
-        tokenAddressList.push(s["token0"]["id"])
-        poolAddressList.push(s["pool0"])
-        poolToken[s["pool0"]] = s["token0"]["id"]
-
-        tokenAddressList.push(s["token1"]["id"])
-        poolAddressList.push(s["pool1"])
-        poolToken[s["pool1"]] = s["token1"]["id"]
-    }
-    return {"tokenAddressList" : Array.from(new Set(tokenAddressList)), "poolAddressList" : poolAddressList, "poolToken": poolToken}
-}
-
-async function getPoolFromHttp(chain) {
-    const { size, firstPage, getDataURL } = http_endpoint[chain]
-    let fetchNext = true
-    let page = firstPage
-    const results = []
-    while (fetchNext) {
-        const { data: { data: result }} = await utils.fetchURL(getDataURL(page, size))
-        fetchNext = size === result.length
-        page++
-        results.push(...result)
-    }
-
-    const tokenAddressList = []
-    const poolAddressList = []
-    const poolToken = {}
-    for (const s of results) {
-        tokenAddressList.push(s["token0Addr"])
-        poolAddressList.push(s["pool0Addr"])
-        poolToken[s["pool0Addr"]] = s["token1Addr"]
-
-        tokenAddressList.push(s["token1Addr"])
-        poolAddressList.push(s["pool1Addr"])
-        poolToken[s["pool1Addr"]] = s["token0Addr"]
-    }
-    return {"tokenAddressList" : Array.from(new Set(tokenAddressList)), "poolAddressList" : poolAddressList, "poolToken": poolToken}
-}
-
-async function kcc_tvl(timestamp, _block, { kcc: block }) {
-    const toa = []    
-    const poolInfo = await getPoolFromHttp("kcc");
-    for (const pool of poolInfo["poolAddressList"]) {
-        const poolToken = poolInfo["poolToken"][pool]
-        toa.push([poolToken, pool])
-    }
-
-    for (const token of poolInfo["tokenAddressList"]) {
-        toa.push([token, openleve_address["kcc"]])
-    }
-    return sumTokens2({ chain: 'kcc', block, tokensAndOwners: toa, })
-}
-
-module.exports = {
-    methodology: "get pool and token address from the openleverage subgraph",
-    ethereum: {
-        tvl: eth_tvl
-    },
-    bsc: {
-        tvl: bsc_tvl
-    },
-    kcc: {
-        tvl: kcc_tvl
-    } 
-}
+  }
+})

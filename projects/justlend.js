@@ -1,57 +1,44 @@
-const retry = require('./helper/retry');
-const axios = require('axios');
-const { toUSDTBalances } = require('./helper/balances');
+const { unhexifyTarget, } = require('@defillama/sdk/build/abi/tron');
+const ADDRESSES = require('./helper/coreAssets.json')
+const { sumTokens } = require('./helper/sumTokens')
 
-async function core() {
-  const response = (
-    await retry(
-      async (bail) => await axios.get(
-        'https://labc.ablesdxd.link/justlend/markets/dashboard')
-    )
-  ).data.data;
+const comptroller = 'TGjYzgCyPobsNS9n6WcbdLVR9dH7mWqFx7'
 
-  const tvl = response.totalDepositedUSD - response.totalBorrowedUSD;
-
-  return toUSDTBalances(tvl);
-};
-
-async function historical() {
-  const response = (
-    await retry(
-      async (bail) => await axios.get(
-        'https://labc.ablesdxd.link/justlend/markets/dashboard')
-    )
-  ).data.data;
-
-  const tvl = response.totalDepositedUSD - response.totalBorrowedUSD;
-
-  return toUSDTBalances(tvl);
-};
-
-// node test.js projects/justlend.js
-async function pool2() {
-  const response = (
-    await retry(
-      async (bail) => await axios.get(
-        'https://apilist.tronscan.org/api/defiTvl')
-    )
-  ).data;
-
-  const justLend = (response.projects.filter(
-    p => p.project == "JustLend"))[0];
-
-  const coreTVL = await core();
-
-  if (coreTVL > 0) {
-    return justLend.locked - coreTVL;
-  } else {
-    return 0;
-  };
-};
 module.exports = {
-  misrepresentedTokens: true,
   tron: {
-    tvl: core,
-    pool2,
+    tvl, borrowed,
   },
 };
+
+async function tvl(api) {
+  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(unhexifyTarget)
+  const cMarkets = ['TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP']
+  const tokensAndOwners = []
+  const otherMarkets = []
+  for (let i = 0; i < markets.length; i++) {
+    if (cMarkets.includes(markets[i])) {
+      tokensAndOwners.push([ADDRESSES.null, markets[i]])
+    } else
+      otherMarkets.push(markets[i])
+  }
+
+  const underlyings = await api.multiCall({ abi: 'address:underlying', calls: otherMarkets })
+  underlyings.forEach((t, i) => tokensAndOwners.push([t, otherMarkets[i]]))
+  return sumTokens({ chain: 'tron', tokensAndOwners })
+}
+
+async function borrowed(api) {
+  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(unhexifyTarget)
+  const cMarkets = ['TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP']
+  const otherMarkets = []
+  for (let i = 0; i < markets.length; i++) {
+    if (!cMarkets.includes(markets[i]))
+      otherMarkets.push(markets[i])
+  }
+
+  const underlyings = await api.multiCall({ abi: 'address:underlying', calls: otherMarkets })
+  const uBorrowed = await api.multiCall({ abi: 'uint256:totalBorrows', calls: otherMarkets })
+  const cBorrowed = await api.multiCall({ abi: 'uint256:totalBorrows', calls: cMarkets })
+  api.add(underlyings, uBorrowed)
+  api.add(ADDRESSES.null, cBorrowed)
+}

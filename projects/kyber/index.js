@@ -1,144 +1,78 @@
-const sdk = require("@defillama/sdk");
-const retry = require("async-retry");
-const { GraphQLClient, gql } = require("graphql-request");
-const { getChainTransform } = require("../helper/portedTokens");
-const { calcTvl } = require("./tvl.js");
-const { getBlock } = require("../helper/getBlock");
-const abi = require("./abi.json");
+const sdk = require("@defillama/sdk")
+const { cachedGraphQuery } = require("../helper/cache");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const chains = {
-  ethereum: {
-    graphId: "mainnet",
-    factory: "0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE"
-  },
-  arbitrum: {
-    graphId: "arbitrum-one",
-    factory: "0x51E8D106C646cA58Caf32A47812e95887C071a62"
-  },
-  polygon: {
-    graphId: "matic",
-    factory: "0x5F1fe642060B5B9658C15721Ea22E982643c095c"
-  },
-  avax: {
-    graphId: "avalanche",
-    factory: "0x10908C875D865C66f271F5d3949848971c9595C9"
-  },
-  bsc: {
-    graphId: "bsc",
-    factory: "0x878dFE971d44e9122048308301F540910Bbd934c"
-  },
-  fantom: {
-    graphId: "fantom",
-    factory: "0x78df70615ffc8066cc0887917f2Cd72092C86409"
-  },
-  cronos: {
-    graphId: "cronos",
-    factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974"
-  },
-  optimism: {
-    graphId: "optimism",
-    factory: "0x1c758aF0688502e49140230F6b0EBd376d429be5"
-  },
-  aurora: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
-  //velas: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
-  oasis: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" }
-  //bittorrent: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" }
+const CONFIG = {
+  ethereum: { graphId: "mainnet" },
+  arbitrum: { graphId: "arbitrum-one", blacklistedTokens: ['0x0df5dfd95966753f01cb80e76dc20ea958238c46'] }, // rWETH
+  polygon: { graphId: "matic" },
+  avax: { graphId: "avalanche" },
+  bsc: { graphId: "bsc" },
+  fantom: { graphId: "fantom" },
+  cronos: { graphId: "cronos" },
+  optimism: { graphId: "optimism" },
+  linea: { graphId: 'linea' },
+  base: { graphId: 'base' },
+  scroll: { graphId: 'scroll' }
 };
 
 async function fetchPools(chain) {
-  const url =
-    chain == "cronos"
-      ? "https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos"
-      : `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
-  const graphQLClient = new GraphQLClient(url);
+  let url
 
-  return (await retry(
-    async bail =>
-      await graphQLClient.request(gql`
-        {
-          pools {
-            id
-          }
+  switch (chain) {
+    case "linea": url = 'https://graph-query.linea.build/subgraphs/name/kybernetwork/kyberswap-elastic-linea'; break;
+    case "cronos": url = 'https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos'; break;
+    case "base": url = 'https://base-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-base'; break;
+    case "scroll": url = 'https://scroll-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-scroll'; break;
+    case "mainnet": url = sdk.graph.modifyEndpoint('4U9PxDR4asVvfXyoVy18fhuj6NHnQhLzZkjZ5Bmuc5xk'); break;
+    case "arbitrum-one" : url = sdk.graph.modifyEndpoint('C36tj8jSpEHxcNbjM3z7ayUZHVjrk4HRqnpGMFuRgXs6'); break;
+    case "avalanche": url = sdk.graph.modifyEndpoint('9oMJfc7CL8uDqqQ3T3NFBnFCz9JMwq2YhH9AqojECFWp'); break;
+    case "bsc": url = sdk.graph.modifyEndpoint('FDEDgycFnTbPZ7PfrnWEZ4iR7T5De6BR69zx1i8gKQRa'); break;
+    case "fantom": url = sdk.graph.modifyEndpoint('9aj6YZFVL647wFBQXnNKM72eiowP4fyzynQKwLrn5axL'); break;
+    case "optimism": url = sdk.graph.modifyEndpoint('3Kpd8i7U94pTz3Mgdb8hyvT5o26fpwT7SUHAbTa6JzfZ'); break;
+    default: url = `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
+  }
+  let toa = [];
+  const poolQuery = `
+    query pools($lastId: String) {
+      pools(first: 1000, where: {id_gt: $lastId} ) {
+        id
+        token0 {
+          id
         }
-      `)
-  )).pools.map(p => p.id);
-}
-function elastic(chain) {
-  return async (_, block, chainBlocks) => {
-    if (!("graphId" in chains[chain])) return {};
-
-    block = chainBlocks[chain];
-    const pools = await fetchPools(chains[chain].graphId);
-    const balances = {};
-    const transform = await getChainTransform(chain);
-
-    const [{ output: token0s }, { output: token1s }] = await Promise.all([
-      sdk.api.abi.multiCall({
-        calls: pools.map(p => ({
-          target: p
-        })),
-        block,
-        chain,
-        abi: abi.token0
-      }),
-      sdk.api.abi.multiCall({
-        calls: pools.map(p => ({
-          target: p
-        })),
-        block,
-        chain,
-        abi: abi.token1
-      })
-    ]);
-    const [token0Balances, token1Balances] = await Promise.all([
-      sdk.api.abi.multiCall({
-        calls: pools.map((p, i) => ({
-          target: token0s[i].output,
-          params: [p]
-        })),
-        block,
-        chain,
-        abi: "erc20:balanceOf"
-      }),
-      sdk.api.abi.multiCall({
-        calls: pools.map((p, i) => ({
-          target: token1s[i].output,
-          params: [p]
-        })),
-        block,
-        chain,
-        abi: "erc20:balanceOf"
-      })
-    ]);
-
-    sdk.util.sumMultiBalanceOf(balances, token0Balances, true, transform);
-    sdk.util.sumMultiBalanceOf(balances, token1Balances, true, transform);
-
-    return balances;
-  };
-}
-function classic(chain) {
-  return async (timestamp, block, chainBlocks) => {
-    if (!("factory" in chains[chain])) return {};
-    const transform = await getChainTransform(chain);
-    return calcTvl(
-      transform,
-      getBlock(timestamp, chain, chainBlocks),
-      chain,
-      chains[chain].factory,
-      0,
-      true
-    );
-  };
+        token1 {
+          id
+        }
+      }
+    }`;
+    const pools = await cachedGraphQuery('kyber/'+chain, url, poolQuery, { fetchById: true,  })
+    pools.forEach(({ id, token0, token1}) => {
+      toa.push([token0.id, id])
+      toa.push([token1.id, id])
+    })
+  
+  return toa;
 }
 
-const moduleExports = {};
-Object.keys(chains).forEach(chain => {
-  moduleExports[chain] = {
-    tvl: sdk.util.sumChainTvls([elastic(chain), classic(chain)])
-  };
-});
+function elastic(graphId, blacklistedTokens = []) {
+  return async (api) => {
+    if (!graphId) return
+    const pools = await fetchPools(graphId);
+    return sumTokens2({ api, tokensAndOwners: pools, blacklistedTokens })
+  }
+}
+
 module.exports = {
-  misrepresentedTokens: true,
-  ...moduleExports
+  timetravel: false,
+  hallmarks: [
+    [Math.floor(new Date('2023-04-17')/1e3), 'Kyber team identified a vuln'],
+    [1700611200,'Protocol exploit'],
+  ],
 };
+
+Object.keys(CONFIG).forEach((chain) => {
+  const { graphId, blacklistedTokens } = CONFIG[chain]
+  module.exports[chain] = { tvl: elastic(graphId, blacklistedTokens)}
+})
+
+module.exports.base.tvl = () => ({})  // setting base to 0 for now as I could not find the graph endpoint

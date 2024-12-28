@@ -1,0 +1,9 @@
+{
+  "wantLockedTotal": "uint256:wantLockedTotal",
+  "poolLength": "uint256:poolLength",
+  "poolInfo": "function poolInfo(uint256) view returns (uint256 allocPoint, uint256 lastRewardBlock, uint256 accGAMMAPerShare, uint256 accGAMMAPerFactorPerShare, uint256 gammaRewardBoostPercentage, uint256 totalFactor, address want, address strat, address gToken, address iToken, bool isInfinity, bool hasStratRewards, bool isBoosted)",
+  "totalSupply": "uint256:totalSupply",
+  "exchangeRateStored": "uint256:exchangeRateStored",
+  "decimals": "uint8:decimals",
+  "balanceOfGtoken": "uint256:balanceOfGtoken"
+}
