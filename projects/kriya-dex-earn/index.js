@@ -2,10 +2,10 @@ const { fetchURL } = require("../helper/utils");
 const sui = require("../helper/chain/sui");
 
 const clmmVaultUrl =
-  "https://88ob93rfva.execute-api.ap-southeast-1.amazonaws.com/release/vaults";
+  "https://vjkibmct3h.execute-api.ap-southeast-1.amazonaws.com/release/vaults";
 
 const llVaultUrl =
-  "https://4sacq88271.execute-api.ap-southeast-1.amazonaws.com/release/vaults";
+  "https://c19eainr59.execute-api.ap-southeast-1.amazonaws.com/release/defilama/vaults";
 
 async function clmmVaultTVL(api) {
   const vaults = (await fetchURL(clmmVaultUrl))?.data;
