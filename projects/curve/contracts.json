@@ -36,7 +36,12 @@
         "currency": "KRW"
       }
     },
-    "CurveStableswapFactoryNG": "0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf"
+    "blacklist": [
+      "0x69000dFD5025E82f48Eb28325A2B88a241182CEd"
+    ],
+    "CurveStableswapFactoryNG": "0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0x0c0e5f2fF0ff18a3be9b835635039256dC4B4963"
   },
   "polygon": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -52,7 +57,9 @@
       "0xa7fd7d83e2d63f093b71c5f3b84c27cff66a7802",
       "0xacfbe6979d58b55a681875fc9adad0da4a37a51b"
     ],
-    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
+    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0xC1b393EfEF38140662b91441C6710Aa704973228"
   },
   "arbitrum": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -62,7 +69,8 @@
       "2CRV": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41"
     },
     "CurveStableswapFactoryNG": "0x9AF14D26075f142eb3F292D5065EB3faa646167b",
-    "CurveL2TricryptoFactory": "0xbc0797015fcfc47d9c1856639cae50d0e69fbee8"
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8" 
   },
   "aurora": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -71,7 +79,9 @@
     "metapoolBases": {
       "3CRV": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41"
     },
-    "CurveStableswapFactoryNG": "0x5eeE3091f747E60a045a2E715a4c71e600e31F6E"
+    "CurveStableswapFactoryNG": "0x5eeE3091f747E60a045a2E715a4c71e600e31F6E",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0xC1b393EfEF38140662b91441C6710Aa704973228"
   },
   "avax": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -80,7 +90,9 @@
     "metapoolBases": {
       "av3CRV": "0xb0d2eb3c2ca3c6916fab8dcbf9d9c165649231ae"
     },
-    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
+    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a"
   },
   "fantom": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -99,8 +111,9 @@
       "scFUSDT": "0x02224765bc8d54c21bb51b0951c80315e1c263f9",
       "scMIM": "0x90b7c21be43855afd2515675fc307c084427404f"
     },
-    "yearnTokens": {},
-    "CurveStableswapFactoryNG": "0xe61Fb97Ef6eBFBa12B36Ffd7be785c1F5A2DE66b"
+    "CurveStableswapFactoryNG": "0xe61Fb97Ef6eBFBa12B36Ffd7be785c1F5A2DE66b",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0x9AF14D26075f142eb3F292D5065EB3faa646167b"
   },
   "harmony": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -120,11 +133,12 @@
   "base": {
     "wrapped": "0x4200000000000000000000000000000000000006",
     "registriesMapping": {
-      "triCryptoFactory": "0xa5961898870943c68037f6848d2d866ed2016bcb",
       "stableFactory": "0x3093f9B57A428F3EB6285a589cb35bEA6e78c336",
       "cryptoFactory": "0x5EF72230578b3e399E6C6F4F6360edF95e83BBfd"
     },
-    "CurveStableswapFactoryNG": "0xd2002373543Ce3527023C75e7518C274A51ce712"
+    "CurveStableswapFactoryNG": "0xd2002373543Ce3527023C75e7518C274A51ce712",
+    "CurveTwocryptoFactoryNG": "0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F",
+    "CurveTricryptoFactoryNG": "0xa5961898870943c68037f6848d2d866ed2016bcb"
   },
   "optimism": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -133,7 +147,9 @@
     "metapoolBases": {
       "3CRV": "0x1337bedc9d22ecbe766df105c9623922a27963ec"
     },
-    "CurveStableswapFactoryNG": "0x5eeE3091f747E60a045a2E715a4c71e600e31F6E"
+    "CurveStableswapFactoryNG": "0x5eeE3091f747E60a045a2E715a4c71e600e31F6E",
+    "CurveTricryptoFactoryNG": "0xc6C09471Ee39C7E30a067952FcC89c8922f9Ab53",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F"
   },
   "xdai": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -153,7 +169,9 @@
   "fraxtal": {
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "metapoolBases": {},
-    "CurveStableswapFactoryNG": "0xd2002373543ce3527023c75e7518c274a51ce712"
+    "CurveStableswapFactoryNG": "0xd2002373543Ce3527023C75e7518C274A51ce712",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F"
   },
   "kava": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -165,16 +183,36 @@
   "xlayer": {
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "metapoolBases": {},
-    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e"
+    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e",
+    "CurveTwocryptoFactoryNG": "0x0c59d36b23f809f8b6c7cb4c8c590a0ac103baef",
+    "CurveTricryptoFactoryNG": "0xd3b17f862956464ae4403ccf829ce69199856e1e"
   },
   "bsc": {
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "metapoolBases": {},
-    "CurveStableswapFactoryNG": "0xd7e72f3615aa65b92a4dbdc211e296a35512988b"
+    "CurveStableswapFactoryNG": "0xd7e72f3615aa65b92a4dbdc211e296a35512988b",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0xc55837710bc500F1E3c7bb9dd1d51F7c5647E657"
   },
   "mantle": {
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "metapoolBases": {},
-    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e"
+    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e",
+    "CurveTwocryptoFactoryNG": "0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F",
+    "CurveTricryptoFactoryNG": "0x0C9D8c7e486e822C29488Ff51BFf0167B4650953"
+  },
+  "taiko": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0xA51894664A773981C6C112C43ce576f315d5b1B6",
+    "CurveStableswapFactoryNG": "0x06452f9c013fc37169B57Eab8F50A7A48c9198A3",
+    "CurveTwocryptoFactoryNG": "0xFAbC421e3368D158d802684A217a83c083c94CeB",
+    "CurveTricryptoFactoryNG": "0x0C9D8c7e486e822C29488Ff51BFf0167B4650953"
+  },
+  "corn": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0xda5dDd7270381A7C2717aD10D1c0ecB19e3CDFb2",
+    "CurveStableswapFactoryNG": "0xd7E72f3615aa65b92A4DBdC211E296a35512988B",
+    "CurveTwocryptoFactoryNG": "0x5Ea9DD3b6f042A34Df818C6c1324BC5A7c61427a",
+    "CurveTricryptoFactoryNG": "0x7Ca46A636b02D4aBC66883D7FF164bDE506DC66a"
   }
-}
+} 

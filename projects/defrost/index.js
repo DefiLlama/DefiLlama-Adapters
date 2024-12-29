@@ -60,7 +60,6 @@ async function staking(api) {
 
 module.exports = {
   doublecounted: true,
-  start: 6965653,
   avax: {
     tvl,
     staking

@@ -158,6 +158,11 @@ const config = {
       { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
     ]
   },
+  rsk: {
+    vaultConfigs: [
+      { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 6753128, isAlgebra: false, }, // Uniswap
+    ]
+  },
   scroll: {
     vaultConfigs: [
       { factory: '0xb42D5956cDe4386B65C087CfCD16910aB6114F15', fromBlock: 5264782, isAlgebra: false, }, // Metavault

@@ -14,7 +14,6 @@ const LP_MINING_CONTRACT_V2 = "0x2490AFBf1609119bB76E5e936f4ce4cBed815947";
 const lps = [PPFT_MAIN_LP, XPPFT_LP];
 
 module.exports = {
-  start: 13406569,
   cronos: {
     tvl: () => ({}),
     staking: sumTokensExport({

@@ -20,6 +20,12 @@ module.exports = {
       return data
     }
   },
+  drift: {
+    vaultTvl: async (vault, version) => {
+      const { data } = await client.get('/drift/vault_tvl', { params: { vault, version } })
+      return data
+    }
+  },
   injective: {
     mitoVaultQuery: async ({ address }) => {
       const { data } = await client.get('/injective/mito-vault/' + address)
@@ -31,6 +37,12 @@ module.exports = {
     },
     getOrders: async (body) => {
       const { data } = await client.post('/injective/orderbook/orders', body)
+      return data
+    },
+  },
+  kamino: {
+    tvl: async () => {
+      const { data } = await client.get('/kamino/tvl')
       return data
     },
   },
