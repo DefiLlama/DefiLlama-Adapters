@@ -1,5 +1,5 @@
 const { uniV3Export } = require('../helper/uniswapV3')
 
 module.exports = uniV3Export({
-    tomochain: { factory: '0xe615c973e92bDcB584Bf9085c4612E342164e12A', fromBlock: 86210948, isAlgebra: false },
+    tomochain: { factory: '0x1F09b50e8cbAed8A157fEe28716d13AfE36A77E7', fromBlock: 86787787, isAlgebra: false },
 })

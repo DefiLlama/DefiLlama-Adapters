@@ -74,7 +74,7 @@ module.exports = {
   methodology:
     "BetSwirl has no users TVL yet. However, it includes the bankrolls amounts (each tokens amount in the bank allowing players to bet).",
   // The first Bank was deployed on Polygon at tx 0x6b99f617946d2f8c23adcd440cd3309d2da750e52d135853f38a0da11cdc3233
-  start: 1648344312, // new Date(Date.UTC(2022, 2, 27, 1, 25, 12)).getTime() / 1e3,
+  start: '2022-03-27', // new Date(Date.UTC(2022, 2, 27, 1, 25, 12)).getTime() / 1e3,
   bsc: {
     tvl: treasury("bsc"),
     ownTokens: staking('0xa475f643aa480a3df3e9872b6e80e75ae99b19db', '0x3e0a7C7dB7bB21bDA290A80c9811DE6d47781671'),

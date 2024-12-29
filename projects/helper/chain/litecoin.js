@@ -4,7 +4,7 @@ const { PromisePool } = require('@supercharge/promise-pool')
 
 // const url = addr => 'https://chainz.cryptoid.info/ltc/api.dws?q=getbalance&a=' + addr
 const url1 = addr => 'https://ltc.tokenview.io/api/address/balancetrend/ltc/' + addr
-const url = addr => 'https://explorer.litecoin.net/api/address/' + addr
+const url = addr => 'https://litecoinspace.org/api/address/' + addr
 
 async function getBalance(addr) {
   try {
