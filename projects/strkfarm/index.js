@@ -28,6 +28,10 @@ const STRATEGIES = {
     address: "0x9d23d9b1fa0db8c9d75a1df924c3820e594fc4ab1475695889286f3f6df250",
     token: ADDRESSES.starknet.ETH, // ETH Sensei
     zToken: '0x1b5bd713e72fdc5d63ffd83762f81297f6175a5e0a4771cdadbc1dd5fe72cb1'
+  }, {
+    address: "0x9140757f8fb5748379be582be39d6daf704cc3a0408882c0d57981a885eed9",
+    token: ADDRESSES.starknet.ETH, // ETH Sensei XL
+    zToken: '0x057146f6409deb4c9fa12866915dd952aa07c1eb2752e451d7f3b042086bdeb8'
   }]
 }
 
