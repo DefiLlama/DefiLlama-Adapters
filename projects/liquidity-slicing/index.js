@@ -1,55 +1,71 @@
+const sdk = require('@defillama/sdk')
+
 const ADDRESSES = require('../helper/coreAssets.json')
-const { ethers } = require('ethers');
 
 const abi = {
-  "checkContract": "function checkContract(uint16,bytes32) view returns (uint256)",
-  "nodeStates": "function nodeStates(uint256,bytes32) view returns (uint256 totalStaked,uint256,uint256)"
+  "tvl": "function tvl() external view returns (uint256)"
 }
-
-
-const MANAGER_CONTRACT_ADDRESS = "0x1F0ea3b63F3Fca05719E54E7469Ef897754eF666";
 
 const config = {
   manta: {
-    transformToken: "manta-network",
-    chainId: 2,
-    decimals: 18,
-    delegator: {
-      "0x89060B31DB21C6cB4e946EaCB28EFefF085C275a": ["0x2847e7f2823a5048f4ae2cd808a5e978aa6ce41fcbb6e7e7bbbb1b64446b0639"]
-    },
-    validator: {
-      "0xaB21907461313127Ce944F6f168888d93C091363": ["0x8e8103383262ff2256490767e2338ffc452bf602b0addede203da3218cc9d241"]
-    }
+    fManta: "0x3008bEB3E883CC90f95344B875d8b0c6F224fDC0",
+    sManta: "0x56c02b7388dfce36c4b53878890Cf450145E23cA"
   },
   aleo: {
-    transformToken: "aleo",
-    chainId: 5,
-    decimals: 6,
-    delegator: {
-      "0x52ade9c48599d71603cf661f98c9b7bd21cfb8ba448efd6204e89096b969c30c": ["0xbb57045a8a9c39dfb06baaf5ed6cb02343a17feecbf63aba9b15a6694476140f"]
-    },
-    validator: {
-      "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff": ["0x0000000000000000000000000000000000000000000000000000000000000005"]
-    }
+    fAleo: "0x16077d3455DE4Aae822eF46390ef216166803347",
+    sAleo: "0x6a8C66dEcb40FD2d1F1429AB12A125437c7988E9"
+  },
+  bnb: {
+    fBNB: "0xcB8FbEBAA1994A535cC7A87f021C7De65F165B36"
   }
 };
 
-async function tvl(api) {
-  for (const chain of Object.keys(config)) {
-    const { transformToken: tokenId, chainId, decimals, delegator, validator, } = config[chain];
-    const allConfig = { ...delegator, ...validator };
+const tokenMapping = {
+  manta: "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",  // MANTA token address
+  // aleo: ADDRESSES.ALEO.ALEO,    // ALEO token address
+  bnb: ADDRESSES.bsc.WBNB       // BNB token address
+};
 
-    for (const [hostAddr, nodes] of Object.entries(allConfig)) {
-      const i = await api.call({ abi: abi.checkContract, target: MANAGER_CONTRACT_ADDRESS, params: [chainId, ethers.zeroPadValue(hostAddr, 32)] });
-      const calls = nodes.map(v => ({ params: [i, v] }))
-      const stakes = (await api.multiCall({ abi: abi.nodeStates, calls, target: MANAGER_CONTRACT_ADDRESS })).map(i => i.totalStaked)
-      stakes.forEach(val => api.addCGToken(tokenId, val / (10 ** decimals)))
+
+const ALEO_PRICE = "0.956"
+
+async function tvl(api) {
+  const balances = {}
+  let totalUsdTvl = 0
+  
+  for (const [chain, contracts] of Object.entries(config)) {
+    const tokenAddress = tokenMapping[chain]
+    let chainTvl = 0
+    
+    for (const [_, contractAddress] of Object.entries(contracts)) {
+      const tvlAmount = await api.call({ 
+        abi: abi.tvl,
+        target: contractAddress
+      })
+      
+      if (chain === 'aleo') {
+        // use fixed price for ALEO
+        chainTvl += (Number(tvlAmount) / 1e18) * ALEO_PRICE
+      } else {
+        // add tvl to balances
+        api.add(tokenAddress, tvlAmount)
+      }
     }
+    
+    if (chain === 'aleo') {
+      totalUsdTvl += chainTvl
+    }
+  }
+  
+  return {
+    ...balances,
+    tether: totalUsdTvl  // add aleo pool tvl
   }
 }
 
 module.exports = {
   arbitrum: {
     tvl,
-  }
+  },
+  methodology: "Calculates TVL of staked tokens, using the price of ALEO from Coinmarketcap",
 }
