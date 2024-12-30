@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-
+const axios = require("axios")
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const abi = {
@@ -20,6 +20,12 @@ const config = {
   }
 };
 
+const coingeckoIds = {
+  manta: "manta-network",
+  aleo: "aleo",
+  bnb: "binancecoin"
+}
+
 const tokenMapping = {
   manta: "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",  // MANTA token address
   // aleo: ADDRESSES.ALEO.ALEO,    // ALEO token address
@@ -33,6 +39,11 @@ async function tvl(api) {
   const balances = {}
   let totalUsdTvl = 0
   
+  const timestamp = Math.floor(Date.now() / 1000)
+  const prices = await axios.get(`https://coins.llama.fi/prices/current/${
+    Object.values(coingeckoIds).map(id => `coingecko:${id}`).join(',')
+  }`)
+
   for (const [chain, contracts] of Object.entries(config)) {
     const tokenAddress = tokenMapping[chain]
     let chainTvl = 0
@@ -43,24 +54,21 @@ async function tvl(api) {
         target: contractAddress
       })
       
-      if (chain === 'aleo') {
-        // use fixed price for ALEO
-        chainTvl += (Number(tvlAmount) / 1e18) * ALEO_PRICE
-      } else {
-        // add tvl to balances
-        api.add(tokenAddress, tvlAmount)
+      
+      const price = prices.data.coins[`coingecko:${coingeckoIds[chain]}`]?.price
+      if (price) {
+        
+        chainTvl += (Number(tvlAmount) / 1e18) * price
       }
     }
     
-    if (chain === 'aleo') {
-      totalUsdTvl += chainTvl
-    }
+    totalUsdTvl += chainTvl
   }
   
   return {
-    ...balances,
-    tether: totalUsdTvl  // add aleo pool tvl
+    tether: totalUsdTvl
   }
+ 
 }
 
 module.exports = {
