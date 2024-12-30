@@ -14,6 +14,10 @@ const config = {
     fromBlock: 18438182,
     controller: "0x7900f766F06e361FDDB4FdeBac5b138c4EEd8d4A",
   },
+  iotaevm: {
+    fromBlock: 1936296,
+    controller: "0x0E4d23092A4a12caAd0E22e0892EcEC7C09DC51c",
+  },
 };
 
 Object.keys(config).forEach((chain) => {
