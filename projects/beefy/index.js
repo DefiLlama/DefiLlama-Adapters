@@ -46,6 +46,7 @@ const chains = {
   era: 324,
   metis: 1088,
   polygon_zkevm: 1101,
+  lisk: 1135,
   moonbeam: 1284,
   moonriver: 1285,
   sei: 1329,
