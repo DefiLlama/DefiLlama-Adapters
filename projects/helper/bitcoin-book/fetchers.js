@@ -46,7 +46,7 @@ module.exports = {
     const users = await api.call({ abi: 'address[]:getQualifiedUsers', target: '0xbee335BB44e75C4794a0b9B54E8027b111395943' })
     const userInfos = await api.multiCall({ abi: abi.getQualifiedUserInfo, target: '0xbee335BB44e75C4794a0b9B54E8027b111395943', calls: users })
     userInfos.forEach(i => staticAddresses.push(i.depositAddress))
-    return staticAddresses
+    return Array.from(new Set(staticAddresses))
   },
 
   b14g: async () => {
