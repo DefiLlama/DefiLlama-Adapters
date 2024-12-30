@@ -24,7 +24,7 @@ async function suiTvl() {
 // run command： node test.js projects/mole/index.js
 module.exports = {
   timetravel: false,
-  start: 1653840000,
+  start: '2022-05-29',
   // avax: {
   //   tvl: avaxTvl,
   //   staking: avaxStaking,

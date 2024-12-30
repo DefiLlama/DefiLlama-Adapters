@@ -83,7 +83,6 @@ async function op_tvl(api) {
 }
 
 module.exports = {
-  start: 14962974,
   ethereum: {
     tvl: eth_tvl
   },

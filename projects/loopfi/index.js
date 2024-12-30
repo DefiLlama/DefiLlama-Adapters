@@ -36,7 +36,7 @@ const tokensYieldnest = {
 module.exports = {
   methodology:
     "Counts the number of WETH, WBTC and LRT tokens in the LoopFi Prelaunch Contracts in Ethereum and Scroll networks.",
-  start: 1718390875,
+  start: '2024-06-14',
   ethereum: {
     tvl: sumTokensExport({
       ownerTokens: [[Object.values(tokens), LOOP_PRELAUNCH], [Object.values(tokensBtc), LOOP_PRELAUNCH_BTC], [Object.values(tokensYieldnest), LOOP_PRELAUNCH_YNETH]],

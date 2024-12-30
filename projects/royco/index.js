@@ -1,9 +1,9 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 const config = {
-  ethereum: { factory: '0xb316D165D01aC68d31B297F847533D671c965662', fromBlock: 21040754 },
-  arbitrum: { factory: '0xb316D165D01aC68d31B297F847533D671c965662', fromBlock: 267610608 },
-  base: { factory: '0xb316D165D01aC68d31B297F847533D671c965662', fromBlock: 21548421 },
+  ethereum: { factory: '0x75e502644284edf34421f9c355d75db79e343bca', fromBlock: 21244948 },
+  arbitrum: { factory: '0x75e502644284edf34421f9c355d75db79e343bca', fromBlock: 277208990 },
+  base: { factory: '0x75e502644284edf34421f9c355d75db79e343bca', fromBlock: 22754606 },
 }
 
 Object.keys(config).forEach(chain => {

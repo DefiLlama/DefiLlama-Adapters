@@ -178,15 +178,48 @@ const supportedChains = [
     chainId: 314,
     identifier: 'filecoin'
   },
+  {
+    name: 'Zircuit',
+    subgraphEndpoint:  'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit',
+    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'},
+    chainId: 48900,
+    identifier: 'zircuit'
+  },
+  {
+    name: 'Sonic',
+    subgraphEndpoint:  'https://api.0xgraph.xyz/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-sonic/prod/gn',
+    chainId: 146,
+    identifier: 'sonic'
+  },
+  {
+    name: 'Moonbeam',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-moonbeam/prod/gn',
+    chainId: 1284,
+    identifier: 'moonbeam'
+  },
+  // {
+  //   name: 'Sei',
+  //   subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clu1fg6ajhsho01x7ajld3f5a/subgraphs/dragonswap-v3-prod/1.0.5/gn',
+  //   chainId: 1, // null?
+  //   identifier: 'sei' // sei-network
+  // },
+  {
+    name: 'Taiko',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-taiko/1.1.1/gn',
+    chainId: 167000,
+    identifier: 'taiko'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
 const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {id}}`
+const z_query = `{  vaults(first: 1000, where: {lastSnapshot_gte: "0", totalLPTokensIssued_gt: "0"}) {    id  }}`
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
     tvl: async (api) => {
-      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
+      let _query = api.chain === 'zircuit' ? z_query : query
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, _query, { headers: chain.headers })
 
       const vaults = data.vaults.map((vault) => vault.id)
       const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
