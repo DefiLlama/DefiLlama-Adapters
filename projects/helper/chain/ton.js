@@ -73,7 +73,7 @@ function sumTokensExport({ ...args }) {
   return (api) => sumTokens({ api, ...args })
 }
 
-async function call({ target, abi, params = [] }) {
+async function call({ target, abi, params = [], rawStack = false, }) {
   const requestBody = {
     "address": target,
     "method": abi,
@@ -87,6 +87,9 @@ async function call({ target, abi, params = [] }) {
   if (exit_code !== 0) {
     throw new Error('Expected a zero exit code, but got ' + exit_code)
   }
+
+  if (rawStack) return stack
+
   stack.forEach((i, idx) => {
     if (i[0] === 'num') {
       stack[idx] = parseInt(i[1], 16)
