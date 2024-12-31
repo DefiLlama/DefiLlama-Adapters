@@ -12,5 +12,6 @@
   "state": "function state() view returns (uint160 sqrtPriceX96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint256 liquidity, uint256 liquidityX)",
   "stakedAmountsAbi": "function stakedAmounts(address) external view returns (uint256)",
   "stakedMlpAmount": "function stakedMlpAmount(address account) view returns (uint256)",
-  "symbol": "string:symbol"
+  "symbol": "string:symbol",
+  "poolInfos": "function poolInfos(bytes32) view returns (tuple(address openFundShare, address openFundRedemption, uint256 openFundShareSlot, uint256 latestRedeemSlot) poolSFTInfo, tuple(uint16 carryRate, address carryCollector, uint64 latestProtocolFeeSettleTime) poolFeeInfo, tuple(address poolManager, address subscribeNavManager, address redeemNavManager) managerInfo, tuple(uint256 hardCap, uint256 subscribeMin, uint256 subscribeMax, uint64 fundraisingStartTime, uint64 fundraisingEndTime) subscribeLimitInfo, address vault, address currency, address navOracle, uint64 valueDate, bool permissionless, uint256 fundraisingAmount)"
 }
