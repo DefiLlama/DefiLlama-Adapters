@@ -38,6 +38,7 @@ async function tvl(api) {
       onlyArgs: true,
       eventAbi: PAIR_CREATED_EVENT_ABI_2
     }));
+    // eslint-disable-next-line no-empty
   } catch (e) {}
 
   const logs = [...logs1, ...logs2]
