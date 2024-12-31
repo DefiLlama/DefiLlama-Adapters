@@ -18,8 +18,15 @@ const vaultUserAddresses = [
   new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"), //Vault A
   new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE"), //Vault B
   new PublicKey("Hcs63usAc6cxWccycrVwx1mrNgNSpUZaUgFm7Lw9tSkR"), //Vault C
-  new PublicKey("MzEPFp2LwCSMMPHLQsqfE7SN6xkPHZ8Uym2HfrH7g5P"), //Yield Compress A
-  new PublicKey("CMiyE7M98DSPBEhQGTA6CzNodWkNuuW4y9HoocfK75nG") //Yield Compress B
+  new PublicKey("ARLwHJ3CYLkVTeW3nHvPBmGQ7SLQdhZbAkWHzYrq57rt"), //Vault D
+  new PublicKey("FyH3qGRQSG7AmdEsPEVDxdJJLnLhAn3CZ48acQU34LFr"), //Vault E
+  new PublicKey("MzEPFp2LwCSMMPHLQsqfE7SN6xkPHZ8Uym2HfrH7g5P"), //Yield Compass A
+  new PublicKey("CMiyE7M98DSPBEhQGTA6CzNodWkNuuW4y9HoocfK75nG"), //Yield Compass B
+  new PublicKey("CnaXXuzc2S5UFSGoBRuKVNnzXBvxbaMwq6hZu5m91CAV"),//LST Yield Compass
+  new PublicKey("Fwfu73gfD5KzqtSAVKqmW414rshmYpoHY4nJ8LWqPyHB"), //Prime standard
+  new PublicKey("6NaF3EpArzHJ4x5GeTzjcUcdic29Rt4sy4pn6LP7iJ4r") //Prime A
+
+  
 
 
 ];
@@ -41,52 +48,65 @@ const vaultUserAddresses = [
  * 
  */
 async function tvl(api) {
+  // Get all vault accounts first
   const accounts = await getMultipleAccounts(vaultUserAddresses)
   const deserializedData = accounts.map(deserializeUserPositions)
-  const perpIndices = deserializedData.map(data => data.perpPositions.map(position => position.market_index)).flat()
-  const perpKeys = perpIndices.map(index => getVaultPublicKey('perp_market', index))
-  const perpAccounts = await getMultipleAccounts(perpKeys)
+
+  // Collect unique market indices upfront
+  const allSpotIndices = new Set()
+  const allPerpIndices = new Set()
+  
+  deserializedData.forEach(({ spotPositions, perpPositions }) => {
+    spotPositions?.forEach(pos => allSpotIndices.add(pos.market_index))
+    perpPositions?.forEach(pos => allPerpIndices.add(pos.market_index))
+  })
+
+  // Batch fetch 
+  const allKeys = [
+    ...[...allSpotIndices].map(index => getVaultPublicKey('spot_market', index)),
+    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index))
+  ]
+  
+  const allAccounts = await getMultipleAccounts(allKeys)
+  
+  // Create lookup maps
+  const spotAccountMap = {}
   const perpAccountMap = {}
-  perpIndices.forEach((v, i) => perpAccountMap[v] = perpAccounts[i])
+  
+  let offset = 0
+  ;[...allSpotIndices].forEach((index, i) => {
+    spotAccountMap[index] = allAccounts[i]
+    offset = i + 1
+  })
+  ;[...allPerpIndices].forEach((index, i) => {
+    perpAccountMap[index] = allAccounts[i + offset]
+  })
 
-
+  // Process positions using the cached account data
   for (const { spotPositions, perpPositions } of deserializedData) {
-    // 
-    // Process spot positions
     if (spotPositions?.length) {
-      const spotIndices = spotPositions.map(position => position.market_index)
-      const spotKeys = spotIndices.map(index => getVaultPublicKey('spot_market', index))
-      const spotAccounts = await getMultipleAccounts(spotKeys)
-      const spotAccountMap = {}
-      spotIndices.forEach((v, i) => spotAccountMap[v] = spotAccounts[i])
-
       spotPositions.forEach(position => {
-        const tokenMint = getTokenMintFromMarketIndex(position.market_index);
-        const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index]);
-        api.add(tokenMint, adjustedBalance);
-      });
+        const tokenMint = getTokenMintFromMarketIndex(position.market_index)
+        const adjustedBalance = processSpotPosition(position, spotAccountMap[position.market_index])
+        api.add(tokenMint, adjustedBalance)
+      })
     }
 
-    // Process perp positions
     if (perpPositions?.length) {
+      perpPositions.map(position => {
+        const baseTokenMint = getPerpTokenMintFromMarketIndex(position.market_index)
+        const { baseBalance, quoteBalance } = processPerpPosition(position)
+        api.add(baseTokenMint, baseBalance)
 
-      perpPositions.map(async position => {
-        // Handle base asset
-        const baseTokenMint = getPerpTokenMintFromMarketIndex(position.market_index);
-        const { baseBalance, quoteBalance } = processPerpPosition(position);
-        api.add(baseTokenMint, baseBalance);
-        // 
-        // Handle quote asset (always USDC)
-        const quoteTokenMint = getTokenMintFromMarketIndex(0);
-        //
-        api.add(quoteTokenMint, quoteBalance);
+        const quoteTokenMint = getTokenMintFromMarketIndex(0)
+        api.add(quoteTokenMint, quoteBalance)
 
-        const { cumulativeFundingRateLong, cumulativeFundingRateShort, } = getPerpMarketFundingRates(perpAccountMap[position.market_index]);
-        const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort;
-        const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6);
-        const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6));
+        const { cumulativeFundingRateLong, cumulativeFundingRateShort } = getPerpMarketFundingRates(perpAccountMap[position.market_index])
+        const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort
+        const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6)
+        const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6))
 
-        api.add(quoteTokenMint, fundingRatePnl);
+        api.add(quoteTokenMint, fundingRatePnl)
       })
     }
   }

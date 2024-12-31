@@ -88,6 +88,9 @@ const arkhamExchange = require('./arkham-exchange.js')
 const chakra = require('./chakra.js')
 const nerveNetworkBridge = require('./nervenetworkbridge.js')
 const nexusbtc = require('./nexusbtc')
+const tapbit = require('./tapbit-cex.js')
+const jbtc = require('./jbtc')
+const bitkub = require('./bitkub-cex.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -101,8 +104,14 @@ const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
 ]
 
+const stacksSBTC = [
+  // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
+  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
+]
+
 module.exports = {
   ...fetchers,
+  stacksSBTC,
   bitomato,
   bitlayerBridge,
   teleswap,
@@ -194,5 +203,8 @@ module.exports = {
   arkhamExchange,
   chakra,
   nerveNetworkBridge,
-  nexusbtc
+  nexusbtc,
+  tapbit,
+  jbtc,
+  bitkub
 }

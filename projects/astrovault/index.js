@@ -99,5 +99,3 @@ module.exports = {
     tvl,
   },
 }
-
-module.exports = { nibiru: { tvl } }
