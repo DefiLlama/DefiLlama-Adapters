@@ -8,7 +8,7 @@ function fetchChain() {
         const response = await _response;
 
         let total_tvl = 0;
-        vaults = response["data"]["yield"]
+        let vaults = response["data"]["yield"]
 
         for (const vault in vaults) {
             total_tvl += parseFloat(vault["total_usd_staked_in_vault"])
