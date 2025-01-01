@@ -81,7 +81,13 @@ const config = {
   blast: { 
     factories: [
       '0x7b816c1ccafa7d3e71e279ed9dc3226484f6ef87',
-      '0xb3c80cfcdd177e3fce2e66870e4768d1ead89f6c'
+      '0xb3c80cfcdd177e3fce2e66870e4768d1ead89f6c',
+      '0xfff3C004D115002E0fe8Ef08bBB127aEF5B97bE1'
+    ]
+  },
+  sonic: { 
+    factories: [
+      '0x26fca5916c20D252feEF7A58E39886d3d3112b91'
     ]
   }
 }
@@ -170,7 +176,8 @@ const blacklistedPools = {
   mantle: [],
   optimism: [],
   real: [],
-  blast: []
+  blast: [],
+  sonic: []
 }
 
 module.exports = {}
