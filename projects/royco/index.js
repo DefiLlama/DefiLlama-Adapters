@@ -20,10 +20,10 @@ const slug = {
 const roycoSubgraph = {
   projectId: "project_cm07c8u214nt801v1b45zb60i",
   recipe: {
-    version: "1.0.24",
+    version: "1.0.25",
   },
   vault: {
-    version: "1.0.31",
+    version: "1.0.32",
   },
 };
 
