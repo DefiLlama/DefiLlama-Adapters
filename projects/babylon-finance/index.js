@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js")
 const abi = require('./abi.json');
 const { unwrapUniswapV3LPs } = require("./helper");
+const { log } = require('../helper/utils')
 
 const babController = '0xd4a5b5fcb561daf3adf86f8477555b92fba43b5f'
 const babylonViewer = '0x740913FEF40720E82498D5b73A4E8C3a5D9b9d79'
@@ -16,8 +17,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         block: ethBlock,
         chain: 'ethereum'
     })
-    // console.log('gardens (public and private)', gardens)
 
+    const gardensToIgnore = ["0xB0EE8C61c78aA9B7ED138bcC6bce7ABeC8470038", "0xF0AF08d7bc6e4aE42b84771aE3f9DA7D8e58b083", "0x4f5721Ce7F02586D67eA0CC6003e889E974DC9A0", "0xab051B83eecA40084855e289E2531D22F9AffD21"]
+    gardens = gardens.filter(i => !gardensToIgnore.includes(i))
     // Get details of all gardens using babylonViewer contract
     const gardensDetails = await sdk.api.abi.multiCall({
         abi: abi['getGardenDetails'],
@@ -29,9 +31,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         chain: 'ethereum'
     })
 
-    const gardensToIgnore = ["0xB0EE8C61c78aA9B7ED138bcC6bce7ABeC8470038"]
     for (const gardenDetails of gardensDetails.output) {
-        if (gardensToIgnore.includes(gardenDetails.input.params[0])) { continue; };
+        if (gardensToIgnore.includes(gardenDetails.input.params[0])) { continue; }
+        // log(gardenDetails.input.params[0], !!gardenDetails.output)
         const [gardenName, symbol, creators, reserveAsset, arr1, strategies, finalizedStrategies, voteParams, capitalArr, profits] = gardenDetails.output
         // const garden_principal = capitalArr[0]
         const garden_idle = capitalArr[9]
@@ -55,8 +57,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
         const garden_tvl = strategies_tvl.reduce((acc, el) => acc.plus(BigNumber(el)), BigNumber(garden_idle))
         balances[reserveAsset] = balances[reserveAsset] ? BigNumber(balances[reserveAsset]).plus(garden_tvl) : garden_tvl
-        if (garden_tvl / 1e18 > 10)
-            console.log(`Garden with name "${gardenName}" TVL: ${garden_tvl / 1e18} of reserveAsset: ${reserveAsset} locked\n${strategy_str}-----------------------------`)
+        // if (garden_tvl / 1e18 > 10)
+        //     log(`Garden with name "${gardenName}" TVL: ${garden_tvl / 1e18} of reserveAsset: ${reserveAsset} locked\n${strategy_str}-----------------------------`)
     }
     return Object.fromEntries(Object.entries(balances).map(b => [b[0], b[1].toFixed(0)]))
 }
@@ -71,7 +73,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
         pool: harvest_pool
     }]
     await unwrapUniswapV3LPs(balances, univ3_Positions, ethBlock, 'ethereum')
-    console.log('balances:', balances)
+    // log('balances:', balances)
     return balances
 }
 

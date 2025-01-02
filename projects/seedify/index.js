@@ -1,13 +1,9 @@
-const sdk = require("@defillama/sdk");
-const { getBlock } = require('../helper/getBlock');
-const { transformBscAddress } = require('../helper/portedTokens');
 const { pool2 } = require("../helper/pool2");
+const { stakings } = require("../helper/staking");
 
 const SFUND = "0x477bC8d23c634C154061869478bce96BE6045D12";
 const pool2Token = "0x74fa517715c4ec65ef01d55ad5335f90dce7cc87";
 const pool2Holder = "0x1F10564BAD9367CfF4247A138eBbA9a9aaeb789E";
-
-
 
 const stakingContracts = [
     {
@@ -28,43 +24,10 @@ const stakingContracts = [
     },
 ];
 
-async function findBalances(contracts, block) {
-    const transform = await transformBscAddress();
-    const balances = {};
-
-    const balanceOfs = (await sdk.api.abi.multiCall({
-        calls: contracts.map((c) => ({
-            target: c.token,
-            params: c.address
-        })),
-        abi: "erc20:balanceOf",
-        block,
-        chain: 'bsc'
-    })).output;
-    
-    for (let i = 0; i < contracts.length; i++) {           
-        
-        sdk.util.sumSingleBalance(
-            balances,
-            transform(contracts[i].token),
-            balanceOfs[i].output
-        );
-        
-    };
-    return balances;
-};
-
-
-
-async function staking(timestamp, block, chainBlocks) {
-    block = await getBlock(timestamp, 'bsc', chainBlocks);
-    return await findBalances(stakingContracts, block);
-};
-
 module.exports = {
     bsc: {
         tvl: () => ({}),
-        pool2: pool2(pool2Holder, pool2Token, "bsc"),
-        staking
+        pool2: pool2(pool2Holder, pool2Token),
+        staking: stakings(stakingContracts.map(i => i.address), SFUND)
     }
 };

@@ -1,53 +1,32 @@
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 
-const factoryPoolContract = "0x98C58c1cEb01E198F8356763d5CbA8EB7b11e4E2";
-const USDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+const USDC = ADDRESSES.arbitrum.USDC;
 
-const arbiTvl = async (chainBlocks) => {
-  const balances = {};
+// Both v1 and v2 factories
+const factoryPoolContractsConfig = [
+  {
+    fromBlock: 1009749,
+    contract: '0x98C58c1cEb01E198F8356763d5CbA8EB7b11e4E2',
+  },
+  {
+    fromBlock: 13387522,
+    contract: '0x3Feafee6b12C8d2E58c5B118e54C09F9273c6124',
+  },
+]
 
-  const numOfPools = (
-    await sdk.api.abi.call({
-      abi: abi.numPools,
-      target: factoryPoolContract,
-      chain: "arbitrum",
-      block: chainBlocks["arbitrum"],
-    })
-  ).output;
-
-  for (let index = 0; index < numOfPools; index++) {
-    const pool = (
-      await sdk.api.abi.call({
-        abi: abi.pools,
-        target: factoryPoolContract,
-        params: index,
-        chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
-      })
-    ).output;
-
-    const poolBalance = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: USDC,
-        params: pool,
-        chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, `arbitrum:${USDC}`, poolBalance);
+async function tvl(api) {
+  const owners = []
+  for (const { contract } of factoryPoolContractsConfig) {
+    const pools = await api.fetchList({  lengthAbi: abi.numPools, itemAbi: abi.pools, target: contract})
+    owners.push(...pools)
   }
-
-  return balances;
-};
+  return api.sumTokens({ owners, tokens: [USDC] })
+}
 
 module.exports = {
-  misrepresentedTokens: true,
   arbitrum: {
-    tvl: arbiTvl,
+    tvl,
   },
   methodology:
     "We count liquidity on the Leveraged Pools through PoolFactory contract",

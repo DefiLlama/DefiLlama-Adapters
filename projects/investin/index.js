@@ -1,12 +1,23 @@
-const { default: axios } = require("axios");
+const { getConnection, sumTokens2, decodeAccount, } = require("../helper/solana");
+const { PublicKey, } = require("@solana/web3.js");
 
-const api = "https://capitalfund-api-1-8ftn8.ondigitalocean.app/solanaFunds/details";
-
-async function fetch() {
-    let aumValue = (await axios.get(api)).data.totalVolume;
-    return aumValue;
+async function tvl() {
+  const connection = getConnection()
+  const accounts = await connection.getProgramAccounts(new PublicKey('8dbbmZXbLsUirEsgaBVcPBEdciESza6L2zkEuer4crR'), {
+    filters: [{
+      dataSize: 3160
+    }]
+  })
+  const data = accounts.map(i => decodeAccount('investinFund', i.account))
+  const tokenAccounts =  data.map(i => {
+    return i.tokens.filter(i => i.is_active && !i.is_on_mango && +i.balance > 1e4).map(i => i.vault.toString())
+  }).flat()
+  return sumTokens2({ tokenAccounts })
 }
 
 module.exports = {
-    fetch
-}
+  timetravel: false,
+  solana: {
+    tvl,
+  },
+};

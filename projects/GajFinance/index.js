@@ -11,9 +11,8 @@ async function stakingAvax(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  broken: 'Api is no longer reachable',
   methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
-  avalanche: {
+  avax:{
     staking: stakingAvax,
   },
   ...masterChefExports(MASTER_GAJ, 'polygon', GAJ_TOKEN),

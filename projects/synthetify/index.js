@@ -1,17 +1,22 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { Program } = require("@project-serum/anchor");
+const { sumTokens2, getProvider, } = require("../helper/solana");
 
-async function fetch() {
-    const response = (
-      await retry(async () => await axios.get("https://api.synthetify.io/stats/mainnet"))
-    ).data;
-    const index = response.length - 1
-    return response[index].collateralAll
-  }
+const programId = '5TeGDBaMNPc2uxvx6YLDycsoxFnBuqierPt3a8Bk4xFX'
 
-  module.exports = {
-      timetravel: false,
-      fetch,
-      methodology:
-        'To obtain TVL of Synthetify we must add all colaterals which was deposited.'
-  }
+async function tvl() {
+  const provider = getProvider()
+  const idl = await Program.fetchIdl(programId, provider)
+  const program = new Program(idl, programId, provider)
+  const state = await program.account.state.all()
+  const owners = state.map(i => i.account.exchangeAuthority.toString())
+  return sumTokens2({ owners, })
+}
+
+module.exports = {
+  timetravel: false,
+  solana: {
+    tvl,
+  },
+  methodology:
+    'To obtain TVL of Synthetify we must add all colaterals which was deposited.'
+}

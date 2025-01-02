@@ -1,7 +1,4 @@
-const abi = require('./abi')
-const { getChainTransform } = require('../helper/portedTokens')
-const { sumTokens } = require('../helper/unwrapLPs')
-const sdk = require('@defillama/sdk')
+const { tarotHelper } = require('./tarotHelper')
 
 const config = {
   fantom: {
@@ -9,90 +6,79 @@ const config = {
       '0x35C052bBf8338b06351782A565aa9AaD173432eA', // Tarot Classic
       '0xF6D943c8904195d0f69Ba03D97c0BAF5bbdCd01B', // Tarot Requiem
       '0xbF76F858b42bb9B196A87E43235C2f0058CF7322', // Tarot Carcosa
+      '0xa90092A6bfC100e32777B257AF46B3Ec2675d876', // Tarot Voyager
+      '0xe034c865299dA16A429DaD26bFf5468C2689F7D8', // Tarot Forever
     ]
   },
   optimism: {
     factories: [
       '0x1D90fDAc4DD30c3ba38d53f52A884F6e75d0989e', // Tarot Opaline
       '0xD7cABeF2c1fD77a31c5ba97C724B82d3e25fC83C', // Tarot Velours
+      '0x49DF1fe24cAf1a7dcBB2E2b1793b93b04eDb62bF', // Tarot Jupiter
+      '0xBA47316035E6C95b31cb55BfB93458Ad41E4Da04', // Tarot Velouté
+    ]
+  },
+  base: {
+    factories: [
+      '0xEb5809eb0f79aaB6e53E6374258b29A244Dfc12d', // Tarot Aerials
+    ]
+  },
+  arbitrum: {
+    factories: [
+      '0x2217AEC3440E8FD6d49A118B1502e539f88Dba55', // Tarot Galahad
+      '0x1bbD5637421a83b00C5Cd549B9C3721B28553F80', // Tarot Saurian
+      '0x4B6daE049A35196A773028B2E835CCcCe9DD4723', // Tarot Ulysses
+    ]
+  },
+  bsc: {
+    factories: [
+      '0x2217AEC3440E8FD6d49A118B1502e539f88Dba55', // Tarot Bermuda
+      '0xC20099a3F0728634C1136489074508be7B406d3a', // Tarot Palermo
+    ]
+  },
+  ethereum: {
+    factories: [
+      '0x1CAfcB9f3B5A152b1553bC2c688BA6a18054b653', // Tarot Eleusis
+      '0x4B6daE049A35196A773028B2E835CCcCe9DD4723', // Tarot Equinox
+    ]
+  },
+  kava: {
+    factories: [
+      '0x82B3413D575Aa93806308A04b53c78ae2037dA11', // Tarot Avignon
+      '0x54950cae3d8513EA041066F31697903de5909F57', // Tarot Orleans
+    ]
+  },
+  canto: {
+    factories: [
+      '0xb6193DF61351736e5190bF1DEB2E4f0769bd1BF2', // Tarot Cabaret
+      '0x82B3413D575Aa93806308A04b53c78ae2037dA11', // Tarot Cantata
+    ]
+  },
+  avax: {
+    factories: [
+      '0x36Df0A76a124d8b2205fA11766eC2eFF8Ce38A35', // Tarot Cascade
+    ]
+  },
+  polygon: {
+    factories: [
+      '0x36Df0A76a124d8b2205fA11766eC2eFF8Ce38A35', // Tarot Paprika
+    ]
+  },
+  era: {
+    factories: [
+      '0xf450b51fb2E1e4f05DAf9Cf7D9BB97714540B4f4', // Tarot Zeniths
+    ]
+  },
+  linea: {
+    factories: [
+      '0xb6193DF61351736e5190bF1DEB2E4f0769bd1BF2', // Tarot Leyline
+    ]
+  },
+  scroll: {
+    factories: [
+      '0x2217AEC3440E8FD6d49A118B1502e539f88Dba55', // Tarot Osirion
     ]
   },
 }
-module.exports = {}
 
-Object.keys(config).forEach(chain => {
-  let tvlPromise
-  const balances = {}
-  const borrowedBalances = {}
-
-  async function _getTvl(block) {
-    const { factories } = config[chain]
-    const transform = await getChainTransform(chain)
-    const collaterals = []
-    const borrowables = []
-    for (const factory of factories) {
-      const { output: allLendingPoolsLength } = await sdk.api.abi.call({
-        target: factory,
-        abi: abi.allLendingPoolsLength,
-        chain, block,
-      })
-
-      const poolCalls = []
-      for (let i = 0; i < +allLendingPoolsLength; i++)  poolCalls.push({ params: i })
-      const { output: allLendingPools } = await sdk.api.abi.multiCall({
-        target: factory,
-        abi: abi.allLendingPools,
-        calls: poolCalls,
-        chain, block,
-      })
-
-      const calls2 = allLendingPools.map(i => ({ params: i.output }))
-
-      const { output: getLendingPool } = await sdk.api.abi.multiCall({
-        target: factory,
-        abi: abi.getLendingPool,
-        calls: calls2,
-        chain, block,
-      })
-
-      getLendingPool.forEach(i => {
-        collaterals.push(i.output.collateral)
-        borrowables.push(i.output.borrowable0, i.output.borrowable1)
-      })
-    }
-
-    const underlyingCalls = [...collaterals, ...borrowables].map(i => ({ target: i }))
-    const { output: toaInput } = await sdk.api.abi.multiCall({
-      abi: abi.underlying,
-      calls: underlyingCalls,
-      chain, block,
-    })
-
-    const underlyingMapping = {}
-
-    const toa = toaInput.map(i => [i.output, i.input.target])
-    toaInput.forEach(i => underlyingMapping[i.input.target] = i.output)
-    const { output: borrowed } = await sdk.api.abi.multiCall({
-      abi: abi.totalBorrows,
-      calls: borrowables.map(i => ({ target: i })),
-      chain, block,
-    })
-
-    borrowed.forEach(i => {
-      sdk.util.sumSingleBalance(borrowedBalances, transform(underlyingMapping[i.input.target]), i.output)
-    })
-
-    await sumTokens(balances, toa, block, chain, transform, { resolveLP: true })
-    return { balances, borrowedBalances }
-  }
-
-  async function getTvl(block) {
-    if (!tvlPromise) tvlPromise = _getTvl(block)
-    return tvlPromise
-  }
-
-  module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => (await getTvl(block)).balances,
-    borrowed: async (_, _b, { [chain]: block }) => (await getTvl(block)).borrowedBalances,
-  }
-})
+tarotHelper(module.exports, config)

@@ -28,7 +28,7 @@ async function tvl(timestamp, block) {
 
     if (timestamp < startTimestamp || block < startBlock) {
         return balances;
-    };
+    }
 
     const synthCount = await sdk.api.abi.call({
         target: perlinX,
@@ -97,6 +97,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-    start: 1600905600,
+    start: '2020-09-24',
     ethereum: { tvl }
 }

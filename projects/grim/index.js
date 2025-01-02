@@ -1,25 +1,14 @@
-const utils = require('../helper/utils');
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const config = require('./config.json')
 
-async function fetch() {
-  const response = await utils.fetchURL('https://api.grim.finance/tvl');
-
-  let tvl = 0;
-  for (const chainId in response.data) {
-    const chain = response.data[chainId];
-
-    for (const vault in chain) {
-      tvl += chain[vault];
+Object.keys(config).forEach(chain => {
+  const pools = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const tokens = await api.multiCall({  abi: 'address:want', calls: pools})      
+      const bals = await api.multiCall({  abi: 'uint256:balance', calls: pools})      
+      api.addTokens(tokens, bals)
+      return sumTokens2({ api, resolveLP: true, })
     }
   }
-  if(tvl === 0){
-    throw new Error("TVL for grim finance cannot be 0")
-  }
-
-  return tvl;
-}
-
-module.exports = {
-  timetravel: false,
-  methodology: 'TVL data is pulled from the Grim Finance API "https://api.grim.finance/tvl".',
-  fetch,
-}
+})

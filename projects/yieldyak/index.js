@@ -1,121 +1,70 @@
-const sdk = require('@defillama/sdk');
-const { unwrapUniswapLPs, unwrapCrv, unwrapLPsAuto } = require('../helper/unwrapLPs')
-const abi = require('./abi.json')
-const { request, gql } = require("graphql-request");
-const { transformAvaxAddress } = require('../helper/portedTokens');
-const { default: BigNumber } = require('bignumber.js');
 const { staking } = require('../helper/staking');
-const { addFundsInMasterChef } = require('../helper/masterchef');
-const { requery } = require('../helper/requery');
+const { cachedGraphQuery, getConfig } = require('../helper/cache')
+const sdk = require('@defillama/sdk')
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-    farms(first: 1000) {
-        id
-        name
-        depositToken {
-          id
-        }
-        depositTokenBalance
-    }
+const graphUrl = sdk.graph.modifyEndpoint('7oSYYdK5RKmqggdzFyfUnojP6puDAj31C4ezDGrgVfk9')
+const graphQuery = `{ farms(first: 1000) { id }}`;
+
+async function avaxTvl(api) {
+  const farms = await getConfig('yieldyak/avax', 'https://staging-api.yieldyak.com/43114/farms')
+  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.address), permitFailure: true, })
+  const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.address), permitFailure: true, })
+  const symbols = await api.multiCall({
+    abi: 'string:symbol',
+    calls: tokens.map(token => ({ target: token })),
+    permitFailure: true,
+  });
+
+  
+  const excludedAddress = '0x59414b3089ce2af0010e7523dea7e2b35d776ec7';
+  const excludedSymbol = 'YAK';
+
+  tokens.forEach((token, i) => {
+    if (!token || !vals[i] || token === excludedAddress || symbols[i] === excludedSymbol) return;
+    api.add(token, vals[i]);
+  });
 }
-`;
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-    const chain = 'avax'
-    const block = chainBlocks.avax;
-    const farms = (await request(graphUrl, graphQuery, { block })).farms
-    const transformAddress = await transformAvaxAddress()
-    const calls = {
-        calls: farms.map(f => ({
-            target: f.id
-        })),
-        block,
-        chain
-    }
-    const [tokenAmounts, tokens] = await Promise.all([
-        sdk.api.abi.multiCall({
-            ...calls,
-            abi: abi.totalDeposits,
-        }),
-        sdk.api.abi.multiCall({
-            ...calls,
-            abi: abi.depositToken,
-        })
-    ])
-    await requery(tokenAmounts, "avax", block, abi.totalDeposits)
-    await requery(tokens, "avax", block, abi.depositToken)
-    tokens.output.forEach((token, idx) => {
-        if (token.output === null) {
-            token.output = farms[idx].depositToken.id
-        }
-    })
-    const balances = {}
-    const lps = []
-    const crvLps = []
-    const snowballCalls = []
-    const snowballBalances = []
-    farms.forEach((farm, idx) => {
-        let token = tokens.output[idx].output.toLowerCase()
-        if (token === '0xb599c3590f42f8f995ecfa0f85d2980b76862fc1') return;    // Blacklist UST token
-        if (token == "0x0000000000000000000000000000000000000000") {
-            token = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"; // Replace YY's AVAX with WAVAX
-        }
-        let balance = tokenAmounts.output[idx].output
-        if (farm.name.startsWith("Snowball: sPGL ")) {
-            snowballCalls.push({ target: token })
-            snowballBalances.push(balance)
-        } else if (farm.name.startsWith("Yield Yak: Gondola ") || farm.name.includes("Curve 3pool")) {
-            crvLps.push({
-                token,
-                balance,
-            })
-        } else {
-            try {
-                sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
-            } catch (e) {
-                console.log(e)
-            }
-        }
-    })
+async function arbiTvl(api) {
+  const farms = await getConfig('yieldyak/arbi', 'https://staging-api.yieldyak.com/42161/farms')
+  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.address), permitFailure: true, })
+  const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.address), permitFailure: true, })
+  const excludedAddress = '0x7f4dB37D7bEb31F445307782Bc3Da0F18dF13696';
 
+  tokens.forEach((token, i) => {
+    if (!token || !vals[i] || token === excludedAddress) return;
+    api.add(token, vals[i]);
+  });
+}
+async function mantleTvl(api) {
+  const farms = await getConfig('yieldyak/mantle', 'https://staging-api.yieldyak.com/5000/farms')
+  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.address), permitFailure: true, })
+  const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.address), permitFailure: true, })
+  const excludedAddress = '0x7f4dB37D7bEb31F445307782Bc3Da0F18dF13696';
 
-    const [underlyingToken, ratio] = await Promise.all([abi.token, abi.getRatio].map(abi =>
-        sdk.api.abi.multiCall({
-            calls: snowballCalls,
-            block,
-            chain,
-            abi,
-            requery: true,
-        })
-    ))
-
-    underlyingToken.output.forEach(({ output }, idx) => {
-        const balance = BigNumber(snowballBalances[idx]).times(ratio.output[idx].output).div(1e18).toFixed(0)
-        sdk.util.sumSingleBalance(balances, transformAddress(output), balance)
-    })
-
-    await unwrapLPsAuto({ balances, block, chain, transformAddress })
-    await Promise.all(
-        crvLps.map(crvLp => unwrapCrv(balances, crvLp.token, crvLp.balance, block, 'avax', transformAddress))
-    )
-    //await addTokensAndLPs(balances, tokens, tokenAmounts, block, 'avax', transformAddress)
-    return balances
+  tokens.forEach((token, i) => {
+    if (!token || !vals[i] || token === excludedAddress) return;
+    api.add(token, vals[i]);
+  });
 }
 
 const masterYak = "0x0cf605484A512d3F3435fed77AB5ddC0525Daf5f"
 const yakToken = "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
-async function pool2(time, ethBlock, chainBlocks) {
-    const balances = {}
-    await addFundsInMasterChef(balances, masterYak, chainBlocks.avax, "avax", addr => `avax:${addr}`, undefined, [yakToken])
-    return balances
-}
+const arbiYyStaking = "0xbb82b43Bf2057B804253D5Db8c18A647fC1f3403"
+const mantleYyStaking = "0xF54D65AeB65b093A6BF717b541894ee6471A6CE1"
+const bridgedYakToken = "0x7f4dB37D7bEb31F445307782Bc3Da0F18dF13696"
 
 module.exports = {
-    avalanche: {
-        tvl,
-        staking: staking(masterYak, yakToken, "avax"),
-        pool2
-    }
+  avax: {
+    tvl:avaxTvl,
+    staking: staking(masterYak, yakToken),
+  },
+  arbitrum: { 
+    tvl: arbiTvl,
+    staking: staking(arbiYyStaking, bridgedYakToken),
+  },
+  mantle: { 
+    tvl: mantleTvl,
+    staking: staking(mantleYyStaking, bridgedYakToken),
+  }
 }

@@ -1,17 +1,7 @@
-
-const { graphQuery } = require('../helper/http')
-
-const endpoint = 'https://graph.official.finance/graphql'
-const query = '{ embrGetProtocolData { totalLiquidity } }'
-
-async function fetch() {
-  const response = await graphQuery(endpoint, query)
-  return +response.embrGetProtocolData.totalLiquidity
-}
+const { onChainTvl } = require('../helper/balancer')
 
 module.exports = {
-  avalanche: {
-    fetch
+  avax: {
+    tvl: onChainTvl('0xad68ea482860cd7077a5d0684313dd3a9bc70fbb', 8169253)
   },
-  fetch
 }

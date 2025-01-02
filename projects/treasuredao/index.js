@@ -10,9 +10,9 @@ const MAGIC_WETH_SLP = "0xB7E50106A5bd3Cf21AF210A755F9C8740890A8c9";
 module.exports = {
   misrepresentedTokens: true,
   arbitrum: {
-    staking: staking(stakingContract, MAGIC, "arbitrum"),
-    pool2: pool2(stakingPool2Contract, MAGIC_WETH_SLP, "arbitrum"),
+    tvl: (async) => ({}),
+    staking: staking(stakingContract, MAGIC),
+    pool2: pool2(stakingPool2Contract, MAGIC_WETH_SLP),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };

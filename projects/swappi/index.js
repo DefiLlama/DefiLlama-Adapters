@@ -1,30 +1,8 @@
-const retry = require('async-retry');
-const { GraphQLClient, gql } = require('graphql-request');
-const { toUSDTBalances } = require('../helper/balances');
-
-const endpoint = "https://graphql.swappi.io/subgraphs/name/swappi-dex/swappi";
-
-const query = gql`
-  query MyQuery {
-    uniswapFactories {
-      totalLiquidityUSD
-    }
-  }
-`;
-
-const graphQLClient = new GraphQLClient(endpoint);
-
-
-async function fetch() {
-    const results = await retry(async bail => await graphQLClient.request(query));
-    const tvlAmount = parseFloat(results.uniswapFactories[0].totalLiquidityUSD);
-  return toUSDTBalances(tvlAmount)
-}
+const { getUniTVL } = require('../helper/unknownTokens');
 
 module.exports = {
   misrepresentedTokens: true,
   conflux: {
-    tvl: fetch,
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0xe2a6f7c0ce4d5d300f97aa7e125455f5cd3342f5'}),
   }
-  
 } 

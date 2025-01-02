@@ -24,52 +24,10 @@ const config = {
 };
 
 const abi = {
-  totalStaked: {
-    inputs: [],
-    name: "totalStaked",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  totalRedeemable: {
-    inputs: [],
-    name: "totalRedeemable",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  totalReserves: {
-    inputs: [],
-    name: "totalReserves",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  totalBorrows: {
-    inputs: [],
-    name: "totalBorrows",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
+  totalStaked: "uint256:totalStaked",
+  totalRedeemable: "uint256:totalRedeemable",
+  totalReserves: "uint256:totalReserves",
+  totalBorrows: "uint256:totalBorrows",
 };
 
 function tvl(chain) {
@@ -161,5 +119,7 @@ module.exports = {
   base: {
     tvl: tvl("base"),
     borrowed: borrowing("base"),
-  },
-};
+  }
+}
+
+

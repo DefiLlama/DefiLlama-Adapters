@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 module.exports = {
   // Curve.fi Factory USD Metapool: moUSD 
   '0x162b21ba1a90dd9384c615192fa4053217d2a8db': {
@@ -24,10 +25,15 @@ module.exports = {
     swapContract: '0x1d4b4796853aeda5ab457644a18b703b6ba8b4ab',
     underlyingTokens: ['0x88fd584dF3f97c64843CD474bDC6F78e398394f4', '0x5b5bd8913d766d005859ce002533d4838b0ebbb5'],
   },
+  // ARTH.usd
+  '0xc5c71accca3a1357985e8912e1ed0aa910c30bdc': {
+    swapContract: '0xaf6b98b5dc17f4a9a5199545a1c29ee427266da4',
+    underlyingTokens: ['0x8b02998366f7437f6c4138f4b543ea5c000cd608', '0x5b5bD8913D766D005859CE002533D4838B0Ebbb5'],
+  },
   // val3PS
   '0x5b5bd8913d766d005859ce002533d4838b0ebbb5': {
     swapContract: '0x19ec9e3f7b21dd27598e7ad5aae7dc0db00a806d',
-    underlyingTokens: ['0xaed19dab3cd68e4267aec7b2479b1ed2144ad77f', '0xa6fdea1655910c504e974f7f1b520b74be21857b', '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9'],
+    underlyingTokens: [ADDRESSES.bsc.valBUSD, ADDRESSES.bsc.valUSDC, ADDRESSES.bsc.valUSDT],
   },
   // ARTHu3PS
   '0xb38b49bae104bbb6a82640094fd61b341a858f78': {
@@ -37,37 +43,37 @@ module.exports = {
   // 3EPS
   '0xaf4de8e872131ae328ce21d909c74705d3aaf452': {
     swapContract: '0x160caed03795365f3a589f10c379ffa7d75d4e76',
-    underlyingTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', '0x55d398326f99059ff775485246999027b3197955'],
+    underlyingTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT],
   },
   '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
     swapContract: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
-    underlyingTokens: ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0x6b175474e89094c44da98b954eedeac495271d0f'],
+    underlyingTokens: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.DAI],
   },
   '0x075b1bb99792c9e1041ba13afef80c91a1e70fb3': {
     swapContract: '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714',
-    underlyingTokens: ['0xeb4c2781e4eba804ce9a9803c67d0893436bb27d', '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6'],
+    underlyingTokens: ['0xeb4c2781e4eba804ce9a9803c67d0893436bb27d', ADDRESSES.ethereum.WBTC, '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6'],
   },
   // Nerve
   '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': {
     swapContract: '0x1B3771a66ee31180906972580adE9b81AFc5fCDc',
-    underlyingTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x55d398326f99059ff775485246999027b3197955', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'],
+    underlyingTokens: [ADDRESSES.bsc.BUSD, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC],
   },
   // DOP-LP BSC
   '0x9116f04092828390799514bac9986529d70c3791': {
     swapContract: '0x5162f992EDF7101637446ecCcD5943A9dcC63A8A',
     underlyingTokens: [
       '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
-      '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-      '0x55d398326f99059fF775485246999027B3197955',
-      '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'
+      ADDRESSES.bsc.BUSD,
+      ADDRESSES.bsc.USDT,
+      ADDRESSES.bsc.USDC
     ],
   },
   // DOP-2P-LP BSC
   '0x124166103814e5a033869c88e0f40c61700fca17': {
     swapContract: '0x449256e20ac3ed7F9AE81c2583068f7508d15c02',
     underlyingTokens: [
-      '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-      '0x55d398326f99059fF775485246999027B3197955'
+      ADDRESSES.bsc.BUSD,
+      ADDRESSES.bsc.USDT
     ],
   },
   // DOP-UST-LP BSC
@@ -75,16 +81,16 @@ module.exports = {
     swapContract: '0x830e287ac5947B1C0DA865dfB3Afd7CdF7900464',
     underlyingTokens: [
       '0x23396cF899Ca06c4472205fC903bDB4de249D6fC',
-      '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-      '0x55d398326f99059fF775485246999027B3197955'
+      ADDRESSES.bsc.BUSD,
+      ADDRESSES.bsc.USDT
     ],
   },
   // DOP-3P-LP BSC
   '0xaa5509ce0ecea324bff504a46fc61eb75cb68b0c': {
     swapContract: '0x61f864a7dFE66Cc818a4Fd0baabe845323D70454',
     underlyingTokens: [
-      '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-      '0x55d398326f99059fF775485246999027B3197955',
+      ADDRESSES.bsc.BUSD,
+      ADDRESSES.bsc.USDT,
       '0xfF54da7CAF3BC3D34664891fC8f3c9B6DeA6c7A5'
     ],
   },
@@ -92,18 +98,18 @@ module.exports = {
   '0xb0f0983b32352a1cfaec143731ddd8a5f6e78b1f': {
     swapContract: '0x3ED4b2070E3DB5eF5092F504145FB8150CfFE5Ea',
     underlyingTokens: [
-      '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
-      '0x55d398326f99059fF775485246999027B3197955',
-      '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'
+      ADDRESSES.bsc.BUSD,
+      ADDRESSES.bsc.USDT,
+      ADDRESSES.bsc.USDC
     ],
   },
   // IS3USD Polygon
   '0xb4d09ff3dA7f9e9A2BA029cb0A81A989fd7B8f17': {
     swapContract: '0x837503e8A8753ae17fB8C8151B8e6f586defCb57',
     underlyingTokens: [
-      '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
-      '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-      '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+      ADDRESSES.polygon.DAI,
+      ADDRESSES.polygon.USDT,
+      ADDRESSES.polygon.USDC
     ]
   },
   // am3CRV Polygon
@@ -119,10 +125,10 @@ module.exports = {
   '0xc25a3a3b969415c80451098fa907ec722572917f': {
     swapContract: '0xA5407eAE9Ba41422680e2e00537571bcC53efBfD',
     underlyingTokens: [
-      '0xdac17f958d2ee523a2206206994597c13d831ec7',
-      '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-      '0x6b175474e89094c44da98b954eedeac495271d0f',
-      '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
+      ADDRESSES.ethereum.USDT,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.DAI,
+      ADDRESSES.ethereum.sUSD,
     ]
   },
   // renBTC Eth
@@ -130,27 +136,27 @@ module.exports = {
     swapContract: '0x93054188d876f558f4a66B2EF1d97d16eDf0895B',
     underlyingTokens: [
       '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
-      '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+      ADDRESSES.ethereum.WBTC
     ]
   },
   // lusd Eth
   '0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca': {
     swapContract: '0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca',
     underlyingTokens: [
-      '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+      ADDRESSES.ethereum.LUSD,
       '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
     ]
   },
   // steCRV Eth
   '0x06325440d014e39736583c165c2963ba99faf14e': {
     swapContract: '0xdc24316b9ae028f1497c275eb9192a3ea0f67022',
-    underlyingTokens: ['0xae7ab96520de3a18e5e111b5eaab095312d7fe84']
+    underlyingTokens: [ADDRESSES.ethereum.STETH]
   },
   // fraxCRV Eth
   '0xd632f22692fac7611d2aa1c0d552930d43caed3b': {
     swapContract: '0xd632f22692fac7611d2aa1c0d552930d43caed3b',
     underlyingTokens: [
-      '0x853d955acef822db058eb8505911ed77f175b99e',
+      ADDRESSES.ethereum.FRAX,
       '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
     ]
   },
@@ -164,7 +170,7 @@ module.exports = {
     swapContract: '0xC2d95EEF97Ec6C17551d45e77B590dc1F9117C67',
     underlyingTokens: [
       '0x5c2ed810328349100A66B82b78a1791B101C9D61',
-      '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501'
+      ADDRESSES.fantom.renBTC
     ]
   },
   // tricryptoCRV v1 Polygon
@@ -208,8 +214,8 @@ module.exports = {
   '0xd7d4a4c67e9c1f5a913bc38e87e228f4b8820e8a': {
     swapContract: '0xCF97190fAAfea63523055eBd139c008cdb4468eB',
     underlyingTokens: [
-      '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70',
-      '0xc7198437980c041c805a1edcba50c1ce5db95118'
+      ADDRESSES.avax.DAI,
+      ADDRESSES.avax.USDT_e
     ]
   },
   // gondolaYAKPool Avax
@@ -224,8 +230,8 @@ module.exports = {
   '0x4dc5a6308338e540aa97faab7fd2e03876075413': {
     swapContract: '0x4b941276eb39d114c89514791d073a085acba3c0',
     underlyingTokens: [
-      '0xc7198437980c041c805a1edcba50c1ce5db95118',
-      '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'
+      ADDRESSES.avax.USDT_e,
+      ADDRESSES.avax.USDC_e
     ]
   },
   // av3CRV Avax
@@ -241,17 +247,17 @@ module.exports = {
   '0x2dd7c9371965472e5a5fd28fbe165007c61439e1': {
     swapContract: '0x2dd7C9371965472E5A5fD28fbE165007c61439E1',
     underlyingTokens: [
-      '0x82f0B8B456c1A451378467398982d4834b6829c1',
-      '0x049d68029688eAbF473097a2fC38ef61633A3C7A',
-      '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75'
+      ADDRESSES.fantom.MIM,
+      ADDRESSES.fantom.fUSDT,
+      ADDRESSES.fantom.USDC
     ]
   },
   // Dai-Usdc Fantom
   '0x27e611fd27b276acbd5ffd632e5eaebec9761e40': {
     swapContract: '0x27E611FD27b276ACbd5Ffd632E5eAEBEC9761E40',
     underlyingTokens: [
-      '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
-      '0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E'
+      ADDRESSES.fantom.USDC,
+      ADDRESSES.fantom.DAI
     ]
   },
   // gDai-gUSDC-gUSDT Fantom
@@ -269,14 +275,14 @@ module.exports = {
     underlyingTokens: [
       '0x74b23882a30290451A17c44f4F05243b6b58C76d',
       '0x321162Cd933E2Be498Cd2267a90534A804051b11',
-      '0x049d68029688eAbF473097a2fC38ef61633A3C7A'
+      ADDRESSES.fantom.fUSDT
     ]
   },
   // btc-renbtc Fantom
   '0x5b5cfe992adac0c9d48e05854b2d91c73a003858': {
     swapContract: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
     underlyingTokens: [
-      '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501',
+      ADDRESSES.fantom.renBTC,
       '0x321162Cd933E2Be498Cd2267a90534A804051b11'
     ]
   },
@@ -284,8 +290,8 @@ module.exports = {
   '0xaea2e71b631fa93683bcf256a8689dfa0e094fcd': {
     swapContract: '0xaea2e71b631fa93683bcf256a8689dfa0e094fcd',
     underlyingTokens: [
-      '0xc7198437980c041c805a1edcba50c1ce5db95118',
-      '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664',
+      ADDRESSES.avax.USDT_e,
+      ADDRESSES.avax.USDC_e,
       '0x130966628846bfd36ff31a822705796e8cb8c18d',
     ]
   },
@@ -323,7 +329,7 @@ module.exports = {
   '0xcee60cfa923170e4f8204ae08b4fa6a3f5656f3a': {
     swapContract: '0xF178C0b5Bb7e7aBF4e12A4838C7b7c5bA2C623c0',
     underlyingTokens: [
-      '0x514910771AF9Ca656af840dff83E8264EcF986CA',
+      ADDRESSES.ethereum.LINK,
       '0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6',
     ],
   },
@@ -341,7 +347,7 @@ module.exports = {
     swapContract: '0x59bf0545fca0e5ad48e13da269facd2e8c886ba4',
     underlyingTokens: [
       '0x64343594ab9b56e99087bfa6f2335db24c2d1f17',
-      '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F',
+      ADDRESSES.arbitrum.FRAX,
     ]
   },
   // pBTC-sBTC Ethereum
@@ -359,7 +365,7 @@ module.exports = {
   },
   '0x50b0d9171160d6eb8aa39e090da51e7e078e81c4': {
     swapContract: '0x50b0d9171160d6eb8aa39e090da51e7e078e81c4',
-    underlyingTokens: ['0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F']
+    underlyingTokens: [ADDRESSES.ethereum.SNX]
   },
   '0xcaf8703f8664731ced11f63bb0570e53ab4600a9': {
     swapContract: '0xcaf8703f8664731ced11f63bb0570e53ab4600a9',
@@ -375,7 +381,7 @@ module.exports = {
   },
   '0x0437ac6109e8a366a1f4816edf312a36952db856': {
     swapContract: '0x0437ac6109e8a366a1f4816edf312a36952db856',
-    underlyingTokens: ['0x6B3595068778DD592e39A122f4f5a5cF09C90fE2']
+    underlyingTokens: [ADDRESSES.ethereum.SUSHI]
   },
   '0x9001a452d39a8710d27ed5c2e10431c13f5fba74': {
     swapContract: '0x9001a452d39a8710d27ed5c2e10431c13f5fba74',
@@ -383,7 +389,7 @@ module.exports = {
   },
   '0x961226b64ad373275130234145b96d100dc0b655': {
     swapContract: '0x961226b64ad373275130234145b96d100dc0b655',
-    underlyingTokens: ['0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0']
+    underlyingTokens: [ADDRESSES.ethereum.FXS]
   },
   // TOKEMAKS END
 

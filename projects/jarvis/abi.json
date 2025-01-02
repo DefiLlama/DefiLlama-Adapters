@@ -1,7 +1,15 @@
 {
-  "SynthereumPoolRegistry_getCollaterals": {"inputs":[],"name":"getCollaterals","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}, 
-  "SynthereumPoolRegistry_getSyntheticTokens": {"inputs":[],"name":"getSyntheticTokens","outputs":[{"internalType":"string[]","name":"","type":"string[]"}],"stateMutability":"view","type":"function"}, 
-  "SynthereumPoolRegistry_getElements": {"inputs":[{"internalType":"string","name":"syntheticTokenSymbol","type":"string"},{"internalType":"contract IERC20","name":"collateralToken","type":"address"},{"internalType":"uint8","name":"version","type":"uint8"}],"name":"getElements","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}, 
-  "LiquidityPool_syntheticToken": {"inputs":[],"name":"syntheticToken","outputs":[{"internalType":"contract IERC20","name":"syntheticCurrency","type":"address"}],"stateMutability":"view","type":"function"}, 
-  "LiquidityPool_getAllDerivatives": {"inputs":[],"name":"getAllDerivatives","outputs":[{"internalType":"contract IDerivative[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}
+  "SynthereumPoolRegistry_getCollaterals": "address[]:getCollaterals",
+  "SynthereumPoolRegistry_getSyntheticTokens": "string[]:getSyntheticTokens",
+  "SynthereumPoolRegistry_getElements": "function getElements(string syntheticTokenSymbol, address collateralToken, uint8 version) view returns (address[])",
+  "collateralToken": "address:collateralToken",
+  "totalCollateralAmount": "function totalCollateralAmount() view returns (uint256 usersCollateral, uint256 lpsCollateral, uint256 totalCollateral)",
+  "SynthereumFixedRateRegistry_getCollaterals": "address[]:getCollaterals",
+  "SynthereumFixedRateRegistry_getSyntheticTokens": "string[]:getSyntheticTokens",
+  "SynthereumFixedRateRegistry_getElements": "function getElements(string syntheticTokenSymbol, address collateralToken, uint8 version) view returns (address[])",
+  "totalPegCollateral": "uint256:totalPegCollateral",
+  "SynthereumSelfMintingRegistry_getCollaterals": "address[]:getCollaterals",
+  "SynthereumSelfMintingRegistry_getSyntheticTokens": "string[]:getSyntheticTokens",
+  "SynthereumSelfMintingRegistry_getElements": "function getElements(string syntheticTokenSymbol, address collateralToken, uint8 version) view returns (address[])",
+  "getGlobalPositionData": "function getGlobalPositionData() view returns (uint256 totCollateral, uint256 totTokensOutstanding)"
 }

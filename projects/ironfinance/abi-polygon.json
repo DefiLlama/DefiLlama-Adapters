@@ -1,98 +1,16 @@
 {
   "IronSwap": {
-    "getTokenBalances": {
-      "inputs": [],
-      "name": "getTokenBalances",
-      "outputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "",
-          "type": "uint256[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    "getTokens": {
-      "inputs": [],
-      "name": "getTokens",
-      "outputs": [
-        {
-          "internalType": "contract IERC20[]",
-          "name": "",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "getTokenBalances": "uint256[]:getTokenBalances",
+    "getTokens": "address[]:getTokens"
   },
 
   "IronController": {
-    "getAllMarkets": {
-      "constant": true,
-      "inputs": [],
-      "name": "getAllMarkets",
-      "outputs": [
-        {
-          "internalType": "contract RToken[]",
-          "name": "",
-          "type": "address[]"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "getAllMarkets": "address[]:getAllMarkets"
   },
 
   "rToken": {
-    "getCash": {
-      "constant": true,
-      "inputs": [],
-      "name": "getCash",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-
-    "underlying": {
-      "constant": true,
-      "inputs": [],
-      "name": "underlying",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-
-    "symbol": {
-      "constant": true,
-      "inputs": [],
-      "name": "symbol",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "getCash": "uint256:getCash",
+    "underlying": "address:underlying",
+    "symbol": "string:symbol"
   }
 }

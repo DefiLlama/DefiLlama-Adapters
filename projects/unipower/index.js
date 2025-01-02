@@ -1,6 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { pool2, pool2s } = require("../helper/pool2");
 
 /*** Ethereum Addresses ***/
     // Static Power Part
@@ -9,7 +9,7 @@ const POWER_eth = "0xF2f9A7e93f845b3ce154EfbeB64fB9346FCCE509";
 
     // ETH Prime Part
 const ethPrimeContract = "0xe40e1531a4B56fB65571AD2ca43Dc0048a316a2D";
-const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
     // PowerDAO Part
 const liquidityVaultContracts = [
@@ -41,13 +41,13 @@ async function ethTvl() {
 module.exports = {
     ethereum: {
         staking: staking(staticPowerContract, POWER_eth),
-        pool2: pool2s(liquidityVaultContracts, [WETH_POWER_UNIV2]),
+        pool2: staking(liquidityVaultContracts, [WETH_POWER_UNIV2]),
         tvl: ethTvl,
     },
     polygon: {
         tvl: async () => ({}),
-        staking: staking(stakingContract, POWER_polygon, "polygon"),
-        pool2: pool2(stakingContract, POWER_USDC_UNIV2, "polygon"),
+        staking: staking(stakingContract, POWER_polygon),
+        pool2: staking(stakingContract, POWER_USDC_UNIV2),
     },
     methodology:
         "Counts tvl of WETH deposited through ETH Prime Contract, also there are pool2 and staking part from different seccions. Polygon tvl consist of staked POWER and the POWER/USDC LP pool2",

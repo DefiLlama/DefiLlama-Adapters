@@ -20,11 +20,11 @@ module.exports = {
   ethereum: {
     tvl: async () => ({}),
     pool2: pool2(stakingContract, ethLP),
-    staking: staking(stakingContract, baconToken, "ethereum"),
+    staking: staking(stakingContract, baconToken),
   },
   bsc: {
     tvl: async () => ({}),
     pool2: pool2(bscPool2Contract, bscLP, "bsc", (addr) => `bsc:${addr}`),
-    staking: staking(bscStakingContract, bscBaconToken, "bsc"),
+    staking: staking(bscStakingContract, bscBaconToken),
   },
 };

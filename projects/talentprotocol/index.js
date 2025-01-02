@@ -1,14 +1,13 @@
-const {getBlock} = require('../helper/getBlock')
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
-const cUSDTokenAddress = "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+const cUSDTokenAddress = ADDRESSES.celo.cUSD
 
 const stakingContract = "0x8ea91a982d93836415CE3abbaf12d59fb8cE3Ff8"
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl(timestamp, ethBlock, {celo: block}) {
     const chain = "celo"
     const balances = {}
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
 
     const stakedcUSD = await sdk.api.erc20.balanceOf({
       target: cUSDTokenAddress,
@@ -22,6 +21,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports={
+    hallmarks: [
+        [1656547200,"Token Purchase & Rewards claiming halt"]
+    ],
     methodology: "Get all cUSD that the staking contract for Talent Protocol holds",
     celo: {
         tvl

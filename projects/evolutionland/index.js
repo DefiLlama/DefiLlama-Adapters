@@ -1,37 +1,6 @@
-const BigNumber = require('bignumber.js')
-const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-
-const gold = {
-  "ethereum": "0x358dBA28848cca268BA8a76B65E5b3eF9Ef92238",
-  "heco": "0xFB371c8B99ba0b239E66E0a66bB6296b00dCD09f",
-  "polygon": "0x56746a8099a7e6D962802A23e01FeDdc1282cDAe",
-  "crab": "0x701A7d67B824D1Bc713FC5E77bE1C475Ec93106d",
-}
-const wood = {
-  "ethereum": "0xD4B784Ae5c12153D11Ca55853d832D2a2D514a08",
-  "heco": "0xcA3749C8C3aF04278D596a3fBe461481B6aa1b01",
-  "polygon": "0xe97C7F83ec91E29569f1a08De95ad3Bb0e8B6B3A",
-  "crab": "0xbA91F2d6d78953881A912f3DF71a541cD30eb980",
-}
-const hoo = {
-  "ethereum": "0x19E22a73A046f19eCB51a46ACe4cA7A4bB7c20c6",
-  "heco": "0x56746a8099a7e6D962802A23e01FeDdc1282cDAe",
-  "polygon": "0x81989cD57271565DBFfe9807E917Afc098B30c9A",
-  "crab": "0x54Eb408696E6b3Cc1795Caaf53B22F38F24200Fa",
-}
-const fire = {
-  "ethereum": "0x8469A695D70033EcD170c82BE1253842162AA77e",
-  "heco": "0xe97C7F83ec91E29569f1a08De95ad3Bb0e8B6B3A",
-  "polygon": "0x8216981a3eF2b45C705119644D0D48AcF7d14472",
-  "crab": "0xEd969c03e8881371754231FE1C8f1D4fE4AF2082",
-}
-const sioo = {
-  "ethereum": "0x1320994fA466E19F17b143995999C7275EAe50E1",
-  "heco": "0x81989cD57271565DBFfe9807E917Afc098B30c9A",
-  "polygon": "0x2D8822a54fe8966891cEF3aC5A29d3B916393739",
-  "crab": "0x9AC045F4B69C2DB58fDF70D4bEF8228ef5A2C5a8",
-}
 const ring = {
   "ethereum": "0x9469D013805bFfB7D3DEBe5E7839237e535ec483",
   "heco": "0x15e65456310ecb216B51EfBd8a1dBf753353DcF9",
@@ -39,10 +8,10 @@ const ring = {
   "crab": "0x7399Ea6C9d35124d893B8d9808930e9d3F211501",
 }
 const weth = {
-  "ethereum": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  "heco": "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
-  "polygon": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-  "crab": "0x2D2b97EA380b0185e9fDF8271d1AFB5d2Bf18329",
+  "ethereum": ADDRESSES.ethereum.WETH,
+  "heco": ADDRESSES.heco.WHT,
+  "polygon": ADDRESSES.polygon.WMATIC_2,
+  "crab": ADDRESSES.crab.WCRAB,
 }
 
 const lpGOLD = {
@@ -82,186 +51,15 @@ const lpETH = {
   "crab": "0xF157c9393255Db1728bC6483c3545Ca8a1655a0F",
 }
 
-async function crabTvl(timestamp, blocks) {
-  let block = blocks["crab"];
-
-  if (block === undefined) {
-    block = (await sdk.api.util.lookupBlock(timestamp, { chain: "crab" }))
-      .block;
-  }
-  const lps = [
-    {
-      "target": ring.crab,
-      "params": lpGOLD.crab
-    },
-    {
-      "target": ring.crab,
-      "params": lpWOOD.crab
-    },
-    {
-      "target": ring.crab,
-      "params": lpHOO.crab
-    },
-    {
-      "target": ring.crab,
-      "params": lpFIRE.crab
-    },
-    {
-      "target": ring.crab,
-      "params": lpSIOO.crab
-    },
-    {
-      "target": ring.crab,
-      "params": lpETH.crab
-    },
-  ]
-  let balances = await stakingBalanceTvl(timestamp, block, "crab", lps)
-  balances[ring.ethereum] = balances[ring.crab] + '000000000'
-  delete balances[ring.crab]
-  return balances
+async function tvl(api) {
+  const owners = [lpETH].map(i => i[api.chain])
+  const balances = await sumTokens2({ api, owners, tokens: [weth[api.chain]] })
+  const owners1 = [lpGOLD, lpWOOD, lpHOO, lpFIRE, lpSIOO, lpETH].map(i => i[api.chain])
+  return sumTokens2({ balances, api, owners: owners1, tokens: [ring[api.chain]], transformAddress: i => ring.ethereum })
 }
 
-async function polygonTvl(timestamp, blocks) {
-  let block = blocks["polygon"];
+module.exports = {};
 
-  if (block === undefined) {
-    block = (await sdk.api.util.lookupBlock(timestamp, { chain: "polygon" }))
-      .block;
-  }
-  const lps = [
-    {
-      "target": ring.polygon,
-      "params": lpGOLD.polygon
-    },
-    {
-      "target": ring.polygon,
-      "params": lpWOOD.polygon
-    },
-    {
-      "target": ring.polygon,
-      "params": lpHOO.polygon
-    },
-    {
-      "target": ring.polygon,
-      "params": lpFIRE.polygon
-    },
-    {
-      "target": ring.polygon,
-      "params": lpSIOO.polygon
-    },
-    {
-      "target": ring.polygon,
-      "params": lpETH.polygon
-    },
-  ]
-  let balances = await stakingBalanceTvl(timestamp, block, "polygon", lps)
-  balances[ring.ethereum] = balances[ring.polygon]
-  delete balances[ring.polygon]
-  return balances
-}
-
-async function hecoTvl(timestamp, blocks) {
-  let block = blocks["heco"];
-
-  if (block === undefined) {
-    block = (await sdk.api.util.lookupBlock(timestamp, { chain: "heco" }))
-      .block;
-  }
-  const lps = [
-    {
-      "target": ring.heco,
-      "params": lpGOLD.heco
-    },
-    {
-      "target": ring.heco,
-      "params": lpWOOD.heco
-    },
-    {
-      "target": ring.heco,
-      "params": lpHOO.heco
-    },
-    {
-      "target": ring.heco,
-      "params": lpFIRE.heco
-    },
-    {
-      "target": ring.heco,
-      "params": lpSIOO.heco
-    },
-    {
-      "target": ring.heco,
-      "params": lpETH.heco
-    },
-  ]
-  let balances = await stakingBalanceTvl(timestamp, block, "heco", lps)
-  balances[ring.ethereum] = balances[ring.heco]
-  delete balances[ring.heco]
-  return balances
-}
-
-async function ethTvl(timestamp, blocks) {
-  let block = blocks["ethereum"];
-
-  const lps = [
-    {
-      "target": ring.ethereum,
-      "params": lpGOLD.ethereum
-    },
-    {
-      "target": ring.ethereum,
-      "params": lpWOOD.ethereum
-    },
-    {
-      "target": ring.ethereum,
-      "params": lpHOO.ethereum
-    },
-    {
-      "target": ring.ethereum,
-      "params": lpFIRE.ethereum
-    },
-    {
-      "target": ring.ethereum,
-      "params": lpSIOO.ethereum
-    },
-    {
-      "target": ring.ethereum,
-      "params": lpETH.ethereum
-    },
-    {
-      "target": weth.ethereum,
-      "params": lpETH.ethereum
-    },
-  ]
-  return await stakingBalanceTvl(timestamp, block, "ethereum", lps)
-}
-
-async function stakingBalanceTvl(timestamp, block, chain, lps) {
-
-  const balancesOfResult = await sdk.api.abi.multiCall({
-    calls: lps.map((lp) => ({
-      target: lp.target,
-      params: lp.params
-    })),
-    abi: 'erc20:balanceOf',
-    block,
-    chain
-  })
-  let balances = {}
-  sdk.util.sumMultiBalanceOf(balances, balancesOfResult);
-  return balances
-}
-
-module.exports = {
-  ethereum: {
-    tvl: ethTvl
-  },
-  heco: {
-    tvl: hecoTvl
-  },
-  polygon: {
-    tvl: polygonTvl
-  },
-  crab: {
-    tvl: crabTvl
-  },
-}
+['ethereum', 'polygon', 'heco', 'crab'].forEach(chain => {
+  module.exports[chain] = { tvl }
+})

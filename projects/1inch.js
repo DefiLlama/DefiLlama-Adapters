@@ -1,25 +1,27 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
-const { GraphQLClient, gql } = require('graphql-request')
+const { sumTokens2, } = require('./helper/unwrapLPs')
+const { getLogs } = require('./helper/cache/getLogs')
 
-async function fetch() {
+const config = require("./1inch/config");
 
-    var endpoint = 'https://api.thegraph.com/subgraphs/name/1inch-exchange/oneinch-liquidity-protocol-v2'
-    var graphQLClient = new GraphQLClient(endpoint)
+module.exports = {}
 
-    var query = gql`
-    {
-      mooniswapFactories(first: 1) {
-        totalLiquidityUSD
-        totalLiquidityETH
+Object.keys(config).forEach(chain => {
+  const { blacklistedTokens = [], factories } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const ownerTokens = []
+      for (const { MooniswapFactory, fromBlock} of factories) {
+        const logs = await getLogs({
+          api,
+          target: MooniswapFactory,
+          topic: 'Deployed(address,address,address)',
+          eventAbi: 'event Deployed(address indexed mooniswap, address indexed token1, address indexed token2)',
+          onlyArgs: true,
+          fromBlock,
+        })
+        logs.forEach(i => ownerTokens.push([[i.token1, i.token2], i.mooniswap]))
       }
+      return sumTokens2({ api, ownerTokens, blacklistedTokens, sumChunkSize: 50, })
     }
-    `;
-
-    const results = await retry(async bail => await graphQLClient.request(query))
-    return parseFloat(results.mooniswapFactories[0].totalLiquidityUSD)
-}
-
-module.exports = {
-  fetch
-}
+  }
+})

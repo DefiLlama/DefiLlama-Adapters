@@ -1,13 +1,10 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, sumTokens2, } = require("../helper/unwrapLPs");
 const {
-  transformBscAddress,
-  transformPolygonAddress,
-  transformOkexAddress,
+  getChainTransform,
 } = require("../helper/portedTokens");
 
 // --- BSC Addresses ---
@@ -123,14 +120,7 @@ const pool2StratsOkex = [
   "0xfa065195657A07f9c9F0A0a5e16DcD0Dff4AF11a",
 ];
 
-const calcTvl = async (
-  balances,
-  chain,
-  block,
-  masterchef,
-  transformAddress,
-  excludePool2
-) => {
+const calcTvl = async (balances, chain, block, masterchef, transformAddress, excludePool2) => {
   const poolLength = (
     await sdk.api.abi.call({
       abi: abi.poolLength,
@@ -140,72 +130,27 @@ const calcTvl = async (
     })
   ).output;
 
-  const lpPositions = [];
+  const toa = [];
+  const calls = [];
 
-  for (let index = 0; index < poolLength; index++) {
-    const strat = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterchef,
-        params: index,
-        chain,
-        block,
-      })
-    ).output.strat;
-   
-    const want = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterchef,
-        params: index,
-        chain,
-        block,
-      })
-    ).output.want;
-  
-    const strat_bal = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: want,
-        params: strat,
-        chain,
-        block,
-      })
-    ).output;
-  
-    const symbol = (
-      await sdk.api.abi.call({
-        abi: abi.symbol,
-        target: want,
-        chain,
-        block,
-      })
-    ).output;
- 
-    if (
-      excludePool2.some((addr) => addr.toLowerCase() === want.toLowerCase()) ||
-      symbol.includes("HC") ||
-      symbol.includes("GC") ||
-      symbol.includes("HERO") ||
-      symbol.includes("HONOR")
-    ) {
-    } else if (symbol.includes("LP") || symbol.includes("UNI-V2")) {
-      lpPositions.push({
-        token: want,
-        balance: strat_bal,
-      });
-    } else {
-      sdk.util.sumSingleBalance(balances, `${chain}:${want}`, strat_bal);
-    }
-  }
+  for (let index = 0; index < poolLength; index++) calls.push({ params: index })
 
-  await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
+  const { output: data } = await sdk.api.abi.multiCall({
+    target: masterchef,
+    abi: abi.poolInfo,
+    calls,
+    chain, block,
+  })
+
+  data.forEach(i => toa.push([i.output.want, i.output.strat]))
+
+  return sumTokens2({ balances, chain, block, tokensAndOwners: toa, resolveLP: true, blacklistedTokens: excludePool2 })
 };
 
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = await getChainTransform('bsc');
 
   await calcTvl(
     balances,
@@ -222,7 +167,7 @@ const bscTvl = async (chainBlocks) => {
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = await getChainTransform('polygon');
 
   await calcTvl(
     balances,
@@ -239,7 +184,7 @@ const polygonTvl = async (chainBlocks) => {
 const okexTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformOkexAddress();
+  const transformAddress = await getChainTransform('okexchain');
 
   await calcTvl(
     balances,
@@ -257,18 +202,18 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: bscTvl,
-    staking: stakings(stakingContractBsc, HERO, "bsc"),
-    pool2: pool2s(pool2StratsBsc, excludePool2Bsc, "bsc"),
+    staking: stakings(stakingContractBsc, HERO),
+    pool2: pool2s(pool2StratsBsc, excludePool2Bsc),
   },
   polygon: {
     tvl: polygonTvl,
-    staking: stakings(stakingContractPolygon, HONOR, "polygon"),
-    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon, "polygon"),
+    staking: stakings(stakingContractPolygon, HONOR),
+    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon),
   },
   okexchain: {
     tvl: okexTvl,
-    staking: stakings(stakingContractOkex, GLORY, "okexchain"),
-    pool2: pool2s(pool2StratsOkex, excludePool2Okex, "okexchain"),
+    staking: stakings(stakingContractOkex, GLORY),
+    pool2: pool2s(pool2StratsOkex, excludePool2Okex),
   },
   methodology:
     "We count liquidity on the Farms through MasterChef contracts",

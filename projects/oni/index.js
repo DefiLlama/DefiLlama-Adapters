@@ -1,4 +1,4 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require("../helper/staking");
 
 const OniFactory = "0xED13950fD0a2E10788E830e60CFA0D018125310e";
@@ -9,15 +9,7 @@ module.exports = {
   methodology:
     "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://info.oni.exchange/ as the source. Staking accounts for ONI locked in MasterChef (0xE93fC7e6103EF86F3329635B8197D462B74F0cb8)",
   bsc: {
-    tvl: calculateUsdUniTvl(
-      OniFactory,
-      "bsc",
-      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-      [OniToken],
-      "wbnb",
-      18,
-      true
-    ),
+    tvl: getUniTVL({ factory: OniFactory, useDefaultCoreAssets: true }),
     staking: stakingPricedLP(
       MasterChef,
       OniToken,

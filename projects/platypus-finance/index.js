@@ -1,46 +1,35 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const constants = require("./constants");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { cachedGraphQuery } = require('../helper/cache')
 
-async function balanceOf(owner, target, block) {
-  const chain = "avax";
-  let decimals = (await sdk.api.erc20.decimals(target, chain)).output;
-  let balance = (
-    await sdk.api.erc20.balanceOf({
-      owner,
-      target,
-      block,
-      chain,
-    })
-  ).output;
-  return Number(balance) / 10 ** decimals;
-}
-
-async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  const block = chainBlocks["avax"];
-  let balances = {};
-
-  for (const key in constants) {
-    const { id, addresses } = constants[key];
-    let totalBalance = 0;
-    for (const { token, lpTokens } of addresses) {
-      for (const lpToken of lpTokens) {
-        totalBalance += await balanceOf(lpToken, token, block);
-      }
-    }
-    balances[id] = totalBalance;
+const blacklistedTokens = []
+const query = `{
+  pools {
+    id
+    name
+    assetsList { id token { id } }
   }
+}`
 
-  return balances;
+async function tvl(api) {
+  if (api.timestamp > +new Date("2023-02-17") / 1e3) blacklistedTokens.push("0xdaCDe03d7Ab4D81fEDdc3a20fAA89aBAc9072CE2") // USP was hacked
+  const { pools } = await cachedGraphQuery("platypus-finance", sdk.graph.modifyEndpoint('Bu5QPRWGnZB6NxU4S7kAKQZJpY4pHmAq3TV69V1W2Qqw'), query)
+  const tokensAndOwners = pools.map(i => i.assetsList.map(v => [v.token.id, v.id])).flat()
+  return sumTokens2({ api, tokensAndOwners, blacklistedTokens });
 }
 
 module.exports = {
-  avalanche: {
+  avax: {
     tvl,
     staking: staking(
       "0x5857019c749147eee22b1fe63500f237f3c1b692",
       "0x22d4002028f537599be9f666d1c4fa138522f9c8",
-      "avax"
     ),
   },
+  hallmarks: [
+    [Math.floor(new Date('2023-02-17') / 1e3), 'Protocol was hacked for $8.5m'],
+    [Math.floor(new Date('2023-10-12') / 1e3), 'Protocol was hacked for $2m'],
+    [1716811215,"Acquired by Stable Jack"]
+  ],
 };

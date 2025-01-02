@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // proxy contract:
 //     https://github.com/nomad-xyz/config/blob/main/production.json
 // token holdings:
@@ -15,32 +16,26 @@ const HOME_CHAINS = {
 
 const TOKEN_ADDRESSES = [
   {
-    // FRAX
-    'ethereum': '0x853d955aCEf822Db058eb8505911ED77F175b99e'
+    'ethereum': ADDRESSES.ethereum.FRAX
   },
   {
-    // USDC
-    'ethereum': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+    'ethereum': ADDRESSES.ethereum.USDC
   },
   {
-    // DAI
-    'ethereum': '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+    'ethereum': ADDRESSES.ethereum.DAI
   },
   {
-    // USDT
-    'ethereum': '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+    'ethereum': ADDRESSES.ethereum.USDT
   },
   {
     // FXS
-    'ethereum': '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0'
+    'ethereum': ADDRESSES.ethereum.FXS
   },
   {
-    // WETH
-    'ethereum': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+    'ethereum': ADDRESSES.ethereum.WETH
   },
   {
-    // WBTC
-    'ethereum': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+    'ethereum': ADDRESSES.ethereum.WBTC
   },
   {
     // IAG
@@ -83,14 +78,14 @@ function tvl(chain) {
     TOKEN_ADDRESSES.forEach(t => {
       if (t[chain]) toa.push([t[chain], owner])
     })
-    return sumTokens({}, toa, block, chain)
+    return sumTokens({}, toa, block, chain, undefined)
   }
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
-  start: 13983843,
+  hallmarks: [
+    [1659312000,"trusted root exploit"]
+  ],
+      methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
   ...chainExports(tvl, Object.keys(HOME_CHAINS))
 }; 

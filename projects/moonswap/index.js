@@ -1,10 +1,14 @@
-const {getChainTvl} = require('../helper/getUniSubgraphTvl')
+const { getUniTVL } = require('../helper/unknownTokens')
 
-const tvl = getChainTvl({
-    'moonriver': 'https://api.thegraph.com/subgraphs/name/moonfarmin/moonswap-dex'
-})
-
-module.exports={
-    tvl: tvl('moonriver'),
-    methodology: "We get the tvl from the subgraph at graph.moonfarm.in/subgraphs/name/moonswap, it only includes liquidity on the DEX"
-} // node test.js projects/moonswap/index.js
+module.exports = {
+  moonriver: {
+    tvl: getUniTVL({
+      factory: '0x056973f631a5533470143bb7010c9229c19c04d2',
+      useDefaultCoreAssets: true,
+      blacklist: [
+        '0xfd301ca82d007880e678bb750a771550c5104ff2', // ANKR, bad decimal?
+      ]
+    })
+  },
+  misrepresentedTokens: true,
+}

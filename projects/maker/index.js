@@ -1,113 +1,99 @@
-const BigNumber = require('bignumber.js');
-// const utils = require('web3-utils');
-const sdk = require('@defillama/sdk');
-const MakerSCDConstants = require("./abis/makerdao.js");
-const MakerMCDConstants = require("./abis/maker-mcd.js");
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
-const { requery } = require('../helper/requery.js');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getLogs2 } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function getJoins(block) {
-  // let rely = utils.sha3("rely(address)").substr(0, 10);
-  // let relyTopic = utils.padRight(rely, 64);
-  let relyTopic = '0x65fae35e00000000000000000000000000000000000000000000000000000000'
+const MCD_VAT = '0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b'
+const VAT_topic = '0x65fae35e00000000000000000000000000000000000000000000000000000000'
+const START_VAT_BLOCK = 8928152
 
-  let joins = [];
+const MCD_DOG = '0x135954d155898d42c90d2a57824c690e0c7bef1b'
+const DOG_topic = '0x4ff2caaa972a7c6629ea01fae9c93d73cc307d13ea4c369f9bbbb7f9b7e9461d'
+const START_DOG_BLOCK = 12317310
 
-  // get list of auths
-  const logs = (
-    await sdk.api.util
-      .getLogs({
-        keys: [],
-        toBlock: block,
-        target: MakerMCDConstants.VAT,
-        fromBlock: MakerMCDConstants.STARTBLOCK,
-        topics: [relyTopic],
-      })
-  ).output;
-
-  let auths = logs.map(auth => {
-    return `0x${auth.topics[1].substr(26)}`;
-  });
-
-  const ilks = await sdk.api.abi.multiCall({
-    abi: MakerMCDConstants.ilk,
-    calls: auths.map((auth) => ({
-      target: auth,
-    })),
-    block
-  });
-  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)
-  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)  // make sure that failed calls actually fail
-
-  for (let ilk of ilks.output) {
-    if (ilk.output) {
-      joins.push(ilk.input.target)
-    }
-  }
-
-  return joins;
+const abi = {
+  ilk: "function ilk() view returns (bytes32)",
+  gem: "address:gem",
+  Pie: "uint256:Pie",
+  dog: "address:dog",
 }
 
-async function tvl(timestamp, block) {
-  let balances = {};
-  balances[MakerSCDConstants.WETH_ADDRESS] = (await sdk.api.erc20.balanceOf({
-    block,
-    target: MakerSCDConstants.WETH_ADDRESS,
-    owner: MakerSCDConstants.TUB_ADDRESS
-  })).output;
+const getJoins = async (api) => {
+  const logs = (await getLogs2({ api, target: MCD_VAT, fromBlock: START_VAT_BLOCK, topics: [VAT_topic] })).map(log => {
+    return '0x' + log.topics[1].slice(-40);
+  })
 
-  if (block >= MakerMCDConstants.STARTBLOCK) {
-    let joins = await getJoins(block);
-
-    await Promise.all(joins.map(async join => {
-      try {
-        const gem = (await sdk.api.abi.call({
-          block,
-          target: join,
-          abi: MakerMCDConstants.gem
-        })).output;
-        const balance = (await sdk.api.erc20.balanceOf({
-          target: gem,
-          owner: join,
-          block
-        })).output;
-
-        const symbol = join === "0xad37fd42185ba63009177058208dd1be4b136e6b"?"SAI": await sdk.api.erc20.symbol(gem)
-        if (symbol.output === "UNI-V2") {
-          await unwrapUniswapLPs(balances, [{
-            token: gem,
-            balance
-          }],
-            block)
-        } else {
-          sdk.util.sumSingleBalance(balances, gem, balance);
-        }
-      } catch (e) {
-        try{
-          if(join !== "0x7b3799b30f268ba55f926d7f714a3001af89d359"){
-            await sdk.api.abi.call({
-              block,
-              target: join,
-              abi: MakerMCDConstants.dog
-            })
-          }
-          return
-        } catch(e){
-          throw new Error("failed gem() and dog() on "+join)
-        }
-      }
-    }))
-  }
-
-  return balances;
+  const ilks = await api.multiCall({ abi: abi.ilk, calls: logs, permitFailure: true })
+  
+  return logs.map((auth, i) => {
+    const ilk = ilks[i];
+    if (!ilk) return null
+    return auth.toLowerCase();
+  }).filter(Boolean);
 }
+
+const getDogs = async (api) => {
+  const logs = (await getLogs2({ api, target: MCD_DOG, fromBlock: START_DOG_BLOCK, topics: [DOG_topic], skipCache: true, skipCacheRead: true })).map(log => {
+    return '0x' + log.data.slice(-40);
+  })
+
+  const dogs = await api.multiCall({ abi: abi.dog, calls: logs, permitFailure: true })
+  
+  return logs.map((auth, i) => {
+    const dog = dogs[i];
+    if (!dog) return null
+    return auth.toLowerCase();
+  }).filter(Boolean);
+}
+
+const tvl = async (api) => {
+  const [joins/*, dogs*/] = await Promise.all([
+    getJoins(api),
+    // getDogs(api) 
+  ])
+
+  const tokens = await api.multiCall({ abi: abi.gem, calls: joins, permitFailure: true })
+
+  let toas = joins.map((join, i) => {
+    const token = tokens[i];
+    if (!token) return null
+    return [token, join]
+  }).filter(Boolean)
+
+  toas = toas.filter(i => i[0].toLowerCase() !== ADDRESSES.ethereum.SAI.toLowerCase())
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toas.map(([token]) => token) })
+  const gUNIToa = toas.filter((_, i) => symbols[i] === 'G-UNI')
+  toas = toas.filter((_, i) => symbols[i] !== 'G-UNI' && !symbols[i].startsWith('RWA'))
+  await unwrapGunis({ api, toa: gUNIToa, })
+  return sumTokens2({ api, tokensAndOwners: toas, resolveLP: true})
+}
+
+async function unwrapGunis({ api, toa, }) {
+  const lps = toa.map(i => i[0])
+  const balanceOfCalls = toa.map(t => ({ params: t[1], target: t[0] }))
+  const [
+    token0s, token1s, supplies, uBalances, tokenBalances
+  ] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: lps }),
+    api.multiCall({ abi: 'address:token1', calls: lps }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: lps }),
+    api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 token0Bal, uint256 token1Bal)', calls: lps }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
+  ])
+
+  tokenBalances.forEach((bal, i) => {
+    const ratio = bal / supplies[i]
+    const token0Bal = uBalances[i][0] * ratio
+    const token1Bal = uBalances[i][1] * ratio
+    api.add(token0s[i], token0Bal)
+    api.add(token1s[i], token1Bal)
+  })
+  api.removeTokenBalance(ADDRESSES.ethereum.DAI) // remove dai balances
+}
+
 
 module.exports = {
-  timetravel: true,
-  methodology: `Counts all the tokens being used as collateral of CDPs.
-  
-  On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
-  start: 1513566671, // 12/18/2017 @ 12:00am (UTC)
+  methodology: `Counts all the tokens being used as collateral of CDPs. On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
+  start: '2017-12-18', // 12/18/2017 @ 12:00am (UTC)
   ethereum: {
     tvl
   },

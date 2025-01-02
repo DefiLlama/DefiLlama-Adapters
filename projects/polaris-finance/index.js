@@ -1,91 +1,48 @@
-const {
-  sumTokensAndLPsSharedOwners,
-  sumLPWithOnlyOneTokenOtherThanKnown,
-} = require("../helper/unwrapLPs");
-const { stakings } = require("../helper/staking");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { onChainTvl } = require("../helper/balancer");
 
-const spolar = "0x9D6fc90b25976E40adaD5A3EdD08af9ed7a21729";
-const spolarRewardPool = "0xA5dF6D8D59A7fBDb8a11E23FDa9d11c4103dc49f";
-const polarSunrise = "0xA452f676F109d34665877B7a7B203f2B445D7DE0";
-const tripolarSunrise = "0x203a65b3153C55B57f911Ea73549ed0b8EC82B2D";
-const ethernalSunrise = "0x813c989395f585115152f5D54FdD181fC19CA82a";
-const orbitalSunrise = "0x154ad27D2C8bC616A90a5eEc3e6297f9fB7aB88e";
-const tripolar = "0x60527a2751A827ec0Adf861EfcAcbf111587d748";
+const xpolar = "0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993";
+const xpolarRewardPool = "0x140e8a21d08cbb530929b012581a7c7e696145ef";
+const chain = "aurora";
 
-const polarLPTokens = [
-  "0x3fa4d0145a0b6Ad0584B1ad5f61cB490A04d8242", // POLAR-NEAR
-  "0xADf9D0C77c70FCb1fDB868F54211288fCE9937DF", // SPOLAR-NEAR
-  "0x75890912E9bb373dD0aA57a3fe9eC748Bf923915", // POLAR-STNEAR
+const sunrises = [
+  "0xA452f676F109d34665877B7a7B203f2B445D7DE0", // polarSunrise
+  "0x203a65b3153C55B57f911Ea73549ed0b8EC82B2D", // tripolarSunrise
+  "0x37223e0066969027954a5499ea4445bB9F55b36F", // uspSunrise
+  "0x33Fd42C929769f2C57cD68353Bff0bD7C6c51604", // ethernalSunrise
+  "0x494E811678f84816878A6e7e333f834Be7d4f21D", // orbitalSunrise
+  "0x5DB00aeFe6404A08802678480e953ACb32E14Eab", // binarisSunrise
 ];
 
-const tripolarLPTokens = [
-  "0x85f155fdcf2a951fd95734eceb99f875b84a2e27", // TRIPOLAR-XTRI
+const singleStakeTokens = [
+  "0x17cbd9C274e90C537790C51b4015a65cD015497e", // ETHERNAL
+  "0x266437E6c7500A947012F19A3dE96a3881a0449E", // EBOND
+  "0x3AC55eA8D2082fAbda674270cD2367dA96092889", // ORBITAL
+  "0x192bdcdd7b95A97eC66dE5630a85967F6B79e695", // OBOND
+  "0xa69d9Ba086D41425f35988613c156Db9a88a1A96", // USP
+  "0xcE32b28c19C61B19823395730A0c7d91C671E54b", // USPBOND
+  "0xf0f3b9Eee32b1F490A4b8720cf6F005d4aE9eA86", // POLAR
+  "0x3a4773e600086A753862621A26a2E3274610da43", // PBOND
+  "0x60527a2751A827ec0Adf861EfcAcbf111587d748", // TRIPOLAR
+  "0x8200B4F47eDb608e36561495099a8caF3F806198", // TRIBOND
 ];
 
-const ethernalLPTokens = [
-  "0x81D77f8e86f65b9C0F393afe0FC743D888c2d4d7", // ETHERNAL-ETHEREUM
-];
-
-const orbitalLPTokens = [
-  "0x7243cB5DBae5921c78A022110645a23a38ffBA5D", // WBTC-ORBITAL
-];
-
-const pool2Total = async (_timestamp, _ethBlock, chainBlocks) => {
-  let balances = {};
-  let transform = (addr) => `${"aurora"}:${addr}`;
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    polarLPTokens.map((token) => [token, true]),
-    [spolarRewardPool],
-    chainBlocks["aurora"],
-    "aurora",
-    transform
-  );
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    ethernalLPTokens.map((token) => [token, true]),
-    [spolarRewardPool],
-    chainBlocks["aurora"],
-    "aurora",
-    transform
-  );
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    orbitalLPTokens.map((token) => [token, true]),
-    [spolarRewardPool],
-    chainBlocks["aurora"],
-    "aurora",
-    transform
-  );
-
-  await sumLPWithOnlyOneTokenOtherThanKnown(
-    balances,
-    tripolarLPTokens[0],
-    spolarRewardPool,
-    tripolar,
-    chainBlocks["aurora"],
-    "aurora",
-    transform
-  );
-
-  return balances;
+const staking = async (_timestamp, _ethBlock, { [chain]: block }) => {
+  const tokensAndOwners = [];
+  sunrises.forEach((o) => tokensAndOwners.push([xpolar, o]));
+  singleStakeTokens.forEach((t) => tokensAndOwners.push([t, xpolarRewardPool]));
+  return sumTokens2({ chain, block, tokensAndOwners });
 };
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
+    misrepresentedTokens: true,
   methodology:
     "Pool2 TVL accounts for all LPs staked in Dawn, Staking TVL accounts for all tokens staked in Sunrise.",
   aurora: {
-    tvl: async () => ({}),
-    pool2: pool2Total,
-    staking: stakings(
-      [polarSunrise, tripolarSunrise, ethernalSunrise, orbitalSunrise],
-      spolar,
-      "aurora"
-    ),
+    tvl: onChainTvl("0x6985436a0E5247A3E1dc29cdA9e1D89C5b59e26b", 71729132),
+    staking,
+  },
+  telos: {
+    tvl: onChainTvl("0x9Ced3B4E4DC978265484d1F1f569010E13f911c9", 319760799),
   },
 };

@@ -1,31 +1,15 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
-
-async function fetch() {
-  var response = await retry(async bail => await axios.get('http://solyard.finance/tvl'))
-
-  return response.data.total - response.data['YARDv1'] - response.data['YARDv1-USDC'];
-}
+const { sumTokens2 } = require('./helper/solana')
 
 async function staking() {
-  var response = await retry(async bail => await axios.get('http://solyard.finance/tvl'))
-
-  return response.data['YARDv1'];
-}
-
-async function pool2() {
-  var response = await retry(async bail => await axios.get('http://solyard.finance/tvl'))
-
-  return response.data['YARDv1-USDC'];
+  return sumTokens2({ tokenAccounts: ['Gcdr3WtnnCW1SCDoLQNWXBtmt7xt4x9GEroz3zAfMWys']})
 }
 
 module.exports = {
+  deadFrom: '2022-06-30',
   timetravel: false,
-  staking:{
-    fetch:staking
+  solana: {
+    tvl: () => ({}),
+    staking,
+    pool2: () => ({}),
   },
-  pool2:{
-    fetch: pool2
-  },
-  fetch
 }

@@ -1,79 +1,87 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
-const { fetchURL } = require("../helper/utils");
-const sdk = require("@defillama/sdk")
-const abi = require('./abi.json');
-const { default: BigNumber } = require("bignumber.js");
+const ADDRESSES = require('../helper/coreAssets.json')
+const abi = require('./abi.json')
 
-const fdt = "0xed1480d12be41d92f36f5f7bdd88212e381a3677";
-const comitium = "0x4645d1cF3f4cE59b06008642E74E60e8F80c8b58";
+const { sumTokens2, } = require("../helper/unwrapLPs")
+const { getConfig } = require('../helper/cache')
 
-const stakingNft = "0xE9F9936a639809e766685a436511eac3Fb1C85bC";
-const fdtGohm = "0x75b02b9889536B617d57D08c1Ccb929c523945C1";
 
-const stakingContract = "0xe98ae8cD25CDC06562c29231Db339d17D02Fd486";
-const wSOhm = "0xca76543cf381ebbb277be79574059e32108e3e65";
-const rgt = "0xD291E7a03283640FDc51b121aC401383A46cC623";
-const yfi = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
-const mkr = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2";
-const bond = "0x0391D2021f89DC339F60Fff84546EA23E337750f";
-const uma = "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828";
-const wsohmFdtSLP = "0x2e30e758b3950dd9afed2e21f5ab82156fbdbbba";
+const STAKING_CONTRACT = "0xe98ae8cD25CDC06562c29231Db339d17D02Fd486"
+const STAKING_NFT = "0xE9F9936a639809e766685a436511eac3Fb1C85bC"
+const RGT = "0xD291E7a03283640FDc51b121aC401383A46cC623"
+const YFI = ADDRESSES.ethereum.YFI
+const MKR = ADDRESSES.ethereum.MKR
+const BOND = "0x0391D2021f89DC339F60Fff84546EA23E337750f"
+const UMA = "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828"
+const WSOHM = "0xca76543cf381ebbb277be79574059e32108e3e65"
+const WSOHM_FDT_SLP = "0x2e30e758b3950dd9afed2e21f5ab82156fbdbbba"
+const FDT_GOHM = "0x75b02b9889536B617d57D08c1Ccb929c523945C1"
 
-const gOhm = "0x0ab87046fbb341d058f17cbc4c1133f25a20a52f";
+// Protocol TVL
+async function tvl(api) {
 
-async function tvl(timestamp, block) {
-  const balances = {};
-  // liquidity mining
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [wSOhm, false],
-      [rgt, false],
-      [yfi, false],
-      [mkr, false],
-      [bond, false],
-      [uma, false],
-      [wsohmFdtSLP, true],
-      [fdtGohm, true],
-    ],
-    [stakingContract, stakingNft],
-    block,
-    "ethereum",
-    (addr) => {
-      if (addr.toLowerCase() === "0xca76543cf381ebbb277be79574059e32108e3e65") {
-        return gOhm;
+  // Launch Ceremony
+  await sumTokens2({ api, owners: [STAKING_CONTRACT, STAKING_NFT], tokens: [RGT, YFI, MKR, BOND, UMA, WSOHM_FDT_SLP, FDT_GOHM,], resolveLP: true })
+  const wsOHMBal = await api.call({  abi: 'erc20:balanceOf', target: WSOHM, params: STAKING_CONTRACT })
+  api.add('0x0ab87046fbb341d058f17cbc4c1133f25a20a52f', wsOHMBal)
+
+  const metadata = (await getConfig('fiatdao', 'https://raw.githubusercontent.com/fiatdao/changelog/main/metadata/metadata-mainnet.json'))
+  const allVaults = Object.keys(metadata)
+  const tokensAll = await api.multiCall({ abi: abi.token, calls: allVaults, })
+  const tokens = []
+  const vaults = []
+
+  tokensAll.forEach((output, i) => {
+    if (output !== ADDRESSES.null) {
+      vaults.push(allVaults[i])
+      tokens.push(output)
+    }
+  })
+
+  const tokenScales = await api.multiCall({ abi: abi.tokenScale, calls: vaults, })
+  const underliers = await api.multiCall({ abi: abi.underlierToken, calls: vaults, })
+  const underlierScales = await api.multiCall({ abi: abi.underlierScale, calls: vaults, })
+
+  const erc20Metadata = []
+  const erc1155Metadata = []
+
+  underliers.forEach((token, i) => {
+    const underlier = token
+    const vault = vaults[i]
+    const scale = underlierScales[i] / (tokenScales[i] * 1e18)
+    metadata[vault].tokenIds.forEach(id => {
+      if (id === '0') {
+        erc20Metadata.push({ vault, scale, underlier, tokenCall: { target: tokens[i], params: vault }, priceCall: { target: vault, params: [0, false, false] } })
+        return;
       }
-      return addr;
+      erc1155Metadata.push({ vault, scale, underlier, tokenCall: { target: tokens[i], params: [vault, id] }, priceCall: { target: vault, params: [id, false, false] } })
+    })
+  })
+
+  const erc20Balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: erc20Metadata.map(i => i.tokenCall), })
+  const erc20Prices = await api.multiCall({ abi: abi.fairPrice, calls: erc20Metadata.map(i => i.priceCall), })
+  const erc1155Balances = await api.multiCall({ abi: abi.balanceOf, calls: erc1155Metadata.map(i => i.tokenCall), permitFailure: true})
+  const erc1155Prices = await api.multiCall({ abi: abi.fairPrice, calls: erc1155Metadata.map(i => i.priceCall), permitFailure: true })
+
+  erc20Balances.forEach((output, i) => {
+     api.add(erc20Metadata[i].underlier, erc20Metadata[i].scale * output * erc20Prices[i])
+  })
+
+  erc1155Balances.forEach((output, i) => {
+    if (!output || !erc1155Prices[i]) {
+      return;
     }
-  );
+    api.add(erc1155Metadata[i].underlier, erc1155Metadata[i].scale * output * erc1155Prices[i])
+  })
 
-  // v1
-  const vaults = Object.entries((await fetchURL("https://raw.githubusercontent.com/fiatdao/changelog/main/deployment/deployment-mainnet.json")).data)
-    .filter((e)=>e[0].startsWith("vaultEPT") && !e[0].endsWith("Actions")).map(e=>e[1].address)
-  await Promise.all(vaults.map(async vault=>{
-    // would be better to use multicall but im lazy
-    const token = await sdk.api.abi.call({target:vault, block, abi: abi.token})
-    if(token.output==="0x0000000000000000000000000000000000000000"){
-      return
-    }
-    const tokenBalance = await sdk.api.erc20.balanceOf({target: token.output, owner: vault, block})
-    const underlier = await sdk.api.abi.call({target:vault, block, abi: abi.underlierToken})
-    const price = await sdk.api.abi.call({target:vault, block, abi: abi.fairPrice, params: [0, false, false]})
-
-    sdk.util.sumSingleBalance(balances, underlier.output ==="0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA" ?"0x5f98805a4e8be255a32880fdec7f6728c6568ba0":underlier.output, 
-      BigNumber(tokenBalance.output).times(price.output).div(1e18)
-    .toFixed(0));
-  }))
-
-  return balances;
 }
 
 module.exports = {
-  methodology:
-    "TVL includes value of Rewards Pools and staking includes FDT staked in Senatus",
-  ethereum: {
-    tvl,
-    staking: staking(comitium, fdt),
-  },
-};
+  misrepresentedTokens: true,
+  methodology: 'TVL includes fair value of collateral backing outstanding $FIAT and the initial FDT Jubilee event',
+  ethereum: { tvl },
+  hallmarks: [
+    [1635959960, "FDT Jubilee starts"],
+    [1639380013, "FDT Jubilee ends"],
+    [1649604096, "Protocol Launch"]
+  ]
+}

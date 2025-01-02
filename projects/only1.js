@@ -1,12 +1,11 @@
-const axios = require("axios")
-const retry = require('async-retry')
+const { getConfig } = require('./helper/cache')
+const { sumTokens2 } = require('./helper/solana')
 
 async function staking() {
-  const { data } = await axios.get("https://us-central1-only1-staking-stats.cloudfunctions.net/tvl")
+  const { data } = await getConfig('only1-solana',"https://api-edge.only1.app/staking-pools")
 
-  return {
-    'only1': data.totalTvl
-  }
+  const owners = data.map(i => i.publicKey)
+  return sumTokens2({ tokens: ['3bRTivrVsitbmCTGtqwp7hxXPsybkjn4XLNtPsHqa3zR'], owners, computeTokenAccount: true, })
 }
 
 module.exports = {

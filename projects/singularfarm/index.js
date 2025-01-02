@@ -1,13 +1,10 @@
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
-const { addFundsInMasterChef } = require("../helper/masterchef");
 const avaxabi = require("./avaxAbi.json");
 const bscabi = require("./bscAbi.json");
 const polyabi = require("./polyAbi.json");
 const ftmabi = require("./ftmAbi.json");
 const abiGeneral = require("../helper/abis/masterchef.json");
-const { default: BigNumber } = require("bignumber.js");
 
 const SINGTOKEN = {
 	avax: "0xF9A075C9647e91410bF6C402bDF166e1540f67F0",
@@ -108,7 +105,7 @@ async function polyTvl(timestamp, block, chainBlocks) {
 module.exports = {
 	methodology:
 		"Only staked LP is counted as TVL. Excluded in TVL : Locked SING in the bank, meltingpot, value of BNB & xJOE which aren't on CoinGecko yet.",
-	avalanche: {
+	avax:{
 		tvl: avaxTvl,
 	},
 	bsc: {

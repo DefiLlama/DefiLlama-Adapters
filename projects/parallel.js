@@ -1,19 +1,12 @@
-const retry = require('./helper/retry');
-const axios = require('axios');
-
-async function fetch() {
-        const response = (
-            await retry(
-                async (bail) => await axios.get('https://analytics.parallel.fi/api/tvl')
-            )
-        ).data;
-
-        const tvl = response.total;
-
-        return tvl
-}
+const { getExports } = require('./helper/heroku-api')
 
 module.exports = {
-    timetravel: false,
-    fetch,
-};
+  // deadFrom: '2024-08-17',
+  timetravel: false,
+  ...getExports("parallel-crowdloan", ['heiko', 'parallel']),
+}
+
+const chains = ['heiko', 'parallel']
+chains.forEach(chain => {
+  Object.keys(module.exports[chain]).forEach(key => module.exports[chain][key] =  () => ({}))  
+})

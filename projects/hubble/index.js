@@ -1,29 +1,22 @@
-const axios = require("axios");
-const BigNumber = require('bignumber.js');
-const {toUSDTBalances} = require('../helper/balances');
-const HUBBLE_API = "https://api.hubbleprotocol.io";
-
-const client = axios.create({
-  baseURL: HUBBLE_API,
-});
+const { sumTokens2 } = require("../helper/solana");
 
 async function tvl() {
-  const metrics = await client.get("/metrics");
-  const tvl = new BigNumber(metrics.data.totalValueLocked);
-  const staking = new BigNumber(metrics.data.hbb.staked).multipliedBy( metrics.data.hbb.price);
-  return toUSDTBalances(tvl.minus(staking));
+  const collateralVaultAuthority = 'HZYHFagpyCqXuQjrSCN2jWrMHTVHPf9VWP79UGyvo95L'
+  const psmVaultAuthority = '8WrqMitrgjzfqaPJ5PK6X3VT6B1Z8rDgQQny2aWwvJ8q'
+  return sumTokens2({ owners: [collateralVaultAuthority, psmVaultAuthority] })
 }
 
 async function staking() {
-  const metrics = await client.get("/metrics");
-  const value = new BigNumber(metrics.data.hbb.staked).multipliedBy(metrics.data.hbb.price);
-  return toUSDTBalances(value)
+  const hbbStakingPoolTokenAndOwner = [
+    'HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6',
+    'GbjqYShCb3LeyXuxkjLBGcmrWakqePPpMoHraQJcTtJJ'
+  ]
+
+  const tokensAndOwners = [hbbStakingPoolTokenAndOwner]
+  return sumTokens2({ tokensAndOwners, })
 }
 
 module.exports = {
-  methodology: `To obtain the Hubble Protocol TVL we use the formula 'TVL = Total HBB Staked * Current HBB Price + Total Collateral Value + Total Stablecoin (USDH) in Stability Pool'.`,
-  solana: {
-    tvl,
-    staking,
-  },
-}
+  timetravel: false,
+  solana: { tvl, staking, },
+};

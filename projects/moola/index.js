@@ -1,20 +1,18 @@
-const { getBlock } = require('../helper/getBlock')
+const ADDRESSES = require('../helper/coreAssets.json')
 const { aaveChainTvl } = require('../helper/aave')
 const { singleAssetV1Market } = require('../aave/v1')
 const sdk = require('@defillama/sdk')
 
 const v1PoolCore = "0xAF106F8D4756490E7069027315F4886cc94A8F73"
-const gasAsset = "0x471ece3750da237f93b8e339c536989b8978a438"
+const gasAsset = ADDRESSES.celo.CELO
 
 function lending(borrowed) {
-    return async (timestamp, ethBlock, chainBlocks) => {
+    return async (timestamp, ethBlock, {celo: block}) => {
         const chain = 'celo'
-        const block = await getBlock(timestamp, chain, chainBlocks, true);
         const v1Balances = {};
         await singleAssetV1Market(v1Balances, v1PoolCore, block, borrowed, chain, gasAsset);
 
         const balances = await aaveChainTvl(chain, "0xF03982910d17d11670Dc3734DD73292cC4Ab7491", addr => `celo:${addr}`, ["0x43d067ed784D9DD2ffEda73775e2CC4c560103A1"], borrowed)(timestamp, ethBlock, {
-            ...chainBlocks,
             celo: block
         })
         Object.entries(v1Balances).map(entry => sdk.util.sumSingleBalance(balances, "celo:" + entry[0], entry[1]))

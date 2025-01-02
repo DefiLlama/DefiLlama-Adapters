@@ -1,29 +1,9 @@
-const BigNumber = require("bignumber.js");
-const v2TVL = require("./v2");
-const { ETH, WETH, DEFI_SWAP_LAUNCH_DATE } = require("./constant");
-
-async function tvl(timestamp, block) {
-  const [v2] = await Promise.all([v2TVL(timestamp, block)]);
-  // replace WETH with ETH for v2
-  v2[ETH] = v2[WETH];
-  delete v2[WETH];
-
-  const tokenAddresses = new Set(Object.keys(v2));
-
-  const balances = Array.from(tokenAddresses).reduce(
-    (accumulator, tokenAddress) => {
-      const v2Balance = new BigNumber(v2[tokenAddress] || "0");
-      accumulator[tokenAddress] = v2Balance.toFixed();
-
-      return accumulator;
-    },
-    {}
-  );
-
-  return balances;
-}
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
-  start: DEFI_SWAP_LAUNCH_DATE,
-  tvl,
-};
+  misrepresentedTokens: true,
+  start: '2020-09-08', // Tuesday, 8 September 2020 00:00:00
+  ethereum: {
+    tvl: getUniTVL({ factory: '0x9DEB29c9a4c7A88a3C0257393b7f3335338D9A9D', useDefaultCoreAssets: true }),
+  },
+}

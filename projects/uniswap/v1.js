@@ -1,19 +1,20 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
+const { getLogs } = require('../helper/cache/getLogs')
 
 const START_BLOCK = 6627917;
 const FACTORY = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95';
-const ETH = '0x0000000000000000000000000000000000000000'.toLowerCase();
+const ETH = ADDRESSES.null.toLowerCase();
 
-async function tvl(timestamp, block) {
-  const logs = (await sdk.api.util
-    .getLogs({
-      keys: [],
-      toBlock: block,
+async function tvl(api) {
+  const block = api.block
+  const logs = (await getLogs({
+      api,
       target: FACTORY,
       fromBlock: START_BLOCK,
       topic: 'NewExchange(address,address)',
-    })).output;
+    }));
 
   const exchanges = {};
   logs.forEach((log) => {
@@ -48,7 +49,6 @@ async function tvl(timestamp, block) {
   return tokenBalances.reduce(
     (accumulator, tokenBalance) => {
       if(tokenBalance.output === null){
-        console.log("excluded", tokenBalance.input.target)
         return accumulator
       }
         const balanceBigNumber = new BigNumber(tokenBalance.output)
@@ -66,7 +66,7 @@ async function tvl(timestamp, block) {
       ).toFixed(),
     }
   )
-};
+}
 
 module.exports={
   tvl

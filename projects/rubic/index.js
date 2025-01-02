@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const solana = require('../helper/solana')
 const { stakings } = require('../helper/staking');
 
 const stakingContractRoundOne = '0x8d9Ae5a2Ecc16A66740A53Cc9080CcE29a7fD9F5';
 const stakingContractRoundTwo =  '0xa96cdb86332b105065ca99432916e631e469cf5d';
+const stakingContractRoundThree =  '0x3333B155fa21A972D179921718792f1036370333';
 const stakingToken = '0x8e3bcc334657560253b83f08331d85267316e08a'; // BRBC token (bsc)
 
 const pools = {
@@ -17,19 +18,21 @@ const pools = {
   arbitrum: '0x5F3c8d58A01Aad4f875d55E2835D82e12f99723c',
   aurora: '0x55Be05ecC1c417B16163b000CB71DcE8526a5D06',
   solana: 'DrmQS74dx5yDPzAJdGpVMqpSkVP9RXFQnMQAdeo1P7mj',
+  kava: '0x333b8881485fB8dE9af05d0B259a7f3f032B3333'
 };
 
 const usdcByChain = {
-  bsc: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
-  ethereum: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  polygon: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-  fantom: '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
-  avax: '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664',
+  bsc: ADDRESSES.bsc.USDC,
+  ethereum: ADDRESSES.ethereum.USDC,
+  polygon: ADDRESSES.polygon.USDC,
+  fantom: ADDRESSES.fantom.USDC,
+  avax: ADDRESSES.avax.USDC_e,
   harmony: '0x985458e523db3d53125813ed68c274899e9dfab4',
-  moonriver: '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
-  arbitrum: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-  aurora: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802',
-  solana: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+  moonriver: ADDRESSES.moonriver.USDC,
+  arbitrum: ADDRESSES.arbitrum.USDC,
+  aurora: ADDRESSES.aurora.USDC_e,
+  solana: ADDRESSES.solana.USDC,
+  kava: ADDRESSES.telos.ETH
 }
 
 function chainTvl(chain) {
@@ -46,51 +49,18 @@ function chainTvl(chain) {
   }
 }
 
-function solanaTvl() {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-    const poolBalance = await solana.getTokenBalance(usdcByChain['solana'], pools['solana']);
-
-    sdk.util.sumSingleBalance(balances, 'usd-coin', poolBalance);
-
-    return balances;
-  }
-}
-
-
 
 module.exports = {
   timetravel: false, // solana :cries:
-  methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
+  methodology: 'Staking pool balance',
   bsc: {
-    tvl: chainTvl('bsc'),
-    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo], stakingToken, 'bsc'),
+    tvl: () => ({}),
+    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken),
   },
-  ethereum: {
-    tvl: chainTvl('ethereum')
-  },
-  polygon: {
-    tvl: chainTvl('polygon')
-  },
-  fantom: {
-    tvl: chainTvl('fantom')
-  },
-  avalanche: {
-    tvl: chainTvl('avax')
-  },
-  harmony: {
-    tvl: chainTvl('harmony')
-  },
-  moonriver: {
-    tvl: chainTvl('moonriver')
-  },
-  arbitrum: {
-    tvl: chainTvl('arbitrum')
-  },
-  aurora: {
-    tvl: chainTvl('aurora')
-  },
-  solana: {
-    tvl: solanaTvl()
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
+  kava: {
+    tvl: chainTvl('kava')
   }
 }

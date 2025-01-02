@@ -1,67 +1,88 @@
-const { query } = require('../helper/terra')
-const { getBlock } = require('../helper/getBlock')
+const { queryContract, queryContracts, sumTokens, queryContractWithRetries } = require('../helper/chain/cosmos')
 const { PromisePool } = require('@supercharge/promise-pool')
+const { transformDexBalances } = require('../helper/portedTokens')
+
+function extractTokenInfo(asset) {
+  const { native_token, token, native } = asset.info
+  for (const tObject of [native_token, token, native]) {
+    if (!tObject) continue
+    if (typeof tObject === 'string') return tObject
+    const token = tObject.denom || tObject.contract_addr
+    if (token) return token
+  }
+}
 
 function getAssetInfo(asset) {
-    return [asset.info.native_token?.denom ?? asset.info.token?.contract_addr, Number(asset.amount)]
+  return [extractTokenInfo(asset), Number(asset.amount)]
 }
 
-async function getAllPairs(factory, block, phoenix) {
-    let allPairs = []
-    let currentPairs;
-    do {
-        currentPairs = (await query(`contracts/${factory}/store?query_msg={"pairs":{"limit":30${allPairs.length === 0 ? "" : `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}`
-            }}}`, block, phoenix)).pairs
-        allPairs = [...allPairs, ...currentPairs];
-    } while (currentPairs.length > 0)
-    return allPairs.map(pair => pair.contract_addr)
+async function getAllPairs(factory, chain, { blacklistedPairs = [] } = {}) {
+  const blacklist = new Set(blacklistedPairs)
+  let allPairs = []
+  let currentPairs;
+  const limit = factory === 'terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r' ? 29 : 30 // some weird native token issue at one of the pagination query
+  do {
+    const queryStr = `{"pairs": { "limit": ${limit} ${allPairs.length ? `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}` : ""} }}`
+    currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
+    allPairs.push(...currentPairs.filter(pair => !blacklist.has(pair.contract_addr)))
+  } while (currentPairs.length > 0)
+  const dtos = []
+  const getPairPool = (async (pair) => {
+    const pairRes = await queryContractWithRetries({ contract: pair.contract_addr, chain, data: { pool: {} } })
+    const pairDto = {}
+    pairDto.assets = []
+    pairDto.addr = pair.contract_addr
+    pairRes.assets.forEach((asset, idx) => {
+      const [addr, balance] = getAssetInfo(asset)
+      pairDto.assets.push({ addr, balance })
+    })
+    pairDto.pair_type = pair.pair_type
+    dtos.push(pairDto)
+  })
+  const { errors } = await PromisePool
+    .withConcurrency(10)
+    .for(allPairs)
+    .process(getPairPool)
+  if ((errors?.length ?? 0) > 50) {
+    throw new Error(`Too many errors: ${errors.length}/${allPairs.length} on ${chain}`)
+  }
+  return dtos
 }
 
-function getFactoryTvl(factory, phoenix = false) {
-    return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, phoenix ? "terra2" : "terra", chainBlocks, true)
-        const pairs = await getAllPairs(factory, block, phoenix)
+const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentrated'
 
-        let ustTvl = 0;
-        const balances = {}
-        const prices = {}
-        const addPairToTVL = async (pair, index) => {
-            const { assets } = await query(`contracts/${pair}/store?query_msg={"pool":{}}`, block, phoenix)
-            const [token0, amount0] = getAssetInfo(assets[0])
-            const [token1, amount1] = getAssetInfo(assets[1])
-            if (token0 === "uusd") {
-                ustTvl += amount0 * 2
-                if (amount1 !== 0) {
-                    prices[token1] = amount0 / amount1
-                }
-            } else if (token1 === 'uusd') {
-                ustTvl += amount1 * 2
-                if (amount0 !== 0) {
-                    prices[token0] = amount1 / amount0
-                }
-            } else if (token1 === "uluna") {
-                balances[token1] = (balances[token1] ?? 0) + amount1 * 2
-            } else {
-                balances[token0] = (balances[token0] ?? 0) + amount0
-                balances[token1] = (balances[token1] ?? 0) + amount1
-            }
-        }
-        await PromisePool
-            .withConcurrency(31)
-            .for(pairs)
-            .process(addPairToTVL)
-        Object.entries(balances).map(entry => {
-            const price = prices[entry[0]]
-            if (price) {
-                ustTvl += entry[1] * price
-            }
-        })
-        return {
-            'terrausd': ustTvl / 1e6
-        }
-    }
+function getFactoryTvl(factory, { blacklistedPairs = [] } = {}) {
+  return async (api) => {
+    const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs })).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
+
+    const otherPairs = pairs.filter(isNotXYK)
+    const xykPairs = pairs.filter(pair => !isNotXYK(pair))
+    otherPairs.forEach(({ assets }) => {
+      api.add(assets[0].addr, assets[0].balance)
+      api.add(assets[1].addr, assets[1].balance)
+    })
+
+    const data = xykPairs.map(({ assets }) => ({
+      token0: assets[0].addr,
+      token0Bal: assets[0].balance,
+      token1: assets[1].addr,
+      token1Bal: assets[1].balance,
+    }))
+    return transformDexBalances({ api, data })
+  }
+}
+
+
+function getSeiDexTvl(codeId) {
+  return async (api) => {
+    const chain = api.chain
+    const contracts = await queryContracts({ chain, codeId, })
+    return sumTokens({ chain, owners: contracts })
+  }
 }
 
 module.exports = {
-    getFactoryTvl
+  getFactoryTvl,
+  getSeiDexTvl,
+  getAssetInfo,
 }

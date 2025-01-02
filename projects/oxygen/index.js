@@ -1,17 +1,14 @@
-const axios = require("axios")
-const { toUSDTBalances } = require('../helper/balances');
+const { sumTokens2 } = require('../helper/solana')
 
-const endpoint = "https://history-api.oxygen.org/oxygen-history/public/api/v1/market-data/tvl"
 
-async function tvl() {
-    const tvl = (await axios.get(endpoint)).data
-    return toUSDTBalances(tvl)
+async function tvl(api) {
+  return sumTokens2({ owner: '4ncyWnbG22vqEmyxTfBsEdbNuQhBphaasg5q5YgoiPgq'})
 }
 
 module.exports = {
-    timetravel: false,
-    misrepresentedTokens: true,
-    solana: {
-        tvl,
-    },
+  timetravel: false,
+  solana: {
+    tvl,
+    borrowed: () => 0,
+  },
 }

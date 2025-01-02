@@ -1,6 +1,6 @@
 const {fetchURL} = require('./helper/utils')
 
-const endpoint = "https://rocketswap.exchange:2053/api/get_market_summaries_w_token"
+const endpoint = "https://rocketswap.exchange/api/get_market_summaries_w_token"
 
 async function tvl(){
     const markets = await fetchURL(endpoint)
@@ -15,5 +15,8 @@ async function tvl(){
 
 module.exports={
     timetravel: false,
-    tvl
+    lamden: {
+        tvl: () => ({}),
+    },
+  deadFrom: "2023-12-09",
 }

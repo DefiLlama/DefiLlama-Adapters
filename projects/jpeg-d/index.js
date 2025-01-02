@@ -1,15 +1,18 @@
-const { staking } = require("../helper/staking")
-const { pool2 } = require("../helper/pool2")
-
-const JPEG = "0xe80c0cd204d654cebe8dd64a4857cab6be8345a3"
-const JPEG_WETH_SLP = "0xdb06a76733528761eda47d356647297bc35a98bd"
-const staking_contract = "0x3eed641562ac83526d7941e4326559e7b607556b"
+const { staking } = require("../helper/staking");
+const { tvl, stakingJPEGD } = require("./helper/index");
+const { LP_STAKING, JPEG_WETH_SLP } = require("./helper/addresses");
 
 module.exports = {
-  methodology: `TVL for JPEG'd consists of the staking of JPEG and pool2 of the sushi JPEG/WETH LP`, 
-  ethereum:{
-    tvl: () => ({}),
-    staking: staking(staking_contract, JPEG, "ethereum"), 
-    pool2: pool2(staking_contract, JPEG_WETH_SLP, "ethereum"), 
-  }
-}
+  methodology: `Counts the floor value of all NFTs supplied in the protocol vaults`,
+  ethereum: {
+    tvl,
+    staking: stakingJPEGD,
+    pool2: staking(LP_STAKING, [JPEG_WETH_SLP]),
+  },
+  hallmarks: [
+    [1666003500, "pETH borrows"],
+    [1669551000, "JPEG LTV boost"],
+    [1690730000, "pETH-ETH Curve pool drained"],
+    [1694680200, "pETH Citadel relaunch"],
+  ],
+};

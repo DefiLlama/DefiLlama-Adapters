@@ -1,13 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
   fyields: [
     {
-      yieldBearingAsset: "0x82f0B8B456c1A451378467398982d4834b6829c1", //MIM
+      yieldBearingAsset: ADDRESSES.fantom.MIM, //MIM
       yieldProxy: "0xf730167FC2aF7a02db63d3e8CE54179A70Ea72b7",
       chain: "fantom",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", //WFTM
+      yieldBearingAsset: ADDRESSES.fantom.WFTM, //WFTM
       yieldProxy: "0xa6Dd261D8801457d4B66a6b5C262E04931C36E99",
       chain: "fantom",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
@@ -25,7 +26,7 @@ module.exports = {
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", //USDC
+      yieldBearingAsset: ADDRESSES.fantom.USDC, //USDC
       yieldProxy: "0xc0Cf1846134D90CDA5eC8244fe8c992F7A96500F",
       chain: "fantom",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
@@ -37,13 +38,13 @@ module.exports = {
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: "0x049d68029688eAbF473097a2fC38ef61633A3C7A", //fUSDT
+      yieldBearingAsset: ADDRESSES.fantom.fUSDT, //fUSDT
       yieldProxy: "0xD30303241c53097FEa1f6D75f4f0a77FEF22d435",
       chain: "fantom",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",
     },
     {
-      yieldBearingAsset: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E", //DAI
+      yieldBearingAsset: ADDRESSES.fantom.DAI, //DAI
       yieldProxy: "0xf58e5571FaEB95C703e0eBb4fDFC2eb7dB18FC53",
       chain: "fantom",
       router: "0xa2E7017FA7f38BE3eE2F6BBcA09BDBF286Bb46DD",

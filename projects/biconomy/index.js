@@ -1,86 +1,91 @@
-const { getBlock } = require("../helper/getBlock");
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { sumTokens } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { returnEthBalance } = require("../helper/utils")
 const { getChainTransform } = require("../helper/portedTokens");
 
-const bridgeContracts = {
-  ethereum: ["0x2A5c2568b10A0E826BfA892Cf21BA7218310180b"],
-  polygon: ["0x2A5c2568b10A0E826BfA892Cf21BA7218310180b"],
-  avax: ["0x2A5c2568b10A0E826BfA892Cf21BA7218310180b"],
-};
-
-// Tokens on the bridge contracts
-const bridgeTokens = [
-  {
-    // USDT
-    ethereum: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    polygon: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+// taken from https://docs.biconomy.io/products/hyphen-instant-cross-chain-transfers/contract-addresses
+const config = {
+  ethereum: {
+    bridges: [
+      '0xebaB24F13de55789eC1F3fFe99A285754e15F7b9',
+      '0x2A5c2568b10A0E826BfA892Cf21BA7218310180b',
+    ],
+    tokens: [
+      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.ethereum.DAI,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.USDT,
+    ]
   },
-  {
-    // USDC
-    ethereum: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    polygon: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    avax: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+  polygon: {
+    bridges: [
+      '0xebaB24F13de55789eC1F3fFe99A285754e15F7b9',
+      '0x2A5c2568b10A0E826BfA892Cf21BA7218310180b',
+    ],
+    tokens: [
+      ADDRESSES.polygon.USDT,
+      ADDRESSES.polygon.USDC,
+      ADDRESSES.polygon.DAI,
+      ADDRESSES.polygon.WETH_1,
+    ]
   },
-  {
-    // WETH
-    polygon: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
-    avax: "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
+  avax: {
+    bridges: [
+      '0xebaB24F13de55789eC1F3fFe99A285754e15F7b9',
+      '0x2A5c2568b10A0E826BfA892Cf21BA7218310180b',
+    ],
+    tokens: [
+      ADDRESSES.avax.USDT_e,
+      ADDRESSES.avax.USDC_e,
+      ADDRESSES.avax.DAI,
+      ADDRESSES.avax.WETH_e,
+    ]
   },
-  {
-    // BICO
-    ethereum: "0xF17e65822b568B3903685a7c9F496CF7656Cc6C2",
-    polygon: "0x91c89A94567980f0e9723b487b0beD586eE96aa7",
+  bsc: {
+    bridges: [
+      '0x279ac60785a2fcb85550eb243b9a42a543171cc7',
+      '0x94D3E62151B12A12A4976F60EdC18459538FaF08',
+    ],
+    tokens: [
+      ADDRESSES.bsc.ETH,
+      ADDRESSES.bsc.USDC,
+      ADDRESSES.bsc.USDT,
+    ]
   },
-];
-
-function chainTvl(chain) {
-  return async (time, _, chainBlocks) => {
-    const block = await getBlock(time, chain, chainBlocks, true);
-    const balances = {};
-    await Promise.all(
-      bridgeTokens.map(async (token) => {
-        if (token[chain] === undefined) {
-          return;
-        }
-
-        const chainTransform = await getChainTransform(chain);
-        const tokenAddress = await chainTransform(token[chain]);
-
-        if (bridgeContracts[chain] !== undefined) {
-          await sumTokens(
-            balances,
-            bridgeContracts[chain].map((b) => [token[chain], b]),
-            block,
-            chain,
-            () => tokenAddress
-          );
-        }
-      })
-    );
-
-    if (chain === "ethereum") {
-      const ethBal = await returnEthBalance(bridgeContracts[chain][0]);
-      sdk.util.sumSingleBalance(balances, "ethereum", ethBal);
-    }
-    return balances;
-  };
+  optimism: {
+    bridges: [
+      '0xb4778f5aefeb4605ed96e893417271d4a55e32ee',
+      '0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8',
+    ],
+    tokens: [
+      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.optimism.USDC,
+    ]
+  },
+  arbitrum: {
+    bridges: [
+      '0xb4778f5aefeb4605ed96e893417271d4a55e32ee',
+      '0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8',
+    ],
+    tokens: [
+      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.arbitrum.USDC,
+    ]
+  },
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  doublecounted: false,
+    hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
   methodology:
     "Biconomy TVL is the USD value of token balances in the Hyphen 2.0 contracts.",
-  ethereum: {
-    tvl: chainTvl("ethereum"),
-  },
-  polygon: {
-    tvl: chainTvl("polygon"),
-  },
-  avalanche: {
-    tvl: chainTvl("avax"),
-  },
-};
+}
+
+Object.keys(config).forEach(chain => module.exports[chain] = {
+  tvl: async (time, _, { [chain]: block }) => {
+    const { bridges, tokens, } = config[chain]
+    return sumTokens2({ chain, block, owners: bridges, tokens });
+  }
+})

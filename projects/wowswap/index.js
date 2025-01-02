@@ -1,5 +1,7 @@
 const BigNumber = require("bignumber.js");
 const protocol = require("./protocol");
+const { staking } = require('../helper/staking')
+const { chains, } = require("./constants");
 
 function tvl(chain) {
   return async function(timestamp, block, chainBlocks) {
@@ -14,7 +16,6 @@ function tvl(chain) {
     const shortingPairs = await protocol.getShortingPairs(lendables, shortables, chain, chainBlocks[chain]);
     const routableShortingPairs = await protocol.getRoutableShortingPairs(lendables, proxyLendables, shortables, chain, chainBlocks[chain]);
 
-    const stakedLiquidity = Object.entries(await protocol.getStakedLiquidity(chain, chainBlocks[chain]))
     const liquidity = (await Promise.all([
         reserves,
         pairs,
@@ -26,7 +27,7 @@ function tvl(chain) {
 
     const balances = {};
 
-    for (const [token, balance] of [...liquidity, ...stakedLiquidity]) {
+    for (const [token, balance] of [...liquidity, ]) {
       balances[token.toLowerCase()] = BigNumber.sum((balances[token.toLowerCase()] || 0).toString(), balance);
     }
 
@@ -39,14 +40,14 @@ function tvl(chain) {
 }
 
 module.exports = {
-  start: 1618218000,            // Mon Apr 12 2021 09:00:00
-
+  start: '2021-04-12',            // Mon Apr 12 2021 09:00:00
   misrepresentedTokens: true,
-  ethereum: { tvl: tvl("ethereum") },
-  bsc: { tvl: tvl("bsc") },
-  polygon: { tvl: tvl("polygon") },
-  heco: { tvl: tvl("heco") },
-  avax: { tvl: tvl("avax") },
-  iotex: { tvl: tvl("iotex") },
-  metis: { tvl: tvl("metis") }
 };
+
+Object.keys(chains).forEach(chain => {
+  const { WOW, xWOW, } = chains[chain]
+  module.exports[chain] = {
+    tvl: tvl(chain),
+    staking: staking(xWOW, WOW, chain, chains.ethereum.WOW)
+  }
+})

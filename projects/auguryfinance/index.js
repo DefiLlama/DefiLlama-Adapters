@@ -1,9 +1,6 @@
 const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 
 const MasterAugur = "0x6ad70613d14c34aa69E1604af91c39e0591a132e";
 
@@ -37,7 +34,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   const balance = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: lpTokens.map((lp) => ({
         target: lp,
         params: MasterAugur,
@@ -64,7 +61,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   }
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
 
   await unwrapUniswapLPs(
     balances,
@@ -77,52 +74,9 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-// ----- Treasury TVL -----
-const treasuryTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const DeveloperTeamWallet = "0xE2E26BAc2ff37A7aE219EcEF74C5A1Bf95d5f854";
-
-  /*** Tokens aren't in the file matic.json that exit in GitHub respository of the protocol ***/
-  const amWMATIC = "0x8df3aad3a84da6b69a4da8aec3ea40d9091b2ac4";
-  const OMEN = "0x76e63a3E7Ba1e2E61D3DA86a87479f983dE89a7E";
-  const QUICK = "0x831753dd7087cac61ab5644b308642cc1c33dc13";
-
-  const tokens_polygon = (
-    await utils.fetchURL(
-      "https://raw.githubusercontent.com/augury-finance/default-token-list/master/tokens/matic.json"
-    )
-  ).data.map((tokenAddress) => tokenAddress.address).filter(token => token !== "0xaaAEBE6Fe48E54f431b0C390CfaF0b017d09D42d");
-
-  tokens_polygon.push(amWMATIC, OMEN, QUICK);
-
-  const balanceTreasury = (
-    await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
-      calls: tokens_polygon.map((tp) => ({
-        target: tp,
-        params: DeveloperTeamWallet,
-      })),
-      chain: "polygon",
-      block: chainBlocks["polygon"],
-    })
-  ).output.map((lp) => lp.output);
-
-  for (let index = 0; index < tokens_polygon.length; index++) {
-      sdk.util.sumSingleBalance(
-        balances,
-        `polygon:${tokens_polygon[index]}`,
-        balanceTreasury[index]
-      );
-  }
-
-  return balances;
-};
-
 module.exports = {
   methodology: 'MasterAugur(MasterChef) contract is used to pull LP token amounts. LP tokens are unwrapped and each token token balance is considered in the TVL sum.',
   polygon: {
     tvl: polygonTvl,
-    treasury: treasuryTvl
   },
 };

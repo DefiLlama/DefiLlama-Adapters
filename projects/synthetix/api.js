@@ -1,8 +1,10 @@
-const sdk = require('@defillama/sdk');
+const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { requery } = require('../helper/requery');
+const { sliceIntoChunks, } = require('../helper/utils');
 const { request, gql } = require("graphql-request");
 
 const QUERY_NO_BLOCK = gql`
@@ -20,15 +22,15 @@ const synthetixStates = {
   optimism: '0x8377b25B8564f6Be579865639776c5082CB37163' // It's Issuer, not SynthetixState but has the same issuanceRatio function
 }
 const synthetixs = {
-  ethereum: '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+  ethereum: ADDRESSES.ethereum.SNX,
   optimism: '0x8700daec35af8ff88c16bdf0418774cb3d7599b4'
 }
 const snxGraphEndpoints = {
-  ethereum: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-ethereum',
-  optimism: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-optimism-regenesis'
+  ethereum: sdk.graph.modifyEndpoint('2chLKUMdvBJEbrceCdvCF8VGB1xQ3Ytbyujj9Rw3WyKY'),
+  optimism: sdk.graph.modifyEndpoint('5NQi9n4ztd8M6EEDFKA6gwcCnbLdmzZRymiDbPkbjEWN')
 }
 const ethStaking = "0xc1aae9d18bbe386b102435a8632c8063d31e747c"
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+const weth = ADDRESSES.ethereum.WETH
 
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -39,8 +41,8 @@ function chainTvl(chain) {
     let totalTopStakersSNXLocked = new BigNumber(0);
     let totalTopStakersSNX = new BigNumber(0);
 
-    const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 300)
-    console.log('holders count: ', holdersAll.flat().length, chain)
+    const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 5000)
+    sdk.log('holders count: ', holdersAll.flat().length, chain)
 
     const issuanceRatio = (await sdk.api.abi.call({
       block,
@@ -49,7 +51,10 @@ function chainTvl(chain) {
       abi: abi['issuanceRatio']
     })).output;
 
+    let i = 0
+
     for (const holders of holdersAll) {
+      sdk.log('fetching %s of %s', ++i, holdersAll.length)
 
       const calls = holders.map(holder => ({ target: synthetix, params: holder }))
       const [ratio, collateral] = await Promise.all([
@@ -94,7 +99,6 @@ function chainTvl(chain) {
       abi: abi['totalSupply']
     })).output;
 
-    //console.log(unformattedSnxTotalSupply, new BigNumber(unformattedSnxTotalSupply).div(Math.pow(10, 18)))
     const snxTotalSupply = parseInt(new BigNumber(unformattedSnxTotalSupply).div(Math.pow(10, 18)));
     const totalSNXLocked = percentLocked.times(snxTotalSupply);
 
@@ -131,17 +135,8 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
   return Array.from(holders)
 }
 
-function sliceIntoChunks(arr, chunkSize = 100) {
-  const res = [];
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    const chunk = arr.slice(i, i + chunkSize);
-    res.push(chunk);
-  }
-  return res;
-}
-
 module.exports = {
-  start: 1565287200,  // Fri Aug 09 2019 00:00:00
+  start: '2019-08-08',  // Fri Aug 09 2019 00:00:00
   optimism: {
     tvl: chainTvl("optimism")
   },

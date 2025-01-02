@@ -1,101 +1,109 @@
-const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require('../helper/staking')
 const { fetchURL } = require('../helper/utils')
 
 
-async function staking(){
-    const tvl = await fetchURL("https://staking.muesliswap.com/milk-locked")
-    if(tvl.data<=0){
+async function staking() {
+    let totalAda = 0
+    // Milk locked
+    const tvlMilk = (
+        (await fetchURL("https://staking.muesliswap.com/milk-locked")).data +
+        (await fetchURL("https://staking.muesliswap.com/milk-vault-locked")).data
+    )
+    if (tvlMilk.data <= 0) {
         throw new Error("muesliswap tvl is below 0")
     }
-    const orders = (await fetchURL(`https://orders.muesliswap.com/orderbook/?policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa&tokenname=MILK`)).data
-    if(orders.fromToken !== "."){
-        throw new Error("Tokens paired against something other than ADA")
-    }
-    const topPrice = orders.buy[0].price
-    return {
-        cardano: tvl.data * topPrice
-    }
-}
+    const infoMilk = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
+    const priceMilk = parseFloat(infoMilk.price)
+    totalAda += priceMilk * tvlMilk / 1e6
 
+    // Myield locked
+    const tvlMyield = parseFloat((await fetchURL("http://staking.muesliswap.com/myield-info")).data[0]["amountStaked"]) / 1e6
+    const infoMyield = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d5949454c44&quote-policy-id=8f9c32977d2bacb87836b64f7811e99734c6368373958da20172afba`)).data
+    const priceMyield = parseFloat(infoMyield.price)
+    totalAda += priceMyield * tvlMyield / 1e6
 
-async function adaTvl(){
-    const tokens = (await fetchURL("https://orders.muesliswap.com/known-tokens")).data
-    let totalAda = 0
-    await Promise.all(tokens.map(async t=>{
-        const policyId = t.address.split(".")[0];
-        const tokenname = t.address.split(".")[1];
-        const orders = (await fetchURL(`https://orders.muesliswap.com/orderbook/?policy-id=${policyId}&tokenname=${encodeURIComponent(tokenname)}`)).data
-        if(orders.fromToken !== "."){
-            throw new Error("Tokens paired against something other than ADA")
-        }
-        let totalBuy= 0;
-        orders.buy.forEach(o=>{
-            totalBuy += o.totalPrice
-        })
-        if(orders.buy.length === 0 || orders.sell.length === 0){
-            return
-        }
-        const topPrice = orders.buy[0].price
-        let totalAmountOtherToken = 0
-        orders.sell.forEach(o=>{
-            totalAmountOtherToken += o.amount
-        })
-        const totalSell = totalAmountOtherToken * topPrice
-        totalAda += totalBuy + totalSell
-    }))
-    const orderbooksv2 = (await fetchURL("https://orderbookv2.muesliswap.com/all-orderbooks")).data
-    await Promise.all(orderbooksv2.map(async orders=>{
-        if(orders.fromToken !== "."){
-            throw new Error("Tokens paired against something other than ADA")
-        }
-        let totalBuy= 0;
-        orders.buy.forEach(o=>{
-            totalBuy += (o.totalLvl / 1e6)
-        })
-        if(orders.buy.length === 0 || orders.sell.length === 0){
-            return
-        }
-        const topPrice = (orders.buy[0].lvlPerToken / 1e6)
-        let totalAmountOtherToken = 0
-        orders.sell.forEach(o=>{
-            totalAmountOtherToken += o.amount
-        })
-        const totalSell = totalAmountOtherToken * topPrice
-        totalAda += totalBuy + totalSell
-    }))
     return {
         cardano: totalAda
     }
 }
 
-module.exports={
+
+async function adaTvl() {
+    let totalAda = 0
+
+    // fetch the prices of each traded token first
+    const adaPrices = new Map(Object.entries((await fetchURL("https://api.muesliswap.com/defillama/prices")).data))
+
+   /*  // then first accumulate over the legacy orderbook
+    const orderbookV1 = (await fetchURL("https://orders.muesliswap.com/all-orderbooks")).data
+    const vOrderbookV1 = orderbookV1.map(ob => {
+        if (ob.fromToken === ".") {
+            const totalBuy = ob.buy.map(o => parseFloat(o.totalPrice)).reduce((p, c) => p + c, 0)
+            const totalSell = ob.sell.map(o => parseFloat(o.amount)).reduce((p, c) => p + c, 0)
+            // Find the price (we need to convert the tokenname to hex first for this)
+            const policyId = ob.toToken.split('.')[0]
+            const name = Buffer.from(ob.toToken.split('.', 2)[1]).toString('hex').toLowerCase()
+            const price = (adaPrices.get(policyId + '.' + name)?.bidPrice ?? 0) / 1e6
+            return (totalBuy + totalSell * price)
+        } else {
+            const totalBuy = ob.buy.map(o => parseFloat(o.totalPrice)).reduce((p, c) => p + c, 0)
+            const totalSell = ob.sell.map(o => parseFloat(o.amount)).reduce((p, c) => p + c, 0)
+            // Find the price (we need to convert the tokenname to hex first for this)
+            const fromPolicyId = ob.fromToken.split('.')[0]
+            const fromName = Buffer.from(ob.fromToken.split('.', 2)[1]).toString('hex').toLowerCase()
+            const fromPrice = (adaPrices.get(fromPolicyId + '.' + fromName)?.bidPrice ?? 0) / 1e6
+            const toPolicyId = ob.toToken.split('.')[0]
+            const toName = Buffer.from(ob.toToken.split('.', 2)[1]).toString('hex').toLowerCase()
+            const toPrice = (adaPrices.get(toPolicyId + '.' + toName)?.bidPrice ?? 0) / 1e6
+            return (totalBuy * fromPrice + totalSell * toPrice)
+        }
+    })
+    totalAda += vOrderbookV1.reduce((p, c) => p + c, 0) */
+
+    // then accumulate over the orderbooks
+    const orderbookV2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
+    const vOrderbookV2 = orderbookV2
+        .map(ob => {
+            if (ob.fromToken === ".") {
+                const totalBuy = ob.orders
+                    .filter(o => !o.providers.includes("muesliswapAMM"))
+                    .map(o => parseInt(o.fromAmount)).reduce((p, c) => p + c, 0)
+                return totalBuy
+            } else {
+                const price = adaPrices.get(ob.fromToken)?.bidPrice ?? 0
+                const totalAmountOtherToken = ob.orders
+                    .filter(o => !o.providers.includes("muesliswapAMM"))
+                    .map(o => parseInt(o.fromAmount)).reduce((p, c) => p + c, 0)
+                const totalSell = totalAmountOtherToken * price
+                return totalSell
+            }
+        })
+    totalAda += vOrderbookV2.reduce((p, c) => p + c, 0) / 1e6
+
+    // and add pool TVLs
+    const pools = (await fetchURL("https://api.muesliswap.com/liquidity/pools?providers=muesliswap,muesliswap_clp,muesliswap_v2&only-verified=n")).data
+    const vPools = pools.map(p => {
+        const amountA = parseInt(p.tokenA.amount) * parseFloat(p.tokenA.priceAda)
+        const amountB = parseInt(p.tokenB.amount) * parseFloat(p.tokenB.priceAda)
+        return amountA + amountB
+    })
+    totalAda += vPools.reduce((p, c) => p + c, 0) / 1e6
+
+    return {
+        cardano: totalAda
+    }
+}
+
+module.exports = {
     misrepresentedTokens: true,
     timetravel: false,
     methodology: "The factory addresses are used to find the LP pairs on Smart BCH and Milkomeda. For Cardano we calculate the tokens on resting orders on the order book contracts. TVL is equal to the liquidity on the AMM plus the open orders in the order book",
-    smartbch: {
-        tvl:calculateUsdUniTvl("0x72cd8c0B5169Ff1f337E2b8F5b121f8510b52117", "smartbch", "0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04", ["0xc8E09AEdB3c949a875e1FD571dC4b3E48FB221f0"], "bitcoin-cash"),
-        staking: stakingPricedLP("0x4856BB1a11AF5514dAA0B0DC8Ca630671eA9bf56", "0xc8E09AEdB3c949a875e1FD571dC4b3E48FB221f0", "smartbch", "0x599061437d8455df1f86d401FCC2211baaBC632D", "bitcoin-cash", false, 18)
-    },
-    cardano:{
+    cardano: {
         tvl: adaTvl,
-        staking
+        // staking
     },
     milkomeda: {
-        tvl: calculateUsdUniTvl(
-            '0x57A8C24B2B0707478f91D3233A264eD77149D408',
-            'milkomeda',
-            '0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9',
-            [
-                '0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844', //TETHER
-                '0xb44a9b6905af7c801311e8f4e76932ee959c663c', //USDC
-                '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D', //ETH
-                '0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c', //ceETH
-                '0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A', //AVAX
-                '0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8', //BTC
-                '0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52', //BNB
-            ],
-            'cardano'
-        )
+        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', useDefaultCoreAssets: true }),
     }
 }

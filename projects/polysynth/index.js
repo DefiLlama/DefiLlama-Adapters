@@ -1,39 +1,29 @@
-const sdk = require("@defillama/sdk");
-const {transformPolygonAddress} = require('../helper/portedTokens');
-const { staking } = require("../helper/staking");
+const { getConfig } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+let _response;
 
-const insuranceFund = "0x809F76d983768846acCbD8F8C9BDc240dC39bf8B"
-const manager = "0xeC5ae95D4e9288a5C7c744F278709C56e9dC34eD"
-const usdcMatic = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
-const stakingAddress = "0xb88cc657d93979495045e9f204cec2eed265ed42"
-
-async function tvl(_timestamp, ethBlock, chainBlocks) {
-    const balances = {};
-    const underlyingBalances = await sdk.api.abi.multiCall({
-        calls: [{
-            target: usdcMatic,
-            params: insuranceFund
-        },{
-            target: usdcMatic,
-            params: manager
-        },{
-            target: usdcMatic,
-            params: stakingAddress
-        }],
-        block: chainBlocks.polygon,
-        abi: "erc20:balanceOf",
-        chain: 'polygon'
-    });
-    const usdc = await (await transformPolygonAddress())(usdcMatic);
-    sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[0].output)
-    sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[1].output)
-    sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[2].output)
-
-    return balances
+async function getVaults(chain) {
+  if (!_response) _response = getConfig('polysynth', 'https://fast-wren-87.hasura.app/api/rest/vaults/all/meta')
+  return (await _response).vault_meta_data
+    .filter(i => i.chain_id === chains[chain])
 }
 
-module.exports = {    
-    polygon: {
-        tvl: tvl        
-    }    
+const chains = {
+  ethereum: 1,
+  polygon: 137,
+  arbitrum: 42161
 }
+
+module.exports = {};
+
+Object.keys(chains).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const vaultData = await getVaults(chain)
+      const vaults = vaultData.map(i => i.vault_address)
+      const beefys = await api.multiCall({ abi: 'address:BEEFY_VAULT', calls: vaults, permitFailure: true, })
+      const tokens = vaultData.map((v, i) => beefys[i] ? beefys[i] : v.asset_address)
+      return sumTokens2({ api, tokensAndOwners2: [tokens, vaults] })
+    }
+  }
+})

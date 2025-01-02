@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
@@ -10,7 +11,7 @@ const sdk = require("@defillama/sdk");
 
 async function tvl(timestamp, block) {
   // WETH ERC20 contract
-  const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+  const weth = ADDRESSES.ethereum.WETH;
 
   // Contract holding all of the WETH balance in the system
   const ethCollateralJoin = "0x2D3cD7b81c93f188F3CB8aD87c8Acc73d6226e3A";
@@ -31,6 +32,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-  start: 1613520000,
-  tvl,
+  start: '2021-02-17',
+  ethereum: { tvl },
 };

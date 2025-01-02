@@ -8,12 +8,10 @@
   "timetravel",
   "borrowed",
   "start",
-  "masterchef",
   "doublecounted",
-  "treasury",
   "hallmarks",
-  "incentivized",
-  "offers",
+  "isHeavyProtocol",
   "deadFrom",
-  "broken"
+  "ownTokens",
+  "vesting"
 ]

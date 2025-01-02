@@ -1,53 +1,5 @@
-const sdk = require('@defillama/sdk');
-const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
-const { getBlock } = require('../helper/getBlock');
 const { chainExports: getChainExports } = require('../helper/exports');
-
-function elkAddress(chain) {
-  switch(chain) {
-    case 'iotex': 
-    return '0xa00744882684c3e4747faefd68d283ea44099d03';
-    default:
-      return '0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE';
-  }
-} 
-
-function geckoId(chain) {
-  switch(chain) {
-    case 'iotex': 
-    return 'iotex';
-    default:
-      return 'elk-finance';
-  }
-}
-
-function whitelist(chain) {
-  switch(chain) {
-    case 'iotex': 
-    return ["0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE", "0x3b2bf2b523f54c4e454f08aa286d03115aff326c"];
-    default:
-      return [];
-  }
-}
-const stakingContracts = {
-  "heco": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "polygon": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "bsc": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "avax": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "fantom": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "xdai": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "okexchain": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "elastos": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "hoo": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "moonriver": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "kcc": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "harmony": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "cronos": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "telos": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "fuse": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-  "iotex": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
-};
-// node test.js projects/elkfinance/index.js
+const { getUniTVL } = require('../helper/unknownTokens')
 
 const factories = {
   xdai: "0xCB018587dA9590A18f49fFE2b85314c33aF3Ad3B",
@@ -66,30 +18,31 @@ const factories = {
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
   fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
   iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42",
-  ethereum: "0x6511eBA915fC1b94b2364289CCa2b27AE5898d80", 
+  ethereum: "0x6511eBA915fC1b94b2364289CCa2b27AE5898d80",
   optimism: "0xedfad3a0F42A8920B011bb0332aDe632e552d846",
-  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0"
+  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0",
+  kava: "0xC012C4b3d253A8F22d5e4ADA67ea2236FF9778fc",
+  bittorrent: "0xc06348AEE3f3E92eE452816E0D3F25C919F6fB04",
+  bitgert: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  metis: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  wan: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  neon_evm: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  astar: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  base: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  linea: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  velas: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  q: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  rsk: "0x69D10bc18cd588a4B70F836A471D4e9c2Fd86092"
 }
 
-function chainTvl(chain){
-  return calculateUsdUniTvl(
-    factories[chain], 
-    chain, 
-    elkAddress(chain), 
-    whitelist(chain),
-    geckoId(chain),
-    18,
-    true
-  )
+function chainTvl(chain) {
+  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, blacklistedTokens: ['0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978'] })
 }
 
 const chainExports = getChainExports(chainTvl, Object.keys(factories))
-chainExports.misrepresentedTokens= true;
-chainExports.timetravel= true
-/*
-Object.entries(stakingContracts).forEach(contract=>{
-  chainExports[contract[0] === "avax"?"avalanche":contract[0]].staking = chainStaking(contract[0], contract[1])
-})
-*/
+chainExports.misrepresentedTokens = true;
+chainExports.timetravel = true
 
 module.exports = chainExports
+
+module.exports.hoo.tvl = () => ({})

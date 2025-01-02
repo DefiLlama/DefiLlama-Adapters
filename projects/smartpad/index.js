@@ -1,4 +1,3 @@
-const {getBlock} = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 
 const data = {
@@ -20,11 +19,10 @@ const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals)
 
 function getTVLFunction(chain)
 {
-    return async function tvl(timestamp, ethBlock, chainBlocks) {
+    return async function tvl(timestamp, ethBlock, {[chain]: block}) {
         const balances = {};
 
         const chainData = data[chain];
-        const block = await getBlock(timestamp, chain, chainBlocks);
 
         const balance = await sdk.api.erc20.balanceOf({
             block,
@@ -54,3 +52,5 @@ module.exports={
       tvl: () => ({})
     }
 }
+module.exports.deadFrom = '2022-08-09'
+

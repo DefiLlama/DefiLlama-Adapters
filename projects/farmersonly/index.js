@@ -1,68 +1,76 @@
-const { default: axios } = require("axios");
-const { toUSDTBalances } = require("../helper/balances");
-const retry = require("../helper/retry");
+const { getUniTVL } = require('../helper/unknownTokens')
+const abi = require('./abi')
+const { stakings } = require('../helper/staking')
+const sdk = require('@defillama/sdk')
+const { createIncrementArray, log } = require('../helper/utils')
+const { getChainTransform } = require('../helper/portedTokens')
+const { unwrapLPsAuto } = require('../helper/unwrapLPs')
 
-const farmApi = "https://api.elision.farm/getFarmStats/harmony/farmersonlyfi";
-const vaultApi = "https://api.elision.farm/getFarmStats/harmony/farmersonlyfi-vault";
+const fox = '0x0159ED2E06DDCD46a25E74eb8e159Ce666B28687'
+const vaultChef = '0x2914646e782cc36297c6639734892927b3b6fe56'
+const chain = 'harmony'
 
-async function getFarmTvl(category) {
-  let { data: farms } = await retry(async (bail) => await axios.get(farmApi));
-  let tvl = getTvl(farms, category);
-  return tvl;
-}
+const dexTVL = getUniTVL({
+  factory: '0xfa53b963a39621126bf45f647f813952cd3c5c66',
+  useDefaultCoreAssets: true,
+})
 
-async function getVaultTvl(category) {
-  let { data: vaults } = await retry(async (bail) => await axios.get(vaultApi));
-  let tvl = getTvl(vaults, category);
-  return tvl;
-}
+const vaultTvl = async (_, _b, { [chain]: block }) => {
+  const { output: poolLength } = await sdk.api.abi.call({
+    target: vaultChef,
+    abi: abi.poolLength,
+    chain, block,
+  })
+  const vaultCalls = createIncrementArray(poolLength).map(i => ({ params: i }))
 
-async function getTvl(data, category) {
-  let tvl = 0;
-  for (let i = 0; i < data.length; i++) {
-    switch (category) {
-      case "pool2":
-        if (data[i].name.startsWith("FOX")) {
-          tvl += data[i].farm_liquidity_usd;
-        }
-        break;
-      case "staking":
-        if (data[i].name === "FOX POOL") {
-          return data[i].farm_liquidity_usd;
-        }
-        break;
-      default:
-        if (data[i].name !== "FOX POOL" && !data[i].name.startsWith("FOX")) {
-          tvl += data[i].farm_liquidity_usd;
-        }
-        break;
+  const { output: vaultRes } = await sdk.api.abi.multiCall({
+    target: vaultChef,
+    abi: abi.poolInfo,
+    calls: vaultCalls,
+    chain, block,
+  })
+
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls: vaultRes.map(i => ({ target: i.output.want })),
+    chain, block,
+  })
+
+  const tokenCalls = []
+  const tokens = []
+  const blacklisted = [
+    '0x4342659cE0Bda7EB9A9621Eb5dF5A67CE8f5ac85',
+    '0xAd600896f611686F4B83FfEd29b4AE4BF70558a5',
+  ].map(i => i.toLowerCase())
+  symbols.forEach(({ output, }, i) => {
+    const strat = vaultRes[i].output.strat.toLowerCase()
+    if (blacklisted.includes(strat)) {
+      return;
     }
-  }
-  return tvl;
+    if (output !== 'FOX-LP') {
+      tokens.push(vaultRes[i].output.want)
+      tokenCalls.push({ target: strat, })
+    }
+  })
+
+  const { output: tokenRes } = await sdk.api.abi.multiCall({
+    abi: abi.wantLockedTotal,
+    calls: tokenCalls,
+    chain, block,
+  })
+
+  const transform = await getChainTransform(chain)
+  const balances = {}
+  tokenRes.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances, transform(tokens[i]), output))
+
+  await unwrapLPsAuto({ balances, chain, block, transformAddress: transform, })
+  return balances
 }
 
-async function harmonyTvl() {
-  let farmTvl = await getFarmTvl();
-  let vaultTvl = await getVaultTvl();
-  return toUSDTBalances(farmTvl + vaultTvl);
-}
-
-async function pool2() {
-  let farmTvl = await getFarmTvl("pool2");
-  let vaultTvl = await getVaultTvl("pool2");
-  return toUSDTBalances(farmTvl + vaultTvl);
-}
-
-async function staking() {
-  let farmTvl = await getFarmTvl("staking");
-  let vaultTvl = await getVaultTvl("staking");
-  return toUSDTBalances(farmTvl + vaultTvl);
-}
 
 module.exports = {
   harmony: {
-    tvl: harmonyTvl,
-    pool2,
-    staking
-  },
-};
+    tvl: sdk.util.sumChainTvls([vaultTvl, dexTVL]),
+    staking: stakings(['0x15e04418d328c39bA747690F6DaE9Bbf548CD358', '0xA68E643e1942fA8635776b718F6EeD5cEF2a3F15',], '0x0159ed2e06ddcd46a25e74eb8e159ce666b28687')
+  }
+}

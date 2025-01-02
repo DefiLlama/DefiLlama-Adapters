@@ -1,0 +1,3 @@
+{
+  "getTokenBalancesWithSupplies": "function getTokenBalancesWithSupplies(address _account, address[] _tokens) view returns (uint256[])"
+}

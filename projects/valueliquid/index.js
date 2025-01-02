@@ -1,76 +1,7 @@
-/*==================================================
-  Modules
-==================================================*/
 
-const sdk = require('@defillama/sdk');
-const getCurrentTokens = require('./abis/getCurrentTokens.json');
+const { v1Tvl } = require('../helper/balancer')
 
-const BigNumber = require("bignumber.js");
-
-async function valueLiquidTvl(timestamp, block) {
-  let balances = {
-    '0x0000000000000000000000000000000000000000': '0', // ETH
-  };
-
-  let poolLogs = await sdk.api.util.getLogs({
-    target: '0xEbC44681c125d63210a33D30C55FD3d37762675B',
-    topic: 'LOG_NEW_POOL(address,address)',
-    keys: ['topics'],
-    fromBlock: 10961776,
-    toBlock: block
-  });
-
-  let poolCalls = [];
-
-  let pools = poolLogs.output.map((poolLog) => {
-    return `0x${poolLog[2].slice(26)}`
-  });
-
-  const poolTokenData = (await sdk.api.abi.multiCall({
-    calls: pools.map((poolAddress) => ({target: poolAddress})),
-    abi: getCurrentTokens,
-  })).output;
-
-  poolTokenData.forEach((poolToken) => {
-    let poolTokens = poolToken.output;
-    let poolAddress = poolToken.input.target;
-
-    poolTokens.forEach((token) => {
-      poolCalls.push({
-        target: token,
-        params: poolAddress,
-      });
-    })
-  });
-
-  let poolBalances = (await sdk.api.abi.multiCall({
-    block,
-    calls: poolCalls,
-    abi: 'erc20:balanceOf'
-  })).output;
-
-  poolBalances.forEach((balanceOf) => {
-      let balance = balanceOf.output;
-      let address = balanceOf.input.target;
-
-      if (new BigNumber(balance).toNumber() <= 0) {
-        return;
-      }
-
-      balances[address] = new BigNumber(balances[address] || 0).plus(balance).toFixed();
-  });
-
-  return balances;
-}
-
-async function tvl(timestamp, block) {
-  return await valueLiquidTvl(timestamp, block);
-}
-
-/*==================================================
-  Exports
-==================================================*/
 module.exports = {
-  start: 1601440616,  // 09/30/2020 @ 4:36am (UTC)
-  ethereum: { tvl }
+  start: '2020-09-30',  // 09/30/2020 @ 4:36am (UTC)
+  ethereum: { tvl: v1Tvl('0xebc44681c125d63210a33d30c55fd3d37762675b', 10961776) }
 };

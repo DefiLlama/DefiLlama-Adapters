@@ -1,15 +1,5 @@
 {
-    "totalLoansOutstanding":     {
-      "inputs": [],
-      "name": "totalLoansOutstanding",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+  "totalLoansOutstanding": "uint256:totalLoansOutstanding",
+  "pools": "function pools(address) view returns (uint256 totalMinted, uint256 totalPrincipalRedeemed, bool created)",
+  "assets": "uint256:assets"
 }
