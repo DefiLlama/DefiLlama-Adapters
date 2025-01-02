@@ -165,7 +165,7 @@ const chainConfig = {
 		stakingContract: null,
 		stakingContractV2: null,
 	},
-	mantle: {
+	sonic: {
 		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
 		woo: null,
 		stakingContract: null,
