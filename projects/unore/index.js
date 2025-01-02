@@ -33,7 +33,7 @@ const config = {
   rollux: {
     uToken: uno_rollux, // UNO Rollux token for staking only
     tokensAndOwners: [
-      ['0x4200000000000000000000000000000000000006', '0x7393310FdC8ed40B35D2afD79848BC7166Ae0474'], // Plutus
+      [ADDRESSES.optimism.WETH_1, '0x7393310FdC8ed40B35D2afD79848BC7166Ae0474'], // Plutus
     ],
     pools: [
       '0x8685C2b4D2024805a1FF6831Bc4cc8569457811D', // Athena
@@ -43,7 +43,7 @@ const config = {
 }
 
 module.exports = {
-  start: 1626100000,  // Sep-20-2021 07:27:47 AM +UTC
+  start: '2021-07-12',  // Sep-20-2021 07:27:47 AM +UTC
   kava: { tvl: async () => ({})},
 };
 
