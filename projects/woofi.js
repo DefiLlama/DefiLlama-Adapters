@@ -83,6 +83,7 @@ const wooPPConfig = {
 		'0xcDA86A272531e8640cD7F1a92c01839911B90bb0', // mETH
 		ADDRESSES.mantle.USDT, // USDT
 		ADDRESSES.mantle.USDC, // USDC
+		'0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA', // cmETH
 	],
 	sonic: [
 		ADDRESSES.sonic.wS, //wS
