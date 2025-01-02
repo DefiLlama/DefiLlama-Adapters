@@ -84,6 +84,11 @@ const wooPPConfig = {
 		ADDRESSES.mantle.USDT, // USDT
 		ADDRESSES.mantle.USDC, // USDC
 	],
+	sonic: [
+		ADDRESSES.sonic.wS, //wS
+		'0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
+		ADDRESSES.sonic['USDC.e'], // USDC.e
+	],
 }
 
 const chainConfig = {
@@ -148,6 +153,12 @@ const chainConfig = {
 		stakingContractV2: null,
 	},
 	base: {
+		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	mantle: {
 		wooPPContract: '0xEd9e3f98bBed560e66B89AaC922E29D4596A9642',
 		woo: null,
 		stakingContract: null,
