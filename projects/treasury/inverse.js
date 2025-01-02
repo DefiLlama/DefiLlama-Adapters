@@ -64,7 +64,10 @@ module.exports = treasuryExports({
       "0x0404d05F3992347d2f0dC3a97bdd147D77C85c1c",// dola-fraxusdc lp CVX
     ],
     auraPools: [
-      "0xA36d3799eA28f4B75653EBF9D91DDA4519578086", // sDOLA-DOLA aura pool
+      // "0xA36d3799eA28f4B75653EBF9D91DDA4519578086", // sDOLA-DOLA aura pool
+    ], 
+    blacklistedLPs: [
+      '0xcb79637aaffdc1e8db17761fa10367b46745ecb0'
     ]
   },
   optimism: {

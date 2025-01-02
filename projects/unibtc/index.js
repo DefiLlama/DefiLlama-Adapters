@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const defaultVault = '0xF9775085d726E782E83585033B58606f7731AB18'
 const extraVault = '0x84E5C854A7fF9F49c888d69DECa578D406C26800'
 
-const fbtc0  = '0xc96de26018a54d51c097160568752c4e3bd6c364'
+const fbtc0  = ADDRESSES.bob.FBTC
 const fbtc1 = '0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c'
 
 const config = {

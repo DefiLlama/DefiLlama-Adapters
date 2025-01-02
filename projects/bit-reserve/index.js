@@ -7,7 +7,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'The total value of BTC in the rBTC contract on the BIT-RESERVE platform.',
-  start: 1715917267,
+  start: '2024-05-17',
   core: {
     tvl
   }

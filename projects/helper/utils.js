@@ -101,6 +101,7 @@ function isLP(symbol, token, chain) {
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
   if (chain === 'shibarium' && ['SSLP', 'ChewyLP'].includes(symbol)) return true
+  if (chain === 'omax' && ['OSWAP-V2'].includes(symbol)) return true
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
@@ -257,7 +258,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos']
+    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel']
     if (!token.startsWith('0x') || blacklistedChains.includes(chain)) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
@@ -306,12 +307,16 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   sdk.log('Balance table for [%s] %s', chain, tableLabel)
-  const filtered = logObj.filter(i => {
+  let filtered = logObj.filter(i => {
     const symbol = i.symbol?.toLowerCase() ?? ''
     if (/\.(com|net|org|xyz|site|io)/.test(symbol)) return false
     if (/claim|access|airdrop/.test(symbol)) return false
     return true
   })
+  if (filtered.length > 300) {
+    sdk.log('Too many unknowns to display #'+filtered.length, 'displaying first 100')
+    filtered = filtered.slice(0, 100)
+  }
   if (filtered.length)
     console.table(filtered)
 }

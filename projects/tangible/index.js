@@ -11,7 +11,6 @@ const realTvl = async (api) => {
   const basketManager = '0x5e581ce0472bF528E7F5FCB96138d7759AC2ac3f'.toLowerCase()
   // get all baskets in existance
   const baskets = await api.call({ abi: 'address[]:getBasketsArray', target: basketManager })
-  console.log(baskets)
   const basketTVL = await api.multiCall({  abi: 'uint256:getTotalValueOfBasket', calls: baskets})
   api.add(USTB, basketTVL)
 }

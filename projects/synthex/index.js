@@ -14,7 +14,6 @@ const DAI = ADDRESSES.optimism.DAI;
 
 module.exports = {
     methodology: "counts value of assets in the PoolC and PoolF",
-    start: 82762407,
     arbitrum: {
         tvl: sumTokensExport({
             ownerTokens: [
