@@ -37,6 +37,7 @@ const poolHelpers = {
   'core': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'gravity': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'iotex': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'morph': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
