@@ -21,7 +21,7 @@ async function tvl() {
     pools
       .filter(({ shares_total_supply }) => +shares_total_supply > 0) // Token pair must have some liquidity
       .map(({ token_account_ids, pool_kind, amounts }) => {
-        if (!['SIMPLE_POOL', 'STABLE_SWAP', "RATED_SWAP"].includes(pool_kind)) throw new Error('Unknown pool kind.')
+        // if (!['SIMPLE_POOL', 'STABLE_SWAP', "RATED_SWAP"].includes(pool_kind)) throw new Error('Unknown pool kind.')
         token_account_ids.forEach((token, index) => {
           sumSingleBalance(balances, token, amounts[index])
         })

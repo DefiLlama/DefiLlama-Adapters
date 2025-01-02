@@ -15,12 +15,12 @@ const network = {
 
 async function getReserveDeposits(poolId, reserveId, isBorrowed = false) {
   const data = await ReserveData.load(network, poolId, reserveId)
-  const rate = Number(data.bRate) / 1e9
-  const supply = Number(data.bSupply)
-  const borrowed = Number(data.dSupply)
-  if (isBorrowed)
-    return borrowed * rate
-  return (supply - borrowed) * rate
+   // bRate and dRate have 9 decimals
+   const supply = Number(data.bSupply) * Number(data.bRate) / 1e9;
+   const borrowed = Number(data.dSupply) * Number(data.dRate) / 1e9
+   if (isBorrowed)
+     return borrowed
+   return supply - borrowed
 }
 
 
@@ -39,9 +39,9 @@ async function addPoolTVL(poolId, api, isBorrowed = false) {
 
 async function tvl(api) {
   let backstop = await BackstopConfig.load(network, BACKSTOP_ID);
-  for (const pool of backstop.rewardZone)
+  for (const pool of backstop.rewardZone){
     await addPoolTVL(pool, api);
-
+}
   return sumTokens2({ api })
 }
 

@@ -23,7 +23,6 @@ async function tvl(_, block) {
 
 module.exports = {
       methodology: 'counts the amount of LUSD tokens in the 3 buckets of the LUSD ChickenBonds protocol.',
-  start: 15674057,
   ethereum: {
     tvl,
   },

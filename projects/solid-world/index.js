@@ -47,7 +47,7 @@ async function pool2(api) {
 }
 
 module.exports = {
-  start: 1684477800, // Fri May 19 2023 06:30:00 GMT+0000
+  start: '2023-05-19', // Fri May 19 2023 06:30:00 GMT+0000
   methodology: `TVL is a measure of the health of the Solid World ecosystem. The TVL can be looked at from 2 perspectives. The 1st perspective, "RWA" valuation, represents the total value of the tokenized forward carbon credits, and is computed as the present value of the on-chain forward credits (ERC1155), based on their exchange rate to CRISP tokens (ERC20) and subsequent USDC value, summed-up.The 2nd perspective, "pool2", represents the total value locked up in our staking contract, and it's calculated by adding up the value of all the LP tokens that are staked. The LP tokens represent the amount of liquidity that has been provided to the Solid World platform.`,
   polygon: {
     tvl,

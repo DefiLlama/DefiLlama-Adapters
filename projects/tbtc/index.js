@@ -1,17 +1,13 @@
 const { sumTokens } = require('../helper/chain/bitcoin')
-const { getConfig } = require('../helper/cache')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
-async function tvl(api) {
-  const { wallets } = await getConfig('tbtc/wallets', 'https://api.threshold.network/tbtc/wallets/pof')
-  const owners = wallets.filter(i => +i.walletBitcoinBalance > 0).map(wallet => wallet.walletBitcoinAddress)
-  return sumTokens({ owners, })
+async function tvl() {
+  return sumTokens({ owners: await bitcoinAddressBook.tBTC() })
 }
 
 module.exports = {
   timetravel: false,
   methodology: "BTC on btc chain",
   ethereum: { tvl: () => ({}) },
-  bitcoin: {
-    tvl,
-  },
+  bitcoin: { tvl },
 };

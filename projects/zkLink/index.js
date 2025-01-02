@@ -1,5 +1,6 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking.js");
 
 const config = {
   ethereum: {
@@ -99,7 +100,7 @@ const config = {
       "0x80d12A78EfE7604F00ed07aB2f16F643301674D5",
     ],
     tokens: [
-      "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",  // wstETH
+      ADDRESSES.base.wstETH,  // wstETH
     ],
   },
   optimism: {
@@ -134,3 +135,7 @@ async function tvl(api) {
 Object.keys(config).forEach(async chain => {
   module.exports[chain] = { tvl }
 })
+module.exports.ethereum.staking = staking(
+  '0xAd16eDCF7DEB7e90096A259c81269d811544B6B6', 
+  '0xfC385A1dF85660a7e041423DB512f779070FCede'
+);

@@ -19,7 +19,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Information is retrieved from both the blockchain and the SpiralDAO API. "https://api.spiral.farm".',
-  start: 16991020,
   ethereum: {
     tvl,
     staking: staking(STAKING, COIL),

@@ -27,7 +27,7 @@ const USDC_BSC_ADDRESS = ADDRESSES.bsc.USDC;
 
 module.exports = {
   methodology: "TVL counts the USDC held in the controller contracts.",
-  start: 1715693000,
+  start: '2024-05-14',
   arbitrum: {
     tvl: sumTokensExport({
       owners: [

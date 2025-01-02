@@ -6,7 +6,6 @@ const TOKENS = ["0x574f75bc522CB42ec2365dc54485D471f2eFb4B6"]
 module.exports = {
   methodology:
     "First Crosschain Pool as a Service Miner. Twist to generate 10%/daily reward.",
-  start: 35011373,
   bsc: {
     tvl: sumTokensExport({
       tokensAndOwners: [

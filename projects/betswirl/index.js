@@ -3,7 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs.js")
 
 module.exports = {
   methodology: "TVL counts BETS tokens or 8020 LP deposited on the Staking contracts.",
-  start: 1687715559,
+  start: '2023-06-25',
   bsc: {
     staking: staking('0x20Df34eBe5dCB1082297A18BA8d387B55fB975a0', '0x94025780a1aB58868D9B2dBBB775f44b32e8E6e5'),
   },

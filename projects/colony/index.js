@@ -46,7 +46,7 @@ module.exports = {
     "TVL also includes rewards in various tokens distributed in the staking contract, " +
     "actual fundraised stablecoins in projects (Nests), and liquidity from Colony Dex.",
   avax: {
-    start: 1638367059, // CLY Token deployment
+    start: '2021-12-01', // CLY Token deployment
     tvl: _tvl(),
     staking: _staking,
     // vesting: clyVesting(colonyGovernanceToken, vestingContract),
