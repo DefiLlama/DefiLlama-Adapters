@@ -46,7 +46,7 @@ module.exports['ethereum'] = { tvl };
 
 module.exports.hallmarks = [
   [1710115200, 'Beta test closing'],
-  [1712361600, 'ETH Boosted Vault Release'],
+  // [1712361600, 'ETH Boosted Vault Release'],
   [1718927999, 'Symbiotic LRT Vault Release'],
   [1734454404, 'Migration to InceptionLRT'],
 ];
