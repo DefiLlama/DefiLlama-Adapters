@@ -4,8 +4,6 @@ const { getLogs } = require("../helper/cache/getLogs");
 const SWAPX_V2_FACTORY = "0x05c1be79d3aC21Cc4B727eeD58C9B2fF757F5663"
 const PAIR_CREATED_TOPIC_1 = "0xc4805696c66d7cf352fc1d6bb633ad5ee82f6cb577c453024b6e0eb8306c6fc9";  // keccak256 hash of the event signature
 const PAIR_CREATED_EVENT_ABI_1 = "event PairCreated(address indexed token0, address indexed token1, bool stable, address pair, uint)";
-const PAIR_CREATED_TOPIC_2 = "0x569b30fc0532966a95a03af8962ff200e056ff234fa2c80041c7c46e33a6f799";  // keccak256 hash of the event signature
-const PAIR_CREATED_EVENT_ABI_2 = "event PairCreated(address indexed token0, address indexed token1, uint256 indexed feeTierId, address pair, uint)";
 const fromBlock = 1333667;
 const erc20Abi = "erc20:balanceOf";
 
@@ -18,7 +16,7 @@ async function tvl(api) {
     }));
   }
 
-  const logs1 = getPairs(await getLogs({
+  const logs = getPairs(await getLogs({
     api,
     target: SWAPX_V2_FACTORY,
     fromBlock,
@@ -27,21 +25,6 @@ async function tvl(api) {
     eventAbi: PAIR_CREATED_EVENT_ABI_1
   }));
 
-  let logs2 = []
-
-  try {
-    logs2 = getPairs(await getLogs({
-      api,
-      target: SWAPX_V2_FACTORY,
-      fromBlock,
-      topic: PAIR_CREATED_TOPIC_2,
-      onlyArgs: true,
-      eventAbi: PAIR_CREATED_EVENT_ABI_2
-    }));
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-
-  const logs = [...logs1, ...logs2]
   const tok0Bals = await api.multiCall({ abi: erc20Abi, calls: logs.map(log => ({ target: log.token0, params: log.pair })) })
   const tok1Bals = await api.multiCall({ abi: erc20Abi, calls: logs.map(log => ({ target: log.token1, params: log.pair })) })
 
