@@ -1,3 +1,4 @@
+HEAD
 # Defillama Adapters
 
 Follow [this guide](https://docs.llama.fi/submit-a-project) to create an adapter and submit a PR with it.
@@ -43,3 +44,17 @@ The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain c
 
 ## Adapter rules
 - Never add extra npm packages, if you need a chain-level package for your chain, ask us and we'll consider it, but we can't accept any npm package that is project-specific
+
+# DeFiLlama TVL Integration
+
+This project fetches the Total Value Locked (TVL) data from the DeFiLlama API and saves it to a local JSON file.
+
+## Installation
+1. Clone the repository.
+2. Run `npm install` to install dependencies.
+
+## Usage
+To fetch the latest TVL data:
+```bash
+node index.js --tvl
+632ef51e8 (Added DeFiLlama TVL API integration with error handling and CLI)
