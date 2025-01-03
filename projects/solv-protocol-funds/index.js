@@ -30,6 +30,7 @@ async function tvl(api) {
   await vaultBalance(api, graphData);
   await otherDeposit(api, address);
   await ceffuBalance(api, address, graphData);
+  await defiVaultBalance(api, address, graphData);
 }
 
 const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
@@ -356,6 +357,40 @@ async function ceffuBalance(api, address, graphData) {
       if (balance > 0) {
         api.add(poolBaseInfos[i][1], balance)
       }
+    }
+  }
+}
+
+async function defiVaultBalance(api, address, graphData) {
+  if (!address[api.chain] || !address[api.chain]["defiVault"]) {
+    return;
+  }
+  let defiVaultData = address[api.chain]["defiVault"];
+
+  let pools = [];
+  for (const graph of graphData.pools) {
+    if (graph['poolId'] == defiVaultData['poolId']) {
+      pools.push(graph)
+    }
+  }
+  if (pools.length > 0) {
+    if (defiVaultData.poolId) {
+      const [totalSupply, poolInfos] = await Promise.all([
+        api.call({ abi: 'erc20:totalSupply', target: defiVaultData.defiVault }),
+        api.call({ abi: abi.poolInfos, target: pools[0].marketContractAddress, params: [defiVaultData.poolId] }),
+      ]);
+
+      const redemptionConcrete = await api.call({
+        abi: abi.concrete,
+        target: poolInfos.poolSFTInfo.openFundRedemption,
+      })
+
+      const [slotTotalValue, nav] = await Promise.all([
+        api.call({ abi: abi.slotTotalValue, target: redemptionConcrete, params: [poolInfos.poolSFTInfo.latestRedeemSlot] }),
+        api.call({ abi: abi.getSubscribeNav, target: poolInfos.navOracle, params: [defiVaultData.poolId, api.timestamp * 1000] }),
+      ]);
+
+      api.add(poolInfos.currency, BigNumber(slotTotalValue).plus(totalSupply).times(BigNumber(nav.nav_)).div(BigNumber(10).pow(18)).toNumber());
     }
   }
 }
