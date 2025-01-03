@@ -15,10 +15,10 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama):Arun
 
 
-##### Twitter Link:
+##### Twitter Link:https://x.com/gajraj__arun
 
 
 ##### List of audit links if any:
@@ -30,14 +30,14 @@
 ##### Logo (High resolution, will be shown with rounded borders):
 
 
-##### Current TVL:
+##### Current TVL:15ML
 
 
 ##### Treasury Addresses (if the protocol has treasury)
-
+0x1234567890abcdef1234567890abcdef12345678
 
 ##### Chain:
-
+Ethereum
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
 
@@ -52,7 +52,7 @@
 
 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
-
+AI Protocols
 
 ##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
 ##### Implementation Details: Briefly describe how the oracle is integrated into your project:
