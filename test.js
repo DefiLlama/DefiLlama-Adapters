@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-
 const handleError = require('./utils/handleError')
 const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
 process.on('unhandledRejection', handleError)
@@ -31,7 +30,7 @@ if (process.env.LLAMA_SANITIZE)
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
-
+const CG_API_KEY = process.env.CG_API_KEY
 
 async function getTvl(
   unixTimestamp,
@@ -403,19 +402,27 @@ async function computeTVL(balances, timestamp) {
   const tokenBalances = {};
   const usdTokenBalances = {};
 
-  tokenData.forEach(response => {
-    Object.keys(response).forEach(address => {
-      delete unknownTokens[address]
+  for (const response of tokenData) {
+    for (const address of Object.keys(response)) {
+      delete unknownTokens[address];
       const data = response[address];
       const balance = balances[address];
-
-      if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
-      if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
-      if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
-        console.log(`Price for ${address} is stale, ignoring...`)
-        return
+      const symbol = response[address].symbol
+  
+      if (data === undefined) {
+        tokenBalances[`UNKNOWN (${address})`] = balance;
+        continue;
       }
-
+  
+      if (('confidence' in data && data.confidence < confidenceThreshold) || !data.price) {
+        continue;
+      }
+  
+      if (Math.abs(data.timestamp - Date.now() / 1e3) > 24 * 3600) {
+        console.log(`Price for ${address} is stale, ignoring...`);
+        continue;
+      }
+  
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {
         amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
@@ -424,21 +431,29 @@ async function computeTVL(balances, timestamp) {
         amount = Number(balance);
         usdAmount = amount * data.price;
       }
-
+  
       if (usdAmount > 1e8) {
         console.log(`-------------------
-Warning: `)
-        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M) , price data: `, data)
-        console.log(`-------------------`)
+  Warning: `);
+        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M), price data: `, data);
+
+        const isValidMarketCap = await checkMarketCap(address, symbol, usdAmount);
+        if (!isValidMarketCap) {
+          console.log(`Skipping ${symbol} (${address}) due to invalid market cap. \n`);
+          continue;
+        }
+        console.log(`-------------------`);
       }
+  
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;
+  
       if (isNaN(usdTvl)) {
-        throw new Error(`NaN usdTvl for ${address} with balance ${balance} and price ${data.price}`)
+        throw new Error(`NaN usdTvl for ${address} with balance ${balance} and price ${data.price}`);
       }
-    })
-  });
+    }
+  }
 
   Object.keys(unknownTokens).forEach(address => tokenBalances[`UNKNOWN (${address})`] = balances[address])
 
@@ -475,6 +490,67 @@ function buildPricesGetQueries(readKeys) {
 
   queries.push(query.slice(0, -1))
   return queries
+}
+
+async function checkMarketCap(address, symbol, usdAmount) {
+  console.log(`Checking the Market Cap for ${address} (${symbol})`);
+
+  if (!CG_API_KEY) {
+    console.log(`⚠️  CG_API_KEY is not set, skipping check`);
+    return true;
+  }
+
+  const [coingeckoId] = await searchCoingeckoId(symbol);
+
+  if (!coingeckoId) {
+    console.log(`⚠️  No CoinGecko ID found for symbol: ${symbol}`);
+    console.log(`⚠️  Proceeding cautiously and counting the token.`);
+    return true;
+  }
+
+  const coinMarketCap = await fetchCoinMarketCap(coingeckoId);
+
+  if (!coinMarketCap) {
+    console.log(`⚠️  No market cap found for CoinGecko ID: ${coingeckoId}`);
+    console.log(`⚠️  Proceeding cautiously and counting the token.`);
+    return true;
+  }
+
+  console.log(`✅ Market Cap for ${symbol} (${coingeckoId}) found: ${coinMarketCap}`);
+
+  if (usdAmount > coinMarketCap) {
+    console.log(`❌ USD amount (${usdAmount}) exceeds market cap (${coinMarketCap}) for ${symbol}. Ignoring token.`);
+    return false;
+  }
+
+  console.log(`✅ USD amount (${usdAmount}) is within market cap (${coinMarketCap}) for ${symbol}. Counting token.`);
+  return true;
+}
+
+async function searchCoingeckoId(symbol) {
+  const url = `https://pro-api.coingecko.com/api/v3/search?query=${symbol}`;
+  const { data } = await axios.get(url, {
+    headers: {
+      accept: 'application/json',
+      'x-cg-pro-api-key': CG_API_KEY,
+    },
+  });
+
+  return data.coins
+  .filter((coin) => coin.symbol.toLowerCase() === symbol.toLowerCase())
+  .map((coin) => coin.id);
+}
+
+async function fetchCoinMarketCap(id){
+  const url = `https://pro-api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+  const { data } = await axios.get(url, {
+    headers: {
+      accept: 'application/json',
+      'x-cg-pro-api-key': CG_API_KEY
+    }
+  });
+
+  return data.market_data.market_cap.usd
 }
 
 async function initCache() {
