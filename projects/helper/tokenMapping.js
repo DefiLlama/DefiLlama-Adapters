@@ -50,6 +50,9 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  water: {   
+    '0xC807C5FfFf748eF435Ddb99b181846Edd1e70041': { coingeckoId: "water-3", decimals: 18 },
+  },
   kopi: {
     'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
     'ucusdc': { coingeckoId: 'usd-coin', decimals: 6 },
