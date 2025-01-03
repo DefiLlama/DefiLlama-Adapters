@@ -11,7 +11,7 @@ async function tvl() {
 }
 
 module.exports = {
-  methodology: "Liquidity on the DEX, DUSD price is reduced by 30% because of the dex stabilty tax",
+  methodology: "Liquidity on the DEX, DUSD price is reduced by 30% because of the dex stability tax",
   timetravel: false,
   misrepresentedTokens: true,
   defichain: {
