@@ -16,7 +16,7 @@ const config = {
 }
 
 module.exports = {
-    methodology: "assets in liquidity are counted as TVL + balances of all tokens (USDC, USDT, WBTC, WETH, WSYS, and native SYS) held in the Change treasury address on the Rollux network. These tokens are used to provide liquidity for cross-chain swaps.",
+    methodology: "assets in liquidity are counted as TVL + balances of all tokens (USDC, USDT, WBTC, WETH, WSYS, and native SYS) held in the Chainge treasury address on the Rollux network. These tokens are used to provide liquidity for cross-chain swaps.",
     fusion: { tvl: () => ({})}
 }
 
