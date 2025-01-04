@@ -21,6 +21,9 @@ const cvxAddress = ADDRESSES.ethereum.CVX;
 const aCVX = "0xb0903Ab70a7467eE5756074b31ac88aEBb8fB777";
 const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
 const uniBTC_Genesis_Gauge = "0x1D20671A21112E85b03B00F94Fd760DE0Bef37Ba"
+const usdcAddress = ADDRESSES.ethereum.USDC;
+const fxUSD_stabilityPool = "0x65C9A641afCEB9C0E6034e558A319488FA0FA3be"
+const fxUSD_stabilityPool_Gauge = "0xEd92dDe3214c24Ae04F5f96927E3bE8f8DbC3289"
 module.exports = {
   doublecounted: true,
   ethereum: {
@@ -50,6 +53,21 @@ async function getUniBTCTvl(api) {
     })
   return totalSupply
 }
+
+async function getFxUSDStabilityPoolTVL(api) {
+  const FxUSDStabilityPoolTotalSupply = await api.api.call(
+    {
+      target: fxUSD_stabilityPool_Gauge,
+      abi: 'uint256:totalSupply',
+    })
+  const FxUSDStabilityPoolNav = await api.api.call(
+    {
+      target: fxUSD_stabilityPool,
+      abi: 'uint256:nav',
+    })
+  return {totalSupply:FxUSDStabilityPoolTotalSupply,nav:FxUSDStabilityPoolNav}
+}
+
 async function getBaseTokenRate(api) {
   const rates = await api.multiCall({ abi: 'uint256:getRate', calls: baseTokenRate })
   rates.splice(0, 0, 1e18);
@@ -64,6 +82,7 @@ async function tvl(api) {
   const bals = await api.multiCall({ abi: 'uint256:totalBaseToken', calls: treasuries })
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
   const uniBTCTvl = await getUniBTCTvl(api)
+  const { totalSupply:FxUSDStabilityPoolTotalSupply, nav:FxUSDStabilityPoolNav } = await getFxUSDStabilityPoolTVL(api)
   bals.forEach((bal, i) => {
     if (tokens[i].toLowerCase() === aCVX.toLowerCase()) {
       api.add(cvxAddress, bal/(rates[i]/1e18)*aCvxRate / 10 ** (18 - decimals[i]))  
@@ -72,4 +91,5 @@ async function tvl(api) {
     }
   })
   api.add(uniBTC, uniBTCTvl)
+  api.add(usdcAddress, FxUSDStabilityPoolTotalSupply/1e18*FxUSDStabilityPoolNav/10**12)
 }
