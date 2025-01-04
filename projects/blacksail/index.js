@@ -56,19 +56,24 @@ const ERC20_ABI = [
 ]
 
 async function getTotalLpStakedInVault(web3, strategy_address, prices, vault_id, token_id) {
-    const strategyContract = new web3.eth.Contract(BLACKSAIL_STRAT_ABI, strategy_address);
-    const totalStaked = new BigNumber(await strategyContract.methods.balanceOf().call());
-    const stakingToken = await strategyContract.methods.staking_token().call();
-    const stakingTokenContract = new web3.eth.Contract(ERC20_ABI, stakingToken);
-    const stakingTokenDecimals = await stakingTokenContract.methods.decimals().call();
+    try {
+        const strategyContract = new web3.eth.Contract(BLACKSAIL_STRAT_ABI, strategy_address);
+        const totalStaked = new BigNumber(await strategyContract.methods.balanceOf().call());
+        const stakingToken = await strategyContract.methods.staking_token().call();
+        const stakingTokenContract = new web3.eth.Contract(ERC20_ABI, stakingToken);
+        const stakingTokenDecimals = await stakingTokenContract.methods.decimals().call();
 
-    let tokenPrice = new BigNumber(0);
-    if (prices[vault_id]) {
-        tokenPrice = new BigNumber(prices[token_id]);
+        let tokenPrice = new BigNumber(0);
+        if (prices[vault_id]) {
+            tokenPrice = new BigNumber(prices[token_id]);
+        }
+
+        const totalStakedInUsd = totalStaked.times(tokenPrice.dividedBy(new BigNumber(10).pow(stakingTokenDecimals)));
+        return totalStakedInUsd;
+    } catch (error) {
+        console.error("Error in Blacksail getTotalLpStakedInVault: ", error);
+        return new BigNumber(0);
     }
-
-    const totalStakedInUsd = totalStaked.times(tokenPrice.dividedBy(new BigNumber(10).pow(stakingTokenDecimals)));
-    return totalStakedInUsd;
 }
 
 
