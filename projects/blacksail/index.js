@@ -55,7 +55,7 @@ const ERC20_ABI = [
     }
 ]
 
-async function getTotalLpStakedInVault(web3, strategy_address, prices, vault_id, token_id) {
+async function getTotalLpStakedInVault(web3, strategy_address, prices, token_id) {
     try {
         const strategyContract = new web3.eth.Contract(BLACKSAIL_STRAT_ABI, strategy_address);
         const totalStaked = new BigNumber(await strategyContract.methods.balanceOf().call());
@@ -64,7 +64,7 @@ async function getTotalLpStakedInVault(web3, strategy_address, prices, vault_id,
         const stakingTokenDecimals = await stakingTokenContract.methods.decimals().call();
 
         let tokenPrice = new BigNumber(0);
-        if (prices[vault_id]) {
+        if (token_id in prices) {
             tokenPrice = new BigNumber(prices[token_id]);
         }
 
