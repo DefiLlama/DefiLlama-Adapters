@@ -1,4 +1,4 @@
-const { getTVL } = require('./utils');
+const { getTVL } = require('../SwapX-v2/utils');
 
 module.exports = {
   sonic: {
