@@ -1,5 +1,5 @@
 const utils = require('../helper/utils');
-const {Web3} = require('web3');
+const ethers = require("ethers");
 const BigNumber = require('bignumber.js');
 let _response;
 
@@ -55,20 +55,20 @@ const ERC20_ABI = [
     }
 ]
 
-async function getTotalLpStakedInVault(web3, strategy_address, prices, token_id) {
+async function getTotalLpStakedInVault(provider, strategy_address, prices, token_id) {
     try {
-        const strategyContract = new web3.eth.Contract(BLACKSAIL_STRAT_ABI, strategy_address);
-        const totalStaked = new BigNumber(await strategyContract.methods.balanceOf().call());
-        const stakingToken = await strategyContract.methods.staking_token().call();
-        const stakingTokenContract = new web3.eth.Contract(ERC20_ABI, stakingToken);
-        const stakingTokenDecimals = await stakingTokenContract.methods.decimals().call();
+        const strategyContract = new ethers.Contract(strategy_address, BLACKSAIL_STRAT_ABI, provider);
+        const totalStaked = await strategyContract.balanceOf();
+        const stakingToken = await strategyContract.staking_token();
+        const stakingTokenContract = new ethers.Contract(stakingToken, ERC20_ABI, provider);
+        const stakingTokenDecimals = await stakingTokenContract.decimals();
 
         let tokenPrice = new BigNumber(0);
         if (token_id in prices) {
             tokenPrice = new BigNumber(prices[token_id]);
         }
 
-        const totalStakedInUsd = totalStaked.times(tokenPrice.dividedBy(new BigNumber(10).pow(stakingTokenDecimals)));
+        const totalStakedInUsd = new BigNumber(totalStaked.toString()).times(tokenPrice.dividedBy(new BigNumber(10).pow(stakingTokenDecimals)));
         return totalStakedInUsd;
     } catch (error) {
         console.error("Error in Blacksail getTotalLpStakedInVault: ", error);
@@ -86,12 +86,12 @@ async function fetchChain() {
         let yields = response["data"]["yield"]
         let prices = response["data"]["price"]
 
-        const web3 = new Web3(new Web3.providers.HttpProvider(CHAIN_DATA["146"]["chainRPC"]));
+        const provider = new ethers.JsonRpcProvider(CHAIN_DATA["146"]["chainRPC"]);
 
         for (const vault in yields) {
-            total_tvl += getTotalLpStakedInVault(web3, yields[vault]["strat_address"], prices, yields[vault]["token_id"])
+            total_tvl += await getTotalLpStakedInVault(provider, yields[vault]["strat_address"], prices, yields[vault]["token_id"]);
         }
-        return total_tvl
+        return total_tvl;
     }
 }
 
