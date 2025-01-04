@@ -1,5 +1,5 @@
 const utils = require('../helper/utils');
-const Web3 = require('web3');
+const {Web3} = require('web3');
 const BigNumber = require('bignumber.js');
 let _response;
 
