@@ -85,6 +85,10 @@ const fixBalancesTokens = {
   odyssey: {
     [ADDRESSES.null]: { coingeckoId: 'dione', decimals: 18 },
     '0xf21cbaf7bd040d686bd390957770d2ea652e4013': { coingeckoId: 'dione', decimals: 18 },
+  },
+  crossfi: {
+    [ADDRESSES.null]: { coingeckoId: 'crossfi-2', decimals: 18 },
+    [ADDRESSES.crossfi.WXFI]: { coingeckoId: 'crossfi-2', decimals: 18 },
   }
 }
 
