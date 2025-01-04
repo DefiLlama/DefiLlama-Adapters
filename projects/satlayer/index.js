@@ -14,7 +14,7 @@ function computeStaked({
 
 module.exports = {
   doublecounted: true,
-  methodology: 'Total amount of BTC staked on SatLayer.',
+  methodology: 'Total amount of BTC staked and restaked on SatLayer.',
   ethereum: {
     tvl: computeStaked({
       tokens: [
