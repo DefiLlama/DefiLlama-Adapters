@@ -15,9 +15,8 @@ Object.keys(config).forEach(chain => {
       const tokensAndOwners = [USDTBridge]
       const logsV1 = await getLogs2({ api, factory: factoryV1, eventAbi: 'event PositionOpened (address indexed owner, address indexed position, address ofd, address collateral, uint256 price)', fromBlock: fromBlockV1 })
       const logsV2 = await getLogs2({ api, factory: factoryV2, eventAbi: 'event PositionOpened(address indexed owner, address indexed position, address original, address collateral)', fromBlock: fromBlockV2 })
-      logsV1.forEach(log => tokensAndOwners.push([log.collateral, log.position]))
-      logsV2.forEach(log => tokensAndOwners.push([log.collateral, log.position]))
-      return api.sumTokens({ api, tokensAndOwners })
+      logsV1.concat(logsV2).forEach(log => tokensAndOwners.push([log.collateral, log.position]))
+      return api.sumTokens({ tokensAndOwners })
     }
   }
 })
