@@ -32,12 +32,13 @@ const chains = {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
+  // deadFrom: '2024-08-01',
   methodology:
   'TVL data is pulled from the Vaporwave Finance API "https://api.vaporwave.farm/tvl".',
   doublecounted: true,
   ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
-    tvl: fetchChain(chain[1], false),
-    staking: fetchChain(chain[1], true),
+    tvl: () => ({}),
+    staking: () => ({}),
   }]))
 }
 
