@@ -18,6 +18,7 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
+  FLOW_RPC: "https://mainnet.evm.nodes.onflow.org"
 }
 
 const ENV_KEYS = [
