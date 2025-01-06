@@ -1,4 +1,3 @@
-const aws = require('aws-sdk')
 const sdk = require('@defillama/sdk')
 const Bucket = "tvl-adapter-cache";
 const axios = require('axios')
@@ -44,7 +43,7 @@ async function setCache(project, chain, cache) {
     await sdk.cache.writeCache(getFileKey(project, chain), cache)
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
-    // sdk.log(e)
+    sdk.log(e)
   }
 }
 
@@ -58,8 +57,8 @@ async function _setCache(project, chain, json) {
     await setCache(project, chain, json)
 }
 
-async function getConfig(project, endpoint) {
-  if (!project || !endpoint) throw new Error('Missing parameters')
+async function getConfig(project, endpoint, { fetcher } = {}) {
+  if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
   if (!configCache[cacheKey]) configCache[cacheKey] = _getConfig()
@@ -67,7 +66,12 @@ async function getConfig(project, endpoint) {
 
   async function _getConfig() {
     try {
-      const { data: json } = await axios.get(endpoint)
+      let json
+      if (endpoint) {
+        json = (await axios.get(endpoint)).data
+      } else {
+        json = await fetcher()
+      }
       if (!json) throw new Error('Invalid data')
       await _setCache(key, project, json)
       return json
@@ -100,8 +104,9 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetchById, } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, headers, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
   if (!configCache[cacheKey]) configCache[cacheKey] = _cachedGraphQuery()
@@ -110,10 +115,14 @@ async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetc
   async function _cachedGraphQuery() {
     try {
       let json
+      if (useBlock && !variables.block  && !fetchById) {
+        if (!api) throw new Error('Missing parameters')
+        variables.block = await api.getBlock()
+      }
       if (!fetchById)
-        json = await graphql.request(endpoint, query, { variables })
+        json = await graphql.request(endpoint, query, { variables, headers })
       else 
-        json = await graphFetchById({ endpoint, query, params: variables })
+        json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit, headers } })
       if (!json) throw new Error('Empty JSON')
       await _setCache(key, project, json)
       return json
@@ -126,15 +135,16 @@ async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetc
 }
 
 
-async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500 } = {} }) {
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500, headers } = {} }) {
   if (useBlock && !params.block)
     params.block = await api.getBlock() - safeBlockLimit
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
 
   let data = []
   let lastId = ""
   let response;
   do {
-    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }})
+    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }, headers })
     Object.keys(res).forEach(key => response = res[key])
     data.push(...response)
     lastId = response[response.length - 1]?.id

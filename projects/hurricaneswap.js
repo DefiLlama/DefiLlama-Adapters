@@ -18,11 +18,9 @@ const chainTvl = getUniTVL({
 })
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
-  misrepresentedTokens: true,
+      misrepresentedTokens: true,
   avax: {
-    tvl: sdk.util.sumChainTvls([chainTvl, staking(masterChefV2, AVAX, "avax")]),
+    tvl: sdk.util.sumChainTvls([chainTvl, staking(masterChefV2, AVAX)]),
     staking: stakings(
       [
         stakingConttract_xhctBar,

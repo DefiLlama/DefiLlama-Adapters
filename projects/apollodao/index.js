@@ -1,6 +1,7 @@
 // vaults are closed: https://articles.apollo.farm/apollo-dao-will-be-closing-vaults-on-terra-classic/
 const axios = require("axios");
 const { endPoints, queryContract } = require('../helper/chain/cosmos')
+const { getAssetInfo } = require('../terraswap/factoryTvl')
 
 const chain = 'osmosis'
 
@@ -22,22 +23,22 @@ const contractAddresses = {
     akt_osmo: "osmo122ryl7pez7yjprtvjckltu2uvjxrq3kqt4nvclax2la7maj6757qg054ga",
 };
 
-async function tvl(_, _1, _2,  { api }) {
+async function tvl(api) {
     if (api.chain != "osmosis") return {}
     for (const contractName in contractAddresses) {
         let contractAddress = contractAddresses[contractName];
         let vaultInfo = await queryContract({
             contract: contractAddress,
             chain: 'osmosis',
-            data: { 'info': {} } 
-          });
+            data: { 'info': {} }
+        });
         const gammToken = vaultInfo.base_token;
         const poolID = gammToken.split('gamm/pool/')[1];
         let totalAssets = await queryContract({
             contract: contractAddress,
             chain: 'osmosis',
-            data: { 'total_assets': {} } 
-          });
+            data: { 'total_assets': {} }
+        });
 
         let poolEndpoint = `${endPoints[chain]}/osmosis/gamm/v1beta1/pools/${poolID}`;
         const poolData = (await axios.get(poolEndpoint)).data.pool;
@@ -62,7 +63,7 @@ function calculateTokenAmounts(poolData, gammAmount) {
             // Extract the token's denom and amount.
             let denom = asset.token.denom;
             let assetAmount = asset.token.amount;
-    
+
             // Calculate the amount of this token that corresponds to the given amount of pool shares.
             tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
         }
@@ -71,13 +72,62 @@ function calculateTokenAmounts(poolData, gammAmount) {
             // Extract the token's denom and amount.
             let denom = asset.denom;
             let assetAmount = asset.amount;
-    
+
             // Calculate the amount of this token that corresponds to the given amount of pool shares.
             tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
         }
     }
 
     return tokenAmounts;
+}
+
+const neutronVaults = {
+    pcl_wstETH_axlWETH: "neutron1yvhe4f0q3swtf37pkf9kku59l52nevr3trxs62vah004a08pkl8qlaccc7",
+    xyk_ASTRO_axlUSDC: "neutron135nkp0fth0vtertv7ngvkkgc4cwamp2tpnmjdlppat0047f9wjmqxeu9p8",
+    pxl_capped_stTIA_TIA: "neutron1qzf6t478xuutq0ahkm07pl2y2tctreccrlafkrl38k4cafk3rgdq3lfky5",
+    pcl_wstETH_NTRN: "neutron17vedy2clhctw0654k93m375ud7h5jsy8nj9gnlkjnyd4mcfnfrdql226al",
+};
+
+async function neutronTvl(api) {
+    if (api.chain != "neutron") return {}
+    for (const contractName in neutronVaults) {
+        let contractAddress = neutronVaults[contractName];
+        let vaultInfo = await queryContract({
+            contract: contractAddress,
+            chain: 'neutron',
+            data: { 'info': {} }
+        });
+
+        const vaultState = await queryContract({
+            contract: contractAddress,
+            chain: 'neutron',
+            data: {
+                'vault_extension': {
+                    'apollo': {
+                        'state': {}
+                    }
+                }
+            }
+        });
+
+        const pairAddr = vaultState.pool.pair_addr;
+
+        const lpTokenAddr = vaultInfo.base_token;
+        let totalAssets = await queryContract({
+            contract: contractAddress,
+            chain: 'neutron',
+            data: { 'total_assets': {} }
+        });
+
+        const pairRes = await queryContract({ contract: pairAddr, chain: 'neutron', data: { pool: {} } });
+        const totalLpSupply = Number(pairRes.total_share);
+
+        pairRes.assets.forEach((asset, idx) => {
+            const [token, balance] = getAssetInfo(asset)
+            const amount = balance * totalAssets / totalLpSupply;
+            api.add(token, amount);
+        });
+    }
 }
 
 module.exports = {
@@ -88,6 +138,9 @@ module.exports = {
     },
     osmosis: {
         tvl,
+    },
+    neutron: {
+        tvl: neutronTvl,
     },
     hallmarks: [
         [1651881600, "UST depeg"],

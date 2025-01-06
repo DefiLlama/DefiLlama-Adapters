@@ -2,15 +2,19 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = {}
   const reactorTvl = await api.multiCall({
     abi: 'uint256:getPoolDenominatedValue', calls: [
-      '0x933589C46233Efa8cCDe8287E077cA6CC51Bec17',
-      '0xDd418b4Ec8396191D08957bD42F549e215B8e89a',
+      '0x933589C46233Efa8cCDe8287E077cA6CC51Bec17', // uniswapV3HedgingReactor alpha
+      '0xDd418b4Ec8396191D08957bD42F549e215B8e89a', // perpHedgingReactor
+      '0x0053849115783b9678DBB173BB852f06e950Fe05', // uniswapV3HedgingReactor beyond
+      '0x5250F9ab6a6a7CB447dc96cb218cE9E796905852', // uniswapV3RangeOrderReactor
+      '0xf013767D55954EcCCacb4914d52D2ef8f95d82C5', // perpHedgingReactor
+      '0x575e7766F22DBE82b6DD31B915B7D429B9409F16' // gmxHedgingReactor
     ]
   })
-  reactorTvl.forEach(i => sdk.util.sumSingleBalance(balances, 'tether', i/1e18))
+  reactorTvl.forEach(i => sdk.util.sumSingleBalance(balances, 'tether', i / 1e18))
 
   return sumTokens2({
     api, balances, tokensAndOwners: [

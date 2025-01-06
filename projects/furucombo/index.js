@@ -1,26 +1,23 @@
-const sdk = require("@defillama/sdk");
-const axios = require("axios");
+const { getLogs } = require('../helper/cache/getLogs')
 
-const API_ENDPOINT = "https://api.furucombo.app/v1/investables/farm_tvl";
-const API_KEY = "VDNl6XunwQaTYWtvMZ6Qqa2GeVtSqzqo8Mrquo4O";
+const factory = '0xFD1353baBf86387FcB6D009C7b74c1aB2178B304'
+const fromBlock = '29080112'
 
-async function polygon(timestamp, blockETH, chainBlocks) {
-  const balances = {};
+const tvl = async (api) => {
+  const logs = await getLogs({
+    api,
+    target: factory,
+    eventAbi: 'event FundCreated (address indexed newFund, address comptroller, address shareToken, address vault)',
+    onlyArgs: true,
+    fromBlock,
+  })
 
-  const { data } = await axios.get(API_ENDPOINT, {
-        params: { block: chainBlocks["polygon"] },
-        headers: { ["X-Api-Key"]: API_KEY },
-      })
-
-  for (const { token, balance } of data.balances) {
-    sdk.util.sumSingleBalance(balances, "polygon:" + token.address, balance);
-  }
-
-  return balances;
+  const tokens = await api.multiCall({  abi: 'address[]:getAssetList', calls: logs.map(l => l.newFund) })
+  const ownerTokens = tokens.map((t, i) => [t, logs[i].vault])
+  return api.sumTokens({ ownerTokens })
 }
 
 module.exports = {
-  polygon: {
-    tvl: polygon,
-  },
-};
+  deadFrom: '2024-12-09',
+  polygon : { tvl : () => ({}) } 
+}

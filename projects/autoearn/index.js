@@ -26,4 +26,15 @@ const zk_helper = yieldHelper({
   abis,
 })
 
-module.exports = mergeExports([arbi_helper, zk_helper])
+const farm_base = '0x04888AfAE97dC01e337582A2c8D3D232e27273fe'
+const ate_base = '0xd5DA32Ad4C7510457C0e46Fa4332F75f6C4C4dC0'
+
+const base_helper = yieldHelper({
+  project: 'autoearn-finance-base',
+  chain: 'base',
+  masterchef: farm_base,
+  nativeToken: ate_base,
+  abis,
+})
+
+module.exports = mergeExports([arbi_helper, zk_helper, base_helper])

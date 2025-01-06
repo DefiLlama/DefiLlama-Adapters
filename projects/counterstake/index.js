@@ -11,8 +11,6 @@ const {
     fetchOswapExchangeRates,
     summingBaseAABalancesToTvl,
 } = require('../helper/chain/obyte');
-const utils = require('../helper/utils');
-const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
@@ -74,9 +72,9 @@ async function totalObyteTvl(timestamp) {
     }
 }
 
-const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
+const totalTVLByEVMNetwork = async (api) => {
     const bridges = await getConfig('counterstake/bridges', 'https://counterstake.org/api/bridges').then((data) => data.data);
-    const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data);
+    const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data.assistants);
 
     const bridgeAasByChain = [];
     const tokensAndOwners = []
@@ -90,6 +88,7 @@ const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
             bridgeAasByChain.push(import_aa);
         }
     });
+
 
     pooledAssistants.filter(({ network }) => network.toLowerCase() === api.chain).forEach(({ assistant_aa, side, bridge_id }) => {
         const bridge = bridges.find((bridge) => bridge.bridge_id === bridge_id);
@@ -124,13 +123,45 @@ const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
         tokensAndOwners.push([voteTokenAddress, governanceAddress ])
     });
 
-    return sumTokens2({ api, tokensAndOwners})
+    const sum = await sumTokens2({ api, tokensAndOwners });
+
+    return tryToGetUSDPriceOfUnknownTokens(sum, api);
+};
+
+const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
+    const LINE_CONTRACT = '0x31f8d38df6514b6cc3c360ace3a2efa7496214f6';
+    const LINE_TOKEN_KEY = `kava:${LINE_CONTRACT}`;
+
+    const transformedSumObject = { ...sum };
+
+    if (LINE_TOKEN_KEY in sum) { // support LINE token on Kava Network
+
+        const ORACLE_CONTRACT_ADDRESS = await api.call({
+            abi: "address:oracle",
+            target: LINE_CONTRACT,
+        });
+
+        const totalLocked = transformedSumObject[LINE_TOKEN_KEY]
+
+        const linePriceInCollateral = await api.call({
+            abi: "uint256:getPrice",
+            target: ORACLE_CONTRACT_ADDRESS,
+        });
+
+        const priceInCollateral = totalLocked * linePriceInCollateral / 1e36
+        const exchangeRates = await fetchOswapExchangeRates();
+
+        transformedSumObject['usd'] = exchangeRates['GBYTE_USD'] * priceInCollateral;
+
+        delete transformedSumObject[LINE_TOKEN_KEY];
+    }
+
+    return transformedSumObject;
 }
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Counterstake protocol. " +
         "This includes the value of exported assets held in the custody of cross-chain bridges, the stakes of cross-chain transfers, " +

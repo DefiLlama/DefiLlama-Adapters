@@ -64,6 +64,6 @@ function pool2(chain, gasToken) {
 module.exports = {
   iotex: {
     tvl: () => ({}),
-    pool2: pool2("iotex", "iotex"),
+    pool2: pool2("iotex"),
   },
 };

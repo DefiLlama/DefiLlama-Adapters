@@ -12,14 +12,10 @@ async function eos() {
   return response.data.data.totalLiquidityChart.value24h;
 }
 
-async function fetch() {
-  return await eos()
-}
-
 module.exports = {
   methodology: `PayCash Swap TVL is achieved by making a call to its PayCash Swap API.`,
   eos: {
     fetch: eos
   },
-  fetch,
+  fetch: eos,
 }

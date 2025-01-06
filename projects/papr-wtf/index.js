@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 
   const controller = '0x3b29c19ff2fcea0ff98d0ef5b184354d74ea74b0'
   const logs = await getLogs({

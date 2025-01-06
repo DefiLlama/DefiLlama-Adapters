@@ -1,14 +1,15 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 
-const { staking } = require('../helper/staking')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { staking } = require("../helper/staking");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumUnknownTokens } = require("../helper/unknownTokens");
 const { getPriceMIM, getPriceAura, getPriceSushi } = require("./getPrice");
 
 const prllxERC20 = require("./abis/prllxERC20.json");
 const contracts = require("./contracts.json");
 
-async function ethTvl(time, _ethBlock, { ethereum: block }, { api }) {
+async function ethTvl(api) {
   const strategyId = await api.call({
     target: contracts.eth.parallaxAddress,
     params: contracts.eth.strategyAddress,
@@ -43,7 +44,7 @@ async function ethTvl(time, _ethBlock, { ethereum: block }, { api }) {
   return balances;
 }
 
-async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
+async function arbitrumTvl(api) {
   const balances = {};
 
   const strategyId = await api.call({
@@ -148,14 +149,60 @@ async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
   return balances;
 }
 
+async function eraTvl(api) {
+  if (contracts.era.length > 0) {
+    for (let i = 0; i < contracts.era.length; i++) {
+      const strItem = contracts.era[i];
+      const strategyId = await api.call({
+        target: strItem.parallaxAddress,
+        params: strItem.strategyAddress,
+        abi: prllxERC20["strategyToId"],
+      });
+
+      const strategy = await api.call({
+        target: strItem.parallaxAddress,
+        params: strategyId,
+        abi: prllxERC20.strategiesERA,
+      });
+      const pair = strItem.lpAddress;
+      api.add(pair, strategy.totalStaked);
+    }
+    return sumUnknownTokens({
+      api,
+      resolveLP: true,
+      lps: contracts.era.map((strItem) => strItem.lpAddress),
+    });
+  }
+}
+
 module.exports = {
   methodology: "TVL comes from the Staking Vaults",
   arbitrum: {
-    tvl: arbitrumTvl,
-    staking: staking(['0x82FD636D7A28a20635572EB8ec0603ee264B8651', '0xA3CE2c0d1cfB29F398f8f4800bA202Aba39dbbfe', '0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e', ], '0xc8CCBd97b96834b976C995a67BF46e5754e2C48E'),
-    pool2: sumTokensExport({ owner: '0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e', resolveUniV3: true, })
+    tvl: sdk.util.sumChainTvls([
+      arbitrumTvl,
+      sumTokensExport({
+        owner: "0x9bab3c2ccf202edf451d76c8690c2d1716f4ae69",
+        resolveUniV3: true,
+      }),
+    ]),
+    staking: staking(
+      [
+        "0x82FD636D7A28a20635572EB8ec0603ee264B8651",
+        "0xA3CE2c0d1cfB29F398f8f4800bA202Aba39dbbfe",
+        "0x9d02A989B34aB9Af9bb4fE59604392829ddD16f5",
+        "0x9f35e7c711224c704d5999b859F17A2E7CF35A16",
+      ],
+      "0xc8CCBd97b96834b976C995a67BF46e5754e2C48E"
+    ),
+    pool2: sumTokensExport({
+      owner: "0x9d02A989B34aB9Af9bb4fE59604392829ddD16f5",
+      resolveUniV3: true,
+    }),
   },
   ethereum: {
     tvl: ethTvl,
+  },
+  era: {
+    tvl: eraTvl,
   },
 };

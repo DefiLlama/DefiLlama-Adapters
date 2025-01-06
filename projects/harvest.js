@@ -14,7 +14,7 @@ const chains = {
 module.exports = {}
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const response = await getConfig('harvest', endpoint)
       const vaults = Object.values(response[chains[chain]]).map(i => i.vaultAddress)
       const strategy = await api.multiCall({ abi: 'address:strategy', calls: vaults })
@@ -25,7 +25,7 @@ Object.keys(chains).forEach(chain => {
         if (!token) token = tokensV[idx]
         if (token) api.add(token, bals2[idx])
       })
-      return sumTokens2({ api, resolveLP: true, owners: vaults, resolveUniV3: true })
+      return sumTokens2({ api, resolveLP: true, owners: vaults, resolveUniV3: chain !== 'base', permitFailure: true })
     }
   }
 })

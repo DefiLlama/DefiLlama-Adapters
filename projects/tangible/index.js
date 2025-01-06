@@ -1,14 +1,28 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokensExport, sumTokens2, } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
+const { getInsuranceFundValue, insuranceTokens } = require("./insurance-fund-polygon");
+const { getInsuranceFundValueOp } = require("./insurance-fund-optimism");
+const { getInsuranceFundValueBase } = require("./insurance-fund-base");
+const { getInsuranceFundValueArb } = require("./insurance-fund-arbitrum");
+
+const realTvl = async (api) => {
+  const USTB = '0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd'
+  const basketManager = '0x5e581ce0472bF528E7F5FCB96138d7759AC2ac3f'.toLowerCase()
+  // get all baskets in existance
+  const baskets = await api.call({ abi: 'address[]:getBasketsArray', target: basketManager })
+  const basketTVL = await api.multiCall({  abi: 'uint256:getTotalValueOfBasket', calls: baskets})
+  api.add(USTB, basketTVL)
+}
 
 // doc: https://docs.tangible.store/real-usd/real-usd-v3-contracts-and-addresses
 const TNGBL = '0x49e6A20f1BBdfEeC2a8222E052000BbB14EE6007'.toLowerCase()
 const USDR = '0x40379a439d4f6795b6fc9aa5687db461677a2dba'.toLowerCase()
+const CVX_ETH = ADDRESSES.ethereum.CVX.toLowerCase()
 
 const { apGetAddress, getPriceManager, getCategories,
   getTotalSupply, getTokenByIndex, getTnftCustody,
-  getItemPriceBatchTokenIds, getPair } = require("./abi.js");
+  getItemPriceBatchTokenIds, getPair, } = require("./abi.js");
 
 const ADDRESS_PROVIDER_ADDRESS = "0xE95BCf65478d6ba44C5F57740CfA50EA443619eA";
 const FACTORY_ADDRESS = "0xB0E54b88BB0043A938563fe8A77F4ddE2eB0cFc0";
@@ -16,24 +30,50 @@ const FACTORY_ADDRESS = "0xB0E54b88BB0043A938563fe8A77F4ddE2eB0cFc0";
 const insuranceConfig = {
   ethereum: {
     owner: '0x5d35A37E5842F6b3072893A3f7Bf0e1d1FF80179',
-    tokens: [ADDRESSES.null],
+    tokens: [ADDRESSES.null, CVX_ETH],
   },
   polygon: {
-    owner: '0xD1758fbABAE91c805BE76D56548A584EF68B81f0',
-    tokens: [ADDRESSES.polygon.DAI, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT, ADDRESSES.null, ADDRESSES.polygon.WETH, ADDRESSES.polygon.WMATIC],
+    owners: ['0xD1758fbABAE91c805BE76D56548A584EF68B81f0', '0x632572cfAa39330c8F0211b5B33BC86135E48b5f'],
+    tokens: Object.values(insuranceTokens),
   },
   optimism: {
     owner: '0x7f922242d919feF0da0e40e3Cb4B7f7D3c97a63e',
-    tokens: [ADDRESSES.null, ADDRESSES.optimism.OP, ADDRESSES.optimism.USDC,],
+    tokens: [ADDRESSES.null, ADDRESSES.optimism.OP, ADDRESSES.optimism.USDC],
   },
+  base: {
+    owner: "0x17ee1f11aa0654bd4ab1af4b6b309c7f137c925e",
+    tokens: [ADDRESSES.null,],
+  },
+  arbitrum: {
+    owner: "0xe19848f158efd31d45a6975320365251c92040c1",
+    tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDT],
+  }
 }
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   await Promise.all([
     treasuryTvl,
-    insuranceTvl,
     rwaTVL,
-    tangiblePOL
+    tangiblePOL,
+    insuranceTvl,
+  ].map(fn => fn(api)))
+}
+
+async function tvlOp(api) {
+  await Promise.all([
+    insuranceTvlOp,
+  ].map(fn => fn(api)))
+}
+
+async function tvlBase(api) {
+  await Promise.all([
+    insuranceTvlBase,
+  ].map(fn => fn(api)))
+}
+
+async function tvlArb(api) {
+  await Promise.all([
+    insuranceTvlArb,
   ].map(fn => fn(api)))
 }
 
@@ -44,12 +84,29 @@ async function treasuryTvl(api) {
     target: ADDRESS_PROVIDER_ADDRESS,
     params: ["0xc83e4fd410f80be983b083c99898391186b0893751a26a9a1e5fdcb9d4129701"],//keccak of USDRTreasury
   })
-  await api.sumTokens({ owner: usdrTreasuryAddress, tokens: [ADDRESSES.polygon.DAI] })
+  await api.sumTokens({ owner: usdrTreasuryAddress, tokens: [ADDRESSES.polygon.DAI,] })
 }
 
 async function insuranceTvl(api) {
-  await unwrapBalancerToken(api)
-  return api.sumTokens(insuranceConfig.polygon)
+  await Promise.all(insuranceConfig.polygon.owners.map(i => (async () => {
+    await unwrapBalancerToken(api, i);
+    await getInsuranceFundValue(api, i);
+  })()))
+}
+
+async function insuranceTvlOp(api) {
+  await getInsuranceFundValueOp(api, insuranceConfig.optimism.owner);
+  return sumTokens2({ api, ...insuranceConfig.optimism })
+}
+
+async function insuranceTvlBase(api) {
+  await getInsuranceFundValueBase(api, insuranceConfig.base.owner);
+  await api.sumTokens({ owner: insuranceConfig.base.owner, tokens: insuranceConfig.base.tokens })
+}
+
+async function insuranceTvlArb(api) {
+  await getInsuranceFundValueArb(api, insuranceConfig.arbitrum.owner);
+  return sumTokens2({ api, ...insuranceConfig.arbitrum })
 }
 
 async function rwaTVL(api) {
@@ -102,6 +159,13 @@ async function tangiblePOL(api) {
     params: ["0xd1e0c1a56a62f2e6553b45bde148c89c51a01f766c23f4bb2c612bd2c822f711"],//keccak of paerl api address
   })
 
+  // liquidity manager
+  const liquidityManager = await api.call({
+    abi: apGetAddress,
+    target: ADDRESS_PROVIDER_ADDRESS,
+    params: ["0x6878742ff510854cb02c186504af5267007c4a6d33f490fc28ec83e83e1458e1"],//keccak of liquidity manager
+  })
+
   const { data } = await getConfig('tangible', "https://api.pearl.exchange/api/v15/pools");
   const pools = data.filter(
     (pool) =>
@@ -111,9 +175,8 @@ async function tangiblePOL(api) {
         pool.token0.symbol === "USDR"),
   ).map(i => i.address)
 
-  const multisigAddress = "0x100fCC635acf0c22dCdceF49DD93cA94E55F0c71"
   const [lpBals, tokens0, tokens1, totalSupplies, reserves] = await Promise.all([
-    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, multisigAddress]})) }),
+    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, liquidityManager] })) }),
     api.multiCall({ abi: 'address:token0', calls: pools }),
     api.multiCall({ abi: 'address:token1', calls: pools }),
     api.multiCall({ abi: 'uint256:totalSupply', calls: pools }),
@@ -133,14 +196,19 @@ async function tangiblePOL(api) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1697032800, "USDR Depeg"]
+  ],
   misrepresentedTokens: true,
   polygon: { tvl, },
   ethereum: { tvl: sumTokensExport(insuranceConfig.ethereum) },
-  optimism: { tvl: sumTokensExport(insuranceConfig.optimism) },
+  base: { tvl: tvlBase },
+  arbitrum: { tvl: tvlArb },
+  optimism: { tvl: tvlOp },
+  real: { tvl: realTvl },
 }
 
-async function unwrapBalancerToken(api) {
-  const owner = insuranceConfig.polygon.owner
+async function unwrapBalancerToken(api, owner) {
   const gauge = '0x07222e30b751c1ab4a730745afe19810cfd762c0'
   const balancerToken = '0x9f9f548354b7c66dc9a9f3373077d86aaaccf8f2'
   const [lpSupply, lpTokens] = await api.batchCall([

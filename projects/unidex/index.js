@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
+//const molten = "0x031d35296154279dc1984dcd93e392b1f946737b";
 
 async function FantomTvl(_time, _ethBlock, { fantom: block }) {
   const contracts = {
@@ -41,9 +42,9 @@ async function ArbitrumTvl(_time, _ethBlock, { arbitrum: block }) {
   const mim = ADDRESSES.arbitrum.MIM;
   const gdai = "0xd85e038593d7a098614721eae955ec2022b9b91b";
   const ram = "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418";
-  const mai = "0x5979D7b546E38E414F7E9822514be443A4800529";
+  const mai = ADDRESSES.arbitrum.WSTETH;
   const gmx = ADDRESSES.arbitrum.GMX;
-  const wsteth = "0x5979D7b546E38E414F7E9822514be443A4800529";
+  const wsteth = ADDRESSES.arbitrum.WSTETH;
   const gns = "0x18c11FD286C5EC11c3b683Caa813B77f5163A122";
   const cap = "0x031d35296154279dc1984dcd93e392b1f946737b";
   const unsheth = "0x0Ae38f7E10A43B5b2fB064B42a2f4514cbA909ef";
@@ -74,6 +75,17 @@ async function BaseTvl(_time, _ethBlock, { base: block }) {
   return sumTokens2({ chain, block, tokens, owners, })
 }
 
+async function EvmosTvl(_time, _ethBlock, { evmos: block }) {
+  const contracts = {
+    "stevmosPool": "0x21708707f03A19C3a4ea5E1a132B5cF96b86F294",
+  };
+  const stevmos = ADDRESSES.evmos.STEVMOS;
+  const chain = 'evmos'
+  const tokens = [stevmos, nullAddress]
+  const owners = Object.values(contracts)
+  return sumTokens2({ chain, block, tokens, owners, })
+}
+
 async function MetisTvl(_time, _ethBlock, { metis: block }) {
   const contracts = {
     "metisPool": "0x9Ba3db52BC401F4EF8ba23e56268C3AdE0290837",
@@ -89,10 +101,11 @@ async function MetisTvl(_time, _ethBlock, { metis: block }) {
 async function OpTvl(_time, _ethBlock, { optimism: block }) {
   const contracts = {
     "daiPool": "0xCdDF71750E596b4C38785afFEc3bd4C9bff43f6F",
+    "ethPool": "0x68A4cF26705B3cEaB49d1C99DE98F3Db28ee767E"
   };
   const dai = ADDRESSES.optimism.DAI;
   const chain = 'optimism'
-  const tokens = [dai]
+  const tokens = [dai, nullAddress]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
 }
@@ -132,6 +145,9 @@ module.exports = {
   },
   boba: {
     tvl: BobaTvl
+  },
+  evmos: {
+    tvl: EvmosTvl
   },
   metis: {
     tvl: MetisTvl

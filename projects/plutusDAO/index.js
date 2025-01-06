@@ -14,6 +14,12 @@ const plsJones = "0xe7f6C3c1F0018E4C08aCC52965e5cbfF99e34A44";
 const plsJonesFarm = "0x23B87748b615096d1A0F48870daee203A720723D";
 const plsSpa = "0x0D111e482146fE9aC9cA3A65D92E65610BBC1Ba6";
 const plsSpaFarm = "0x73e7c78E8a85C074733920f185d1c78163b555C8";
+const plsRdnt = "0x1605bbDAB3b38d10fA23A7Ed0d0e8F4FEa5bFF59";
+const plsRdntFarm = "0xaE3f67589Acb90bd2cbccD8285b37fe4F8F29042"
+const plsArb = "0x7a5D193fE4ED9098F7EAdC99797087C96b002907"
+const plsARbFarm = "0xCfc273D86333bF453b847d4D8cb7958307D85196"
+
+
 const plvGlpToken = ADDRESSES.arbitrum.plvGLP;
 const plgGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
 
@@ -22,6 +28,8 @@ const dpxPlsDpxLp = "0x16e818e279d7a12ff897e257b397172dcaab323b";
 
 const plsEthMasterChef = "0x5593473e318F0314Eb2518239c474e183c4cBED5";
 const plsEthLp = "0x6CC0D643C7b8709F468f58F363d73Af6e4971515";
+
+const plsV2Staker = "0xE9645988a5E6D5EfCc939bed1F3040Dba94C6CbB"
 
 const lps = [
   '0x16e818e279d7a12ff897e257b397172dcaab323b', // DPX-plsDPX-LP
@@ -46,12 +54,20 @@ async function tvl(ts, _block, {[chain]: block}) {
 
   sdk.util.sumSingleBalance(balances, 'arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', plvGlpSupply)  // sum as GLP as well
 
+  const {output: totalStakedPlsV2} = await sdk.api.erc20.totalSupply({
+    target: plsV2Staker,
+    chain,
+    block,
+  })
   
+  sdk.util.sumSingleBalance(balances, `arbitrum:${plutusToken}`, totalStakedPlsV2)
   const tokensAndOwners = [
      [plsDpx, plsDpxFarmV1],
      [plsDpx, plsDpxFarm],
      [plsJones, plsJonesFarm],
      [plsSpa, plsSpaFarm],
+     [plsRdnt, plsRdntFarm],
+     [plsArb, plsARbFarm],
   ]
   return sumUnknownTokens({
     balances, tokensAndOwners, lps, coreAssets, chain, block,

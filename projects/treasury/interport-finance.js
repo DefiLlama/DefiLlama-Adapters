@@ -1,4 +1,3 @@
-const { Indexed } = require("ethers/lib/utils");
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 const Treasury1 = "0xa67488eEAa9C15a4F6f5A3E98f45041e34310677";

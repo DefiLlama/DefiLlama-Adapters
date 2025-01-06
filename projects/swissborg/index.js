@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -13,17 +14,18 @@ const config = {
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
       '0xff4606bd3884554cdbdabd9b6e25e2fad4f6fc54',
       '0x22bF0A4C4eff418b3306AbFeE20813D0b6E8Dc74',
+      '0x11444C6389A26C8E41d7FD5CafBfCC511303b7d3',
+      '0x67FE3293FC4e877F3CDc3F0ed93721a600f72BdE',
+      '0x178Fb204c1ff2Ed7d0651C522A3a5B15480Eb76d',
+      '0xFbA64167e4f091Ca625FA79aa6f83665856f8Bf2',
+      '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+      '0xe2484A7Ac1b9Cb6D8E55fd00e129aB913172bea6',
+      '0xdbe15F6573108B6736c70779C683Ca633c18aFe2',
+      '0xa2E07DB4e92F66071Ca68984517972F5625AB325',
     ],
   },
   bitcoin: {
-    owners: [
-      '18DowXoMUQT5EU8zPTDTrq4hrwmi8ddCcc',
-      'bc1qfu6su3qz4tn0et634mv7p090a0cgameq6rdvuc',
-      'bc1qutkfwnuq4v0zdkenqt5vyuxlrmsezldzue5znc',
-      '1Mgs8zLJ7JyngcNRUscayyPHnnYJpJS5x2',
-      'bc1qc8ee9860cdnkyej0ag5hf49pcx7uvz89lkwpr9',
-      '1JgXCkk3gjmgfgjT2vvnjpvqfvNNTFCRpM',
-    ]
+    owners: bitcoinAddressBook.swissborg
   },
   ripple: {
     owners: [
@@ -44,18 +46,26 @@ const config = {
       '2E1UKoiiZPwsp4vn6tUh5k61kG2UqYpT7oBrFaJUJXXd',
       '2XxP4kS2vfkiMvpLpGNxry3fPUYimsuAmSbqL1KnuwZ8',
       'Cet3t77x2BBVSmiEFm8ZPoDSngbpso2RuWPL79Ky7SpA',
+      '9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL',
+      'Fe7SEekiKygziaEGKxsDsgLVzrCfNvVBvAYsaJBwFA8s',
+      'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
+      '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
+      '3jvARuePRR6KpNAeYYGRQzs8W4VYsWWxe4BfoTSTZhUr',
     ],
   },
   polkadot: {
     owners: [
       '1xXbYy1V5Sc3EQZ76wmcWy4gXTSyLbzgdDNJtGT6jEcL2z7',
       '15Fg7p6pzLo6uinCFdsx3HTWdAx4vFt8nnw2E3JWHHwh9NCn',
+      '15mENJiKxtbxE2PNcB8qTaatYKjFTN4kitEzZ5eiHFGW3DVU',
     ],
   },
   cardano: {
     owners: [
       'addr1qxqut96hxv5zxmhcgspmnq9tuaf6xglvq6tdv8jm5zltatv5hnm8tps2jw73pherd4l9yuuetxlp6gkeufq5p6ftjswssk33fx',
       'addr1q9vrcmu4sr7yrspknu8gwrzgrs6wuh0e6pkk9tyz2clg9llt77jyl7422xv72h9mc9kmsgvajssj4a4cpsv07n4e5lpqkfe9ft',
+      'addr1qy9ffv7zmqtmenskcnvsxszhv6zsls8gkl339tc5d2c5davhg2p4nekj924whmlmczq3jkf22yt5wh3ml7f8g3mxud4ss6mwyd',
+      'addr1qx2tzwkx4fjg8cg0htw27cje4029cmf2plsm3nws5qyky45njhmrzd25840eesfu6q33tzaqxtrqarfuqe9wpsc9ks0qea4lcq',
     ],
   },
   hedera: {
@@ -79,6 +89,8 @@ const config = {
       '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
       '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
+      '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
+      '0x9531AA9883bF11f2a63d86caD7e826f37Acec3c4',
     ]
   },
   polygon: {
@@ -90,8 +102,20 @@ const config = {
   moonbeam: {
     owners: [
       '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
+      '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
     ]
-  }
+  },
+  cosmos: {
+    owners: [
+        'cosmos10dfzd2wpnpeuy2lgan35ah8dg5p4l298v0n8e8',
+    ]
+  },
+  arbitrum: {
+    owners: [
+      '0x8F0d8b27bF808976Fa94f03e2230b4bca95bf3C4',
+      '0x5509Be53b2dD0CD6fb8473B0EdA94e0a3059b73a',
+    ]
+  },
 }
 
 module.exports = cexExports(config)

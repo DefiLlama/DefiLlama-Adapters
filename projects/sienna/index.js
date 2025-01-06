@@ -1,56 +1,58 @@
-const { get } = require('../helper/http')
+const { queryContract, } = require('../helper/chain/secret')
+const { transformDexBalances } = require('../helper/portedTokens')
+const { PromisePool } = require('@supercharge/promise-pool')
+const sdk = require('@defillama/sdk')
+const { sleep } = require('../helper/utils')
 
-let lendData
-let overviewData
-
-async function getLendData() {
-  if (!lendData)
-    lendData = get('https://ethereumbridgebackend.azurewebsites.net/sienna_lend_latest_data')
-  return lendData
+async function tvl(api) {
+  const factiories = ["secret18sq0ux28kt2z7dlze2mu57d3ua0u5ayzwp6v2r", "secret1zvk7pvhtme6j8yw3ryv0jdtgg937w0g0ggu8yy"]
+  const data = []
+  await Promise.all(factiories.map(i => getExchanges(i, data)))
+  return transformDexBalances({ data, chain: api.chain })
 }
 
-async function getOverviewData() {
-  if (!overviewData)
-    overviewData = get('https://ethereumbridgebackend.azurewebsites.net/sienna_token_statistics')
-  return overviewData
+async function getExchanges(factory, data) {
+  const pools = []
+  const limit = 30
+  let hasMore = true
+  do {
+    const { list_exchanges: { exchanges } } = await queryContract({ contract: factory, data: { list_exchanges: { pagination: { start: pools.length, limit } } } })
+    hasMore = exchanges.length === limit
+
+    sdk.log(factory, exchanges.length, pools.length, hasMore)
+    pools.push(...exchanges)
+    const { errors } = await PromisePool.withConcurrency(10)
+      .for(exchanges)
+      .process(async (i) => {
+        let { address, contract } = i
+        if (!address) address = contract.address
+        const { pair_info } = await queryContract({ contract: address, data: "pair_info" })
+        data.push({
+          token0: transformToken(pair_info.pair.token_0, pair_info),
+          token0Bal: pair_info.amount_0,
+          token1: transformToken(pair_info.pair.token_1, pair_info),
+          token1Bal: pair_info.amount_1,
+        })
+        await sleep(1000)
+      })
+
+    console.log(errors, errors.length, factory, exchanges.length, pools.length, hasMore)
+    // if (errors && errors.length)
+    //   throw errors[0]
+
+  } while (hasMore)
 }
 
-async function getPoolLiquidity() {
-  let pool_liquidity
-  const { data } = await get('https://ethereumbridgebackend.azurewebsites.net/sienna_token_historical_data?type=hourly&period=1+days')
-  data.filter(i => i.pool_liquidity).forEach(i => pool_liquidity = i.pool_liquidity)
-  return pool_liquidity
-}
-
-async function tvl() {
-  throw new Error('tvlresponse is wrong')
-  // const [ lend, overview ] = await Promise.all([getLendData(), getOverviewData()])
-  // return {
-  //   tether: lend.data.underlying_balance_usd + (await getPoolLiquidity())
-  // }
-}
-
-async function staking() {
-  const overview = await getOverviewData()
-  return {
-    tether: overview.staked
+function transformToken(addr, poolData) {
+  if (!addr?.custom_token) {
+    // console.log(JSON.stringify(addr, null, 2))
+    // console.log(JSON.stringify(poolData, null, 2))
+    throw new Error("No custom token")
   }
-}
-
-async function borrowed() {
-  const lend = await getLendData()
-  return {
-    tether: lend.data.total_borrows_usd
-  }
+  return addr.custom_token.contract_addr
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
-  methodology: 'All tokens locked in SIENNA Network pairs + All the supplied tokens to Sienna Lend Markets + Staked Sienna;',
-  secret: {
-    tvl,
-    staking,
-    borrowed,
-  }
+  secret: { tvl }
 }

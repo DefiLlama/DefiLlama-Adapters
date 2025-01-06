@@ -92,7 +92,7 @@ const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
   const bridgeContract = getBridgeContract(chain);
   const tokens = Object.values(tokensConf[chain])
   const owners = [bridgeContract]
-  return sumTokens2({ chain, block:chainBlocks[chain], tokens, owners, })
+  return sumTokens2({ chain, block:chainBlocks[chain], tokens, owners })
 };
 
 module.exports = {

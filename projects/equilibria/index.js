@@ -15,6 +15,24 @@ const contracts = {
     eqbRewardsAddress: "0x70f61901658aAFB7aE57dA0C30695cE4417e72b9",
     pendleAddress: "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
   },
+  bsc: {
+    boosterAddress: "0x4D32C8Ff2fACC771eC7Efc70d6A8468bC30C26bF",
+    staker: "0x64627901dAdb46eD7f275fD4FC87d086cfF1e6E3",
+    eqbRewardsAddress: "0x0140dE476f49B6B42f7b73612b6dc317aB91D3BC",
+    pendleAddress: "0xb3Ed0A426155B79B898849803E3B36552f7ED507",
+  },
+  optimism: {
+    boosterAddress: "0x18C61629E6CBAdB85c29ba7993f251b3EbE2B356",
+    staker: "0x4D32C8Ff2fACC771eC7Efc70d6A8468bC30C26bF",
+    eqbRewardsAddress: "0x22Fc5A29bd3d6CCe19a06f844019fd506fCe4455",
+    pendleAddress: "0xBC7B1Ff1c6989f006a1185318eD4E7b5796e66E1",
+  },
+  mantle: {
+    boosterAddress: "0x920873E5b302A619C54c908aDFB77a1C4256A3B8",
+    staker: "0x479603DE0a8B6D2f4D4eaA1058Eea0d7Ac9E218d",
+    eqbRewardsAddress: "0x71e0ce200a10f0bBFB9F924fE466ACf0B7401EbF",
+    pendleAddress: "0xd27B18915e7acc8FD6Ac75DB6766a80f8D2f5729",
+  }
 };
 
 async function tvl(chain, block) {
@@ -78,7 +96,7 @@ async function tvl(chain, block) {
   return balances;
 }
 
-const chains = ["ethereum", "arbitrum"];
+const chains = ["ethereum", "arbitrum", 'bsc', 'optimism', 'mantle'];
 
 module.exports = {
   doublecounted: true,

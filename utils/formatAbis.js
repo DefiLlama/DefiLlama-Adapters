@@ -70,8 +70,8 @@ function transform(obj, file) {
     if (iLen && oLen && knownTypes.has(oType)) {
       res[key] = `${oType}:${value.name}`
     } else {
-      const iface = new ethers.utils.Interface([value])
-      res[key] = iface.format(ethers.utils.FormatTypes.full)[0]
+      const iface = new ethers.Interface([value])
+      res[key] = iface.format()[0]
     }
   }
 

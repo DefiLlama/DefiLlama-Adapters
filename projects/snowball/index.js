@@ -53,7 +53,7 @@ async function getSnowglobeBalances(snowglobes, api) {
   api.addTokens(tokens, tokenBalances)
 }
 
-async function tvl(_timestamp, _ethereumBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const data = await cachedGraphQuery('snowball', API_URL, query)
   const deprecatedSnowglobes = data.DeprecatedContracts.filter(contract => contract.kind === "Snowglobe").map(contract => ({ pair: contract.pair, snowglobeAddress: contract.contractAddresses[0] }));
   const deprecatedStablevaults = data.DeprecatedContracts.filter(contract => contract.kind === "Stablevault").map(contract => ({ swapAddress: contract.contractAddresses[2] }));

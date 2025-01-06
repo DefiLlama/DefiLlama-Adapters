@@ -1,10 +1,13 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 
 // Ethereum Vaults
 const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
 const ethPutVault = '0x6d2Cdb589BE6037Df1AeA5dC433829aD5aF30013'
 const wbtcCallVault = '0x60a4422B6B52aEF50647c67F29D6a7e6DAc3CCBC'
+
+// Ethereum - Wheel
+const synWethBi = '0x3567e2A6E161f3623307Aa4e59ceab6dEFf6291f'
 
 const lunaPutVault = '0x49d8cde90cefdd4f8568f7d895e686fdb76b146e'
 const algoPutVault = '0xC2DD9C7F526C7465D14bbBb25991DaB35f8Ea2B4'
@@ -28,6 +31,27 @@ const indexETH_BiWeekly_B = "0x71F5d6fa67c2C9D2b76246569093390d02F80678"
 // Ethereum - Stronghold IndexBTC vaults
 const indexBTC_BiWeekly_A = "0xB2d3102944dEc6c4D7B0d87cA9De6eB13B70c11e"
 const indexBTC_BiWeekly_B = "0xB1105529305f166531b7d857B1d6f28000278aff"
+
+// Ethereum - Boosted Positions (Aave V2 Fork)
+const PTeETH_27JUN24 = '0xc69Ad9baB1dEE23F4605a82b3354F8E40d1E5966'
+const aPTeETH_27JUN24 = '0xE6A9465B9DA25Ddacc55AF5F2a111Db4E80Ba20D'
+const aWETH = '0xE41645Db7C6813993eEA1cBA83912cE07d8a6d29'
+const PTUSDe_25JUL24 = '0xa0021EF8970104c2d008F38D92f115ad56a9B8e1'
+const aPTUSDe_25JUL24 = '0xCe51Ca8D61dAb1f84bD95329218b87E95054aB22'
+const aUSDC = '0xFB3CbdA3145Fac86040bE8501e0750cd1ddDA0Af'
+const  PTweeths_29AUG24 = '0xda6530efafd63a42d7b9a0a5a60a03839cdb813a'
+const aPTweeths_29AUG24 = '0xb33587882dEe85B3dCcd5C82d942BB10119f8BB0'
+const  PTunieth_26SEP24 = '0x15fA86404BFbA8b46684552F792558128bFB6418'
+const aPTunieth_26SEP24 = '0x4390a8E941b0B16a8E6B670D878a9eF6d3e11725'
+const  PTweeth_26DEC24  = '0x6ee2b5E19ECBa773a352E5B21415Dc419A700d1d'
+const aPTweeth_26DEC24  = '0xBE8b41bDd18b0f0f47DbF338cfA837469F755d95'
+const  PTezeth_26DEC24  = '0xf7906F274c174A52d444175729E3fa98f9bde285'
+const aPTezeth_26DEC24  = '0xD9309EA9e2336A9Fe2A15b04D9036Db15A729047'
+const  PTksusde_26SEP24 = '0xd351de53277c4218CC29f793263FB60E2fcFC1dC'
+const aPTksusde_26SEP24 = '0x2b04E9ebeCC71BC3450C1C7B1FB8E0404E870d59'
+const  PTsusde_26SEP24  = '0x6c9f097e044506712B58EAC670c9a5fd4BCceF13'
+const aPTsusde_26SEP24  = '0x024F400F55dc1b877695Ba4e8e53a509Fb3F0BF2'
+
 
 // Avalanche Vaults
 const avaxCallVault = '0xd06Bd68d58eD40CC2031238A3993b99172ea37cA'
@@ -63,14 +87,46 @@ const indexUST_LUNA_2wk_b = "0x112AdEC687FA605CE3221943C301Ed99B7C33Ed7"
 //Aurora Vaults
 const nearCallVault = '0xfc7F11Bb0d97d9db1f701eEA0fDE611536F1EB5F'
 
+//cronos vaults
+const cronosCallVault = '0x99F05418967d3596CAfd260913b682Fd9b0CBB40'
+
+
 //Boba Vaults
 const bobaCallVault = '0x5a9f1D95C59365613B4224e690Bb4971DD246142'
 const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 
 //Arbitrum Vaults
 const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
+const arbPutVault = '0xf94ea5B18401821BE07FBfF535B8211B061A7F70'
+const ethCallVaultArb = '0x1D1CD4abe0F2AF9d79b5e3149BF4A503f97C1EAd'
+const ethPutVaultArb = '0xA8459eC6DF0D9a61058C43a308dD8A2CEc9d550E'
+// Assets locked in Aave V2 fork
+const aArb_ARB = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5' 
+const aUsdc_ARB = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
+const aWeth_ARB = '0xBbf03fC0C8441e9cc50cC087f74899C137597b6e'
+// LongLiquidityVaults - Holds aAssets (not counted) and V3 liquidity NFTs
+const arbC_LLV = '0x721Bba1556649e9c70E2dF1EAFC04270376025f7'
+const arbP_LLV = '0x57eD79afD32c616E4631231636F4597188d20C5e'
+const ethC_LLV = '0x078F98Be8A1bb1bD64799B8F05Aca08f5850A69D'
+const ethP_LLV = '0xE84CB9daF67644734051c7f6e978968f04F6751e'
+// Boosted assets (Selling options backed by yielding assets) (locked in Aave V2 Fork)
+const  PTezETH_27JUN24 = '0x8EA5040d423410f1fdc363379Af88e1DB5eA1C34'
+const aPTezETH_27JUN24 = '0x2F741a91dCe2a1e1Ed24c88F93A0f3530f1CBf2C'
+const  PTrsETH_27JUN24 = '0xAFD22F824D51Fb7EeD4778d303d4388AC644b026'
+const aPTrsETH_27JUN24 = '0x121b956D11EaeCFD3f0CdF259D6faFFEbEDD0bC9'
+const  PTweETH_27JUN24 = '0x1c27Ad8a19Ba026ADaBD615F6Bc77158130cfBE4'
+const aPTweETH_27JUN24 = '0x1B38B4586003E64c6c87F4acaF4f15415C2034EB'
 
-//zkEVM vaults
+const   PTweETH_26SEP24 = '0xb8b0a120F6A68Dd06209619F62429fB1a8e92feC'
+const  aPTweETH_26SEP24 = '0xF5d0866646DF182Fb9BC7FB27B26B84F96b2239d'
+const   PTezETH_26SEP24 = '0x2CCFce9bE49465CC6f947b5F6aC9383673733Da9'
+const  aPTezETH_26SEP24 = '0x3F9ca12e7D4867E45b289484a3F33bbA2A1b8723'
+const   PTrsETH_26SEP24 = '0x30c98c0139B62290E26aC2a2158AC341Dcaf1333'
+const  aPTrsETH_26SEP24 = '0x0B6Ef11254edCab4b164daa7e626Dc0d0c2Ad51f'
+const  PTuniETH_26DEC24 = '0x22e9ad26ea0e65a7073571d5d7172ff6336084ad'
+const aPTuniETH_26DEC24 = '0x3D3a1CAA95D427b9fF63b93cB90e1a470eeBA5D7'
+
+// Polygon zkEVM vaults
 const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
 
 // Ethereum Assets
@@ -81,6 +137,7 @@ const ust = '0xa693b19d2931d498c5b318df961919bb4aee87a5'
 const tUSDC = '0x9f238fae3d1f1982716f136836fc2c0d1c2928ab'
 const tAlgo = '0x0354762a3c01730d07d2f7098365d64dc81b565d'
 const bit = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5'
+const ausdc = '0xBcca60bB61934080951369a648Fb03DF4F96263C' // Aave V2 USDC
 
 // Avalanche Assets
 const wavax = ADDRESSES.avax.WAVAX
@@ -110,16 +167,24 @@ const near = ADDRESSES.aurora.NEAR
 let boba = ADDRESSES.boba.BOBA
 const bobaUSDC = ADDRESSES.boba.USDC
 
-// Arbitrum assets
-let arb = ADDRESSES.arbitrum.ARB
+// cronos assets
+const wcro = ADDRESSES.cronos.WCRO_1
 
-// zkEVM assets
-const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082';
+// Arbitrum assets
+const arb = ADDRESSES.arbitrum.ARB
+const usdc_arb = ADDRESSES.arbitrum.USDC_CIRCLE
+const weth_arb = ADDRESSES.arbitrum.WETH
+const univ3nft_arb = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
+
+// Polygon zkEVM assets
+const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082'
 
 module.exports = {
-  methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
+  methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, and AMM are calculated as TVL.`,
   hallmarks: [
-    [Math.floor(new Date('2022-09-30') / 1e3), 'Thetanuts migration V0 -> V1'],
+    [1646658000, 'Migration from v0 to v1'],
+    [1664460000, 'Migration from v1 to v2'],
+    [1702472400, 'Launch of Thetanuts Finance v3'],
   ],
 }
 
@@ -134,6 +199,9 @@ const config = {
       [tAlgo, algoCallVault,],
       [usdc, bitPutVault,],
       [bit, bitCallVault,],
+      
+      [weth, synWethBi,],
+      [usdc, synWethBi,],
 
       [usdc, indexUSDC_BTC_1wk,],
       [usdc, indexUSDC_ETH_2wk_a,],
@@ -148,6 +216,26 @@ const config = {
       [wbtc, indexBTC_BiWeekly_A,],
       [wbtc, indexBTC_BiWeekly_B,],
 
+      [ausdc, indexUSDC_BTC_1wk,],
+      [ausdc, indexUSDC_ETH_2wk_a,],
+      [ausdc, indexUSDC_AVAX_2wk_b,],
+      [ausdc, indexUSDC_MATIC_2wk_a,],
+      [ausdc, indexUSDC_BNB_2wk_b,],
+      [ausdc, ethPutVault,],
+
+      [weth, aWETH,],
+      [PTeETH_27JUN24, aPTeETH_27JUN24,],
+      [PTweeths_29AUG24, aPTweeths_29AUG24,],
+      [PTunieth_26SEP24, aPTunieth_26SEP24,],
+
+      [PTweeth_26DEC24, aPTweeth_26DEC24,],
+      [PTezeth_26DEC24, aPTezeth_26DEC24,],
+
+      [usdc, aUSDC,],
+      [PTUSDe_25JUL24, aPTUSDe_25JUL24,],
+      [PTsusde_26SEP24, aPTsusde_26SEP24,],
+      [PTksusde_26SEP24, aPTksusde_26SEP24,],
+
     ]
   },
   avax: {
@@ -159,6 +247,27 @@ const config = {
   arbitrum: {
     tokensAndOwners: [
       [arb, arbCallVault,],
+      [usdc_arb, arbPutVault,],
+      [weth_arb, ethCallVaultArb,],
+      [usdc_arb, ethPutVaultArb,],
+      [arb, aArb_ARB,],
+      [weth_arb, aWeth_ARB,],
+      [usdc_arb, aUsdc_ARB,],      
+
+      [PTezETH_27JUN24, aPTezETH_27JUN24,],
+      [PTrsETH_27JUN24, aPTrsETH_27JUN24,],
+      [PTweETH_27JUN24, aPTweETH_27JUN24,],
+
+      [PTezETH_26SEP24, aPTezETH_26SEP24,],
+      [PTrsETH_26SEP24, aPTrsETH_26SEP24,],
+      [PTweETH_26SEP24, aPTweETH_26SEP24,],
+      [PTuniETH_26DEC24, aPTuniETH_26DEC24,],
+    ],
+    uniV3Owners: [
+       arbC_LLV,
+       arbP_LLV,
+       ethC_LLV,
+       ethP_LLV,
     ]
   },
   fantom: {
@@ -205,16 +314,30 @@ const config = {
       [near, nearCallVault,],
     ]
   },
+  cronos: {
+    tokensAndOwners: [
+      [wcro, cronosCallVault]
+    ]
+  },
   polygon_zkevm: {
     tokensAndOwners: [
       [stMatic, stMaticCallVault,],
+    ]
+  },
+  inevm: {
+    tokensAndOwners: [
+      ['0x69011706b3f6C6eaeD7D2Bc13801558B4fd94CBF', '0x6950D30996e8EC8D93dd1602b059b3a38389Bb88'],
+      ['0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147', '0xEc9284b92B8039c4180Ac99863ed73Ee5Ff33E63'],
     ]
   }
 }
 
 Object.keys(config).forEach(chain => {
-  const { tokensAndOwners } = config[chain]
+  const { tokensAndOwners, uniV3Owners } = config[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ tokensAndOwners, })
+    tvl: async (api) => {
+      if (uniV3Owners) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true})
+      return sumTokens2({ api, tokensAndOwners})
+    }
   }
 })

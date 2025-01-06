@@ -13,7 +13,7 @@ async function tvl() {
 
 module.exports = {
   methodology:
-    "Merkl is a side product from Angle Labs used to better reward concentrated liquidity positions. It doesn't have any TVL. See the yield dashboard for a list of Merkl pools.",
+    "Merkl is a side product from Angle Labs used to reward concentrated liquidity positions. It doesn't have any TVL. See the yield dashboard for a list of Merkl pools.",
   ethereum: {
     tvl,
   },
@@ -24,6 +24,12 @@ module.exports = {
     tvl,
   },
   arbitrum: {
+    tvl,
+  },
+  base: {
+    tvl,
+  },
+  polygon_zkevm: {
     tvl,
   },
 };

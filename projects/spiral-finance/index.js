@@ -77,12 +77,12 @@ async function calcTvl(block, spr, mastermind, pool2, api) {
   return balances;
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
-  return await calcTvl(chainBlocks.fantom, spr, mastermind, false, api);
+async function tvl(api) {
+  return await calcTvl(api.block, spr, mastermind, false, api);
 }
 
-async function pool2(timestamp, block, chainBlocks, { api }) {
-  return await calcTvl(chainBlocks.fantom, spr, mastermind, true, api);
+async function pool2(api) {
+  return await calcTvl(api.block, spr, mastermind, true, api);
 }
 
 module.exports = {

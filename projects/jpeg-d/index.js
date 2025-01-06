@@ -12,7 +12,7 @@ module.exports = {
   hallmarks: [
     [1666003500, "pETH borrows"],
     [1669551000, "JPEG LTV boost"],
-    [1683662400, "P2P Ape Staking"],
     [1690730000, "pETH-ETH Curve pool drained"],
+    [1694680200, "pETH Citadel relaunch"],
   ],
 };

@@ -9,7 +9,7 @@ const subgraphs = {
     'polygon': 'sushiswap/matic-exchange',
     'fantom': 'sushiswap/fantom-exchange',
     'bsc': 'sushiswap/bsc-exchange',
-    'harmony': 'https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange',
+    //'harmony': 'https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange',
     //'okexchain': 'https://q.hg.network/subgraphs/name/sushiswap/okex-exchange',
     'avax': 'sushiswap/avalanche-exchange',
     'celo': 'sushiswap/celo-exchange',
@@ -34,6 +34,6 @@ const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
 const xSUSHI = "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
 const SUSHI = ADDRESSES.ethereum.SUSHI
 
-subgraphChainTvls.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum');
+subgraphChainTvls.ethereum.staking = staking(xSUSHI, SUSHI);
 
 module.exports=subgraphChainTvls;
