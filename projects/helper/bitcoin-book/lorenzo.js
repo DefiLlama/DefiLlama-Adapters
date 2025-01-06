@@ -30,5 +30,18 @@ module.exports = [
   //cap2, Delegate to Lombard FP(609b4b8e27e214fd830e69a83a8270a03f7af356f64dde433a7e4b81b2399806)
   "bc1pa56692v3hxguvu8vgu5d7dh9twlj7wm87qvzvxdru3rnluv8nmdqk58ewz",
   //other vault bitcoin address
-  "bc1pu2e56xlz284s5lh9am2k2ys2lhtau5mgq6j9fgljxt7tegsgtp3spmvk0w"
+  "bc1pu2e56xlz284s5lh9am2k2ys2lhtau5mgq6j9fgljxt7tegsgtp3spmvk0w",
+
+  // cap3
+  "bc1pd8z0x5a34w3s3nvyzfjn5z9qchg52wm2exktqev76uc5mjq9lsxq6wsf0m",
+  "bc1pm3k5ssdpw7lyzqy4ndqvgs6mvanw046sktw79xfmw0znvrng2wps8qw6zy",
+
+  // cap1, BBN target stake script address
+  "bc1pzr98tfuzxxjwkk3fq9k86ar98ttnj6zpf4x62099avdupj443x9qv5xdax",
+  // cap3, BBN target stake script address
+  "bc1pcrqesnduvztc080dvu0wdm6jzjvuf24g0kamn6p2h2ru0jmssljq69n7mv",
+  // cap3, BBN target stake script address
+  "bc1prku5dse3ps3hkyjn5lpu0qcypcmqmhqhh8wfuztpck5h5unx5wjq9mpjjv",
+  // cap3, BBN target stake script address
+  "bc1p9yrhpkm6klag7r0xq8f93degehxc086tnv2lsckg54cl2yl5wyeqdhx8v6"
 ]

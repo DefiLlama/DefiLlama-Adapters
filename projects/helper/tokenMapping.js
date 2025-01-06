@@ -50,6 +50,9 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  water: {   
+    '0xC807C5FfFf748eF435Ddb99b181846Edd1e70041': { coingeckoId: "water-3", decimals: 18 },
+  },
   kopi: {
     'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
     'ucusdc': { coingeckoId: 'usd-coin', decimals: 6 },
@@ -85,6 +88,10 @@ const fixBalancesTokens = {
   odyssey: {
     [ADDRESSES.null]: { coingeckoId: 'dione', decimals: 18 },
     '0xf21cbaf7bd040d686bd390957770d2ea652e4013': { coingeckoId: 'dione', decimals: 18 },
+  },
+  crossfi: {
+    [ADDRESSES.null]: { coingeckoId: 'crossfi-2', decimals: 18 },
+    [ADDRESSES.crossfi.WXFI]: { coingeckoId: 'crossfi-2', decimals: 18 },
   }
 }
 
