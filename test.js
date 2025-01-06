@@ -436,12 +436,7 @@ async function computeTVL(balances, timestamp) {
         console.log(`-------------------
   Warning: `);
         console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M), price data: `, data);
-
-        const isValidMarketCap = await checkMarketCap(address, symbol, usdAmount);
-        if (!isValidMarketCap) {
-          console.log(`Skipping ${symbol} (${address}) due to invalid market cap. \n`);
-          continue;
-        }
+        await checkMarketCap(address, symbol, usdAmount);
         console.log(`-------------------`);
       }
   
@@ -492,31 +487,24 @@ function buildPricesGetQueries(readKeys) {
   return queries
 }
 
-async function checkMarketCap(address, symbol, usdAmount) {
-  console.log(`Checking the Market Cap for ${address} (${symbol})`);
+async function checkMarketCap(token, symbol, usdAmount) {
+  console.log(`Checking the Market Cap for ${token} (${symbol})`);
 
   if (!CG_API_KEY) {
     console.log(`⚠️  CG_API_KEY is not set, skipping check`);
     return true;
   }
 
-  const [coingeckoId] = await searchCoingeckoId(symbol);
+  const normalizedToken = symbol === "ETH" ? "coingecko:ethereum" : token;
 
-  if (!coingeckoId) {
-    console.log(`⚠️  No CoinGecko ID found for symbol: ${symbol}`);
-    console.log(`⚠️  Proceeding cautiously and counting the token.`);
+  const coinMarketCap = normalizedToken.includes(":") && !normalizedToken.startsWith("coingecko:")
+    ? await fetchCoinMarketCap(normalizedToken, symbol, true)
+    : await fetchCoinMarketCap(normalizedToken, symbol, false);
+
+  if (coinMarketCap === null) {
+    console.log(`⚠️  No market cap found for ${symbol}. Proceeding cautiously.`);
     return true;
   }
-
-  const coinMarketCap = await fetchCoinMarketCap(coingeckoId);
-
-  if (!coinMarketCap) {
-    console.log(`⚠️  No market cap found for CoinGecko ID: ${coingeckoId}`);
-    console.log(`⚠️  Proceeding cautiously and counting the token.`);
-    return true;
-  }
-
-  console.log(`✅ Market Cap for ${symbol} (${coingeckoId}) found: ${coinMarketCap}`);
 
   if (usdAmount > coinMarketCap) {
     console.log(`❌ USD amount (${usdAmount}) exceeds market cap (${coinMarketCap}) for ${symbol}. Ignoring token.`);
@@ -527,30 +515,41 @@ async function checkMarketCap(address, symbol, usdAmount) {
   return true;
 }
 
-async function searchCoingeckoId(symbol) {
-  const url = `https://pro-api.coingecko.com/api/v3/search?query=${symbol}`;
-  const { data } = await axios.get(url, {
-    headers: {
-      accept: 'application/json',
-      'x-cg-pro-api-key': CG_API_KEY,
-    },
-  });
+async function fetchCoinMarketCap(token, symbol, isByChain) {
+  try {
+    const [chain, address] = isByChain ? token.split(":") : ["", token.split(":")[1]];
+    const url = isByChain
+      ? `https://pro-api.coingecko.com/api/v3/coins/${chain}/contract/${address}`
+      : `https://pro-api.coingecko.com/api/v3/coins/${address}?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false`;
 
-  return data.coins
-  .filter((coin) => coin.symbol.toLowerCase() === symbol.toLowerCase())
-  .map((coin) => coin.id);
-}
+    const { data } = await axios.get(url, {
+      headers: {
+        accept: "application/json",
+        "x-cg-pro-api-key": CG_API_KEY,
+      },
+    });
 
-async function fetchCoinMarketCap(id){
-  const url = `https://pro-api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false`;
-  const { data } = await axios.get(url, {
-    headers: {
-      accept: 'application/json',
-      'x-cg-pro-api-key': CG_API_KEY
+    if (!data) {
+      console.log(`❌ No data returned from CoinGecko API for ${token}`);
+      return null;
     }
-  });
 
-  return data.market_data.market_cap.usd
+    if (!data.symbol || data.symbol.toLowerCase() !== symbol.toLowerCase()) {
+      console.log(`❌ Symbol mismatch for ${token} (expected: ${symbol}, received: ${data.symbol || "none"})`);
+      return null;
+    }
+
+    if (!data.market_data || !data.market_data.market_cap || !data.market_data.market_cap.usd) {
+      console.log(`❌ No market cap data found for ${token}`);
+      return null;
+    }
+
+    console.log(`✅ Market cap found for ${symbol}: ${data.market_data.market_cap.usd} USD`);
+    return data.market_data.market_cap.usd;
+  } catch (error) {
+    console.error(`❌ Error while querying CoinGecko API for ${token}:`, error.message);
+    return null;
+  }
 }
 
 async function initCache() {
