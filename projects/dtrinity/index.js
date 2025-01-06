@@ -56,7 +56,7 @@ const borrowed = async (api) => {
 }
 
 module.exports = {
-    methodology: 'TVL consists of TVL of dLEND protocol, total value of collateral backing dUSD stablecoin (FRAX, sFRAX, DAI, sDAI, USDC), and total dUSD AMO supply',
+    methodology: 'Includes TVL for dLEND and TVL for dUSD.',
     fraxtal: {
         tvl,
         borrowed

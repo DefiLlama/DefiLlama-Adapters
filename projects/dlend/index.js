@@ -41,7 +41,7 @@ const fetchReserveData = async (api, poolDatas, isBorrowed) => {
   return api.sumTokens({ tokensAndOwners });
 }
   
-module.exports.methodology = "Counts both the tokens locked as collateral and borrowed tokens in the protocol. This includes tokens used as collateral to borrow or earn yield, as well as the total borrowed tokens (both stable and variable rate borrows)."
+module.exports.methodology = "Includes total supplied liquidity plus total debt."
   
 Object.keys(CONFIG).forEach((chain) => {
   const poolDatas = CONFIG[chain];
