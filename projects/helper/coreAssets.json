@@ -668,6 +668,9 @@
     "LUNA": "uluna",
     "UST": "uusd"
   },
+  "mantra": {
+    "OM": "uom"
+  },
   "crescent": {
     "BCRE": "ubcre",
     "CRE": "ucre"
