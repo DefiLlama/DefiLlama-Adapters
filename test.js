@@ -436,7 +436,12 @@ async function computeTVL(balances, timestamp) {
         console.log(`-------------------
   Warning: `);
         console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M), price data: `, data);
-        await checkMarketCap(address, symbol, usdAmount);
+
+        const isWithinMarketCap = await checkMarketCap(address, symbol, usdAmount);
+        if (!isWithinMarketCap) {
+          console.log(`Ignoring token ${address} (${symbol}) due to exceeding market cap.`);
+          continue;
+        }
         console.log(`-------------------`);
       }
   
