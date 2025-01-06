@@ -55,7 +55,7 @@ const ERC20_ABI = [
     }
 ]
 
-async function getTotalLpStakedInVault(provider, strategy_address, prices, token_id) {
+async function getTotalLpStakedInVault(provider, prices, strategy_address, token_id) {
     try {
         const strategyContract = new ethers.Contract(strategy_address, BLACKSAIL_STRAT_ABI, provider);
         const totalStaked = await strategyContract.balanceOf();
@@ -78,25 +78,44 @@ async function getTotalLpStakedInVault(provider, strategy_address, prices, token
 
 
 async function fetchChain() {
-    return async () => {
-        if (!_response) _response = utils.fetchURL('https://api.blacksail.finance/stats')
-        const response = await _response;
+    if (!_response) {
+        const response = await fetch('https://api.blacksail.finance/stats', {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.BLACKSAIL_API_KEY,
+                'Content-Type': 'application/json'
+            }
+        });
 
-        let total_tvl = 0;
-        let yields = response["data"]["yield"]
-        let prices = response["data"]["price"]
-
-        const provider = new ethers.JsonRpcProvider(CHAIN_DATA["146"]["chainRPC"]);
-
-        for (const vault in yields) {
-            total_tvl += await getTotalLpStakedInVault(provider, yields[vault]["strat_address"], prices, yields[vault]["token_id"]);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch Blacksail API: ${response.status} - ${response.statusText}`);
         }
-        return total_tvl;
+
+        _response = await response.json();
     }
+
+    let total_tvl = 0;
+    let yields = response["data"]["yield"];
+    let prices = response["data"]["price"];
+
+    const provider = new ethers.JsonRpcProvider(CHAIN_DATA["146"]["chainRPC"]);
+
+    for (const vault in yields) {
+        total_tvl += await getTotalLpStakedInVault(
+            provider,
+            prices,
+            yields[vault]["strat_address"],
+            yields[vault]["token_id"]
+        );
+    }
+
+    return total_tvl;
 }
 
 module.exports = {
     sonic: {
-        tvl: fetchChain()
+        tvl: (async () => {
+            return await fetchChain();
+        })()  // Immediately invoke the function to get the result
     }
 }
