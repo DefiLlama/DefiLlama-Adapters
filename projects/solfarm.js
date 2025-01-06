@@ -7,7 +7,7 @@ async function fetch() {
 }
 
 module.exports = {
-  deadFrom: 2024-12-31,
+  deadFrom: '2024-12-31',
   hallmarks:[
     [1667865600, "FTX collapse"]
 ],
