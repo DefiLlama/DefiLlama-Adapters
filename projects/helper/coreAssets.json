@@ -2113,5 +2113,8 @@
   "vana": {
     "WVANA": "0x00eddd9621fb08436d0331c149d1690909a5906d",
     "USDC.e": "0xf1815bd50389c46847f0bda824ec8da914045d14"
+  },
+  "crossfi": {
+    "WXFI" : "0xC537D12bd626B135B251cCa43283EFF69eC109c4"
   }
 }
