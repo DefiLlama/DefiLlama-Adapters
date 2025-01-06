@@ -437,7 +437,7 @@ async function computeTVL(balances, timestamp) {
   Warning: `);
         console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M), price data: `, data);
 
-        const { isWithinMarketCap, newPrice } = await checkMarketCap(address, symbol, usdAmount);
+        const { isWithinMarketCap, newPrice, marketCap } = await checkMarketCap(address, symbol, usdAmount);
 
         if (!isWithinMarketCap) {
           if (!newPrice) {
@@ -453,6 +453,13 @@ async function computeTVL(balances, timestamp) {
             : Number(balance);
         
           usdAmount = amount * data.price;
+
+          if (usdAmount > marketCap) {
+            console.log(`❌ Even with updated price, USD amount (${usdAmount}) still exceeds market cap (${marketCap}). Ignoring token.`);
+            continue;
+          }
+
+          console.log(`✅ With updated price, USD amount (${usdAmount}) is now within market cap (${marketCap}). Counting token.`);
         }
         console.log(`-------------------`);
       }
@@ -509,7 +516,7 @@ async function checkMarketCap(token, symbol, usdAmount) {
 
   if (!CG_API_KEY) {
     console.log(`⚠️  CG_API_KEY is not set, skipping check`);
-    return { isWithinMarketCap: true, newPrice: null };
+    return { isWithinMarketCap: true, newPrice: null, marketCap: null };
   }
 
   const normalizedToken = symbol === "ETH" ? "coingecko:ethereum" : token;
@@ -520,7 +527,7 @@ async function checkMarketCap(token, symbol, usdAmount) {
 
   if (!coinData || !coinData.marketCap) {
     console.log(`⚠️  No market cap found for ${symbol}. Proceeding cautiously.`);
-    return { isWithinMarketCap: true, newPrice: null };
+    return { isWithinMarketCap: true, newPrice: null, marketCap: null };
   }
 
   const { marketCap, price } = coinData;
@@ -528,14 +535,15 @@ async function checkMarketCap(token, symbol, usdAmount) {
   if (usdAmount > marketCap) {
     if (!price) {
       console.log(`❌ USD amount (${usdAmount}) exceeds market cap (${marketCap}), and no valid price found on CoinGecko for ${symbol}. Ignoring token.`);
-      return { isWithinMarketCap: false, newPrice: null };
+      return { isWithinMarketCap: false, newPrice: null, marketCap };
     }
-    console.log(`❌ USD amount (${usdAmount}) exceeds market cap (${marketCap}) for ${symbol}. Using updated price from CoinGecko.`);
-    return { isWithinMarketCap: false, newPrice: price };
+
+    console.log(`❌ USD amount (${usdAmount}) exceeds market cap (${marketCap}). Using updated price from CoinGecko: ${price}`);
+    return { isWithinMarketCap: false, newPrice: price, marketCap };
   }
 
   console.log(`✅ USD amount (${usdAmount}) is within market cap (${marketCap}) for ${symbol}. Counting token.`);
-  return { isWithinMarketCap: true, newPrice: null };
+  return { isWithinMarketCap: true, newPrice: null, marketCap };
 }
 
 async function fetchCoinMarketCap(token, symbol, isByChain) {
