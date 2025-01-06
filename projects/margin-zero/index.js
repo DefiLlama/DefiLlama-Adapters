@@ -61,39 +61,37 @@ async function getPoolTokens(api, pool, chainName) {
 }
 
 
-async function tvl(sdk) {
-  if (sdk.api.chainId && chainConfig[sdk.api.chainId]) {
-    const config = chainConfig[sdk.api.chainId]
-    const subgraphUrl = config.subgraph
-    const chainName = config.chainName
+async function tvl(api) {
+  const config = chainConfig[api.api.chainId]
+  const subgraphUrl = config.subgraph
+  const chainName = config.chainName
 
-    let cummulativeLiquidityRanges = []
+  let cummulativeLiquidityRanges = []
 
-    let counter = 0;
-    while (true) {
-      const { liquidityRanges } = await cachedGraphQuery('marign-zero/tvl', subgraphUrl, LiquidityRangesQuery(1000, 1000 * counter))
-      cummulativeLiquidityRanges = [...cummulativeLiquidityRanges, ...liquidityRanges]
-      counter++;
+  let counter = 0;
+  while (true) {
+    const { liquidityRanges } = await cachedGraphQuery('marign-zero/tvl', subgraphUrl, LiquidityRangesQuery(1000, 1000 * counter))
+    cummulativeLiquidityRanges = [...cummulativeLiquidityRanges, ...liquidityRanges]
+    counter++;
 
-      if (liquidityRanges.length < 1000) {
-        break;
-      }
+    if (liquidityRanges.length < 1000) {
+      break;
     }
+  }
 
-    let pools = new Set(cummulativeLiquidityRanges.map(({ pool }) => pool.toLowerCase()))
+  let pools = new Set(cummulativeLiquidityRanges.map(({ pool }) => pool.toLowerCase()))
 
-    pools = [...new Set(pools)];
+  pools = [...new Set(pools)];
 
-    for await (const pool of pools) {
-      const currTick = (await sdk.api.call({ abi: slot0Abi, target: pool }))['tick']
-      const { token0, token1 } = await getPoolTokens(sdk.api, pool, chainName)
-      const poolLiquidityRanges = cummulativeLiquidityRanges.filter(({ pool: rangePool }) => rangePool.toLowerCase() === pool.toLowerCase())
+  for await (const pool of pools) {
+    const currTick = (await api.api.call({ abi: slot0Abi, target: pool }))['tick']
+    const { token0, token1 } = await getPoolTokens(api.api, pool, chainName)
+    const poolLiquidityRanges = cummulativeLiquidityRanges.filter(({ pool: rangePool }) => rangePool.toLowerCase() === pool.toLowerCase())
 
-      for (const { tickLower, tickUpper, liquidity } of poolLiquidityRanges) {
-        const { amount0, amount1 } = unwrapLiquidity(tickLower, tickUpper, currTick, liquidity)
-        sdk.add(token0, amount0)
-        sdk.add(token1, amount1)
-      }
+    for (const { tickLower, tickUpper, liquidity } of poolLiquidityRanges) {
+      const { amount0, amount1 } = unwrapLiquidity(tickLower, tickUpper, currTick, liquidity)
+      api.add(token0, amount0)
+      api.add(token1, amount1)
     }
   }
 }
