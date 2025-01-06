@@ -114,8 +114,8 @@ async function fetchChain() {
 
 module.exports = {
     sonic: {
-        tvl: (async () => {
-            return await fetchChain();
-        })()  // Immediately invoke the function to get the result
+        tvl: async () => {
+            return await fetchChain();  // Await the result and return it
+        }
     }
 }
