@@ -5,6 +5,7 @@ const BOOL_KEYS = [
 ]
 
 const DEFAULTS = {
+  WATER_MULTICALL_RPC: "0x63cee78B11774535132fd773C5dDe3c4b41CD07f",
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
@@ -18,6 +19,7 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
+  FLOW_RPC: "https://mainnet.evm.nodes.onflow.org"
 }
 
 const ENV_KEYS = [
