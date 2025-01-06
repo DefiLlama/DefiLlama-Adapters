@@ -1,10 +1,9 @@
-
 const { sumTokensExport } = require("../helper/chain/ton");
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const sydeBtcPool = "EQBm9Ns0p98h74liNdYn-jOnJ79BT5cm--LIAeoYlfeWzQOk"
-const sydeEthPool = "EQCo4FcMyezTvv2xOY-6iW4AAGahV2u8tkMxVT90gDz0sk5t"
-const sydeEurPool = "EQC9H5G-VrnnwFa60pn08t5EqNMREW8NscnqL13W2jl9je4P"
+const sydeBtcPool = "EQA2J0WCTdYdG-XeyMpPBTeu2dWB2f0oFiV4KVRfV0gewF4E"
+const sydeEthPool = "EQD-7ycFO3yeh0EeT2wgXoOQmu64rdDBXqGm4nHDInPfCxJG"
+const sydeEurPool = "EQDXvkuKPZahcTDRHSybwiU0E5VpiGFP2QS2iHr082JmtTT9"
 
 module.exports = {
   methodology: 'Counts Syde smartcontract balance as TVL.',
