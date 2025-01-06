@@ -441,7 +441,7 @@ async function computeTVL(balances, timestamp) {
 
         if (!isWithinMarketCap) {
           if (!newPrice) {
-            console.log(`Token ${address} (${symbol}) exceeds market cap and no valid price was found. Ignoring token.`);
+            console.log(`❌ Token ${address} (${symbol}) exceeds market cap and no valid price was found. Ignoring token.`);
             continue;
           }
         
