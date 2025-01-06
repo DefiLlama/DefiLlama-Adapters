@@ -22,7 +22,10 @@ const vaultUserAddresses = [
   new PublicKey("FyH3qGRQSG7AmdEsPEVDxdJJLnLhAn3CZ48acQU34LFr"), //Vault E
   new PublicKey("MzEPFp2LwCSMMPHLQsqfE7SN6xkPHZ8Uym2HfrH7g5P"), //Yield Compass A
   new PublicKey("CMiyE7M98DSPBEhQGTA6CzNodWkNuuW4y9HoocfK75nG"), //Yield Compass B
-  new PublicKey("CnaXXuzc2S5UFSGoBRuKVNnzXBvxbaMwq6hZu5m91CAV") //LST Yield Compass
+  new PublicKey("CnaXXuzc2S5UFSGoBRuKVNnzXBvxbaMwq6hZu5m91CAV"),//LST Yield Compass
+  new PublicKey("Fwfu73gfD5KzqtSAVKqmW414rshmYpoHY4nJ8LWqPyHB"), //Prime standard
+  new PublicKey("6NaF3EpArzHJ4x5GeTzjcUcdic29Rt4sy4pn6LP7iJ4r"), //Prime A
+  new PublicKey("2XnEYxNovTmYDXkDb7zninKttt3j9i67sj96H7CV5wZw") // JLP Navigator II
   
 
 

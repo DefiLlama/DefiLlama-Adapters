@@ -169,9 +169,20 @@ const config = {
       { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4728729, isAlgebra: false, }, // Uniswap
     ]
   },
+  sonic: {
+    vaultConfigs: [
+      { factory: '0x7D18F2D60E4fd6F485419727515807d09A542eb9', fromBlock: 1971740, isAlgebra: false, }, // Equalizer
+      { factory: '0x34513e8A327987Bb44acF5A925a7f3b4092d8b5F', fromBlock: 1476044, isAlgebra: true, }, // SwapX
+    ]
+  },
   taiko: {
     vaultConfigs: [
       { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 11578, isAlgebra: true, }, // Henjin
+    ]
+  },
+  zircuit: {
+    vaultConfigs: [
+      { factory: '0x1A58D4CFF22C7E2e0c4cCf4a0010b87822d024A1', fromBlock: 5104000, isAlgebra: true, }, // Ocelex
     ]
   },
 }
