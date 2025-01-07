@@ -43,7 +43,11 @@ const endPoints = {
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
-  noble: "https://noble-api.polkachu.com"
+  kopi: "https://rest.kopi.money",
+  noble: "https://noble-api.polkachu.com",
+  mantra: "https://api.mantrachain.io",
+  elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
+  pryzm: "https://api.pryzm.zone"
 };
 
 const chainSubpaths = {
@@ -310,7 +314,7 @@ async function sumTokens({ balances, owners = [], chain, owner, tokens, blacklis
     .for(owners)
     .process(async (owner, i) => {
       await getBalance2({ balances, owner, chain, tokens, blacklistedTokens, api, })
-      if (chain === 'osmosis' && owners.length > 100) 
+      if (chain === 'osmosis' && owners.length > 100)
         await sleep(3000)
     });
 
