@@ -8,6 +8,7 @@ const tvl = async (api) => {
 
   const proxies = [
     '0xa116b4680b52973426B6D2a92DcC972b8DbcB46F',
+    '0x97cA296139f114BF3040Cf05D05c240B770c627E'
   ]
 
   const tokens = await api.multiCall({ abi: 'address:ASSET_TOKEN', calls: depositPools })
