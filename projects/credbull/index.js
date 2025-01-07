@@ -1,5 +1,5 @@
 const { getConfig } = require('../helper/cache');
-const sdk = require("@defillama/sdk");
+const { util } = require("@defillama/sdk");
 
 const cblConfigArbitrum = {
   cbl: "0xD6b3d81868770083307840F513A3491960b95cb6",
@@ -31,7 +31,7 @@ async function borrowedFund(api) {
 
   const fundNavBalances = {};
   fundNavResults.forEach(([denominationAsset, nav]) => {
-    sdk.util.sumSingleBalance(fundNavBalances, `polygon:${denominationAsset}`, nav);
+    util.sumSingleBalance(fundNavBalances, `polygon:${denominationAsset}`, nav);
   });
 
   return fundNavBalances;
