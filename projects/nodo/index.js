@@ -24,6 +24,12 @@ const config = {
     tokens: [
       "0x55d398326f99059fF775485246999027B3197955"
     ]
+  },
+  celo: {
+    chaingeAddress: "0x65583D94d848E398dE3ef8382e5827000eb99961",
+    tokens: [
+      "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e"
+    ]
   }
 }
 
