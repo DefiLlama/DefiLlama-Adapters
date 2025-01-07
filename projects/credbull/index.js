@@ -20,7 +20,7 @@ async function tvl(api) {
   return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
 }
 
-// Credbull Fund TVL, including LiquidStone
+// Credbull Fund, including LiquidStone
 async function borrowedFund(api) {
   const fundNavResults = await api.multiCall({
     abi: 'function calcNav(address _vaultProxy) external returns (address denominationAsset_, uint256 nav_)',
