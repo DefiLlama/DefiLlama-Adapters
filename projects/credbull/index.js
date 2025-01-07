@@ -21,7 +21,7 @@ async function tvl(api) {
 }
 
 // Credbull Fund TVL, including LiquidStone
-async function tvlFund(api) {
+async function borrowedFund(api) {
   const fundNavResults = await api.multiCall({
     abi: 'function calcNav(address _vaultProxy) external returns (address denominationAsset_, uint256 nav_)',
     calls: [fundConfigPolygon.liquidStoneFund],
@@ -54,7 +54,7 @@ async function stakedCbl(api) {
 
 module.exports = {
   methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
-  polygon: { tvl: tvlFund },
-  btr: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, staking: stakedCbl },
+  btr: { tvl, borrowed, },
+  polygon: { borrowed: borrowedFund },
 };
