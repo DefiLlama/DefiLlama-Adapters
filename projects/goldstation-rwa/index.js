@@ -12,7 +12,6 @@ async function avalancheTotalSupply(api) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   klaytn: {
     tvl:kaiaGpcTotalSupply,
   },
