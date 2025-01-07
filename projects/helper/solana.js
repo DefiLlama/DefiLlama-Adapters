@@ -409,6 +409,21 @@ async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
   return results.flat()
 }
 
+function i80f48ToNumber(i80f48) {
+  if (i80f48.value) i80f48 = i80f48.value
+  // Create a mask with the lower 48 bits set to 1
+  const mask = BigInt((1n << 48n) - 1n)
+
+  // Shift right by 48 bits to get the integer part
+  const integerPart = BigInt(i80f48) >> BigInt(48)
+
+  // Use bitwise AND to get the fractional part
+  const fractionalPart = BigInt(i80f48) & mask
+
+  // Convert to regular numbers and add together
+  return Number(integerPart) + Number(fractionalPart) / Number(1n << 48n)
+}
+
 module.exports = {
   endpoint: endpoint(),
   getMultipleAccounts,
@@ -428,4 +443,5 @@ module.exports = {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
   getAssociatedTokenAddress,
+  i80f48ToNumber,
 };
