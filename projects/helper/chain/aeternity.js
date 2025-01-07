@@ -1,4 +1,5 @@
 const axios = require('axios');
+const sdk = require('@defillama/sdk')
 
 const endpoint = 'https://mainnet.aeternity.io/v2/accounts'; // Replace with the appropriate endpoint
 
