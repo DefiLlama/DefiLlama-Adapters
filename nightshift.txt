@@ -1,0 +1,49 @@
+Hello Ser, I hope you are well rested and have woken to milk and honey!
+
+GOOD NEWS!
+
+It has been a long day BUT we have three funded markets running and the UI is updated! Neutron seem pretty happy so far. 
+
+Duality IS LIVE!!
+
+LESS GOOD NEWS!
+
+We have two bugs
+
+- The balance bug, I was going to attempt a fix by multiplying the amount by something like 0.95 as the discrepancy I saw was quite small but ran out of time. It is severe if we are not monitoring logs as it prevents new positions being made so the price gets stale. 
+- A bug where the strategy buys its own liquidity. This is detailed in the TG channel. I began looking at this and potentially we are not cancelling orders that should be so it is buying itself.
+
+Some things that came up today
+
+- Neutron asked about withdrawing and how the float works, then suggested a queue.
+- We need to think about rebalancing, either Av Stoik or widening the spread on one side if the amounts are imbalanced. 
+
+I have sent a PR to DefiLlama with the NTRN/USDC strat. 
+
+Thing I gracefully request from you
+
+- Keep an eye on the markets and pricing, in the case that we see the balance bug the service needs to be restarted and it will rectify.
+- If you have time please look at the balance bug
+- If you have time please look at the buying own liquidity bug
+- If you have time please check the signer balance. It was about 4.5 NTRN just now so should be fine. 
+
+Thank you!
+
+Some helpful commands should you need them
+
+```sh
+sudo systemctl start locust-limitmm-utiauusdc.service
+sudo systemctl start locust-limitmm-untrnuusdc.service
+sudo systemctl start locust-limitmm-uatomuusdc.service
+```
+
+```sh
+journalctl -f -u locust-limitmm-utiauusdc.service
+journalctl -f -u locust-limitmm-untrnuusdc.service
+journalctl -f -u locust-limitmm-uatomuusdc.service
+```
+
+UI's 
+https://app.neutron.org/orderbook/NTRN/USDC
+https://app.neutron.org/orderbook/ATOM/USDC
+https://app.neutron.org/orderbook/TIA/USDC
