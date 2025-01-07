@@ -19,11 +19,12 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
-  'kopi', 'elys', "pryzm", "mantra",
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
+  'celestia', 'dydx',
 
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
-  'eclipse',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor',
 ]
 
 const transformTokens = {
@@ -52,6 +53,18 @@ const fixBalancesTokens = {
   },
   water: {   
     '0xC807C5FfFf748eF435Ddb99b181846Edd1e70041': { coingeckoId: "water-3", decimals: 18 },
+  },
+  bittorrent: {   
+    [ADDRESSES.null]: { coingeckoId: "bittorrent", decimals: 18 },
+  },
+  dymension: {   
+    [ADDRESSES.null]: { coingeckoId: "dymension", decimals: 18 },
+  },
+  energyweb: {   
+    [ADDRESSES.null]: { coingeckoId: "energy-web-token", decimals: 18 },
+  },
+  etn: {   
+    [ADDRESSES.null]: { coingeckoId: "electroneum", decimals: 18 },
   },
   kopi: {
     'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
