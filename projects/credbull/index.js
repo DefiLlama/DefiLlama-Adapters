@@ -1,13 +1,40 @@
 const { getConfig } = require('../helper/cache');
+const sdk = require("@defillama/sdk");
 
-const STAKING_VAULT_CONTRACT = "0xe4a4d891f02DF7bFFc5ff9e691313DE8a9E76b91";
-const CBL_TOKEN = "0xD6b3d81868770083307840F513A3491960b95cb6";
+const cblConfigArbitrum = {
+  cbl: "0xD6b3d81868770083307840F513A3491960b95cb6",
+  cblStakingV2: "0xc0C1DaA773570C041c47cE12c397AdDFD6B7403F",
+};
 
+const fundConfigPolygon = {
+  liquidStoneFund: "0x2eda17eb596858566be933b26fae6fa4ee8ccd6d",
+  fundNavCalculator: "0xcdf038dd3b66506d2e5378aee185b2f0084b7a33",
+};
+
+// Credbull DeFi Vaults v1 TVL (6 or 12 month fixed APY)
 async function tvl(api) {
   let vaults = await getConfig('credbull', "https://incredbull.io/api/vaults")
   vaults = vaults[api.chain]
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+
   return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
+}
+
+// Credbull Fund TVL, including LiquidStone
+async function tvlFund(api) {
+  const fundNavResults = await api.multiCall({
+    abi: 'function calcNav(address _vaultProxy) external returns (address denominationAsset_, uint256 nav_)',
+    calls: [fundConfigPolygon.liquidStoneFund],
+    target: fundConfigPolygon.fundNavCalculator,
+    excludeFailed: true,
+  })
+
+  const fundNavBalances = {};
+  fundNavResults.forEach(([denominationAsset, nav]) => {
+    sdk.util.sumSingleBalance(fundNavBalances, `polygon:${denominationAsset}`, nav);
+  });
+
+  return fundNavBalances;
 }
 
 async function borrowed(api) {
@@ -21,12 +48,13 @@ async function borrowed(api) {
 }
 
 async function stakedCbl(api) {
-  const bals = await api.multiCall({ abi: 'address:totalAssets', calls: [STAKING_VAULT_CONTRACT,] })
-  api.add(CBL_TOKEN, bals)
+  const bals = await api.multiCall({ abi: 'address:totalAssets', calls: [cblConfigArbitrum.cblStakingV2,] })
+  api.add(cblConfigArbitrum.cbl, bals)
 }
 
 module.exports = {
   methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
+  polygon: { tvl: tvlFund },
   btr: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, staking: stakedCbl },
 };
