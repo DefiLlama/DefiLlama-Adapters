@@ -109,7 +109,8 @@ const config = {
       "0xD793281182A0e3E023116004778F45c29fc14F19",
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0x85FAa6C1F2450b9caEA300838981C2e6E120C35c",
-      "0xeb01f8cdae433e7b55023ff0b2da44c4c712dce2"
+      "0xeb01f8cdae433e7b55023ff0b2da44c4c712dce2",
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
   bitcoin: {
@@ -1650,14 +1651,6 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "era": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  }
 };
 
 const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3',  'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', ]
