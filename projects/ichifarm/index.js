@@ -49,6 +49,8 @@ const config = {
   base: {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
+      { factory: '0x24430E837efB64EF87bb32be03437fc6005EEF74', fromBlock: 22095330, isAlgebra: false, }, // PancakeSwap
+      { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, isAlgebra: false, }, // Uniswap 
     ]
   },
   blast: {
@@ -67,6 +69,7 @@ const config = {
   celo: {
     vaultConfigs: [
       { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 24256269, isAlgebra: false, }, // Uniswap v3
+      { factory: '0x8D05f6870106707BaeCFCf5C0570DB7a583eb92A', fromBlock: 27821113, isAlgebra: false, }, // Ubeswap 
     ]
   },
   eon: {
@@ -93,6 +96,11 @@ const config = {
     vaultConfigs: [
       { factory: '0x932E1908461De58b0891E5022431dc995Cb95C5E', fromBlock: 74304207, isAlgebra: false, }, // Equalizer
       { factory: '0x89FFdaa18b296d9F0CF02fBD88e5c633FEFA5f34', fromBlock: 79156621, isAlgebra: true, }, // Spiritswap 
+    ]
+  },
+  flare: {
+    vaultConfigs: [
+      { factory: '0x85a4dd4ed356A7976a8302b1b690202d58583c55', fromBlock: 30879155, isAlgebra: false, }, // SparkDex
     ]
   },
   fuse: {
@@ -124,6 +132,11 @@ const config = {
       { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
     ]
   },
+  mode: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 12395812, isAlgebra: true, }, // Kim
+    ]
+  },
   op_bnb: {
     vaultConfigs: [
       { factory: '0xADDA3A15EA71c223a82Af86d4578EF2B076035F1', fromBlock: 13911597, isAlgebra: true, }, // Thena
@@ -143,15 +156,36 @@ const config = {
       { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
     ]
   },
+  real: {
+    vaultConfigs: [
+      { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
+    ]
+  },
+  rsk: {
+    vaultConfigs: [
+      { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 6753128, isAlgebra: false, }, // Uniswap
+    ]
+  },
   scroll: {
     vaultConfigs: [
       { factory: '0xb42D5956cDe4386B65C087CfCD16910aB6114F15', fromBlock: 5264782, isAlgebra: false, }, // Metavault
       { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4728729, isAlgebra: false, }, // Uniswap
     ]
   },
+  sonic: {
+    vaultConfigs: [
+      { factory: '0x7D18F2D60E4fd6F485419727515807d09A542eb9', fromBlock: 1971740, isAlgebra: false, }, // Equalizer
+      { factory: '0x34513e8A327987Bb44acF5A925a7f3b4092d8b5F', fromBlock: 1476044, isAlgebra: true, }, // SwapX
+    ]
+  },
   taiko: {
     vaultConfigs: [
       { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 11578, isAlgebra: true, }, // Henjin
+    ]
+  },
+  zircuit: {
+    vaultConfigs: [
+      { factory: '0x1A58D4CFF22C7E2e0c4cCf4a0010b87822d024A1', fromBlock: 5104000, isAlgebra: true, }, // Ocelex
     ]
   },
 }

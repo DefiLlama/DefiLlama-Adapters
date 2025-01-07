@@ -1,7 +1,8 @@
 const { sumUnknownTokens } = require("../helper/unknownTokens")
 
 const config = {
-    ethereum: "0x3BaC111A6F5ED6A554616373d5c7D858d7c10d88"
+    ethereum: "0x3BaC111A6F5ED6A554616373d5c7D858d7c10d88",
+    astar: "0xe9B85D6A1727d4B22595bab40018bf9B7407c677"
 }
 
 Object.keys(config).forEach(chain => {
