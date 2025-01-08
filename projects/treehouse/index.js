@@ -26,6 +26,15 @@ const nav =  await api.call({
 api.add(ADDRESSES.ethereum.WSTETH, nav)
 }
 
+// NAV of grow vault. 1 gtETH === 1 wstETH
+async function addGrowAutovaultNav(api) {
+  const gtEth_autovault = '0x5Fde59415625401278c4d41C6beFCe3790eb357f'
+  const gtETH_totalSupply = await api.call({  abi: 'erc20:totalSupply', target: gtEth_autovault})
+  const wstETH_balance = await api.call({ target: gtEth_autovault, abi: 'function convertToAssets(uint256) view returns (uint256)', params: gtETH_totalSupply, })
+
+  api.add(ADDRESSES.ethereum.WSTETH, wstETH_balance, { skipChain: true })
+}
+
 
 async function tvl(api) {
   const vault = '0x551d155760ae96050439ad24ae98a96c765d761b'
@@ -33,6 +42,7 @@ async function tvl(api) {
   await api.sumTokens({ owner: vault, tokens })
 
   await getInFlightLidoRedemptionNav(api)
+  await addGrowAutovaultNav(api)
 
   const storage = await api.call({ abi: 'address:strategyStorage', target: vault })
   const strategies = await api.fetchList({ lengthAbi: 'getStrategyCount', itemAbi: 'getStrategyAddress', target: storage })
