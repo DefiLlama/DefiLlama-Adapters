@@ -13,38 +13,31 @@ query MyQuery {
 }
 `;
 
-async function getTvl() {
-  try {
-    const data = await request(endpoint, query);
+async function tvl(api) {
+  const data = await request(endpoint, query);
 
-    const securities = data.securities || [];
-    
-    let tokens = 0;
-    const currencyDecimal = 10 ** 18; 
+  const securities = data.securities || [];
 
-    securities.forEach(security => {
-      security.secondaryInvestors.forEach(investor => {
-        const amt = parseFloat(investor.amount);
-        tokens += amt / currencyDecimal;
-      });
+  let tokens = 0;
+  const currencyDecimal = 10 ** 18;
+
+  securities.forEach(security => {
+    security.secondaryInvestors.forEach(investor => {
+      const amt = parseFloat(investor.amount);
+      tokens += amt / currencyDecimal;
     });
+  });
 
-    const price = 100.5;
-    const tvl = tokens * price;
-
-    // console.log("tvl", tvl);
-    return tvl;
-  } catch (error) {
-    console.error("Error fetching TVL:", error);
-    return 0;
-  }
+  const price = 100.5;
+  const tvl = tokens * price
+  api.addUSDValue(tvl);
 }
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   methodology: "The value in RWA held by the protocol",
   ethereum: {
-    fetch: getTvl
+    tvl
   },
-  fetch: getTvl
 };

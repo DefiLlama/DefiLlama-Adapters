@@ -5,7 +5,7 @@ const coins = {
   deepType: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
   suiType: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI",
   usdcType: ADDRESSES.sui.USDC_CIRCLE,
-  bethType: "0xd0e89b2af5e4910726fbcd8b8dd37bb79b29e5f83f7491bca830e94f7f226d29::eth::ETH",
+  bethType: ADDRESSES.sui.ETH,
   wusdtType: ADDRESSES.sui.USDT,
   wusdcType: ADDRESSES.sui.USDC,
   nsType: "0x5145494a5f5100e645e4b0aa950fa6b68f614e8c59e17bc5ded3495123a79178::ns::NS",

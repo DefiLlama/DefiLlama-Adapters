@@ -73,7 +73,7 @@ function sumTokensExport({ ...args }) {
   return (api) => sumTokens({ api, ...args })
 }
 
-async function call({ target, abi, params = [] }) {
+async function call({ target, abi, params = [], rawStack = false, }) {
   const requestBody = {
     "address": target,
     "method": abi,
@@ -87,6 +87,9 @@ async function call({ target, abi, params = [] }) {
   if (exit_code !== 0) {
     throw new Error('Expected a zero exit code, but got ' + exit_code)
   }
+
+  if (rawStack) return stack
+
   stack.forEach((i, idx) => {
     if (i[0] === 'num') {
       stack[idx] = parseInt(i[1], 16)
@@ -97,8 +100,11 @@ async function call({ target, abi, params = [] }) {
 }
 
 async function addTonBalances({ api, addresses }) {
+  api.log('Fetching TON balances', { addresses: addresses.length })
   const chunks = sliceIntoChunks(addresses, 399)
+  let i = 0
   for (const chunk of chunks) {
+    api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
     const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
     accounts.forEach(({ balance }) => {
       api.add(ADDRESSES.null, balance)
