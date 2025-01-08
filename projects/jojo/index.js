@@ -1,5 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
+const cbethBase = "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22";
+const degenBase = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed";
+const mUsdcBase = "0xEdc817A28E8B93B03976FBd4a3dDBc9f7D176c22";
 
 module.exports = {
   era: { tvl: sumTokensExport({ tokens: [ADDRESSES.era.USDC], owners: ['0x47eAD228547db8397398C1D3aAfd0847CBEbddeC'], }) },
@@ -16,8 +19,8 @@ module.exports = {
   base: {
     tvl: sumTokensExport(
       {
-        tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH],
-        owners: ['0x2f7c3cf9d9280b165981311b822becc4e05fe635', '0xf8192489A8015cA1690a556D42F7328Ea1Bb53D0']
+        tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH, cbethBase, degenBase, mUsdcBase, ],
+        owners: ['0x2f7c3cf9d9280b165981311b822becc4e05fe635', '0xf8192489A8015cA1690a556D42F7328Ea1Bb53D0', '0x8B7e1924fF57EEc8EbD87254E4de6Ff397f039D3']
       }
     )
   },

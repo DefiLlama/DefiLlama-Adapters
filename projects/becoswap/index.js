@@ -12,6 +12,7 @@ module.exports = {
     tvl: getUniTVL({
       useDefaultCoreAssets: true,
       factory: '0x58b54BCDF2aF8a70dD6433EB39b308148261bB49',
+      blacklistedTokens: ['0x551a5dcac57c66aa010940c2dcff5da9c53aa53b']
     })
   },
 };

@@ -1,5 +1,5 @@
-const sdk = require("@defillama/sdk");
-const MOUNTAIN_PROTOCOL_CONTRACT = "0x59d9356e565ab3a36dd77763fc0d87feaf85508c";
+const ADDRESSES = require('../helper/coreAssets.json')
+const MOUNTAIN_PROTOCOL_CONTRACT = ADDRESSES.ethereum.USDM;
 
 async function tvl(api) {
   const totalSupply = await api.call({
@@ -20,7 +20,6 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   methodology: "Calculates the total USDM Supply",
-  start: 16685700,
   ethereum: {
     tvl,
   },

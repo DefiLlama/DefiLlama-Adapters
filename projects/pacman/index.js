@@ -1,6 +1,7 @@
+const sdk = require("@defillama/sdk");
 const { graphQuery } = require('../helper/http')
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/pacmanfinance/pacman-arbitrum";
+const subgraphUrl = sdk.graph.modifyEndpoint('9xteTELUdzjii1yLASJm6CxSpYuS1bmE6DGWMMhgkq2k');
 
 const vaultsQuery = `
   query {
