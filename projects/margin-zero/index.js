@@ -8,7 +8,7 @@ const chainConfigs =
   },
 }
 
-const LiquidityRangesQuery = `{ liquidityRanges(where: { liquidity_gt: "100" }) { pool hook handler liquidity tickLower tickUpper }}`
+const LiquidityRangesQuery = `{ liquidityRanges(where: { liquidity_gt: "100" }) { pool hook liquidity tickLower tickUpper }}`
 
 const slot0Abi =
   "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
