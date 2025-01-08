@@ -9,9 +9,7 @@ const chainConfigs =
   },
 }
 
-
 const LiquidityRangesQuery = `{ liquidityRanges(where: { liquidity_gt: "100" }) { pool hook handler liquidity tickLower tickUpper }}`
-
 
 const slot0Abi =
   "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
@@ -21,7 +19,6 @@ const token0Abi =
 
 const token1Abi =
   "function token1() view returns (address)";
-
 
 
 async function getPoolData(api, pool) {
@@ -37,7 +34,6 @@ async function getPoolData(api, pool) {
     tick
   }
 }
-
 
 async function tvl(api) {
   const config = chainConfigs[api.chain]
@@ -62,14 +58,11 @@ async function tvl(api) {
     const token1 = poolsDataMap[pool.toLowerCase()]['token1'];
     const tick = poolsDataMap[pool.toLowerCase()]['tick'];
 
-
     addUniV3LikePosition({ api, token0, token1, tick, liquidity, tickUpper, tickLower, })
 
   }
 
 }
-
-
 
 module.exports = {
   methodology: "TVL is calculated by summing the value of all tokens in Margin Zero liquidity positions across supported chains",
