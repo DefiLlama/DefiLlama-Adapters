@@ -6,7 +6,6 @@ const chainConfigs =
 {
   sonic: {
     subgraphUrl: "https://api.goldsky.com/api/public/project_cm58q8wq01kbk01ts09lc52kp/subgraphs/mz-subgraph/main/gn",
-    startBlock: 1791455,
   },
 }
 
