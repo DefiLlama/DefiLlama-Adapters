@@ -31,7 +31,6 @@ async function tvl(api) {
     }
   })
 
-  console.log(data.length)
   return transformDexBalances({ data, api, })
 }
 
