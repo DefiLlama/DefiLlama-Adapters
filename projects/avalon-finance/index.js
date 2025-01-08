@@ -32,6 +32,8 @@ const solvMarkets = {
 	core: aaveExports('', '0x410d2D3Dc79ec66A2Cfc3A4a0AD4af3a38D38bd0', undefined, ['0x802CB61844325dc9A161bC3A498E3BE1B7b6FE00'], { v3: true }),
 	arbitrum: aaveExports('', '0xa2ddc06baDc817C612111137c0cf6Bd43634EE1a', undefined, ['0xEc579d2cE07401258710199Ff12a5bb56e086a6F'], { v3: true }),
 	bob: aaveExports('', '', undefined, ['0xfabb0fDca4348d5A40EB1BB74AEa86A1C4eAd7E2'], { v3: true }),
+	corn: aaveExports('', '', undefined, ['0xf0d077728D424Ee6C6Eba82d23ce56C2e91E57Ea'], { v3: true }),
+	sonic: aaveExports('', '', undefined, ['0x23f02C2eeFe2010298Ab74059393326d3df59a02'], { v3: true }),
 }
 
 const pumpBTCMarkets = {
@@ -93,7 +95,12 @@ const uniIotxMarkets = {
 	iotex: aaveExports('', '', undefined, ['0x2c4aEB7C9f0D196a51136B3c7bec49cB2DBD1966'], { v3: true }),
 }
 
+	// BSC - USDX
+const usdxMarkets = {
+		bsc: aaveExports('', '', undefined, ['0x9515dC23bBE46f9C9885D24Fa276745A11b7f9D8'], { v3: true }),
+}
+
 module.exports = mergeExports(
-	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets, uniIotxMarkets
+	mainMarket, innovativeMarket, solvMarkets, pumpBTCMarkets, unibtcMarkets, stbtcMarkets, otherProtocolTokenMarkets, obtcMarkets, ubtcMarkets, xaumMarkets, lbtcMarkets, listaMarkets, uniIotxMarkets, usdxMarkets
 )
 module.exports.methodology = methodologies.lendingMarket
