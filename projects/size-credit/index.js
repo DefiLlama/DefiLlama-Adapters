@@ -1,4 +1,4 @@
-const SIZE_FACTORY = {
+const config = {
   base: '0x330Dc31dB45672c1F565cf3EC91F9a01f8f3DF0b',
   ethereum: '0x3A9C05c3Da48E6E26f39928653258D7D4Eb594C1'
 }
@@ -15,8 +15,8 @@ const abis = {
   }
 }
 
-async function tvl(api, chain) {
-  const markets = await api.call({ abi: abis.SizeFactory.getMarkets, target: SIZE_FACTORY[chain] })
+async function tvl(api) {
+  const markets = await api.call({ abi: abis.SizeFactory.getMarkets, target: config[api.chain] })
   const datas = await api.multiCall({ abi: abis.Size.data, calls: markets })
 
   const borrowATokens = datas.map(data => data.borrowAToken)
@@ -34,8 +34,8 @@ async function tvl(api, chain) {
   })
 }
 
-async function borrowed(api, chain) {
-  const markets = await api.call({ abi: abis.SizeFactory.getMarkets, target: SIZE_FACTORY[chain] })
+async function borrowed(api) {
+  const markets = await api.call({ abi: abis.SizeFactory.getMarkets, target: config[api.chain] })
   const datas = await api.multiCall({ abi: abis.Size.data, calls: markets })
 
   const debtTokens = datas.map(data => data.debtToken)
@@ -46,13 +46,8 @@ async function borrowed(api, chain) {
   return api.add(underlyingBorrowTokens, totalDebts)
 }
 
-module.exports = {
-  base: {
-    tvl: (api) => tvl(api, 'base'),
-    borrowed: (api) => borrowed(api, 'base')
-  },
-  ethereum: {
-    tvl: (api) => tvl(api, 'ethereum'),
-    borrowed: (api) => borrowed(api, 'ethereum')
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl, borrowed,
   }
-}
+})
