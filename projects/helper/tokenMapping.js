@@ -24,7 +24,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
 
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
-  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
 const transformTokens = {
@@ -108,6 +108,14 @@ const fixBalancesTokens = {
   },
   mantra: {
     uom: { coingeckoId: 'mantra-dao', decimals: 6 },
+  },
+  verus: {
+    'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV': { coingeckoId: 'verus-coin', decimals: 0 },
+    'iGBs4DWztRNvNEJBt4mqHszLxfKTNHTkhM': { coingeckoId: 'dai', decimals: 0 },
+    'iCkKJuJScy4Z6NSDK7Mt42ZAB2NEnAE1o4': { coingeckoId: 'maker', decimals: 0 },
+    'i9nwxtKuVYX4MSbeULLiK2ttVi6rUEhh4X': { coingeckoId: 'ethereum', decimals: 0 },
+    'iS8TfRPfVpKo5FVfSUzfHBQxo9KuzpnqLU': { coingeckoId: 'tbtc', decimals: 0 },
+    'i9oCSqKALwJtcv49xUKS2U2i79h1kX6NEY': { coingeckoId: 'tether', decimals: 0 },
   }
 }
 
