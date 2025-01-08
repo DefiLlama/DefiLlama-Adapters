@@ -65,7 +65,7 @@ async function bscTVL(timestamp, _block, { bsc: block }) {
 }
 
 module.exports = {
-  start: 1640100600, // 12/21/2021 @ 15:30pm (UTC)
+  start: '2021-12-21', // 12/21/2021 @ 15:30pm (UTC)
   bsc: {
     tvl: bscTVL,
     staking: stakings([stakingContract_APX, daoContract], TOKEN_APX),

@@ -7,15 +7,18 @@ const config = {
   era: ["0xB73550bC1393207960A385fC8b34790e5133175E"],
   manta: ["0x67f93d36792c49a4493652B91ad4bD59f428AD15"],
   blast: ["0xc6DF4ddDBFaCb866e78Dcc01b813A41C15A08C10"],
+  base: ["0xA754b2f1535287957933db6e2AEE2b2FE6f38588"],
   linea: [
     "0x67f93d36792c49a4493652B91ad4bD59f428AD15", // main linea market
     '0x9aFB91a3cfB9aBc8Cbc8429aB57b6593FE36E173', // croak linea market
     '0xEe9ec60657B714E3FAC5255a5443AC5EC7Ba5bB0', // foxy linea market
   ],
   xlayer: ["0x97e59722318F1324008484ACA9C343863792cBf6"],
+  zircuit: ["0xA754b2f1535287957933db6e2AEE2b2FE6f38588"],
   ethereum: [
     "0x47223D4eA966a93b2cC96FFB4D42c22651FADFcf", // ethereum lrt market
-    '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611' // bitcoin lrt market
+    '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611', // bitcoin lrt market
+    '0x298ECDcb0369Aef75cBbdA3e46a224Cfe622E287' // stablecoin rwa market
   ],
 };
 

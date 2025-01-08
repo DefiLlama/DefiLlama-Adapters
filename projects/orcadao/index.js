@@ -40,7 +40,7 @@ async function borrowed(api) {
     calls: banksAndCollateral.map(p => p[1]),
     abi: "uint256:totalDebt",
   })
-  api.add('0xd586e7f844cea2f87f50152665bcbc2c279d8d70', debt)
+  api.add(ADDRESSES.avax.DAI, debt)
 }
 
 const treasuryContract = "0x10131d4f3193a59A46d3ab57D765f2604e77B4E3";
