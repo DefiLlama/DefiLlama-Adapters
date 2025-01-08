@@ -4,7 +4,7 @@ async function tvl (api) {
     const res = await get("https://api.pixelswap.io/apis/tokens");
 
     res.data.tokens.forEach(({ address, tokenBalance }) => {
-      if (!tokenBalance) return
+      if (!tokenBalance) return;
       api.addTokens(address, tokenBalance)
     })
   }
