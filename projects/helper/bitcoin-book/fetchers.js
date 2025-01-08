@@ -11,10 +11,10 @@ module.exports = {
     const target = "0x0000000000000000000000000000000000000100";
     const api = new sdk.ChainApi({ chain: 'bfc' })
     const round = await api.call({  abi: 'uint32:current_round', target})
-    
-    const feeVault = await api.call({ abi: 'function registration_info(address target, uint32 pool_round) view returns (address, string, string, address[], bytes[])', target, params: [target, round] })
+
+    const utxoVault = await api.call({ abi: 'function registration_info(address target, uint32 pool_round) view returns (address, string, string, address[], bytes[])', target, params: [target, round] })
     const vault = await api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round });
-    vault.push(feeVault[2])
+    vault.push(utxoVault[2])
 
     return vault
   },
