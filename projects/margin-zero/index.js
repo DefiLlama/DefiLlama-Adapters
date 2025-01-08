@@ -1,7 +1,6 @@
 const { cachedGraphQuery } = require("../helper/cache");
 const { addUniV3LikePosition } = require('../helper/unwrapLPs');
 
-
 const chainConfigs =
 {
   sonic: {
