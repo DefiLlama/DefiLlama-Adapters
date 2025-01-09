@@ -1,7 +1,6 @@
-const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const config = {
+const CONFIG = {
   base: {
     fromBlock: 5314581,
     controller: "0xfbF069Dbbf453C1ab23042083CFa980B3a672BbA",
@@ -20,22 +19,16 @@ const config = {
   },
 };
 
-Object.keys(config).forEach((chain) => {
-  const { controller, fromBlock } = config[chain];
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const logs = await getLogs({
-        api,
-        target: controller,
-        topic: "PairCreated(uint128,address,address)",
-        eventAbi:
-          "event PairCreated(uint128 indexed pairId, address indexed token0, address indexed token1)",
-        onlyArgs: true,
-        fromBlock,
-      });
-      const tokens = logs.map((i) => [i.token0, i.token1]).flat();
+const abi = {
+  pairs: "function pairs() view returns (address[2][])"
+}
 
-      return sumTokens2({ api, owner: controller, tokens });
-    },
-  };
-});
+const tvl = async (api) => {
+  const { controller } = CONFIG[api.chain]
+  const tokens = (await api.call({ target: controller, abi: abi.pairs })).flat()
+  return sumTokens2({ api, owner: controller, tokens })
+}
+
+Object.keys(CONFIG).forEach((chain) => {
+  module.exports[chain] = { tvl }
+})
