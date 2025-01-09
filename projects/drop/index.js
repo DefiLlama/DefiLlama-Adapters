@@ -8,6 +8,12 @@ const chains = {
     coinGeckoId: "cosmos",
     dropContract: "neutron16m3hjh7l04kap086jgwthduma0r5l0wh8kc6kaqk92ge9n5aqvys9q6lxr"
   },
+  celestia: {
+    chainId: "celestia",
+    denom: "utia",
+    coinGeckoId: "celestia",
+    dropContract: "neutron1fp649j8djj676kfvh0qj8nt90ne86a8f033w9q7p9vkcqk9mmeeqxc9955"
+  },
 };
 
 function makeTvlFn(chain) {
