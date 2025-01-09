@@ -48,7 +48,7 @@ const vaults = [
     {
         name: "matic-usdc",
         address: "0xB19e59b77E173363FB7Ce674f1279c76ee237c7A", 
-        token1: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270", 
+        token1: ADDRESSES.polygon.WMATIC_2, 
         token2: ADDRESSES.polygon.USDC, 
         token1decimal: 18,
         token2decimal: 6,
@@ -59,7 +59,7 @@ const vaults = [
     {
         name: "matic-weth",
         address: "0x249403E3163aAA88259e0e79A513E999EF8AbEc3", 
-        token1: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270", 
+        token1: ADDRESSES.polygon.WMATIC_2, 
         token2: ADDRESSES.polygon.WETH_1, 
         token1decimal: 18,
         token2decimal: 18,

@@ -16,7 +16,21 @@ const Contracts = {
   LVL_BNB_LP: "0x70f16782010fa7ddf032a6aacdeed05ac6b0bc85"
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+const ContractsArb = {
+  Pool: "0x32B7bF19cb8b95C27E644183837813d4b595dcc6",
+  Chef: "0x0180dee5Df18eBF76642e50FaaEF426f7b2874f7",
+  Tokens: {
+    ETH: ADDRESSES.arbitrum.WETH,
+    USDT: ADDRESSES.arbitrum.USDT,
+    USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
+    BTC: ADDRESSES.arbitrum.WBTC,
+    ARB: ADDRESSES.arbitrum.ARB
+  }
+}
+async function arbtvl(api) {
+  return sumTokens2({ api, owner: ContractsArb.Pool, tokens: Object.values(ContractsArb.Tokens)})
+}
+async function tvl(api) {
   return sumTokens2({ api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
 }
 
@@ -25,6 +39,7 @@ module.exports = {
     tvl,
     pool2: pool2(Contracts.Chef, Contracts.LVL_BNB_LP)
   },
+  arbitrum: { tvl: arbtvl },
   hallmarks: [
     [Math.floor(new Date('2023-05-01')/1e3), 'Referral contract exploited'],
   ],

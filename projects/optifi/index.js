@@ -67,3 +67,5 @@ module.exports = {
     [Math.floor(new Date('2022-08-30')/1e3), 'OptiFi mainnet program was closed by mistake'],
   ],
 };
+
+module.exports.deadFrom = '2022-09-02'

@@ -5,11 +5,11 @@ const { GraphQLClient, gql } = require('graphql-request');
 
 const ethAddress = ADDRESSES.null
 
-const lsd_subgraph = 'https://api.thegraph.com/subgraphs/name/stakehouse-dev/lsd'
+const lsd_subgraph = 'https://lsd-subgraph.joinstakehouse.com'
 
-const stakehouse_subgraph = 'https://api.thegraph.com/subgraphs/name/stakehouse-dev/stakehouse-protocol'
+const stakehouse_subgraph = 'https://stakehouse-subgraph.joinstakehouse.com'
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let balances = {};
   let query
   let results

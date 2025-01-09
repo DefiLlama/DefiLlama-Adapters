@@ -1,89 +1,89 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require("@defillama/sdk");
+const ADDRESSES = require("../helper/coreAssets.json");
 const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
-const addresses = require("./addresses.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const lockerABI = require("./locked.json");
-const sdk = require('@defillama/sdk')
 
-const jTokenToToken = {
-  "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:" + ADDRESSES.arbitrum.WETH, // jETH
-  "0x5375616bb6c52a90439ff96882a986d8fcdce421": "arbitrum:0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1", // jgOHM,
-  "0xf018865b26ffab9cd1735dcca549d95b0cb9ea19": "arbitrum:0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55", // jDPX
-  "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": "arbitrum:0x32eb7902d4134bf98a28b963d26de779af92a212" // jrdpx
-}
-const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'
-const AURALocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC'
-const USDC = ADDRESSES.arbitrum.USDC;
-const jAuraStrategy = '0x7629fc134e5a7feBEf6340438D96881C8D121f2c';
+const addresses = require("./addresses");
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
-  let metaVaultsAddresses = [addresses.DpxEthBullVault, addresses.DpxEthBearVault, addresses.RdpxEthBullVault, addresses.RdpxEthBearVault];
+const jAssetToAsset = {
+  "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": ADDRESSES.arbitrum.WETH, // jETH
+  "0x5375616bb6c52a90439ff96882a986d8fcdce421": addresses.tokens.gohm, // jgOHM,
+  "0xf018865b26ffab9cd1735dcca549d95b0cb9ea19": addresses.tokens.dpx, // jDPX
+  "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": addresses.tokens.rdpx, // jrdpx
+};
 
-  const [
-    tokens, bals, vAssets, vBals, 
-  ] = await Promise.all([
-    api.multiCall({  abi: 'address:depositToken', calls: metaVaultsAddresses}),
-    api.multiCall({  abi: 'uint256:workingBalance', calls: metaVaultsAddresses}),
-    api.multiCall({ abi: 'address:asset', calls: addresses.vaults }),
-    api.multiCall({ abi: 'uint256:totalAssets', calls: addresses.vaults }),
-  ])
+const tokensAndOwners = [
+  [addresses.tokens.uvrt, addresses.glp.stableRewardTracker],
+  [addresses.tokens.uvrt, addresses.glp.router],
+  [addresses.tokens.glp, addresses.glp.leverageStrategy],
+];
 
-  const usdcBalance = await sdk.api.erc20.balanceOf({
-      target: USDC,
-      owner: addresses.trackers.uvert.token,
-      chain: 'arbitrum',
-      block: chainBlocks['arbitrum']
-  }).then(result => result.output)
-
-  const toa = []
-
-  api.addTokens(tokens,bals)
-  api.addTokens(vAssets,vBals)
-  api.addToken(USDC, usdcBalance)
-  Object.values(addresses.trackers).map(tracker => toa.push([tracker.token, tracker.holder]))
-  toa.push([addresses.glp, addresses.strategy,])
-
-  return sumTokens2({ api, tokensAndOwners: toa, });
+const abi = {
+  locker: "function lockedBalances(address _user) view returns (uint256 total, uint256 unlockable, uint256 locked, (uint112 amount, uint32 unlockTime)[] lockData)",
+  glpManager: "function getLPManagerContracts(uint256 _nonce) view returns (address lp,address viewer,address swapper,address receiver,address priceHelper,address lpManager,address doubleTracker,address singleTrackerZero,address singleTrackerOne,address compounder,address router)"
 }
 
-async function tvl_ethereum(timestamp, block, chainBlocks, { api }) {
-  const balances = {}
+async function tvl_arbitrum (api) {
+  const [metavaultTokens, metavaultBalances, optionVaultTokens, optionVaultBalances, jusdcTvl] =
+    await Promise.all([
+      api.multiCall({ abi: "address:depositToken", calls: addresses.metaVaultsAddresses }),
+      api.multiCall({ abi: "uint256:workingBalance", calls: addresses.metaVaultsAddresses }),
+      api.multiCall({ abi: "address:asset", calls: addresses.optionVaultAddresses }),
+      api.multiCall({ abi: "uint256:totalAssets", calls: addresses.optionVaultAddresses }),
+      api.call({ abi: "uint256:totalAssets", target: addresses.jusdc.underlyingVault }),
+    ]);
 
-  const leftoverStrategy = await sdk.api.erc20.balanceOf({
-    target: AURA,
-    owner: jAuraStrategy,
-    chain: 'ethereum',
-    block: chainBlocks['ethereum']
-  }).then(result => result.output)
-  sdk.util.sumSingleBalance(balances, AURA, leftoverStrategy)
+  api.addTokens(metavaultTokens, metavaultBalances);
+  api.addTokens(optionVaultTokens, optionVaultBalances);
+  api.addTokens(addresses.tokens.usdc, jusdcTvl);
 
-  const lockedBalance = await sdk.api.abi.call({
-      abi: lockerABI.at(0),
-      target: AURALocker,
-      params: jAuraStrategy,
-      chain: 'ethereum',
-      block: chainBlocks['ethereum']
-  }).then(result => result.output[0])
-  sdk.util.sumSingleBalance(balances, AURA, lockedBalance)
+  for (const factoryAddress of addresses.smartLpArbFactories) {
+    const contracts = await api.fetchList({ lengthAbi: 'nonce', itemAbi: abi.glpManager, target: factoryAddress, startFromOne: true })
+    const lpManagers = contracts.map(c => c.lpManager)
 
-  return balances;
+    const [token0s, token1s, aums] = await Promise.all([
+      api.multiCall({ abi: "address:token0", calls: lpManagers, permitFailure: true }),
+      api.multiCall({ abi: "address:token1", calls: lpManagers, permitFailure: true }),
+      api.multiCall({ abi: "function aum() returns (uint256 amount0, uint256 amount1)", calls: lpManagers, permitFailure: true })
+    ])
+
+    lpManagers.forEach((_lp, i) => {
+      const token0 = token0s[i]
+      const token1 = token1s[i]
+      const aum = aums[i]
+      if (!token0 || !token1 || !aum) return
+      api.add(token0, aum.amount0)
+      api.add(token1, aum.amount1)
+    })
+  }
+
+  return sumTokens2({ api, tokensAndOwners });
 }
+
+async function tvl_ethereum(api) {
+  const [leftoverStrategy, total] = await Promise.all([
+    api.call({ target: addresses.tokens.aura, params: [addresses.aura.strategy], abi: 'erc20:balanceOf' }),
+    api.call({ target: addresses.aura.locker, params: [addresses.aura.strategy], abi: abi.locker }).then(res => res.total)
+  ]);
+  
+  [leftoverStrategy, total].forEach((bals) => {
+    api.add(addresses.tokens.aura, bals)
+  });
+}
+
 
 module.exports = {
   arbitrum: {
-    tvl,
-    pool2: pool2s(addresses.lpStaking, addresses.lps, "arbitrum", addr => {
+    tvl: tvl_arbitrum,
+    staking: stakings(addresses.stakingContracts, addresses.tokens.jones, "arbitrum"),
+    pool2: pool2s(addresses.lpStaking, addresses.lps, "arbitrum", (addr) => {
       addr = addr.toLowerCase();
-      if (jTokenToToken[addr] !== undefined) {
-        return jTokenToToken[addr];
-      }
-      return `arbitrum:${addr}`;
+      return `arbitrum:${jAssetToAsset[addr] ?? addr}`;
     }),
-    staking: stakings(addresses.jonesStaking, addresses.jones)
   },
+
   ethereum: {
-    tvl: tvl_ethereum
-  }
-}
-// node test.js projects/jones-dao/index.js
+    tvl: tvl_ethereum,
+  },
+};

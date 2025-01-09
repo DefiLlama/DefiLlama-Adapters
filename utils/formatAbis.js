@@ -3,7 +3,7 @@ const glob = require('glob')
 const jsonfile = require('jsonfile')
 const fs = require('fs')
 
-let data = require('../projects/test/abi.js')
+let data = require('../projects/test/abi.json')
 const rootFolder = '../projects'
 const rootFolderTest = '../projects/yfii'
 
@@ -70,8 +70,8 @@ function transform(obj, file) {
     if (iLen && oLen && knownTypes.has(oType)) {
       res[key] = `${oType}:${value.name}`
     } else {
-      const iface = new ethers.utils.Interface([value])
-      res[key] = iface.format(ethers.utils.FormatTypes.full)[0]
+      const iface = new ethers.Interface([value])
+      res[key] = iface.format()[0]
     }
   }
 
@@ -91,7 +91,7 @@ function print() {
   }
   console.log(res)
   res = transform(res)
-  fs.writeFileSync(__dirname+'/../projects/test/abi.js', 'module.exports = '+JSON.stringify(res, null, 2))
+  fs.writeFileSync(__dirname+'/../projects/test/abi.json', JSON.stringify(res, null, 2))
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }

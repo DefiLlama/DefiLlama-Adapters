@@ -4,7 +4,7 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 module.exports = {
-  start: 1579811423, // Thu, 23 Jan 2020 20:30:23 GMT
+  start: '2020-01-23', // Thu, 23 Jan 2020 20:30:23 GMT
   ethereum: { tvl: sdk.util.sumChainTvls([
     '0xc59b0e4de5f1248c1140964e0ff287b192407e0c',
     '0x6f400810b62df8e13fded51be75ff5393eaa841f',
@@ -16,9 +16,9 @@ function addTvl(owner) {
     ADDRESSES.ethereum.WETH,
     ADDRESSES.ethereum.DAI,
     ADDRESSES.ethereum.USDC,
-    '0x6810e776880c02933d47db1b9fc05908e5386b96',
+    ADDRESSES.ethereum.GNO,
     ADDRESSES.ethereum.YFI,
-    '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+    ADDRESSES.ethereum.sUSD,
     ADDRESSES.ethereum.UNI,
     '0xa1d65E8fB6e87b60FECCBc582F7f97804B725521',
     '0xc00e94cb662c3520282e6f5717214004a7f26888',

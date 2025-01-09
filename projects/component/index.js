@@ -30,7 +30,7 @@ const ethPools = [
         underlying: [
             "0x1456688345527bE1f37E9e627DA0837D6f08C925",
             ADDRESSES.ethereum.DAI,
-            "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51"
+            ADDRESSES.ethereum.sUSD
         ]
     }
 ];

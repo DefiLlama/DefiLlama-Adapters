@@ -38,8 +38,6 @@ async function tvl(timestamp, block) {
   };
 
   const alkQueries = alkCombos();
-  //console.log(alkQueries);   // for debugging 
-  //console.table(alkQueries); // for debugging
 
   const wethEarnOpen = '0x8125afd067094cD573255f82795339b9fe2A40ab';
   const wethEarn = '0x1f52453B32BFab737247114D56d756A6c37dd9Ef';
@@ -73,6 +71,6 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   methodology: "TVL consists of Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn, Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn Open, and does NOT currently consider assets borrowed",
-  start: 1609380306,        // unix timestamp (utc 0) specifying when the project began, or where live data begins
+  start: '2020-12-31',        // unix timestamp (utc 0) specifying when the project began, or where live data begins
   ethereum: { tvl }                       // tvl adapter
 };

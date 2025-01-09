@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
-const { getFixBalances } = require('../helper/portedTokens')
 
 const chain = 'astar'
 
@@ -196,14 +195,10 @@ async function tvl(ts, _block, chainBlocks ) {
 
   balances = translateBalancesForBridgeToken(balances);
 
-  (await getFixBalances(chain))(balances)
-
   return balances
 }
 
 module.exports = {
-  timetravel: true,
-  start: 915830,
   methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked BAI in StabilityPool",
   astar: {
     tvl,

@@ -1,13 +1,20 @@
+const { sumTokens } = require("./helper/sumTokens");
 const ADDRESSES = require('./helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
+const bitcoinAddressBook = require('./helper/bitcoin-book/index.js')
 
-async function tvl(ts, block) {
-  return {
-    [ADDRESSES.ethereum.WBTC]: (await sdk.api.erc20.totalSupply({ target: ADDRESSES.ethereum.WBTC, block })).output
+// WALLETS FROM HERE https://wbtc.network/dashboard/audit
+const owners = bitcoinAddressBook.wbtc
+
+async function tvl(api){
+  if(api.timestamp > Date.now()/1e3 - 3600){
+    return sumTokens({ owners, api })
+  } else {
+    const supply = await api.call({ target: ADDRESSES.ethereum.WBTC, abi: 'erc20:totalSupply', })
+    api.add(ADDRESSES.ethereum.WBTC, supply)
   }
 }
 
 module.exports = {
-  ethereum: { tvl },
-  methodology: `TVL for WBTC consists of the BTC deposits in custody that were used to mint WBTC`
-}
+  bitcoin: { tvl },
+  methodology: `TVL for WBTC consists of the BTC deposits in custody that were used to mint WBTC`,
+};

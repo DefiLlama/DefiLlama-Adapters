@@ -128,7 +128,7 @@ module.exports = {
       ADDRESSES.ethereum.USDT,
       ADDRESSES.ethereum.USDC,
       ADDRESSES.ethereum.DAI,
-      '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
+      ADDRESSES.ethereum.sUSD,
     ]
   },
   // renBTC Eth
@@ -143,7 +143,7 @@ module.exports = {
   '0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca': {
     swapContract: '0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca',
     underlyingTokens: [
-      '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+      ADDRESSES.ethereum.LUSD,
       '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
     ]
   },
@@ -156,7 +156,7 @@ module.exports = {
   '0xd632f22692fac7611d2aa1c0d552930d43caed3b': {
     swapContract: '0xd632f22692fac7611d2aa1c0d552930d43caed3b',
     underlyingTokens: [
-      '0x853d955acef822db058eb8505911ed77f175b99e',
+      ADDRESSES.ethereum.FRAX,
       '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
     ]
   },
@@ -347,7 +347,7 @@ module.exports = {
     swapContract: '0x59bf0545fca0e5ad48e13da269facd2e8c886ba4',
     underlyingTokens: [
       '0x64343594ab9b56e99087bfa6f2335db24c2d1f17',
-      '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F',
+      ADDRESSES.arbitrum.FRAX,
     ]
   },
   // pBTC-sBTC Ethereum
@@ -389,7 +389,7 @@ module.exports = {
   },
   '0x961226b64ad373275130234145b96d100dc0b655': {
     swapContract: '0x961226b64ad373275130234145b96d100dc0b655',
-    underlyingTokens: ['0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0']
+    underlyingTokens: [ADDRESSES.ethereum.FXS]
   },
   // TOKEMAKS END
 

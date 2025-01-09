@@ -38,6 +38,9 @@ const chains = {
   velas: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
   oasis: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
   bittorrent: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
+  linea: { factory: "0x1c758af0688502e49140230f6b0ebd376d429be5" },
+  era: { factory: "0x9017f5A42fbe5bCA3853400D2660a2Ee771b241e" },
+  scroll: {factory: "0x1c758aF0688502e49140230F6b0EBd376d429be5"}
 };
 
 function classic(chain) {

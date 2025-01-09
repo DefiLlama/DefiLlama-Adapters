@@ -8,4 +8,5 @@ module.exports = {
   moonriver: {
     tvl: () => ({}),
   },
+  deadFrom: '2022-10-01'
 }

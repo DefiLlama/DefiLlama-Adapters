@@ -4,7 +4,6 @@ const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
 const coreAssets = require('../coreAssets.json')
-const ADDRESSES = coreAssets
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
@@ -40,7 +39,7 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams, })
 }
 
 
-async function searchAccountsAll({ appId, limit = 1000, searchParams = {} }) {
+async function searchAccountsAll({ appId, limit = 1000, searchParams = {}, sumTokens = false, api }) {
   const accounts = []
   let nexttoken
   do {
@@ -48,6 +47,15 @@ async function searchAccountsAll({ appId, limit = 1000, searchParams = {} }) {
     nexttoken = res['next-token']
     accounts.push(...res.accounts)
   } while (nexttoken)
+  if (sumTokens && api) {
+    sdk.log('sumTokens', accounts.length)
+    for (const account of accounts) {
+      api.add('1', account.amount)
+      for (const asset of (account.assets ?? [])) {
+        api.add(asset['asset-id']+'', asset.amount)
+      }
+    }
+  }
   return accounts
 }
 
@@ -56,11 +64,14 @@ const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
   return fn(...args);
 }
 
-async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
+async function sumTokens({ owner, owners = [], tokens = [], token, balances, api, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
+  if (!balances) {
+    balances = api ? api.getBalances() : {}
+  }
   if (owner) owners = [owner]
   if (token) tokens = [token]
   if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
-  const accounts = await Promise.all(owners.map(getAccountInfo))
+  const accounts = await Promise.all(owners.map(limitedGetAccountInfo))
   accounts.forEach(({ assets }, i) => {
     if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
@@ -81,7 +92,7 @@ async function getAssetInfo(assetId) {
 
   async function _getAssetInfo() {
     const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
-    const reserveInfo = await getAccountInfo(asset.params.reserve)
+    const reserveInfo = await limitedGetAccountInfo(asset.params.reserve)
     const assetObj = { ...asset.params, ...asset, reserveInfo, }
     assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
     assetObj.assets = { ...reserveInfo.assetMapping }
@@ -90,8 +101,19 @@ async function getAssetInfo(assetId) {
   }
 }
 
+async function getAssetInfoWithoutReserve(assetId) {
+  if (!assetCache[assetId]) assetCache[assetId] = _getAssetInfo()
+  return assetCache[assetId]
+
+  async function _getAssetInfo() {
+    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
+    const assetObj = { ...asset.params, ...asset, }
+    return assetObj
+  }
+}
+
 async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedTokens, }) {
-  const lpBalance = balances['algorand:'+lpId]
+  const lpBalance = balances['algorand:' + lpId]
   if (lpBalance && lpBalance !== '0') {
     const lpInfo = await getAssetInfo(lpId)
     let ratio = lpBalance / lpInfo.circulatingSupply
@@ -110,11 +132,14 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
     }
   }
   delete balances[lpId]
-  delete balances['algorand:'+lpId]
+  delete balances['algorand:' + lpId]
   return balances
 }
 
 async function getAccountInfo(accountId) {
+  if (typeof accountId === 'number') { // it is an application id
+    accountId = getApplicationAddress(accountId)
+  }
   if (!accountCache[accountId]) accountCache[accountId] = _getAccountInfo()
   return accountCache[accountId]
 
@@ -138,12 +163,16 @@ const tokens = {
   wEth: 887406851,
   wBtcGoBtcLp: 1058934626,
   wEthGoEthLp: 1058935051,
+  xUsdGoUsdLp: 1081974597,
   usdtGoUsdLp: 1081978679,
+  wusdcGoUsdLp: 1242543501,
+  wusdtGoUsdLp: 1242550568,
   goUsd: 672913181,
   usdcGoUsdLp: 885102318,
   gard: 684649988,
   gold$: 246516580,
   silver$: 246519683,
+  ASAGold: 1241944285
 };
 
 // store all asset ids as string
@@ -159,6 +188,7 @@ async function getAppGlobalState(marketId) {
     response.application.params["global-state"].forEach(x => {
       let decodedKey = Buffer.from(x.key, "base64").toString("binary")
       results[decodedKey] = x.value.uint
+      if (x.value.type === 1) results[decodedKey] = Buffer.from(x.value.bytes, "base64").toString("binary")
     })
 
     return results
@@ -175,7 +205,7 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
     if (geckoMapping.includes(id)) {
       return {
         price: i.amount / unknownAssetQuantity,
-        geckoId: 'algorand:'+id,
+        geckoId: 'algorand:' + id,
         decimals: 0,
       }
     }
@@ -184,15 +214,24 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   throw new Error('Not mapped with any whitelisted assets')
 }
 
+async function lookupTransactionsByID(searchParams = {}) {
+  const urlParams = new URLSearchParams(searchParams).toString();
+  return (await axiosObj.get(`/v2/transactions?${urlParams}`)).data
+}
+
+const limitedGetAccountInfo = withLimiter(getAccountInfo)
+
 module.exports = {
   tokens,
   getAssetInfo: withLimiter(getAssetInfo),
+  getAssetInfoWithoutReserve: withLimiter(getAssetInfoWithoutReserve),
   searchAccountsAll,
-  getAccountInfo,
+  getAccountInfo: limitedGetAccountInfo,
   sumTokens,
   getApplicationAddress,
   lookupApplications: withLimiter(lookupApplications),
   lookupAccountByID: withLimiter(lookupAccountByID),
+  lookupTransactionsByID: withLimiter(lookupTransactionsByID),
   searchAccounts: withLimiter(searchAccounts),
   getAppGlobalState: getAppGlobalState,
   getPriceFromAlgoFiLP,

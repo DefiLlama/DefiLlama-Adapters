@@ -15,3 +15,4 @@ const treasuryTokens = [
 module.exports = {
     ...ohmTvl(treasury, treasuryTokens, "avax", stakingContract, clavis)
 }
+module.exports.deadFrom = '2022-03-01'

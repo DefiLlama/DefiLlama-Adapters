@@ -9,3 +9,4 @@ module.exports = yieldHelper({
   masterchef: contract,
   nativeToken: opt,
 })
+module.exports.deadFrom = '2023-01-09'

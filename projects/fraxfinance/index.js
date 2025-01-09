@@ -4,7 +4,7 @@ const { staking, } = require("../helper/staking");
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 
 const USDC = ADDRESSES.ethereum.USDC;
-const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
+const FXS = ADDRESSES.ethereum.FXS;
 const FRAX_3CRV = '0xd632f22692fac7611d2aa1c0d552930d43caed3b'
 const T_3CRV = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
 
@@ -113,27 +113,6 @@ async function addUSDCPools(api, balances) {
   })
 }
 
-async function addAMOMinter(api, balances) {
-  const amoMinter = '0xcf37B62109b537fa0Cb9A90Af4CA72f6fb85E241'
-  let allAMOAddresses = await api.call({ target: amoMinter, abi: 'address[]:allAMOAddresses' })
-  const amos = allAMOAddresses.filter(i => i !== nullAddress)
-  const blacklist = new Set([
-    '0x66635DC1EdEfF19e839f152a67278151Aa6e1B61', // aave AMO
-    INVESTOR_AMO,
-  ].map(i => i.toLowerCase()))
-  const dollBallAbi = 'function dollarBalances() view returns (uint256 frax_val_e18, uint256 collat_val_e18)'
-  const res = await api.multiCall({ abi: dollBallAbi, calls: amos.filter(i => blacklist.has(i.toLowerCase())) })
-  const table = []
-  res.forEach((v, i) => {
-    table.push([amos[i], Number(v.collat_val_e18 / 1e24).toFixed(3)])
-    sdk.util.sumSingleBalance(balances, USDC, v.collat_val_e18 / 1e12, api.chain)
-  })
-  table.sort((a, b) => +b[1] - +a[1])
-  console.log(amos.length)
-  console.table(table)
-
-}
-
 async function addInvestorAMO(api, balances) {
   return sumTokens2({
     balances,
@@ -142,6 +121,7 @@ async function addInvestorAMO(api, balances) {
       Synapse: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
       'Wrapped BTC': ADDRESSES.ethereum.WBTC,
       'USD Coin': ADDRESSES.ethereum.USDC,
+      'PAX': '0x8e870d67f660d95d5be530380d0ec0bd388289e1',
       ZigZag: '0xc91a71a1ffa3d8b22ba615ba1b9c01b2bbbf55ad',
       'Governance OHM': '0x0ab87046fbb341d058f17cbc4c1133f25a20a52f',
       'Aave interest bearing USDC': '0xbcca60bb61934080951369a648fb03df4f96263c',
@@ -154,7 +134,7 @@ async function addInvestorAMO(api, balances) {
       TrueUSD: ADDRESSES.ethereum.TUSD,
       'Gelato Network Token': '0x15b7c0c907e4c6b9adaaaabc300c08991d6cea05',
       'Staked Aave': '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
-      'Convex Token': '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
+      'Convex Token': ADDRESSES.ethereum.CVX,
       'Curve DAO Token': ADDRESSES.ethereum.CRV,
       'Bend Token': '0x0d02755a5700414b26ff040e1de35d337df56218',
       'Binance USD': ADDRESSES.ethereum.BUSD,
@@ -164,7 +144,7 @@ async function addInvestorAMO(api, balances) {
   })
 }
 
-const ethereumTvl = async (timestamp, block, _, { api }) => {
+const ethereumTvl = async (api) => {
   let balances = {};
 
   await Promise.all([

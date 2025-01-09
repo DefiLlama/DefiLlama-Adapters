@@ -1,25 +1,49 @@
-const { sumTokens2 } = require('./helper/solana')
-
-async function tvl() {
-  // token account authority: JCNCMFXo5M5qwUPg2Utu1u6YWp3MbygxqBsBeXXJfrw
-  return sumTokens2({
-    tokenAccounts: [
-      '6W9yiHDCW9EpropkFV8R3rPiL8LVWUHSiys3YeW6AT6S', // legacy usdc vault
-      'Bzjkrm1bFwVXUaV9HTnwxFrPtNso7dnwPQamhqSxtuhZ', // usdc insurance fund
-      'GXWqPpjQpdz7KZw9p7f5PX2eGxHAhvpNXiviFkAB8zXg', // usdc vault
-      'DfYCNezifxAEsQbAJ1b3j6PX3JVBe8fu11KBhxsbw5d2', // sol vault
-      '4vwQWa4RjmPkn1WrmyEE3t912yWsBf9JNkASH36AQL3F', // sol insurance fund
-      '5p8B6KhJjesV212heBu1o86W2vUSnW1P83ZNnMLtCAAx', // msol vault
-      'iBM2BTsrXXDfwm4P4ssbzBAquaj7gGgNNhBVaq8ryiY',  // msol insurance fund
-      '2CqkQvYxp9Mq4PqLvAQ1eryYxebUh4Liyn5YMDtXsYci', // legacy usdc insurance fund
-    ]
-  })
-}
+const { PublicKey } = require("@solana/web3.js");
+const anchor = require("@project-serum/anchor");
+const { sumTokens2, } = require("./helper/solana");
+const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+const { getConfig } = require('./helper/cache')
 
 module.exports = {
   timetravel: false,
   methodology: "Calculate sum across all program token accounts",
   solana: {
-    tvl
+    tvl,
+  },
+};
+
+async function tvl(api) {
+
+  const legacyVaults = [
+    '6W9yiHDCW9EpropkFV8R3rPiL8LVWUHSiys3YeW6AT6S', // legacy usdc vault
+    'Bzjkrm1bFwVXUaV9HTnwxFrPtNso7dnwPQamhqSxtuhZ', // legacy usdc insurance fund
+  ];
+  const getSpotMarketVaultPublicKey = marketIndex => getVaultPublicKey('spot_market_vault', marketIndex)
+  const getInsuranceFundVaultPublicKey = marketIndex => getVaultPublicKey('insurance_fund_vault', marketIndex)
+  let configFile = await getConfig('drift-config', 'https://raw.githubusercontent.com/drift-labs/protocol-v2/master/sdk/src/constants/spotMarkets.ts')
+  const marketIndices = [];
+  configFile = configFile.slice(configFile.indexOf('MainnetSpotMarkets:'))
+
+  const regex = /marketIndex:\s*(\d+),/g
+  let match;
+  while ((match = regex.exec(configFile))) {
+    marketIndices.push(parseInt(match[1]));
   }
+
+  const vaults = [
+    ...legacyVaults,
+    ...marketIndices.map(getSpotMarketVaultPublicKey),
+    ...marketIndices.map(getInsuranceFundVaultPublicKey),
+  ]
+  
+  return sumTokens2({ tokenAccounts: vaults })
 }
+
+function getVaultPublicKey(seed, marketIndex) {
+  return PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(anchor.utils.bytes.utf8.encode(seed)),
+      new anchor.BN(marketIndex).toArrayLike(Buffer, 'le', 2),
+    ], DRIFT_PROGRAM_ID)[0].toBase58()
+}
+

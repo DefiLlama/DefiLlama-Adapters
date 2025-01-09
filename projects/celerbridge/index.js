@@ -1,26 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
-const { getFixBalances } = require('../helper/portedTokens')
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
-config.setProvider("clv", new ethers.providers.StaticJsonRpcProvider(
-  "https://api-para.clover.finance",
-  {
-    name: "clv",
-    chainId: 1024,
-  }
-))
 
-config.setProvider("syscoin", new ethers.providers.StaticJsonRpcProvider(
-  "https://rpc.ankr.com/syscoin",
-  {
-    name: "syscoin",
-    chainId: 57,
-  }
-))
 
 // Bridge and token contract addresses are taken from https://cbridge-docs.celer.network/reference/contract-addresses
 const liquidityBridgeContractsV2 = {
@@ -82,6 +65,10 @@ const liquidityBridgeContractsV2 = {
   shiden: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C", "0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573",],
   syscoin: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C", "0x1E6b1ceAF75936f153ABB7B65FBa57AbaE14e6CE"],
   xdai: [ADDRESSES.astar.USDT],
+  era: ["0x54069e96C4247b37C2fbd9559CA99f08CD1CD66c"],
+  polygon_zkevm: ["0xD46F8E428A06789B5884df54E029e738277388D1"],
+  linea: ["0x9B36f165baB9ebe611d491180418d8De4b8f3a1f"],
+  scroll: ["0x9B36f165baB9ebe611d491180418d8De4b8f3a1f"],
 };
 
 // Tokens added to the liquidity bridges, excluding Celer-Pegged tokens.
@@ -109,15 +96,15 @@ const liquidityBridgeTokens = [
     bsc: ADDRESSES.bsc.USDC,
     ethereum: ADDRESSES.ethereum.USDC,
     fantom: ADDRESSES.fantom.USDC,
-    harmony: "0x985458e523db3d53125813ed68c274899e9dfab4",
+    // harmony: "0x985458e523db3d53125813ed68c274899e9dfab4",
     heco: ADDRESSES.heco.USDC_HECO,
     okexchain: ADDRESSES.okexchain.USDC,
     optimism: ADDRESSES.optimism.USDC,
     polygon: ADDRESSES.polygon.USDC,
     xdai: ADDRESSES.xdai.USDC,
+    era: ADDRESSES.era.USDC,
   },
   {
-    // BUSD
     ethereum: ADDRESSES.ethereum.BUSD,
     bsc: ADDRESSES.bsc.BUSD,
   },
@@ -138,11 +125,15 @@ const liquidityBridgeTokens = [
     fantom: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
     optimism: ADDRESSES.tombchain.FTM,
     polygon: ADDRESSES.polygon.WETH_1,
+    era: ADDRESSES.era.WETH,
+    polygon_zkevm: ADDRESSES.polygon_zkevm.WETH,
+    linea: ADDRESSES.linea.WETH,
+    scroll: ADDRESSES.scroll.WETH,
   },
   {
     // WBTC
     arbitrum: ADDRESSES.arbitrum.WBTC,
-    avax: "0x50b7545627a5162F82A992c33b87aDc75187B218",
+    avax: ADDRESSES.avax.WBTC_e,
     ethereum: ADDRESSES.ethereum.WBTC,
     fantom: "0x321162Cd933E2Be498Cd2267a90534A804051b11",
     polygon: ADDRESSES.polygon.WBTC,
@@ -172,14 +163,14 @@ const liquidityBridgeTokens = [
   {
     // LYRA
     ethereum: "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf",
-    optimism: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+    optimism: ADDRESSES.base.DAI,
   },
   {
     // IMX
     arbitrum: "0x9c67ee39e3c4954396b9142010653f17257dd39c",
     avax: "0xeA6887e4a9CdA1B77E70129E5Fba830CdB5cdDef",
     ethereum: "0x7b35ce522cb72e4077baeb96cb923a5529764a00",
-    harmony: "0xbd8064cdb96c00a73540922504f989c64b7b8b96",
+    // harmony: "0xbd8064cdb96c00a73540922504f989c64b7b8b96",
     moonriver: "0x900f1Ec5819FA087d368877cD03B265Bf1802667",
     polygon: "0x60bb3d364b765c497c8ce50ae0ae3f0882c5bd05",
   },
@@ -236,7 +227,7 @@ const liquidityBridgeTokens = [
     arbitrum: "0xaE6aab43C4f3E0cea4Ab83752C278f8dEbabA689",
     bsc: "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623",
     ethereum: "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0",
-    optimism: "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3",
+    optimism: ADDRESSES.op_bnb.USDT,
     polygon: "0x08C15FA26E519A78a666D19CE5C646D55047e0a3",
   },
   {
@@ -319,7 +310,6 @@ const liquidityBridgeTokens = [
     polygon: "0x08648471B5AAd25fEEeb853d6829048f3Fc37786",
   },
   {
-    // iZi
     arbitrum: ADDRESSES.bsc.iZi,
     bsc: ADDRESSES.bsc.iZi,
     ethereum: "0x9ad37205d608B8b219e6a2573f922094CEc5c200",
@@ -365,12 +355,9 @@ const liquidityBridgeTokens = [
     ethereum: "0xcA37530E7c5968627BE470081d1C993eb1dEaf90",
   },
   {
-    // cUSD
     celo: ADDRESSES.celo.cUSD,
   },
   {
-    // WSYS
-    // origin: "syscoin:" + ADDRESSES.syscoin.WSYS,
     syscoin: ADDRESSES.syscoin.WSYS,
     bsc: "0x6822A778726CD2f0d4A1Cfaca2D04654e575cC82",
     ethereum: "0xF3C96924d85566C031ddc48DbC63B2d71da6D0f6",
@@ -385,12 +372,11 @@ const liquidityBridgeTokens = [
     ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
   },
   {
-    // FRAX
-    ethereum: "0x853d955acef822db058eb8505911ed77f175b99e",
+    ethereum: ADDRESSES.ethereum.FRAX,
   },
   {
     // FXS
-    ethereum: "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+    ethereum: ADDRESSES.ethereum.FXS,
   },
   {
     // MAI
@@ -401,15 +387,12 @@ const liquidityBridgeTokens = [
     bsc: "0x1fD991fb6c3102873ba68a4e6e6a87B3a5c10271",
   },
   {
-    // BNB
     bsc: ADDRESSES.bsc.WBNB,
   },
   {
-    // AVAX
     avax: ADDRESSES.avax.WAVAX,
   },
   {
-    // FTM
     fantom: ADDRESSES.fantom.WFTM,
   },
   {
@@ -437,8 +420,6 @@ const liquidityBridgeTokens = [
     heco: "0x4668e0E7cC545De886aBF038067F81cD4DC0924b",
   },
   {
-    // SDN
-    // origin: "shiden:" + ADDRESSES.shiden.WSDN,
     shiden: ADDRESSES.shiden.WSDN,
   },
   {
@@ -450,15 +431,12 @@ const liquidityBridgeTokens = [
     avax: "0x4fbf0429599460d327bd5f55625e30e4fc066095",
   },
   {
-    // MATIC
-    polygon: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    polygon: ADDRESSES.polygon.WMATIC_2,
   },
   {
-    // AAVE
     ethereum: ADDRESSES.ethereum.AAVE,
   },
   {
-    // CRV
     ethereum: ADDRESSES.ethereum.CRV,
   },
   {
@@ -486,8 +464,7 @@ const liquidityBridgeTokens = [
     boba: "0xCe055Ea4f29fFB8bf35E852522B96aB67Cbe8197",
   },
   {
-    // LUSD
-    ethereum: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+    ethereum: ADDRESSES.ethereum.LUSD,
   },
   {
     // JONES
@@ -542,9 +519,7 @@ function chainTvl(chain) {
         liquidityBridgeContractsV2[chain].filter(owner => owner.toLowerCase() !== bridgeContractV1.toLowerCase())
           .forEach(owner => toa.push([token[chain], owner]))
     })
-    const balances = await sumTokens({}, toa, block, chain)
-    const fixBalances = await getFixBalances(chain)
-    fixBalances(balances)
+    const balances = await sumTokens({}, toa, block, chain, undefined)
     return balances
   };
 }

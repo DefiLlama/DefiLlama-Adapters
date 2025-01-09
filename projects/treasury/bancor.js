@@ -31,7 +31,19 @@ module.exports = treasuryExports({
         "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942",
         "0x6710c63432A2De02954fc0f851db07146a6c0312",
         ADDRESSES.ethereum.AAVE,
-        ADDRESSES.ethereum.WBTC
+        ADDRESSES.ethereum.WBTC,
+        '0x903bef1736cddf2a537176cf3c64579c3867a881',
+        '0x111111517e4929d3dcbdfa7cce55d30d4b6bc4d6', //ichi
+        '0x6c6EE5e31d828De241282B9606C8e98Ea48526E2', //hot
+        '0x275f5Ad03be0Fa221B4C6649B8AeE09a42D9412A', //mona
+        '0x4a220E6096B25EADb88358cb44068A3248254675', //qnt
+        '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72', //ENS
+        '0xb9EF770B6A5e12E45983C5D80545258aA38F3B78', //zcn
+        '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07', //omg
+        '0xaA7a9CA87d3694B5755f213B5D04094b8d0F0A6F', //trac
+        ADDRESSES.ethereum.WSTETH,
+        '0x4C2e59D098DF7b6cBaE0848d66DE2f8A4889b9C3', //fodl
+        ADDRESSES.ethereum.MKR,
      ],
     owners: [treasury],
     ownTokens: [BNT, vBNT],

@@ -1,12 +1,25 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress } = require("../helper/unwrapLPs");
+const sdk = require('@defillama/sdk')
+
+function staking(contract, token) {
+  return async (api) => {
+    api.add(token, await api.call({ target: contract, abi: 'erc20:totalSupply'}))
+  }
+}
+
 module.exports = {
-  misrepresentedTokens: true,
+  doublecounted: true,
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
-      const tvl = await api.call({  abi: 'uint256:getContractTVL', target: '0x7623e9DC0DA6FF821ddb9EbABA794054E078f8c4'})
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"),
+    tvl: async ({ timestamp }) => {
+      const api = new sdk.ChainApi({ timestamp, chain: 'optimism' })
+      await api.getBlock()
       return {
-        ['ethereum:' + ADDRESSES.null]: tvl
+        [nullAddress]: await api.call({ target: '0x6329004E903B7F420245E7aF3f355186f2432466', abi: 'uint256:getTvl' })
       }
     }
+  },
+  arbitrum:{
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27")
   }
 }

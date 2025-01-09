@@ -6,7 +6,7 @@ const WAVAX_THOR_JLP = "0x95189f25b4609120F72783E883640216E92732DA";
 module.exports = {
   misrepresentedTokens: true,
   avax: {
-    pool2: pool2(stakingPool2Contract, WAVAX_THOR_JLP, "avax"),
+    pool2: pool2(stakingPool2Contract, WAVAX_THOR_JLP),
     tvl: (async) => ({}),
   },
   methodology: "Counts liquidty on pool2 only",

@@ -23,18 +23,19 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.WETH,//WETH
         ADDRESSES.ethereum.USDT,//USDT
         "0xf16aEe6a71aF1A9Bc8F56975A4c2705ca7A782Bc", //20WETH-80ALC
-        "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+        ADDRESSES.ethereum.LUSD,
         ADDRESSES.ethereum.CRV,
         ADDRESSES.ethereum.YFI,
         "0xa258C4606Ca8206D8aA700cE2143D7db854D168c",
-        "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+        ADDRESSES.ethereum.FXS,
         "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
         "0xF1bB87563A122211d40d393eBf1c633c330377F9", //xpremia
-        "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+        ADDRESSES.ethereum.FXS,
         "0x7f50786A0b15723D741727882ee99a0BF34e3466"
      ],
     owners: [alchemixTreasury, operations_treasury, treasury2, treasury3, treasury4, treasury5], 
     ownTokens: [ALCX],
+    blacklistedTokens: ["0xbc6da0fe9ad5f3b0d58160288917aa56653660e9", "0x0100546f2cd4c9d97f798ffc9755e47865ff7ee6"]
   },
   optimism: {
     tokens: [ 
@@ -43,7 +44,8 @@ module.exports = treasuryExports({
         ADDRESSES.optimism.OP,
         "0x3c8B650257cFb5f272f799F5e2b4e65093a11a05"
      ],
-    owners: [treasuryOP], 
+    owners: [treasuryOP],
+    blacklistedTokens: ["0x3e29d3a9316dab217754d13b28646b76607c5f04"]
   },
   fantom: {
     tokens: [ 

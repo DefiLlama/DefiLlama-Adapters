@@ -5,7 +5,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const LSDVAULT_CONTRACT_V1 = "0xE76Ffee8722c21b390eebe71b67D95602f58237F";
 const LSDVAULT_CONTRACT_V2 = "0x51A80238B5738725128d3a3e06Ab41c1d4C05C74";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: LSDVAULT_CONTRACT_V2,

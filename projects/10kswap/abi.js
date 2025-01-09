@@ -13,7 +13,8 @@ const fabis = [{
       "type": "felt"
     }
   ],
-  "stateMutability": "view"
+  "stateMutability": "view",
+  "customType": "address"
 },
 {
   "name": "allPairsLength",
@@ -25,7 +26,8 @@ const fabis = [{
       "type": "felt"
     }
   ],
-  "stateMutability": "view"
+  "stateMutability": "view",
+  "customType": "Uint256"
 }
 ]
 
@@ -40,7 +42,8 @@ const pabis = [
         "type": "felt"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "view",
+    "customType": "address"
   },
   {
     "name": "token1",
@@ -52,7 +55,8 @@ const pabis = [
         "type": "felt"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "view",
+    "customType": "address"
   },
   {
     "name": "getReserves",
@@ -60,11 +64,11 @@ const pabis = [
     "inputs": [],
     "outputs": [
       {
-        "name": "reserve0",
+        "name": "_reserve0",
         "type": "felt"
       },
       {
-        "name": "reserve1",
+        "name": "_reserve1",
         "type": "felt"
       },
       {

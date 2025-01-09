@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
-const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
-const { transformBscAddress } = require("../helper/portedTokens");
+const { compoundExports } = require("../helper/compound");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 
 const comptroller = "0x44f2A790aCB1bE42d3F7864e9F73762556eb895E";
@@ -10,9 +9,9 @@ const WBNBEquivalent = ADDRESSES.bsc.WBNB;
 
 const stakingChef = "0xbfcaB1627c4fB86A055DE4B8a56D46e625F51C0B";
 
-const stakingPools = async (timestamp, ethBlock, chainBlocks) => {
+const stakingPools = async (_ts, _b, chainBlocks) => {
   const balances = {};
-  let transformAddress = await transformBscAddress();
+  let transformAddress = i => `bsc:${i}`;
 
   await addFundsInMasterChef(
     balances,
@@ -27,12 +26,9 @@ const stakingPools = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
   bsc: {
     staking: stakingPools,
     ...compoundExports(comptroller,
-      "bsc",
       cBNB,
       WBNBEquivalent)
   },

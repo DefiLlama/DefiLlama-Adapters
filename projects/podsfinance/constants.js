@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
   ADDRESS_ZERO: ADDRESSES.null,
@@ -7,16 +8,16 @@ module.exports = {
   NETWORK_POLYGON: {
     id: 137,
     name: 'polygon',
-    subgraph: 'https://api.thegraph.com/subgraphs/name/pods-finance/pods-matic'
+    subgraph: sdk.graph.modifyEndpoint('5yQETkt77T9htftwDSW4WJpoGkPH9KBQzQLzPnuyZ8ti')
   },
   NETWORK_MAINNET: {
     id: 1,
     name: 'ethereum',
-    subgraph: 'https://api.thegraph.com/subgraphs/name/pods-finance/pods'
+    subgraph: sdk.graph.modifyEndpoint('9qiAuWa5ryYeTj1gLy9BGiiVkfgkXnsN25wkYQSfyaws')
   },
   NETWORK_ARBITRUM: {
     id: 42161,
     name: 'arbitrum',
-    subgraph: 'https://api.thegraph.com/subgraphs/name/pods-finance/pods-arbitrum'
+    subgraph: sdk.graph.modifyEndpoint('5Qz4mWABKaCfr9uGnteAAwmWmBAyQtRDYgB3ydU556HX')
   }
 }

@@ -1,11 +1,38 @@
-const { staking } = require('../helper/staking');
+const { request } = require("../helper/utils/graphql")
+const { cachedGraphQuery } = require('../helper/cache')
 
-const token = "0xF9DF075716B2D9B95616341DC6bC64c85e56645c";
-const masterchef = "0xe401c80962c521E751454Fc1C9ff34014e0b8FFB";
+const { toUSDTBalances } = require("../helper/balances")
+
+const url = "https://squid.subsquid.io/mayfairfund-api/v/v1/graphql"
+
+async function getStakingData() {
+  return await request(url, `query StakingAnalytics {
+    stakingPools(where: {id_eq: "0x3ad426dc2f005b721359a94f8b8d71b8890b3068-0"}) {
+      tvl
+    }
+  }
+  `)
+
+}
+async function getStaking() {
+  let staking = 0
+  const data = await getStakingData()
+  staking = data.stakingPools?.[0].tvl;
+  return toUSDTBalances(staking)
+}
+
+async function tvl(api) {
+  const { balancerVaults: [{ pools }] } = await cachedGraphQuery('mayfair', url, `{  balancerVaults { pools{ id vaultId } } }`)
+  const data = await api.multiCall({ abi: 'function getPoolTokens(bytes32) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)', calls: pools.map(i => ({ target: i.vaultId, params: i.id })) })
+  data.forEach(({ tokens, balances }) => api.addTokens(tokens.slice(1), balances.slice(1)))
+  return api.getBalances()
+}
 
 module.exports = {
+  timetravel: false,
+  doublecounted: true, // tokens are in balancer pools
   arbitrum: {
-    tvl: () => 0,
-    staking: staking(masterchef, token)
+    tvl,
+    staking: getStaking
   }
 }

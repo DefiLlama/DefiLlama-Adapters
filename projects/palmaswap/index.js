@@ -8,6 +8,10 @@ const weth = ADDRESSES.core.WCORE
 
 module.exports = {
   misrepresentedTokens: true,
+  hallmarks: [
+    [1679356800, "Rug Pull"]
+  ],
+  deadFrom: '2023-03-21',
   core: {
     tvl: sdk.util.sumChainTvls([uniTvl, staking({
       owners: [masterchef],

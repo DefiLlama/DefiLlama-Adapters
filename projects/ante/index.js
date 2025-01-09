@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 const { createIncrementArray } = require('../helper/utils');
 
@@ -36,7 +35,7 @@ const CONFIG = {
       },
     ],
     startBlock: 32245577,
-    gasToken: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    gasToken: ADDRESSES.polygon.WMATIC_2,
   },
   bsc: {
     factories: [
@@ -95,60 +94,37 @@ const CONFIG = {
 };
 
 Object.keys(CONFIG).forEach((chain) => {
-  const { startBlock, factories } = CONFIG[chain];
+  const { factories } = CONFIG[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      let calls, currentRes;
+    tvl: async (api) => {
+      let currentRes;
       const pools = [];
-      let tokens = [];
+      let tokens = [nullAddress];
       let i = 0;
-      const length = 4;
+      const length = 10
 
       for (const factory of factories) {
         if (factory.version >= '0.6') {
-          const controller = await sdk.api.abi.call({
-            target: factory.factory,
-            abi: abis.getController,
-            chain,
-            block,
-          });
-          const allowedTokens = await sdk.api.abi.call({
-            target: controller.output,
-            abi: abis.getAllowedTokens,
-            chain,
-            block,
-          });
-
-          tokens = [...new Set([...tokens, ...allowedTokens.output])];
+          const controller = await api.call({ target: factory.factory, abi: abis.getController, });
+          const allowedTokens = await api.call({ target: controller, abi: abis.getAllowedTokens, });
+          tokens.push(...allowedTokens);
         }
         do {
-          calls = createIncrementArray(4).map((j) => ({
-            params: j + i * length,
-          }));
-          const { output: res } = await sdk.api.abi.multiCall({
+          const calls = createIncrementArray(length).map((j) => ({ params: j + i * length, }));
+          const res = await api.multiCall({
             target: factory.factory,
             abi: abis.allPools,
             calls,
-            chain,
-            block,
             permitFailure: true,
           });
 
-          currentRes = res.map((i) => i.output).filter((i) => i);
-
+          currentRes = res.filter((i) => i)
           pools.push(...currentRes);
-
           i++;
         } while (currentRes.length === length);
       }
-      return sumTokens2({
-        tokens: [nullAddress, ...tokens],
-        owners: pools,
-        chain,
-        block,
-      });
+      return sumTokens2({ tokens, owners: pools, api });
     },
-    start: startBlock,
   };
 });
 

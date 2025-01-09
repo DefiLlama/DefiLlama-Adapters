@@ -13,11 +13,13 @@ function transformAddress(addr) {
 }
 
 const endpoint = "https://rpc.mainnet.near.org"
+// const endpoint = "https://near.lava.build"
 
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
   'meta-pool.near': { name: 'staked-near', decimals: 24, },
   [ADDRESSES.near.LINA]: { name: 'linear-protocol', decimals: 24, },
+  "storage.herewallet.near": { name: 'here-staking', decimals: 24, },
   'usn': { name: 'usn', decimals: 18, },
   'aurora': { name: 'ethereum', decimals: 18, },
   'token.skyward.near': { name: 'skyward-finance', decimals: 18, },
@@ -41,6 +43,17 @@ const tokenMapping = {
   [ADDRESSES.near.PEMBROCK]: { name: 'pembrock', decimals: 18 },
   'token.sweat': { name: 'sweatcoin', decimals: 18 },
   'v2-nearx.stader-labs.near': { name: 'stader-nearx', decimals: 24 },
+  '17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1': { name: 'usd-coin', decimals: 6 },
+  'edge-fast.near': { name: 'edge-video-ai', decimals: 24 },
+  '802d89b6e511b335f05024a65161bce7efc3f311.factory.bridge.near': { name: 'linear-protocol-lnr', decimals: 18 },
+  'ftv2.nekotoken.near': { name: 'neko', decimals: 24 },
+  'token.lonkingnearbackto2024.near': { name: 'lonk-on-near', decimals: 8 },
+  'blackdragon.tkn.near': { name: 'black-dragon', decimals: 24 },
+  'gear.enleap.near': { name: 'near-tinker-union-gear', decimals: 18 },
+  'token.0xshitzu.near': { name: 'shitzu', decimals: 18 },
+  'purge-558.meme-cooking.near': { name: 'forgive-me-father', decimals: 18 },
+  'mpdao-token.near': { name: 'meta-pool-dao', decimals: 6 },
+  'kat.token0.near': { name: 'nearkat', decimals: 18 },
 }
 
 async function view_account(account_id) {

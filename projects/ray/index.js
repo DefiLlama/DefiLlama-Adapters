@@ -4,7 +4,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const ETH_ADDRESS = ADDRESSES.null;
 const WETH_ADDRESS = ADDRESSES.ethereum.WETH;
-const SAI_ADDRESS = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
+const SAI_ADDRESS = ADDRESSES.ethereum.SAI;
 const DAI_ADDRESS = ADDRESSES.ethereum.DAI;
 const USDC_ADDRESS = ADDRESSES.ethereum.USDC;
 
@@ -51,7 +51,7 @@ const allPortfolioManagers = [
 owners.push(allPortfolioManagers[0].address)
 
 module.exports = {
-  start: 1568274392,  // 09/12/2019 @ 7:46am (UTC)
+  start: '2019-09-12',  // 09/12/2019 @ 7:46am (UTC)
   ethereum: {
     tvl: sumTokensExport({
       owners,
