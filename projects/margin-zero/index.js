@@ -13,27 +13,6 @@ const LiquidityRangesQuery = `{ liquidityRanges(where: { liquidity_gt: "100" }) 
 const slot0Abi =
   "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
 
-const token0Abi =
-  "function token0() view returns (address)";
-
-const token1Abi =
-  "function token1() view returns (address)";
-
-
-async function getPoolData(api, pool) {
-  const [token0, token1, tick] = await Promise.all([
-    api.call({ abi: token0Abi, target: pool }),
-    api.call({ abi: token1Abi, target: pool }),
-    api.call({ abi: slot0Abi, target: pool }).then((res) => res[1])
-  ])
-
-  return {
-    token0,
-    token1,
-    tick
-  }
-}
-
 async function tvl(api) {
   const config = chainConfigs[api.chain]
 
@@ -44,21 +23,17 @@ async function tvl(api) {
   })
 
   let poolsDataMap = {}
-  const pools = Array.from(new Set(liquidityRanges.map(({ pool }) => pool)))
-
-  // Fill pools data map
-  await Promise.all(pools.map((pool) => getPoolData(api, pool).then((poolData) => {
-    poolsDataMap[pool.toLowerCase()] = poolData
-  })))
-
+  const pools = Array.from(new Set(liquidityRanges.map(({ pool }) => pool.toLowerCase())))
+  const poolIndexMap = {}
+  pools.forEach((pool, index) =>     poolIndexMap[pool] = index)
+  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
+  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
+  const slots = await api.multiCall({ abi: slot0Abi, calls: pools })
 
   for (const { liquidity, tickLower, tickUpper, pool } of liquidityRanges) {
-    const token0 = poolsDataMap[pool.toLowerCase()]['token0'];
-    const token1 = poolsDataMap[pool.toLowerCase()]['token1'];
-    const tick = poolsDataMap[pool.toLowerCase()]['tick'];
+    const idx = poolIndexMap[pool.toLowerCase()]
 
-    addUniV3LikePosition({ api, token0, token1, tick, liquidity, tickUpper, tickLower, })
-
+    addUniV3LikePosition({ api, token0: token0s[idx], token1: token1s[idx], tick: slots[idx].tick, liquidity, tickUpper, tickLower, })
   }
 
 }
