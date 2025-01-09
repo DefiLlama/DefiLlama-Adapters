@@ -160,6 +160,13 @@ const HYPE_REGISTRY = {
   apechain: [
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 476343], // Camelot
   ],
+  sonic: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 1825082], // Equalizer
+    ["0x2705176750a81d6b1C64c5081d55aA1B54681917", 2760689], // Shadow
+  ],
+  bob: [
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 11706713], // Uniswap
+  ],
 };
 
 Object.keys(HYPE_REGISTRY).forEach(chain => {

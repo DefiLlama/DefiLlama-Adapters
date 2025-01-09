@@ -70,7 +70,19 @@ function addressFromContractId(contractId) {
   return bs58.encode(bytes);
 }
 
+async function sumTokens({ owners = [], owner }) {
+  if (owner) owners = [owner];
+  let total = 0
+  for (const owner of owners)
+    total += (await getAlphBalance(owner)).balance / 1e18
+
+  return {
+    alephium: total
+  }
+}
+
 module.exports = {
+  sumTokens,
   getAlphBalance,
   getTokensBalance,
   getTokenInfo,

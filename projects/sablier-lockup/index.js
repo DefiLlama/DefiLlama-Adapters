@@ -15,6 +15,7 @@ const config = {
   polygon: { endpoints: ['CsDNYv9XPUMP8vufuwDVKQrVhsxhzzRHezjLFFKZZbrx'], },
   scroll: { endpoints: ['HVcngokCByfveLwguuafrBC34xB65Ne6tpGrXHmqDSrh'], },
   xdai: { endpoints: ['EXhNLbhCbsewJPx4jx5tutNXpxwdgng2kmX1J7w1bFyu'], },
+	chz: { endpoints: ['HKvzAuGjrEiza11W48waJy5csbhKpkMLF688arwHhT5f'], },
 }
 
 
