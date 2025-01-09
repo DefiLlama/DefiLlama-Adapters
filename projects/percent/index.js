@@ -1,12 +1,9 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { stakings } = require("../helper/staking");
-const { getCompoundV2Tvl } = require("../helper/compound");
+const { compoundExports2 } = require("../helper/compound");
 
 const comptroller = "0xf47dD16553A934064509C40DC5466BBfB999528B";
-const pETH = "0x45F157b3d3d7C415a0e40012D64465e3a0402C64";
-const pETHEquivalent = ADDRESSES.ethereum.WETH;
 
 const pool2Contract = "0x23b53026187626Ed8488e119767ACB2Fe5F8de4e";
 const lpOfPool2 = "0xEB85B2E12320a123d447Ca0dA26B49E666b799dB";
@@ -69,26 +66,11 @@ module.exports = {
   ethereum: {
     staking: stakings(stakingContracts, PCT),
     pool2: pool2,
-    borrowed: getCompoundV2Tvl(
-      comptroller,
-      "ethereum",
-      (addr) => addr,
-      pETH,
-      pETHEquivalent,
-      true
-    ),
-    tvl: sdk.util.sumChainTvls([
-      getCompoundV2Tvl(
-        comptroller,
-        "ethereum",
-        (addr) => addr,
-        pETH,
-        pETHEquivalent
-      ),
-      ethTvl,
-    ]),
-  },
+    ...compoundExports2({ comptroller, cether: '0x45f157b3d3d7c415a0e40012d64465e3a0402c64' }),
 
+  },
   methodology:
     "Same as compound, we get all the liquidity and the borrowed part on the lending markets",
 };
+
+module.exports.ethereum.tvl = sdk.util.sumChainTvls([module.exports.ethereum.tvl, ethTvl])

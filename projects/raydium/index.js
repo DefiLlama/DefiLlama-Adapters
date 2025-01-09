@@ -154,8 +154,10 @@ async function combinedTvl(api) {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   misrepresentedTokens: true,
   hallmarks: [[1667865600, "FTX collapse"]],
+
   solana: {
     tvl: combinedTvl,
     staking: () => sumTokens2({ tokenAccounts: ['8tnpAECxAT9nHBqR1Ba494Ar5dQMPGhL31MmPJz1zZvY'] })

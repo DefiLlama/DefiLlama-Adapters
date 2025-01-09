@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
+const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
@@ -11,14 +11,14 @@ const contracts = require("./contracts.json");
 const { getLogs } = require('../helper/cache/getLogs')
 
 const chains = [
-  "ethereum", //-200M
-  "polygon", //-40M
-  "arbitrum", //G
-  "aurora", //G
-  "avax", //-30M
-  "fantom", //-80M
-  "optimism", //-6M
-  "xdai", //G
+  "ethereum",
+  "polygon",
+  "arbitrum",
+  "aurora",
+  "avax",
+  "fantom",
+  "optimism",
+  "xdai",
   "moonbeam",
   "celo",
   "kava",
@@ -26,8 +26,11 @@ const chains = [
   "fraxtal",
   "xlayer",
   "bsc",
-  "mantle"
-]; // Object.keys(contracts);
+  "mantle",
+  "taiko",
+  "corn",
+  "sonic",
+];
 const registryIds = {
   stableswap: 0,
   stableFactory: 3,
@@ -92,7 +95,7 @@ async function getPools(block, chain) {
   let { registriesMapping, addressProvider } = contracts[chain]
   if (!registriesMapping) {
     registriesMapping = {};
-    if(addressProvider){
+    if (addressProvider) {
       (await sdk.api.abi.multiCall({
         block, chain,
         calls: Object.values(registryIds).map(r => ({ params: r })),
@@ -106,8 +109,11 @@ async function getPools(block, chain) {
   if (contracts[chain].CurveStableswapFactoryNG) {
     registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
   }
-  if (contracts[chain].CurveL2TricryptoFactory) {
-    registriesMapping.CurveL2TricryptoFactory = contracts[chain].CurveL2TricryptoFactory
+  if (contracts[chain].CurveTricryptoFactoryNG) {
+    registriesMapping.CurveTricryptoFactoryNG = contracts[chain].CurveTricryptoFactoryNG
+  }
+  if (contracts[chain].CurveTwocryptoFactoryNG) {
+    registriesMapping.CurveTwocryptoFactoryNG = contracts[chain].CurveTwocryptoFactoryNG
   }
   const poolList = {}
   await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
@@ -165,7 +171,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
   const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
   let nCoins = {}
-  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory'].includes(registry))
+  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory', 'CurveTricryptoFactoryNG', 'CurveTwocryptoFactoryNG'].includes(registry))
     nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
 
   let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
@@ -257,25 +263,17 @@ module.exports.ethereum["staking"] = staking(
 );
 
 module.exports.harmony = {
-  tvl: async (ts, ethB, chainB) => {
-    if (ts > 1655989200) {
+  tvl: async (api) => {
+    if (api.timestamp > 1655989200) {
       // harmony hack
       return {};
     }
-    const block = chainB.harmony
-    const balances = {};
-    await sumTokensSharedOwners(
-      balances,
-      [
+    return api.sumTokens({
+      owner: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023', tokens: [
         "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
         "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
-      ],
-      ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
-      block,
-      "harmony",
-      addr => `harmony:${addr}`
-    );
-    return balances;
+      ]
+    })
   }
 };
 

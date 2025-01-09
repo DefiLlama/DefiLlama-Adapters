@@ -35,4 +35,5 @@ helperReturn.era.tvl = tvlFunWrapper
 return helperReturn;
 }
 
-module.exports = {...yieldHelperWrapper(), hallmarks:[[1690589340, "Rug"]]}
+module.exports = {...yieldHelperWrapper(), hallmarks:[[1690589340, "Rug"]]},
+module.exports.deadFrom='2023-07-29'
