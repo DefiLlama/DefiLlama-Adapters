@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
-const ethers = require("ethers");
 
 const XAI = '0xd7c9f0e536dc865ae858b0c0453fe76d13c3beac'
 const blacklistedSilos = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa",];
@@ -166,7 +165,6 @@ async function getSilosV1(api) {
 }
 
 async function getSilosV2(api) {
-  const decoder = ethers.AbiCoder.defaultAbiCoder();
   const chain = api.chain;
   let logs = [];
   let siloAddresses = [];
@@ -177,17 +175,15 @@ async function getSilosV2(api) {
         api,
         target: SILO_FACTORY,
         fromBlock: START_BLOCK,
-        topic: 'NewSilo(address,address,address,address,address,address)',
+        eventAbi: 'event NewSilo(address indexed implementation, address indexed token0, address indexed token1, address silo0, address silo1, address siloConfig)',
       });
       logs = [...logs, ...logChunk];
     }
 
-    // Process unindexed values of logs to extract both silo0 and silo1 addresses
     siloAddresses = logs.flatMap((log) => {
-      const [silo0, silo1] = decoder.decode(
-        ['address', 'address', 'address'], // silo0, silo1, siloConfig
-        log.data
-      );
+
+      let silo0 = log.args[3];
+      let silo1 = log.args[4];
 
       return [silo0, silo1].filter(
         (address) => blacklistedSilos.indexOf(address.toLowerCase()) === -1
