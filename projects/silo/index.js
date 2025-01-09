@@ -68,6 +68,14 @@ const configV2 = {
       }
     ]
   },
+  arbitrum: {
+    factories: [
+      {
+        START_BLOCK: 291201890,
+        SILO_FACTORY: '0xf7dc975C96B434D436b9bF45E7a45c95F0521442', // Silo V2 Arbitrum (Main)
+      }
+    ]
+  }
 }
 
 async function tvl(api) {
@@ -193,7 +201,7 @@ async function getSilosV2(api) {
 
 
 module.exports = {
-  methodology: `We calculate TVL by interacting with Silo Factory smart contracts on Ethereum, Arbitrum, Base & Optimism. For Ethereum, it queries Silo(Main)(0xB7d391192080674281bAAB8B3083154a5f64cd0a), (Legacy)(0x4D919CEcfD4793c0D47866C8d0a02a0950737589), (Convex Factory)(0x6d4A256695586F61b77B09bc3D28333A91114d5a), and (LLAMA Edition)(0x2c0fA05281730EFd3ef71172d8992500B36b56eA). On Arbitrum, we query the Silo Arbitrum factory(0x4166487056A922D784b073d4d928a516B074b719), On Optimism, we query the Silo Optimism factory(0x6B14c4450a29Dd9562c20259eBFF67a577b540b9), On Base, we query the Silo Base factory(0x408822E4E8682413666809b0655161093cd36f2b), we query the  to obtain the addresses of Silos, retrieve the assets of each Silo, and then calculates the sum of the deposited tokens, borrowed amount are exported separately.`,
+  methodology: `We calculate TVL by interacting with Silo Factory smart contracts on Ethereum, Arbitrum, Base & Optimism. For Ethereum, it queries Silo(Main-V2)(0xa42001d6d2237d2c74108fe360403c4b796b7170), (Main-V1)(0xB7d391192080674281bAAB8B3083154a5f64cd0a), (Legacy-V1)(0x4D919CEcfD4793c0D47866C8d0a02a0950737589), (Convex Factory-V1)(0x6d4A256695586F61b77B09bc3D28333A91114d5a), and (LLAMA Edition-V1)(0x2c0fA05281730EFd3ef71172d8992500B36b56eA). On Arbitrum, we query the Silo Arbitrum factories (Main-V2)(0xf7dc975C96B434D436b9bF45E7a45c95F0521442) & (Main-V1)(0x4166487056A922D784b073d4d928a516B074b719), On Optimism, we query the Silo Optimism factory (Main-V1)(0x6B14c4450a29Dd9562c20259eBFF67a577b540b9), On Base, we query the Silo Base factory (Main-V1)(0x408822E4E8682413666809b0655161093cd36f2b), we query the  to obtain the addresses of Silos, retrieve the assets of each Silo, and then calculates the sum of the deposited tokens, borrowed amount are exported separately.`,
   ethereum: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, },
   optimism: { tvl, borrowed, },
