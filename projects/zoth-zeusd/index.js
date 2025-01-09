@@ -1,31 +1,20 @@
-const ZeUSD = '0x7DC9748DA8E762e569F9269f48F69A1a9F8Ea761'
-const ZeUSD_Metis = '0x2d3D1a6982840Dd88bC2380Fd557F8A9D5e27a77'
+const router = '0x2f52C3664Ff2b12A1A8Bc7B6020C7E92DBa781aE'
 
-const mainnet_tvl = async (api) => {
-    const supply = await api.call({ abi: 'erc20:totalSupply', target: ZeUSD })
-    api.add(ZeUSD, supply)
-}
-const manta_tvl = async (api) => {
-    const supply = await api.call({ abi: 'erc20:totalSupply', target: ZeUSD })
-    api.add(ZeUSD, supply)
+const abi = {
+	getAllSubVaults: 'function getAllSubVaults() view returns (address[] collaterals, (string integrationType, address collateralAddress, address subVaultAddress, uint256 price, uint256 ltv, bool isActive, uint256 registeredAt, uint256 lastUpdatedAt, uint8 tokenType)[] details)'
 }
 
-const metis_tvl = async (api) => {
-    const supply = await api.call({ abi: 'erc20:totalSupply', target: ZeUSD_Metis })
-    api.add(ZeUSD_Metis, supply)
-}
+const tvl = async (api) => {
+	const activeVaults = await api.call({ target: router, abi: abi.getAllSubVaults })
 
+	const tokensAndOwners = activeVaults.details.map((vault) => {
+		const { collateralAddress, subVaultAddress} = vault
+		return [collateralAddress, subVaultAddress]
+	})
+
+	return api.sumTokens({ tokensAndOwners, blacklistedTokens: ['0xfEd3D6557Dc46A1B25d0A6F666513Cb33835864B'] })
+}
 
 module.exports = {
-    timetravel: false,
-    methodology: "Sums total ZeUSD in circulation across all chains",
-    ethereum: {
-        tvl: mainnet_tvl
-    },
-    manta: {
-        tvl: manta_tvl
-    },
-    metis: {
-        tvl: metis_tvl
-    },
-};
+	ethereum: { tvl }
+}
