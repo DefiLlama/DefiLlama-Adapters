@@ -33,7 +33,6 @@ const abi = {
 
 async function tvl(api) {
   const { userManager, underlying, uToken } = config[api.chain]
-  console.log({ userManager, underlying, uToken })
   const bals = await api.batchCall([
     { target: userManager, abi: abi.totalStaked },
     { target: uToken, abi: abi.totalRedeemable },
