@@ -30,7 +30,6 @@ const chains = [
   "taiko",
   "corn",
   "sonic",
-  "ink",
 ];
 const registryIds = {
   stableswap: 0,
