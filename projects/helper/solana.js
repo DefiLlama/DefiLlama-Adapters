@@ -135,8 +135,9 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   return individual ? balancesIndividual : balances
 }
 
-async function getMultipleAccounts(accountsArray) {
-  const connection = getConnection()
+async function getMultipleAccounts(accountsArray, {api} = {}) {
+  const chain = api?.chain ?? 'solana'
+  const connection = getConnection(chain)
   if (!accountsArray.length) return []
   accountsArray.forEach((val, i) => {
     if (typeof val === 'string') accountsArray[i] = new PublicKey(val)
@@ -174,6 +175,9 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
     const tokenAccounts = []
 
     programAccounts.forEach((account) => {
+      if (DEX_PROGRAM_ID === '9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP' && account.account.space < 324) {
+        return;
+      }
       const tokenSwap = decodeAccount('tokenSwap', account.account);
       tokenAccounts.push(tokenSwap.tokenAccountA.toString())
       tokenAccounts.push(tokenSwap.tokenAccountB.toString())
@@ -219,7 +223,7 @@ async function sumTokens2({
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
   if (!tokensAndOwners.length) {
-    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
+    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), chain)
 
     if (_owners.length) {
       const data = await getOwnerAllAccounts(_owners)
@@ -248,18 +252,18 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
-    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
+    tokenAccounts = getUniqueAddresses(tokenAccounts, chain)
 
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError, chain })
     await transformBalances({ tokenBalances, balances, chain, })
   }
 
   if (solOwners.length) {
-    const solBalance = await getSolBalances(solOwners, { chain })
-    sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
+    const solBalance = await getSolBalances(solOwners)
+    sdk.util.sumSingleBalance(balances, `${chain}:` + ADDRESSES.solana.SOL, solBalance)
   }
 
-  blacklistedTokens.forEach(i => delete balances['solana:' + i])
+  blacklistedTokens.forEach(i => delete balances[`${chain}:` + i])
 
   return balances
 
@@ -405,6 +409,21 @@ async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
   return results.flat()
 }
 
+function i80f48ToNumber(i80f48) {
+  if (i80f48.value) i80f48 = i80f48.value
+  // Create a mask with the lower 48 bits set to 1
+  const mask = BigInt((1n << 48n) - 1n)
+
+  // Shift right by 48 bits to get the integer part
+  const integerPart = BigInt(i80f48) >> BigInt(48)
+
+  // Use bitwise AND to get the fractional part
+  const fractionalPart = BigInt(i80f48) & mask
+
+  // Convert to regular numbers and add together
+  return Number(integerPart) + Number(fractionalPart) / Number(1n << 48n)
+}
+
 module.exports = {
   endpoint: endpoint(),
   getMultipleAccounts,
@@ -424,4 +443,5 @@ module.exports = {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
   getAssociatedTokenAddress,
+  i80f48ToNumber,
 };

@@ -19,6 +19,6 @@ module.exports = {
   cardano: {
     tvl
   },
-  start: 1728878400,
+  start: '2024-10-14',
   methodology: "TVL is equal to all ADA, CBLP and USDM (USDM by Moneta) held in the treasury and unlent funds, collected fees and loan collateral held by the V1 script.",
 };
