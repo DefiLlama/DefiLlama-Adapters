@@ -1,0 +1,5 @@
+{
+    "totalAgents": "function totalAgents() public view returns (uint256)",
+    "allAgentTokens": "function allAgentTokens(uint256) public view returns (address)",
+    "liquidityPools": "function liquidityPools() external view returns (address[] memory liquidityPools_)"
+}
