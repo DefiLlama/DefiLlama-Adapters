@@ -181,10 +181,33 @@ const supportedChains = [
   {
     name: 'Zircuit',
     subgraphEndpoint:  'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit',
-    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'
-    },
+    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'},
     chainId: 48900,
     identifier: 'zircuit'
+  },
+  {
+    name: 'Sonic',
+    subgraphEndpoint:  'https://api.0xgraph.xyz/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-sonic/prod/gn',
+    chainId: 146,
+    identifier: 'sonic'
+  },
+  {
+    name: 'Moonbeam',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-moonbeam/prod/gn',
+    chainId: 1284,
+    identifier: 'moonbeam'
+  },
+  // {
+  //   name: 'Sei',
+  //   subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clu1fg6ajhsho01x7ajld3f5a/subgraphs/dragonswap-v3-prod/1.0.5/gn',
+  //   chainId: 1, // null?
+  //   identifier: 'sei' // sei-network
+  // },
+  {
+    name: 'Taiko',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-taiko/1.1.1/gn',
+    chainId: 167000,
+    identifier: 'taiko'
   },
 ]
 

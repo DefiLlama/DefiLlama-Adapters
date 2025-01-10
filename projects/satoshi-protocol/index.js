@@ -1,6 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getLogs } = require("../helper/cache/getLogs");
 const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint256 feeIn,uint256 feeOut,uint256 debtTokenMintCap,uint256 dailyMintCap,address oracle,bool isUsingOracle,uint256 swapWaitingPeriod,uint256 maxPrice,uint256 minPrice)";
+const VaultTokenStrategySetEventABI = "event TokenStrategySet(address token, address strategy)";
 
 
 function createExports({
@@ -8,6 +9,7 @@ function createExports({
   nymInformation, // { address, fromBlock }
   aaveStrategyVaults, // { address, asset, aToken }[]
   pellStrategyVaults, // { address, asset }[]
+  pellStrategyVaultsV2, // { address, fromBlock }[]
 }) {
   return {
     tvl: async (api) => {
@@ -46,6 +48,17 @@ function createExports({
         const calls2 = strategies.map((v, i) => ({ target: v, params: vaults[i] }))
         const bals = await api.multiCall({ abi: "function userUnderlyingView(address) external view returns (uint256)", calls: calls2 })
         api.add(tokens, bals)
+      }
+
+      if (pellStrategyVaultsV2) {
+        for(let i = 0; i < pellStrategyVaultsV2.length; i++) {
+          const { address: vaultAddress, fromBlock } = pellStrategyVaultsV2[i];
+          const logs = await getLogs({ api, target: vaultAddress, fromBlock, eventAbi: VaultTokenStrategySetEventABI, onlyArgs: true });
+          const assets = logs.map(item => item.token);
+          const calls = assets.map((asset) => ({ target: vaultAddress, params: asset }))
+          const assetAmounts = await api.multiCall({ abi: "function getPosition(address) external view returns (uint256)", calls: calls })
+          api.add(assets, assetAmounts)
+        }
       }
 
       return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
@@ -114,5 +127,11 @@ module.exports = {
       '0xa79241206c3008bE4EB4B62A48A4F98303060D4f', // BSquare WBTC Collateral
       '0xc6F361db5eC432E95D0A08A9Fbe0d7412971cE6c', // BSquare uBTC Collateral
     ],
+    pellStrategyVaultsV2: [
+      {
+        address: '0x1F745AEC91A7349E4F846Ae1D94915ec4f6cF053',
+        fromBlock: 11581100,
+      }
+    ]
   }),
 }
