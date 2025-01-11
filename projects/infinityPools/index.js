@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk');
 const { getLogs } = require('../helper/cache/getLogs');
 
 const INFINITYPOOLS_FACTORY = "0x86342D7bBe93cB640A6c57d4781f04d93a695f08";
+const INFINITYPOOLS_PERIPHERY_VAULT = "0xF8FAD01B2902fF57460552C920233682c7c011a7"
 
 const startBlocks = {
     base: 24888600
@@ -59,6 +60,16 @@ function chainTvl(chain) {
             balanceCalls.push({
                 target: pools[pool].token1Address,
                 params: pool,
+            });
+            
+            //add balance of vault in the TVL as well. This represent the vault deposits that users want to use as margin
+            balanceCalls.push({
+                target: pools[pool].token0Address,
+                params: INFINITYPOOLS_PERIPHERY_VAULT,
+            });
+            balanceCalls.push({
+                target: pools[pool].token1Address,
+                params: INFINITYPOOLS_PERIPHERY_VAULT,
             });
         }
 
