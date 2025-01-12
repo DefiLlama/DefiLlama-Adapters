@@ -9,6 +9,7 @@ const config = {
   xlayer: '0x2ccadb1e437aa9cdc741574bda154686b1f04c09',
   bob: '0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09',
   ink: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
+  sonic: '0xd8863d794520285185197F97215c8B8AD04E8815',
 }
 
 module.exports = {

@@ -1,4 +1,3 @@
-const { decimals } = require('@defillama/sdk/build/erc20')
 let coreAssets = require('./coreAssets.json')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
@@ -19,11 +18,12 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
-  'kopi', 'elys', "pryzm"
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
+  'celestia', 'dydx', 'carbon'
 
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
-  'eclipse',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
 const transformTokens = {
@@ -49,6 +49,21 @@ const fixBalancesTokens = {
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
+  },
+  water: {   
+    '0xC807C5FfFf748eF435Ddb99b181846Edd1e70041': { coingeckoId: "water-3", decimals: 18 },
+  },
+  bittorrent: {   
+    [ADDRESSES.null]: { coingeckoId: "bittorrent", decimals: 18 },
+  },
+  dymension: {   
+    [ADDRESSES.null]: { coingeckoId: "dymension", decimals: 18 },
+  },
+  energyweb: {   
+    [ADDRESSES.null]: { coingeckoId: "energy-web-token", decimals: 18 },
+  },
+  etn: {   
+    [ADDRESSES.null]: { coingeckoId: "electroneum", decimals: 18 },
   },
   kopi: {
     'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
@@ -89,6 +104,27 @@ const fixBalancesTokens = {
   crossfi: {
     [ADDRESSES.null]: { coingeckoId: 'crossfi-2', decimals: 18 },
     [ADDRESSES.crossfi.WXFI]: { coingeckoId: 'crossfi-2', decimals: 18 },
+  },
+  mantra: {
+    uom: { coingeckoId: 'mantra-dao', decimals: 6 },
+  },
+  verus: {
+    'i5w5MuNik5NtLcYmNzcvaoixooEebB6MGV': { coingeckoId: 'verus-coin', decimals: 0 },
+    'iGBs4DWztRNvNEJBt4mqHszLxfKTNHTkhM': { coingeckoId: 'dai', decimals: 0 },
+    'iCkKJuJScy4Z6NSDK7Mt42ZAB2NEnAE1o4': { coingeckoId: 'maker', decimals: 0 },
+    'i9nwxtKuVYX4MSbeULLiK2ttVi6rUEhh4X': { coingeckoId: 'ethereum', decimals: 0 },
+    'iS8TfRPfVpKo5FVfSUzfHBQxo9KuzpnqLU': { coingeckoId: 'tbtc', decimals: 0 },
+    'i9oCSqKALwJtcv49xUKS2U2i79h1kX6NEY': { coingeckoId: 'tether', decimals: 0 },
+  },
+  unit0: {
+    '0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0xb303d80db8415FD1d3C9FED68A52EEAc9a052671': { coingeckoId: 'tether', decimals: 6 },
+    '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E71248B': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x9CE808657ba90C65a2700b1cA5D943eC72834B52': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+  },
+  starknet: {
+    '0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6': { coingeckoId: 'spiko-us-t-bills-money-market-fund', decimals: 5 },
+    '0x4f5e0de717daa6aa8de63b1bf2e8d7823ec5b21a88461b1519d9dbc956fb7f2': { coingeckoId: 'eutbl', decimals: 5 },
   }
 }
 
