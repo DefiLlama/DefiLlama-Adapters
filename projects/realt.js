@@ -4,7 +4,7 @@ const { get } = require('./helper/http')
 // Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
 // See https://api.realt.community/ for reference
 async function xdaiTvl(api) {
-  let realt_tokens = await get('https://api.realt.community/v1/token')
+  let realt_tokens = await get('https://api.realtoken.community/v1/token')
 
   // Filter out deprecated contracts
   realt_tokens = realt_tokens.filter(t => !t['fullName'].startsWith('OLD-')).filter(t => t.xDaiContract && +t.tokenPrice)
