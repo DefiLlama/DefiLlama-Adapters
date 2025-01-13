@@ -36,7 +36,7 @@ For a hybrid approach using both onchain and indexer data, you may refer to the 
 
 ## Caveat
 
-Since all adapter are run in AWS Lambdas, it is essential to make sure your adapter does not take more than 15min to return the result as it's the hard limit set by AWS.
+Since all adapters are run in AWS Lambdas, it is essential to make sure your adapter does not take more than 15min to return the result as it's the hard limit set by AWS.
 
 ## Test an adapter
 
