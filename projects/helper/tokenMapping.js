@@ -122,6 +122,10 @@ const fixBalancesTokens = {
     '0x1B100DE3F13E3f8Bb2f66FE58c1949c32E71248B': { coingeckoId: 'ethereum', decimals: 18 },
     '0x9CE808657ba90C65a2700b1cA5D943eC72834B52': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
+  starknet: {
+    '0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6': { coingeckoId: 'spiko-us-t-bills-money-market-fund', decimals: 5 },
+    '0x4f5e0de717daa6aa8de63b1bf2e8d7823ec5b21a88461b1519d9dbc956fb7f2': { coingeckoId: 'eutbl', decimals: 5 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
