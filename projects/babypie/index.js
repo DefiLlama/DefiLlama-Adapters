@@ -1,31 +1,10 @@
-const { PollingWatchKind } = require("typescript");
-const config = require("./config");
-const sdk = require('@defillama/sdk')
-
-
-
-
-async function tvl(api) {
-  const { mbtc } = config[api.chain];
-
-  
-   tokenSupply = await api.call({ abi: 'uint256:totalSupply', target: mbtc });
-
-
-  api.add(mbtc, tokenSupply);
-}
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/sumTokens.js');
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
-  arbitrum: {
-    tvl: tvl,
+  bitcoin: {
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.magpie }),
   },
-  ethereum: {
-    tvl: tvl,
-  },
-  bsc: {
-    tvl: tvl,
-  },
-  
-};
-
-module.exports.doublecounted = true;
+  ethereum: { tvl: sumTokensExport({ owners: ['0xE813FFA7932f2D182F0ae89254acFD0bAa6E2Df3'], tokens: [ADDRESSES.ethereum.WBTC] }) },
+}

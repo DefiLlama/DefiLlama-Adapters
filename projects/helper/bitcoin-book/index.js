@@ -109,8 +109,13 @@ const stacksSBTC = [
   'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
 ]
 
+const magpie = [
+  '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
+]
+
 module.exports = {
   ...fetchers,
+  magpie,
   stacksSBTC,
   bitomato,
   bitlayerBridge,
