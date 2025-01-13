@@ -20,18 +20,23 @@ const vaultTvlOnArbitrum = sumERC4626VaultsExport({
     "0x195a9e0f29f96d4ab2139ee1272380a4aa352890",
     '0x75288264FDFEA8ce68e6D852696aB1cE2f3E5004',
     '0xaB2743a3A2e06d457368E901F5f927F271fa1374',
-    '0x91aCd32dA9beA6DA3751dc12Ee0fBe47169349C1'
+    '0x91aCd32dA9beA6DA3751dc12Ee0fBe47169349C1',
+    '0xc027EC28F76d92D4124fCbffCF6b25137a84968C',
+    '0x999a57ae7694298126a5db2E44F778CA486b14FC',
+    '0xaC75f0c46723432a2303f2a7c7769535A179Ed56',
+    '0x907A9f69061736AD82811CccD6ADD9dC4A2352A9',
+    '0x1176c3760Af6a1dbAa5BBd0Cc6cdA8A2Ed6B785E'
   ],
   isOG4626: true,
 });
 
-const vaultTvlOnAvalanche = sumERC4626VaultsExport({
-  vaults: ["0x17Fd8C3d1e0379Cf6B1Dace21750E624EB9573C2"],
+const vaultTvlOnBase = sumERC4626VaultsExport({
+  vaults: ['0x6c05A7d2c24B48fC3C615D294fEc2eB068548897'],
   isOG4626: true,
 })
 
-const vaultTvlOnBase = sumERC4626VaultsExport({
-  vaults: ['0x6c05A7d2c24B48fC3C615D294fEc2eB068548897'],
+const vaultTvlOnEthereum = sumERC4626VaultsExport({
+  vaults: ['0x07Dff4087b43c4A759f4Fc69511c26d51929dAF4'],
   isOG4626: true,
 })
 
@@ -39,10 +44,10 @@ module.exports = {
   arbitrum: {
     tvl: vaultTvlOnArbitrum,
   },
-  avax: {
-    tvl: vaultTvlOnAvalanche,
-  },
   base: {
     tvl: vaultTvlOnBase,
-  }
+  },
+  ethereum: {
+    tvl: vaultTvlOnEthereum,
+  },
 };
