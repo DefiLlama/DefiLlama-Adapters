@@ -7,7 +7,7 @@ Also, don't hesitate to send a message on [our discord](https://discord.defillam
 > If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters)
 > - If you would like to add a `liquidations` adapter, please refer to [this readme document](https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/liquidations) for details.
 
-1. PLEASE PLEASE **enable "Allow edits by maintainers" while putting up the PR.**
+1. PLEASE **enable "Allow edits by maintainers" while putting up the PR.**
 2. Once your adapter has been merged, it takes time to show on the UI. No need to notify us on Discord.
 3. TVL must be computed from blockchain data (reason: https://github.com/DefiLlama/DefiLlama-Adapters/discussions/432), if you have trouble with creating a the adapter, please hop onto our discord, we are happy to assist you.
 4. **For updating listing info** It is a different repo, you can find your listing in this file: https://github.com/DefiLlama/defillama-server/blob/master/defi/src/protocols/data2.ts, you can  edit it there and put up a PR
