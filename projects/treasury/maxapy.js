@@ -1,5 +1,3 @@
-const sdk = require('@defillama/sdk')
-
 const TREASURY = {
   ethereum: "0x5000Ba796Fd84a0f929AF80Cfe27301f0358F268",
   polygon: "0x91044419869d0921D682a50B41156503A4E484F6"
@@ -15,86 +13,17 @@ const VAULTS = {
   }
 }
 
+const tvl = async (api) => {
+  const vaults = Object.values(VAULTS[api.chain])
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map(vault => ({ target: vault, params: TREASURY[api.chain] })) })
+  const bals = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: vaults.map((vault, i) => ({ target: vault, params: balances[i] })) })
+  api.add(tokens, bals)
+}
+
 module.exports = {
   methodology: "Counts assets held by treasury in ERC4626 vault tokens",
   start: 1729675931,
-  ethereum: {
-    tvl: async (api) => {
-      const vault = VAULTS.ethereum.maxETH
-      const treasury = TREASURY.ethereum
-
-      const vaultBalance = await api.call({
-        target: vault,
-        abi: 'erc20:balanceOf',
-        params: [treasury]
-      })
-
-      if (vaultBalance > 0) {
-        const asset = await api.call({
-          target: vault,
-          abi: 'function asset() view returns (address)'
-        })
-
-        const underlyingAmount = await api.call({
-          target: vault,
-          abi: 'function convertToAssets(uint256) view returns (uint256)',
-          params: [vaultBalance]
-        })
-
-        const decimals = await api.call({
-          target: vault,
-          abi: 'erc20:decimals'
-        })
-
-        api.add(asset, underlyingAmount)
-        
-        api.log('Ethereum Treasury maxETH vault:', {
-          vaultTokens: vaultBalance.toString(),
-          underlyingTokens: underlyingAmount.toString(),
-          decimals: decimals.toString(),
-          asset
-        })
-      }
-    }
-  },
-  polygon: {
-    tvl: async (api) => {
-      for (const [vaultName, vault] of Object.entries(VAULTS.polygon)) {
-        const treasury = TREASURY.polygon
-
-        const vaultBalance = await api.call({
-          target: vault,
-          abi: 'erc20:balanceOf',
-          params: [treasury]
-        })
-
-        if (vaultBalance > 0) {
-          const asset = await api.call({
-            target: vault,
-            abi: 'function asset() view returns (address)'
-          })
-
-          const underlyingAmount = await api.call({
-            target: vault,
-            abi: 'function convertToAssets(uint256) view returns (uint256)',
-            params: [vaultBalance]
-          })
-
-          const decimals = await api.call({
-            target: vault,
-            abi: 'erc20:decimals'
-          })
-
-          api.add(asset, underlyingAmount)
-          
-          api.log(`Polygon Treasury ${vaultName} vault:`, {
-            vaultTokens: vaultBalance.toString(),
-            underlyingTokens: underlyingAmount.toString(),
-            decimals: decimals.toString(),
-            asset
-          })
-        }
-      }
-    }
-  }
+  ethereum: { tvl },
+  polygon: { tvl },
 }
