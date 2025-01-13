@@ -11,7 +11,7 @@ const accountsQuery = gql`
     # subgraph bug - balances_: {amount_not: "0"} filter doesn't work
     accounts(first: $pageSize, where: { id_gt: $lastId }) {
       id
-      # if account_id != topLevelAccount_id then it's a sub-account, needs to be remapped for "owner" in the end
+      # if account_id != topLevelAccount_id then it's a subaccount, needs to be remapped for "owner" in the end
       topLevelAccount {
         id
       }
