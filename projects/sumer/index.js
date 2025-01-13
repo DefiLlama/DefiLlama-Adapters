@@ -7,4 +7,6 @@ module.exports = {
   ethereum: compoundExports2({ comptroller: '0x60A4570bE892fb41280eDFE9DB75e1a62C70456F' }),
   zklink: compoundExports2({ comptroller: '0xe6099D924efEf37845867D45E3362731EaF8A98D' }),
   bsquared: compoundExports2({ comptroller: '0xdD9C863197df28f47721107f94eb031b548B5e48' }),
+  core: compoundExports2({ comptroller: '0x7f5a7aE2688A7ba6a9B36141335044c058a08b3E' }),
+  bsc: compoundExports2({ comptroller: '0x15B5220024c3242F7D61177D6ff715cfac4909eD' }),
 }
