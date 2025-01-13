@@ -1,10 +1,18 @@
+
+var ethers = require("ethers");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs")
 
+// Prelaunch
 const LOOP_PRELAUNCH = "0xaBEEcB1d3414550B30694bB37ac24CAaD0b82aE9"
 const LOOP_PRELAUNCH_SCROLL = "0x640befeAd1A7ce841ef878058A7003EC260ebAE8"
 const LOOP_PRELAUNCH_BTC = "0x497Fb40D610C29E66d06F3B18Cd9966053abB49A"
 const LOOP_PRELAUNCH_YNETH = "0xa67C60AE18BE09F074a6c733a1cc06B63Ae53589"
+
+// Loop tokens
+const lpETH = "0xa684EAf215ad323452e2B2bF6F817d4aa5C116ab"
+const lpBNB = "0xED166436559Fd3d7f44cb00CACDA96EB999D789e"
+
 
 const tokens = {
   WETH: ADDRESSES.ethereum.WETH,
@@ -33,14 +41,86 @@ const tokensYieldnest = {
   ynETH: '0x09db87A538BD693E9d08544577d5cCfAA6373A48'
 }
 
+const spectraVault = "0x9BfCD3788f923186705259ae70A1192F601BeB47"
+const spectraLPToken = "0x2408569177553A427dd6956E1717f2fBE1a96F1D"
+
+
+async function tvlEthereum(_timestamp,_block,_,{api}){
+    const block = await api.getBlock();
+    const lpETHTotalSupply  = await api.call({
+        abi: "function totalSupply() view returns (uint256)",
+        target: lpETH,
+        params: [],
+        block
+    })
+    const totalBorrowed  = await api.call({
+        abi: "function totalBorrowed() view returns (uint256)",
+        target: lpETH,
+        params: [],
+        block
+    })
+
+    const spotPrice =  await api.call({
+        abi: "function spotPrice() view returns (uint256)",
+        target: spectraVault,
+        params: [],
+        block
+    })
+    const vaultTVL = await api.call({
+        abi: "function balanceOf(address user) view returns (uint256)",
+        target: spectraLPToken,
+        params: [spectraVault],
+        block
+    })
+
+    // Chainlink WETH price feed
+    const wethPrice = await api.call({
+      abi: "function latestAnswer() view returns (uint256)",
+      target: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+      params: [], block
+    })
+
+    // This is the total collateral value locked
+    api.addToken(spectraLPToken, vaultTVL)
+
+    // Since there is no price feed for Spectra LP token we use the internal price feed + chainlink
+    const spectraLPTokenUSD = parseFloat(ethers.formatEther(vaultTVL)) * parseFloat(ethers.formatEther(spotPrice)) * parseFloat(ethers.formatUnits(wethPrice, 8));
+    
+
+    // lpETH value is backed 1:1 with WETH, so we count it as WETH
+    await api.add(tokens.WETH, lpETHTotalSupply - totalBorrowed)
+    await sumTokensExport({
+        ownerTokens: [[Object.values(tokens), LOOP_PRELAUNCH], [Object.values(tokensBtc), LOOP_PRELAUNCH_BTC], [Object.values(tokensYieldnest), LOOP_PRELAUNCH_YNETH]],
+      })(api)
+
+    const balances = await api.getBalances()
+
+    return { ...balances,
+      usd: spectraLPTokenUSD
+    }
+}
+
+async function tvlBnb(_timestamp,_block,_,{api}){
+    const block = await api.getBlock();
+    const lpBNBTotalSupply  = await api.call({
+        abi: "function totalSupply() view returns (uint256)",
+        target: lpBNB,
+        params: [],
+        block
+    })
+    await api.add(ADDRESSES.bsc.WBNB, lpBNBTotalSupply)
+
+}
+
 module.exports = {
   methodology:
-    "Counts the number of WETH, WBTC and LRT tokens in the LoopFi Prelaunch Contracts in Ethereum and Scroll networks.",
-  start: '2024-06-14',
+    "Counts the number of deposited tokens in the Prelaunch Contracts and the tokens provided as collateral in the Loop Protocol",
+  start: 1718390875,
   ethereum: {
-    tvl: sumTokensExport({
-      ownerTokens: [[Object.values(tokens), LOOP_PRELAUNCH], [Object.values(tokensBtc), LOOP_PRELAUNCH_BTC], [Object.values(tokensYieldnest), LOOP_PRELAUNCH_YNETH]],
-    })
+    tvl: tvlEthereum
+  },
+  bsc: {
+    tvl: tvlBnb
   },
   scroll: {
     tvl: sumTokensExport({
