@@ -28,7 +28,7 @@ interface Liq {
 
 ## Examples and references
 
-You may refer to the Aave V2 and Angle Protocol adapter for examples of how multi-chain protocols are handled.
+You may refer to the Aave V2 and Angle Protocol adapter for examples of how multichain protocols are handled.
 
 For a complete onchain (non-subgraph) adapter, you may refer to the MakerDAO adapter.
 
