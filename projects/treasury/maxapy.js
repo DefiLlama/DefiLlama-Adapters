@@ -15,10 +15,7 @@ const VAULTS = {
 
 const tvl = async (api) => {
   const vaults = Object.values(VAULTS[api.chain])
-  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: vaults.map(vault => ({ target: vault, params: TREASURY[api.chain] })) })
-  const bals = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: vaults.map((vault, i) => ({ target: vault, params: balances[i] })) })
-  api.add(tokens, bals)
+  return api.sumTokens({ owner: TREASURY[api.chain], tokens: vaults })
 }
 
 module.exports = {
