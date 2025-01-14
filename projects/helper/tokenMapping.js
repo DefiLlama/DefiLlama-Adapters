@@ -61,6 +61,7 @@ const fixBalancesTokens = {
     [ADDRESSES.base.WETH]: { coingeckoId: 'ethereum', decimals: 18 },
     "0xb5668713E9BA8bC96f97D691663E70b54CE90b0A": { "coingeckoId": "wrapped-bitcoin-universal", "decimals": 18 },
     "0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3": { "coingeckoId": "lorenzo-stbtc", "decimals": 18 },
+    "0xFA3198ecF05303a6d96E57a45E6c815055D255b1": { "coingeckoId": "universal-btc", "decimals": 18 },
     "0x2826D136F5630adA89C1678b64A61620Aab77Aea": { "coingeckoId": "swell-network", "decimals": 18 },
     "0x1cf7b5f266A0F39d6f9408B90340E3E71dF8BF7B": { "coingeckoId": "swell-restaked-btc", "decimals": 8 },
     "0xb89c6ED617f5F46175E41551350725A09110bbCE": { "coingeckoId": "tether", "decimals": 6 },
