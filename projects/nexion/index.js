@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const farmAbi = require("./farm-Abi.json");
-
+const { sumTokensExport } = require("../helper/unknownTokens.js");
 
 let contracts = {
   NEONStaking: "0x00149EF1A0a41083bC3996d026a7c0f32fc5cb73",
@@ -50,6 +50,7 @@ async function staking(api) {
   sdk.util.sumSingleBalance(balances, contracts.NEONFarm, plsin2);
   return balances;
 }
+const lps = ["0xE56043671df55dE5CDf8459710433C10324DE0aE"]
 
 module.exports = {
   methodology: `FARM: return total assets of farm and buyNburn
@@ -57,5 +58,7 @@ module.exports = {
   pulse: {
     staking,
     tvl,
+    pool2: sumTokensExport({ owners: [contracts.NEONFarm,contracts.OLDNEONFarm], tokens: lps, useDefaultCoreAssets: true, }),
+
   },
 };
