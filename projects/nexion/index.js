@@ -19,28 +19,34 @@ let contracts = {
 };
 
 const COLLATERALS = {
-  pulse: {
+
     DAI: ADDRESSES.pulse.DAI,
     // PLS: nullAddress,
     WPLS: ADDRESSES.pulse.WPLS,
-    // DAIPLS_LP:"0xE56043671df55dE5CDf8459710433C10324DE0aE"
-  },
+    DAIPLS_LP:"0xE56043671df55dE5CDf8459710433C10324DE0aE"
+
 };
 
-async function tvl(api) {
-  return sumTokens2({
-    api,
-    owner: [contracts.NEONBuynBurn,contracts.NEONFarm,contracts.OLDNEONFarm],
-    tokens: Object.values(COLLATERALS[api.chain]),
-  });
-}
+// async function tvl(api) {
+//   return sumTokens2({
+//     api,
+//     owner: [contracts.NEONBuynBurn,contracts.NEONFarm,contracts.OLDNEONFarm],
+//     tokens: Object.values(COLLATERALS[api.chain]),
+//   });
+// }
 
 
-const lps = ["0xE56043671df55dE5CDf8459710433C10324DE0aE"]
+// const lps = ["0xE56043671df55dE5CDf8459710433C10324DE0aE"]
 
 module.exports = {
-  methodology: `FARM: return total assets of farms and buyNburn`,
+  methodology: `BuynBurn holds PLS from user deposits. Farms hold PLS-DAI LP from user deposits`,
   pulse: {
-    tvl
+    tvl :sumTokensExport({ owner: [contracts.NEONBuynBurn],tokens: [nullAddress]}),
+     staking: sumTokensExport({
+            owners:[contracts.NEONFarm,contracts.OLDNEONFarm],
+            tokens: [COLLATERALS.DAI, COLLATERALS.WPLS],
+            useDefaultCoreAssets: true,
+            lps: [COLLATERALS.DAIPLS_LP],
+          }),
   },
 };
