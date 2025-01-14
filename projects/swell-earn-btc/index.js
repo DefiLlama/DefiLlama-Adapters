@@ -19,16 +19,29 @@ const tokens = [
   ...ethTokens,
 ]
 
+const swellchainTokens = [
+  '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3', // stBTC
+  '0xFA3198ecF05303a6d96E57a45E6c815055D255b1', // uBTC
+]
 
-const tvl = async (api) => {
+
+const ethTvl = async (api) => {
   return sumTokens2({
     api,
     owner: earnBTCVault, tokens,
   })
 }
 
+const swellchainTvl = async (api) => {
+  return sumTokens2({
+    api,
+    owner: earnBTCVault,
+    tokens: swellchainTokens
+  })
+}
 module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault on Ethereum and Swellchain',
   doublecounted: true,
-  ethereum: { tvl }
+  ethereum: { tvl: ethTvl },
+  swellchain: { tvl: swellchainTvl }
 }
