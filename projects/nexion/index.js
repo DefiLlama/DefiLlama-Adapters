@@ -23,7 +23,7 @@ const COLLATERALS = {
     DAI: ADDRESSES.pulse.DAI,
     // PLS: nullAddress,
     WPLS: ADDRESSES.pulse.WPLS,
-    DAIPLS_LP:"0xE56043671df55dE5CDf8459710433C10324DE0aE"
+    // DAIPLS_LP:"0xE56043671df55dE5CDf8459710433C10324DE0aE"
 
 };
 
@@ -41,10 +41,10 @@ const COLLATERALS = {
 module.exports = {
   methodology: `BuynBurn holds PLS from user deposits. Farms hold PLS-DAI LP from user deposits`,
   pulse: {
-    tvl :sumTokensExport({ owners: [contracts.NEONBuynBurn,contracts.NEONFarm,contracts.OLDNEONFarm],
+    tvl :sumTokensExport({ owners: [contracts.NEONBuynBurn],
       tokens: [COLLATERALS.DAI, COLLATERALS.WPLS,nullAddress],
-      useDefaultCoreAssets: true,
-      lps: [COLLATERALS.DAIPLS_LP]})
+      useDefaultCoreAssets: true})
+ 
     
   },
 };
