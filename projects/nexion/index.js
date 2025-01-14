@@ -41,12 +41,13 @@ const COLLATERALS = {
 module.exports = {
   methodology: `BuynBurn holds PLS from user deposits. Farms hold PLS-DAI LP from user deposits`,
   pulse: {
-    tvl :sumTokensExport({ owner: [contracts.NEONBuynBurn],tokens: [nullAddress]}),
-     staking: sumTokensExport({
-            owners:[contracts.NEONFarm,contracts.OLDNEONFarm],
-            tokens: [COLLATERALS.DAI, COLLATERALS.WPLS],
-            useDefaultCoreAssets: true,
-            lps: [COLLATERALS.DAIPLS_LP],
-          }),
+    tvl :sumTokensExport({ owner: [contracts.NEONBuynBurn,contracts.NEONFarm,contracts.OLDNEONFarm],tokens: [COLLATERALS.DAI, COLLATERALS.WPLS,nullAddress],    useDefaultCoreAssets: true,
+      lps: [COLLATERALS.DAIPLS_LP]}),
+    //  staking: sumTokensExport({
+    //         owners:[contracts.NEONFarm,contracts.OLDNEONFarm],
+    //         tokens: [COLLATERALS.DAI, COLLATERALS.WPLS],
+    //         useDefaultCoreAssets: true,
+    //         lps: [COLLATERALS.DAIPLS_LP],
+    //       }),
   },
 };
