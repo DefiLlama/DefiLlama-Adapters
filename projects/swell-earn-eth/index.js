@@ -39,6 +39,7 @@ const vaultTokens = [
 const swellchainTokens = [
   '0x18d33689AE5d02649a859A1CF16c9f0563975258', // rswETH
   '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7', // swETH
+  '0xC3d33a0Ea1582410075567c589af895fcaF1127c', // tempest weeth/eth
 ]
 
 const tokens = [
