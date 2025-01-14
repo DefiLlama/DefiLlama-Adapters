@@ -4,7 +4,7 @@ const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const farmAbi = require("./farm-Abi.json");
 
 
-contracts = {
+let contracts = {
   NEONStaking: "0x00149EF1A0a41083bC3996d026a7c0f32fc5cb73",
   NEON: "0xF2Da3942616880E52e841E5C504B5A9Fba23FFF0",
   gg: "0x8a9eAa66561B87645B14998aDc8aE0472C8B3AD4",
@@ -41,8 +41,13 @@ async function staking(api) {
     target: contracts.NEONFarm,
     abi: farmAbi.valueofthis,
   });
+  const plsin2 = await api.call({
+    target: contracts.OLDNEONFarm,
+    abi: farmAbi.valueofthis,
+  });
 
   sdk.util.sumSingleBalance(balances, contracts.NEONFarm, plsin);
+  sdk.util.sumSingleBalance(balances, contracts.NEONFarm, plsin2);
   return balances;
 }
 
