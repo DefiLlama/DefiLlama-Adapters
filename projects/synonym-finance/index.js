@@ -35,7 +35,8 @@ chains.forEach(chain => {
 
 async function getTokenInfos(api, requestedChain) {
   const registry = await api.call({ abi: 'address:getAssetRegistry', target: hub })
-  const tokenBridge = await api.call({ abi: 'address:tokenBridge', target: hub })
+  const wormholeTunnel = await api.call({ abi: 'address:getWormholeTunnel', target: hub })
+  const tokenBridge = await api.call({ abi: 'address:tokenBridge', target: wormholeTunnel })
   const assets = await api.call({ abi: 'address[]:getRegisteredAssets', target: registry })
   const isBridged = await api.multiCall({ abi: 'function isWrappedAsset(address) view returns (bool)', calls: assets, target: tokenBridge })
   const arbiAssets = []
