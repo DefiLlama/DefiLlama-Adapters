@@ -36,6 +36,11 @@ const vaultTokens = [
   "0x78Fc2c2eD1A4cDb5402365934aE5648aDAd094d0", // Re7 WETH
 ]
 
+const swellchainTokens = [
+  '0x18d33689AE5d02649a859A1CF16c9f0563975258', // rswETH
+  '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7', // swETH
+]
+
 const tokens = [
   ...ethTokens,
   ...pendleLPTokens,
@@ -43,7 +48,7 @@ const tokens = [
 ]
 
 
-const tvl = async (api) => {
+const ethTvl = async (api) => {
   return sumTokens2({
     api,
     owner: earnETHVault, tokens,
@@ -52,8 +57,16 @@ const tvl = async (api) => {
   })
 }
 
+const swellchainTvl = async (api) => {
+  return sumTokens2({
+    api,
+    owner: earnETHVault, swellchainTokens
+  })
+}
+
 module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault + LP positions',
   doublecounted: true,
-  ethereum: { tvl }
+  ethereum: { ethTvl },
+  swellchain: { swellchainTvl }
 }
