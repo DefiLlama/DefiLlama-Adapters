@@ -22,11 +22,11 @@ const getTvl = async (api, isStaking) => {
   const stakingPools = await api.multiCall({ abi: abi.lpStakingPool, calls: indexes, });
 
   //get assets this index consists of
-  const assetsResult = await api.multiCall({ abi: abi.getAllAssets, calls: indexes, });
+  const assetsResult = await api.multiCall({ abi: abi.getAllAssets, calls: indexes, permitFailure: true });
   const stakingTokens = await api.multiCall({ abi: abi.stakingToken, calls: stakingPools, });
 
   const ownerTokens = [
-    ...assetsResult.map((assets, i) => [assets.map(asset => asset.token), indexes[i]]),
+    ...assetsResult.filter(assets => assets).map((assets, i) => [assets.map(asset => asset.token), indexes[i]]),
     ...stakingTokens.map((stakingToken, i) => [[stakingToken], stakingPools[i]])
   ];
 
