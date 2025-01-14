@@ -7,26 +7,23 @@ const abi = {
 }
 
 const config = {
-  base: {
-    rebalancer: '0x6A0b87D6b74F7D5C92722F6a11714DBeDa9F3895',
-    bookManager: '0x382CCccbD3b142D7DA063bF68cd0c89634767F76',
-    fromBlock: 21715410,
-  },
+  rebalancer: '0x6A0b87D6b74F7D5C92722F6a11714DBeDa9F3895',
+  bookManager: '0x382CCccbD3b142D7DA063bF68cd0c89634767F76',
+  blacklistedTokens: ['0x000000000000bb1b11e5ac8099e92e366b64c133'],
+  fromBlock: 21715410
 }
 
 async function tvl(api) {
-  const { rebalancer, bookManager, fromBlock } = config[api.chain]
+  const { rebalancer, bookManager, fromBlock, blacklistedTokens } = config
   const logs = await getLogs2({ api, factory: rebalancer, eventAbi: abi.openEvent, fromBlock, extraKey: 'open-bookid' })
   const bookIds = logs.map(i => [i.bookIdA, i.bookIdB]).flat()
   const res = await api.multiCall({ abi: abi.getBookKey, calls: bookIds, target: bookManager })
   const tokens = res.map(i => [i.base, i.quote]).flat()
-  return api.sumTokens({ owners: [rebalancer,], tokens })
+  return api.sumTokens({ owners: [rebalancer], tokens, blacklistedTokens })
 }
 
 module.exports = {
+  hallmarks: [[1733788800, 'The Clober Liquidity Vault has been hacked']],
   methodology: "TVL includes all assets deposited into the Clober Liquidity Vault contract, specifically allocated for liquidity provision and market-making within the Clober ecosystem",
-};
-
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
-})
+  base: { tvl }
+}
