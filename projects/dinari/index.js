@@ -13,6 +13,9 @@ const config = {
   kinto: {
     factory: "0xE4Daa69e99F48AD0C4D4843deF4447253248A906",
     usdplus: "0x6F086dB0f6A621a915bC90295175065c9e5d9b8c"
+  },
+  plume: {
+    factory: "0x84ad0De589B0075E057123c800959f10C29869D8"
   }
 }
 
