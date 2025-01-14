@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
@@ -36,7 +37,7 @@ const vaultTokens = [
   "0x78Fc2c2eD1A4cDb5402365934aE5648aDAd094d0", // Re7 WETH
 ]
 
-const swellchainTokens = [
+const swellTokens = [
   '0x18d33689AE5d02649a859A1CF16c9f0563975258', // rswETH
   '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7', // swETH
   '0xC3d33a0Ea1582410075567c589af895fcaF1127c', // tempest weeth/eth
@@ -54,21 +55,50 @@ const ethTvl = async (api) => {
     api,
     owner: earnETHVault, tokens,
     uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, earnETHVault]],
-    uniV3ExtraConfig: { nftIdFetcher: pancakeswapMasterChef }
+    uniV3ExtraConfig: { nftIdFetcher: pancakeswapMasterChef },
+    fetchCoValentTokens: true
   })
 }
 
-const swellchainTvl = async (api) => {
+const swellTvl = async (api) => {
   return sumTokens2({
     api,
     owner: earnETHVault,
-    tokens: swellchainTokens
+    tokens: swellTokens
   })
+}
+
+const earnBTCVault = '0x66E47E6957B85Cf62564610B76dD206BB04d831a';
+
+const ethBTCTvl = async (api) => {
+  const ethTokens = [
+    ADDRESSES.ethereum.WBTC, // WBTC
+    '0x8DB2350D78aBc13f5673A411D4700BCF87864dDE', // swBTC
+    '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC
+    '0xC96dE26018A54D51c097160568752c4E3BD6C364', // fBTC
+    '0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e', // pumpBTC
+    '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa', // tBTC
+    '0x8236a87084f8B84306f72007F36F2618A5634494', // LBTC
+    '0x7A56E1C57C7475CCf742a1832B028F0456652F97', // solvBTC
+  ]
+
+  return sumTokens2({ api, owner: earnBTCVault, tokens: ethTokens, fetchCoValentTokens: true })
+}
+
+const swellBTCTvl = async (api) => {
+
+  const swellTokens = [
+    '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3', // stBTC
+    '0xFA3198ecF05303a6d96E57a45E6c815055D255b1', // uBTC
+  ]
+
+  return sumTokens2({ api, owner: earnBTCVault, tokens: swellTokens })
+
 }
 
 module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault + LP positions',
   doublecounted: true,
-  ethereum: { tvl: ethTvl },
-  swellchain: { tvl: swellchainTvl }
+  ethereum: { tvl: sdk.util.sumChainTvls([ethTvl, ethBTCTvl]) },
+  swellchain: { tvl: sdk.util.sumChainTvls([swellTvl, swellBTCTvl]) },
 }
