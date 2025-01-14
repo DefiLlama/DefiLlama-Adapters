@@ -21,7 +21,11 @@ async function borrowed(api) {
 
 async function tvl() {
   const markets = (await getConfig('solend', solendConfigEndpoint))
-  return sumTokens2({ owners: markets.map(i => i.authorityAddress)});
+  return sumTokens2({ owners: markets.map(i => i.authorityAddress) });
+}
+
+async function eclipseTvl(api) {
+  return sumTokens2({ api, owners: ['5Gk1kTdDqqacmA2UF3UbNhM7eEhVFvF3p8nd9p3HbXxk'] });
 }
 
 module.exports = {
@@ -30,6 +34,7 @@ module.exports = {
     tvl,
     borrowed,
   },
+  eclipse: { tvl: eclipseTvl },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
   hallmarks: [

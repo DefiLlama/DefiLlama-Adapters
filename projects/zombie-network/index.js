@@ -11,7 +11,6 @@ async function staking(api) {
 
   const bloodPrice = klayBalance / bldBalance
   const staking = stakingBalance * bloodPrice / 1e18
-  console.log('staking', staking, klayBalance, bldBalance, stakingBalance, bloodPrice)
   api.addCGToken('klay-token', staking)
 }
 
