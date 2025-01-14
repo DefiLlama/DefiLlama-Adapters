@@ -20,6 +20,7 @@ const vaultsBlast = [
   '0x6654cddf2a14a06307af6a8d7731dd4e059962a1',
   '0x4caec64454893c7912e6beb1e19b4714dd353748',
   '0x24e72c2c7be9b07942f6f8d3cdce995df699514d',
+  '0xb3e2099b135b12139c4eb774f84a5808fb25c67d',
 ]
 
 const vaultsArbitrum = [
