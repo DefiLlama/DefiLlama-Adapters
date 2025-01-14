@@ -22,7 +22,7 @@ const aCVX = "0xb0903Ab70a7467eE5756074b31ac88aEBb8fB777";
 const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
 const uniBTC_Genesis_Gauge = "0x1D20671A21112E85b03B00F94Fd760DE0Bef37Ba"
 const fxUSD_stabilityPool = "0x65C9A641afCEB9C0E6034e558A319488FA0FA3be"
-const fxUSD_stabilityPool_Gauge = "0xEd92dDe3214c24Ae04F5f96927E3bE8f8DbC3289"
+const FxProtocol_PoolManager = "0x250893CA4Ba5d05626C785e8da758026928FCD24"
 
 module.exports = {
   doublecounted: true,
@@ -65,7 +65,6 @@ async function tvl(api) {
       api.add(tokens[i], bal / (rates[i] / 1e18) / 10 ** (18 - decimals[i]))
     }
   })
-
-  const tokensAndOwners = [[uniBTC, uniBTC_Genesis_Gauge], [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool]]
+  const tokensAndOwners = [[uniBTC, uniBTC_Genesis_Gauge], [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool], [ADDRESSES.ethereum.WSTETH, FxProtocol_PoolManager]]
   return api.sumTokens({ tokensAndOwners })
 }

@@ -37,7 +37,11 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "The value in RWA held by the protocol",
+  hallmarks: [
+    [Math.floor(new Date('2025-01-13')/1e3), 'ZTLN is deprecated'],
+  ],
+  deadFrom: "2025-01-13",
   ethereum: {
-    tvl
+    tvl: () => ({}),
   },
 };
