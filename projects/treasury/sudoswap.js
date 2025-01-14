@@ -16,8 +16,15 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.DAI,
       ADDRESSES.ethereum.USDC,
       ADDRESSES.ethereum.USDT,
-      "0x853d955aCEf822Db058eb8505911ED77F175b99e", //frax
+      ADDRESSES.ethereum.FRAX,
       "0xb23d80f5FefcDDaa212212F028021B41DEd428CF", //PRIME
+    ],
+  },
+  sanko: {
+    owners: ["0x5bfe2ef160eaaaa4afa89a8fa09775b6580162c9"],
+    ownTokens: [],
+    tokens: [
+      nullAddress,
     ],
   },
 });

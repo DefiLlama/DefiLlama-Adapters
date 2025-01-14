@@ -13,7 +13,7 @@ module.exports = {
     staking: staking(stakingContractETH, FEG_ETH)
   },
   bsc: {
-    staking: staking(stakingContractBSC, FEG_BSC, "bsc"),
+    staking: staking(stakingContractBSC, FEG_BSC),
     tvl: async ()=>({}),
   },
   methodology:

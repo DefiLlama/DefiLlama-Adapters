@@ -12,3 +12,5 @@ module.exports = {
         ["0x468c174cc015d4a697586C0a99F95E045F7e6f91", true] // scrMim SPIRIT LP
     ], "fantom", stakingContract, scr, undefined, undefined, false)
 }
+
+module.exports.deadFrom = '2022-02-01'

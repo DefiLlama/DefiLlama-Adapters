@@ -9,7 +9,7 @@ const kronosBusdLP = "0xDBB34E29D345788273e85DE84814CfAA95c9c5f7";
 module.exports = {
   methodology: "TVL consists of pools created by the factory contract",
   bsc: {
-    tvl: uniTvlExport(kronosFactory, 'bsc'),
+    tvl: uniTvlExport(kronosFactory, 'bsc', true),
     staking: stakingUnknownPricedLP(
       kRONOSMasterChef,
       kronosDaoToken,

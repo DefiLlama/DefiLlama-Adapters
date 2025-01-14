@@ -3,6 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const treasuryARB = "0xf15968a096fc8f47650001585d23bee819b5affb";
 const treasuryETH = "0xd884aca1897ac45515cee6d5fd48f341b4023ace"
+const treasuryETH2 = "0x117f55bf3c2e3bcdc7f308504480ee53f754a7ca"
 const hegic = "0x584bC13c7D411c00c01A62e8019472dE68768430"
 
 module.exports = treasuryExports({
@@ -19,7 +20,7 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.USDC
      ],
-    owners: [treasuryETH],
+    owners: [treasuryETH, treasuryETH2],
     ownTokens: [hegic],
   },
 })

@@ -7,7 +7,7 @@ const { getUniTVL } = require('../helper/unknownTokens')
 module.exports = {
     methodology: `Uses factory(0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50) address and whitelisted tokens address to find and price Liquidity Pool pairs`,
     arbitrum: {
-        tvl: getUniTVL({ factory: '0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50', chain: 'arbitrum' }),
-        staking: staking(MasterChefContract, WTFX, "arbitrum"),
+        tvl: getUniTVL({ factory: '0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50', useDefaultCoreAssets: true }),
+        staking: staking(MasterChefContract, WTFX),
     }
 };

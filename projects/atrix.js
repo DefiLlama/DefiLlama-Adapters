@@ -1,15 +1,15 @@
-const { get } = require('./helper/http')
+const { sumTokens2, } = require('./helper/solana')
 
-async function fetch() {
-  return (await get('https://api.atrix.finance/api/tvl')).tvl;
+async function tvl() {
+  return sumTokens2({ owner: '3uTzTX5GBSfbW7eM9R9k95H7Txe32Qw3Z25MtyD2dzwC', })
+ 
 }
 
 module.exports = {
   timetravel: false,
-  methodology: "The Atrix API endpoint fetches on-chain data from the Serum orderbook and token accounts for each liquidity pool, then uses prices from Coingecko to aggregate total TVL.",
-  fetch,
+  solana: { tvl },
   hallmarks: [
     [1665521360, "Mango Markets Hack"],
     [1667865600, "FTX collapse"]
   ],
-};
+}

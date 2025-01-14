@@ -16,7 +16,7 @@ const addresses = {
   bal80eth20: "0x5c6Ee304399DBdB9C8Ef030aB642B10820DB8F56",
 };
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   let pools = await Promise.all([AURA_BOOSTER, AURA_BOOSTER_2].map(i => api.fetchList({ target: i, itemAbi: abi.poolInfo, lengthAbi: abi.poolLength, })))
   pools = pools.flat()
   const poolInputs = pools.map(pool => pool.lptoken)
@@ -36,8 +36,8 @@ async function tvl(_, block, _1, { api }) {
   const poolTokensInfo = await api.multiCall({ calls: poolIds.map(poolId => ({ target: BALANCER_VAULT, params: poolId })), abi: abi.getPoolTokens, })
   const balancesinStaking = await api.multiCall({ calls: pools.map(pool => ({ target: pool.token, params: pool.crvRewards })), abi: 'erc20:balanceOf', })
   const totalSupplies = await api.multiCall({ calls: pools.map(pool => pool.lptoken), abi: 'erc20:totalSupply', })
-  const { output: veBalTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veBal, block })
-  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block })
+  const { output: veBalTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veBal, block: api.block })
+  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block: api.block })
   const ratio = veBalance / veBalTotalSupply
   const ratios = balancesinStaking.map((v, i) => +totalSupplies[i] > 0 ? v / totalSupplies[i] : 0)
   const bal = await unwrapBalancerToken({ api, balancerToken: addresses.bal80eth20, owner: addresses.veBal, })
@@ -60,24 +60,38 @@ async function tvl(_, block, _1, { api }) {
   }
 }
 
+const config = {
+  base: { factory: '0xb1a4fe1c6d25a0ddab47431a92a723dd71d9021f', fromBlock: 2555348, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  arbitrum: { factory: '0x6817149cb753bf529565b4d023d7507ed2ff4bc0', fromBlock: 72942741, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0' },
+  optimism: { factory: '0xa523f47A933D5020b23629dDf689695AA94612Dc', fromBlock: 83239534, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0' },
+  polygon: { factory: '0x22625eedd92c81a219a83e1dc48f88d54786b017', fromBlock: 40687417, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  xdai: { factory: '0x83E443EF4f9963C77bd860f94500075556668cb8', fromBlock: 27088527, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  polygon_zkevm: { factory: '0x2498A2B0d6462d2260EAC50aE1C3e03F4829BA95', fromBlock: 203652, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  avax: { factory: '0xf23b4DB826DbA14c0e857029dfF076b1c0264843', fromBlock: 32558551, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  fraxtal: { factory: '0xc3ccacE87f6d3A81724075ADcb5ddd85a8A1bB68', fromBlock: 4712390, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+}
+
 module.exports = {
   methodology: "TVL of Aura Finance consists of the total deposited assets, protocol-controlled value via veBAL and vote-locked AURA (staking)",
   ethereum: {
     tvl,
     staking: staking(addresses.auraLocker, addresses.aura)
-  },
-  arbitrum: {
-    tvl: async (_, _1, _2, { api }) => {
+  }
+}
+
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, voterProxy, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
-        target: '0x6817149cb753bf529565b4d023d7507ed2ff4bc0',
+        target: factory,
         topics: ['0xaa98436d09d130af48de49867af8b723bbbebb0d737638b5fe8f1bf31bbb71c0'],
         eventAbi: 'event GaugeCreated (address indexed gauge)',
         onlyArgs: true,
-        fromBlock: 72942741,
+        fromBlock,
       })
 
-      const voterProxy = '0xc181edc719480bd089b94647c2dc504e2700a2b0'
       // const auraBalVault = '0x4EA9317D90b61fc28C418C247ad0CA8939Bbb0e9'
       // const asset = await api.call({  abi: 'address:asset', target: auraBalVault })
       // const bal = await api.call({  abi: 'uint256:totalAssets', target: auraBalVault })
@@ -88,4 +102,4 @@ module.exports = {
       api.addTokens(tokens, bals)
     }
   }
-}
+})

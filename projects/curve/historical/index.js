@@ -5,6 +5,7 @@ const axios = require("axios");
 const web3 = new Web3(`https://eth.llamarpc.com`);
 const abis = require('./abis.js')
 const { toUSDTBalances } = require('../../helper/balances')
+const sdk = require('@defillama/sdk')
 
 
 let swaps = [
@@ -192,7 +193,7 @@ async function tvlFunc(timestamp, block) {
                     tvl += parseFloat(poolAmount )
                 }
             } catch(e){
-                console.log(item.name, i, "failed")
+                sdk.log(item.name, i, "failed")
             }
         })
       )

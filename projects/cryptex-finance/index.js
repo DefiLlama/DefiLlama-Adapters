@@ -1,8 +1,8 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { sumTokensSharedOwners, sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens2, sumTokensExport, } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking')
+const { pool2 } = require('../helper/pool2')
 
 const ctxToken = "0x321c2fe4446c7c963dc41dd58879af648838f98d";
 const factory = "0x70236b36f86AB4bd557Fe9934E1246537B472918";
@@ -49,53 +49,19 @@ const optCollaterals = [
   "0x6fd9d7AD17242c41f7131d257212c54A0e816691" // UNI
 ]
 
-async function ethTvl(timestamp, block) {
-  let balances = {};
-  await sumTokensSharedOwners(balances, ethCollaterals, ethVaults, block);
-  return balances;
-}
-
-async function optTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  await sumTokensSharedOwners(balances, optCollaterals, optVaults, chainBlocks.optimism, "optimism");
-  return balances;
-}
-
-const treasuryAddress = "0xa54074b2cc0e96a43048d4a68472F7F046aC0DA8";
-const treasuryContents = [
-  ADDRESSES.ethereum.USDC
-]
-const optTreasury = "0x271901c3268D0959bbc9543DE4f073D3708C88F7";
-
-async function treasury(timestamp, block) {
-  let balances = {};
-  const ethBal = (await sdk.api.eth.getBalance({
-    target: treasuryAddress,
-    block,
-  })).output;
-  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.WETH, ethBal);
-  await sumTokensSharedOwners(balances, treasuryContents, [treasuryAddress], block);
-  return balances;
-}
-
-
 module.exports = {
   methodology: "TVL includes collateral in vaults",
   ethereum: {
-    tvl: ethTvl,
-    pool2: staking(ethStakingContracts, ethPool2s),
+    tvl: sumTokensExport({ tokens: ethCollaterals, owners: ethVaults,}),
+    pool2: pool2(ethStakingContracts, ethPool2s),
     staking: staking_,
-    treasury
   },
   optimism: {
-    tvl: optTvl
+    tvl: sumTokensExport({ tokens: optCollaterals, owners: optVaults,})
   }
 };
 
-
-
-
-async function staking_(_, _b, _cb, { api, }) {
+async function staking_(api) {
   const logs = await getLogs({
     api,
     target: factory,

@@ -1,49 +1,28 @@
-const sdk = require("@defillama/sdk");
-const { staking } = require("../helper/staking");
 const MasterMagpieAbi = require("../magpiexyz/abis/masterMagpie.json");
 const config = require("./config");
+const { staking } = require('../helper/staking')
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
-  const { masterPenpie, pendleStaking, vePENDLE, PENDLE } = config[api.chain];
+async function tvl(api) {
+  const { masterPenpie, vlPNP, pendleStaking, mPENDLE, } = config[api.chain];
 
   const poolTokens = await api.fetchList({
     lengthAbi: MasterMagpieAbi.poolLength,
     itemAbi: MasterMagpieAbi.registeredToken,
     target: masterPenpie,
   });
-
-  const decimals = await api.multiCall({
-    abi: "erc20:decimals",
-    calls: poolTokens,
-  });
-
-  const balances = {};
-  poolTokens.push(vePENDLE);
-  decimals.push("18");
-
-  const bals = await api.multiCall({
-    abi: "erc20:balanceOf",
-    calls: poolTokens.map((i) => ({ target: i, params: pendleStaking })),
-  });
-
-  bals.forEach((v, i) => {
-    v /= 10 ** (18 - decimals[i]);
-    sdk.util.sumSingleBalance(
-      balances,
-      poolTokens[i] == vePENDLE ? PENDLE : poolTokens[i],
-      v,
-      api.chain
-    );
-  });
-
-  return balances;
+  const blacklistedTokens = []
+  if (vlPNP) blacklistedTokens.push(vlPNP)
+  if (mPENDLE && masterPenpie) await api.sumTokens({ tokens: [mPENDLE], owner: masterPenpie })
+  return api.sumTokens({ tokens: poolTokens, owner: pendleStaking, blacklistedTokens })
 }
 
 Object.keys(config).forEach((chain) => {
-  const { masterPenpie, mPENDLE } = config[chain];
+  const { PNP, vlPNP, } = config[chain];
+
   module.exports[chain] = {
-    doublecounted: true,
-    tvl: tvl,
-    staking: staking(masterPenpie, mPENDLE),
+    tvl,
   };
+  if (PNP && vlPNP) module.exports[chain].staking = staking(vlPNP, PNP)
 });
+
+module.exports.doublecounted = true

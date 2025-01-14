@@ -1,9 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("../wagmidao/abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const {
-  getFixBalancesSync,
-} = require("../helper/portedTokens");
 
 const bondContracts = [
   //Bond 1USDC
@@ -17,8 +14,6 @@ const bondContracts = [
   //Bond FAM
   "0xEfb7DDE5261100a32657C9606507a130257D93c6",
 ];
-
-const GMI = "0x8750f5651af49950b5419928fecefca7c82141e3";
 
 const Treasury = async (timesamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -64,8 +59,6 @@ const Treasury = async (timesamp, ethBlock, chainBlocks) => {
     chainBlocks["harmony"],
     "harmony",
   );
-
-  getFixBalancesSync('harmony')(balances);
 
   return balances;
 };

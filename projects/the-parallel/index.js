@@ -15,7 +15,7 @@ const PRL_MINING = '0x21EFC3DDE8a69Fb8A5403406ebDd23e08C924785'
 
 module.exports = {
     bsc: {
-        staking: stakings([ PRL_MINING, PRL_LOCKED, ], PRL_TOKEN, 'bsc'),
+        staking: stakings([ PRL_MINING, PRL_LOCKED, ], PRL_TOKEN),
         tvl: () => ({}),
     }
 }

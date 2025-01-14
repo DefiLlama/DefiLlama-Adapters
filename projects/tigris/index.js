@@ -29,14 +29,14 @@ const TigrisAddresses = {
   },
 };
 
-async function arbitrumTvl(_, _b, _cb, { api }) {
+async function arbitrumTvl(api) {
   const tokensAndOwners = [
     [TigrisAddresses.arbitrum.USDT, TigrisAddresses.arbitrum.StableVault],
   ];
   return sumTokens2({ api, tokensAndOwners });
 }
 
-async function polygonTvl(_, _b, _cb, { api }) {
+async function polygonTvl(api) {
   const tokensAndOwners = [
     [TigrisAddresses.polygon.DAI, TigrisAddresses.polygon.StableVault],
   ];

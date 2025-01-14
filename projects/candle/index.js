@@ -19,10 +19,12 @@ module.exports = {
     tvl: () => ({}),
   },
   // candle: {
-  //   staking: stakings(stakingContracts, CNDL, 'candle'),
-  //   pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2], 'candle'),
+  //   staking: stakings(stakingContracts, CNDL),
+  //   pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2]),
   //   tvl: () => ({}),
   // },
   methodology: "Counts liquidty on the staking and pool2s only",
 
 };
+
+module.exports.deadFrom = '2022-05-25'

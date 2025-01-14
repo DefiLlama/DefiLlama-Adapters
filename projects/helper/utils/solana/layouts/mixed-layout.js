@@ -1,6 +1,6 @@
 const {
   struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, BufferLayout,
-} = require('./layout-base')
+  option, } = require('./layout-base')
 
 const LastUpdateLayout = BufferLayout.struct(
   [uint64("slot"), BufferLayout.u8("stale")],
@@ -195,7 +195,108 @@ const TokenSwapLayout = BufferLayout.struct([
 ])
 
 
+const Hub3Layout = BufferLayout.struct([
+  publicKey("issuerKey"),
+  u64("price"),
+  u64("totalShares"),
+  u64("totalFees"),
+  u8("bump"),
+  u32("holders"),
+  u8("migration"), // bool
+  u64("a"),
+  u64("b"),
+  u64("d"),
+])
+
+const eSOL_feeFields = [u64('denominator'), u64('numerator')];
+const eSOL_rateOfExchangeFields = [u64('denominator'), u64('numerator')];
+
+const ESOLStakePoolLayout = BufferLayout.struct([
+  // rustEnum(AccountTypeKind, 'accountType'),
+  u8('accountType'),
+  publicKey('manager'),
+  publicKey('staker'),
+  publicKey('stakeDepositAuthority'),
+  u8('stakeWithdrawBumpSeed'),
+  publicKey('validatorList'),
+  publicKey('reserveStake'),
+  publicKey('poolMint'),
+  publicKey('managerFeeAccount'),
+  publicKey('tokenProgramId'),
+  u64('totalLamports'),
+  u64('poolTokenSupply'),
+  u64('lastUpdateEpoch'),
+  struct([u64('unixTimestamp'), u64('epoch'), publicKey('custodian')], 'lockup'),
+  struct(eSOL_feeFields, 'epochFee'),
+  option(struct(eSOL_feeFields), 'nextEpochFee'),
+  option(publicKey(), 'preferredDepositValidatorVoteAddress'),
+  option(publicKey(), 'preferredWithdrawValidatorVoteAddress'),
+  struct(eSOL_feeFields, 'stakeDepositFee'),
+  struct(eSOL_feeFields, 'stakeWithdrawalFee'),
+  option(struct(eSOL_feeFields), 'nextWithdrawalFee'),
+  u8('stakeReferralFee'),
+  option(publicKey(), 'solDepositAuthority'),
+  struct(eSOL_feeFields, 'solDepositFee'),
+  u8('solReferralFee'),
+  option(publicKey(), 'solWithdrawAuthority'),
+  struct(eSOL_feeFields, 'solWithdrawalFee'),
+  option(struct(eSOL_feeFields), 'nextSolWithdrawalFee'),
+  u64('lastEpochPoolTokenSupply'),
+  u64('lastEpochTotalLamports'),
+  option(struct(eSOL_rateOfExchangeFields), 'rateOfExchange'),
+  publicKey('treasuryFeeAccount'),
+  struct(eSOL_feeFields, 'treasuryFee'),
+  u64('totalLamportsLiquidity'),
+  u32("maxValidatorYieldPerEpochNumerator")
+]);
+
+
+const PARLAY_LAYOUT_PARTIAL = BufferLayout.struct([
+  publicKey('mint'),
+  u32("entryCount"),
+  u64('entryCost'),
+]);
+
+const HH_PARI_LAYOUT_PARTIAL = BufferLayout.struct([
+  publicKey('mint'),
+  u64("closeTimestamp"),
+  u64("resolveTimestamp"),
+  u64("outcomeTimestamp"),
+  u16("creatorFee"),
+  u16("platformFee"),
+  u8('state'),
+  u8('outcome'),
+  BufferLayout.seq(u64(), u8().span, 'amounts'), 
+]);
+
+const ACCESS_LAYOUT = BufferLayout.struct([
+  BufferLayout.u8('tag'),
+  BufferLayout.u8('bumpSeed'),
+  uint64('dailyInflation'),
+  publicKey('tokenMint'),
+  publicKey('authority'),
+  uint64('creationTime'),
+  uint64('totalStaked'),
+  uint64('totalStakedSnapshot'),
+  uint64('lastSnapshotOffset'),
+  uint128('ixGate'),
+  publicKey('freezeAuthority'),
+  uint128('adminIxGate'),
+  BufferLayout.u16('feeBasisPoints'),
+  uint64('lastFeeDistributionTime'),
+  BufferLayout.u32('feeRecipientsCount'),
+  BufferLayout.seq(
+    BufferLayout.struct([
+      publicKey('owner'),
+      uint64('percentage'),
+    ]),
+    10,
+    'recipients'
+  ),
+]);
+
 module.exports = {
-  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout,
+  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
+  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT
 }
 

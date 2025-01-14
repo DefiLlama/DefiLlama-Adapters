@@ -1,3 +1,5 @@
+
+const hydraExport = require('../hydradex.js')
 const { getExports } = require('../helper/heroku-api')
 
 module.exports = {

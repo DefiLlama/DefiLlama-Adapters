@@ -8,14 +8,17 @@ const abi = {
 const vaultFactories = {
   ethereum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
   arbitrum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
+  bsc: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
 };
 
 const fromBlocks = {
   ethereum: 15912005,
   arbitrum: 54210090,
+  bsc: 29123165,
 };
 
-async function tvl(_, block, _1, { api, chain }) {
+async function tvl(api) {
+  const { chain } = api
   const logs = await getLogs({
     api,
     target: vaultFactories[chain], // vault factory
@@ -36,7 +39,8 @@ async function tvl(_, block, _1, { api, chain }) {
 
 module.exports = {
   methodology: "TVL consists of the total liquidity available in the cover pools",
-  start: 1667260800, // Nov 01 2022 @ 12:00am (UTC)
+  start: '2022-11-01', // Nov 01 2022 @ 12:00am (UTC)
   ethereum: { tvl },
   arbitrum: { tvl },
+  bsc: { tvl },
 };

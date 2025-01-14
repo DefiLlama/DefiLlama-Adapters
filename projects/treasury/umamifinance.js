@@ -26,7 +26,7 @@ module.exports = treasuryExports({
       "0x55ff62567f09906a85183b866df84bf599a4bf70", // KROM
       "0x3d9907f9a368ad0a51be60f7da3b97cf940982d8", // GRAIL
       "0x3CAaE25Ee616f2C8E13C74dA0813402eae3F496b", // xGRAIL
-      "0x912CE59144191C1204E64559FE8253a0e49E6548", // ARB
+      ADDRESSES.arbitrum.ARB, // ARB
       "0x3e6648c5a70a150a88bce65f4ad4d506fe15d2af", //spell
       "0x10010078a54396f62c96df8532dc2b4847d47ed3", //hnd
       "0x32eb7902d4134bf98a28b963d26de779af92a212", //rpdx
@@ -44,6 +44,11 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.USDC,//usdc
     ],
     owners: [ethowners]
-
   },
 });
+
+module.exports.deadFrom = '2024-08-30'
+module.exports.ethereum.tvl = () => ({})
+module.exports.ethereum.ownTokens = () => ({})
+module.exports.arbitrum.tvl = () => ({})
+module.exports.arbitrum.ownTokens = () => ({})

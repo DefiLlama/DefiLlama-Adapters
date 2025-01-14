@@ -5,7 +5,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const chain = "fantom";
 
-async function staking(timestamp, block, chainBlocks, { api }) {
+async function staking(api) {
   const tokens = await api.multiCall({  abi: poolAbi.rewardsToken, calls: pools }) 
   const tokensAndOwners = tokens.map((v, i) => [v, pools[i]])
   farms.forEach(({ token, contract}) => tokensAndOwners.push([token, contract]))
@@ -15,7 +15,6 @@ async function staking(timestamp, block, chainBlocks, { api }) {
 module.exports = {
   fantom: {
     tvl: getUniTVL({
-      chain,
       useDefaultCoreAssets: true,
       factory: "0x7ceb5f3a6d1888eec74a41a5377afba5b97200ea",
     }),

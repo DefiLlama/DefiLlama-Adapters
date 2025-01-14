@@ -1,14 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const {
-    transformPolygonAddress
-} = require('../helper/portedTokens');
-const {
     pool2
 } = require('../helper/pool2');
-const {
-    sumChainTvls
-} = require('@defillama/sdk/build/generalUtil');
 
 const USDC_POOL_STAKING_CONTRACT = '0x7FCf0f2dcEc385FCCEd98240A8A4bEC8e91da7D1'
 const GOVERNANCE_STAKING_CONTRACT = '0xd46206003FfB72Fe5FEB04373328C62e2bF864f9'
@@ -20,7 +14,7 @@ const chain = 'polygon'
 
 async function chainTVL(timestamp, block, chainBlocks) {
     const balances = {}
-    const transform = await transformPolygonAddress();
+    const transform = i => `polygon:${i}`;
 
     const USDCPool = await sdk.api.abi.call({
         target: USDC_POOL_STAKING_CONTRACT,
@@ -35,7 +29,7 @@ async function chainTVL(timestamp, block, chainBlocks) {
 
 async function stakingX(timestamp, block, chainBlocks) {
     const balances = {}
-    const transform = await transformPolygonAddress();
+    const transform = i => `polygon:${i}`;
 
     const totalGOGOLocked = await sdk.api.abi.call({
         target: GOVERNANCE_STAKING_CONTRACT,
@@ -50,13 +44,12 @@ async function stakingX(timestamp, block, chainBlocks) {
 }
 
 async function pool2X(...args) {
-    const transform = await transformPolygonAddress();
+    const transform = i => `polygon:${i}`;
     return pool2(LP_STAKING_CONTRACT, LP_TOKEN_USDC, chain, transform)(...args)
 }
 
 module.exports = {
-    timetravel: true,
-    start: 1638388550,
+        start: '2021-12-01',
     polygon: {
         staking: stakingX,
         pool2: pool2X,

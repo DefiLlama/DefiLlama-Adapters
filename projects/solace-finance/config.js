@@ -6,7 +6,7 @@ module.exports = {
     uwp_address: '0x5efC0d9ee3223229Ce3b53e441016efC5BA83435',
     tokens: [
       {
-        PoolToken: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+        PoolToken: ADDRESSES.ethereum.FRAX,
         TokenTicker: "FRAX",
       },
       {
@@ -40,7 +40,7 @@ module.exports = {
         TokenTicker: "WMATIC",
       },
       {
-        PoolToken: "0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89",
+        PoolToken: ADDRESSES.polygon.FRAX,
         TokenTicker: "FRAX",
       },
       {

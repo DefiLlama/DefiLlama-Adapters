@@ -19,7 +19,7 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.USDC
     ],
     owners: [Treasury_ETH, Treasury_MULTICHAIN],
-    ownTokens: [THALES_ETH],  
+    ownTokens: [THALES_ETH, '0x03e173ad8d1581a4802d3b532ace27a62c5b81dc'],  
   },
   optimism: {
     tokens: [
@@ -30,6 +30,7 @@ module.exports = treasuryExports({
     ],
     owners: [Treasury_OP, Treasury_MULTICHAIN],
     ownTokens: [THALES_OP],  
+    permitFailure: true,
   },
   arbitrum: {
     tokens: [ 

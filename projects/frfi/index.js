@@ -20,3 +20,5 @@ module.exports = {
   ethereum: { tvl: tvl('1') },
   kava: { tvl: tvl('2222') },
 };
+
+module.exports.deadFrom = '2023-05-09'

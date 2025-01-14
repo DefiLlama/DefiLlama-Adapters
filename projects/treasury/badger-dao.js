@@ -47,6 +47,7 @@ module.exports = treasuryExports({
      ],
     owners: [treasury_vault, treasury_ops, treasury_voter, treasury_dev, treasury_tech, treasury_pay, treasury_drip1, treasury_drip2, treasury_bfraxbp],
     ownTokens: [BADGER, DIGG],
+    blacklistedTokens: ['0x7491989cfbc6da74141bc8cd187e480c21ece169'],
     resolveUniV3: true,
     transformAddress,
   },

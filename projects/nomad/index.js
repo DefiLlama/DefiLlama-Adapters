@@ -16,31 +16,25 @@ const HOME_CHAINS = {
 
 const TOKEN_ADDRESSES = [
   {
-    // FRAX
-    'ethereum': '0x853d955aCEf822Db058eb8505911ED77F175b99e'
+    'ethereum': ADDRESSES.ethereum.FRAX
   },
   {
-    // USDC
     'ethereum': ADDRESSES.ethereum.USDC
   },
   {
-    // DAI
     'ethereum': ADDRESSES.ethereum.DAI
   },
   {
-    // USDT
     'ethereum': ADDRESSES.ethereum.USDT
   },
   {
     // FXS
-    'ethereum': '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0'
+    'ethereum': ADDRESSES.ethereum.FXS
   },
   {
-    // WETH
     'ethereum': ADDRESSES.ethereum.WETH
   },
   {
-    // WBTC
     'ethereum': ADDRESSES.ethereum.WBTC
   },
   {
@@ -84,7 +78,7 @@ function tvl(chain) {
     TOKEN_ADDRESSES.forEach(t => {
       if (t[chain]) toa.push([t[chain], owner])
     })
-    return sumTokens({}, toa, block, chain)
+    return sumTokens({}, toa, block, chain, undefined)
   }
 }
 
@@ -92,9 +86,6 @@ module.exports = {
   hallmarks: [
     [1659312000,"trusted root exploit"]
   ],
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
-  start: 13983843,
+      methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
   ...chainExports(tvl, Object.keys(HOME_CHAINS))
 }; 

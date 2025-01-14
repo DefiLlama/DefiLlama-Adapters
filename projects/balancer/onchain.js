@@ -21,6 +21,10 @@ const config = {
   arbitrum: { fromBlock: 222832, },
   xdai: { fromBlock: 24821598, },
   polygon_zkevm: { fromBlock: 203079, },
+  base: { fromBlock: 1196036, },
+  avax: { fromBlock: 26386141, },
+  mode: { fromBlock: 8110317, },
+  fraxtal: { fromBlock: 4708596 }
 }
 
 module.exports = {};

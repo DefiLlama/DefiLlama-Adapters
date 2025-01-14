@@ -9,7 +9,14 @@ module.exports = treasuryExports({
     owners: [Treasury],
   },
   ethereum: {
-    tokens: [nullAddress, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.SUSHI, '0x5afe3855358e112b5647b952709e6165e1c1eeee' ],
+    tokens: [
+      nullAddress,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.USDT,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.SUSHI,
+      ADDRESSES.ethereum.SAFE, 
+    ],
     owners: [Treasury],
     ownTokens: ['0x767fe9edc9e0df98e07454847909b5e959d7ca0e'],
   }

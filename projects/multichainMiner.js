@@ -1,14 +1,12 @@
 const ADDRESSES = require('./helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { getChainTransform,
-  getFixBalances } = require("./helper/portedTokens");
+const { sumTokensExport } = require('./helper/unwrapLPs');
 
 const minedTokens = {
   'cake': '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
   'busd': ADDRESSES.bsc.BUSD,
-  'matic': ADDRESSES.polygon.WMATIC_2,
-  'ftm': ADDRESSES.fantom.WFTM,
-  'avax': ADDRESSES.avax.WAVAX,
+  'matic': ADDRESSES.null,
+  'ftm': ADDRESSES.null,
+  'avax': ADDRESSES.null,
   'usdc': ADDRESSES.polygon.USDC, // polygon
   'doge': '0xba2ae424d960c26247dd6c32edc70b295c744c43', // bsc
   'eth': ADDRESSES.bsc.ETH   // bsc
@@ -23,7 +21,6 @@ const minerContracts = {
   'doge': '0x026d814935a053D10abA9987e4D047Aa9369c97E', // bsc
   'eth': '0x212A3A41a0e58CCdc86F013b003d4afF805a958c'   // bsc
 };
-const abi = "uint256:getBalance";
 
 const config = {
   bsc: {
@@ -44,18 +41,7 @@ module.exports = {};
 
 Object.keys(config).forEach(chain => {
   const { keys } = config[chain]
-  module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      const balances = {}
-      const transform = await getChainTransform(chain)
-      const fixBalances = await getFixBalances(chain)
-      const calls = keys.map(i => ({ target: minerContracts[i] }))
-      const { output: bals } = await sdk.api.abi.multiCall({
-        abi, calls, chain, block,
-      })
-      bals.forEach((data, i) => sdk.util.sumSingleBalance(balances, transform(minedTokens[keys[i]]), data.output))
-      fixBalances(balances)
-      return balances
-    }
-  }
+  const owners = keys.map(i => minerContracts[i])
+  const tokens = keys.map(i => minedTokens[i])
+  module.exports[chain] =  { tvl: sumTokensExport({ tokensAndOwners2: [tokens, owners], })}
 })

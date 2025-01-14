@@ -2,9 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { compoundExports } = require("../helper/compound");
-const {uniTvlExport} = require("../helper/calculateUniTvl");
 
 // Jetswap section
 //const factory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
@@ -85,7 +83,7 @@ const bscTvl = async (timestamp, block, chainBlocks) => {
     });
   });
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
 
   await unwrapUniswapLPs(
     balances,
@@ -111,7 +109,7 @@ const bscTvl = async (timestamp, block, chainBlocks) => {
   return balances;
 };
 
-const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3393eb5ad17c195", "bsc", "0xE24146585E882B6b59ca9bFaaaFfED201E4E5491", ADDRESSES.bsc.WBNB)
+const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3393eb5ad17c195", "0xE24146585E882B6b59ca9bFaaaFfED201E4E5491", ADDRESSES.bsc.WBNB)
 
 module.exports = {
   bsc: {

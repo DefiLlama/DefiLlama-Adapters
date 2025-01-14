@@ -1,7 +1,5 @@
 const sdk = require("@defillama/sdk");
-const utils = require('../helper/utils');
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { getConfig } = require('../helper/cache')
 const abi = require("./abi.json");
 
@@ -32,7 +30,7 @@ async function calculate(chainBlocks, localPools, remotePools) {
     })
   ).output.map(v => v.output);
 
-  const transformAdress = await transformBscAddress();
+  const transformAdress = i => `bsc:${i}`;
 
   const lpPositions = [];
 

@@ -7,7 +7,7 @@ module.exports = {
   ultron: {
     tvl: () => ({}),
     staking: staking({
-      owner: '0xd130811147bb87f313c555e5281b94b9e71b480a', 
+      owner: '0x60768787077a8411d8f626ce35333fa3f02be602', 
       tokens: [ADDRESSES.ultron.wULX], 
       chain: 'ultron'
     })

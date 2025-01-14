@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens,  } = require("../helper/unwrapLPs")
 const { sumTokens: sumTokensCosmos, } = require('../helper/chain/cosmos')
 const sdk = require("@defillama/sdk")
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
+const { getChainTransform, } = require("../helper/portedTokens")
 const config = require("./config")
 
 const nullAddress = ADDRESSES.null
@@ -32,7 +32,6 @@ Object.keys(config).forEach(chain => {
         const balance = await sdk.api.eth.getBalance({ target: address, block, chain })
         sdk.util.sumSingleBalance(balances, transform(nullAddress), balance.output)
       }
-      (await getFixBalances(chain))(balances);
       return balances
     }
   })

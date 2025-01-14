@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache');
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { camelotNFTPoolAbi } = require('../single/abi');
 
 async function getProjectInfo() {
   return Promise.all([
@@ -15,29 +16,27 @@ const config = {
 }
 
 module.exports = {
+  hallmarks: [
+    [1691373600, "Steadefi exploited"],
+  ],
 };
 
 Object.keys(config).forEach(chain => {
-  const { fsglp } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const chainId = api.getChainId()
       let [lendingPools, vaults] = await getProjectInfo()
       lendingPools = lendingPools.filter(i => i.chainId === chainId).map(i => i.address)
-      vaults = vaults.filter(i => i.chainId === chainId).map(i => i.address)
+      vaults = vaults.filter(i => i.chainId === chainId)
+      const vaultAddresses = vaults.map(i => i.address)
       const lpAssets = await api.multiCall({ abi: 'address:asset', calls: lendingPools })
-      const managers = await api.multiCall({ abi: 'address:manager', calls: vaults })
-      let lpTokens = await api.multiCall({ abi: 'address:lpToken', calls: managers, permitFailure: true, })
-      const glpPoolManagers = managers.filter((_, i) => !lpTokens[i])
-      glpPoolManagers.forEach(v => {
-        lpAssets.push(fsglp)
-        lendingPools.push(v)
+      const bals = await api.multiCall({ abi: 'function assetAmt() view returns (uint256,uint256)', calls: vaultAddresses, permitFailure: true })
+      bals.forEach((res, i) => {
+        if (!res) return;
+        const [bal0, bal1] = res
+        api.addToken(vaults[i].tokens[0].address, bal0)
+        api.addToken(vaults[i].tokens[1].address, bal1)
       })
-      const lpPoolManagers = managers.filter((_, i) => lpTokens[i])
-      lpTokens = lpTokens.filter(i => i)
-      const bals = await api.multiCall({ abi: 'uint256:lpTokenAmt', calls: lpPoolManagers })
-      api.addTokens(lpTokens, bals)
-      // api.add('tether', tokenValue.reduce((a, v) => a + v/1e13, 0), { skipChain: true})
       return sumTokens2({ api, tokensAndOwners2: [lpAssets, lendingPools] })
     }
   }

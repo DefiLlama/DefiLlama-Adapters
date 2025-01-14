@@ -1,5 +1,4 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
-const { getFixBalances } = require("../helper/portedTokens")
 const { getUserMasterChefBalances } = require("../helper/masterchef")
 const { getUserCraftsmanV2Balances, getUserCamelotMasterBalances } = require("./helpers")
 const vvsPoolInfoABI = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accVVSPerShare)'
@@ -55,12 +54,10 @@ const getHelpers = (chain) => {
     const  { pools, }  = await fetchDataOnce()
 
     let balances = {}
-    const fixBalances = await getFixBalances(chain)
     const block = chainBlocks[chain]
     const tokensAndOwners = pools.filter(pool => !pool.isLP).map(pool => [pool.tokenContract, pool.address])
 
     await sumTokens2({ balances, tokensAndOwners, block, chain })
-    fixBalances(balances)
     return balances
   }
 
@@ -70,7 +67,6 @@ const getHelpers = (chain) => {
 
     const balances = {}
     const block = chainBlocks[chain]
-    const fixBalances = await getFixBalances(chain)
 
     for (const wMasterChef of wmasterchefs) {
       await getWMasterChefBalances(wMasterChef, { balances, block, chain, excludePool2: true, pool2Tokens: [SINGLE_TOKEN] })
@@ -78,7 +74,6 @@ const getHelpers = (chain) => {
 
     const tokensAndOwners = vaults.map(({ token, address }) => [token, address])
     await sumTokens2({ balances, tokensAndOwners, block, chain }) // Add lending pool tokens to balances
-    fixBalances(balances)
     return balances
   }
 
@@ -88,7 +83,6 @@ const getHelpers = (chain) => {
 
     const balances = {}
     const block = chainBlocks[chain]
-    const fixBalances = await getFixBalances(chain)
     const tokensAndOwners = pools.filter(pool => pool.isLP).map(pool => [pool.tokenContract, pool.address])
     await sumTokens2({ balances, tokensAndOwners, block, chain, resolveLP: true }) // Add staked lp tokens to balances
 
@@ -96,7 +90,6 @@ const getHelpers = (chain) => {
       await getWMasterChefBalances(wMasterChef, { balances, block, chain, onlyPool2: true, pool2Tokens: [SINGLE_TOKEN] })
     }
 
-    fixBalances(balances)
     return balances
   }
 
@@ -108,7 +101,7 @@ const getHelpers = (chain) => {
 }
 
 module.exports = {
-  start: 1643186078,
+  start: '2022-01-26',
   // if we can backfill data with your adapter. Most SDK adapters will allow this, but not all. For example, if you fetch a list of live contracts from an API before querying data on-chain, timetravel should be 'false'.
   //if you have used token substitutions at any point in the adapter this should be 'true'.
   misrepresentedTokens: true,
