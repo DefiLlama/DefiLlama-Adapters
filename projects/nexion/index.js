@@ -22,7 +22,7 @@ const COLLATERALS = {
   pulse: {
     DAI: ADDRESSES.pulse.DAI,
     PLS: nullAddress,
-    DAI: ADDRESSES.pulse.WPLS,
+    WPLS: ADDRESSES.pulse.WPLS,
   },
 };
 
