@@ -21,7 +21,7 @@ let contracts = {
 const COLLATERALS = {
   pulse: {
     DAI: ADDRESSES.pulse.DAI,
-    PLS: nullAddress,
+    // PLS: nullAddress,
     WPLS: ADDRESSES.pulse.WPLS,
     // DAIPLS_LP:"0xE56043671df55dE5CDf8459710433C10324DE0aE"
   },
@@ -39,11 +39,8 @@ async function tvl(api) {
 const lps = ["0xE56043671df55dE5CDf8459710433C10324DE0aE"]
 
 module.exports = {
-  methodology: `FARM: return total assets of farms and buyNburn
-`,
+  methodology: `FARM: return total assets of farms and buyNburn`,
   pulse: {
-
-    tvl,
-
+    tvl
   },
 };
