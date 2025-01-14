@@ -60,13 +60,14 @@ const ethTvl = async (api) => {
 const swellchainTvl = async (api) => {
   return sumTokens2({
     api,
-    owner: earnETHVault, swellchainTokens
+    owner: earnETHVault,
+    tokens: swellchainTokens
   })
 }
 
 module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault + LP positions',
   doublecounted: true,
-  ethereum: { ethTvl },
-  swellchain: { swellchainTvl }
+  ethereum: { tvl: ethTvl },
+  swellchain: { tvl: swellchainTvl }
 }
