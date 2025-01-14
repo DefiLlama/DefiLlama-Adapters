@@ -1,5 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view } = require('../helper/chain/aptos')
+const { call: near_call } = require('../helper/chain/near')
+const { queryContract } = require('../helper/chain/cosmos')
 
 const TRUSTAKE_APT_CONTRACT_ADDR = "0x6f8ca77dd0a4c65362f475adb1c26ae921b1d75aa6b70e53d0e340efd7d8bc80"
 const MODULE = "staker"
@@ -27,6 +29,20 @@ async function tvl(api) {
   api.add(MATIC_TOKEN_ADDR, (totalSupply * sharePrice) + +dust)
 }
 
+const TRUSTAKE_NEAR_CONTRACT_ADDR = "staker1.msig1.trufin.near"
+
+async function nearTvl() {
+  const totalStaked = await near_call(TRUSTAKE_NEAR_CONTRACT_ADDR, 'get_total_staked', {})
+  return { near: totalStaked[0] / 1e24 }
+}
+
+const TRUSTAKE_INJ_CONTRACT_ADDR = "inj1x997dy6ka7y8u0r56yk2k83llspy33yet9zcnq"
+
+async function injectiveTvl(api) {
+  const { total_staked } = await queryContract({ contract: TRUSTAKE_INJ_CONTRACT_ADDR, chain: "injective", data: '{"get_total_staked": {}}'})
+  api.add(ADDRESSES.injective.INJ, total_staked)
+}
+
 module.exports = {
   methodology: `Counts the TVL of native tokens across all TruStake vaults.`,
   ethereum: {
@@ -34,5 +50,11 @@ module.exports = {
   },
   aptos: {
     tvl: aptosTvl
+  },
+  near: {
+    tvl: nearTvl
+  },
+  injective: {
+    tvl: injectiveTvl
   }
 }

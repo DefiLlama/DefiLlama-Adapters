@@ -4,7 +4,7 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 module.exports = {
-  start: 1579811423, // Thu, 23 Jan 2020 20:30:23 GMT
+  start: '2020-01-23', // Thu, 23 Jan 2020 20:30:23 GMT
   ethereum: { tvl: sdk.util.sumChainTvls([
     '0xc59b0e4de5f1248c1140964e0ff287b192407e0c',
     '0x6f400810b62df8e13fded51be75ff5393eaa841f',

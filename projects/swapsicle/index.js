@@ -157,5 +157,4 @@ module.exports = {
       stakedTLOSIceBox
    ])
   },
-  //start: 15434772,
 }

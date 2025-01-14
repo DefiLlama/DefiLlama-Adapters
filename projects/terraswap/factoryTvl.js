@@ -36,23 +36,33 @@ async function getAllPairs(factory, chain, { blacklistedPairs = [] } = {}) {
       const [addr, balance] = getAssetInfo(asset)
       pairDto.assets.push({ addr, balance })
     })
+    pairDto.pair_type = pair.pair_type
     dtos.push(pairDto)
   })
-  const {errors} = await PromisePool
+  const { errors } = await PromisePool
     .withConcurrency(10)
     .for(allPairs)
     .process(getPairPool)
-  if((errors?.length ?? 0) > 50){
+  if ((errors?.length ?? 0) > 50) {
     throw new Error(`Too many errors: ${errors.length}/${allPairs.length} on ${chain}`)
   }
   return dtos
 }
 
-function getFactoryTvl(factory, { blacklistedPairs = []} = {}) {
+const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentrated'
+
+function getFactoryTvl(factory, { blacklistedPairs = [] } = {}) {
   return async (api) => {
     const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs })).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
 
-    const data = pairs.map(({ assets }) => ({
+    const otherPairs = pairs.filter(isNotXYK)
+    const xykPairs = pairs.filter(pair => !isNotXYK(pair))
+    otherPairs.forEach(({ assets }) => {
+      api.add(assets[0].addr, assets[0].balance)
+      api.add(assets[1].addr, assets[1].balance)
+    })
+
+    const data = xykPairs.map(({ assets }) => ({
       token0: assets[0].addr,
       token0Bal: assets[0].balance,
       token1: assets[1].addr,

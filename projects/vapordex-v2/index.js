@@ -9,4 +9,8 @@ module.exports = uniV3Export({
     factory,
     fromBlock: 312329030,
   },
+  apechain: {
+    factory,
+    fromBlock: 2671998,
+  },
 });

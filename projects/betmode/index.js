@@ -9,4 +9,16 @@ module.exports = {
       tokens: [ADDRESSES.mode.USDC],
     }),
   },
+  base: {
+    tvl: sumTokensExport({
+      owners: ["0x1C6971510c02eAe2e0a7d02A51193fE0b7286De4"],
+      tokens: [ADDRESSES.base.USDC],
+    }),
+  },
+  optimism: {
+    tvl: sumTokensExport({
+      owners: ["0x4b9d8f10bB6F50765DbeB9F8FBBF3Dace0Db8f3c"],
+      tokens: [ADDRESSES.optimism.USDC_CIRCLE],
+    }),
+  },
 };

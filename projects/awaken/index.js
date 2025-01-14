@@ -2,7 +2,7 @@ const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
 
 const GRAPH_QUERY = gql`
-  query get_tvl($dto: GetTotalValueLockedDto) {
+  query get_tvl($dto: GetTotalValueLockedDto!) {
     totalValueLocked(dto: $dto) {
       value
     }
@@ -32,13 +32,13 @@ function getChainTvl(graphUrls) {
 }
 
 const v2graph = getChainTvl({
-  aelf: "https://dapp.awaken.finance/AElfIndexer_Swap/SwapIndexerSchema/graphql",
+  aelf: "https://app.aefinder.io/awaken/995f8e7e957d43d6b1706a4e351e2e47/graphql",
 });
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'AElfIndexer_Swap' subgraph`,
-  start: 1706745600,
+  start: '2024-02-01',
   aelf: {
     tvl: v2graph("aelf"),
   },

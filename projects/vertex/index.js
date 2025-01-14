@@ -31,6 +31,23 @@ const seiConfig = {
   "perpEngine": "0x0F54f46979C62aB73D03Da60eBE044c8D63F724f"
 }
 
+const baseConfig = {
+  "querier": "0x57237f44e893468efDD568cA7dE1EA8A57d14c1b",
+  "clearinghouse": "0xE46Cb729F92D287F6459bDA6899434E22eCC48AE",
+  "clearinghouseLiq": "0xA35Cd71DDC7aab953377314a56a663E9706F1354",
+  "endpoint": "0x92C2201D48481e2d42772Da02485084A4407Bbe2",
+  "spotEngine": "0xe818be1DA4E53763bC77df904aD1B5A1C5A61626",
+  "perpEngine": "0x5BD184F408932F9E6bA00e44A071bCCb8977fb47"
+}
+
+const sonicConfig = {
+  "querier": "0xcC7895C391041231BfB5837A6923A4A26586d14f",
+  "clearinghouse": "0x447c9aEe069F6A13007eb9D2d2a4Bb4Ad92AB721",
+  "clearinghouseLiq": "0xd52e4Cb7D6e769a4957C9Da1bd33E0B12D956789",
+  "endpoint": "0x2f5F835d778eBE8c28fC743E50EB9a68Ca93c2Fa",
+  "spotEngine": "0xEa555556ab1973973e4f9d3378277Ab156de783d",
+  "perpEngine": "0x9100770dE5268B969e540650D003D909d5012826"
+}
 
 module.exports = {
   arbitrum: {
@@ -48,7 +65,19 @@ module.exports = {
   sei: {
     tvl: sumTokensExport({
       owners: [seiConfig.clearinghouse, seiConfig.endpoint],
-      tokens: [ADDRESSES.sei.USDC, ADDRESSES.sei.USDT],
+      tokens: [ADDRESSES.sei.USDC, ADDRESSES.sei.WSEI],
+    })
+  },
+  base: {
+    tvl: sumTokensExport({
+      owners: [baseConfig.clearinghouse, baseConfig.endpoint],
+      tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH],
+    })
+  },
+  sonic: {
+    tvl: sumTokensExport({
+      owners: [sonicConfig.clearinghouse, sonicConfig.endpoint],
+      tokens: [ADDRESSES.sonic["USDC.e"], ADDRESSES.sonic.wS],
     })
   }
 }

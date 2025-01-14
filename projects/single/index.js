@@ -101,7 +101,7 @@ const getHelpers = (chain) => {
 }
 
 module.exports = {
-  start: 1643186078,
+  start: '2022-01-26',
   // if we can backfill data with your adapter. Most SDK adapters will allow this, but not all. For example, if you fetch a list of live contracts from an API before querying data on-chain, timetravel should be 'false'.
   //if you have used token substitutions at any point in the adapter this should be 'true'.
   misrepresentedTokens: true,

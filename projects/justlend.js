@@ -1,6 +1,44 @@
-const { compoundExports2 } = require('./helper/compound')
+const { unhexifyTarget, } = require('@defillama/sdk/build/abi/tron');
 const ADDRESSES = require('./helper/coreAssets.json')
+const { sumTokens } = require('./helper/sumTokens')
+
+const comptroller = 'TGjYzgCyPobsNS9n6WcbdLVR9dH7mWqFx7'
 
 module.exports = {
-  tron: compoundExports2({ comptroller: 'TGjYzgCyPobsNS9n6WcbdLVR9dH7mWqFx7', cether: '0x2c7c9963111905d29eb8da37d28b0f53a7bb5c28', cetheEquivalent: ADDRESSES.null, transformAdressRaw: i => 'tron:' + i }),
+  tron: {
+    tvl, borrowed,
+  },
 };
+
+async function tvl(api) {
+  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(unhexifyTarget)
+  const cMarkets = ['TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP']
+  const tokensAndOwners = []
+  const otherMarkets = []
+  for (let i = 0; i < markets.length; i++) {
+    if (cMarkets.includes(markets[i])) {
+      tokensAndOwners.push([ADDRESSES.null, markets[i]])
+    } else
+      otherMarkets.push(markets[i])
+  }
+
+  const underlyings = await api.multiCall({ abi: 'address:underlying', calls: otherMarkets })
+  underlyings.forEach((t, i) => tokensAndOwners.push([t, otherMarkets[i]]))
+  return sumTokens({ chain: 'tron', tokensAndOwners })
+}
+
+async function borrowed(api) {
+  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(unhexifyTarget)
+  const cMarkets = ['TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP']
+  const otherMarkets = []
+  for (let i = 0; i < markets.length; i++) {
+    if (!cMarkets.includes(markets[i]))
+      otherMarkets.push(markets[i])
+  }
+
+  const underlyings = await api.multiCall({ abi: 'address:underlying', calls: otherMarkets })
+  const uBorrowed = await api.multiCall({ abi: 'uint256:totalBorrows', calls: otherMarkets })
+  const cBorrowed = await api.multiCall({ abi: 'uint256:totalBorrows', calls: cMarkets })
+  api.add(underlyings, uBorrowed)
+  api.add(ADDRESSES.null, cBorrowed)
+}

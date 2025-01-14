@@ -10,6 +10,9 @@ const config = {
     ['0x703Bd8115E6F21a37BB5Df97f78614ca72Ad7624', 35259725],
     ['0x7573B99BC09c11Dc0427fb9c6662bc603E008304', 35163914],
   ],
+  arbitrum: [
+    ['0xE0e2Ba143EE5268DA87D529949a2521115987302', 248291297 ]
+  ]
 }
 
 Object.keys(config).forEach(chain => {

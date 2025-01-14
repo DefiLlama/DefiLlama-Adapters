@@ -8,7 +8,6 @@ const wbETHvault = "0xB72dA4A9866B0993b9a7d842E5060716F74BF262";
 const rETHvault = "0x090B2787D6798000710a8e821EC6111d254bb958"
 
 module.exports = {
-  start: 17990141,
   ethereum: {
     tvl: sumTokensExport({ tokensAndOwners2: [[ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.WSTETH, "0xa2e3356610840701bdf5611a53974510ae27e2e1", ADDRESSES.ethereum.RETH], [stETHvault, wstETHvault, wbETHvault, rETHvault]] }),
   }

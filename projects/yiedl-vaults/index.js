@@ -90,6 +90,6 @@ module.exports = {
     optimism: {
     tvl,
   },
-  start: 1703073600, // 2023-12-20 12:00:00 UTC
+  start: '2023-12-20', // 2023-12-20 12:00:00 UTC
   methodology: 'Calculates the total value of positions held by the YIEDL Vaults in Synthetix Perpetuals.'
 };

@@ -5,6 +5,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  deadFrom: '2023-03-22',
   timetravel: false,
   ethereum: { tvl: () => ({}), },
   polygon: { tvl: () => ({}), },

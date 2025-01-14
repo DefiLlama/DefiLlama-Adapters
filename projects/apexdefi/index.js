@@ -2,8 +2,8 @@ const { staking } = require('../helper/staking')
 const ADDRESSES = require('../helper/coreAssets.json');
 
 const config = {
-  avax: { factory: "0x3D193de151F8e4e3cE1C4CB2977F806663106A87", wrapperFactory: '0x39aB4aabAd7656f94E32ebD90547C3c4a183f4B4' },
-  base: { factory: "0x4ccf7aa5736c5e8b6da5234d1014b5019f50cb56", wrapperFactory: '0xc9fbf1e865eeababe92d47ddb11d580f37ce4e00' },
+  avax: { factory: "0x754A0c42C35562eE7a41eb824d14bc1259820f01", wrapperFactory: '0x39aB4aabAd7656f94E32ebD90547C3c4a183f4B4' },
+  base: { factory: "0x10d11Eb1d5aB87E65518458F990311480b321061", wrapperFactory: '0xc9fbf1e865eeababe92d47ddb11d580f37ce4e00' },
   ethereum: { factory: "0x820c889D5749847217599B43ab86FcC91781019f", },
 }
 

@@ -47,7 +47,7 @@ async function avax(timestamp, _, { avax: block }) {
 }
 
 module.exports = {
-  start: 1609459200, // unix timestamp (utc 0) specifying when the project began, or where live data begins
+  start: '2021-01-01', // unix timestamp (utc 0) specifying when the project began, or where live data begins
   ethereum: { tvl },
   arbitrum: { tvl: arbitrum },
   avax: { tvl: avax },

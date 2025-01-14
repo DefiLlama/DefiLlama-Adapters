@@ -20,7 +20,6 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true,
   methodology: "Calculates the total USDM Supply",
-  start: 16685700,
   ethereum: {
     tvl,
   },

@@ -1,139 +1,35 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { getConfig } = require('../helper/cache')
-const BigNumber = require("bignumber.js");
+const { getConfig } = require('../helper/cache');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 module.exports = {
-    tvlV1Eth,
-    tvlV1Bsc
+  tvlV1Eth,
+  tvlV1Bsc
 }
 
-async function tvlV1Eth({timestamp}, block) {
-    const startTimestamp = 1602054167;
-    const startBlock = 11007158;
-  
-    if (timestamp < startTimestamp || block < startBlock) {
-      return BigNumber(0);
-    }
-    return tvlV1("ethereum", block, "https://homora.alphafinance.io/static/contracts.json", "WETHAddress", "totalETH")
+async function tvlV1Eth(api) {
+  return tvlV1(api, "https://homora.alphafinance.io/static/contracts.json")
 }
 
 const wBNB = ADDRESSES.bsc.WBNB
-async function tvlV1Bsc(timestamp, block, chainBlocks) {
-    const tvlBNB = await tvlV1("bsc", chainBlocks.bsc, "https://homora-bsc.alphafinance.io/static/contracts.json", "WBNBAddress", "totalBNB")
-    return {
-        ["bsc:"+wBNB]: tvlBNB.toFixed(0)
-    }
+async function tvlV1Bsc(api) {
+  await tvlV1(api, "https://homora-bsc.alphafinance.io/static/contracts.json")
 }
 
-async function tvlV1(chain, block, contractsUrl, wrappedBaseName, totalEthMethodName) {
-    const data = await getConfig('alpha-hormora/v1/'+chain,
-      contractsUrl
-    );
-  
-    const bankAddress = data.bankAddress.toLowerCase();
-    const WETHAddress = data[wrappedBaseName].toLowerCase();
-  
-    let pools = data.pools;
-  
-    const uniswapPools = pools.filter(
-      (pool) => pool.id === undefined
-    );
-  
-    const sushiswapPools = pools.filter(
-      (pool) => pool.id !== undefined
-    );
-    pools = [...uniswapPools, ...sushiswapPools];
-  
-    const { output: _totalETH } = await sdk.api.abi.call({
-      target: bankAddress,
-      block,
-      chain,
-      abi: 'uint256:'+totalEthMethodName,
-    });
-  
-    const totalETH = BigNumber(_totalETH);
-  
-    const { output: _totalDebt } = await sdk.api.abi.call({
-      target: bankAddress,
-      block,
-      chain,
-      abi: abi["glbDebtVal"],
-    });
-  
-    const totalDebt = BigNumber(_totalDebt);
-  
-    // Uniswap Pools
-    const { output: _UnilpTokens } = await sdk.api.abi.multiCall({
-      calls: uniswapPools.map((pool) => ({
-        target: pool.lpStakingAddress,
-        params: [pool.goblinAddress],
-      })),
-      chain,
-      abi: abi["balanceOf"],
-      block,
-    });
-  
-    // Sushiswap Pools
-    const { output: _SushilpTokens } = await sdk.api.abi.multiCall({
-      calls: sushiswapPools.map((pool) => ({
-        target: pool.lpStakingAddress,
-        params: [pool.id, pool.goblinAddress],
-      })),
-      chain,
-      abi: abi["userInfo"],
-      block,
-    });
-  
-    const _lpTokens = [
-      ..._UnilpTokens,
-      ..._SushilpTokens.map((x) => ({
-        output: x.output[0],
-      })),
-    ];
-  
-    const lpTokens = _lpTokens.map((_lpToken) => BigNumber(_lpToken.output || 0));
-  
-    const { output: _totalETHOnStakings } = await sdk.api.abi.multiCall({
-      calls: pools.map((pool) => ({
-        target: WETHAddress,
-        params: [pool.lpTokenAddress],
-      })),
-      chain,
-      abi: abi["balanceOf"],
-      block,
-    });
-  
-    const totalETHOnStakings = _totalETHOnStakings.map((stake) =>
-      BigNumber(stake.output || 0)
-    );
-  
-    const { output: _totalLpTokens } = await sdk.api.abi.multiCall({
-      calls: pools.map((pool) => ({
-        target: pool.lpTokenAddress,
-      })),
-      chain,
-      abi: abi["totalSupply"],
-      block,
-    });
-  
-    const totalLpTokens = _totalLpTokens.map((_totalLpToken) =>
-      BigNumber(_totalLpToken.output || 0)
-    );
-  
-    const unUtilizedValue = totalETH.minus(totalDebt);
-  
-    let tvl = BigNumber(unUtilizedValue);
-    for (let i = 0; i < lpTokens.length; i++) {
-      if (totalLpTokens[i].gt(0)) {
-        const amount = lpTokens[i]
-          .times(totalETHOnStakings[i])
-          .div(totalLpTokens[i])
-          .times(BigNumber(2));
-  
-        tvl = tvl.plus(amount);
-      }
-    }
-    return tvl;
-  }
+async function tvlV1(api, contractsUrl) {
+  const data = await getConfig('alpha-hormora/v1/' + api.chain, contractsUrl);
+
+  const bankAddress = data.bankAddress
+
+  let pools = data.pools.map(i => i.goblinAddress)
+  const tokens = await api.multiCall({  abi: 'address:lpToken', calls: pools })
+  const shares = await api.multiCall({  abi: 'uint256:totalShare', calls: pools })
+  const bals = await api.multiCall({  abi: 'function shareToBalance(uint256) view returns (uint256)', calls: shares.map((v, i) => ({ target: pools[i], params: v})) })
+  api.add(tokens, bals)
+  const totalEthMethodName = api.chain === 'bsc' ? 'totalBNB' : 'totalETH';
+  const totalETH = await api.call({ target: bankAddress, abi: 'uint256:' + totalEthMethodName, });
+  const totalDebt = await api.call({ target: bankAddress, abi: abi.glbDebtVal, });
+  api.addGasToken(totalETH - totalDebt);
+  return sumTokens2({ api, resolveLP: true})
+}

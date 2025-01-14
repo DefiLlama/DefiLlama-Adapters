@@ -40,7 +40,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
   }
 
   module.exports = {
-    start: 1538179200,  // 09/29/2018 @ 12:00am (UTC)
+    start: '2018-09-29',  // 09/29/2018 @ 12:00am (UTC)
     ethereum: { tvl },
    hallmarks:[
     [1611630974, "Series B $10M"],

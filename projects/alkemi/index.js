@@ -71,6 +71,6 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   methodology: "TVL consists of Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn, Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn Open, and does NOT currently consider assets borrowed",
-  start: 1609380306,        // unix timestamp (utc 0) specifying when the project began, or where live data begins
+  start: '2020-12-31',        // unix timestamp (utc 0) specifying when the project began, or where live data begins
   ethereum: { tvl }                       // tvl adapter
 };

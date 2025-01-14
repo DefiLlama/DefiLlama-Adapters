@@ -45,7 +45,6 @@ const config = {
 module.exports = {
   doublecounted: true,
   methodology: 'The sum of the balance of all listed collateral and lend tokens in all deployed pools.',
-  start: 88774917,
 };
 
 Object.keys(config).forEach(chain => {

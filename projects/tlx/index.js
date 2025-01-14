@@ -41,7 +41,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1712731500,
+  start: '2024-04-10',
   methodology:
     "Total TLX locked in the genesis locker contract and total TLX staked in the staking contract. TVL is computed as the total margin deposited across the protocol's leveraged tokens.",
   optimism: {

@@ -13,7 +13,7 @@ const tvlTokens = [ADDRESSES.polygon.WETH_1, // WETH
 
 module.exports = {
     methodology: 'counts all USDC/WBTC/WETH/GHST balances of market contracts.',
-    start: 1677225600, // 24 Feb 2023 08:00:00 UTC
+    start: '2023-02-24', // 24 Feb 2023 08:00:00 UTC
     polygon: {
         tvl: sumTokensExport({ owners: markets, tokens: tvlTokens, }),
     }

@@ -11,4 +11,4 @@ module.exports = {
     })
   },
   misrepresentedTokens: true,
-} // node test.js projects/moonswap/index.js
+}

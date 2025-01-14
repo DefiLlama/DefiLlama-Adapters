@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
-const { getTokenSupply } = require('../helper/solana')
 
 const ethGraphUrl = sdk.graph.modifyEndpoint('AJaQdD8DUunuwHCbAsZk5h62AfyNG1etRtK9EcDH7gwH');
 const bscGraphUrl =
@@ -152,20 +151,17 @@ async function solana() {
         ["renLUNA", "8wv2KAykQstNAj2oW6AHANGBiFKVFhvMiyyzzjhkmGvE"],
     ]
     const balances = {}
-    await Promise.all(tokens.map(async token => {
-        balances[symbol(token[0])] = await getTokenSupply(token[1])
-    }))
     return balances
 }
 
 module.exports = {
-        solana: {
+    solana: {
         tvl: solana
     },
     ethereum: {
         tvl: eth,
     },
-    avax:{
+    avax: {
         tvl: avax,
     },
     bsc: {
@@ -187,3 +183,6 @@ module.exports = {
         tvl: optimism
     },
 };
+
+
+Object.values(module.exports).forEach(chainExports => chainExports.tvl = () => ({}))

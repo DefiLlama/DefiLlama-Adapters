@@ -16,6 +16,7 @@ async function transformInjectiveAddress() {
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
+    if (addr.startsWith('injective:') || addr.startsWith('ethereum:')) return addr
     return `injective:${addr}`;
   };
 }
@@ -112,7 +113,7 @@ async function getChainTransform(chain) {
     if (chain === 'aura' && addr.startsWith('aura')) return chainStr
     if (chain === 'massa' && addr.startsWith('AS1')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    if (addr.startsWith('0x') || ['solana', 'kava', 'renec'].includes(chain)) return chainStr
+    if (addr.startsWith('0x') || ['solana', 'kava', 'renec', 'eclipse'].includes(chain)) return chainStr
     return addr
   };
 }

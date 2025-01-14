@@ -1,7 +1,0 @@
-{
-  "getCurrentTokens": "address[]:getCurrentTokens",
-  "get_virtual_price": "uint256:get_virtual_price",
-  "getPricePerFullShare": "uint256:getPricePerFullShare",
-  "balanceOfUnderlying": "function balanceOfUnderlying(address owner) returns (uint256)",
-  "underlying": "address:underlying"
-}

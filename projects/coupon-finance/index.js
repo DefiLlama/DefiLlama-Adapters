@@ -69,7 +69,6 @@ module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
   methodology: "TVL consists of deposit and collateral in the Coupon Finance contract",
-  start: 150536505,
   arbitrum: {
     tvl,
   },

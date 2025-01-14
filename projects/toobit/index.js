@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -7,9 +8,7 @@ const config = {
     ],
   },
   bitcoin: {
-    owners: [
-        '3926KKKCqcLaWpAau73TMo19sNv23s1wji'
-    ]
+    owners: bitcoinAddressBook.toobit
   },
   bsc: {
     owners: [

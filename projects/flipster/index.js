@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -12,9 +13,7 @@ const config = {
     ]
   },  
   bitcoin: {
-    owners: [
-        '31iAUikiV7yKEYBzbA1iHPcanHNsLBFe8C'
-    ]
+    owners: bitcoinAddressBook.flipster
   },  
   arbitrum: {
     owners: [

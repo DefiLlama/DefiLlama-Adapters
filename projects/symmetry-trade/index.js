@@ -12,7 +12,6 @@ const TOKENS = [
 
 module.exports = {
     methodology: 'counts the token deposited in market contract',
-    start: 923000,
     scroll: {
         tvl: sumTokensExport({ owner: MARKET_CONTRACT, tokens: TOKENS}),
     }

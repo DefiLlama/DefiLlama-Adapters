@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
   methodology: "Total USDC locked in the Vest Exchange.",
-  start: 1710709200,
+  start: '2024-03-17',
   era: {
     tvl: staking([
         "0xf7483A1464DeF6b8d5A6Caca4A8ce7E5be8F1F68",

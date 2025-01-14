@@ -36,7 +36,6 @@ async function tvl(_, block) {
 module.exports = {
   misrepresentedTokens: true,
   methodology: 'Gets the value of all tokens managed through frigg.eco universe',
-  start: 15575809,
   ethereum: {
     tvl
   },

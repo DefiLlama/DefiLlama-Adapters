@@ -10,7 +10,7 @@ const tokens = [
     ["0xf5a5f547612e95c688971fb68334a80ceb3c542b", true], // MINO-DAI
     ["0x1c139f4b953ce0c0f6aa1cd1755727ad5aba5080", true], // MINO-WCRO
     [ADDRESSES.cronos.WBTC, false], // WBTC
-    ["0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23", false], // WCRO
+    [ADDRESSES.cronos.WCRO_1, false], // WCRO
     ["0xe44fd7fcb2b1581822d0c862b68222998a0c299a", false] // WETH
 ];
 

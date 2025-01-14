@@ -9,6 +9,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "ripple-binary-codec": "^2.1.0"
+    "ripple-binary-codec": "^2.1.0",
+    "xrpl": "^4.0.0"
   }
 }

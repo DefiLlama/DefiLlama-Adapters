@@ -11,7 +11,6 @@ async function tvl() {
 
 module.exports = {
   timetravel: false, // need to add code to fetch osmosis block
-  start: 5887991,
   osmosis: {
     tvl,
   },

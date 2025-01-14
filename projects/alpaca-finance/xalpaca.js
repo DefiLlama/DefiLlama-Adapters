@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { getConfig } = require('../helper/cache')
 
@@ -18,25 +17,14 @@ async function getProcolXAlpacaAddresses(chain) {
     )
   }
 }
-  
 
-async function calxALPACAtvl(chain, block) {
-  const xalpacaAddresses = await getProcolXAlpacaAddresses(chain);
 
-  const xalpacaTVL = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.xalpacaTotalSupply,
-      calls: [
-        {
-          target: xalpacaAddresses["xALPACA"],
-        },
-      ],
-      chain,
-    })
-  ).output;
+async function calxALPACAtvl(api) {
+  const xalpacaAddresses = await getProcolXAlpacaAddresses(api.chain);
+
+  const xalpacaTVL = await api.call({ abi: abi.xalpacaTotalSupply, target: xalpacaAddresses["xALPACA"], })
   const alpacaAddress = xalpacaAddresses["Tokens"]["ALPACA"];
-  return { [`${chain}:${alpacaAddress}`]: xalpacaTVL[0].output };
+  api.add(alpacaAddress, xalpacaTVL)
 }
 
 module.exports = {
