@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const farmAbi = require("./farm-Abi.json");
 
@@ -48,7 +49,6 @@ async function staking(api) {
 module.exports = {
   methodology: `FARM: return total assets of farm and buyNburn
 `,
-
   pulse: {
     staking,
     tvl,
