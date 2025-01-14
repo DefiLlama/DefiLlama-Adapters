@@ -41,7 +41,7 @@ async function stakingTvl(_, _b, _cb, { api }) {
 module.exports = {
   methodology: 'TVL of ParagonsDAO corresponds to the staking of PDT tokens in the staking contract.',
   start: 18751707, // Update with the block or timestamp when staking started
-  base: {
+  paragonsdao :{
     tvl: async () => ({}), // leave protocol TVL as empty
     staking: stakingTvl,
   },
