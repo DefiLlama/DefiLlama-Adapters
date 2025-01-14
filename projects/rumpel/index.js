@@ -7,6 +7,7 @@ const CONTRACTS = {
   ETHENA_LP_STAKING: "0x8707f238936c12c309bfc2B9959C35828AcFc512",
   MORPHO_BLUE: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
   ZIRCUIT_RESTAKING_POOL: "0xF047ab4c75cebf0eB9ed34Ae2c186f3611aEAfa6",
+  FLUID_POSITION_RESOLVER: "0x3E3dae4F30347782089d398D462546eb5276801C",
 };
 
 const DEPLOYMENT = {
@@ -22,6 +23,7 @@ const TOKENS = {
   USDE: ADDRESSES.ethereum.USDe,
   WSTETH: ADDRESSES.ethereum.WSTETH,
   WBTC: ADDRESSES.ethereum.WBTC,
+  AMPHRETH:"0x5fD13359Ba15A84B76f7F87568309040176167cd",
   WEETH: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
   WEETHS: "0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
   MSTETH: "0x49446A0874197839D15395B908328a74ccc96Bc0",
@@ -34,7 +36,25 @@ const TOKENS = {
   KWEETH: "0x2DABcea55a12d73191AeCe59F508b191Fb68AdaC",
   DC_WSTETH_COLLATERAL: "0xC329400492c6ff2438472D4651Ad17389fCb843a",
   DC_SUSDE_COLLATERAL: "0x19d0D8e6294B7a04a2733FE433444704B791939A",
+  DC_LBTC_COLLATERAL: "0x9C0823D3A1172F9DdF672d438dec79c39a64f448",
+  YT_EBTC: "0xeB993B610b68F2631f70CA1cf4Fe651dB81f368e",
+  YT_WEETHK: "0x7B64b99A1fd80b6c012E354a14ADb352b5916CE1",
+  YT_AGETH: "0x3568f1d2e8058F6D99Daa17051Cb4a2930C83978",
+  YT_WEETHS: "0x719B51Dd92B7809A80A2E8c91D89367BF58f1D7A",
+  YT_SUSDE: "0xbE05538f48D76504953c5d1068898C6642937427",
+  YT_USDE: "0x5D8B3cd632c58D5CE75C2141C1C8b3b0C209b3ed",
+  YT_RE7LRT: "0x89E7f4E5210A77Ac0f20511389Df71eC98ce9971",
+  YT_RSTETH: "0x11CCff2F748a0100dBd457FF7170A54e12064Aba",
+  YT_AMPHRETH: "0x5dB8a2391a72F1114BbaE30eFc9CD89f4a29F988",
 };
+
+const FLUID_VAULTS = [
+  { VAULT: "0xeAEf563015634a9d0EE6CF1357A3b205C35e028D", TOKEN: TOKENS.WEETH },
+  { VAULT: "0x1c6068eC051f0Ac1688cA1FE76810FA9c8644278", TOKEN: TOKENS.WEETHS },
+  { VAULT: "0x3996464c0fCCa8183e13ea5E5e74375e2c8744Dd", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0xBc345229C1b52e4c30530C614BB487323BA38Da5", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0xe210d8ded13Abe836a10E8Aa956dd424658d0034", TOKEN: TOKENS.SUSDE },
+]
 
 const MORPHO_SUSDE_MARKET_ID =
   "0x39d11026eae1c6ec02aa4c0910778664089cdd97c3fd23f68f7cd05e2e95af48";
@@ -42,7 +62,7 @@ const MORPHO_SUSDE_MARKET_ID =
 async function tvl(api) {
   const owners = await getOwners(api);
 
-  await Promise.all([sumBaseTokens, handleLockedUSDE, handleMorphoSuppliedSUSDE, handleZircuitAssets, handleStrategyTokenBalances].map(async (fn) => fn()));
+  await Promise.all([sumBaseTokens, handleLockedUSDE, handleMorphoSuppliedSUSDE, handleZircuitAssets, handleStrategyTokenBalances, handleFluidPositions].map(async (fn) => fn()));
 
   async function sumBaseTokens() {
     return api.sumTokens({
@@ -69,8 +89,21 @@ async function tvl(api) {
     api.add(TOKENS.USDE, positions.map(i => i.amount))
   }
 
+  async function handleFluidPositions() {
+    const positions = await api.multiCall({
+      target: CONTRACTS.FLUID_POSITION_RESOLVER,
+      abi: "function getAllVaultPositions(address) view returns ((uint256,address owner,uint256 supply,uint256)[])",
+      calls: FLUID_VAULTS.map(({ VAULT }) => ({ params: [VAULT] })),
+    });
+
+    for (let i = 0; i < positions.length; i++) {
+      const rumpelPositions = positions[i].filter(i => owners.includes(i.owner));
+      api.add(FLUID_VAULTS[i].TOKEN, rumpelPositions.map(i => i.supply))
+    }
+  }
+
   async function handleZircuitAssets() {
-    const assets = [TOKENS.WEETH, TOKENS.WEETHS, TOKENS.USDE, TOKENS.MSTETH]
+    const assets = [TOKENS.WEETH, TOKENS.WEETHS, TOKENS.USDE, TOKENS.MSTETH, TOKENS.AMPHRETH]
     const calls = []
     for (const asset of assets)
       for (const owner of owners)
@@ -91,6 +124,15 @@ async function tvl(api) {
       TOKENS.RSTETH,
       TOKENS.RE7LRT,
       TOKENS.RE7RWBTC,
+      TOKENS.YT_EBTC,
+      TOKENS.YT_WEETHK,
+      TOKENS.YT_AGETH,
+      TOKENS.YT_WEETHS,
+      TOKENS.YT_SUSDE,
+      TOKENS.YT_USDE,
+      TOKENS.YT_RE7LRT,
+      TOKENS.YT_RSTETH,
+      TOKENS.YT_AMPHRETH,
     ]
     return api.sumTokens({ owners, tokens })
   }

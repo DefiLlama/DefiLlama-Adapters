@@ -1,7 +1,7 @@
 const { queryContract } = require('../helper/chain/cosmos')
 const { getConfig } = require('../helper/cache')
 
-async function tvl(api) {
+async function tvlOsmosis(api) {
   const data = await getConfig('quasar-vaults', 'https://api.quasar.fi/vaults')
   const vaults = data.filter(i => i.chainId === 'osmosis-1').map(i => i.address)
   for (const vault of vaults) {
@@ -11,10 +11,22 @@ async function tvl(api) {
   return api.getBalances()
 }
 
+async function tvlEthereum(api) {
+  const data = await getConfig('quasar-vaults', 'https://api.quasar.fi/vaults')
+  const vaults = data.filter(i => i.chainId === 1).map(i => i.address)
+  const tvlRes = await api.multiCall({ abi: 'function underlyingTvl() view returns (address[] tokens, uint256[] bals)', calls: vaults })
+  tvlRes.forEach(({ tokens, bals }) => {
+    api.add(tokens, bals)
+  })
+}
+
 module.exports = {
   timetravel: false,
   methodology: 'Total TVL on vaults',
   osmosis: {
-    tvl,
+    tvl: tvlOsmosis,
   },
+  ethereum: {
+    tvl: tvlEthereum
+  }
 }

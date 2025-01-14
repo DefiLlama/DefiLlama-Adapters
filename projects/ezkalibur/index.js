@@ -7,7 +7,7 @@ const SWORD_WETH_LP = '0xc8b6b3a4d2d8428ef3a940eac1e32a7ddadcb0f1'
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 1686309181,
+  start: '2023-06-09',
   era: {
     tvl: getUniTVL({ factory: '0x15C664A62086c06D43E75BB3fddED93008B8cE63', useDefaultCoreAssets: true,  }),
     staking: stakingPricedLP(xSWORD,SWORD_TOKEN,'era',SWORD_WETH_LP,'weth')
