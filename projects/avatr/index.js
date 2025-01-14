@@ -26,6 +26,7 @@ module.exports = {
   hallmarks: [
     [1682726400, "Rug Pull"]
   ],
+  deadFrom: '2023-04-29',
   ethereum: {
     tvl,
   },
