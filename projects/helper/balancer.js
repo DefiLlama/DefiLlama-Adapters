@@ -34,6 +34,29 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
   }
 }
 
+function v3Tvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], onlyUseExistingCache, permitFailure } = {}) {
+  return async (api) => {
+    const regsistedEvents = "event PoolRegistered(address indexed pool, address indexed factory, (address token, uint8 tokenType, address rateProvider, bool paysYieldFees)[] tokenConfig, uint256 swapFeePercentage, uint32 pauseWindowEndTime, (address pauseManager, address swapFeeManager, address poolCreator) roleAccounts, (bool enableHookAdjustedAmounts, bool shouldCallBeforeInitialize, bool shouldCallAfterInitialize, bool shouldCallComputeDynamicSwapFee, bool shouldCallBeforeSwap, bool shouldCallAfterSwap, bool shouldCallBeforeAddLiquidity, bool shouldCallAfterAddLiquidity, bool shouldCallBeforeRemoveLiquidity, bool shouldCallAfterRemoveLiquidity, address hooksContract) hooksConfig, (bool disableUnbalancedLiquidity, bool enableAddLiquidityCustom, bool enableRemoveLiquidityCustom, bool enableDonation) liquidityManagement)"
+
+    const logs = await getLogs({
+      api,
+      target: vault,
+      fromBlock,
+      eventAbi: regsistedEvents,
+      onlyArgs: true,
+      extraKey: 'PoolRegistered',
+      topics: ['0xbc1561eeab9f40962e2fb827a7ff9c7cdb47a9d7c84caeefa4ed90e043842dad'],
+      onlyUseExistingCache,
+    })
+
+    const pools = logs.map(i => i.pool)
+    const tokens = logs.map(i => i.tokenConfig.map(i => i.token)).flat()
+
+    blacklistedTokens = [...blacklistedTokens, ...pools].map(i => i.toLowerCase())
+    return api.sumTokens({ owner: vault, tokens })
+  }
+}
+
 function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
   return async (api) => {
     let poolLogs = await getLogs({
@@ -52,7 +75,7 @@ function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
   }
 }
 
-function balV2GraphExport({ vault,  blacklistedTokens = [], graphURL, name, permitFailure, }) {
+function balV2GraphExport({ vault, blacklistedTokens = [], graphURL, name, permitFailure, }) {
   return async (api) => {
     if (!graphURL) {
       throw new Error('graphURL is required')
@@ -61,7 +84,7 @@ function balV2GraphExport({ vault,  blacklistedTokens = [], graphURL, name, perm
       throw new Error('name is required (it is used as id for caching)')
     }
     const query = `{ tokens(first: 1000) { address } }`
-    const tokens  = (await cachedGraphQuery(name, graphURL, query)).tokens.map(t => t.address)
+    const tokens = (await cachedGraphQuery(name, graphURL, query)).tokens.map(t => t.address)
     return sumTokens2({ api, owner: vault, tokens, blacklistedTokens, permitFailure })
   }
 }
@@ -70,4 +93,5 @@ module.exports = {
   onChainTvl,
   v1Tvl,
   balV2GraphExport,
+  v3Tvl,
 };

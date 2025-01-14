@@ -13,6 +13,7 @@ function transformAddress(addr) {
 }
 
 const endpoint = "https://rpc.mainnet.near.org"
+// const endpoint = "https://near.lava.build"
 
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
@@ -50,6 +51,9 @@ const tokenMapping = {
   'blackdragon.tkn.near': { name: 'black-dragon', decimals: 24 },
   'gear.enleap.near': { name: 'near-tinker-union-gear', decimals: 18 },
   'token.0xshitzu.near': { name: 'shitzu', decimals: 18 },
+  'purge-558.meme-cooking.near': { name: 'forgive-me-father', decimals: 18 },
+  'mpdao-token.near': { name: 'meta-pool-dao', decimals: 6 },
+  'kat.token0.near': { name: 'nearkat', decimals: 18 },
 }
 
 async function view_account(account_id) {

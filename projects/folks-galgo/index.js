@@ -15,3 +15,16 @@ module.exports = {
     },
   },
 };
+
+module.exports.hallmarks = [
+  [1664553600, "Algorand Governance Recommitment"], //5
+  [1672502400, "Algo Gov"], //6
+  [1680278400, "Algo Gov"], //7
+  [1688140800, "Algo Gov"], //8
+  [1696089600, "Algo Gov"], //9
+  [1704038400, "Algo Gov"], //10
+  [1711900800, "Algo Gov"], //11
+  [1719763200, "Algo Gov"], //12
+  [1727712000, "Algo Gov"], //13
+  [1735660800, "Algo Gov"], //14
+]

@@ -18,6 +18,7 @@
     "cryptoFactory": "function get_coins(address _pool) view returns (address[2])",
     "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])",
     "CurveStableswapFactoryNG": "function get_coins(address _pool) view returns (address[])",
-    "CurveL2TricryptoFactory": "function get_coins(address _pool) view returns (address[3])"
+    "CurveTwocryptoFactoryNG": "function get_coins(address _pool) view returns (address[2])",
+    "CurveTricryptoFactoryNG": "function get_coins(address _pool) view returns (address[3])"
   }
 }

@@ -1,13 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const config = {
   'ethereum': {
     marketFactory: ['0x1F728c2fD6a3008935c1446a965a313E657b7904'],
     marketView: '0xAb797C4C6022A401c31543E316D3cd04c67a87fC',
-    collateralToken: '0x83F20F44975D03b1b09e64809B757c47f942BEeA'
+    collateralToken: ADDRESSES.ethereum.SDAI
   },
   'xdai': {
     marketFactory: ['0x83183DA839Ce8228E31Ae41222EaD9EDBb5cDcf1'],
     marketView: '0x995dC9c89B6605a1E8cc028B37cb8e568e27626f',
-    collateralToken: '0xaf204776c7245bf4147c2612bf6e5972ee483701'
+    collateralToken: ADDRESSES.xdai.SDAI
   },
 }
 
@@ -84,7 +85,7 @@ function calculateTotalSupply(marketsData) {
 
   // Merge child market supplies into parent markets
   marketsData.forEach((market) => {
-    if (market.parentMarket !== '0x0000000000000000000000000000000000000000') {
+    if (market.parentMarket !== ADDRESSES.null) {
       const parentSupply = marketSupplies.get(market.parentMarket);
       const childSupply = marketSupplies.get(market.id);
 
@@ -99,7 +100,7 @@ function calculateTotalSupply(marketsData) {
   // Calculate total supply of parent markets (parent markets are backed by sDAI)
   let totalSupply = 0;
   marketsData.forEach((market) => {
-    if (market.parentMarket === '0x0000000000000000000000000000000000000000') {
+    if (market.parentMarket === ADDRESSES.null) {
       const marketSupply = marketSupplies.get(market.id);
       if (marketSupply) {
         totalSupply += marketSupply.reduce((a, b) => a > b ? a : b, 0);

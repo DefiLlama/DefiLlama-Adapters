@@ -2,13 +2,13 @@ const { getProvider, sumTokens2, exportDexTVL, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
 const sdk = require('@defillama/sdk')
 
-async function tvl() {
-  const provider = getProvider()
+async function tvl(api) {
+  const provider = getProvider(api.chain)
   const programId = 'whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc'
   const program = new Program(whirpoolIDL, programId, provider)
   const whirlpools = await program.account.whirlpool.all()
-  const tokenAccounts = whirlpools.map(({ account}) => [account.tokenVaultA, account.tokenVaultB]).flat()
-  return sumTokens2({ tokenAccounts, })
+  const tokenAccounts = whirlpools.map(({ account }) => [account.tokenVaultA, account.tokenVaultB]).flat()
+  return sumTokens2({ tokenAccounts, api, })
 }
 
 /* async function orcaPoolTvlViaConfig() {
@@ -22,14 +22,15 @@ async function tvl() {
   return sumTokens2({ tokenAccounts, blacklistedTokens, })
 } */
 
-const orcaV1Tvl =  exportDexTVL('DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1')
-const orcaV2Tvl =  exportDexTVL('9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP')
+const orcaV1Tvl = exportDexTVL('DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1')
+const orcaV2Tvl = exportDexTVL('9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP')
 
 module.exports = {
   timetravel: false,
   solana: {
     tvl: sdk.util.sumChainTvls([orcaV1Tvl, orcaV2Tvl, tvl])
   },
+  eclipse: { tvl },
   hallmarks: [
     [1628565707, "Token+LM launch"],
     [1667865600, "FTX collapse"]

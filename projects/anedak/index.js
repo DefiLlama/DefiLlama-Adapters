@@ -116,10 +116,11 @@ async function fetch() {
 }
 
 module.exports = {
+  // deadFrom: '2024-08-30',
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "TVL accounts for the liquidity on all Anedak AMM pools, with all values calculated in terms of KDA price.",
   kadena: {
-    tvl: fetch,
+    tvl: () => ({}),
   },
 };

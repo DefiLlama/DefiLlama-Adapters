@@ -87,6 +87,9 @@ function pool2TVL(chain) {
 }
 
 module.exports = {
+  hallmarks : [
+    [1702598400, "Frontend was shut down"]
+  ],
   ethereum: {
     tvl: tvl('ethereum'),
     pool2: pool2TVL('ethereum'),

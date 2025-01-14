@@ -1,19 +1,22 @@
-const { sumUnknownTokens } = require('../helper/unknownTokens');
+const KAIA_GPC = '0x27397bfbefd58a437f2636f80a8e70cfc363d4ff';
+const AVALANCHE_GPC = '0x1b27D7A06DeEa4d5CB4fd60c164153C90f64281D';
 
-const GPC = '0x27397bfbefd58a437f2636f80a8e70cfc363d4ff';
+async function kaiaGpcTotalSupply(api) {
+  const supply = await api.call({ abi: 'erc20:totalSupply', target: KAIA_GPC })
+  api.add(KAIA_GPC, supply)
+}
 
-async function tvl(api) {
-  const supply = await api.call({ abi: 'erc20:totalSupply', target: GPC })
-  api.add(GPC, supply)
-
-  const lps = ['0xCd13CD31fb61345Abe7B7376A4664784622817EE']
-  return sumUnknownTokens({ api, lps, useDefaultCoreAssets: true })
+async function avalancheTotalSupply(api) {
+  const supply = await api.call({ abi: 'erc20:totalSupply', target: AVALANCHE_GPC })
+  api.add(AVALANCHE_GPC, supply)
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   klaytn: {
-    tvl,
+    tvl:kaiaGpcTotalSupply,
+  },
+  avax: {
+    tvl: avalancheTotalSupply,
   }
 }
 

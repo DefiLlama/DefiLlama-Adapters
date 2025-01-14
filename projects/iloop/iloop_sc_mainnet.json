@@ -1,0 +1,169 @@
+{
+  "address": "3i8rGP3ex8cjs7YYWrQeE4nWizuaStsVNUXpRGtMbs3H",
+  "metadata": {
+    "name": "iloop_sc",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Reserve",
+      "discriminator": [
+        43,
+        242,
+        204,
+        202,
+        26,
+        247,
+        59,
+        127
+      ]
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "Reserve",
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lending_market",
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidity_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidity_supply",
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidity_supply_amount",
+            "type": "u64"
+          },
+          {
+            "name": "liquidity_price",
+            "type": "u64"
+          },
+          {
+            "name": "liquidity_price_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "liquidity_price_max_age_price_seconds",
+            "type": "u64"
+          },
+          {
+            "name": "liquidity_price_updated_at",
+            "type": "u64"
+          },
+          {
+            "name": "collateral_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral_supply",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral_supply_amount",
+            "type": "u64"
+          },
+          {
+            "name": "borrow_rate",
+            "type": "u64"
+          },
+          {
+            "name": "deposit_rate",
+            "type": "u64"
+          },
+          {
+            "name": "borrow_enabled",
+            "type": "u64"
+          },
+          {
+            "name": "borrowed_amount",
+            "type": "u64"
+          },
+          {
+            "name": "borrowed_collateral_amount",
+            "type": "u64"
+          },
+          {
+            "name": "max_withdraw_per_day",
+            "type": "u64"
+          },
+          {
+            "name": "withdrew_today",
+            "type": "u64"
+          },
+          {
+            "name": "last_withdrew_at",
+            "type": "i64"
+          },
+          {
+            "name": "margin_rate",
+            "type": "u64"
+          },
+          {
+            "name": "optimal_utilization_rate_1",
+            "type": "u64"
+          },
+          {
+            "name": "optimal_utilization_rate_2",
+            "type": "u64"
+          },
+          {
+            "name": "max_borrow_rate",
+            "type": "u64"
+          },
+          {
+            "name": "reserve_factor",
+            "type": "u64"
+          },
+          {
+            "name": "max_multiply",
+            "type": "u64"
+          },
+          {
+            "name": "max_supply",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation_threshold",
+            "type": "u64"
+          },
+          {
+            "name": "liquidation_penalty",
+            "type": "u64"
+          },
+          {
+            "name": "flash_loan_enabled",
+            "type": "u64"
+          },
+          {
+            "name": "utilization_cap",
+            "type": "u64"
+          },
+          {
+            "name": "apy",
+            "type": "u64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}

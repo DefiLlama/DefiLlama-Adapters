@@ -30,10 +30,15 @@ module.exports = {
 
       return sumTokens2({
         api,
-        chain: "bob",
         tokens: [
           ADDRESSES.bob.WBTC,
           ADDRESSES.bob.TBTC,
+          ADDRESSES.bob.SolvBTC,
+          ADDRESSES.bob.SolvBTC_BBN,
+          ADDRESSES.bob.FBTC,
+          ADDRESSES.bob.uniBTC,
+          ADDRESSES.bob.pumpBTC,
+          "0xA45d4121b3D47719FF57a947A9d961539Ba33204", // LBTC
         ],
         owners: gateways,
       });

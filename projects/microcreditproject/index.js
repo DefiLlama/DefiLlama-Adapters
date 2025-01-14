@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const TOKENS = [
-  '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd',
-  '0x0CE35b0D42608Ca54Eb7bcc8044f7087C18E7717',
+  ADDRESSES.functionx.WFX,
+  ADDRESSES.islm.USDC,
 ]
 
 const INVESTMENT_CONTRACT = '0x951d1571C75C519Cc3D09b6B71595C6aCe1c06dB'
