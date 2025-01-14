@@ -95,6 +95,7 @@ const assetList = [
   ['BTC', 'BTC', '3NXCvmLGz9SxYi6TnjbBQfQMcwiZ1iQETa'],
   ['BTC', 'BTC', '3NjHh71XgjikBoTNYdWgXiNeZcLaKNThgb'],
   ['BTC', 'BTC', '3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA'],
+  ['BTC', 'BTC', 'bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72'],
   ['BTC', 'BTC', 'bc1q32lyrhp9zpww22phqjwwmelta0c8a5q990ghs6'],
   ['BTC', 'BTC', 'bc1q78ufzeu8w8fwvxuphrdlg446xhyptf28fkatu5'],
   ['BTC', 'BTC', 'bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h'],
@@ -174,7 +175,6 @@ const assetList = [
   ['DOGE', 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
   ['DOGE', 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
   ['DOGE', 'BEP20', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  /*
   ['DOGE', 'DOGE', 'D73RQLGWW9TBT2AKspEP24wLiXFrXvnTqX'],
   ['DOGE', 'DOGE', 'D7BrtudMAdwz2U7vSGumVDuxZsZNibJuzw'],
   ['DOGE', 'DOGE', 'D7D2f2WuEkwhTWqBkisZ5sM3JagaBcNWBs'],
@@ -212,7 +212,6 @@ const assetList = [
   ['DOGE', 'DOGE', 'DTSop4ycWkpmDqpncVZ3jwKp3z7B4kW4T3'],
   ['DOGE', 'DOGE', 'DTbG3RJRejnM99g8MSnhSbJxJVW8X7YXy9'],
   ['DOGE', 'DOGE', 'DU8gPC5mh4KxWJARQRxoESFark2jAguBr5'],
-  */
   ['DOT', 'BEP2', 'bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz'],
   ['DOT', 'BEP2', 'bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn'],
   ['DOT', 'BEP20', '0x0e4158c85ff724526233c1aeb4ff6f0c46827fbe'],
@@ -227,6 +226,7 @@ const assetList = [
   ['DOT', 'DOT', '1743nDTMZisPgBCYSAgkUn1kVG7MePc9rvMEjoRNf4ipVkF'],
   ['DOT', 'DOT', '1P6bgxZi42kYYV545c3RSp7NJLUgASDpMP1ifXJazVR1e2N'],
   ['DOT', 'DOT', '1qnJN7FViy3HZaxZK9tGAA71zxHSBeUweirKqCaox4t8GT7'],
+  ['DOT', 'DOT', '169HLL5FwyoazAXyc8g7M6VRFCbpiLKTW6yQBVHBjRBUcFra'],
   ['DOT', 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
   ['DOT', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
   ['DOT', 'ETH', '0xdfd5293d8e347dfe59e90efd55b2956a1343963d'],
@@ -280,7 +280,7 @@ const assetList = [
   ['ETH', 'OP', '0x5a52e96bacdabb82fd05763e25335261b270efcb'],
   ['ETH', 'OP', '0xacd03d601e5bb1b275bb94076ff46ed9d753435a'],
   ['ETH', 'OP', '0xf977814e90da44bfa03b6295a0616a897441acec'],
- // ['ETH', 'STK', ' 0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d'],
+  ['ETH', 'STK', '0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d'],
   ['ETH', 'ERA', '0x7aed074ca56f5050d5a2e512ecc5bf7103937d76'],
   ['ETH', 'ERA', '0xa84fd90d8640fa63d194601e0b2d1c9094297083'],
   ['ETH', 'ERA', '0xf977814e90da44bfa03b6295a0616a897441acec'],
@@ -290,6 +290,7 @@ const assetList = [
   ['FDUSD', 'BEP20', '0x8894e0a0c962cb723c1976a4421c95949be2d4e3'],
   ['FDUSD', 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
   ['FDUSD', 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
+  ['USDT', 'BEP20', '0x4fdFE365436b5273a42F135C6a6244A20404271E'],
   ['FDUSD', 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
   ['FDUSD', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
   ['FDUSD', 'ETH', '0x4a9e49a45a4b2545cb177f79c7381a30e1dc261f'],
@@ -306,6 +307,7 @@ const assetList = [
   ['GRT', 'ARB', '0xf977814e90da44bfa03b6295a0616a897441acec'],
   ['GRT', 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
   ['GRT', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
+  ['ETH', 'ETH', '0x4fdFE365436b5273a42F135C6a6244A20404271E'],
   ['GRT', 'ETH', '0x5a52e96bacdabb82fd05763e25335261b270efcb'],
   ['GRT', 'ETH', '0xdfd5293d8e347dfe59e90efd55b2956a1343963d'],
   ['GRT', 'ETH', '0xf977814e90da44bfa03b6295a0616a897441acec'],
@@ -426,6 +428,8 @@ const assetList = [
   ['SOL', 'SOL', '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM'],
   ['SOL', 'SOL', 'BZ3kabSsMzbuJUguYxtmkRtzw7ACqw1DUMH8PcbvXiUr'],
   ['SOL', 'SOL', 'HXsKP7wrBWaQ8T2Vtjry3Nj3oUgwYcqq9vrHDM12G664'],
+  //added on 31/07/2024
+  ['SOL', 'SOL', 'GK35nWN6ZHSGZrRTf8kTQd8RkFCighChPEb41XwSFVAC'],
   ['SSV', 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
   ['SSV', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
   ['SSV', 'ETH', '0x4a9e49a45a4b2545cb177f79c7381a30e1dc261f'],
@@ -567,33 +571,35 @@ const assetList = [
   ['WRX', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
   ['WRX', 'ETH', '0xdfd5293d8e347dfe59e90efd55b2956a1343963d'],
   ['WRX', 'ETH', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  ['XRP', 'BEP2', 'bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz'],
-  ['XRP', 'BEP2', 'bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn'],
-  ['XRP', 'BEP20', '0x0e4158c85ff724526233c1aeb4ff6f0c46827fbe'],
-  ['XRP', 'BEP20', '0x5a52e96bacdabb82fd05763e25335261b270efcb'],
-  ['XRP', 'BEP20', '0x8894e0a0c962cb723c1976a4421c95949be2d4e3'],
-  ['XRP', 'BEP20', '0xbd612a3f30dca67bf60a39fd0d35e39b7ab80774'],
-  ['XRP', 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
-  ['XRP', 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
-  ['XRP', 'BEP20', '0xeb2d2f1b8c558a40207669291fda468e50c8a0bb'],
-  ['XRP', 'BEP20', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  ['XRP', 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
-  ['XRP', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
-  ['XRP', 'ETH', '0xdfd5293d8e347dfe59e90efd55b2956a1343963d'],
-  ['XRP', 'ETH', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  ['XRP', 'XRP', 'rBtttd61FExHC68vsZ8dqmS3DfjFEceA1A'],
-  ['XRP', 'XRP', 'rDAE53VfMvftPB4ogpWGWvzkQxfht6JPxr'],
-  ['XRP', 'XRP', 'rDecw8UhrZZUiaWc91e571b3TL41MUioh7'],
-  ['XRP', 'XRP', 'rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ'],
-  ['XRP', 'XRP', 'rNU4eAowPuixS5ZCWaRL72UUeKgxcKExpK'],
-  ['XRP', 'XRP', 'rP3mUZyCDzZkTSd1VHoBbFt8HGm8fyq8qV'],
-  ['XRP', 'XRP', 'rPJ5GFpyDLv7gqeB1uZVUBwDwi41kaXN5A'],
-  ['XRP', 'XRP', 'rPz2qA93PeRCyHyFCqyNggnyycJR1N4iNf'],
-  ['XRP', 'XRP', 'rarG6FaeYhnzSKSS5EEPofo4gFsPn2bZKk'],
-  ['XRP', 'XRP', 'rfQ9EcLkU6WnNmkS3EwUkFeXeN47Rk8Cvi'],
-  ['XRP', 'XRP', 'rhWj9gaovwu2hZxYW7p388P8GRbuXFLQkK'],
-  ['XRP', 'XRP', 'rpmxpWis42eYV4oMhyxJNSzrLRdacJVooa'],
-  ['XRP', 'XRP', 'rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza'],  
+  [ADDRESSES.ripple.XRP, 'BEP2', 'bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz'],
+  [ADDRESSES.ripple.XRP, 'BEP2', 'bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0x0e4158c85ff724526233c1aeb4ff6f0c46827fbe'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0x5a52e96bacdabb82fd05763e25335261b270efcb'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0x8894e0a0c962cb723c1976a4421c95949be2d4e3'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0xbd612a3f30dca67bf60a39fd0d35e39b7ab80774'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0xeb2d2f1b8c558a40207669291fda468e50c8a0bb'],
+  [ADDRESSES.ripple.XRP, 'BEP20', '0xf977814e90da44bfa03b6295a0616a897441acec'],
+  [ADDRESSES.ripple.XRP, 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
+  [ADDRESSES.ripple.XRP, 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
+  [ADDRESSES.ripple.XRP, 'ETH', '0xdfd5293d8e347dfe59e90efd55b2956a1343963d'],
+  [ADDRESSES.ripple.XRP, 'ETH', '0xf977814e90da44bfa03b6295a0616a897441acec'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rBtttd61FExHC68vsZ8dqmS3DfjFEceA1A'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rDAE53VfMvftPB4ogpWGWvzkQxfht6JPxr'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rDecw8UhrZZUiaWc91e571b3TL41MUioh7'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rNU4eAowPuixS5ZCWaRL72UUeKgxcKExpK'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rP3mUZyCDzZkTSd1VHoBbFt8HGm8fyq8qV'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rPJ5GFpyDLv7gqeB1uZVUBwDwi41kaXN5A'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rPz2qA93PeRCyHyFCqyNggnyycJR1N4iNf'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rarG6FaeYhnzSKSS5EEPofo4gFsPn2bZKk'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rfQ9EcLkU6WnNmkS3EwUkFeXeN47Rk8Cvi'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rhWj9gaovwu2hZxYW7p388P8GRbuXFLQkK'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rpmxpWis42eYV4oMhyxJNSzrLRdacJVooa'],
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza'],  
+  // added on 31/07/2024
+  [ADDRESSES.ripple.XRP, ADDRESSES.ripple.XRP, 'rwkbXMJQLQhVhcjZnnHV4zu39N7WcQXQKX'],
   ['USDT', 'ETH', '0x835678a611b28684005a5e2233695fb6cbbb0007'],
   ['ETH', 'ETH', '0x835678a611b28684005a5e2233695fb6cbbb0007'],
   ['ETH', 'ARB', '0xf92402bb795fd7cd08fb83839689db79099c8c9c'],
@@ -618,13 +624,16 @@ const assetList = [
   ['MATIC', 'MATIC', '0x505e71695e9bc45943c58adec1650577bca68fd9'],
   ['USDT', 'MATIC', '0x505e71695e9bc45943c58adec1650577bca68fd9'],
   ['USDT', 'TRX', 'TRGCqsUXeynKTgynp2j9g3sg7Nux2KtB3u'],
+  // added on the 27/08/2024
+  ['BTC', 'BTC', '3PXBET2GrTwCamkeDzKCx8DeGDyrbuGKoc'],
+  ['BTC', 'BTC', '3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud'],
 ]
 
 function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
 function getOwners(chain) {
-  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO', 'DOGE'].includes(chain)
+  const isCaseSensitive = ['BTC', 'TRX', 'SOL', ADDRESSES.ripple.XRP, 'LTC', 'DOT', 'ALGO', 'DOGE'].includes(chain)
   return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
@@ -647,8 +656,8 @@ module.exports = {
     ],
   },
   bep2: {
-    geckoId: 'binancecoin',
-    owners: getAddresses('BEP2'),
+    // geckoId: 'binancecoin',
+    // owners: getAddresses('BEP2'),
   },
   tron: {
     owners: getOwners('TRX'),
@@ -669,7 +678,7 @@ module.exports = {
     owners: getOwners('OP')
   },
   ripple: {
-    owners: getOwners('XRP')
+    owners: getOwners(ADDRESSES.ripple.XRP)
   },
   solana: {
     owners: getOwners('SOL')
@@ -704,9 +713,7 @@ module.exports = {
   near: {
     owners: getOwners('NEAR')
   },
-  /*
   doge: {
     owners: getOwners('DOGE')
   },
-  */
 }

@@ -60,7 +60,7 @@ const supportedChains = [
   },
   {
     name: 'Linea',
-    subgraphEndpoint: 'https://subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-linea/1.1.2/gn',
     chainId: 59144,
     identifier: 'linea'
   },
@@ -84,7 +84,7 @@ const supportedChains = [
   },
   {
     name: 'Scroll',
-    subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-scroll/1.1.1/gn',
     chainId: 534352,
     identifier: 'scroll'
   },
@@ -106,12 +106,6 @@ const supportedChains = [
     chainId: 250,
     identifier: 'fantom'
   },
-  // {
-  //   name: 'Flare',
-  //   subgraphEndpoint: '',
-  //   chainId: 14,
-  //   identifier: 'flare'
-  // },
   {
     name: 'Blast',
     subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-blast/1.1.1/gn',
@@ -126,7 +120,7 @@ const supportedChains = [
   },
   {
     name: 'AstarzkEVM',
-    subgraphEndpoint: 'https://subgraph.steer.finance/astarzkevm/subgraphs/name/steerprotocol/steer-astarzkevm',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
     chainId: 3776,
     identifier: 'astrzk'
   },
@@ -148,22 +142,84 @@ const supportedChains = [
     chainId: 30,
     identifier: 'rsk'
   },
-
+  {
+    name: 'Celo',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-celo/1.1.1/gn',
+    chainId: 42220,
+    identifier: 'celo'
+  },
+  {
+    name: 'ZklinkNova',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-zklink-nova/1.0.1/gn',
+    chainId: 810180,
+    identifier: 'zklink'
+  },
+  {
+    name: 'Flare',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-flare/1.1.1/gn',
+    chainId: 14,
+    identifier: 'flare'
+  },
+  {
+    name: 'ApeChain',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-apechain/1.1.1/gn',
+    chainId: 33139,
+    identifier: 'apechain'
+  },
   // {
-  //   name: 'Celo',
-  //   subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/BPaFHyfVrhv3pdjGodpQcWggAg1Bcrvc9SFc2t2BXeho',
-  //   chainId: 42220,
-  //   identifier: 'celo'
+  //   name: 'Bittorrent',
+  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-btt/1.1.1/gn',
+  //   chainId: 199,
+  //   identifier: 'bittorrent'
   // },
+  {
+    name: 'Filecoin',
+    subgraphEndpoint:  'https://fil.subgraph.laconic.com/v1/steer-protocol/iRoheeEh2g6CdZ9OnunLwNCFHG8a7TAdtIYNNxboRSKVxgZfjq',
+    chainId: 314,
+    identifier: 'filecoin'
+  },
+  {
+    name: 'Zircuit',
+    subgraphEndpoint:  'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit',
+    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'},
+    chainId: 48900,
+    identifier: 'zircuit'
+  },
+  {
+    name: 'Sonic',
+    subgraphEndpoint:  'https://api.0xgraph.xyz/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-sonic/prod/gn',
+    chainId: 146,
+    identifier: 'sonic'
+  },
+  {
+    name: 'Moonbeam',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-moonbeam/prod/gn',
+    chainId: 1284,
+    identifier: 'moonbeam'
+  },
+  // {
+  //   name: 'Sei',
+  //   subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clu1fg6ajhsho01x7ajld3f5a/subgraphs/dragonswap-v3-prod/1.0.5/gn',
+  //   chainId: 1, // null?
+  //   identifier: 'sei' // sei-network
+  // },
+  {
+    name: 'Taiko',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-taiko/1.1.1/gn',
+    chainId: 167000,
+    identifier: 'taiko'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
 const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {id}}`
+const z_query = `{  vaults(first: 1000, where: {lastSnapshot_gte: "0", totalLPTokensIssued_gt: "0"}) {    id  }}`
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
     tvl: async (api) => {
-      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
+      let _query = api.chain === 'zircuit' ? z_query : query
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, _query, { headers: chain.headers })
 
       const vaults = data.vaults.map((vault) => vault.id)
       const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
@@ -189,7 +245,9 @@ module.exports.arbitrum.staking = stakings(
     "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
     "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4",
     "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B",
-    "0x3338B85fB1607C519962571B67061e02408475Bb"
+    "0x3338B85fB1607C519962571B67061e02408475Bb",
+    "0x6519A921d0E6F06524eff5DF976abc9A3ABF36cF",
+    "0x004a733aA20ea2CaDdba6af62Bb56Aa96dCE4922"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"

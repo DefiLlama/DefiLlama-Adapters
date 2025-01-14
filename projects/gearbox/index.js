@@ -3,7 +3,7 @@
  **
  **
  ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
- ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.3.2
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.4.3
  **
  **
  **
@@ -16,6 +16,7 @@ var getLogs = require("../helper/cache/getLogs");
 var ADDRESS_PROVIDER_V3 = {
   ethereum: "0x9ea7b04da02a5373317d745c1571c84aad03321d",
   arbitrum: "0x7d04eCdb892Ae074f03B5D0aBA03796F90F3F2af",
+  optimism: "0x3761ca4BFAcFCFFc1B8034e69F19116dD6756726",
 };
 
 // src/adapter/pools/abi.ts
@@ -480,7 +481,10 @@ var adapter_default = {
   arbitrum: {
     tvl,
   },
-  methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
+  optimism: {
+    tvl,
+  },
+  methodology: `Retrieves the tokens in each Gearbox pool & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
   misrepresentedTokens: true,
 };
 

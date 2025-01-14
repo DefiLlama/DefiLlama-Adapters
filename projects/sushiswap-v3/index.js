@@ -95,14 +95,17 @@ module.exports = uniV3Export({
   blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
   //europa: { factory: '0x51d15889b66A2c919dBbD624d53B47a9E8feC4bB', fromBlock: 5124251, },
   rsk: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 6365060, }, //this one
+  sonic: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 1, }, //this one
 });
 
 const config = {
   filecoin: { endpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin' },
+  europa: { endpoint: 'https://elated-tan-skat-graph.skalenodes.com:8000/subgraphs/name/sushi/v3-skale-europa' },
+  zeta: { endpoint: 'https://api.goldsky.com/api/public/project_cls39ugcfyhbq01xl9tsf6g38/subgraphs/v3-zetachain/1.0.0/gn' },
 }
 
 const query = `{
-  pools {
+  pools(first:1000) {
     id
     token0 { id }
     token1 { id }
@@ -122,6 +125,7 @@ Object.keys(config).forEach(chain => {
 
 const config1 = {
   islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
+  // europa: { endpoint: 'https://web-8ngym4vde.sushi.com/pool/api/pools?chainIds=2046399126&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3,SUSHISWAP_V2' },
 }
 
 Object.keys(config1).forEach(chain => {
