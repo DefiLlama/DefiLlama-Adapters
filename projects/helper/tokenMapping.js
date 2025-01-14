@@ -97,6 +97,13 @@ const fixBalancesTokens = {
   wc: {
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
   },
+  soneium: {
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.optimism.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
+    '0xbA9986D2381edf1DA03B0B9c1f8b00dc4AacC369': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x3A337a6adA9d885b6Ad95ec48F9b75f197b5AE35': { coingeckoId: 'tether', decimals: 6 },
+    '0x2cae934a1e84f693fbb78ca5ed3b0a6893259441': { coingeckoId: 'astar', decimals: 18 },
+  },
   odyssey: {
     [ADDRESSES.null]: { coingeckoId: 'dione', decimals: 18 },
     '0xf21cbaf7bd040d686bd390957770d2ea652e4013': { coingeckoId: 'dione', decimals: 18 },
@@ -125,7 +132,7 @@ const fixBalancesTokens = {
   starknet: {
     '0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6': { coingeckoId: 'spiko-us-t-bills-money-market-fund', decimals: 5 },
     '0x4f5e0de717daa6aa8de63b1bf2e8d7823ec5b21a88461b1519d9dbc956fb7f2': { coingeckoId: 'eutbl', decimals: 5 },
-  }
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
