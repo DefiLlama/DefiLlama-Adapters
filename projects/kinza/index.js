@@ -1,4 +1,5 @@
 const { aaveExports } = require("../helper/aave");
+const methodologies = require("../helper/methodologies");
 
 module.exports = {
   methodology: methodologies.lendingMarket,
