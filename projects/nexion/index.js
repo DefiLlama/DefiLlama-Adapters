@@ -23,42 +23,27 @@ const COLLATERALS = {
     DAI: ADDRESSES.pulse.DAI,
     PLS: nullAddress,
     WPLS: ADDRESSES.pulse.WPLS,
+    DAIPLS_LP:"0xE56043671df55dE5CDf8459710433C10324DE0aE"
   },
 };
 
 async function tvl(api) {
   return sumTokens2({
     api,
-    owner: contracts.NEONBuynBurn,
+    owner: [contracts.NEONBuynBurn,contracts.NEONFarm,contracts.OLDNEONFarm],
     tokens: Object.values(COLLATERALS[api.chain]),
   });
 }
 
-async function staking(api) {
-  const balances = {};
 
-  const plsin = await api.call({
-    target: contracts.NEONFarm,
-    abi: farmAbi.valueofthis,
-  });
-  const plsin2 = await api.call({
-    target: contracts.OLDNEONFarm,
-    abi: farmAbi.valueofthis,
-  });
-
-  sdk.util.sumSingleBalance(balances, contracts.NEONFarm, plsin);
-  sdk.util.sumSingleBalance(balances, contracts.NEONFarm, plsin2);
-  return balances;
-}
 const lps = ["0xE56043671df55dE5CDf8459710433C10324DE0aE"]
 
 module.exports = {
-  methodology: `FARM: return total assets of farm and buyNburn
+  methodology: `FARM: return total assets of farms and buyNburn
 `,
   pulse: {
-    staking,
+
     tvl,
-    pool2: sumTokensExport({ owners: [contracts.NEONFarm,contracts.OLDNEONFarm], tokens: lps, useDefaultCoreAssets: true, }),
 
   },
 };
