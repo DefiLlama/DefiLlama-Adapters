@@ -49,7 +49,7 @@ const exportsData =  Object.keys(config).map((chain) => {
 }
 })
 exportsData.push(uniV3Export({
-    soneium: { factory: soneium.v3Factory, fromBlock: 1812231 },
+    soneium: { factory: config.soneium.v3Factory, fromBlock: 1812231 },
 }))
 
 
