@@ -40,7 +40,7 @@ module.exports = {
   hallmarks: [
     [Math.floor(new Date('2025-01-13')/1e3), 'ZTLN is deprecated'],
   ],
-  // deadFrom: "2025-01-13",
+  deadFrom: "2025-01-13",
   ethereum: {
     tvl: () => ({}),
   },

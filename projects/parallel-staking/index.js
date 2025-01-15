@@ -1,7 +1,7 @@
 const { getExports } = require('../helper/heroku-api')
 
 module.exports = {
-  // deadFrom: '2024-08-17',
+  deadFrom: '2024-08-17',
   timetravel: false,
   ...getExports("parallel-staking", ['heiko', 'parallel']),
 }
