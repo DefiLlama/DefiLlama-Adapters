@@ -22,6 +22,7 @@ const DEFAULTS = {
   FLOW_RPC: "https://rest-mainnet.onflow.org",
   SONEIUM_RPC: "https://rpc.soneium.org",
   SONEIUM_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  SUPERPOSITION_RPC: "https://rpc.superposition.so"
 }
 
 const ENV_KEYS = [
