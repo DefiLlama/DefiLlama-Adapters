@@ -10,6 +10,7 @@ const ZtakeV1Address = "0x9248F1Ee8cBD029F3D22A92EB270333a39846fB2"
 async function tvl(api) {
   if (!_response) _response = utils.fetchURL('https://api.getclave.io/api/v1/invest/tvl')
   const response = await _response;
+  // This API returns the tvl of 0x7f73934f333a25b456dc9b8b62a19f211c991f1c contract in ZKsync Era
   const tvlData= response.data
 
   // Clave aggregator tvl
