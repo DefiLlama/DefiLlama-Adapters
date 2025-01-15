@@ -54,6 +54,7 @@ function parseOutput(result, abi, allAbi) {
 
 async function call({ abi, target, params = [], allAbi = [] } = {}, ...rest) {
   const { data: { result } } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
+  
   return parseOutput(result, abi, allAbi)
 }
 
@@ -75,6 +76,9 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
     const { data } = await axios.post(STARKNET_RPC, chunk)
     allData.push(...data)
   }
+
+  console.log(80);
+  console.log(allData);
 
   const response = []
   allData.forEach((i) => {
