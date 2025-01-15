@@ -115,7 +115,6 @@ async function borrowed(api) {
       target: sDebtToken,
       abi: 'erc20:totalSupply',
     })
-    console.log(tokenAddress,vDebt,sDebt)
     api.add(tokenAddress, vDebt)
     api.add(tokenAddress, sDebt)
   }
