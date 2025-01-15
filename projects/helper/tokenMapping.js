@@ -46,19 +46,19 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  water: {   
+  water: {
     '0xC807C5FfFf748eF435Ddb99b181846Edd1e70041': { coingeckoId: "water-3", decimals: 18 },
   },
-  bittorrent: {   
+  bittorrent: {
     [ADDRESSES.null]: { coingeckoId: "bittorrent", decimals: 18 },
   },
-  dymension: {   
+  dymension: {
     [ADDRESSES.null]: { coingeckoId: "dymension", decimals: 18 },
   },
-  energyweb: {   
+  energyweb: {
     [ADDRESSES.null]: { coingeckoId: "energy-web-token", decimals: 18 },
   },
-  etn: {   
+  etn: {
     [ADDRESSES.null]: { coingeckoId: "electroneum", decimals: 18 },
   },
   kopi: {
@@ -100,6 +100,13 @@ const fixBalancesTokens = {
     '0xbA9986D2381edf1DA03B0B9c1f8b00dc4AacC369': { coingeckoId: 'usd-coin', decimals: 6 },
     '0x3A337a6adA9d885b6Ad95ec48F9b75f197b5AE35': { coingeckoId: 'tether', decimals: 6 },
     '0x2cae934a1e84f693fbb78ca5ed3b0a6893259441': { coingeckoId: 'astar', decimals: 18 },
+  },
+  superpositionso: {
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+    '0x1fB719f10b56d7a85DCD32f27f897375fB21cfdd': { coingeckoId: 'ethereum', decimals: 18 },
+    '0xA2555701754464d32D9624149E3fDb459F3c8DE4': { coingeckoId: 'arbitrum', decimals: 18 },
+    '0x80eFAD50D395671C13C4b1FA2969f7a7Aa9EF7b3': { coingeckoId: 'fluidity-money', decimals: 18 },
+    '0x6e142cdaefa4ba7786e8d1ff74968db67c3b910d': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
   odyssey: {
     [ADDRESSES.null]: { coingeckoId: 'dione', decimals: 18 },
