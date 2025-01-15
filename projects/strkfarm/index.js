@@ -66,10 +66,10 @@ async function computeXSTRKStratTVL(api) {
       target: c.vesu,
       params: [pool_id, c.xSTRK, c.token, c.address] 
     })),
-    abi: SINGLETONabiMap.check_collateralization,  
+    abi: {...SINGLETONabiMap.check_collateralization_unsafe, customInput: 'address'},
   });
 
-  console.log(1)
+  console.log(data)
 
   // const tvl = (collateral_value * xSTRK_price) - debt_value;
   
