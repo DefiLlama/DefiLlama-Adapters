@@ -3,11 +3,13 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const { pool2s } = require("../helper/pool2");
 
 const RESERVE_HOLDER = '0xc36303ef9c780292755B5a9593Bfa8c1a7817E2a';
+const STETH_ADAPTER = '0x18601d46c38362cDA8CA0571BbBCD9a34bC2BD65';
+const WEETH_ADAPTER = '0x7f6dA7071d3524C61c2c87c4e631E52cbC8af5b6';
 const CHI_STAKING = '0xaB1dCa1C0f948c268652eedC676966002Ae241c6';
 const CHI_LOCKING = '0xE3dD17ff009bAC84e32130fcA5f01C908e956603';
 const CHI_VESTING = '0x426DBAa2B33cE1B833C13b72503F5128AFef79fC';
 const STETH = ADDRESSES.ethereum.STETH;
-const WETH = ADDRESSES.ethereum.WETH
+const WETH = ADDRESSES.ethereum.WETH;
 const WEETH = ADDRESSES.ethereum.WEETH;
 const CHI = '0x3b21418081528845a6DF4e970bD2185545b712ba';
 
@@ -22,12 +24,14 @@ const lpAddresses = [
 
 async function tvl(api) {
     const owner = RESERVE_HOLDER;
+    const owner1 = STETH_ADAPTER;
+    const owner2 = WEETH_ADAPTER;
     const tokens = [
         STETH,
         WETH,
         WEETH,
     ];
-    return sumTokens2({ owner, tokens, api })
+    return sumTokens2({ owners: [owner, owner1, owner2], tokens, api })
 }
 
 async function staking(api) {
