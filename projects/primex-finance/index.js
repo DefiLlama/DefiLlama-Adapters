@@ -132,7 +132,7 @@ const config = {
       WSTETH: ADDRESSES.ethereum.WSTETH,
       RETH: ADDRESSES.ethereum.RETH,
       SDAI: ADDRESSES.ethereum.SDAI,
-      WEETH: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+      WEETH: ADDRESSES.ethereum.WEETH,
       ETHFI: "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
       LDO: ADDRESSES.ethereum.LIDO,
       EZETH: "0xbf5495efe5db9ce00f80364c8b423567e58d2110",

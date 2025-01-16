@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getLogs } = require("../helper/cache/getLogs");
 const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint256 feeIn,uint256 feeOut,uint256 debtTokenMintCap,uint256 dailyMintCap,address oracle,bool isUsingOracle,uint256 swapWaitingPeriod,uint256 maxPrice,uint256 minPrice)";
@@ -112,13 +113,13 @@ module.exports = {
       {
         address: '0x713dD0E14376a6d34D0Fde2783dca52c9fD852bA',
         aToken: '0xd6890176e8d912142AC489e8B5D8D93F8dE74D60', // aBOBWBTC
-        asset: '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3', // BOB WBTC
+        asset: ADDRESSES.bob.WBTC, // BOB WBTC
       }
     ],
     pellStrategyVaults: [
       {
         address: '0x04485140d6618be431D8841de4365510717df4fd',
-        asset: '0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3', // BOB WBTC
+        asset: ADDRESSES.bob.WBTC, // BOB WBTC
       }
     ],
   }),

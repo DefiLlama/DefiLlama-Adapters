@@ -161,7 +161,7 @@ const config = {
       ],
       [
         // stEUR Token
-        "0x004626a008b1acdc4c74ab51644093b155e59a23",
+        ADDRESSES.celo.STEUR,
         // OFTChipAdapter (owner)
         "0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90",
       ],

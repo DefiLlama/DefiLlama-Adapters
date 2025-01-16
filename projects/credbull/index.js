@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache');
 
 const cblConfigArbitrum = {
@@ -27,8 +28,8 @@ async function borrowedFund(api) {
     target: fundConfigPolygon.fundNavCalculator,
     excludeFailed: true,
   })
-  const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', params: fundConfigPolygon.liquidStoneFund })
-  api.add('0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', vaultBalance * -1)
+  const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.polygon.USDC_CIRCLE, params: fundConfigPolygon.liquidStoneFund })
+  api.add(ADDRESSES.polygon.USDC_CIRCLE, vaultBalance * -1)
 
   fundNavResults.forEach((i) => {
     api.add(i.denominationAsset, i.nav)
@@ -37,8 +38,8 @@ async function borrowedFund(api) {
 }
 
 async function polygonTvl(api) {
-  const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', params: fundConfigPolygon.liquidStoneFund })
-  api.add('0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', vaultBalance)
+  const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.polygon.USDC_CIRCLE, params: fundConfigPolygon.liquidStoneFund })
+  api.add(ADDRESSES.polygon.USDC_CIRCLE, vaultBalance)
 }
 
 async function borrowed(api) {
