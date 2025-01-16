@@ -11,11 +11,12 @@ const LP_ABI = {
   token0: "address:token0",
   token1: "address:token1",
   getReserves: "function getReserves() view returns (uint256 _reserve0, uint256 _reserve1, uint256)",
-  totalSupply: "uint256:totalSupply",
+  totalSupply: "function totalSupply() view returns (uint256)",
 }
 
 const TOKEN_ABI = {
   decimals: "uint8:decimals",
+  totalSupply: "function totalSupply() view returns (uint256)",
 }
 
 async function fetchBeefyTVL(api) {
@@ -72,7 +73,7 @@ module.exports = {
       // If the current block is earlier than the date BCT was transferred to KlimaDAO, return 0
       if (api.timestamp < 1709828986)  return {}
       const bctAddress = "0x2F800Db0fdb5223b3C3f354886d907A671414A7F"
-      const supply = await api.call({ abi: 'erc20:totalSupply', target: bctAddress, })
+      const supply = await api.call({ target: bctAddress, abi: TOKEN_ABI.totalSupply })
       api.add(bctAddress, supply)      
     },
     staking: staking("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d", "0x4e78011ce80ee02d2c3e649fb657e45898257815"),
