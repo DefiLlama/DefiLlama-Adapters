@@ -8,7 +8,7 @@ const chains = {
   arbitrum: 'arbitrum',
   base: 'base',
   polygon: 'matic',
-  zksync: 'zksync'
+  era: 'zksync'
 }
 
 const tvl = async (api) => {
@@ -31,7 +31,7 @@ const tvl = async (api) => {
     if (token) api.add(token, bals2[i])
   })
 
-  return sumTokens2({ api, resolveLP: true, owners: vaults.map(({ vault }) => vault), resolveUniV3: api.chain !== 'base', permitFailure: true })
+  return sumTokens2({ api, resolveLP: true, owners: vaults.map(({ vault }) => vault), resolveUniV3: api.chain !== 'base' && api.chain !== 'era', permitFailure: true })
 }
 
 Object.keys(chains).forEach((chain) => {
