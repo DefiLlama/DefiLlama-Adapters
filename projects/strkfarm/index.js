@@ -8,6 +8,7 @@ const { call } = require("../helper/chain/starknet");
 const ADDRESSES = require('../helper/coreAssets.json');
 const { ERC4626AbiMap } = require('./erc4626');
 const { SINGLETONabiMap } = require('./singleton');
+const { endurABIMap } = require('./endur');
 const { ERC721StratAbiMap } = require('./sensei');
 
 const STRATEGIES = {
@@ -60,6 +61,17 @@ async function computeAutoCompoundingTVL(api) {
 async function computeXSTRKStratTVL(api) {
   const pool_id = "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161";
   const contracts = STRATEGIES.xSTRKStrats;
+
+  console.log(endurABIMap.preview_redeem)
+
+  const price = await multiCall({
+    calls: contracts.map(c => ({
+      target: c.address,
+      params: 10n ** 18n
+    })),
+    abi: endurABIMap.preview_redeem 
+  });  
+
   const xSTRK_price = 1;
   const data = await multiCall({
     calls: contracts.map(c => ({
@@ -69,11 +81,9 @@ async function computeXSTRKStratTVL(api) {
     abi: {...SINGLETONabiMap.check_collateralization_unsafe, customInput: 'address'},
   });
 
-  console.log(data)
-
-  // const tvl = (collateral_value * xSTRK_price) - debt_value;
+  const tvl = (collateral_value * xSTRK_price) - debt_value;
   
-  // api.addTokens(contracts.token, tvl);
+  api.addTokens(contracts.token, tvl);
 }
 
 // returns tvl and token of the Sensei strategies
