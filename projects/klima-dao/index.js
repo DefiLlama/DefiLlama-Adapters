@@ -12,12 +12,10 @@ const LP_ABI = {
   token1: "address:token1",
   getReserves: "function getReserves() view returns (uint256 _reserve0, uint256 _reserve1, uint256)",
   totalSupply: "uint256:totalSupply",
-  decimals: "uint8:decimals"
 }
 
 const TOKEN_ABI = {
   decimals: "uint8:decimals",
-  symbol: "string:symbol"
 }
 
 async function fetchBeefyTVL(api) {
@@ -42,22 +40,28 @@ async function fetchBeefyTVL(api) {
       api.call({ target: lpToken, abi: LP_ABI.totalSupply })
     ])
 
+    // Get token decimals
+    const [token0Decimals, token1Decimals] = await Promise.all([
+      api.call({ target: token0, abi: TOKEN_ABI.decimals }),
+      api.call({ target: token1, abi: TOKEN_ABI.decimals })
+    ])
+
     // Ensure all values are BigInt
     const balanceBN = BigInt(balance.toString())
     const totalSupplyBN = BigInt(totalSupply.toString())
     const reserve0BN = BigInt(reserves[0].toString())
     const reserve1BN = BigInt(reserves[1].toString())
 
-    // Calculate the vault's share of the LP pool with proper decimal handling
+    // Calculate the vault's share of the LP pool
     const share = (balanceBN * BigInt(1e18)) / totalSupplyBN
     
     // Calculate token amounts with proper decimal handling
     const token0Amount = (reserve0BN * share) / BigInt(1e18)
     const token1Amount = (reserve1BN * share) / BigInt(1e18)
 
-    // Add both tokens to TVL
-    api.add(token0, token0Amount)
-    api.add(token1, token1Amount)
+    // Add both tokens to TVL with their correct decimals
+    api.add(token0, token0Amount, { skipDecimals: true, decimals: token0Decimals })
+    api.add(token1, token1Amount, { skipDecimals: true, decimals: token1Decimals })
   }
 }
 
