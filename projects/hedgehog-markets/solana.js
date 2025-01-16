@@ -92,7 +92,7 @@ async function tvl(api) {
       // - mint address (73..105)
       // - yes amount (113..121)
       // - no amount (121..129)
-      dataSlice: { offset: 69, length: 56 },
+      dataSlice: { offset: 73, length: 56 },
       filters: [
         // Market accounts have a discriminator of 3 at offset 0.
         { memcmp: { offset: 0, bytes: "4" } },
