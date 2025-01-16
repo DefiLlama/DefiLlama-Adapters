@@ -99,6 +99,7 @@ async function tvlMantle(api) {
 
 module.exports = {
   methodology: 'Token balance in vault and strategy contracts',
+  doublecounted: true,
   start: '2024-09-10', // Tuesday, September 10, 2024 12:00:00 AM,
   ethereum: {
     tvl,
