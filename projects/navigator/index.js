@@ -10,7 +10,7 @@ const sonicNAVI = "0x6881B80ea7C858E4aEEf63893e18a8A36f3682f3";
 
 // sonicV2
 const sonicV2Vault = "0x41cD8CaFc24A771031B9eB9C57cFC94D86045eB6";
-const sonicV2Assets = [ADDRESSES.sonic.USDC.e]
+const sonicV2Assets = [ADDRESSES.sonic['USDC.e']]
 
 const tvl = async (api) => {
   await Promise.all([
