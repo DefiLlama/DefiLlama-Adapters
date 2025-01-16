@@ -5,10 +5,10 @@ const { sumTokens2 } = require('./helper/unwrapLPs')
 const endpoint = "https://api.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
 const chains = {
   ethereum: 'eth',
-  // bsc: 'bsc',
   arbitrum: 'arbitrum',
   base: 'base',
-  polygon: 'matic'
+  polygon: 'matic',
+  zksync: 'zksync'
 }
 
 const tvl = async (api) => {
