@@ -20,6 +20,8 @@ async function getTvl(api) {
 }
 
 module.exports = {
+  hallmarks: [[1730332800, "Definitive Sunset of DefiEdge"]],
+  deadFrom: '2024-10-31',
   doublecounted: true,
   misrepresentedTokens: true,
   timetravel: false,
