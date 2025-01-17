@@ -1,11 +1,12 @@
-const { getLogs } = require("../helper/cache/getLogs");
-module.exports.doublecounted = true;
-const blacklistedTokens = [
-  '0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a', // GYD ethereum
-]
+const Web3 = require("web3");
+const { getLogs } = require("../helper/cache/getLogs");module.exports.doublecounted = true;
+const blacklistedTokens = ["0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a", // GYD ethereum]
+const rpcUrls = {sei: "https://still-clean-morning.sei-pacific.quiknode.pro/414cfbb55c44ed3ba548d8a68dfb59cdf72a4775",};
 
 async function tvl(api) {
-  const pools = config[api.chain];
+  if (api.chain === "sei") {
+    api.web3 = new Web3(rpcUrls.sei);
+  }
 
   const promises = pools.map(async ({ factory, fromBlock }) => {
     const logs = await getLogs({
