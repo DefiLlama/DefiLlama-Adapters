@@ -21,7 +21,7 @@ const assets = {
   base: ADDRESSES.base.USDbC, //USDC
   linea: ADDRESSES.linea.USDC, //USDC
   blast: ADDRESSES.blast.USDB, // USDB
-  sonic: ADDRESSES.sonic['USDC.e']
+  sonic: ADDRESSES.sonic.USDC_e
 }
 
 const abi = "uint256:totalNetAssets"
