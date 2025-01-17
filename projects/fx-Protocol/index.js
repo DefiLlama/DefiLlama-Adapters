@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getConfig } = require('../helper/cache')
 const treasuries = [
   "0x0e5CAA5c889Bdf053c9A76395f62267E653AFbb0",
   "0xED803540037B0ae069c93420F89Cd653B6e3Df1f",
@@ -14,7 +13,6 @@ const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
 const uniBTC_Genesis_Gauge = "0x1D20671A21112E85b03B00F94Fd760DE0Bef37Ba"
 const fxUSD_stabilityPool = "0x65C9A641afCEB9C0E6034e558A319488FA0FA3be"
 const FxProtocol_PoolManager = "0x250893CA4Ba5d05626C785e8da758026928FCD24"
-const ALADDIN_API_BASE_URL = 'https://api.aladdin.club/';
 module.exports = {
   doublecounted: true,
   ethereum: {
@@ -24,11 +22,14 @@ module.exports = {
 };
 
 async function getGaugeTvl(api) {
-  const { data } = (await getConfig('fx-protocol/gauges', `${ALADDIN_API_BASE_URL}api1/fx_gauge_tvl_apy`))
-  const gauges = data.map(i => i.gauge)
-  const tokens = await api.multiCall({ abi: 'address:stakingToken', calls: gauges })
-  const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: gauges })
-  api.add(tokens, bals)
+  const gauges = await api.fetchList({  lengthAbi: 'n_gauges', itemAbi: 'gauges', target: '0xe60eB8098B34eD775ac44B1ddE864e098C6d7f37'})
+
+  const tokens = await api.multiCall({ abi: 'address:stakingToken', calls: gauges, permitFailure: true })
+  const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: gauges, permitFailure: true })
+  tokens.forEach((token, i) => {
+    if(token && bals[i])
+      api.add(token, bals[i])
+  })
 }
 
 async function tvl(api) {
