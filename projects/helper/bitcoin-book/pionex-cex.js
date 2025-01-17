@@ -1,5 +1,4 @@
 module.exports = [
-  "1D2Pds2XyiDe7CknDumKkdSECuepGsBCSR",
   "bc1qs0jdyydyd4kv7fwqre4suhz33mcuy3838xdsla",
   "1JkmFSbqijbrv6JdyVx2hNwyE8nzEy3Cs5",
   "bc1qctq0v0vecjxp4de66znkh0dcczkvuqjwwt0za4",
@@ -15,5 +14,9 @@ module.exports = [
   "bc1q0jkkjr2qr4wl3v399algvsjuk8g7vlm3yaqufu",
   "17UcdCaVWpmgpuZsKfKdWRUUViAzoQFY3H",
   "bc1qguymjgurnywqac3rrplr2nmkl26cf5jyyq3vkv",
-  "1D9YPYQevtEsk26exBjCY2pKfhDsXTxJEE"
+  "1D9YPYQevtEsk26exBjCY2pKfhDsXTxJEE",
+  "bc1qs5lsnltqwdvledqvgrf82prja04ej4xk2z7ktu",
+  "bc1qcc2h0dw6t79y4czk8newhazwgzlygyfawu7k30",
+  "bc1q7d9lknwmc7tnwcemapkymggne2sv0hxkg84vg6",
+  "bc1q9a67xl67smtue0ajutxttsla25a45x6fdpwccp"
 ]

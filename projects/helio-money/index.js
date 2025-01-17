@@ -9,22 +9,30 @@ const lisLPs = [
     "0xC23d348f9cC86dDB059ec798e87E7F76FBC077C1", // Lista LP aHAY-USDT
     "0xF6aB5cfdB46357f37b0190b793fB199D62Dcf504", // Lista LP UV-17-THE
     "0x1Cf9c6D475CdcA67942d41B0a34BD9cB9D336C4d", // Lista LP sAMM-HAY/FRAX
+    "0x9eb77a54a33069a319d91f493e6b1c9066fb38f7" // Lista LP pancake lisUSD/USDT
+    
   ];
 
+  
 const abi = {
     lpToken: "address:lpToken",
-    lpTotalSupply: "uint256:lpTotalSupply",
+    totalSupply: "uint256:totalSupply",
 };
 
 const pool2 = async (api) => {
     const [lisLpTokens, lisLpBalances] = await Promise.all([
         api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.lpToken }),
-        api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.lpTotalSupply }),
+        api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.totalSupply }),
       ]);
 
+
       lisLPs.forEach((_lp, i) => {
+
         api.add(lisLpTokens[i], lisLpBalances[i])
       })
+
+    
+  
 }
 
 module.exports = {
@@ -106,7 +114,15 @@ module.exports = {
 
                 // vUSDT, PSM - LSR
                 // [ADDRESSES.bsc.USDT, "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
-                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"]
+                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"],
+
+                // pumpBTC
+                [
+                    "0xf9C4FF105803A77eCB5DAE300871Ad76c2794fa4",
+                    "0xEA44dDC58eC6b4902E19A353c554B6A4F32b9e6E",
+                ],
+                // BTCB vault
+                [ADDRESSES.bsc.BTCB, "0x1AfA1589a634BE568D7872dCF1bbE6F79e11FaD5"],
             ],
         }),
         pool2,
