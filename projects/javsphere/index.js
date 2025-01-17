@@ -14,20 +14,14 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: `We count the TVL of LeverageX Trading platform leveragex.trade (LPs and Traders). And TVL from staking and freezer of javsphers native token JAV.`,
+  methodology: `TVL of LeverageX Trading platform leveragex.trade (LPs and Traders). TVL from staking and freezer of javsphers native token JAV.`,
   hallmarks: [
     [1733837635, "Migration to BASE"],
+    [1734547635, "Launch of LeverageX.trade"],
   ],
   base: {
     tvl,
     staking: staking([STAKING_BASE, FREEZER_BASE], JAV_BASE),
     vesting: staking(VESTING_BASE, JAV_BASE)
-  },
-  defichain_evm: {
-    tvl: () => { },
-    staking: () => { },
-  },
-  defichain: {
-    tvl: () => { },
-  },
+  }
 }
