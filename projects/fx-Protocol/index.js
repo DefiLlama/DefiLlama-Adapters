@@ -1,4 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require("@defillama/sdk");
+const axios = require("axios");
 const treasuries = [
   "0x0e5CAA5c889Bdf053c9A76395f62267E653AFbb0",
   "0xED803540037B0ae069c93420F89Cd653B6e3Df1f",
@@ -23,7 +25,7 @@ const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
 const uniBTC_Genesis_Gauge = "0x1D20671A21112E85b03B00F94Fd760DE0Bef37Ba"
 const fxUSD_stabilityPool = "0x65C9A641afCEB9C0E6034e558A319488FA0FA3be"
 const FxProtocol_PoolManager = "0x250893CA4Ba5d05626C785e8da758026928FCD24"
-
+const ALADDIN_API_BASE_URL = 'https://api.aladdin.club/';
 module.exports = {
   doublecounted: true,
   ethereum: {
@@ -45,6 +47,16 @@ async function getACVXInfo(api) {
   return totalAssets / totalSupply
 }
 
+async function getGaugeTvl(api) {
+  try {
+    const gaugeinfo = (await axios.get(`${ALADDIN_API_BASE_URL}api1/fx_gauge_tvl_apy`))
+    const gauges = gaugeinfo.data.data
+    return gauges
+  } catch (error) {
+    return {}
+  }
+}
+
 async function getBaseTokenRate(api) {
   const rates = await api.multiCall({ abi: 'uint256:getRate', calls: baseTokenRate })
   rates.splice(0, 0, 1e18);
@@ -53,6 +65,11 @@ async function getBaseTokenRate(api) {
 }
 
 async function tvl(api) {
+  const gaugeObj = await getGaugeTvl(api)
+  Object.values(gaugeObj).forEach(gauge => {
+      api.add(gauge.lpAddress, gauge.tvl*1e18);
+  });
+  
   const aCvxRate = await getACVXInfo(api)
   const rates = await getBaseTokenRate(api)
   const tokens = await api.multiCall({ abi: 'address:baseToken', calls: treasuries })
