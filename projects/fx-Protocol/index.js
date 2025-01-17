@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const axios = require("axios");
 const treasuries = [
   "0x0e5CAA5c889Bdf053c9A76395f62267E653AFbb0",
