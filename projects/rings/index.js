@@ -37,7 +37,7 @@ const config = {
       '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812'
     ],
     supportedAssets: [
-      ADDRESSES.sonic['USDC.e'], // USDC
+      ADDRESSES.sonic.USDC_e, // USDC
       '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
     ]
   },
