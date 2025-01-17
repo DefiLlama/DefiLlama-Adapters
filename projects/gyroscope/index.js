@@ -1,4 +1,3 @@
-const Web3 = require("web3");
 const { getLogs } = require("../helper/cache/getLogs");module.exports.doublecounted = true;
 const blacklistedTokens = ["0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a", // GYD ethereum]
 const rpcUrls = {sei: "https://still-clean-morning.sei-pacific.quiknode.pro/414cfbb55c44ed3ba548d8a68dfb59cdf72a4775",};
