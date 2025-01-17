@@ -77,7 +77,7 @@ module.exports = {
   sonic: {
     tvl: sumTokensExport({
       owners: [sonicConfig.clearinghouse, sonicConfig.endpoint],
-      tokens: [ADDRESSES.sonic["USDC.e"], ADDRESSES.sonic.wS],
+      tokens: [ADDRESSES.sonic.USDC_e, ADDRESSES.sonic.wS],
     })
   }
 }
