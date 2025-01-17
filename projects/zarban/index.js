@@ -1,137 +1,53 @@
-const abi = require("./abi.json")
+const abi = {
+  "getReservesList": "address[]:getReservesList",
+  "getReserveData": "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address zTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
+  "list": "function list() view returns (bytes32[])",
+  "join": "function join(bytes32 ilk) view returns (address)",
+  "gem": "address:gem",
+  "debt": "uint256:debt"
+}
 
 //constant addresses
 const lendingPoolAddress = "0xC62545B7f466317b014773D1C605cA0D0931B0Fd";
 const ilkRegistryAddress = "0x821282748eb5b63155df21c62d6a6699ffcb01cf";
-const vat = "0x975Eb113D580c44aa5676370E2CdF8f56bf3F99F";
 const zar = "0xd946188a614a0d9d0685a60f541bba1e8cc421ae";
 
-async function getMarketForToken(api, tokenAddress) {
-  const marketAddress = (await api.call({
-    target: lendingPoolAddress,
-    abi: abi.lendingPool.getReserveData,
-    params: [tokenAddress],
-  })).zTokenAddress
-  return [marketAddress, tokenAddress]
-}
-
 async function getLmMarkets(api) {
-  const lmMarkets = []
-
-  // Get the list of reserves (markets) in the LendingPool
-  const tokens = (
-    await api.call({
-      target: lendingPoolAddress,
-      abi: abi.lendingPool.getReservesList,
-    })
-  );
-
-  for (const tokenAddress of tokens) {
-    lmMarkets.push(await getMarketForToken(api, tokenAddress))
-  }
-  return await Promise.all(lmMarkets)
-}
-
-async function getGemForIlk(api, ilk) {
-  const gemJoin = await api.call({
-    target: ilkRegistryAddress,
-    abi: abi.ilkRegistry.join,
-    params: [ilk],
-  })
-  const gem = await api.call({
-    target: gemJoin,
-    abi: abi.gemJoin.gem,
-  })
-  return [gemJoin, gem]
+  const tokens = await api.call({  abi: abi.getReservesList, target: lendingPoolAddress})
+  const markets = await api.multiCall({  abi: abi.getReserveData, calls: tokens, target: lendingPoolAddress, })
+  return [tokens, markets]
 }
 
 async function getScsMarkets(api) {
-  const scsMarkets = []
 
-  const ilks = (
-    await api.call({
-      target: ilkRegistryAddress,
-      abi: abi.ilkRegistry.list,
-    })
-  );
+  const ilks = await api.call({ target: ilkRegistryAddress, abi: abi.list, })
+  const gemJoins = await api.multiCall({  abi: abi.join, calls: ilks, target: ilkRegistryAddress, })
+  const gems = await api.multiCall({  abi: abi.gem, calls: gemJoins,  })
 
-  for (const ilk of ilks) {
-    scsMarkets.push(await getGemForIlk(api, ilk))
-  }
-
-  return await Promise.all(scsMarkets)
+  return api.sumTokens({ tokensAndOwners2: [gems, gemJoins] })
 }
 
+
 async function tvl(api) {
-  const [lmMarkets, scsMarkets] = await Promise.all([
-    getLmMarkets(api),
-    getScsMarkets(api)]
-  )
+  await getScsMarkets(api)
+  const [lmTokens, lmMarkets] = await getLmMarkets(api)
 
-  let balances = []
-  for (const [marketAddress, tokenAddress] of lmMarkets) {
-    balances.push(api.call({
-      target: marketAddress,
-      abi: 'erc20:totalSupply',
-    }))
-  }
-  for (const [gemJoin, gem] of scsMarkets) {
-    balances.push(api.call({
-      target: gem,
-      abi: 'erc20:balanceOf',
-      params: [gemJoin],
-    }))
-  }
-
-  balances = await Promise.all(balances)
-  const markets = lmMarkets.concat(scsMarkets)
-  for (const i in balances) {
-    api.add(markets[i][1], balances[i])
-  }
-
+  await api.sumTokens({ tokensAndOwners2: [lmTokens, lmMarkets.map(i => i.zTokenAddress)] })
+  api.removeTokenBalance(zar)
 }
 
 async function borrowed(api) {
 
-  const [lmMarkets, scsMarkets] = await Promise.all([
-    getLmMarkets(api),
-    getScsMarkets(api)]
-  )
-  for (const [marketAddress, tokenAddress] of lmMarkets) {
-
-    const reserveData = await api.call({
-      target: lendingPoolAddress,
-      abi: abi.lendingPool.getReserveData,
-      params: [tokenAddress],
-    })
-
-    const vDebtToken = reserveData.variableDebtTokenAddress
-    const sDebtToken = reserveData.stableDebtTokenAddress
-    const vDebt = await api.call({
-      target: vDebtToken,
-      abi: 'erc20:totalSupply',
-    })
-    const sDebt = await api.call({
-      target: sDebtToken,
-      abi: 'erc20:totalSupply',
-    })
-    api.add(tokenAddress, vDebt)
-    api.add(tokenAddress, sDebt)
-  }
-
-  const debt = await api.call({
-    target: vat,
-    abi: abi.vat.debt,
-  })
-
-  const borrowedWithInterest = debt / 1e27
-  api.add(zar, borrowedWithInterest)
+  const [tokens, markets] = await getLmMarkets(api)
+  const stableDebtTokens = markets.map(i => i.stableDebtTokenAddress)
+  const variableDebtTokens = markets.map(i => i.variableDebtTokenAddress)
+  const stableSupply = await api.multiCall({  abi: 'uint256:totalSupply', calls: stableDebtTokens })
+  const variableSupply = await api.multiCall({  abi: 'uint256:totalSupply', calls: variableDebtTokens })
+  api.add(tokens, stableSupply)
+  api.add(tokens, variableSupply)
+  api.removeTokenBalance(zar)
 }
 
 module.exports = {
-  start: 77669795,
-  arbitrum: {
-    tvl,
-    borrowed,
-  }
+  arbitrum: { tvl, borrowed, }
 }
