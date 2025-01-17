@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
 
 const ETH = ADDRESSES.null
 const RPL = '0xd33526068d116ce69f19a9ee46f0bd304f21a51f'
@@ -7,6 +8,7 @@ const rocketVault = '0x3bDC69C4E5e13E52A65f5583c23EFB9636b469d6'
 const rocketRewardsPool = '0xEE4d2A71cF479e0D3d0c3c2C923dbfEB57E73111'
 const trustedNodeManager = '0xb8e783882b11Ff4f6Cef3C501EA0f4b960152cc9'
 const rocketNodeStaking = '0xF18Dc176C10Ff6D8b5A17974126D43301F8EEB95'
+const backfill_node_first_block = 21060563
 
 const abi = {
   getNodeCount: "function getNodeCount() view returns (uint256)",
@@ -21,14 +23,17 @@ const abi = {
   getNodeETHProvided: "function getNodeETHProvided(address _nodeAddress) view returns (uint256)",
 };
 
-const tvl = async (api) => {
-  const [nodeLength, pendingETHRewards, depositPoolBalance] = await Promise.all([
-    api.call({ target: rocketNodeManager, abi: abi.getNodeCount }),
-    api.call({ target: rocketRewardsPool, abi: abi.getPendingETHRewards }),
-    api.call({ target: rocketVault, abi: abi.balanceOf, params: ['rocketDepositPool'] }),
-  ])
+const nodeBalances = async (api) => {
+  /**
+   Small hack for backfilling: the following code uses a recent contract deployed just 180 days ago. It allows retrieving all the nodeAddresses,
+   even those prior to this date. If the backfill api's timestamp is earlier than the contract's creation date, we use the creation date as the limit
+   to continue making calls. We'll then apply a filter to exclude nodeAddresses with registrationTime > api.timestamp
+  */
 
-  const addresses = await api.call({ target: rocketNodeManager, abi: abi.getNodeAddresses, params: [0, nodeLength] });
+  const block = await api.getBlock() < backfill_node_first_block ? backfill_node_first_block : await api.getBlock()
+  const nodeApi = new sdk.ChainApi({ chain: api.chain, block })
+  const nodeLength = await nodeApi.call({ target: rocketNodeManager, abi: abi.getNodeCount })
+  const addresses = await nodeApi.call({ target: rocketNodeManager, abi: abi.getNodeAddresses, params: [0, nodeLength] });
 
   const batchSize = 100;
   const batchedAddresses = [];
@@ -36,18 +41,34 @@ const tvl = async (api) => {
     batchedAddresses.push(addresses.slice(i, i + batchSize));
   }
 
-  const results = await Promise.all(
-    batchedAddresses.map(async (batch) => {
-      const details = await api.multiCall({ calls: batch.map((address) => ({ target: rocketNodeManager, params: [address] })), abi: abi.getNodeDetails, permitFailure: true })
-      const ethProvided = await api.multiCall({ calls: batch.map((address) => ({ target: rocketNodeStaking, params: [address] })), abi: abi.getNodeETHProvided, permitFailure: true })
-      return { details: details ? details.filter((result) => result && result.exists) : [], ethProvided: ethProvided || [] };
-    })
-  )
-
+  const results = [];
+  for (const batch of batchedAddresses) {
+    const details = await nodeApi.multiCall({ calls: batch.map((address) => ({ target: rocketNodeManager, params: [address] })), abi: abi.getNodeDetails, permitFailure: true });
+    const ethProvided = await nodeApi.multiCall({ calls: batch.map((address) => ({ target: rocketNodeStaking, params: [address] })), abi: abi.getNodeETHProvided, permitFailure: true });
+  
+    const filteredResults = [];
+    if (details) {
+      for (let i = 0; i < details.length; i++) {
+        const detail = details[i];
+        if (detail && detail.exists && detail.registrationTime <= api.timestamp) {
+          filteredResults.push({
+            detail,
+            ethProvided: ethProvided[i] || 0,
+          });
+        }
+      }
+    }
+  
+    results.push({
+      details: filteredResults.map((result) => result.detail),
+      ethProvided: filteredResults.map((result) => result.ethProvided),
+    });
+  }
+  
   const flattenedDetails = results.flatMap((result) => result.details);
   const flattenedEthProvided = results.flatMap((result) => result.ethProvided);
 
-  const { minipoolCount, ethMatched, nodeEthProvided } = flattenedDetails.reduce(
+  const { minipoolCount, ethMatched, nodeEthProvided} = flattenedDetails.reduce(
     (acc, curr, index) => {
       if (!curr) return acc;
       acc.minipoolCount += Number(curr.minipoolCount) || 0;
@@ -55,10 +76,16 @@ const tvl = async (api) => {
       acc.nodeEthProvided += Number(flattenedEthProvided[index]) || 0;
       return acc;
     },
-    { minipoolCount: 0, ethMatched: 0, nodeEthProvided: 0 }
+    { minipoolCount: 0, ethMatched: 0, nodeEthProvided: 0}
   );
 
-  api.add(ETH, [pendingETHRewards, depositPoolBalance, ethMatched, nodeEthProvided])
+  api.add(ETH, [ethMatched, nodeEthProvided])
+}
+
+const tvl = async (api) => {
+  await nodeBalances(api)
+  const depositPoolBalance = await api.call({ target: rocketVault, abi: abi.balanceOf, params: ['rocketDepositPool'] })
+  api.add(ETH, depositPoolBalance)
 }
 
 const staking = async (api) => {
@@ -68,6 +95,7 @@ const staking = async (api) => {
 }
 
 module.exports = {
-  methodology: 'TVL represents the total ETH from the minipools as well as the staking rewards pending distribution',
+  start: 1633046400,
+  methodology: 'TVL represents the total ETH from the minipools',
   ethereum: { tvl, staking }
 }

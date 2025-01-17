@@ -18,8 +18,6 @@ module.exports = {
 
 Object.keys(config).forEach((chain) => {
     module.exports[chain] = {
-        tvl: async (_, _b, _cb, { api }) => {
-            return api.erc4626Sum({ calls: config[chain], isOG4626: true });
-        },
+        tvl: async (api) =>  api.erc4626Sum({ calls: config[chain], isOG4626: true, permitFailure: true })
     };
 });

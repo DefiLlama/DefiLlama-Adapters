@@ -13,7 +13,6 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
             methodology: 'counts the number of ASTR tokens locked in Liquid Staking contract',
-    start: 1502025,
     astar: {
       tvl,
     }
