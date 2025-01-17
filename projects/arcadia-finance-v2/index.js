@@ -64,6 +64,7 @@ async function tvl (api) {
   const { factory, pools, uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT } = config;
   const ownerTokens = []
   const ownerIds = []
+  const accs = []
 
   const uTokens = await api.multiCall({ abi: "address:asset", calls: pools });
   const accounts = await api.fetchList({ lengthAbi: 'allAccountsLength', itemAbi: 'allAccounts', target: factory, })
@@ -75,9 +76,11 @@ async function tvl (api) {
     ownerTokens.push([assetData.assets, account])
     if (!assetData[0].length || !assetData[1].length) return;
     ownerIds.push([assetData[0], assetData[1], account])
+    accs.push(account)
   })
 
-  await sumTokens2({ api, owners: accounts, uniV3ExtraConfig: { nftAddress: alienBaseNFT } })
+  if (alienBaseNFT)
+    await sumTokens2({ api, owners: accs, uniV3ExtraConfig: { nftAddress: alienBaseNFT } })
 
   // add all simple ERC20s
   await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT], tokensAndOwners2: [uTokens, pools] });
@@ -86,41 +89,7 @@ async function tvl (api) {
   await unwrapArcadiaAeroLP({ api, ownerIds });
 
   // add all native LP positions
-  return sumTokens2({ api, owners: accounts, resolveUniV3: true, resolveSlipstream: true })
-
-
-
-  // await api.sumTokens({ tokensAndOwners2: [uTokens, pools] });
-  // const accounts = await api.fetchList({ lengthAbi: 'allAccountsLength', itemAbi: 'allAccounts', target: factory, });
-  // if (alienBaseNFT)
-  //   await sumTokens2({ api, owners: accounts, uniV3ExtraConfig: { nftAddress: alienBaseNFT } })
-
-  // const assetDatas = await api.multiCall({ abi: abi.generateAssetData, calls: accounts, permitFailure: true });
-
-  // accounts.map((account, i) => {
-  //   const assetData = assetDatas[i]
-  //   if (!assetData) return null
-  //   const ownerToken = [assetData.assets, account]
-  //   const ownerId = [assetData[i][0], assetData[i][1], account]
-  //   return { ownerToken, ownerId }
-  // }).filter(Boolean)
-
-  // const ownerTokens = accounts.map((account, i) => [assetData[i].assets, account])
-  // const ownerIds = accounts.map((account, i) => [
-  //   assetData[i][0],
-  //   assetData[i][1],
-  //   account,
-  // ]);
-  
-  // // add all simple ERC20s
-  // await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT,], });
-
-  // // add all Arcadia-wrapped LP positions
-  // await unwrapArcadiaAeroLP({ api, ownerIds });
-
-  // // add all native LP positions
-  // return sumTokens2({ api, owners: accounts, resolveUniV3: true, resolveSlipstream: true })
-
+  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true })
 }
 
 module.exports = {
