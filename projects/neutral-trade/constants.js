@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const DATA_URL = 'https://raw.githubusercontent.com/neutral-trade/vaults-data/main';
 
 const START_TIMESTAMP = 1730419200; // 2024-11-01
@@ -6,12 +7,12 @@ const START_TIMESTAMP = 1730419200; // 2024-11-01
 const TOKENS = {
   USDC: {
     name: 'USDC',
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6
   },
   SOL: {
     name: 'SOL',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     decimals: 9
   },
   WBTC: {
