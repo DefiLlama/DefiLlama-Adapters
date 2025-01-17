@@ -65,6 +65,9 @@ const fixBalancesTokens = {
   mantra: {
     uom: { coingeckoId: 'mantra-dao', decimals: 6 },
   },
+  occ: {
+    '0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12': { coingeckoId: 'edu-coin', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
