@@ -16,10 +16,10 @@ async function suiTvl(api) {
   const object = await sui.getObject(SUI_BANK_ID);
   const vaultObject = await sui.getObject(BLUE_VAULT_ID);
 
-  const tvl = object.fields.coinBalance;
+  const usdcAmount = object.fields.coinBalance;
   const blueCoinAmount = vaultObject.fields.total_locked_amount;
   // div by 1e6 as usdc coin has 6 precision
-  api.add(ADDRESSES.sui.USDC, tvl);
+  api.add(ADDRESSES.sui.USDC, usdcAmount);
   // div by 1e9 as blue coin has 9 precision
   api.add(BLUE_COIN, blueCoinAmount);
   return api.getBalances()
