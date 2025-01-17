@@ -75,7 +75,8 @@ const config = {
   sei: [
     {
       name: "Gyro E-CLP V2 Factory",
-      factory: "0xB438ea246cefA9241305aD62E5D307D014baF7Fa"
+      factory: "0xB438ea246cefA9241305aD62E5D307D014baF7Fa",
+      fromBlock: 113_999_999,
     },
   ],
   avax: [
