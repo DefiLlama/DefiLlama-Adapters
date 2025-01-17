@@ -1,30 +1,12 @@
-const { getConfig } = require("../helper/cache");
+const { getConfig } = require("../helper/cache")
+const { sumERC4626Vaults } = require("../helper/erc4626")
 
 const ENDPOINT = "https://api.omniyield.finance/pools";
 
 async function tvl(api) {
   const pools = await getConfig("omniyield/arbitrum", ENDPOINT);
-  const arbitrumPools = pools["42161"] || [];
-
-  if (!arbitrumPools.length) {
-    return {};
-  }
-
-  for (const pool of arbitrumPools) {
-    const poolAddress = pool.address;
-    const assetAddress = pool.asset.address;
-
-    if (!poolAddress || !assetAddress) {
-      continue;
-    }
-
-    const totalValue = await api.call({
-      abi: "uint256:totalValue",
-      target: poolAddress,
-    });
-
-    api.add(assetAddress, totalValue);
-  }
+  const vaults = (pools[api.chainId] ?? []).map(i => i.address)
+  return sumERC4626Vaults({ api, calls: vaults, tokenAbi: 'token', balanceAbi: 'totalValue' })
 }
 
 module.exports = {
