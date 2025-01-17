@@ -55,6 +55,33 @@ const Singleton = [
         ],
         "state_mutability": "external"
       },
+      {
+        "name": "position",
+        "type": "function",
+        "inputs": [
+          {
+            "name": "pool_id",
+            "type": "core::felt252"
+          },
+          {
+            "name": "collateral_asset",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "debt_asset",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "user",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "(vesu::data_model::Position, core::integer::u256, core::integer::u256)"
+          }
+        ],
+      }
   ]
   
   const SINGLETONabiMap = {}

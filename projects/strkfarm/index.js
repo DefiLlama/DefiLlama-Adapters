@@ -54,7 +54,7 @@ async function computeAutoCompoundingTVL(api) {
     calls: contracts.map(c => c.address),
     abi: ERC4626AbiMap.total_assets
   });
-
+  console.log(totalAssets);
   api.addTokens(contracts.map(c => c.token), totalAssets);
 }
 
@@ -62,44 +62,35 @@ async function computeXSTRKStratTVL(api) {
   const pool_id = "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161";
   const contracts = STRATEGIES.xSTRKStrats;
 
-  const value = BigInt(10**12)
-  const mask = (1n << 128n) - 1n; 
-  const low = value & mask; 
-  const high = value >> 128n;  
-
-  const p = await call ({
-    abi: ERC4626AbiMap.preview_redeem,
-    target: ADDRESSES.starknet.XSTRK,
-    params: [low.toString(), high.toString()]
-  });
-  // console.log(p)
-
   const price = await multiCall({
     calls: contracts.map(c => ({
-      target: "0x28d709c875c0ceac3dce7065bec5328186dc89fe254527084d1689910954b0a",
-      params: [10**18]
+      target: c.xSTRK,
+      params: ['0xDE0B6B3A7640000', '0x0']
     })),
-    abi: endurABIMap.preview_redeem 
+    abi: { ...endurABIMap.preview_redeem, customInput: 'address' }
   });  
-  let xstrk_price = price[0];  // Assuming `price` is returned as a BigInt array
-  console.log("xSTRK price:", xstrk_price);
-
-  // let xstrk_price = price / 10**18
-  // console.log(xstrk_price)
+  let xstrk_price = Number(price[0]) / 10**18 // Assuming `price` is returned as a BigInt array
 
   const data = await multiCall({
     calls: contracts.map(c => ({
       target: c.vesu,
       params: [pool_id, c.xSTRK, c.token, c.address] 
     })),
-    abi: {...SINGLETONabiMap.check_collateralization_unsafe, customInput: 'address'},
+    abi: {...SINGLETONabiMap.position, customInput: 'address'},
   });
-  
 
-  const tvl = ((data[0]['1'] / 10**18) * 1.02) - (data[0]['2'] / 10**18);
+  console.log(data);
+
+  let collateral = Number(data[0]['0']);
+  // let debt = Number(data[0]['2']) / 10**18;
+
+  // console.log(collateral);
+  // console.log(debt);
+
+  let tvl = (collateral * xstrk_price) - 71294647137295445217014;
   console.log(tvl)
   
-  // api.addTokens(contracts.map(c => c.token), tvl);
+  api.addTokens(contracts[0].token, [tvl]);
 }
 
 // returns tvl and token of the Sensei strategies
