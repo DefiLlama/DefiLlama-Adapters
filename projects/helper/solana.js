@@ -444,4 +444,5 @@ module.exports = {
   TOKEN_2022_PROGRAM_ID,
   getAssociatedTokenAddress,
   i80f48ToNumber,
+  runInChunks,
 };
