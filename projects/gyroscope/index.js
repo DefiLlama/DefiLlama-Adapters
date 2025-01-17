@@ -72,6 +72,13 @@ const config = {
       fromBlock: 13035219,
     },
   ],
+  sei: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0xB438ea246cefA9241305aD62E5D307D014baF7Fa",
+      fromBlock: 117_480_059,
+    },
+  ],
   avax: [
     {
       name: "Gyro E-CLP V2 Factory",
