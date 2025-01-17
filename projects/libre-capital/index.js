@@ -33,7 +33,7 @@ async function getFundPrices() {
   const { data: navData } = await fetchURL(NAV_API_URL);
   const priceMap = {};
   navData.forEach(fund => {
-    priceMap[fund.fundName] = fund.priceLocal;
+    priceMap[fund.fundName] = fund.nav;
   });
   return priceMap;
 }
