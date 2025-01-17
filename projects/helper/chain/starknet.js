@@ -26,7 +26,6 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   requestData.contract_address = requestData.contractAddress
   delete requestData.contractAddress
   delete requestData.entrypoint
-  console.log(params);
   if (abi.customInput === 'address') requestData.calldata = params.map(i => i.slice(2))
   return getCallBody(requestData, id)
 
@@ -36,7 +35,6 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
 }
 
 function parseOutput(result, abi, allAbi) {
-  console.log(result);
   let response = new CallData([abi, ...allAbi]).parse(abi.name, result)
   // convert BigInt to string
   for (const key in response) {
@@ -76,7 +74,6 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   for (const chunk of chunks) {
     await sleep(2000)
     const { data } = await axios.post(STARKNET_RPC, chunk)
-    console.log(data);
     allData.push(...data)
   }
 

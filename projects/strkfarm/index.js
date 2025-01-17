@@ -62,17 +62,31 @@ async function computeXSTRKStratTVL(api) {
   const pool_id = "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161";
   const contracts = STRATEGIES.xSTRKStrats;
 
-  console.log(endurABIMap.preview_redeem)
+  const value = BigInt(10**12)
+  const mask = (1n << 128n) - 1n; 
+  const low = value & mask; 
+  const high = value >> 128n;  
+
+  const p = await call ({
+    abi: ERC4626AbiMap.preview_redeem,
+    target: ADDRESSES.starknet.XSTRK,
+    params: [low.toString(), high.toString()]
+  });
+  // console.log(p)
 
   const price = await multiCall({
     calls: contracts.map(c => ({
-      target: c.address,
-      params: 10n ** 18n
+      target: "0x28d709c875c0ceac3dce7065bec5328186dc89fe254527084d1689910954b0a",
+      params: [10**18]
     })),
     abi: endurABIMap.preview_redeem 
   });  
+  let xstrk_price = price[0];  // Assuming `price` is returned as a BigInt array
+  console.log("xSTRK price:", xstrk_price);
 
-  const xSTRK_price = 1;
+  // let xstrk_price = price / 10**18
+  // console.log(xstrk_price)
+
   const data = await multiCall({
     calls: contracts.map(c => ({
       target: c.vesu,
@@ -80,10 +94,12 @@ async function computeXSTRKStratTVL(api) {
     })),
     abi: {...SINGLETONabiMap.check_collateralization_unsafe, customInput: 'address'},
   });
-
-  const tvl = (collateral_value * xSTRK_price) - debt_value;
   
-  api.addTokens(contracts.token, tvl);
+
+  const tvl = ((data[0]['1'] / 10**18) * 1.02) - (data[0]['2'] / 10**18);
+  console.log(tvl)
+  
+  // api.addTokens(contracts.map(c => c.token), tvl);
 }
 
 // returns tvl and token of the Sensei strategies
