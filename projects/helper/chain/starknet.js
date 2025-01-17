@@ -54,7 +54,6 @@ function parseOutput(result, abi, allAbi) {
 
 async function call({ abi, target, params = [], allAbi = [] } = {}, ...rest) {
   const { data: { result } } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
-  
   return parseOutput(result, abi, allAbi)
 }
 

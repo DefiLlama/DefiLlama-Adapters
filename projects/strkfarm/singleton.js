@@ -78,10 +78,24 @@ const Singleton = [
         ],
         "outputs": [
           {
-            "type": "(vesu::data_model::Position, core::integer::u256, core::integer::u256)"
+            "type": "(core::integer::u256, core::integer::u256, core::integer::u256, core::integer::u256)"
           }
         ],
-      }
+      },
+      {
+        "name": "vesu::data_model::Position",
+        "type": "struct",
+        "members": [
+          {
+            "name": "collateral_shares",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "nominal_debt",
+            "type": "core::integer::u256"
+          }
+        ]
+      },
   ]
   
   const SINGLETONabiMap = {}

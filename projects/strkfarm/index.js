@@ -54,7 +54,6 @@ async function computeAutoCompoundingTVL(api) {
     calls: contracts.map(c => c.address),
     abi: ERC4626AbiMap.total_assets
   });
-  console.log(totalAssets);
   api.addTokens(contracts.map(c => c.token), totalAssets);
 }
 
@@ -79,16 +78,10 @@ async function computeXSTRKStratTVL(api) {
     abi: {...SINGLETONabiMap.position, customInput: 'address'},
   });
 
-  console.log(data);
+  let collateral = Number(data[0]['2']);
+  let debt = Number(data[0]['3']);
 
-  let collateral = Number(data[0]['0']);
-  // let debt = Number(data[0]['2']) / 10**18;
-
-  // console.log(collateral);
-  // console.log(debt);
-
-  let tvl = (collateral * xstrk_price) - 71294647137295445217014;
-  console.log(tvl)
+  let tvl = (collateral * xstrk_price) - debt;
   
   api.addTokens(contracts[0].token, [tvl]);
 }
@@ -119,8 +112,8 @@ async function computeSenseiTVL(api) {
 }
 
 async function tvl(api) {
-  // await computeAutoCompoundingTVL(api);
-  // await computeSenseiTVL(api);
+  await computeAutoCompoundingTVL(api);
+  await computeSenseiTVL(api);
   await computeXSTRKStratTVL(api);
 }
 
