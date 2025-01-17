@@ -12,7 +12,7 @@ const ethTokens = [
   ADDRESSES.ethereum.WETH, // WETH
   "0x9Ba021B0a9b958B5E75cE9f6dff97C7eE52cb3E6", // apxETH
   "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6", // pxETH
-  "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee", // weETH
+  ADDRESSES.ethereum.WEETH, // weETH
   "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110", // ezETH
   "0xC329400492c6ff2438472D4651Ad17389fCb843a", // sym_wstETH
   "0x38B86004842D3FA4596f0b7A0b53DE90745Ab654", // sym_swETH
@@ -38,8 +38,8 @@ const vaultTokens = [
 ]
 
 const swellTokens = [
-  '0x18d33689AE5d02649a859A1CF16c9f0563975258', // rswETH
-  '0x09341022ea237a4DB1644DE7CCf8FA0e489D85B7', // swETH
+  ADDRESSES.swellchain.rswETH, // rswETH
+  ADDRESSES.swellchain.swETH, // swETH
   '0xC3d33a0Ea1582410075567c589af895fcaF1127c', // tempest weeth/eth
 ]
 
@@ -75,7 +75,7 @@ const ethBTCTvl = async (api) => {
     ADDRESSES.ethereum.WBTC, // WBTC
     '0x8DB2350D78aBc13f5673A411D4700BCF87864dDE', // swBTC
     '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC
-    '0xC96dE26018A54D51c097160568752c4E3BD6C364', // fBTC
+    ADDRESSES.mantle.FBTC, // fBTC
     '0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e', // pumpBTC
     '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa', // tBTC
     '0x8236a87084f8B84306f72007F36F2618A5634494', // LBTC
@@ -88,8 +88,8 @@ const ethBTCTvl = async (api) => {
 const swellBTCTvl = async (api) => {
 
   const swellTokens = [
-    '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3', // stBTC
-    '0xFA3198ecF05303a6d96E57a45E6c815055D255b1', // uBTC
+    ADDRESSES.swellchain.stBTC, // stBTC
+    ADDRESSES.swellchain.uBTC_1, // uBTC
   ]
 
   return sumTokens2({ api, owner: earnBTCVault, tokens: swellTokens })

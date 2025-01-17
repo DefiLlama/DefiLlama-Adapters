@@ -20,7 +20,7 @@ module.exports = {
     '0xb0b84d294e0c75a6abe60171b70edeb2efd14a1b',//slisBNB
     '0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5',//lisUSD
     ADDRESSES.bsc.USDC, //usdc
-    '0xf6718b2701d4a6498ef77d7c152b2137ab28b8a3', //stBTC
+    ADDRESSES.swellchain.stBTC, //stBTC
     '0x4aae823a6a0b376de6a78e74ecc5b079d38cbcf7', //SolvBTC
     '0x2a3dc2d5daf9c8c46c954b8669f4643c6b1c081a', //uBTC
   ], }) },
