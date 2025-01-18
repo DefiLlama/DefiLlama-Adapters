@@ -23,5 +23,12 @@ module.exports = {
     tvl,
     staking: staking([STAKING_BASE, FREEZER_BASE], JAV_BASE),
     vesting: staking(VESTING_BASE, JAV_BASE)
-  }
+  },
+  defichain_evm: {
+    tvl: () => { },
+    staking: () => { },
+  },
+  defichain: {
+    tvl: () => { },
+  },
 }
