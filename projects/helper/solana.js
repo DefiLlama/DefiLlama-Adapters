@@ -72,7 +72,8 @@ function getAssociatedTokenAddress(mint, owner,) {
 
 
 async function getTokenSupplies(tokens, { api } = {}) {
-  const sleepTime = tokens.length > 2000 ? 2000 : 200
+  // const sleepTime = tokens.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   const connection = getConnection()
   tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
   const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
@@ -94,7 +95,8 @@ async function getTokenSupplies(tokens, { api } = {}) {
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
-  const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  // const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   log('total token accounts: ', tokenAccounts.length, 'sleepTime: ', sleepTime)
   tokenAccounts.forEach((val, i) => {
     if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
