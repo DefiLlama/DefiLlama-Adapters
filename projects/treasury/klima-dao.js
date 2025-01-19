@@ -61,6 +61,7 @@ module.exports = treasuryExports({
       '0x576Bca23DcB6d94fF8E537D88b0d3E1bEaD444a2', // BCT (base address)
       '0x20b048fa035d5763685d695e66adf62c5d9f5055', // CHAR
       AERO,
+      '0x16E1846aaFD6ecf91De676e7B6fc23f09a83F258', // WOOD
     ],
     solidlyVeNfts: [
       { baseToken: AERO, veNft: aeroVotingEscrow},

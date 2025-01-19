@@ -5,3 +5,5 @@ module.exports.ethereum = compoundExports2({ comptroller: '0x67aA3eCc5831a65A5Ba
 module.exports.op_bnb = compoundExports2({ comptroller: '0xd6e3e2a1d8d95cae355d15b3b9f8e5c2511874dd'})
 module.exports.arbitrum = compoundExports2({ comptroller: '0x317c1A5739F39046E20b08ac9BeEa3f10fD43326'})
 module.exports.era = compoundExports2({ comptroller: '0xddE4D098D9995B659724ae6d5E3FB9681Ac941B1'})
+module.exports.base = compoundExports2({ comptroller: '0x0C7973F9598AA62f9e03B94E92C967fD5437426C'})
+module.exports.optimism = compoundExports2({ comptroller: '0x5593FF68bE84C966821eEf5F0a988C285D5B7CeC'})

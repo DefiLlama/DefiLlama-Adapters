@@ -121,6 +121,8 @@ module.exports = {
                     "0xf9C4FF105803A77eCB5DAE300871Ad76c2794fa4",
                     "0xEA44dDC58eC6b4902E19A353c554B6A4F32b9e6E",
                 ],
+                // BTCB vault
+                [ADDRESSES.bsc.BTCB, "0x1AfA1589a634BE568D7872dCF1bbE6F79e11FaD5"],
             ],
         }),
         pool2,

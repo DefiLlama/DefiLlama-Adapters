@@ -237,7 +237,7 @@ module.exports = {
 
       const weETH = {
         vault: "0x5e0a74cb0F74D57F9d69914575b972ba6A14e27c",
-        reStakingToken: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+        reStakingToken: ADDRESSES.ethereum.WEETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
@@ -255,7 +255,7 @@ module.exports = {
 
       const weETH1x = {
         vault: "0x9320AB04E319018842BD59e2817054d19850Abc0",
-        reStakingToken: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+        reStakingToken: ADDRESSES.ethereum.WEETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 

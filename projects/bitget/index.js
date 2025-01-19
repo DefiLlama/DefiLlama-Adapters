@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 
@@ -59,7 +60,7 @@ const config = {
       "0x4d216d2682f3997f6c19420beee4530d08d0ea5f", // add on 27/05/2024
       "0xdbe46a02322e636b92296954637e1d7db9d5ed26", // add on 27/05/2024
       "0xbff5092f83bd810e0926068b89633bf66eaa037b",
-      "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
+      ADDRESSES.ethereum.CVX,
       "0x80097a87a7dcde470e34c10b5cceb85abf83b531",
       "0xe4786cfe980ef5a6428a2fffafabf24f1fc79b64",
       "0x4c1d7de286d7c20df5f2ba44b3bc706c1e03bf13",
