@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const _target = "0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB"
-const gasQuery = '0x0000000000000000000000000000000000000001'
-const gasAddress = '0x0000000000000000000000000000000000000000'
+const gasQuery = ADDRESSES.linea.WETH_1
+const gasAddress = ADDRESSES.null
 
 module.exports = async (api, { chainId, target = _target } = {}) => {
   const totalBalances = await sumTokens2({ api, owner: target, fetchCoValentTokens: true, balances: {} })
