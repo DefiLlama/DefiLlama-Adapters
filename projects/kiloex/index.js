@@ -33,7 +33,7 @@ module.exports = {
       ADDRESSES.optimism.WETH_1, //WBNB
       ADDRESSES.defiverse.USDC, //BTCB
       ADDRESSES.defiverse.ETH, //ETH
-      
+      '0xe3C0FF176eF92FC225096C6d1788cCB818808b35', //oBTC
     ] })
   },
   manta: {
