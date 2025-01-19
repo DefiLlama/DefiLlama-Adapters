@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 const config = {
@@ -6,7 +7,7 @@ const config = {
     factoryV2: '0x70e318f5066597868a9026ecccC0e04D693d0fbD', fromBlockV2: 45094649,
   },
 }
-const USDTBridge = ["0x55d398326f99059fF775485246999027B3197955", "0xAEaF85C740C7a6ee94183E848d0e557cB7FbeA47"];
+const USDTBridge = [ADDRESSES.bsc.USDT, "0xAEaF85C740C7a6ee94183E848d0e557cB7FbeA47"];
 
 Object.keys(config).forEach(chain => {
   const { factoryV1, factoryV2, fromBlockV1, fromBlockV2 } = config[chain]

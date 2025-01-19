@@ -8,7 +8,7 @@ const chainConfigs = {
         assets: [
             ADDRESSES.ethereum.WBTC,//WBTC
             "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568",//uniBTC
-            "0xC96dE26018A54D51c097160568752c4E3BD6C364",//FBTC
+            ADDRESSES.mantle.FBTC,//FBTC
             "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",//cbBTC
             "0x2F913C820ed3bEb3a67391a6eFF64E70c4B20b19",//M-BTC
         ],
@@ -19,7 +19,7 @@ const chainConfigs = {
         assets: [
             ADDRESSES.bsc.BTCB,//BTCB
             "0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a",//uniBTC
-            "0xC96dE26018A54D51c097160568752c4E3BD6C364",//FBTC
+            ADDRESSES.mantle.FBTC,//FBTC
             "0x9BFA177621119e64CecbEabE184ab9993E2ef727",//M-BTC
         ],
     }

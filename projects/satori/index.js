@@ -5,7 +5,7 @@ const { sumTokensExport: sumTokensExportOfTon } = require("../helper/chain/ton")
 const ethereum_LBTC = "0x8236a87084f8B84306f72007F36F2618A5634494";
 const ethereum_PumpBTC = "0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e";
 const base_PumpBTC = "0x23dA5F2d509cb43A59d43C108a43eDf34510eff1";
-const stBTC = "0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3";
+const stBTC = ADDRESSES.swellchain.stBTC;
 
 module.exports = {
   methodology:
