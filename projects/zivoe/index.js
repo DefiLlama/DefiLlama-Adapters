@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require("../helper/cache/getLogs");
 
 const LOANS_FROM_BLOCK = 20973423;
@@ -12,7 +13,7 @@ const ST_STT = "0x0D45c292baCdC47CE850E4c83a2FA2e8509DEd5D";
 const ST_JTT = "0xcacdB1A5a11F824E02De4CA6E7b2D12BB278aA7c";
 
 // TVL Asset
-const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+const USDC = ADDRESSES.ethereum.USDC;
 
 async function borrowed(api) {
   const loansIds = await getLogs2({
