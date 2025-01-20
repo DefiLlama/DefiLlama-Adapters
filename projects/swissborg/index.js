@@ -118,6 +118,11 @@ const config = {
       '0x5509Be53b2dD0CD6fb8473B0EdA94e0a3059b73a',
     ]
   },
+  osmosis: {
+    owners: [
+      'osmo1h9sy6z5hnk5wjf6ds8w4syq0yqs706n9m6qlap',
+    ]
+  }
 }
 
 module.exports = cexExports(config)
