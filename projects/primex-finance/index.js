@@ -161,6 +161,17 @@ const config = {
       [ADDRESSES.ethereum.AAVE]: "0xA700b4eB416Be35b2911fd5Dee80678ff64fF6C9",
     },
   },
+  base: {
+    bucketsFactory: '0xCf552C38A0Ecb51982Af28d4e475beF27aC2dD25',
+    bucketsFactoryv2: '0x8e8792881227e8fee8a9e05a567A44D3FA04a7f0',
+    positionManager: '0x01ED183275956dBd0064B789B778cA0921e695E9',
+    traderBalanceVault: '0xDf7B923a7bF62331092B49fd36EE26A21755DFa1',
+    defaultTokens: {
+    },
+    aaveTokens: {
+    },
+  }
+
 }
 
 module.exports = {}
