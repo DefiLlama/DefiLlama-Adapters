@@ -268,9 +268,10 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
   }
 }
 
-async function unwrapSlipstreamNFTs({ balances = {}, nftsAndOwners = [], block, chain = 'base', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
+async function unwrapSlipstreamNFTs({ balances, nftsAndOwners = [], api, owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
   // https://velodrome.finance/security#contracts
   // https://aerodrome.finance/security#contracts
+  const chain = api.chain
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
@@ -287,46 +288,41 @@ async function unwrapSlipstreamNFTs({ balances = {}, nftsAndOwners = [], block, 
     else
       nftsAndOwners = owners.map(o => [nftAddress, o])
   }
-  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapSlipstreamNFT({ balances, owner, nftAddress, block, chain, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })))
+  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapSlipstreamNFT({ balances, owner, nftAddress, api, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })))
   return balances
 }
 
-async function unwrapSlipstreamNFT({ balances, owner, positionIds = [], nftAddress, block, chain = 'base', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
+async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nftAddress, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
+  if (!balances) balances = api.getBalances()
+  const chain = api.chain
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const factoryKey = getFactoryKey(chain, nftAddress)
-  if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
-  let factory = (await factories[factoryKey]).output
+  if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory, })
+  let factory = (await factories[factoryKey])
 
   if (!positionIds || positionIds.length === 0) {
-    const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
-    positionIds = (await sdk.api.abi.multiCall({
-      block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
+    const nftPositions = await api.call({ target: nftIdFetcher, params: owner, abi: 'erc20:balanceOf' })
+    positionIds = (await api.multiCall({
+      abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
       calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
-    })).output.map(positionIdCall => positionIdCall.output)
+    }))
   }
 
-  const positions = (await sdk.api.abi.multiCall({
-    block, chain, abi: slipstreamNftABI.positions, target: nftAddress,
-    calls: positionIds.map((position) => ({ params: [position] })),
-  })).output.map(positionsCall => positionsCall.output)
+  const positions = (await api.multiCall({ abi: slipstreamNftABI.positions, target: nftAddress, calls: positionIds, }))
 
   const lpInfo = {}
   positions.forEach(position => lpInfo[getKey(position)] = position)
   const lpInfoArray = Object.values(lpInfo)
 
-  const poolInfos = (await sdk.api.abi.multiCall({
-    block, chain,
-    abi: slipstreamNftABI.getPool, target: factory,
-    calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1, info.tickSpacing] })),
-  })).output.map(positionsCall => positionsCall.output)
+  const poolInfos = (await api.multiCall({ abi: slipstreamNftABI.getPool, target: factory, calls: lpInfoArray.map((info) => ({ params: [info.token0, info.token1, info.tickSpacing] })), }))
 
-  const slot0 = await sdk.api.abi.multiCall({ block, chain, abi: slipstreamNftABI.slot0, calls: poolInfos.map(i => ({ target: i })) })
+  const slot0 = await api.multiCall({ abi: slipstreamNftABI.slot0, calls: poolInfos })
 
-  slot0.output.forEach((slot, i) => lpInfoArray[i].tick = slot.output.tick)
+  slot0.forEach((slot, i) => lpInfoArray[i].tick = slot.tick)
 
   positions.map(addV3PositionBalances)
   return balances
@@ -818,7 +814,7 @@ async function sumTokens2({
 
   if (resolveNFTs) {
     const coreNftTokens = whitelistedNFTs[api.chain] ?? []
-    const nftTokens = await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false})))
+    const nftTokens = await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false })))
     nftTokens.forEach((nfts, i) => ownerTokens.push([[nfts, tokens, coreNftTokens].flat(), owners[i]]))
   }
 
@@ -830,14 +826,14 @@ async function sumTokens2({
         .flat()
     )
   }
-  
+
   if (convexRewardPools.length) {
     const convexRewardPoolsTokensAndOwners = convexRewardPools.map(poolAddress => {
       return owners.map(owner => [poolAddress, owner])
     }).flat();
     await unwrapConvexRewardPools({ api, tokensAndOwners: convexRewardPoolsTokensAndOwners });
   }
-  
+
   if (auraPools.length) {
     const tokensAndOwners = auraPools.map(poolAddress => {
       return owners.map(owner => [poolAddress, owner])
@@ -866,7 +862,7 @@ async function sumTokens2({
     await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
 
   if (resolveSlipstream)
-    await unwrapSlipstreamNFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
+    await unwrapSlipstreamNFTs({ balances, api, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
 
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
@@ -968,7 +964,7 @@ async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, ba
     const [tokens, bals] = await api.call({ abi: 'function getPoolTokens(bytes32) view returns (address[], uint256[],uint256)', target: vault, params: poolId })
     tokens.forEach((v, i) => {
       // handle balancer composable metapools case where the pool contains the LP itself, we can skip it for our calc
-      if(v.toLowerCase() !== balancerToken.toLowerCase()) {
+      if (v.toLowerCase() !== balancerToken.toLowerCase()) {
         sdk.util.sumSingleBalance(balances, v, bals[i] * ratio, api.chain)
       }
     })
