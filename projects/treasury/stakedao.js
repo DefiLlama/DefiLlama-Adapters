@@ -63,16 +63,16 @@ const ethTokens = [
   "0xaA25cb1b10b8252480Cc6A3b17C22e6C0E00Bcb4", // sdBTCCoveredCallV2
   "0xc10B7CA0383F0357EdEED233Dc806B5229DCF4a5", // sdETHCoveredCallV2
   "0x320623b8e4ff03373931769a31fc52a4e78b5d70", // RSR
-  "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", // stETH
+  ADDRESSES.ethereum.STETH, // stETH
   "0x7448c7456a97769f6cd04f1e83a4a23ccdc46abd", // MAV 
   "0xefc0ced4b3d536103e76a1c4c74f0385c8f4bdd3", // PYTH 
   "0x8f22779662ad253844013d8e99eccb4d80e31417", // BobrCRV
   "0xb3ad645db386d7f6d753b2b9c3f4b853da6890b8", // CTR
-  "0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7", // cvxCRV
+  ADDRESSES.ethereum.cvxCRV, // cvxCRV
   "0x34635280737b5bfe6c7dc2fc3065d60d66e78185", // cvxPRISMA
   "0x4591dbff62656e7859afe5e45f6f47d3669fbb28", // mkUSD
-  "0x365accfca291e7d3914637abf1f7635db165bb09", // FXN
-  "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // FXS
+  ADDRESSES.ethereum.FXN, // FXN
+  ADDRESSES.ethereum.FXS, // FXS
   "0xe19d1c837b8a1c83a56cd9165b2c0256d39653ad", // sdFXN
   "0x402f878bdd1f5c66fdaf0fababcf74741b68ac36", // sdFXS
   "0xd1b5651e55d4ceed36251c61c50c889b36f6abb5", // sdCRV
