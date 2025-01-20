@@ -10,6 +10,7 @@ const ports = {
   polygon: undefined,
   avax: undefined,
   bsc: undefined,
+  sonic: undefined,
   // metis: undefined,
 }
 
