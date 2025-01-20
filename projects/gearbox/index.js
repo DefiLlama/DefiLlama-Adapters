@@ -170,68 +170,73 @@ const getV2Tvl = async (api) => {
             .find((log) => log.args?.onBehalfOf === borrower)?.args.creditAccount
       );
 
-      const totalValues = await api.multiCall({
-        abi: v2Abis.calcTotalValue,
-        target: creditFacade,
-        calls: openCredits.filter((i) => i),
-      });
-
-      api.add(
-        underlying,
-        totalValues.reduce((a, c) => a + Number(c), 0)
-      );
+      const totalValues = await api.multiCall({ abi: v2Abis.calcTotalValue, target: creditFacade, calls: openCredits });
+      api.add(underlying, totalValues.reduce((a, c) => a + Number(c), 0));
     })
   );
 };
 
 const getV3Managers = async (api) => {
   const dc300 = await api.call({ abi: v3Abis.getAddressOrRevert, target: ADDRESS_PROVIDER_V3[api.chain], params: [DATA_COMPRESSOR, 300] })
-  return { rawManagers: await api.call({ abi: v3Abis.getCreditManagersV3List, target: dc300 }), dc300 };
+  return { managers: await api.call({ abi: v3Abis.getCreditManagersV3List, target: dc300 }), dc300 };
 }
 
 const getV3Tvl = async (api) => {
-  const { rawManagers, dc300 } = await getV3Managers(api)
-  if (!rawManagers[0] || !dc300) return;
+  const { managers, dc300 } = await getV3Managers(api)
+  if (!managers.length) return;
 
+  await Promise.all(
+    managers.map(async ({ addr }) => {
+      try {
+        const accs = await api.call({ target: dc300, abi: v3Abis.getCreditAccountsByCreditManager, params: [addr, []] })
+        accs.forEach(({ balances }) => {
+          balances.forEach(({ balance, token }) => {
+            if (+balance < 1) return;
+            api.add(token, +balance) 
+          })
+        })
+
+      } catch (error) {
+        return getV3CAsWithoutCompressor(api, addr)
+      }
+    })
+  )
+}
+
+const getV3CAsWithoutCompressor = async (api, manager) => {
   const [accs, collateralTokensCount] = await Promise.all([
-    api.multiCall({ calls: rawManagers.map(({ addr }) => ({ target: addr })), abi: v3Abis.creditAccounts, permitFailure: true }),
-    api.multiCall({ calls: rawManagers.map(({ addr }) => ({ target: addr })), abi: v3Abis.collateralTokensCount, permitFailure: true })
+    api.call({ target: manager, abi: v3Abis.creditAccounts, permitFailure: true }),
+    api.call({ target: manager, abi: v3Abis.collateralTokensCount, permitFailure: true })
   ])
 
-  const managers = rawManagers.map((manager, i) => {
-    const acc = accs[i];
-    const collateralTokenCount = collateralTokensCount[i];
-    if (!acc || !collateralTokenCount) return null;
-    return { manager, bitMask: Array.from({ length: collateralTokenCount }, (_, j) => BigInt(1) << BigInt(j)) };
-  }).filter(Boolean);
+  const bitMasks = [];
+  for (let i = 0; i < collateralTokensCount; i++) {
+    bitMasks.push(BigInt(1) << BigInt(i));
+  }
 
-  const calls = managers.flatMap(({ manager, bitMask }) =>
-    bitMask.map((e) => ({ target: manager.addr, params: [e] }))
-  );
-  
-  const collateralTokens = await api.multiCall({ abi: v3Abis.getTokenByMask, calls });
+  const collateralTokens = await api.multiCall({ abi: v3Abis.getTokenByMask, calls: bitMasks.map((bm) => ({ target: manager, params: [bm] })) });
 
-  const tokensAndOwners = managers.flatMap(({ bitMask }, managerIndex) => {
-    const accForManager = accs[managerIndex];
-    const tokensForManager = collateralTokens.splice(0, bitMask.length);
-    return accForManager.map((acc) => [tokensForManager, acc]);
-  });
-
-
-  api.sumTokens({ tokensAndOwners: tokensAndOwners.slice(0, 1) })
+  for (const token of collateralTokens) {
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: accs.map((owner) => ({ target: token, params: [owner] })), permitFailure: true })
+    if (!balances.length) return;
+    balances.forEach((balance) => {
+      api.add(token, balance)
+    })
+  }
 }
  
  // src/adapter/index.ts
 const tvl = async (api) => {
-  // const tokensAndOwners = await getPools(api)
+  const tokensAndOwners = await getPools(api)
   if (api.chain === 'ethereum') {
-    // await getV1Tvl(api),
-    // await getV2Tvl(api)
+    await getV1Tvl(api),
+    await getV2Tvl(api)
   }
 
   await getV3Tvl(api)
+  await api.sumTokens({ tokensAndOwners })
 }
  
-['ethereum'/*, 'arbitrum', 'optimism'*/].forEach((chain) => {
+['ethereum', 'arbitrum', 'optimism'].forEach((chain) => {
    module.exports[chain] = { tvl }
 })
