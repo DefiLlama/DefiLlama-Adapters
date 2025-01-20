@@ -121,6 +121,23 @@ module.exports = {
                     "0xf9C4FF105803A77eCB5DAE300871Ad76c2794fa4",
                     "0xEA44dDC58eC6b4902E19A353c554B6A4F32b9e6E",
                 ],
+                  // mBTC
+                [
+                    "0x7c1cCA5b25Fa0bC9AF9275Fb53cBA89DC172b878",
+                    "0x8A016f1896dC2939fFDbB60f6E42bCc245e2bB0b",
+                ],
+                // mCake
+                [
+                    "0x581FA684D0Ec11ccb46B1d92F1F24C8A3F95C0CA",
+                    "0x605356cc9f725e6744A51E78CD49E6029DcC4404",
+                ],
+                // mwBETH
+                [
+                    "0x7dc91cbd6cb5a3e6a95eed713aa6bf1d987146c8",
+                    "0x3cd434f0A58018B87eF1D2436cb710ca46F0fC43",
+                ],
+                // BTCB vault
+                [ADDRESSES.bsc.BTCB, "0x1AfA1589a634BE568D7872dCF1bbE6F79e11FaD5"],
             ],
         }),
         pool2,

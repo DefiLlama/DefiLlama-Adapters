@@ -5,10 +5,10 @@ const { sumTokens2 } = require('./helper/unwrapLPs')
 const endpoint = "https://api.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
 const chains = {
   ethereum: 'eth',
-  // bsc: 'bsc',
   arbitrum: 'arbitrum',
   base: 'base',
-  polygon: 'matic'
+  polygon: 'matic',
+  era: 'zksync'
 }
 
 const tvl = async (api) => {
@@ -31,7 +31,7 @@ const tvl = async (api) => {
     if (token) api.add(token, bals2[i])
   })
 
-  return sumTokens2({ api, resolveLP: true, owners: vaults.map(({ vault }) => vault), resolveUniV3: api.chain !== 'base', permitFailure: true })
+  return sumTokens2({ api, resolveLP: true, owners: vaults.map(({ vault }) => vault), resolveUniV3: api.chain !== 'base' && api.chain !== 'era', permitFailure: true })
 }
 
 Object.keys(chains).forEach((chain) => {
