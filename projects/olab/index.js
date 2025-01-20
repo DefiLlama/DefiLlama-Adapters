@@ -12,7 +12,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'counts the number of USDC tokens in the conditional tokens contract.',
+  methodology: 'TVL (Total Value Locked) refers to the total amount of USDC held in the Conditional Token smart contract, along with the USDC collateral provided to all O.LAB Prediction markets ever created.',
   start: 23899060,
   base: {
     tvl,
