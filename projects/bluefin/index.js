@@ -14,15 +14,16 @@ const Arbitrum_Config = {
 
 async function suiTvl(api) {
   const object = await sui.getObject(SUI_BANK_ID);
-  const vaultObject = await sui.getObject(BLUE_VAULT_ID);
-
   const usdcAmount = object.fields.coinBalance;
-  const blueCoinAmount = vaultObject.fields.total_locked_amount;
   // div by 1e6 as usdc coin has 6 precision
   api.add(ADDRESSES.sui.USDC, usdcAmount);
+}
+
+const staking = async (api) => {
+  const vaultObject = await sui.getObject(BLUE_VAULT_ID);
+  const blueCoinAmount = vaultObject.fields.total_locked_amount;
   // div by 1e9 as blue coin has 9 precision
   api.add(BLUE_COIN, blueCoinAmount);
-  return api.getBalances()
 }
 
 module.exports = {
@@ -33,7 +34,8 @@ module.exports = {
     })
   },
   sui: {
-    tvl: suiTvl
+    tvl: suiTvl,
+    staking
   },
   hallmarks: [
     [Math.floor(new Date('2023-12-22')/1e3), 'Decomission Arbitrum support'],
