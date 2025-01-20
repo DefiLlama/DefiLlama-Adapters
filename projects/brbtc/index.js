@@ -41,7 +41,7 @@ module.exports = {
 async function tvl(api) {
     const cfg = chainConfigs[api.chain] ?? {}
     if (!cfg) return;
-    if (cfg.staking.kernel) {
+    if (cfg.staking && cfg.staking.kernel) {
         const stakingCfg = cfg.staking.kernel
         const stakingToken = stakingCfg.assets[0]
         const stakingBalance = await api.call({
@@ -52,6 +52,6 @@ async function tvl(api) {
     return sumTokens2({ api, owner: cfg.vault, tokens: cfg.assets })
 }
 
-['bsc'].forEach(chain => {
+['ethereum', 'bsc'].forEach(chain => {
     module.exports[chain] = { tvl: tvl }
 })
