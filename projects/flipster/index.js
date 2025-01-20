@@ -84,11 +84,11 @@ const config = {
       '0xECfa1357a76499FF04C8306a869d518f2dD6297f'
     ]
   },
-  conflux: {
-    owners: [
-      'cfx:aajnh5j7c85prg3nf8kyg3hdawy4unyvf6bhdr1fkz'
-    ]
-  },
+  // conflux: {
+  //   owners: [
+  //     'cfx:aajnh5j7c85prg3nf8kyg3hdawy4unyvf6bhdr1fkz'
+  //   ]
+  // },
   cosmos: {
     owners: [
       'cosmos1gcsur9g2vxagmyr0u7pc9kcvtyd7zuyen3n5x7'
