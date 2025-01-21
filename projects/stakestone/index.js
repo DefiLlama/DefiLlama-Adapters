@@ -18,7 +18,6 @@ const mantaTvl = async (api) => {
 }
 
 module.exports = {
-    start: 18182242,
     ethereum: {
         tvl: ethTvl
     },

@@ -142,7 +142,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1611991703, // 01/30/2021 @ 07:28:23 AM +UTC
+  start: '2021-01-30', // 01/30/2021 @ 07:28:23 AM +UTC
   ethereum: {
     tvl
   }
