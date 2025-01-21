@@ -2178,5 +2178,8 @@
     "ETH": "i9nwxtKuVYX4MSbeULLiK2ttVi6rUEhh4X",
     "TBTC": "iS8TfRPfVpKo5FVfSUzfHBQxo9KuzpnqLU",
     "USDT": "i9oCSqKALwJtcv49xUKS2U2i79h1kX6NEY"
+  },
+  "zksync": {
+    "USDM": "0x7715c206A14Ac93Cb1A6c0316A6E5f8aD7c9Dc31"
   }
 }
