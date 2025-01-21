@@ -9,7 +9,7 @@ module.exports = {
                     '0xdafe498b31f24ea5577055e86bf77e96bcba2c39a7ae47abaa819c303a45a352', //USDC-USDT
                     '0x81e83f73530c262b0dbf5414649a875c48a48144de3c08ff68cb9d54b36f2eaa', //FUEL-USDC
 
-                    '0x81e83f73530c262b0dbf5414649a875c48a48144de3c08ff68cb9d54b36f2eaa', //USDT-USDC
+                    '0xe4e4844f78e2e470b590d0c76ffc9f4422a87317377813a181a02c60a60bc774', //USDT-USDC
                     '0x0bef6eb3018d901818978175feccf650b65dee8e3a8f5b59e138bcf1cf1d0db9', //WETH-USDC
                     '0x4391b39d9165917faffb9dcc69d19b6952a6ebf02db593747cf2f5d8298d28c7', //FUEL-ETH
                     '0x272bc2c2d065e8ca22f0473e328f403bb1ba2e85d71f5fa51dcb83393714ff01', //TRUMP-ETH
