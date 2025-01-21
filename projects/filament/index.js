@@ -1,7 +1,6 @@
-const { filamentExports } = require('../helper/filament');
-
 module.exports = {
   sei: {
-    tvl: filamentExports(),
+    tvl: () => ({}),
   },
+  deadFrom: '2024-12-24',
 }
