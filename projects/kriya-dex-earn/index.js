@@ -1,5 +1,4 @@
 const { fetchURL } = require("../helper/utils");
-const sui = require("../helper/chain/sui");
 
 const vaultsUrl =
   "https://api.kriya.finance/defillama/vaults";
@@ -14,7 +13,8 @@ async function vaultTVL(api) {
   try {
     const vaults = (await fetchURL(vaultsUrl))?.data?.data;
     for (const vault of vaults) {
-      if (vault?.vaultType === "KriyaClmm" || vault?.vaultType === "CetusClmm") {
+      if (vault?.vaultType === "KriyaClmm" ) continue;
+      if (vault?.vaultType === "CetusClmm") {
         const tokenX = Number(vault?.info?.tokenXAmount) * 10 ** Number(vault?.info?.pool?.tokenXDecimals);
         const tokenY = Number(vault?.info?.tokenYAmount) * 10 ** Number(vault?.info?.pool?.tokenYDecimals);
         api.add(vault?.info?.pool?.tokenXType, tokenX);
@@ -29,16 +29,11 @@ async function vaultTVL(api) {
   }
 }
 
-async function stakingTVL(api) {
+async function staking(api) {
   const kdxMetrics = (await fetchURL(kdxStakingUrl))?.data?.data;
   const totalStaked = Number(kdxMetrics?.kdxStaked) * 10 ** KDX_DECIMALS;
 
   api.add(KDX_TYPE, totalStaked);
-}
-
-async function vaultsTVL(api) {
-  await vaultTVL(api);
-  await stakingTVL(api);
 }
 
 module.exports = {
@@ -47,6 +42,7 @@ module.exports = {
   methodology:
     "Collets all the TVL from the KriyaDEX vaults. The TVL is denominated in USD.",
   sui: {
-    tvl: vaultsTVL,
+    tvl: vaultTVL,
+    staking,
   },
 };
