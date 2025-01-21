@@ -30,7 +30,10 @@ async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens
     if (onlyWhitelistedTokens && !tokens.includes(jetton.address)) return;
     const decimals = jetton.decimals
     price = price?.prices?.USD
-    if (!decimals || !price) return;
+    if (!decimals || !price) {
+      api.add(jetton.address, balance)
+      return;
+    }
     const bal = balance * price / 10 ** decimals
     api.add('tether', bal, { skipChain: true })
   })

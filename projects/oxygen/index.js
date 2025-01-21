@@ -11,4 +11,5 @@ module.exports = {
     tvl,
     borrowed: () => 0,
   },
+  deadFrom: '2022-11-01'
 }
