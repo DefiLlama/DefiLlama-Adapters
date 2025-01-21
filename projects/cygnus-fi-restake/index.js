@@ -11,7 +11,7 @@ const CYGNUS_POOL_CONFIG = {
       vault: '0x7551aEa51588AaCe99B89c3FaC3CFc4108DB8094'
     },
     STBTC: {
-      depositToken: '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3',
+      depositToken: ADDRESSES.swellchain.stBTC,
       vault: '0x0Ce45dd53affbb011884EF1866E0738f58AB7969'
     },
     UNIBTC: {

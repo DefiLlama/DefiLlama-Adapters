@@ -1,8 +1,12 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { staking } = require("../helper/staking.js");
 const { cachedGraphQuery } = require('../helper/cache')
 
 // @dev: mapping of XCHF to its Bridge
 const XCHFBridge = ["0xb4272071ecadd69d933adcd19ca99fe80664fc08", "0x7bbe8F18040aF0032f4C2435E7a76db6F1E346DF"];
+const Frankencoin = "0xB58E61C3098d85632Df34EecfB899A1Ed80921cB";
+const SavingsModule = "0x3BF301B0e2003E75A3e86AB82bD1EFF6A9dFB2aE";
+
 
 async function tvl(api) {
   const tokensAndOwners = [XCHFBridge];
@@ -21,6 +25,7 @@ async function tvl(api) {
 module.exports = {
   ethereum: {
     tvl,
+    staking: staking(SavingsModule, Frankencoin)
   },
   start: '2023-10-28',
 };

@@ -7,29 +7,20 @@ module.exports = {
   cardano: {
     tvl: async () => {
       const data = await post(
-        "https://citizens.theapesociety.io/api/getLevvyData",
-        {}
+        "https://8080-truthful-birthday-xc2vhr.us1.demeter.run/api/v1/token/platform/stats",
+        ''
       );
       return {
-        cardano: data.tokens.tvl,
-      };
-    },
-    staking: async () => {
-      const data = await post(
-        "https://citizens.theapesociety.io/api/getLevvyData",
-        {}
-      );
-      return {
-        cardano: data.tokens.staked,
+        cardano: data.totalValueLocked/1e6,
       };
     },
     borrowed: async () => {
       const data = await post(
-        "https://citizens.theapesociety.io/api/getLevvyData",
-        {}
+        "https://8080-truthful-birthday-xc2vhr.us1.demeter.run/api/v1/token/platform/stats",
+        ''
       );
       return {
-        cardano: data.tokens.borrowed,
+        cardano: data.totalValueBorrowed/1e6,
       };
     },
   },

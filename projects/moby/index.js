@@ -2,6 +2,9 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
+  hallmarks: [
+    [1736294400,"Private-key Leak Exploit"]
+  ],
   arbitrum: {
     tvl: sumTokensExport({ 
       owners: [
