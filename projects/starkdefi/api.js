@@ -30,6 +30,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology: "Value of all LP available in the DEX",
+  isHeavyProtocol: true,
   starknet: {
     tvl,
   },
