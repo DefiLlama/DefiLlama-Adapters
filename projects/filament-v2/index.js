@@ -1,5 +1,7 @@
 import { filamentExportsV2 } from "../helper/filament";
 
-export const sei = {
-  tvl: filamentExportsV2(),
-};
+module.exports = {
+  sei: {
+    tvl: filamentExportsV2(),
+  },
+}
