@@ -1,4 +1,4 @@
-import { filamentExportsV2 } from "../helper/filament";
+const { filamentExportsV2 } =  require("../helper/filament");
 
 module.exports = {
   sei: {
