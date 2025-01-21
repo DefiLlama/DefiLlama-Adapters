@@ -84,6 +84,13 @@ const toobit = require('./toobit.js')
 const indiaCovid = require('./india-covid.js')
 const wooCEX = require('./woo-cex.js')
 const bitlayerBridge = require('./bitlayer-bridge.js')
+const arkhamExchange = require('./arkham-exchange.js')
+const chakra = require('./chakra.js')
+const nerveNetworkBridge = require('./nervenetworkbridge.js')
+const nexusbtc = require('./nexusbtc')
+const tapbit = require('./tapbit-cex.js')
+const jbtc = require('./jbtc')
+const bitkub = require('./bitkub-cex.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -94,10 +101,26 @@ const teleswap = [
   '3LNsey3ceG9ZHkQ7bcfAjwnew7KVujHt29', // BRC20_LOCKER
 ]
 
+const ssiProtocol = [
+  '1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM'
+]
+
+const bitomato = [
+  'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
+]
+
+const stacksSBTC = [
+  // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
+  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
+]
+
 module.exports = {
   ...fetchers,
+  stacksSBTC,
+  bitomato,
   bitlayerBridge,
   teleswap,
+  ssiProtocol,
   ainn,
   allo,
   avalanche,
@@ -183,4 +206,11 @@ module.exports = {
   indiaCovid,
   wooCEX,
   p2pb2b,
+  arkhamExchange,
+  chakra,
+  nerveNetworkBridge,
+  nexusbtc,
+  tapbit,
+  jbtc,
+  bitkub
 }

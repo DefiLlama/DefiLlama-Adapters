@@ -49,6 +49,7 @@ module.exports = {
         "0xa70af99bff6b168327f9d1480e29173e757c7904", // crvUSDT
         "0xdad97f7713ae9437fa9249920ec8507e5fbb23d3", // crv3crypto
         ADDRESSES.polygon.WBTC, // WBTC
+        ADDRESSES.polygon.WETH_1, // WETH
       ],
     }),
   },
@@ -64,6 +65,7 @@ module.exports = {
         "0xA5E0E46462970C9Ee8C2ECadcde254c483748Ec4", // b3pool
         "0xae87e5fa20f335ce14aa3b9e0616308d9ac7d4ce", // crvUSDT
         ADDRESSES.bsc.BTCB, // BTCB
+        ADDRESSES.bsc.ETH, // ETH
       ],
     }),
   },
@@ -94,6 +96,7 @@ module.exports = {
         "0x1337BedC9D22ecbe766dF105c9623922A27963EC", // av3crv
         "0x1daB6560494B04473A0BE3E7D83CF3Fdf3a51828", // crv3crypto
         ADDRESSES.avax.BTC_b, // BTC.b
+        ADDRESSES.avax.WETH_e, // WETH.e
       ],
     }),
   },
@@ -112,6 +115,7 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         "0x1337bedc9d22ecbe766df105c9623922a27963ec", // x3CRV
+        ADDRESSES.xdai.WETH, // WETH
       ],
     }),
   },
@@ -120,6 +124,7 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         ADDRESSES.blast.WETH, // WETH
+        ADDRESSES.blast.USDB, // USDB
       ],
     }),
   },
@@ -128,6 +133,7 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         ADDRESSES.mantle.WETH, // WETH
+        ADDRESSES.mantle.USDC, // USDC
       ],
     }),
   },
@@ -137,6 +143,7 @@ module.exports = {
       tokens: [
         ADDRESSES.linea.WETH, // WETH
         "0x3aab2285ddcddad8edf438c1bab47e1a9d05a9b4", // WBTC
+        ADDRESSES.linea.USDC, // USDC.e
       ],
     }),
   },
@@ -145,6 +152,48 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         ADDRESSES.taiko.WETH, // WETH
+        ADDRESSES.taiko.USDC, // USDC
+      ],
+    }),
+  },
+  celo: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0x28f209844029755fc563c1bd4fd21f42dc7ce0e4", // Tri-pool
+      ],
+    }),
+  },
+  fraxtal: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        "0xcaef324bea3ff5c7a08710081294f3344ffadc54", // FRAX/USDT
+        "0xfc00000000000000000000000000000000000006", // wfrxETH
+      ],
+    }),
+  },
+  kava: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        ADDRESSES.kava.USDt, // USDt
+      ],
+    }),
+  },
+  metis: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        ADDRESSES.metis.WETH, // WETH
+      ],
+    }),
+  },
+  mode: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        ADDRESSES.optimism.WETH_1, // WETH
       ],
     }),
   },
