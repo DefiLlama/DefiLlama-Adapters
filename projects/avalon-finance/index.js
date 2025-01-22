@@ -35,7 +35,7 @@ const solvMarkets = {
 	corn: aaveExports('', '', undefined, ['0xf0d077728D424Ee6C6Eba82d23ce56C2e91E57Ea'], { v3: true }),
 	sonic: aaveExports('', '', undefined, ['0x23f02C2eeFe2010298Ab74059393326d3df59a02'], { v3: true }),
 	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }), // Taiko - Solv
-	sei: aaveExports('', '', undefined, [''], { v3: true }),
+	sei: aaveExports('', '', undefined, ['0x16b9b88B773C1a1aBA6D305e0560171405d45121'], { v3: true }),
 
 }
 
