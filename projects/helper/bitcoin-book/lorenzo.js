@@ -49,5 +49,4 @@ module.exports = [
   "bc1p9ta9m4h6z5hz5mvu2450qqrd5x507a25c4uper8nkxllhs94x7msv77l0s",
   "bc1plh54q8p2e870cc9yunza4509ulna54dara2vz38c44f0jdgce4rseupqy7",
   "bc1p8lqq8u7rlr38fgttp2hypz9t2vl4r486gkm67mkawyn769e7njmqhyz0tn"
-
 ]
