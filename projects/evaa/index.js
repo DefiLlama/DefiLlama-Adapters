@@ -13,7 +13,7 @@ async function processTVL(api) {
       while (!success && retries > 0) {
         try {
           const [totalSupply, totalBorrow] = await call({ target: poolAssets.poolAddress, abi: 'getAssetTotals', params: [["int", assetId]] });
-          const assetTvl = (totalSupply - totalBorrow) / 10 ** decimals;
+          const assetTvl = totalSupply / 10 ** decimals;
           if(cgListed) {
             api.addCGToken(cgId, assetTvl);
           } else {
