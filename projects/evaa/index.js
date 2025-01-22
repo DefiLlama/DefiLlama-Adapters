@@ -49,7 +49,7 @@ async function processTVL(api) {
 }
 
 module.exports = {
-  methodology: 'Counts EVAA\'s pools assets as TVL.',
+  methodology: 'Counts the supply of EVAA\'s asset pools as TVL.',
   ton: {
     tvl: (api) => processTVL(api),
   }
