@@ -53,7 +53,7 @@ const unibtcMarkets = {
 	bsc: aaveExports('', '', undefined, ['0xF828A73cB00072843241C6294ed778F26854fe5C'], { v3: true }),
 	mode: aaveExports('', '', undefined, ['0x8F016F5dac399F20B34E35CBaF1dFf12eeE2dE74'], { v3: true }),
 	iotex: aaveExports('', '', undefined, ['0x28292e1ca36e400FB7d0B66AaA99EB808E3Cb8cB'], { v3: true }),
-	bob: aaveExports('', '', undefined, [''], { v3: true }),
+	bob: aaveExports('', '', undefined, ['0x100AC26ad2c253B18375f1dC4BC0EeeB66DEBc88'], { v3: true }),
 }
 
 const stbtcMarkets = {
