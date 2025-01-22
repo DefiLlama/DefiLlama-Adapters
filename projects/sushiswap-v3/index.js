@@ -70,10 +70,6 @@ module.exports = uniV3Export({
     factory: "0x2F255d3f3C0A3726c6c99E74566c4b18E36E3ce6",
     fromBlock: 3945310,
   },
-  sonic: {
-    factory: "0x46B3fDF7b5CDe91Ac049936bF0bDb12c5d22202e",
-    fromBlock: 347590
-  },
   // boba: { factory: '0x0BE808376Ecb75a5CF9bB6D237d16cd37893d904', fromBlock: 998556, },
   polygon_zkevm: {
     factory: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
@@ -99,6 +95,7 @@ module.exports = uniV3Export({
   blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
   //europa: { factory: '0x51d15889b66A2c919dBbD624d53B47a9E8feC4bB', fromBlock: 5124251, },
   rsk: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 6365060, }, //this one
+  sonic: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 1, }, //this one
 });
 
 const config = {

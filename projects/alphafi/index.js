@@ -166,13 +166,6 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     token0Type: ADDRESSES.sui.SUI, 
     token1Type: "0x2053d08c1e2bd02791056171aab0fd12bd7cd7efad2ab8f6b9c8902f14df2ff2::ausd::AUSD"
   },
-  { //alpha usdc
-    poolID: "0x4540c5e7de64088c0c2c30abc51f7e6bbe6bc48703667c108aa1de23f6aa40e6",
-    parentPoolID: "0x6595edf6d8c8b6894a5c6760843ae2fde81cb37d8586984dd1345b0f00bfecd8",
-    investorID: "0x187ca6f373d20465a730125c93e62a96c6a73354a1a8b35cbdd2b39278b7b141",
-    token0Type: "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA",
-    token1Type: ADDRESSES.sui.USDC_CIRCLE
-  },
   { //wbtc usdc
     poolID: "0xbc0de037958d7988710c40f4e7317f8f3ffca4fa3cc9e1c18bc1ebd7ec65cd6e",
     parentPoolID: "0x38282481e3a024c50254c31ebfc4710e003fe1b219c0aa31482a860bd58c4ab0",
@@ -229,9 +222,87 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     token0Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
     token1Type: ADDRESSES.sui.SUI
   },
+  { // stsui usdc
+    poolID: "0x95f0543f861584f1a3c3129c46901d5c5cc1d44e77eb57aab63eec55cd128f29",
+    parentPoolID: "0x151d6959cb2a6d1a5b6cfec6d1eae690af0318e46e5fb3ec45dd4e3b67eebeda",
+    investorID: "0x65e4af88e543e41c410f969801d53e40acb23da7be811e4c61d05a7d7d235b3b",
+    token0Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
+  { // alpha stsui
+    poolID: "0xd601c2d1f451a1493e8d071482272a83e6dafbcdb82b249ca5b3ac909c4138f3",
+    parentPoolID: "0xd4051b5dc76ca354e48813268aa79de38b274878ef6a9d274066ae5a47f46cc6",
+    investorID: "0x959f6df092073b23c0ad0278a9cf070b6779f2edc9b7124108207b4d7b4e94ca",
+    token0Type: "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA",
+    token1Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI"
+  },
+  { // suiusdt usdc
+    poolID: "0x5b975bf7d0f0e3784a5b2db8f0a3e0b45cdcc31b39a222e680716a6ad7eba67f",
+    parentPoolID: "0x0bd95d012d60190a6713ae51f2d833b24ae70c5fb07fcfb41db40f25549878b1",
+    investorID: "0x23c073d557e4512f1811bd7c767047de13de14c59bb9607373613531250910b7",
+    token0Type: ADDRESSES.sui.suiUSDT,
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
+  { // stsui buck
+    poolID: "0xdee56209e25c0eafdd3e06ee9f4aae03d173478d158fb4c5c1fbae7c75d4cd72",
+    parentPoolID: "0x0bc35f5b7e7b77dadc62c2630e9efafb1beb4122fd5393bf3b99586abf3ca8b1",
+    investorID: "0xb5633adb8cfb5a4e6580002b21bc403d5d096dbca07495986b4882619ce05279",
+    token0Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+    token1Type: ADDRESSES.sui.BUCK
+  },
+  { // stsui musd
+    poolID: "0xb251e187a4e688dd3dbbf378e4aacfdd41de6a81e2a4bc10c7b80e056c1da630",
+    parentPoolID: "0x0da4bcb1669ae3b6ce80f024e3a2076e2c4e2cc899d4724fce94da0f729bc968",
+    investorID: "0xa8a705f8819e01396927c1ec179a140750597ed3b5268d205bbf5240979fda86",
+    token0Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+    token1Type: "0xe44df51c0b21a27ab915fa1fe2ca610cd3eaa6d9666fe5e62b988bf7f0bd8722::musd::MUSD"
+  },
   
 ]
-
+const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
+  { //sui usdc
+    poolID: "0x1ec0aacf500624de90dd21478da12fca4726b3837e78993aee1c82f631e8364d",
+    parentPoolID: "0x3b585786b13af1d8ea067ab37101b6513a05d2f90cfe60e8b1d9e1b46a63c4fa",
+    investorID: "0xcf2a8bfaafd4b50f068826e3e4217925b4280836d8f182e3481c3725269c2a1f",
+    token0Type: ADDRESSES.sui.SUI,
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
+  { //usdt usdc
+    poolID: "0x65a167f16da65732fc71ec5b8714e5beb293e931d54820f1fea188bbcf09383d",
+    parentPoolID: "0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f",
+    investorID: "0x685c0569675bb46b838941568f1123c03eeef374dc4160c7d9b3abbc3b93f25c",
+    token0Type: ADDRESSES.sui.USDT,
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
+  { //suiUsdt Usdc
+    poolID: "0x8b68333ff71fa008bb2c8bc26d5989fba51cec27393172bb6bbfdbd360489542",
+    parentPoolID: "0x0bd95d012d60190a6713ae51f2d833b24ae70c5fb07fcfb41db40f25549878b1",
+    investorID: "0x07506ea66cb73fa60dbea5177c974ca6c98d7cd8ee2fae631af6e79f139f99ec",
+    token0Type: ADDRESSES.sui.suiUSDT,
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
+  { //deep sui
+    poolID: "0x76fb78985fae4cf24bcd933ea5e8a6e818e9d4b51c091c4c4a78b6720199e81e",
+    parentPoolID: "0x1b06371d74082856a1be71760cf49f6a377d050eb57afd017f203e89b09c89a2",
+    investorID: "0x217a85380d0cf4b4c5a870b8f6d11b8e3bc66de87e86d0376080ca7e60e6506c",
+    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
+    token1Type: ADDRESSES.sui.SUI
+  },
+  { //blue sui
+    poolID: "0xb8cf0bf8b39f465c1b845e5ee8c2c53424c3faf97fb8e0ef1139abb9001e844a",
+    parentPoolID: "0xde705d4f3ded922b729d9b923be08e1391dd4caeff8496326123934d0fb1c312",
+    investorID: "0xf7785cf8b3d3f9bee48bf4d90a142d7ec98b25d6784408ffedc11633d7124197",
+    token0Type: "0xe1b45a0e641b9955a20aa0ad1c1f4ad86aad8afb07296d4085e349a50e90bdca::blue::BLUE",
+    token1Type: ADDRESSES.sui.SUI
+  },
+  { //deep blue
+    poolID: "0x37671a77fb00a3323304f2586d18694bb93a6bc840e8184634ebe66d69eb48db",
+    parentPoolID: "0x4b8271fc4819078e44ee9a0506a824b77464789d57ace355d0562a4776c51840",
+    investorID: "0x90364be9cca6c1df042f269fb944fd49ba1c74688789fe33329aa6d40ac8552a",
+    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
+    token1Type: "0xe1b45a0e641b9955a20aa0ad1c1f4ad86aad8afb07296d4085e349a50e90bdca::blue::BLUE"
+  },
+]
 const ALPHAFI_NAVI_TVL_IDS = [
   {
     poolID: "0x643f84e0a33b19e2b511be46232610c6eb38e772931f582f019b8bbfb893ddb3",
@@ -288,6 +359,11 @@ const ALPHAFI_NAVI_TVL_IDS = [
     tokenType: "0xa99b8952d4f7d947ea77fe0ecdcc9e5fc0bcab2841d6e2a5aa00c3044e5544b5::navx::NAVX",
     expo: 9
   },
+  {
+    poolID: "0xd1125035ab6e2889239442031c130c641b75b430b71057bb79710ad578cc2867",
+    tokenType: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+    expo: 9
+  },
 ]
 const ALPHAFI_NAVI_LOOP_TVL_IDS = [
   { //sui vsui
@@ -340,6 +416,13 @@ const ALPHAFI_POOL2_IDS = [{
   poolID: "0x4c0e42f1826170ad9283b321a7f9a453ef9f65aaa626f7d9ee5837726664ecdc",
   parentPoolID: "0x29e218b46e35b4cf8eedc7478b8795d2a9bcce9c61e11101b3a039ec93305126",
   investorID: "0xb43d1defd5f76ef084d68d6b56e903b54d0a3b01be8bb920ed1fa84b42c32ee1",
+  token0Type: "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA",
+  token1Type: ADDRESSES.sui.USDC_CIRCLE
+},
+{ //alpha usdc
+  poolID: "0x4540c5e7de64088c0c2c30abc51f7e6bbe6bc48703667c108aa1de23f6aa40e6",
+  parentPoolID: "0x6595edf6d8c8b6894a5c6760843ae2fde81cb37d8586984dd1345b0f00bfecd8",
+  investorID: "0x187ca6f373d20465a730125c93e62a96c6a73354a1a8b35cbdd2b39278b7b141",
   token0Type: "0xfe3afec26c59e874f3c1d60b8203cb3852d2bb2aa415df9548b8d688e6683f93::alpha::ALPHA",
   token1Type: ADDRESSES.sui.USDC_CIRCLE
 },
@@ -413,7 +496,7 @@ async function addPoolTVL4(api, alphafiBucketPools){
 
 async function tvl(api) {
   
-  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS), addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS)])
+  await Promise.all([addPoolTVL(api, ALPHAFI_CETUS_TVL_IDS), addPoolTVL2(api, ALPHAFI_NAVI_TVL_IDS), addPoolTVL3(api, ALPHAFI_NAVI_LOOP_TVL_IDS), addPoolTVL4(api, ALPHAFI_BUCKET_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_TVL_IDS), addPoolTVL(api, ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS)]);
 
 }
 async function pool2(api) {
