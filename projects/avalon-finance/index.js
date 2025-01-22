@@ -89,7 +89,7 @@ const xaumMarkets = {
 const lbtcMarkets = {
 	bsc: aaveExports('', '', undefined, ['0x5b9b3C211B81627Cc6b46824CB26829F31A587dc'], { v3: true }),
 	corn: aaveExports('', '', undefined, ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], { v3: true }),
-	bob: aaveExports('', '', undefined, [''], { v3: true }),
+	bob: aaveExports('', '', undefined, ['0x28292e1ca36e400FB7d0B66AaA99EB808E3Cb8cB'], { v3: true }),
 }
 
 const listaMarkets = {
