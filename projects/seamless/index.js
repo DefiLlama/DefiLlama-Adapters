@@ -5,7 +5,7 @@ const abi = require("./abis.json");
 const { mergeExports } = require("../helper/utils");
 const methodologies = require("../helper/methodologies");
 
-const SEAMLESS_GOVERNOR_SHORT_TIMELOCK = "0x8768c789C6df8AF1a92d96dE823b4F80010Db294";
+const SEAMLESS_GOVERNOR_SHORT_TIMELOCK = "0x639d2dD24304aC2e6A691d8c1cFf4a2665925fee";
 const MORPHO_VAULTS_FACTORY_v1_1 = "0xFf62A7c278C62eD665133147129245053Bbf5918";
 
 const AAVE_ADDRESSES_PROVIDER_REGISTRY = "0x90C5055530C0465AbB077FA016a3699A3F53Ef99";
