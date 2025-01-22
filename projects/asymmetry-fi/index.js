@@ -14,34 +14,46 @@ const VOTIUM = '0x00000069aBbB0B1Ad6975bcF753eEe15D318A0BF'
 // afCVX
 const AFCVX = '0x8668a15b7b023Dc77B372a740FCb8939E15257Cf'
 
-async function tvl(api) {
+// veASF
+const veASF = '0xf119b5aa93a7755b09952b3a88d04cdaf5329034'
+const ASF_TOKEN = '0x59a529070fBb61e6D6c91f952CcB7f35c34Cf8Aa' // ASF token address
 
+async function tvl(api) {
   const tokensAndOwners = [
     // safETH Balances
     [ADDRESSES.ethereum.WSTETH, '0x972a53e3a9114f61b98921fb5b86c517e8f23fad'],
-    [ADDRESSES.ethereum.RETH, '0x7b6633c0cd81dc338688a528c0a3f346561f5ca3'],
-    [SFRXETH, '0x36ce17a5c81e74dc111547f5dffbf40b8bf6b20a'],
-    [ANKRETH, '0xf4A1735505188DAf0872312Dd1A6182d342ea981'],
-    [SWETH, '0xF5cCaF2Dbed6c7Ae341Df42a9a74E057e9df3D09'],
-    [STAFI, '0xAd0e8EdBDabDC4dd204b49F73511C1a13a8797CC'],
+    [ADDRESSES.ethereum.RETH,   '0x7b6633c0cd81dc338688a528c0a3f346561f5ca3'],
+    [SFRXETH,                   '0x36ce17a5c81e74dc111547f5dffbf40b8bf6b20a'],
+    [ANKRETH,                   '0xf4A1735505188DAf0872312Dd1A6182d342ea981'],
+    [SWETH,                     '0xF5cCaF2Dbed6c7Ae341Df42a9a74E057e9df3D09'],
+    [STAFI,                     '0xAd0e8EdBDabDC4dd204b49F73511C1a13a8797CC'],
 
     // afETH Balances
     [SFRXETH, AFETH],
+
+    // veASF locked ASF balance
+    [ASF_TOKEN, veASF],
   ]
 
   // CVX in afETH (Votium Strategy)
-  const votiumAvailableCVX = await api.call({ abi: 'uint256:availableCvx', target: VOTIUM, })
+  const votiumAvailableCVX = await api.call({
+    abi: 'uint256:availableCvx',
+    target: VOTIUM,
+  })
   api.add(CVX, votiumAvailableCVX)
 
   // CVX in afCVX (Clever Strategy)
-  const afCVXAvailableCVX = await api.call({ abi: 'uint256:totalAssets', target: AFCVX, })
+  const afCVXAvailableCVX = await api.call({
+    abi: 'uint256:totalAssets',
+    target: AFCVX,
+  })
   api.add(CVX, afCVXAvailableCVX)
 
   return api.sumTokens({ tokensAndOwners })
 }
 
 module.exports = {
-  methodology: 'counts tvl on afETH, safETH, and afCVX',
+  methodology: 'Counts TVL on afETH, safETH, afCVX, and veASF (locked ASF).',
   ethereum: {
     tvl,
   },
