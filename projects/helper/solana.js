@@ -67,7 +67,7 @@ function getAssociatedTokenAddress(mint, owner,) {
   if (typeof mint === 'string') mint = new PublicKey(mint)
   if (typeof owner === 'string') owner = new PublicKey(owner)
   const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
-  return associatedTokenAddress;
+  return associatedTokenAddress.toString()
 }
 
 
