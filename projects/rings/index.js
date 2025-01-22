@@ -40,7 +40,7 @@ async function tvl(api) {
       target: vaults[0],
       abi: 'function totalSupply() view returns (uint256)'
     })
-    api.add(ADDRESSES.sonic["USDC.e"], BigInt(totalSupplyUsd) * BigInt(rateUsd) / BigInt(1e6))
+    api.add(ADDRESSES.sonic["USDC_e"], BigInt(totalSupplyUsd) * BigInt(rateUsd) / BigInt(1e6))
 
     // WETH vaults
     const rateEth = await chainApi.call({
