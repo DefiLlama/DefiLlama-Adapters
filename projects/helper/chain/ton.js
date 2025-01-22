@@ -3,6 +3,7 @@ const ADDRESSES = require('../coreAssets.json')
 const plimit = require('p-limit')
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
+const { sumTokens2 } = require('../unwrapLPs')
 
 const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
 
@@ -69,7 +70,7 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   for (const addr of owners) {
     await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens })
   }
-  return api.getBalances()
+  return sumTokens2({ api, })
 }
 
 function sumTokensExport({ ...args }) {
