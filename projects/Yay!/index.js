@@ -30,7 +30,6 @@ const eth = async (api) => {
   balances["ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c"] = balances["ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c"] - bridgedYayStoneBals
   balances["ethereum:0xe1b4d34e8754600962cd944b535180bd758e6c2e"] = balances["ethereum:0xe1b4d34e8754600962cd944b535180bd758e6c2e"] - bridgedYayAgEthBals
 
-
   return balances;
 }
 
