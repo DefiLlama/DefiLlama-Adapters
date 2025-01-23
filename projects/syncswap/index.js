@@ -3,7 +3,7 @@ const { transformDexBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
 async function tvl(api) {
-  const { fromBlock, classicFactorys, stableFactorys, aquaFactorys = [] } = config[api.chain]
+  const { fromBlock, classicFactorys, stableFactorys, aquaFactorys, rangedFactorys = [] } = config[api.chain]
 
   const logs = await Promise.all([...classicFactorys, ...stableFactorys, ...aquaFactorys].map(factory => (getFactoryLogs(api, factory))));
 
@@ -24,6 +24,66 @@ async function tvl(api) {
       })
     }
   }
+  const v3logs = await Promise.all([...rangedFactorys].map(factory => (getV3FactoryLogs(api, factory))))
+
+  const block = api.block
+
+  const pairAddresses = []
+  const token0Addresses = []
+  const token1Addresses = []
+  for (let log of v3logs.flat()) {
+    token0Addresses.push(`0x${log[0].substr(-40)}`.toLowerCase())
+    token1Addresses.push(`0x${log[1].substr(-40)}`.toLowerCase())
+    pairAddresses.push(`0x${log[3].substr(-40)}`.toLowerCase())
+  }
+
+
+  const pairs = {}
+  // add token0Addresses
+  token0Addresses.forEach((token0Address, i) => {
+    const pairAddress = pairAddresses[i]
+    pairs[pairAddress] = {
+      token0Address: token0Address,
+    }
+  })
+
+  // add token1Addresses
+  token1Addresses.forEach((token1Address, i) => {
+    const pairAddress = pairAddresses[i]
+    pairs[pairAddress] = {
+      ...(pairs[pairAddress] || {}),
+      token1Address: token1Address,
+    }
+  })
+
+  let balanceCalls = []
+
+  const exclude = []
+  for (let pair of Object.keys(pairs)) {
+    if(exclude.includes(pair)){
+      continue;
+    }
+    balanceCalls.push({
+      target: pairs[pair].token0Address,
+      params: pair,
+    })
+    balanceCalls.push({
+      target: pairs[pair].token1Address,
+      params: pair,
+    })
+  }
+
+  const tokenBalances = (
+      await sdk.api.abi.multiCall({
+        abi: 'erc20:balanceOf',
+        calls: balanceCalls,
+        fromBlock,
+        block,
+        chain: api.chain,
+      })
+  )
+
+  sdk.util.sumMultiBalanceOf(balances, tokenBalances, true);
 
 
   return transformDexBalances({ balances, data, chain: api.chain })
@@ -38,14 +98,24 @@ async function tvl(api) {
       onlyArgs: true,
     })
   }
+  async function getV3FactoryLogs(api, factory) {
+    return getLogs({
+      api,
+      target: factory,
+      fromBlock,
+      topic: "PoolCreated(address,address,int24)",
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      onlyArgs: true,
+    })
+  }
 }
-
 const config = {
   era: {
     fromBlock: 9775,
     stableFactorys: ['0x5b9f21d407F35b10CbfDDca17D5D84b129356ea3', '0x81251524898774F5F2FCaE7E7ae86112Cb5C317f'],
     classicFactorys: ['0xf2DAd89f2788a8CD54625C60b55cD3d2D0ACa7Cb', '0x0a34FBDf37C246C0B401da5f00ABd6529d906193'],
-    aquaFactorys: ['0x20b28B1e4665FFf290650586ad76E977EAb90c5D', '0xFfa499b019394d9bEB5e21FC54AD572E4942302b', '0x0754870C1aAb00eDCFABDF4e6FEbDD30e90f327d']
+    aquaFactorys: ['0x20b28B1e4665FFf290650586ad76E977EAb90c5D', '0xFfa499b019394d9bEB5e21FC54AD572E4942302b', '0x0754870C1aAb00eDCFABDF4e6FEbDD30e90f327d'],
+    rangedFactorys: ['0x9D63d318143cF14FF05f8AAA7491904A494e6f13']
   },
   linea: {
     fromBlock: 716,
