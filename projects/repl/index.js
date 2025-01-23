@@ -7,6 +7,9 @@ const http = require('../helper/http');
 
 const REPL_HELPER_CONTRACT = '0x65846aECBF23385F76B73ef1EDD1ebdFf7Ac258D';
 
+const PATH_TOKEN_CONTRACT = '0x13D1EA691C8153F5bc9a491d41b927E2baF8A6b1';
+const ATH_TOKEN_CONTRACT_ARBITRUM = '0xc87b37a581ec3257b734886d9d3a581f5a9d056c';
+
 const getAllValidAgents = async (api) => {
   const total = await api.call({ abi: abi.getAllAgentsCount, target: REPL_HELPER_CONTRACT })
   const COUNT = 30
@@ -38,5 +41,11 @@ module.exports = {
       api.add(nullAddress, minerAssets);
       api.add(nullAddress, tvlComponents);
     },
+  },
+  arbitrum: {
+    tvl: async (api) => {
+      const totalSupply = await api.call({ abi: abi.totalSupply, target: PATH_TOKEN_CONTRACT })
+      api.add(ATH_TOKEN_CONTRACT_ARBITRUM, totalSupply)
+    }
   },
 };
