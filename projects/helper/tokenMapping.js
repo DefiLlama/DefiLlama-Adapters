@@ -55,7 +55,7 @@ const fixBalancesTokens = {
   elys: {
     'uelys': { coingeckoId: 'elys-network', decimals: 6 },
   },
-  superpositionso: {
+  superposition: {
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
     '0x1fB719f10b56d7a85DCD32f27f897375fB21cfdd': { coingeckoId: 'ethereum', decimals: 18 },
     '0xA2555701754464d32D9624149E3fDb459F3c8DE4': { coingeckoId: 'arbitrum', decimals: 18 },
