@@ -71,6 +71,12 @@ const fixBalancesTokens = {
   ton: {
     '0:9bd52017d6178af6d2bc6b9097b5849b7475e43cf01758a4f2dd8cf93c7d6582': { coingeckoId: 'ethereum', decimals: 9 },
     '0:9b9117699eb5997e6d3b74fe67ff08c6c7a9653641cd21d999fa0a4841c0cff8': { coingeckoId: 'bitcoin', decimals: 9 },
+  },
+  fluence: {
+    '0x236501327e701692a281934230af0b6be8df3353': { coingeckoId: 'fluence', decimals: 18 },
+  },
+  Swan: {
+    '0xBb4eC1b56cB624863298740Fd264ef2f910d5564': { coingeckoId: 'swan-chain', decimals: 18 },
   }
 }
 
