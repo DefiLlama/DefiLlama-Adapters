@@ -16,6 +16,7 @@ async function tvl(api) {
   const balance = scValToNative(response.val.value().val()).amount;
   const parsedBalance = Number(balance) / 1e7;
   api.addCGToken('stellar', parsedBalance);
+  return api.getBalances()
 }
 
 module.exports = {

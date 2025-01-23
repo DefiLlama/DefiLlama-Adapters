@@ -97,6 +97,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-    start: 1600905600,
+    start: '2020-09-24',
     ethereum: { tvl }
 }

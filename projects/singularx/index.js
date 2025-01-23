@@ -17,6 +17,6 @@ const ethereumTokens = [
 ];
 
 module.exports = {
-  start: 1685817000,
+  start: '2023-06-03',
   ethereum: { tvl: sumTokensExport({ owners: ethereumContracts, tokens: ethereumTokens, }) },
 };

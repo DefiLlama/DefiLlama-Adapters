@@ -44,4 +44,13 @@ module.exports = {
   sui: {
     tvl: async () => await computeTVL("sui"),
   },
+  solana: {
+    tvl: async () => await computeTVL("solana"),
+  },
+  stellar: {
+    tvl: async () => await computeTVL("stellar"),
+  },
+  optimism: {
+    tvl: async () => await computeTVL("optimism"),
+  }
 };

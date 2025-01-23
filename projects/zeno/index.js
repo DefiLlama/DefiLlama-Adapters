@@ -16,7 +16,7 @@ async function metisTvl(api) {
 }
 
 module.exports = {
-  start: 1710294153,
+  start: '2024-03-13',
   metis: {
     tvl: metisTvl,
   },
