@@ -1,48 +1,24 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const MOUNTAIN_PROTOCOL_CONTRACT = ADDRESSES.ethereum.USDM;
-const ZKSYNC_MOUNTAIN_PROTOCOL_CONTRACT = ADDRESSES.zksync.USDM;
 
-function chainTvl(chain){
-  const contractAddress = chain == "zksync" ? ZKSYNC_MOUNTAIN_PROTOCOL_CONTRACT : MOUNTAIN_PROTOCOL_CONTRACT;
-  return async (api) => {
-    const totalSupply = await api.call({
-      abi: "erc20:totalSupply",
-      target: contractAddress,
-    });
-  
-    const decimals = await api.call({
-      abi: "erc20:decimals",
-      target: contractAddress,
-    });
-  
-    return {
-      "usd-coin": totalSupply / 10 ** decimals,
-    };
-  }
+const USDM = {
+  ethereum: ADDRESSES.ethereum.USDM,
+  polygon: ADDRESSES.ethereum.USDM,
+  optimism: ADDRESSES.ethereum.USDM,
+  base: ADDRESSES.ethereum.USDM,
+  arbitrum: ADDRESSES.ethereum.USDM,
+  era: ADDRESSES.era.USDM
 }
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: "Calculates the total USDM Supply",
-  ethereum: {
-    tvl: chainTvl("ethereum"),
-  },
-  polygon: {
-    tvl: chainTvl("polygon"),
-  },
-  optimism: {
-    tvl: chainTvl("optimism"),
-  },
-  base: {
-    tvl: chainTvl("base"),
-  },
-  arbitrum: {
-    tvl: chainTvl("arbitrum"),
-  },
-  zksync: {
-    tvl: chainTvl("zksync"),
-  },
-  celo: {
-    tvl: chainTvl("celo"),
-  },
-};
+}
+
+const tvl = async (api) => {
+  const supply = await api.call({ target: USDM[api.chain], abi: 'erc20:totalSupply' })
+  api.add(USDM[api.chain], supply)
+}
+
+Object.keys(USDM).forEach((chain) => {
+  module.exports[chain] = { tvl }
+})
