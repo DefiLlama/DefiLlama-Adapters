@@ -64,11 +64,6 @@ const soneium = async (api) => {
   }
 
   return api.addBalances(balances)
-
-  // console.log(await api.getBalancesV2())
-  // console.log(await api.getUSDValue())
-
-  // return balances;
 }
 
 module.exports = {
