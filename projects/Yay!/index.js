@@ -1,5 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-
 const yayStoneAddress = '0xe86142af1321eaac4270422081c1EdA31eEcFf0c'
 const yayAgETHAddress = '0x0341d2c2CE65B62aF8887E905245B8CfEA2a3b97'
 
