@@ -1,10 +1,11 @@
 const { nullAddress } = require('../helper/tokenMapping');
 const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const REPL_HELPER_CONTRACT = '0x65846aECBF23385F76B73ef1EDD1ebdFf7Ac258D';
 
-const PATH_TOKEN_CONTRACT = '0x13D1EA691C8153F5bc9a491d41b927E2baF8A6b1';
+const PATH_TOKEN_CONTRACT = '0xc537e67Eb192b3F0B6B183ff52060Ee92475f398';
 const ATH_TOKEN_CONTRACT_ARBITRUM = '0xc87b37a581ec3257b734886d9d3a581f5a9d056c';
 
 const PFLT_TOKEN_CONTRACT = '0xa1cF424EE59d9B5C5B7F6801FE510E430cA1AEA8';
@@ -52,13 +53,15 @@ module.exports = {
   fluence: {
     tvl: async (api) => {
       const totalSupply = await api.call({ abi: abi.totalSupply, target: PFLT_TOKEN_CONTRACT })
-      api.add(nullAddress, totalSupply)
+      api.addGasToken(totalSupply)
+      return sumTokens2({ api })
     }
   },
-  Swan: {
+  swan: {
     tvl: async (api) => {
       const totalSupply = await api.call({ abi: abi.totalSupply, target: PSWAN_TOKEN_CONTRACT })
-      api.add(ADDRESSES.Swan.SWAN, totalSupply)
+      api.addGasToken(totalSupply)
+      return sumTokens2({ api })
     }
   }
 };

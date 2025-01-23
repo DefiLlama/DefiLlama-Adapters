@@ -73,9 +73,11 @@ const fixBalancesTokens = {
     '0:9b9117699eb5997e6d3b74fe67ff08c6c7a9653641cd21d999fa0a4841c0cff8': { coingeckoId: 'bitcoin', decimals: 9 },
   },
   fluence: {
-    '0x236501327e701692a281934230af0b6be8df3353': { coingeckoId: 'fluence', decimals: 18 },
+    [ADDRESSES.null]: { coingeckoId: 'fluence-2', decimals: 18 },
+    '0x236501327e701692a281934230af0b6be8df3353': { coingeckoId: 'fluence-2', decimals: 18 },
   },
-  Swan: {
+  swan: {
+    [ADDRESSES.null]: { coingeckoId: 'swan-chain', decimals: 18 },
     '0xBb4eC1b56cB624863298740Fd264ef2f910d5564': { coingeckoId: 'swan-chain', decimals: 18 },
   }
 }
