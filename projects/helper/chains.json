@@ -291,7 +291,6 @@
   "solana",
   "sommelier",
   "songbird",
-  "soneium",
   "sora",
   "stacks",
   "stafi",
@@ -348,5 +347,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "soneium"
 ]
