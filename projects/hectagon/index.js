@@ -10,10 +10,8 @@ const TREASURY_ADDRESS = "0x4059c4a0b8a2B528C4f2E101A3bB8fB169aBa4fB";
 const HECTA_BUSD_ADDRESS = "0xc7cee4cea7c76e11e9f5e5e5cbc5e3b798a1c4d0";
 
 module.exports = {
-  timetravel: true,
-  methodology:
+    methodology:
     "Total Value Lock in Hectagon protocol is calculated by sum of: Treasury locked value",
-  start: 20195418,
   bsc: {
     tvl: (_, _b, {[chain]: block}) => sumTokens2({ chain, block, owner: TREASURY_ADDRESS, tokens: [HECTA_BUSD_ADDRESS, BUSD_ADDRESS,]}),
     staking: staking(gHECTA, HECTA_ADDRESS, chain),

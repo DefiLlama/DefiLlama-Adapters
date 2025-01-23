@@ -15,10 +15,9 @@ chains.forEach(chain => {
   module.exports[chain] = { tvl }
 })
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   let { tvl: { vaults } } = await getConfig('matri-farm', MATRIX_API)
   vaults = vaults.filter(vault => vault.chain === api.chain).map(i => i.address)
-  console.log(vaults.length, api.chain)
   let wants = await api.multiCall({ abi: 'address:want', calls: vaults, permitFailure: true })
   const wantVaults = vaults.filter((vault, i) => wants[i])
   wants = wants.filter(want => want)

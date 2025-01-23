@@ -5,8 +5,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const tokenListsApiEndpoint = "https://token-list.solv.finance/vouchers-prod.json"
 
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const chainId = api.getChainId()
   const tokens = await tokenList(chainId);
   await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
@@ -14,7 +13,7 @@ async function tvl() {
 
 async function tokenList(chainId) {
   let tokens = [];
-  const allTokens = (await getConfig('solv-protocol', tokenListsApiEndpoint)).tokens;
+  const allTokens = (await getConfig('solv-protocol/token-list', tokenListsApiEndpoint)).tokens;
   for (let token of allTokens) {
     if (chainId == token.chainId) {
       if (token.extensions.voucher.underlyingToken != undefined) {
