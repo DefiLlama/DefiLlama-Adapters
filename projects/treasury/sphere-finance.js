@@ -44,7 +44,6 @@ module.exports = treasuryExports({
         ADDRESSES.arbitrum.GMX,
         ADDRESSES.arbitrum.WBTC,
         "0x15b2fb8f08E4Ac1Ce019EADAe02eE92AeDF06851",
-        "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
      ],
     owners: [treasuryARB],
     ownTokens: [],

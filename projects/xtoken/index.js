@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const terminal = require("./terminal");
 const {
   kncAddr,
   xaaveaAddr,
@@ -33,7 +31,6 @@ const {
   usdcAddr,
   aaveAddr,
 } = require("./constants");
-const BigNumber = require('bignumber.js');
 const xu3lps = [
   xu3lpaAddr,
   xu3lpbAddr,
@@ -42,174 +39,68 @@ const xu3lps = [
   xu3lpgAddr,
   xu3lphAddr,
 ];
+const { getLogs } = require('../helper/cache/getLogs');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
-async function tvl(timestamp, block) {
-  let balances = {};
+async function ethTvl(api) {
+  const aaveBals = await api.multiCall({ abi: abi.getFundHoldings, calls: [xaaveaAddr, xaavebAddr] })
+  const xu3lpsBals = (await api.multiCall({ abi: abi.getNav, calls: xu3lps })).reduce((acc, curr) => acc + +curr / 1e12, 0)
+  const xu3lpsdBals = (await api.multiCall({ abi: abi.getNav, calls: [xu3lpdAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xu3lpsedBals = (await api.multiCall({ abi: abi.getNav, calls: [xu3lpeAddr] })).reduce((acc, curr) => acc + +curr / 1e10, 0)
+  const xinchTvlRaw = (await api.multiCall({ abi: abi.getNav, calls: [xinchaAddr, xinchbAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xalphaaTvlRaw = (await api.multiCall({ abi: abi.getNav, calls: [xalphaaAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xbntaStakedRaw = (await api.multiCall({ abi: abi.totalAllocatedNav, calls: [xbntaAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xbntaBufferRaw = (await api.multiCall({ abi: abi.getBufferBalance, calls: [xbntaAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xbntaPendingRaw = (await api.multiCall({ abi: abi.getRewardsContributionToNav, calls: [xbntaAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xkncTvlRaw = (await api.multiCall({ abi: abi.getFundKncBalanceTwei, calls: [xkncaAddr, xkncbAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xsnxaSnxRaw = (await api.multiCall({ abi: abi.getSnxBalance, calls: [xsnxaTradeAccountingAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  const xsnxaEthRaw = (await api.multiCall({ abi: abi.getEthBalance, calls: [xsnxaTradeAccountingAddr] })).reduce((acc, curr) => acc + +curr, 0)
+  api.addTokens(aaveAddr, aaveBals)
+  api.addTokens(usdcAddr, xu3lpsBals)
+  api.addTokens(wethAddr, xu3lpsdBals)
+  api.addTokens(wbtcAddr, xu3lpsedBals)
+  api.addTokens(inchAddr, xinchTvlRaw)
+  api.addTokens(bntAddr, xbntaStakedRaw)
+  api.addTokens(bntAddr, xbntaBufferRaw)
+  api.addTokens(bntAddr, xbntaPendingRaw)
+  api.addTokens(kncAddr, xkncTvlRaw)
+  api.addTokens(alphaAddr, xalphaaTvlRaw)
+  api.addTokens(snxTokenAddr, xsnxaSnxRaw)
+  api.addTokens(wethAddr, xsnxaEthRaw)
 
-  const xaaveTvlRaw = (
-    await sdk.api.abi.multiCall({
-      calls: [xaaveaAddr, xaavebAddr].map((a) => ({ target: a })),
-      abi: abi.getFundHoldings,
-      block,
-    })
-  ).output
-    .map((r) => r.output)
-    .reduce((a, b) => a + +b, 0);
-  sdk.util.sumSingleBalance(balances, aaveAddr, xaaveTvlRaw);
-
-  const xu3lpTvlRaw = (
-    await sdk.api.abi.multiCall({
-      calls: xu3lps.map((a) => ({ target: a })),
-      abi: abi.getNav,
-      block,
-    })
-  ).output
-    .map((r) => r.output)
-    .reduce((a, b) => a + +b, 0);
-  sdk.util.sumSingleBalance(balances, usdcAddr, xu3lpTvlRaw / 10 ** 12);
-
-  const xu3lpdTvlRaw = (
-    await sdk.api.abi.call({
-      target: xu3lpdAddr,
-      abi: abi.getNav,
-      block,
-    })
-  ).output
-  sdk.util.sumSingleBalance(balances, wethAddr, xu3lpdTvlRaw);
-
-  const xu3lpeTvlRaw = (
-    await sdk.api.abi.call({
-      target: xu3lpeAddr,
-      abi: abi.getNav,
-      block,
-    })
-  ).output
-  sdk.util.sumSingleBalance(balances, wbtcAddr, xu3lpeTvlRaw / 10 ** 10);
-
-  const xinchTvlRaw = (
-    await sdk.api.abi.multiCall({
-      calls: [xinchaAddr, xinchbAddr].map((a) => ({ target: a })),
-      abi: abi.getNav,
-      block,
-    })
-  ).output
-    .map((r) => r.output)
-    .reduce((a, b) => a + +b, 0);
-  sdk.util.sumSingleBalance(balances, inchAddr, xinchTvlRaw);
-
-  const xbntaStakedRaw = (
-    await sdk.api.abi.call({
-      target: xbntaAddr,
-      abi: abi.totalAllocatedNav,
-      block
-    })
-  ).output;
-  const xbntaBufferRaw = (
-    await sdk.api.abi.call({
-      target: xbntaAddr,
-      abi: abi.getBufferBalance,
-      block
-    })
-  ).output;
-  const xbntaPendingRaw = (
-    await sdk.api.abi.call({
-      target: xbntaAddr,
-      abi: abi.getRewardsContributionToNav,
-      block
-    })
-  ).output;
-  sdk.util.sumSingleBalance(balances, bntAddr, xbntaStakedRaw);
-  sdk.util.sumSingleBalance(balances, bntAddr, xbntaBufferRaw);
-  sdk.util.sumSingleBalance(balances, bntAddr, xbntaPendingRaw);
-
-  const xkncTvlRaw = (
-    await sdk.api.abi.multiCall({
-      calls: [xkncaAddr, xkncbAddr].map((a) => ({ target: a })),
-      abi: abi.getFundKncBalanceTwei,
-      block,
-    })
-  ).output
-    .map((r) => r.output)
-    .reduce((a, b) => a + +b, 0);
-  sdk.util.sumSingleBalance(balances, kncAddr, xkncTvlRaw);
-
-  const xalphaaTvlRaw = (
-    await sdk.api.abi.call({
-      target: xalphaaAddr,
-      abi: abi.getNav,
-      block
-    })
-  ).output;
-  sdk.util.sumSingleBalance(balances, alphaAddr, xalphaaTvlRaw);
-  const xsnxaSnxRaw = (
-    await sdk.api.abi.call({
-      abi: abi.getSnxBalance,
-      target: xsnxaTradeAccountingAddr,
-      block,
-    })
-  ).output;
-  sdk.util.sumSingleBalance(balances, snxTokenAddr, xsnxaSnxRaw);
-  const xsnxaEthRaw = (
-    await sdk.api.abi.call({
-      abi: abi.getEthBalance,
-      target: xsnxaTradeAccountingAddr,
-      block,
-    })
-  ).output;
-  sdk.util.sumSingleBalance(balances, wethAddr, xsnxaEthRaw);
-  const xsnxaEthrsi6040Raw = (
-    await sdk.api.abi.call({
-      abi: "erc20:balanceOf",
-      target: ethrsi6040Addr,
-      params: xsnxaAdminAddr,
-      block,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, ethrsi6040Addr, xsnxaEthrsi6040Raw);
-    const xsnxaSusdRaw = (await sdk.api.abi.call({
-      abi: abi.debtBalanceOf,
-      target: snxAddr,
-      params: [xsnxaAdminAddr, '0x7355534400000000000000000000000000000000000000000000000000000000'],
-      block,
-    })).output;
-  sdk.util.sumSingleBalance(
-      balances,
-      ADDRESSES.ethereum.sUSD,
-      xsnxaSusdRaw
-  );
-
-  Object.keys(balances).forEach(key => balances[key] = BigNumber(balances[key]).toFixed(0))
-
-  return terminal.getData("mainnet", block, balances);
-}
-
-async function fetchOptimism() {
-  return terminal.getData("optimism");
-}
-
-async function fetchArbitrum() {
-  return terminal.getData("arbitrum");
-}
-
-async function fetchPolygon() {
-  return terminal.getData("polygon");
+  await api.sumTokens({ tokensAndOwners: [[ethrsi6040Addr, xsnxaAdminAddr]] })
+  const xsnxaSusdRaw = (await api.call({ abi: abi.debtBalanceOf, target: snxAddr, params: [xsnxaAdminAddr, '0x7355534400000000000000000000000000000000000000000000000000000000'], }));
+  api.add(ADDRESSES.ethereum.sUSD, xsnxaSusdRaw)
 }
 
 module.exports = {
   doublecounted: true,
-  timetravel: false,
-  ethereum:{
-    tvl,
-  },
-  arbitrum: {
-    tvl: fetchArbitrum,
-  },
-  optimism: {
-    tvl: fetchOptimism,
-  },
-  polygon: {
-    tvl: fetchPolygon,
-  },
+  misrepresentedTokens: true,
   methodology: `TVL includes deposits made to xToken Terminal and xToken Market.`,
 };
+
+const config = {
+  ethereum: { factory: '0x090559D58aAB8828C27eE7a7EAb18efD5bB90374', fromBlock: 14373342 },
+  arbitrum: { factory: '0x090559D58aAB8828C27eE7a7EAb18efD5bB90374', fromBlock: 7804500 },
+  optimism: { factory: '0x090559D58aAB8828C27eE7a7EAb18efD5bB90374', fromBlock: 4396677 },
+  polygon: { factory: '0x090559D58aAB8828C27eE7a7EAb18efD5bB90374', fromBlock: 25871314 },
+}
+
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        eventAbi: 'event DeployedIncentivizedPool (address indexed clrInstance, address indexed token0, address indexed token1, uint24 fee, int24 lowerTick, int24 upperTick)',
+        onlyArgs: true,
+        fromBlock,
+      })
+      const ownerTokens = logs.map(log => [[log.token0, log.token1], log.clrInstance])
+      await api.sumTokens({ ownerTokens })
+      if (chain === 'ethereum') await ethTvl(api)
+      return sumTokens2({ api, owners: logs.map(log => log.clrInstance), resolveUniV3: true, })
+    }
+  }
+})

@@ -9,7 +9,7 @@ const treasuryTokens = [
   ["0x130966628846bfd36ff31a822705796e8cb8c18d", false], // MIM
   [ADDRESSES.avax.WAVAX, false], // WAVAX,
   [ADDRESSES.avax.USDT_e, false], // USDT
-  ["0x50b7545627a5162f82a992c33b87adc75187b218", false], // WBTC
+  [ADDRESSES.avax.WBTC_e, false], // WBTC
   [ADDRESSES.avax.WETH_e, false], // WETH
   ["0x84d2fe6adace63407f4b6bd91ab9f782ba3cb420", true], // CAKE-MIM JLP
   ["0xb8df8111a74e5fd62b13dbbe59ddeb343fc91d4a", true] // CAKE-WAVAX JLP                                                  

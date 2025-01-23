@@ -1,0 +1,5 @@
+{
+  "getStrategies": "function getStrategies() view returns (tuple(address deployedAt, address pair, tuple(address asset, string assetSymbol, uint256 assetDecimals, address collateral, string collateralSymbol, uint256 collateralDecimals, address rateContract, address oracle, uint256 depositLimit, uint64 ratePerSec, uint64 fullUtilizationRate, uint32 feeToProtocolRate, uint32 maxOacleDeviation, uint256 lowExchangeRate, uint256 highExchangeRate, uint256 maxLTV, uint256 protocolLiquidationFee, uint256 totalAsset, uint256 totalCollateral, uint256 totalBorrow, uint256 version) pairData)[])",
+  "getVaults": "function getVaults() view returns (tuple(address deployedAt, bool isShutdown, address asset, string assetSymbol, uint256 assetDecimals, string name, uint256 totalAssets, uint256 totalDebt)[])"
+
+}

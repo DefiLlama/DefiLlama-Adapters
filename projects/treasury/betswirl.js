@@ -21,7 +21,7 @@ const banks = {
 };
 
 function treasury(chain) {
-  return async (_timestamp, _block, {[chain]: block}, { api }) => {
+  return async (api) => {
     const abiV1 = 'function getTokens() view returns (tuple(uint8 decimals, address tokenAddress, string name, string symbol, tuple(bool allowed, tuple(uint16 dividend, uint16 referral, uint16 treasury, uint16 team, uint256 dividendAmount, uint256 treasuryAmount, uint256 teamAmount) houseEdgeSplit, uint256 balanceReference, tuple(uint16 thresholdRate, uint16 toTreasury, uint16 toTeam) balanceOverflow) token)[])'
     const abiV2 = 'function getTokens() view returns (tuple(uint8 decimals, address tokenAddress, string name, string symbol, tuple(bool allowed, uint16 balanceRisk, address partner, tuple(uint16 dividend, uint16 referral, uint16 partner, uint16 treasury, uint16 team, uint256 dividendAmount, uint256 partnerAmount, uint256 treasuryAmount, uint256 teamAmount, uint256 referralAmount, uint256 minPartnerTransferAmount) houseEdgeSplit, uint256 balanceReference, tuple(uint16 thresholdRate, uint16 toTreasury, uint16 toTeam) balanceOverflow) token)[])'
     const currentAbi = 'function getTokens() view returns (tuple(uint8 decimals, address tokenAddress, string name, string symbol, tuple(bool allowed, bool paused, uint16 balanceRisk, uint64 VRFSubId, address partner, uint256 minBetAmount, uint256 minPartnerTransferAmount, tuple(uint16 bank, uint16 dividend, uint16 partner, uint16 treasury, uint16 team, uint256 dividendAmount, uint256 partnerAmount, uint256 treasuryAmount, uint256 teamAmount) houseEdgeSplit) token)[])'
@@ -47,7 +47,7 @@ function treasury(chain) {
 
     // Get the Bank for the input block
     const [, bankVersion, bankAddressOfBlock] = banks[chain].find(
-      ([bankLastBlock]) => (block || 999999999999) < bankLastBlock
+      ([bankLastBlock]) => (api.block || 999999999999) < bankLastBlock
     );
 
     // Retrieves all tokens from the Bank contract
@@ -74,7 +74,7 @@ module.exports = {
   methodology:
     "BetSwirl has no users TVL yet. However, it includes the bankrolls amounts (each tokens amount in the bank allowing players to bet).",
   // The first Bank was deployed on Polygon at tx 0x6b99f617946d2f8c23adcd440cd3309d2da750e52d135853f38a0da11cdc3233
-  start: 1648344312, // new Date(Date.UTC(2022, 2, 27, 1, 25, 12)).getTime() / 1e3,
+  start: '2022-03-27', // new Date(Date.UTC(2022, 2, 27, 1, 25, 12)).getTime() / 1e3,
   bsc: {
     tvl: treasury("bsc"),
     ownTokens: staking('0xa475f643aa480a3df3e9872b6e80e75ae99b19db', '0x3e0a7C7dB7bB21bDA290A80c9811DE6d47781671'),

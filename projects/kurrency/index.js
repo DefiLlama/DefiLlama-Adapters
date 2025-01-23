@@ -1,4 +1,4 @@
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { PSM, cdpManager, getCollateralInfo } = config[api.chain]
   const ids = await api.call({ abi: abi.getCollateralIds, target: cdpManager })
   const psmTokens = await api.call({ abi: abi.getPSMTokens, target: PSM })

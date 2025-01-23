@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { deadFrom } = require('../mosquitos-finance');
 
 // polyo Asset Address
 const Asset_P01_BUSD = "0xC72e6f8041183EaD6f85839bD463F7aD0f14A40D";
@@ -31,5 +32,6 @@ module.exports = {
   },
   hallmarks: [
     [1662842254, "Rug pull"],
-  ]
+  ],
+  deadFrom: 1662842254
 };

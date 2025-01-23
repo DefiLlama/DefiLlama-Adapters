@@ -28,7 +28,7 @@ const CONTRACT_INFOS = {
   }
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const chain = api.chain
   const CONTRACT_INFO = CONTRACT_INFOS[chain]
   const [registerEvents, setLoanConfigurationEvents] = await Promise.all([
@@ -69,7 +69,6 @@ module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
   methodology: "TVL consists of deposit and collateral in the Coupon Finance contract",
-  start: 150536505,
   arbitrum: {
     tvl,
   },

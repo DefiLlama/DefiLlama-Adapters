@@ -1,40 +1,49 @@
-const { graphQuery } = require('../helper/http')
+const { graphQuery } = require("../helper/http");
 
 const endpoint = "https://api.defiedge.io/graphql";
-const query = `
-    query Stats($network: [Network!] $dex: [Dex!] = [Uniswap, Apeswap, Pancakeswap, Arbidex, Sushiswap]) {
-      stats(network: $network, dex: $dex) {
-        totalValueManaged
-      }
+
+const query = /* GraphQL */ `
+  query Stats($network: [Network!]) {
+    stats(network: $network) {
+      totalValueManaged
     }
-  `;
-
-async function tvl() {
-  const { api } = arguments[3]
-  let tvl = 0
-  const { dexes, network } = config[api.chain]
-  for (const dex of dexes) {
-    const results = await graphQuery(endpoint, query, { network: [network], dex: [dex] })
-    tvl += results.stats.totalValueManaged
   }
+`;
 
-  return { "usd-coin": tvl};
+async function getTvl(api) {
+  const { network } = config[api.chain];
+
+  const results = await graphQuery(endpoint, query, { network: [network] });
+  const tvl = results.stats.totalValueManaged;
+
+  return { "usd-coin": tvl };
 }
 
 module.exports = {
+  hallmarks: [[1730332800, "Definitive Sunset of DefiEdge"]],
+  deadFrom: '2024-10-31',
   doublecounted: true,
-  timetravel: false,
   misrepresentedTokens: true,
+  timetravel: false,
 };
 
 const config = {
-  ethereum: { dexes: ["Uniswap",], network: "mainnet",},
-  bsc: { dexes: ["Uniswap", "Apeswap", "Pancakeswap",], network: "bsc",},
-  arbitrum: { dexes: ["Uniswap", "Arbidex", "Sushiswap"], network: "arbitrum",},
-  optimism: { dexes: ["Uniswap",], network: "optimism",},
-  polygon: { dexes: ["Uniswap",], network: "polygon",},
-}
+  arbitrum: { network: "arbitrum" },
+  astrzk: { network: "astarZkEVM" },
+  avax: { network: "avalanche" },
+  base: { network: "base" },
+  bsc: { network: "bsc" },
+  era: { network: "zksyncEra" },
+  ethereum: { network: "mainnet" },
+  linea: { network: "linea" },
+  mantle : { network: "mantle" },
+  moonbeam: { network: "moonbeam" },
+  optimism: { network: "optimism" },
+  polygon_zkevm: { network: "zkEVM" },
+  polygon: { network: "polygon" },
+  xlayer: { network: "xLayer" },
+};
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
-})
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl: getTvl };
+});

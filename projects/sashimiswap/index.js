@@ -36,7 +36,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { stakingContracts, stakingToken, dexFactory, comptroller, dexFromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const ownerTokens = []
       if (comptroller) {
         const markets = await api.call({ abi: 'address[]:getAllMarkets', target: comptroller, })
@@ -58,7 +58,7 @@ Object.keys(config).forEach(chain => {
       }
       return sumTokens2({ api, ownerTokens, blacklistedTokens, })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       if (comptroller) {
         const markets = await api.call({ abi: 'address[]:getAllMarkets', target: comptroller, })
         let uTokens = await api.multiCall({ abi: 'address:underlying', calls: markets, permitFailure: true })

@@ -17,8 +17,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: true,
-    arbitrum: {
+        arbitrum: {
         tvl
     }
 }

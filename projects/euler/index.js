@@ -13,7 +13,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const EULER = '0x27182842e098f60e3d576794a5bffb0777e025d3'
   const logs = await getLogs({
     api,
@@ -27,7 +27,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return sumTokens2({ api, owner: EULER, tokens: logs.map(i => i.underlying)})
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const EULER = '0x27182842e098f60e3d576794a5bffb0777e025d3'
   const logs = await getLogs({
     api,

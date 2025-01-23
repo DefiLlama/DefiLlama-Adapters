@@ -1,19 +1,19 @@
-const axios = require('axios');
 const BigNumber = require("bignumber.js");
 const { RPC_ENDPOINT } = require('../helper/chain/tezos');
 const { PromisePool } = require('@supercharge/promise-pool');
+const { get } = require('../helper/http')
 
 const SPICY_URL = 'https://spicya.sdaotools.xyz/api/rest';
 const MATTER_CORE = 'KT1K4jn23GonEmZot3pMGth7unnzZ6EaMVjY';
 const MATTER_LIVE = 'KT1FYct7DUK1mUkk9BPJEg7AeH7Fq3hQ9ah3';
 
 async function fetchTokenBalances(account) {
-  return (await axios(`${RPC_ENDPOINT}/v1/tokens/balances?account=${account}&limit=100&select=balance,token.id%20as%20id,token.contract%20as%20contract,token.standard%20as%20standard,token.tokenId%20as%20token_id`)).data;
+  return (await get(`${RPC_ENDPOINT}/v1/tokens/balances?account=${account}&limit=100&select=balance,token.id%20as%20id,token.contract%20as%20contract,token.standard%20as%20standard,token.tokenId%20as%20token_id`));
 }
 
 async function fetchSupply (contract, id) {
   const req = id ? `/v1/tokens/?contract=${contract}&tokenId=${id}` : `/v1/tokens/?contract=${contract}`;
-  const supply = (await axios(`${RPC_ENDPOINT}${req}`)).data;
+  const supply = (await get(`${RPC_ENDPOINT}${req}`));
 
   return new BigNumber(supply[0].totalSupply);
 }
@@ -21,15 +21,15 @@ async function fetchSupply (contract, id) {
 let _spicePools, _spiceTokens
 
 async function fetchSpicyPools() {
-  if (!_spicePools) _spicePools = axios(`${SPICY_URL}/PoolListAll/`)
-  const spicyPools = (await _spicePools).data.pair_info;
+  if (!_spicePools) _spicePools = get(`${SPICY_URL}/PoolListAll/`)
+  const spicyPools = (await _spicePools).pair_info;
 
   return spicyPools.map(token => ({ contract: token.contract, reservextz: token.reservextz }));
 }
 
 async function fetchSpicyTokens() {
-  if (!_spiceTokens) _spiceTokens = axios(`${SPICY_URL}/TokenList`)
-  return (await _spiceTokens).data.tokens;
+  if (!_spiceTokens) _spiceTokens = get(`${SPICY_URL}/TokenList`)
+  return (await _spiceTokens).tokens;
 }
 
 async function lpToTez(farm) {

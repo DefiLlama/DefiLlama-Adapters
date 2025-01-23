@@ -15,7 +15,7 @@ module.exports = {
     Object.keys(config).forEach(chain => {
       const { markets } = config[chain]
 
-      async function borrowed(timestamp, block, _, { api }) {
+      async function borrowed(api) {
         const balances = {}
         const tokens = await api.multiCall({ abi: 'address:baseToken', calls: markets })
         const bals = await api.multiCall({ abi: 'uint256:totalBorrow', calls: markets })
@@ -23,7 +23,7 @@ module.exports = {
         return balances
       }
 
-      async function tvl(timestamp, block, _, { api }) {
+      async function tvl(api) {
         const toa = []
         await Promise.all(markets.map(async (m, i) => {
           const items = await api.fetchList({ lengthAbi: abi.numAssets, itemAbi: abi.getAssetInfo, target: m })

@@ -11,7 +11,7 @@ module.exports = {
        useDefaultCoreAssets: true,
       factory: factoryBSC,
     }),
-    staking: staking(masterchef, tendie, "bsc")
+    staking: staking(masterchef, tendie)
   },
   methodology: 'TVL counts the liquidity in each of the Tendieswap pairs. Pairs are found using the factory address. Staking TVL accounts for TENDIE on its masterchef contract.'
 };

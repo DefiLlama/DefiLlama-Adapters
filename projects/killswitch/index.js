@@ -43,7 +43,8 @@ module.exports = {
     fetch: fetchChain("aurora"),
   },
   clv: {
-    fetch: fetchChain("clv"),
+    fetch: () => 0,
+    // fetch: fetchChain("clv"),
   },
   fetch,
 };

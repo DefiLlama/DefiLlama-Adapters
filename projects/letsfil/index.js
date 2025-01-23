@@ -1,9 +1,9 @@
 const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
-const LETSFIL_CONTRACT = "0x02F0C30Eb92e89912371242Ee86Fe98050D040A5";
+const LETSFIL_CONTRACT = "0xeD02FD25CA54e06dE121BFD36764C9f65CB6A183";
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
 
   const collateralBalance = await api.call({
     abi: 'function getTvl() external view returns (uint256)',
@@ -20,8 +20,7 @@ async function tvl(_, _1, _2, { api }) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  methodology: 'counts the number of pledge filecoins in the letsfil contract',
+    methodology: 'counts the number of pledge filecoins in the letsfil contract',
   filecoin: {
     tvl
   }
