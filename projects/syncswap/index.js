@@ -3,11 +3,11 @@ const { transformDexBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
 async function tvl(api) {
-  const { fromBlock, classicFactorys, stableFactorys, aquaFactorys, rangedFactorys = [] } = config[api.chain]
+  const { fromBlock, classicFactorys = [], stableFactorys = [], aquaFactorys = [], rangedFactorys = [] } = config[api.chain]
 
   const logs = await Promise.all([...classicFactorys, ...stableFactorys, ...aquaFactorys].map(factory => (getFactoryLogs(api, factory))));
 
-  const balances = {}
+  let balances = {}
   const data = []
 
   const reserves = await Promise.all(logs.map(log => (api.multiCall({ abi: 'function getReserves() external view returns (uint, uint)', calls: log.map(i => i.pool) }))))
@@ -15,7 +15,7 @@ async function tvl(api) {
   for (let i = 0; i < logs.length; i++) {
     if (i < classicFactorys.length) {
       reserves[i].forEach(([token0Bal, token1Bal], j) => {
-        data.push({ token0Bal, token1Bal, token0: logs[i][j].token0, token1: logs[i][j].token1, })
+        data.push({ token0Bal, token1Bal, token0: logs[i][j].token0, token1: logs[i][j].token1 })
       })
     } else {
       reserves[i].forEach(([reserve0, reserve1], j) => {
@@ -24,67 +24,29 @@ async function tvl(api) {
       })
     }
   }
-  const v3logs = await Promise.all([...rangedFactorys].map(factory => (getV3FactoryLogs(api, factory))))
 
-  const block = api.block
+  const v3logs = await Promise.all(rangedFactorys.map(factory => getV3FactoryLogs(api, factory)));
 
-  const pairAddresses = []
-  const token0Addresses = []
-  const token1Addresses = []
-  for (let log of v3logs.flat()) {
-    token0Addresses.push(`0x${log[0].substr(-40)}`.toLowerCase())
-    token1Addresses.push(`0x${log[1].substr(-40)}`.toLowerCase())
-    pairAddresses.push(`0x${log[3].substr(-40)}`.toLowerCase())
-  }
+  const pairs = {};
+    v3logs.flat().forEach(([token0, token1, , pair]) => {
+      const pairAddress = pair.toLowerCase();
+      pairs[pairAddress] = {
+        token0Address: token0.toLowerCase(),
+        token1Address: token1.toLowerCase(),
+      };
+  });
 
+  const balanceCalls = [];
+    Object.entries(pairs).forEach(([pair, { token0Address, token1Address }]) => {
+      balanceCalls.push({ target: token0Address, params: [pair] });
+      balanceCalls.push({ target: token1Address, params: [pair] });
+  });
 
-  const pairs = {}
-  // add token0Addresses
-  token0Addresses.forEach((token0Address, i) => {
-    const pairAddress = pairAddresses[i]
-    pairs[pairAddress] = {
-      token0Address: token0Address,
-    }
+  const tokenBalances = await api.multiCall({ calls: balanceCalls, abi: 'erc20:balanceOf' })
+  
+  balanceCalls.forEach(({ target }, i) => {
+    sdk.util.sumSingleBalance(balances, target, tokenBalances[i])
   })
-
-  // add token1Addresses
-  token1Addresses.forEach((token1Address, i) => {
-    const pairAddress = pairAddresses[i]
-    pairs[pairAddress] = {
-      ...(pairs[pairAddress] || {}),
-      token1Address: token1Address,
-    }
-  })
-
-  let balanceCalls = []
-
-  const exclude = []
-  for (let pair of Object.keys(pairs)) {
-    if(exclude.includes(pair)){
-      continue;
-    }
-    balanceCalls.push({
-      target: pairs[pair].token0Address,
-      params: pair,
-    })
-    balanceCalls.push({
-      target: pairs[pair].token1Address,
-      params: pair,
-    })
-  }
-
-  const tokenBalances = (
-      await sdk.api.abi.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: balanceCalls,
-        fromBlock,
-        block,
-        chain: api.chain,
-      })
-  )
-
-  sdk.util.sumMultiBalanceOf(balances, tokenBalances, true);
-
 
   return transformDexBalances({ balances, data, chain: api.chain })
 
@@ -98,6 +60,7 @@ async function tvl(api) {
       onlyArgs: true,
     })
   }
+
   async function getV3FactoryLogs(api, factory) {
     return getLogs({
       api,
@@ -109,6 +72,7 @@ async function tvl(api) {
     })
   }
 }
+
 const config = {
   era: {
     fromBlock: 9775,
