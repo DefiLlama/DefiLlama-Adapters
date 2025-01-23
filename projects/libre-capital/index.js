@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos");
 const { fetchURL } = require("../helper/utils");
+const sui = require("../helper/chain/sui");
 
 const NAV_API_URL = "https://nav.dev.librecapital.com/funds";
 
@@ -23,6 +24,14 @@ const RECEIPT_TOKENS = {
     UMA: {
       address: 'inj1eh6h6vllrvtl6qyq77cv5uwy0hw6e6d8jy4pxy',
       decimals: 18,
+      underlying: 'security-token',
+      fundName:'USD I Money Market, a sub-fund of Libre SAF VCC'
+    }
+  },
+  sui: {
+    UMA: {
+      address: '0xf98b6567fbd8e10403a05c4c3ac2a2c384b8f7cd7430756d23b0021ae28d1398',
+      decimals: 9,
       underlying: 'security-token',
       fundName:'USD I Money Market, a sub-fund of Libre SAF VCC'
     }
@@ -101,8 +110,34 @@ async function injectiveTvl() {
   return balances;
 }
 
+async function suiTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+  
+  // Query total supply from Sui contract
+  const receiptTokenObject = await sui.getObject( RECEIPT_TOKENS.sui.UMA.address);
+
+  if (receiptTokenObject?.fields?.balance) {
+    const token = RECEIPT_TOKENS.sui.UMA;
+    const balance = receiptTokenObject.fields.balance;
+    const price = fundPrices[token.fundName] || 1;
+
+    // Convert balance to human readable and multiply by price
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
+    
+    totalTvl += valueUSD;
+  }
+
+  // Return the total value in the format DeFiLlama expects
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Polygon and Injective. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Polygon, Injective and Sui. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   polygon: { tvl: polygonTvl },
-  injective: { tvl: injectiveTvl }
+  injective: { tvl: injectiveTvl },
+  sui: { tvl: suiTvl }
 }
