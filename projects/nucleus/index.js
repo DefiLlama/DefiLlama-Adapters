@@ -1,25 +1,13 @@
 const { getConfig } = require("../helper/cache");
 
-async function getMarkets() {
-    return getConfig('nucleus-vaults', "https://backend.nucleusearn.io/v1/protocol/markets");
-}
-
-async function getTokens() {
-    return getConfig('nucleus-tokens', "https://backend.nucleusearn.io/v1/protocol/tokens");
-}
-
+const isEvm = (address) => /^0x[a-fA-F0-9]{40}$/.test(address)
 
 const tvl = async (api) => {
-  
-    const vaultMap = await getMarkets();
-    const owners = Object.keys(vaultMap);
-    const tokens = await getTokens();
-    
-    return api.sumTokens({ owners, tokens })
-  };
+  const vaults = Object.keys(await getConfig('nucleus-vaults', "https://backend.nucleusearn.io/v1/protocol/markets"))
+  const tokens = (await getConfig('nucleus-tokens', "https://backend.nucleusearn.io/v1/protocol/tokens")).filter(isEvm)
+  return api.sumTokens({ owners: vaults, tokens })
+}
 
 module.exports = {
-    ethereum: {
-      tvl,
-    },
-  };
+  ethereum: { tvl }
+}
