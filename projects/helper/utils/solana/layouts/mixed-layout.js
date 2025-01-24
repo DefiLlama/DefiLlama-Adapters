@@ -295,8 +295,29 @@ const ACCESS_LAYOUT = BufferLayout.struct([
   ),
 ]);
 
+const bool = BufferLayout.u8
+// https://github.com/mercurial-finance/stable-swap-n-pool-js/blob/main/src/state.ts#L32
+const METEORA_STABLE_SWAP_LAYOUT = BufferLayout.struct([
+  BufferLayout.u8('version'),
+  bool('isInitialized'),
+  BufferLayout.u8('nonce'),
+  u64('amplificationCoefficient'),
+  u64('feeNumerator'),
+  u64('adminFeeNumerator'),
+  BufferLayout.u32('tokenAccountsLength'),
+  u64('precisionFactor'),
+  BufferLayout.seq(u64(), 4, 'precisionMultipliers'),
+  BufferLayout.seq(publicKey(), 4, 'tokenAccounts'),
+  publicKey('poolMint'),
+  publicKey('adminTokenMint'),
+  BufferLayout.struct([
+    bool('swapEnabled'),
+    bool('addLiquidityEnabled'),
+  ]),
+]);
+
 module.exports = {
   ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
-  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT
+  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT, METEORA_STABLE_SWAP_LAYOUT,
 }
 
