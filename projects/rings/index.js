@@ -42,7 +42,7 @@ const CONFIG = {
     ],
     supportedAssets: [
       ADDRESSES.sonic.USDC_e,
-      ADDRESSES.sonic.WETH,
+      '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b',   // WETH
     ],
     stakingVaults: [
       '0x4d85ba8c3918359c78ed09581e5bc7578ba932ba',   // stkscUSD
