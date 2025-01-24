@@ -3,6 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const farmAbi = require("./farm-Abi.json");
 const { sumTokensExport } = require("../helper/unknownTokens.js");
+const { staking } = require('./helper/staking')
 
 let contracts = {
   NEONStaking: "0x00149EF1A0a41083bC3996d026a7c0f32fc5cb73",
@@ -27,21 +28,11 @@ const COLLATERALS = {
 
 };
 
-// async function tvl(api) {
-//   return sumTokens2({
-//     api,
-//     owner: [contracts.NEONBuynBurn,contracts.NEONFarm,contracts.OLDNEONFarm],
-//     tokens: Object.values(COLLATERALS[api.chain]),
-//   });
-// }
-
-
-// const lps = ["0xE56043671df55dE5CDf8459710433C10324DE0aE"]
-
 module.exports = {
   methodology: `BuynBurn holds PLS from user deposits. Farms hold PLS-DAI LP from user deposits`,
   pulse: {
-    tvl :sumTokensExport({ owners: [contracts.NEONBuynBurn,contracts.NEONFarm,contracts.OLDNEONFarm],
+    staking:staking(contracts.NEONStaking,contracts.NEON,this.pulse),
+    tvl :sumTokensExport({ owners: [contracts.NEONFarm,contracts.OLDNEONFarm],
       tokens: [COLLATERALS.DAI, COLLATERALS.WPLS,nullAddress],
       useDefaultCoreAssets: true,
       lps: [COLLATERALS.DAIPLS_LP]
@@ -50,10 +41,3 @@ module.exports = {
     
   },
 };
-
-//  staking: sumTokensExport({
-    //         owners:[contracts.NEONFarm,contracts.OLDNEONFarm],
-    //         tokens: [COLLATERALS.DAI, COLLATERALS.WPLS],
-    //         useDefaultCoreAssets: true,
-    //         lps: [COLLATERALS.DAIPLS_LP],
-    //       }),
