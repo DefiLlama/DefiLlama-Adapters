@@ -46,6 +46,9 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  base: {
+    '0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2': { coingeckoId: 'ethena-staked-usde', decimals: 18 },
+  },
   kopi: {
     'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
     'ucusdc': { coingeckoId: 'usd-coin', decimals: 6 },
