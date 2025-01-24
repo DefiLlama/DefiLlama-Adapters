@@ -18,4 +18,5 @@ module.exports = {
   apechain: { tvl },
   duckchain: { tvl },
   occ: { tvl },
+  spn: { tvl },
 };
