@@ -1,64 +1,64 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const { stakings } = require("../helper/staking");
 
-const config = {
+module.exports = {
+  methodology: 'TVL counts the tokens deposited in the boring vaults.',
+  start: 1733726867
+}
+
+const CONFIG = {
   ethereum: {
     vaults: [
       '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
       '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
     ],
-    accountants: [
-      '0xA76E0F54918E39A63904b51F688513043242a0BE',
-      '0x3a592F9Ea2463379c4154d03461A73c484993668'
+    supportedAssets: [
+      ADDRESSES.ethereum.USDC,                         // USDC
+      ADDRESSES.ethereum.USDT,                         // USDT
+      ADDRESSES.ethereum.DAI,                          // DAI
+      ADDRESSES.ethereum.SDAI,                         // SDAI
+      ADDRESSES.ethereum.sUSDS,                        // SUSDS
+      ADDRESSES.ethereum.WETH,                         // WETH
+      ADDRESSES.ethereum.WSTETH,                       // WSTETH
+      ADDRESSES.ethereum.STETH,                       // WSTETH
+      ADDRESSES.ethereum.WEETH,                        // WEETH
+      ADDRESSES.ethereum.EETH,                        // WEETH
+      '0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f', // GHO
+      '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // AAVEUSDC
+      '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a', // AAVEUSDT
+      '0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d', // STKGHO
+      '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
+      '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // AAVEWETH
+      '0xd63070114470f685b75B74D60EEc7c1113d33a3D',  // USDO MORPHO,
+      '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB', // STEAK_USDC
+      '0x2371e134e3455e0593363cBF89d3b6cf53740618' // GAUNTLET WETH
     ]
   },
   sonic: {
     vaults: [
       '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
+      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812'
     ],
-    accountants: [
-      '0xA76E0F54918E39A63904b51F688513043242a0BE',
-      '0x3a592F9Ea2463379c4154d03461A73c484993668'
+    supportedAssets: [
+      ADDRESSES.sonic.USDC_e,
+      ADDRESSES.sonic.WETH,
+    ],
+    stakingVaults: [
+      '0x4d85ba8c3918359c78ed09581e5bc7578ba932ba',   // stkscUSD
+      '0x455d5f11Fea33A8fa9D3e285930b478B6bF85265'    // stkscETH
+    ],
+    stakingSupportedAssets: [
+      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',   // scUSD
+      '0x3bce5cb273f0f148010bbea2470e7b5df84c7812',   // scETH
     ]
-  }
-}
-
-async function tvl(api) {
-  for (const chain in config) {
-    const chainApi = new sdk.ChainApi({ chain, timestamp: api.timestamp })
-
-    const vaults = config[chain].vaults
-    const accountants = config[chain].accountants
-
-    // USDC vaults
-    const rateUsd = await chainApi.call({
-      target: accountants[0],
-      abi: 'function getRate() view returns (uint256)'
-    })
-    const totalSupplyUsd = await chainApi.call({
-      target: vaults[0],
-      abi: 'function totalSupply() view returns (uint256)'
-    })
-    api.add(ADDRESSES.sonic["USDC_e"], BigInt(totalSupplyUsd) * BigInt(rateUsd) / BigInt(1e6))
-
-    // WETH vaults
-    const rateEth = await chainApi.call({
-      target: accountants[1],
-      abi: 'function getRate() view returns (uint256)'
-    })
-    const totalSupplyEth = await chainApi.call({
-      target: vaults[1],
-      abi: 'function totalSupply() view returns (uint256)'
-    })
-    api.add(ADDRESSES.sonic["WETH"], BigInt(totalSupplyEth) * BigInt(rateEth) / BigInt(1e18))
-  }
-}
-
-module.exports = {
-  sonic: {
-    tvl,
   },
-  methodology: 'TVL counts the tokens deposited in the boring vaults.',
-  start: 1733726867
-};
+}
+
+Object.keys(CONFIG).forEach((chain) => {
+  const {  vaults, supportedAssets,  stakingVaults = [], stakingSupportedAssets = [] } = CONFIG[chain]
+  module.exports[chain] = { 
+    tvl: sumTokensExport({ owners: vaults, tokens: supportedAssets }),
+    staking: stakings(stakingVaults, stakingSupportedAssets),
+  };
+});
