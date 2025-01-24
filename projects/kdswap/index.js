@@ -10,7 +10,7 @@ const GAS_PRICE = 0.00000001;
 const creationTime = () => Math.round(new Date().getTime() / 1000) - 10;
 
 const graphQLUrls = {
-  "kadena": "https://kdswap-fd-prod-cpeabrdfgdg9hzen.z01.azurefd.net/graphql",
+  "kadena": "https://api.kdswap.exchange/graphql",
 }
 
 const getReserve = (tokenData) => {
