@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const farmAbi = require("./farm-Abi.json");
 const { sumTokensExport } = require("../helper/unknownTokens.js");
-const { staking } = require('./helper/staking')
+const { staking } = require('../helper/staking.js');
 
 let contracts = {
   NEONStaking: "0x00149EF1A0a41083bC3996d026a7c0f32fc5cb73",
