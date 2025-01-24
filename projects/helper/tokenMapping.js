@@ -53,17 +53,8 @@ const fixBalancesTokens = {
   water: {   
     '0xC807C5FfFf748eF435Ddb99b181846Edd1e70041': { coingeckoId: "water-3", decimals: 18 },
   },
-  bittorrent: {   
-    [ADDRESSES.null]: { coingeckoId: "bittorrent", decimals: 18 },
-  },
-  dymension: {   
-    [ADDRESSES.null]: { coingeckoId: "dymension", decimals: 18 },
-  },
-  energyweb: {   
-    [ADDRESSES.null]: { coingeckoId: "energy-web-token", decimals: 18 },
-  },
-  etn: {   
-    [ADDRESSES.null]: { coingeckoId: "electroneum", decimals: 18 },
+  base: {
+    '0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2': { coingeckoId: 'ethena-staked-usde', decimals: 18 },
   },
   kopi: {
     'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
