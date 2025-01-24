@@ -9,12 +9,4 @@ module.exports = {
     tvl: () => ({}),
     pool2,
   },
-};
-{
-  "iotex": {
-    "gft": {
-      "address": "0xde5914a97cc5066751624f053d719f67a4d69383",
-      "token": "0x53bdd401a871bd0f84e94619edcc0c24489d4aab"
-    },
-  }
 }
