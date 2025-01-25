@@ -27,6 +27,10 @@ const stakingPools = [
   "XTME5AZADQ3DYJWTENDG3G6WTXK2LUWQPYTZLVLADLFNFNKLUWERDNID7I",
   // USDC/xUSD [SI] PACT LP TKN
   "M3V5ZGXQODFTA25XQ7N2JUIN5HGQS3X7TRS3NAZVXJUNOAUGNVUWP6XWAU",
+   // Compx Algo Staking
+  "ZKXS4SAXMCBVOHMWNGZZO7AXMRETLTLYLQRBO2KLSN2SPOGZCU4O3JABSA",
+  // Compx Calgo Staking
+  "Y3CNVFHCAMWZP57R7S7URX366XRE6VKCHWDN57VMR7WL556OFTDXGAQZ3E"
 ];
 
 
@@ -80,5 +84,8 @@ async function getCDPVaultTokens() {
 }
 
 async function staking() {
-  return sumTokens({ owners: stakingPools, tinymanLps: [['2525037707', '2518721081'] ]});
+  return sumTokens({
+    owners: stakingPools,
+    tinymanLps: [['2525037707', '2518721081']],
+  });
 }
