@@ -91,7 +91,5 @@ async function staking() {
   return sumTokens({
     owners: stakingPools,
     tinymanLps: [['2525037707', '2518721081']],
-    // Don't count cAlgo as the wallet contains the same tokens as the vault
-    blacklistedTokens: ['2400334372']
   });
 }
