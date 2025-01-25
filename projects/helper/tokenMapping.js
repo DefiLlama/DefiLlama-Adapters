@@ -86,7 +86,10 @@ const fixBalancesTokens = {
   swan: {
     [ADDRESSES.null]: { coingeckoId: 'swan-chain', decimals: 18 },
     '0xBb4eC1b56cB624863298740Fd264ef2f910d5564': { coingeckoId: 'swan-chain', decimals: 18 },
-  }
+  },
+  sui: {
+    '0xf4530aa5ef8af33c497ec38f54ff9dd45fad9157264efae9693eb62faf8667b5::coin::COIN': { coingeckoId: 'dinero-staked-eth', decimals: 8 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
