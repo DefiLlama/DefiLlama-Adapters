@@ -27,6 +27,14 @@ const stakingPools = [
   "XTME5AZADQ3DYJWTENDG3G6WTXK2LUWQPYTZLVLADLFNFNKLUWERDNID7I",
   // USDC/xUSD [SI] PACT LP TKN
   "M3V5ZGXQODFTA25XQ7N2JUIN5HGQS3X7TRS3NAZVXJUNOAUGNVUWP6XWAU",
+  // ALGO STAKING
+  "Y3CNVFHCAMWZP57R7S7URX366XRE6VKCHWDN57VMR7WL556OFTDXGAQZ3E",
+  // Calgo Re-staking
+  "ZKXS4SAXMCBVOHMWNGZZO7AXMRETLTLYLQRBO2KLSN2SPOGZCU4O3JABSA",
+  // Compx Algo Staking
+  "ZKXS4SAXMCBVOHMWNGZZO7AXMRETLTLYLQRBO2KLSN2SPOGZCU4O3JABSA",
+  // Compx Calgo Staking
+  "Y3CNVFHCAMWZP57R7S7URX366XRE6VKCHWDN57VMR7WL556OFTDXGAQZ3E"
 ];
 
 
@@ -80,5 +88,10 @@ async function getCDPVaultTokens() {
 }
 
 async function staking() {
-  return sumTokens({ owners: stakingPools, tinymanLps: [['2525037707', '2518721081'] ]});
+  return sumTokens({
+    owners: stakingPools,
+    tinymanLps: [['2525037707', '2518721081']],
+    // Don't count cAlgo as the wallet contains the same tokens as the vault
+    blacklistedTokens: ['2400334372']
+  });
 }
