@@ -20,7 +20,7 @@ Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Ad
 
 ## Work in progress
 
-This is a work in progress. The goal is to eventually handle historical data. DefiLlama aims to be transparent, accurate and open source.
+This is a work in progress. DefiLlama aims to be transparent, accurate and open source.
 
 If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.defillama.com/) and drop a message.
 
@@ -29,6 +29,8 @@ If you have any suggestions, want to contribute or want to chat, please join [ou
 node test.js projects/pangolin/index.js
 # Add a timestamp at the end to run the adapter at a historical timestamp
 node test.js projects/aave/v3.js 1729080692
+# or using YYYY-MM-DD
+node test.js projects/aave/v3.js 2024-10-16
 ```
 
 ## Changing RPC providers
