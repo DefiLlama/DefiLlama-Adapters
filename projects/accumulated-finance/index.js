@@ -1,4 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const config = {
   "accumulate": [
@@ -122,7 +123,7 @@ Object.entries(transformedConfig).forEach(([chain, configs]) => {
         totalSupply += parseInt(supply, 10);
         api.add(token ?? baseToken ?? ADDRESSES.null, supply, { skipChain: !!baseToken })
       }
-      return api.getBalances();
+      return sumTokens2({ api })
     },
   }
 })
