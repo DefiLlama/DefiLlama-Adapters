@@ -107,14 +107,14 @@ const tvl = async (api) => {
   m2ms.forEach((_, i) => {
     const strategyAssets = strategyAssetss[i]
     strategyAssets.forEach(({ strategy, netAssetValue }) => {
-      // we unwrap the aerodrome position and count only the non-USDC+ part
+      // we exclude the aerodrome position which is 99% USDC+
       if (api.chain === 'base' && m2ms[i] === '0x96aa0bBe4D0dea7C4AF4739c53dBFA0300262253')
         if (strategy.toLowerCase() !== '0x744a222750A0681FB2f7167bDD00E2Ba611F89A9'.toLowerCase()) return;
       api.add(assets[i], netAssetValue)
     })
   })
 
-  if (api.chain === 'base') {
+ /*  if (api.chain === 'base') {
     // unwrap aerodrome positions
     const strategy = '0xcc9c1edae4D3b8d151Ebc56e749aD08b09f50248'
     const CLGauge = '0xd030df11fa453a222782f6458cc71954a48ea104'
@@ -123,7 +123,7 @@ const tvl = async (api) => {
 
     await unwrapSlipstreamNFT({ api, positionIds, nftAddress, })
     api.removeTokenBalance('0x85483696Cc9970Ad9EdD786b2C5ef735F38D156f')
-  }
+  } */
 }
 
 Object.keys(CONFIG).forEach((chain) => {
