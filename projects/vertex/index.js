@@ -59,7 +59,7 @@ module.exports = {
   mantle: {
     tvl: sumTokensExport({
       owners: [mantleConfig.clearinghouse, mantleConfig.endpoint],
-      tokens: ["0xcDA86A272531e8640cD7F1a92c01839911B90bb0", ADDRESSES.mantle.USDC, ADDRESSES.mantle.WETH, ADDRESSES.mantle.WMNT],
+      tokens: [ADDRESSES.mantle.mETH, ADDRESSES.mantle.USDC, ADDRESSES.mantle.WETH, ADDRESSES.mantle.WMNT],
     })
   },
   sei: {
@@ -77,7 +77,7 @@ module.exports = {
   sonic: {
     tvl: sumTokensExport({
       owners: [sonicConfig.clearinghouse, sonicConfig.endpoint],
-      tokens: [ADDRESSES.sonic["USDC.e"], ADDRESSES.sonic.wS],
+      tokens: [ADDRESSES.sonic.USDC_e, ADDRESSES.sonic.wS],
     })
   }
 }

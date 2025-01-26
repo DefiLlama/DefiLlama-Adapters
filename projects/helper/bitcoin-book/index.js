@@ -100,6 +100,11 @@ const teleswap = [
   '31uHNFfbejkbUD2B26o2CARfU1ALJ6x6Ag', // BOB_LOCKER
   '3LNsey3ceG9ZHkQ7bcfAjwnew7KVujHt29', // BRC20_LOCKER
 ]
+
+const ssiProtocol = [
+  '1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM'
+]
+
 const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
 ]
@@ -109,12 +114,18 @@ const stacksSBTC = [
   'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
 ]
 
+const magpie = [
+  '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
+]
+
 module.exports = {
   ...fetchers,
+  magpie,
   stacksSBTC,
   bitomato,
   bitlayerBridge,
   teleswap,
+  ssiProtocol,
   ainn,
   allo,
   avalanche,

@@ -63,7 +63,7 @@ const config = {
       ADDRESSES.mantle.WETH,//weth
       ADDRESSES.mantle.USDC, //usdc
       "0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2", // WBTC
-      "0xcDA86A272531e8640cD7F1a92c01839911B90bb0", // meth
+      ADDRESSES.mantle.mETH, // meth
       "0x779f4E5fB773E17Bc8E809F4ef1aBb140861159a", // KTC
     ],
   },

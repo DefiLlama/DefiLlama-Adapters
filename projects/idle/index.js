@@ -57,7 +57,9 @@ const contracts = {
     ]
   },
   optimism: {
-    
+    cdos: [
+      "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B" // FalconX
+    ]
   },
   arbitrum: {
     cdos: [
