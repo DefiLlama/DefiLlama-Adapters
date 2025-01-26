@@ -73,6 +73,7 @@ const fixBalancesTokens = {
     '0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12': { coingeckoId: 'edu-coin', decimals: 18 },
   },
   artela: {
+    [ADDRESSES.null]: { coingeckoId: 'artela-network', decimals: 18 },
     '0xadcd43c78a914c6b14171ab1380bcfcfa25cd3ad': { coingeckoId: 'artela-network', decimals: 18 },
   },
   ton: {
