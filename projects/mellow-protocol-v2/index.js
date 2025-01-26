@@ -31,8 +31,10 @@ Object.keys(config).forEach(chain => {
   const { vaults, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const baseTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[] tokens, uint256[] values)', calls: vaults })
-      baseTvl.forEach(({ tokens, values}) => {
+      const baseTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[] tokens, uint256[] values)', calls: vaults, permitFailure: true })
+      baseTvl.forEach((i) => {
+        if (!i) return;
+        const { tokens, values } = i
         api.add(tokens, values)
       })
     }
