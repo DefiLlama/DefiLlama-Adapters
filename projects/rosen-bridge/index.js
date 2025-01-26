@@ -1,6 +1,7 @@
 const { sumTokensExport } = require("../helper/sumTokens");
 const ADDRESSES = require('../helper/coreAssets.json');
-const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
+const { nullAddress } = require("../helper/tokenMapping.js");
 
 module.exports = {
   timetravel: false,
@@ -26,14 +27,14 @@ module.exports = {
         '6c35aa395c7c75b0f67f7804d6930f0e11ef93c3387dc1faa86498d54af7962c', //MEW
         '1fd6e032e8476c4aa54c18c1a308dce83940e8f4a28f576440513ed7326ad489', //PAI
         '089990451bb430f05a85f4ef3bcb6ebf852b3d6ee68d86d78658b9ccef20074f', //QUACKS
-        '8b08cdd5449a9592a9e79711d7d79249d7a03c535d17efaee83e216e80a44c4b', //RSN
+        // '8b08cdd5449a9592a9e79711d7d79249d7a03c535d17efaee83e216e80a44c4b', //RSN - excluded because it is projects own token
         '003bd19d0187117f130b62e1bcab0939929ff5c7709f843c5c4dd158949285d0', //SigRSV
         '03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04', //SigUSD
         '012c74dcd0920ce0c3f9f3945d509ea07b33872f3f144b816bcd7b664b22d5b3', //Troll
         '59ee24951ce668f0ed32bdb2e2e5731b6c36128748a3b23c28407c5f8ccbf0f6', //Walrus
       ]
     }),
-    staking:  sumTokensExport({
+    staking: sumTokensExport({
       owners: [
         "NY4PEzZ7VfjtnTN697R7my9uAVkCYb6N71J2RSmJCFSdDqVf9aPvFQqKXujYDBtSA8hxYVUgkGgU9SP2Ss7JDUkHkdGLBqZwH4yDcPyVvbVbcre3o7nR59wiFDVtjzCjfZmVvMVJD9HiW4GKqVuZGTQCKns8tDe3sJoDNTL3VmhzRUPZf9JCN4TNji1ruXf5CxqWtDrCfoxE4xfbRWGmtBMdLMoRdL85V7z1fP5KxroWX5YgZQo28nTCU3WjPuY2YrjqYYGNHXvFZ9G8E85kCcseNtRWqViXGFzmwqHWKaYe4AdJzBbMKzJWYszsbiemNvisPtT2Yj3FjAmAErpW3gMeWyH3WtbipaAu9D31ggpLeLkLTGscJ9HB2oExpGWvv6u9mGdkTJMHYUuZJUGrcJPE3m7ZTEFxwkbeR9oD8nHHgW4SB46kHFbxzNoUksGPZQnxf95J3e5PUnhYgg7mrQLNpq6pphgGukFcHDgAN2rgFmUSDVsuzomhP735SMiveXSPzx6PZeP7CmrEHyXN6mFbBJuY17kvzzix1w9eFwryZDuZqnAANkYhF3TLkLyGZfSC4o9iAGynpivuNMUgbKAuj6D116tKoCq9PHELL8eTefmXNLFuhauQuKRjmWQKj9zYSd7qi6Zf49KX25PnWHkC3REc4abYpjtiQFefT2HkWRwneTCkJ8uMvoHs6kJzLg8NVzH8XwEZhTM2tNSDhBKZaURpYiQcHwLDgv5uFiwhasLAdZi2EJywBYX51NKc6m4MEsTiAJC9jkEydWcwyDzSHN18yEr4rvEgMNkUhLHJokgV2v3BNFhUTJqe58e2QXAmx9MytUDqzg3vwexEpMhueC2roYA27P1mmb85HKEz15a8LnuUT8ZjmG8kDbHuPYFyxcATytVuDrFDzqKBt9X36bocip4ZU4RRY8JcWjJvMcrBCjV3EhDVQ4it8bhoZnn79PsXazvDteua1NEYEJniPnNrRaiKTUWrseEUQ2vVjWy134jMxRbeiARhoj7MDxug2kFP8jRGSsxWt3Qqbv2SezT3xZ8jYxTyQ2CiyJ61CvUQwPtmoY3XKjrgrJKwnSzJRs4egKPYZKoSiSy6UdHMKuNDmys8wYo3Gi2EgVdUYRLLWcHh5Z2H91odSbTW2h5e6pZeY4a45TgihE6ZnZBhHGc75zJjukhPgP1wEp8GrreHA7ejvTEmpwNgj571x5JrvRD5TxWaFuZKBonGexovAK2L5v", // bitcoin rsn permit collateral address
         "ChTbcUHgBNqNMVjzV1dvCb2UDrX9nh6rGGcURCFEYXuH5ykKh7Ea3FvpFhHb9AnxXJkgAZ6WASN7Rdn7VMgkFaqP5Z5RWp84cDTmsZkhYrgAVGN7mjeLs8UxqUvRi2ArZbm35Xqk8Y88Uq2MJzmDVHLHzCYRGym8XPxFM4YEVxqzHSKYYDvaMLgKvoskFXKrvceAqEiyih26hjpekCmefiF1VmrPwwShrYYxgHLFCZdigw5JWKV4DmewuR1FH3oNtGoFok859SXeuRbpQfrTjHhGVfDsbXEo3GYP2imAh1APKyLEsG9LcE5WZnJV8eseQnYA8sACLDKZ8Tbpp9KUE7QZNFpnwGnkYx7eybbrCeFDFjTGpsBzaS6fRKrWj2J4Wy3TTyTU1F8iMCrHBF8inZPw9Kg9YEZuJMdXDFNtuaK15u86mF2s2Z5B1vdL5MtZfWThFLnixKds8ABEmGbe8n75Dym5Wv3pkEXQ6XPpaMjUxHfRJB3EfcoFM5nsZHWSTfbFBcHxSRnEiiU67cgJsBUpQn7FvEvqNLiKM4fL3yyykMtQ6RjAS8rhycszphvQa5qFrDHie4vPuTq8", //watcher collateral
@@ -81,8 +82,15 @@ module.exports = {
   },
   bitcoin: {
     tvl: sumTokensExport({ owners: bitcoinAddressBook.rosenBridge })
-  }
+  },
+  ethereum: {
+    tvl: sumTokensExport({
+      owners: [
+        '0x451698faa07fc68301af622a3ad42205f13c6e4b',  //  Ethereum Hot Wallet
+        '0x5f64a7a5FDAA1CF64e4507E7cA5Be164E59EfBbF',  //  Ethereum Cold Wallet
+      ],
+      tokens: [nullAddress,]
+    })
+  },
 };
 
-// 0x451698faa07fc68301af622a3ad42205f13c6e4b  Ethereum Hot Wallet
-// 0x5f64a7a5FDAA1CF64e4507E7cA5Be164E59EfBbF  Ethereum Cold Wallet
