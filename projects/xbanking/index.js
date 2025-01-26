@@ -1,53 +1,30 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const contracts = require("./contracts.json");
-const { pool2 } = require("../helper/pool2");
-const vaults = [
-  contracts.ftmVault,
-  contracts.ethVault,
-  contracts.avaxVault,
-  contracts.tombVault,
-]
+const { sumTokens2 } = require('../helper/solana')
 
 const tokens = [
-  contracts.FTM,
-  contracts.WETH,
-  contracts.AVAX,
-  contracts.TOMB,
+  'So11111111111111111111111111111111111111112', 
+  '4k3Dyjzvzp8e4P7SNLLA8vZFaep2XDbD2W37D5u7yCK', 
+  'Es9vMFrzaCERZhC8LCyD9F5Zszdnwf4Gpfn3xFn1i1kA',
+  'So11111111111111111111111111111111111111112',
+  '2uAuGwYH22SJJtaTqMJ2AGEL2rBdiRKkuak2QCCSaFCA'
 ]
 
-async function tvl(api) {
-  const _tokens = [...tokens]
-  const owners = [...vaults, ...vaults]
-  vaults.forEach(v => _tokens.push(contracts.Collateral))
-  return api.sumTokens({ tokensAndOwners2: [_tokens, owners] })
-}
+const owners = [
+  'EjqH5TsEp7Ks1BdVKoLjsNwDsYARzpGDEvhw7srYvs5w',
+  '5MfcrehHKskxjiYTTqcKubtqmrMJuyNParmeQYgNLdkA',
+]
 
-async function borrowed(api) {
-  const vaults0 = vaults.slice(0, 2);
-  const vaults1 = vaults.slice(2);
-  const tokens0 = tokens.slice(0, 2);
-  const tokens1 = tokens.slice(2);
-  const balances = await api.multiCall({ abi: abi.see_s1ftm_circ, calls: vaults0 })
-  const balances1 = await api.multiCall({ abi: abi.see_s1tomb_circ, calls: vaults1 })
-  api.addTokens(tokens0, balances)
-  api.addTokens(tokens1, balances1)
-
-  const chainApi = new sdk.ChainApi({ chain: api.chain, block: api.block })
-  chainApi.sumTokens({ tokensAndOwners2: [tokens, vaults] })
-  Object.entries(chainApi.getBalances()).forEach(([token, balance]) => {
-    api.add(token, balance * -1, { skipChain: true })
+async function tvl() {
+  return sumTokens2({
+    tokens, 
+    owners,
   })
-  return api.getBalances()
 }
 
 module.exports = {
-  fantom: {
+  timetravel: false,
+  misrepresentedTokens: true,
+  methodology: "xbanking tvl",
+  solana: {
     tvl,
-    borrowed,
-    pool2: pool2(
-      [contracts.pool2, contracts.pool2],
-      [contracts.daiPool2, contracts.ftmPool2],
-    )
-  }
+  },
 }
