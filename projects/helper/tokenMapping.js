@@ -73,6 +73,7 @@ const fixBalancesTokens = {
     '0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12': { coingeckoId: 'edu-coin', decimals: 18 },
   },
   artela: {
+    [ADDRESSES.null]: { coingeckoId: 'artela-network', decimals: 18 },
     '0xadcd43c78a914c6b14171ab1380bcfcfa25cd3ad': { coingeckoId: 'artela-network', decimals: 18 },
   },
   ton: {
@@ -90,6 +91,9 @@ const fixBalancesTokens = {
   sui: {
     '0xf4530aa5ef8af33c497ec38f54ff9dd45fad9157264efae9693eb62faf8667b5::coin::COIN': { coingeckoId: 'dinero-staked-eth', decimals: 8 },
   },
+  soneium: {
+    '0x60336f9296c79da4294a19153ec87f8e52158e5f': { coingeckoId: 'bifrost-voucher-astr', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
