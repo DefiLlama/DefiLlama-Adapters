@@ -5,11 +5,11 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  // deadFrom: '2025-01-25',
+  deadFrom: '2025-01-25',
   secret: {
     tvl
   },
   juno: {
-    tvl: tvl
+    tvl
   }
 }
