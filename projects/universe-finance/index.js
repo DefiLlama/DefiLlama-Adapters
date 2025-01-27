@@ -1,110 +1,33 @@
-const sdk = require("@defillama/sdk");
 const { getConfig } = require('../helper/cache')
 
 const vaultsUrl = "https://raw.githubusercontent.com/UniverseFinance/UniverseFinanceProtocol/main/doc/vaultAddress.json";
 
-const token0Abi = 'address:token0'
-const token1Abi = 'address:token1'
-
-function eth(timestamp, ethBlock, chainBlocks) {
-    return chainTvl(timestamp, ethBlock, chainBlocks, "ethereum");
-}
-
-function matic(timestamp, ethBlock, chainBlocks) {
-    return chainTvl(timestamp, ethBlock, chainBlocks, "polygon");
-}
-
-
-async function chainTvl(timestamp, ethBlock, chainBlocks, chain) {
-  const block = chain == "ethereum" ? ethBlock : chainBlocks[chain];
-  let balances = {};
+async function tvl(api) {
   let resp = await getConfig('Universe', vaultsUrl);
 
-  let allVaults = resp.filter(vault => vault.type > 0).map((vault) => ({
-        address: vault.address,
-        name: vault.name,
-        getTotalAmounts: vault.getTotalAmounts,
-        type: vault.type,
-        amountIndex: vault.amountIndex,
-        chain: vault.chain
-  }));
+  let allVaults1 = resp.filter(vault => vault.type === 1 && vault.chain == api.chain).map((vault) => vault.address)
+  let allVaults2 = resp.filter(vault => vault.type === 2 && vault.chain == api.chain).map((vault) => vault.address)
+  const token0s1 = await api.multiCall({ abi: 'address:token0', calls: allVaults1 })
+  const token1s1 = await api.multiCall({ abi: 'address:token1', calls: allVaults1 })
+  const token0s2 = await api.multiCall({ abi: 'address:token0', calls: allVaults2 })
+  const token1s2 = await api.multiCall({ abi: 'address:token1', calls: allVaults2 })
+  const getTotalAmounts1 = await api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 liq, uint256 total0, uint256 total1)', calls: allVaults1 })
+  const getTotalAmounts2 = await api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 total0, uint256 total1, uint256 free0, uint256 free1, uint256 util0, uint256 util1)', calls: allVaults2 })
 
-  const abiMap = {};
-  const addressMap = {};
+  allVaults1.forEach((vault, idx) => {
+    api.add(token0s1[idx], getTotalAmounts1[idx].total0)
+    api.add(token1s1[idx], getTotalAmounts1[idx].total1)
+  })
 
-  for (let i = 0; i < allVaults.length; i++) {
-      if(allVaults[i].chain != chain){
-           continue;
-      }
-      if(abiMap[allVaults[i].type] == undefined){
-          abiMap[allVaults[i].type] = allVaults[i].getTotalAmounts;
-      }
-      if(addressMap[allVaults[i].type] == undefined){
-          addressMap[allVaults[i].type] = [{
-              "address":allVaults[i].address,
-              "index":allVaults[i].amountIndex
-          }];
-      }else{
-          addressMap[allVaults[i].type].push({
-              "address":allVaults[i].address,
-              "index":allVaults[i].amountIndex
-          });
-      }
-  }
-
-  const types = Object.keys(abiMap);
-  const typeNumber = types.length;
-  for (let i = 0; i < typeNumber; i++) {
-      const addressList = addressMap[types[i]];
-      const abi = abiMap[types[i]];
-      let { output: totalAmount } = await sdk.api.abi.multiCall({
-        calls: addressList.map((address) => ({
-          target: address.address,
-        })),
-        abi: abi,
-        block,
-        chain
-      });
-
-      let { output: token0 } = await sdk.api.abi.multiCall({
-        calls: addressList.map((address) => ({
-          target: address.address,
-        })),
-        abi: token0Abi,
-        block,
-        chain
-      });
-
-      let { output: token1 } = await sdk.api.abi.multiCall({
-        calls: addressList.map((address) => ({
-          target: address.address,
-        })),
-        abi: token1Abi,
-        block,
-        chain
-      });
-
-      for (let i = 0; i < addressList.length; i++) {
-        let addr0 = token0[i].output;
-        addr0 = (chain == "ethereum" ? addr0 : (chain + ":" + addr0));
-        let addr1 = token1[i].output;
-        addr1 = (chain == "ethereum" ? addr1 : (chain + ":" + addr1));
-        // Sums value in UNI pools
-        sdk.util.sumSingleBalance(balances, addr0, totalAmount[i].output[addressList[i].index]);
-        sdk.util.sumSingleBalance(balances, addr1, totalAmount[i].output[addressList[i].index + 1]);
-      }
-  }
-
-  return balances;
+  allVaults2.forEach((vault, idx) => {
+    api.add(token0s2[idx], getTotalAmounts2[idx].total0)
+    api.add(token1s2[idx], getTotalAmounts2[idx].total1)
+  })
 }
 
 module.exports = {
   doublecounted: true,
   methodology: "Vault TVL consists of the tokens in the vault contract and the total amount in the UNI V3 pool through the getTotalAmounts ABI call",
-  ethereum: {
-    tvl: eth,
-  },
-  polygon: {
-    tvl: matic
-  },
+  ethereum: { tvl },
+  polygon: { tvl },
 };

@@ -11,4 +11,4 @@ Object.keys(config).forEach(chain => {
   // delete module.exports[chain].borrowed // removed because it is higher than deposited, probably will never be repaid
 })
 
-// TODO: mark it as dead from december 2022
+module.exports.deadFrom = '2022-12-15'  // Heco chain is retired
