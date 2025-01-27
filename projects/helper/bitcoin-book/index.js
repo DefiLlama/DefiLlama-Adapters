@@ -42,6 +42,7 @@ const blofinCex = require('./blofin-cex.js')
 const btse = require('./btse.js')
 const bybit = require('./bybit.js')
 const cakeDefi = require('./cake-defi.js')
+const coffernetwork = require('./coffernetwork.js')
 const coindcx = require('./coindcx.js')
 const coinex = require('./coinex.js')
 const coinsquare = require('./coinsquare.js')
@@ -158,6 +159,7 @@ module.exports = {
   btse,
   bybit,
   cakeDefi,
+  coffernetwork,
   coindcx,
   coinex,
   coinsquare,
