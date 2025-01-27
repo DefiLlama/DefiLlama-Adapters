@@ -125,7 +125,7 @@ const getAllReservesDatas = async (poolAddresses, atLedgerIndex) => {
           token1Reserve: token1,
         });
       } catch (error) {
-        console.error("Errors occurred while fetching reserves:", errors);
+        console.error("Errors occurred while fetching reserves:", error);
       }
     });
 

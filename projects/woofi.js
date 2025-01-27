@@ -88,7 +88,7 @@ const wooPPConfig = {
 	sonic: [
 		ADDRESSES.sonic.wS, //wS
 		'0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
-		ADDRESSES.sonic['USDC.e'], // USDC.e
+		ADDRESSES.sonic.USDC_e, // USDC.e
 	],
 }
 

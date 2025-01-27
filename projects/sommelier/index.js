@@ -10,6 +10,7 @@ const {
   optimismCellarsV2p5,
 } = require("./cellar-constants");
 
+const blacklistCellars = ['0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e']
 
 async function ethereum_tvl(api) {
   const block = await api.getBlock();
@@ -58,12 +59,12 @@ async function optimism_tvl(api) {
 // Returns list of cellar addresses that are deployed based on their start block
 function filterActiveCellars(cellars, block) {
   return cellars
-    .filter((cellar) => cellar.startBlock <= block)
+    .filter((cellar) => cellar.startBlock <= block && !blacklistCellars.includes(cellar.id))
     .map((cellar) => cellar.id);
 }
 
 module.exports = {
-      methodology:
+  methodology:
     "TVL is calculated as the sum of deposits invested into the strategy, deposits waiting to be invested, and yield waiting to be reinvested or redistributed across all Cellars.",
   start: '2022-07-01',
   ["ethereum"]: { tvl: ethereum_tvl },

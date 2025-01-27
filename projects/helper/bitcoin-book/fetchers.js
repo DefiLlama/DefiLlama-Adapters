@@ -91,6 +91,26 @@ module.exports = {
       return txHash
     }
   },
+  coffernetwork: async () => {
+
+    return getConfig('coffer-network', undefined, {
+      fetcher: async () => {
+        throw new Error('Coffer Network fetcher is not implemented')
+      }
+    })
+
+    function reserveBytes(txHashTemp) {
+      let txHash = ''
+      if (txHashTemp.length % 2 === 1) {
+        txHashTemp = '0' + txHashTemp
+      }
+      txHashTemp = txHashTemp.split('').reverse().join('')
+      for (let i = 0; i < txHashTemp.length - 1; i += 2) {
+        txHash += txHashTemp[i + 1] + txHashTemp[i]
+      }
+      return txHash
+    }
+  },
 
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
