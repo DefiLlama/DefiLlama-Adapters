@@ -1,30 +1,45 @@
-const { sumTokens2 } = require('../helper/solana')
+const utils = require('../helper/utils');
+let _response;
 
-const tokens = [
-  'So11111111111111111111111111111111111111112', 
-  '4k3Dyjzvzp8e4P7SNLLA8vZFaep2XDbD2W37D5u7yCK', 
-  'Es9vMFrzaCERZhC8LCyD9F5Zszdnwf4Gpfn3xFn1i1kA',
-  'So11111111111111111111111111111111111111112',
-  '2uAuGwYH22SJJtaTqMJ2AGEL2rBdiRKkuak2QCCSaFCA'
-]
+function fetchChain(chainId, staking) {
+  return async () => {
+    if (!_response) {
+      _response = utils.fetchURL('https://api.xbanking.org/v2/platform/tvl');
+    }
+    const response = await _response;
+    let tvl = 0;
 
-const owners = [
-  'EjqH5TsEp7Ks1BdVKoLjsNwDsYARzpGDEvhw7srYvs5w',
-  '5MfcrehHKskxjiYTTqcKubtqmrMJuyNParmeQYgNLdkA',
-]
+    const chainName = Object.keys(response).find(key => key.toLowerCase() === chainId.toLowerCase());
+    
+    if (chainName) {
+      tvl = Number(response[chainName]);
+    }
 
-async function tvl() {
-  return sumTokens2({
-    tokens, 
-    owners,
-  })
+    if (tvl === 0) {
+      throw new Error(`chain ${chainId} tvl is 0`);
+    }
+    return tvl;
+  };
 }
+
+const chains = {
+  ethereum: 'ethereum',
+  avax: 'avax',
+  arbitrum: 'arbitrum',
+  binance: 'binance',
+  solana: 'solana',
+  bitcoin: 'bitcoin',
+  ton: 'ton',
+  aptos: 'aptos',
+  sui: 'sui'
+};
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: "xbanking tvl",
-  solana: {
-    tvl,
-  },
-}
+  doublecounted: true,
+  ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
+    tvl: fetchChain(chain[1], false),
+    staking: fetchChain(chain[1], true),
+  }]))
+};
