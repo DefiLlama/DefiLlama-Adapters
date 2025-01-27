@@ -84,8 +84,10 @@ async function getCDPVaultTokens() {
 }
 
 async function staking() {
-  return sumTokens({
+  const balances = await sumTokens({
     owners: stakingPools,
     tinymanLps: [['2525037707', '2518721081']],
   });
+  delete balances['algorand:2400334372']
+  return balances;
 }
