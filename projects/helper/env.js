@@ -21,6 +21,8 @@ const DEFAULTS = {
   ELSM_RPC: "https://rpc.elysiumchain.tech",
   ARTELA_RPC: "https://node-euro.artela.network/rpc,https://node-hongkong.artela.network/rpc,https://node-us-2.artela.network/rpc",
   ARTELA_RPC_MULTICALL: "0x80BC476a33a1b40a788dcC9bfe9dFdae9723b872",
+  ZERO_NETWORK_RPC_MULTICALL: "0x0307F341a18f1FC1f63a7Ceeac970245A08C5a80",
+  ABSTRACT_RPC: "https://api.mainnet.abs.xyz",
 }
 
 const ENV_KEYS = [
