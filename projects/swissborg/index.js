@@ -51,6 +51,7 @@ const config = {
       'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
       '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
       '3jvARuePRR6KpNAeYYGRQzs8W4VYsWWxe4BfoTSTZhUr',
+      'CFvYntdD6o7goAmXXtUKhirr8xLEfhY3txyJ8BpiisxJ',
     ],
   },
   polkadot: {
@@ -91,6 +92,7 @@ const config = {
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
       '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
       '0x9531AA9883bF11f2a63d86caD7e826f37Acec3c4',
+      '0x4DF0BCB425aac41795B40a2B5A563A6a3eC23B41',
     ]
   },
   polygon: {
@@ -116,6 +118,11 @@ const config = {
       '0x5509Be53b2dD0CD6fb8473B0EdA94e0a3059b73a',
     ]
   },
+  osmosis: {
+    owners: [
+      'osmo1h9sy6z5hnk5wjf6ds8w4syq0yqs706n9m6qlap',
+    ]
+  }
 }
 
 module.exports = cexExports(config)

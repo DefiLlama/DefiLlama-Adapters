@@ -18,8 +18,12 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
-  FLOW_RPC: "https://mainnet.evm.nodes.onflow.org"
+  FLOW_RPC: "https://rest-mainnet.onflow.org",
+  SONEIUM_RPC: "https://rpc.soneium.org",
+  SONEIUM_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  RONIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  SUPERPOSITION_RPC: "https://rpc.superposition.so",
+  OCC_RPC: "https://rpc.edu-chain.raas.gelato.cloud"
 }
 
 const ENV_KEYS = [
@@ -35,6 +39,7 @@ const ENV_KEYS = [
   'ETHEREUM_TOKENS_ENDPOINT',
   'FBTC_ACCESS_TOKEN',
   'UNISAT_AUTH',
+  'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
 ]
 
