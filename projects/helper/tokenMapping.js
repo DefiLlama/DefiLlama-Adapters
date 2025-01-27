@@ -46,6 +46,26 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  abstract: {
+    '0x000000000000000000000000000000000000800a': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x3439153eb7af838ad19d56e1571fbd09333c2809': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x66De4D3Ad9A490e4f090D60bFF1B82723150abB3': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x0709F39376dEEe2A2dfC94A58EdEb2Eb9DF012bD': { coingeckoId: 'tether', decimals: 6 },
+  },
+  zero_network: {
+    '0xac98b49576b1c892ba6bfae08fe1bb0d80cf599c': { coingeckoId: 'ethereum', decimals: 18 },
+    '0xf1f9e08a0818594fde4713ae0db1e46672ca960e': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+    '0x6a6394f47dd0baf794808f2749c09bd4ee874e70': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x6386da73545ae4e2b2e0393688fa8b65bb9a7169': { coingeckoId: 'tether', decimals: 6 },
+  },
+  redstone: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+    '0xd5d59fc063e7548b6015a36feb10b875924a19be': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
+  ink: {
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: 'usd-coin', decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
