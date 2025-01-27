@@ -12,12 +12,40 @@ const config = {
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: ['0x6ee1955afb64146b126162b4ff018db1eb8f08c3'],
+    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3"],
     fromBlock: 13977148,
+  },
+  arbitrum: {
+    morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
+    fromBlock: 296446593,
+  },
+  fraxtal: {
+    morphoBlue: "0xa6030627d724bA78a59aCf43Be7550b4C5a0653b",
+    fromBlock: 15317931,
+  },
+  ink: {
+    morphoBlue: "0x857f3EefE8cbda3Bc49367C996cd664A880d3042",
+    fromBlock: 4078776,
+  },
+  optimism: {
+    morphoBlue: "0xce95AfbB8EA029495c66020883F87aaE8864AF92",
+    fromBlock: 130770075,
+  },
+  polygon: {
+    morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
+    fromBlock: 66931042,
+  },
+  scroll: {
+    morphoBlue: "0x2d012EdbAdc37eDc2BC62791B666f9193FDF5a55",
+    fromBlock: 12842868,
+  },
+  wc: {
+    morphoBlue: "0xE741BC7c34758b4caE05062794E8Ae24978AF432",
+    fromBlock: 9025669,
   },
 };
 
-Object.keys(config).forEach((chain) => { 
+Object.keys(config).forEach((chain) => {
   const { morphoBlue, fromBlock, blackList = [] } = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
@@ -31,7 +59,11 @@ Object.keys(config).forEach((chain) => {
       )
         .map((i) => [i.collateralToken, i.loanToken])
         .flat();
-      return api.sumTokens({ owner: morphoBlue, tokens, blacklistedTokens: blackList });
+      return api.sumTokens({
+        owner: morphoBlue,
+        tokens,
+        blacklistedTokens: blackList,
+      });
     },
     borrowed: async (api) => {
       const marketIds = await getMarkets(api);
