@@ -63,7 +63,7 @@ async function tvl(api) {
         api.add(token1, iTokenBals[i].bal2 * ratio)
     })
 
-    return sumUnknownTokens({ api, useDefaultCoreAssets: true, lps: tokens.filter((_, i) => symbols[i].startsWith('v-')), resolveLP: true, allLps: true, })
+    return sumUnknownTokens({ api, useDefaultCoreAssets: true, lps: stakingTokens, resolveLP: true, })
 }
 
 module.exports = {
