@@ -19,7 +19,7 @@ const DEFAULTS = {
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: "https://rest-mainnet.onflow.org",
   ELSM_RPC: "https://rpc.elysiumchain.tech",
-  ARTELA_RPC: "https://node-euro.artela.network/rpc",
+  ARTELA_RPC: "https://node-euro.artela.network/rpc,https://node-hongkong.artela.network/rpc,https://node-us-2.artela.network/rpc",
   ARTELA_RPC_MULTICALL: "0x80BC476a33a1b40a788dcC9bfe9dFdae9723b872",
 }
 
