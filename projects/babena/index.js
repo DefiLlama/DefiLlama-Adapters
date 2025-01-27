@@ -104,7 +104,7 @@ async function stakingfetch() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  // deadFrom: '2024-08-30',
+  deadFrom: '2024-08-30',
   kadena: {
     tvl: () => ({}),
     staking: () => ({})

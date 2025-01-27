@@ -32,7 +32,7 @@ const chains = {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  // deadFrom: '2024-08-01',
+  deadFrom: '2024-08-01',
   methodology:
   'TVL data is pulled from the Vaporwave Finance API "https://api.vaporwave.farm/tvl".',
   doublecounted: true,

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json');
 const DATA_URL = 'https://raw.githubusercontent.com/neutral-trade/vaults-data/main';
 
 const START_TIMESTAMP = 1730419200; // 2024-11-01
@@ -6,12 +7,12 @@ const START_TIMESTAMP = 1730419200; // 2024-11-01
 const TOKENS = {
   USDC: {
     name: 'USDC',
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6
   },
   SOL: {
     name: 'SOL',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     decimals: 9
   },
   WBTC: {
@@ -27,6 +28,7 @@ const TOKENS = {
 };
 
 const VAULTS = [
+  // PUBLIC
   {
     name: "USDC Basis (Perps Basket)",
     address: "4cvgasNfbJ36yeMVJSkscgL2Yco9dFGdj52Wrg91fmHv",
@@ -89,6 +91,32 @@ const VAULTS = [
     dataUrl: `${DATA_URL}/tradersrekt.json`
   },
   {
+    name: "SOL Momentum (CTA-Marco)",
+    address: "DbAX9qNiHrtrngLz8e5nBNWbmeGGVRKUQtxfGdENCFJS",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/ctasol.json`
+  },
+  {
+    name: "Long SOL, Short ETH",
+    address: "2zsHAfvD2BpmZbuPhc32dija8cXu8ow6n2yzyZTMvQ8V",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/soleth.json`
+  },
+  {
+    name: "Tangem USDC Staking",
+    address: "HS2anXrdps1S2DZCHepgzfcoaqSUWBBuuqTRMugJisP2",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/tangemjlpdn.json`
+  },
+  {
+    name: "Tangem WBTC Staking",
+    address: "6E2sh7ygUzXFJAafXX5sMeSj7eK6YkYqpoAzXm7bYtCw",
+    token: TOKENS.WBTC,
+    dataUrl: `${DATA_URL}/tangemwbtc.json`
+  },
+
+  // VIPS
+  {
     name: "vip01",
     address: "CZU38L2NyL6tqFxzYAGYkmkf2JG98tZfZ2CnUapVgXQe",
     token: TOKENS.USDC,
@@ -130,7 +158,50 @@ const VAULTS = [
     address: "CYUyHzu6Z3JyBhfkQpZZwWqa2zpcmzaK1xXS96n8ea1U",
     token: TOKENS.SOL,
     dataUrl: `${DATA_URL}/vip08.json`
-  }
+  },
+  // 'vip09' // placeholder
+  {
+    name: "vip10",
+    address: "5Wv7V9zLGD3g7JTXfYjpzFEs42kjowXqUHh7wQ5ryVef",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip10.json`
+  },
+  {
+    name: "vip11",
+    address: "HhLwXF15V3MTVG9ucGGmT6mcEuqt2BjHuTCJBi4Zvi4K",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip11.json`
+  },
+  {
+    name: "vip12",
+    address: "GpMcLVnUqE1RyEB5rRFsFQJGKiPBBXqrpFsdbfUPgbqv",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip12.json`
+  },
+  {
+    name: "vip13",
+    address: "9V2LggfMo1EjaBbq3qBRBifD287m8zryrZgTR72grcCp",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip13.json`
+  },
+  {
+    name: "vip14",
+    address: "4iSH214QLwWnJQNwTH6VfH4oNcPccr7HnMmsybjnTtez",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip14.json`
+  },
+  {
+    name: "vip15",
+    address: "AwVR9y8Qw5erzrzE8hcs1j1se86yBwmrRidWb1qzaAy2",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip15.json`
+  },
+  {
+    name: "vip16",
+    address: "4H3wAK5tkT7G1vFrj6J9jWGvbaqVGkzPPBsp9qyKUYz9",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/vip16.json`
+  },
 ];
 
 module.exports = {

@@ -17,7 +17,7 @@ module.exports = {
   hallmarks: [
     [1672448400, "Rug Pull"]
   ],
-  // deadFrom: 1672448400,
+  deadFrom: 1672448400,
   polygon: {
     tvl: () => ({}),
     staking: () => ({}),
