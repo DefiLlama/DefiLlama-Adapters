@@ -29,6 +29,8 @@ async function tvl(api) {
       api.add(token, bals[i])
   })
 
+  console.log("test")
+
   // resolve ichi vaults
   const iSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: ichiVaults })
   const iToken0s = await api.multiCall({ abi: 'address:token0', calls: ichiVaults })
