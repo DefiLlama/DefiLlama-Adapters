@@ -186,3 +186,5 @@ module.exports = {
 
 
 Object.values(module.exports).forEach(chainExports => chainExports.tvl = () => ({}))
+
+module.exports.deadFrom = '2022-11-01'

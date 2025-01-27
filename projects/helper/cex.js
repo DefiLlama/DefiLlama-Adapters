@@ -278,6 +278,7 @@ function cexExports(config) {
 
     const options = { ...config[chain], owners, tokens, chain, blacklistedTokens, }
     if (chain === 'solana')  options.solOwners = owners
+    if (chain === 'ton')  options.onlyWhitelistedTokens = true
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
   if (config.bep2) {
