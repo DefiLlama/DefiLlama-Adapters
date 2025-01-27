@@ -26,6 +26,7 @@ const vaultUserAddresses = [
   new PublicKey("Fwfu73gfD5KzqtSAVKqmW414rshmYpoHY4nJ8LWqPyHB"), //Prime standard
   new PublicKey("6NaF3EpArzHJ4x5GeTzjcUcdic29Rt4sy4pn6LP7iJ4r"), //Prime A
   new PublicKey("3CTgSqfQPWsFCjQmJx45JgVWgqEWau5ec55tsQDxW8gM"), // Prime B
+  new PublicKey("3BWfL6sGXMhLZaSbj5D7DYy2tFrjxV7gBdyrnVbcKnEi"), // Prime C
   new PublicKey("2XnEYxNovTmYDXkDb7zninKttt3j9i67sj96H7CV5wZw"), // JLP Navigator II
   
 
