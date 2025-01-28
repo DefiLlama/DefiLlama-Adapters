@@ -395,6 +395,15 @@ module.exports = {
       ]
     },
     {
+      name: 'abstract',
+      tokens: [
+        '0x3439153EB7AF838Ad19d56E1571FBD09333C2809', // WETH
+      ],
+      holders: [
+        '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189' // portal
+      ]
+    },
+    {
       name: 'boba_bnb',
       tokens: [
         '0x9f98f9f312d23d078061962837042b8918e6aff2', // USDC
