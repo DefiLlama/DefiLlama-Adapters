@@ -92,6 +92,7 @@ const tapbit = require('./tapbit-cex.js')
 const jbtc = require('./jbtc')
 const bitkub = require('./bitkub-cex.js')
 const coin8 = require('./coin8.js')
+const bitrue = require('./bitrue-cex.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -219,5 +220,6 @@ module.exports = {
   tapbit,
   jbtc,
   bitkub,
-  coin8
+  coin8,
+  bitrue
 }
