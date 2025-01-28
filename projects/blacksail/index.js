@@ -14,8 +14,7 @@ async function fetcher() {
 }
 
 async function tvl(api) {
-    let strats = await getConfig('blacksail/strats', undefined, { fetcher })
-    strats = (await api.multiCall({ abi: 'address:staking_token', calls: strats, permitFailure: true })).map((v, i) => v ? strats[i] : null).filter(i => i)
+    let strats = (await api.multiCall({ abi: 'address:staking_token', calls: strats, permitFailure: true })).map((v, i) => v ? strats[i] : null).filter(i => i)
     
     const balances = (await api.multiCall({ abi: 'uint256:balanceOf', calls: strats }))
     const stakingTokens = await api.multiCall({ abi: 'address:staking_token', calls: strats })
