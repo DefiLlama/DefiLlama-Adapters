@@ -14,9 +14,29 @@ const SPOT_MARKETS = {
     mint: ADDRESSES.solana.SOL,
     decimals: 9
   },
+  6: {
+    name: 'jitoSOL',
+    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    decimals: 9
+  },
+  16:{
+    name:'INF',
+    mint:'5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm', 
+    decimals: 9
+  },
+  17:{
+    name:'dSOL',
+    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
+    decimals: 9
+  },
   19: {
     name: 'JLP',
     mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6
+  },
+  22: {
+    name: 'PYUSD',
+    mint: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo',
     decimals: 6
   },
   28: {
