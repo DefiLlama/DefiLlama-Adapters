@@ -65,7 +65,11 @@ const fixBalancesTokens = {
   },
   ink: {
     '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: 'usd-coin', decimals: 6 },
-  }
+  },
+  parex: {
+    '0x1595aBE9DCF068a969B819B64809D2bEdd3703b6': { coingeckoId: 'parex', decimals: 18 },
+    '0x19a5C551e4762F232448da1984Ecb445b4a7721e': { coingeckoId: 'tether', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
