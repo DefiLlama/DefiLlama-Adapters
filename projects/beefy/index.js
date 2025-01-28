@@ -40,6 +40,7 @@ const chains = {
   fuse: 122,
   heco: 128,
   polygon: 137,
+  sonic: 146,
   manta: 169,
   fantom: 250,
   fraxtal: 252,

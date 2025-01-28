@@ -65,6 +65,27 @@ const config = {
       fromBlock: 41209677,
     },
   ],
+  base: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x15e86be6084c6a5a8c17732d398dfbc2ec574cec",
+      fromBlock: 13035219,
+    },
+  ],
+  sei: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0xB438ea246cefA9241305aD62E5D307D014baF7Fa",
+      fromBlock: 117_480_059,
+    },
+  ],
+  avax: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x41E9ac0bfed353c2dE21a980dA0EbB8A464D946A",
+      fromBlock: 50484541,
+    },
+  ],
   optimism: [
     {
       name: "Gyro E-CLP V2 Factory",

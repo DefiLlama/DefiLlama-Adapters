@@ -9,6 +9,8 @@ const ADDRESSES = require('../coreAssets.json')
 // https://proxy.atomscan.com/chains.json
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
+// https://celestia.publicnode.com/
+// https://api.axelarscan.io/api/getTVL
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://lcd.osmosis.zone",
@@ -43,7 +45,17 @@ const endPoints = {
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
-  noble: "https://noble-api.polkachu.com"
+  kopi: "https://rest.kopi.money",
+  noble: "https://noble-api.polkachu.com",
+  mantra: "https://api.mantrachain.io",
+  elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
+  pryzm: "https://api.pryzm.zone",
+  agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  band: 'https://laozi1.bandchain.org/api',
+  celestia: 'https://celestia-rest.publicnode.com',
+  dydx: 'https://dydx-rest.publicnode.com',
+  carbon: 'https://rest.lavenderfive.com/carbon/',
+  evmos: 'https://evmos-api.polkachu.com',
 };
 
 const chainSubpaths = {
@@ -310,7 +322,7 @@ async function sumTokens({ balances, owners = [], chain, owner, tokens, blacklis
     .for(owners)
     .process(async (owner, i) => {
       await getBalance2({ balances, owner, chain, tokens, blacklistedTokens, api, })
-      if (chain === 'osmosis' && owners.length > 100) 
+      if (chain === 'osmosis' && owners.length > 100)
         await sleep(3000)
     });
 

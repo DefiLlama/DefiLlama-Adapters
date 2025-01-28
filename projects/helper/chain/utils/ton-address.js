@@ -126,7 +126,7 @@ class Address {
 				address: new Address(r.workchain, r.hashPart),
 			};
 		} else {
-			let addr = source.replace(/\-/g, "+").replace(/_/g, "/"); // Convert from url-friendly to true base64
+			let addr = source.replace(/-/g, "+").replace(/_/g, "/"); // Convert from url-friendly to true base64
 			let r = parseFriendlyAddress(addr);
 			return {
 				isBounceable: r.isBounceable,

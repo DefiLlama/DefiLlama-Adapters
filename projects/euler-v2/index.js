@@ -5,7 +5,9 @@ module.exports = {
 }
 
 const config = {
-  ethereum: { factory: '0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e', }
+  ethereum: { factory: '0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e', },
+  base: { factory: '0x7F321498A801A191a93C840750ed637149dDf8D0', },
+  swellchain: { factory: '0x238bF86bb451ec3CA69BB855f91BDA001aB118b9', }
 }
 
 Object.keys(config).forEach(chain => {

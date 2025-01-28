@@ -34,6 +34,10 @@ const HubPools = {
       poolAddress: "0x307bCEC89624660Ed06C97033EDb7eF49Ab0EB2D",
       tokenAddress: '0xbc78D84Ba0c46dFe32cf2895a19939c86b81a777',
     },
+    { // JOE      
+      poolAddress: "0x5e5a2007a8D613C4C98F425097166095C875e6eE",
+      tokenAddress: ADDRESSES.avax.JOE,
+    },
   ],
   'ethereum': [
     // excluding USDC cause bridged

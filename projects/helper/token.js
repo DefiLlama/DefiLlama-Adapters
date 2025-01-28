@@ -9,6 +9,7 @@ const sdk = require('@defillama/sdk')
 async function covalentGetTokens(address, api, {
   onlyWhitelisted = true,
   useCovalent = false,
+  skipCacheRead = false,
 } = {}) {
   const chainId = api?.chainId
   const chain = api?.chain
@@ -19,7 +20,7 @@ async function covalentGetTokens(address, api, {
 
   if (!useCovalent) {
     if (!ankrChainMapping[chain]) throw new Error('Chain Not supported: ' + chain)
-    const tokens = await ankrGetTokens(address, { onlyWhitelisted })
+    const tokens = await ankrGetTokens(address, { onlyWhitelisted, skipCacheRead, })
     return tokens[ankrChainMapping[chain]] ?? []
   }
 
