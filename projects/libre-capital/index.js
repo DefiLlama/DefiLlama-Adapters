@@ -1,9 +1,18 @@
 const sdk = require("@defillama/sdk");
 const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos");
-const { fetchURL } = require("../helper/utils");
 const sui = require("../helper/chain/sui");
 
-const NAV_API_URL = "https://nav.dev.librecapital.com/funds";
+const NAV_CONTRACT = "0xBdbF06d1831c290d06CD353db5eDf915178AF277";
+const NAV_ABI = {
+  "inputs": [{"internalType": "string","name": "_instrumentName","type": "string"}],
+  "name": "getLatestNAV",
+  "outputs": [
+    {"internalType": "uint256","name": "navPerShare","type": "uint256"},
+    {"internalType": "bytes32","name": "legalDocumentHash","type": "bytes32"}
+  ],
+  "stateMutability": "view",
+  "type": "function"
+};
 
 const RECEIPT_TOKENS = {
   polygon: {
@@ -11,13 +20,13 @@ const RECEIPT_TOKENS = {
       address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
       decimals: 18,
       underlying: 'security-token',
-      fundName:'USD I Money Market, a sub-fund of Libre SAF VCC'
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
     },
     BHMA: {
       address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
       decimals: 18,
       underlying: 'security-token',
-      fundName:'BH Master Fund Access, a sub-fund of Libre SAF VCC'
+      fundName:' BH Master Fund Access a sub-fund of Libre SAF VCC'
     }
   },
   injective: {
@@ -25,7 +34,7 @@ const RECEIPT_TOKENS = {
       address: 'inj1eh6h6vllrvtl6qyq77cv5uwy0hw6e6d8jy4pxy',
       decimals: 18,
       underlying: 'security-token',
-      fundName:'USD I Money Market, a sub-fund of Libre SAF VCC'
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   sui: {
@@ -33,17 +42,37 @@ const RECEIPT_TOKENS = {
       address: '0xf98b6567fbd8e10403a05c4c3ac2a2c384b8f7cd7430756d23b0021ae28d1398',
       decimals: 9,
       underlying: 'security-token',
-      fundName:'USD I Money Market, a sub-fund of Libre SAF VCC'
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   }
 }
 
 async function getFundPrices() {
-  const { data: navData } = await fetchURL(NAV_API_URL);
   const priceMap = {};
-  navData.forEach(fund => {
-    priceMap[fund.fundName] = fund.nav;
+  const uniqueFundNames = [...new Set(
+    Object.values(RECEIPT_TOKENS).flatMap(tokens => 
+      Object.values(tokens).map(token => token.fundName)
+    )
+  )];
+
+  const navCalls = uniqueFundNames.map(fundName => ({
+    target: NAV_CONTRACT,
+    params: [fundName]
+  }));
+
+  const navResults = await sdk.api.abi.multiCall({
+    abi: NAV_ABI,
+    calls: navCalls,
+    chain: 'optimism'
   });
+
+  navResults.output.forEach((result, i) => {
+    if (result.success) {
+      // navPerShare is in the first position of the returned tuple
+      priceMap[uniqueFundNames[i]] = Number(result.output[0]) / 1e6; // Assuming 18 decimals for NAV
+    }
+  });
+
   return priceMap;
 }
 
