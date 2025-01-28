@@ -1,49 +1,33 @@
-const sdk = require("@defillama/sdk");
 const { queryContract } = require('../helper/chain/cosmos')
 
-const chains = {
-  cosmos: {
-    chainId: "cosmoshub-4",
-    denom: "uatom",
+const config = {
+  neutron: [{
     coinGeckoId: "cosmos",
-    dropContract: "neutron16m3hjh7l04kap086jgwthduma0r5l0wh8kc6kaqk92ge9n5aqvys9q6lxr"
+    dropContract: "neutron15v5acjfttf3umzatmj7rqfjy6yzcgekh266ehjsxclvaem0hpd7q9qpscr"
   },
-  celestia: {
-    chainId: "celestia",
-    denom: "utia",
+  {
     coinGeckoId: "celestia",
-    dropContract: "neutron1fp649j8djj676kfvh0qj8nt90ne86a8f033w9q7p9vkcqk9mmeeqxc9955"
-  },
+    dropContract: "neutron1vqtnu54addf87qp73fnjvqafruzkr2zjgswkhsmsg45t08wla2nqqan0hc"
+  }],
 };
 
-function makeTvlFn(chain) {
-  return async () => {
-    const balances = {};
-    const data = await queryContract({
-      contract: chain.dropContract,
-      chain: "neutron",
-      data: {
-        "total_bonded": {}
+async function tvl(api) {
+  for (const { coinGeckoId, dropContract, decimals = 6 } of config[api.chain]) {
+    const delegations = await queryContract({ contract: dropContract, chain: api.chain, data: {
+        "extension": {
+          "msg": {
+            "delegations": {}
+          }
+        }
       }
     });
-    const assetBalance = parseInt(data, 10) / 1e6;
-    const amount = assetBalance;
-
-    sdk.util.sumSingleBalance(
-      balances,
-      chain.coinGeckoId,
-      amount
-    );
-
-    return balances;
-  };
+    const bonded = delegations.delegations.delegations.map(delegation => Number(delegation.amount.amount)).reduce((ps, amount) => ps + amount, 0);
+    api.addCGToken(coinGeckoId, bonded / 10 ** decimals)
+  }
 }
 
 module.exports = {
   timetravel: false,
   methodology: "Sum of all the tokens that are liquid staked on DROP",
-};
-
-for (const chainName of Object.keys(chains)) {
-  module.exports[chainName] = { tvl: makeTvlFn(chains[chainName]) };
+  neutron: { tvl }
 }
