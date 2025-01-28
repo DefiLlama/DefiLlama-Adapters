@@ -48,6 +48,7 @@ const fixBalancesTokens = {
   },
   abstract: {
     '0x000000000000000000000000000000000000800a': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'ethereum', decimals: 18 },
     '0x3439153eb7af838ad19d56e1571fbd09333c2809': { coingeckoId: 'ethereum', decimals: 18 },
     '0x66De4D3Ad9A490e4f090D60bFF1B82723150abB3': { coingeckoId: 'ethereum', decimals: 18 },
     '0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1': { coingeckoId: 'usd-coin', decimals: 6 },
