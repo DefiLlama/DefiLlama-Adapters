@@ -3,9 +3,9 @@ const { request, } = require("graphql-request");
 
 
 const config = {
-  blast: { token: ADDRESSES.blast.USDB, start: 1710115200, graphUrl: "https://api.studio.thegraph.com/query/62472/intentx-analytics_082_blast/version/latest", accountSource: '0x083267D20Dbe6C2b0A83Bd0E601dC2299eD99015'},
-  base: { token: ADDRESSES.base.USDbC, start: 1700006400, graphUrl: "https://api.studio.thegraph.com/query/62472/intentx-analytics_082/version/latest", accountSource: '0x8Ab178C07184ffD44F0ADfF4eA2ce6cFc33F3b86'},
-  mantle: { token: ADDRESSES.mantle.USDC, start: 1712966400, graphUrl: "https://subgraph-api.mantle.xyz/subgraphs/name/mantle_intentx-analytics_082", accountSource: '0xECbd0788bB5a72f9dFDAc1FFeAAF9B7c2B26E456' },
+  blast: { token: ADDRESSES.blast.USDB, start: 1710115200, graphUrl: "https://api.goldsky.com/api/public/project_cm0bho0j0ji6001t8e26s0wv8/subgraphs/intentx-blast-analytics-083/latest/gn", accountSource: '0x083267D20Dbe6C2b0A83Bd0E601dC2299eD99015'},
+  base: { token: ADDRESSES.base.USDbC, start: 1700006400, graphUrl: "https://api.goldsky.com/api/public/project_cm0bho0j0ji6001t8e26s0wv8/subgraphs/intentx-base-analytics-083/latest/gn", accountSource: '0x8Ab178C07184ffD44F0ADfF4eA2ce6cFc33F3b86'},
+  mantle: { token: ADDRESSES.mantle.USDC, start: 1712966400, graphUrl: "https://api.goldsky.com/api/public/project_cm0bho0j0ji6001t8e26s0wv8/subgraphs/intentx-mantle-analytics-083/latest/gn", accountSource: '0xECbd0788bB5a72f9dFDAc1FFeAAF9B7c2B26E456' },
 }
 
 async function tvl(api) {
@@ -46,6 +46,7 @@ module.exports = {
     [1704200400, "0.8.2 Migration"],
     [config.blast.start, "Blast Deploy"],
     [config.mantle.start, "Mantle Deploy"],
+    [1725753600, "0.8.3 Migration"]
   ],
 }
 

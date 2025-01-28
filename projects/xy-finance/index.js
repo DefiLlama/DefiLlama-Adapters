@@ -73,6 +73,9 @@ const config = {
   },
   ox_chain: {
     chainId: '6699'
+  },
+  cronos_zkevm: {
+    chainId: '388'
   }
 }
 
@@ -500,6 +503,12 @@ const yPoolDepositContract = {
     //   "contractAddress": "0xD95841e7eC6b61f708829B57a3433C3Fd24B2A8c",
     //   "tokenAddress": "0x92073dE2706eB8f0265998bCf7B8F751e1349b8F"
     // }
+  },
+  "388": {
+    "ETH": {
+      "contractAddress": "0xAa0b0654E79E17332d983E2351bD926cE336B9BD",
+      "tokenAddress": "0x271602A97027ee1dd03b1E6e5dB153eB659A80b1"
+    },
   }
 }
 
