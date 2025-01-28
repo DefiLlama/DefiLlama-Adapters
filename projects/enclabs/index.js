@@ -4,8 +4,7 @@ const { compoundExports2 } = require('../helper/compound')
 const config = {
   sonic: {
     endpoint: sdk.graph.modifyEndpoint('Ha7WNTEk2U1MvMUVMmmv8e7uZxJUYY4n8r57iJHYyYcJ'),
-  },
-  
+  },  
 }
 
 Object.keys(config).forEach(chain => {
@@ -13,10 +12,9 @@ Object.keys(config).forEach(chain => {
 })
 
 async function getPools(api) {
-  const { endpoint, corePools } = config[api.chain]
-  const poolSet = new Set(corePools.map(i=>i.toLowerCase()))
+  const { endpoint } = config[api.chain]
   const { pools } = await cachedGraphQuery('enclabs/'+api.chain, endpoint, `{ pools { id  }}`)
-  return pools.map(i => i.id).filter(i => !poolSet.has(i.toLowerCase()))
+  return pools.map(i => i.id)
 }
 
 async function tvl(...args) {
