@@ -11,7 +11,7 @@ async function tvl() {
 
 module.exports = {
   methodology: 'Counts the Sulaana token present in the contract.',
-  pox: {
+  pollux: {
     tvl,
   }
 }; 
