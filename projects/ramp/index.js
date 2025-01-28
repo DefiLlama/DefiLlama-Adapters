@@ -4,7 +4,9 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 function getChainTVL(chain) {
   return async (api) => {
-    const key = chain === 'ethereum' ? 'eth' : chain;
+    // https://appv2.rampdefi.com/#/lever
+    return {}
+/*     const key = chain === 'ethereum' ? 'eth' : chain;
     const { [key]: config } = await getConfig('ramp', 'https://config.rampdefi.com/config/appv2/priceInfo');
     const tokens = config.tokens;
     delete tokens.RUSD
@@ -21,7 +23,7 @@ function getChainTVL(chain) {
 
     const res = (await api.multiCall({ abi: abi.getPoolAmount, calls, permitFailure: true})).map(i => i ?? 0)
     api.addTokens(iTokens, res)
-    return sumTokens2({ api, resolveLP: true, })
+    return sumTokens2({ api, resolveLP: true, }) */
   }
 }
 
