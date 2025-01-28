@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { mergeExports } = require('../helper/utils')
 
 const config = {
   ethereum: {
@@ -28,13 +29,32 @@ const config = {
   }
 }
 
-module.exports = {
-  methodology: `FBTC and LFBTC as collateral`,
+
+// Count USDT of USDaMinter Safe Multisig. USDa can be minted by USDT.
+// Address: 0x5A79311083dC82aBc2DE1E5639673C876cc6757e
+const usdaMinterConfig = {
+  ethereum: {
+    address: '0x5A79311083dC82aBc2DE1E5639673C876cc6757e',
+    usdtAddress: ADDRESSES.ethereum.USDT,
+  }
 }
 
-Object.keys(config).forEach(chain => {
+module.exports = {
+  methodology: `FBTC, LFBTC and USDT as collateral`,
+}
+
+const fbtcAndLFBTCTVL= Object.keys(config).forEach(chain => {
   const {poolAddress, lfbtcAddress, fbtcAddress,} = config[chain]
   module.exports[chain] = {
     tvl: sumTokensExport({ owner: poolAddress, tokens: [lfbtcAddress, fbtcAddress], }),
   }
 })
+
+const usdaMinterTVL = Object.keys(usdaMinterConfig).forEach(chain => {
+  const {address, usdtAddress} = usdaMinterConfig[chain]
+  module.exports[chain] = {
+    tvl: sumTokensExport({ owner: address, tokens: [usdtAddress], }),
+  }
+})
+
+module.exports = mergeExports(fbtcAndLFBTCTVL, usdaMinterTVL)
