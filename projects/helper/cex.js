@@ -10,6 +10,7 @@ const defaultTokens = {
     ADDRESSES.ethereum.USDC,
     ADDRESSES.ethereum.LINK,
     ADDRESSES.ethereum.DAI,
+    ADDRESSES.ethereum.WEETH,
     ADDRESSES.ethereum.WBTC,
     ADDRESSES.ethereum.TUSD, // TUSD
     ADDRESSES.ethereum.BUSD, // BUSD
