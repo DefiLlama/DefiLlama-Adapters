@@ -3,6 +3,7 @@ const { VAULTS } = require("./vaults");
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   methodology: "TVL is calculated by summing net value asset in vaults.",
   solana: {
     tvl,
