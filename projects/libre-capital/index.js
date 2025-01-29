@@ -1,6 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos");
 const sui = require("../helper/chain/sui");
+const { sumTokens2 } = require('../helper/solana');
+const { sumTokens } = require('../helper/chain/near');
+
 
 const NAV_CONTRACT = "0xBdbF06d1831c290d06CD353db5eDf915178AF277";
 const NAV_ABI = {
@@ -41,6 +44,38 @@ const RECEIPT_TOKENS = {
     UMA: {
       address: '0xf98b6567fbd8e10403a05c4c3ac2a2c384b8f7cd7430756d23b0021ae28d1398',
       decimals: 9,
+      underlying: 'security-token',
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    }
+  },
+  solana: {
+    UMA: {
+      address: '5d3zUSzje2saHwgzwJwFE8SDR8S5sGpE9wHhXdsCfu7j',
+      decimals: 9,
+      underlying: 'security-token',
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    }
+  },
+  near: {
+    UMA: {
+      address: 'libre_instrument_1.near',
+      decimals: 24,
+      underlying: 'security-token',
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    }
+  },
+  aptos: {
+    UMA: {
+      address: '0x8e6c1961e911cc7f1fa3d1dc821b199f0cf90c569c7feece76ee7ed1386d257c',
+      decimals: 8,
+      underlying: 'security-token',
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    }
+  },
+  mantra: {
+    UMA: {
+      address: '0x8e6c1961e911cc7f1fa3d1dc821b199f0cf90c569c7feece76ee7ed1386d257c',
+      decimals: 18,
       underlying: 'security-token',
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
     }
@@ -164,9 +199,59 @@ async function suiTvl() {
   return balances;
 }
 
+async function solanaTvl() {
+  const balances = {}
+  const fundPrices = await getFundPrices();
+  
+  const token = RECEIPT_TOKENS.solana.UMA;
+  const owner = '9WNzeX4ygMpgbFzA36nuAHgqGmn4CKGtPNjQhJBcVf2j';
+  
+  const solanaBalances = await sumTokens2({ 
+    tokens: [token.address],
+    owners: [owner],
+  });
+
+  // Get the balance and apply NAV price
+  Object.entries(solanaBalances).forEach(([tokenAddress, balance]) => {
+    const price = fundPrices[token.fundName] || 1;
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
+    balances['usd-coin'] = valueUSD;
+  });
+
+  return balances;
+}
+
+async function nearTvl() {
+  const balances = {}
+  const fundPrices = await getFundPrices();
+  
+  const token = RECEIPT_TOKENS.near.UMA;
+  const owner = 'libre_investor_0.near';
+  
+  const nearBalances = await sumTokens({ 
+    tokens: [token.address], 
+    owners: [owner],
+  });
+
+  // Get the balance and apply NAV price
+  Object.entries(nearBalances).forEach(([tokenAddress, balance]) => {
+    const price = fundPrices[token.fundName] || 1;
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
+    balances['usd-coin'] = valueUSD;
+  });
+
+  return balances;
+}
+
+
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Polygon, Injective and Sui. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Polygon, Injective, Sui, Solana, NEAR, Aptos and Mantra. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
-  sui: { tvl: suiTvl }
+  sui: { tvl: suiTvl },
+  solana: { tvl: solanaTvl },
+  near: { tvl: nearTvl },
+
 }
