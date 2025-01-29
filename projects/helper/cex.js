@@ -111,7 +111,6 @@ const defaultTokens = {
      "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
      "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
      "0x6982508145454ce325ddbe47a25d4ec3d2311933",  // PEPE
-     "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee"
   ],
   tron: [
     nullAddress,
