@@ -4,7 +4,6 @@ const sui = require("../helper/chain/sui");
 const { sumTokens2 } = require('../helper/solana');
 const { sumTokens } = require('../helper/chain/near');
 
-
 const NAV_CONTRACT = "0xBdbF06d1831c290d06CD353db5eDf915178AF277";
 const NAV_ABI = {
   "inputs": [{"internalType": "string","name": "_instrumentName","type": "string"}],
@@ -18,6 +17,14 @@ const NAV_ABI = {
 };
 
 const RECEIPT_TOKENS = {
+  ethereum: {
+    UMA: {
+      address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    }
+  },
   polygon: {
     UMA: {
       address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
@@ -245,13 +252,40 @@ async function nearTvl() {
   return balances;
 }
 
+async function ethereumTvl(timestamp, block) {
+  const balances = {}
+  const fundPrices = await getFundPrices();
+  
+  // Get total supply of the receipt token
+  const supplies = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: Object.values(RECEIPT_TOKENS.ethereum).map(i => ({ target: i.address })),
+    chain: 'ethereum',
+    block,
+  })
+
+  // Map token's total supply to represent RWA TVL
+  supplies.output.forEach((supply, i) => {
+    const token = Object.values(RECEIPT_TOKENS.ethereum)[i]
+    const balance = supply.output;
+    const price = fundPrices[token.fundName] || 1;
+
+    // Convert balance to human readable and multiply by price
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
+    
+    balances['usd-coin'] = valueUSD;
+  })
+
+  return balances;
+}
 
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Polygon, Injective, Sui, Solana, NEAR, Aptos and Mantra. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana and NEAR. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  ethereum: { tvl: ethereumTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
   sui: { tvl: suiTvl },
   solana: { tvl: solanaTvl },
   near: { tvl: nearTvl },
-
 }
