@@ -1,5 +1,5 @@
 const abi = {
-  "totalValue": "function totalValue() view returns (uint256 balance)"
+  "totalValue": "function totalValue() view returns (uint256)"
 };
 
 const token = "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38";
