@@ -75,74 +75,6 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
 
 const gelatoPoolsAbi = 'address:pool'
 
-// Unwrap the tokens that are LPs and directly add the others
-// To be used when you don't know which tokens are LPs and which are not
-async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress = id => id) {
-  const tokens0 = await sdk.api.abi.multiCall({
-    calls: tokens.output.map(t => ({
-      target: t.output
-    })),
-    abi: token0,
-    block,
-    chain
-  })
-  const lpBalances = []
-  tokens0.output.forEach((result, idx) => {
-    const token = tokens.output[idx].output
-    const balance = amounts.output[idx].output
-    if (result.success) {
-      lpBalances.push({
-        token,
-        balance
-      })
-    } else {
-      sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
-    }
-  })
-  await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
-}
-
-async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain = "ethereum", transformAddress = id => id) {
-  const [balanceOfLP, balanceOfTokenListedInLP, lpSupply] = await Promise.all([
-    sdk.api.erc20.balanceOf({
-      target: lpToken,
-      owner,
-      block,
-      chain
-    }),
-    sdk.api.erc20.balanceOf({
-      target: listedToken,
-      owner: lpToken,
-      block,
-      chain
-    }),
-    sdk.api.erc20.totalSupply({
-      target: lpToken,
-      block,
-      chain
-    }),
-  ])
-  sdk.util.sumSingleBalance(balances, transformAddress(listedToken),
-    BigNumber(balanceOfLP.output).times(balanceOfTokenListedInLP.output).div(lpSupply.output).times(2).toFixed(0)
-  )
-}
-
-async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tokenNotToUse, block, chain = "ethereum", transformAddress = id => id) {
-  const [token0, token1] = await Promise.all([token0Abi, token1Abi]
-    .map(abi => sdk.api.abi.call({
-      target: lpToken,
-      abi,
-      chain,
-      block
-    }).then(o => o.output))
-  )
-  let listedToken = token0
-  if (tokenNotToUse.toLowerCase() === listedToken.toLowerCase()) {
-    listedToken = token1
-  }
-  await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
-}
-
 const PANCAKE_NFT_ADDRESS = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
 async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
   nftAddress = nftAddress ?? uniV3ExtraConfig.nftAddress
@@ -371,93 +303,6 @@ function addToken({ balances, token, amount, chain, blacklistedTokens = [], whit
   if (blacklistedTokens.length && blacklistedTokens.includes(addr)) return;
   if (whitelistedTokens.length && !whitelistedTokens.includes(addr)) return;
   sdk.util.sumSingleBalance(balances, token, amount, chain)
-}
-
-/*
-tokens [
-    [token, owner, isLP] - eg ["0xaaa", "0xbbb", true]
-]
-*/
-async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", transformAddress = id => id) {
-  const balanceOfTokens = await sdk.api.abi.multiCall({
-    calls: tokens.map(t => ({
-      target: t[0],
-      params: t[1]
-    })),
-    abi: 'erc20:balanceOf',
-    block,
-    chain
-  })
-  const lpBalances = []
-  balanceOfTokens.output.forEach((result, idx) => {
-    const token = result.input.target
-    const balance = result.output
-    if (tokens[idx][2]) {
-      lpBalances.push({
-        token,
-        balance
-      })
-    } else {
-      sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
-    }
-  })
-  await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
-}
-
-const balancerVault = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
-async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress, api) {
-  if (api) {
-    balances = api.getBalances()
-    chain = api.chain
-    block = api.block
-  }
-  let vault = chain === 'fantom' ? '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce' : balancerVault
-  if (!transformAddress) transformAddress = await getChainTransform(chain)
-  const poolIds = sdk.api.abi.multiCall({
-    calls: tokensAndOwners.map(t => ({
-      target: t[0]
-    })),
-    abi: getPoolId,
-    block,
-    chain
-  })
-  const balancerPoolSupplies = sdk.api.abi.multiCall({
-    calls: tokensAndOwners.map(t => ({
-      target: t[0]
-    })),
-    abi: 'erc20:totalSupply',
-    block,
-    chain
-  })
-  const balanceOfTokens = sdk.api.abi.multiCall({
-    calls: tokensAndOwners.map(t => ({
-      target: t[0],
-      params: t[1]
-    })),
-    abi: 'erc20:balanceOf',
-    block,
-    chain
-  });
-  const balancerPoolsPromise = sdk.api.abi.multiCall({
-    calls: (await poolIds).output.map(o => ({
-      target: vault,
-      params: o.output
-    })),
-    abi: getPoolTokens,
-    block,
-    chain
-  })
-  const [poolSupplies, tokenBalances, balancerPools] = await Promise.all([balancerPoolSupplies, balanceOfTokens, balancerPoolsPromise])
-  tokenBalances.output.forEach((result, idx) => {
-    const lpBalance = result.output
-    const balancerPool = balancerPools.output[idx].output
-    const supply = poolSupplies.output[idx].output
-    balancerPool.tokens.forEach((token, tokenIndex) => {
-      const tokensInPool = balancerPool.balances[tokenIndex]
-      const underlyingBalance = BigNumber(tokensInPool).times(lpBalance).div(supply)
-      sdk.util.sumSingleBalance(balances, transformAddress(token), underlyingBalance.toFixed(0));
-    })
-  })
 }
 
 const nullAddress = ADDRESSES.null
@@ -1078,12 +923,7 @@ module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
   unwrapSlipstreamNFT,
-  addTokensAndLPs,
-  sumTokensAndLPs,
   sumTokens,
-  sumBalancerLps,
-  sumLPWithOnlyOneToken,
-  sumLPWithOnlyOneTokenOtherThanKnown,
   genericUnwrapCvx,
   unwrapLPsAuto,
   isLP,
