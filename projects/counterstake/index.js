@@ -120,15 +120,18 @@ const totalTVLByEVMNetwork = async (api) => {
     bridgeAasByChain.forEach((_, index) => {
         const voteTokenAddress = voteTokenAddresses[index];
         const governanceAddress = governanceAddresses[index];
-        tokensAndOwners.push([voteTokenAddress, governanceAddress ])
+        tokensAndOwners.push([voteTokenAddress, governanceAddress])
     });
-
+    const blacklistedTokens = []
+    if (api.chain === 'kava') {
+        blacklistedTokens.push('0x31f8d38df6514b6cc3c360ace3a2efa7496214f6')  // we dont have any info on line token/how it is minted, 99% of token supply in this staking contract which is suspicious
+    }
     return sumTokens2({ api, tokensAndOwners });
 };
 
 module.exports = {
     timetravel: false,
-        misrepresentedTokens: true,
+    misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Counterstake protocol. " +
         "This includes the value of exported assets held in the custody of cross-chain bridges, the stakes of cross-chain transfers, " +
