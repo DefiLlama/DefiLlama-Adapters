@@ -123,41 +123,8 @@ const totalTVLByEVMNetwork = async (api) => {
         tokensAndOwners.push([voteTokenAddress, governanceAddress ])
     });
 
-    const sum = await sumTokens2({ api, tokensAndOwners });
-
-    return tryToGetUSDPriceOfUnknownTokens(sum, api);
+    return sumTokens2({ api, tokensAndOwners });
 };
-
-const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
-    const LINE_CONTRACT = '0x31f8d38df6514b6cc3c360ace3a2efa7496214f6';
-    const LINE_TOKEN_KEY = `kava:${LINE_CONTRACT}`;
-
-    const transformedSumObject = { ...sum };
-
-    if (LINE_TOKEN_KEY in sum) { // support LINE token on Kava Network
-
-        const ORACLE_CONTRACT_ADDRESS = await api.call({
-            abi: "address:oracle",
-            target: LINE_CONTRACT,
-        });
-
-        const totalLocked = transformedSumObject[LINE_TOKEN_KEY]
-
-        const linePriceInCollateral = await api.call({
-            abi: "uint256:getPrice",
-            target: ORACLE_CONTRACT_ADDRESS,
-        });
-
-        const priceInCollateral = totalLocked * linePriceInCollateral / 1e36
-        const exchangeRates = await fetchOswapExchangeRates();
-
-        transformedSumObject['usd'] = exchangeRates['GBYTE_USD'] * priceInCollateral;
-
-        delete transformedSumObject[LINE_TOKEN_KEY];
-    }
-
-    return transformedSumObject;
-}
 
 module.exports = {
     timetravel: false,
