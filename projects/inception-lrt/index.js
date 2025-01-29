@@ -14,7 +14,7 @@ module.exports = {
   hallmarks: [
     [1714953600, "Genesis Merges with InceptionLRT"],
     [1734530420, "Amphor Labs Merges with InceptionLRT"],
-    [1734530420, "Symbiotic Vaults Release"]
+    [1738079880, "Symbiotic Vaults Release"]
   ],
   doublecounted: true,
   ethereum: { tvl: tvl_eth, } ,
