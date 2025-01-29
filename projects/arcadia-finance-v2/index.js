@@ -53,11 +53,10 @@ async function unwrapArcadiaAeroLP({ api, ownerIds }) {
 
 async function uwrapStakedSlipstreamLP({ api, sSlipNftIds, }) {
   const { slipNFT } = config;
-  const balances = api.getBalances();
 
   // Arcadia's staked slipstream NFT wrapper issues a position with the same ID as the wrapped NFT
   // -> fetch the values of the wrapped IDs by simply fetching the values of those IDs on the native slipstream NFT
-  await unwrapSlipstreamNFT({ balances: balances, positionIds: sSlipNftIds, nftAddress: slipNFT, chain: 'base', blacklistedTokens: [], whitelistedTokens: [], uniV3ExtraConfig: {} });
+  await unwrapSlipstreamNFT({ api, positionIds: sSlipNftIds, nftAddress: slipNFT, });
 }
 
 async function tvl (api) {
@@ -67,6 +66,8 @@ async function tvl (api) {
   const accs = []
 
   const uTokens = await api.multiCall({ abi: "address:asset", calls: pools });
+  await api.sumTokens({ blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT], tokensAndOwners2: [uTokens, pools] });
+  
   const accounts = await api.fetchList({ lengthAbi: 'allAccountsLength', itemAbi: 'allAccounts', target: factory, })
   const assetDatas = await api.multiCall({ abi: abi.generateAssetData, calls: accounts, permitFailure: true })
 
@@ -83,7 +84,7 @@ async function tvl (api) {
     await sumTokens2({ api, owners: accs, uniV3ExtraConfig: { nftAddress: alienBaseNFT } })
 
   // add all simple ERC20s
-  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT], tokensAndOwners2: [uTokens, pools] });
+  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT],});
 
   // add all Arcadia-wrapped LP positions
   await unwrapArcadiaAeroLP({ api, ownerIds });
@@ -95,6 +96,7 @@ async function tvl (api) {
 module.exports = {
   methodology: "TVL is calculated as the sum of all Account values and the available balance in the liquidity pools. Assets are not double counted.",
   base: { tvl },
+  isHeavyProtocol: true,
   start: '2024-03-25', // Mon Mar 25 2024 18:00:00 GMT+0000
   hallmarks: [
     [Math.floor(new Date("2024-04-03") / 1e3), "Points program announced."],

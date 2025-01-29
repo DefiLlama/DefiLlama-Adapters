@@ -1,5 +1,3 @@
-const sdk = require('@defillama/sdk')
-const {chainExports} = require('../helper/exports')
 const { getConfig } = require('../helper/cache')
 
 let data
@@ -43,32 +41,18 @@ const nested = {
 // const graphUrl = 'https://api.nested.finance/graphql'
 
 function chainTvl_onchain(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}) => {
-    const balances = {}
-    const transformAddress = (addr) => `${chain}:${addr}`
-
-    
+  return async (api) => {
     const tokens_response = await getData();
-    const recordsTokens = tokens_response
+    const tokens = tokens_response
       .filter(t => t.startsWith(nested[chain]['prefix']))
-      .map(t => t.substring(t.indexOf(':') + 1))
-
-    const reserveTokens = [...new Set(recordsTokens.flat())]
-    
-    const tokenBalances = await sdk.api.abi.multiCall({
-      calls: reserveTokens.map(t => ({
-        target: t,
-        params: nested[chain]['nestReserve_contract'],
-      })),
-      abi: 'erc20:balanceOf',
-      chain,
-      block,
-    });
-    sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transformAddress);
-    
-    return balances
+      .map(t => t.substring(t.indexOf(':') + 1)).flat()
+    const owner = nested[chain]['nestReserve_contract']
+    return api.sumTokens({ owner, tokens })
   }
 }
 
-module.exports = chainExports(chainTvl_onchain, Object.keys(nested))
 module.exports.methodology = 'Nested TVL consists of tokens held by NestedReserve contracts on each chain, for which we can get the address using a rest api endpoint'
+
+Object.keys(nested).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl_onchain(chain) }
+})
