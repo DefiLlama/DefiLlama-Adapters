@@ -59,7 +59,7 @@ const RECEIPT_TOKENS = {
   near: {
     UMA: {
       address: 'libre_instrument_1.near',
-      decimals: 24,
+      decimals: 18,
       underlying: 'security-token',
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
     }
