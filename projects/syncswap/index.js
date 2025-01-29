@@ -3,11 +3,11 @@ const { transformDexBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
 async function tvl(api) {
-  const { fromBlock, classicFactorys, stableFactorys, aquaFactorys = [] } = config[api.chain]
+  const { fromBlock, classicFactorys = [], stableFactorys = [], aquaFactorys = [], rangedFactorys = [] } = config[api.chain]
 
   const logs = await Promise.all([...classicFactorys, ...stableFactorys, ...aquaFactorys].map(factory => (getFactoryLogs(api, factory))));
 
-  const balances = {}
+  let balances = {}
   const data = []
 
   const reserves = await Promise.all(logs.map(log => (api.multiCall({ abi: 'function getReserves() external view returns (uint, uint)', calls: log.map(i => i.pool) }))))
@@ -15,7 +15,7 @@ async function tvl(api) {
   for (let i = 0; i < logs.length; i++) {
     if (i < classicFactorys.length) {
       reserves[i].forEach(([token0Bal, token1Bal], j) => {
-        data.push({ token0Bal, token1Bal, token0: logs[i][j].token0, token1: logs[i][j].token1, })
+        data.push({ token0Bal, token1Bal, token0: logs[i][j].token0, token1: logs[i][j].token1 })
       })
     } else {
       reserves[i].forEach(([reserve0, reserve1], j) => {
@@ -25,6 +25,28 @@ async function tvl(api) {
     }
   }
 
+  const v3logs = await Promise.all(rangedFactorys.map(factory => getV3FactoryLogs(api, factory)));
+
+  const pairs = {};
+    v3logs.flat().forEach(([token0, token1, , pair]) => {
+      const pairAddress = pair.toLowerCase();
+      pairs[pairAddress] = {
+        token0Address: token0.toLowerCase(),
+        token1Address: token1.toLowerCase(),
+      };
+  });
+
+  const balanceCalls = [];
+    Object.entries(pairs).forEach(([pair, { token0Address, token1Address }]) => {
+      balanceCalls.push({ target: token0Address, params: [pair] });
+      balanceCalls.push({ target: token1Address, params: [pair] });
+  });
+
+  const tokenBalances = await api.multiCall({ calls: balanceCalls, abi: 'erc20:balanceOf' })
+  
+  balanceCalls.forEach(({ target }, i) => {
+    sdk.util.sumSingleBalance(balances, target, tokenBalances[i])
+  })
 
   return transformDexBalances({ balances, data, chain: api.chain })
 
@@ -38,6 +60,17 @@ async function tvl(api) {
       onlyArgs: true,
     })
   }
+
+  async function getV3FactoryLogs(api, factory) {
+    return getLogs({
+      api,
+      target: factory,
+      fromBlock,
+      topic: "PoolCreated(address,address,int24)",
+      eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, int24 indexed tickSpacing, address pool)',
+      onlyArgs: true,
+    })
+  }
 }
 
 const config = {
@@ -45,7 +78,8 @@ const config = {
     fromBlock: 9775,
     stableFactorys: ['0x5b9f21d407F35b10CbfDDca17D5D84b129356ea3', '0x81251524898774F5F2FCaE7E7ae86112Cb5C317f'],
     classicFactorys: ['0xf2DAd89f2788a8CD54625C60b55cD3d2D0ACa7Cb', '0x0a34FBDf37C246C0B401da5f00ABd6529d906193'],
-    aquaFactorys: ['0x20b28B1e4665FFf290650586ad76E977EAb90c5D', '0xFfa499b019394d9bEB5e21FC54AD572E4942302b', '0x0754870C1aAb00eDCFABDF4e6FEbDD30e90f327d']
+    aquaFactorys: ['0x20b28B1e4665FFf290650586ad76E977EAb90c5D', '0xFfa499b019394d9bEB5e21FC54AD572E4942302b', '0x0754870C1aAb00eDCFABDF4e6FEbDD30e90f327d'],
+    rangedFactorys: ['0x9D63d318143cF14FF05f8AAA7491904A494e6f13']
   },
   linea: {
     fromBlock: 716,

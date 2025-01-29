@@ -14,8 +14,11 @@ const VOTIUM = '0x00000069aBbB0B1Ad6975bcF753eEe15D318A0BF'
 // afCVX
 const AFCVX = '0x8668a15b7b023Dc77B372a740FCb8939E15257Cf'
 
-async function tvl(api) {
+// veASF (for ASF staking)
+const veASF = '0xf119b5aa93a7755b09952b3a88d04cdaf5329034'
+const ASF_TOKEN = '0x59a529070fBb61e6D6c91f952CcB7f35c34Cf8Aa' // ASF token address
 
+async function tvl(api) {
   const tokensAndOwners = [
     // safETH Balances
     [ADDRESSES.ethereum.WSTETH, '0x972a53e3a9114f61b98921fb5b86c517e8f23fad'],
@@ -30,19 +33,36 @@ async function tvl(api) {
   ]
 
   // CVX in afETH (Votium Strategy)
-  const votiumAvailableCVX = await api.call({ abi: 'uint256:availableCvx', target: VOTIUM, })
+  const votiumAvailableCVX = await api.call({
+    abi: 'uint256:availableCvx',
+    target: VOTIUM,
+  })
   api.add(CVX, votiumAvailableCVX)
 
   // CVX in afCVX (Clever Strategy)
-  const afCVXAvailableCVX = await api.call({ abi: 'uint256:totalAssets', target: AFCVX, })
+  const afCVXAvailableCVX = await api.call({
+    abi: 'uint256:totalAssets',
+    target: AFCVX,
+  })
   api.add(CVX, afCVXAvailableCVX)
 
   return api.sumTokens({ tokensAndOwners })
 }
 
+async function staking(api) {
+  // Just the ASF locked in veASF, displayed under "Staking"
+  return api.sumTokens({
+    tokensAndOwners: [
+      [ASF_TOKEN, veASF],
+    ],
+  })
+}
+
 module.exports = {
-  methodology: 'counts tvl on afETH, safETH, and afCVX',
+  methodology:
+    'TVL counts all assets in safETH, afETH, afCVX, and locked ASF in veASF. Staking includes just the locked ASF in veASF.',
   ethereum: {
     tvl,
+    staking,
   },
 }
