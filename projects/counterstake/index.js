@@ -124,7 +124,8 @@ const totalTVLByEVMNetwork = async (api) => {
     });
     const blacklistedTokens = []
     if (api.chain === 'kava') {
-        blacklistedTokens.push('0x31f8d38df6514b6cc3c360ace3a2efa7496214f6')  // we dont have any info on line token/how it is minted, 99% of token supply in this staking contract which is suspicious
+        // okay, no way line has a tvl of 12m when it is backed by 60k? https://linetoken.org https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/line/index.js
+        blacklistedTokens.push('0x31f8d38df6514b6cc3c360ace3a2efa7496214f6')
     }
     return sumTokens2({ api, tokensAndOwners });
 };
