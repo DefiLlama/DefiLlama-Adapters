@@ -1,18 +1,21 @@
-const abi = {
-  "totalValue": "function totalValue() view returns (uint256)"
-};
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const token = "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38";
-const vault = "0xe5203Be1643465b3c0De28fd2154843497Ef4269";
+const SONIC_SFC_CONTRACT = '0xFC00FACE00000000000000000000000000000000'
+const vault = '0xe5203Be1643465b3c0De28fd2154843497Ef4269'
+const S = ADDRESSES.null
 
-const sTvl = async (api) => {
-  const bal = await api.call({ abi: abi.totalValue, target: vault });
-  api.add(token, bal);
-  
+const abis = {
+  validatorsIndexed: "function validatorsIndexed(uint256) view returns (uint256 validatorId, uint8 weight, uint256 limit, uint256 SInTransit)",
+  numberOfValidators: "function numberOfValidators() view returns (uint256)",
+  getStake: "function getStake(address delegator, uint256 validatorID) view returns (uint256 stake)"
+}
+
+const tvl = async (api) => {
+  const validators = await api.fetchList({ target: vault, lengthAbi: abis.numberOfValidators, itemAbi: abis.validatorsIndexed })
+  const validatorsBalances = await api.multiCall({ calls: validators.map(({ validatorId }) => ({ target: SONIC_SFC_CONTRACT, params: [vault, validatorId] })), abi: abis.getStake })
+  api.add(S, validatorsBalances)
 }
 
 module.exports = {
-  sonic: {
-    tvl: sTvl
-  },
-};
+  sonic: { tvl }
+}
