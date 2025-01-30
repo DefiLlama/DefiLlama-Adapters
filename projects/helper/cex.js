@@ -10,6 +10,7 @@ const defaultTokens = {
     ADDRESSES.ethereum.USDC,
     ADDRESSES.ethereum.LINK,
     ADDRESSES.ethereum.DAI,
+    ADDRESSES.ethereum.WEETH,
     ADDRESSES.ethereum.WBTC,
     ADDRESSES.ethereum.TUSD, // TUSD
     ADDRESSES.ethereum.BUSD, // BUSD
@@ -109,7 +110,7 @@ const defaultTokens = {
      "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
      "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
      "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
-     "0x6982508145454ce325ddbe47a25d4ec3d2311933"  // PEPE
+     "0x6982508145454ce325ddbe47a25d4ec3d2311933",  // PEPE
   ],
   tron: [
     nullAddress,
@@ -175,6 +176,7 @@ const defaultTokens = {
      '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
      '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
      '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -255,6 +257,8 @@ const defaultTokens = {
     ADDRESSES.ton.TON_2,
     ADDRESSES.ton.TON_3,
   ],
+  sui: [],
+  aptos: [],
 }
 
 function cexExports(config) {
@@ -275,6 +279,7 @@ function cexExports(config) {
 
     const options = { ...config[chain], owners, tokens, chain, blacklistedTokens, }
     if (chain === 'solana')  options.solOwners = owners
+    if (chain === 'ton')  options.onlyWhitelistedTokens = true
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
   if (config.bep2) {
