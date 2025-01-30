@@ -32,16 +32,15 @@ function staking(chain) {
       params: [susn],
       abi: 'erc20:balanceOf'
     })
-    api.add(nullAddress, balance)
+    api.add(usn, balance)
   }
 }
 
 module.exports = {
-  doublecounted:true,
   methodology: "TVL is total supply of USN tokens. Staking is USN balance in sUSN contract.",
   ethereum: {
     tvl: tvl('ethereum'),
-   // staking: staking('ethereum'),
+    staking: staking('ethereum'),
   },
   sophon: {
     tvl: tvl('sophon')
