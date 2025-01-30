@@ -28,14 +28,12 @@ const tvlConfig = {
 async function treasuryTvl(api) {
 
   // liquidity market treasury
-  const balances = await sumTokens({ ...api, api, ...tvlConfig })
+  await sumTokens({  api, ...tvlConfig })
 
   // stablecoin system treasury
   const zarBalance = await api.call({ abi: abi.zar, params: [vowAddress], target: vatAddress })
   const sinBalance = await api.call({ abi: abi.sin, params: [vowAddress], target: vatAddress })
-  balances["arbitrum:"+ZAR] = Number(balances["arbitrum:"+ZAR]||0) + ((zarBalance - sinBalance) / 1e27)
-
-  return balances
+  api.add(ZAR, (zarBalance - sinBalance) / 1e27)
 }
 
 module.exports = {
