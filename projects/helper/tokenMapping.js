@@ -44,6 +44,10 @@ const fixBalancesTokens = {
   hedera: {
     '0x00000000000000000000000000000000000c01f3': { coingeckoId: "hsuite", decimals: 4 },
   },
+  rbn: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "redbelly-network-token", decimals: 18 },
+    '0x0233971bd2de29e81029336c46997055df3b5282': { coingeckoId: "liquid-crypto", decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
