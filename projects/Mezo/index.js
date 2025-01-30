@@ -17,7 +17,7 @@ async function tvl(api) {
             ADDRESSES.ethereum.USDC,
             ADDRESSES.ethereum.CRVUSD,
             ADDRESSES.ethereum.USDe,
-            "0xC96dE26018A54D51c097160568752c4E3BD6C364", //fBTC
+            "0xC96dE26018A54D51c097160568752c4E3BD6C364", // fBTC
             "0x7A56E1C57C7475CCf742a1832B028F0456652F97", // solvBTC
             "0xd9D920AA40f578ab794426F5C90F6C731D159DEf", // solvBTC.bbn
             "0x8DB2350D78aBc13f5673A411D4700BCF87864dDE", // swBTC
