@@ -54,7 +54,8 @@
     "USDM": "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C",
     "PRISMA": "0xdA47862a83dac0c112BA89c6abC2159b95afd71C",
     "FXN": "0x365accfca291e7d3914637abf1f7635db165bb09",
-    "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3"
+    "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+    "sUSDe": "0x9d39a5de30e57443bff2a8307a4256c8797a3497"
   },
   "fantom": {
     "WFTM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
