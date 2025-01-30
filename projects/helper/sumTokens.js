@@ -39,6 +39,7 @@ const helpers = {
 // some chains support both evm & non-evm, this is to handle if address provided is not evm
 const altEVMHelper = {
   "astar": require("./chain/astar"),
+  "evmos": helpers.cosmos,
 }
 
 const geckoMapping = {
@@ -74,7 +75,8 @@ async function sumTokens(options) {
 
   if (token) tokens = [token]
   if (owner) owners = [owner]
-  const nonEvmOwnerFound = chain !== 'tron' &&  owners.some(o => !o.startsWith('0x'))
+  const evmAddressExceptions = new Set(['tron', 'xdc'])
+  const nonEvmOwnerFound = !evmAddressExceptions.has(chain) &&  owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
 
   if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {

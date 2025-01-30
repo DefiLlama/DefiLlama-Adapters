@@ -13,6 +13,8 @@ const oft_tokens = {
   'era' : '0xd4169E045bcF9a86cC00101225d9ED61D2F51af2',
   'linea' : '0xD2671165570f41BBB3B0097893300b6EB6101E6C',
   'xlayer' : '0x5a71f5888ee05b36ded9149e6d32ee93812ee5e9',
+  'zircuit' : '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
+  'swellchain' : '0xc3eACf0612346366Db554C991D7858716db09f58'
 }
 
 async function tvl(api) {

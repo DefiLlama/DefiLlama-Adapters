@@ -27,7 +27,6 @@ async function sumTokens({ balances = {}, owners = [] }) {
   let total = 0
   for (const owner of owners) {
     const balance = await getBalance(owner)
-    console.log(owner, balance)
     total += balance
   }
   sdk.util.sumSingleBalance(balances, 'bittensor', total)

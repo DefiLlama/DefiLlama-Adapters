@@ -10,6 +10,7 @@ const ADDRESSES = require('../coreAssets.json')
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
 // https://celestia.publicnode.com/
+// https://api.axelarscan.io/api/getTVL
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://lcd.osmosis.zone",
@@ -53,6 +54,8 @@ const endPoints = {
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
+  carbon: 'https://rest.lavenderfive.com/carbon/',
+  evmos: 'https://evmos-api.polkachu.com',
 };
 
 const chainSubpaths = {

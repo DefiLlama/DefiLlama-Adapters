@@ -41,7 +41,7 @@ const uniBTC_ADDRESS = {
 
 const cmETH_ADDRESS = {
   mantle: { 
-    asset: "0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA", 
+    asset: ADDRESSES.mantle.cmETH, 
     vault: "0x6FF000453a9c14f7d3bf381925c8cde565DbCe55",
   }
 };
@@ -70,7 +70,7 @@ const ezETH_ADDRESS = {
 };
 
 const WEETH_ADDRESS = {
-  ethereum: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+  ethereum: ADDRESSES.ethereum.WEETH,
   arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
   optimism: "0x346e03f8cce9fe01dcb3d0da3e9d00dc2c0e08f0",
   mode: ADDRESSES.blast.weETH,

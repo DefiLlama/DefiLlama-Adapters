@@ -6,4 +6,9 @@ module.exports = uniV3Export({
     fromBlock: 400,
     isAlgebra: true,
   },
+  base: {
+    factory: "0x4963818c35d5793D771bf8091c750b5A71eD101b",
+    fromBlock: 24813689,
+    isAlgebra: true,
+  },
 });
