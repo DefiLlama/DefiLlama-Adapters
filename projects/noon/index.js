@@ -40,7 +40,6 @@ module.exports = {
   methodology: "TVL is total supply of USN tokens. Staking is USN balance in sUSN contract.",
   ethereum: {
     tvl: tvl('ethereum'),
-    staking: staking('ethereum'),
   },
   sophon: {
     tvl: tvl('sophon')
