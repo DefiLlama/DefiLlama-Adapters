@@ -28,7 +28,8 @@ module.exports = {
         '0xF98b660AdF2ed7d9d9D9dAACC2fb0CAce4F21835', // SIS,
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G,
         '0x76A797A59Ba2C17726896976B7B3747BfD1d220f', // WTON,
-        '0xB3F4D70C6a18cC0F2D1205dbF3B21cB73e1B0592', // GPTW
+        '0xB3F4D70C6a18cC0F2D1205dbF3B21cB73e1B0592', // GPTW,
+        '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -401,6 +402,16 @@ module.exports = {
       ],
       holders: [
         '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189' // portal
+      ]
+    },
+    {
+      name: 'xdai',
+      tokens: [
+        '0x2a22f9c3b484c3629090FeED35F17Ff8F88f76F0', // USDC.e,
+        '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1', // WETH
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
     },
     {
