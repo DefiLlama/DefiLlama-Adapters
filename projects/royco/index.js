@@ -61,8 +61,9 @@ Object.keys(config).forEach((chain) => {
         let allMarkets = [];
         let skip = 0;
         const pageSize = 1000;
+        let hasMore = true;
 
-        while (true) {
+        while (hasMore) {
           const vaultMarketsQuery = gql`
             {
               rawMarkets(first: ${pageSize}, skip: ${skip}) {
@@ -79,7 +80,7 @@ Object.keys(config).forEach((chain) => {
           const markets = result.rawMarkets;
           allMarkets = [...allMarkets, ...markets];
 
-          if (markets.length < pageSize) break;
+          hasMore = markets.length === pageSize;
           skip += pageSize;
         }
         return allMarkets;
@@ -89,8 +90,9 @@ Object.keys(config).forEach((chain) => {
         let allPositions = [];
         let skip = 0;
         const pageSize = 1000;
+        let hasMore = true;
 
-        while (true) {
+        while (hasMore) {
           const recipePositionsQuery = gql`
             {
               rawPositions(where: { offerSide: 0 }, first: ${pageSize}, skip: ${skip}) {
@@ -108,7 +110,7 @@ Object.keys(config).forEach((chain) => {
           const positions = result.rawPositions;
           allPositions = [...allPositions, ...positions];
 
-          if (positions.length < pageSize) break;
+          hasMore = positions.length === pageSize;
           skip += pageSize;
         }
         return allPositions;
