@@ -7,6 +7,12 @@ const config = {
   mode: '0x80980869D90A737aff47aBA6FbaA923012C1FF50',
   zklink: '0x4Ac518DbF0CC730A1c880739CFa98fe0bB284959',
   bsquared: '0x72f7a8eb9F83dE366AE166DC50F16074076C3Ea6',
+  bob: '0x77cabFd057Bd7C81c011059F1bf74eC1fBeDa971',
+  btr: '0xf1E25704e75dA0496B46Bf4E3856c5480A3c247F',
+  mint: '0x0f225d10dd29D4703D42C5E93440F828bf04D150',
+  taiko: '0x803a61d82BaD2743bE35Be5dC6DEA0CccE82C056',
+  bsc: '0x8eFdD7396b83Cd53ae7555224A30c41b1A100ffA',
+  morph: '0xD48c646CF9B011D97E31770873985ADD8ed7371c',
 }
 
 const abis = {
@@ -17,9 +23,9 @@ const abis = {
 
 Object.keys(config).forEach(chain => {
   const comptroller = config[chain]
-  module.exports[chain] = compoundExports2({ comptroller, fetchBalances: true, abis, })
+  module.exports[chain] = compoundExports2({ comptroller, abis, })
 })
 
 module.exports = mergeExports([module.exports, {
-  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', fetchBalances: true, abis, }),
+  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, }),
 }])

@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { Program, } = require("@project-serum/anchor");
+const { Program } = require('@coral-xyz/anchor');
 const { getConfig } = require('../helper/cache')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
 const { getProvider } = require('../helper/solana')
@@ -11,38 +11,47 @@ async function getData() {
   return data
 
   async function getAllData() {
-    const programId = '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt'
     const provider = getProvider()
-    const idl = await getConfig('banx-idl', 'https://raw.githubusercontent.com/frakt-solana/banx-public-sdk/master/src/fbond-protocol/idl/bonds.json')
-    const program = new Program(idl, programId, provider)
+    const idl = await getConfig('banx-idl', 'https://api.banx.gg/idl')
+    const program = new Program(idl, provider)
 
-    const fraktBondsOffset = 8;
-    const bondOfferOffset = 32 + 8;
+    const bondTradeTxnOffset = 8;
+    const userVaultOffset = 8;
     const [
-      fraktBonds,
-      bondOffers,
+      bondTradeTxn,
+      userVaults,
     ] = await Promise.all([
-      getFilteredAccounts(program, 'fraktBond', fraktBondsOffset, [5,]),
-      getFilteredAccounts(program, 'bondOfferV2', bondOfferOffset, [5, 7,]),
+      getFilteredAccounts(program, 'bondTradeTransactionV3', bondTradeTxnOffset, [2, 6, 9, 13]),
+      getFilteredAccounts(program, 'userVault', userVaultOffset, [1]),
+    ]);
 
-    ])
+    const { escrowSum, escrowSumUsdc } = userVaults.reduce(({ escrowSum, escrowSumUsdc }, userVault) => {
+      if (userVault.account.lendingTokenType.usdc) {
+        return { escrowSum, escrowSumUsdc: escrowSumUsdc + (+userVault.account.offerLiquidityAmount) }
+      }
+      return { escrowSum: escrowSum + (+userVault.account.offerLiquidityAmount), escrowSumUsdc }
+    }, { escrowSum: 0, escrowSumUsdc: 0 })
 
-    // OffersSum is sum of sol in pools not yet lent out. The borrowedSum is the sum of SOL which has been borrowed and overcollaterized by the value of locked NFTs
-    const offersSum = bondOffers.reduce((acc, offer) => acc + (+offer.account.fundsSolOrTokenBalance) + Math.max(0, +offer.account.bidSettlement), 0)
+    const { borrowedSum, borrowedSumUsdc } = bondTradeTxn.reduce(({ borrowedSum, borrowedSumUsdc }, bondTxn) => {
+      if (bondTxn.account.lendingToken.usdc) {
+        return { borrowedSumUsdc: borrowedSumUsdc + (+bondTxn.account.solAmount), borrowedSum };
+      }
+      return { borrowedSum: borrowedSum + (+bondTxn.account.solAmount), borrowedSumUsdc };
+    }, { borrowedSum: 0, borrowedSumUsdc: 0 });
 
-    const borrowedSum = fraktBonds.reduce((acc, bond) => acc + bond.account.borrowedAmount.toNumber(), 0)
 
-
-    return { tvl: offersSum, borrowed: borrowedSum }
+    return { tvl: escrowSum, tvlUsdc: escrowSumUsdc, borrowed: borrowedSum, borrowedUsdc: borrowedSumUsdc }
   }
 }
 
 const tvl = async () => {
-  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).tvl }
+  const { tvl, tvlUsdc } = await getData();
+  return { ['solana:' + ADDRESSES.solana.SOL]: tvl, ['solana:' + ADDRESSES.solana.USDC]: tvlUsdc }
 };
 
 const borrowed = async () => {
-  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).borrowed }
+  const { borrowed, borrowedUsdc } = await getData();
+  return { ['solana:' + ADDRESSES.solana.SOL]: borrowed, ['solana:' + ADDRESSES.solana.USDC]: borrowedUsdc }
 };
 
 const getFilteredAccounts = async (program, accountName, offset, indexes) => {

@@ -1,7 +1,7 @@
 const abi = require("./abi.json");
 const { pool2s } = require("../helper/pool2");
-const { addFundsInMasterChef } = require("../helper/masterchef");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking");
 
 const pool2FarmContracts = [
   //CTFFarmV1
@@ -53,53 +53,20 @@ const farms = [
   "0xCE997537498793d25dAb0F289e161DB26914275A",
 ];
 
-const Staking = async (chainBlocks) => {
-  const balances = {};
-
-  let transformAddress = i => `bsc:${i}`;
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [NFTL_V1, false],
-      [CTF_V1, false],
-      [NFTL_V2, false],
-      [CTF_V2, false],
-      [CTF_V3, false],
-    ],
-    farms,
-    chainBlocks["bsc"],
-    "bsc",
-    transformAddress
-  );
-  
-  return balances;
-};
 
 const bscTvl = async (api) => {
-  const balances = {};
-
-  let transformAddress = i => `bsc:${i}`;
+  const blacklistedTokens = [CTF_V3, CTF_V2]
+  const ownerTokens = []
   for (const farm of farms) {
-    await addFundsInMasterChef(
-      balances,
-      farm,
-      api.bsc,
-      "bsc",
-      transformAddress,
-      abi.poolInfo,
-      [CTF_V2],
-      true,
-      true,
-      CTF_V3
-    );
+    const poolInfos = await api.fetchList({  lengthAbi: 'poolLength', itemAbi: abi.poolInfo, target: farm })
+    ownerTokens.push([poolInfos.map(pool => pool.lpToken), farm])
   }
-
-  return balances;
+  return sumTokens2({ api, ownerTokens, blacklistedTokens, resolveLP: true, })
 };
 
 module.exports = {
-    bsc: {
-    staking: Staking,
+  bsc: {
+    staking: staking(farms, [NFTL_V1, CTF_V1, NFTL_V2, CTF_V2, CTF_V3,]),
     pool2: pool2s(pool2FarmContracts, lpPool2),
     tvl: bscTvl,
   },

@@ -3,7 +3,6 @@ const {staking} = require("../helper/staking");
 
 module.exports = {
     methodology: 'zkDX counts the staking values as tvl',
-    start: 3744214,
     era: {
         tvl: staking(
             ["0x79033C597B7d8e752a7511cF24512f4A7217C0B8", "0xd6cce119B45Efcb378a4735a96aE08826A37ca1c",
@@ -21,6 +20,6 @@ module.exports = {
     },
     zklink:{
         tvl: staking(["0xb5e635f2cB9eAC385D679069f8e0d1740436b355", "0xa6DbD1bdB1DC4339Df51d90Ce306CCE6edFbbbb1"],
-            ["0x0000000000000000000000000000000000000000", "0x1a1A3b2ff016332e866787B311fcB63928464509"])
+            [ADDRESSES.null, ADDRESSES.zklink.USDC])
     }
 };

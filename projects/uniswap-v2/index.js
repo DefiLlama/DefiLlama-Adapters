@@ -2,7 +2,7 @@ const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const { getUniTVL } = require('../helper/unknownTokens');
 
 const v2graph = getChainTvl({
-  ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v2-dev'
+  ethereum: 'A3Np3RQbaBA6oKJgiwDJeo5T3zrYfGHPWFYayMwtNDum'
 })
 
 module.exports = {
