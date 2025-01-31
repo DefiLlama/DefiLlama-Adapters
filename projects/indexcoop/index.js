@@ -15,6 +15,16 @@ const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
 const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
 const hyETH = "0xc4506022Fb8090774E8A628d5084EED61D9B99Ee";
 const dsETH = "0x341c05c0E9b33C0E38d64de76516b2Ce970bB3BE";
+const eth2xArb = "0x26d7D3728C6bb762a5043a1d0CeF660988Bca43C";
+const eth3xArb = "0xA0A17b2a015c14BE846C5d309D076379cCDfa543";
+const iEthArb = "0x749654601a286833aD30357246400D2933b1C89b";
+const btc2xArb = "0xeb5bE62e6770137beaA0cC712741165C594F59D7";
+const btc3xArb = "0x3bDd0d5c0C795b2Bf076F5C8F177c58e42beC0E6";
+const iBtcArb = "0x80e58AEA88BCCaAE19bCa7f0e420C1387Cc087fC";
+const eth2xBase = "0xC884646E6C88d9b172a23051b38B0732Cc3E35a6";
+const eth3xBase = "0x329f6656792c7d34D0fBB9762FA9A8F852272acb";
+const btc2xBase = "0x186f3d8bb80dff50750babc5a4bcc33134c39cde";
+const btc3xBase = "0x1F4609133b6dAcc88f2fa85c2d26635554685699";
 const aaveDebtToken = "0xf63b34710400cad3e044cffdcab00a0f32e33ecf";
 const USDC = ADDRESSES.ethereum.USDC
 const gtcETH = '0x36c833Eed0D376f75D1ff9dFDeE260191336065e'
@@ -31,6 +41,16 @@ const sets = [
   dsETH,
   gtcETH,
   hyETH,
+  eth2xArb,
+  eth3xArb,
+  iEthArb,
+  btc2xArb,
+  btc3xArb,
+  iBtcArb,
+  eth2xBase,
+  eth3xBase,
+  btc2xBase,
+  btc3xBase,
 ];
 
 async function tvl(api) {
