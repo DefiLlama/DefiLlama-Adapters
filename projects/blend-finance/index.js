@@ -9,4 +9,9 @@ module.exports = {
 			getAllATokens: "function getAllBTokens() view returns (tuple(string symbol, address tokenAddress)[])",
 		}
 	}),
+	occ: aaveExports('occ', '0x58cCCdafe3B0DE4cB94d35F9CcC0680E4199C06B', undefined, ['0xf444a0333DAa67efC5b1C2c0B79F435dd0f652a9'], {
+		v3: true, abis: {
+			getAllATokens: "function getAllBTokens() view returns (tuple(string symbol, address tokenAddress)[])",
+		}
+	}),
 }
