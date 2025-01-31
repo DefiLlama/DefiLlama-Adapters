@@ -3,7 +3,6 @@ const { Program } = require("@project-serum/anchor");
 
 async function getTokenAccounts(programId, idl, chain) {
   const provider = getProvider(chain)
-  console.log(programId, chain)
   const program = new Program(idl, programId, provider)
   const data = await program.account.amm.all()
   return data.map(({ account: { tokenAAccount, tokenBAccount }}) => ([tokenAAccount, tokenBAccount,])).flat()

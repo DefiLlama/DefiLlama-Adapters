@@ -101,6 +101,8 @@ function isLP(symbol, token, chain) {
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
   if (chain === 'shibarium' && ['SSLP', 'ChewyLP'].includes(symbol)) return true
+  if (chain === 'omax' && ['OSWAP-V2'].includes(symbol)) return true
+  if (chain === 'sonic' && symbol.endsWith(' spLP')) return true
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')

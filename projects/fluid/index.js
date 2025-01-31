@@ -16,7 +16,7 @@ const config = {
       }
       return "0xD7588F6c99605Ab274C211a0AFeC60947668A8Cb";
     },
-    weETH: "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+    weETH: ADDRESSES.ethereum.WEETH,
     zircuit: "0xF047ab4c75cebf0eB9ed34Ae2c186f3611aEAfa6",
     weETHs: "0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
   },

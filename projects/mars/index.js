@@ -122,5 +122,6 @@ module.exports = {
     [1690945200, 'Launch on Neutron'],
     [1696906800, 'Mars v2 launch on Osmosis'],
     [1724166000, 'Mars v2 launch on Neutron'],
+    [1734098400, 'Perps launch on Neutron']
   ],
 };

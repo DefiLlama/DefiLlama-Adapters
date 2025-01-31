@@ -6,6 +6,7 @@ const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"
 }
 
+// The desyn asset arrangement needs to be requested via the rest api form
 async function getInfoListPool(strategy_type, chain) {
   const data = await getConfig('desyn/' + strategy_type, `https://api.desyn.io/etf/defillama/get_pool_list?strategy_type=${strategy_type}`)
   return data.data.config[chain]?.safePools
@@ -47,6 +48,7 @@ function getTvlFunction(strategy_type, isDoubleCounted) {
     const allBals = await api.multiCall({ abi: abi.getBalance, calls })
     api.add(allTokens, allBals)
 
+    // rest api type:: StrategyType2
     if (strategy_type === 'StrategyType2')
       api.removeTokenBalance(leverageStaking)
   }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 const { cachedGraphQuery } = require('../helper/cache');
   
@@ -22,7 +23,7 @@ async function tvl(api) {
     // Add TVL for MEME Pools 
     for (const { fields } of suiMemePoolsData) {
         if ( fields.sui_available == 0) continue;
-        api.add( "0x2::sui::SUI", fields.sui_available) 
+        api.add( ADDRESSES.sui.SUI, fields.sui_available) 
     }
 }
  

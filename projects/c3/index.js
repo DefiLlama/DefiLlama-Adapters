@@ -1,5 +1,4 @@
 const { sumTokens } = require("../helper/chain/algorand")
-const { chainExports } = require("../helper/exports")
 
 const coreContractAddress = 'XGE65UPXAFATPMTKGPA2VNHLMDY2URHD7NNPI3XJ3ZOXEAU6E4ZGH7PWZY'
 
@@ -51,5 +50,8 @@ function chainTvl(chain) {
 	}
 }
 
-module.exports = chainExports(chainTvl, Object.keys(chainMap))
 module.exports.methodology = 'Calculates the TVL from the contract, then remaps assets for accurate value source'
+
+Object.keys(chainMap).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})

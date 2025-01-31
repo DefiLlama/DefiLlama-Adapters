@@ -16,3 +16,5 @@ Object.keys(factories).forEach(chain => {
     tvl: getUniTVL({ factory, useDefaultCoreAssets: true })
   }
 })
+
+Object.keys(module.exports.heco).forEach(key => module.exports.heco[key] = () => ({}))

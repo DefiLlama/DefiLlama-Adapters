@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const STAKING_CONTRACT = "0x000000000000000000000000000000000070eac5";
-const HST = "0x00000000000000000000000000000000000ec585";
+const HST = ADDRESSES.hedera.HST;
 
 const ENTITIES = [
   {
@@ -14,7 +15,7 @@ const ENTITIES = [
     ],
   },
   {
-    token: "0x000000000000000000000000000000000030fb8b",
+    token: ADDRESSES.hedera.STEAM,
     contracts: [
       "0x00000000000000000000000000000000005737f0",
       "0x00000000000000000000000000000000005737e1",
@@ -25,7 +26,7 @@ const ENTITIES = [
     ],
   },
   {
-    token: "0x00000000000000000000000000000000005c9f70",
+    token: ADDRESSES.hedera.HLQT,
     contracts: [
       "0x00000000000000000000000000000000005cb45b",
       "0x00000000000000000000000000000000005cb45f",
