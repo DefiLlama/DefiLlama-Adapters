@@ -18,7 +18,7 @@ async function tvl(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  start: 1704067199, // Sunday 31 December 2023 23:59:59
+  start: '2024-01-01', // Sunday 31 December 2023 23:59:59
   methodology:
     "Aggregates total value of Lobster protocol vaults on Arbitrum",
   arbitrum: {

@@ -1,4 +1,3 @@
-const { chainExports } = require("../helper/exports");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getConfig } = require('../helper/cache')
 
@@ -80,4 +79,7 @@ const chains = [
   // "heco",
   // "aurora",
 ];
-module.exports = chainExports(chainTvl, Array.from(chains));
+
+chains.forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})

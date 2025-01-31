@@ -72,10 +72,10 @@ module.exports = {
     fromBlockSickle: 62383980,
     moeMasterchef: '0xA756f7D419e1A5cbd656A438443011a7dE1955b5'
   },
-  /*bsc: {
+  bsc: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
     chainName: 'bsc',
     masterchefV3: '0x556B9306565093C855AEA9AE92A594704c2Cd59e',
     fromBlockSickle: 37565801
-  },*/
+  },
 }

@@ -3,6 +3,7 @@ const { exportDexTVL } = require('../helper/solana')
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   methodology:
     "TVL includes the total token value inside the protocol's liquidity pools.",
   solana: {

@@ -175,7 +175,6 @@ const assetList = [
   ['DOGE', 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
   ['DOGE', 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
   ['DOGE', 'BEP20', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  /*
   ['DOGE', 'DOGE', 'D73RQLGWW9TBT2AKspEP24wLiXFrXvnTqX'],
   ['DOGE', 'DOGE', 'D7BrtudMAdwz2U7vSGumVDuxZsZNibJuzw'],
   ['DOGE', 'DOGE', 'D7D2f2WuEkwhTWqBkisZ5sM3JagaBcNWBs'],
@@ -213,7 +212,6 @@ const assetList = [
   ['DOGE', 'DOGE', 'DTSop4ycWkpmDqpncVZ3jwKp3z7B4kW4T3'],
   ['DOGE', 'DOGE', 'DTbG3RJRejnM99g8MSnhSbJxJVW8X7YXy9'],
   ['DOGE', 'DOGE', 'DU8gPC5mh4KxWJARQRxoESFark2jAguBr5'],
-  */
   ['DOT', 'BEP2', 'bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz'],
   ['DOT', 'BEP2', 'bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn'],
   ['DOT', 'BEP20', '0x0e4158c85ff724526233c1aeb4ff6f0c46827fbe'],
@@ -282,7 +280,7 @@ const assetList = [
   ['ETH', 'OP', '0x5a52e96bacdabb82fd05763e25335261b270efcb'],
   ['ETH', 'OP', '0xacd03d601e5bb1b275bb94076ff46ed9d753435a'],
   ['ETH', 'OP', '0xf977814e90da44bfa03b6295a0616a897441acec'],
- // ['ETH', 'STK', ' 0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d'],
+  ['ETH', 'STK', '0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d'],
   ['ETH', 'ERA', '0x7aed074ca56f5050d5a2e512ecc5bf7103937d76'],
   ['ETH', 'ERA', '0xa84fd90d8640fa63d194601e0b2d1c9094297083'],
   ['ETH', 'ERA', '0xf977814e90da44bfa03b6295a0616a897441acec'],
@@ -658,8 +656,8 @@ module.exports = {
     ],
   },
   bep2: {
-    geckoId: 'binancecoin',
-    owners: getAddresses('BEP2'),
+    // geckoId: 'binancecoin',
+    // owners: getAddresses('BEP2'),
   },
   tron: {
     owners: getOwners('TRX'),
@@ -715,9 +713,7 @@ module.exports = {
   near: {
     owners: getOwners('NEAR')
   },
-  /*
   doge: {
     owners: getOwners('DOGE')
   },
-  */
 }
