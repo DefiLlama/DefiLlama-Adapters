@@ -14,7 +14,7 @@ module.exports = {
     tvl: sumTokensExport({
       ownerTokens: [
         [[ADDRESSES.ethereum.WBTC], "0xbe6d2444a717767544a8b0ba77833aa6519d81cd",], //WBTC
-        [["0xc96de26018a54d51c097160568752c4e3bd6c364"], "0x38d516a43f9bab90455c16f9299866217062467e",],//FBTC 
+        [[ADDRESSES.bob.FBTC], "0x38d516a43f9bab90455c16f9299866217062467e",],//FBTC 
 ] 
     }),
   },

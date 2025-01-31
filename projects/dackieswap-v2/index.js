@@ -1,11 +1,11 @@
 const { getUniTVL } = require("../helper/unknownTokens");
 const { stakings } = require("../helper/staking");
 
-const DACKIE = "0xc2BC7A73613B9bD5F373FE10B55C59a69F4D617B";
+const DACKIE = "0x73326b4d0225c429bed050c11C4422d91470AaF4";
 
 const stakingPools = [
   // Lock & flexible pool
-  "0x4Ad387bcb03B92a6e22A72391Cc37493Fc388B05",
+  "0xF6C5b5Df9Bcee40cd474CCd6373f99b56dBCF5E5",
 ];
 const config = {
   xlayer: '0x757cd583004400ee67e5cc3c7a60c6a62e3f6d30',
