@@ -13,6 +13,7 @@ async function tvl(api) {
 
 
 module.exports = {
+    doublecounted: true,
     start: '2025-01-01',
     sonic: { tvl }
 };
