@@ -24,5 +24,5 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "TVL includes all assets deposited into the Sonic Market Liquidity Vault contract, specifically allocated for liquidity provision and market-making within the Sonic Market ecosystem",
-  base: { tvl }
+  sonic: { tvl }
 }
