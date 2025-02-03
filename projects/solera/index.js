@@ -3,5 +3,5 @@ const methodologies = require("../helper/methodologies");
 
 module.exports = {
   methodology: methodologies.lendingMarket,
-  plume: aaveExports(undefined, '0x7b0Ed65C30bC84fbEd61bA6470CdF9e7aDa62c29'),
+  plume: aaveExports(undefined, undefined, undefined, ['0x6e2921D5C907f47Fd6A577A992920C9b9Acc7F23'], { v3: true }),
 }
