@@ -390,6 +390,12 @@ const ALPHAFI_NAVI_LOOP_TVL_IDS = [
     tokenType: "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
     expo: 9
   },
+  { //stsui sui
+    poolID: "0xc4caf2d31693974b838ffb83b0c8ae880a6b09ca251a07062cf66453bf3e3ce0",
+    investorID: "0x3e8937974f3dac64eb8ee9f86a80ccc24852bd2f74d18753d071bbdad73a4c97",
+    tokenType: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+    expo: 9
+  },
 ]
 const ALPHAFI_BUCKET_TVL_IDS = [
   {
