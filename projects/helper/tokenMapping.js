@@ -59,6 +59,7 @@ const fixBalancesTokens = {
   sxr: {
     [nullAddress]: { coingeckoId: "sx-network-2", decimals: 18 },
     '0x3E96B0a25d51e3Cc89C557f152797c33B839968f': { coingeckoId: "sx-network-2", decimals: 18 },
+    '0x6629ce1cf35cc1329ebb4f63202f3f197b3f050b': { coingeckoId: "usd-coin", decimals: 6 },
   },
   sonic: {
     '0x040c10f8238e4689c5e549ef5e07478b738b2ba5': { coingeckoId: "ignition-fbtc", decimals: 8 },
