@@ -5,7 +5,6 @@ const BOOL_KEYS = [
 ]
 
 const DEFAULTS = {
-  WATER_MULTICALL_RPC: "0x63cee78B11774535132fd773C5dDe3c4b41CD07f",
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
@@ -19,11 +18,13 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: "https://rest-mainnet.onflow.org",
-  SONEIUM_RPC: "https://rpc.soneium.org",
-  SONEIUM_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  RONIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  SUPERPOSITION_RPC: "https://rpc.superposition.so",
-  OCC_RPC: "https://rpc.edu-chain.raas.gelato.cloud"
+  ELSM_RPC: "https://rpc.elysiumchain.tech",
+  ARTELA_RPC: "https://node-euro.artela.network/rpc,https://node-hongkong.artela.network/rpc,https://node-us-2.artela.network/rpc",
+  ARTELA_RPC_MULTICALL: "0x80BC476a33a1b40a788dcC9bfe9dFdae9723b872",
+  ZERO_NETWORK_RPC_MULTICALL: "0x0307F341a18f1FC1f63a7Ceeac970245A08C5a80",
+  PLUME_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  ABSTRACT_RPC_MULTICALL: "0xaa4de41dba0ca5dcbb288b7cc6b708f3aac759e7",
+  ABSTRACT_RPC: "https://api.mainnet.abs.xyz",
 }
 
 const ENV_KEYS = [
