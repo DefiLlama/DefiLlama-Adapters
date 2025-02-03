@@ -60,6 +60,9 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "sx-network-2", decimals: 18 },
     '0x3E96B0a25d51e3Cc89C557f152797c33B839968f': { coingeckoId: "sx-network-2", decimals: 18 },
   },
+  sonic: {
+    '0x040c10f8238e4689c5e549ef5e07478b738b2ba5': { coingeckoId: "ignition-fbtc", decimals: 8 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
