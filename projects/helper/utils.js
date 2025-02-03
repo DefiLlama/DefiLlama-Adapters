@@ -315,7 +315,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     return true
   })
   if (filtered.length > 300) {
-    sdk.log('Too many unknowns to display #'+filtered.length, 'displaying first 100')
+    sdk.log('Too many unknowns to display #' + filtered.length, 'displaying first 100')
     filtered = filtered.slice(0, 100)
   }
   if (filtered.length)
@@ -333,6 +333,45 @@ function once(func) {
   }
   return wrapped
 }
+
+
+function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
+  return async (api) => {
+    let fetchedValidators = skipValidators;
+    let size = 200;
+    api.sumTokens({ owner: withdrawalAddress, tokens: [nullAddress] })
+    do {
+      const validators = (
+        await http.get(
+          `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
+        )
+      ).data.map((i) => i.publickey);
+      fetchedValidators += validators.length;
+      api.log("Fetching balances for validators", validators.length);
+      await addValidatorBalance(validators);
+      await sleep(10000);
+    } while (fetchedValidators % size === 0);
+
+    return api.getBalances()
+
+
+    async function addValidatorBalance(validators) {
+      if (validators.length > 100) {
+        const chunks = sliceIntoChunks(validators, 100);
+        for (const chunk of chunks) await addValidatorBalance(chunk);
+        return;
+      }
+
+      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
+        indicesOrPubkey: validators.join(","),
+      });
+
+
+      data.forEach((i) => api.addGasToken(i.balance * 1e9));
+    }
+  }
+}
+
 
 module.exports = {
   log,
@@ -355,4 +394,5 @@ module.exports = {
   getParamCalls,
   once,
   isICHIVaultToken,
+  getStakedEthTVL,
 }
