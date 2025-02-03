@@ -92,24 +92,21 @@ module.exports = {
     }
   },
   coffernetwork: async () => {
+    const API_URL = 'https://aapi.coffer.network/v1/stats/addresses';
+    const NETWORK = 'mainnet';
 
     return getConfig('coffer-network', undefined, {
       fetcher: async () => {
-        throw new Error('Coffer Network fetcher is not implemented')
+        const {data: {addresses, network}} = await get(`${API_URL}?network=${NETWORK}`);
+        // console.log('network', network);
+        // console.log('addresses', addresses);
+
+        if (network !== NETWORK) throw new Error('Invalid network');
+        if (!Array.isArray(addresses) || addresses.length <= 0) throw new Error('Invalid addresses');
+
+        return addresses;
       }
     })
-
-    function reserveBytes(txHashTemp) {
-      let txHash = ''
-      if (txHashTemp.length % 2 === 1) {
-        txHashTemp = '0' + txHashTemp
-      }
-      txHashTemp = txHashTemp.split('').reverse().join('')
-      for (let i = 0; i < txHashTemp.length - 1; i += 2) {
-        txHash += txHashTemp[i + 1] + txHashTemp[i]
-      }
-      return txHash
-    }
   },
 
   lombard: async () => {
