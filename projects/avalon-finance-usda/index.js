@@ -24,8 +24,8 @@ const config = {
   },
   sonic: {
     poolAddress: '0x74476697b5FFd19c8CD9603C01527Dcb987C7418',
-    fbtcAddress: ADDRESSES.sonic.FBTC,
-    lfbtcAddress: '0x74476697b5FFd19c8CD9603C01527Dcb987C7418',
+    fbtcAddress: '0xc96de26018a54d51c097160568752c4e3bd6c364',
+    lfbtcAddress: '0x040c10f8238e4689c5e549ef5e07478b738b2ba5',
     usdaAddress: '0xff12470a969dd362eb6595ffb44c82c959fe9acc',
   }
 }
