@@ -93,7 +93,7 @@ module.exports = {
   },
   coffernetwork: async () => {
 
-    return getConfig('coffer-network', undefined, {
+    return getConfig('coffer-network-v0.1', undefined, {
       fetcher: async () => {
         throw new Error('Coffer Network fetcher is not implemented')
       }
