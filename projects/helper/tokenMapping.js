@@ -41,6 +41,12 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  eclipse: {
+    'HP5ksEQBkX5UZXxLThvF24TEh5ta9AUB8TLA1YSXKzDs': { coingeckoId: "neptune-protocol", decimals: 9 },
+    'V5m1Cc9VK61mKL8xVYrjR7bjD2BC5VpADLa6ws3G8KM': { coingeckoId: "stride-staked-tia", decimals: 6 },
+    '9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8': { coingeckoId: "celestia", decimals: 6 },
+    'Fu5P5ikrnQ8BKZECJ1XeeDAaTgWJUrcjw8JmFrNA8TJk': { coingeckoId: "renzo-restaked-sol", decimals: 9 },
+  },
   hedera: {
     '0x00000000000000000000000000000000000c01f3': { coingeckoId: "hsuite", decimals: 4 },
   },
