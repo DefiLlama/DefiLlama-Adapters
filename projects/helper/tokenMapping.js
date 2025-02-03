@@ -55,7 +55,14 @@ const fixBalancesTokens = {
   plume: {
     '0xA849026cDA282eeeBC3C39Afcbe87a69424F16B4': { coingeckoId: "tether", decimals: 6 }, 
     '0x626613B473F7eF65747967017C11225436EFaEd7': { coingeckoId: "ethereum", decimals: 18 }, 
-  }
+  },
+  sxr: {
+    [nullAddress]: { coingeckoId: "sx-network-2", decimals: 18 },
+    '0x3E96B0a25d51e3Cc89C557f152797c33B839968f': { coingeckoId: "sx-network-2", decimals: 18 },
+  },
+  sonic: {
+    '0x040c10f8238e4689c5e549ef5e07478b738b2ba5': { coingeckoId: "ignition-fbtc", decimals: 8 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
