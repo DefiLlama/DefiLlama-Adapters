@@ -9,7 +9,7 @@ const GET_POOL_INFO_ABI = 'function getPoolInfo() external view returns (address
 
 async function tvl(api) {
   // Retrieve whitelisted pools by getting whitelist proposal logs and checking if the target pool is whitelisted
-  const executedLogs = await getLogs2({ api, target: CONTROLLER, eventAbi: EXECUTED_EVENT_ABI, fromBlock: 1, skipCacheRead: true, })
+  const executedLogs = await getLogs2({ api, target: CONTROLLER, eventAbi: EXECUTED_EVENT_ABI, fromBlock: 1, })
   const proposals = await api.multiCall({ target: CONTROLLER, abi: GET_PROPOSAL_ABI, calls: executedLogs.map(l => l.proposalIdx.toString()) })
   const potentialPools = proposals.map(p => p._target)
   const isWhitelisted = await api.multiCall({ target: CONTROLLER, abi: POOL_WHITELISTED_ABI, calls: potentialPools })
