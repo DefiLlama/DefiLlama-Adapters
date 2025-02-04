@@ -4,6 +4,7 @@ const plimit = require('p-limit')
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 const { sumTokens2 } = require('../unwrapLPs')
+const tonUtils = require('../utils/ton')
 
 const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
 
@@ -28,15 +29,16 @@ async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
   await sleep(1000 * (3 * Math.random() + 3))
   balances.forEach(({ balance, price, jetton }) => {
-    if (onlyWhitelistedTokens && !tokens.includes(jetton.address)) return;
+    const address = tonUtils.address(jetton.address).toString()
+    if (onlyWhitelistedTokens && !tokens.includes(address)) return;
     if (!useTonApiForPrices) {
-      api.add(jetton.address, balance)
+      api.add(address, balance)
       return;
     }
     const decimals = jetton.decimals
     price = price?.prices?.USD
     if (!decimals || !price) {
-      api.add(jetton.address, balance)
+      api.add(address, balance)
       return;
     }
     const bal = balance * price / 10 ** decimals
