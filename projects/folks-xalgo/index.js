@@ -1,13 +1,19 @@
 const { getAssetInfo } = require("../helper/chain/algorand");
-
-const xAlgoAssetId = 1134696561;
+const { getCachedPrices } = require('./prices');
+const { xAlgoAssetId, algoAssetId } = require('./constants');
 
 module.exports = {
   timetravel: false,
   algorand: {
-    tvl: async (api) => {
+    tvl: async () => {
+      const prices = await getCachedPrices();
+      const xAlgoPrice = prices[xAlgoAssetId];
+      const algoPrice = prices[algoAssetId];
+
       const info = await getAssetInfo(xAlgoAssetId);
-      api.add(xAlgoAssetId+'', info.circulatingSupply)
+      const totalXAlgo = info.circulatingSupply / 10 ** info.decimals;
+      const totalAlgo = totalXAlgo * xAlgoPrice / algoPrice;
+      return { algorand: totalAlgo };
     },
   },
 };
