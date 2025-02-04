@@ -93,7 +93,7 @@ module.exports = {
   },
   coffernetwork: async () => {
 
-    return getConfig('coffer-network', undefined, {
+    return getConfig('coffer-network-v0.1', undefined, {
       fetcher: async () => {
         throw new Error('Coffer Network fetcher is not implemented')
       }
@@ -115,6 +115,7 @@ module.exports = {
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
     const BATCH_SIZE = 1000
+    const blacklisted = new Set(['bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'])
 
     return getConfig('lombard', undefined, {
       fetcher: async () => {
@@ -135,7 +136,7 @@ module.exports = {
           batchNumber++;
         }
 
-        return allAddresses;
+        return allAddresses.filter(i => !blacklisted.has('bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'))
       }
     })
   },
