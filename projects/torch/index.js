@@ -16,7 +16,6 @@ async function tvl(api) {
     return acc
   }, 0)
 
-  console.log(yieldTvl, dexV2Tvls.tvl)
   const totalTvl = yieldTvl + dexV2Tvls.tvl
 
   await sumTokens({ 
