@@ -70,6 +70,7 @@ const ankrChainMapping = {
   rollux: 'rollux',
   scroll: 'scroll',
   syscoin: 'syscoin',
+  moonbeam: 'moonbeam'
 }
 
 async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = false } = {}) {
