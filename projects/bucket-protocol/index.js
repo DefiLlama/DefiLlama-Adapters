@@ -16,6 +16,8 @@ const SCALLOP_sUSDT = "0xe6e5a012ec20a49a3d1d57bd2b67140b96cd4d3400b9d79e541f7bd
 const SCALLOP_sSUI = "0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b::scallop_sui::SCALLOP_SUI"
 const SCALLOP_sSB_ETH = "0xb14f82d8506d139eacef109688d1b71e7236bcce9b2c0ad526abcd6aa5be7de0::scallop_sb_eth::SCALLOP_SB_ETH"
 const SCALLOP_sSCA = "0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e::scallop_sca::SCALLOP_SCA"
+const SCALLOP_sDEEP = "0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0ae614608f::scallop_deep::SCALLOP_DEEP"
+const SCALLOP_sbUSDT = "0xb1d7df34829d1513b73ba17cb7ad90c88d1e104bb65ab8f62f13e0cc103783d3::scallop_sb_usdt::SCALLOP_SB_USDT"
 const SPRING_SUI = "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI"
 const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA"
 const AF_LP_IDs = [
@@ -113,7 +115,10 @@ function convertUnderlyingAssets(coin){
   if(coin === SCALLOP_sSB_ETH) return ADDRESSES.sui.ETH
   // sSCAUSDT_PSM
   if(coin === SCALLOP_sSCA) return SCA_ADDRESS
-
+  // sDeep
+  if(coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
+  // sSBUSDT
+  if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.USDT
   return coin
 }
 
