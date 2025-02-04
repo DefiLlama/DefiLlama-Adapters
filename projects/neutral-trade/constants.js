@@ -143,7 +143,7 @@ const VAULTS = [
   {
     name: "Project Super USDC Staking",
     address: "6un71hP7xhpc8nqWWnbYPiamjAckEGH1A6zzenpGdZLf",
-    token: TOKENS.WBTC,
+    token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/projectsuperjlpdn.json`
   },
 
