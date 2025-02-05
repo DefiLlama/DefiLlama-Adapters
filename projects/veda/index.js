@@ -49,5 +49,6 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   start: 1710745200,
+  doublecounted: true,
   ["ethereum"]: { tvl: ethereum_tvl }
 };
