@@ -1,9 +1,8 @@
-const { sumTokens2 } = require('./helper/solana')
-const { getConfig } = require('./helper/cache')
+const { sumTokens2, } = require('./helper/solana')
 
 async function tvl() {
-  const { pools } = await getConfig('atrix-v1', 'https://api.atrix.finance/api/all')
-  return sumTokens2({ tokenAccounts: pools.map(({ marketData: { coinVault, pcVault } }) => [coinVault, pcVault]).flat() })
+  return sumTokens2({ owner: '3uTzTX5GBSfbW7eM9R9k95H7Txe32Qw3Z25MtyD2dzwC', })
+ 
 }
 
 module.exports = {

@@ -1,15 +1,30 @@
 const { nullAddress } = require('../helper/tokenMapping');
-const { get } = require('../helper/http');
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json');
-const { json } = require('starknet');
-const { ethers } = require('ethers');
-const http = require('../helper/http');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
-const WFIL_WPFIL_POOL_ADDRESS = '0x443A6243A36Ef0ae1C46523d563c15abD787F4E9';
-const PFIL_CONTRACT = '0xAaa93ac72bECfbBc9149f293466bbdAa4b5Ef68C';
-const WPFIL_CONTRACT = '0x57E3BB9F790185Cfe70Cc2C15Ed5d6B84dCf4aDb';
-const WFIL_CONTRACT = '0x60E1773636CF5E4A227d9AC24F20fEca034ee25A';
 const REPL_HELPER_CONTRACT = '0x65846aECBF23385F76B73ef1EDD1ebdFf7Ac258D';
+
+const PATH_TOKEN_CONTRACT = '0xc537e67Eb192b3F0B6B183ff52060Ee92475f398';
+const ATH_TOKEN_CONTRACT_ARBITRUM = '0xc87b37a581ec3257b734886d9d3a581f5a9d056c';
+
+const PFLT_TOKEN_CONTRACT = '0xa1cF424EE59d9B5C5B7F6801FE510E430cA1AEA8';
+
+const PSWAN_TOKEN_CONTRACT = '0x00313eAC7eDC05412749bd65422B0Cb1fd4632E1';
+
+const getAllValidAgents = async (api) => {
+  const total = await api.call({ abi: abi.getAllAgentsCount, target: REPL_HELPER_CONTRACT })
+  const COUNT = 30
+  const loop = Math.ceil(total / COUNT)
+  const query = new Array(loop)
+    .fill(0)
+    .map((item, i) => api.call({ abi: abi.getPagedAgents, target: REPL_HELPER_CONTRACT, params: [i * COUNT, COUNT] }))
+  const lists = (await Promise.all(query)).reduce(
+    (pre, cur) => [...pre, ...cur],
+    []
+  )
+  return lists.filter(agent => !!agent.isValid)
+}
 
 // Total Assets of Miners pledged to the protocol
 const getMinerAssets = (agents) => {
@@ -21,7 +36,7 @@ module.exports = {
     tvl: async (api) => {
       const [tvlComponents, activeAgents] = await Promise.all([
         api.call({ abi: abi.getTVLComponents, target: REPL_HELPER_CONTRACT }),
-        api.call({ abi: abi.getAllActiveAgents, target: REPL_HELPER_CONTRACT }),
+        getAllValidAgents(api),
       ]);
 
       const minerAssets = getMinerAssets(activeAgents);
@@ -29,4 +44,25 @@ module.exports = {
       api.add(nullAddress, tvlComponents);
     },
   },
+  arbitrum: {
+    tvl: async (api) => {
+      const totalSupply = await api.call({ abi: abi.totalSupply, target: PATH_TOKEN_CONTRACT })
+      api.add(ATH_TOKEN_CONTRACT_ARBITRUM, totalSupply)
+    }
+  },
+  fluence: {
+    tvl: async (api) => {
+      const totalSupply = await api.call({ abi: abi.totalSupply, target: PFLT_TOKEN_CONTRACT })
+      api.addGasToken(totalSupply)
+      return sumTokens2({ api })
+    }
+  },
+  swan: {
+    tvl: async (api) => {
+      const totalSupply = await api.call({ abi: abi.totalSupply, target: PSWAN_TOKEN_CONTRACT })
+      api.addGasToken(totalSupply)
+      return sumTokens2({ api })
+    }
+  }
 };
+

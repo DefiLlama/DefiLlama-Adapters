@@ -1,8 +1,9 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { get } = require("./helper/http");
 let ret;
 async function getTvl() {
   // This is an api which could get wanchain bridge's lockAddress, balance, tvl and price;
-  // The infomation is updated every 1 hour.
+  // The information is updated every 1 hour.
   if (!ret) {
     ret = await get("https://api.wanpos.xyz/api/tvl");
   }
@@ -28,7 +29,7 @@ const chainsMap = {
   tron: "tron",
   wan: "wanchain",
   xdc: "xdc",
-  ripple: "xrp",
+  ripple: ADDRESSES.ripple.XRP,
   // clover: "clover",
   // telos: "telos",
 };
@@ -37,7 +38,7 @@ Object.keys(chainsMap).map((chain) => {
   module.exports[chain] = {
     tvl: async () => {
       let ret = await getTvl();
-      return { tether: ret[chainsMap[chain]] }
+      return { tether: ret[chainsMap[chain]] ?? 0 }
     },
   };
 });

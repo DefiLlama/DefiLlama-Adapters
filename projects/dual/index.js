@@ -160,6 +160,7 @@ function gsoVault(pubkey) {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   solana: {
     tvl,
     staking,
