@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const anchor = require('@coral-xyz/anchor');
 const { PublicKey } = require("@solana/web3.js");
 const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
@@ -5,17 +6,37 @@ const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn3
 const SPOT_MARKETS = {
   0: {
     name: 'USDC',
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6
   },
   1: {
     name: 'SOL',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
+    decimals: 9
+  },
+  6: {
+    name: 'jitoSOL',
+    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    decimals: 9
+  },
+  16:{
+    name:'INF',
+    mint:'5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm', 
+    decimals: 9
+  },
+  17:{
+    name:'dSOL',
+    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
     decimals: 9
   },
   19: {
     name: 'JLP',
     mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6
+  },
+  22: {
+    name: 'PYUSD',
+    mint: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo',
     decimals: 6
   },
   28: {
@@ -28,7 +49,7 @@ const SPOT_MARKETS = {
 const PERP_MARKETS = {
   0: {
     name: 'SOL-PERP',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     baseDecimals: 9,
     quoteDecimals: 6
   },

@@ -8,6 +8,15 @@ const config = {
   polygon: {
     vaultManager: '0x6008b366058B42792A2497972A3312274DC5e1A8',
   },
+  base: {
+    vaultManager: '0x2ba8C6A519CEDB6d1C35cEb14E8642625E91F77C',
+  },
+  real: {
+    vaultManager: '0x7146efaab12A083b9826c66162062c21eC70fe3c',
+  },
+  sonic: {
+    vaultManager: '0x589a504f2ee9d054b483c700fa814863d639381e',
+  },
 }
 
 Object.keys(config).forEach(chain => {
