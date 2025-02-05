@@ -12,6 +12,7 @@ async function tvl(api) {
 
 module.exports = {
   bouncebit: {
-    tvl
+    tvl: () => ({}),
+    staking: tvl,
   }
 }
