@@ -1,54 +1,48 @@
 const sdk = require("@defillama/sdk");
-const { legacyVaults, boringVaultsV0 } = require("./constants");
+const { legacyVaultsEthereum, boringVaultsV0Ethereum } = require("./ethereum_constants");
+const { sumLegacyTvl, sumBoringTvl } = require("./helper_methods");
 
 async function ethereum_tvl(api) {
-  const block  = await api.getBlock()
-  const balances = {};
+  const block = await api.getBlock()
 
   // Legacy vaults
-  const legacyBalances = await api.multiCall({
-    abi: "uint256:totalAssets",
-    calls: filterActiveLegacyVaults(legacyVaults, block),
-  });
-
-  const legacyAssets = legacyVaults.map((vault) => vault.baseAsset);
-
-  legacyAssets.forEach((asset, idx) => {
-    sdk.util.sumSingleBalance(balances, asset, legacyBalances[idx]);
+  const activeLegacyVaultAddresses = filterActiveLegacyVaults(legacyVaultsEthereum, block);
+  await sumLegacyTvl({
+    api,
+    vaults: activeLegacyVaultAddresses,
+    ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
   });
 
   // Boring vaults V0
-  const activeBoringVaults = filterActiveBoringVaults(boringVaultsV0, block);
-  const boringCalls = activeBoringVaults.map((vault) => ({
-    target: vault.lens,
-    params: [vault.vault, vault.accountant],
-  }));
-
-  const boringBalances = await api.multiCall({
-    abi: "function totalAssets(address boringVault, address accountant) view returns (address asset, uint256 assets)",
-    calls: boringCalls,
-  });
-  const boringV0Assets = activeBoringVaults.map((vault) => vault.baseAsset);
-
-  boringV0Assets.forEach((asset, idx) => {
-    sdk.util.sumSingleBalance(balances, asset, boringBalances[idx][1]);
+  const activeBoringVaults = filterActiveBoringVaults(boringVaultsV0Ethereum, block);
+  //console.log("Active boring vaults count:", activeBoringVaults.length);
+  await sumBoringTvl({
+    api,
+    vaults: activeBoringVaults,
+    ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
   });
 
-  return balances;
+  return api.getBalances();
 }
 
 // Returns list of vault addresses that are deployed based on their start block
 function filterActiveLegacyVaults(vaults, blockHeight) {
   return vaults
     .filter((vault) => vault.startBlock <= blockHeight)
-    .map((vault) => vault.id);
+    .map((vault) => vault.id)
+    .filter(Boolean);
 }
 
-// Returns a dictionary of vault objects that are deployed based on their start block
+// Returns a list of active boring vault objects
 function filterActiveBoringVaults(vaults, blockHeight) {
   return vaults
-    .filter((vault) => vault.startBlock <= blockHeight)
-    .map((vault) => vault);
+    .filter((vault) => vault.startBlock <= blockHeight && vault.vault)
+    .map((vault) => ({
+      id: vault.vault,
+      lens: vault.lens,
+      accountant: vault.accountant,
+      teller: vault.teller
+    }));
 }
 
 module.exports = {
