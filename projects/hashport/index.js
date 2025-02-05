@@ -19,19 +19,25 @@ const CONFIG = {
   hedera: '0.0.540219',
 }
 
-const hederaTVL = async (address) => {
-  const totalBalances = {}
+const hederaTokens = {}
+
+const hederaTVL = async (address, paginationPath = '') => {
   try {
-    const { balance } = await get(`${HEDERA_MIRROR_NODE_URL}/api/v1/accounts/${address}?limit=100&order=asc&transactiontype=cryptotransfer&transactions=true`)
-    balance?.tokens.forEach(token => {
-      // Note: We are filtering this token because its an old version of DOVE
-      if(token.token_id === '0.0.624505') return 
-      totalBalances[`hedera:${token.token_id}`] = String(token.balance)
+    let path = `/api/v1/accounts/${address}/tokens?limit=100&order=desc`
+    if (paginationPath) {
+      path = paginationPath
+    }
+    const { tokens, links } = await get(`${HEDERA_MIRROR_NODE_URL}${path}`)
+    tokens.forEach(token => {
+      hederaTokens[`hedera:${token.token_id}`] = String(token.balance)
     })
+    if (links?.next) {
+      return hederaTVL(address, links.next)
+    }
   } catch (error) {
     log(error)
   }
-  return totalBalances
+  return hederaTokens
 }
 
 const evmTVL = async (api, token, useCoValent = true) => {
