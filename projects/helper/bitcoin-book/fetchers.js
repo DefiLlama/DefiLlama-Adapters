@@ -125,7 +125,7 @@ module.exports = {
           batchNumber++;
         }
 
-        return allAddresses.filter(i => !blacklisted.has('bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'))
+        return allAddresses.filter(i => !blacklisted.has(i))
       }
     })
   },
