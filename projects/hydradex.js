@@ -1,7 +1,7 @@
 const { blockQuery } = require('./helper/http')
 const { getBlock } = require('./hydradex/getHydraV3SubgraphTvl')
 
-async function tvl(timestamp) {
+async function tvl({ timestamp }) {
   const endpoint = 'https://info.hydradex.org/graphql'
   const block = await getBlock(endpoint, timestamp)
   const query = `query ($block: Float!){

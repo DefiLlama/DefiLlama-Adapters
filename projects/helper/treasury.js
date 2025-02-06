@@ -10,10 +10,10 @@ function treasuryExports(config) {
   const exportObj = {}
   chains.forEach(chain => {
     let { ownTokenOwners = [], ownTokens = [], owners = [], tokens = [], blacklistedTokens = [] } = config[chain]
-    if (chain === 'solana') config[chain].solOwners = owners
-    if (chain === 'solana') config[chain].solOwners = owners
-    const tvlConfig = { ...config[chain], }
-    if (config[chain].fetchCoValentTokens !== false) {
+    const tvlConfig = { permitFailure: true, ...config[chain], }
+    if (chain === 'solana') {
+      tvlConfig.solOwners = owners
+    } else if (config[chain].fetchCoValentTokens !== false) {
       if (ankrChainMapping[chain]) {
         tvlConfig.fetchCoValentTokens = true
         const { tokenConfig } = config[chain]

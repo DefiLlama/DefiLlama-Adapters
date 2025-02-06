@@ -103,6 +103,9 @@ const idl = {
           },
           {
             "name": "Deleted"
+          },
+          {
+            "name": 'Initializing'
           }
         ]
       }

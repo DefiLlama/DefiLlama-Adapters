@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
 const getAllPositionsByIdsABI = "function getAllPositionsByIds(address vaultAddress, uint256[] positionIds) view returns (tuple(address worker, uint256 positionId, uint256 positionDebtAmount, uint256 positionHealth, uint256[] positionIngredients, uint16 positionKillFactorBps)[] positionInfos)"
 
 module.exports = {
   timetravel: false,
   era: {
-    async tvl(_, _1, _2, { api }) {
+    async tvl(api) {
       const _data = await getConfig('vivaleva', "https://sbb.sooho.io/api/v1/external/vivaleva/defiLlama")
 
       const data = {
@@ -14,21 +15,21 @@ module.exports = {
             name: "USDC-WETH PancakeSwapV3 Farm Worker",
             address: "0x9ac1CD6f35934bAeD9986711b9D983260C8F38C4",
             lpTokenAddress: "0x291d9F9764c72C9BA6fF47b451a9f7885Ebf9977",
-            farmingTokenAddress: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
-            baseTokenAddress: "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+            farmingTokenAddress: ADDRESSES.era.USDC,
+            baseTokenAddress: ADDRESSES.era.WETH,
           },
           {
             name: "ETH-USDC PancakeswapV3 Farm",
             address: "0x9ca8aD7290079BF5dbE42CCB917474379Aa167e5",
-            farmingTokenAddress: "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
-            baseTokenAddress: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+            farmingTokenAddress: ADDRESSES.era.WETH,
+            baseTokenAddress: ADDRESSES.era.USDC,
             lpToken: "0x291d9F9764c72C9BA6fF47b451a9f7885Ebf9977",
           },
           {
             name: "USDT-USDC PancakeswapV3 Farm",
             address: "0xDa3518E5F2972e0Edc1401336b94E257c58eeb18",
-            farmingTokenAddress: "0x493257fd37edb34451f62edf8d2a0c418852ba4c",
-            baseTokenAddress: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+            farmingTokenAddress: ADDRESSES.era.USDT,
+            baseTokenAddress: ADDRESSES.era.USDC,
             lpToken: "0x3832fB996C49792e71018f948f5bDdd987778424",
           }
         ],
@@ -45,17 +46,10 @@ module.exports = {
       // from pancakeSwapV3Worker
       const pancakeSwapV3Workers = data.pancakeSwapV3Worker;
       const commonCalculator = data.commonCalculator;
-      const calls = []
       for (const [i, v] of vaults.entries()) {
         const positionLength = positionLengths[i];
         const positions = Array.from(Array(Number(positionLength)).keys());
-        calls.push({ params: [v.address, positions] })
-      }
-
-      const pancakeRes = await api.multiCall({ abi: getAllPositionsByIdsABI, calls, target: commonCalculator });
-
-      for (const [i, v] of vaults.entries()) {
-        const positionIngredients = pancakeRes[i]
+        const positionIngredients = await api.call({ abi: getAllPositionsByIdsABI, params: [v.address, positions], target: commonCalculator });
         for (const cur of positionIngredients) {
           const poolAddress = cur.worker.toLowerCase();
           const baseAmount = cur.positionIngredients[0];

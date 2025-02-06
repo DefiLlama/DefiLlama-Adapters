@@ -1,0 +1,25 @@
+const sdk = require("@defillama/sdk");
+// const LendingContract = "0xdc93413cbe690a1643d285c9f075b271372c9b36"
+const { graphQuery } = require('../helper/http')
+const ADDRESSES = require('../helper/coreAssets.json')
+
+async function borrowed(api) {
+  const query = `{
+  loans(where: {id_not: "1", status: ACCEPTED, startTime_lte: "${api.timestamp}" }) {
+    amount
+  }
+}`
+
+  const { loans } = await graphQuery(sdk.graph.modifyEndpoint('AVmBsxjouEH6wvG2HCGPCNNt9eDeX2esaRZ7L7jJaTnD'), query);
+  api.add(ADDRESSES.polygon.USDT, loans.map(i => i.amount));
+  return api.getBalances()
+}
+
+module.exports = {
+  methodology: "Determined by querying from our public TheGraph the total USD value of all active loans",
+  start: '2024-02-14',
+  polygon: {
+    tvl: () => ({}),
+    borrowed,
+  },
+}

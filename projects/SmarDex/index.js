@@ -2,7 +2,7 @@ const { getUniTVL } = require("../helper/unknownTokens");
 const { stakings } = require("../helper/staking");
 
 const config = {
-  ethereum: '0x7753F36E711B66a0350a753aba9F5651BAE76A1D',
+  ethereum: '0xB878DC600550367e14220d4916Ff678fB284214F',
   bsc: '0xA8EF6FEa013034E62E2C4A9Ec1CDb059fE23Af33',
   polygon: '0x9A1e1681f6D59Ca051776410465AfAda6384398f',
   arbitrum: '0x41A00e3FbE7F479A99bA6822704d9c5dEB611F22',

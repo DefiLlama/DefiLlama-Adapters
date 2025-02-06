@@ -1,45 +1,41 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
+const sdk = require('@defillama/sdk');
 
-const VFDepositTokenBalanceAbi = "function depositTokenBalance(address owner) view returns (uint256)"
-const VFDepositTokenBalanceAutoAbi = "function balanceOf(address owner) view returns (uint256)"
-const getAllOwnedAssetsAbi = require('./abis/getAllOwnedAssetsAbi.json');
-const getPoolHelperAbi = "function getPoolInfo(address _address) view returns (tuple(uint256 pid, bool isActive, address token, address lp, uint256 sizeLp, address receipt, uint256 size, address rewards_addr, address helper))"
-const getStakingPositionsAbi = "function getStakedPositions() view returns (tuple(address asset, bytes32 symbol, bytes32 identifier, bytes4 balanceSelector, bytes4 unstakeSelector)[])"
+const getAllOwnedAssetsAbi = "function getAllOwnedAssets() view returns (bytes32[] result)"
+const getLoansAbi = "function getLoans(uint256 _from, uint256 _count) view returns (address[] _loans)"
+const getPrimeAccountsLengthAbi = 'uint256:getLoansLength';
+const ggAVAXBalancerBalanceAbi = "function balancerGgAvaxBalance() view returns (uint256)"
+const yyAVAXBalancerBalanceAbi = "function balancerYyAvaxBalance() view returns (uint256)"
+const sAVAXBalancerBalanceAbi = "function balancerSAvaxBalance() view returns (uint256)"
+
+const yieldYakWombatAvaxBalanceInWombatAvaxSavaxLP = "function avaxBalanceAvaxSavaxYY() view returns (uint256)"
+const yieldYakWombatSAvaxBalanceInWombatAvaxSavaxLP = "function sAvaxBalanceAvaxSavaxYY() view returns (uint256)"
+const yieldYakWombatsAvaxBalanceInWombatAvaxGgavaxLP = "function avaxBalanceAvaxGgavaxYY() view returns (uint256)"
+const yieldYakWombatsGgavaxBalanceInWombatAvaxGgavaxLP = "function ggAvaxBalanceAvaxGgavaxYY() view returns (uint256)"
 
 const assetToAddressMappingAvalanche = require('./mappings/assetToAddressMappingAvalanche.json')
 const assetToAddressMappingArbitrum = require('./mappings/assetToAddressMappingArbitrum.json')
 
 // Avalanche
-const USDC_POOL_TUP_CONTRACT = '0x2323dAC85C6Ab9bd6a8B5Fb75B0581E31232d12b';
-const USDT_POOL_TUP_CONTRACT = '0xd222e10D7Fe6B7f9608F14A8B5Cf703c74eFBcA1';
-const WAVAX_POOL_TUP_CONTRACT = '0xD26E504fc642B96751fD55D3E68AF295806542f5';
-const BTC_POOL_TUP_CONTRACT = '0x475589b0Ed87591A893Df42EC6076d2499bB63d0';
-const ETH_POOL_TUP_CONTRACT = '0xD7fEB276ba254cD9b34804A986CE9a8C3E359148';
+const USDC_POOL_TUP_CONTRACT = '0x8027e004d80274FB320e9b8f882C92196d779CE8';
+const USDT_POOL_TUP_CONTRACT = '0x1b6D7A6044fB68163D8E249Bce86F3eFbb12368e';
+const WAVAX_POOL_TUP_CONTRACT = '0xaa39f39802F8C44e48d4cc42E088C09EDF4daad4';
+const BTC_POOL_TUP_CONTRACT = '0x70e80001bDbeC5b9e932cEe2FEcC8F123c98F738';
+const ETH_POOL_TUP_CONTRACT = '0x2A84c101F3d45610595050a622684d5412bdf510';
 
 const SMART_LOANS_FACTORY_TUP_AVALANCHE = '0x3Ea9D480295A73fd2aF95b4D96c2afF88b21B03D';
-const VF_MAINSTAKING_CONTRACT = "0x8B3d9F0017FA369cD8C164D0Cc078bf4cA588aE5";
 
 // Arbitrum
-const USDC_POOL_TUP_ARBI_CONTRACT = '0x8FE3842e0B7472a57f2A2D56cF6bCe08517A1De0';
-const ETH_POOL_TUP_ARBI_CONTRACT = '0x0BeBEB5679115f143772CfD97359BBcc393d46b3';
-const BTC_POOL_TUP_ARBI_CONTRACT = '0x5CdE36c23f0909960BA4D6E8713257C6191f8C35';
-const ARB_POOL_TUP_ARBI_CONTRACT = '0x2B8C610F3fC6F883817637d15514293565C3d08A';
+const USDC_POOL_TUP_ARBI_CONTRACT = '0x8Ac9Dc27a6174a1CC30873B367A60AcdFAb965cc';
+const ETH_POOL_TUP_ARBI_CONTRACT = '0x788A8324943beb1a7A47B76959E6C1e6B87eD360';
+const BTC_POOL_TUP_ARBI_CONTRACT = '0x0ed7B42B74F039eda928E1AE6F44Eed5EF195Fb5';
+const ARB_POOL_TUP_ARBI_CONTRACT = '0xC629E8889350F1BBBf6eD1955095C2198dDC41c2';
+const DAI_POOL_TUP_ARBI_CONTRACT = '0xFA354E4289db87bEB81034A3ABD6D465328378f1';
 
 const SMART_LOANS_FACTORY_TUP_ARBITRUM = '0xFf5e3dDaefF411a1dC6CcE00014e4Bca39265c20';
 
-async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
-  const logs = await getLogs({
-    api,
-    target: SMART_LOANS_FACTORY_TUP_AVALANCHE,
-    topics: ['0x3c5330cb261eae74426865a348927ace59eae441485c71a110df598f825b6369'],
-    fromBlock: 23431194,
-  })
-  sdk.log('#accounts', logs.length)
-
+async function tvlAvalanche(api) {
   const tokensAndOwners = [
     [assetToAddressMappingAvalanche.USDC, USDC_POOL_TUP_CONTRACT],
     [assetToAddressMappingAvalanche.USDT, USDT_POOL_TUP_CONTRACT],
@@ -48,121 +44,140 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
     [assetToAddressMappingAvalanche.ETH, ETH_POOL_TUP_CONTRACT],
   ]
 
-  const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
-  const positions = await api.multiCall({ abi: getStakingPositionsAbi, calls: accounts })
+  let accounts = [];
+  const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_AVALANCHE, });
+  const batchSize = 500;
+  let batchIndex = 0;
+  while (batchIndex * batchSize < numberOfAccounts) {
+    let batchPrimeAccounts = await api.call({
+      abi: getLoansAbi,
+      target: SMART_LOANS_FACTORY_TUP_AVALANCHE,
+      params: [batchIndex * batchSize, batchSize]
+    })
+    accounts = accounts.concat(batchPrimeAccounts);
+    batchIndex++;
+  }
+
+  sdk.log(accounts.length)
+
+  await addTraderJoeLPs({ api, accounts })
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
-  const vectorTokens = {}
-  const vectorAutoTokens = {}
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
-      tokenStr = ethers.utils.parseBytes32String(tokenStr)
+      tokenStr = ethers.decodeBytes32String(tokenStr)
       const token = assetToAddressMappingAvalanche[tokenStr]
+      if (!token) {
+        sdk.log('Missing asset mapping for: ' + tokenStr)
+        return;
+      }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
       tokensAndOwners.push([token, o])
-    })
-    positions[i].forEach(({ asset, identifier }) => {
-      asset = asset.toLowerCase()
-      if(ethers.utils.parseBytes32String(identifier).toLowerCase().includes("auto")){
-        if (!vectorAutoTokens[asset]) vectorAutoTokens[asset] = []
-        vectorAutoTokens[asset].push(o)
-      }else{
-        if (!vectorTokens[asset]) vectorTokens[asset] = []
-        vectorTokens[asset].push(o)
-      }
     })
   })
 
   const balances = await sumTokens2({ api, tokensAndOwners: tokensAndOwners })
-  await Promise.all(Object.entries(vectorTokens).map(([token, accounts]) => addVectorVaultBalances({ api, balances, accounts, token })))
-  await Promise.all(Object.entries(vectorAutoTokens).map(([token, accounts]) => addVectorVaultBalancesAuto({ api, balances, accounts, token })))
+
+  let ggAvaxBalancerBalances = await api.multiCall({ abi: ggAVAXBalancerBalanceAbi, calls: accounts })
+  let yyAvaxBalancerBalances = await api.multiCall({ abi: yyAVAXBalancerBalanceAbi, calls: accounts })
+  let sAvaxBalancerBalances = await api.multiCall({ abi: sAVAXBalancerBalanceAbi, calls: accounts })
+
+  let avaxYYWombatAvaxSAvaxLPBalances = await api.multiCall({ abi: yieldYakWombatAvaxBalanceInWombatAvaxSavaxLP, calls: accounts })
+  let savaxYYWombatAvaxSAvaxLPBalances = await api.multiCall({ abi: yieldYakWombatSAvaxBalanceInWombatAvaxSavaxLP, calls: accounts })
+  let avaxYYWombatAvaxGgavaxLPBalances = await api.multiCall({ abi: yieldYakWombatsAvaxBalanceInWombatAvaxGgavaxLP, calls: accounts })
+  let ggAaxYYWombatAvaxGgavaxLPBalances = await api.multiCall({ abi: yieldYakWombatsGgavaxBalanceInWombatAvaxGgavaxLP, calls: accounts })
+
+  ggAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_ggAVAX_AVAX"], i, api.chain))
+  yyAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_yyAVAX_AVAX"], i, api.chain))
+  sAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_sAVAX_AVAX"], i, api.chain))
+
+  avaxYYWombatAvaxSAvaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_sAVAX_AVAX_LP_AVAX"], i, api.chain))
+  savaxYYWombatAvaxSAvaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_sAVAX_AVAX_LP_sAVAX"], i, api.chain))
+  avaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_AVAX"], i, api.chain))
+  ggAaxYYWombatAvaxGgavaxLPBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["WOMBAT_ggAVAX_AVAX_LP_ggAVAX"], i, api.chain))
+
   return balances;
 }
 
-async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
-  const logs = await getLogs({
-    api,
-    target: SMART_LOANS_FACTORY_TUP_ARBITRUM,
-    topics: ['0x3c5330cb261eae74426865a348927ace59eae441485c71a110df598f825b6369'],
-    fromBlock: 119102502,
-  })
-  sdk.log('#accounts', logs.length)
-
+async function tvlArbitrum(api) {
   const tokensAndOwners = [
     [assetToAddressMappingArbitrum.USDC, USDC_POOL_TUP_ARBI_CONTRACT],
     [assetToAddressMappingArbitrum.ETH, ETH_POOL_TUP_ARBI_CONTRACT],
     [assetToAddressMappingArbitrum.BTC, BTC_POOL_TUP_ARBI_CONTRACT],
     [assetToAddressMappingArbitrum.ARB, ARB_POOL_TUP_ARBI_CONTRACT],
+    [assetToAddressMappingArbitrum.DAI, DAI_POOL_TUP_ARBI_CONTRACT],
   ]
 
-  const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
-  const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
+  let accounts = [];
+  const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_ARBITRUM, });
+  const batchSize = 500;
+  let batchIndex = 0;
+  while (batchIndex * batchSize < numberOfAccounts) {
+    let batchPrimeAccounts = await api.call({
+      abi: getLoansAbi,
+      target: SMART_LOANS_FACTORY_TUP_ARBITRUM,
+      params: [batchIndex * batchSize, batchSize]
+    })
+    accounts = accounts.concat(batchPrimeAccounts);
+    batchIndex++;
+  }
+
+  sdk.log(accounts.length)
+  const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, })
+  await addTraderJoeLPs({ api, accounts })
+
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
-      tokenStr = ethers.utils.parseBytes32String(tokenStr)
+      tokenStr = ethers.decodeBytes32String(tokenStr)
       const token = assetToAddressMappingArbitrum[tokenStr]
+      if (!token) return;
+      if (!token) {
+        sdk.log('Missing asset mapping for: ' + tokenStr)
+        return;
+      }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
       tokensAndOwners.push([token, o])
     })
   })
 
-  return await sumTokens2({ api, tokensAndOwners: tokensAndOwners });
+  return sumTokens2({ api, tokensAndOwners: tokensAndOwners });
 }
 
-function translatePlatypusLPToBaseToken(token){
-  // Platypus USDC Asset (LP-USDC) -> USDC
-  if(token === "0x06f01502327de1c37076bea4689a7e44279155e9"){
-    token = ADDRESSES.avax.USDC;
-  }
-  return token;
-}
-
-// VectorFinance autocompounding vaults
-async function addVectorVaultBalancesAuto({ balances, accounts, api, token }) {
-  const helper = await api.call({
-    abi: getPoolHelperAbi,
-    target: VF_MAINSTAKING_CONTRACT,
-    params: [token],
+async function addTraderJoeLPs({ api, accounts }) {
+  const pairSet = new Set()
+  const bins = await api.multiCall({ abi: 'function getOwnedTraderJoeV2Bins() public view returns (tuple(address pair, uint24 bin)[])', calls: accounts })
+  const calls = []
+  bins.forEach((res, i) => {
+    const account = accounts[i]
+    res.forEach(({ pair, bin }) => {
+      pair = pair.toLowerCase()
+      pairSet.add(pair)
+      calls.push({ target: pair, bin, account })
+    })
   })
-  const compounder = await api.call({
-    abi: 'function compounder() view returns(address)',
-    target: helper.helper,
+  const pairs = [...pairSet]
+  const tokenXs = await api.multiCall({ abi: 'function getTokenX() view returns (address)', calls: pairs })
+  const tokenYs = await api.multiCall({ abi: 'function getTokenY() view returns (address)', calls: pairs })
+  const pairInfos = {}
+  pairs.forEach((pair, i) => {
+    pairInfos[pair] = {
+      tokenX: tokenXs[i],
+      tokenY: tokenYs[i],
+    }
   })
-  const totalDeposits = await api.call({
-    abi: 'function totalDeposits() view returns(uint256)',
-    target: compounder,
+  const bals = await api.multiCall({ abi: 'function balanceOf(address, uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [account, bin] })) })
+  const binBals = await api.multiCall({ abi: 'function getBin(uint24) view returns (uint128 tokenXbal,uint128 tokenYBal)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
+  const binSupplies = await api.multiCall({ abi: 'function totalSupply(uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
+  binBals.forEach(({ tokenXbal, tokenYBal }, i) => {
+    const { tokenX, tokenY } = pairInfos[calls[i].target]
+    const ratio = bals[i] / binSupplies[i]
+    api.add(tokenX, tokenXbal * ratio)
+    api.add(tokenY, tokenYBal * ratio)
   })
-  const totalSupply = await api.call({
-    abi: 'function totalSupply() view returns(uint256)',
-    target: compounder,
-  })
-  const shareRatio = totalDeposits / totalSupply;
-  let bals = await api.multiCall({ abi: VFDepositTokenBalanceAutoAbi, calls: accounts, target: compounder })
-  bals = bals.map(el => el * shareRatio);
 
-  token = translatePlatypusLPToBaseToken(token);
-
-  bals.forEach(i => sdk.util.sumSingleBalance(balances, token, i, api.chain))
-  return balances
-}
-
-// VectorFinance manual vaults
-async function addVectorVaultBalances({ balances, accounts, api, token }) {
-  const helper = await api.call({
-    abi: getPoolHelperAbi,
-    target: VF_MAINSTAKING_CONTRACT,
-    params: [token],
-  })
-  if (helper.helper.toLowerCase() === '0x9AB2B763798124F81E95419aC9b77a4fB480742D'.toLowerCase()) return balances;
-  const bals = await api.multiCall({ abi: VFDepositTokenBalanceAbi, calls: accounts, target: helper.helper })
-
-  bals.forEach(i => sdk.util.sumSingleBalance(balances, token, i, api.chain))
-  return balances
 }
 
 module.exports = {
   methodology: 'Counts TVL of DeltaPrime\'s lending pools and individual PrimeAccount contracts\'',
-  start:
-    24753316,
   avax: {
     tvl: tvlAvalanche,
   },

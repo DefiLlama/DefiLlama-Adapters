@@ -56,7 +56,7 @@ module.exports = {
   },
 };
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   
   const provider = getProvider();
   const program = constructProgram(provider);
@@ -67,7 +67,7 @@ async function borrowed(_, _b, _cb, { api, }) {
   })
 }
 
-async function tvl1(_, _b, _cb, { api, }) {
+async function tvl1(api) {
   
   const provider = getProvider();
   const program = constructProgram(provider);

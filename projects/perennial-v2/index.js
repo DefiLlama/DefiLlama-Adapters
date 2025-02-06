@@ -1,21 +1,27 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs } = require('../helper/cache/getLogs');
 
 const config = {
-  arbitrum: { factory: '0xad3565680aecee27a39249d8c2d55dac79be5ad0', fromBlock: 135921947 },
-}
+  arbitrum: {
+    dsu: '0x52c64b8998eb7c80b6f526e99e29abdcc86b841b',
+    factory: '0xDaD8A103473dfd47F90168A0E46766ed48e26EC7',
+    fromBlock: 135921706,
+  },
+};
 
-Object.keys(config).forEach(chain => {
-  const { factory, fromBlock, } = config[chain]
+Object.keys(config).forEach((chain) => {
+  const { factory, fromBlock, dsu } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
-        eventAbi: 'event VaultCreated (address indexed vault, address indexed asset, address initialMarket)',
+        eventAbi: 'event InstanceRegistered (address indexed instance)',
         onlyArgs: true,
         fromBlock,
-      })
-      return api.sumTokens({ tokensAndOwners: logs.map(log => [log.asset, log.initialMarket])})
-    }
-  }
-})
+      });
+      return api.sumTokens({
+        tokensAndOwners: logs.map((log) => [dsu, log.instance]),
+      });
+    },
+  };
+});

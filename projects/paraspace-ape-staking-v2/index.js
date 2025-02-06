@@ -2,7 +2,7 @@ const abi = require("../paraspace-v2/helper/abis");
 const address = require("../paraspace-v2/helper/address");
 const sdk = require("@defillama/sdk");
 
-async function tvl(_, _1, _cb, { api }) {
+async function tvl(api) {
   const {
     UiPoolDataProvider,
     PoolAddressProvider,
@@ -33,12 +33,16 @@ async function tvl(_, _1, _cb, { api }) {
   const stakedAddress = [nBAYC, nMAYC, nBAKC, P2PPairStaking, cAPE];
 
   const balances = {};
+  const allStakes = []
+  for (const stake of stakedAddress) {
+    const stakeData = await api.call({
+      target: ApeCoinStaking,
+      params: stake,
+      abi: abi.ApeCoinStaking.getAllStakes,
+    });
+    allStakes.push(stakeData);
+  }
 
-  const allStakes = await api.multiCall({
-    calls: stakedAddress,
-    target: ApeCoinStaking,
-    abi: abi.ApeCoinStaking.getAllStakes,
-  });
   const otherPools = {}
   allStakes.flat().forEach(({ poolId, tokenId, deposited }) => {
     if (poolId === '0') {

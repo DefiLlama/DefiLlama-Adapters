@@ -1,9 +1,5 @@
 const ADDRESSES = require('./helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("./helper/unwrapLPs")
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
-
-const usdtAddress = ADDRESSES.ethereum.USDT;
+const { sumTokens2 } = require("./helper/unwrapLPs")
 
 const oraichainToken = {
     'bsc': '0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0',
@@ -29,71 +25,22 @@ const stakingAddresses = {
         '0xc187c9782364e3db55802f3a51ac887ca8d1b43a',
         '0x8dcff4f1653f45cf418b0b3a5080a0fdcac577c8',
         '0x289268e0b5f05e514834ea37aa9777ce077696a0', //LP
-        '0xb4d6bafed9c6451aeb15665982b55af5913f22cf'  //LP
+        '0xb4d6bafed9c6451aeb15665982b55af5913f22cf',  //LP
+        '0xdC398B05E6646764C0bF02ead1dE2ec192d64F7d' //USDT
     ],
-    'tether': '0xdC398B05E6646764C0bF02ead1dE2ec192d64F7d' //USDT
 };
-
-async function tvl(chainBlocks, chain, transform=a=>a) {
-    let balances = {};
-
-    const lpBalance = (await sdk.api.abi.multiCall({
-        abi: "erc20:balanceOf",
-        target: lpToken[chain],
-        calls: stakingAddresses[chain].map((a)=>({
-            params: a
-        })),
-        block: chainBlocks[chain],
-        chain
-    })).output.map((c) => c.output).reduce((a, b) => Number(a) + Number(b), 0);
-
-    await unwrapUniswapLPs(
-        balances, 
-        [{balance: lpBalance, token: lpToken[chain]}], 
-        chainBlocks[chain], 
-        chain, 
-        transform);
-
-        const tokenBalances = (await sdk.api.abi.multiCall({
-        abi: "erc20:balanceOf",
-        target: oraichainToken[chain],
-        calls: stakingAddresses[chain].map((a)=>({
-            params: a
-        })),
-        block: chainBlocks[chain],
-        chain
-    })).output.map((c) => c.output);
-
-    for (let balance of tokenBalances) {
-        await sumSingleBalance(balances, transform(oraichainToken[chain]), balance);
-    }
-
-    return balances;
-}
-
-async function ethTvl(timestamp, ethBlock, chainBlocks) {
-    let balances = await tvl(chainBlocks, 'ethereum');
-
-    // AI USDT Vault
-    const usdtBalance = (await sdk.api.erc20.balanceOf({
-        block: ethBlock,
-        target: usdtAddress,
-        owner: stakingAddresses['tether']
-    })).output;
-    sdk.util.sumSingleBalance(balances, usdtAddress, usdtBalance);
-    return balances;
-}
-
-async function bscTvl(timestamp, ethBlock, chainBlocks) {
-    return await tvl(chainBlocks, 'bsc', i => `bsc:${i}`);
+async function tvl(api) {
+    const tokens = [lpToken[api.chain], oraichainToken[api.chain]]
+    if (api.chain === 'ethereum') tokens.push(ADDRESSES.ethereum.USDT)
+    return sumTokens2({ api, owners: stakingAddresses[api.chain], tokens, resolveLP: true,  })
 }
 
 module.exports = {
     ethereum: {
-      staking: ethTvl,
-      tvl: async ()=>({}),
+        staking: tvl,
+        tvl: async () => ({}),
     },
     bsc: {
-      staking: bscTvl,
+        staking: tvl,
     },
 }

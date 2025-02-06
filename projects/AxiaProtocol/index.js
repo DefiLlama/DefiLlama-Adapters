@@ -15,7 +15,7 @@ const defiFundLPEth = '0x4833e8b56fc8e8a777fcc5e37cb6035c504c9478'
 const oracleFundEth = '0x152959A2f50D716707fEa4897e72C554272dC584'
 const oracleFundLPEth = '0xbf11db4e63c72c5dffde0f5831d667817c9e9ad5'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = {}
 
   await Promise.all([

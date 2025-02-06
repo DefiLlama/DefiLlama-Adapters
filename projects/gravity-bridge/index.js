@@ -58,7 +58,6 @@ const GRAVITY_BRIDGE_CONTRACT = "0xa4108aa1ec4967f8b52220a4f7e94a8201f2d906";
 
 module.exports = {
   methodology: 'Counts the tokens locked in the Gravity Bridge contract on Ethereum chain.',
-  start: 13798211,
   ethereum: {
     tvl: sumTokensExport({ owner: GRAVITY_BRIDGE_CONTRACT, tokens: erc20Contracts, }),
   },
@@ -67,7 +66,7 @@ module.exports = {
   }
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const bals = await getBalance2({ chain: 'gravitybridge', owner: 'gravity16n3lc7cywa68mg50qhp847034w88pntqzx3ksm'})
   Object.entries(bals).forEach(([key, val]) => {
     if (key.startsWith('gravity0x')) {

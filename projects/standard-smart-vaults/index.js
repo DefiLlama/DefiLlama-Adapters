@@ -1,16 +1,18 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { ethers } = require('ethers');
 const { getLogs } = require('../helper/cache/getLogs')
 const SMART_VAULT_MANAGER_ADDRESS = '0xba169cceCCF7aC51dA223e04654Cf16ef41A68CC'
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const START_TS = 1693206000;
 
 const tokens = [
-  ethers.constants.AddressZero,
+  ADDRESSES.null,
   ADDRESSES.arbitrum.WBTC,
   ADDRESSES.arbitrum.ARB,
   ADDRESSES.arbitrum.LINK,
-  '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429'
+  ADDRESSES.arbitrum.GMX,
+  '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429',
+  '0x3082CC23568eA640225c2467653dB90e9250AaA0',
+  '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A'
 ]
 
 async function getOwners(api) {
@@ -29,7 +31,7 @@ module.exports = {
   methodology: 'counts the aggregated assets locked in The Standard Smart Vaults.',
   start: START_TS,
   arbitrum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       return sumTokens2({ owners: await getOwners(api), tokens, api})
     }
   }
