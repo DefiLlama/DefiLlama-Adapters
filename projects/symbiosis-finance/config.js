@@ -415,6 +415,15 @@ module.exports = {
       ]
     },
     {
+      name: 'berachain',
+      tokens: [
+        '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', // WETH
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
       name: 'boba_bnb',
       tokens: [
         '0x9f98f9f312d23d078061962837042b8918e6aff2', // USDC
