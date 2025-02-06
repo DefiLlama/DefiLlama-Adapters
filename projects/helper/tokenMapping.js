@@ -46,8 +46,8 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   berachain: {
-    [ADDRESSES.null]: { coingeckoId: "berachain-bera", decimals: 18 }, 
-    '0x6969696969696969696969696969696969696969': { coingeckoId: "berachain-bera", decimals: 18 }, 
+    [ADDRESSES.null]: { coingeckoId: "wrapped-bera", decimals: 18 }, 
+    '0x6969696969696969696969696969696969696969': { coingeckoId: "wrapped-bera", decimals: 18 }, 
   }
 }
 
