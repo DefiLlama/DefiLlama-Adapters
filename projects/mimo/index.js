@@ -8,7 +8,7 @@ const config = {
   },
   polygon: {
     vaultCore: [
-      '0x78C48A7d7Fc69735fDab448fe6068bbA44a920E6', //PAR
+      '0x0a9202C6417A7B6B166e7F7fE2719b09261b400f', //PAR
       '0xcABAbC1Feb7C5298F69B635099D75975aD5E6e5f', //paUSD
     ],
   },
