@@ -133,6 +133,30 @@ function makeTvlFn(chain) {
   };
 }
 
+function makeLPTokensTvlFn() {
+  return async () => {
+    const stats = await get(
+      "https://berachain.main.stridenet.co/stats"
+    );
+
+    const balances = {};
+
+    // const amount = Math.round(Number(2904155.048717085) * 100) / 100;
+    // @todo use token amount, not token price
+    const amount = Math.round(Number(stats.total_deposits_usd) * 100) / 100;
+
+    sdk.util.sumSingleBalance(
+      balances,
+      // @todo replace with bgt once it has value on coingecko
+      // https://www.coingecko.com/en/coins/berachain-governance-token
+      "wrapped-bera",
+      amount
+    );
+
+    return balances;
+  };
+}
+
 module.exports = {
   timetravel: false,
   methodology: "Sum of all the tokens that are liquid staked on Stride",
@@ -144,3 +168,7 @@ module.exports = {
 for (const chainName of Object.keys(chains)) {
   module.exports[chainName] = { tvl: makeTvlFn(chains[chainName]) };
 }
+
+module.exports["berachain"] = {
+  tvl: makeLPTokensTvlFn(),
+};
