@@ -1,12 +1,13 @@
-import { Program } from "@project-serum/anchor";
-import {
+const { Program } = require("@coral-xyz/anchor");
+const {
   PublicKey,
-  TOKEN_PROGRAM_ID,
-  TOKEN_2022_PROGRAM_ID,
-} from "@solana/web3.js";
-import { getConnection, decodeAccount } from "../helper/solana";
-import idl from "./idl/krystal_auto_vault.js";
+} = require("@solana/web3.js");
+const { TOKEN_PROGRAM_ID } = require('@project-serum/anchor/dist/cjs/utils/token');
+const { getConnection, decodeAccount, getProvider } = require("../helper/solana");
+const idl = require("./idl/krystal_auto_vault.json");
+const { addUniV3LikePosition } = require("../helper/unwrapLPs.js");
 
+const TOKEN_2022_PROGRAM_ID = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
 const CLMM_PROGRAM_ID = new PublicKey(
   "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
 );
@@ -14,12 +15,15 @@ const POSITION_SEED = Buffer.from("position", "utf8");
 
 async function tvl(api) {
   const connection = getConnection();
-  const program = new Program(idl, { connection });
-
-  // Load all the vaults in the program
-  const vaults = await program.account.userVault.all();
+  const provider = getProvider()
+  const programAddress = "6tgjvHkFUUUbbacEWg225H6AazxoSTso8ix9vkXFScTU"
+  const program = new Program(idl, programAddress, provider)
+  const pools = new Map();
 
   try {
+    // Load all the vaults in the program
+    const vaults = await program.account.userVault.all();
+
     const positions = [];
     for (const account of vaults) {
       const vault = account.publicKey;
@@ -28,6 +32,31 @@ async function tvl(api) {
         vault
       );
       positions.push(...positionsByOwner);
+    }
+
+    for (const position of positions) {
+      const poolId = position.poolId;
+      const poolKey = poolId.toBase58();
+
+      let poolInfo = pools.get(poolKey);
+      if (!poolInfo) {
+        const pool = await connection.getAccountInfo(poolId);
+        if (!pool) continue;
+
+        const info = decodeAccount("raydiumCLMM", pool);
+        pools.set(poolKey, info);
+        poolInfo = info;
+      }
+
+      addUniV3LikePosition({
+        api,
+        token0: poolInfo.mintA.toBase58(),
+        token1: poolInfo.mintB.toBase58(),
+        liquidity: position.liquidity.toNumber(),
+        tickLower: position.tickLower,
+        tickUpper: position.tickUpper,
+        tick: poolInfo.tickCurrent,
+      });
     }
   } catch (error) {
     console.error(error);
@@ -82,3 +111,7 @@ function getPdaPersonalPositionAddress(nftMint) {
 
   return pda;
 }
+
+module.exports = {
+  tvl,
+};
