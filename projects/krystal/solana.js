@@ -1,23 +1,32 @@
 const { Program } = require("@coral-xyz/anchor");
+const { PublicKey } = require("@solana/web3.js");
 const {
-  PublicKey,
-} = require("@solana/web3.js");
-const { TOKEN_PROGRAM_ID } = require('@project-serum/anchor/dist/cjs/utils/token');
-const { getConnection, decodeAccount, getProvider } = require("../helper/solana");
+  TOKEN_PROGRAM_ID,
+} = require("@project-serum/anchor/dist/cjs/utils/token");
+const {
+  getConnection,
+  decodeAccount,
+  getProvider,
+} = require("../helper/solana");
 const idl = require("./idl/krystal_auto_vault.json");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs.js");
 
-const TOKEN_2022_PROGRAM_ID = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+const TOKEN_2022_PROGRAM_ID = new PublicKey(
+  "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+);
 const CLMM_PROGRAM_ID = new PublicKey(
   "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
+);
+const KRYSTAL_VAULT = new PublicKey(
+  "6tgjvHkFUUUbbacEWg225H6AazxoSTso8ix9vkXFScTU"
 );
 const POSITION_SEED = Buffer.from("position", "utf8");
 
 async function tvl(api) {
   const connection = getConnection();
-  const provider = getProvider()
-  const programAddress = "6tgjvHkFUUUbbacEWg225H6AazxoSTso8ix9vkXFScTU"
-  const program = new Program(idl, programAddress, provider)
+  const provider = getProvider();
+
+  const program = new Program(idl, KRYSTAL_VAULT, provider);
   const pools = new Map();
 
   try {
