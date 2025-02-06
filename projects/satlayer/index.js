@@ -12,6 +12,7 @@ const config = {
   ethereum: { factory, fromBlock: 20564864 },
   bsc: { factory, fromBlock: 42094094 },
   btr: { factory: "0x2E3c78576735802eD94e52B7e71830e9E44a9a1C", fromBlock: 4532898 },
+  berachain: { factory: "0x50198b5E1330753F167F6e0544e4C8aF829BC99d", fromBlock: 262893 },
 }
 
 Object.keys(config).forEach(chain => {
