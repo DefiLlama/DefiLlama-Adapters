@@ -33,5 +33,6 @@ module.exports = {
       ],
       tokens: [USDC_ARB_ADDRESS],
     }),
-  }
-}; // node test.js projects/mint-club/index.js
+  },
+  bsc: { tvl: () => ({})}
+}
