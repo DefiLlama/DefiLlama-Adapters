@@ -95,21 +95,10 @@ module.exports = {
 
     return getConfig('coffer-network-v0.1', undefined, {
       fetcher: async () => {
-        throw new Error('Coffer Network fetcher is not implemented')
+        const { data: { addresses, } } = await get('https://aapi.coffer.network/v1/stats/addresses?network=mainnet')
+        return addresses
       }
     })
-
-    function reserveBytes(txHashTemp) {
-      let txHash = ''
-      if (txHashTemp.length % 2 === 1) {
-        txHashTemp = '0' + txHashTemp
-      }
-      txHashTemp = txHashTemp.split('').reverse().join('')
-      for (let i = 0; i < txHashTemp.length - 1; i += 2) {
-        txHash += txHashTemp[i + 1] + txHashTemp[i]
-      }
-      return txHash
-    }
   },
 
   lombard: async () => {
