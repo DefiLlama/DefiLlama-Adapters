@@ -48,6 +48,9 @@ const fixBalancesTokens = {
   berachain: {
     [ADDRESSES.null]: { coingeckoId: "wrapped-bera", decimals: 18 }, 
     '0x6969696969696969696969696969696969696969': { coingeckoId: "wrapped-bera", decimals: 18 }, 
+  },
+  stratis: {
+    '0xeA705D2DbD8DE7Dc70Db7B531D0F620d9CeE9d18': { coingeckoId: "stratis", decimals: 18 },
   }
 }
 
