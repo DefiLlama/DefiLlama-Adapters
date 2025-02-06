@@ -85,6 +85,12 @@ const chains = {
     denom: "aISLM",
     coinGeckoId: "islamic-coin",
   },
+
+  band: {
+    chainId: "laozi-mainnet",
+    denom: "uband",
+    coinGeckoId: "band-protocol",
+  }
 };
 
 // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination

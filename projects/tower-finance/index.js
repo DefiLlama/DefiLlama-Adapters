@@ -3,5 +3,5 @@ module.exports = {
   polygon: {
       tvl: () => ({}),
   },
-  broken: 'website is down, discord link expired, twitter no longer active. Rugged?'
+  deadFrom: '2022-04-27',
 }

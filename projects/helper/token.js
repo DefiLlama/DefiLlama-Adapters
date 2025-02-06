@@ -9,6 +9,7 @@ const sdk = require('@defillama/sdk')
 async function covalentGetTokens(address, api, {
   onlyWhitelisted = true,
   useCovalent = false,
+  skipCacheRead = false,
 } = {}) {
   const chainId = api?.chainId
   const chain = api?.chain
@@ -19,7 +20,7 @@ async function covalentGetTokens(address, api, {
 
   if (!useCovalent) {
     if (!ankrChainMapping[chain]) throw new Error('Chain Not supported: ' + chain)
-    const tokens = await ankrGetTokens(address, { onlyWhitelisted })
+    const tokens = await ankrGetTokens(address, { onlyWhitelisted, skipCacheRead, })
     return tokens[ankrChainMapping[chain]] ?? []
   }
 
@@ -97,7 +98,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
         jsonrpc: '2.0',
         method: 'ankr_getAccountBalance',
         params: {
-          blockchain: Object.values(ankrChainMapping).filter(i => i !== 'eth'),
+          blockchain: Object.values(ankrChainMapping),
           onlyWhitelisted,
           nativeFirst: true,
           skipSyncCheck: true,
@@ -106,7 +107,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
         id: 42
       }
     };
-    const tokens = {}
+    const tokens = cache.tokens ?? {}
     const { data: { result: { assets } } } = await axios.request(options)
     const tokenCache = { timestamp: timeNow, tokens, }
     for (const asset of assets) {
@@ -117,7 +118,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = 
     for (const [chain, values] of Object.entries(tokens)) {
       tokens[chain] = getUniqueAddresses(values)
     }
-    tokens.eth = await getETHTokens(address, onlyWhitelisted)
+    // tokens.eth = await getETHTokens(address, onlyWhitelisted)
 
     await setCache(project, key, tokenCache)
     return tokens

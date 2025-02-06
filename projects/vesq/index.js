@@ -8,7 +8,7 @@ const treasuryTokens = [
     [ADDRESSES.polygon.DAI, false], //DAI
     ["0x2e1ad108ff1d8c782fcbbb89aad783ac49586756", false], //TUSD
     ["0xa3fa99a148fa48d14ed51d610c367c61876997f1", false], //MAI
-    ["0x45c32fa6df82ead1e2ef74d17b76547eddfaff89", false], //FRAX
+    [ADDRESSES.polygon.FRAX, false], //FRAX
     ["0x692597b009d13c4049a947cab2239b7d6517875f", false], //UST
     ["0x27f8d03b3a2196956ed754badc28d73be8830a6e", false], //amDAI
     ["0xd8cA34fd379d9ca3C6Ee3b3905678320F5b45195", false], //gOHM

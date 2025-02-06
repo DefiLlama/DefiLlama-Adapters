@@ -10,6 +10,7 @@ const defaultTokens = {
     ADDRESSES.ethereum.USDC,
     ADDRESSES.ethereum.LINK,
     ADDRESSES.ethereum.DAI,
+    ADDRESSES.ethereum.WEETH,
     ADDRESSES.ethereum.WBTC,
     ADDRESSES.ethereum.TUSD, // TUSD
     ADDRESSES.ethereum.BUSD, // BUSD
@@ -86,7 +87,7 @@ const defaultTokens = {
     '0xaaef88cea01475125522e117bfe45cf32044e238', // GF
     '0x949d48eca67b17269629c7194f4b727d4ef9e5d6', // MC
     '0xbb0e17ef65f82ab018d8edd776e8dd940327b28b', // AXS
-    '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // FXS
+    ADDRESSES.ethereum.FXS, // FXS
     '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
@@ -109,6 +110,7 @@ const defaultTokens = {
      "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
      "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
      "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
+     "0x6982508145454ce325ddbe47a25d4ec3d2311933",  // PEPE
   ],
   tron: [
     nullAddress,
@@ -173,6 +175,8 @@ const defaultTokens = {
      '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
      '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
      '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
+     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
+     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -188,6 +192,7 @@ const defaultTokens = {
     '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
     ADDRESSES.arbitrum.LPT, //lpt
     '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
+    '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
   ],
   avax: [
     nullAddress,
@@ -252,6 +257,8 @@ const defaultTokens = {
     ADDRESSES.ton.TON_2,
     ADDRESSES.ton.TON_3,
   ],
+  sui: [],
+  aptos: [],
 }
 
 function cexExports(config) {
@@ -272,6 +279,7 @@ function cexExports(config) {
 
     const options = { ...config[chain], owners, tokens, chain, blacklistedTokens, }
     if (chain === 'solana')  options.solOwners = owners
+    if (chain === 'ton')  options.onlyWhitelistedTokens = true
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
   if (config.bep2) {
