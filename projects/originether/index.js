@@ -5,7 +5,8 @@ const abi = require("../origindollar/abi.json");
 const ethTvl = async (api) => {
   const vault = "0x39254033945aa2e4809cc2977e7087bee48bd7ab";
   const strategies = await api.call({ abi: 'function getAllStrategies() view returns (address[])', target: vault })
-  const nativeStrategies = strategies.filter(strategy => strategy.toLowerCase() !== '0x1827f9ea98e0bf96550b2fc20f7233277fcd7e63')
+  const isNativeStrategy = (await api.multiCall({  abi: 'uint256:activeDepositedValidators', calls: strategies, permitFailure: true})).map(i => !!i)
+  const nativeStrategies = strategies.filter((_, i) => isNativeStrategy[i])
 
   for(const nativeStrategy of nativeStrategies) {
     const stakingBalance = await api.call({ abi: abi.checkBalance, target: nativeStrategy, params: ADDRESSES.ethereum.WETH })
