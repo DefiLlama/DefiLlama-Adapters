@@ -2,6 +2,7 @@
 
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { getUniqueAddresses } = require('../helper/tokenMapping')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const factory = '0x42a856dbEBB97AbC1269EAB32f3bb40C15102819'
 
 module.exports = {
@@ -21,7 +22,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       const logs = await getLogs2({ api, factory, eventAbi: "event CapChanged(address token, uint256 cap)", fromBlock, })
       const tokens = getUniqueAddresses(logs.map(log => log.token))
-      return api.sumTokens({ owner: factory, tokens })
+      return sumTokens2({ api, owner: factory, tokens })
     }
   }
 })
