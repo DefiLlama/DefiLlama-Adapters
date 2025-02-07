@@ -13,12 +13,13 @@ const ABI = {
 const vaults = {
   bsc: '0x89c527764f03BCb7dC469707B23b79C1D7Beb780',
   celo: '0x979cD0826C2bf62703Ef62221a4feA1f23da3777',
-  ethereum: '0x1bf68a9d1eaee7826b3593c20a0ca93293cb489a',
+  // ethereum: '0x1bf68a9d1eaee7826b3593c20a0ca93293cb489a',
   heco: '0x38C92A7C2B358e2F2b91723e5c4Fc7aa8b4d279F',
   klaytn: '0x9abc3f6c11dbd83234d6e6b2c373dfc1893f648d',
   polygon: '0x506DC4c6408813948470a06ef6e4a1DaF228dbd5',
   meta: '0x292A00F3b99e3CB9b324EdbaA92258C3C61b55ab',
-  wemix: '0x445F863df0090f423A6D7005581e30d5841e4D6d'
+  wemix: '0x445F863df0090f423A6D7005581e30d5841e4D6d',
+  silicon_zk: '0x5aAAcf28ECDd691b4a657684135d8848d38236Bb'
 }
 
 const farms = {
@@ -48,6 +49,7 @@ async function tvl(api) {
   let targetChain = chain
   if (chain === 'ethereum') targetChain = 'eth'
   if (chain === 'polygon') targetChain = 'matic'
+  if (chain === 'silicon_zk') targetChain = 'silicon'
 
   const tokenListURL = 'https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList'
   tokenData = tokenData || getConfig('orbit-bridge', tokenListURL)
@@ -78,11 +80,12 @@ module.exports = {
   bsc: { tvl },
   celo: { tvl },
   heco: { tvl },
-  ethereum: { tvl },
+  // ethereum: { tvl },
   klaytn: { tvl },
   polygon: { tvl },
   meta: { tvl },
   wemix: { tvl },
+  silicon_zk: { tvl },
   ripple: {
     tvl: sumTokensExport({ owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia' })
   },
