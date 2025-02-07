@@ -299,7 +299,16 @@
     "FUSD_3": "0xce86a1cf3cff48139598de6bf9b1df2e0f79f86f",
     "WETH_2": "0x5622f6dc93e08a8b717b149677930c38d5d50682",
     "BNB": "0x6acb34b1df86e254b544189ec32cf737e2482058",
-    "BNB_2": "0x117c0419352ddb6fe575a67faa70315bdc4a93f3"
+    "BNB_2": "0x117c0419352ddb6fe575a67faa70315bdc4a93f3",
+    "USDT_3": "0x3695dd1d1d43b794c0b13eb8be8419eb3ac22bf7",
+    "USDC_3": "0xc6bc407706b7140ee8eef2f86f9504651b63e7f9",
+    "WETH_3": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590",
+    "WSTETH": "0x2931b47c2cee4febad348ba3d322cb4a17662c34",
+    "EZETH": "0x8bf40e191ac82bc09d946629655a6b8baf8f063e",
+    "ULTRAETHS": "0xb10ed6e3810c95a380e4f3e448af1755fa3368cf",
+    "DAI_2": "0x2502f488d481df4f5054330c71b95d93d41625c2 ",
+    "SFUSE": "0xb1dd0b683d9a56525cc096fbf5eec6e60fe79871"
+  
   },
   "evmos": {
     "WEVMOS": "0xd4949664cd82660aae99bedc034a0dea8a0bd517",
