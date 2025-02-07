@@ -2,7 +2,7 @@ const { getUniTVL } = require("../helper/unknownTokens");
 module.exports = {
   methodology:
     "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through Factory Contract.",
-    start: 1701478462, //Dec-2-2023 3:54:26 PM +UTC
+    start: '2023-12-02', //Dec-2-2023 3:54:26 PM +UTC
 
   misrepresentedTokens: true,
   chz: {

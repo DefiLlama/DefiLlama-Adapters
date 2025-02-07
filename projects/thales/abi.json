@@ -3,5 +3,6 @@
   "totalDeposited": "uint256:totalDeposited",
   "tradingAllocation": "uint256:tradingAllocation",
   "getUnderlyingBalance": "function getUnderlyingBalances() view returns (uint256 amount0Current, uint256 amount1Current)",
-  "activeParlayMarkets": "function activeParlayMarkets(uint index, uint pageSize) external view returns (address[] memory)"
+  "activeParlayMarkets": "function activeParlayMarkets(uint index, uint pageSize) external view returns (address[] memory)",
+  "getActiveTickets": "function getActiveTickets(uint _index, uint _pageSize) external view returns (address[] memory)"
 }
