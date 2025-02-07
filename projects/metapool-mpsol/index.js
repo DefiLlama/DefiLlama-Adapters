@@ -7,7 +7,7 @@ async function tvl(api) {
 
 module.exports = {
     timetravel: false,
-    methodology: 'TVL consists of deposits made to the protocol',
+    methodology: 'Calculated by multiplying the tokens Total Supply on Solana with the current market price per token. Numbers may be unrealistic if the onchain supply is much smaller than the reported circulating supply.',
     solana:{
         tvl
     }
