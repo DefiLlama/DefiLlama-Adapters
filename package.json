@@ -28,8 +28,6 @@
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.87.6",
     "@solendprotocol/solend-sdk": "^0.4.3",
-    "@stacks/network": "^6.10.0",
-    "@stacks/transactions": "^6.11.0",
     "@supercharge/promise-pool": "^2.1.0",
     "axios": "^1.6.5",
     "bignumber.js": "^9.0.1",
