@@ -9,6 +9,7 @@ const {
 const idl = require("./idl/krystal_auto_vault.json");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs.js");
 const { getUniqueAddresses } = require("../helper/tokenMapping.js");
+const { get } = require("../helper/http.js");
 
 const CLMM_PROGRAM_ID = new PublicKey(
   "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
@@ -110,4 +111,9 @@ function getPdaPersonalPositionAddress(nftMint) {
   return pda;
 }
 
-module.exports = { tvl };
+async function tvlApi(api) {
+  const res = await get('https://api.krystal.app/solana/v1/lp/tvl')
+  api.addUSDValue(res)
+}
+
+module.exports = { tvl: tvlApi };
