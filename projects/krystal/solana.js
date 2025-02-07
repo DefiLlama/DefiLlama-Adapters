@@ -113,7 +113,7 @@ function getPdaPersonalPositionAddress(nftMint) {
 
 async function tvlApi(api) {
   const res = await get('https://api.krystal.app/solana/v1/lp/tvl')
-  api.addUSDValue(res.tvl)
+  api.addUSDValue(+res.tvl)
 }
 
 module.exports = { tvl: tvlApi };
