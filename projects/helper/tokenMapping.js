@@ -46,12 +46,15 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   berachain: {
-    [ADDRESSES.null]: { coingeckoId: "wrapped-bera", decimals: 18 }, 
-    '0x6969696969696969696969696969696969696969': { coingeckoId: "wrapped-bera", decimals: 18 }, 
+    [ADDRESSES.null]: { coingeckoId: "wrapped-bera", decimals: 18 },
+    '0x6969696969696969696969696969696969696969': { coingeckoId: "wrapped-bera", decimals: 18 },
   },
   stratis: {
     '0xeA705D2DbD8DE7Dc70Db7B531D0F620d9CeE9d18': { coingeckoId: "stratis", decimals: 18 },
-  }
+  },
+  aptos: {
+    '0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b': { coingeckoId: "usd-coin", decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
