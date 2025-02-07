@@ -8,6 +8,7 @@ const {
 } = require("../helper/solana");
 const idl = require("./idl/krystal_auto_vault.json");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs.js");
+const { getUniqueAddresses } = require("../helper/tokenMapping.js");
 
 const CLMM_PROGRAM_ID = new PublicKey(
   "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
@@ -19,6 +20,7 @@ async function tvl(api) {
 
   const program = new Program(idl, { connection });
   const pools = new Map();
+  const pdaPersonalPositionAddressesAll = []
 
   // Load all the vaults in the program
   const vaults = await program.account.userVault.all();
@@ -26,11 +28,25 @@ async function tvl(api) {
   const positions = [];
   for (const account of vaults) {
     const vault = account.publicKey;
-    const positionsByOwner = await findClmmPositionsByOwner(
-      connection,
-      vault
-    );
-    positions.push(...positionsByOwner);
+    await findClmmPositionsByOwner(connection, vault);
+  }
+
+  const positionAccountInfos = await connection.getMultipleAccountsInfo(pdaPersonalPositionAddressesAll);
+
+  positionAccountInfos.map((account) => {
+    if (!account) return;
+
+    positions.push(decodeAccount("raydiumPositionInfo", account));
+  });
+
+  const poolIds = getUniqueAddresses(positions.map((position) => position.poolId.toBase58()), "solana");
+  const poolAccounts = await connection.getMultipleAccountsInfo(poolIds.map(i => new PublicKey(i)));
+
+  for (let i = 0; i < poolIds.length; i++) {
+    const poolId = poolIds[i];
+    const poolAccount = poolAccounts[i];
+    const poolInfo = decodeAccount("raydiumCLMM", poolAccount);
+    pools.set(poolId, poolInfo);
   }
 
   for (const position of positions) {
@@ -38,14 +54,6 @@ async function tvl(api) {
     const poolKey = poolId.toBase58();
 
     let poolInfo = pools.get(poolKey);
-    if (!poolInfo) {
-      const pool = await connection.getAccountInfo(poolId);
-      if (!pool) continue;
-
-      const info = decodeAccount("raydiumCLMM", pool);
-      pools.set(poolKey, info);
-      poolInfo = info;
-    }
 
     addUniV3LikePosition({
       api,
@@ -57,51 +65,41 @@ async function tvl(api) {
       tick: poolInfo.tickCurrent,
     });
   }
-}
 
-async function findClmmPositionsByOwner(connection, owner) {
-  const [tokenAccounts, token2022Accounts] = await Promise.all([
-    connection.getParsedTokenAccountsByOwner(owner, {
-      programId: TOKEN_PROGRAM_ID,
-    }),
-    connection.getParsedTokenAccountsByOwner(owner, {
-      programId: TOKEN_2022_PROGRAM_ID,
-    }),
-  ]);
 
-  const allTokenAccounts = [];
-  if (tokenAccounts?.value) {
-    allTokenAccounts.push(...tokenAccounts.value);
-  }
-  if (token2022Accounts?.value) {
-    allTokenAccounts.push(...token2022Accounts.value);
-  }
+  async function findClmmPositionsByOwner(connection, owner) {
+    const [tokenAccounts, token2022Accounts] = await Promise.all([
+      connection.getParsedTokenAccountsByOwner(owner, {
+        programId: TOKEN_PROGRAM_ID,
+      }),
+      connection.getParsedTokenAccountsByOwner(owner, {
+        programId: TOKEN_2022_PROGRAM_ID,
+      }),
+    ]);
 
-  const tokenNftMints = [];
-  allTokenAccounts.forEach((tokenAccount) => {
-    const info = tokenAccount.account.data.parsed.info;
-    if (info.tokenAmount.amount == "1" && info.tokenAmount.decimals == 0) {
-      tokenNftMints.push(new PublicKey(info.mint));
+    const allTokenAccounts = [];
+    if (tokenAccounts?.value) {
+      allTokenAccounts.push(...tokenAccounts.value);
     }
-  });
+    if (token2022Accounts?.value) {
+      allTokenAccounts.push(...token2022Accounts.value);
+    }
 
-  const pdaPersonalPositionAddresses = tokenNftMints.map((nftMint) => {
-    return getPdaPersonalPositionAddress(nftMint);
-  });
+    const tokenNftMints = [];
+    allTokenAccounts.forEach((tokenAccount) => {
+      const info = tokenAccount.account.data.parsed.info;
+      if (info.tokenAmount.amount == "1" && info.tokenAmount.decimals == 0) {
+        tokenNftMints.push(new PublicKey(info.mint));
+      } else {
+        api.add(info.mint, info.tokenAmount.amount)
+      }
+    });
 
-  const accountInfos = await connection.getMultipleAccountsInfo(
-    pdaPersonalPositionAddresses
-  );
-
-  const positionAccounts = [];
-  accountInfos.map((account) => {
-    if (!account) return;
-
-    positionAccounts.push(decodeAccount("raydiumPositionInfo", account));
-  });
-
-  return positionAccounts;
+    const pdaPersonalPositionAddresses = tokenNftMints.map(getPdaPersonalPositionAddress)
+    pdaPersonalPositionAddressesAll.push(...pdaPersonalPositionAddresses)
+  }
 }
+
 
 function getPdaPersonalPositionAddress(nftMint) {
   const [pda] = PublicKey.findProgramAddressSync(
@@ -112,6 +110,4 @@ function getPdaPersonalPositionAddress(nftMint) {
   return pda;
 }
 
-module.exports = {
-  tvl,
-};
+module.exports = { tvl };

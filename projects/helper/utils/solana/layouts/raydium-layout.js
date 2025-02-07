@@ -197,7 +197,7 @@ const TokenAmountLayout = struct([
 ])
 
 const PositionRewardInfoLayout = struct([u128("growthInsideLastX64"), u64("rewardAmountOwed")]);
-const POSITION_INFO_LAYOUT = struct([
+const RAYDIUM_POSITION_INFO_LAYOUT = struct([
   blob(8),
   u8("bump"),
   publicKey("nftMint"),
@@ -219,5 +219,5 @@ const POSITION_INFO_LAYOUT = struct([
 
 module.exports = {
   RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1,
-  KeyLayoutv4, TokenAmountLayout, POSITION_INFO_LAYOUT
+  KeyLayoutv4, TokenAmountLayout, RAYDIUM_POSITION_INFO_LAYOUT
 }

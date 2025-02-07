@@ -2,7 +2,7 @@
 const { PublicKey } = require("@solana/web3.js");
 const { parseLido, parseLidoValidatorList } = require('./layouts/lido')
 const { parsePhoenix } = require('./layouts/phoenix-dex')
-const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, POSITION_INFO_LAYOUT } = require('./layouts/raydium-layout')
+const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, RAYDIUM_POSITION_INFO_LAYOUT } = require('./layouts/raydium-layout')
 const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
 const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2, MARKET_STATE_LAYOUT_V3_MINIMAL } = require('./layouts/openbook-layout')
 const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT, 
@@ -57,7 +57,7 @@ const customDecoders = {
   openbookOpenOrders: defaultParseLayout(OPEN_ORDERS_LAYOUT_V2),
   // raydiumLPv4: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_V4),
   raydiumCLMM: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM),
-  raydiumPositionInfo: defaultParseLayout(POSITION_INFO_LAYOUT),
+  raydiumPositionInfo: defaultParseLayout(RAYDIUM_POSITION_INFO_LAYOUT),
   raydiumLPStable: defaultParseLayout(RAYDIUM_STABLE_STATE_LAYOUT_V1),
   scnStakePool: defaultParseLayout(SCN_STAKE_POOL),
   fluxbeam: defaultParseLayout(TokenSwapLayout),
