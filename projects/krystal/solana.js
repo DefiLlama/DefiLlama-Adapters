@@ -20,46 +20,42 @@ async function tvl(api) {
   const program = new Program(idl, { connection });
   const pools = new Map();
 
-  try {
-    // Load all the vaults in the program
-    const vaults = await program.account.userVault.all();
+  // Load all the vaults in the program
+  const vaults = await program.account.userVault.all();
 
-    const positions = [];
-    for (const account of vaults) {
-      const vault = account.publicKey;
-      const positionsByOwner = await findClmmPositionsByOwner(
-        connection,
-        vault
-      );
-      positions.push(...positionsByOwner);
+  const positions = [];
+  for (const account of vaults) {
+    const vault = account.publicKey;
+    const positionsByOwner = await findClmmPositionsByOwner(
+      connection,
+      vault
+    );
+    positions.push(...positionsByOwner);
+  }
+
+  for (const position of positions) {
+    const poolId = position.poolId;
+    const poolKey = poolId.toBase58();
+
+    let poolInfo = pools.get(poolKey);
+    if (!poolInfo) {
+      const pool = await connection.getAccountInfo(poolId);
+      if (!pool) continue;
+
+      const info = decodeAccount("raydiumCLMM", pool);
+      pools.set(poolKey, info);
+      poolInfo = info;
     }
 
-    for (const position of positions) {
-      const poolId = position.poolId;
-      const poolKey = poolId.toBase58();
-
-      let poolInfo = pools.get(poolKey);
-      if (!poolInfo) {
-        const pool = await connection.getAccountInfo(poolId);
-        if (!pool) continue;
-
-        const info = decodeAccount("raydiumCLMM", pool);
-        pools.set(poolKey, info);
-        poolInfo = info;
-      }
-
-      addUniV3LikePosition({
-        api,
-        token0: poolInfo.mintA.toBase58(),
-        token1: poolInfo.mintB.toBase58(),
-        liquidity: position.liquidity.toNumber(),
-        tickLower: position.tickLower,
-        tickUpper: position.tickUpper,
-        tick: poolInfo.tickCurrent,
-      });
-    }
-  } catch (error) {
-    console.error(error);
+    addUniV3LikePosition({
+      api,
+      token0: poolInfo.mintA.toBase58(),
+      token1: poolInfo.mintB.toBase58(),
+      liquidity: position.liquidity.toNumber(),
+      tickLower: position.tickLower,
+      tickUpper: position.tickUpper,
+      tick: poolInfo.tickCurrent,
+    });
   }
 }
 
