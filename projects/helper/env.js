@@ -27,6 +27,7 @@ const DEFAULTS = {
   ABSTRACT_RPC: "https://api.mainnet.abs.xyz",
   BERACHAIN_RPC: "https://rpc.berachain.com",
   BERACHAIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  SILICON_ZK_RPC_MULTICALL: "0x566da61a4D0841a67bA8F2c7e5975885fa0Af4DA",
 }
 
 const ENV_KEYS = [
