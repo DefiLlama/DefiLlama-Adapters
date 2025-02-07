@@ -20,10 +20,15 @@ const vaults = [
   "0x849232E2144BD5118B5e4A070FE15035cC07b388",
 ]
 
+const PSMs = [
+  '0xCaB847887a2d516Dfa690fa346638429415c089b',
+  '0x5623554eCe4E1fd78e8a4ce13D588A8e0053825D',
+]
+
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const symbol = await api.multiCall({ abi: 'string:symbol', calls: vaults })
-  return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
+  const pTokens = await api.multiCall({  abi: 'address:stable', calls: PSMs})
+  return api.sumTokens({ tokensAndOwners2: [tokens.concat(pTokens), vaults.concat(PSMs)] })
 }
 
 module.exports = {
