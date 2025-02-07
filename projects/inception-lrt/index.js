@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const CONFIG = [
@@ -23,7 +24,7 @@ const symbioticVaults = [
   '0x06824C27C8a0DbDe5F72f770eC82e3c0FD4DcEc3' // amphrLRT
 ]
 
-const wstETH = '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0'
+const wstETH = ADDRESSES.ethereum.WSTETH
 
 const eventAbis = {
   deposit: "event Deposit(address indexed sender, address indexed receiver, uint256 amount, uint256 iShares)",

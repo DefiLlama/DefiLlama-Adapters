@@ -4,7 +4,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 async function v3Tvl(api) {
   const factory = '0x2aeEC787Be499ef6f68e527B64FADF969D048042';
-  const WETH = '0xe66863b695a392507f5d68b6a7b8aa8218914059'.toLowerCase();
+  const WETH = ADDRESSES.silicon_zk.WETH.toLowerCase();
 
   const fromBlock = 1;
   const eventAbi = 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool, uint256 exid)';

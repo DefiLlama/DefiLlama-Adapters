@@ -41,7 +41,7 @@ module.exports.avax = {
       "0x56b9f5e181550b40472fd8c10a34e4ee6009c304",
       "0xc8e7fb72b53d08c4f95b93b390ed3f132d03f2d5",
       "0x7a842a6f4580edd3df41c1f31e0395044de6bc75",
-      "0x152b9d0fdc40c096757f570a51e494bd4b943e50",
+      ADDRESSES.avax.BTC_b,
       "0xb44b645b5058f7e393f3ae6af58a4cef67006196",
       "0xc654721fbf1f374fd9ffa3385bba2f4932a6af55",
       "0xffff003a6bad9b743d658048742935fffe2b6ed7",

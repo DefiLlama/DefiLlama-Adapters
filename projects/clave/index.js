@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const ZtakeV1Address = "0x9248F1Ee8cBD029F3D22A92EB270333a39846fB2"
 
 async function tvl(api) {
@@ -11,7 +12,7 @@ async function tvl(api) {
       '0x84064c058F2EFea4AB648bB6Bd7e40f83fFDe39a',
       '0x1aF23bD57c62A99C59aD48236553D0Dd11e49D2D',
       '0x697a70779C1A03Ba2BD28b7627a902BFf831b616',
-      '0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E',
+      ADDRESSES.era.ZK,
     ], '0x7f73934F333a25B456Dc9B8b62A19f211c991f1c'
   ]]
 

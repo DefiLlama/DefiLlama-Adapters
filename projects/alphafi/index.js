@@ -109,7 +109,7 @@ const ALPHAFI_CETUS_TVL_IDS = [
     poolID: "0xff496f73a1f9bf7461882fbdad0c6c6c73d301d3137932f7fce2428244359eaa",
     parentPoolID: "0xe01243f37f712ef87e556afb9b1d03d0fae13f96d324ec912daffc339dfdcbd2",
     investorID: "0x5e195363175e4b5139749d901ddd5ef1ffc751777a7051b558c45fa12f24abc3",
-    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
+    token0Type: ADDRESSES.sui.DEEP,
     token1Type: ADDRESSES.sui.SUI
   },
   // buck sui
@@ -212,7 +212,7 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     poolID: "0x46de57bfaa096c674492c3892caa261cf34cc46a2e539ece91f0db3e46e3f6c3",
     parentPoolID: "0x1b06371d74082856a1be71760cf49f6a377d050eb57afd017f203e89b09c89a2",
     investorID: "0x92454fe9c315328efb29607c30f6fb7b5ec55c0a8d9944285075386e381bbca0",
-    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
+    token0Type: ADDRESSES.sui.DEEP,
     token1Type: ADDRESSES.sui.SUI
   },
   { //stsui sui
@@ -285,7 +285,7 @@ const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
     poolID: "0x76fb78985fae4cf24bcd933ea5e8a6e818e9d4b51c091c4c4a78b6720199e81e",
     parentPoolID: "0x1b06371d74082856a1be71760cf49f6a377d050eb57afd017f203e89b09c89a2",
     investorID: "0x217a85380d0cf4b4c5a870b8f6d11b8e3bc66de87e86d0376080ca7e60e6506c",
-    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
+    token0Type: ADDRESSES.sui.DEEP,
     token1Type: ADDRESSES.sui.SUI
   },
   { //blue sui
@@ -299,7 +299,7 @@ const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
     poolID: "0x37671a77fb00a3323304f2586d18694bb93a6bc840e8184634ebe66d69eb48db",
     parentPoolID: "0x4b8271fc4819078e44ee9a0506a824b77464789d57ace355d0562a4776c51840",
     investorID: "0x90364be9cca6c1df042f269fb944fd49ba1c74688789fe33329aa6d40ac8552a",
-    token0Type: "0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270::deep::DEEP",
+    token0Type: ADDRESSES.sui.DEEP,
     token1Type: "0xe1b45a0e641b9955a20aa0ad1c1f4ad86aad8afb07296d4085e349a50e90bdca::blue::BLUE"
   },
 ]
