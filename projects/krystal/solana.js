@@ -69,10 +69,14 @@ async function findClmmPositionsByOwner(connection, owner) {
     }),
   ]);
 
-  const allTokenAccounts = [
-    ...tokenAccounts?.value,
-    ...token2022Accounts?.value,
-  ];
+  const allTokenAccounts = [];
+  if (tokenAccounts?.value) {
+    allTokenAccounts.push(...tokenAccounts.value);
+  }
+  if (token2022Accounts?.value) {
+    allTokenAccounts.push(...token2022Accounts.value);
+  }
+
   const tokenNftMints = [];
   allTokenAccounts.forEach((tokenAccount) => {
     const info = tokenAccount.account.data.parsed.info;
