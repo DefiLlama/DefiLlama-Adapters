@@ -10,7 +10,6 @@ const config = {
     "0x291344FBaaC4fE14632061E4c336Fe3B94c52320",
     "0x0F76De33a3679a6065D14780618b54584a3907D4",
     "0xD1D64dAeED7504Ef3Eb056aa2D973bD064843A84",
-    // "0x1c17a39B156189BF40905425170a3Ff62fb650DA",
     "0xB0730AA7d6e880F901B5d71A971096dB56895a0f",
     "0x5f44A7DD0a016A5Ec9682df36899A781442CAa43",
     "0x0215EdEecdABE3DfC5EC8D59337eC9b26d359088",
@@ -24,7 +23,6 @@ const config = {
     '0xaB2743a3A2e06d457368E901F5f927F271fa1374',
     '0x91aCd32dA9beA6DA3751dc12Ee0fBe47169349C1',
     '0xc027EC28F76d92D4124fCbffCF6b25137a84968C',
-    // '0x999a57ae7694298126a5db2E44F778CA486b14FC', // exlcude own tokens from tvl
     '0xaC75f0c46723432a2303f2a7c7769535A179Ed56',
     '0x907A9f69061736AD82811CccD6ADD9dC4A2352A9',
     '0x1176c3760Af6a1dbAa5BBd0Cc6cdA8A2Ed6B785E',
@@ -37,9 +35,19 @@ const config = {
   ]
 }
 
+const stakings = {
+  arbitrum: [
+    "0x1c17a39B156189BF40905425170a3Ff62fb650DA",
+    '0x999a57ae7694298126a5db2E44F778CA486b14FC',
+  ]
+}
+
 Object.keys(config).forEach(chain => {
   const vaults = config[chain]
   module.exports[chain] = {
     tvl: sumERC4626VaultsExport({ vaults, isOG4626: true, })
   }
+
+  if (stakings[chain])
+    module.exports[chain].staking = sumERC4626VaultsExport({ vaults: stakings[chain], isOG4626: true, })
 })
