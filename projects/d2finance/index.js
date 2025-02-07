@@ -38,7 +38,7 @@ const config = {
 const stakings = {
   arbitrum: [
     "0x1c17a39B156189BF40905425170a3Ff62fb650DA",
-    '0x999a57ae7694298126a5db2E44F778CA486b14FC',
+    // '0x999a57ae7694298126a5db2E44F778CA486b14FC',
   ]
 }
 
