@@ -13,7 +13,7 @@ const ABI = {
 const vaults = {
   bsc: '0x89c527764f03BCb7dC469707B23b79C1D7Beb780',
   celo: '0x979cD0826C2bf62703Ef62221a4feA1f23da3777',
-  // ethereum: '0x1bf68a9d1eaee7826b3593c20a0ca93293cb489a',
+  ethereum: '0x1bf68a9d1eaee7826b3593c20a0ca93293cb489a',
   heco: '0x38C92A7C2B358e2F2b91723e5c4Fc7aa8b4d279F',
   klaytn: '0x9abc3f6c11dbd83234d6e6b2c373dfc1893f648d',
   polygon: '0x506DC4c6408813948470a06ef6e4a1DaF228dbd5',
@@ -80,7 +80,7 @@ module.exports = {
   bsc: { tvl },
   celo: { tvl },
   heco: { tvl },
-  // ethereum: { tvl },
+  ethereum: { tvl },
   klaytn: { tvl },
   polygon: { tvl },
   meta: { tvl },
