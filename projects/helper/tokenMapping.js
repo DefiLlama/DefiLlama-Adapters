@@ -45,23 +45,6 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  berachain: {
-    [ADDRESSES.null]: { coingeckoId: "wrapped-bera", decimals: 18 }, 
-    '0x6969696969696969696969696969696969696969': { coingeckoId: "wrapped-bera", decimals: 18 }, 
-    '0x93f4d0ab6a8b4271f4a28db399b5e30612d21116': { coingeckoId: "ethereum:0x094c0e36210634c3CfA25DC11B96b562E0b07624", decimals: 18 }, 
-    '0xecac9c5f704e954931349da37f60e39f515c11c1': { coingeckoId: "ethereum:0x8236a87084f8B84306f72007F36F2618A5634494", decimals: 18 }, 
-  },
-  stratis: {
-    '0xeA705D2DbD8DE7Dc70Db7B531D0F620d9CeE9d18': { coingeckoId: "stratis", decimals: 18 },
-  },
-  aptos: {
-    '0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b': { coingeckoId: "usd-coin", decimals: 6 },
-  },
-  silicon_zk: {
-    '0x0000000000000000000000000000000000000000': { coingeckoId: "ethereum", decimals: 18 },
-    '0xe66863b695a392507f5d68b6a7b8aa8218914059': { coingeckoId: "ethereum", decimals: 18 },
-    '0x1e4a5963abfd975d8c9021ce480b42188849d41d': { coingeckoId: "tether", decimals: 18 },
-  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
