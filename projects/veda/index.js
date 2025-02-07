@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { legacyVaultsEthereum, boringVaultsV0Ethereum } = require("./ethereum_constants");
+const { boringVaultsV0Berachain } = require("./berachain_constants");
 const { sumLegacyTvl, sumBoringTvl } = require("./helper_methods");
 
 async function ethereum_tvl(api) {
@@ -7,20 +8,23 @@ async function ethereum_tvl(api) {
 
   // Legacy vaults
   const activeLegacyVaultAddresses = filterActiveLegacyVaults(legacyVaultsEthereum, block);
-  await sumLegacyTvl({
-    api,
-    vaults: activeLegacyVaultAddresses,
-    ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
-  });
+  if (activeLegacyVaultAddresses.length > 0) {
+    await sumLegacyTvl({
+      api,
+      vaults: activeLegacyVaultAddresses,
+      ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
+    });
+  }
 
   // Boring vaults V0
   const activeBoringVaults = filterActiveBoringVaults(boringVaultsV0Ethereum, block);
-  //console.log("Active boring vaults count:", activeBoringVaults.length);
-  await sumBoringTvl({
-    api,
-    vaults: activeBoringVaults,
-    ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
-  });
+  if (activeBoringVaults.length > 0) {
+    await sumBoringTvl({
+      api,
+      vaults: activeBoringVaults,
+      ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
+    });
+  }
 
   return api.getBalances();
 }
@@ -45,10 +49,25 @@ function filterActiveBoringVaults(vaults, blockHeight) {
     }));
 }
 
+
+async function berachain_tvl(api) {
+  const block = await api.getBlock()
+
+  const activeBoringVaults = filterActiveBoringVaults(boringVaultsV0Berachain, block);
+  if (activeBoringVaults.length > 0) {
+    await sumBoringTvl({
+      api,
+      vaults: activeBoringVaults,
+      ownersToDedupe: [...boringVaultsV0Berachain].filter(v => v.id),
+    });
+  }
+}
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   start: 1710745200,
   doublecounted: true,
-  ["ethereum"]: { tvl: ethereum_tvl }
+  ["ethereum"]: { tvl: ethereum_tvl },
+  ["berachain"]: { tvl: berachain_tvl }
 };

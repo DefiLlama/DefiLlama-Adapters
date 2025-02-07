@@ -1,14 +1,17 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 
 const legacyVaultsEthereum = [
+  /*
   {
     id: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
     startBlock: 19460621,
     baseAsset: ADDRESSES.ethereum.WETH,
   },
+  */
 ];
 
 const boringVaultsV0Ethereum = [
+  /*
   {
     name: "Liquid USD",
     vault: "0x08c6F91e2B681FaF5e17227F2a44C307b3C1364C",
@@ -198,6 +201,7 @@ const boringVaultsV0Ethereum = [
     startBlock: 21363112,
     baseAsset: ADDRESSES.ethereum.USDC,
   },
+  */
   {
     name: "Liquid Bera ETH",
     vault: "0x83599937c2C9bEA0E0E8ac096c6f32e86486b410",
@@ -216,6 +220,7 @@ const boringVaultsV0Ethereum = [
     startBlock: 21514285,
     baseAsset: ADDRESSES.ethereum.WBTC,
   },
+  /*
   {
     name: "Usual Bera",
     vault: "0x165c62448015d96c920dDA001Ae27733AF2C36c7",
@@ -252,6 +257,7 @@ const boringVaultsV0Ethereum = [
     startBlock: 21746816,
     baseAsset: ADDRESSES.ethereum.WBTC,
   },
+  */
 ];
 
 module.exports = {
