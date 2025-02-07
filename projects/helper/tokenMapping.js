@@ -54,6 +54,9 @@ const fixBalancesTokens = {
   stratis: {
     '0xeA705D2DbD8DE7Dc70Db7B531D0F620d9CeE9d18': { coingeckoId: "stratis", decimals: 18 },
   },
+  aptos: {
+    '0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b': { coingeckoId: "usd-coin", decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
