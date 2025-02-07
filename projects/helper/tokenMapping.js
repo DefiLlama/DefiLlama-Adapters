@@ -48,10 +48,12 @@ const fixBalancesTokens = {
   berachain: {
     [ADDRESSES.null]: { coingeckoId: "wrapped-bera", decimals: 18 }, 
     '0x6969696969696969696969696969696969696969': { coingeckoId: "wrapped-bera", decimals: 18 }, 
+    '0x93f4d0ab6a8b4271f4a28db399b5e30612d21116': { coingeckoId: "ethereum:0x094c0e36210634c3CfA25DC11B96b562E0b07624", decimals: 18 }, 
+    '0xecac9c5f704e954931349da37f60e39f515c11c1': { coingeckoId: "ethereum:0x8236a87084f8B84306f72007F36F2618A5634494", decimals: 18 }, 
   },
   stratis: {
     '0xeA705D2DbD8DE7Dc70Db7B531D0F620d9CeE9d18': { coingeckoId: "stratis", decimals: 18 },
-  }
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
