@@ -11,6 +11,8 @@ async function tvl() {
 
     console.log(loTokenBalances)
 
+    // get token USD total value
+
 }
 
 
