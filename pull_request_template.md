@@ -15,19 +15,19 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama): LiquidOps
 
 
-##### Twitter Link:
+##### Twitter Link: https://x.com/Liquid_Ops
 
 
 ##### List of audit links if any:
 
 
-##### Website Link:
+##### Website Link: https://liquidops.io
 
 
-##### Logo (High resolution, will be shown with rounded borders):
+##### Logo (High resolution, will be shown with rounded borders): https://arweave.dev/PCfQWSAkjhTxUStbiVp_gy4oFVwjF2MJnGfOCn6v0E8
 
 
 ##### Current TVL:
@@ -36,7 +36,7 @@
 ##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain:
+##### Chain: AO
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -45,23 +45,23 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): LiquidOps is an over collateralised lending and borrowing protocol built on AO.arweave.dev and arweave.org, modeled after Compound V2.
 
 
 ##### Token address and ticker if any:
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: Lending
 
 
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): Redstone
 ##### Implementation Details: Briefly describe how the oracle is integrated into your project:
 ##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
 
 ##### forkedFrom (Does your project originate from another project):
 
 
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### methodology (what is being counted as tvl, how is tvl being calculated): All lent tokens in LiquidOps in USD are added together.
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity):
+##### Github org/user (Optional, if your code is open source, we can track activity): https://github.com/useLiquidOps
