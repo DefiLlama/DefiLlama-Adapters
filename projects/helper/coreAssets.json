@@ -2242,5 +2242,15 @@
   "sxr": {
     "WSX": "0x3E96B0a25d51e3Cc89C557f152797c33B839968f",
     "USDC": "0x6629ce1cf35cc1329ebb4f63202f3f197b3f050b"
+  },
+  "berachain": {
+    "WBERA": "0x6969696969696969696969696969696969696969"
+  },
+  "stratis": {
+    "WSTRAX": "0xeA705D2DbD8DE7Dc70Db7B531D0F620d9CeE9d18"
+  },
+  "silicon_zk": {
+    "WETH": "0xe66863b695a392507f5d68b6a7b8aa8218914059",
+    "USDT": "0x1e4a5963abfd975d8c9021ce480b42188849d41d"
   }
 }
