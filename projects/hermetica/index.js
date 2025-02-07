@@ -3,7 +3,7 @@ const { stacks } = require('../helper/coreAssets.json')
 const { call } = require('../helper/chain/stacks-api')
 
 module.exports = {
-  methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
+  methodology: 'Counts the number of USDh tokens on Stacks and Bitcoin (Runes).',
   timetravel: false,
   bitcoin: {
     tvl: async () => {
