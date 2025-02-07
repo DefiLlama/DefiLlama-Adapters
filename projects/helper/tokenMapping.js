@@ -57,6 +57,11 @@ const fixBalancesTokens = {
   aptos: {
     '0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b': { coingeckoId: "usd-coin", decimals: 6 },
   },
+  silicon_zk: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "ethereum", decimals: 18 },
+    '0xe66863b695a392507f5d68b6a7b8aa8218914059': { coingeckoId: "ethereum", decimals: 18 },
+    '0x1e4a5963abfd975d8c9021ce480b42188849d41d': { coingeckoId: "tether", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

@@ -18,7 +18,8 @@ const vaults = {
   klaytn: '0x9abc3f6c11dbd83234d6e6b2c373dfc1893f648d',
   polygon: '0x506DC4c6408813948470a06ef6e4a1DaF228dbd5',
   meta: '0x292A00F3b99e3CB9b324EdbaA92258C3C61b55ab',
-  wemix: '0x445F863df0090f423A6D7005581e30d5841e4D6d'
+  wemix: '0x445F863df0090f423A6D7005581e30d5841e4D6d',
+  silicon_zk: '0x5aAAcf28ECDd691b4a657684135d8848d38236Bb'
 }
 
 const farms = {
@@ -48,6 +49,7 @@ async function tvl(api) {
   let targetChain = chain
   if (chain === 'ethereum') targetChain = 'eth'
   if (chain === 'polygon') targetChain = 'matic'
+  if (chain === 'silicon_zk') targetChain = 'silicon'
 
   const tokenListURL = 'https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList'
   tokenData = tokenData || getConfig('orbit-bridge', tokenListURL)
@@ -83,6 +85,7 @@ module.exports = {
   polygon: { tvl },
   meta: { tvl },
   wemix: { tvl },
+  silicon_zk: { tvl },
   ripple: {
     tvl: sumTokensExport({ owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia' })
   },
