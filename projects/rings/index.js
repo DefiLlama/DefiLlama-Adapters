@@ -10,8 +10,8 @@ module.exports = {
 const CONFIG = {
   ethereum: {
     vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
+      ADDRESSES.sonic.scUSD,
+      ADDRESSES.sonic.scETH,
     ],
     supportedAssets: [
       ADDRESSES.ethereum.USDC,                         // USDC
@@ -37,8 +37,8 @@ const CONFIG = {
   },
   sonic: {
     vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812'
+      ADDRESSES.sonic.scUSD,
+      ADDRESSES.sonic.scETH
     ],
     supportedAssets: [
       ADDRESSES.sonic.USDC_e,
@@ -49,8 +49,8 @@ const CONFIG = {
       '0x455d5f11Fea33A8fa9D3e285930b478B6bF85265'    // stkscETH
     ],
     stakingSupportedAssets: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',   // scUSD
-      '0x3bce5cb273f0f148010bbea2470e7b5df84c7812',   // scETH
+      ADDRESSES.sonic.scUSD,   // scUSD
+      ADDRESSES.sonic.scETH,   // scETH
       '0xCd4D2b142235D5650fFA6A38787eD0b7d7A51c0C',   // Stable Beets
       '0x33B29bcf17e866A35941e07CbAd54f1807B337f5',   // Stable Beets Gauge
       '0xE54DD58a6d4e04687f2034dd4dDAb49da55F8afF',   // Echoes of the Ether
