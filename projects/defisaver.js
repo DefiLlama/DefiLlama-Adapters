@@ -9,14 +9,15 @@ async function tvl(api) {
   //
   // By getting subscription data from the first package you can calculate balances for each position using `get${protocol_name_here}AccountBalances` method from the second package
 
-  const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=${block}`);
+  const response = await fetch(`https://stats.defisaver.com/api/automation/tvl/per-asset?chainId=${chainId}&block=${block - 10000}`);
   const data = await response.json();
 
-  if (response.status !== 200) {
+  if (response.status !== 200)
     throw new Error(data.message || 'Error not handled');
-  }
 
-  return data.balances;
+  Object.entries(data.balances).forEach(([token, balance]) => {
+    api.add(token, +balance)
+  })
 }
 
 module.exports = {

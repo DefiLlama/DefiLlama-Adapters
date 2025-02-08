@@ -1,5 +1,6 @@
 const { getExports } = require('../helper/heroku-api')
 const { sumTokens2 } = require('../helper/solana')
+const index = require('../index')
 
 module.exports = {
   timetravel: false,
@@ -11,6 +12,8 @@ module.exports.solana = {
   staking: () => sumTokens2({ tokenAccounts: ['8tnpAECxAT9nHBqR1Ba494Ar5dQMPGhL31MmPJz1zZvY'] }),
   tvl: tvlWithCheck,
 }
+
+module.exports.solana = index.solana
 
 async function tvlWithCheck(api) {
   const balances = await tvl(api)
