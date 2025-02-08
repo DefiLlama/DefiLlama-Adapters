@@ -3,13 +3,15 @@ const sdk = require("@defillama/sdk");
 const { staking, } = require("../helper/staking");
 const { sumUnknownTokens } = require('../helper/unknownTokens');
 
+const { uniV3Export } = require("../helper/uniswapV3");
+
 const chain = "arbitrum";
 
 const plutusToken = "0x51318B7D00db7ACc4026C88c3952B66278B6A67F";
 
 const SYK = "0xacc51ffdef63fb0c014c882267c3a17261a5ed50";
 const plsSYK = "0x68d6d2545f14751baf36c417c2cc7cdf8da8a15b";
-const plsSYKFarm = "0x912ce59144191c1204e64559fe8253a0e49e6548";
+const plsSYKFarm = "0xCE8A501710ff0717601AD43B51f4b7CF832beff4";
 const SPA = '0x5575552988a3a80504bbaeb1311674fcfd40ad4b'
 const plsSpa = "0x0D111e482146fE9aC9cA3A65D92E65610BBC1Ba6";
 const plsSpaFarm = "0x73e7c78E8a85C074733920f185d1c78163b555C8";
@@ -20,6 +22,9 @@ const plsRdntv2 = "0x6dbf2155b0636cb3fd5359fccefb8a2c02b6cb51";
 const plsRdntv2Burn= "0x6dbF2155B0636cb3fD5359FCcEFB8a2c02B6cb51"
 const ARB = "0x912ce59144191c1204e64559fe8253a0e49e6548";
 const dLP = "0x32df62dc3aed2cd6224193052ce665dc18165841";
+const JonesLP = '0xe8EE01aE5959D3231506FcDeF2d5F3E85987a39c'
+const plvGlpToken = ADDRESSES.arbitrum.plvGLP;
+const plgGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
 
 // DEPRECATED; will track to maintain history
 const plsJones = "0xe7f6C3c1F0018E4C08aCC52965e5cbfF99e34A44";
@@ -35,23 +40,21 @@ const plsDpx = "0xF236ea74B515eF96a9898F5a4ed4Aa591f253Ce1";
 const dpxPlsDpxMasterChef = "0xA61f0d1d831BA4Be2ae253c13ff906d9463299c2";
 const dpxPlsDpxLp = "0x16e818e279d7a12ff897e257b397172dcaab323b";
 
-const plvGlpToken = ADDRESSES.arbitrum.plvGLP;
-const plgGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
-
 const plsEthMasterChef = "0x5593473e318F0314Eb2518239c474e183c4cBED5";
 const plsEthLp = "0x6CC0D643C7b8709F468f58F363d73Af6e4971515";
 
 const lps = [
   '0x16e818e279d7a12ff897e257b397172dcaab323b', // DPX-plsDPX-LP
   '0x69fdf3b2e3784a315e2885a19d3565c4398d49a5', // plsJONES JONES-WETH SLP
-  '0x0d111e482146fe9ac9ca3a65d92e65610bbc1ba6', // plsSPA-SPA LP
+  '0x617462e8cc146cb5d8dfd070dd23c337c81798bc', // plsSPA-SPA LP
   '0xdaccf9aa59ad3c9a02b69639fe8a1e3c6493d39e', // plsSYK-SYK LP
-  '0x00c7f3082833e796A5b3e4Bd59f6642FF44DCD15', // plsGrail-GRAIL LP
+  '0xc0Ad0bDe7DE13B3B9Ca5eacb156D30c354c591EA', // plsGrail-GRAIL LP
   '0x47a52b2bee1a0cc9a34bb9ee34c357c054112c3e', // plsARB-ARB LP
 ]
+
 const coreAssets = [
   DPX,
-  '0xe8EE01aE5959D3231506FcDeF2d5F3E85987a39c', // JONES-WETH SLP
+  JonesLP,
   dLP,
   SPA,
   SYK,
@@ -64,6 +67,14 @@ const plutusStakingContracts = [
   "0xBEB981021ed9c85AA51d96C0c2edA10ee4404A2e",
   "0xE9645988a5E6D5EfCc939bed1F3040Dba94C6CbB"
 ];
+
+module.exports = uniV3Export({
+  plutus: {
+    factory: "0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B",
+    fromBlock: 102286676,
+    isAlgebra: true,
+  },
+});
 
 async function tvl(ts, _block, {[chain]: block}) {
   const balances = {}
@@ -83,18 +94,6 @@ async function tvl(ts, _block, {[chain]: block}) {
     }
 
     try {
-      // Add plvGLP total supply
-      const { output: plvGlpSupply } = await sdk.api.erc20.totalSupply({
-        target: plvGlpToken, 
-        chain, 
-        block
-      });
-      sdk.util.sumSingleBalance(balances, 'arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', plvGlpSupply)
-    } catch (e) {
-      console.log(`Error getting plvGLP total supply: ${e.message}`)
-    }
-
-    try {
       // calculate syk TVL
       const { output: plsSykSupply } = await sdk.api.erc20.totalSupply({
         target: plsSYK,
@@ -106,6 +105,7 @@ async function tvl(ts, _block, {[chain]: block}) {
       console.log(`Error getting plsSyk total supply: ${e.message}`)
     }
 
+    // calcluate plsRdntv2 TVL
     try {
       const { output: plsRdntv2Supply } = await sdk.api.erc20.totalSupply({
         target: plsRdntv2,
@@ -178,10 +178,7 @@ async function tvl(ts, _block, {[chain]: block}) {
   return balances
 }
 
-async function stakingPls(ts, _block, {[chain]: block}) {
-  const balances = {}
-  
-  // Calculate values for PLS assets staked in farms
+async function stakingPlsTvl(api) {
   const tokensAndOwners = [
      [plsDpx, plsDpxFarmV1],
      [plsDpx, plsDpxFarm],
@@ -193,47 +190,60 @@ async function stakingPls(ts, _block, {[chain]: block}) {
      [plsGrail, plsGrailFarm],
   ]
 
-  // Filter out non-existent contracts
-  const validTokensAndOwners = []
-  for (const [token, owner] of tokensAndOwners) {
-    try {
-      const balance = await sdk.api.erc20.balanceOf({
-        target: token,
-        owner,
-        chain,
-        block,
-      })
-      if (balance.success) {
-        validTokensAndOwners.push([token, owner])
-        console.log(`Token ${token} balance in ${owner}:`, balance.output)
-      }
-    } catch (e) {
-      console.log(`Failed to get balance for token ${token}`)
-    }
-  }
+  // Get raw balances
+  const bals = await api.multiCall({  
+    abi: 'erc20:balanceOf',
+    calls: tokensAndOwners.map(([token, owner]) => ({
+      target: token,
+      params: owner
+    }))
+  })
 
-  if (validTokensAndOwners.length > 0) {
-    return sumUnknownTokens({
-      balances, 
-      tokensAndOwners: validTokensAndOwners,  // Only use valid pairs
-      lps, 
-      coreAssets, 
-      chain, 
-      block,
-    })
-  }
-  
-  return balances
+  // Add raw balances and log them
+  tokensAndOwners.forEach(([token], i) => {
+    if (bals[i]) {
+      console.log(`Adding balance for ${token}: ${bals[i]}`)
+      api.add(token, bals[i])
+    }
+  })
+
+  // // Add plvGLP balance
+  // try {
+  //   const { output: plvGlpSupply } = await sdk.api.erc20.totalSupply({
+  //     target: plvGlpToken, 
+  //     chain: api.chain, 
+  //     block: api.block
+  //   });
+  //   api.add('arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', plvGlpSupply)
+  // } catch (e) {
+  //   console.log(`Error getting plvGLP total supply: ${e.message}`)
+  // }
+
+  return sumUnknownTokens({
+    api,
+    lps,
+    coreAssets,
+    resolveLP: true,
+    log_coreAssetPrices: true,
+    debug: true,
+  })
+}
+
+const stakingPls = () => async (timestamp, _block, chainBlocks) => {
+  console.log('\nCalling stakingPls with:', { timestamp, chain, block: chainBlocks[chain] })
+  const result = await stakingPlsTvl(new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp }))
+  console.log('\nstakingPls returning:', result)
+  return result
 }
 
 module.exports = {
   misrepresentedTokens: true,
   [chain]: {
     tvl,
-    pool2: staking([dpxPlsDpxMasterChef, plsEthMasterChef], [dpxPlsDpxLp, plsEthLp], chain),
     staking: sdk.util.sumChainTvls([
       staking(plutusStakingContracts, plutusToken, chain),
-      stakingPls
+      staking(plgGlpPlutusChef, plvGlpToken, chain),
+      stakingPls()
     ]),
   },
 };
