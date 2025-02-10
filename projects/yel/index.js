@@ -106,11 +106,6 @@ async function tvl( api, coveredAssets){
 
     totalTokenBalance = tokenBalanceOnPotion + (ltokenBalanceOnSLToken * cbr)
 
-    if(originalToken.toLowerCase() === '0x949185D3BE66775Ea648F4a306740EA9eFF9C567'.toLowerCase()) {
-
-    console.log(api, originalToken, totalTokenBalance)
-    }
-
     api.add(originalToken, totalTokenBalance)
   }
 }
