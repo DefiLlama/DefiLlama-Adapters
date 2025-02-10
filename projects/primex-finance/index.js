@@ -86,7 +86,7 @@ const config = {
       WEETH: "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
       ETHFI: "0x7189fb5B6504bbfF6a852B13B7B82a3c118fDc27",
       EZETH: ADDRESSES.optimism.ezETH,
-      RSETH: "0x4186bfc76e2e237523cbc30fd220fe055156b41f",
+      RSETH: ADDRESSES.berachain.rsETH,
       USDE: ADDRESSES.arbitrum.USDe,
       CBETH: "0x1debd73e752beaf79865fd6446b0c970eae7732f",
       USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
@@ -161,6 +161,17 @@ const config = {
       [ADDRESSES.ethereum.AAVE]: "0xA700b4eB416Be35b2911fd5Dee80678ff64fF6C9",
     },
   },
+  base: {
+    bucketsFactory: '0xCf552C38A0Ecb51982Af28d4e475beF27aC2dD25',
+    bucketsFactoryv2: '0x8e8792881227e8fee8a9e05a567A44D3FA04a7f0',
+    positionManager: '0x01ED183275956dBd0064B789B778cA0921e695E9',
+    traderBalanceVault: '0xDf7B923a7bF62331092B49fd36EE26A21755DFa1',
+    defaultTokens: {
+    },
+    aaveTokens: {
+    },
+  }
+
 }
 
 module.exports = {}

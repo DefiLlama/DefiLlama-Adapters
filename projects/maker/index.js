@@ -31,20 +31,6 @@ const getJoins = async (api) => {
   }).filter(Boolean);
 }
 
-const getDogs = async (api) => {
-  const logs = (await getLogs2({ api, target: MCD_DOG, fromBlock: START_DOG_BLOCK, topics: [DOG_topic], skipCache: true, skipCacheRead: true })).map(log => {
-    return '0x' + log.data.slice(-40);
-  })
-
-  const dogs = await api.multiCall({ abi: abi.dog, calls: logs, permitFailure: true })
-  
-  return logs.map((auth, i) => {
-    const dog = dogs[i];
-    if (!dog) return null
-    return auth.toLowerCase();
-  }).filter(Boolean);
-}
-
 const tvl = async (api) => {
   const [joins/*, dogs*/] = await Promise.all([
     getJoins(api),
