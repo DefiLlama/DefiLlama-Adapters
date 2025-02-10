@@ -13,7 +13,11 @@ module.exports = {
       })
       const receiverRewards = logs.map(i => i.rewardReceiver)
       const coreStakeAmounts = await api.multiCall({ abi: 'uint256:totalCoreStake', calls: receiverRewards })
-      api.addGasToken(coreStakeAmounts)
+       const totalCoreStakedVault = await api.call({
+        target: "0xee21ab613d30330823D35Cf91A84cE964808B83F",
+        abi: 'uint256:totalStaked',
+      });
+       api.addGasToken([...coreStakeAmounts, totalCoreStakedVault]);
     }
   },
   bitcoin: {

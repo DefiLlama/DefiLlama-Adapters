@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const solana = require('../helper/solana');
 const waves = require("../helper/chain/waves");
 const { sumTokens2, } = require('../helper/unwrapLPs');
@@ -9,11 +10,11 @@ const data = {
   },
   ethereum: {
     contractAddress: "0x3AC7A6635d99F376c3c05442f7Eef62d349C3A55",
-    tokens: ["0x1a920b0eaE5B49c51eBf042a61c3Fa58Dae04882", "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE", "0x6982508145454Ce325dDbE47a25d4ec3d2311933", "0x4d224452801ACEd8B2F0aebE155379bb5D594381", "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",]
+    tokens: ["0x1a920b0eaE5B49c51eBf042a61c3Fa58Dae04882", ADDRESSES.ethereum.INU, "0x6982508145454Ce325dDbE47a25d4ec3d2311933", "0x4d224452801ACEd8B2F0aebE155379bb5D594381", "0x812Ba41e071C7b7fA4EBcFB62dF5F45f6fA853Ee",]
   },
   unit0: {
     contractAddress: "0x3AC7A6635d99F376c3c05442f7Eef62d349C3A55",
-    tokens: ["0xEb19000D90f17FFbd3AD9CDB8915D928F4980fD1", "0xb303d80db8415FD1d3C9FED68A52EEAc9a052671", "0x1B100DE3F13E3f8Bb2f66FE58c1949c32E71248B", "0x9CE808657ba90C65a2700b1cA5D943eC72834B52",]
+    tokens: [ADDRESSES.unit0.USDC, ADDRESSES.unit0.USDT, ADDRESSES.unit0.WETH, ADDRESSES.unit0.WBTC,]
   },
 }
 

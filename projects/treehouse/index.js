@@ -94,7 +94,7 @@ async function tvl(api) {
 }
 
 async function tvlMantle(api) {
-  return api.sumTokens({ owner: '0x5E4ACCa7a9989007cD74aE4ed1b096c000779DCC', tokens: ['0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA'] })
+  return api.sumTokens({ owner: '0x5E4ACCa7a9989007cD74aE4ed1b096c000779DCC', tokens: [ADDRESSES.mantle.cmETH] })
 }
 
 module.exports = {
