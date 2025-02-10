@@ -20,7 +20,7 @@ async function tvl(api, address, blacklistedTokens) {
   ])
 
   const ownerTokens = vaults.map((vault, i) => ([tokens[i], vault]))
-  return sumTokens2({ api, ownerTokens, resolveLP: true, blacklistedTokens});
+  return sumTokens2({ api, ownerTokens, resolveLP: true, blacklistedTokens, permitFailure: true });
 }
 
 module.exports = { methodology: 'calculates overall value deposited across different protocol portfolios' }

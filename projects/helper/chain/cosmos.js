@@ -9,6 +9,8 @@ const ADDRESSES = require('../coreAssets.json')
 // https://proxy.atomscan.com/chains.json
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
+// https://celestia.publicnode.com/
+// https://api.axelarscan.io/api/getTVL
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://lcd.osmosis.zone",
@@ -47,7 +49,13 @@ const endPoints = {
   noble: "https://noble-api.polkachu.com",
   mantra: "https://api.mantrachain.io",
   elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
-  pryzm: "https://api.pryzm.zone"
+  pryzm: "https://api.pryzm.zone",
+  agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  band: 'https://laozi1.bandchain.org/api',
+  celestia: 'https://celestia-rest.publicnode.com',
+  dydx: 'https://dydx-rest.publicnode.com',
+  carbon: 'https://rest.lavenderfive.com/carbon/',
+  evmos: 'https://evmos-api.polkachu.com',
 };
 
 const chainSubpaths = {

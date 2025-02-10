@@ -4,15 +4,15 @@ module.exports = {
   misrepresentedTokens: true,
   cardano: {
     tvl: async () => {
-      const data = await post('https://citizens.theapesociety.io/api/getLevvyData', {})
+      const data = await post('https://8080-truthful-birthday-xc2vhr.us1.demeter.run/api/v1/nft/platform/stats', '')
       return {
-        cardano: data.adaTVL,
+        cardano: data.totalValueLocked/1e6,
       }
     },
     borrowed: async () => {
-      const data = await post('https://citizens.theapesociety.io/api/getLevvyData', {})
+      const data = await post('https://8080-truthful-birthday-xc2vhr.us1.demeter.run/api/v1/nft/platform/stats', '')
       return {
-        cardano: data.borrowed,
+        cardano: data.totalValueBorrowed/1e6,
       }
     }
   },

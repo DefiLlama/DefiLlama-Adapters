@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 
@@ -59,7 +60,7 @@ const config = {
       "0x4d216d2682f3997f6c19420beee4530d08d0ea5f", // add on 27/05/2024
       "0xdbe46a02322e636b92296954637e1d7db9d5ed26", // add on 27/05/2024
       "0xbff5092f83bd810e0926068b89633bf66eaa037b",
-      "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
+      ADDRESSES.ethereum.CVX,
       "0x80097a87a7dcde470e34c10b5cceb85abf83b531",
       "0xe4786cfe980ef5a6428a2fffafabf24f1fc79b64",
       "0x4c1d7de286d7c20df5f2ba44b3bc706c1e03bf13",
@@ -204,14 +205,14 @@ const config = {
   ton: {
     owners: [ //only wallets with more than 50k
       "UQDJlZqZfh1OQ4PY2ze4bSEBznjc8fGzkE2YiP5XLvDv1JNr",
-      "EQCnRoi95R9jLVrPONxTWEMMCuIlHBsYZjYZW5JwtoecbRl6",
+      // "EQCnRoi95R9jLVrPONxTWEMMCuIlHBsYZjYZW5JwtoecbRl6",
      // "EQC5Jj1PfKD8PmwxdBDi47mtbLahHV0Qkrs39lVl2A4nPlPC",
-      "EQAkKBTk1NuRH9wuy5qJFesfCoZMvZXa2NV9mCet3t3ndwkH",
-      "EQDN9_DXwJA28GQnLjxCntVwvknvKes6c1tku8F5FQc3MkZo",
+      // "EQAkKBTk1NuRH9wuy5qJFesfCoZMvZXa2NV9mCet3t3ndwkH",
+      // "EQDN9_DXwJA28GQnLjxCntVwvknvKes6c1tku8F5FQc3MkZo",
     //  "EQAGQcXOz5QWPXW_faObcN7HfSx8ihstAzoQTV9ckqmrDfcQ",
     //  "EQCUlDMK5NDVOmpbLAzGVkXfCXpmEJgKWHL4J7oHmuNkPxaH",
     //  "EQAWLm0Xut7koqsFxI2j3YBvjI1M_tVHXFrgTysXvF4NQWu5",
-      "EQAGR25YDiUNCr7Fw2WnEYM0g8WB1XuQi-N9Vr2w4zjDEhg5",
+      // "EQAGR25YDiUNCr7Fw2WnEYM0g8WB1XuQi-N9Vr2w4zjDEhg5",
     //  "EQDpwKJP-qaqTyKIkOca6VUL_FOmxX5kO8McJA4YcnrBzlwi",
     //  "EQAzZQL6-D71tTLTFbpxRQtmHJDoP85k2Lwf0r9kLzVV2VRy",
     //  "EQCzCMf5tPWW9iUBdYhZclSYcbBccO02Gf1ak5QB7qly5Gsl",
