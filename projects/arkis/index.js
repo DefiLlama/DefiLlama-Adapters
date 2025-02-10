@@ -56,7 +56,7 @@ async function getTokens(api, chain, agreementAddresses) {
   });
   
   if(tokenSet.has(config.chains[chain].nativeToken)) {
-    tokenSet.delete(config.ethAddress);
+    tokenSet.delete(config.chains[chain].nativeToken);
     tokenSet.add(config.zeroAddress)
   }
 
