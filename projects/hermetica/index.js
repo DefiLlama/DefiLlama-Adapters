@@ -41,7 +41,7 @@ module.exports = {
 
       const sUSDhSupplyRunes = totaluUSDhSupply - uUSDhSupplyStacks;
 
-      return { usdh: sUSDhSupplyRunes / (10 ** 8) }
+      return { usd: sUSDhSupplyRunes / (10 ** 8) }
     }
   },
   stacks: {
@@ -56,7 +56,8 @@ module.exports = {
       );
       const supplyOnStacksuUsdh = Number(parseClarityInt(supplyResponse.result));
 
-      return { usdh: supplyOnStacksuUsdh / (10 ** 8) }
+      return { usd: supplyOnStacksuUsdh / (10 ** 8) }
     }
-  }
+  },
+  misrepresentedTokens: true
 }
