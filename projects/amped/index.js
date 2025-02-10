@@ -13,9 +13,9 @@ const berachainVaultAddress = '0xc3727b7E7F3FF97A111c92d3eE05529dA7BD2f48';
 const berachainStakingAddress = '0xE65668F745F546F061b4fC925A31Cb1F6512c32A';
 const berachainAmpAddress = '0xAc611438AE5F3953DeDB47c2ea8d6650D601C1B4';
 
-// const bscVaultAddress = '0xdcFaaf6f3bb71B270404992853588BE9B7fc89EA';
-// const bscStakingAddress = '0x9fe50b66fc34cA06BbC684fF13242d61c860F190';
-// const bscAmpAddress = '0x16DF3d8978d17fE725Dc307aD14FdE3B12E6Da75';
+const bscVaultAddress = '0xdcFaaf6f3bb71B270404992853588BE9B7fc89EA';
+const bscStakingAddress = '0x9fe50b66fc34cA06BbC684fF13242d61c860F190';
+const bscAmpAddress = '0x16DF3d8978d17fE725Dc307aD14FdE3B12E6Da75';
 
 
 module.exports = {
@@ -24,10 +24,10 @@ module.exports = {
 	staking: staking(phoenixStakingAddress, phoenixAmpAddress),
 	tvl: gmxExports({ vault: phoenixVaultAddress, })
   },
-  // bsc: {
-	// staking: staking(bscStakingAddress, bscAmpAddress),
-	// tvl: gmxExports({ vault: bscVaultAddress, })
-  // },
+  bsc: {
+	staking: staking(bscStakingAddress, bscAmpAddress),
+	tvl: gmxExports({ vault: bscVaultAddress, })
+  },
   sonic: {
 	staking: staking(sonicStakingAddress, sonicAmpAddress),
 	tvl: gmxExports({ vault: sonicVaultAddress, })
