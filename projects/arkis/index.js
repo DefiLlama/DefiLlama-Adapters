@@ -17,21 +17,16 @@ async function fetchFactoryLogs(api, chain, factoryType) {
   const topic = factoryType === "agreement" ? "AgreementCreated(address)" : "AccountDeployed(address)";
   const eventAbi = factoryType === "agreement" ? "event AgreementCreated(address agreement)" : "event AccountDeployed(address indexed account)";
 
-  try {
-    const logs = await getLogs({
-      api: api,
-      target: config.chains[chain].factory[factoryType],
-      topic: topic,
-      eventAbi: eventAbi,
-      onlyArgs: true,
-      fromBlock: config.chains[chain].startBlock,
-    });
+  const logs = await getLogs({
+    api: api,
+    target: config.chains[chain].factory[factoryType],
+    topic: topic,
+    eventAbi: eventAbi,
+    onlyArgs: true,
+    fromBlock: config.chains[chain].startBlock,
+  });
 
-    return logs.map((log) => log[0]);
-  } catch (error) {
-    console.error(`Failed to fetch logs on ${chain} for ${factoryType}:`, error);
-    return [];
-  }
+  return logs.map((log) => log[0]);
 }
 
 
@@ -45,25 +40,21 @@ async function fetchFactoryLogs(api, chain, factoryType) {
 async function getTokens(api, chain, agreementAddresses) {
   const tokenSet = new Set();
 
-  for (const agreementAddress of agreementAddresses) {
-    try {
-      const { metadata, whitelist } = await api.call({
-        abi: infoAbi,
-        target: agreementAddress,
-      });
-
-      if (metadata.leverage === config.zeroAddress) {
-        console.warn(`Skipping Agreement ${agreementAddress} - No valid leverage found`);
-        continue;
-      }
-
-      tokenSet.add(metadata.leverage);
-      metadata.collaterals.forEach((collateral) => tokenSet.add(collateral));
-      whitelist.tokens.forEach((token) => tokenSet.add(token));
-    } catch (error) {
-      console.error(`Failed to fetch data on ${chain} for Agreement ${agreementAddress}:`, error);
+  const results = await api.multiCall({
+    abi: infoAbi,
+    calls: agreementAddresses,
+  });
+  
+  results.forEach((result, i) => {
+    if (result.metadata.leverage === config.zeroAddress) {
+      console.warn(`Skipping Agreement ${agreementAddresses[i]} - No valid leverage found`);
+      return;
     }
-  }
+    tokenSet.add(result.metadata.leverage);
+    result.metadata.collaterals.forEach((collateral) => tokenSet.add(collateral));
+    result.whitelist.tokens.forEach((token) => tokenSet.add(token));
+  });
+  
   if(tokenSet.has(config.chains[chain].nativeToken)) {
     tokenSet.delete(config.ethAddress);
     tokenSet.add(config.zeroAddress)
