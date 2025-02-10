@@ -17,7 +17,6 @@ const bscVaultAddress = '0xdcFaaf6f3bb71B270404992853588BE9B7fc89EA';
 const bscStakingAddress = '0x9fe50b66fc34cA06BbC684fF13242d61c860F190';
 const bscAmpAddress = '0x16DF3d8978d17fE725Dc307aD14FdE3B12E6Da75';
 
-
 module.exports = {
   start: '2024-06-06',
   lightlink_phoenix: {
