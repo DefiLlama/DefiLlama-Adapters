@@ -17,17 +17,7 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  FLOW_RPC: "https://rest-mainnet.onflow.org",
-  ELSM_RPC: "https://rpc.elysiumchain.tech",
-  ARTELA_RPC: "https://node-euro.artela.network/rpc,https://node-hongkong.artela.network/rpc,https://node-us-2.artela.network/rpc",
-  ARTELA_RPC_MULTICALL: "0x80BC476a33a1b40a788dcC9bfe9dFdae9723b872",
-  ZERO_NETWORK_RPC_MULTICALL: "0x0307F341a18f1FC1f63a7Ceeac970245A08C5a80",
-  PLUME_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  ABSTRACT_RPC_MULTICALL: "0xaa4de41dba0ca5dcbb288b7cc6b708f3aac759e7",
-  ABSTRACT_RPC: "https://api.mainnet.abs.xyz",
-  BERACHAIN_RPC: "https://rpc.berachain.com",
-  BERACHAIN_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  SILICON_ZK_RPC_MULTICALL: "0x566da61a4D0841a67bA8F2c7e5975885fa0Af4DA",
+  ARTELA_RPC_MULTICALL: "0x6d761c3fe633c67b1d3a55678b04eb4ad11c4642",  // one set in sdk is wrong
 }
 
 const ENV_KEYS = [
