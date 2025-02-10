@@ -34,9 +34,5 @@ module.exports = {
   berachain: {
 	staking: staking(berachainStakingAddress, berachainAmpAddress),
 	tvl: gmxExports({ vault: berachainVaultAddress, })
-  },
-  sonic: {
-	staking: staking(sonicStakingAddress, sonicAmpAddress),
-	tvl: gmxExports({ vault: sonicVaultAddress, })
   }
 };
