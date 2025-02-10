@@ -1,4 +1,4 @@
-const {staking} = require('../helper/staking')
+const { staking } = require('../helper/staking')
 const { gmxExports } = require('../helper/gmx')
 
 const phoenixVaultAddress = '0xa6b88069EDC7a0C2F062226743C8985FF72bB2Eb';
@@ -20,12 +20,12 @@ const bscAmpAddress = '0x16DF3d8978d17fE725Dc307aD14FdE3B12E6Da75';
 module.exports = {
   start: '2024-06-06',
   lightlink_phoenix: {
-	staking: staking(phoenixStakingAddress, phoenixAmpAddress),
-	tvl: gmxExports({ vault: phoenixVaultAddress, })
+    staking: staking(phoenixStakingAddress, phoenixAmpAddress),
+    tvl: gmxExports({ vault: phoenixVaultAddress, })
   },
   bsc: {
-	staking: staking(bscStakingAddress, bscAmpAddress),
-	tvl: gmxExports({ vault: bscVaultAddress, })
+    staking: staking(bscStakingAddress, bscAmpAddress),
+    tvl: gmxExports({ vault: bscVaultAddress, })
   },
   sonic: {
 	staking: staking(sonicStakingAddress, sonicAmpAddress),
