@@ -17,11 +17,8 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  ARTELA_RPC_MULTICALL: "0x6d761c3fe633c67b1d3a55678b04eb4ad11c4642",  // one set in sdk is wrong  
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
   LULO_API_KEY: '',
-  UNICHAIN_RPC: 'https://mainnet.unichain.org',
-  UNICHAIN_RPC_MULTICALL: '0xbe96011CC6E759b82CB170DDc29176eA7Fe3af85',
 }
 
 const ENV_KEYS = [
