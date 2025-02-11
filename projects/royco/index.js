@@ -57,21 +57,68 @@ Object.keys(config).forEach((chain) => {
   const { recipeSubgraphUrl, vaultSubgraphUrl } = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
-      const vaultMarketsQuery = gql`
-        {
-          rawMarkets {
-            inputTokenId
-            quantityOffered
-            incentivesOfferedIds
-            incentivesOfferedAmount
-            endTimestamps
-          }
+      const fetchAllMarkets = async () => {
+        let allMarkets = [];
+        let skip = 0;
+        const pageSize = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+          const vaultMarketsQuery = gql`
+            {
+              rawMarkets(first: ${pageSize}, skip: ${skip}) {
+                inputTokenId
+                quantityOffered
+                incentivesOfferedIds
+                incentivesOfferedAmount
+                endTimestamps
+              }
+            }
+          `;
+
+          const result = await request(vaultSubgraphUrl, vaultMarketsQuery);
+          const markets = result.rawMarkets;
+          allMarkets = [...allMarkets, ...markets];
+
+          hasMore = markets.length === pageSize;
+          skip += pageSize;
         }
-      `;
+        return allMarkets;
+      };
 
-      const vaultMarkets = await request(vaultSubgraphUrl, vaultMarketsQuery);
+      const fetchAllPositions = async () => {
+        let allPositions = [];
+        let skip = 0;
+        const pageSize = 1000;
+        let hasMore = true;
 
-      vaultMarkets.rawMarkets.map((market) => {
+        while (hasMore) {
+          const recipePositionsQuery = gql`
+            {
+              rawPositions(where: { offerSide: 0 }, first: ${pageSize}, skip: ${skip}) {
+                inputTokenId
+                quantity
+                isWithdrawn
+                tokenIds
+                tokenAmounts
+                isClaimed
+              }
+            }
+          `;
+
+          const result = await request(recipeSubgraphUrl, recipePositionsQuery);
+          const positions = result.rawPositions;
+          allPositions = [...allPositions, ...positions];
+
+          hasMore = positions.length === pageSize;
+          skip += pageSize;
+        }
+        return allPositions;
+      };
+
+      const vaultMarkets = await fetchAllMarkets();
+
+      vaultMarkets.map((market) => {
         const inputTokenId = market.inputTokenId.split("-")[1];
         const inputTokenAmount = market.quantityOffered;
 
@@ -94,25 +141,9 @@ Object.keys(config).forEach((chain) => {
         });
       });
 
-      const recipePositionsQuery = gql`
-        {
-          rawPositions(where: { offerSide: 0 }) {
-            inputTokenId
-            quantity
-            isWithdrawn
-            tokenIds
-            tokenAmounts
-            isClaimed
-          }
-        }
-      `;
+      const recipePositions = await fetchAllPositions();
 
-      const recipePositions = await request(
-        recipeSubgraphUrl,
-        recipePositionsQuery
-      );
-
-      recipePositions.rawPositions.map((position) => {
+      recipePositions.map((position) => {
         const inputTokenId = position.inputTokenId.split("-")[1];
         const inputTokenAmount = position.quantity;
 
