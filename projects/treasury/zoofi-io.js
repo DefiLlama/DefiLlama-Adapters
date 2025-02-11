@@ -3,12 +3,7 @@ const treasury = "0x54C56e149F6D655Aa784678057D1f96612b0Cf1a"
 
 async function tvl(api) {
   const tokens = await api.call({ abi: 'address[]:assetTokens', target: zooProtocol })
-  const calls = tokens.map((token) => ({
-    target: token,
-    params: [treasury],
-  }));
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls})
-  api.add(tokens, balances)
+  return api.sumTokens({ tokens, owner: treasury })
 }
 
 module.exports = {
