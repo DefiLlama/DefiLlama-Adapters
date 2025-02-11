@@ -49,7 +49,7 @@ const fixBalancesTokens = {
     '0x891986cf778004c86c5f2d8c18198635f725a5ce': { coingeckoId: "artela-network", decimals: 18 }
   },
   hashkey: {
-    '0xeB0F8d6f3ba574D8C4C9e51aF4c479872C256515': { coingeckoId: "hashkey", decimals: 18 },
+    '0xB210D2120d57b758EE163cFfb43e73728c471Cf1': { coingeckoId: "hashkey", decimals: 18 },
   }
 }
 
