@@ -1,24 +1,14 @@
-const { GraphQLClient, gql } = require('graphql-request')
+const { onChainTvl } = require('../helper/balancer')
 
-const graphQLClient = new GraphQLClient('https://api.mondrianswap.xyz/graphql')
+const V2_ADDRESS = '0x48cD08ad2065e0cD2dcD56434e393D55A59a4F64'; // shared by all networks
 
-const query = gql`
-  query tokens {
-    embrGetProtocolData {
-      totalLiquidity
-    }
-  }
-`
-
-async function tvl() {
-  const data = await graphQLClient.request(query)
-  return {
-    tether: data.embrGetProtocolData.totalLiquidity
-  }
+const config = {
+  abstract: { fromBlock: 1199036, },
 }
 
-module.exports = {
-  abstract: {
-    tvl,
+Object.keys(config).forEach(chain => {
+  const { fromBlock } = config[chain]
+  module.exports[chain] = {
+    tvl: onChainTvl(V2_ADDRESS, fromBlock)
   }
-}
+})
