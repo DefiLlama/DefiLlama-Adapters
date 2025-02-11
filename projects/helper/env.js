@@ -19,6 +19,7 @@ const DEFAULTS = {
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   ARTELA_RPC_MULTICALL: "0x6d761c3fe633c67b1d3a55678b04eb4ad11c4642",  // one set in sdk is wrong  
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  LULO_API_KEY: '',
 }
 
 const ENV_KEYS = [
