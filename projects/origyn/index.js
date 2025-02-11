@@ -32,7 +32,7 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: "TVL the total locked value of tokens (non-circulating) plus the total value of ORIGYN certificates",
+  methodology: "TVL the total locked value of staked tokens and the total asset value of ORIGYN certificates.",
   icp: {
     tvl,
   },
