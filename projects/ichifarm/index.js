@@ -42,6 +42,7 @@ const config = {
   arbitrum: {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 102858581, isAlgebra: false, },
+      { factory: '0x0aC9e4a0423eec93357e2B0F83ef8c6469FD47F7', fromBlock: 254452080, isAlgebra: false, }, // Pancakeswap
       { factory: '0xedAc86bc526557c422AB1F6BF848bF0da9fB44A6', fromBlock: 140300509, isAlgebra: false, }, // Ramses
       { factory: '0x1Cc05B01f2e52ae3bb29F7A0059Fe112C60aA3f4', fromBlock: 147199960, isAlgebra: false, }, // Horiza
     ],
@@ -49,7 +50,10 @@ const config = {
   base: {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
+      { factory: '0x51a0D74e1791399cE02aafD9a21dc4637Fe57959', fromBlock: 24832870, isAlgebra: true, }, // Henjin
+      { factory: '0x28cF3b462a1ADdE87fe7144d110BcF0D464C97b7', fromBlock: 22972345, isAlgebra: true, }, // Kim
       { factory: '0x24430E837efB64EF87bb32be03437fc6005EEF74', fromBlock: 22095330, isAlgebra: false, }, // PancakeSwap
+      { factory: '0xbA096706A850caF1cADAEfE7529Db1343a0c187E', fromBlock: 25174764, isAlgebra: true, }, // Trebleswap 
       { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, isAlgebra: false, }, // Uniswap 
     ]
   },
@@ -130,6 +134,7 @@ const config = {
   mantle: {
     vaultConfigs: [
       { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
+      { factory: '0x797ebB6A84367B0409094FEA0D10aC7516432433', fromBlock: 65385973, isAlgebra: false, }, // Crust
     ]
   },
   mode: {

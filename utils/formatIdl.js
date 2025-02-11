@@ -34,6 +34,12 @@ function checkType(typeObj) {
 
   if (typeObj.type.kind !== 'struct') return;
   typeObj.type.fields.forEach(f => {
+    const isVec = f.type?.vec?.defined?.name
+    if (isVec) {
+      checkType(typeMap[isVec])
+      return;
+    }
+
     if (typeof f.type === 'object') {
       const tName = f.type.defined?.name
       if (tName && typeMap[tName]) checkType(typeMap[tName])

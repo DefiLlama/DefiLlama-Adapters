@@ -76,6 +76,8 @@ const config = {
       '0x989897f1D976EE0b59Bf0A3172C170D8f3Cb84e3',
       '0x6E72C8726c71a4Cbc6e31ff7d47B399Fa983C7B8',
       '0x106825b71ccE77a70B69f57A0ACf9C4a6acf292a',
+      // automator
+      '0x4C241483B4a85e44C59bcEcFe17A4E7d0A073CDB',
     ],
     aVaults: [
       // aArbUSDT
@@ -111,6 +113,11 @@ const config = {
       '0x770f7fcEce69C68B208B80bBc4e3d1Bf8f9c0672',
       '0x1e5A684d263F42BaC1f2bAd6fB379277D4D6c28C',
       '0xBF898C0C2E7d415dE8FCcc78d1200D029a060560',
+      // automator 2.0
+      '0x3f2e94b23553286322d050ea7e850286a5af731c',
+      '0x38a3e7f2959478b4f686a8f3a8b694654dabc4d7',
+      '0xa8631bcf425eb51abccba26ce3f503a66d6f2411',
+      '0xffB0b9eDb5Fc84Ca4aD1eA1b722b95f1bB200718',
     ],
     crvtokens: [
     ],

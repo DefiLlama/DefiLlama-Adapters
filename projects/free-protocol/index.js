@@ -52,7 +52,7 @@ module.exports = {
         '0x19727db22Cba70B1feE40337Aba69D83c6741caF',
       ],
       tokens: [
-        '0xEc901DA9c68E90798BbBb74c11406A32A70652C3',
+        ADDRESSES.berachain.STONE,
       ]
     })
   },

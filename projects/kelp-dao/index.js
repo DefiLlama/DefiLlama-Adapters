@@ -1,18 +1,21 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const DEPOSIT_POOL = "0x036676389e48133B63a802f8635AD39E752D375D";
 const rstETH = '0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7'
 
 const oft_tokens = {
-  'arbitrum' : '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
-  'optimism' : '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
-  'manta' : '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
-  'mode' : '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
-  'blast' : '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
+  'arbitrum' : ADDRESSES.berachain.rsETH,
+  'optimism' : ADDRESSES.berachain.rsETH,
+  'manta' : ADDRESSES.berachain.rsETH,
+  'mode' : ADDRESSES.berachain.rsETH,
+  'blast' : ADDRESSES.berachain.rsETH,
   'scroll' : '0x65421ba909200b81640d98B979d07487C9781B66',
   'base' : '0x1Bc71130A0e39942a7658878169764Bbd8A45993',
   'era' : '0xd4169E045bcF9a86cC00101225d9ED61D2F51af2',
   'linea' : '0xD2671165570f41BBB3B0097893300b6EB6101E6C',
   'xlayer' : '0x5a71f5888ee05b36ded9149e6d32ee93812ee5e9',
+  'zircuit' : ADDRESSES.berachain.rsETH,
+  'swellchain' : ADDRESSES.swellchain.rsETH
 }
 
 async function tvl(api) {

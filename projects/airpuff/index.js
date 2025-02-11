@@ -457,7 +457,7 @@ module.exports = {
 
       const rsETH = {
         vault: "0x65E7C3C88806FF010BB197B2577cCddA9704fA2F",
-        reStakingToken: "0x4186BFC76E2E237523CBC30FD220FE055156b41F",
+        reStakingToken: ADDRESSES.berachain.rsETH,
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 
@@ -474,7 +474,7 @@ module.exports = {
 
       const rsETH1x = {
         vault: "0xe929BF8368171a76D4A828ee2cD4A50CcE31d203" /*vault*/,
-        reStakingToken: "0x4186BFC76E2E237523CBC30FD220FE055156b41F" /*reStakingToken*/,
+        reStakingToken: ADDRESSES.berachain.rsETH /*reStakingToken*/,
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 

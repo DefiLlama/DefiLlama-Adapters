@@ -86,7 +86,7 @@ const config = {
       WEETH: "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
       ETHFI: "0x7189fb5B6504bbfF6a852B13B7B82a3c118fDc27",
       EZETH: ADDRESSES.optimism.ezETH,
-      RSETH: "0x4186bfc76e2e237523cbc30fd220fe055156b41f",
+      RSETH: ADDRESSES.berachain.rsETH,
       USDE: ADDRESSES.arbitrum.USDe,
       CBETH: "0x1debd73e752beaf79865fd6446b0c970eae7732f",
       USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
