@@ -1,3 +1,7 @@
+const { PublicKey } = require("@solana/web3.js");
+const { getMultipleAccounts } = require('../helper/solana')
+const axios = require("axios");
+
 function deserializeUserPositions(accountInfo) {
   if (!accountInfo) {
     throw new Error('User account not found');
@@ -53,4 +57,67 @@ function deserializeUserPositions(accountInfo) {
   };
 }
 
-module.exports = { deserializeUserPositions };
+
+function readPublicKeyFromBuffer(buffer, offset) {
+  if (!buffer || buffer.length < offset + 32) {
+    throw new Error('Buffer is too small to contain a public key at the specified offset');
+  }
+  const publicKeyBytes = buffer.slice(offset, offset + 32);
+  return new PublicKey(publicKeyBytes);
+}
+
+
+async function fetchVaultUserAddressesWithOffset(data, offset) {
+  const vaultUserAddresses = [];
+  const otherDataArray = [];
+
+  const validData = data.filter(item => {
+    try {
+      new PublicKey(item.address); // This will throw if the address is invalid
+      return true;
+    } catch (error) {
+      console.error(`Invalid address found: ${item.address}`, error);
+      return false;
+    }
+  });
+
+  const accounts = await getMultipleAccounts(validData.map(item => new PublicKey(item.address)));
+
+  accounts.forEach((account, index) => {
+    const item = validData[index];
+    try {
+      const userPublicKey = readPublicKeyFromBuffer(account.data, offset);
+      if (item.programId === "vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR") {
+        vaultUserAddresses.push(userPublicKey);
+      } else {
+        otherDataArray.push({
+          programId: item.programId,
+          address: item.address,
+          user: userPublicKey.toString()
+        });
+      }
+    } catch (error) {
+      console.error(`Error processing address ${item.address}:`, error);
+    }
+  });
+
+  return { vaultUserAddresses, otherDataArray };
+}
+
+async function fetchVaultAddresses() {
+  try {
+    const response = await axios.get('https://api.vectis.finance/strategy/fetchAllVaultAddresses');
+ 
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching vault addresses:', error);
+    throw error;
+  }
+}
+
+module.exports = { readPublicKeyFromBuffer, deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses };
+
