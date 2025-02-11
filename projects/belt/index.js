@@ -25,3 +25,5 @@ module.exports = {
   heco: { tvl },
   klaytn: { tvl }
 }
+
+Object.keys(module.exports.heco).forEach(key => module.exports.heco[key] = () => ({}))
