@@ -1,19 +1,21 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const swapFlashLoan = '0x4bcb9Ea3dACb8FfE623317E0B102393A3976053C';
+const swapFlashLoans = Object.values({
+  'BP1': "0x4bcb9Ea3dACb8FfE623317E0B102393A3976053C",
+  'BP2': "0x6a63cbf00D15137756189c29496B14998b259254",
+  'BP3': "0xE7E1b1F216d81a4b2c018657f26Eda8FE2F91e26",
+  'BP4': "0xeC938Bc5b201E96b6AFE97070a8Ea967E0dcAe96"
+})
 
-const ADDRESSES = {
-    'WBTC': "0x5832f53d147b3d6Cd4578B9CBD62425C7ea9d0Bd",
-    "solvBTCb": "0x5b1fb849f1f76217246b8aaac053b5c7b15b7dc3",
-    "solvBTCcore": "0x9410e8052bc661041e5cb27fdf7d9e9e842af2aa"
+async function tvl(api) {
+  const tokens = await api.multiCall({  abi: 'address[]:getTokens', calls: swapFlashLoans})
+  const ownerTokens = tokens.map((token, idx) => [token, swapFlashLoans[idx]])
+  return sumTokens2({ api, ownerTokens })
 }
 
 module.exports = {
-    core: {
-        tvl: sumTokensExport(
-            {
-                owner: swapFlashLoan,
-                tokens: [ADDRESSES.WBTC, ADDRESSES.solvBTCb, ADDRESSES.solvBTCcore]
-            }),
-    }
+  core: {
+    tvl
+  },
+  methodology: "Counts all BTC-pegged tokens in the Bitflux liquidity pools"
 }

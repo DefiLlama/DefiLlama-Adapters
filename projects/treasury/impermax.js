@@ -1,12 +1,25 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
-const treasury = "0x7f959c082bc30f3ea88187fac1a640438ad7bf20";
+const treasury = "0xc28f68cd2df0fcc50f0058fb20abbc77bec8bdc6";
+const operations = "0x2157bfbb446744fc92bd95c3911eb58d0a9b01bd";
 
 module.exports = treasuryExports({
   arbitrum: {
     tokens: [ 
         nullAddress,
      ],
-    owners: [treasury,],
+    owners: [treasury, operations],
+  },
+  base: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [treasury, operations],
+  },
+  blast: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: [treasury, operations],
   },
 })
