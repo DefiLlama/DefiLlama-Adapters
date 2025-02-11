@@ -141,19 +141,13 @@ function makeLPTokensTvlFn() {
 
     const balances = {};
 
-    // const amount = Math.round(Number(2904155.048717085) * 100) / 100;
-    // @todo use token amount, not token price
-    const amount = Math.round(Number(stats.total_deposits_usd) * 100) / 100;
-
     sdk.util.sumSingleBalance(
       balances,
-      // @todo replace with bgt once it has value on coingecko
-      // https://www.coingecko.com/en/coins/berachain-governance-token
-      "wrapped-bera",
-      amount
+      "berachain",
+      Math.floor(stats.tvl_usd)
     );
 
-    return balances;
+    return balances
   };
 }
 
