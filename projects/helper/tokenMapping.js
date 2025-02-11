@@ -47,7 +47,10 @@ const fixBalancesTokens = {
   },
   artela: {
     '0x891986cf778004c86c5f2d8c18198635f725a5ce': { coingeckoId: "artela-network", decimals: 18 }
-  }
+  },
+  unichain: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18 }
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
