@@ -1,6 +1,6 @@
 const { PublicKey } = require("@solana/web3.js");
 const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey } = require("./spotMarkets");
-const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses} = require("./helpers");
+const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses, readPublicKeyFromBuffer} = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
 const { getMultipleAccounts} = require('../helper/solana')
 
