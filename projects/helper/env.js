@@ -20,6 +20,8 @@ const DEFAULTS = {
   ARTELA_RPC_MULTICALL: "0x6d761c3fe633c67b1d3a55678b04eb4ad11c4642",  // one set in sdk is wrong  
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
   LULO_API_KEY: '',
+  UNICHAIN_RPC: 'https://mainnet.unichain.org',
+  UNICHAIN_RPC_MULTICALL: '0xbe96011CC6E759b82CB170DDc29176eA7Fe3af85',
 }
 
 const ENV_KEYS = [
