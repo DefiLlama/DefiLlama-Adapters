@@ -49,7 +49,11 @@ const fixBalancesTokens = {
     '0x891986cf778004c86c5f2d8c18198635f725a5ce': { coingeckoId: "artela-network", decimals: 18 }
   },
   unichain: {
-    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18 }
+    [ADDRESSES.null]: { coingeckoId: "ethereum", decimals: 18 },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18 },
+    '0x20CAb320A855b39F724131C69424240519573f81': { coingeckoId: "dai", decimals: 18 },
+    '0x8f187aA05619a017077f5308904739877ce9eA21': { coingeckoId: "uniswap", decimals: 18 },
+    '0x078D782b760474a361dDA0AF3839290b0EF57AD6': { coingeckoId: "usd-coin", decimals: 6 },
   },
 }
 
