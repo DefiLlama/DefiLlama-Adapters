@@ -1,4 +1,5 @@
 const axios = require("axios");
+const ethers = require("ethers");
 
 module.exports = {
     methodology: "Sums the total supplies of thePAC's issued tokens."
@@ -11,16 +12,16 @@ const config = {
 }
 
 async function getTotalSupply(api) {
-    return await api.call({
+    return ethers.formatUnits(await api.call({
         abi: "erc20:totalSupply",
         target: config.hashkey.PacARB,
-    })
+    }), 18)
 }
 
 async function fetchUnClaimedToken() {
     try {
         const response = await axios.get("https://manager.thepac.xyz/api/unClaimed/PacARB");
-        return response.data.data.unClaimed
+        return ethers.formatUnits(response.data.data.unClaimed, 18)
     } catch (error) {
         console.error("Error fetching backend data:", error);
         return "0";
@@ -35,7 +36,7 @@ async function tvl(api) {
 
     const totalTokens = Number(supply) + Number(unClaimed);
 
-    api.addTokens(config.hashkey.PacARB, totalTokens / 1e18);
+    api.addTokens(config.hashkey.PacARB, totalTokens);
 }
 
 module.exports = {
