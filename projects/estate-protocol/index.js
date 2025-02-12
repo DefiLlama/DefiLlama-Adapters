@@ -1,20 +1,20 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
 
-async function arbTvl(api) {
-    let ep_tokens = await get('https://estateprotocol.com/api/public/property/list')
+const EVM_ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/;
 
-    // Filter out tokens
-    ep_tokens = ep_tokens.filter(t => t.propertyAddress && t.token_price)
+async function tvl(api) {
+    const tokens = (await get('https://estateprotocol.com/api/public/property/list')).filter(t => t.propertyAddress && EVM_ADDRESS_REGEX.test(t.propertyAddress) && t.token_price)
+    const tokenSupplies = await api.multiCall({ calls: tokens.map((token) => ({ target: token.propertyAddress })), abi: 'erc20:totalSupply' })
 
-    // Get total supply for each token
-    const tokenSupplies_arb = await api.multiCall({calls: ep_tokens.map(t => t.propertyAddress), abi: 'erc20:totalSupply'});
-    tokenSupplies_arb.map((supply, i) => api.add(ADDRESSES.arbitrum.USDC_CIRCLE, supply/1e18 * parseFloat(ep_tokens[i]['token_price']) * 1e6 ))
+    tokenSupplies.forEach((supply, i) => {
+      const token = tokens[i]
+      const price = parseFloat(token.token_price)
+      api.add(ADDRESSES.arbitrum.USDC_CIRCLE, supply * price * Math.pow(10, 6-18))
+    })
 }
 
 module.exports = {
   methodology: `TVL for Estate Protocol consists of the accumulation of all properties prices, each being tokenSupply * tokenPrice where tokenPrice is given by the API`,
-  arbitrum: {
-    tvl: arbTvl
-  },
+  arbitrum: { tvl }
 }
