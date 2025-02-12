@@ -35,12 +35,37 @@ const config = {
   },
   arbitrum: {
     owners: [
-      '0xc21A1D213f64FeDEA3415737CCe2BE37Eb59be81'
+      '0xc21A1D213f64FeDEA3415737CCe2BE37Eb59be81',
+    ]
+  },
+  aptos: {
+    owners: [
+      '0x41a7160155e2d946918fe7969e83f1f70840cf808a7f6e15a18bf6505453ec73',
+    ],
+  },
+    optimism:{
+    owners: [
+      '0xc21A1D213f64FeDEA3415737CCe2BE37Eb59be81',
     ]
   },
   solana: {
     owners: [
       'BRvrp5WQkVuda1BAxfaBTpbBW4b73GhNp7AW7NcBs596',
+    ]
+  },
+  avax:{
+    owners:[
+      '0xc21A1D213f64FeDEA3415737CCe2BE37Eb59be81',
+    ]
+  },
+  bsc: {
+    owners: [
+     '0x85E1De87a7575C6581F7930F857a3813B66A14d8',
+    ],
+  },
+  polkadot:{
+    owners: [
+      '16iUCscbCHM5mkszPaogRJioxHRbew8YB34nWqsoMkaX1XDZ',
     ]
   },
   ftn: {
