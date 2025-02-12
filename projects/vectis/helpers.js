@@ -76,7 +76,6 @@ async function fetchVaultUserAddressesWithOffset(data, offset) {
       new PublicKey(item.address); // This will throw if the address is invalid
       return true;
     } catch (error) {
-      console.error(`Invalid address found: ${item.address}`, error);
       return false;
     }
   });
@@ -86,14 +85,19 @@ async function fetchVaultUserAddressesWithOffset(data, offset) {
   accounts.forEach((account, index) => {
     const item = validData[index];
     try {
+      //custom vault with different storage layout
+      if (item.programId === "EDnxACbdY1GeXnadh5gRuCJnivP7oQSAHGGAHCma4VzG") {
+        const userPublicKey = readPublicKeyFromBuffer(account.data, 200);
+        vaultUserAddresses.push(userPublicKey);
+      }
       const userPublicKey = readPublicKeyFromBuffer(account.data, offset);
       if (item.programId === "vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR") {
         vaultUserAddresses.push(userPublicKey);
-      } else {
+      } else
+       {
         otherDataArray.push({
           programId: item.programId,
           address: item.address,
-          user: userPublicKey.toString()
         });
       }
     } catch (error) {
@@ -119,5 +123,6 @@ async function fetchVaultAddresses() {
   }
 }
 
-module.exports = { readPublicKeyFromBuffer, deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses };
+
+module.exports = { readPublicKeyFromBuffer, deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses};
 

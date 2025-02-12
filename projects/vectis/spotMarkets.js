@@ -133,13 +133,13 @@ function getSpotMarketCumulativeBorrowInterest(accountInfo) {
 
 function processPerpPosition(position) {
 
+
   let baseBalance = position.market_index === 0 ? position.base_asset_amount : position.base_asset_amount / BigInt(10);
 
   let quoteBalance = position.quote_asset_amount;
 
   return { baseBalance, quoteBalance };
 }
-
 
 
 function getPerpMarketFundingRates(accountInfo) {

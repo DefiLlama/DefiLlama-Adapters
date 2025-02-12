@@ -1,13 +1,11 @@
-const { PublicKey } = require("@solana/web3.js");
 const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey } = require("./spotMarkets");
-const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses, readPublicKeyFromBuffer} = require("./helpers");
+const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses} = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
 const { getMultipleAccounts} = require('../helper/solana')
 
 
 
-
-module.exports = {
+  module.exports = {
   timetravel: false,
   doublecounted: true,
   methodology: "Calculate sum of spot positions in vaults with unrealized profit and loss",
@@ -36,9 +34,7 @@ async function tvl(api) {
 
   const vaultAddresses = await fetchVaultAddresses();
 
-
-  //@todo deal with otherDataArray 
-  const { vaultUserAddresses, otherDataArray } = await fetchVaultUserAddressesWithOffset(vaultAddresses, 168);
+  const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(vaultAddresses, 168);
 
   // Get all vault accounts first
   const accounts = await getMultipleAccounts(vaultUserAddresses)
@@ -56,7 +52,7 @@ async function tvl(api) {
   // Batch fetch 
   const allKeys = [
     ...[...allSpotIndices].map(index => getVaultPublicKey('spot_market', index)),
-    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index))
+    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index)),
   ]
   
   const allAccounts = await getMultipleAccounts(allKeys)
