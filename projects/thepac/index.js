@@ -1,4 +1,3 @@
-const { ethers } = require("ethers");
 const axios = require("axios");
 
 module.exports = {
@@ -12,19 +11,11 @@ const config = {
 }
 
 async function getTotalSupply() {
-    try {
-        const provider = new ethers.JsonRpcProvider("https://mainnet.hsk.xyz");
-        const contract = new ethers.Contract(
-            config.hashkey.PacARB,
-            ["function totalSupply() view returns (uint256)"],
-            provider
-        );
-        const supply = await contract.totalSupply();
-        return ethers.formatUnits(supply, 18);
-    } catch (error) {
-        console.error("Error in getTotalSupply:", error);
-        return "0";
-    }
+    const api = await getApi("hashkey", timestamp);
+    return (await api.call({
+        abi: "erc20:totalSupply",
+        target: config.hashkey.PacARB,
+    })) / 1e18
 }
 
 async function fetchUnClaimedToken() {
