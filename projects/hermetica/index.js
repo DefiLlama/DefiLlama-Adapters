@@ -1,5 +1,4 @@
 const { get, post } = require('../helper/http')
-const { stacks } = require('../helper/coreAssets.json')
 
 const USDhContract = 'SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.usdh-token-v1';
 
