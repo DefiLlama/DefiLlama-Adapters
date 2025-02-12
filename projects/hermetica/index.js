@@ -1,6 +1,8 @@
 const { get, post } = require('../helper/http')
 const { stacks } = require('../helper/coreAssets.json')
 
+const USDhContract = 'SPN5AKG35QZSK2M8GAMR4AFX45659RJHDW353HSG.usdh-token-v1';
+
 function parseClarityInt(hexString) {
   // Remove "0x" prefix
   let hex = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
@@ -25,8 +27,7 @@ module.exports = {
   bitcoin: {
     tvl: async () => {
       const totalSupply = await get('https://app.hermetica.fi/api/v1/usdh/supply');
-      const usdhTokenContract = stacks.USDh.split('::')[0];
-      const [contract_address, contract_name] = usdhTokenContract.split('.');
+      const [contract_address, contract_name] = USDhContract.split('.');
       const supplyResponse = await post(`https://api.mainnet.hiro.so/v2/contracts/call-read/${contract_address}/${contract_name}/get-total-supply`,
         {
           sender: contract_address,
@@ -41,13 +42,12 @@ module.exports = {
 
       const sUSDhSupplyRunes = totaluUSDhSupply - uUSDhSupplyStacks;
 
-      return { usd: sUSDhSupplyRunes / (10 ** 8) }
+      return { 'usd-coin': sUSDhSupplyRunes / (10 ** 8) }
     }
   },
   stacks: {
     tvl: async () => {
-      const usdhTokenContract = stacks.USDh.split('::')[0];
-      const [contract_address, contract_name] = usdhTokenContract.split('.');
+      const [contract_address, contract_name] = USDhContract.split('.');
       const supplyResponse = await post(`https://api.mainnet.hiro.so/v2/contracts/call-read/${contract_address}/${contract_name}/get-total-supply`,
         { 
           sender: contract_address,
@@ -56,7 +56,7 @@ module.exports = {
       );
       const supplyOnStacksuUsdh = Number(parseClarityInt(supplyResponse.result));
 
-      return { usd: supplyOnStacksuUsdh / (10 ** 8) }
+      return { 'usd-coin': supplyOnStacksuUsdh / (10 ** 8) }
     }
   },
   misrepresentedTokens: true
