@@ -1,3 +1,4 @@
+const { ethers } = require("ethers");
 const axios = require("axios");
 
 module.exports = {
@@ -11,7 +12,7 @@ const config = {
 }
 
 async function getTotalSupply() {
-    const api = await getApi("hashkey", timestamp);
+    const api = await getApi("hashkey");
     return (await api.call({
         abi: "erc20:totalSupply",
         target: config.hashkey.PacARB,
