@@ -10,18 +10,17 @@ const config = {
     }
 }
 
-async function getTotalSupply() {
-    const api = await getApi("hashkey", timestamp);
-    return (await api.call({
+async function getTotalSupply(api) {
+    return await api.call({
         abi: "erc20:totalSupply",
         target: config.hashkey.PacARB,
-    })) / 1e18
+    })
 }
 
 async function fetchUnClaimedToken() {
     try {
         const response = await axios.get("https://manager.thepac.xyz/api/unClaimed/PacARB");
-        return ethers.formatUnits(response.data.data.unClaimed, 18);
+        return response.data.data.unClaimed
     } catch (error) {
         console.error("Error fetching backend data:", error);
         return "0";
@@ -30,13 +29,13 @@ async function fetchUnClaimedToken() {
 
 async function tvl(api) {
     const [supply, unClaimed] = await Promise.all([
-        getTotalSupply(),
+        getTotalSupply(api),
         fetchUnClaimedToken(),
     ]);
 
     const totalTokens = Number(supply) + Number(unClaimed);
 
-    api.addTokens(config.hashkey.PacARB, totalTokens);
+    api.addTokens(config.hashkey.PacARB, totalTokens / 1e18);
 }
 
 module.exports = {
