@@ -50,7 +50,7 @@ const fixBalancesTokens = {
   },
   hashkey: {
     '0xB210D2120d57b758EE163cFfb43e73728c471Cf1': { coingeckoId: "hashkey", decimals: 18 },
-  }
+  },
   silicon_zk: {
     "0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035": { coingeckoId: "usd-coin", decimals: 6 },
     "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
