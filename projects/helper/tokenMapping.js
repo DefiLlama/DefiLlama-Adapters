@@ -51,6 +51,11 @@ const fixBalancesTokens = {
   hashkey: {
     '0xB210D2120d57b758EE163cFfb43e73728c471Cf1': { coingeckoId: "hashkey", decimals: 18 },
   }
+  silicon_zk: {
+    "0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035": { coingeckoId: "usd-coin", decimals: 6 },
+    "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    "0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4": { coingeckoId: "dai", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
