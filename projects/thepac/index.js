@@ -1,5 +1,5 @@
-const { ethers } = require("ethers");
 const axios = require("axios");
+const ethers = require("ethers");
 
 module.exports = {
     methodology: "Sums the total supplies of thePAC's issued tokens."
@@ -19,7 +19,7 @@ async function getTotalSupply(api) {
 async function fetchUnClaimedToken() {
     try {
         const response = await axios.get("https://manager.thepac.xyz/api/unClaimed/PacARB");
-        return ethers.formatUnits(response.data.data.unClaimed, 18);
+        return ethers.formatUnits(response.data.data.unClaimed, 18)
     } catch (error) {
         console.error("Error fetching backend data:", error);
         return "0";
