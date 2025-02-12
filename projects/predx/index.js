@@ -4,13 +4,13 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 module.exports = {
   zklink: {
     tvl: sumTokensExport({
-      owners: ["0x986Ca3A4F05AA7EA5733d81Da6649043f43cB9A8"],
+      owners: ["0x21855483F45ab1801CbE4248b9a2F178320c444B"],
       tokens: [ADDRESSES.zklink.USDT]
     }),
   },
   base: {
     tvl: sumTokensExport({
-      owners: ["0xa6368fd44e699f6bca2ab3a02C44beFCA7257cF4"],
+      owners: ["0x10dE7F398C76341B5a5C33693C930609863F692C"],
       tokens: [ADDRESSES.base.USDC]
     }),
   },
@@ -22,26 +22,26 @@ module.exports = {
   },
   linea: {
     tvl: sumTokensExport({
-      owners: ["0xF9AD26Bb325f4C82F26bF2549b65e6f9a4a04a78"],
+      owners: ["0x3F8D22db689A9c6F0560baCE255cdD854Ab84Ca5"],
       tokens: [ADDRESSES.linea.USDC]
     }),
   },
   bsc: {
     tvl: sumTokensExport({
-      owners: ["0x38Db024F8EA400A57c15C25D1DC46aE868C08a2F"],
+      owners: ["0x2e8c67E73883e787A164cD9FeA592d0AcDbC61D4"],
       tokens: [ADDRESSES.bsc.USDT]
     }),
   },
   mantle: {
     tvl: sumTokensExport({
-      owners: ["0x38Db024F8EA400A57c15C25D1DC46aE868C08a2F"],
+      owners: ["0x8D2DB5B86b7C079FF8F7190D788766EeB789F104"],
       tokens: [ADDRESSES.mantle.USDC]
     }),
   },
   btr: {
     tvl: sumTokensExport({
-      owners: ["0x92CdC3a149A6bc3f39136eF4A94292cDC2Cc4b9b"],
-      tokens: ["0xf8c374ce88a3be3d374e8888349c7768b607c755"]
+      owners: ["0x8E4fb0169aECB4768220d97aA1D0106322716678"],
+      tokens: ["0xf8C374CE88A3BE3d374e8888349C7768B607c755"]
     }),
   },
 }

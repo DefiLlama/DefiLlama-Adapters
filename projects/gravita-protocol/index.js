@@ -30,7 +30,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral on the Gravita platform",
-  start: 1684256400, // Tuesday, May 15, 2023 17:00 GMT
+  start: '2023-05-16', // Tuesday, May 15, 2023 17:00 GMT
 };
 
 Object.keys(ADMIN_ADDRESSES).forEach((chain) => {

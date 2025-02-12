@@ -19,7 +19,7 @@ async function calculateTvl(llamapay, vestingContract, api, isVesting) {
   tokensAndOwners = tokensAndOwners.filter(([token]) => isWhitelistedToken(symbolMapping[token], token, isVesting))
   if (isVesting)
     tokensAndOwners.push(...await getTokensAndOwners(vestingContract, api, true))
-  return sumTokens2({ tokensAndOwners, api, resolveLP: true, })
+  return sumTokens2({ tokensAndOwners, api, resolveLP: false, }) // resolveLP: false maybe breaking them down returns too high TVL for some reason
 }
 
 async function getTokensAndOwners(contract, api, isVestingContract) {

@@ -1,4 +1,3 @@
-
 const sdk = require('@defillama/sdk')
 
 const http = require('../http')
@@ -6,6 +5,7 @@ const { getEnv } = require('../env')
 const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
+const { GraphQLClient } = require("graphql-request");
 
 const coreTokens = Object.values(coreTokensAll.aptos)
 
@@ -14,6 +14,7 @@ const endpoint = () => getEnv('APTOS_RPC')
 async function aQuery(api) {
   return http.get(`${endpoint()}${api}`)
 }
+
 async function getResources(account) {
   const data = []
   let lastData
@@ -34,11 +35,6 @@ async function getResource(account, key) {
   let url = `${endpoint()}/v1/accounts/${account}/resource/${key}`
   const { data } = await http.get(url)
   return data
-}
-
-async function getCoinInfo(address) {
-  if (address === '0x1') return { data: { decimals: 8, name: 'Aptos' } }
-  return http.get(`${endpoint()}/v1/accounts/${address}/resource/0x1::coin::CoinInfo%3C${address}::coin::T%3E`)
 }
 
 function dexExport({
@@ -101,8 +97,10 @@ async function getTableData({ table, data }) {
   return response
 }
 
-async function function_view({ functionStr, type_arguments = [], args = [] }) {
-  const response = await http.post(`${endpoint()}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments: args })
+async function function_view({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined }) {
+  let path = `${endpoint()}/v1/view`
+  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
+  const response = await http.post(path, { "function": functionStr, "type_arguments": type_arguments, arguments: args })
   return response.length === 1 ? response[0] : response
 }
 
@@ -126,11 +124,65 @@ function sumTokensExport(options) {
   return async (api) => sumTokens({ ...api, api, ...options })
 }
 
+const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql");
+
+// Query to get the latest block.
+const latestBlockQuery = `query LatestBlock {
+  block_metadata_transactions(order_by: {version: desc}, limit: 1) {
+    block_height
+  }
+}`;
+
+// Query to get a block.
+const blockQuery = `query Block($block: bigint) {
+  block_metadata_transactions(limit: 1, where: {block_height: {_eq: $block}}) {
+    timestamp
+    version
+  }
+}`;
+
+// Query to get a block range.
+const blockRangeQuery = `query Block($firstBlock: bigint, $limit: Int) {
+  block_metadata_transactions(limit: $limit, where: {block_height: {_gte: $firstBlock}}, order_by: {block_height: asc}) {
+    timestamp
+    version
+  }
+}`;
+
+// Given a timestamp, returns the transaction version that is closest to that timestamp.
+const timestampToVersion = async (timestamp, minBlock = 0) => {
+  let left = minBlock;
+  let right = await graphQLClient.request(latestBlockQuery).then(r => Number(r.block_metadata_transactions[0].block_height));
+  let middle;
+  while (left + 100 < right) {
+    middle = Math.round((left + right) / 2);
+    const middleBlock = await graphQLClient.request(blockQuery, { block: middle }).then(r => r.block_metadata_transactions[0]);
+    const middleBlockDate = new Date(middleBlock.timestamp);
+    if (middleBlockDate.getTime() === timestamp.getTime()) {
+      return Number(middleBlock.version);
+    }
+    if (timestamp.getTime() < middleBlockDate.getTime()) {
+      right = middle;
+    } else {
+      left = middle + 1;
+    }
+  }
+  const blocks = await graphQLClient.request(
+    blockRangeQuery,
+    { firstBlock: left, limit: right - left }
+  ).then(r => r.block_metadata_transactions);
+  const mappedBlocks = blocks.map((e) => ({
+    version: Number(e.version),
+    delta: Math.abs(timestamp.getTime() - new Date(e.timestamp).getTime())
+  }));
+  mappedBlocks.sort((a, b) => a.delta - b.delta);
+  return mappedBlocks[0].version;
+}
+
 module.exports = {
   endpoint: endpoint(),
   dexExport,
   aQuery,
-  getCoinInfo,
   getResources,
   getResource,
   coreTokens,
@@ -139,4 +191,5 @@ module.exports = {
   getTableData,
   function_view,
   hexToString,
+  timestampToVersion
 };

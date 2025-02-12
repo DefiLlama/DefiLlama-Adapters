@@ -13,7 +13,6 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'counts the number of WETH and USDC in Ithaca Fundlock contract',
-  start: 176036233,
   arbitrum: {
     tvl: sumTokensExport({
       tokensAndOwners: [

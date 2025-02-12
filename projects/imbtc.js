@@ -1,10 +1,11 @@
 const { sumTokens } = require('./helper/chain/bitcoin')
+const { imbtc } = require('./helper/bitcoin-book/index.js')
 
 module.exports = {
   ethereum: { tvl: () => ({}) },
   bitcoin: {
     tvl: () => sumTokens({
-      owners: ['3JMjHDTJjKPnrvS7DycPAgYcA6HrHRk8UG', '3GH4EhMi1MG8rxSiAWqfoiUCMLaWPTCxuy'],
+      owners: imbtc,
     })
   },
   methodology: `TVL for imBTC consists of the BTC deposits in custody that were used to mint imBTC`,

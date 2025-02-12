@@ -23,7 +23,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Counts the value of token reserves inside all deployed Wells.",
-  start: 1692797303,
+  start: '2023-08-23',
   ethereum: { tvl },
   arbitrum: { tvl }
 };

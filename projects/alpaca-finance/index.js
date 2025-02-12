@@ -5,7 +5,7 @@ const { calxALPACAtvl } = require('./xalpaca');
 const aExports = require('../alpaca-finance-lend');
 
 module.exports = {
-  start: 1602054167,
+  start: '2020-10-07',
   bsc: {
     tvl: sdk.util.sumChainTvls([calLyfTvl, calAusdTvl, aExports.bsc.tvl]),
     staking: calxALPACAtvl,

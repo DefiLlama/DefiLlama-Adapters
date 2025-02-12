@@ -133,6 +133,7 @@ module.exports = {
   linea: { tvl: getUniTVL({ factory: '0xFbc12984689e5f15626Bad03Ad60160Fe98B303C', useDefaultCoreAssets: true, }) },
   thundercore: { tvl: tvl2 },
   islm: { tvl: tvl2 },
+  sonic: { tvl: tvl2 },
 }
 
 // module.exports.polygon.tvl = getChainTVL('polygon')

@@ -34,7 +34,7 @@ module.exports = {
     "Counts the lamports in each coin container in the Cellena contract account.",
   aptos: {
 
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
 
       const data = await _getResources()
       const coinContainers = data.filter(reserveContrainerFilter)
@@ -48,7 +48,6 @@ module.exports = {
       });
       //get funible asset balance
       await getfungibleAssetBalances(api)
-      console.log(api)
     }
   }
 }

@@ -269,8 +269,55 @@ const HH_PARI_LAYOUT_PARTIAL = BufferLayout.struct([
   BufferLayout.seq(u64(), u8().span, 'amounts'), 
 ]);
 
+const ACCESS_LAYOUT = BufferLayout.struct([
+  BufferLayout.u8('tag'),
+  BufferLayout.u8('bumpSeed'),
+  uint64('dailyInflation'),
+  publicKey('tokenMint'),
+  publicKey('authority'),
+  uint64('creationTime'),
+  uint64('totalStaked'),
+  uint64('totalStakedSnapshot'),
+  uint64('lastSnapshotOffset'),
+  uint128('ixGate'),
+  publicKey('freezeAuthority'),
+  uint128('adminIxGate'),
+  BufferLayout.u16('feeBasisPoints'),
+  uint64('lastFeeDistributionTime'),
+  BufferLayout.u32('feeRecipientsCount'),
+  BufferLayout.seq(
+    BufferLayout.struct([
+      publicKey('owner'),
+      uint64('percentage'),
+    ]),
+    10,
+    'recipients'
+  ),
+]);
+
+const bool = BufferLayout.u8
+// https://github.com/mercurial-finance/stable-swap-n-pool-js/blob/main/src/state.ts#L32
+const METEORA_STABLE_SWAP_LAYOUT = BufferLayout.struct([
+  BufferLayout.u8('version'),
+  bool('isInitialized'),
+  BufferLayout.u8('nonce'),
+  u64('amplificationCoefficient'),
+  u64('feeNumerator'),
+  u64('adminFeeNumerator'),
+  BufferLayout.u32('tokenAccountsLength'),
+  u64('precisionFactor'),
+  BufferLayout.seq(u64(), 4, 'precisionMultipliers'),
+  BufferLayout.seq(publicKey(), 4, 'tokenAccounts'),
+  publicKey('poolMint'),
+  publicKey('adminTokenMint'),
+  BufferLayout.struct([
+    bool('swapEnabled'),
+    bool('addLiquidityEnabled'),
+  ]),
+]);
+
 module.exports = {
   ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, 
-  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL,
+  PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT, METEORA_STABLE_SWAP_LAYOUT,
 }
 

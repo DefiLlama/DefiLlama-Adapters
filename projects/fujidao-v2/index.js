@@ -81,24 +81,25 @@ Object.keys(config).forEach(chain => {
       const assets = bassets.concat(yassets)
 
       const debtAssets = blogs.map(log => log.debtAsset)
-      
-      const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
-      const debtBals = await api.multiCall({ abi: 'uint256:totalDebt', calls: bvaults, permitFailure: true, })
 
-      bals.forEach((bal, i) => {
-        api.add(assets[i], bal)
+      const [bals, debtBals] = await Promise.all([
+        api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: true }),
+        api.multiCall({ abi: 'uint256:totalDebt', calls: bvaults, permitFailure: true, })
+      ])
+
+      vaults.map((_, i) => {
+        const asset = assets[i]
+        const bal = bals[i]
+        if (!bal) return
+        api.add(asset, bal)
       })
 
-      debtAssets.forEach((bal, i) => {
-        if (!debtBals[i]) {
-          return;
-          // if (+bal === 0) return;
-          // throw new Error(`No debt balance for ${bvaults[i]}`)
-        }
-        api.add(debtAssets[i], debtBals[i] * -1)
+      bvaults.map((_, i) => {
+        const debtAsset = debtAssets[i]
+        const debtBal = debtBals[i]
+        if (!debtBal) return
+        api.add(debtAsset, debtBal * -1)
       })
-
-      return api.getBalances()
     },
     borrowed: async (api) => {
       let logs = [];
@@ -119,17 +120,18 @@ Object.keys(config).forEach(chain => {
       }
       const vaults = logs.map(log => log.vault)
       const debtAssets = logs.map(log => log.debtAsset)
-      const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
-      const debtBals = (await api.multiCall({ abi: 'uint256:totalDebt', calls: vaults, permitFailure: true, }))
-      bals.forEach((bal, i) => {
-        if (!debtBals[i]) {
-          return;
-          // if (+bal === 0) return;
-          // throw new Error(`No debt balance for ${vaults[i]}`)
-        }
-        api.add(debtAssets[i], debtBals[i])
-      })
-      return api.getBalances()
+
+      const [bals, debtBals] = await Promise.all([
+        api.multiCall({ abi: 'uint256:totalAssets', calls: vaults, permitFailure: true }),
+        api.multiCall({ abi: 'uint256:totalDebt', calls: vaults, permitFailure: true })
+      ])
+
+      vaults.forEach((_, i) => {
+        const debtBal = debtBals[i]
+        const debtAsset = debtAssets[i]
+        if (!debtBal) return
+        api.add(debtAsset, debtBal)
+      })      
     }
   }
 })

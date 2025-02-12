@@ -3,6 +3,8 @@ const sdk = require("@defillama/sdk");
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
 const { BigNumber } = require("bignumber.js");
+const { sumTokensExport } = require("../helper/sumTokens");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
 
 const getBridgeContract = {
   'ethereum': '0xC707E0854DA2d72c90A7453F8dc224Dd937d7E82',
@@ -87,6 +89,8 @@ async function tronTvl(api) {
 
 module.exports = {
   methodology: "Assets staked in the pool and trading contracts",
+  doublecounted: true,
+  bitcoin: { tvl: sumTokensExport({ owners: bitcoinAddressBook.nerveNetworkBridge }) },
   tron: {
     tvl: tronTvl
   },

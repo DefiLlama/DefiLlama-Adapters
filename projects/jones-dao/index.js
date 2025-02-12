@@ -4,7 +4,6 @@ const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const lockerABI = require("./aura-locker-abi.json");
 const addresses = require("./addresses");
 
 const jAssetToAsset = {
@@ -14,94 +13,77 @@ const jAssetToAsset = {
   "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": addresses.tokens.rdpx, // jrdpx
 };
 
-async function tvl(api) {
+const tokensAndOwners = [
+  [addresses.tokens.uvrt, addresses.glp.stableRewardTracker],
+  [addresses.tokens.uvrt, addresses.glp.router],
+  [addresses.tokens.glp, addresses.glp.leverageStrategy],
+];
+
+const abi = {
+  locker: "function lockedBalances(address _user) view returns (uint256 total, uint256 unlockable, uint256 locked, (uint112 amount, uint32 unlockTime)[] lockData)",
+  glpManager: "function getLPManagerContracts(uint256 _nonce) view returns (address lp,address viewer,address swapper,address receiver,address priceHelper,address lpManager,address doubleTracker,address singleTrackerZero,address singleTrackerOne,address compounder,address router)"
+}
+
+async function tvl_arbitrum (api) {
   const [metavaultTokens, metavaultBalances, optionVaultTokens, optionVaultBalances, jusdcTvl] =
     await Promise.all([
-      api.multiCall({
-        abi: "address:depositToken",
-        calls: addresses.metaVaultsAddresses,
-      }),
-      api.multiCall({
-        abi: "uint256:workingBalance",
-        calls: addresses.metaVaultsAddresses,
-      }),
-      api.multiCall({
-        abi: "address:asset",
-        calls: addresses.optionVaultAddresses,
-      }),
-      api.multiCall({
-        abi: "uint256:totalAssets",
-        calls: addresses.optionVaultAddresses,
-      }),
-      sdk.api.abi.call({
-        abi: "uint256:totalAssets",
-        target: addresses.jusdc.underlyingVault,
-        chain: "arbitrum",
-      }),
+      api.multiCall({ abi: "address:depositToken", calls: addresses.metaVaultsAddresses }),
+      api.multiCall({ abi: "uint256:workingBalance", calls: addresses.metaVaultsAddresses }),
+      api.multiCall({ abi: "address:asset", calls: addresses.optionVaultAddresses }),
+      api.multiCall({ abi: "uint256:totalAssets", calls: addresses.optionVaultAddresses }),
+      api.call({ abi: "uint256:totalAssets", target: addresses.jusdc.underlyingVault }),
     ]);
 
   api.addTokens(metavaultTokens, metavaultBalances);
   api.addTokens(optionVaultTokens, optionVaultBalances);
-  api.addTokens(addresses.tokens.usdc, jusdcTvl.output);
-  const getLPManagerContractsABI = "function getLPManagerContracts(uint256 _nonce) view returns (address lp,address viewer,address swapper,address receiver,address priceHelper,address lpManager,address doubleTracker,address singleTrackerZero,address singleTrackerOne,address compounder,address router)"
-
+  api.addTokens(addresses.tokens.usdc, jusdcTvl);
 
   for (const factoryAddress of addresses.smartLpArbFactories) {
-    const contracts = await api.fetchList({ lengthAbi: 'nonce', itemAbi: getLPManagerContractsABI, target: factoryAddress, startFromOne: true })
+    const contracts = await api.fetchList({ lengthAbi: 'nonce', itemAbi: abi.glpManager, target: factoryAddress, startFromOne: true })
     const lpManagers = contracts.map(c => c.lpManager)
 
-    const token0s = await api.multiCall({ abi: "address:token0", calls: lpManagers })
-    const token1s = await api.multiCall({ abi: "address:token1", calls: lpManagers })
-    const aums = await api.multiCall({ abi: "function aum() returns (uint256 amount0, uint256 amount1)", calls: lpManagers })
+    const [token0s, token1s, aums] = await Promise.all([
+      api.multiCall({ abi: "address:token0", calls: lpManagers, permitFailure: true }),
+      api.multiCall({ abi: "address:token1", calls: lpManagers, permitFailure: true }),
+      api.multiCall({ abi: "function aum() returns (uint256 amount0, uint256 amount1)", calls: lpManagers, permitFailure: true })
+    ])
 
-    api.add(token0s, aums.map(a => a.amount0))
-    api.add(token1s, aums.map(a => a.amount1))
+    lpManagers.forEach((_lp, i) => {
+      const token0 = token0s[i]
+      const token1 = token1s[i]
+      const aum = aums[i]
+      if (!token0 || !token1 || !aum) return
+      api.add(token0, aum.amount0)
+      api.add(token1, aum.amount1)
+    })
   }
-
-  const tokensAndOwners = [
-    [addresses.tokens.uvrt, addresses.glp.stableRewardTracker],
-    [addresses.tokens.uvrt, addresses.glp.router],
-    [addresses.tokens.glp, addresses.glp.leverageStrategy],
-  ];
 
   return sumTokens2({ api, tokensAndOwners });
 }
 
 async function tvl_ethereum(api) {
-  const balances = {};
-
-  const leftoverStrategy = await sdk.api.erc20
-    .balanceOf({
-      target: addresses.tokens.aura,
-      owner: addresses.aura.strategy,
-    })
-    .then((result) => result.output);
-  sdk.util.sumSingleBalance(balances, addresses.tokens.aura, leftoverStrategy);
-
-  const lockedBalance = await sdk.api.abi
-    .call({
-      abi: lockerABI.at(0),
-      target: addresses.aura.locker,
-      params: addresses.aura.strategy,
-    })
-    .then((result) => result.output[0]);
-  sdk.util.sumSingleBalance(balances, addresses.tokens.aura, lockedBalance);
-
-  return balances;
+  const [leftoverStrategy, total] = await Promise.all([
+    api.call({ target: addresses.tokens.aura, params: [addresses.aura.strategy], abi: 'erc20:balanceOf' }),
+    api.call({ target: addresses.aura.locker, params: [addresses.aura.strategy], abi: abi.locker }).then(res => res.total)
+  ]);
+  
+  [leftoverStrategy, total].forEach((bals) => {
+    api.add(addresses.tokens.aura, bals)
+  });
 }
+
 
 module.exports = {
   arbitrum: {
-    tvl,
+    tvl: tvl_arbitrum,
+    staking: stakings(addresses.stakingContracts, addresses.tokens.jones, "arbitrum"),
     pool2: pool2s(addresses.lpStaking, addresses.lps, "arbitrum", (addr) => {
       addr = addr.toLowerCase();
       return `arbitrum:${jAssetToAsset[addr] ?? addr}`;
     }),
-    staking: stakings(addresses.stakingContracts, addresses.tokens.jones, "arbitrum"),
   },
 
   ethereum: {
     tvl: tvl_ethereum,
   },
 };
-// node test.js projects/jones-dao/index.js

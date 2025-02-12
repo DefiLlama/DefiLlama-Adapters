@@ -6,7 +6,7 @@ module.exports = {
   blast: {
     tvl, borrowed,
   },
-  start: 1709630412,
+  start: '2024-03-05',
 };
 
 async function tvl(api) {

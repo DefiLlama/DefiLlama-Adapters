@@ -53,7 +53,7 @@ async function tvl({ timestamp }) {
 }
 
 module.exports = {
-  start: 1516406400,
+  start: '2018-01-20',
   bitcoin: { tvl },
 };
 

@@ -46,7 +46,6 @@ async function tvl(timestamp, block, chainBlocks) {
 module.exports = {
       methodology:
     "Accross different vaults, counts the total number of assets accumulated on each of them",
-  start: 33000000,
   fantom: {
     tvl,
   },

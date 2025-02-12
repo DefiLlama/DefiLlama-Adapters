@@ -6,7 +6,7 @@ const TROVE_MANAGER_ADDRESS = {
 }
 
 module.exports = {
-  start: 1700000000, // Tuesday, November 14, 2023 10:13:20 PM
+  start: '2023-11-14', // Tuesday, November 14, 2023 10:13:20 PM
 };
 
 Object.keys(TROVE_MANAGER_ADDRESS).forEach(chain => {

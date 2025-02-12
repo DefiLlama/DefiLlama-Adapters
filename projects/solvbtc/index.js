@@ -2,7 +2,7 @@ const { getConfig } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { sumTokens } = require("../helper/chain/bitcoin");
 
-const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
+const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
 
 async function bitcoinTvl(api) {
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));

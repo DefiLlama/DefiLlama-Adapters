@@ -114,7 +114,7 @@ function validateHallmarks(hallmark) {
   const year = new Date(timestamp * 1000).getFullYear()
   const currentYear = new Date().getFullYear()
   if (year < 2010 || year > currentYear) {
-    throw new Error("Hallmark timestamp should be between 2010 and "+ currentYear + " but got " + year)
+    throw new Error("Hallmark timestamp should be between 2010 and " + currentYear + " but got " + year)
   }
 
   if (typeof text !== 'string') {
@@ -124,16 +124,12 @@ function validateHallmarks(hallmark) {
 
 (async () => {
   let module = {};
-  try {
-    module = require(passedFile)
-  } catch (e) {
-    console.log(e)
-  }
+  module = require(passedFile)
   if (module.hallmarks) {
     if (!Array.isArray(module.hallmarks)) {
       throw new Error("Hallmarks should be an array of arrays")
     }
-    if(module.hallmarks.length > 6){
+    if (module.hallmarks.length > 6) {
       console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
     }
 
@@ -146,7 +142,7 @@ function validateHallmarks(hallmark) {
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
   const passedTimestamp = process.argv[3]
-  if(passedTimestamp !== undefined){
+  if (passedTimestamp !== undefined) {
     unixTimestamp = Number(passedTimestamp)
     const res = await getBlocks(unixTimestamp, chains)
     chainBlocks = res.chainBlocks
@@ -174,6 +170,8 @@ function validateHallmarks(hallmark) {
           storedKey = chain;
           tvlFunctionIsFetch = true;
         }
+        try {
+
         await getTvl(
           unixTimestamp,
           ethBlock,
@@ -185,6 +183,10 @@ function validateHallmarks(hallmark) {
           tvlFunctionIsFetch,
           storedKey,
         );
+        } catch (e) {
+          console.error(`Error in ${storedKey}:`, e)
+          process.exit(1)
+        }
         let keyToAddChainBalances = tvlType;
         if (tvlType === "tvl" || tvlType === "fetch") {
           keyToAddChainBalances = "tvl";
@@ -236,11 +238,16 @@ function validateHallmarks(hallmark) {
 
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
     console.log(`--- ${chain} ---`);
-    Object.entries(balances)
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([symbol, balance]) => {
-        console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
-      });
+    let entries = Object.entries(balances)
+    entries.sort((a, b) => b[1] - a[1])
+
+    if (entries.length > 30) {
+      console.log("Showing top 30 tokens, total tokens:", entries.length)
+      entries = entries.slice(0, 30)
+    }
+    entries.forEach(([symbol, balance]) => {
+      console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
+    });
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
   });
   console.log(`------ TVL ------`);

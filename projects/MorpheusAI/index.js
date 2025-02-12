@@ -16,7 +16,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'Calculates TVL based on stETH deposits in the project contract.',
-  start: 1707378815,  // Feb-08-2024 07:33:35 AM UTC in Unix timestamp
+  start: '2024-02-08',  // Feb-08-2024 07:33:35 AM UTC in Unix timestamp
   ethereum: {
     tvl
   },

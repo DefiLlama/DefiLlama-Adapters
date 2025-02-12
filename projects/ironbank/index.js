@@ -1,7 +1,7 @@
 const { compoundExports2 } = require("../helper/compound");
 
 module.exports = {
-  start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
+  start: '2020-09-08', // 09/08/2020 @ 8:00am (UTC)
   ethereum: compoundExports2({
     comptroller: '0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB',
     blacklistedTokens: [

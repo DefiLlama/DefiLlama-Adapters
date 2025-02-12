@@ -1,5 +1,6 @@
 const { sumTokensExport } = require('../helper/sumTokens')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
-  bitcoin: { tvl: sumTokensExport({owner: '32ixEdVJWo3kmvJGMTZq5jAQVZZeuwnqzo'}) }
+  bitcoin: { tvl: sumTokensExport({ owners: bitcoinAddressBook.elSalvador }) }
 }

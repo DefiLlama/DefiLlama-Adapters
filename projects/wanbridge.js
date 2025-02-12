@@ -3,7 +3,7 @@ const { get } = require("./helper/http");
 let ret;
 async function getTvl() {
   // This is an api which could get wanchain bridge's lockAddress, balance, tvl and price;
-  // The infomation is updated every 1 hour.
+  // The information is updated every 1 hour.
   if (!ret) {
     ret = await get("https://api.wanpos.xyz/api/tvl");
   }

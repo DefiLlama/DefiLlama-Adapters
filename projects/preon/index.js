@@ -1,3 +1,4 @@
+//preon
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -14,6 +15,11 @@ const config = {
       [["0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97"], "0x82CD73E9cc96cC12569D412cC2480E4d5962AfF5"], // aPolWMatic
       [["0xEA1132120ddcDDA2F119e99Fa7A27a0d036F7Ac9"], "0x8105Fc3487F117982Eb5A5456D8639b0353242d8"], // aPolSTMATIC
       [["0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE"], "0xdc4552609a3f673f0b72958f678d4a48d0e94ebd"], // aPolDAI
+    ],
+  },
+  base: {
+    ownerTokens: [
+      [[ADDRESSES.base.WETH], "0xEfaA597277Ce531e52018d42224aB579Bbe31a04"], // aeroAMO
     ],
   },
 };
@@ -48,12 +54,25 @@ async function customTvl(api) {
   }
 }
 
+async function baseTvl(api) {
+  const aeroAMO = '0xEfaA597277Ce531e52018d42224aB579Bbe31a04'
+  const [amountWeth, _amountOETH] = await api.call({ 
+    abi: 'function getPositionPrincipal() view returns (uint256, uint256)', 
+    target: aeroAMO 
+  })
+  api.add(ADDRESSES.base.USDC, amountWeth)
+  return api.getBalances()
+}
+
 async function tvl(api) {
+  if (api.chain === 'base') {
+    return baseTvl(api)
+  }
   await Promise.all([tokenTvl, customTvl].map((fn) => fn(api)));
 }
 
 module.exports = {
-  methodology: "Adds up the total value locked as collateral on the Preon Finance",
+  methodology: "Adds up the total value locked as collateral, as well as the AMO positions on Preon Finance",
 };
 
 Object.keys(config).forEach((chain) => {

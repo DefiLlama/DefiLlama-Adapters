@@ -9,8 +9,6 @@ const Boba_SHIBUI_USDT = "0x3f714fe1380ee2204ca499d1d8a171cbdfc39eaa";
 
 
 module.exports = {
-  start: 394825,
-
   boba: {
     tvl: () => ({}),
     pool2: pool2s([

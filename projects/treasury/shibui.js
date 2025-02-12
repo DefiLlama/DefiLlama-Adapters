@@ -6,8 +6,6 @@ const Boba_SHIBUI_WETH = "0xcE9F38532B3d1e00a88e1f3347601dBC632E7a82";
 const Boba_SHIBUI_USDT = "0x3f714fe1380ee2204ca499d1d8a171cbdfc39eaa";
 
 module.exports = {
-  start: 394825,
-
   boba: {
     tvl: async (api) => {
       return api.sumTokens({ owners: [

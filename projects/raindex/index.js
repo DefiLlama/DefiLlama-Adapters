@@ -33,7 +33,9 @@ const orderbooks = {
     v3: [
       { address: "0xf1224a483ad7f1e9aa46a8ce41229f32d7549a74", start: 1707183011 },
     ],
-    v4: []
+    v4: [
+      { address: "0x0eA6d458488d1cf51695e1D6e4744e6FB715d37C", start: 1729850783 },
+    ]
   },
   flare: {
     v3: [

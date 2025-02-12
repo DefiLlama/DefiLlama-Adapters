@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   bsc: {
@@ -22,7 +23,7 @@ const config = {
             ]
   },
   bitcoin: {
-    owners: ['1MiFZMJkFMhMrubjjo6f5oEhh7XgSwXWgp']
+    owners: bitcoinAddressBook.hotbit
   },
   ripple: {
     owners: ['rJKBidE4Av6ZaFTBcAucZXCpU7QvNXyfpT']

@@ -1,6 +1,6 @@
 const { tvl } = require('../pooltogether/v5.js')
 
-const chains = ['optimism', 'base', 'arbitrum']
+const chains = ['optimism', 'base', 'arbitrum', 'ethereum', 'scroll', 'xdai']
 
 module.exports = {
   doublecounted: true,

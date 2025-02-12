@@ -104,7 +104,7 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, headers, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   endpoint = sdk.graph.modifyEndpoint(endpoint)
   const key = 'config-cache'
@@ -120,9 +120,9 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
         variables.block = await api.getBlock()
       }
       if (!fetchById)
-        json = await graphql.request(endpoint, query, { variables })
+        json = await graphql.request(endpoint, query, { variables, headers })
       else 
-        json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit } })
+        json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit, headers } })
       if (!json) throw new Error('Empty JSON')
       await _setCache(key, project, json)
       return json
@@ -135,7 +135,7 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
 }
 
 
-async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500 } = {} }) {
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500, headers } = {} }) {
   if (useBlock && !params.block)
     params.block = await api.getBlock() - safeBlockLimit
   endpoint = sdk.graph.modifyEndpoint(endpoint)
@@ -144,7 +144,7 @@ async function graphFetchById({  endpoint, query, params = {}, api, options: { u
   let lastId = ""
   let response;
   do {
-    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }})
+    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }, headers })
     Object.keys(res).forEach(key => response = res[key])
     data.push(...response)
     lastId = response[response.length - 1]?.id

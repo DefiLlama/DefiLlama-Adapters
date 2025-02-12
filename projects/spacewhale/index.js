@@ -6,7 +6,7 @@ const SPACEWHALE = "0xf5961a2441fC68E38300cd8ae8d6a172b12D7E7A"; // SPACEWHALE
 const assets = [nullAddress, ADDRESSES.arbitrum.USDC_CIRCLE] // ETH, USDC
 
 module.exports = {
-	start: 1712109600,
+	start: '2024-04-03',
 	arbitrum: {
 		tvl: sumTokensExport({ owners: [fundStore], tokens: assets }),
 		staking: sumTokensExport({ owners: [fundStore], tokens: [SPACEWHALE] }),

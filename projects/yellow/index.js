@@ -6,6 +6,7 @@ const vaults = {
   ethereum: {},
   linea: {},
   polygon: {},
+  scroll: {},
 }
 
 module.exports = {

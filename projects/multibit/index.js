@@ -2,6 +2,7 @@ const abi = require("./abi.json");
 const { getConfig } = require('../helper/cache')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/chain/brc20')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const BRIDGE_TOKENS = "https://api.multibit.exchange/support/token";
 
@@ -16,11 +17,7 @@ module.exports = {
   methodology: `Tokens bridged via MultiBit are counted as TVL`,
   bitcoin: {
     tvl: sumTokensExport({
-      owners: [
-        'bc1p6r6hx759e3ulvggvd9x3df0rqh27jz59nvfjd2fzmh3wqyt6walq82u38z', // hot wallet
-        'bc1pyyms2ssr0hagy5j50r5n689e6ye0626v3c98j5fw0jk6tz3vrgts7nt56g',  // cold wallet
-        'bc1qmcrpqanjnrw58y0fvq08fqchgxv5aylctew7vxlkalfns3rpedxsx4hxpu',  // cold wallet
-      ],
+      owners: bitcoinAddressBook.multibit,
       blacklistedTokens: ['MUBI', 'BSSB', 'savm'] // more SAVM is bridged than circulating supply according to coingecko & etherscan
     }),
 

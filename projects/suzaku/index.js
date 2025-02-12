@@ -8,7 +8,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1727654400,
+  start: '2024-09-30',
   avax: {
     tvl,
   },
