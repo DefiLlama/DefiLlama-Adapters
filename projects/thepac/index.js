@@ -11,12 +11,9 @@ const config = {
     }
 }
 
-async function getTotalSupply() {
-    const api = await getApi("hashkey");
-    return (await api.call({
-        abi: "erc20:totalSupply",
-        target: config.hashkey.PacARB,
-    })) / 1e18
+async function getTotalSupply(api) {
+    const totalSupply = await api.call({ abi: "erc20:totalSupply", target: config.hashkey.PacARB });
+    return ethers.formatUnits(totalSupply, 18);
 }
 
 async function fetchUnClaimedToken() {
@@ -31,7 +28,7 @@ async function fetchUnClaimedToken() {
 
 async function tvl(api) {
     const [supply, unClaimed] = await Promise.all([
-        getTotalSupply(),
+        getTotalSupply(api),
         fetchUnClaimedToken(),
     ]);
 
