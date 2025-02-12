@@ -31,7 +31,7 @@ async function tvl(api) {
 
 	const drift_vault_program = new Program(driftVaults, DRIFT_VAULT_PROGRAM_ADDR, provider)
 	const vault_res = await drift_vault_program.account.vault.fetch(NX_JLP_DELTA_NEUTRAL_VAULT_ADDR);
-	api.add(ADDRESSES.solana.USDC, vault_res.netDeposits.toString())	
+	// api.add(ADDRESSES.solana.USDC, vault_res.netDeposits.toString())
 }
 
 module.exports = {
