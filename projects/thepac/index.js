@@ -12,10 +12,8 @@ const config = {
 }
 
 async function getTotalSupply(api) {
-    return ethers.formatUnits(await api.call({
-        abi: "erc20:totalSupply",
-        target: config.hashkey.PacARB,
-    }), 18)
+    const totalSupply = await api.call({ abi: "erc20:totalSupply", target: config.hashkey.PacARB })
+    return ethers.formatUnits(totalSupply, 18)
 }
 
 async function fetchUnClaimedToken() {
