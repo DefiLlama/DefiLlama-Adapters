@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const anchor = require('@coral-xyz/anchor');
 const { PublicKey } = require("@solana/web3.js");
 const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+const CUSTOM_PROGRAM_ID = new PublicKey('EDnxACbdY1GeXnadh5gRuCJnivP7oQSAHGGAHCma4VzG')
 
 const SPOT_MARKETS = {
   0: {
@@ -132,14 +133,13 @@ function getSpotMarketCumulativeBorrowInterest(accountInfo) {
 
 function processPerpPosition(position) {
 
-  //if perp market 0, amount needs to mul by 10 
+
   let baseBalance = position.market_index === 0 ? position.base_asset_amount : position.base_asset_amount / BigInt(10);
 
   let quoteBalance = position.quote_asset_amount;
 
   return { baseBalance, quoteBalance };
 }
-
 
 
 function getPerpMarketFundingRates(accountInfo) {

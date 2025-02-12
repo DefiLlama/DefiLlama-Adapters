@@ -9,5 +9,5 @@ async function tvl(api) {
 module.exports = {
   hyperliquid: { tvl },
   misrepresentedTokens: true,
-  doublecounted: true,
+  //doublecounted: true,
 }
