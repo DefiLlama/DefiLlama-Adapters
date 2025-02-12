@@ -118,6 +118,7 @@ const stacksSBTC = [
 
 const magpie = [
   '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
+  'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
 ]
 
 module.exports = {
