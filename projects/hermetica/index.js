@@ -41,7 +41,7 @@ module.exports = {
 
       const sUSDhSupplyRunes = totaluUSDhSupply - uUSDhSupplyStacks;
 
-      return { 'usd-coin': sUSDhSupplyRunes / (10 ** 8) }
+      return { 'hermetica-usdh': sUSDhSupplyRunes / (10 ** 8) }
     }
   },
   stacks: {
@@ -55,7 +55,7 @@ module.exports = {
       );
       const supplyOnStacksuUsdh = Number(parseClarityInt(supplyResponse.result));
 
-      return { 'usd-coin': supplyOnStacksuUsdh / (10 ** 8) }
+      return { 'hermetica-usdh': supplyOnStacksuUsdh / (10 ** 8) }
     }
   },
   misrepresentedTokens: true
