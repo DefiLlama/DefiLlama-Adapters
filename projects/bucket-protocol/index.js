@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
+const { calculatehaSuiSuiVaultShares } = require("./utils");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
@@ -225,6 +226,12 @@ async function tvl(api) {
     if (x !== BUCK) api.add(x, xVal);
     if (y !== BUCK) api.add(y, yVal);
   }
+
+  // TODO: testing 
+  const myShare = "1052361942581"
+  const amounts = await calculatehaSuiSuiVaultShares(myShare)
+
+  console.log({amounts})
 
   // Cetus USDC-BUCK LP
   // 1 Bucketus = 0.5 BUCK + 0.5 USDC
