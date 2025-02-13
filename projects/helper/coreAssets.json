@@ -55,6 +55,7 @@
     "PRISMA": "0xdA47862a83dac0c112BA89c6abC2159b95afd71C",
     "FXN": "0x365accfca291e7d3914637abf1f7635db165bb09",
     "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
+    "apxETH": "0x9Ba021B0a9b958B5E75cE9f6dff97C7eE52cb3E6",
     "ETHFI": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB",
     "METH": "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
     "USD0": "0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5",
@@ -577,7 +578,10 @@
     "abUSDT": "E77cpQ4VncGmcAXX16LHFFzNBEBb2U7Ar7LBmZNfCgwL",
     "aeUSDT": "Bn113WT6rbdgwrm12UJtnmNqGqZjY4it2WoUQuQopFVn",
     "aaUSDT": "FwEHs3kJEdMa2qZHv7SgzCiFXUQPEycEXksfBkwmS8gj",
-    "BUSDbs": "5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2"
+    "BUSDbs": "5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2",
+    "ORCA": "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE",
+    "jitoSOL": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn",
+    "kySOL": "kySo1nETpsZE2NWe5vj2C64mPSciH1SppmHb4XieQ7B"
   },
   "astar": {
     "WASTR_1": "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720",
@@ -2097,7 +2101,13 @@
     "SOL": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
     "USDC": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
     "WIF": "841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH",
-    "TIA": "9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8"
+    "TIA": "9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8",
+    "apxETH": "6AjQBsySS1FtQmA7a4oYc6GYpHBTDqtSswptsVSTz3Tv",
+    "USDT": "CEBP3CqAbW4zdZA57H2wfaSG1QNdzQ72GiQEbQXyW9Tm",
+    "WBTC": "7UTjr1VC6Z9DPsWD6mh5wPzNtufN17VnzpKS3ASpfAji",
+    "ORCA": "2tGbYEm4nuPFyS6zjDTELzEhvVKizgKewi6xT7AaSKzn",
+    "jitoSOL": "JAh5pFYn1Kbh7kCuqZab8viVFdNgTmpS6hzFstSGNBvG",
+    "kySOL": "8jN7xMDqJucigQphWHvqAPQPAmk7VJKKsqLmgCkE7XzP"
   },
   "unit0": {
     "UNIT": "0xcf43f7703d9b4e8835f977ef364b4014fa7e856e",
