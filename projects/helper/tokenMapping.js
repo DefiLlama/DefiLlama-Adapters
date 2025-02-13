@@ -49,6 +49,13 @@ const fixBalancesTokens = {
     "0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035": { coingeckoId: "usd-coin", decimals: 6 },
     "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
     "0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4": { coingeckoId: "dai", decimals: 18 },
+  },
+  sty: {
+    [ADDRESSES.null]: { coingeckoId: "story-2", decimals: 18 },
+    '0x1514000000000000000000000000000000000000': { coingeckoId: "story-2", decimals: 18 },
+    '0x968b9a5603ddeb2a78aa08182bc44ece1d9e5bf0': { coingeckoId: "usd-coin", decimals: 6 },
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x2d08d948fc0bd2db5411e8ab3c49e0bb89a2b428': { coingeckoId: "ethereum", decimals: 18 },
   }
 }
 
