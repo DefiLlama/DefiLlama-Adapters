@@ -144,3 +144,32 @@ module.exports = {
 for (const chainName of Object.keys(chains)) {
   module.exports[chainName] = { tvl: makeTvlFn(chains[chainName]) };
 }
+
+// ############### Berachain TVL ###############
+// Berachain TVL is calculated differently than the other chains Stride
+// supports.
+const MANAGER_CONTRACT_ADDRESS = "0xDcc5E38f0207757604c5a4925A870dE9554395b4";
+function makeBerachainTvlFn() {
+  return async (api) => {
+    // Get all whitelisted receipt tokens (vaults)
+    const receipts = await api.call({
+      target: MANAGER_CONTRACT_ADDRESS,
+      abi: "receipts",
+    });
+
+    // For each vault, get the total staked amount
+    const stakedAmounts = await api.multiCall({
+      abi: "totalStakedByReceipt",
+      calls: receipts,
+    });
+
+    // Count each receipt’s staked tokens in TVL
+    receipts.forEach((token, idx) => {
+      api.add(token, stakedAmounts[idx]);
+    });
+  };
+}
+
+module.exports["berachain"] = {
+  tvl: makeBerachainTvlFn(),
+};
