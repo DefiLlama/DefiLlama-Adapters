@@ -7,3 +7,4 @@ module.exports.arbitrum = compoundExports2({ comptroller: '0x317c1A5739F39046E20
 module.exports.era = compoundExports2({ comptroller: '0xddE4D098D9995B659724ae6d5E3FB9681Ac941B1'})
 module.exports.base = compoundExports2({ comptroller: '0x0C7973F9598AA62f9e03B94E92C967fD5437426C'})
 module.exports.optimism = compoundExports2({ comptroller: '0x5593FF68bE84C966821eEf5F0a988C285D5B7CeC'})
+module.exports.unichain = compoundExports2({ comptroller: '0xe22af1e6b78318e1Fe1053Edbd7209b8Fc62c4Fe'})
