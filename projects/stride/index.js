@@ -103,10 +103,7 @@ function getCoinDenimals(denom) {
 function makeTvlFn(chain) {
   return async () => {
     // Define the URL for host_zone based on chainId
-    const hostZoneUrl =
-      chain.chainId === "celestia"
-        ? "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/staketia/host_zone"
-        : chain.chainId === "dymension_1100-1"
+    const hostZoneUrl = chain.chainId === "dymension_1100-1"
         ? "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakedym/host_zone"
         : `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
 
