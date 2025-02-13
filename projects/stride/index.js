@@ -154,13 +154,14 @@ function makeBerachainTvlFn() {
     // Get all whitelisted receipt tokens (vaults)
     const receipts = await api.call({
       target: MANAGER_CONTRACT_ADDRESS,
-      abi: "receipts",
+      abi: 'function receipts() view returns (address[])',
     });
 
     // For each vault, get the total staked amount
     const stakedAmounts = await api.multiCall({
-      abi: "totalStakedByReceipt",
-      calls: receipts,
+      target: MANAGER_CONTRACT_ADDRESS,
+      abi: "function totalStakedByReceipt(address receipt) view returns (uint256)",
+      calls: receipts.map(receipt => ({ params: [receipt] })),
     });
 
     // Count each receipt’s staked tokens in TVL
@@ -171,5 +172,6 @@ function makeBerachainTvlFn() {
 }
 
 module.exports["berachain"] = {
+  doublecounted: true,
   tvl: makeBerachainTvlFn(),
 };
