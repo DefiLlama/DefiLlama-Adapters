@@ -56,6 +56,7 @@
     "FXN": "0x365accfca291e7d3914637abf1f7635db165bb09",
     "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
     "apxETH": "0x9Ba021B0a9b958B5E75cE9f6dff97C7eE52cb3E6",
+    "tETH": "0x19e099B7aEd41FA52718D780dDA74678113C0b32",
     "ETHFI": "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB",
     "METH": "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
     "USD0": "0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5",
@@ -2107,7 +2108,8 @@
     "WBTC": "7UTjr1VC6Z9DPsWD6mh5wPzNtufN17VnzpKS3ASpfAji",
     "ORCA": "2tGbYEm4nuPFyS6zjDTELzEhvVKizgKewi6xT7AaSKzn",
     "jitoSOL": "JAh5pFYn1Kbh7kCuqZab8viVFdNgTmpS6hzFstSGNBvG",
-    "kySOL": "8jN7xMDqJucigQphWHvqAPQPAmk7VJKKsqLmgCkE7XzP"
+    "kySOL": "8jN7xMDqJucigQphWHvqAPQPAmk7VJKKsqLmgCkE7XzP",
+    "tETH": "GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn"
   },
   "unit0": {
     "UNIT": "0xcf43f7703d9b4e8835f977ef364b4014fa7e856e",
