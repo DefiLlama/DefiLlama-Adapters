@@ -139,15 +139,9 @@ function makeLPTokensTvlFn() {
       "https://berachain.main.stridenet.co/stats"
     );
 
-    const balances = {};
-
-    sdk.util.sumSingleBalance(
-      balances,
-      "berachain",
-      Math.floor(stats.tvl_usd)
-    );
-
-    return balances
+    return {
+      "berachain-bera": Math.floor(stats.tvl_usd)
+    };
   };
 }
 
