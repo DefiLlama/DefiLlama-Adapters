@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 
-async function updateBerpsVaultTvl(api, pluginAddress, balances, transform) {
+async function updateBerpsVaultTvl(api, pluginAddress, balances) {
     const tokenAddress = await api.call({
         abi: 'function getToken() view returns (address)',
         target: pluginAddress
@@ -11,14 +11,7 @@ async function updateBerpsVaultTvl(api, pluginAddress, balances, transform) {
         target: pluginAddress
     });
 
-    const decimals = await api.call({
-        abi: 'erc20:decimals',
-        target: tokenAddress
-    });
-
-    const reserve = totalSupply / (10 ** decimals);
-
-    sdk.util.sumSingleBalance(balances, transform(tokenAddress), reserve);
+    sdk.util.sumSingleBalance(balances, tokenAddress, totalSupply, api.chain);
 }
 
 module.exports = {

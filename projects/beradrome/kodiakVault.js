@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 
-async function updateKodiakVaultTvl(api, pluginAddress, balances, transform) {
+async function updateKodiakVaultTvl(api, pluginAddress, balances) {
     const pairAddress = await api.call({
         abi: 'function getToken() view returns (address)',
         target: pluginAddress
@@ -48,8 +48,11 @@ async function updateKodiakVaultTvl(api, pluginAddress, balances, transform) {
     const reserve0Beradrome = reserve0 * ratio;
     const reserve1Beradrome = reserve1 * ratio;
 
-    sdk.util.sumSingleBalance(balances, transform(token0Address), reserve0Beradrome);
-    sdk.util.sumSingleBalance(balances, transform(token1Address), reserve1Beradrome);
+    const reserve0BeradromeScaled = BigInt(Math.round(reserve0Beradrome * 10 ** decimals0));
+    const reserve1BeradromeScaled = BigInt(Math.round(reserve1Beradrome * 10 ** decimals1));
+
+    sdk.util.sumSingleBalance(balances, token0Address, reserve0BeradromeScaled, api.chain);
+    sdk.util.sumSingleBalance(balances, token1Address, reserve1BeradromeScaled, api.chain);
 }
 
 module.exports = {

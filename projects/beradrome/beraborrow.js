@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 
-async function updateBeraborrowTvl(api, pluginAddress, balances, transform) {
+async function updateBeraborrowTvl(api, pluginAddress, balances) {
     const sTokenAddress = await api.call({
         abi: 'function getToken() view returns (address)',
         target: pluginAddress
@@ -39,7 +39,9 @@ async function updateBeraborrowTvl(api, pluginAddress, balances, transform) {
 
     const reserve = ratio * totalUnderlyingInSTokenFormatted;
 
-    sdk.util.sumSingleBalance(balances, transform(underlyingToken), reserve);
+    const reserveScaled = BigInt(Math.round(reserve * 10 ** sTokenDecimals));
+
+    sdk.util.sumSingleBalance(balances, underlyingToken, reserveScaled, api.chain);
 }
 
 module.exports = {

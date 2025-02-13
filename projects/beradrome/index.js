@@ -27,14 +27,13 @@ async function borrowed(api) {
 
 async function tvl(api) {
     const balances = {};
-    const transform = i => `berachain:${i}`;
 
     const honeyBalance = await api.call({  
         abi: 'erc20:balanceOf',
         target: ADDRESSES.berachain.HONEY,
         params: BERO
     })
-    sdk.util.sumSingleBalance(balances, transform(ADDRESSES.berachain.HONEY), honeyBalance);
+    sdk.util.sumSingleBalance(balances, ADDRESSES.berachain.HONEY, honeyBalance, api.chain);
 
     const plugins = await api.call({ abi: 'address[]:getPlugins', target: VOTER })
 
@@ -63,27 +62,27 @@ async function tvl(api) {
         }
 
         if (name === 'Berps bHONEY' || name === 'iBGT') {
-            await updateBerpsVaultTvl(api, plugin, balances, transform)
+            await updateBerpsVaultTvl(api, plugin, balances)
         }
 
         if (inferredProtocol === 'BeraSwap' || inferredProtocol === 'Infrared') {
-            await updateBalancerV2Tvl(api, plugin, balances, transform)
+            await updateBalancerV2Tvl(api, plugin, balances)
         }
 
         if (inferredProtocol === 'Kodiak V2') {
-            await updateKodiakUniV2Tvl(api, plugin, balances, transform)
+            await updateKodiakUniV2Tvl(api, plugin, balances)
         }
 
-        if (inferredProtocol === 'Kodiak') {
-            await updateKodiakVaultTvl(api, plugin, balances, transform)
+        if (inferredProtocol === "Kodiak" ||inferredProtocol === "Kodiak Trifecta" ||inferredProtocol === "Infrared Trifecta Kodiak") {
+            await updateKodiakVaultTvl(api, plugin, balances)
         }
 
         if (inferredProtocol === 'BERPS') {
-            await updateBerpsVaultTvl(api, plugin, balances, transform)
+            await updateBerpsVaultTvl(api, plugin, balances)
         }
 
         if (inferredProtocol === 'Beraborrow') {
-            await updateBeraborrowTvl(api, plugin, balances, transform)
+            await updateBeraborrowTvl(api, plugin, balances)
         }
     }
 

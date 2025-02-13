@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 
 const VAULT = "0x4Be03f781C497A489E3cB0287833452cA9B9E80B";
 
-async function updateBalancerV2Tvl(api, pluginAddress, _balances, transform) {
+async function updateBalancerV2Tvl(api, pluginAddress, _balances) {
     const balancerToken = await api.call({
         abi: 'function getToken() view returns (address)',
         target: pluginAddress
@@ -64,8 +64,11 @@ async function updateBalancerV2Tvl(api, pluginAddress, _balances, transform) {
     const reserve0Beradrome = (reserve0 / (10 ** decimals0)) * ratio;
     const reserve1Beradrome = (reserve1 / (10 ** decimals1)) * ratio;
 
-    sdk.util.sumSingleBalance(_balances, transform(token0Address), reserve0Beradrome);
-    sdk.util.sumSingleBalance(_balances, transform(token1Address), reserve1Beradrome);
+    const reserve0BeradromeScaled = BigInt(Math.round(reserve0Beradrome * 10 ** decimals0));
+    const reserve1BeradromeScaled = BigInt(Math.round(reserve1Beradrome * 10 ** decimals1));
+
+    sdk.util.sumSingleBalance(_balances, token0Address, reserve0BeradromeScaled, api.chain);
+    sdk.util.sumSingleBalance(_balances, token1Address, reserve1BeradromeScaled, api.chain);
 }
 
 module.exports = {

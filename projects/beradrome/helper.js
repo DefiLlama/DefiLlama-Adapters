@@ -27,13 +27,13 @@ function inferProtocol(protocol, name) {
             break;
         case "Infrared Trifecta":
             if (name.includes("Island")) {
-                inferredProtocol = "Kodiak";
+                inferredProtocol = "Infrared Trifecta Kodiak";
             }
             break;
         case "Kodiak":
             return "Kodiak";
         case "Kodiak Trifecta":
-            return "Kodiak";
+            return "Kodiak Trifecta";
         case "BeraPaw":
             if (name.includes("BeraSwap")) {
                 inferredProtocol = "BeraSwap";
