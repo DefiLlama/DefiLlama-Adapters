@@ -22,7 +22,7 @@ async function tvl(api) {
   const ichiVaults = []
   const ichiBals = []
   tokens.forEach((token, i) => {
-    if (symbols[i] === 'ICHI_Vault_LP') {
+    if (symbols[i] === 'ICHI_Vault_LP' || symbols[i].startsWith('IV-SWAPX') ) {
       ichiVaults.push(token)
       ichiBals.push(bals[i])
     } else

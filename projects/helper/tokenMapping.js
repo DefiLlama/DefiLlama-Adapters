@@ -41,58 +41,14 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  base: {
-    '0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2': { coingeckoId: 'ethena-staked-usde', decimals: 18 },
-  },
-  kopi: {
-    'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
-    'ucusdc': { coingeckoId: 'usd-coin', decimals: 6 },
-    'uasusdtinj': { coingeckoId: 'tether', decimals: 6 },
-    'ucusdtinj': { coingeckoId: 'tether', decimals: 6 },
-  },
-  elys: {
-    'uelys': { coingeckoId: 'elys-network', decimals: 6 },
-  },
-  spn: {
-    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
-    '0x1fB719f10b56d7a85DCD32f27f897375fB21cfdd': { coingeckoId: 'ethereum', decimals: 18 },
-    '0xA2555701754464d32D9624149E3fDb459F3c8DE4': { coingeckoId: 'arbitrum', decimals: 18 },
-    '0x6c030c5cc283f791b26816f325b9c632d964f8a1': { coingeckoId: 'usd-coin', decimals: 6 },
-    '0x80eFAD50D395671C13C4b1FA2969f7a7Aa9EF7b3': { coingeckoId: 'fluidity-money', decimals: 18 },
-    '0x6e142cdaefa4ba7786e8d1ff74968db67c3b910d': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-  },
-  mantra: {
-    uom: { coingeckoId: 'mantra-dao', decimals: 6 },
-  },
-  occ: {
-    '0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12': { coingeckoId: 'edu-coin', decimals: 18 },
-  },
-  artela: {
-    [ADDRESSES.null]: { coingeckoId: 'artela-network', decimals: 18 },
-    '0xadcd43c78a914c6b14171ab1380bcfcfa25cd3ad': { coingeckoId: 'artela-network', decimals: 18 },
-  },
-  ton: {
-    '0:9bd52017d6178af6d2bc6b9097b5849b7475e43cf01758a4f2dd8cf93c7d6582': { coingeckoId: 'ethereum', decimals: 9 },
-    '0:9b9117699eb5997e6d3b74fe67ff08c6c7a9653641cd21d999fa0a4841c0cff8': { coingeckoId: 'bitcoin', decimals: 9 },
-  },
-  fluence: {
-    [ADDRESSES.null]: { coingeckoId: 'fluence-2', decimals: 18 },
-    '0x236501327e701692a281934230af0b6be8df3353': { coingeckoId: 'fluence-2', decimals: 18 },
-  },
-  swan: {
-    [ADDRESSES.null]: { coingeckoId: 'swan-chain', decimals: 18 },
-    '0xBb4eC1b56cB624863298740Fd264ef2f910d5564': { coingeckoId: 'swan-chain', decimals: 18 },
-  },
-  sui: {
-    '0xf4530aa5ef8af33c497ec38f54ff9dd45fad9157264efae9693eb62faf8667b5::coin::COIN': { coingeckoId: 'dinero-staked-eth', decimals: 8 },
-  },
-  soneium: {
-    '0x60336f9296c79da4294a19153ec87f8e52158e5f': { coingeckoId: 'bifrost-voucher-astr', decimals: 18 },
+  silicon_zk: {
+    "0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035": { coingeckoId: "usd-coin", decimals: 6 },
+    "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    "0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4": { coingeckoId: "dai", decimals: 18 },
   }
 }
 
