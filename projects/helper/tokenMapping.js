@@ -45,6 +45,12 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  artela: {
+    '0x891986cf778004c86c5f2d8c18198635f725a5ce': { coingeckoId: "artela-network", decimals: 18 }
+  },
+  hashkey: {
+    '0xB210D2120d57b758EE163cFfb43e73728c471Cf1': { coingeckoId: "hashkey", decimals: 18 },
+  },
   silicon_zk: {
     "0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035": { coingeckoId: "usd-coin", decimals: 6 },
     "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
