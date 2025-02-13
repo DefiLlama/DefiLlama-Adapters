@@ -1,10 +1,17 @@
 const { Program } = require("@project-serum/anchor");
-const { getProvider, } = require("../helper/solana");
+const ADDRESSES = require('../helper/coreAssets.json')
+
+const { getProvider } = require("../helper/solana");
+const { drift: { vaultTvl } } = require("../helper/chain/rpcProxy")
+
+
 const nxIdlV1 = require("./nx-idl-v1.json");
 const nxIdlV2 = require("./nx-idl-v2.json");
 
 const NX_PROGRAM_ADDR_V1 = "EHBN9YKtMmrZhj8JZqyBQRGqyyeHw5xUB1Q5eAHszuMt";
 const NX_PROGRAM_ADDR_V2 = "NXFiKimQN3QSL3CDhCXddyVmLfrai8HK36bHKaAzK7g";
+const NX_JLP_DELTA_NEUTRAL_VAULT_ADDR = "HYHnL9BB3tqSPxkVbdcAn9CAa4hyqNYUh1FwDc4he7aD";
+
 
 async function tvl(api) {
 	const provider = getProvider();
@@ -20,6 +27,9 @@ async function tvl(api) {
 	for (let value of res)
 		for (let { account: pool } of value) 
 			api.add(pool.tokenMint.toBase58(), pool.depositTokens.toString())
+
+	const drift_jlp_vault_tvl = await vaultTvl(NX_JLP_DELTA_NEUTRAL_VAULT_ADDR)
+	api.add(ADDRESSES.solana.USDC, drift_jlp_vault_tvl.toString())
 }
 
 module.exports = {
