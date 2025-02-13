@@ -206,19 +206,6 @@ async function stakingPlsTvl(api) {
       api.add(token, bals[i])
     }
   })
-
-  // // Add plvGLP balance
-  // try {
-  //   const { output: plvGlpSupply } = await sdk.api.erc20.totalSupply({
-  //     target: plvGlpToken, 
-  //     chain: api.chain, 
-  //     block: api.block
-  //   });
-  //   api.add('arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', plvGlpSupply)
-  // } catch (e) {
-  //   console.log(`Error getting plvGLP total supply: ${e.message}`)
-  // }
-
   return sumUnknownTokens({
     api,
     lps,
