@@ -25,6 +25,30 @@ const TOKEN_INFO = {
   },
 }
 
+function getTokenInfo(isSpotMarket, marketIndex) {
+  if (isSpotMarket) {
+    switch (marketIndex) {
+      case 0:
+        return TOKEN_INFO['USDC']
+      case 1:
+        return TOKEN_INFO['SOL']
+      case 19:
+        return TOKEN_INFO['JLP']
+    }
+  }
+  else {
+    switch (marketIndex) {
+      case 0:
+        return TOKEN_INFO['SOL']
+      case 1:
+        return TOKEN_INFO['BTC']
+      case 2:
+        return TOKEN_INFO['ETH']
+    }
+  }
+  return undefined
+}
+
 async function tvl(api) {
 
   const vaultUserAddresses = [
