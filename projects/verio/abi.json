@@ -1,0 +1,5 @@
+{
+  "verioIPStakePool": "function getTotalStake() view returns (uint256)",
+  "verioIPStakePoolBalance": "function getStakePoolAmount() view returns (uint256)",
+  "verioIPAssetStaking": "function getTotalStakePricedInIP() view returns (uint256)"
+}
