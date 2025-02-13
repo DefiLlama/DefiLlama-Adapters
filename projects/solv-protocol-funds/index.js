@@ -14,9 +14,9 @@ const graphUrlList = {
   merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin',
 }
 
-const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-protocol-rwa-slot/main/slot.json';
+const slotListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-rwa-slot.json';
 
-const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
+const addressUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-funds.json';
 
 async function tvl(api) {
   const address = (await getConfig('solv-protocol/funds', addressUrl));
@@ -32,7 +32,7 @@ async function tvl(api) {
   await ceffuBalance(api, address, graphData);
 }
 
-const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
+const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
 async function getSolvBTCVAddresses(api) {
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
 
@@ -221,7 +221,6 @@ async function lendle(api, address) {
 async function vaultBalance(api, graphData) {
   const network = api.chain;
 
-  const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
@@ -229,23 +228,24 @@ async function vaultBalance(api, graphData) {
     const poolConcretes = await concrete(poolLists, api);
 
     const poolBaseInfos = await api.multiCall({
+      permitFailure: true,
       abi: abi.slotBaseInfo,
       calls: poolLists.map((index) => ({
         target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
+        params: [index.openFundShareSlot],
       })),
     })
 
     let vaultAddress = [];
     for (const key in poolLists) {
-      if (solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
+      if (poolBaseInfos[key] && solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
         vaultAddress.push(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`);
       }
     }
 
     let vaults = {};
     for (const key in poolLists) {
-      if (poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
         vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
       }
     }

@@ -40,7 +40,7 @@ function tvl(chain) {
 }
 
 module.exports = {
-  start: 1618218000,            // Mon Apr 12 2021 09:00:00
+  start: '2021-04-12',            // Mon Apr 12 2021 09:00:00
   misrepresentedTokens: true,
 };
 

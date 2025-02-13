@@ -9,7 +9,15 @@ const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk');
-const { TOKEN_PROGRAM_ID, ASSOCIATED_PROGRAM_ID, } = require('@project-serum/anchor/dist/cjs/utils/token');
+
+/** Address of the SPL Token program */
+const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+
+/** Address of the SPL Token 2022 program */
+const TOKEN_2022_PROGRAM_ID = new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb')
+
+/** Address of the SPL Associated Token Account program */
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL')
 
 const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
@@ -31,9 +39,12 @@ const endpoint = (isClient) => {
 }
 
 const renecEndpoint = () => getEnv('RENEC_RPC')
+const eclipseEndpoint = () => getEnv('ECLIPSE_RPC')
+
 const endpointMap = {
   solana: endpoint,
   renec: renecEndpoint,
+  eclipse: eclipseEndpoint,
 }
 
 function getConnection(chain = 'solana') {
@@ -51,8 +62,18 @@ function getProvider(chain = 'solana') {
   return provider[chain]
 }
 
+
+function getAssociatedTokenAddress(mint, owner,) {
+  if (typeof mint === 'string') mint = new PublicKey(mint)
+  if (typeof owner === 'string') owner = new PublicKey(owner)
+  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
+  return associatedTokenAddress.toString()
+}
+
+
 async function getTokenSupplies(tokens, { api } = {}) {
-  const sleepTime = tokens.length > 2000 ? 2000 : 200
+  // const sleepTime = tokens.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   const connection = getConnection()
   tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
   const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
@@ -74,7 +95,8 @@ async function getTokenSupplies(tokens, { api } = {}) {
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
-  const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  // const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   log('total token accounts: ', tokenAccounts.length, 'sleepTime: ', sleepTime)
   tokenAccounts.forEach((val, i) => {
     if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
@@ -115,8 +137,9 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   return individual ? balancesIndividual : balances
 }
 
-async function getMultipleAccounts(accountsArray) {
-  const connection = getConnection()
+async function getMultipleAccounts(accountsArray, {api} = {}) {
+  const chain = api?.chain ?? 'solana'
+  const connection = getConnection(chain)
   if (!accountsArray.length) return []
   accountsArray.forEach((val, i) => {
     if (typeof val === 'string') accountsArray[i] = new PublicKey(val)
@@ -154,6 +177,9 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
     const tokenAccounts = []
 
     programAccounts.forEach((account) => {
+      if (DEX_PROGRAM_ID === '9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP' && account.account.space < 324) {
+        return;
+      }
       const tokenSwap = decodeAccount('tokenSwap', account.account);
       tokenAccounts.push(tokenSwap.tokenAccountA.toString())
       tokenAccounts.push(tokenSwap.tokenAccountB.toString())
@@ -167,8 +193,13 @@ function sumTokensExport({ tokenAccounts, owner, owners, tokens, solOwners, blac
   return (api) => sumTokens2({ api, chain: api.chain, tokenAccounts, owner, owners, tokens, solOwners, blacklistedTokens, allowError, tokensAndOwners, ...rest })
 }
 
+function getEndpoint(chain) {
+  return endpointMap[chain]()
+}
+
 async function sumTokens2({
-  balances = {},
+  api,
+  balances,
   tokensAndOwners = [],
   tokens = [],
   owners = [],
@@ -178,19 +209,32 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
   computeTokenAccount = false,
+  chain = 'solana',
 }) {
+
+  if (api) chain = api.chain
+  if (!balances) {
+    if (api) balances = api.getBalances()
+    else balances = {}
+  }
+
+  const endpoint = getEndpoint(chain)
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
   if (!tokensAndOwners.length) {
-    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
+    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), chain)
 
-    const data = await getOwnerAllAccounts(_owners)
-    for (const item of data) {
-      if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
-      sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
+    if (_owners.length) {
+      const data = await getOwnerAllAccounts(_owners)
+      const tokenBalances = {}
+      for (const item of data) {
+        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+        sdk.util.sumSingleBalance(tokenBalances,item.mint, item.amount)
+      }
+      await transformBalances({ tokenBalances, balances, chain, })
     }
   }
 
@@ -204,24 +248,24 @@ async function sumTokens2({
     tokensAndOwners = getUnique(tokensAndOwners)
     log('total balance queries: ', tokensAndOwners.length)
     await runInChunks(tokensAndOwners, async (chunk) => {
-      const tokenBalances = await getTokenBalances(chunk)
-      transformBalances({ tokenBalances, balances, })
+      const tokenBalances = await getTokenBalances(chunk, chain)
+      transformBalances({ tokenBalances, balances, chain, })
     }, { sleepTime: 400 })
   }
 
   if (tokenAccounts.length) {
-    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
+    tokenAccounts = getUniqueAddresses(tokenAccounts, chain)
 
-    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
-    await transformBalances({ tokenBalances, balances, })
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError, chain })
+    await transformBalances({ tokenBalances, balances, chain, })
   }
 
   if (solOwners.length) {
     const solBalance = await getSolBalances(solOwners)
-    sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
+    sdk.util.sumSingleBalance(balances, `${chain}:` + ADDRESSES.solana.SOL, solBalance)
   }
 
-  blacklistedTokens.forEach(i => delete balances['solana:' + i])
+  blacklistedTokens.forEach(i => delete balances[`${chain}:` + i])
 
   return balances
 
@@ -234,10 +278,10 @@ async function sumTokens2({
   }
 
   async function getOwnerAllAccounts(owners) {
-    console.log('fetching sol token balances for', owners.length, 'owners')
+    sdk.log('fetching sol token balances for', owners.length, 'owners', chain,)
     return runInChunks(owners, async (chunk) => {
       const body = chunk.map(i => formOwnerBalanceQuery(i))
-      const tokenBalances = await http.post(endpoint(), body)
+      const tokenBalances = await http.post(endpoint, body)
       return tokenBalances.map(i => i.result.value).flat().map(i => ({
         account: i.pubkey,
         mint: i.account.data.parsed.info.mint,
@@ -262,8 +306,8 @@ async function sumTokens2({
     }
   }
 
-  async function getSolBalances(accounts) {
-    const connection = getConnection()
+  async function getSolBalances(accounts, { chain} = {}) {
+    const connection = getConnection(chain)
 
     const balances = await runInChunks(accounts, async (chunk) => {
       chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
@@ -282,14 +326,15 @@ async function sumTokens2({
     return tokensAndOwners.map(([mint, owner]) => {
       return PublicKey.findProgramAddressSync(
         [owner.toBuffer(), programBuffer, mint.toBuffer(),],
-        ASSOCIATED_PROGRAM_ID
+        ASSOCIATED_TOKEN_PROGRAM_ID
       )[0]
     })
   }
 
-  async function getTokenBalances(tokensAndAccounts) {
+  async function getTokenBalances(tokensAndAccounts, chain) {
+    const endpoint = getEndpoint(chain)
     const body = tokensAndAccounts.map(([token, account], i) => formTokenBalanceQuery(token, account, i))
-    const tokenBalances = await http.post(endpoint(), body);
+    const tokenBalances = await http.post(endpoint, body);
     const balances = {}
     tokenBalances.forEach(({ result: { value } = {} } = {}) => {
       if (!value) return;
@@ -314,8 +359,8 @@ async function sumTokens2({
   }
 }
 
-async function transformBalances({ tokenBalances, balances = {}, }) {
-  await transformBalancesOrig('solana', tokenBalances)
+async function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
+  await transformBalancesOrig(chain, tokenBalances)
   for (const [token, balance] of Object.entries(tokenBalances))
     sdk.util.sumSingleBalance(balances, token, balance)
   return balances
@@ -366,6 +411,21 @@ async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
   return results.flat()
 }
 
+function i80f48ToNumber(i80f48) {
+  if (i80f48.value) i80f48 = i80f48.value
+  // Create a mask with the lower 48 bits set to 1
+  const mask = BigInt((1n << 48n) - 1n)
+
+  // Shift right by 48 bits to get the integer part
+  const integerPart = BigInt(i80f48) >> BigInt(48)
+
+  // Use bitwise AND to get the fractional part
+  const fractionalPart = BigInt(i80f48) & mask
+
+  // Convert to regular numbers and add together
+  return Number(integerPart) + Number(fractionalPart) / Number(1n << 48n)
+}
+
 module.exports = {
   endpoint: endpoint(),
   getMultipleAccounts,
@@ -381,4 +441,10 @@ module.exports = {
   getStakedSol,
   getSolBalanceFromStakePool,
   getTokenSupplies,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
+  getAssociatedTokenAddress,
+  i80f48ToNumber,
+  runInChunks,
 };

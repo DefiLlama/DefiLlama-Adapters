@@ -62,7 +62,6 @@ async function tvl(api) {
 module.exports = {
     methodology: 'add underlying asset balances in all the vaults together.',
   doublecounted: true,
-  start: 15308000, // The first vault YEARN_VAULT was deployed
   ethereum: {
     tvl,
     staking: staking("0x0a36f9565c6fb862509ad8d148941968344a55d8", "0xba8a621b4a54e61c442f5ec623687e2a942225ef")

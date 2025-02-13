@@ -1,0 +1,146 @@
+{
+  "events": [],
+  "accounts": [{"discriminator": [142, 49, 166, 242, 50, 66, 97, 188], "name": "Bank"}],
+  "address": "Astro1oWvtB7cBTwi3efLMFB47WXx7DJDQeoxi235kA",
+  "instructions": [],
+  "metadata": {"description": "Created with Anchor", "name": "astrolend", "spec": "0.1.0", "version": "0.1.0"},
+  "types": [
+    {
+      "name": "Bank",
+      "repr": {"kind": "c"},
+      "serialization": "bytemuckunsafe",
+      "type": {
+        "fields": [
+          {"name": "mint", "type": "pubkey"},
+          {"name": "mint_decimals", "type": "u8"},
+          {"name": "group", "type": "pubkey"},
+          {"name": "_pad0", "type": {"array": ["u8", 7]}},
+          {"name": "asset_share_value", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "liability_share_value", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "liquidity_vault", "type": "pubkey"},
+          {"name": "liquidity_vault_bump", "type": "u8"},
+          {"name": "liquidity_vault_authority_bump", "type": "u8"},
+          {"name": "insurance_vault", "type": "pubkey"},
+          {"name": "insurance_vault_bump", "type": "u8"},
+          {"name": "insurance_vault_authority_bump", "type": "u8"},
+          {"name": "_pad1", "type": {"array": ["u8", 4]}},
+          {"name": "collected_insurance_fees_outstanding", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "fee_vault", "type": "pubkey"},
+          {"name": "fee_vault_bump", "type": "u8"},
+          {"name": "fee_vault_authority_bump", "type": "u8"},
+          {"name": "_pad2", "type": {"array": ["u8", 6]}},
+          {"name": "collected_group_fees_outstanding", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "total_liability_shares", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "total_asset_shares", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "last_update", "type": "i64"},
+          {"name": "config", "type": {"defined": {"name": "BankConfig"}}},
+          {
+            "docs": [
+              "Bank Config Flags",
+              "",
+              "- EMISSIONS_FLAG_BORROW_ACTIVE: 1",
+              "- EMISSIONS_FLAG_LENDING_ACTIVE: 2",
+              "- PERMISSIONLESS_BAD_DEBT_SETTLEMENT: 4",
+              ""
+            ],
+            "name": "flags",
+            "type": "u64"
+          },
+          {
+            "docs": [
+              "Emissions APR.",
+              "Number of emitted tokens (emissions_mint) per 1e(bank.mint_decimal) tokens (bank mint) (native amount) per 1 YEAR."
+            ],
+            "name": "emissions_rate",
+            "type": "u64"
+          },
+          {"name": "emissions_remaining", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "emissions_mint", "type": "pubkey"},
+          {"name": "_padding_0", "type": {"array": [{"array": ["u64", 2]}, 28]}},
+          {"name": "_padding_1", "type": {"array": [{"array": ["u64", 2]}, 32]}}
+        ],
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "WrappedI80F48",
+      "repr": {"align": 8, "kind": "c"},
+      "serialization": "bytemuck",
+      "type": {"fields": [{"name": "value", "type": {"array": ["u8", 16]}}], "kind": "struct"}
+    },
+    {
+      "docs": ["TODO: Convert weights to (u64, u64) to avoid precision loss (maybe?)"],
+      "name": "BankConfig",
+      "repr": {"kind": "c"},
+      "serialization": "bytemuckunsafe",
+      "type": {
+        "fields": [
+          {"name": "asset_weight_init", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "asset_weight_maint", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "liability_weight_init", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "liability_weight_maint", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "deposit_limit", "type": "u64"},
+          {"name": "interest_rate_config", "type": {"defined": {"name": "InterestRateConfig"}}},
+          {"name": "operational_state", "type": {"defined": {"name": "BankOperationalState"}}},
+          {"name": "oracle_setup", "type": {"defined": {"name": "OracleSetup"}}},
+          {"name": "oracle_keys", "type": {"array": ["pubkey", 5]}},
+          {"name": "_pad0", "type": {"array": ["u8", 6]}},
+          {"name": "borrow_limit", "type": "u64"},
+          {"name": "risk_tier", "type": {"defined": {"name": "RiskTier"}}},
+          {"name": "auto_padding_0", "type": {"array": ["u8", 7]}},
+          {"name": "_pad1", "type": {"array": ["u8", 7]}},
+          {
+            "docs": [
+              "USD denominated limit for calculating asset value for initialization astrol requirements.",
+              "Example, if total SOL deposits are equal to $1M and the limit it set to $500K,",
+              "then SOL assets will be discounted by 50%.",
+              "",
+              "In other words the max value of liabilities that can be backed by the asset is $500K.",
+              "This is useful for limiting the damage of orcale attacks.",
+              "",
+              "Value is UI USD value, for example value 100 -> $100"
+            ],
+            "name": "total_asset_value_init_limit",
+            "type": "u64"
+          },
+          {"docs": ["Time window in seconds for the oracle price feed to be considered live."], "name": "oracle_max_age", "type": "u16"},
+          {"name": "_padding", "type": {"array": ["u8", 38]}}
+        ],
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "InterestRateConfig",
+      "repr": {"kind": "c"},
+      "serialization": "bytemuck",
+      "type": {
+        "fields": [
+          {"name": "optimal_utilization_rate", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "plateau_interest_rate", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "max_interest_rate", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "insurance_fee_fixed_apr", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "insurance_ir_fee", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "protocol_fixed_fee_apr", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "protocol_ir_fee", "type": {"defined": {"name": "WrappedI80F48"}}},
+          {"name": "_padding", "type": {"array": [{"array": ["u64", 2]}, 8]}}
+        ],
+        "kind": "struct"
+      }
+    },
+    {
+      "name": "BankOperationalState",
+      "repr": {"kind": "rust"},
+      "type": {"kind": "enum", "variants": [{"name": "Paused"}, {"name": "Operational"}, {"name": "ReduceOnly"}]}
+    },
+    {
+      "name": "OracleSetup",
+      "repr": {"kind": "rust"},
+      "type": {
+        "kind": "enum",
+        "variants": [{"name": "None"}, {"name": "PythLegacy"}, {"name": "SwitchboardV2"}, {"name": "PythPushOracle"}, {"name": "SwitchboardPull"}]
+      }
+    },
+    {"name": "RiskTier", "repr": {"kind": "rust"}, "type": {"kind": "enum", "variants": [{"name": "Collateral"}, {"name": "Isolated"}]}}
+  ],
+  "errors": []
+}

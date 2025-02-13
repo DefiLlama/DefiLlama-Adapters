@@ -21,9 +21,10 @@ async function calLyfTvl(api) {
   const chain = api.chain;
   const addresses = await getProcolAddresses(chain);
   const vaults = addresses["Vaults"].map(i => i.address)
-  const tokens  = await api.multiCall({  abi: 'address:token', calls: vaults})
-  const  bals = await api.multiCall({  abi: 'uint256:totalToken', calls: vaults})
+  const tokens = await api.multiCall({ abi: 'address:token', calls: vaults })
+  const bals = await api.multiCall({ abi: 'uint256:totalToken', calls: vaults })
   api.add(tokens, bals)
+  api.removeTokenBalance('0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c')
   return api.getBalances()
 }
 
@@ -31,4 +32,3 @@ module.exports = {
   calLyfTvl,
   getProcolAddresses
 }
-  
