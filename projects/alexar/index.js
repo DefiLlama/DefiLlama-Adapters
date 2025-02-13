@@ -1,5 +1,6 @@
 const { getConfig } = require('../helper/cache')
-const { sumTokens } = require('../helper/sumTokens')
+const { sumTokens } = require('../helper/sumTokens');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const chainMapping = {
   avax: 'avalanche',
@@ -40,11 +41,11 @@ chainListSupply.concat(chainListTotal).forEach(chain => {
           tokensAndOwners.push([data.address, data.token_manager_address])
       } else {
         if (assetTvl.denom_data.symbol.startsWith('axl')) return;
-        owners.push(...assetTvl.source_escrow_addresses)
+        owners.push(...(assetTvl?.source_escrow_addresses ?? []))
       }
     })
     if (tokensAndOwners.length > 0)
-      return api.sumTokens({ tokensAndOwners, blacklistedTokens })
+      return sumTokens2({ api, tokensAndOwners, blacklistedTokens, permitFailure: true, })
     return sumTokens({ chain, owners, blacklistedTokens, })
   }
 });
