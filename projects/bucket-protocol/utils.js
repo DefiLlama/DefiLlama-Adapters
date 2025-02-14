@@ -15,6 +15,15 @@ BigNumber.config({
   POW_PRECISION: 64,
 });
 
+async function calculateGSUIunderlyingSui(gSuiAmount) {
+  const fields = (await getObject("0x811fe901ed2a5d75cd125912ad6110efdff8be00fe694601a94167e2bd545ac2")).fields
+  const pool = Number(fields.pool)
+  const pipe = Number(fields.pipe_debt.fields.value)
+  const supply = Number(fields.supply.fields.value)
+  const percentage = (pool + pipe)/ supply
+  return percentage * Number(gSuiAmount)
+}
+
 async function calculatehaSuiSuiVaultShares(lpAmount) {
     const suiHasuiPool = (
         await getObject(SUI_HASUI_POOL_ID)
@@ -108,4 +117,4 @@ class MathUtil {
 }
 
 
-export { getCoinAmountFromLiquidity,calculatehaSuiSuiVaultShares };
+export { getCoinAmountFromLiquidity,calculatehaSuiSuiVaultShares,calculateGSUIunderlyingSui };

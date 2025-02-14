@@ -1,6 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
-const { calculatehaSuiSuiVaultShares } = require("./utils");
+const { calculatehaSuiSuiVaultShares, calculateGSUIunderlyingSui } = require("./utils");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
@@ -11,6 +11,7 @@ const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 const USDC_CIRCLE= ADDRESSES.sui.USDC_CIRCLE
 const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI"
+const GSUI = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x2::sui::SUI>"
 const FDUSD= "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD"
 const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC"
 const SCALLOP_sUSDC = "0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC"
@@ -179,7 +180,7 @@ async function tvl(api) {
   for (const bucket of bucketList) {
     //AF_LP doesn't have price, need to split the tokens
     if (bucket.type.includes("AF_LP")) continue;
-    const coin_address = bucket.type.split("<").pop()?.replace(">", "") ?? "";
+    const coin_address = bucket.type.slice(bucket.type.indexOf("<") + 1, bucket.type.lastIndexOf(">"))
 
     /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
     const coin = convertUnderlyingAssets(coin_address)
@@ -188,10 +189,12 @@ async function tvl(api) {
       const {coinA: haSuiAmount, coinB: suiAmount} = await calculatehaSuiSuiVaultShares(bucket.fields.collateral_vault)
       api.add(HASUI, haSuiAmount)
       api.add(SUI, suiAmount)
-    }{
+    }else if(coin == GSUI){
+      const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
+      api.add(SUI, suiAmount);
+    }else{
       api.add(coin, bucket.fields.collateral_vault);
     }
-    
   }
 
   for (const [
