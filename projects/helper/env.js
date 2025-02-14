@@ -17,14 +17,9 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  FLOW_RPC: "https://rest-mainnet.onflow.org",
-  ELSM_RPC: "https://rpc.elysiumchain.tech",
-  ARTELA_RPC: "https://node-euro.artela.network/rpc,https://node-hongkong.artela.network/rpc,https://node-us-2.artela.network/rpc",
-  ARTELA_RPC_MULTICALL: "0x80BC476a33a1b40a788dcC9bfe9dFdae9723b872",
-  ZERO_NETWORK_RPC_MULTICALL: "0x0307F341a18f1FC1f63a7Ceeac970245A08C5a80",
-  PLUME_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  ABSTRACT_RPC_MULTICALL: "0xaa4de41dba0ca5dcbb288b7cc6b708f3aac759e7",
-  ABSTRACT_RPC: "https://api.mainnet.abs.xyz",
+  FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  LULO_API_KEY: '',
+  STY_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
 }
 
 const ENV_KEYS = [

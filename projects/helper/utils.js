@@ -52,7 +52,7 @@ const blacklisted_LPS = new Set([
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
-  if (chain === 'bsc' && symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  if (symbol.startsWith('IV-')) return true
   return false
 }
 
@@ -94,7 +94,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
   if (chain === 'arbitrum' && /^(DLP|LP-)/.test(symbol)) return false // DODO or Wombat
-  if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
+  if (['base', 'sonic',].includes(chain) && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP

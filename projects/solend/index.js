@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, decodeAccount, getMultipleAccounts, } = require("../helper/solana");
 const { getConfig } = require('../helper/cache')
 
@@ -26,11 +27,11 @@ async function tvl() {
 
 // TODO: Find a dynamic way to obtain this mapping
 const TOKEN_MINT_TO_TOKEN2022_MINT = {
-  'So11111111111111111111111111111111111111112': 'So11111111111111111111111111111111111111112',
+  [ADDRESSES.solana.SOL]: ADDRESSES.solana.SOL,
   '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': 'GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn',
-  '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': '841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH',
-  '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': 'BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL',
-  'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': 'AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE',
+  '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': ADDRESSES.eclipse.WIF,
+  '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': ADDRESSES.eclipse.SOL,
+  'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': ADDRESSES.eclipse.USDC,
 };
 
 async function eclipseTvl(api) {
