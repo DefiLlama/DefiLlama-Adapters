@@ -9,21 +9,20 @@ const SUI = ADDRESSES.sui.SUI;
 const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
-const USDC_CIRCLE= ADDRESSES.sui.USDC_CIRCLE
-const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI"
-const GSUI = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x2::sui::SUI>"
-const FDUSD= "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD"
-const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC"
-const SCALLOP_sUSDC = "0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC"
-const SCALLOP_sUSDT = "0xe6e5a012ec20a49a3d1d57bd2b67140b96cd4d3400b9d79e541f7bdbab661f95::scallop_wormhole_usdt::SCALLOP_WORMHOLE_USDT"
-const SCALLOP_sSUI = "0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b::scallop_sui::SCALLOP_SUI"
-const SCALLOP_sSB_ETH = "0xb14f82d8506d139eacef109688d1b71e7236bcce9b2c0ad526abcd6aa5be7de0::scallop_sb_eth::SCALLOP_SB_ETH"
-const SCALLOP_sSCA = "0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e::scallop_sca::SCALLOP_SCA"
-const SCALLOP_sDEEP = "0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0ae614608f::scallop_deep::SCALLOP_DEEP"
-const SCALLOP_sbUSDT = "0xb1d7df34829d1513b73ba17cb7ad90c88d1e104bb65ab8f62f13e0cc103783d3::scallop_sb_usdt::SCALLOP_SB_USDT"
-const SPRING_SUI = "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI"
-const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA"
-const SUI_HASUI_CETUS_VAULT_LP_ADDRESS = '0x828b452d2aa239d48e4120c24f4a59f451b8cd8ac76706129f4ac3bd78ac8809::lp_token::LP_TOKEN'
+const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI";
+const GSUI = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x2::sui::SUI>";
+const USDC_CIRCLE = ADDRESSES.sui.USDC_CIRCLE;
+const FDUSD = "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD";
+const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC";
+const SCALLOP_sUSDC = "0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC";
+const SCALLOP_sUSDT = "0xe6e5a012ec20a49a3d1d57bd2b67140b96cd4d3400b9d79e541f7bdbab661f95::scallop_wormhole_usdt::SCALLOP_WORMHOLE_USDT";
+const SCALLOP_sSUI = "0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b::scallop_sui::SCALLOP_SUI";
+const SCALLOP_sSB_ETH = "0xb14f82d8506d139eacef109688d1b71e7236bcce9b2c0ad526abcd6aa5be7de0::scallop_sb_eth::SCALLOP_SB_ETH";
+const SCALLOP_sSCA = "0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e::scallop_sca::SCALLOP_SCA";
+const SCALLOP_sDEEP = "0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0ae614608f::scallop_deep::SCALLOP_DEEP";
+const SCALLOP_sbUSDT = "0xb1d7df34829d1513b73ba17cb7ad90c88d1e104bb65ab8f62f13e0cc103783d3::scallop_sb_usdt::SCALLOP_SB_USDT";
+const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA";
+const SUI_HASUI_CETUS_VAULT_LP_ADDRESS = '0x828b452d2aa239d48e4120c24f4a59f451b8cd8ac76706129f4ac3bd78ac8809::lp_token::LP_TOKEN';
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
   "0x885e09419b395fcf5c8ee5e2b7c77e23b590e58ef3d61260b6b4eb44bbcc8c62",
@@ -84,6 +83,9 @@ const haSUI_sLP_ID =
 const navi_sLP_ID =
   "0xcbe804c8c334dcadecd4ba05ee10cffa54dad36f279ab4ec9661d67f9372881c";
 
+const navi_stSUI_sLP_ID =
+  "0xd3f6b8f3c92d8f967f7e177e836770421e351b419ffe074ce57911365b4ede56";
+
 const scallop_sUSDC_LP_ID =
   "0x7b16192d63e6fa111b0dac03f99c5ff965205455089f846804c10b10be55983c";
 
@@ -92,6 +94,9 @@ const scallop_sUSDT_LP_ID =
 
 const scallop_sCircleUSDC_LP_ID =
   "0xdf91ef19f6038e662e9c89f111ffe19e808cdfb891d080208d15141932f9513b";
+
+const scallop_sSuiBridgeUSDT_LP_ID =
+  "0x8471787fc69ef06f4762cb60863e1c48475d79c804a000e613306adee7b7824a";
 
 const haSUI_Navi_Pond_ID = "0xef1ff1334c1757d8e841035090d34b17b7aa3d491a3cb611319209169617518e"
 
@@ -107,7 +112,7 @@ async function getScallopsLPAmount(id) {
   return stakingLPObject.fields.coin_balance;
 }
 
-function convertUnderlyingAssets(coin){
+function convertUnderlyingAssets(coin) {
   // USDC
   if(coin === SCALLOP_swUSDC) return ADDRESSES.sui.USDC
   if(coin === SCALLOP_sUSDC) return ADDRESSES.sui.USDC_CIRCLE
@@ -122,7 +127,7 @@ function convertUnderlyingAssets(coin){
   // sDeep
   if(coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
   // sSBUSDT
-  if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.USDT
+  if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
   return coin
 }
 
@@ -185,14 +190,14 @@ async function tvl(api) {
     /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
     const coin = convertUnderlyingAssets(coin_address)
 
-    if(coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS){
+    if(coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS) {
       const {coinA: haSuiAmount, coinB: suiAmount} = await calculatehaSuiSuiVaultShares(bucket.fields.collateral_vault)
       api.add(HASUI, haSuiAmount)
       api.add(SUI, suiAmount)
-    }else if(coin == GSUI){
+    } else if(coin == GSUI) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
-    }else{
+    } else {
       api.add(coin, bucket.fields.collateral_vault);
     }
   }
@@ -307,6 +312,12 @@ async function tvl(api) {
     snaviLPAmount
   );
 
+  const snavistSUILPAmount = await getStakingLPAmount(navi_stSUI_sLP_ID);
+  api.add(
+    "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+    snavistSUILPAmount
+  );
+
   const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
   api.add(
     "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
@@ -326,7 +337,10 @@ async function tvl(api) {
   api.add(USDT, scallopUSDT_LPAmount);
 
   const scallopCircleUSDC_LPAmount = await getScallopsLPAmount(scallop_sCircleUSDC_LP_ID);
-  api.add(USDC_CIRCLE, scallopCircleUSDC_LPAmount)
+  api.add(USDC_CIRCLE, scallopCircleUSDC_LPAmount);
+
+  const scallopSuiBridgeUSDT_LPAmount = await getScallopsLPAmount(scallop_sSuiBridgeUSDT_LP_ID);
+  api.add(ADDRESSES.sui.suiUSDT, scallopSuiBridgeUSDT_LPAmount);
 }
 
 module.exports = {
