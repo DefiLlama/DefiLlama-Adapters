@@ -371,6 +371,16 @@ const ALPHAFI_NAVI_TVL_IDS = [
     tokenType: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
     expo: 9
   },
+  { //wBTC
+    poolID: "0x17743a10e89b108fd7c048e7737ce09082e3ef91f416ee93c2566c5dd3f438db",
+    tokenType: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    expo: 8
+  },
+  {// suiUSDT
+    poolID: "0x1d30d1b07d78341810a604ad34734001b3b70362c6502de2220999074429a641",
+    tokenType: ADDRESSES.sui.suiUSDT,
+    expo: 6
+  },
 ]
 const ALPHAFI_NAVI_LOOP_TVL_IDS = [
   { //sui vsui
