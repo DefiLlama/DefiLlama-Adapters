@@ -34,6 +34,9 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: 'Value of user supplied asset on zkLend is considered as TVL',
+  hallmarks: [
+    [1739232000, "Empty Market Exploit"]
+  ],
   starknet: {
     tvl,
     borrowed,
