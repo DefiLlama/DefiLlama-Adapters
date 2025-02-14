@@ -36,7 +36,8 @@ function tvl(chain) {
       target,
       topics: ['0x2f9902ccfa1b25adff84fa12ff5b7cbcffcb5578f08631567f5173b39c3004fe'],
       fromBlock,
-      eventAbi: 'event CreatePool(address indexed poolAddress, string name, string symbol, uint256 purchaseTokenCap, address indexed purchaseToken, uint256 duration, uint256 sponsorFee, address indexed sponsor, uint256 purchaseDuration, bool hasAllowList)'
+      eventAbi: 'event CreatePool(address indexed poolAddress, string name, string symbol, uint256 purchaseTokenCap, address indexed purchaseToken, uint256 duration, uint256 sponsorFee, address indexed sponsor, uint256 purchaseDuration, bool hasAllowList)',
+      onlyUseExistingCache: true,
     })
     ))).flat()
 

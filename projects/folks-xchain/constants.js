@@ -37,6 +37,12 @@ const HubPools = {
     { // JOE      
       poolAddress: "0x5e5a2007a8D613C4C98F425097166095C875e6eE",
       tokenAddress: ADDRESSES.avax.JOE,
+      chainPoolAddress: '0x3b1C2eC8B7cdE241E0890C9742C14dD7867aA812',
+    },
+    { // ggAVAX      
+      poolAddress: "0xAdA5Be2A259096fd11D00c2b5c1181843eD008DC",
+      tokenAddress: '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3',
+      chainPoolAddress: '0xe53189D00D1b4F231A2a208a7967E0dCaE8Db073',
     },
   ],
   'ethereum': [
