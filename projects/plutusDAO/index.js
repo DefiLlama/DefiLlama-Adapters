@@ -122,7 +122,6 @@ async function tvl(ts, _block, {[chain]: block}) {
         chain,
         block,
       })
-      console.log(`Fetching prices for tokens: arbitrum:${token0}, arbitrum:${token1}`)
       const { data: prices } = await axios.get(`https://coins.llama.fi/prices/current/arbitrum:${token0},arbitrum:${token1}`)
       const token0Price = prices.coins[`arbitrum:${token0}`]?.price
       const token1Price = prices.coins[`arbitrum:${token1}`]?.price
@@ -215,54 +214,56 @@ async function tvl(ts, _block, {[chain]: block}) {
   return balances
 }
 
-async function stakingPlsTvl(api) {
-  const tokensAndOwners = [
-     [plsDpx, plsDpxFarmV1],
-     [plsDpx, plsDpxFarm],
-     [plsSYK, plsSYKFarm],
-     [plsJones, plsJonesFarm],
-     [plsSpa, plsSpaFarm],
-     [plsRdnt, plsRdntFarm],
-     [plsArb, plsARbFarm],
-     [plsGrail, plsGrailFarm],
-  ]
+//commented out, will update in later PR merge. not calculating values correctly as is
 
-  const balances = {}
+// async function stakingPlsTvl(api) {
+//   const tokensAndOwners = [
+//      [plsDpx, plsDpxFarmV1],
+//      [plsDpx, plsDpxFarm],
+//      [plsSYK, plsSYKFarm],
+//      [plsJones, plsJonesFarm],
+//      [plsSpa, plsSpaFarm],
+//      [plsRdnt, plsRdntFarm],
+//      [plsArb, plsARbFarm],
+//      [plsGrail, plsGrailFarm],
+//   ]
+
+//   const balances = {}
   
-  try {
-    const bals = await api.multiCall({  
-      abi: 'erc20:balanceOf',
-      calls: tokensAndOwners.map(([token, owner]) => ({
-        target: token,
-        params: owner
-      }))
-    })
+//   try {
+//     const bals = await api.multiCall({  
+//       abi: 'erc20:balanceOf',
+//       calls: tokensAndOwners.map(([token, owner]) => ({
+//         target: token,
+//         params: owner
+//       }))
+//     })
 
-    tokensAndOwners.forEach(([token], i) => {
-      if (bals[i]) balances[token] = bals[i]
-    })
+//     tokensAndOwners.forEach(([token], i) => {
+//       if (bals[i]) balances[token] = bals[i]
+//     })
 
-    return sumUnknownTokens({
-      api,
-      balances,
-      tokensAndOwners,
-      lps,
-      coreAssets,
-      resolveLP: true,
-      debug: true,
-    })
-  } catch (e) {
-    console.log(`Error in stakingPlsTvl: ${e.message}`)
-    return {}
-  }
-}
+//     return sumUnknownTokens({
+//       api,
+//       balances,
+//       tokensAndOwners,
+//       lps,
+//       coreAssets,
+//       resolveLP: true,
+//       debug: true,
+//     })
+//   } catch (e) {
+//     console.log(`Error in stakingPlsTvl: ${e.message}`)
+//     return {}
+//   }
+// }
 
-const stakingPls = () => async (timestamp, _block, chainBlocks) => {
-  console.log('\nCalling stakingPls with:', { timestamp, chain, block: chainBlocks[chain] })
-  const result = await stakingPlsTvl(new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp }))
-  console.log('\nstakingPls returning:', result)
-  return result
-}
+// const stakingPls = () => async (timestamp, _block, chainBlocks) => {
+//   console.log('\nCalling stakingPls with:', { timestamp, chain, block: chainBlocks[chain] })
+//   const result = await stakingPlsTvl(new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp }))
+//   console.log('\nstakingPls returning:', result)
+//   return result
+// }
 
 module.exports = {
   misrepresentedTokens: true,
@@ -271,7 +272,6 @@ module.exports = {
     staking: sdk.util.sumChainTvls([
       staking(plutusStakingContracts, plutusToken, chain),
       staking(plvGlpPlutusChef, plvGlpToken, chain),
-      stakingPls()
     ]),
   },
 };
