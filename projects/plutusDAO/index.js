@@ -1,9 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking, } = require("../helper/staking");
-const { sumUnknownTokens } = require('../helper/unknownTokens');
-
-const { uniV3Export } = require("../helper/uniswapV3");
+const { sumUnknownTokens, getTokenPrices } = require('../helper/unknownTokens');
 
 const chain = "arbitrum";
 
@@ -20,11 +18,10 @@ const plsGrail = "0x9e6B748d25Ed2600Aa0ce7Cbb42267adCF21Fd9B";
 const plsGrailFarm = "0x62c10f8f003093C942a9AB8B3E0F94BA612CC982";
 const plsRdntv2 = "0x6dbf2155b0636cb3fd5359fccefb8a2c02b6cb51";
 const plsRdntv2Burn= "0x6dbF2155B0636cb3fD5359FCcEFB8a2c02B6cb51"
-const ARB = "0x912ce59144191c1204e64559fe8253a0e49e6548";
 const dLP = "0x32df62dc3aed2cd6224193052ce665dc18165841";
 const JonesLP = '0xe8EE01aE5959D3231506FcDeF2d5F3E85987a39c'
-const plvGlpToken = ADDRESSES.arbitrum.plvGLP;
-const plgGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
+const plvGlpToken = '0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1';
+const plvGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
 
 // DEPRECATED; will track to maintain history
 const plsJones = "0xe7f6C3c1F0018E4C08aCC52965e5cbfF99e34A44";
@@ -34,6 +31,7 @@ const plsDpxFarm = "0x75c143460F6E3e22F439dFf947E25C9CcB72d2e8";
 const plsRdnt = "0x1605bbDAB3b38d10fA23A7Ed0d0e8F4FEa5bFF59";
 const plsRdntFarm = "0xaE3f67589Acb90bd2cbccD8285b37fe4F8F29042"
 const plsArb = "0x7a5D193fE4ED9098F7EAdC99797087C96b002907"
+const ARB = "0x912ce59144191c1204e64559fe8253a0e49e6548";
 const plsARbFarm = "0xCfc273D86333bF453b847d4D8cb7958307D85196"
 const DPX = '0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55'
 const plsDpx = "0xF236ea74B515eF96a9898F5a4ed4Aa591f253Ce1";
@@ -68,25 +66,17 @@ const plutusStakingContracts = [
   "0xE9645988a5E6D5EfCc939bed1F3040Dba94C6CbB"
 ];
 
-module.exports = uniV3Export({
-  plutus: {
-    factory: "0x1a3c9B1d2F0529D97f2afC5136Cc23e58f1FD35B",
-    fromBlock: 102286676,
-    isAlgebra: true,
-  },
-});
-
 async function tvl(ts, _block, {[chain]: block}) {
   const balances = {}
   
   try {
     // Calculate GLP value
     try {
-      const { output: glpBal } = await sdk.api.erc20.balanceOf({ 
+      const { output: glpBal } = await sdk.api.abi.call({ 
         target: plvGlpToken, 
-        owner: plgGlpPlutusChef, 
         chain, 
-        block, 
+        block,
+        abi: 'function totalAssets() external view returns (uint256)'
       })
       sdk.util.sumSingleBalance(balances, 'arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', glpBal)
     } catch (e) {
@@ -190,30 +180,34 @@ async function stakingPlsTvl(api) {
      [plsGrail, plsGrailFarm],
   ]
 
-  // Get raw balances
-  const bals = await api.multiCall({  
-    abi: 'erc20:balanceOf',
-    calls: tokensAndOwners.map(([token, owner]) => ({
-      target: token,
-      params: owner
-    }))
-  })
+  const balances = {}
+  
+  try {
+    const bals = await api.multiCall({  
+      abi: 'erc20:balanceOf',
+      calls: tokensAndOwners.map(([token, owner]) => ({
+        target: token,
+        params: owner
+      }))
+    })
 
-  // Add raw balances and log them
-  tokensAndOwners.forEach(([token], i) => {
-    if (bals[i]) {
-      console.log(`Adding balance for ${token}: ${bals[i]}`)
-      api.add(token, bals[i])
-    }
-  })
-  return sumUnknownTokens({
-    api,
-    lps,
-    coreAssets,
-    resolveLP: true,
-    log_coreAssetPrices: true,
-    debug: true,
-  })
+    tokensAndOwners.forEach(([token], i) => {
+      if (bals[i]) balances[token] = bals[i]
+    })
+
+    return sumUnknownTokens({
+      api,
+      balances,
+      tokensAndOwners,
+      lps,
+      coreAssets,
+      resolveLP: true,
+      debug: true,
+    })
+  } catch (e) {
+    console.log(`Error in stakingPlsTvl: ${e.message}`)
+    return {}
+  }
 }
 
 const stakingPls = () => async (timestamp, _block, chainBlocks) => {
@@ -229,7 +223,7 @@ module.exports = {
     tvl,
     staking: sdk.util.sumChainTvls([
       staking(plutusStakingContracts, plutusToken, chain),
-      staking(plgGlpPlutusChef, plvGlpToken, chain),
+      staking(plvGlpPlutusChef, plvGlpToken, chain),
       stakingPls()
     ]),
   },
