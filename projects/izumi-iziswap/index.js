@@ -56,3 +56,5 @@ Object.keys(poolHelpers).forEach(chain => {
 module.exports.hallmarks = [
   [1715648400,"End Mode TVL Campaign S1"]
 ]
+
+module.exports.ultron.tvl =  () => ({}) // their RPC is rugging us
