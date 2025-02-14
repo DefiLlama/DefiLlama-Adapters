@@ -80,11 +80,11 @@ const RECEIPT_TOKENS = {
     }
   },
   mantra: {
-    UMA: {
-      address: '0x8e6c1961e911cc7f1fa3d1dc821b199f0cf90c569c7feece76ee7ed1386d257c',
+    APCA: {
+      address: 'mantra1vguuxez2h5ekltfj9gjd62fs5k4rl2zy5hfrncasykzw08rezpfsjx4gjx',
       decimals: 18,
       underlying: 'security-token',
-      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName:'Libre SAF VCC - Access Private Credit Feeder'
     }
   }
 }
@@ -280,12 +280,44 @@ async function ethereumTvl(timestamp, block) {
   return balances;
 }
 
+async function mantraTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+  
+  // Query total supply from Mantra contract
+  const supply = await queryContractCosmos({
+    contract: RECEIPT_TOKENS.mantra.APCA.address,
+    chain: 'mantra',
+    data: {
+      token_info: {}
+    }
+  })
+
+  if (supply?.total_supply) {
+    const token = RECEIPT_TOKENS.mantra.APCA;
+    const balance = supply.total_supply;
+    const price = fundPrices[token.fundName] || 1;
+    
+    // Convert balance to human readable and multiply by price
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
+    
+    totalTvl += valueUSD;
+  }
+
+  // Return the total value in the format DeFiLlama expects
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana and NEAR. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana, NEAR and Mantra. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   ethereum: { tvl: ethereumTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
   sui: { tvl: suiTvl },
   solana: { tvl: solanaTvl },
   near: { tvl: nearTvl },
+  mantra: { tvl: mantraTvl },
 }
