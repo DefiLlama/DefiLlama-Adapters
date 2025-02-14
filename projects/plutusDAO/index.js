@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking, } = require("../helper/staking");
-const { sumUnknownTokens, geftTokenPrices } = require('../helper/unknownTokens');
+const { sumUnknownTokens} = require('../helper/unknownTokens');
 const axios = require('axios');
 
 const chain = "arbitrum";
@@ -22,8 +22,6 @@ const plsRdntv2Burn= "0x6dbF2155B0636cb3fD5359FCcEFB8a2c02B6cb51"
 const dLP = "0x32df62dc3aed2cd6224193052ce665dc18165841";
 const plvGlpToken = '0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1';
 const plvGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
-const plsEthMasterChef = "0x5593473e318F0314Eb2518239c474e183c4cBED5";
-const plsEthLp = "0x6CC0D643C7b8709F468f58F363d73Af6e4971515";
 
 // DEPRECATED; will track to maintain history
 const plsJones = "0xe7f6C3c1F0018E4C08aCC52965e5cbfF99e34A44";
