@@ -16,3 +16,23 @@ Object.keys(mapping).forEach(chain => {
   }
 })
 module.exports = exportObject
+
+/* backing wallets are 
+Ceffu(BTC)：
+1BmKSPG4AcCNkxC29tQVXF6vfK9hvxUtRL
+1BNpsNMq96ypaPmH8zuYLAxHPxYQQdXEvU
+1BNmwHhD4SAogR1fxpZnNCEWrVqA1Djdjb
+1BR8fqjuapewZy6HjBHTHZthTot3pMT55y
+1BK4YdJCSmJNa6ptNwGb6M67ioivFuQQTe
+
+Ceffu(BTCB):
+0x062900dcd4729af3bdbf3150b98eb9bcfdb822ac
+Binance(BTC)：
+1J8hRVttPiZya2GnfZbBaQj2zxonbTn2cH
+1Mx5gBkvGqy8LPYcJfJ7yjhA5oVzLrNGFg
+OKX(BTC)：
+bc1qksyye79f03pr4uezx5ddtr5ap65ug3j3vfmds5arkfwtr4fjtt5qnnxnyk
+3LEt6F46QjBCrMMMp8getCrpjBmN6brXoG
+BYBIT(BTC)：
+1DGZtD885npNLuCvNFRwa5uh4m1TR5WpYz
+*/
