@@ -149,9 +149,96 @@ async function ethereum_tvl(api) {
   return toUSDTBalances(v1_tvl + v2_multipli_contract_tvl)
 }
 
+
+async function fetchLogsInBatches({api, contract, topics, startBlock, endBlock, actionType, batchSize = 1000}) {
+  let logs = [];
+  for (let fromBlock = startBlock; fromBlock < endBlock; fromBlock += batchSize) {
+    let toBlock = Math.min(fromBlock + batchSize - 1, endBlock);
+    console.log(`Fetching logs from ${fromBlock} to ${toBlock}`);
+
+    const batchLogs = await getLogs({
+      api,
+      target: contract,
+      topics: topics,
+      onlyArgs: true,
+      fromBlock,
+      toBlock,
+      extraKey: `multipli-bsc-${actionType}-${endBlock}`,
+    });
+
+    logs = logs.concat(batchLogs);
+  }
+  return logs;
+}
+
+async function bsc_tvl(api) {
+  const latestBlock = 46628565;
+
+  const multipliBSCDepositLogs = await fetchLogsInBatches({api, contract: BSC_DEPOSIT_CONTRACT, topics: ['0x573284f4c36da6a8d8d84cd06662235f8a770cc98e8c80e304b8f382fdc3dca2'], startBlock: 45979911, endBlock: latestBlock, actionType: 'deposit'})
+
+  const coin_config = (await axios.post("https://api.tanx.fi/main/stat/v3/coins/"))
+
+  const usdc_config = coin_config.data.payload.usdc
+
+  const multipliBSCDepositAmount = multipliBSCDepositLogs.map(
+    log => {
+      const parsedLog = crosschainIface.parseLog(log);
+
+      console.log(parsedLog)
+
+      const user = parsedLog.args[0]
+      const token = parsedLog.args[1];
+      const quantizedAmount = parsedLog.args[2].toString();
+
+      const data = {
+        user,
+        token,
+        quantizedAmount
+      }
+
+      return data
+
+    }
+  ).filter(data => [ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT].includes(data.token)).reduce((acc, data) => acc.plus(data.quantizedAmount), new BigNumber(0))
+
+  const multipliBSCDeposit = multipliBSCDepositAmount.toString() / 10 ** Number(usdc_config.decimal)
+
+  const multipliBSCWithdrawalLogs = await fetchLogsInBatches({api, contract: BSC_DEPOSIT_CONTRACT, topics: ['0xe4f4f1fb3534fe80225d336f6e5a73007dc992e5f6740152bf13ed2a08f3851a'], startBlock: 45979911, endBlock: latestBlock, actionType: 'withdrawal'})
+
+  const multipliBSCWithdrawalAmount = multipliBSCWithdrawalLogs.map(
+    log => {
+      const parsedLog = crosschainIface.parseLog(log);
+
+      console.log(parsedLog)
+
+      const user = parsedLog.args[0]
+      const token = parsedLog.args[1];
+      const quantizedAmount = parsedLog.args[2].toString();
+      const withdrawalId = parsedLog.args[3].toString();
+
+      const data = {
+        user,
+        token,
+        quantizedAmount,
+        withdrawalId
+      }
+
+      return data
+
+    }
+  ).filter(data => [ADDRESSES.bsc.USDC, ADDRESSES.bsc.USDT].includes(data.token) && data.withdrawalId.includes("US")).reduce((acc, data) => acc.plus(data.quantizedAmount), new BigNumber(0))
+
+  const multipliBSCWithdrawal = multipliBSCWithdrawalAmount.toString() / 10 ** Number(usdc_config.decimal)
+
+  const multipliBSCContractTVL = multipliBSCDeposit - multipliBSCWithdrawal
+
+  return toUSDTBalances(multipliBSCContractTVL)
+}
+
+
 module.exports = {
   ethereum: { tvl: ethereum_tvl },
-  // bsc: { tvl: bsc_tvl },
+  bsc: { tvl: bsc_tvl },
 
   methodology: `V1 TVL = Σ Withdrawals (from contract to admin wallet) - Σ Deposits (from admin wallet to contract), V2 TVL = Σ Deposits - Σ Withdrawals to and from the contract respectively. The sum of V1 and V2 TVLs is the total TVL of the protocol.`
 }
