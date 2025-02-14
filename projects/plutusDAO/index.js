@@ -126,11 +126,8 @@ async function tvl(ts, _block, {[chain]: block}) {
       })
       console.log(`Fetching prices for tokens: arbitrum:${token0}, arbitrum:${token1}`)
       const { data: prices } = await axios.get(`https://coins.llama.fi/prices/current/arbitrum:${token0},arbitrum:${token1}`)
-      console.log('Received price data:', prices)
       const token0Price = prices.coins[`arbitrum:${token0}`]?.price
       const token1Price = prices.coins[`arbitrum:${token1}`]?.price
-      console.log(`Token prices - token0: ${token0Price}, token1: ${token1Price}`)
-
       const totalValue = (reserves._reserve0 * token0Price) + (reserves._reserve1 * token1Price)
       const pricePerLP = totalValue / totalSupply
 
@@ -139,7 +136,10 @@ async function tvl(ts, _block, {[chain]: block}) {
         chain,
         block
       });
-      sdk.util.sumSingleBalance(balances, `arbitrum:${JonesLP}`, plsJonesSupply, { pricePerLP })
+      const totalValueInUSD = (plsJonesSupply * pricePerLP) / 1e18
+      
+      // Add as USDT value instead of LP token
+      sdk.util.sumSingleBalance(balances, 'usd', totalValueInUSD)
     } catch (e) {
       console.log(`Error getting JonesLP calculation: ${e.message}`)
     }
