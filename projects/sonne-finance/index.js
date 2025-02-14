@@ -14,3 +14,4 @@ module.exports.optimism.staking = staking(["0xdc05d85069dc4aba65954008ff99f2d73f
 module.exports.hallmarks = [
 	[1715731260,"donation attack exploit"],
   ]
+  module.exports.optimism.borrowed = ()=>({}) // bad debt after hack
