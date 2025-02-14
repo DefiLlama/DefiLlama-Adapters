@@ -1,22 +1,17 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-
-async function mainnetTVL(api) {
-  const totalSupply = await api.call({ target: ADDRESSES.ethereum.KING, abi: 'uint256:totalSupply' });
-  api.add(ADDRESSES.ethereum.KING, totalSupply);
-}
-
-async function swellTVL(api) {
-  const totalSupply = await api.call({ target: ADDRESSES.swellchain.KING, abi: 'uint256:totalSupply' });
-  api.add(ADDRESSES.swellchain.KING, totalSupply);
-}
-
 module.exports = {
-  methodology: 'TVL received directly from the KING contract address. TVL is calculated base on the underlying assets',
-  start: 20927127,
-  ethereum: {
-    tvl: mainnetTVL,
-  },
-  swellchain: {
-    tvl: swellTVL
-  }
+  methodology: 'Tokens on the king contract',
 }
+
+const config = {
+  ethereum: '0x8F08B70456eb22f6109F57b8fafE862ED28E6040',
+}
+
+Object.keys(config).forEach(chain => {
+  const king = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const tokens = await api.call({  abi: 'address[]:allTokens', target:king })
+      return api.sumTokens({ owner: king, tokens })
+    }
+  }
+})
