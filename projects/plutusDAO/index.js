@@ -1,7 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking, } = require("../helper/staking");
-const { sumUnknownTokens, getTokenPrices } = require('../helper/unknownTokens');
+const { sumUnknownTokens, geftTokenPrices } = require('../helper/unknownTokens');
+const axios = require('axios');
 
 const chain = "arbitrum";
 
@@ -19,12 +20,14 @@ const plsGrailFarm = "0x62c10f8f003093C942a9AB8B3E0F94BA612CC982";
 const plsRdntv2 = "0x6dbf2155b0636cb3fd5359fccefb8a2c02b6cb51";
 const plsRdntv2Burn= "0x6dbF2155B0636cb3fD5359FCcEFB8a2c02B6cb51"
 const dLP = "0x32df62dc3aed2cd6224193052ce665dc18165841";
-const JonesLP = '0xe8EE01aE5959D3231506FcDeF2d5F3E85987a39c'
 const plvGlpToken = '0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1';
 const plvGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
+const plsEthMasterChef = "0x5593473e318F0314Eb2518239c474e183c4cBED5";
+const plsEthLp = "0x6CC0D643C7b8709F468f58F363d73Af6e4971515";
 
 // DEPRECATED; will track to maintain history
 const plsJones = "0xe7f6C3c1F0018E4C08aCC52965e5cbfF99e34A44";
+const JonesLP = '0xe8EE01aE5959D3231506FcDeF2d5F3E85987a39c'
 const plsJonesFarm = "0x23B87748b615096d1A0F48870daee203A720723D";
 const plsDpxFarmV1 = "0x20DF4953BA19c74B2A46B6873803F28Bf640c1B5";
 const plsDpxFarm = "0x75c143460F6E3e22F439dFf947E25C9CcB72d2e8";
@@ -37,9 +40,6 @@ const DPX = '0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55'
 const plsDpx = "0xF236ea74B515eF96a9898F5a4ed4Aa591f253Ce1";
 const dpxPlsDpxMasterChef = "0xA61f0d1d831BA4Be2ae253c13ff906d9463299c2";
 const dpxPlsDpxLp = "0x16e818e279d7a12ff897e257b397172dcaab323b";
-
-const plsEthMasterChef = "0x5593473e318F0314Eb2518239c474e183c4cBED5";
-const plsEthLp = "0x6CC0D643C7b8709F468f58F363d73Af6e4971515";
 
 const lps = [
   '0x16e818e279d7a12ff897e257b397172dcaab323b', // DPX-plsDPX-LP
@@ -93,6 +93,55 @@ async function tvl(ts, _block, {[chain]: block}) {
       sdk.util.sumSingleBalance(balances, `arbitrum:${SYK}`, plsSykSupply)
     } catch (e) {
       console.log(`Error getting plsSyk total supply: ${e.message}`)
+    }
+
+    // calculate JoneLP TVL
+    try {
+      // Get reserves and token info
+      const { output: reserves } = await sdk.api.abi.call({
+        target: JonesLP,
+        abi: 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)',
+        chain,
+        block,
+      })
+
+      const { output: token0 } = await sdk.api.abi.call({
+        target: JonesLP,
+        abi: 'function token0() view returns (address)',
+        chain,
+        block,
+      })
+      const { output: token1 } = await sdk.api.abi.call({
+        target: JonesLP,
+        abi: 'function token1() view returns (address)',
+        chain,
+        block,
+      })
+
+      const { output: totalSupply } = await sdk.api.abi.call({
+        target: JonesLP,
+        abi: 'function totalSupply() view returns (uint256)',
+        chain,
+        block,
+      })
+      console.log(`Fetching prices for tokens: arbitrum:${token0}, arbitrum:${token1}`)
+      const { data: prices } = await axios.get(`https://coins.llama.fi/prices/current/arbitrum:${token0},arbitrum:${token1}`)
+      console.log('Received price data:', prices)
+      const token0Price = prices.coins[`arbitrum:${token0}`]?.price
+      const token1Price = prices.coins[`arbitrum:${token1}`]?.price
+      console.log(`Token prices - token0: ${token0Price}, token1: ${token1Price}`)
+
+      const totalValue = (reserves._reserve0 * token0Price) + (reserves._reserve1 * token1Price)
+      const pricePerLP = totalValue / totalSupply
+
+      const { output: plsJonesSupply } = await sdk.api.erc20.totalSupply({
+        target: plsJones,
+        chain,
+        block
+      });
+      sdk.util.sumSingleBalance(balances, `arbitrum:${JonesLP}`, plsJonesSupply, { pricePerLP })
+    } catch (e) {
+      console.log(`Error getting JonesLP calculation: ${e.message}`)
     }
 
     // calcluate plsRdntv2 TVL
