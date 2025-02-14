@@ -10,6 +10,7 @@ const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 const USDC_CIRCLE= ADDRESSES.sui.USDC_CIRCLE
+const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI"
 const FDUSD= "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD"
 const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC"
 const SCALLOP_sUSDC = "0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC"
@@ -21,6 +22,7 @@ const SCALLOP_sDEEP = "0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0
 const SCALLOP_sbUSDT = "0xb1d7df34829d1513b73ba17cb7ad90c88d1e104bb65ab8f62f13e0cc103783d3::scallop_sb_usdt::SCALLOP_SB_USDT"
 const SPRING_SUI = "0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI"
 const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA"
+const SUI_HASUI_CETUS_VAULT_LP_ADDRESS = '0x828b452d2aa239d48e4120c24f4a59f451b8cd8ac76706129f4ac3bd78ac8809::lp_token::LP_TOKEN'
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
   "0x885e09419b395fcf5c8ee5e2b7c77e23b590e58ef3d61260b6b4eb44bbcc8c62",
@@ -181,7 +183,15 @@ async function tvl(api) {
 
     /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
     const coin = convertUnderlyingAssets(coin_address)
-    api.add(coin, bucket.fields.collateral_vault);
+
+    if(coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS){
+      const {coinA: haSuiAmount, coinB: suiAmount} = await calculatehaSuiSuiVaultShares(bucket.fields.collateral_vault)
+      api.add(HASUI, haSuiAmount)
+      api.add(SUI, suiAmount)
+    }{
+      api.add(coin, bucket.fields.collateral_vault);
+    }
+    
   }
 
   for (const [
@@ -226,12 +236,6 @@ async function tvl(api) {
     if (x !== BUCK) api.add(x, xVal);
     if (y !== BUCK) api.add(y, yVal);
   }
-
-  // TODO: testing 
-  const myShare = "1052361942581"
-  const amounts = await calculatehaSuiSuiVaultShares(myShare)
-
-  console.log({amounts})
 
   // Cetus USDC-BUCK LP
   // 1 Bucketus = 0.5 BUCK + 0.5 USDC
