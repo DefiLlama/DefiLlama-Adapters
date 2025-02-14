@@ -39,7 +39,7 @@ async function earnTvl(api) {
   const vaultData = await pluto.account.vaultEarn.all()
   vaultData.forEach(({ publicKey, account }) => {
     if (publicKey.toString() === HNST_VAULT) return;
-    let unit = account.unitSupply.toString() / 1e8
+    let unit = (account.unitSupply.toNumber() - account.unitBorrowed.toNumber()) / 1e8
     let index = account.index.toString() / 1e12
     let amount = unit * index
     api.add(account.tokenMint.toString(), amount * (10 ** account.tokenDecimal));
@@ -72,4 +72,7 @@ module.exports = {
     tvl,
     // borrowed,
   },
+  hallmarks: [
+      [1733534040, "Referral-only launch"],
+  ]
 };
