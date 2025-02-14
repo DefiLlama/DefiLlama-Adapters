@@ -12,7 +12,7 @@ const TOKENS = {
 
 module.exports = treasuryExports({
   ethereum: {
-    tokens: Object.values(TOKENS),
     owners: [FOOM_TREASURY],
+    ownTokens: [TOKENS.FOOM]
   },
 });
