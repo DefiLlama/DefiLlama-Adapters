@@ -1,7 +1,7 @@
 const { sumTokensExport } = require("../helper/unwrapLPs")
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const wS = '0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38'
+const wS = ADDRESSES.sonic.wS
 
 const defaultPort = '0x0000151d008235A6cC00004F00FA2bDF9dF95400'
 const ports = {
