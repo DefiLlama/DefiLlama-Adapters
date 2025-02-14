@@ -57,7 +57,6 @@ const endPoints = {
   dydx: 'https://dydx-rest.publicnode.com',
   carbon: 'https://rest.lavenderfive.com/carbon/',
   evmos: 'https://evmos-api.polkachu.com',
-  evmos: 'https://evmos-api.polkachu.com',
 };
 
 const chainSubpaths = {
