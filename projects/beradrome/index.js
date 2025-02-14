@@ -28,7 +28,7 @@ async function borrowed(api) {
 async function tvl(api) {
     const balances = {};
 
-    const honeyBalance = await api.call({  
+    const honeyBalance = await api.call({
         abi: 'erc20:balanceOf',
         target: ADDRESSES.berachain.HONEY,
         params: BERO
@@ -73,7 +73,7 @@ async function tvl(api) {
             await updateKodiakUniV2Tvl(api, plugin, balances)
         }
 
-        if (inferredProtocol === "Kodiak" ||inferredProtocol === "Kodiak Trifecta" ||inferredProtocol === "Infrared Trifecta Kodiak") {
+        if (inferredProtocol === "Kodiak" || inferredProtocol === "Kodiak Trifecta" || inferredProtocol === "Infrared Trifecta Kodiak") {
             await updateKodiakVaultTvl(api, plugin, balances)
         }
 

@@ -1,6 +1,6 @@
 function inferProtocol(protocol, name) {
     let inferredProtocol = "Unsupported protocol";
-    
+
     switch (protocol) {
         case "Berachain":
             if (name.includes("BeraSwap")) {
@@ -55,7 +55,7 @@ function inferProtocol(protocol, name) {
         default:
             break;
     }
-    
+
     return inferredProtocol;
 }
 
