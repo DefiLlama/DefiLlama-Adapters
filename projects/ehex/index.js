@@ -1,4 +1,4 @@
-// HEX contract address on PulseChain
+// HEX contract address on Ethereum
 const token = '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39'
 
 /*
@@ -20,19 +20,19 @@ Example globalInfo response:
 ]
 */
 
-async function stakingPulse(api) {
-  const globalInfo = await api.call({ abi: "function globalInfo() view returns (uint256[13])", target: token, chain: 'pulse' })
+async function stakingEth(api) {
+  const globalInfo = await api.call({ abi: "function globalInfo() view returns (uint256[13])", target: token })
   return {
-    ['pulse:' + token]: (globalInfo[0].toString() / 1).toExponential()
+    ['ethereum:' + token]: (globalInfo[0].toString() / 1).toExponential()
   }
 }
 
 module.exports = {
-  methodology: "TVL consists of HEX tokens staked in the protocol on PulseChain, plus liquidity in Uniswap V2 pools. The globalInfo function returns an array where the first element [0] represents the total amount of HEX tokens locked in stakes (lockedHeartsTotal).",
-  pulse: {
-    staking: stakingPulse,
+  methodology: "TVL consists of HEX tokens staked in the protocol on Ethereum, plus liquidity in Uniswap V2 pools. The globalInfo function returns an array where the first element [0] represents the total amount of HEX tokens locked in stakes (lockedHeartsTotal).",
+  ethereum: {
+    staking: stakingEth,
     tvl: async (api) => ({
-      ["pulse:" + token]: (await api.call({ target: token, abi: "uint256:totalSupply", chain: 'pulse' }))
+      ["ethereum:" + token]: (await api.call({ target: token, abi: "uint256:totalSupply" }))
     })
   }
-}; // node test.js projects/hex/index.js
+}; // node test.js projects/ehex/index.js
