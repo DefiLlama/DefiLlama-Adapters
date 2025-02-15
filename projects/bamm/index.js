@@ -26,7 +26,23 @@ Object.keys(config).forEach((chain) => {
             calls: bammsList.map((bamm) => ({ target: BAMMUIHELPER, params: bamm })),
         });
         for (let member of tvlResults) {
-            api.addTokens(member[1], member[3]);
+            let denomination = null;
+            let tvlInDenomination = null;
+        
+            if (member[0].toLowerCase().includes("0xfc0000")) {
+                denomination = member[0];
+                tvlInDenomination = member[2];
+            } else if (member[1].toLowerCase().includes("0xfc0000")) {
+                denomination = member[1];
+                tvlInDenomination = member[3];
+            }
+        
+            if (denomination && tvlInDenomination) {
+                api.addTokens(denomination, tvlInDenomination);
+            } else {
+                // default to 
+                api.addTokens(member[1], member[3]);
+            }
         }
       },
     };
