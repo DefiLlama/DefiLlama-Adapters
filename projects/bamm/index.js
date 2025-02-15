@@ -12,22 +12,15 @@ const config = {
 
 
 Object.keys(config).forEach((chain) => {
-    let fundsMap = config[chain];
-    const bammFactories = Object.values(fundsMap);
-  
-    console.log(`~~~~> ${bammFactories}`);
-  
+    let factoryMap = config[chain];
+    const bammFactories = Object.values(factoryMap);
     module.exports[chain] = {
       tvl: async (api) => {
-        // Ensure api.multiCall is used correctly
         const bamms  = await api.multiCall({
           abi: Abi.bammsArray,
           calls: bammFactories.map((factory) => ({ target: factory })),
         });
-        console.log(bamms, typeof(bamms))
         let bammsList = bamms[0];
-        
-        // Fetch TVL for each BAMM address
         const tvlResults = await api.multiCall({
             abi: Abi.getTVL,
             calls: bammsList.map((bamm) => ({ target: BAMMUIHELPER, params: bamm })),
