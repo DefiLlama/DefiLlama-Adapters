@@ -1,53 +1,45 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const contracts = require("./contracts.json");
-const { pool2 } = require("../helper/pool2");
-const vaults = [
-  contracts.ftmVault,
-  contracts.ethVault,
-  contracts.avaxVault,
-  contracts.tombVault,
-]
+const utils = require('../helper/utils');
+let _response;
 
-const tokens = [
-  contracts.FTM,
-  contracts.WETH,
-  contracts.AVAX,
-  contracts.TOMB,
-]
+function fetchChain(chainId, staking) {
+  return async () => {
+    if (!_response) {
+      _response = utils.fetchURL('https://api.xbanking.org/v2/platform/tvl');
+    }
+    const response = await _response;
+    let tvl = 0;
 
-async function tvl(api) {
-  const _tokens = [...tokens]
-  const owners = [...vaults, ...vaults]
-  vaults.forEach(v => _tokens.push(contracts.Collateral))
-  return api.sumTokens({ tokensAndOwners2: [_tokens, owners] })
+    const chainName = Object.keys(response).find(key => key.toLowerCase() === chainId.toLowerCase());
+    
+    if (chainName) {
+      tvl = Number(response[chainName]);
+    }
+
+    if (tvl === 0) {
+      throw new Error(`chain ${chainId} tvl is 0`);
+    }
+    return tvl;
+  };
 }
 
-async function borrowed(api) {
-  const vaults0 = vaults.slice(0, 2);
-  const vaults1 = vaults.slice(2);
-  const tokens0 = tokens.slice(0, 2);
-  const tokens1 = tokens.slice(2);
-  const balances = await api.multiCall({ abi: abi.see_s1ftm_circ, calls: vaults0 })
-  const balances1 = await api.multiCall({ abi: abi.see_s1tomb_circ, calls: vaults1 })
-  api.addTokens(tokens0, balances)
-  api.addTokens(tokens1, balances1)
-
-  const chainApi = new sdk.ChainApi({ chain: api.chain, block: api.block })
-  chainApi.sumTokens({ tokensAndOwners2: [tokens, vaults] })
-  Object.entries(chainApi.getBalances()).forEach(([token, balance]) => {
-    api.add(token, balance * -1, { skipChain: true })
-  })
-  return api.getBalances()
-}
+const chains = {
+  ethereum: 'ethereum',
+  avax: 'avax',
+  arbitrum: 'arbitrum',
+  binance: 'binance',
+  solana: 'solana',
+  bitcoin: 'bitcoin',
+  ton: 'ton',
+  aptos: 'aptos',
+  sui: 'sui'
+};
 
 module.exports = {
-  fantom: {
-    tvl,
-    borrowed,
-    pool2: pool2(
-      [contracts.pool2, contracts.pool2],
-      [contracts.daiPool2, contracts.ftmPool2],
-    )
-  }
-}
+  timetravel: false,
+  misrepresentedTokens: true,
+  doublecounted: true,
+  ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
+    tvl: fetchChain(chain[1], false),
+    staking: fetchChain(chain[1], true),
+  }]))
+};
