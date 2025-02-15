@@ -1,19 +1,10 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
-const BigNumber = require("bignumber.js");
 const { getObject } = require("../helper/chain/sui");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs");
 
 const SUI_HASUI_POOL_ID = "0x871d8a227114f375170f149f7e9d45be822dd003eba225e83c05ac80828596bc"
 const SUI_HASUI_VAULT_ID = "0xde97452e63505df696440f86f0b805263d8659b77b8c316739106009d514c270"
-
-BigNumber.config({
-  DECIMAL_PLACES: 64,
-  ROUNDING_MODE: BigNumber.ROUND_DOWN,
-  EXPONENTIAL_AT: [-64, 64], // equivalent to toExpNeg and toExpPos
-  MODULO_MODE: BigNumber.ROUND_DOWN,
-  POW_PRECISION: 64,
-});
 
 async function calculateGSUIunderlyingSui(gSuiAmount) {
   const fields = (await getObject("0x811fe901ed2a5d75cd125912ad6110efdff8be00fe694601a94167e2bd545ac2")).fields
@@ -31,12 +22,8 @@ async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
   const lpRatio = lpAmount / lpSupply
   const clmmPosition = vaultObject.fields.positions[0].fields.clmm_postion.fields
   const liquidity = clmmPosition.liquidity * lpRatio
-  const tick = Math.floor(Math.log(suiHasuiPool.fields.current_sqrt_price ** 2) / Math.log(1.0001));
-  console.log({
-    token0, token1, liquidity, tick,
-    tickLower: clmmPosition.tick_lower_index.fields.bits,
-    tickUpper: clmmPosition.tick_upper_index.fields.bits,
-  })
+  // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
+  const tick = Math.floor(Math.log((suiHasuiPool.fields.current_sqrt_price / 2 ** 64) ** 2) / Math.log(1.0001))
 
   addUniV3LikePosition({
     api, token0, token1, liquidity, tick,
@@ -183,40 +170,26 @@ async function tvl(api) {
   const aflStakedList = aflpObjs.map((aflp) => aflp.fields.staked);
   const buckAfPoolData = await sui.getObjects(AF_POOL_IDs);
 
-  const afsuiSuiLpObj = await sui.getObject(AFSUI_SUI_LP_ID);
-  const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
-
-  const afsuiSuiLpBucket = await sui.getObject(AFSUI_SUI_LP_BUCKET_ID);
-  const afsuiSuiLpBucketStaked = afsuiSuiLpBucket.fields.collateral_vault;
-
   const kriyalpObjs = await sui.getObjects(KRIYA_LP_IDS);
   const kriyaStakedList = kriyalpObjs.map(
     (kriyalp) => kriyalp.fields.staked.fields.lsp.fields.balance
   );
   const kriyalpPoolData = await sui.getObjects(KRIYA_POOL_IDs);
 
-  const cetusLpObj = await sui.getObject(CETUS_LP_ID);
+
+  const [afsuiSuiLpObj, afsuiSuiLpBucket, cetusLpObj, usdcCirclePSMObj, fdusdPSMObj, usdcPSMObj, usdtPSMObj, bucketusPSMObj, cetablePSMObj, stapearlPSMObj,] = await sui.getObjects([
+    AFSUI_SUI_LP_ID, AFSUI_SUI_LP_BUCKET_ID, CETUS_LP_ID, USDC_CIRCLE_PSM, FDUSD_PSM, USDC_PSM, USDT_PSM, BUCKETUS_PSM, CETABLE_PSM, STAPEARL_PSM,
+  ])
+
+  const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
+  const afsuiSuiLpBucketStaked = afsuiSuiLpBucket.fields.collateral_vault;
   const stakedBucketus = cetusLpObj.fields.staked;
-
-  const usdcCirclePSMObj = await sui.getObject(USDC_CIRCLE_PSM);
   const usdcCirclePSMAmount = usdcCirclePSMObj.fields.pool;
-
-  const fdusdPSMObj = await sui.getObject(FDUSD_PSM);
   const fdusdPSMAmount = fdusdPSMObj.fields.pool;
-
-  const usdcPSMObj = await sui.getObject(USDC_PSM);
   const usdcPSMAmount = usdcPSMObj.fields.pool;
-
-  const usdtPSMObj = await sui.getObject(USDT_PSM);
   const usdtPSMAmount = usdtPSMObj.fields.pool;
-
-  const bucketusPSMObj = await sui.getObject(BUCKETUS_PSM);
   const bucketusPSMAmount = bucketusPSMObj.fields.pool;
-
-  const cetablePSMObj = await sui.getObject(CETABLE_PSM);
   const cetablePSMAmount = cetablePSMObj.fields.pool;
-
-  const stapearlPSMObj = await sui.getObject(STAPEARL_PSM);
   const stapearlPSMAmount = stapearlPSMObj.fields.pool;
 
   const bucketList = protocolFields.filter((item) =>
