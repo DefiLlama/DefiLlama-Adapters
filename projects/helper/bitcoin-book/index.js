@@ -123,8 +123,13 @@ const magpie = [
   'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
 ]
 
+const hyperunit = [
+  'bc1pdwu79dady576y3fupmm82m3g7p2p9f6hgyeqy0tdg7ztxg7xrayqlkl8j9',
+]
+
 module.exports = {
   ...fetchers,
+  hyperunit,
   cygnus,
   magpie,
   stacksSBTC,
