@@ -1,0 +1,4 @@
+{
+    "bammsArray": "address[]:bammsArray",
+    "getTVL": "function getTVL(address) view returns (address,address,uint256,uint256)"
+}
