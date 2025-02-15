@@ -1,4 +1,4 @@
-export const BERA_CONTRACTS = {
+const BERA_CONTRACTS = {
   chainInfo: {
     chainId: 80094,
     startBlock: 951099,
@@ -23,7 +23,7 @@ export const BERA_CONTRACTS = {
   },
 }
 
-export const UNICHAIN_CONTRACTS = {
+const UNICHAIN_CONTRACTS = {
   chainInfo: {
     chainId: 130,
     startBlock: 8590656,
@@ -47,4 +47,9 @@ export const UNICHAIN_CONTRACTS = {
     Staker: "0x56F8619AD96DE71D668391865Fb3bF74e1670DFb",
     StakingToken: "0x5ba5Ba5327D148e2b4F398276224afc9235F3102",
   },
+}
+
+module.exports = {
+  BERA_CONTRACTS,
+  UNICHAIN_CONTRACTS,
 }
