@@ -90,6 +90,33 @@ module.exports = {
       tokens: [ADDRESSES.bsc.USDC,stBTC],
     }),
   },
+  zircuit:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x301A29D92B23750c481D6F2feAA01F872561A528",
+        "0x8DdCb1F874e635E03f172cc02B4F57ae94Ae7BC0"
+      ],
+      tokens: ["0x3b952c8C9C44e8Fe201e2b26F6B2200203214cfF"],
+    }),
+  },
+  sty:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x0848F4AE872545C901D3325AEFf09F0fa8952AfC",
+        "0x133A54E116731c0CBE35EE41276D570e0730E92D"
+      ],
+      tokens: ["0xF1815bd50389c46847f0Bda824eC8da914045D14","0x674843C06FF83502ddb4D37c2E09C01cdA38cbc8"],
+    }),
+  },
+  plume:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x04AE748272c3959A9904aeaD3cc00AAf476aa34D",
+        "0x36Bd86676A05ABAaF30D57F65Ba463669E018F3e"
+      ],
+      tokens: [ADDRESSES.plume.USDC_e,"0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F"],
+    }),
+  },
   ethereum:{
     tvl: sumTokensExport({
       owners: [
