@@ -99,7 +99,7 @@ module.exports = {
       tokens: ["0x3b952c8C9C44e8Fe201e2b26F6B2200203214cfF"],
     }),
   },
-  story:{
+  sty:{
     tvl: sumTokensExport({
       owners: [
         "0x0848F4AE872545C901D3325AEFf09F0fa8952AfC",
