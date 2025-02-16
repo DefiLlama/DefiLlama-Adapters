@@ -100,6 +100,11 @@ const CONFIG = {
       '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7',
     ],
   },
+  abstract: {
+    pools: [
+      '0x221F0E1280Ec657503ca55c708105F1e1529527D',
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {
