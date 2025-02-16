@@ -108,7 +108,7 @@ module.exports = {
   doublecounted: true,
   ethereum: {
     tvl: tvl_from_registry('ethereum'),
-    staking: staking(veAPW, APW), 
+    //staking: staking(veAPW, APW), 
   },
   polygon: {
     tvl: tvl_from_registry('polygon'), 

@@ -13,7 +13,7 @@ module.exports = treasuryExports({
   },
   mantle: {
     tokens: [
-      "0xcda86a272531e8640cd7f1a92c01839911b90bb0",
+      ADDRESSES.mantle.mETH,
       ADDRESSES.bob.FBTC
     ],
     owners,

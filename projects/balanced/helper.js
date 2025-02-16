@@ -44,7 +44,8 @@ const networkIdentifiers = {
   "0x2105.base": "base",
   "sui": "sui",
   "solana" : "solana",
-  "stellar" : "stellar"
+  "stellar" : "stellar",
+  "optimism" : "optimism"
 }
 
 // Get decimals of cross-chain Balanced assets in balancedAssetManagerContract

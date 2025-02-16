@@ -8,12 +8,12 @@ const config = {
   },
   ethereum: {
     endpoint: sdk.graph.modifyEndpoint('Htf6Hh1qgkvxQxqbcv4Jp5AatsaiY5dNLVcySkpCaxQ8'),
-    corePools: ['0x67aA3eCc5831a65A5Ba7be76BED3B5dc7DB60796'],
+    corePools: ['0x687a01ecF6d3907658f7A7c714749fAC32336D1B'],
   },
-  /*arbitrum: {
+  arbitrum: {
     endpoint: sdk.graph.modifyEndpoint('2zqpTYBL3X1E2eb129bKno1pJdx6xBawr8urp61w33Z8'),
     corePools: ['0x317c1A5739F39046E20b08ac9BeEa3f10fD43326']
-  },*/
+  },
 }
 
 Object.keys(config).forEach(chain => {

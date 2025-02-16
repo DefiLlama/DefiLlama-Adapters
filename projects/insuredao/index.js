@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { sumTokensAndLPs, } = require('../helper/unwrapLPs');
+const { sumTokens2, } = require('../helper/unwrapLPs');
 
 // addresses pools
 
@@ -13,39 +12,14 @@ const vlINSURE = "0xA12ab76a82D118e33682AcB242180B4cc0d19E29";
 const uni = "0x1b459aec393d604ae6468ae3f7d7422efa2af1ca";
 const uniStaking = "0xf57882cf186db61691873d33e3511a40c3c7e4da";
 
-// =================== GET INSURE BALANCES =================== //
-async function staking(_, block) {
-  let balances = {};
-
-  const veinsureBalances = (
-    await sdk.api.abi.call({
-      target: VotingEscrow,
-      abi: 'uint256:supply',
-      block: block,
-    })
-  ).output;
-
-  const vlinsureBalances = (
-    await sdk.api.abi.call({
-      target: insure,
-      params: vlINSURE,
-      abi: 'erc20:balanceOf',
-      block: block,
-    })
-  ).output;
-  
-  sdk.util.sumSingleBalance(balances, insure ,veinsureBalances);
-  sdk.util.sumSingleBalance(balances, insure ,vlinsureBalances);
-  
-  return balances;
+async function staking(api) {
+  const veinsureBalances = await api.call({  abi: 'uint256:supply', target: VotingEscrow})
+  api.add(insure, veinsureBalances)
+  return api.sumTokens({ owner: vlINSURE, token: insure})
 }
 
-async function pool2(_, block) {
-  const balances = {}
-  await sumTokensAndLPs(balances, [
-    [uni, uniStaking, true]
-  ], block)
-  return balances
+async function pool2(api) {
+  return sumTokens2({api, owner: uniStaking, token: uni, resolveLP: true})
 }
 
 const config = {
