@@ -18,17 +18,17 @@ async function updateBeraborrowTvl(api, pluginAddress, balances) {
 
     const underlyingToken = await api.call({
         abi: 'function asset() view returns (address)',
-        target: pluginAddress
+        target: sTokenAddress
     });
 
     const totalUnderlyingInSToken = await api.call({
         abi: 'function totalAssets() view returns (uint256)',
-        target: pluginAddress
+        target: sTokenAddress
     });
 
     const totalSupplySToken = await api.call({
         abi: 'function totalSupply() view returns (uint256)',
-        target: pluginAddress
+        target: sTokenAddress
     });
 
     const totalSupplyFormatted = totalSupply / (10 ** sTokenDecimals);
