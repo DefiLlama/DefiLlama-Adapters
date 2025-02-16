@@ -3,8 +3,8 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const gsnakeTokenAddress = "0x674a430f531847a6f8976A900f8ace765f896a1b";
 const snakeGenesisAddress = '0x29D0762f7bE8409d0aC34A3595AF62E8c0120950'
-const gsnakeRewardPoolAddress = "0xcfB9fDCd480Bc731833257eb982718cAb5aD2cE6";
-const masonryAddress = "0x5A5d34826ab31003F26F8A15e9B645803d85eA81";
+const gsnakeRewardPoolAddress = "0xFE6915a0983a304F4D131DA635664030dA06Bcd2";
+const masonryAddress = "0x54eb20859334C1958eb67f1b5a283b7A100280D3";
 
 const ftmLPs = [
   "0x287c6882dE298665977787e268f3dba052A6e251", // snake-s-lp
