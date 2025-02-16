@@ -95,6 +95,11 @@ const CONFIG = {
       '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590'
     ],
   },
+  unichain: {
+    pools: [
+      '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7',
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {
