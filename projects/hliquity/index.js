@@ -7,6 +7,6 @@ const STAKING_ADDRESS = "";
 const HLQT_ADDRESS = "0x00000000000000000000000000000000005c9f70"
 
 module.exports = {
-  methodology: 'the amount of locked hbar in the HLiquity protocol',
+  methodology: 'Total deposits of HBAR for borrowed HCHF',
   hedera: { tvl: getLiquityTvl('0x00000000000000000000000000000000005c9f66')}
 };
