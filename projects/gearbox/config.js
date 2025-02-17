@@ -57,6 +57,7 @@ const v3Abis = {
   creditAccounts: "function creditAccounts() view returns (address[])",
   collateralTokensCount: "function collateralTokensCount() view returns (uint8)",
   getTokenByMask: "function getTokenByMask(uint256 tokenMask) view returns (address token)",
+  getPoolsV3List: "function getPoolsV3List() view returns (tuple(address addr, address underlying, address dieselToken, string symbol, string name, uint256 baseInterestIndex, uint256 availableLiquidity, uint256 expectedLiquidity, uint256 totalBorrowed, uint256 totalDebtLimit, tuple(address creditManager, uint256 borrowed, uint256 limit, uint256 availableToBorrow)[] creditManagerDebtParams, uint256 totalAssets, uint256 totalSupply, uint256 supplyRate, uint256 baseInterestRate, uint256 dieselRate_RAY, uint256 withdrawFee, uint256 lastBaseInterestUpdate, uint256 baseInterestIndexLU, uint256 version, address poolQuotaKeeper, address gauge, tuple(address token, uint16 rate, uint16 quotaIncreaseFee, uint96 totalQuoted, uint96 limit, bool isActive)[] quotas, tuple(address zapper, address tokenIn, address tokenOut)[] zappers, tuple(address interestModel, uint256 version, uint16 U_1, uint16 U_2, uint16 R_base, uint16 R_slope1, uint16 R_slope2, uint16 R_slope3, bool isBorrowingMoreU2Forbidden) lirm, bool isPaused)[])",
 };
 
 module.exports = {

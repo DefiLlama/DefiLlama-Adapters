@@ -15,19 +15,6 @@
    misrepresentedTokens: true
  }
 
-const getPools = async (api) => {
-   const contractsRegisterAddr = await api.call({ 
-     abi: poolAbis.getAddressOrRevert,
-     target: ADDRESS_PROVIDER_V3[api.chain],
-     params: [CONTRACTS_REGISTER, 0]
-   })
- 
-   const rawPools = await api.call({ target: contractsRegisterAddr, abi: poolAbis.getPools })
-   const pools = rawPools.filter((p) => p !== "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286")
-   const underlyings = await api.multiCall({ calls: pools, abi: poolAbis.underlyingToken })
-   return underlyings.map((u, i) => [u, pools[i]])
-}
-
 const getV1Managers = async (api) => {
   const provider = ADDRESS_PROVIDER_V3[api.chain]
   const contractsRegisterAddr = await api.call({ abi: v1Abis.getAddressOrRevert, target: provider, params: [CONTRACTS_REGISTER, 0] });
@@ -176,67 +163,29 @@ const getV2Tvl = async (api) => {
   );
 };
 
-const getV3Managers = async (api) => {
-  const dc300 = await api.call({ abi: v3Abis.getAddressOrRevert, target: ADDRESS_PROVIDER_V3[api.chain], params: [DATA_COMPRESSOR, 300] })
-  return { managers: await api.call({ abi: v3Abis.getCreditManagersV3List, target: dc300 }), dc300 };
-}
+const getV3Data = async (api, type) => {
+  const dc300 = await api.call({ abi: v3Abis.getAddressOrRevert, target: ADDRESS_PROVIDER_V3[api.chain], params: [DATA_COMPRESSOR, 300] });
+  const poolV3Datas = await api.call({ target: dc300, abi: v3Abis.getPoolsV3List });
 
-const getV3Tvl = async (api) => {
-  const { managers, dc300 } = await getV3Managers(api)
-  if (!managers.length) return;
-
-  await Promise.all(
-    managers.map(async ({ addr }) => {
-      try {
-        const accs = await api.call({ target: dc300, abi: v3Abis.getCreditAccountsByCreditManager, params: [addr, []] })
-        accs.forEach(({ balances }) => {
-          balances.forEach(({ balance, token }) => {
-            if (+balance < 1) return;
-            api.add(token, +balance) 
-          })
-        })
-
-      } catch (error) {
-        return getV3CAsWithoutCompressor(api, addr)
-      }
-    })
-  )
-}
-
-const getV3CAsWithoutCompressor = async (api, manager) => {
-  const [accs, collateralTokensCount] = await Promise.all([
-    api.call({ target: manager, abi: v3Abis.creditAccounts, permitFailure: true }),
-    api.call({ target: manager, abi: v3Abis.collateralTokensCount, permitFailure: true })
-  ])
-
-  const bitMasks = [];
-  for (let i = 0; i < collateralTokensCount; i++) {
-    bitMasks.push(BigInt(1) << BigInt(i));
-  }
-
-  const collateralTokens = await api.multiCall({ abi: v3Abis.getTokenByMask, calls: bitMasks.map((bm) => ({ target: manager, params: [bm] })) });
-
-  for (const token of collateralTokens) {
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: accs.map((owner) => ({ target: token, params: [owner] })), permitFailure: true })
-    if (!balances.length) return;
-    balances.forEach((balance) => {
-      api.add(token, balance)
-    })
-  }
-}
+  poolV3Datas.forEach(({ totalAssets, totalBorrowed, underlying }) => {
+    const balance = type === 'supplied' ? totalAssets : totalBorrowed;
+    api.add(underlying, balance);
+  });
+};
  
- // src/adapter/index.ts
 const tvl = async (api) => {
-  const tokensAndOwners = await getPools(api)
   if (api.chain === 'ethereum') {
     await getV1Tvl(api),
     await getV2Tvl(api)
   }
 
-  await getV3Tvl(api)
-  await api.sumTokens({ tokensAndOwners })
+  await getV3Data(api, 'supplied')
+}
+
+const borrowed = async (api) => {
+  return getV3Data(api, 'borrowed')
 }
  
 ['ethereum', 'arbitrum', 'optimism'].forEach((chain) => {
-   module.exports[chain] = { tvl }
+   module.exports[chain] = { tvl, borrowed }
 })
