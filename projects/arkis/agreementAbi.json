@@ -1,4 +1,5 @@
-{
+[
+  {
   "constant": true,
   "inputs": [],
   "name": "info",
@@ -27,4 +28,18 @@
   "payable": false,
   "stateMutability": "view",
   "type": "function"
-}
+},
+{
+    "inputs": [],
+    "name": "totalBorrowed",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

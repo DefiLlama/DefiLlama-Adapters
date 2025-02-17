@@ -1,10 +1,10 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
-const infoAbi = require("./agreementAbi.json");
+const agreementAbi = require("./agreementAbi.json");
 const config = require("./config.json");
 
-
+let agreementsCached;
 /**
  * Fetches logs from a factory contract on a specified blockchain.
  *
@@ -41,7 +41,7 @@ async function getTokens(api, chain, agreementAddresses) {
   const tokenSet = new Set();
 
   const results = await api.multiCall({
-    abi: infoAbi,
+    abi: agreementAbi[0],
     calls: agreementAddresses,
   });
   
@@ -63,6 +63,48 @@ async function getTokens(api, chain, agreementAddresses) {
   return Array.from(tokenSet);
 }
 
+async function borrowed(api, chain, agreementAddresses) {
+  const tokenBorrowedMap = new Map();
+
+  const block = await api.getBlock();
+  
+  // Create parallel call batches with state lock
+  const [resultsInfo, resultsTotalBorrowed] = await Promise.all([
+    Promise.all(agreementAddresses.map(address => 
+      api.call({
+        abi: agreementAbi[0],
+        target: address,
+        block,
+      })
+    )),
+    Promise.all(agreementAddresses.map(address => 
+      api.call({
+        abi: agreementAbi[1],
+        target: address,
+        block,
+      })
+    ))
+  ]);
+
+  if (resultsInfo.length !== resultsTotalBorrowed.length) {
+    throw new Error('Data misalignment detected');
+  }
+
+  resultsInfo.forEach((resultInfo, i) => {
+    if (resultInfo.metadata.leverage === config.zeroAddress) {
+      console.warn(`Skipping Agreement ${agreementAddresses[i]} - No valid leverage found`);
+      return;
+    }
+    const key = `${chain}:${resultInfo.metadata.leverage}`;
+    const borrowedAmount = Number(resultsTotalBorrowed[i]) || 0;
+    tokenBorrowedMap.set(key, 
+      (tokenBorrowedMap.get(key) || 0) + borrowedAmount
+    );
+  });
+
+  return Object.fromEntries(tokenBorrowedMap);
+}
+
 
 module.exports = {
   methodology:
@@ -72,7 +114,7 @@ module.exports = {
 Object.keys(config.chains).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
-      const agreements = await fetchFactoryLogs(
+      if (agreementsCached === undefined) agreementsCached = await fetchFactoryLogs(
         api,
         chain,
         "agreement"
@@ -82,10 +124,18 @@ Object.keys(config.chains).forEach(chain => {
         chain,
         "marginAccount"
       );
-      const owners = [...agreements, ...marginAccounts];
-      const tokens = await getTokens(api, chain, agreements);
+      const owners = [...agreementsCached, ...marginAccounts];
+      const tokens = await getTokens(api, chain, agreementsCached);
 
       return sumTokens2({api, chain, owners, tokens, resolveLP: true, unwrapAll: true});
+    },
+    borrowed: async(api) => {
+      if (agreementsCached === undefined) agreementsCached = await fetchFactoryLogs(
+        api,
+        chain,
+        "agreement"
+      );
+      return borrowed(api, chain, agreementsCached)
     }
   }
 })
