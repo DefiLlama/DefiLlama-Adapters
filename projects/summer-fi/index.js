@@ -1,30 +1,17 @@
-const { automationTvl } = require("./handlers");
-const { getAutomationCdpIdList, setCallCache } = require("./helpers");
-const sdk = require("@defillama/sdk");
-const { getCache, setCache } = require("../helper/cache");
-
-module.exports = {
-  doublecounted: true,
-  methodology: "Summer.fi TVL is calculated by fetching on-chain data, retrieving CDP IDs, and using them to determine locked assets via the automationTvl function, excluding frontend-managed Maker vaults",
-  ethereum: { tvl },
-};
-
-async function tvl(api) {
-  await api.getBlock();
-  const executionStart = Date.now() / 1000;
-  const [cdpIdList, cache] = await Promise.all([
-    getAutomationCdpIdList({ api }),
-    getCache("summer-fi/cache", api.chain),
-  ]);
-
-  setCallCache(cache);
-
-  sdk.log([...cdpIdList].length, "cdpIdList");
-
-  await Promise.all([
-    automationTvl({ api, cdpIdList }),
-  ]);
-
-  await setCache("summer-fi/cache", api.chain, cache);
-  sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
+const config = {
+  ethereum: '0x09eb323dBFECB43fd746c607A9321dACdfB0140F',
+  base: '0x09eb323dBFECB43fd746c607A9321dACdfB0140F',
+  arbitrum: '0x09eb323dBFECB43fd746c607A9321dACdfB0140F',
 }
+
+Object.keys(config).forEach(chain => {
+  const factory = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const vaults = await api.call({  abi: 'address[]:getActiveFleetCommanders', target: factory })
+      const assets = await api.multiCall({  abi: 'address:asset', calls: vaults })
+      const balances = await api.multiCall({  abi: 'uint256:totalAssets', calls: vaults })
+      api.add(assets, balances)
+    }
+  }
+})
