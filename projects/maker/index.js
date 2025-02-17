@@ -31,20 +31,6 @@ const getJoins = async (api) => {
   }).filter(Boolean);
 }
 
-const getDogs = async (api) => {
-  const logs = (await getLogs2({ api, target: MCD_DOG, fromBlock: START_DOG_BLOCK, topics: [DOG_topic], skipCache: true, skipCacheRead: true })).map(log => {
-    return '0x' + log.data.slice(-40);
-  })
-
-  const dogs = await api.multiCall({ abi: abi.dog, calls: logs, permitFailure: true })
-  
-  return logs.map((auth, i) => {
-    const dog = dogs[i];
-    if (!dog) return null
-    return auth.toLowerCase();
-  }).filter(Boolean);
-}
-
 const tvl = async (api) => {
   const [joins/*, dogs*/] = await Promise.all([
     getJoins(api),
@@ -93,7 +79,7 @@ async function unwrapGunis({ api, toa, }) {
 
 module.exports = {
   methodology: `Counts all the tokens being used as collateral of CDPs. On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
-  start: 1513566671, // 12/18/2017 @ 12:00am (UTC)
+  start: '2017-12-18', // 12/18/2017 @ 12:00am (UTC)
   ethereum: {
     tvl
   },

@@ -15,7 +15,6 @@ const ScixBusd = "0xe8Efb51E051B08614DF535EE192B0672627BDbF9";
 const scUsdBusd = "0x53085B02955CFD2F884c58D19B8a35ef5095E8aE";
 
 module.exports = {
-  start: 10880500,    // 09/16/2020 @ 12:00am (UTC+8)
   bsc: {
     tvl,
     staking: staking(VotingEscrow, SCIX),
