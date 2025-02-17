@@ -4,5 +4,6 @@
   "slot0": "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
   "totalSupply": "uint256:totalSupply",
   "PFILPerToken": "uint256:PFILPerToken",
-  "getAllAgentsCount": "function getAllAgentsCount() view returns ((uint256))"
+  "getAllAgentsCount": "function getAllAgentsCount() view returns ((uint256))",
+  "getTvlTokenAmount": "function getTvlTokenAmount() view returns ((uint256))"
 }

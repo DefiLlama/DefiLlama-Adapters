@@ -83,6 +83,28 @@ const CONFIG = {
       '0x81F6138153d473E8c5EcebD3DC8Cd4903506B075',
     ],
   },
+  sei: {
+    pools: [
+      '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //usdc pool
+      '0x0dB9afb4C33be43a0a0e396Fd1383B4ea97aB10a'
+    ],
+  },
+  soneium: {
+    pools: [
+      '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B', //usdc pool
+      '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590'
+    ],
+  },
+  unichain: {
+    pools: [
+      '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7',
+    ],
+  },
+  abstract: {
+    pools: [
+      '0x221F0E1280Ec657503ca55c708105F1e1529527D',
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {

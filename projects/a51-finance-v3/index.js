@@ -40,6 +40,8 @@ const config = {
   manta: [{ target: "0x69317029384c3305fC04670c68a2b434e2D8C44C", helper: "0xa1d8180f4482359ceb7eb7437fcf4a2616830f81", startBlock: 1834975 },],
   // lynex 
   linea: [{target: "0xA8Dc31c8C9F93dB2e42A5472F580689794639576",helper: "0x965356eb2C208Ce4130E267342cA720042Cce7b2",startBlock: 4518443,},],
+  // swapmode
+  mode: [{ target: "0x69317029384c3305fC04670c68a2b434e2D8C44C", helper: "0xFFD9acf25F2D930BE88D486D588ecBa7a418DE0B", startBlock: 11042629 },],
 }
 
 module.exports = {

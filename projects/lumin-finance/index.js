@@ -29,6 +29,7 @@ async function borrowed(api) {
   tokens.forEach((token, i) => api.add(token, deposit[i][1]))
 }
 async function staking(api) {
+  return; // this is broken
   const stakingBalance = await api.call({
     abi: abi.v2.stakeStats,
     target: LUMIN_V2_CONTRACT,
@@ -41,7 +42,6 @@ async function staking(api) {
 
 module.exports = {
   methodology: 'Gets v1 total deposits, and v2 staking statistics on-chain.',
-  start: 194344665,
   arbitrum: {
     staking,
     tvl, borrowed,

@@ -18,7 +18,7 @@ const walletAddresses = {
 const tokenAddress = {
   bsc: [ADDRESSES.bsc.USDT],
   arbitrum: [ADDRESSES.arbitrum.USDT],
-  //base: ['0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2'],
+  base: [ADDRESSES.base.USDT],
   mantle: [ADDRESSES.mantle.USDT]
 }
 
@@ -31,10 +31,10 @@ module.exports = {
   },
   arbitrum: {
     tvl: sumTokensExport({ owners: walletAddresses.arbitrum, tokens: tokenAddress.arbitrum }),
-  },/*
+  },
   base: {
     tvl: sumTokensExport({ owners: walletAddresses.base, tokens: tokenAddress.base }),
-  },*/
+  },
   mantle: {
     tvl: sumTokensExport({ owners: walletAddresses.mantle, tokens: tokenAddress.mantle }),
   },

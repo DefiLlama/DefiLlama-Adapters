@@ -11,7 +11,6 @@ const configs = {
 
 module.exports = {
   methodology: "Total staking",
-  start: 210487219,
   arbitrum: {
     tvl: sumTokensExport({
       tokensAndOwners: [

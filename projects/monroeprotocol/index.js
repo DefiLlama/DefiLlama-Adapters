@@ -16,8 +16,14 @@ const V1_SPECIAL_ADDRESSES = {
     monusd: "0x051baaA86328Fc7F522431932B8010F66f260A6a"
   }
 }
-// V2
-const roeUSD = "0xF88DF111343BffE7a2d89FB770d77A264d53f043"
+const DETERMINISTIC_roeUSD = "0x87196DB491ee1C77B91853CB79C118A322d6A9c0"
+// V2 addresses
+const V2_ADDRESSES = {
+  manta: "0xF88DF111343BffE7a2d89FB770d77A264d53f043",
+  avax: "0xF88DF111343BffE7a2d89FB770d77A264d53f043",
+  arbitrum: DETERMINISTIC_roeUSD,
+  ethereum: DETERMINISTIC_roeUSD
+}
 
 async function tvl(api) {
   const owners = []
@@ -37,9 +43,10 @@ async function tvl(api) {
   
   // V2
   if (V2_CHAINS.indexOf(api.chain) > -1) {
-    const vaultLengthV2 = await api.call({ abi: "uint:getVaultsLength", target: roeUSD })
+    const vaultLengthV2 = await api.call({ abi: "uint:getVaultsLength", target: V2_ADDRESSES[api.chain] })
     const vaultCallsV2 = createIncrementArray(vaultLengthV2)
-    const vaultsV2 = await api.multiCall({  abi: "function vaults(uint vaultId) view returns (address)", calls: vaultCallsV2, target: roeUSD})
+    const vaultsV2 = await api.multiCall({  abi: "function vaults(uint vaultId) view returns (address)", calls: vaultCallsV2, target: V2_ADDRESSES[api.chain]})
+
     const _tokensV2 = await api.multiCall({  abi: 'address:collateralAsset', calls: vaultsV2})
     tokens.push(..._tokensV2)
     owners.push(...vaultsV2)
@@ -52,7 +59,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral in Monroe vaults",
-  start: 1710288000, // March 13, 2024 00:00 GMT
+  start: '2024-03-13', // March 13, 2024 00:00 GMT
   hallmarks: [
     [1722000000, "V2 Launch"]
   ],
