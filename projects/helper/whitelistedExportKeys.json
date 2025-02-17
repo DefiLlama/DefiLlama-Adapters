@@ -9,12 +9,9 @@
   "borrowed",
   "start",
   "doublecounted",
-  "treasury",
   "hallmarks",
-  "incentivized",
-  "offers",
+  "isHeavyProtocol",
   "deadFrom",
-  "broken",
   "ownTokens",
   "vesting"
 ]

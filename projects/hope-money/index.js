@@ -1,18 +1,11 @@
 const { sumTokensExport } = require('../helper/sumTokens')
 const ADDRESSES = require('../helper/coreAssets.json')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 module.exports = {
   methodology: 'Tokens held in coinbase custody. Reserve info taken from: https://hope.money/gomboc.html',
   doublecounted: true,
-  bitcoin: {
-    tvl: sumTokensExport({ owners: [
-      '15PYHP5ZW29B3o19jFNKz6RyRdHCtzJj5H',
-      '16BLcAyJR8unm8RpQT9PGTwh5uPpZEf2ut',
-      '3JoCB8ifwhL4YKo9rCYMgVGbqxBqnpQpdS',
-      '179fgM9yyTHj4ZCTfAcGhUFiQMXuPx5xrF',
-      '1LaC3Xt8RZWYH1pjcvXxrWxLvXe7iR3ybe'
-    ]})
-  },
+  bitcoin: { tvl: sumTokensExport({ owners: bitcoinAddressBook.hopeMoney }) },
   ethereum: {
     tvl: sumTokensExport({
       tokensAndOwners: [

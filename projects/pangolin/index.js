@@ -46,14 +46,15 @@ module.exports = {
   },
   hedera: {
     tvl: async () => {
-       const block = await getCurrentBlock()
+      // const block = await getCurrentBlock()
+      // pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
       const data = await graphQuery('https://graph-hedera-pangolin.canary.exchange/subgraphs/name/pangolin', `{
-          pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
+          pangolinFactory(id: "1") {
           totalLiquidityUSD
           }
       }`)
-      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD) 
+      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
     }
   },
-  start: 1612715300, // 7th-Feb-2021
+  start: '2021-02-07', // 7th-Feb-2021
 };

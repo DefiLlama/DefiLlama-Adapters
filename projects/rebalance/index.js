@@ -13,14 +13,12 @@ const config = {
   ],
 };
 
-const abi =
-  'function getDepositBalance(address user, address vault) view returns (uint256 balance)';
+const abi = "function getDepositBalance(address user, address vault) view returns (uint256 balance)";
 
 module.exports = {
-  methodology:
-    'TVL displays the total amount of assets stored in the REBALANCE vault contracts.',
+  methodology: "TVL displays the total amount of assets stored in the REBALANCE vault contracts.",
   start: '2024-04-03',
-  hallmarks: [[1712143874, 'Profitable vaults deployment']],
+  hallmarks: [[1712143874, "Profitable vaults deployment"]],
 };
 
 Object.keys(config).forEach((chain) => {
@@ -29,16 +27,10 @@ Object.keys(config).forEach((chain) => {
 
 const tvl = async (api, vaults) => {
   const [providers, assets] = await Promise.all([
-    api.multiCall({ calls: vaults, abi: 'address:activeProvider' }),
-    api.multiCall({ calls: vaults, abi: 'address:asset' }),
+    api.multiCall({ calls: vaults, abi: "address:activeProvider" }),
+    api.multiCall({ calls: vaults, abi: "address:asset" }),
   ]);
 
-  const balances = await api.multiCall({
-    calls: vaults.map((vault, i) => ({
-      target: providers[i],
-      params: [vault, vault],
-    })),
-    abi,
-  });
-  api.add(assets, balances);
+  const balances = await api.multiCall({ calls: vaults.map((vault, i) => ({ target: providers[i], params: [vault, vault] })), abi })
+  api.add(assets, balances)
 };

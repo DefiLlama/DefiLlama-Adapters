@@ -1,6 +1,6 @@
 const { nullAddress } = require("../helper/tokenMapping");
 
-const LUMIN_V1_CONTRACT_ASSET_MANAGER = "0x61c6b185fafd2727ddeac6247e6770f5eadd823a"
+const LUMIN_V1_CONTRACT_ASSET_MANAGER = "0x7f9a5443c1938fCc7b5A0FffA94385CC867A9495"
 const LUMIN_V2_CONTRACT = "0x1F00009c0310A4804925695F44355dE5110EC074"
 
 const abi = {
@@ -29,6 +29,7 @@ async function borrowed(api) {
   tokens.forEach((token, i) => api.add(token, deposit[i][1]))
 }
 async function staking(api) {
+  return; // this is broken
   const stakingBalance = await api.call({
     abi: abi.v2.stakeStats,
     target: LUMIN_V2_CONTRACT,
@@ -41,7 +42,6 @@ async function staking(api) {
 
 module.exports = {
   methodology: 'Gets v1 total deposits, and v2 staking statistics on-chain.',
-  start: 194344665,
   arbitrum: {
     staking,
     tvl, borrowed,

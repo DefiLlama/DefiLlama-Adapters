@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+
 const handleError = require('./utils/handleError')
 const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
 process.on('unhandledRejection', handleError)
@@ -9,7 +10,7 @@ const path = require("path");
 require("dotenv").config();
 const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
-  blocks: { getCurrentBlocks },
+  blocks: { getBlocks },
   humanizeNumber: { humanizeNumber },
 } } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
@@ -26,9 +27,10 @@ const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
+process.env.SKIP_RPC_CHECK = 'true'
 
 
 async function getTvl(
@@ -101,25 +103,55 @@ sdk.api.abi.call = async (...args) => {
   }
 }
 
+function validateHallmarks(hallmark) {
+  if (!Array.isArray(hallmark)) {
+    throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
+  }
+  const [timestamp, text] = hallmark
+  if (typeof timestamp !== 'number' && isNaN(+new Date(timestamp))) {
+    throw new Error("Hallmark timestamp should be a number/dateString")
+  }
+  const year = new Date(timestamp * 1000).getFullYear()
+  const currentYear = new Date().getFullYear()
+  if (year < 2010 || year > currentYear) {
+    throw new Error("Hallmark timestamp should be between 2010 and " + currentYear + " but got " + year)
+  }
+
+  if (typeof text !== 'string') {
+    throw new Error("Hallmark text should be a string")
+  }
+}
+
 (async () => {
   let module = {};
-  try {
-    module = require(passedFile)
-  } catch (e) {
-    console.log(e)
+  module = require(passedFile)
+  if (module.hallmarks) {
+    if (!Array.isArray(module.hallmarks)) {
+      throw new Error("Hallmarks should be an array of arrays")
+    }
+    if (module.hallmarks.length > 6) {
+      console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+    }
+
+    module.hallmarks.forEach(validateHallmarks)
   }
-  await initCache()
+  // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
-  const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  // const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
-  const chainBlocks = {}
+
+  let unixTimestamp = Math.round(Date.now() / 1000) - 60;
+  let chainBlocks = {}
+  const passedTimestamp = process.argv[3]
+  if (passedTimestamp !== undefined) {
+    unixTimestamp = Number(passedTimestamp)
+    const res = await getBlocks(unixTimestamp, chains)
+    chainBlocks = res.chainBlocks
+  }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
-  const knownTokenPrices = {};
 
   let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
     if (typeof value !== "object" || value === null) {
@@ -138,6 +170,8 @@ sdk.api.abi.call = async (...args) => {
           storedKey = chain;
           tvlFunctionIsFetch = true;
         }
+        try {
+
         await getTvl(
           unixTimestamp,
           ethBlock,
@@ -149,6 +183,10 @@ sdk.api.abi.call = async (...args) => {
           tvlFunctionIsFetch,
           storedKey,
         );
+        } catch (e) {
+          console.error(`Error in ${storedKey}:`, e)
+          process.exit(1)
+        }
         let keyToAddChainBalances = tvlType;
         if (tvlType === "tvl" || tvlType === "fetch") {
           keyToAddChainBalances = "tvl";
@@ -200,11 +238,16 @@ sdk.api.abi.call = async (...args) => {
 
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
     console.log(`--- ${chain} ---`);
-    Object.entries(balances)
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([symbol, balance]) => {
-        console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
-      });
+    let entries = Object.entries(balances)
+    entries.sort((a, b) => b[1] - a[1])
+
+    if (entries.length > 30) {
+      console.log("Showing top 30 tokens, total tokens:", entries.length)
+      entries = entries.slice(0, 30)
+    }
+    entries.forEach(([symbol, balance]) => {
+      console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
+    });
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
   });
   console.log(`------ TVL ------`);
@@ -231,6 +274,7 @@ function checkExportKeys(module, filePath, chains) {
     || (filePath.length === 2 &&
       !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
         || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
+        || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
       )))
     process.exit(0)
 
@@ -352,10 +396,10 @@ async function computeTVL(balances, timestamp) {
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
 
+  const queries = buildPricesGetQueries(readKeys)
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 100))
-    .process(async (keys) => {
-      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
+    .for(queries).process(async (query) => {
+      tokenData.push((await axios.get(query)).data.coins)
     })
 
   if (errors && errors.length)
@@ -421,7 +465,23 @@ setTimeout(() => {
     process.exit(1);
 }, 10 * 60 * 1000) // 10 minutes
 
+function buildPricesGetQueries(readKeys) {
+  if (!readKeys.length) return []
+  const burl = 'https://coins.llama.fi/prices/current/'
+  const queries = []
+  let query = burl
 
+  for (const key of readKeys) {
+    if (query.length + key.length > 2000) {
+      queries.push(query.slice(0, -1))
+      query = burl
+    }
+    query += `${key},`
+  }
+
+  queries.push(query.slice(0, -1))
+  return queries
+}
 
 async function initCache() {
   let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
@@ -442,10 +502,10 @@ async function saveSdkInternalCache() {
 }
 
 async function preExit() {
-  try {
-    await saveSdkInternalCache() // save sdk cache to r2
-  } catch (e) {
-    if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
-      sdk.error(e)
-  }
+  // try {
+  //     await saveSdkInternalCache() // save sdk cache to r2
+  // } catch (e) {
+  //   if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+  //     sdk.error(e)
+  // }
 }
