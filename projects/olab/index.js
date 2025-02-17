@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
-const USDC_CONTRACT_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
-
+const ADDRESSES = require('../helper/coreAssets.json')
+const USDC_CONTRACT_BASE = ADDRESSES.base.USDC;
 const OLAB_METRICS_URL = 'https://api.olab.xyz/api/v2/statistics';
 
 async function tvl(api) {
