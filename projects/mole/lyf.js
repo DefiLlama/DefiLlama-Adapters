@@ -1,12 +1,15 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const BN = require("bn.js");
 const BigNumber = require("bignumber.js");
 const { coreTokens } = require("../helper/chain/aptos");
 const { getResources } = require("../helper/chain/aptos");
 const { getConfig } = require('../helper/cache')
-const { unwrapUniswapLPs, addUniV3LikePosition } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sui = require('../helper/chain/sui')
 const { transformBalances } = require("../helper/portedTokens");
+const { getObject } = require("../helper/chain/sui");
+const { i32BitsToNumber, getCoinAmountFromLiquidity, tickIndexToSqrtPriceX64 } = require("./utils")
 
 async function getProcolAddresses(chain) {
   // if (chain === 'avax') {
@@ -257,16 +260,27 @@ async function calLyfTvlSui(api) {
     }
   )
 
-  for (const workerInfo of workerInfos) {
-    const liquidity = workerInfo.fields.position_nft.fields.liquidity
-    const tickLower = workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits
-    const tickUpper = workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits
-    const poolId = workerInfo.fields.position_nft.fields.pool
-    const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
-    const tick = Math.floor(Math.log(currentSqrtPrice ** 2) / Math.log(1.0001));
-    const [token0, token1] = poolMap.get(poolId).type.replace('>', '').split('<')[1].split(', ')
-    addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick })
-  }
+  workerInfos.forEach(workerInfo => 
+    {
+      const liquidity = workerInfo.fields.position_nft.fields.liquidity
+      const tickLowerIndex = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits)
+      const tickUpperIndex = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits)
+      let poolId = workerInfo.fields.position_nft.fields.pool
+      // poolId = poolId.replace('0x0', '0x')
+      const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
+
+      const coinAmounts = getCoinAmountFromLiquidity(new BN(liquidity), new BN(currentSqrtPrice), tickIndexToSqrtPriceX64(tickLowerIndex), 
+          tickIndexToSqrtPriceX64(tickUpperIndex))
+
+      let coinAamount = coinAmounts.coinA
+      let coinBamount = coinAmounts.coinB
+      
+      const [coinA, coinB] = poolMap.get(poolId).type.replace('>', '').split('<')[1].split(', ')
+      api.add(coinA, coinAamount.toString())
+      api.add(coinB, coinBamount.toString())
+      
+    }
+  )
 
   // calculate the Vault TVL.
 
