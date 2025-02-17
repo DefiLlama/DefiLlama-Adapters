@@ -1,5 +1,4 @@
-// HEX contract address on PulseChain
-const token = '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39'
+const ADDRESSES = require('../helper/coreAssets.json')
 
 /*
 Example globalInfo response:
@@ -20,19 +19,18 @@ Example globalInfo response:
 ]
 */
 
-async function stakingPulse(api) {
-  const globalInfo = await api.call({ abi: "function globalInfo() view returns (uint256[13])", target: token, chain: 'pulse' })
-  return {
-    ['pulse:' + token]: (globalInfo[0].toString() / 1).toExponential()
-  }
+async function staking(api) {
+  const globalInfo = await api.call({ abi: "function globalInfo() view returns (uint256[13])", target: ADDRESSES.pulse.HEX })
+  api.add(ADDRESSES.pulse.HEX, globalInfo[0])
 }
 
 module.exports = {
   methodology: "TVL consists of HEX tokens staked in the protocol on PulseChain, plus liquidity in Uniswap V2 pools. The globalInfo function returns an array where the first element [0] represents the total amount of HEX tokens locked in stakes (lockedHeartsTotal).",
   pulse: {
-    staking: stakingPulse,
-    tvl: async (api) => ({
-      ["pulse:" + token]: (await api.call({ target: token, abi: "uint256:totalSupply", chain: 'pulse' }))
-    })
+    staking,
+  },
+  ethereum: {
+    tvl: () => ({}),
+    staking,
   }
-}; // node test.js projects/hex/index.js
+}
