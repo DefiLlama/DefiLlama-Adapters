@@ -1,4 +1,3 @@
-const { sumERC4626VaultsExport } = require('../helper/erc4626');
 const config = {
   arbitrum: [
     '0x2469c01daf31b68603Bd57E2FFf75E548223EA17', // rUSDT
@@ -10,15 +9,32 @@ const config = {
   ],
 };
 
+const abi =
+  'function getDepositBalance(address user, address vault) view returns (uint256 balance)';
+
 module.exports = {
   methodology:
     'TVL displays the total amount of assets stored in the REBALANCE vault contracts.',
-  start: 1712143874,
+  start: '2024-04-03',
   hallmarks: [[1712143874, 'Profitable vaults deployment']],
 };
 
 Object.keys(config).forEach((chain) => {
-  module.exports[chain] = {
-    tvl: sumERC4626VaultsExport({ vaults: config[chain], isOG4626: true }),
-  };
+  module.exports[chain] = { tvl: (api) => tvl(api, config[chain]) };
 });
+
+const tvl = async (api, vaults) => {
+  const [providers, assets] = await Promise.all([
+    api.multiCall({ calls: vaults, abi: 'address:activeProvider' }),
+    api.multiCall({ calls: vaults, abi: 'address:asset' }),
+  ]);
+
+  const balances = await api.multiCall({
+    calls: vaults.map((vault, i) => ({
+      target: providers[i],
+      params: [vault, vault],
+    })),
+    abi,
+  });
+  api.add(assets, balances);
+};
