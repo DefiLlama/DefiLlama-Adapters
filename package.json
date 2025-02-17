@@ -34,7 +34,6 @@
     "blakejs": "^1.2.1",
     "bn.js": "^5.2.1",
     "borsh": "^0.7.0",
-    "buffer-layout": "^1.2.2",
     "curve25519-js": "^0.0.4",
     "dotenv": "^8.6.0",
     "ethers": "^6.0.0",
