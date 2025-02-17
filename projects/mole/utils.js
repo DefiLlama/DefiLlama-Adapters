@@ -1,6 +1,7 @@
 
 const BigNumber = require("bignumber.js");
 const import_bn6 = require("bn.js");
+const BN = require("bn.js");
 
 function asIntN(int, bits = 32) {
     return Number(BigInt.asIntN(bits, BigInt(int)));
@@ -199,9 +200,23 @@ function getCoinAmountFromLiquidity(liquidity, curSqrtPrice, lowerPrice, upperPr
     };
   }
 
+function addUniV3LikePositionBN({ api, token0, token1, liquidity, tickLower, tickUpper, currentSqrtPrice }) {
+  const tickLowerIndex = i32BitsToNumber(tickLower)
+  const tickUpperIndex = i32BitsToNumber(tickUpper)
+
+  const coinAmounts = getCoinAmountFromLiquidity(new BN(liquidity), new BN(currentSqrtPrice), tickIndexToSqrtPriceX64(tickLowerIndex), tickIndexToSqrtPriceX64(tickUpperIndex))
+
+  let coinAamount = coinAmounts.coinA
+  let coinBamount = coinAmounts.coinB
+
+  api.add(token0, coinAamount.toString())
+  api.add(token1, coinBamount.toString())
+}
+
 module.exports = {
     asIntN,
     i32BitsToNumber,
     getCoinAmountFromLiquidity,
     tickIndexToSqrtPriceX64,
+    addUniV3LikePositionBN,
 }
