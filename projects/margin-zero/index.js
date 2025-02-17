@@ -8,24 +8,33 @@ const chainConfigs =
   },
 }
 
-const LiquidityRangesQuery = `{ liquidityRanges(where: { liquidity_gt: "100" }) { pool hook liquidity tickLower tickUpper }}`
+const LiquidityRangesQuery = (first, skip) => `{ liquidityRanges(first: ${first} skip: ${skip} where: { liquidity_gt: "100" }) { pool hook liquidity tickLower tickUpper }}`
 
 const slot0Abi =
   "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
 
 async function tvl(api) {
   const config = chainConfigs[api.chain]
+  let liquidityRanges = [];
+  let page = 0;
+  while (true) {
+    const _liquidityRanges = await cachedGraphQuery('marign-zero/tvl', config.subgraphUrl, LiquidityRangesQuery(1000, page * 1000), {
+      api,
+      fetchById: true,
+      useBlock: true,
+    })
 
-  const liquidityRanges = await cachedGraphQuery('marign-zero/tvl', config.subgraphUrl, LiquidityRangesQuery, {
-    api,
-    fetchById: true,
-    useBlock: true,
-  })
+    liquidityRanges = liquidityRanges.concat(_liquidityRanges)
+    page++;
 
-  let poolsDataMap = {}
+    if (_liquidityRanges && _liquidityRanges.length < 1000) {
+      break;
+    }
+  }
+
   const pools = Array.from(new Set(liquidityRanges.map(({ pool }) => pool.toLowerCase())))
   const poolIndexMap = {}
-  pools.forEach((pool, index) =>     poolIndexMap[pool] = index)
+  pools.forEach((pool, index) => poolIndexMap[pool] = index)
   const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
   const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
   const slots = await api.multiCall({ abi: slot0Abi, calls: pools })
