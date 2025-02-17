@@ -93,6 +93,8 @@ const jbtc = require('./jbtc')
 const bitkub = require('./bitkub-cex.js')
 const coin8 = require('./coin8.js')
 const bitrue = require('./bitrue-cex.js')
+const cygnus = require('./cygnus.js')
+const unitbtc = require('./unit-btc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -123,6 +125,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
+  cygnus,
   magpie,
   stacksSBTC,
   bitomato,
@@ -222,5 +225,6 @@ module.exports = {
   jbtc,
   bitkub,
   coin8,
-  bitrue
+  bitrue,
+  unitbtc
 }
