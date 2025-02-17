@@ -1,18 +1,23 @@
+const { get } = require('../helper/http')
+
 const USDC_CONTRACT_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
-const CONDITIONAL_TOKENS_CONTRACT_BASE = '0x34AA5631BdAD51583845e5e82e2CAf6cE63bA64D';
+
+const OLAB_METRICS_URL = 'https://api.olab.xyz/api/v2/statistics';
 
 async function tvl(api) {
-  const collateralBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: USDC_CONTRACT_BASE,
-    params: [CONDITIONAL_TOKENS_CONTRACT_BASE],
-  });
-
-  api.add(USDC_CONTRACT_BASE, collateralBalance)
+  const options = {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
+    }
+  };
+  const data = await get(OLAB_METRICS_URL, options);
+  const {result: {totalDeposit}} = data;
+  const tvl = totalDeposit*10**6;
+  api.add(USDC_CONTRACT_BASE, tvl)
 }
 
 module.exports = {
-  methodology: 'TVL (Total Value Locked) refers to the total amount of USDC held in the Conditional Token smart contract, along with the USDC collateral provided to all O.LAB Prediction markets ever created.',
+  methodology: 'TVL (Total Value Locked) refers to the total amount of USDC held in the platform',
   start: 23899060,
   base: {
     tvl,
