@@ -1,4 +1,4 @@
-const router = '0x2f52C3664Ff2b12A1A8Bc7B6020C7E92DBa781aE'
+const collateralVault = '0x5dafc0eE88997a2A2Aa4b8e9c4411fab82FE2B16'
 const ZTLN = '0xfEd3D6557Dc46A1B25d0A6F666513Cb33835864B'
 
 const abi = {
@@ -6,7 +6,7 @@ const abi = {
 }
 
 const tvl = async (api) => {
-	const activeVaults = await api.call({ target: router, abi: abi.getAllSubVaults })
+	const activeVaults = await api.call({ target: collateralVault, abi: abi.getAllSubVaults })
 
 	const tokensAndOwners = activeVaults.details.map((vault) => {
 		const { collateralAddress, subVaultAddress} = vault
