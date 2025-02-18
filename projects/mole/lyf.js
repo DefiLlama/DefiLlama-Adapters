@@ -264,7 +264,7 @@ async function calLyfTvlSui(api) {
     const poolId = workerInfo.fields.position_nft.fields.pool
     const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
     // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
-    const tick = Math.floor(Math.log((currentSqrtPrice / 2 ** 64) ** 2) / Math.log(1.0001))
+    const tick = Math.floor(Math.log(currentSqrtPrice ** 2) / Math.log(1.0001));
     const [token0, token1] = poolMap.get(poolId).type.replace('>', '').split('<')[1].split(', ')
     addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick })
   }
