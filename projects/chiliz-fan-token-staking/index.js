@@ -1,7 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { getTokenPrices } = require("../helper/unknownTokens")
 const ADDRESSES = require('../helper/coreAssets.json')
-const ts = require('typescript')
 
 const STAKING_CONTRACT = '0x5ff7f9724fd477d9a07dcdb894d0ca7f8fae1501'
 const KAYEN_ROUTER = '0xE2918AA38088878546c1A18F2F9b1BC83297fdD3'
