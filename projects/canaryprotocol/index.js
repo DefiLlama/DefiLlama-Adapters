@@ -7,7 +7,8 @@ async function tvl(api) {
       target: vault.token.address,
       params: [vault.address],
     });
-    // TODO do we need to do anything with decimals?
+    // TODO remove debug line
+    console.log(vault.name, collateralBalance)
 
     api.add(vault.token.address, collateralBalance)
   }

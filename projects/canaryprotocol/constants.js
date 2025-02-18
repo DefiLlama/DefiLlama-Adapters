@@ -13,18 +13,18 @@ const TOKENS = {
   },
 };
 
+// TODO update vaults
+
 const VAULTS = [
   {
-    name: "USDC Basis (Perps Basket)",
-    address: "4cvgasNfbJ36yeMVJSkscgL2Yco9dFGdj52Wrg91fmHv",
-    token: TOKENS.USDC,
-    dataUrl: `${DATA_URL}/btcethfunding.json`
+    name: "Nest RWA",
+    address: "0xc6580Fef7a21970625c2cCb03b45a86c9CBb8EBC",
+    token: TOKENS.nRWA,
   },
   {
-    name: "BTC Super Staking",
-    address: "BVddkVtFJLCihbVrtLo8e3iEd9NftuLunaznAxFFW8vf",
-    token: TOKENS.WBTC,
-    dataUrl: `${DATA_URL}/btcjlpnl.json`
+    name: "Nest YIELD",
+    address: "0x27162A82576880048DAD8697814E1F75FE665AD5",
+    token: TOKENS.nYIELD,
   },
 ];
 
