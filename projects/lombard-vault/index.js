@@ -23,4 +23,7 @@ module.exports = {
       onlyWhitelisted: false,
     }, resolveUniV3: true,}),
   },
+  sonic: {
+    tvl: sumTokensExport({ owners: ['0x309f25d839A2fe225E80210e110C99150Db98AAF'], tokens: ['0xecAc9C5F704e954931349Da37F60E39f515c11c1']}),
+  },
 };
