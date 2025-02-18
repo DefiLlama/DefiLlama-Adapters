@@ -7,7 +7,7 @@ const STAKING_ADDRESS = "0x00000000000000000000000000000000005c9f30";
 const HLQT_ADDRESS = "0x00000000000000000000000000000000005c9f70"
 
 module.exports = {
-  start: '2024-06-05',  //start date when protocol went live
+  start: '2024-06-05',  //start date; when protocol went live
   methodology: 'Total deposits of HBAR for borrowed HCHF',
   hedera: {
     tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS),
