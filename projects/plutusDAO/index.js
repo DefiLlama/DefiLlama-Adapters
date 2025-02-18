@@ -5,6 +5,8 @@ const plutusToken = "0x51318B7D00db7ACc4026C88c3952B66278B6A67F";
 
 const SYK = "0xacc51ffdef63fb0c014c882267c3a17261a5ed50";
 const plsSYK = "0x68d6d2545f14751baf36c417c2cc7cdf8da8a15b";
+const DPX = '0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55'
+const plsDPX = '0xF236ea74B515eF96a9898F5a4ed4Aa591f253Ce1'
 const SPA = '0x5575552988a3a80504bbaeb1311674fcfd40ad4b'
 const plsSpa = "0x0D111e482146fE9aC9cA3A65D92E65610BBC1Ba6";
 const GRAIL = "0x3d9907f9a368ad0a51be60f7da3b97cf940982d8"
@@ -25,8 +27,8 @@ async function tvl(api) {
     api.add(GRAIL, grailBal)
   }
 
-  const plsTokens = [plsSpa, plsSYK]
-  const uTokens = [SPA, SYK]
+  const plsTokens = [plsSpa, plsSYK, plsDPX]
+  const uTokens = [SPA, SYK, DPX]
 
   const tokenSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: plsTokens, permitFailure: true, })
 
