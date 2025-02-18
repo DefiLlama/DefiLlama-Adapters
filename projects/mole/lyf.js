@@ -7,6 +7,7 @@ const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs, addUniV3LikePosition } = require("../helper/unwrapLPs");
 const sui = require('../helper/chain/sui')
 const { transformBalances } = require("../helper/portedTokens");
+const { i32BitsToNumber } = require("../helper/utils/tick");
 
 async function getProcolAddresses(chain) {
   // if (chain === 'avax') {
@@ -259,11 +260,12 @@ async function calLyfTvlSui(api) {
 
   for (const workerInfo of workerInfos) {
     const liquidity = workerInfo.fields.position_nft.fields.liquidity
-    const tickLower = workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits
-    const tickUpper = workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits
+    const tickLower = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits)
+    const tickUpper = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits)
     const poolId = workerInfo.fields.position_nft.fields.pool
     const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
-    const tick = Math.floor(Math.log(currentSqrtPrice ** 2) / Math.log(1.0001));
+    // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
+    const tick =  Math.floor(Math.log((currentSqrtPrice / 2 ** 64) ** 2) / Math.log(1.0001))
     const [token0, token1] = poolMap.get(poolId).type.replace('>', '').split('<')[1].split(', ')
     addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick })
   }
