@@ -18,6 +18,7 @@ function customCacheFunction({ cache, logs }) {
 
 module.exports = {
   getExport: (STAKING_CONTRACT, fromBlock = 20248272) => ({
+    misrepresentedTokens: true,
     chz: {
       tvl: () => ({}), staking: async (api) => {
         const KayenPairs = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: '0xE2918AA38088878546c1A18F2F9b1BC83297fdD3' })
