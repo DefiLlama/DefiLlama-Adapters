@@ -91,7 +91,9 @@ async function tvl(api) {
     // Getting the tvl for each token
     const tokensTvl = await Promise.all(distinctTokens.map(async token => {
         const lp = lpMap[token]
-
+        if (!lp) {
+          return 0
+        }
         const [stakedTvl, tokenPrice] = await Promise.all([
             api.call({
                 abi: GET_TOTAL_STAKE_ABI,
