@@ -896,7 +896,6 @@ function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickU
   } else {
     amount1 = liquidity * (sb - sa)
   }
-  // console.log(({ token0, token1, amount0, amount1, liquidity, tickLower, tickUpper, tick, sa, sb }))
 
   api.add(token0, amount0)
   api.add(token1, amount1)

@@ -1,5 +1,4 @@
 
-const BigNumber = require("bignumber.js");
 const import_bn6 = require("bn.js");
 
 
@@ -159,6 +158,16 @@ function tickIndexToSqrtPriceX64(tickIndex) {
   return new import_bn6(tickIndexToSqrtPriceNegative(tickIndex));
 }
 
+
+function asIntN(int, bits = 32) {
+  return Number(BigInt.asIntN(bits, BigInt(int)));
+}
+
+function i32BitsToNumber(v) {
+  return asIntN(BigInt(v), 32);
+}
+
 module.exports = {
   tickToPrice,
+  i32BitsToNumber,
 }
