@@ -36,7 +36,6 @@ async function tvl(api) {
             target: STAKING_CONTRACT,
             eventAbi: STAKE_EVENT,
             onlyArgs: true,
-            skipCache: true,
             fromBlock: 20248272,
         }),
         getLogs({
@@ -44,7 +43,6 @@ async function tvl(api) {
             target: KAYEN_ROUTER,
             eventAbi: PAIR_CREATED_EVENT,
             onlyArgs: true,
-            skipCache: true,
             fromBlock: 12098248,
         }),
         getLogs({
@@ -52,7 +50,6 @@ async function tvl(api) {
             target: KAYER_WRAPPER_FACTORY,
             eventAbi: WRAPPED_TOKEN_CREATED_EVENT,
             onlyArgs: true,
-            skipCache: true,
             fromBlock: 12039720,
         })
     ])
