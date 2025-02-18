@@ -94,16 +94,14 @@ module.exports = {
       tokens: [nullAddress,]
     })
   },
-  //},
-  //binance: {
-  //  tvl: sumTokensExport({
-  //    owners: [
-  //      '0x4f68032EBe64b353a22FE1d9B7A6Af43Dd38bacB',  //  Binance Hot Wallet
-  //      '0x5f64a7a5fdaa1cf64e4507e7ca5be164e59efbbf',  //  Binance Cold Wallet
-  //    ],
-  //    tokens: [nullAddress,]
-  //  })
-  //},
-// Adding Binance addresses, not sure of the format so I left it commented out.
+  bsc: {
+    tvl: sumTokensExport({
+      owners: [
+        '0x4f68032EBe64b353a22FE1d9B7A6Af43Dd38bacB',  //  Binance Hot Wallet
+        '0x5f64a7a5FDAA1CF64e4507E7cA5Be164E59EfBbF',  //  Binance Cold Wallet
+      ],
+      tokens: [nullAddress,]
+    })
+  },
 };
 
