@@ -60,7 +60,7 @@ module.exports = {
   },
   cronos: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_CRONOS, PWN_V1_1_SIMPLE_LOAN_B, PWN_V1_3_SIMPLE_LOAN], fetchCoValentTokens: true, tokenConfig: { useCovalent: true, },
+      owners: [PWN_BUNDLER_CRONOS, PWN_V1_1_SIMPLE_LOAN_B, PWN_V1_3_SIMPLE_LOAN], fetchCoValentTokens: true, tokenConfig: { ignoreMissingChain: true, },
     }),
   },
   base: {
@@ -95,12 +95,12 @@ module.exports = {
   },
   unichain: {
     tvl: sumTokensExport({
-      owners: [PWN_V1_3_SIMPLE_LOAN_UNICHAIN, PWN_BUNDLER_UNICHAIN], fetchCoValentTokens: true,
+      owners: [PWN_V1_3_SIMPLE_LOAN_UNICHAIN, PWN_BUNDLER_UNICHAIN], fetchCoValentTokens: true, tokenConfig: { ignoreMissingChain: true, }
     }),
   },
   wc: {
     tvl: sumTokensExport({
-      owners: [PWN_V1_3_SIMPLE_LOAN, PWN_BUNDLER_WORLD], fetchCoValentTokens: true,
+      owners: [PWN_V1_3_SIMPLE_LOAN, PWN_BUNDLER_WORLD], fetchCoValentTokens: true, tokenConfig: { ignoreMissingChain: true, }
     }),
   },
   mantle: { tvl: () => ({}) },
