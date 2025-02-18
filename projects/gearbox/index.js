@@ -168,7 +168,7 @@ const getV3Data = async (api, type) => {
   const poolV3Datas = await api.call({ target: dc300, abi: v3Abis.getPoolsV3List });
 
   poolV3Datas.forEach(({ totalAssets, totalBorrowed, underlying }) => {
-    const balance = type === 'supplied' ? totalAssets : totalBorrowed;
+    const balance = type === 'supplied' ? totalAssets - totalBorrowed : totalBorrowed;
     api.add(underlying, balance);
   });
 };
