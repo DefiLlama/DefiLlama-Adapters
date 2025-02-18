@@ -1,91 +1,82 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const { sumTokens2 } = require("../helper/unwrapLPs")
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const infoAbi = require("./agreementAbi.json");
-const config = require("./config.json");
+const native = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
+const factories = {
+  agreement: "0xEA623eebd9c5bFd56067e36C89Db0C13e6c70ba8",
+  marginAccount: "0xbbC9c04348E093473C5b176Cb4b103fF706528bf"
+}
 
-/**
- * Fetches logs from a factory contract on a specified blockchain.
- *
- * @param {Object} api - The API instance to interact with the blockchain.
- * @param {string} chain - The name of the blockchain to fetch logs from.
- * @param {string} factoryType - The type of factory to fetch logs for. Can be "agreement" or "account".
- * @returns {Promise<Array<string>>} - A promise that resolves to an array of log addresses.
- */
-async function fetchFactoryLogs(api, chain, factoryType) {
-  const topic = factoryType === "agreement" ? "AgreementCreated(address)" : "AccountDeployed(address)";
-  const eventAbi = factoryType === "agreement" ? "event AgreementCreated(address agreement)" : "event AccountDeployed(address indexed account)";
+const topics = {
+  agreementCreated: "AgreementCreated(address)",
+  accountDeployed: "AccountDeployed(address)"
+}
 
-  const logs = await getLogs({
-    api: api,
-    target: config.chains[chain].factory[factoryType],
-    topic: topic,
-    eventAbi: eventAbi,
-    onlyArgs: true,
-    fromBlock: config.chains[chain].startBlock,
-  });
+const eventAbis = {
+  agreementCreated: "event AgreementCreated(address agreement)",
+  accountDeployed: "event AccountDeployed(address indexed account)"
+}
 
+const abis = {
+  info: "function info() view returns (tuple(address leverage, uint32 apy, uint256 totalDepositThreshold, address[] collaterals, address[] lenders, address[] borrowers) metadata, tuple(address[] tokens, address[] operators) whitelist)",
+  totalBorrowed: "function totalBorrowed() returns (uint256)",
+}
+
+const fetchFactoryLogs = async (api, type) => {
+  const fromBlock = 21069508;
+  const topic = type === "agreement" ? topics.agreementCreated : topics.accountDeployed;
+  const eventAbi = type === "agreement" ? eventAbis.agreementCreated : eventAbis.accountDeployed;
+  const logs = await getLogs({ api, extraKey: type, target: factories[type], topic, eventAbi, onlyArgs: true, fromBlock });
   return logs.map((log) => log[0]);
 }
 
-
-/**
- * Fetch unique tokens array (leverage, collaterals, whitelisted tokens) from agreements.
- * @param {object} api - The API object for blockchain interaction.
- * @param {string} chain - The name of the blockchain to fetch logs from.
- * @param {string[]} agreementAddresses - An array of agreement addresses.
- * @returns {Promise<string[]>} - An array of unique token addresses.
- */
-async function getTokens(api, chain, agreementAddresses) {
+const getTokens = async (api, agreementAddresses) => {
   const tokenSet = new Set();
+  const rawInfos = await api.multiCall({ calls: agreementAddresses, abi: abis.info });
+  const infos = rawInfos.filter(({ metadata }) => metadata.leverage !== ADDRESSES.null);
 
-  const results = await api.multiCall({
-    abi: infoAbi,
-    calls: agreementAddresses,
+  infos.forEach(({ metadata, whitelist }, i) => {
+    tokenSet.add(metadata.leverage);
+    metadata.collaterals.forEach(token => tokenSet.add(token));
+    whitelist.tokens.forEach(token => tokenSet.add(token));
   });
-  
-  results.forEach((result, i) => {
-    if (result.metadata.leverage === config.zeroAddress) {
-      console.warn(`Skipping Agreement ${agreementAddresses[i]} - No valid leverage found`);
-      return;
-    }
-    tokenSet.add(result.metadata.leverage);
-    result.metadata.collaterals.forEach((collateral) => tokenSet.add(collateral));
-    result.whitelist.tokens.forEach((token) => tokenSet.add(token));
-  });
-  
-  if(tokenSet.has(config.chains[chain].nativeToken)) {
-    tokenSet.delete(config.chains[chain].nativeToken);
-    tokenSet.add(config.zeroAddress)
+
+  if (tokenSet.has(native)) {
+    tokenSet.delete(native);
+    tokenSet.add(ADDRESSES.null);
   }
 
   return Array.from(tokenSet);
 }
 
 
+const tvl = async (api) => {
+  const [agreements, marginAccounts] = await Promise.all([
+    fetchFactoryLogs(api, "agreement"),
+    fetchFactoryLogs(api, "marginAccount")
+  ])
+
+  const tokens = await getTokens(api, agreements);
+  const owners = [...agreements, ...marginAccounts]
+  return sumTokens2({ api, owners, tokens, resolveLP: true, unwrapAll: true });
+}
+
+const borrowed = async (api) => {
+  const agreements = await fetchFactoryLogs(api, "agreement");
+  const [infos, totalBorrowed] = await Promise.all([
+    api.multiCall({ calls: agreements, abi: abis.info }),
+    api.multiCall({ calls: agreements, abi: abis.totalBorrowed })
+  ])
+
+  infos.forEach(({ metadata }, i) => {
+    if (metadata.leverage === ADDRESSES.null) return;
+    api.add(metadata.leverage, totalBorrowed[i]) 
+  })
+}
+
 module.exports = {
-  methodology:
-    "TVL is calculated by summing the balances of leverage assets, collaterals, and whitelisted tokens held in agreements and margin accounts deployed by factory contracts. Native tokens and LP tokens are also included.",
-};
-
-Object.keys(config.chains).forEach(chain => {
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const agreements = await fetchFactoryLogs(
-        api,
-        chain,
-        "agreement"
-      );
-      const marginAccounts = await fetchFactoryLogs(
-        api,
-        chain,
-        "marginAccount"
-      );
-      const owners = [...agreements, ...marginAccounts];
-      const tokens = await getTokens(api, chain, agreements);
-
-      return sumTokens2({api, chain, owners, tokens, resolveLP: true, unwrapAll: true});
-    }
-  }
-})
+  methodology: "TVL is calculated by summing the balances of leverage assets, collaterals, and whitelisted tokens held in agreements and margin accounts deployed by factory contracts. Native tokens and LP tokens are also included.",
+  ethereum : { tvl, borrowed }
+}
