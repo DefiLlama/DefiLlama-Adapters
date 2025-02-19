@@ -4,7 +4,7 @@ const { nullAddress } = require("../helper/tokenMapping")
 const sdk = require('@defillama/sdk')
 const { sliceIntoChunks, sleep } = require("../helper/utils")
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const factory = '0xcE393b11872EE5020828e443f6Ec9DE58CD8b6c5'
   const logs = await getLogs({
     api,

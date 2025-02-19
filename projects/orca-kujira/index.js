@@ -2,7 +2,7 @@ const { sumTokens } = require("../helper/chain/cosmos");
 const { getConfig } = require("../helper/cache");
 const { queryContract, queryV1Beta1 } = require("../helper/chain/cosmos");
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const contracts = await getConfig(
     "kujira/contracts",
     "https://raw.githubusercontent.com/Team-Kujira/kujira.js/master/src/resources/contracts.json"

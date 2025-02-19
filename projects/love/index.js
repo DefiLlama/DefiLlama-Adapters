@@ -2,7 +2,6 @@
 module.exports = {
   methodology:
     "The liquidity on these three pools + the tokens staked on all three chains (PulseChain, Ethereum, and Binance Smart Chain)",
-  start: 1000235,
 };
 
 const config = {
@@ -15,7 +14,7 @@ Object.keys(config).forEach(chain => {
   const { staking} = config[chain]
   module.exports[chain] = {
     tvl: () => ({}),
-    staking: async (_, _b, _cb, { api, }) => {
+    staking: async (api) => {
       const stakingToken = await api.call({  abi: 'address:stakingToken', target: staking})
       return api.sumTokens({ owner: staking, tokens: [stakingToken]})
     }

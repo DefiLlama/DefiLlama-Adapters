@@ -3,7 +3,7 @@ const { sumUnknownTokens } = require('../helper/unknownTokens');
 const GENESIS_REWARD_POOL = "0x4F4014EC1685699290A311E0A159E1E39914853F";
 const poolInfoAbi = "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 lastRewardTime, uint256 accBasedPerShare, bool isStarted)";
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const tokens = []
   let gotError = false
   let i = 0
@@ -19,7 +19,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return api.sumTokens({ owner: GENESIS_REWARD_POOL, tokens })
 }
 
-async function pool2(timestamp, ethBlock, chainBlocks, { api }) {
+async function pool2(api) {
   const pools = [
     { // BasedRewardPool
       'pool2Address': '0x5F45e48F9C053286cE9Ca08Db897f8b7eb3f7992',

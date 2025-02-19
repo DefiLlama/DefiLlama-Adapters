@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
 const abiV3 = require("./abiV3.json");
 const abiNew = require("./abiNew.json");
@@ -5,14 +6,14 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 
 // liquidity pools
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const poolInfo1 = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: '0x0ac58Fd25f334975b1B61732CF79564b6200A933' })
   const poolInfo2 = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: '0xB87F7016585510505478D1d160BDf76c1f41b53d' })
   const poolInfo3 = await api.fetchList({ lengthAbi: abiNew.poolLength, itemAbi: abiNew.poolInfo, target: '0x9EBce8B8d535247b2a0dfC0494Bc8aeEd7640cF9' })
   const poolInfo4 = await api.fetchList({ lengthAbi: abiV3.poolLength, itemAbi: abiV3.poolInfo, target: '0x405960AEAad7Ec8B419DEdb511dfe9D112dFc22d' })
   let allPoolInfos = poolInfo1.concat(poolInfo2).concat(poolInfo3).concat(poolInfo4);
 
-  allPoolInfos = allPoolInfos.filter(el => el.want.toLowerCase() !== "0xC9440dEb2a607A6f6a744a9d142b16eD824A1A3b".toLowerCase() && el.strat.toLowerCase() !== "0x0000000000000000000000000000000000000000".toLowerCase())
+  allPoolInfos = allPoolInfos.filter(el => el.want.toLowerCase() !== "0xC9440dEb2a607A6f6a744a9d142b16eD824A1A3b".toLowerCase() && el.strat.toLowerCase() !== ADDRESSES.null.toLowerCase())
   const tokens = allPoolInfos.map(i => i.want)
   const bals = (await api.multiCall({ abi: abi.wantLockedTotal, calls: allPoolInfos.map(i => i.strat), permitFailure: true })).map(i => i ?? 0)
   const _totalAmounts = await api.multiCall({ abi: abiV3.getTotalAmounts, calls: tokens, permitFailure: true })

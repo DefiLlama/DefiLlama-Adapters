@@ -12,7 +12,7 @@ let output = {};
 
 Object.keys(chains).map((chain) => {
   output[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let res = await getConfig('optmism-bridge', "https://static.optimism.io/optimism.tokenlist.json");
       const tokenData = res.tokens.filter(
         (t) => t.chainId == chains[chain]

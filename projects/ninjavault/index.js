@@ -1,7 +1,7 @@
 const { queryContract } = require('../helper/chain/cosmos')
 const sdk = require('@defillama/sdk')
 
-async function staking(_, _2, _1, { api }) {
+async function staking(api) {
   const res = await queryContract({ chain: api.chain, contract: "inj102zs4nvdq4lyztqntp4l7nsvvqkpcvec4eeryw", data: { balance: {} }})
   const balances = {}
   sdk.util.sumSingleBalance(balances,'coingecko:dojo-token', res/1e18);

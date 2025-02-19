@@ -29,7 +29,7 @@ const CURVE_CONTRACTS = [{  // pBTCsBTC curve
   token: '0xDE5331AC4B3630f94853Ff322B66407e0D6331E8',
 }]
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const toa = Object.values(UNI_CONTRACTS).map(({ uniPair, address }) => ([uniPair, address]))
   CURVE_CONTRACTS.forEach(i => toa.push([i.token, i.address]))
   return sumTokens2({ api, tokensAndOwners: toa})}

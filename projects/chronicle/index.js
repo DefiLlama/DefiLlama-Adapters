@@ -9,8 +9,8 @@ module.exports = {
   misrepresentedTokens: true,
   aurora: {
     tvl: (async) => ({}),
-    staking: staking(farmContract, XNL, "aurora"),
-    pool2: pool2(farmContract, XNL_AURORA_TriLP, "aurora"),
+    staking: staking(farmContract, XNL),
+    pool2: pool2(farmContract, XNL_AURORA_TriLP),
   },
   methodology: "Counts liquidty on the staking and pool2 only",
 };

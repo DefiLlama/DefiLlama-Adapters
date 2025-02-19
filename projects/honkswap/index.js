@@ -10,6 +10,6 @@ module.exports = {
   methodology:
     "Factory address (0x34D7ffF45108De08Ca9744aCdf2e8C50AAC1C73C) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
   smartbch: {
-    tvl: getUniTVL({ factory: FACTORY, chain: 'smartbch', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true }),
   }
 }

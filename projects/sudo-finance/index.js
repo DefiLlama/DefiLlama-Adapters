@@ -3,7 +3,7 @@ const sui = require("../helper/chain/sui");
 const LIQUIDITY_POOL_VAULT =
   "0x5e288c9acbb8746bb22f5d5c3af5e0ba6a7bf04fb276772c1035004f6ca98f37";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const depositVaultFields = await sui.getDynamicFieldObjects({
     parent: LIQUIDITY_POOL_VAULT,
   });

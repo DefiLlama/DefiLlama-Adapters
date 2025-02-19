@@ -111,9 +111,9 @@ function yieldHelper({
   return {
     misrepresentedTokens: useDefaultCoreAssets,
     [chain]: {
-      tvl: async (_, _b, _cb, { api }) => (await getAllTVL(api)).tvl,
-      pool2: async (_, _b, _cb, { api }) => (await getAllTVL(api)).pool2,
-      staking: async (_, _b, _cb, { api }) => (await getAllTVL(api)).staking,
+      tvl: async (api) => (await getAllTVL(api)).tvl,
+      pool2: async (api) => (await getAllTVL(api)).pool2,
+      staking: async (api) => (await getAllTVL(api)).staking,
     }
   }
 }

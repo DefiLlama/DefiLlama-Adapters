@@ -16,8 +16,15 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
+
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
+  'celestia', 'dydx', 'carbon', 'milkyway',
+
+]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
+]
 
 const transformTokens = {
   // Sample Code
@@ -38,40 +45,18 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  bitcoin: {
-    BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
-    MUBI: { coingeckoId: 'multibit', decimals: 0 },
-    rats: { coingeckoId: 'rats', decimals: 0 },
-    BTCs: { coingeckoId: 'btcs', decimals: 0 },
-    MMSS: { coingeckoId: 'mmss', decimals: 0 },
-    AINN: { coingeckoId: 'artificial-neural-network-ordinals', decimals: 0 },
+  chz: {
+    '0x60f397acbcfb8f4e3234c659a3e10867e6fa6b67': { coingeckoId: 'pepper', decimals: 18 },
   },
-  btn: {
-    '0x8148b71232162ea7a0b1c8bfe2b8f023934bfb58': { coingeckoId: 'bitnet', decimals: 18 },
+  flow: {
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 }, 
+    '0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed': { coingeckoId: "flow-bridged-pyusd-flow", decimals: 6 }, 
   },
-  omax: { 
-    '0x373e4b4E4D328927bc398A9B50e0082C6f91B7bb': { coingeckoId: 'omax-token', decimals: 18 },
-  },
-  kujira: {
-    'factory:kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t:ufuzn': { coingeckoId: 'fuzion', decimals: 6 },
-  },
-  astar: {
-    '0xffffffff00000000000000010000000000000010': { coingeckoId: 'astar', decimals:18  },
-  },
-  moonriver: {
-    '0xffffffff98e37bf6a393504b5adc5b53b4d0ba11': { coingeckoId: 'moonriver', decimals: 18  },
-    '0xffffffff3646a00f78cadf8883c5a2791bfcddc4': { coingeckoId: 'bifrost-native-coin', decimals: 12  },
-    '0xffffffffc6deec7fc8b11a2c8dde9a59f8c62efe': { coingeckoId: 'kusama', decimals: 12  },
-  },
-  moonbeam: {
-    '0xffffffff99dabe1a8de0ea22baa6fd48fde96f6c': { coingeckoId: 'voucher-glmr', decimals: 18  },
-    '0xffffffffcd0ad0ea6576b7b285295c85e94cf4c1': { coingeckoId: 'filecoin', decimals: 18  },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
-function getUniqueAddresses(addresses, chain) {
+function getUniqueAddresses(addresses, chain = 'ethereum') {
   const toLowerCase = !caseSensitiveChains.includes(chain)
   const set = new Set()
   addresses.forEach(i => set.add(toLowerCase ? i.toLowerCase() : i))
@@ -108,6 +93,7 @@ function getCoreAssets(chain = 'ethereum') {
 
 function normalizeAddress(address, chain, extractChain = false) {
   if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
+  if (chain === 'sei' && address?.startsWith('0x')) return address.toLowerCase()
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }
@@ -218,7 +204,7 @@ const anyswapTokenBlacklist = {
     ADDRESSES.shiden.ETH,
     ADDRESSES.telos.ETH,
     ADDRESSES.telos.USDT
-  ]
+  ],
 }
 
 module.exports = {

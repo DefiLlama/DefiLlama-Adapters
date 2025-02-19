@@ -8,10 +8,10 @@ const configs = [
 ]
 
 module.exports = {
-  start: 1613135160, // 02/12/2021 @ 01:06pm UTC
+  start: '2021-02-12', // 02/12/2021 @ 01:06pm UTC
   ethereum: {
     tvl: sdk.util.sumChainTvls(configs.map(i => {
-      return async function tvl(timestamp, block, _1, { api }) {
+      return async function tvl(api) {
         const logs = await getLogs({ api, target: i.governance, eventAbi: 'event NewToken (address indexed token, uint16 indexed tokenId)', onlyArgs: true, fromBlock: i.fromBlock, })
         const tokens = logs.map(log => log.token)
         tokens.push(ADDRESSES.null)

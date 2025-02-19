@@ -1,4 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const config = {
   "accumulate": [
@@ -32,29 +33,64 @@ const config = {
     {
       "manta": {
         token: '0x95cef13441be50d20ca4558cc0a27b601ac544e5',
-        "LST": "0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547"
+        "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
       }
     }
   ],
   "zeta": [
-  {
-    "zeta": {
-      "baseToken": '0xf091867ec603a6628ed83d274e835539d82e9cc8',
-      "LST": '0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547'
-    }
-  },
-  {
-    "bsc": {
-      "baseToken": "0xf091867ec603a6628ed83d274e835539d82e9cc8",
-      "LST": "0xcf123d8638266629fb02fc415ad47bd47de01a6b"
+    {
+      "zeta": {
+        "baseToken": '0xf091867ec603a6628ed83d274e835539d82e9cc8',
+        "LST": '0xcba2aeec821b0b119857a9ab39e09b034249681a'
+      }
     },
-  },
-  {
-    "ethereum": {
-      "baseToken": "0xf091867ec603a6628ed83d274e835539d82e9cc8",
-      "LST": "0xf38feedb0c85c1e1d6864c7513ac646d28bb0cfc"
+    {
+      "bsc": {
+        "baseToken": "0xf091867ec603a6628ed83d274e835539d82e9cc8",
+        "LST": "0xcf123d8638266629fb02fc415ad47bd47de01a6b"
+      },
+    },
+    {
+      "ethereum": {
+        "baseToken": "0xf091867ec603a6628ed83d274e835539d82e9cc8",
+        "LST": "0xf38feedb0c85c1e1d6864c7513ac646d28bb0cfc"
+      }
+    },
+  ],
+  "sei": [
+    {
+      "sei": {
+        "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+      },
     }
-  },
+  ],
+  "oasis": [
+    {
+      "sapphire": {
+        "LST": "0xed57966f1566de1a90042d07403021ea52ad4724"
+      }
+    }
+  ],
+  "artela": [
+    {
+      "artela": {
+        "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+      },
+    }
+  ],
+  "bitkub": [
+    {
+    "bitkub": {
+      "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+    }
+  }],
+  "stETH": [
+    {
+      "ethereum": {
+        "baseToken": ADDRESSES.ethereum.STETH,
+        "LST": "0x684d7fd1067ed8e9686e6fd764d048b9bf92dfa9"
+      }
+    },
   ]
 }
 
@@ -86,14 +122,14 @@ const transformedConfig = transformConfig(config);
 
 Object.entries(transformedConfig).forEach(([chain, configs]) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let totalSupply = 0;
       for (const { LST, baseToken, token } of configs) {
         const supply = await api.call({ abi: 'uint256:totalSupply', target: LST });
         totalSupply += parseInt(supply, 10);
         api.add(token ?? baseToken ?? ADDRESSES.null, supply, { skipChain: !!baseToken })
       }
-      return api.getBalances();
+      return sumTokens2({ api })
     },
   }
 })

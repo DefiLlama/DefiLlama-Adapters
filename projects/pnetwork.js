@@ -18,21 +18,21 @@ function getTvl(timestamp) {
       epoch: 'ms',
       db: 'pnetwork-volumes-1',
     };
-  
+
     const queryURL = `https://pnetwork.watch/api/datasources/proxy/1/query?${new URLSearchParams(queryObj).toString()}`;
-  
+
     const { data: res } = await axios.get(queryURL);
-  
+
     const { results: [{ series }, sumTvl] } = res;
     const response = {};
-  
+
     response.tvlTotal = getTvl(sumTvl.series[0].values);
     series.forEach(({ tags: { host_blockchain }, values }) => (response[chainMapping[host_blockchain]] = getTvl(values)));
     if (!response.tvlTotal) throw new Error('Incorrect tvl');
-  
+
     return response;
   }
-  
+
 
   function getTvl(values) {
     return values.reduce((a, i) => a ? a : i[1], 0)
@@ -59,8 +59,8 @@ module.exports = {
 
 Object.values(chainMapping).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (ts) => {
-      const response = await getTvl(ts)
+    tvl: async ({ timestamp }) => {
+      const response = await getTvl(timestamp)
       return toUSDTBalances(response[chain] || 0)
     }
   }

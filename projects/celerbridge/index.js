@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
@@ -133,7 +132,7 @@ const liquidityBridgeTokens = [
   {
     // WBTC
     arbitrum: ADDRESSES.arbitrum.WBTC,
-    avax: "0x50b7545627a5162F82A992c33b87aDc75187B218",
+    avax: ADDRESSES.avax.WBTC_e,
     ethereum: ADDRESSES.ethereum.WBTC,
     fantom: "0x321162Cd933E2Be498Cd2267a90534A804051b11",
     polygon: ADDRESSES.polygon.WBTC,
@@ -376,7 +375,7 @@ const liquidityBridgeTokens = [
   },
   {
     // FXS
-    ethereum: "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+    ethereum: ADDRESSES.ethereum.FXS,
   },
   {
     // MAI
@@ -530,7 +529,10 @@ let chains = liquidityBridgeTokens.reduce((allChains, token) => {
 }, new Set());
 
 Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
-module.exports = chainExports(chainTvl, Array.from(chains));
+
+Array.from(chains).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [

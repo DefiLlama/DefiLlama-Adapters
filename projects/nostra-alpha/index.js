@@ -42,7 +42,7 @@ function* chunks(arr, n) {
   }
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const supplied = await multiCall({
     calls: supplyTokens,
     abi: assetTokenAbi.totalSupply,
@@ -62,7 +62,7 @@ async function tvl(_, _1, _2, { api }) {
   api.addTokens(underlyings, data);
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const borrowed = await multiCall({
     calls: debtTokens,
     abi: assetTokenAbi.totalSupply,

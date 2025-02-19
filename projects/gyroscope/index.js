@@ -4,7 +4,7 @@ const blacklistedTokens = [
   '0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a', // GYD ethereum
 ]
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const pools = config[api.chain];
 
   const promises = pools.map(async ({ factory, fromBlock }) => {
@@ -65,6 +65,27 @@ const config = {
       fromBlock: 41209677,
     },
   ],
+  base: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x15e86be6084c6a5a8c17732d398dfbc2ec574cec",
+      fromBlock: 13035219,
+    },
+  ],
+  sei: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0xB438ea246cefA9241305aD62E5D307D014baF7Fa",
+      fromBlock: 117_480_059,
+    },
+  ],
+  avax: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x41E9ac0bfed353c2dE21a980dA0EbB8A464D946A",
+      fromBlock: 50484541,
+    },
+  ],
   optimism: [
     {
       name: "Gyro E-CLP V2 Factory",
@@ -91,6 +112,13 @@ const config = {
       name: "Gyro E-CLP V2 Factory",
       factory: "0x5D56EA1B2595d2dbe4f5014b967c78ce75324f0c",
       fromBlock: 5147666,
+    },
+  ],
+  xdai: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x5d3Be8aaE57bf0D1986Ff7766cC9607B6cC99b89",
+      fromBlock: 33759936,
     },
   ],
 };

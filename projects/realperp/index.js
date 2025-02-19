@@ -7,7 +7,7 @@ const RAP = "0x9576ca6D15E7CcCe184fA7523085d21A554B1b52";
 
 module.exports = {
   manta: {
-    staking: staking(Staking, RAP, "manta"),
+    staking: staking(Staking, RAP),
     tvl: gmxExports({ vault: Vault }),
   },
 };

@@ -8,15 +8,15 @@ const ETH_LP_BRIDGED = '0x5b51f8a6651e4d45d0e3d0131e73b30b7e3443f4'
 const POLY_ETH_MASTERCHEF = '0xa378721517B5030D9D17CaF68623bB1f2CcF5c2e'
 
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   polygon: {
     tvl: async () => ({}),
     pool2: pool2(POLY_MASTERCHEF, POLY_LP),
   },
   ethereum: {
     tvl: async () => ({}),
-    pool2: async (ts, block, chainBlocks, { api }) => {
-      const { output: LPbalance } = await sdk.api.erc20.balanceOf({ target: ETH_LP_BRIDGED, owner: POLY_ETH_MASTERCHEF, block: chainBlocks.polygon, chain: 'polygon' })
+    pool2: async (api) => {
+      const { output: LPbalance } = await sdk.api.erc20.balanceOf({ target: ETH_LP_BRIDGED, owner: POLY_ETH_MASTERCHEF, chain: 'polygon' })
       api.add(ETH_LP, LPbalance)
       return sumTokens2({ api, resolveLP: true })
     }
