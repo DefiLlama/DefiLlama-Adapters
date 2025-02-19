@@ -12,7 +12,7 @@ const gammaVaults = [
   '0xF08BDBC590C59cb7B27A8D224E419ef058952b5f',
   '0x2BCBDD577616357464CFe307Bc67F9e820A66e80',
   '0x547a116a2622876ce1c8d19d41c683c8f7bec5c0',
-]
+].map(i => i.toLowerCase());
 
 const tokens = [
   ADDRESSES.null,
