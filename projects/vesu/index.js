@@ -18,10 +18,10 @@ const ASSETS = [
   ADDRESSES.starknet.USDC,
   ADDRESSES.starknet.USDT,
   ADDRESSES.starknet.WSTETH,
+  ADDRESSES.starknet.WSTETH_1,
   ADDRESSES.starknet.STRK,
   ADDRESSES.starknet.XSTRK,
   ADDRESSES.starknet.SSTRK,
-  ADDRESSES.starknet.WSTETH_Legacy,
   ADDRESSES.starknet.EKUBO
 ];
 
