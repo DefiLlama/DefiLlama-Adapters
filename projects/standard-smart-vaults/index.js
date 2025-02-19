@@ -95,7 +95,6 @@ async function getUnderlyingTokensForGamma(sums, api) {
         underlying1.toString();
       delete sums[`arbitrum:${gammaVaultAddress.toLowerCase()}`];
     }
-    console.log(sums);
   }
   return sums;
 }
