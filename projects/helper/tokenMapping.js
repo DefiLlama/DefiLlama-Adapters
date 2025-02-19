@@ -54,7 +54,6 @@ const fixBalancesTokens = {
   },
   sonic: {
     '0x6047828dc181963ba44974801ff68e538da5eaf9': { coingeckoId: "tether", decimals: 6 },
-    '0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae': { coingeckoId: "rings-scusd", decimals: 6 },
   }
 }
 
