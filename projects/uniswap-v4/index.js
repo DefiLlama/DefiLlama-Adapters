@@ -1,7 +1,4 @@
-const { getConfig } = require("../helper/cache");
-const { get } = require("../helper/http");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs');
 const { nullAddress } = require("../helper/tokenMapping");
 
