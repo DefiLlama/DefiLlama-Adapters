@@ -716,7 +716,7 @@ async function sumTokens2({
 
 
   if (resolveIchiVault)
-    await unwrapICHIVaults({ api })
+    await unwrapHypervisorVaults({ api })
 
 
   if (!skipFixBalances) {
@@ -732,12 +732,14 @@ async function sumTokens2({
   }
 }
 
-async function unwrapICHIVaults({ api }) {
+async function unwrapHypervisorVaults({ api, lps }) {
   let chain = api.chain
   const balances = api.getBalances()
   let tokens = Object.keys(balances).filter(t => t.startsWith(chain + ':')).map(t => t.split(':')[1])
-  const symbols = (await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })).map(i => i || '')
-  const lps = tokens.filter((t, i) => isICHIVaultToken(symbols[i], t, chain))
+  if (!lps) {
+    const symbols = (await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })).map(i => i || '')
+    lps = tokens.filter((t, i) => isICHIVaultToken(symbols[i], t, chain))
+  }
 
   if (!lps.length) return api.getBalances()
 
@@ -936,4 +938,5 @@ module.exports = {
   unwrapConvexRewardPools,
   addUniV3LikePosition,
   unwrapSolidlyVeNft,
+  unwrapHypervisorVaults,
 }
