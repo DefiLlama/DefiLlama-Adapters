@@ -19,7 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
-  'celestia', 'dydx', 'carbon'
+  'celestia', 'dydx', 'carbon', 'milkyway',
 
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
@@ -41,21 +41,17 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  hedera: {
-    '0x00000000000000000000000000000000000c01f3': { coingeckoId: "hsuite", decimals: 4 },
-  },
-  rbn: {
-    '0x0000000000000000000000000000000000000000': { coingeckoId: "redbelly-network-token", decimals: 18 },
-    '0x0233971bd2de29e81029336c46997055df3b5282': { coingeckoId: "liquid-crypto", decimals: 18 },
-  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  plume: {
-    '0xA849026cDA282eeeBC3C39Afcbe87a69424F16B4': { coingeckoId: "tether", decimals: 6 }, 
-    '0x626613B473F7eF65747967017C11225436EFaEd7': { coingeckoId: "ethereum", decimals: 18 }, 
-  }
+  chz: {
+    '0x60f397acbcfb8f4e3234c659a3e10867e6fa6b67': { coingeckoId: 'pepper', decimals: 18 },
+  },
+  flow: {
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 }, 
+    '0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed': { coingeckoId: "flow-bridged-pyusd-flow", decimals: 6 }, 
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

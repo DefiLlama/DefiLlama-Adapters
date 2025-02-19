@@ -13,6 +13,7 @@ const wildCreditABI = require('../wildcredit/abi.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
+const { tickToPrice } = require('./utils/tick');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -169,8 +170,6 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => 1.0001 ** tick
-
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
@@ -267,8 +266,6 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => 1.0001 ** tick
-
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
@@ -616,7 +613,7 @@ async function sumTokens2({
     // nftAddress
     // nftIdFetcher
   },
-  resolveICHIVault = false,
+  resolveIchiVault = false,
   solidlyVeNfts = [],
   convexRewardPools = [],
   auraPools = [],
@@ -715,22 +712,12 @@ async function sumTokens2({
   log(chain, 'summing tokens', tokensAndOwners.length)
 
 
-  let ichiVaultToAs = []
-  if (resolveICHIVault) {
-    const symbols = (await api.multiCall({ abi: 'erc20:symbol', calls: tokensAndOwners.map(t => t[0]) }))
-    tokensAndOwners.filter(([token, owner], i) => {
-      if (isICHIVaultToken(symbols[i], token, api.chain)) {
-        ichiVaultToAs.push([token, owner])
-        return false
-      }
-      return true
-    })
-  }
-
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, sumChunkSize, })
 
-  if (ichiVaultToAs.length)
-    await unwrapICHIVaults()
+
+  if (resolveIchiVault)
+    await unwrapICHIVaults({ api })
+
 
   if (!skipFixBalances) {
     const fixBalances = await getFixBalances(chain)
@@ -743,30 +730,39 @@ async function sumTokens2({
     toa = toa.map(i => i.join('-'))
     return getUniqueAddresses(toa, chain).map(i => i.split('-'))
   }
+}
 
+async function unwrapICHIVaults({ api }) {
+  let chain = api.chain
+  const balances = api.getBalances()
+  let tokens = Object.keys(balances).filter(t => t.startsWith(chain + ':')).map(t => t.split(':')[1])
+  const symbols = (await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })).map(i => i || '')
+  const lps = tokens.filter((t, i) => isICHIVaultToken(symbols[i], t, chain))
 
-  async function unwrapICHIVaults() {
-    const lps = ichiVaultToAs.map(i => i[0])
-    const balanceOfCalls = ichiVaultToAs.map(t => ({ params: t[1], target: t[0] }))
-    const [
-      token0s, token1s, supplies, uBalances, tokenBalances
-    ] = await Promise.all([
-      api.multiCall({ abi: 'address:token0', calls: lps }),
-      api.multiCall({ abi: 'address:token1', calls: lps }),
-      api.multiCall({ abi: 'uint256:totalSupply', calls: lps }),
-      api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 token0Bal, uint256 token1Bal)', calls: lps }),
-      api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
-    ])
+  if (!lps.length) return api.getBalances()
 
-    tokenBalances.forEach((bal, i) => {
-      const ratio = bal / supplies[i]
-      const token0Bal = uBalances[i][0] * ratio
-      const token1Bal = uBalances[i][1] * ratio
-      sdk.util.sumSingleBalance(balances, token0s[i], token0Bal)
-      sdk.util.sumSingleBalance(balances, token1s[i], token1Bal)
-    })
-    return balances
-  }
+  const [
+    token0s, token1s, supplies, uBalances,
+  ] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: lps }),
+    api.multiCall({ abi: 'address:token1', calls: lps }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: lps }),
+    api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 token0Bal, uint256 token1Bal)', calls: lps }),
+  ])
+
+  lps.forEach((_, i) => {
+    const lpToken = `${chain}:${lps[i]}`
+    const bal = balances[lpToken]
+    if (!bal) return;
+    const ratio = bal / supplies[i]
+    const token0Bal = uBalances[i][0] * ratio
+    const token1Bal = uBalances[i][1] * ratio
+    api.add(token0s[i], token0Bal)
+    api.add(token1s[i], token1Bal)
+    api.removeTokenBalance(lpToken)
+  })
+
+  return api.getBalances()
 }
 
 function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveSlipstream, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, logCalls, ...args }) {
@@ -882,7 +878,7 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
 }
 
 function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick }) {
-  const tickToPrice = (tick) => 1.0001 ** tick
+  
   const sa = tickToPrice(tickLower / 2)
   const sb = tickToPrice(tickUpper / 2)
 
