@@ -229,23 +229,24 @@ async function vaultBalance(api, graphData) {
     const poolConcretes = await concrete(poolLists, api);
 
     const poolBaseInfos = await api.multiCall({
+      permitFailure: true,
       abi: abi.slotBaseInfo,
       calls: poolLists.map((index) => ({
         target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
+        params: [index.openFundShareSlot],
       })),
     })
 
     let vaultAddress = [];
     for (const key in poolLists) {
-      if (solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
+      if (poolBaseInfos[key] && solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
         vaultAddress.push(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`);
       }
     }
 
     let vaults = {};
     for (const key in poolLists) {
-      if (poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
         vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
       }
     }

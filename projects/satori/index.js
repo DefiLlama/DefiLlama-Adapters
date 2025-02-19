@@ -5,7 +5,7 @@ const { sumTokensExport: sumTokensExportOfTon } = require("../helper/chain/ton")
 const ethereum_LBTC = "0x8236a87084f8B84306f72007F36F2618A5634494";
 const ethereum_PumpBTC = "0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e";
 const base_PumpBTC = "0x23dA5F2d509cb43A59d43C108a43eDf34510eff1";
-const stBTC = "0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3";
+const stBTC = ADDRESSES.swellchain.stBTC;
 
 module.exports = {
   methodology:
@@ -88,6 +88,33 @@ module.exports = {
         "0xD2F244164cd09e5cBb6360c4a17aAF976a34562a"
       ],
       tokens: [ADDRESSES.bsc.USDC,stBTC],
+    }),
+  },
+  zircuit:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x301A29D92B23750c481D6F2feAA01F872561A528",
+        "0x8DdCb1F874e635E03f172cc02B4F57ae94Ae7BC0"
+      ],
+      tokens: ["0x3b952c8C9C44e8Fe201e2b26F6B2200203214cfF"],
+    }),
+  },
+  sty:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x0848F4AE872545C901D3325AEFf09F0fa8952AfC",
+        "0x133A54E116731c0CBE35EE41276D570e0730E92D"
+      ],
+      tokens: ["0xF1815bd50389c46847f0Bda824eC8da914045D14","0x674843C06FF83502ddb4D37c2E09C01cdA38cbc8"],
+    }),
+  },
+  plume:{
+    tvl: sumTokensExport({
+      owners: [
+        "0x04AE748272c3959A9904aeaD3cc00AAf476aa34D",
+        "0x36Bd86676A05ABAaF30D57F65Ba463669E018F3e"
+      ],
+      tokens: [ADDRESSES.plume.USDC_e,"0xdddD73F5Df1F0DC31373357beAC77545dC5A6f3F"],
     }),
   },
   ethereum:{

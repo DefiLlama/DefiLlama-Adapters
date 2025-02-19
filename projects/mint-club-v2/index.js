@@ -12,14 +12,15 @@ const V2_BOND_CONTRACTS = {
   zora: "0xc5a076cad94176c2996B32d8466Be1cE757FAa27",
   klaytn: "0xc5a076cad94176c2996B32d8466Be1cE757FAa27",
   ham: "0xc5a076cad94176c2996B32d8466Be1cE757FAa27",
-  shibarium: "0xc5a076cad94176c2996B32d8466Be1cE757FAa27"
+  shibarium: "0xc5a076cad94176c2996B32d8466Be1cE757FAa27",
+  unichain: "0xc5a076cad94176c2996B32d8466Be1cE757FAa27"
 }
 
 const ownTokens = {
   bsc: ['0x1f3Af095CDa17d63cad238358837321e95FC5915']
 }
 
-const chains = ['avax', 'ethereum', 'optimism', 'arbitrum', 'polygon', 'bsc', 'base', 'blast', 'degen', 'zora', 'klaytn', 'ham', 'shibarium']
+const chains = ['avax', 'ethereum', 'optimism', 'arbitrum', 'polygon', 'bsc', 'base', 'blast', 'degen', 'zora', 'klaytn', 'ham', 'shibarium', 'unichain']
 
 chains.forEach(chain => {
   const BOND_CONTRACT = V2_BOND_CONTRACTS[chain] ?? '0xc5a076cad94176c2996B32d8466Be1cE757FAa27'

@@ -20,12 +20,18 @@ const vaultsBlast = [
   '0x6654cddf2a14a06307af6a8d7731dd4e059962a1',
   '0x4caec64454893c7912e6beb1e19b4714dd353748',
   '0x24e72c2c7be9b07942f6f8d3cdce995df699514d',
+  '0xb3e2099b135b12139c4eb774f84a5808fb25c67d',
 ]
 
 const vaultsArbitrum = [
   '0x320cd9d00961fb45857a043efea77dc6b9db5d95',
   '0x6f0acbaac51f3c72ddaa4edc6e20fc388d20adbc',
   '0x951c846aa10cc3da45defed784c3802605f71769',
+]
+
+const vaultsBase = [
+    "0x459a3d995d66798b1ab114f702b8bc8655484e78",
+    "0xa7517b9930d0556175a1971bd62084e16f21881f",
 ]
 
 const dexes = [
@@ -59,9 +65,14 @@ async function tvlArbitrum(api) {
   return api.erc4626Sum2({ calls: vaultsArbitrum });
 }
 
+async function tvlBase(api) {
+  return api.erc4626Sum2({ calls: vaultsBase });
+}
+
 module.exports = {
   doublecounted: true,
   methodology: "We calculate TVL based on the Total Supply of our proxy contracts through which users interact with vault's contracts",
+  base: { tvl: tvlBase },
   blast: { tvl: tvlBlast },
   arbitrum: { tvl: tvlArbitrum },
 };
