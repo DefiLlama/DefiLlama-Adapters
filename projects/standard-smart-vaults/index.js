@@ -5,6 +5,15 @@ const SMART_VAULT_MANAGER_USD_ADDRESS = '0x496aB4A155C8fE359Cd28d43650fAFA0A3532
 const { sumTokens2, unwrapHypervisorVaults } = require('../helper/unwrapLPs')
 const START_TS = 1693206000;
 
+const gammaVaults = [
+  '0x52ee1FFBA696c5E9b0Bc177A9f8a3098420EA691',
+  '0x6B7635b7d2E85188dB41C3c05B1efa87B143fcE8',
+  '0xfA392dbefd2d5ec891eF5aEB87397A89843a8260',
+  '0xF08BDBC590C59cb7B27A8D224E419ef058952b5f',
+  '0x2BCBDD577616357464CFe307Bc67F9e820A66e80',
+  '0x547a116a2622876ce1c8d19d41c683c8f7bec5c0',
+]
+
 const tokens = [
   ADDRESSES.null,
   ADDRESSES.arbitrum.WBTC,
@@ -13,7 +22,8 @@ const tokens = [
   ADDRESSES.arbitrum.GMX,
   '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429',
   '0x3082CC23568eA640225c2467653dB90e9250AaA0',
-  '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A'
+  '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A',
+  ...gammaVaults,
 ]
 
 async function getOwners(api) {
@@ -38,16 +48,7 @@ module.exports = {
   arbitrum: {
     tvl: async (api) => {
       await sumTokens2({ owners: await getOwners(api), tokens, api })
-      await unwrapHypervisorVaults({
-        api, lps: [
-          '0x52ee1FFBA696c5E9b0Bc177A9f8a3098420EA691',
-          '0x6B7635b7d2E85188dB41C3c05B1efa87B143fcE8',
-          '0xfA392dbefd2d5ec891eF5aEB87397A89843a8260',
-          '0xF08BDBC590C59cb7B27A8D224E419ef058952b5f',
-          '0x2BCBDD577616357464CFe307Bc67F9e820A66e80',
-          '0x547a116a2622876ce1c8d19d41c683c8f7bec5c0',
-        ]
-      })
+      await unwrapHypervisorVaults({ api, lps: gammaVaults })
     }
   }
 };
