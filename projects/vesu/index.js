@@ -18,7 +18,8 @@ const ASSETS = [
   ADDRESSES.starknet.WSTETH,
   ADDRESSES.starknet.STRK,
   ADDRESSES.starknet.XSTRK,
-  ADDRESSES.starknet.SSTRK
+  ADDRESSES.starknet.SSTRK,
+  ADDRESSES.starknet.EKUBO,
 ];
 
 async function tvl(api) {

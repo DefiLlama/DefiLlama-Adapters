@@ -13,6 +13,7 @@ const wildCreditABI = require('../wildcredit/abi.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
+const { tickToPrice } = require('./utils/tick');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -169,8 +170,6 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => 1.0001 ** tick
-
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
@@ -267,8 +266,6 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => 1.0001 ** tick
-
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
@@ -881,7 +878,7 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
 }
 
 function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick }) {
-  const tickToPrice = (tick) => 1.0001 ** tick
+  
   const sa = tickToPrice(tickLower / 2)
   const sb = tickToPrice(tickUpper / 2)
 
