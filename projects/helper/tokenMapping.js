@@ -52,6 +52,10 @@ const fixBalancesTokens = {
     '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 }, 
     '0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed': { coingeckoId: "flow-bridged-pyusd-flow", decimals: 6 }, 
   },
+  sonic: {
+    '0x6047828dc181963ba44974801ff68e538da5eaf9': { coingeckoId: "tether", decimals: 6 },
+    '0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae': { coingeckoId: "rings-scusd", decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
