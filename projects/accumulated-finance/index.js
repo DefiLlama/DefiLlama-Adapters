@@ -1,4 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const config = {
   "accumulate": [
@@ -70,6 +71,19 @@ const config = {
       }
     }
   ],
+  "artela": [
+    {
+      "artela": {
+        "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+      },
+    }
+  ],
+  "bitkub": [
+    {
+    "bitkub": {
+      "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+    }
+  }],
   "stETH": [
     {
       "ethereum": {
@@ -115,7 +129,7 @@ Object.entries(transformedConfig).forEach(([chain, configs]) => {
         totalSupply += parseInt(supply, 10);
         api.add(token ?? baseToken ?? ADDRESSES.null, supply, { skipChain: !!baseToken })
       }
-      return api.getBalances();
+      return sumTokens2({ api })
     },
   }
 })
