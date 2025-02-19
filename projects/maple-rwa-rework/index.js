@@ -48,16 +48,23 @@ const processPools = async (api, key) => {
   pools.forEach((pool) => {
     const { asset, assets, collateralValue, principalOut, poolMeta } = pool
     const token = ADDRESSES.ethereum[asset.symbol] ?? null
-    if (!token) return;
-    const balance = key === "collateralValue" ? +collateralValue + +assets : +principalOut
+    if (!token || poolMeta.state === "Inactive") return;
+    const balance = key === "collateralValue" ? Number(collateralValue) + Number(assets) : Number(principalOut)
     api.add(token, balance)
   })
 };
+
+const staking = async (api) => {
+  const START_BLOCK = 20735662
+  const block = await api.getBlock()
+  if (block < START_BLOCK) return;
+  return api.erc4626Sum({ calls: [stSYRUP], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
+}
 
 module.exports = {
   ethereum: { 
     tvl: async (api) => processPools(api, "collateralValue"),
     borrowed: async (api) => processPools(api),
-    staking: async (api) => api.erc4626Sum({ calls: [stSYRUP], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
+    staking
   }
 };
