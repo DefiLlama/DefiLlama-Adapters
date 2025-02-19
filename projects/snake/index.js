@@ -1,5 +1,6 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
+const sdk = require("@defillama/sdk");
 
 const gsnakeTokenAddress = "0x674a430f531847a6f8976A900f8ace765f896a1b";
 const snakeGenesisAddress = '0x29D0762f7bE8409d0aC34A3595AF62E8c0120950'
@@ -24,7 +25,7 @@ async function snakeGenesisTVL(api) {
 }
 
 
-const pool2 = async (api) => {
+const getRehypotecatedLpsTVL = async (api) => {
   let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x3af1dd7a2755201f8e2d6dcda1a61d9f54838f4f' })
   let pools = await api.multiCall({ abi: 'address:stake', calls: gauges, permitFailure: true })
   const pools2 = []
@@ -41,13 +42,12 @@ const pool2 = async (api) => {
 
 
 module.exports = {
-  methodology: "Pool2 deposits consist of SNAKE/S and GSNAKE/S LP tokens deposits while the staking TVL consists of the GSNAKEs tokens locked within the Masonry contract(0x5A5d34826ab31003F26F8A15e9B645803d85eA81).",
-  hallmarks: [
-    [1739577600, 'Genesis Phase Ended']
-  ],
+  methodology: "Tvl counts all the genesis farm tvl and also the masterchef similar to convex/lqdr rehypotecation system to stake on underlying farms to yield xSHADOW rewards to be used in the protocol. Staking TVL consists of the GSNAKEs tokens locked within the Masonry contract(0x54eb20859334C1958eb67f1b5a283b7A100280D3).",
   sonic: {
-    tvl: snakeGenesisTVL,
-    pool2,
-    staking: staking(masonryAddress, gsnakeTokenAddress),
+    tvl: sdk.util.sumChainTvls([
+      snakeGenesisTVL,
+      getRehypotecatedLpsTVL,
+    ]),
+    staking: staking(masonryAddress, gsnakeTokenAddress)
   },
 };
