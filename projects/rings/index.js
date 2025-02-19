@@ -57,15 +57,11 @@ const CONFIG = {
       '0xD0851030C94433C261B405fEcbf1DEC5E15948d0'    // stkscBTC
     ],
     stakingSupportedAssets: [
-      ADDRESSES.sonic.scUSD,   // scUSD
-      ADDRESSES.sonic.scETH,   // scETH
-      '0xBb30e76d9Bb2CC9631F7fC5Eb8e87B5Aff32bFbd',   // scBTC
       '0xCd4D2b142235D5650fFA6A38787eD0b7d7A51c0C',   // Stable Beets
       '0x33B29bcf17e866A35941e07CbAd54f1807B337f5',   // Stable Beets Gauge
       '0xE54DD58a6d4e04687f2034dd4dDAb49da55F8afF',   // Echoes of the Ether
       '0x8828a6e3166cac78F3C90A5b5bf17618BDAf1Deb',   // Echoes of the Ether Gauge
       '0x0806af1762Bdd85B167825ab1a64E31CF9497038',   //  MEC Capital Euler
-      '0x743E03cceB4af2efA3CC76838f6E8B50B63F184c',   // UNIV3
     ]
   },
 }
@@ -74,6 +70,6 @@ Object.keys(CONFIG).forEach((chain) => {
   const {  vaults, supportedAssets,  stakingVaults = [], stakingSupportedAssets = [] } = CONFIG[chain]
   module.exports[chain] = { 
     tvl: sumTokensExport({ owners: vaults, tokens: supportedAssets }),
-    staking: stakings(stakingVaults, stakingSupportedAssets),
+    staking: sumTokensExport({ owners: stakingVaults, tokens: stakingSupportedAssets, resolveUniV3: true, blacklistedTokens: vaults }),
   };
 });
