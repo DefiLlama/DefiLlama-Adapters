@@ -14,7 +14,7 @@ function parseClarityInt(hexString) {
 
   // Handle two’s complement for negative numbers
   if (bigIntValue > BigInt("0x7ffffffffffffffffffffffffffffffff")) {
-      bigIntValue = bigIntValue - BigInt("0x100000000000000000000000000000000");
+    bigIntValue = bigIntValue - BigInt("0x100000000000000000000000000000000");
   }
 
   return bigIntValue.toString(); // Return as a readable decimal string
@@ -48,7 +48,7 @@ module.exports = {
     tvl: async () => {
       const [contract_address, contract_name] = USDhContract.split('.');
       const supplyResponse = await post(`https://api.mainnet.hiro.so/v2/contracts/call-read/${contract_address}/${contract_name}/get-total-supply`,
-        { 
+        {
           sender: contract_address,
           arguments: []
         }
@@ -58,5 +58,4 @@ module.exports = {
       return { 'hermetica-usdh': supplyOnStacksuUsdh / (10 ** 8) }
     }
   },
-  misrepresentedTokens: true
 }
