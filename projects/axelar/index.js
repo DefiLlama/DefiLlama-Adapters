@@ -24,7 +24,7 @@ chainListSupply.concat(chainListTotal).forEach(chain => {
     module.exports[chain] = { tvl };
   }
   async function tvl(api) {
-    const config = await getConfig('alexar', 'https://api.axelarscan.io/api/getTVL')
+    const config = await getConfig('axelar', 'https://api.axelarscan.io/api/getTVL')
     const tokensAndOwners = []
     const owners = []
     const blacklistedTokens = blacklistedTokensChain[chain] || []

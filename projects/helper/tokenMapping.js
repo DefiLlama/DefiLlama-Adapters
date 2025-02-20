@@ -19,7 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
-  'celestia', 'dydx', 'carbon', 'milkyway',
+  'celestia', 'dydx', 'carbon', 'milkyway', 'axelar'
 
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
@@ -54,6 +54,9 @@ const fixBalancesTokens = {
   },
   sonic: {
     '0x6047828dc181963ba44974801ff68e538da5eaf9': { coingeckoId: "tether", decimals: 6 },
+  },
+  axelar: {
+    '0x467719ad09025fcc6cf6f8311755809d45a5e5f3': {coingeckoId: "axelar", decimals: 6}
   }
 }
 
