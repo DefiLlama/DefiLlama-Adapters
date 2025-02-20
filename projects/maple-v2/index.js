@@ -21,14 +21,12 @@ const query = `
         asset
         poolCollaterals {
           addresses
-          asset
           assetAmount
         }
       }
     }
   }
 `;
-
 
 const getPools = async (block) => {
   const payload = {
@@ -46,9 +44,9 @@ const processPools = async (api, key) => {
   const pools = await getPools(block);
 
   pools.forEach((pool) => {
-    const { asset, assets, collateralValue, principalOut, poolMeta } = pool
-    const token = ADDRESSES.ethereum[asset.symbol] ?? null
-    if (!token || poolMeta.state === "Inactive") return;
+    const { id, name, asset: { symbol }, assets, collateralValue, principalOut, poolMeta } = pool
+    const token = ADDRESSES.ethereum[symbol] ?? null
+    if (!token) return;
     const balance = key === "collateralValue" ? Number(collateralValue) + Number(assets) : Number(principalOut)
     api.add(token, balance)
   })
