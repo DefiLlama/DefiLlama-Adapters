@@ -1,34 +1,10 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-
+const { staking } = require("../helper/staking");
 
 const gsnakeTokenAddress = "0x674a430f531847a6f8976A900f8ace765f896a1b";
 const snakeGenesisAddress = '0x29D0762f7bE8409d0aC34A3595AF62E8c0120950'
-const gsnakeRewardPoolAddress = "0xcfB9fDCd480Bc731833257eb982718cAb5aD2cE6";
-const masonryAddress = "0x5A5d34826ab31003F26F8A15e9B645803d85eA81";
-
-const ftmLPs = [
-  "0x287c6882dE298665977787e268f3dba052A6e251", // snake-s-lp
-  "0xb901D7316447C84f4417b8a8268E2822095051E6", // gsnake-s-lp
-];
-
-async function pool2(api) {
-  return sumTokens2({ api, owner: gsnakeRewardPoolAddress, tokens: ftmLPs, })
-}
-
-async function staking(api) {
-  const toa = [
-    [gsnakeTokenAddress, masonryAddress,],
-  ]
-
-  const lif3Tokens = [
-    '0x674a430f531847a6f8976A900f8ace765f896a1b', // GSNAKE
-    '0x3a516e01f82c1e18916ED69a81Dd498eF64bB157', // SNAKE
-  ]
-
-  lif3Tokens.forEach(t => toa.push([t, snakeGenesisAddress]))
-
-  return sumTokens2({ api, tokensAndOwners: toa, })
-}
+const gsnakeRewardPoolAddress = "0xFE6915a0983a304F4D131DA635664030dA06Bcd2";
+const masonryAddress = "0x54eb20859334C1958eb67f1b5a283b7A100280D3";
 
 async function snakeGenesisTVL(api) {
   const tokens = [
@@ -48,11 +24,30 @@ async function snakeGenesisTVL(api) {
 }
 
 
+const pool2 = async (api) => {
+  let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x3af1dd7a2755201f8e2d6dcda1a61d9f54838f4f' })
+  let pools = await api.multiCall({ abi: 'address:stake', calls: gauges, permitFailure: true })
+  const pools2 = []
+  const gauges2 = []
+  pools.forEach((pool, i) => {
+    if (!pool) return;
+    pools2.push(pool)
+    gauges2.push(gauges[i])
+  })
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: gauges2.map(gauge => ({ target: gauge, params: gsnakeRewardPoolAddress })) })
+  api.add(pools2, bals)
+  return sumTokens2({ api, tokens: pools2, })
+};
+
+
 module.exports = {
   methodology: "Pool2 deposits consist of SNAKE/S and GSNAKE/S LP tokens deposits while the staking TVL consists of the GSNAKEs tokens locked within the Masonry contract(0x5A5d34826ab31003F26F8A15e9B645803d85eA81).",
+  hallmarks: [
+    [1739577600, 'Genesis Phase Ended']
+  ],
   sonic: {
     tvl: snakeGenesisTVL,
     pool2,
-    staking,
+    staking: staking(masonryAddress, gsnakeTokenAddress),
   },
 };

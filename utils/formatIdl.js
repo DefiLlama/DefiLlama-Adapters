@@ -41,17 +41,22 @@ function checkType(typeObj) {
     }
 
     if (typeof f.type === 'object') {
-      const tName = f.type.defined?.name
+      const tName = getDefinedName(f.type)
       if (tName && typeMap[tName]) checkType(typeMap[tName])
       if (f.type.array)
         f.type.array.forEach(a => {
-          if (a.defined && typeMap[a.defined.name]) checkType(typeMap[a.defined.name])
+          const name = getDefinedName(a)
+          if (name && typeMap[name]) checkType(typeMap[name])
         })
     }
   })
 }
 
-console.log(JSON.stringify({whitelistedTypeMap: Object.keys(whitelistedTypeMap), accountMap: Object.keys(accountMap), whitelistedTypes: Array.from(whitelistedTypes)}, null, 2))
+function getDefinedName(obj) {
+  return obj.defined?.name ?? (typeof obj.defined === 'string' ? obj.defined : null)
+}
+
+console.log(JSON.stringify({ whitelistedTypeMap: Object.keys(whitelistedTypeMap), accountMap: Object.keys(accountMap), whitelistedTypes: Array.from(whitelistedTypes) }, null, 2))
 idl.types = Object.values(whitelistedTypeMap)
 
 

@@ -41,7 +41,7 @@ const endPoints = {
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
-  nolus: "https://pirin-cl.nolus.network:1317",
+  nolus: "https://lcd.nolus.network",
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
@@ -56,7 +56,6 @@ const endPoints = {
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
   carbon: 'https://rest.lavenderfive.com/carbon/',
-  evmos: 'https://evmos-api.polkachu.com',
   evmos: 'https://evmos-api.polkachu.com',
 };
 
