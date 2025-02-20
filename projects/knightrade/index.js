@@ -68,23 +68,29 @@ async function tvl(api) {
   for (const account of accounts) {
       const userData = program.coder.accounts.decode("User", account.data);
       for (const spotPosition of userData.spotPositions) {
-        if (spotPosition.scaledBalance != 0) {
+        if (!new BN(spotPosition.scaledBalance).isZero()) {
           const marketIndex = spotPosition.marketIndex
           const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
-          const scaledBalance = BN(spotPosition.scaledBalance).toNumber();
+          const scaledBalance = new BN(spotPosition.scaledBalance)
           const token = getTokenInfo(true, marketIndex)
-          const balance = scaledBalance * 10 ** (token.decimals - 9) * (balanceType == 'deposit' ? 1 : -1)
-          api.add(token.mint, balance)
+          if (!token) continue;
+          const balance = scaledBalance
+            .mul(new BN(balanceType === 'deposit' ? 1 : -1))
+            .div(new BN(10).pow(new BN(token.decimals - 9)));
+  
+          api.add(token.mint, balance.toString()) 
         }        
       }
       for (const perpPosition of userData.perpPositions) {
-        if (perpPosition.baseAssetAmount != 0) {
+        if (!new BN(perpPosition.baseAssetAmount).isZero()) {
           const marketIndex = perpPosition.marketIndex
           const token = getTokenInfo(false, marketIndex)
-          const baseAssetAmount = BN(perpPosition.baseAssetAmount).toNumber() * 10 ** (token.decimals - 9)
-          const quoteAssetAmount = BN(perpPosition.quoteAssetAmount).toNumber()
-          api.add(TOKEN_INFO['USDC'].mint, quoteAssetAmount)
-          api.add(token.mint, baseAssetAmount)
+          if (!token) continue;
+          const baseAssetAmount = new BN(perpPosition.baseAssetAmount)
+            .div(new BN(10).pow(new BN(token.decimals - 9))); 
+          const quoteAssetAmount = new BN(perpPosition.quoteAssetAmount)
+          api.add(TOKEN_INFO['USDC'].mint, quoteAssetAmount.toString())
+          api.add(token.mint, baseAssetAmount.toString())
         }        
       }
   }
@@ -94,7 +100,5 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   methodology: "SPOT balance + PERP positions unsettled PNLs",
-  solana: {
-    tvl,
-  },
+  solana: { tvl },
 };
