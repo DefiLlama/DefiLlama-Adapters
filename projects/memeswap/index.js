@@ -1,35 +1,16 @@
-const { uniTvlExport } = require('../helper/unknownTokens')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const chain = 'berachain'
 const factory = '0x80DA434B49b4d3481aF81D58Eaa3817c888377d4'
 const vault = '0x21F18c02B2487024018Ef3a4D95f9D436867743d'
-const BERA_TOKEN = '0x0000000000000000000000000000000000000000'
 
 async function tvl(api) {
-  const tvl = await api.call({
-    abi:
-    {
-      inputs: [],
-      stateMutability: 'view',
-      type: 'function',
-      name: 'totalSupply',
-      outputs: [
-        {
-          internalType: 'uint256',
-          name: '',
-          type: 'uint256',
-        },
-      ],
-    }
-,
-    target: vault,
-  });
-  api.add(BERA_TOKEN, tvl)
-  api.addBalances(await uniTvlExport(chain, factory)[chain].tvl(api))
+  const pairs = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factory })
+  pairs.push(vault)
+  return api.sumTokens({ owners: pairs, token: ADDRESSES.berachain.WBERA })
 }
 
 module.exports = {
-  [chain]: {
+  berachain: {
     tvl
   },
 }
