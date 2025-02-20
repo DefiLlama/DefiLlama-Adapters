@@ -46,6 +46,7 @@ async function run() {
   if (storeInR2) {
     try {
       await sdk.cache.writeCache(`${Bucket}/bitcoin-addresses.json`, projectData)
+      console.log('data written to s3 bucket');
     } catch (e) {
       sdk.log('failed to write data to s3 bucket: ')
       sdk.log(e)
