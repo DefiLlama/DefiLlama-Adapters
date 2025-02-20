@@ -19,17 +19,13 @@ async function tvl(api) {
 }
 
 async function getPoolIds()  {
-  let poolInfos = [];
   const page = await sui.getDynamicFieldObjects({
     parent:
       '0x8b0a90c71b7993522e609c40df29bc5bf476609c026b74b2ae4572d05e4416a2',
   });
-  for (const data of page) {
-    poolInfos.push(data);
-  }
+  const poolInfos = await sui.getObjects(page.map((data) => data.fields.id.id));
   const poolIds = [];
-  for (const poolInfoId of poolInfos) {
-    const poolInfo = await sui.getObject(poolInfoId.fields.id.id);
+  for (const poolInfo of poolInfos) {
     for (const item of poolInfo.fields.value.fields.contents) {
       poolIds.push(item.fields.pool_id);
     }
