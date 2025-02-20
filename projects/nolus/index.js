@@ -17,6 +17,11 @@ const osmosisStAtomOracleAddr = 'nolus1mtcv0vhpt94s82mcemj5sc3v94pq3k2g62yfa5p82
 const osmosisStAtomLeaserAddr = 'nolus1xv0erzdcphnpkf8tr76uynldqx6sspw7782zg9wthz8xpemh7rnsv4nske'
 const osmosisStAtomLppAddr = 'nolus1jufcaqm6657xmfltdezzz85quz92rmtd88jk5x0hq9zqseem32ysjdm990'
 
+// Osmosis ATOM Protocol Contracts (OSMOSIS-OSMOSIS-ATOM) pirin-1
+const osmosisAtomOracleAddr = 'nolus16xt97qd5mc2zkya7fs5hvuavk92cqds82qjuq6rf7p7akxfcuxcs5u2280'
+const osmosisAtomLeaserAddr = 'nolus1rspfrcnjn9vumct3nn20gktksrcjstrh5z8qp340lr8s7fmasd2qmjydk2'
+const osmosisAtomLppAddr = 'nolus1u0zt8x3mkver0447glfupz9lz6wnt62j70p5fhhtu3fr46gcdd9s5dz9l6'
+
 // Osmosis allBTC Protocol Contracts (OSMOSIS-OSMOSIS-ALL_BTC) pirin-1
 const osmosisBtcOracleAddr = 'nolus1y0nlrnw25mh2vxhaupamwca4wdvuxs26tq4tnxgjk8pw0gxevwfq5ry07c'
 const osmosisBtcLeaserAddr = 'nolus1dzwc9hu9aqlmm7ua4lfs2lyafmy544dd8vefsmjw57qzcanhsvgsf4u3ld'
@@ -136,7 +141,8 @@ module.exports = {
         'stride-staked-atom': await getLppTvl([osmosisStAtomLppAddr]),
         'osmosis-allbtc': await getLppTvl([osmosisBtcLppAddr]),
         'osmosis-allsol': await getLppTvl([osmosisSolLppAddr]),
-        'akash-network': await getLppTvl([osmosisAktLppAddr])
+        'akash-network': await getLppTvl([osmosisAktLppAddr]),
+        'cosmos': await getLppTvl([osmosisAtomLppAddr])
       }
     }
   },
@@ -154,6 +160,7 @@ module.exports = {
         { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
         { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
         { leaser: osmosisStAtomLeaserAddr, oracle: osmosisStAtomOracleAddr },
+        { leaser: osmosisAtomLeaserAddr, oracle: osmosisAtomOracleAddr },
         { leaser: osmosisBtcLeaserAddr, oracle: osmosisBtcOracleAddr },
         { leaser: osmosisSolLeaserAddr, oracle: osmosisSolOracleAddr },
         { leaser: osmosisAktLeaserAddr, oracle: osmosisAktOracleAddr }
