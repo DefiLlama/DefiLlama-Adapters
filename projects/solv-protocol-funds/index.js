@@ -30,8 +30,8 @@ async function tvl(api) {
   await vaultBalance(api, graphData);
   await otherDeposit(api, address);
   await ceffuBalance(api, address, graphData);
-  await pancakeV3PositionsBalance(api, address);
-  await avalonBalance(api, address);
+  await lpV3PositionsBalance(api, address);
+  await aaveSupplyBalance(api, address);
 }
 
 const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
@@ -364,30 +364,38 @@ async function ceffuBalance(api, address, graphData) {
   }
 }
 
-async function pancakeV3PositionsBalance(api, address) {
-  if (!address[api.chain] || !address[api.chain]["pancakeV3Positions"]) {
+async function lpV3PositionsBalance(api, address) {
+  if (!address[api.chain] || !address[api.chain]["lpV3Positions"]) {
     return;
   }
-  let pancakeV3PositionsData = address[api.chain]["pancakeV3Positions"];
-  await sumTokens2({ api, uniV3nftsAndOwners: pancakeV3PositionsData["vaults"], blacklistedTokens: pancakeV3PositionsData["blacklistedTokens"] ?? [], resolveLP: true, })
+  let lpV3PositionsData = address[api.chain]["lpV3Positions"];
+  await sumTokens2({ api, uniV3nftsAndOwners: lpV3PositionsData["lpV3nftsAndOwners"], blacklistedTokens: lpV3PositionsData["blacklistedTokens"] ?? [], resolveLP: true, })
 }
 
-async function avalonBalance(api, address) {
-  if (!address[api.chain] || !address[api.chain]["avalon"]) {
+async function aaveSupplyBalance(api, address) {
+  if (!address[api.chain] || !address[api.chain]["aaves"]) {
     return;
   }
-  let avalonData = address[api.chain]["avalon"];
+  let aavesData = address[api.chain]["aaves"];
 
-  const balances = await api.multiCall({
-    abi: abi.balanceOf,
-    calls: Object.values(avalonData["avalonAddress"]).map((index) => ({
+  const allCalls = [];
+  for (let i = 0; i < aavesData.length; i++) {
+    const aaveAddress = aavesData[i];
+    allCalls.push(...Object.values(aaveAddress["aaveAddress"]).map((index) => ({
       target: index[0],
       params: [index[1]]
-    })),
-  })
+    })));
+  }
+  
+  const balances = await api.multiCall({
+    abi: abi.balanceOf,
+    calls: allCalls,
+  });
 
-  for (const balance of balances) {
-    api.add(avalonData.solvBTCAddress, balance)
+  for (let i = 0; i < balances.length; i++) {
+    const balance = balances[i];
+    const aaveAddress = aavesData[Math.floor(i / Object.values(aavesData[i % aavesData.length]["aaveAddress"]).length)];
+    api.add(aaveAddress["assetAddress"], balance);
   }
 }
 
