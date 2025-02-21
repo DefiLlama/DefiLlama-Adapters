@@ -86,7 +86,27 @@ const RECEIPT_TOKENS = {
       underlying: 'security-token',
       fundName:'Libre SAF VCC - Access Private Credit Feeder'
     }
-  }
+  },
+  imx: {
+    UMA: {
+      address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    BHMA: {
+      address: '0x8b37F32749CF339f39bCf5cfF2c880D342ddF64B',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName:' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    APCA: {
+      address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName:'Libre SAF VCC - Access Private Credit Feeder'
+    }
+  },
 }
 
 async function getFundPrices() {
@@ -311,8 +331,39 @@ async function mantraTvl() {
   return balances;
 }
 
+async function imxTvl({ imx: block }) {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+  
+  // Get total supply of receipt token
+  const supplies = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: Object.values(RECEIPT_TOKENS.imx).map(i => ({ target: i.address })),
+    chain: 'imx',
+    block,
+  })
+
+  // Map token's total supply to represent RWA TVL
+  supplies.output.forEach((supply, i) => {
+    const token = Object.values(RECEIPT_TOKENS.imx)[i]
+    const balance = supply.output;
+    const price = fundPrices[token.fundName] || 1;
+
+    // Convert balance to human readable and multiply by price
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
+    
+    totalTvl += valueUSD;
+  })
+
+  // Return the total value in the format DeFiLlama expects
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana, NEAR and Mantra. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana, NEAR, Mantra and Immutable zkEVM. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   ethereum: { tvl: ethereumTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
@@ -320,4 +371,5 @@ module.exports = {
   solana: { tvl: solanaTvl },
   near: { tvl: nearTvl },
   mantra: { tvl: mantraTvl },
+  imx: { tvl: imxTvl },
 }
