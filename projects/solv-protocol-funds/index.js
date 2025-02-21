@@ -30,7 +30,8 @@ async function tvl(api) {
   await vaultBalance(api, graphData);
   await otherDeposit(api, address);
   await ceffuBalance(api, address, graphData);
-  await defiVaultBalance(api, address, graphData);
+  await pancakeV3PositionsBalance(api, address);
+  await avalonBalance(api, address);
 }
 
 const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
@@ -234,6 +235,7 @@ async function vaultBalance(api, graphData) {
         target: poolConcretes[index.contractAddress],
         params: [index.openFundShareSlot]
       })),
+      permitFailure: true
     })
 
     let vaultAddress = [];
@@ -245,7 +247,7 @@ async function vaultBalance(api, graphData) {
 
     let vaults = {};
     for (const key in poolLists) {
-      if (poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
         vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
       }
     }
@@ -258,7 +260,7 @@ async function vaultBalance(api, graphData) {
       const key = `${token}-${owner}`.toLowerCase()
       return !blacklisted[key] && !blacklistedTokens.includes(token)
     })
-    
+
     return api.sumTokens({ tokensAndOwners, blacklistedTokens, })
   }
 }
@@ -308,7 +310,7 @@ async function ceffuBalance(api, address, graphData) {
 
     let vaults = {};
     for (const key in pools) {
-      if (poolBaseInfos[key][1] && pools[key]["vault"]) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && pools[key]["vault"]) {
         vaults[`${pools[key]["vault"].toLowerCase()}-${poolBaseInfos[key][1].toLowerCase()}`] = [poolBaseInfos[key][1], pools[key]["vault"]]
       }
     }
@@ -361,37 +363,30 @@ async function ceffuBalance(api, address, graphData) {
   }
 }
 
-async function defiVaultBalance(api, address, graphData) {
-  if (!address[api.chain] || !address[api.chain]["defiVault"]) {
+async function pancakeV3PositionsBalance(api, address) {
+  if (!address[api.chain] || !address[api.chain]["pancakeV3Positions"]) {
     return;
   }
-  let defiVaultData = address[api.chain]["defiVault"];
+  let pancakeV3PositionsData = address[api.chain]["pancakeV3Positions"];
+  await sumTokens2({ api, uniV3nftsAndOwners: pancakeV3PositionsData["vaults"], blacklistedTokens: pancakeV3PositionsData["blacklistedTokens"] ?? [], resolveLP: true, })
+}
 
-  let pools = [];
-  for (const graph of graphData.pools) {
-    if (graph['poolId'] == defiVaultData['poolId']) {
-      pools.push(graph)
-    }
+async function avalonBalance(api, address) {
+  if (!address[api.chain] || !address[api.chain]["avalon"]) {
+    return;
   }
-  if (pools.length > 0) {
-    if (defiVaultData.poolId) {
-      const [totalSupply, poolInfos] = await Promise.all([
-        api.call({ abi: 'erc20:totalSupply', target: defiVaultData.defiVault }),
-        api.call({ abi: abi.poolInfos, target: pools[0].marketContractAddress, params: [defiVaultData.poolId] }),
-      ]);
+  let avalonData = address[api.chain]["avalon"];
 
-      const redemptionConcrete = await api.call({
-        abi: abi.concrete,
-        target: poolInfos.poolSFTInfo.openFundRedemption,
-      })
+  const balances = await api.multiCall({
+    abi: abi.balanceOf,
+    calls: Object.values(avalonData["avalonAddress"]).map((index) => ({
+      target: index[0],
+      params: [index[1]]
+    })),
+  })
 
-      const [slotTotalValue, nav] = await Promise.all([
-        api.call({ abi: abi.slotTotalValue, target: redemptionConcrete, params: [poolInfos.poolSFTInfo.latestRedeemSlot] }),
-        api.call({ abi: abi.getSubscribeNav, target: poolInfos.navOracle, params: [defiVaultData.poolId, api.timestamp * 1000] }),
-      ]);
-
-      api.add(poolInfos.currency, BigNumber(slotTotalValue).plus(totalSupply).times(BigNumber(nav.nav_)).div(BigNumber(10).pow(18)).toNumber());
-    }
+  for (const balance of balances) {
+    api.add(avalonData.solvBTCAddress, balance)
   }
 }
 
