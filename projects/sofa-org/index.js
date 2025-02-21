@@ -23,6 +23,11 @@ const config = {
       '0xB8610F07D25C3B0D7D589bDe8be1b07Ffae1A0A5',
       '0x36Ac0331D03e40ab67Af564bC453314Cb58E0629',
       '0x858Af7297a3D20f61E0F7A2487c686e0A3353f2C',
+      // automator 2.0 vaults
+      '0x550cceC27639E01C5d9adE39f75e1351F791d2C2',
+      '0x622ccb3C38502DD9175B347FD32bb327A7175ffD',
+      '0x26E9aA240070d37C109E976b688E9B05C6Bd946b',
+      '0xA86dC0E47697D23469C1804a3a40021BEfCd89A2',
     ],
     aVaults: [
       '0x00aEca021D0f06c7dee54D58ee6Af47B5645aB19',
@@ -44,6 +49,8 @@ const config = {
       '0x21f759Bcb31739032A00b37e3560a216AE52eFDC',
       '0x3191a0008415dEB5c5161C4B394Ec46C8C703f8c',
       '0xC9Aa266e2E50EC2474cD881566845480F8daE931',
+      // automator 2.0 usdt automators
+      '0x5643ecfbb4bbaf4318582983a8b5216acefadce0',
     ],
     // scrvusd
     crvtokens: [
@@ -78,6 +85,11 @@ const config = {
       '0x106825b71ccE77a70B69f57A0ACf9C4a6acf292a',
       // automator
       '0x4C241483B4a85e44C59bcEcFe17A4E7d0A073CDB',
+      // automator 2.0 vautls
+      '0x3d5489b9846cD3BC3e05D32d46C51d50fA37c049',
+      '0x40e439cb71379eE5fF6b914313c11A792A385e93',
+      '0x68C91Df6ecBa6c697217d747f04B72EEDc6af1e7',
+      '0xC914Ba8F6393cC611BD1d207e317C68BE27943eB',
     ],
     aVaults: [
       // aArbUSDT
@@ -108,16 +120,21 @@ const config = {
       '0x94Fe821E8Adde08aB97530D432Ff34A724FD7830',
       '0x4a5B4049a4aFae31278d36768704872f73dA67D1',
       '0x08c57aE48a89b6876A76dC618972Ef1602da7ED8',
-      // automator
+      // automator 1.0
       '0x986Fa0383C39dBdA1B3A29Ac536fe5Df354Ed160',
       '0x770f7fcEce69C68B208B80bBc4e3d1Bf8f9c0672',
       '0x1e5A684d263F42BaC1f2bAd6fB379277D4D6c28C',
       '0xBF898C0C2E7d415dE8FCcc78d1200D029a060560',
-      // automator 2.0
+      // automator 2.0 automators
       '0x3f2e94b23553286322d050ea7e850286a5af731c',
       '0x38a3e7f2959478b4f686a8f3a8b694654dabc4d7',
       '0xa8631bcf425eb51abccba26ce3f503a66d6f2411',
       '0xffB0b9eDb5Fc84Ca4aD1eA1b722b95f1bB200718',
+      '0xC860e34ce6c2B9Ba30815FDF7730F3a4AbF70254',
+      '0x9884bc72674B8e3c3742b87cCC3188e6e410ae25',
+      '0xdBf223A74F56a784F5a9D83D5c4874169D87e29C',
+      '0x3f0950daeea7ac1e613dee784142e8c718d3948e',
+      '0x5fcfC91B1853147765964532acB8554A4b068346',
     ],
     crvtokens: [
     ],
