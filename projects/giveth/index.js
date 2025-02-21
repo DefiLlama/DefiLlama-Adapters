@@ -4,7 +4,7 @@ const { sumUnknownTokens } = require("../helper/unknownTokens");
 const { getConnection } = require("../helper/solana");
 
 // Token Addresses
-const GIV = "0x900db999074d9277c5da2a43f252d74366230da0";
+const MainnetGIV = "0x900db999074d9277c5da2a43f252d74366230da0";
 const xdaiGIV = "0x4f4f9b8d5b4d0dc10506e5551b0513b61fd59e75";
 const optimismGIV = "0x528CDc92eAB044E1E39FE43B9514bfdAB4412B98";
 const polygonZKEVMGIV = "0xddAFB91475bBf6210a151FA911AC8fdA7dE46Ec2";
@@ -85,7 +85,7 @@ async function stakingPolygonZKEVM() {
   const balance = await sumUnknownTokens({
     owners: ["0xc790f82bf6f8709aa4a56dc11afad7af7c2a9867"], // GIVFarm on Polygon ZKEVM
     tokens: [polygonZKEVMGIV],
-    chain: "polygonzkevm",
+    chain: "polygonzk",
   });
   return balance;
 }
@@ -97,7 +97,7 @@ async function poolPolygonZKEVM() {
       "0x30c99b07271d9a7143c324f04c77642262380c88", // WETH - Quickswap - Not owned
     ],
     tokens: [polygonZKEVMGIV],
-    chain: "polygonzkevm",
+    chain: "polygonzk",
   });
   return balance;
 }
@@ -136,7 +136,7 @@ module.exports = {
     staking: stakingOptimism,
     pool2: poolOptimism,
   },
-  polygonzkevm: {
+  polygonzk: {
     tvl: poolPolygonZKEVM,
     staking: stakingPolygonZKEVM,
     pool2: poolPolygonZKEVM,
