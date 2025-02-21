@@ -17,6 +17,10 @@ const berachainVaultAddress = '0xc3727b7E7F3FF97A111c92d3eE05529dA7BD2f48';
 const berachainStakingAddress = '0xE65668F745F546F061b4fC925A31Cb1F6512c32A';
 const berachainAmpAddress = '0xAc611438AE5F3953DeDB47c2ea8d6650D601C1B4';
 
+const baseVaultAddress = '0xed33E4767B8d68bd7F64c429Ce4989686426a926';
+const baseStakingAddress = '0x9e45B1f3983e5BD6480C39f57F876df0eda8EA74';
+const baseAmpAddress = '0xAc611438AE5F3953DeDB47c2ea8d6650D601C1B4';
+
 module.exports = {
   start: '2024-06-06',
   lightlink_phoenix: {
@@ -34,5 +38,9 @@ module.exports = {
   berachain: {
     staking: staking(berachainStakingAddress, berachainAmpAddress),
     tvl: gmxExports({ vault: berachainVaultAddress, })
+  },
+  base: {
+    staking: staking(baseStakingAddress, baseAmpAddress),
+    tvl: gmxExports({ vault: baseVaultAddress, })
   }
 };
