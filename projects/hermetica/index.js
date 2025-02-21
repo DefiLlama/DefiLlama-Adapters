@@ -25,7 +25,8 @@ module.exports = {
   timetravel: false,
   bitcoin: {
     tvl: async () => {
-      const totalSupply = await get('https://app.hermetica.fi/api/v1/usdh/supply');
+      const { result: totalSupply } = await get('https://app.hermetica.fi/api/v1/usdh/supply');
+
       const [contract_address, contract_name] = USDhContract.split('.');
       const supplyResponse = await post(`https://api.mainnet.hiro.so/v2/contracts/call-read/${contract_address}/${contract_name}/get-total-supply`,
         {
