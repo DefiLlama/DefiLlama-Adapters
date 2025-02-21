@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const vaults = [
   // "0x74E852a4f88bfbEff01275bB95d5ed77f2967d12",
   // "0x78F87aA41a4C32a619467d5B36e0319F3EAf2DA2",
@@ -20,15 +22,30 @@ const vaults = [
   "0x849232E2144BD5118B5e4A070FE15035cC07b388",
 ]
 
+const beraBorrowWberaVault = '0x6751C09113a83a83a43829fD0b3BC0D7bdbe07bf'
+const beraBorrowWberaToken = '0x9158d1b0c9cc4ec7640eaef0522f710dadee9a1b'
+
 const PSMs = [
   '0xCaB847887a2d516Dfa690fa346638429415c089b',
   '0x5623554eCe4E1fd78e8a4ce13D588A8e0053825D',
 ]
 
+const getAllCollateralsAndDenManagersAbi = "function getAllCollateralsAndDenManagers() view returns ((address collateral, address[] denManagers)[])"
+
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const pTokens = await api.multiCall({  abi: 'address:stable', calls: PSMs})
-  return api.sumTokens({ tokensAndOwners2: [tokens.concat(pTokens), vaults.concat(PSMs)] })
+  const beraTokens = await api.multiCall({ abi: 'address:collVault', calls: vaults })
+  const pTokens = await api.multiCall({ abi: 'address:stable', calls: PSMs })
+  const denInfos = await api.call({ abi: getAllCollateralsAndDenManagersAbi, target: '0xFA7908287c1f1B256831c812c7194cb95BB440e6' })
+  const tokensAndOwners = tokens.map((t, i) => [t, vaults[i]])
+  tokensAndOwners.push([ADDRESSES.berachain.WBERA, beraBorrowWberaVault])
+  beraTokens.push(beraBorrowWberaToken)
+
+  pTokens.forEach((t, i) => tokensAndOwners.push([t, PSMs[i]]))
+  denInfos.forEach(({ collateral, denManagers }) => {
+    denManagers.forEach(d => tokensAndOwners.push([collateral, d]))
+  })
+  return api.sumTokens({ tokensAndOwners, blacklistedTokens: beraTokens })
 }
 
 module.exports = {
