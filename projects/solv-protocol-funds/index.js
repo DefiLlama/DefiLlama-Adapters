@@ -236,7 +236,6 @@ async function vaultBalance(api, graphData) {
         target: poolConcretes[index.contractAddress],
         params: [index.openFundShareSlot],
       })),
-      permitFailure: true
     })
 
     let vaultAddress = [];
