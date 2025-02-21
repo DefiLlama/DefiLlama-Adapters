@@ -85,7 +85,7 @@ async function stakingPolygonZKEVM() {
   const balance = await sumUnknownTokens({
     owners: ["0xc790f82bf6f8709aa4a56dc11afad7af7c2a9867"], // GIVFarm on Polygon ZKEVM
     tokens: [polygonZKEVMGIV],
-    chain: "polygonzk",
+    chain: "polygon_zkevm",
   });
   return balance;
 }
@@ -97,7 +97,7 @@ async function poolPolygonZKEVM() {
       "0x30c99b07271d9a7143c324f04c77642262380c88", // WETH - Quickswap - Not owned
     ],
     tokens: [polygonZKEVMGIV],
-    chain: "polygonzk",
+    chain: "polygon_zkevm",
   });
   return balance;
 }
@@ -136,7 +136,7 @@ module.exports = {
     staking: stakingOptimism,
     pool2: poolOptimism,
   },
-  polygonzk: {
+  polygon_zkevm: {
     tvl: poolPolygonZKEVM,
     staking: stakingPolygonZKEVM,
     pool2: poolPolygonZKEVM,
