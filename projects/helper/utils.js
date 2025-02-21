@@ -52,7 +52,7 @@ const blacklisted_LPS = new Set([
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
-  if (chain === 'bsc' && symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  if (symbol.startsWith('IV-')) return true
   return false
 }
 
@@ -94,7 +94,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
   if (chain === 'arbitrum' && /^(DLP|LP-)/.test(symbol)) return false // DODO or Wombat
-  if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
+  if (['base', 'sonic',].includes(chain) && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
@@ -102,6 +102,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
   if (chain === 'shibarium' && ['SSLP', 'ChewyLP'].includes(symbol)) return true
   if (chain === 'omax' && ['OSWAP-V2'].includes(symbol)) return true
+  if (chain === 'sonic' && symbol.endsWith(' spLP')) return true
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
@@ -314,7 +315,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     return true
   })
   if (filtered.length > 300) {
-    sdk.log('Too many unknowns to display #'+filtered.length, 'displaying first 100')
+    sdk.log('Too many unknowns to display #' + filtered.length, 'displaying first 100')
     filtered = filtered.slice(0, 100)
   }
   if (filtered.length)
@@ -332,6 +333,45 @@ function once(func) {
   }
   return wrapped
 }
+
+
+function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
+  return async (api) => {
+    let fetchedValidators = skipValidators;
+    let size = 200;
+    api.sumTokens({ owner: withdrawalAddress, tokens: [nullAddress] })
+    do {
+      const validators = (
+        await http.get(
+          `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
+        )
+      ).data.map((i) => i.publickey);
+      fetchedValidators += validators.length;
+      api.log("Fetching balances for validators", validators.length);
+      await addValidatorBalance(validators);
+      await sleep(10000);
+    } while (fetchedValidators % size === 0);
+
+    return api.getBalances()
+
+
+    async function addValidatorBalance(validators) {
+      if (validators.length > 100) {
+        const chunks = sliceIntoChunks(validators, 100);
+        for (const chunk of chunks) await addValidatorBalance(chunk);
+        return;
+      }
+
+      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
+        indicesOrPubkey: validators.join(","),
+      });
+
+
+      data.forEach((i) => api.addGasToken(i.balance * 1e9));
+    }
+  }
+}
+
 
 module.exports = {
   log,
@@ -354,4 +394,5 @@ module.exports = {
   getParamCalls,
   once,
   isICHIVaultToken,
+  getStakedEthTVL,
 }

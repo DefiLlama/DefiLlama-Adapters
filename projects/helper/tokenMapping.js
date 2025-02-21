@@ -19,7 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
-  'celestia', 'dydx', 'carbon'
+  'celestia', 'dydx', 'carbon', 'milkyway',
 
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
@@ -41,29 +41,25 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  kopi: {
-    'uasusdc': { coingeckoId: 'usd-coin', decimals: 6 },
-    'ucusdc': { coingeckoId: 'usd-coin', decimals: 6 },
-    'uasusdtinj': { coingeckoId: 'tether', decimals: 6 },
-    'ucusdtinj': { coingeckoId: 'tether', decimals: 6 },
+  chz: {
+    '0x60f397acbcfb8f4e3234c659a3e10867e6fa6b67': { coingeckoId: 'pepper', decimals: 18 },
   },
-  elys: {
-    'uelys': { coingeckoId: 'elys-network', decimals: 6 },
+  flow: {
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 }, 
+    '0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed': { coingeckoId: "flow-bridged-pyusd-flow", decimals: 6 }, 
   },
-  superpositionso: {
-    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
-    '0x1fB719f10b56d7a85DCD32f27f897375fB21cfdd': { coingeckoId: 'ethereum', decimals: 18 },
-    '0xA2555701754464d32D9624149E3fDb459F3c8DE4': { coingeckoId: 'arbitrum', decimals: 18 },
-    '0x80eFAD50D395671C13C4b1FA2969f7a7Aa9EF7b3': { coingeckoId: 'fluidity-money', decimals: 18 },
-    '0x6e142cdaefa4ba7786e8d1ff74968db67c3b910d': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+  sonic: {
+    '0x6047828dc181963ba44974801ff68e538da5eaf9': { coingeckoId: "tether", decimals: 6 },
   },
-  mantra: {
-    uom: { coingeckoId: 'mantra-dao', decimals: 6 },
+  astar: {
+    '0x1ec4bbd1ff6642d29c1453ce1207b039a434a438': { coingeckoId: "astar", decimals: 18 },
+  },
+  tara: {
+    '0xe6a69cd4ff127ad8e53c21a593f7bac4c608945e': { coingeckoId: 'lara', decimals: 18 },
   },
 }
 

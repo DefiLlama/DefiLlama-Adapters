@@ -42,6 +42,7 @@ const config = {
   polygon_zkevm: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },
   mantle: { margin: '0xE6Ef4f0B2455bAB92ce7cC78E35324ab58917De8', },
   xlayer: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },
+  berachain: { margin: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D', },
   // base: { margin: '0x43C2FDB89A1C491F9FE86E1Ff05bd2BE204Ab4aE', },
 }
 

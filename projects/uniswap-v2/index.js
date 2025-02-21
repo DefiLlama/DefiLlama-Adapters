@@ -1,4 +1,5 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { get } = require('../helper/http');
 const { getUniTVL } = require('../helper/unknownTokens');
 
 const v2graph = getChainTvl({
@@ -22,7 +23,8 @@ const config = {
   bsc: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
   polygon: '0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C',
   celo: '0x79a530c8e2fA8748B7B40dd3629C0520c2cCf03f',
-  zora: '0x0F797dC7efaEA995bB916f268D919d0a1950eE3C'
+  zora: '0x0F797dC7efaEA995bB916f268D919d0a1950eE3C',
+  unichain: '0x1F98400000000000000000000000000000000002',
 }
 
 Object.keys(config).forEach(chain => {
@@ -31,3 +33,22 @@ Object.keys(config).forEach(chain => {
     tvl: getUniTVL({ factory, useDefaultCoreAssets: true, })
   }
 })
+
+module.exports.isHeavyProtocol = true
+
+const graphChains = ['base']
+graphChains.forEach(chain => {
+  module.exports[chain] = { tvl: tvlViaGraph }
+})
+
+async function tvlViaGraph(api) {
+  const endpoint = `https://interface.gateway.uniswap.org/v2/uniswap.explore.v1.ExploreStatsService/ProtocolStats?connect=v1&encoding=json&message=%7B%22chainId%22%3A%22${api.chainId}%22%7D`
+  const res = await get(endpoint, {
+    headers: {
+      'origin': 'https://app.uniswap.org',
+    } 
+  })
+  const v2 = res.dailyProtocolTvl.v2
+  const tvl = v2[v2.length - 1].value
+  api.addUSDValue(tvl)
+}
