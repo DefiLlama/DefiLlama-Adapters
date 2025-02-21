@@ -10,7 +10,7 @@ async function tvl() {
         const totalStakedCHR = response / 1e6;  
 
         return {
-            "chromaway": totalStakedCHR, // Uses CoinGecko ID 'chromaway' for CHR token
+            "chromaway": totalStakedCHR,
         };
     } catch (error) {
         console.error("Error fetching Chromia staking data:", error);
@@ -20,7 +20,7 @@ async function tvl() {
 
 module.exports = {
     timetravel: false, // Chromia may not support historical queries
-    methodology: "Fetches total staked CHR from Chromia's API and converts it to human-readable format (6 decimals).",
+    methodology: "Fetches total staked CHR from the Chromia Economy Chain API.",
     chromia: {
         tvl,
     },
