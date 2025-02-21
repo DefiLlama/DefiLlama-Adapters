@@ -1,5 +1,8 @@
 const { VAULTS } = require("./constants")
 
+// test with
+// node test.js projects/canaryprotocol/index.js
+
 async function tvl(api) {
   for (const vault of VAULTS) {
     const collateralBalance = await api.call({
@@ -7,8 +10,8 @@ async function tvl(api) {
       target: vault.token.address,
       params: [vault.address],
     });
-    // TODO remove debug line
-    console.log(vault.name, collateralBalance)
+    // uncomment for debugging
+    // console.log(vault.token.name, collateralBalance)
 
     api.add(vault.token.address, collateralBalance)
   }
