@@ -22,6 +22,9 @@ const config = {
       '0xe2484A7Ac1b9Cb6D8E55fd00e129aB913172bea6',
       '0xdbe15F6573108B6736c70779C683Ca633c18aFe2',
       '0xa2E07DB4e92F66071Ca68984517972F5625AB325',
+      '0xBb6CaCfCeA26e45D0ac8019e1Eb606440736b53e',
+      '0x697A276401BadD8A9e37aEdd3DBF70b325f31268',
+      '0x8a1feCFF181dD770206c0892E09B0243A495152b'
     ],
   },
   bitcoin: {
@@ -51,6 +54,7 @@ const config = {
       'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
       '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
       '3jvARuePRR6KpNAeYYGRQzs8W4VYsWWxe4BfoTSTZhUr',
+      'CFvYntdD6o7goAmXXtUKhirr8xLEfhY3txyJ8BpiisxJ',
     ],
   },
   polkadot: {
@@ -91,6 +95,7 @@ const config = {
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
       '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
       '0x9531AA9883bF11f2a63d86caD7e826f37Acec3c4',
+      '0x4DF0BCB425aac41795B40a2B5A563A6a3eC23B41',
     ]
   },
   polygon: {
@@ -116,6 +121,11 @@ const config = {
       '0x5509Be53b2dD0CD6fb8473B0EdA94e0a3059b73a',
     ]
   },
+  osmosis: {
+    owners: [
+      'osmo1h9sy6z5hnk5wjf6ds8w4syq0yqs706n9m6qlap',
+    ]
+  }
 }
 
 module.exports = cexExports(config)

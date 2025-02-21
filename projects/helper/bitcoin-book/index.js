@@ -91,6 +91,12 @@ const nexusbtc = require('./nexusbtc')
 const tapbit = require('./tapbit-cex.js')
 const jbtc = require('./jbtc')
 const bitkub = require('./bitkub-cex.js')
+const coin8 = require('./coin8.js')
+const bitrue = require('./bitrue-cex.js')
+const cygnus = require('./cygnus.js')
+const unitbtc = require('./unit-btc.js')
+const backpack = require('./backpack.js')
+const coinbasebtc = require('./coinbase-btc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -100,6 +106,11 @@ const teleswap = [
   '31uHNFfbejkbUD2B26o2CARfU1ALJ6x6Ag', // BOB_LOCKER
   '3LNsey3ceG9ZHkQ7bcfAjwnew7KVujHt29', // BRC20_LOCKER
 ]
+
+const ssiProtocol = [
+  '1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM'
+]
+
 const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
 ]
@@ -109,12 +120,20 @@ const stacksSBTC = [
   'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
 ]
 
+const magpie = [
+  '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
+  'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
+]
+
 module.exports = {
   ...fetchers,
+  cygnus,
+  magpie,
   stacksSBTC,
   bitomato,
   bitlayerBridge,
   teleswap,
+  ssiProtocol,
   ainn,
   allo,
   avalanche,
@@ -206,5 +225,10 @@ module.exports = {
   nexusbtc,
   tapbit,
   jbtc,
-  bitkub
+  bitkub,
+  coin8,
+  bitrue,
+  unitbtc,
+  backpack,
+  coinbasebtc
 }

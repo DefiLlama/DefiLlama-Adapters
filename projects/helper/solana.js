@@ -67,12 +67,13 @@ function getAssociatedTokenAddress(mint, owner,) {
   if (typeof mint === 'string') mint = new PublicKey(mint)
   if (typeof owner === 'string') owner = new PublicKey(owner)
   const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
-  return associatedTokenAddress;
+  return associatedTokenAddress.toString()
 }
 
 
 async function getTokenSupplies(tokens, { api } = {}) {
-  const sleepTime = tokens.length > 2000 ? 2000 : 200
+  // const sleepTime = tokens.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   const connection = getConnection()
   tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
   const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
@@ -94,7 +95,8 @@ async function getTokenSupplies(tokens, { api } = {}) {
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
-  const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  // const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   log('total token accounts: ', tokenAccounts.length, 'sleepTime: ', sleepTime)
   tokenAccounts.forEach((val, i) => {
     if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
@@ -409,6 +411,21 @@ async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
   return results.flat()
 }
 
+function i80f48ToNumber(i80f48) {
+  if (i80f48.value) i80f48 = i80f48.value
+  // Create a mask with the lower 48 bits set to 1
+  const mask = BigInt((1n << 48n) - 1n)
+
+  // Shift right by 48 bits to get the integer part
+  const integerPart = BigInt(i80f48) >> BigInt(48)
+
+  // Use bitwise AND to get the fractional part
+  const fractionalPart = BigInt(i80f48) & mask
+
+  // Convert to regular numbers and add together
+  return Number(integerPart) + Number(fractionalPart) / Number(1n << 48n)
+}
+
 module.exports = {
   endpoint: endpoint(),
   getMultipleAccounts,
@@ -428,4 +445,6 @@ module.exports = {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
   getAssociatedTokenAddress,
+  i80f48ToNumber,
+  runInChunks,
 };

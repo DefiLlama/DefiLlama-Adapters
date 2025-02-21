@@ -6,6 +6,7 @@ const config = {
   polygon: {
     bucketsFactory: '0x7E6915D307F434E4171cCee90e180f5021c60089',
     bucketsFactoryv2: '0x9649CfDCfAa9c80907e63dD9Cb161cBA2033F3A0',
+    bucketsFactoryv3: '0x84318E4573B5c109d1b57A1fDC2607A0C7d5296F',
     positionManager: '0x02bcaA4633E466d151b34112608f60A82a4F6035',
     traderBalanceVault: '0x0801896C67CF024606BcC92bd788d6Eb077CC74F',
     defaultTokens: {
@@ -37,8 +38,9 @@ const config = {
       WSTETH: ADDRESSES.polygon.WSTETH,
       LDO: "0xC3C7d422809852031b44ab29EEC9F1EfF2A58756",
       FRAX: ADDRESSES.polygon.FRAX,
-      FXS: "0x1a3acf6d19267e2d3e7f898f42803e90c9219062"
+      FXS: "0x1a3acf6d19267e2d3e7f898f42803e90c9219062",
     },
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
     aaveTokens: {
       [ADDRESSES.polygon.WETH_1]: "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8",
       [ADDRESSES.polygon.WBTC]: "0x078f358208685046a11C85e8ad32895DED33A249",
@@ -50,6 +52,7 @@ const config = {
   arbitrum: {
     bucketsFactory: '0x4e6f7372bCE4083c779c17B240A94dc2EA57AE67',
     bucketsFactoryv2: '0xB4d3A9f10D3D687FaF3b05b9aa3054856A1d7be8',
+    bucketsFactoryv3: '0x10dDc924A0687a8bbEe6051A8CdAEc9ecA83F2E1',
     positionManager: '0x86890E30cE9E1e13Db5560BbEb435c55567Af1cd',
     traderBalanceVault: '0xc08FFBBA8c5f42beb7e6dd29142cC61855a3076B',
     defaultTokens: {
@@ -86,15 +89,16 @@ const config = {
       WEETH: "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
       ETHFI: "0x7189fb5B6504bbfF6a852B13B7B82a3c118fDc27",
       EZETH: ADDRESSES.optimism.ezETH,
-      RSETH: "0x4186bfc76e2e237523cbc30fd220fe055156b41f",
+      RSETH: ADDRESSES.berachain.rsETH,
       USDE: ADDRESSES.arbitrum.USDe,
       CBETH: "0x1debd73e752beaf79865fd6446b0c970eae7732f",
       USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
       TBTC: "0x6c84a8f1c29108f47a79964b5fe888d4f4d0de40",
       FRAX: ADDRESSES.arbitrum.FRAX,
       FRXETH: "0x178412e79c25968a32e89b11f63b33f733770c2a",
-      SFRXETH: "0x95ab45875cffdba1e5f451b950bc2e42c0053f39"
+      SFRXETH: "0x95ab45875cffdba1e5f451b950bc2e42c0053f39",
     },
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
     aaveTokens: {
       [ADDRESSES.arbitrum.DAI]: "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
       [ADDRESSES.arbitrum.USDC]: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",
@@ -107,6 +111,7 @@ const config = {
   ethereum: {
     bucketsFactory: '0x7dE8607157124c894Ba9F18dd6138B5E8AAd5890',
     bucketsFactoryv2: '0x55120da310A0c5fd81Fd3bb8C177F6649bE30ACc',
+    bucketsFactoryv3: '0xe0b3daA28E5c32B4AB7eE9700B57CE38eEf9872b',
     positionManager: '0x99d63fEA4b3Ef6ca77941df3C5740dAd1586f0B8',
     traderBalanceVault: '0x156e2fC8e1906507412BEeEB6640Bf999a1Ea76b',
     defaultTokens: {
@@ -132,7 +137,7 @@ const config = {
       WSTETH: ADDRESSES.ethereum.WSTETH,
       RETH: ADDRESSES.ethereum.RETH,
       SDAI: ADDRESSES.ethereum.SDAI,
-      WEETH: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+      WEETH: ADDRESSES.ethereum.WEETH,
       ETHFI: "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
       LDO: ADDRESSES.ethereum.LIDO,
       EZETH: "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
@@ -149,8 +154,9 @@ const config = {
       FRAX: ADDRESSES.ethereum.FRAX,
       FXS: ADDRESSES.ethereum.FXS,
       FRXETH: "0x5e8422345238f34275888049021821e8e08caa1f",
-      SFRXETH: ADDRESSES.ethereum.sfrxETH
+      SFRXETH: ADDRESSES.ethereum.sfrxETH,
     },
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
     aaveTokens: {
       [ADDRESSES.ethereum.WETH]: "0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8",
       [ADDRESSES.ethereum.WSTETH]: "0x0B925eD163218f6662a35e0f0371Ac234f9E9371",
@@ -161,13 +167,22 @@ const config = {
       [ADDRESSES.ethereum.AAVE]: "0xA700b4eB416Be35b2911fd5Dee80678ff64fF6C9",
     },
   },
+  base: {
+    bucketsFactory: '0xCf552C38A0Ecb51982Af28d4e475beF27aC2dD25',
+    bucketsFactoryv2: '0x8e8792881227e8fee8a9e05a567A44D3FA04a7f0',
+    bucketsFactoryv3: '0x15e975dA0080e7A3731Ac329245241b83AcFcAfC',
+    positionManager: '0x01ED183275956dBd0064B789B778cA0921e695E9',
+    traderBalanceVault: '0xDf7B923a7bF62331092B49fd36EE26A21755DFa1',
+    vpmx: "0x4C7876977ECe31fDb8e932e17977D4C93DB1938F",
+    PMX: "0x0B3EAEAd748facDb9d943d3407011f16Eb17D0Cf",
+    defaultTokens: {},
+    aaveTokens: {},
+  }
 }
 
-module.exports = {}
-
 Object.keys(config).forEach(chain => {
-  const { bucketsFactory, bucketsFactoryv2, positionManager, traderBalanceVault, defaultTokens, aaveTokens } = config[chain]
-
+  const { bucketsFactory, bucketsFactoryv2, bucketsFactoryv3, positionManager, traderBalanceVault, vpmx, defaultTokens, aaveTokens, PMX, } = config[chain]
+  
   module.exports[chain] = {
     tvl: async (api) => {
       const buckets = await api.call({ target: bucketsFactory, abi: abi.allBuckets })
@@ -178,15 +193,23 @@ Object.keys(config).forEach(chain => {
       const tokensAndOwnersBucketsv2 = bucketsv2.map((b, i) => [borrowedTokensAddressesv2[i], b])
       const aTokensAndOwnersBucketsv2 = bucketsv2.map((b, i) => [aaveTokens[borrowedTokensAddressesv2[i].toLowerCase()], b]).filter((p) => p[0])
 
+      const bucketsv3 = await api.call({ target: bucketsFactoryv3, abi: abi.allBuckets })
+      const borrowedTokensAddressesv3 = await api.multiCall({ abi: abi.borrowedAsset, calls: bucketsv3 })
+      const tokensAndOwnersBucketsv3 = bucketsv3.map((b, i) => [borrowedTokensAddressesv3[i], b])
+      const aTokensAndOwnersBucketsv3 = bucketsv3.map((b, i) => [aaveTokens[borrowedTokensAddressesv3[i].toLowerCase()], b]).filter((p) => p[0])
+
       const tokensAndOwnersBuckets = buckets.map((b, i) => [borrowedTokensAddresses[i], b])
       const aTokensAndOwnersBuckets = buckets.map((b, i) => [aaveTokens[borrowedTokensAddresses[i].toLowerCase()], b]).filter((p) => p[0])
 
       const tokensAndOwnersPM = Object.values(defaultTokens).map(t => [t, positionManager])
       const tokensAndOwnersTBV = Object.values(defaultTokens).map(t => [t, traderBalanceVault])
 
-      const tokensAndOwners = tokensAndOwnersBuckets.concat(tokensAndOwnersBucketsv2, aTokensAndOwnersBuckets, aTokensAndOwnersBucketsv2, tokensAndOwnersPM, tokensAndOwnersTBV)
-
+      const tokensAndOwners = tokensAndOwnersBuckets.concat(tokensAndOwnersBucketsv2, tokensAndOwnersBucketsv3, aTokensAndOwnersBuckets, aTokensAndOwnersBucketsv2, aTokensAndOwnersBucketsv3, tokensAndOwnersPM, tokensAndOwnersTBV,)
+    
       return sumTokens2({ api, tokensAndOwners })
     }
   }
+
+  if (vpmx)
+    module.exports[chain].staking = api => api.sumTokens({ owner: vpmx, tokens: [PMX] })
 })

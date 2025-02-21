@@ -230,17 +230,18 @@ async function vaultBalance(api, graphData) {
     const poolConcretes = await concrete(poolLists, api);
 
     const poolBaseInfos = await api.multiCall({
+      permitFailure: true,
       abi: abi.slotBaseInfo,
       calls: poolLists.map((index) => ({
         target: poolConcretes[index.contractAddress],
-        params: [index.openFundShareSlot]
+        params: [index.openFundShareSlot],
       })),
       permitFailure: true
     })
 
     let vaultAddress = [];
     for (const key in poolLists) {
-      if (solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
+      if (poolBaseInfos[key] && solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
         vaultAddress.push(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`);
       }
     }
