@@ -1,57 +1,49 @@
-const { Program } = require("@project-serum/anchor");
-const bs58 = require('bs58');
-const { getProvider } = require("../helper/solana");
-const idl = require('./idl')
 
-const SOL = "So11111111111111111111111111111111111111112"
+const { Program } = require("@coral-xyz/anchor");
+const { getProvider } = require("../helper/solana");
+const bankIdl = require('./bank-idl');
+const defiIdl = require('./defi-idl');
+
+const BANK_PROGRAM_ID = 'rain2M5b9GeFCk792swkwUu51ZihHJb3SUQ8uHxSRJf';
+const DEFI_PROGRAM_ID = 'rDeFiHPjHZRLiz4iBzMw3zv6unZs4VwdU6qQcVd3NSK';
 
 async function tvl(api) {
-  const provider = getProvider()
-  const program = new Program(idl, 'RainEraPU5yDoJmTrHdYynK9739GkEfDsE4ffqce2BR', provider)
+  const provider = getProvider();
+  const bankProgram = new Program(bankIdl, BANK_PROGRAM_ID, provider);
+  const defiProgram = new Program(defiIdl, DEFI_PROGRAM_ID, provider);
 
-  const pools = await program.account.pool.all()
-  const nftCollections = await program.account.collection.all([
-    {
-      memcmp: {
-        offset: 8 + 132,
-        bytes: bs58.encode(Buffer.from([0])), // nfts only
-      },
-    },
-  ])
+  // Get all banks
+  const banks = await bankProgram.account.bank.all();
 
-  const loans = await program.account.loan.all([
+  // Get all active defi loans
+  const defiLoans = await defiProgram.account.loan.all([
     {
       memcmp: {
         offset: 8 + 1,
         bytes: bs58.encode(Buffer.from([0])), // active loans only
       },
     },
-  ])
+  ]);
 
-  for (const loan of loans) {
-    if (loan.account.isDefi) {
-      api.add(loan.account.mint.toString(), loan.account.collateralAmount)
-    } else {
-      const collection = nftCollections.find(c => c.account.collectionId == loan.account.collection)
-      if (collection) {
-        api.add(SOL, collection.account.floorPrice)
-      }
-    }
+  // Add bank available liquidity to TVL, availableLiquidity = totalLiquidity - borrowedLiquidity
+  for (const bank of banks) {
+    api.add(
+      bank.account.mint.toString(),
+      bank.account.availableLiquidity
+    );
   }
 
-  for (const pool of pools)
-    api.add(pool.account.currency.toString(), pool.account.availableAmount)
+  // Add defi loan collateral to TVL
+  for (const loan of defiLoans) {
+    api.add(
+      loan.account.collateral.toString(),
+      loan.account.collateralAmount
+    );
+  }
 }
 
-async function borrowed(api) {
-  const provider = getProvider()
-  const program = new Program(idl, 'RainEraPU5yDoJmTrHdYynK9739GkEfDsE4ffqce2BR', provider)
-  const pools = await program.account.pool.all()
-
-  for (const pool of pools)
-    api.add(pool.account.currency.toString(), pool.account.borrowedAmount)
-}
+tvl()
 
 module.exports = {
-  solana: { tvl, borrowed, },
+  solana: { tvl },
 }
