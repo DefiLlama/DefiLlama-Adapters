@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-
 const handleError = require('./utils/handleError')
 const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
 process.on('unhandledRejection', handleError)
@@ -31,7 +30,7 @@ if (process.env.LLAMA_SANITIZE)
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
-
+const CG_API_KEY = process.env.CG_API_KEY
 
 async function getTvl(
   unixTimestamp,
@@ -409,19 +408,27 @@ async function computeTVL(balances, timestamp) {
   const tokenBalances = {};
   const usdTokenBalances = {};
 
-  tokenData.forEach(response => {
-    Object.keys(response).forEach(address => {
-      delete unknownTokens[address]
+  for (const response of tokenData) {
+    for (const address of Object.keys(response)) {
+      delete unknownTokens[address];
       const data = response[address];
       const balance = balances[address];
-
-      if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
-      if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
-      if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
-        console.log(`Price for ${address} is stale, ignoring...`)
-        return
+      const symbol = response[address].symbol
+  
+      if (data === undefined) {
+        tokenBalances[`UNKNOWN (${address})`] = balance;
+        continue;
       }
-
+  
+      if (('confidence' in data && data.confidence < confidenceThreshold) || !data.price) {
+        continue;
+      }
+  
+      if (Math.abs(data.timestamp - Date.now() / 1e3) > 24 * 3600) {
+        console.log(`Price for ${address} is stale, ignoring...`);
+        continue;
+      }
+  
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {
         amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
@@ -430,21 +437,48 @@ async function computeTVL(balances, timestamp) {
         amount = Number(balance);
         usdAmount = amount * data.price;
       }
-
+  
       if (usdAmount > 1e8) {
         console.log(`-------------------
-Warning: `)
-        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M) , price data: `, data)
-        console.log(`-------------------`)
+  Warning: `);
+        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M), price data: `, data);
+
+        const { isWithinMarketCap, newPrice, marketCap } = await checkMarketCap(address, symbol, usdAmount);
+
+        if (!isWithinMarketCap) {
+          if (!newPrice) {
+            console.log(`❌ Token ${address} (${symbol}) exceeds market cap and no valid price was found. Ignoring token.`);
+            continue;
+          }
+        
+          console.log(`⚠️  Token ${address} (${symbol}) exceeds market cap. Using updated price from CoinGecko: ${newPrice}`);
+          data.price = newPrice;
+        
+          amount = address.includes(":") && !address.startsWith("coingecko:")
+            ? new BigNumber(balance).div(10 ** data.decimals).toNumber()
+            : Number(balance);
+        
+          usdAmount = amount * data.price;
+
+          if (usdAmount > marketCap) {
+            console.log(`❌ Even with updated price, USD amount (${usdAmount}) still exceeds market cap (${marketCap}). Ignoring token.`);
+            continue;
+          }
+
+          console.log(`✅ With updated price, USD amount (${usdAmount}) is now within market cap (${marketCap}). Counting token.`);
+        }
+        console.log(`-------------------`);
       }
+  
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;
+  
       if (isNaN(usdTvl)) {
-        throw new Error(`NaN usdTvl for ${address} with balance ${balance} and price ${data.price}`)
+        throw new Error(`NaN usdTvl for ${address} with balance ${balance} and price ${data.price}`);
       }
-    })
-  });
+    }
+  }
 
   Object.keys(unknownTokens).forEach(address => tokenBalances[`UNKNOWN (${address})`] = balances[address])
 
@@ -481,6 +515,81 @@ function buildPricesGetQueries(readKeys) {
 
   queries.push(query.slice(0, -1))
   return queries
+}
+
+async function checkMarketCap(token, symbol, usdAmount) {
+  console.log(`Checking the Market Cap for ${token} (${symbol})`);
+
+  if (!CG_API_KEY) {
+    console.log(`⚠️  CG_API_KEY is not set, skipping check`);
+    return { isWithinMarketCap: true, newPrice: null, marketCap: null };
+  }
+
+  const normalizedToken = symbol === "ETH" ? "coingecko:ethereum" : token;
+
+  const coinData = normalizedToken.includes(":") && !normalizedToken.startsWith("coingecko:")
+    ? await fetchCoinMarketCap(normalizedToken, symbol, true)
+    : await fetchCoinMarketCap(normalizedToken, symbol, false);
+
+  if (!coinData || !coinData.marketCap) {
+    console.log(`⚠️  No market cap found for ${symbol}. Proceeding cautiously.`);
+    return { isWithinMarketCap: true, newPrice: null, marketCap: null };
+  }
+
+  const { marketCap, price } = coinData;
+
+  if (usdAmount > marketCap) {
+    if (!price) {
+      console.log(`❌ USD amount (${usdAmount}) exceeds market cap (${marketCap}), and no valid price found on CoinGecko for ${symbol}. Ignoring token.`);
+      return { isWithinMarketCap: false, newPrice: null, marketCap };
+    }
+
+    console.log(`❌ USD amount (${usdAmount}) exceeds market cap (${marketCap}). Using updated price from CoinGecko: ${price}`);
+    return { isWithinMarketCap: false, newPrice: price, marketCap };
+  }
+
+  console.log(`✅ USD amount (${usdAmount}) is within market cap (${marketCap}) for ${symbol}. Counting token.`);
+  return { isWithinMarketCap: true, newPrice: null, marketCap };
+}
+
+async function fetchCoinMarketCap(token, symbol, isByChain) {
+  try {
+    const [chain, address] = isByChain ? token.split(":") : ["", token.split(":")[1]];
+    const url = isByChain
+      ? `https://pro-api.coingecko.com/api/v3/coins/${chain}/contract/${address}`
+      : `https://pro-api.coingecko.com/api/v3/coins/${address}?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+
+    const { data } = await axios.get(url, {
+      headers: {
+        accept: "application/json",
+        "x-cg-pro-api-key": CG_API_KEY,
+      },
+    });
+
+    if (!data) {
+      console.log(`❌ No data returned from CoinGecko API for ${token}`);
+      return null;
+    }
+
+    if (!data.symbol || data.symbol.toLowerCase() !== symbol.toLowerCase()) {
+      console.log(`❌ Symbol mismatch for ${token} (expected: ${symbol}, received: ${data.symbol || "none"})`);
+      return null;
+    }
+
+    const marketCap = data.market_data?.market_cap?.usd || null;
+    const price = data.market_data?.current_price?.usd || null;
+
+    if (!marketCap) {
+      console.log(`❌ No market cap data found for ${token}`);
+    } else {
+      console.log(`✅ Market cap found for ${symbol}: ${marketCap} USD`);
+    }
+
+    return { marketCap, price };
+  } catch (error) {
+    console.error(`❌ Error while querying CoinGecko API for ${token}:`, error.message);
+    return null;
+  }
 }
 
 async function initCache() {
