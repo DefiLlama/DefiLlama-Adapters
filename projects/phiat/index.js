@@ -25,6 +25,6 @@ module.exports = {
   pulse: {
     tvl: lending(false),
     borrowed: lending(true),
-    staking: staking(stakingContract, PHIAT, "pulse"),
+    staking: staking(stakingContract, PHIAT),
   },
 };

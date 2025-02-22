@@ -83,8 +83,8 @@ module.exports = {
         tvl:tvlArbitrum
     },
     ethereum:{
-        tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", ADDRESSES.ethereum.USDC, "ethereum"),
-        staking: staking("0xcb9f85730f57732fc899fb158164b9ed60c77d49", "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf", "ethereum")
+        tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", ADDRESSES.ethereum.USDC),
+        staking: staking("0xcb9f85730f57732fc899fb158164b9ed60c77d49", "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf")
     },
  hallmarks:[
     [1635218174, "Lyra Token"],

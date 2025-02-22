@@ -5,7 +5,6 @@ const LP = '0xd2eb1de935fe66501aece023b0437fa7b9c40a25'
 
 module.exports = {
   methodology: "Counts USDC deposited to trade and to mint BLP. Staking counts BSM and esBSM deposited to earn esBSM",
-  start: 1700488,
   base: {
     tvl: staking("0xEDFFF5d0C68cFBd44FA12659Fd9AD55F04748874", ADDRESSES.base.USDbC),
     pool2: sumTokensExport({ owner: "0xe2cb504d51fd16d8bdf533c58553ed3f4f755f00", tokens: [LP], useDefaultCoreAssets: true, }),

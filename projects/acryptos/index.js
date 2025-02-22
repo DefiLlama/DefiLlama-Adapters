@@ -66,6 +66,9 @@ module.exports = {
   base:{
     tvl: fetchallchain(8453),
   },
+  linea:{
+    tvl: fetchallchain(59144),    
+  },
   harmony: {
     tvl: fetchallchain(1666600000),
   }

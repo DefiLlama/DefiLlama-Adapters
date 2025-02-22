@@ -26,7 +26,7 @@ module.exports = {
   bsc: {
     tvl: lending(false),
     borrowed: lending(true),
-    staking: staking(stakingContract, VALAS, "bsc"),
-    pool2: pool2(stakingContractPool2, VALAS_BNB_pLP, "bsc"),
+    staking: staking(stakingContract, VALAS),
+    pool2: pool2(stakingContractPool2, VALAS_BNB_pLP),
   },
 };

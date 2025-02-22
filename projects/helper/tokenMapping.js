@@ -16,8 +16,15 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
+
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
+  'celestia', 'dydx', 'carbon', 'milkyway',
+
+]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
+]
 
 const transformTokens = {
   // Sample Code
@@ -34,29 +41,31 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  ethereum: {
-    '0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0': { coingeckoId: 'stakestone-ether', decimals: 18 },
-  },
-  islm: {
-    '0xeC8CC083787c6e5218D86f9FF5f28d4cC377Ac54': { coingeckoId: 'islamic-coin', decimals: 18 },
-    '0xc5e00d3b04563950941f7137b5afa3a534f0d6d6': { coingeckoId: 'dai', decimals: 18 },
-    '0xeceeefcee421d8062ef8d6b4d814efe4dc898265': { coingeckoId: 'ethereum', decimals: 18 },
-    '0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-    '0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75': { coingeckoId: 'tether', decimals: 6 },
-    '0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd': { coingeckoId: 'axlusdc', decimals: 6 },
-  },
-  svm: {
-    '0x5db252ead05C54B08A83414adCAbF46Eaa9E0337': { coingeckoId: 'bitcoin', decimals: 18 },
-  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  }
+  },
+  chz: {
+    '0x60f397acbcfb8f4e3234c659a3e10867e6fa6b67': { coingeckoId: 'pepper', decimals: 18 },
+  },
+  flow: {
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 }, 
+    '0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed': { coingeckoId: "flow-bridged-pyusd-flow", decimals: 6 }, 
+  },
+  sonic: {
+    '0x6047828dc181963ba44974801ff68e538da5eaf9': { coingeckoId: "tether", decimals: 6 },
+  },
+  astar: {
+    '0x1ec4bbd1ff6642d29c1453ce1207b039a434a438': { coingeckoId: "astar", decimals: 18 },
+  },
+  tara: {
+    '0xe6a69cd4ff127ad8e53c21a593f7bac4c608945e': { coingeckoId: 'lara', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
-function getUniqueAddresses(addresses, chain) {
+function getUniqueAddresses(addresses, chain = 'ethereum') {
   const toLowerCase = !caseSensitiveChains.includes(chain)
   const set = new Set()
   addresses.forEach(i => set.add(toLowerCase ? i.toLowerCase() : i))
@@ -93,6 +102,7 @@ function getCoreAssets(chain = 'ethereum') {
 
 function normalizeAddress(address, chain, extractChain = false) {
   if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
+  if (chain === 'sei' && address?.startsWith('0x')) return address.toLowerCase()
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }

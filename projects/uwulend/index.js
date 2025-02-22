@@ -23,6 +23,6 @@ module.exports = {
   ethereum: {
     tvl: lending(false),
     borrowed: lending(true),
-    pool2: stakings([PoolV1, PoolV2], [SLP], "ethereum"),
+    pool2: stakings([PoolV1, PoolV2], [SLP]),
   },
 };

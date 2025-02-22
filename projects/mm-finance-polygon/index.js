@@ -8,7 +8,7 @@ const masterChef = '0xa2B417088D63400d211A4D5EB3C4C5363f834764'
 module.exports = {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://polymm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa2B417088D63400d211A4D5EB3C4C5363f834764)',
   polygon: {
-    staking: staking(masterChef, mmfToken, 'polygon'),
+    staking: staking(masterChef, mmfToken),
     tvl: getUniTVL({ 
       factory,
       useDefaultCoreAssets: true,
