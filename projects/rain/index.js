@@ -1,5 +1,6 @@
 
 const { Program } = require("@coral-xyz/anchor");
+const bs58 = require('bs58');
 const { getProvider } = require("../helper/solana");
 const bankIdl = require('./bank-idl');
 const defiIdl = require('./defi-idl');
