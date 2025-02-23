@@ -43,8 +43,6 @@ async function tvl(api) {
   }
 }
 
-tvl()
-
 module.exports = {
   solana: { tvl },
 }
