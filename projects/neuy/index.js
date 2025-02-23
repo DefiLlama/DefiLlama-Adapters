@@ -28,7 +28,7 @@ module.exports = {
  polygon: {
     tvl: () => ({}),
     staking: sumTokensExport({ owners: Object.values(polyLP), tokens: [neuy.polygon], } ),
-  }
+  },
 base: {
    tvl: () => ({}),
    staking: sumTokensExport({ owners: Object.values(baseLP), tokens: [neuy.base], } ),
