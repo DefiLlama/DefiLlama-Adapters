@@ -68,7 +68,7 @@ const fixBalancesTokens = {
     "0xFA3198ecF05303a6d96E57a45E6c815055D255b1": { coingeckoId: "tether", decimals: 6 },
     "0x0dc95Af5156fb0cC34a8c9BD646B748B9989A956": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
   },
-  hyper_evm: {
+  hyperliquid: {
     '0x5555555555555555555555555555555555555555': { coingeckoId: "hyperliquid", decimals: 18 },
     '0x94e8396e0869c9f2200760af0621afd240e1cf38': { coingeckoId: "hyperliquid", decimals: 18 },
   },
