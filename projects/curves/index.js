@@ -7,13 +7,12 @@ const CURVES_CONTRACT = "0xEad4138380B508949Ccd48B97AD930bd89aAb719"
 const CURVES_GROUPS_CONTRACT = "0x88c7484d19E49B09233484824698a5214d81f866"
 
 async function tvl(api) {
-  const balances = await sumTokens2({
-    tokens: [nullAddress],  // This references native ETH currency
+  return sumTokens2({
+    tokens: [nullAddress],
     owners: [CURVES_CONTRACT, CURVES_GROUPS_CONTRACT],
     api
   })
 
-  return balances
 }
 
 module.exports = {

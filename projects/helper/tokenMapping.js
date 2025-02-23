@@ -49,8 +49,8 @@ const fixBalancesTokens = {
     '0x60f397acbcfb8f4e3234c659a3e10867e6fa6b67': { coingeckoId: 'pepper', decimals: 18 },
   },
   flow: {
-    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 }, 
-    '0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed': { coingeckoId: "flow-bridged-pyusd-flow", decimals: 6 }, 
+    '0xf1815bd50389c46847f0bda824ec8da914045d14': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed': { coingeckoId: "flow-bridged-pyusd-flow", decimals: 6 },
   },
   sonic: {
     '0x6047828dc181963ba44974801ff68e538da5eaf9': { coingeckoId: "tether", decimals: 6 },
@@ -61,6 +61,13 @@ const fixBalancesTokens = {
   tara: {
     '0xe6a69cd4ff127ad8e53c21a593f7bac4c608945e': { coingeckoId: 'lara', decimals: 18 },
   },
+  "formnetwork": {
+    [ADDRESSES.null]: { coingeckoId: "ethereum", decimals: 18 },
+    "0xb1b812b664c28E1bA1d35De925Ae88b7Bc7cdCF5": { coingeckoId: "ethereum", decimals: 18 },
+    "0xFBf489bb4783D4B1B2e7D07ba39873Fb8068507D": { coingeckoId: "usd-coin", decimals: 6 },
+    "0xFA3198ecF05303a6d96E57a45E6c815055D255b1": { coingeckoId: "tether", decimals: 6 },
+    "0x0dc95Af5156fb0cC34a8c9BD646B748B9989A956": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
