@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const ABI = require("./abi.json");
 
 const CONFIG = {
     vaultInfo: "0x73956FF7375476EBFD5e82d80Ea9065a5bCc3d2b",
@@ -18,7 +17,8 @@ const CONFIG = {
   }
 
 const abis = {
-  underlyingToken: "address:underlyingToken"
+  underlyingToken: "address:underlyingToken",
+  borrowedBalance: "function borrowedBalance(address[] _vaults) view returns (address[], uint256[])"
 }
 
 const tvl = async (api) => {
@@ -31,7 +31,7 @@ const tvl = async (api) => {
 
 async function borrowed(api) {
   const { vaultInfo, vaults } = CONFIG
-  const borrowedBalance = await api.call({ target: vaultInfo, abi: ABI.borrowedBalance, params: [vaults], permitFailure: true });
+  const borrowedBalance = await api.call({ target: vaultInfo, abi: abis.borrowedBalance, params: [vaults], permitFailure: true });
   if (!borrowedBalance) return;
   api.addTokens(borrowedBalance[0], borrowedBalance[1]);
 }
