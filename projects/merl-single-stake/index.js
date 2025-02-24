@@ -4,6 +4,7 @@ const MERL_TOKEN = '0x5c46bFF4B38dc1EAE09C5BAc65872a1D8bc87378'
 
 module.exports = {
   merlin: {
+    tvl: staking([MERL_SINGLE_STAKE_CONTRACT,], MERL_TOKEN),
     staking: staking([MERL_SINGLE_STAKE_CONTRACT,], MERL_TOKEN),
   }
 }
