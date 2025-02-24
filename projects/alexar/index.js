@@ -1,7 +1,6 @@
 const { getConfig } = require('../helper/cache')
-const { sumTokens } = require('../helper/sumTokens')
-
-const blacklistedAssets = ['uaxl'];
+const { sumTokens } = require('../helper/sumTokens');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const chainMapping = {
   avax: 'avalanche',
@@ -10,16 +9,25 @@ const chainMapping = {
   bsc: 'binance'
 };
 
-const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', /*'crescent',*/ 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
+const blackListChains = ['comdex', 'crescent'];
+const chainListSupply = ['juno', 'cosmos', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
 const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum', 'base'];
 
+const blacklistedTokensChain = {
+  ethereum: ['0x946fb08103b400d1c79e07acCCDEf5cfd26cd374'], // KIP tvl is higher than the circulating supply
+}
 
 chainListSupply.concat(chainListTotal).forEach(chain => {
-  module.exports[chain] = { tvl };
+  if (blackListChains.includes(chain)) {
+    module.exports[chain] = { tvl: () => ({}) };
+  } else {
+    module.exports[chain] = { tvl };
+  }
   async function tvl(api) {
     const config = await getConfig('alexar', 'https://api.axelarscan.io/api/getTVL')
     const tokensAndOwners = []
     const owners = []
+    const blacklistedTokens = blacklistedTokensChain[chain] || []
     const mappedChain = chainMapping[chain] || chain;
     config.data.forEach(({ tvl: { [mappedChain]: assetTvl } = {} }) => {
       if (!assetTvl) return;
@@ -33,12 +41,12 @@ chainListSupply.concat(chainListTotal).forEach(chain => {
           tokensAndOwners.push([data.address, data.token_manager_address])
       } else {
         if (assetTvl.denom_data.symbol.startsWith('axl')) return;
-        owners.push(...assetTvl.source_escrow_addresses)
+        owners.push(...(assetTvl?.source_escrow_addresses ?? []))
       }
     })
     if (tokensAndOwners.length > 0)
-      return api.sumTokens({ tokensAndOwners })
-    return sumTokens({ chain, owners })
+      return sumTokens2({ api, tokensAndOwners, blacklistedTokens, permitFailure: true, })
+    return sumTokens({ chain, owners, blacklistedTokens, })
   }
 });
 

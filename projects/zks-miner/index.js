@@ -13,4 +13,5 @@ module.exports = {
   era: {
     tvl: sumTokensExport({ owners: [SILVER_MINER, DIAMOND_MINER, GOLD_MINER,], tokens: [nullAddress] })
   },
+  deadFrom: 1682726400
 }

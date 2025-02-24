@@ -9,7 +9,7 @@ async function getData() {
   const data = await _data
   const res = {}
   data.forEach((item) => {
-    res[item.date] = item.tvl / 1e8
+    res[item.date] = item.tvl / 1e7
   })
   return res
 }
@@ -32,7 +32,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1719792000,
+  start: '2024-07-01',
   misrepresentedTokens: true,
   methodology:
     'counts the liquidity of the Pools on AMM, data is pulled from the Aquarius API.',
