@@ -13,19 +13,19 @@ const configs = {
     wstASTROracleSoneium: '0x5A599251a359Cf27A6A42E7baB1b1494d3919083',
     ccipPoolAstar: '0x80376eE13282E597ad00B55495e408141fe7DDCB'
 };
-// Fetches TVL for wstASTR value to the API.
+// Fetches soneium TVL for wstASTR value to the API.
 async function getSoneiumTvl(api) {
-    // Fetch and calculate TVL for nsASTR
+    // Fetch and calculate TVL for wstASTR
     const wstASTRSupply = await api.call({ target: configs.wstASTRTokenSoneium, abi: 'erc20:totalSupply' });
     const wstASTRRateData = await api.call({ target: configs.wstASTROracleSoneium, abi: abis.latestRoundData });
     const ratio = wstASTRRateData.answer / 1e8; 
     const stakedAmountInASTR = wstASTRSupply * ratio ; 
     api.add(ADDRESSES.soneium.ASTAR, stakedAmountInASTR);
 }
-
-// Fetches TVL for wstASTR value to the API.
+    
+// Fetches astar TVL for wstASTR value to the API.
 async function getAstarTvl(api) {
-  // Fetch and calculate TVL for nsASTR
+  // Fetch and calculate TVL for wstASTR
   const wstASTRSupply = await api.call({ target: configs.wstASTRTokenAstar, abi: 'erc20:totalSupply' });
   const ccipPoolBalance = await api.call({ 
     target: configs.wstASTRTokenAstar, 
