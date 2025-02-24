@@ -12,7 +12,6 @@ const configs = {
     wstASTRTokenSoneium: '0x3b0DC2daC9498A024003609031D973B1171dE09E',
     wstASTROracleSoneium: '0x5A599251a359Cf27A6A42E7baB1b1494d3919083'
 };
-
 // Fetches TVL for wstASTR value to the API.
 async function getSoneiumTvl(api) {
     // Fetch and calculate TVL for nsASTR
@@ -23,22 +22,9 @@ async function getSoneiumTvl(api) {
     api.add(ADDRESSES.soneium.ASTAR, stakedAmountInASTR);
 }
 
-// Fetches TVL for wstASTR value to the API.
-async function getAstarTvl(api) {
-    // Fetch and calculate TVL for nsASTR
-    const wstASTRSupply = await api.call({ target: configs.wstASTRTokenAstar, abi: 'erc20:totalSupply' });
-    const wstASTRRateData = await api.call({ target: configs.wstASTROracleAstar, abi: abis.latestRoundData });
-    const ratio = wstASTRRateData.answer / 1e8;  
-    const stakedAmountInASTR = wstASTRSupply * ratio ; 
-    api.add(ADDRESSES.soneium.ASTAR, stakedAmountInASTR);
-}
-
 module.exports = {
     soneium: {
         tvl: getSoneiumTvl
-    },
-    astar: {
-        tvl: getAstarTvl
     },
     methodology: `TVL is calculated by fetching the total supply of wstASTR converting their values into the underlying tokens ASTR using the current conversion rate provided by the respective oracle.`
 };
