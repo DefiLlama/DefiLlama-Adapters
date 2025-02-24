@@ -22,6 +22,7 @@ const DEFAULTS = {
   FORMNETWORK_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   HYPERLIQUID_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   HYPERLIQUID_RPC: 'https://hyperliquid.cloud.blockscout.com/api/eth-rpc',
+  TRON_RPC: 'https://api.trongrid.io',
 }
 
 const ENV_KEYS = [
