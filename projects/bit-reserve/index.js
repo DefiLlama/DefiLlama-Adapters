@@ -1,5 +1,3 @@
-const sdk = require('@defillama/sdk');
-const { assertArgumentCount } = require('ethers');
 const rBTC_CONTRACT = '0x473286faD076c050FB48a449c77d7434d947cE00';
 const RS_CONTRACT = '0x3192bE801D2C4f1B5B4A070e7c4097Ba0f23412A';
 
