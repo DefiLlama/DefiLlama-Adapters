@@ -18,6 +18,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+	start: '2022-09-29',
 	doublecounted: true,
 	methodology: 'Counts the total ethers staked with RockX Staking Contract.',
 	ethereum: {
