@@ -41,6 +41,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  chromia: {
+    '5F16D1545A0881F971B164F1601CBBF51C29EFD0633B2730DA18C403C3B428B5': { coingeckoId: "chromaway", decimals: 6 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
