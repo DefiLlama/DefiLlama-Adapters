@@ -9,6 +9,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   doublecounted: true,
+  start: '2024-04-13',
   bitcoin: {
     tvl
   }
@@ -23,6 +24,6 @@ async function tvlEvm(api) {
   return api.sumTokens({ api, owner: vault, tokens })
 }
 
-['btr', 'ethereum', 'bsc', 'arbitrum', 'mantle', 'merlin', 'optimism', 'bob', 'bsquared', 'zeta', 'mode'].forEach(chain => {
+['btr', 'ethereum', 'bsc', 'arbitrum', 'mantle', 'merlin', 'optimism', 'bob', 'bsquared', 'zeta', 'mode', 'berachain'].forEach(chain => {
   module.exports[chain] = { tvl: tvlEvm }
 })
