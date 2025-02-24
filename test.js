@@ -354,7 +354,7 @@ function fixBalances(balances) {
     else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
-      sdk.util.sumSingleBalance(balances, newKey, BigNumber(value).toFixed(0))
+      sdk.util.sumSingleBalance(balances, newKey, value)
     }
   })
 }
@@ -424,7 +424,7 @@ async function computeTVL(balances, timestamp) {
 
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {
-        amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
+        amount = Number(balance) / 10 ** data.decimals
         usdAmount = amount * data.price;
       } else {
         amount = Number(balance);
