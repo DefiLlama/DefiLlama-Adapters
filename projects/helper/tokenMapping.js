@@ -57,21 +57,7 @@ const fixBalancesTokens = {
   },
   astar: {
     '0x1ec4bbd1ff6642d29c1453ce1207b039a434a438': { coingeckoId: "astar", decimals: 18 },
-  },
-  tara: {
-    '0xe6a69cd4ff127ad8e53c21a593f7bac4c608945e': { coingeckoId: 'lara', decimals: 18 },
-  },
-  "formnetwork": {
-    [ADDRESSES.null]: { coingeckoId: "ethereum", decimals: 18 },
-    "0xb1b812b664c28E1bA1d35De925Ae88b7Bc7cdCF5": { coingeckoId: "ethereum", decimals: 18 },
-    "0xFBf489bb4783D4B1B2e7D07ba39873Fb8068507D": { coingeckoId: "usd-coin", decimals: 6 },
-    "0xFA3198ecF05303a6d96E57a45E6c815055D255b1": { coingeckoId: "tether", decimals: 6 },
-    "0x0dc95Af5156fb0cC34a8c9BD646B748B9989A956": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-  },
-  hyperliquid: {
-    '0x5555555555555555555555555555555555555555': { coingeckoId: "hyperliquid", decimals: 18 },
-    '0x94e8396e0869c9f2200760af0621afd240e1cf38': { coingeckoId: "hyperliquid", decimals: 18 },
-  },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
