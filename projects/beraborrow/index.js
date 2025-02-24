@@ -1,3 +1,4 @@
+const { getLogs2 } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const vaults = [
@@ -22,7 +23,6 @@ const vaults = [
   "0x849232E2144BD5118B5e4A070FE15035cC07b388",
 ]
 
-const beraBorrowWberaVault = '0x6751C09113a83a83a43829fD0b3BC0D7bdbe07bf'
 const beraBorrowWberaToken = '0x9158d1b0c9cc4ec7640eaef0522f710dadee9a1b'
 
 const PSMs = [
@@ -38,13 +38,19 @@ async function tvl(api) {
   const pTokens = await api.multiCall({ abi: 'address:stable', calls: PSMs })
   const denInfos = await api.call({ abi: getAllCollateralsAndDenManagersAbi, target: '0xFA7908287c1f1B256831c812c7194cb95BB440e6' })
   const tokensAndOwners = tokens.map((t, i) => [t, vaults[i]])
-  tokensAndOwners.push([ADDRESSES.berachain.WBERA, beraBorrowWberaVault])
-  beraTokens.push(beraBorrowWberaToken)
 
   pTokens.forEach((t, i) => tokensAndOwners.push([t, PSMs[i]]))
   denInfos.forEach(({ collateral, denManagers }) => {
     denManagers.forEach(d => tokensAndOwners.push([collateral, d]))
   })
+
+  const infraredLogs = await getLogs2({ api, factory: '0xb71b3DaEA39012Fb0f2B14D2a9C86da9292fC126', eventAbi: 'event NewVault (address _sender, address indexed _asset, address indexed _vault)', fromBlock: 562092, })
+  const infraAssets = infraredLogs.map(log => log._asset)
+  const names = await api.multiCall({ abi: 'string:name', calls: infraAssets, permitFailure: true, })
+  const bbInfraWrappers = infraAssets.filter((a, i) => names[i] && names[i].startsWith('Beraborrow: '))
+  const bbInfraWrapperUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: bbInfraWrappers })
+  beraTokens.push(beraBorrowWberaToken, ...bbInfraWrappers)
+  bbInfraWrapperUnderlyings.forEach((u, i) => tokensAndOwners.push([u, bbInfraWrappers[i]]))
   return api.sumTokens({ tokensAndOwners, blacklistedTokens: beraTokens })
 }
 
