@@ -36,6 +36,7 @@ const chainConfigs = {
 module.exports = {
     methodology: 'brBTC standing for Bedrock BTC, is designed specifically for Bitcoin holders seeking to participate in the next generation of DeFi opportunities. It accepts uniBTC and multiple wrapped BTC assets and Bedrock manages those assets on multiple trusted yield source layers such as Babylon, Kernel, Pell, Satlayer and etc.',
     doublecounted: true,
+    start: '2024-12-19',
 }
 
 async function tvl(api) {
