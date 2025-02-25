@@ -86,6 +86,7 @@ Object.keys(graphs).forEach(chain => {
       for (const eventEmitter of emitters[chain] ?? []) {
         const bidAssignedLogs = await getLogs({
           api,
+          extraKey: "bidAssigned",
           target: eventEmitter,
           eventAbi: 'event BidAssigned(bytes32 termAuctionId, bytes32 id, uint256 amount)',
           onlyArgs: true,
@@ -98,6 +99,7 @@ Object.keys(graphs).forEach(chain => {
 
         const repurchasePaymentSubmittedLogs = await getLogs({
           api,
+          extraKey: "repurchasePaymentSubmitted",
           target: eventEmitter,
           eventAbi: 'event RepurchasePaymentSubmitted(bytes32 termRepoId, address borrower, uint256 repurchaseAmount)',
           onlyArgs: true,
