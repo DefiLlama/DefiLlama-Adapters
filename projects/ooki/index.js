@@ -51,8 +51,8 @@ let stakingContracts = [
 
 Object.keys(contracts).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => getBalances(api, false),
-    borrowed: async (_, _b, _cb, { api, }) => getBalances(api, true),
+    tvl: async (api) => getBalances(api, false),
+    borrowed: async (api) => getBalances(api, true),
   }
 })
 module.exports.ethereum.staking = stakings(stakingContracts, [ooki, bzrx])

@@ -7,6 +7,7 @@ const DHEDGE_FACTORY_PROXIES = {
   polygon: "0xfdc7b8bFe0DD3513Cc669bB8d601Cb83e2F69cB0",
   optimism: "0x5e61a079A178f0E5784107a4963baAe0c5a680c6",
   arbitrum: "0xffFb5fB14606EB3a548C113026355020dDF27535",
+  base: "0x49Afe3abCf66CF09Fab86cb1139D8811C8afe56F",
 };
 
 /* *** dHEDGE V1 *** */
@@ -17,7 +18,8 @@ const DHEDGE_V1_VAULTS_ABI =
   "function deployedFunds(uint256) view returns (address)";
 const DHEDGE_V1_TVL_ABI = "function totalFundValue() view returns (uint256)";
 
-const getV1TotalValueLocked = async (_, __, ___, { api, chain }) => {
+const getV1TotalValueLocked = async (api) => {
+  const { chain } = api
   const target = DHEDGE_FACTORY_PROXIES[chain];
   const vaults = await api.fetchList({ lengthAbi: DHEDGE_V1_VAULTS_QUANTITY_ABI, itemAbi: DHEDGE_V1_VAULTS_ABI, target, });
   const vaultsValues = await api.multiCall({ abi: DHEDGE_V1_TVL_ABI, calls: vaults, permitFailure: true, });
@@ -34,7 +36,8 @@ const DHEDGE_V2_VAULTS_ABI =
 const DHEDGE_V2_VAULT_SUMMARY_ABI =
   "function getFundSummary() view returns (tuple(string name, uint256 totalSupply, uint256 totalFundValue))";
 
-const tvl = async (_, __, ___, { api, chain }) => {
+const tvl = async (api) => {
+  const { chain } = api
   const target = DHEDGE_FACTORY_PROXIES[chain];
   const vaults = await api.call({ abi: DHEDGE_V2_VAULTS_ABI, target, })
   let chunkSize = chain === 'optimism' ? 42 : 51 // Optimism has a lower gas limit
@@ -54,7 +57,7 @@ const tvl = async (_, __, ___, { api, chain }) => {
 const DHT_STAKING_V1_PROXY = "0xEe1B6b93733eE8BA77f558F8a87480349bD81F7f";
 const DHT_ON_MAINNET = "0xca1207647Ff814039530D7d35df0e1Dd2e91Fa84";
 
-const getV1StakingTotalAmount = async (_, __, ___, { api }) => ({
+const getV1StakingTotalAmount = async (api) => ({
   [DHT_ON_MAINNET]: await api.call({
     abi: "erc20:balanceOf",
     target: DHT_ON_MAINNET,
@@ -68,7 +71,7 @@ const DHT_STAKED_ABI = "function dhtStaked() view returns (uint256)";
 const DHT_STAKING_V2_PROXY = "0xf165ca3d75120d817b7428eef8c39ea5cb33b612";
 const DHT_ON_OPTIMISM = "optimism:0xaf9fe3b5ccdae78188b1f8b9a49da7ae9510f151";
 
-const getV2StakingTotalAmount = async (_, __, ___, { api }) => ({
+const getV2StakingTotalAmount = async (api) => ({
   [DHT_ON_OPTIMISM]: await api.call({
     abi: DHT_STAKED_ABI,
     target: DHT_STAKING_V2_PROXY,
@@ -92,6 +95,9 @@ module.exports = {
   arbitrum: {
     tvl,
   },
+  base: {
+    tvl,
+  },
   misrepresentedTokens: true,
   methodology: "Aggregates total value of each dHEDGE vault ever created",
   hallmarks: [
@@ -100,5 +106,6 @@ module.exports = {
     [1674003600, "Optimism Incentives Start"],
     [1679965200, "DHT Staking V2 Release"],
     [1701468842, "Arbitrum Launch"],
+    [1706569200, "Base Launch"],
   ],
 };

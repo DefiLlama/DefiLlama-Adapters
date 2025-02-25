@@ -1,22 +1,26 @@
+
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
 ]
 
 const DEFAULTS = {
+  EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
+  STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
-  SOLANA_RPC: 'https://api.mainnet-beta.solana.com',
-  APTOS_RPC: 'https://aptos-mainnet.pontem.network',
+  // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
+  SOLANA_RPC: "https://api.mainnet-beta.solana.com",
+  ECLIPSE_RPC: 'https://eclipse.lgns.net',
+  APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
+  SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
-  ACALA_RPC: "https://eth-rpc-acala.aca-api.network",
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  CHZ_RPC: "https://chiliz.publicnode.com,https://rpc.ankr.com/chiliz",
-  MANTLE_RPC:"https://mantle.publicnode.com,https://rpc.ankr.com/mantle,https://mantle.drpc.org,https://1rpc.io/mantle,https://mantle-mainnet.public.blastapi.io",
-  MODE_RPC: 'https://mainnet.mode.network',
-  ZILLIQA_RPC: 'https://api.zilliqa.com',
-  FSC_RPC: 'https://fsc-dataseed1.fonscan.io',
+  FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  LULO_API_KEY: '', 
+  HYPERLIQUID_RPC: 'https://hyperliquid.cloud.blockscout.com/api/eth-rpc',
+  TRON_RPC: 'https://api.trongrid.io',
 }
 
 const ENV_KEYS = [
@@ -24,10 +28,16 @@ const ENV_KEYS = [
   ...Object.keys(DEFAULTS),
   'GETBLOCK_KEY',
   'LOFTY_API',
+  'SOLANA_RPC_CLIENT',
   'OLYMPUS_GRAPH_API_KEY',
   'SUMMER_HISTORY_ENDPOINT',
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
+  'ETHEREUM_TOKENS_ENDPOINT',
+  'FBTC_ACCESS_TOKEN',
+  'UNISAT_AUTH',
+  'RPC_PROXY_URL',
+  'BLACKSAIL_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
@@ -42,5 +52,6 @@ function getEnv(key) {
 }
 
 module.exports = {
+  ENV_KEYS,
   getEnv,
 }

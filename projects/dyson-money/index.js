@@ -4,8 +4,14 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const utils = require('../helper/utils');
 const { toUSDTBalances } = require('../helper/balances');
 
+
+const TVL_URL = 'https://api2.dyson.money/vaults/metrics/tvl';
+
 const sphere_token = "0x62F594339830b90AE4C084aE7D223fFAFd9658A7"
 const ylSPHEREvault = "0x4Af613f297ab00361D516454E5E46bc895889653"
+
+
+let TVL_byNetwork;
 
 async function polygonTvl(timestamp, block, chainBlocks) {
   let balances = {};
@@ -27,51 +33,56 @@ async function polygonTvl(timestamp, block, chainBlocks) {
   })
 
   // calculate TVL for polygon from API
-  const dysonTvl = await fetchChain(137)()
-  for (const [token, balance] of Object.entries(dysonTvl)) {
+  const polygon_tvl = await fetchNetworkTVL('polygon')();
+  for (const [token, balance] of Object.entries(polygon_tvl)) {
     balances[token] = (balances[token] || 0) + balance
   }
   return balances;
 } 
 
-let _response
-
-function fetchChain(chainId) {
+function fetchNetworkTVL(network) {
   return async () => {
-    if (!_response) _response = utils.fetchURL('https://api.dyson.money/tvl');
-    const response = await _response;
+    try {
+      if(!TVL_byNetwork) TVL_byNetwork = utils.fetchURL(`${TVL_URL}`).then(response => response.data);
 
-    let tvl = 0;
-    const chain = response.data[chainId];
-    for (const vault in chain) {
-      tvl += Number(chain[vault]);
-    }
-    if (tvl === 0) {
+      const response = await TVL_byNetwork;
+      const total = Number(response[network].total); // all numeric values on the API are stored as string for precision
+
+      if(!total) return {}
+
+      return toUSDTBalances(total);
+    } catch(e) {
+      console.error(`There was an error trying to fetch 'dyson-money' TVL on network - ${network}. Exited with error: ${e}`);
       return {};
     }
-
-    return toUSDTBalances(tvl);
-  };
+  }
 }
+
+
 
 module.exports = {
   doublecounted: true,
-  misrepresentedTokens: false,
-  methodology: "TVL is calculated by summing the liquidity in the Uniswap V3 pools.",
+    methodology: "Counts the tokens locked in the contracts.",
   polygon: {
     tvl: polygonTvl,
-    staking: staking(ylSPHEREvault, sphere_token, "polygon")
+    staking: staking(ylSPHEREvault, sphere_token)
   },
   optimism: {
-    tvl: fetchChain(10),
+    tvl: fetchNetworkTVL('optimism'),
   },
   arbitrum: {
-    tvl: fetchChain(42161),
+    tvl: fetchNetworkTVL('arbitrum'),
   },
   bsc: {
-    tvl: fetchChain(56)
+    tvl: fetchNetworkTVL('binance')
   },
   avax: {
-    tvl: fetchChain(43114)
-  }
+    tvl: fetchNetworkTVL('avalanche')
+  },
+  kava: {
+    tvl: fetchNetworkTVL('kava'),
+  },
+  base: {
+    tvl: fetchNetworkTVL('base'),
+  },
 };

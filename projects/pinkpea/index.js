@@ -1,15 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const abi = require("./lens.json");
-const { ethers } = require("ethers");
-
-const vaultLensAddress = "0x64958a77bE17f3B840d66260CB088f4C8dB1f47C";
-const zeroAddress = ADDRESSES.null;
-
-const tokenDecimals = {
-  "0x53ff774ebE8Bf7E03df8D73D3E9915b2Ca4eC40E": 6,
-};
-
 const vaultsList = [
   "0x27A8432Fa94b2B33dfB77C4Ff2a5018b7e4bc975",
   "0x0aC81555c63011cB7269baf03e7f4B4bC2F7C60d",
@@ -25,32 +13,12 @@ const vaultsList = [
   "0x3FA7b079EA5e9D4d98A5C4C60355124B0a9eDcc9",
   "0x6060E56BE05783A1A7Ca385706A50Cf17E146e29",
   "0x53ff774ebE8Bf7E03df8D73D3E9915b2Ca4eC40E",
-];
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  let totalSupply = (
-    await sdk.api.abi.call({
-      target: vaultLensAddress,
-      params: [vaultsList, zeroAddress],
-      abi: abi.balanceInfoViews,
-      chain: "aurora",
-      block: chainBlocks.aurora,
-    })
-  ).output;
+]
 
-  let totalTvl = 0;
-  totalSupply.forEach((data) => {
-    let decimal = 24;
-    if (tokenDecimals[data.vaultAddress]) {
-      decimal = tokenDecimals[data.vaultAddress];
-    }
-    totalTvl +=
-      Number(ethers.utils.formatUnits(data.tvl, data.decimal)) *
-      Number(ethers.utils.formatUnits(data.tokenPrice, decimal));
-  });
-  return {
-    ["aurora:" + ADDRESSES.aurora.USDT_e]: totalTvl * 1000000,
-  };
+async function tvl(api) {
+  return api.erc4626Sum({ calls: vaultsList })
 }
+
 module.exports = {
   aurora: {
     tvl,

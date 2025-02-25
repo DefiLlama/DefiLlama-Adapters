@@ -1,10 +1,9 @@
 const { sumTokens2, } = require("../helper/unwrapLPs")
 
-
 const CutoffABI = "function FNFT_CUTOFF() external view returns (uint256)"
 const numFNFTSABI = "function fnftsCreated() external view returns (uint256)"
 const getFNFTSupplyABI = "function getSupply(uint256 fnftId) external view returns (uint256)"
-const getFNFTConfigABI = "function getFNFT(uint256 fnftId) external view returns (tuple(address asset,,,,,,,) memory)"
+const getFNFTConfigABI = "function getFNFT(uint256 fnftId) view returns ((address asset, address pipeToContract, uint256 depositAmount, uint256 depositMul, uint256 split, uint256 depositStopTime, bool maturityExtension, bool isMulti, bool nontransferrable))"
 const getWalletABI = "function getFNFTAddress(uint256 fnftId) external view returns (address)"
 
 const config = {
@@ -51,7 +50,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { holder, revest, tokenVaultV2, fnftHandler, revest_lp } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _1, { api }) => {
+    tvl: async (api) => {
 
       const blacklistedTokens = []
       if (revest) blacklistedTokens.push(revest.toLowerCase())
@@ -125,7 +124,7 @@ Object.keys(config).forEach(chain => {
   }
 
   if (revest)
-    module.exports[chain].staking = async (_, _b, _1, { api }) => {
+    module.exports[chain].staking = async (api) => {
       //Get the number of FNFTS for the TokenVaultV2
       let info = await api.batchCall([
         { target: config[chain].tokenVaultV2, abi: CutoffABI, },

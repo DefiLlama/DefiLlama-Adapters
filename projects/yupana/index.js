@@ -4,14 +4,19 @@ const {
   getBigMapById,
   sumTokens2,
 } = require("../helper/chain/tezos");
+
 const YUPANA_CORE = "KT1Rk86CX85DjBKmuyBhrCyNsHyudHVtASec";
+const YUPANA_CORE_V2 = "KT1CojtgtVHVarS135fnV3y4z8TiKXrsRHJr"; // https://twitter.com/YupanaFinance/status/1739216683728797802
 
 async function tvl() {
-  return sumTokens2({ owners: [YUPANA_CORE], includeTezos: true, })
+  return sumTokens2({ owners: [YUPANA_CORE, YUPANA_CORE_V2], includeTezos: true, })
 }
 
 async function borrowed() {
   const balances = {};
+  await Promise.all([YUPANA_CORE, YUPANA_CORE_V2].map(addBorrowed));
+
+  async function addBorrowed(YUPANA_CORE) {
   const storage = await getStorage(YUPANA_CORE);
   const tokens_map = await getBigMapById(storage.storage.tokens);
   for (const id in tokens_map) {
@@ -25,6 +30,7 @@ async function borrowed() {
     else
       token_address = `${token.mainToken.fA12}`;
     sdk.util.sumSingleBalance(balances, token_address, token_borrows, 'tezos');
+  }
   }
   return balances
 }

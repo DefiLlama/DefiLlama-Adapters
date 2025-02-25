@@ -8,7 +8,7 @@ module.exports = {
       "base",
       undefined,
       undefined,
-      { useDefaultCoreAssets: true, hasStablePools: true, fetchBalances: true, }
+      { useDefaultCoreAssets: true, hasStablePools: true, }
     ),
   },
 };

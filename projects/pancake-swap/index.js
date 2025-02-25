@@ -41,7 +41,7 @@ query get_tvl($block: Int) {
   }
 }
 `;
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl({timestamp}, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
     const tvl = await request(graphEndpoint, currentQuery, {}, {
       "referer": "https://pancakeswap.finance/",
@@ -116,7 +116,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, CAKE, pools = [] } = config[chain]
-  module.exports[chain].staking = async (_, _b, _cb, { api, }) => {
+  module.exports[chain].staking = async (api) => {
     const logs = await getLogs({ api, target: factory, eventAbi: 'event NewSmartChefContract (address indexed martChef)', onlyArgs: true, fromBlock, })
     pools.push(...logs.map(log => log.martChef))
     return api.sumTokens({ owners: pools, tokens: [CAKE] })

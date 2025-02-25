@@ -21,9 +21,7 @@ async function tvl() {
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: "Calculates the amount of SUI staked in Volo liquid staking contracts.",
+            methodology: "Calculates the amount of SUI staked in Volo liquid staking contracts.",
     sui: {
         tvl,
     }

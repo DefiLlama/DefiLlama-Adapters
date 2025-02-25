@@ -5,7 +5,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const chain = "fantom";
 
-async function staking(timestamp, block, chainBlocks, { api }) {
+async function staking(api) {
   const tokens = await api.multiCall({  abi: poolAbi.rewardsToken, calls: pools }) 
   const tokensAndOwners = tokens.map((v, i) => [v, pools[i]])
   farms.forEach(({ token, contract}) => tokensAndOwners.push([token, contract]))
