@@ -10,7 +10,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "It queries totalReserves in Vault.sol for each collateral token",
-  start: 21888482,
+  methodology: "Token balance in the vault contract",
   ethereum: { tvl }
 };
