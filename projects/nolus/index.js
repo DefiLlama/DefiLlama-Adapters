@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const { transformBalances } = require('../helper/portedTokens')
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
+const { sleep } = require('../helper/utils')
 
 // Osmosis Noble USDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_NOBLE) pirin-1
 const osmosisNobleOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
@@ -69,7 +70,7 @@ async function getLeaseContracts(leaseCodeId) {
 }
 
 async function getLeases(leaseAddresses) {
-  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {} })
+  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {"state":{}} })
 }
 
 async function getLppTvl(lppAddresses) {  
@@ -121,6 +122,7 @@ function find(collection, predicate) {
 async function tvl(protocols) {
   let balances = {}
   for (let i = 0; i < protocols.length; i++) {
+    await sleep(2000)
     const p = protocols[i]
     const oracleData = await queryContract({ contract: p.oracle, chain: 'nolus', data: { 'currencies': {} } })
     const leaseCodeId = await getLeaseCodeId(p.leaser)
