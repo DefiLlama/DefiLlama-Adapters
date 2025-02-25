@@ -2,21 +2,16 @@ async function tvl(api) {
   const protocolConfigs = [
     {
       protocol: '0xc0fA386aE92f18A783476d09121291A1972C30Dc',
-      treasury: '0x54c56e149f6d655aa784678057d1f96612b0cf1a',
     },
     {
       protocol: '0x4737c3BAB13a1Ad94ede8B46Bc6C22fb8bBE9c81',
-      treasury: '0x54c56e149f6d655aa784678057d1f96612b0cf1a',
     }
   ]
 
   const tokensAndOwners = []
   
-  for (const { protocol: zooProtocol, treasury } of protocolConfigs) {
+  for (const { protocol: zooProtocol } of protocolConfigs) {
     const assets = await api.call({ abi: 'address[]:assetTokens', target: zooProtocol })
-
-    // Add treasury balances
-    assets.forEach(asset => tokensAndOwners.push([asset, treasury]))
 
     const vaults = (await api.multiCall({ abi: 'function getVaultAddresses(address) view returns (address[])', calls: assets, target: zooProtocol })).flat()
 
