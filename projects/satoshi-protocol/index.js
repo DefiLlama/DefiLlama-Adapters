@@ -14,36 +14,24 @@ function createExports({
 }) {
   return {
     tvl: async (api) => {
-      const tokens = [];
-      const owners = [];
+      const tokensAndOwners = []
       if (troveList) {
-        owners.push(...troveList);
-        const _collaterals = await getCollateralsFromTrove(api, troveList);
-        const collaterals = Array.from(new Set(_collaterals.filter(v => !!_collaterals)))
-        tokens.push(...collaterals);
+        // owners.push(...troveList);
+        await getCollateralsFromTrove(api, troveList, tokensAndOwners);
       }
 
       if (nymList && nymList.length > 0) {
         for (let i = 0; i < nymList.length; i++) {
-          const nymInformation = nymList[i];
-          const assetList = await getAssetListFromNymContract(api, nymInformation.address, nymInformation.fromBlock);
-          assetList.forEach(asset => {
-            owners.push(nymInformation.address);
-            tokens.push(asset);
-          })
+          await getAssetListFromNymContract(api, nymList[i].address, nymList[i].fromBlock, tokensAndOwners);
         }
       }
 
       if (aaveStrategyVaults) {
-        const calls = []
-        const tokens = []
         for (let index = 0; index < aaveStrategyVaults.length; index++) {
           const { address: vault, aToken, asset } = aaveStrategyVaults[index];
-          tokens.push(asset)
-          calls.push({ target: aToken, params: vault })
+          tokensAndOwners.push([asset, vault])
+          tokensAndOwners.push([aToken, vault])
         }
-        const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls })
-        api.add(tokens, bals)
       }
 
       if (pellStrategyVaults) {
@@ -66,20 +54,20 @@ function createExports({
         }
       }
 
-      return sumTokens2({ api, tokensAndOwners2: [tokens, owners] })
+      return sumTokens2({ api, tokensAndOwners, })
     },
   }
 }
 
-async function getCollateralsFromTrove(api, troveList) {
+async function getCollateralsFromTrove(api, troveList, tokensAndOwners) {
   const tokens = await api.multiCall({ abi: 'address:collateralToken', calls: troveList })
-  return tokens;
+  tokens.forEach((token, i) => tokensAndOwners.push([token, troveList[i]]))
 }
 
-async function getAssetListFromNymContract(api, nymContractAddress, fromBlock) {
+async function getAssetListFromNymContract(api, nymContractAddress, fromBlock, tokensAndOwners) {
   const logs = await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventABI, onlyArgs: true });
   const assetList = logs.map(item => item.asset);
-  return assetList;
+  assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
 }
 
 
