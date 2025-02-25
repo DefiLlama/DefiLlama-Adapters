@@ -1,27 +1,51 @@
-
 async function tvl(api) {
-  const zooProtocol = '0xc0fA386aE92f18A783476d09121291A1972C30Dc'
-  const assets = await api.call({ abi: 'address[]:assetTokens', target: zooProtocol })
+  const protocolConfigs = [
+    {
+      protocol: '0xc0fA386aE92f18A783476d09121291A1972C30Dc',
+      treasury: '0x54c56e149f6d655aa784678057d1f96612b0cf1a',
+    },
+    {
+      protocol: '0x4737c3BAB13a1Ad94ede8B46Bc6C22fb8bBE9c81',
+      treasury: '0x54c56e149f6d655aa784678057d1f96612b0cf1a',
+    }
+  ]
 
-  // Normally, assets are routed to other vaults like Infrared, Yeet, etc
-  const vaults = (await api.multiCall({ abi: 'function getVaultAddresses(address) view returns (address[])', calls: assets, target: zooProtocol })).flat()
-  const assetBals = await api.multiCall({ abi: 'uint256:assetBalance', calls: vaults })
-  api.add(assets, assetBals)
+  const tokensAndOwners = []
+  
+  for (const { protocol: zooProtocol, treasury } of protocolConfigs) {
+    const assets = await api.call({ abi: 'address[]:assetTokens', target: zooProtocol })
 
-  // On vault close, assets are withdrawn from underlying vaults and held by the vault itself
-  const tokensAndOwners = vaults.map((vault, i) => [assets[i], vault])
+    // Add treasury balances
+    assets.forEach(asset => tokensAndOwners.push([asset, treasury]))
 
+    const vaults = (await api.multiCall({ abi: 'function getVaultAddresses(address) view returns (address[])', calls: assets, target: zooProtocol })).flat()
 
-  // On every epoch close, a portion of assets are withdrawn from underlying vaults, and deposited to the redeem pool contract
-  const epochInfoAbi = 'function epochInfoById(uint256 epochId) public view returns (uint256 epochId, uint256 startTime, uint256 duration, address redeemPool, address stakingBribesPool, address adhocBribesPool)'
-  const epochInfos = await api.fetchList({ lengthAbi: 'epochIdCount', itemAbi: epochInfoAbi, targets: vaults, startFromOne: true, groupedByInput: true })
+    const assetBals = await Promise.all(vaults.map(async (vault) => {
+      try {
+        return await api.call({ abi: 'uint256:assetBalance', target: vault })
+      } catch (e) {
+        // It seems that if uint256:assetBalance returns '0x', api.call throws an error
+        // console.log(`Error getting assetBalance for vault ${vault}, defaulting to 0`)
+        return '0'
+      }
+    }))
+    
+    api.add(assets, assetBals)
 
-  epochInfos.forEach((infos, i) => {
-    const asset = assets[i]
-    infos.forEach(({ redeemPool }) => {
-      tokensAndOwners.push([asset, redeemPool])
+    // Add vault balances
+    vaults.forEach((vault, i) => tokensAndOwners.push([assets[i], vault]))
+
+    // Add redeem pool balances
+    const epochInfoAbi = 'function epochInfoById(uint256 epochId) public view returns (uint256 epochId, uint256 startTime, uint256 duration, address redeemPool, address stakingBribesPool, address adhocBribesPool)'
+    const epochInfos = await api.fetchList({ lengthAbi: 'epochIdCount', itemAbi: epochInfoAbi, targets: vaults, startFromOne: true, groupedByInput: true })
+
+    epochInfos.forEach((infos, i) => {
+      const asset = assets[i]
+      infos.forEach(({ redeemPool }) => {
+        tokensAndOwners.push([asset, redeemPool])
+      })
     })
-  })
+  }
 
   return api.sumTokens({ tokensAndOwners })
 }
