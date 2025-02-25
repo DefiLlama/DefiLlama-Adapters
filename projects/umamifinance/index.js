@@ -35,9 +35,9 @@ module.exports = {
   start: '2022-07-05', // UMAMI deployment block ts
   arbitrum: {
     staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI),
-    tvl: sumERC4626VaultsExport({ vaults: glpVaults.concat(gmVaultsArbitrum), isOG4626: true }),
+    tvl: sumERC4626VaultsExport({ vaults: glpVaults.concat(gmVaultsArbitrum), isOG4626: true, permitFailure: true }),
   },
   avax: {
-    tvl: sumERC4626VaultsExport({ vaults:gmVaultsAvax, isOG4626: true }),
+    tvl: sumERC4626VaultsExport({ vaults:gmVaultsAvax, isOG4626: true, permitFailure: true }),
   }
 }

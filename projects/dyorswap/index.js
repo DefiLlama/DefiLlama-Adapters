@@ -11,6 +11,7 @@ const config = {
   ink: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
   sonic: '0xd8863d794520285185197F97215c8B8AD04E8815',
   soneium: '0x4f0c1b4c6FdF983f2d385Cf24DcbC8c68f345E40',
+  unichain: '0x6c86ab200661512fDBd27Da4Bb87dF15609A2806',
 }
 
 module.exports = {

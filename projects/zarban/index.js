@@ -45,7 +45,6 @@ async function borrowed(api) {
   const variableSupply = await api.multiCall({  abi: 'uint256:totalSupply', calls: variableDebtTokens })
   api.add(tokens, stableSupply)
   api.add(tokens, variableSupply)
-  api.removeTokenBalance(zar)
 }
 
 module.exports = {

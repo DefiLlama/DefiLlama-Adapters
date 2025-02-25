@@ -55,4 +55,11 @@ module.exports = {
     comptroller: '0x15B5220024c3242F7D61177D6ff715cfac4909eD',
     blacklistedTokens: []
   }),
+  berachain: compoundExports2({
+    comptroller: '0x16C7d1F9EA48F7DE5E8bc3165A04E8340Da574fA',
+    blacklistedTokens: [
+      '0x163cEbBD83A4e2821fF06C9b0707A8A64FEc0AbC', // suUSD
+      '0xA6ae238D9CaF65DFA67670FDE3156EFeE9334488', // suBTC
+    ]
+  }),
 }
