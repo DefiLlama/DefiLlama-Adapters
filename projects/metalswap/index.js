@@ -61,11 +61,6 @@ const config = {
 module.exports = {
   hallmarks: [
     [1662076800, "Hedging Contracts (HC) Launch on ETH"],
-    [1682985600, "Winning Optimism Growth Grant"],
-    [1687737600, "HC Launch on Optimism"],
-    [1701907200, "HC Launch on Linea"],
-    [1726185600, "Rebrand to Denaria approved"],
-    [1727308800, "Launch of PERP DEX Demo"],
     [1740355200, "TVL Migration to Denaria"]
   ],
 
