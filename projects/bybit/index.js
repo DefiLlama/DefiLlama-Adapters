@@ -175,12 +175,6 @@ const config = {
       'DDz1H7AcqPgmKzFEP3pBHW5b1GWuWEoAAP',
     ]
   },
-  litecoin: {
-    owners: [
-      'LKxNtynH2GxLc2oLxUGL6ryckK8JMdP5BR',
-      'ltc1qp7cnlxmz8wgc93g0m020ckru2s55t25y3wunf6',
-    ]
-  },
   ton: {
     owners: [
       'EQB9Ez1OQlyOAN4BVROkTmbm0WOyHnFyCux1eZZeXeKMVV6_',
