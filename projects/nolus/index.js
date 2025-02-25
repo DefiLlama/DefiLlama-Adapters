@@ -69,7 +69,7 @@ async function getLeaseContracts(leaseCodeId) {
 }
 
 async function getLeases(leaseAddresses) {
-  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {} })
+  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {"state":{}} })
 }
 
 async function getLppTvl(lppAddresses) {  
