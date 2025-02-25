@@ -1,9 +1,7 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // --- BSC Addresses ---
 const masterChefContractBsc = "0x738600B15B2b6845d7Fe5B6C7Cb911332Fb89949";
@@ -57,153 +55,24 @@ const pool2StratsPolygon = ["0xB045Ea272229f9c0c94ca36C1e805226c9C8c034"];
 
 const excludePool2Polygon = ["0x312D2eAb1c01C0c3d74f41a3B7Dd5772aD9F3Ca2"];
 
-const calcTvl = async (
-  balances,
-  chain,
-  block,
-  masterchef,
-  transformAddress,
-  excludePool2
-) => {
-  const poolLength = (
-    await sdk.api.abi.call({
-      abi: abi.poolLength,
-      target: masterchef,
-      chain,
-      block,
-    })
-  ).output;
-
-  const lpPositions = [];
-
-  for (let index = 0; index < poolLength; index++) {
-    const strat = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterchef,
-        params: index,
-        chain,
-        block,
-      })
-    ).output.strat;
-
-    const want = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterchef,
-        params: index,
-        chain,
-        block,
-      })
-    ).output.want;
-
-    const strat_bal = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: want,
-        params: strat,
-        chain,
-        block,
-      })
-    ).output;
-
-    const symbol = (
-      await sdk.api.abi.call({
-        abi: abi.symbol,
-        target: want,
-        chain,
-        block,
-      })
-    ).output;
-
-    if (
-      excludePool2.some((addr) => addr.toLowerCase() === want.toLowerCase()) ||
-      symbol.includes("RCUBE") ||
-      symbol.includes("QBERT") ||
-      symbol.includes("pQBERT")
-    ) {
-      continue
-    } else if (symbol.includes("LP")) {
-      lpPositions.push({
-        token: want,
-        balance: strat_bal,
-      });
-    } else {
-      sdk.util.sumSingleBalance(balances, `${chain}:${want}`, strat_bal);
-    }
-  }
-
-  await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
-};
-
-const bscStaking = async (chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = i => `bsc:${i}`;
-  for (const token of stakingTokensBsc) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[token, false]],
-      retroStakingsBsc,
-      chainBlocks["bsc"],
-      "bsc",
-      transformAddress
-    );
-  }
-
-  return balances;
-};
-
-const polygonStaking = async (...params) => {
-  for (const stakingContract of retroStakingsPolygon) {
-    return staking(stakingContract, pQBERT)(...params);
-  }
-};
-
-const bscTvl = async (chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = i => `bsc:${i}`;
-
-  await calcTvl(
-    balances,
-    "bsc",
-    chainBlocks["bsc"],
-    masterChefContractBsc,
-    transformAddress,
-    excludePool2Bsc
-  );
-
-  return balances;
-};
-
-const polygonTvl = async (chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = i => `polygon:${i}`;
-
-  await calcTvl(
-    balances,
-    "polygon",
-    chainBlocks["polygon"],
-    masterChefContractPolygon,
-    transformAddress,
-    excludePool2Polygon
-  );
-
-  return balances;
-};
+async function tvl(api) {
+  const masterchef = api.chain === "bsc" ? masterChefContractBsc : masterChefContractPolygon;
+  const blacklistedTokens = excludePool2Bsc.concat(excludePool2Polygon).concat([pQBERT])
+  const poolInfos = await api.fetchList({  lengthAbi: abi.poolLength , itemAbi: abi.poolInfo, target: masterchef})
+  const tokensAndOwners = poolInfos.map(poolInfo => [poolInfo.want, poolInfo.strat])
+  return sumTokens2({ api, tokensAndOwners, blacklistedTokens,  })
+}
 
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    tvl: bscTvl,
-    staking: bscStaking,
+    tvl,
+    staking: staking(retroStakingsBsc, stakingTokensBsc),
     pool2: pool2s(pool2StratsBsc, excludePool2Bsc),
   },
   polygon: {
-    tvl: polygonTvl,
-    staking: polygonStaking,
+    tvl,
+    staking: staking(retroStakingsPolygon, pQBERT),
     pool2: pool2s(pool2StratsPolygon, excludePool2Polygon),
   },
   methodology:
