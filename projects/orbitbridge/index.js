@@ -26,11 +26,11 @@ const SILICON_RECOVERY = '0xac6b4b573df32f31e933c2c8a58d5e334690e0ee'
 
 // tokens on silicon bridged from ethereum
 const SILICON_TOKENS = [
-  "0x0000000000000000000000000000000000000000",// ETH
-  "0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4", // DAI
-  "0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035", // USDC
-  "0x1e4a5963abfd975d8c9021ce480b42188849d41d", // USDT
-  "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1" // WBTC
+  ADDRESSES.null,// ETH
+  ADDRESSES.astarzk.DAI, // DAI
+  ADDRESSES.astarzk.USDC, // USDC
+  ADDRESSES.astarzk.USDT, // USDT
+  ADDRESSES.astarzk.WBTC // WBTC
 ]
 
 const farms = {

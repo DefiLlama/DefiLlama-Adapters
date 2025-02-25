@@ -16,7 +16,7 @@ const ALPHAFI_CETUS_TVL_IDS = [
     poolID: "0xa7239a0c727c40ee3a139689b16b281acfd0682a06c23531b184a61721ece437",
     parentPoolID: "0x0e809689d04d87f4bd4e660cd1b84bf5448c5a7997e3d22fc480e7e5e0b3f58d",
     investorID: "0x1b923520f19660d4eb013242c6d03c84fdea034b8f784cfd71173ef72ece50e1",
-    token0Type: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY",
+    token0Type: ADDRESSES.sui.USDY,
     token1Type: ADDRESSES.sui.USDC
   },
   { //wusdc sui
@@ -343,7 +343,7 @@ const ALPHAFI_NAVI_TVL_IDS = [
   },
   {
     poolID: "0xea3c2a2d29144bf8f22e412ca5e2954c5d3021d3259ff276e3b62424a624ad1f",
-    tokenType: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY",
+    tokenType: ADDRESSES.sui.USDY,
     expo: 6
   },
   {

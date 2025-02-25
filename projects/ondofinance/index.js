@@ -25,7 +25,7 @@ const config = {
     USDY: "0x5bE26527e817998A7206475496fDE1E68957c5A6",
   },
   sui: {
-    USDY: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY",
+    USDY: ADDRESSES.sui.USDY,
   },
   aptos: {
     USDY: "0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc",

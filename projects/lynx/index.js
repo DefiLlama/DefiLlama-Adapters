@@ -123,7 +123,7 @@ const config = {
       ],
       [
         // sFUSE Token
-        "0xb1DD0B683d9A56525cC096fbF5eec6E60FE79871",
+        ADDRESSES.fuse.SFUSE,
         // OFTChipAdapter (owner)
         "0x707f3d554B47E17F1FDfb408FE091B39D51929CF",
       ],

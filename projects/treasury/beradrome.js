@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const beradromeTreasury = "0xaB53AfB5C63E2552e7bD986c0a38E8a8dC58E09C";
@@ -10,7 +11,7 @@ module.exports = treasuryExports({
     tokens: [
         nullAddress,
         "0x5C43a5fEf2b056934478373A53d1cb08030fd382", //BRLY
-        "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce", //HONEY
+        ADDRESSES.berachain.HONEY, //HONEY
         "0x18878Df23e2a36f81e820e4b47b4A40576D3159C", // OHM
         "0x231A6BD8eB88Cfa42776B7Ac575CeCAf82bf1E21", //PLUG
     ],

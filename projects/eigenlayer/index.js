@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const { getLogs2 } = require("../helper/cache/getLogs");
 const { startAlliumQuery, retrieveAlliumResults } = require("../helper/allium");
 const { getCache, setCache } = require("../helper/cache");
 
-const EIGEN = '0xec53bF9167f50cDEB3Ae105f56099aaaB9061F83'
+const EIGEN = ADDRESSES.ethereum.EIGEN
 const eigenStrategy = '0xaCB55C530Acdb2849e6d4f36992Cd8c9D50ED8F7'
 const bEIGEN = '0x83e9115d334d248ce39a6f36144aeab5b3456e75'
 

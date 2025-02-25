@@ -69,7 +69,7 @@ const HubPools = {
     },
     { // cbBTC_base      
       poolAddress: "0x9eD81F0b5b0E9b6dE00F374fFc7f270902576EF7",
-      tokenAddress: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+      tokenAddress: ADDRESSES.ethereum.cbBTC,
       chainPoolAddress: '0x50d5Bb3Cf57D2fB003b602A6fD10F90baa8567EA',
     },
   ],

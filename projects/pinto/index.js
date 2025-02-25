@@ -12,7 +12,7 @@ const ADDR = {
     // Underlying non-pinto tokens
     WETH: ADDRESSES.base.WETH,
     CBETH: "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
-    CBBTC: "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+    CBBTC: ADDRESSES.ethereum.cbBTC,
     WSOL: "0x1c61629598e4a901136a81bc138e5828dc150d67",
     USDC: ADDRESSES.base.USDC
   }
