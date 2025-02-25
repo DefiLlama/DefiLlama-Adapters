@@ -10,14 +10,10 @@ const protocolConfig = [
 ]
 
 async function tvl(api) {
-  let tokensAndOwners = []
-  
-  for (const { protocol, treasury } of protocolConfig) {
-    const tokens = await api.call({ abi: 'address[]:assetTokens', target: protocol })
-    tokens.forEach(token => tokensAndOwners.push([token, treasury]))
-  }
-  
-  return api.sumTokens({ tokensAndOwners })
+  let ownerTokens = []
+  const tokens = await api.multiCall({  abi: 'address[]:assetTokens', calls: protocolConfig.map(i => i.protocol)})
+  tokens.forEach((v, i) => ownerTokens.push([v, protocolConfig[i].treasury]))
+  return api.sumTokens({ ownerTokens })
 }
 
 module.exports = {
