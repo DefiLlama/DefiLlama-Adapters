@@ -41,6 +41,8 @@ const getPools = async (block) => {
 
 const processPools = async (api, key) => {
   const block = await api.getBlock();
+  // This is the deployment block of the first poolV2
+  if (block < 16186377) return console.error('Error: Impossible to backfill - The queried block is earlier than the deployment block of poolsV2');
   const pools = await getPools(block);
 
   pools.forEach((pool) => {
@@ -60,6 +62,7 @@ const staking = async (api) => {
 }
 
 module.exports = {
+  hallmarks: [[1670976000, 'V2 Deployment']],
   ethereum: { 
     tvl: async (api) => processPools(api, "collateralValue"),
     borrowed: async (api) => processPools(api),
