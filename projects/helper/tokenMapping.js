@@ -48,6 +48,9 @@ const fixBalancesTokens = {
   hyperliquid: {
     '0x94e8396e0869c9f2200760af0621afd240e1cf38': { coingeckoId: "hyperliquid", decimals: 18 },
   },
+  mint: {
+    '0xFd24287551068981737F64ab5f4054DA27F01833': { coingeckoId: 'ethereum', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
