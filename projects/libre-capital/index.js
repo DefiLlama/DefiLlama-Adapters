@@ -23,6 +23,30 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    BHMA: {
+      address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMB: {
+      address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMC: {
+      address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: '0xe5631cCF95350948Ba2D4d8c815c05AFBfb47A9F',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   polygon: {
@@ -36,7 +60,25 @@ const RECEIPT_TOKENS = {
       address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
       decimals: 18,
       underlying: 'security-token',
-      fundName:' BH Master Fund Access a sub-fund of Libre SAF VCC'
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMB: {
+      address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMC: {
+      address: '0xC1Cd4CCd9E74be61EDdd5C06f962657Bd5D57aF3',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: '0xe5631cCF95350948Ba2D4d8c815c05AFBfb47A9F',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   injective: {
@@ -45,6 +87,30 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: 'inj14h6vrgxfshwp30tjne6xw74la6730mf7wy2j3n',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    APCA: {
+      address: 'inj1f5zrhkq02fahllqf6g2e37d4aeqfsp63z74t4l',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'Libre SAF VCC - Access Private Credit Feeder'
+    },
+    LDCFA: {
+      address: 'inj1qrmw646zfqlq9xxqd5zrvw4yqevxah263l4z27',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    LDCFB: {
+      address: 'inj1kxucwmm5wc640xl0vswf04a0naxm0m9anmzc76',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   sui: {
@@ -61,6 +127,30 @@ const RECEIPT_TOKENS = {
       decimals: 9,
       underlying: 'security-token',
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    BHMA: {
+      address: '93qLFcpdpMeSdhsw2SnkBehUvMi8UX9idHpV6ZvNuP8e',
+      decimals: 9,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMB: {
+      address: '4VXQrtXmNoRoETY7S6uL8NwwGx15UXJ1FU8Q1wgCHjG6',
+      decimals: 9,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMC: {
+      address: '562Cd8zkXyWJ5ixwY3dKJMRzqToCi2upc12DbyjZ1UwG',
+      decimals: 9,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: '2hzQ4sexbsJsSmp1s6gQCKJDmtAx3WnQ3pLZmDJBWpFC',
+      decimals: 9,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   near: {
@@ -69,6 +159,30 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    BHMA: {
+      address: 'libre_instrument_0.near',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMB: {
+      address: 'libre_instrument_3.near',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMC: {
+      address: 'libre_instrument_4.near',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: 'libre_instrument_2.near',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   aptos: {
@@ -77,6 +191,30 @@ const RECEIPT_TOKENS = {
       decimals: 8,
       underlying: 'security-token',
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    BHMA: {
+      address: '0x2a557b82f8c92697627d2be3cbcb50cc21237f764942b9cc79e4cb693a22fb17',
+      decimals: 8,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMB: {
+      address: '0xececb4a41a655506454b16cef6b0284292f60ef6282e6bc7f355ee7a9a31abaa',
+      decimals: 8,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    BHMC: {
+      address: '0x68cd0c8f494447123c77bffaae34212e3afbe32f83b46577aaab01ea79c6ee15',
+      decimals: 8,
+      underlying: 'security-token',
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: '0x70d42e894d91754f6731f057a59cced66f731f1223965c8afb0bc1ed017a01ff',
+      decimals: 8,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   mantra: {
@@ -85,6 +223,18 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       fundName:'Libre SAF VCC - Access Private Credit Feeder'
+    },
+    LDCFA: {
+      address: 'mantra1rl8su3hadqqq2v86lscpuklsh2mh84cxqvjdew4jt9yd07dzekyq7vvhrd',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    LDCFB: {
+      address: 'mantra1vhjnzk9ly03dugffvzfcwgry4dgc8x0sv0nqqtfxj3ajn7rn5ghqjerqcd',
+      decimals: 18,
+      underlying: 'security-token',
+      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
     }
   },
   imx: {
@@ -284,6 +434,8 @@ async function ethereumTvl(timestamp, block) {
     block,
   })
 
+  let totalValueUSD = 0;
+
   // Map token's total supply to represent RWA TVL
   supplies.output.forEach((supply, i) => {
     const token = Object.values(RECEIPT_TOKENS.ethereum)[i]
@@ -294,9 +446,11 @@ async function ethereumTvl(timestamp, block) {
     const adjustedBalance = Number(balance) / (10 ** token.decimals);
     const valueUSD = adjustedBalance * price;
     
-    balances['usd-coin'] = valueUSD;
+    
+    totalValueUSD += valueUSD;
   })
 
+  balances['usd-coin'] = totalValueUSD;
   return balances;
 }
 
