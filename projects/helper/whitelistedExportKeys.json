@@ -13,5 +13,6 @@
   "isHeavyProtocol",
   "deadFrom",
   "ownTokens",
-  "vesting"
+  "vesting",
+  "isWhitelabeledProvider"
 ]

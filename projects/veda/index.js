@@ -40,5 +40,6 @@ module.exports = {
   misrepresentedTokens: false,
   start: 1710745200,
   doublecounted: true,
-  ["berachain"]: { tvl: berachain_tvl }
+  ["berachain"]: { tvl: berachain_tvl },
+  isWhitelabeledProvider: true
 };
