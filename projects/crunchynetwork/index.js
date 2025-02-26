@@ -7,7 +7,14 @@ const { PromisePool } = require('@supercharge/promise-pool')
 async function fetchFarmsTvl() {
     const farms = await get(RPC_ENDPOINT + '/v1/contracts/KT1KnuE87q1EKjPozJ5sRAjQA24FPsP57CE3/bigmaps/farms/keys?limit=1000')
     const items = farms.map(farm => [farm.value.poolToken.address, farm.value.poolBalance]).filter(item => item[1] !== "0")
-    console.log("items", items)
+    return getAllLPToTez(items);
+}
+
+// crunchy farm v2 address KT1L1WZgdsfjEyP5T4ZCYVvN5vgzrNbu18kX
+// TVL = sum(crunchFarm.poolBalance / quipuLP.total_supply * quipuLP.tez_pool * 2 * XTZUSD)
+async function fetchFarmsV2Tvl() {
+    const farms = await get(RPC_ENDPOINT + '/v1/contracts/KT1L1WZgdsfjEyP5T4ZCYVvN5vgzrNbu18kX/bigmaps/farms/keys?limit=1000')
+    const items = farms.map(farm => [farm.value.poolToken.address, farm.value.poolBalance]).filter(item => item[1] !== "0")
     return getAllLPToTez(items);
 }
 
@@ -49,9 +56,10 @@ async function lpToTez(lpTokenAddress, lpTokens) {
 
 async function tvl() {
     const farmsTvl = await fetchFarmsTvl();
+    const farmsV2Tvl = await fetchFarmsV2Tvl();
     const deepFreezersTvl = await fetchDeepFreezersTvl();
     return {
-        tezos: (farmsTvl + deepFreezersTvl ) / 1e6
+        tezos: (farmsTvl + farmsV2Tvl + deepFreezersTvl ) / 1e6
     };
 }
 

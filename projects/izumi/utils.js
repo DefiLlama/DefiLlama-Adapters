@@ -1,5 +1,5 @@
 const { getChainTransform } = require('../helper/portedTokens')
-const { unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
 const BigNumber = require('bignumber.js');
@@ -216,7 +216,7 @@ async function unwrapNFTs({ balances = {}, nftsAndOwners = [], block, chain = 'b
   const uniContracts = config.uniContracts
   const iZiContracts = config.iZiContracts
   if (iZiContracts) await unwrapiZiswapV3NFTs({ balances, chain, block, nftAddress, owners: iZiContracts, })
-  if (uniContracts) await unwrapUniswapV3NFTs({ balances, chain, block, owners: uniContracts, })
+  if (uniContracts) await sumTokens2({ balances, chain, block, owners: uniContracts, resolveUniV3: true, })
   // to fix balances of token addresses which are not on CoinGecko
   // await checkAndFixToken(balances, chain, fixTokens)
   return balances

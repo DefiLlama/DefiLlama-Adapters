@@ -7,5 +7,6 @@ module.exports = {
     tvl: () => 0,
     pool2: staking('0x326E906A28Cd7fF56cCe6A84a8043786B8762cDf', zaiLP),
     staking: staking('0xE2612091Ec3dBE6f40BbfD0f30e3b8E4eA896e53', zaiV2),
-  }
+  },
+  deadFrom: '2022-11-11',
 };

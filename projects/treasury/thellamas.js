@@ -23,7 +23,7 @@ module.exports = mergeExports([treasuryExports({
   },
 }), {
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const lockedCVXBal = await api.call({  abi: 'erc20:balanceOf', target: ADDRESSES.ethereum.vlCVX, params: Treasury })
       api.add(ADDRESSES.ethereum.CVX, lockedCVXBal)
       await genericUnwrapCvxRewardPool({ api, owner: Treasury, pool: '0x39D78f11b246ea4A1f68573c3A5B64E83Cff2cAe'})

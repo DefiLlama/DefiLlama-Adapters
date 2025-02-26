@@ -1,131 +1,242 @@
-const sdk = require("@defillama/sdk");
-const { sumTokens2 } = require("../helper/unwrapLPs.js");
-const abi = require("./abi.json");
+/**
+ **
+ ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.4.3
+ **
+ **/
 
-const { getV2CAs, getV1CAs } = require("./events");
+ const ethers = require("ethers");
+ const { getLogs } = require("../helper/cache/getLogs");
+ const { ADDRESS_PROVIDER_V3, CONTRACTS_REGISTER, DATA_COMPRESSOR, poolAbis, v1Abis, v2Abis, v3Abis } = require("./config");
+ 
+  module.exports = {
+   hallmarks: [[1666569600, "LM begins"]],
+   methodology: `Retrieves the tokens in each Gearbox pool & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
+   misrepresentedTokens: true
+ }
 
-const addressProvider = "0xcf64698aff7e5f27a11dff868af228653ba53be0";
-//// Gearbox TVL
-/// Sum of 2 Sources:
-/// 1. Pool TVL                  - Derived using availableLiquidity()
-/// 2. Credit Account v1 & v2    - Derived by getting balances on all open Credit Accounts
+const getPools = async (api) => {
+   const contractsRegisterAddr = await api.call({ 
+     abi: poolAbis.getAddressOrRevert,
+     target: ADDRESS_PROVIDER_V3[api.chain],
+     params: [CONTRACTS_REGISTER, 0]
+   })
+ 
+   const rawPools = await api.call({ target: contractsRegisterAddr, abi: poolAbis.getPools })
+   const pools = rawPools.filter((p) => p !== "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286")
+   const underlyings = await api.multiCall({ calls: pools, abi: poolAbis.underlyingToken })
+   return underlyings.map((u, i) => [u, pools[i]])
+}
 
-const getPoolAddrs = async (block) => {
-  // Get contractsRegister from Gearbox addressProvider
-  const { output: contractsRegister } = await sdk.api.abi.call({
-    abi: abi["getContractsRegister"],
-    target: addressProvider,
-    block,
-  });
+const getV1Managers = async (api) => {
+  const provider = ADDRESS_PROVIDER_V3[api.chain]
+  const contractsRegisterAddr = await api.call({ abi: v1Abis.getAddressOrRevert, target: provider, params: [CONTRACTS_REGISTER, 0] });
+  const rawCreditManagers = await api.call({ target: contractsRegisterAddr, abi: v1Abis.getCreditManagers });
+  const versions = await api.multiCall({ calls: rawCreditManagers, abi: v1Abis.version });
+  const creditManagers = rawCreditManagers.filter((_, i) => versions[i] == 1);
+  const underlyings = await api.multiCall({ calls: creditManagers, abi: v1Abis.underlyingToken });
+  return creditManagers.map((manager, i) => ({ manager, underlying: underlyings[i] }))
+}
 
-  // Get gearbox pools from the contractsRegister, and underlyingToken for each pool
-  const { output: pools } = await sdk.api.abi.call({
-    abi: abi["getPools"],
-    target: contractsRegister,
-    block,
-  });
+const getV1Tvl = async (api) => {
+  const managers = await getV1Managers(api)
+  if (!managers.length) return;
 
-  const { output: poolsUnderlying } = await sdk.api.abi.multiCall({
-    abi: abi["underlyingToken"],
-    calls: pools
-      .filter((p) => p != "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286") // RM wstETH pool
-      .map((pool) => ({ target: pool })),
-    block,
-  });
-  const tokensAndOwners = poolsUnderlying.map((t) => [
-    t.output,
-    t.input.target,
-  ]);
+  await Promise.all(
+    managers.map(async ({ manager, underlying }) => {
+      const topics = [];
+      const eventsByDate = [];
+      const accounts = new Set();
 
-  let poolBalances = {};
-  return { tokensAndOwners, poolBalances };
-};
+      const addEvent = ({ blockNumber, logIndex }, address, operation) => {
+        eventsByDate.push({
+          time: blockNumber * 1e5 + logIndex,
+          address,
+          operation,
+        });
+      };
 
-const getCreditManagers = async (block) => {
-  // Get DataCompressor from Gearbox addressProvider
-  const { output: DataCompressor } = await sdk.api.abi.call({
-    abi: abi["getDataCompressor"],
-    target: addressProvider,
-    block,
-  });
-  // Get gearbox pools from the contractsRegister, and underlyingToken for each pool
-  const { output: creditManagers } = await sdk.api.abi.call({
-    abi: abi["getCreditManagersList"],
-    target: DataCompressor,
-    block,
-  });
+      const creditFilter = await api.call({ target: manager, abi: v1Abis.creditFilter });
+      const cm = new ethers.Contract(manager, v1Abis.filtersV1);
+      cm.interface.forEachEvent((e) => topics.push(e.topicHash));
+      const rawLogs = await getLogs({ target: manager, fromBlock: 13854983, api, topics: [topics] });
+      const logs = rawLogs.map((log) => ({ ...cm.interface.parseLog(log), blockNumber: log.blockNumber, logIndex: log.logIndex }));
 
-  return creditManagers;
-};
+      logs.forEach((log) => {
+        const { name, args } = log;
+        switch (name) {
+          case "OpenCreditAccount":
+            addEvent(log, args.onBehalfOf, "add");
+            break;
+          case "RepayCreditAccount":
+            addEvent(log, args.borrower, "delete");
+            break;
+          case "TransferAccount":
+            addEvent(log, args.oldOwner, "delete");
+            addEvent(log, args.newOwner, "add");
+            break;
+        }
+      });
 
-const getV2TVL = async (block) => {
-  // Get Current CMs
-  const creditManagers = (await getCreditManagers(block)).filter(
-    (cm) => cm.version != 1
+      eventsByDate
+        .sort((a, b) => a.time - b.time)
+        .forEach(({ address, operation }) => {
+          if (operation === "add") accounts.add(address);
+          else accounts.delete(address);
+        });
+
+      const openCredits = Array.from(accounts).map(
+        (borrower) =>
+          logs.find((log) => log.args?.onBehalfOf === borrower)?.args.creditAccount
+      );
+
+      const totalValues = await api.multiCall({
+        abi: v1Abis.calcTotalValue,
+        target: creditFilter,
+        calls: openCredits.filter((i) => i !== "0xaBBd655b3791175113c1f1146D3B369494A2b815")
+      });
+
+      api.add(underlying, totalValues.reduce((a, c) => a + Number(c), 0));
+    })
   );
-  // Silently throw if no V2 CAs available
-  if (!creditManagers[0]) return [];
+};
 
-  // Get all CA Balances
-  const caValues = await Promise.all(
-    creditManagers.map((cm) => getV2CAs(cm.addr, block))
+const getV2Managers = async (api) => {
+  const provider = ADDRESS_PROVIDER_V3[api.chain];
+  const dataCompressor210 = await api.call({ abi: v2Abis.getAddressOrRevert, target: provider, params: [DATA_COMPRESSOR, 210] });
+  return api.call({ abi: v2Abis.getCreditManagersV2List, target: dataCompressor210 });
+};
+
+const getV2Tvl = async (api) => {
+  const managers = await getV2Managers(api);
+  if (!managers.length) return;
+
+  await Promise.all(
+    managers.map(async ({ addr, underlying }) => {
+      const topics = [];
+      const eventsByDate = [];
+      const accounts = new Set();
+
+      const addEvent = ({ blockNumber, logIndex }, address, operation) => {
+        eventsByDate.push({ time: blockNumber * 1e5 + logIndex, address, operation });
+      };
+
+      const creditFacade = await api.call({ abi: v2Abis.creditFacade, target: addr });
+      const ccLogs = await getLogs({ target: addr, fromBlock: 13854983, api, onlyArgs: true, eventAbi: v2Abis.newConfigurator });
+      const ccAddrs = ccLogs.map((log) => log[0]);
+
+      const cfAddrs = [];
+      for (const cca of ccAddrs) {
+        const cfLogs = await getLogs({ target: cca, fromBlock: 13854983, api, onlyArgs: true, eventAbi: v2Abis.creditFacadeUpgraded });
+        if (cfLogs.length) cfAddrs.push(...cfLogs.map((log) => log[0]));
+      }
+
+      const logs = [];
+      for (const cfAddr of cfAddrs) {
+        const cf = new ethers.Contract(cfAddr, v2Abis.filtersV2);
+        cf.interface.forEachEvent((e) => topics.push(e.topicHash));
+        const rawLogs = await getLogs({ target: cfAddr, fromBlock: 13854983, api, topics: [topics] });
+        const cfLogs = rawLogs.map((log) => ({ ...cf.interface.parseLog(log), blockNumber: log.blockNumber, logIndex: log.logIndex }));
+        if (cfLogs.length) logs.push(...cfLogs);
+      }
+
+      logs.forEach((log) => {
+        const { name, args } = log;
+        switch (name) {
+          case "OpenCreditAccount":
+            addEvent(log, args.onBehalfOf, "add");
+            break;
+          case "LiquidateExpiredCreditAccount":
+            addEvent(log, args.borrower, "delete");
+            break;
+          case "TransferAccount":
+            addEvent(log, args.oldOwner, "delete");
+            addEvent(log, args.newOwner, "add");
+            break;
+        }
+      });
+
+      eventsByDate
+        .sort((a, b) => a.time - b.time)
+        .forEach(({ address, operation }) => {
+          if (operation === "add") accounts.add(address);
+          else accounts.delete(address);
+        });
+
+      const openCredits = Array.from(accounts).map(
+        (borrower) =>
+          logs
+            .sort((a, b) => b.blockNumber - a.blockNumber)
+            .find((log) => log.args?.onBehalfOf === borrower)?.args.creditAccount
+      );
+
+      const totalValues = await api.multiCall({ abi: v2Abis.calcTotalValue, target: creditFacade, calls: openCredits });
+      api.add(underlying, totalValues.reduce((a, c) => a + Number(c), 0));
+    })
   );
-
-  return creditManagers.map((cm, i) => ({
-    addr: cm.addr,
-    token: cm.underlying,
-    bal: caValues[i],
-  }));
 };
 
-const getV1TVL = async (block) => {
-  // Get Current CMs
-  const creditManagers = (await getCreditManagers(block)).filter(
-    (cm) => cm.version != 2
-  );
+const getV3Managers = async (api) => {
+  const dc300 = await api.call({ abi: v3Abis.getAddressOrRevert, target: ADDRESS_PROVIDER_V3[api.chain], params: [DATA_COMPRESSOR, 300] })
+  return { managers: await api.call({ abi: v3Abis.getCreditManagersV3List, target: dc300 }), dc300 };
+}
 
-  // Silently throw if no V2 CAs available
-  if (!creditManagers[0]) return [];
+const getV3Tvl = async (api) => {
+  const { managers, dc300 } = await getV3Managers(api)
+  if (!managers.length) return;
 
-  // Get all CA Balances
-  const caValues = await Promise.all(
-    creditManagers.map((cm) => getV1CAs(cm.addr, block))
-  );
+  await Promise.all(
+    managers.map(async ({ addr }) => {
+      try {
+        const accs = await api.call({ target: dc300, abi: v3Abis.getCreditAccountsByCreditManager, params: [addr, []] })
+        accs.forEach(({ balances }) => {
+          balances.forEach(({ balance, token }) => {
+            if (+balance < 1) return;
+            api.add(token, +balance) 
+          })
+        })
 
-  return creditManagers.map((cm, i) => ({
-    addr: cm.addr,
-    token: cm.underlying,
-    bal: caValues[i],
-  }));
-};
+      } catch (error) {
+        return getV3CAsWithoutCompressor(api, addr)
+      }
+    })
+  )
+}
 
-const tvl = async (timestamp, block) => {
-  // Pool TVL (Current token balances)
-  const { poolBalances, tokensAndOwners } = await getPoolAddrs(block);
-  // V1 CreditAccounts TVL
-  const v1Balances = await getV1TVL(block);
+const getV3CAsWithoutCompressor = async (api, manager) => {
+  const [accs, collateralTokensCount] = await Promise.all([
+    api.call({ target: manager, abi: v3Abis.creditAccounts, permitFailure: true }),
+    api.call({ target: manager, abi: v3Abis.collateralTokensCount, permitFailure: true })
+  ])
 
-  // V2 CreditAccounts TVL in USD
-  const v2Balances = await getV2TVL(block);
+  const bitMasks = [];
+  for (let i = 0; i < collateralTokensCount; i++) {
+    bitMasks.push(BigInt(1) << BigInt(i));
+  }
 
-  // Merge all balances for each token
-  [...v1Balances, ...v2Balances].forEach((i) => {
-    sdk.util.sumSingleBalance(poolBalances, i.token, i.bal);
-    tokensAndOwners.push([i.token, i.addr]);
-  });
+  const collateralTokens = await api.multiCall({ abi: v3Abis.getTokenByMask, calls: bitMasks.map((bm) => ({ target: manager, params: [bm] })) });
 
-  return sumTokens2({
-    balances: poolBalances,
-    tokensAndOwners,
-    block,
-  });
-};
+  for (const token of collateralTokens) {
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: accs.map((owner) => ({ target: token, params: [owner] })), permitFailure: true })
+    if (!balances.length) return;
+    balances.forEach((balance) => {
+      api.add(token, balance)
+    })
+  }
+}
+ 
+ // src/adapter/index.ts
+const tvl = async (api) => {
+  const tokensAndOwners = await getPools(api)
+  if (api.chain === 'ethereum') {
+    await getV1Tvl(api),
+    await getV2Tvl(api)
+  }
 
-module.exports = {
-  hallmarks: [[1666569600, "LM begins"]],
-  ethereum: {
-    tvl,
-  },
-  methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1 & V2) denominated in the underlying token.`,
-  misrepresentedTokens: true,
-};
+  await getV3Tvl(api)
+  await api.sumTokens({ tokensAndOwners })
+}
+ 
+['ethereum', 'arbitrum', 'optimism'].forEach((chain) => {
+   module.exports[chain] = { tvl }
+})

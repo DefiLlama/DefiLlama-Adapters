@@ -75,16 +75,13 @@ async function staking() {
 
   // voting escrow
   let votingEscrowGlobalState = await getAppGlobalState(900653165)
-  let deflyState = await getAppGlobalState(641499935)
   let opulState = await getAppGlobalState(674526408)
   let totalLockedBank = votingEscrowGlobalState[marketStrings.total_locked]
-  let totalDefly = deflyState[marketStrings.underlying_cash] - deflyState[marketStrings.underlying_reserves]
   let totalOpul = opulState[marketStrings.underlying_cash] - opulState[marketStrings.underlying_reserves]
   const balance = totalLockedBank * price / (10 ** decimals)
 
   return  {
     [geckoId]: balance,
-    defly: totalDefly / 1e6,
     opulous: totalOpul / 1e10,
   }
 }

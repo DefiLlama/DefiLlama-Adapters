@@ -6,7 +6,7 @@ const DAI_CONTRACT = ADDRESSES.optimism.DAI;
 const USDC_CONTRACT = ADDRESSES.arbitrum.USDC;
 const USDT_CONTRACT = ADDRESSES.arbitrum.USDT;
 const WBTC_CONTRACT = ADDRESSES.arbitrum.WBTC;
-const WSTETH_CONTRACT = '0x5979D7b546E38E414F7E9822514be443A4800529';
+const WSTETH_CONTRACT = ADDRESSES.arbitrum.WSTETH;
 const ARB_CONTRACT = ADDRESSES.arbitrum.ARB;
 
 const TOKEN_CONTRACTS = [
@@ -21,7 +21,6 @@ const TOKEN_CONTRACTS = [
 
 module.exports = {
   methodology: 'Sums up the value of all tokens wrapped into Shell v2',
-  start: 24142587,
   arbitrum: {
     tvl: sumTokensExport({ owner: OCEAN_CONTRACT, tokens: TOKEN_CONTRACTS})
   },

@@ -1,23 +1,13 @@
-const axios = require("axios");
+const { sumTokens2, } = require('../helper/solana')
+
+// https://www.npmjs.com/package/@unstake-it/sol
+// https://learn.sanctum.so/docs/contracts
 
 async function tvl() {
-    const publicAPIKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYyOTIwMTUyOSwiZXhwIjoxOTQ0Nzc3NTI5fQ.nJcAWD5NXaHQJdPc0_J1lNMv-YDx9bpVlPkke91Jx0c'
-    const response = await axios.get(
-        'https://rvliqpfbqcjhdlrgjkvw.supabase.co/rest/v1/APITable?select=tvl_sol&api_id=eq.1',
-        {
-            headers: {
-                'apikey': publicAPIKey,
-            }
-        }
-    )
-
-    return {
-        'solana': response.data[0].tvl_sol / 1_000_000_000
-    }
+  return sumTokens2({ solOwners: ['3rBnnH9TTgd3xwu48rnzGsaQkSr1hR64nY71DrDt6VrQ'],})
 }
 
 module.exports = {
-    timetravel: false,
-    solana: { tvl },
-    methodology: 'We call our API endpoint to get total SOL TVL. An alternative is to check our total supply for a lower bound on TVL, as each SOCN token is guaranteed to be backed by (at least) 1 SOL.',
+  timetravel: false,
+  solana: { tvl, },
 }

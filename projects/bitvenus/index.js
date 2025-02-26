@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -10,18 +11,12 @@ const config = {
       '0x5631aa1fc1868703a962e2fd713dc02cad07c1db',     
       '0x4785e47ae7061632c2782384da28b9f68a5647a3',
       '0x25Ee4Ce905Da85df8620cB82884adDf96A14498A',
-      '0xE1E5F8caCc6B9Ace0894Fe7ba467328587e60bE7'      
+      '0xE1E5F8caCc6B9Ace0894Fe7ba467328587e60bE7',
+      '0xb8001c3ec9aa1985f6c747e25c28324e4a361ec1'  //cobo wallet     
     ],
   },
   bitcoin: {
-    owners: [
-      //  '3FdoFGYYcD1EU7ekrt2x2u2mFrjmxouMJG',
-      //  '358pjjkYRG8exw2BKZnn7Q9s6SCb7wZEWN',
-      //  '3C1ykoWkHBMZwmY8PUUMVxtJJSBkZBCtN8',
-      'bc1qrm2a7u9xyeffvulm6e589qvesmt0v0rjxqfkhv',
-      'bc1qvht34dma2uy23l9j862nnqr38a42kjr66e6lec'
-
-    ]
+    owners: bitcoinAddressBook.bitvenus
   },
   bsc: {
     owners: [
@@ -38,4 +33,4 @@ const config = {
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'This wallets where provide by BitVenus team on the 07/02/2023. *On the 14/07/2023 BitVenus team provided new wallets'
+module.exports.methodology = 'This wallets where provide by BitVenus team on the 07/02/2023. *On the 14/07/2023 BitVenus team provided new wallets. A new wallet was provide on the 15/12/2023 by bitvenus team'

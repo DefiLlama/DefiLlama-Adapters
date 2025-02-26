@@ -1,8 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-
 const abi = require("./abi.json");
-const contracts = {
+const config = {
   ethereum: {
     DEPLOY_BLOCK: 10819469,
     GLOBAL_CONFIG_ADDRESS: "0xa13B12D2c2EC945bCAB381fb596481735E24D585",
@@ -23,196 +20,21 @@ const contracts = {
   },
 };
 
-const utility = {
-  // get the latest TokenRegistry address through the GlobalConfig contract
-  async getTokenRegistryAddressByGlobalConfig(block, chain) {
-    return (
-      await sdk.api.abi.call({
-        block: block,
-        chain: chain,
-        target: contracts[chain].GLOBAL_CONFIG_ADDRESS,
-        params: [],
-        abi: abi["global:tokenInfoRegistry"],
-      })
-    ).output;
-  },
+Object.keys(config).forEach(chain => {
+  const { GLOBAL_CONFIG_ADDRESS, SAVINGS_ADDRESS, CETH, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      // Get TokenRegistry Address
+      let tokenRegistryAddress = await api.call({ target: GLOBAL_CONFIG_ADDRESS, abi: abi["global:tokenInfoRegistry"], })
 
-  // Get the latest Bank address through the GlobalConfig contract
-  async getBankAddressByGlobalConfig(block, chain) {
-    return (
-      await sdk.api.abi.call({
-        block: block,
-        chain: chain,
-        target: contracts[chain].GLOBAL_CONFIG_ADDRESS,
-        params: [],
-        abi: abi["global:bank"],
-      })
-    ).output;
-  },
+      // Get latest markets
+      let markets = await api.call({ target: tokenRegistryAddress, abi: abi["tokenRegistry:getTokens"], });
 
-  // Get the TokenRegistry contract
-  async getTokenRegistryContract(block, ads, chain) {
-    return (
-      await sdk.api.abi.call({
-        block: block,
-        chain: chain,
-        target: ads,
-        params: [],
-        abi: abi["tokenRegistry:getTokens"],
-      })
-    ).output;
-  },
+      let bankAddress = await api.call({ target: GLOBAL_CONFIG_ADDRESS, abi: abi["global:bank"], })
+      const amounts = await api.multiCall({ abi: abi["bank:getPoolAmount"], calls: markets, target: bankAddress, })
+      api.add(markets, amounts)
+      return api.sumTokens({ owner: SAVINGS_ADDRESS, token: CETH})
 
-  // Get all tokens
-  async getMarkets(block, chain) {
-    // Get TokenRegistry Address
-    let tokenRegistryAddress =
-      await utility.getTokenRegistryAddressByGlobalConfig(block, chain);
-
-    // Get latest markets
-    let currentMarkets = await utility.getTokenRegistryContract(
-      block,
-      tokenRegistryAddress,
-      chain
-    );
-    return currentMarkets;
-  },
-
-  async getBankPoolAmounts(block, markets, chain) {
-    let bankAddress = await utility.getBankAddressByGlobalConfig(block, chain);
-    let callsArray = [];
-    markets.forEach((element) => {
-      callsArray.push({
-        target: bankAddress,
-        params: element,
-      });
-    });
-    return (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: abi["bank:getPoolAmount"],
-        calls: callsArray,
-      })
-    ).output;
-  },
-
-  async getBankContractTokenState(block, markets, chain) {
-    let bankAddress = await utility.getBankAddressByGlobalConfig(block, chain);
-    let callsArray = [];
-    markets.forEach((element) => {
-      callsArray.push({
-        target: bankAddress,
-        params: element,
-      });
-    });
-    return (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: abi["bank:getTokenState"],
-        calls: callsArray,
-      })
-    ).output;
-  },
-
-  // Get Token Value
-  async getCtokenValue(block, ctoken, chain) {
-    let cEthToken = await sdk.api.abi.call({
-      block: block,
-      chain: chain,
-      target: ctoken,
-      params: contracts[chain].SAVINGS_ADDRESS,
-      abi: "erc20:balanceOf",
-    });
-    return cEthToken.output;
-  },
-  
-  // Get cTokens
-  async getCTokens(block, markets, chain) {
-    let tokenRegistryAddress =
-      await utility.getTokenRegistryAddressByGlobalConfig(block, chain);
-    let callsArray = [];
-    let allTokenObj = {};
-    markets.forEach((token_address) => {
-      allTokenObj[token_address] = "";
-      callsArray.push({
-        target: tokenRegistryAddress,
-        params: token_address,
-      });
-    });
-    let cToken = (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: abi["tokenRegistry:getCToken"],
-        calls: callsArray,
-      })
-    ).output;
-
-    let zeroCTokenAddress = ADDRESSES.null;
-    cToken.forEach((item) => {
-        allTokenObj[item.input.params[0]] =
-          item.output === zeroCTokenAddress ? "" : item.output;
-    });
-    return allTokenObj;
-  },
-  //
-};
-
-async function ethereumTvl(timestamp, blockETH, chainBlocks) {
-  const block = blockETH;
-  const chain = "ethereum";
-  return await getTvlByChain(timestamp, block, chain);
-}
-async function okexchainTvl(timestamp, blockETH, chainBlocks) {
-  const block = chainBlocks["okexchain"];
-  const chain = "okexchain";
-  return await getTvlByChain(timestamp, block, chain);
-}
-async function polygonTvl(timestamp, blockETH, chainBlocks) {
-  const block = chainBlocks["polygon"];
-  const chain = "polygon";
-  return await getTvlByChain(timestamp, block, chain);
-}
-
-async function getTvlByChain(timestamp, block, chain) {
-  let config = contracts[chain];
-
-  let balances = {};
-  let networkAddressSymbol = chain === "ethereum" ? "" : `${chain}:`;
-  if (!block || block > config.DEPLOY_BLOCK) {
-    // Get all Tokens in the market
-    let markets = await utility.getMarkets(block, chain);
-
-    // Get Bank
-    let banksPoolAmounts = await utility.getBankPoolAmounts(
-      block,
-      markets,
-      chain
-    );
-    banksPoolAmounts.forEach((result) => {
-        balances[networkAddressSymbol + result.input.params] = result.output;
-    });
-
-    // cETH value
-    balances[networkAddressSymbol + config.CETH] = await utility.getCtokenValue(
-      block,
-      config.CETH,
-      chain
-    );
+    }
   }
-  return balances;
-}
-
-module.exports = {
-  ethereum: {
-    tvl: ethereumTvl,
-  },
-  okexchain: {
-    tvl: okexchainTvl,
-  },
-  polygon: {
-    tvl: polygonTvl,
-  },
-};
+})

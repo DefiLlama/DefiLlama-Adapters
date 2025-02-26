@@ -4,6 +4,7 @@ module.exports = {
 	terra: {
 		tvl: () => ({}),
 	},
+	deadFrom: '2022-05-26',
 	timetravel: false,
 	hallmarks:[
           [1651881600, "UST depeg"],

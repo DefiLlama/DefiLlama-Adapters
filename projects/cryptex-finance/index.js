@@ -61,7 +61,7 @@ module.exports = {
   }
 };
 
-async function staking_(_, _b, _cb, { api, }) {
+async function staking_(api) {
   const logs = await getLogs({
     api,
     target: factory,

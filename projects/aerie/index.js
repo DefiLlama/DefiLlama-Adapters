@@ -1,6 +1,6 @@
 const { sumUnknownTokens } = require('../helper/unknownTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const Indexer = '0x0336dfb02ba66ce75f5cc7898c3eafeddc493daf'
   let pools = await api.call({ abi: abi.getAllSaaSPools, target: Indexer })
   const isEnabled = await api.multiCall({ abi: abi.poolEnabled, calls: pools })

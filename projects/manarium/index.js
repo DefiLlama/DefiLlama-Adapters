@@ -24,3 +24,4 @@ module.exports = {
       staking: tvl
     }
   }; 
+  module.exports.deadFrom = '2023-03-09'

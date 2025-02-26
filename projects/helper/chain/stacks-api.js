@@ -1,7 +1,7 @@
 const stacks = require('@stacks/transactions')
 const { StacksMainnet } = require('@stacks/network')
 
-const { bufferCVFromString, callReadOnlyFunction, uintCV, principalCV, } = stacks
+const { bufferCVFromString, callReadOnlyFunction, uintCV, principalCV,tupleCV, } = stacks
 let network
 
 const senderAddress = 'ST2F4BK4GZH6YFBNHYDDGN4T1RKBA7DA1BJZPJEJJ'
@@ -19,8 +19,10 @@ async function call({ target, abi, inputArgs = [], }) {
   return stacks.cvToValue(result)
 
   function toClairty(arg) {
+    if (arg.type.startsWith('(tuple')) return tupleCV(arg.value)
     switch (arg.type) {
       case 'string': return bufferCVFromString(arg.value)
+      case 'uint': return uintCV(arg.value)
       case 'number': return uintCV(arg.value)
       case 'principal': return principalCV(arg.value)
       default: throw new Error(`Unknown type ${arg.type}`)

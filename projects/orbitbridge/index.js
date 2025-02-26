@@ -1,10 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
-const { get } = require('../helper/http')
 const { getConfig } = require('../helper/cache')
 const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { transformBalances } = require('../helper/portedTokens')
+const { sumTokensExport: tonExport } = require('../helper/chain/ton')
 const { nullAddress } = require('../helper/tokenMapping');
 
 const ABI = {
@@ -20,8 +18,20 @@ const vaults = {
   klaytn: '0x9abc3f6c11dbd83234d6e6b2c373dfc1893f648d',
   polygon: '0x506DC4c6408813948470a06ef6e4a1DaF228dbd5',
   meta: '0x292A00F3b99e3CB9b324EdbaA92258C3C61b55ab',
-  wemix: '0x445F863df0090f423A6D7005581e30d5841e4D6d'
+  wemix: '0x445F863df0090f423A6D7005581e30d5841e4D6d',
+  silicon_zk: '0x5aAAcf28ECDd691b4a657684135d8848d38236Bb'
 }
+
+const SILICON_RECOVERY = '0xac6b4b573df32f31e933c2c8a58d5e334690e0ee'
+
+// tokens on silicon bridged from ethereum
+const SILICON_TOKENS = [
+  ADDRESSES.null,// ETH
+  ADDRESSES.astarzk.DAI, // DAI
+  ADDRESSES.astarzk.USDC, // USDC
+  ADDRESSES.astarzk.USDT, // USDT
+  ADDRESSES.astarzk.WBTC // WBTC
+]
 
 const farms = {
   bsc: [
@@ -41,78 +51,63 @@ const farms = {
 
 let tokenData
 
-function chainTvls(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}) => {
-    const vault = vaults[chain]
-    let targetChain = chain
-    if (chain === 'ethereum') targetChain = 'eth'
-    if (chain === 'polygon') targetChain = 'matic'
+async function tvl(api) {
+  const chain = api.chain
 
-    const tokenListURL = 'https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList'
-    tokenData = tokenData || getConfig('orbit-bridge', tokenListURL)
-    const data = await tokenData
+  if (chain === 'meta') return {} // rpc issues with meta
 
-    let tokenList = data.origins.filter(x => x.chain === targetChain && !x.is_nft).map(x => x.address)
-    tokenList.push(nullAddress)
-    const balances = await sumTokens2({ owner: vault, tokens: tokenList, chain, block, blacklistedTokens: [
+  const vault = vaults[chain]
+  let targetChain = chain
+  if (chain === 'ethereum') targetChain = 'eth'
+  if (chain === 'polygon') targetChain = 'matic'
+  if (chain === 'silicon_zk') targetChain = 'silicon'
+
+  const tokenListURL = 'https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList'
+  tokenData = tokenData || getConfig('orbit-bridge', tokenListURL)
+  const data = await tokenData
+
+  let tokenList = data.origins.filter(x => x.chain === targetChain && !x.is_nft).map(x => x.address)
+  tokenList.push(nullAddress)
+  await sumTokens2({
+    api,
+    owner: vault, tokens: tokenList, blacklistedTokens: [
       '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
       // reason for skipping, most of the tvl comes from this transaction which is about 25% of ORU supply on ETH
       // https://etherscan.io/tx/0x0a556fcef2a867421ec3941251ad3c10ae1402a23ddd9ad4b1097b686ced89f7
-    ] })
+    ]
+  })
 
-    if (farms[chain]) {
-      const calls = farms[chain].map(i => ({ params: i }))
-      const { output: farmData } = await sdk.api.abi.multiCall({
-        target: vault,
-        abi: ABI.farms,
-        calls, chain, block,
-      })
-      const { output: farmBalance } = await sdk.api.abi.multiCall({
-        abi: ABI.wantLockedTotal,
-        calls: farmData.map(i => ({ target: i.output})), 
-        chain, block,
-      })
-      farmBalance.forEach((data, i) => sdk.util.sumSingleBalance(balances, chain + ':' + farms[chain][i], data.output))
-    }
-    return balances
+  if (farms[chain]) {
+    const calls = farms[chain]
+    const farmData = await api.multiCall({ target: vault, abi: ABI.farms, calls, })
+    const farmBalance = await api.multiCall({ abi: ABI.wantLockedTotal, calls: farmData, })
+    api.add(farms[chain], farmBalance)
+  }
+
+  if (chain === 'silicon_zk') {
+    await sumTokens2({
+      api,
+      owner: SILICON_RECOVERY, tokens: SILICON_TOKENS
+    })
   }
 }
 
 module.exports = {
   methodology: 'Tokens locked in Orbit Bridge contract are counted as TVL',
   timetravel: false,
-  bsc: {
-    tvl: chainTvls('bsc')
-  },
-  celo: {
-    tvl: chainTvls('celo')
-  },
-  heco: {
-    tvl: chainTvls('heco')
-  },
-  ethereum: {
-    tvl: chainTvls('ethereum')
-  },
-  klaytn: {
-    tvl: chainTvls('klaytn')
-  },
-  polygon: {
-    tvl: chainTvls('polygon')
-  },
-  meta: {
-    tvl: chainTvls('meta')
-  },
-  wemix: {
-    tvl: chainTvls('wemix')
-  },
+  bsc: { tvl },
+  celo: { tvl },
+  heco: { tvl },
+  ethereum: { tvl },
+  klaytn: { tvl },
+  polygon: { tvl },
+  meta: { tvl },
+  wemix: { tvl },
+  silicon_zk: { tvl },
   ripple: {
-    tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'})
+    tvl: sumTokensExport({ owner: 'rJTEBWu7u1NcJAiMQ9iEa1dbsuPyhTiW23' })
   },
   ton: {
-    tvl: async () => {
-      let ton_vault = "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy"
-      const res = await get(`https://tonapi.io/v1/account/getInfo?account=${ton_vault}`)
-      return await transformBalances('ton', {[ADDRESSES.null]: res.balance})
-    }
+    tvl: tonExport({ owner: "EQDXbWI3jClPS510by25zTA8SUKMa4XSD2K7DbZb0jincPGw", tokens: [ADDRESSES.null], onlyWhitelistedTokens: true }),
   },
 }

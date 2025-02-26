@@ -17,7 +17,8 @@ const fromBlocks = {
   bsc: 29123165,
 };
 
-async function tvl(_, block, _1, { api, chain }) {
+async function tvl(api) {
+  const { chain } = api
   const logs = await getLogs({
     api,
     target: vaultFactories[chain], // vault factory
@@ -38,7 +39,7 @@ async function tvl(_, block, _1, { api, chain }) {
 
 module.exports = {
   methodology: "TVL consists of the total liquidity available in the cover pools",
-  start: 1667260800, // Nov 01 2022 @ 12:00am (UTC)
+  start: '2022-11-01', // Nov 01 2022 @ 12:00am (UTC)
   ethereum: { tvl },
   arbitrum: { tvl },
   bsc: { tvl },

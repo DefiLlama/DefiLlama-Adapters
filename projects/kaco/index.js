@@ -34,6 +34,6 @@ module.exports = {
       KAC["bsc"],
       0
     ),
-    tvl: getUniTVL({ factory: '0xcd8620889c1dA22ED228e6C00182177f9dAd16b7', chain: 'shiden', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: '0xcd8620889c1dA22ED228e6C00182177f9dAd16b7', useDefaultCoreAssets: true }),
   },
 };

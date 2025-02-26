@@ -26,6 +26,6 @@ module.exports = treasuryExports({
       "0x243387a7036bfcB09f9bF4EcEd1E60765D31aA70", // uSSPELL
     ],
     owners: [treasury],
-    ownToken: [uwu],
+    ownTokens: [uwu],
   },
 });

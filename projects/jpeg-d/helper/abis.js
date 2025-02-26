@@ -19,7 +19,8 @@ const APE_STAKING = {
 
 const P2P_APE_STAKING_ABI = {
   nextNonce: "function nextNonce() external view returns (uint256)",
-  offers: "function offers(uint24) view returns (uint8 offerType, tuple(uint8 collection, uint16 tokenId) mainNft, uint16 bakcTokenId, uint80 apeAmount, uint16 apeRewardShareBps, uint16 bakcRewardShareBps, bool isPaired, uint80 lastSingleStakingRewardPerShare)"
+  offers:
+    "function offers(uint24) view returns (uint8 offerType, tuple(uint8 collection, uint16 tokenId) mainNft, uint16 bakcTokenId, uint80 apeAmount, uint16 apeRewardShareBps, uint16 bakcRewardShareBps, bool isPaired, uint80 lastSingleStakingRewardPerShare)",
 };
 
 const ERC721 = {

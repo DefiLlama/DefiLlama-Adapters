@@ -6,3 +6,5 @@ module.exports = ohmTvl(treasury, [
     [ADDRESSES.ethereum.WETH, false],
     ["0xfad704847967d9067df7a60910399155fca43fe8", true]
 ], "ethereum", "0x5895b13da9beb11e36136817cdcf3c4fcb16aaea", "0x21ad647b8f4fe333212e735bfc1f36b4941e6ad2")
+
+module.exports.deadFrom = '2022-08-01'

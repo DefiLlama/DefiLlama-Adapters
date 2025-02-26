@@ -1,16 +1,16 @@
 const { sumTokens2 } = require('./unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-function gmxExports({ vault, blacklistedTokens = [], abis = {} }) {
+function gmxExports({ vault, blacklistedTokens = [], abis = {}, permitFailure = false, }) {
   abis = { ...defaultAbis, ...abis}
-  return async (ts, _block, _, { api }) => {
+  return async (api) => {
     const tokenAddresses = await api.fetchList({
       target: vault,
       lengthAbi: abis.allWhitelistedTokensLength,
       itemAbi: abis.allWhitelistedTokens,
     })
 
-    return sumTokens2({ api, owner: vault, tokens: tokenAddresses, blacklistedTokens, })
+    return sumTokens2({ api, owner: vault, tokens: tokenAddresses, blacklistedTokens, permitFailure, })
   }
 }
 
@@ -25,7 +25,7 @@ function gmxExportsV2({ eventEmitter, fromBlock, blacklistedTokens = [], abis = 
   // https://github.com/gmx-io/gmx-synthetics/blob/main/contracts/market/MarketFactory.sol#L87C19-L87C31
   // https://github.com/gmx-io/gmx-synthetics/tree/main/deployments/arbitrum
   abis = { ...defaultAbis, ...abis}
-  return async (ts, _block, _, { api }) => {
+  return async (api) => {
     const logs = await getLogs({
       api,
       target: eventEmitter,

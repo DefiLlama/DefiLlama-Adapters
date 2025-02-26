@@ -6,6 +6,7 @@ module.exports = {
   ],
   timetravel: false,
   misrepresentedTokens: true,
+  deadFrom: '2022-05-26',
   terra: {
     tvl: () => ({}),
   }

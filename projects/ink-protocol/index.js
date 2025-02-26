@@ -22,3 +22,5 @@ module.exports = {
   ]
 }
 
+
+module.exports.deadFrom = '2022-05-26'

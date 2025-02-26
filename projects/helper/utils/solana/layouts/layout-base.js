@@ -89,7 +89,45 @@ const uint128 = (property = "uint128") => {
   return layout;
 };
 const u128 = uint128
+class OptionLayout extends BufferLayout.Layout {
+  constructor(layout, property) {
+      super(-1, property);
+      this.layout = layout;
+      this.discriminator = BufferLayout.u8();
+  }
+  encode(src, b, offset = 0) {
+      if (src === null || src === undefined) {
+          return this.discriminator.encode(0, b, offset);
+      }
+      this.discriminator.encode(1, b, offset);
+      return this.layout.encode(src, b, offset + 1) + 1;
+  }
+  decode(b, offset = 0) {
+      const discriminator = this.discriminator.decode(b, offset);
+      if (discriminator === 0) {
+          return null;
+      }
+      else if (discriminator === 1) {
+          return this.layout.decode(b, offset + 1);
+      }
+      throw new Error('Invalid option ' + this.property);
+  }
+  getSpan(b, offset = 0) {
+      const discriminator = this.discriminator.decode(b, offset);
+      if (discriminator === 0) {
+          return 1;
+      }
+      else if (discriminator === 1) {
+          return this.layout.getSpan(b, offset + 1) + 1;
+      }
+      throw new Error('Invalid option ' + this.property);
+  }
+}
+
+function option(layout, property) {
+  return new OptionLayout(layout, property);
+}
 
 module.exports = {
-  struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, BufferLayout,
+  struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, BufferLayout, option,
 }

@@ -4,17 +4,14 @@ const config = {
   polygon: { shop: '0x0c9fa52d7ed12a6316d3738c80931ecbc6c49907', },
 }
 
-module.exports = {
-};
-
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const shop = config[chain].shop
       const posIds = await api.fetchList({ itemAbi: abi.openPositions, lengthAbi: abi.openPositionsSize, target: shop })
       const posData = await api.multiCall({ abi: abi.positions, calls: posIds, target: shop })
       const tokens = posData.map(pos => ([pos.collateral.collateralToken, pos.acquired.acquiredToken, pos.depositToken])).flat()
-      return sumTokens2({ api, owner: shop, tokens, resolveUniV3: true, blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88']})
+      return sumTokens2({ api, owner: shop, tokens, resolveUniV3: true, })
     }
   }
 })

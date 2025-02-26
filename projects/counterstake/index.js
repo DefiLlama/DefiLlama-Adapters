@@ -11,8 +11,6 @@ const {
     fetchOswapExchangeRates,
     summingBaseAABalancesToTvl,
 } = require('../helper/chain/obyte');
-const utils = require('../helper/utils');
-const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
@@ -74,9 +72,9 @@ async function totalObyteTvl(timestamp) {
     }
 }
 
-const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
+const totalTVLByEVMNetwork = async (api) => {
     const bridges = await getConfig('counterstake/bridges', 'https://counterstake.org/api/bridges').then((data) => data.data);
-    const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data);
+    const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data.assistants);
 
     const bridgeAasByChain = [];
     const tokensAndOwners = []
@@ -90,6 +88,7 @@ const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
             bridgeAasByChain.push(import_aa);
         }
     });
+
 
     pooledAssistants.filter(({ network }) => network.toLowerCase() === api.chain).forEach(({ assistant_aa, side, bridge_id }) => {
         const bridge = bridges.find((bridge) => bridge.bridge_id === bridge_id);
@@ -121,15 +120,18 @@ const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
     bridgeAasByChain.forEach((_, index) => {
         const voteTokenAddress = voteTokenAddresses[index];
         const governanceAddress = governanceAddresses[index];
-        tokensAndOwners.push([voteTokenAddress, governanceAddress ])
+        tokensAndOwners.push([voteTokenAddress, governanceAddress])
     });
-
-    return sumTokens2({ api, tokensAndOwners})
-}
+    const blacklistedTokens = []
+    if (api.chain === 'kava') {
+        // okay, no way line has a tvl of 12m when it is backed by 60k? https://linetoken.org https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/line/index.js
+        blacklistedTokens.push('0x31f8d38df6514b6cc3c360ace3a2efa7496214f6')
+    }
+    return sumTokens2({ api, tokensAndOwners });
+};
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
     misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Counterstake protocol. " +

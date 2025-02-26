@@ -13,7 +13,8 @@ const fabis = [{
       "type": "felt"
     }
   ],
-  "stateMutability": "view"
+  "stateMutability": "view",
+  "customType": "address"
 },
 {
   "name": "allPairsLength",
@@ -40,7 +41,8 @@ const pabis = [
         "type": "felt"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "view",
+    "customType": "address"
   },
   {
     "name": "getToken1",
@@ -52,7 +54,8 @@ const pabis = [
         "type": "felt"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "view",
+    "customType": "address"
   },
   {
       "inputs": [],

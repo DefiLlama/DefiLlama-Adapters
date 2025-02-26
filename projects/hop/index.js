@@ -1,5 +1,4 @@
-const { chainExports } = require('../helper/exports')
-const { default: axios } = require('axios')
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
@@ -11,9 +10,9 @@ const getChainKey = chain => chainMapping[chain] ?? chain
 
 // node test.js projects/hop/index.js
 function chainTvl(chain) {
-    return async (_, _b, {[chain]: block}) => {
-        const toa = []
-        const { bridges, bonders } = await getConfig('hop-protocol', 'https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
+    return async (api) => {
+        let toa = []
+        const { bridges, bonders } = await getConfig('hop-protocol', 'https://s3.us-west-1.amazonaws.com/assets.hop.exchange/mainnet/v1-core-config.json')
         for (const tokenConstants of Object.values(bridges)) {
             const chainConstants = tokenConstants[getChainKey(chain)]
             if (chainConstants === undefined)
@@ -42,8 +41,13 @@ function chainTvl(chain) {
                 }
             }
         }
-        return sumTokens2({ chain, tokensAndOwners: toa, block, })
+        toa = toa.filter(([i, j]) => i && j && j !== ADDRESSES.null)
+        return sumTokens2({ api, tokensAndOwners: toa, })
     }
 }
 
-module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])
+const chains = ['base', 'ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)]
+
+chains.forEach(chain => {
+    module.exports[chain] = { tvl: chainTvl(chain) }
+})

@@ -42,4 +42,5 @@ module.exports = {
     hallmarks: [
       [Math.floor(new Date('2023-04-23')/1e3), 'Protocol shutdown'],
     ],
+    deadFrom: '2023-04-23',
 };
