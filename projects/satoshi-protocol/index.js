@@ -44,7 +44,7 @@ function createExports({
       }
 
       if (pellStrategyVaultsV2) {
-        for(let i = 0; i < pellStrategyVaultsV2.length; i++) {
+        for (let i = 0; i < pellStrategyVaultsV2.length; i++) {
           const { address: vaultAddress, fromBlock } = pellStrategyVaultsV2[i];
           const logs = await getLogs({ api, target: vaultAddress, fromBlock, eventAbi: VaultTokenStrategySetEventABI, onlyArgs: true });
           const assets = logs.map(item => item.token);
@@ -85,8 +85,8 @@ module.exports = {
     troveList: [
       '0xf1A7b474440702BC32F622291B3A01B80247835E', // BITLAYER WBTC Collateral(V1)
       '0xe9897fe6C8bf96D5ef8B0ECC7cBfEdef9818232c', // BITLAYER stBTC Collateral(V1)
-      '0x3DC0565bcA627823828Aa3F2f8d805ec8a16005a', , // BITLAYER WBTC Collateral(V2)
-      '0x404dCd7E15947D04063B436f71d93E2d79023aa9', , // BITLAYER stBTC Collateral(V2)
+      '0x3DC0565bcA627823828Aa3F2f8d805ec8a16005a', // BITLAYER WBTC Collateral(V2)
+      '0x404dCd7E15947D04063B436f71d93E2d79023aa9', // BITLAYER stBTC Collateral(V2)
     ],
     nymList: [{
       address: '0xC562321a494290bE5FeDF9092cee35DE6f884D50',

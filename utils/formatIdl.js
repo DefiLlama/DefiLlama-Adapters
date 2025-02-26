@@ -64,7 +64,7 @@ function checkType(typeObj) {
           if (name && typeMap[name]) checkType(typeMap[name])
         })
     }
-    if (typeof f.type === 'enum' && Array.isArray(f.type.variants)) {
+    if (f.type === 'enum' && Array.isArray(f.type.variants)) {
       f.type.variants.forEach(v => {
         if (!v.fields) {
           const name = getDefinedName(v)
