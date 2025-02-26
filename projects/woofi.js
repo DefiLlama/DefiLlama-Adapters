@@ -73,7 +73,7 @@ const wooPPConfig = {
 	],
 	base: [
 		ADDRESSES.base.WETH, // WETH
-		'0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC
+		ADDRESSES.ethereum.cbBTC, // cbBTC
 		ADDRESSES.base.USDbC, // USDbC
 		ADDRESSES.base.USDC, // native USDC
 	],
@@ -88,7 +88,7 @@ const wooPPConfig = {
 	sonic: [
 		ADDRESSES.sonic.wS, //wS
 		'0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
-		ADDRESSES.sonic['USDC.e'], // USDC.e
+		ADDRESSES.sonic.USDC_e, // USDC.e
 	],
 }
 

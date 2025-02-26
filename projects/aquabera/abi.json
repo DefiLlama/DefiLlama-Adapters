@@ -1,0 +1,3 @@
+{
+  "getTotalAmounts": "function getTotalAmounts() view returns (uint256 total0, uint256 total1)"
+}
