@@ -94,6 +94,9 @@ const bitkub = require('./bitkub-cex.js')
 const coin8 = require('./coin8.js')
 const bitrue = require('./bitrue-cex.js')
 const cygnus = require('./cygnus.js')
+const unitbtc = require('./unit-btc.js')
+const backpack = require('./backpack.js')
+const coinbasebtc = require('./coinbase-btc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -114,7 +117,8 @@ const bitomato = [
 
 const stacksSBTC = [
   // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
-  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
+  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc',
+  'bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy',
 ]
 
 const magpie = [
@@ -224,5 +228,8 @@ module.exports = {
   jbtc,
   bitkub,
   coin8,
-  bitrue
+  bitrue,
+  unitbtc,
+  backpack,
+  coinbasebtc
 }

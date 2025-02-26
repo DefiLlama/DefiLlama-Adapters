@@ -8,7 +8,11 @@ const chainConfigs =
   },
 }
 
-const LiquidityRangesQuery = `{ liquidityRanges(where: { liquidity_gt: "100" }) { pool hook liquidity tickLower tickUpper }}`
+const LiquidityRangesQuery = `query getLiquidities($lastId: String!) { 
+  liquidityRanges(first:100 where: {and: [{id_gt: $lastId}, { liquidity_gt: "100" } ]}) { 
+    id pool hook liquidity tickLower tickUpper
+  }
+}`
 
 const slot0Abi =
   "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)";
@@ -22,7 +26,6 @@ async function tvl(api) {
     useBlock: true,
   })
 
-  let poolsDataMap = {}
   const pools = Array.from(new Set(liquidityRanges.map(({ pool }) => pool.toLowerCase())))
   const poolIndexMap = {}
   pools.forEach((pool, index) =>     poolIndexMap[pool] = index)

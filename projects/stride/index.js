@@ -103,10 +103,7 @@ function getCoinDenimals(denom) {
 function makeTvlFn(chain) {
   return async () => {
     // Define the URL for host_zone based on chainId
-    const hostZoneUrl =
-      chain.chainId === "celestia"
-        ? "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/staketia/host_zone"
-        : chain.chainId === "dymension_1100-1"
+    const hostZoneUrl = chain.chainId === "dymension_1100-1"
         ? "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakedym/host_zone"
         : `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
 
@@ -147,3 +144,29 @@ module.exports = {
 for (const chainName of Object.keys(chains)) {
   module.exports[chainName] = { tvl: makeTvlFn(chains[chainName]) };
 }
+
+// ############### Berachain TVL ###############
+// Berachain TVL is calculated differently than the other chains Stride
+// supports.
+const MANAGER_CONTRACT_ADDRESS = "0xDcc5E38f0207757604c5a4925A870dE9554395b4";
+function makeBerachainTvlFn() {
+  return async (api) => {
+    // Get all whitelisted receipt tokens (vaults)
+    const receipts = await api.call({
+      target: MANAGER_CONTRACT_ADDRESS,
+      abi: 'function receipts() view returns (address[])',
+    });
+
+    // For each vault, get the total staked amount
+    const stakedAmounts = await api.multiCall({
+      target: MANAGER_CONTRACT_ADDRESS,
+      abi: "function totalStakedByReceipt(address receipt) view returns (uint256)",
+      calls: receipts,
+    });
+    api.add(receipts, stakedAmounts);
+  };
+}
+
+module.exports["berachain"] = {
+  tvl: makeBerachainTvlFn(),
+};

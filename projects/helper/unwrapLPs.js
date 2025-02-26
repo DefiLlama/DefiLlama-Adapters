@@ -13,6 +13,7 @@ const wildCreditABI = require('../wildcredit/abi.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
+const { tickToPrice } = require('./utils/tick');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -92,6 +93,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         case 'celo': nftAddress = '0x3d79EdAaBC0EaB6F08ED885C05Fc0B014290D95A'; break;
         case 'base': nftAddress = '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1'; break;
         case 'blast': nftAddress = '0x434575eaea081b735c985fa9bf63cd7b87e227f9'; break;
+        case 'sonic': nftAddress = '0x743e03cceb4af2efa3cc76838f6e8b50b63f184c'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
@@ -169,8 +171,6 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => 1.0001 ** tick
-
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
@@ -267,8 +267,6 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => 1.0001 ** tick
-
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
@@ -719,7 +717,7 @@ async function sumTokens2({
 
 
   if (resolveIchiVault)
-    await unwrapICHIVaults({ api })
+    await unwrapHypervisorVaults({ api })
 
 
   if (!skipFixBalances) {
@@ -735,12 +733,14 @@ async function sumTokens2({
   }
 }
 
-async function unwrapICHIVaults({ api }) {
+async function unwrapHypervisorVaults({ api, lps }) {
   let chain = api.chain
   const balances = api.getBalances()
   let tokens = Object.keys(balances).filter(t => t.startsWith(chain + ':')).map(t => t.split(':')[1])
-  const symbols = (await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })).map(i => i || '')
-  const lps = tokens.filter((t, i) => isICHIVaultToken(symbols[i], t, chain))
+  if (!lps) {
+    const symbols = (await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true })).map(i => i || '')
+    lps = tokens.filter((t, i) => isICHIVaultToken(symbols[i], t, chain))
+  }
 
   if (!lps.length) return api.getBalances()
 
@@ -881,7 +881,7 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
 }
 
 function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick }) {
-  const tickToPrice = (tick) => 1.0001 ** tick
+  
   const sa = tickToPrice(tickLower / 2)
   const sb = tickToPrice(tickUpper / 2)
 
@@ -939,4 +939,5 @@ module.exports = {
   unwrapConvexRewardPools,
   addUniV3LikePosition,
   unwrapSolidlyVeNft,
+  unwrapHypervisorVaults,
 }
