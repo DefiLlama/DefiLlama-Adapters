@@ -1,7 +1,7 @@
 const { getCache } = require('../helper/http');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const { chains } = require("./config.json");
+const { chainsMap } = require("./config.json");
 
 async function fetch(networkName) {
   const response = await getCache(
@@ -12,7 +12,7 @@ async function fetch(networkName) {
 }
 
 async function tvl(api) {
-  const networkName = chains[api.chain];
+  const networkName = chainsMap[api.chain];
   const lockers = await fetch(networkName);
 
   const lockedValues = await api.multiCall({
@@ -27,6 +27,6 @@ async function tvl(api) {
   return sumTokens2({api, resolveLP: true});
 }
 
-Object.keys(chains).forEach((chain) => {
+Object.keys(chainsMap).forEach((chain) => {
   module.exports[chain] = { tvl };
 });
