@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 
@@ -8,15 +9,15 @@ const masonryAddress = "0x54eb20859334C1958eb67f1b5a283b7A100280D3";
 
 async function snakeGenesisTVL(api) {
   const tokens = [
-    "0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38", // S
-    "0x29219dd400f2Bf60E5a23d13Be72B486D4038894", // USDC.e
+    ADDRESSES.sonic.wS, // S
+    ADDRESSES.sonic.USDC_e, // USDC.e
     "0x50c42dEAcD8Fc9773493ED674b675bE577f2634b", // WETH
     "0x3333b97138D4b086720b5aE8A7844b1345a33333", // SHADOW
     "0x79bbF4508B1391af3A0F4B30bb5FC4aa9ab0E07C", // ANON
-    "0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE", // scUSD
+    ADDRESSES.sonic.scUSD, // scUSD
     "0x9fDbC3f8Abc05Fa8f3Ad3C17D2F806c1230c4564", // GOGLZ
     "0x44E23B1F3f4511b3a7e81077Fd9F2858dF1B7579", // MCLB
-    "0xE5DA20F15420aD15DE0fa650600aFc998bbE3955", // stS
+    ADDRESSES.sonic.STS, // stS
     "0x3333111A391cC08fa51353E9195526A70b333333", // x33
   ]
 
