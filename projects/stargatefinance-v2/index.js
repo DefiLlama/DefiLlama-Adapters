@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const CONFIG = {
@@ -92,7 +93,17 @@ const CONFIG = {
   soneium: {
     pools: [
       '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B', //usdc pool
-      '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590'
+      ADDRESSES.fuse.WETH_3
+    ],
+  },
+  unichain: {
+    pools: [
+      '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7',
+    ],
+  },
+  abstract: {
+    pools: [
+      '0x221F0E1280Ec657503ca55c708105F1e1529527D',
     ],
   },
 }
