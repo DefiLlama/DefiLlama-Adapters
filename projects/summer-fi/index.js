@@ -5,7 +5,7 @@ const { getCache, setCache } = require("../helper/cache");
 
 module.exports = {
   doublecounted: true,
-  methodology: "Summer.fi TVL is calculated by fetching on-chain data, retrieving CDP IDs, and using them to determine locked assets via the automationTvl function, excluding frontend-managed Maker vaults",
+  methodology: "Summer.fi PRO TVL is calculated by fetching on-chain data, retrieving CDP IDs, and using them to determine locked assets via the automationTvl function, excluding frontend-managed Maker vaults",
   ethereum: { tvl },
 };
 
