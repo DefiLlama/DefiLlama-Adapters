@@ -239,7 +239,6 @@ async function sumTokens2({
   }
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
-  // 
 
   if (computeTokenAccount) {
     const computedTokenAccounts = computeTokenAccounts(tokensAndOwners)
@@ -377,6 +376,37 @@ function readBigUInt64LE(buffer, offset) {
   return BigInt(lo) + (BigInt(hi) << BigInt(32));
 }
 
+// how to check if token or token-2022?
+async function getTokenTotalSupply(mint, chain = 'solana', isToken2022 = true) {
+  const body = {
+    id: 1,
+    jsonrpc: "2.0",
+    method: "getProgramAccounts",
+    params: [
+      isToken2022 ? TOKEN_2022_PROGRAM_ID.toString() : TOKEN_PROGRAM_ID.toString(),
+      {
+        encoding: "jsonParsed",
+        filters: [
+          {
+            memcmp: {
+              offset: 0,
+              bytes: mint
+            }
+          }
+        ]
+      }
+    ],
+  }
+  const tokenMintAccounts = (await http.post(getEndpoint(chain), body)).result
+  
+  let totalSupply = 0
+  tokenMintAccounts.forEach(i => {
+    totalSupply += parseInt(i.account.data.parsed.info.tokenAmount.amount)
+  })
+
+  return totalSupply
+}
+
 async function getStakedSol(solAddress, api) {
   const stakeAccounts = await getConnection().getProgramAccounts(StakeProgram.programId, {
     filters: [{
@@ -447,4 +477,5 @@ module.exports = {
   getAssociatedTokenAddress,
   i80f48ToNumber,
   runInChunks,
+  getTokenTotalSupply
 };
