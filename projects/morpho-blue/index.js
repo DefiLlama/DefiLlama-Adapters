@@ -43,6 +43,26 @@ const config = {
     morphoBlue: "0xE741BC7c34758b4caE05062794E8Ae24978AF432",
     fromBlock: 9025669,
   },
+  mode: {
+    morphoBlue: "0xd85cE6BD68487E0AaFb0858FDE1Cd18c76840564",
+    fromBlock: 19983370,
+  },
+  corn: {
+    morphoBlue: "0xc2B1E031540e3F3271C5F3819F0cC7479a8DdD90",
+    fromBlock: 25140190,
+  },
+  hemi: {
+    morphoBlue: "0xa4Ca2c2e25b97DA19879201bA49422bc6f181f42",
+    fromBlock: 1188872,
+  },
+  sonic: {
+    morphoBlue: "0xd6c916eB7542D0Ad3f18AEd0FCBD50C582cfa95f",
+    fromBlock: 9100931,
+  },
+  unichain: {
+    morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
+    fromBlock: 9139027,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
