@@ -36,7 +36,13 @@ const HubPools = {
     },
     { // JOE      
       poolAddress: "0x5e5a2007a8D613C4C98F425097166095C875e6eE",
-      tokenAddress: '0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd',
+      tokenAddress: ADDRESSES.avax.JOE,
+      chainPoolAddress: '0x3b1C2eC8B7cdE241E0890C9742C14dD7867aA812',
+    },
+    { // ggAVAX      
+      poolAddress: "0xAdA5Be2A259096fd11D00c2b5c1181843eD008DC",
+      tokenAddress: '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3',
+      chainPoolAddress: '0xe53189D00D1b4F231A2a208a7967E0dCaE8Db073',
     },
   ],
   'ethereum': [
@@ -63,7 +69,7 @@ const HubPools = {
     },
     { // cbBTC_base      
       poolAddress: "0x9eD81F0b5b0E9b6dE00F374fFc7f270902576EF7",
-      tokenAddress: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+      tokenAddress: ADDRESSES.ethereum.cbBTC,
       chainPoolAddress: '0x50d5Bb3Cf57D2fB003b602A6fD10F90baa8567EA',
     },
   ],

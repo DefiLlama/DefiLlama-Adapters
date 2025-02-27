@@ -49,5 +49,8 @@ module.exports = {
   },
   stellar: {
     tvl: async () => await computeTVL("stellar"),
+  },
+  optimism: {
+    tvl: async () => await computeTVL("optimism"),
   }
 };

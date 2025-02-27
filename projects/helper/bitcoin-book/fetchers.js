@@ -10,8 +10,13 @@ module.exports = {
   btcfi_cdp: async () => {
     const target = "0x0000000000000000000000000000000000000100";
     const api = new sdk.ChainApi({ chain: 'bfc' })
-    const round = await api.call({ abi: 'uint32:current_round', target })
-    return api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round })
+    const round = await api.call({  abi: 'uint32:current_round', target})
+
+    const utxoVault = await api.call({ abi: 'function registration_info(address target, uint32 pool_round) view returns (address, string, string, address[], bytes[])', target, params: [target, round] })
+    const vault = await api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round });
+    vault.push(utxoVault[2])
+
+    return vault
   },
   bedrock: async () => {
     const API_URL = 'https://raw.githubusercontent.com/Bedrock-Technology/uniBTC/refs/heads/main/data/tvl/reserve_address.json'
@@ -46,7 +51,7 @@ module.exports = {
     const users = await api.call({ abi: 'address[]:getQualifiedUsers', target: '0xbee335BB44e75C4794a0b9B54E8027b111395943' })
     const userInfos = await api.multiCall({ abi: abi.getQualifiedUserInfo, target: '0xbee335BB44e75C4794a0b9B54E8027b111395943', calls: users })
     userInfos.forEach(i => staticAddresses.push(i.depositAddress))
-    return staticAddresses
+    return Array.from(new Set(staticAddresses))
   },
 
   b14g: async () => {
@@ -86,10 +91,20 @@ module.exports = {
       return txHash
     }
   },
+  coffernetwork: async () => {
+
+    return getConfig('coffer-network-v0.1', undefined, {
+      fetcher: async () => {
+        const { data: { addresses, } } = await get('https://aapi.coffer.network/v1/stats/addresses?network=mainnet')
+        return addresses
+      }
+    })
+  },
 
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
     const BATCH_SIZE = 1000
+    const blacklisted = new Set(['bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'])
 
     return getConfig('lombard', undefined, {
       fetcher: async () => {
@@ -110,7 +125,7 @@ module.exports = {
           batchNumber++;
         }
 
-        return allAddresses;
+        return allAddresses.filter(i => !blacklisted.has(i))
       }
     })
   },
