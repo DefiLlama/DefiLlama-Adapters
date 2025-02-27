@@ -7,7 +7,7 @@ chains.forEach(chain => {
   module.exports[chain] = {
     tvl: async function (api) {
       if (api.chain === 'corn') {
-        api.chainId = 210000
+        api.chainId = 21000000
       }
       if (api.chain === 'hemi') {
         api.chainId = 43111
