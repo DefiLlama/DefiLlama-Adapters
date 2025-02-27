@@ -343,34 +343,177 @@ async function getFundPrices() {
   return priceMap;
 }
 
-async function polygonTvl({ polygon: block137 }) {
+async function ethTvl() {
   const balances = {}
   let totalTvl = 0;
   const fundPrices = await getFundPrices();
-  
-  // Get total supply of both receipt tokens
-  const supplies = await sdk.api.abi.multiCall({
+
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.ethereum)) {
+    try {
+      const balance = await sdk.api.erc20.totalSupply({
+        target: token.address,
+      });
+
+      if (balance?.output) {
+        const price = fundPrices[token.instrumentId] || 1;
+        const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        totalTvl += valueUSD;
+      }
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
+  }
+
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
+async function polygonTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.polygon)) {
+    try {
+      const balance = await sdk.api.erc20.totalSupply({
+        target: token.address,
+        chain: 'polygon'
+      });
+
+      if (balance?.output) {
+        const price = fundPrices[token.instrumentId] || 1;
+        const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        totalTvl += valueUSD;
+      }
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
+  }
+
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
+async function mantraTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.mantra)) {
+    try {
+      const supply = await queryContractCosmos({
+        contract: token.address,
+        chain: 'mantra',
+        data: {
+          token_info: {}
+        }
+      });
+
+      if (supply?.total_supply) {
+        const price = fundPrices[token.instrumentId] || 1;
+        const adjustedBalance = Number(supply.total_supply) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        totalTvl += valueUSD;
+      }
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
+  }
+
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
+async function suiTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.sui)) {
+    try {
+      const receiptTokenObject = await sui.getObject(token.address);
+      if (receiptTokenObject?.fields?.balance) {
+        const balance = receiptTokenObject.fields.balance;
+        const price = fundPrices[token.instrumentId] || 1;
+        const adjustedBalance = Number(balance) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        totalTvl += valueUSD;
+      }
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
+  }
+
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
+async function imxTvl({ imx: block }) {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+
+  try {
+    // Get total supply of receipt tokens
+    const supplies = await sdk.api.abi.multiCall({
       abi: 'erc20:totalSupply',
-    calls: Object.values(RECEIPT_TOKENS.polygon).map(i => ({ target: i.address })),
-      chain: 'polygon',
-    block: block137,
-  })
+      calls: Object.values(RECEIPT_TOKENS.imx).map(i => ({ target: i.address })),
+      chain: 'imx',
+      block
+    });
 
+    // Map each token's total supply to represent RWA TVL
+    supplies.output.forEach((supply, i) => {
+      try {
+        if (supply?.output) {
+          const token = Object.values(RECEIPT_TOKENS.imx)[i];
+          const price = fundPrices[token.instrumentId] || 1;
+          const adjustedBalance = Number(supply.output) / (10 ** token.decimals);
+          const valueUSD = adjustedBalance * price;
+          totalTvl += valueUSD;
+        }
+      } catch (e) {
+        console.error('Error processing token:', Object.values(RECEIPT_TOKENS.imx)[i].address, e);
+      }
+    });
+  } catch (e) {
+    console.error('Error in IMX multicall:', e);
+  }
 
-  // Map each token's total supply to represent RWA TVL
-  supplies.output.forEach((supply, i) => {
-    const token = Object.values(RECEIPT_TOKENS.polygon)[i]
-    const balance = supply.output;
-    const price = fundPrices[token.instrumentId] || 1;
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
 
-    // Convert balance to human readable and multiply by price
-    const adjustedBalance = Number(balance) / (10 ** token.decimals);
-    const valueUSD = adjustedBalance * price;
-    
-    totalTvl += valueUSD;
-  })
+async function avaxTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
 
-  // Return the total value in the format DeFiLlama expects
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.avalanche)) {
+    try {
+      const balance = await sdk.api.erc20.totalSupply({
+        target: token.address,
+        chain: 'avax'
+      });
+
+      if (balance?.output) {
+        const price = fundPrices[token.instrumentId] || 1;
+        const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        totalTvl += valueUSD;
+      }
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
+  }
+
   balances['usd-coin'] = totalTvl;
   return balances;
 }
@@ -404,31 +547,6 @@ async function injectiveTvl() {
     } catch (e) {
       console.error('Error querying token:', token.address, e);
     }
-  }
-
-  // Return the total value in the format DeFiLlama expects
-  balances['usd-coin'] = totalTvl;
-  return balances;
-}
-
-async function suiTvl() {
-  const balances = {}
-  let totalTvl = 0;
-  const fundPrices = await getFundPrices();
-  
-  // Query total supply from Sui contract
-  const receiptTokenObject = await sui.getObject( RECEIPT_TOKENS.sui.UMA.address);
-
-  if (receiptTokenObject?.fields?.balance) {
-    const token = RECEIPT_TOKENS.sui.UMA;
-    const balance = receiptTokenObject.fields.balance;
-      const price = fundPrices[token.instrumentId] || 1;
-
-    // Convert balance to human readable and multiply by price
-      const adjustedBalance = Number(balance) / (10 ** token.decimals);
-      const valueUSD = adjustedBalance * price;
-    
-    totalTvl += valueUSD;
   }
 
   // Return the total value in the format DeFiLlama expects
@@ -501,135 +619,11 @@ async function nearTvl() {
   return balances;
 }
 
-async function ethereumTvl(timestamp, block) {
-  const balances = {}
-  const fundPrices = await getFundPrices();
-  
-  // Get total supply of the receipt token
-  const supplies = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: Object.values(RECEIPT_TOKENS.ethereum).map(i => ({ target: i.address })),
-    chain: 'ethereum',
-    block,
-  })
-
-  let totalValueUSD = 0;
-
-  // Map token's total supply to represent RWA TVL
-  supplies.output.forEach((supply, i) => {
-    const token = Object.values(RECEIPT_TOKENS.ethereum)[i]
-    const balance = supply.output;
-    const price = fundPrices[token.instrumentId] || 1;
-
-    // Convert balance to human readable and multiply by price
-    const adjustedBalance = Number(balance) / (10 ** token.decimals);
-    const valueUSD = adjustedBalance * price;
-    
-    totalValueUSD += valueUSD;
-  })
-
-  balances['usd-coin'] = totalValueUSD;
-  return balances;
-}
-
-async function mantraTvl() {
+async function aptosTvl() {
   const balances = {}
   let totalTvl = 0;
   const fundPrices = await getFundPrices();
   
-  // Query total supply from Mantra contract
-  const supply = await queryContractCosmos({
-    contract: RECEIPT_TOKENS.mantra.APCA.address,
-    chain: 'mantra',
-    data: {
-      token_info: {}
-    }
-  })
-
-  if (supply?.total_supply) {
-    const token = RECEIPT_TOKENS.mantra.APCA;
-    const balance = supply.total_supply;
-    const price = fundPrices[token.instrumentId] || 1;
-    
-    // Convert balance to human readable and multiply by price
-    const adjustedBalance = Number(balance) / (10 ** token.decimals);
-    const valueUSD = adjustedBalance * price;
-    
-    totalTvl += valueUSD;
-  }
-
-  // Return the total value in the format DeFiLlama expects
-  balances['usd-coin'] = totalTvl;
-  return balances;
-}
-
-async function imxTvl({ imx: block }) {
-  const balances = {}
-  let totalTvl = 0;
-  const fundPrices = await getFundPrices();
-
-  // Get total supply of receipt token
-  const supplies = await sdk.api.abi.multiCall({
-      abi: 'erc20:totalSupply',
-    calls: Object.values(RECEIPT_TOKENS.imx).map(i => ({ target: i.address })),
-    chain: 'imx',
-      block,
-  })
-
-  // Map token's total supply to represent RWA TVL
-  supplies.output.forEach((supply, i) => {
-    const token = Object.values(RECEIPT_TOKENS.imx)[i]
-    const balance = supply.output;
-    const price = fundPrices[token.instrumentId] || 1;
-
-    // Convert balance to human readable and multiply by price
-    const adjustedBalance = Number(balance) / (10 ** token.decimals);
-    const valueUSD = adjustedBalance * price;
-    
-    totalTvl += valueUSD;
-  })
-
-  // Return the total value in the format DeFiLlama expects
-  balances['usd-coin'] = totalTvl;
-  return balances;
-}
-
-async function avalancheTvl(timestamp, block) {
-  const balances = {}
-  const fundPrices = await getFundPrices();
-  
-  // Get total supply of the receipt token
-  const supplies = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: Object.values(RECEIPT_TOKENS.avalanche).map(i => ({ target: i.address })),
-    chain: 'avax',
-    block,
-  })
-
-  let totalValueUSD = 0;
-
-  // Map token's total supply to represent RWA TVL
-  supplies.output.forEach((supply, i) => {
-    const token = Object.values(RECEIPT_TOKENS.avalanche)[i]
-    const balance = supply.output;
-    const price = fundPrices[token.instrumentId] || 1;
-
-    // Convert balance to human readable and multiply by price
-    const adjustedBalance = Number(balance) / (10 ** token.decimals);
-    const valueUSD = adjustedBalance * price;
-    
-    totalValueUSD += valueUSD;
-  })
-
-  balances['usd-coin'] = totalValueUSD;
-  return balances;
-}
-
-async function aptosTvl(timestamp, block) {
-  const balances = {}
-  const fundPrices = await getFundPrices();
-  let totalValueUSD = 0;
-
   // Get total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.aptos)) {
       // Get the concurrent supply
@@ -648,18 +642,17 @@ async function aptosTvl(timestamp, block) {
       
     
       
-      totalValueUSD += valueUSD;
+      totalTvl += valueUSD;
     
   }
 
-  balances['usd-coin'] = totalValueUSD;
+  balances['usd-coin'] = totalTvl;
   return balances;
 }
 
 module.exports = {
   methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana, NEAR, Mantra and Immutable zkEVM. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
-  ethereum: { tvl: ethereumTvl },
-  avax: { tvl: avalancheTvl },
+  ethereum: { tvl: ethTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
   sui: { tvl: suiTvl },
@@ -667,5 +660,6 @@ module.exports = {
   near: { tvl: nearTvl },
   mantra: { tvl: mantraTvl },
   imx: { tvl: imxTvl },
+  avax: { tvl: avaxTvl },
   aptos: { tvl: aptosTvl },
 }
