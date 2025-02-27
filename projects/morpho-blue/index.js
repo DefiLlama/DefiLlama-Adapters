@@ -51,20 +51,18 @@ const config = {
     morphoBlue: "0xc2B1E031540e3F3271C5F3819F0cC7479a8DdD90",
     fromBlock: 25140190,
   },
-  // Error: Unknown chain(s): hemi
-  // hemi: {
-  //   morphoBlue: "0xa4Ca2c2e25b97DA19879201bA49422bc6f181f42",
-  //   fromBlock: 1188872,
-  // },
+  hemi: {
+    morphoBlue: "0xa4Ca2c2e25b97DA19879201bA49422bc6f181f42",
+    fromBlock: 1188872,
+  },
   sonic: {
     morphoBlue: "0xd6c916eB7542D0Ad3f18AEd0FCBD50C582cfa95f",
     fromBlock: 9100931,
   },
-  // Error in unichain: TypeError: Cannot read properties of null (reading 'getBlock')
-  // unichain: {
-  //   morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
-  //   fromBlock: 9139027,
-  // },
+  unichain: {
+    morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
+    fromBlock: 9139027,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
