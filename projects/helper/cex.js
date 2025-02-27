@@ -110,7 +110,9 @@ const defaultTokens = {
      "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
      "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
      "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
-     "0x6982508145454ce325ddbe47a25d4ec3d2311933",  // PEPE
+     "0x6982508145454ce325ddbe47a25d4ec3d2311933", // PEPE
+     "0xd5f7838f5c461feff7fe49ea5ebaf7728bb0adfa", //METH
+     "0xe6829d9a7ee3040e1276fa75293bde931859e8fa" // CMETH
   ],
   tron: [
     nullAddress,
