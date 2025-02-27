@@ -1,9 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos");
 const sui = require("../helper/chain/sui");
-const { sumTokens2 } = require('../helper/solana');
 const { sumTokens } = require('../helper/chain/near');
-const { getResources, getResource } = require("../helper/chain/aptos");
+const { Connection, PublicKey } = require('@solana/web3.js');
+const {  getResource } = require("../helper/chain/aptos");
 
 const NAV_CONTRACT = "0x0f29d042bb26a200b2a507b752e51dbbc05bf2f6";
 const NAV_ABI = {
@@ -438,48 +438,66 @@ async function suiTvl() {
 
 async function solanaTvl() {
   const balances = {}
+  let totalTvl = 0;
   const fundPrices = await getFundPrices();
-  
-  const token = RECEIPT_TOKENS.solana.UMA;
-  const owner = '9WNzeX4ygMpgbFzA36nuAHgqGmn4CKGtPNjQhJBcVf2j';
-  
-    const solanaBalances = await sumTokens2({ 
-      tokens: [token.address],
-      owners: [owner],
-    });
+  const connection = new Connection('https://api.mainnet-beta.solana.com');
 
-  // Get the balance and apply NAV price
-    Object.entries(solanaBalances).forEach(([tokenAddress, balance]) => {
-      const price = fundPrices[token.instrumentId] || 1;
-      const adjustedBalance = Number(balance) / (10 ** token.decimals);
-      const valueUSD = adjustedBalance * price;
-    
-    balances['usd-coin'] = valueUSD;
-    });
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.solana)) {
+    try {
+      const tokenPubkey = new PublicKey(token.address);
+      const supply = await connection.getTokenSupply(tokenPubkey);
+      
+      if (supply?.value?.amount) {
+        const balance = supply.value.amount;
+        const price = fundPrices[token.instrumentId] || 1;
 
+        // Convert balance to human readable and multiply by price
+        const adjustedBalance = Number(balance) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        
+        totalTvl += valueUSD;
+      }
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
+  }
+
+  // Return the total value in the format DeFiLlama expects
+  balances['usd-coin'] = totalTvl;
   return balances;
 }
 
 async function nearTvl() {
   const balances = {}
+  let totalTvl = 0;
   const fundPrices = await getFundPrices();
-  
-  const token = RECEIPT_TOKENS.near.UMA;
-  const owner = 'libre_investor_0.near';
-  
-  const nearBalances = await sumTokens({ 
-      tokens: [token.address],
-    owners: [owner],
-    });
 
-  // Get the balance and apply NAV price
-  Object.entries(nearBalances).forEach(([tokenAddress, balance]) => {
-      const price = fundPrices[token.instrumentId] || 1;
-      const adjustedBalance = Number(balance) / (10 ** token.decimals);
-      const valueUSD = adjustedBalance * price;
-    balances['usd-coin'] = valueUSD;
-  });
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.near)) {
+    try {
+      const supply = await sumTokens({
+        owners: ['libre_investor_0.near'],
+        tokens: [token.address],
+      });
 
+      if (supply) {
+        const balance = Object.values(supply)[0] || 0;
+        const price = fundPrices[token.instrumentId] || 1;
+
+        // Convert balance to human readable and multiply by price
+        const adjustedBalance = Number(balance) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        
+        totalTvl += valueUSD;
+      }
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
+  }
+
+  // Return the total value in the format DeFiLlama expects
+  balances['usd-coin'] = totalTvl;
   return balances;
 }
 
