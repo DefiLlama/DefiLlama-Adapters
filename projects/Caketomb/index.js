@@ -1,4 +1,4 @@
-const {pool2Exports} = require("../helper/pool2");
+const {pool2} = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
 const shares = "0x9f8349C33B942b6CBb15426E02b5Bbb77fAeB64f";
@@ -15,6 +15,6 @@ module.exports = {
     bsc: {
         tvl: async () => ({}),
         staking: staking(boardroom, shares),
-        pool2: pool2Exports(shareRewardPool, pancakeLPs, "bsc", addr=>`bsc:${addr}`)
+        pool2: pool2(shareRewardPool, pancakeLPs, "bsc", addr=>`bsc:${addr}`)
     }
 }

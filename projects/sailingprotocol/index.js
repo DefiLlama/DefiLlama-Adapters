@@ -69,11 +69,6 @@ const tokens = [
     "sufficientLiquidityForDefiLlamaIndexer": false,
   },
   {
-    "address": "0xBa5c32915e2303EA41d1986f5B3AAd0a98B4Fd80",
-    "ticker": "ETHE",
-    "sufficientLiquidityForDefiLlamaIndexer": false,
-  },
-  {
     "address": "0xA78Fb2b64Ce2Fb8bBe46968cf961C5Be6eB12924",
     "ticker": "AAAU",
     "sufficientLiquidityForDefiLlamaIndexer": false,
@@ -97,7 +92,7 @@ async function tvl(api) {
       api.add(token.address, tokenTotalSupply);
     } else {
       const tickerPricing = await axios.post(
-        'https://sailingprotocol.org/api/sailingprotocol/market_data/historical_intraday',
+        'https://sailingprotocol.org/api/market_data/historical_intraday',
         {
           ticker: token.ticker
         }

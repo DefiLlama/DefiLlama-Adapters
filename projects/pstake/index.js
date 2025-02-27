@@ -66,13 +66,8 @@ function cosmostvl() {
   };
 }
 
-const owner = "bc1qajcp935tuvqakut95f0sc9qm09hxjj6egexl9d";
-
 module.exports = {
   methodology: `Total amount of liquid staked tokens on Persistence.`,
   bsc: { tvl: bsctvl },
   persistence: { tvl: cosmostvl() },
-  bitcoin: {
-    tvl: sdk.util.sumChainTvls([sumTokensExport({ owner })]),
-  },
 };

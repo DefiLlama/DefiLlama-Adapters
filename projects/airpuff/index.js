@@ -45,22 +45,22 @@ module.exports = {
     tvl: async (api) => {
       const KUSDC = {
         vault: "0x4c18E80b801AA24066D8B1C6E65ee245497Cb741",
-        token: "0xa415021bC5c4C3b5B989116DC35Ae95D9C962c8D",
+        token: ADDRESSES.karak.USDC,
       };
 
       const KWETH = {
         vault: "0x9a9631F7BEcE5C6E0aBA1f73f0e5796c534dc4db",
-        token: "0x4200000000000000000000000000000000000006",
+        token: ADDRESSES.optimism.WETH_1,
       };
 
       const wethLending = {
         vault: "0xd6034F9147CF7528e857403Dea93bc45743295eb",
-        token: "0x4200000000000000000000000000000000000006",
+        token: ADDRESSES.optimism.WETH_1,
       };
 
       const usdcLending = {
         vault: "0x475820E4bCE0E3d233Ad7f6A8c9DD1f66974c5d6",
-        token: "0xa415021bC5c4C3b5B989116DC35Ae95D9C962c8D",
+        token: ADDRESSES.karak.USDC,
       };
 
       const KarakUSDCBal = await api.call({ target: KUSDC.vault, abi: contractAbis.getTotalSupply });
@@ -237,7 +237,7 @@ module.exports = {
 
       const weETH = {
         vault: "0x5e0a74cb0F74D57F9d69914575b972ba6A14e27c",
-        reStakingToken: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+        reStakingToken: ADDRESSES.ethereum.WEETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
@@ -255,7 +255,7 @@ module.exports = {
 
       const weETH1x = {
         vault: "0x9320AB04E319018842BD59e2817054d19850Abc0",
-        reStakingToken: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+        reStakingToken: ADDRESSES.ethereum.WEETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
@@ -457,7 +457,7 @@ module.exports = {
 
       const rsETH = {
         vault: "0x65E7C3C88806FF010BB197B2577cCddA9704fA2F",
-        reStakingToken: "0x4186BFC76E2E237523CBC30FD220FE055156b41F",
+        reStakingToken: ADDRESSES.berachain.rsETH,
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 
@@ -474,7 +474,7 @@ module.exports = {
 
       const rsETH1x = {
         vault: "0xe929BF8368171a76D4A828ee2cD4A50CcE31d203" /*vault*/,
-        reStakingToken: "0x4186BFC76E2E237523CBC30FD220FE055156b41F" /*reStakingToken*/,
+        reStakingToken: ADDRESSES.berachain.rsETH /*reStakingToken*/,
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 

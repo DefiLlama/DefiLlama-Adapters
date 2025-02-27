@@ -31,7 +31,7 @@ const addressMap = {
   "0xb23dfc0c4502a271976f1ee65321c51be2529640":
     "0x76fcf0e8c7ff37a47a799fa2cd4c13cde0d981c9", //aura50OHM-50DAI -> 50OHM-50DAI
   "0xc8418af6358ffdda74e09ca9cc3fe03ca6adc5b0":
-    "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // veFXS -> FXS
+    ADDRESSES.ethereum.FXS, // veFXS -> FXS
   "0x3fa73f1e5d8a792c80f426fc8f84fbf7ce9bbcac":
     "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf", //vlAURA -> AURA
   [ADDRESSES.ethereum.vlCVX]:
@@ -158,12 +158,13 @@ function buildTvl(isOwnTokensMode = false){
     const tokens = tokensToBalances.map(i => i.tokenAddress)
 
 
-    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true, })
     const ownTokens = new Set(olympusTokens.map(i => i.toLowerCase()))
     tokensToBalances.map(async (token, i) => {
       if (ownTokens.has(token.tokenAddress.toLowerCase())) {
         if (!isOwnTokensMode) return;
       } else if (isOwnTokensMode) return;
+      if (!decimals[i]) return;
       api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
     })
     return await sumTokens2({ api, resolveLP: true, })
@@ -176,7 +177,7 @@ async function ownTokens(api) {
 }
 
 module.exports = {
-  start: 1616569200, // March 24th, 2021
+  start: '2021-03-24', // March 24th, 2021
   timetravel: false,
   methodology:
     "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",

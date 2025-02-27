@@ -16,11 +16,15 @@ const config = {
       }
       return "0xD7588F6c99605Ab274C211a0AFeC60947668A8Cb";
     },
-    weETH: "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+    weETH: ADDRESSES.ethereum.WEETH,
     zircuit: "0xF047ab4c75cebf0eB9ed34Ae2c186f3611aEAfa6",
+    weETHs: "0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
   },
   arbitrum: {
     liquidityResolver: (block) => "0x46859d33E662d4bF18eEED88f74C36256E606e44",
+  },
+  base: {
+    liquidityResolver: (block) => "0x35A915336e2b3349FA94c133491b915eD3D3b0cd",
   },
 };
 
@@ -45,6 +49,15 @@ async function tvl(api) {
         params: [config.ethereum.weETH, config.liquidity],
       })
     );
+    // add WeETHs deployed to Zircuit
+    api.add(
+      config.ethereum.weETHs,
+      await api.call({
+        target: config.ethereum.zircuit,
+        abi: "function balance(address, address) public view returns (uint256 balance)",
+        params: [config.ethereum.weETHs, config.liquidity],
+      })
+    );
   }
 
   return api.sumTokens({
@@ -62,7 +75,7 @@ async function borrowed(api) {
   const tokens = await getListedTokens(api);
   const borrowed = await api.call({
     target: config[api.chain].liquidityResolver(api.block),
-    abi: api.block < 19992056 ? abi.getOverallTokensDataLegacy : abi.getOverallTokensData,
+    abi: api.chain == "ethereum" && api.block < 19992056 ? abi.getOverallTokensDataLegacy : abi.getOverallTokensData,
     params: [tokens],
   });
   api.add(
@@ -75,5 +88,6 @@ module.exports = {
   methodology: methodologies.lendingMarket,
   ethereum: { tvl, borrowed },
   arbitrum: { tvl, borrowed },
+  base: { tvl, borrowed },
 };
 // node test.js projects/fluid/index.js

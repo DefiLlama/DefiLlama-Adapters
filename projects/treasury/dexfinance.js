@@ -19,10 +19,10 @@ module.exports = treasuryExports({
 			'0xd56734d7f9979dd94fae3d67c7e928234e71cd4c', //tia
 			'0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8', //pendle
 			'0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
-			'0xf97f4df75117a78c1a5a0dbb814af92458539fb4', //link
-			'0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a', //gmx
-			'0x912ce59144191c1204e64559fe8253a0e49e6548', //arb
-			'0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f', //wbtc
+			ADDRESSES.arbitrum.LINK, //link
+			ADDRESSES.arbitrum.GMX, //gmx
+			ADDRESSES.arbitrum.ARB, //arb
+			ADDRESSES.arbitrum.WBTC, //wbtc
 		]
 	},
 	avax: {
@@ -55,8 +55,8 @@ module.exports = treasuryExports({
 	// 	owners: [mainTreasury],
 	// 	tokens: [
 	// 		ADDRESSES.pulse.WETH,
-	// 		'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //usdc(fork)
-	// 		'0x30fcb23a906493371b1721c8feb8815804808d74', //sdai
+	// 		ADDRESSES.ethereum.USDC, //usdc(fork)
+	// 		ADDRESSES.pulse.sDAI, //sdai
 	// 		'0xaa2c47a35c1298795b5271490971ec4874c8e53d', //usdex
 	// 		'0x6386704cd6f7a584ea9d23ccca66af7eba5a727e', //spark
 	// 	]
@@ -77,7 +77,7 @@ module.exports = treasuryExports({
 			'0x940181a94a35a4569e4529a3cdfb74e38fd98631', //aero
 			'0x7f62ac1e974d65fab4a81821ca6af659a5f46298', //wels
 			'0x78b3c724a2f663d11373c4a1978689271895256f', //tkn
-			'0xc1cba3fcea344f92d9239c08c0568f6f2f0ee452', //wsteth
+			ADDRESSES.base.wstETH, //wsteth
 			'0x373504da48418c67e6fcd071f33cb0b3b47613c7', //wbasedoge
 		]
 	},

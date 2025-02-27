@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { deadFrom } = require('../mosquitos-finance');
 
 // ztp swap address
 const SWAP_ADDR = "0xCdD4396527b6681775173839002E6af201885CB8";
@@ -18,6 +19,7 @@ module.exports = {
   hallmarks: [
     [1667174400, "Rug Pull"]
   ],
+  deadFrom: 1667174400,
   bsc: {
     tvl,
   },
