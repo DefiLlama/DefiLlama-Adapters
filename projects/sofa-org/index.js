@@ -1,48 +1,37 @@
-const config = {
-  arbitrum: {
-    vaults: [
-      "0x7ECd1b5255543F4C2D7D8E475afCd01699dBE2B0",
-      "0xdFEb3460771148799b2D4344c369e2b2d6C26c42",
-      "0x00aEca021D0f06c7dee54D58ee6Af47B5645aB19",
-      "0x989897f1D976EE0b59Bf0A3172C170D8f3Cb84e3",
-      "0x6E72C8726c71a4Cbc6e31ff7d47B399Fa983C7B8",
-      "0x106825b71ccE77a70B69f57A0ACf9C4a6acf292a"
-    ], aVaults: [
-      "0x3a253838121b9ad9736fAFc030Cf4971615D68b2",
-      "0xD9cFF1bc89f705EaB2579fA2DC86E9a6F971370a",
-      "0x9C5D3C3AbD633b8eA68C5a51325f8630DC620AD9",
-      "0x2F1C60bA96ec6925fA9bBbFC9Eb7908bD35Bc224",
-      "0x72e0906558e4Ee528974cD7803bfF12d9f2869C3",
-      "0x9377f17ABde96887943e5Fcc92Db034c76820529"
-    ]
-  },
-  ethereum: {
-    vaults: [
-      "0x3a253838121b9ad9736fAFc030Cf4971615D68b2",
-      "0xD9cFF1bc89f705EaB2579fA2DC86E9a6F971370a",
-      "0x106825b71ccE77a70B69f57A0ACf9C4a6acf292a",
-      "0x5494855B98858Ea4eF54D13E1d003197A387CE34",
-      "0x9C5D3C3AbD633b8eA68C5a51325f8630DC620AD9",
-      "0x2F1C60bA96ec6925fA9bBbFC9Eb7908bD35Bc224"
-    ], aVaults: [
-      "0x00aEca021D0f06c7dee54D58ee6Af47B5645aB19",
-      "0x989897f1D976EE0b59Bf0A3172C170D8f3Cb84e3",
-      "0x9377f17ABde96887943e5Fcc92Db034c76820529",
-      "0x99c59D82b10c56950F6C031946656e6D0aD509ca",
-      "0xF6c70b5F034070001E833C9EbC6a3A0176B683A6",
-      "0x62104e40fA81a19f2B7E17C78C3ffBF4aCa4F212"
-    ]
-  }
+const { staking } = require('../helper/staking')
+const { getConfig } = require('../helper/cache')
+
+const chains = {
+  ethereum: 'ethereum',
+  arbitrum: 'arbitrum',
+  bsc: 'bsc',
+  polygon: 'polygon',
 }
 
-Object.keys(config).forEach(chain => {
-  const { vaults = [], aVaults = [] } = config[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const tokens = await api.multiCall({ abi: 'address:collateral', calls: vaults })
-      const tokens2 = await api.multiCall({ abi: 'address:collateral', calls: aVaults })
-      const atokens = await api.multiCall({ abi: 'address:aToken', calls: aVaults })
-      return api.sumTokens({ tokensAndOwners2: [[tokens, tokens2, atokens].flat(), [vaults, aVaults, aVaults].flat()] })
-    }
+let config;
+const tvl = async (api) => {
+  if (!config) {
+    config = await getConfig('sofa-org/vaults', 'https://raw.githubusercontent.com/sofa-org/sofa-gitbook/main/static/vaults.json')
   }
+
+  const { vaults = [], aVaults = [], crvtokens=[], crvUSDVaults = [] } = config[chains[api.chain]]
+  const tokens = await api.multiCall({ abi: 'address:collateral', calls: vaults })
+  const tokens2 = await api.multiCall({ abi: 'address:collateral', calls: aVaults })
+  const atokens = await api.multiCall({ abi: 'address:aToken', calls: aVaults })
+
+  return api.sumTokens({ tokensAndOwners2: [[tokens, tokens2, atokens, crvtokens].flat(), [vaults, aVaults, aVaults, crvUSDVaults].flat()] })
+}
+
+Object.keys(chains).forEach(chain => {
+  module.exports[chain] = { tvl }
 })
+
+module.exports.ethereum.staking = staking([
+  '0xBEFB3aAD1dfb1660444f0D76A91261EF755B2B86',
+  '0xBFD58c8150cF7048D5C149fA2bAdDD194b8416fe',
+  '0xfA49f859a012e8b1795A81B23b21Db0bD40e7770',
+  '0x94Fe821E8Adde08aB97530D432Ff34A724FD7830',
+  '0x4a5B4049a4aFae31278d36768704872f73dA67D1',
+  '0x08c57aE48a89b6876A76dC618972Ef1602da7ED8',
+  '0x2B9aeA129B85F51A468274e7271434A83c3BB6b4', // StRCH
+], '0x57b96d4af698605563a4653d882635da59bf11af')

@@ -1,0 +1,12 @@
+{
+  "flow": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0xd3bF53DAC106A0290B0483EcBC89d40FcC961f3e",
+    "CurveStableswapFactoryNG": "0x4412140D52C1F5834469a061927811Abb6026dB7",
+    "CurveTwocryptoFactoryNG": "0xf0E48dC92f66E246244dd9F33b02f57b0E69fBa9",
+    "CurveTricryptoFactoryNG": "0xebd098c60b1089f362AC9cfAd9134CBD29408226",
+    "addressProvider": "",
+    "metapoolBases": {},
+    "blacklist": []
+  }
+}

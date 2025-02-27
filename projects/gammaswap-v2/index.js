@@ -18,6 +18,7 @@ const config = {
     factories: [
       { factory: '0xfd513630f697a9c1731f196185fb9eba6eaac20b', fromBlock: 19961383 },
     ],
+    deltaswapFactory: '0x5fbe219e88f6c6f214ce6f5b1fcaa0294f31ae1b'
   },
 }
 

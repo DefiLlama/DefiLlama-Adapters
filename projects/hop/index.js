@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { chainExports } = require('../helper/exports')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
@@ -47,4 +46,8 @@ function chainTvl(chain) {
     }
 }
 
-module.exports = chainExports(chainTvl, ['base', 'ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])
+const chains = ['base', 'ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)]
+
+chains.forEach(chain => {
+    module.exports[chain] = { tvl: chainTvl(chain) }
+})

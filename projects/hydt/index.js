@@ -42,7 +42,7 @@ async function staking(api) {
 module.exports = {
     misrepresentedTokens: true,
     methodology: "Retrieving the reserve BNB balance for TVL. Retrieving the staked amounts for HYDT from the earn (HYDT staking) contract and the LP Tokens from the farm contract for staking.",
-    start: 1693763345,
+    start: '2023-09-03',
     bsc: {
         tvl,
         staking,

@@ -26,11 +26,19 @@ module.exports = {
         [
           '0xcA0bFd5f735924e34Cc567146989e467fFbbCe1a',
           '0x25D710AC957A54bdD6578b5DC8187a355c805edb',
-        ], // weETH
+        ], // weETH (Scroll Bridged)
         [
           '0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1',
           '0x1C04CedF3Aac5fE35A7811689Ac6Da25b01BDc81',
         ], // WBTC
+        [
+          '0x01f0a31698c4d065659b9bdc21b3610292a1c506',
+          '0x016d036ec56eed17b5f9dfa212e27f8e260cc7d0',
+        ], // weETH (Stargate Bridged)
+        [
+          '0x3ba89d490ab1c0c9cc2313385b30710e838370a4',
+          '0xde12ec22c5c4eeeeaf8afdc4ec735d75cf9d15a5',
+        ], // SolvBTC.b
       ],
     }),
   },
