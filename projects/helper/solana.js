@@ -376,7 +376,6 @@ function readBigUInt64LE(buffer, offset) {
   return BigInt(lo) + (BigInt(hi) << BigInt(32));
 }
 
-// how to check if token or token-2022?
 async function getTokenTotalSupply(mint, chain = 'solana', isToken2022 = true) {
   const body = {
     id: 1,
