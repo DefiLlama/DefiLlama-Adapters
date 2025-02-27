@@ -3,6 +3,7 @@ const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos")
 const sui = require("../helper/chain/sui");
 const { sumTokens2 } = require('../helper/solana');
 const { sumTokens } = require('../helper/chain/near');
+const { getResources, getResource } = require("../helper/chain/aptos");
 
 const NAV_CONTRACT = "0x0f29d042bb26a200b2a507b752e51dbbc05bf2f6";
 const NAV_ABI = {
@@ -52,7 +53,7 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     }
   },
   polygon: {
@@ -89,8 +90,38 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     }
+  },
+  avalanche: {
+    BHMA: {
+      address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
+      decimals: 18,
+      underlying: 'security-token',
+      instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    APCA: {
+      address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
+      decimals: 18,
+      underlying: 'security-token',
+      instrumentId:"0x3636653765336666346534363764313238323964396366340000000000000000",
+      fundName:'Libre SAF VCC - Access Private Credit Feeder'
+    },
+    LDCFA: {
+      address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
+      decimals: 18,
+      underlying: 'security-token',
+      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      fundName:'Libre SAF VCC - Laser Digital Carry Fund A'
+    },
+    LDCFB: {
+      address: '0xbee4274F1c5EE0B30fC5AAa7842A434C35BF6f7b',
+      decimals: 18,
+      underlying: 'security-token',
+      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      fundName:'Libre SAF VCC - Laser Digital Carry Fund B'
+    },
   },
   injective: {
     UMA: {
@@ -105,7 +136,7 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     },
     APCA: {
       address: 'inj1f5zrhkq02fahllqf6g2e37d4aeqfsp63z74t4l',
@@ -119,14 +150,14 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3637313739666237366165623037313161373136386634300000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
     },
     LDCFB: {
       address: 'inj1kxucwmm5wc640xl0vswf04a0naxm0m9anmzc76',
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3637313761303239366165623037313161373136386634310000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
     }
   },
   sui: {
@@ -172,7 +203,7 @@ const RECEIPT_TOKENS = {
       decimals: 9,
       underlying: 'security-token',
       instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     }
   },
   near: {
@@ -209,44 +240,30 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     }
   },
   aptos: {
     UMA: {
-      address: '0x8e6c1961e911cc7f1fa3d1dc821b199f0cf90c569c7feece76ee7ed1386d257c',
-      decimals: 8,
+      address: '0xb78860ec33dd1343a723bbaae7ba9fc858ca59ecb936cab8ab3ee7f35aae7502',
+      decimals: 9,
       underlying: 'security-token',
       instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
     },
     BHMA: {
-      address: '0x2a557b82f8c92697627d2be3cbcb50cc21237f764942b9cc79e4cb693a22fb17',
-      decimals: 8,
-      underlying: 'security-token',
-      instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
-    },
-    BHMB: {
-      address: '0xececb4a41a655506454b16cef6b0284292f60ef6282e6bc7f355ee7a9a31abaa',
-      decimals: 8,
-      underlying: 'security-token',
-      instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
-      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
-    },
-    BHMC: {
-      address: '0x68cd0c8f494447123c77bffaae34212e3afbe32f83b46577aaab01ea79c6ee15',
-      decimals: 8,
+      address: '0xabd58a12ca7f20dd397787bd87b674cc2f8cd7168718d5b7a71daa5d89836079',
+      decimals: 9,
       underlying: 'security-token',
       instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
       fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
     },
     HLSPC: {
-      address: '0x70d42e894d91754f6731f057a59cced66f731f1223965c8afb0bc1ed017a01ff',
-      decimals: 8,
+      address: '0x7647a37bb1ee1f42953ca4a00f1cf347254d38a2aa31d2e37176bbb94c14cf75',
+      decimals: 9,
       underlying: 'security-token',
       instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     }
   },
   mantra: {
@@ -262,14 +279,14 @@ const RECEIPT_TOKENS = {
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3637313739666237366165623037313161373136386634300000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
     },
     LDCFB: {
       address: 'mantra1vhjnzk9ly03dugffvzfcwgry4dgc8x0sv0nqqtfxj3ajn7rn5ghqjerqcd',
       decimals: 18,
       underlying: 'security-token',
       instrumentId:"0x3637313761303239366165623037313161373136386634310000000000000000",
-      fundName: 'USD I Money Market a sub-fund of Libre SAF VCC'
+      fundName: 'Libre SAF VCC - Laser Digital Carry Fund B'
     }
   },
   imx: {
@@ -330,7 +347,7 @@ async function polygonTvl({ polygon: block137 }) {
   const balances = {}
   let totalTvl = 0;
   const fundPrices = await getFundPrices();
-
+  
   // Get total supply of both receipt tokens
   const supplies = await sdk.api.abi.multiCall({
       abi: 'erc20:totalSupply',
@@ -363,25 +380,30 @@ async function injectiveTvl() {
   let totalTvl = 0;
   const fundPrices = await getFundPrices();
 
-  // Query total supply from Injective contract
-    const supply = await queryContractCosmos({
-    contract: RECEIPT_TOKENS.injective.UMA.address,
-      chain: 'injective',
-      data: {
-        token_info: {}
+  // Query total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.injective)) {
+    try {
+      const supply = await queryContractCosmos({
+        contract: token.address,
+        chain: 'injective',
+        data: {
+          token_info: {}
+        }
+      });
+
+      if (supply?.total_supply) {
+        const balance = supply.total_supply;
+        const price = fundPrices[token.instrumentId] || 1;
+
+        // Convert balance to human readable and multiply by price
+        const adjustedBalance = Number(balance) / (10 ** token.decimals);
+        const valueUSD = adjustedBalance * price;
+        
+        totalTvl += valueUSD;
       }
-  })
-
-    if (supply?.total_supply) {
-    const token = RECEIPT_TOKENS.injective.UMA;
-      const balance = supply.total_supply;
-      const price = fundPrices[token.instrumentId] || 1;
-
-    // Convert balance to human readable and multiply by price
-      const adjustedBalance = Number(balance) / (10 ** token.decimals);
-      const valueUSD = adjustedBalance * price;
-    
-    totalTvl += valueUSD;
+    } catch (e) {
+      console.error('Error querying token:', token.address, e);
+    }
   }
 
   // Return the total value in the format DeFiLlama expects
@@ -431,6 +453,7 @@ async function solanaTvl() {
       const price = fundPrices[token.instrumentId] || 1;
       const adjustedBalance = Number(balance) / (10 ** token.decimals);
       const valueUSD = adjustedBalance * price;
+    
     balances['usd-coin'] = valueUSD;
     });
 
@@ -478,14 +501,13 @@ async function ethereumTvl(timestamp, block) {
   supplies.output.forEach((supply, i) => {
     const token = Object.values(RECEIPT_TOKENS.ethereum)[i]
     const balance = supply.output;
-      const price = fundPrices[token.instrumentId] || 1;
+    const price = fundPrices[token.instrumentId] || 1;
 
     // Convert balance to human readable and multiply by price
-      const adjustedBalance = Number(balance) / (10 ** token.decimals);
-      const valueUSD = adjustedBalance * price;
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
     
-    
-      totalValueUSD += valueUSD;
+    totalValueUSD += valueUSD;
   })
 
   balances['usd-coin'] = totalValueUSD;
@@ -554,9 +576,72 @@ async function imxTvl({ imx: block }) {
   return balances;
 }
 
+async function avalancheTvl(timestamp, block) {
+  const balances = {}
+  const fundPrices = await getFundPrices();
+  
+  // Get total supply of the receipt token
+  const supplies = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: Object.values(RECEIPT_TOKENS.avalanche).map(i => ({ target: i.address })),
+    chain: 'avax',
+    block,
+  })
+
+  let totalValueUSD = 0;
+
+  // Map token's total supply to represent RWA TVL
+  supplies.output.forEach((supply, i) => {
+    const token = Object.values(RECEIPT_TOKENS.avalanche)[i]
+    const balance = supply.output;
+    const price = fundPrices[token.instrumentId] || 1;
+
+    // Convert balance to human readable and multiply by price
+    const adjustedBalance = Number(balance) / (10 ** token.decimals);
+    const valueUSD = adjustedBalance * price;
+    
+    totalValueUSD += valueUSD;
+  })
+
+  balances['usd-coin'] = totalValueUSD;
+  return balances;
+}
+
+async function aptosTvl(timestamp, block) {
+  const balances = {}
+  const fundPrices = await getFundPrices();
+  let totalValueUSD = 0;
+
+  // Get total supply for each token
+  for (const token of Object.values(RECEIPT_TOKENS.aptos)) {
+      // Get the concurrent supply
+      const supply = await getResource(token.address, '0x1::fungible_asset::ConcurrentSupply');
+
+      
+      if (!supply) continue;
+
+      // Get total supply and price
+      const totalSupply = supply.current.value || '0';
+      const price = fundPrices[token.instrumentId] || 1;
+      
+      // Convert supply to human readable and multiply by price
+      const adjustedSupply = Number(totalSupply) / (10 ** token.decimals);
+      const valueUSD = adjustedSupply * price;
+      
+    
+      
+      totalValueUSD += valueUSD;
+    
+  }
+
+  balances['usd-coin'] = totalValueUSD;
+  return balances;
+}
+
 module.exports = {
   methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana, NEAR, Mantra and Immutable zkEVM. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   ethereum: { tvl: ethereumTvl },
+  avax: { tvl: avalancheTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
   sui: { tvl: suiTvl },
@@ -564,4 +649,5 @@ module.exports = {
   near: { tvl: nearTvl },
   mantra: { tvl: mantraTvl },
   imx: { tvl: imxTvl },
+  aptos: { tvl: aptosTvl },
 }
