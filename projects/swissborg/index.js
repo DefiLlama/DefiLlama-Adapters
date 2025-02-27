@@ -128,6 +128,11 @@ const config = {
     owners: [
       'osmo1h9sy6z5hnk5wjf6ds8w4syq0yqs706n9m6qlap',
     ]
+  },
+  xdai: {
+    owners: [
+      '0x4c61Fad9b400A8a3E0BbD40C4D57cF05525BF87e',
+    ]
   }
 }
 
