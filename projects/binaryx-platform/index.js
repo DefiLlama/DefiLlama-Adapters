@@ -2,8 +2,8 @@ const ADDRESSES = require("../helper/coreAssets.json");
 
 const propertyFactoryAddress = '0x5d618C67674945081824e7473821A79E4ec0970F';
 const priceOracleAddress = '0x551C261eFcf109378D101de9A2741FB8078Abf45';
-const offPlanFactoryAddress = '0x5d618C67674945081824e7473821A79E4ec0970F'; // Replace with actual off-plan factory address
-const offPlanServiceAddress = '0x551C261eFcf109378D101de9A2741FB8078Abf45'; // Replace with actual off-plan service address
+const offPlanFactoryAddress = '0x2718fe8eEB091301d1f3D367231aFfE95C2f68Fe';
+const offPlanServiceAddress = '0xe442Aa8dC9D8526d7ccDDF4f3f8369294EAfA9dC';
 
 // not relevant assets
 const excludedTokens = ['0xC478d5C1E7F19D035Ad330bE09cb84eB9582D7F1', '0xd2198dBB407f5405284d0A00eA6624D087b7098b', '0x228ce2B019B5a54C545E61490E5ba66E40915868'].map(i => i.toLowerCase())
