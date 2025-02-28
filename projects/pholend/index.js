@@ -13,27 +13,45 @@ const SUPPORTED_TOKENS = [
 ];
 
 async function tvl(api) {
-  const tokensAndOwners = SUPPORTED_TOKENS.map(t => [t, LENDING_POOL]);
-  return sumTokens2({ api, tokensAndOwners });
+  // Get aToken addresses for each supported token
+  const reserveData = await api.multiCall({
+    abi: 'function getReserveData(address asset) view returns (tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id)',
+    calls: SUPPORTED_TOKENS.map(t => ({ target: LENDING_POOL, params: t }))
+  });
+
+  // Get total supply of aTokens (represents total deposits)
+  const aTokenBalances = await api.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: reserveData.map(i => i.aTokenAddress),
+  });
+
+  const balances = {};
+  SUPPORTED_TOKENS.forEach((token, i) => {
+    const totalSupply = aTokenBalances[i] || 0;
+    if (totalSupply > 0) sdk.util.sumSingleBalance(balances, token, totalSupply, api.chain);
+  });
+
+  return balances;
 }
 
 async function borrowed(api) {
   const balances = {};
   
-  const totalBorrows = await api.multiCall({
+  const reserveData = await api.multiCall({
     abi: 'function getReserveData(address asset) view returns (tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id)',
     calls: SUPPORTED_TOKENS.map(t => ({ target: LENDING_POOL, params: t }))
   });
 
-  const stableDebtTotals = await api.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: totalBorrows.map(i => i.stableDebtTokenAddress),
-  });
-
-  const variableDebtTotals = await api.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: totalBorrows.map(i => i.variableDebtTokenAddress),
-  });
+  const [stableDebtTotals, variableDebtTotals] = await Promise.all([
+    api.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: reserveData.map(i => i.stableDebtTokenAddress),
+    }),
+    api.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: reserveData.map(i => i.variableDebtTokenAddress),
+    })
+  ]);
 
   SUPPORTED_TOKENS.forEach((token, i) => {
     const stableDebt = stableDebtTotals[i] || 0;
@@ -46,7 +64,14 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: 'Counts the tokens locked in the lending pool as TVL. Borrowed tokens are tracked by adding up the stable and variable debt token supplies.',
+  methodology: `Measures the total value locked (TVL) in the PhoLend protocol on CrossFi chain:
+    - Deposits: Calculated by getting the total supply of aTokens for each supported asset (XFI, WETH, USDC, WBTC, USDT, WBNB, SOL)
+    - Borrows: Sum of all stable and variable debt tokens for each asset
+    - Net TVL: Total deposits minus total borrows
+    The protocol uses an classical Lending protocol style where:
+    - Deposits are represented by aTokens (interest-bearing tokens)
+    - Borrows are tracked through stableDebtTokens and variableDebtTokens
+    - Liquidation thresholds and loan-to-value ratios are set per asset`,
   crossfi: {
     tvl,
     borrowed,
