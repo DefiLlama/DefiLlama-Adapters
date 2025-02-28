@@ -1,13 +1,7 @@
 const { toUSDTBalances } = require("../helper/balances");
 const { get } = require('../helper/http')
 
-async function tvl() {
-  // Get the total value of ORIGYN Certificates
-  // Ref: https://github.com/ORIGYN-SA/origyn-sns/blob/master/backend/canisters/collection_index/impl/src/queries/http_request.rs#L29
-  const collectionIndexUrl = 'https://leqqw-uaaaa-aaaaj-azsba-cai.raw.icp0.io/stats';
-  const collectionIndexData = await get(collectionIndexUrl);
-  const collectionTvl = collectionIndexData.total_value_locked;
-  
+async function staking() {
   // Get the total supply in OGY
   // Ref: https://github.com/ORIGYN-SA/origyn-sns/blob/master/backend/canisters/token_metrics/impl/src/queries/http_request.rs#L40
   const totalSupplyUrl = 'https://juolv-3yaaa-aaaal-ajc6a-cai.raw.icp0.io/total-supply';
@@ -27,7 +21,17 @@ async function tvl() {
   // total supply - circulating supply
   const tokenTvl = (totalSupply - circulatingSupply) * ogyUsdt;
 
-  return toUSDTBalances(tokenTvl + collectionTvl);
+  return toUSDTBalances(tokenTvl);
+}
+
+async function tvl() {
+  // Get the total value of ORIGYN Certificates
+  // Ref: https://github.com/ORIGYN-SA/origyn-sns/blob/master/backend/canisters/collection_index/impl/src/queries/http_request.rs#L29
+  const collectionIndexUrl = 'https://leqqw-uaaaa-aaaaj-azsba-cai.raw.icp0.io/stats';
+  const collectionIndexData = await get(collectionIndexUrl);
+  const collectionTvl = collectionIndexData.total_value_locked;
+
+  return toUSDTBalances(collectionTvl);
 }
 
 module.exports = {
@@ -35,5 +39,6 @@ module.exports = {
   methodology: "TVL the total locked value of staked tokens and the total asset value of ORIGYN certificates.",
   icp: {
     tvl,
+    staking,
   },
 }
