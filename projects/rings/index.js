@@ -36,7 +36,7 @@ const CONFIG = {
       '0x2371e134e3455e0593363cBF89d3b6cf53740618', // GAUNTLET WETH
       ADDRESSES.ethereum.WBTC,
       '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642', // EBTC
-      '0x8236a87084f8B84306f72007F36F2618A5634494' // LBTC
+      ADDRESSES.ethereum.LBTC // LBTC
     ]
   },
   sonic: {
@@ -48,7 +48,7 @@ const CONFIG = {
     supportedAssets: [
       ADDRESSES.sonic.USDC_e,
       '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
-      '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', // WBTC
+      ADDRESSES.berachain.WBTC, // WBTC
       '0xecAc9C5F704e954931349Da37F60E39f515c11c1'  // LBTC
     ],
     stakingVaults: [
