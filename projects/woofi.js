@@ -73,22 +73,22 @@ const wooPPConfig = {
 	],
 	base: [
 		ADDRESSES.base.WETH, // WETH
-		'0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC
+		ADDRESSES.ethereum.cbBTC, // cbBTC
 		ADDRESSES.base.USDbC, // USDbC
 		ADDRESSES.base.USDC, // native USDC
 	],
 	mantle: [
 		ADDRESSES.mantle.WMNT, // WMNT
 		ADDRESSES.mantle.WETH, // WETH
-		'0xcDA86A272531e8640cD7F1a92c01839911B90bb0', // mETH
+		ADDRESSES.mantle.mETH, // mETH
 		ADDRESSES.mantle.USDT, // USDT
 		ADDRESSES.mantle.USDC, // USDC
-		'0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA', // cmETH
+		ADDRESSES.mantle.cmETH, // cmETH
 	],
 	sonic: [
 		ADDRESSES.sonic.wS, //wS
 		'0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
-		ADDRESSES.sonic['USDC.e'], // USDC.e
+		ADDRESSES.sonic.USDC_e, // USDC.e
 	],
 }
 

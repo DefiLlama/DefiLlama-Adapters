@@ -5,7 +5,6 @@ const BOOL_KEYS = [
 ]
 
 const DEFAULTS = {
-  WATER_MULTICALL_RPC: "0x63cee78B11774535132fd773C5dDe3c4b41CD07f",
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
@@ -18,8 +17,12 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  RPC_PROXY_URL: "https://rpc-proxy.llama.fi",
-  FLOW_RPC: "https://mainnet.evm.nodes.onflow.org"
+  FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  LULO_API_KEY: '', 
+  HYPERLIQUID_RPC: 'https://hyperliquid.cloud.blockscout.com/api/eth-rpc',
+  TRON_RPC: 'https://api.trongrid.io',
+  HEMI_RPC: 'https://rpc.hemi.network/rpc',
+  HEMI_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
 }
 
 const ENV_KEYS = [
@@ -34,7 +37,9 @@ const ENV_KEYS = [
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
   'ETHEREUM_TOKENS_ENDPOINT',
   'FBTC_ACCESS_TOKEN',
-  'UNISAT_AUTH'
+  'UNISAT_AUTH',
+  'RPC_PROXY_URL',
+  'BLACKSAIL_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

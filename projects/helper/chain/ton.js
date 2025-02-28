@@ -3,6 +3,8 @@ const ADDRESSES = require('../coreAssets.json')
 const plimit = require('p-limit')
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
+const { sumTokens2 } = require('../unwrapLPs')
+const tonUtils = require('../utils/ton')
 
 const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
 
@@ -22,15 +24,27 @@ async function getJettonBalances(addr) {
   return res
 }
 
-async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false }) {
+async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false, useTonApiForPrices = true, }) {
   if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return;
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
   await sleep(1000 * (3 * Math.random() + 3))
+  tokens = tokens.map((a) => {
+    if (a === ADDRESSES.ton.TON) return ADDRESSES.ton.TON
+    return tonUtils.address(a).toString()
+  })
   balances.forEach(({ balance, price, jetton }) => {
-    if (onlyWhitelistedTokens && !tokens.includes(jetton.address)) return;
+    const address = tonUtils.address(jetton.address).toString()
+    if (onlyWhitelistedTokens && !tokens.includes(address)) return;
+    if (!useTonApiForPrices) {
+      api.add(address, balance)
+      return;
+    }
     const decimals = jetton.decimals
     price = price?.prices?.USD
-    if (!decimals || !price) return;
+    if (!decimals || !price) {
+      api.add(address, balance)
+      return;
+    }
     const bal = balance * price / 10 ** decimals
     api.add('tether', bal, { skipChain: true })
   })
@@ -55,7 +69,7 @@ async function getTokenRates({ tokens = [] }) {
 
 const sumTokensAccount = rateLimited(_sumTokensAccount)
 
-async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false }) {
+async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false, useTonApiForPrices = true }) {
   if (!api) throw new Error('api is required')
 
   if (owner) owners.push(owner)
@@ -64,9 +78,9 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
 
   for (const addr of owners) {
-    await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens })
+    await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens, useTonApiForPrices })
   }
-  return api.getBalances()
+  return sumTokens2({ api, })
 }
 
 function sumTokensExport({ ...args }) {
@@ -79,7 +93,7 @@ async function call({ target, abi, params = [], rawStack = false, }) {
     "method": abi,
     "stack": params
   }
-  const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
+  const { ok, result } = await post('https://ton.drpc.org/rest/runGetMethod', requestBody)
   if (!ok) {
     throw new Error("Unknown");
   }

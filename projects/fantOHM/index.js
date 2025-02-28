@@ -14,7 +14,7 @@ const moonriverFhm = "0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286";
 const moonriverStaking = "0xF5C7D63C5Fc0aD4b7Cef7d8904239860725Ebc87";
 const moonriverTreasuryContract = "0x5E983ff70DE345de15DbDCf0529640F14446cDfa";
 
-// addreses of gnosis safe's according to: https://fantohm.com/#security
+// addresses of gnosis safe's according to: https://fantohm.com/#security
 const fantomGnosisContract = "0x34F93b12cA2e13C6E64f45cFA36EABADD0bA30fC";
 const ethGnosisContract = "0x66a98CfCd5A0dCB4E578089E1D89134A3124F0b1";
 const bscGnosisContract = "0x3538Acb37Cf5a92eBE7091714975b2f8dDd5c6C1";
