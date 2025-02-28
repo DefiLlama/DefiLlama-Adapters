@@ -651,7 +651,7 @@ async function aptosTvl() {
 }
 
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds represented by UMA, BHMA and UMA receipt tokens on Ethereum, Polygon, Injective, Sui, Solana, NEAR, Mantra and Immutable zkEVM. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, and Avalanche. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   ethereum: { tvl: ethTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
