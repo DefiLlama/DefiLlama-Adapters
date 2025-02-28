@@ -65,11 +65,11 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: `Measures the total value locked (TVL) in the PhoLend protocol on CrossFi chain:
-    - Deposits: Calculated by getting the total supply of aTokens for each supported asset (XFI, WETH, USDC, WBTC, USDT, WBNB, SOL)
+    - Deposits: Calculated by getting the total supply of pTokens for each supported asset (XFI, WETH, USDC, WBTC, USDT, WBNB, SOL)
     - Borrows: Sum of all stable and variable debt tokens for each asset
     - Net TVL: Total deposits minus total borrows
     The protocol uses an classical Lending protocol style where:
-    - Deposits are represented by aTokens (interest-bearing tokens)
+    - Deposits are represented by pTokens (interest-bearing tokens)
     - Borrows are tracked through stableDebtTokens and variableDebtTokens
     - Liquidation thresholds and loan-to-value ratios are set per asset`,
   crossfi: {
