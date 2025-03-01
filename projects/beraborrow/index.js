@@ -1,3 +1,6 @@
+const { getLogs2 } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const vaults = [
   // "0x74E852a4f88bfbEff01275bB95d5ed77f2967d12",
   // "0x78F87aA41a4C32a619467d5B36e0319F3EAf2DA2",
@@ -20,15 +23,35 @@ const vaults = [
   "0x849232E2144BD5118B5e4A070FE15035cC07b388",
 ]
 
+const beraBorrowWberaToken = '0x9158d1b0c9cc4ec7640eaef0522f710dadee9a1b'
+
 const PSMs = [
   '0xCaB847887a2d516Dfa690fa346638429415c089b',
   '0x5623554eCe4E1fd78e8a4ce13D588A8e0053825D',
 ]
 
+const getAllCollateralsAndDenManagersAbi = "function getAllCollateralsAndDenManagers() view returns ((address collateral, address[] denManagers)[])"
+
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const pTokens = await api.multiCall({  abi: 'address:stable', calls: PSMs})
-  return api.sumTokens({ tokensAndOwners2: [tokens.concat(pTokens), vaults.concat(PSMs)] })
+  const beraTokens = await api.multiCall({ abi: 'address:collVault', calls: vaults })
+  const pTokens = await api.multiCall({ abi: 'address:stable', calls: PSMs })
+  const denInfos = await api.call({ abi: getAllCollateralsAndDenManagersAbi, target: '0xFA7908287c1f1B256831c812c7194cb95BB440e6' })
+  const tokensAndOwners = tokens.map((t, i) => [t, vaults[i]])
+
+  pTokens.forEach((t, i) => tokensAndOwners.push([t, PSMs[i]]))
+  denInfos.forEach(({ collateral, denManagers }) => {
+    denManagers.forEach(d => tokensAndOwners.push([collateral, d]))
+  })
+
+  const infraredLogs = await getLogs2({ api, factory: '0xb71b3DaEA39012Fb0f2B14D2a9C86da9292fC126', eventAbi: 'event NewVault (address _sender, address indexed _asset, address indexed _vault)', fromBlock: 562092, })
+  const infraAssets = infraredLogs.map(log => log._asset)
+  const names = await api.multiCall({ abi: 'string:name', calls: infraAssets, permitFailure: true, })
+  const bbInfraWrappers = infraAssets.filter((a, i) => names[i] && names[i].startsWith('Beraborrow: '))
+  const bbInfraWrapperUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: bbInfraWrappers })
+  beraTokens.push(beraBorrowWberaToken, ...bbInfraWrappers)
+  bbInfraWrapperUnderlyings.forEach((u, i) => tokensAndOwners.push([u, bbInfraWrappers[i]]))
+  return api.sumTokens({ tokensAndOwners, blacklistedTokens: beraTokens })
 }
 
 module.exports = {

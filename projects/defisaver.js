@@ -22,8 +22,10 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
+  timetravel: false, // because we do block - 10k, remove that to refill
   methodology: 'TVL accounts for all assets deposited into the automated strategies.',
   ethereum: { tvl },
   arbitrum: { tvl },
   optimism: { tvl },
+  base: { tvl },
 };
