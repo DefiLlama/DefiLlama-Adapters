@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { queryContract: queryContractCosmos } = require("../helper/chain/cosmos");
 const sui = require("../helper/chain/sui");
-const { sumTokens } = require('../helper/chain/near');
+const { call } = require('../helper/chain/near')
 const { Connection, PublicKey } = require('@solana/web3.js');
 const {  getResource } = require("../helper/chain/aptos");
 
@@ -350,19 +350,15 @@ async function ethTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.ethereum)) {
-    try {
-      const balance = await sdk.api.erc20.totalSupply({
-        target: token.address,
-      });
+    const balance = await sdk.api.erc20.totalSupply({
+      target: token.address,
+    });
 
-      if (balance?.output) {
-        const price = fundPrices[token.instrumentId] || 1;
-        const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        totalTvl += valueUSD;
-      }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+    if (balance?.output) {
+      const price = fundPrices[token.instrumentId] || 1;
+      const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      totalTvl += valueUSD;
     }
   }
 
@@ -377,20 +373,16 @@ async function polygonTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.polygon)) {
-    try {
-      const balance = await sdk.api.erc20.totalSupply({
-        target: token.address,
-        chain: 'polygon'
-      });
+    const balance = await sdk.api.erc20.totalSupply({
+      target: token.address,
+      chain: 'polygon'
+    });
 
-      if (balance?.output) {
-        const price = fundPrices[token.instrumentId] || 1;
-        const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        totalTvl += valueUSD;
-      }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+    if (balance?.output) {
+      const price = fundPrices[token.instrumentId] || 1;
+      const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      totalTvl += valueUSD;
     }
   }
 
@@ -405,23 +397,19 @@ async function mantraTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.mantra)) {
-    try {
-      const supply = await queryContractCosmos({
-        contract: token.address,
-        chain: 'mantra',
-        data: {
-          token_info: {}
-        }
-      });
-
-      if (supply?.total_supply) {
-        const price = fundPrices[token.instrumentId] || 1;
-        const adjustedBalance = Number(supply.total_supply) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        totalTvl += valueUSD;
+    const supply = await queryContractCosmos({
+      contract: token.address,
+      chain: 'mantra',
+      data: {
+        token_info: {}
       }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+    });
+
+    if (supply?.total_supply) {
+      const price = fundPrices[token.instrumentId] || 1;
+      const adjustedBalance = Number(supply.total_supply) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      totalTvl += valueUSD;
     }
   }
 
@@ -436,17 +424,13 @@ async function suiTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.sui)) {
-    try {
-      const receiptTokenObject = await sui.getObject(token.address);
-      if (receiptTokenObject?.fields?.balance) {
-        const balance = receiptTokenObject.fields.balance;
-        const price = fundPrices[token.instrumentId] || 1;
-        const adjustedBalance = Number(balance) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        totalTvl += valueUSD;
-      }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+    const receiptTokenObject = await sui.getObject(token.address);
+    if (receiptTokenObject?.fields?.balance) {
+      const balance = receiptTokenObject.fields.balance;
+      const price = fundPrices[token.instrumentId] || 1;
+      const adjustedBalance = Number(balance) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      totalTvl += valueUSD;
     }
   }
 
@@ -459,32 +443,24 @@ async function imxTvl({ imx: block }) {
   let totalTvl = 0;
   const fundPrices = await getFundPrices();
 
-  try {
-    // Get total supply of receipt tokens
-    const supplies = await sdk.api.abi.multiCall({
-      abi: 'erc20:totalSupply',
-      calls: Object.values(RECEIPT_TOKENS.imx).map(i => ({ target: i.address })),
-      chain: 'imx',
-      block
-    });
+  // Get total supply of receipt tokens
+  const supplies = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: Object.values(RECEIPT_TOKENS.imx).map(i => ({ target: i.address })),
+    chain: 'imx',
+    block
+  });
 
-    // Map each token's total supply to represent RWA TVL
-    supplies.output.forEach((supply, i) => {
-      try {
-        if (supply?.output) {
-          const token = Object.values(RECEIPT_TOKENS.imx)[i];
-          const price = fundPrices[token.instrumentId] || 1;
-          const adjustedBalance = Number(supply.output) / (10 ** token.decimals);
-          const valueUSD = adjustedBalance * price;
-          totalTvl += valueUSD;
-        }
-      } catch (e) {
-        console.error('Error processing token:', Object.values(RECEIPT_TOKENS.imx)[i].address, e);
-      }
-    });
-  } catch (e) {
-    console.error('Error in IMX multicall:', e);
-  }
+  // Map each token's total supply to represent RWA TVL
+  supplies.output.forEach((supply, i) => {
+    if (supply?.output) {
+      const token = Object.values(RECEIPT_TOKENS.imx)[i];
+      const price = fundPrices[token.instrumentId] || 1;
+      const adjustedBalance = Number(supply.output) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      totalTvl += valueUSD;
+    }
+  });
 
   balances['usd-coin'] = totalTvl;
   return balances;
@@ -497,20 +473,16 @@ async function avaxTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.avalanche)) {
-    try {
-      const balance = await sdk.api.erc20.totalSupply({
-        target: token.address,
-        chain: 'avax'
-      });
+    const balance = await sdk.api.erc20.totalSupply({
+      target: token.address,
+      chain: 'avax'
+    });
 
-      if (balance?.output) {
-        const price = fundPrices[token.instrumentId] || 1;
-        const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        totalTvl += valueUSD;
-      }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+    if (balance?.output) {
+      const price = fundPrices[token.instrumentId] || 1;
+      const adjustedBalance = Number(balance.output) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      totalTvl += valueUSD;
     }
   }
 
@@ -525,27 +497,23 @@ async function injectiveTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.injective)) {
-    try {
-      const supply = await queryContractCosmos({
-        contract: token.address,
-        chain: 'injective',
-        data: {
-          token_info: {}
-        }
-      });
-
-      if (supply?.total_supply) {
-        const balance = supply.total_supply;
-        const price = fundPrices[token.instrumentId] || 1;
-
-        // Convert balance to human readable and multiply by price
-        const adjustedBalance = Number(balance) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        
-        totalTvl += valueUSD;
+    const supply = await queryContractCosmos({
+      contract: token.address,
+      chain: 'injective',
+      data: {
+        token_info: {}
       }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+    });
+
+    if (supply?.total_supply) {
+      const balance = supply.total_supply;
+      const price = fundPrices[token.instrumentId] || 1;
+
+      // Convert balance to human readable and multiply by price
+      const adjustedBalance = Number(balance) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      
+      totalTvl += valueUSD;
     }
   }
 
@@ -562,22 +530,18 @@ async function solanaTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.solana)) {
-    try {
-      const tokenPubkey = new PublicKey(token.address);
-      const supply = await connection.getTokenSupply(tokenPubkey);
+    const tokenPubkey = new PublicKey(token.address);
+    const supply = await connection.getTokenSupply(tokenPubkey);
       
-      if (supply?.value?.amount) {
-        const balance = supply.value.amount;
-        const price = fundPrices[token.instrumentId] || 1;
+    if (supply?.value?.amount) {
+      const balance = supply.value.amount;
+      const price = fundPrices[token.instrumentId] || 1;
 
-        // Convert balance to human readable and multiply by price
-        const adjustedBalance = Number(balance) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        
-        totalTvl += valueUSD;
-      }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+      // Convert balance to human readable and multiply by price
+      const adjustedBalance = Number(balance) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      
+      totalTvl += valueUSD;
     }
   }
 
@@ -593,24 +557,17 @@ async function nearTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.near)) {
-    try {
-      const supply = await sumTokens({
-        owners: ['libre_investor_0.near'],
-        tokens: [token.address],
-      });
+    const supply = await call(token.address, 'ft_total_supply', {});
 
-      if (supply) {
-        const balance = Object.values(supply)[0] || 0;
-        const price = fundPrices[token.instrumentId] || 1;
+    if (supply) {
+      const balance = supply;
+      const price = fundPrices[token.instrumentId] || 1;
 
-        // Convert balance to human readable and multiply by price
-        const adjustedBalance = Number(balance) / (10 ** token.decimals);
-        const valueUSD = adjustedBalance * price;
-        
-        totalTvl += valueUSD;
-      }
-    } catch (e) {
-      console.error('Error querying token:', token.address, e);
+      // Convert balance to human readable and multiply by price
+      const adjustedBalance = Number(balance) / (10 ** token.decimals);
+      const valueUSD = adjustedBalance * price;
+      
+      totalTvl += valueUSD;
     }
   }
 
@@ -626,24 +583,20 @@ async function aptosTvl() {
   
   // Get total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.aptos)) {
-      // Get the concurrent supply
-      const supply = await getResource(token.address, '0x1::fungible_asset::ConcurrentSupply');
+    // Get the concurrent supply
+    const supply = await getResource(token.address, '0x1::fungible_asset::ConcurrentSupply');
 
-      
-      if (!supply) continue;
+    if (!supply) continue;
 
-      // Get total supply and price
-      const totalSupply = supply.current.value || '0';
-      const price = fundPrices[token.instrumentId] || 1;
-      
-      // Convert supply to human readable and multiply by price
-      const adjustedSupply = Number(totalSupply) / (10 ** token.decimals);
-      const valueUSD = adjustedSupply * price;
-      
+    // Get total supply and price
+    const totalSupply = supply.current.value || '0';
+    const price = fundPrices[token.instrumentId] || 1;
     
-      
-      totalTvl += valueUSD;
+    // Convert supply to human readable and multiply by price
+    const adjustedSupply = Number(totalSupply) / (10 ** token.decimals);
+    const valueUSD = adjustedSupply * price;
     
+    totalTvl += valueUSD;
   }
 
   balances['usd-coin'] = totalTvl;
