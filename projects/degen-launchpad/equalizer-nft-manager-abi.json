@@ -1,4 +1,0 @@
-{
-    "tokensOfOwner": "function tokensOfOwner(address owner) view returns (uint256[])",
-    "lockedAssets": "function lockedAssets(uint256 _lockID) view returns (address,  uint256, uint256)"
-}
