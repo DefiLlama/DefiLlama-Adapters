@@ -26,17 +26,20 @@ async function staking(api) {
   return sumTokens({ api, owner: market, tokens: [ADDRESSES.starknet.ZEND] })
 }
 
-async function borrowed(api) {
+/*async function borrowed(api) {
   let data = await multiCall({ calls: assets, target: market, abi: marketAbi.get_total_debt_for_token });
   data = data.map(i => +i)
   api.addTokens(assets, data)
-}
+}*/
 
 module.exports = {
   methodology: 'Value of user supplied asset on zkLend is considered as TVL',
+  hallmarks: [
+    [1739232000, "Empty Market Exploit"]
+  ],
   starknet: {
     tvl,
-    borrowed,
+    borrowed: ()=>({}), // hacked, it's all bad debt
     staking,
   },
 }

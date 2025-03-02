@@ -106,7 +106,7 @@ module.exports = {
       tokens: [
         "0xf6C5F01C7F3148891ad0e19DF78743D31E390D1f", // 4pool
         ADDRESSES.optimism.WETH_1, // WETH
-        "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf", // cbBTC
+        ADDRESSES.ethereum.cbBTC, // cbBTC
       ],
     }),
   },

@@ -1,32 +1,29 @@
-const sdk = require('@defillama/sdk')
+const { getEnv } = require("../helper/env")
 
 const endpoint = 'http://api.flexlend.fi/stats'
-const startTimestamp = 1704067200 // 2024-01-01
 
-async function tvl(options) {
-	const balances = {}
+async function tvl(api) {
 	const request = {
 		method: 'GET',
 		headers: {
 			accept: 'application/json',
-			'x-lulo-api-key': String(process.env.LULO_API_KEY || ''),
+			'x-lulo-api-key': getEnv('LULO_API_KEY'),
 		},
 	}
 
-	const response = await fetch(`${endpoint}?timestamp=${options.timestamp}`, request)
+	const response = await fetch(`${endpoint}?timestamp=${api.timestamp}`, request)
 
 	const { data } = await response.json()
 
 	data.map(d => {
-		sdk.util.sumSingleBalance(balances, d.mintAddress, d.tokens, 'solana')
+		api.add(d.mintAddress, d.tokens)
 	})
-	return balances
 }
 
 module.exports = {
 	doublecounted: true,
 	timetravel: true,
-	start: startTimestamp,
+	start: 1704067200,
 	methodology:
 		'Volume is calculated by summing the total USD value of deposited funds in Lulo across all tokens',
 	solana: { tvl },
