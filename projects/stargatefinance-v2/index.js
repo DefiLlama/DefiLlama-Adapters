@@ -121,7 +121,11 @@ const CONFIG = {
       '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', //eth pool
     ],
   },
-
+  sonic: {
+    pools: [
+      '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //eth pool
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {
