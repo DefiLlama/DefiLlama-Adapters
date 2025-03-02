@@ -123,7 +123,7 @@ const CONFIG = {
   },
   sonic: {
     pools: [
-      '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //eth pool
+      '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //usdc pool
     ],
   },
 }
