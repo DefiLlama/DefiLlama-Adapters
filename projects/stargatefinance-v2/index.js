@@ -111,6 +111,12 @@ const CONFIG = {
       '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7' //weth pool
     ],
   },
+  lightlink: {
+    pools: [
+      '0x8731d54E9D02c286767d56ac03e8037C07e01e98', //eth pool
+    ],
+  },
+  
 }
 
 const createTvlFunction = (pools) => {
