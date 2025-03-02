@@ -24,7 +24,7 @@ async function tvl(api) {
 
   const balances = await api.multiCall({ calls, abi: abi.balanceOf, })
   api.addTokens(tokens, balances)
-};
+}
 
 module.exports = {
   sei: {
