@@ -116,7 +116,12 @@ const CONFIG = {
       '0x8731d54E9D02c286767d56ac03e8037C07e01e98', //eth pool
     ],
   },
-  
+  hemi: {
+    pools: [
+      '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', //eth pool
+    ],
+  },
+
 }
 
 const createTvlFunction = (pools) => {
