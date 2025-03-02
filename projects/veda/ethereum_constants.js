@@ -1,17 +1,14 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 
 const legacyVaultsEthereum = [
-  /*
   {
     id: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
     startBlock: 19460621,
     baseAsset: ADDRESSES.ethereum.WETH,
   },
-  */
 ];
 
 const boringVaultsV0Ethereum = [
-  /*
   {
     name: "Liquid USD",
     vault: "0x08c6F91e2B681FaF5e17227F2a44C307b3C1364C",
@@ -237,7 +234,6 @@ const boringVaultsV0Ethereum = [
     startBlock: 21746816,
     baseAsset: ADDRESSES.ethereum.WBTC,
   },
-  */
 ];
 
 module.exports = {
