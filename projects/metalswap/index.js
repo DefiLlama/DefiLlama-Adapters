@@ -60,7 +60,7 @@ const config = {
 
 module.exports = {
   hallmarks: [
-    [1662076800, "Hedging Contracts (HC) Launch on ETH"],
+    [1662076800, "Launch on ETH"],
     [1740355200, "TVL Migration to Denaria"]
   ],
 
