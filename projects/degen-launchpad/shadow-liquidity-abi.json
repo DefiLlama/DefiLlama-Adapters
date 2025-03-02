@@ -1,0 +1,3 @@
+{
+    "liquidity": "function liquidity() view returns (uint128)"
+}
