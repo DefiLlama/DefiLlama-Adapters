@@ -1,286 +1,7 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
-const BigNumber = require("bignumber.js");
-const { BN } = require("bn.js");
 const { getObject } = require("../helper/chain/sui");
-
-function signedShiftLeft(n0, shiftBy, bitWidth) {
-  const twosN0 = n0.toTwos(bitWidth).shln(shiftBy);
-  twosN0.imaskn(bitWidth + 1);
-  return twosN0.fromTwos(bitWidth);
-}
-
-function signedShiftRight(n0, shiftBy, bitWidth) {
-  const twoN0 = n0.toTwos(bitWidth).shrn(shiftBy);
-  twoN0.imaskn(bitWidth - shiftBy + 1);
-  return twoN0.fromTwos(bitWidth - shiftBy);
-}
-
-function tickIndexToSqrtPricePositive(tick) {
-  let ratio;
-
-  if ((tick & 1) !== 0) {
-    ratio = new BN("79232123823359799118286999567");
-  } else {
-    ratio = new BN("79228162514264337593543950336");
-  }
-
-  if ((tick & 2) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("79236085330515764027303304731")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 4) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("79244008939048815603706035061")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 8) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("79259858533276714757314932305")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 16) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("79291567232598584799939703904")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 32) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("79355022692464371645785046466")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 64) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("79482085999252804386437311141")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 128) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("79736823300114093921829183326")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 256) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("80248749790819932309965073892")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 512) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("81282483887344747381513967011")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 1024) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("83390072131320151908154831281")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 2048) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("87770609709833776024991924138")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 4096) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("97234110755111693312479820773")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 8192) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("119332217159966728226237229890")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 16384) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("179736315981702064433883588727")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 32768) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("407748233172238350107850275304")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 65536) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("2098478828474011932436660412517")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 131072) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("55581415166113811149459800483533")),
-      96,
-      256,
-    );
-  }
-  if ((tick & 262144) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("38992368544603139932233054999993551")),
-      96,
-      256,
-    );
-  }
-
-  return signedShiftRight(ratio, 32, 256);
-}
-
-function tickIndexToSqrtPriceNegative(tickIndex) {
-  const tick = Math.abs(tickIndex);
-  let ratio;
-
-  if ((tick & 1) !== 0) {
-    ratio = new BN("18445821805675392311");
-  } else {
-    ratio = new BN("18446744073709551616");
-  }
-
-  if ((tick & 2) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18444899583751176498")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 4) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18443055278223354162")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 8) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18439367220385604838")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 16) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18431993317065449817")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 32) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18417254355718160513")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 64) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18387811781193591352")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 128) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18329067761203520168")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 256) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("18212142134806087854")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 512) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("17980523815641551639")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 1024) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("17526086738831147013")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 2048) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("16651378430235024244")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 4096) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("15030750278693429944")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 8192) !== 0) {
-    ratio = signedShiftRight(
-      ratio.mul(new BN("12247334978882834399")),
-      64,
-      256,
-    );
-  }
-  if ((tick & 16384) !== 0) {
-    ratio = signedShiftRight(ratio.mul(new BN("8131365268884726200")), 64, 256);
-  }
-  if ((tick & 32768) !== 0) {
-    ratio = signedShiftRight(ratio.mul(new BN("3584323654723342297")), 64, 256);
-  }
-  if ((tick & 65536) !== 0) {
-    ratio = signedShiftRight(ratio.mul(new BN("696457651847595233")), 64, 256);
-  }
-  if ((tick & 131072) !== 0) {
-    ratio = signedShiftRight(ratio.mul(new BN("26294789957452057")), 64, 256);
-  }
-  if ((tick & 262144) !== 0) {
-    ratio = signedShiftRight(ratio.mul(new BN("37481735321082")), 64, 256);
-  }
-
-  return ratio;
-}
-
-function tickIndexToSqrtPriceX64(tickIndex) {
-  if (tickIndex > 0) {
-    return new BN(tickIndexToSqrtPricePositive(tickIndex));
-  }
-  return new BN(tickIndexToSqrtPriceNegative(tickIndex));
-}
+const { addUniV3LikePosition } = require("../helper/unwrapLPs");
 
 const SUI_HASUI_POOL_ID = "0x871d8a227114f375170f149f7e9d45be822dd003eba225e83c05ac80828596bc"
 const SUI_HASUI_VAULT_ID = "0xde97452e63505df696440f86f0b805263d8659b77b8c316739106009d514c270"
@@ -298,100 +19,25 @@ async function calculateGSUIunderlyingSui(gSuiAmount) {
   const pool = Number(fields.pool)
   const pipe = Number(fields.pipe_debt.fields.value)
   const supply = Number(fields.supply.fields.value)
-  const percentage = (pool + pipe)/ supply
+  const percentage = (pool + pipe) / supply
   return percentage * Number(gSuiAmount)
 }
 
-async function calculatehaSuiSuiVaultShares(lpAmount) {
-    const suiHasuiPool = (
-        await getObject(SUI_HASUI_POOL_ID)
-      )
-      const vaultObject = (
-        await getObject(SUI_HASUI_VAULT_ID)
-      )
+async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
+  const suiHasuiPool = await getObject(SUI_HASUI_POOL_ID)
+  const vaultObject = await getObject(SUI_HASUI_VAULT_ID)
+  const lpSupply = vaultObject.fields.lp_token_treasury.fields.total_supply.fields.value;
+  const lpRatio = lpAmount / lpSupply
+  const clmmPosition = vaultObject.fields.positions[0].fields.clmm_postion.fields
+  const liquidity = clmmPosition.liquidity * lpRatio
+  // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
+  const tick = Math.floor(Math.log((suiHasuiPool.fields.current_sqrt_price / 2 ** 64) ** 2) / Math.log(1.0001))
 
-      const clmmPosition =
-        vaultObject.fields.positions[0].fields.clmm_postion.fields;
-      const liquidity = new BN(clmmPosition.liquidity);
-      const curSqrtPrice = new BN(suiHasuiPool.fields.current_sqrt_price);
-      const lowerSqrtPrice = new BN(
-        tickIndexToSqrtPriceX64(Number(clmmPosition.tick_lower_index.fields.bits)),
-      );
-      const upperSqrtPrice = new BN(
-        tickIndexToSqrtPriceX64(Number(clmmPosition.tick_upper_index.fields.bits)),
-      );
-
-      const amount = getCoinAmountFromLiquidity(
-        liquidity,
-        curSqrtPrice,
-        lowerSqrtPrice,
-        upperSqrtPrice,
-      );
-
-      const lpSupply =
-        vaultObject.fields.lp_token_treasury.fields.total_supply.fields.value;
-
-      const percentage = BigNumber(lpAmount).div(BigNumber(lpSupply));
-
-      const coinAShare = percentage.multipliedBy(
-        BigNumber(amount.coinA.toString()),
-      );
-      const coinBShare = percentage.multipliedBy(
-        BigNumber(amount.coinB.toString()),
-      );
-
-      return({
-        coinA: coinAShare.decimalPlaces(0).toNumber(),
-        coinB: coinBShare.decimalPlaces(0).toNumber(),
-      });
-
-}
-
-function getCoinAmountFromLiquidity(
-  liquidity,
-  curSqrtPrice,
-  lowerSqrtPrice,
-  upperSqrtPrice
-) {
-  const liq = new BigNumber(liquidity.toString());
-  const curSqrtPriceStr = new BigNumber(curSqrtPrice.toString());
-  const lowerPriceStr = new BigNumber(lowerSqrtPrice.toString());
-  const upperPriceStr = new BigNumber(upperSqrtPrice.toString());
-  let coinA;
-  let coinB;
-  if (curSqrtPrice.lt(lowerSqrtPrice)) {
-    coinA = MathUtil.toX64_Decimal(liq)
-      .multipliedBy(upperPriceStr.minus(lowerPriceStr))
-      .div(lowerPriceStr.multipliedBy(upperPriceStr));
-    coinB = new BigNumber(0);
-  } else if (curSqrtPrice.lt(upperSqrtPrice)) {
-    coinA = MathUtil.toX64_Decimal(liq)
-      .multipliedBy(upperPriceStr.minus(curSqrtPriceStr))
-      .div(curSqrtPriceStr.multipliedBy(upperPriceStr));
-
-    coinB = MathUtil.fromX64_Decimal(
-      liq.multipliedBy(curSqrtPriceStr.minus(lowerPriceStr)),
-    );
-  } else {
-    coinA = new BigNumber(0);
-    coinB = MathUtil.fromX64_Decimal(
-      liq.multipliedBy(upperPriceStr.minus(lowerPriceStr)),
-    );
-  }
-
-  return {
-    coinA: coinA.decimalPlaces(0),
-    coinB: coinB.decimalPlaces(0),
-  };
-}
-
-class MathUtil {
-  static toX64_Decimal(num) {
-    return num.multipliedBy(BigNumber(2 ** 64));
-  }
-  static fromX64_Decimal(num) {
-    return num.multipliedBy(BigNumber(2 ** -64));
-  }
+  addUniV3LikePosition({
+    api, token0, token1, liquidity, tick,
+    tickLower: clmmPosition.tick_lower_index.fields.bits,
+    tickUpper: clmmPosition.tick_upper_index.fields.bits,
+  })
 }
 
 const MAINNET_PROTOCOL_ID =
@@ -520,18 +166,18 @@ async function getNaviLPAmount(id) {
 
 function convertUnderlyingAssets(coin) {
   // USDC
-  if(coin === SCALLOP_swUSDC) return ADDRESSES.sui.USDC
-  if(coin === SCALLOP_sUSDC) return ADDRESSES.sui.USDC_CIRCLE
+  if (coin === SCALLOP_swUSDC) return ADDRESSES.sui.USDC
+  if (coin === SCALLOP_sUSDC) return ADDRESSES.sui.USDC_CIRCLE
   // USDT
-  if(coin === SCALLOP_sUSDT) return ADDRESSES.sui.USDT
+  if (coin === SCALLOP_sUSDT) return ADDRESSES.sui.USDT
   // sSUI
-  if(coin === SCALLOP_sSUI) return ADDRESSES.sui.SUI
+  if (coin === SCALLOP_sSUI) return ADDRESSES.sui.SUI
   // sbETH
-  if(coin === SCALLOP_sSB_ETH) return ADDRESSES.sui.ETH
+  if (coin === SCALLOP_sSB_ETH) return ADDRESSES.sui.ETH
   // sSCAUSDT_PSM
-  if(coin === SCALLOP_sSCA) return SCA_ADDRESS
+  if (coin === SCALLOP_sSCA) return SCA_ADDRESS
   // sDeep
-  if(coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
+  if (coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
   // sSBUSDT
   if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
   return coin
@@ -546,40 +192,26 @@ async function tvl(api) {
   const aflStakedList = aflpObjs.map((aflp) => aflp.fields.staked);
   const buckAfPoolData = await sui.getObjects(AF_POOL_IDs);
 
-  const afsuiSuiLpObj = await sui.getObject(AFSUI_SUI_LP_ID);
-  const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
-
-  const afsuiSuiLpBucket = await sui.getObject(AFSUI_SUI_LP_BUCKET_ID);
-  const afsuiSuiLpBucketStaked = afsuiSuiLpBucket.fields.collateral_vault;
-
   const kriyalpObjs = await sui.getObjects(KRIYA_LP_IDS);
   const kriyaStakedList = kriyalpObjs.map(
     (kriyalp) => kriyalp.fields.staked.fields.lsp.fields.balance
   );
   const kriyalpPoolData = await sui.getObjects(KRIYA_POOL_IDs);
 
-  const cetusLpObj = await sui.getObject(CETUS_LP_ID);
+
+  const [afsuiSuiLpObj, afsuiSuiLpBucket, cetusLpObj, usdcCirclePSMObj, fdusdPSMObj, usdcPSMObj, usdtPSMObj, bucketusPSMObj, cetablePSMObj, stapearlPSMObj,] = await sui.getObjects([
+    AFSUI_SUI_LP_ID, AFSUI_SUI_LP_BUCKET_ID, CETUS_LP_ID, USDC_CIRCLE_PSM, FDUSD_PSM, USDC_PSM, USDT_PSM, BUCKETUS_PSM, CETABLE_PSM, STAPEARL_PSM,
+  ])
+
+  const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
+  const afsuiSuiLpBucketStaked = afsuiSuiLpBucket.fields.collateral_vault;
   const stakedBucketus = cetusLpObj.fields.staked;
-
-  const usdcCirclePSMObj = await sui.getObject(USDC_CIRCLE_PSM);
   const usdcCirclePSMAmount = usdcCirclePSMObj.fields.pool;
-
-  const fdusdPSMObj = await sui.getObject(FDUSD_PSM);
   const fdusdPSMAmount = fdusdPSMObj.fields.pool;
-
-  const usdcPSMObj = await sui.getObject(USDC_PSM);
   const usdcPSMAmount = usdcPSMObj.fields.pool;
-
-  const usdtPSMObj = await sui.getObject(USDT_PSM);
   const usdtPSMAmount = usdtPSMObj.fields.pool;
-
-  const bucketusPSMObj = await sui.getObject(BUCKETUS_PSM);
   const bucketusPSMAmount = bucketusPSMObj.fields.pool;
-
-  const cetablePSMObj = await sui.getObject(CETABLE_PSM);
   const cetablePSMAmount = cetablePSMObj.fields.pool;
-
-  const stapearlPSMObj = await sui.getObject(STAPEARL_PSM);
   const stapearlPSMAmount = stapearlPSMObj.fields.pool;
 
   const bucketList = protocolFields.filter((item) =>

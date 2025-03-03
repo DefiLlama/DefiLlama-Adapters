@@ -192,7 +192,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 
 const blacklists = {
   ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
-  arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378'],
+  arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378', '0xd4fe6e1e37dfcf35e9eeb54d4cca149d1c10239f'],
 }
 
 const config = {
