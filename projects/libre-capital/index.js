@@ -94,6 +94,13 @@ const RECEIPT_TOKENS = {
     }
   },
   avalanche: {
+    UMA: {
+      address: '0xcf2Ca1B21e6f5dA7A2744f89667dE4E450791C79',
+      decimals: 18,
+      underlying: 'security-token',
+      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
     BHMA: {
       address: '0xcc777c52ee9Ee5A57965a8E56F06211Fad34Fb3B',
       decimals: 18,
