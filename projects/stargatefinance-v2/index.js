@@ -105,7 +105,7 @@ const CONFIG = {
       '0x221F0E1280Ec657503ca55c708105F1e1529527D',
     ],
   },
-  gnosis: {
+  xdai: {
     pools: [
       '0xB1EeAD6959cb5bB9B20417d6689922523B2B86C3', //usdc pool
       '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7' //weth pool
