@@ -1,33 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { legacyVaultsEthereum, boringVaultsV0Ethereum } = require("./ethereum_constants");
 const { boringVaultsV0Berachain } = require("./berachain_constants");
+const { boringVaultsV0Arbitrum } = require("./arbitrum_constants");
+const { boringVaultsV0Base } = require("./base_constants");
 const { sumLegacyTvl, sumBoringTvl } = require("./helper_methods");
-
-async function ethereum_tvl(api) {
-  const block = await api.getBlock()
-
-  // Legacy vaults
-  const activeLegacyVaultAddresses = filterActiveLegacyVaults(legacyVaultsEthereum, block);
-  if (activeLegacyVaultAddresses.length > 0) {
-    await sumLegacyTvl({
-      api,
-      vaults: activeLegacyVaultAddresses,
-      ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
-    });
-  }
-
-  // Boring vaults V0
-  const activeBoringVaults = filterActiveBoringVaults(boringVaultsV0Ethereum, block);
-  if (activeBoringVaults.length > 0) {
-    await sumBoringTvl({
-      api,
-      vaults: activeBoringVaults,
-      ownersToDedupe: [...legacyVaultsEthereum, ...boringVaultsV0Ethereum].filter(v => v.id),
-    });
-  }
-
-  return api.getBalances();
-}
 
 // Returns list of vault addresses that are deployed based on their start block
 function filterActiveLegacyVaults(vaults, blockHeight) {
@@ -49,18 +25,33 @@ function filterActiveBoringVaults(vaults, blockHeight) {
     }));
 }
 
-
-async function berachain_tvl(api) {
+async function chainTvl(api, boringVaults, legacyVaults = []) {
   const block = await api.getBlock()
+  
+  const activeBoringVaults = filterActiveBoringVaults(boringVaults, block);
+  const activeLegacyVaultAddresses = legacyVaults.length > 0 
+    ? filterActiveLegacyVaults(legacyVaults, block)
+    : [];
 
-  const activeBoringVaults = filterActiveBoringVaults(boringVaultsV0Berachain, block);
+  const allVaults = [...(legacyVaults || []), ...activeBoringVaults].filter(v => v.id);
+
+  if (activeLegacyVaultAddresses.length > 0) {
+    await sumLegacyTvl({
+      api,
+      vaults: activeLegacyVaultAddresses,
+      ownersToDedupe: allVaults,
+    });
+  }
+
   if (activeBoringVaults.length > 0) {
     await sumBoringTvl({
       api,
       vaults: activeBoringVaults,
-      ownersToDedupe: [...boringVaultsV0Berachain].filter(v => v.id),
+      ownersToDedupe: allVaults,
     });
   }
+
+  return api.getBalances();
 }
 
 module.exports = {
@@ -68,6 +59,8 @@ module.exports = {
   misrepresentedTokens: false,
   start: 1710745200,
   doublecounted: true,
-  ["ethereum"]: { tvl: ethereum_tvl },
-  ["berachain"]: { tvl: berachain_tvl }
+  //["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ethereum, legacyVaultsEthereum) },
+  //["berachain"]: { tvl: (api) => chainTvl(api, boringVaultsV0Berachain) },
+  //["arbitrum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Arbitrum) },
+  ["base"]: { tvl: (api) => chainTvl(api, boringVaultsV0Base) },
 };
