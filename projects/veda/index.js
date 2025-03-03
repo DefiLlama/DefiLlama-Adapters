@@ -1,8 +1,12 @@
 const sdk = require("@defillama/sdk");
+
 const { legacyVaultsEthereum, boringVaultsV0Ethereum } = require("./ethereum_constants");
 const { boringVaultsV0Berachain } = require("./berachain_constants");
 const { boringVaultsV0Arbitrum } = require("./arbitrum_constants");
 const { boringVaultsV0Base } = require("./base_constants");
+const { boringVaultsV0Bnb } = require("./bnb_constants");
+const { boringVaultsV0Bob } = require("./bob_constants");
+const { boringVaultsV0Sonic } = require("./sonic_constants");
 const { sumLegacyTvl, sumBoringTvl } = require("./helper_methods");
 
 // Returns list of vault addresses that are deployed based on their start block
@@ -59,8 +63,11 @@ module.exports = {
   misrepresentedTokens: false,
   start: 1710745200,
   doublecounted: true,
-  //["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ethereum, legacyVaultsEthereum) },
-  //["berachain"]: { tvl: (api) => chainTvl(api, boringVaultsV0Berachain) },
-  //["arbitrum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Arbitrum) },
+  ["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ethereum, legacyVaultsEthereum) },
+  ["berachain"]: { tvl: (api) => chainTvl(api, boringVaultsV0Berachain) },
+  ["arbitrum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Arbitrum) },
   ["base"]: { tvl: (api) => chainTvl(api, boringVaultsV0Base) },
+  ["bsc"]: { tvl: (api) => chainTvl(api, boringVaultsV0Bnb) },
+  ["bob"]: { tvl: (api) => chainTvl(api, boringVaultsV0Bob) },
+  ["sonic"]: { tvl: (api) => chainTvl(api, boringVaultsV0Sonic) }
 };

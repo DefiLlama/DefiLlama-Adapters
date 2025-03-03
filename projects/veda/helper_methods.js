@@ -101,7 +101,7 @@ async function deduplicateAndAdd({ vaults, assets, bals, api, ownersToDedupe = [
     //Final Value: ${finalValue}
     //Deduplication Ratio: ${ratios[i] * 100}%`);
   });
-
+  
   assets.forEach((a, i) => api.add(a, bals[i] * ratios[i]));
 }
 
