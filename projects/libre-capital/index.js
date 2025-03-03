@@ -167,6 +167,27 @@ const RECEIPT_TOKENS = {
       underlying: 'security-token',
       instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
       fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    BHMA: {
+      address: '0x5cc264ed730baef1315f36b3ad563798aee6febdcd8bee83f580c0d076e06345',
+      decimals: 9,
+      underlying: 'security-token',
+      instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    LDCFA: {
+      address: '0xedbdf3711daa627a47c98e17daf0489802d01fcecb0c9b3774e55792db7833e1',
+      decimals: 9,
+      underlying: 'security-token',
+      instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
+      fundName: 'Libre SAF VCC - Laser Digital Carry Fund A'
+    },
+    HLSPC: {
+      address: '0x8e92364602f481d1824700d220c30dc096008e82fc0353f6f42f7358ed0c3f41',
+      decimals: 9,
+      underlying: 'security-token',
+      instrumentId: "0x3636633433643637363564313665353638356639333338340000000000000000",
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     }
   },
   solana: {
