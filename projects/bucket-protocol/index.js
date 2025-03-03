@@ -6,14 +6,6 @@ const { addUniV3LikePosition } = require("../helper/unwrapLPs");
 const SUI_HASUI_POOL_ID = "0x871d8a227114f375170f149f7e9d45be822dd003eba225e83c05ac80828596bc"
 const SUI_HASUI_VAULT_ID = "0xde97452e63505df696440f86f0b805263d8659b77b8c316739106009d514c270"
 
-BigNumber.config({
-  DECIMAL_PLACES: 64,
-  ROUNDING_MODE: BigNumber.ROUND_DOWN,
-  EXPONENTIAL_AT: [-64, 64], // equivalent to toExpNeg and toExpPos
-  MODULO_MODE: BigNumber.ROUND_DOWN,
-  POW_PRECISION: 64,
-});
-
 async function calculateGSUIunderlyingSui(gSuiAmount) {
   const fields = (await getObject("0x811fe901ed2a5d75cd125912ad6110efdff8be00fe694601a94167e2bd545ac2")).fields
   const pool = Number(fields.pool)
@@ -229,9 +221,7 @@ async function tvl(api) {
     const coin = convertUnderlyingAssets(coin_address)
 
     if(coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS) {
-      const {coinA: haSuiAmount, coinB: suiAmount} = await calculatehaSuiSuiVaultShares(bucket.fields.collateral_vault)
-      api.add(HASUI, haSuiAmount)
-      api.add(SUI, suiAmount)
+      await calculatehaSuiSuiVaultShares(api, HASUI, SUI, bucket.fields.collateral_vault)
     } else if(coin == GSUI) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
