@@ -200,14 +200,32 @@ const supportedChains = [
   // {
   //   name: 'Sei',
   //   subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clu1fg6ajhsho01x7ajld3f5a/subgraphs/dragonswap-v3-prod/1.0.5/gn',
-  //   chainId: 1, // null?
-  //   identifier: 'sei' // sei-network
+  //   chainId: 1329,
+  //   identifier: 'sei'
   // },
   {
     name: 'Taiko',
     subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-taiko/1.1.1/gn',
     chainId: 167000,
     identifier: 'taiko'
+  },
+  {
+    name: 'Zetachain',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-zetachain-mainnet/prod/gn',
+    chainId: 7000,
+    identifier: 'zeta'
+  },
+  {
+    name: 'Soneium',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-soneium/prod/gn',
+    chainId: 1868,
+    identifier: 'soneium'
+  },
+  {
+    name: 'Bera',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-bera/prod/gn',
+    chainId: 80094,
+    identifier: 'berachain'
   },
 ]
 

@@ -24,7 +24,12 @@ const TOKENS = {
     name: 'Wrapped ETH (Wormhole) (WETH)',
     mint: '7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs',
     decimals: 8
-  }
+  },
+  JLP: {
+    name: 'Jupiter Perps LP',
+    mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6
+  },
 };
 
 const VAULTS = [
@@ -125,6 +130,12 @@ const VAULTS = [
     address: "2csxi2M4uMijHW3CvnHqAYJ9CcLcZbGmDNKSz1qjRAVQ",
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/bigshort.json`
+  },
+  {
+    name: "Neutralized JLP",
+    address: "CG2zv4wsSetgs6mAucEKnHPwSoZSLYMwGroembTUNeaU",
+    token: TOKENS.JLP,
+    dataUrl: `${DATA_URL}/neutralizedjlp.json`
   },
 
   // Communities
@@ -245,6 +256,12 @@ const VAULTS = [
     address: "1CUvZgVGaxV6sDUjFrWHyzukWBD2amUi3dQkvh9KKVA",
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/vip18.json`
+  },
+  {
+    name: "vip19",
+    address: "5DPwSqEfaEsBH4zzZha35TpWRRPnWFfVgYZyK3zNswT7",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/forest.json`
   },
   {
     name: "vip-p01",

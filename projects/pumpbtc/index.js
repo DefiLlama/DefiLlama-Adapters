@@ -34,7 +34,7 @@ async function otherTvl(api) {
 module.exports.isHeavyProtocol = true;
 module.exports.doublecounted = true;
 
-['bitcoin', 'ethereum', 'bsc', 'mantle', 'base', 'arbitrum', 'bob', 'morph'].forEach(chain => {
+['bitcoin', 'ethereum', 'bsc', 'mantle', 'base', 'arbitrum', 'bob', 'morph', 'sei'].forEach(chain => {
   if (chain == 'bitcoin') {
     module.exports[chain] = {
       tvl: bitcoinTvl,

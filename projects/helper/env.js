@@ -18,7 +18,11 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
-  LULO_API_KEY: '',
+  LULO_API_KEY: '', 
+  HYPERLIQUID_RPC: 'https://hyperliquid.cloud.blockscout.com/api/eth-rpc',
+  TRON_RPC: 'https://api.trongrid.io',
+  HEMI_RPC: 'https://rpc.hemi.network/rpc',
+  HEMI_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
 }
 
 const ENV_KEYS = [

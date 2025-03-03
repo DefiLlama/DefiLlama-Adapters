@@ -21,7 +21,7 @@ async function covalentGetTokens(address, api, {
 
   if (!useCovalent) {
     if (!ankrChainMapping[chain]) {
-      if (ignoreMissingChain) return []
+      if (ignoreMissingChain) return Object.values(ADDRESSES[chain] ?? []).concat([ADDRESSES.null])
       throw new Error('Chain Not supported: ' + chain)
     }
     const tokens = await ankrGetTokens(address, { onlyWhitelisted, skipCacheRead, })
@@ -74,6 +74,7 @@ const ankrChainMapping = {
   rollux: 'rollux',
   scroll: 'scroll',
   syscoin: 'syscoin',
+  moonbeam: 'moonbeam'
 }
 
 async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = false } = {}) {
