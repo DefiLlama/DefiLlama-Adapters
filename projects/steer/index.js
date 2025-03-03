@@ -28,12 +28,12 @@ const supportedChains = [
     chainId: 56,
     identifier: 'bsc'
   },
-  // {
-  //   name: 'Evmos',
-  //   subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
-  //   chainId: 9001,
-  //   identifier: 'evmos'
-  // },
+  {
+    name: 'Evmos',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
+    chainId: 9001,
+    identifier: 'evmos'
+  },
   {
     name: 'Avalanche',
     subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
@@ -226,6 +226,12 @@ const supportedChains = [
     subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-bera/prod/gn',
     chainId: 80094,
     identifier: 'berachain'
+  },
+  {
+    name: 'Ethereum',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-mainnet/prod/gn',
+    chainId: 1,
+    identifier: 'ethereum'
   },
 ]
 
