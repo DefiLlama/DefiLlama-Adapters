@@ -49,6 +49,9 @@ const contracts = {
       "0x8a999F5A3546F8243205b2c0eCb0627cC10003ab", // idleDAIYield
       "0x1ee6470CD75D5686d0b2b90C0305Fa46fb0C89A1", // idleUSDCYield
       "0xfdA25D931258Df948ffecb66b5518299Df6527C4" // idleWETHYield
+    ],
+    cdos: [
+      '0xF9E2AE779a7d25cDe46FccC41a27B8A4381d4e52' // Bastion CV
     ]
   },
   polygon_zkevm: {
@@ -135,6 +138,7 @@ async function tvl(api) {
 
   // Get CDOs contract values
   const contractValue = await api.multiCall({ abi: 'uint256:getContractValue', calls: cdos })
+
   cdos.forEach((cdo, i) => {
     const tokenDecimals = tokensDecimals[cdoToken[i]] || 18
     trancheTokensMapping[aatrances[i]] = {
