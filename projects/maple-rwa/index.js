@@ -1,16 +1,57 @@
+const axios = require('axios');
 
-const rwaPools = [
-  '0xfe119e9C24ab79F1bDd5dd884B86Ceea2eE75D92', //   Cash Management
-  '0xe9d33286f0E37f517B1204aA6dA085564414996d', // AQRU
-]
+const query_url = "https://api.maple.finance/v2/graphql";
 
-async function tvl(api) {
-  const tokens = await api.multiCall({ abi: 'address:asset', calls: rwaPools })
-  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: rwaPools })
-  api.addTokens(tokens, bals)
+const coingeckoMapping = {
+  'BTC': { name: 'bitcoin', decimals: 8 },
+  'ETH': { name: 'ethereum', decimals: 18 },
+  'SOL': { name: 'solana', decimals: 18 },
+  'INJ': { name: 'injective-protocol', decimals: 18 }
 }
+
+const query = `
+  query {
+    nativeLoans {
+      liquidityAsset {
+        symbol
+        decimals
+      }
+      createdAt
+      principalOwed
+      collateralAsset
+      collateralAssetAmount
+    }
+  }
+`;
+
+const getLoans = async (api) => {
+  const payload = {
+    query,
+    headers: { "Content-Type": "application/json" }
+  };
+
+  const { data } = await axios.post(query_url, payload);
+  return data.data.nativeLoans.filter(({ createdAt }) => createdAt < api.timestamp * 1000);
+};
+
+const processLoans = async (api, key) => {
+  const loans = await getLoans(api)
+  const isCollateral = key === "collateralValue";
+
+  loans.forEach(({ liquidityAsset: { symbol, decimals }, principalOwed, collateralAssetAmount, collateralAsset }) => {
+    const assetKey = isCollateral ? collateralAsset : symbol;
+    const balance = Number(isCollateral ? collateralAssetAmount : principalOwed);
+    const token = coingeckoMapping[assetKey]?.name;
+    const parseDecimals = coingeckoMapping[assetKey]?.decimals ?? decimals;
+    if (!token) return;
+    api.addCGToken(token, balance / 10 ** parseDecimals);
+  })
+}
+
 
 module.exports = {
-  doublecounted: true,
-  ethereum: { tvl, }
-}
+  ethereum: { 
+    tvl: async (api) => processLoans(api, "collateralValue"),
+    borrowed: async (api) => processLoans(api),
+  }
+};
