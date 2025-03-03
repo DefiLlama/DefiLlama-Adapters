@@ -63,6 +63,7 @@ const staking = async (api) => {
 
 module.exports = {
   hallmarks: [[1670976000, 'V2 Deployment']],
+  solana: { tvl: () => ({})},
   ethereum: { 
     tvl: async (api) => processPools(api, "collateralValue"),
     borrowed: async (api) => processPools(api),
