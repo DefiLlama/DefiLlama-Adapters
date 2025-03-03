@@ -50,6 +50,8 @@ const fixBalancesTokens = {
   },
   hemi: {
     [ADDRESSES.null]: { coingeckoId: "ethereum", decimals: 18 },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18 },
+    '0xad11a8BEb98bbf61dbb1aa0F6d6F2ECD87b35afA': { coingeckoId: "hemi", decimals: 6 },
   },
 }
 
