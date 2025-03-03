@@ -13,7 +13,7 @@ const osmosisVaults = {
   TIARedemption: "osmo1reyz7pwu7y9e7lmzqg6j4h7jcv32du7n7jhnk2lz93a9lxr56ess2qtgzl",
   ATOMRedemption: "osmo1hvl5kj4xzdj4udxjv2dzk2zfqhzkd9afqygwq3t84tn53e0250zqrltj48",
   DYDXRedemption: "osmo1grs74ux62lukjdlfs9ll4myyulcyjcd4uzwpw3cgnzdygtsspp2se2ense",
-  BTCUSDC: "osmo193kjx80ag4tck2enuxcprxnrcusemmh5mun5k87c96d7swz6y2dqf39rxe",
+  // BTCUSDC: "osmo193kjx80ag4tck2enuxcprxnrcusemmh5mun5k87c96d7swz6y2dqf39rxe",
 }
 
 const neutronVaults = {
