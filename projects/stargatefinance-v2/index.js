@@ -106,6 +106,27 @@ const CONFIG = {
       '0x221F0E1280Ec657503ca55c708105F1e1529527D',
     ],
   },
+  xdai: {
+    pools: [
+      '0xB1EeAD6959cb5bB9B20417d6689922523B2B86C3', //usdc pool
+      '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7' //weth pool
+    ],
+  },
+  lightlink_phoenix: {
+    pools: [
+      '0x8731d54E9D02c286767d56ac03e8037C07e01e98', //eth pool
+    ],
+  },
+  hemi: {
+    pools: [
+      '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', //eth pool
+    ],
+  },
+  sonic: {
+    pools: [
+      '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //usdc pool
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {
