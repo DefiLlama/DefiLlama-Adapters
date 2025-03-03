@@ -57,4 +57,4 @@ module.exports.hallmarks = [
   [1715648400,"End Mode TVL Campaign S1"]
 ]
 
-module.exports.ultron.tvl =  () => ({}) // their RPC is rugging us
+// module.exports.ultron.tvl =  () => ({}) // their RPC is rugging us

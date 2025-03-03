@@ -32,7 +32,22 @@ function checkType(typeObj) {
   if (isAccountObjInTypeMap || !accountMap[typeObj.name])
     whitelistedTypeMap[typeObj.name] = typeObj
 
+  if (typeObj.type.kind === 'enum' && Array.isArray(typeObj.type.variants)) {
+    typeObj.type.variants.forEach(v => {
+      if (!v.fields) {
+        const name = getDefinedName(v)
+        if (name && typeMap[name]) checkType(typeMap[name])
+        return;
+      }
+      v.fields.forEach(f => {
+        const name = getDefinedName(f)
+        if (name && typeMap[name]) checkType(typeMap[name])
+      })
+    })
+  }
+
   if (typeObj.type.kind !== 'struct') return;
+
   typeObj.type.fields.forEach(f => {
     const isVec = f.type?.vec?.defined?.name
     if (isVec) {
@@ -48,6 +63,19 @@ function checkType(typeObj) {
           const name = getDefinedName(a)
           if (name && typeMap[name]) checkType(typeMap[name])
         })
+    }
+    if (f.type === 'enum' && Array.isArray(f.type.variants)) {
+      f.type.variants.forEach(v => {
+        if (!v.fields) {
+          const name = getDefinedName(v)
+          if (name && typeMap[name]) checkType(typeMap[name])
+          return;
+        }
+        v.fields.forEach(f => {
+          const name = getDefinedName(f)
+          if (name && typeMap[name]) checkType(typeMap[name])
+        })
+      })
     }
   })
 }
