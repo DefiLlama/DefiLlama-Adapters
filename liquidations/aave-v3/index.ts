@@ -145,59 +145,66 @@ const positions = (chain: Chains) => async () => {
     const subgraphUrl = rc[chain].subgraphUrl;
     const usdcAddress = rc[chain].usdcAddress;
     const users = (await request(subgraphUrl, query, { lastId, pageSize })).accounts as User[];
+
     // Filter for active debt and remove users with no collateral, these should be accounted elsewhere as bad debt
     const debts = users
       .filter(user => user.collateral.length > 0)
       .filter(user => user.borrows.length > 0)
       .reduce((acc, user) => {
-        let totalDebt = user.borrows.reduce((debts, borrow) => {
-            const normalizedBalance = ((parseFloat(borrow.balance) / 10**borrow.asset.decimals) * parseFloat(borrow.asset.lastPriceUSD == null ? "0" : borrow.asset.lastPriceUSD)).toString();
+        const totalDebt = user.borrows.reduce((debts, b) => {
+            const normalizedBalance = ((parseFloat(b.balance) / 10**b.asset.decimals) * parseFloat(b.asset.lastPriceUSD == null ? "0" : b.asset.lastPriceUSD)).toString();
             debts += parseFloat(normalizedBalance);
             return debts;
         }, 0);
-        let totalCollateral = user.collateral.reduce((collateral, c) => {
+
+        const totalCollateral = user.collateral.reduce((collateral, c) => {
             const normalizedBalance = ((parseFloat(c.balance) / 10**c.asset.decimals) * parseFloat(c.asset.lastPriceUSD == null ? "0" : c.asset.lastPriceUSD));
             collateral += normalizedBalance;
             return collateral;
         }, 0);
+
         // Early return for positions in liquidation range; Likely stale data or unprofitable to liquidate
         if (totalDebt >= totalCollateral) {
           return acc;
-        } 
-        let collateralWeights = user.collateral.map((collateral) => {
-            const normalizedBalance = ((parseFloat(collateral.balance) / 10**collateral.asset.decimals) * parseFloat(collateral.asset.lastPriceUSD == null ? "0" : collateral.asset.lastPriceUSD)).toString();
+        }; 
+
+        const collateralWeights = user.collateral.map((c) => {
+            const normalizedBalance = ((parseFloat(c.balance) / 10**c.asset.decimals) * parseFloat(c.asset.lastPriceUSD == null ? "0" : c.asset.lastPriceUSD)).toString();
             return parseFloat(normalizedBalance) / totalCollateral; 
         }, [] as { weight: Number; asset: { name: string; symbol: string; decimals: number; lastPriceUSD: string; } }[]);
-        let weightedLT = user.collateral.reduce((acc, collateral) => {
-            const normalizedBalance = ((parseFloat(collateral.balance) / 10**collateral.asset.decimals) * parseFloat(collateral.asset.lastPriceUSD == null ? "0" : collateral.asset.lastPriceUSD)).toString();
-            LT[chain][collateral.asset.symbol] ? (acc += (parseFloat(normalizedBalance) / totalCollateral) * (collateral.emode ? LT[chain][collateral.asset.symbol].emode : LT[chain][collateral.asset.symbol].normal)) : console.log("No LT for ", collateral.asset.symbol);
-            if (acc == 0) {
-              console.log(collateral, collateral.asset, LT[chain][collateral.asset.symbol], "eMode: ", collateral.emode? "true" : "false");
-            }
-            return acc; 
+
+        const weightedLT = user.collateral.reduce((lt, c) => {
+            const normalizedBalance = ((parseFloat(c.balance) / 10**c.asset.decimals) * parseFloat(c.asset.lastPriceUSD == null ? "0" : c.asset.lastPriceUSD)).toString();
+            LT[chain][c.asset.symbol] ? (lt += (parseFloat(normalizedBalance) / totalCollateral) * (c.emode ? LT[chain][c.asset.symbol].emode : LT[chain][c.asset.symbol].normal)) : console.log("No LT for ", c.asset.symbol);
+            return lt; 
         }, 0);
-        console.log(user.id, "Total Debt: ", totalDebt, "Total Collateral: ", totalCollateral);
-        console.log(user.id, "Collateral Weights: ", collateralWeights);
-        console.log("LT: ", weightedLT, "LTV: ", totalDebt / totalCollateral, "Price impact to liquidate: ", 1 - totalDebt / totalCollateral / weightedLT);
-        // Return for positions in liquidation range; Likely stale data or unprofitable to liquidate
-        if (weightedLT > totalDebt / totalCollateral) {
+
+        const priceImpact = totalDebt / totalCollateral / weightedLT;
+
+        // Return for positions in liquidation range; Likely stale data or unprofitable to liquidate 
+        if (weightedLT < totalDebt / totalCollateral) {
           return acc;
         } else {
-          acc.push({
-            balance: totalDebt.toString(),
-            collateral: totalCollateral.toString(),
-            weightedLT: weightedLT,
-            collateralWeights: collateralWeights,
-            asset: {
-                name: "USD",
-                decimals: 18,
-                lastPriceUSD: "1"
-            } // Change to store liquidation prices by collateral asset
-        })
+          acc.push(...user.collateral.map((collateral, i) => {
+            return { 
+              owner: user.id,
+              liqPrice: parseFloat(collateral.asset.lastPriceUSD == null ? "0" : collateral.asset.lastPriceUSD) * priceImpact * collateralWeights[i],
+              collateral: collateral.asset.symbol,
+              collateralAmount: collateral.balance,
+              extra: {
+                url: explorerBaseUrl + user.id,
+              }, 
+            } as Liq;
+          })
+        );
+          // console.log(user.id, "Total Debt: ", totalDebt, "Total Collateral: ", totalCollateral);
+          // console.log(user.id, "Collateral Weights: ", collateralWeights);
+          // console.log("LT: ", weightedLT, "LTV: ", totalDebt / totalCollateral, "Price impact to liquidate: ", 1 - totalDebt / totalCollateral / weightedLT, "PI: ", priceImpact);
+          console.log("Liquidation Prices: ", acc);
         }
         return acc;
-    }, [] as { balance: string; collateral: string; weightedLT: number; collateralWeights: number[]; asset: { name: string; decimals: number; lastPriceUSD: string; } }[]);
-    return;
+    }, [] as Liq[]).flat();
+    return debts;
 };
 
 // const positions = (chain: Chains) => async () => {
