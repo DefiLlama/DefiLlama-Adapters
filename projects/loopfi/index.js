@@ -10,6 +10,7 @@ const LOOP_PRELAUNCH_YNETH = "0xa67C60AE18BE09F074a6c733a1cc06B63Ae53589"
 
 // Loop tokens
 const lpETH = "0xa684EAf215ad323452e2B2bF6F817d4aa5C116ab"
+const lpUSD = "0x0eecBDbF7331B8a50FCd0Bf2C267Bf47BD876054"
 const lpBNB = "0xED166436559Fd3d7f44cb00CACDA96EB999D789e"
 
 
@@ -48,7 +49,7 @@ const clisBNBLPToken = "0x1d9D27f0b89181cF1593aC2B36A37B444Eb66bEE"
 
 
 async function tvlEthereum(api) {
-  const calls = [lpETH]
+  const calls = [lpETH, lpUSD]
   const assets = await api.multiCall({ abi: 'address:asset', calls, })
   const ownerTokens = [
     [Object.values(tokens), LOOP_PRELAUNCH],
