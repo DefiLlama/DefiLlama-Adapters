@@ -121,6 +121,12 @@ const stacksSBTC = [
   'bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy',
 ]
 
+const zeusZBTC = [
+  // https://docs.zeusnetwork.xyz/intro/welcome-to-zeus-network/how-it-works-bitcoin-and-solana
+  'bc1pnfxwuhs7tdrdwy4dpqp4s7pslfy725jjnq5mlrzqlenawf3zzmmsenz0pl',
+  'bc1pe9mqlwch368qk5y8q6s2h68allugyyp5mnr0ps6adfucduz24z8sxzhuey',
+]
+
 const magpie = [
   '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
   'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
@@ -128,6 +134,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
+  zeusZBTC,
   cygnus,
   magpie,
   stacksSBTC,
