@@ -61,6 +61,7 @@ const chains = {
   oasis: 42262,
   avax: 43114,
   linea: 59144,
+  berachain: 80094,
   real: 111188,
   scroll: 534352,
   aurora: 1313161554,

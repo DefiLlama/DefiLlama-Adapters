@@ -11,7 +11,7 @@ module.exports = {
         ADDRESSES.null,
         ADDRESSES.ethereum.STETH,
         "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
-        "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
+        ADDRESSES.ethereum.METH,
         ADDRESSES.ethereum.DAI,
         ADDRESSES.ethereum.SDAI,
         ADDRESSES.ethereum.USDT,

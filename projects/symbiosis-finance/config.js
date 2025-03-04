@@ -424,6 +424,15 @@ module.exports = {
       ]
     },
     {
+      name: 'unichain',
+      tokens: [
+        '0x4200000000000000000000000000000000000006', // WETH
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
       name: 'boba_bnb',
       tokens: [
         '0x9f98f9f312d23d078061962837042b8918e6aff2', // USDC
