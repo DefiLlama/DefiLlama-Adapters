@@ -128,6 +128,15 @@ const scallop_sCircleUSDC_LP_ID =
 const scallop_sSuiBridgeUSDT_LP_ID =
   "0x8471787fc69ef06f4762cb60863e1c48475d79c804a000e613306adee7b7824a";
 
+const navi_sCircleUSDC_LP_ID =
+  "0xb5ed3f2e5c19f425baad3d9a0afffdc84d0550ace2372692cf93325da81e4392";
+
+const navi_sSuiBridgeUSDT_LP_ID =
+  "0x4ae310b93c65e358b6f8beb73f34d0ac7d507947d8aea404159d19883a3b1c6a";
+
+const navi_fdUSD_LP_ID =
+  "0xa2790bbd90275e35214bffd8da3c01742bb5883fde861bf566a9ecfa1b3f5090";
+
 const haSUI_Navi_Pond_ID = "0xef1ff1334c1757d8e841035090d34b17b7aa3d491a3cb611319209169617518e"
 
 const SUI_Navi_Pond_ID = "0xcf887d7201c259496a191348da86b4772a2e2ae3f798ca50d1247194e30b7656";
@@ -138,6 +147,11 @@ async function getStakingLPAmount(id) {
 }
 
 async function getScallopsLPAmount(id) {
+  const stakingLPObject = await sui.getObject(id);
+  return stakingLPObject.fields.coin_balance;
+}
+
+async function getNaviLPAmount(id) {
   const stakingLPObject = await sui.getObject(id);
   return stakingLPObject.fields.coin_balance;
 }
@@ -157,7 +171,7 @@ function convertUnderlyingAssets(coin) {
   // sDeep
   if (coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
   // sSBUSDT
-  if (coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
+  if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
   return coin
 }
 
@@ -206,9 +220,9 @@ async function tvl(api) {
     /// Since we're unable to fetch the price of Scallop's sCOIN, we'll regard sCOIN as underlying assets
     const coin = convertUnderlyingAssets(coin_address)
 
-    if (coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS) {
+    if(coin == SUI_HASUI_CETUS_VAULT_LP_ADDRESS) {
       await calculatehaSuiSuiVaultShares(api, HASUI, SUI, bucket.fields.collateral_vault)
-    } else if (coin == GSUI) {
+    } else if(coin == GSUI) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
     } else {
@@ -355,6 +369,15 @@ async function tvl(api) {
 
   const scallopSuiBridgeUSDT_LPAmount = await getScallopsLPAmount(scallop_sSuiBridgeUSDT_LP_ID);
   api.add(ADDRESSES.sui.suiUSDT, scallopSuiBridgeUSDT_LPAmount);
+
+  const naviCircleUSDC_LPAmount = await getNaviLPAmount(navi_sCircleUSDC_LP_ID);
+  api.add(USDC_CIRCLE, naviCircleUSDC_LPAmount);
+
+  const naviSuiBridgeUSDT_LPAmount = await getNaviLPAmount(navi_sSuiBridgeUSDT_LP_ID);
+  api.add(ADDRESSES.sui.suiUSDT, naviSuiBridgeUSDT_LPAmount);
+
+  const naviFDUSD_LPAmount = await getNaviLPAmount(navi_fdUSD_LP_ID);
+  api.add(FDUSD, naviFDUSD_LPAmount);
 }
 
 module.exports = {
