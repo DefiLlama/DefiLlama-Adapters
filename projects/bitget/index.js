@@ -81,6 +81,9 @@ const config = {
       "0x0635ac6675e05c7f58383493bb7d1a513cd65688",
       "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D"
     ],
+    blacklistedTokens: [
+      "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
+    ]
   },
   tron: {
     owners: [
