@@ -1,22 +1,42 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { ApiPromise, WsProvider } = require("@polkadot/api");
+const { waitReady } = require("@polkadot/wasm-crypto");
 
-
-const config = {
-    base: [
-        '0x7ea76bcabb63d40549e02e63da31e2378d0496d8',
-    ],
+const CONFIG = {
+    name: 'glue',
+    decimals: 18,
+    relaychainWsUrl: 'wss://mainnet-relay-ws.m11.glue.net',
 }
 
-Object.keys(config).forEach(chain => {
-    const pools = config[chain]
-    module.exports[chain] = {
-        tvl: async (api) => {
-            const tokens0 = await api.multiCall({ abi: 'address:token0', calls: pools })
-            const tokens1 = await api.multiCall({ abi: 'address:token1', calls: pools })
+async function getRelaychainApi() {
+    const relaychainProvider = new WsProvider(CONFIG.relaychainWsUrl);
+    const api = await ApiPromise.create({ provider: relaychainProvider });
+    await waitReady();
+    return api;
+}
 
-            const ownerTokens = pools.map((pool, i) => [[tokens0[i], tokens1[i]], pool])
+module.exports = {
+    [CONFIG.name]: {
+        tvl: async () => {
+            try {
+                const api = await getRelaychainApi();
 
-            return sumTokens2({ api, ownerTokens, resolveLP: true })
+                const totalLockedAmount = await api.query.nominationPools.totalValueLocked();
+                const bonded = await api.query.staking.erasTotalStake(1);
+
+                const lockedValue = BigInt(totalLockedAmount.toString());
+                const bondedValue = BigInt(bonded.toString());
+
+                const totalValueLockedAtomic = lockedValue + bondedValue;
+
+                const totalValueLocked = Number(totalValueLockedAtomic) / 10 ** CONFIG.decimals;
+
+                return {
+                    [CONFIG.name]: totalValueLocked,
+                };
+            } catch (error) {
+                console.error(error);
+                throw error;
+            }
         }
     }
-})
+};
