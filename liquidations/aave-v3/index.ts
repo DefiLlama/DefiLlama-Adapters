@@ -3,9 +3,6 @@ import { gql, request } from "graphql-request";
 import { Liq } from "../utils/types";
 import { getPagedGql } from "../utils/gql";
 
-const lastId = "0x00";
-const pageSize = 5;
-
 const query = gql`
 query users($lastId: String, $pageSize: Int) {
   accounts(
@@ -204,9 +201,7 @@ const populateLT = async (chain: Chains) => {
 
 const positions = (chain: Chains) => async () => {
     const explorerBaseUrl = rc[chain].explorerBaseUrl;
-    const subgraphUrl = rc[chain].subgraphUrl;
-    const usdcAddress = rc[chain].usdcAddress;
-    const users = (await request(subgraphUrl, query, { lastId, pageSize })).accounts as User[];
+    const users = (await getPagedGql(rc[chain].subgraphUrl, query, "users")) as User[];
 
     await populateLT(chain);
 
