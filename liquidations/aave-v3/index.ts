@@ -63,7 +63,9 @@ interface User {
 
 enum Chains {
   ethereum = "ethereum",
-  // polygon = "polygon",
+  arbitrum = "arbitrum",
+  base = "base",
+  polygon = "polygon",
 }
 
 type AaveAdapterResource = {
@@ -82,62 +84,122 @@ const rc: { [chain in Chains]: AaveAdapterResource } = {
     subgraphUrl: sdk.graph.modifyEndpoint('JCNWRypm7FYwV8fx5HhzZPSFaMxgkPuw4TnR3Gpi81zk'), // Messari AAVE v3
     explorerBaseUrl: "https://etherscan.io/address/",
   },
-  // [Chains.polygon]: {
-  //   name: "aave",
-  //   chain: Chains.polygon,
-  //   usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-  //   subgraphUrl: sdk.graph.modifyEndpoint('H1Et77RZh3XEf27vkAmJyzgCME2RSFLtDS2f4PPW6CGp'),
-  //   explorerBaseUrl: "https://polygonscan.com/address/",
-  // },
+  [Chains.arbitrum]: {
+    name: "aave",
+    chain: Chains.ethereum,
+    usdcAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    subgraphUrl: sdk.graph.modifyEndpoint('4xyasjQeREe7PxnF6wVdobZvCw5mhoHZq3T7guRpuNPf'), // Messari AAVE v3
+    explorerBaseUrl: "https://arbiscan.io/address/",
+  },
+  [Chains.polygon]: {
+    name: "aave",
+    chain: Chains.polygon,
+    usdcAddress: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+    subgraphUrl: sdk.graph.modifyEndpoint('6yuf1C49aWEscgk5n9D1DekeG1BCk5Z9imJYJT3sVmAT'),
+    explorerBaseUrl: "https://polygonscan.com/address/",
+  },
+  [Chains.base]: {
+    name: "aave",
+    chain: Chains.base,
+    usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    subgraphUrl: sdk.graph.modifyEndpoint('D7mapexM5ZsQckLJai2FawTKXJ7CqYGKM8PErnS3cJi9'),
+    explorerBaseUrl: "https://basescan.org/address/",
+  }
 };
 
-// Consider adding helper to derive live values from contracts; The subgraph does not contain emode LT values
 const LT: { [chain in Chains]: { [asset: string]: { normal: number, emode: number } } } = {
+  [Chains.ethereum]: {},
+  [Chains.polygon]: {},
+  [Chains.arbitrum]: {},
+  [Chains.base]: {},
+};
+
+// Consider adding helper to derive live values from contracts; The subgraph does not contain emode LT values or categories
+const emodeCategories: { [chain in Chains]: { [symbol: string]: number } } = {
   [Chains.ethereum]: {
-    "ETH": { normal: 0.75, emode: 0.95 },
-    "USDC": { normal: 0.78, emode: 0.92 },
-    "GHO": { normal: 0, emode: null },
-    "DAI": { normal: 0.77, emode: 0.92 },
-    "wstETH": { normal: 0.81, emode: 0.95 },
-    "PYUSD": { normal: 0.78, emode: null },
-    "tBTC": { normal: 0.78, emode: 0.86 },
-    "STG": { normal: 0.37, emode: null },
-    "ETHx": { normal: 0.77, emode: 0.95 },
-    "USDT": { normal: 0.78, emode: 0.92 },
-    "BAL": { normal: 0.59, emode: null },
-    "rsETH": { normal: 0.75, emode: 0.95 },
-    "USDS": { normal: 0.78, emode: 0.92 },
-    "LUSD": { normal: 0.77, emode: 0.92 },
-    "sUSDe": { normal: 0.75, emode: 0.92 },
-    "WBTC": { normal: 0.78, emode: 0.86 },  
-    "sDAI": { normal: 0.78, emode: 0.92 }, 
-    "WETH": { normal: 0.83, emode: 0.95 },
-    "USDe": { normal: 0.75, emode: 0.92 },
-    "ENS": { normal: 0.49, emode: null },
-    "KNC": { normal: 0.37, emode: null },
-    "cbBTC": { normal: 0.78, emode: 0.86 },
-    "LBTC": { normal: 0.75, emode: 0.86 },
-    "1INCH": { normal: 0.67, emode: null },
-    "CRV": { normal: 0.41, emode: null },
-    "FXS": { normal: 0.42, emode: null },
-    "MKR": { normal: 0.7, emode: null },
-    "osETH": { normal: 0.75, emode: 0.95 },
-    "cbETH": { normal: 0.75, emode: 0.95 },
-    "LDO": { normal: 0.5, emode: null },
-    "AAVE": { normal: 0.76, emode: null },
-    "RPL": { normal: 0, emode: null },
-    "crvUSD": { normal: 0, emode: null },
-    "weETH": { normal: 0.8, emode: 0.95 },
-    "SNX": { normal: 0.65, emode: null },
-    "rETH": { normal: 0.79, emode: 0.95 },
-    "FRAX": { normal: 0.72, emode: null },
-    "UNI": { normal: 0.74, emode: null },
-    "LINK": { normal: 0.71, emode: null }
+    // ETH Correlated
+    "WETH": 0.95,
+    "wstETH": 0.95,
+    "weETH": 0.95,
+    "osETH": 0.95,
+    "rETH": 0.95,
+    "ETHx": 0.95,
+    "cbETH": 0.95,
+    // sUSDe Stablecoins
+    "USDT": 0.92,
+    "USDC": 0.92,
+    "USDS": 0.92,
+    "sUSDe": 0.92,
+    // rsETH LST Main
+    "rsETH": 0.945,
+    // LBTC / WBTC
+    "LBTC": 0.86,
+    "WBTC": 0.86,
   },
-  // [Chains.polygon]: {
-  //   "MATIC": { normal: 0.6, emode: 0.65 },
-  //   "USDC": { normal: 0.85, emode: 0.9 },
-  // },
+  [Chains.arbitrum]: {
+    // ETH Correlated
+    "WETH": 0.95,
+    "wstETH": 0.95,
+    "weETH": 0.95,
+    // Stablecoins
+    "USDT": 0.95,
+    "USD₮0": 0.95,
+    "USDC": 0.95,
+    "USDC.e": 0.95,
+    "DAI": 0.95,
+    // ezETH wstETH
+    "ezETH": 0.95,
+  },
+  [Chains.polygon]: {
+    // ETH Correlated
+    "WETH": 0.95,
+    "wstETH": 0.95,
+    "weETH": 0.95,
+    "osETH": 0.95,
+    "rETH": 0.95,
+    "ETHx": 0.95,
+    "cbETH": 0.95,
+    // sUSDe Stablecoins
+    "USDT": 0.92,
+    "USDC": 0.92,
+    "USDS": 0.92,
+    "sUSDe": 0.92,
+    // rsETH LST Main
+    "rsETH": 0.945,
+    // LBTC / WBTC
+    "LBTC": 0.86,
+    "WBTC": 0.86,
+  },
+  [Chains.base]: {
+    // ETH Correlated
+    "WETH": 0.93,
+    "weETH": 0.93,
+    "osETH": 0.93,
+    "cbETH": 0.93,
+    // ezETH wstETH
+    "ezETH": 0.95,
+  }
+};
+
+const populateLT = async (chain: Chains) => {
+  const subgraphUrl = rc[chain].subgraphUrl;
+  const data = await request(subgraphUrl, gql`
+    query {
+      markets {
+        inputToken {
+          symbol
+        }
+        liquidationThreshold
+      }
+    }
+  `);
+
+  data.markets.forEach((market: any) => {
+    const symbol = market.inputToken.symbol;
+    const liquidationThreshold = parseFloat(market.liquidationThreshold) / 100;
+    const emodeThreshold = emodeCategories[chain][symbol] || null;
+    LT[chain][symbol] = { normal: liquidationThreshold, emode: emodeThreshold };
+  });
 };
 
 const positions = (chain: Chains) => async () => {
@@ -145,6 +207,8 @@ const positions = (chain: Chains) => async () => {
     const subgraphUrl = rc[chain].subgraphUrl;
     const usdcAddress = rc[chain].usdcAddress;
     const users = (await request(subgraphUrl, query, { lastId, pageSize })).accounts as User[];
+
+    await populateLT(chain);
 
     // Filter for active debt and remove users with no collateral, these should be accounted elsewhere as bad debt
     const debts = users
@@ -197,99 +261,23 @@ const positions = (chain: Chains) => async () => {
             } as Liq;
           })
         );
-          // console.log(user.id, "Total Debt: ", totalDebt, "Total Collateral: ", totalCollateral);
-          // console.log(user.id, "Collateral Weights: ", collateralWeights);
-          // console.log("LT: ", weightedLT, "LTV: ", totalDebt / totalCollateral, "Price impact to liquidate: ", 1 - totalDebt / totalCollateral / weightedLT, "PI: ", priceImpact);
-          console.log("Liquidation Prices: ", acc);
-        }
-        return acc;
+      };
+      return acc;
     }, [] as Liq[]).flat();
     return debts;
 };
 
-// const positions = (chain: Chains) => async () => {
-//   const explorerBaseUrl = rc[chain].explorerBaseUrl;
-//   const subgraphUrl = rc[chain].subgraphUrl;
-//   const usdcAddress = rc[chain].usdcAddress;
-//   const _ethPriceQuery = ethPriceQuery(usdcAddress);
-//   const users = (await getPagedGql(rc[chain].subgraphUrl, query, "users")) as User[];
-//   const ethPrice = 1 / ((await request(subgraphUrl, _ethPriceQuery)).priceOracleAsset.priceInEth / 1e18);
-//   const positions = users
-//     .map((user) => {
-//       let totalDebt = 0,
-//         totalCollateral = 0;
-//       const debts = (user.reserves as any[]).map((reserve) => {
-//         const decimals = 10 ** reserve.reserve.decimals;
-//         const price = (Number(reserve.reserve.price.priceInEth) / 1e18) * ethPrice;
-//         const liqThreshold = Number(reserve.reserve.reserveLiquidationThreshold) / 1e4; // belongs to [0, 1]
-//         let debt = Number(reserve.currentTotalDebt);
-//         if (reserve.usageAsCollateralEnabledOnUser === true) {
-//           debt -= Number(reserve.currentATokenBalance) * liqThreshold;
-//         }
-//         debt *= price / decimals;
-//         if (debt > 0) {
-//           totalDebt += debt;
-//         } else {
-//           totalCollateral -= debt;
-//         }
-//         return {
-//           debt,
-//           price,
-//           token: reserve.reserve.underlyingAsset,
-//           totalBal: reserve.currentATokenBalance,
-//           decimals,
-//         };
-//       });
-
-//       const liquidablePositions: Liq[] = debts
-//         .filter(({ debt }) => debt < 0)
-//         .map((pos) => {
-//           const usdPosNetCollateral = -pos.debt;
-//           const otherCollateral = totalCollateral - usdPosNetCollateral;
-//           const diffDebt = totalDebt - otherCollateral;
-//           if (diffDebt > 0) {
-//             const amountCollateral = usdPosNetCollateral / pos.price; // accounts for liqThreshold
-//             const liqPrice = diffDebt / amountCollateral;
-//             // if liqPrice > pos.price -> bad debt
-//             return {
-//               owner: user.id as string,
-//               liqPrice,
-//               collateral: `${chain}:` + pos.token,
-//               collateralAmount: pos.totalBal as string,
-//               extra: {
-//                 url: explorerBaseUrl + user.id,
-//               },
-//             } as Liq;
-//           } else {
-//             return {
-//               owner: "",
-//               liqPrice: 0,
-//               collateral: "",
-//               collateralAmount: "",
-//             };
-//           }
-//         })
-//         .filter((t) => !!t.owner);
-
-//       return liquidablePositions;
-//     })
-//     .flat();
-//   return positions;
-// };
-
-(async () => {
-  try {
-      console.log(await positions(Chains.ethereum)());
-  } catch (error) {
-      console.error("Error fetching positions:", error);
-  }
-})();
-
-// module.exports = {
-//   ethereum: {
-//     liquidations: positions(Chains.ethereum),
-//   },
-//   // polygon: {
-//   //   liquidations: positions(Chains.polygon),
-//   // },
-// };
+module.exports = {
+  ethereum: {
+    liquidations: positions(Chains.ethereum),
+  },
+  polygon: {
+    liquidations: positions(Chains.polygon),
+  },
+  base: {
+    liquidations: positions(Chains.base),
+  },
+  arbitrum: {
+    liquidations: positions(Chains.arbitrum),
+  },
+};
