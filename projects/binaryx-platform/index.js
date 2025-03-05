@@ -27,29 +27,24 @@ async function calculateRentalPropertiesTVL(api) {
     calls: rentalAssets, 
     target: priceOracleAddress 
   });
-
-  const usdtAddress = ADDRESSES.polygon.USDT;
   
   rentalSupplies.forEach((supply, i) => {
     const valueInUSDT = (supply / 1e18) * (rentalPrices[i] / 1e6);
-    api.add(usdtAddress, valueInUSDT * 1e6);
+    api.add(ADDRESSES.polygon.USDT, valueInUSDT * 1e6);
   });
 }
 
 async function calculateOffPlanPropertiesTVL(api) {
   const allOffPlanAssets = await fetchAllOffPlanAssets(api);
-  
   const offPlanSellProgress = await api.multiCall({ 
     abi: 'function getSellProgress(address offPlan) view returns (tuple(uint256 tokensSoldD18, uint256 amountInUsdCollectedD18, uint256 amountInUsdLeftToCollectD18, uint256 tokensLeftD18))', 
     calls: allOffPlanAssets, 
     target: offPlanServiceAddress 
   });
-
-  const usdtAddress = ADDRESSES.polygon.USDT;
   
   for (let i = 0; i < allOffPlanAssets.length; i++) {
     const valueInUSDT = offPlanSellProgress[i].amountInUsdCollectedD18 / 1e18;
-    api.add(usdtAddress, valueInUSDT * 1e6);
+    api.add(ADDRESSES.polygon.USDT, valueInUSDT * 1e6);
   }
 }
 
