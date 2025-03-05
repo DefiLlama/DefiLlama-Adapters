@@ -1,4 +1,3 @@
-const { ethers } = require('ethers');
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require('../helper/unknownTokens')
