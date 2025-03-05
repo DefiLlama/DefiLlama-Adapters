@@ -28,5 +28,6 @@ async function tvl(api) {
 module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
+  methodology: 'Get the total supply of each vault, then multiply by the quote (getRate) to get the TVL of the vault in the base token.',
   ethereum: { tvl },
 }
