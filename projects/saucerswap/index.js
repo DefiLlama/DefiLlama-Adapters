@@ -1,8 +1,8 @@
 const { fetchURL } = require("../helper/utils")
 
 async function fetch() {
-  const res = await fetchURL("https://api.saucerswap.finance/stats/tvl");
-  return res.data.tvl;
+  const res = await fetchURL("https://api.saucerswap.finance/stats");
+  return res.data.tvlUsd;
 }
 
 module.exports = {
