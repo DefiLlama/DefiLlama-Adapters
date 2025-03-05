@@ -1,10 +1,10 @@
-const axios = require("axios")
+const { request, gql } = require('graphql-request')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const unifiAvsSubgraphUrl = 'https://api.studio.thegraph.com/query/90587/unifiavs/version/latest'
 
 async function tvl(api) {
-  const query = `{
+  const query = gql`{
     totalShares(id: 1) {
       id
       totalEigenShares
@@ -12,8 +12,8 @@ async function tvl(api) {
     }
   }`
 
-  const response = await axios.post(unifiAvsSubgraphUrl, { query })
-  const { totalShares, totalEigenShares } = response.data.data.totalShares || {}
+  const response = await request(unifiAvsSubgraphUrl, query)
+  const { totalShares, totalEigenShares } = response.totalShares || {}
 
   api.add(ADDRESSES.ethereum.WETH, totalShares)
   api.add(ADDRESSES.ethereum.EIGEN, totalEigenShares)
