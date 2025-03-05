@@ -1,4 +1,5 @@
 const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const graphs = {
   ethereum:
@@ -49,7 +50,7 @@ Object.keys(graphs).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const data = await cachedGraphQuery(`term-finance-${chain}`, host, query, { fetchById: true })
-      return api.sumTokens( { tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker])})
+      return sumTokens2({ api, tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker]), permitFailure: true })
     },
     borrowed: async (api) => {
       const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
