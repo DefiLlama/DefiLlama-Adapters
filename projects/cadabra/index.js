@@ -2,9 +2,43 @@ const { getLogs2 } = require("../helper/cache/getLogs");
 
 const BSC_VAULT = '0x6f24f5EB8f50DE36C1D1FEcD31c423e1fc8ba4ae';
 const BSC_FROM_BLOCK = 45524968;
+const BSC_CADABRA_FULL_RANGE_PAIR_LENS = '0x2A479CFf64574Ed192f42509a205e3eb94Dc258C';
 
 const ARBITRUM_VAULT = '0x31206FFb663651aBe29cCb72aD213d5F95BdaC45';
 const ARBITRUM_FROM_BLOCK = 293021794;
+
+async function bscTvl(api) {
+    const token0 = await api.call({
+        abi: 'function token0() view returns(address)',
+        target: BSC_CADABRA_FULL_RANGE_PAIR_LENS
+    });
+    const token1 = await api.call({
+        abi: 'function token1() view returns(address)',
+        target: BSC_CADABRA_FULL_RANGE_PAIR_LENS
+    });
+
+    const [frpReserve0, frpReserve1] = await api.call({
+        abi: 'function fullRangePairReserves()\n' +
+            '    view\n' +
+            '    returns (uint256 reserve0, uint256 reserve1)',
+        target: BSC_CADABRA_FULL_RANGE_PAIR_LENS
+    });
+
+    const [polReserve0, polReserve1] = await api.call({
+        abi: 'function polReserves()\n' +
+            '    view\n' +
+            '    returns (uint256 reserve0, uint256 reserve1)',
+        target: BSC_CADABRA_FULL_RANGE_PAIR_LENS
+    });
+
+    api.add(token0, frpReserve0)
+    api.add(token1, frpReserve1)
+    api.add(token0, polReserve0)
+    api.add(token1, polReserve1)
+
+    let strategiesFunc = strategiesTvl(BSC_VAULT, BSC_FROM_BLOCK)
+    await strategiesFunc(api)
+}
 
 function strategiesTvl(vault, fromBlock) {
   return async (api) => {
@@ -46,7 +80,7 @@ module.exports = {
   methodology: `The TVL is calculated by summing all underlying reserves across our strategies`,
   doublecounted: true,
   bsc: {
-    tvl: strategiesTvl(BSC_VAULT, BSC_FROM_BLOCK)
+    tvl: bscTvl
   },
   arbitrum: {
     tvl: strategiesTvl(ARBITRUM_VAULT, ARBITRUM_FROM_BLOCK)
