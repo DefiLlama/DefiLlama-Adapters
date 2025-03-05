@@ -5,7 +5,7 @@ const instituitionalContractAddress = {
   },
   arbitrum: {
     address: '0x45dCf4F9d1B47C138Bc1E490a878790932d66caf',
-    startBlock: 218221531
+    startBlock: 188232859
   },
   base: {
     address: '0x07D7bf6dCc4A2f03E82E3da52eBfBAe871443322',
