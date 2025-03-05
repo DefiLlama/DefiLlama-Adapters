@@ -8,7 +8,9 @@ const POOLS = [
   "0x4dc4f0ca6ea4961e4c8373265bfd5317678f4fe374d76f3fd7135f57763bf28", //  Genesis Pool
   "0x7f135b4df21183991e9ff88380c2686dd8634fd4b09bb2b5b14415ac006fe1d", // Re7 USDC Pool
   "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161", // Re7 xSTRK Pool
-  "0x2e06b705191dbe90a3fbaad18bb005587548048b725116bff3104ca501673c1" // Re7 sSTRK Pool
+  "0x2e06b705191dbe90a3fbaad18bb005587548048b725116bff3104ca501673c1", // Re7 sSTRK Pool
+  "0x6febb313566c48e30614ddab092856a9ab35b80f359868ca69b2649ca5d148d", // Re7 Starknet Ecosystem Pool
+  "0x59ae5a41c9ae05eae8d136ad3d7dc48e5a0947c10942b00091aeb7f42efabb7" // Re7 wstETH Pool
 ];
 const ASSETS = [
   ADDRESSES.starknet.ETH,
@@ -16,9 +18,11 @@ const ASSETS = [
   ADDRESSES.starknet.USDC,
   ADDRESSES.starknet.USDT,
   ADDRESSES.starknet.WSTETH,
+  ADDRESSES.starknet.WSTETH_1,
   ADDRESSES.starknet.STRK,
   ADDRESSES.starknet.XSTRK,
-  ADDRESSES.starknet.SSTRK
+  ADDRESSES.starknet.SSTRK,
+  ADDRESSES.starknet.EKUBO
 ];
 
 async function tvl(api) {
