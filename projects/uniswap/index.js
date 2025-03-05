@@ -95,6 +95,7 @@ module.exports = {
     corn: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 10878 },
     hemi: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 963965 },
     sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
+    saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
     unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
   }),
   filecoin: { tvl: filecoinTvl },
