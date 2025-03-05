@@ -2124,6 +2124,13 @@
   "corn": {
     "BTCN": "0xda5ddd7270381a7c2717ad10d1c0ecb19e3cdfb2"
   },
+  "saga": {
+    "USDC": "0xfc960c233b8e98e0cf282e29bde8d3f105fc24d5",
+    "SAGA": "0xa19377761fed745723b90993988e04d641c2cffe",
+    "USDT": "0xc8fe3c1de344854f4429bb333affaef97ef88cea",
+    "WETH": "0xeb41d53f14cb9a67907f2b8b5dbc223944158ccb",
+    "UNI": "0x4e33613add93463e82a14080021f2ffaf1e062cf"
+  },
   "sonic": {
     "wS": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
     "WS_1": "0x832497895f05100e53f42dfa8fc758b4866b183a",
