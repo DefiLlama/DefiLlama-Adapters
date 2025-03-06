@@ -25,7 +25,11 @@ module.exports = {
       const ynBTCk = '0x78839cE14a8213779128Ee4da6D75E1326606A56'
       const ynBNBx = '0x32C830f5c34122C6afB8aE87ABA541B7900a2C5F'
       const ynCoBTCk = '0x99155a7fc5d76114dbB71d7ebcF412ee2FC0ee81'
-      return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynCoBTCk], isOG4626: true})
+
+      const ynCoBTCk_balance = await api.call({ abi: 'uint256:totalAssets', target: ynCoBTCk })
+      api.add(ADDRESSES.null, ynCoBTCk_balance)
+  
+      return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx], isOG4626: true})
     }
   },
 }
