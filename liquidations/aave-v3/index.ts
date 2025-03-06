@@ -6,7 +6,7 @@ import { getPagedGql } from "../utils/gql";
 const query = gql`
 query users($lastId: String, $pageSize: Int) {
   accounts(
-    first: $first
+    first: $pageSize
     where: {id_gt: $lastId, openPositionCount_gt: 0, borrows_: {amountUSD_gt: "0"}}
   ) {
     borrows: positions(where: {balance_gt: "0", side: BORROWER, timestampClosed: null}) {
@@ -201,7 +201,7 @@ const populateLT = async (chain: Chains) => {
 
 const positions = (chain: Chains) => async () => {
     const explorerBaseUrl = rc[chain].explorerBaseUrl;
-    const users = (await getPagedGql(rc[chain].subgraphUrl, query, "users")) as User[];
+    const users = (await getPagedGql(rc[chain].subgraphUrl, query, "accounts")) as User[];
 
     await populateLT(chain);
 
