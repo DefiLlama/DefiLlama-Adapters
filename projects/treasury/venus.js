@@ -18,7 +18,7 @@ module.exports = treasuryExports({
       ADDRESSES.bsc.BETH, //BETH
       ADDRESSES.bsc.WBNB,
       venusBTC,
-      "0x2170Ed0880ac9A755fd29B2688956BD959F933F8", //eth
+      ADDRESSES.bsc.ETH, //eth
       "0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8", // venusUSDC
       "0xf508fCD89b8bd15579dc79A6827cB4686A3592c8", // venusETH
       "0xfD5840Cd36d94D7229439859C0112a4185BC0255", // venusUSDT
@@ -37,10 +37,10 @@ module.exports = treasuryExports({
       "0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47", //ada
       "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD", //link
       "0xbA2aE424d960c26247Dd6c32edC70B295c744C43", //doge
-      "0x40af3827F39D0EAcBF4A168f8D4ee67c121D11c9", //tusd
+      ADDRESSES.bsc.TUSD, //tusd
       "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153", //fil
       "0xCC42724C6683B7E57334c4E856f4c9965ED682bD", //matic
-      "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //busd
+      ADDRESSES.bsc.BUSD, //busd
       "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827", //ankrbnb
       "0xCE7de646e7208a4Ef112cb6ed5038FA6cC6b12e3", //trx
       "0x352Cb5E19b12FC216548a2677bD0fce83BaE434B", //btt
@@ -60,4 +60,13 @@ module.exports = treasuryExports({
     owners: [venusTreasury],
     ownTokens: [XVS, VAI],
   },
+  era: {
+    tokens: [
+      ADDRESSES.era.WBTC, 
+      ADDRESSES.era.ZK, 
+      ADDRESSES.era.USDC, 
+      ADDRESSES.era.WETH  
+    ],
+    owners: ['0xB2e9174e23382f7744CebF7e0Be54cA001D95599']
+  }
 });

@@ -135,7 +135,6 @@ async function tvl(chain, block) {
 
 module.exports = {
   methodology: 'Counts Waterfall DeFi tranche products TVL and staking TVL',
-  start: 16343128,
   bsc: {
     tvl: bscTVL,
     staking: bscStaking

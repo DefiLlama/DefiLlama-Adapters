@@ -69,6 +69,10 @@ const config = {
       factory: "0x44fEF0fAB3A96CA34b06d5142350Ef9223F65A7e",
       fromBlock: 226174706,
     },
+    vaults: {
+      factory: "0xA8e8AccabCf29e7d8b33D086085D87F9F38a6Ed7",
+      fromBlock: 226193395
+    }
   },
   [CHAIN.MANTLE]: {
     dynamic: {
@@ -78,6 +82,10 @@ const config = {
     vaults: {
       factory: "0xF041A2838794266d19f79709F416A2977F896A9B",
       fromBlock: 59594636
+    },
+    prime: {
+      factory: "0x29157e2B6A34Ae1787CDdD05Ad54DD4aa9783A5c",
+      fromBlock: 68483768
     }
   },
   [CHAIN.BASE]: {
@@ -185,7 +193,7 @@ Object.keys(config).forEach((chain) => {
 
     await Promise.all(promiseArray)
 
-    return sumTokens2({ api, tokensAndOwners2: [allTokens, allPools], blacklistedTokens: blacklistedTokens[chain]})
+    return sumTokens2({ api, tokensAndOwners2: [allTokens, allPools], blacklistedTokens: blacklistedTokens[chain] })
   }
 
   const borrowed = async (api) => {
@@ -210,7 +218,7 @@ Object.keys(config).forEach((chain) => {
 
     api.addTokens(allTokens, balances)
     if (blacklistedTokens[chain]) {
-      blacklistedTokens[chain].forEach((token) =>  api.removeTokenBalance(token))
+      blacklistedTokens[chain].forEach((token) => api.removeTokenBalance(token))
     }
   }
   module.exports[chain] = { tvl, borrowed }

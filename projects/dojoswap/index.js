@@ -1,4 +1,3 @@
-const BigNumber = require("bignumber.js");
 const { getFactoryTvl } = require("../terraswap/factoryTvl");
 
 const factory = {

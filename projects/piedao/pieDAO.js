@@ -9,8 +9,14 @@ tokensAndOwners.push(
   ['0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A', '0x8314337d2b13e1A61EadF0FD1686b2134D43762F'],
 )
 
-const pieABI = require("../config/piedao/abi/IPie.json");
-const pieStakingAll = require("../config/piedao/abi/IStakingAll.json");
+const pieABI = {
+  "totalSupply": "uint256:totalSupply",
+  "calcTokensForAmount": "function calcTokensForAmount(uint256 _amount) view returns (address[] tokens, uint256[] amounts)"
+}
+const pieStakingAll = {
+  "poolCount": "uint256:poolCount",
+  "getPoolToken": "function getPoolToken(uint256 _poolId) view returns (address)"
+}
 
 async function addPools(api) {
   const stakingC = '0x6de77A304609472A4811a0BFD47d8682Aebc29df'

@@ -1,5 +1,0 @@
-{
-  "balanceOf": "function balanceOf(address, address) view returns (uint256)",
-  "balances": "function balances(uint256 arg0) view returns (uint256)",
-  "totalBorrow": "function totalBorrow() view returns (uint128 elastic, uint128 base)"
-}

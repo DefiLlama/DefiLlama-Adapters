@@ -221,6 +221,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  start: 1602054167,
+  start: '2020-10-07',
   bsc: { tvl },
 };

@@ -5,7 +5,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 const LYBRA_CONTRACT = "0x97de57eC338AB5d51557DA3434828C5DbFaDA371";
 
 module.exports = {
-  start: 1682265600,
+  start: '2023-04-23',
   ethereum: {
     tvl: sumTokensExport({ owner: LYBRA_CONTRACT, tokens: [ADDRESSES.ethereum.STETH]}),
   }

@@ -9,7 +9,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 6949784,
   cronos: {
     tvl,
   },

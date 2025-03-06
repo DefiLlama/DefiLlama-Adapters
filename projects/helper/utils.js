@@ -52,7 +52,7 @@ const blacklisted_LPS = new Set([
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
-  if (chain === 'bsc' && symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  if (symbol.startsWith('IV-')) return true
   return false
 }
 
@@ -68,7 +68,8 @@ function isLP(symbol, token, chain) {
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
-  if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
+  if (chain === 'oasis' && ['LPT', 'GLP'].includes(symbol)) return true
+  if (chain === 'iotex' && ['MIMO-LP'].includes(symbol)) return true
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
@@ -93,12 +94,15 @@ function isLP(symbol, token, chain) {
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
   if (chain === 'arbitrum' && /^(DLP|LP-)/.test(symbol)) return false // DODO or Wombat
-  if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
+  if (['base', 'sonic',].includes(chain) && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
+  if (chain === 'shibarium' && ['SSLP', 'ChewyLP'].includes(symbol)) return true
+  if (chain === 'omax' && ['OSWAP-V2'].includes(symbol)) return true
+  if (chain === 'sonic' && symbol.endsWith(' spLP')) return true
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
@@ -255,7 +259,8 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    if (!token.startsWith('0x') || chain === 'starknet') return;
+    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel']
+    if (!token.startsWith('0x') || blacklistedChains.includes(chain)) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
     else
@@ -303,12 +308,16 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   sdk.log('Balance table for [%s] %s', chain, tableLabel)
-  const filtered = logObj.filter(i => {
+  let filtered = logObj.filter(i => {
     const symbol = i.symbol?.toLowerCase() ?? ''
     if (/\.(com|net|org|xyz|site|io)/.test(symbol)) return false
     if (/claim|access|airdrop/.test(symbol)) return false
     return true
   })
+  if (filtered.length > 300) {
+    sdk.log('Too many unknowns to display #' + filtered.length, 'displaying first 100')
+    filtered = filtered.slice(0, 100)
+  }
   if (filtered.length)
     console.table(filtered)
 }
@@ -324,6 +333,45 @@ function once(func) {
   }
   return wrapped
 }
+
+
+function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
+  return async (api) => {
+    let fetchedValidators = skipValidators;
+    let size = 200;
+    api.sumTokens({ owner: withdrawalAddress, tokens: [nullAddress] })
+    do {
+      const validators = (
+        await http.get(
+          `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
+        )
+      ).data.map((i) => i.publickey);
+      fetchedValidators += validators.length;
+      api.log("Fetching balances for validators", validators.length);
+      await addValidatorBalance(validators);
+      await sleep(10000);
+    } while (fetchedValidators % size === 0);
+
+    return api.getBalances()
+
+
+    async function addValidatorBalance(validators) {
+      if (validators.length > 100) {
+        const chunks = sliceIntoChunks(validators, 100);
+        for (const chunk of chunks) await addValidatorBalance(chunk);
+        return;
+      }
+
+      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
+        indicesOrPubkey: validators.join(","),
+      });
+
+
+      data.forEach((i) => api.addGasToken(i.balance * 1e9));
+    }
+  }
+}
+
 
 module.exports = {
   log,
@@ -346,4 +394,5 @@ module.exports = {
   getParamCalls,
   once,
   isICHIVaultToken,
+  getStakedEthTVL,
 }

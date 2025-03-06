@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -8,10 +9,7 @@ const config = {
     ],
   },
   bitcoin: {
-    owners: [
-        "bc1qyvppkaa74d9jvtz664a6uxmj09hf0eyg3uhx4h",
-        "1DywJMqHHMWuP7xyfkRqJZCEe7GdEKFRcp"
-    ],
+    owners: bitcoinAddressBook.hashkey,
   },
   litecoin: {
     owners: [

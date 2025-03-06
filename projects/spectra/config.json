@@ -6,5 +6,17 @@
   "arbitrum": {
     "factory": "0x51100574E1CF11ee9fcC96D70ED146250b0Fdb60",
     "fromBlock": 204418891
+  },
+  "optimism": {
+    "factory": "0x9c594C2e2e2e5aa300be12596215188C324c3E7c",
+    "fromBlock": 122132149
+  },
+  "base": {
+    "factory": "0x51100574E1CF11ee9fcC96D70ED146250b0Fdb60",
+    "fromBlock": 16537568
+  },
+  "sonic": {
+    "factory": "0xC9092777bF098e74B23B66c4140064eB3FcCD0F1",
+    "fromBlock": 1856411
   }
 }

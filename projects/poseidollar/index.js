@@ -93,8 +93,8 @@ async function suiTVL(api) {
     "0x3cfad71fc1f65addbadc0d4056fbd1106aa6b9a219e3ea1f5356a2f500d13182"
   );
 
-  //TVL on PSH Earn
-  for (let i = 0; i < poolShareInfo.length; i++) {
+  //TVL on PSH Earn - ignoring pool 0, it is returning absurd value
+  for (let i = 1; i < poolShareInfo.length; i++) {
     api.add(poolShareInfo[i].coinX, poolShareInfo[i].coinXStaked)
 
     if (poolShareInfo[i].coinY)

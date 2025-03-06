@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   /*
@@ -30,9 +31,7 @@ const config = {
   },
   /*
   bitcoin: {
-    owners: [
-      'bc1qy8xx8fcsmdlc447ls4wzw2tn3y6c6cy64wckhz',
-    ]
+    owners: bitcoinAddressBook.nonkyc
   }, // remove it for now
     /*
   bitcoincash: {

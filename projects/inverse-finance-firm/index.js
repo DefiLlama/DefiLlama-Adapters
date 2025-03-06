@@ -50,6 +50,6 @@ module.exports = {
     [1707177600, "Launch of sDOLA"],
     [1718236800, "CRV liquidation"]    
   ],
-  start: 1670701200, // Dec 10 2022
+  start: '2022-12-10', // Dec 10 2022
   ethereum: { tvl }
 };

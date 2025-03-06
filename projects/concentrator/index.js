@@ -22,6 +22,8 @@ const aladdinCVXAddress = "0xb0903Ab70a7467eE5756074b31ac88aEBb8fB777";
 const arUSDAddress = "0x549716F858aefF9CB845d4C78c67A7599B0Df240";
 const arUSD4626Address = "0x07D1718fF05a8C53C8F05aDAEd57C0d672945f9a";
 const rUSDAddress = "0x65D72AA8DA931F047169112fcf34f52DbaAE7D18";
+const aFXNAddress = "0x00Bac667a4cCf9089aB1Db978238C555C4349545";
+const fxnAddress = ADDRESSES.ethereum.FXN;
 
 const concentratorNewVault = "0x3Cf54F3A1969be9916DAD548f3C084331C4450b5";
 const concentratorAfxsVault = "0xD6E3BB7b1D6Fa75A71d48CFB10096d59ABbf99E1";
@@ -81,6 +83,7 @@ async function tvl(api) {
     getAsdCRVInfo(balances, block),
     getAladdinCVXInfo(balances, block),
     getAladdinRUSDInfo(balances, block),
+    getAladdinFXNInfo(balances, block),
     getVaultInfo("old", balances, block),
     getVaultInfo("New", balances, block),
     getVaultInfo("afxs", balances, block),
@@ -264,6 +267,22 @@ async function getAladdinRUSDInfo(balances, block) {
     balances,
     rUSDAddress,
     aladdinRUSDTotalUnderlying,
+    chain
+  );
+}
+
+async function getAladdinFXNInfo(balances, block) {
+  const aladdinFXNTotalUnderlying = (
+    await sdk.api.abi.call({
+      target: aFXNAddress,
+      block,
+      abi: AladdinAFXSABI.totalAssets,
+    })
+  ).output;
+  sdk.util.sumSingleBalance(
+    balances,
+    fxnAddress,
+    aladdinFXNTotalUnderlying,
     chain
   );
 }

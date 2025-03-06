@@ -1,43 +1,17 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { staking } = require('../helper/staking');
 
 const FarmPoolManager = "0x7ec4AeaeB57EcD237F35088D11C59525f7D631FE";
 const treasuryAddress = "0x9300736E333233F515E585c26A5b868772392709";
 const AVE = "0x78ea17559B3D2CF85a7F9C2C704eda119Db5E6dE";
 
-/*** Staking of native token AVE TVL Portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = addr => 'avax:'+addr;
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[AVE, false]],
-    [treasuryAddress],
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
-
-  return balances;
-};
-
 /*** farms TVL portion ***/
-const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
+const avaxTvl = async (api) => {
   const chain = 'avax'
-  const block = chainBlocks[chain]
 
-  const CountOfPools = (
-    await sdk.api.abi.call({
-      abi: abi.poolCount,
-      target: FarmPoolManager,
-      chain, block,
-    })
-  ).output;
+  const CountOfPools = await api.call({ abi: abi.poolCount, target: FarmPoolManager, })
 
   const indices = []
 
@@ -48,28 +22,14 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
     indices.push(index)
   }
 
-  const { output: poolsRes } = await sdk.api.abi.multiCall({
-    target: FarmPoolManager,
-    abi: abi.getPool,
-    calls: indices.map(i => ({ params: i })),
-    chain, block,
-  })
-  const pools = poolsRes.map(i => i.output.pool)
-
-  const { output: tokens } = await sdk.api.abi.multiCall({
-    target: FarmPoolManager,
-    abi: abi.stakingToken,
-    calls: pools.map(i => ({ target: i })),
-    chain, block,
-  })
-  const toa = []
-  tokens.forEach(({ output, input: { target } }) => toa.push([output, target]))
-  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+  const pools = (await api.multiCall({ target: FarmPoolManager, abi: abi.getPool, calls: indices, })).map(i => i.pool)
+  const tokens = await api.multiCall({ abi: abi.stakingToken, calls: pools, })
+  return sumTokens2({ api, tokensAndOwners2: [tokens, pools], resolveLP: true, })
 };
 
 module.exports = {
-  avax:{
-    staking,
+  avax: {
+    staking: staking(treasuryAddress, AVE),
     tvl: avaxTvl,
   },
   methodology: `We count TVL that is on the Farms threw FarmPoolManager contract 

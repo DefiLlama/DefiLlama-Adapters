@@ -1,5 +1,4 @@
 const axios = require("axios");
-const BigNumber = require("bignumber.js");
 
 const URL = 'https://aptos-mainnet-econia.nodeinfra.com';
 

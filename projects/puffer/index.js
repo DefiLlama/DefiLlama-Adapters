@@ -7,7 +7,6 @@ async function tvl(api) {
 module.exports = {
   doublecounted: true,
   methodology: 'Returns the total assets owned by the Puffer Vault on Ethereum.',
-  start: 19128047,
   ethereum: {
     tvl,
   }
