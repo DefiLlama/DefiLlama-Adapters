@@ -118,7 +118,7 @@ const chains = [
   'solana',
   'ton',
   'sui',
-  'bnb',
+  'bsc',
   'arbitrum',
   'avax',
   'btc'
@@ -144,5 +144,7 @@ module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     doublecounted: true,
+    ...Object.fromEntries(Object.entries(chains).map(async chain => [chain[0], {
       tvl: await fetchTotalTVL()
+    }]))
   };
