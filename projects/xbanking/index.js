@@ -144,7 +144,5 @@ module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     doublecounted: true,
-    ...Object.fromEntries(Object.entries(chains).map(async chain => [chain[0], {
-      tvl: await fetchTotalTVL(chain[1], false)
-    }]))
+      tvl: await fetchTotalTVL()
   };
