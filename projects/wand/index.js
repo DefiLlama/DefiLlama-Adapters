@@ -1,20 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const sdk = require('@defillama/sdk');
-
-const ip = ADDRESSES.null
-const vIP = '0x5267F7eE069CEB3D8F1c760c215569b79d0685aD'
-
-async function transformVIP2IP(api, vipBalance) {
-  const verioComponentSelector = '0x20Cb9DCb6FC306c31325bdA6221AA5e067B9Da51'
-  const verioStakePool = await api.call({ abi: 'address:stakePool', target: verioComponentSelector })
-  const ipBalance = await api.call({ 
-    abi: 'function calculateIPWithdrawal(uint256) view returns (uint256)', 
-    target: verioStakePool, 
-    params: [vipBalance] 
-  })
-  return ipBalance
-}
 
 async function styTvl(api) {
   const protocols = [
@@ -22,49 +7,67 @@ async function styTvl(api) {
   ]
 
   const tokensAndOwners = []
-  let totalVipBalance = 0n
 
   for (const protocol of protocols) {
     const assets = await api.call({ abi: 'address[]:assetTokens', target: protocol })
 
-    const vaults = (await api.multiCall({ abi: 'function getVaultAddresses(address) view returns (address[])', calls: assets, target: protocol })).flat()
+    // Get vault arrays for each asset
+    const vaultArrays = await api.multiCall({ 
+      abi: 'function getVaultAddresses(address) view returns (address[])', 
+      calls: assets, 
+      target: protocol 
+    })
+    
+    // Create expanded arrays to match vaults with their corresponding assets
+    const expandedAssets = []
+    const vaults = []
+    
+    // For each asset, map it to its vaults
+    vaultArrays.forEach((vaultArray, assetIndex) => {
+      const asset = assets[assetIndex]
+      vaultArray.forEach(vault => {
+        expandedAssets.push(asset)
+        vaults.push(vault)
+      })
+    })
+    
+    // Now expandedAssets[i] corresponds to vaults[i]
     const assetBals = await api.multiCall({ abi: 'uint256:assetBalance', calls: vaults, permitFailure: true })
     
-    // Track VIP balances separately
-    for (let i = 0; i < assets.length; i++) {
-      if (assets[i].toLowerCase() === vIP.toLowerCase()) {
-        // Accumulate VIP balances
-        totalVipBalance += BigInt(assetBals[i] || 0)
-      } else {
-        // Add other asset balances normally
-        api.add(assets[i], assetBals[i] || 0)
-      }
+    // Add balances with correct asset-vault mapping
+    for (let i = 0; i < vaults.length; i++) {
+      api.add(expandedAssets[i], assetBals[i] || 0)
     }
 
     // Add redeem pool balances
     const epochInfoAbi = 'function epochInfoById(uint256 epochId) public view returns (uint256 epochId, uint256 startTime, uint256 duration, address redeemPool, address stakingBribesPool, address adhocBribesPool)'
     try {
-      const epochInfos = await api.fetchList({ lengthAbi: 'epochIdCount', itemAbi: epochInfoAbi, target: vaults[0], startFromOne: true, groupedByInput: true })
+      // const epochInfos = await api.fetchList({ 
+      //   lengthAbi: 'epochIdCount', 
+      //   itemAbi: epochInfoAbi, 
+      //   targets: vaults, 
+      //   startFromOne: true, 
+      //   groupedByInput: true 
+      // })
       
-      for (let i = 0; i < assets.length; i++) {
-        const asset = assets[i]
-        const infos = epochInfos[i] || []
+      // For each vault and its corresponding asset
+      for (let i = 0; i < vaults.length; i++) {
+        const asset = expandedAssets[i]
+        const vault = vaults[i]
+
+        const epochInfos = await api.fetchList({ 
+          lengthAbi: 'epochIdCount', 
+          itemAbi: epochInfoAbi, 
+          target: vault, 
+          startFromOne: true, 
+          groupedByInput: true 
+        })
+
+        const infos = epochInfos || []
         
         for (const { redeemPool } of infos) {
           if (redeemPool && redeemPool !== '0x0000000000000000000000000000000000000000') {
-            if (asset.toLowerCase() === vIP.toLowerCase()) {
-              // For VIP tokens in redeem pools, we'll check their balance and add it to totalVipBalance
-              const vipInRedeemPool = await api.call({
-                abi: 'function balanceOf(address) view returns (uint256)',
-                target: vIP,
-                params: [redeemPool]
-              }).catch(() => 0)
-              
-              totalVipBalance += BigInt(vipInRedeemPool || 0)
-            } else {
-              // Other tokens are added normally
-              tokensAndOwners.push([asset, redeemPool])
-            }
+            tokensAndOwners.push([asset, redeemPool])
           }
         }
       }
@@ -73,27 +76,7 @@ async function styTvl(api) {
     }
   }
 
-  // Convert accumulated VIP to IP
-  if (totalVipBalance > 0n) {
-    try {
-      const ipEquivalent = await transformVIP2IP(api, totalVipBalance)
-      // Add the IP equivalent to the balances
-      api.add(ip, ipEquivalent)
-      // console.log(`Converted ${totalVipBalance.toString()} VIP to ${ipEquivalent.toString()} IP`)
-    } catch (e) {
-      console.error("Failed to convert VIP to IP:", e)
-    }
-  }
-
-  // Get final balances with token owners
-  const balances = await api.sumTokens({ tokensAndOwners })
-  
-  // Make sure VIP isn't counted in the final balances
-  if (balances[vIP]) {
-    delete balances[vIP]
-  }
-  
-  return balances
+  return api.sumTokens({ tokensAndOwners })
 }
 
 module.exports = {
