@@ -164,5 +164,5 @@ module.exports = {
   'arbitrum': { tvl: getTvl },
   'ethereum': { tvl: getTvl },
   'base': { tvl: getTvl },
-  methodology: `To obtain the TVL of Csigma Finance we make on-chain calls. We query the total amount of USDT/USDC locked in the protocol and use the result to return the TVL.`,
+  methodology: `The TVL of Csigma Finance is calculated by querying smart contracts on Ethereum, Arbitrum, and Base. It includes the total investments in institutional pools, balances in Edge pools, and private debt network investments (on Arbitrum) while subtracting repayments. Token balances (USDT/USDC) are fetched on-chain, and the final TVL is derived by summing these values.`,
 }
