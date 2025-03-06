@@ -90,6 +90,12 @@ async function tvl(api) {
       `${AGDEX}::pool::Vault<0x1::aptos_coin::AptosCoin>`
   );
   const apt_value = parseInt(apt_balance) + parseInt(apt_r.reserved_amount);
+  console.log("BTC", BTC);
+  console.log("btc_value", btc_value);
+
+// BTC 0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::WbtcCoin
+// btc_value 20
+  
   api.add(lzUSDC, usdc_value);
   api.add(BTC, btc_value);
   api.add(ETH, eth_value);
