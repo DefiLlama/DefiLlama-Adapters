@@ -1,4 +1,4 @@
-const { cachedGraphQuery } = require('../helper/cache')
+const { cachedGraphQuery, graphFetchById } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const graphs = {
@@ -53,7 +53,7 @@ Object.keys(graphs).forEach(chain => {
       return sumTokens2({ api, tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker]), permitFailure: true })
     },
     borrowed: async (api) => {
-      const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
+      const data = await graphFetchById({ endpoint: host, query: borrowedQuery, api })
 
       for (const { term: { purchaseToken }, repoExposure } of data) {
         api.add(purchaseToken, repoExposure)
