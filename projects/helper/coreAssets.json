@@ -831,7 +831,9 @@
     "zWBTC": "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WBTC",
     "zWETH": "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WETH",
     "USDt": "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b",
-    "USDC_3": "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b"
+    "USDC_3": "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b",
+    "MOON": "0xd71e041f0d9c871e68604699aa109ead5643ced548f9d216ddb89702968e5458::moon_coin::MoonCoin",
+    "CELL": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12"
   },
   "dogechain": {
     "WWDOGE": "0xb7ddc6414bf4f5515b52d8bdd69973ae205ff101",
@@ -2226,7 +2228,12 @@
     "WBTC": "0x6e142cdaefa4ba7786e8d1ff74968db67c3b910d"
   },
   "occ": {
-    "WEDU": "0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12"
+    "WEDU": "0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12",
+    "BLEND": "0x526e8a66e357ffeaeeec6d7be1e5ea44a788dd1d",
+    "USDT": "0x7277cc818e3f3ffbb169c6da9cc77fc2d2a34895",
+    "USDC": "0x836d275563bab5e93fd6ca62a95db7065da94342",
+    "WETH": "0xa572bf655f61930b6f0d4546a67cd1376220081a",
+    "WBTC": "0xac0313f97398b585f23f8e50952f10d62350697c"
   },
   "artela": {
     "WART": "0xadcd43c78a914c6b14171ab1380bcfcfa25cd3ad",

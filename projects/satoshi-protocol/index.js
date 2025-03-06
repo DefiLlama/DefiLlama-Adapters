@@ -103,6 +103,7 @@ module.exports = {
       '0x8FAE9D3dBeE1c66b84E90df21A1DbdBab9262843', // BOB tBTC Collateral(V1)
       '0xFFFE50D535aaA9B16499D2fDb3BbD94144ca5336', // BOB SolvBTC Collateral(V1)
       '0xa0B2325BB635679cCFbf50570edd0C6F3D7dA81e', // BOB SolvBTC.BBN Collateral(V1)
+      '0xF091CE6116294A3b13D0f57c6eaCb8837e513CaD', // BOB FBTC Collateral(V1)
       '0xB6C69F4EfC6ad9d12C5Fc3715722D5bbEa712a3f', // WBTC Collateral(V2)
       '0xbf626Fc742bFfD6F17de9Cf2480Da25Dad4D5135', // TBTC Collateral(V2)
       '0x39F36DA1f4028473d41e077E178c8551bE4bb231', // SolvBTC Collateral(V2)
@@ -144,5 +145,12 @@ module.exports = {
         fromBlock: 11581100,
       }
     ]
+  }),
+  bsc: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WBTC Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // BTCB Collateral(V2)
+    ],
+    
   }),
 }
