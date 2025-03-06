@@ -114,6 +114,15 @@ async function fetchBtcTVL() {
   return btc * btcPrice;
 }
 
+const chains = [
+  'solana',
+  'ton',
+  'sui',
+  'bnb',
+  'arbitrum',
+  'avax',
+  'btc'
+]
 
 async function fetchTotalTVL() {
 
