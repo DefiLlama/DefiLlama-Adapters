@@ -18,7 +18,6 @@ async function fetchAvaxTVL() {
 
 module.exports = {
     avax: {
-        tvl: async (api) =>
-            await fetchAvaxTVL()
+        tvl: async (api) => { await fetchAvaxTVL() }
       },
   };
