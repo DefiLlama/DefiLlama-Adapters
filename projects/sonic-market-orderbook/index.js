@@ -20,7 +20,7 @@ function customCacheFunction({ cache, logs }) {
 
 async function tvl(api) {
   const { factory, fromBlock } = config[api.chain]
-  const tokens = await getLogs2({ api, factory, eventAbi: abi.openEvent, fromBlock, extraKey: 'open-address',  customCacheFunction, skipCacheRead: true })
+  const tokens = await getLogs2({ api, factory, eventAbi: abi.openEvent, fromBlock, extraKey: 'open-address',  customCacheFunction, })
   return sumTokens2({ api, owner: factory, tokens, permitFailure: true })
 }
 

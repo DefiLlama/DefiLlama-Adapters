@@ -10,6 +10,7 @@ module.exports = {
   methodology: "TVL is fetched from Coffer Network Bitcoin Staking Protocol from native Bitcoin",
   start: "2025-01-20",
   isHeavyProtocol: true,
+  doublecounted: true,
   bitcoin: {
     tvl,
   },
