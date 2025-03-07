@@ -17,15 +17,11 @@ async function baseTvl(api) {
   // Fetch base TVL from FLP pool
   await api.sumTokens({ owner: vaultStorageAddress, tokens: flpUnderlyings });
 
-  // Fetch LFDX and AEROLP balances
-  const balances = await api.sumTokens({ 
-    owners: [fdxStakingAddress, stfdxlpStakingAddress], 
-    tokens: [LFDX, AEROLP] 
-  });
+  // Fetch AEROLP balances
+  await api.sumTokens({ owner: stfdxlpStakingAddress, tokens: [AEROLP] });
 
-  if (balances[`base:${LFDX.toLowerCase()}`]) {
-    api.add(FDX, balances[`base:${LFDX.toLowerCase()}`]);
-  }
+  const lfdxTotalSupply = await api.call({ abi: "erc20:totalSupply", target: LFDX });
+  api.add(FDX, lfdxTotalSupply);
 }
 
 module.exports = {
