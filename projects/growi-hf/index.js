@@ -26,23 +26,17 @@ async function fetchTVL() {
             });
 
             res.on("end", () => {
-                try {
-                    const response = JSON.parse(body);
+                const response = JSON.parse(body);
 
-                    let tvlAmount = 0;
-                    if (response.portfolio && response.portfolio.length > 0) {
-                        const accountHistory = response.portfolio.find(p => p[0] === "allTime");
-                        if (accountHistory && accountHistory[1].accountValueHistory.length > 0) {
-                            const lastEntry = accountHistory[1].accountValueHistory.slice(-1)[0];
-                            tvlAmount = parseFloat(lastEntry[1]);
-                        }
+                let tvlAmount = 0;
+                if (response.portfolio && response.portfolio.length > 0) {
+                    const accountHistory = response.portfolio.find(p => p[0] === "allTime");
+                    if (accountHistory && accountHistory[1].accountValueHistory.length > 0) {
+                        const lastEntry = accountHistory[1].accountValueHistory.slice(-1)[0];
+                        tvlAmount = parseFloat(lastEntry[1]);
                     }
-
-                    resolve({ "usd-coin": tvlAmount });
-                } catch (error) {
-                    console.error("Error parsing TVL response:", error);
-                    resolve({});
                 }
+                resolve({ "usd-coin": tvlAmount });
             });
         });
 
