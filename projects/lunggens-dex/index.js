@@ -3,5 +3,5 @@
 
 module.exports = {
   lung: { tvl: () => ({}) },
-  // deadFrom: '2025-01-13',
+  deadFrom: '2025-01-13',
 }

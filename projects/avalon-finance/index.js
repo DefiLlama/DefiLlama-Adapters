@@ -12,12 +12,12 @@ const mainMarket = {
 	scroll: aaveExports('', '0xFBb77A68ee35e7902F1ABE0Bd34B263023e90c70', undefined, ['0x18cbe70602Ee17f79D56971F685E9EaF49DA53F2'], { v3: true }),
 	iotex: aaveExports('', '', undefined, ['0xBa77520d38953BF6a8395D118CfF714Ed672533f'], { v3: true }),
 	bsquared: aaveExports('', '', undefined, ['0x4Ea93E846b8C6E7b3D5a5BEDF4fe6B8AED58FCEe'], { v3: true }),
-	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }),
 	mode: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
 	klaytn: aaveExports('', '', undefined, ['0xddD3D480521bc027596e078BCd1b838d50Daa076'], { v3: true }), // Kaia V3 Main
 	zeta: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }), // Zetachain V3 Main
 	corn: aaveExports('', '', undefined, ['0x56552f4407113894Bfce34b5b88C57b941AFc519'], { v3: true }), // Corn V3 Main
 	duckchain: aaveExports('', '', undefined, ['0x100AC26ad2c253B18375f1dC4BC0EeeB66DEBc88'], { v3: true }), // Duckchain V3 Main
+	taiko: aaveExports('', '', undefined, ['0x43248dF19B9B55f7b488CF68A1224308Af2D81eC'], { v3: true }), // Taiko - Main
 }
 
 const innovativeMarket = {
@@ -34,6 +34,9 @@ const solvMarkets = {
 	bob: aaveExports('', '', undefined, ['0xfabb0fDca4348d5A40EB1BB74AEa86A1C4eAd7E2'], { v3: true }),
 	corn: aaveExports('', '', undefined, ['0xf0d077728D424Ee6C6Eba82d23ce56C2e91E57Ea'], { v3: true }),
 	sonic: aaveExports('', '', undefined, ['0x23f02C2eeFe2010298Ab74059393326d3df59a02'], { v3: true }),
+	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true }), // Taiko - Solv
+	sei: aaveExports('', '', undefined, ['0x16b9b88B773C1a1aBA6D305e0560171405d45121'], { v3: true }),
+
 }
 
 const pumpBTCMarkets = {
@@ -50,6 +53,7 @@ const unibtcMarkets = {
 	bsc: aaveExports('', '', undefined, ['0xF828A73cB00072843241C6294ed778F26854fe5C'], { v3: true }),
 	mode: aaveExports('', '', undefined, ['0x8F016F5dac399F20B34E35CBaF1dFf12eeE2dE74'], { v3: true }),
 	iotex: aaveExports('', '', undefined, ['0x28292e1ca36e400FB7d0B66AaA99EB808E3Cb8cB'], { v3: true }),
+	bob: aaveExports('', '', undefined, ['0x100AC26ad2c253B18375f1dC4BC0EeeB66DEBc88'], { v3: true }),
 }
 
 const stbtcMarkets = {
@@ -85,6 +89,7 @@ const xaumMarkets = {
 const lbtcMarkets = {
 	bsc: aaveExports('', '', undefined, ['0x5b9b3C211B81627Cc6b46824CB26829F31A587dc'], { v3: true }),
 	corn: aaveExports('', '', undefined, ['0x5EcDC2432ED77cD8E2cE6183712c5cc712c40ec0'], { v3: true }),
+	bob: aaveExports('', '', undefined, ['0x28292e1ca36e400FB7d0B66AaA99EB808E3Cb8cB'], { v3: true }),
 }
 
 const listaMarkets = {
