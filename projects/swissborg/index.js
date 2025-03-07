@@ -24,7 +24,9 @@ const config = {
       '0xa2E07DB4e92F66071Ca68984517972F5625AB325',
       '0xBb6CaCfCeA26e45D0ac8019e1Eb606440736b53e',
       '0x697A276401BadD8A9e37aEdd3DBF70b325f31268',
-      '0x8a1feCFF181dD770206c0892E09B0243A495152b'
+      '0x8a1feCFF181dD770206c0892E09B0243A495152b',
+      '0x5eD60B7BFba654342C401f853B55B8dd82f90726',
+      '0xa9a99C96e9fCCaC00a100e72A2C19eDe79458698',
     ],
   },
   bitcoin: {
@@ -55,6 +57,7 @@ const config = {
       '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
       '3jvARuePRR6KpNAeYYGRQzs8W4VYsWWxe4BfoTSTZhUr',
       'CFvYntdD6o7goAmXXtUKhirr8xLEfhY3txyJ8BpiisxJ',
+      'H9RCk9jQYX1bZ6HmjDAiD4r8GMgF8zpW9P1pacze7L9E',
     ],
   },
   polkadot: {
@@ -125,8 +128,13 @@ const config = {
     owners: [
       'osmo1h9sy6z5hnk5wjf6ds8w4syq0yqs706n9m6qlap',
     ]
+  },
+  xdai: {
+    owners: [
+      '0x4c61Fad9b400A8a3E0BbD40C4D57cF05525BF87e',
+    ]
   }
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'The list of wallets can be found at https://github.com/SwissBorg/pub. We also publish monthly our Proof of Liabilities at https://swissborg.com/proof-of-liabilities/audits.'
+module.exports.methodology = 'The list of wallets can be found at https://github.com/SwissBorg/pub. We also publish monthly our Proof of Liabilities at https://swissborg.com/proof-of-liabilities/audits. The total assets do not take into account the assets in DeFi.'

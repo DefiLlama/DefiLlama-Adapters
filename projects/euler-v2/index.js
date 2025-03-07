@@ -10,6 +10,9 @@ const config = {
   swellchain: { factory: '0x238bF86bb451ec3CA69BB855f91BDA001aB118b9', },
   sonic: { factory: '0xF075cC8660B51D0b8a4474e3f47eDAC5fA034cFB', },
   unichain: { factory: '0xbAd8b5BDFB2bcbcd78Cc9f1573D3Aad6E865e752', },
+  bob: { factory: '0x046a9837A61d6b6263f54F4E27EE072bA4bdC7e4', },
+  berachain: { factory: '0x5C13fb43ae9BAe8470f646ea647784534E9543AF', },
+  avax: { factory: '0xaf4B4c18B17F6a2B32F6c398a3910bdCD7f26181', },
 }
 
 Object.keys(config).forEach(chain => {

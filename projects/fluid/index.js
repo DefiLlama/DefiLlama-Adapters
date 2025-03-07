@@ -26,6 +26,9 @@ const config = {
   base: {
     liquidityResolver: (block) => "0x35A915336e2b3349FA94c133491b915eD3D3b0cd",
   },
+  polygon: {
+    liquidityResolver: (block) => "0x98d900e25AAf345A4B23f454751EC5083443Fa83",
+  },
 };
 
 async function getListedTokens(api) {
@@ -89,5 +92,6 @@ module.exports = {
   ethereum: { tvl, borrowed },
   arbitrum: { tvl, borrowed },
   base: { tvl, borrowed },
+  polygon: { tvl, borrowed },
 };
 // node test.js projects/fluid/index.js
