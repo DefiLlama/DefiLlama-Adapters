@@ -1,16 +1,26 @@
 const { nullAddress } = require("../helper/tokenMapping")
+const { sumTokensExport } = require("../helper/unwrapLPs")
 
 const config = {
-  base: '0x26a54955a5fb9472d3edfeac9b8e4c0ab5779ed3',
+  base: {
+    'exchange': '0x26a54955a5fb9472d3edfeac9b8e4c0ab5779ed3',
+    'degen': '0x797d6f745F691133cE90438e1Ba3eeEb16e4b5B5',
+    'staking': '0xE5E10Bf64CD32218CdbF501914B7A0d181934930',
+    'stakingToken': '0xd47f3e45b23b7594f5d5e1ccfde63237c60be49e',
+  }
 }
 
 Object.keys(config).forEach(chain => {
-  const exchange = config[chain]
+  const { exchange, degen, staking, stakingToken, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const tokens = await api.call({ abi: 'address[]:getSupportedTokenList', target: exchange })
       tokens.push(nullAddress)
-      return api.sumTokens({ owner: exchange, tokens, blacklistedTokens: ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'] })
-    }
+
+      const owners = [exchange, degen,]
+      return api.sumTokens({ owners, tokens, blacklistedTokens: ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'] })
+    },
   }
+  if (stakingToken)
+    module.exports[chain].staking = sumTokensExport({ owner: staking, token: stakingToken, })
 })
