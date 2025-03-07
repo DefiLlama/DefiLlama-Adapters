@@ -32,7 +32,7 @@ async function fetch(networkName) {
 function getRandomUserAgent() {
   const randomIndex = Math.floor(Math.random() * userAgents.length);
   return userAgents[randomIndex];
-};
+}
 
 async function tvl(api) {
   const networkName = chainMapping[api.chain];
