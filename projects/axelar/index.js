@@ -46,7 +46,6 @@ const chainListTotal = [
   'blast', 
   'bsc', 
   'celo', 
-  'cfg', 
   'ethereum', 
   'fantom', 
   'filecoin',
