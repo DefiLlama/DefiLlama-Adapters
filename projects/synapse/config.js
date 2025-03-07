@@ -370,7 +370,7 @@ module.exports = {
         {
           pool: ADDRESSES.aurora.nUSD,
           tokens: [
-            '0x4e71a2e537b7f9d9413d3991d37958c0b5e1e503',
+            ADDRESSES.canto.NOTE,
             // "0xd8836af2e565d3befce7d906af63ee45a57e8f80", // nUSD
           ]
         },

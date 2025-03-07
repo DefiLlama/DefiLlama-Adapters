@@ -49,6 +49,14 @@ const sonicConfig = {
   "perpEngine": "0x9100770dE5268B969e540650D003D909d5012826"
 }
 
+const abstractConfig = {
+  "querier": "0xC155f48b8212a7Dd16B336f1891c8E26D5DFE093",
+  "clearinghouse": "0x1385bF2f06165cA0621aF047cF8666c256e1B1C2",
+  "endpoint": "0x6B104c78D384D1C25CcEe2CA0698541e22eC60b2",
+  "spotEngine": "0xA65B7Ae7A3a17B93dc382fA1487b4bc3BCEB6e3D",
+  "perpEngine": "0x6950DD3d2da0cdc217ad56714c6BA0011171bcC4"
+}
+
 module.exports = {
   arbitrum: {
     tvl: sumTokensExport({
@@ -59,7 +67,7 @@ module.exports = {
   mantle: {
     tvl: sumTokensExport({
       owners: [mantleConfig.clearinghouse, mantleConfig.endpoint],
-      tokens: ["0xcDA86A272531e8640cD7F1a92c01839911B90bb0", ADDRESSES.mantle.USDC, ADDRESSES.mantle.WETH, ADDRESSES.mantle.WMNT],
+      tokens: [ADDRESSES.mantle.mETH, ADDRESSES.mantle.USDC, ADDRESSES.mantle.WETH, ADDRESSES.mantle.WMNT],
     })
   },
   sei: {
@@ -77,7 +85,13 @@ module.exports = {
   sonic: {
     tvl: sumTokensExport({
       owners: [sonicConfig.clearinghouse, sonicConfig.endpoint],
-      tokens: [ADDRESSES.sonic["USDC.e"], ADDRESSES.sonic.wS],
+      tokens: [ADDRESSES.sonic.USDC_e, ADDRESSES.sonic.wS],
+    })
+  },
+  abstract: {
+    tvl: sumTokensExport({
+      owners: [abstractConfig.clearinghouse, abstractConfig.endpoint],
+      tokens: [ADDRESSES.abstract.USDC],
     })
   }
 }

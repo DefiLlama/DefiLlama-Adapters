@@ -29,6 +29,9 @@ async function tvl(api) {
     await addFraxVaultToTVL(balances, api);
   }
 
+  if (api.chain === 'ethereum')
+  vaultAddresses = vaultAddresses.filter(i => !['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb'].includes(i))
+
   const assets = await api.multiCall({ abi: getAssetAbi, calls: vaultAddresses, });
   const totalAssets = await api.multiCall({ abi: getTotalAssets, calls: vaultAddresses, });
 
