@@ -21,6 +21,7 @@ async function tvl(api) {
   }
   await Promise.all(args.map(_tvl))
   await setCache(project, chain, cache)
+  return api.getBalances()
 }
 
 module.exports = {

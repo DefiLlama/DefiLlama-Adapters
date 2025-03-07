@@ -29,7 +29,6 @@ module.exports = {
   bsc: {
     staking: stakingPools,
     ...compoundExports(comptroller,
-      "bsc",
       cBNB,
       WBNBEquivalent)
   },

@@ -230,6 +230,5 @@ async function tvl(_, _b, {[chain]: block }) {
 }
 
 module.exports = {
-  start: 8606077, // January 19, 2021 11:51:30 AM
   celo: { tvl }
 };

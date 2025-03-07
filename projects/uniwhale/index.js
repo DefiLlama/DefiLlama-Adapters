@@ -5,7 +5,7 @@ const UNIWHALE_MARGIN_POOL = "0xBB1B941aB76fAE4e9F552B860eFaC1F367AC9bCc";
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
-  start: 1677833673,
+  start: '2023-03-03',
   bsc: {
     tvl: sumTokensExport({ owners: [UNIWHALE_LIQUIDITY_POOL, UNIWHALE_MARGIN_POOL, ], tokens: [USDT]}),
   },

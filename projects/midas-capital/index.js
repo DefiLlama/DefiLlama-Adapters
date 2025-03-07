@@ -1,10 +1,10 @@
 const sdk = require("@defillama/sdk");
 
-const { compoundExportsWithAsyncTransform } = require("../helper/compound");
+const { compoundExports2 } = require("../helper/compound");
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2023-06-17')/1e3), 'Protocol was exploited for $600k'],
+    [Math.floor(new Date('2023-06-17') / 1e3), 'Protocol was exploited for $600k'],
   ]
 }
 
@@ -55,39 +55,10 @@ const pools = {
 
 function getTvl(chain) {
   const config = pools[chain] ?? { pools: [] };
-  const tvls = config.pools.map((pool) =>
-    compoundExportsWithAsyncTransform(pool, chain, undefined, undefined, { resolveLPs: true })
-  );
-  let _tvl = sdk.util.sumChainTvls(tvls.map((t) => t.tvl))
-  let _borrowed = sdk.util.sumChainTvls(tvls.map((t) => t.borrowed))
-  let tvl = _tvl
-  let borrowed = _borrowed
-  if (chain === "bsc") {
-    tvl = resolveHypervisor(_tvl)
-    borrowed = resolveHypervisor(_borrowed)
-  }
-  return { tvl, borrowed };
+  const tvls = config.pools.map((comptroller) => compoundExports2({ comptroller }));
+  let tvl = sdk.util.sumChainTvls(tvls.map((t) => t.tvl))
+  let borrowed = sdk.util.sumChainTvls(tvls.map((t) => t.borrowed))
+  return { tvl, borrowed }
 }
 
 Object.keys(pools).forEach(chain => module.exports[chain] = getTvl(chain))
-
-function resolveHypervisor(tvlFunc) {
-  return async (...args) => {
-    const { api } = args[3]
-    const balances = await tvlFunc(...args)
-    let bscTokens = Object.keys(balances).filter(t => t.startsWith('bsc:')).map(t => t.slice(4))
-    const res = await api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256,uint256)', calls: bscTokens, permitFailure: true })
-    const hyperVisorTokens = bscTokens.filter((t, i) => res[i])
-    const totalAmounts = res.filter(i => i)
-    const token0s = await api.multiCall({ abi: 'address:token0', calls: hyperVisorTokens, })
-    const token1s = await api.multiCall({ abi: 'address:token1', calls: hyperVisorTokens, })
-    const totalSupplies = await api.multiCall({ abi: 'function totalSupply() returns (uint256)', calls: hyperVisorTokens, })
-    hyperVisorTokens.forEach((token, i) => {
-      const bal = balances[`bsc:${token}`] / totalSupplies[i]
-      delete balances[`bsc:${token}`]
-      sdk.util.sumSingleBalance(balances, token0s[i], totalAmounts[i][0] * bal, api.chain)
-      sdk.util.sumSingleBalance(balances, token1s[i], totalAmounts[i][1] * bal, api.chain)
-    })
-    return balances
-  }
-}

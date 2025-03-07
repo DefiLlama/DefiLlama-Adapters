@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getProvider, getSolBalances, } = require('../helper/solana')
+const { getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
 const { getConfig } = require('../helper/cache')
 
@@ -18,7 +18,7 @@ async function getData() {
     const pbPools = await program.account.priceBasedLiquidityPool.all()
     const liquidityPools = await program.account.liquidityPool.all()
     const solOwners = [...liquidityPools.map(i => i.account.liqOwner), ...pbPools.map(i => i.account.liqOwner)].map(i => i.toString())
-    const poolsTVL = (await getSolBalances(solOwners))
+    const poolsTVL = (await sumTokens2({ solOwners }))['solana:' + ADDRESSES.solana.SOL] ?? 0
     const loans = await program.account.loan.all()
 
     const loanSum = loans.filter(i => i.account.loanStatus.activated).reduce((a, i) => a + +i.account.originalPrice, 0)

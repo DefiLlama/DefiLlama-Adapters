@@ -7,6 +7,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'counts the total amount of ETH underlying the LSTs deposited into the yETH pool.',
-  start: 1693971707,
+  start: '2023-09-06',
   ethereum: { tvl }
 };

@@ -89,3 +89,5 @@ module.exports = {
     borrowed: () => 0,
   }
 };
+
+module.exports.deadFrom = '2025-01-15'  // Heco chain is retired

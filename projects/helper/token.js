@@ -9,6 +9,8 @@ const sdk = require('@defillama/sdk')
 async function covalentGetTokens(address, api, {
   onlyWhitelisted = true,
   useCovalent = false,
+  skipCacheRead = false,
+  ignoreMissingChain = false,
 } = {}) {
   const chainId = api?.chainId
   const chain = api?.chain
@@ -18,8 +20,11 @@ async function covalentGetTokens(address, api, {
   if (['mantle', 'blast'].includes(chain)) useCovalent = true
 
   if (!useCovalent) {
-    if (!ankrChainMapping[chain]) throw new Error('Chain Not supported: ' + chain)
-    const tokens = await ankrGetTokens(address, { onlyWhitelisted })
+    if (!ankrChainMapping[chain]) {
+      if (ignoreMissingChain) return Object.values(ADDRESSES[chain] ?? []).concat([ADDRESSES.null])
+      throw new Error('Chain Not supported: ' + chain)
+    }
+    const tokens = await ankrGetTokens(address, { onlyWhitelisted, skipCacheRead, })
     return tokens[ankrChainMapping[chain]] ?? []
   }
 
@@ -69,9 +74,10 @@ const ankrChainMapping = {
   rollux: 'rollux',
   scroll: 'scroll',
   syscoin: 'syscoin',
+  moonbeam: 'moonbeam'
 }
 
-async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
+async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = false } = {}) {
   address = address.toLowerCase()
 
   if (!ankrTokenCalls[address]) ankrTokenCalls[address] = _call()
@@ -83,9 +89,9 @@ async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
     const timeNow = Math.floor(Date.now() / 1e3)
     const THREE_DAYS = 3 * 24 * 3600
     const cache = (await getCache(project, key)) ?? {}
-    if (cache.timestamp && (timeNow - cache.timestamp) < THREE_DAYS)
+    if (!skipCacheRead && cache.timestamp && (timeNow - cache.timestamp) < THREE_DAYS)
       return cache.tokens
-    
+
     sdk.log('Pulling tokens for ' + address)
 
     const options = {
@@ -97,6 +103,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
         jsonrpc: '2.0',
         method: 'ankr_getAccountBalance',
         params: {
+          blockchain: Object.values(ankrChainMapping),
           onlyWhitelisted,
           nativeFirst: true,
           skipSyncCheck: true,
@@ -105,7 +112,7 @@ async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
         id: 42
       }
     };
-    const tokens = {}
+    const tokens = cache.tokens ?? {}
     const { data: { result: { assets } } } = await axios.request(options)
     const tokenCache = { timestamp: timeNow, tokens, }
     for (const asset of assets) {
@@ -116,10 +123,25 @@ async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
     for (const [chain, values] of Object.entries(tokens)) {
       tokens[chain] = getUniqueAddresses(values)
     }
+    // tokens.eth = await getETHTokens(address, onlyWhitelisted)
 
     await setCache(project, key, tokenCache)
     return tokens
   }
+}
+
+async function getETHTokens(address, onlyWhitelisted) {
+  const endpoint = getEnv('ETHEREUM_TOKENS_ENDPOINT')
+  if (!endpoint) throw new Error('Missing endpoint for ethereum tokens')
+  const url = `${endpoint}/v1/1/address/${address}/balances_v2/`
+  const { data: { items } } = await get(url)
+  const tokenSet = new Set()
+  items.forEach(i => {
+    const token = i.native_token ? ADDRESSES.null : i.contract_address
+    if (i.is_spam && onlyWhitelisted) return;
+    tokenSet.add(token)
+  })
+  return Array.from(tokenSet)
 }
 
 async function getComplexTreasury(owners) {

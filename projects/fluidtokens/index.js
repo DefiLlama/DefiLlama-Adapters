@@ -59,7 +59,8 @@ async function tvl() {
   const boosted=parseInt(boosted_tvl.bs_available_volume)+parseInt(boosted_tvl.bs_active_volume);
   
   return {
-    cardano: (SC_offers_tvl+repay_tvl+pools_tvl+boosted) / 1e6,
+    // cardano: (SC_offers_tvl+repay_tvl+pools_tvl+boosted) / 1e6,
+    cardano: (SC_offers_tvl+pools_tvl+boosted) / 1e6,
   };
 }
 

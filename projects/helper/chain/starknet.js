@@ -71,7 +71,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   const allData = []
   const chunks = sliceIntoChunks(callBodies, 25)
   for (const chunk of chunks) {
-    await sleep(2000)
+    await sleep(200)
     const { data } = await axios.post(STARKNET_RPC, chunk)
     allData.push(...data)
   }
@@ -183,7 +183,6 @@ async function getLogs({ fromBlock, topic, target }) {
 
   const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
   const { data } = await axios.post(STARKNET_RPC, body)
-  console.log(data)
 }
 
 api.call = module.exports.call

@@ -8,6 +8,7 @@ const config = {
   xdai: {
     factory: '0x8ea1a7241537f10fa73363fdc6380f3fc8619c03', fromBlock: 26026402, tokensAndOwners: [[ADDRESSES.xdai.WXDAI, '0xac004b512c33D029cf23ABf04513f1f380B3FD0a']],  // v1
   },
+  chz: { factory: '0xC57DC3acf7834D0dc4B2F73a5fb81dD9609D347A', fromBlock: 12285532 }
 }
 
 async function tvl(api) {
@@ -17,7 +18,8 @@ async function tvl(api) {
 module.exports = {
   xdai: { tvl },
   polygon: { tvl },
-  methodology: `TVL is the total amount of WXDAI and USDC held on Liquidity pools’ smart-contracts.`
+  chz: { tvl },
+  methodology: `TVL is the total amount of WXDAI, USDC, USDT and CHZ held on Liquidity pools’ smart-contracts.`
 }
 
 Object.keys(config).forEach(chain => {

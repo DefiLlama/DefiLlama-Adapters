@@ -8,5 +8,6 @@ module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
   hallmarks: [
     [1647043200, "Rug Pull"]
-  ]
+  ],
+  deadFrom: '2022-03-12'
 }

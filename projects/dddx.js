@@ -3,7 +3,6 @@ const { stakings } = require("./helper/staking");
 
 module.exports = {
     misrepresentedTokens: true,
-            incentivized: true,
     bsc: {
         tvl: getUniTVL({ factory: '0xb5737A06c330c22056C77a4205D16fFD1436c81b', useDefaultCoreAssets: true }),
         staking: stakings(
@@ -14,7 +13,6 @@ module.exports = {
 
             ],
             '0x4B6ee8188d6Df169E1071a7c96929640D61f144f',
-            'bsc'
         )
     }
 };
