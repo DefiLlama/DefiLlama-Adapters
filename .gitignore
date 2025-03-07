@@ -8,3 +8,5 @@ historical-data.js
 yarn.lock
 .DS_Store
 .vscode
+
+*.log
