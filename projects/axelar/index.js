@@ -25,7 +25,6 @@ const chainListSupply = [
   'juno', 
   'migaloo',
   'neutron',
-  'nolus',
   'osmosis', 
   'persistence', 
   'regen',
