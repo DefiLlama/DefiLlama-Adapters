@@ -30,7 +30,7 @@ const chainListSupply = [
   'regen',
   'secret', 
   'sei',
-  'sommelier',
+  // 'sommelier',
   'stargaze', 
   'stride',
   'terra2',
