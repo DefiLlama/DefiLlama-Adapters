@@ -3,7 +3,8 @@ const sdk = require('@defillama/sdk')
 module.exports = {
   doublecounted: true,
   hallmarks: [
-    [1689937200,"ETH Omnipool Hacked"]
+    [1689937200,"ETH Omnipool Hacked"],
+    [1741393291, 'Team decides to wind down the project'], 
   ],
   ethereum: {
     tvl: async (api) => {
