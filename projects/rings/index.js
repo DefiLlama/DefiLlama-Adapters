@@ -59,8 +59,6 @@ const CONFIG = {
     stakingSupportedAssets: [
       '0xCd4D2b142235D5650fFA6A38787eD0b7d7A51c0C',   // Stable Beets
       '0x33B29bcf17e866A35941e07CbAd54f1807B337f5',   // Stable Beets Gauge
-      '0xE54DD58a6d4e04687f2034dd4dDAb49da55F8afF',   // Echoes of the Ether
-      '0x8828a6e3166cac78F3C90A5b5bf17618BDAf1Deb',   // Echoes of the Ether Gauge
       '0x0806af1762Bdd85B167825ab1a64E31CF9497038',   //  MEC Capital Euler
     ]
   },
