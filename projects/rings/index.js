@@ -51,23 +51,12 @@ const CONFIG = {
       ADDRESSES.berachain.WBTC, // WBTC
       '0xecAc9C5F704e954931349Da37F60E39f515c11c1'  // LBTC
     ],
-    stakingVaults: [
-      '0x4d85ba8c3918359c78ed09581e5bc7578ba932ba',   // stkscUSD
-      '0x455d5f11Fea33A8fa9D3e285930b478B6bF85265',   // stkscETH
-      '0xD0851030C94433C261B405fEcbf1DEC5E15948d0'    // stkscBTC
-    ],
-    stakingSupportedAssets: [
-      '0xCd4D2b142235D5650fFA6A38787eD0b7d7A51c0C',   // Stable Beets
-      '0x33B29bcf17e866A35941e07CbAd54f1807B337f5',   // Stable Beets Gauge
-      '0x0806af1762Bdd85B167825ab1a64E31CF9497038',   //  MEC Capital Euler
-    ]
   },
 }
 
 Object.keys(CONFIG).forEach((chain) => {
-  const {  vaults, supportedAssets,  stakingVaults = [], stakingSupportedAssets = [] } = CONFIG[chain]
+  const {  vaults, supportedAssets } = CONFIG[chain]
   module.exports[chain] = { 
     tvl: sumTokensExport({ owners: vaults, tokens: supportedAssets }),
-    staking: sumTokensExport({ owners: stakingVaults, tokens: stakingSupportedAssets, resolveUniV3: true, blacklistedTokens: vaults }),
   };
 });
