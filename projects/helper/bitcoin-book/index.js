@@ -134,6 +134,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo'],
   zeusZBTC,
   cygnus,
   magpie,
