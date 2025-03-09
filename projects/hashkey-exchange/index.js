@@ -13,7 +13,8 @@ const config = {
   },
   ethereum: {
     owners: [
-      "0x7ffbafdc1e4f0a4b97130b075fb4a25f807a1807", //cold
+      "0x7ffbafdc1e4f0a4b97130b075fb4a25f807a1807", // cold 1
+      "0xee1bf4d7c53af2beafc7dc1dcea222a8c6d87ad9", // cold 2
       "0xffe15ff598e719d29dfe5e1d60be1a5521a779ae",
       //     "0x7269bc4a66c755b951f068626201090f0c3098e9", // bosera funds https://www.bosera.com/english/index.html
       "0x48ee4a557e291c2a48d227e8a8dbe2217a825682",
