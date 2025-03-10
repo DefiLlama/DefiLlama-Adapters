@@ -10,8 +10,9 @@ module.exports = {
 const CONFIG = {
   ethereum: {
     vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
+      ADDRESSES.sonic.scUSD,
+      ADDRESSES.sonic.scETH,
+      '0xBb30e76d9Bb2CC9631F7fC5Eb8e87B5Aff32bFbd'
     ],
     supportedAssets: [
       ADDRESSES.ethereum.USDC,                         // USDC
@@ -32,33 +33,32 @@ const CONFIG = {
       '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // AAVEWETH
       '0xd63070114470f685b75B74D60EEc7c1113d33a3D',  // USDO MORPHO,
       '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB', // STEAK_USDC
-      '0x2371e134e3455e0593363cBF89d3b6cf53740618' // GAUNTLET WETH
+      '0x2371e134e3455e0593363cBF89d3b6cf53740618', // GAUNTLET WETH
+      ADDRESSES.ethereum.WBTC,
+      '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642', // EBTC
+      ADDRESSES.ethereum.LBTC // LBTC
     ]
   },
   sonic: {
     vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812'
+      ADDRESSES.sonic.scUSD,
+      ADDRESSES.sonic.scETH,
+      '0xBb30e76d9Bb2CC9631F7fC5Eb8e87B5Aff32bFbd'
     ],
     supportedAssets: [
       ADDRESSES.sonic.USDC_e,
-      '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b',   // WETH
+      '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b',  // WETH
+      ADDRESSES.berachain.WBTC,                      // WBTC
+      '0xecAc9C5F704e954931349Da37F60E39f515c11c1',  // LBTC
+      '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6',  // AUSDC
+      '0xe18Ab82c81E7Eecff32B8A82B1b7d2d23F1EcE96'   // AWETH
     ],
-    stakingVaults: [
-      '0x4d85ba8c3918359c78ed09581e5bc7578ba932ba',   // stkscUSD
-      '0x455d5f11Fea33A8fa9D3e285930b478B6bF85265'    // stkscETH
-    ],
-    stakingSupportedAssets: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',   // scUSD
-      '0x3bce5cb273f0f148010bbea2470e7b5df84c7812',   // scETH
-    ]
   },
 }
 
 Object.keys(CONFIG).forEach((chain) => {
-  const {  vaults, supportedAssets,  stakingVaults = [], stakingSupportedAssets = [] } = CONFIG[chain]
+  const {  vaults, supportedAssets } = CONFIG[chain]
   module.exports[chain] = { 
     tvl: sumTokensExport({ owners: vaults, tokens: supportedAssets }),
-    staking: stakings(stakingVaults, stakingSupportedAssets),
   };
 });
