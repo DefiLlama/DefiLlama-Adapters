@@ -13,20 +13,27 @@ async function baseTvl(api) {
     ADDRESSES.base.WETH,
     "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf" // cbBTC
   ];
-  
+
   // Fetch base TVL from FLP pool
   await api.sumTokens({ owner: vaultStorageAddress, tokens: flpUnderlyings });
+}
 
-  // Fetch AEROLP balances
-  await api.sumTokens({ owner: stfdxlpStakingAddress, tokens: [AEROLP] });
-
+async function staking(api) {
+  // Fetch LFDX total supply (staked FDX)
   const lfdxTotalSupply = await api.call({ abi: "erc20:totalSupply", target: LFDX });
   api.add(FDX, lfdxTotalSupply);
+}
+
+async function pool2(api) {
+  // Fetch AEROLP balances from staking contract
+  await api.sumTokens({ owner: stfdxlpStakingAddress, tokens: [AEROLP] });
 }
 
 module.exports = {
   start: '2025-02-20',
   base: {
     tvl: baseTvl,
+    staking,
+    pool2,
   },
 };
