@@ -22,7 +22,20 @@ const tvl = async (api) => {
   // const vaults = Object.keys(await getConfig('nucleus-vaults', "https://backend.nucleusearn.io/v1/protocol/markets"))
   const tokens = await getConfig('nucleus-tokens', "https://backend.nucleusearn.io/v1/protocol/tokens")
   const sanitizeTokens = sanitizeAndValidateEvmAddresses(tokens)
-  return api.sumTokens({ owners: vaults, tokens: sanitizeTokens })
+
+  const [symbols, decimals] = await Promise.all([
+    api.multiCall({ calls: sanitizeTokens, abi: 'erc20:symbol', permitFailure: true }),
+    api.multiCall({ calls: sanitizeTokens, abi: 'erc20:decimals', permitFailure: true })
+  ])
+
+  const erc20Tokens = sanitizeTokens.map((token, index) => {
+    const symbol = symbols[index]
+    const decimal = decimals[index]
+    if (!symbol || !decimal) return null;
+    return token
+  }).filter(Boolean)
+
+  return api.sumTokens({ owners: vaults, tokens: erc20Tokens })
 }
 
 module.exports = {
