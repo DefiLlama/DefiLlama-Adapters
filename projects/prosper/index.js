@@ -129,11 +129,11 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: `
     Total TVL is the sum of three parts:
-    1. PROS Hashrate Value: (500,080 TH/s * ASIC Price Index from the "19to25" field) added as USDC.
+    1. PROS Baseline Hashrate Value: (500,080 TH/s of capacity * Hashrate Index's ASIC Price Index for 19 to 25 J/TH efficiency tier) added as USDC.
     2. Treasury Value:
-         a) BTC held in the treasury (BTC balance from Blockchain.info * current BTC price) added as USDC,
-         b) PROS held in the treasury (on-chain balance) added as PROS.
-    3. Staked Value of PROS: Total supply of the receipt token, representing staked PROS.
+         a) BTC held in the treasury (BTC balance * current BTC price),
+         b) PROS held in the treasury (PROS balance * current PROS price)
+    3. Staked Value of PROS: Total supply of the receipt token, representing staked PROS, * current PROS price
   `,
   bsc: {
     tvl,
