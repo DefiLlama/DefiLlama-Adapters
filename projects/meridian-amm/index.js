@@ -1,27 +1,22 @@
 const sdk = require("@defillama/sdk");
-const { getResource, function_view } = require("../helper/chain/movement");
+const { getResource, function_view } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
 
-const thalaswapAddress = "fbdb3da73efcfa742d542f152d65fc6da7b55dee864cd66475213e4be18c9d54";
+const thalaswapAddress = "0xfbdb3da73efcfa742d542f152d65fc6da7b55dee864cd66475213e4be18c9d54";
 const thalaswapControllerResource = `${thalaswapAddress}::pool::MeridianAMM`;
-let resourcesCache;
 
-async function _getResource(address, key) {
-  if (!resourcesCache) resourcesCache = getResource(address, key)
-  return resourcesCache
-}
 async function getBalance(poolAddress, assetMetadata) {
-  return function_view({ functionStr: "0x1::primary_fungible_store::balance", type_arguments: ["0x1::fungible_asset::Metadata"], args: [poolAddress, assetMetadata] });
+  return function_view({ functionStr: "0x1::primary_fungible_store::balance", type_arguments: ["0x1::fungible_asset::Metadata"], args: [poolAddress, assetMetadata], chain: 'movement' });
 }
 
 module.exports = {
   timetravel: false,
   methodology:
     "Aggregates TVL in all pools in Meridian's AMM.",
-  aptos: {
-    tvl: async () => {
+  movement: {
+    tvl: async (api) => {
       const balances = {};
-      const controller = await _getResource(thalaswapAddress, thalaswapControllerResource)
+      const controller = await getResource(thalaswapAddress, thalaswapControllerResource, api.chain)
       
       const poolObjects = controller.pools.inline_vec.map(pool => (pool.inner))
 
@@ -34,7 +29,7 @@ module.exports = {
         }
       }
 
-      return transformBalances("movement", balances);
+      return transformBalances(api.chain, balances);
     },
   },
 };
