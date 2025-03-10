@@ -8,22 +8,24 @@ const config = {
     ],
     tokens: [
       ADDRESSES.polygon.WMATIC_2,
-      ADDRESSES.polygon.USDC,
       ADDRESSES.polygon.USDC_CIRCLE,
       ADDRESSES.polygon.USDT,
-      ADDRESSES.polygon.WETH,
+      ADDRESSES.polygon.WETH_1,
       ADDRESSES.polygon.WBTC,
+      ADDRESSES.polygon.WSOL,
     ]
   },
   ethereum: {
     owners: [
-      '0x7df4253cf5cf81f7ca7fa5f37e54bc3543a528fb',
+      '0x23Ca477089466Ac4D563a89E4F0df8C46B92735d',
     ],
     tokens: [
       ADDRESSES.ethereum.USDC,
       ADDRESSES.ethereum.USDT,
-      '0xa8c8861b5ccf8cce0ade6811cd2a7a7d3222b0b8',
-      '0x84d17ef6bec165484c320b852eeb294203e191be',
+      ADDRESSES.ethereum.POL,
+      ADDRESSES.ethereum.WSOL,
+      ADDRESSES.ethereum.WBTC,
+      ADDRESSES.ethereum.WETH,
     ]
   }
 }
