@@ -28,6 +28,10 @@ async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens
   if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return;
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
   await sleep(1000 * (3 * Math.random() + 3))
+  tokens = tokens.map((a) => {
+    if (a === ADDRESSES.ton.TON) return ADDRESSES.ton.TON
+    return tonUtils.address(a).toString()
+  })
   balances.forEach(({ balance, price, jetton }) => {
     const address = tonUtils.address(jetton.address).toString()
     if (onlyWhitelistedTokens && !tokens.includes(address)) return;

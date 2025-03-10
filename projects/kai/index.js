@@ -21,9 +21,17 @@ const suiUsdtVault = {
   id: '0x7a2e56773ad4d9bd4133c67ed0ae60187f00169b584a55c0204175897e41d166',
   tType: ADDRESSES.sui.suiUSDT
 }
+const usdyVault = {
+  id: '0x02ec915b35fb958ca9a7d94e57d7254513ff711832ba8aebfc0ac3395152260b',
+  tType: ADDRESSES.sui.USDY
+}
+const deepVault = {
+  id: '0x6e58792dccbaa1d1d708d9a847a7c5b3f90c7878d1b76fd79afa48d31063bca6',
+  tType: ADDRESSES.sui.DEEP
+}
 
 async function tvl(api) {
-  const vaults = [wUsdcVault, wUsdtVault, SuiVault, UsdcVault, suiUsdtVault]
+  const vaults = [wUsdcVault, wUsdtVault, SuiVault, UsdcVault, suiUsdtVault, usdyVault, deepVault]
   const vaultObjs = await sui.getObjects(vaults.map(v => v.id))
 
   for (let i = 0; i < vaults.length; i++) {
