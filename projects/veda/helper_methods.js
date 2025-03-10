@@ -43,7 +43,6 @@ async function sumBoringTvl({ vaults, api, ownersToDedupe = [] }) {
 }
 
 async function deduplicateAndAdd({ vaults, assets, bals, api, ownersToDedupe = [], type, lensAddresses }) {
-  // If there are no vaults or owners to dedupe, just add the balances directly
   if (!vaults.length || !ownersToDedupe.length) {
     assets.forEach((a, i) => api.add(a, bals[i]));
     return;
@@ -102,7 +101,7 @@ async function deduplicateAndAdd({ vaults, assets, bals, api, ownersToDedupe = [
     //Final Value: ${finalValue}
     //Deduplication Ratio: ${ratios[i] * 100}%`);
   });
-
+  
   assets.forEach((a, i) => api.add(a, bals[i] * ratios[i]));
 }
 
