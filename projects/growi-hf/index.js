@@ -58,5 +58,5 @@ async function tvl() {
 module.exports = {
     methodology: "TVL is calculated directly from Hyperliquid API by getting GrowiHF Vault TVL.",
     timetravel: false,
-    arbitrum: { tvl },
+    hyperliquid: { tvl },
 };
