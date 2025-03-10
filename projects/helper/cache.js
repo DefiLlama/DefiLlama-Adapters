@@ -128,7 +128,7 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
       return json
     } catch (e) {
       // sdk.log(e)
-      sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+      sdk.log(project, 'trying to fetch from cache, failed to fetch data from endpoint:', endpoint)
       return getCache(key, project)
     }
   }
