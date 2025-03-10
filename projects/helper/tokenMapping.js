@@ -45,7 +45,7 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  hashkey: {
+  hsk: {
     '0xe7c6bf469e97eeb0bfb74c8dbff5bd47d4c1c98a': { coingeckoId: "hashkey-ecopoints", decimals: 18 }, // was mapped to wrong chain
   },
   hyperliquid: {
