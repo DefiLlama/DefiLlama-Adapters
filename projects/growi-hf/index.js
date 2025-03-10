@@ -42,8 +42,7 @@ async function fetchTVL() {
 
 
         req.on("error", (error) => {
-            console.error("Error fetching TVL:", error);
-            resolve({});
+            reject(new Error("Error fetching TVL:", error));
         });
 
         req.write(data);
