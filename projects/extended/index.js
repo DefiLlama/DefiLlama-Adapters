@@ -6,6 +6,5 @@ const contracts = [
 ];
 
 module.exports = {
-  start: 1720915200,  // 07/14/2024 @ 12:00am (UTC)
   ethereum: { tvl: sumTokensExport({ owners: contracts, tokens: [ADDRESSES.ethereum.USDC] }) }
 };
