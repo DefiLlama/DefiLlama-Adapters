@@ -8,8 +8,7 @@ const tvlMethod = '/tvl'
 const maxRetriesCount = 3
 
 module.exports = {
-  // TODO description
-  methodology: "TVL calculated from PuppyFun contracts.",
+  methodology: "TVL is counted as the total amount locked in PuppyFun smart contracts. In our particular case it is the total BNB amount in PuppyFun virtual DEX (all tokens which are not yet migrated). Calculated similarly to UniswapV2 based DEXes.",
   bsc: {
     tvl,
   },
