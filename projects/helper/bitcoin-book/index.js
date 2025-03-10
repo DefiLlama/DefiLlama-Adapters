@@ -117,7 +117,14 @@ const bitomato = [
 
 const stacksSBTC = [
   // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
-  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc'
+  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc',
+  'bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy',
+]
+
+const zeusZBTC = [
+  // https://docs.zeusnetwork.xyz/intro/welcome-to-zeus-network/how-it-works-bitcoin-and-solana
+  'bc1p698gf9gm8j34gvars97j6spsgrlxlhvyfajt2tsz2vnw9fcat9cqjcjn4v',
+  'bc1p96utmwdngv3xwdn90d7wg4tyqke70fs6js8ajgqkk89zn08z8d5q8xzchd',
 ]
 
 const magpie = [
@@ -127,6 +134,8 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo'],
+  zeusZBTC,
   cygnus,
   magpie,
   stacksSBTC,

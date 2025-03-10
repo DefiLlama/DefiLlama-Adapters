@@ -46,15 +46,10 @@ const STRATEGIES = {
 
 // returns tvl and token of the AutoCompounding strategies
 async function computeAutoCompoundingTVL(api) {
+  // vaults under this catagory are retired so tvl balances are not considered
+  const retiredBalance = 0
   const contracts = STRATEGIES.AutoCompounding;
-  // though these will be zToken (i.e. zkLend token, e.g. zUSDC), 
-  // according to zkLend, 1zToken = 1 underlying token
-  // so, 1 zSTRK == 1 STRK, 1 zUSDC == 1 USDC
-  const totalAssets = await multiCall({
-    calls: contracts.map(c => c.address),
-    abi: ERC4626AbiMap.total_assets
-  });
-  api.addTokens(contracts.map(c => c.token), totalAssets);
+  api.addTokens(contracts.map(c => c.token), retiredBalance);
 }
 
 async function computeXSTRKStratTVL(api) {
@@ -88,27 +83,10 @@ async function computeXSTRKStratTVL(api) {
 
 // returns tvl and token of the Sensei strategies
 async function computeSenseiTVL(api) {
-  // Sensei strategies contain multiple LP tokens in each contract bcz of looping and borrow,
-  // but we only consider the zToken bal divided by a factor (to offset looping) as TVL
-  // - This is bcz any deposit by user first gets deposited into zkLend for zToken
+  // vaults under this catagory are retired so tvl balances are not considered
+  const retiredBalance = 0 
   const contracts = STRATEGIES.Sensei;
-  const settings = await multiCall({
-    calls: contracts.map(c => c.address),
-    abi: ERC721StratAbiMap.get_settings
-  });
-
-  const DENOMINATOR_FACTOR = 1000000n;
-  const offsetFactors = settings.map(s => s.coefs_sum2); // The factor is in 10**6 terms
-  const balances = await multiCall({
-    calls: contracts.map(c => ({
-      target: c.zToken,
-      params: c.address,
-    })),
-    abi: ERC4626AbiMap.balanceOf
-  });
-
-  const adjustedBalances = balances.map((b, i) => (b * DENOMINATOR_FACTOR) / (DENOMINATOR_FACTOR + BigInt(offsetFactors[i])));
-  api.addTokens(contracts.map(c => c.token), adjustedBalances);
+  api.addTokens(contracts.map(c => c.token), retiredBalance);
 }
 
 async function tvl(api) {
