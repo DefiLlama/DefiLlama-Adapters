@@ -2314,5 +2314,10 @@
   },
   "hyperliquid": {
     "WHYPE": "0x5555555555555555555555555555555555555555"
+  }, 
+  "hsk": {
+    "WHSK": "0xb210d2120d57b758ee163cffb43e73728c471cf1", 
+    "USDT": "0xf1b50ed67a9e2cc94ad3c477779e2d4cbfff9029", 
+    "USDC": "0x054ed45810dbbab8b27668922d110669c9d88d0a"
   }
 }
