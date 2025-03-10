@@ -4,6 +4,7 @@ const BigNumber = require("bignumber.js");
 const abi = require('../helper/abis/aave.json');
 const { nullAddress } = require('../helper/unwrapLPs');
 
+// The getV1Assets function retrieves the list of reserves for a given lending pool core contract.
 async function getV1Assets(lendingPoolCore, block, chain) {
     const reserves = (
         await sdk.api.abi.call({
@@ -19,6 +20,7 @@ async function getV1Assets(lendingPoolCore, block, chain) {
 
 const ethReplacement = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
+// The multiMarketV1TvlBorrowed function calculates the total borrowed value for multiple markets in Aave V1.
 async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block, chain, eth) {
     const reserves = await getV1Assets(lendingPoolCore, block, chain);
     const totalBorrowed = await sdk.api.abi.multiCall({
@@ -62,10 +64,12 @@ function multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain="eth
     return (borrowed?multiMarketV1TvlBorrowed:depositMultiMarketV1Tvl)(balances, lendingPoolCore, block, chain, eth)
 }
 
+// The singleAssetV1Market function calculates the TVL for single asset markets in Aave V1.
 async function singleAssetV1Market(balances, lendingPoolCore, block, borrowed, chain, eth) {
     return multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain, eth);
 }
 
+// The uniswapV1Market function calculates the TVL for Uniswap V1 markets in Aave V1.
 async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed, eth = ADDRESSES.null){
     const uniswapMarketTvlBalances = {}
     await multiMarketV1Tvl(
@@ -122,6 +126,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
     return balances
 }
 
+// The methodology property explains how the TVL is calculated.
 module.exports={
     singleAssetV1Market,
     uniswapV1Market

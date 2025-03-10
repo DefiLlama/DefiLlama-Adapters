@@ -1,11 +1,14 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const { sumTokensExport } = require('../helper/unwrapLPs')
+
+// The getUniTVL function is used to calculate the total value locked (TVL) in Uniswap-like decentralized exchanges.
 const config = {
   ethereum: '0xcBAE5C3f8259181EB7E2309BC4c72fDF02dD56D8',
   pulse: '0x5b9f077a77db37f3be0a5b5d31baeff4bc5c0bd7',
 }
 
+// The sumTokensExport function is used to sum the tokens held in specific accounts.
 const staking = {
   pulse: {
     tokensAndOwners: [

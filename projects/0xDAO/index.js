@@ -1,9 +1,11 @@
 const oxLensAbi = {
+  // The oxLensAbi object contains the ABI for the oxLens contract, which provides data about the oxPools.
   "oxPoolsAddresses": "address[]:oxPoolsAddresses",
   "oxPoolsData": "function oxPoolsData(address[] _oxPoolsAddresses) view returns (tuple(address id, address stakingAddress, uint256 stakedTotalSupply, uint256 totalSupply, tuple(address id, string symbol, bool stable, address token0Address, address token1Address, address gaugeAddress, address bribeAddress, address[] bribeTokensAddresses, address fees, uint256 totalSupply) poolData)[])"
 }
 
 const veAbi = {
+  // The veAbi object contains the ABI for the ve contract, which provides data about locked tokens.
   "locked": "function locked(uint256) view returns (int128 amount, uint256 end)"
 }
 
@@ -18,6 +20,7 @@ const { standardPoolInfoAbi } = require('../helper/masterchef')
 const { sumTokens2 } = require("../helper/unwrapLPs.js");
 
 async function tvl(api) {
+  // The tvl function calculates the total value locked (TVL) in the 0xDAO protocol by summing the balances of various pools and locked tokens.
   const masterchef = "0xa7821c3e9fc1bf961e280510c471031120716c3d"
   const oxd = "0xc165d941481e68696f43ee6e99bfb2b23e0e3114"
   const tokens = (await api.fetchList({ lengthAbi: 'poolLength', itemAbi: standardPoolInfoAbi, target: masterchef })).map(i => i.lpToken)

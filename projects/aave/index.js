@@ -6,7 +6,7 @@ const { ammMarket } = require('./amm');
 const { unwrapBalancerToken } = require('../helper/unwrapLPs');
 const methodologies = require('../helper/methodologies');
 
-
+// The getV2Reserves function fetches the V2 reserves for the specified block and chain.
 const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
 
 function ethereum(borrowed) {
@@ -20,6 +20,7 @@ function ethereum(borrowed) {
       if(borrowed){
         await getBorrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
       } else {
+        // The getTvl function calculates the total value locked (TVL) for the specified Aave V2 reserves.
         await getTvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
       }
     }
@@ -49,6 +50,7 @@ function v2(chain, v2Registry){
   }
 }
 
+// The methodology property explains how the TVL is calculated.
 module.exports = {
     methodology: methodologies.lendingMarket,
   ethereum: {

@@ -4,6 +4,7 @@ const abi = {
   getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
 };
 
+// The CONFIG object contains the configuration for the Aave V3 protocol on different chains.
 const CONFIG = {
   ethereum: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758'],
   polygon: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
@@ -22,6 +23,7 @@ const CONFIG = {
   sonic: ['0x306c124fFba5f2Bc0BcAf40D249cf19D492440b9']
 };
 
+// The fetchReserveData function fetches the reserve data for the specified pool and calculates the TVL or borrowed values.
 const fetchReserveData = async (api, poolDatas, isBorrowed) => {
   const reserveTokens = await api.multiCall({ calls: poolDatas, abi: abi.getAllReservesTokens });
   const calls = []
@@ -44,6 +46,7 @@ const fetchReserveData = async (api, poolDatas, isBorrowed) => {
   return api.sumTokens({ tokensAndOwners })
 }
 
+// The methodology property explains how the TVL is calculated.
 module.exports.methodology = "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending."
 
 Object.keys(CONFIG).forEach((chain) => {

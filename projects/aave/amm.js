@@ -1,5 +1,6 @@
 const abi = require('../helper/abis/aave.json');
 
+// The ammMarket function calculates the total value locked (TVL) in the Aave AMM market by summing the balances of various tokens.
 async function ammMarket(api, borrowed) {
   const lendingPool = "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB"
   const reservesList = (await api.call({
@@ -35,5 +36,7 @@ async function ammMarket(api, borrowed) {
 }
 
 module.exports = {
+  // The methodology property explains how the TVL is calculated.
+  methodology: "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
   ammMarket
 }

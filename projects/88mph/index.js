@@ -1,8 +1,10 @@
 const sdk = require('@defillama/sdk')
 
+// The staking function is used to calculate the total value locked in the staking contract.
 const { staking } = require('../helper/staking')
 const { getUniqueAddresses } = require('../helper/utils')
 
+// The config object contains the configuration for the 88mph protocol on different chains.
 const config = {
   ethereum: { dpools: [
     "0x19e10132841616ce4790920d5f94b8571f9b9341",
@@ -111,6 +113,7 @@ const config = {
   ] },
 }
 
+// The tvlExports object contains the TVL calculation functions for different chains.
 const tvlExports = {};
 
 Object.keys(config).forEach(chain => {

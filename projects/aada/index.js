@@ -1,5 +1,6 @@
 const { sumTokensExport } = require("../helper/chain/cardano");
 
+// The scriptAdresses array contains the addresses of various Cardano scripts used in the Aada protocol.
 const scriptAdresses = [
   "addr1zy9940grv28qxz9k82l9gmqd80vfd8a2734e35yzsz9cqktfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9smq5w00", //request.hs -- Request created. Lender to fund
   "addr1zykhtew0z93z6hmgu2ew7kl9puqz0wmafp0f3jypuejkwmrfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9skq4p22", //collateral.hs -- Loan funded. Borrower to repay
@@ -14,6 +15,7 @@ const scriptAdresses = [
 ];
 
 module.exports = {
+  // The methodology property explains how the TVL is calculated.
   methodology:
     "Calculates the total of idle tokens held in pool contracts or collateral tokens secured in the collateral contract.",
   timetravel: false,
@@ -24,6 +26,7 @@ module.exports = {
         "8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f6958741414441",
       ],
     }),
+    // The sumTokensExport function is used to sum the tokens held in specific Cardano accounts.
     tvl: sumTokensExport({ scripts: scriptAdresses }),
   },
   hallmarks: [[1708560053, "V2 Launch"]],

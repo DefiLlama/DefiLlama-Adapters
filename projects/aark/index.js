@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-async function tvl(api) {
 
+// The tvl function calculates the total value locked (TVL) in the specified vault contract.
+async function tvl(api) {
+  // The VAULT_CONTRACT_ADDRESS constant stores the address of the vault contract.
   const VAULT_CONTRACT_ADDRESS = '0x7A5df878e195D09F1C0bbba702Cfdf0ac9d0a835'
   return api.sumTokens({ owner: VAULT_CONTRACT_ADDRESS, tokens: [
     ADDRESSES.arbitrum.WETH,
@@ -24,5 +26,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  // The methodology property explains how the TVL is calculated.
+  methodology: 'The TVL is calculated by summing the balances of various tokens held in the specified vault contract.',
   arbitrum: { tvl },
 }
