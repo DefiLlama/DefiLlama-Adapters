@@ -9,11 +9,11 @@ const { GraphQLClient } = require("graphql-request");
 
 
 const endpoint = () => getEnv('APTOS_RPC')
-const movementEndpoint = () => getEnv('MOVEMENT_RPC')
+const movementEndpoint = () => getEnv('MOVE_RPC')
 
 const endpointMap = {
   aptos: endpoint,
-  movement: movementEndpoint,
+  move: movementEndpoint,
 }
 
 
