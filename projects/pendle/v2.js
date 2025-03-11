@@ -63,7 +63,7 @@ const config = {
   },
   sonic: {
     factories: [
-      { factory: "0xfee31a6ec6ebefa0b5a594bf5b1139e3c6faa0fb", fromBlock: 41294178 },  // v3
+      { factory: "0xfee31a6ec6ebefa0b5a594bf5b1139e3c6faa0fb", fromBlock: 7830430 },  // v3
     ],
   }
 };
