@@ -24,6 +24,26 @@ query poolQuery($lastId: ID) {
 }`
 
 const borrowedQuery = `
+query borrowedQuery($lastId: ID, $block: Int) {
+  termRepoExposures(
+    where: {
+      repoExposure_gt: 0,
+      id_gt: $lastId,
+    },
+    first: 1000,
+    block: {
+      number: $block
+    }
+  ) {
+    id
+    term {
+      purchaseToken
+    }
+    repoExposure
+  }
+}`
+
+const borrowedQueryHeadBlock = `
 query borrowedQuery($lastId: ID) {
   termRepoExposures(
     where: {
@@ -40,6 +60,11 @@ query borrowedQuery($lastId: ID) {
   }
 }`
 
+const graphStartBlock = {
+  ethereum: 5240462,
+  avax: 43162227,
+}
+
 module.exports = {
   methodology: `Counts the collateral tokens locked in Term Finance's term repos.`,
   // hallmarks: [[1588610042, "TermFinance Launch"]],
@@ -53,7 +78,14 @@ Object.keys(graphs).forEach(chain => {
       return sumTokens2({ api, tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker]), permitFailure: true })
     },
     borrowed: async (api) => {
-      const data = await graphFetchById({ endpoint: host, query: borrowedQuery, api })
+      let data
+      if (!api.block) {
+        data = await graphFetchById({ endpoint: host, query: borrowedQueryHeadBlock, api, useBlock: false })
+      } else if (api.block >= graphStartBlock[chain]) {
+        data = await graphFetchById({ endpoint: host, query: borrowedQuery, api, useBlock: true, params: { block: api.block } })
+      } else {
+        data = []
+      }
 
       for (const { term: { purchaseToken }, repoExposure } of data) {
         api.add(purchaseToken, repoExposure)
