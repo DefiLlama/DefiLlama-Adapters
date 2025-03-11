@@ -72,7 +72,7 @@ async function tvlBlast(api) {
   })
 
   await api.sumTokens({ ownerTokens })
-  const stakedTokens = cybroStakingBlast.map(address => {
+  const stakedTokens = cybroStakingBlast.map(async (address) => {
     return await api.call({abi: "function totalLocked() view returns (uint256)", target: address, params: []})
   })
   await api.addTokens(["0x963eec23618bbc8e1766661d5f263f18094ae4d5"], [stakedTokens.reduce((acc, a) => acc + a, 0)])
