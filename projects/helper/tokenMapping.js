@@ -19,7 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
-  'celestia', 'dydx', 'carbon', 'milkyway',
+  'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride',
 
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
@@ -42,6 +42,13 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
+  saga: {
+    '0xfc960c233b8e98e0cf282e29bde8d3f105fc24d5': { coingeckoId: "usd-coin", decimals: 6 },
+    '0xc8fe3c1de344854f4429bb333affaef97ef88cea': { coingeckoId: "tether", decimals: 6 },
+    '0xeb41d53f14cb9a67907f2b8b5dbc223944158ccb': { coingeckoId: "ethereum", decimals: 18 },
+    '0x4e33613add93463e82a14080021f2ffaf1e062cf': { coingeckoId: "uniswap", decimals: 18 },
+    '0xa19377761fed745723b90993988e04d641c2cffe': { coingeckoId: "saga-2", decimals: 6 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
@@ -53,6 +60,13 @@ const fixBalancesTokens = {
     '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18 },
     '0xad11a8BEb98bbf61dbb1aa0F6d6F2ECD87b35afA': { coingeckoId: "hemi", decimals: 6 },
   },
+  move: {
+    '0xa': { coingeckoId: "movement", decimals: 8 },
+    '0x447721a30109c662dde9c73a0c2c9c9c459fb5e5a9c92f03c50fa69737f5d08d': { coingeckoId: "tether", decimals: 6 },
+    '0x83121c9f9b0527d1f056e21a950d6bf3b9e9e2e8353d0e95ccea726713cbea39': { coingeckoId: "usd-coin", decimals: 6 },
+    '0xb06f29f24dde9c6daeec1f930f14a441a8d6c0fbea590725e88b340af3e1939c': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    '0x908828f4fb0213d4034c3ded1630bbd904e8a3a6bf3c63270887f0b06653a376': { coingeckoId: "ethereum", decimals: 8 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

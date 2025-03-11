@@ -125,7 +125,7 @@ module.exports = {
   },
   blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b', useDefaultCoreAssets: true, }) },
   core: { tvl: tvl2 },
-  //rsk: { tvl: tvl2 },
+  rsk: { tvl: tvl2 },
   europa: { tvl: getUniTVL({ factory: '0x1aaF6eB4F85F8775400C1B10E6BbbD98b2FF8483', useDefaultCoreAssets: true, }) },
   moonbeam: { tvl: getUniTVL({ factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4', useDefaultCoreAssets: true, }) },
   polygon_zkevm: { tvl: tvl2 },
