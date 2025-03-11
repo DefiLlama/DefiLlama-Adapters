@@ -27,7 +27,7 @@ const ASSETS = [
   ADDRESSES.starknet.XSTRK,
   ADDRESSES.starknet.SSTRK,
   ADDRESSES.starknet.EKUBO,
-  ADDRESSES.starknet.CASH
+  "0x498edfaf50ca5855666a700c25dd629d577eb9afccdf3b5977aec79aee55ada" // CASH
 ];
 
 async function tvl(api) {
