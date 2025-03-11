@@ -1,34 +1,34 @@
 const sdk = require("@defillama/sdk");
-const { getResource, function_view } = require("../helper/chain/aptos");
+const { function_view } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
 
-const thalaswapAddress = "0xfbdb3da73efcfa742d542f152d65fc6da7b55dee864cd66475213e4be18c9d54";
-const thalaswapControllerResource = `${thalaswapAddress}::pool::MeridianAMM`;
+const meridianLensAddress = "23e71cc9821bbe85404ab9850694cd319701687265bb18740af067843fc81f1e";
 
-async function getBalance(poolAddress, assetMetadata) {
-  return function_view({ functionStr: "0x1::primary_fungible_store::balance", type_arguments: ["0x1::fungible_asset::Metadata"], args: [poolAddress, assetMetadata], chain: 'move' });
+async function getPools(lensAddress) {
+  return function_view({ functionStr: `${lensAddress}::lens::get_all_pools_info`, type_arguments: [], args: [], chain: 'move' })
 }
 
 module.exports = {
   timetravel: false,
-  methodology: "Aggregates TVL in all pools in Meridian's AMM.",
+  methodology:
+    "Aggregates TVL in all pools in Meridian's AMM.",
   move: {
     tvl: async (api) => {
-      const balances = {};
-      const controller = await getResource(thalaswapAddress, thalaswapControllerResource, api.chain)
-
-      const poolObjects = controller.pools.inline_vec.map(pool => (pool.inner))
-
-      for (const poolAddress of poolObjects) {
-        const pool = await getResource(poolAddress, `${thalaswapAddress}::pool::Pool`, api.chain)
-        const assets = pool.assets_metadata.map(asset => asset.inner)
-        for (const asset of assets) {
-          const balance = await getBalance(poolAddress, asset)
-          sdk.util.sumSingleBalance(balances, asset, balance);
+      const poolInfos = await getPools(meridianLensAddress)
+      const netBalances = {};
+      
+      for (const poolInfo of poolInfos) {
+        const assets = poolInfo.assets_metadata.map(asset => asset.inner)
+        const balances = poolInfo.balances
+        
+        console.log(poolInfo)
+        for (let i = 0; i < assets.length; i++) {
+            console.log(assets[i], balances[i])
+            sdk.util.sumSingleBalance(netBalances, assets[i], balances[i]);
         }
       }
 
-      return transformBalances(api.chain, balances);
+      return transformBalances(api.chain, netBalances)
     },
   },
 };
