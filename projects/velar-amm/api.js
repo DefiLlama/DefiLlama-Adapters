@@ -16,6 +16,7 @@ async function tvl(api) {
   await uniTvl(api, stableFactory, { isStable: true })
   await uniTvl(api, factory)
   await uniTvl(api, factory2, { isVersion2: true })
+  return api.getBalances()
 }
 
 
