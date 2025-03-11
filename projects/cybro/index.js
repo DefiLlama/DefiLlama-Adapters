@@ -20,12 +20,6 @@ const vaultsBlast = [
   '0x3db2bd838c2bed431dcfa012c3419b7e94d78456',
   '0xc66fc517c8bf1c34ae48529df53dd84469e21daa',
   '0x24e72c2c7be9b07942f6f8d3cdce995df699514d',
-  '0xbfb18eda8961ee33e38678caf2bceb2d23aedfea',
-  '0xc95317e48451a97602e3ae09c237d1dd8ee83cd0',
-  '0x66e1bea0a5a934b96e2d7d54eddd6580c485521b',
-  '0x370498c028564de4491b8aa2df437fb772a39ec5',
-  '0xe9041d3483a760c7d5f8762ad407ac526fbe144f',
-  '0xe472ccb182a51c589034957cd6291d0b64eaaab2',
   '0xb3e2099b135b12139c4eb774f84a5808fb25c67d',
   '0xb81d975cc7f80ede476c1a930720378bda4092a2',
 ]
@@ -72,10 +66,9 @@ async function tvlBlast(api) {
   })
 
   await api.sumTokens({ ownerTokens })
-  const stakedTokens = cybroStakingBlast.map(async (address) => {
-    return await api.call({abi: "function totalLocked() view returns (uint256)", target: address, params: []})
-  })
-  await api.addTokens(["0x963eec23618bbc8e1766661d5f263f18094ae4d5"], [stakedTokens.reduce((acc, a) => acc + a, 0)])
+  let stakedTokens = await api.multiCall({abi: "function totalLocked() view returns (uint256)", calls: cybroStakingBlast })
+
+  await api.addTokens(["0x963eec23618bbc8e1766661d5f263f18094ae4d5"], [stakedTokens.reduce((acc, item) => acc + Number(item), 0)])
   return api.erc4626Sum2({ calls: vaultsBlast });
 }
 
