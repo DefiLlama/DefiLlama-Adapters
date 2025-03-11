@@ -21,9 +21,7 @@ module.exports = {
         const assets = poolInfo.assets_metadata.map(asset => asset.inner)
         const balances = poolInfo.balances
         
-        console.log(poolInfo)
         for (let i = 0; i < assets.length; i++) {
-            console.log(assets[i], balances[i])
             sdk.util.sumSingleBalance(netBalances, assets[i], balances[i]);
         }
       }
