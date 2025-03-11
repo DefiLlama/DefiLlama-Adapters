@@ -97,6 +97,7 @@ const cygnus = require('./cygnus.js')
 const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
+const prosper = require('./prosper.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -239,5 +240,6 @@ module.exports = {
   bitrue,
   unitbtc,
   backpack,
-  coinbasebtc
+  coinbasebtc,
+  prosper
 }
