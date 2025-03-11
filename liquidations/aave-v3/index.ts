@@ -83,7 +83,7 @@ const rc: { [chain in Chains]: AaveAdapterResource } = {
   },
   [Chains.arbitrum]: {
     name: "aave",
-    chain: Chains.ethereum,
+    chain: Chains.arbitrum,
     usdcAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     subgraphUrl: sdk.graph.modifyEndpoint('4xyasjQeREe7PxnF6wVdobZvCw5mhoHZq3T7guRpuNPf'), // Messari AAVE v3
     explorerBaseUrl: "https://arbiscan.io/address/",
