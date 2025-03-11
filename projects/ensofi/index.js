@@ -1,6 +1,6 @@
 const { default: axios } = require("axios")
 
-const ensoApi = 'https://service.devnet.ensofi.xyz/api/defilama'
+const ensoApi = 'https://service.ensofi.xyz/api/defilama'
 
 const network = {
   eclipse: 'ECLIPSE'
