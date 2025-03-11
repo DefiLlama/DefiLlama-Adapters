@@ -119,7 +119,7 @@ const CONFIG = {
   },
   hemi: {
     pools: [
-      '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', //eth pool
+      ADDRESSES.fuse.WETH_3, //eth pool
     ],
   },
   sonic: {

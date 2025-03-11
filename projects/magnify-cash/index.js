@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 
-const USDC_WORLDCHAIN = "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1"
+const USDC_WORLDCHAIN = ADDRESSES.wc.USDC_e
 const Magnify_Cash_V1 = '0x4E52d9e8d2F70aD1805084BA4fa849dC991E7c88';
 const Magnify_Cash_V2 = '0x93dbB2d447F0086aF60B2becc66598fe3D9135A1';
 
