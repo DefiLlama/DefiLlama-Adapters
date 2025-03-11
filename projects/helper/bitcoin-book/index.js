@@ -243,5 +243,6 @@ module.exports = {
   bitrue,
   unitbtc,
   backpack,
-  coinbasebtc
+  coinbasebtc,
+  prosper
 }
