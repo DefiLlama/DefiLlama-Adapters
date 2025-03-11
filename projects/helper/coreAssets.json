@@ -62,7 +62,9 @@
     "EIGEN": "0xec53bF9167f50cDEB3Ae105f56099aaaB9061F83",
     "LBTC": "0x8236a87084f8B84306f72007F36F2618A5634494",
     "cbBTC": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
-    "BTCN": "0x386E7A3a0c0919c9d53c3b04FF67E73Ff9e45Fb6"
+    "BTCN": "0x386E7A3a0c0919c9d53c3b04FF67E73Ff9e45Fb6",
+    "POL": "0x455e53cbb86018ac2b8092fdcd39d8444affc3f6",
+    "WSOL": "0xD31a59c85aE9D8edEFeC411D448f90841571b89c"
   },
   "fantom": {
     "WFTM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
@@ -138,7 +140,8 @@
     "IVN": "0x6a46d878401f46b4c7f665f065e0667580e031ec",
     "ankrBNB": "0xe85afccdafbe7f2b096f268e31cce3da8da2990a",
     "aBNBb": "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d",
-    "TUSD": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9"
+    "TUSD": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9",
+    "WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"
   },
   "polygon": {
     "WMATIC": "0xfd28c7cea3c50a060cb4c0059e453c6d4dd9829d",
@@ -162,7 +165,8 @@
     "BNB": "0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f",
     "BUSD": "0x9c9e5fd8bbc25984b178fdce6117defa39d2db39",
     "WORK": "0x6002410dda2fb88b4d0dc3c1d562f7761191ea80",
-    "FRAX": "0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89"
+    "FRAX": "0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89",
+    "WSOL": "0xd93f7E271cB87c23AaA73edC008A79646d1F9912"
   },
   "xdai": {
     "WXDAI": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
@@ -289,7 +293,8 @@
     "plvGLP": "0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1",
     "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
     "FRAX": "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
-    "sUSDe": "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2"
+    "sUSDe": "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2",
+    "ETHFI": "0x7189fb5B6504bbfF6a852B13B7B82a3c118fDc27"
   },
   "fuse": {
     "WFUSE": "0x0be9e53fd7edac9f859882afdda116645287c629",
@@ -831,7 +836,9 @@
     "zWBTC": "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WBTC",
     "zWETH": "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WETH",
     "USDt": "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b",
-    "USDC_3": "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b"
+    "USDC_3": "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b",
+    "MOON": "0xd71e041f0d9c871e68604699aa109ead5643ced548f9d216ddb89702968e5458::moon_coin::MoonCoin",
+    "CELL": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12"
   },
   "dogechain": {
     "WWDOGE": "0xb7ddc6414bf4f5515b52d8bdd69973ae205ff101",
@@ -1543,7 +1550,10 @@
     "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
     "USDT": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
     "rETH": "0xb6fe221fe9eef5aba221c348ba20a1bf5e73624c",
-    "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452"
+    "wstETH": "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",
+    "cbBTC": "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+    "ETHFI": "0x6C240DDA6b5c336DF09A4D011139beAAa1eA2Aa2",
+    "WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"
   },
   "sei": {
     "SEI": "usei",
@@ -2132,7 +2142,8 @@
     "STS": "0xe5da20f15420ad15de0fa650600afc998bbe3955",
     "scETH": "0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812",
     "scUSD": "0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE",
-    "USDT": "0x6047828dc181963ba44974801ff68e538da5eaf9"
+    "USDT": "0x6047828dc181963ba44974801ff68e538da5eaf9",
+    "LBTC": "0xecAc9C5F704e954931349Da37F60E39f515c11c1"
   },
   "vinu": {
     "USDT": "0xC0264277fcCa5FCfabd41a8bC01c1FcAF8383E41",
@@ -2226,7 +2237,12 @@
     "WBTC": "0x6e142cdaefa4ba7786e8d1ff74968db67c3b910d"
   },
   "occ": {
-    "WEDU": "0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12"
+    "WEDU": "0xd02e8c38a8e3db71f8b2ae30b8186d7874934e12",
+    "BLEND": "0x526e8a66e357ffeaeeec6d7be1e5ea44a788dd1d",
+    "USDT": "0x7277cc818e3f3ffbb169c6da9cc77fc2d2a34895",
+    "USDC": "0x836d275563bab5e93fd6ca62a95db7065da94342",
+    "WETH": "0xa572bf655f61930b6f0d4546a67cd1376220081a",
+    "WBTC": "0xac0313f97398b585f23f8e50952f10d62350697c"
   },
   "artela": {
     "WART": "0xadcd43c78a914c6b14171ab1380bcfcfa25cd3ad",
@@ -2307,5 +2323,10 @@
   },
   "hyperliquid": {
     "WHYPE": "0x5555555555555555555555555555555555555555"
+  }, 
+  "hsk": {
+    "WHSK": "0xb210d2120d57b758ee163cffb43e73728c471cf1", 
+    "USDT": "0xf1b50ed67a9e2cc94ad3c477779e2d4cbfff9029", 
+    "USDC": "0x054ed45810dbbab8b27668922d110669c9d88d0a"
   }
 }
