@@ -97,6 +97,7 @@ module.exports = {
     sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
     unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
     lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
+    saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
   }),
   filecoin: { tvl: filecoinTvl },
 }
