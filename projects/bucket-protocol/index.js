@@ -95,6 +95,9 @@ const FDUSD_PSM = "0xb23092f74b7bbea45056d8564a7325be993cc2926b89f384367b9ad309d
 const BUCKETUS_PSM =
   "0xba86a0f37377844f38060a9f62b5c5cd3f8ba13901fa6c4ee5777c1cc535306b";
 
+const BLUEFIN_STABLE_LP_PSM =
+  "0x27c3ec824df70520cb3cf9592049506167e8094a779a680b83b987519e3895b6";
+
 const CETABLE_PSM =
   "0x6e94fe6910747a30e52addf446f2d7e844f69bf39eced6bed03441e01fa66acd";
 
@@ -191,8 +194,8 @@ async function tvl(api) {
   const kriyalpPoolData = await sui.getObjects(KRIYA_POOL_IDs);
 
 
-  const [afsuiSuiLpObj, afsuiSuiLpBucket, cetusLpObj, usdcCirclePSMObj, fdusdPSMObj, usdcPSMObj, usdtPSMObj, bucketusPSMObj, cetablePSMObj, stapearlPSMObj,] = await sui.getObjects([
-    AFSUI_SUI_LP_ID, AFSUI_SUI_LP_BUCKET_ID, CETUS_LP_ID, USDC_CIRCLE_PSM, FDUSD_PSM, USDC_PSM, USDT_PSM, BUCKETUS_PSM, CETABLE_PSM, STAPEARL_PSM,
+  const [afsuiSuiLpObj, afsuiSuiLpBucket, cetusLpObj, usdcCirclePSMObj, fdusdPSMObj, usdcPSMObj, usdtPSMObj, bucketusPSMObj, cetablePSMObj, stapearlPSMObj, bluefinStableLpObj] = await sui.getObjects([
+    AFSUI_SUI_LP_ID, AFSUI_SUI_LP_BUCKET_ID, CETUS_LP_ID, USDC_CIRCLE_PSM, FDUSD_PSM, USDC_PSM, USDT_PSM, BUCKETUS_PSM, CETABLE_PSM, STAPEARL_PSM, BLUEFIN_STABLE_LP_PSM,
   ])
 
   const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
@@ -203,6 +206,7 @@ async function tvl(api) {
   const usdcPSMAmount = usdcPSMObj.fields.pool;
   const usdtPSMAmount = usdtPSMObj.fields.pool;
   const bucketusPSMAmount = bucketusPSMObj.fields.pool;
+  const bluefinStableLpPSMAmount = bluefinStableLpObj.fields.pool;
   const cetablePSMAmount = cetablePSMObj.fields.pool;
   const stapearlPSMAmount = stapearlPSMObj.fields.pool;
 
@@ -294,8 +298,13 @@ async function tvl(api) {
   api.add(USDC, Math.floor(halfStapearlAmount));
   api.add(USDT, Math.floor(halfStapearlAmount));
 
+  // 1 BUCKETUS = 0.5 USDC + 0.5 BUCK
   const halfBucketusAmount = Math.floor(bucketusPSMAmount / 2);
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));
+
+  // 1 BLUEFIN_STABLE_LP = 0.5 USDC + 0.5 BUCK
+  const halfBluefinStableLPAmount = Math.floor(bluefinStableLpPSMAmount / 2);
+  api.add(USDC, Math.floor(halfBluefinStableLPAmount / 1000));
 
   //AFSUI-SUI LP
   const afsuiSuiLpSupply = afsuiSuiLpObj.fields.lp_supply.fields.value;
