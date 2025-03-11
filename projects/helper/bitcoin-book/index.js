@@ -97,6 +97,7 @@ const cygnus = require('./cygnus.js')
 const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
+const prosper = require('./prosper.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -130,10 +131,6 @@ const zeusZBTC = [
 const magpie = [
   '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
   'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
-]
-
-const prosper = [
-  'bc1qcrdvx3dvq35kawsp02033pwla244rr6hptg982', // https://app.prosper-fi.com/stats#dao-treasury
 ]
 
 module.exports = {
