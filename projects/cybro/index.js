@@ -30,6 +30,12 @@ const vaultsBlast = [
   '0xb81d975cc7f80ede476c1a930720378bda4092a2',
 ]
 
+const cybroStakingBlast = [
+  '0xD01D2b926EDB4E9DF43AbC2F97B0655845adA688',
+  '0x13a2A10C5f800199d2a1B2Db4972eFFDeE3EeaA5',
+  '0x03B7BEcB964ab0ebad805683d14f338504152707',
+]
+
 const vaultsArbitrum = [
   '0x951c846aa10cc3da45defed784c3802605f71769',
   '0x6f0acbaac51f3c72ddaa4edc6e20fc388d20adbc',
@@ -66,6 +72,10 @@ async function tvlBlast(api) {
   })
 
   await api.sumTokens({ ownerTokens })
+  const stakedTokens = cybroStakingBlast.map(address => {
+    return await api.call({abi: "function totalLocked() view returns (uint256)", target: address, params: []})
+  })
+  await api.addTokens(["0x963eec23618bbc8e1766661d5f263f18094ae4d5"], [stakedTokens.reduce((acc, a) => acc + a, 0)])
   return api.erc4626Sum2({ calls: vaultsBlast });
 }
 
