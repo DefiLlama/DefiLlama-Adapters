@@ -6,7 +6,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const { chainMapping, userAgents, metisBaseUrl } = require("./config.json");
 
-async function fetch(networkName) {
+async function fetchSales(networkName) {
   let contracts = [];
   let currentPage = 1;
   let isLastPage = false;
@@ -39,7 +39,7 @@ function getRandomUserAgent() {
 
 async function tvl(api) {
   const networkName = chainMapping[api.chain];
-  const sales = await fetch(networkName);
+  const sales = await fetchSales(networkName);
   const tokenAddresses = sales.map((sale) => (sale.tokenAddress));
 
   // Native currencies TVL
@@ -61,6 +61,7 @@ async function tvl(api) {
   const availableOtherCurrenciesValues = await api.multiCall({
     abi: "erc20:balanceOf",
     calls: salesWithOtherCurrency.map((sale) => ({ target: sale.currencyAddress, params: [sale.tokenAddress] })),
+    requery: true
   });
   api.addTokens(tokenAddressesWithOtherCurrency, availableOtherCurrenciesValues)
   
@@ -68,6 +69,7 @@ async function tvl(api) {
   const availableTokensValues = await api.multiCall({
     abi: "uint256:totalTokensLeft",
     calls: sales.map((sale) => ({ target: sale.address })),
+    requery: true
   });
   api.addTokens(tokenAddresses, availableTokensValues)
 
@@ -79,7 +81,8 @@ async function tvl(api) {
         target: sale.address,
         params: investor
       }));
-    }).flat(1)
+    }).flat(1),
+    requery: true
   });
   let cursor = 0;
   const tokensToClaimValues = [];

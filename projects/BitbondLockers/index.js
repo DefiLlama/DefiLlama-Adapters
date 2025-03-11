@@ -3,7 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const { chainMapping, userAgents, metisBaseUrl } = require("./config.json");
 
-async function fetch(networkName) {
+async function fetchLockers(networkName) {
   let contracts = [];
   let currentPage = 1;
   let isLastPage = false;
@@ -36,11 +36,12 @@ function getRandomUserAgent() {
 
 async function tvl(api) {
   const networkName = chainMapping[api.chain];
-  const lockers = await fetch(networkName);
+  const lockers = await fetchLockers(networkName);
 
   const lockedValues = await api.multiCall({
     abi: "uint256:getLockedTokensAmount",
     calls: lockers.map((locker) => ({ target: locker.address })),
+    requery: true
   });
 
   const tokenAddresses = lockers.map((locker) => (locker.tokenAddress));
