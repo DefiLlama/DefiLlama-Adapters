@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const config = require("./config");
 const sdk = require('@defillama/sdk')
 
@@ -17,7 +18,7 @@ async function tvl(api) {
   const zircuitApi = new sdk.ChainApi({ chain: 'zircuit', timestamp: api.timestamp });
   await zircuitApi.getBlock()
   const zircuitSupplies = await getZircuitSupplies(zircuitApi);
-  api.add('0xae7ab96520de3a18e5e111b5eaab095312d7fe84', zircuitSupplies.zircuitMstethSupply * -1); // Adjust for msteth
+  api.add(ADDRESSES.ethereum.STETH, zircuitSupplies.zircuitMstethSupply * -1); // Adjust for msteth
   api.add('0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf', zircuitSupplies.zircuitEgethSupply * -1); // Adjust for egeth
 
   // Fetch token list and their supplies

@@ -19,7 +19,7 @@ const usdc_resource_account = "0x19fb80bd79fa8f7538404af85196396973e3fbbda150349
 const usdc_metadata = "0x2b3be0a97a73c87ff62cbdd36837a9fb5bbd1d7f06a73b7ed62ec15c5326c1b8";
 
 const usdt_resource_account = "0xbb3c1b88599c563062e2b08fe3a92ab048d700f9aa44617c680d59a4aa69b23f";
-const usdt_metadata = "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b";
+const usdt_metadata = ADDRESSES.aptos.USDt;
 
 const eth_resource_account = "0x38bca0c288df1e13d9a30d33c4ce8ee778333c52bd4e730b49c6c9379be39b10";
 const eth_metadata = "0xae02f68520afd221a5cd6fda6f5500afedab8d0a2e19a916d6d8bc2b36e758db";

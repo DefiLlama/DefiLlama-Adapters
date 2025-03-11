@@ -7,6 +7,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,
   xsat: {
     tvl
   },
