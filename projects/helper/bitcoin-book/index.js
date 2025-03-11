@@ -132,6 +132,10 @@ const magpie = [
   'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
 ]
 
+const prosper = [
+  'bc1qcrdvx3dvq35kawsp02033pwla244rr6hptg982', // https://app.prosper-fi.com/stats#dao-treasury
+]
+
 module.exports = {
   ...fetchers,
   hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo'],
