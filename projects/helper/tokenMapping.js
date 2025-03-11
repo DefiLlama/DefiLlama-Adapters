@@ -32,7 +32,6 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
-
 }
 const ibcMappings = {
   // Sample Code
@@ -44,6 +43,13 @@ const fixBalancesTokens = {
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
+  },
+  hemi: {
+    '0x6c851f501a3f24e29a8e39a29591cddf09369080': { coingeckoId: 'dai', decimals: 18 },
+    '0xad11a8beb98bbf61dbb1aa0f6d6f2ecd87b35afa': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e': { coingeckoId: 'tether', decimals: 6 },
+    '0x03c7054bcb39f7b2e5b2c7acb37583e32d70cfa3': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+    '0xc3eacf0612346366db554c991d7858716db09f58': { coingeckoId: 'kelp-dao-restaked-eth', decimals: 18 },
   },
 }
 
