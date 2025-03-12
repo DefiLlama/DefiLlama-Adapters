@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const LENDING_POOL = '0x09e7b6BF92ba8566939d59fE3e3844385d492E77';
 const SUPPORTED_TOKENS = [
-  '0xC537D12bd626B135B251cCa43283EFF69eC109c4', // WXFI
+  ADDRESSES.crossfi.WXFI, // WXFI
   '0xa084d905e3F35C6B86B5E672C2e72b0472ddA1e3', // WETH
   '0x7bBcE15166bBc008EC1aDF9b3D6bbA0602FCE7Ba', // USDC
   '0x417c85B9D0826501d7399FEeF417656774d333cc', // WBTC
