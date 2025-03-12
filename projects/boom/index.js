@@ -33,17 +33,11 @@ async function fetchTVL() {
   }
 }
 
-// This is a wrapper function that will be used for the top-level TVL
-async function fetchTotalTVL() {
-  return fetchTVL();
-}
-
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology: "TVL is fetched from Orderly API and includes total holdings + unsettled balance.",
   sonic: {
     tvl: fetchTVL
-  },
-  tvl: fetchTotalTVL
+  }
 }; 
