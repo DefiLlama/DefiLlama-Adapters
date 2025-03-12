@@ -2,11 +2,12 @@
 const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
+const DUSX = '0xe30e73Cc52EF50A4E4a8b1a3dd0b002b2276F854'
 const tokens = {
     // Basic tokens
-    STTX: '0x97a10beEbB25e0eBfA55Ca0A7d00E37AFe957DEa',
-    veSTTX: '0x8221312e9cF90A2B160eCdabf922408a5ef1CF9E',
-    DUSX: '0xe30e73Cc52EF50A4E4a8b1a3dd0b002b2276F854',
+    // STTX: '0x97a10beEbB25e0eBfA55Ca0A7d00E37AFe957DEa',
+    // veSTTX: '0x8221312e9cF90A2B160eCdabf922408a5ef1CF9E',
+    // DUSX: '0xe30e73Cc52EF50A4E4a8b1a3dd0b002b2276F854',
     USDC: '0x29219dd400f2Bf60E5a23d13Be72B486D4038894',
     USDT: '0x6047828dc181963ba44974801FF68e538dA5eaF9',
     
@@ -57,20 +58,16 @@ async function tvl(api) {
     tokensAndOwners.push([tokens.USDC, contracts.PegStabilityModuleUSDC]);
     tokensAndOwners.push([tokens.USDT, contracts.PegStabilityModuleUSDT]);
 
-    // Floor tokens
-    tokensAndOwners.push([tokens.DUSX, contracts.Floor]);
-
     // Get all balances first
     const balances = await sumTokens2({ api, tokensAndOwners });
     
     return balances;
 }
 
-// Calculates staked STTX and DUSX
+// Calculates staked DUSX
 async function staking(api) {
     const tokensAndOwners = [
-        [tokens.STTX, contracts.VoteEscrowedSTTX],
-        [tokens.DUSX, contracts.StakedDUSX],
+        [DUSX, contracts.StakedDUSX],
     ];
 
     const balances = await sumTokens2({ api, tokensAndOwners });
@@ -104,7 +101,7 @@ async function borrowed(api) {
                     target: contracts.MarketLens,
                     params: [lender],
                 });
-                api.add(tokens.DUSX, borrowedAmount);
+                api.add(DUSX, borrowedAmount);
             } catch (lenderError) {
                 console.log(`Error getting borrowed amount for lender ${lender}: ${lenderError.message}`);
                 // Continue with other lenders if one fails
