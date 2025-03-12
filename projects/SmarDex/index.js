@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { getUniTVL } = require("../helper/unknownTokens");
 const { stakings } = require("../helper/staking");
@@ -12,7 +13,7 @@ const config = {
 
 const ethereumFactory = "0xB878DC600550367e14220d4916Ff678fB284214F";
 const USDN_PROTOCOL_ADDRESS = "0x656cB8C6d154Aad29d8771384089be5B5141f01a";
-const WSTETH_TOKEN_ADDRESS = "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0";
+const WSTETH_TOKEN_ADDRESS = ADDRESSES.ethereum.WSTETH;
 const REBALANCER_ADDRESS = "0xaebcc85a5594e687f6b302405e6e92d616826e03";
 
 async function fetchUSDNData(api, block) {

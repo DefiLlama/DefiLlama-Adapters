@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const axios = require("axios");
 
 // ------------------------------
@@ -10,7 +11,7 @@ const ORIGINAL_TOKEN = "0x915424Ac489433130d92B04096F3b96c82e92a9D"; // PROS tok
 
 // USDC on BSC (used to represent USD value)
 // Do not include the "bsc:" prefix; the system auto-adds it.
-const USDC_ADDRESS = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
+const USDC_ADDRESS = ADDRESSES.bsc.USDC;
 
 // ------------------------------
 // ASIC Price Index Data (for PROS hashrate)
