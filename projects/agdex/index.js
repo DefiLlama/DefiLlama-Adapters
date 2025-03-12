@@ -11,9 +11,9 @@ const USDT =
 const APT =
   ADDRESSES.aptos.APT;
 const BTC =
-  ADDRESSES.aptos.CELER_WBTC;
+  ADDRESSES.aptos.zWBTC;
 const ETH =
-  ADDRESSES.aptos.CELER_ETH;
+  ADDRESSES.aptos.zWETH;
 
 const usdc_resource_account = "0x19fb80bd79fa8f7538404af85196396973e3fbbda1503495598172c8813f7ca5";
 const usdc_metadata = "0x2b3be0a97a73c87ff62cbdd36837a9fb5bbd1d7f06a73b7ed62ec15c5326c1b8";
@@ -90,12 +90,6 @@ async function tvl(api) {
       `${AGDEX}::pool::Vault<0x1::aptos_coin::AptosCoin>`
   );
   const apt_value = parseInt(apt_balance) + parseInt(apt_r.reserved_amount);
-  console.log("BTC", BTC);
-  console.log("btc_value", btc_value);
-
-// BTC 0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::WbtcCoin
-// btc_value 20
-  
   api.add(lzUSDC, usdc_value);
   api.add(BTC, btc_value);
   api.add(ETH, eth_value);

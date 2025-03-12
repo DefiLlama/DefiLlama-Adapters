@@ -11,7 +11,7 @@ async function baseTvl(api) {
   const flpUnderlyings = [
     ADDRESSES.base.USDC,
     ADDRESSES.base.WETH,
-    "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf" // cbBTC
+    ADDRESSES.ethereum.cbBTC // cbBTC
   ];
 
   // Fetch base TVL from FLP pool

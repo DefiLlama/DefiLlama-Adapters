@@ -49,7 +49,7 @@ const CONFIG = {
       ADDRESSES.sonic.USDC_e,
       '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b',  // WETH
       ADDRESSES.berachain.WBTC,                      // WBTC
-      '0xecAc9C5F704e954931349Da37F60E39f515c11c1',  // LBTC
+      ADDRESSES.sonic.LBTC,  // LBTC
       '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6',  // AUSDC
       '0xe18Ab82c81E7Eecff32B8A82B1b7d2d23F1EcE96'   // AWETH
     ],

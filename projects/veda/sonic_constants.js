@@ -3,7 +3,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const boringVaultsV0Sonic = [
   {
     name: "Sonic scETH",
-    vault: "0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812",
+    vault: ADDRESSES.sonic.scETH,
     accountant: "0x3a592F9Ea2463379c4154d03461A73c484993668",
     teller: "0x31A5A9F60Dc3d62fa5168352CaF0Ee05aA18f5B8",
     lens: "0xE0eFE934DC4744090e8eF93f1D125E4015a857FE",
@@ -12,7 +12,7 @@ const boringVaultsV0Sonic = [
   },
   {
     name: "Sonic scUSD",
-    vault: "0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE",
+    vault: ADDRESSES.sonic.scUSD,
     accountant: "0xA76E0F54918E39A63904b51F688513043242a0BE",
     teller: "0x358CFACf00d0B4634849821BB3d1965b472c776a",
     lens: "0xE0eFE934DC4744090e8eF93f1D125E4015a857FE",
