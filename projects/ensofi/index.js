@@ -6,12 +6,15 @@ const network = {
   eclipse: 'ECLIPSE'
 }
 
-async function fetchTvlByNetwork(network) {
-  return (await axios.get(`${ensoApi}/tvl/${network}`)).data
+async function fetchTvlByNetwork(api) {
+  const res = await axios.get(`${ensoApi}/tvl/${network.eclipse}`);
+  Object.entries(res.data.data).forEach(([key, value]) => {
+    api.add(key, value);
+  })
 }
 
 module.exports = {
   eclipse: {
-    tvl: fetchTvlByNetwork(network.eclipse),
+    tvl: fetchTvlByNetwork
   }
 }
