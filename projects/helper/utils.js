@@ -259,7 +259,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel']
+    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel', 'move']
     if (!token.startsWith('0x') || blacklistedChains.includes(chain)) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)

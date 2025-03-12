@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 
@@ -7,8 +8,8 @@ const tokens = [
   "0x79bbF4508B1391af3A0F4B30bb5FC4aa9ab0E07C",  // Anon 10% 
   "0x44E23B1F3f4511b3a7e81077Fd9F2858dF1B7579",  // Mclb 9% 
   "0xA04BC7140c26fc9BB1F36B1A604C7A5a88fb0E70",  // SWPx 11% 
-  "0xE5DA20F15420aD15DE0fa650600aFc998bbE3955",  // stS 7% 
-  "0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE",  // scUSD 7% 
+  ADDRESSES.sonic.STS,  // stS 7% 
+  ADDRESSES.sonic.scUSD,  // scUSD 7% 
   "0x4EEC869d847A6d13b0F6D1733C5DEC0d1E741B4f",  // Indi 4% 
   "0x9fDbC3f8Abc05Fa8f3Ad3C17D2F806c1230c4564",  // Goglz 4% 
   "0x2D0E0814E62D80056181F5cd932274405966e4f0",  // Beets 2%
