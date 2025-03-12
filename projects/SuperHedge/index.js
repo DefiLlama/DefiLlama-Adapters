@@ -10,7 +10,7 @@ async function tvl(api) {
     params: [SH_VAULT_1],
   });
 
-  api.add(SH_VAULT_1_CURRENCY, collateralBalance)
+  api.add(SH_VAULT_1_CURRENCY, currencyBalance)
 
   const ptBalance = await api.call({
     abi: 'erc20:balanceOf',
@@ -18,7 +18,7 @@ async function tvl(api) {
     params: [SH_VAULT_1],
   });
 
-  api.add(SH_VAULT_1_PT, collateralBalance)
+  api.add(SH_VAULT_1_PT, ptBalance)
 }
 
 module.exports = {
