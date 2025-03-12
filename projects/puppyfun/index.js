@@ -1,32 +1,53 @@
-const axios = require('axios')
-
 const BNB_ADDRESS = '0x0000000000000000000000000000000000000000'
+const FACTORIES = ['0xbFC5229ab471c54B58481fA232CFd4a18371C51C']
 
-const apiBaseURL = 'https://bd-fun-defilama-ts-backend-main.puppy.fun/lama-api'
-const tvlMethod = '/tvl'
+const factoryAbi = {
+    allPairsLength: "function allPairsLength() view returns (uint256)",
+    allPairs: "function allPairs(uint256) view returns (address)"
+};
 
-const maxRetriesCount = 3
-
-module.exports = {
-  methodology: "TVL is counted as the total amount locked in PuppyFun smart contracts. In our particular case it is the total BNB amount in PuppyFun virtual DEX (all tokens which are not yet migrated). Calculated similarly to UniswapV2 based DEXes.",
-  bsc: {
-    tvl,
-  },
-}
+const pairAbi = {
+    getReserves: "function getReserves() view returns (uint128, uint128)"
+};
 
 async function tvl(api) {
-  const queryURL = apiBaseURL + tvlMethod
+    for (let factory of FACTORIES) {
+        console.log(`Started collecting TVL for factory ${factory} ...`)
+        const pairsLen = await api.call({ abi: factoryAbi.allPairsLength, target: factory, params: [] })
+        console.log(`Found ${pairsLen} pairs`)
 
-  for (let tryCount = 0; tryCount < maxRetriesCount; ++tryCount) {
-    try {
-      console.log(`Query TVL ...`)
-      const response = await axios.get(queryURL)
-      console.log(`Got response: tvlDirty: ${response.data.tvlDirty / 10 ** 18} BNB | tvlClean ${response.data.tvlClean / 10 ** 18} BNB`)
-      api.add(BNB_ADDRESS, response.data.tvlClean)
-      break
-    } catch(err) {
-      console.log(`Error getting TVL`, err)
-      continue
+        const pairsIndexes = [...Array(Number(pairsLen)).keys()]
+
+        const allPairsCalls = pairsIndexes.map(index => ({
+            target: factory,
+            params: [index]
+        }))
+        
+        const pairs = await api.multiCall({
+            calls: allPairsCalls,
+            abi: factoryAbi.allPairs,
+        });
+
+        const getReservesCalls = pairs.map(pair => ({
+            target: pair,
+            params: []
+        }))
+
+        const reservesBNB = await api.multiCall({
+            calls: getReservesCalls,
+            abi: pairAbi.getReserves,
+        });
+
+        const totalReservesForFactory = reservesBNB.reduce((sum, r) => sum + BigInt(r[1]), 0n)
+
+        console.log(`BNB TVL for Factory: ${factory}: ${Number(totalReservesForFactory) / 10 ** 18} BNB`)
+        api.add(BNB_ADDRESS, totalReservesForFactory)
     }
-  }
+}
+
+module.exports = {
+    methodology: "TVL is counted as the total amount locked in PuppyFun smart contracts. In our particular case it is the total BNB amount in PuppyFun virtual DEX (all tokens which are not yet migrated). Calculated similarly to UniswapV2 based DEXes.",
+    bsc: {
+      tvl,
+    },
 }
