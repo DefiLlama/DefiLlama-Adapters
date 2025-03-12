@@ -6,7 +6,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const DUSX = '0xe30e73Cc52EF50A4E4a8b1a3dd0b002b2276F854'
 const tokens = {
     // Basic tokens
-    // STTX: '0x97a10beEbB25e0eBfA55Ca0A7d00E37AFe957DEa',
+    STTX: '0x97a10beEbB25e0eBfA55Ca0A7d00E37AFe957DEa',
     // veSTTX: '0x8221312e9cF90A2B160eCdabf922408a5ef1CF9E',
     // DUSX: '0xe30e73Cc52EF50A4E4a8b1a3dd0b002b2276F854',
     USDC: ADDRESSES.sonic.USDC_e,
@@ -68,6 +68,7 @@ async function tvl(api) {
 // Calculates staked DUSX
 async function staking(api) {
     const tokensAndOwners = [
+        [STTX, contracts.LenderVoteEscrowedSTTX]
         [DUSX, contracts.StakedDUSX],
     ];
 
