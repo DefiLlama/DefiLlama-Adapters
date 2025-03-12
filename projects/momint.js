@@ -1,3 +1,19 @@
+//
+//    /$$      /$$   /$$$$$$   /$$      /$$  /$$$$$$  /$$   /$$  /$$$$$$$$
+//   | $$$    /$$$  /$$__  $$ | $$$    /$$$ |_  $$_/ | $$$ | $$ |__  $$__/
+//   | $$$$  /$$$$ | $$  \ $$ | $$$$  /$$$$   | $$   | $$$$| $$    | $$   
+//   | $$ $$/$$ $$ | $$  | $$ | $$ $$/$$ $$   | $$   | $$ $$ $$    | $$   
+//   | $$  $$$| $$ | $$  | $$ | $$  $$$| $$   | $$   | $$  $$$$    | $$   
+//   | $$\  $ | $$ | $$  | $$ | $$\  $ | $$   | $$   | $$\  $$$    | $$   
+//   | $$ \/  | $$ |  $$$$$$/ | $$ \/  | $$  /$$$$$$ | $$ \  $$    | $$   
+//   |__/     |__/  \______/  |__/     |__/ |______/ |__/  \__/    |__/   
+//
+// 
+//     Adapter for the Momint marketplace on Lisk/OP stack
+//     This adapter calculates TVL and volume for the Momint marketplace
+//     TVL is calculated as the sum of all active listings
+//     Volume is calculated as the sum of all completed sales
+// 
 const { ethers } = require("ethers");
 const { getBlock } = require('../helpers/getBlock');
 
@@ -132,3 +148,5 @@ module.exports = {
         [Date.parse("2025-03-12") / 1000, "Momint Marketplace OP Stack Launch"]
     ]
 };
+
+// Made with ❤️ by the Momint Team
