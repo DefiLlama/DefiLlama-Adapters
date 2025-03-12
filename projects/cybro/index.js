@@ -1,3 +1,5 @@
+const { stakings } = require("../helper/staking.js");
+
 const vaultsBlast = [
   '0xc9434fbee4ec9e0bad7d067b35d2329e5f1d8915',
   '0xf56dab7b7b2954aa86a591f164205e6cdd33797e',
@@ -66,9 +68,6 @@ async function tvlBlast(api) {
   })
 
   await api.sumTokens({ ownerTokens })
-  let stakedTokens = await api.multiCall({abi: "function totalLocked() view returns (uint256)", calls: cybroStakingBlast })
-
-  await api.addTokens(["0x963eec23618bbc8e1766661d5f263f18094ae4d5"], [stakedTokens.reduce((acc, item) => acc + Number(item), 0)])
   return api.erc4626Sum2({ calls: vaultsBlast });
 }
 
@@ -84,6 +83,6 @@ module.exports = {
   doublecounted: true,
   methodology: "We calculate TVL based on the Total Supply of our proxy contracts through which users interact with vault's contracts",
   base: { tvl: tvlBase },
-  blast: { tvl: tvlBlast },
+  blast: { tvl: tvlBlast, staking: stakings(cybroStakingBlast, "0x963eec23618bbc8e1766661d5f263f18094ae4d5") },
   arbitrum: { tvl: tvlArbitrum },
 };
