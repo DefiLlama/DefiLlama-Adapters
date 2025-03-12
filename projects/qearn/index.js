@@ -1,4 +1,4 @@
-const { fetchQuerySC } = require("../helper/chain/qubic");
+const { fetchQuerySC, getBalance } = require("../helper/chain/qubic");
 const { QubicHelper } = require("@qubic-lib/qubic-ts-library/dist/qubicHelper");
 
 function uint8ArrayToBase64(uint8Array) {
@@ -12,6 +12,7 @@ function base64ToUint8Array(base64) {
 };
 
 const qHelper = new QubicHelper();
+const QearnAddress = "JAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVKHO";
 
 // Query
 const getLockInfoPerEpoch = async (epoch) => {
@@ -208,12 +209,6 @@ const getBurnedAndBoostedStatsPerEpoch = async (epoch) => {
 module.exports = {
   start: '2025-03-15', 
   qubic: { 
-    tvl:  getLockInfoPerEpoch,
-          getUserLockInfo,
-          getStateOfRound,
-          getUserLockStatus,
-          getEndedStatus,
-          getBurnedAndBoostedStats,
-          getBurnedAndBoostedStatsPerEpoch,
+    tvl: getBalance(QearnAddress)
   },
 };
