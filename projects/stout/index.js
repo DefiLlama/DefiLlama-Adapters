@@ -68,7 +68,7 @@ async function tvl(api) {
 // Calculates staked DUSX
 async function staking(api) {
     const tokensAndOwners = [
-        [STTX, contracts.LenderVoteEscrowedSTTX]
+        [STTX, contracts.VoteEscrowedSTTX]
         [DUSX, contracts.StakedDUSX],
     ];
 
