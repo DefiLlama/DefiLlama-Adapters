@@ -61,7 +61,7 @@ module.exports = {
     tvl: sumTokensExport({ owners: base_owners, tokens: [
       ADDRESSES.base.USDC, //USDC
       '0x3b86ad95859b6ab773f55f8d94b4b9d443ee931f', //SolvBTC
-      '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',//cbBTC
+      ADDRESSES.ethereum.cbBTC,//cbBTC
       ADDRESSES.blast.weETH,//weETH
       ADDRESSES.base.wstETH,//wstETH
       '0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e','0xD2012fc1B913cE50732ebcaa7E601fe37Ac728C6','0x12418783e860997eb99e8aCf682DF952F721cF62','0xe3C0FF176eF92FC225096C6d1788cCB818808b35'
