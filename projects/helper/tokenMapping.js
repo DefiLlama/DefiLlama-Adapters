@@ -42,6 +42,9 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
+  qubic: {
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA': {coingeckoId: "qubic-network", decimals: 0},
+  },
   saga: {
     '0xfc960c233b8e98e0cf282e29bde8d3f105fc24d5': { coingeckoId: "usd-coin", decimals: 6 },
     '0xc8fe3c1de344854f4429bb333affaef97ef88cea': { coingeckoId: "tether", decimals: 6 },
