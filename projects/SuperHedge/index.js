@@ -4,7 +4,7 @@ const SH_VAULT_1 = '0xDF59153DA47dc7c39505261D423BAf14c48D23A6'; // SHProduct Va
 
 async function tvl(api) {
   
-  const collateralBalance = await api.call({
+  const currencyBalance = await api.call({
     abi: 'erc20:balanceOf',
     target: SH_VAULT_1_CURRENCY,
     params: [SH_VAULT_1],
@@ -12,7 +12,7 @@ async function tvl(api) {
 
   api.add(SH_VAULT_1_CURRENCY, collateralBalance)
 
-  const collateralBalance = await api.call({
+  const ptBalance = await api.call({
     abi: 'erc20:balanceOf',
     target: SH_VAULT_1_PT,
     params: [SH_VAULT_1],
