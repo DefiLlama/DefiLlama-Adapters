@@ -111,8 +111,8 @@ const defaultTokens = {
      "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
      "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
      "0x6982508145454ce325ddbe47a25d4ec3d2311933", // PEPE
-     "0xd5f7838f5c461feff7fe49ea5ebaf7728bb0adfa", //METH
-     "0xe6829d9a7ee3040e1276fa75293bde931859e8fa", // CMETH
+     ADDRESSES.ethereum.METH, //METH
+     ADDRESSES.mantle.cmETH, // CMETH
      "0x54d2252757e1672eead234d27b1270728ff90581" // BITGET TOKEN, NEW
   ],
   tron: [
