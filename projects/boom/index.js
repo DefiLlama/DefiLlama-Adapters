@@ -9,7 +9,7 @@ async function fetchTVL() {
     const response = await axios.get(ORDERLY_API_URL);
     console.log(`API Response status: ${response.status}`);
     console.log(`API Response data: ${JSON.stringify(response.data)}`);
-    
+
     const data = response.data.data;
 
     if (!data) {
@@ -20,7 +20,7 @@ async function fetchTVL() {
     // Ensure values are numbers and default to 0 if undefined or not a number
     const totalHolding = parseFloat(data.total_holding) || 0;
     const totalUnsettledBalance = parseFloat(data.total_unsettled_balance) || 0;
-    
+
     console.log(`Total holding: ${totalHolding}`);
     console.log(`Total unsettled balance: ${totalUnsettledBalance}`);
 
@@ -44,11 +44,11 @@ async function fetchTVL() {
   }
 }
 
+// Export in the format expected by DefiLlama
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology: "TVL is fetched from Orderly API and includes total holdings + unsettled balance.",
-  sonic: {
-    tvl: fetchTVL
-  }
-}; 
+  start: 1700000000, // Approximate timestamp for when the project launched
+  sonic: { tvl: fetchTVL }
+};
