@@ -96,9 +96,7 @@ module.exports = {
       const balances = {};
 
       const marketAddresses = await getMarketAddresses('move');
-      console.log(marketAddresses);
       const markets = await Promise.all(marketAddresses.map(marketAddress => getMarket('move', marketAddress)));
-      console.log(markets);
       markets.forEach(({ cash, coin }) => {
         sdk.util.sumSingleBalance(balances, coin, cash);
       });
