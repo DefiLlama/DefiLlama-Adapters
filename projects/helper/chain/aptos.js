@@ -198,7 +198,7 @@ module.exports = {
   aQuery,
   getResources,
   getResource,
-  coreTokens: coreTokensAll['aptos'],
+  coreTokensAptos: Object.values(coreTokensAll['aptos']),
   sumTokens,
   sumTokensExport,
   getTableData,

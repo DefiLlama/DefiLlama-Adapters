@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { getResource, coreTokens } = require("../helper/chain/aptos");
+const { getResource, coreTokensAptos } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
 const { moduleAddress, resourceAddress } = require("./helper");
 
@@ -13,7 +13,7 @@ async function lendingTvl() {
         const token = vault.key;
         const balance = vault.value.balance;
 
-        const isCoreAsset = coreTokens.includes(token);
+        const isCoreAsset = coreTokensAptos.includes(token);
         if (isCoreAsset) {
             sdk.util.sumSingleBalance(balances, token, balance);
         }
