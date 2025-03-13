@@ -39,6 +39,36 @@ const config = {
         "0xAa0400E5a90f697230638DbE76D9C49e4aC745B4",
     ],
   },
+  tron: {
+    owners: [
+        "TYs8Aupg4iXDhifXm1kaCb1MfMcPjLn5RE",
+        "TZBcnxpRJcYJkbVMCi6g69BZmTmNACQxpD"
+    ],
+  },
+  bsc: {
+    owners: [
+        "0x8d13018cf3a136c4c6f6fad37ba880b4677a91d4",
+        "0x6a276a58c5194ef196b58442f627dba070cb37bf"
+    ],
+  },
+  solana: {
+    owners: [
+        "GDui3zpJC1xdnddCM2Vjp5Hnj97pQH1gDAHctyavx5iQ",
+        "CrK188sdwoXzMCukUhwDdZmE3fEjsMfESwz8P8o5XbgT"
+    ],
+  },
+  ton: {
+    owners: [
+        "UQBmo9W_9TZNlVzzH6f_L8CIC4N5GrYs3o8sjUsLXRzLHEU2",
+        "UQDxsCGvjT-wPp-R-OePbXl4UwsVZs-02PItnmzaAuUxXAi2"
+    ],
+  },
+  scroll: {
+    owners: [
+        "0x08c974911e29a7b23899139fb53fdb99aa6cab76",
+        "0xdd261309c5b32c006f6ad9a0f16b872392479cdb"
+    ],
+  },
 }
 
 module.exports = cexExports(config)
