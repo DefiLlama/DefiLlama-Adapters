@@ -39,6 +39,7 @@ const poolHelpers = {
   'iotex': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'morph': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'kava': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'hemi': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
@@ -56,3 +57,5 @@ Object.keys(poolHelpers).forEach(chain => {
 module.exports.hallmarks = [
   [1715648400,"End Mode TVL Campaign S1"]
 ]
+
+// module.exports.ultron.tvl =  () => ({}) // their RPC is rugging us

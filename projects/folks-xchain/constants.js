@@ -69,7 +69,7 @@ const HubPools = {
     },
     { // cbBTC_base      
       poolAddress: "0x9eD81F0b5b0E9b6dE00F374fFc7f270902576EF7",
-      tokenAddress: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+      tokenAddress: ADDRESSES.ethereum.cbBTC,
       chainPoolAddress: '0x50d5Bb3Cf57D2fB003b602A6fD10F90baa8567EA',
     },
   ],
@@ -104,7 +104,25 @@ const HubPools = {
       tokenAddress: ADDRESSES.arbitrum.ARB,
       chainPoolAddress: '0x1b2a8d56967d00700DD5C94E27B1a116a1deF8Df',
     },
-  ]
+  ],
+  'polygon': [
+    // excluding USDC cause bridged
+    { // POL      
+      poolAddress: "0x481cF0c02BF17a33753CE32f1931ED9990fFB40E",
+      tokenAddress: ADDRESSES.null,
+      chainPoolAddress: '0x4Db12F554623E4B0b3F5bAcF1c8490D4493380A5',
+    },
+    { // wBTC_pol      
+      poolAddress: "0x7054254933279d93D97309745AfbFF9310cdb570",
+      tokenAddress: ADDRESSES.polygon.WBTC,
+      chainPoolAddress: '0x1A40208E9506E08a6f62DbCCf8de7387743179E9',
+    },
+    { // wETH_pol      
+      poolAddress: "0x88Ae56886233C706409c74c3D4EA9A9Ac1D65ab2",
+      tokenAddress: ADDRESSES.polygon.WETH_1,
+      chainPoolAddress: '0x2e6e4603536078bd7661338F06FB93cf6F9b7A98',
+    },
+  ],
 }
 
 module.exports = {

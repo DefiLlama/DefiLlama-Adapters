@@ -14,8 +14,7 @@ async function borrowed(api) {
 
 async function tvl(api) {
   const owners = Object.values(evaaPoolAssets).map(pool => pool.poolAddress);
-  return sumTokens({ owners, api, tokens: [ADDRESSES.null], useTonApiForPrices: false })
-
+  return sumTokens({ owners, api, tokens: [ADDRESSES.null], useTonApiForPrices: true })
 }
 
 module.exports = {
