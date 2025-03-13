@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const { coreTokens } = require("../helper/chain/aptos");
+const { coreTokensAptos } = require("../helper/chain/aptos");
 const { getResources } = require("../helper/chain/aptos");
 const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs, addUniV3LikePosition } = require("../helper/unwrapLPs");
@@ -207,8 +207,8 @@ async function unwrapPancakeSwapLps({
     const reserve0 = token0Reserve(i)
     const reserve1 = token1Reserve(i)
     const [token0, token1] = getTokens(i)
-    const isCoreAsset0 = coreTokens.includes(token0)
-    const isCoreAsset1 = coreTokens.includes(token1)
+    const isCoreAsset0 = coreTokensAptos.includes(token0)
+    const isCoreAsset1 = coreTokensAptos.includes(token1)
     const nonNeglibleReserves = reserve0 !== '0' && reserve1 !== '0'
     const lp = lps[i.lpType];
     const balance0 = new BigNumber(reserve0).times(lp.amount).div(lp.totalSupply).toFixed(0);
