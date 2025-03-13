@@ -18,7 +18,7 @@ const CONFIG = {
   polygon: {
     router: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
     stakingContract: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
-    stg: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    stg: ADDRESSES.fuse.WETH_3,
   },
   arbitrum: {
     router: '0x53Bf833A5d6c4ddA888F69c22C88C9f356a41614',
@@ -31,18 +31,18 @@ const CONFIG = {
   fantom: {
     router: '0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6',
     stakingContract: '0x224D8Fd7aB6AD4c6eb4611Ce56EF35Dec2277F03',
-    stg: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    stg: ADDRESSES.fuse.WETH_3,
   },
   avax: {
     router: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
     stakingContract: '0x8731d54E9D02c286767d56ac03e8037C07e01e98',
-    stg: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    stg: ADDRESSES.fuse.WETH_3,
   },
   metis: {
-    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    router: ADDRESSES.fuse.WETH_3,
   },
   mantle: {
-    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    router: ADDRESSES.fuse.WETH_3,
   },
   base: {
     router: '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B',
@@ -51,13 +51,13 @@ const CONFIG = {
     stg: '0xE3B53AF74a4BF62Ae5511055290838050bf764Df',
   },
   linea: {
-    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    router: ADDRESSES.fuse.WETH_3,
     etherToken: '0x224d8fd7ab6ad4c6eb4611ce56ef35dec2277f03',
     stakingContract: '0x4a364f8c717cAAD9A442737Eb7b8A55cc6cf18D8',
-    stg: '0x808d7c71ad2ba3FA531b068a2417C63106BC0949',
+    stg: ADDRESSES.lightlink_phoenix.USDT,
   },
   kava: {
-    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+    router: ADDRESSES.fuse.WETH_3,
   },
 }
 
