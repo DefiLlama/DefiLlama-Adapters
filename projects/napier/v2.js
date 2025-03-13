@@ -43,6 +43,10 @@ const config = {
     factory: "0x0000001afbCA1E8CF82fe458B33C9954A65b987B",
     fromBlock: 17433043,
   },
+  hyperliquid: {
+    factory: "0x000000488f0fB672CEc8ec4B90980e7C6E492E22",
+    fromBlock: 1028801,
+  },
 };
 
 // Tracks TVL in Principal Token vaults and TwoCrypto pools
