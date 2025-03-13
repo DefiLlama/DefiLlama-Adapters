@@ -3,7 +3,7 @@ const { pool2 } = require('../helper/pool2')
 const { sumTokensExport } = require('../helper/unknownTokens')
 
 const config = {
-  base: { factory: '0x288025b60330e01d793B6e83c1a0dE22bb943459', fromBlock: 21180486 },
+  base: { factory: '0x61a98bef11867c69489b91f340fe545eefc695d7', fromBlock: 21180486 },
 }
 
 Object.keys(config).forEach(chain => {
