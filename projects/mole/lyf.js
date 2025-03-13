@@ -207,8 +207,10 @@ async function unwrapPancakeSwapLps({
     const reserve0 = token0Reserve(i)
     const reserve1 = token1Reserve(i)
     const [token0, token1] = getTokens(i)
-    const isCoreAsset0 = coreTokens.includes(token0)
-    const isCoreAsset1 = coreTokens.includes(token1)
+
+    const coreTokensJson = JSON.stringify(coreTokens)
+    const isCoreAsset0 = coreTokensJson.includes(token0)
+    const isCoreAsset1 = coreTokensJson.includes(token1)
     const nonNeglibleReserves = reserve0 !== '0' && reserve1 !== '0'
     const lp = lps[i.lpType];
     const balance0 = new BigNumber(reserve0).times(lp.amount).div(lp.totalSupply).toFixed(0);
