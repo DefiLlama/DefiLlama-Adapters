@@ -1,7 +1,5 @@
 
 const { searchAccountsAll, sumTokens, tokens, getAppGlobalState, } = require('../helper/chain/algorand')
-const { transformBalances } = require('../helper/portedTokens')
-const chain = 'algorand'
 
 const treasuryAddress = "MTMJ5ADRK3CFG3HGUI7FS4Y55WGCUO5CRUMVNBZ7FW5IIG6T3IU2VJHUMM"
 const v2TreasuryAddress = "52O7EFC7TQPGSSM7HE6NDXMUUYM2W5OI4IOCDPTYJLPUYDO7BMNK5SCPEY"
@@ -31,7 +29,7 @@ async function tvl() {
         account['assets'].filter(i => i['asset-id'] === gAlgoId).forEach(i => gAlgoBal += i.amount)
     }
   }))
-  return transformBalances(chain, { 1: algoBal, ['' + gAlgoId]: gAlgoBal })
+  return { 'algorand:1': algoBal, ['algorand' + gAlgoId]: gAlgoBal }
 }
 
 async function staking() {
@@ -39,8 +37,8 @@ async function staking() {
   const state = await getAppGlobalState(stakingGARDId)
   let gardBal = 0
   const keys = ["NL", "NLL", "3M", "6M", "9M", "12M"]
-  keys.forEach(k => gardBal += state[k] || 0)
-  return transformBalances(chain, { ['' + gardId]: gardBal })
+  keys.forEach(k => gardBal += state[k] || 0);
+  return { ['algorand:' + gardId]: gardBal }
 }
 
 module.exports = {
@@ -50,7 +48,7 @@ module.exports = {
   timetravel: false,
   algorand: {
     tvl,
-    treasury,
+    // treasury,
     staking,
   }
 }
