@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
-const { getResource, coreTokens } = require("../helper/chain/aptos");
+const { getResource, coreTokensAptos } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
 const { getPancakeReserveAndLpSupply } = require("./pancake");
 const { getTypeArgs, moduleAddress, resourceAddress } = require("./helper");
@@ -38,8 +38,8 @@ function calculateLyfPoolTokens(lyfPools) {
             balanceY,
         }
 
-        const isCoreAssetX = coreTokens.includes(tokenX);
-        const isCoreAssetY = coreTokens.includes(tokenY);
+        const isCoreAssetX = coreTokensAptos.includes(tokenX);
+        const isCoreAssetY = coreTokensAptos.includes(tokenY);
         const nonNeglibleReserves = reserveX !== '0' && reserveY !== '0';
         /// @dev calculate total core assets
         if (isCoreAssetX && isCoreAssetY) {
