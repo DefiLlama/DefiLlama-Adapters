@@ -39,8 +39,8 @@ async function tvl(api) {
   const lockers = await fetchLockers(networkName);
 
   const lockedValues = await api.multiCall({
-    abi: "uint256:getLockedTokensAmount",
-    calls: lockers.map((locker) => ({ target: locker.address })),
+    abi: "erc20:balanceOf",
+    calls: lockers.map((locker) => ({ target: locker.tokenAddress, params: [locker.address] })),
     requery: true
   });
 

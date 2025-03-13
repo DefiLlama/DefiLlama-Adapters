@@ -60,38 +60,18 @@ async function tvl(api) {
   const tokenAddressesWithOtherCurrency = salesWithOtherCurrency.map((sale) => (sale.tokenAddress));
   const availableOtherCurrenciesValues = await api.multiCall({
     abi: "erc20:balanceOf",
-    calls: salesWithOtherCurrency.map((sale) => ({ target: sale.currencyAddress, params: [sale.tokenAddress] })),
+    calls: salesWithOtherCurrency.map((sale) => ({ target: sale.currencyAddress, params: [sale.address] })),
     requery: true
   });
   api.addTokens(tokenAddressesWithOtherCurrency, availableOtherCurrenciesValues)
   
-  // Available tokens TVL
-  const availableTokensValues = await api.multiCall({
-    abi: "uint256:totalTokensLeft",
-    calls: sales.map((sale) => ({ target: sale.address })),
+  // Tokens TVL
+  const tokensValues = await api.multiCall({
+    abi: "erc20:balanceOf",
+    calls: sales.map((sale) => ({ target: sale.tokenAddress, params: [sale.address] })),
     requery: true
   });
-  api.addTokens(tokenAddresses, availableTokensValues)
-
-  // Tokens to claim TVL
-  const tokensToClaimExpandedValues = await api.multiCall({
-    abi: "function tokensToClaim(address) view returns (uint256)",
-    calls: sales.map((sale) => {
-      return sale.investors.map((investor) => ({
-        target: sale.address,
-        params: investor
-      }));
-    }).flat(1),
-    requery: true
-  });
-  let cursor = 0;
-  const tokensToClaimValues = [];
-  sales.forEach((sale) => {
-    const investorsCount = sale.investors.length;
-    tokensToClaimValues.push(tokensToClaimExpandedValues.slice(cursor, cursor + investorsCount).reduce((acc, val) => acc.plus(val), BigNumber(0)));
-    cursor += investorsCount;
-  });
-  api.addTokens(tokenAddresses, tokensToClaimValues)
+  api.addTokens(tokenAddresses, tokensValues)
   
   return sumTokens2({api, resolveLP: true});
 }
