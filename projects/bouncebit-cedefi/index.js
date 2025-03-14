@@ -1,4 +1,5 @@
 const { cachedGraphQuery } = require('../helper/cache')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const config = {
   ethereum: {
@@ -31,6 +32,9 @@ async function fetchTokens(chain, subgraphUrl) {
   return cachedGraphQuery(`${prefix}/${chain}`, subgraphUrl, query)
 }
 
+const PROMO_BTCB_STAKE_ABI =
+  "function totalStaked() view returns (uint256)";
+
 async function tvl(api) {
   const chain = api.chain
   
@@ -55,6 +59,11 @@ async function tvl(api) {
     const targetToken = TOKEN_MAPPINGS[token.id] || token.id
     api.add(targetToken, token.tvl)
   })
+
+  if (chain === 'bsc') {
+    const BTCBStaked = await api.call({  abi: PROMO_BTCB_STAKE_ABI, target: '0x471461A60EC3855DC58E00De81E3510b8945D2f9'})  
+    api.add(ADDRESSES.bsc.BTCB, BTCBStaked)
+  }
 
   return api.getBalances()
 }
