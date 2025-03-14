@@ -307,6 +307,7 @@ const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
   '0x000000000000000000000000000000000000800a', // zksync era gas token
 ]
+const gasTokenSet = new Set(gasTokens)
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -501,6 +502,7 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
     }
     const token = stripTokenHeader(key)
     if (!/^0x/.test(token)) return;     // if token is not an eth address, we ignore it
+    if (gasTokenSet.has(token)) return; // if token is a gas token, we ignore it
     tokens.push({ output: token })
     amounts.push({ output: balances[key] })
     delete balances[key]
