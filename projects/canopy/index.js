@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { function_view } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
 
 const canopyCoreAddress = "b10bd32b3979c9d04272c769d9ef52afbc6edc4bf03982a9e326b96ac25e7f2d"; // Canopy Core Vaults Module
 
@@ -59,12 +57,10 @@ module.exports = {
   move: {
     tvl: async (api) => {
       const vaultsInfo = await getCanopyCoreVaults(canopyCoreAddress)
-      const netBalances = {};
-      
       for (const vault of vaultsInfo.vaults) {
         const asset = vault.asset_address
         const balance = vault.total_asset
-        sdk.util.sumSingleBalance(netBalances, asset, balance);
+        api.add(asset, balance);
       }
 
       for (const vault of canopyLiquidswapVaultArgs) {
@@ -73,11 +69,9 @@ module.exports = {
         const assetY = vault.y_fa
         const balanceX = vaultInfo[0]
         const balanceY = vaultInfo[1]
-        sdk.util.sumSingleBalance(netBalances, assetX, balanceX);
-        sdk.util.sumSingleBalance(netBalances, assetY, balanceY);
+        api.add(assetX, balanceX);
+        api.add(assetY, balanceY);
       }
-
-      return transformBalances(api.chain, netBalances)
     },
   },
 };

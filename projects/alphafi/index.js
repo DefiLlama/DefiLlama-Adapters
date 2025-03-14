@@ -264,7 +264,13 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     token0Type: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
     token1Type: ADDRESSES.sui.USDC_CIRCLE
   },
-  
+  { //stsui sui
+    poolID: "0x0b45d1e5889b524dc1a472f59651cdedb8e0a2678e745f27975a9b57c127acdd",
+    parentPoolID: "0x73549e0918d10727e324ebeed11ab81ab46f8fadb11078a0641f117d9097b725",
+    investorID: "0xaec347c096dd7e816febd8397be4cca3aabc094a9a2a1f23d7e895564f859dc2",
+    token0Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
+    token1Type: ADDRESSES.sui.SUI
+  },
 ]
 const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
   { //sui usdc

@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
-const { transformBalances } = require('../helper/portedTokens')
 
 async function tvl(api) {
   const { factory, fromBlock, } = config[api.chain]
@@ -18,7 +17,6 @@ async function tvl(api) {
 
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true })
   api.addTokens(tokens, bals.map((v, i) => v / 10 ** (18 - (decimals[i] ?? 18))))
-  return transformBalances(api.chain, api.getBalances())
 }
 
 const config = {
