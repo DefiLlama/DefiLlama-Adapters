@@ -1,28 +1,14 @@
-const solana = require("../helper/solana");
-const stellar = require("./stellar/stellar");
-const data = require("./contracts.json");
-const sdk = require("@defillama/sdk");
-const {default: BigNumber} = require("bignumber.js");
+const { sumTokens2 } = require("../helper/solana");
 
-const toNumber = (decimals, n) => BigNumber(n/(10 ** decimals)).toFixed(0)
+const data = require("./contracts.json");
 
 const solanaTvl = async (api) => {
   const tokens = data['solana'].tokens;
-  return solana.sumTokens2({ tokensAndOwners: tokens.map(i => [i.tokenAddress, i.poolAddress])});
-}
-
-const stellarTvl = async (api) => {
-  const balances = {}
-  for (const token of data['stellar'].tokens) {
-    const balance = await stellar.getTokenBalance(token.tokenAddress, token.poolAddress);
-    sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
-  }
-  return balances;
+  return sumTokens2({ tokensAndOwners: tokens.map(i => [i.tokenAddress, i.poolAddress])})
 }
 
 function getTVLFunction(chain) {
   if (chain === 'solana') return solanaTvl;
-  if (chain === 'stellar') return stellarTvl;
 
   return async function evmTvl(api) {
     const tokensData = data[chain].tokens;
