@@ -51,6 +51,15 @@ const fixBalancesTokens = {
     '0x03c7054bcb39f7b2e5b2c7acb37583e32d70cfa3': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
     '0xc3eacf0612346366db554c991d7858716db09f58': { coingeckoId: 'kelp-dao-restaked-eth', decimals: 18 },
   },
+  taker: {
+    [ADDRESSES.taker.uniBTC]: { coingeckoId: "universal-btc", decimals: 8 },
+    [ADDRESSES.taker.cbBTC]: { coingeckoId: "coinbase-wrapped-btc", decimals: 8 },
+    [ADDRESSES.taker.BTCB]: { coingeckoId: "binance-bitcoin", decimals: 18 },
+    [ADDRESSES.taker.ETH]: { coingeckoId: "ethereum", decimals: 18 },
+    [ADDRESSES.taker.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    [ADDRESSES.taker.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.taker.USDT]: { coingeckoId: "tether", decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
