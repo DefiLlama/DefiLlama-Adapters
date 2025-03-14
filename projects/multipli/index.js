@@ -10,6 +10,7 @@ async function getTvlByChain(chain) {
 
 
 module.exports = {
+    timetravel: false,
     ethereum: {
         tvl: () => getTvlByChain('ethereum')
     },
