@@ -1,3 +1,4 @@
+const ADDRESSES = require("../helper/coreAssets.json")
 const { getConfig } = require("../helper/cache");
 
 const sanitizeAndValidateEvmAddresses = (addresses) => {
@@ -14,7 +15,7 @@ const vaults = [
   '0x66E47E6957B85Cf62564610B76dD206BB04d831a', // earnBTC
   '0x9Ed15383940CC380fAEF0a75edacE507cC775f22', // earnETH
   '0x196ead472583bc1e9af7a05f860d9857e1bd3dcc', // unifiETH
-  '0x19e099B7aEd41FA52718D780dDA74678113C0b32', // tETH
+  ADDRESSES.ethereum.tETH, // tETH
   '0x9fAaEA2CDd810b21594E54309DC847842Ae301Ce', // seiyanETH
 ]
 
