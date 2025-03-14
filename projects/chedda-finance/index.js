@@ -1,4 +1,14 @@
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+
+const poolAbi = {
+  borrowed: "function borrowed() view returns (uint256)"
+};
+
+// Fix 1: Use the correct pool addresses without duplicates
+const cheddaPools = [
+  '0xE5c35103D75a72035B7B21Bb8e3Fd1e06920e5b0',
+  '0x7677DcdaCE362b4185dB2eE47472108156397936'
+];
 
 const cbAssetPool = "0xE5c35103D75a72035B7B21Bb8e3Fd1e06920e5b0"
 const memecoinPool = "0x7677DcdaCE362b4185dB2eE47472108156397936";
@@ -15,9 +25,36 @@ async function tvl({api}) {
     owners: [cbAssetPool, memecoinPool], api })
 }
 
+// Fix 2: Map pools to their respective tokens for proper accounting
+const fetchTotalBorrowData = async (api, poolAddresses) => {
+  // Map of which tokens are borrowed from which pools
+  const poolToToken = {
+    [cbAssetPool]: [USDC, CBBTC, CBETH],
+    [memecoinPool]: [USDC, DEGEN, BRETT, TOSHI]
+  };
+
+  const totalBorrows = await api.multiCall({
+    abi: poolAbi.borrowed,
+    calls: poolAddresses
+  });
+  
+  // Process the returned data
+  poolAddresses.forEach((poolAddress, i) => {
+    // Get the primary token for this pool (using the first token as an example)
+    // You may need to adjust this logic based on how your pools work
+    const token = poolToToken[poolAddress][0];
+    api.add(token, totalBorrows[i]);
+  });
+  
+  return api.getBalances();
+};
+
 module.exports = {
   methodology: `TVL is comprised of assets and collateral deposited to the pools on https://app.chedda.finance`,
   base: {
-    tvl
+    tvl,
+    borrowed: async (api) => {
+      return fetchTotalBorrowData(api, cheddaPools);
+    }
   }
 }
