@@ -5,7 +5,7 @@ This adapter calculates both the **Total Value Locked (TVL)** and **Revenue** fo
 
 ## Chain
 Binance Smart Chain (BSC)
-
+  
 ## Methodology
 ### TVL:
 - **Primary Source:** TVL is calculated by fetching Oracle prices directly from the **ExchangeRates contract** on BSC for each Oikos synth in circulation.
