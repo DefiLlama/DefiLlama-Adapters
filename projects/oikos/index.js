@@ -1,75 +1,65 @@
 import Web3 from 'web3';
 import snx from '@oikos/oikos-bsc';
 import axios from 'axios';
+import feePoolABI from './FeePoolABI.json' assert { type: 'json' };
+import exchangerABI from './ExchangerABI.json' assert { type: 'json' };
 import exchangeRatesABI from './ExchangeRatesABI.json' assert { type: 'json' };
 
-const web3 = new Web3('https://bsc-dataseed.binance.org/'); // BSC Mainnet RPC
+const web3 = new Web3('https://bsc-dataseed.binance.org/');
+
+// Contract Addresses
+const feePoolAddress = '0x4a7644B4b3ae6E4e2c53D01a39E7C4afA25061aF';
+const exchangerAddress = '0xad17064Ad709f37CB97af2e26E2F9E896a65EBa4';
 const exchangeRatesAddress = '0xe1ff83762F2db7274b6AC2c1C9Bb75B2A8574EaF';
 
+const feePool = new web3.eth.Contract(feePoolABI, feePoolAddress);
+const exchanger = new web3.eth.Contract(exchangerABI, exchangerAddress);
 const exchangeRates = new web3.eth.Contract(exchangeRatesABI, exchangeRatesAddress);
 
-async function fetch() {
-    console.log("Starting data retrieval for Oikos...");
+const toBytes32 = text => web3.utils.asciiToHex(text.padEnd(32, '\0'));
+
+async function fetch({ endTimestamp }) {
+    console.log("Starting combined data retrieval for Oikos...");
+
+    let totalValueLocked = 0;
+    let totalFees = 0;
 
     try {
+        // TVL Calculation
         const synths = snx.getSynths({ network: 'bsc' });
-
-        let totalValueLocked = 0;
-        const tokenList = synths.map(synth => synth.name.toLowerCase()).join(',');
-
-        // Iterate through Synths
         for (const synth of synths) {
             const tokenName = synth.name.toLowerCase();
-
-            // Attempt to fetch Oracle price from the Oikos contract first
             try {
-                const currencyKey = web3.utils.rightPad(
-                    web3.utils.asciiToHex(synth.name),
-                    64
-                );
-
-                const oraclePrice = await exchangeRates.methods
-                    .rateForCurrency(currencyKey)
-                    .call();
-
+                const currencyKey = toBytes32(synth.name);
+                const oraclePrice = await exchangeRates.methods.rateForCurrency(currencyKey).call();
                 const oracleUSD = Number(oraclePrice) / 1e18;
                 totalValueLocked += oracleUSD;
-
                 console.log(`✅ Found Oracle price for: ${tokenName} - ${oracleUSD} USD`);
-                continue;
             } catch (oracleError) {
                 console.warn(`⚠️ Failed to fetch Oracle price for: ${tokenName}`);
             }
-
-            // If Oracle data fails, try CoinGecko as fallback
-            try {
-                const response = await axios.get(
-                    `https://api.coingecko.com/api/v3/simple/price?ids=${tokenName}&vs_currencies=usd`
-                );
-
-                if (response.data[tokenName]) {
-                    totalValueLocked += response.data[tokenName].usd;
-                    console.log(`✅ Fallback to CoinGecko price for: ${tokenName} - ${response.data[tokenName].usd} USD`);
-                } else {
-                    console.warn(`⚠️ Missing data for: ${tokenName} (Both Oracle and CoinGecko failed)`);
-                }
-            } catch (geckoError) {
-                console.warn(`⚠️ Failed to fetch fallback CoinGecko price for: ${tokenName}`);
-            }
         }
 
-        console.log(`✅ Total TVL Calculated: ${totalValueLocked}`);
-        return { tvl: totalValueLocked };
+        // Revenue Calculation
+        const feesByPeriod = await feePool.methods.feesByPeriod(feePoolAddress).call();
+        totalFees = Number(feesByPeriod[0][0]) / 1e18;
+
+        console.log(`✅ Total TVL Calculated: ${totalValueLocked} USD`);
+        console.log(`✅ Total Revenue Calculated: ${totalFees} USD`);
+
+        return {
+            tvl: totalValueLocked.toFixed(2),
+            dailyFees: totalFees.toFixed(2),
+            dailyRevenue: totalFees.toFixed(2),
+            dailySupplySideRevenue: totalFees.toFixed(2)
+        };
 
     } catch (error) {
         console.error("❌ Error fetching data:", error.message);
-        return { tvl: 0 };
+        return { tvl: 0, dailyFees: 0, dailyRevenue: 0, dailySupplySideRevenue: 0 };
     }
 }
 
-export default {
-    methodology: "TVL based on the total value of circulating Synths on BSC, prioritizing on-chain Oracle prices with CoinGecko as fallback.",
+export const handler = {
     fetch
 };
-
-fetch().then(console.log);
