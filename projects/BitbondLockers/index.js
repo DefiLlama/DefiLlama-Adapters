@@ -1,3 +1,4 @@
+const { getConfig } = require('../helper/cache');
 const { get } = require('../helper/http');
 const { sumUnknownTokens } = require('../helper/unknownTokens');
 const { isLP } = require("../helper/unwrapLPs");
@@ -37,7 +38,9 @@ function getRandomUserAgent() {
 
 async function tvl(api) {
   const networkName = chainMapping[api.chain];
-  const lockers = await fetchLockers(networkName);
+  const lockers = await getConfig(`bitbond/locker/${networkName}`, undefined, {
+    fetcher: () => fetchLockers(networkName)
+  });
   const tokens = lockers.map((locker) => locker.tokenAddress);
   const symbols  = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true, })
   const tokensAndOwners = []

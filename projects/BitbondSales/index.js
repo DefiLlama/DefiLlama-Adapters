@@ -36,7 +36,9 @@ function getRandomUserAgent() {
 
 async function tvl(api) {
   const networkName = chainMapping[api.chain];
-  const sales = await fetchSales(networkName);
+  const sales = await getConfig(`bitbond/sales/${networkName}`, undefined, {
+    fetcher: () => fetchSales(networkName)
+  });
   const tokensAndOwners = sales.map((sale) => [sale.currencyAddress, sale.address]);
   return sumTokens2({ api, tokensAndOwners });
 }
