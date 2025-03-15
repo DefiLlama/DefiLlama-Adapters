@@ -4,7 +4,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test.js",
     "weeklyChanges": "git pull && git diff $(git log -1 --before=@{7.days.ago} --format=%H) --stat | grep -E \"projects/\" | cut -d / -f 2 | cut -d \" \" -f 1 | uniq | wc -l",
     "dev": "babel-watch curve.js",
     "lint": "eslint -c .eslintrc.js .",
@@ -46,7 +46,8 @@
     "p-limit": "^3.1.0",
     "starknet": "^5.24.3",
     "tron-format-address": "^0.1.8",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "web3": "^1.10.0"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
