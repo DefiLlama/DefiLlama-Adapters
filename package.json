@@ -47,7 +47,7 @@
     "starknet": "^5.24.3",
     "tron-format-address": "^0.1.8",
     "typescript": "^5.0.0",
-    "web3": "^1.10.0"
+    "web3": "^1.7.0"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
