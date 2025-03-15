@@ -1,5 +1,6 @@
 const { get } = require('../helper/http');
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumUnknownTokens } = require('../helper/unknownTokens');
+const { isLP } = require("../helper/unwrapLPs");
 
 const { chainMapping, userAgents, metisBaseUrl } = require("./config.json");
 
@@ -37,18 +38,17 @@ function getRandomUserAgent() {
 async function tvl(api) {
   const networkName = chainMapping[api.chain];
   const lockers = await fetchLockers(networkName);
+  const tokens = lockers.map((locker) => locker.tokenAddress);
+  const symbols  = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true, })
+  const tokensAndOwners = []
+  tokens.forEach((token, i) => {
+    const symbol = symbols[i]
+    if (isLP(symbol, token, api.chain)) {
+      tokensAndOwners.push([token, lockers[i].address])
+    }
+  })
 
-  const lockedValues = await api.multiCall({
-    abi: "erc20:balanceOf",
-    calls: lockers.map((locker) => ({ target: locker.tokenAddress, params: [locker.address] })),
-    requery: true
-  });
-
-  const tokenAddresses = lockers.map((locker) => (locker.tokenAddress));
-
-  api.addTokens(tokenAddresses, lockedValues)
-  
-  return sumTokens2({api, resolveLP: true});
+  return sumUnknownTokens({api, resolveLP: true, useDefaultCoreAssets: true, tokensAndOwners, });
 }
 
 Object.keys(chainMapping).forEach((chain) => {
