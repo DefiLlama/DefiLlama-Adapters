@@ -11,7 +11,7 @@ const EXCHANGER_ADDRESS = "0xad17064Ad709f37CB97af2e26E2F9E896a65EBa4";
 const feePoolContract = new Contract(FEEPOOL_ADDRESS, feePoolABI, provider);
 const exchangerContract = new Contract(EXCHANGER_ADDRESS, exchangerABI, provider);
 
-async function fetch({ endTimestamp }) {
+async function fetch() {
     console.log("Starting combined data retrieval for Oikos...");
 
     const totalRevenue = await feePoolContract.totalFees(); 
@@ -32,4 +32,9 @@ module.exports = {
             methodology: {
                 TVL: "Derived from total issued synths in the Exchanger contract.",
                 Fees: "Fees collected directly from the FeePool contract.",
-                Revenue: "Protocol revenue is equal to total fees collect
+                Revenue: "Protocol revenue is equal to total fees collected.",
+                SupplySideRevenue: "LP revenue is included in total fees."
+            }
+        }
+    }
+};
