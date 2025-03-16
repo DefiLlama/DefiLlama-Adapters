@@ -26,25 +26,16 @@ async function fetch() {
     // CycleX AILayer Tokenized Fund(R):
     // const CAFR = '0x4c717e5B5B622E5C9F22039eB46762B7AEa9663E'
 
-    try {
-        const response = await get(CYCLEX_API_ALL_FUND);
-        // console.log(`API Response data: ${JSON.stringify(response.data)}`);
-        const allFund = response.data
-        const symbols = [CAFM.symbol, CAFR.symbol];
-        const funds = allFund.find(item => symbols.includes(item.simple_name));
-        if (funds === undefined || funds === null) {
-            return 0;
-        }
-        
-        const totalTVL = funds.reduce((acc, fund) => acc + (fund.tvl_value * 1e5), 0);
-        return totalTVL;
-    } catch (error) {
-        console.error(`Error fetching TVL: ${error.message}`);
-        if (error.response) {
-            console.error(`Error response data: ${JSON.stringify(error.response.data)}`);
-        }
+    const response = await get(CYCLEX_API_ALL_FUND);
+    // console.log(`API Response data: ${JSON.stringify(response.data)}`);
+    const allFund = response.data
+    const symbols = [CAFM.symbol, CAFR.symbol];
+    const funds = allFund.find(item => symbols.includes(item.simple_name));
+    if (funds === undefined || funds === null) {
         return 0;
     }
+    const totalTVL = funds.reduce((acc, fund) => acc + (fund.tvl_value * 1e5), 0);
+    return totalTVL;
 }
 
 module.exports = {
