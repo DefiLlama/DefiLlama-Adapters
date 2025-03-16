@@ -26,7 +26,7 @@ async function fetch() {
 }
 
 module.exports = {
-    adapter: {
+    bsc: {
         fetch,
         meta: {
             methodology: {
