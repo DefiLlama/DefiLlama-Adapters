@@ -16,7 +16,6 @@ async function tvl() {
     const tokenAccounts = []
     const blacklistedTokens = []
     poolData.forEach(({ account: i }) => {
-        console.log(i)
         blacklistedTokens.push(i.launcherMint.toString())
         tokenAccounts.push(i.poolVaultKey.toString())
     });
