@@ -1,12 +1,10 @@
 const ADDRESSES = require('./coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const token0 = 'address:token0'
 const symbol = 'string:symbol'
-const { getPoolTokens, getPoolId, bPool, getCurrentTokens, } = require('./abis/balancer.json')
+const { bPool, getCurrentTokens, } = require('./abis/balancer.json')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
-const creamAbi = require('./abis/cream.json')
 const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
@@ -425,53 +423,6 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
   return balances
 }
 
-
-async function genericUnwrapCvxRewardPool({ api, owner, pool, balances }) {
-  if (!balances) balances = await api.getBalances()
-  const [bal, cToken] = await api.batchCall([
-    { target: pool, params: owner, abi: 'erc20:balanceOf' },
-    { target: pool, abi: 'address:stakingToken' },
-  ])
-  sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
-  return balances
-}
-
-async function genericUnwrapCvxFraxFarm({ api, owner, farm, balances }) {
-  if (!balances) balances = await api.getBalances()
-  const [bal, fraxToken] = await api.batchCall([
-    { target: farm, params: owner, abi: cvx_abi.cvxFraxFarm_lockedLiquidityOf },
-    { target: farm, abi: 'address:stakingToken' },
-  ])
-  const [curveToken] = await api.batchCall([
-    { target: fraxToken, abi: 'address:curveToken' },
-  ])
-  sdk.util.sumSingleBalance(balances, curveToken, bal, api.chain)
-  return balances
-}
-
-
-async function genericUnwrapCvxPrismaPool({ api, owner, pool, balances }) {
-  if (!balances) balances = await api.getBalances()
-  const [bal, cToken] = await api.batchCall([
-    { target: pool, params: owner, abi: 'erc20:balanceOf' },
-    { target: pool, abi: 'address:lpToken' },
-  ])
-  sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
-  return balances
-}
-
-async function genericUnwrapCvxCurveLendRewardPool({ api, owner, rewardsContract, lendVault, balances }) {
-  if (!balances) balances = await api.getBalances()
-
-  const [bal, asset, pricePerShare] = await api.batchCall([
-    { target: rewardsContract, params: owner, abi: 'erc20:balanceOf' },
-    { target: lendVault, abi: 'address:asset' },
-    { target: lendVault, abi: 'uint256:pricePerShare' },
-  ])
-  const balance = BigNumber(bal).times(pricePerShare).div(1e18).toFixed(0)
-  sdk.util.sumSingleBalance(balances, asset, balance, api.chain)
-  return balances
-}
 
 async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [], abis = {} }) {
   if (api) {
@@ -932,10 +883,6 @@ module.exports = {
   sumTokens2,
   unwrapBalancerToken,
   sumTokensExport,
-  genericUnwrapCvxRewardPool,
-  genericUnwrapCvxFraxFarm,
-  genericUnwrapCvxPrismaPool,
-  genericUnwrapCvxCurveLendRewardPool,
   unwrapMakerPositions,
   unwrap4626Tokens,
   unwrapConvexRewardPools,
