@@ -28,13 +28,11 @@ async function fetch() {
 module.exports = {
     bsc: {
         fetch,
-        meta: {
-            methodology: {
-                TVL: "Derived from total issued synths in the Exchanger contract.",
-                Fees: "Fees collected directly from the FeePool contract.",
-                Revenue: "Protocol revenue is equal to total fees collected.",
-                SupplySideRevenue: "LP revenue is included in total fees."
-            }
-        }
+    },
+    methodology: {
+        TVL: "Derived from total issued synths in the Exchanger contract.",
+        Fees: "Fees collected directly from the FeePool contract.",
+        Revenue: "Protocol revenue is equal to total fees collected.",
+        SupplySideRevenue: "LP revenue is included in total fees."
     }
 };
