@@ -1,4 +1,4 @@
-const { Web3 } = require('web3'); // Corrected import
+const Web3 = require('web3'); // Corrected import
 const { BigNumber } = require('bignumber.js');
 const https = require('https'); // For SSL verification (optional)
 
