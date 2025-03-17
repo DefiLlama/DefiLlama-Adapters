@@ -1,24 +1,22 @@
 # Oikos.cash TVL & Revenue Adapters
 
-## Description
-This adapter calculates both the **Total Value Locked (TVL)** and **Revenue** for Oikos.cash on Binance Smart Chain (BSC). It prioritizes on-chain data for improved accuracy and independence, with CoinGecko data used only as a fallback when necessary.
+This adapter calculates TVL and fees for the Oikos protocol on BNB Chain using on-chain data. Unlike the Synthetix adapter, which relies on an off-chain endpoint, Oikos requires direct blockchain queries for accurate results.
 
-## Chain
-Binance Smart Chain (BSC)
-  
-## Methodology
-### TVL:
-- **Primary Source:** TVL is calculated by fetching Oracle prices directly from the **ExchangeRates contract** on BSC for each Oikos synth in circulation.
-- **Fallback:** If Oracle data retrieval fails for a specific synth, the adapter attempts to fetch the token price via **CoinGecko's API**.
-- **Aggregation:** Values are aggregated to compute the total TVL.
+Methodology
+TVL Calculation:
+TVL is calculated by summing the totalSupply() of all relevant Synth contracts. Each Synth’s supply is retrieved directly from the blockchain and converted to USD values.
 
-### Revenue:
-- **Primary Source:** Derived directly from the **FeePool contract**, tracking fees collected during BSC transactions.
-- **Fallback:** If FeePool data fails, the adapter calculates swap fees from the **Exchanger contract** using `feeRateForExchange` logic to capture revenue based on exchange volume.
-- The final revenue calculation includes both fee-based sources to ensure accuracy.
+Fees Calculation:
+Fees are calculated using the totalFeesAvailable() function from the Oikos FeePool contract. This ensures accurate data by querying the chain directly.
 
-## Notes
-- The adapter dynamically adapts to data availability, prioritizing on-chain data for reliability.
-- The methodology ensures alignment with DefiLlama’s best practices for accurate DeFi data reporting.
+Contracts Used
+Synth Contracts:
+These contracts track the total supply of Oikos synthetic assets. Their addresses are included in the adapter's logic.
+FeePool Contract:
+The FeePool contract is queried for accumulated protocol fees.
+Why This Change?
+The previous adapter attempted to follow the Synthetix logic, relying on an off-chain API endpoint. Since Oikos does not have a similar API, we have transitioned to direct on-chain data retrieval for accurate results.
 
-✅ Successfully tested with `yarn test tvl oikos` and `yarn test fees oikos`.
+Testing
+The adapter has been tested locally using the provided test script.
+Both TVL and Fees calculations are now returning meaningful results
