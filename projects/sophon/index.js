@@ -1,4 +1,4 @@
-const getTvl = require("../txBridge/util")
+const getTvl = require("../txBridgeCustomUSDc/util")
 
 module.exports = {
   ethereum: {
