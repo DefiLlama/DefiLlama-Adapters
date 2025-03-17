@@ -49,7 +49,7 @@ function dexExport({
   poolStr,
   token0Reserve = i => i.data.coin_x_reserve.value,
   token1Reserve = i => i.data.coin_y_reserve.value,
-  getTokens = i => i.type.split('<')[1].replace('>', '').split(', '),
+  getTokens = async i => i.type.split('<')[1].replace('>', '').split(', '),
 }) {
   return {
     timetravel: false,
@@ -62,10 +62,10 @@ function dexExport({
         pools = pools.filter(i => i.type.includes(poolStr))
         log(`Number of pools: ${pools.length}`)
         const coreTokens = Object.values(coreTokensAll[chain] ?? {})
-        pools.forEach(i => {
+        const promises = pools.map(async i => {
           const reserve0 = token0Reserve(i)
           const reserve1 = token1Reserve(i)
-          const [token0, token1] = getTokens(i)
+          const [token0, token1] = await getTokens(i)
           const isCoreAsset0 = coreTokens.includes(token0)
           const isCoreAsset1 = coreTokens.includes(token1)
           const nonNeglibleReserves = reserve0 !== '0' && reserve1 !== '0'
@@ -83,6 +83,8 @@ function dexExport({
               sdk.util.sumSingleBalance(balances, token1, reserve1)
           }
         })
+
+        await Promise.all(promises)
 
         return transformBalances(chain, balances)
       }
