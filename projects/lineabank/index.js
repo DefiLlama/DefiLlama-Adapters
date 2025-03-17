@@ -1,5 +1,7 @@
+const { function_view } = require("../helper/chain/aptos");
 const { compoundExports2 } = require("../helper/compound")
 const { mergeExports } = require("../helper/utils")
+
 const config = {
   linea: '0x009a0b7C38B542208936F1179151CD08E2943833',
   scroll: '0xEC53c830f4444a8A56455c6836b5D2aA794289Aa',
@@ -22,12 +24,61 @@ const abis = {
   totalBorrows: "uint256:totalBorrow",
 }
 
+// LayerBank pool contract address
+const LAYERBANK_POOL_CONTRACT = "0xf257d40859456809be19dfee7f4c55c4d033680096aeeb4228b7a15749ab68ea";
+
+/**
+ * Fetches pool data from LayerBank
+*/
+async function fetchPoolData() {
+  try {
+    const poolData = await function_view({
+      functionStr: `${LAYERBANK_POOL_CONTRACT}::ui_pool_data_provider_v3::get_reserves_data`,
+      chain: "move"
+    });
+    return poolData;
+  } catch (error) {
+    return [[], {}]; // Return default value in case of error
+  }
+}
+
+async function fetchPoolList() {
+  const poolList = await function_view({
+    functionStr: `${LAYERBANK_POOL_CONTRACT}::ui_pool_data_provider_v3::get_reserves_list`,
+    chain: "move"
+  });
+  return poolList;
+}
 
 Object.keys(config).forEach(chain => {
   const comptroller = config[chain]
   module.exports[chain] = compoundExports2({ comptroller, abis, })
 })
 
+module.exports.move = {
+  tvl: async (api) => {
+    // Fetch pool data
+    const poolData = await fetchPoolData();
+    const assets = poolData[0] || [];
+
+    // Calculate TVL for each asset and add to balances
+    assets.forEach(asset => {
+      api.add(asset.underlying_asset, asset.available_liquidity);
+    });
+  },
+  borrowed: async (api) => {
+    // Fetch pool data
+    const poolData = await fetchPoolData();
+    const assets = poolData[0] || [];
+
+    // Calculate TVL for each asset and add to balances
+    assets.forEach(asset => {
+      api.add(asset.underlying_asset, asset.total_scaled_variable_debt);
+    });
+  }
+};
+
 module.exports = mergeExports([module.exports, {
   linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, }),
 }])
+
