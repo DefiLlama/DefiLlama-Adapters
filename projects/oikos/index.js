@@ -1,17 +1,35 @@
-// Dynamically install required dependencies if not already installed
-const requiredDependencies = ['web3', 'bignumber.js'];
-for (const dep of requiredDependencies) {
+// Function to dynamically install missing dependencies
+function installDependency(dep) {
+    console.log(`🚨 Installing missing dependency: ${dep}`);
+    const { execSync } = require('child_process');
     try {
-        require.resolve(dep);
-    } catch (e) {
-        console.log(`🚨 Installing missing dependency: ${dep}`);
-        const { execSync } = require('child_process');
         execSync(`npm install ${dep}`, { stdio: 'inherit' });
+    } catch (error) {
+        console.error(`❌ Failed to install ${dep}: ${error.message}`);
+        process.exit(1); // Exit the script if installation fails
     }
 }
-// Now require the dependencies
-const Web3 = require('web3'); // Corrected import
-const { BigNumber } = require('bignumber.js');
+
+// Function to safely require a module
+function requireModule(moduleName) {
+    try {
+        // Clear the module cache to ensure the newly installed module is loaded
+        delete require.cache[require.resolve(moduleName)];
+        return require(moduleName);
+    } catch (error) {
+        if (error.code === 'MODULE_NOT_FOUND') {
+            installDependency(moduleName);
+            // Clear the module cache again and retry
+            delete require.cache[require.resolve(moduleName)];
+            return require(moduleName);
+        }
+        throw error; // Re-throw other errors
+    }
+}
+
+// Dynamically require 'web3' and 'bignumber.js'
+const Web3 = requireModule('web3');
+const { BigNumber } = requireModule('bignumber.js');
 const https = require('https'); // For SSL verification (optional)
 
 console.log("🚨 Starting Oikos Adapter Execution...");
