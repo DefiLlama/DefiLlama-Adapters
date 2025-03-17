@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk');
+const { BigNumber } = require('bignumber.js');
 
 console.log("🚨 Starting Oikos Adapter Execution...");
 
@@ -46,7 +47,7 @@ const FEEPOOL_CONTRACT = "0x4a7644B4b3ae6E4e2c53D01a39E7C4afA25061aF";
 async function tvl() {
     console.log("🚨 Inside TVL Function...");
     console.log("🚀 Starting TVL calculation...");
-    let totalTVL = 0;
+    let totalTVL = new BigNumber(0);
 
     for (const synth of SYNTHS) {
         console.log(`🔍 Attempting to fetch total supply for ${synth.symbol} at address ${synth.address}`);
@@ -59,7 +60,7 @@ async function tvl() {
             });
 
             console.log(`✅ ${synth.symbol} Total Supply Retrieved: ${totalSupply.output}`);
-            totalTVL += parseFloat(totalSupply.output) / 10 ** synth.decimals;
+            totalTVL = totalTVL.plus(new BigNumber(totalSupply.output).dividedBy(10 ** synth.decimals));
 
             console.log(`Updated Total TVL: ${totalTVL.toFixed(2)}`);
         } catch (error) {
@@ -88,7 +89,7 @@ async function fees() {
 
         console.log(`✅ Total Fees Retrieved from FeePool Contract: ${totalFees.output}`);
 
-        const feesInEth = parseFloat(totalFees.output) / 1e18;
+        const feesInEth = new BigNumber(totalFees.output).dividedBy(1e18);
 
         return {
             dailyFees: feesInEth.toFixed(2),
