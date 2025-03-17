@@ -39,13 +39,15 @@ const SYNTHS = [
 // FeePool Contract for Revenue Calculation
 const FEEPOOL_CONTRACT = "0x4a7644B4b3ae6E4e2c53D01a39E7C4afA25061aF";
 
-// TVL Calculation
-async function tvl(_, block) {
-    console.log("🚨 Inside TVL Function...");
-    console.log("🚀 Starting TVL calculation...");
+// TVL + Fees Calculation Combined into `fetch`
+async function fetch(_, block) {
+    console.log("🚨 Inside Fetch Function...");
+    console.log("🚀 Starting TVL and Fees calculation...");
 
     let totalTVL = new BigNumber(0);
+    let totalFees = new BigNumber(0);
 
+    // TVL Calculation
     for (const synth of SYNTHS) {
         console.log(`🔍 Attempting to fetch total supply for ${synth.symbol} at address ${synth.address}`);
 
@@ -57,8 +59,6 @@ async function tvl(_, block) {
                 block
             });
 
-            console.log(`✅ Raw Response for ${synth.symbol}: ${totalSupply}`);
-
             const supplyInUnits = new BigNumber(totalSupply).dividedBy(10 ** synth.decimals);
             totalTVL = totalTVL.plus(supplyInUnits);
 
@@ -69,48 +69,40 @@ async function tvl(_, block) {
         }
     }
 
-    console.log(`✅ Final Total TVL Calculated: ${totalTVL.toFixed(2)}`);
-    return {
-        'bsc:usd': totalTVL.toFixed(2)
-    };
-}
-
-// Fees Calculation
-async function fees(_, block) {
-    console.log("🚨 Inside Fees Function...");
-    console.log("🚀 Starting Fees calculation...");
-
+    // Fees Calculation
     try {
         console.log(`🔍 Attempting to fetch total fees from FeePool contract...`);
 
-        const { output: totalFees } = await sdk.api.abi.call({
+        const { output: feesData } = await sdk.api.abi.call({
             abi: FEEPOOL_ABI,
             target: FEEPOOL_CONTRACT,
             chain: 'bsc',
             block
         });
 
+        totalFees = new BigNumber(feesData).dividedBy(1e18);
+
         console.log(`✅ Total Fees Retrieved from FeePool Contract: ${totalFees}`);
-
-        const feesInEth = new BigNumber(totalFees).dividedBy(1e18);
-
-        return {
-            dailyFees: feesInEth.toFixed(2),
-            dailyRevenue: feesInEth.toFixed(2),
-            dailySupplySideRevenue: feesInEth.toFixed(2)
-        };
     } catch (error) {
         console.error(`❌ Error in Fees Calculation: ${error.message}`);
-        return {};
     }
+
+    console.log(`✅ Final Total TVL Calculated: ${totalTVL.toFixed(2)}`);
+    console.log(`✅ Final Total Fees Calculated: ${totalFees.toFixed(2)}`);
+
+    return {
+        tvl: totalTVL.toFixed(2),
+        dailyFees: totalFees.toFixed(2),
+        dailyRevenue: totalFees.toFixed(2),
+        dailySupplySideRevenue: totalFees.toFixed(2)
+    };
 }
 
 module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     bsc: {
-        tvl,
-        fees
+        fetch
     },
     methodology:
         "TVL is calculated by summing token balances from multiple Synth contracts and Collateral contracts. Fees are derived directly from the FeePool contract using totalFeesAvailable().",
