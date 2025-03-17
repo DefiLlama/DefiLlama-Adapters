@@ -1,9 +1,12 @@
-// Function to dynamically install missing dependencies
+const path = require('path');
+const { execSync } = require('child_process');
+
+// Function to install a dependency in the correct directory
 function installDependency(dep) {
     console.log(`🚨 Installing missing dependency: ${dep}`);
-    const { execSync } = require('child_process');
     try {
-        execSync(`npm install ${dep}`, { stdio: 'inherit' });
+        // Install the dependency in the current directory
+        execSync(`npm install ${dep}`, { stdio: 'inherit', cwd: __dirname });
     } catch (error) {
         console.error(`❌ Failed to install ${dep}: ${error.message}`);
         process.exit(1); // Exit the script if installation fails
