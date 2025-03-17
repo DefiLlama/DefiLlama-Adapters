@@ -1,116 +1,105 @@
 const sdk = require('@defillama/sdk');
-const { BigNumber } = require('bignumber.js');
+const { default: axios } = require('axios');
+const { getBlock } = require('./helper/getBlock');
+const { getChainTransform } = require('./helper/portedTokens');
+const { sumTokens2 } = require('./helper/unwrapLPs');
 
-console.log("🚨 Starting Oikos Adapter Execution...");
+// ABIs
+const ExchangeRatesABI = require('./abis/ExchangeRates.json');
+const FeePoolABI = require('./abis/FeePool.json');
+const ExchangerABI = require('./abis/Exchanger.json');
+const SynthABI = require('./abis/Synth.json');
 
-// Synth ABI for `totalSupply()` function
-const SYNTH_ABI = [
-    {
-        constant: true,
-        inputs: [],
-        name: "totalSupply",
-        outputs: [{ name: "", type: "uint256" }],
-        payable: false,
-        stateMutability: "view",
-        type: "function"
-    }
-];
+// Constants
+const CHAIN = 'bsc';
+const EXCHANGE_RATES_ADDRESS = '0xExchangeRatesAddress'; // Replace with actual address
+const FEE_POOL_ADDRESS = '0xFeePoolAddress'; // Replace with actual address
+const EXCHANGER_ADDRESS = '0xExchangerAddress'; // Replace with actual address
 
-// FeePool ABI for `totalFeesAvailable()` function
-const FEEPOOL_ABI = [
-    {
-        constant: true,
-        inputs: [],
-        name: "totalFeesAvailable",
-        outputs: [{ name: "", type: "uint256" }],
-        payable: false,
-        stateMutability: "view",
-        type: "function"
-    }
-];
+// Helper function to fetch Oracle prices
+async function fetchOraclePrices(block) {
+  const rates = await sdk.api.abi.call({
+    target: EXCHANGE_RATES_ADDRESS,
+    abi: ExchangeRatesABI.find(({ name }) => name === 'ratesForCurrencies'),
+    params: [['sUSD', 'sBTC', 'sETH']], // Replace with actual synth symbols
+    chain: CHAIN,
+    block,
+  });
 
-// Synth Contracts for TVL Calculation
-const SYNTHS = [
-    { address: "0x1bE8d1de0052b7c2f6F9f8F640aAc622518520eE", symbol: "ODR", decimals: 18 },
-    { address: "0x97619B7AB5E5CE6b36203E10b5fc0F34C57b324A", symbol: "iBNB", decimals: 8 },
-    { address: "0xB72ef897482B5aCe5815FE0c427720A3BBB0FA59", symbol: "iBTC", decimals: 18 },
-    { address: "0x19399869d4582C3B9729fc9B2A3776309d235F13", symbol: "iETH", decimals: 18 },
-    { address: "0x4DDaCe4B8d58c3989075d2953FBA81fe69De5389", symbol: "oBNB", decimals: 18 },
-    { address: "0x19e0E8413DEe3AfFd94bdd42519d01935a0CF0c2", symbol: "oBTC", decimals: 18 },
-    { address: "0x68Db964FfF792D1A427f275D228E759d197471B9", symbol: "oXAU", decimals: 18 },
-];
-
-// FeePool Contract for Revenue Calculation
-const FEEPOOL_CONTRACT = "0x4a7644B4b3ae6E4e2c53D01a39E7C4afA25061aF";
+  return rates.output.reduce((acc, rate, index) => {
+    acc[['sUSD', 'sBTC', 'sETH'][index]] = rate; // Replace with actual synth symbols
+    return acc;
+  }, {});
+}
 
 // TVL Calculation
-async function tvl() {
-    console.log("🚨 Inside TVL Function...");
-    console.log("🚀 Starting TVL calculation...");
-    let totalTVL = new BigNumber(0);
+async function tvl(timestamp, ethBlock, chainBlocks) {
+  const block = await getBlock(timestamp, CHAIN, chainBlocks);
+  const transform = await getChainTransform(CHAIN);
 
-    for (const synth of SYNTHS) {
-        console.log(`🔍 Attempting to fetch total supply for ${synth.symbol} at address ${synth.address}`);
+  // Fetch Oracle prices
+  const oraclePrices = await fetchOraclePrices(block);
 
-        try {
-            const totalSupply = await sdk.api.abi.call({
-                target: synth.address,
-                abi: SYNTH_ABI[0],
-                chain: 'bsc'
-            });
+  // Fetch synth balances
+  const synthBalances = await sdk.api.abi.multiCall({
+    calls: ['sUSD', 'sBTC', 'sETH'].map((symbol) => ({ // Replace with actual synth symbols
+      target: symbol, // Replace with actual synth addresses
+      params: [],
+    })),
+    abi: SynthABI.find(({ name }) => name === 'totalSupply'),
+    chain: CHAIN,
+    block,
+  });
 
-            console.log(`✅ ${synth.symbol} Total Supply Retrieved: ${totalSupply.output}`);
-            totalTVL = totalTVL.plus(new BigNumber(totalSupply.output).dividedBy(10 ** synth.decimals));
-
-            console.log(`Updated Total TVL: ${totalTVL.toFixed(2)}`);
-        } catch (error) {
-            console.error(`❌ Error fetching total supply for ${synth.symbol}: ${error.message}`);
-        }
+  // Calculate TVL
+  const tvl = synthBalances.output.reduce((acc, { input: { target }, output }) => {
+    const price = oraclePrices[target];
+    if (price) {
+      acc += output * price / 1e18; // Adjust decimals if necessary
     }
+    return acc;
+  }, 0);
 
-    console.log(`✅ Final Total TVL Calculated: ${totalTVL.toFixed(2)}`);
-    return {
-        'bsc:usd': totalTVL.toFixed(2)
-    };
+  return {
+    tether: tvl, // Report TVL in USD
+  };
 }
 
-// Fees Calculation
-async function fees() {
-    console.log("🚨 Inside Fees Function...");
-    console.log("🚀 Starting Fees calculation...");
+// Revenue Calculation
+async function revenue(timestamp, ethBlock, chainBlocks) {
+  const block = await getBlock(timestamp, CHAIN, chainBlocks);
 
-    try {
-        console.log(`🔍 Attempting to fetch total fees from FeePool contract...`);
-        const totalFees = await sdk.api.abi.call({
-            target: FEEPOOL_CONTRACT,
-            abi: FEEPOOL_ABI[0],
-            chain: 'bsc'
-        });
+  // Fetch fees from FeePool
+  const feePoolFees = await sdk.api.abi.call({
+    target: FEE_POOL_ADDRESS,
+    abi: FeePoolABI.find(({ name }) => name === 'totalFeesAvailable'),
+    chain: CHAIN,
+    block,
+  });
 
-        console.log(`✅ Total Fees Retrieved from FeePool Contract: ${totalFees.output}`);
+  // Fetch swap fees from Exchanger
+  const exchangerFees = await sdk.api.abi.call({
+    target: EXCHANGER_ADDRESS,
+    abi: ExchangerABI.find(({ name }) => name === 'feeRateForExchange'),
+    chain: CHAIN,
+    block,
+  });
 
-        const feesInEth = new BigNumber(totalFees.output).dividedBy(1e18);
+  // Calculate total revenue
+  const totalRevenue = feePoolFees.output + exchangerFees.output;
 
-        return {
-            dailyFees: feesInEth.toFixed(2),
-            dailyRevenue: feesInEth.toFixed(2),
-            dailySupplySideRevenue: feesInEth.toFixed(2)
-        };
-    } catch (error) {
-        console.error(`❌ Error in Fees Calculation: ${error.message}`);
-        return {};
-    }
+  return {
+    tether: totalRevenue / 1e18, // Adjust decimals if necessary
+  };
 }
 
+// Export the adapter
 module.exports = {
-    timetravel: false,
-    misrepresentedTokens: true,
-    bsc: {
-        tvl,
-        fees,
-    },
-    methodology:
-        "TVL is calculated by summing token balances from multiple Synth contracts and Collateral contracts. Fees are derived directly from the FeePool contract using totalFeesAvailable().",
+  timetravel: true, // Indicates if the adapter supports time travel (historical data)
+  methodology: "TVL is calculated by fetching Oracle prices from the ExchangeRates contract. Revenue is derived from the FeePool and Exchanger contracts.",
+  start: 1638316800, // Timestamp when the protocol launched
+  bsc: {
+    tvl, // TVL calculation
+    revenue, // Revenue calculation
+  },
 };
-
-console.log("✅ Adapter Loaded Successfully");
