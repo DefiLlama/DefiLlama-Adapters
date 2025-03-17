@@ -3,17 +3,25 @@ const { queryContract } = require('../helper/chain/cosmos')
 const config = {
   neutron: [{
     coinGeckoId: "cosmos",
-    dropContract: "neutron16m3hjh7l04kap086jgwthduma0r5l0wh8kc6kaqk92ge9n5aqvys9q6lxr"
+    dropContract: "neutron15v5acjfttf3umzatmj7rqfjy6yzcgekh266ehjsxclvaem0hpd7q9qpscr"
   },
   {
     coinGeckoId: "celestia",
-    dropContract: "neutron1fp649j8djj676kfvh0qj8nt90ne86a8f033w9q7p9vkcqk9mmeeqxc9955"
+    dropContract: "neutron1vqtnu54addf87qp73fnjvqafruzkr2zjgswkhsmsg45t08wla2nqqan0hc"
   }],
 };
 
 async function tvl(api) {
   for (const { coinGeckoId, dropContract, decimals = 6 } of config[api.chain]) {
-    const bonded = await queryContract({ contract: dropContract, chain: api.chain, data: { "total_bonded": {} } })
+    const delegations = await queryContract({ contract: dropContract, chain: api.chain, data: {
+        "extension": {
+          "msg": {
+            "delegations": {}
+          }
+        }
+      }
+    });
+    const bonded = delegations.delegations.delegations.map(delegation => Number(delegation.amount.amount)).reduce((ps, amount) => ps + amount, 0);
     api.addCGToken(coinGeckoId, bonded / 10 ** decimals)
   }
 }

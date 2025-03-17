@@ -20,7 +20,7 @@ Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Ad
 
 ## Work in progress
 
-This is a work in progress. The goal is to eventually handle historical data. DefiLlama aims to be transparent, accurate and open source.
+This is a work in progress. DefiLlama aims to be transparent, accurate and open source.
 
 If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.defillama.com/) and drop a message.
 
@@ -29,6 +29,8 @@ If you have any suggestions, want to contribute or want to chat, please join [ou
 node test.js projects/pangolin/index.js
 # Add a timestamp at the end to run the adapter at a historical timestamp
 node test.js projects/aave/v3.js 1729080692
+# or using YYYY-MM-DD
+node test.js projects/aave/v3.js 2024-10-16
 ```
 
 ## Changing RPC providers
@@ -39,7 +41,7 @@ BSC_RPC="..."
 POLYGON_RPC="..."
 ```
 
-The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain can be found [here](https://github.com/DefiLlama/defillama-sdk/blob/master/src/providers.json)
+The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain can be found [here](https://unpkg.com/@defillama/sdk@5.0.116/build/providers.json). If you run into issues with a chain make sure to update the sdk with `npm update @defillama/sdk`.
 
 ## Adapter rules
 - Never add extra npm packages, if you need a chain-level package for your chain, ask us and we'll consider it, but we can't accept any npm package that is project-specific

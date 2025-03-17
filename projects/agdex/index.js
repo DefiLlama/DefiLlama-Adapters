@@ -11,9 +11,9 @@ const USDT =
 const APT =
   ADDRESSES.aptos.APT;
 const BTC =
-  ADDRESSES.aptos.CELER_WBTC;
+  ADDRESSES.aptos.zWBTC;
 const ETH =
-  ADDRESSES.aptos.CELER_ETH;
+  ADDRESSES.aptos.zWETH;
 
 const usdc_resource_account = "0x19fb80bd79fa8f7538404af85196396973e3fbbda1503495598172c8813f7ca5";
 const usdc_metadata = "0x2b3be0a97a73c87ff62cbdd36837a9fb5bbd1d7f06a73b7ed62ec15c5326c1b8";

@@ -1,13 +1,25 @@
-const { sumTokensExport } = require("../helper/chain/ton");
-const ADDRESSES = require("../helper/coreAssets.json");
 
-const evaaMainPool = "EQC8rUZqR_pWV1BylWUlPNBzyiTYVoBEmQkMIQDZXICfnuRr"
-const evaaLpPool = "EQBIlZX2URWkXCSg3QF2MJZU-wC5XkBoLww-hdWk2G37Jc6N"
-const evaaAltsPool = "EQANURVS3fhBO9bivig34iyJQi97FhMbpivo1aUEAS2GYSu-";
+const ADDRESSES = require('../helper/coreAssets.json')
+const { call, sumTokens } = require("../helper/chain/ton");
+const evaaPoolAssets = require("./evaaPoolAssets");
+
+async function borrowed(api) {
+  for (const poolAssets of Object.values(evaaPoolAssets)) {
+    for (const { assetId, address } of poolAssets.assets) {
+      const [_totalSupply, totalBorrow] = await call({ target: poolAssets.poolAddress, abi: 'getAssetTotals', params: [["int", assetId]] });
+      api.add(address, totalBorrow)
+    }
+  }
+}
+
+async function tvl(api) {
+  const owners = Object.values(evaaPoolAssets).map(pool => pool.poolAddress);
+  return sumTokens({ owners, api, tokens: [ADDRESSES.null], useTonApiForPrices: true })
+}
 
 module.exports = {
-  methodology: 'Counts EVAA smartcontract balance as TVL.',
+  methodology: 'Counts the supply of EVAA\'s asset pools as TVL.',
   ton: {
-    tvl: sumTokensExport({ owners: [evaaMainPool, evaaLpPool, evaaAltsPool], tokens: [ADDRESSES.null]}),
+    tvl, borrowed,
   }
 }

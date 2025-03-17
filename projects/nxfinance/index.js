@@ -35,7 +35,7 @@ async function tvl(api) {
 	const funding_rate_reversion_tvl = await vaultTvl(FUNDING_RATE_REVERSION_VAULT_ADDR)
 	api.add(ADDRESSES.solana.USDC, funding_rate_reversion_tvl.toString())
 
-	
+
 }
 
 module.exports = {
