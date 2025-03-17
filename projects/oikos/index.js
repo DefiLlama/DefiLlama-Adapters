@@ -1,39 +1,5 @@
-const path = require('path');
-const { execSync } = require('child_process');
-
-// Function to install a dependency in the correct directory
-function installDependency(dep) {
-    console.log(`🚨 Installing missing dependency: ${dep}`);
-    try {
-        // Install the dependency in the current directory
-        execSync(`npm install ${dep}`, { stdio: 'inherit', cwd: __dirname });
-    } catch (error) {
-        console.error(`❌ Failed to install ${dep}: ${error.message}`);
-        process.exit(1); // Exit the script if installation fails
-    }
-}
-
-// Function to safely require a module
-function requireModule(moduleName) {
-    try {
-        // Clear the module cache to ensure the newly installed module is loaded
-        delete require.cache[require.resolve(moduleName)];
-        return require(moduleName);
-    } catch (error) {
-        if (error.code === 'MODULE_NOT_FOUND') {
-            installDependency(moduleName);
-            // Clear the module cache again and retry
-            delete require.cache[require.resolve(moduleName)];
-            return require(moduleName);
-        }
-        throw error; // Re-throw other errors
-    }
-}
-
-// Dynamically require 'web3' and 'bignumber.js'
-const Web3 = requireModule('web3');
-const { BigNumber } = requireModule('bignumber.js');
-const https = require('https'); // For SSL verification (optional)
+const sdk = require('@defillama/sdk');
+const { BigNumber } = require('bignumber.js');
 
 console.log("🚨 Starting Oikos Adapter Execution...");
 
@@ -50,23 +16,6 @@ const SYNTH_ABI = [
     }
 ];
 
-// FeePool ABI for `totalFeesAvailable()` function (ONLY IF YOU PLAN TO KEEP IT IN CONSOLE.LOG)
-const FEEPOOL_ABI = [
-    {
-        constant: true,
-        inputs: [],
-        name: "totalFeesAvailable",
-        outputs: [{ name: "", type: "uint256" }],
-        payable: false,
-        stateMutability: "view",
-        type: "function"
-    }
-];
-
-// Initialize Web3 with a BSC provider
-const agent = new https.Agent({ rejectUnauthorized: false }); // Disables SSL verification (optional)
-const web3 = new Web3('https://rpc.ankr.com/bsc', { agent }); // Updated RPC endpoint
-
 // Synth Contracts for TVL Calculation
 const SYNTHS = [
     { address: "0x1bE8d1de0052b7c2f6F9f8F640aAc622518520eE", symbol: "ODR", decimals: 18 },
@@ -79,21 +28,25 @@ const SYNTHS = [
 ];
 
 // TVL Calculation
-async function tvl() {
+async function tvl(_, block) {
     console.log("🚨 Inside TVL Function...");
     console.log("🚀 Starting TVL calculation...");
+    
     let totalTVL = new BigNumber(0);
 
     for (const synth of SYNTHS) {
         console.log(`🔍 Attempting to fetch total supply for ${synth.symbol} at address ${synth.address}`);
 
         try {
-            const contract = new web3.eth.Contract(SYNTH_ABI, synth.address);
-            const totalSupply = await contract.methods.totalSupply().call();
+            const { output: totalSupply } = await sdk.api.abi.call({
+                abi: SYNTH_ABI,
+                target: synth.address,
+                chain: 'bsc',
+                block
+            });
 
             console.log(`✅ ${synth.symbol} Total Supply Retrieved: ${totalSupply}`);
             
-            // Correctly handle decimals
             const supplyInUnits = new BigNumber(totalSupply).dividedBy(10 ** synth.decimals);
             totalTVL = totalTVL.plus(supplyInUnits);
 
@@ -116,7 +69,7 @@ module.exports = {
         tvl
     },
     methodology:
-        "TVL is calculated by summing token balances from multiple Synth contracts and Collateral contracts."
+        "TVL is calculated by summing token balances from multiple Synth contracts."
 };
 
 console.log("✅ Adapter Loaded Successfully");
