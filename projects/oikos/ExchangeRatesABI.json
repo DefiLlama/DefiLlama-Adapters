@@ -1,0 +1,11 @@
+[
+    {
+        "constant": true,
+        "inputs": [{ "name": "currencyKey", "type": "bytes32" }],
+        "name": "rateForCurrency",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
