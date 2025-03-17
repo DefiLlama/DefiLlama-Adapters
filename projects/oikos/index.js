@@ -1,5 +1,6 @@
-const sdk = require('@defillama/sdk');
+const { Web3 } = require('web3'); // Corrected import
 const { BigNumber } = require('bignumber.js');
+const https = require('https'); // For SSL verification (optional)
 
 console.log("🚨 Starting Oikos Adapter Execution...");
 
@@ -16,7 +17,7 @@ const SYNTH_ABI = [
     }
 ];
 
-// FeePool ABI for `totalFeesAvailable()` function
+// FeePool ABI for `totalFeesAvailable()` function (ONLY IF YOU PLAN TO KEEP IT IN CONSOLE.LOG)
 const FEEPOOL_ABI = [
     {
         constant: true,
@@ -29,6 +30,10 @@ const FEEPOOL_ABI = [
     }
 ];
 
+// Initialize Web3 with a BSC provider
+const agent = new https.Agent({ rejectUnauthorized: false }); // Disables SSL verification (optional)
+const web3 = new Web3('https://rpc.ankr.com/bsc', { agent }); // Updated RPC endpoint
+
 // Synth Contracts for TVL Calculation
 const SYNTHS = [
     { address: "0x1bE8d1de0052b7c2f6F9f8F640aAc622518520eE", symbol: "ODR", decimals: 18 },
@@ -40,9 +45,6 @@ const SYNTHS = [
     { address: "0x68Db964FfF792D1A427f275D228E759d197471B9", symbol: "oXAU", decimals: 18 },
 ];
 
-// FeePool Contract for Revenue Calculation
-const FEEPOOL_CONTRACT = "0x4a7644B4b3ae6E4e2c53D01a39E7C4afA25061aF";
-
 // TVL Calculation
 async function tvl() {
     console.log("🚨 Inside TVL Function...");
@@ -53,14 +55,14 @@ async function tvl() {
         console.log(`🔍 Attempting to fetch total supply for ${synth.symbol} at address ${synth.address}`);
 
         try {
-            const totalSupply = await sdk.api.abi.call({
-                target: synth.address,
-                abi: SYNTH_ABI[0],
-                chain: 'bsc'
-            });
+            const contract = new web3.eth.Contract(SYNTH_ABI, synth.address);
+            const totalSupply = await contract.methods.totalSupply().call();
 
-            console.log(`✅ ${synth.symbol} Total Supply Retrieved: ${totalSupply.output}`);
-            totalTVL = totalTVL.plus(new BigNumber(totalSupply.output).dividedBy(10 ** synth.decimals));
+            console.log(`✅ ${synth.symbol} Total Supply Retrieved: ${totalSupply}`);
+            
+            // Correctly handle decimals
+            const supplyInUnits = new BigNumber(totalSupply).dividedBy(10 ** synth.decimals);
+            totalTVL = totalTVL.plus(supplyInUnits);
 
             console.log(`Updated Total TVL: ${totalTVL.toFixed(2)}`);
         } catch (error) {
@@ -74,43 +76,14 @@ async function tvl() {
     };
 }
 
-// Fees Calculation
-async function fees() {
-    console.log("🚨 Inside Fees Function...");
-    console.log("🚀 Starting Fees calculation...");
-
-    try {
-        console.log(`🔍 Attempting to fetch total fees from FeePool contract...`);
-        const totalFees = await sdk.api.abi.call({
-            target: FEEPOOL_CONTRACT,
-            abi: FEEPOOL_ABI[0],
-            chain: 'bsc'
-        });
-
-        console.log(`✅ Total Fees Retrieved from FeePool Contract: ${totalFees.output}`);
-
-        const feesInEth = new BigNumber(totalFees.output).dividedBy(1e18);
-
-        return {
-            dailyFees: feesInEth.toFixed(2),
-            dailyRevenue: feesInEth.toFixed(2),
-            dailySupplySideRevenue: feesInEth.toFixed(2)
-        };
-    } catch (error) {
-        console.error(`❌ Error in Fees Calculation: ${error.message}`);
-        return {};
-    }
-}
-
 module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     bsc: {
-        tvl,
-        fees,
+        tvl
     },
     methodology:
-        "TVL is calculated by summing token balances from multiple Synth contracts and Collateral contracts. Fees are derived directly from the FeePool contract using totalFeesAvailable().",
+        "TVL is calculated by summing token balances from multiple Synth contracts and Collateral contracts."
 };
 
 console.log("✅ Adapter Loaded Successfully");
