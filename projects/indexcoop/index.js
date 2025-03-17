@@ -14,6 +14,7 @@ const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
 const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
 const hyETH = "0xc4506022Fb8090774E8A628d5084EED61D9B99Ee";
 const dsETH = "0x341c05c0E9b33C0E38d64de76516b2Ce970bB3BE";
+const wstETH15x = "0xc8DF827157AdAf693FCb0c6f305610C28De739FD";
 const aaveDebtToken = "0xf63b34710400cad3e044cffdcab00a0f32e33ecf";
 const USDC = ADDRESSES.ethereum.USDC
 const gtcETH = '0x36c833Eed0D376f75D1ff9dFDeE260191336065e'
@@ -33,6 +34,7 @@ const config = {
       dsETH,
       gtcETH,
       hyETH,
+      wstETH15x,
     ],
     aaveLeverageModule: '0x9d08CCeD85A68Bf8A19374ED4B5753aE3Be9F74f'.toLowerCase(),
   },
@@ -44,6 +46,8 @@ const config = {
       "0xeb5bE62e6770137beaA0cC712741165C594F59D7", // btc2xArb
       "0x3bDd0d5c0C795b2Bf076F5C8F177c58e42beC0E6", // btc3xArb
       "0x80e58AEA88BCCaAE19bCa7f0e420C1387Cc087fC", // iBtcArb
+      "0xE7b1Ce8DfEE3D7417397cd4f56dBFc0d49E43Ed1", // eth2xBtcArb
+      "0x77f69104145f94a81cec55747c7a0fc9cb7712c3", // btc2xEthArb
     ],
     aaveLeverageModule: '0x6d1b74e18064172d028c5ee7af5d0ccc26f2a4ae'.toLowerCase(),
   },
