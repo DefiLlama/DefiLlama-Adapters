@@ -9,22 +9,30 @@ const lisLPs = [
     "0xC23d348f9cC86dDB059ec798e87E7F76FBC077C1", // Lista LP aHAY-USDT
     "0xF6aB5cfdB46357f37b0190b793fB199D62Dcf504", // Lista LP UV-17-THE
     "0x1Cf9c6D475CdcA67942d41B0a34BD9cB9D336C4d", // Lista LP sAMM-HAY/FRAX
+    "0x9eb77a54a33069a319d91f493e6b1c9066fb38f7" // Lista LP pancake lisUSD/USDT
+    
   ];
 
+  
 const abi = {
     lpToken: "address:lpToken",
-    lpTotalSupply: "uint256:lpTotalSupply",
+    totalSupply: "uint256:totalSupply",
 };
 
 const pool2 = async (api) => {
     const [lisLpTokens, lisLpBalances] = await Promise.all([
         api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.lpToken }),
-        api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.lpTotalSupply }),
+        api.multiCall({calls: lisLPs.map((lis) => ({ target: lis })), abi: abi.totalSupply }),
       ]);
 
+
       lisLPs.forEach((_lp, i) => {
+
         api.add(lisLpTokens[i], lisLpBalances[i])
       })
+
+    
+  
 }
 
 module.exports = {
@@ -93,16 +101,43 @@ module.exports = {
                 ["0x1346b618dC92810EC74163e4c27004c921D446a5","0x03DB750d6212C6a0BCa9258E8cB7cf46dfD63067"],
 
                 // USDT
-["0x55d398326f99059ff775485246999027b3197955", "0xAd406CcF75f9E6216fA4349635B0cD77D0059b1f"],
+[ADDRESSES.bsc.USDT, "0xAd406CcF75f9E6216fA4349635B0cD77D0059b1f"],
 
                 //FDUSD
-                ["0xc5f0f7b66764f6ec8c8dff7ba683102295e16409","0x2202a491752Fee0E616F06A89E2eF416E2Fcd7e9"],
+                [ADDRESSES.ethereum.FDUSD,"0x2202a491752Fee0E616F06A89E2eF416E2Fcd7e9"],
 
-
+                // sUSDX
+                [
+                    "0x7788A3538C5fc7F9c7C8A74EAC4c898fC8d87d92",
+                    "0x98b167359566c1ea05335D52794C7Eb6f8E6739a",
+                ],
 
                 // vUSDT, PSM - LSR
-                // ["0x55d398326f99059ff775485246999027b3197955", "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
-                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"]
+                // [ADDRESSES.bsc.USDT, "0x5763DDeB60c82684F3D0098aEa5076C0Da972ec7"],
+                ["0xfd5840cd36d94d7229439859c0112a4185bc0255","0xf76D9cFD08dF91491680313B1A5b44307129CDa9"],
+
+                // pumpBTC
+                [
+                    "0xf9C4FF105803A77eCB5DAE300871Ad76c2794fa4",
+                    "0xEA44dDC58eC6b4902E19A353c554B6A4F32b9e6E",
+                ],
+                  // mBTC
+                [
+                    "0x7c1cCA5b25Fa0bC9AF9275Fb53cBA89DC172b878",
+                    "0x8A016f1896dC2939fFDbB60f6E42bCc245e2bB0b",
+                ],
+                // mCake
+                [
+                    "0x581FA684D0Ec11ccb46B1d92F1F24C8A3F95C0CA",
+                    "0x605356cc9f725e6744A51E78CD49E6029DcC4404",
+                ],
+                // mwBETH
+                [
+                    "0x7dc91cbd6cb5a3e6a95eed713aa6bf1d987146c8",
+                    "0x3cd434f0A58018B87eF1D2436cb710ca46F0fC43",
+                ],
+                // BTCB vault
+                [ADDRESSES.bsc.BTCB, "0x1AfA1589a634BE568D7872dCF1bbE6F79e11FaD5"],
             ],
         }),
         pool2,

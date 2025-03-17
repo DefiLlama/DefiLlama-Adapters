@@ -16,3 +16,6 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+
+Object.keys(module.exports.heco).forEach(key => module.exports.heco[key] = () => ({}))

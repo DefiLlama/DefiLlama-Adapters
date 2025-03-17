@@ -365,7 +365,7 @@ async function getTokenPrices({
 async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {}, resolveLP = false, abis,
-  ownerTokens = [],
+  ownerTokens = [], allLps = false,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -386,7 +386,7 @@ async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
       ownerTokens.forEach(([tokens, owner]) => tokens.forEach(i => tokensAndOwners.push([i, owner])))
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
   await sumTokens2({ api, balances, chain, block, tokensAndOwners, skipFixBalances: true, resolveLP, abis })
-  const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio, abis, })
+  const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio, abis, allLps, })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)
   fixBalances(balances)

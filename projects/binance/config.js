@@ -627,6 +627,8 @@ const assetList = [
   // added on the 27/08/2024
   ['BTC', 'BTC', '3PXBET2GrTwCamkeDzKCx8DeGDyrbuGKoc'],
   ['BTC', 'BTC', '3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud'],
+  ['ETH', 'ETH', '0xad354cfbaa4a8572dd6df021514a3931a8329ef5'], //https://x.com/binance/status/1889827037130428428
+  ['USDC', 'ETH', '0xad354cfbaa4a8572dd6df021514a3931a8329ef5'], //https://x.com/binance/status/1889827037130428428
 ]
 
 function getAddresses(chain) {
