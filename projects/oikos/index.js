@@ -1,3 +1,15 @@
+// Dynamically install required dependencies if not already installed
+const requiredDependencies = ['web3', 'bignumber.js'];
+for (const dep of requiredDependencies) {
+    try {
+        require.resolve(dep);
+    } catch (e) {
+        console.log(`🚨 Installing missing dependency: ${dep}`);
+        const { execSync } = require('child_process');
+        execSync(`npm install ${dep}`, { stdio: 'inherit' });
+    }
+}
+// Now require the dependencies
 const Web3 = require('web3'); // Corrected import
 const { BigNumber } = require('bignumber.js');
 const https = require('https'); // For SSL verification (optional)
