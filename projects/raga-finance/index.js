@@ -49,7 +49,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Calculates TVL as Deposited + RewardsEarned - Withdrawn - SlashingAmount from the specified Ethereum and USDC vault contracts.',
+  methodology: 'Calculates TVL as Deposited + RewardsEarned - Withdrawn - SlashingAmount from the specified DAI and USDC strategy contracts.',
   start: 21986569,
   ethereum: {
     tvl,
