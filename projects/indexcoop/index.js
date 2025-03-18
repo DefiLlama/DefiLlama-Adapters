@@ -34,7 +34,6 @@ const config = {
       dsETH,
       gtcETH,
       hyETH,
-      // wstETH15x,
     ],
     aaveLeverageModule: '0x9d08CCeD85A68Bf8A19374ED4B5753aE3Be9F74f'.toLowerCase(),
   },
@@ -59,6 +58,7 @@ const config = {
       "0x1F4609133b6dAcc88f2fa85c2d26635554685699", // btc3xBase
       "0x0a0fbd86d2deb53d7c65fecf8622c2fa0dcdc9c6", // uSOL/USDC
       "0x2f67e4be7fbf53db88881324aac99e9d85208d40", // uSUI/USDC
+      wstETH15x,
     ],
     aaveLeverageModule: '0xC06a6E4d9D5FF9d64BD19fc243aD9B6E5a672699'.toLowerCase(),
     morphoLeverageModule: '0x9534b6ec541ad182fbee2b0b01d1e4404765b8d7'.toLowerCase(),
@@ -106,7 +106,7 @@ Object.keys(config).forEach(chain => {
 
       }
 
-      // await sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: sets })
+      await sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: sets })
     }
   }
 })
