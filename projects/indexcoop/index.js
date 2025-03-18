@@ -34,7 +34,7 @@ const config = {
       dsETH,
       gtcETH,
       hyETH,
-      wstETH15x,
+      // wstETH15x,
     ],
     aaveLeverageModule: '0x9d08CCeD85A68Bf8A19374ED4B5753aE3Be9F74f'.toLowerCase(),
   },
@@ -57,13 +57,16 @@ const config = {
       "0x329f6656792c7d34D0fBB9762FA9A8F852272acb", // eth3xBase
       "0x186f3d8bb80dff50750babc5a4bcc33134c39cde", // btc2xBase
       "0x1F4609133b6dAcc88f2fa85c2d26635554685699", // btc3xBase
+      "0x0a0fbd86d2deb53d7c65fecf8622c2fa0dcdc9c6", // uSOL/USDC
+      "0x2f67e4be7fbf53db88881324aac99e9d85208d40", // uSUI/USDC
     ],
     aaveLeverageModule: '0xC06a6E4d9D5FF9d64BD19fc243aD9B6E5a672699'.toLowerCase(),
+    morphoLeverageModule: '0x9534b6ec541ad182fbee2b0b01d1e4404765b8d7'.toLowerCase(),
   },
 }
 
 Object.keys(config).forEach(chain => {
-  const { sets, aaveLeverageModule, } = config[chain]
+  const { sets, aaveLeverageModule, morphoLeverageModule, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
 
@@ -92,7 +95,18 @@ Object.keys(config).forEach(chain => {
         usdcDebt.forEach(i => api.add(USDC, i * -1))
       }
 
-      await sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: sets })
+      if (morphoLeverageModule) {
+        const morphoLeveragedSets = sets.filter((m, i) => modules[i].some(j => j.toLowerCase() === morphoLeverageModule))
+        const mResults = await api.multiCall({ abi: 'function getCollateralAndBorrowBalances(address) view returns (uint256 collateralBalance, uint256 borrowBalance, uint256 borrowSharesU256)', calls: morphoLeveragedSets, target: morphoLeverageModule })
+        const mTokens = await api.multiCall({ abi: 'function marketParams(address) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)', calls: morphoLeveragedSets, target: morphoLeverageModule })
+        mTokens.forEach((o, i) => {
+          api.add(o.loanToken, mResults[i].borrowBalance * -1)
+          api.add(o.collateralToken, mResults[i].collateralBalance)
+        })
+
+      }
+
+      // await sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: sets })
     }
   }
 })
