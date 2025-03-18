@@ -112,6 +112,16 @@
       }
     ],
     "bridgeAddress": "0x001E3f136c2f804854581Da55Ad7660a2b35DEf7"
+  },
+  "stellar": {
+    "tokens": [
+      {
+        "decimals": 7,
+        "name": "usd-coin",
+        "poolAddress": "CAOTMWRKNMV5GWSVOMWCTCM5ZZFEQFUSWNLCZXA2KAXD4YG5A4DIPNFT",
+        "tokenAddress": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
+      }
+    ]
   }
 }
 
