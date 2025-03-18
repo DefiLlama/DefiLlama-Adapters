@@ -20,6 +20,9 @@ const config = {
       "0x04fcd675f63b1ac987c650567977523e85a78135",
       "0xf579d6086cd6e557fb18c440582b2ed56a1c48e1",
       "0x6F4565c9D673DBDD379ABa0b13f8088d1AF3Bb0C",
+      "0x1Db92e2EeBC8E0c075a02BeA49a2935BcD2dFCF4",
+      "0x72187DB55473B693Ded367983212FE2db3768829",
+      "0xb829e684df8e31b402a4d4aedf3bbc18a52e7589"
     ],
   },
   bitcoin: {
@@ -51,6 +54,12 @@ const config = {
       "THRKrcUPirR6GU6qvsKAv2M6PUBcwe6ruD",
       "TMB53f4eYhEhTqkuzKRNDoDNu5Ma5DtMSc",
       "TTT5cF5aPZjF6FkPJqV4MmnuykMACjDvmb",
+      "TVYkGPtjVK7hvVcfsuZ8QXRsAdR2axpSP5",
+      "TJ6Ajasg7SQMYJuFxVAwwcsCSDSdNVPjDE",
+      "TFAxireFhrca32XpKaTwABbrNyxSrM6twe",
+      "TG9n9mHxbYfwVjizac1WaEoQ8ELfExPBCp",
+      "TPk6eu8rKWmdd1qAhyYFsmkUpbZjJbiNMW",
+      "TSTDgxSnutWG9NHjGa4H9v7sMkNdtKacPJ"
     ],
   },
   polygon: {
