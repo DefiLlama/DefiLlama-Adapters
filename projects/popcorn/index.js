@@ -19,7 +19,23 @@ const fraxLockVaultsNotRegistered = [
 
 async function tvl(api) {
   let balances = {};
-  const data = await getConfig('popcorn/' + api.chain, `https://raw.githubusercontent.com/Popcorn-Limited/defi-db/main/vaults/${api.getChainId()}.json`);
+
+  let chainId = api.getChainId();
+
+  // We need to assign our NBTC Vaults TVL to Hemi since the funds controlled by the ethereum vault are bridged to Hemi
+  const nbtcVaultAddress = "0x77e88cA17A6D384DCBB13747F6767F30e3753e63";
+  const nbtcAddress = "0x8BB97A618211695f5a6a889faC3546D1a573ea77";
+  if (api.chain === 'hemi') {
+    // Using the mainnet api, we can get the total assets of the NBTC vault and its value in USD
+    // The NBTC price isnt properly displayed using the hemi api so we use the mainnet api to get the price as a workaround
+    const mainnetApi = new sdk.ChainApi({ chain: "ethereum", block: 22022958 }) // Using block number of the NBTC bridge event
+    const totalAssets = await mainnetApi.call({ abi: getTotalAssets, target: nbtcVaultAddress });
+    sdk.util.sumSingleBalance(balances, nbtcAddress, totalAssets, "ethereum")
+
+    return sumTokens2({ balances, chain: "ethereum", resolveLP: true, })
+  }
+
+  const data = await getConfig('popcorn/' + api.chain, `https://raw.githubusercontent.com/Popcorn-Limited/defi-db/main/vaults/${chainId}.json`);
   let vaultAddresses = Object.keys(data);
 
   if (api.chain === "arbitrum") {
@@ -29,8 +45,10 @@ async function tvl(api) {
     await addFraxVaultToTVL(balances, api);
   }
 
-  if (api.chain === 'ethereum')
-  vaultAddresses = vaultAddresses.filter(i => !['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb'].includes(i))
+  if (api.chain === 'ethereum') {
+    // Filtering out and unused vault and the NBTC vault to prevent double counting
+    vaultAddresses = vaultAddresses.filter(i => !['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb', nbtcVaultAddress].includes(i))
+  }
 
   const assets = await api.multiCall({ abi: getAssetAbi, calls: vaultAddresses, });
   const totalAssets = await api.multiCall({ abi: getTotalAssets, calls: vaultAddresses, });
@@ -53,5 +71,7 @@ module.exports = {
   bsc: { tvl, },
   polygon: { tvl, },
   arbitrum: { tvl, },
-  optimism: { tvl, }
+  optimism: { tvl, },
+  base: { tvl, },
+  hemi: { tvl, },
 };
