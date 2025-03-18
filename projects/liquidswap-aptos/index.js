@@ -1,7 +1,9 @@
-const { dexExport, getResource } = require('../helper/chain/aptos')
-const sdk = require('@defillama/sdk')
+const { dexExport, getResources } = require('../helper/chain/aptos')
+const sdk = require('@defillama/sdk');
+const { transformDexBalances } = require('../helper/portedTokens');
 
 module.exports = {
+  misrepresentedTokens: true,
   aptos: {
     tvl: sdk.util.sumChainTvls([
       dexExport({
@@ -20,25 +22,41 @@ module.exports = {
         account: '0x3851f155e7fc5ec98ce9dbcaf04b2cb0521c562463bd128f9d1331b38c497cf3',
         poolStr: 'liquidity_pool::LiquidityPool',
       }).aptos.tvl,
-      dexExport({
-        account: '0xeef5ce9727e7faf3b83cb0630e91d45612eac563f670eecaadf1cb22c3bdfdfb',
-        poolStr: 'pool::Pool',
-        token0Reserve: i => i.data.coins_x.value,
-        token1Reserve: i => i.data.coins_y.value,
-        getTokens: async (i) => {
-          const chain = 'move';
-          const account = '0x4763c5cfde8517f48e930f7ece14806d75b98ce31b0b4eab99f49a067f5b5ef2';
-          const tokens = i.type.split('<')[1].replace('>', '').split(', ')
-          const key = (token) => `0x4763c5cfde8517f48e930f7ece14806d75b98ce31b0b4eab99f49a067f5b5ef2::wrapper::WrapperCoinInfo<${token}>`
-          const [token0, token1] = await Promise.all(
-            [
-              tokens[0].includes('wrapped') ? getResource(account, key(tokens[0]), chain).then(r => r.metadata.inner) : tokens[0],
-              tokens[1].includes('wrapped') ? getResource(account, key(tokens[1]), chain).then(r => r.metadata.inner) : tokens[1]
-            ]
-          )
-          return [token0, token1]
-        },
-      }).aptos.tvl
-    ])
+      movePoolTvl])
   }
+}
+
+
+async function movePoolTvl(api) {
+  const account = '0xeef5ce9727e7faf3b83cb0630e91d45612eac563f670eecaadf1cb22c3bdfdfb'
+  const poolStr = 'pool::Pool'
+  const token0Reserve = i => i.data.coins_x.value
+  const token1Reserve = i => i.data.coins_y.value
+  const chain = api.chain
+  let pools = await getResources(account, chain)
+  const resources = await getResources('0x4763c5cfde8517f48e930f7ece14806d75b98ce31b0b4eab99f49a067f5b5ef2', chain)
+  pools = pools.filter(i => i.type.includes(poolStr))
+  api.log(`Number of pools: ${pools.length}`)
+  const data = []
+  const tokenMap = {}
+  resources.forEach(r => {
+    if (!r.type.includes('wrapped')) return;
+    let key = r.type.split('<')[1].replace('>', '')
+    tokenMap[key] = r.data.metadata?.inner
+  })
+  const getTokens = i => i.type.split('<')[1].replace('>', '').split(', ').map(i => i.includes('wrapped') ? tokenMap[i] : i)
+
+  pools.forEach(i => {
+    const token0Bal = token0Reserve(i)
+    const token1Bal = token1Reserve(i)
+    const [token0, token1] = getTokens(i)
+    data.push({
+      token0,
+      token1,
+      token0Bal,
+      token1Bal,
+    })
+  })
+
+  return transformDexBalances({ api, data })
 }
