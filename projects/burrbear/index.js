@@ -3,7 +3,7 @@ const { onChainTvl } = require('../helper/balancer')
 const V2_ADDRESS = '0xBE09E71BDc7b8a50A05F7291920590505e3C7744'; // shared by all networks
 
 const config = {
-  berachain: { fromBlock: 1, },
+  berachain: { fromBlock: 121531, },
 }
 
 Object.keys(config).forEach(chain => {
