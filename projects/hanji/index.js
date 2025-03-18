@@ -9,15 +9,15 @@ const vaultTokenChangedEventAbi = "event TokenChanged(uint8 tokenId, address tok
 
 async function tvl(api) {
   const lobCreatedLogs = await getLogs2({ api, factory: LOB_FACTORY, eventAbi: createdLOBEventAbi, fromBlock: 6610800, })
-  const ownerTokens = lobCreatedLogs.map(log => [[log.tokenXAddress, log.tokenYAddress], log.OnchainCLOB]);
-
   const vaultCreatedLogs = await getLogs2({ api, factory: VAULT_FACTORY, eventAbi: createdVaultEventAbi, fromBlock: 7059590, })
+  const ownerTokens = lobCreatedLogs.map(log => [[log.tokenXAddress, log.tokenYAddress], log.OnchainCLOB]);
+  const lpManagers = vaultCreatedLogs.map(log => log.lpManager);
+  const tokenInfos = await api.fetchList({ lengthAbi: 'getTokensCount', itemAbi: "function tokens(uint256) view returns (address tokenAddress, bool isActive, uint16 targetWeight, uint16 lowerBoundWeight, uint16 upperBoundWeight, uint8 decimals, uint24 oracleConfRel, bytes32 oraclePriceId)", calls: lpManagers, groupedByInput: true, })
+  lpManagers.forEach((lpManager, i) => {
+    const tokens = tokenInfos[i].map(i => i.tokenAddress)
+    ownerTokens.push([tokens, lpManager])
+  })
 
-  for (const log of vaultCreatedLogs) {
-    const vaultTokenLogs = await getLogs2({ api, factory: log.lpManager, eventAbi: vaultTokenChangedEventAbi, fromBlock: 7059590, })
-    const vaultTokens = new Set(vaultTokenLogs.map(log => log.tokenAddress));
-    ownerTokens.push([[...vaultTokens], log.lpManager]);
-  }
 
   return api.sumTokens({ ownerTokens })
 }
