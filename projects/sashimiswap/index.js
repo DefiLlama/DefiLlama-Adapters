@@ -145,3 +145,6 @@ const blacklistedTokens = [
   '0xe2a246c36fa86eee290acef79a8dc66b6b7f25ba',
   '0x8fc67b8ed339c740a58ebd7aae24ba9d57d8dd25',
 ]
+
+
+Object.entries(module.exports.heco).forEach(([key, value]) => module.exports.heco[key] = () => ({}))

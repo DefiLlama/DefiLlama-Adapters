@@ -23,3 +23,4 @@ module.exports = {
     tvl: ethTvl,
   }
 }
+module.exports.doublecounted = true;

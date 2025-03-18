@@ -12,7 +12,8 @@ const chain = 'radixdlt'
 
 const ENTITY_DETAILS_URL = `https://mainnet.radixdlt.com/state/entity/details`
 
-async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
+async function sumTokens({ owner, owners = [], api, transformLSU = false,  blacklistedTokens = [] }) {
+  const blacklistSet = new Set(blacklistedTokens.map(i => i.toLowerCase()))
   const fixBalances = getFixBalancesSync(chain)
 
   if (owner) owners.push(owner)
@@ -23,6 +24,7 @@ async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
   let items = await queryAddresses({ addresses: owners })
   items.forEach((item) => {
     item.fungible_resources.items.forEach(({ resource_address, amount }) => {
+      if (blacklistSet.has(resource_address.toLowerCase())) return;
       api.add(resource_address, +amount)
     });
   });

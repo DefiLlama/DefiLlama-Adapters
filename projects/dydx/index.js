@@ -43,9 +43,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
     start: '2018-09-29',  // 09/29/2018 @ 12:00am (UTC)
     ethereum: { tvl },
    hallmarks:[
-    [1611630974, "Series B $10M"],
-    [1623726974, "Series C $65M"],
     [1627960574, "dydx token"],
-    [1632798974, "$250k Trading Comp"],
   ]
   };
