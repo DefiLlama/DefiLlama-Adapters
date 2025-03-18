@@ -1,87 +1,57 @@
-const ETH_VAULT_ADDRESS = '0x0b4EC936DE78833Fc3944df6277734b0517A181e';
-const USDC_VAULT_ADDRESS = '0x539201a389aD9b18F4DA95ff7C7C1d8C3FCbB3Ba';
+const USDC_STRATEGY_ADDRESS = '0xA2b648cE3ECFCa0BdE6eF353169cE97c4CcBE127';
+const DAI_STRATEGY_ADDRESS = '0xFf222313F328a9A555f068137e08e85b6aAe214A';
+const STRATEGY_MANAGER_ADDRESS = '0x751b60E27B6a722c0d1D1a48446DA0e52618228E';
 
 const VAULT_ABI = [
   {
-    "constant": true,
-    "inputs": [],
-    "name": "ethDeposited",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "ethWithdrawn",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "slashingAmount",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "rewardsClaimed",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "stableDeposited",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "stableWithdrawn",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_strategy",
+        "type": "address"
+      }
+    ],
+    "name": "fetchStrategyDeposit",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "valueDeposited", "type": "uint256" },
+          { "internalType": "uint256", "name": "rewardsEarned", "type": "uint256" },
+          { "internalType": "uint256", "name": "amountSlashed", "type": "uint256" },
+          { "internalType": "uint256", "name": "valueWithdrawn", "type": "uint256" }
+        ],
+        "internalType": "struct IStrategyManager.StrategyStruct",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   }
 ];
 
-async function fetchVaultData(api, vaultAddress, depositedFn, withdrawnFn, rewardsFn, slashingFn) {
-  const [deposited, withdrawn, rewards, slashing] = await Promise.all([
-    api.call({ abi: VAULT_ABI.find(f => f.name === depositedFn), target: vaultAddress }),
-    api.call({ abi: VAULT_ABI.find(f => f.name === withdrawnFn), target: vaultAddress }),
-    api.call({ abi: VAULT_ABI.find(f => f.name === rewardsFn), target: vaultAddress }),
-    api.call({ abi: VAULT_ABI.find(f => f.name === slashingFn), target: vaultAddress }),
-  ]);
+async function fetchVaultData(api, strategyAddress, strategyManagerAddress) {
+  const { valueDeposited, rewardsEarned, amountSlashed, valueWithdrawn } = await api.call({
+    abi: VAULT_ABI.find(f => f.name === "fetchStrategyDeposit"),
+    target: strategyManagerAddress,
+    params: [strategyAddress]
+  });
 
-  return deposited.add(rewards).sub(withdrawn).sub(slashing);
+  return valueDeposited.add(rewardsEarned).sub(valueWithdrawn).sub(amountSlashed);
 }
 
 async function tvl(api) {
-  const ethTVL = await fetchVaultData(api, ETH_VAULT_ADDRESS, 'ethDeposited', 'ethWithdrawn', 'rewardsClaimed', 'slashingAmount');
-  const usdcTVL = await fetchVaultData(api, USDC_VAULT_ADDRESS, 'stableDeposited', 'stableWithdrawn', 'rewardsClaimed', 'slashingAmount');
+  const usdcTVL = await fetchVaultData(api, USDC_STRATEGY_ADDRESS, STRATEGY_MANAGER_ADDRESS);
+  const daiTVL = await fetchVaultData(api, DAI_STRATEGY_ADDRESS, STRATEGY_MANAGER_ADDRESS);
 
-  api.add('0x0000000000000000000000000000000000000000', ethTVL); // ETH address
-  api.add('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', usdcTVL); // USDC address on Ethereum
+  api.add('0x6B175474E89094C44Da98b954EedeAC495271d0F', daiTVL); // DAI address on Ethereum
+  api.add('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', usdcTVL); // USDC address on Ethereum
 }
 
 module.exports = {
-  methodology: 'Calculates TVL as Deposited + RewardsClaimed - Withdrawn - SlashingAmount from the specified Ethereum and USDC vault contracts.',
-  start: 0,
+  methodology: 'Calculates TVL as Deposited + RewardsEarned - Withdrawn - SlashingAmount from the specified Ethereum and USDC vault contracts.',
+  start: 21986569,
   ethereum: {
     tvl,
   },
 };
-
