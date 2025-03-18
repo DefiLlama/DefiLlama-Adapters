@@ -15,17 +15,17 @@ async function getCanopyCoreVaults(address, pageSize = 100) {
   let hasMoreVaults = true;
 
   while (hasMoreVaults) {
-    const response = await function_view({ 
-      functionStr: `${address}::vault::vaults_view`, 
-      type_arguments: [], 
-      args: [offset.toString(), pageSize.toString()], 
-      chain: 'move' 
+    const response = await function_view({
+      functionStr: `${address}::vault::vaults_view`,
+      type_arguments: [],
+      args: [offset.toString(), pageSize.toString()],
+      chain: 'move'
     });
 
     if (response.vaults && response.vaults.length > 0) {
       allVaults = allVaults.concat(response.vaults);
       offset += response.vaults.length;
-      
+
       // If we got fewer vaults than the page size, we've reached the end
       if (response.vaults.length < pageSize) {
         hasMoreVaults = false;
@@ -40,29 +40,36 @@ async function getCanopyCoreVaults(address, pageSize = 100) {
   return { vaults: allVaults };
 }
 async function getCanopyLiquidswapVault(vaultArgs) {
-  return function_view({ 
-    functionStr: `${canopyLiquidswapAddress}::vault::get_total_amounts_view`, 
-    type_arguments: [vaultArgs.token_x_type, vaultArgs.token_y_type, vaultArgs.bin_step_type], 
-    args: [vaultArgs.vault_address], 
-    chain: 'move' })
+  return function_view({
+    functionStr: `${canopyLiquidswapAddress}::vault::get_total_amounts_view`,
+    type_arguments: [vaultArgs.token_x_type, vaultArgs.token_y_type, vaultArgs.bin_step_type],
+    args: [vaultArgs.vault_address],
+    chain: 'move'
+  })
 }
 
 async function getCanopyLiquidswapVaultsMetadata() {
-  return function_view({ 
-    functionStr: `${registryAddress}::vaults_registry::get_all_recognized_vaults`, 
-    type_arguments: [], 
-    args: [], 
-    chain: 'move' })
+  return function_view({
+    functionStr: `${registryAddress}::vaults_registry::get_all_recognized_vaults`,
+    type_arguments: [],
+    args: [],
+    chain: 'move'
+  })
 }
+
+const wrappedCache = {}
 
 async function getWrappedFA(coin) {
   if (coin === moveCoinAddress) return moveCoinFa;
-  const result = await function_view({ 
-    functionStr: `${liquidswapV1Address}::wrapper::get_fa_metadata`, 
-    type_arguments: [coin], 
-    args: [], 
-    chain: 'move' });
-  return result.inner;
+  let result = wrappedCache[coin];
+  if (!result)
+    wrappedCache[coin] = function_view({
+      functionStr: `${liquidswapV1Address}::wrapper::get_fa_metadata`,
+      type_arguments: [coin],
+      args: [],
+      chain: 'move'
+    });
+  return (await wrappedCache[coin]).inner;
 }
 
 module.exports = {
