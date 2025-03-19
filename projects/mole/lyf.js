@@ -1,12 +1,11 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const { coreTokens } = require("../helper/chain/aptos");
+const { coreTokensAptos } = require("../helper/chain/aptos");
 const { getResources } = require("../helper/chain/aptos");
 const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs, addUniV3LikePosition } = require("../helper/unwrapLPs");
 const sui = require('../helper/chain/sui')
-const { transformBalances } = require("../helper/portedTokens");
 const { i32BitsToNumber } = require("../helper/utils/tick");
 
 async function getProcolAddresses(chain) {
@@ -106,10 +105,8 @@ async function calLyfTvl(chain, block) {
 }
 
 // aptos
-async function calLyfTvlAptos() {
+async function calLyfTvlAptos(api) {
   /// @dev Initialized variables
-  const balances = {};
-
   /// @dev Getting all resources
   const addresses = await getProcolAddresses('aptos');
   const resources = await getResources(addresses.Publisher);
@@ -126,7 +123,7 @@ async function calLyfTvlAptos() {
 
   /// @dev unwrap LP to get underlaying token balances for workers that are working with LPs
   await unwrapPancakeSwapLps({
-      balances,
+      api,
       lps,
       account: '0xc7efb4076dbe143cbcd98cfaaa929ecfc8f299203dfff63b95ccb6bfe19850fa',
       poolStr: 'swap::TokenPairReserve',
@@ -138,10 +135,8 @@ async function calLyfTvlAptos() {
   resources.filter(i => i.type.includes("vault::VaultInfo"))
     .map(i => {
       const token = i.type.split('<')[1].replace('>','');
-      sdk.util.sumSingleBalance(balances, token, new BigNumber(i.data.coin.value).minus(i.data.reserve_pool).toFixed(0))
+      api.add( token, new BigNumber(i.data.coin.value).minus(i.data.reserve_pool).toFixed(0))
     })
-
-  return transformBalances('aptos', balances)
 }
 
 function sumPancakeWorkerStakingLps(resources, lps, workers) {
@@ -168,7 +163,7 @@ function sumPancakeWorkerStakingLps(resources, lps, workers) {
 }
 
 async function unwrapPancakeSwapLps({
-  balances,
+  api,
   lps,
   account,
   poolStr,
@@ -207,23 +202,23 @@ async function unwrapPancakeSwapLps({
     const reserve0 = token0Reserve(i)
     const reserve1 = token1Reserve(i)
     const [token0, token1] = getTokens(i)
-    const isCoreAsset0 = coreTokens.includes(token0)
-    const isCoreAsset1 = coreTokens.includes(token1)
+    const isCoreAsset0 = coreTokensAptos.includes(token0)
+    const isCoreAsset1 = coreTokensAptos.includes(token1)
     const nonNeglibleReserves = reserve0 !== '0' && reserve1 !== '0'
     const lp = lps[i.lpType];
     const balance0 = new BigNumber(reserve0).times(lp.amount).div(lp.totalSupply).toFixed(0);
     const balance1 = new BigNumber(reserve1).times(lp.amount).div(lp.totalSupply).toFixed(0);
     if (isCoreAsset0 && isCoreAsset1) {
-      sdk.util.sumSingleBalance(balances, token0, balance0)
-      sdk.util.sumSingleBalance(balances, token1, balance1)
+      api.add( token0, balance0)
+      api.add( token1, balance1)
     } else if (isCoreAsset0) {
-      sdk.util.sumSingleBalance(balances, token0, balance0)
+      api.add( token0, balance0)
       if (nonNeglibleReserves)
-        sdk.util.sumSingleBalance(balances, token0, balance0)
+        api.add( token0, balance0)
     } else if (isCoreAsset1) {
-      sdk.util.sumSingleBalance(balances, token1, balance1)
+      api.add( token1, balance1)
       if (nonNeglibleReserves)
-        sdk.util.sumSingleBalance(balances, token1, balance1)
+        api.add( token1, balance1)
     }
   })
 }

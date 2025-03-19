@@ -10,15 +10,12 @@ const { calxMOLEtvl } = require('./xmole');
 //   return await calxMOLEtvl('avax', chainBlocks.avax);
 // }
 
-async function aptosTvl() {
-  const lyfTvl = await calLyfTvlAptos()
-  return {...lyfTvl};
+async function aptosTvl(api) {
+  return calLyfTvlAptos(api)
 }
 
-async function suiTvl() {
-  const { api } = arguments[3]
-
-  const lyfTvl = await calLyfTvlSui(api)
+async function suiTvl(api) {
+  return calLyfTvlSui(api)
 }
 
 // run command： node test.js projects/mole/index.js

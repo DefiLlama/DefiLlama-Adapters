@@ -1,5 +1,4 @@
 const { queryContract, queryV1Beta1 } = require("../helper/chain/cosmos");
-const { transformBalances } = require("../helper/portedTokens");
 //Staked indicates if the asset is staked by the pooler.
 //If so, we must query the pool address for the balance to determine the value. If not staked, we can lookup the balance directly.
 const poolerAddresses = [
@@ -69,8 +68,6 @@ async function tvl(api) {
       api.add(denom, amount);
     });
   }
-
-  return transformBalances("neutron", api.getBalances());
 }
 
 module.exports = {
