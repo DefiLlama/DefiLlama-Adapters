@@ -46,4 +46,5 @@ module.exports = {
         }
     }, {}),
     fetch,
+    deadFrom: '2024-09-30',
 }

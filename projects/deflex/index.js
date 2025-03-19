@@ -16,7 +16,7 @@ async function tvl(api) {
 				limitOrderState[keyValue['key']] = keyValue['value']
 			}
 			const assetInId = limitOrderState[assetInIdKey]['uint']
-			api.add(assetInId > 0 ? assetInId : 1, limitOrderState[amountInKey]['uint'])
+			api.add((assetInId > 0 ? assetInId : 1).toString(), limitOrderState[amountInKey]['uint'])
 		})
 	})
 }

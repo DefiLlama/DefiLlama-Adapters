@@ -51,6 +51,10 @@ const fixBalancesTokens = {
     '0x03c7054bcb39f7b2e5b2c7acb37583e32d70cfa3': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
     '0xc3eacf0612346366db554c991d7858716db09f58': { coingeckoId: 'kelp-dao-restaked-eth', decimals: 18 },
   },
+  stellar: {
+    XLM: { coingeckoId: 'stellar', decimals: 7 },
+    'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
