@@ -75,6 +75,14 @@
       }
     ]
   },
+  "celo": {
+    "tokens": [
+      {
+        "poolAddress": "0xfb2C7c10e731EBe96Dabdf4A96D656Bfe8e2b5Af",
+        "tokenAddress": "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e"
+      }
+    ]
+  },
   "tron": {
     "tokens": [
       {
@@ -88,6 +96,10 @@
       {
         "poolAddress": "7DyZQw3iV5zhHssnNA6Nopi5zc8NGLbYjHMcaok6NN66",
         "tokenAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+      },
+      {
+        "poolAddress": "DW4a2Eq7X5MiPkzscGMJmgjsDaSWrWMkqPtRGLFyZwCX",
+        "tokenAddress": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
       }
     ],
     "bridgeAddress": "BrdgN2RPzEMWF96ZbnnJaUtQDQx7VRXYaHHbYCBvceWB"
@@ -95,8 +107,8 @@
   "base": {
     "tokens": [
       {
-      "poolAddress": "0xDA6bb1ec3BaBA68B26bEa0508d6f81c9ec5e96d5",
-      "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+        "poolAddress": "0xDA6bb1ec3BaBA68B26bEa0508d6f81c9ec5e96d5",
+        "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
       }
     ],
     "bridgeAddress": "0x001E3f136c2f804854581Da55Ad7660a2b35DEf7"

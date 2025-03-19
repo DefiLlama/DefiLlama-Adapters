@@ -11,7 +11,15 @@ async function getAssetSupply(asset) {
   return supply
 }
 
+async function addUSDCBalance(api, account) {
+  const { trustlines } = await get(`https://api.stellar.expert/explorer/public/contract/${account}/value`)
+  const usdc = trustlines.find(({ asset }) => asset === 'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1')
+  if (usdc) {
+    api.addCGToken('usd-coin', usdc.value/1e7)
+  }
+}
 
 module.exports = {
-  getAssetSupply
+  getAssetSupply,
+  addUSDCBalance,
 }
