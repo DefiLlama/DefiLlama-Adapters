@@ -100,9 +100,9 @@ function sumAssests(balances, leases, currencies) {
       const currencyData = find(currencies, (n) => n.ticker == ticker)
       if (currencyData) { 
         if (nativeTokens.hasOwnProperty(currencyData.dex_symbol)) {
-          sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount, 'nolus')
+          sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount)
         }
-        sdk.util.sumSingleBalance(balances, currencyData.dex_symbol, amount, 'nolus')
+        sdk.util.sumSingleBalance(balances, currencyData.dex_symbol.replace(/\//g, ':'), amount, 'nolus')
       }
     }
   })
@@ -129,6 +129,7 @@ async function tvl(protocols) {
     const leases = await getLeases(leaseContracts)
     sumAssests(balances, leases, oracleData)
   }
+  return balances
 }
 
 module.exports = {
