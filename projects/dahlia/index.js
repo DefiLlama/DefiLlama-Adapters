@@ -1,3 +1,4 @@
+const BigNumber = require("bignumber.js");
 const { getLogs2 } = require('../helper/cache/getLogs');
 
 const config = {
@@ -5,12 +6,12 @@ const config = {
 };
 
 module.exports = {
-  methodology: "TVL = Total Lent + Total Collateral", // TODO
+  methodology: "TVL = Total Lent - Total Borrow",
 };
 
 const getDeployedMarketIds = async (api, dahlia, fromBlock) => {
   const eventAbi = "event DeployMarket(uint32 indexed id, address indexed vault, tuple(address loanToken, address collateralToken, address oracle, address irm, uint256 lltv, uint256 liquidationBonusRate, string name, address owner) marketConfig)";
-  const logs = await getLogs2({ api, eventAbi, target: dahlia, fromBlock, topics: ["0xbe9a2432e4c18ee1eb6ab3ce194836a0257e410c7cc435b4c31ac111a0b90e22"], skipCache: true }); // TODO: Works only with skipCache // onlyArgs: true
+  const logs = await getLogs2({ api, eventAbi, target: dahlia, fromBlock, topics: ["0xbe9a2432e4c18ee1eb6ab3ce194836a0257e410c7cc435b4c31ac111a0b90e22"] });
   return logs.map(log => log.id);
 }
 
@@ -32,11 +33,10 @@ Object.keys(config).forEach(chain => {
 
       for (const market of marketValues) {
         const loanToken = market.loanToken;
-        const totalLendAssets = market.totalLendAssets;
-        api.add(loanToken, totalLendAssets);
-        const collateralToken = market.collateralToken;
-        const totalCollateralAssets = market.totalCollateralAssets;
-        api.add(collateralToken, totalCollateralAssets);
+        const totalLendAssets = BigNumber(market.totalLendAssets);
+        const totalBorrowAssets = BigNumber(market.totalBorrowAssets);
+        const marketTVL = totalLendAssets.minus(totalBorrowAssets).toFixed(0);
+        api.add(loanToken, marketTVL);
       }
     },
     borrowed: async (api) => {
