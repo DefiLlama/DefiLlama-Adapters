@@ -4,12 +4,14 @@ const abi = require("../origindollar/abi.json");
 
 const ethTvl = async (api) => {
   const vault = "0x39254033945aa2e4809cc2977e7087bee48bd7ab";
-  const nativeStaking = '0x34eDb2ee25751eE67F68A45813B22811687C0238'
-  const nativeStaking2 = '0x4685dB8bF2Df743c861d71E6cFb5347222992076'
-  const stakingBalance1 = await api.call({ abi: abi.checkBalance, target: nativeStaking, params: ADDRESSES.ethereum.WETH })
-  api.add(ADDRESSES.ethereum.WETH, stakingBalance1)
-  const stakingBalance2 = await api.call({ abi: abi.checkBalance, target: nativeStaking2, params: ADDRESSES.ethereum.WETH })
-  api.add(ADDRESSES.ethereum.WETH, stakingBalance2)
+  const strategies = await api.call({ abi: 'function getAllStrategies() view returns (address[])', target: vault })
+  const isNativeStrategy = (await api.multiCall({  abi: 'uint256:activeDepositedValidators', calls: strategies, permitFailure: true})).map(i => !!i)
+  const nativeStrategies = strategies.filter((_, i) => isNativeStrategy[i])
+
+  for(const nativeStrategy of nativeStrategies) {
+    const stakingBalance = await api.call({ abi: abi.checkBalance, target: nativeStrategy, params: ADDRESSES.ethereum.WETH })
+    api.add(ADDRESSES.ethereum.WETH, stakingBalance)
+  }
 
   // add ETH part of curve LP
   const convexStrategy = '0x1827F9eA98E0bf96550b2FC20F7233277FcD7E63'

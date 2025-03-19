@@ -1,6 +1,5 @@
-const sdk = require('@defillama/sdk')
-const { transformBalances } = require('../helper/portedTokens')
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
+const { sleep } = require('../helper/utils')
 
 // Osmosis Noble USDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_NOBLE) pirin-1
 const osmosisNobleOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
@@ -16,6 +15,11 @@ const osmosisAxlLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyht
 const osmosisStAtomOracleAddr = 'nolus1mtcv0vhpt94s82mcemj5sc3v94pq3k2g62yfa5p82npfnd3xqx8q2w8c5f'
 const osmosisStAtomLeaserAddr = 'nolus1xv0erzdcphnpkf8tr76uynldqx6sspw7782zg9wthz8xpemh7rnsv4nske'
 const osmosisStAtomLppAddr = 'nolus1jufcaqm6657xmfltdezzz85quz92rmtd88jk5x0hq9zqseem32ysjdm990'
+
+// Osmosis ATOM Protocol Contracts (OSMOSIS-OSMOSIS-ATOM) pirin-1
+const osmosisAtomOracleAddr = 'nolus16xt97qd5mc2zkya7fs5hvuavk92cqds82qjuq6rf7p7akxfcuxcs5u2280'
+const osmosisAtomLeaserAddr = 'nolus1rspfrcnjn9vumct3nn20gktksrcjstrh5z8qp340lr8s7fmasd2qmjydk2'
+const osmosisAtomLppAddr = 'nolus1u0zt8x3mkver0447glfupz9lz6wnt62j70p5fhhtu3fr46gcdd9s5dz9l6'
 
 // Osmosis allBTC Protocol Contracts (OSMOSIS-OSMOSIS-ALL_BTC) pirin-1
 const osmosisBtcOracleAddr = 'nolus1y0nlrnw25mh2vxhaupamwca4wdvuxs26tq4tnxgjk8pw0gxevwfq5ry07c'
@@ -44,10 +48,6 @@ const astroportNobleLppAddr = 'nolus17vsedux675vc44yu7et9m64ndxsy907v7sfgrk7tw3x
 
 const _6Zeros = 1000000
 
-const nativeTokens = {
-  'untrn': 'neutron:untrn',
-  'uosmo': 'osmosis:uosmo'
-}
 
 async function getLeaseCodeId(leaserAddress) {
   const leaserContract = await queryContract({ contract: leaserAddress, chain: 'nolus', data: { 'config': {} } })
@@ -64,7 +64,7 @@ async function getLeaseContracts(leaseCodeId) {
 }
 
 async function getLeases(leaseAddresses) {
-  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {} })
+  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {"state":{}} })
 }
 
 async function getLppTvl(lppAddresses) {  
@@ -87,17 +87,14 @@ async function getLppTvl(lppAddresses) {
   return totalLpp / divisor;
 }
 
-function sumAssests(balances, leases, currencies) {
+function sumAssests(api, leases, currencies) {
   leases.forEach(v => {
     if (v.opened) {
       let ticker = v.opened.amount.ticker
       const amount = parseInt(v.opened.amount.amount, 10)
       const currencyData = find(currencies, (n) => n.ticker == ticker)
       if (currencyData) { 
-        if (nativeTokens.hasOwnProperty(currencyData.dex_symbol)) {
-          sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount)
-        }
-        sdk.util.sumSingleBalance(balances, currencyData.dex_symbol, amount)
+        api.add(currencyData.dex_symbol, amount)
       }
     }
   })
@@ -113,17 +110,16 @@ function find(collection, predicate) {
   return undefined
 }
 
-async function tvl(protocols) {
-  let balances = {}
+async function tvl(api, protocols) {
   for (let i = 0; i < protocols.length; i++) {
+    await sleep(2000)
     const p = protocols[i]
     const oracleData = await queryContract({ contract: p.oracle, chain: 'nolus', data: { 'currencies': {} } })
     const leaseCodeId = await getLeaseCodeId(p.leaser)
     const leaseContracts = await getLeaseContracts(leaseCodeId)
     const leases = await getLeases(leaseContracts)
-    sumAssests(balances, leases, oracleData)
+    sumAssests(api, leases, oracleData)
   }
-  return transformBalances('nolus', balances)
 }
 
 module.exports = {
@@ -136,24 +132,26 @@ module.exports = {
         'stride-staked-atom': await getLppTvl([osmosisStAtomLppAddr]),
         'osmosis-allbtc': await getLppTvl([osmosisBtcLppAddr]),
         'osmosis-allsol': await getLppTvl([osmosisSolLppAddr]),
-        'akash-network': await getLppTvl([osmosisAktLppAddr])
+        'akash-network': await getLppTvl([osmosisAktLppAddr]),
+        'cosmos': await getLppTvl([osmosisAtomLppAddr])
       }
     }
   },
   neutron: {
-    tvl: async () => {
-      return await tvl([
+    tvl: async (api) => {
+      return await tvl(api, [
         { leaser: astroportLeaserAddr, oracle: astroportOracleAddr },
         { leaser: astroportNobleLeaserAddr, oracle: astroportNobleOracleAddr },
       ])
     }
   },
   osmosis: {
-    tvl: async () => {
-      return await tvl([
+    tvl: async (api) => {
+      return await tvl(api, [
         { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
         { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
         { leaser: osmosisStAtomLeaserAddr, oracle: osmosisStAtomOracleAddr },
+        { leaser: osmosisAtomLeaserAddr, oracle: osmosisAtomOracleAddr },
         { leaser: osmosisBtcLeaserAddr, oracle: osmosisBtcOracleAddr },
         { leaser: osmosisSolLeaserAddr, oracle: osmosisSolOracleAddr },
         { leaser: osmosisAktLeaserAddr, oracle: osmosisAktOracleAddr }
