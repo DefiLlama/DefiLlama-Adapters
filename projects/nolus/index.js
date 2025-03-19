@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk')
+const { transformBalances } = require('../helper/portedTokens')
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
 const { sleep } = require('../helper/utils')
 
@@ -100,9 +101,9 @@ function sumAssests(balances, leases, currencies) {
       const currencyData = find(currencies, (n) => n.ticker == ticker)
       if (currencyData) { 
         if (nativeTokens.hasOwnProperty(currencyData.dex_symbol)) {
-          sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount, 'nolus')
+          sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount)
         }
-        sdk.util.sumSingleBalance(balances, currencyData.dex_symbol, amount, 'nolus')
+        sdk.util.sumSingleBalance(balances, currencyData.dex_symbol, amount)
       }
     }
   })
@@ -129,6 +130,7 @@ async function tvl(protocols) {
     const leases = await getLeases(leaseContracts)
     sumAssests(balances, leases, oracleData)
   }
+  return transformBalances('nolus', balances)
 }
 
 module.exports = {
