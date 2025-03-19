@@ -1,3 +1,0 @@
-{
-    "rateForCurrency": "function rateForCurrency(bytes32 currencyKey) view returns (uint256)"
-  }
