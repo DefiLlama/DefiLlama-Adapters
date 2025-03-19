@@ -5,7 +5,7 @@ const config = {
 };
 
 module.exports = {
-  methodology: "TVL = ", // TODO
+  methodology: "TVL = Total Lent + Total Collateral", // TODO
 };
 
 const getDeployedMarketIds = async (api, dahlia, fromBlock) => {
