@@ -1,0 +1,7 @@
+{
+  "decimals":"function decimals() view returns (uint8)",
+  "RATE_MULTIPLIER":"function RATE_MULTIPLIER() view returns (uint256)",
+  "totalSupply":"function totalSupply() view returns (uint256)",
+  "getConversionRates":"function getConversionRates() view returns (uint256 suppliedRate, uint256 borrowedRate)",
+  "underlyingAsset":"function underlyingAsset() view returns (address)"
+}
