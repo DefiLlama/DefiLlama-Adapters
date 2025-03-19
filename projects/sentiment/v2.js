@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 
-const PONDER_URL = "https://prism-production-973c.up.railway.app";
+const PONDER_URL = "https://artistic-perfection-production.up.railway.app";
 
 const SUPERPOOLS = [
   {
