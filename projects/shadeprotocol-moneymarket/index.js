@@ -11,11 +11,6 @@ async function tvl(api) {
   api.addUSDValue(data.collateralTvl + data.loanableTvl + lentTvl)
 }
 
-async function collateral(api) {
-  const data = await getData(api)
-  api.addUSDValue(data.collateralTvl)
-}
-
 async function borrowed(api) {
   const data = await getData(api)
   api.addUSDValue(data.lentTvl)
@@ -26,6 +21,5 @@ module.exports = {
   secret: {
     tvl,
     borrowed,
-    collateral,
   }
 }
