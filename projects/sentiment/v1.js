@@ -48,7 +48,6 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   arbitrum: { tvl },
-  hallmarks: [[Math.floor(new Date("2023-04-04") / 1e3), "1M hack"]],
 };
 
 const query = `query get_accounts($lastId: String!) {
