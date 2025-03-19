@@ -1,5 +1,6 @@
 const { fetchQuerySC, getBalance } = require("../helper/chain/qubic");
 const { QubicHelper } = require("@qubic-lib/qubic-ts-library/dist/qubicHelper");
+const { sumTokensExport } = require('../helper/unwrapLPs');
 
 function uint8ArrayToBase64(uint8Array) {
   const binaryString = String.fromCharCode.apply(null, Array.from(uint8Array));
@@ -206,9 +207,16 @@ const getBurnedAndBoostedStatsPerEpoch = async (epoch) => {
   };
 };
 
+async function staking() {
+  return {
+    "qubic": 21234123412
+  }
+}
+
+
 module.exports = {
   start: '2025-03-15', 
   qubic: { 
-    tvl: getBalance(QearnAddress)
+    tvl: async()=>({})
   },
 };
