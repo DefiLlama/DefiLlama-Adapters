@@ -7,8 +7,7 @@ async function getData(api) {
 
 async function tvl(api) {
   const data = await getData(api)
-  // Loanable + Lent = Total supplied for lending
-  api.addUSDValue(data.collateralTvl + data.loanableTvl + data.lentTvl)
+  api.addUSDValue(data.collateralTvl + data.loanableTvl)
 }
 
 async function borrowed(api) {
