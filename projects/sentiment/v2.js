@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 
 const PONDER_URL = "https://artistic-perfection-production.up.railway.app";
+const PORTFOLIO_LENS_ADDRESS = "0x9700750001dDD7C4542684baC66C64D74fA833c0";
 
 const SUPERPOOLS = [
   {
@@ -9,16 +10,8 @@ const SUPERPOOLS = [
   },
 ];
 
-// Allowed collateral tokens mapping (addresses are lowercased)
-const SUPERPOOL_COLLATERAL_ASSETS = {
-  "0x2831775cb5e64b1d892853893858a261e898fbeb": {
-    "0x94e8396e0869c9f2200760af0621afd240e1cf38": true,
-  },
-};
-
 const POOL_ADDRESS = "0x36BFD6b40e2c9BbCfD36a6B1F1Aa65974f4fFA5D";
 
-// Fetch pool ID from Ponder for a given superPool address.
 async function getPoolId(superPoolAddress) {
   const response = await fetch(`${PONDER_URL}/graphql`, {
     method: "POST",
@@ -28,11 +21,7 @@ async function getPoolId(superPoolAddress) {
         query GetPoolId($superPoolId: String!) {
           superPool(id: $superPoolId) {
             poolConnections {
-              items {
-                pool {
-                  id
-                }
-              }
+              items { pool { id } }
             }
           }
         }
@@ -40,17 +29,17 @@ async function getPoolId(superPoolAddress) {
       variables: { superPoolId: superPoolAddress },
     }),
   });
+
   const result = await response.json();
   const poolConnection = result.data?.superPool?.poolConnections?.items?.[0];
-  if (!poolConnection) {
-    throw new Error(`Could not find pool ID for superPool ${superPoolAddress}`);
-  }
+  if (!poolConnection)
+    throw new Error(`Could not find pool ID for ${superPoolAddress}`);
+
   return poolConnection.pool.id;
 }
 
-// For each position, we sum the amounts of allowed collateral tokens.
-async function fetchCollateral(superPoolAddress, poolId) {
-  let collateralByToken = {};
+async function getPositionAddresses(poolId) {
+  let positions = [];
   let afterCursor = null;
   let hasNextPage = true;
 
@@ -60,58 +49,32 @@ async function fetchCollateral(superPoolAddress, poolId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         query: `
-          query GetCollateralForPool($poolId: BigInt!, $after: String) {
-            positionDebts(
-              limit: 100
-              after: $after
-              where: { poolId: $poolId }
-            ) {
-              items {
-                position {
-                  positionAssets {
-                    items {
-                      assetAddress
-                      amount
-                    }
-                  }
-                }
-              }
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
+          query GetPositions($poolId: BigInt!, $after: String) {
+            positions(limit: 100, after: $after, where: { poolId: $poolId }) {
+              items { id }
+              pageInfo { hasNextPage, endCursor }
             }
           }
         `,
         variables: { poolId, after: afterCursor },
       }),
     });
-    const result = await response.json();
-    const items = result.data?.positionDebts?.items || [];
-    for (const debt of items) {
-      const assets = debt.position.positionAssets.items;
-      for (const asset of assets) {
-        const assetAddress = asset.assetAddress.toLowerCase();
-        const allowedCollateral =
-          SUPERPOOL_COLLATERAL_ASSETS[superPoolAddress.toLowerCase()];
-        if (!allowedCollateral[assetAddress]) continue;
 
-        if (!collateralByToken[assetAddress]) {
-          collateralByToken[assetAddress] = BigInt(0);
-        }
-        collateralByToken[assetAddress] += BigInt(asset.amount);
-      }
-    }
-    hasNextPage = result.data?.positionDebts?.pageInfo?.hasNextPage;
-    afterCursor = result.data?.positionDebts?.pageInfo?.endCursor;
+    const result = await response.json();
+    const items = result.data?.positions?.items || [];
+    positions.push(...items.map((i) => i.id));
+
+    hasNextPage = result.data?.positions?.pageInfo?.hasNextPage;
+    afterCursor = result.data?.positions?.pageInfo?.endCursor;
   }
-  return collateralByToken;
+
+  return positions;
 }
 
 async function tvl(api) {
   const balances = {};
 
-  // --- LENDING TVL ---
+  // Lending TVL
   for (const { superPool, underlyingAsset } of SUPERPOOLS) {
     const totalAssets = await api.call({
       target: superPool,
@@ -120,15 +83,21 @@ async function tvl(api) {
     sdk.util.sumSingleBalance(balances, underlyingAsset, totalAssets);
   }
 
-  // --- COLLATERAL TVL ---
-  // For each super pool, fetch its associated collateral from Ponder.
+  // Collateral TVL
   for (const { superPool } of SUPERPOOLS) {
     try {
       const poolId = await getPoolId(superPool);
-      const collateral = await fetchCollateral(superPool, poolId);
-      for (const [token, amount] of Object.entries(collateral)) {
-        sdk.util.sumSingleBalance(balances, `hyperliquid:${token}`, amount);
-      }
+      const positions = await getPositionAddresses(poolId);
+
+      const assetData = await api.multiCall({
+        abi: "function getAssetData(address) view returns ((address asset, uint256 amount, uint256 valueInEth)[])",
+        calls: positions,
+        target: PORTFOLIO_LENS_ADDRESS,
+      });
+
+      assetData.flat().forEach(({ asset, amount }) => {
+        sdk.util.sumSingleBalance(balances, `hyperliquid:${asset}`, amount);
+      });
     } catch (error) {
       console.error(
         "Error fetching collateral for superPool:",
@@ -144,8 +113,6 @@ async function tvl(api) {
 async function borrowed(api) {
   const balances = {};
 
-  // For each super pool, fetch its poolId and then
-  // call the pool contract to get total borrowed amount.
   for (const { superPool, underlyingAsset } of SUPERPOOLS) {
     try {
       const poolId = await getPoolId(superPool);
@@ -156,19 +123,16 @@ async function borrowed(api) {
       });
       sdk.util.sumSingleBalance(balances, underlyingAsset, totalBorrows);
     } catch (error) {
-      console.error(
-        "Error fetching borrowed amount for superPool:",
-        superPool,
-        error
-      );
+      console.error("Error fetching borrowed amount:", superPool, error);
     }
   }
+
   return balances;
 }
 
 module.exports = {
   methodology:
-    "We count total assets held in the Super Pool contracts (lending TVL) and collateral tokens from positions (fetched via Sentiment’s Ponder instance).",
+    "Sums assets held by SuperPool contracts (lending TVL) and collateral held by all Position contracts.",
   start: 1014900,
   hyperliquid: { tvl, borrowed },
 };
