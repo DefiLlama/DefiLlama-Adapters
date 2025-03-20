@@ -23,7 +23,11 @@ async function getPoolTokenBalance(tokenAddress, bridgeAddress, bridgeId) {
         throw new Error(JSON.stringify(inspectionResult, null, 2));
     }
 
-    const [data] = inspectionResult.results?.pop()?.returnValues?.pop();
+    const results = inspectionResult.results;
+    if (!results || !Array.isArray(results) || results.length === 0) {
+        return '0';
+    }
+    const [data] = results.pop().returnValues.pop();
     return fromU64(data);
 }
 
