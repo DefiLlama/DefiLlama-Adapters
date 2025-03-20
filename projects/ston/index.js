@@ -16,7 +16,11 @@ module.exports = {
           token1: i.token1_address,
           token0Bal: i.reserve0,
           token1Bal: i.reserve1,
-        }))
+        })),
+        blacklistedTokens: [
+          'EQCKiXahTtXh01KzY6yfj9TAzxdunbv5o9dcHv--cbM2eoHf',
+          'EQAsHOPv6QeOuno7MxIhLQYjeSSO-vDb44WVoES4deEad__E',
+        ]
       })
     }
   }

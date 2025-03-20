@@ -1,7 +1,5 @@
-const sdk = require("@defillama/sdk");
 const { isStableToken } = require("./helper/streamingHelper");
 const { getBlock } = require("./helper/http");
-const { transformBalances } = require("./helper/portedTokens");
 const { blockQuery } = require("./helper/http");
 
 const supertokensQuery = `
@@ -41,7 +39,7 @@ const blacklistedSuperTokens = new Set(
 );
 
 // Main function for all chains to get balances of superfluid tokens
-async function getChainBalances(allTokens, chain, block, isVesting) {
+async function getChainBalances(allTokens, chain, block, isVesting, api) {
   // Init empty balances
   let balances = {};
 
@@ -50,16 +48,12 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
   );
 
   // Abi MultiCall to get supertokens supplies
-  const { output: supply } = await sdk.api.abi.multiCall({
+  const supply = await api.multiCall({
     abi: "erc20:totalSupply", // abi['totalSupply'],
-    calls: allTokens.map((token) => ({
-      target: token.id,
-    })),
-    block,
-    chain,
+    calls: allTokens.map(token => token.id),
   });
 
-  supply.forEach(({ output: totalSupply }, i) => {
+  supply.forEach((totalSupply, i) => {
     const {
       id,
       underlyingAddress,
@@ -81,24 +75,18 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
       blacklistedSuperTokens.has(underlyingAddress.toLowerCase())
     )
       return;
-    sdk.util.sumSingleBalance(
-      balances,
-      prefixedUnderlyingAddress,
-      underlyingTokenBalance
-    );
+    api.add(prefixedUnderlyingAddress, underlyingTokenBalance);
   });
-
-  return transformBalances(chain, balances);
 }
 
 async function retrieveSupertokensBalances(
   chain,
   block,
   isVesting,
-  ts,
+  api,
   graphUrl
 ) {
-  const blockNum = await getBlock(ts, chain, { [chain]: block });
+  const blockNum = await getBlock(api.timestamp, chain, { [chain]: block });
   const { tokens } = await blockQuery(graphUrl, supertokensQuery, {
     api: { getBlock: () => blockNum, block: blockNum },
   });
@@ -106,7 +94,7 @@ async function retrieveSupertokensBalances(
   // Use active supertokens only
   const allTokens = tokens.filter((t) => t.isSuperToken && t.isListed);
 
-  return getChainBalances(allTokens, chain, block, isVesting);
+  return getChainBalances(allTokens, chain, block, isVesting, api);
 }
 
 /**
@@ -157,9 +145,9 @@ module.exports = {
 Object.keys(subgraphEndpoints).forEach((chain) => {
   const { graph } = subgraphEndpoints[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) =>
-      retrieveSupertokensBalances(chain, block, false, _, graph),
-    vesting: async (_, _b, { [chain]: block }) =>
-      retrieveSupertokensBalances(chain, block, true, _, graph),
+    tvl: async (api, _b, { [chain]: block }) =>
+      retrieveSupertokensBalances(chain, block, false, api, graph),
+    vesting: async (api, _b, { [chain]: block }) =>
+      retrieveSupertokensBalances(chain, block, true, api, graph),
   };
 });

@@ -9,7 +9,7 @@ const chainConfigs = {
             ADDRESSES.ethereum.WBTC,//WBTC
             "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568",//uniBTC
             ADDRESSES.mantle.FBTC,//FBTC
-            "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",//cbBTC
+            ADDRESSES.ethereum.cbBTC,//cbBTC
             "0x2F913C820ed3bEb3a67391a6eFF64E70c4B20b19",//M-BTC
         ],
         staking: null,

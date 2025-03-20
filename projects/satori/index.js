@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { sumTokensExport: sumTokensExportOfTon } = require("../helper/chain/ton");
 
-const ethereum_LBTC = "0x8236a87084f8B84306f72007F36F2618A5634494";
+const ethereum_LBTC = ADDRESSES.ethereum.LBTC;
 const ethereum_PumpBTC = "0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e";
 const base_PumpBTC = "0x23dA5F2d509cb43A59d43C108a43eDf34510eff1";
 const stBTC = ADDRESSES.swellchain.stBTC;
@@ -105,7 +105,7 @@ module.exports = {
         "0x0848F4AE872545C901D3325AEFf09F0fa8952AfC",
         "0x133A54E116731c0CBE35EE41276D570e0730E92D"
       ],
-      tokens: ["0xF1815bd50389c46847f0Bda824eC8da914045D14","0x674843C06FF83502ddb4D37c2E09C01cdA38cbc8"],
+      tokens: [ADDRESSES.flow.stgUSDC,"0x674843C06FF83502ddb4D37c2E09C01cdA38cbc8"],
     }),
   },
   plume:{

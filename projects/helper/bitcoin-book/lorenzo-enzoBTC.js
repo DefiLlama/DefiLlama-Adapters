@@ -5,8 +5,9 @@ module.exports = [
   'bc1qrdnqpvyx5g40ta0wg9js7ky8qx5qglnxyf72qx',
   '19KdJBkptNL7RJYgsWFvGr8BqGaeV9xEpg',
   '14eK85UFbR74KADFXkPXKyEDrroiVVGmxX',
-
-  'bc1p8v4wwf883d0f384vcgynrhsyhu6wmx5rtsajxdqjd24x2h22d4kq42cr0z',
-  'bc1px7tzwdf3vy8her3yxeehh7jzps8k4s4w54gfh4uk5klgu7cjk66srh7c2w',
+  
   'bc1pr6pga0d44xm3t8z36qnya6sfznsm8fwkn507x6gqt86xtnvm4h4sj2zqus',
+  '19wFRSr3GYHmVQtnmbkx7Wkjw3jZdyYB9a',
+  'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0',
+  'bc1qyd4g2r0n0p9u775z7062rz8j88xxy27kmmh5aj'
 ]
