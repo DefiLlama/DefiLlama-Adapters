@@ -44,7 +44,6 @@ const config = {
 
 async function tvl(api) {
   if (config[api.chain]) {
-    console.log(api.chain)
     const targets = await getTokens(api);
 
     const vaults = await api.multiCall({
@@ -52,13 +51,10 @@ async function tvl(api) {
       calls: targets.map(i => ({ target: i, params: [config[api.chain].assets.USDC] })),
     });
 
-    console.log(vaults)
-
     const totalAssets = await api.multiCall({
       abi: contractAbis.totalAssets,
       calls: vaults.map(i => ({ target: i })),
     });
-    console.log(totalAssets)
 
     const decimals = await api.multiCall({
       abi: "erc20:decimals",
