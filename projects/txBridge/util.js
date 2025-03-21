@@ -5,8 +5,8 @@ const _target = "0xD7f9f54194C633F36CCD5F3da84ad4a1c38cB2cB"
 const gasQuery = ADDRESSES.linea.WETH_1
 const gasAddress = ADDRESSES.null
 
-async function txBridgeTvl (api, { chainId, target = _target, additionalBridges = [] } = {}) {
-  const totalBalances = await sumTokens2({ api, owner: target, fetchCoValentTokens: true, balances: {} })
+async function txBridgeTvl (api, { chainId, target = _target, additionalBridges = [], extraTokens } = {}) {
+  const totalBalances = await sumTokens2({ api, owner: target, fetchCoValentTokens: true, balances: {}, tokens: extraTokens })
   const tokens = Object.keys(totalBalances).map(token => token.split(':')[1]).filter(token => token !== gasAddress)
   tokens.unshift(gasQuery)
   const balances = (await api.multiCall({
