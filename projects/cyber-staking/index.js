@@ -1,5 +1,4 @@
 const STCYBR_TOKEN_CONTRACT = '0x3EfE22FA52F6789DDfc263Cec5BCf435b14b77e2';
-const CYBER_TOKEN_CONTRACT = '0x14778860E937f509e651192a90589dE711Fb88a9';
 
 async function tvl(api) {
   const collateralBalance = await api.call({
@@ -8,7 +7,9 @@ async function tvl(api) {
   });
 
   // stCYBER is minted 1:1 with CYBER
-  api.add(CYBER_TOKEN_CONTRACT, collateralBalance)
+  return {
+    'coingecko:cyberconnect': collateralBalance / 1e18
+  }
 }
 
 module.exports = {
