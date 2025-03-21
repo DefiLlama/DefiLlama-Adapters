@@ -49,21 +49,24 @@ async function tvl(api) {
     const vaults = await api.multiCall({
       abi: contractAbis.getVault,
       calls: targets.map(i => ({ target: i, params: [config[api.chain].assets.USDC] })),
+      permitFailure: true
     });
 
     const totalAssets = await api.multiCall({
       abi: contractAbis.totalAssets,
       calls: vaults.map(i => ({ target: i })),
+      permitFailure: true
     });
 
     const decimals = await api.multiCall({
       abi: "erc20:decimals",
       calls: targets.map(i => ({ target: i })),
+      permitFailure: true
     });
 
     for (let i = 0; i <= targets.length; i++) {
-      if (totalAssets[i] > 0) {
-        let value = Number(totalAssets[i]) / 10 ** (Number(decimals[i]));
+      if (totalAssets[i] > 0 && decimals[i] > 0) {
+        let value = totalAssets[i] / 10 ** (decimals[i]);
         api.addUSDValue(value);
       }
     }
