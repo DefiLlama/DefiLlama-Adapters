@@ -1,42 +1,105 @@
-const JTRSY = "0x8c213ee79581Ff4984583C6a801e5263418C4b86";
-
-const config = {
-  "ethereum": [ { "token": JTRSY, "vault": "0x36036fFd9B1C6966ab23209E073c68Eb9A992f50" } ],
-  "base": [ { "token": JTRSY, "vault": "0xF9a6768034280745d7F303D3d8B7f2bF3Cc079eF" } ],
-  "arbitrum": [ { "token": JTRSY, "vault": "0x16C796208c6E2d397Ec49D69D207a9cB7d072f04" } ]
-}
+const { getLogs } = require('../helper/cache/getLogs')
 
 const contractAbis = {
+  getVault: "function vault(address asset) external view returns (address)",
   totalAssets: "function totalAssets() external view returns (uint256)",
 };
 
-module.exports = {
-  methodology: "TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.",
+
+const config = {
   ethereum: {
-    tvl: async (api) => {
-      for (let i = 0; i < config['ethereum'].length; i++) {
-        const decimals = await api.call({ abi: 'erc20:decimals', target: config['ethereum'][i]['token'] })
-        const value = await api.call({ abi: contractAbis.totalAssets, target: config['ethereum'][i]['vault'] })
-        api.addUSDValue(value / 10 ** (decimals));
+    factories: [
+      {
+        START_BLOCK: 20432393,
+        TOKEN_FACTORY: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29'
       }
-    },
+    ],
+    assets: {
+      USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+    }
   },
   base: {
-    tvl: async (api) => {
-      for (let i = 0; i < config['base'].length; i++) {
-        const decimals = await api.call({ abi: 'erc20:decimals', target: config['base'][i]['token'] })
-        const value = await api.call({ abi: contractAbis.totalAssets, target: config['base'][i]['vault'] })
-        api.addUSDValue(value / 10 ** (decimals));
+    factories: [
+      {
+        START_BLOCK: 17854404,
+        TOKEN_FACTORY: '0x7f192F34499DdB2bE06c4754CFf2a21c4B056994'
       }
-    },
+    ],
+    assets: {
+      USDC: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
+    }
   },
   arbitrum: {
-    tvl: async (api) => {
-      for (let i = 0; i < config['arbitrum'].length; i++) {
-        const decimals = await api.call({ abi: 'erc20:decimals', target: config['arbitrum'][i]['token'] })
-        const value = await api.call({ abi: contractAbis.totalAssets, target: config['arbitrum'][i]['vault'] })
-        api.addUSDValue(value / 10 ** (decimals));
+    factories: [
+      {
+        START_BLOCK: 238245701,
+        TOKEN_FACTORY: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29'
       }
-    },
+    ],
+    assets: {
+      USDC: '0xaf88d065e77c8cc2239327c5edb3a432268e5831'
+    }
   },
-};
+}
+
+async function tvl(api) {
+  if (config[api.chain]) {
+    console.log(api.chain)
+    const targets = await getTokens(api);
+
+    const vaults = await api.multiCall({
+      abi: contractAbis.getVault,
+      calls: targets.map(i => ({ target: i, params: [config[api.chain].assets.USDC] })),
+    });
+
+    console.log(vaults)
+
+    const totalAssets = await api.multiCall({
+      abi: contractAbis.totalAssets,
+      calls: vaults.map(i => ({ target: i })),
+    });
+    console.log(totalAssets)
+
+    const decimals = await api.multiCall({
+      abi: "erc20:decimals",
+      calls: targets.map(i => ({ target: i })),
+    });
+
+    for (let i = 0; i <= targets.length; i++) {
+      if (totalAssets[i] > 0) {
+        let value = Number(totalAssets[i]) / 10 ** (Number(decimals[i]));
+        api.addUSDValue(value);
+      }
+    }
+  }
+}
+
+async function getTokens(api) {
+  const chain = api.chain;
+  let logs = [];
+  let tokenAddresses = [];
+  if (config[chain]) {
+    for (let factory of config[chain].factories) {
+      const { TOKEN_FACTORY, START_BLOCK } = factory;
+      let logChunk = await getLogs({
+        api,
+        target: TOKEN_FACTORY,
+        fromBlock: START_BLOCK,
+        eventAbi: 'event DeployTranche(uint64 indexed poolId, bytes16 indexed trancheId, address indexed tranche)',
+      });
+      logs = [...logs, ...logChunk];
+    }
+
+    tokenAddresses = logs.map((log) => log.args[2]);
+
+  }
+  return tokenAddresses;
+}
+
+
+module.exports = {
+  methodology: `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`,
+  ethereum: { tvl },
+  base: { tvl },
+  arbitrum: { tvl },
+}
