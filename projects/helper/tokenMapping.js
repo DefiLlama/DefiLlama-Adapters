@@ -54,6 +54,9 @@ const fixBalancesTokens = {
   stellar: {
     XLM: { coingeckoId: 'stellar', decimals: 7 },
     'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
+  },
+  winr: {
+    '0xd77b108d4f6cefaa0cae9506a934e825becca46e': { coingeckoId: 'winr-protocol', decimals: 18 }
   }
 }
 
