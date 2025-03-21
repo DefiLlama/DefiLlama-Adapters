@@ -6,6 +6,10 @@ const protocolConfig = [
   {
     protocol: '0x4737c3BAB13a1Ad94ede8B46Bc6C22fb8bBE9c81',
     treasury: "0x54C56e149F6D655Aa784678057D1f96612b0Cf1a"
+  },
+  {
+    protocol: '0x9F0956c33f45141a7D8D5751038ae0A71C562f87',
+    treasury: "0x54C56e149F6D655Aa784678057D1f96612b0Cf1a"
   }
 ]
 

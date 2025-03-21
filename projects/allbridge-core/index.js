@@ -1,15 +1,26 @@
 const { addUSDCBalance } = require("../helper/chain/stellar");
-const { sumTokens2 } = require("../helper/solana");
+const solana = require("../helper/solana");
+const suiTx = require("./suiTx");
 
-const data = require("./contracts.json");
+const data = require("./contracts");
+const {default: BigNumber} = require("bignumber.js");
 
 const solanaTvl = async (api) => {
   const tokens = data['solana'].tokens;
-  return sumTokens2({ tokensAndOwners: tokens.map(i => [i.tokenAddress, i.poolAddress]) })
+  return solana.sumTokens2({ tokensAndOwners: tokens.map(i => [i.tokenAddress, i.poolAddress])});
+}
+
+const suiTvl = async (api) => {
+  const suiData = data['sui'];
+  for (const token of suiData.tokens) {
+    const balance = await suiTx.getPoolTokenBalance(token.tokenAddress, suiData.bridgeAddress, suiData.bridgeId);
+    api.add(token.tokenAddress, balance);
+  }
 }
 
 function getTVLFunction(chain) {
   if (chain === 'solana') return solanaTvl;
+  if (chain === 'sui') return suiTvl;
 
   return async function evmTvl(api) {
     const tokensData = data[chain].tokens;

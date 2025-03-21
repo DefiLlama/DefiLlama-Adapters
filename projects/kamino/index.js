@@ -8,10 +8,12 @@ module.exports = {
 	solana: { tvl }
 }
 
+const excludedTokenSet = new Set(['GECKO', 'PEEP'])
+
 async function tvl(api) {
 	const data = await get('https://api.kamino.finance/strategies/metrics?env=mainnet-beta')
 	data.forEach((i => {
-		if (i.tokenA === 'GECKO' || i.tokenB === 'GECKO') return; // skip GECKO, it has incorrect price
+		if (excludedTokenSet.has(i.tokenA) || excludedTokenSet.has(i.tokenB)) return;
 		if (+i.totalValueLocked > 1e8) console.log(i)
 		api.addUSDValue(+i.totalValueLocked)
 	}))

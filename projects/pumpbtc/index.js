@@ -16,6 +16,7 @@ async function getStakingAddresses() {
 }
 
 async function bitcoinTvl(api) {
+  throw new Error('Change the api used for this')
   const owners = await bitcoinBook.pumpBTC()
   return sumTokens({ api, owners })
 }
