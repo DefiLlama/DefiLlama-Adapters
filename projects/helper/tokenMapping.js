@@ -44,6 +44,9 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  mtt_network: {
+    '0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
   hemi: {
     '0x6c851f501a3f24e29a8e39a29591cddf09369080': { coingeckoId: 'dai', decimals: 18 },
     '0xad11a8beb98bbf61dbb1aa0f6d6f2ecd87b35afa': { coingeckoId: 'usd-coin', decimals: 6 },
