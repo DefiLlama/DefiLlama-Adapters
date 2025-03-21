@@ -54,6 +54,15 @@ const fixBalancesTokens = {
   stellar: {
     XLM: { coingeckoId: 'stellar', decimals: 7 },
     'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
+  },
+  vic: {
+    [ADDRESSES.vic.WVIC]: { coingeckoId: 'wrapped-viction', decimals: 18 },
+    [ADDRESSES.vic.USDT]: { coingeckoId: 'tether', decimals: 6 },
+    [ADDRESSES.vic.SAROS]: { coingeckoId: 'saros-finance', decimals: 18 },
+    [ADDRESSES.vic.C98]: { coingeckoId: 'coin98', decimals: 18 },
+    [ADDRESSES.vic.ARKEN]: { coingeckoId: 'arken-finance', decimals: 18 },
+    [ADDRESSES.vic.ETER]: { coingeckoId: 'eternals', decimals: 18 },
+    [ADDRESSES.vic.RABBIT]: { coingeckoId: 'rabbitswap-2', decimals: 18 },
   }
 }
 
