@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 
 const LENDING_POOL = '0x09e7b6BF92ba8566939d59fE3e3844385d492E77';
+const PROTOCOL_DATA_PROVIDER = '0x4D38f23A09c946667c59Ef89C812725F73DAfCd5';
 
 const RESERVES = {
   XFI: {
@@ -30,39 +31,30 @@ const RESERVES = {
   }
 };
 
-const getReserveDataABI = 'function getReserveData(address asset) view returns (tuple(uint256 configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))';
+const getReserveDataABI = 'function getReserveData(address asset) view returns (tuple(uint256 availableLiquidity, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp))';
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
 
   try {
-    // Get reserve data for all assets
+    // Get reserve data for all assets using Protocol Data Provider
     const reserveData = await sdk.api.abi.multiCall({
-      target: LENDING_POOL,
+      target: PROTOCOL_DATA_PROVIDER,
       abi: getReserveDataABI,
       calls: Object.values(RESERVES).map(r => ({ params: [r.address] })),
       chain: 'crossfi',
       block: chainBlocks['crossfi']
     });
 
-    // Get aToken balances
-    const aTokenBalances = await Promise.all(
-      reserveData.output.map((data, i) => {
-        if (!data.success || !data.output.aTokenAddress) return 0;
-        return sdk.api.erc20.totalSupply({
-          target: data.output.aTokenAddress,
-          chain: 'crossfi',
-          block: chainBlocks['crossfi']
-        }).then(b => b.output);
-      })
-    );
-
-    // Add balances
-    Object.values(RESERVES).forEach((reserve, i) => {
-      const balance = aTokenBalances[i];
-      if (balance && balance !== '0') {
-        sdk.util.sumSingleBalance(balances, reserve.address, balance, 'crossfi');
-        console.log(`${reserve.symbol} TVL:`, balance / (10 ** reserve.decimals));
+    // Process reserve data
+    reserveData.output.forEach((data, i) => {
+      if (!data.success) return;
+      const reserve = Object.values(RESERVES)[i];
+      const { availableLiquidity } = data.output;
+      
+      if (availableLiquidity && availableLiquidity !== '0') {
+        sdk.util.sumSingleBalance(balances, reserve.address, availableLiquidity, 'crossfi');
+        console.log(`${reserve.symbol} TVL:`, availableLiquidity / (10 ** reserve.decimals));
       }
     });
   } catch (e) {
@@ -79,7 +71,7 @@ async function borrowed(timestamp, block, chainBlocks) {
     // Get reserve data for all assets
     const reserveData = await sdk.api.abi.multiCall({
       target: LENDING_POOL,
-      abi: getReserveDataABI,
+      abi: 'function getReserveData(address asset) view returns (tuple(uint256 configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))',
       calls: Object.values(RESERVES).map(r => ({ params: [r.address] })),
       chain: 'crossfi',
       block: chainBlocks['crossfi']
@@ -128,9 +120,13 @@ async function borrowed(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology: `Measures the total value locked (TVL) in the PhoLend protocol on CrossFi chain:
-    - TVL: Total supply of aTokens, representing the total deposits
+    - TVL: Available liquidity in the lending pool per asset (from Protocol Data Provider)
     - Borrows: Sum of stable and variable debt token balances
     - Net TVL: Total deposits minus total borrows
+
+    Data is fetched from:
+    - Protocol Data Provider for TVL
+    - Direct debt token balances for borrows
 
     Supported assets:
     - XFI (Native CrossFi token, 18 decimals)
@@ -140,7 +136,7 @@ module.exports = {
     - WBTC (from Arbitrum, 8 decimals)
 
     The protocol uses AAVE v2 style lending where:
-    - Deposits are represented by aTokens (interest-bearing tokens)
+    - TVL is tracked through Protocol Data Provider
     - Borrows are tracked through stableDebtTokens and variableDebtTokens
     - Asset prices are provided by DIA Oracle
     - Liquidation thresholds and loan-to-value ratios are set per asset`,
