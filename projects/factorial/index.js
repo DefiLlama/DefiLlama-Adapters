@@ -1,4 +1,5 @@
 const { call } = require("../helper/chain/ton");
+const { get } = require('../helper/http')
 const { processTVMSliceReadAddress } = require("./utils");
 const ADDRESSES = require("../helper/coreAssets.json");
 
@@ -12,8 +13,10 @@ const pools = [
    
 
 async function tvl(api) { 
+  const pools = await get('https://api.factorial.finance/info/pools');
+
   for(const pool of pools) {
-    const pool_data = await call({ target: pool, abi: "get_pool_data" })
+    const pool_data = await call({ target: pool.address, abi: "get_pool_data" })
 
     const _kv = 1;
     const assetDicIdx = 13;
@@ -36,8 +39,10 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
+  const pools = await get('https://api.factorial.finance/info/pools');
+
   for(const pool of pools) {
-    const pool_data = await call({ target: pool, abi: "get_pool_data" })
+    const pool_data = await call({ target: pool.address, abi: "get_pool_data" })
 
     const _kv = 1;
     const assetDicIdx = 13;
