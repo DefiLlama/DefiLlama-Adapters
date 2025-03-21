@@ -1,24 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const axios = require('axios');
 
-const NODE_URL = "https://xrplcluster.com";
-
 const tvl = async (api) => {
-    const address = "rprFy94qJB5riJpMmnPDp3ttmVKfcrFiuq";
-    
-    const payload = {
-        method: "account_info",
-        params: [{
-            account: address,
-            ledger_index: "validated"
-        }]
-    };
+    const balanceInXRP = await dopplerApi();
+    api.add(ADDRESSES.ripple.XRP, balanceInXRP * 10 ** 6)
+}
 
-    const { data } = await axios.post(NODE_URL, payload);
-    const balanceInDrops = data.result.account_data.Balance;
-    api.add(ADDRESSES.ripple.XRP, balanceInDrops)
+const dopplerApi = async (api) => {
+    const response = await axios.get("https://api.doppler.finance/v1/xrpfi/staking-info");
+    return response.data[0].totalStaked;
 }
 
 module.exports = {
-    ripple: { tvl }
+    ripple: { tvl },
 }
