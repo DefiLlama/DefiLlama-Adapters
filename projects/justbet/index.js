@@ -17,7 +17,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   start: '2023-03-22',
-  methodology: 'TVL is fetched from Winr Protocol Historical API and represents the total LP and Staked WINR in the WINR staking protocol.',
+  methodology: 'TVL is fetched from Winr Protocol Historical API and represents the total LP and Staked WINR in the WINR staking protocol .',
   arbitrum: {
     tvl,
   },
