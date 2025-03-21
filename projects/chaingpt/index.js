@@ -44,11 +44,65 @@ const config = {
   ],
   era: [
     { factory: '0xf25F7c9522cdCD839697F1644CFCA1312306885C', fromBlock: 37458600 },
+  ],
+  blast: [
+    { factory: '0xBB9667bcbd04bD4F2C1f2FCd14995Bd3d00c5655', fromBlock: 8619958 },
+  ],
+  sonic: [
+    { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98', fromBlock: 11999667 },
+  ],
+  berachain: [
+    { factory: '0xBB9667bcbd04bD4F2C1f2FCd14995Bd3d00c5655', fromBlock: 787656 },
+  ],
+
+}
+
+const giveawayConfigs = {
+  ethereum: [
+    { factory: '0xA0bfA7C31CAe6674E9c2E71fD318DDfD67b5170a', fromBlock: 20669631 },
+  ],
+  polygon: [
+    { factory: '0xa54638C7B2120AD7f39C493746d190c4A81DA3c1', fromBlock: 61373122 },
+  ],
+  bsc: [
+    { factory: '0x0D2238F162ab6fB7c68d889b689022D7FE9C8407', fromBlock: 41928710  },
+  ],
+  arbitrum: [
+    { factory: '0x0cd66D345220887F487ed312B6e5A6ea19318193', fromBlock: 249633021 },
+  ],
+  avax: [
+    { factory: '0x3081a3Fa81425840dD3573403bF8D23D8b2565a1', fromBlock: 50066128 },
+  ],
+  core: [
+    { factory: '0xd8AFfb6f722b059d1744fd52c53b31d92C4601d3	', fromBlock: 17353388, blacklistedTokens: ['0xcE87100A1dBAf576ebd063EB0890840346338689'] },
+  ],
+  base: [
+    { factory: '0x0cd66D345220887F487ed312B6e5A6ea19318193', fromBlock: 19286106, },
+  ],
+  xlayer: [
+    { factory: '0xe9349e46b558D127Af69e725D6517c1CCd2f41fe', fromBlock: 4500864 },
+  ],
+  linea: [
+    { factory: '0xe9349e46b558D127Af69e725D6517c1CCd2f41fe', fromBlock: 8973395  },
+  ],
+  era: [
+    { factory: '0x13D2b68592dC40c96E3EcC13dC45214A5417c91c', fromBlock: 45159890 },
+  ],
+  blast: [
+    { factory: '0xe9349e46b558D127Af69e725D6517c1CCd2f41fe', fromBlock: 8619977 },
+  ],
+  sonic: [
+    { factory: '0xBB9667bcbd04bD4F2C1f2FCd14995Bd3d00c5655', fromBlock: 12000098 },
+  ],
+  berachain: [
+    { factory: '0x9840652DC04fb9db2C43853633f0F62BE6f00f98	', fromBlock: 787627 },
   ]
 }
 
 async function tvl(api) {
   const chainConfigs = config[api.chain]
+  const giveawayChainConfigs = giveawayConfigs[api.chain]
+
   const ownerTokens = []
   const poolTokenMapping = {}
   let blacklistedTokens = []
@@ -101,6 +155,56 @@ async function tvl(api) {
       ownerTokens.push([poolTokenMapping[key], i.pool])
     })
   }
+
+  for (const giveawayChainConfig of giveawayChainConfigs) {
+    const { factory, fromBlock, blacklistedTokens: configBlacklistedTokens } = giveawayChainConfig
+
+    if (configBlacklistedTokens) {
+      blacklistedTokens = blacklistedTokens.concat(configBlacklistedTokens)
+    }
+
+    const logs2 = await getLogs({
+      api,
+      target: factory,
+      eventAbi: 'event GiveawayPoolCreated (address registeredBy, address indexed token, address indexed pool, uint256 poolId)',
+      fromBlock: fromBlock,
+    })
+
+    const pools = []
+    const poolFromBlocks = {}
+    logs2.forEach((i) => {
+      pools.push(i.args.pool)
+      poolFromBlocks[i.args.pool] = i.blockNumber
+    })
+
+    await PromisePool
+      .withConcurrency(7)
+      .for(pools)
+      .process(async pool => {
+        const fromBlock = poolFromBlocks[pool]
+        if (!fromBlock) return;
+        const logs = await getLogs({
+          api,
+          target: pool,
+          eventAbi: 'event GiveawayPoolCreated (address token, uint256 openTime, uint256 closeTime, address owner)',
+          fromBlock,
+        })
+        logs.forEach(({ args: i }) => {
+          const key = i.token + '-' +'giveaway' + '-' + i.owner
+
+          if (!poolTokenMapping[key]) poolTokenMapping[key] = []
+          poolTokenMapping[key].push(i.token)
+        })
+      })
+
+    logs2.forEach(({ args: i }) => {
+      const key = i.token + '-' + 'giveaway' + '-' + i.registeredBy
+      if (!poolTokenMapping[key]) return;
+
+      ownerTokens.push([poolTokenMapping[key], i.pool])
+    })
+  }
+
 
   return sumTokens2({ api, ownerTokens, blacklistedTokens, permitFailure: true, })
 
