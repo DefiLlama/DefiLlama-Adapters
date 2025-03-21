@@ -19,4 +19,5 @@ module.exports = {
   duckchain: { tvl },
   occ: { tvl },
   spn: { tvl },
+  winr: { tvl }
 };
