@@ -56,7 +56,9 @@ const fixBalancesTokens = {
     'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
   },
   winr: {
-    '0xd77b108d4f6cefaa0cae9506a934e825becca46e': { coingeckoId: 'winr-protocol', decimals: 18 }
+    '0xd77b108d4f6cefaa0cae9506a934e825becca46e': { coingeckoId: 'winr-protocol', decimals: 18 },
+    '0xbf6fa9d2bf9f681e7b6521b49cf8eccf9ad8d31d': { coingeckoId: 'winr-protocol', decimals: 18 },
+    '0x59edbb343991d30f77dcdbad94003777e9b09ba9': { coingeckoId: 'usd-coin', decimals: 6 },
   }
 }
 
