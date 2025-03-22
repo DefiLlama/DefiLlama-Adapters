@@ -1,5 +1,3 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
-
 const config = {
   abstract: {
     gacha: '0x3272596F776470D2D7C3f7dfF3dc50888b7D8967',
@@ -7,29 +5,23 @@ const config = {
   },
 }
 
+const abi = {
+  getConfig: 'function getConfig() view returns (tuple(uint256 currentSupply, uint256 currentPoolId, address owner, address uniswapRouter, address paymentToken, address entropy, address feeWallet, uint16 feeBPS, uint16 referralBPS, uint256 referralClaimThreshold))',
+  getPools: 'function getPool(uint256) view returns (tuple(uint256,uint256,uint256,address token,uint256,uint16,uint16[]))',
+}
+
 async function tvl(api) {
   const { gacha } = config[api.chain]
-
-  const { currentPoolId } = await api.call({
-    target: gacha,
-    abi: 'function getConfig() view returns (tuple(uint256 currentSupply, uint256 currentPoolId, address owner, address uniswapRouter, address paymentToken, address entropy, address feeWallet, uint16 feeBPS, uint16 referralBPS, uint256 referralClaimThreshold))',
-  })
+  const { currentPoolId } = await api.call({ abi: abi.getConfig, target: gacha })
+  const _tokens = await api.fetchList({ lengthAbi: abi.getConfig, itemAbi: abi.getPools, target: gacha, field: 'token', itemCount: currentPoolId, startFromOne: true, })
 
   const tokens = [
     "0x3439153EB7AF838Ad19d56E1571FBD09333C2809", // weth
     "0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1", // usdc
   ];
 
-  for (let i = 1; i <= currentPoolId; i++) {
-    const { token } = await api.call({
-      target: gacha,
-      abi: 'function getPool(uint256) view returns (tuple(uint256,uint256,uint256,address token,uint256,uint16,uint16[]))',
-      params: [i],
-    })
-    tokens.push(token)
-  }
-
-  return sumTokens2({ api, owner: gacha, tokens })
+  tokens.push(..._tokens)
+  return api.sumTokens({ owner: gacha, tokens })
 }
 
 module.exports = {
