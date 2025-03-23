@@ -1,8 +1,9 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('../http')
+const { get, post } = require('../http')
 const { getEnv } = require('../env')
 const { getUniqueAddresses } = require('../tokenMapping')
 const { RateLimiter } = require("limiter");
+const { sliceIntoChunks } = require('../utils');
 
 const url = addr => 'https://blockstream.info/api/address/' + addr
 const url2 = addr => 'https://rpc.ankr.com/http/btc_blockbook/api/address/' + addr
@@ -13,10 +14,35 @@ const balancesNow = {
 
 }
 
+const bitcoinCacheEnv = getEnv('BITCOIN_CACHE_API')
+
 
 const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 10_000 });
 
+async function getCachedBitcoinBalances(owners) {
+  const chunks = sliceIntoChunks(owners, 700)
+  sdk.log('bitcoin cache api call: ', owners.length, chunks.length)
+  let sum = 0
+  let i = 0
+  for (const chunk of chunks) {
+    const res = await post(bitcoinCacheEnv, { addresses: chunk, network: 'BTC' })
+    sdk.log(i++, sum/1e8, res/1e8, chunk.length)
+    sum += +res
+  }
+  return sum
+}
+
 async function _sumTokensBlockchain({ balances = {}, owners = [], }) {
+  if (bitcoinCacheEnv && owners.length > 51) {
+    try {
+      const res = await getCachedBitcoinBalances(owners)
+      sdk.util.sumSingleBalance(balances, 'bitcoin', res/1e8)
+      return balances
+
+    } catch (e) {
+      sdk.log('bitcoin cache error', e.toString())
+    }
+  }
   console.time('bitcoin' + owners.length + '___' + owners[0])
   const STEP = 200
   for(let i=0; i<owners.length; i+=STEP){

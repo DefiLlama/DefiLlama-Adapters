@@ -43,6 +43,7 @@ const ENV_KEYS = [
   'UNISAT_AUTH',
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
+  'BITCOIN_CACHE_API',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
