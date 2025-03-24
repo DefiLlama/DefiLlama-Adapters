@@ -9,7 +9,6 @@ const STAKING_CONTRACT_ADDRESS = "0xe2239938Ce088148b3Ab398b2b77Eedfcd9d1AfC";
 const WBTC_LIQUIDITY_ADDRESSES = ["0x9DD9C2D208B07Bf9A4eF9CA311F36d7185749635","0xEF440AC3D77F906F9F0E1C15B35BCF300B4C427C"];
 
 module.exports = {
-  methodology: "Fees: Users pay 0.3% flat fee for each swap",
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
       sumTokensExport({ owners: bitcoinAddressBook.garden }),

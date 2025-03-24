@@ -16,6 +16,8 @@ const export2 = uniV3Export({
   duckchain: { factory: '0xCf4062Ee235BbeB4C7c0336ada689ed1c17547b6', fromBlock: 1530060, isAlgebra: true, },
   occ: { factory: '0xCf4062Ee235BbeB4C7c0336ada689ed1c17547b6', fromBlock: 21053, isAlgebra: true, },
   spn: { factory: '0xCf4062Ee235BbeB4C7c0336ada689ed1c17547b6', fromBlock: 1, isAlgebra: true, },
+  winr: { factory: '0x10aA510d94E094Bd643677bd2964c3EE085Daffc', fromBlock: 1258618, isAlgebra: true }
 })
 
 module.exports = mergeExports([export1, export2])
+
