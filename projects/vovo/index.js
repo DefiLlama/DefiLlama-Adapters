@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const balanceABI = 'function balance(bool isMax) view returns (uint256)';
 
 const usdcVaults = [
@@ -20,7 +21,7 @@ async function tvl(api) {
     abi: balanceABI,
     calls: vaults.map((i) => ({ target: i, params: true })),
   });
-  const tokens  = (await api.multiCall({  abi: 'address:vaultToken', calls: vaults, permitFailure: true, })).map(i => i ?? '0x1aDDD80E6039594eE970E5872D247bf0414C8903')
+  const tokens  = (await api.multiCall({  abi: 'address:vaultToken', calls: vaults, permitFailure: true, })).map(i => i ?? ADDRESSES.arbitrum.fsGLP)
   api.add(tokens, tvls)
 }
 
