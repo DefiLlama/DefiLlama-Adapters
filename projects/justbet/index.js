@@ -1,7 +1,9 @@
-var ethers = require("ethers");
-const { vaultAdapterAbi, lockV2Abi } = require('./abis')
-const { fetchWinrPrice, convertToUsd } = require('./helper')
+const sdk = require('@defillama/sdk')
 
+const { vaultAdapterAbi } = require('./abis')
+const { sumTokens2 } = require("../helper/unwrapLPs");
+
+const WWINR_ADDRESS = "0xbf6fa9d2bf9f681e7b6521b49cf8eccf9ad8d31d";
 const WINR_LOCKV2_CONTRACT = "0x7f3E35B41BDF7DBA6a90661918d0EfDDC6C15c3C";
 const WINR_VAULT_ADAPTER_CONTRACT = "0xc942b79E51fe075c9D8d2c7501A596b4430b9Dd7";
 
@@ -15,50 +17,38 @@ const JUSTBET_BANKROLL_INDEXES = [
 ];
 
 const tvl = async (api) => {
-    try {
-        const [poolsDetails, lockStats, price] = await Promise.all([
-            api.call({
-                abi: vaultAdapterAbi,
-                target: WINR_VAULT_ADAPTER_CONTRACT,
-                params: [JUSTBET_BANKROLL_INDEXES]
-            }),
-            api.call({
-                abi: lockV2Abi,
-                target: WINR_LOCKV2_CONTRACT
-            }),
-            fetchWinrPrice()
-        ])
-    
-        const [details, amounts] = [poolsDetails[0], poolsDetails[1]];
-        const pools = [];
-    
-        details.forEach((detail, index) => {
-            pools.push({
-                detail: detail,
-                amount: amounts[index]
-            });
-        });
-    
-        const poolTvl = pools.reduce((acc, data) => {
-            const poolSupply = convertToUsd(
-                data.detail.bankrollTokenAddress,
-                data.amount.bankrollTokenPrice,
-                data.amount.bankrollAmount
-            );
-            acc += poolSupply;
-            return acc;
-        }, 0);
-    
-        const winrPrice = price.stats.reverse()[0][1];
-        const totalWINRLocked = lockStats[1];
-        
-        const stakedWinr = ethers.formatEther(totalWINRLocked, 18) * winrPrice;
-        const tvl = poolTvl + stakedWinr;
+    const [poolsDetails, lockBalance] = await Promise.all([
+        api.call({
+            abi: vaultAdapterAbi,
+            target: WINR_VAULT_ADAPTER_CONTRACT,
+            params: [JUSTBET_BANKROLL_INDEXES]
+        }),
+        sdk.api.eth.getBalance({ target: WINR_LOCKV2_CONTRACT, chain: 'winr'}),
+    ])
 
-        return tvl;
-    } catch (error) {
-        return {}
-    }
+
+    const [details, amounts] = [poolsDetails[0], poolsDetails[1]];
+    const pools = [];
+
+    details.forEach((detail, index) => {
+        pools.push({
+            detail: detail,
+            amount: amounts[index]
+        });
+    });
+
+    const tokens = pools.map(p => p.detail)
+    const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: tokens.map(i => ({ target: i.bankrollTokenAddress, params: i.vaultAddress})) })
+    
+    
+    const tokenAddresses = tokens.map(i => i.bankrollTokenAddress.toLowerCase())
+    const winrIndex = tokenAddresses.findIndex(i => i === WWINR_ADDRESS.toLowerCase())
+        
+    bals[winrIndex] = BigInt(bals[winrIndex]) + BigInt(lockBalance.output)
+
+    api.addTokens(tokenAddresses, bals)
+
+    return sumTokens2({ api })
 }
 
 module.exports = {

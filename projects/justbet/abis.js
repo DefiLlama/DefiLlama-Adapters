@@ -37,19 +37,6 @@ const vaultAdapterAbi = {
   type: 'function'
 };
 
-const lockV2Abi = {
-  inputs: [],
-  name: 'getStats',
-  outputs: [
-    { internalType: 'uint256', name: 'totalEarnings', type: 'uint256' },
-    { internalType: 'uint256', name: 'totalWINRLocked', type: 'uint256' },
-    { internalType: 'uint256', name: 'totalvWINRLocked', type: 'uint256' }
-  ],
-  stateMutability: 'view',
-  type: 'function'
-}
-
 module.exports = {
-  vaultAdapterAbi,
-  lockV2Abi
+  vaultAdapterAbi
 }
