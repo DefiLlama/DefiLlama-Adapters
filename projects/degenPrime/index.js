@@ -35,7 +35,7 @@ async function tvlBase(api) {
 
   let accounts = [];
   const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_BASE, });
-  const batchSize = 10; //500 to 10, assuming smaller number of accounts
+  const batchSize = 500; 
   let batchIndex = 0;
   while (batchIndex * batchSize < numberOfAccounts) {
     let batchPrimeAccounts = await api.call({
@@ -49,7 +49,7 @@ async function tvlBase(api) {
 
   sdk.log(accounts.length)
 
-  // await addTraderJoeLPs({ api, accounts })
+
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
@@ -72,7 +72,7 @@ async function tvlBase(api) {
 
 
 module.exports = {
-  methodology: 'Counts TVL of DeltaPrime\'s lending pools and individual PrimeAccount contracts\'',
+  methodology: 'Counts TVL of DegenPrime\'s lending pools and individual PrimeAccount contracts\'',
   base: {
     tvl: tvlBase,
   },
