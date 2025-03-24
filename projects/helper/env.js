@@ -25,6 +25,7 @@ const DEFAULTS = {
   HEMI_RPC: 'https://rpc.hemi.network/rpc',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   HEMI_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
+  WINR_RPC: 'https://rpc-winr-mainnet-0.t.conduit.xyz'
 }
 
 const ENV_KEYS = [
@@ -42,6 +43,7 @@ const ENV_KEYS = [
   'UNISAT_AUTH',
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
+  'BITCOIN_CACHE_API',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

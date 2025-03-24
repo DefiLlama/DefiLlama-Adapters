@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view } = require("../helper/chain/aptos");
 
 const canopyCoreAddress = "b10bd32b3979c9d04272c769d9ef52afbc6edc4bf03982a9e326b96ac25e7f2d"; // Canopy Core Vaults Module
@@ -6,7 +7,7 @@ const canopyLiquidswapAddress = "968a2429f2544882a1743c51128fdf876ff03a25287d618
 const registryAddress = "e6ef7257c8d73c55c97507705e4aac1bcc740c648eb698db3b07895fff689f05"; // Registry for Liquidswap Vaults
 const liquidswapV1Address = "4763c5cfde8517f48e930f7ece14806d75b98ce31b0b4eab99f49a067f5b5ef2"; // Liquidswap V1 Module
 
-const moveCoinAddress = "0x1::aptos_coin::AptosCoin"
+const moveCoinAddress = ADDRESSES.aptos.APT
 const moveCoinFa = "0xa"
 
 async function getCanopyCoreVaults(address, pageSize = 100) {

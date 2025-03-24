@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const sdk = require("@defillama/sdk");
 
 // USDT token adresi (Unit0 ağında)
-const usdt = "0xb303d80db8415FD1d3C9FED68A52EEAc9a052671"; // Unit0 ağındaki USDT adresi
+const usdt = ADDRESSES.unit0.USDT; // Unit0 ağındaki USDT adresi
 // Ana dapp kontratı
 const p2p = "0xDCb086519b5776AcBE15EeA5d65FC72498AD110f";
 
