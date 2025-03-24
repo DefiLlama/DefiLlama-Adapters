@@ -15,6 +15,7 @@ const POOLS = [
   "0x27f2bb7fb0e232befc5aa865ee27ef82839d5fad3e6ec1de598d0fab438cb56", // Alterscope xSTRK Pool
   "0x5c678347b60b99b72f245399ba27900b5fc126af11f6637c04a193d508dda26", // Alterscope wstETH Pool
   "0x2906e07881acceff9e4ae4d9dacbcd4239217e5114001844529176e1f0982ec", // Alterscope Cornerstone Pool
+  "0x3de03fafe6120a3d21dc77e101de62e165b2cdfe84d12540853bd962b970f99", // Re7 rUSDC Pool
 ];
 const ASSETS = [
   ADDRESSES.starknet.ETH,
@@ -27,7 +28,8 @@ const ASSETS = [
   ADDRESSES.starknet.XSTRK,
   ADDRESSES.starknet.SSTRK,
   ADDRESSES.starknet.EKUBO,
-  "0x498edfaf50ca5855666a700c25dd629d577eb9afccdf3b5977aec79aee55ada" // CASH
+  "0x498edfaf50ca5855666a700c25dd629d577eb9afccdf3b5977aec79aee55ada", // CASH
+  "0x02019e47A0Bc54ea6b4853C6123FfC8158EA3AE2Af4166928b0dE6e89f06De6C" // rUSDC
 ];
 
 async function tvl(api) {
