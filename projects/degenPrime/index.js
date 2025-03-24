@@ -1,6 +1,7 @@
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk');
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const getAllOwnedAssetsAbi = "function getAllOwnedAssets() view returns (bytes32[] result)"
 const getLoansAbi = "function getLoans(uint256 _from, uint256 _count) view returns (address[] _loans)"
@@ -8,7 +9,22 @@ const getPrimeAccountsLengthAbi = 'uint256:getLoansLength';
 
 
 
-const assetToAddressMappingBase = require('./mappings/assetToAddressMappingBase.json')
+const assetToAddressMappingBase = {
+  "cbBTC": ADDRESSES.base.cbBTC,
+  "USDC": ADDRESSES.base.USDC,
+  "AERO": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+  "ETH": ADDRESSES.optimism.WETH_1,
+  "BRETT": "0x532f27101965dd16442E59d40670FaF5eBB142E4",
+  "BTC": ADDRESSES.ethereum.cbBTC,
+  "SKI": "0x768BE13e1680b5ebE0024C42c896E3dB59ec0149",
+  "DEGEN": "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed",
+  "TOSHI": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4",
+  "KEYCAT": "0x9a26F5433671751C3276a065f57e5a02D2817973",
+  "BASEDPEPE": "0x52b492a33E447Cdb854c7FC19F1e57E8BfA1777D",
+  "VIRTUAL": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+  "MOG": "0x2Da56AcB9Ea78330f947bD57C54119Debda7AF71",
+  "AIXBT": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825"
+}  
 
 // Base
 const USDC_POOL_TUP_CONTRACT = '0x2Fc7641F6A569d0e678C473B95C2Fc56A88aDF75';
@@ -64,10 +80,7 @@ async function tvlBase(api) {
     })
   })
 
-  const balances = await sumTokens2({ api, tokensAndOwners: tokensAndOwners })
-
-
-  return balances;
+  return sumTokens2({ api, tokensAndOwners: tokensAndOwners })
 }
 
 
