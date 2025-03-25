@@ -59,9 +59,13 @@ const fixBalancesTokens = {
     'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
   },
   winr: {
-    '0xd77b108d4f6cefaa0cae9506a934e825becca46e': { coingeckoId: 'winr-protocol', decimals: 18 },
-    '0xbf6fa9d2bf9f681e7b6521b49cf8eccf9ad8d31d': { coingeckoId: 'winr-protocol', decimals: 18 },
-    '0x59edbb343991d30f77dcdbad94003777e9b09ba9': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0xd77b108d4f6cefaa0cae9506a934e825becca46e': { coingeckoId: 'winr-protocol', decimals: 18 }, // WINR on arbitrum
+    '0xbf6fa9d2bf9f681e7b6521b49cf8eccf9ad8d31d': { coingeckoId: 'winr-protocol', decimals: 18 }, // WWINR on winr chain
+    '0x59edbb343991d30f77dcdbad94003777e9b09ba9': { coingeckoId: 'usd-coin', decimals: 6 }, // USDC on winr chain
+    '0x0381132632E9E27A8f37F1bc56bd5a62d21a382B': { coingeckoId: 'tether', decimals: 6 }, // Tether on winr chain
+    '0xF2857668777135E22f8CD53C97aBf8821b7F0bdf': { coingeckoId: 'arbitrum', decimals: 18 }, // Arbitrum on winr chain
+    '0xE60256921AE414D7B35d6e881e47931f45E027cf': { coingeckoId: 'ethereum', decimals: 18 }, // Ether on winr chain
+    '0x5B20DcAB6B91f157A39036c6c0e6F16e56d74CDb': { coingeckoId: 'solana', decimals: 18 }, // Solana on winr chain
   }
 }
 
