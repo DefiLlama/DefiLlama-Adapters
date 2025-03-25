@@ -119,12 +119,12 @@ const CONFIG = {
   },
   hemi: {
     pools: [
-      '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', //eth pool
+      ADDRESSES.fuse.WETH_3, //eth pool
     ],
   },
   sonic: {
     pools: [
-      '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //usdc pool
+      '0xA272fFe20cFfe769CdFc4b63088DCD2C82a2D8F9', //usdc pool
     ],
   },
 }

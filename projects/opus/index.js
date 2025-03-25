@@ -10,6 +10,7 @@ const tokensAndOwners = [
   [ADDRESSES.starknet.WSTETH_1, "0x03dc297a3788751d6d02acfea1b5dcc21a0eee1d34317a91aea2fbd49113ea58"],
   [ADDRESSES.starknet.XSTRK, "0x04a3e7dffd8e74a706be9abe6474e07fbbcf41e1be71387514c4977d54dbc428"],
   [ADDRESSES.starknet.SSTRK, "0x03b709f3ab9bc072a195b907fb2c27688723b6e4abb812a8941def819f929bd8"],
+  [ADDRESSES.starknet.EKUBO, "0x06d44c6172f6b68fda893348d33be58b69f0add83ed480d1192d19bc4188c8f6"],
   // Transmuters
   [ADDRESSES.starknet.USDC, "0x03878595db449e1af7de4fb0c99ddb01cac5f23f9eb921254f4b0723a64a23cb"],
 ]

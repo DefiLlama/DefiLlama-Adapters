@@ -4,7 +4,7 @@ const { staking } = require('../helper/staking')
 
 const abis = {
   poolLength: "uint256:vaultsLength",
-  poolInfo: {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vaultInfo","outputs":[{"internalType":"address","name":"vault","type":"address"},{"internalType":"uint256","name":"blockNumber","type":"uint256"},{"internalType":"uint256","name":"createdAt","type":"uint256"}],"stateMutability":"view","type":"function"},
+  poolInfo: "function vaultInfo(uint256) view returns (address vault, uint256 blockNumber, uint256 createdAt)",
   wantLockedTotal: "uint256:tokenBalance",
   want: "address:want",
 }
