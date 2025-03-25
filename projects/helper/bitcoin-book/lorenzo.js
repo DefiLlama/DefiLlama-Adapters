@@ -70,7 +70,6 @@ module.exports = [
   
   // new batched TVL
   'bc1q4cgxdkr6kypy4nxf24zy4l2rjuuavdnflnnfs0',
-  'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0',
   'bc1qdkkv0aqfjqzfj4lszrwnl5ywlm2c8d6uvds26s',
   'bc1ql70zgt8lmnk2n7z8usdc2cv6kp39722rrj6u4p',
   'bc1q4kfty7afjs4yse4c3pqwah4eh082e4e0f8fdt4',

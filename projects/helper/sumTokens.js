@@ -33,6 +33,7 @@ const helpers = {
   "bittensor": require("./chain/bittensor"),
   "fuel": require("./chain/fuel"),
   "radixdlt": require("./chain/radixdlt"),
+  "stellar": require("./chain/stellar"),
 }
 
 
