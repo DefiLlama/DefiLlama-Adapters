@@ -8,7 +8,7 @@ const defaultOwner = '0x6b0e12Cb3D78a931b74F51D09F3D34E3047c0E49'; // meson
 const config = {
   merlin: {
     tokens: [
-      '0xB880fd278198bd590252621d4CD071b1842E9Bcd', // M-BTC
+      ADDRESSES.merlin.WBTC_1, // M-BTC
       '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e'  // uniBTC
     ],
   },
@@ -41,12 +41,12 @@ module.exports = {
       tokens: [
         ADDRESSES.null, // 用于追踪原生 TON
         "EQCuPm01HldiduQ55xaBF_1kaW_WAUy5DHey8suqzU_MAJOR",
-        "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT",
-        "EQCvxJy4eG8hyHBFsZ7eePxrRsUQSFE_jpptRAYBmcG_DOGS",
+        ADDRESSES.ton.NOT,
+        ADDRESSES.ton.DOGS,
         "EQB4zZusHsbU2vVTPqjhlokIOoiZhEdCMT703CWEzhTOo__X",
         "EQAJ8uWd7EBqsmpSWaRdf_I-8R8-XHwh3gsNKhy-UrdrPcUo",
-        "EQC98_qAmNEptUtPc7W6xdHh_ZHrBUFpw5Ft_IzNU20QAJav",
-        "EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7",
+        ADDRESSES.ton.tsTON,
+        ADDRESSES.ton.CATI,
         "EQAfF5j3JMIpZlLmACv7Ub7RH7WmiVMuV4ivcgNYHvNnqHTz"
       ],
       owners: [

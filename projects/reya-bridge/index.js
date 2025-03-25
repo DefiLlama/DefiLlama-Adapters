@@ -34,8 +34,7 @@ module.exports = {
           "0x72384be7092144cD9a57526B486827E4eA632351", // eth vault
           "0xBC31ec84bd7BC2c97B9413F6E473cE96Be153a25" // usdc vault 2
         ],
-        tokens: [ADDRESSES.polygon.USDC, ADDRESSES.polygon.WETH, ADDRESSES.polygon.USDC_CIRCLE
-        ],
+        tokens: [ADDRESSES.polygon.USDC, ADDRESSES.polygon.WETH, ADDRESSES.polygon.USDC_CIRCLE],
       }),
   },
   base: {
@@ -43,10 +42,11 @@ module.exports = {
       sumTokens2({
         api,
         owners: [
-          "0x77e61C6fcAEe80CA578B818DD583d2b78f99289C", // usdc vault
+          "0x77e61C6fcAEe80CA578B818DD583d2b78f99289C", // dai vault
           "0x2b3A8ABa1E055e879594cB2767259e80441E0497", // eth vault
+          "0xd71629697b71e2df26b4194f43f6eaed3b367ac0", //usdc real vault
         ],
-        tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH],
+        tokens: [ADDRESSES.base.USDC, ADDRESSES.base.WETH, ADDRESSES.base.DAI],
       }),
   },
   arbitrum: {

@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require("../helper/unwrapLPs");
 
-const FlareUSDCe="0xFbDa5F676cB37624f28265A144A48B0d6e87d3b6";
+const FlareUSDCe=ADDRESSES.rari.USDC_e;
 
 async function FlareTvl(api) {
   const tokens = [nullAddress, FlareUSDCe];

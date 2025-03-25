@@ -55,7 +55,7 @@ module.exports = {
         ADDRESSES.null, // ETH
         ADDRESSES.ethereum.WBTC, // WBTC
         ADDRESSES.ethereum.WETH, // WETH
-        "0xd31a59c85ae9d8edefec411d448f90841571b89c", // WSOL
+        ADDRESSES.ethereum.WSOL, // WSOL
         ADDRESSES.ethereum.WSTETH, // Lido WSTETH
         ADDRESSES.ethereum.EETH, // EETH
         '0xd9a442856c234a39a81a089c06451ebaa4306a72', // pufETH

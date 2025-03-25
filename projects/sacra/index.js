@@ -15,6 +15,7 @@ const rewardPoolReal = '0xb35E67FD20070C3d3dC5EEa29D62e95b707471cA';
 const controllerSonic = '0x75e1e98650c119c4E3dCE3070CE6A5397Ed70c6a';
 const tresurySonic = '0x3bDbd2Ed1A214Ca4ba4421ddD7236ccA3EF088b6';
 const rewardPoolSonic = '0xda08F7DE9923acEe24CE292Ec2b20D45b1522Cb6';
+const sonicSacra = '0x7AD5935EA295c4E743e4f2f5B4CDA951f41223c2'
 
 
 module.exports = {
@@ -26,6 +27,7 @@ module.exports = {
     tvl: sumTokensExport({ token: ADDRESSES.real.USDC, owners: [controllerReal, tresuryReal, rewardPoolReal] })
   },
   sonic: {
-    tvl: sumTokensExport({ token: ADDRESSES.sonic.wS, owners: [controllerSonic, tresurySonic, rewardPoolSonic] })
+    tvl: sumTokensExport({ token: ADDRESSES.sonic.wS, owners: [controllerSonic, tresurySonic, rewardPoolSonic] }),
+    staking: sumTokensExport({ token: sonicSacra, owners: [controllerSonic, tresurySonic, rewardPoolSonic] }),
   }
 }
