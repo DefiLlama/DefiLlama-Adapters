@@ -11,5 +11,7 @@ module.exports = {
   era: { tvl: getTvl('0x8b73bB0557C151Daa39b6ff556e281e445b296D5') },
   ink: { tvl: getTvl('0xcab283e4bb527Aa9b157Bae7180FeF19E2aaa71a') },
   flare: { tvl: getTvl('0x61Ef2d1d8637Dc24e19c2C9dA8f58f6F06C3D31E') },
-  // plume: { tvl: getTvl('0xcab283e4bb527Aa9b157Bae7180FeF19E2aaa71a') },
+  berachain: { tvl: getTvl('0x3B0145f3CFA64BC66F5742F512f871665309075d') },
+  arbitrum: { tvl: getTvl('0x8a6e8E584b415352f7aAef2304945E1772f80378') },
+  abstract: { tvl: getTvl('0xb72207E1FB50f341415999732A20B6D25d8127aa') },
 };
