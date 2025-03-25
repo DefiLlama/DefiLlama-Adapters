@@ -46,7 +46,7 @@ const vaultsGraphStartBlock = {
 }
 
 module.exports = {
-  methodology: `Counts the purchase tokens locked in Term Finance's vaults.`,
+  methodology: `Counts deposits in Term Strategy Vaults allocated to other protocols.`,
   // hallmarks: [[1588610042, "TermFinance Launch"]],
 };
 
