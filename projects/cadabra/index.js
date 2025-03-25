@@ -42,11 +42,32 @@ async function addWrapperReserves(api, tokens) {
   res.forEach(([tokens, amounts]) => api.add(tokens, amounts))
 }
 
+async function pool2(api) {
+
+  const BSC_CADABRA_FULL_RANGE_PAIR_LENS = '0x2A479CFf64574Ed192f42509a205e3eb94Dc258C';
+  const token0 = await api.call({ abi: 'address:token0', target: BSC_CADABRA_FULL_RANGE_PAIR_LENS });
+  const token1 = await api.call({ abi: 'address:token1', target: BSC_CADABRA_FULL_RANGE_PAIR_LENS });
+
+  const [frpReserve0, frpReserve1] = await api.call({
+    abi: 'function fullRangePairReserves()  view returns (uint256 reserve0, uint256 reserve1)',
+    target: BSC_CADABRA_FULL_RANGE_PAIR_LENS
+  });
+
+  const [polReserve0, polReserve1] = await api.call({
+    abi: 'function polReserves()  view returns (uint256 reserve0, uint256 reserve1)',
+    target: BSC_CADABRA_FULL_RANGE_PAIR_LENS
+  });
+
+  api.add(token0, [frpReserve0, polReserve0])
+  api.add(token1, [frpReserve1, polReserve1])
+}
+
 module.exports = {
   methodology: `The TVL is calculated by summing all underlying reserves across our strategies`,
   doublecounted: true,
   bsc: {
-    tvl: strategiesTvl(BSC_VAULT, BSC_FROM_BLOCK)
+    tvl: strategiesTvl(BSC_VAULT, BSC_FROM_BLOCK),
+    pool2,
   },
   arbitrum: {
     tvl: strategiesTvl(ARBITRUM_VAULT, ARBITRUM_FROM_BLOCK)

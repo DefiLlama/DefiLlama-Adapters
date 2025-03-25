@@ -227,6 +227,12 @@ const supportedChains = [
     chainId: 80094,
     identifier: 'berachain'
   },
+  {
+    name: 'Ethereum',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-mainnet/prod/gn',
+    chainId: 1,
+    identifier: 'ethereum'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain

@@ -1,5 +1,4 @@
 const { get } = require('../helper/http')
-const { transformBalances } = require('../helper/portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
 
@@ -35,8 +34,8 @@ async function getData() {
     async function addPool([assetId, poolId]) {
       const { PoolAssetLBMapping: { total_borrowed, total_lend } } = await get(`https://rest.comdex.one/comdex/lend/v1beta1/pool_asset_lb_mapping/${assetId}/${poolId}`)
       const token = assetMap[assetId]
-      sdk.util.sumSingleBalance(balances.tvl, token, total_lend - total_borrowed)
-      sdk.util.sumSingleBalance(balances.borrowed, token, total_borrowed)
+      sdk.util.sumSingleBalance(balances.tvl, token, total_lend - total_borrowed, 'comdex')
+      sdk.util.sumSingleBalance(balances.borrowed, token, total_borrowed, 'comdex')
     }
   }
 }
@@ -46,7 +45,7 @@ module.exports = {
   deadFrom: "2024-09-17",
   timetravel: false,
   comdex: {
-    tvl: async () => transformBalances('comdex', (await getData()).tvl),
-    borrowed: async () => transformBalances('comdex', (await getData()).borrowed),
+    tvl: async () => (await getData()).tvl,
+    borrowed: async () => (await getData()).borrowed,
   }
 }

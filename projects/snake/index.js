@@ -4,7 +4,7 @@ const { staking } = require("../helper/staking");
 
 const gsnakeTokenAddress = "0x674a430f531847a6f8976A900f8ace765f896a1b";
 const snakeGenesisAddress = '0x29D0762f7bE8409d0aC34A3595AF62E8c0120950'
-const gsnakeRewardPoolAddress = "0xFE6915a0983a304F4D131DA635664030dA06Bcd2";
+const gsnakeRewardPoolAddress = "0xe6E0A10eb298F0aC4170f2502cF7b201375BBc85";
 const masonryAddress = "0x54eb20859334C1958eb67f1b5a283b7A100280D3";
 
 async function snakeGenesisTVL(api) {
@@ -26,7 +26,7 @@ async function snakeGenesisTVL(api) {
 
 
 const pool2 = async (api) => {
-  let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x3af1dd7a2755201f8e2d6dcda1a61d9f54838f4f' })
+  let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x9F59398D0a397b2EEB8a6123a6c7295cB0b0062D' })
   let pools = await api.multiCall({ abi: 'address:stake', calls: gauges, permitFailure: true })
   const pools2 = []
   const gauges2 = []

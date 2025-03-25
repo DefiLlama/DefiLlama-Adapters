@@ -57,6 +57,9 @@ const endPoints = {
   dydx: 'https://dydx-rest.publicnode.com',
   carbon: 'https://rest.lavenderfive.com/carbon/',
   evmos: 'https://evmos-api.polkachu.com',
+  regen: 'https://rest-regen.ecostake.com',
+  sommelier: 'https://sommelier-rpc.polkachu.com',
+  stride: 'https://stride-api.polkachu.com',
 };
 
 const chainSubpaths = {
