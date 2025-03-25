@@ -18,41 +18,16 @@ const fetchPriceAbi = "function fetchPrice(address token) view returns (uint256)
 const decimalsAbi = "function decimals() view returns (uint8)";
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
-  const hypeBlock = await api.getBlock(timestamp);
-  
-  const decimalsPromises = validCollaterals.map(collateral => 
-    api.call({
-      target: collateral,
-      abi: decimalsAbi,
-      block: hypeBlock,
-    }).catch(() => 18)
-  );
-  
   const collateralBalancesPromises = validCollaterals.map(collateral => 
     api.call({
       target: collateral,
       abi: balanceOfAbi,
       params: [voAddress],
-      block: hypeBlock,
-    }).catch(() => 0)
+    })
   );
   
-  const tokenPricesPromises = validCollaterals.map(collateral => 
-    api.call({
-      target: priceFeedAddress,
-      abi: fetchPriceAbi,
-      params: [collateral],
-      block: hypeBlock,
-    }).catch(() => 0)
-  );
+  const collateralBalances = await Promise.all(collateralBalancesPromises);
   
-  const [decimals, collateralBalances, tokenPrices] = await Promise.all([
-    Promise.all(decimalsPromises),
-    Promise.all(collateralBalancesPromises),
-    Promise.all(tokenPricesPromises)
-  ]);
-  
-  // Process the results
   for (let i = 0; i < validCollaterals.length; i++) {
     const collateral = validCollaterals[i];
     const balance = collateralBalances[i];
