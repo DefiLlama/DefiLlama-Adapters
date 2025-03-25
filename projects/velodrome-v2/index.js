@@ -19,6 +19,8 @@ module.exports = {
   fraxtal: { tvl },
   ink: { tvl },
   soneium: { tvl },
+  unichain: { tvl },
+  swellchain: { tvl },
   hallmarks: [
     [1687465883, "v2 Migration on OP Mainnet"], // https://twitter.com/VelodromeFi/status/1671979216039202816
   ]

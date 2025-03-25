@@ -17,14 +17,16 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  FLOW_RPC: "https://rest-mainnet.onflow.org",
-  ELSM_RPC: "https://rpc.elysiumchain.tech",
-  ARTELA_RPC: "https://node-euro.artela.network/rpc,https://node-hongkong.artela.network/rpc,https://node-us-2.artela.network/rpc",
-  ARTELA_RPC_MULTICALL: "0x80BC476a33a1b40a788dcC9bfe9dFdae9723b872",
-  ZERO_NETWORK_RPC_MULTICALL: "0x0307F341a18f1FC1f63a7Ceeac970245A08C5a80",
-  PLUME_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  ABSTRACT_RPC_MULTICALL: "0xaa4de41dba0ca5dcbb288b7cc6b708f3aac759e7",
-  ABSTRACT_RPC: "https://api.mainnet.abs.xyz",
+  FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  LULO_API_KEY: '', 
+  HYPERLIQUID_RPC: 'https://hyperliquid.cloud.blockscout.com/api/eth-rpc',
+  ETLK_RPC: 'https://explorer.etherlink.com/api/eth-rpc',
+  TRON_RPC: 'https://api.trongrid.io',
+  HEMI_RPC: 'https://rpc.hemi.network/rpc',
+  MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
+  HEMI_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
+  WINR_RPC: 'https://rpc-winr-mainnet-0.t.conduit.xyz',
+  MTT_NETWORK_RPC: 'https://evm-rpc.mtt.network'
 }
 
 const ENV_KEYS = [
@@ -42,6 +44,7 @@ const ENV_KEYS = [
   'UNISAT_AUTH',
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
+  'BITCOIN_CACHE_API',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
