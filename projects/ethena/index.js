@@ -8,7 +8,11 @@ module.exports = {
             const supply = await api.call({ abi: 'erc20:totalSupply', target: USDe })
             await sumTokens2({
                 api,
-                owner: "0x2d4d2a025b10c09bdbd794b4fce4f7ea8c7d7bb4",
+                owners: [
+                    "0x2d4d2a025b10c09bdbd794b4fce4f7ea8c7d7bb4",
+                    "0xd54F23BE482D9A58676590fCa79c8E43087f92fB",
+                    "0x2B5AB59163a6e93b4486f6055D33CA4a115Dd4D5"
+                ],
                 tokens: [
                     ADDRESSES.ethereum.USDC,
                     ADDRESSES.ethereum.sUSDS,
