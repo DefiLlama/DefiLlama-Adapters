@@ -28,12 +28,12 @@ const supportedChains = [
     chainId: 56,
     identifier: 'bsc'
   },
-  // {
-  //   name: 'Evmos',
-  //   subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
-  //   chainId: 9001,
-  //   identifier: 'evmos'
-  // },
+  {
+    name: 'Evmos',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
+    chainId: 9001,
+    identifier: 'evmos'
+  },
   {
     name: 'Avalanche',
     subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/GZotTj3rQJ8ZqVyodtK8TcnKcUxMgeF7mCJHGPYbu8dA',
@@ -232,6 +232,12 @@ const supportedChains = [
     subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-mainnet/prod/gn',
     chainId: 1,
     identifier: 'ethereum'
+  },
+  {
+    name: 'Hemi',
+    subgraphEndpoint:  'https://api.studio.thegraph.com/query/78728/steer-protocol-hemi/version/latest',
+    chainId: 43111,
+    identifier: 'hemi'
   },
 ]
 
