@@ -26,7 +26,8 @@ const DEFAULTS = {
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   HEMI_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
   WINR_RPC: 'https://rpc-winr-mainnet-0.t.conduit.xyz',
-  MTT_NETWORK_RPC: 'https://evm-rpc.mtt.network'
+  MTT_NETWORK_RPC: 'https://evm-rpc.mtt.network',
+  BEVM_RPC: "https://rpc-mainnet-1.bevm.io,https://rpc-mainnet-2.bevm.io",
 }
 
 const ENV_KEYS = [
