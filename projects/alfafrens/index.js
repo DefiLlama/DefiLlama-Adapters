@@ -1,10 +1,10 @@
 /**
  * Alfafrens SoFi - a project by Superfluid.
  * alfafrens.com
- * 
+ *
  * This adapter tracks amount flowing between subscribers and channels. Currently it only tracks the
  * version 2 contracts.
- * 
+ *
  * V1 Creation
  * - Stream token: $DEGENx
  * V2 Creation https://basescan.org/tx/0x6c39ce34ab8349b1b57deb1ca5228e8a57e19699cde082a7da57f0e03984149b
@@ -41,7 +41,6 @@ const globalStatsQuery = `query get_global_stats($block: Int) {
 }`;
 
 const tvl = async (api, mainnetBlockNumber, chainsBlockNumbers) => {
-  console.log(chainsBlockNumbers)
   const chain = "base";
   const { globalDatas } = await blockQuery(graphUrl, globalStatsQuery, { api });
 
@@ -55,7 +54,7 @@ const tvl = async (api, mainnetBlockNumber, chainsBlockNumbers) => {
 
   console.log(`Flow Volume: ${ethx_volume * 1e-18} $ETHx`);
 
-  if (parseInt(ethx_volume) > 0 ){
+  if (parseInt(ethx_volume) > 0) {
     const balances = {};
     sdk.util.sumSingleBalance(balances, ETH_token_address, ethx_volume);
     return transformBalances(chain, balances);
@@ -66,7 +65,7 @@ const tvl = async (api, mainnetBlockNumber, chainsBlockNumbers) => {
 
 module.exports = {
   timetravel: true,
-  methodology: 'Total ETH streamed on the platform',
+  methodology: "Total ETH streamed on the platform",
   start: STARTING_BLOCK_NUMBER,
   base: { tvl },
   hallmarks: [[1734000000, "Alfafrens V2 Launch"]],
