@@ -21,7 +21,7 @@ const limiter = new RateLimiter({ tokensPerInterval: 1, interval: 10_000 });
 
 async function cachedBTCBalCall(owners, retriesLeft = 2) {
   try {
-    const res =  await post(bitcoinCacheEnv, { addresses: owners, network: 'BTC' })
+    const res = await post(bitcoinCacheEnv, { addresses: owners, network: 'BTC' })
     return res
   } catch (e) {
     console.error('cachedBTCBalCall error', e.toString())
@@ -39,27 +39,29 @@ async function getCachedBitcoinBalances(owners) {
   let i = 0
   for (const chunk of chunks) {
     const res = await cachedBTCBalCall(chunk)
-    sdk.log(i++, sum/1e8, res/1e8, chunk.length)
+    sdk.log(i++, sum / 1e8, res / 1e8, chunk.length)
     sum += +res
   }
   return sum
 }
 
-async function _sumTokensBlockchain({ balances = {}, owners = [], }) {
+async function _sumTokensBlockchain({ balances = {}, owners = [], forceCacheUse, }) {
   if (bitcoinCacheEnv && owners.length > 51) {
+    if (owners.length > 1000) forceCacheUse = true
     try {
       const res = await getCachedBitcoinBalances(owners)
-      sdk.util.sumSingleBalance(balances, 'bitcoin', res/1e8)
+      sdk.util.sumSingleBalance(balances, 'bitcoin', res / 1e8)
       return balances
 
     } catch (e) {
+      if (forceCacheUse) throw e
       sdk.log('bitcoin cache error', e.toString())
     }
   }
   console.time('bitcoin' + owners.length + '___' + owners[0])
   const STEP = 50
-  for(let i=0; i<owners.length; i+=STEP){
-    const { addresses } = await get(url3(owners.slice(i, i+STEP)))
+  for (let i = 0; i < owners.length; i += STEP) {
+    const { addresses } = await get(url3(owners.slice(i, i + STEP)))
     for (const addr of addresses)
       sdk.util.sumSingleBalance(balances, 'bitcoin', addr.final_balance / 1e8)
     await sleep(10000)
@@ -96,19 +98,20 @@ async function getBalanceNow(addr) {
   return balancesNow[addr]
 }
 
-async function sumTokens({ balances = {}, owners = [], timestamp }) {
+async function sumTokens({ balances = {}, owners = [], timestamp, forceCacheUse, }) {
   if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   owners = getUniqueAddresses(owners, 'bitcoin')
   const now = Date.now() / 1e3
 
   if (!timestamp || (now - timestamp) < delay) {
     try {
-      await sumTokensBlockchain({ balances, owners })
+      await sumTokensBlockchain({ balances, owners, forceCacheUse })
       return balances
     } catch (e) {
       sdk.log('bitcoin sumTokens error', e.toString())
     }
   }
+  if (forceCacheUse) throw new Error('timestamp is too old, cant pull with forceCacheUse flag set')
 
   for (const addr of owners)
     sdk.util.sumSingleBalance(balances, 'bitcoin', await getBalance(addr, timestamp))
