@@ -1,14 +1,12 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-const sdk = require("@defillama/sdk");
-
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const vaultFactory = "0x70b14cd0Cf7BD442DABEf5Cb0247aA478B82fcbb";
-const yBGT = "0x7e768f47dfDD5DAe874Aac233f1Bc5817137E453";
+const voter = "0x37d1E4594ed04818B68aF5396bc7388c26F17E4A";
+const bgt = "0x656b95E550C07a9ffe548bd4085c72418Ceb1dba";
 
 async function vaultsTVL(api) {
+  // grab all the vaults
   const compoundingVaults = await api.call({
-    // abi: "function getAllCompoundingVaults() external view returns (address[] vaults)",
     abi: "function getAllCompoundingVaults() external view returns (address[])",
     target: vaultFactory,
   });
@@ -19,6 +17,7 @@ async function vaultsTVL(api) {
 
   const vaults = [...compoundingVaults, ...bgtEarnerVaults];
 
+  // grab all the tokens and balances in the vaults
   const tokens = await api.multiCall({
     abi: "address:stakingAsset",
     calls: vaults,
@@ -28,6 +27,16 @@ async function vaultsTVL(api) {
     abi: "uint256:totalAssets",
     calls: vaults,
   });
+
+  // grab BGT balance of yBGT backing
+  const bgtBalance = await api.call({
+    abi: "erc20:balanceOf",
+    target: bgt,
+    params: [voter],
+  });
+
+  tokens.push(bgt);
+  balances.push(bgtBalance);
 
   api.add(tokens, balances);
   return sumTokens2({ api, resolveLP: true });
