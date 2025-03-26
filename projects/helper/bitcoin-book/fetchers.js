@@ -183,5 +183,13 @@ module.exports = {
       }
     }
     return owners
-  }
+  },
+  dlcLink: async () => {
+    const config = await getConfig('dlc-link', 'https://api.dlc.link/v1/ibtc/proof-of-reserve')
+    const addresses= []
+    config.chains.forEach(c => {
+      addresses.push(...(c.vaultAddresses ?? []))
+    })
+    return addresses
+  },
 }

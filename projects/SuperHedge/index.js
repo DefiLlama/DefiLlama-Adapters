@@ -1,4 +1,5 @@
-const SH_VAULT_1_CURRENCY = '0x4c9EDD5852cd905f086C759E8383e09bff1E68B3'; // USDe Ethereum
+const ADDRESSES = require('../helper/coreAssets.json')
+const SH_VAULT_1_CURRENCY = ADDRESSES.ethereum.USDe; // USDe Ethereum
 const SH_VAULT_1_PT = '0x8A47b431A7D947c6a3ED6E42d501803615a97EAa'; // Pendle pt token
 const SH_VAULT_1 = '0xDF59153DA47dc7c39505261D423BAf14c48D23A6'; // SHProduct Vault
 

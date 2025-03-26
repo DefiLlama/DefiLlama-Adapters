@@ -2,6 +2,7 @@ async function tvl(api) {
   const protocols = [
     '0xc0fA386aE92f18A783476d09121291A1972C30Dc',
     '0x4737c3BAB13a1Ad94ede8B46Bc6C22fb8bBE9c81',
+    '0x9F0956c33f45141a7D8D5751038ae0A71C562f87'
   ]
 
   const tokensAndOwners = []
