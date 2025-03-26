@@ -166,7 +166,7 @@ const config = {
         factory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
         fromBlock: 682246,
     },
-    hyperEVM: {
+    hyperliquid: {
         factory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
         fromBlock: 200467,
     }
