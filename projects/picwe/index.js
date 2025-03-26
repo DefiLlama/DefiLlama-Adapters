@@ -19,30 +19,18 @@ const CONSTANTS = {
  * @throws {Error} If unable to fetch reserves after retries
  */
 async function getProtocolReserves(retries = CONSTANTS.MAX_RETRIES) {
-  const fetchReserves = async () => {
-    try {
-      const reserves = await function_view({ 
-        functionStr: `${CONSTANTS.PROTOCOL.ADDRESS}::${CONSTANTS.PROTOCOL.FUNCTION}`, 
-        type_arguments: [], 
-        args: [],
-        chain: 'move'
-      });
+  const reserves = await function_view({ 
+    functionStr: `${CONSTANTS.PROTOCOL.ADDRESS}::${CONSTANTS.PROTOCOL.FUNCTION}`, 
+    type_arguments: [], 
+    args: [],
+    chain: 'move'
+  });
 
-      if (!Array.isArray(reserves) || reserves.length !== 2) {
-        throw new Error(`Invalid reserves format: ${JSON.stringify(reserves)}`);
-      }
+  if (!Array.isArray(reserves) || reserves.length !== 2) {
+    throw new Error(`Invalid reserves format: ${JSON.stringify(reserves)}`);
+  }
 
-      return reserves;
-    } catch (error) {
-      if (retries > 0) {
-        await new Promise(resolve => setTimeout(resolve, CONSTANTS.RETRY_DELAY));
-        return getProtocolReserves(retries - 1);
-      }
-      throw new Error(`Failed to fetch protocol reserves: ${error.message}`);
-    }
-  };
-
-  return fetchReserves();
+  return reserves;
 }
 
 /**
@@ -53,14 +41,9 @@ module.exports = {
   methodology: "TVL consists of total reserves locked in the WEUSD protocol on Movement blockchain.",
   move: {
     tvl: async (api) => {
-      try {
-        const reserves = await getProtocolReserves();
-        api.add(CONSTANTS.TOKENS.TOKEN_A, reserves[0]);
-        api.add(CONSTANTS.TOKENS.TOKEN_B, reserves[1]);
-      } catch (error) {
-        api.log('TVL calculation failed', error);
-        throw error;
-      }
+      const reserves = await getProtocolReserves();
+      api.add(CONSTANTS.TOKENS.TOKEN_A, reserves[0]);
+      api.add(CONSTANTS.TOKENS.TOKEN_B, reserves[1]);
     }
   }
 };
