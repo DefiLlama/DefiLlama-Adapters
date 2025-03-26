@@ -9,15 +9,19 @@ const getPoolJettonsRateLimited = rateLimited(getPoolCurrentJettons);
 
 
 const POOLS = [
-  'EQC-jlX83DYZgSWRW5q_XuHLWWFQPp2xGmc8BCoeWckKpeHs',
-  'EQD6gQSWCayHh0FvUnTXlpfizIWiq7UeE4gYvXGYtEhIYJ8q',
-  'EQCE_6TevKEpj8OTz3rZt1D5bR6fENQbSN2bbW0jzxbWGGIo',
+  'EQC-jlX83DYZgSWRW5q_XuHLWWFQPp2xGmc8BCoeWckKpeHs', // native TON
+  'EQD6gQSWCayHh0FvUnTXlpfizIWiq7UeE4gYvXGYtEhIYJ8q', // USDT
+  'EQCE_6TevKEpj8OTz3rZt1D5bR6fENQbSN2bbW0jzxbWGGIo', // NOT
+  'EQDuM7dM6mw0vAMurdY0hTNREenlZR1yCurqqo99q3o42nCi', // stTON
+  'EQC2HxXptnU7vstREZOHyheGTafnFNSlVus5Iwd8Ik89Q7dD' // tsTON
 ]
 
 const UNDERLYING_JETTONS = [
   ADDRESSES.ton.TON,
   ADDRESSES.ton.USDT,
   ADDRESSES.ton.NOT,
+  ADDRESSES.ton.TON,
+  ADDRESSES.ton.TON,
 ]
 
 

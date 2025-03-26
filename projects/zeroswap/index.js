@@ -10,7 +10,6 @@ const AVAX_STAKING_ADDRESS = '0xa4751EAa89C5D6ff61384766268cabf25aCD1011'
 
 module.exports = {
   methodology: 'Counts tvl of all the tokens staked through Staking Contracts',
-  start: 1000235,
   ethereum: {
     tvl:() => ({}),
     staking: staking(ETH_STAKING_ADDRESS, ETH_TOKEN_ADDRESS),

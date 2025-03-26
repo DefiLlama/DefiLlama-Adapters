@@ -64,11 +64,14 @@ const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
   return fn(...args);
 }
 
-async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
+async function sumTokens({ owner, owners = [], tokens = [], token, balances, api, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
+  if (!balances) {
+    balances = api ? api.getBalances() : {}
+  }
   if (owner) owners = [owner]
   if (token) tokens = [token]
   if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
-  const accounts = await Promise.all(owners.map(getAccountInfo))
+  const accounts = await Promise.all(owners.map(limitedGetAccountInfo))
   accounts.forEach(({ assets }, i) => {
     if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
@@ -89,11 +92,22 @@ async function getAssetInfo(assetId) {
 
   async function _getAssetInfo() {
     const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
-    const reserveInfo = await getAccountInfo(asset.params.reserve)
+    const reserveInfo = await limitedGetAccountInfo(asset.params.reserve)
     const assetObj = { ...asset.params, ...asset, reserveInfo, }
     assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
     assetObj.assets = { ...reserveInfo.assetMapping }
     delete assetObj.assets[assetId]
+    return assetObj
+  }
+}
+
+async function getAssetInfoWithoutReserve(assetId) {
+  if (!assetCache[assetId]) assetCache[assetId] = _getAssetInfo()
+  return assetCache[assetId]
+
+  async function _getAssetInfo() {
+    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
+    const assetObj = { ...asset.params, ...asset, }
     return assetObj
   }
 }
@@ -200,15 +214,24 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   throw new Error('Not mapped with any whitelisted assets')
 }
 
+async function lookupTransactionsByID(searchParams = {}) {
+  const urlParams = new URLSearchParams(searchParams).toString();
+  return (await axiosObj.get(`/v2/transactions?${urlParams}`)).data
+}
+
+const limitedGetAccountInfo = withLimiter(getAccountInfo)
+
 module.exports = {
   tokens,
   getAssetInfo: withLimiter(getAssetInfo),
+  getAssetInfoWithoutReserve: withLimiter(getAssetInfoWithoutReserve),
   searchAccountsAll,
-  getAccountInfo,
+  getAccountInfo: limitedGetAccountInfo,
   sumTokens,
   getApplicationAddress,
   lookupApplications: withLimiter(lookupApplications),
   lookupAccountByID: withLimiter(lookupAccountByID),
+  lookupTransactionsByID: withLimiter(lookupTransactionsByID),
   searchAccounts: withLimiter(searchAccounts),
   getAppGlobalState: getAppGlobalState,
   getPriceFromAlgoFiLP,

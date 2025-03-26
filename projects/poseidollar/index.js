@@ -84,7 +84,7 @@ async function suiTVL(api) {
   const listPoolFlowX = (
     await sui.getDynamicFieldObjects({
       parent:
-        "0xd15e209f5a250d6055c264975fee57ec09bf9d6acdda3b5f866f76023d1563e6",
+        "0xd15e209f5a250d6055c264975fee57ec09bf9d6acdda3b5f866f76023d1563e6", sleep: 1000
     })
   ).map((i) => i.fields.value.fields);
 

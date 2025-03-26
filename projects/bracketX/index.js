@@ -14,7 +14,7 @@ async function tvl(api) {
 
 module.exports = {
       methodology: 'Count the number of WETH tokens locked in the protocol contract.',
-  start: 1704412800,
+  start: '2024-01-05',
   arbitrum: {
     tvl,
   }

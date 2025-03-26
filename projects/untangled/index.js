@@ -20,4 +20,5 @@ module.exports = {
   celo: {
     tvl, borrowed,
   },
+  deadFrom: "2025-01-14",
 };

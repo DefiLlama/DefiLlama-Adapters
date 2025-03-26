@@ -1,7 +1,5 @@
-const sdk = require("@defillama/sdk");
 const { isStableToken } = require("./helper/streamingHelper");
 const { getBlock } = require("./helper/http");
-const { transformBalances } = require("./helper/portedTokens");
 const { blockQuery } = require("./helper/http");
 
 const supertokensQuery = `
@@ -31,26 +29,31 @@ query get_supertokens($block: Int) {
 }
 `;
 
+function isWhitelistedToken(token, address, isVesting) {
+  const isStable = isStableToken(token?.symbol, address);
+  return isVesting ? !isStable : isStable;
+}
+
 const blacklistedSuperTokens = new Set(
   ["0x441bb79f2da0daf457bad3d401edb68535fb3faa"].map((i) => i.toLowerCase())
 );
 
 // Main function for all chains to get balances of superfluid tokens
-async function getChainBalances(allTokens, chain, block) {
+async function getChainBalances(allTokens, chain, block, isVesting, api) {
   // Init empty balances
   let balances = {};
 
+  allTokens = allTokens.filter(({ underlyingAddress, underlyingToken = {} }) =>
+    isWhitelistedToken(underlyingToken, underlyingAddress, isVesting)
+  );
+
   // Abi MultiCall to get supertokens supplies
-  const { output: supply } = await sdk.api.abi.multiCall({
+  const supply = await api.multiCall({
     abi: "erc20:totalSupply", // abi['totalSupply'],
-    calls: allTokens.map((token) => ({
-      target: token.id,
-    })),
-    block,
-    chain,
+    calls: allTokens.map(token => token.id),
   });
 
-  supply.forEach(({ output: totalSupply }, i) => {
+  supply.forEach((totalSupply, i) => {
     const {
       id,
       underlyingAddress,
@@ -65,30 +68,33 @@ async function getChainBalances(allTokens, chain, block) {
       10 ** decimals;
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = underlyingAddress;
+    // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) sdk.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
+    // if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
     if (
       !underlyingToken ||
       blacklistedSuperTokens.has(underlyingAddress.toLowerCase())
-    ) {
+    )
       return;
-    }
-    sdk.util.sumSingleBalance(
-      balances,
-      prefixedUnderlyingAddress,
-      underlyingTokenBalance
-    );
+    api.add(prefixedUnderlyingAddress, underlyingTokenBalance);
   });
-
-  return transformBalances(chain, balances);
 }
 
-async function retrieveSupertokensBalances(chain, block, ts, graphUrl) {
-  const blockNum = await getBlock(ts, chain, { [chain]: block });
+async function retrieveSupertokensBalances(
+  chain,
+  block,
+  isVesting,
+  api,
+  graphUrl
+) {
+  const blockNum = await getBlock(api.timestamp, chain, { [chain]: block });
   const { tokens } = await blockQuery(graphUrl, supertokensQuery, {
     api: { getBlock: () => blockNum, block: blockNum },
   });
+
+  // Use active supertokens only
   const allTokens = tokens.filter((t) => t.isSuperToken && t.isListed);
 
-  return getChainBalances(allTokens, chain, block);
+  return getChainBalances(allTokens, chain, block, isVesting, api);
 }
 
 /**
@@ -139,7 +145,9 @@ module.exports = {
 Object.keys(subgraphEndpoints).forEach((chain) => {
   const { graph } = subgraphEndpoints[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) =>
-      retrieveSupertokensBalances(chain, block, _, graph),
+    tvl: async (api, _b, { [chain]: block }) =>
+      retrieveSupertokensBalances(chain, block, false, api, graph),
+    vesting: async (api, _b, { [chain]: block }) =>
+      retrieveSupertokensBalances(chain, block, true, api, graph),
   };
 });

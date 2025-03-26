@@ -115,7 +115,7 @@ module.exports = {
   avax: {
     tvl: avaxTvl,
   },
-  start: 1622204347, // 28-05-2021 12:19:07 (UTC)
+  start: '2021-05-28', // 28-05-2021 12:19:07 (UTC)
   methodology:
     "Assets held within the GRO Protocol - either within the PWRD or Vault (GVT) products, or staked in the Gro Protocol pools. Avax TVL is the sum of tokens locked in Gro Labs.",
 };

@@ -7,4 +7,5 @@ module.exports = {
     base: 8453,
     arbitrum: 42161,
     scroll: 534352,
+    swellchain: 1923,
 }

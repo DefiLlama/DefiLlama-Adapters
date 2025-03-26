@@ -90,5 +90,4 @@ module.exports = {
         borrowed: getMetaStreetTVL(true),
     },
             methodology: 'TVL is calculated by getting the ERC20 balance of each vault, which counts tokens deposited into contracts for earning yield but not the value of any NFT loan note collateral the vault has purchased. Borrowed tokens are also not counted towards TVL.',
-    start: 14878205
 };

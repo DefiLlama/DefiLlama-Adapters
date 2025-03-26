@@ -39,31 +39,38 @@ const uniBTC_ADDRESS = {
   },
 };
 
+const cmETH_ADDRESS = {
+  mantle: { 
+    asset: ADDRESSES.mantle.cmETH, 
+    vault: "0x6FF000453a9c14f7d3bf381925c8cde565DbCe55",
+  }
+};
+
 const ezETH_ADDRESS = {
   ethereum: { 
     asset: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110", 
     vault: "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
   },
   arbitrum: { 
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    asset: ADDRESSES.optimism.ezETH, 
     vault: "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
   },
   blast: { 
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    asset: ADDRESSES.optimism.ezETH, 
     vault: "0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0",
   },
   linea: { 
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5", 
+    asset: ADDRESSES.optimism.ezETH, 
     vault: "0x96d6cE4e83dB947fF6bD1Ab0B377F23cd5D9ec2D",
   },
   mode: {
-    asset: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    asset: ADDRESSES.optimism.ezETH,
     vault: "0xbEd575b0FeDa4F84b71144634693DaCc07749471"
   }
 };
 
 const WEETH_ADDRESS = {
-  ethereum: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+  ethereum: ADDRESSES.ethereum.WEETH,
   arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
   optimism: "0x346e03f8cce9fe01dcb3d0da3e9d00dc2c0e08f0",
   mode: ADDRESSES.blast.weETH,
@@ -199,5 +206,12 @@ module.exports = {
         { type: 'vault', data: uniBTC_ADDRESS.bsc },
       ]
     )
-  }
+  },
+  mantle: {
+    tvl: chainTVL(
+      [
+        { type: 'vault', data: cmETH_ADDRESS.mantle },
+      ]
+    )
+  },
 };

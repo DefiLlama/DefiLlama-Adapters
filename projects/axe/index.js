@@ -3,7 +3,7 @@ module.exports = {
     [1648765747, "Rug Pull"]
   ],
     deadFrom: 1648765747,
-    start: 1637036516, // 16 Nov 2021
+    start: '2021-11-16', // 16 Nov 2021
     ethereum: {
       tvl: () => ({}),
       staking: () => ({}),

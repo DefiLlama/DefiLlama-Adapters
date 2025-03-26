@@ -19,6 +19,10 @@ async function getObject(objectId) {
   }])).content
 }
 
+async function fnSleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function queryEvents({ eventType, transform = i => i }) {
   let filter = {}
   if (eventType) filter.MoveEventType = eventType
@@ -48,7 +52,7 @@ async function getObjects(objectIds) {
       "showContent": true,
     }],
   })
-  return objectIds.map(i => result.find(j => j.data.objectId === i)?.data?.content)
+  return objectIds.map(i => result.find(j => j.data?.objectId === i)?.data?.content)
 }
 
 async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } = {}) {
@@ -58,7 +62,8 @@ async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } 
   }])).content
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set() }) {
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep }) {
+  if (sleep) await fnSleep(sleep)
   const {
     result: { data, hasNextPage, nextCursor }
   } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
@@ -134,11 +139,21 @@ function dexExport({
 }
 
 
-async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api }) {
+async function sumTokens({ owners = [], blacklistedTokens = [], api, tokens = [], }) {
   owners = getUniqueAddresses(owners, true)
   const bals = await call('suix_getAllBalances', owners)
-  bals.forEach(i => api.add(i.coinType, i.totalBalance))
+  const blacklistSet = new Set(blacklistedTokens)
+  const tokenSet = new Set(tokens)
+  bals.forEach(i => {
+    if (blacklistSet.has(i.coinType)) return;
+    if (tokenSet.size > 0 && !tokenSet.has(i.coinType)) return;
+    api.add(i.coinType, i.totalBalance)
+  })
   return api.getBalances()
+}
+
+function sumTokensExport(config) {
+  return (api) => sumTokens({ ...config, api })
 }
 
 async function queryEventsByType({ eventType, transform = i => i }) {
@@ -174,5 +189,6 @@ module.exports = {
   getDynamicFieldObjects,
   dexExport,
   sumTokens,
+  sumTokensExport,
   queryEventsByType,
 };

@@ -109,10 +109,10 @@
 
   module.exports = {
     // #1 susdv2 pool started
-    // start: 1600758000, // 09/22/2020 @ 03:00:00pm +UTC
+    // start: '2020-09-22', // 09/22/2020 @ 03:00:00pm +UTC
     // #2 dfi pool started
-    // start: 1602345600, // 10/10/2020 @ 04:00:00pm +UTC
-    start: 1602374400, // 10/11/2020 @ 00:00:00am +UTC
+    // start: '2020-10-10', // 10/10/2020 @ 04:00:00pm +UTC
+    start: '2020-10-11', // 10/11/2020 @ 00:00:00am +UTC
     ethereum: {
       tvl
     }
