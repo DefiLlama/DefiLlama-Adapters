@@ -19,14 +19,14 @@ const { transformBalances } = require("../helper/portedTokens");
 
 // 23573780 is the block number the contract was created.
 // const STARTING_BLOCK_NUMBER = 23573780;
-const STARTING_BLOCK_NUMBER = 23603200;
+const STARTING_BLOCK_NUMBER = 23604000;
 
 const ETHx_token_address = "0x46fd5cfb4c12d87acd3a13e92baa53240c661d93";
 const ETH_token_address = "0x0000000000000000000000000000000000000000";
 const AF_token_address = "0x6c90a582c166f59de91f97fa7aef7315a968b342";
 
 const graphUrl =
-  "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/alfafrens_v2/prod/gn";
+  "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/alfafrens_v2_no_prune/2.0.0/gn";
 
 const globalStatsQuery = `query get_global_stats($block: Int) {
   globalDatas(block: {number: $block}) {
@@ -40,11 +40,10 @@ const globalStatsQuery = `query get_global_stats($block: Int) {
   }
 }`;
 
-const tvl = async (api, b, c, d) => {
+const tvl = async (api, mainnetBlockNumber, chainsBlockNumbers) => {
+  console.log(chainsBlockNumbers)
   const chain = "base";
-  const { globalDatas } = await blockQuery(graphUrl, globalStatsQuery, {
-    api,
-  });
+  const { globalDatas } = await blockQuery(graphUrl, globalStatsQuery, { api });
 
   const [
     {
@@ -56,9 +55,13 @@ const tvl = async (api, b, c, d) => {
 
   console.log(`Flow Volume: ${ethx_volume * 1e-18} $ETHx`);
 
-  const balances = {};
-  sdk.util.sumSingleBalance(balances, ETH_token_address, ethx_volume);
-  return transformBalances(chain, balances);
+  if (parseInt(ethx_volume) > 0 ){
+    const balances = {};
+    sdk.util.sumSingleBalance(balances, ETH_token_address, ethx_volume);
+    return transformBalances(chain, balances);
+  }
+
+  return;
 };
 
 module.exports = {
@@ -66,5 +69,5 @@ module.exports = {
   methodology: 'Total ETH streamed on the platform',
   start: STARTING_BLOCK_NUMBER,
   base: { tvl },
-  hallmarks: [[1733936900, "Alfafrens V2 Launch"]],
+  hallmarks: [[1734000000, "Alfafrens V2 Launch"]],
 };
