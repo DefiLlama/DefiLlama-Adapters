@@ -44,6 +44,7 @@ async function vaultsTVL(api) {
 
 module.exports = {
   berachain: {
+    methodology: "TVL is calculated from the balances of all Bearn Vaults plus the BGT that backs yBGT.",
     tvl: vaultsTVL,
   },
 };
