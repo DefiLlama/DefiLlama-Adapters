@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getProvider, sumTokens2 } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
@@ -10,15 +11,15 @@ const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ
 const SPL_ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
 const edgeCaseTimestamps = [
-  { start: 1713880000, end: 1713885480 }, // 10:32 AM - 10:58 AM ET on April 23, 2024
-  { start: 1713874500, end: 1713876060 }, // 8:15 AM - 8:41 AM ET on April 23, 2024
+  { start: '2024-04-23', end: 1713885480 }, // 10:32 AM - 10:58 AM ET on April 23, 2024
+  { start: '2024-04-23', end: 1713876060 }, // 8:15 AM - 8:41 AM ET on April 23, 2024
 ];
 
 const idleAccount = new PublicKey("bkhAyULeiXwju7Zmy4t3paDHtVZjNaofVQ4VgEdTWiE");
 const deployedAccount = new PublicKey("6riP1W6R3qzUPWYwLGtXEC23aTqmyAEdDtXzhntJquAh");
 const multisigAccount = new PublicKey("DkPYEECBc28iute8vWvAuAU4xiM91Sht59p7FHZbmNQv");
 const pendingUnstakeAccount = new PublicKey("HTnwdgfXrA6gZRiQsnfxLKbvdcqnxdbuC2FJsmCCVMw9");
-const usdcAddress = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+const usdcAddress = new PublicKey(ADDRESSES.solana.USDC);
 const iscAddress = new PublicKey("J9BcrQfX4p9D1bvLzRNCbMDv8f44a9LFdeqNE4Yk2WMD");
 const usdcPoolAccount = new PublicKey("9m3wEeK3v5yyqDGMnDiDRR3FjCwZjRVB4n92pieGtTbP");
 const iscPoolAccount = new PublicKey("CrsxVEF7YNGAk9QwwbB2vuesUWoDopfgFAhA9apoCJ2z");

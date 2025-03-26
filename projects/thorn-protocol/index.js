@@ -11,7 +11,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "Uses factory(0x888099De8EA8068D92bB04b47A743B82195c4aD2) address and whitelisted tokens address to find and price Liquidity Pool pairs",
-  start: 1729159200,
+  start: '2024-10-17',
   sapphire: {
     tvl,
   },

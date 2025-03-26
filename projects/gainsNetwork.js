@@ -1,7 +1,7 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const { pool2 } = require("./helper/pool2");
 const { staking } = require("./helper/staking");
-const { sumTokens2 } = require("./helper/unwrapLPs");
+const { sumTokens2, nullAddress } = require("./helper/unwrapLPs");
 
 const tokens = {
   polygon: {
@@ -48,12 +48,19 @@ async function baseTvl(api) {
   ];
   return sumTokens2({ api, tokensAndOwners });
 }
+
+async function apeTvl(api) {
+  // `0x00000000000f7e000644657dC9417b185962645a` is gTrade's own version of wAPE
+  // All trading and depositing happens in native tokens and held in custom non-rebasing wAPE
+  return sumTokens2({ owner: '0x00000000000f7e000644657dC9417b185962645a', tokens: [nullAddress], api});
+}
 // node test.js projects/gainsNetwork.js
 module.exports = {
   hallmarks: [
     [1672531200,"Launch on Arbitrum"],
     [1705553229,"Launched gETH and gUSDC"],
     [1727650801,"Launch on Base"],
+    [1732233600,"Launch on ApeChain"],
   ],
   polygon: {
     tvl: polyTvl,
@@ -71,5 +78,9 @@ module.exports = {
   base: {
     tvl: baseTvl,
     staking: staking(['0x28efAa11199DAF45AA8fBf95f920e5bc090DCbF3'], '0xFB1Aaba03c31EA98A3eEC7591808AcB1947ee7Ac'),
+  },
+  apechain: {
+    tvl: apeTvl,
+    staking: staking(['0x6dCD75474F9BDE2793cb3Da00b8959fb27BFa9d5'], '0xe31C676d8235437597581b44c1c4f8A30e90b38a'),
   },
 };

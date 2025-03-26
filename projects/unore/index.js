@@ -43,7 +43,7 @@ const config = {
 }
 
 module.exports = {
-  start: 1626100000,  // Sep-20-2021 07:27:47 AM +UTC
+  start: '2021-07-12',  // Sep-20-2021 07:27:47 AM +UTC
   kava: { tvl: async () => ({})},
 };
 

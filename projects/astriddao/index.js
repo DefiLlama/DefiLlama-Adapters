@@ -199,7 +199,6 @@ async function tvl(ts, _block, chainBlocks ) {
 }
 
 module.exports = {
-    start: 915830,
   methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked BAI in StabilityPool",
   astar: {
     tvl,

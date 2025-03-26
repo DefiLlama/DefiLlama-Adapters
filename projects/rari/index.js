@@ -60,7 +60,7 @@ async function fuseTvl(api) {
 
 module.exports = {
   doublecounted: true,
-  start: 1596236058,        // July 14, 2020
+  start: '2020-08-01',        // July 14, 2020
   ethereum: {
     tvl,
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),

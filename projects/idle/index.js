@@ -49,6 +49,9 @@ const contracts = {
       "0x8a999F5A3546F8243205b2c0eCb0627cC10003ab", // idleDAIYield
       "0x1ee6470CD75D5686d0b2b90C0305Fa46fb0C89A1", // idleUSDCYield
       "0xfdA25D931258Df948ffecb66b5518299Df6527C4" // idleWETHYield
+    ],
+    cdos: [
+      '0xF9E2AE779a7d25cDe46FccC41a27B8A4381d4e52' // Bastion CV
     ]
   },
   polygon_zkevm: {
@@ -57,7 +60,14 @@ const contracts = {
     ]
   },
   optimism: {
-    
+    cdos: [
+      "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B" // FalconX
+    ]
+  },
+  arbitrum: {
+    cdos: [
+      "0x3919396Cd445b03E6Bb62995A7a4CB2AC544245D" // Bastion Credit Vault
+    ]
   }
 }
 
@@ -119,31 +129,32 @@ async function tvl(api) {
       fromBlock,
     })
     cdos.push(...logs.map(i => i.proxy))
-
-    const [strategyToken, token, aatrances, bbtrances, aaprices, bbprices] = await Promise.all(['address:strategyToken', "address:token", "address:AATranche", "address:BBTranche", "uint256:priceAA", "uint256:priceBB"].map(abi => api.multiCall({ abi, calls: cdos })))
-    blacklistedTokens.push(...cdos)
-    blacklistedTokens.push(...aatrances)
-    blacklistedTokens.push(...bbtrances)
-
-    // Get CDOs contract values
-    const contractValue = await api.multiCall({ abi: 'uint256:getContractValue', calls: cdos })
-    cdos.forEach((cdo, i) => {
-      const tokenDecimals = tokensDecimals[token[i]] || 18
-      trancheTokensMapping[aatrances[i]] = {
-        token: token[i],
-        decimals: tokenDecimals,
-        price: BigNumber(aaprices[i]).div(`1e${tokenDecimals}`).toFixed()
-      }
-      trancheTokensMapping[bbtrances[i]] = {
-        token: token[i],
-        decimals: tokenDecimals,
-        price: BigNumber(bbprices[i]).div(`1e${tokenDecimals}`).toFixed()
-      }
-
-      // Get CDOs underlying tokens balances
-      sdk.util.sumSingleBalance(balances, token[i], contractValue[i], api.chain)
-    })
   }
+
+  const [cdoToken, aatrances, bbtrances, aaprices, bbprices] = await Promise.all(["address:token", "address:AATranche", "address:BBTranche", "uint256:priceAA", "uint256:priceBB"].map(abi => api.multiCall({ abi, calls: cdos })))
+  blacklistedTokens.push(...cdos)
+  blacklistedTokens.push(...aatrances)
+  blacklistedTokens.push(...bbtrances)
+
+  // Get CDOs contract values
+  const contractValue = await api.multiCall({ abi: 'uint256:getContractValue', calls: cdos })
+
+  cdos.forEach((cdo, i) => {
+    const tokenDecimals = tokensDecimals[cdoToken[i]] || 18
+    trancheTokensMapping[aatrances[i]] = {
+      token: cdoToken[i],
+      decimals: tokenDecimals,
+      price: BigNumber(aaprices[i]).div(`1e${tokenDecimals}`).toFixed()
+    }
+    trancheTokensMapping[bbtrances[i]] = {
+      token: cdoToken[i],
+      decimals: tokenDecimals,
+      price: BigNumber(bbprices[i]).div(`1e${tokenDecimals}`).toFixed()
+    }
+
+    // Get CDOs underlying tokens balances
+    sdk.util.sumSingleBalance(balances, cdoToken[i], contractValue[i], api.chain)
+  })
 
   const trancheTokensBalancesCalls = []
 

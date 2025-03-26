@@ -158,12 +158,13 @@ function buildTvl(isOwnTokensMode = false){
     const tokens = tokensToBalances.map(i => i.tokenAddress)
 
 
-    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true, })
     const ownTokens = new Set(olympusTokens.map(i => i.toLowerCase()))
     tokensToBalances.map(async (token, i) => {
       if (ownTokens.has(token.tokenAddress.toLowerCase())) {
         if (!isOwnTokensMode) return;
       } else if (isOwnTokensMode) return;
+      if (!decimals[i]) return;
       api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
     })
     return await sumTokens2({ api, resolveLP: true, })
@@ -176,7 +177,7 @@ async function ownTokens(api) {
 }
 
 module.exports = {
-  start: 1616569200, // March 24th, 2021
+  start: '2021-03-24', // March 24th, 2021
   timetravel: false,
   methodology:
     "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",

@@ -13,7 +13,7 @@ async function tvl(api) {
     timetravel: true,
     misrepresentedTokens: false,
     methodology: 'Adds the total amount of collateral in the active pool and the collateral surplus pool of the eBTC protocol.',
-    start: 1710492719,
+    start: '2024-03-15',
     ethereum: {
       tvl,
     }

@@ -24,7 +24,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 17243078,
   ethereum: {
     tvl,
   },

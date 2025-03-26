@@ -59,6 +59,11 @@ const config = {
 }
 
 module.exports = {
+  hallmarks: [
+    [1662076800, "Launch on ETH"],
+    [1740355200, "TVL Migration to Denaria"]
+  ],
+
   polygon: {
     pool2: pool2UniV3({ stakingAddress: '0x313c3F878998622f18761d609AA007F2bbC378Db', chain: 'polygon' })
   }
