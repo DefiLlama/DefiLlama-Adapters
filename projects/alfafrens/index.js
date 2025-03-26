@@ -1,6 +1,15 @@
 /**
- * V1 Launch ..?
- * V2 Launch https://basescan.org/tx/0x6c39ce34ab8349b1b57deb1ca5228e8a57e19699cde082a7da57f0e03984149b
+ * Alfafrens SoFi - a project by Superfluid.
+ * alfafrens.com
+ * 
+ * This adapter tracks amount flowing between subscribers and channels. Currently it only tracks the
+ * version 2 contracts.
+ * 
+ * V1 Creation
+ * - Stream token: $DEGENx
+ * V2 Creation https://basescan.org/tx/0x6c39ce34ab8349b1b57deb1ca5228e8a57e19699cde082a7da57f0e03984149b
+ * - Stream token: $ETHx [0x46fd5cfb4c12d87acd3a13e92baa53240c661d93]
+ * - Reward token: $AF   [0x6c90a582c166f59de91f97fa7aef7315a968b342]
  */
 
 const sdk = require("@defillama/sdk");
@@ -8,8 +17,9 @@ const sdk = require("@defillama/sdk");
 const { blockQuery, getBlock } = require("../helper/http");
 const { transformBalances } = require("../helper/portedTokens");
 
-const STARTING_BLOCK_NUMBER = 23573780;
-// start: 27925360,
+// 23573780 is the block number the contract was created.
+// const STARTING_BLOCK_NUMBER = 23573780;
+const STARTING_BLOCK_NUMBER = 23603200;
 
 const ETHx_token_address = "0x46fd5cfb4c12d87acd3a13e92baa53240c661d93";
 const ETH_token_address = "0x0000000000000000000000000000000000000000";
@@ -46,7 +56,7 @@ const tvl = async (api, b, c, d) => {
 
   console.log(`Flow Volume: ${ethx_volume * 1e-18} $ETHx`);
 
-  let balances = {};
+  const balances = {};
   sdk.util.sumSingleBalance(balances, ETH_token_address, ethx_volume);
   return transformBalances(chain, balances);
 };
