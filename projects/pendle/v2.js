@@ -58,7 +58,12 @@ const config = {
   },
   base: {
     factories: [
-      { factory: "0x5202F7477685686284b3F47B0A5334b15ea0393D", fromBlock: 22350099 },  // v3
+      { factory: "0x59968008a703dc13e6beaeced644bdce4ee45d13", fromBlock: 22350352 },  // v3
+    ],
+  },
+  sonic: {
+    factories: [
+      { factory: "0xfee31a6ec6ebefa0b5a594bf5b1139e3c6faa0fb", fromBlock: 7830430 },  // v3
     ],
   }
 };
@@ -130,7 +135,11 @@ Object.keys(config).forEach((chain) => {
            ? 18 : decimals[i]));
         let index = tokenAssetTypeSy.indexOf(sy[i]);
         if (index !== -1) {
-          value = (value * exchangeRates[index]) / 10 ** 18;
+          value = (value * exchangeRates[index]) / 10 ** ([
+            '0x141ec2d606f12ff959d7d07cde6811e5fdff2831',
+            '0xec30e55b51d9518cfcf5e870bcf89c73f5708f72', 
+            '0xd5cf704dc17403343965b4f9cd4d7b5e9b20cc52'
+          ].includes(sy[i].toLowerCase()) ? v.decimals : 18);
         }
         api.add(v.uAsset.toLowerCase(), value);
       });

@@ -20,6 +20,8 @@ const config = {
     '0x31063F7CA8ef4089Db0dEdf8D6e35690B468A611', // bitcoin lrt market
     '0x298ECDcb0369Aef75cBbdA3e46a224Cfe622E287' // stablecoin rwa market
   ],
+  corn:["0x2f7e54ff5d45f77bFfa11f2aee67bD7621Eb8a93"],
+  abstract:["0x8EEAE4dD40EBee7Bb6471c47d4d867539CF53ccF"]
 };
 
 const linea = {

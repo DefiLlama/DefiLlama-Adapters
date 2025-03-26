@@ -27,6 +27,7 @@ const addressBook = {
       {name: "eToken Junior FortuneCredit", address: "0xb1Dff6ce862273adcA2B9eFD96A8976764Ac7414"},
       {name: "eToken Junior Azzegura", address: "0x45435f79103472eD62fB9C92F04c50b188b22B99"},
       {name: "eToken Junior Covest", address: "0x92624870dC092C36943682375Df8246BF126D410"},
+      {name: "eToken Junior Poncho", address: "0x0AA6623Be5b293fDde18aE0095163785a0b0E4E3"},
       // PremiumsAccounts
       {name: "PremiumsAccount Koala", address: "0xCCf5C404d32eB6E777088AB13837a1b8dCBA9328"},
       {name: "PremiumsAccount Innov Zone", address: "0x4f43B8F252887F814ED689346fdb5Bd266394520"},
@@ -43,12 +44,14 @@ const addressBook = {
       {name: "PremiumsAccount FortuneCredit", address: "0xaF48bd33916836F5A3dD8C9095692d240A6A2567"},
       {name: "PremiumsAccount Azzegura", address: "0x6CB730dF6B3DB5BAac5FD96F50b04005c1B3A5F7"},
       {name: "PremiumsAccount Covest", address: "0x1D71E3901dB121F05A4a06F92440108055386355"},
+      {name: "PremiumsAccount Poncho", address: "0xa490D80A80c8E547D040CE3aBBDCC8CcAD584e4c"},
       // Main CFLs
       {name: "CFL Koala", address: "0xf6b7a278afFbc905b407E01893B287D516016ce0"},
       {name: "CFL Spot", address: "0x48Ff8B1493c6A3545Aea3F0812f1303E2f958bF4"},
       {name: "CFL Bliss", address: "0x936DAC0eeA5e4E90B8384B96d1aA6284Ce106f71"},
       // MultiStrategy Vault - Vault that aggregates assets of several reserves
       {name: "MultiStrategy Vault", address: "0x1EE585dcea25cbDa16BE8cfeFa381A1F32acA418"},
+      {name: "MultiStrategy Vault V2", address: "0x14F6DFEE761455247C6bf2b2b052a1F6245dD6FB"},
     ],
   }
 };
