@@ -1,4 +1,5 @@
-const BNB_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ADDRESSES = require('../helper/coreAssets.json')
+const BNB_ADDRESS = ADDRESSES.null
 const FACTORIES = ['0xbFC5229ab471c54B58481fA232CFd4a18371C51C']
 
 const factoryAbi = {

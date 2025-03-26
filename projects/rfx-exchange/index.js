@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function tvl(api) {
@@ -17,10 +18,10 @@ async function tvl(api) {
     "0x7D00EBe4a0aA10eB99dC661e5A305fb3cdB79E8c"
   ]
   const tokens = [
-    "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
-    "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+    ADDRESSES.era.WETH,
+    ADDRESSES.era.USDC,
     "0xB21f16d1EA2E8D96CcFafA397cEf855Bf368AA83",
-    "0x5A7d6b2F92C77FAD6CCaBd7EE0624E64907Eaf3E",
+    ADDRESSES.era.ZK,
     "0x703b52F2b28fEbcB60E1372858AF5b18849FE867",
     "0x0469d9d1dE0ee58fA1153ef00836B9BbCb84c0B6"
   ]

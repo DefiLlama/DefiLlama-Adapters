@@ -134,7 +134,7 @@ const ALPHAFI_CETUS_TVL_IDS = [
     parentPoolID: "0x7df346f8ef98ad20869ff6d2fc7c43c00403a524987509091b39ce61dde00957",
     investorID: "0x6285c57b0d86cbe585abfe5b23d74f96243f450381ef4d57604164e76a76f4c8",
     token0Type: ADDRESSES.sui.USDC_CIRCLE,
-    token1Type: "0x375f70cf2ae4c00bf37117d0c85a2c71545e6ee05c4a5c7d282cd66a4504b068::usdt::USDT"
+    token1Type: ADDRESSES.sui.suiUSDT
   },
 ]
 

@@ -119,6 +119,9 @@ const navi_sLP_ID =
 const navi_stSUI_sLP_ID =
   "0xd3f6b8f3c92d8f967f7e177e836770421e351b419ffe074ce57911365b4ede56";
 
+const navi_sbWBTC_LP_ID =
+  "0x208628e8800828b272dfc4cf40ef98e1ba137f65d26a28961176a1718c2bdb4c";
+
 const scallop_sUSDC_LP_ID =
   "0x7b16192d63e6fa111b0dac03f99c5ff965205455089f846804c10b10be55983c";
 
@@ -354,6 +357,9 @@ async function tvl(api) {
     "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
     snavistSUILPAmount
   );
+
+  const snavisbWBTCLPAmount = await getStakingLPAmount(navi_sbWBTC_LP_ID);
+  api.add(ADDRESSES.sui.WBTC, snavisbWBTCLPAmount);
 
   const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
   api.add(
