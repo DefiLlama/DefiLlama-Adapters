@@ -1,47 +1,38 @@
 const sdk = require('@defillama/sdk')
-const pairContract = require('./abi/pairContract')
-const { get } = require('../helper/http');
-
-// getAllPairAddresses-- 0x607b6d16
-// After for each of the pairs, we do the following:
-// Call totalCollateral-- 0x4ac8eb5f for each
-// 
-
-const BLOCK_START = 22034910;
+const { getConfig } = require('../helper/cache')
 
 async function tvl(api) {
-    const pairs = await get('https://raw.githubusercontent.com/resupplyfi/resupply/main/deployment/contracts.json');
+    const pairs = await getConfig('resupply/tvl/', 'https://raw.githubusercontent.com/resupplyfi/resupply/main/deployment/contracts.json');
+    
+    const pairsContracts = [];
 
-    const crv = [];
-    const frx = [];
-  
     for (const [key, value] of Object.entries(pairs)) {
-      if (!key.endsWith('_DEPRECATED')) {
-        if (key.startsWith('PAIR_CURVELEND')) crv.push(value);
-        else if (key.startsWith('PAIR_FRAXLEND')) frx.push(value);
-      }
+        if (!key.endsWith('_DEPRECATED')) {
+            if (key.startsWith('PAIR_CURVELEND') || key.startsWith('PAIR_FRAXLEND')) {
+                pairsContracts.push(value); // Added to collect contract addresses
+            }
+        }
     }
 
-    const [crvTVLs, frxTVLs] = await Promise.all([
-      api.multiCall({
-        abi: pairContract.totalCollateral, // or getPairAccounting
-        calls: crv.map(addr => ({ target: addr })),
-      }),
-      api.multiCall({
-        abi: pairContract.totalCollateral,
-        calls: frx.map(addr => ({ target: addr })),
-      }),
+    const [balances] = await Promise.all([  
+        api.multiCall({
+            abi: 'uint256:totalCollateral',
+            calls: pairsContracts,
+        })
     ]);
-  
-    const crvTotal = crvTVLs.reduce((sum, bal) => sum + Number(bal) / 1e21, 0);
-    const frxTotal = frxTVLs.reduce((sum, bal) => sum + Number(bal) / 1e18, 0);
-    
-    return {'usd': crvTotal + frxTotal};
-  }
+
+    const tokens = await api.multiCall({  // Fixed syntax and stored result
+        abi: 'address:underlying',
+        calls: pairsContracts,
+    });
+
+    console.log(tokens, balances);
+    api.add(tokens, balances); 
+    }
 
 module.exports = {
-    start: BLOCK_START,
+    start: '2025-03-15',
     ethereum: {
-    tvl,
-  }
-}; 
+        tvl,
+    }
+};
