@@ -6,6 +6,7 @@ const abi = {
 };
 
   const CONFIG = {
+    bitlayer: '0x3d0E678776e4287BEfB0449d344D195ad1A2C418',
     base: '0xa67998d867cd4b64fe9ecc1549341f1d86389c0f',
   };
   
