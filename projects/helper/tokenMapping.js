@@ -40,29 +40,19 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  // Sample Code
-  ozone: {
-    // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
+  prom: {
+    [ADDRESSES['null']]: { coingeckoId: "prometeus", decimals: 18 }, // Native PROM
+    '0x7e942605B5028E3B751dBB5Ef8afC5CF85a5A7eD': { coingeckoId: "tether", decimals: 6 }, // USDT
+    '0xd9c95e2ad330E11D7Dfa58f18504049f625E955e': { coingeckoId: "usd-coin", decimals: 6 }, // USDC
+    '0x6064C9028d069a7822d30EF17065A57524A5FcAb': { coingeckoId: "tether", decimals: 18 }, // USDT (BSC version in  Prom)
+    '0x04A21a38D5E275d6023B27504beB3095dC43B0C0': { coingeckoId: "prometeus", decimals: 18 }, // wPROM
   },
-  mtt_network: {
-    '0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265': { coingeckoId: 'usd-coin', decimals: 6 },
+  ethereum: {
+    '0xfc82bb4ba86045af6f327323a46e80412b91b27d': { coingeckoId: "prometeus", decimals: 18 }, // PROM (Ethereum)
   },
-  hemi: {
-    '0x6c851f501a3f24e29a8e39a29591cddf09369080': { coingeckoId: 'dai', decimals: 18 },
-    [ADDRESSES.hemi.USDC_e]: { coingeckoId: 'usd-coin', decimals: 6 },
-    '0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e': { coingeckoId: 'tether', decimals: 6 },
-    [ADDRESSES.bob.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-    [ADDRESSES.swellchain.rsETH]: { coingeckoId: 'kelp-dao-restaked-eth', decimals: 18 },
+  bsc: {
+    '0xaf53d56ff99f1322515e54fdde93ff8b3b7dafd5': { coingeckoId: "prometeus", decimals: 18 }, // PROM (BSC)
   },
-  stellar: {
-    XLM: { coingeckoId: 'stellar', decimals: 7 },
-    'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
-  },
-  winr: {
-    '0xd77b108d4f6cefaa0cae9506a934e825becca46e': { coingeckoId: 'winr-protocol', decimals: 18 },
-    '0xbf6fa9d2bf9f681e7b6521b49cf8eccf9ad8d31d': { coingeckoId: 'winr-protocol', decimals: 18 },
-    '0x59edbb343991d30f77dcdbad94003777e9b09ba9': { coingeckoId: 'usd-coin', decimals: 6 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
