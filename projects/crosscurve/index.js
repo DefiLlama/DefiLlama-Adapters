@@ -197,4 +197,22 @@ module.exports = {
       ],
     }),
   },
+  manta: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        ADDRESSES.manta.WETH, // WETH
+        ADDRESSES.manta.USDT, // USDT
+      ],
+    }),
+  },
+  sonic: {
+    tvl: sumTokensExport({
+      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+      tokens: [
+        ADDRESSES.sonic.WETH, // WETH
+        ADDRESSES.sonic.USDC, // usdc.e
+      ],
+    }),
+  }
 };
