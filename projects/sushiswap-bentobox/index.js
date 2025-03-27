@@ -3,7 +3,7 @@ const { bentobox } = require("./bentobox.js");
 const bentobox_chains = [
   "ethereum",
   "polygon",
-  "fantom",
+  // "fantom",
 //  "bsc",
   "avax",
   "arbitrum",
