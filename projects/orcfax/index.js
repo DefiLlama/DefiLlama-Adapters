@@ -163,8 +163,6 @@ async function getStakedStatus(assetID) {
 }
 
 async function getTotalValueStaked() {
-    console.log("Starting validator checks...");
-
     // Run all getStakedStatus calls in parallel
     const results = await Promise.all(
         validatorLicenseAssetIDs.map(async (validatorLicenseAssetID, index) => {
