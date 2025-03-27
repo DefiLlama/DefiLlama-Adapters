@@ -26,7 +26,6 @@ async function tvl(api) {
         calls: pairsContracts,
     });
 
-    console.log(tokens, balances);
     api.add(tokens, balances); 
     }
 
