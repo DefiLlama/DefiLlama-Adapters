@@ -32,10 +32,10 @@ const chainTVL = ({ vaults = [] }) => async (api) => {
   const capTokens = caps.map(i => i.asset)
   const capTokenBals = await api.multiCall({ abi: 'uint256:load', calls: capContracts })
   api.add(capTokens, capTokenBals)
-  const vaultInfos = await api.multiCall({ abi:  "function vaultParams() view returns (uint8 decimals, address asset, uint56 minimumSupply, uint104 cap)", calls: vaults, permitFailure: true })
-  const vaultInfos2 = await api.multiCall({ abi:  "address:asset", calls: vaults,  permitFailure: true })
-  const vaultTokens = vaultInfos.map((v, i )=> v?.asset ?? vaultInfos2[i])
-  return api.sumTokens({ tokensAndOwners2: [vaultTokens, vaults]})
+  const vaultInfos = await api.multiCall({ abi: "function vaultParams() view returns (uint8 decimals, address asset, uint56 minimumSupply, uint104 cap)", calls: vaults, permitFailure: true })
+  const vaultInfos2 = await api.multiCall({ abi: "address:asset", calls: vaults, permitFailure: true })
+  const vaultTokens = vaultInfos.map((v, i) => v?.asset ?? vaultInfos2[i])
+  return api.sumTokens({ tokensAndOwners2: [vaultTokens, vaults] })
 }
 
 module.exports = {
@@ -45,8 +45,9 @@ module.exports = {
       vaults: [
         '0xE4cf2D4eb9c01784798679F2FED4CF47cc59a3ec',
         "0x02Ff1F648Ff443B5d88214341F0acE6ECFb94cF3",
-       "0xA1eBd23c4364e7491633237A0d9359D82c629182",
-       "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
+        "0xA1eBd23c4364e7491633237A0d9359D82c629182",
+        "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
+        "0x0B75e167F8A37179b7044414EE43e94cabeAA2FA",
       ],
     }),
   },
@@ -63,6 +64,7 @@ module.exports = {
         "0x7E8cffBe165c6905a8AceC0f37B341c00353e8BA",
         "0x73981B0496fC08e9136BAF74b79d32A4d4F2a007",
         "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
+        "0x54602E5cBa09e01EeE9B2050F1F4f0Dc902CeE34",
       ]
     }),
   },
@@ -76,7 +78,7 @@ module.exports = {
   mode: {
     tvl: chainTVL({
       vaults: [
-       "0xbEd575b0FeDa4F84b71144634693DaCc07749471"
+        "0xbEd575b0FeDa4F84b71144634693DaCc07749471"
       ],
     }),
   },
@@ -96,7 +98,8 @@ module.exports = {
     tvl: chainTVL({
       vaults: [
         "0x56ceD49205e5D9b4d8D9B29f4aBfbe7bb8b08768",
-       "0x96d6cE4e83dB947fF6bD1Ab0B377F23cd5D9ec2D",
+        "0x96d6cE4e83dB947fF6bD1Ab0B377F23cd5D9ec2D",
+        "0xcF101e13b5181f79094B0726B03e89d1cB95b28C",
       ],
     }),
   },
