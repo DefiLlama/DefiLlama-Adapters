@@ -19,6 +19,6 @@ const bentobox_chains = [
 
 bentobox_chains.forEach((chain) => {
   module.exports[chain] = {
-    tvl: bentobox(chain),
+    tvl: chain === "fantom" ? () => ({}) : bentobox(chain),
   };
 });
