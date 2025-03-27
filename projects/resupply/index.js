@@ -9,7 +9,7 @@ async function tvl(api) {
     for (const [key, value] of Object.entries(pairs)) {
         if (!key.endsWith('_DEPRECATED')) {
             if (key.startsWith('PAIR_CURVELEND') || key.startsWith('PAIR_FRAXLEND')) {
-                pairsContracts.push(value); // Added to collect contract addresses
+                pairsContracts.push(value); 
             }
         }
     }
@@ -21,7 +21,7 @@ async function tvl(api) {
         })
     ]);
 
-    const tokens = await api.multiCall({  // Fixed syntax and stored result
+    const tokens = await api.multiCall({ 
         abi: 'address:underlying',
         calls: pairsContracts,
     });
