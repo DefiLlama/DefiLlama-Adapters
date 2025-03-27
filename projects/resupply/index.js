@@ -24,7 +24,7 @@ async function tvl(api) {
 
     const [crvTVLs, frxTVLs] = await Promise.all([
       api.multiCall({
-        abi: pairContract.totalCollateral,
+        abi: pairContract.totalCollateral, // or getPairAccounting
         calls: crv.map(addr => ({ target: addr })),
       }),
       api.multiCall({
