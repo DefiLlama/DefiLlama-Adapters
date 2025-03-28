@@ -1,5 +1,4 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const sdk = require('@defillama/sdk');
 
 const evoq = '0xF9C74A65B04C73B911879DB0131616C556A626bE'
 const lens = '0x5576207849D570bfE1acB6004595561851813198'
