@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const PONDER_URL = "https://artistic-perfection-production.up.railway.app";
@@ -6,7 +7,7 @@ const PORTFOLIO_LENS_ADDRESS = "0x9700750001dDD7C4542684baC66C64D74fA833c0";
 const SUPERPOOLS = [
   {
     superPool: "0x2831775cb5e64b1d892853893858a261e898fbeb",
-    underlyingAsset: "hyperliquid:0x5555555555555555555555555555555555555555",
+    underlyingAsset: "hyperliquid:" + ADDRESSES.hyperliquid.WHYPE,
   },
 ];
 

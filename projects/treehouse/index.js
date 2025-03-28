@@ -95,7 +95,7 @@ async function tvl(api) {
 
   // strategies[1]
   // tokensAndOwners:[
-  //     ['0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', '0x5ae0e44de96885702bd99a6914751c952d284938'], // wstETH
+  //     [ADDRESSES.ethereum.WSTETH, '0x5ae0e44de96885702bd99a6914751c952d284938'], // wstETH
   //     ['0x12B54025C112Aa61fAce2CDB7118740875A566E9', '0x5ae0e44de96885702bd99a6914751c952d284938'], // spark collateral wsteth
   //     ['0x2e7576042566f8D6990e07A1B61Ad1efd86Ae70d', '0x5ae0e44de96885702bd99a6914751c952d284938'], // spark debt weth
   // ]
