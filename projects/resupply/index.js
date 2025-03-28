@@ -7,12 +7,11 @@ const coinsAbi = 'function coins(uint256) view returns (address)';
 const balancesAbi = 'function balances(uint256) view returns (uint256)'
 
 async function tvl(api) {
-    const contracts = await getConfig('resupply/tvl/', 'https://raw.githubusercontent.com/resupplyfi/resupply/main/deployment/contracts.json');
+    const contracts = await getConfig('resupply/tvl', 'https://raw.githubusercontent.com/resupplyfi/resupply/main/deployment/contracts.json');
 
     // Lending Market
     const pairsContracts = Object.entries(contracts)
         .filter(([key]) =>
-        !key.endsWith('_DEPRECATED') &&
         (key.startsWith('PAIR_CURVELEND') || key.startsWith('PAIR_FRAXLEND'))
         )
         .map(([, value]) => value);
@@ -32,41 +31,6 @@ async function tvl(api) {
     });
 
     api.add(tokens, assetBalances);
-
-    // Insurance Pool
-
-    const insurancePoolBalance = await api.call({
-        target: contracts.INSURANCE_POOL,
-        abi: 'uint256:totalAssets',
-    });
-
-
-    const insurancePoolToken = await api.call({
-        target: contracts.INSURANCE_POOL,
-        abi: 'address:asset',
-    });
-
-    api.add(insurancePoolToken, insurancePoolBalance);
-
-    // Liquidity Pools
-
-    const poolContracts = Object.entries(contracts)
-    .filter(([key]) => /^(REUSD|WETH).*_POOL$/.test(key))
-    .map(([, value]) => value);
-
-    const calls = poolContracts.flatMap(target =>
-    [0, 1].map(index => ({ target, params: index }))
-    );
-
-    const [allCoins, allBalances] = await Promise.all([
-    api.multiCall({ abi: coinsAbi, calls, permitFailure: true }),
-    api.multiCall({ abi: balancesAbi, calls, permitFailure: true }),
-    ]);
-
-    allCoins.forEach((coin, i) => {
-    const balance = allBalances[i];
-    if (coin && balance) api.add(coin, balance);
-    });
 
 }
 
