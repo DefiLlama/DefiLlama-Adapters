@@ -1,5 +1,7 @@
 const { cachedGraphQuery } = require('../helper/cache')
 const ADDRESSES = require('../helper/coreAssets.json')
+const easyBTC = require('./easyBTC')
+const premium = require('./premium')
 
 const config = {
   ethereum: {
@@ -35,7 +37,7 @@ async function fetchTokens(chain, subgraphUrl) {
 const PROMO_BTCB_STAKE_ABI =
   "function totalStaked() view returns (uint256)";
 
-async function tvl(api) {
+async function cedefiTvl(api) {
   const chain = api.chain
   
   const tokenLists = await Promise.all(
@@ -68,10 +70,21 @@ async function tvl(api) {
   return api.getBalances()
 }
 
+async function combinedTvl(api) {
+  const [cedefiBalances, easyBTCBalances, premiumBalances] = await Promise.all([
+    cedefiTvl(api),
+    easyBTC[api.chain]?.tvl?.(api) || {},
+    premium[api.chain]?.tvl?.(api) || {}
+  ])
+
+  // merge all balances
+  return api.sumTokens([cedefiBalances, easyBTCBalances, premiumBalances])
+}
+
 module.exports = {
-  methodology: "Calculate TVL by querying BounceBit Cedefi subgraph"
+  methodology: "Calculate TVL by querying BounceBit Cedefi subgraph, EasyBTC and Premium protocols",
 }
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl: combinedTvl }
 })
