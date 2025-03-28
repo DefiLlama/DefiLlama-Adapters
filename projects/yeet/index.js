@@ -24,6 +24,6 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated by calling the getBacking function on the contract and converting to USD using the BERA token price",
+  methodology: "Calculated by calling the getBacking function on the contract and converting to USD using the BERA token price",
   berachain: {tvl}
 };
