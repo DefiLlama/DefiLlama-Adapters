@@ -12,12 +12,9 @@ const tokens = [
     "0xf508fCD89b8bd15579dc79A6827cB4686A3592c8", // vETH
 ]
 
-abis = {
-  "getTotalMarketBorrow": "function getTotalMarketBorrow(address _poolToken) view returns (uint256 p2pBorrowAmount, uint256 poolBorrowAmount)"
-}
-
 async function borrowed(api) {
-  const borrowDatas = await api.multiCall({ abi: abis.getTotalMarketBorrow, calls: tokens, target: lens })
+  const abi = "function getTotalMarketBorrow(address _poolToken) view returns (uint256 p2pBorrowAmount, uint256 poolBorrowAmount)"
+  const borrowDatas = await api.multiCall({ abi, calls: tokens, target: lens })
   await Promise.all(borrowDatas.map(async (v, i) => {
     let underlyingToken;
     if(tokens[i] === "0xA07c5b74C9B40447a954e1466938b865b6BBea36") {
