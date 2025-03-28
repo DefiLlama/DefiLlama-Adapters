@@ -6,7 +6,6 @@ module.exports = {
 }
 
 const config = {
-  plume: { factory: '0xbe3c7Bbc504EA41c21D3810c340Cd15624a3cF59', fromBlock: 357721 },
 }
 
 Object.keys(config).forEach(chain => {
