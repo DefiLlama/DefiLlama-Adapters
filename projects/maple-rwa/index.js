@@ -16,8 +16,15 @@ const ENDPOINT = 'https://api.maple.finance/v2/graphql';
 const LOANS_QUERY = `
     query getNativeLoansSnapshot($timestamp: Float!) {
       nativeLoansSnapshot(timestamp: $timestamp) {
-        loanValueUsd
+        loanId
+        loanAsset
+        loanAmount
+        collateralAsset
+        collateralAmount
+        collateralPrice
         collateralValueUsd
+        loanAssetPrice
+        loanValueUsd
       }
     }
   `;
@@ -25,7 +32,7 @@ const LOANS_QUERY = `
 /**
  * Fetches raw loan data from Maple Finance's GraphQL API
  * @param {number} timestamp Unix timestamp in seconds
- * @returns {Promise<Array<{loanValueUsd: string, collateralValueUsd: string}>>} Array of loan objects containing USD values
+ * @returns {Promise<Array<{loanId: string, loanAsset: string, loanAmount: string, collateralAsset: string, collateralAmount: string, collateralPrice: string, collateralValueUsd: string, loanAssetPrice: string, loanValueUsd: string}>>} Array of loan objects
  */
 const fetchLoans = async (timestamp) => {
   const timestampMs = timestamp * 1000;
