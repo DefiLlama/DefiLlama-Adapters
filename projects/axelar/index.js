@@ -10,8 +10,53 @@ const chainMapping = {
 };
 
 const blackListChains = ['comdex', 'crescent'];
-const chainListSupply = ['juno', 'cosmos', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
-const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum', 'base'];
+const chainListSupply = [
+  'agoric', 
+  'archway', 
+  'carbon', 
+  'celestia', 
+  'chihuahua', 
+  'cosmos', 
+  'dymension', 
+  'evmos', 
+  'fraxtal',
+  'injective', 
+  'kujira', 
+  'juno', 
+  'migaloo',
+  'neutron',
+  'osmosis', 
+  'persistence', 
+  'regen',
+  'secret', 
+  'sei',
+  // 'sommelier',
+  'stargaze', 
+  'stride',
+  'terra2',
+  'umee', 
+  'xpla'
+];
+const chainListTotal = [
+  'arbitrum', 
+  'aurora', 
+  'avax', 
+  'base', 
+  'blast', 
+  'bsc', 
+  'celo', 
+  'ethereum', 
+  'fantom', 
+  'filecoin',
+  'imx',
+  'kava', 
+  'linea',
+  'mantle', 
+  'moonbeam',
+  'optimism', 
+  'polygon',
+  'scroll', 
+];
 
 const blacklistedTokensChain = {
   ethereum: ['0x946fb08103b400d1c79e07acCCDEf5cfd26cd374'], // KIP tvl is higher than the circulating supply

@@ -77,12 +77,6 @@ async function tvl(api) {
 async function pool2(api) {
   return (await gettotalTvl(api.block)).pool2
 }
-/*
-async function staking(_, _b, { [chain]: block }) {
-  return (await gettotalTvl(block)).staking
-}*/
-
-
 
 module.exports = {
   hallmarks: [
