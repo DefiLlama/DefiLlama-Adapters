@@ -78,6 +78,7 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
 
   for (const addr of owners) {
+    await sleep(1000 * (3 * Math.random() + 7))
     await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens, useTonApiForPrices })
   }
   return sumTokens2({ api, })

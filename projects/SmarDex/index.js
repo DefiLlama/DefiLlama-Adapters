@@ -1,7 +1,6 @@
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require("../helper/unknownTokens");
 const { stakings } = require("../helper/staking");
-const { usdnProtocolAbi, rebalancerAbi } = require("./abis");
 
 const config = {
   bsc: "0xA8EF6FEa013034E62E2C4A9Ec1CDb059fE23Af33",
@@ -12,61 +11,32 @@ const config = {
 
 const ethereumFactory = "0xB878DC600550367e14220d4916Ff678fB284214F";
 const USDN_PROTOCOL_ADDRESS = "0x656cB8C6d154Aad29d8771384089be5B5141f01a";
-const WSTETH_TOKEN_ADDRESS = "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0";
+const WSTETH_TOKEN_ADDRESS = ADDRESSES.ethereum.WSTETH;
 const REBALANCER_ADDRESS = "0xaebcc85a5594e687f6b302405e6e92d616826e03";
 
-async function fetchUSDNData(api, block) {
-  const { chain } = api;
+async function fetchUSDNData(api) {
 
-  const getBalanceVaultCall = sdk.api.abi.call({
-    target: USDN_PROTOCOL_ADDRESS,
-    abi: usdnProtocolAbi.find((m) => m.name === "getBalanceVault"),
-    chain,
-    block,
-  });
-
-  const getBalanceLongCall = sdk.api.abi.call({
-    target: USDN_PROTOCOL_ADDRESS,
-    abi: usdnProtocolAbi.find((m) => m.name === "getBalanceLong"),
-    chain,
-    block,
-  });
-
-  const rebalancerCurrentStateDataCall = sdk.api.abi.call({
+  const balanceVault = await api.call({ target: USDN_PROTOCOL_ADDRESS, abi: "uint256:getBalanceVault", });
+  const balanceLong = await api.call({ target: USDN_PROTOCOL_ADDRESS, abi: "uint256:getBalanceLong", });
+  const rebalancerCurrentStateData = await api.call({
     target: REBALANCER_ADDRESS,
-    abi: rebalancerAbi.find((m) => m.name === "getCurrentStateData"),
-    chain,
-    block,
+    abi: "function getCurrentStateData() view returns (uint128 pendingAssets_, uint256 maxLeverage_, (int24 tick, uint256 tickVersion, uint256 index) currentPosId_)",
   });
-
-  const [balanceVault, balanceLong, rebalancerCurrentStateData] = await Promise.all([
-    getBalanceVaultCall,
-    getBalanceLongCall,
-    rebalancerCurrentStateDataCall,
-  ]);
 
   return {
-    getBalanceVault: BigInt(balanceVault.output),
-    getBalanceLong: BigInt(balanceLong.output),
-    rebalancerPendingAssets: BigInt(rebalancerCurrentStateData.output[0]),
+    getBalanceVault: balanceVault,
+    getBalanceLong: balanceLong,
+    rebalancerPendingAssets: rebalancerCurrentStateData.pendingAssets_,
   };
 }
 
 const getEthereumTVL = async (api, block, chainBlocks) => {
-  const usdnData = await fetchUSDNData(api, block);
+  const usdnData = await fetchUSDNData(api);
+  const uniTVL = await getUniTVL({ factory: ethereumFactory, fetchBalances: true, useDefaultCoreAssets: false })(api, block, chainBlocks);
 
-  const usdnWstEthLocked = Number(usdnData.getBalanceLong + usdnData.getBalanceVault + usdnData.rebalancerPendingAssets);
-
-  const uniTVL = await getUniTVL({ factory: ethereumFactory, fetchBalances: true, useDefaultCoreAssets: false })(
-    api,
-    block,
-    chainBlocks
-  );
-
-  return {
-    ...uniTVL,
-    [`ethereum:${WSTETH_TOKEN_ADDRESS}`]: usdnWstEthLocked,
-  };
+  api.addBalances(uniTVL)
+  api.add(WSTETH_TOKEN_ADDRESS, Object.values(usdnData))
+  return api.getBalances();
 };
 
 Object.keys(config).forEach((chain) => {

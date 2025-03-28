@@ -34,7 +34,7 @@ async function getGaugeTvl(api) {
 
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:baseToken', calls: treasuries })
-  const tokensAndOwners = [[uniBTC, uniBTC_Genesis_Gauge], [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool], [ADDRESSES.ethereum.WSTETH, FxProtocol_PoolManager]]
+  const tokensAndOwners = [[uniBTC, uniBTC_Genesis_Gauge], [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool], [ADDRESSES.ethereum.WSTETH, FxProtocol_PoolManager],[ADDRESSES.ethereum.WBTC, FxProtocol_PoolManager]]
   tokens.forEach((v, i) => tokensAndOwners.push([v, treasuries[i]]))
   return api.sumTokens({ tokensAndOwners })
 }
