@@ -89,9 +89,8 @@ const processPools = async (api, key) => {
  * @returns {Promise<Object>} Total staked value in USD
  */
 const staking = async (api) => {
-  const START_BLOCK = 20735662
   const block = await api.getBlock()
-  if (block < START_BLOCK) return;
+  if (block < STAKING_START_BLOCK) return;
   return api.erc4626Sum({ calls: [stSYRUP], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
 }
 
