@@ -18,12 +18,12 @@ const abi = {
       });
       const reData = {}
       tokenBalance.forEach(async item=>{
-        reData[item.tokenAddress] = item.value
+        api.add(item.tokenAddress, item.value)
       })
-      console.log("reData:",reData)
-      return reData
+      return 
   }
-  
+  module.exports.methodology = "RollDex functions as a decentralized exchange for crypto derivatives. It offers on-chain perpetuals, providing traders and stakers with exceptional opportunities."
+
   Object.keys(CONFIG).forEach((chain) => {
       module.exports[chain] = {
         tvl: (api) => queryTvlData(api, chain),
