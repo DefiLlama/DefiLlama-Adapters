@@ -17,7 +17,7 @@ module.exports = {
       let poolInfos = [];
       while (true) {
         console.log(`Getting pools from ${currStart} to ${currStart + chunkSize}`)
-        const pools = await getPools(thalaswapLensAddress, currStart, currStart + chunkSize)
+        let pools = await getPools(thalaswapLensAddress, currStart, currStart + chunkSize)
         if (pools.length < chunkSize) {
           break;
         }
@@ -26,9 +26,9 @@ module.exports = {
       }
       console.log(`Found ${poolInfos.length} pools`)
       
-      for (const poolInfo of poolInfos) {
-        const assets = poolInfo.assets_metadata.map(asset => asset.inner)
-        const balances = poolInfo.balances
+      for (let poolInfo of poolInfos) {
+        let assets = poolInfo.assets_metadata.map(asset => asset.inner)
+        let balances = poolInfo.balances
         api.add(assets, balances)
       }
     },
