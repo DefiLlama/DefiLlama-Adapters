@@ -14,53 +14,69 @@
 
 const sdk = require("@defillama/sdk");
 
-const { blockQuery, getBlock } = require("../helper/http");
+const { graphQuery } = require("../helper/http");
 const { transformBalances } = require("../helper/portedTokens");
 
 // 23573780 is the block number the contract was created.
 // const STARTING_BLOCK_NUMBER = 23573780;
 const STARTING_BLOCK_NUMBER = 23604000;
 
-const ETHx_token_address = "0x46fd5cfb4c12d87acd3a13e92baa53240c661d93";
-const ETH_token_address = "0x0000000000000000000000000000000000000000";
-const AF_token_address = "0x6c90a582c166f59de91f97fa7aef7315a968b342";
+const tokens = {
+  ETHx: {
+    symbol: "ETHx",
+    address: "0x46fd5cfb4c12d87acd3a13e92baa53240c661d93",
+    underlying_symbol: "ETH",
+    underlying_address: "0x0000000000000000000000000000000000000000",
+  },
+  AF: {
+    symbol: "AF",
+    address: "0x6c90a582c166f59de91f97fa7aef7315a968b342",
+    underlying_symbol: null,
+    underlying_address: null,
+  },
+};
 
-const graphUrl =
+const alfafrensGraphURL =
   "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/alfafrens_v2_no_prune/2.0.0/gn";
+const superfluidGraphURL = "https://base-mainnet.subgraph.x.superfluid.dev";
 
-const globalStatsQuery = `query get_global_stats($block: Int) {
-  globalDatas(block: {number: $block}) {
-    lastUpdatedTimestamp
-    totalClaimed
-    totalStaked
-    totalSubscriptionCashbackFlowAmount
-    totalSubscriptionCashbackFlowRate
-    totalSubscriptionFlowAmount
-    totalSubscriptionFlowRate
+const tvl = async (api) => {
+  const balances = {};
+  let hasData = true;
+  let pageSize = 500,
+    pageSkip = 0;
+
+  while (hasData) {
+    const { userAddresses } = await getUserWalletAddresses(
+      api,
+      pageSize,
+      pageSkip
+    );
+
+    const token_balance = await getUserBalances(
+      api,
+      tokens.ETHx,
+      userAddresses
+    );
+
+    sdk.util.sumSingleBalance(
+      balances,
+      tokens.ETHx.underlying_address,
+      token_balance
+    );
+
+    if ((hasData = userAddresses.length === pageSize)) {
+      pageSkip = pageSkip + pageSize;
+      console.debug(`Total users fetched: ${pageSkip}`);
+    } else {
+      console.debug(`Total users fetched: ${pageSkip + userAddresses.length}`);
+    }
   }
-}`;
 
-const tvl = async (api, mainnetBlockNumber, chainsBlockNumbers) => {
-  const chain = "base";
-  const { globalDatas } = await blockQuery(graphUrl, globalStatsQuery, { api });
-
-  const [
-    {
-      lastUpdatedTimestamp,
-      totalClaimed: af_volume,
-      totalSubscriptionFlowAmount: ethx_volume,
-    },
-  ] = globalDatas;
-
-  console.log(`Flow Volume: ${ethx_volume * 1e-18} $ETHx`);
-
-  if (parseInt(ethx_volume) > 0) {
-    const balances = {};
-    sdk.util.sumSingleBalance(balances, ETH_token_address, ethx_volume);
-    return transformBalances(chain, balances);
-  }
-
-  return;
+  console.debug(
+    `Total ETHx Balance: ${balances[tokens.ETHx.underlying_address] * 1e-18}`
+  );
+  return transformBalances("base", balances);
 };
 
 module.exports = {
@@ -69,4 +85,99 @@ module.exports = {
   start: STARTING_BLOCK_NUMBER,
   base: { tvl },
   hallmarks: [[1734000000, "Alfafrens V2 Launch"]],
+};
+
+/**
+ * Returns a list of addresses
+ * @param {*} api
+ * @param {int} pageSize
+ * @param {int} pageSkip
+ * @returns {string[]}
+ */
+const getUserWalletAddresses = async (api, pageSize = 500, pageSkip = 0) => {
+  const getWalletBatchQuery = `query getAAUsers($skip: Int = 0, $first: Int = 500, $block: Block_height) {
+  users(
+    orderBy: createdTimestamp
+    orderDirection: asc
+    first: $first
+    skip: $skip
+    block: $block
+  ) {
+    id
+    createdTimestamp
+  }
+}`;
+
+  const { users } = await graphQuery(
+    alfafrensGraphURL,
+    getWalletBatchQuery,
+    {
+      skip: pageSkip,
+      first: pageSize,
+    },
+    { api }
+  );
+
+  console.debug("Users fetched: ", users.length);
+  return { userAddresses: users.map((u) => u.id), pageSize, pageSkip };
+};
+
+/**
+ * Returns the total tokens for a list of addresses
+ * @param {*} api
+ * @param {{symbol:string, address:string}} token
+ * @param {string[]} addresses
+ * @returns {int}
+ */
+const getUserBalances = async (api, token, addresses) => {
+  const query = `query accountTokenSnapshots(
+  $first: Int = 500, 
+  $skip: Int = 0, 
+  $orderBy: AccountTokenSnapshot_orderBy = id, 
+  $orderDirection: OrderDirection = asc, 
+  $user_addresses: [ID] = [], 
+  $token_address: ID = ""
+  $block: Block_height
+) {
+  accountTokenSnapshots(
+    first: $first
+    skip: $skip
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    block: $block
+    where: {
+        account_: { id_in: $user_addresses },
+        token_: { id: $token_address },
+    }
+  ) {
+    balanceUntilUpdatedAt
+    id
+    token {
+      id
+      symbol
+    }
+    updatedAtBlockNumber
+    updatedAtTimestamp
+    account {
+      id
+    }
+  }
+}`;
+
+  const { accountTokenSnapshots } = await graphQuery(
+    superfluidGraphURL,
+    query,
+    { user_addresses: addresses, token_address: token.address },
+    { api }
+  );
+
+  const balance = accountTokenSnapshots.reduce((t, s) => {
+    return t + parseInt(s.balanceUntilUpdatedAt);
+  }, 0);
+
+  console.debug(
+    `${token.symbol} Balance for ${addresses.length} users: ${balance * 1e-18}`
+  );
+
+  return balance;
 };
