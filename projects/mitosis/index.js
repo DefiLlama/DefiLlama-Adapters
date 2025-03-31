@@ -43,11 +43,12 @@ module.exports = {
   ethereum: {
     tvl: chainTVL({
       vaults: [
-        '0xE4cf2D4eb9c01784798679F2FED4CF47cc59a3ec',
+        "0xE4cf2D4eb9c01784798679F2FED4CF47cc59a3ec",
         "0x02Ff1F648Ff443B5d88214341F0acE6ECFb94cF3",
         "0xA1eBd23c4364e7491633237A0d9359D82c629182",
         "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
         "0x0B75e167F8A37179b7044414EE43e94cabeAA2FA",
+        "0x14C5a9007FDC5eE4De1581C892b5fd4623D8cdBf",
       ],
     }),
   },
@@ -55,6 +56,7 @@ module.exports = {
     tvl: chainTVL({
       vaults: [
         "0xA0EeB418213f8472cba2c842378E1bB64e28bd28",
+        "0xb9ca61a6d5fa0c443f3c48ab1fbf0118964308d6",
       ]
     }),
   },
@@ -65,6 +67,7 @@ module.exports = {
         "0x73981B0496fC08e9136BAF74b79d32A4d4F2a007",
         "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
         "0x54602E5cBa09e01EeE9B2050F1F4f0Dc902CeE34",
+        "0x3c09fb9630B8f89F73871506F445F5DbedBEB0DF",
       ]
     }),
   },
@@ -72,24 +75,30 @@ module.exports = {
     tvl: chainTVL({
       vaults: [
         "0x5616Fe2762687Cd8a9158c27F62aff84E36821Be",
+        "0xea8eDdb19a980B6D9D77167ca08a70a692DA0DD7",
       ],
     }),
   },
   mode: {
     tvl: chainTVL({
       vaults: [
-        "0xbEd575b0FeDa4F84b71144634693DaCc07749471"
+        "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
+        "0xa30c1544d12309a519A205A486f6AF0515dFA442",
       ],
     }),
   },
   manta: {
     tvl: chainTVL({
+      vaults: [
+        "0x8735C80fb5aEfF60d35C9d6E663758Af7861981E",
+      ],
     }),
   },
   blast: {
     tvl: chainTVL({
       vaults: [
-        // "0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0",
+        "0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0",
+        "0x0817b88a528E2F5F980d26e98fC950CbD6aE31Ef",
       ],
     }),
 
@@ -100,6 +109,7 @@ module.exports = {
         "0x56ceD49205e5D9b4d8D9B29f4aBfbe7bb8b08768",
         "0x96d6cE4e83dB947fF6bD1Ab0B377F23cd5D9ec2D",
         "0xcF101e13b5181f79094B0726B03e89d1cB95b28C",
+        "0x3478dE5e82431676C87113001bBeeb359cb5eAa5",
       ],
     }),
   },
