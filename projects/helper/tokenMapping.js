@@ -66,6 +66,14 @@ const fixBalancesTokens = {
     '0xF2857668777135E22f8CD53C97aBf8821b7F0bdf': { coingeckoId: 'arbitrum', decimals: 18 }, // Arbitrum on winr chain
     '0xE60256921AE414D7B35d6e881e47931f45E027cf': { coingeckoId: 'ethereum', decimals: 18 }, // Ether on winr chain
     '0x5B20DcAB6B91f157A39036c6c0e6F16e56d74CDb': { coingeckoId: 'solana', decimals: 18 }, // Solana on winr chain
+  },
+  hedera: {
+    '0x0000000000000000000000000000000000101ae3': { coingeckoId: 'usd-coin', decimals: 6 }, 
+    '0x0000000000000000000000000000000000101af0': { coingeckoId: 'tether', decimals:  6}, 
+    '0x0000000000000000000000000000000000101af5': { coingeckoId: 'dai', decimals:  8}, 
+    '0x0000000000000000000000000000000000101afb': { coingeckoId: 'wrapped-bitcoin', decimals:  8}, 
+    '0x000000000000000000000000000000000008437c': { coingeckoId: 'ethereum', decimals:  8}, 
+    '0x00000000000000000000000000000000007e545e': { coingeckoId: 'bonzo-finance', decimals: 8 }, 
   }
 }
 
