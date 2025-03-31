@@ -44,7 +44,6 @@ module.exports = treasuryExports({
             '971385312',               // fUSDt
             ADDRESSES.algorand.OPUL,
             '1044269355',              // fOPUL
-            '2200000000',              // TINY
             ADDRESSES.algorand.GARD,
             '1060587336',              // fGARD
             '1163259470',              // MPL
