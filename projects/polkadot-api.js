@@ -182,31 +182,31 @@ async function getHydrationBalances() {
 }
 
 async function tvl(api) {
-  try {
-    const relayChainDOT = await getRelayChainBalance();
-    const assetHubBalances = await getAssetHubBalances();
-    const hydrationBalances = await getHydrationBalances();
+  const assetHubBalances = await getAssetHubBalances();
+  const hydrationBalances = await getHydrationBalances();
 
-    const totalDOT = relayChainDOT + assetHubBalances.dot + hydrationBalances.dot;
-    api.addCGToken("polkadot", totalDOT);
+  const totalUSDC = assetHubBalances.usdc + hydrationBalances.usdc;
+  const totalUSDT = assetHubBalances.usdt + hydrationBalances.usdt;
+  api.addCGToken("usd-coin", totalUSDC);
+  api.addCGToken("tether", totalUSDT);
 
-    const totalUSDC = assetHubBalances.usdc + hydrationBalances.usdc;
-    const totalUSDT = assetHubBalances.usdt + hydrationBalances.usdt;
-    api.addCGToken("usd-coin", totalUSDC);
-    api.addCGToken("tether", totalUSDT);
+  api.addCGToken("mythos", assetHubBalances.mythos);
 
-    api.addCGToken("mythos", assetHubBalances.mythos);
+  return api.getBalances();
+}
 
-    return api.getBalances();
-  } catch (error) {
-    console.error("Error calculating TVL:", error);
-    return api.getBalances();
-  }
+async function ownTokens(api) {
+  const relayChainDOT = await getRelayChainBalance();
+  const assetHubBalances = await getAssetHubBalances();
+  const hydrationBalances = await getHydrationBalances();
+
+  const totalDOT = relayChainDOT + assetHubBalances.dot + hydrationBalances.dot;
+  api.addCGToken("polkadot", totalDOT);
+
+  return api.getBalances();
 }
 
 module.exports = {
   timetravel: false,
-  methodology:
-    "TVL is calculated by summing up the balances across three chains: Relay Chain (DOT), Asset Hub (DOT, USDC, USDT, MYTHOS), and Hydration (DOT, USDC, USDT). The balances are fetched directly from the respective chain's treasury and related addresses.",
-  polkadot: { tvl },
+  polkadot: { tvl, ownTokens, },
 };
