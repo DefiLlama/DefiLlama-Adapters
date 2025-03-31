@@ -230,8 +230,6 @@ module.exports = {
         '0xE6c259bc0FCE25b71fE95A00361D3878E16232C3', // xCRV
         '0x3c2fcf53f742345c5c1b3dcb2612a1949bc1f18d', // xWETH
         '0x06a2e1521afde7f7dc30d351dcf04408042f536e', // wFTM
-        '0x3f833ed02629545dd78afc3d585f7f3918a3de62', // xSTABLE
-        '0xa3a63276b8668583e1b47b979d1093d9aaf431ee', // xSTABLE2
       ]
     })
   }
