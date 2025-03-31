@@ -4,8 +4,8 @@ const { post } = require("../helper/http.js")
 const endpoint = 'https://cu.ao-testnet.xyz'
 const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
 const tickerTransformations = {
-    'qAR': 'AR',
-    'wUSDC': 'USDC',
+    'qAR': 'arweave',
+    'wUSDC': 'usd-coin',
   };
   
 
@@ -13,22 +13,20 @@ async function tvl() {
 
     const supportedTokensRes = await DryRun(controllerId, "Get-Tokens")
     const supportedTokens = JSON.parse(supportedTokensRes.Messages[0].Data)
+    const balancesPromises = supportedTokens.map(async balanceObject => {
+        const infoRes = await DryRun(balanceObject.oToken, "Info");
+        const tagsObject = Object.fromEntries(
+          infoRes.Messages[0].Tags.map((tag) => [tag.name, tag.value])
+        );
+        const ticker = tickerTransformations[balanceObject.ticker] || balanceObject.ticker;
+        return { [`coingecko:${ticker}`]: scaleBalance(tagsObject['Cash'], tagsObject['Denomination']) };
+      });
+      
+      const balancesArray = await Promise.all(balancesPromises);
+      
+      const combinedBalances = Object.assign({}, ...balancesArray);
 
-    const balancesArray = await Promise.all(
-        supportedTokens.map(async balanceObject => {
-          const infoRes = await DryRun(balanceObject.oToken, "Info");
-          const tagsObject = Object.fromEntries(
-            infoRes.Messages[0].Tags.map((tag) => [tag.name, tag.value]),
-          );
-          const ticker = tickerTransformations[balanceObject.ticker] || balanceObject.ticker;
-          return { ticker, balance: scaleBalance(tagsObject['Cash'], tagsObject['Denomination']) };
-        })
-      );
-
-      console.log(balancesArray)
-
-
-      return balancesArray
+      return combinedBalances
 
 }
 
@@ -49,12 +47,13 @@ async function DryRun(target, action) {
     return response
 }
 
-
 function scaleBalance(amount, denomination) {
+    console.log(amount, denomination)
     const scaledDivider = BigInt(10) ** BigInt(denomination)
     const balance = BigInt(amount)  / scaledDivider
     return Number(balance)
 }
+
 
 
 module.exports = {
@@ -62,8 +61,3 @@ module.exports = {
   LiquidOps: { tvl },
 };
 
-
-// TODO: remove later after testing
-tvl()
-  .then(() => console.log('TVL calculation completed'))
-  .catch(error => console.error('Error calculating TVL:', error));
