@@ -35,7 +35,9 @@ const chainListSupply = [
   'stride',
   'terra2',
   'umee', 
-  'xpla'
+  'xpla',
+  'stellar',
+  'sui'
 ];
 const chainListTotal = [
   'arbitrum', 
