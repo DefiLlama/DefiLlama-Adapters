@@ -1,24 +1,42 @@
-import { post } from "../helper/http"
+const { post } = require("../helper/http.js")
 
+
+const endpoint = 'https://cu.ao-testnet.xyz'
+const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
+const tickerTransformations = {
+    'qAR': 'AR',
+    'wUSDC': 'USDC',
+  };
+  
 
 async function tvl() {
 
-    const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
-
     const supportedTokens = Object.values(await DryRun(controllerId, "Get-Tokens"))
 
-    const loTokenBalances = await Promise.all(supportedTokens.map(tokenID => DryRun(tokenID, "Balance")));
+    const balancesArray = await Promise.all(
+        supportedTokens.map(async balanceObject => {
+          const balance = await DryRun(balanceObject.id, "Balance");
+          const ticker = tickerTransformations[balanceObject.ticker] || balanceObject.ticker;
+          return { ticker, balance };
+        })
+      );
 
-    console.log(loTokenBalances)
+    console.log(balancesArray)
 
-    // get token USD total value
+    // How to get USD valances for balancesArray?
+    // response: 
+    // const balancesArray = [
+    //   { ticker: 'USDC', balance: 698328699 },
+    //   { ticker: 'AR', balance: 1880007389099 }
+    // ]
 
 }
 
 
-// Access AO on chain data via a node
+
+// Access AO on chain data via the node endpoint
 async function DryRun(target, action) {
-    const { Messages: [{ Data }] } = await post(`https://cu.ao-testnet.xyz/dry-run?process-id=${target}`, { 
+    const { Messages: [{ Data }] } = await post(`${endpoint}/dry-run?process-id=${target}`, { 
         Id: "1234", Target: target, Owner: "1234", Anchor: "0", Data: "1234",
         Tags: [
             ["Target", target],
@@ -38,3 +56,7 @@ module.exports = {
 };
 
 
+// TODO: remove later after testing
+tvl()
+  .then(() => console.log('TVL calculation completed'))
+  .catch(error => console.error('Error calculating TVL:', error));
