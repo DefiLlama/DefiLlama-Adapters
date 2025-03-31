@@ -32,7 +32,11 @@ const config = {
 
     // sei
     "0x7fF67093231CE8DBC70c0A65b629ed080e66a7F0", // pumpbtc
-    "0xe5DfcE87E75e92C61aeD31329716Cf3D85Cd9C8c"  // ylBTCLST
+    "0xe5DfcE87E75e92C61aeD31329716Cf3D85Cd9C8c", // ylBTCLST
+    
+    // lfbtc-cian-eth
+    "0x821d2e44984168d278C698fD742d5138c01bAAA2"  // lfbtc-cian-eth
+
   ],
   optimism: ["0x907883da917ca9750ad202ff6395C4C6aB14e60E"],
   bsc: ["0xEa5f10A0E612316A47123D818E2b597437D19a17"],
