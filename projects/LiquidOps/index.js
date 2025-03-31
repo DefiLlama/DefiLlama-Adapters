@@ -48,7 +48,6 @@ async function DryRun(target, action) {
 }
 
 function scaleBalance(amount, denomination) {
-    console.log(amount, denomination)
     const scaledDivider = BigInt(10) ** BigInt(denomination)
     const balance = BigInt(amount)  / scaledDivider
     return Number(balance)
