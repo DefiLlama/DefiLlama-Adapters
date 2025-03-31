@@ -10,6 +10,7 @@ const LOOP_PRELAUNCH_YNETH = "0xa67C60AE18BE09F074a6c733a1cc06B63Ae53589"
 
 // Loop tokens
 const lpETH = "0xa684EAf215ad323452e2B2bF6F817d4aa5C116ab"
+const lpUSD = "0x0eecBDbF7331B8a50FCd0Bf2C267Bf47BD876054"
 const lpBNB = "0xED166436559Fd3d7f44cb00CACDA96EB999D789e"
 
 
@@ -43,23 +44,35 @@ const tokensYieldnest = {
 const spectraVault = "0x9BfCD3788f923186705259ae70A1192F601BeB47"
 const spectraLPToken = "0x2408569177553A427dd6956E1717f2fBE1a96F1D"
 
+const clisBNBCDPVault = "0x03C07e6d561b664246058974dB31dbF1c1C0B416"
+const clisBNBLPToken = "0x1d9D27f0b89181cF1593aC2B36A37B444Eb66bEE"
+
+const spectraUSDVault = "0xbb23b7ACdE2B3A2E6446B16Cd3Dd471b0d80342c"
+const spectraUSDLPToken = "0x09d484B738dD85CE3953102453E91507982121d0"
+
 
 async function tvlEthereum(api) {
-  const calls = [lpETH]
+  const calls = [lpETH, lpUSD]
   const assets = await api.multiCall({ abi: 'address:asset', calls, })
   const ownerTokens = [
     [Object.values(tokens), LOOP_PRELAUNCH],
     [Object.values(tokensBtc), LOOP_PRELAUNCH_BTC],
     [Object.values(tokensYieldnest), LOOP_PRELAUNCH_YNETH],
     [[spectraLPToken], spectraVault],
+    [[spectraUSDLPToken], spectraUSDVault]
   ]
   assets.forEach((asset, i) => ownerTokens.push([[asset], calls[i]]))
   return api.sumTokens({ ownerTokens })
 }
 
 async function tvlBnb(api) {
-  const assets = await api.multiCall({ abi: 'address:asset', calls: [lpBNB] })
-  return api.sumTokens({ tokensAndOwners2: [assets, [lpBNB]] })
+  const calls = [lpBNB]
+  const assets = await api.multiCall({ abi: 'address:asset', calls, })
+  const ownerTokens = [
+  [[clisBNBLPToken], clisBNBCDPVault],
+  ]
+  assets.forEach((asset, i) => ownerTokens.push([[asset], calls[i]]))
+  return api.sumTokens({ ownerTokens })
 }
 
 module.exports = {
