@@ -26,7 +26,7 @@ async function snakeGenesisTVL(api) {
 
 
 const pool2 = async (api) => {
-  let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x3af1dd7a2755201f8e2d6dcda1a61d9f54838f4f' })
+  let gauges = await api.call({ abi: 'address[]:getAllGauges', target: '0x9F59398D0a397b2EEB8a6123a6c7295cB0b0062D' })
   let pools = await api.multiCall({ abi: 'address:stake', calls: gauges, permitFailure: true })
   const pools2 = []
   const gauges2 = []

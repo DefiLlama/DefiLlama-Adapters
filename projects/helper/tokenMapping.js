@@ -32,7 +32,6 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
-
 }
 const ibcMappings = {
   // Sample Code
@@ -42,23 +41,8 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
-  saga: {
-    '0xfc960c233b8e98e0cf282e29bde8d3f105fc24d5': { coingeckoId: "usd-coin", decimals: 6 },
-    '0xc8fe3c1de344854f4429bb333affaef97ef88cea': { coingeckoId: "tether", decimals: 6 },
-    '0xeb41d53f14cb9a67907f2b8b5dbc223944158ccb': { coingeckoId: "ethereum", decimals: 18 },
-    '0x4e33613add93463e82a14080021f2ffaf1e062cf': { coingeckoId: "uniswap", decimals: 18 },
-    '0xa19377761fed745723b90993988e04d641c2cffe': { coingeckoId: "saga-2", decimals: 6 },
-  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  },
-  hyperliquid: {
-    '0x94e8396e0869c9f2200760af0621afd240e1cf38': { coingeckoId: "hyperliquid", decimals: 18 },
-  },
-  hemi: {
-    [ADDRESSES.null]: { coingeckoId: "ethereum", decimals: 18 },
-    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18 },
-    '0xad11a8BEb98bbf61dbb1aa0F6d6F2ECD87b35afA': { coingeckoId: "hemi", decimals: 6 },
   },
 }
 
