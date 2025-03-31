@@ -11,14 +11,15 @@ const abi = {
   };
   
   const queryTvlData = async (api,chain) => {
-    const tokenBalance = await api.call({
+    const tokenInfo = await api.call({
         abi: abi.totalValue,
         target: CONFIG[chain],
         params: [],
       });
-      const reData = {}
-      tokenBalance.forEach(async item=>{
-        api.add(item.tokenAddress, item.value)
+
+      const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: tokenInfo.map(i => ({ target: i.tokenAddress, params: CONFIG[chain]})) })
+      tokenInfo.forEach(async (item,key)=>{
+        api.add(item.tokenAddress, bals[key])
       })
       return 
   }
