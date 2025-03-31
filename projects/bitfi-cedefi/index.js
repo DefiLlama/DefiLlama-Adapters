@@ -27,6 +27,7 @@ Ceffu(BTC)：
 1BNmwHhD4SAogR1fxpZnNCEWrVqA1Djdjb
 1BR8fqjuapewZy6HjBHTHZthTot3pMT55y
 1BK4YdJCSmJNa6ptNwGb6M67ioivFuQQTe
+1BuUWDpjKo7HnpNt9RF5wd4pEmqFmv6fhE
 
 Ceffu(BTCB):
 0x062900dcd4729af3bdbf3150b98eb9bcfdb822ac
