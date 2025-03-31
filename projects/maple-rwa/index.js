@@ -52,17 +52,18 @@ const fetchLoans = async (timestamp) => {
  * Calculates total value based on specified property and returns API response format
  * @param {number} timestamp Unix timestamp in seconds
  * @param {string} propertyName Property to sum ('loanValueUsd' or 'collateralValueUsd')
- * @returns {Promise<{usd: number}>} Total value in USD
+ * @returns {Promise<number>} Total value in USD
  */
-const getTotal = async (timestamp, propertyName) => {
+const getTotal = async (api, propertyName) => {
+  const timestamp = api.timestamp
   const loans = await fetchLoans(timestamp);
   const total = loans.reduce((sum, loan) => sum + Number(loan[propertyName]), 0);
-  return { usd: total };
+  api.addUSDValue(total)
 }
 
 module.exports = {
   ethereum: {
-    tvl: async (api) => await getTotal(api.timestamp, 'collateralValueUsd'),
-    borrowed: async (api) => await getTotal(api.timestamp, 'loanValueUsd'),
+    tvl: async (api) => await getTotal(api, 'collateralValueUsd'),
+    borrowed: async (api) => await getTotal(api, 'loanValueUsd'),
   },
 };
