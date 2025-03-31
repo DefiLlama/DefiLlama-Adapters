@@ -4,6 +4,7 @@ const utils = require('../helper/utils')
 const config = {
   factory: "0xDa14Fdd72345c4d2511357214c5B89A919768e59",
   uniNFT: "0x03a520b32c04bf3beef7beb72e919cf822ed34f1",
+  uniV4NFT: "0x7C5f5A4bBd8fD63184577525326123B519429bDc",
   alienBaseNFT: "0xb7996d1ecd07fb227e8dca8cd5214bdfb04534e5",
   slipNFT: "0x827922686190790b37229fd06084350e74485b72",
   wAeroNFT: "0x17B5826382e3a5257b829cF0546A08Bd77409270".toLowerCase(),
@@ -65,17 +66,18 @@ async function uwrapStakedSlipstreamLP({ api, sSlipNftIds, }) {
 }
 
 async function tvl (api) {
-  const { factory, pools, uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT, wsSlipNFT } = config;
+  const { factory, pools, uniNFT, uniV4NFT,slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT, wsSlipNFT } = config;
   const ownerTokens = []
   const ownerIds = []
   const accs = []
+  const uniV4Ids = []
 
   const uTokens = await api.multiCall({ abi: "address:asset", calls: pools });
-  await api.sumTokens({ blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT, wsSlipNFT], tokensAndOwners2: [uTokens, pools] });
-  
+  await api.sumTokens({ blacklistedTokens: [uniNFT, uniV4NFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT, wsSlipNFT], tokensAndOwners2: [uTokens, pools] });
+
   const accounts = await api.fetchList({ lengthAbi: 'allAccountsLength', itemAbi: 'allAccounts', target: factory, })
 
-    // Account version 1 has a stored state of all assets, and can be fetched using generateAssetData()
+  // Account version 1 has a stored state of all assets, and can be fetched using generateAssetData()
   // Account version 2 has no such stored state, and must be fetched with external api calls.
   const versions = await api.multiCall({abi: 'function ACCOUNT_VERSION() view returns (uint256)', calls: accounts,});
   const v1Accounts = accounts.filter((_, i) => versions[i] === '1');
@@ -88,7 +90,7 @@ async function tvl (api) {
   // 4. Return format is then transformed to be identical to the format of the V1 assetData
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const batchSize = 10;
+  const batchSize = 5;
   for (let i = 0; i < v2Accounts.length; i += batchSize) {
     const batch = v2Accounts.slice(i, i + batchSize);
     await Promise.all(batch.map(async (account) => {
@@ -123,12 +125,19 @@ async function tvl (api) {
         if (!assetData[0][0].length || !assetData[0][1].length || assetData[0][1] == "0") return;
         ownerIds.push([assetData[0][0], assetData[0][1], account])
         accs.push(account)
+
+        for (let i = 0; i < assetData[0][0].length; i++) {
+          if (assetData[0][0][i] === uniV4NFT) {
+            uniV4Ids.push(assetData[0][1][i]);
+          }
+        }
+        
       } catch (error) {
           console.log(`Failed to fetch/process data for account ${account}:`, error);
           return;
       }
     }));
-    
+
     // Add small delay between batches to prevent rate limiting
     if (i + batchSize < v2Accounts.length) {  // Only sleep if there are more batches to process
       await sleep(1000);
@@ -143,19 +152,25 @@ async function tvl (api) {
     if (!assetData[0].length || !assetData[1].length) return;
     ownerIds.push([assetData[0], assetData[1], account])
     accs.push(account)
+
+    for (let i = 0; i < assetData.assets.length; i++) {
+      if (assetData.assets[i] === uniV4NFT) {
+        uniV4Ids.push(assetData[1][i]);
+      }
+    }
   })
 
   if (alienBaseNFT)
     await sumTokens2({ api, owners: accs, uniV3ExtraConfig: { nftAddress: alienBaseNFT } })
 
   // add all simple ERC20s
-  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT, wsSlipNFT],});
+  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, uniV4NFT, slipNFT, wAeroNFT, sAeroNFT, sSlipNFT, alienBaseNFT, wsSlipNFT],});
 
   // add all Arcadia-wrapped LP positions
   await unwrapArcadiaAeroLP({ api, ownerIds });
 
-  // add all native LP positions
-  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true })
+  //add all native LP positions
+  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true, resolveUniV4: true, uniV4ExtraConfig: {"positionIds":uniV4Ids}})
 }
 
 module.exports = {

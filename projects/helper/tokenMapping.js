@@ -44,16 +44,28 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  mtt_network: {
+    '0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265': { coingeckoId: 'usd-coin', decimals: 6 },
+  },
   hemi: {
     '0x6c851f501a3f24e29a8e39a29591cddf09369080': { coingeckoId: 'dai', decimals: 18 },
-    '0xad11a8beb98bbf61dbb1aa0f6d6f2ecd87b35afa': { coingeckoId: 'usd-coin', decimals: 6 },
+    [ADDRESSES.hemi.USDC_e]: { coingeckoId: 'usd-coin', decimals: 6 },
     '0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e': { coingeckoId: 'tether', decimals: 6 },
-    '0x03c7054bcb39f7b2e5b2c7acb37583e32d70cfa3': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-    '0xc3eacf0612346366db554c991d7858716db09f58': { coingeckoId: 'kelp-dao-restaked-eth', decimals: 18 },
+    [ADDRESSES.bob.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+    [ADDRESSES.swellchain.rsETH]: { coingeckoId: 'kelp-dao-restaked-eth', decimals: 18 },
   },
   stellar: {
     XLM: { coingeckoId: 'stellar', decimals: 7 },
     'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
+  },
+  winr: {
+    '0xd77b108d4f6cefaa0cae9506a934e825becca46e': { coingeckoId: 'winr-protocol', decimals: 18 }, // WINR on arbitrum
+    '0xbf6fa9d2bf9f681e7b6521b49cf8eccf9ad8d31d': { coingeckoId: 'winr-protocol', decimals: 18 }, // WWINR on winr chain
+    '0x59edbb343991d30f77dcdbad94003777e9b09ba9': { coingeckoId: 'usd-coin', decimals: 6 }, // USDC on winr chain
+    '0x0381132632E9E27A8f37F1bc56bd5a62d21a382B': { coingeckoId: 'tether', decimals: 6 }, // Tether on winr chain
+    '0xF2857668777135E22f8CD53C97aBf8821b7F0bdf': { coingeckoId: 'arbitrum', decimals: 18 }, // Arbitrum on winr chain
+    '0xE60256921AE414D7B35d6e881e47931f45E027cf': { coingeckoId: 'ethereum', decimals: 18 }, // Ether on winr chain
+    '0x5B20DcAB6B91f157A39036c6c0e6F16e56d74CDb': { coingeckoId: 'solana', decimals: 18 }, // Solana on winr chain
   }
 }
 
