@@ -11,23 +11,29 @@ const tickerTransformations = {
 
 async function tvl() {
 
-    const supportedTokens = Object.values(await DryRun(controllerId, "Get-Tokens"))
+    const supportedTokensRes = await DryRun(controllerId, "Get-Tokens")
+    const supportedTokens = JSON.parse(supportedTokensRes.Messages[0].Data)
 
     const balancesArray = await Promise.all(
         supportedTokens.map(async balanceObject => {
-          const balance = await DryRun(balanceObject.id, "Balance");
+          const infoRes = await DryRun(balanceObject.oToken, "Info");
+          const tagsObject = Object.fromEntries(
+            infoRes.Messages[0].Tags.map((tag) => [tag.name, tag.value]),
+          );
           const ticker = tickerTransformations[balanceObject.ticker] || balanceObject.ticker;
-          return { ticker, balance };
+          return { ticker, balance: tagsObject['Cash'], denomination: tagsObject['Denomination'] };
         })
       );
 
-    console.log(balancesArray)
+      console.log(balancesArray)
+
+
 
     // How to get USD valances for balancesArray?
     // response: 
     // const balancesArray = [
-    //   { ticker: 'USDC', balance: 698328699 },
-    //   { ticker: 'AR', balance: 1880007389099 }
+    //   { ticker: 'USDC', balance: '11138876965', denomination: '6' },
+    //   { ticker: 'AR', balance: '792019358040000', denomination: '12' }
     // ]
 
 }
@@ -36,7 +42,7 @@ async function tvl() {
 
 // Access AO on chain data via the node endpoint
 async function DryRun(target, action) {
-    const { Messages: [{ Data }] } = await post(`${endpoint}/dry-run?process-id=${target}`, { 
+    const response = await post(`${endpoint}/dry-run?process-id=${target}`, { 
         Id: "1234", Target: target, Owner: "1234", Anchor: "0", Data: "1234",
         Tags: [
             ["Target", target],
@@ -46,7 +52,7 @@ async function DryRun(target, action) {
             ["Variant", "ao.TN.1"]
         ].map(([name, value]) => ({ name, value }))
     });
-    return JSON.parse(Data);
+    return response
 }
 
 
