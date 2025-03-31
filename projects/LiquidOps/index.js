@@ -3,9 +3,9 @@ import { post } from "../helper/http"
 
 async function tvl() {
 
-    const controller = 'vYlv6Dx8ZGt4oGaqsXaPjh9qi8iS8eQsoU9Ai65km4A'
+    const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
 
-    const supportedTokens = Object.values(await DryRun(controller, "Get-Tokens"))
+    const supportedTokens = Object.values(await DryRun(controllerId, "Get-Tokens"))
 
     const loTokenBalances = await Promise.all(supportedTokens.map(tokenID => DryRun(tokenID, "Balance")));
 
