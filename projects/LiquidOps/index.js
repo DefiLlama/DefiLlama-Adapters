@@ -21,20 +21,14 @@ async function tvl() {
             infoRes.Messages[0].Tags.map((tag) => [tag.name, tag.value]),
           );
           const ticker = tickerTransformations[balanceObject.ticker] || balanceObject.ticker;
-          return { ticker, balance: tagsObject['Cash'], denomination: tagsObject['Denomination'] };
+          return { ticker, balance: scaleBalance(tagsObject['Cash'], tagsObject['Denomination']) };
         })
       );
 
       console.log(balancesArray)
 
 
-
-    // How to get USD valances for balancesArray?
-    // response: 
-    // const balancesArray = [
-    //   { ticker: 'USDC', balance: '11138876965', denomination: '6' },
-    //   { ticker: 'AR', balance: '792019358040000', denomination: '12' }
-    // ]
+      return balancesArray
 
 }
 
@@ -53,6 +47,13 @@ async function DryRun(target, action) {
         ].map(([name, value]) => ({ name, value }))
     });
     return response
+}
+
+
+function scaleBalance(amount, denomination) {
+    const scaledDivider = BigInt(10) ** BigInt(denomination)
+    const balance = BigInt(amount)  / scaledDivider
+    return Number(balance)
 }
 
 
