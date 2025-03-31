@@ -53,17 +53,13 @@ const tvl = async (api) => {
       pageSkip
     );
 
-    const token_balance = await getUserBalances(
+    const output = await getUserBalancesOnChain(
       api,
       tokens.ETHx,
       userAddresses
     );
 
-    sdk.util.sumSingleBalance(
-      balances,
-      tokens.ETHx.underlying_address,
-      token_balance
-    );
+    sdk.util.sumMultiBalanceOf(balances, { output });
 
     if ((hasData = userAddresses.length === pageSize)) {
       pageSkip = pageSkip + pageSize;
@@ -125,59 +121,29 @@ const getUserWalletAddresses = async (api, pageSize = 500, pageSkip = 0) => {
 /**
  * Returns the total tokens for a list of addresses
  * @param {*} api
- * @param {{symbol:string, address:string}} token
+ * @param {{symbol:string, address:string, underlying_symbol:string|null, underlying_address:string|null}} token
  * @param {string[]} addresses
  * @returns {int}
  */
-const getUserBalances = async (api, token, addresses) => {
-  const query = `query accountTokenSnapshots(
-  $first: Int = 500, 
-  $skip: Int = 0, 
-  $orderBy: AccountTokenSnapshot_orderBy = id, 
-  $orderDirection: OrderDirection = asc, 
-  $user_addresses: [ID] = [], 
-  $token_address: ID = ""
-  $block: Block_height
-) {
-  accountTokenSnapshots(
-    first: $first
-    skip: $skip
-    orderBy: $orderBy
-    orderDirection: $orderDirection
-    block: $block
-    where: {
-        account_: { id_in: $user_addresses },
-        token_: { id: $token_address },
-    }
-  ) {
-    balanceUntilUpdatedAt
-    id
-    token {
-      id
-      symbol
-    }
-    updatedAtBlockNumber
-    updatedAtTimestamp
-    account {
-      id
-    }
-  }
-}`;
+const getUserBalancesOnChain = async (api, token, addresses) => {
+  const tokenBalances = await api.multiCall({
+    calls: addresses.map((aa) => ({
+      target: token.address,
+      params: aa,
+    })),
+    abi: "erc20:balanceOf",
+    withMetadata: true,
+  });
 
-  const { accountTokenSnapshots } = await graphQuery(
-    superfluidGraphURL,
-    query,
-    { user_addresses: addresses, token_address: token.address },
-    { api }
-  );
-
-  const balance = accountTokenSnapshots.reduce((t, s) => {
-    return t + parseInt(s.balanceUntilUpdatedAt);
-  }, 0);
-
+  const balance = tokenBalances.reduce((t, b) => t + parseInt(b.output), 0);
   console.debug(
     `${token.symbol} Balance for ${addresses.length} users: ${balance * 1e-18}`
   );
 
-  return balance;
+  return tokenBalances.map((t) => {
+    // overwrite target with supertoken's underlying token address (if applicable).
+    // assuming tokens are 1:1 at this moment.
+    t.input.target = token.underlying_address || t.input.target;
+    return t;
+  });
 };
