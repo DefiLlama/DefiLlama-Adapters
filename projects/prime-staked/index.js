@@ -12,7 +12,6 @@ module.exports = {
   doublecounted: true,
   methodology:
     "Returns the total assets owned by primeETH",
-  start: 19128047,
   ethereum: {
     tvl,
   },

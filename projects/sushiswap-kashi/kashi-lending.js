@@ -43,6 +43,9 @@ const kashiQuery = `
 
 function kashiLending(chain, borrowed) {
   return async (api) => {
+    if(borrowed === true && api.timestamp > 1672534861){
+      return {}
+    }
     const graphUrl = graphUrls[chain];
 
     // Query graphql endpoint

@@ -11,6 +11,7 @@ kashi_chains.forEach((chain) => {
 });
 
 module.exports = {
+  deadFrom: '2025-01-01',
   misrepresentedTokens: true,
   ...modulesToExport,
 };

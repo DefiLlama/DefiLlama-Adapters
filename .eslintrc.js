@@ -16,5 +16,6 @@ module.exports = {
         "no-unused-vars": "off",
         "no-useless-escape": "warn",
         "no-prototype-builtins": "off",
+        "no-unreachable": "off",
     }
 }

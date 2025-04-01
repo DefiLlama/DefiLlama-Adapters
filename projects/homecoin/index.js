@@ -52,9 +52,10 @@ const borrowed = async (_, ethBlock) => {
 module.exports = {
     misrepresentedTokens: true,
   start: HOME_START,
+  deadFrom: '2022-11-09',
   ethereum: {
     tvl,
-    borrowed,
+    borrowed: ()=>({}), // it's all bad debt
   },
   methodology:
     "The base TVL metric counts only USDC liquidity in the protocol." +

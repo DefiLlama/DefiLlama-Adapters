@@ -1,15 +1,15 @@
 const { get } = require('./helper/http');
+const ADDRESSES = require('./helper/coreAssets.json')
 
-async function cardanoTVL() {
-  let { tvlAda } = await get('https://api2.splash.trade/platform-api/v1/platform/stats')
+const ADA = ADDRESSES.cardano.ADA
 
-  return { cardano: tvlAda };
+async function tvl(api) {
+  let { tvlAda } = await get('https://analytics.splash.trade/platform-api/v1/platform/stats')
+  api.add(ADA, tvlAda)
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  cardano: {
-    tvl: cardanoTVL,
-  }
+  cardano: { tvl }
 }

@@ -1,9 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json');
-const { sumTokens2 } = require('../helper/unwrapLPs');
-const sdk = require('@defillama/sdk');
+const ADDRESSES = require("../helper/coreAssets.json");
 
 const WEETH_ADDRESS = {
-  ethereum: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+  ethereum: ADDRESSES.ethereum.WEETH,
   arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
   optimism: "0x346e03f8cce9fe01dcb3d0da3e9d00dc2c0e08f0",
   mode: ADDRESSES.blast.weETH,
@@ -13,76 +11,167 @@ const WEETH_ADDRESS = {
   scroll: "0x01f0a31698c4d065659b9bdc21b3610292a1c506",
 };
 
-const VAULT_weETHs = {
-  ethereum: "0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
-};
-
 const CAP_ADDRESS = {
-  scroll: "0x4a6219E25a41FD4165fbd158D89723a7175EA382",
   ethereum: "0x451d791b6e9a9b8c9237bb55e58a7757342b16f9",
+  arbitrum: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
+  optimism: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
+  mode: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
+  manta: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
   blast: "0x096430ef0a653c067df32e93ff77090e084169de",
   linea: "0xcd32876b9b483eb75e8ca74935e4b51725f33a91",
+  scroll: "0xcd32876b9B483eb75e8ca74935E4b51725F33A91",
 };
 
-const vaults = {
-  scroll: '0xB9Ca61A6D5fA0c443F3c48Ab1fbf0118964308D6',
-  ethereum: '0xE4cf2D4eb9c01784798679F2FED4CF47cc59a3ec'
+const THEO_VAULT_ADDRESS = [
+  {
+    chainId: 1,
+    address: "0x0b75e167f8a37179b7044414ee43e94cabeaa2fa",
+  },
+  {
+    chainId: 42161,
+    address: "0x54602e5cba09e01eee9b2050f1f4f0dc902cee34",
+  },
+  {
+    chainId: 59144,
+    address: "0xcf101e13b5181f79094b0726b03e89d1cb95b28c",
+  },
+];
+
+const THEO_UNDERLYING_ASSETS = {
+  "0x0b75e167f8a37179b7044414ee43e94cabeaa2fa": WEETH_ADDRESS.ethereum,
+  "0x54602e5cba09e01eee9b2050f1f4f0dc902cee34": WEETH_ADDRESS.arbitrum,
+  "0xcf101e13b5181f79094b0726b03e89d1cb95b28c": WEETH_ADDRESS.linea,
 };
 
-const ethCapTVL = async (api) => {
-  const ethcap = CAP_ADDRESS.ethereum;
-  const tvl = await api.call({ abi: "uint256:load", target: ethcap });
-  
-  const balance = {};
-  balance[WEETH_ADDRESS.ethereum] = tvl;
+const chainTVL = ({ vaults = [] }) => async (api) => {
+  const caps = [];
+  if (CAP_ADDRESS[api.chain] && WEETH_ADDRESS[api.chain]) {
+    caps.push({ cap: CAP_ADDRESS[api.chain], asset: WEETH_ADDRESS[api.chain] });
+  }
+  const capContracts = caps.map((i) => i.cap);
+  const capTokens = caps.map((i) => i.asset);
+  const capTokenBals = await api.multiCall({
+    abi: "uint256:load",
+    calls: capContracts,
+  });
+  api.add(capTokens, capTokenBals);
 
-  return balance;
+  const theoVaults = THEO_VAULT_ADDRESS.filter(
+    (vault) => vault.chainId === api.chainId
+  ).map((vault) => vault.address.toLowerCase());
+
+  const regularVaults = vaults.filter(
+    (vault) => !theoVaults.includes(vault.toLowerCase())
+  );
+
+  const vaultInfos = await api.multiCall({
+    abi: "function vaultParams() view returns (uint8 decimals, address asset, uint56 minimumSupply, uint104 cap)",
+    calls: regularVaults,
+    permitFailure: true,
+  });
+  const vaultInfos2 = await api.multiCall({
+    abi: "address:asset",
+    calls: regularVaults,
+    permitFailure: true,
+  });
+  const vaultTokens = vaultInfos.map((v, i) => v?.asset ?? vaultInfos2[i]);
+
+  const balances = await api.sumTokens({
+    tokensAndOwners2: [vaultTokens, regularVaults],
+  });
+
+  if (theoVaults.length > 0) {
+    const theoTotalSupplies = await api.multiCall({
+      abi: "uint256:totalSupply",
+      calls: theoVaults,
+    });
+
+    theoVaults.forEach((theoVault, i) => {
+      const underlyingAsset = THEO_UNDERLYING_ASSETS[theoVault];
+      if (underlyingAsset) {
+        api.add(underlyingAsset, theoTotalSupplies[i]);
+      } else {
+        api.add(theoVault, theoTotalSupplies[i]);
+      }
+    });
+  }
+
+  return balances;
 };
-
-const ethVaultTVL = async (api) => {
-  const ethvault = vaults.ethereum;
-  return sumTokens2({ api, owner: ethvault, tokens: [VAULT_weETHs.ethereum] });
-};
-
-const scrollVaultTVL = async (api) => {
-  const vault = vaults.scroll;
-  return sumTokens2({ api, owner: vault, tokens: [WEETH_ADDRESS.scroll] });
-};
-
-const capTVL = (chain) => async (api) => {
-  const cap = CAP_ADDRESS[chain] ?? "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2";
-  const tvl = await api.call({ abi: "uint256:load", target: cap });
-  api.add(WEETH_ADDRESS[chain], tvl);
-};
-
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
-    tvl: sdk.util.sumChainTvls([ethCapTVL, ethVaultTVL])
+    tvl: chainTVL({
+      vaults: [
+        "0xE4cf2D4eb9c01784798679F2FED4CF47cc59a3ec",
+        "0x02Ff1F648Ff443B5d88214341F0acE6ECFb94cF3",
+        "0xA1eBd23c4364e7491633237A0d9359D82c629182",
+        "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
+        "0x0B75e167F8A37179b7044414EE43e94cabeAA2FA",
+      ],
+    }),
   },
   scroll: {
-    tvl: scrollVaultTVL,
+    tvl: chainTVL({
+      vaults: [
+        "0xA0EeB418213f8472cba2c842378E1bB64e28bd28",
+      ]
+    }),
   },
   arbitrum: {
-    tvl: capTVL("arbitrum"),
+    tvl: chainTVL({
+      vaults: [
+        "0x7E8cffBe165c6905a8AceC0f37B341c00353e8BA",
+        "0x73981B0496fC08e9136BAF74b79d32A4d4F2a007",
+        "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
+        "0x54602E5cBa09e01EeE9B2050F1F4f0Dc902CeE34",
+      ]
+    }),
   },
   optimism: {
-    tvl: capTVL("optimism"),
+    tvl: chainTVL({
+      vaults: [
+        "0x5616Fe2762687Cd8a9158c27F62aff84E36821Be",
+      ],
+    }),
   },
   mode: {
-    tvl: capTVL("mode"),
+    tvl: chainTVL({
+      vaults: [
+        "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
+      ],
+    }),
   },
   manta: {
-    tvl: capTVL("manta"),
+    tvl: chainTVL({
+      vaults: [],
+    }),
   },
   blast: {
-    tvl: capTVL("blast"),
+    tvl: chainTVL({
+      vaults: [
+        "0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0",
+      ],
+    }),
   },
   linea: {
-    tvl: capTVL("linea"),
+    tvl: chainTVL({
+      vaults: [
+        "0x56ceD49205e5D9b4d8D9B29f4aBfbe7bb8b08768",
+        "0x96d6cE4e83dB947fF6bD1Ab0B377F23cd5D9ec2D",
+        "0xcF101e13b5181f79094B0726B03e89d1cB95b28C",
+      ],
+    }),
+  },
+  bsc: {
+    tvl: chainTVL({
+      vaults: ["0xaDd58517c5D45c8ed361986f193785F8Ed1ABFc2"],
+    }),
+  },
+  mantle: {
+    tvl: chainTVL({
+      vaults: ["0x6FF000453a9c14f7d3bf381925c8cde565DbCe55"],
+    }),
   },
 };
-
-
-
-

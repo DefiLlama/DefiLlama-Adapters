@@ -71,19 +71,19 @@ const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
 
 const savingsVaultTvl = (chain) => async (api) => {
   const calls = networks[chain]["savingsVaults"]
-  const assets = await api.multiCall({
-    abi: savingsVaultAbi.asset, calls,
-  })
-  const totalAssets = await api.multiCall({
-    abi: savingsVaultAbi.totalAssets, calls,
-  })
-  const balances = {}
+  const [assets, totalAssets] = await Promise.all([
+    api.multiCall({ abi: savingsVaultAbi.asset, calls }),
+    api.multiCall({ abi: savingsVaultAbi.totalAssets, calls, permitFailure: true })
+  ])
 
-  totalAssets.forEach((bal, i) => {
-    const token = assets[i]
-    if (!bal && calls[i].toLowerCase() === '0x6bad6a9bcfda3fd60da6834ace5f93b8cfed9598') return;
-    sdk.util.sumSingleBalance(balances, token, bal, chain)
+  const balances = {};
+  calls.forEach((call, i) => {
+    const asset = assets[i]
+    const bal = totalAssets[i]
+    if(!bal) return;
+    sdk.util.sumSingleBalance(balances, asset, bal, chain)
   })
+
   return balances
 };
 

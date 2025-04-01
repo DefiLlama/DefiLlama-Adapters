@@ -16,14 +16,15 @@ function getAssetInfo(asset) {
   return [extractTokenInfo(asset), Number(asset.amount)]
 }
 
-async function getAllPairs(factory, chain) {
+async function getAllPairs(factory, chain, { blacklistedPairs = [] } = {}) {
+  const blacklist = new Set(blacklistedPairs)
   let allPairs = []
   let currentPairs;
   const limit = factory === 'terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r' ? 29 : 30 // some weird native token issue at one of the pagination query
   do {
     const queryStr = `{"pairs": { "limit": ${limit} ${allPairs.length ? `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}` : ""} }}`
     currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
-    allPairs.push(...currentPairs)
+    allPairs.push(...currentPairs.filter(pair => !blacklist.has(pair.contract_addr)))
   } while (currentPairs.length > 0)
   const dtos = []
   const getPairPool = (async (pair) => {
@@ -35,29 +36,39 @@ async function getAllPairs(factory, chain) {
       const [addr, balance] = getAssetInfo(asset)
       pairDto.assets.push({ addr, balance })
     })
+    pairDto.pair_type = pair.pair_type
     dtos.push(pairDto)
   })
-  const {errors} = await PromisePool
+  const { errors } = await PromisePool
     .withConcurrency(10)
     .for(allPairs)
     .process(getPairPool)
-  if((errors?.length ?? 0) > 50){
+  if ((errors?.length ?? 0) > 50) {
     throw new Error(`Too many errors: ${errors.length}/${allPairs.length} on ${chain}`)
   }
   return dtos
 }
 
-function getFactoryTvl(factory) {
-  return async (_, _1, _2, { chain }) => {
-    const pairs = (await getAllPairs(factory, chain)).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
+const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentrated'
 
-    const data = pairs.map(({ assets }) => ({
+function getFactoryTvl(factory, { blacklistedPairs = [] } = {}) {
+  return async (api) => {
+    const pairs = (await getAllPairs(factory, api.chain, { blacklistedPairs })).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
+
+    const otherPairs = pairs.filter(isNotXYK)
+    const xykPairs = pairs.filter(pair => !isNotXYK(pair))
+    otherPairs.forEach(({ assets }) => {
+      api.add(assets[0].addr, assets[0].balance)
+      api.add(assets[1].addr, assets[1].balance)
+    })
+
+    const data = xykPairs.map(({ assets }) => ({
       token0: assets[0].addr,
       token0Bal: assets[0].balance,
       token1: assets[1].addr,
       token1Bal: assets[1].balance,
     }))
-    return transformDexBalances({ chain, data })
+    return transformDexBalances({ api, data })
   }
 }
 

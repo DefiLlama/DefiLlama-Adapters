@@ -28,7 +28,7 @@ async function tvl(api) {
   const strategyData = await getConfig('nimbora-yield', undefined, { fetcher })
   for (let index = 0; index < strategyData.length; index++) {
     const strategyInfo = strategyData[index];
-    const underlying = parseAddress(strategyInfo.underlying) == "0x05574eb6b8789a91466f902c380d978e472db68170ff82a5b650b95a58ddf4ad" ? ADDRESSES.starknet.DAI : parseAddress(strategyInfo.underlying);
+    const underlying = parseAddress(strategyInfo.underlying) == ADDRESSES.starknet.DAI_1 ? ADDRESSES.starknet.DAI : parseAddress(strategyInfo.underlying);
     const strategyTvl = await call({ target: strategyInfo.tokenManager, abi: totalAssetsAbi });
     api.add(underlying, strategyTvl)
   }

@@ -10,7 +10,7 @@ async function tvl(api) {
   data = data.filter(i => i.strategy !== ADDRESSES.null)
   const aTokens = await api.multiCall({  abi: 'address:aToken', calls: data.map(i => i.strategy)})
   const ownerTokens = data.map((i, idx) => [[i.asset, aTokens[idx]], i.strategy])
-  return api.sumTokens({ ownerTokens })
+  return api.sumTokens({ ownerTokens, blacklistedTokens: ['0x42c248d137512907048021b30d9da17f48b5b7b2'] })
 }
 
 module.exports = {
