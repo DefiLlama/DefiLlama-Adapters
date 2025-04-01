@@ -218,21 +218,21 @@ async function tvl(api) {
   pendingWithdraws.map( (amount, i) => sdk.util.sumSingleBalance(balances, creditsTokens[i], amount, api.chain))
   pendingInstantWithdraws.map( (amount, i) => sdk.util.sumSingleBalance(balances, creditsTokens[i], amount, api.chain))
 
-  cdos.forEach((cdo, i) => {
-    const tokenDecimals = tokensDecimals[cdoToken[i]] || 18
+  cdoToken.forEach((token, i) => {
+    const tokenDecimals = tokensDecimals[token] || 18
     trancheTokensMapping[aatrances[i]] = {
-      token: cdoToken[i],
+      token,
       decimals: tokenDecimals,
       price: BigNumber(aaprices[i]).div(`1e${tokenDecimals}`).toFixed()
     }
     trancheTokensMapping[bbtrances[i]] = {
-      token: cdoToken[i],
+      token,
       decimals: tokenDecimals,
       price: BigNumber(bbprices[i]).div(`1e${tokenDecimals}`).toFixed()
     }
 
     // Get CDOs underlying tokens balances
-    sdk.util.sumSingleBalance(balances, cdoToken[i], contractValue[i], api.chain)
+    sdk.util.sumSingleBalance(balances, token, contractValue[i], api.chain)
   })
 
   const trancheTokensBalancesCalls = []
