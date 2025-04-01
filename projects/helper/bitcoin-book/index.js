@@ -116,6 +116,10 @@ const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
 ]
 
+const lbank = [
+  '1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn',
+]
+
 const stacksSBTC = [
   // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
   'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc',
@@ -242,5 +246,6 @@ module.exports = {
   unitbtc,
   backpack,
   coinbasebtc,
-  prosper
+  prosper,
+  lbank
 }

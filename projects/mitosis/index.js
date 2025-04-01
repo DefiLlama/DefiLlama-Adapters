@@ -114,7 +114,9 @@ module.exports = {
   },
   scroll: {
     tvl: chainTVL({
-      vaults: ["0xA0EeB418213f8472cba2c842378E1bB64e28bd28"],
+      vaults: [
+        "0xA0EeB418213f8472cba2c842378E1bB64e28bd28",
+      ]
     }),
   },
   arbitrum: {
@@ -124,17 +126,21 @@ module.exports = {
         "0x73981B0496fC08e9136BAF74b79d32A4d4F2a007",
         "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
         "0x54602E5cBa09e01EeE9B2050F1F4f0Dc902CeE34",
-      ],
+      ]
     }),
   },
   optimism: {
     tvl: chainTVL({
-      vaults: ["0x5616Fe2762687Cd8a9158c27F62aff84E36821Be"],
+      vaults: [
+        "0x5616Fe2762687Cd8a9158c27F62aff84E36821Be",
+      ],
     }),
   },
   mode: {
     tvl: chainTVL({
-      vaults: ["0xbEd575b0FeDa4F84b71144634693DaCc07749471"],
+      vaults: [
+        "0xbEd575b0FeDa4F84b71144634693DaCc07749471",
+      ],
     }),
   },
   manta: {
@@ -144,7 +150,9 @@ module.exports = {
   },
   blast: {
     tvl: chainTVL({
-      vaults: ["0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0"],
+      vaults: [
+        "0x8506fD66FCeD711c11F9E837EcAEC0F87C3F60A0",
+      ],
     }),
   },
   linea: {
