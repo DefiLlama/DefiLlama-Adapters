@@ -8,7 +8,6 @@ module.exports = [
   
   'bc1pr6pga0d44xm3t8z36qnya6sfznsm8fwkn507x6gqt86xtnvm4h4sj2zqus',
   '19wFRSr3GYHmVQtnmbkx7Wkjw3jZdyYB9a',
-  'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0',
   'bc1qyd4g2r0n0p9u775z7062rz8j88xxy27kmmh5aj',
 
     
