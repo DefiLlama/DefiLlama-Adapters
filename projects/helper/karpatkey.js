@@ -10,7 +10,7 @@ const chainMapping = {
 }
 
 async function karpatKeyTvl({timestamp}, daoName, tokenToExclude) {
-  const {data} = await fetchURL("https://aumapi.karpatkey.dev/our_daos_token_details")
+  const {data} = await fetchURL("https://aumapi.kpk.dev/our_daos_token_details")
   let date = new Date(timestamp*1e3)
   let monthlyData = data.tokens.filter(t=>t.year_month === `${date.getFullYear()}_${date.getMonth()+1}` && t.dao === daoName)
   while(monthlyData.length === 0){
