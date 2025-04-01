@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const bridgeAddresses = {
-    'DAI': { tokenAddress: ADDRESSES.ethereum.DAI, ownerContractAddress: '0x6A1B588B0684dACE1f53C5820111F400B3dbfeBf'  },
     'stETH': { tokenAddress: ADDRESSES.ethereum.STETH, ownerContractAddress: '0xfE08D40Eee53d64936D3128838867c867602665c' }
 }
 
