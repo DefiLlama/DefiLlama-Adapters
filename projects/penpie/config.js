@@ -35,4 +35,22 @@ module.exports = {
     vlPNP: "0x0Af3EC6F9592C193196bEf220BC0Ce4D9311527D",
     PNP: "0xC4a65A93dD6CD9717551ebE827E8baEe025d1d7E",
   },
+  base: {
+    masterPenpie: "0xC295087393C3ffc8AA46A8f6489Ac93cE2dC6461",
+    vePENDLE: "0x051dcd6a80f11fE68F77Fb0EBdE03853FA96B1fD",
+    mPENDLE: "",
+    PENDLE: "0xA99F6e6785Da0F5d6fB42495Fe424BCE029Eeb3E",
+    pendleStaking: "0x7A89614B596720D4D0f51A69D6C1d55dB97E9aAB",
+    vlPNP: "",
+    PNP: "",
+  },
+  sonic: {
+    masterPenpie: "0x664cc2BcAe1E057EB1Ec379598c5B743Ad9Db6e7",
+    vePENDLE: "0xE017CCC08505Ac8fbb5a364680e459d9fBaEE74d",
+    mPENDLE: "",
+    PENDLE: "0xf1eF7d2D4C0c881cd634481e0586ed5d2871A74B",
+    pendleStaking: "0xF9619e8B01Acc23FAc7Ee0AEb1258433b85814ec",
+    vlPNP: "",
+    PNP: "",
+  },
 };

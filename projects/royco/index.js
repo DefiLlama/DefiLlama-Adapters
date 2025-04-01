@@ -15,6 +15,18 @@ const slug = {
     defillama: "base",
     royco: "base",
   },
+  21000000: {
+    defillama: "corn",
+    royco: "corn-maizenet",
+  },
+  146: {
+    defillama: "sonic",
+    royco: "sonic",
+  },
+  999: {
+    defillama: "hyperliquid",
+    royco: "hyperevm",
+  },
 };
 
 const roycoSubgraph = {
@@ -50,6 +62,21 @@ const config = {
     chainId: 8453,
     recipeSubgraphUrl: getRecipeSubgraphUrl(8453),
     vaultSubgraphUrl: getVaultSubgraphUrl(8453),
+  },
+  [slug[21000000].defillama]: {
+    chainId: 21000000,
+    recipeSubgraphUrl: getRecipeSubgraphUrl(21000000),
+    vaultSubgraphUrl: getVaultSubgraphUrl(21000000),
+  },
+  [slug[146].defillama]: {
+    chainId: 146,
+    recipeSubgraphUrl: getRecipeSubgraphUrl(146),
+    vaultSubgraphUrl: getVaultSubgraphUrl(146),
+  },
+  [slug[999].defillama]: {
+    chainId: 999,
+    recipeSubgraphUrl: getRecipeSubgraphUrl(999),
+    vaultSubgraphUrl: getVaultSubgraphUrl(999),
   },
 };
 
