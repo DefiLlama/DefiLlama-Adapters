@@ -44,8 +44,14 @@ const tokensYieldnest = {
 const spectraVault = "0x9BfCD3788f923186705259ae70A1192F601BeB47"
 const spectraLPToken = "0x2408569177553A427dd6956E1717f2fBE1a96F1D"
 
+const spectraVaultYnETHx = "0x9c5EE26b9623cA864693C575a8fBc8933ae964E7"
+const spectraYnETHxLPToken = "0xBc48c48789031A130F957c59e07B7F987aA642dE"
+
 const clisBNBCDPVault = "0x03C07e6d561b664246058974dB31dbF1c1C0B416"
 const clisBNBLPToken = "0x1d9D27f0b89181cF1593aC2B36A37B444Eb66bEE"
+
+const spectraUSDVault = "0xbb23b7ACdE2B3A2E6446B16Cd3Dd471b0d80342c"
+const spectraUSDLPToken = "0x09d484B738dD85CE3953102453E91507982121d0"
 
 
 async function tvlEthereum(api) {
@@ -56,6 +62,8 @@ async function tvlEthereum(api) {
     [Object.values(tokensBtc), LOOP_PRELAUNCH_BTC],
     [Object.values(tokensYieldnest), LOOP_PRELAUNCH_YNETH],
     [[spectraLPToken], spectraVault],
+    [[spectraUSDLPToken], spectraUSDVault],
+    [[spectraYnETHxLPToken], spectraVaultYnETHx]
   ]
   assets.forEach((asset, i) => ownerTokens.push([[asset], calls[i]]))
   return api.sumTokens({ ownerTokens })
@@ -65,7 +73,7 @@ async function tvlBnb(api) {
   const calls = [lpBNB]
   const assets = await api.multiCall({ abi: 'address:asset', calls, })
   const ownerTokens = [
-    [[clisBNBLPToken], clisBNBCDPVault],
+  [[clisBNBLPToken], clisBNBCDPVault],
   ]
   assets.forEach((asset, i) => ownerTokens.push([[asset], calls[i]]))
   return api.sumTokens({ ownerTokens })

@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
 const { sleep } = require('../helper/utils')
 
@@ -49,10 +48,6 @@ const astroportNobleLppAddr = 'nolus17vsedux675vc44yu7et9m64ndxsy907v7sfgrk7tw3x
 
 const _6Zeros = 1000000
 
-const nativeTokens = {
-  'untrn': 'neutron:untrn',
-  'uosmo': 'osmosis:uosmo'
-}
 
 async function getLeaseCodeId(leaserAddress) {
   const leaserContract = await queryContract({ contract: leaserAddress, chain: 'nolus', data: { 'config': {} } })
@@ -92,17 +87,14 @@ async function getLppTvl(lppAddresses) {
   return totalLpp / divisor;
 }
 
-function sumAssests(balances, leases, currencies) {
+function sumAssests(api, leases, currencies) {
   leases.forEach(v => {
     if (v.opened) {
       let ticker = v.opened.amount.ticker
       const amount = parseInt(v.opened.amount.amount, 10)
       const currencyData = find(currencies, (n) => n.ticker == ticker)
       if (currencyData) { 
-        if (nativeTokens.hasOwnProperty(currencyData.dex_symbol)) {
-          sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount, 'nolus')
-        }
-        sdk.util.sumSingleBalance(balances, currencyData.dex_symbol, amount, 'nolus')
+        api.add(currencyData.dex_symbol, amount)
       }
     }
   })
@@ -118,8 +110,7 @@ function find(collection, predicate) {
   return undefined
 }
 
-async function tvl(protocols) {
-  let balances = {}
+async function tvl(api, protocols) {
   for (let i = 0; i < protocols.length; i++) {
     await sleep(2000)
     const p = protocols[i]
@@ -127,7 +118,7 @@ async function tvl(protocols) {
     const leaseCodeId = await getLeaseCodeId(p.leaser)
     const leaseContracts = await getLeaseContracts(leaseCodeId)
     const leases = await getLeases(leaseContracts)
-    sumAssests(balances, leases, oracleData)
+    sumAssests(api, leases, oracleData)
   }
 }
 
@@ -147,16 +138,16 @@ module.exports = {
     }
   },
   neutron: {
-    tvl: async () => {
-      return await tvl([
+    tvl: async (api) => {
+      return await tvl(api, [
         { leaser: astroportLeaserAddr, oracle: astroportOracleAddr },
         { leaser: astroportNobleLeaserAddr, oracle: astroportNobleOracleAddr },
       ])
     }
   },
   osmosis: {
-    tvl: async () => {
-      return await tvl([
+    tvl: async (api) => {
+      return await tvl(api, [
         { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
         { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
         { leaser: osmosisStAtomLeaserAddr, oracle: osmosisStAtomOracleAddr },
