@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens, sumTokensExport } = require('../helper/sumTokens');
 
 const BBTC = '0xF5e11df1ebCf78b6b6D26E04FF19cD786a1e81dC'
-const BBUSD = '0x77776b40C3d75cb07ce54dEA4b2Fd1D07F865222'
+const BBUSD = ADDRESSES.bouncebit.BBUSD
 // const stBBTC = '0x7F150c293c97172C75983BD8ac084c187107eA19'
 
 const stBBTC_STAKE_ABI =

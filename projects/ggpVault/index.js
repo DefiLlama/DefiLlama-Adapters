@@ -1,16 +1,7 @@
-const GGPVAULT_CONTRACT = "0xdF34022e8a280fc79499cA560439Bb6f9797EbD8";
-const GGP = "0x69260B9483F9871ca57f81A90D91E2F96c2Cd11d";
-
-async function tvl(api) {
-  const bal = await api.call({
-    abi: "uint256:totalAssets",
-    target: GGPVAULT_CONTRACT,
-  });
-  api.add(GGP, bal);
-}
+const { sumERC4626VaultsExport } = require('../helper/erc4626')
 
 module.exports = {
   avax: {
-    tvl,
+    tvl: sumERC4626VaultsExport({ vaults: ['0xdF34022e8a280fc79499cA560439Bb6f9797EbD8', '0x36213ca1483869c5616be738Bf8da7C9B34Ace8d'], isOG4626: true })
   },
 };
