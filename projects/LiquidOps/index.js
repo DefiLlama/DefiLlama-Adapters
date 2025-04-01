@@ -57,7 +57,7 @@ function scaleBalance(amount, denomination) {
 
 module.exports = {
   methodology: "TVL is calculated by getting all supported token pools on LiquidOps, then the lent token balances from the pools and adding up all token USD values provided by CoinGecko.",
-  LiquidOps: { tvl },
+  ao: { tvl },
 };
 
 
