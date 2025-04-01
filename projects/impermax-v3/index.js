@@ -53,63 +53,59 @@ async function tvl(api) {
 }
 
 async function processUniV3Positions(api, positionsApiUrl) {
-  try {
-    console.log(`Fetching positions from API: ${positionsApiUrl}`);
-    const response = await axios.get(positionsApiUrl);
-    const positions = response.data;
+  console.log(`Fetching positions from API: ${positionsApiUrl}`);
+  const response = await axios.get(positionsApiUrl);
+  const positions = response.data;
 
-    if (!Array.isArray(positions) || positions.length === 0) {
-      console.log(`No positions found with api ${positionsApiUrl}`);
-      return;
+  if (!Array.isArray(positions) || positions.length === 0) {
+    console.log(`No positions found with api ${positionsApiUrl}`);
+    return;
+  }
+
+  const poolsMap = {};
+  positions.forEach(position => {
+    if (!position.uniswapV3PoolId || position.liquidity === '0') return;
+
+    const poolId = position.uniswapV3PoolId.toLowerCase();
+    if (!poolsMap[poolId]) {
+      poolsMap[poolId] = {
+        token0: position.token0Id,
+        token1: position.token1Id,
+        positions: []
+      };
     }
 
-    const poolsMap = {};
-    positions.forEach(position => {
-      if (!position.uniswapV3PoolId || position.liquidity === '0') return;
+    poolsMap[poolId].positions.push({
+      liquidity: position.liquidity,
+      tickLower: position.tickLower,
+      tickUpper: position.tickUpper
+    });
+  });
 
-      const poolId = position.uniswapV3PoolId.toLowerCase();
-      if (!poolsMap[poolId]) {
-        poolsMap[poolId] = {
-          token0: position.token0Id,
-          token1: position.token1Id,
-          positions: []
-        };
-      }
+  // Get tick of all unique pools
+  const poolAddresses = Object.keys(poolsMap);
+  const slot0 = await api.multiCall({
+    abi: abi.slot0,
+    calls: poolAddresses,
+    permitFailure: true
+  });
 
-      poolsMap[poolId].positions.push({
+  poolAddresses.forEach((poolAddress, i) => {
+    const poolData = poolsMap[poolAddress];
+    const slotData = slot0[i];
+
+    poolData.positions.forEach(position => {
+      addUniV3LikePosition({
+        api,
+        token0: poolData.token0,
+        token1: poolData.token1,
+        tick: slotData.tick,
         liquidity: position.liquidity,
         tickLower: position.tickLower,
         tickUpper: position.tickUpper
       });
     });
-
-    // Get tick of all unique pools
-    const poolAddresses = Object.keys(poolsMap);
-    const slot0 = await api.multiCall({
-      abi: abi.slot0,
-      calls: poolAddresses,
-      permitFailure: true
-    });
-
-    poolAddresses.forEach((poolAddress, i) => {
-      const poolData = poolsMap[poolAddress];
-      const slotData = slot0[i];
-
-      poolData.positions.forEach(position => {
-        addUniV3LikePosition({
-          api,
-          token0: poolData.token0,
-          token1: poolData.token1,
-          tick: slotData.tick,
-          liquidity: position.liquidity,
-          tickLower: position.tickLower,
-          tickUpper: position.tickUpper
-        });
-      });
-    });
-  } catch (error) {
-    console.error('Error processing Uniswap V3 positions from API:', error);
-  }
+  });
 }
 
 // Same as impermax-v2 adapter
