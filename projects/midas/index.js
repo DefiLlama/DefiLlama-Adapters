@@ -12,6 +12,10 @@ const config = {
   },
   sapphire: {
     mTBILL: '0xDD629E5241CbC5919847783e6C96B2De4754e438',
+  },
+  etlk: {
+    mTBILL: "0xDD629E5241CbC5919847783e6C96B2De4754e438",
+    mBASIS: "0x2247B5A46BB79421a314aB0f0b67fFd11dd37Ee4",
   }
 }
 

@@ -1,5 +1,4 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const hogGenesisAddress = '0x2e585b96a2ef1661508110e41c005be86b63fc34'
 const rewardPoolAddress = '0xa7141905e2972c295577882552bede5406daf5ec'
@@ -15,8 +14,8 @@ const genesisTokens = [
   "0x79bbf4508b1391af3a0f4b30bb5fc4aa9ab0e07c",  // Anon 10% 
   "0x44e23b1f3f4511b3a7e81077fd9f2858df1b7579",  // Mclb 9% 
   "0xa04bc7140c26fc9bb1f36b1a604c7a5a88fb0e70",  // SWPx 11% 
-  "0xe5da20f15420ad15de0fa650600afc998bbe3955",  // stS 7% 
-  "0xd3dce716f3ef535c5ff8d041c1a41c3bd89b97ae",  // scUSD 7% 
+  ADDRESSES.sonic.STS,  // stS 7% 
+  ADDRESSES.sonic.scUSD,  // scUSD 7% 
   "0x4eec869d847a6d13b0f6d1733c5dec0d1e741b4f",  // Indi 4% 
   "0x9fdbc3f8abc05fa8f3ad3c17d2f806c1230c4564",  // Goglz 4% 
   "0x2d0e0814e62d80056181f5cd932274405966e4f0",  // Beets 2%
