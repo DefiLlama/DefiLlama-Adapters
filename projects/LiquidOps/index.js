@@ -27,20 +27,27 @@ async function DryRun(target, action) {
 
 
 function scaleBalance(amount, denomination) {
-  const scaledDivider = BigInt(10) ** BigInt(denomination)
-  const balance = BigInt(amount)  / scaledDivider
-  return Number(balance)
+  if (amount === "0") return 0;
+  const denominationVal = parseInt(denomination);
+  const len = amount.length;
+
+  if (denominationVal >= len) {
+      return parseFloat("0." + "0".repeat(denominationVal - len) + amount.replace(/0+$/, ""));
+  }
+
+  const integerPart = amount.substr(0, len - denominationVal);
+  const fractionalPart = amount.substr(len - denominationVal).replace(/0+$/, "");
+
+  if (fractionalPart === "") return parseInt(integerPart);
+
+  return parseFloat(integerPart + "." + fractionalPart);
 }
 
 
-
-let cachedTokenInfo = null;
 async function getTokenInfos() {
-  if (cachedTokenInfo) return cachedTokenInfo;
-  
   const supportedTokensRes = await DryRun(controllerId, "Get-Tokens")
   const supportedTokens = JSON.parse(supportedTokensRes.Messages[0].Data)
-  cachedTokenInfo = await Promise.all(
+  const tokenInfo = await Promise.all(
     supportedTokens.map(async (balanceObject) => {
       const infoRes = await DryRun(balanceObject.oToken, "Info");
       const tagsObject = Object.fromEntries(
@@ -51,13 +58,14 @@ async function getTokenInfos() {
       return {
         ticker: `coingecko:${ticker}`,
         cash: scaleBalance(tagsObject['Cash'], tagsObject['Denomination']),
-        totalBorrows: scaleBalance(tagsObject['totalBorrows'], tagsObject['Denomination'])
+        totalBorrows: scaleBalance(tagsObject['Total-Borrows'], tagsObject['Denomination'])
       };
     })
   );
   
-  return cachedTokenInfo;
+  return tokenInfo;
 }
+
 
 async function tvl() {
   const tokensInfo = await getTokenInfos();
@@ -70,6 +78,7 @@ async function tvl() {
   return combinedBalances;
 }
 
+
 async function borrowed() {
   const tokensInfo = await getTokenInfos();
   const combinedBalances = {};
@@ -80,6 +89,7 @@ async function borrowed() {
   
   return combinedBalances;
 }
+
 
 module.exports = {
   methodology: methodologies.lendingMarket,
