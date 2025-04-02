@@ -6,6 +6,9 @@ const BSC_FROM_BLOCK = 45524968;
 const ARBITRUM_VAULT = '0x31206FFb663651aBe29cCb72aD213d5F95BdaC45';
 const ARBITRUM_FROM_BLOCK = 293021794;
 
+const SONIC_VAULT = '0x575Ac25f047A76B467A84BfA69b328D6ebC6aE60';
+const SONIC_FROM_BLOCK = 13212801;
+
 function strategiesTvl(vault, fromBlock) {
   return async (api) => {
     const logs = await getLogs2({
@@ -71,5 +74,8 @@ module.exports = {
   },
   arbitrum: {
     tvl: strategiesTvl(ARBITRUM_VAULT, ARBITRUM_FROM_BLOCK)
+  },
+  sonic: {
+    tvl: strategiesTvl(SONIC_VAULT, SONIC_FROM_BLOCK)
   }
 };
