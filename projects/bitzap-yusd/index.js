@@ -1,38 +1,19 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const config = {
-  btr: {
-    pools: [
-      { factory: '0x076f890bb7169bbbc282458cbdd5414d5af0af25', fromBlock: 10053638 },
-    ]
-  },
+const controller = '0x487e869353977411142de3a776bc2cd9f3197164'
+
+const abis = {
+  nLoans: 'function n_loans() view returns (uint256)',
+  loans: 'function loans(uint256 arg0) view returns (address)',
+  userState: 'function user_state(address user) view returns (uint256[4])'
+}
+
+const tvl = async (api) => {
+  const users = await api.fetchList({ target: controller, itemAbi: abis.loans, lengthAbi: abis.nLoans })
+  const userInfos = await api.multiCall({ calls: users.map((user) => ({ target: controller, params: [user] })), abi: abis.userState })
+  userInfos.forEach(([coll]) => { api.add(ADDRESSES.ethereum.WBTC, coll / 1e10, { skipChain: true })})
 }
 
 module.exports = {
-};
-
-
-Object.keys(config).forEach(chain => {
-  const { pools} = config[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const logs = await Promise.all(pools.map(getLogs_))
-
-      return sumTokens2({ api, tokensAndOwners: logs.flat().map(i => [i.collateral, i.amm]) })
-
-      async function getLogs_({ factory, fromBlock }) {
-        return getLogs({
-          api,
-          target: factory,
-          topics: ['0xebbe0dfde9dde641808b7a803882653420f3a5b12bb405d238faed959e1e3aa3'],
-          eventAbi: 'event AddMarket (address indexed collateral, address controller, address amm, address monetary_policy, uint256 ix)',
-          onlyArgs: true,
-          fromBlock,
-        })
-      }
-    }
-  }
-})
-
-// returning 0
+  btr: { tvl }
+}
