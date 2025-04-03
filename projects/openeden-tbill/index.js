@@ -15,44 +15,55 @@ const xrpTBILLAddr = {
     subscriptionOperatorAddress: 'rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM',
 }
 
-async function evmTVL(api) {
-    if (evmTBILLAddr[api.chain]) {
-        const tbillTVL = await api.call({
-            abi: 'uint256:totalAssets',
-            target: evmTBILLAddr[api.chain],
-        })
-        api.add(evmTBILLAddr[api.chain], tbillTVL)
-    }
+async function ethTVL(api) {
+    const tbill = await api.call({ 
+        abi: 'uint256:totalAssets', 
+        target: evmTBILLAddr.ethereum 
+    })
+    api.add(evmTBILLAddr.ethereum, tbill)
 
-    if (evmUSDOAddr[api.chain]) {
-        const usdoTVL = await api.call({
-            abi: 'uint256:totalSupply',
-            target: evmUSDOAddr[api.chain],
-        })
-        api.add(evmUSDOAddr[api.chain], usdoTVL)
-    }
+    const usdo = await api.call({ 
+        abi: 'uint256:totalSupply', 
+        target: evmUSDOAddr.ethereum 
+    })
+    api.add(evmUSDOAddr.ethereum, usdo)
+}
+
+async function arbTVL(api) {
+    const tbill = await api.call({ 
+        abi: 'uint256:totalAssets', 
+        target: evmTBILLAddr.arbitrum
+    })
+    api.add(evmTBILLAddr.arbitrum, tbill)
+}
+
+async function baseTVL(api) {
+    const usdo = await api.call({ 
+        abi: 'uint256:totalSupply', 
+        target: evmUSDOAddr.base 
+    })
+    api.add(evmUSDOAddr.base, usdo)
 }
 
 async function solTVL(api) {
     const data = await getTokenSupplies([solTBILLAddr])
-    Object.entries(data).forEach(([token, balance]) => {
-        api.add(token, balance)
+    Object.entries(data).forEach(([addr, tbill]) => {
+        api.add(addr, tbill)
     })
 }
 
 async function xrpTVL(api) {
-
     const data = await ripple.gatewayBalances({
-        account: xrpTBILLAddr.issuerAddress,
-        hotwallet: xrpTBILLAddr.subscriptionOperatorAddress,
+        account: xrpTBILLAddr.issuerAddress, 
+        hotwallet: xrpTBILLAddr.subscriptionOperatorAddress, 
     })
-    api.add(evmTBILLAddr['ethereum'], Number(data.obligations?.TBL) * 1e6, { skipChain: true })
+    api.add(evmTBILLAddr.ethereum, Number(data.obligations?.TBL) * 1e6, { skipChain: true })
 }
 
 module.exports = {
-  ethereum: { tvl: evmTVL },
-  arbitrum: { tvl: evmTVL },
-  base: { tvl: evmTVL},
+  ethereum: { tvl: ethTVL },
+  arbitrum: { tvl: arbTVL },
+  base: { tvl: baseTVL},
   ripple: { tvl: xrpTVL },
   solana: { tvl: solTVL },
 }
