@@ -1,3 +1,3 @@
 const { uniTvlExport } = require('../helper/unknownTokens')
 
-module.exports = uniTvlExport('svm', '0x1842c9bD09bCba88b58776c7995A9A9bD220A925')
+module.exports = uniTvlExport('prom', '0x3B73a7eDc9dfE4847a20BcCfEf6Eb1c90439f5C9') //factory address
