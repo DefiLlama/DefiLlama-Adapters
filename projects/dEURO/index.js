@@ -11,7 +11,10 @@ const MAINNET = {
     EURT: "0x2353D16869F717BFCD22DaBc0ADbf4Dca62C609f",
     EURS: "0x0423F419De1c44151B6b000e2dAA51859C1D5d2A",
     EURC: "0xD03cD3ea55e67bC61b78a0d70eE93018e2182Dbe"
-  }
+  },
+  WFPS: "0x5052D3Cc819f53116641e89b96Ff4cD1EE80B182",   // Wrapped Frankencoin Pool Share
+  FPS: "0x1bA26788dfDe592fec8bcB0Eaff472a42BE341B2",    // Frankencoin Pool Share
+  ZCHF: "0xB58E61C3098d85632Df34EecfB899A1Ed80921cB",   // Frankencoin
 };
 
 const GRAPHQL_ENDPOINT = "https://ponder.dEURO.com";
@@ -30,11 +33,17 @@ async function tvl(api) {
   }`;
 
   const { positionV2s } = await cachedGraphQuery('dEURO', GRAPHQL_ENDPOINT, positionQuery);
-
+  const wfpsPriceInZchf = await api.call({  abi: 'uint256:price', target: MAINNET.FPS}) // WFPS price = FPS price
+  
   // Add collateral tokens in positions
   positionV2s?.items?.forEach(i => {
     if (parseInt(i.collateralBalance) > 0) {
-      tokensAndOwners.push([i.collateral, i.position]);
+      if (i.collateral?.toLowerCase() === MAINNET.WFPS.toLowerCase()) {
+        const wfpsValueInZchf = BigInt(i.collateralBalance) * BigInt(wfpsPriceInZchf) / BigInt(10**18);
+        api.add(MAINNET.ZCHF, wfpsValueInZchf);
+      } else {
+        tokensAndOwners.push([i.collateral, i.position]);
+      }
     }
   });
 
