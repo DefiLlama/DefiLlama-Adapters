@@ -2360,7 +2360,8 @@
     "ETH": "0x908828f4fb0213d4034c3ded1630bbd904e8a3a6bf3c63270887f0b06653a376"
   },
   "mtt_network": {
-    "USDC": "0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265"
+    "USDC": "0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265",
+    "USDT": "0x78a39b9101983D2009Ff14773E8e47Ca3a23BBfD"
   },
   "winr": {
     "WINR": "0xd77b108d4f6cefaa0cae9506a934e825becca46e",
