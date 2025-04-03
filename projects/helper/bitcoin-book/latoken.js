@@ -1,35 +1,5 @@
 module.exports = [
   "bc1q48amr6l7dvacdppgucvnswwuyleaqh4dus8z8h",
   "bc1q2cgh9nxn7cqmqhk4hc5fu6mju8nzy9a20qqqh8", //cold
-  "bc1qw5fc9ml9vm4xq5c6xkcdu3vtwyw4gdn8lw0uwq",
-  "bc1qxga6uywv26xya6ysm2sa3zjusv5az8e7u53v2t",
-  "bc1qs6y3m650fsjkc3fp9hph3kuup7clzq97e2yhms",
-  "bc1qy4m37x93apmh5rzjyjuus0z75dev4kqhtlacp4",
-  "bc1q36wjkvel2thtsa7meqz6zw5xxlq460ndsdry3n",
-  "bc1qhkced4x5224mcyd7mrec3062qnjr3jhdl6qgnj",
-  "bc1q2cgh9nxn7cqmqhk4hc5fu6mju8nzy9a20qqqh8",
-  "bc1qvfja42tc6n4kvhjrg78xz7xepfecgtnyrnjr75",
-  "bc1qe6yg0jqqh3lnqya6cdjvwwx434vzzpky7fsgga",
-  "bc1qrwtyxlkcnxrnkhx4vezexy25v0mp46kzd5cfjs",
-  "bc1q48amr6l7dvacdppgucvnswwuyleaqh4dus8z8h",
-  "bc1q3z0ph0z7w4mtlakzde3y63srhtudsrvpdhxqjy",
-  "bc1q5atnjdswe3xaqts36xcym3grhuwjv9zjw7fwp6",
-  "bc1q03747tmx66vngxxkyv64nxryn4t4x2awu84kh4",
-  "bc1qhgl582pql4uj4n428p6s645rs3a7360qufr3wm",
-  "bc1q3s6sgeavt3ytymcfh0xzjtyzrnat69pqcehcwz",
-  "bc1q6nscng9ayv3rhcx0czjqzxppe6na2ldtcktng4",
-  "bc1qu9wy5fsz8zmyqeuaucvhac7zhll646dtqhq5n2",
-  "bc1qw5fc9ml9vm4xq5c6xkcdu3vtwyw4gdn8lw0uwq",
-  "bc1qpr4xqsuxjnla34zp7l65aqagstmja4fdtqfpds",
-  "bc1qsessxflqsw9uq0jdjaryrurq82cpv6kn3l58mr",
-  "bc1q6ve56cpev4tjaaf7h95fcllvqsd6u7e8vsc89l",
-  "bc1qzvnsk6e32j5k5zd5w28v3h2dn4zkz30gkxl9lg",
-  "bc1qhzq2tf4p56ztseyqxzgte3muc2xehgpz5eswcy",
-  "bc1qex96yyju8g905jnu5jxxe2233wdzzugvu78yr5",
-  "bc1qrz5f8dep2ghgu2xw597a0j2jyvr68jdpteuvl0",
-  "bc1qmdjq7knsdlzvj990plgnqcmzuga6tvn63nmuad",
-  "bc1q6ntnj9yag07qvwyc600atywa6n9rwvqt02e86y",
-  "bc1qkhveyfp2jjhg8sh6flrvxmel9uqazwntmn6hc6",
-  "bc1qhq73kqggmw2r94freavg66fz4r8ngk68jj4ktn",
-  "bc1q8dukz2tkdmf76r8etk3s67596d9jawvftqnjsv"
-];
+  "bc1qw5fc9ml9vm4xq5c6xkcdu3vtwyw4gdn8lw0uwq"
+]
