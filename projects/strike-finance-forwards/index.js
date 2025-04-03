@@ -9,18 +9,8 @@ const strikeTokenAddress = 'f13ac4d66b3ee19a6aa0f2a22298737bd907cc95121662fc971b
 async function fetchContractAddresses(positionsTxHashes) {
     const contractAddresses = await Promise.all(
         positionsTxHashes.map(async ({ txHash, outputIndex }) => {
-            try {
-                const txUtxos = await getTxUtxos(txHash);
-                if (txUtxos && txUtxos.outputs && txUtxos.outputs[outputIndex]) {
-                    return txUtxos.outputs[outputIndex].address;
-                } else {
-                    console.error('Invalid txUtxos or outputIndex', { txHash, outputIndex }, txUtxos);
-                    return null;
-                }
-            } catch (error) {
-                console.error('Error fetching txUtxos for', { txHash, outputIndex }, error);
-                return null;
-            }
+            const txUtxos = await getTxUtxos(txHash);
+            return txUtxos?.outputs?.[outputIndex]?.address || null;
         })
     );
 
@@ -29,33 +19,22 @@ async function fetchContractAddresses(positionsTxHashes) {
 
 async function tvl() {
     const allPositions = await get('https://beta.strikefinance.org/api/forwards/getAllForwards');
-
-    // Get position tx hash and output index
     const positionsTxHashes = allPositions.forwards.map(({ outRef }) => outRef);
-
-    // Get contract addresses from tx outputs
     const uniqueContractAddresses = [...new Set(await fetchContractAddresses(positionsTxHashes))];
-
-    // Get assets from the unique contract addresses
-    const formattedAssets = await sumTokens2({
-        owners: uniqueContractAddresses
-    });
-
-    return formattedAssets
+    return await sumTokens2({ owners: uniqueContractAddresses });
 }
 
 async function stake() {
-    const stakedStrike = await sumTokens2({
+    return await sumTokens2({
         owner: strikeStaking,
         tokens: [strikeTokenAddress]
-    })
-    return stakedStrike;
+    });
 }
 
 module.exports = {
     timetravel: false,
     cardano: {
-        tvl: tvl,
+        tvl,
         staking: stake
     },
 }
