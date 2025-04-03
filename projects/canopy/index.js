@@ -10,6 +10,74 @@ const liquidswapV1Address = "4763c5cfde8517f48e930f7ece14806d75b98ce31b0b4eab99f
 const moveCoinAddress = ADDRESSES.aptos.APT
 const moveCoinFa = "0xa"
 
+const cornucopiaVaultSingleAssetInstances = [
+  "0xfc92543a46dd93c8df27baf33b45bfcddef241ce07a7813c3278714662cff684",
+  "0xef2436c88d7b329add9c0f22e72854349d815e12a3545c636bd9954b6c5d5525",
+  "0xc88fc85e66bc6feaa22af729eca471b645e2ecbc30b20e5e3aed6a27b18bce6c",
+]
+
+const cornucopiaVaultDualAssetInstances = [
+  "0x56ed550ba1bee0ba121c559887dcf4377c0807a9c442169efcf8f9a22b5e0810",
+  "0xb2533c3b95078c92fd9aaa2e9fb182966e879a7a19e1697345788722a56205b1",
+  "0x5652c4977b103d323756540dd030c2cd083539600f3ed07872fdb762f7c9ed4a",
+  "0x3a1849f4974623aaf162c02d1b6298aebc3acf964997c1f4e1fe6f435188e499",
+];
+
+const cornucopiaVedaVaultDualAssetInstances = [
+  "0xcf52f11fe0247257ac0ce475c6ac2a8fa0cacfbe2ff7367f0e6bdcbc13e666c9"
+]
+
+const cornucopiaVaultSingleAssetPkg = "0x2e326b5ed3736370cabc3bfddeb20a7a985e03f097101b7b3da66d51f80a7840";
+const cornucopiaVaultDualAssetPkg = "0x3e56e3bdec22868d77346b1d4728302da8f6649eacbd8b67a05aa94130085abb";
+const cornucopiaVedaVaultDualAssetPkg = "0xcf8b722b373efb58754667a6ce56e3b5078337bfb5dbf47ec66b4d10e1098e4b";
+
+async function getDualAssetBalances(pkgAddress, instanceAddresses, api) {
+
+  for (const dualAssetInstanceAddress of instanceAddresses) {
+
+    const base_asset_balances = await function_view({
+      functionStr: `${pkgAddress}::dual_asset_base_deployer::last_recorded_base_asset_balances`,
+      type_arguments: [],
+      args: [dualAssetInstanceAddress],
+      chain: 'move'
+    });
+
+    const baseAssets = await function_view({
+      functionStr: `${pkgAddress}::dual_asset_base_deployer::base_assets`,
+      type_arguments: [],
+      args: [dualAssetInstanceAddress],
+      chain: 'move'
+    });
+
+    api.add(baseAssets[0].inner, base_asset_balances[0]);
+    api.add(baseAssets[1].inner, base_asset_balances[1]);
+  }
+
+}
+
+async function getSingleAssetBalances(pkgAddress, instanceAddresses, api) {
+
+  for (const singleAssetInstanceAddress of instanceAddresses) {
+
+    const total_unclaimed_contributions = await function_view({
+      functionStr: `${pkgAddress}::single_asset_base_deployer::total_unclaimed_contributions`,
+      type_arguments: [],
+      args: [singleAssetInstanceAddress],
+      chain: 'move'
+    });
+
+    const baseAssets = await function_view({
+      functionStr: `${pkgAddress}::single_asset_base_deployer::base_asset`,
+      type_arguments: [],
+      args: [singleAssetInstanceAddress],
+      chain: 'move'
+    });
+
+    api.add(baseAssets.inner, total_unclaimed_contributions);
+  }
+
+}
+
 async function getCanopyCoreVaults(address, pageSize = 100) {
   let offset = 0;
   let allVaults = [];
@@ -96,6 +164,9 @@ module.exports = {
         api.add(assetX, balanceX);
         api.add(assetY, balanceY);
       }
+      await getDualAssetBalances(cornucopiaVaultDualAssetPkg, cornucopiaVaultDualAssetInstances, api);
+      await getDualAssetBalances(cornucopiaVedaVaultDualAssetPkg, cornucopiaVedaVaultDualAssetInstances, api);
+      await getSingleAssetBalances(cornucopiaVaultSingleAssetPkg, cornucopiaVaultSingleAssetInstances, api);
     },
   },
 };
