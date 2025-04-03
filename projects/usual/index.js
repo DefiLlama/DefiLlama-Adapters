@@ -19,5 +19,6 @@ const owners = [
 
 module.exports = {
   methodology: 'TVL represents the value in RWA held by the protocol',
-  ethereum: { tvl: sumTokensExport({ tokens, owners })}
+  ethereum: { tvl: sumTokensExport({ tokens, owners })}, 
+  doublecounted: true 
 }
