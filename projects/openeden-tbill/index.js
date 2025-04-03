@@ -15,31 +15,40 @@ const xrpTBILLAddr = {
     subscriptionOperatorAddress: 'rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM',
 }
 
-async function evmTVL(api, token) {
-    const tvl = await api.call({
-        abi: 'erc20:totalSupply',
-        target: token,
-    })
-    api.add(token, tvl, { skipChain: true })
-}
-
 async function ethTVL(api) {
-    evmTVL(api, evmTBILLAddr['ethereum'])
-    evmTVL(api, evmUSDOAddr['ethereum'])
+    const tbill = await api.call({ 
+        abi: 'uint256:totalAssets', 
+        target: evmTBILLAddr.ethereum 
+    })
+    api.add(evmTBILLAddr.ethereum, tbill)
+
+    const usdo = await api.call({ 
+        abi: 'uint256:totalSupply', 
+        target: evmUSDOAddr.ethereum 
+    })
+    api.add(evmUSDOAddr.ethereum, usdo)
 }
 
 async function arbTVL(api) {
-    evmTVL(api, evmTBILLAddr['arbitrum'])
+    const tbill = await api.call({ 
+        abi: 'uint256:totalAssets', 
+        target: evmTBILLAddr.arbitrum
+    })
+    api.add(evmTBILLAddr.arbitrum, tbill)
 }
 
 async function baseTVL(api) {
-    evmTVL(api, evmUSDOAddr['base'])
+    const usdo = await api.call({ 
+        abi: 'uint256:totalSupply', 
+        target: evmUSDOAddr.base 
+    })
+    api.add(evmUSDOAddr.base, usdo)
 }
 
 async function solTVL(api) {
     const data = await getTokenSupplies([solTBILLAddr])
-    Object.entries(data).forEach(([token, balance]) => {
-        api.add(token, balance, { skipChain: true })
+    Object.entries(data).forEach(([addr, tbill]) => {
+        api.add(addr, tbill)
     })
 }
 
@@ -48,7 +57,7 @@ async function xrpTVL(api) {
         account: xrpTBILLAddr.issuerAddress, 
         hotwallet: xrpTBILLAddr.subscriptionOperatorAddress, 
     })
-    api.add(evmTBILLAddr['ethereum'], Number(data.obligations?.TBL) * 1e6, { skipChain: true })
+    api.add(evmTBILLAddr.ethereum, Number(data.obligations?.TBL) * 1e6, { skipChain: true })
 }
 
 module.exports = {
