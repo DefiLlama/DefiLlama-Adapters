@@ -1,6 +1,6 @@
 const abi = {
-  "getTokensForBorrowingArray": "function getTokensForBorrowingArray() view returns ((address tokenAddress, uint256 LTV, uint256 stableRate, string name, uint256 liquidationThreshold)[])",
-  "getTokensForLendingArray": "function getTokensForLendingArray() view returns ((address tokenAddress, uint256 LTV, uint256 stableRate, string name, uint256 liquidationThreshold)[])",
+  "getTokensForBorrowingArray": "function getTokensForBorrowingArray() view returns ((address tokenAddress, uint256 LTV, uint256 rate, string name, uint256 liquidationThreshold)[])",
+  "getTokensForLendingArray": "function getTokensForLendingArray() view returns ((address tokenAddress, uint256 LTV, uint256 rate, string name, uint256 liquidationThreshold)[])",
   "getTotalTokenBorrowed": "function getTotalTokenBorrowed(address tokenAddress) view returns (uint256)",
 }
 
