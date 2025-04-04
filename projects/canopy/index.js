@@ -7,6 +7,8 @@ const canopyLiquidswapAddress = "968a2429f2544882a1743c51128fdf876ff03a25287d618
 const registryAddress = "e6ef7257c8d73c55c97507705e4aac1bcc740c648eb698db3b07895fff689f05"; // Registry for Liquidswap Vaults
 const liquidswapV1Address = "4763c5cfde8517f48e930f7ece14806d75b98ce31b0b4eab99f49a067f5b5ef2"; // Liquidswap V1 Module
 
+const liquidswapV0_5PeripheryAddress = "0x97529f5d2d9c0b1b6595b731e70166ea5314ab8682af04d58040898b5b07bc90";
+
 const moveCoinAddress = ADDRESSES.aptos.APT
 const moveCoinFa = "0xa"
 
@@ -30,6 +32,8 @@ const cornucopiaVedaVaultDualAssetInstances = [
 const cornucopiaVaultSingleAssetPkg = "0x2e326b5ed3736370cabc3bfddeb20a7a985e03f097101b7b3da66d51f80a7840";
 const cornucopiaVaultDualAssetPkg = "0x3e56e3bdec22868d77346b1d4728302da8f6649eacbd8b67a05aa94130085abb";
 const cornucopiaVedaVaultDualAssetPkg = "0xcf8b722b373efb58754667a6ce56e3b5078337bfb5dbf47ec66b4d10e1098e4b";
+
+const meridianPkg = "0xfbdb3da73efcfa742d542f152d65fc6da7b55dee864cd66475213e4be18c9d54";
 
 async function getDualAssetBalances(pkgAddress, instanceAddresses, api) {
 
@@ -103,7 +107,7 @@ async function getCanopyCoreVaults(address, pageSize = 100) {
       // No more vaults or empty response
       hasMoreVaults = false;
     }
-    console.log('allVaults', allVaults.length)
+    // console.log('allVaults', allVaults.length).
   }
 
   return { vaults: allVaults };
@@ -141,6 +145,27 @@ async function getWrappedFA(coin) {
   return (await wrappedCache[coin]).inner;
 }
 
+// This function parses the paired_coin_type string to extract token types and curve type
+function parseLiquidswapLPType(lpTypeString) {
+  try {
+    // Extract the content between < and >
+    const genericPart = lpTypeString.match(/<(.+)>/)[1];
+
+    // Split by comma and trim to get the three parts
+    const parts = genericPart.split(',').map(part => part.trim());
+
+    return {
+      token0: parts[0],
+      token1: parts[1],
+      curveType: parts[2]
+    };
+  } catch (error) {
+    console.error("Failed to parse LP type string:", error);
+    return null;
+  }
+}
+
+
 module.exports = {
   timetravel: false,
   methodology:
@@ -150,10 +175,86 @@ module.exports = {
       const vaultsInfo = await getCanopyCoreVaults(canopyCoreAddress)
       for (const vault of vaultsInfo.vaults) {
         const asset = vault.asset_address
-        const balance = vault.total_asset
+        const balance = vault.total_asset;
+        const asset_name = vault.asset_name;
+
+        // Handle Meridian LP tokens
+        if (asset_name === "Meridian LP Token") {
+          // Get the underlying assets in the pool
+          const poolAssetsMetadata = await function_view({
+            functionStr: `${meridianPkg}::pool::pool_assets_metadata`,
+            type_arguments: [],
+            args: [asset],
+            chain: 'move'
+          });
+
+          // Preview what we'd get if we removed liquidity
+          const removeLiquidityPreview = await function_view({
+            functionStr: `${meridianPkg}::pool::preview_remove_liquidity`,
+            type_arguments: [],
+            args: [asset, asset, balance],
+            chain: 'move'
+          });
+
+          // Add each underlying asset to the TVL
+          for (let i = 0; i < poolAssetsMetadata.length; i++) {
+            const assetMetadata = poolAssetsMetadata[i];
+            const assetAmount = removeLiquidityPreview.withdrawn_amounts[i];
+            // Get the FA (fungible asset) address if necessary
+            api.add(assetMetadata.inner, assetAmount);
+          }
+          continue;
+        }
+
+        // Handle Liquidswap V0.5 LP tokens
+        if (asset_name && asset_name.startsWith("LS05")) {
+          // Get the paired coin type string
+          const pairedCoinType = vault.paired_coin_type?.vec?.[0];
+          if (!pairedCoinType) {
+            throw new Error("Missing paired_coin_type for Liquidswap LP token");
+          }
+
+          // Parse the LP type string to extract token types and curve type
+          const lpTypeInfo = parseLiquidswapLPType(pairedCoinType);
+          if (!lpTypeInfo) {
+            throw new Error("Failed to parse LP type info");
+          }
+
+          // console.log("LP Type Info:", lpTypeInfo);
+
+          // Get the reserves for the LP token
+          const reserves = await function_view({
+            functionStr: `${liquidswapV0_5PeripheryAddress}::views::get_reserves_for_lp_coins`,
+            type_arguments: [
+              lpTypeInfo.token0,
+              lpTypeInfo.token1,
+              lpTypeInfo.curveType
+            ],
+            args: [balance, 5], // 5 is the LS version for V0.5
+            chain: 'move'
+          });
+
+          // Extract the reserve values
+          const reserve0 = reserves[0];
+          const reserve1 = reserves[1];
+
+          // Get the FA addresses for both tokens
+          const token0FA = await getWrappedFA(lpTypeInfo.token0);
+          const token1FA = await getWrappedFA(lpTypeInfo.token1);
+
+          // Add the reserves to the TVL
+          api.add(token0FA, reserve0);
+          api.add(token1FA, reserve1);
+
+          // console.log(`Added reserves for ${asset_name}: ${token0FA}=${reserve0}, ${token1FA}=${reserve1}`);
+          continue;
+        }
+
+        // For regular assets, add them directly
         api.add(asset, balance);
       }
 
+      // Process Canopy Liquidswap vaults
       const vaultsMetadata = await getCanopyLiquidswapVaultsMetadata(registryAddress);
       for (const vault of vaultsMetadata) {
         const vaultInfo = await getCanopyLiquidswapVault(vault)
@@ -164,6 +265,8 @@ module.exports = {
         api.add(assetX, balanceX);
         api.add(assetY, balanceY);
       }
+
+      // Process Cornucopia vaults
       await getDualAssetBalances(cornucopiaVaultDualAssetPkg, cornucopiaVaultDualAssetInstances, api);
       await getDualAssetBalances(cornucopiaVedaVaultDualAssetPkg, cornucopiaVedaVaultDualAssetInstances, api);
       await getSingleAssetBalances(cornucopiaVaultSingleAssetPkg, cornucopiaVaultSingleAssetInstances, api);
