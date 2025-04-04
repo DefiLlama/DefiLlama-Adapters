@@ -26,7 +26,7 @@ async function tvl() {
 
 async function stake() {
     return await sumTokens2({
-        owner: strikeStaking,
+        owner: [strikeStaking],
         tokens: [strikeTokenAddress]
     });
 }
