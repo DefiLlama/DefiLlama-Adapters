@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { function_view } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
 
 const meridianLensAddress = "23e71cc9821bbe85404ab9850694cd319701687265bb18740af067843fc81f1e";
 
@@ -15,18 +13,15 @@ module.exports = {
   move: {
     tvl: async (api) => {
       const poolInfos = await getPools(meridianLensAddress)
-      const netBalances = {};
-      
       for (const poolInfo of poolInfos) {
         const assets = poolInfo.assets_metadata.map(asset => asset.inner)
         const balances = poolInfo.balances
-        
+
         for (let i = 0; i < assets.length; i++) {
-            sdk.util.sumSingleBalance(netBalances, assets[i], balances[i]);
+          api.add(assets[i], balances[i]);
         }
       }
 
-      return transformBalances(api.chain, netBalances)
     },
   },
 };
