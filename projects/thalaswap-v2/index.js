@@ -1,5 +1,5 @@
 const { function_view } = require("../helper/chain/aptos");
-const { get } = require('./helper/http')
+const { get } = require('../helper/http')
 
 const thalaswapLensAddress = "ff1ac437457a839f7d07212d789b85dd77b3df00f59613fcba02388464bfcacb";
 
