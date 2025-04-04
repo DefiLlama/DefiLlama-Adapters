@@ -15,7 +15,7 @@ module.exports = {
   aptos: {
     tvl: async (api) => {
       // Fetch pool data from API
-      const { data: { data: poolsData } } = await get('https://app.thala.fi/api/liquidity-pools');
+      const { data: poolsData } = await get('https://app.thala.fi/api/liquidity-pools');
 
       // Filter for V2 pools and get lptAddresses
       const v2Pools = poolsData.filter(pool => pool.metadata.isV2);
