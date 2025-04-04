@@ -17,7 +17,7 @@ const xrpTBILLAddr = {
 
 async function ethTVL(api) {
     const tbill = await api.call({ 
-        abi: 'uint256:totalAssets', 
+        abi: 'uint256:totalSupply',
         target: evmTBILLAddr.ethereum 
     })
     api.add(evmTBILLAddr.ethereum, tbill)
@@ -31,7 +31,7 @@ async function ethTVL(api) {
 
 async function arbTVL(api) {
     const tbill = await api.call({ 
-        abi: 'uint256:totalAssets', 
+        abi: 'uint256:totalSupply',
         target: evmTBILLAddr.arbitrum
     })
     api.add(evmTBILLAddr.arbitrum, tbill)
