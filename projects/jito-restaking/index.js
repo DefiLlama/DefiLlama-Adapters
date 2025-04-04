@@ -36,7 +36,7 @@ async function tvl(api) {
 
 
 
-  fragSOL = [
+  const fragSOL = [
     ['J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
     ['BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85', 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
     ['mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', 'AkbZvKxUAxMKz92FF7g5k2YLCJftg8SnYEPWdmZTt3mp'],
