@@ -35,7 +35,7 @@ const chainListSupply = [
   'stride',
   'terra2',
   'umee', 
-  'xpla'
+  'xpla',
 ];
 const chainListTotal = [
   'arbitrum', 
@@ -56,6 +56,8 @@ const chainListTotal = [
   'optimism', 
   'polygon',
   'scroll', 
+  'stellar',
+  'sui',
 ];
 
 const blacklistedTokensChain = {
