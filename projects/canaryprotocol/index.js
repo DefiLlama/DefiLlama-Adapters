@@ -5,6 +5,7 @@ module.exports = {
   methodology: "The combined TVL all vaults",
 }
 
+// TODO: update the smart contract address for plume-mainnet
 const config = {
   plume: { factory: '0xbe3c7Bbc504EA41c21D3810c340Cd15624a3cF59', fromBlock: 357721 },
 }
