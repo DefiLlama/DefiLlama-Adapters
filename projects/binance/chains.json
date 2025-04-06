@@ -27,7 +27,8 @@
     "0xb38e8c17e38363af6ebdcb3dae12e0243582891d",
     "0xf92402bb795fd7cd08fb83839689db79099c8c9c",
     "0xf977814e90da44bfa03b6295a0616a897441acec",
-    "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
+    "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f",
+    "Bridging in progress"
   ],
   "avax": [
     "0x3bce63c6c9abf7a47f52c9a3a7950867700b0158",
@@ -60,6 +61,7 @@
     "0x4fdfe365436b5273a42f135c6a6244a20404271e",
     "0x515b72ed8a97f42c568d6a143232775018f133c8",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+    "0x631fc1ea2270e98fbd9d92658ece0f5a269aa161",
     "0x73f5ebe90f27b46ea12e5795d16c4b408b19cc6f",
     "0x835678a611b28684005a5e2233695fb6cbbb0007",
     "0x8894e0a0c962cb723c1976a4421c95949be2d4e3",
@@ -141,7 +143,6 @@
     "DMcrq3jy8MVYTBM9tGCjFZerpKXpW91WXx",
     "DPAMdZsSirVBGeDR9sE1LJXkwG6AQSNAMW",
     "DPNqMsW1rotjhCzcbBEXzK3W73DiyzVLYc",
-    "DPjAgjrEYTc7RzN3E19sDLrAhRt7DrTTmd",
     "DQYqMYmQCfL2eDLmMXV5uvCPkN6Vv4KtSx",
     "DQkwksfYrAWAR9tRcqygA5pihmnURozxzo",
     "DTGrjpvJXQU2zSpUDsnk9b4PAQW5Pwtg4K",
@@ -194,10 +195,8 @@
     "LbmGksLBwtwRXyxeazCZqKiAHX6cWN2AzN",
     "LhcTcrMrheBqbthwfit43jkT9qnge5wSs1",
     "LhzEoDXHXASi4hSMxrKeVoSGrED9QsBpPq",
-    "MCxkrwNxqtJXRYUX3jjNM9pQXyng7rTNDd",
     "MG9aFQgTH5C4UPcur8S2bh5duKYMfaJFUS",
     "MGvsTeo5z1uEp61t9Vu9ShjK5NEZM5hGzH",
-    "MLuNd2gvfBPj4MQpuRikTqqxbF7cypJEAX",
     "MQSs17ECe51kqhkFPQY98wiyPvGuK5iCB6",
     "MQd1fJwqBJvwLuyhr17PhEFx1swiqDbPQS"
   ],
@@ -223,11 +222,19 @@
     "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
   ],
   "near": [
+    "1ff65ecdcd5dd3965f80f969c65120cddfc965ee9741e5655b44461b718037c6",
     "451913e633c72fb951effe076d3bd2977e3f08083dcf6c87fa89992b0d437c5c",
+    "56203c5b21b828175fa9c1fd4161ecaca76de9a1f6008935eeb9b4d6dc821a22",
     "5c33c6218d47e00ef229f60da78d0897e1ee9665312550b8afd5f9c7bc6957d2",
+    "7747991786f445efb658b69857eadc7a57b6b475beec26ed14da8bc35bb2b5b6",
     "9c484fa5d2d069569ba063fc555c34e621ccd88fdbb0295fc79bad232621c5c1",
+    "binance1.near",
     "binancecold3.near",
-    "d04204b6591fefb973a8ed60929f8211af89ee38020da9faf905acdc7a320063"
+    "c6f10c6993a97c90e34ce60c5ea3ccb4915cf731daff0e7a2e5d93ebc879cc74",
+    "d04204b6591fefb973a8ed60929f8211af89ee38020da9faf905acdc7a320063",
+    "e1074e251c7350b8a4480816fffd897b727011df579e04cc19f890fd48fd8830",
+    "e1a70d1d2b8df95e0742c5aa18eb9089d84d5365fead073ac77d4c115cf3e264",
+    "e37e1cf6cd9c8601881799e531c958cd0ca01c734a6349aa88a23489c4258d05"
   ],
   "op_bnb": [
     "0x001ceb373c83ae75b9f5cf78fc2aba3e185d09e2",
@@ -238,7 +245,6 @@
     "0x4ed6cf63bd9c009d247ee51224fc1c7041f517f1",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0xacd03d601e5bb1b275bb94076ff46ed9d753435a",
-    "0xe69f81b825d7dc31ee9becef4dbeab5cf30e3abb",
     "0xf977814e90da44bfa03b6295a0616a897441acec",
     "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
   ],
@@ -246,6 +252,9 @@
     "0x030e37ddd7df1b43db172b23916d523f1599c6cb",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0xb32e9a84ae0b55b8ab715e4ac793a61b277bafa3"
+  ],
+  "scroll": [
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
   "solana": [
     "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S",
@@ -319,6 +328,7 @@
   "era": [
     "0x43684d03d81d3a4c70da68febdd61029d426f042",
     "0x4aec0e98fc1fb55b9cc2faaa7a81acca42cb4e96",
+    "0x4ed6cf63bd9c009d247ee51224fc1c7041f517f1",
     "0x7aed074ca56f5050d5a2e512ecc5bf7103937d76",
     "0xa84fd90d8640fa63d194601e0b2d1c9094297083",
     "0xf977814e90da44bfa03b6295a0616a897441acec"
