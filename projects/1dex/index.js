@@ -6,7 +6,6 @@ const symbolToCoingeckoId = {
     'EOS': 'eos',
     'USDT': 'tether',
     'BTC': 'bitcoin',
-    'RAMS': 'ramses-exchange',
     'XSAT': 'exsat-network',
 };
 
