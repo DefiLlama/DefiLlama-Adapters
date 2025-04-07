@@ -27,6 +27,7 @@ const DEFAULTS = {
   HEDERA_RPC_MULTICALL: '0x18fa376d92511dd04090566ab6144847c03557d8', // Hedera Multicall3 contract
   GOAT_RPC: 'https://rpc.goat.network',
   GOAT_RPC_MULTICALL: '0x0D30331D462a30E344ee599B7483E313D63fD42A',
+  HYPERLIQUID_RPC: 'https://rpc.purroofgroup.com',
 }
 
 const ENV_KEYS = [
