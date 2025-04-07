@@ -94,7 +94,7 @@ async function call({ target, abi, params = [], rawStack = false, }) {
     "method": abi,
     "stack": params
   }
-  const { ok, result } = await post('https://ton.drpc.org/rest/runGetMethod', requestBody)
+  const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
   if (!ok) {
     throw new Error("Unknown");
   }

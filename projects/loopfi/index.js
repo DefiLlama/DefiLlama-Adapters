@@ -44,6 +44,9 @@ const tokensYieldnest = {
 const spectraVault = "0x9BfCD3788f923186705259ae70A1192F601BeB47"
 const spectraLPToken = "0x2408569177553A427dd6956E1717f2fBE1a96F1D"
 
+const spectraVaultYnETHx = "0x9c5EE26b9623cA864693C575a8fBc8933ae964E7"
+const spectraYnETHxLPToken = "0xBc48c48789031A130F957c59e07B7F987aA642dE"
+
 const clisBNBCDPVault = "0x03C07e6d561b664246058974dB31dbF1c1C0B416"
 const clisBNBLPToken = "0x1d9D27f0b89181cF1593aC2B36A37B444Eb66bEE"
 
@@ -59,7 +62,8 @@ async function tvlEthereum(api) {
     [Object.values(tokensBtc), LOOP_PRELAUNCH_BTC],
     [Object.values(tokensYieldnest), LOOP_PRELAUNCH_YNETH],
     [[spectraLPToken], spectraVault],
-    [[spectraUSDLPToken], spectraUSDVault]
+    [[spectraUSDLPToken], spectraUSDVault],
+    [[spectraYnETHxLPToken], spectraVaultYnETHx]
   ]
   assets.forEach((asset, i) => ownerTokens.push([[asset], calls[i]]))
   return api.sumTokens({ ownerTokens })

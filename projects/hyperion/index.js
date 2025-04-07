@@ -49,7 +49,7 @@ async function getPoolInfo() {
 
 module.exports = {
   timetravel: false,
-  methodology: "Counts the total liquidity in all pools on Hyperfluid.",
+  methodology: "Counts the total liquidity in all pools on Hyperion.",
   aptos: {
     tvl: async (api) => {
       const poolInfo = await getPoolInfo();

@@ -98,6 +98,7 @@ const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
 const prosper = require('./prosper.js')
+const hotcoin = require('./hotcoin.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -114,6 +115,10 @@ const ssiProtocol = [
 
 const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
+]
+
+const lbank = [
+  '1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn',
 ]
 
 const stacksSBTC = [
@@ -242,5 +247,7 @@ module.exports = {
   unitbtc,
   backpack,
   coinbasebtc,
-  prosper
+  prosper,
+  lbank,
+  hotcoin
 }
