@@ -10,133 +10,88 @@ const symbolToCoingeckoId = {
     'XSAT': 'exsat-network',
 };
 
-async function getContractActionsWithPagination(contract, actionName) {
-    try {
-        let allActions = [];
-        let pos = -1;
-        const pageSize = 100;
-        let hasMore = true;
-        let oldestActionSeq = null;
-        
-        while (hasMore) {
-            try {
-                const response = await post(`${endpoint}/history/get_actions`, {
-                    account_name: contract,
-                    pos: pos,
-                    offset: -pageSize  
-                });
-                
-                if (!response.actions || response.actions.length === 0) {
-                    hasMore = false;
-                    break;
-                }
-                
-                const filteredActions = response.actions.filter(action => {
-                    if (Array.isArray(actionName)) {
-                        return actionName.includes(action.action_trace.act.name);
-                    }
-                    return action.action_trace.act.name === actionName;
-                });
-                
-                if (filteredActions.length > 0) {
-                    allActions = [...allActions, ...filteredActions];
-                }
-                
-                if (response.actions.length > 0) {
-                    const lastAction = response.actions[response.actions.length - 1];
-                    oldestActionSeq = lastAction.account_action_seq;
-                    pos = oldestActionSeq - pageSize + 1;
-                    
-                    if (response.actions.length < pageSize) {
-                        hasMore = false;
-                    }
-                } else {
-                    hasMore = false;
-                }
-                
-            } catch (error) {
-                hasMore = false;
-            }
+async function getContractActions(contract, actionNames) {
+    const allActions = [];
+    const pageSize = 100;
+    let pos = -1;
+    let hasMore = true;
+    
+    while (hasMore) {
+        try {
+            const response = await post(`${endpoint}/history/get_actions`, {
+                account_name: contract,
+                pos: pos,
+                offset: -pageSize  
+            });
+            
+            const actions = response.actions || [];
+            if (actions.length === 0) break;
+            
+            const filteredActions = actions.filter(action => 
+                Array.isArray(actionNames) 
+                    ? actionNames.includes(action.action_trace.act.name)
+                    : action.action_trace.act.name === actionNames
+            );
+            
+            allActions.push(...filteredActions);
+
+            const lastAction = actions[actions.length - 1];
+            pos = lastAction.account_action_seq - pageSize + 1;
+            hasMore = actions.length === pageSize;
+            
+        } catch (error) {
+            console.error('Pagination error:', error.message);
+            break;
         }
-        return allActions;
-    } catch (error) {
-        console.error('Error during pagination:', error);
-        return [];
     }
+    
+    return allActions;
+}
+
+function calculateBalancesFromActions(actions) {
+    const balances = {};
+    
+    for (const action of actions) {
+        const { name, data } = action.action_trace.act;
+        const { quantity, contract } = data;
+        const [amount, symbol] = quantity.split(' ');
+        
+        if (!balances[symbol]) {
+            balances[symbol] = {
+                amount: 0,
+                contract,
+                symbol
+            };
+        }
+        
+        const parsedAmount = parseFloat(amount);
+        balances[symbol].amount += name === 'logdeposit1' ? parsedAmount : -parsedAmount;
+    }
+    
+    return balances;
 }
 
 function convertToDefiLlamaFormat(balances) {
     const result = {};
     
-    Object.entries(balances).forEach(([symbol, data]) => {
-        if (data.amount > 0) {
-            const coingeckoId = symbolToCoingeckoId[symbol];
-            if (coingeckoId) {
-                result[coingeckoId] = data.amount;
-            }
+    for (const [symbol, data] of Object.entries(balances)) {
+        if (data.amount > 0 && symbolToCoingeckoId[symbol]) {
+            result[symbolToCoingeckoId[symbol]] = data.amount;
         }
-    });
+    }
     
     return result;
 }
 
-
-async function calculateTVLFromActions(contract) {
-    try {
-        const actions = await getContractActionsWithPagination(contract, ["logdeposit1", "logwithdraw1"]);
-        
-        const balances = {};
-        
-        actions.forEach(action => {
-            const { action_trace } = action;
-            const { act } = action_trace;
-            const { name, data } = act;
-            
-            if (name === 'logdeposit1') {
-                const { quantity, contract } = data;
-                const [amount, symbol] = quantity.split(' ');
-                
-                if (!balances[symbol]) {
-                    balances[symbol] = {
-                        amount: 0,
-                        contract: contract,
-                        symbol: symbol
-                    };
-                }
-                
-                balances[symbol].amount += parseFloat(amount);
-            } 
-            else if (name === 'logwithdraw1') {
-                const { quantity, contract } = data;
-                const [amount, symbol] = quantity.split(' ');
-                
-                if (!balances[symbol]) {
-                    balances[symbol] = {
-                        amount: 0,
-                        contract: contract,
-                        symbol: symbol
-                    };
-                }
-                
-                balances[symbol].amount -= parseFloat(amount);
-            }
-        });
-        
-        return balances;
-    } catch (error) {
-        console.error('Error calculating TVL from actions:', error);
-        throw error;
-    }
-}
-
-// 1DEX
-// https://1dex.com
 async function eos() {
-    const actionBasedBalances = await calculateTVLFromActions("portal.1dex", 50);
-
-    const accountTvl = convertToDefiLlamaFormat(actionBasedBalances)
-    
-    return accountTvl;
+    try {
+        const actions = await getContractActions("portal.1dex", ["logdeposit1", "logwithdraw1"]);
+        const balances = calculateBalancesFromActions(actions);
+        return convertToDefiLlamaFormat(balances);
+    } catch (error) {
+        console.error('Error fetching 1DEX TVL:', error);
+        return {};
+    }
 }
 
 module.exports = {
