@@ -39,6 +39,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  etlk: {
+    "0xe4880249745eAc5F1eD9d8F7DF844792D560e750": { coingeckoId: "USTBL", decimals: 5 }, // USTBL
+    "0xa0769f7A8fC65e47dE93797b4e21C073c117Fc80": { coingeckoId: "EUTBL", decimals: 5 }, // EUTBL
+  },
   prom: {
     [ADDRESSES['null']]: { coingeckoId: "prometeus", decimals: 18 }, // Native PROM
     '0x7e942605B5028E3B751dBB5Ef8afC5CF85a5A7eD': { coingeckoId: "tether", decimals: 6 }, // USDT
