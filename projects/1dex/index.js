@@ -16,32 +16,26 @@ async function getContractActions(contract, actionNames) {
     let hasMore = true;
     
     while (hasMore) {
-        try {
-            const response = await post(`${endpoint}/history/get_actions`, {
-                account_name: contract,
-                pos: pos,
-                offset: -pageSize  
-            });
-            
-            const actions = response.actions || [];
-            if (actions.length === 0) break;
-            
-            const filteredActions = actions.filter(action => 
-                Array.isArray(actionNames) 
-                    ? actionNames.includes(action.action_trace.act.name)
-                    : action.action_trace.act.name === actionNames
-            );
-            
-            allActions.push(...filteredActions);
+        const response = await post(`${endpoint}/history/get_actions`, {
+            account_name: contract,
+            pos: pos,
+            offset: -pageSize  
+        });
+        
+        const actions = response.actions || [];
+        if (actions.length === 0) break;
+        
+        const filteredActions = actions.filter(action => 
+            Array.isArray(actionNames) 
+                ? actionNames.includes(action.action_trace.act.name)
+                : action.action_trace.act.name === actionNames
+        );
+        
+        allActions.push(...filteredActions);
 
-            const lastAction = actions[actions.length - 1];
-            pos = lastAction.account_action_seq - pageSize + 1;
-            hasMore = actions.length === pageSize;
-            
-        } catch (error) {
-            console.error('Pagination error:', error.message);
-            break;
-        }
+        const lastAction = actions[actions.length - 1];
+        pos = lastAction.account_action_seq - pageSize + 1;
+        hasMore = actions.length === pageSize;
     }
     
     return allActions;
@@ -64,7 +58,9 @@ function calculateBalancesFromActions(actions) {
         }
         
         const parsedAmount = parseFloat(amount);
-        balances[symbol].amount += name === 'logdeposit1' ? parsedAmount : -parsedAmount;
+        if (name === 'logdeposit1' || name === 'logwithdraw1') {
+            balances[symbol].amount += name === 'logdeposit1' ? parsedAmount : -parsedAmount;
+        }
     }
     
     return balances;
@@ -83,14 +79,9 @@ function convertToDefiLlamaFormat(balances) {
 }
 
 async function eos() {
-    try {
-        const actions = await getContractActions("portal.1dex", ["logdeposit1", "logwithdraw1"]);
-        const balances = calculateBalancesFromActions(actions);
-        return convertToDefiLlamaFormat(balances);
-    } catch (error) {
-        console.error('Error fetching 1DEX TVL:', error);
-        return {};
-    }
+    const actions = await getContractActions("portal.1dex", ["logdeposit1", "logwithdraw1"]);
+    const balances = calculateBalancesFromActions(actions);
+    return convertToDefiLlamaFormat(balances);
 }
 
 module.exports = {
