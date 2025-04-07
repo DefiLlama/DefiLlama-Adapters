@@ -34,6 +34,7 @@ const tvl = async (api) => {
 module.exports = {
   methodology: 'Count TVL by counting the balance of the token in the staking contract and calculating its value in WLD based on the reserves of the GOTR/WLD pair.',
   wc: {
-    tvl: tvl
+    tvl: () => ({}),
+    pool2: tvl
   }
 };
