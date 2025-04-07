@@ -1,3 +1,4 @@
+const { getConfig } = require("../helper/cache");
 const { function_view } = require("../helper/chain/aptos");
 const { get } = require('../helper/http')
 const { PromisePool } = require('@supercharge/promise-pool')
@@ -16,7 +17,7 @@ module.exports = {
   aptos: {
     tvl: async (api) => {
       // Fetch pool data from API
-      const { data: poolsData } = await get('https://app.thala.fi/api/liquidity-pools');
+      const { data: poolsData } = await getConfig('thalaswa-v2', 'https://app.thala.fi/api/liquidity-pools');
 
       // Filter for V2 pools and get lptAddresses
       const v2Pools = poolsData.filter(pool => pool.metadata.isV2);
