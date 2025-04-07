@@ -1,10 +1,13 @@
 const { post } = require("../helper/http");
 
-const endpoint = 'https://exsat2.greymass.com/v1'; 
+const endpoint = 'https://eos.greymass.com/v1'; 
 
 const symbolToCoingeckoId = {
     'EOS': 'eos',
     'USDT': 'tether',
+    'BTC': 'bitcoin',
+    'RAMS': 'ramses-exchange',
+    'XSAT': 'exsat-network',
 };
 
 async function getContractActionsWithPagination(contract, actionName) {
@@ -130,9 +133,6 @@ async function calculateTVLFromActions(contract) {
 // https://1dex.com
 async function eos() {
     const actionBasedBalances = await calculateTVLFromActions("portal.1dex", 50);
-
-    console.log(actionBasedBalances);
-    
 
     const accountTvl = convertToDefiLlamaFormat(actionBasedBalances)
     
