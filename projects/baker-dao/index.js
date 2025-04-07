@@ -21,31 +21,22 @@ async function tvl(timestamp, block, chainBlocks) {
     block: chainBlocks.berachain
   });
 
-  // Get the prevPrice from the contract
-  const prevPrice = await sdk.api.abi.call({
-    target: BREAD_CONTRACT_ADDRESS,
-    abi: "uint256:prevPrice",
-    chain: "berachain",
-    block: chainBlocks.berachain
-  });
-
-  // Calculate TVL using the new formula:
-  // bera in contract * bera price + bread in contract * prevPrice * bera price
-  const beraTvl = Number(beraBalance.output);
-  const breadTvl = Number(breadBalance.output) * Number(prevPrice.output / 1e18);
-  const totalTvl = beraTvl + breadTvl;
-
-  // Add the calculated value to balances
   sdk.util.sumSingleBalance(
     balances,
     `berachain:${BERA_ADDRESS}`,
-    totalTvl
+    beraBalance.output
+  );
+
+  sdk.util.sumSingleBalance(
+    balances,
+    `berachain:${BREAD_CONTRACT_ADDRESS}`,
+    breadBalance.output
   );
 
   return balances;
 }
 
 module.exports = {
-  methodology: "Calculated based on the formula: (BERA in contract * BERA price) + (BREAD in contract * prevPrice * BERA price)",
+  methodology: "Measures the total value of BERA and BREAD tokens held in the protocol's contract",
   berachain: {tvl}
 };
