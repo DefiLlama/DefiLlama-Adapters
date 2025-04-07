@@ -126,22 +126,17 @@ async function getWrappedFA(coin) {
 
 // This function parses the paired_coin_type string to extract token types and curve type
 function parseLiquidswapLPType(lpTypeString) {
-  try {
-    // Extract the content between < and >
-    const genericPart = lpTypeString.match(/<(.+)>/)[1];
+  // Extract the content between < and >
+  const genericPart = lpTypeString.match(/<(.+)>/)[1];
 
-    // Split by comma and trim to get the three parts
-    const parts = genericPart.split(',').map(part => part.trim());
+  // Split by comma and trim to get the three parts
+  const parts = genericPart.split(',').map(part => part.trim());
 
-    return {
-      token0: parts[0],
-      token1: parts[1],
-      curveType: parts[2]
-    };
-  } catch (error) {
-    console.error("Failed to parse LP type string:", error);
-    return null;
-  }
+  return {
+    token0: parts[0],
+    token1: parts[1],
+    curveType: parts[2]
+  };
 }
 
 
