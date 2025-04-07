@@ -9,20 +9,15 @@ const DOPPLER_API_URL = "https://api.doppler.finance/v1/xrpfi/staking-info";
 // Ceffu is similar to CEX wallets, making it impossible to track Doppler's balance on-chain
 // Our api response is sum of fireblocks and ceffu balances
 const tvl = async (api) => {
-    try {
-        const { data } = await axios.get(DOPPLER_API_URL);
-        if (!data || !data[0]) {
-            throw new Error('Invalid API response');
-        }
-
-        const stakingInfo = data[0];
-        const { totalStaked } = stakingInfo;
-
-        api.add(ADDRESSES.ripple.XRP, totalStaked * 1e6); // Convert to drops (1 XRP = 1,000,000 drops)
-    } catch (error) {
-        console.error('Error fetching Doppler Finance staking info:', error);
-        return 0;
+    const { data } = await axios.get(DOPPLER_API_URL);
+    if (!data || !data[0]) {
+        throw new Error('Invalid API response');
     }
+
+    const stakingInfo = data[0];
+    const { totalStaked } = stakingInfo;
+
+    api.add(ADDRESSES.ripple.XRP, totalStaked * 1e6); // Convert to drops (1 XRP = 1,000,000 drops)
 }
 
 module.exports = {
