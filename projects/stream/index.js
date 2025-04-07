@@ -21,6 +21,7 @@ async function tvlEth(_, _1, _2, { api }) {
   });
 }
 
+
 async function tvlChain(chain, block, _1, _2, { api }) {
   const vaultData = getChainVaultData(chain);
   if (!vaultData.length) return;
