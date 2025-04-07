@@ -24,28 +24,22 @@ const config = {
                     pricerAddress: "0x8dB72b8F7F896569F6B254263D559902Ea2A9B35"
                 },
             ],
-
-
     }
 }
 
 async function tvl(api) {
     const tokens = config.hsk.AoABT.map((token) => token.tokenAddress);
-    const pricers = config.hsk.AoABT.map((token) => token.pricerAddress);
 
-    const [supplies, prices] = await Promise.all([
+    const [supplies] = await Promise.all([
         api.multiCall({abi: "erc20:totalSupply", calls: tokens}),
-        api.multiCall({abi: "uint256:getLatestPrice", calls: pricers}),
     ]);
-    const tvl = tokens.map((token, i) => {
-        const supply = BigNumber(supplies[i]).div(1e18);
-        const price = BigNumber(prices[i]).div(1e18);
 
-        return supply.times(price);
+    const totalTvl = tokens.map((token, i) => {
+        return BigNumber(supplies[i])
     }).reduce((a, b) => a.plus(b), BigNumber(0));
 
 
-    api.addToken(config.hsk.AoABT[0].tokenAddress, tvl.toFixed(0));
+    api.addToken(config.hsk.AoABT[0].tokenAddress, totalTvl.toFixed(0));
 }
 
 module.exports = {
@@ -56,4 +50,3 @@ module.exports = {
         tvl
     }
 };
-
