@@ -33,11 +33,11 @@ function maverickTVL(config) {
 }
 
 module.exports = maverickTVL({
-  "plume-mainnet": {
+  plume: {
     factories: [
       {
         address: "0x056A588AfdC0cdaa4Cab50d8a4D2940C5D04172E",
-        startBlock: 12118,
+        startBlock: 91951,
       },
     ],
   },
