@@ -27,6 +27,7 @@ const DEFAULTS = {
   GOAT_RPC: 'https://rpc.goat.network',
   GOAT_RPC_MULTICALL: '0x0D30331D462a30E344ee599B7483E313D63fD42A',
   HYPERLIQUID_RPC: 'https://rpc.purroofgroup.com',
+  HSK_RPC: 'https://hashkey.blockscout.com/api/eth-rpc',
 }
 
 const ENV_KEYS = [
