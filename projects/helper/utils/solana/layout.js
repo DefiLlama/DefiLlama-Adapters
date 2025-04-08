@@ -13,6 +13,7 @@ const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
 const { parseSanctumLstStateList } = require("./layouts/sanctum-validators-lsts-layout");
 const { STAKE_POOL_PARTIAL } = require("./layouts/stake-pool-partial-layout");
 const { STAKE_POOL_LAYOUT } = require("./layouts/stakePool");
+const { JITO_VAULT_LAYOUT } = require("./layouts/jito-layout");
 
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
@@ -69,6 +70,7 @@ const customDecoders = {
   hhParlay: defaultParseLayout(PARLAY_LAYOUT_PARTIAL),
   hhPari: defaultParseLayout(HH_PARI_LAYOUT_PARTIAL),
   access: defaultParseLayout(ACCESS_LAYOUT),
+  jitoVault: defaultParseLayout(JITO_VAULT_LAYOUT),
   meteoraStablePool: defaultParseLayout(METEORA_STABLE_SWAP_LAYOUT),
   zeusGuardianSetting: defaultParseLayout(ZEUS_GUARDIAN_SETTING_LAYOUT),
 }

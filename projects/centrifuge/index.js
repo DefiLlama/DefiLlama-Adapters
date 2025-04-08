@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const contractAbis = {
@@ -15,7 +16,7 @@ const config = {
       }
     ],
     assets: {
-      USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+      USDC: ADDRESSES.ethereum.USDC
     }
   },
   base: {
@@ -26,7 +27,7 @@ const config = {
       }
     ],
     assets: {
-      USDC: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
+      USDC: ADDRESSES.base.USDC
     }
   },
   arbitrum: {
@@ -37,7 +38,7 @@ const config = {
       }
     ],
     assets: {
-      USDC: '0xaf88d065e77c8cc2239327c5edb3a432268e5831'
+      USDC: ADDRESSES.arbitrum.USDC_CIRCLE
     }
   },
 }
