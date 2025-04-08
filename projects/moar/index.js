@@ -26,7 +26,6 @@ async function tvl(api, chain) {
         functionStr: `${addresses[chain]['moar']}::credit_manager::get_all_credit_accounts`,
         chain: chain
     })
-    console.log({creditAccounts})
 
     for (const creditAccount of creditAccounts) {
         const [_, assetData] = await function_view({
