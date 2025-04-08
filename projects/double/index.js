@@ -13,7 +13,7 @@ async function tvl(api) {
   const bals = await api.multiCall({ abi: abis.totalBalances, calls: pairs, target: '0x89BEda6E5331CdDEe6c9a5Ad1B789ce6dFEBe6c7', })
   api.add(pairs, bals)
   return sumTokens2({ api, resolveLP: true })
-};
+}
 
 module.exports = {
   doublecounted: true,
