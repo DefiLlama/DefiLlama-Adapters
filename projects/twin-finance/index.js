@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const erc20Abi = {
   balanceOf: 'function balanceOf(address) view returns (uint256)',
   totalSupply: 'function totalSupply() view returns (uint256)' // Kept for reference, but unused now
 };
 
-const usdcAddress = '0x549943e04f40284185054145c6E4e9568C1D3241'; 
+const usdcAddress = ADDRESSES.berachain.USDC; 
 const twinUSDCAddress = '0x1b7678F6991b8dCcf9bB879929e12f1005d80E94';
 // Replace with the actual address of your deposit/staking/vault contract
 const depositContractAddress = '0xF77B36ba4691c5e3e022D9e7b5a8f78103ccC57a'; 
