@@ -141,12 +141,12 @@ const config = {
     "owners": [
       "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w",
       "HiRpdAZifEsZGdzQ5Xo5wcnaH3D2Jj9SoNsUzcYNK78J",
-      "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
-      "CVMV7614DjSjY114GwHhG1HNFXofceziDpuGz7VjDD5K",
+      // "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
+      // "CVMV7614DjSjY114GwHhG1HNFXofceziDpuGz7VjDD5K",
       "G9XFfWz6adb9wFDKN2v7HfmJDgAc2hirrTwBmca4w26C",
-      "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
-      "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
-      "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
+      // "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
+      // "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
+      // "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
     ]
   },
   "ripple": {
@@ -1653,7 +1653,9 @@ const config = {
   },
 };
 
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3',  'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', ]
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'tara', 'zkfair',
+  'vinu',
+]
 
 unsupportedChains.forEach(chain => delete config[chain]);
 

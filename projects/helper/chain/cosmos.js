@@ -15,7 +15,7 @@ const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://rest-osmosis.ecostake.com",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://kuji-api.kleomedes.network",
+  kujira: "https://kujira-rest.publicnode.com",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
   terra2: "https://terra-lcd.publicnode.com",
@@ -55,8 +55,11 @@ const endPoints = {
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
-  carbon: 'https://rest.lavenderfive.com/carbon/',
+  carbon: 'https://api.carbon.network',
   evmos: 'https://evmos-api.polkachu.com',
+  regen: 'https://rest-regen.ecostake.com',
+  sommelier: 'https://sommelier-rpc.polkachu.com',
+  stride: 'https://stride-api.polkachu.com',
 };
 
 const chainSubpaths = {
