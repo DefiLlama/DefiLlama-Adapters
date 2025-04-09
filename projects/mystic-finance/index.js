@@ -9,7 +9,3 @@ Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = aaveExports(chain, undefined, undefined, poolDatas, { v3: true })
 });
 
-
-// module.exports.hallmarks = [
-//   [1773030089, "Start Mystic Rewards"],
-// ]
