@@ -23,7 +23,7 @@ module.exports = {
       const v2Pools = poolsData.filter(pool => pool.metadata.isV2);
 
       const { errors } = await PromisePool.for(v2Pools)
-        .withConcurrency(5)
+        .withConcurrency(2)
         .process(async (pool) => {
           const poolInfo = await getPool(thalaswapLensAddress, pool.metadata.lptAddress);
           const assets = poolInfo.assets_metadata.map(asset => asset.inner);
