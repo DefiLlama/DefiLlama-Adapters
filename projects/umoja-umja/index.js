@@ -5,7 +5,8 @@ const Arbitrum = {
 
 module.exports = {
   arbitrum: {
-      tvl: async (api) => {
+      tvl: () => ({}),
+      staking: async (api) => {
           const lockedUmoGov = await api.call({ abi: 'erc20:balanceOf', target: Arbitrum.token, params: Arbitrum.umo_governance })
           api.add(Arbitrum.token, lockedUmoGov)
       },
