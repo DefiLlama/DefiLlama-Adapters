@@ -1,4 +1,4 @@
-const YETH_POOL = '0x2cced4ffA804ADbe1269cDFc22D7904471aBdE63';
+const YETH_POOL = '0x0Ca1bd1301191576Bea9b9afCFD4649dD1Ba6822';
 
 async function tvl(api) {
   const tokens = await api.fetchList({  lengthAbi: 'num_assets', itemAbi: 'assets', target: YETH_POOL})

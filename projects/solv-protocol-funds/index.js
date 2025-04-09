@@ -18,6 +18,18 @@ const slotListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protoco
 
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-funds.json';
 
+const solvTokens = {
+  ethereum: [
+    '0x7A56E1C57C7475CCf742a1832B028F0456652F97',
+  ],
+  bsc: [
+    '0x4aae823a6a0b376De6A78e74eCC5b079d38cBCf7',
+  ],
+  arbitrum: [
+    '0x3647c54c4c2C65bC7a2D63c0Da2809B399DBBDC0',
+  ]
+}
+
 async function tvl(api) {
   const address = (await getConfig('solv-protocol/funds', addressUrl));
   const graphData = await getGraphData(api.timestamp, api.chain, api);
@@ -32,6 +44,10 @@ async function tvl(api) {
   await ceffuBalance(api, address, graphData);
   await lpV3PositionsBalance(api, address);
   await aaveSupplyBalance(api, address);
+
+  (solvTokens[api.chain] ?? []).forEach(token => {
+    api.removeTokenBalance(token)
+  })
 }
 
 const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
@@ -385,7 +401,6 @@ async function aaveSupplyBalance(api, address) {
       params: [index[1]]
     })));
   }
-  
   const balances = await api.multiCall({
     abi: abi.balanceOf,
     calls: allCalls,

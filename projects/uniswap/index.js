@@ -93,8 +93,12 @@ module.exports = {
     lisk: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 577168 },
     wc: { factory: "0x7a5028BDa40e7B173C278C5342087826455ea25a", fromBlock: 1603366 },
     corn: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 10878 },
+    goat: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 848385 },
+    hemi: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 1293598 },
     sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
     unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
+    lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
+    saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
   }),
   filecoin: { tvl: filecoinTvl },
 }
@@ -115,3 +119,5 @@ module.exports.sei.tvl = async (api) => {
   const ownerTokens = pools.map((pool, i) => [[token0s[i], token1s[i]], pool])
   return sumTokens2({ api, ownerTokens })
 }
+
+delete module.exports.saga // chain rpc is broken?
