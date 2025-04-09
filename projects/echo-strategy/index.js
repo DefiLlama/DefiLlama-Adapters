@@ -8,9 +8,7 @@ async function getTVL() {
       strategyModuleList.map(moduleName => function_view({ functionStr: `${strategyAddress}::${moduleName}::get_strategy_data` }))
     );
     const total = responses.reduce((sum, res) => sum + Number(res.tvl), 0);
-    return {
-      aptos: total / 1e10
-    }
+    return total;
   } catch (err) {
     console.error('error:', err);
   }
@@ -18,6 +16,9 @@ async function getTVL() {
 
 module.exports = {
   aptos: {
-    tvl: getTVL
+    tvl: async (api) => {
+      const data = await getTVL();
+      api.add('0x4e1854f6d332c9525e258fb6e66f84b6af8aba687bbcb832a24768c4e175feec::abtc::ABTC', data);
+    }
   },
 };
