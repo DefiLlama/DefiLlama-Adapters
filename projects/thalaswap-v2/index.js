@@ -34,6 +34,7 @@ module.exports = {
       // Handle errors
       if (errors?.length > 0) {
         console.error("Errors occurred while processing pools:", errors);
+        throw errors[0];
       }
     },
   },
