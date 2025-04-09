@@ -314,6 +314,8 @@ Object.keys(config).forEach(chain => {
   switch (chain) {
     case 'base':
     case 'optimism': tvl = tvlBaseOptimism; break;
+    case 'fraxtal':
+    case 'avax':
     case 'arbitrum':
     case 'sonic':
     case 'linea': tvl = tvlArbitrumLinea; break;
