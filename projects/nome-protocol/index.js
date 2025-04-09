@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs")
 
 // POOLS
@@ -11,7 +12,7 @@ const STAB_FUND = '0xff491a00b12be29413a2b29c2499cac50e4ec35a'
 // TOKENS
 const NOME_TOKEN = '0xfaf4c16847bd0ebac546c49a9c9c6b81abd4b08c'
 const USDbr_TOKEN = '0x6d4223dae2a8744a85a6d44e97f3f61679f87ee6'
-const HONEY_TOKEN = '0xfcbd14dc51f0a4d49d5e53c2e0950e0bc26d0dce'
+const HONEY_TOKEN = ADDRESSES.berachain.HONEY
 
 // LP POOLS
 const NOME_HONEY_LP = '0x54270bea720a79db0a34645053b02740ebcbfad5'
