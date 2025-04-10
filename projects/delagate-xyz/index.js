@@ -15,7 +15,7 @@ async function tvl(api) {
       return cache
     },
   })
-  return sumTokens2({ owner: '0xc2e257476822377dfb549f001b4cb00103345e66', tokens, permitFailure: true, sumChunkSize: 50 })
+  return sumTokens2({ owner: '0xc2e257476822377dfb549f001b4cb00103345e66', tokens, permitFailure: true, sumChunkSize: 10 })
 }
 
 module.exports = {
