@@ -4,9 +4,6 @@ const { staking } = require("../helper/staking.js");
 const RESUP_TOKEN = '0x419905009e4656fdc02418c7df35b1e61ed5f726';
 const GOV_STAKING_CONTRACT = '0x22222222E9fE38F6f1FC8C61b25228adB4D8B953';
 
-const REUSD_TOKEN = '0x57ab1e0003f623289cd798b1824be09a793e4bec';
-const INSURANCE_POOL_CONTRACT = '0x00000000efe883b3304aFf71eaCf72Dbc3e1b577';
-
 const convertToAssetsAbi = 'function convertToAssets(uint256) view returns (uint256)';
 
 async function tvl(api) {
@@ -37,13 +34,7 @@ async function stakingTvl(api) {
     params: [GOV_STAKING_CONTRACT],
   });
 
-  const reUsdBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: REUSD_TOKEN,
-    params: [INSURANCE_POOL_CONTRACT],
-  });
   api.add(RESUP_TOKEN, resupBalance);
-  api.add(REUSD_TOKEN, reUsdBalance);
 }
 
 module.exports = {
