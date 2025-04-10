@@ -78,6 +78,7 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
 
   for (const addr of owners) {
+    await sleep(1000 * (3 * Math.random() + 7))
     await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens, useTonApiForPrices })
   }
   return sumTokens2({ api, })
@@ -93,7 +94,7 @@ async function call({ target, abi, params = [], rawStack = false, }) {
     "method": abi,
     "stack": params
   }
-  const { ok, result } = await post('https://ton.drpc.org/rest/runGetMethod', requestBody)
+  const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
   if (!ok) {
     throw new Error("Unknown");
   }

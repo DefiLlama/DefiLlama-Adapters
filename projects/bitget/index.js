@@ -67,11 +67,8 @@ const config = {
       "0x14b5f559c27bc00c39f668a88471498d68d18768",
       "0xe7b3b0a59b026ec1fef16561daf93672a61bafec",
       "0x3c2a309d9005433c1bc2c92ef1be06489e5bf258",
-      "0xa7fc83c0cdf12cdccb8e7e5350994aa8ae881c9a",
       "0xe368759445438b8ec4e50bf4094e939341174e62",
       "0x2dd64ee5ea8706097a5674154288989e3dbe3a05",
-      "0x85cf18558263505e1152c0e478763aa68b4e8f31",
-      "0x72049af618eba3a50e9e4eb85bf4476bff0a76ca",
       "0xa700c091687afbfada6b84b5e02a5e672ee35597",
       "0xd509ff5d6e530401b53cc7d3b80607824d85ff60",
       "0x255e91ab794da40d39a5aceff20d98841df873af",
@@ -84,6 +81,9 @@ const config = {
       "0x0635ac6675e05c7f58383493bb7d1a513cd65688",
       "0x1D774ed0A7b897aAaE3526F07e487C5F9540F55D"
     ],
+    blacklistedTokens: [
+      "0x19de6b897ed14a376dda0fe53a5420d2ac828a28", // old bitget token
+    ]
   },
   tron: {
     owners: [

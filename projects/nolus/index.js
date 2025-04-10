@@ -1,6 +1,5 @@
-const sdk = require('@defillama/sdk')
-const { transformBalances } = require('../helper/portedTokens')
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
+const { sleep } = require('../helper/utils')
 
 // Osmosis Noble USDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_NOBLE) pirin-1
 const osmosisNobleOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
@@ -49,10 +48,6 @@ const astroportNobleLppAddr = 'nolus17vsedux675vc44yu7et9m64ndxsy907v7sfgrk7tw3x
 
 const _6Zeros = 1000000
 
-const nativeTokens = {
-  'untrn': 'neutron:untrn',
-  'uosmo': 'osmosis:uosmo'
-}
 
 async function getLeaseCodeId(leaserAddress) {
   const leaserContract = await queryContract({ contract: leaserAddress, chain: 'nolus', data: { 'config': {} } })
@@ -69,7 +64,7 @@ async function getLeaseContracts(leaseCodeId) {
 }
 
 async function getLeases(leaseAddresses) {
-  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {} })
+  return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {"state":{}} })
 }
 
 async function getLppTvl(lppAddresses) {  
@@ -92,17 +87,14 @@ async function getLppTvl(lppAddresses) {
   return totalLpp / divisor;
 }
 
-function sumAssests(balances, leases, currencies) {
+function sumAssests(api, leases, currencies) {
   leases.forEach(v => {
     if (v.opened) {
       let ticker = v.opened.amount.ticker
       const amount = parseInt(v.opened.amount.amount, 10)
       const currencyData = find(currencies, (n) => n.ticker == ticker)
       if (currencyData) { 
-        if (nativeTokens.hasOwnProperty(currencyData.dex_symbol)) {
-          sdk.util.sumSingleBalance(balances, nativeTokens[currencyData.dex_symbol], amount)
-        }
-        sdk.util.sumSingleBalance(balances, currencyData.dex_symbol, amount)
+        api.add(currencyData.dex_symbol, amount)
       }
     }
   })
@@ -118,17 +110,16 @@ function find(collection, predicate) {
   return undefined
 }
 
-async function tvl(protocols) {
-  let balances = {}
+async function tvl(api, protocols) {
   for (let i = 0; i < protocols.length; i++) {
+    await sleep(2000)
     const p = protocols[i]
     const oracleData = await queryContract({ contract: p.oracle, chain: 'nolus', data: { 'currencies': {} } })
     const leaseCodeId = await getLeaseCodeId(p.leaser)
     const leaseContracts = await getLeaseContracts(leaseCodeId)
     const leases = await getLeases(leaseContracts)
-    sumAssests(balances, leases, oracleData)
+    sumAssests(api, leases, oracleData)
   }
-  return transformBalances('nolus', balances)
 }
 
 module.exports = {
@@ -147,16 +138,16 @@ module.exports = {
     }
   },
   neutron: {
-    tvl: async () => {
-      return await tvl([
+    tvl: async (api) => {
+      return await tvl(api, [
         { leaser: astroportLeaserAddr, oracle: astroportOracleAddr },
         { leaser: astroportNobleLeaserAddr, oracle: astroportNobleOracleAddr },
       ])
     }
   },
   osmosis: {
-    tvl: async () => {
-      return await tvl([
+    tvl: async (api) => {
+      return await tvl(api, [
         { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
         { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
         { leaser: osmosisStAtomLeaserAddr, oracle: osmosisStAtomOracleAddr },

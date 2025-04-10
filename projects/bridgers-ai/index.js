@@ -4,39 +4,39 @@ const { nullAddress, sumTokensExport, } = require('../helper/sumTokens')
 const getBridgeContract = (chain) => {
   switch (chain) {
     case 'ethereum':
-      return '0x92e929d8b2c8430bcaf4cd87654789578bb2b786';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     case 'bsc':
-      return '0x1ed5685f345b2fa564ea4a670de1fde39e484751';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     case 'heco':
       return '0xaeAE2CBb1E024E27e80cc61eE9A8B300282209B4';
     case 'okexchain':
-      return '0x37809F06F0Daf8f1614e8a31076C9bbEF4992Ff9';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     case 'polygon':
-      return '0x242Ea2A8C4a3377A738ed8a0d8cC0Fe8B4D6C36E';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     case 'fantom':
-      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     case 'arbitrum':
-      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     case 'tron':
-      return 'TEorZTZ5MHx8SrvsYs1R3Ds5WvY1pVoMSA';
+      return 'TPwezUWpEGmFBENNWJHwXHRG1D2NCEEt5s';
     case 'solana':
-      return 'AL89We2CN1RdEJhUAtUs8ZhdQhkdECg6WX6qq7QntoWH';
+      return 'FDF8AxHB8UK7RS6xay6aBvwS3h7kez9gozqz14JyfKsg';
     case 'base':
       return '0xa18968cc31232724f1dbd0d1e8d0b323d89f3501';
     case 'sui':
-      return '0x5b64222ecff7e41abe28d48667fe81b13afa526d2490324080db9430f053052e';
+      return '0x2b0876f0b7034320ad6d2f378501fe92e41c8b4780bda7769094d2431170e532';
     case 'aptos':
       return '0x4512ba8a4862edcb20d5027a8d1b47129299d4bed9e41a8a727b78808d6faef4';
     case 'ton':
-      return 'EQBueUEMhTXyX4ugA_sJ-sCchXU29W9VIwW2hNIlDQkUE8xq';
+      return 'EQA7x9ynlRUvgiWsQRUTTkLwznG3ZyFDKprejQej75HDTo54';
     case 'era':
       return '0x2042ecdc71f9ffb2eb9cda7f801eccc5c6c8b7eb';
     case 'linea':
       return '0x8159891dfe9de7fc3bf1b665eb1adda60f2acd0e';
     case 'optimism':
-      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     case 'avax':
-      return '0x8f957ed3f969d7b6e5d6df81e61a5ff45f594dd1';
+      return '0xb685760ebd368a891f27ae547391f4e2a289895b';
     default:
       throw new Error('Missing bridgers contract');
   }

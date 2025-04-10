@@ -1,23 +1,9 @@
 const ADDRESSES = require('./coreAssets.json')
-const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
 const erc20 = require('./abis/erc20.json')
-
-async function returnBalance(token, address, block, chain) {
-  const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
-  let { output: balance } = await sdk.api.erc20.balanceOf({ target: token, owner: address, chain, block })
-  balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
-  return parseFloat(balance);
-}
-
-async function returnEthBalance(address) {
-  const output = await sdk.api.eth.getBalance({ target: address })
-  let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
-  return parseFloat(ethAmount);
-}
 
 async function fetchURL(url) {
   return axios.get(url)
@@ -259,7 +245,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel']
+    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel', 'move']
     if (!token.startsWith('0x') || blacklistedChains.includes(chain)) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
@@ -378,8 +364,6 @@ module.exports = {
   createIncrementArray,
   fetchURL,
   postURL,
-  returnBalance,
-  returnEthBalance,
   isLP,
   mergeExports,
   getBalance,

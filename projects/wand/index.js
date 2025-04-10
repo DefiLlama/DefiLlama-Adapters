@@ -1,6 +1,84 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
+async function styTvl(api) {
+  const protocols = [
+    '0x555ad3261c0eD6119Ab291b8dC383111d83C67c7'
+  ]
+
+  const tokensAndOwners = []
+
+  for (const protocol of protocols) {
+    const assets = await api.call({ abi: 'address[]:assetTokens', target: protocol })
+
+    // Get vault arrays for each asset
+    const vaultArrays = await api.multiCall({ 
+      abi: 'function getVaultAddresses(address) view returns (address[])', 
+      calls: assets, 
+      target: protocol 
+    })
+    
+    // Create expanded arrays to match vaults with their corresponding assets
+    const expandedAssets = []
+    const vaults = []
+    
+    // For each asset, map it to its vaults
+    vaultArrays.forEach((vaultArray, assetIndex) => {
+      const asset = assets[assetIndex]
+      vaultArray.forEach(vault => {
+        expandedAssets.push(asset)
+        vaults.push(vault)
+      })
+    })
+    
+    // Now expandedAssets[i] corresponds to vaults[i]
+    const assetBals = await api.multiCall({ abi: 'uint256:assetBalance', calls: vaults, permitFailure: true })
+    
+    // Add balances with correct asset-vault mapping
+    for (let i = 0; i < vaults.length; i++) {
+      api.add(expandedAssets[i], assetBals[i] || 0)
+    }
+
+    // Add redeem pool balances
+    const epochInfoAbi = 'function epochInfoById(uint256 epochId) public view returns (uint256 epochId, uint256 startTime, uint256 duration, address redeemPool, address stakingBribesPool, address adhocBribesPool)'
+    try {
+      // const epochInfos = await api.fetchList({ 
+      //   lengthAbi: 'epochIdCount', 
+      //   itemAbi: epochInfoAbi, 
+      //   targets: vaults, 
+      //   startFromOne: true, 
+      //   groupedByInput: true 
+      // })
+      
+      // For each vault and its corresponding asset
+      for (let i = 0; i < vaults.length; i++) {
+        const asset = expandedAssets[i]
+        const vault = vaults[i]
+
+        const epochInfos = await api.fetchList({ 
+          lengthAbi: 'epochIdCount', 
+          itemAbi: epochInfoAbi, 
+          target: vault, 
+          startFromOne: true, 
+          groupedByInput: true 
+        })
+
+        const infos = epochInfos || []
+        
+        for (const { redeemPool } of infos) {
+          if (redeemPool && redeemPool !== ADDRESSES.null) {
+            tokensAndOwners.push([asset, redeemPool])
+          }
+        }
+      }
+    } catch (e) {
+      console.log("Error fetching epoch info:", e.message)
+    }
+  }
+
+  return api.sumTokens({ tokensAndOwners })
+}
+
 module.exports = {
   blast: {
     tvl: sumTokensExport({ 
@@ -21,5 +99,6 @@ module.exports = {
         ADDRESSES.blast.weETH  // weETH
       ],
     }),
-  }
+  },
+  sty: { tvl: styTvl }
 };
