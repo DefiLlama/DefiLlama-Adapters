@@ -34,7 +34,7 @@ module.exports = {
     tvl,
     staking: staking(MON_STAKING_POOL, MON_TOKEN),
   },
-  start: 1664074800,
+  start: '2022-09-25',
     methodology:
     "Total deposits of ETH and wBTC for borrowed DCHF.",
 };

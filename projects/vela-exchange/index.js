@@ -32,7 +32,6 @@ module.exports = {
     staking: async (api) => velaStaking(api,arbitrumEndpoint)
   },
   base: {
-    start: 3566528,
     tvl: staking("0xC4ABADE3a15064F9E3596943c699032748b13352", ADDRESSES.base.USDbC),
     staking: async (api) => velaStaking(api,baseEndpoint)
   },

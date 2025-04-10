@@ -1,5 +1,5 @@
 module.exports = {
-  start: 1682899200,
+  start: '2023-05-01',
   era: {
     tvl: () => 0,
   },

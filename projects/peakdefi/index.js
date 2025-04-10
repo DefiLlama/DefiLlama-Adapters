@@ -23,7 +23,7 @@ async function tvl(api) {
   return sumTokens2({ api, owners: Object.values(funds), tokens })
 }
 module.exports = {
-  start: 1607405152,        // Dec-08-2020 05:25:52 PM +UTC
+  start: '2020-12-08',        // Dec-08-2020 05:25:52 PM +UTC
   bsc: {
     staking: staking(stakingContracts.bsc, peakAddress, "bsc", peakAddress),
   },

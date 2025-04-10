@@ -41,7 +41,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'sum of ferro stablecoin pool contracts balance',
-  start: 1651218360,
+  start: '2022-04-29',
   cronos: {
     tvl,
   }

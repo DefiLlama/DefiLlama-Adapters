@@ -1,14 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { getChainTransform } = require('../helper/portedTokens');
-const { sumTokens } = require('../helper/unwrapLPs')
+const { nullAddress, sumTokensExport } = require('../helper/unwrapLPs')
 
 const usdtEth = ADDRESSES.ethereum.USDT;
 const daiEth = ADDRESSES.ethereum.DAI;
 const wbtcEth = ADDRESSES.ethereum.WBTC;
 const usdcEth = ADDRESSES.ethereum.USDC;
 const wethEth = ADDRESSES.ethereum.WETH;
-const relayEth = "0x5D843Fa9495d23dE997C394296ac7B4D721E841c";
 const xcasEth = "0x7659CE147D0e714454073a5dd7003544234b6Aa0";
 const trueUSDEth = ADDRESSES.ethereum.TUSD;
 const zeroEth = "0xF0939011a9bb95c3B791f0cb546377Ed2693a574";
@@ -20,7 +17,6 @@ const usdcBsc = ADDRESSES.bsc.USDC;
 const busdBsc = ADDRESSES.bsc.BUSD;
 const ethBsc = ADDRESSES.bsc.ETH;
 const wbnbBsc = ADDRESSES.bsc.WBNB;
-const relayBsc = "0xE338D4250A4d959F88Ff8789EaaE8c32700BD175";
 
 
 const daiAvax = ADDRESSES.avax.DAI;
@@ -54,12 +50,10 @@ const daiMoonriver = "0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844";
 const usdcMoonriver = ADDRESSES.moonriver.USDC;
 const wbtcMoonriver = "0xE6a991Ffa8CfE62B0bf6BF72959A3d4f11B2E0f5";
 const wethMoonriver = "0x3Ca3fEFA944753b43c751336A5dF531bDD6598B6";
-const relayMoonriver = "0xAd7F1844696652ddA7959a49063BfFccafafEfe7";
 const wMOVR = "0x98878B06940aE243284CA214f92Bb71a2b032B8A";
 
 
 const usdtFantom = "0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9";
-const relayFantom = "0x338003E074DabFec661E1901bdB397aF9Cab6A76";
 const daiFantom = ADDRESSES.fantom.DAI;
 const usdcFantom = ADDRESSES.fantom.USDC;
 const wFantom = ADDRESSES.fantom.WFTM;
@@ -67,32 +61,17 @@ const btcFantom = "0x321162Cd933E2Be498Cd2267a90534A804051b11";
 
 
 const usdtHarmony = "0x224e64ec1bdce3870a6a6c777edd450454068fec";
-const relayHarmony = "0x0e4d3a20b757cea2a0910129991b9d42cc2be188";
 const daiHarmony = "0xEf977d2f931C1978Db5F6747666fa1eACB0d0339";
 const usdcHarmony = "0x985458e523db3d53125813ed68c274899e9dfab4";
 const busdHarmony = "0xe176ebe47d621b984a73036b9da5d834411ef734";
 const woneOne = ADDRESSES.harmony.WONE;
 
-
-
-const wsdnShiden = "0x1a6a12953d5439e8965d94d3d8452464fbd53e30";
-const usdtShiden = ADDRESSES.telos.USDC;
-const usdcShiden = ADDRESSES.telos.ETH;
-const busdShiden = ADDRESSES.shiden.BUSD;
-
-
-
-
 const usdcMetis = ADDRESSES.metis.m_USDC;
 const usdtMetis = ADDRESSES.metis.m_USDT;
-const relayMetis = ADDRESSES.metis.RELAY;
 const maticMetis = ADDRESSES.metis.MATIC;
 const mimMetis = "0x44Dd7C98885cD3086E723B8554a90c9cC4089C4C";
 const ftmMetis = ADDRESSES.oasis.USDT
 const metis = ADDRESSES.metis.Metis;
-const wbtcMetis = ADDRESSES.metis.WBTC;
-const avaxMetis = ADDRESSES.metis.rAVAX;
-const daiMetis = ADDRESSES.metis.DAI;
 const mdaiMetis="0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0";
 
 
@@ -102,7 +81,6 @@ const daiCronos = "0xF2001B145b43032AAF5Ee2884e456CCd805F677D";
 const usdcCronos = ADDRESSES.cronos.USDC;
 const wbtcCronos = ADDRESSES.cronos.WBTC;
 const wethCronos = "0xe44fd7fcb2b1581822d0c862b68222998a0c299a";
-const relayCronos = "0x9C29650a1B273A031A35F3121914aae882B144A4";
 const busdCronos = ADDRESSES.oasis.USDT;
 const wCronos = ADDRESSES.cronos.WCRO_1;
 
@@ -142,225 +120,64 @@ const metisAddr = "0x640b3408EaC140297136677aC0cFF13a8c82C5Ed";
 const cronosAddr = "0x3f1B059d94551c9300176ceB55FD23aF0e4E2E29";
 const BRIDGE_ADDRESS = "0x9A8cF02F3e56c664Ce75E395D0E4F3dC3DafE138";
 
-
-let ethTokenAddress = [usdtEth, daiEth, wbtcEth, usdcEth, wethEth, xcasEth, trueUSDEth, zeroEth,dxpEth];
-let bscTokenAddress = [usdtBsc, daiBsc, usdcBsc, busdBsc, ethBsc, wbnbBsc];
-let avaxTokenAddress = [daiAvax, wavax, wbtcAvax, usdcAvax, usdtAvax];
-let hecoTokenAddress = [wHeco, wbtcHeco, ethHeco, usdcHeco, daiHeco, husdHeco];
-let maticTokenAddress = [miMatic, wmatic, wethMatic, wbtcMatic, usdcMatic, daiMatic, usdtMatic];
-let moonTokenAddress = [usdtMoonriver, daiMoonriver, usdcMoonriver, wbtcMoonriver, wethMoonriver, wMOVR];
-let fantomTokenAddress = [usdcFantom, usdtFantom, daiFantom, wFantom, btcFantom];
-let harmonyTokenAddress = [usdtHarmony, daiHarmony, usdcHarmony, busdHarmony, woneOne];
-let shidenTokenAddress = [wsdnShiden, usdtShiden, usdcShiden, busdShiden];
-let metisTokenAddress = [usdcMetis, usdtMetis, metis, maticMetis, ftmMetis, mimMetis,mdaiMetis];
-let metisTotalSupply = [wbtcMetis, daiMetis, avaxMetis, ftmMetis, maticMetis];
-let cronosTokenAddress = [usdtCronos, daiCronos, usdcCronos, wbtcCronos, wethCronos, busdCronos, wCronos];
-let iotexTokenAddress = [usdtIoTex, daiIoTex, usdcIoTex, busdIoTex, wIotex]
-let optimismTokenAddress=[usdtOptimism,daiOptimism,wbtcOptimism]
-let arbitrumTokenAddress=[wbtcArbitrum,usdtArbitrum,daiArbitrum]
-
-
-async function ethTvl(timestamp, ethBlock, _) {
-  let balances = {};
-  let tokenBalance;
-  const toa = []
-  ethTokenAddress.forEach(t => {
-    toa.push([t, ethAddr])
-    toa.push([t, eth1Addr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  tokenBalance = (await sdk.api.eth.getBalance({ target: eth1Addr })).output;
-  sdk.util.sumSingleBalance(balances, "ethereum:" + ADDRESSES.ethereum.WETH, tokenBalance)
-
-  return sumTokens(balances, toa, ethBlock)
-}
-
-
-async function bscTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'bsc'
-  const toa = []
-  let balances = {};
-  bscTokenAddress.forEach(t => {
-    toa.push([t, bscAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function avaxTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'avax'
-  const toa = []
-  let balances = {};
-  avaxTokenAddress.forEach(t => {
-    toa.push([t, avaxAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function hecoTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'heco'
-  const toa = []
-  let balances = {};
-  hecoTokenAddress.forEach(t => {
-    toa.push([t, hecoAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function polygonTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'polygon'
-  const toa = []
-  let balances = {};
-  maticTokenAddress.forEach(t => {
-    toa.push([t, polyAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
-  const chain = 'fantom'
-  const toa = []
-  let balances = {};
-  fantomTokenAddress.forEach(t => {
-    toa.push([t, ftmAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks) {
-  const chain = 'harmony'
-  const toa = []
-  let balances = {};
-  harmonyTokenAddress.forEach(t => {
-    toa.push([t, harmonyAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
-  const chain = 'metis'
-  const toa = []
-  let balances = {};
-  metisTokenAddress.forEach(t => {
-    toa.push([t, metisAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function cronosTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'cronos'
-  const toa = []
-  let balances = {};
-  cronosTokenAddress.forEach(t => {
-    toa.push([t, cronosAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'iotex'
-  const toa = []
-  let balances = {};
-  iotexTokenAddress.forEach(t => {
-    toa.push([t, iotexAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'moonriver'
-  const toa = []
-  let balances = {};
-  moonTokenAddress.forEach(t => {
-    toa.push([t, moonriverAddr])
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function optimismTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'optimism'
-  const toa = []
-  let balances = {};
-  optimismTokenAddress.forEach(t => {
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-async function arbitrumTvl(timestamp, ethBlock, chainBlocks) {
-  const chain = 'arbitrum'
-  const toa = []
-  let balances = {};
-  arbitrumTokenAddress.forEach(t => {
-    toa.push([t, BRIDGE_ADDRESS])
-  })
-
-  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined)
-}
-
-
-
-module.exports = {
+const config = {
   ethereum: {
-    tvl: ethTvl,
+    tokens: [usdtEth, daiEth, wbtcEth, usdcEth, wethEth, xcasEth, trueUSDEth, zeroEth,dxpEth, nullAddress],
+    owners: [ethAddr, eth1Addr, BRIDGE_ADDRESS]
   },
   bsc: {
-    tvl: bscTvl,
+    tokens: [usdtBsc, daiBsc, usdcBsc, busdBsc, ethBsc, wbnbBsc],
+    owners: [bscAddr, BRIDGE_ADDRESS]
   },
   avax: {
-    tvl: avaxTvl,
+    tokens: [daiAvax, wavax, wbtcAvax, usdcAvax, usdtAvax],
+    owners: [avaxAddr, BRIDGE_ADDRESS]
   },
   heco: {
-    tvl: hecoTvl,
+    tokens: [wHeco, wbtcHeco, ethHeco, usdcHeco, daiHeco, husdHeco],
+    owners: [hecoAddr, BRIDGE_ADDRESS]
   },
   polygon: {
-    tvl: polygonTvl,
+    tokens: [miMatic, wmatic, wethMatic, wbtcMatic, usdcMatic, daiMatic, usdtMatic],
+    owners: [polyAddr, BRIDGE_ADDRESS]
   },
   fantom: {
-    tvl: fantomTvl,
+    tokens: [usdcFantom, usdtFantom, daiFantom, wFantom, btcFantom],
+    owners: [ftmAddr, BRIDGE_ADDRESS]
   },
   harmony: {
-    tvl: harmonyTvl,
+    tokens: [usdtHarmony, daiHarmony, usdcHarmony, busdHarmony, woneOne],
+    owners: [harmonyAddr, BRIDGE_ADDRESS]
   },
   metis: {
-    tvl: metisTvl,
+    tokens: [usdcMetis, usdtMetis, metis, maticMetis, ftmMetis, mimMetis,mdaiMetis],
+    owners: [metisAddr, BRIDGE_ADDRESS]
   },
   cronos: {
-    tvl: cronosTvl,
+    tokens: [usdtCronos, daiCronos, usdcCronos, wbtcCronos, wethCronos, busdCronos, wCronos],
+    owners: [cronosAddr, BRIDGE_ADDRESS]
   },
   iotex: {
-    tvl: ioTexTvl,
+    tokens:  [usdtIoTex, daiIoTex, usdcIoTex, busdIoTex, wIotex],
+    owners: [iotexAddr, BRIDGE_ADDRESS]
   },
   moonriver: {
-    tvl: moonriverTvl,
+    tokens:  [usdtMoonriver, daiMoonriver, usdcMoonriver, wbtcMoonriver, wethMoonriver, wMOVR],
+    owners: [moonriverAddr, BRIDGE_ADDRESS]
   },
   optimism: {
-    tvl: optimismTvl,
+    tokens: [usdtOptimism,daiOptimism,wbtcOptimism],
+    owners: [BRIDGE_ADDRESS]
   },
   arbitrum: {
-    tvl: arbitrumTvl,
-  },
+    tokens: [wbtcArbitrum,usdtArbitrum,daiArbitrum],
+    owners: [BRIDGE_ADDRESS]
+  }
+}
 
-};
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl: sumTokensExport(config[chain])
+  }
+})
+

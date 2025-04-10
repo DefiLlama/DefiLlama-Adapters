@@ -17,7 +17,7 @@ module.exports = {
                 "0x49446A0874197839D15395B908328a74ccc96Bc0",
                 "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",
                 "0xf951E335afb289353dc249e82926178EaC7DEd78",
-                "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+                ADDRESSES.ethereum.WEETH,
                 ADDRESSES.ethereum.WETH,
                 "0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",
                 "0x8457CA5040ad67fdebbCC8EdCE889A335Bc0fbFB",

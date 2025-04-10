@@ -39,7 +39,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "TVL consists of the total liquidity available in the cover pools",
-  start: 1667260800, // Nov 01 2022 @ 12:00am (UTC)
+  start: '2022-11-01', // Nov 01 2022 @ 12:00am (UTC)
   ethereum: { tvl },
   arbitrum: { tvl },
   bsc: { tvl },
