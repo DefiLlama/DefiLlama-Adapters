@@ -12,39 +12,29 @@ const GET_POOL_VIEW_FUNCTION = `${MOSAIC_AMM_PACKAGE}::liquidity_pool::get_pool_
  * @returns {Promise<Array<string>>} - Array of pool IDs
  */
 const getPoolIds = async chain => {
-  try {
-    const pools = await function_view({
-      functionStr: GET_ALL_POOLS_FUNCTION,
-      type_arguments: [],
-      args: [],
-      chain
-    });
+  const pools = await function_view({
+    functionStr: GET_ALL_POOLS_FUNCTION,
+    type_arguments: [],
+    args: [],
+    chain
+  });
 
-    return pools.map(pool => pool.inner);
-  } catch (error) {
-    console.error(`Error fetching pool IDs: ${error.message}`);
-    return [];
-  }
+  return pools.map(pool => pool.inner);
 };
 
 /**
  * Fetches data for a specific pool
  * @param {string} poolId - Pool identifier
  * @param {string} chain - The blockchain name
- * @returns {Promise<Object|null>} - Pool data or null if error
+ * @returns {Promise<Object>} - Pool data
  */
 const getPoolData = async (poolId, chain) => {
-  try {
-    return await function_view({
-      functionStr: GET_POOL_VIEW_FUNCTION,
-      type_arguments: [],
-      args: [poolId],
-      chain
-    });
-  } catch (error) {
-    console.error(`Error fetching data for pool ${poolId}: ${error.message}`);
-    return null;
-  }
+  return await function_view({
+    functionStr: GET_POOL_VIEW_FUNCTION,
+    type_arguments: [],
+    args: [poolId],
+    chain
+  });
 };
 
 module.exports = {
