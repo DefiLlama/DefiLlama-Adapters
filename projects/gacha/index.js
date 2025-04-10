@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const config = {
   abstract: {
     gacha: '0x3272596F776470D2D7C3f7dfF3dc50888b7D8967',
@@ -16,8 +17,8 @@ async function tvl(api) {
   const _tokens = await api.fetchList({ lengthAbi: abi.getConfig, itemAbi: abi.getPools, target: gacha, field: 'token', itemCount: currentPoolId, startFromOne: true, })
 
   const tokens = [
-    "0x3439153EB7AF838Ad19d56E1571FBD09333C2809", // weth
-    "0x84A71ccD554Cc1b02749b35d22F684CC8ec987e1", // usdc
+    ADDRESSES.abstract.WETH, // weth
+    ADDRESSES.abstract.USDC, // usdc
   ];
 
   tokens.push(..._tokens)

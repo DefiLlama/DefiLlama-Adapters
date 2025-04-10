@@ -73,7 +73,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
   const objects = await getObjects(fetchIds)
   items.push(...objects)
   if (!hasNextPage) return items
-  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds })
+  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds, sleep })
 }
 
 async function call(method, params, { withMetadata = false } = {}) {

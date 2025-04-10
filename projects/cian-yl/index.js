@@ -8,6 +8,7 @@ const config = {
     "0xcc7E6dE27DdF225E24E8652F62101Dab4656E20A",
     "0xd4Cc9b31e9eF33E392FF2f81AD52BE8523e0993b",
     "0x3D086B688D7c0362BE4f9600d626f622792c4a20",
+    "0x8D76e7847dFbEA6e9F4C235CADF51586bA3560A2",
 
     // bera 
 
@@ -32,7 +33,8 @@ const config = {
 
     // sei
     "0x7fF67093231CE8DBC70c0A65b629ed080e66a7F0", // pumpbtc
-    "0xe5DfcE87E75e92C61aeD31329716Cf3D85Cd9C8c"  // ylBTCLST
+    "0xe5DfcE87E75e92C61aeD31329716Cf3D85Cd9C8c" // ylBTCLST
+
   ],
   optimism: ["0x907883da917ca9750ad202ff6395C4C6aB14e60E"],
   bsc: ["0xEa5f10A0E612316A47123D818E2b597437D19a17"],
@@ -49,6 +51,17 @@ Object.keys(config).forEach((chain) => {
   let vaults = config[chain].map(i => i.toLowerCase());
   vaults = [...new Set(vaults)];
   module.exports[chain] = {
-    tvl: async (api) => api.erc4626Sum({ calls: vaults, isOG4626: true, permitFailure: true })
+    tvl: async (api) => {  
+      if (chain === 'ethereum') {
+        // ADD lfbtc-cian-eth balance
+        const lfbtcCianBalance = await api.call({
+          abi: 'erc20:balanceOf',
+          target: "0xc152d5A599F83B3d0098cbAdb23FcE95F27Ff30B", // lfbtc-cian-eth
+          params: ["0x821d2e44984168d278C698fD742d5138c01bAAA2"], // wfbtc wrapper
+        });
+        api.add("0xc152d5A599F83B3d0098cbAdb23FcE95F27Ff30B", lfbtcCianBalance); 
+      }
+      return await api.erc4626Sum({ calls: vaults, isOG4626: true, permitFailure: true });
+    }
   };
 });

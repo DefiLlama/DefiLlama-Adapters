@@ -16,7 +16,7 @@ const ETH =
   ADDRESSES.aptos.zWETH;
 
 const usdc_resource_account = "0xb27c95e40594d6f5765e0183ccca5ebcd0942f9c9a66578af1c743f5bd0d90e5";
-const usdc_metadata = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b";
+const usdc_metadata = ADDRESSES.aptos.USDC_3;
 
 const layerzero_usdc_resource_account = "0x19fb80bd79fa8f7538404af85196396973e3fbbda1503495598172c8813f7ca5";
 const layerzero_usdc_metadata = "0x2b3be0a97a73c87ff62cbdd36837a9fb5bbd1d7f06a73b7ed62ec15c5326c1b8";

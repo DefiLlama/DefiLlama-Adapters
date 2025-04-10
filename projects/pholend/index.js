@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const LENDING_POOL = '0x09e7b6BF92ba8566939d59fE3e3844385d492E77';
@@ -6,7 +7,7 @@ const PROTOCOL_DATA_PROVIDER = '0x4D38f23A09c946667c59Ef89C812725F73DAfCd5';
 const RESERVES = {
   XFI: {
     symbol: 'XFI',
-    address: '0xC537D12bd626B135B251cCa43283EFF69eC109c4',
+    address: ADDRESSES.crossfi.WXFI,
     decimals: 18
   },
   WETH: {

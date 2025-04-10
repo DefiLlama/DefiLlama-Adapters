@@ -67,11 +67,7 @@ module.exports = [
   '1FopykmQHhF51JwZ5co9nEDuQHHL6PqCTn',
   '1EVosahWYJKUj5b861eiHWvwZxfq5SuXqk',
   'bc1pzd6luyardlle9f7lul2y8fl72c22p6vxspc4k4g4gzgjf8975s0sr042yt',
-  
-  // new batched TVL
-  'bc1q4cgxdkr6kypy4nxf24zy4l2rjuuavdnflnnfs0',
-  'bc1qdkkv0aqfjqzfj4lszrwnl5ywlm2c8d6uvds26s',
-  'bc1ql70zgt8lmnk2n7z8usdc2cv6kp39722rrj6u4p',
-  'bc1q4kfty7afjs4yse4c3pqwah4eh082e4e0f8fdt4',
-  'bc1q4zqnzrapnvcdye8cl4fymtyz0udk4t60rynx7j'
+
+  'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0'
+
 ]
