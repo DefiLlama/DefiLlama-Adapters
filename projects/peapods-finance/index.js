@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
@@ -48,7 +49,7 @@ const getTvl = async (api, isStaking) => {
     const lendingPairArray = await api.multiCall({ abi: abi.lendingPair, calls: indexesV3.map(index => ({ target: leverageManager, params: [index] })) });
 
     PAIRED_LP_TOKEN.forEach((tokens, i) => {
-      if(lendingPairArray[i] != '0x0000000000000000000000000000000000000000'){
+      if(lendingPairArray[i] != ADDRESSES.null){
         lendingPairsToGetAssets.push([PAIRED_LP_TOKEN[i]]);
       }else{
         includedStakingPools.push([stakingTokensV3[i], PAIRED_LP_TOKEN[i]]);
