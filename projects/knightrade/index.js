@@ -135,6 +135,28 @@ async function tvlArbitrum(api) {
     marketToTokenMap[market[0]] = market[1];
   }
   for (const vault of vaults) {
+    await api.sumTokens({
+      tokensAndOwners: [
+        // Wallet
+        [ADDRESSES.arbitrum.USDC, vault],
+        [ADDRESSES.arbitrum.USDT, vault],
+        [ADDRESSES.arbitrum.USDC_CIRCLE, vault],
+        [ADDRESSES.arbitrum.WETH, vault],
+        [ETHER_ADDRESS, vault],        
+        [ADDRESSES.arbitrum.WBTC, vault],
+        // GMXv2 Earn
+        [addresses.gmWeth, vault],
+        [addresses.gmBtc, vault],
+        // Aave
+        [addresses.aaveEthAToken, vault],
+        [addresses.aaveBtcAToken, vault],
+        [addresses.aaveUsdcAToken, vault],
+        [addresses.aaveEthDebtToken, vault],
+        [addresses.aaveBtcDebtToken, vault],
+        [addresses.aaveUsdcDebtToken, vault],
+      ]
+    });
+    // GMXv2 Trade
     const positions = await api.call({
       abi: getAccountPositionsAbi,
       target: v2ReaderAddress,
@@ -147,31 +169,13 @@ async function tvlArbitrum(api) {
       await api.add(marketToTokenMap[pos.addresses.market], pos.numbers.sizeInTokens);
       await api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -pos.numbers.sizeInUsd * 1e-24);
     }
-    await api.sumTokens({
-      tokensAndOwners: [
-        [ADDRESSES.arbitrum.USDC, vault],
-        [ADDRESSES.arbitrum.USDT, vault],
-        [ADDRESSES.arbitrum.USDC_CIRCLE, vault],
-        [ADDRESSES.arbitrum.WETH, vault],
-        [ETHER_ADDRESS, vault],        
-        [ADDRESSES.arbitrum.WBTC, vault],
-        [addresses.gmWeth, vault],
-        [addresses.gmBtc, vault],
-        [addresses.aaveEthAToken, vault],
-        [addresses.aaveBtcAToken, vault],
-        [addresses.aaveUsdcAToken, vault],
-        [addresses.aaveEthDebtToken, vault],
-        [addresses.aaveBtcDebtToken, vault],
-        [addresses.aaveUsdcDebtToken, vault],
-      ]
-    });
   }
 }
 
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: "SPOT balance + PERP positions unsettled PNLs",
+  methodology: "Solana: Drift | Arbitrum: Aave, GMX",
   solana: { tvl: tvlSolana },
   arbitrum: { tvl: tvlArbitrum },
 };
