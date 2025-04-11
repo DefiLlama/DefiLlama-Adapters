@@ -28,8 +28,8 @@ const tvl = async (api) => {
 
   states.forEach((state) => {
    state.fields.coins.forEach((typeName, index) => {
-    const [package, module, otw] = typeName.fields.name.split('::')
-    api.add(`${normalizeAddress(package)}::${module}::${otw}`, BigInt(state.fields.balances[index]) / POW_9);
+    const [pkg, module, otw] = typeName.fields.name.split('::')
+    api.add(`${normalizeAddress(pkg)}::${module}::${otw}`, BigInt(state.fields.balances[index]) / POW_9);
    });
   });
 }
