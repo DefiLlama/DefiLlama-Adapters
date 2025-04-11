@@ -128,6 +128,14 @@ const ALPHAFI_CETUS_TVL_IDS = [
     token0Type: "0x76cb819b01abed502bee8a702b4c2d547532c12f25001c9dea795a5e631c26f1::fud::FUD",
     token1Type: ADDRESSES.sui.SUI
   },
+  // usdc suiusdt
+  {
+    poolID: "0x59ec4223043e2bbbcd519bf161088b81946193b0580d6ce94b48e9cb659c6efa",
+    parentPoolID: "0x7df346f8ef98ad20869ff6d2fc7c43c00403a524987509091b39ce61dde00957",
+    investorID: "0x6285c57b0d86cbe585abfe5b23d74f96243f450381ef4d57604164e76a76f4c8",
+    token0Type: ADDRESSES.sui.USDC_CIRCLE,
+    token1Type: ADDRESSES.sui.suiUSDT
+  },
 ]
 
 const ALPHAFI_BLUEFIN_TVL_IDS = [
@@ -271,6 +279,34 @@ const ALPHAFI_BLUEFIN_TVL_IDS = [
     token0Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
     token1Type: ADDRESSES.sui.SUI
   },
+  { //suibtc usdc
+    poolID: "0x4043b9e628d0cc6c2e3f322e6a7bddf603a3bcc084992355b55f4c23516bb6ba",
+    parentPoolID: "0xf0e4772e80800550368973d1f8ab2c9a7241ace8df8770452ee2bf3e3e67b8a1",
+    investorID: "0x6876c4b19075ee774ca368a4a782c9425cca97251093dafa7ff239a846b3ee30",
+    token0Type: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
+  { //lbtc suibtc
+    poolID: "0xd30d849bbddd0c1bc0e2eb552c2dacdf4ae998cc03cd485640eb3db7f456e295",
+    parentPoolID: "0x7df346f8ef98ad20869ff6d2fc7c43c00403a524987509091b39ce61dde00957",
+    investorID: "0x43523544dd4e7900ac6aeb8299e1aebd5d72bf7fae97f1a3b988c31e08b1bacc",
+    token0Type: "0x3e8e9423d80e1774a7ca128fccd8bf5f1f7753be658c5e645929037f7c819040::lbtc::LBTC",
+    token1Type: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC"
+  },
+  { //wal usdc
+    poolID: "0x2781cca45bd57e1205b46dd439baf5233a0f02c4016e0a6b0d1f84036f47d109",
+    parentPoolID: "0xbcc6909d2e85c06cf9cbfe5b292da36f5bfa0f314806474bbf6a0bf9744d37ce",
+    investorID: "0x386445d435618922939a998c59593558d576821b5adceb1279b72731fbefaa38",
+    token0Type: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
+  { //wal stsui
+    poolID: "0x20f27f4b4e8de8e11aef5c59a4facc8367a92b24bd8302448bd97efbbaf9fec5",
+    parentPoolID: "0xee0d89310b7216a8ef86cd2af0dd22382f4be2049cd073603b7099d9846ab4ca",
+    investorID: "0xe171b8b8270e0e311362d55a0e21d387be6d549af8559f0d6ce3c4dfbb95deb7",
+    token0Type: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    token1Type: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI"
+  },
 ]
 const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
   { //sui usdc
@@ -314,6 +350,20 @@ const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
     investorID: "0x90364be9cca6c1df042f269fb944fd49ba1c74688789fe33329aa6d40ac8552a",
     token0Type: ADDRESSES.sui.DEEP,
     token1Type: "0xe1b45a0e641b9955a20aa0ad1c1f4ad86aad8afb07296d4085e349a50e90bdca::blue::BLUE"
+  },
+  { //sui lbtc
+    poolID: "0xafc0dc5166233af565e30e24755c401ff8958a28a8fdfdbbf407236b67725695",
+    parentPoolID: "0xa0153768c7ed857ffd8bad4708da873fb7825a6878e5f4c83f5df4c091933e56",
+    investorID: "0x7a8fc71060975c6e16083c723f376eaf41aab466d0a773c06a68f8f07040998a",
+    token0Type: ADDRESSES.sui.SUI,
+    token1Type: "0x3e8e9423d80e1774a7ca128fccd8bf5f1f7753be658c5e645929037f7c819040::lbtc::LBTC"
+  },
+  { //wal usdc
+    poolID: "0x82938703e493c5759c4fa1218d7b7f82fd0356714dfc32eae457479f1f71c225",
+    parentPoolID: "0xbcc6909d2e85c06cf9cbfe5b292da36f5bfa0f314806474bbf6a0bf9744d37ce",
+    investorID: "0xab8585241f83c4e9cfe4d3b36af4b640a0c309b2b60be2c07b2246c32e5d8b4e",
+    token0Type: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
   },
 ]
 const ALPHAFI_NAVI_TVL_IDS = [
@@ -385,6 +435,16 @@ const ALPHAFI_NAVI_TVL_IDS = [
   {// suiUSDT
     poolID: "0x1d30d1b07d78341810a604ad34734001b3b70362c6502de2220999074429a641",
     tokenType: ADDRESSES.sui.suiUSDT,
+    expo: 6
+  },
+  {// WAL
+    poolID: "0x8ceca427f6fef09f7691eb2c9f1bf41e4854230f9e1bd21322b3ea7f76ee6975",
+    tokenType: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
+    expo: 9
+  },
+  {// DEEP
+    poolID: "0x16a5cc859b1af17b7478c79ff43e67cc5f5e5d257fba21839060dd398a9eb958",
+    tokenType: ADDRESSES.sui.DEEP,
     expo: 6
   },
 ]

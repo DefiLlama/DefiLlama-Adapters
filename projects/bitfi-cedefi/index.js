@@ -4,6 +4,9 @@ const mapping = {
   },
   bsc: {
     bfBTC: '0x623F2774d9f27B59bc6b954544487532CE79d9DF',
+  },
+  hemi: {
+    bfBTC: '0x623F2774d9f27B59bc6b954544487532CE79d9DF'
   }
 }
 const exportObject = {}

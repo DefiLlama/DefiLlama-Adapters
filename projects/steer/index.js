@@ -233,6 +233,12 @@ const supportedChains = [
     chainId: 1,
     identifier: 'ethereum'
   },
+  {
+    name: 'Hemi',
+    subgraphEndpoint:  'https://api.studio.thegraph.com/query/78728/steer-protocol-hemi/version/latest',
+    chainId: 43111,
+    identifier: 'hemi'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain
