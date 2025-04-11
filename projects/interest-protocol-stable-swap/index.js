@@ -1,6 +1,6 @@
 const sui = require("../helper/chain/sui")
 
-const PACKAGE_ID = '0x50052aca3d7b971bd9824e1bb151748d03870adfe3ba06dce384d2a77297c719';
+const SUI_PACKAGE_ID = '0x50052aca3d7b971bd9824e1bb151748d03870adfe3ba06dce384d2a77297c719';
 
 const POW_9 = 1_000_000_000n;
 
@@ -17,7 +17,7 @@ function normalizeAddress(
 
 const tvl = async (api) => {
   const newPoolEvents = await sui.queryEvents({
-    eventType: `${PACKAGE_ID}::event_wrapper::InterestStableSwapEvent<${PACKAGE_ID}::events::NewPool>`
+    eventType: `${SUI_PACKAGE_ID}::event_wrapper::InterestStableSwapEvent<${SUI_PACKAGE_ID}::events::NewPool>`
   });
 
    const statesIds = newPoolEvents.map(
