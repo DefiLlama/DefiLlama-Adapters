@@ -5,6 +5,7 @@ const abi = {
 }
 
 const config = {
+  plume: { pool: '0x8bd47bC14f38840820d1DC7eD5Eb57b85d2c7808', },
   plume_mainnet: { pool: '0x3AF7D19aAeCf142C91FF1A8575A316807a0f611A', },
 }
 
