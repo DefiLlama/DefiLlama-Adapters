@@ -1,22 +1,27 @@
 const config = {
-  ethereum: "0x6a5D488EC17d6a7a1872AaB88feC90c1B2Df4196",
-  scroll: "0xea3E87699D11B77Fba754Bf0257a25664B97437d",
-  bsc: "0x6a5D488EC17d6a7a1872AaB88feC90c1B2Df4196",
+  bsc: "0x1987d8109638A028BB8bE654531B15642a8708E3",
+  fhe:"0xe8451dC0959469e42F2679b3eC085e58FB212b11"
 };
 
+// const token = "0xd55C9fB62E176a8Eb6968f32958FeFDD0962727E"
+
 module.exports = {
-  methodology: "Counts the total amount of asset tokens deposited in each of the Strategy contracts registered in the helper contract on each chain.",
+  methodology: "Counts the total amount of FHE tokens deposited in Mind Agentic World contracts on BSC and MindChain.",
 }
 
 Object.keys(config).forEach(chain => {
   const target = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const [_vaults, tokens, bals] = await api.call({
-        abi: "function getPoolTotalAssets() view returns (address[] memory,address[] memory, uint256[] memory)",
+      const tvlAmount = await api.call({
+        abi: "function allHubAssetAmount() view returns (uint256)", 
         target,
       })
-      api.add(tokens, bals)
+       const bigIntAmount = BigInt(tvlAmount); 
+       const amountInToken = bigIntAmount / BigInt(10 ** 18); 
+      // api.add(token, tvlAmount,{ priceChain: "bsc" })
+      api.addCGToken("mind-network", amountInToken)
     }
   }
 })
+      
