@@ -4,7 +4,8 @@ const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { getAmounts } = require("./iziswap");
-const { sumTokens2: sumTokens2Solana } = require('../helper/solana')
+const { sumTokens2: sumTokens2Solana, getConnection, decodeAccount } = require('../helper/solana')
+const { PublicKey } = require("@solana/web3.js");
 
 // The Graph
 const graphUrlList = {
@@ -416,11 +417,34 @@ async function aaveSupplyBalance(api, address) {
 }
 
 async function solanaTvl(api, address) {
-  if (api.chain !== 'solana' || !address[api.chain]) {
-    return;
+  if (api.chain !== 'solana' || !address[api.chain]) return;
+
+  const connection = getConnection();
+  const programIds = address[api.chain];
+
+  const accounts = (
+    await Promise.all(programIds.map(pid =>
+      connection.getProgramAccounts(new PublicKey(pid), {
+        filters: [{ dataSize: 3160 }],
+      })
+    ))
+  ).flat();
+
+  const data = []
+  for (const i of accounts) {
+    const decoded = decodeAccount('investinFund', i.account);
+    data.push(decoded);
   }
-  let tokenAccounts = address[api.chain];
-  return sumTokens2Solana({ tokenAccounts, })
+
+  const tokenAccounts = data
+    .map(d =>
+      d.tokens
+        .filter(i => i.is_active && !i.is_on_mango && +i.balance > 1e4)
+        .map(i => i.vault.toString())
+    )
+    .flat();
+
+  return sumTokens2Solana({ tokenAccounts });
 }
 
 async function getGraphData(timestamp, chain, api) {
