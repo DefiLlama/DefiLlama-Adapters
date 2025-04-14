@@ -15,29 +15,30 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
-
+##### Name (to be shown on DefiLlama): 
+ZEROBASE
 
 ##### Twitter Link:
-
+[x.com/zerobasezk](https://x.com/zerobasezk)
 
 ##### List of audit links if any:
-
+PeckShield Audit Report: https://github.com/peckshield/publications/blob/master/audit_reports/PeckShield-Audit-Report-ZeroBase-Vault-v1.0.pdf
+Salus Audit Report: https://github.com/Salusec/Salus-audit/blob/main/2024/ZeroBase_report_2024-12-24.pdf
 
 ##### Website Link:
-
+https://app.zerobase.pro/
 
 ##### Logo (High resolution, will be shown with rounded borders):
 
 
 ##### Current TVL:
-
+$632.14k USD 
 
 ##### Treasury Addresses (if the protocol has treasury)
 
 
 ##### Chain:
-
+ethereum, avax, bsc, arbitrum, polygon, base, optimism
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
 
@@ -46,13 +47,13 @@
 
 
 ##### Short Description (to be shown on DefiLlama):
-
+ZEROBASE introduces the first zk-powered staking product on stablecoins.
 
 ##### Token address and ticker if any:
 
 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
-
+Liquid staking
 
 ##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
 ##### Implementation Details: Briefly describe how the oracle is integrated into your project:
@@ -62,6 +63,6 @@
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
-
+TVL is calculated from the USDT and USDC tokens locked in Zerobase vaults and withdrawal vaults across multiple chains.
 
 ##### Github org/user (Optional, if your code is open source, we can track activity):
