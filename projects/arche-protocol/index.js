@@ -36,7 +36,3 @@ module.exports = {
         }
     }
 };
-
-let a = fetchLockedTokens().then(resp => {
-    console.log(resp)
-})
