@@ -32,6 +32,6 @@ async function tvl(api, address, blacklistedTokens) {
 module.exports = { methodology: 'calculates overall value deposited across different protocol portfolios' }
 
 Object.keys(config).forEach(chain => {
-  const { address, blacklistedTokens } = config['base']
-  module.exports['base'] = { tvl: (api) => tvl(api, address, blacklistedTokens) }
+  const { address, blacklistedTokens } = config[chain]
+  module.exports[chain] = { tvl: (api) => tvl(api, address, blacklistedTokens) }
 })
