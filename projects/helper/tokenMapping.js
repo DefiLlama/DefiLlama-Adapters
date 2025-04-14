@@ -19,8 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
-  'celestia', 'dydx', 'carbon'
-
+  'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride','prom'
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
@@ -32,7 +31,6 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
-
 }
 const ibcMappings = {
   // Sample Code
@@ -41,35 +39,12 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  eclipse: {
-    'HP5ksEQBkX5UZXxLThvF24TEh5ta9AUB8TLA1YSXKzDs': { coingeckoId: "neptune-protocol", decimals: 9 },
-    'V5m1Cc9VK61mKL8xVYrjR7bjD2BC5VpADLa6ws3G8KM': { coingeckoId: "stride-staked-tia", decimals: 6 },
-    '9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8': { coingeckoId: "celestia", decimals: 6 },
-    'Fu5P5ikrnQ8BKZECJ1XeeDAaTgWJUrcjw8JmFrNA8TJk': { coingeckoId: "renzo-restaked-sol", decimals: 9 },
-  },
-  hedera: {
-    '0x00000000000000000000000000000000000c01f3': { coingeckoId: "hsuite", decimals: 4 },
-  },
-  rbn: {
-    '0x0000000000000000000000000000000000000000': { coingeckoId: "redbelly-network-token", decimals: 18 },
-    '0x0233971bd2de29e81029336c46997055df3b5282': { coingeckoId: "liquid-crypto", decimals: 18 },
-  },
-  // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  plume: {
-    '0xA849026cDA282eeeBC3C39Afcbe87a69424F16B4': { coingeckoId: "tether", decimals: 6 }, 
-    '0x626613B473F7eF65747967017C11225436EFaEd7': { coingeckoId: "ethereum", decimals: 18 }, 
-  },
-  sxr: {
-    [nullAddress]: { coingeckoId: "sx-network-2", decimals: 18 },
-    '0x3E96B0a25d51e3Cc89C557f152797c33B839968f': { coingeckoId: "sx-network-2", decimals: 18 },
-    '0x6629ce1cf35cc1329ebb4f63202f3f197b3f050b': { coingeckoId: "usd-coin", decimals: 6 },
-  },
-  sonic: {
-    '0x040c10f8238e4689c5e549ef5e07478b738b2ba5': { coingeckoId: "ignition-fbtc", decimals: 8 },
-  },
+  eclipse: {
+    'CEBP3CqAbW4zdZA57H2wfaSG1QNdzQ72GiQEbQXyW9Tm': { coingeckoId: 'tether', decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

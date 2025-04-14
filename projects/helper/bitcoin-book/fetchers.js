@@ -95,26 +95,16 @@ module.exports = {
 
     return getConfig('coffer-network-v0.1', undefined, {
       fetcher: async () => {
-        throw new Error('Coffer Network fetcher is not implemented')
+        const { data: { addresses, } } = await get('https://aapi.coffer.network/v1/stats/addresses?network=mainnet')
+        return addresses
       }
     })
-
-    function reserveBytes(txHashTemp) {
-      let txHash = ''
-      if (txHashTemp.length % 2 === 1) {
-        txHashTemp = '0' + txHashTemp
-      }
-      txHashTemp = txHashTemp.split('').reverse().join('')
-      for (let i = 0; i < txHashTemp.length - 1; i += 2) {
-        txHash += txHashTemp[i + 1] + txHashTemp[i]
-      }
-      return txHash
-    }
   },
 
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
     const BATCH_SIZE = 1000
+    const blacklisted = new Set(['bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'])
 
     return getConfig('lombard', undefined, {
       fetcher: async () => {
@@ -135,11 +125,11 @@ module.exports = {
           batchNumber++;
         }
 
-        return allAddresses;
+        return allAddresses.filter(i => !blacklisted.has(i))
       }
     })
   },
-  solvBTC: async () => {
+  solvBTCLST: async () => {
     const API_URL = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/bitcoin.json'
     return Object.values(await getConfig('solv-protocol/solv-btc-lst', API_URL)).flat();
   },
@@ -193,5 +183,18 @@ module.exports = {
       }
     }
     return owners
-  }
+  },
+  dlcLink: async () => {
+    const config = await getConfig('dlc-link', 'https://api.dlc.link/v1/ibtc/proof-of-reserve')
+    const addresses= []
+    config.chains.forEach(c => {
+      addresses.push(...(c.vaultAddresses ?? []))
+    })
+    return addresses
+  },
+  solvBTC: async () => {
+    const API_URL = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json'
+    const res = await getConfig('solv-protocol/solv-btc-non-lst', API_URL)
+    return res.bitcoin
+  },
 }

@@ -12,10 +12,7 @@ const CONFIG = {
 const tvl = async (api) => {
   const tokens = CONFIG[api.chain]
   const supplies = await api.multiCall({ calls: tokens, abi: 'erc20:totalSupply' })
-
-  supplies.forEach((supply) => {
-    api.addUSDValue(supply / 1e6)
-  })
+  api.add(tokens, supplies)
 }
 
 Object.keys(CONFIG).forEach((chain) => {
