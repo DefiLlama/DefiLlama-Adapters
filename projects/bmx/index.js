@@ -22,7 +22,7 @@ module.exports = {
         staking: staking(stakingAddresses.base, tokenAddresses.base)
     },
     sonic: {
-        tvl: gmxExports({ vault: vaultAddresses.base })
+        tvl: gmxExports({ vault: vaultAddresses.sonic })
     },
     mode: {
         tvl: gmxExports({ vault: vaultAddresses.mode }),
