@@ -16,7 +16,8 @@ module.exports = {
   methodology:
     "TVL counts all of the tokens locked in the permanent Uniswap v2 LOCK/WETH pool.",
   arbitrum: {
-    tvl: sumTokensExport({
+    tvl:() => ({}),
+    pool2: sumTokensExport({
       chain: "arbitrum",
       owner: VAULT_ADDRESS,
       tokens: [...Object.values(TOKENS_BY_CHAIN["arbitrum"])],
