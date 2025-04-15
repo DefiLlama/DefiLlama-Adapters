@@ -13,10 +13,7 @@ async function fetchLockedTokens() {
         chain: 'move'
     })
 
-    // Returns [0] because the functions returns multiple values
-    // Total deposited move is the first value
     return lockedTokens;
-
 }
 
 module.exports = {
