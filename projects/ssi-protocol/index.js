@@ -14,3 +14,6 @@ module.exports = treasuryExports({
 })
 
 Object.keys(module.exports).forEach(chain => delete module.exports[chain].ownTokens)
+
+
+// WE NEED TO ADD MAGSSI HERE TOO since its an indexes. Removed from the other one
