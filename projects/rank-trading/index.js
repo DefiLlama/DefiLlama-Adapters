@@ -1,6 +1,6 @@
 const abi = require("./abi");
 
-const rankFactoryContracts = ["0x3dF9430E94DeC9992fDB076254B7B7E8b8932F5b"];
+const rankFactoryContracts = ["0x6E9d30690E433503d3dB7001610f60290a286a3f"];
 
 async function tvl(api) {
   for (const rankFactoryContract of rankFactoryContracts) {
