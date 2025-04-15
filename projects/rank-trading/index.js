@@ -34,8 +34,8 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Sum of all assets locked in Rank Trading contracts",
-  start: 47582949,
-  bnbt: {
+  start: 48201631,
+  bsc: {
     tvl,
   },
 };
