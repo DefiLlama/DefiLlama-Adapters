@@ -11,7 +11,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  taraxa: {
+  tara: {
     tvl,
     staking: staking(LARA_STAKING_CONTRACT, LARA_ADDRESS)
   }
