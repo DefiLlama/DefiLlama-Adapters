@@ -109,14 +109,34 @@ module.exports = {
     //   })
 
     //   return api.getBalances()
-    const { data: { data: { totalDeposits, totalCollateral } } } = await axios.get('https://api.lista.org/api/moolah/overall')
+    const { data: { data: {  depositDetails, collateralDetails, borrowedDetails } } } = await axios.get('https://api.lista.org/api/moolah/overall')
       
-      // Convert string to number and sum up
-      const totalValue = Number(totalDeposits) + Number(totalCollateral)
-      
-      return {
-        'tether': totalValue
-      }
-    }
+    // Add deposits
+    depositDetails.forEach(detail => {
+      api.add(detail.address, +detail.amount * 10 ** 18)
+    })
+
+    // Add collateral
+    collateralDetails.forEach(detail => {
+      api.add(detail.address, +detail.amount * 10 ** 18)
+    })
+
+    // Subtract borrowed
+    
+    borrowedDetails.forEach(detail => {
+      api.add(detail.address, -detail.amount * 10 ** 18)
+    })
+
+    return api.getBalances()
+  },
+  borrowed: async (api) => {
+    const { data: { data: { borrowedDetails } } } = await axios.get('https://api.lista.org/api/moolah/overall')
+    
+    borrowedDetails.forEach(detail => {
+      api.add(detail.address, +detail.amount * 10 ** 18)
+    })
+
+    return api.getBalances()
+  }
   }
 } 
