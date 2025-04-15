@@ -9,7 +9,8 @@ const config = {
 }
 const abi = {
     totalAssets: "uint256:totalAssets",
-    idToMarketParams: "function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)"
+    idToMarketParams: "function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)",
+    market: "function market(bytes32) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)"
 }
 const eventAbis = {
   supplyCollateral: 'event SupplyCollateral(bytes32 indexed id, address indexed caller, address indexed onBehalf, uint256 assets)',
@@ -23,120 +24,83 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: async (api) => {
-        
-    //   const { data: { data: vaults } } = await axios.get('https://api.lista.org/api/moolah/vault/list?page=1&pageSize=1000')
+      const { data: { data: vaults } } = await axios.get('https://api.lista.org/api/moolah/vault/list?page=1&pageSize=1000')
       
-    //   const totalAssets = await api.multiCall({
-    //     abi: abi.totalAssets,
-    //     calls: vaults.list.map(i => i.address)
-    //   })
-    //   const tokensAndOwners = vaults.list.map((vault, i) => {
-    //     api.add(vault.asset, totalAssets[i])
-    //     return [vault.asset, vault.address]
-    //   })
-
-        
-    
-    //   const [supplyLogs
-    //     , withdrawLogs,
-    //      liquidateLogs
-    // ] = await Promise.all([
-    //     getLogs2({ 
-    //       api, 
-    //       target: config.bsc.vault,
-    //       eventAbi: eventAbis.supplyCollateral,
-    //       fromBlock: config.bsc.fromBlock,
-    //       extraKey: 'SupplyCollateral',
-          
-    //     }),
-    //     getLogs2({ 
-    //       api, 
-    //       target: config.bsc.vault,
-    //       eventAbi: eventAbis.withdrawCollateral,
-    //       fromBlock: config.bsc.fromBlock,
-    //       extraKey: 'WithdrawCollateral'
-    //     }),
-    //     getLogs2({ 
-    //       api, 
-    //       target: config.bsc.vault,
-    //       eventAbi: eventAbis.liquidate,
-    //       fromBlock: config.bsc.fromBlock,
-    //       extraKey: 'Liquidate'
-    //     })
-    //   ])
-
-    
-
-    //   const tokenBalances = {}
+      // Create set of assets and collect collateral IDs
+      const assets = new Set()
+      const collateralIds = []
       
-    //   const uniqueIds = [...new Set(supplyLogs.map(log => log.id))]
+      vaults.list.forEach(vault => {
+        assets.add(vault.asset)
+        vault.collaterals.forEach(collateral => {
+          collateralIds.push(collateral.id)
+        })
+      })
 
-    //   const marketParams = await api.multiCall({
-    //     abi: abi.idToMarketParams,
-    //     calls: uniqueIds.map(id => ({
-    //       target: config.bsc.vault,
-    //       params: [id]
-    //     }))
-    //   })
+      // Get collateral tokens from idToMarketParams
+      const marketParams = await api.multiCall({
+        abi: abi.idToMarketParams,
+        calls: collateralIds.map(id => ({
+          target: config.bsc.vault,
+          params: [id]
+        }))
+      })
 
-    //   const idToCollateralToken = {}
-    //   uniqueIds.forEach((id, i) => {
-    //     idToCollateralToken[id] = marketParams[i].collateralToken
-    //   })
+      const collateralTokens = new Set(marketParams.map(param => param.collateralToken))
 
-    //   supplyLogs.forEach(log => {
-    //     const collateralToken = idToCollateralToken[log.id]
-    //     const amount = log.assets
-    //     tokenBalances[collateralToken] = (tokenBalances[collateralToken] || 0) + Number(amount)
-    //   })
+      // Build tokensAndOwners array
+      const tokensAndOwners = []
 
-    //   withdrawLogs.forEach(log => {
-    //     const collateralToken = idToCollateralToken[log.id]
-    //     const amount = log.assets
-    //     tokenBalances[collateralToken] = (tokenBalances[collateralToken] || 0) - Number(amount)
-    //   })
+      // Add assets
+      assets.forEach(asset => {
+        tokensAndOwners.push([asset, config.bsc.vault])
+      })
 
-    //   liquidateLogs.forEach(log => {
-    //     const collateralToken = idToCollateralToken[log.id]
-    //     const amount = log.seizedAssets
-    //     tokenBalances[collateralToken] = (tokenBalances[collateralToken] || 0) - Number(amount)
-    //   })
+      // Add collateral tokens
+      collateralTokens.forEach(token => {
+        tokensAndOwners.push([token, config.bsc.vault])
+      })
 
-    //   Object.entries(tokenBalances).forEach(([token, balance]) => {
-    //     if (balance > 0) {
-    //       api.add(token, balance)
-    //     }
-    //   })
-
-    //   return api.getBalances()
-    const { data: { data: {  depositDetails, collateralDetails, borrowedDetails } } } = await axios.get('https://api.lista.org/api/moolah/overall')
+      return api.sumTokens({ tokensAndOwners })
+    },
+    borrowed: async (api) => {
+      const { data: { data: vaults } } = await axios.get('https://api.lista.org/api/moolah/vault/list?page=1&pageSize=1000')
       
-    // Add deposits
-    depositDetails.forEach(detail => {
-      api.add(detail.address, +detail.amount * 10 ** 18)
-    })
+      // Collect all collateral IDs
+      const collateralIds = []
+      vaults.list.forEach(vault => {
+        vault.collaterals.forEach(collateral => {
+          collateralIds.push(collateral.id)
+        })
+      })
 
-    // Add collateral
-    collateralDetails.forEach(detail => {
-      api.add(detail.address, +detail.amount * 10 ** 18)
-    })
+      // Get loan tokens from idToMarketParams
+      const marketParams = await api.multiCall({
+        abi: abi.idToMarketParams,
+        calls: collateralIds.map(id => ({
+          target: config.bsc.vault,
+          params: [id]
+        }))
+      })
 
-    // Subtract borrowed
-    
-    borrowedDetails.forEach(detail => {
-      api.add(detail.address, -detail.amount * 10 ** 18)
-    })
+      // Get market data for each ID
+      const marketData = await api.multiCall({
+        abi: abi.market,
+        calls: collateralIds.map(id => ({
+          target: config.bsc.vault,
+          params: [id]
+        }))
+      })
 
-    return api.getBalances()
-  },
-  borrowed: async (api) => {
-    const { data: { data: { borrowedDetails } } } = await axios.get('https://api.lista.org/api/moolah/overall')
-    
-    borrowedDetails.forEach(detail => {
-      api.add(detail.address, +detail.amount * 10 ** 18)
-    })
+      // Add borrowed amounts for each loan token
+      marketParams.forEach((param, i) => {
+        const totalBorrowAssets = marketData[i].totalBorrowAssets
+        if (totalBorrowAssets > 0) {
+          api.add(param.loanToken, totalBorrowAssets)
+        }
+      })
 
-    return api.getBalances()
-  }
+      return api.getBalances()
+    }
   }
 } 
