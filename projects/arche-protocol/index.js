@@ -4,23 +4,19 @@ const ARCHE_CONTRACT_ADDRESS = "0xbcc40f56a3538c9cc25254f485f48e6f150f9acac53a2e
 const MOVE_TOKEN_ADDRESS = "0x1::aptos_coin::AptosCoin";
 
 async function fetchLockedTokens() {
-    try {
-        // Call arche contract to get the total locked move tokens
-        const protocolSummary = await function_view({
-            functionStr: `${ARCHE_CONTRACT_ADDRESS}::router::protocol_summary`,
-            type_arguments: [],
-            args: ["0xa"],
-            chain: 'move'
-        })
 
-        // Returns [0] because the functions returns multiple values
-        // Total deposited move is the first value
-        return protocolSummary[0];
+    // Call arche contract to get the total locked move tokens
+    const lockedTokens = await function_view({
+        functionStr: `${ARCHE_CONTRACT_ADDRESS}::collateral::total_collateral`,
+        type_arguments: [],
+        args: ["0xa"],
+        chain: 'move'
+    })
 
-    } catch (error) {
-        console.error("Error fetching locked tokens:", error);
-        return 0;
-    }
+    // Returns [0] because the functions returns multiple values
+    // Total deposited move is the first value
+    return lockedTokens;
+
 }
 
 module.exports = {
