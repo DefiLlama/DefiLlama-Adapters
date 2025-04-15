@@ -20,6 +20,7 @@ const CATEX_POOLS = [
 
 module.exports = {
   methodology: 'TVL counts the tokens locked in Gamma ALM vaults that Catex manages on top of Uniswap V4',
+  start: 69453847,
   polygon: {
     tvl: async (api) => {
       // Get token addresses for each vault
