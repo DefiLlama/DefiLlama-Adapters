@@ -19,9 +19,9 @@ async function staking(api) {
 // ------------------------------
 module.exports = {
   misrepresentedTokens: true,
+  //     1. PROS Baseline Hashrate Value: (500,080 TH/s of capacity * Hashrate Index's ASIC Price Index for 19 to 25 J/TH efficiency tier). Note that this is is a baseline or minimum value of Prosper's hashrate, as it only accounts for the base value of the ASIC miners, and does not include the value of all the infrastructure required to enable live, operational hashrate.
   methodology: `
     Total TVL:
-    1. PROS Baseline Hashrate Value: (500,080 TH/s of capacity * Hashrate Index's ASIC Price Index for 19 to 25 J/TH efficiency tier). Note that this is is a baseline or minimum value of Prosper's hashrate, as it only accounts for the base value of the ASIC miners, and does not include the value of all the infrastructure required to enable live, operational hashrate.
     2. Staked Value of PROS: Total supply of the receipt token, representing staked PROS (provided only in the staking function).
     3. Treasury Value:
        a) BTC held in the treasury (BTC balance * current BTC price),
