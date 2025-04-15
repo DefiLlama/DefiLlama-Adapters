@@ -18,7 +18,6 @@ async function staking(api) {
 // Module Exports
 // ------------------------------
 module.exports = {
-  timetravel: false,
   misrepresentedTokens: true,
   methodology: `
     Total TVL:
