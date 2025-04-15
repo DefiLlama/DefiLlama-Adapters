@@ -42,14 +42,6 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  eclipse: {
-    'CEBP3CqAbW4zdZA57H2wfaSG1QNdzQ72GiQEbQXyW9Tm': { coingeckoId: 'tether', decimals: 6 },
-  },
-  elys: {
-    'ibc:6BFB09FE2464A7681645610F56BBEFF555A00B8AE146339FEB4609BF40FB0F4A': { coingeckoId: 'xion-2', decimals: 6, },
-    'ibc:B88C39AD6C8550716DFD64C3AD28F355633554821249AC9F8BCC21341641CD18': { coingeckoId: 'saga-2', decimals: 6, },
-    'ibc:0E293A7622DC9A6439DB60E6D234B5AF446962E27CA3AB44D0590603DFF6968E': { coingeckoId: 'wrapped-bitcoin', decimals: 8, },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
