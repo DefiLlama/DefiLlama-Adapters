@@ -18,7 +18,7 @@ async function tvl() {
   const estimatedTVL = solValueUSD * 2
 
   return {
-    tether: estimatedTVL,
+    tether: estimatedTVL
   }
 }
 
@@ -27,6 +27,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'Estimates TVL by doubling the USD value of SOL in the IPLR/SOL Raydium LP pool.',
   solana: {
-    tvl,
-  },
+    tvl
+  }
 }
