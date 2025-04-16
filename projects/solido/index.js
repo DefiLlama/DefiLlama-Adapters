@@ -15,18 +15,14 @@ const calculateSolidoTVL = async (api) => {
 
   // For each supported collateral type, get total stats
   for (const coinType of coreTokens) {
-    try {
-      const [totalCollateral, totalDebt] = await invokeViewFunction(
-        CDP_GET_TOTAL_STATS_FUNCTION_TYPE,
-        [coinType],
-        []
-      );
-      if (totalCollateral > 0) {
-        sdk.util.sumSingleBalance(balances, coinType, totalCollateral);
-      }
-    } catch (error) {
-      // Skip if the coin type is not supported as collateral
-      console.log(`Error getting stats for ${coinType}: ${error.message}`);
+    const [totalCollateral, totalDebt] = await invokeViewFunction(
+      CDP_GET_TOTAL_STATS_FUNCTION_TYPE,
+      [coinType],
+      []
+    );
+    
+    if (totalCollateral > 0) {
+      sdk.util.sumSingleBalance(balances, coinType, totalCollateral);
     }
   }
 
