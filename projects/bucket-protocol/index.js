@@ -15,6 +15,36 @@ async function calculateGSUIunderlyingSui(gSuiAmount) {
   return percentage * Number(gSuiAmount)
 }
 
+async function calculateHAWALunderlyingWal(haWalAmount){
+  const fields = (await getObject("0x9e5f6537be1a5b658ec7eed23160df0b28c799563f6c41e9becc9ad633cb592b")).fields;
+  const supply = Number(fields.hawal_supply);
+  const total_staked = Number(fields.total_staked);
+  const total_rewards = Number(fields.total_rewards);
+  const collected_protocol_fees = Number(fields.collected_protocol_fees);
+  const uncollected_protocol_fees = Number(fields.uncollected_protocol_fees);
+  const total_unstaked = Number(fields.total_unstaked);
+  const percentage = (total_staked + total_rewards - collected_protocol_fees - uncollected_protocol_fees - total_unstaked) / supply;
+  return percentage * Number(haWalAmount);
+}
+
+async function calculateWWALunderlyingWal(wWalAmount){
+  const blizzardStaking = await sui.getDynamicFieldObjects({
+    parent: "0xccf034524a2bdc65295e212128f77428bb6860d757250c43323aa38b3d04df6d",
+  });
+  const exchangeRateTableId = blizzardStaking[0].fields.historic_rate.fields.exchange_rate.fields.id.id;
+  const exchangeRateTable =  await sui.getDynamicFieldObjects({
+    parent: exchangeRateTableId,
+  });
+  
+  const maxNameObject = exchangeRateTable.reduce((max, current) => {
+    return current.fields.name > max.fields.name ? current : max;
+  });
+  const totalWWAL = Number(maxNameObject.fields.value.fields.lst);
+  const totalWAL = Number(maxNameObject.fields.value.fields.wal);
+  
+  return wWalAmount * totalWAL / totalWWAL;
+}
+
 async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
   const suiHasuiPool = await getObject(SUI_HASUI_POOL_ID)
   const vaultObject = await getObject(SUI_HASUI_VAULT_ID)
@@ -39,8 +69,11 @@ const SUI = ADDRESSES.sui.SUI;
 const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
+const WAL = "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL";
 const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI";
 const GSUI = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x2::sui::SUI>";
+const HAWAL = "0x8b4d553839b219c3fd47608a0cc3d5fcc572cb25d41b7df3833208586a8d2470::hawal::HAWAL";
+const WWAL = "0xb1b0650a8862e30e3f604fd6c5838bc25464b8d3d827fbd58af7cb9685b832bf::wwal::WWAL";
 const USDC_CIRCLE = ADDRESSES.sui.USDC_CIRCLE;
 const FDUSD = "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD";
 const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC";
@@ -232,7 +265,13 @@ async function tvl(api) {
     } else if(coin == GSUI) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
-    } else {
+    }else if (coin == HAWAL){
+      const walAmount = await calculateHAWALunderlyingWal(bucket.fields.collateral_vault);
+      api.add(WAL, walAmount);
+    }else if (coin == WWAL){
+      const walAmount = await calculateWWALunderlyingWal(bucket.fields.collateral_vault);
+      api.add(WAL, walAmount);
+    }else {
       api.add(coin, bucket.fields.collateral_vault);
     }
   }
