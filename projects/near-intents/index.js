@@ -2,22 +2,20 @@ const { httpGet } = require("../helper/chain/near")
 
 const api_tvl = "https://flipsidecrypto.xyz/api/v1/queries/82a54d67-5614-4b3c-b2fa-696396dc5c30/data/latest"
 
-const adapter = {
-    adapter: {
-        "near": {
-          start: '2025-04-16',
-          fetch: async () => {
-            const result = await httpGet(api_tvl);
-            return {
-                tvl: result?.TOTAL_NET_MINTED_VOLUME || '0',
-            }
-          }
-        }
+
+function tvl() {
+    return async () => {
+      const assetsCallResponse = await httpGet(api_tvl);
+  
+      const balances = assetsCallResponse?.TOTAL_NET_MINTED_VOLUME || '0';
+  
+      return balances;
     }
-};
+  }
+
 
 module.exports = {
     near: {
-        tvl: adapter
+        tvl: tvl()
     }
 }
