@@ -3,6 +3,7 @@ const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
 
+
 function transformAddress(addr) {
   const bridgedAssetIdentifier = ".factory.bridge.near";
   if (addr.endsWith(bridgedAssetIdentifier))
@@ -132,6 +133,21 @@ async function sumTokens({ balances = {}, owners = [], tokens = []}) {
   return balances
 }
 
+const successCodes = [200, 201, 202, 203, 204, 205, 206, 207, 208, 226];
+
+async function httpGet(url, options, { withMetadata = false } = {}) {
+  try {
+    const res = await axios.get(url, options)
+    if (!successCodes.includes(res.status)) throw new Error(`Error fetching ${url}: ${res.status} ${res.statusText}`)
+    if (!res.data) throw new Error(`Error fetching ${url}: no data`)
+    if (withMetadata) return res
+    return res.data
+  } catch (error) {
+    throw formAxiosError(url, error, { method: 'GET' })
+  }
+}
+
+
 module.exports = {
   view_account,
   call,
@@ -139,4 +155,5 @@ module.exports = {
   getTokenBalance,
   sumSingleBalance,
   sumTokens,
+  httpGet
 };
