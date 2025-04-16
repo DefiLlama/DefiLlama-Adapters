@@ -14,7 +14,6 @@ async function calculateGSUIunderlyingSui(gSuiAmount) {
   const percentage = (pool + pipe) / supply
   return percentage * Number(gSuiAmount)
 }
-
 async function calculateHAWALunderlyingWal(haWalAmount){
   const fields = (await getObject("0x9e5f6537be1a5b658ec7eed23160df0b28c799563f6c41e9becc9ad633cb592b")).fields;
   const supply = Number(fields.hawal_supply);
@@ -42,7 +41,7 @@ async function calculateWWALunderlyingWal(wWalAmount){
   const totalWWAL = Number(maxNameObject.fields.value.fields.lst);
   const totalWAL = Number(maxNameObject.fields.value.fields.wal);
   
-  return wWalAmount * totalWAL / totalWWAL;
+  return wWalAmount / totalWWAL * totalWAL;
 }
 
 async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
