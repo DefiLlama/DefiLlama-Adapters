@@ -1,13 +1,13 @@
-import { httpGet } from "../helper/chain/near";
+const { httpGet } = require("../helper/chain/near")
 
-const api_fee = "https://flipsidecrypto.xyz/api/v1/queries/82a54d67-5614-4b3c-b2fa-696396dc5c30/data/latest"
+const api_tvl = "https://flipsidecrypto.xyz/api/v1/queries/82a54d67-5614-4b3c-b2fa-696396dc5c30/data/latest"
 
 const adapter = {
     adapter: {
         "near": {
           start: '2025-04-16',
           fetch: async () => {
-            const result = await httpGet(payload);
+            const result = await httpGet(api_tvl);
             return {
                 tvl: result?.TOTAL_NET_MINTED_VOLUME || '0',
             }
@@ -16,4 +16,8 @@ const adapter = {
     }
 };
 
-export default adapter;
+module.exports = {
+    near: {
+        tvl: adapter
+    }
+}
