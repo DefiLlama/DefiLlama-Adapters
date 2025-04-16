@@ -119,5 +119,3 @@ module.exports.sei.tvl = async (api) => {
   const ownerTokens = pools.map((pool, i) => [[token0s[i], token1s[i]], pool])
   return sumTokens2({ api, ownerTokens })
 }
-
-delete module.exports.saga // chain rpc is broken?
