@@ -8,7 +8,10 @@ const config = {
       '43DbAvKxhXh1oSxkJSqGosNw3HpBnmsWiak6tB5wpecN',
       'BbHG9GvPActFGogv3iNrpDAj4qpXr8t3jF16uGxXcKci',
       '9NJmj9VaTU9D7ytdzy5RHMrfAgw2pYwqnUhuMqatcsr',
-      'HwDX5eJkzPAJ7y7ENrH23HaDGUgB4nXPxG8UsB4cEMGE'
+      'HwDX5eJkzPAJ7y7ENrH23HaDGUgB4nXPxG8UsB4cEMGE',
+      'HgTWrWU195u6s4v3JiEjJFCb6J6wxtQh8DAYV63tCx6Q',
+      'DFFN6XgrTYDR2uFvaXJFRcFrMrtt6ZbPxpDs3mVbpxuR',
+      'J16ovD5x6kZLYDYAa6CqfrwacHdM7fcKD9iKG5EoNeGR'
     ],
   },
   ethereum: {

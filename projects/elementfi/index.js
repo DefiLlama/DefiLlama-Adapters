@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
-const bn = require('bignumber.js')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const trancheFactoryAddress = "0x62F161BF3692E4015BefB05A03a94A40f520d1c0";
@@ -20,52 +19,35 @@ const wps = [
 ]
 
 async function tvl(api) {
-  let balances = {};
-  const block = api.block
 
-  const tranches = (await getLogs({
+  const logs = (await getLogs({
     target: trancheFactoryAddress,
-    topic: 'TrancheCreated(address,address,uint256)',
-    fromBlock: 12685765, api
-  })).map(i => `0x${i.topics[1].substr(-40).toLowerCase()}`)
-  const underlying = await api.multiCall({
-    abi: abi['underlying'],
-    calls: tranches,
-  })
-  const valueSupplied = await api.multiCall({
-    abi: abi['valueSupplied'],
-    calls: tranches,
-  })
-  underlying.forEach((t, i) => sdk.util.sumSingleBalance(balances, t, valueSupplied[i]))
+    eventAbi: 'event TrancheCreated (address indexed trancheAddress, address indexed wpAddress, uint256 indexed expiration)',
+    fromBlock: 12685765, api, onlyArgs: true,
+  }))
+  const tranches = logs.map(i => i.trancheAddress)
+  const underlying = await api.multiCall({ abi: abi['underlying'], calls: tranches, })
+  const valueSupplied = await api.multiCall({ abi: abi['valueSupplied'], calls: tranches, })
+  api.add(underlying, valueSupplied)
 
 
   // wp tvl
   await Promise.all(wps.map(async wp => {
     try {
-      let poolId = (await sdk.api.abi.call({
-        block,
-        target: wp,
-        abi: abi['getPoolId'],
-      })).output;
-
-      let poolTokens = (await sdk.api.abi.call({
-        block,
-        target: balVault,
-        abi: abi['getPoolTokens'],
-        params: poolId
-      })).output;
+      let poolId = await api.call({ target: wp, abi: abi['getPoolId'], })
+      let poolTokens = await api.call({ target: balVault, abi: abi['getPoolTokens'], params: poolId })
       const names = await api.multiCall({ abi: 'string:name', calls: poolTokens.tokens })
+
       for (let i = 0; i < poolTokens.tokens.length; i++) {
         let token = poolTokens.tokens[i];
-        if (names[i].startsWith('Element Yield Token'))
+        if (names[i].startsWith('Element'))
           return;
 
-        balances[token.toLowerCase()] = balances[token.toLowerCase()] ? new bn(balances[token.toLowerCase()]).plus(poolTokens.balances[i]) : poolTokens.balances[i];
+        api.add(token, poolTokens.balances[i])
       }
     } catch (e) {
       sdk.log(e)
     }
-
   }))
 
   // // // cc tvl
@@ -73,31 +55,24 @@ async function tvl(api) {
     api,
     target: ccpFactory,
     fromBlock: 12686198,
-    topic: 'PoolCreated(address)',
-  })).map(i => `0x${i.topics[1].substr(-40)}`);
+    eventAbi: 'event CCPoolCreated (address indexed pool, address indexed bondToken)',
+    onlyArgs: true,
+  })).map(i => i.pool);
 
   await Promise.all(cc.map(async i => {
-    const poolId = await api.call({
-      target: i,
-      abi: abi['getPoolId'],
-    })
-    const poolTokens = await api.call({
-      target: balVault,
-      abi: abi['getPoolTokens'],
-      params: poolId
-    })
+    const poolId = await api.call({ target: i, abi: abi['getPoolId'], })
+    const poolTokens = await api.call({ target: balVault, abi: abi['getPoolTokens'], params: poolId })
 
     for (let i = 0; i < poolTokens.tokens.length; i++) {
       let token = poolTokens.tokens[i];
       if (tranches.indexOf(token.toLowerCase()) >= 0) {
         continue;
       }
-      sdk.util.sumSingleBalance(balances, token, poolTokens.balances[i])
+      api.add(token, poolTokens.balances[i])
     }
   }))
-
-  return balances;
 }
+
 module.exports = {
   ethereum: { tvl },
 };

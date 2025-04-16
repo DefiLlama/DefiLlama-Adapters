@@ -25,8 +25,9 @@ module.exports = {
       const ynBTCk = '0x78839cE14a8213779128Ee4da6D75E1326606A56'
       const ynBNBx = '0x32C830f5c34122C6afB8aE87ABA541B7900a2C5F'
       const ynCoBTCk = '0x132376b153d3cFf94615fe25712DB12CaAADf547'
+      const ynBfBTCk = '0x1B015705214bdcAAf43E8EDeCa13023143224Ab7'
   
-      return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynCoBTCk], isOG4626: true})
+      return api.erc4626Sum({ calls: [ynBNB, ynBTCk, ynBNBx, ynCoBTCk, ynBfBTCk], isOG4626: true})
     }
   },
 }

@@ -262,6 +262,19 @@ const defaultTokens = {
   ],
   sui: [],
   aptos: [],
+  mantle: [
+    nullAddress,
+    ADDRESSES.mantle.USDC,
+    ADDRESSES.mantle.USDT,
+    ADDRESSES.mantle.cmETH,
+    ADDRESSES.mantle.mETH,
+    ADDRESSES.mantle.WETH,
+    ADDRESSES.mantle.WMNT,
+    ADDRESSES.mantle.USDe,
+    ADDRESSES.mantle.sUSDe,
+    ADDRESSES.mantle.AUSD,
+    ADDRESSES.mantle.FBTC
+  ],
 }
 
 function cexExports(config) {
