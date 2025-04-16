@@ -1,20 +1,26 @@
 const { httpGet } = require("../helper/chain/near")
-const { call, sumSingleBalance } = require('../helper/chain/near')
+const { sumSingleBalance } = require('../helper/chain/near')
 
 function tvl() {
     return async () => {
-        const api_tvl = "https://flipsidecrypto.xyz/api/v1/queries/82a54d67-5614-4b3c-b2fa-696396dc5c30/data/latest";
+        const balances = {};
+
+        const api_tvl = "https://flipsidecrypto.xyz/api/v1/queries/912162c9-22f1-46d9-88a1-1059b8f0b6b3/data/latest";
         const assetsCallResponse = await httpGet(api_tvl);
-  
-        const balances = {'NEAR': assetsCallResponse[0].TOTAL_NET_MINTED_VOLUME};
-  
+
+        // Process each item in the response
+        assetsCallResponse.forEach((item) => {
+            const token = item.SYMBOL;
+            const balance = item.NET_TOKENS_MINTED_USD;
+            sumSingleBalance(balances, token, balance);
+        });
+
         return balances;
     }
-  }
-
+}
 
 module.exports = {
     near: {
-        tvl: tvl(),
+        tvl
     }
 }
