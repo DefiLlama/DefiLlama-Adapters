@@ -838,7 +838,8 @@
     "USDt": "0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b",
     "USDC_3": "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46f3b",
     "MOON": "0xd71e041f0d9c871e68604699aa109ead5643ced548f9d216ddb89702968e5458::moon_coin::MoonCoin",
-    "CELL": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12"
+    "CELL": "0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12",
+    "stApt": "0x111ae3e5bc816a5e63c2da97d0aa3886519e0cd5e4b046659fa35796bd11542a::stapt_token::StakedApt"
   },
   "dogechain": {
     "WWDOGE": "0xb7ddc6414bf4f5515b52d8bdd69973ae205ff101",
@@ -1177,7 +1178,8 @@
     "AXS": "0x97a9107c1793bc407d6f527b77e7fff4d812bece",
     "SLP": "0xa8754b9fa15fc18bb59458815510e40a12cd2014",
     "WETH": "0xc99a6a985ed2cac1ef41640596c5a5f9f4e19ef5",
-    "USDC": "0x0b7007c13325c48911f73a2dad5fa5dcbf808adc"
+    "USDC": "0x0b7007c13325c48911f73a2dad5fa5dcbf808adc",
+    "LRON": "0xcad9e7aa2c3ef07bad0a7b69f97d059d8f36edd2"
   },
   "arbitrum_nova": {
     "WETH": "0x722e8bdd2ce80a4422e880164f2079488e115365",
@@ -2115,7 +2117,8 @@
     "SOL": "BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL",
     "USDC": "AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE",
     "WIF": "841P4tebEgNux2jaWSjCoi9LhrVr9eHGjLc758Va3RPH",
-    "TIA": "9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8"
+    "TIA": "9RryNMhAVJpAwAGjCAMKbbTFwgjapqPkzpGMfTQhEjf8",
+    "USDT": "CEBP3CqAbW4zdZA57H2wfaSG1QNdzQ72GiQEbQXyW9Tm"
   },
   "unit0": {
     "UNIT": "0xcf43f7703d9b4e8835f977ef364b4014fa7e856e",
