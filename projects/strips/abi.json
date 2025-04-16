@@ -1,4 +1,0 @@
-{
-  "getAllMarkets": "function getAllMarkets() view returns (tuple(bool created, address market)[])",
-  "getLiquidity": "int256:getLiquidity"
-}

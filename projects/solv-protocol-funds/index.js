@@ -4,6 +4,7 @@ const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { getAmounts } = require("./iziswap");
+const { sumTokens2: sumTokens2Solana } = require('../helper/solana')
 
 // The Graph
 const graphUrlList = {
@@ -38,12 +39,13 @@ async function tvl(api) {
   await mux(api, address);
   await klp(api, address);
   await iziswap(api, address);
-  await lendle(api, address);
+  await derivativeToken(api, address);
   await vaultBalance(api, graphData);
   await otherDeposit(api, address);
   await ceffuBalance(api, address, graphData);
   await lpV3PositionsBalance(api, address);
   await aaveSupplyBalance(api, address);
+  await solanaTvl(api, address);
 
   (solvTokens[api.chain] ?? []).forEach(token => {
     api.removeTokenBalance(token)
@@ -225,15 +227,15 @@ async function concrete(slots, api) {
   return concretes;
 }
 
-async function lendle(api, address) {
-  if (!address[api.chain] || !address[api.chain]["lendle"]) {
+async function derivativeToken(api, address) {
+  if (!address[api.chain] || !address[api.chain]["derivativeData"]) {
     return;
   }
-  let lendleData = address[api.chain]["lendle"];
+  let derivativeTokenData = address[api.chain]["derivativeData"];
 
-  const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
+  const balance = await api.call({ abi: abi.balanceOf, target: derivativeTokenData.derivativeToken, params: derivativeTokenData.account.userAddress });
 
-  api.add(lendleData.account.ethAddress, balance)
+  api.add(derivativeTokenData.account.underlyingToken, balance)
 }
 
 async function vaultBalance(api, graphData) {
@@ -401,7 +403,6 @@ async function aaveSupplyBalance(api, address) {
       params: [index[1]]
     })));
   }
-
   const balances = await api.multiCall({
     abi: abi.balanceOf,
     calls: allCalls,
@@ -412,6 +413,14 @@ async function aaveSupplyBalance(api, address) {
     const aaveAddress = aavesData[Math.floor(i / Object.values(aavesData[i % aavesData.length]["aaveAddress"]).length)];
     api.add(aaveAddress["assetAddress"], balance);
   }
+}
+
+async function solanaTvl(api, address) {
+  if (api.chain !== 'solana' || !address[api.chain]) return;
+
+  const tokenAccounts = address[api.chain];
+
+  return sumTokens2Solana({ tokenAccounts });
 }
 
 async function getGraphData(timestamp, chain, api) {
@@ -445,7 +454,7 @@ async function getGraphData(timestamp, chain, api) {
 
 
 // node test.js projects/solv-protocol-funds
-['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
+['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'solana'].forEach(chain => {
   module.exports[chain] = {
     tvl
   }
