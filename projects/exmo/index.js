@@ -18,6 +18,16 @@ const config = {
       '0xD936704458E4f8525B6bE7C0ebC5fE268BaB4977',
     ]
   },
+  tron: {
+    owners: [
+      'TMjqArFD86YDNShnMXSzYqDXKZAphGSJN7',
+    ]
+  },
+  ton: {
+    owners: [
+      'UQAAdyo7XAGGaNbg7BbHq3XhPXhuFJuX64KStIgOyiFWZiuP',
+    ]
+  },
 }
 
 module.exports = cexExports(config)
