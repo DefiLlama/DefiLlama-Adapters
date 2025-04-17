@@ -41,7 +41,7 @@ async function getFxProtocolPoolManagerStrategyTvl(api) {
 
 async function getFxProtocolStabilityPoolStrategyTvl(api) {
   const bals = await api.call({ abi: 'uint256:totalSupply', target: FxProtocol_PoolManager_AaveV3Strategy_USDC })
-  api.add(ADDRESSES.ethereum.USDC, bals)
+  api.add("0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", bals)
 }
 
 async function tvl(api) {
