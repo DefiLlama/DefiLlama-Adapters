@@ -1,4 +1,4 @@
-const { erc4626Abi } = require('./abi');
+const { erc4626Abi, fortyAcresAbi } = require('./abi');
 
 const vaultMapping = {
   optimism: '0x08dCDBf7baDe91Ccd42CB2a4EA8e5D199d285957',
@@ -25,27 +25,31 @@ const get4626VaultToken = async (api, addresses) => {
   return api.multiCall({ calls: addresses, abi: erc4626Abi.asset, });
 }
 
-async function getVaultTvl(api) {
-    const totalUnlockedAssets =  await api.call({
-      abi: erc4626Abi.totalAssets,
-      target: vaultMapping[api.chain],
-    });
-
-    const totalLockedAssets = await api.call({
-        abi: erc4626Abi.epochRewardsLocked,
-        target: vaultMapping[api.chain],
-    });
-
-    const vaultToken = await get4626VaultToken(api, [vaultMapping[api.chain]])
-    api.addTokens([...vaultToken, ...vaultToken],  [totalUnlockedAssets, totalLockedAssets])
+async function getVaultBalance(api) {
+    const vaultToken = await api.call({ target: vaultMapping[api.chain], abi: erc4626Abi.asset, });
+    const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: vaultToken, params: [vaultMapping[api.chain]] })
+    api.addTokens([vaultToken], [vaultBalance])
     return
+}
+
+
+async function getBorrowed(api) {
+  const borrowed =  await api.call({
+    abi: fortyAcresAbi.activeAssets,
+    target: fortyAcresMapping[api.chain],
+  });
+
+  const vaultToken = await api.call({ target: vaultMapping[api.chain], abi: erc4626Abi.asset, });
+  api.addTokens([vaultToken],  [borrowed])
+  return
 }
 
 module.exports = {
     get4626VaultToken,
-    getVaultTvl,
+    getVaultBalance,
     fortyAcresMapping,
     baseTokenMapping,
     vaultMapping,
     veNftMapping,
+    getBorrowed
 }
