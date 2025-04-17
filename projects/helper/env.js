@@ -19,15 +19,9 @@ const DEFAULTS = {
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
   LULO_API_KEY: '',
-  ETLK_RPC: 'https://explorer.etherlink.com/api/eth-rpc',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
-  HEDERA_RPC_MULTICALL: '0x18fa376d92511dd04090566ab6144847c03557d8', // Hedera Multicall3 contract
-  GOAT_RPC: 'https://rpc.goat.network',
-  GOAT_RPC_MULTICALL: '0x0D30331D462a30E344ee599B7483E313D63fD42A',
-  HYPERLIQUID_RPC: 'https://rpc.purroofgroup.com',
-  HSK_RPC: 'https://hashkey.blockscout.com/api/eth-rpc',
 }
 
 const ENV_KEYS = [
