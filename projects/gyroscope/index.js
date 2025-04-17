@@ -1,5 +1,5 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const blacklistedTokens = ['0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a'; // GYD ethereum]
+const blacklistedTokens = ['0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a']; // GYD ethereum
 const utils = require('../helper/utils');
 const { toUSDTBalances } = require('../helper/balances');
 
