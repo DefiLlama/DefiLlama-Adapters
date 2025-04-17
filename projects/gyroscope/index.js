@@ -1,8 +1,25 @@
 const { getLogs } = require("../helper/cache/getLogs");
-module.exports.doublecounted = true;
-const blacklistedTokens = [
-  '0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a', // GYD ethereum
-]
+const blacklistedTokens = ['0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a'; // GYD ethereum]
+const utils = require('../helper/utils');
+const { toUSDTBalances } = require('../helper/balances');
+
+let _jellyResponse; // need to use API for Sei
+
+async function seiTvl() {
+  if (!_jellyResponse) {
+    _jellyResponse = utils.fetchURL('https://api.jellyverse.org/pools/');
+  }
+
+  const { data } = await _jellyResponse;
+  const gyroEPools = data.filter(pool => pool.poolType === "GyroE");
+
+  const totalLiquidity = gyroEPools.reduce((sum, pool) => {
+    return sum + Number(pool.totalLiquidity || 0);
+  }, 0);
+
+  return toUSDTBalances(totalLiquidity);
+}
+                           
 
 async function tvl(api) {
   const pools = config[api.chain];
@@ -121,8 +138,25 @@ const config = {
       fromBlock: 33759936,
     },
   ],
+  sonic: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x5364296D19d453D73f84a94e78681A430e620c5f",
+      fromBlock: 5143648,
+    },
+  ]
 };
 
-Object.keys(config).forEach((chain) => {
-  module.exports[chain] = { tvl };
-});
+module.exports = {
+  methodology: "sum of all the tokens locked in CLPs",
+  misrepresentedTokens: true,
+  doublecounted: true,
+  timetravel: true,
+  ...Object.fromEntries(Object.keys(config).map((chain) => {
+    const useApi = chain === 'sei';
+    return [chain, {
+      tvl: useApi ? seiTvl : tvl,
+      ...(useApi ? { timetravel: false } : {})
+    }];
+  })),
+};
