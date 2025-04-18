@@ -15,10 +15,10 @@ Object.keys(config).forEach(chain => {
       const poolIds = logs.map(log => log.poolId)
       const token0s = await api.multiCall({ abi: 'address:token0', calls: bunnis })
       const token1s = await api.multiCall({ abi: 'address:token1', calls: bunnis })
-      const balances = await api.multiCall({ abi: 'function poolBalances(bytes32) view returns (uint256 token0, uint256 token1)', calls: poolIds, target: factory })
+      const balances = await api.multiCall({ abi: 'function poolBalances(bytes32) view returns (uint256 token0, uint256 token1)', calls: poolIds, target: factory, permitFailure: true })
 
-      const balances0 = balances.map(b => b.token0)
-      const balances1 = balances.map(b => b.token1)
+      const balances0 = balances.map(b => b?.token0 ?? 0)
+      const balances1 = balances.map(b => b?.token1 ?? 0)
       api.add(token0s, balances0)
       api.add(token1s, balances1)
     }

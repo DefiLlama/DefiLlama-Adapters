@@ -119,7 +119,7 @@ const boringVaultsV0Ethereum = [
   },
   {
     name: "Mantle cMETH",
-    vault: "0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA",
+    vault: ADDRESSES.mantle.cmETH,
     accountant: "0x6049Bd892F14669a4466e46981ecEd75D610a2eC",
     teller: "0xB6f7D38e3EAbB8f69210AFc2212fe82e0f1912b0",
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
@@ -182,7 +182,7 @@ const boringVaultsV0Ethereum = [
   },
   {
     name: "scETH",
-    vault: "0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812",
+    vault: ADDRESSES.sonic.scETH,
     accountant: "0x3a592F9Ea2463379c4154d03461A73c484993668",
     teller: "0x31A5A9F60Dc3d62fa5168352CaF0Ee05aA18f5B8",
     lens: "0xE0eFE934DC4744090e8eF93f1D125E4015a857FE",
@@ -191,7 +191,7 @@ const boringVaultsV0Ethereum = [
   },
   {
     name: "scUSD",
-    vault: "0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE",
+    vault: ADDRESSES.sonic.scUSD,
     accountant: "0xA76E0F54918E39A63904b51F688513043242a0BE",
     teller: "0x358CFACf00d0B4634849821BB3d1965b472c776a",
     lens: "0xE0eFE934DC4744090e8eF93f1D125E4015a857FE",
@@ -234,6 +234,33 @@ const boringVaultsV0Ethereum = [
     startBlock: 21746816,
     baseAsset: ADDRESSES.ethereum.WBTC,
   },
+  {
+    name: "tacUSD",
+    vault: "0x699e04F98dE2Fc395a7dcBf36B48EC837A976490",
+    accountant: "0x58cD5e97ffaeA62986C86ac44bB8EF7092c7ff5B",
+    teller: "0xBbf9E8718D83CF67b568bfFd9d3034BfF02A0103",
+    lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
+    startBlock: 21882726,
+    baseAsset: ADDRESSES.ethereum.USDC,
+  },
+  {
+    name: "tacETH",
+    vault: "0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad",
+    accountant: "0x1683870f3347F2837865C5D161079Dc3fDbf1087",
+    teller: "0xe97365b41B340352d3d32CA2C7230330F19A1e73",
+    lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
+    startBlock: 21882620,
+    baseAsset: ADDRESSES.ethereum.WETH,
+  },
+  {
+    name: "tacBTC",
+    vault: "0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf",
+    accountant: "0xe4858a89d5602Ad30de2018C408d33d101F53d53",
+    teller: "0x7C75cbb851D321B2Ec8034D58A9B5075e991E584",
+    lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
+    startBlock: 21882704,
+    baseAsset: ADDRESSES.ethereum.WBTC,
+  }
 ];
 
 module.exports = {

@@ -14,6 +14,7 @@ const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
 const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
 const hyETH = "0xc4506022Fb8090774E8A628d5084EED61D9B99Ee";
 const dsETH = "0x341c05c0E9b33C0E38d64de76516b2Ce970bB3BE";
+const wstETH15x = "0xc8DF827157AdAf693FCb0c6f305610C28De739FD";
 const aaveDebtToken = "0xf63b34710400cad3e044cffdcab00a0f32e33ecf";
 const USDC = ADDRESSES.ethereum.USDC
 const gtcETH = '0x36c833Eed0D376f75D1ff9dFDeE260191336065e'
@@ -44,6 +45,8 @@ const config = {
       "0xeb5bE62e6770137beaA0cC712741165C594F59D7", // btc2xArb
       "0x3bDd0d5c0C795b2Bf076F5C8F177c58e42beC0E6", // btc3xArb
       "0x80e58AEA88BCCaAE19bCa7f0e420C1387Cc087fC", // iBtcArb
+      "0xE7b1Ce8DfEE3D7417397cd4f56dBFc0d49E43Ed1", // eth2xBtcArb
+      "0x77f69104145f94a81cec55747c7a0fc9cb7712c3", // btc2xEthArb
     ],
     aaveLeverageModule: '0x6d1b74e18064172d028c5ee7af5d0ccc26f2a4ae'.toLowerCase(),
   },
@@ -53,13 +56,17 @@ const config = {
       "0x329f6656792c7d34D0fBB9762FA9A8F852272acb", // eth3xBase
       "0x186f3d8bb80dff50750babc5a4bcc33134c39cde", // btc2xBase
       "0x1F4609133b6dAcc88f2fa85c2d26635554685699", // btc3xBase
+      "0x0a0fbd86d2deb53d7c65fecf8622c2fa0dcdc9c6", // uSOL/USDC
+      "0x2f67e4be7fbf53db88881324aac99e9d85208d40", // uSUI/USDC
+      wstETH15x,
     ],
     aaveLeverageModule: '0xC06a6E4d9D5FF9d64BD19fc243aD9B6E5a672699'.toLowerCase(),
+    morphoLeverageModule: '0x9534b6ec541ad182fbee2b0b01d1e4404765b8d7'.toLowerCase(),
   },
 }
 
 Object.keys(config).forEach(chain => {
-  const { sets, aaveLeverageModule, } = config[chain]
+  const { sets, aaveLeverageModule, morphoLeverageModule, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
 
@@ -86,6 +93,17 @@ Object.keys(config).forEach(chain => {
         toa.push([aaveDebtToken, icethAddress])
         const usdcDebt = await api.multiCall({ abi: "function borrowBalanceStored(address account) view returns (uint256)", target: "0x39aa39c021dfbae8fac545936693ac917d5e7563", calls: [ethFliAddress, btcFliAddress] })
         usdcDebt.forEach(i => api.add(USDC, i * -1))
+      }
+
+      if (morphoLeverageModule) {
+        const morphoLeveragedSets = sets.filter((m, i) => modules[i].some(j => j.toLowerCase() === morphoLeverageModule))
+        const mResults = await api.multiCall({ abi: 'function getCollateralAndBorrowBalances(address) view returns (uint256 collateralBalance, uint256 borrowBalance, uint256 borrowSharesU256)', calls: morphoLeveragedSets, target: morphoLeverageModule })
+        const mTokens = await api.multiCall({ abi: 'function marketParams(address) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)', calls: morphoLeveragedSets, target: morphoLeverageModule })
+        mTokens.forEach((o, i) => {
+          api.add(o.loanToken, mResults[i].borrowBalance * -1)
+          api.add(o.collateralToken, mResults[i].collateralBalance)
+        })
+
       }
 
       await sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: sets })

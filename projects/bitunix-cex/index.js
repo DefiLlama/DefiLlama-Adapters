@@ -34,7 +34,11 @@ const config = {
         'TVaRQRPJh3MT3AfGLVZuaTdJL8nd176tpB',
         'TXP66hCnRzRP4ZNbQcNSWcBV4C5JnHK51F',
         'TP5UzNzk4tL2Jo6twHavUM9s9NjUPSgrvN',
-        'TJRkfdgdQTSTmfQQzFy8RR6o73eLCEorSH'
+        'TJRkfdgdQTSTmfQQzFy8RR6o73eLCEorSH',
+        'TSuAmGTDB9oowddNqg9Gm2rAmKztF9jhU4',
+        'TKXvBz4TmLMY5o1rirHndusiVT5Lj4i75E',
+        'TTXc32nXdJMTkWakntMLZS88HUUjn1u4Ev',
+        'TKmiqjVG9jvYd9atx5qwhTRdQBf6rETsSg'
     ],
   },
 }
