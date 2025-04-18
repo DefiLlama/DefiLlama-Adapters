@@ -8,7 +8,8 @@ async function tvl(api) {
 
     if (!address[api.chain]) return
 
-    const strategies = address[api.chain];
+    const strategies = address[api.chain]["strategies"];
+    const solvbtcAddress = address[api.chain]["solvbtc"];
 
     const balances = await Promise.all(strategies.map(async (strategy) => {
         const [totalSupply, nav] = await Promise.all([
@@ -27,8 +28,7 @@ async function tvl(api) {
             .times(BigNumber(nav.nav_).div(1e18))
             .div(1e18)
             .toNumber();
-
-        return [strategy.erc20, balance];
+        return [solvbtcAddress, balance];
     }));
 
     for (const item of balances) {
