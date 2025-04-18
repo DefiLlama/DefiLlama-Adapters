@@ -1,3 +1,4 @@
+const CORE_ASSETS = require("../helper/coreAssets.json");
 const { getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -19,6 +20,9 @@ const Events = {
 };
 
 const ADDRESSES = {
+  // Term Structure
+  zkTrueUpContractAddress: "0x09E01425780094a9754B2bd8A3298f73ce837CF9",
+  // TermMax
   arbitrum: {
     Factory: {
       address: "0x14920eb11b71873d01c93b589b40585dacfca096",
@@ -49,7 +53,7 @@ const ADDRESSES = {
   },
 };
 
-async function getMarketAddresses(api) {
+async function getTermMaxMarketAddresses(api) {
   const logs = await getLogs2({
     api,
     eventAbi: Events.CreateMarket,
@@ -59,8 +63,8 @@ async function getMarketAddresses(api) {
   return logs.map(([market]) => market);
 }
 
-async function getMarketTVL(api) {
-  const marketAddresses = await getMarketAddresses(api);
+async function getTermMaxMarketOwnerTokens(api) {
+  const marketAddresses = await getTermMaxMarketAddresses(api);
   const tokens = await api.multiCall({
     abi: ABIS.Market.tokens,
     calls: marketAddresses,
@@ -69,13 +73,13 @@ async function getMarketTVL(api) {
   for (let i = 0; i < marketAddresses.length; i += 1) {
     const marketAddress = marketAddresses[i];
     const { collateral, debt, gearingToken } = tokens[i];
-    ownerTokens.push([[collateral], gearingToken]);
-    ownerTokens.push([[debt], marketAddress]);
+    ownerTokens.push([[collateral], gearingToken]); // TVL factor: collateral on the gearing token
+    ownerTokens.push([[debt], marketAddress]); // TVL factor: underlying on the market
   }
   return ownerTokens;
 }
 
-async function getVaultAddresses(api) {
+async function getTermMaxVaultAddresses(api) {
   const addresses = [];
   const promises = [];
   for (const vaultFactory of ADDRESSES[api.chain].VaultFactory) {
@@ -97,25 +101,55 @@ async function getVaultAddresses(api) {
   return addresses;
 }
 
-async function getVaultTVL(api) {
-  const vaultAddresses = await getVaultAddresses(api);
+async function getTermMaxVaultOwnerTokens(api) {
+  const vaultAddresses = await getTermMaxVaultAddresses(api);
   const assets = await api.multiCall({
     abi: ABIS.Vault.asset,
     calls: vaultAddresses,
   });
-  return assets.map(([asset], idx) => [[asset], vaultAddresses[idx]]);
+  return assets.map(([asset], idx) => [[asset], vaultAddresses[idx]]); // TVL factor: idle fund in the vault
 }
 
-async function getTVL(api) {
+async function getTermMaxOwnerTokens(api) {
   const [marketOwnerTokens, vaultOwnerTokens] = await Promise.all([
-    getMarketTVL(api),
-    getVaultTVL(api),
+    getTermMaxMarketOwnerTokens(api),
+    getTermMaxVaultOwnerTokens(api),
   ]);
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
-  return sumTokens2({ api, ownerTokens });
+  return ownerTokens;
+}
+
+async function getTermStructureOwnerTokens(api) {
+  const infoAbi =
+    "function getAssetConfig(uint16 tokenId) external view returns (bool isStableCoin, bool isTsbToken, uint8 decimals, uint128 minDepositAmt, address token)";
+  const tokenInfo = await api.fetchList({
+    lengthAbi: "getTokenNum",
+    itemAbi: infoAbi,
+    target: ADDRESSES.zkTrueUpContractAddress,
+    startFrom: 1,
+  });
+  const tokens = tokenInfo.map((i) => i.token);
+  tokens.push(CORE_ASSETS.ethereum.WETH);
+  return tokens.map((token) => [[token], ADDRESSES.zkTrueUpContractAddress]);
 }
 
 module.exports = {
-  arbitrum: { tvl: getTVL },
-  ethereum: { tvl: getTVL },
+  arbitrum: {
+    tvl: async (api) => {
+      const ownerTokens = await getTermMaxOwnerTokens(api);
+      return sumTokens2({ api, ownerTokens });
+    },
+  },
+  ethereum: {
+    tvl: async (api) => {
+      const [termStructureOwnerTokens, termMaxOwnerTokens] = await Promise.all([
+        getTermStructureOwnerTokens(api),
+        getTermMaxOwnerTokens(api),
+      ]);
+      const ownerTokens = []
+        .concat(termStructureOwnerTokens)
+        .concat(termMaxOwnerTokens);
+      return sumTokens2({ api, ownerTokens });
+    },
+  },
 };
