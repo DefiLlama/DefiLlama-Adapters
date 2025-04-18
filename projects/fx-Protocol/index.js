@@ -19,7 +19,7 @@ module.exports = {
   doublecounted: true,
   ethereum: {
     tvl,
-    // pool2: getGaugeTvl,
+    pool2: getGaugeTvl,
   },
 };
 
