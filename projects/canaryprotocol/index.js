@@ -6,6 +6,7 @@ module.exports = {
 }
 
 const config = {
+  // TODO: update the smart contract address for plume_mainnet
   plume: { factory: '0xbe3c7Bbc504EA41c21D3810c340Cd15624a3cF59', fromBlock: 357721 },
 }
 

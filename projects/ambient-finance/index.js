@@ -10,6 +10,7 @@ const vault = {
   canto: "0x9290c893ce949fe13ef3355660d07de0fb793618",
   swellchain: "0xaAAaAaaa82812F0a1f274016514ba2cA933bF24D",
   plume: "0xAaAaAAAA81a99d2a05eE428eC7a1d8A3C2237D85",
+  plume_mainnet: "0xAaAaAAAA81a99d2a05eE428eC7a1d8A3C2237D85",
 }
 
 const subgraphs = {
@@ -19,6 +20,7 @@ const subgraphs = {
   ethereum: sdk.graph.modifyEndpoint('DyHaLYK1keqcv3YD3VczKGYvxQGfGgV6bGTbZLMj5xME'),
   swellchain: 'https://ambindexer.net/swell-gcgo/pool_list?chainId=0x783',
   plume: 'https://ambindexer.net/plume-gcgo/pool_list?chainId=0x18231',
+  plume_mainnet: 'https://ambindexer.net/plume-gcgo/pool_list?chainId=0x18232',
 }
 
 

@@ -18,10 +18,10 @@ const config = {
     factory: "0xBCE6410A175a1C9B1a25D38d7e1A900F8393BC4D",
     usdplus: "0x98C6616F1CC0D3E938A16200830DD55663dd7DD3"
   },
+  // TODO: update the smart contract address for plume_mainnet
   plume: {
     factory: "0x84ad0De589B0075E057123c800959f10C29869D8"
   }
-
 }
 
 async function getTokens(api) {
