@@ -1,0 +1,6 @@
+{
+  "factorySettings": "function factorySettings() view returns (address asset, address assetPriceFeed, address rankToken, address ranktokenPricePair, address backendAddress, address managedAddress, address rankStakingPool, uint256 rankStakingPoolId, uint256 premiumStakingValue, tuple(uint16 depositFeeBP, uint16 performanceFeeBP, uint16 ownerDepositFeeBP), uint256 MAX_DURATION, bool enabled)",
+  "rankStrategiesCount": "function rankStrategiesCount() view returns (uint256)",
+  "rankStrategies": "function rankStrategies(uint256) view returns (address)",
+  "totals": "function totals() view returns (uint256 shares, uint256 assetAmount, uint256 withdrawableAssetAmount, uint256 lastAvailUpdate)"
+}
