@@ -8,6 +8,7 @@ const CEL_ADDRESS = "0x8b83ECC4EF8FaEc5c05b7D6EC002B659BE137120";
 const BERACHAIN_FARM_ADDRESS = "0xAbFc9bb50af39D1e6f99836Ff2EeCc39778808a1";
 const BERACHAIN_CEL_ADDRESS = "0xD3415dCFbdA117814e24a4cbaf61128A4D79b860";
 const BERACHAIN_FARM_LP_ADDRESS = "0x5CC7BebF2A05fC4b7F259C8688Ff0d80735E36FE";
+const BERACHAIN_FARM_HONEY_ADDRESS = "0xd69836d43024692eB57fd7DFe417dd8da3A7c91c";
 
 async function getTvl(api, farmAddress) {
   let pools = await api.call({ abi: abiInfo.poolTvls, target: farmAddress });
@@ -25,6 +26,7 @@ async function tvl(api) {
     return await getTvl(api,FARM_IONIC_ADDRESS);
   }else{
     await getTvl(api,BERACHAIN_FARM_ADDRESS);
+    await getTvl(api,BERACHAIN_FARM_HONEY_ADDRESS);
     return await getTvl(api,BERACHAIN_FARM_LP_ADDRESS);
   }
 }
