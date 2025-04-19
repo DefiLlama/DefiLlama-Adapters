@@ -2,6 +2,8 @@ const { cachedGraphQuery } = require('../helper/cache')
 const easyBTC = require('./easyBTC')
 const premium = require('./premium')
 const promo = require('./promo')
+const cedefiForCedefi = require('./cedefiFromSolana')
+const promoFromSolana = require('./promoFromSolana')
 
 const config = {
   ethereum: {
@@ -15,7 +17,8 @@ const config = {
     main: { url: 'https://bitswap-subgraph.bouncebit.io/subgraphs/name/bb-defillama-bb' },
     boyya: { url: 'https://bitswap-subgraph.bouncebit.io/subgraphs/name/bb-defillama-boyya-bb' }
   },
-  base: {}
+  base: {},
+  solana: {}
 }
 
 const query = `{
@@ -37,6 +40,8 @@ async function fetchTokens(chain, subgraphUrl) {
 
 async function cedefiTvl(api) {
   if (api.chain === 'base') return {}
+  if (api.chain === 'solana') return cedefiForCedefi[api.chain]?.tvl?.(api) || {}
+  
   const chain = api.chain
   
   const tokenLists = await Promise.all(
@@ -69,7 +74,8 @@ async function combinedTvl(api) {
     cedefiTvl(api),
     easyBTC[api.chain]?.tvl?.(api) || {},
     premium[api.chain]?.tvl?.(api) || {},
-    promo[api.chain]?.tvl?.(api) || {}
+    promo[api.chain]?.tvl?.(api) || {},
+    promoFromSolana[api.chain]?.tvl?.(api) || {}
   ])
 
   // merge all balances
