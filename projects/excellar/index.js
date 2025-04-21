@@ -1,37 +1,56 @@
-const StellarSdk = require('stellar-sdk');
-const server = new StellarSdk.Server('https://horizon.stellar.org');
+const axios = require('axios');
 
+const HORIZON_URL = 'https://horizon.stellar.org';
 const ISSUER = 'GBMAAGRUMXBRG3IG6BPG5LCO7FTE5VIRA3VF64BFII3LXC27GSEYLHKU';
-// List all asset codes issued by Excellar here
-const ASSET_CODES = ['USDXLR']; // Extend this array as needed
+const ASSET_CODE = 'USDXLR';
 
-async function fetch() {
-  const results = {};
-  for (const code of ASSET_CODES) {
-    const asset = new StellarSdk.Asset(code, ISSUER);
-    let total = 0;
-    let next = await server.accounts().forAsset(asset).limit(200).call();
+const api = axios.create({
+  timeout: 60000, // 60 seconds per request
+  headers: { 'Accept-Encoding': 'gzip' }
+});
 
-    while (true) {
-      next.records.forEach(acc => {
-        const bal = acc.balances.find(
-          b => b.asset_code === code && b.asset_issuer === ISSUER
+async function fetchTvl() {
+  let total = 0;
+  let next = `${HORIZON_URL}/accounts?asset=${ASSET_CODE}:${ISSUER}&limit=200`;
+  let retryCount = 0;
+  const maxRetries = 8;
+  let delay = 10000; // 10 seconds
+
+  while (next) {
+    try {
+      const { data } = await api.get(next);
+
+      data._embedded.records.forEach(account => {
+        const balance = account.balances.find(
+          b => b.asset_code === ASSET_CODE && b.asset_issuer === ISSUER
         );
-        if (bal) total += parseFloat(bal.balance);
+        if (balance) total += parseFloat(balance.balance);
       });
-      if (next.records.length < 200 || !next.next) break;
-      next = await next.next();
+
+      next = data._links.next?.href || null;
+      retryCount = 0;
+      delay = 10000; // Reset delay on success
+
+    } catch (error) {
+      if (retryCount >= maxRetries) {
+        throw new Error(`Horizon API unreachable after ${maxRetries} retries`);
+      }
+      if (error.code === 'ETIMEDOUT' || error.response?.status === 429 || error.response?.status >= 500) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2;
+        retryCount++;
+        continue;
+      }
+      throw error;
     }
-    results[code] = total;
   }
-  // Optionally, sum all assets for a combined TVL
-  results['total_usd'] = Object.values(results).reduce((a, b) => a + b, 0);
-  return results;
+
+  return { usd: total };
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'Counts all circulating Excellar-issued assets by summing balances for each asset code.',
-  stellar: { fetch }
+  methodology: 'Sums all USDXLR balances across Stellar trustlines using the Horizon API.',
+  stellar: { fetch: fetchTvl }
 };
 
