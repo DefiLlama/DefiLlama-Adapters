@@ -5,52 +5,33 @@ const ISSUER = 'GBMAAGRUMXBRG3IG6BPG5LCO7FTE5VIRA3VF64BFII3LXC27GSEYLHKU';
 const ASSET_CODE = 'USDXLR';
 
 const api = axios.create({
-  timeout: 60000, // 60 seconds per request
+  timeout: 30000,
   headers: { 'Accept-Encoding': 'gzip' }
 });
 
 async function fetchTvl() {
-  let total = 0;
-  let next = `${HORIZON_URL}/accounts?asset=${ASSET_CODE}:${ISSUER}&limit=200`;
-  let retryCount = 0;
-  const maxRetries = 8;
-  let delay = 10000; // 10 seconds
+  const ASSET_ENDPOINT = `${HORIZON_URL}/assets?asset_code=${ASSET_CODE}&asset_issuer=${ISSUER}`;
 
-  while (next) {
-    try {
-      const { data } = await api.get(next);
+  try {
+    const { data } = await api.get(ASSET_ENDPOINT);
 
-      data._embedded.records.forEach(account => {
-        const balance = account.balances.find(
-          b => b.asset_code === ASSET_CODE && b.asset_issuer === ISSUER
-        );
-        if (balance) total += parseFloat(balance.balance);
-      });
-
-      next = data._links.next?.href || null;
-      retryCount = 0;
-      delay = 10000; // Reset delay on success
-
-    } catch (error) {
-      if (retryCount >= maxRetries) {
-        throw new Error(`Horizon API unreachable after ${maxRetries} retries`);
-      }
-      if (error.code === 'ETIMEDOUT' || error.response?.status === 429 || error.response?.status >= 500) {
-        await new Promise(resolve => setTimeout(resolve, delay));
-        delay *= 2;
-        retryCount++;
-        continue;
-      }
-      throw error;
+    if (!data._embedded || !data._embedded.records || data._embedded.records.length === 0) {
+      throw new Error('No asset records found');
     }
-  }
 
-  return { usd: total };
+    const asset = data._embedded.records[0];
+    const tvl = parseFloat(asset.balances.authorized); // Extract authorized balance
+    return { usd: tvl };
+
+  } catch (error) {
+    console.error('Error fetching TVL:', error);
+    throw error;
+  }
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'Sums all USDXLR balances across Stellar trustlines using the Horizon API.',
+  methodology: 'Fetches the USDXLR authorized balance from the /assets endpoint on the Stellar Horizon API, representing total circulating supply.',
   stellar: { fetch: fetchTvl }
 };
 
