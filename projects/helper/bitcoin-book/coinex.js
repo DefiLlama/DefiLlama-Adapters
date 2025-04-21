@@ -1,4 +1,5 @@
 module.exports = [
+  /* all empty addresses
   '189myj1KAbiCWfqWhT6Td4noANKBuag3QN',
   '1C2Pxf3ghtKyM4mKC3xSLKrN33YcKnKF2a',
   '1JZw5HYSoAEfvGGVQ4U2JihZaQkjcXrr2i',
@@ -16,4 +17,7 @@ module.exports = [
   '141TDnaiLEW1vE5xd42Dw8HEhDCA2qrZTr',
   '1Ew9SPwBHY8GjHd3uBxhtGcvVmyBN7PHcw',
   '1LYrQCjUf54vf9G4qwFpJQ9RCyL2DprPqQ',
+  */
+  'bc1qqz623jyqdsh2w5y5kdmzk2ws6mzr2mt2etv5gx',
+  '31nXEifPqiUL3hqfTP5epd93s3ShNLnWL4'
 ]

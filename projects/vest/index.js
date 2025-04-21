@@ -12,7 +12,7 @@ module.exports = {
   },
   base: {
     tvl: staking(
-      "0xE80F92077131b9890599E418AE323de71cE1C35a",
+      ["0xE80F92077131b9890599E418AE323de71cE1C35a","0x32d95F243F9E2c1344E4BAa91a8D32711527ef7e"],
       ADDRESSES.base.USDC
     ),
   },
