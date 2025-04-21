@@ -12,4 +12,10 @@ module.exports = [
   "1LrsskS2hmLvevKiqASDymS8xRmJ7Gp83u",
   "1Ko6Sbu8VgZaQNZMfRgNjR8zVzVN9wL7aX",
   "12rFmDggwCNrRL6vuPEjzCDSskTRPjDajP",
+  "14ug9BVtGnxY8ezvd5cr1PXHeXBYXkpsdw",
+  "139RYdfv7vNtbnK88juMR3s4pgwvB4db9Y",
+  "1KHch51TT2eazxYkUXtr38GXtPTjf8Mue",
+  "bc1qpz86ltanq6042k36rs0yl0wjpd6tgu8fwckan7",
+  "bc1q7enk8z5gkuzk2sla4vnmzh5qq8jq6wptx0pty5",
+  "bc1qmv30sf5tnlx52x6vszl0gmey7vae6elzpm2zxw"
 ];
