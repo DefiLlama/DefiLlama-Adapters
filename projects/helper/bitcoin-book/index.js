@@ -100,6 +100,7 @@ const coinbasebtc = require('./coinbase-btc.js')
 const prosper = require('./prosper.js')
 const hotcoin = require('./hotcoin.js')
 const orangex = require('./orangex.js')
+const exmo = require('./exmo.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -252,5 +253,6 @@ module.exports = {
   prosper,
   lbank,
   hotcoin,
-  orangex
+  orangex,
+  exmo
 }
