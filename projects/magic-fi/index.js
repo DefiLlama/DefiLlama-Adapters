@@ -1,11 +1,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { call, view_account, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
+const { call, sumTokens } = require('../helper/chain/near');
 const { sumTokensExport } = require('../helper/unwrapLPs');
 const { sumTokens2 } = require('../helper/solana');
 
 const ASSET_MANAGER_CONTRACT = 'asset-manager.orderly-network.near';
 const GET_LISTED_TOKENS_METHOD = 'get_listed_tokens';
-const FT_NEAR = 'wrap.near';
 
 const owner = '0x816f722424b49cf1275cc86da9840fbd5a6167e9'
 
@@ -23,22 +22,14 @@ const tokenAddress = {
 }
 
 async function tvl() {
-  let ftTokens = (await call(ASSET_MANAGER_CONTRACT, GET_LISTED_TOKENS_METHOD, {}));
-
-  // NOTE: balances for FT tokens
-  let balances = await addTokenBalances(ftTokens, ASSET_MANAGER_CONTRACT);
-
-  // NOTE: add near balance for tokens
-  const asset_manager_contract_state = await view_account(ASSET_MANAGER_CONTRACT);
-  sumSingleBalance(balances, FT_NEAR, asset_manager_contract_state['amount']);
-
-  return balances;
+  let ftTokens = await call(ASSET_MANAGER_CONTRACT, GET_LISTED_TOKENS_METHOD, {})
+  return sumTokens({ owners: [ASSET_MANAGER_CONTRACT], tokens: ftTokens });
 }
 
 module.exports = {
   timetravel: false,
-  near: {    tvl,  },
-  solana: { tvl: () => sumTokens2({ tokenAccounts: ['77puyQ4K4ov82qzBuda4q9iMh2Ux49YnnBNWqxQkcrXE']})},
+  near: { tvl, },
+  solana: { tvl: () => sumTokens2({ tokenAccounts: ['77puyQ4K4ov82qzBuda4q9iMh2Ux49YnnBNWqxQkcrXE'] }) },
   methodology: 'All the tokens deposited into Magic-Fi Network by chain'
 };
 
