@@ -1,0 +1,10 @@
+{
+  "name": "Sonicxswap",
+  "description": "The DEX on Sonic chain with staking, farming, and launchpad.",
+  "website": "https://www.sonicxswap.com/",
+  "category": "DEX",
+  "chain": "Sonic",
+  "twitter": "https://x.com/SonicxDex",
+  "telegram": "https://t.me/SonicxSwap",
+  "github": "https://github.com/SonicxSwapExchange/SonicxSwap"
+}
