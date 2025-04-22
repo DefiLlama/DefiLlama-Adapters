@@ -2,7 +2,6 @@ const { get } = require('../helper/http')
 
 // Protocol-specific TVL calculations
 async function pendleTvl(api, wallets) {
-    let totalTvl = 0;
     const marketAddresses = {
         aUSDC: {
             lp: '0x3f5ea53d1160177445b1898afbb16da111182418',
@@ -47,18 +46,14 @@ async function pendleTvl(api, wallets) {
                 });
                 
                 const usdValue = (Number(balance) * prices[`${market}_${type}`]) / 1e18;
-                walletTvl += usdValue;
+                api.add(wallet, usdValue);
             }
         }
-        totalTvl += walletTvl;
     }
-
-    return totalTvl;
 }
 
 async function aaveTvl(api, wallets) {
     const AAVE_TOKEN_ADDRESS = '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6';
-    let totalTvl = 0;
     
     for (const wallet of wallets) {
         console.log('Calculating Aave TVL for Wallet:', wallet);
@@ -68,10 +63,8 @@ async function aaveTvl(api, wallets) {
             params: [wallet]
         });
         const usdValue = Number(balance) / 1e6; // 6 decimals for Aave token
-        totalTvl += usdValue;
+        api.add(AAVE_TOKEN_ADDRESS, usdValue);
     }
-
-    return totalTvl;
 }
 
 async function siloTvl(api, wallets) {
@@ -86,8 +79,6 @@ async function siloTvl(api, wallets) {
         'EGGS-USDC-33': '0x42CE2234fd5a26bF161477a996961c4d01F466a3',
         'WBTC-USDC-50': '0xb488af9A423eE9012db3b90B213dcca2CD9C4070'
     };
-
-    let totalTvl = 0;
 
     for (const wallet of wallets) {
         console.log('Calculating Silo TVL for Wallet:', wallet);
@@ -111,11 +102,9 @@ async function siloTvl(api, wallets) {
             });
 
             const usdValue = Number(assets) / (10 ** decimals);
-            totalTvl += usdValue;
+            api.add(address, usdValue);
         }
     }
-
-    return totalTvl;
 }
 
 async function tvl(api) {
@@ -126,22 +115,24 @@ async function tvl(api) {
     
     // Calculate TVL for each protocol
     const startTime = Date.now();
-    const [pendleTvlValue, aaveTvlValue, siloTvlValue] = await Promise.allSettled([
+    await Promise.allSettled([
         pendleTvl(api, wallets),
         aaveTvl(api, wallets),
         siloTvl(api, wallets),
-    ]).then(results => results.map(result => 
-        result.status === 'fulfilled' ? result.value : 0
-    ));
+    ]);
     const endTime = Date.now();
-    // Sum up TVL from all protocols
-    const totalTvl = pendleTvlValue + aaveTvlValue + siloTvlValue;
+    
+    // Get all balances and calculate total TVL
+    const balances = api.getBalances();
+    const totalTvl = Object.values(balances).reduce((sum, value) => sum + value, 0);
     console.log('Total TVL:', totalTvl);
+    
     const processingTimeMs = endTime - startTime;
     const minutes = Math.floor(processingTimeMs / 60000);
     const seconds = ((processingTimeMs % 60000) / 1000).toFixed(2);
     console.log(`Time taken to process TVL calculations: ${minutes} minutes and ${seconds} seconds`);
     console.timeEnd('Total Processing Time');
+    
     return { 'usd-coin': totalTvl };
 }
 
