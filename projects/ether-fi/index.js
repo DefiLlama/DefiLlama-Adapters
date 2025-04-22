@@ -1,6 +1,38 @@
 const { nullAddress } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk')
 
+async function updateEbtcTvl(api) {
+  const chains = ['ethereum', 'base', 'berachain', 'corn', 'scroll']
+  for (const chain of chains) {
+    let chainApi = new sdk.ChainApi({ chain: chain, timestamp: api.timestamp })
+    if (chain === 'ethereum') {
+      chainApi = api;
+    }
+    const btcBal = await chainApi.call({
+      target: '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642',
+      abi: 'uint256:totalSupply'
+    });
+    api.add(ADDRESSES.ethereum.EBTC, btcBal);
+  }
+  return
+}
+
+async function updateEusdTvl(api) {
+  const chains = ['ethereum', 'scroll']
+  for (const chain of chains) {
+    let chainApi = new sdk.ChainApi({ chain: chain, timestamp: api.timestamp })
+    if (chain === 'ethereum') {
+      chainApi = api;
+    }
+    const eusdBal = await chainApi.call({
+      target: '0x939778D83b46B456224A33Fb59630B11DEC56663',
+      abi: 'uint256:totalSupply'
+    });
+    api.add(ADDRESSES.ethereum.EUSD, eusdBal);
+  }
+  return
+}
+
 function staking(contract, token) {
   return async (api) => {
     api.add(token, await api.call({ target: contract, abi: 'erc20:totalSupply'}))
