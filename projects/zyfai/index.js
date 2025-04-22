@@ -177,7 +177,6 @@ async function tvl(api) {
     console.time('Total Processing Time');
     const response = await fetch('https://api.zyf.ai/api/v1/data/active-wallets?chainId=146');
     const wallets = await response.json();
-    // const wallets = ["0xb50685c25485CA8C520F5286Bbbf1d3F216D6989"];
     console.log('Number of wallets to process:', wallets.length);
     
     // Calculate TVL for each protocol
