@@ -21,7 +21,7 @@ const CONFIG = {
       ADDRESSES.ethereum.SDAI,                         // SDAI
       ADDRESSES.ethereum.sUSDS,                        // SUSDS
       '0xCAcd6fd266aF91b8AeD52aCCc382b4e165586E29',    // frxUSD
-      '0xac3E018457B222d93114458476f3E3416Abbe38F',   // sfrxUSD
+      '0xcf62F905562626CfcDD2261162a51fd02Fc9c5b6',   // sfrxUSD
       ADDRESSES.ethereum.WETH,                         // WETH
       ADDRESSES.ethereum.WSTETH,                       // WSTETH
       ADDRESSES.ethereum.STETH,                       // WSTETH
