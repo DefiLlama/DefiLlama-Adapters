@@ -39,7 +39,7 @@ module.exports = {
   timetravel: false,
   near: { tvl },
   solana: { tvl: () => sumTokens2({ tokenAccounts: ['77puyQ4K4ov82qzBuda4q9iMh2Ux49YnnBNWqxQkcrXE']})},
-  methodology: 'All the tokens deposited into Orderly Network by chain'
+  methodology: 'All the tokens deposited into Magic-Fi Network by chain'
 };
 
 Object.keys(tokenAddress).forEach(chain => {
