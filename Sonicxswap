@@ -1,1 +1,13 @@
 projects/sonicxswap/index.js
+const { getUniTVL } = require('../helper/unknownTokens');
+
+module.exports = {
+  misrepresentedTokens: true,
+  methodology: 'TVL is calculated using the Sonicxswap factory address on the Sonic chain. It sums the liquidity of all LP pairs.',
+  sonic: {
+    tvl: getUniTVL({
+      factory: '0x0569F2A6B281b139bC164851cf86E4a792ca6e81',
+      useDefaultCoreAssets: true,
+    }),
+  },
+};
