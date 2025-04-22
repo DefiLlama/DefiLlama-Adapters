@@ -2225,7 +2225,8 @@
     "msETH": "0x4661407fc224e5432d7f528a20ef8906e453a8f3",
     "mswETH": "0x027a9d301fb747cd972cfb29a63f3bda551dfc5c",
     "USDT0": "0x102d758f688a4c1c5a80b116bd945d4455460282",
-    "KING": "0xc2606aade4bdd978a4fa5a6edb3b66657acee6f8"
+    "KING": "0xc2606aade4bdd978a4fa5a6edb3b66657acee6f8",
+    "rUSDC": "0x9ab96A4668456896d45c301Bc3A15Cee76AA7B8D"
   },
   "elys": {
     "uelys": "uelys"
