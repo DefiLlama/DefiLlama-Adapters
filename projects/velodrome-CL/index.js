@@ -9,6 +9,8 @@ const config = {
   ink: { },
   soneium: { },
   unichain: { },
+  swellchain: { },
+  celo: { },
 }
 
 Object.keys(config).forEach(chain => {

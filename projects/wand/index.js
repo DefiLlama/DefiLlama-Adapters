@@ -66,7 +66,7 @@ async function styTvl(api) {
         const infos = epochInfos || []
         
         for (const { redeemPool } of infos) {
-          if (redeemPool && redeemPool !== '0x0000000000000000000000000000000000000000') {
+          if (redeemPool && redeemPool !== ADDRESSES.null) {
             tokensAndOwners.push([asset, redeemPool])
           }
         }
