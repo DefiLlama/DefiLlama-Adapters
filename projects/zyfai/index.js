@@ -34,7 +34,6 @@ async function pendleTvl(api, wallets) {
     // Process each wallet
     for (const wallet of wallets) {
         console.log('Calculating Pendle TVL for Wallet:', wallet)
-        let walletTvl = 0;
         
         // Get balance for each token
         for (const market of Object.keys(marketAddresses)) {
@@ -44,9 +43,10 @@ async function pendleTvl(api, wallets) {
                     target: address,
                     params: [wallet]
                 });
-                
                 const usdValue = (Number(balance) * prices[`${market}_${type}`]) / 1e18;
-                api.add(wallet, usdValue);
+                if (usdValue > 0.01) {
+                    api.add(address, usdValue);
+                }
             }
         }
     }
@@ -63,7 +63,9 @@ async function aaveTvl(api, wallets) {
             params: [wallet]
         });
         const usdValue = Number(balance) / 1e6; // 6 decimals for Aave token
-        api.add(AAVE_TOKEN_ADDRESS, usdValue);
+        if (usdValue > 0.01) {
+            api.add(AAVE_TOKEN_ADDRESS, usdValue);
+        }
     }
 }
 
@@ -102,36 +104,28 @@ async function siloTvl(api, wallets) {
             });
 
             const usdValue = Number(assets) / (10 ** decimals);
-            api.add(address, usdValue);
+            if (usdValue > 0.01) {
+                api.add(address, usdValue);
+            }
         }
     }
 }
 
 async function tvl(api) {
-    console.time('Total Processing Time');
     const response = await fetch('https://api.zyf.ai/api/v1/data/active-wallets?chainId=146');
     const wallets = await response.json();
-    console.log('Number of wallets to process:', wallets.length);
     
     // Calculate TVL for each protocol
-    const startTime = Date.now();
-    await Promise.allSettled([
+    await Promise.all([
         pendleTvl(api, wallets),
         aaveTvl(api, wallets),
         siloTvl(api, wallets),
-    ]);
-    const endTime = Date.now();
-    
-    // Get all balances and calculate total TVL
+    ]);    
+
+    // Calculate total TVL
     const balances = api.getBalances();
     const totalTvl = Object.values(balances).reduce((sum, value) => sum + value, 0);
     console.log('Total TVL:', totalTvl);
-    
-    const processingTimeMs = endTime - startTime;
-    const minutes = Math.floor(processingTimeMs / 60000);
-    const seconds = ((processingTimeMs % 60000) / 1000).toFixed(2);
-    console.log(`Time taken to process TVL calculations: ${minutes} minutes and ${seconds} seconds`);
-    console.timeEnd('Total Processing Time');
     
     return { 'usd-coin': totalTvl };
 }
