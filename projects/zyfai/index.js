@@ -181,9 +181,7 @@ async function tvl(api) {
     
     // Calculate TVL for each protocol
     const startTime = Date.now();
-    const [pendleTvlValue
-        , aaveTvlValue, siloTvlValue
-    ] = await Promise.allSettled([
+    const [pendleTvlValue, aaveTvlValue, siloTvlValue] = await Promise.allSettled([
         pendleTvl(api, wallets),
         aaveTvl(api, wallets),
         siloTvl(api, wallets),
