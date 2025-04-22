@@ -1,23 +1,24 @@
+const ADDRESSES = require('../helper/coreAssets.json');
 const axios = require('axios');
-async function fetchAvaxTVL() {
-    const address = '0x0639556F03714A74a5fEEaF5736a4A64fF70D206';
-    const rpcUrl = 'https://api.avax.network/ext/bc/C/rpc';
-    const body = {
-      jsonrpc: "2.0",
-      id: 1,
-      method: "eth_getBalance",
-      params: [address, "latest"]
-    };
-    const res = await axios.post(rpcUrl, body);
-    const balanceWei = BigInt(res.data.result);
-    const avax = Number(balanceWei) / 1e18;
-    const priceRes = await axios.get('https://api.binance.com/api/v3/ticker/price?symbol=AVAXUSDT');
-    const avaxPrice = priceRes.data.price;
-    return avax * avaxPrice;
-  }
+
+const XB_API_URL = "https://api.xbanking.org:3444/tvl/solana";
+// ref: https://xbanking.medium.com/xbanking-is-the-safest-defi-platform-94c9833bc5c6
+// Our custodial services operate similarly to CEX wallets, making it impossible to track xbanking's full balance on-chain
+// Our api response is sum of fireblocks and custodial services balance
+const tvl = async (api) => {
+    const { data } = await axios.get(XB_API_URL);
+    if (!data || !data[0]) {
+        throw new Error('Invalid API response');
+    }
+
+    const stakingInfo = data[0];
+    const { totalStaked } = stakingInfo;
+
+    api.add(ADDRESSES.solana.SOL, totalStaked);
+}
 
 module.exports = {
-    avax: {
-        tvl: async (api) => { await fetchAvaxTVL() }
-      },
-  };
+    solana: {
+        tvl
+    }
+};
