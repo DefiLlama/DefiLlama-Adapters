@@ -89,6 +89,20 @@ const MARKET_STATE_LAYOUT_V3 = struct([
   blob(7),
 ]);
 
+
+const MARKET_STATE_LAYOUT_V3_MINIMAL = struct([
+  publicKey('baseMint'),
+  publicKey('quoteMint'),
+
+  publicKey('baseVault'),
+  u64('baseDepositsTotal'),
+  u64('baseFeesAccrued'),
+
+  publicKey('quoteVault'),
+  u64('quoteDepositsTotal'),
+  u64('quoteFeesAccrued'),
+]);
+
 const OPEN_ORDERS_LAYOUT_V2 = struct([
   blob(5),
 
@@ -115,6 +129,7 @@ const OPEN_ORDERS_LAYOUT_V2 = struct([
 
 
 module.exports = {
+  MARKET_STATE_LAYOUT_V3_MINIMAL,
   MARKET_STATE_LAYOUT_V3,
   OPEN_ORDERS_LAYOUT_V2
 }

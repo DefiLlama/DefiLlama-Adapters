@@ -15,8 +15,7 @@ const contracts = [
   'TPfAqGJ83NbVcRcsMFx7GJ749t9VV6cZvp',
 ]
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const tokenAs = await api.multiCall({ calls: contracts, abi: 'address:tokenA', permitFailure: true })
   const tokenBs = await api.multiCall({ calls: contracts, abi: 'address:tokenB', permitFailure: true })
   const tokensAndOwners = []

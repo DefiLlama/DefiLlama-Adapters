@@ -12,7 +12,7 @@ const config = {
 
 Object.entries(config).forEach(([chain, { auditor }]) => {
   module.exports[chain] = {
-    tvl: async (_, __, ___, { api }) => {
+    tvl: async (api) => {
       const markets = await api.call({ abi: abis.allMarkets, target: auditor, });
       const treasuries = await api.multiCall({ abi: abis.treasury, calls: markets, })
       return sumTokens2({ api, tokens: markets, owners: treasuries, })

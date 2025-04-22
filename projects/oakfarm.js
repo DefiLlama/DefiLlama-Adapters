@@ -33,13 +33,13 @@ module.exports = {};
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
+    tvl: async (api) => {
       const balances = {}
       const { vaults } = config[chain]
       const tokens = await api.multiCall({  abi: abi.token, calls: vaults }) 
       const bal = await api.multiCall({  abi: abi.balance, calls: vaults }) 
       tokens.forEach((token, i) => sdk.util.sumSingleBalance(balances, `${chain}:${token}`, bal[i]))
-      await unwrapLPsAuto({ balances, chain, block, })
+      await unwrapLPsAuto({ balances, chain, block: api.block, })
       return balances
     }
   }

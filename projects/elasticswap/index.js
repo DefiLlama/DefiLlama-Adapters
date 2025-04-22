@@ -39,7 +39,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { startBlock, factory, stakingPools, ticToken, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
+    tvl: async (api) => {
       let { pairAddresses = [] } = config[chain]
 
       if (startBlock) {
@@ -57,24 +57,17 @@ Object.keys(config).forEach(chain => {
           pairAddresses.push(`0x${log.topics[2].substr(-40)}`.toLowerCase())
       }
 
-      const calls = pairAddresses.map(i => ({ target: i }))
+      const calls = pairAddresses
 
-      const { output: baseToken } = await sdk.api.abi.multiCall({
-        abi: BaseTokenAbi,
-        chain, block, calls,
+      const baseToken = await api.multiCall({
+        abi: BaseTokenAbi, calls,
       });
 
-      const { output: quoteToken } = await sdk.api.abi.multiCall({
-        abi: QuoteTokenAbi,
-        chain, block, calls,
+      const quoteToken = await api.multiCall({
+        abi: QuoteTokenAbi, calls,
       })
 
-      const toa = []
-      const addTokens = ({ output, input: { target }}) => toa.push([output, target, ])
-      baseToken.forEach(addTokens)
-      quoteToken.forEach(addTokens)
-
-      return sumTokens2({ tokensAndOwners: toa, chain, block, })
+      return sumTokens2({ tokensAndOwners2: [baseToken.concat(quoteToken), calls.concat(calls)], api, })
     },
     staking: stakings(stakingPools, ticToken, chain)
   }

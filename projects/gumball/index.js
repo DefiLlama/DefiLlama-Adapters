@@ -34,7 +34,7 @@ async function reservesCallFn({ api, calls }) {
   })
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   let items = await api.fetchList({ itemAbi: abi.deployInfo, lengthAbi: abi.deployLength, target: GumballFactoryContractArbitrum })
   items = items.filter(i => i.allowed)
   // let prices = await api.multiCall({ abi: abi.gbtPrice, calls: items.map(i => i.gbt) })

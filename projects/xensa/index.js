@@ -3,7 +3,7 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const _xensaCoreAddress = '0xd1242313461dd533279f0cac0dbc06ecdb878a79';
 
-async function tvl(timestamp, _ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const reserves_xensa = (
     await api.call({
       target: _xensaCoreAddress,

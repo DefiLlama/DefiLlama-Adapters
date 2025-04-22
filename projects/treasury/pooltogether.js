@@ -1,9 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require("../helper/treasury");
 const {
-  unwrapUniswapV3NFTs,
   sumTokensExport,
   sumTokens,
+  sumTokens2,
 } = require("../helper/unwrapLPs");
 
 const pullTreasury = "0x42cd8312D2BCe04277dD5161832460e95b24262E";
@@ -32,11 +32,8 @@ async function ethOwnTokens(timestamp, block) {
     [POOL, pullTreasury],
     [POOL, vesting],
   ];
-  const nftsAndOwners = [
-    ["0xC36442b4a4522E871399CD717aBDD847Ab11FE88", pullTreasury],
-  ];
   await sumTokens(balances, tokensAndOwners, block);
-  await unwrapUniswapV3NFTs({ balances, nftsAndOwners, block });
+  await sumTokens2({ balances, owner: pullTreasury, resolveUniV3: true, block });
   return balances;
 }
 

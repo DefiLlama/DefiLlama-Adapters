@@ -6,7 +6,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { pools } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const poolData = await api.multiCall({  abi: abi.assets, calls: pools})
       return api.sumTokens({ ownerTokens: poolData.map((v, i) => [v.map(j => j.token), pools[i]])})
     }

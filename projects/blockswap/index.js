@@ -9,7 +9,7 @@ const lsd_subgraph = 'https://lsd-subgraph.joinstakehouse.com'
 
 const stakehouse_subgraph = 'https://stakehouse-subgraph.joinstakehouse.com'
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let balances = {};
   let query
   let results

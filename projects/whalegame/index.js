@@ -3,7 +3,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 
 const GAME_CONTRACT_ADDRESS = "0xF1baf16Db25405856f5379246Beba2B694e1449D";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const whaleTokenAddress = await api.call({ abi: abi.whaleToken, target: GAME_CONTRACT_ADDRESS, });
   const owners = [GAME_CONTRACT_ADDRESS, whaleTokenAddress]
 

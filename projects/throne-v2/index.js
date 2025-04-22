@@ -5,7 +5,6 @@ const FACTORY = "0xe4806BdD8E010828324928d25587721F6B58BEA2"
 const dexTVL = getUniTVL({
     factory: FACTORY,
     useDefaultCoreAssets: true,
-    fetchBalances: true,
 })
 
 

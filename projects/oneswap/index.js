@@ -11,7 +11,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const pairs = await api.fetchList({  lengthAbi: 'uint256:allPairsLength', itemAbi: 'function allPairs(uint256) view returns (address)', target: factory, permitFailure: true, })
       const data = await api.multiCall({  abi: 'function getTokensFromPair(address) view returns (address, address)', calls: pairs, target: factory})
       const ownerTokens = data.map((v, i) => [v.map(i => i === tronNull ? nullAddress : i), pairs[i]])

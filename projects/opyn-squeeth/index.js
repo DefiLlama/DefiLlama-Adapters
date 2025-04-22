@@ -11,10 +11,11 @@ const uniPool = '0x82c427adfdf2d245ec51d8046b41c4ee87f0d29c';
 
 module.exports = {
   ethereum: {
-    tvl: async (timestamp, block, _, { api })=> {
+    tvl: async (api)=> {
       let balances = {};
+      const { block } = api
   
-      if(block >= START_BLOCK) {
+      if(!block || block >= START_BLOCK) {
   
         return sumTokens2({ api, tokensAndOwners: [
           [ETH, controller],

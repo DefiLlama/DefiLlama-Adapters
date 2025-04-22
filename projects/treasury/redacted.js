@@ -8,6 +8,7 @@ const treasury4 = "0xa722ebccd25adb06e5d0190b240d1f4039839822"
 const treasury5OP = "0x2e33a660742e813ad948fb9f7d682fe461e5fbf3"
 const treasury6ARB = "0x64769c53ff91b83fe9830776a4b85a1f4e1edaad"
 const BTRF = "0xc55126051B22eBb829D00368f4B12Bde432de5Da"
+const DINERO = "0x6DF0E641FC9847c0c6Fde39bE6253045440c14d3"
 
 module.exports = treasuryExports({
   ethereum: {
@@ -23,7 +24,7 @@ module.exports = treasuryExports({
       "0xBCe0Cf87F513102F22232436CCa2ca49e815C3aC",
       ADDRESSES.ethereum.CRV,
     ],
-    ownTokens: [BTRF],
+    ownTokens: [BTRF, DINERO],
     owners: [treasury, treasury2,treasury3,treasury4],
   },
   optimism: {

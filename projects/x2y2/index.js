@@ -11,7 +11,7 @@ const XY3_v1 = "0xC28F7Ee92Cd6619e8eEC6A70923079fBAFb86196";
 const XY3_v2 = "0xFa4D5258804D7723eb6A934c11b1bd423bC31623"
 const XY3_v3 = "0xB81965DdFdDA3923f292a47A1be83ba3A36B5133"
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, owners: [XY3_v1, XY3_v2, XY3_v3], resolveNFTs: true})
 }
 
@@ -19,6 +19,6 @@ module.exports = {
   methodology: `TVL for X2Y2 consists of deposited NFTs`,
   ethereum:{
     tvl,
-    staking: staking(X2Y2_staking, X2Y2, "ethereum"), 
+    staking: staking(X2Y2_staking, X2Y2), 
   }
 }

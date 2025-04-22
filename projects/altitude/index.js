@@ -19,7 +19,7 @@ let output = {};
 
 CHAINS.forEach(chain => {
   output[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       // Define a function to fetch tokens given a contract address
       const fetchTokens = async (contract) => {
         const tokens = [];

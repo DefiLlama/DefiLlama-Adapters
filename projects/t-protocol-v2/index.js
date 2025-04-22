@@ -8,13 +8,13 @@ const USTP = '0xed4d84225273c867d269f967cc696e0877068f8a'
 
 module.exports = {
   methodology: "counts value of assets in the Treasury",
-  start: 1677913260,
+  start: '2023-03-04',
   ethereum: {
     tvl,
   },
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   await api.sumTokens({ owner: RUST_POOL, tokens: [ADDRESSES.ethereum.USDC, STBT]})
   return sumTokens2({ owner: UNI_V3_MANAGER, resolveUniV3: true, blacklistedTokens: [USTP], api,  })
   

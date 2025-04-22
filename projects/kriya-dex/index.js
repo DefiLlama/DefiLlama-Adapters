@@ -2,7 +2,7 @@ const sui = require('../helper/chain/sui')
 
 const EVENT_FILTER = "0xa0eba10b173538c8fecca1dff298e488402cc9ff374f8a12ca7758eebe830b66::spot_dex::PoolCreatedEvent";
 
-async function kriyaTVL(_, _1, _2, { api }) {
+async function kriyaTVL(api) {
   const poolIds = await sui.queryEvents({ eventType: EVENT_FILTER, transform: i => i.pool_id});
   const pools = await sui.getObjects(poolIds)
   pools.forEach(i => {

@@ -12,6 +12,7 @@ module.exports = {
   arbitrum: {
     tvl: sumTokensExport({ tokensAndOwners: [
       [ADDRESSES.arbitrum.USDC, '0x0d49c416103cbd276d9c3cd96710db264e3a0c27'],
+      [ADDRESSES.arbitrum.USDC_CIRCLE, '0x0d49c416103cbd276d9c3cd96710db264e3a0c27'],
     ]})
   }
 }

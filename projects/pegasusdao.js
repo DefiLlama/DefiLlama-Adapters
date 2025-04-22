@@ -1,8 +1,7 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const { tombTvl } = require("./helper/tomb");
 const sdk = require("@defillama/sdk");
-const { getChainTransform } = require("./helper/portedTokens");
-const { unwrapUniswapLPs, unwrapLPsAuto } = require('./helper/unwrapLPs');
+const { sumTokens2 } = require('./helper/unwrapLPs');
 
 const PES = "0x8efbaa6080412d7832025b03b9239d0be1e2aa3b";
 const SPES = "0xBBd4650EeA85f9DBd83d6Fb2a6E8B3d8f32FE1C5";
@@ -15,7 +14,7 @@ const lps = [
 const shareLps = "0x72c1f5fb7e5513a07e1ff663ad861554887a0a0a";
 const genesisPool = "0x64bfCBe4480B53E8234Ca258a96720F29fe6A6fB";
 const genesisTokens = [
-    "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
+    ADDRESSES.cronos.WCRO_1,
     ADDRESSES.cronos.USDC,
     "0x97749c9b61f878a880dfe312d2594ae07aed7656",
     "0xb8df27c687c6af9afe845a2afad2d01e199f4878",
@@ -37,36 +36,8 @@ function addToExports(chain, key, fn) {
     exportObject[chain][key].push(fn)
 }
 
-async function tvl(timestamp, block, chainBlocks) {
-    const balances = {};
-    const transform = await getChainTransform('cronos');
-    const result = await sdk.api.abi.multiCall({
-        calls: genesisTokens.map((t) => ({
-          target: t,
-          params: [ genesisPool ],
-        })),
-        abi: "erc20:balanceOf",
-        chain: 'cronos',
-        block: chainBlocks.cronos
-      });
-
-    sdk.util.sumMultiBalanceOf(balances, result, true, transform);
-    await unwrapUniswapLPs(
-        balances, 
-        [
-            { 
-                token: genesisTokens[4], 
-                balance: balances[`cronos:${genesisTokens[4]}`] 
-            }
-        ], 
-        chainBlocks.cronos, 
-        'cronos', 
-        transform
-        );
-
-    delete balances[`cronos:${PES}`];
-    await unwrapLPsAuto({ balances, block: chainBlocks.cronos, chain: 'cronos',  })
-    return balances; 
+async function tvl(api) {
+  return sumTokens2({ api, owner: genesisPool, tokens: genesisTokens, resolveLP: true })
 }
 
 addToExports('cronos', 'tvl', tvl)

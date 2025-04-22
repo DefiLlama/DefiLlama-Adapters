@@ -3,7 +3,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
   ethereum: {
-    tvl: async function tvl(_, _b, _cb, { api, }) {
+    tvl: async function tvl(api) {
       const logs = await getLogs({
         api,
         target: '0x82cac2725345ea95a200187ae9a5506e48fe1c5d',

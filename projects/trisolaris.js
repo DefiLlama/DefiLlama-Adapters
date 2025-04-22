@@ -2,14 +2,13 @@ const ADDRESSES = require('./helper/coreAssets.json')
 const { getUniTVL } = require('./helper/unknownTokens')
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('./helper/unwrapLPs')
-const chain = 'aurora'
 
 const dexTVL = getUniTVL({
   factory: '0xc66F594268041dB60507F00703b152492fb176E7',
   useDefaultCoreAssets: true,
 })
 
-async function stableswapTVL(_, _b, { [chain]: block }) {
+async function stableswapTVL(api) {
   const pools = [
     {
       name: 'USDC/USDT/USN',
@@ -38,7 +37,7 @@ async function stableswapTVL(_, _b, { [chain]: block }) {
   ]
 
   const tokensAndOwners = pools.map(({ contract, tokens }) => tokens.map(t => [t, contract])).flat()
-  return sumTokens2({ chain, block, tokensAndOwners })
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {

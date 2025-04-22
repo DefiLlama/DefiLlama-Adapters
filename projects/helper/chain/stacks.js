@@ -1,5 +1,6 @@
 const { get, } = require('../http')
 const { nullAddress } = require('../tokenMapping')
+const { getFixBalancesSync } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
 const chain = 'stacks'
 
@@ -41,7 +42,8 @@ async function sumTokens({ owner, owners = [], tokens = [], balances = {}, black
   if (owner) owners = [owner]
 
   await Promise.all(owners.map(i => addTokens(i, { balances, tokens, blacklistedTokens, })))
-  return balances
+  const transform = getFixBalancesSync(chain)
+  return transform(balances)
 }
 
 module.exports = {

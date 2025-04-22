@@ -17,7 +17,7 @@ async function getPawnNFTTokens(api) {
   return logs.map(log => log.pieceToken)
 }
 
-async function borrowed(timestamp, block, _, { api }) {
+async function borrowed(api) {
   const blacklistedTokens = await getPawnNFTTokens(api)
   const items = await api.call({ abi: ABI.cTokenMetadataAll, target: Lending, params: [LendCToken], })
   items.forEach((v) => {
@@ -27,7 +27,7 @@ async function borrowed(timestamp, block, _, { api }) {
 }
 
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const blacklistedTokens = await getPawnNFTTokens(api)
   const items = await api.call({ abi: ABI.cTokenMetadataAll, target: Lending, params: [LendCToken], })
   return sumTokens2({ api, tokensAndOwners: items.map(i => [i.underlyingAssetAddress, i.cToken]), blacklistedTokens })

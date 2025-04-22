@@ -13,12 +13,12 @@ const LP_ADDRESS_SET_USDC = "0x31fa3838788A07607D95C9c640D041eAec649f50"
 // system coll
 const AVAX_TROVE_MANAGER_ADDRESS = "0x7551A127C41C85E1412EfE263Cadb49900b0668C";
 const ETH_TROVE_MANAGER_ADDRESS = "0x7837C2dB2d004eB10E608d95B2Efe8cb57fd40b4";
-const BTC_ADDRESS = '0x50b7545627a5162f82a992c33b87adc75187b218';
+const BTC_ADDRESS = ADDRESSES.avax.WBTC_e;
 const BTC_TROVE_MANAGER_ADDRESS = "0x56c194F1fB30F8cdd49E7351fC9C67d8C762a86F";
 const DAI_TROVE_MANAGER_ADDRESS = "0x54b35c002468a5Cc2BD1428C011857d26463ecbC";
 
 // --- staking ---
-async function stakingTvl(_, _ethBlock, chainBlocks, { api }) {
+async function stakingTvl(api) {
   const StakesBalance = await api.call({ target: TOKEN_STAKING_ADDRESS, abi: "uint256:totalTokenStaked", })
   return { [SET_ADDRESS]: StakesBalance }
 }

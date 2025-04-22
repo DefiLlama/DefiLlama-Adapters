@@ -1,89 +1,18 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const masterChefContract = "0xEE7Bc7727436D839634845766f567fa354ba8C56";
 
-const bscTvl = async (chainBlocks) => {
-  const balances = {};
+async function tvl(api) {
+  const infos = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: masterChefContract })
+  const lpTokens = infos.map(i => i.lpToken)
+  const strats = infos.map(i => i.strat)
+  return sumTokens2({ api, tokensAndOwners2: [lpTokens, strats], resolveLP: true })
+}
 
-  const poolLength = (
-    await sdk.api.abi.call({
-      abi: abi.poolLength,
-      target: masterChefContract,
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-  ).output;
-
-  const lpPositions = [];
-
-  for (let index = 0; index < poolLength; index++) {
-    const strat = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterChefContract,
-        params: index,
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output.strat;
-
-    const lpToken = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterChefContract,
-        params: index,
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output.lpToken;
-    
-    const strat_bal = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: lpToken,
-        params: strat,
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output;
-    
-    const symbol = (
-      await sdk.api.abi.call({
-        abi: abi.symbol,
-        target: lpToken,
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output;
-
-    if (symbol.includes("LP")) {
-      lpPositions.push({
-        token: lpToken,
-        balance: strat_bal,
-      });
-    } else {
-      sdk.util.sumSingleBalance(balances, `bsc:${lpToken}`, strat_bal);
-    }
-  }
-  const transformAddress = i => `bsc:${i}`;
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["bsc"],
-    "bsc",
-    transformAddress
-  );
-
-  delete balances["bsc:0x95e7c70b58790a1cbd377bc403cd7e9be7e0afb1"]
-  return balances;
-};
 
 module.exports = {
-  bsc: {
-    tvl: bscTvl,
-  },
+  bsc: { tvl, },
   methodology:
     "We count liquidity on the Strategies (Vaults) through MasterChef contracts",
 };

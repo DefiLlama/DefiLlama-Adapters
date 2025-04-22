@@ -1,9 +1,10 @@
+const sdk = require("@defillama/sdk");
 const { toUSDTBalances } = require("../helper/balances");
 const { request, gql } = require("graphql-request");
 
 async function tvlFromGraph() {
   const graphUrl =
-    "https://api.thegraph.com/subgraphs/name/riccardogalbusera/orbit-subgraph";
+    sdk.graph.modifyEndpoint('BRUJ3Y4Fpq4VuvoCAi4p9qv1SxZ6ghVtMK1Rg8igfxmi');
   const graphQuery = gql`
     query {
       positionManagerFactories(first: 1) {

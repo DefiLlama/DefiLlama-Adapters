@@ -5,7 +5,7 @@ const vaults = [
   '0xfC287513E2DD58fbf952eB0ED05D511591a6215B', // Blur
 ]
 
-async function tvl(_1, _2, chainBlocks, { api }) {
+async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
   api.addTokens(tokens, bals)

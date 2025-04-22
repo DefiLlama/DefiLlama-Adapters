@@ -12,12 +12,18 @@ function formatToken(token, type) {
       return "KSM";
     case `{"VSToken":"KSM"}`:
       return "vsKSM";
+    case `{"VSToken2":"0"}`:
+      return "vsDOT";
     case `{"VToken":"KSM"}`:
       return "vKSM";
     case `{"Token":"KAR"}`:
       return "KAR";
+    case `{"Native":"BNC"}`:
+      return "BNC";
     case `{"Token":"ZLK"}`:
       return "ZLK";
+    case `{"Token":"MOVR"}`:
+      return "MOVR";
     case `{"Stable":"KUSD"}`:
       return "KUSD";
     case `{"Token2":"0"}`:
@@ -26,10 +32,16 @@ function formatToken(token, type) {
       return type === "kusama" ? "KINT" : "GLMR";
     case `{"VToken2":"0"}`:
       return "vDOT";
+    case `{"VToken2":"1"}`:
+      return "vGLMR";
     case `{"VToken2":"4"}`:
       return "vFIL";
     case `{"Token2":"4"}`:
       return "FIL";
+    case `{"VToken2":"3"}`:
+      return "vASTR";
+    case `{"Token2":"3"}`:
+      return "ASTR";
     case `{"VToken":"BNC"}`:
       return "vBNC";
     case `{"VToken":"MOVR"}`:
@@ -68,6 +80,8 @@ function formatTokenAmount(amount, tokenSymbol) {
     case "GLMR":
     case "FIL":
     case "vFIL":
+    case "ASTR":
+    case "vASTR":
       decimals = 18;
       break;
   }
@@ -81,14 +95,15 @@ const tokenToCoingecko = {
   KSM: "kusama",
   MOVR: "moonriver",
   GLMR: "moonbeam",
-  // KUSD: "acala-dollar",
+  KUSD: "acala-dollar",
   ZLK: "zenlink-network-token",
   USDT: "tether",
   FIL: "filecoin",
+  ASTR: "astar"
 };
 
 async function tvl() {
-  const kusamaProvider = new WsProvider("wss://bifrost-rpc.liebi.com/ws");
+  const kusamaProvider = new WsProvider("wss://hk.bifrost-rpc.liebi.com/ws");
   const kusamaApi = await ApiPromise.create(({ provider: kusamaProvider }));
 
   const totalLiquidity = {};
@@ -153,6 +168,72 @@ async function tvl() {
       }
     }
   }));
+
+  // stable dex tvl
+
+  const kusamaStablePools = await kusamaApi.query.stableAsset?.pools.entries();
+
+  await Promise.all(kusamaStablePools.map(async (item) => {
+    const pool = item[1].toHuman()
+
+    await Promise.all([pool.assets[0], pool.assets[1]].map(async (token, i) => {
+      let ratio = 1;
+      let currentToken = formatToken(JSON.stringify(token), 'kusama')
+      const isVstoken = currentToken.startsWith("vs");
+      const isVtoken = currentToken.startsWith("v") && !isVstoken;
+
+      currentToken = isVtoken ? currentToken.slice(1) : currentToken;
+      currentToken = isVstoken ? currentToken.slice(2) : currentToken;
+      if (isVtoken) {
+        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool(currentToken === "BNC" ? { "native": currentToken } : { "token": currentToken });
+        const totalIssuance = await kusamaApi.query.tokens.totalIssuance({ "vToken": currentToken });
+        ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
+      }
+      if (isVstoken) {
+        ratio = 1 / 2;
+      }
+      if (totalLiquidity[currentToken]) {
+        totalLiquidity[currentToken] = new BigNumber(totalLiquidity[currentToken]).plus(pool.balances[i].replaceAll(',', '')).multipliedBy(ratio).toFixed().split(".")[0];
+      } else {
+        totalLiquidity[currentToken] = new BigNumber(pool.balances[i].replaceAll(',', '')).multipliedBy(ratio).toFixed().split(".")[0];
+      }
+    }))
+  }))
+
+  const polkadotStablePools = await polkadotApi.query.stableAsset?.pools.entries();
+
+  await Promise.all(polkadotStablePools.map(async (item) => {
+    const pool = item[1].toHuman()
+
+    await Promise.all([pool.assets[0], pool.assets[1]].map(async (token, i) => {
+      let ratio = 1;
+      let currentToken = formatToken(JSON.stringify(token), 'polkadot')
+      if (!currentToken) {
+        console.log(JSON.stringify(token) )
+        return;
+      }
+
+      const isVstoken = currentToken?.startsWith("vs");
+      const isVtoken = currentToken?.startsWith("v") && !isVstoken;
+
+      currentToken = isVtoken ? currentToken.slice(1) : currentToken;
+      currentToken = isVstoken ? currentToken.slice(2) : currentToken;
+
+      if (isVtoken) {
+        const tokenPool = await polkadotApi.query.vtokenMinting.tokenPool({ "token2": token.VToken2 });
+        const totalIssuance = await polkadotApi.query.tokens.totalIssuance({ "vToken2": token.VToken2 });
+        ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
+      }
+      if (isVstoken) {
+        ratio = 1 / 2;
+      }
+      if (totalLiquidity[currentToken]) {
+        totalLiquidity[currentToken] = new BigNumber(totalLiquidity[currentToken]).plus(pool.balances[i].replaceAll(',', '')).multipliedBy(ratio).toFixed().split(".")[0];
+      } else {
+        totalLiquidity[currentToken] = new BigNumber(pool.balances[i].replaceAll(',', '')).multipliedBy(ratio).toFixed().split(".")[0];
+      }
+    }))
+  }))
 
   for (const key in totalLiquidity) {
     totalLiquidityFormatted[tokenToCoingecko[key]] = formatTokenAmount(

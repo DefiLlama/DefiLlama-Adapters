@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk")
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const pools = await api.call({  abi: 'address[]:getDeployedPoolsList', target: '0xe6f4d9711121e5304b30ac2aae57e3b085ad3c4d'})
   const collaterals = await api.multiCall({  abi: 'address:collateralAddress', calls: pools})
   const borrows = await api.multiCall({  abi: 'address:quoteTokenAddress', calls: pools})
@@ -9,7 +9,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return sumTokens2({ ownerTokens, api})
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
     const pools = await api.call({  abi: 'address[]:getDeployedPoolsList', target: '0xe6f4d9711121e5304b30ac2aae57e3b085ad3c4d'})
     const debts = await api.multiCall({  abi: 'function debtInfo() external view returns (uint256, uint256, uint256, uint256)', calls: pools})
     const borrows = await api.multiCall({  abi: 'address:quoteTokenAddress', calls: pools})

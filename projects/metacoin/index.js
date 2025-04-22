@@ -4,7 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const exchangeAddr = '0x1dd2235091c82862bcc7e9c25017ba9c409c0820'
 const vaultAddr = '0x1ac269102c4d8c4f92b3cf9d214ea78060b4d366'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: exchangeAddr,

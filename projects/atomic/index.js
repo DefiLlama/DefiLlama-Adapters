@@ -4,7 +4,7 @@ const Lendings = [
   "0xc1b677039892C048f2eFb7E9C5da1B51fDE92504"
 ];
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const balances = {};
 
   const collateralBalance = await api.multiCall({
@@ -26,8 +26,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  arbitrum: {
+    arbitrum: {
     tvl
   }
 };

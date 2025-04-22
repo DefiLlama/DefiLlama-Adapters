@@ -19,17 +19,18 @@ async function getPools(api) {
   return pools
 }
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
+  const block = api.block
   const pools = await getPools(api)
   const tokensAndOwners = pools.map(i => ([i.currency, i.pool]))
   return sumTokens2({ block, tokensAndOwners })
 }
 
-async function borrowed(_, block, _1, { api }) {
+async function borrowed(api) {
   const pools = await getPools(api)
   const calls = pools.map(i => ({ target: i.pool }))
   const { output: borrows } = await sdk.api.abi.multiCall({
-    abi: "uint256:borrows", calls, block,
+    abi: "uint256:borrows", calls, block: api.block,
   })
   const balances = {}
   borrows.forEach(({ output, }, i) => sdk.util.sumSingleBalance(balances, pools[i].currency, output ))

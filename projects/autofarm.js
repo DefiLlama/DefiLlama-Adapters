@@ -31,7 +31,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const masterchef = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await api.fetchList({  lengthAbi: 'uint256:poolLength', itemAbi: 'function poolInfo(uint256) view returns (address want, uint256,uint256,uint256,address strat)', target: masterchef, })
       const tokens = data.map(i => i.want)
       const bals = await api.multiCall({  abi: 'uint256:wantLockedTotal', calls: data.map(i => i.strat), permitFailure: true, })

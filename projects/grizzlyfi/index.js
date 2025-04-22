@@ -140,7 +140,7 @@ const pcsV3 = [
   }
 ]
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const balances = api.getBalances();
 
   const getHive = i => i.hive

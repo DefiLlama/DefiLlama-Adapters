@@ -1,6 +1,6 @@
 const { staking } = require('../helper/staking')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const reserveBalance = await api.call({  abi: 'uint256:reserveBalance', target:  '0xf7be8476ae27d27ebc236e33020150b23a86f3dd'}) 
   return {
     tether: reserveBalance / 1e18

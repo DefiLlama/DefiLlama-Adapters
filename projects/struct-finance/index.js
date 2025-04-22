@@ -1,28 +1,60 @@
-const ADDRESSES = require('../helper/coreAssets.json');
+const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumAutoPoolTokenXY } = require("./utils");
+const {
+  addresses,
+  autoPoolABI,
+  aptFarmUserInfoCalls,
+  aptFarmAddress,
+  aptFarmABI
+} = require("./constants");
 
-const addresses = {
-  struct: {
-    gmxYieldSource: "0x6aE12b0adF9716181c07D19dfe76442AB1b3817b",
-    gmxFactory: "0x46f8765781ac36e5e8f9937658fa311af9d735d7",
-  },
-  token: {
-    fsGlp: "0x9e295b5b976a184b14ad8cd72413ad846c299660",
-  },
-};
+async function tvl(api) {
+  const vaultsGmx = await api.fetchList({ lengthAbi: "totalProducts", itemAbi: "allProducts", target: addresses.struct.gmx.factory, });
+  const vaultsTjap = await api.fetchList({ lengthAbi: "totalProducts", itemAbi: "allProducts", target: addresses.struct.tjap.factory, });
 
-async function tvl(ts, _, __, { api }) {
-  const vaults = await api.fetchList({  lengthAbi: 'uint256:totalProducts', itemAbi: "function allProducts(uint256) external view returns (address)", target: addresses.struct.gmxFactory})
-  vaults.push(addresses.struct.gmxYieldSource);
+  // call userInfo on APT farm, passing in the farm ID and the yield source address
+  // first value returned in the array is the amount of AP tokens staked by the yield source contract
+  const responsesFarmUserInfo  = await api.multiCall({
+    target: aptFarmAddress,
+    calls: aptFarmUserInfoCalls,
+    abi: aptFarmABI,
+  });
+
+  // then take the amount and pass it to previewAmounts on each respective TJAP Autovault contract, which will give
+  // back the amounts redeemable by the yield source in token X and token Y
+  const amountsXYCalls = Object.values(addresses.token.tjap).map(
+    (autovaultAddress, i) => {
+      return {
+        target: autovaultAddress,
+        params: responsesFarmUserInfo[i].amount,
+      };
+    }
+  );
+
+  const responsesAmountsXY  = await api.multiCall({
+    calls: amountsXYCalls,
+    abi: autoPoolABI,
+  })
+
+  responsesAmountsXY.forEach((response, i) => {
+    sumAutoPoolTokenXY(api, response, amountsXYCalls[i].target)
+  })
+
+  vaultsGmx.push(addresses.struct.gmx.yieldSource);
 
   return sumTokens2({
     api,
-    owners: vaults,
+    owners: [vaultsTjap, vaultsGmx].flat(),
     tokens: [
       ADDRESSES.avax.BTC_b,
+      ADDRESSES.avax.WBTC_e,
       ADDRESSES.avax.USDC,
       ADDRESSES.avax.WETH_e,
-      addresses.token.fsGlp,
+      ADDRESSES.avax.EURC,
+      ADDRESSES.avax.WAVAX,
+      ADDRESSES.avax.SAVAX,
+      addresses.token.gmx.fsGlp,
     ],
   });
 }

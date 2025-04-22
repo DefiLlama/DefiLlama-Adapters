@@ -7,6 +7,6 @@ const SEA = "0x41607272ce6f2a42732ae382f00f8f9ce68d78f3";
 module.exports = {
   metis: {
     tvl: (async) => ({}),
-    ownTokens: staking(treasuryContract, SEA, "metis"),
+    ownTokens: staking(treasuryContract, SEA),
   },
 };

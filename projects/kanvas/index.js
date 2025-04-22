@@ -111,6 +111,6 @@ module.exports = {
     kava:{
         tvl,
         pool2,
-        staking: staking(stakingAddress, kanvas, "kava")
+        staking: staking(stakingAddress, kanvas)
     }
 }

@@ -9,12 +9,13 @@ const config = {
 module.exports = {
   hallmarks: [
     [1680134400, "Rugpull"]
-  ]
+  ],
+  deadFrom: '2023-03-30'
 };
 
 Object.keys(config).forEach(chain => { module.exports[chain] = {tvl} })
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const factory = config[api.chain]
   const tokens = await api.call({ abi: 'address[]:getTokens', target: factory })
   const owners = await api.multiCall({ abi: 'function assetOf(address) view returns (address)', target: factory, calls: tokens })

@@ -9,7 +9,7 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   ton: {
-    tvl: async (_, _1, _2, { api}) => {
+    tvl: async (api) => {
       const pools = await getConfig('tegro-fi', 'https://api.tegro.finance/v1/pairs')
       let tonPools = pools.filter(i => !i.base.address ).map(i => i.address)
       sdk.log(pools.length, tonPools.length)

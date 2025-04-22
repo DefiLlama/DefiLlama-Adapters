@@ -1,4 +1,4 @@
-const axios = require('axios')
+const { get } = require('../helper/http')
 
 let nowDate = new Date();
 nowDate.setFullYear(nowDate.getFullYear() - 1);
@@ -15,8 +15,8 @@ function getItemByName (projectName, listArr) {
 }
 
 async function fetch(){
-    const pools = await axios.get(url);
-    let item = getItemByName('TRX Staking Governance', pools.data.projects);
+    const pools = await get(url);
+    let item = getItemByName('TRX Staking Governance', pools.projects);
     return parseInt(item.locked);
 }
 

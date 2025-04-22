@@ -1,5 +1,3 @@
-const abi = require("./abi.json");
-const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 
 const SaffronStakingV2Contract = "0x4eB4C5911e931667fE1647428F38401aB1661763";

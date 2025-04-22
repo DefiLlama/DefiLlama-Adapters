@@ -16,6 +16,7 @@ async function tvl(){
 module.exports={
     timetravel: false,
     lamden: {
-        tvl
-    }
+        tvl: () => ({}),
+    },
+  deadFrom: "2023-12-09",
 }

@@ -19,7 +19,7 @@ const stakingPools = [
 
 module.exports = {
   bsc: {
-    staking: stakings(stakingPools, NMX, 'bsc'),
+    staking: stakings(stakingPools, NMX),
     tvl: sdk.util.sumChainTvls(factories),
   },
 };

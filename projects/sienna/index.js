@@ -2,8 +2,9 @@ const { queryContract, } = require('../helper/chain/secret')
 const { transformDexBalances } = require('../helper/portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
+const { sleep } = require('../helper/utils')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const factiories = ["secret18sq0ux28kt2z7dlze2mu57d3ua0u5ayzwp6v2r", "secret1zvk7pvhtme6j8yw3ryv0jdtgg937w0g0ggu8yy"]
   const data = []
   await Promise.all(factiories.map(i => getExchanges(i, data)))
@@ -20,7 +21,7 @@ async function getExchanges(factory, data) {
 
     sdk.log(factory, exchanges.length, pools.length, hasMore)
     pools.push(...exchanges)
-    const { errors } = await PromisePool.withConcurrency(3)
+    const { errors } = await PromisePool.withConcurrency(10)
       .for(exchanges)
       .process(async (i) => {
         let { address, contract } = i
@@ -32,18 +33,20 @@ async function getExchanges(factory, data) {
           token1: transformToken(pair_info.pair.token_1, pair_info),
           token1Bal: pair_info.amount_1,
         })
+        await sleep(1000)
       })
 
-    if (errors && errors.length)
-      throw errors[0]
+    console.log(errors, errors.length, factory, exchanges.length, pools.length, hasMore)
+    // if (errors && errors.length)
+    //   throw errors[0]
 
   } while (hasMore)
 }
 
 function transformToken(addr, poolData) {
   if (!addr?.custom_token) {
-    console.log(JSON.stringify(addr, null, 2))
-    console.log(JSON.stringify(poolData, null, 2))
+    // console.log(JSON.stringify(addr, null, 2))
+    // console.log(JSON.stringify(poolData, null, 2))
     throw new Error("No custom token")
   }
   return addr.custom_token.contract_addr

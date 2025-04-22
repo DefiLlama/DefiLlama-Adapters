@@ -14,7 +14,7 @@ module.exports = {
 Object.keys(CHEFS).forEach(chain => {
   const chef = CHEFS[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const lp = await api.fetchList({
         lengthAbi: abi.poolLength,
         itemAbi: abi.poolInfo,

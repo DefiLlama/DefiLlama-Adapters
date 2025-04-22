@@ -18,7 +18,7 @@ async function getData() {
 
 module.exports = {
   doublecounted: true,
-  start: 1659312000,
+  start: '2022-08-01',
   hallmarks: [
     [1659312000, "Protocol Launch"],
     [1666641600, "Optimism Launch"],
@@ -33,7 +33,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   // const { fromBlock, protocol, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       // const logs = await getLogs({
       //   api,

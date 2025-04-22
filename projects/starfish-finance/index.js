@@ -8,7 +8,7 @@ const addresses = {
   },
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   
   const vault = '0x496F6125E1cd31f268032bd4cfaA121D203639b7'
   const vaultQuery = `{ pools(first: 1000 offset: 0 ) { nodes { tokensList } } }`

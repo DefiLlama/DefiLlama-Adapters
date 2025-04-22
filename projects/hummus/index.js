@@ -11,7 +11,7 @@ const config = {
   },
 }
 
-async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { pools } = config[api.chain]
   const tokensArray = await api.multiCall({ abi: "address[]:getTokenAddresses", calls: pools })
   const tokens = tokensArray.flat()

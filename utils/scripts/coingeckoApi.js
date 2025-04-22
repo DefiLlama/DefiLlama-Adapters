@@ -14,7 +14,6 @@ const ONE_WEEK = 7 * ONE_DAY
 
 run()
 
-
 function writeToCache() {
   fs.writeFileSync(cacheFile, JSON.stringify(geckoCache))
 }

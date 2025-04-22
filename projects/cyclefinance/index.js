@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -87,52 +86,22 @@ const vaults = [
 ];
 
 /*** Staking of native token CYCLE and CYCLE/AVAX LP TVL Portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks, { api }) => {
-  const staking_lpToken = 
-    await api.call({
-      abi: abi.stakingToken,
-      target: coreRewards,
-    })
-  return sumTokens2({ api, tokens: [CYCLE, staking_lpToken], owners: [coreRewards, avaxRewards]})
+const staking = async (api) => {
+  const staking_lpToken = await api.call({ abi: abi.stakingToken, target: coreRewards, })
+  return sumTokens2({ api, tokens: [CYCLE, staking_lpToken], owners: [coreRewards, avaxRewards] })
 };
 
-/*** vaults TVL portion ***/
-const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const lpTokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.LPtoken,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "avax",
-      block: chainBlocks["avax"],
-    })
-  ).output.map((lp) => lp.output);
-
-  const lpTokens_bal = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balanceLPinSystem,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "avax",
-      block: chainBlocks["avax"],
-    })
-  ).output.map((lpb) => lpb.output);
-
-  for (let index = 0; index < vaults.length; index++) {
-    sdk.util.sumSingleBalance(balances,lpTokens[index],lpTokens_bal[index], 'avax')
-  }
-
-  return balances;
+const avaxTvl = async (api) => {
+  const lpTokens = await api.multiCall({ abi: abi.LPtoken, calls: vaults, })
+  const lpTokens_bal = await api.multiCall({ abi: abi.balanceLPinSystem, calls: vaults, })
+  api.add(lpTokens, lpTokens_bal)
+  return sumTokens2({ api, resolveLP: true,})
 };
 
 module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
-  avax:{
+  avax: {
     tvl: avaxTvl,
     staking
   },

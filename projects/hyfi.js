@@ -8,7 +8,7 @@ module.exports = {
 
 const poolInfoABI = "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accSushiPerShare)"
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const masterchef = '0x4b7a63837c8cf56e4dcf5140c12388c24030d7df'
   const infos = await api.fetchList({  lengthAbi: 'uint256:poolLength', itemAbi: poolInfoABI, target:masterchef })
   const tokens = infos.map(i => i.lpToken)

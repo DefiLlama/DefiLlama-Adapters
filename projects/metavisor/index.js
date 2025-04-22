@@ -11,7 +11,7 @@ const CONFIG = {
   arbitrum: { uniswapRegistry: { startBlock: 71578282, }, },
 };
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const chainConfig = CONFIG[api.chain]["uniswapRegistry"];
 
   const vaultLogs = await getLogs({

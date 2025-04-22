@@ -14,6 +14,7 @@ module.exports = {
         tvl: dexTVL, 
     },
     clv: {
-        tvl: getUniTVL({ factory: '0x4531e148b55d89212E219F612A459fC65f657d7d',  useDefaultCoreAssets: true }),
+        // tvl: getUniTVL({ factory: '0x4531e148b55d89212E219F612A459fC65f657d7d',  useDefaultCoreAssets: true }),
+        tvl: () => ({}),
       },
 }

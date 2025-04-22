@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -18,6 +19,14 @@ const config = {
       '0xc6bed363b30df7f35b601a5547fe56cd31ec63da',  // - Hot Wallet
       '0x29728d0efd284d85187362faa2d4d76c2cfc2612',  // - Hot Wallet
       '0xe9f7eCAe3A53D2A67105292894676b00d1FaB785',  // - Hot Wallet
+    ],
+  },
+  bitcoin: {
+    owners: bitcoinAddressBook.kraken,
+  },
+  starknet: {
+    owners: [
+      '0x620102ea610be8518125cf2de850d0c4f5d0c5d81f969cff666fb53b05042d2'
     ],
   },
 }

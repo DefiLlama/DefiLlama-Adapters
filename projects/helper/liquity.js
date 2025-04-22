@@ -1,7 +1,7 @@
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 
 function getLiquityTvl(TROVE_MANAGER_ADDRESS, { nonNativeCollateralToken = false, abis = {}, collateralToken, } = {}) {
-  return async (_, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const activePool = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: abis.activePool ?? "address:activePool", })
     const defaultPool = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: "address:defaultPool", })
     let token = nullAddress
@@ -11,6 +11,17 @@ function getLiquityTvl(TROVE_MANAGER_ADDRESS, { nonNativeCollateralToken = false
   }
 }
 
+function getLiquityV2Tvl(CollateralRegistry, { abis = {}, } = {}) {
+  return async (api) => {
+    const troves = await api.fetchList({ lengthAbi: abis.totalCollaterals ?? 'totalCollaterals', itemAbi: abis.getTroveManager ?? 'getTroveManager', target: CollateralRegistry })
+    const activePools = await api.multiCall({ abi: abis.activePool ?? 'address:activePool', calls: troves })
+    const defaultPools = await api.multiCall({ abi: abis.defaultPoolAddress ?? 'address:defaultPoolAddress', calls: activePools })
+    const tokens = await api.multiCall({ abi: abis.collToken ?? 'address:collToken', calls: activePools })
+    return api.sumTokens({ tokensAndOwners2: [tokens.concat(tokens), activePools.concat(defaultPools)] })
+  }
+}
+
 module.exports = {
-  getLiquityTvl
+  getLiquityTvl,
+  getLiquityV2Tvl,
 };

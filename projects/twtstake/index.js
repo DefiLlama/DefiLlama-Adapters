@@ -6,10 +6,7 @@ module.exports = {
   hallmarks: [
     [1681948800, "TWTStake Flagged on Twitter"]
   ],
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'Counts the number of TWT tokens in the TWT Stake contract.',
-  start: 1000235,
+      methodology: 'Counts the number of TWT tokens in the TWT Stake contract.',
   bsc: {
     tvl: () => 0,
     staking: staking(TWT_STAKE_CONTRACT,TWT_TOKEN_CONTRACT)

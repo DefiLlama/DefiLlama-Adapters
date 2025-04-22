@@ -22,7 +22,7 @@ const config = {
 
 async function optimizerV3(time, block, _, {api}) {
   const data = await getConfig('popsicle/'+api.chain, config[api.chain])
-  const pools = data.map(i => i.fragolaAddress)
+  const pools = data.map(i => i?.fragolaAddress).filter(i=>i)
   const token0s = await api.multiCall({  abi: 'address:token0', calls: pools})
   const token1s = await api.multiCall({  abi: 'address:token1', calls: pools})
   const bals = await api.multiCall({  abi: 'function usersAmounts() returns (uint256,uint256)', calls: pools})
@@ -35,7 +35,7 @@ async function fantomTvl(timestamp, block, chainBlocks, {api}) {
   return api.sumTokens({ owner: '0xFDB988aF9ef9D0C430176f972bA82B98b476F3ee', tokens: ['0xddc0385169797937066bbd8ef409b5b3c0dfeb52']})
 }
 
-async function fantomStaking(timestamp, block, chainBlocks, { api }) {
+async function fantomStaking(api) {
   return sumTokens2({
     api,
     tokensAndOwners: [

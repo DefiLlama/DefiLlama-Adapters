@@ -17,7 +17,7 @@ const config = {
 
 const blacklistedTokens = []
 
-async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { pools } = config[api.chain]
   const tokensArray = await api.multiCall({ abi: "address[]:getTokens", calls: pools })
   const tokens = tokensArray.flat()

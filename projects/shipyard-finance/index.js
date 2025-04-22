@@ -1,10 +1,3 @@
-const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
-const {usdtAddress} = require("../helper/balances");
-const { get } = require('../helper/http')
-
-const USDT_DECIMALS = 6;
-
 const ARBITRUM = {
   vaults: ['0xb5AAa74CbA960D9Cbb6beE05e5435299308C682c'],
 };
@@ -16,60 +9,16 @@ const ETHEREUM = {
 }
 
 function chainTvl(chain, config) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain];
-
-    let chainBalance = 0;
-
-    const wants = [];
-    const coins = [];
-
-    for (const vault of config.vaults) {
-
-      const want = (await sdk.api.abi.call({
-        block,
-        target: vault,
-        abi: abi.want,
-        chain,
-      })).output;
-
-      wants.push(want)
-      coins.push(`${chain}:${want}`.toLowerCase());
-    }
-
-    const getCoins = get(`https://coins2.llama.fi/prices/current/${coins.join(',')}`)
-
-    const coinsData = (await getCoins).coins;
-
-    for (let index = 0; index < config.vaults.length; index++) {
-      const vault = config.vaults[index];
-      const want = wants[index];
-
-      const vaultBalance = (await sdk.api.abi.call({
-        block,
-        target: vault,
-        abi: abi.balance,
-        chain,
-      })).output;
-
-      const coinId = `${chain}:${want}`.toLowerCase();
-
-      const coinDecimals = coinsData[coinId].decimals;
-      const coinPrice = coinsData[coinId].price;
-
-      const divisor = coinDecimals === USDT_DECIMALS ? 1 : 10 ** (coinDecimals - USDT_DECIMALS);
-
-      chainBalance += vaultBalance * (coinPrice / divisor)
-    }
-
-    return {
-      [usdtAddress]: chainBalance
-    };
-  };
+  return async (api) => {
+    const vaults = config.vaults;
+    const tokens = await api.multiCall({  abi: 'address:want', calls: vaults})
+    const vals = await api.multiCall({  abi: 'uint256:balance', calls: vaults})
+    api.addTokens(tokens, vals)
+    return api.getBalances()
+  }
 }
 
 module.exports = {
-  timetravel: false,
   doublecounted: true,
   arbitrum: {
     tvl: chainTvl('arbitrum', ARBITRUM),
@@ -82,5 +31,6 @@ module.exports = {
   },
   hallmarks: [
     [1677200400, "Vaults deprecated"]
-  ]
+  ],
+  deadFrom: '2023-02-23',
 };

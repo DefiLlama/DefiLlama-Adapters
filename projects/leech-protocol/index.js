@@ -7,7 +7,7 @@ async function getPoolData(api) {
   return getConfig('leech-protocol/' + api.chain, `${poolsUrl}/${api.chainId}`)
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { items: pools } = await getPoolData(api);
   const chain = api.chain
   const wantPools = []

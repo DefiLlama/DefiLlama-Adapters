@@ -11,6 +11,7 @@ module.exports = uniV3Export({
       '0x454f4597582df557c2757403f47d3f3bbb890d43',
       '0xf1917602fff55a5ebccc7d03aead225dd9bf3776',
       '0x121a3fba8456ebce13964363ba35fea00c2aa3d2',
+      '0xd24616870ca41bc01074446988faeb0085a71190',
     ]
   },
   ethereum: { factory, fromBlock: 16950685, },

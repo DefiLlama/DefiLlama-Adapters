@@ -15,7 +15,6 @@ const ScixBusd = "0xe8Efb51E051B08614DF535EE192B0672627BDbF9";
 const scUsdBusd = "0x53085B02955CFD2F884c58D19B8a35ef5095E8aE";
 
 module.exports = {
-  start: 10880500,    // 09/16/2020 @ 12:00am (UTC+8)
   bsc: {
     tvl,
     staking: staking(VotingEscrow, SCIX),
@@ -23,18 +22,18 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const totalDeposited = await api.call({  abi: 'uint256:totalDeposited', target: Scientist})
   const token = await api.call({  abi: 'address:token', target: Scientist})
   const scSupply = await api.call({  abi: 'address:totalSupplyScTokens', target: Transmute})
-  const transmuteValue = await api.call({  abi: 'address:totalValue', target: TransmuteAdapter})
+  // const transmuteValue = await api.call({  abi: 'address:totalValue', target: TransmuteAdapter})
   api.add(token, totalDeposited)
   api.add(token, scSupply)
-  api.add(token, transmuteValue)
+  // api.add(token, transmuteValue)
   await api.sumTokens({ owner: Transmute, token})
 }
 
-async function pool2(_, _b, _cb, { api, }) {
+async function pool2(api) {
   const ibALPACABalance = await api.call({  abi: 'erc20:balanceOf', target: ibALPACA, params: [Farm]})
   const ibALPACASupply = await api.call({  abi: 'uint256:totalSupply', target: ibALPACA})
   const alpacaBal = await api.call({  abi: 'uint256:totalToken', target: ibALPACA})

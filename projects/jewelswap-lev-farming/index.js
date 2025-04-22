@@ -37,8 +37,7 @@ const proxyProvider = new ProxyNetworkProvider(networkConfig.gatewayUrl, {
 });
 
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
 
   addNfts(await getNFTs(FARMS))
   addNfts(await getNFTs(FARMS2))

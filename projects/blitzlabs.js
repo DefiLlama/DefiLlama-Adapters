@@ -14,9 +14,10 @@ const BLITZ = "0xF376807DcdbAa0d7FA86E7c9EAcC58d11ad710E4";
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    staking: stakings(singleStakingContracts, BLITZ, 'bsc'),
-    pool2: stakings(LPStakingContracts, BUSD_BLITZ_CAKELP, 'bsc'),
+    staking: stakings(singleStakingContracts, BLITZ),
+    pool2: stakings(LPStakingContracts, BUSD_BLITZ_CAKELP),
     tvl: async () => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2s only",
+  deadFrom: '2023-12-01',
 }
