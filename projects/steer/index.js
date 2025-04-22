@@ -118,12 +118,12 @@ const supportedChains = [
     chainId: 34443,
     identifier: 'mode'
   },
-  {
-    name: 'AstarzkEVM',
-    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
-    chainId: 3776,
-    identifier: 'astrzk'
-  },
+  // {
+  //   name: 'AstarzkEVM',
+  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
+  //   chainId: 3776,
+  //   identifier: 'astrzk'
+  // },
   {
     name: 'Telos',
     subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-telos/1.0.1/gn',
