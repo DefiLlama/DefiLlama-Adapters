@@ -1,5 +1,5 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const { staking, stakings } = require('./helper/staking')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { staking, stakings } = require('../helper/staking')
 
 const magicPPConfig = {
 	fantom: [
