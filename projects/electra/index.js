@@ -4,7 +4,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
   timetravel: false,
   bsc: {
-    tvl: sumTokensExport({ owner:'0xfc63831f1C517d196470F03a61afD3d0CC0f7127', tokens: [ADDRESSES.bsc.USDT] })
+    tvl: sumTokensExport({ owner:'0xfc63831f1C517d196470F03a61afD3d0CC0f7127', tokens: [ADDRESSES.bsc.USDT] }) +
+     sumTokensExport({ owner:'0xb220195156c590e6645b86e8e65a029979095463', tokens: [ADDRESSES.bsc.USDT] }) //cold wallet
   },
   ethereum: {
     tvl: sumTokensExport({ owner:'0xfc63831f1C517d196470F03a61afD3d0CC0f7127', tokens: [ADDRESSES.ethereum.USDT] })
