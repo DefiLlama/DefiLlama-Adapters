@@ -1,5 +1,6 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 module.exports = {
   methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
@@ -12,7 +13,7 @@ const config = {
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3"],
+    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd'],
     fromBlock: 13977148,
   },
   arbitrum: {
@@ -79,7 +80,8 @@ Object.keys(config).forEach((chain) => {
       )
         .map((i) => [i.collateralToken, i.loanToken])
         .flat();
-      return api.sumTokens({
+      return sumTokens2({
+        api,
         owner: morphoBlue,
         tokens,
         blacklistedTokens: blackList,
@@ -98,6 +100,7 @@ Object.keys(config).forEach((chain) => {
         abi: abi.morphoBlueFunctions.market,
       });
       marketData.forEach((i, idx) => {
+        if (marketInfo[idx].collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd'.toLowerCase()) return;
         api.add(marketInfo[idx].loanToken, i.totalBorrowAssets);
       });
       return api.getBalances();
@@ -118,4 +121,4 @@ Object.keys(config).forEach((chain) => {
     });
     return logs.map((i) => i.id);
   }
-});
+})
