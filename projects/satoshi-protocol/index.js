@@ -172,6 +172,7 @@ module.exports = {
       '0xddac7d4e228c205197FE9961865FFE20173dE56B', // WETH Collateral(V2)
       '0x4B37F38DF39C9E6D876b830ED3FF444533Aa2E45', // WBTC Collateral(V2)
       '0x50B02283f3c39A463DF3d84d44d46b5432D7D193', // cbBTC Collateral(V2)
+      '0x01DF7D28c51639F2f2F95dcF2FdFF374269327B0', // clBTC Collateral(V2)
     ],
     nymList: [{
       address: '0x9a3c724ee9603A7550499bE73DC743B371811dd3',
