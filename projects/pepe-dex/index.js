@@ -4,7 +4,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { nullAddress, sumTokensExport } = require("../helper/unwrapLPs");
 const { scriptEvaluate, assetBalance, sumTokens } = require("../helper/chain/waves");
 
-// Bridge actually doesn't store WAVES on its account
+// DEX actually doesn't store WAVES on its account
 // but stakes it to our WAVES staking contract
 // so TVL calculation is based on product of SWAVES/WAVES rate with SWAVES balance
 async function wavesTVL(api) {
