@@ -49,7 +49,7 @@ const config = {
   },
   corn: {
     morphoBlue: "0xc2B1E031540e3F3271C5F3819F0cC7479a8DdD90",
-    fromBlock: 25140190,
+    fromBlock: 251401,
   },
   hemi: {
     morphoBlue: "0xa4Ca2c2e25b97DA19879201bA49422bc6f181f42",
