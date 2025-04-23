@@ -134,6 +134,12 @@ async function getTermStructureOwnerTokens(api) {
 }
 
 module.exports = {
+  hallmarks: [
+    [
+      Math.floor(new Date("2025-04-15") / 1000),
+      "Sunset Term Structure and launch TermMax",
+    ],
+  ],
   arbitrum: {
     tvl: async (api) => {
       const ownerTokens = await getTermMaxOwnerTokens(api);

@@ -2416,5 +2416,8 @@
     "USDT": "0x30B7FB8CC9749029bc81d8fB3B4e9E0a529A7b44",
     "USDC": "0x7c55B4842d13C5fbA418e8f65BF5BE3E47A4ac2d",
     "DAI": "0xac790d98Ec71e713880488adBe23F441aebBa846"
+  },
+  "babylon": {
+    "BABY": "ubbn"
   }
 }
