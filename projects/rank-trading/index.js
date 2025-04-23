@@ -15,20 +15,25 @@ async function tvl(api) {
       target: rankFactoryContract,
       params: [],
     });
-    for (let i = 0; i < rankStrategiesCount; i++) {
-      const rankStrategyContract = await api.call({
-        abi: abi["rankStrategies"],
-        target: rankFactoryContract,
-        params: [i],
-      });
-      const totals = await api.call({
-        abi: abi["totals"],
-        target: rankStrategyContract,
-        params: [],
-        permitFailure: true,
-      });
-      api.add(token, totals.assetAmount);
-    }
+    const rankStrategyContracts = await api.multiCall({
+      abi: abi["rankStrategies"],
+      target: rankFactoryContract,
+      calls: Array.from({ length: rankStrategiesCount }, (_, i) => (
+        { params: [i] }
+      )),
+    });
+
+    const totals = await api.multiCall({
+      abi: abi["totals"],
+      calls: rankStrategyContracts,
+      permitFailure: true,
+    });
+
+    totals.forEach((total) => {
+      if (total) {
+        api.add(token, total.assetAmount);
+      }
+    });
   }
 }
 
