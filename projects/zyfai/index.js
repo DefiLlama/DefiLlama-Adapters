@@ -111,6 +111,43 @@ async function siloTvl(api, wallets) {
     }
 }
 
+async function eulerTvl(api, wallets) {
+    const POOL_ADDRESSES = {
+        'MEV Capital Sonic Cluster USDC.e': '0x196F3C7443E940911EE2Bb88e019Fd71400349D9',
+        'Re7 Labs Cluster USDC.e': '0x3D9e5462A940684073EED7e4a13d19AE0Dcd13bc',
+    };
+
+    for (const wallet of wallets) {
+        console.log('Calculating Euler TVL for Wallet:', wallet);
+        
+        for (const [poolName, address] of Object.entries(POOL_ADDRESSES)) {
+            const balance = await api.call({
+                abi: 'erc20:balanceOf',
+                target: address,
+                params: [wallet]
+            });
+
+            const assets = await api.call({
+                abi: 'function convertToAssets(uint256) view returns (uint256)',
+                target: address,
+                params: [balance]
+            });
+
+            const decimals = await api.call({
+                abi: 'erc20:decimals',
+                target: address
+            });
+
+            const usdValue = Number(assets) / (10 ** decimals);
+            if (usdValue > 0.01) {
+                api.add(address, usdValue);
+            }
+        }
+    }
+}
+
+
+
 async function tvl(api) {
     const response = await fetch('https://api.zyf.ai/api/v1/data/active-wallets?chainId=146');
     const wallets = await response.json();
@@ -120,6 +157,7 @@ async function tvl(api) {
         pendleTvl(api, wallets),
         aaveTvl(api, wallets),
         siloTvl(api, wallets),
+        eulerTvl(api, wallets),
     ]);    
 
     // Calculate total TVL
