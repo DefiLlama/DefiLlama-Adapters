@@ -18,5 +18,9 @@
   "sonic": {
     "factory": "0xC9092777bF098e74B23B66c4140064eB3FcCD0F1",
     "fromBlock": 1856411
+  },
+  "hemi": {
+    "factory": "0x51100574E1CF11ee9fcC96D70ED146250b0Fdb60",
+    "fromBlock": 1289435
   }
 }
