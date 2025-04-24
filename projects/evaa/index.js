@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { call, sumTokens } = require("../helper/chain/ton");
 const evaaPoolAssets = require("./evaaPoolAssets");
 
-async function callWithRetry(callParams, maxRetries = 5, initialDelay = 100, maxDelay = 5000) {
+async function callWithRetry(callParams, maxRetries = 5, initialDelay = 1000, maxDelay = 5000) {
   let retries = 0;
   let delay = initialDelay;
   while (retries < maxRetries) {
