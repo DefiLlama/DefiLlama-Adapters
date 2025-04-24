@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-tvl = async (api) =>  {
+const tvl = async (api) =>  {
   const accountId = 'GDESDYZS5TQE6ADZDIC4WLAMLCJLZEEUKSO2UXTFTAQSHLFCQICIIYDA';
   const usdcIssuer = 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN';
   const apiUrl = `https://horizon.stellar.org/accounts/${accountId}`;
@@ -14,7 +14,7 @@ tvl = async (api) =>  {
 
   const usdcBalance = usdcBalanceObj ? parseFloat(usdcBalanceObj.balance) : 0;
 
- api.addUSDValue(usdcBalance)
+  api.addUSDValue(usdcBalance)
 }
 
 
