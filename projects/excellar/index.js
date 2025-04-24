@@ -1,18 +1,22 @@
 const axios = require('axios');
 
-const HORIZON_URL = 'https://horizon.stellar.org';
-const ISSUER = 'GBMAAGRUMXBRG3IG6BPG5LCO7FTE5VIRA3VF64BFII3LXC27GSEYLHKU';
-const ASSET_CODE = 'USDXLR';
+tvl = async (api) =>  {
+  const accountId = 'GDESDYZS5TQE6ADZDIC4WLAMLCJLZEEUKSO2UXTFTAQSHLFCQICIIYDA';
+  const usdcIssuer = 'GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN';
+  const apiUrl = `https://horizon.stellar.org/accounts/${accountId}`;
 
-const tvl = async (api) => {
-  const url = `${HORIZON_URL}/assets?asset_code=${ASSET_CODE}&asset_issuer=${ISSUER}`;
-  const { data } = await axios.get(url);
+  const { data } = await axios.get(apiUrl);
 
-  const asset = data._embedded?.records?.[0];
-  const authorizedStr = asset.balances?.authorized;
-  const authorized = parseFloat(authorizedStr);
-  api.addUSDValue(authorized)
+  const usdcBalanceObj = data.balances.find(b =>
+      b.asset_code === 'USDC' &&
+      b.asset_issuer === usdcIssuer
+    );
+
+  const usdcBalance = usdcBalanceObj ? parseFloat(usdcBalanceObj.balance) : 0;
+
+ api.addUSDValue(usdcBalance)
 }
+
 
 module.exports = {
   stellar: { tvl }
