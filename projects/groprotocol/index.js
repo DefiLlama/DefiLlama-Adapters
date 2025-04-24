@@ -1,11 +1,9 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 // Adapter for Gro Protocol : https://gro.xyz
 
-const sdk = require("@defillama/sdk");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 
-const groTokenAbi = require("./abi.json");
 const { stakings } = require("../helper/staking");
+const { sumERC4626VaultsExport } = require("../helper/erc4626");
 
 // Gro Protocol Token Addresses
 const GRO = "0x3Ec8798B81485A254928B70CDA1cf0A2BB0B74D7"; // Governance Token, not counted for TVL unless staked in pools
@@ -23,24 +21,15 @@ const GROTokenStaker1 = "0x001C249c09090D79Dc350A286247479F08c7aaD7";
 const GROTokenStaker2 = "0x2E32bAd45a1C29c1EA27cf4dD588DF9e68ED376C";
 
 async function tvl(api) {
-  let balances = {};
-
-  // Assets held within PWRD and GVT directly
-  for (const token of [PWRD, GVT]) {
-    const current = await api.call({
-      target: token,
-      abi: groTokenAbi["totalSupply"],
-    });
-    sdk.util.sumSingleBalance(balances, token, current);
-  }
-
-  return balances
+  const tokens = [PWRD, GVT]
+  const supplies = await api.multiCall({  abi: 'erc20:totalSupply', calls: tokens})
+  api.add(tokens, supplies)
 }
 
 async function pool2(api) {
   return sumTokens2({
     api,
-    owners: [GROTokenStaker1,GROTokenStaker2 ],
+    owners: [GROTokenStaker1, GROTokenStaker2],
     tokens: [
       P4_CRV_PWRD_TCRV,
       P1_UNI_GRO_GVT,
@@ -52,59 +41,13 @@ async function pool2(api) {
 }
 
 const labs = [
-  {
-    // USDC
-    vault: "0x57DaED1ee021BE9991F5d30CF494b6B09B5B449E",
-    baseToken: ADDRESSES.avax.USDC_e,
-  },
-  {
-    // DAI
-    vault: "0x5E57E11483A3F60A76af3045303604522059dA2a",
-    baseToken: ADDRESSES.avax.DAI,
-  },
-  {
-    // USDT
-    vault: "0x471F4B4b9A97F82C3a25b034B33A8E306eE9Beb5",
-    baseToken: ADDRESSES.avax.USDT_e,
-  },
-  {
-    // USDC
-    vault: "0x2Eb05cfFA24309b9aaf300392A4D8Db745d4E592",
-    baseToken: ADDRESSES.avax.USDC_e,
-  },
-  {
-    // DAI
-    vault: "0x6063597B9356B246E706Fd6A48C780F897e3ef55",
-    baseToken: ADDRESSES.avax.DAI,
-  },
-  {
-    // USDT
-    vault: "0x6EF44077a1F5e10cDfcCc30EFb7dCdb1d5475581",
-    baseToken: ADDRESSES.avax.USDT_e,
-  },
-];
-
-async function avaxTvl(timestamp, _, { avax: block }) {
-  let balances = {};
-  const transform = addr => 'avax:'+addr
-  const totalAssets = (
-    await sdk.api.abi.multiCall({
-      calls: labs.map((l) => ({ target: l.vault })),
-      abi: groTokenAbi.totalAssets,
-      block,
-      chain: "avax",
-    })
-  ).output;
-
-  for (let i = 0; i < labs.length; i++) {
-    sdk.util.sumSingleBalance(
-      balances,
-      transform(labs[i].baseToken),
-      totalAssets[i].output
-    );
-  }
-  return balances;
-}
+  "0x57DaED1ee021BE9991F5d30CF494b6B09B5B449E",      // USDC
+  "0x5E57E11483A3F60A76af3045303604522059dA2a",      // DAI
+  "0x471F4B4b9A97F82C3a25b034B33A8E306eE9Beb5",      // USDT
+  "0x2Eb05cfFA24309b9aaf300392A4D8Db745d4E592",      // USDC
+  "0x6063597B9356B246E706Fd6A48C780F897e3ef55",      // DAI
+  "0x6EF44077a1F5e10cDfcCc30EFb7dCdb1d5475581",      // USDT
+]
 
 module.exports = {
   ethereum: {
@@ -113,7 +56,7 @@ module.exports = {
     tvl,
   },
   avax: {
-    tvl: avaxTvl,
+    tvl: sumERC4626VaultsExport({ vaults: labs, tokenAbi: 'token', balanceAbi: 'totalAssets' }),
   },
   start: '2021-05-28', // 28-05-2021 12:19:07 (UTC)
   methodology:

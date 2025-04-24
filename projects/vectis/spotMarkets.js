@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const anchor = require('@coral-xyz/anchor');
 const { PublicKey } = require("@solana/web3.js");
 const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+const CUSTOM_PROGRAM_ID = new PublicKey('EDnxACbdY1GeXnadh5gRuCJnivP7oQSAHGGAHCma4VzG')
 
 const SPOT_MARKETS = {
   0: {
@@ -14,9 +15,29 @@ const SPOT_MARKETS = {
     mint: ADDRESSES.solana.SOL,
     decimals: 9
   },
+  6: {
+    name: 'jitoSOL',
+    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    decimals: 9
+  },
+  16:{
+    name:'INF',
+    mint:'5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm', 
+    decimals: 9
+  },
+  17:{
+    name:'dSOL',
+    mint:'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ', 
+    decimals: 9
+  },
   19: {
     name: 'JLP',
     mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6
+  },
+  22: {
+    name: 'PYUSD',
+    mint: '2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo',
     decimals: 6
   },
   28: {
@@ -112,14 +133,13 @@ function getSpotMarketCumulativeBorrowInterest(accountInfo) {
 
 function processPerpPosition(position) {
 
-  //if perp market 0, amount needs to mul by 10 
+
   let baseBalance = position.market_index === 0 ? position.base_asset_amount : position.base_asset_amount / BigInt(10);
 
   let quoteBalance = position.quote_asset_amount;
 
   return { baseBalance, quoteBalance };
 }
-
 
 
 function getPerpMarketFundingRates(accountInfo) {

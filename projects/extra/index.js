@@ -4,6 +4,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = {
   optimism: { factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd', fromBlock: 96265067, vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b', positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055' },
   base: {factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd', fromBlock: 1960257, vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b', positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055' },
+  berachain: {factory: '0xBB505c54D71E9e599cB8435b4F0cEEc05fC71cbD', fromBlock: 2600000, vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b', positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055' },
 }
 
 module.exports = {};

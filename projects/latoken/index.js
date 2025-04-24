@@ -7,9 +7,10 @@ const config = {
   },
   ethereum: {
     owners: [
-      "0x8D056D457a52c4dAF71CEf45F540a040c143Ea05", //eth hot wallet
+      "0xBC34887050D143F7D3a4ceac5FC1B7Ca6645eD21", //eth hot wallet
       "0x7891b20c690605f4e370d6944c8a5dbfac5a451c", //eth cold wallet
-      "0xeE61F5fB0dB81d3A09392375Ee96f723C0620E07", //erc20 hot wallet
+      "0x127276018F956d996F439c59504f49777687cB6A", //eth cold2 wallet
+      "0x97fc7Eb57534191F1800073c5c31C0d7d7493e67", //erc20 hot wallet
       "0xc00EEbe4E2bE29679781fc5fC350057eE8132BaB", //erc20 subsidy wallet
       "0x4114d8D509503592175A8E044594b29EC081dbe0", //eth custody wallet
       "0x00343217B01188388C0E3242278231Ace35E1b61", //eth custody2 wallet
@@ -18,10 +19,11 @@ const config = {
   },
   polygon: {
     owners: [
-      "0x235e8ceD6b42eE6E226837EB551E86D810d49f22", //hot wallet
+      "0x298Bd5Bdd51A13B7ab653FA0DC76681427121fEa", //hot wallet
       "0xA614180C69aBF82f3E7AAbB53AD9976EC90aeAC6", //subsidy wallet
-      "0x235e8ceD6b42eE6E226837EB551E86D810d49f22", //hot wallet
-      "0xA614180C69aBF82f3E7AAbB53AD9976EC90aeAC6", //subsidy wallet
+      "0x298Bd5Bdd51A13B7ab653FA0DC76681427121fEa", //token hot wallet
+      "0xA614180C69aBF82f3E7AAbB53AD9976EC90aeAC6", //token subsidy wallet
+      "0xba6c98f1cc6869eccbeb892b7a603f8f02db3b29", //cold wallet
     ],
   },
   avax: {
@@ -29,26 +31,29 @@ const config = {
   },
   cardano: {
     owners: [
-      "addr1vx6kespckg27xu879kf40mpv4pmjxl0ad5hewq067e3d50crylyhc", //hot wallet
+      "addr1vy9wq3je4xrfhuha4krxfe9sw7q2ll2k7pcfsfdmayvue4qw7dgc9", //hot wallet
       "addr1v804l0u7q4ju4eyrd8ykvvdehryn6qyz3n4nh8ucfr8s3pgeskjvu", //subsidy wallet
     ],
   },
   algorand: {
-    owners: ["FQQQS3UJFSNYCII2KE5XSCUB5ZIV2HUFVQ22QYLGI3ONFTPOFMAF5HLLZE"],
+    owners: [
+      "ROH5LMHZLKHUGTNAVWNQB5LG4XHBFXM4FKNUUREDAB55UWDH2TY7S35KMU",
+      "5L26VADNZTMVSLEGTRZJQQO233G5HUBN3H6TECS2LPUL3HUKXF6UT2YGFE"
+    ],
   },
   cosmos: {
     owners: [
-      "cosmos1wt5sdluapdqrp8wljyesl7s3x5vzq5z76t4nuj", //hot wallet
+      "cosmos10zzdw24k8ytenpx95rklhnqnr95qutvhdwj0ez", //hot wallet
     ],
   },
   bsc: {
     owners: [
       "0xBA6C98f1cc6869ECCbeB892b7A603F8F02Db3b29", //cold wallet
-      "0xCE55977E7B33E4e5534Bd370eE31504Fc7Ac9ADc", //hot wallet
+      "0x6e4F21142CCEb4Ac5681379ab4f422903C90bf21", //hot wallet
       "0x9480D1cc3fd4cb7936D114f7d63124107870A7b8", //custody wallet
       "0xd76D939B455743e96adbCdf800627b11F3446780", //swap wallet
       "0xBA6C98f1cc6869ECCbeB892b7A603F8F02Db3b29", //token cold wallet
-      "0xCE55977E7B33E4e5534Bd370eE31504Fc7Ac9ADc", //token hot wallet
+      "0x6e4F21142CCEb4Ac5681379ab4f422903C90bf21", //token hot wallet
       "0x9480D1cc3fd4cb7936D114f7d63124107870A7b8", //token custody wallet
       "0xd76D939B455743e96adbCdf800627b11F3446780", //token swap wallet
     ],
@@ -71,7 +76,8 @@ const config = {
   // },
   ethereumclassic: {
     owners: [
-      "0xE69963CE13ED742639C8287913682bC008B3e622", //hot wallet
+      "0x0ED633983B8bBE458Df116E3F02cd441A909ff40", //hot wallet
+      "0xBA6C98f1cc6869ECCbeB892b7A603F8F02Db3b29", //cold wallet
     ],
   },
   // lachain: {
@@ -98,35 +104,41 @@ const config = {
   //   owners: ["protonla"],
   // },
   polkadot: {
-    owners: ["1347e3PfJKKcJL4XJhFeZ5UmZYRnk26Vs9aGjZ8RZLPkWWNY"],
+    owners: [
+      "14Y6v82Rwp7FB7m1K4a6anpjbwRbdFLJWpeePqe4sFpa4yxw", //hot wallet
+      "14tVS1ETLT8vqwaiCSjiqv55w59xWqUjFy1c5U9z2nauYYsj", //cold wallet
+    ],
   },
   solana: {
     owners: [
-      "51AASorYCLPcUHnuQQaau6DfsfFRixzh4HsoQwsc5Ara", //hot wallet
+      "DdAzYR2MyafpvxnpggygmjsYCqxVdW2FkhdEwjCiSi3w", //hot wallet
+      "EiZxRDuRWF12DuiZ5pgeACrEgaGBjCnnMarhszdqVfGY", //cold wallet
+      "4eNCYHUsZwtMBjXpDjhzaXp9MmwMd1dSdr9L1kUEuAxC", //cold2 wallet
     ],
   },
   optimism: {
     owners: [
-      "0xecabeA0fB22f82F3A5a5D6043D7cCf65F3640c85", //hot wallet
+      "0x1C91A83aeFDdFB2C09744b3BeC94D504E26cb56A", //hot wallet
       "0x3b28358e9CDde80A24f0f811daD13aB9fc2A0d2A", //subsidy wallet
+      "0xba6c98f1cc6869eccbeb892b7a603f8f02db3b29", //cold wallet
     ],
   },
   terra: {
-    owners: ["terra14rvsrmq47pr9v5pkdkttftgh526jeeluyumalk"],
+    owners: ["terra1zjq4jdvqtruvxgug64rn0p06kvp7r3qpxzrxdg"], //hot wallet
   },
   terra2: {
-    owners: ["terra13x5jkljx69vyak47k9e9u9qetu0sckxpfysrp7"],
+    owners: ["terra13x5jkljx69vyak47k9e9u9qetu0sckxpfysrp7"], //hot wallet
   },
   tezos: {
     owners: [
-      "tz2QLHkGgaXqoeqUFxUJXAvZ9pdQ2HQDhTe4", //hot wallet
+      "tz2W7hDSZrZg8h57Habj1GdPu674wS2Hpwvj", //hot wallet
     ],
   },
   tron: {
     owners: [
-      "TT2YwaJ8DXsrpycgBGDWEei1FUQm6YT85T", //hot wallet
+      "TM5nw5CT8S8brdBb1HPV5PCL7DqDaeFnJd", //hot wallet
       "TUJrDuFr6ALjtZehcpFRKnBCCo79Gs76ww", //cold wallet
-      "TVNdyXbcJ5ZwwFsjnScrNXSv9d435guynT", //subsidy wallet
+      "TFLJixvV4jyxrWar9sne18M5bzS7tVEE8E", //subsidy wallet
     ],
   },
   zilliqa: {

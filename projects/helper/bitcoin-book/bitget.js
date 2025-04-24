@@ -11,4 +11,8 @@ module.exports = [
   '3DSST4myyyRbiGzgCBE1RVHY7GRjDCh4n9', // add on 27/05/2024
   '3Nu84pbqfcfaFztQ74qc9ni2PH5HGM1bzS', // add on 27/05/2024
   '34hatYbZ27CLLoZWhuJHzBgoTCwXEv8GwT', // add on 27/05/2024
+  '3Gm1h16ov9cH4o4mChapGUai61K1bAXL3c',
+  '1PX5L73e5325fdrSwDHNTuq8RMM9JKR34q',
+  '1PPyiSbdQeo83ezje6Yv8L3UWpDcx4NtSB',
+  '1NZc5p5YQ21tGjVrurzczq56SVq2tiH6dt'
 ]

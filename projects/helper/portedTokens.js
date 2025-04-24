@@ -112,6 +112,7 @@ async function getChainTransform(chain) {
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'aura' && addr.startsWith('aura')) return chainStr
     if (chain === 'massa' && addr.startsWith('AS1')) return chainStr
+    if (chain === 'verus' && addr.startsWith('i')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
     if (addr.startsWith('0x') || ['solana', 'kava', 'renec', 'eclipse'].includes(chain)) return chainStr
     return addr

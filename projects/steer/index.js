@@ -118,12 +118,12 @@ const supportedChains = [
     chainId: 34443,
     identifier: 'mode'
   },
-  {
-    name: 'AstarzkEVM',
-    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
-    chainId: 3776,
-    identifier: 'astrzk'
-  },
+  // {
+  //   name: 'AstarzkEVM',
+  //   subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-astar-zkevm/1.1.1/gn',
+  //   chainId: 3776,
+  //   identifier: 'astrzk'
+  // },
   {
     name: 'Telos',
     subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-telos/1.0.1/gn',
@@ -181,10 +181,69 @@ const supportedChains = [
   {
     name: 'Zircuit',
     subgraphEndpoint:  'https://app.sentio.xyz/api/v1/graphql/rakesh/steer-protocol-zircuit',
-    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'
-    },
+    headers: {'api-key': 'yu0Dep8seTmFjvlmAXN1ILNggARnx74MB'},
     chainId: 48900,
     identifier: 'zircuit'
+  },
+  {
+    name: 'Sonic',
+    subgraphEndpoint:  'https://api.0xgraph.xyz/api/public/803c8c8c-be12-4188-8523-b9853e23051d/subgraphs/steer-protocol-sonic/prod/gn',
+    chainId: 146,
+    identifier: 'sonic'
+  },
+  {
+    name: 'Moonbeam',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-moonbeam/prod/gn',
+    chainId: 1284,
+    identifier: 'moonbeam'
+  },
+  // {
+  //   name: 'Sei',
+  //   subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clu1fg6ajhsho01x7ajld3f5a/subgraphs/dragonswap-v3-prod/1.0.5/gn',
+  //   chainId: 1329,
+  //   identifier: 'sei'
+  // },
+  {
+    name: 'Taiko',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-taiko/1.1.1/gn',
+    chainId: 167000,
+    identifier: 'taiko'
+  },
+  {
+    name: 'Zetachain',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-zetachain-mainnet/prod/gn',
+    chainId: 7000,
+    identifier: 'zeta'
+  },
+  {
+    name: 'Soneium',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-soneium/prod/gn',
+    chainId: 1868,
+    identifier: 'soneium'
+  },
+  {
+    name: 'Bera',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-bera/prod/gn',
+    chainId: 80094,
+    identifier: 'berachain'
+  },
+  {
+    name: 'Ethereum',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-mainnet/prod/gn',
+    chainId: 1,
+    identifier: 'ethereum'
+  },
+  {
+    name: 'Hemi',
+    subgraphEndpoint:  'https://api.studio.thegraph.com/query/78728/steer-protocol-hemi/version/latest',
+    chainId: 43111,
+    identifier: 'hemi'
+  },
+  {
+    name: 'Unichain',
+    subgraphEndpoint:  'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-unichain/prod/gn',
+    chainId: 130,
+    identifier: 'unichain'
   },
 ]
 
@@ -223,7 +282,9 @@ module.exports.arbitrum.staking = stakings(
     "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4",
     "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B",
     "0x3338B85fB1607C519962571B67061e02408475Bb",
-    "0x6519A921d0E6F06524eff5DF976abc9A3ABF36cF"
+    "0x6519A921d0E6F06524eff5DF976abc9A3ABF36cF",
+    "0x004a733aA20ea2CaDdba6af62Bb56Aa96dCE4922",
+    "0x78FE84c305c8Cd7E23186F2740b73915BAeADd52"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"

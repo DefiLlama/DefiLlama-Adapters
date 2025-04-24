@@ -24,7 +24,9 @@ async function solanaTvl() {
   return sumTokens2(
     {
       tokenAccounts: [
-        "9VBi7unB9Sz5eBNUdvQH2xzUENXvNsaiEkP9p2Cabvsy"
+        "9VBi7unB9Sz5eBNUdvQH2xzUENXvNsaiEkP9p2Cabvsy", // Token account for ezSOL
+        "3fJSKVEvVVet79Gi96LtYAjVewa1TNvT49YhhYvBW8Ep", // Token account for bzSOL
+        "5DYQrkNXLxbCpTiRzHpoEeDx398gaJKNZBzuy7u3jAAb", // Token account for ezJTO
       ]
     }
   )

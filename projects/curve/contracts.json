@@ -214,5 +214,19 @@
     "CurveStableswapFactoryNG": "0xd7E72f3615aa65b92A4DBdC211E296a35512988B",
     "CurveTwocryptoFactoryNG": "0x5Ea9DD3b6f042A34Df818C6c1324BC5A7c61427a",
     "CurveTricryptoFactoryNG": "0x7Ca46A636b02D4aBC66883D7FF164bDE506DC66a"
+  },
+  "sonic": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+    "CurveStableswapFactoryNG": "0x7C2085419BE6a04f4ad88ea91bC9F5C6E6C463D8",
+    "CurveTwocryptoFactoryNG": "0x1A83348F9cCFD3Fe1A8C0adBa580Ac4e267Fe495",
+    "CurveTricryptoFactoryNG": "0x635742dCC8313DCf8c904206037d962c042EAfBd"
+  },
+  "ink": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x4200000000000000000000000000000000000006",
+    "CurveStableswapFactoryNG": "0x046207cB759F527b6c10C2D61DBaca45513685CC",
+    "CurveTwocryptoFactoryNG": "0xd125E7a0cEddF89c6473412d85835450897be6Dc",
+    "CurveTricryptoFactoryNG": "0x5Ea9DD3b6f042A34Df818C6c1324BC5A7c61427a"
   }
 } 
