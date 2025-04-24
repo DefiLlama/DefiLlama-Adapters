@@ -12,12 +12,12 @@ module.exports = {
   ],
   methodology,
   arbitrum: {
-    ...aaveExports('arbitrum', '0x9D36DCe6c66E3c206526f5D7B3308fFF16c1aa5E'),
+    ...aaveExports('arbitrum', '0xdba0fa00c0691852dbe8b008180f8837f187378c'),
     // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
     pool2: staking("0x76ba3eC5f5adBf1C58c91e86502232317EeA72dE", "0x32df62dc3aed2cd6224193052ce665dc18165841"),
   },
   bsc: {
-    ...aaveExports('bsc', '0x16Cd518fE9db541feA810b3091fBee6829a9B0Ce'),
+    ...aaveExports('bsc', '0x1e8323a513e099322aa435d172f1e7836fc620a5'),
     // balancer pool is not unwrapped properly, so we use staking and rely on price api instead
     pool2: sumTokensExport({ owner: '0x4fd9f7c5ca0829a656561486bada018505dfcb5e', tokens: ['0x346575fc7f07e6994d76199e41d13dc1575322e1'], useDefaultCoreAssets: true, })
   },
