@@ -1,37 +1,6 @@
 const { nullAddress } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-
-async function updateEbtcTvl(api) {
-  const chains = ['ethereum', 'base', 'berachain', 'corn', 'scroll']
-  for (const chain of chains) {
-    let chainApi = new sdk.ChainApi({ chain: chain, timestamp: api.timestamp })
-    if (chain === 'ethereum') {
-      chainApi = api;
-    }
-    const btcBal = await chainApi.call({
-      target: '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642',
-      abi: 'uint256:totalSupply'
-    });
-    api.add(ADDRESSES.ethereum.EBTC, btcBal);
-  }
-  return
-}
-
-async function updateEusdTvl(api) {
-  const chains = ['ethereum', 'scroll']
-  for (const chain of chains) {
-    let chainApi = new sdk.ChainApi({ chain: chain, timestamp: api.timestamp })
-    if (chain === 'ethereum') {
-      chainApi = api;
-    }
-    const eusdBal = await chainApi.call({
-      target: '0x939778D83b46B456224A33Fb59630B11DEC56663',
-      abi: 'uint256:totalSupply'
-    });
-    api.add(ADDRESSES.ethereum.EUSD, eusdBal);
-  }
-  return
-}
 
 function staking(contract, token) {
   return async (api) => {
@@ -39,11 +8,25 @@ function staking(contract, token) {
   }
 }
 
+function multiAssetStaking(contracts, tokens) {
+  return async (api) => {
+    for (let i = 0; i < contracts.length; i++) {
+      api.add(tokens[i], await api.call({ target: contracts[i], abi: 'erc20:totalSupply'}))
+    }
+  }
+}
+
 module.exports = {
   doublecounted: true,
   ethereum: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"),
-    tvl: async ({ timestamp }) => {
+    //etherfi stake page is supply of staked : eeth, ebtc, eusd, ethfi 
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"), //ethfi
+    staking: staking("0x35fA164735182de50811E8e2E824cFb9B6118ac2", "0x35fA164735182de50811E8e2E824cFb9B6118ac2"), //eeth
+    staking: staking("0x657e8C867D8B37dCC18fA4Caead9C45EB088C642", "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642"), //ebtc
+    staking: staking("0x939778D83b46B456224A33Fb59630B11DEC56663", "0x939778D83b46B456224A33Fb59630B11DEC56663"), //eusd
+
+    //total tvl (not stake tvl)
+    tvl: async ({ timestamp }) => { 
       let etherfi_tvl = 0
       const api = new sdk.ChainApi({ timestamp, chain: 'optimism' })
       const block = await api.getBlock()
@@ -60,9 +43,17 @@ module.exports = {
     }
   },
   arbitrum: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27")
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27") //ethfi
   },
-  base: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x6C240DDA6b5c336DF09A4D011139beAAa1eA2Aa2")
+  base: { //etherfi stake should increase these as they are not on ethereum mainnet
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27"), //ethfi
+    staking: staking("0x657e8C867D8B37dCC18fA4Caead9C45EB088C642", "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642"), //ebtc,  
+  },
+  berachain: { //etherfi stake should increase these as they are not on ethereum mainnet
+    staking: staking("0x657e8C867D8B37dCC18fA4Caead9C45EB088C642", "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642") //ebtc 
+  },
+  scroll: { //etherfi stake should increase these as they are not on ethereum mainnet
+    staking: staking("0x657e8C867D8B37dCC18fA4Caead9C45EB088C642", "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642"), //ebtc,  
+    staking: staking("0x939778D83b46B456224A33Fb59630B11DEC56663", "0x939778D83b46B456224A33Fb59630B11DEC56663") //eusd
   }
 }
