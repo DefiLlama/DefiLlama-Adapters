@@ -31,6 +31,7 @@ async function borrowed(api) {
         api.add(address, totalBorrow);
       } catch (error) {
         console.error(`Failed to get totals for asset ${assetId} in pool ${poolAssets.poolAddress} after multiple retries.`);
+        throw error;
       }
     }
   }
