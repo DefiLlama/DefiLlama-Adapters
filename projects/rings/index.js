@@ -20,6 +20,8 @@ const CONFIG = {
       ADDRESSES.ethereum.DAI,                          // DAI
       ADDRESSES.ethereum.SDAI,                         // SDAI
       ADDRESSES.ethereum.sUSDS,                        // SUSDS
+      '0xCAcd6fd266aF91b8AeD52aCCc382b4e165586E29',    // frxUSD
+      '0xcf62F905562626CfcDD2261162a51fd02Fc9c5b6',   // sfrxUSD
       ADDRESSES.ethereum.WETH,                         // WETH
       ADDRESSES.ethereum.WSTETH,                       // WSTETH
       ADDRESSES.ethereum.STETH,                       // WSTETH
@@ -53,7 +55,9 @@ const CONFIG = {
       ADDRESSES.berachain.WBTC,                      // WBTC
       ADDRESSES.sonic.LBTC,  // LBTC
       '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6',  // AUSDC
-      '0xe18Ab82c81E7Eecff32B8A82B1b7d2d23F1EcE96'   // AWETH
+      '0xe18Ab82c81E7Eecff32B8A82B1b7d2d23F1EcE96',   // AWETH
+      '0x80Eede496655FB9047dd39d9f418d5483ED600df', // frxUSD 
+      '0x5Bff88cA1442c2496f7E475E9e7786383Bc070c0' // sfrxUSD
     ],
   },
 }
