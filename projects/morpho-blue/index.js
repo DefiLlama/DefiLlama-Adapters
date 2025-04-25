@@ -9,7 +9,11 @@ module.exports = {
 const config = {
   ethereum: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+    blackList: ["0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83"],
     fromBlock: 18883124,
+    blacklistedMarketIds: [
+      "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
+    ],
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
@@ -67,10 +71,19 @@ const config = {
 };
 
 Object.keys(config).forEach((chain) => {
-  const { morphoBlue, fromBlock, blackList = [] } = config[chain];
+  const {
+    morphoBlue,
+    fromBlock,
+    blackList = [],
+    blacklistedMarketIds = [],
+  } = config[chain];
   module.exports[chain] = {
     tvl: async (api) => {
-      const marketIds = await getMarkets(api);
+      let marketIds = await getMarkets(api);
+      if (blacklistedMarketIds.length > 0) {
+        const lowerCaseBlacklist = blacklistedMarketIds.map(id => id.toLowerCase());
+        marketIds = marketIds.filter(id => !lowerCaseBlacklist.includes(id.toLowerCase()));
+      }
       const tokens = (
         await api.multiCall({
           target: morphoBlue,
@@ -88,7 +101,11 @@ Object.keys(config).forEach((chain) => {
       });
     },
     borrowed: async (api) => {
-      const marketIds = await getMarkets(api);
+      let marketIds = await getMarkets(api);
+      if (blacklistedMarketIds.length > 0) {
+        const lowerCaseBlacklist = blacklistedMarketIds.map(id => id.toLowerCase());
+        marketIds = marketIds.filter(id => !lowerCaseBlacklist.includes(id.toLowerCase()));
+      }
       const marketInfo = await api.multiCall({
         target: morphoBlue,
         calls: marketIds,
