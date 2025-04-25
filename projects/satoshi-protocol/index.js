@@ -10,7 +10,7 @@ function createExports({
   nymList, // { address, fromBlock }[]
   aaveStrategyVaults, // { address, asset, aToken }[]
   pellStrategyVaults, // { address, asset }[]
-  pellStrategyVaultsV2, // { address, fromBlock }[]
+  strategyVaultsV2, // { address, fromBlock }[]
 }) {
   return {
     tvl: async (api) => {
@@ -43,9 +43,9 @@ function createExports({
         api.add(tokens, bals)
       }
 
-      if (pellStrategyVaultsV2) {
-        for (let i = 0; i < pellStrategyVaultsV2.length; i++) {
-          const { address: vaultAddress, fromBlock } = pellStrategyVaultsV2[i];
+      if (strategyVaultsV2) {
+        for (let i = 0; i < strategyVaultsV2.length; i++) {
+          const { address: vaultAddress, fromBlock } = strategyVaultsV2[i];
           const logs = await getLogs({ api, target: vaultAddress, fromBlock, eventAbi: VaultTokenStrategySetEventABI, onlyArgs: true });
           const assets = logs.map(item => item.token);
           const calls = assets.map((asset) => ({ target: vaultAddress, params: asset }))
@@ -143,7 +143,7 @@ module.exports = {
       '0xa03B86E93c98FE95caC2A6645fF271Bb67040eab', // uBTC Collateral(V2)
       '0xb38653A0190252487FC6502D1D7B41A9647fB84b', // uniBTC Collateral(V2)
     ],
-    pellStrategyVaultsV2: [
+    strategyVaultsV2: [
       {
         address: '0x1F745AEC91A7349E4F846Ae1D94915ec4f6cF053',
         fromBlock: 11581100,
@@ -179,5 +179,11 @@ module.exports = {
       address: '0x9a3c724ee9603A7550499bE73DC743B371811dd3',
       fromBlock: 28842761,
     }],
+    strategyVaultsV2: [
+      {
+        address: '0xE8c5b4517610006C1fb0eD5467E01e4bAd43558D',
+        fromBlock: 29316928,
+      }
+    ]
   }),
 }
