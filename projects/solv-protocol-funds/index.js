@@ -417,10 +417,8 @@ async function aaveSupplyBalance(api, address) {
 
 async function solanaTvl(api, address) {
   if (api.chain !== 'solana' || !address[api.chain]) return;
-
-  const tokenAccounts = address[api.chain];
-
-  return sumTokens2Solana({ tokenAccounts });
+  const owners = address[api.chain];
+  return sumTokens2Solana({ api, owners });
 }
 
 async function getGraphData(timestamp, chain, api) {

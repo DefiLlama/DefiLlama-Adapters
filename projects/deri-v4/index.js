@@ -31,6 +31,7 @@ const config = {
   blast: { fromBlock: 2304573, factory: '0x60138081198b75aAF15ACA3A17Ec7f5Ffc5D4605', },
   base: { fromBlock: 25285725, factory : '0xd4E08C940dDeC162c2D8f3034c75c3e08f1f6032', },
   sonic: { fromBlock: 13168450, factory: '0x35EE168B4d0EA31974E9B184480b758F3E9940D1', },
+  // supra: { fromBlock: 10234310, factory: '0x83e22cb3508f9fc8b7788be66a363b70b801764081565046c68ed92139b05f87', },
 }
 
 Object.keys(config).forEach(chain => {

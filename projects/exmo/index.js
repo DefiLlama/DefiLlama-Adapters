@@ -1,19 +1,27 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
+  bitcoin: { owners: bitcoinAddressBook.exmo },
   ethereum: {
     owners: [
-        '0x7029B8aaE2399a9f4B82d4516D6D16A35A52ff2e',
+      '0x112A52893b96E9679E854934A62841051a679dAA',
+      '0x6297C8ec7662c10CdACFb3e9C04B571528d277E2',
     ],
   },
-  doge: {
+  ethereumclassic: {
     owners: [
-        'DC1GBAsLTJMvShigDk4UR3oVnkmiH4xaoE',
+      '0xD936704458E4f8525B6bE7C0ebC5fE268BaB4977',
     ]
   },
-  ripple: {
+  tron: {
     owners: [
-        'rDfvwaonnG198FJKiugQDn96kVW4Ej6bUX',
+      'TMjqArFD86YDNShnMXSzYqDXKZAphGSJN7',
+    ]
+  },
+  ton: {
+    owners: [
+      'UQAAdyo7XAGGaNbg7BbHq3XhPXhuFJuX64KStIgOyiFWZiuP',
     ]
   },
 }
