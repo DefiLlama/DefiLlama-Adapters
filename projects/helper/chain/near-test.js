@@ -1,6 +1,5 @@
 const axios = require("axios")
-const sdk = require('@defillama/sdk')
-const { default: BigNumber } = require("bignumber.js")
+const { sumSingleBalance } = require('near.js')
   // Define success codes
 const successCodes = [200, 201, 202, 204];
   
@@ -22,21 +21,6 @@ async function httpGet(url, options, { withMetadata = false } = {}) {
     }
 }
 
-function sumSingleBalance(balances, token, balance) {
-  const { name, decimals, } = {}
-
-  if (name) {
-    if (decimals)
-      balance = balance / (10 ** decimals)
-
-    balances[name] = +(balances[name] || 0) + balance
-    return
-  }
-
-  sdk.util.sumSingleBalance(balances, token, BigNumber(balance).toFixed(0))
-  return balances
-}
-
 function tvl() {
     return async () => {
         const balances = {};
@@ -47,7 +31,7 @@ function tvl() {
         // Process each item in the response
         assetsCallResponse.forEach((item) => {
             const token = item.SYMBOL;
-            const balance = item.NET_TOKENS_MINTED_USD || 0;
+            const balance = item.NET_TOKENS_MINTED_USD;
             sumSingleBalance(balances, token, balance);
         });
 
@@ -65,7 +49,7 @@ async function testHttpGet() {
         const tvlFunction = tvl();
         const responseData = await tvlFunction();
         console.log('Response data:', responseData);
-        
+          
     } catch (error) {
         console.error('Error:', error.message);
     }
