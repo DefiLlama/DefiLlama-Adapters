@@ -90,24 +90,22 @@ async function tvl(api) {
   }
 
   // Collateral TVL
-  try {
-    const positions = await getPositionAddresses();
-    // Batch positions into chunks of 30
-    const BATCH_SIZE = 30;
-    for (let i = 0; i < positions.length; i += BATCH_SIZE) {
-      const positionBatch = positions.slice(i, i + BATCH_SIZE);
-      const assetDataBatch = await api.multiCall({
-        abi: "function getAssetData(address) view returns ((address asset, uint256 amount, uint256 valueInEth)[])",
-        calls: positionBatch,
-        target: PORTFOLIO_LENS_ADDRESS,
-      });
+  const positions = await getPositionAddresses();
+  
+  // Batch positions into chunks of 30
+  const BATCH_SIZE = 30;
+  for (let i = 0; i < positions.length; i += BATCH_SIZE) {
+    const positionBatch = positions.slice(i, i + BATCH_SIZE);
+    
+    const assetDataBatch = await api.multiCall({
+      abi: "function getAssetData(address) view returns ((address asset, uint256 amount, uint256 valueInEth)[])",
+      calls: positionBatch,
+      target: PORTFOLIO_LENS_ADDRESS,
+    });
 
-      assetDataBatch.flat().forEach(({ asset, amount }) => {
-        sdk.util.sumSingleBalance(balances, `hyperliquid:${asset}`, amount);
-      });
-    }
-  } catch (error) {
-    console.error("Error fetching collateral:", error);
+    assetDataBatch.flat().forEach(({ asset, amount }) => {
+      sdk.util.sumSingleBalance(balances, `hyperliquid:${asset}`, amount);
+    });
   }
 
   return balances;
@@ -117,17 +115,13 @@ async function borrowed(api) {
   const balances = {};
 
   for (const { superPool, underlyingAsset } of SUPERPOOLS) {
-    try {
-      const poolId = await getPoolId(superPool);
-      const totalBorrows = await api.call({
-        target: POOL_ADDRESS,
-        params: [poolId],
-        abi: "function getTotalBorrows(uint256) view returns (uint256)",
-      });
-      sdk.util.sumSingleBalance(balances, underlyingAsset, totalBorrows);
-    } catch (error) {
-      console.error("Error fetching borrowed amount:", superPool, error);
-    }
+    const poolId = await getPoolId(superPool);
+    const totalBorrows = await api.call({
+      target: POOL_ADDRESS,
+      params: [poolId],
+      abi: "function getTotalBorrows(uint256) view returns (uint256)",
+    });
+    sdk.util.sumSingleBalance(balances, underlyingAsset, totalBorrows);
   }
 
   return balances;
