@@ -5,27 +5,35 @@ const { sumTokens2 } = require('./helper/unwrapLPs')
 const endpoint = "https://api.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
 const chains = {
   ethereum: 'eth',
-  // bsc: 'bsc',
   arbitrum: 'arbitrum',
   base: 'base',
-  polygon: 'matic'
+  polygon: 'matic',
+  era: 'zksync'
 }
 
-module.exports = {}
-Object.keys(chains).forEach(chain => {
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const response = await getConfig('harvest', endpoint)
-      const vaults = Object.values(response[chains[chain]]).map(i => i.vaultAddress)
-      const strategy = await api.multiCall({ abi: 'address:strategy', calls: vaults })
-      const tokensV = await api.multiCall({ abi: 'address:underlying', calls: vaults, permitFailure: true })
-      const tokens = await api.multiCall({ abi: 'address:underlying', calls: strategy, permitFailure: true })
-      const bals2 = await api.multiCall({ abi: 'uint256:underlyingBalanceWithInvestment', calls: vaults, permitFailure: true })
-      tokens.forEach((token, idx) => {
-        if (!token) token = tokensV[idx]
-        if (token) api.add(token, bals2[idx])
-      })
-      return sumTokens2({ api, resolveLP: true, owners: vaults, resolveUniV3: chain !== 'base', permitFailure: true })
-    }
-  }
+const tvl = async (api) => {
+  const response = await getConfig('harvest', endpoint)
+  const rawVaults = Object.values(response[chains[api.chain]]).map(i => i.vaultAddress)
+  const strategies = await api.multiCall({ abi: 'address:strategy', calls: rawVaults, permitFailure: true })
+
+  const vaults = rawVaults.map((vault, i) => {
+    const strategy = strategies[i]
+    if (!strategy) return null
+    return { vault, strategy }
+  }).filter(Boolean)
+
+  const tokensV = await api.multiCall({ abi: 'address:underlying', calls: vaults.map(({ vault }) => ({ target: vault })), permitFailure: true })
+  const tokens = await api.multiCall({ abi: 'address:underlying', calls: vaults.map(({ strategy }) => ({ target: strategy })), permitFailure: true })
+  const bals2 = await api.multiCall({ abi: 'uint256:underlyingBalanceWithInvestment', calls: vaults.map(({ vault }) => ({ target: vault })), permitFailure: true })
+
+  tokens.forEach((token, i) => {
+    if (!token) token = tokensV[i]
+    if (token) api.add(token, bals2[i])
+  })
+
+  return sumTokens2({ api, resolveLP: true, owners: vaults.map(({ vault }) => vault), resolveUniV3: api.chain !== 'base' && api.chain !== 'era', permitFailure: true })
+}
+
+Object.keys(chains).forEach((chain) => {
+  module.exports[chain] = { tvl }
 })

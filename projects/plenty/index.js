@@ -1,20 +1,16 @@
 const { sumTokens2, } = require('../helper/chain/tezos')
 const { getConfig } = require("../helper/cache")
 
-async function tvl() {
-  return sumTokens2({ owners: await getDexes(), includeTezos: true, })
-}
+const API_URL = 'https://config.mainnet.plenty.network/pools'
 
-async function getDexes() {
-  const data = await getConfig('tezos/plenty', "https://config.mainnet.plenty.network/pools")
-  return Object.keys(data)
+const tvl = async () => {
+  const data = await getConfig('tezos/plenty', API_URL)
+  return sumTokens2({ owners: Object.keys(data), includeTezos: true, })
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  start: 1672531200,
-  tezos: {
-    tvl,
-  },
+  start: '2023-01-01',
+  tezos: { tvl },
 }

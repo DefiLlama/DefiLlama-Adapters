@@ -4,6 +4,7 @@ const tokens = [
   ["eosio.token", "WAX", "wax"],
   ["alien.worlds", "TLM", "alien-worlds"],
   ["token.nefty", "NEFTY", "nefty"],
+  ["token.fusion", "LSWAX", "waxfusion-staked-wax"],
 ];
 
 // NeftyBlocks

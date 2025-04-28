@@ -10,7 +10,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1634150000,        // 13th of October, 2021
+  start: '2021-10-13',        // 13th of October, 2021
 	bsc: {
 		tvl,
   },

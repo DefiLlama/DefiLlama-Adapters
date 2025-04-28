@@ -24,6 +24,7 @@ const VaultType = {
   NileCl: 6,
   ZeroLend: 7,
   StargateFarming: 8,
+  UniswapV3: 9,
 };
 
 const typesDataInterfaces = {
@@ -37,7 +38,8 @@ const typesDataInterfaces = {
   [VaultType.LynexAlgebra]: ["uint256", "address"], // vaultType, algebra pool address
   [VaultType.NileCl]: ["uint256", "address", "address"], // vaultType, nileCl pool address, stacking contract address
   [VaultType.ZeroLend]: ["uint256", "address"], // vaultType, ZeroLend strategy address
-  [VaultType.StargateFarming]: ["uint256", "address"] // vaultType, Stargate strategy address
+  [VaultType.StargateFarming]: ["uint256", "address"], // vaultType, Stargate strategy address
+  [VaultType.UniswapV3]: ["uint256", "address"], // vaultType, v3 pool address
 };
 
 const tvl = async (api) => {
@@ -49,7 +51,7 @@ const tvl = async (api) => {
   const vaults = vaultDatas.map((i) => ({ ...i, vaultType: decoder.decode(typesDataInterfaces.any, i.data) }));
 
   // ammVaults
-  const ammTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl];
+  const ammTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl, VaultType.UniswapV3];
   const ammVaults = vaults.filter((i) => ammTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
   const ammPools = vaults
     .filter((i) => ammTypes.includes(Number(i.vaultType.toString())))
@@ -138,7 +140,7 @@ module.exports = {
   methodology:
     "Clip Finance TVL is achieved by summing total values of assets deposited in other protocols through our vaults and vaults balances.",
   doublecounted: true,
-  start: 1697627757, // (Oct-18-2023 11:15:57 AM +UTC) deployed on the BSC network
+  start: '2023-10-18', // (Oct-18-2023 11:15:57 AM +UTC) deployed on the BSC network
 };
 
 Object.keys(config).forEach((chain) => {

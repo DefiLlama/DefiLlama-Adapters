@@ -4,4 +4,5 @@ module.exports = {
   hallmarks: [
     [Math.floor(new Date('2023-06-11') / 1e3), 'Project rugged'],
   ],
+  deadFrom: Math.floor(new Date('2023-06-11') / 1e3)
 } 

@@ -1,8 +1,0 @@
-{
-  "getPools": "address[]:getPools",
-  "tokensWithAllocation": "address[]:tokensWithAllocation",
-  "supply": "function supply(address _token) view returns (uint256)",
-  "getVault": "address:getVault",
-  "getPoolId": "function getPoolId() view returns (bytes32)",
-  "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)"
-}

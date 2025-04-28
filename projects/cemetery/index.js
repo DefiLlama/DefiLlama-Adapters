@@ -7,5 +7,6 @@ module.exports = masterchefExports({
 })
 module.exports.hallmarks = [
   [1646524800,"Rug Pull"]
-]
+],
+module.exports.deadFrom='2022-03-06'
 

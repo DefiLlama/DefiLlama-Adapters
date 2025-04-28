@@ -20,7 +20,7 @@ module.exports = {
     },
   },
   timetravel: true,
-  start: 1677628800, // 2023-03-01
+  start: '2023-03-01', // 2023-03-01
   hallmarks: [
     // timestamp, event
     [1680206490, "Early deposits open"], // 2023-03-30

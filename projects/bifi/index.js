@@ -51,15 +51,10 @@ const chainPools = {
     UnifiedDAI: { pool: '0x2168dAb12A6A93181bbAD9C9dc769307C36fB45C', token: ADDRESSES.bfc.UnifiedDAI },
     UnifiedWBTC: { pool: '0xEa3b4a2dA5DbE8379AD4c60aaD5184df69D7C9AD', token: ADDRESSES.bfc.WBTC},
     UnifiedBTCB: { pool: '0x0B31FeE8bF53bFe2f5F7083B73A4c9C8B517E32F', token: ADDRESSES.bfc.BTCB},
-    BitcoinUSD: { pool: '0xcF2FC1d354018A39D5Ef036aA865Ad8cbF7B611E', token: ADDRESSES.bfc.BitcoinUSD }
+    BitcoinUSD: { pool: '0xcF2FC1d354018A39D5Ef036aA865Ad8cbF7B611E', token: ADDRESSES.bfc.BitcoinUSD },
+    WstBFC: { pool: '0xf9B2f6D2a61923E61aD9F6DAA78f52b7e1722b12', token: '0x386f2F5d9A97659C86f3cA9B8B11fc3F76eFDdaE' },
   },
 }
-
-module.exports = {
-  bitcoin: {
-    tvl: bitcoin
-  },
-};
 
 Object.keys(chainPools).forEach(chain => {
   const pools = chainPools[chain]
@@ -69,21 +64,5 @@ Object.keys(chainPools).forEach(chain => {
     }
   }
 })
-
-const wbtc = ADDRESSES.ethereum.WBTC
-async function bitcoin(timestamp, ethBlock) {
-  const tokenPool = {
-    pool: '0x986Eb51E67e154901ff9B482835788B8f3054076',
-    token: '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
-  }
-  let tokenLocked = await sdk.api.erc20.balanceOf({
-    owner: tokenPool.pool,
-    target: tokenPool.token,
-    block: ethBlock
-  });
-  return {
-    [wbtc]: tokenLocked.output
-  }
-}
 
 module.exports.ethereum.staking = stakings(stakingPool, bfcAddr)

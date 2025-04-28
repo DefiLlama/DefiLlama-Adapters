@@ -6,6 +6,11 @@ const config = {
     factory: '0xDaD8A103473dfd47F90168A0E46766ed48e26EC7',
     fromBlock: 135921706,
   },
+  perennial: {
+    dsu: '0xC27399bE9E39f7F6b1f94fBd512F5c2aD2b5eDb7',
+    factory: '0xDaD8A103473dfd47F90168A0E46766ed48e26EC7',
+    fromBlock: 615402,
+  },
 };
 
 Object.keys(config).forEach((chain) => {

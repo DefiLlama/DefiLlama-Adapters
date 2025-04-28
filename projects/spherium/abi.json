@@ -1,4 +1,0 @@
-{
-  "getAllWhitelistedTokenNames": "string[]:getAllWhitelistedTokenNames",
-  "whitelistedTokenAddress": "function whitelistedTokenAddress(string) view returns (address)"
-}
