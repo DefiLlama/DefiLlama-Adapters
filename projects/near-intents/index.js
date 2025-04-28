@@ -23,7 +23,7 @@ module.exports = {
     near: {
         tvl,
     },
-    methodology: "TVL is calculated by tracking the net amount (deposits - withdrawals) of cross-chain bridged tokens and native tokens on NEAR protocol, with data sourced from Flipside Crypto",
+    methodology: "TVL is calculated by tracking the net amount (deposits - withdrawals) of cross-chain bridged tokens and native tokens on NEAR protocol",
     timetravel: true,
     misrepresentedTokens: false,
     hallmarks: [
