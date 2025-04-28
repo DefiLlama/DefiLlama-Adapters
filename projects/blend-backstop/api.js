@@ -7,7 +7,7 @@ const network = {
   passphrase: "Public Global Stellar Network ; September 2015",
 };
 
-async function tvl(api) {
+async function pool2(api) {
   let backstop = await BackstopConfig.load(network, BACKSTOP_ID);
   let backstop_token = await BackstopToken.load(
     network,
@@ -27,6 +27,6 @@ module.exports = {
     [1745478927, "Calculate TVL using BLND Coin Gecko price instead of approximation via pool weights"],
   ],
   stellar: {
-    tvl,
+    tvl: pool2,
   },
 };
