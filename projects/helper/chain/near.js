@@ -1,7 +1,8 @@
 const ADDRESSES = require('../coreAssets.json')
 const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { decimals } = require('@defillama/sdk/build/erc20');
 
 
 function transformAddress(addr) {
@@ -55,9 +56,38 @@ const tokenMapping = {
   'purge-558.meme-cooking.near': { name: 'forgive-me-father', decimals: 18 },
   'mpdao-token.near': { name: 'meta-pool-dao', decimals: 6 },
   'kat.token0.near': { name: 'nearkat', decimals: 18 },
+  // NEAR Intnets
   'sol.omft.near': { name: 'solana', decimals: 9 },
   'eth.omft.near': { name: 'ethereum', decimals: 18 },
-
+  'btc.omft.near': { name: 'bitcoin', decimals: 8 },
+  'eth-0xdac17f958d2ee523a2206206994597c13d831ec7.omft.near': { name: 'tether', decimals: 6 },
+  'eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near': { name: 'usd-coin', decimals: 6 },
+  'zec.omft.near': { name: 'zcash', decimals: 8 },
+  'sol-5ce3bf3a31af18be40ba30f721101b4341690186.omft.near': { name: 'usd-coin', decimals: 6 },
+  'tron-d28a265909efecdcee7c5028585214ea0b96f015.omft.near': { name: 'tether', decimals: 6 },
+  'doge.omft.near': { name: 'dogecoin', decimals: 8 },
+  'xrp.omft.near': { name: 'xrp', decimals: 6 },
+  'eth-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf.omft.near': { name: 'coinbase-wrapped-btc', decimals: 8 },
+  'sol-c800a4bd850783ccb82c2b2c7e84175443606352.omft.near': { name: 'tether', decimals: 6 },
+  'base-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf.omft.near': { name: 'coinbase-wrapped-btc', decimals: 8 },
+  'arb-0xaf88d065e77c8cc2239327c5edb3a432268e5831.omft.near': { name: 'usd-coun', decimals: 6 },
+  'bera.omft.near': { name: 'berachain-bera', decimals: 18 },
+  'eth-0xaaaaaa20d9e0e2461697782ef11675f668207961.omft.near': { name: 'aurora-near', decimals: 18 },
+  'gnosis.omft.near': { name: 'xdai', decimals: 18 },
+  'base-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913.omft.near': { name: 'usd-coin', decimals: 6 },
+  'arb-0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9.omft.near': { name: 'tether', decimals: 6 },
+  'gnosis-0x4d18815d14fe5c3304e87b3fa18318baa5c23820.omft.near': { name: 'safe', decimals: 18 },
+  'gnosis-0x177127622c4a00f3d409b75571e12cb3c8973d3c.omft.near': { name: 'cow-protocol', decimals: 18},
+  'gnosis-0x9c58bacc331c9aa871afd802db6379a98e80cedb.omft.near': { name: 'gnosis', decimals: 18},
+  'eth-0xa35923162c49cf95e6bf26623385eb431ad920d3.omft.near': { name: 'turbo', decimals: 18},
+  'arb.omft.near': { name: 'ethereum', decimals: 18},
+  'base.omft.near': { name: 'ethereum', decimals: 18},
+  'tron.omft.near': { name: 'tron', decimals: 6},
+  'gnosis-0x2a22f9c3b484c3629090feed35f17ff8f88f76f0.omft.near': { name: 'usd-coin', decimals:6},
+  'bsc.omft.near': { name: 'binancecoin', decimals: 18},
+  'pol.omft.near': { name: 'polkadot', decimals: 18},
+  'base-0x98d0baa52b2d063e780de12f615f963fe8537553.omft.near': { name: 'kaito', decimals: 18},
+  'gnosis-0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1.omft.near': { name: 'weth', decimals: 18},
 }
 
 async function view_account(account_id) {
