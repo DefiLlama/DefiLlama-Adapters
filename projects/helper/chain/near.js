@@ -2,7 +2,6 @@ const ADDRESSES = require('../coreAssets.json')
 const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk');
-const { decimals } = require('@defillama/sdk/build/erc20');
 
 
 function transformAddress(addr) {
