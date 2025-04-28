@@ -8,8 +8,8 @@ async function tvl(api) {
 
     // Process each item in the response
     assetsCallResponse.forEach((item) => {
-        const token = item.SYMBOL;
-        const balance = item.NET_TOKENS_MINTED_USD || 0;
+        const token = item.TOKEN;
+        const balance = item.TOKEN_RAW || 0;
 
         if (token) {
             sumSingleBalance(balances, token, balance);
