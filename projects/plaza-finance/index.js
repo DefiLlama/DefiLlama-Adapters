@@ -39,7 +39,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "Sum of all ETH LSTs/LRTs in the PreDeposit contract",
+  methodology: "Sum of all ETH LSTs/LRTs in the PreDeposit contract pre-launch. ETHPool TVL as balancer tokens post-launch.",
   start: 1742839200,
   base: { tvl },
   hallmarks: [
