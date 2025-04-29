@@ -6,7 +6,7 @@ async function tvl() {
     const tickers = await utils.fetchURL("https://api-phoenix-v2.decentrio.ventures/tickers");
 
     // Sum up the tvl
-    const totalTVL = tickers.data.reduce((acc, t) => acc + t.liquidity_in_usd, 0);
+    const totalTVL = tickers.data.reduce((acc, t) => acc + (t.liquidity_in_usd > 0 ? t.liquidity_in_usd : 0), 0);
     return toUSDTBalances(totalTVL);
 }
 

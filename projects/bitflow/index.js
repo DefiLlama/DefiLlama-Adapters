@@ -1,4 +1,4 @@
-const { sumTokensExport } = require("../helper/sumTokens");
+const { sumTokens } = require("../helper/sumTokens");
 
 const PAIRS = [
   "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-core-v-1-1",
@@ -51,9 +51,26 @@ const PAIRS = [
   "SM1793C4R5PZ4NS4VQ4WMP7SKKYVH8JZEWSZ9HCCR.xyk-pool-pbtc-satoshi-v-1-1"
 ]
 
+const BATCH_SIZE = 5;
+const DELAY = 2000;
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function tvl(api) {
+  const balances = {};
+
+  for (let i = 0; i < PAIRS.length; i += BATCH_SIZE) {
+    const batch = PAIRS.slice(i, i + BATCH_SIZE);
+    await sumTokens({ chain: 'stacks', owners: batch, api, balances })
+    await sleep(DELAY);
+  }
+
+  return balances;
+}
+
 module.exports = {
-  stacks: {
-    tvl: sumTokensExport({ owners: PAIRS }),
-  },
   methodology: "Total Liquidity Added to DEX Trading Pools",
+  stacks: { tvl },
 };
