@@ -17,13 +17,15 @@ async function tvl(api) {
   );
 
   // backstop token is a 80% BLND 20% USDC Comet pool (Balancer v1 fork)
-  // since BLND has no coingecko price, use USDC held in LP shares by the
-  // backstop to approximate total USDC held
-  api.addCGToken("usd-coin", (Number(backstop_token.usdc) / 1e7) * 5);
+  api.addCGToken("usd-coin", Number(backstop_token.usdc) / 1e7);
+  api.addCGToken('blend', Number(backstop_token.blnd) / 1e7);
   return api.getBalances();
 }
 
 module.exports = {
+  hallmarks: [
+    [1745478927, "Calculate TVL using BLND Coin Gecko price instead of approximation via pool weights"],
+  ],
   stellar: {
     tvl,
   },
