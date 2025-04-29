@@ -35,7 +35,7 @@ async function getTokenBalance(
   }
 }
 
-async function pool2(api) {
+async function tvl(api) {
   let backstop = await BackstopConfig.load(network, BACKSTOP_ID);
   let backstopTokeData = await BackstopToken.load(
     network,
@@ -62,6 +62,7 @@ module.exports = {
     [1745858101, "Only account for lp tokens held by the backstop contract"],
   ],
   stellar: {
-    tvl: pool2,
+    tvl: () => ({}),
+    pool2: tvl
   },
 };

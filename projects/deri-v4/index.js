@@ -1,5 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
+const {
+  invokeViewFunction,
+} = require("../helper/chain/supra");
+const { transformBalances } = require("../helper/portedTokens");
 
 async function tvl(api) {
   const { factory, fromBlock, } = config[api.chain]
@@ -33,6 +37,34 @@ const config = {
   sonic: { fromBlock: 13168450, factory: '0x35EE168B4d0EA31974E9B184480b758F3E9940D1', },
 }
 
+const calculateSupraTVL = async (api) => {
+  const chain = api.chain;
+  const vaults = [
+    '0x9eea5363c9e08b22967c89291b7d817e205ffa888b60373b5c1c4562d836c894',
+    '0x4e49f1c8624eaff1bfeddf469439d35bc170ed29ae646c464bda37d6e42c938d',
+  ];
+
+  let stTotalAmount = 0;
+  for (const vault of vaults) {
+    stTotalAmount += parseInt(
+      await invokeViewFunction(
+        '0x83e22cb3508f9fc8b7788be66a363b70b801764081565046c68ed92139b05f87::vault::st_total_amount',
+        [],
+        [vault]
+      )
+    );
+  }
+
+  const balances = {
+    '0x8f7d16ade319b0fce368ca6cdb98589c4527ce7f5b51e544a9e68e719934458b::hyper_coin::DexlynUSDC':
+      stTotalAmount / 10 ** 12,
+  };
+
+  return transformBalances(chain, balances);
+};
+
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
-})
+  module.exports[chain] = { tvl };
+});
+
+module.exports.supra = { tvl: calculateSupraTVL };
