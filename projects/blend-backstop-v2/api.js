@@ -32,7 +32,7 @@ async function getTokenBalance(
     throw Error(`unable to fetch balance for token: ${token_id}`);
   }
 }
-async function pool2(api) {
+async function tvl(api) {
   let backstop = await BackstopConfig.load(network, BACKSTOP_ID);
   let backstopTokeData = await BackstopToken.load(
     network,
@@ -55,6 +55,7 @@ async function pool2(api) {
 
 module.exports = {
   stellar: {
-    tvl: pool2,
+    tvl: () => ({}),
+    pool2: tvl  
   },
 };
