@@ -10,23 +10,20 @@ async function tvl(api) {
     // 1. get Hypervisor
     const hypervisors = await getConfig('yaka-finance/uni-v3-pools', undefined, {
         fetcher: async () => {
-            try {
-                const { data } = await get('https://backend.yaka.finance/api/v1/fusions')
-                const validTypes = ['Wide', 'CL_Stable', 'Narrow', 'Correlated']
-                const filteredHypervisors = data
-                    .filter(pool => validTypes.includes(pool.type))
-                    .map(pool => ({
-                        hypervisor: pool.address, // Hypervisor
-                        token0: pool.token0.address,
-                        token1: pool.token1.address,
-                        type: pool.type,
-                    }))
-                console.log(`Yaka Finance Hypervisor total: ${filteredHypervisors.length}`)
-                return filteredHypervisors
-            } catch (e) {
-                console.error('Yaka Finance API request failed:', e)
-                return []
-            }
+
+            const { data } = await get('https://backend.yaka.finance/api/v1/fusions')
+            const validTypes = ['Wide', 'CL_Stable', 'Narrow', 'Correlated']
+            const filteredHypervisors = data
+                .filter(pool => validTypes.includes(pool.type))
+                .map(pool => ({
+                    hypervisor: pool.address, // Hypervisor
+                    token0: pool.token0.address,
+                    token1: pool.token1.address,
+                    type: pool.type,
+                }))
+            console.log(`Yaka Finance Hypervisor total: ${filteredHypervisors.length}`)
+            return filteredHypervisors
+
         },
         ttl: 3600, //1 Hour
     })
