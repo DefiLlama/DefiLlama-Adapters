@@ -1,0 +1,13 @@
+const { sumTokensExport } = require("../helper/unwrapLPs");
+
+const wOS = "0x9f0df7799f6fdad409300080cff680f5a23df4b1";
+const wOS_HOLDER = "0x0A6F4c98D087445Ef92b589c6f39D22C4373615F";
+
+module.exports = {
+  sonic: {
+    tvl: sumTokensExport({
+      owner: wOS_HOLDER,
+      tokens: [wOS],
+    }),
+  },
+};
