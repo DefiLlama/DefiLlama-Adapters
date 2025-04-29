@@ -1,16 +1,12 @@
 const { getConfig } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { sumTokens } = require("../helper/chain/bitcoin");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
 
 const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solvbtc.json';
 
-async function bitcoinTvl(api) {
-  let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
-  if (!solvbtc[api.chain]) {
-    return;
-  }
-
-  return sumTokens({ owners: solvbtc[api.chain] })
+async function bitcoinTvl() {
+  return sumTokens({ owners: await bitcoinAddressBook.solvBTC() })
 }
 
 async function tvl(api) {

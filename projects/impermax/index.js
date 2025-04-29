@@ -89,6 +89,11 @@ const config = {
     factories: [
       '0x26fca5916c20D252feEF7A58E39886d3d3112b91'
     ]
+  },
+  linea: { 
+    factories: [
+      '0x7A9212D34DD283e952f8f15f084832e9b48ee746'
+    ]
   }
 }
 
@@ -177,7 +182,8 @@ const blacklistedPools = {
   optimism: [],
   real: [],
   blast: [],
-  sonic: []
+  sonic: [],
+  linea: []
 }
 
 module.exports = {}

@@ -58,8 +58,22 @@ const config = {
   },
   base: {
     factories: [
-      { factory: "0x59968008a703dC13E6beaECed644bdCe4ee45d13", fromBlock: 22350352 },  // v3
+      { factory: "0x59968008a703dc13e6beaeced644bdce4ee45d13", fromBlock: 22350352 },  // v3
     ],
+  },
+  sonic: {
+    factories: [
+      { factory: "0xfee31a6ec6ebefa0b5a594bf5b1139e3c6faa0fb", fromBlock: 7830430 },  // v3
+    ],
+  },
+  berachain: {
+    factories: [
+      { factory: "0x8A09574b0401A856d89d1b583eE22E8cb0C5530B", fromBlock: 806126 },  // v3
+    ],
+    pts: [
+      '0x2719e657ec3b3cbe521a18e640ca55799836376f', 
+      '0xdc9b87e5efd6ca2beaa33dde9c544e1e98345de4'
+    ]
   }
 };
 

@@ -3,7 +3,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
   hallmarks: [
-    [1736294400,"Private-key Leak Exploit"]
+    [1736294400,"Private-key Leak Exploit"],
+    [1737072000,"Moby Restored"]
   ],
   arbitrum: {
     tvl: sumTokensExport({ 
@@ -21,5 +22,18 @@ module.exports = {
         ADDRESSES.arbitrum.WBTC,
       ]
     })
+  },
+  berachain: {
+    tvl: sumTokensExport({ 
+      owners: [
+        "0x66f782E776a91CE9c33EcD07f7D2a9743775209e", // vault
+      ],
+      tokens: [
+        ADDRESSES.berachain.WETH,
+        ADDRESSES.berachain.USDC,
+        ADDRESSES.berachain.WBTC,
+        ADDRESSES.berachain.HONEY
+      ]
+    }),
   }
 }
