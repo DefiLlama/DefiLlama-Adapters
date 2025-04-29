@@ -82,21 +82,29 @@ async function tvl(api) {
 
   // Lending TVL
   for (const { superPool, underlyingAsset } of SUPERPOOLS) {
-    const totalAssets = await api.call({
-      target: superPool,
-      abi: "uint256:totalAssets",
+    const poolId = await getPoolId(superPool);
+    const totalBorrows = await api.call({
+      target: POOL_ADDRESS,
+      params: [poolId],
+      abi: "function getTotalBorrows(uint256) view returns (uint256)",
     });
-    sdk.util.sumSingleBalance(balances, underlyingAsset, totalAssets);
+    const totalAssets = await api.call({
+      target: POOL_ADDRESS,
+      params: [poolId],
+      abi: "function getTotalAssets(uint256) view returns (uint256)",
+    });
+    const availableLiquidity = BigInt(totalAssets) - BigInt(totalBorrows);
+    sdk.util.sumSingleBalance(balances, underlyingAsset, availableLiquidity);
   }
 
   // Collateral TVL
   const positions = await getPositionAddresses();
-  
+
   // Batch positions into chunks of 30
   const BATCH_SIZE = 30;
   for (let i = 0; i < positions.length; i += BATCH_SIZE) {
     const positionBatch = positions.slice(i, i + BATCH_SIZE);
-    
+
     const assetDataBatch = await api.multiCall({
       abi: "function getAssetData(address) view returns ((address asset, uint256 amount, uint256 valueInEth)[])",
       calls: positionBatch,
