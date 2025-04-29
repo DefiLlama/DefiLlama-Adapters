@@ -23,6 +23,8 @@ async function tvl(api) {
 module.exports = {
   // because all assets are deposited into Morpho Blue
   doublecounted: true,
+  methodology: 'Count total assets are deposited in Morpho Blue vaults.',
+  start: 1741219200, // 2025-03-06
   polygon: {
     tvl,
   },
