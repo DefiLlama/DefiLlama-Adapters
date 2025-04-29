@@ -19,4 +19,5 @@ module.exports = {
     tvl: async () => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2s only",
+  deadFrom: '2023-12-01',
 }

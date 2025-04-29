@@ -7,6 +7,7 @@ async function eos() {
     const tokens = [
         ["eosio.token", "EOS", "eos"],
         ["usdt.xsat", "USDT", "tether"],
+        ["btc.xsat", "BTC", "bitcoin"],
     ];
     return await get_account_tvl(accounts, tokens, "eos");
 }

@@ -1,5 +1,4 @@
 const { isWhitelistedToken } = require('../helper/streamingHelper')
-const { cachedGraphQuery } = require('../helper/cache')
 const { request } = require("graphql-request");
 
 const config = {
@@ -19,7 +18,9 @@ const config = {
   optimism: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-lockup-optimism/version/latest'] },
   polygon: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-lockup-polygon/version/latest'] },
   scroll: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-lockup-scroll/version/latest'] },
+  sei: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-lockup-sei/version/latest'] },
   xdc: { endpoints: [ 'https://graphql.xinfin.network/subgraphs/name/xdc/sablier-lockup-xdc' ] },
+  unichain: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-lockup-unichain/version/latest'] },
   era: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-lockup-zksync/version/latest'] },
 }
 
