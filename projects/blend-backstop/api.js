@@ -27,6 +27,7 @@ module.exports = {
     [1745478927, "Calculate TVL using BLND Coin Gecko price instead of approximation via pool weights"],
   ],
   stellar: {
-    tvl,
+    tvl: () => ({}),
+    pool2: tvl
   },
 };
