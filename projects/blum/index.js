@@ -10,6 +10,7 @@ async function fetchTvl(api) {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   ton: {
     tvl: fetchTvl
   }
