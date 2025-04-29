@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { BigNumber } = require('bignumber.js')
 
 const STEX_CONTRACT = '0x39694eFF3b02248929120c73F90347013Aec834d';
 const STEX_LENS_CONTRACT = '0x68675DC8406252b6950128f6504A5E287Ef24ED0';
 const STEX_LENS_RESERVES_ABI = 'function getAllReserves(address stex) external view returns (uint256 reserve0Pool, uint256 reserve0Unstaking, uint256 reserve1Pool, uint256 reserve1Lending, uint256 amount1PendingLPWithdrawal)';
-const WHYPE = '0x5555555555555555555555555555555555555555';
+const WHYPE = ADDRESSES.hyperliquid.WHYPE;
 const STHYPE = '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1';
 
 async function tvl(api) {

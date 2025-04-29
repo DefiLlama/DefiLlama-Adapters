@@ -16,7 +16,7 @@ module.exports = {
         "0xc4AD29ba4B3c580e6D59105FFf484999997675Ff", // crv3crypto
         ADDRESSES.ethereum.WETH, // WETH
         "0xb7ecb2aa52aa64a717180e030241bc75cd946726", // tBTC/WBTC
-        "0xD533a949740bb3306d119CC777fa900bA034cd52", // CRV
+        ADDRESSES.ethereum.CRV, // CRV
       ],
     }),
   },
@@ -217,7 +217,7 @@ module.exports = {
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         ADDRESSES.sonic.WETH, // WETH
-        ADDRESSES.sonic.USDC, // usdc.e
+        ADDRESSES.sonic.USDC_e, // usdc.e
       ],
     }),
   },
