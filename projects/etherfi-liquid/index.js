@@ -47,26 +47,37 @@ const vault_config = {
       '0x1D4F0F05e50312d3E7B65659Ef7d06aa74651e0C', //mev 
       '0x95fE19b324bE69250138FE8EE50356e9f6d17Cfe', //ultra
     ],
-    'base': ADDRESSES.ethereum.EUSD,
-    'decimals': 18
+    'base': ADDRESSES.ethereum.USDC,
+    'decimals': 6
   }
 }
 
 async function updateVaultTvl(api, config) {
+  const timestamp = api.timestamp
   const { vaults, accountant, base } = config
   const baseDecimals = config.decimals
+  const optimism_api = new sdk.ChainApi({ timestamp, chain: 'optimism' })
 
   const vaultsSupply = await api.multiCall({ calls: vaults, abi: 'uint256:totalSupply' })
   const quotes = await api.multiCall({ calls: accountant, abi: 'uint256:getRate' })
   const decimals = await api.multiCall({ calls: accountant, abi: 'uint256:decimals' })
-
+  let amount = 0
   for (let i = 0; i < vaultsSupply.length; i++) {
     const vaultSupply = vaultsSupply[i]
     const quote = quotes[i]
     const decimal = decimals[i]
-
-    api.add(base, (vaultSupply / 10 ** decimal) * (quote / 10 ** decimal) * 10 ** baseDecimals)
+    amount += (vaultSupply / 10 ** decimal) * (quote / 10 ** decimal) * 10 ** baseDecimals
   }
+  if(base === ADDRESSES.ethereum.EBTC) {
+    const wbtc = 100 * 10 ** 8 //await optimism_api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquid-v2-wbtc'] })
+    amount -= wbtc
+    api.add(ADDRESSES.ethereum.WBTC, wbtc)
+  } else if(base === ADDRESSES.ethereum.EETH) {
+    const weth = await optimism_api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquid-v2-weth'] })
+    amount -= weth
+    api.add(ADDRESSES.ethereum.WETH, weth)
+  }
+  api.add(base, amount)
 }
 
 
