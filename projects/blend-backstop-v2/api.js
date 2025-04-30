@@ -1,13 +1,11 @@
-const { BackstopConfig, BackstopToken } = require("@blend-capital/blend-sdk");
+const { BackstopConfig, BackstopToken, BackstopPool, BackstopPoolV2,  } = require("@blend-capital/blend-sdk");
 const { nativeToScVal, rpc, Account, TransactionBuilder, Contract, scValToNative } = require("@stellar/stellar-sdk");
-
-const BACKSTOP_ID = "CAO3AGAMZVRMHITL36EJ2VZQWKYRPWMQAPDQD5YEOF3GIF7T44U4JAL3";
+const BACKSTOP_ID = "CAQQR5SWBXKIGZKPBZDH3KM5GQ5GUTPKB7JAFCINLZBC5WXPJKRG3IM7";
 
 const network = {
   rpc: "https://soroban-rpc.creit.tech/",
   passphrase: "Public Global Stellar Network ; September 2015",
 };
-
 async function getTokenBalance(
   token_id,
   address
@@ -34,7 +32,6 @@ async function getTokenBalance(
     throw Error(`unable to fetch balance for token: ${token_id}`);
   }
 }
-
 async function tvl(api) {
   let backstop = await BackstopConfig.load(network, BACKSTOP_ID);
   let backstopTokeData = await BackstopToken.load(
@@ -57,12 +54,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  hallmarks: [
-    [1745478927, "Calculate TVL using BLND Coin Gecko price instead of approximation via pool weights"],
-    [1745858101, "Only account for lp tokens held by the backstop contract"],
-  ],
   stellar: {
     tvl: () => ({}),
-    pool2: tvl
+    pool2: tvl  
   },
 };
