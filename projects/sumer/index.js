@@ -62,4 +62,12 @@ module.exports = {
       '0xA6ae238D9CaF65DFA67670FDE3156EFeE9334488', // suBTC
     ]
   }),
+  hemi: compoundExports2({
+    comptroller: '0xB2fF02eEF85DC4eaE95Ab32AA887E0cC69DF8d8E',
+    blacklistedTokens: [
+      '0x8C38b023Afe895296e2598AE111752223185b35c', // suUSD
+      '0xb1FdC3f660b0953253141B2509c43014d5d3d733', // suETH
+      '0xc7fFEAa5949d50A408bD92DdB0D1EAcef3F8a3Bc', // suBTC
+    ]
+  })
 }
