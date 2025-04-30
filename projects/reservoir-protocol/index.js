@@ -21,7 +21,6 @@ Object.keys(config).forEach(chain => {
       const byusdToken = '0x688e72142674041f8f6af4c808a4045ca1d6ac82';
 
       const owner = '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181';
-      const owner2 = '0xD6D83e479359766f21A63b20d6AF43A138356EbA';
       const kodiakPool = '0xD6D83e479359766f21A63b20d6AF43A138356EbA';
 
       const lpToken2 = '0x7fd165B73775884a38AA8f2B384A53A3Ca7400E6';
@@ -35,8 +34,8 @@ Object.keys(config).forEach(chain => {
           const honeyBalance = await api.call({ abi: 'erc20:balanceOf', target: honeyToken, params: [owner] });
           const byusdBalance = await api.call({ abi: 'erc20:balanceOf', target: byusdToken, params: [owner] });
 
-          const rUSDBalance = await api.call({ abi: 'erc20:balanceOf', target: rUSDToken, params: [owner2] });
-          const honeyBalance2 = await api.call({ abi: 'erc20:balanceOf', target: honeyToken, params: [owner2] });
+          const rUSDBalance = await api.call({ abi: 'erc20:balanceOf', target: rUSDToken, params: [kodiakPool] });
+          const honeyBalance2 = await api.call({ abi: 'erc20:balanceOf', target: honeyToken, params: [kodiakPool] });
           const lpToken2TotalSupply = await api.call({ abi: 'erc20:totalSupply', target: lpToken2 });
 
           const price = (rUSDBalance + honeyBalance2) * 1e8 / lpToken2TotalSupply;
