@@ -69,7 +69,9 @@ async function getVaultTvl(api, vaults) {
 }
 
 async function tvl(api) {
-  const vaults = [];
+  const _vaults = [];
+  let vaults = []
+
   // get all vaults from factories
   for (const factory of vaultFactories) {
     const logs = await getLogs2({
@@ -78,8 +80,17 @@ async function tvl(api) {
       eventAbi: "event VaultCreated(address indexed vault)",
       fromBlock: 956824,
     });
-    vaults.push(...logs.map((log) => log.vault));
+    _vaults.push(...logs.map((log) => log.vault));
   }
+
+  const vaultNames = await api.multiCall({ abi: 'string:name', calls: _vaults, permitFailure: true })
+  vaultNames.forEach((name, i) => {
+    if (name && name.toLowerCase().includes("steer"))
+      steerVaults.push(_vaults[i])
+    else
+      vaults.push(_vaults[i])
+  })
+
   await getSteerVaultTvl(api, steerVaults);
   await getVaultTvl(api, vaults);
   return sumTokens2({ api, resolveLP: true });
