@@ -31,18 +31,18 @@ Object.keys(config).forEach(chain => {
 
       module.exports[chain] = {
         tvl: async (api) => {
-          const lpBalance = await api.call({ abi: 'address:balanceOf', target: lpToken, params: owner });
-          const honeyBalance = await api.call({ abi: 'address:balanceOf', target: honeyToken, params: owner });
-          const byusdBalance = await api.call({ abi: 'address:balanceOf', target: byusdToken, params: owner });
+          const lpBalance = await api.call({ abi: 'erc20:balanceOf', target: lpToken, params: [owner] });
+          const honeyBalance = await api.call({ abi: 'erc20:balanceOf', target: honeyToken, params: [owner] });
+          const byusdBalance = await api.call({ abi: 'erc20:balanceOf', target: byusdToken, params: [owner] });
 
-          const rUSDBalance = await api.call({ abi: 'address:balanceOf', target: rUSDToken, params: owner2 });
-          const honeyBalance2 = await api.call({ abi: 'address:balanceOf', target: honeyToken, params: owner2 });
-          const lpToken2TotalSupply = await api.call({ abi: 'address:TotalSupply', target: lpToken2 });
+          const rUSDBalance = await api.call({ abi: 'erc20:balanceOf', target: rUSDToken, params: [owner2] });
+          const honeyBalance2 = await api.call({ abi: 'erc20:balanceOf', target: honeyToken, params: [owner2] });
+          const lpToken2TotalSupply = await api.call({ abi: 'erc20:totalSupply', target: lpToken2 });
 
           const price = (rUSDBalance + honeyBalance2) * 1e8 / lpToken2TotalSupply;
-          const balance = await api.call({ abi: 'address:balanceOf', target: infraredVault, params: kodiakPool });
+          const balance = await api.call({ abi: 'erc20:balanceOf', target: infraredVault, params: [kodiakPool] });
 
-          api.add(lpToken, lpBalance);
+          api.add(ADDRESSES.berachain.USDC, lpBalance/1e12);
           api.add(honeyToken, honeyBalance);
           api.add(byusdToken, byusdBalance);
           api.add(kodiakPool, balance * price / 1e8);
