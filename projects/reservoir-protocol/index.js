@@ -10,7 +10,8 @@ const config = {
         '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',
         '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc'
         // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
-    ]
+    ],
+  berachain: []
 }
 
 Object.keys(config).forEach(chain => {
