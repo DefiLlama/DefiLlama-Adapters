@@ -2431,5 +2431,10 @@
   },
   "babylon": {
     "BABY": "ubbn"
+  },
+  "aleph_zero": {
+    "WETH": "0xB3f0eE446723f4258862D949B4c9688e7e7d35d3",
+    "USDC": "0x18d25B4e18165c97e1285212e5d1f80eDD6d3Aa7",
+    "USDT": "0xD648529D4803d3467bA8850577BEd4e4b8Ae583C"
   }
 }
