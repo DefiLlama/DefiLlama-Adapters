@@ -1,22 +1,31 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 
+const tokenOwners = [
+  '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181',
+  '0x6811742721DcCe83942739d44E40f140B5BCee37',
+  '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3',
+  '0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1',
+  '0x4809010926aec940b550D34a46A52739f996D75D'
+];
+
 const config = {
-  ethereum: [
-    // https://docs.reservoir.xyz/products/proof-of-reserves
-    '0x0c7e4342534e6e8783311dCF17828a2aa0951CC7',
-    '0x9BB2c38F57883E5285b7c296c66B9eEA4769eF80',
-    '0x99A95a9E38e927486fC878f41Ff8b118Eb632b10',
-    '0xE45321525c85fcc418C88E606B96daD8cBcc047f',
-    '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',
-    '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc'
-    // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
-  ],
-  berachain: {
-    adapters: [
-      '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181',
-      '0x6811742721DcCe83942739d44E40f140B5BCee37',
-      '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3'
+  ethereum: {
+    fundAdapters: [
+      // https://docs.reservoir.xyz/products/proof-of-reserves
+      '0x0c7e4342534e6e8783311dCF17828a2aa0951CC7',
+      '0x9BB2c38F57883E5285b7c296c66B9eEA4769eF80',
+      '0x99A95a9E38e927486fC878f41Ff8b118Eb632b10',
+      '0xE45321525c85fcc418C88E606B96daD8cBcc047f',
+      '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',
+      '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc'
+      // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
     ],
+    tokens: [
+      ADDRESSES.ethereum.USDC,
+      '0xb7de5dfcb74d25c2f21841fbd6230355c50d9308'
+    ]
+  },
+  berachain: {
     tokens: [
       '0xdE04c469Ad658163e2a5E860a03A86B52f6FA8C8',
       '0x549943e04f40284185054145c6E4e9568C1D3241',
@@ -60,16 +69,6 @@ async function calculateLPPosition(api, lp) {
   api.add(token, balance);
 }
 
-async function calculateAdapterPosition(api, adapter, tokens) {
-  const balances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: tokens.map((token) => {
-      return { target: token, params: [adapter] };
-    })
-  });
-  api.add(tokens, balances);
-}
-
 Object.keys(config).forEach((chain) => {
   if (chain === 'berachain') {
     module.exports[chain] = {
@@ -79,17 +78,14 @@ Object.keys(config).forEach((chain) => {
             async (lp) => await calculateLPPosition(api, lp)
           )
         );
-        await Promise.all(
-          config[chain].adapters.map(
-            async (adapter) =>
-              await calculateAdapterPosition(api, adapter, config[chain].tokens)
-          )
-        );
-        return api.getBalances();
+        return api.sumTokens({
+          tokens: config[chain].tokens,
+          owners: tokenOwners
+        });
       }
     };
   } else if (chain === 'ethereum') {
-    const funds = config[chain];
+    const funds = config[chain].fundAdapters;
     module.exports[chain] = {
       tvl: async (api) => {
         const tokens = await api.multiCall({
@@ -107,8 +103,8 @@ Object.keys(config).forEach((chain) => {
         bals.forEach((v, i) => (bals[i] = v * 10 ** (decimals[i] - 18)));
         api.add(tokens, bals);
         return api.sumTokens({
-          owner: '0x4809010926aec940b550D34a46A52739f996D75D',
-          token: ADDRESSES.ethereum.USDC
+          tokens: config[chain].tokens,
+          owners: tokenOwners
         });
       }
     };
