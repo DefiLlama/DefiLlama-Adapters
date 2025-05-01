@@ -51,6 +51,12 @@ const fixBalancesTokens = {
     'ibc:E3459360643C2555C57C7DAB0567FA762B42D5D6D45A76615EA7D99D933AEC04': { coingeckoId: 'secret', decimals: 6, },
     'ibc:343182F79E6450836403252D1122288D480605885A01426085859B43F5ECD3EF': { coingeckoId: 'babylon', decimals: 6, }
   },
+  aleph_zero: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'aleph-zero', decimals: 18, },
+    '0xB3f0eE446723f4258862D949B4c9688e7e7d35d3': { coingeckoId: 'ethereum', decimals: 18, },
+    '0x18d25B4e18165c97e1285212e5d1f80eDD6d3Aa7': { coingeckoId: 'usd-coin', decimals: 6, },
+    '0xD648529D4803d3467bA8850577BEd4e4b8Ae583C': { coingeckoId: 'tether', decimals: 6, },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
