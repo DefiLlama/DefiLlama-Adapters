@@ -1,18 +1,14 @@
-const { PublicKey } = require("@solana/web3.js");
-const { getConnection, decodeAccount, } = require("../helper/solana");
+const { sumTokens2 } = require('../helper/solana');
 
 async function tvl() {
-  const connection = getConnection()
-  const mint = await connection.getAccountInfo(new PublicKey('GVeaBeaHZDJHji4UTzaPJgB1PRiVeCV2EaArjYyiwNdT'));
-  const mintInfo = decodeAccount('mint', mint)
-  return {
-    'SENTBOT': mintInfo.supply.toString() / (10 ** mintInfo.decimals)
-  };
+  var test = await sumTokens2({ solOwners: ['FiPhWKk6o16WP9Doe5mPBTxaBFXxdxRAW9BmodPyo9UK'] });
+  console.log(await test);
+  return test;
 }
 
 module.exports = {
   timetravel: false,
-  solana: {
-    tvl,
-  },
-}
+  methodology:
+    "Sentinel Trader Bot TVL is calculated by retrieving the SOL balance of the SENTBOT mint authority (or treasury) wallet",
+  solana: { tvl },
+};
