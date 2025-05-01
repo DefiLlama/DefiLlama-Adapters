@@ -28,20 +28,16 @@ const TOKENS = {
 };
 
 async function tvl(timestamp, block, chainBlocks) {
-  try {
     const balances = await sumTokens2({
-      chain: 'crossfi',
-      block: chainBlocks['crossfi'],
-      owner: CONTRACT_ADDRESS,
-      tokens: Object.values(TOKENS).map(token => token.address),
-      resolveLP: false,
-      failOnError: false,
+        chain: 'crossfi',
+        block: chainBlocks['crossfi'],
+        owner: CONTRACT_ADDRESS,
+        tokens: Object.values(TOKENS).map(token => token.address),
+        resolveLP: false,
+        failOnError: false,
     });
 
     return balances;
-  } catch (error) {
-    return {};
-  }
 }
 
 module.exports = {
