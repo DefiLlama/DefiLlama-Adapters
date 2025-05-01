@@ -2,10 +2,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// RWA Protocol Contract
 const CONTRACT_ADDRESS = '0x10baa5c14ebde8681e83b2503682b3f45b8dc4c2';
 
-// Define tokens to track
 const TOKENS = {
   WXFI: {
     address: ADDRESSES.crossfi.WXFI,
@@ -31,28 +29,17 @@ const TOKENS = {
 
 async function tvl(timestamp, block, chainBlocks) {
   try {
-    // Use sumTokens2 to get the balance of all tokens in the contract
     const balances = await sumTokens2({
       chain: 'crossfi',
       block: chainBlocks['crossfi'],
       owner: CONTRACT_ADDRESS,
       tokens: Object.values(TOKENS).map(token => token.address),
       resolveLP: false,
-      failOnError: false, // Don't fail the entire adapter if one token fails
+      failOnError: false,
     });
-
-    // Log token balances for debugging
-    for (const [symbol, token] of Object.entries(TOKENS)) {
-      const balance = balances[token.address] || 0;
-      if (balance && balance !== '0') {
-        console.log(`${symbol} balance:`, balance / (10 ** token.decimals));
-      }
-    }
 
     return balances;
   } catch (error) {
-    console.error(`Error in xAssets TVL adapter: ${error.message}`);
-    // Return empty balances in case of error to prevent breaking the entire adapter system
     return {};
   }
 }
@@ -72,6 +59,6 @@ module.exports = {
   crossfi: {
     tvl,
   },
-  timetravel: false, // Set to false if the RPC doesn't support block queries
+  timetravel: false,
   misrepresentedTokens: false,
 };
