@@ -10,6 +10,10 @@ const tokenOwners = [
 
 const config = {
   ethereum: {
+    tokens: [
+      ADDRESSES.ethereum.USDC,
+      '0xb7de5dfcb74d25c2f21841fbd6230355c50d9308'
+    ],
     fundAdapters: [
       // https://docs.reservoir.xyz/products/proof-of-reserves
       '0x0c7e4342534e6e8783311dCF17828a2aa0951CC7',
@@ -20,10 +24,7 @@ const config = {
       '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc'
       // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
     ],
-    tokens: [
-      ADDRESSES.ethereum.USDC,
-      '0xb7de5dfcb74d25c2f21841fbd6230355c50d9308'
-    ]
+    lps: []
   },
   berachain: {
     tokens: [
@@ -34,6 +35,7 @@ const config = {
       '0x7fd165b73775884a38aa8f2b384a53a3ca7400e6',
       '0x1fb6c1ade4f9083b2ea42ed3fa9342e41788d4b5'
     ],
+    fundAdapters: [],
     lps: [
       {
         name: 'BYUSD-HONEY-STABLE',
@@ -69,44 +71,39 @@ async function calculateLPPosition(api, lp) {
   api.add(token, balance);
 }
 
+async function calculateFundAdaptersPositions(api, fundAdapters) {
+  const tokens = await api.multiCall({
+    abi: 'address:underlying',
+    calls: fundAdapters
+  });
+  const bals = await api.multiCall({
+    abi: 'uint256:totalValue',
+    calls: fundAdapters
+  });
+  const decimals = await api.multiCall({
+    abi: 'uint8:decimals',
+    calls: tokens
+  });
+  bals.forEach((v, i) => (bals[i] = v * 10 ** (decimals[i] - 18)));
+  api.add(tokens, bals);
+}
+
 Object.keys(config).forEach((chain) => {
-  if (chain === 'berachain') {
-    module.exports[chain] = {
-      tvl: async (api) => {
-        await Promise.all(
-          config[chain].lps.map(
-            async (lp) => await calculateLPPosition(api, lp)
-          )
-        );
-        return api.sumTokens({
-          tokens: config[chain].tokens,
-          owners: tokenOwners
-        });
-      }
-    };
-  } else if (chain === 'ethereum') {
-    const funds = config[chain].fundAdapters;
-    module.exports[chain] = {
-      tvl: async (api) => {
-        const tokens = await api.multiCall({
-          abi: 'address:underlying',
-          calls: funds
-        });
-        const bals = await api.multiCall({
-          abi: 'uint256:totalValue',
-          calls: funds
-        });
-        const decimals = await api.multiCall({
-          abi: 'uint8:decimals',
-          calls: tokens
-        });
-        bals.forEach((v, i) => (bals[i] = v * 10 ** (decimals[i] - 18)));
-        api.add(tokens, bals);
-        return api.sumTokens({
-          tokens: config[chain].tokens,
-          owners: tokenOwners
-        });
-      }
-    };
-  }
+  module.exports[chain] = {
+    tvl: async (api) => {
+      // Add fund adapters
+      await calculateFundAdaptersPositions(api, config[chain].fundAdapters);
+
+      // Add LPs
+      await Promise.all(
+        config[chain].lps.map(async (lp) => await calculateLPPosition(api, lp))
+      );
+
+      // Add token holdings
+      return api.sumTokens({
+        tokens: config[chain].tokens,
+        owners: tokenOwners
+      });
+    }
+  };
 });
