@@ -1,6 +1,6 @@
 const { sumERC4626VaultsExport } = require('../helper/erc4626');
 
-const hyperliquidVaults = ['0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', '0x706162790b601A8514c18718d0c63C9D1268e89C'];
+const hyperliquidVaults = ['0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', '0xc061d38903b99aC12713B550C2CB44B221674F94'];
 
 const ethereumVaults = [
   '0x9E3C0D2D70e9A4BF4f9d5F0A6E4930ce76Fed09e',
