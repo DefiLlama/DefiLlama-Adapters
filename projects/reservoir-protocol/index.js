@@ -1,20 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 
-const ASSETS = {
-  rUSD: {
-    address: '0x09D4214C03D01F49544C0448DBE3A27f768F2b34',
-    decimals: 18
-  },
-  HONEY: {
-    address: ADDRESSES.berachain.HONEY,
-    decimals: 18
-  },
-  USDT0: {
-    address: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736',
-    decimals: 6
-  }
-};
-
 const config = {
   ethereum: [
     // https://docs.reservoir.xyz/products/proof-of-reserves
@@ -32,69 +17,39 @@ const config = {
       '0x6811742721DcCe83942739d44E40f140B5BCee37',
       '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3'
     ],
-    infraredVaults: [
-      {
-        vault: '0xbbB228B0D7D83F86e23a5eF3B1007D010058161',
-        holder: '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181'
-      }
-    ],
-    kodiakIslands: [
-      {
-        name: 'rUSD-HONEY',
-        pool: '0xD6D83e479359766f21A63b20d6AF43A138356EbA',
-        island: '0x7fd165B73775884a38AA8f2B384A53A3Ca7400E6',
-        assets: [ASSETS.rUSD, ASSETS.HONEY],
-        vault: '0x1C5879B75be9E817B1607AFb6f24F632eE6F8820',
-        holder: '0x6811742721DcCe83942739d44E40f140B5BCee37'
-      }
-      /*
-      {
-        name: 'rUSD-USD₮0',
-        pool: '0x8b711A1d31149397845322Dde3514437F6bd2Eb3',
-        island: '0x1fb6c1ade4f9083b2ea42ed3fa9342e41788d4b5',
-        assets: [ASSETS.rUSD, ASSETS.USDT0],
-        vault: '0x1fb6c1ade4f9083b2ea42ed3fa9342e41788d4b5',
-        holder: '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3'
-      }
-      */
-    ],
     tokens: [
       '0xdE04c469Ad658163e2a5E860a03A86B52f6FA8C8',
       '0x549943e04f40284185054145c6E4e9568C1D3241',
       ADDRESSES.berachain.HONEY,
       '0x688e72142674041f8f6af4c808a4045ca1d6ac82',
-      '0x88C4F34B86907b7221c0061f7a0bBeC9391Ea727',
       '0x7fd165b73775884a38aa8f2b384a53a3ca7400e6',
       '0x1fb6c1ade4f9083b2ea42ed3fa9342e41788d4b5'
+    ],
+    lps: [
+      {
+        name: 'BYUSD-HONEY-STABLE',
+        token: '0xdE04c469Ad658163e2a5E860a03A86B52f6FA8C8',
+        vault: '0xbbB228B0D7D83F86e23a5eF3B1007D0100581613',
+        holder: '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181'
+      },
+      {
+        name: 'rUSD-HONEY',
+        token: '0x7fd165B73775884a38AA8f2B384A53A3Ca7400E6',
+        vault: '0x1C5879B75be9E817B1607AFb6f24F632eE6F8820',
+        holder: '0x6811742721DcCe83942739d44E40f140B5BCee37'
+      },
+      {
+        name: 'rUSD-USD₮0',
+        token: '0x1fb6c1aDE4F9083b2EA42ED3fa9342e41788D4b5',
+        vault: '0xc6De36eceD67db9c17919708865b3eE94a7D987C',
+        holder: '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3'
+      }
     ]
   }
 };
 
-async function calculateKodiakBalances(api, kodiakIsland) {
-  const { pool, island, assets, vault, holder } = kodiakIsland;
-  const balances = await Promise.all(
-    assets.map(async (asset) => {
-      return (
-        (await api.call({
-          abi: 'erc20:balanceOf',
-          target: asset.address,
-          params: [pool]
-        })) *
-        10 ** (18 - asset.decimals)
-      );
-    })
-  );
-
-  const poolBalance = balances.reduce((acc, balance) => {
-    return acc + balance;
-  }, 0);
-
-  const islandTotalSupply = await api.call({
-    abi: 'erc20:totalSupply',
-    target: island
-  });
-
-  const price = poolBalance / islandTotalSupply;
+async function calculateLPPosition(api, lp) {
+  const { token, vault, holder } = lp;
 
   const balance = await api.call({
     abi: 'erc20:balanceOf',
@@ -102,7 +57,17 @@ async function calculateKodiakBalances(api, kodiakIsland) {
     params: [holder]
   });
 
-  api.add(island, balance * price);
+  api.add(token, balance);
+}
+
+async function calculateAdapterPosition(api, adapter, tokens) {
+  const balances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: tokens.map((token) => {
+      return { target: token, params: [adapter] };
+    })
+  });
+  api.add(tokens, balances);
 }
 
 Object.keys(config).forEach((chain) => {
@@ -110,12 +75,16 @@ Object.keys(config).forEach((chain) => {
     module.exports[chain] = {
       tvl: async (api) => {
         await Promise.all(
-          config[chain].kodiakIslands.map(
-            async (kodiakIsland) =>
-              await calculateKodiakBalances(api, kodiakIsland)
+          config[chain].lps.map(
+            async (lp) => await calculateLPPosition(api, lp)
           )
         );
-        console.log(api.getBalances());
+        await Promise.all(
+          config[chain].adapters.map(
+            async (adapter) =>
+              await calculateAdapterPosition(api, adapter, config[chain].tokens)
+          )
+        );
         return api.getBalances();
       }
     };
