@@ -16,7 +16,8 @@ const config = {
 
 Object.keys(config).forEach(chain => {
     if (chain === 'berachain') {
-      const lpToken = '0xbbB228B0D7D83F86e23a5eF3B1007D0100581613';
+      const byusdHoneyVault = '0xbbB228B0D7D83F86e23a5eF3B1007D0100581613';
+      const byusdHoneyToken = '0xdE04c469Ad658163e2a5E860a03A86B52f6FA8C8';
       const honeyToken = '0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce';
       const byusdToken = '0x688e72142674041f8f6af4c808a4045ca1d6ac82';
 
@@ -30,7 +31,7 @@ Object.keys(config).forEach(chain => {
 
       module.exports[chain] = {
         tvl: async (api) => {
-          const lpBalance = await api.call({ abi: 'erc20:balanceOf', target: lpToken, params: [owner] });
+          const lpBalance = await api.call({ abi: 'erc20:balanceOf', target: byusdHoneyVault, params: [owner] });
           const honeyBalance = await api.call({ abi: 'erc20:balanceOf', target: honeyToken, params: [owner] });
           const byusdBalance = await api.call({ abi: 'erc20:balanceOf', target: byusdToken, params: [owner] });
 
@@ -41,7 +42,7 @@ Object.keys(config).forEach(chain => {
           const price = (rUSDBalance + honeyBalance2) * 1e8 / lpToken2TotalSupply;
           const balance = await api.call({ abi: 'erc20:balanceOf', target: infraredVault, params: [kodiakPool] });
 
-          api.add(ADDRESSES.berachain.USDC, lpBalance/1e12);
+          api.add(byusdHoneyToken, lpBalance);
           api.add(honeyToken, honeyBalance);
           api.add(byusdToken, byusdBalance);
           api.add(kodiakPool, balance * price / 1e8);
