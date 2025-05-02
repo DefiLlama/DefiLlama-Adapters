@@ -2004,8 +2004,7 @@
   "reya": {
     "WETH": "0x6b48c2e6a32077ec17e8ba0d98ffc676dfab1a30",
     "USDC": "0x3B860c0b53f2e8bd5264AA7c3451d41263C933F2",
-    "RUSD": "0xa9f32a851b1800742e47725da54a09a7ef2556a3",
-    "SRUSD": "0x162B78e827A8DB8173D13735C08c8D40Cb5cCdAB"
+    "RUSD": "0xa9f32a851b1800742e47725da54a09a7ef2556a3"
   },
   "neutron": {
     "NTRN": "untrn"
