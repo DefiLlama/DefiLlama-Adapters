@@ -143,7 +143,8 @@
     "ankrBNB": "0xe85afccdafbe7f2b096f268e31cce3da8da2990a",
     "aBNBb": "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d",
     "TUSD": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9",
-    "WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"
+    "WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
+    "weETH": "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A"
   },
   "polygon": {
     "WMATIC": "0xfd28c7cea3c50a060cb4c0059e453c6d4dd9829d",
