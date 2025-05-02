@@ -23,6 +23,7 @@ const DEFAULTS = {
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
   CORN_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
+  ASSETCHAIN_RPC_MULTICALL: '0xf8ac4BEB2F75d2cFFb588c63251347fdD629B92c',
 }
 
 const ENV_KEYS = [

@@ -104,7 +104,13 @@ module.exports = {
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
     const BATCH_SIZE = 1000
-    const blacklisted = new Set(['bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'])
+    const blacklisted = new Set([
+      'bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w',
+      'bc1pkzlqekjjylsrt9eh57pcd8ynz5w4jv6k3wlj39x8y59fhm4pjdxs9xvs46',
+      'bc1pntj998mddtc4ketfvh8jhvn4tgrvv5870hsfpwhttxwtgv4mrvmqmr6s3f',
+      'bc1pt3rf4ml95sfc8svqjtl8d6h5hjkej60ruvtfry44g35uchjt2seqxx7tfm',
+      'bc1pwffr0etqcg3awczl6lfs4dne987y64rgnnael577yj02jvuvnrssqyxdsj',
+    ])
 
     return getConfig('lombard', undefined, {
       fetcher: async () => {
