@@ -7,6 +7,7 @@ const config = {
   linea: "0xd67Da8636Ae87b0cECBDa2e66dB58d4839722B52",
   optimism: "0x9dc7B2130e478C5810Dc0cDbD46B9D479b2e1aC4",
   sei: "0x4534F53A81416a83F6bAF5ac63c94aEd1fea1303",
+  flow: "0x49b50F508091b57dAe0D072F21F5cC78d6d94903"
 }
 
 module.exports = {

@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const atETH = '0x284D81e48fBc782Aa9186a03a226690aEA5cBe0E';
-const scETH = '0x3bce5cb273f0f148010bbea2470e7b5df84c7812';
+const scETH = ADDRESSES.sonic.scETH;
 const WETH = '0x50c42deacd8fc9773493ed674b675be577f2634b';
 
 async function tvl(api) {

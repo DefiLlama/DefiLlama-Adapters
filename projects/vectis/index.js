@@ -1,11 +1,11 @@
-const { PublicKey } = require("@solana/web3.js");
 const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey } = require("./spotMarkets");
-const { deserializeUserPositions } = require("./helpers");
+const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses} = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
-const { getMultipleAccounts } = require('../helper/solana')
+const { getMultipleAccounts} = require('../helper/solana')
 
 
-module.exports = {
+
+  module.exports = {
   timetravel: false,
   doublecounted: true,
   methodology: "Calculate sum of spot positions in vaults with unrealized profit and loss",
@@ -13,25 +13,6 @@ module.exports = {
     tvl,
   },
 };
-
-const vaultUserAddresses = [
-  new PublicKey("9Zmn9v5A2YWUQj47bkEmcnc37ZsYe83rsRK8VV2j1UqX"), //Vault A
-  new PublicKey("4KvPuh1wG8j1pLnZUC5CuqTm2a41PWNtik1NwpLoRquE"), //Vault B
-  new PublicKey("Hcs63usAc6cxWccycrVwx1mrNgNSpUZaUgFm7Lw9tSkR"), //Vault C
-  new PublicKey("ARLwHJ3CYLkVTeW3nHvPBmGQ7SLQdhZbAkWHzYrq57rt"), //Vault D
-  new PublicKey("FyH3qGRQSG7AmdEsPEVDxdJJLnLhAn3CZ48acQU34LFr"), //Vault E
-  new PublicKey("MzEPFp2LwCSMMPHLQsqfE7SN6xkPHZ8Uym2HfrH7g5P"), //Yield Compass A
-  new PublicKey("CMiyE7M98DSPBEhQGTA6CzNodWkNuuW4y9HoocfK75nG"), //Yield Compass B
-  new PublicKey("CnaXXuzc2S5UFSGoBRuKVNnzXBvxbaMwq6hZu5m91CAV"),//LST Yield Compass
-  new PublicKey("Fwfu73gfD5KzqtSAVKqmW414rshmYpoHY4nJ8LWqPyHB"), //Prime standard
-  new PublicKey("6NaF3EpArzHJ4x5GeTzjcUcdic29Rt4sy4pn6LP7iJ4r"), //Prime A
-  new PublicKey("3CTgSqfQPWsFCjQmJx45JgVWgqEWau5ec55tsQDxW8gM"), // Prime B
-  new PublicKey("3BWfL6sGXMhLZaSbj5D7DYy2tFrjxV7gBdyrnVbcKnEi"), // Prime C
-  new PublicKey("2XnEYxNovTmYDXkDb7zninKttt3j9i67sj96H7CV5wZw"), // JLP Navigator II
-  
-
-
-];
 /**
  * Vault Equity Calculation Formula:
  * VaultEquity = NetSpotValue + UnrealizedPnL
@@ -50,9 +31,14 @@ const vaultUserAddresses = [
  * 
  */
 async function tvl(api) {
+
+  const vaultAddresses = await fetchVaultAddresses();
+
+  const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(vaultAddresses, 168);
+
   // Get all vault accounts first
   const accounts = await getMultipleAccounts(vaultUserAddresses)
-  const deserializedData = accounts.map(deserializeUserPositions)
+  const deserializedData = accounts.filter((accountInfo) => !!accountInfo).map(deserializeUserPositions)
 
   // Collect unique market indices upfront
   const allSpotIndices = new Set()
@@ -66,7 +52,7 @@ async function tvl(api) {
   // Batch fetch 
   const allKeys = [
     ...[...allSpotIndices].map(index => getVaultPublicKey('spot_market', index)),
-    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index))
+    ...[...allPerpIndices].map(index => getVaultPublicKey('perp_market', index)),
   ]
   
   const allAccounts = await getMultipleAccounts(allKeys)
@@ -107,10 +93,8 @@ async function tvl(api) {
         const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort
         const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6)
         const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6))
-
         api.add(quoteTokenMint, fundingRatePnl)
       })
     }
   }
 }
-

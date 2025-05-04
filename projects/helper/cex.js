@@ -110,7 +110,10 @@ const defaultTokens = {
      "0x23878914efe38d27c4d67ab83ed1b93a74d4086a", //aEthUSDT
      "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8", // aEthWETH
      "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", // aEthUSDC
-     "0x6982508145454ce325ddbe47a25d4ec3d2311933",  // PEPE
+     "0x6982508145454ce325ddbe47a25d4ec3d2311933", // PEPE
+     ADDRESSES.ethereum.METH, //METH
+     ADDRESSES.mantle.cmETH, // CMETH
+     "0x54d2252757e1672eead234d27b1270728ff90581" // BITGET TOKEN, NEW
   ],
   tron: [
     nullAddress,
@@ -259,6 +262,19 @@ const defaultTokens = {
   ],
   sui: [],
   aptos: [],
+  mantle: [
+    nullAddress,
+    ADDRESSES.mantle.USDC,
+    ADDRESSES.mantle.USDT,
+    ADDRESSES.mantle.cmETH,
+    ADDRESSES.mantle.mETH,
+    ADDRESSES.mantle.WETH,
+    ADDRESSES.mantle.WMNT,
+    ADDRESSES.mantle.USDe,
+    ADDRESSES.mantle.sUSDe,
+    ADDRESSES.mantle.AUSD,
+    ADDRESSES.mantle.FBTC
+  ],
 }
 
 function cexExports(config) {

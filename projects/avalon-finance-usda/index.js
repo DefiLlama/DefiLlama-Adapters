@@ -22,6 +22,12 @@ const config = {
     lfbtcAddress: '0x3119a1AD5B63A000aB9CA3F2470611eB997B93B9',
     usdaAddress: '0x2BDC204b6d192921605c66B7260cFEF7bE34Eb2E',
   },
+  sonic: {
+    poolAddress: '0x74476697b5FFd19c8CD9603C01527Dcb987C7418',
+    fbtcAddress: ADDRESSES.mantle.FBTC,
+    lfbtcAddress: '0x040c10f8238e4689c5e549ef5e07478b738b2ba5',
+    usdaAddress: '0xff12470a969dd362eb6595ffb44c82c959fe9acc',
+  }
 }
 
 module.exports = {

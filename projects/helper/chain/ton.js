@@ -4,6 +4,7 @@ const plimit = require('p-limit')
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 const { sumTokens2 } = require('../unwrapLPs')
+const tonUtils = require('../utils/ton')
 
 const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
 
@@ -27,16 +28,21 @@ async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens
   if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return;
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
   await sleep(1000 * (3 * Math.random() + 3))
+  tokens = tokens.map((a) => {
+    if (a === ADDRESSES.ton.TON) return ADDRESSES.ton.TON
+    return tonUtils.address(a).toString()
+  })
   balances.forEach(({ balance, price, jetton }) => {
-    if (onlyWhitelistedTokens && !tokens.includes(jetton.address)) return;
+    const address = tonUtils.address(jetton.address).toString()
+    if (onlyWhitelistedTokens && !tokens.includes(address)) return;
     if (!useTonApiForPrices) {
-      api.add(jetton.address, balance)
+      api.add(address, balance)
       return;
     }
     const decimals = jetton.decimals
     price = price?.prices?.USD
     if (!decimals || !price) {
-      api.add(jetton.address, balance)
+      api.add(address, balance)
       return;
     }
     const bal = balance * price / 10 ** decimals
@@ -70,8 +76,10 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   owners = getUniqueAddresses(owners, api.chain)
 
   if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
+  if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return sumTokens2({ api, })
 
   for (const addr of owners) {
+    await sleep(1000 * (3 * Math.random() + 7))
     await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens, useTonApiForPrices })
   }
   return sumTokens2({ api, })
@@ -87,7 +95,7 @@ async function call({ target, abi, params = [], rawStack = false, }) {
     "method": abi,
     "stack": params
   }
-  const { ok, result } = await post('https://ton.drpc.org/rest/runGetMethod', requestBody)
+  const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
   if (!ok) {
     throw new Error("Unknown");
   }

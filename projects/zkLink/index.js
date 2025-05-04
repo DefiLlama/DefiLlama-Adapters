@@ -25,7 +25,7 @@ const config = {
       "0xfB0Ad0B3C2605A7CA33d6badd0C685E11b8F5585",
     ],
     tokens: [
-      "0x4186BFC76E2E237523CBC30FD220FE055156b41F",  // rsETH
+      ADDRESSES.berachain.rsETH,  // rsETH
       "0x3082CC23568eA640225c2467653dB90e9250AaA0", // RDNT
     ],
   },
@@ -76,7 +76,7 @@ const config = {
       ...Object.values(ADDRESSES.manta),
       ADDRESSES.null,
       "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5", //MANTA
-      "0xEc901DA9c68E90798BbBb74c11406A32A70652C3", //STONE
+      ADDRESSES.berachain.STONE, //STONE
       "0xbdAd407F77f44F7Da6684B416b1951ECa461FB07", //WUSDM
       "0x34c7Ad65E4163306f8745996688b476914201cE0", //uniETH
     ],
