@@ -9,7 +9,10 @@ module.exports = {
 const config = {
   ethereum: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: ["0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83"],
+    blackList: [
+      "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
+      "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+    ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
       "0x1dca6989b0d2b0a546530b3a739e91402eee2e1536a2d3ded4f5ce589a9cd1c2",
@@ -93,6 +96,7 @@ Object.keys(config).forEach((chain) => {
       )
         .map((i) => [i.collateralToken, i.loanToken])
         .flat();
+
       return sumTokens2({
         api,
         owner: morphoBlue,
