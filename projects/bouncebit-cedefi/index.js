@@ -1,4 +1,4 @@
-const { graphQuery } = require('../helper/http')
+const { cachedGraphQuery } = require('../helper/cache')
 const easyBTC = require('./easyBTC')
 const premium = require('./premium')
 const promo = require('./promo')
@@ -33,8 +33,9 @@ const TOKEN_MAPPINGS = {
   '0x7f150c293c97172c75983bd8ac084c187107ea19': '0xf5e11df1ebcf78b6b6d26e04ff19cd786a1e81dc', // stBBTC -> bbtc
 }
 
-async function fetchTokens(subgraphUrl) {
-  return graphQuery(subgraphUrl, query)
+async function fetchTokens(chain, subgraphUrl, cacheKey = '') {
+  const prefix = `bouncebit-cedefi${cacheKey}`
+  return cachedGraphQuery(`${prefix}/${chain}`, subgraphUrl, query)
 }
 
 async function cedefiTvl(api) {
@@ -46,15 +47,15 @@ async function cedefiTvl(api) {
   const tokenLists = await Promise.all(
     chain === 'bouncebit'
       ? [
-          fetchTokens(config[chain].main.url),
-          fetchTokens(config[chain].boyya.url)
+          fetchTokens(chain, config[chain].main.url),
+          fetchTokens(chain, config[chain].boyya.url, '-boyya')
         ]
       : chain === 'bsc'
       ? [
-          fetchTokens(config[chain].subgraphUrl),
-          fetchTokens(config[chain].subgraphUrlVip)
+          fetchTokens(chain, config[chain].subgraphUrl),
+          fetchTokens(chain, config[chain].subgraphUrlVip, '-vip')
         ]
-      : [fetchTokens(config[chain].subgraphUrl)]
+      : [fetchTokens(chain, config[chain].subgraphUrl)]
   )
 
   const allTokens = tokenLists.flatMap(result => result.tokens)
