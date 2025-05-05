@@ -5,9 +5,8 @@ const abi = {
 };
 
 const CONFIG = {
-  sonic: ['0x82c7B4aBB462dE2f7bFDE40c05d1fAa3913DbBB3',
-    '0xA22D38ba0230DcafeA997824349DF92218c9368a',
-    '0xdfd3123701E8cE194751811401553342de423801']
+  sonic: ['0x82c7B4aBB462dE2f7bFDE40c05d1fAa3913DbBB3'],
+  hyperliquid: ['0x0F0E6905B0199393b9102be42f28f71c22e30151'],
 };
 
 const fetchReserveData = async (api, poolDatas, isBorrowed) => {
