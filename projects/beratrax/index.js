@@ -1,18 +1,10 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const vaults = [
-  // Infrared
-  "0x813C9ecE1Da3B529656DfCc5D42815f9cCf60B2c",
-  "0x9bC238c1e0f31a5e016Ea484a698Ee7B4c3B219c",
-  "0x45114A8fCFa77967FDb33E87f6284fc119128836",
-  "0x76BAe24B0fc180B98A613E3AF19F1A6AE8E4d4F4",
-  "0xe88e01F2e3eb8E867Bf38E873DCC229264696098",
-  "0x7c04723AB200D55d1C826160340c089E7CaAFEea",
-  // Kodiak
-  "0x69D08aaCd061B4054036BE42D6807cf669de13bd",
-  "0x2C368aD56E801ed8E8590DF84Cb537E98f566460",
-  "0x388FF9498b8d967DE373b4a440a7A54A34Ec2743",
-  "0xf279F04E3976cc9b32A4ce0402620d2D4C8C692C",
-  "0x8C8ed236D367F7885478959aD5af37E5a1575afA",
+const { getLogs2 } = require("../helper/cache/getLogs");
+
+const vaultFactories = [
+  "0x33cB15BAeD0422E70Ed6f48c72106423F20e21D7",
+  "0x2bA289beE93fa6cBae9eB64FB385f4cb199FF3EE",
+  "0x5CaBB1155D0F0Ff975e30aCaaa11CDA12a6E5b7E",
 ];
 
 const steerVaults = [
@@ -22,12 +14,13 @@ const steerVaults = [
   "0x79e14058406d8FdB91a59e29b3F127FA8Cdc2075",
   "0x1d4AAA36e2a6362C73a221f546813f1E48C41c11",
   "0xBfF450EfF556cb54F4b762bAfb9565266c35917D",
+  "0x184FCE25EF41D72418DfD7953c2aD7574Fb8622A",
 ];
 
-async function getSteerVaultTvl(api) {
+async function getSteerVaultTvl(api, vaults) {
   let tokens = await api.multiCall({
     abi: "address:asset",
-    calls: steerVaults,
+    calls: vaults,
   });
   const [token0s, token1s, supplies, reserves, bals] = await Promise.all([
     api.multiCall({ abi: "address:token0", calls: tokens }),
@@ -39,7 +32,7 @@ async function getSteerVaultTvl(api) {
     }),
     api.multiCall({
       abi: "uint256:totalAssets",
-      calls: steerVaults,
+      calls: vaults,
     }),
   ]);
 
@@ -52,7 +45,7 @@ async function getSteerVaultTvl(api) {
   });
 }
 
-async function getVaultTvl(api) {
+async function getVaultTvl(api, vaults) {
   const assets = await Promise.all(
     vaults.map(async (vault) => {
       const assets = await api.call({
@@ -76,8 +69,30 @@ async function getVaultTvl(api) {
 }
 
 async function tvl(api) {
-  await getSteerVaultTvl(api);
-  await getVaultTvl(api);
+  const _vaults = [];
+  let vaults = []
+
+  // get all vaults from factories
+  for (const factory of vaultFactories) {
+    const logs = await getLogs2({
+      api,
+      factory,
+      eventAbi: "event VaultCreated(address indexed vault)",
+      fromBlock: 956824,
+    });
+    _vaults.push(...logs.map((log) => log.vault));
+  }
+
+  const vaultNames = await api.multiCall({ abi: 'string:name', calls: _vaults, permitFailure: true })
+  vaultNames.forEach((name, i) => {
+    if (name && name.toLowerCase().includes("steer"))
+      steerVaults.push(_vaults[i])
+    else
+      vaults.push(_vaults[i])
+  })
+
+  await getSteerVaultTvl(api, steerVaults);
+  await getVaultTvl(api, vaults);
   return sumTokens2({ api, resolveLP: true });
 }
 
