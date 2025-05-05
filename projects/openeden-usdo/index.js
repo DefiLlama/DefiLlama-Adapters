@@ -2,7 +2,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const config = {
   arbitrum: {
-    owners: ["0x5EaFF7af80488033Bc845709806D5Fae5291eB88", "0x5E6c2AD8376A9E5E857B1d91643399E9aB65ff8c"],
+    owners: ["0x5EaFF7af80488033Bc845709806D5Fae5291eB88", "0x5E6c2AD8376A9E5E857B1d91643399E9aB65ff8c", '0xaAb4Ea02e5616787931c9E8283cb27F0211DC116'],
     tokens: [
       "0xF84D28A8D28292842dD73D1c5F99476A80b6666A", //t-bill
     ],
