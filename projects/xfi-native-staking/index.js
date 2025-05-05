@@ -16,7 +16,7 @@ async function stakingTvl(timestamp, block, chainBlocks, { api }) {
       block: chainBlocks['crossfi']
     });
     
-    console.log(`Raw staking balance: ${balance.output}`);
+    // console.log(`Raw staking balance: ${balance.output}`);
     
     const balances = {};
     // Add the balance to WXFI (wrapped XFI) which is how native tokens are tracked
@@ -32,7 +32,7 @@ async function stakingTvl(timestamp, block, chainBlocks, { api }) {
 module.exports = {
   methodology: 'TVL consists of the XFI tokens staked in the native staking contract on CrossFi chain.',
   crossfi: {
-    tvl: () => ({}), // No TVL outside of staking
+    tvl: stakingTvl,
     staking: stakingTvl,
     // Uncomment this if the custom function doesn't work
     // staking: staking(STAKING_CONTRACT, XFI_TOKEN, 'crossfi'),
