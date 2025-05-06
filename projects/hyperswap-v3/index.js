@@ -1,14 +1,32 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { uniV3Export } = require('../helper/uniswapV3')
+const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
 
-module.exports = uniV3Export({
-  hyperliquid: { 
-    factory: '0xB1c0fa0B789320044A6F623cFe5eBda9562602E3', 
-    fromBlock: 1, 
-    blacklistedTokens: [ // cause failures 
-      '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-      '0xdac17f958d2ee523a2206206994597c13d831ec7', 
-      '0x6b175474e89094c44da98b954eedeac495271d0f'
-    ] 
+module.exports = {
+  hyperliquid: {
+    tvl
   },
-})
+}
+
+async function tvl(api) {
+  const ownerTokens = await getConfig('hyperswap-v3/' + api.chain, undefined, {
+    fetcher: async () => {
+      let page = 0
+      const ownerTokens = []
+      let hasMore = false
+      do {
+        const { data: { pairs, pageCount } } = await get(`https://api.hyperswap.exchange/api/pairs?page=${page}&maxPerPage=50`)
+        page++
+        hasMore = page < pageCount
+        pairs.forEach(p => {
+          const pair = p.pairAddress
+          const token0 = p.token0.token0Address
+          const token1 = p.token1.token1Address
+          if (!pair || !token0 || !token1) throw new Error('Invalid pair data')
+          ownerTokens.push([[token0, token1], pair])
+        })
+      } while (hasMore)
+      return ownerTokens
+    }
+  })
+  return api.sumTokens({ ownerTokens })
+}
