@@ -13,6 +13,9 @@ LBTC = {'ethereum':'0x8236a87084f8b84306f72007f36f2618a5634494', 'base': '0xecac
 CBBTC = {'ethereum': '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf', 'base': '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf', 'arbitrum': '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf'}
 
 async function ebtc_staking(timestamp) {
+  if(timestamp < 1746507563) {
+    return [0, 0, 0]
+  }
   const api = new sdk.ChainApi({ timestamp, chain: 'ethereum' })
   const EBTC = '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642'
   //ethereum, arb , berachain, base
@@ -59,13 +62,13 @@ module.exports = {
 
     tvl: async ({ timestamp }) => { 
       const [lbtc_held, wbtc_held, cbbtc_held] = await ebtc_staking(timestamp)
-      console.log(lbtc_held, wbtc_held, cbbtc_held)
       const api = new sdk.ChainApi({ timestamp, chain: 'optimism' })
       const ethereum_api = new sdk.ChainApi({ timestamp, chain: 'ethereum' })
       const eth_supply = await api.call({ target: '0x6329004E903B7F420245E7aF3f355186f2432466', abi: 'uint256:getTvl' })
-      const looped_tvl = await api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquideth'] })
-      console.log("looped_tvl", looped_tvl)
-      console.log("eth_supply", eth_supply)
+      let looped_tvl = 0
+      if(timestamp > 1746507563) {
+        looped_tvl = await api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquideth'] })
+      }
       const etherfi_eth_tvl = eth_supply - looped_tvl
       const eusd = await ethereum_api.call({ target: '0x939778D83b46B456224A33Fb59630B11DEC56663', abi: 'uint256:totalSupply' }) / 10 ** 12
       return {

@@ -53,6 +53,7 @@ const vault_config = {
 }
 
 async function updateVaultTvl(api, config) {
+  api.block = 21722402
   const timestamp = api.timestamp
   const { vaults, accountant, base } = config
   const baseDecimals = config.decimals
@@ -69,14 +70,25 @@ async function updateVaultTvl(api, config) {
     amount += (vaultSupply / 10 ** decimal) * (quote / 10 ** decimal) * 10 ** baseDecimals
   }
   if(base === ADDRESSES.ethereum.EBTC) {
-    const wbtc = await optimism_api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquid-vault-wbtc'] })
+    let wbtc = 0
+    if(api.block < 22422439) {
+      wbtc = await api.call({ target: '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642', abi: 'uint256:totalSupply'})
+    } else {
+    wbtc = await optimism_api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquid-vault-wbtc'] })
+    }
     amount -= wbtc
     api.add(ADDRESSES.ethereum.WBTC, wbtc)
   } else if(base === ADDRESSES.ethereum.EETH) {
-    const weth = await optimism_api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquid-vault-weth'] })
+    let weth = 0
+    if (api.block < 22422439) {
+    weth = await optimism_api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquid-weth'] })
+    } else {
+    weth = await optimism_api.call({ target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da', abi: 'function categoryTVL(string _category) view returns (uint256)', params: ['liquid-vault-weth'] })
+    }
     amount -= weth
     api.add(ADDRESSES.ethereum.WETH, weth)
   }
+  if(amount < 0) amount = 0
   api.add(base, amount)
 }
 
