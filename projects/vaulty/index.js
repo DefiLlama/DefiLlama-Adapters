@@ -1,6 +1,6 @@
 const { get } = require('../helper/http')
-const {staking} = require("../helper/staking");
-const {toUSDTBalances} = require("../helper/balances");
+const { staking } = require("../helper/staking");
+const { toUSDTBalances } = require("../helper/balances");
 
 async function getPlatformData() {
   return get("https://55vvs1ddm4.execute-api.eu-central-1.amazonaws.com/default/tvl")
@@ -15,9 +15,10 @@ async function tvl() {
 }
 
 module.exports = {
+  deadFrom: '2025-01-01',
   misrepresentedTokens: true,
   methodology: 'TVL counts the tokens deposited to all vaults',
-  bsc:{
+  bsc: {
     staking: staking(stakingContract, vlty),
     tvl
   }
