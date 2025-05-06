@@ -128,7 +128,6 @@ module.exports = {
   methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
   arbitrum: { tvl, borrowed: borrowedVaults, staking: stakedCbl },
   btr: { tvl, borrowed: borrowedVaults, },
-  plume: { borrowed: borrowedVaults},
   plume_mainnet: { borrowed: borrowedVaults},
   polygon: { borrowed: borrowedFund, tvl: polygonTvl },
 };
