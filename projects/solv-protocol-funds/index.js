@@ -46,6 +46,7 @@ async function tvl(api) {
   await lpV3PositionsBalance(api, address);
   await aaveSupplyBalance(api, address);
   await solanaTvl(api, address);
+  await tokenSupply(api, address);
 
   (solvTokens[api.chain] ?? []).forEach(token => {
     api.removeTokenBalance(token)
@@ -421,6 +422,25 @@ async function solanaTvl(api, address) {
   return sumTokens2Solana({ api, owners });
 }
 
+async function tokenSupply(api, address) {
+  if (!address[api.chain] || !address[api.chain]["tokenSupply"]) {
+    return;
+  }
+  let tokenSupplyData = address[api.chain]["tokenSupply"];
+
+  const totalSupplys = await api.multiCall({
+    abi: abi.totalSupply,
+    calls: tokenSupplyData.map((address) => ({
+      target: address,
+    })),
+  });
+
+
+  for (let i = 0; i < tokenSupplyData.length; i++) {
+    api.add(tokenSupplyData[i], totalSupplys[i]);
+  }
+}
+
 async function getGraphData(timestamp, chain, api) {
   let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
 
@@ -452,7 +472,7 @@ async function getGraphData(timestamp, chain, api) {
 
 
 // node test.js projects/solv-protocol-funds
-['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'solana'].forEach(chain => {
+['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'solana', 'soneium'].forEach(chain => {
   module.exports[chain] = {
     tvl
   }
