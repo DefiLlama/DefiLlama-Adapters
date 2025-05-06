@@ -75,11 +75,13 @@ const config = {
     morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
     fromBlock: 5991116,
   },
+  /*
   tacchain_2390_1:{
     morphoBlue: "0xF0453e7368Ea01d6d6d6a222C26B5a06F1d816e9",
     fromBlock: 3669141,
   },
-  camp:{
+  */
+  basecamp:{
     morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
     fromBlock: 4804080,
   },
