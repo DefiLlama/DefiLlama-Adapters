@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json');
+const { defaultTokens } = require('../helper/cex');
 
 // Gnosis Safe multisigs
 const treasuryMultisigs = [
@@ -12,12 +13,6 @@ const treasuryMultisigs = [
     '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', // Old Mode
     '0x0EFeE436D77258217956Ea3fA0E639e306D74992', // Old Base
     '0xa00991F9Aa65a54dBDE368385771C5613A024693', // Old Blast
-];
-
-const vaultContracts = [
-    '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', // tacETH
-    '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', // tacBTC
-    '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', // tacUSD
 ];
 
 const tokens = {
@@ -41,6 +36,7 @@ const tokens = {
         rsWETH: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
         SWELL: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
         TERM: '0xC3d21f79C3120A4fFda7A535f8005a7c297799bF',
+        GEAR: '0xBa3335588D9403515223F109EdC4eB7269a9Ab5D',
         Symbiotic: '0x21DbBA985eEA6ba7F27534a72CCB292eBA1D2c7c',
         wstETH: ADDRESSES.ethereum.WSTETH,
         WETH: ADDRESSES.ethereum.WETH,
@@ -123,8 +119,41 @@ const tokens = {
     }
 };
 
+const treasuryNFTs = {
+    avax: [
+        { veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.avax.PHAR, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // Pharaoh Exchange - vePHAR
+        { veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.avax.PHAR, owner: '0xB6301976f04E6A58D6E57Ff04144A31D911D3a25' }, // Pharaoh Exchange - vePHAR
+        // { veNft: '0x10c2dD78aDe1Dc5800DDD186b123977669a4D9D9', baseToken: tokens.avax.PHAR, owner: '0xc033B96f8A66787420b780fF2C6af75E89F4464b' }, // Pharaoh Collection?
+    ],
+    linea: [
+        { veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.linea.NILE, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // NILE - veNILE
+        // { veNft: '0x8D95f56b0Bac46e8ac1d3A3F12FB1E5BC39b4c0c', baseToken: tokens.linea.NILE, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // veLYNX?
+    ],
+    arbitrum: [
+        { veNft: '0xAAA343032aA79eE9a6897Dab03bef967c3289a06', baseToken: tokens.arbitrum.RAM, owner: '0xB6301976f04E6A58D6E57Ff04144A31D911D3a25' }, // RAMSES - veNFT
+        { veNft: '0xAAA343032aA79eE9a6897Dab03bef967c3289a06', baseToken: tokens.arbitrum.RAM, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // RAMSES - veNFT
+        // { veNft: '0x33545b31c30dffe3164dadf8b10a80a72307ee36', baseToken: tokens.arbitrum.RAM, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // $ARB AIRDROP?
+        // { veNft: '0xf2a20438704a424b22bd6d71a87772ce9deec3be', baseToken: tokens.arbitrum.RAM, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // $ARB AIRDROP?
+    ],
+    mantle: [
+        { veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.mantle.CLEO, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // Cleopatra - veCLEO
+        { veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.mantle.CLEO, owner: '0xB6301976f04E6A58D6E57Ff04144A31D911D3a25' }, // Cleopatra - veCLEO
+    ],
+    scroll: [
+        { veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.scroll.NURI, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // NURI - veNURI
+    ],
+};
+
+const vaultContracts = [
+    '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', // tacETH
+    '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', // tacBTC
+    '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', // tacUSD
+];
+
 module.exports = {
+    defaultTokens,
     tokens,
     treasuryMultisigs,
+    treasuryNFTs,
     vaultContracts,
 };
