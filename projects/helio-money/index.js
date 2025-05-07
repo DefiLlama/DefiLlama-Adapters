@@ -136,6 +136,16 @@ module.exports = {
                     "0x7dc91cbd6cb5a3e6a95eed713aa6bf1d987146c8",
                     "0x3cd434f0A58018B87eF1D2436cb710ca46F0fC43",
                 ],
+                // USDF
+                [
+                    "0x5A110fC00474038f6c02E89C707D638602EA44B5",
+                    "0x8B35291ecF29fD36BA405A03C9832725f2E9e164",
+                ],
+                // asUSDF
+                [
+                    "0x917AF46B3C3c6e1Bb7286B9F59637Fb7C65851Fb",
+                    "0xB53e69b662a2d10343f857eBa9e3b6158Acf632F",
+                ],
                 // BTCB vault
                 [ADDRESSES.bsc.BTCB, "0x1AfA1589a634BE568D7872dCF1bbE6F79e11FaD5"],
             ],

@@ -1,13 +1,16 @@
 
 const { getUniTVL } = require('../helper/unknownTokens.js')
 const config = {
-  optimism: { factory: '0x548118C7E0B865C2CfA94D15EC86B666468ac758' },
+  optimism: { factory: '0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F' },
   lisk: { },
   fraxtal: { },
   //bob: {},
   mode: { },
   ink: { },
   soneium: { },
+  unichain: { },
+  swellchain: { },
+  celo: { },
 }
 
 Object.keys(config).forEach(chain => {
