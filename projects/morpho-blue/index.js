@@ -71,6 +71,28 @@ const config = {
     morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
     fromBlock: 9139027,
   },
+  flame:{
+    morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
+    fromBlock: 5991116,
+  },
+  /*
+  tacchain_2390_1:{
+    morphoBlue: "0xF0453e7368Ea01d6d6d6a222C26B5a06F1d816e9",
+    fromBlock: 3669141,
+  },
+  */
+  basecamp:{
+    morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
+    fromBlock: 4804080,
+  },
+  hyperliquid:{
+    morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
+    fromBlock: 1988429,
+  },
+  plume:{
+    morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
+    fromBlock: 765994,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
