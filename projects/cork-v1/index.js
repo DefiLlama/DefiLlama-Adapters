@@ -109,15 +109,15 @@ Object.keys(config).forEach(chain => {
      * @param {Object} api - API object providing blockchain access.
      * @returns {Promise<Object>} Staking balances.
      */
-    staking: async (api) => {
-      // Depeg Swap (DS), Cover Token (CT) and Custom LP tokens in Cork Vault & Router pools
-      const logs2 = await getLogs2({ api, factory: poolManager, eventAbi: eventAbi2, fromBlock, skipCache: SKIP_CACHE, })
-      const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock, skipCache: SKIP_CACHE, })
-      const stakingTokens = []
-      logs2.forEach(log => stakingTokens.push(log.ds, log.ct)) // DS & CT
-      logs3.forEach(log => stakingTokens.push(log.liquidityToken)) // LPT
-      const stakingContracts = [poolManager, router]
-      await sumTokens2({ api, tokens: stakingTokens, owners: stakingContracts, resolveLP: false, })
-    },
+    // staking: async (api) => {
+    //   // Depeg Swap (DS), Cover Token (CT) and Custom LP tokens in Cork Vault & Router pools
+    //   const logs2 = await getLogs2({ api, factory: poolManager, eventAbi: eventAbi2, fromBlock, skipCache: SKIP_CACHE, })
+    //   const logs3 = await getLogs2({ api, factory: ammHook, eventAbi: eventAbi3, fromBlock, skipCache: SKIP_CACHE, })
+    //   const stakingTokens = []
+    //   logs2.forEach(log => stakingTokens.push(log.ds, log.ct)) // DS & CT
+    //   logs3.forEach(log => stakingTokens.push(log.liquidityToken)) // LPT
+    //   const stakingContracts = [poolManager, router]
+    //   await sumTokens2({ api, tokens: stakingTokens, owners: stakingContracts, resolveLP: false, })
+    // },
   }
 })
