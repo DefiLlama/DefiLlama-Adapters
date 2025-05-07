@@ -1,0 +1,130 @@
+const ADDRESSES = require('../helper/coreAssets.json');
+
+// Gnosis Safe multisigs
+const treasuryMultisigs = [
+    '0x5b38d8094e896FF29DB9889516bf053f5Cf59f60', // Outbound payments
+    '0xB6301976f04E6A58D6E57Ff04144A31D911D3a25', // Inbound payments
+    '0x58A916AD66584811C939AA844025036e5078E811', // DeFi Farming
+    '0x3F3Ac8C6e85c8659e0af4f4B6ed50f51A1A8e0B1', // Main Ethereum
+    '0x184BF40166092A213FA3fEee0ac91dAcd554E2E0', // Old Ethereum
+    '0xc033B96f8A66787420b780fF2C6af75E89F4464b', // Old Avalanche and Mantle
+    '0x1feE198A3D28B2419bf0Ab4BBbd6cC8f75368216', // Old Linea
+    '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', // Old Mode
+    '0x0EFeE436D77258217956Ea3fA0E639e306D74992', // Old Base
+    '0xa00991F9Aa65a54dBDE368385771C5613A024693', // Old Blast
+];
+
+const vaultContracts = [
+    '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', // tacETH
+    '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', // tacBTC
+    '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', // tacUSD
+];
+
+const tokens = {
+    ethereum: {
+        USDC: ADDRESSES.ethereum.USDC,
+        USDT: ADDRESSES.ethereum.USDT,
+        ETH: ADDRESSES.null,
+        DRV: '0x4f3D0b8C2E5A7F1c6B9d4e8a2e5b8c3f3f3f3f3f',
+        SILO: '0x6f80310CA7F2C654691D1383149Fa1A57d8AB1f8',
+        IPOR: '0x1e4746dC744503b53b4A082cB3607B169a289090',
+        FXN: ADDRESSES.ethereum.FXN,
+        LVVA: '0x6243558a24CC6116aBE751f27E6d7Ede50ABFC76',
+        USDO: '0x375eA8da180EBb6F5adaA6090FA0aE31346E62bf',
+        sUSDS: ADDRESSES.ethereum.sUSDS,
+        rEUL: '0xf3e621395fc714B90dA337AA9108771597b4E696',
+        ezREZ: '0x77B1183e730275f6A8024Ce53d54bcC12B368f60',
+        USUALX: '0x06B964d96f5dCF7Eae9d7C559B09EDCe244d4B8E',
+        USD0: '0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5',
+        ynETH: '0x09db87A538BD693E9d08544577d5cCfAA6373A48',
+        aEthUSDT: '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a',
+        rsWETH: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
+        SWELL: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
+        TERM: '0xC3d21f79C3120A4fFda7A535f8005a7c297799bF',
+        Symbiotic: '0x21DbBA985eEA6ba7F27534a72CCB292eBA1D2c7c',
+        wstETH: ADDRESSES.ethereum.WSTETH,
+        WETH: ADDRESSES.ethereum.WETH,
+        stETH: ADDRESSES.ethereum.STETH,
+        cbBTC: ADDRESSES.ethereum.cbBTC,
+        FBTC: '0xc96de26018a54d51c097160568752c4e3bd6c364',
+    },
+    arbitrum: {
+        USDC: ADDRESSES.arbitrum.USDC,
+        USDT: ADDRESSES.arbitrum.USDT,
+        WETH: ADDRESSES.arbitrum.WETH,
+        RAM: '0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418',
+        Silo: '0x0341C0C0ec423328621788d4854119B97f44E391',
+        SYO: '0x577Fd586c9E6BA7f2E85E025D5824DBE19896656',
+        WBTC: ADDRESSES.arbitrum.WBTC,
+        ARB: ADDRESSES.arbitrum.ARB,
+        'USD₮0': '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+    },
+    avax: {
+        USDC: ADDRESSES.avax.USDC,
+        USDt: ADDRESSES.avax.USDt,
+        WETH_e: ADDRESSES.avax.WETH_e,
+        BTC_b: ADDRESSES.avax.BTC_b,
+        WAVAX: ADDRESSES.avax.WAVAX,
+        PHAR: '0xAAAB9D12A30504559b0C5a9A5977fEE4A6081c6b',
+        BLUB: '0x0f669808d88B2b0b3D23214DCD2a1cc6A8B1B5cd',
+        HEFE: '0x18E3605B13F10016901eAC609b9E188CF7c18973',
+        GoGoPool: '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3',
+        Benqi: ADDRESSES.avax.SAVAX,
+    },
+    mantle: {
+        USDC: ADDRESSES.mantle.USDC,
+        USDT: ADDRESSES.mantle.USDT,
+        WETH: ADDRESSES.mantle.WETH,
+        mETH: ADDRESSES.mantle.mETH,
+        cmETH: ADDRESSES.mantle.cmETH,
+        WMNT: ADDRESSES.mantle.WMNT,
+        abcCLEO: '0xCffbE0E73c750731EdB38C14Bc81A39dAc91819d',
+        CLEO: '0xC1E0C8C30F251A07a894609616580ad2CEb547F2',
+    },
+    linea: {
+        USDC: ADDRESSES.linea.USDC,
+        USDT: ADDRESSES.linea.USDT,
+        ETH: ADDRESSES.null,
+        WETH: ADDRESSES.linea.WETH,
+        ZERO: '0x78354f8DcCB269a615A7e0a24f9B0718FDC3C7A7',
+        oLYNX: '0x63349ba5e1f71252ecd56e8f950d1a518b400b60',
+        NILE: '0xAAAac83751090C6ea42379626435f805DDF54DC8',
+        CAKE: '0x0D1E753a25eBda689453309112904807625bEFBe',
+        WBTC: '0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4',
+        FOXY: '0x5FBDF89403270a1846F5ae7D113A989F850d1566',
+        CROAK: '0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF',
+    },
+    mode: {
+        ION: '0x18470019bF0E94611f15852F7e93cf5D65BC34CA',
+        MODE: '0xdfc7c877a950e49d2610114102175a06c2e3167a',
+    },
+    base: {
+        WETH: ADDRESSES.base.WETH,
+        USDC: ADDRESSES.base.USDC,
+        AERO: '0x940181a94A35A4569E4529A3CDfB74e38FD98631',
+        USDT: ADDRESSES.base.USDT,
+        SKYA: '0x623cD3a3EdF080057892aaF8D773Bbb7A5C9b6e9',
+        ETH: ADDRESSES.null,
+    },
+    scroll: {
+        USDT: ADDRESSES.scroll.USDT,
+        WETH: ADDRESSES.scroll.WETH,
+        NURI: '0xAAAE8378809bb8815c08D3C59Eb0c7D1529aD769',
+        SCR: '0xd29687c813D741E2F938F4aC377128810E217b1b',
+    },
+    swellchain: {
+        SWELL: ADDRESSES.swellchain.SWELL,
+    },
+    blast: {
+        HYPER: '0xEC73284E4EC9bcea1A7DDDf489eAA324C3F7dd31',
+    },
+    polygon: {
+        DEFI: '0x18c3eb88c972390120Bb4AbD2F705c48f62E212C',
+    }
+};
+
+module.exports = {
+    tokens,
+    treasuryMultisigs,
+    vaultContracts,
+};

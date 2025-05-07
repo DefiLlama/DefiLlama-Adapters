@@ -60,6 +60,7 @@ const endPoints = {
   regen: 'https://rest-regen.ecostake.com',
   sommelier: 'https://sommelier-rpc.polkachu.com',
   stride: 'https://stride-api.polkachu.com',
+  babylon: 'https://babylon-api.polkachu.com',
 };
 
 const chainSubpaths = {
