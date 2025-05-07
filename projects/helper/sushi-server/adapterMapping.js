@@ -4,7 +4,9 @@ module.exports = {
       {
         'fxdao': '/fxdao/api.js',
         'blend-pools': '/blend-pools/api.js',
+        'blend-pools-v2': '/blend-pools-v2/api.js',
         'blend-backstop': '/blend-backstop/api.js',
+        'blend-backstop-v2': '/blend-backstop-v2/api.js',
         'harvest': '/harvest.js',
         'astar-dapps-staking': '/astar-dapps-staking/api',
         'hydradex-v3': '/hydradex-v3/index.js',
@@ -93,6 +95,7 @@ module.exports = {
       'team-finance': '/team-finance/apiCache',
       synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
+      blum: '/blum/api',
       'yodeswap': '/yodeswap/api',
       'dogeswap-org': '/dogeswap-org/api',
 

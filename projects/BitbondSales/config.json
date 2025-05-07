@@ -6,10 +6,8 @@
     "blast": "blast",
     "bsc": "bsc",
     "ethereum": "ethereum",
-    "fantom": "fantom",
     "optimism": "optimism",
-    "polygon": "polygon",
-    "polygon_zkevm": "polygon-zkevm"
+    "polygon": "polygon"
   },
   "metisBaseUrl": "https://metis.bitbond.com/api/defillama",
   "userAgents": [
