@@ -22,7 +22,7 @@ async function getTvl(poolFactory, api) {
     const collaterals = await api.multiCall({ abi: 'address:collateralAddress', calls: pools });
     const borrows = await api.multiCall({ abi: 'address:quoteTokenAddress', calls: pools });
     const ownerTokens = pools.map((v, i) => [[collaterals[i], borrows[i]], v]);
-    return sumTokens2({ ownerTokens, api, resolveLP: true });
+    return sumTokens2({ ownerTokens, api });
 }
 
 async function getBorrowed(poolFactory, api) {
