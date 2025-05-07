@@ -1,5 +1,5 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { tokens, vaultContracts, defaultTokens } = require("./assets");
+const { tokens, vaultContracts } = require("./assets");
 
 const plainTokens = Object.values(tokens).map(chain => Object.values(chain)).flat(1);
 
