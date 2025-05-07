@@ -26,7 +26,6 @@ async function tvl(api) {
 
         const balance = BigNumber(totalSupply)
             .times(BigNumber(nav.nav_).div(1e18))
-            .div(1e18)
             .toNumber();
         return [solvbtcAddress, balance];
     }));
