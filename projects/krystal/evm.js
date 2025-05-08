@@ -76,7 +76,6 @@ Object.keys(config).forEach(chain => {
           eventAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)",
           onlyArgs: true,
           fromBlock: fromBlock,
-          skipCache: true,
         })
         logs.forEach(i => vaultAddresses.push(i.vault))
       }
