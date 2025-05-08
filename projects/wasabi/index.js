@@ -32,6 +32,7 @@ Object.keys(config).forEach(chain => {
   let { pools, fromBlock, tokens = [], } = config[chain]
   pools = Object.values(pools)
   module.exports[chain] = {
+    methodology: "Counts the total value deposited in the vaults of the Wasabi protocol, including assets that have been loaned out to open long and short positions.",
     tvl: async (api) => {
       const logs = (await Promise.all(pools.map(target => getLogs({
         api,
