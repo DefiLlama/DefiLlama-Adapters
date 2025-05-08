@@ -20,11 +20,11 @@ const vault_config = {
       '0x075e60550C6f77f430B284E76aF699bC31651f75', //move
     ],
     'timestampDeployed': [
-      1717457039,
-      1718161451,
-      1719943535,
-      1735549559,
-      1737018599,
+      1717457139,
+      1718161551,
+      1719943635,
+      1735549659,
+      1737018699,
     ],
     'base': ADDRESSES.ethereum.EETH,
     'decimals': 18
@@ -39,8 +39,8 @@ const vault_config = {
       '0xF44BD12956a0a87c2C20113DdFe1537A442526B5', //beraBtc
     ], 
     'timestampDeployed': [
-      1731626531,
-      1735548563,
+      1731626631,
+      1735548663,
     ],
     'base': ADDRESSES.ethereum.EBTC,
     'decimals': 8
@@ -59,10 +59,10 @@ const vault_config = {
       '0x95fE19b324bE69250138FE8EE50356e9f6d17Cfe', //ultra
     ],
     'timestampDeployed': [
-      1738059803,
-      1724977967,
-      1724694191,
-      1733455907
+      1738059903,
+      1724978067,
+      1724694291,
+      1733456007
     ],
     'base': ADDRESSES.ethereum.USDC,
     'decimals': 6
