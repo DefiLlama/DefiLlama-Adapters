@@ -1,3 +1,4 @@
+const { hallmarks } = require('../aave');
 const { getLogs } = require('../helper/cache/getLogs');
 
 const config = {
@@ -33,6 +34,11 @@ Object.keys(config).forEach(chain => {
   pools = Object.values(pools)
   module.exports[chain] = {
     methodology: "Counts the total value deposited in the vaults of the Wasabi protocol, including assets that have been loaned out to open long and short positions.",
+    hallmarks: [
+      [1709181259, "Deployed on Blast"],
+      [1737365147, "Deployed on Base"],
+      [1741758248, "Deployed on Berachain"]
+    ],
     tvl: async (api) => {
       const logs = (await Promise.all(pools.map(target => getLogs({
         api,
