@@ -1,4 +1,3 @@
-const { hallmarks } = require('../aave');
 const { getLogs } = require('../helper/cache/getLogs');
 
 const config = {
