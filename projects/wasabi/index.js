@@ -39,6 +39,7 @@ Object.keys(config).forEach(chain => {
         eventAbi: "event NewVault(address indexed pool, address indexed asset, address vault)",
         onlyArgs: true,
         fromBlock,
+        extraKey: fromBlock,
       })))).flat();
       return api.erc4626Sum({ calls: logs.map(log => log.vault), isOG4626: true, });
     }
