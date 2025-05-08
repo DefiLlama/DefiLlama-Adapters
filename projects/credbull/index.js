@@ -7,10 +7,7 @@ const addresses = {
     cbl: "0xD6b3d81868770083307840F513A3491960b95cb6",
     cblStakingV2: "0xc0C1DaA773570C041c47cE12c397AdDFD6B7403F",
   },
-  plume: { // legacy plume (ETH Gas)
-    v2Vaults: ["0x2b9d2023DbF3c7473f1cec42F78713d09DdC9FBF"]  // liquidStone X Plume
-  },
-  plume_mainnet: { // plume ($PLUME gas)
+  plume_mainnet: {
     v2Vaults: ["0x577349C99830D3c078034087A532581EF5381A08"]  // liquidStone X Plume
   },
   polygon: {

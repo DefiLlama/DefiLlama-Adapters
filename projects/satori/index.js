@@ -108,15 +108,6 @@ module.exports = {
       tokens: [ADDRESSES.flow.stgUSDC,"0x674843C06FF83502ddb4D37c2E09C01cdA38cbc8"],
     }),
   },
-  plume:{
-    tvl: sumTokensExport({
-      owners: [
-        "0x04AE748272c3959A9904aeaD3cc00AAf476aa34D",
-        "0x36Bd86676A05ABAaF30D57F65Ba463669E018F3e"
-      ],
-      tokens: [ADDRESSES.plume.USDC_e,ADDRESSES.plume_mainnet.pUSD,"0xD630fb6A07c9c723cf709d2DaA9B63325d0E0B73","0x81537d879ACc8a290a1846635a0cAA908f8ca3a6","0xE72Fe64840F4EF80E3Ec73a1c749491b5c938CB9","0x892DFf5257B39f7afB7803dd7C81E8ECDB6af3E8","0x9fbC367B9Bb966a2A537989817A088AFCaFFDC4c"],
-    }),
-  },
   plume_mainnet: {
     tvl: sumTokensExport({
       owners: [
