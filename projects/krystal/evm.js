@@ -49,14 +49,6 @@ const config = {
           },
       ]
     },
-    ethereum: {
-      factories: [
-          {
-            factory: "0x54654bba3fe24f1fc463d31fdb5602b8b0af7dc0",
-            fromBlock: 22374491
-          },
-      ]
-    },
 }
 
 const abis = {
