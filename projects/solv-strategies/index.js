@@ -26,7 +26,6 @@ async function tvl(api) {
 
         const balance = BigNumber(totalSupply)
             .times(BigNumber(nav.nav_).div(1e18))
-            .div(1e18)
             .toNumber();
         return [solvbtcAddress, balance];
     }));
@@ -41,7 +40,7 @@ async function tvl(api) {
     return api.getBalances()
 }
 
-['bsc', 'ethereum', 'avax'].forEach(chain => {
+['bsc', 'ethereum', 'avax', 'bob', 'berachain'].forEach(chain => {
     module.exports[chain] = {
         tvl
     }
