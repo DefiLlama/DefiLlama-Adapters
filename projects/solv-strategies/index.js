@@ -40,7 +40,7 @@ async function tvl(api) {
     return api.getBalances()
 }
 
-['bsc', 'ethereum', 'avax'].forEach(chain => {
+['bsc', 'ethereum', 'avax', 'bob', 'berachain'].forEach(chain => {
     module.exports[chain] = {
         tvl
     }
