@@ -13,6 +13,18 @@ const config = {
       "WASABI_SHORT_POOL": "0x0301079DaBdC9A2c70b856B2C51ACa02bAc10c3a"
     }, fromBlock: 185200,
   },
+  base: {
+    pools: {
+      "WASABI_LONG_POOL": "0xbDaE5dF498A45C5f058E3A09afE9ba4da7b248aa",
+      "WASABI_SHORT_POOL": "0xA456c77d358C9c89f4DFB294fA2a47470b7dA37c"
+    }, fromBlock: 25309500,
+  },
+  berachain: {
+    pools: {
+      "WASABI_LONG_POOL": "0x0da575D3edd4E3ee1D904936F94Ec043c06Bb12B",
+      "WASABI_SHORT_POOL": "0x3EE6C6CdAa0073DE6Da00091329dE4390B0DF1EE"
+    }, fromBlock: 2249763,
+  },
 }
 
 
