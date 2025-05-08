@@ -1,4 +1,7 @@
 const { queryContract, queryV1Beta1 } = require("../helper/chain/cosmos");
+const { queryValencePrograms,extractAccountAddressesForChain } = require("../helper/valence");
+// contract storing all deployed valence programs
+const registryAddress = "neutron1d8me7p72yq95sqnq5jpk34nn4t2vdl30yff29r05250ef92mr80saqcl2f"
 
 // Staked indicates if the asset is staked by the pooler.
 // If so, we must query the pool address for the balance to determine the value. If not staked, we can lookup the balance directly.
@@ -23,12 +26,30 @@ const legacyCoveneants_poolerAddresses = [
 
 
 
-async function tvl(api) {
+async function getValenceTvl(api, valenceDomain,chain) {
+  // TODO: getCache('valence','accounts')
+  // TODO: if not found, query all program configs + cache
+  const allProgramConfigs = await queryValencePrograms(registryAddress);
+  const allProgramAccounts = allProgramConfigs.map((program)=>{
+     return Object.values(program.program_config.accounts) 
+  })
+
+  //TODO: setCache('valence','accounts',allProgramAccounts)
+
+  const allAccountAddressesForChain = allProgramAccounts.map((accounts)=>{
+   
+  return extractAccountAddressesForChain(accounts, valenceDomain, chain)
+    
+  })
+}
+
+
+
+// TVL for early version of Valance Protocol
+async function getLegacyCovenantsTvl(api) {
   for (const pooler of legacyCoveneants_poolerAddresses) {
     let lpBalance;
     let poolAddress;
-
-    console.log('running tvl')
 
     const lpConfig = await queryContract({
       contract: pooler.address,
@@ -75,9 +96,15 @@ async function tvl(api) {
   }
 }
 
+async function getNeutronTvl(api) {
+  // const legacyCovenantsTvl = await getLegacyCovenantsTvl(api);
+  const valenceTvl = await getValenceTvl(api, "CosmosCosmwasm", "neutron");
+  return 
+}
+
 module.exports = {
-  methodology: "Queries the Covenant Liquidity Pooler Addresses to sum up total held value.",
+  methodology: "Queries accounts in all Valence programs, including liquidity pools, to sum up total held value.",
   neutron: {
-    tvl,
+    tvl: (api) => getNeutronTvl(api),
   },
 };
