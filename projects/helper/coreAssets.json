@@ -1205,7 +1205,10 @@
   },
   "xdc": {
     "WXDC": "0x951857744785e80e2de051c32ee7b25f9c458c42",
-    "XSP": "0x36726235dadbdb4658d33e62a249dca7c4b2bc68"
+    "USDC.e": "0x2a8e898b6242355c290e1f4fc966b8788729a4d4",
+    "xUSDT": "0xd4b5f10d61916bd6e0860144a91ac658de8a1437",
+    "XSP": "0x36726235dadbdb4658d33e62a249dca7c4b2bc68",
+    "FXD": "0x49d3f7543335cf38fa10889ccff10207e22110b5"
   },
   "kardia": {
     "WKAI": "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d"
@@ -1562,7 +1565,6 @@
     "ETHFI": "0x6C240DDA6b5c336DF09A4D011139beAAa1eA2Aa2",
     "weETH": "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
     "WBTC": "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"
-
   },
   "sei": {
     "SEI": "usei",
