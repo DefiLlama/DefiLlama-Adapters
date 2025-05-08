@@ -1,7 +1,8 @@
 const { queryContract, queryV1Beta1 } = require("../helper/chain/cosmos");
-//Staked indicates if the asset is staked by the pooler.
-//If so, we must query the pool address for the balance to determine the value. If not staked, we can lookup the balance directly.
-const poolerAddresses = [
+
+// Staked indicates if the asset is staked by the pooler.
+// If so, we must query the pool address for the balance to determine the value. If not staked, we can lookup the balance directly.
+const legacyCoveneants_poolerAddresses = [
   {
     address: "neutron1ulaxj0nelxshdua6l5mdkcqxa5k3gvcc8ut9w5867ej7u80qjx9s5cq5yh", //stars
     staked: true,
@@ -20,10 +21,14 @@ const poolerAddresses = [
   },
 ];
 
+
+
 async function tvl(api) {
-  for (const pooler of poolerAddresses) {
+  for (const pooler of legacyCoveneants_poolerAddresses) {
     let lpBalance;
     let poolAddress;
+
+    console.log('running tvl')
 
     const lpConfig = await queryContract({
       contract: pooler.address,
