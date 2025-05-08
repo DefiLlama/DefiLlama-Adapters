@@ -7,5 +7,5 @@ module.exports = {
   },
   ...evmTvl,
   isHeavyProtocol: true,
-  methodology: "TVL: Sum of all positions' value in every vaults",
+  methodology: "Sum of all positions' value and tokens in every vaults",
 };
