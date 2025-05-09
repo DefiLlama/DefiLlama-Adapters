@@ -2,6 +2,7 @@ const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 async function tvl(api) {
+    if (api.chain === "xlayer") return {}; // xlayer rpc has issues pulling logs
     const {
         factory,
         oldFactory,

@@ -1,7 +1,6 @@
 const {
-  PoolConfig,
-  ReserveData,
   BackstopConfig,
+  PoolV1,
 } = require("@blend-capital/blend-sdk");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -13,28 +12,19 @@ const network = {
   passphrase: "Public Global Stellar Network ; September 2015",
 };
 
-async function getReserveDeposits(poolId, reserveId, isBorrowed = false) {
-  const data = await ReserveData.load(network, poolId, reserveId)
-   // bRate and dRate have 9 decimals
-   const supply = Number(data.bSupply) * Number(data.bRate) / 1e9;
-   const borrowed = Number(data.dSupply) * Number(data.dRate) / 1e9
-   if (isBorrowed)
-     return borrowed
-   return supply - borrowed
-}
-
-
 async function addPoolTVL(poolId, api, isBorrowed = false) {
-  let pool_config = await PoolConfig.load(network, poolId);
-  const { errors } = await PromisePool.withConcurrency(4)
-    .for(pool_config.reserveList)
-    .process(async (reserveId) => {
-      // pools have unique reserves
-      let pool_deposit = await getReserveDeposits(poolId, reserveId, isBorrowed);
-      api.add(reserveId, pool_deposit)
-    });
-  if (errors.length > 0)
-    throw new Error(errors)
+  let pool = await PoolV1.load(network, poolId);
+  
+  for (const [reserveId, reserve] of Array.from(pool.reserves)) {
+    const supply = reserve.totalSupply();
+    const borrowed = reserve.totalLiabilities();
+    if (isBorrowed) {
+      api.add(reserveId, borrowed);
+    } else {
+      api.add(reserveId, supply - borrowed);
+    }
+  }
+
 }
 
 async function tvl(api) {
