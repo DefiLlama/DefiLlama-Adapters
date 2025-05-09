@@ -67,7 +67,7 @@ module.exports = {
     "Aggregate TVL of both the Echelon main pool and its isolated pairs",
   aptos: {tvl, borrowed,  },
   move: {tvl, borrowed,  },
-  echelon: {tvl, borrowed,  },
+  echelon_initia: {tvl, borrowed,  },
 };
 
 async function tvl(api) {
