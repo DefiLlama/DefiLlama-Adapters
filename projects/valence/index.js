@@ -1,5 +1,7 @@
 const { queryContract, queryV1Beta1,sumTokens } = require("../helper/chain/cosmos");
-const { queryValencePrograms,extractAccountAddressesForChain } = require("../helper/valence");
+const { queryValencePrograms,extractAccountsFromProgramConfig } = require("../helper/valence");
+const { getCache, setCache } = require('../helper/cache')
+
 
 const VALENCE_ADDRESSES = {
   // contract storing all deployed Valence Programs
@@ -59,17 +61,22 @@ const DEX_CONFIGS = {
  * Value of tokens being held in Valence accounts
  */
 async function getValenceAccountTvl(api, valenceDomain,chain) {
-  // TODO: getCache('valence','accounts')
-  // TODO: if not found, query all program configs + cache
-  const allProgramConfigs = await queryValencePrograms(VALENCE_ADDRESSES.VALANCE_PROTOCOL_REGISTRY_ADDRESS);
-  const allProgramAccounts = allProgramConfigs.map((program)=>{
-     return Object.values(program.program_config.accounts) 
-  })
+ 
+  let cache = await getCache('valence','accounts')
+  let allProgramAccounts = cache.allProgramAccounts
 
+  if (!cache.allProgramAccounts) {
+    // fetch all program configs from the registry contract
+    const allProgramConfigs = await queryValencePrograms(VALENCE_ADDRESSES.VALANCE_PROTOCOL_REGISTRY_ADDRESS);
+    // extract all account addresses from the program configs
+    allProgramAccounts = allProgramConfigs.map((program)=>{
+       return Object.values(program.program_config.accounts) 
+    })
+    await setCache('valence','accounts',{allProgramAccounts})
+  }
 
-  //TODO: setCache('valence','accounts',allProgramAccounts)
-
-  const allAccountAddressesForChain = allProgramAccounts.map((accounts)=>extractAccountAddressesForChain(accounts, valenceDomain, chain)).flat();
+  // filter accounts by chain
+  const allAccountAddressesForChain = allProgramAccounts.map((accounts)=>extractAccountsFromProgramConfig(accounts, valenceDomain, chain)).flat();
   
   return sumTokens({
       api,
@@ -81,7 +88,7 @@ async function getValenceAccountTvl(api, valenceDomain,chain) {
 /***
  * TVL for liquidity pools deployed with Valence Programs
  */
-async function getLpTvl(api, chain, dexNames=["astroport"]) {
+async function getLpTvl(api, chain, dexNames=[]) {
   const balances = api.getBalances();
 
   for (const dexName of dexNames) {
