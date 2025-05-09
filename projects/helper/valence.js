@@ -50,8 +50,9 @@ async function queryValencePrograms(registryAddress) {
  * Extract the account addresses for a given domain and chain from a program config
  */
 function extractAccountAddressesForChain(programAccounts,domain,chain) {
-    console.log('extracting', programAccounts);
-    return programAccounts.filter((accountConfig)=>domain in accountConfig.domain && accountConfig.domain[domain] === chain).map((accountConfig)=>{
+    let filter = chain
+    if (filter==="terra2") filter="terra" // handling edge case, in Valence the chain name is configured as "terra" but refers to terra2 (phoenix-1)
+    return programAccounts.filter((accountConfig)=>domain in accountConfig.domain && accountConfig.domain[domain] === filter).map((accountConfig)=>{
        return accountConfig.addr
     })
 }
