@@ -6,22 +6,19 @@ const { getCache, setCache } = require("../helper/cache");
 module.exports = {
   doublecounted: true,
   methodology: "Summer.fi PRO TVL is calculated by fetching on-chain data, retrieving CDP IDs, and using them to determine locked assets via the automationTvl function, excluding frontend-managed Maker vaults",
-  tvl,
-  ethereum: { tvl: ethereumTvl },
-  base: { tvl: baseTvl },
-  arbitrum: { tvl: arbitrumTvl },
-  optimism: { tvl: optimismTvl },
+  ethereum: {
+    tvl: ethereumTvl
+  },
+  base: {
+    tvl: baseTvl
+  },
+  arbitrum: {
+    tvl: arbitrumTvl
+  },
+  optimism: {
+    tvl: optimismTvl
+  }
 };
-
-async function tvl(api) {
-  const chainTvls = await Promise.all([
-    ethereumTvl(api),
-    baseTvl(api),
-    arbitrumTvl(api),
-    optimismTvl(api),
-  ]);
-  return chainTvls.reduce((acc, curr) => acc + curr, 0);
-}
 
 async function ethereumTvl(api) {
   await api.getBlock();
