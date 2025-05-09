@@ -49,7 +49,6 @@ const API_KEY = process.env.SMARDEX_SUBGRAPH_API_KEY
 const EXPLORER_BASE_URL = "https://smardex.io/usdn/explorer?search=";
 
 const fetchOpenPositions = async (): Promise<Position[]> => {
-  try {
     const response = await axios.get<ApiResponse>(API_URL, {
       headers: { "x-api-key": API_KEY },
     });
@@ -59,10 +58,6 @@ const fetchOpenPositions = async (): Promise<Position[]> => {
     } else {
       return [];
     }
-  } catch (error) {
-    console.error(`Failed to fetch USDN positions: ${error}`);
-    return [];
-  }
 };
 
 const calculateLiquidationPrice = (position: Position): number => {
@@ -97,7 +92,6 @@ const formatPosition = (position: Position): Liq => {
 };
 
 const positions = async (): Promise<Liq[]> => {
-  try {
     const positionsData = await fetchOpenPositions();
     
     if (!positionsData || positionsData.length === 0) {
@@ -105,10 +99,6 @@ const positions = async (): Promise<Liq[]> => {
     }
     
     return positionsData.map(formatPosition);
-  } catch (error) {
-    console.error(`Error retrieving USDN positions: ${error}`);
-    return [];
-  }
 };
 
 module.exports = {
