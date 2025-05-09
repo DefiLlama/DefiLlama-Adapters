@@ -68,11 +68,16 @@ query {
 }`;
 
 const dpmPositions = async ({ api, }) => {
+  // Block offsets for different chains:
+  // Ethereum: 100 blocks ≈ 20 minutes (12s block time)
+  // Base/Arbitrum/Optimism: 500 blocks ≈ 16 minutes (2s block time)
+  const blockOffset = api.chain === 'ethereum' ? 100 : 500;
+  
   const [aave, ajna, morphoBlue, spark] = await Promise.all([
-    blockQuery(endpoints.aave(), aaveQuery(api.block - 500), { api }),
-    blockQuery(endpoints.ajna(), ajnaQuery(api.block - 500), { api }),
-    blockQuery(endpoints.morphoBlue(), morphoBlueQuery(api.block - 500), { api }),
-    blockQuery(endpoints.spark(), sparkQuery(api.block - 500), { api }),
+    blockQuery(endpoints.aave(), aaveQuery(api.block - blockOffset), { api }),
+    blockQuery(endpoints.ajna(), ajnaQuery(api.block - blockOffset), { api }),
+    blockQuery(endpoints.morphoBlue(), morphoBlueQuery(api.block - blockOffset), { api }),
+    blockQuery(endpoints.spark(), sparkQuery(api.block - blockOffset), { api }),
   ]);
 
   const supportedAjnaPools = [...new Set(ajna.accounts.map(({ pool: { address } }) => address))];
