@@ -1,10 +1,10 @@
-const { queryContract, queryV1Beta1,sumTokens,getBalance2, unwrapLp } = require("../helper/chain/cosmos");
+const { queryContract, queryV1Beta1,sumTokens } = require("../helper/chain/cosmos");
 const { queryValencePrograms,extractAccountAddressesForChain } = require("../helper/valence");
 
-const CONFIG = {
+const VALENCE_ADDRESSES = {
   // contract storing all deployed Valence Programs
   VALANCE_PROTOCOL_REGISTRY_ADDRESS: "neutron1d8me7p72yq95sqnq5jpk34nn4t2vdl30yff29r05250ef92mr80saqcl2f",
-  // addresses for pool from early version of Valance Protocol
+  // addresses for pools from early version of Valance Protocol
   V1_COVENANTS_POOLER_ADDRESSES: [
     // Staked indicates if the asset is staked by the pooler.
     // If so, we must query the pool address for the balance to determine the value. If not staked, we can lookup the balance directly.
@@ -27,13 +27,41 @@ const CONFIG = {
   ]
 }
 
+// Configurations for querying value for liquidity tokens for specific DEXs
+const DEX_CONFIGS = {
+  astroport: {
+    // regex to match liquidity tokens  
+    regex: ":astroport:share",
+    // function to extract pool address from liquidity token address
+    poolAddressExtractor: (lpToken, chain) => lpToken.replace(`${chain}:factory:`,"").replace(":astroport:share",""),
+    // function to query value of liquidity token
+    // returns {amount: number, denom: string}
+    queryShareValue: async ({
+      poolAddress,
+      lpBalance,
+      chain
+    }) => {
+      const shareValue = await queryContract({
+        contract: poolAddress,
+        chain,
+        data: `{"share":{"amount":"${lpBalance}"}}`,
+      });
+      return shareValue.map((token) => ({
+        amount: token.amount,
+        denom: token.info.native_token.denom,
+      }))
+    }
+  },
+  // Add more DEX configurations here as needed
+};
+
 /***
  * Value of tokens being held in Valence accounts
  */
 async function getValenceAccountTvl(api, valenceDomain,chain) {
   // TODO: getCache('valence','accounts')
   // TODO: if not found, query all program configs + cache
-  const allProgramConfigs = await queryValencePrograms(CONFIG.VALANCE_PROTOCOL_REGISTRY_ADDRESS);
+  const allProgramConfigs = await queryValencePrograms(VALENCE_ADDRESSES.VALANCE_PROTOCOL_REGISTRY_ADDRESS);
   const allProgramAccounts = allProgramConfigs.map((program)=>{
      return Object.values(program.program_config.accounts) 
   })
@@ -43,48 +71,56 @@ async function getValenceAccountTvl(api, valenceDomain,chain) {
 
   const allAccountAddressesForChain = allProgramAccounts.map((accounts)=>extractAccountAddressesForChain(accounts, valenceDomain, chain)).flat();
   
-  await sumTokens({
+  return sumTokens({
       api,
       owners: allAccountAddressesForChain,
       chain
       })
-
-      console.log('BALANCES',chain,api.getBalances())
 }
 
 /***
  * TVL for liquidity pools deployed with Valence Programs
  */
-async function getLpTvl(api,chain) {
+async function getLpTvl(api, chain, dexNames=["astroport"]) {
   const balances = api.getBalances();
 
-  // only widely used DEX is Astroport on Neutron, more can be added here later on
-  const ASTROPORT_REGEX=":astroport:share"
-  const astroportLpTokens = Object.keys(balances).filter((address)=>address.match(ASTROPORT_REGEX));
+  for (const dexName of dexNames) {
+    const dexConfig = DEX_CONFIGS[dexName];
+    if (!dexConfig) {
+      console.log(`Warning: skipping unsupported DEX: ${dexName}`);
+      continue;
+    }
 
-  for (const lpToken of astroportLpTokens) {
-    const lpBalance = balances[lpToken];
-    const poolAddress = lpToken.replace(":astroport:share","").replace(`${chain}:factory:`,"");
-    console.log('POOL ADDRESS',poolAddress,lpToken)
+    const possibleLpTokens = Object.keys(balances).filter((address) => address.match(dexConfig.regex));
 
+    possibleLpTokens.forEach(async(lpToken)=>{
+         // regex method does not guarantee an LP token is valid, so handle the error gracefully and ignore the asset in the valuation if this is the case
+         try {
+          const lpBalance = balances[lpToken];
+          const poolAddress = dexConfig.poolAddressExtractor(lpToken, chain);
+          const shareValues = await dexConfig.queryShareValue({
+            poolAddress,
+            lpBalance,
+            chain
+          });
+    
+          shareValues.forEach((shareValue) => {
+            api.add(shareValue.denom, shareValue.amount);
+          });
+  
+        } catch (e){
+          console.log('Warning: Could not query LP share value for',lpToken)
+        }
+    })
+  
 
-    const shareValue = await queryContract({
-      contract: poolAddress,
-      chain: "neutron",
-      data: `{"share":{"amount":"${lpBalance}"}}`,
-    });
-    shareValue.forEach((token) => {
-      const denom = token.info.native_token.denom;
-      const amount = token.amount;
-      api.add(denom, amount);
-    });
-
-}
+   
+  }
 }
 
 // TVL for first version of Valance Protocol
 async function getV1CovenantsTvl(api) {
-  for (const pooler of CONFIG.V1_COVENANTS_POOLER_ADDRESSES) {
+  for (const pooler of VALENCE_ADDRESSES.V1_COVENANTS_POOLER_ADDRESSES) {
     let lpBalance;
     let poolAddress;
 
@@ -139,12 +175,12 @@ module.exports = {
   methodology: "Queries accounts in all Valence programs, including liquidity pools, to sum up total held value.",
   neutron: {
     tvl: async (api) => {
-      // await getV1CovenantsTvl(api);
+      await getV1CovenantsTvl(api);
       await getValenceAccountTvl(api, "CosmosCosmwasm", "neutron");
-      await getLpTvl(api,"neutron");
+      await getLpTvl(api,"neutron",["astroport"]); // this must be called after getValenceAccountTvl, it assumes api.balances has been populated
     },
   },
-  // terra2: {
-  //   tvl: (api) => getValenceAccountTvl(api, "CosmosCosmwasm", "terra2"), 
-  // }
+  terra2: {
+    tvl: (api) => getValenceAccountTvl(api, "CosmosCosmwasm", "terra2"), 
+  }
 };
