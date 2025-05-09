@@ -179,7 +179,7 @@ async function getV1CovenantsTvl(api) {
 
 
 module.exports = {
-  methodology: "Queries accounts in all Valence programs, including liquidity pools, to sum up total held value.",
+  methodology: "Aggregates balances in all Valence Programs and converts LP shares to sum up total value.",
   neutron: {
     tvl: async (api) => {
       await getV1CovenantsTvl(api);
