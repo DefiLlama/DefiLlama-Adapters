@@ -22,39 +22,39 @@ const ADDRESSES = {
   },
   base: {
     aaveV3: {
-      pool: "", // Add Base Aave V3 addresses
-      oracle: "",
-      poolDataProvider: ""
+      pool: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      oracle: "0x2Cc0Fc26eD4563A5ce5e8bdcfe1A2878676Ae156",
+      poolDataProvider: "0x2D8A3C5677189723C4cB8873CfC9C8976fDF38Ac"
     },
     ajna: {
-      pool: "", // Add Base Ajna addresses
-      quoteToken: ""
+      pool: "0x97fa9b0909C238D170C1ab3B5c728A3a45BBEcBa",
+      quoteToken: "0x4200000000000000000000000000000000000006" // WETH on Base
     },
     morphoBlue: {
-      market: "", // Add Base Morpho Blue addresses
-      urdFactory: ""
+      market: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
+      urdFactory: "0x7276454fc1CF9C408deeed722fd6b5E7A4CA25D8"
     }
   },
   arbitrum: {
     aaveV3: {
-      pool: "", // Add Arbitrum Aave V3 addresses
-      oracle: "",
-      poolDataProvider: ""
+      pool: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+      oracle: "0xb56c2F0B653B2e0b10C9b928C8580Ac5Df02C7C7",
+      poolDataProvider: "0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654"
     },
     ajna: {
-      pool: "", // Add Arbitrum Ajna addresses
-      quoteToken: ""
+      pool: "0x30c5eF2997d6a882DE52c4ec01B6D0a5e5B4fAAE",
+      quoteToken: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1" // WETH on Arbitrum
     }
   },
   optimism: {
     aaveV3: {
-      pool: "", // Add Optimism Aave V3 addresses
-      oracle: "",
-      poolDataProvider: ""
+      pool: "0x794a61358D6845594F94dc1DB02A252b5b4814aD",
+      oracle: "0xD81eb3728a631871a7eBBaD631b5f424909f0c77",
+      poolDataProvider: "0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654"
     },
     ajna: {
-      pool: "", // Add Optimism Ajna addresses
-      quoteToken: ""
+      pool: "0x30c5eF2997d6a882DE52c4ec01B6D0a5e5B4fAAE",
+      quoteToken: "0x4200000000000000000000000000000000000006" // WETH on Optimism
     }
   }
 };
