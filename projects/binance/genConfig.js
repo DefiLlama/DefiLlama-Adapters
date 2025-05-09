@@ -55,6 +55,8 @@ const chainMap = {
   NEAR: 'near',
   DOGE: 'doge',
   XLM: 'stellar',
+  SCROLL: "scroll",
+  SONIC: "sonic",
 }
 
 
