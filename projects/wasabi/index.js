@@ -45,13 +45,6 @@ Object.keys(config).forEach(chain => {
   let { pools, fromBlock, tokens = [], } = config[chain]
   pools = Object.values(pools)
   module.exports[chain] = {
-    methodology: "Counts the total value deposited in the vaults of the Wasabi protocol, including assets that have been loaned out to open long and short positions.",
-    hallmarks: [
-      [1709181259, "Deployed on Blast"],
-      [1733011200, "Deployed on Solana"],
-      [1737365147, "Deployed on Base"],
-      [1741758248, "Deployed on Berachain"]
-    ],
     tvl: async (api) => {
       const logs = (await Promise.all(pools.map(target => getLogs({
         api,
@@ -68,3 +61,10 @@ Object.keys(config).forEach(chain => {
 module.exports.solana = {
   tvl: solanaTvl
 }
+module.exports.hallmarks=[
+  [1709181259, "Deployed on Blast"],
+  [1733011200, "Deployed on Solana"],
+  [1737365147, "Deployed on Base"],
+  [1741758248, "Deployed on Berachain"]
+]
+module.exports.methodology="Counts the total value deposited in the vaults of the Wasabi protocol, including assets that have been loaned out to open long and short positions."
