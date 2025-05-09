@@ -2,6 +2,7 @@ const ADDRESSES = require('../../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const { blockQuery } = require("../../helper/http");
 const { endpoints } = require("../constants/endpoints");
+const { ADDRESSES: PROTOCOL_ADDRESSES } = require("../constants/addresses");
 
 const NEGATIVE_WAD_PRECISION = -18;
 const WETH_ADDRESS = ADDRESSES.ethereum.WETH;
@@ -43,13 +44,38 @@ query {
   }
 }`;
 
-const dpmPositions = async ({ api, }) => {
-  const aave = await blockQuery(endpoints.aave(), aaveQuery(api.block - 500), { api,  });
-  // const ajna = await blockQuery(endpoints.ajna(), ajnaQuery(api.block - 500), { api, });
+const morphoBlueQuery = (block) => `
+query {
+  markets(first: 1000, block: { number: ${block} }) {
+    id
+    totalSupplyAssets
+    totalBorrowAssets
+    collateralToken
+  }
+}`;
 
-  const supportedAjnaPools = [
-    // ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),
-  ];
+const sparkQuery = (block) => `
+query {
+  positions(first: 10000, where: {
+    and: [
+      { collateral_gt: 0 },
+      { protocol: "Spark" }
+    ]
+  }, block: { number: ${block} }) {
+    collateral
+    collateralAddress
+  }
+}`;
+
+const dpmPositions = async ({ api, }) => {
+  const [aave, ajna, morphoBlue, spark] = await Promise.all([
+    blockQuery(endpoints.aave(), aaveQuery(api.block - 500), { api }),
+    blockQuery(endpoints.ajna(), ajnaQuery(api.block - 500), { api }),
+    blockQuery(endpoints.morphoBlue(), morphoBlueQuery(api.block - 500), { api }),
+    blockQuery(endpoints.spark(), sparkQuery(api.block - 500), { api }),
+  ]);
+
+  const supportedAjnaPools = [...new Set(ajna.accounts.map(({ pool: { address } }) => address))];
 
   const aaveBorrowishPositions = aave.positions.map(
     ({ collateral, collateralAddress }) => ({
@@ -57,12 +83,14 @@ const dpmPositions = async ({ api, }) => {
       collateralAddress,
     })
   );
-  /* const ajnaBorrowishPositions = ajna.accounts
+
+  const ajnaBorrowishPositions = ajna.accounts
     .filter(({ borrowPositions }) => borrowPositions.length)
     .map(({ borrowPositions: [{ collateral }], collateralToken }) => ({
       collateral: new BigNumber(collateral).shiftedBy(NEGATIVE_WAD_PRECISION),
       collateralAddress: collateralToken,
     }));
+
   const ajnaEarnPositions = ajna.pools
     .filter(({ address }) => supportedAjnaPools.includes(address))
     .map(({ debt, depositSize, quoteTokenAddress }) => ({
@@ -71,11 +99,25 @@ const dpmPositions = async ({ api, }) => {
         .shiftedBy(NEGATIVE_WAD_PRECISION),
       collateralAddress: quoteTokenAddress,
     }));
- */
+
+  const morphoBluePositions = morphoBlue.markets.map(({ totalSupplyAssets, totalBorrowAssets, collateralToken }) => ({
+    collateral: new BigNumber(totalSupplyAssets).minus(new BigNumber(totalBorrowAssets)),
+    collateralAddress: collateralToken,
+  }));
+
+  const sparkPositions = spark.positions.map(
+    ({ collateral, collateralAddress }) => ({
+      collateral: new BigNumber(collateral),
+      collateralAddress,
+    })
+  );
+
   const tokensWithAmounts = [
     ...aaveBorrowishPositions,
-    // ...ajnaBorrowishPositions,
-    // ...ajnaEarnPositions,
+    ...ajnaBorrowishPositions,
+    ...ajnaEarnPositions,
+    ...morphoBluePositions,
+    ...sparkPositions,
   ].reduce(
     (total, { collateral, collateralAddress }) => ({
       ...total,

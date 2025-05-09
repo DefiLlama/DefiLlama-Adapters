@@ -1,4 +1,4 @@
-const { automationTvl, aaveV3Tvl, ajnaTvl, morphoBlueTvl, makerTvl } = require("./handlers");
+const { automationTvl, dpmPositions, makerTvl } = require("./handlers");
 const { getAutomationCdpIdList, setCallCache } = require("./helpers");
 const sdk = require("@defillama/sdk");
 const { getCache, setCache } = require("../helper/cache");
@@ -37,9 +37,7 @@ async function ethereumTvl(api) {
 
   await Promise.all([
     automationTvl({ api, cdpIdList }),
-    aaveV3Tvl({ api, chain: 'ethereum' }),
-    ajnaTvl({ api, chain: 'ethereum' }),
-    morphoBlueTvl({ api, chain: 'ethereum' }),
+    dpmPositions({ api }),
     makerTvl({ api, cdpIdList }),
   ]);
 
@@ -53,11 +51,7 @@ async function baseTvl(api) {
   const cache = await getCache("summer-fi/cache", api.chain);
   setCallCache(cache);
 
-  await Promise.all([
-    aaveV3Tvl({ api, chain: 'base' }),
-    ajnaTvl({ api, chain: 'base' }),
-    morphoBlueTvl({ api, chain: 'base' }),
-  ]);
+  await dpmPositions({ api });
 
   await setCache("summer-fi/cache", api.chain, cache);
   sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
@@ -69,10 +63,7 @@ async function arbitrumTvl(api) {
   const cache = await getCache("summer-fi/cache", api.chain);
   setCallCache(cache);
 
-  await Promise.all([
-    aaveV3Tvl({ api, chain: 'arbitrum' }),
-    ajnaTvl({ api, chain: 'arbitrum' }),
-  ]);
+  await dpmPositions({ api });
 
   await setCache("summer-fi/cache", api.chain, cache);
   sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
@@ -84,10 +75,7 @@ async function optimismTvl(api) {
   const cache = await getCache("summer-fi/cache", api.chain);
   setCallCache(cache);
 
-  await Promise.all([
-    aaveV3Tvl({ api, chain: 'optimism' }),
-    ajnaTvl({ api, chain: 'optimism' }),
-  ]);
+  await dpmPositions({ api });
 
   await setCache("summer-fi/cache", api.chain, cache);
   sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
