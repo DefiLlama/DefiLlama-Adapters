@@ -31,17 +31,14 @@ const config = {
   },
 }
 
-const solanaTvl = async () => {
-  const balances = {}
+const solanaTvl = async (api) => {
   const provider = getProvider()
   const program = new Program(idl, provider)
   const vaults = await program.account.lpVault.all()
-  console.log(vaults)
   vaults.forEach((data, i) => {
     const lpAsset = data.account.asset.toString()
-    sdk.util.sumSingleBalance(balances, lpAsset, data.account.totalAssets, 'solana')
+    api.add(lpAsset, data.account.totalAssets)
   })
-  return balances
 }
 
 Object.keys(config).forEach(chain => {
@@ -62,7 +59,6 @@ Object.keys(config).forEach(chain => {
         eventAbi: "event NewVault(address indexed pool, address indexed asset, address vault)",
         onlyArgs: true,
         fromBlock,
-        extraKey: fromBlock,
       })))).flat();
       return api.erc4626Sum({ calls: logs.map(log => log.vault), isOG4626: true, });
     }
