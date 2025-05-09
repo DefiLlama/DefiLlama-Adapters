@@ -1,4 +1,4 @@
-const { automationTvl } = require("./handlers");
+const { automationTvl, dpmPositions, makerTvl } = require("./handlers");
 const { getAutomationCdpIdList, setCallCache } = require("./helpers");
 const sdk = require("@defillama/sdk");
 const { getCache, setCache } = require("../helper/cache");
@@ -6,10 +6,21 @@ const { getCache, setCache } = require("../helper/cache");
 module.exports = {
   doublecounted: true,
   methodology: "Summer.fi PRO TVL is calculated by fetching on-chain data, retrieving CDP IDs, and using them to determine locked assets via the automationTvl function, excluding frontend-managed Maker vaults",
-  ethereum: { tvl },
+  ethereum: {
+    tvl: ethereumTvl
+  },
+  base: {
+    tvl: baseTvl
+  },
+  arbitrum: {
+    tvl: arbitrumTvl
+  },
+  optimism: {
+    tvl: optimismTvl
+  }
 };
 
-async function tvl(api) {
+async function ethereumTvl(api) {
   await api.getBlock();
   const executionStart = Date.now() / 1000;
   const [cdpIdList, cache] = await Promise.all([
@@ -23,7 +34,45 @@ async function tvl(api) {
 
   await Promise.all([
     automationTvl({ api, cdpIdList }),
+    dpmPositions({ api }),
+    makerTvl({ api, cdpIdList }),
   ]);
+
+  await setCache("summer-fi/cache", api.chain, cache);
+  sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
+}
+
+async function baseTvl(api) {
+  await api.getBlock();
+  const executionStart = Date.now() / 1000;
+  const cache = await getCache("summer-fi/cache", api.chain);
+  setCallCache(cache);
+
+  await dpmPositions({ api });
+
+  await setCache("summer-fi/cache", api.chain, cache);
+  sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
+}
+
+async function arbitrumTvl(api) {
+  await api.getBlock();
+  const executionStart = Date.now() / 1000;
+  const cache = await getCache("summer-fi/cache", api.chain);
+  setCallCache(cache);
+
+  await dpmPositions({ api });
+
+  await setCache("summer-fi/cache", api.chain, cache);
+  sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
+}
+
+async function optimismTvl(api) {
+  await api.getBlock();
+  const executionStart = Date.now() / 1000;
+  const cache = await getCache("summer-fi/cache", api.chain);
+  setCallCache(cache);
+
+  await dpmPositions({ api });
 
   await setCache("summer-fi/cache", api.chain, cache);
   sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
