@@ -1,8 +1,8 @@
 const sui = require("../helper/chain/sui")
 
-const PACKAGE_ID = '0x50052aca3d7b971bd9824e1bb151748d03870adfe3ba06dce384d2a77297c719';
+const SUI_PACKAGE_ID = '0x50052aca3d7b971bd9824e1bb151748d03870adfe3ba06dce384d2a77297c719';
 
-const POW_9 = 1_000_000_000n;
+const POW_18 = 1_000_000_000_000_000_000n;
 
 function normalizeAddress(
   value,
@@ -17,7 +17,7 @@ function normalizeAddress(
 
 const tvl = async (api) => {
   const newPoolEvents = await sui.queryEvents({
-    eventType: `${PACKAGE_ID}::event_wrapper::InterestStableSwapEvent<${PACKAGE_ID}::events::NewPool>`
+    eventType: `${SUI_PACKAGE_ID}::event_wrapper::InterestStableSwapEvent<${SUI_PACKAGE_ID}::events::NewPool>`
   });
 
    const statesIds = newPoolEvents.map(
@@ -26,10 +26,21 @@ const tvl = async (api) => {
    
   const states = await sui.getObjects(statesIds);
 
+  const decimalsMap = {};
+
+  states.forEach((state) => {
+    state.fields.metadata_map.fields.contents.forEach(content => {
+      const [pkg, module, otw] = content.fields.key.fields.name.split('::');
+      decimalsMap[`${normalizeAddress(pkg)}::${module}::${otw}`] = BigInt(content.fields.value.fields.scalar);
+    });
+  });
+
   states.forEach((state) => {
    state.fields.coins.forEach((typeName, index) => {
-    const [package, module, otw] = typeName.fields.name.split('::')
-    api.add(`${normalizeAddress(package)}::${module}::${otw}`, BigInt(state.fields.balances[index]) / POW_9);
+    const [pkg, module, otw] = typeName.fields.name.split('::');
+
+    const key = `${normalizeAddress(pkg)}::${module}::${otw}`
+    api.add(key, BigInt(state.fields.balances[index]) * decimalsMap[key] / POW_18);
    });
   });
 }
