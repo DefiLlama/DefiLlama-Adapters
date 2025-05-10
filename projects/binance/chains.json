@@ -71,6 +71,7 @@
     "0xdccf3b77da55107280bd850ea519df3705d1a75a",
     "0xe2fc31f816a9b94326492132018c3aecc4a93ae1",
     "0xeb2d2f1b8c558a40207669291fda468e50c8a0bb",
+    "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
     "0xf977814e90da44bfa03b6295a0616a897441acec",
     "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
   ],
@@ -79,6 +80,7 @@
     "1PJiGp2yDLvUgqeBsuZVCBADArNsk6XEiw",
     "1PPWMe42cywnM61nVatkmiggwdRQYLiCyS",
     "1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7",
+    "32BgTv3NSYbMsBTwDbNNN2GKZPCTJSkqDv",
     "32KqbtrRVxC6GLUJgJhVQtFTaCdq4GrgBb",
     "32bhzEniykYRFADVaRM5PYswsjC23cxtes",
     "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP",
@@ -92,6 +94,7 @@
     "3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN",
     "3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2",
     "3EVVc8e2rxwUuERtdJCduWig8DnpsUqyA6",
+    "3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt",
     "3F9CGMu7JSJnMHA8jFM2KgxuH6hhxtvENP",
     "3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B",
     "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA",
@@ -110,9 +113,7 @@
     "bc1q5qvs2dzzydqt4ygfn0k0ertjnv8ctytgcdz7l0",
     "bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h",
     "bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72",
-    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h",
-    "32BgTv3NSYbMsBTwDbNNN2GKZPCTJSkqDv",
-    "3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt"
+    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
   ],
   "celo": [
     "0xef268b5c05452d63a17da12f562368e88a036ef1",
@@ -271,6 +272,13 @@
     "GBrURzmtWujJRTA3Bkvo7ZgWuZYLMMwPCwre7BejJXnK",
     "GK35nWN6ZHSGZrRTf8kTQd8RkFCighChPEb41XwSFVAC",
     "HXsKP7wrBWaQ8T2Vtjry3Nj3oUgwYcqq9vrHDM12G664"
+  ],
+  "sonic": [
+    "0x18e226459ccf0eec276514a4fd3b226d8961e4d1",
+    "0x4fdfe365436b5273a42f135c6a6244a20404271e",
+    "0xa4e471dbfe8c95d4c44f520b19cee436c01c3267",
+    "0xab72bd3eb3b5cc90165fa39da85ad0d496330c00",
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
   "starknet": [
     "0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d"
