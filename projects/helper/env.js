@@ -27,6 +27,7 @@ const DEFAULTS = {
   FLAME_RPC: "https://rpc.flame.astria.org",
   BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
   BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
+  PLUME_RPC: "https://rpc.plume.org",
 }
 
 const ENV_KEYS = [
