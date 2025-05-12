@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view } = require("../helper/chain/aptos");
 
 const CONSTANTS = {
@@ -7,7 +8,7 @@ const CONSTANTS = {
   },
   TOKENS: {
     TOKEN_A: '0xa',
-    TOKEN_B: '0x447721a30109c662dde9c73a0c2c9c9c459fb5e5a9c92f03c50fa69737f5d08d'
+    TOKEN_B: ADDRESSES.move.USDT
   },
   MAX_RETRIES: 3,
   RETRY_DELAY: 1000, // ms
