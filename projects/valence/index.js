@@ -189,5 +189,12 @@ module.exports = {
   },
   terra2: {
     tvl: (api) => getValenceAccountTvl(api, "CosmosCosmwasm", "terra2"), 
-  }
+  },
+  hallmarks: [
+    [1717545600, "Nolus<>Neutron liquidity lending"]
+    [1718064000, "Stargaze<>Neutron liquidity lending"]
+    [1719360000, "Shade<>Neutron liquidity lending"]
+    [1723507200, "Mars<>Neutron liquidity lending"]
+    [1743379200, "Neutron dICS deployment"]
+  ]
 };
