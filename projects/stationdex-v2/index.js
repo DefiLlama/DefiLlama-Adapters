@@ -6,6 +6,7 @@ const config = {
 }
 
 module.exports = {
+  deadFrom: "2025-01-01",
   misrepresentedTokens: true,
 }
 
