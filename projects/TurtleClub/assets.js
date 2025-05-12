@@ -27,7 +27,7 @@ const tokens = {
         LVVA: '0x6243558a24CC6116aBE751f27E6d7Ede50ABFC76',
         USDO: '0x375eA8da180EBb6F5adaA6090FA0aE31346E62bf',
         sUSDS: ADDRESSES.ethereum.sUSDS,
-        rEUL: '0xf3e621395fc714B90dA337AA9108771597b4E696', // not priced in coins api
+        rEUL: '0xf3e621395fc714B90dA337AA9108771597b4E696',
         EUL: '0xd9Fcd98c322942075A5C3860693e9f4f03AAE07b',
         ezREZ: '0x77B1183e730275f6A8024Ce53d54bcC12B368f60',
         REZ: '0x3B50805453023a91a8bf641e279401a0b23FA6F9',
@@ -45,7 +45,7 @@ const tokens = {
         stETH: ADDRESSES.ethereum.STETH,
         cbBTC: ADDRESSES.ethereum.cbBTC,
         FBTC: '0xc96de26018a54d51c097160568752c4e3bd6c364',
-        tsSwellRswETH: '0xd4c9AA3FFDDc3EeE1d624849872EA3Eae2529972',
+        tsSwellRswETH: '0xd4c9AA3FFDDc3EeE1d624849872EA3Eae2529972', // TODO not priced properly
     },
     arbitrum: {
         USDC: ADDRESSES.arbitrum.USDC,
@@ -120,7 +120,7 @@ const tokens = {
     },
     swellchain: {
         SWELL: ADDRESSES.swellchain.SWELL,
-        tsSwellETH: '0x7fE118Bee84900fAED30dAb9ecFbeAD633392f05',
+        tsSwellETH: '0x7fE118Bee84900fAED30dAb9ecFbeAD633392f05', // TODO not priced properly
     },
     blast: {
         HYPER: '0xEC73284E4EC9bcea1A7DDDf489eAA324C3F7dd31',
@@ -136,16 +136,16 @@ const tokens = {
 const exceptions = {
     ethereum: [
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
-        { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ },
+        { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
         // { token: tokens.ethereum.tsSwellRswETH, use: tokens.ethereum.ETH },
     ],
     linea: [
         { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
-        { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
-        { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
-        { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
-        { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
-        { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
+        // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
+        // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
+        // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
+        // { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
+        // { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
     ],
 };
 
