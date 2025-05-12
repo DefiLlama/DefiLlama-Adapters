@@ -30,6 +30,7 @@ const tokens = {
         rEUL: '0xf3e621395fc714B90dA337AA9108771597b4E696', // not priced in coins api
         EUL: '0xd9Fcd98c322942075A5C3860693e9f4f03AAE07b',
         ezREZ: '0x77B1183e730275f6A8024Ce53d54bcC12B368f60',
+        REZ: '0x3B50805453023a91a8bf641e279401a0b23FA6F9',
         USUALX: '0x06B964d96f5dCF7Eae9d7C559B09EDCe244d4B8E',
         USD0: '0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5',
         ynETH: '0x09db87A538BD693E9d08544577d5cCfAA6373A48',
@@ -38,12 +39,13 @@ const tokens = {
         SWELL: '0x0a6E7Ba5042B38349e437ec6Db6214AEC7B35676',
         TERM: '0xC3d21f79C3120A4fFda7A535f8005a7c297799bF',
         GEAR: '0xBa3335588D9403515223F109EdC4eB7269a9Ab5D',
-        Symbiotic: '0x21DbBA985eEA6ba7F27534a72CCB292eBA1D2c7c',
+        Symbiotic: '0x21DbBA985eEA6ba7F27534a72CCB292eBA1D2c7c', // DC_ETHFI
         wstETH: ADDRESSES.ethereum.WSTETH,
         WETH: ADDRESSES.ethereum.WETH,
         stETH: ADDRESSES.ethereum.STETH,
         cbBTC: ADDRESSES.ethereum.cbBTC,
         FBTC: '0xc96de26018a54d51c097160568752c4e3bd6c364',
+        tsSwellRswETH: '0xd4c9AA3FFDDc3EeE1d624849872EA3Eae2529972',
     },
     arbitrum: {
         USDC: ADDRESSES.arbitrum.USDC,
@@ -95,10 +97,12 @@ const tokens = {
         z0WETH: '0xB4FFEf15daf4C02787bC5332580b838cE39805f5',
         z0ezETH: '0x0684FC172a0B8e6A65cF4684eDb2082272fe9050',
         z0rsETH: '0x8d8b70a576113FEEdd7E3810cE61f5E243B01264',
+        z0USDT: '0x508C39Cd02736535d5cB85f3925218E5e0e8F07A',
     },
     mode: {
         ION: '0x18470019bF0E94611f15852F7e93cf5D65BC34CA',
         MODE: '0xdfc7c877a950e49d2610114102175a06c2e3167a',
+        ICL: '0x95177295A394f2b9B04545FFf58f4aF0673E839d',
     },
     base: {
         WETH: ADDRESSES.base.WETH,
@@ -116,6 +120,7 @@ const tokens = {
     },
     swellchain: {
         SWELL: ADDRESSES.swellchain.SWELL,
+        tsSwellETH: '0x7fE118Bee84900fAED30dAb9ecFbeAD633392f05',
     },
     blast: {
         HYPER: '0xEC73284E4EC9bcea1A7DDDf489eAA324C3F7dd31',
@@ -131,9 +136,16 @@ const tokens = {
 const exceptions = {
     ethereum: [
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
+        { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ },
+        // { token: tokens.ethereum.tsSwellRswETH, use: tokens.ethereum.ETH },
     ],
     linea: [
         { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
+        { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
+        { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
+        { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
+        { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
+        { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
     ],
 };
 
@@ -141,12 +153,11 @@ const treasuryNFTs = {
     avax: [
         { name: 'PHAR', veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.avax.PHAR, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // Pharaoh Exchange - vePHAR
         { name: 'PHAR', veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.avax.PHAR, owner: '0xB6301976f04E6A58D6E57Ff04144A31D911D3a25' }, // Pharaoh Exchange - vePHAR
-        // { name: '', veNft: '0x10c2dD78aDe1Dc5800DDD186b123977669a4D9D9', baseToken: tokens.avax.PHAR, owner: '0xc033B96f8A66787420b780fF2C6af75E89F4464b' }, // Pharaoh Collection?
     ],
     linea: [
         { name: 'NILE', veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.linea.NILE, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // NILE - veNILE
         { name: 'Lynex', veNft: '0x8D95f56b0Bac46e8ac1d3A3F12FB1E5BC39b4c0c', baseToken: tokens.linea.LYNX, owner: '0x58A916AD66584811C939AA844025036e5078E811', useLocked: false }, // veLYNX
-        // { name: 'Lynex', veNft: '0x8D95f56b0Bac46e8ac1d3A3F12FB1E5BC39b4c0c', baseToken: tokens.linea.LYNX, owner: '0x1feE198A3D28B2419bf0Ab4BBbd6cC8f75368216' }, // veLYNX
+        { name: 'Lynex', veNft: '0x8D95f56b0Bac46e8ac1d3A3F12FB1E5BC39b4c0c', baseToken: tokens.linea.LYNX, owner: '0x1feE198A3D28B2419bf0Ab4BBbd6cC8f75368216', useLocked: false }, // veLYNX
         // { name: '', veNft: '0x398f0a3e303Afd3cAe2b602D6bBe01b1C1AF4749', baseToken: '??', owner: '0x1feE198A3D28B2419bf0Ab4BBbd6cC8f75368216' }, // WIZ
     ],
     arbitrum: [
@@ -162,6 +173,9 @@ const treasuryNFTs = {
     scroll: [
         { name: 'NURI', veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.scroll.NURI, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // NURI - veNURI
     ],
+    mode: [
+        { name: 'MODE', veNft: '0x06ab1Dc3c330E9CeA4fDF0C7C6F6Fb6442A4273C', baseToken: tokens.mode.MODE, owner: '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', useLocked: false },
+    ]
 };
 
 const vaultContracts = [
