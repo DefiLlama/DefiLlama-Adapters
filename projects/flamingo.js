@@ -1,16 +1,23 @@
-const { get } = require('./helper/http')
+// adapter.js
+const { get } = require('./helper/http');
 
 async function tvl() {
   try {
-    const data = await get(…);
+    const data = await get(
+      'https://flamingo-us-1.b-cdn.net/flamingo/analytics/daily-latest/tvl_data'
+    );
     const { pool_usd, flund_usd, lend_usd } = data.tvl_data;
+
+    // Parse strings to floats and sum them
     const totalUsd =
       parseFloat(pool_usd) +
       parseFloat(flund_usd) +
       parseFloat(lend_usd);
+
     return { tether: totalUsd };
-  } catch (e) {
-    console.error('TVL fetch failed', e);
+  } catch (error) {
+    console.error('TVL fetch failed:', error);
+    // Fallback to zero if something goes wrong
     return { tether: 0 };
   }
 }
@@ -27,7 +34,7 @@ module.exports = {
     [1656410400, "Mobile App"],
     [1656677699, "Fiat Onramper launched"],
     [1660047299, "First limit order trades on OrderBook+"],
-    [1668428099, "Wave 1 of new liquidity pools"], 
+    [1668428099, "Wave 1 of new liquidity pools"],
     [1671192899, "Wave 2 of new liquidity pools"],
     [1673352899, "USD Stablecoin FUSD & Flamingo Lend"],
     [1676463299, "FUSD Pool Bonus released"],
@@ -48,4 +55,4 @@ module.exports = {
   neo: {
     tvl
   }
-}
+};
