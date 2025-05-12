@@ -93,7 +93,7 @@ const tokens = {
         WBTC: '0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4',
         FOXY: '0x5FBDF89403270a1846F5ae7D113A989F850d1566',
         CROAK: '0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF',
-        z0weETH: '0x77E305B4D4D3b9DA4e82Cefd564F5b948366A44b',
+        z0weETH: '0x77E305B4D4D3b9DA4e82Cefd564F5b948366A44b', // TODO all ZeroLend not priced properly
         z0WETH: '0xB4FFEf15daf4C02787bC5332580b838cE39805f5',
         z0ezETH: '0x0684FC172a0B8e6A65cF4684eDb2082272fe9050',
         z0rsETH: '0x8d8b70a576113FEEdd7E3810cE61f5E243B01264',
@@ -129,6 +129,7 @@ const tokens = {
         DEFI: '0x18c3eb88c972390120Bb4AbD2F705c48f62E212C',
     },
     berachain: {
+        rEUL: '0x56C44d2F484A61ce92Fa0BCc849feB37aBfeB59C', // TODO not priced properly, no balances either
         EUL: '0xEb9b5f4EB023aE754fF59A04c9C038D58606DAC6',
     }
 };
@@ -137,7 +138,6 @@ const exceptions = {
     ethereum: [
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
-        // { token: tokens.ethereum.tsSwellRswETH, use: tokens.ethereum.ETH },
     ],
     linea: [
         { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
@@ -174,7 +174,7 @@ const treasuryNFTs = {
         { name: 'NURI', veNft: '0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F', baseToken: tokens.scroll.NURI, owner: '0x58A916AD66584811C939AA844025036e5078E811' }, // NURI - veNURI
     ],
     mode: [
-        { name: 'MODE', veNft: '0x06ab1Dc3c330E9CeA4fDF0C7C6F6Fb6442A4273C', baseToken: tokens.mode.MODE, owner: '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', useLocked: false },
+        // { name: 'MODE', veNft: '0x06ab1Dc3c330E9CeA4fDF0C7C6F6Fb6442A4273C', baseToken: tokens.mode.MODE, owner: '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', useLocked: false },
     ]
 };
 
