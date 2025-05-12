@@ -20,6 +20,7 @@ async function tvlWithCheck(api) {
   api.addBalances(balances)
   api.removeTokenBalance('DS4QiZfkp39PsHXYCRV3NkyDUKV9SpTczp2qnAUg6Nt6') // ZMB
   api.removeTokenBalance('HDa3zJc12ahykSsBRvgiWzr6WLEByf36yzKKbVvy4gnF') // SOS
+  api.removeTokenBalance('2xaPstY4XqJ2gUA1mpph3XmvmPZGuTuJ658AeqX3gJ6F') // QUP
   const usdValue = await api.getUSDValue()
   // for some godforsaken reason, the TVL is sometimes reported as 60M, we fail in that case rather than report a wrong number
   if (usdValue < 2e8) throw new Error('TVL is too low :' + usdValue / 1e6 + 'M')
