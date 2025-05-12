@@ -95,6 +95,7 @@ module.exports = {
       'team-finance': '/team-finance/apiCache',
       synthetix: '/synthetix/apiCache',
       dxsale: '/dxsale/apiCache',
+      blum: '/blum/api',
       'yodeswap': '/yodeswap/api',
       'dogeswap-org': '/dogeswap-org/api',
 

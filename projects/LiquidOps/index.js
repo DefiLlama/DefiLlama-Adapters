@@ -6,7 +6,9 @@ const endpoint = 'https://cu.ao-testnet.xyz'
 const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
 const tickerTransformations = {
     'qAR': 'arweave',
+    'wAR': 'arweave',
     'wUSDC': 'usd-coin',
+    'wUSDT': 'tether',
 };
 
 
