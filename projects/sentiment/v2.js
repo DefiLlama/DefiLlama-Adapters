@@ -1,4 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 
 const PONDER_URL = "https://artistic-perfection-production.up.railway.app";
@@ -39,7 +39,7 @@ async function getPoolId(superPoolAddress) {
   return poolConnection.pool.id;
 }
 
-async function getPositionAddresses(poolId) {
+async function getPositionAddresses() {
   let positions = [];
   let afterCursor = null;
   let hasNextPage = true;
@@ -50,14 +50,19 @@ async function getPositionAddresses(poolId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         query: `
-          query GetPositions($poolId: BigInt!, $after: String) {
-            positions(limit: 100, after: $after, where: { poolId: $poolId }) {
-              items { id }
-              pageInfo { hasNextPage, endCursor }
+          query GetPositions($after: String) {
+            positions(limit: 999, after: $after) {
+              items {
+                id
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
             }
           }
         `,
-        variables: { poolId, after: afterCursor },
+        variables: { after: afterCursor },
       }),
     });
 
@@ -77,35 +82,38 @@ async function tvl(api) {
 
   // Lending TVL
   for (const { superPool, underlyingAsset } of SUPERPOOLS) {
-    const totalAssets = await api.call({
-      target: superPool,
-      abi: "uint256:totalAssets",
+    const poolId = await getPoolId(superPool);
+    const totalBorrows = await api.call({
+      target: POOL_ADDRESS,
+      params: [poolId],
+      abi: "function getTotalBorrows(uint256) view returns (uint256)",
     });
-    sdk.util.sumSingleBalance(balances, underlyingAsset, totalAssets);
+    const totalAssets = await api.call({
+      target: POOL_ADDRESS,
+      params: [poolId],
+      abi: "function getTotalAssets(uint256) view returns (uint256)",
+    });
+    const availableLiquidity = BigInt(totalAssets) - BigInt(totalBorrows);
+    sdk.util.sumSingleBalance(balances, underlyingAsset, availableLiquidity);
   }
 
   // Collateral TVL
-  for (const { superPool } of SUPERPOOLS) {
-    try {
-      const poolId = await getPoolId(superPool);
-      const positions = await getPositionAddresses(poolId);
+  const positions = await getPositionAddresses();
 
-      const assetData = await api.multiCall({
-        abi: "function getAssetData(address) view returns ((address asset, uint256 amount, uint256 valueInEth)[])",
-        calls: positions,
-        target: PORTFOLIO_LENS_ADDRESS,
-      });
+  // Batch positions into chunks of 30
+  const BATCH_SIZE = 30;
+  for (let i = 0; i < positions.length; i += BATCH_SIZE) {
+    const positionBatch = positions.slice(i, i + BATCH_SIZE);
 
-      assetData.flat().forEach(({ asset, amount }) => {
-        sdk.util.sumSingleBalance(balances, `hyperliquid:${asset}`, amount);
-      });
-    } catch (error) {
-      console.error(
-        "Error fetching collateral for superPool:",
-        superPool,
-        error
-      );
-    }
+    const assetDataBatch = await api.multiCall({
+      abi: "function getAssetData(address) view returns ((address asset, uint256 amount, uint256 valueInEth)[])",
+      calls: positionBatch,
+      target: PORTFOLIO_LENS_ADDRESS,
+    });
+
+    assetDataBatch.flat().forEach(({ asset, amount }) => {
+      sdk.util.sumSingleBalance(balances, `hyperliquid:${asset}`, amount);
+    });
   }
 
   return balances;
@@ -115,17 +123,13 @@ async function borrowed(api) {
   const balances = {};
 
   for (const { superPool, underlyingAsset } of SUPERPOOLS) {
-    try {
-      const poolId = await getPoolId(superPool);
-      const totalBorrows = await api.call({
-        target: POOL_ADDRESS,
-        params: [poolId],
-        abi: "function getTotalBorrows(uint256) view returns (uint256)",
-      });
-      sdk.util.sumSingleBalance(balances, underlyingAsset, totalBorrows);
-    } catch (error) {
-      console.error("Error fetching borrowed amount:", superPool, error);
-    }
+    const poolId = await getPoolId(superPool);
+    const totalBorrows = await api.call({
+      target: POOL_ADDRESS,
+      params: [poolId],
+      abi: "function getTotalBorrows(uint256) view returns (uint256)",
+    });
+    sdk.util.sumSingleBalance(balances, underlyingAsset, totalBorrows);
   }
 
   return balances;
