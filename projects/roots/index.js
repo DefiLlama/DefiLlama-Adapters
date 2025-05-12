@@ -17,7 +17,7 @@ const VaultTokens = {
     USDCe_HONEY: "0xf961a8f6d8c69e7321e78d254ecafbcc3a637621",
 }
 
-const MEAD = "0x0E2b5428CE48c87a33Ad55A14d3b5E41339f3Dc3"
+const MEAD = "0xEDB5180661F56077292C92Ab40B1AC57A279a396"
 
 async function tvl(api) {
   const balances = {}
