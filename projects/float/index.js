@@ -1,6 +1,5 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const multiplier_pool_single = [
   "0x52eadaFf8E3d816CE205691D1D703e08d369F576",
@@ -21,60 +20,11 @@ const multiplier_pool_slp = [
   "0xCD817491872bdB33e0D21589bd92DbfF43387CA4",
 ];
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  for (let i = 0; i < multiplier_pool_single.length; i++) {
-    const stake_token = (
-      await sdk.api.abi.call({
-        abi: abi.stakeToken,
-        target: multiplier_pool_single[i],
-        ethBlock,
-      })
-    ).output;
-
-    const balance = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: stake_token,
-        params: multiplier_pool_single[i],
-        ethBlock,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, stake_token, balance);
-  }
-
-  const lpPositions = [];
-
-  for (let i = 0; i < multiplier_pool_slp.length; i++) {
-    const token = (
-      await sdk.api.abi.call({
-        abi: abi.stakeToken,
-        target: multiplier_pool_slp[i],
-        ethBlock,
-      })
-    ).output;
-
-    const balance = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: token,
-        params: multiplier_pool_slp[i],
-        ethBlock,
-      })
-    ).output;
-
-    lpPositions.push({
-      balance,
-      token,
-    });
-  }
-
-  await unwrapUniswapLPs(balances, lpPositions, ethBlock);
-
-  return balances;
-};
+const ethTvl = async (api) => {
+  const owners = multiplier_pool_single.concat(multiplier_pool_slp);
+  const tokens = await api.multiCall({ abi: abi.stakeToken, calls: owners })
+  return sumTokens2({ api, tokensAndOwners2: [tokens, owners], })
+}
 
 module.exports = {
   ethereum: {
