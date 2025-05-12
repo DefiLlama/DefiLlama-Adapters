@@ -11,6 +11,7 @@ const config = {
   unichain: { },
   swellchain: { },
   celo: { },
+  sseed: { },
 }
 
 Object.keys(config).forEach(chain => {

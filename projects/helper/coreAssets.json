@@ -1613,6 +1613,12 @@
     "USDC": "secret1h6z05y90gwm4sqxzhz4pkyp36cna9xtp7q0urv",
     "USDT": "secret18wpjn83dayu4meu6wnn29khfkwdxs7kyrz9c8f"
   },
+  "sseed": {
+    "WETH": "0x4200000000000000000000000000000000000006",
+    "USDC": "0xc316c8252b5f2176d0135ebb0999e99296998f2e",
+    "SUPR": "0x6ea1ffcbd7f5d210db07d9e773862b0512fa219b",
+    "oUSDT": "0x1217BfE6c773EEC6cc4A38b5Dc45B92292B6E189"
+  },
   "aura": {
     "AURA": "uaura",
     "WAURA": "0xDE47A655a5d9904BD3F7e1A536D8323fBD99993A",
