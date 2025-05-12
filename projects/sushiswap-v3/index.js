@@ -94,14 +94,16 @@ module.exports = uniV3Export({
   islm: { factory, fromBlock: 6541826, },
   blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
   //europa: { factory: '0x51d15889b66A2c919dBbD624d53B47a9E8feC4bB', fromBlock: 5124251, },
-  rsk: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 6365060, }, //this one
+  //rsk: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 6365060, }, //this one
   sonic: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 1, }, //this one
+  hemi: { factory: '0xCdBCd51a5E8728E0AF4895ce5771b7d17fF71959', fromBlock: 507517, }
 });
 
 const config = {
   filecoin: { endpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin' },
   europa: { endpoint: 'https://elated-tan-skat-graph.skalenodes.com:8000/subgraphs/name/sushi/v3-skale-europa' },
   zeta: { endpoint: 'https://api.goldsky.com/api/public/project_cls39ugcfyhbq01xl9tsf6g38/subgraphs/v3-zetachain/1.0.0/gn' },
+  rsk: { endpoint: 'https://api.goldsky.com/api/public/project_clslspm3c0knv01wvgfb2fqyq/subgraphs/sushiswap/v3-rootstock-2/gn' },
 }
 
 const query = `{
@@ -125,7 +127,6 @@ Object.keys(config).forEach(chain => {
 
 const config1 = {
   islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
-  // europa: { endpoint: 'https://web-8ngym4vde.sushi.com/pool/api/pools?chainIds=2046399126&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3,SUSHISWAP_V2' },
 }
 
 Object.keys(config1).forEach(chain => {

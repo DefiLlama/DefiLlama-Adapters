@@ -9,6 +9,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { ERC4626AbiMap } = require('./erc4626');
 const { SINGLETONabiMap } = require('./singleton');
 const { endurABIMap } = require('./endur');
+const { FusionAbiMap } = require('./fusionAbi');
 const { ERC721StratAbiMap } = require('./sensei');
 
 const STRATEGIES = {
@@ -41,26 +42,33 @@ const STRATEGIES = {
     token: ADDRESSES.starknet.STRK,
     xSTRK: ADDRESSES.starknet.XSTRK,
     vesu: "0x02545b2e5d519fc230e9cd781046d3a64e092114f07e44771e0d719d148725ef"
-  }] 
+  }],
+  "FusionVaults": [{
+    address: "0x07fb5bcb8525954a60fde4e8fb8220477696ce7117ef264775a1770e23571929",
+    token: ADDRESSES.starknet.STRK, // Fusion STRK
+  }, {
+    address: "0x5eaf5ee75231cecf79921ff8ded4b5ffe96be718bcb3daf206690ad1a9ad0ca",
+    token: ADDRESSES.starknet.ETH, // Fusion ETH
+  }, {
+    address: "0x00a858c97e9454f407d1bd7c57472fc8d8d8449a777c822b41d18e387816f29c",
+    token: ADDRESSES.starknet.USDC, // Fusion USDC
+  }, {
+    address: "0x0115e94e722cfc4c77a2f15c4aefb0928c1c0029e5a57570df24c650cb7cec2c",
+    token: ADDRESSES.starknet.USDT, // Fusion USDT
+  }]
 }
 
 // returns tvl and token of the AutoCompounding strategies
 async function computeAutoCompoundingTVL(api) {
+  // vaults under this catagory are retired so tvl balances are not considered
+  const retiredBalance = 0
   const contracts = STRATEGIES.AutoCompounding;
-  // though these will be zToken (i.e. zkLend token, e.g. zUSDC), 
-  // according to zkLend, 1zToken = 1 underlying token
-  // so, 1 zSTRK == 1 STRK, 1 zUSDC == 1 USDC
-  const totalAssets = await multiCall({
-    calls: contracts.map(c => c.address),
-    abi: ERC4626AbiMap.total_assets
-  });
-  api.addTokens(contracts.map(c => c.token), totalAssets);
+  api.addTokens(contracts.map(c => c.token), retiredBalance);
 }
 
 async function computeXSTRKStratTVL(api) {
   const pool_id = "0x52fb52363939c3aa848f8f4ac28f0a51379f8d1b971d8444de25fbd77d8f161";
   const contracts = STRATEGIES.xSTRKStrats;
-
   const price = await multiCall({
     calls: contracts.map(c => ({
       target: c.xSTRK,
@@ -88,33 +96,27 @@ async function computeXSTRKStratTVL(api) {
 
 // returns tvl and token of the Sensei strategies
 async function computeSenseiTVL(api) {
-  // Sensei strategies contain multiple LP tokens in each contract bcz of looping and borrow,
-  // but we only consider the zToken bal divided by a factor (to offset looping) as TVL
-  // - This is bcz any deposit by user first gets deposited into zkLend for zToken
+  // vaults under this catagory are retired so tvl balances are not considered
+  const retiredBalance = 0 
   const contracts = STRATEGIES.Sensei;
-  const settings = await multiCall({
-    calls: contracts.map(c => c.address),
-    abi: ERC721StratAbiMap.get_settings
-  });
+  api.addTokens(contracts.map(c => c.token), retiredBalance);
+}
 
-  const DENOMINATOR_FACTOR = 1000000n;
-  const offsetFactors = settings.map(s => s.coefs_sum2); // The factor is in 10**6 terms
-  const balances = await multiCall({
-    calls: contracts.map(c => ({
-      target: c.zToken,
-      params: c.address,
-    })),
-    abi: ERC4626AbiMap.balanceOf
-  });
-
-  const adjustedBalances = balances.map((b, i) => (b * DENOMINATOR_FACTOR) / (DENOMINATOR_FACTOR + BigInt(offsetFactors[i])));
-  api.addTokens(contracts.map(c => c.token), adjustedBalances);
+async function computeFusionTVL(api) {
+  const fusionContracts = STRATEGIES.FusionVaults
+  // calculates tvl of each fusion vault 
+  const totalAssets = await multiCall({
+    calls: fusionContracts.map(c => c.address),
+    abi: FusionAbiMap.total_assets
+  })
+  api.addTokens(fusionContracts.map(c => c.token), totalAssets);
 }
 
 async function tvl(api) {
   await computeAutoCompoundingTVL(api);
   await computeSenseiTVL(api);
   await computeXSTRKStratTVL(api);
+  await computeFusionTVL(api);
 }
 
 module.exports = {

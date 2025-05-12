@@ -2,6 +2,7 @@ const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 async function tvl(api) {
+    if (api.chain === "xlayer") return {}; // xlayer rpc has issues pulling logs
     const {
         factory,
         oldFactory,
@@ -166,6 +167,10 @@ const config = {
         factory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
         fromBlock: 682246,
     },
+    hyperliquid: {
+        factory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
+        fromBlock: 200467,
+    }
 };
 
 Object.keys(config).forEach((chain) => {

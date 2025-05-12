@@ -19,6 +19,10 @@ async function getObject(objectId) {
   }])).content
 }
 
+async function fnSleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function queryEvents({ eventType, transform = i => i }) {
   let filter = {}
   if (eventType) filter.MoveEventType = eventType
@@ -58,7 +62,8 @@ async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } 
   }])).content
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set() }) {
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep }) {
+  if (sleep) await fnSleep(sleep)
   const {
     result: { data, hasNextPage, nextCursor }
   } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
@@ -68,7 +73,7 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
   const objects = await getObjects(fetchIds)
   items.push(...objects)
   if (!hasNextPage) return items
-  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds })
+  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds, sleep })
 }
 
 async function call(method, params, { withMetadata = false } = {}) {
@@ -159,7 +164,9 @@ async function queryEventsByType({ eventType, transform = i => i }) {
       hasNextPage
     }
     nodes {
-      json
+      contents {
+        json
+      }
     }
   }
 }`
@@ -168,7 +175,7 @@ async function queryEventsByType({ eventType, transform = i => i }) {
   do {
     const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
     after = hasNextPage ? endCursor : null
-    items.push(...nodes.map(i => i.json).map(transform))
+    items.push(...nodes.map(i => i.contents.json).map(transform))
   } while (after)
   return items
 }

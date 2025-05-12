@@ -29,7 +29,8 @@ module.exports = {
         '0x9C7BEBa8F6eF6643aBd725e45a4E8387eF260649', // G,
         '0x76A797A59Ba2C17726896976B7B3747BfD1d220f', // WTON,
         '0xB3F4D70C6a18cC0F2D1205dbF3B21cB73e1B0592', // GPTW,
-        '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC
+        '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,
+        '0x4b3a2187648902082db0a44e8235d57F3f23DD10', // PINEYE
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -245,6 +246,7 @@ module.exports = {
       name: 'rsk',
       tokens: [
         '0xef213441A85dF4d7ACbDaE0Cf78004e1E486bB96', // rUSDT,
+        '0x74c9f2b00581F1B11AA7ff05aa9F608B7389De67', // USDC.e,
         '0x542fDA317318eBF1d3DEAf76E0b632741A7e677d', // WRBTC
       ],
       holders: [
@@ -362,7 +364,8 @@ module.exports = {
         'EQD8AErK5HbmnftlHQuk8bXC_JuX1COLPeNIfMriw23gfO3I', // TON,
         'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', // USDT,
         'EQBh9XACT0B60U8Q48VnjyqCxzxpM4oA0c8rqKt4h70yk1V5', // UXLINK,
-        'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI
+        'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI,
+        'EQDY2MzMJY_9OWm9UyQNLTU2Qs_8BRomlMUbbADnh-tFkLaU', // PINEYE
       ],
       holders: [
         'EQDpUHhVl5lJ6Y47DCd0TWdXB_kd-U-N6KyAELePNjfj15HT' // portal
@@ -381,6 +384,15 @@ module.exports = {
       name: 'morph',
       tokens: [
         '0xe34c91815d7fc18A9e2148bcD4241d0a5848b693', // USDC
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'goat',
+      tokens: [
+        '0xbC10000000000000000000000000000000000000', // WGBTC
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
@@ -418,6 +430,24 @@ module.exports = {
       name: 'berachain',
       tokens: [
         '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', // WETH
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'unichain',
+      tokens: [
+        '0x4200000000000000000000000000000000000006', // WETH
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'soneium',
+      tokens: [
+        '0x4200000000000000000000000000000000000006', // WETH
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
 
 async function getProcolAddresses(chain) {
@@ -24,7 +25,7 @@ async function calLyfTvl(api) {
   const tokens = await api.multiCall({ abi: 'address:token', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:totalToken', calls: vaults })
   api.add(tokens, bals)
-  api.removeTokenBalance('0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c')
+  api.removeTokenBalance(ADDRESSES.bsc.BTCB)
   return api.getBalances()
 }
 
