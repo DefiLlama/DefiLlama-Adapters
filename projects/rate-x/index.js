@@ -29,7 +29,7 @@ async function bscTvl(api) {
     params: ["0xEDBcdD0A45Fd8EBa749fFc10205c65CeA54336D5"],
   });
 
-  api.add("0xB0b84D294e0C75A6abe60171b70edEb2EFd14A1B", balance);
+  api.add("0x77c9b49a58325131D08F9dC120388f20c57c2572", balance);
   return api.getBalances();
 }
 
