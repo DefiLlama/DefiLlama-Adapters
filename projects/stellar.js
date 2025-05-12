@@ -26,6 +26,6 @@ async function fetch({ timestamp }) {
 module.exports = {
   timetravel: true,
   start: 1704067200, // 2025-01-01 UTC
-  methodology: 'Value of total selling liabilities in accounts and trustlines for the Stellar network converted to USD',
+  methodology: 'Total value of all sell offers in the built-in Stellar Decentralized exchange. This includes XLM and assets issued on the network, converting to USD.',
   fetch,
 };
