@@ -6,10 +6,9 @@ const config = {
 }
 
 module.exports = {
-  deadFrom: "2025-01-01",
   misrepresentedTokens: true,
 }
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true, }), }
+  module.exports[chain] = { tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true, }) }
 })
