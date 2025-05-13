@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: file_changes
-        uses: trilom/file-changes-action@v1.2.4
+        uses: trilom/file-changes-action@ce38c8ce2459ca3c303415eec8cb0409857b4272
         with:
           output: 'json'
           fileOutput: 'json'
@@ -15,7 +15,6 @@ jobs:
       - name: Run changes files through test script
         env:
           LLAMA_DEBUG_MODE: "true"
-          BSC_RPC: https://rpc.ankr.com/bsc,https://bsc-dataseed4.binance.org
         run: |
           RUN_FILES=$(
             MODIFIED=${{ steps.file_changes.outputs.files_modified}} \
