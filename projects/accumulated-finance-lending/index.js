@@ -71,9 +71,8 @@ Object.entries(transformedConfig).forEach(([chain, configs]) => {
         const totalCollaterals = new BigNumber(totalCollateralsRaw);
         const pricePerShare = new BigNumber(pricePerShareRaw).div(1e18);
         const result = totalAssets.plus(totalCollaterals.times(pricePerShare));
-        api.add(ADDRESSES.null, result.toFixed(0));
+        api.add(baseToken ?? ADDRESSES.null, result.toFixed(0));
       }
-
       return sumTokens2({ api });
     },
   };
