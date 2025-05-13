@@ -59,7 +59,7 @@ const getDecimalsData = async (tokens, api) => {
 };
 
 const getAutomationV1Data = async ({ api }) => {
-  const cdpIdList = new Set();
+  const cdpIdList = new Map();
   if (api.chain !== "ethereum") return cdpIdList;
   const [triggerAddedEvents, triggerRemovedEvents] = await Promise.all(
     Object.keys(logsTopic.automationBotV1).map((key) =>
@@ -87,15 +87,15 @@ const getAutomationV1Data = async ({ api }) => {
     })),
   ].sort((a, b) => a.trigger - b.trigger);
 
-  triggerEvents.forEach((event) => {
-    const { cdp, action } = event;
+  triggerEvents.forEach(({ cdp, action } ) => {
     if (action === "triggerAdded") {
-      cdpIdList.add(cdp);
-    } else if (action === "triggerRemoved" && cdpIdList.has(cdp)) {
+      cdpIdList.set(cdp, cdp);
+    } else if (action === "triggerRemoved") {
       cdpIdList.delete(cdp);
     }
   });
-  return cdpIdList;
+
+  return Array.from(cdpIdList.values());
 };
 
 const automationV1Tvl = async ({ api, automationV1Data }) => {

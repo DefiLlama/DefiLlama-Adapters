@@ -14,7 +14,7 @@ const { ethers } = require("ethers");
 const decoder = ethers.AbiCoder.defaultAbiCoder();
 
 const getTriggerData = (trigger) => {
-  const [, triggerType] = decoder.decode(
+  const [_positionAddress, triggerType] = decoder.decode(
     [
       "address", // position address
       "uint16", // trigger type
@@ -35,9 +35,9 @@ const getTriggerData = (trigger) => {
     decoderFields.push("bytes32"); // pool id (in morpho)
   }
   const [
-    positionAddress, // position address (DPM) // trigger type // maxCoverage (not used) // trigger type (already got it above) // maxCoverage (not used)
-    ,
-    ,
+    positionAddress, // position address (DPM)
+    _triggerType, // trigger type (mapped above)
+    _maxCoverage, // maxCoverage (not used)
     debtTokenAddress, // debt token
     collateralTokenAddress, // collateral token
     _operationName, // operation name (not used)
@@ -153,7 +153,7 @@ const automationV2Tvl = async ({ api, automationV2Data }) => {
 };
 
 const getAutomationV2Data = async ({ api }) => {
-  const triggersList = new Set();
+  const triggersMap = new Map();
   const [triggerAddedEvents, triggerRemovedEvents] = await Promise.all(
     Object.keys(logsTopic.automationBotV2).map((key) =>
       getLogs({
@@ -181,14 +181,14 @@ const getAutomationV2Data = async ({ api }) => {
   ].sort((a, b) => a.triggerId - b.triggerId);
 
   triggerEvents.forEach(({ triggerData, action, triggerId }) => {
-    const trigger = { triggerData, action, triggerId };
     if (action === "triggerAdded") {
-      triggersList.add(trigger);
-    } else if (action === "triggerRemoved" && triggersList.has(trigger)) {
-      triggersList.delete(trigger);
+      triggersMap.set(triggerId, { triggerData, action, triggerId });
+    } else if (action === "triggerRemoved") {
+      triggersMap.delete(triggerId);
     }
   });
-  const triggersData = Array.from(triggersList, getTriggerData);
+
+  const triggersData = Array.from(triggersMap.values(), getTriggerData);
   const finalTriggersData = new Map(); // Use a Map to ensure uniqueness
   triggersData.forEach((trigger) => {
     const { positionAddress, triggerType } = trigger;
