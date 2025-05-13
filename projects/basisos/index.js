@@ -16,6 +16,6 @@ async function tvl(api) {
   
 module.exports = {
   methodology: "TVL is calculated as the aggregated sum of total assets across all deployed vaults.",
-  timetravel: false,
+  timetravel: true,
   arbitrum: { tvl },
 };
