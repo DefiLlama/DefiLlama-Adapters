@@ -1,8 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens,  } = require("../helper/unwrapLPs")
+const { sumTokens2,  } = require("../helper/unwrapLPs")
 const { sumTokens: sumTokensCosmos, } = require('../helper/chain/cosmos')
-const sdk = require("@defillama/sdk")
-const { getChainTransform, } = require("../helper/portedTokens")
 const config = require("./config")
 
 const nullAddress = ADDRESSES.null
@@ -17,34 +15,31 @@ Object.keys(config).forEach(chain => {
       pools = [],
       bridge,
     } = config[chain][exportKey]
-    chainExport[exportKey] = async (ts, _block, { [chain]: block }) => {
-      const balances = {}
+    chainExport[exportKey] = async (api) => {
       let tokensAndOwners = []
       pools.forEach(({ pool, tokens }) => {
         tokens.forEach(token => tokensAndOwners.push([token, pool]))
       })
-      await sumTokens(balances, tokensAndOwners, block, chain)
       if (bridge) {
         const { address, tokens } = bridge
-        tokensAndOwners = tokens.map(t => [t, address])
-        await sumTokens(balances, tokensAndOwners, block, chain)
-        const transform = await getChainTransform(chain)
-        const balance = await sdk.api.eth.getBalance({ target: address, block, chain })
-        sdk.util.sumSingleBalance(balances, transform(nullAddress), balance.output)
+        tokens.push(nullAddress)
+        tokensAndOwners.push(...tokens.map(t => [t, address]))
       }
-      return balances
+      return sumTokens2({ api, tokensAndOwners })
     }
   })
 })
 
-module.exports.ethereum.pool2 = async (ts, block) => {
-  return sumTokens({}, [
-     ['0x4a86c01d67965f8cb3d0aaa2c655705e64097c31', '0xd10ef2a513cee0db54e959ef16cac711470b62cf', ]
-  ], block)
+module.exports.ethereum.pool2 = async (api) => {
+  return sumTokens2({
+    api, tokensAndOwners: [
+      ['0x4a86c01d67965f8cb3d0aaa2c655705e64097c31', '0xd10ef2a513cee0db54e959ef16cac711470b62cf', ]
+   ]
+  })
 }
 
 module.exports.terra = {}
-module.exports.terra.tvl = async (timestamp, ethBlock, { terra: block }) => {
+module.exports.terra.tvl = async () => {
 	return sumTokensCosmos({ owner: 'terra1qwzdua7928ugklpytdzhua92gnkxp9z4vhelq8', chain: 'terra'})
 }
 module.exports.hallmarks = [
