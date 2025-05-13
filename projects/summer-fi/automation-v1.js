@@ -102,11 +102,6 @@ const automationV1Tvl = async ({ api, automationV1Data }) => {
   const cdpIds = [...automationV1Data];
   if (cdpIds.length === 0) return;
   const ilkNames = await getCdpManagerData(cdpIds, api);
-  const owners = await api.multiCall({
-    abi: abi.maker.getOwner,
-    target: contracts.ethereum.McdMonitorV2,
-    calls: cdpIds,
-  });
   const cdpIlkIds = {};
   ilkNames.forEach((val, idx) => (cdpIlkIds[cdpIds[idx]] = val));
   const ilkIds = [...new Set(ilkNames)];
