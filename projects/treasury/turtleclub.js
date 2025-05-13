@@ -16,19 +16,15 @@ function formatForTreasuryExport(tokens = {}) {
 async function sumPositions(api, NFTs) {
     const waitNFTs = [];
     for (const treasuryNFT of NFTs) {
-        const { veNft, owner, baseToken, name, useLocked = true } = treasuryNFT;
+        const { veNft, owner, baseToken, useLocked = true } = treasuryNFT;
 
         waitNFTs.push((async () => {
-            try {
-                if (useLocked) await unwrapSolidlyVeNft({ api, isAltAbi: true, veNft, owner, baseToken });
-                else {
-                    const count = await api.call({ abi: 'erc20:balanceOf', target: veNft, params: owner });
-                    const tokenIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex, calls: createIncrementArray(count).map(i => ({ params: [owner, i] })), target: veNft });
-                    const bals = await api.multiCall({ abi: balanceOfNft_erc721, calls: tokenIds, target: veNft });
-                    bals.forEach(i => api.add(baseToken, i));
-                }
-            } catch (e) {
-                console.log(`Error in ${name} for ${owner} on ${api.chain}: `, e.message);
+            if (useLocked) await unwrapSolidlyVeNft({ api, isAltAbi: true, veNft, owner, baseToken });
+            else {
+                const count = await api.call({ abi: 'erc20:balanceOf', target: veNft, params: owner });
+                const tokenIds = await api.multiCall({ abi: SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex, calls: createIncrementArray(count).map(i => ({ params: [owner, i] })), target: veNft });
+                const bals = await api.multiCall({ abi: balanceOfNft_erc721, calls: tokenIds, target: veNft });
+                bals.forEach(i => api.add(baseToken, i));
             }
         })());
     }
