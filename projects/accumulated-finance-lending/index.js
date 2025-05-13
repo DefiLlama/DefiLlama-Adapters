@@ -1,14 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const BigNumber = require('bignumber.js').default;
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { addresses } = require("../koyo/constants");
 
 const config = {
   velas: [
     {
       "velas": {
         address: "0x570ae1d228d54c2a29c52603f962f45331d66680",
-        baseToken: "0x3557371afed82dd683de278924bd0e1a790a3c49",
         collateralToken: "0x8f0ecda9679ad16e30be3d83d183c482821f5325"
       }
     }
@@ -68,9 +66,9 @@ Object.entries(transformedConfig).forEach(([chain, configs]) => {
           api.call({ abi: pricePerShareABI, target: collateralToken })
         ]);
         const totalAssets = new BigNumber(totalAssetsRaw);
-        const totalCollaterals = new BigNumber(totalCollateralsRaw);
-        const pricePerShare = new BigNumber(pricePerShareRaw).div(1e18);
-        const result = totalAssets.plus(totalCollaterals.times(pricePerShare));
+        const totalCollateral = new BigNumber(totalCollateralsRaw);
+        const pricePerShare = new BigNumber(pricePerShareRaw)
+        const result = totalAssets.plus(totalCollateral.times(pricePerShare).div(1e18));
         api.add(baseToken ?? ADDRESSES.null, result.toFixed(0));
       }
       return sumTokens2({ api });
