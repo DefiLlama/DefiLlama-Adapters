@@ -46,6 +46,9 @@ const tokens = {
         cbBTC: ADDRESSES.ethereum.cbBTC,
         FBTC: '0xc96de26018a54d51c097160568752c4e3bd6c364',
         tsSwellRswETH: '0xd4c9AA3FFDDc3EeE1d624849872EA3Eae2529972', // TODO not priced properly
+        aEthUSDC: '0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c',
+        eUSDC_2: '0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9',
+        gtUSDC: '0xdd0f28e19C1780eb6396170735D45153D261490d',
     },
     arbitrum: {
         USDC: ADDRESSES.arbitrum.USDC,
@@ -138,6 +141,8 @@ const exceptions = {
     ethereum: [
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
+        // { token: tokens.ethereum.tsSwellRswETH, use: ADDRESSES.null },
+        { token: tokens.ethereum.eUSDC_2, use: tokens.ethereum.USDT },
     ],
     linea: [
         { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
@@ -146,6 +151,9 @@ const exceptions = {
         // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
         // { token: tokens.linea.z0weETH, use: tokens.linea.ETH },
         // { token: tokens.linea.z0USDT, use: tokens.linea.USDT },
+    ],
+    swellchain: [
+        // { token: tokens.swellchain.tsSwellETH, use: ADDRESSES.null }, // TODO not priced properly
     ],
 };
 
