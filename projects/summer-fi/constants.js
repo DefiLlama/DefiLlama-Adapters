@@ -81,7 +81,7 @@ const contracts = {
   },
   arbitrum: {
     AaveProtocolDataProvider: "0x14496b405D62c24F91f04Cda1c69Dc526D56fDE5",
-    AutomationBotV2: "0xEece0010A715bA9c46E0F4fc53b3DA5988e5F043",
+    AutomationBotV2: "0xE018AeA83728a037D8B6f76cCA0E8331cDAb937a",
   },
   optimism: {
     AaveProtocolDataProvider: "0x14496b405D62c24F91f04Cda1c69Dc526D56fDE5",
