@@ -2,24 +2,18 @@
 const { get } = require('./helper/http');
 
 async function tvl() {
-  try {
-    const data = await get(
-      'https://flamingo-us-1.b-cdn.net/flamingo/analytics/daily-latest/tvl_data'
-    );
-    const { pool_usd, flund_usd, lend_usd } = data.tvl_data;
+  const data = await get(
+    'https://flamingo-us-1.b-cdn.net/flamingo/analytics/daily-latest/tvl_data'
+  );
+  const { pool_usd, flund_usd, lend_usd } = data.tvl_data;
 
-    // Parse strings to floats and sum them
-    const totalUsd =
-      parseFloat(pool_usd) +
-      parseFloat(flund_usd) +
-      parseFloat(lend_usd);
+  // Parse strings to floats and sum them
+  const totalUsd =
+    parseFloat(pool_usd) +
+    parseFloat(flund_usd) +
+    parseFloat(lend_usd);
 
-    return { tether: totalUsd };
-  } catch (error) {
-    console.error('TVL fetch failed:', error);
-    // Fallback to zero if something goes wrong
-    return { tether: 0 };
-  }
+  return { tether: totalUsd };
 }
 
 module.exports = {
