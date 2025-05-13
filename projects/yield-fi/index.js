@@ -4,7 +4,7 @@ const { api2 } = require("@defillama/sdk");
 module.exports = {
     methodology: "Launched v2 yUSD",
     hallmarks: [
-      [Math.floor(new Date('2025-05-02')/1e3), 'v1 is deprecated'],
+      [Math.floor(new Date('2025-05-02')/1e3), 'Launched v2 yUSD'],
     ],
   }
 
