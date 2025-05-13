@@ -10,6 +10,7 @@ const {
 
 const { getLogs } = require("../helper/cache/getLogs");
 const { ethers } = require("ethers");
+const { getDecimalsData } = require("./helpers");
 
 const decoder = ethers.AbiCoder.defaultAbiCoder();
 
@@ -72,86 +73,6 @@ const getMorphoPositionCollateralCall = ({
   };
 };
 
-const automationV2Tvl = async ({ api, automationV2Data }) => {
-  const aaveCalls = [];
-  const sparkCalls = [];
-  const morphoCalls = [];
-  automationV2Data.forEach(
-    ({ positionAddress, triggerType, collateralTokenAddress, poolId }) => {
-      if (aaveTriggerTypes.includes(triggerType)) {
-        aaveCalls.push(
-          getAaveLikePositionCollateralCall({
-            positionAddress,
-            collateralTokenAddress,
-          })
-        );
-      }
-      if (sparkTriggerTypes.includes(triggerType)) {
-        sparkCalls.push(
-          getAaveLikePositionCollateralCall({
-            positionAddress,
-            collateralTokenAddress,
-          })
-        );
-      }
-      if (morphoTriggerTypes.includes(triggerType)) {
-        morphoCalls.push(
-          getMorphoPositionCollateralCall({
-            positionAddress,
-            poolId,
-            collateralTokenAddress,
-          })
-        );
-      }
-    }
-  );
-
-  const [aaveCollateralData, sparkCollateralData, morphoCollateralData] =
-    await Promise.all([
-      api.multiCall({
-        abi: abi.aaveLike.getUserReserveData,
-        target: contracts[api.chain].AaveProtocolDataProvider,
-        calls: aaveCalls,
-      }),
-      api.multiCall({
-        abi: abi.aaveLike.getUserReserveData,
-        target: contracts[api.chain].SparkProtocolDataProvider,
-        calls: sparkCalls,
-      }),
-      api.multiCall({
-        abi: abi.morpho.MorphoBluePosition,
-        target: contracts[api.chain].MorphoBlue,
-        calls: morphoCalls.map((call) => ({
-          // re-mapped because im saving the collateral token in morphoCalls for later
-          params: [call.params[0], call.params[1]],
-        })),
-      }),
-    ]);
-
-  aaveCollateralData.forEach((aaveData, aaveDataIndex) => {
-    const collateralAmount = aaveData[0]; // currentATokenBalance
-    if (collateralAmount > 0) {
-      const collateralTokenAddress = aaveCalls[aaveDataIndex].params[0];
-      api.add(collateralTokenAddress, collateralAmount);
-    }
-  });
-  sparkCollateralData.forEach((sparkData, sparkDataIndex) => {
-    const collateralAmount = sparkData[0]; // currentATokenBalance
-    if (collateralAmount > 0) {
-      const collateralTokenAddress = sparkCalls[sparkDataIndex].params[0];
-      api.add(collateralTokenAddress, collateralAmount);
-    }
-  });
-  morphoCollateralData.forEach((morphoData, morphoDataIndex) => {
-    const collateralAmount = morphoData[2]; // collateral
-    if (collateralAmount > 0) {
-      const collateralTokenAddress =
-        morphoCalls[morphoDataIndex].collateralTokenAddress; // saved in morphoCalls
-      api.add(collateralTokenAddress, collateralAmount);
-    }
-  });
-};
-
 const getAutomationV2Data = async ({ api }) => {
   const triggersMap = new Map();
   const [triggerAddedEvents, triggerRemovedEvents] = await Promise.all(
@@ -180,6 +101,10 @@ const getAutomationV2Data = async ({ api }) => {
     })),
   ].sort((a, b) => a.triggerId - b.triggerId);
 
+  if (api.chain === "arbitrum") {
+    console.log("triggerEvents arbitrum", JSON.stringify(triggerEvents));
+  }
+
   triggerEvents.forEach(({ triggerData, action, triggerId }) => {
     if (action === "triggerAdded") {
       triggersMap.set(triggerId, { triggerData, action, triggerId });
@@ -200,11 +125,117 @@ const getAutomationV2Data = async ({ api }) => {
     })();
     if (!protocolName) return;
     const key = `${api.chain}-${positionAddress}-${protocolName}`;
+
     if (!finalTriggersData.has(key)) {
       finalTriggersData.set(key, trigger);
     }
   });
   return Array.from(finalTriggersData.values());
+};
+
+const automationV2Tvl = async ({ api, automationV2Data }) => {
+  const aaveCalls = [];
+  const sparkCalls = [];
+  const morphoCalls = [];
+  const tokens = new Set();
+  automationV2Data.forEach(
+    ({ positionAddress, triggerType, collateralTokenAddress, poolId }) => {
+      if (aaveTriggerTypes.includes(triggerType)) {
+        aaveCalls.push(
+          getAaveLikePositionCollateralCall({
+            positionAddress,
+            collateralTokenAddress,
+          })
+        );
+        if (!tokens.has(collateralTokenAddress)) {
+          tokens.add(collateralTokenAddress);
+        }
+      }
+      if (sparkTriggerTypes.includes(triggerType)) {
+        sparkCalls.push(
+          getAaveLikePositionCollateralCall({
+            positionAddress,
+            collateralTokenAddress,
+          })
+        );
+        if (!tokens.has(collateralTokenAddress)) {
+          tokens.add(collateralTokenAddress);
+        }
+      }
+      if (morphoTriggerTypes.includes(triggerType)) {
+        morphoCalls.push(
+          getMorphoPositionCollateralCall({
+            positionAddress,
+            poolId,
+            collateralTokenAddress,
+          })
+        );
+        if (!tokens.has(collateralTokenAddress)) {
+          tokens.add(collateralTokenAddress);
+        }
+      }
+    }
+  );
+
+  const [
+    aaveCollateralData,
+    sparkCollateralData,
+    morphoCollateralData,
+    decimals,
+  ] = await Promise.all([
+    api.multiCall({
+      abi: abi.aaveLike.getUserReserveData,
+      target: contracts[api.chain].AaveProtocolDataProvider,
+      calls: aaveCalls,
+    }),
+    api.multiCall({
+      abi: abi.aaveLike.getUserReserveData,
+      target: contracts[api.chain].SparkProtocolDataProvider,
+      calls: sparkCalls,
+    }),
+    api.multiCall({
+      abi: abi.morpho.MorphoBluePosition,
+      target: contracts[api.chain].MorphoBlue,
+      calls: morphoCalls.map((call) => ({
+        // re-mapped because im saving the collateral token in morphoCalls for later
+        params: [call.params[0], call.params[1]],
+      })),
+    }),
+    getDecimalsData(tokens, api),
+  ]);
+
+  aaveCollateralData.forEach((aaveData, aaveDataIndex) => {
+    const collateralAmount = aaveData[0]; // currentATokenBalance
+    if (collateralAmount > 0) {
+      const collateralTokenAddress = aaveCalls[aaveDataIndex].params[0];
+      api.add(
+        collateralTokenAddress,
+        collateralAmount / 10 ** (18 - decimals[collateralTokenAddress])
+      );
+    }
+  });
+  sparkCollateralData.forEach((sparkData, sparkDataIndex) => {
+    const collateralAmount = sparkData[0]; // currentATokenBalance
+    if (collateralAmount > 0) {
+      const collateralTokenAddress = sparkCalls[sparkDataIndex].params[0];
+      api.add(
+        collateralTokenAddress,
+        collateralAmount / 10 ** (18 - decimals[collateralTokenAddress])
+      );
+    }
+  });
+
+  morphoCollateralData.forEach((morphoData, morphoDataIndex) => {
+    const collateralAmount = morphoData[2]; // collateral
+    if (collateralAmount > 0) {
+      const collateralTokenAddress =
+        morphoCalls[morphoDataIndex].collateralTokenAddress; // saved in morphoCalls
+      api.add(
+        collateralTokenAddress,
+        collateralAmount / 10 ** (18 - decimals[collateralTokenAddress])
+      );
+    }
+  });
 };
 
 module.exports = {

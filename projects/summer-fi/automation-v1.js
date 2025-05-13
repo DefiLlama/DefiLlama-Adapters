@@ -4,6 +4,7 @@ const { abi, contracts, logsTopic, creationBlocks } = require("./constants");
 const { cachedCalls } = require("./cache");
 
 const { getLogs } = require("../helper/cache/getLogs");
+const { getDecimalsData } = require("./helpers");
 
 const getCdpData = async (cdpIds, api) => {
   const res = [];
@@ -46,18 +47,6 @@ const getIlkRegistryData = async (ilks, api) => {
   });
 };
 
-const getDecimalsData = async (tokens, api) => {
-  return cachedCalls({
-    items: tokens,
-    multiCall: async (calls) =>
-      api.multiCall({
-        abi: "erc20:decimals",
-        calls,
-      }),
-    key: "getDecimalsData",
-  });
-};
-
 const getAutomationV1Data = async ({ api }) => {
   const cdpIdList = new Map();
   if (api.chain !== "ethereum") return cdpIdList;
@@ -87,7 +76,7 @@ const getAutomationV1Data = async ({ api }) => {
     })),
   ].sort((a, b) => a.trigger - b.trigger);
 
-  triggerEvents.forEach(({ cdp, action } ) => {
+  triggerEvents.forEach(({ cdp, action }) => {
     if (action === "triggerAdded") {
       cdpIdList.set(cdp, cdp);
     } else if (action === "triggerRemoved") {
