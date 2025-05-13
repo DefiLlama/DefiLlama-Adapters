@@ -19,7 +19,7 @@ Object.keys(GRAPH_URLS).forEach(chain => {
 })
 
 function vaultsOfKind(investmentVaults, vaultKind) {
-  return investmentVaults.filter(vault => !!vault.kinds.find(v => v === vaultKind)).map(v => v.id)
+  return investmentVaults.filter(vault => !!vault.vaultKinds.find(v => v === vaultKind)).map(v => v.id)
 }
 
 async function processLeveragedVaults(api, vaults) {
@@ -37,7 +37,7 @@ async function processLeveragedVaults(api, vaults) {
   })
 }
 
-async function processCompoundVaults(api, vaults) {
+async function processRepricingVaults(api, vaults) {
   const [decimals, supplies, reserves, rawNonLevTokens] = await Promise.all([
     api.multiCall({ abi: 'uint8:decimals', calls: vaults, permitFailure: true }),
     api.multiCall({ abi: 'uint256:totalSupply', calls: vaults, permitFailure: true }),
@@ -69,28 +69,30 @@ async function processErc4626Vaults(api, vaults) {
 }
 
 async function tvl(api) {
-  const { metrics: [{ investmentVaults }] } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ metrics { investmentVaults { id kinds } } }')
+  const { investmentVaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ investmentVaults { id vaultKinds } }')
 
-  await processLeveragedVaults(api, vaultsOfKind(investmentVaults, 'Leverage'))
-  await processCompoundVaults(api, vaultsOfKind(investmentVaults, 'Compound'))
+  await processLeveragedVaults(api, vaultsOfKind(investmentVaults, 'LEVERAGE'))
+  await processRepricingVaults(api, vaultsOfKind(investmentVaults, 'REPRICING'))
   await processErc4626Vaults(api, vaultsOfKind(investmentVaults, 'ERC4626'))
 }
 
 async function borrowed(api) {
-  const { metrics: [{ investmentVaults }] } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ metrics { investmentVaults { id kinds } } }')
+  const { investmentVaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ investmentVaults { id vaultKinds } }')
+  const vaults = vaultsOfKind(investmentVaults, 'LEVERAGE')
 
-  const vaults = vaultsOfKind(investmentVaults, 'Leverage')
-
-  const [levReserveTokens, assetsAndLiabilities] = await Promise.all([
-    api.multiCall({ calls: vaults, abi: 'address:reserveToken', permitFailure: true }),
-    api.multiCall({ abi: 'function assetsAndLiabilities() external view returns (uint256 assets,uint256 liabilities,uint256 ratio)', calls: vaults, permitFailure: true })
+  // Retrieve the token balance of the underlying debt token
+  const managers = await api.multiCall({ calls: vaults, abi: 'address:manager', permitFailure: true })
+  const borrowLends = await api.multiCall({ calls: managers, abi: 'address:borrowLend', permitFailure: true })
+  const [borrowTokens, borrowAmounts] = await Promise.all([
+    await api.multiCall({ calls: borrowLends, abi: 'address:borrowToken', permitFailure: true }),
+    await api.multiCall({ calls: borrowLends, abi: 'address:debtBalance', permitFailure: true })
   ])
 
   vaults.forEach((_vault, i) => {
-    const levReserveToken = levReserveTokens[i]
-    const assetsAndLiability = assetsAndLiabilities[i]
-    if(!levReserveToken || !assetsAndLiability) return
-    const levBal = assetsAndLiability.liabilities
-    api.addToken(levReserveToken, levBal)
+    const debtToken = borrowTokens[i]
+    const debtAmount = borrowAmounts[i]
+    if(!debtToken || !debtAmount) return
+    console.log(debtToken, debtAmount)
+    api.addToken(debtToken, debtAmount)
   })
 }
