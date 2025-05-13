@@ -1,6 +1,7 @@
 const { uniV3Export } = require('../helper/uniswapV3')
-const { cachedGraphQuery, configPost, getConfig } = require('../helper/cache')
+const { cachedGraphQuery, getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { post } = require('../helper/http')
 
 const graphs = {
   ethereum: "5AXe97hGLfjgFAc6Xvg6uDpsD5hqpxrxcma9MoxG7j7h",
@@ -42,24 +43,6 @@ function v3TvlPaged(chain) {
   }
 }
 
-async function filecoinTvl(api) {
-  const { result: { pools } } = await configPost('oku-trade/filecoin', 'https://cush.apiary.software/filecoin', {
-    "jsonrpc": "2.0",
-    "method": "cush_topPools",
-    "params": [
-      {
-        "result_size": 1000,
-        "sort_by": "tx_count",
-        "sort_order": false
-      }
-    ],
-    "id": 0
-  })
-  const ownerTokens = pools.map(i => [[i.t0, i.t1], i.address])
-  return api.sumTokens({ ownerTokens })
-}
-
-
 module.exports = {
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   timetravel: false,
@@ -93,9 +76,14 @@ module.exports = {
     lisk: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 577168 },
     wc: { factory: "0x7a5028BDa40e7B173C278C5342087826455ea25a", fromBlock: 1603366 },
     corn: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 10878 },
-    sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744},
+    goat: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 848385 },
+    hemi: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 1293598 },
+    sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
+    unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
+    lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
+    xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664 }
+    // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
   }),
-  filecoin: { tvl: filecoinTvl },
 }
 
 const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'base']
@@ -106,11 +94,40 @@ chains.forEach(chain => {
   }
 })
 
-module.exports.sei.tvl = async (api) => {
-  const { result } = await getConfig('oku-trade/sei', 'https://omni.icarus.tools/sei/cush/getAllPoolsInOrder')
-  const pools = result.map(i => i.pool)
-  const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
-  const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
-  const ownerTokens = pools.map((pool, i) => [[token0s[i], token1s[i]], pool])
-  return sumTokens2({ api, ownerTokens })
+const okuGraphMap = {
+  filecoin: 'https://omni.v2.icarus.tools/filecoin',
+  rsk: 'https://omni.v2.icarus.tools/rootstock',
+  saga: 'https://omni.v2.icarus.tools/saga',
+  sei: 'https://omni.v2.icarus.tools/sei',
+  // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
 }
+
+Object.keys(okuGraphMap).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const ownerTokens = await getConfig('oku-trade/' + chain, undefined, {
+        fetcher: async () => {
+          const { result: { pools } } = await post(okuGraphMap[chain], {
+            "jsonrpc": "2.0",
+            "method": "cush_topPools",
+            "params": [
+              {
+                "result_size": 1000,
+                "sort_by": "tx_count",
+                "sort_order": false
+              }
+            ],
+            "id": 0
+          })
+          const ownerTokens = pools.map(i => [[i.t0, i.t1], i.address])
+          if (!ownerTokens.length) throw new Error('No pools found')
+          if (ownerTokens.some(i => !i[0][0] || !i[0][1] || !i[1]))
+            throw new Error('Invalid pools found')
+
+          return ownerTokens
+        }
+      })
+      return api.sumTokens({ ownerTokens })
+    }
+  }
+})

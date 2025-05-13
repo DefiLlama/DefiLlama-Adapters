@@ -20,7 +20,7 @@ const config = {
       ADDRESSES.arbitrum.WSTETH,
       "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
       "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
-      "0x4186BFC76E2E237523CBC30FD220FE055156b41F",
+      ADDRESSES.berachain.rsETH,
       ADDRESSES.blast.ezETH
     ]
   },

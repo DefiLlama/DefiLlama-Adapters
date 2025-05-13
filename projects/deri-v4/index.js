@@ -1,6 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
-const { transformBalances } = require('../helper/portedTokens')
+const {
+  invokeViewFunction,
+} = require("../helper/chain/supra");
+const { transformBalances } = require("../helper/portedTokens");
 
 async function tvl(api) {
   const { factory, fromBlock, } = config[api.chain]
@@ -18,11 +21,10 @@ async function tvl(api) {
 
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true })
   api.addTokens(tokens, bals.map((v, i) => v / 10 ** (18 - (decimals[i] ?? 18))))
-  return transformBalances(api.chain, api.getBalances())
 }
 
 const config = {
-  arbitrum: { fromBlock: 152219576, factory: '0xccacf05a3cb1770f9a5b5a8aa219af1ac0c5e26b', },
+  arbitrum: { fromBlock: 154160066, factory: '0x7C4a640461427C310a710D367C2Ba8C535A7Ef81', },
   era: { fromBlock: 19529699, factory: '0x34FD72D2053339EA4EB1a8836CF50Ebce91962D0', },
   linea: { fromBlock: 926110, factory: '0xe840Bb03fE58540841e6eBee94264d5317B88866', },
   scroll: { fromBlock: 1384607, factory: '0x7B56Af65Da221A40B48bEDcCb67410D6C0bE771D', },
@@ -31,8 +33,38 @@ const config = {
   taiko: { fromBlock: 130174, factory: '0xd4E08C940dDeC162c2D8f3034c75c3e08f1f6032', },
   bsc: { fromBlock: 37069498, factory: '0x2c2E1eE20C633EAe18239c0BF59cEf1FC44939aC', },
   blast: { fromBlock: 2304573, factory: '0x60138081198b75aAF15ACA3A17Ec7f5Ffc5D4605', },
+  base: { fromBlock: 25285725, factory : '0xd4E08C940dDeC162c2D8f3034c75c3e08f1f6032', },
+  sonic: { fromBlock: 13168450, factory: '0x35EE168B4d0EA31974E9B184480b758F3E9940D1', },
 }
 
+const calculateSupraTVL = async (api) => {
+  const chain = api.chain;
+  const vaults = [
+    '0x9eea5363c9e08b22967c89291b7d817e205ffa888b60373b5c1c4562d836c894',
+    '0x4e49f1c8624eaff1bfeddf469439d35bc170ed29ae646c464bda37d6e42c938d',
+  ];
+
+  let stTotalAmount = 0;
+  for (const vault of vaults) {
+    stTotalAmount += parseInt(
+      await invokeViewFunction(
+        '0x83e22cb3508f9fc8b7788be66a363b70b801764081565046c68ed92139b05f87::vault::st_total_amount',
+        [],
+        [vault]
+      )
+    );
+  }
+
+  const balances = {
+    '0x8f7d16ade319b0fce368ca6cdb98589c4527ce7f5b51e544a9e68e719934458b::hyper_coin::DexlynUSDC':
+      stTotalAmount / 10 ** 12,
+  };
+
+  return transformBalances(chain, balances);
+};
+
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
-})
+  module.exports[chain] = { tvl };
+});
+
+module.exports.supra = { tvl: calculateSupraTVL };
