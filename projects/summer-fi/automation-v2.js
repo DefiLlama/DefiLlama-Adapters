@@ -101,10 +101,6 @@ const getAutomationV2Data = async ({ api }) => {
     })),
   ].sort((a, b) => a.triggerId - b.triggerId);
 
-  if (api.chain === "arbitrum") {
-    console.log("triggerEvents arbitrum", JSON.stringify(triggerEvents));
-  }
-
   triggerEvents.forEach(({ triggerData, action, triggerId }) => {
     if (action === "triggerAdded") {
       triggersMap.set(triggerId, { triggerData, action, triggerId });
