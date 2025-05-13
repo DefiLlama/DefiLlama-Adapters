@@ -134,6 +134,9 @@ const automationV2Tvl = async ({ api, automationV2Data }) => {
   const sparkCalls = [];
   const morphoCalls = [];
   const tokens = new Set();
+  if (api.chain === "arbitrum") {
+    console.log("arbitrum automationV2Data", automationV2Data);
+  }
   automationV2Data.forEach(
     ({ positionAddress, triggerType, collateralTokenAddress, poolId }) => {
       if (aaveTriggerTypes.includes(triggerType)) {
