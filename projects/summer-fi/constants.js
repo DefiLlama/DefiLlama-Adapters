@@ -84,7 +84,7 @@ const contracts = {
     AutomationBotV2: "0xEece0010A715bA9c46E0F4fc53b3DA5988e5F043",
   },
   optimism: {
-    AaveProtocolDataProvider: "0x14496b405D62c24F91f04Cda1c69Dc526D56fDE5",
+    AaveProtocolDataProvider: "0x64f558A4BFC1b03d43DFF8C68d5A1e04B9Fd7A66",
     AutomationBotV2: "0xb2e2a088d9705cd412CE6BF94e765743Ec26b1e4",
   },
 };

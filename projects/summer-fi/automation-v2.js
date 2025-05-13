@@ -23,7 +23,9 @@ const getTriggerData = (trigger) => {
     trigger.triggerData
   );
 
-  const isMorpho = morphoTriggerTypes.includes(triggerType);
+  const triggerTypeAsBigInt = BigInt(triggerType);
+
+  const isMorpho = morphoTriggerTypes.includes(triggerTypeAsBigInt);
   const decoderFields = [
     "address", // position address
     "uint16", // trigger type
@@ -37,8 +39,8 @@ const getTriggerData = (trigger) => {
   }
   const [
     positionAddress, // position address (DPM)
-    _triggerType, // trigger type (mapped above)
-    _maxCoverage, // maxCoverage (not used)
+    ,
+    ,
     debtTokenAddress, // debt token
     collateralTokenAddress, // collateral token
     _operationName, // operation name (not used)
@@ -46,7 +48,7 @@ const getTriggerData = (trigger) => {
   ] = decoder.decode(decoderFields, trigger.triggerData);
   return {
     positionAddress,
-    triggerType,
+    triggerType: triggerTypeAsBigInt,
     debtTokenAddress,
     collateralTokenAddress,
     poolId,
