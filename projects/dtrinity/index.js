@@ -59,35 +59,54 @@ async function getFraxtalAMOTvl(api, network) {
   }
 
   const tokens = await api.call({ abi: 'address[]:listCollateral', target: networkConfig.collateralVault })
-  return api.sumTokens({ owner: [networkConfig.collateralVault], tokens })
+  return api.sumTokens({ owner: networkConfig.collateralVault, tokens })
 }
 
 async function getSonicAMOTvl(api, network) {
   const networkConfig = config[network]
   if (!networkConfig) return
 
-  const dUSDConfig = networkConfig.dUSD
-  const dSConfig = networkConfig.dS
+  const results = {}
+  
+  for (const [, tokenConfig] of Object.entries(networkConfig)) {
+    if (!tokenConfig.pools) continue
 
-  for (const pool of dUSDConfig.pools) {
-    const lpBal = await api.call({ abi: 'erc20:balanceOf', target: pool.lpAddress, params: dUSDConfig.address })
-    const collateralBal = await api.call({ abi: 'erc20:balanceOf', params: pool.lpAddress, target: pool.collateralAddress })
-    const lpSupply = await api.call({ abi: 'erc20:totalSupply', target: pool.lpAddress })
-    const collateralAmount = collateralBal * lpBal / lpSupply
-    api.add(pool.collateralAddress, collateralAmount)
+    for (const pool of tokenConfig.pools) {
+      const [reserve0, reserve1] = await api.call({ 
+        abi: 'function getReserves() view returns (uint128, uint128)',
+        target: pool.lpAddress
+      })
+      
+      const token0 = await api.call({
+        abi: 'function token0() view returns (address)',
+        target: pool.lpAddress
+      })
+      const token1 = await api.call({
+        abi: 'function token1() view returns (address)',
+        target: pool.lpAddress
+      })
+
+      if (token0.toLowerCase() === pool.collateralAddress.toLowerCase()) {
+        api.add(pool.collateralAddress, reserve0)
+      } else if (token1.toLowerCase() === pool.collateralAddress.toLowerCase()) {
+        api.add(pool.collateralAddress, reserve1)
+      }
+    }
+
+    const collaterals = await api.call({ 
+      abi: 'address[]:listCollateral', 
+      target: tokenConfig.collateralVault 
+    })
+    
+    const tokenResult = await api.sumTokens({ 
+      owner: tokenConfig.collateralVault, 
+      tokens: collaterals 
+    })
+    
+    Object.assign(results, tokenResult)
   }
-  const dUSDCollaterals = await api.call({ abi: 'address[]:listCollateral', target: dUSDConfig.collateralVault })
 
-  for (const pool of dSConfig.pools) {
-    const lpBal = await api.call({ abi: 'erc20:balanceOf', target: pool.lpAddress, params: dSConfig.address })
-    const collateralBal = await api.call({ abi: 'erc20:balanceOf', params: pool.lpAddress, target: pool.collateralAddress })
-    const lpSupply = await api.call({ abi: 'erc20:totalSupply', target: pool.lpAddress })
-    const collateralAmount = collateralBal * lpBal / lpSupply
-    api.add(pool.collateralAddress, collateralAmount)
-  }
-  const dSCollaterals = await api.call({ abi: 'address[]:listCollateral', target: dSConfig.collateralVault })
-
-  return api.sumTokens({ owner: [dUSDConfig.collateralVault, dSConfig.collateralVault], tokens: [...dUSDCollaterals, ...dSCollaterals] })
+  return results
 }
 
 const tvl = async (api) => {
