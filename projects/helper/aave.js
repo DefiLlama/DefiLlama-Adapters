@@ -209,7 +209,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
   }
 
   async function borrowed(api) {
-    const balances = {}
+    const balances = api.getBalances()
     const data = await getReservesData(api)
     const supplyVariable = await api.multiCall({
       abi: 'erc20:totalSupply',
