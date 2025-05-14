@@ -64,7 +64,7 @@ const ethTvl = async (api) => {
     owner: earnETHVault, tokens,
     uniV3nftsAndOwners: [[PANCAKE_NFT_ADDRESS, earnETHVault]],
     uniV3ExtraConfig: { nftIdFetcher: pancakeswapMasterChef },
-    fetchCoValentTokens: true
+    fetchCoValentTokens: true,
   })
 }
 
@@ -72,7 +72,8 @@ const swellTvl = async (api) => {
   return sumTokens2({
     api,
     owner: earnETHVault,
-    tokens: swellchainTokens
+    tokens: swellchainTokens,
+    resolveSlipstream: true,
   })
 }
 
