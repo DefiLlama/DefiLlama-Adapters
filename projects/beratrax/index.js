@@ -66,6 +66,8 @@ const vaultAddresses = [
   "0xb5B652d6D4Ae3f61507Fe05052b224596c42D6C0",
 ];
 
+const stLBGTVaultAddress = "0x27555679E118ec6ECF5F37Dbf2Dc996695e00a1e";
+
 async function getSteerVaultTvl(api, vaults) {
   let tokens = await api.multiCall({
     abi: "address:asset",
@@ -175,6 +177,31 @@ async function getVaultTvl(api, vaults) {
   api.addTokens(assets, balances);
 }
 
+async function getStLBGTVaultTvl(api) {
+  const stLbgt = await api.call({
+    abi: "function asset() view returns (address)",
+    target: stLBGTVaultAddress,
+  });
+
+  const lbgt = await api.call({
+    abi: "function asset() view returns (address)",
+    target: stLbgt,
+  });
+
+  const totalStLbgt = await api.call({
+    abi: "function totalAssets() view returns (uint256)",
+    target: stLBGTVaultAddress,
+  });
+
+  const totalLbgt = await api.call({
+    abi: "function convertToAssets(uint256) view returns (uint256)",
+    target: stLbgt,
+    params: [totalStLbgt],
+  });
+
+  api.addToken(lbgt, totalLbgt);
+}
+
 async function tvl(api) {
   const _vaults = [];
   let vaults = [];
@@ -202,7 +229,7 @@ async function tvl(api) {
       steerVaults.push(_vaults[i]);
     else vaults.push(_vaults[i]);
   });
-
+ 
   // getLogs2 is not picking up some VaultCreated events, so we add the hardcoded vaults
   const uniqueVaults = new Set([...vaults, ...vaultAddresses]);
   const uniqueSteerVaults = new Set([...steerVaults, ...steerVaultAddresses]);
@@ -210,7 +237,7 @@ async function tvl(api) {
 
   burrBearVaults = Array.from(uniqueBurrBearVaults);
   vaults = Array.from(uniqueVaults).filter(
-    (vault) => !burrBearVaults.includes(vault)
+    (vault) => !burrBearVaults.includes(vault) && vault !== stLBGTVaultAddress
   );
   steerVaults = Array.from(uniqueSteerVaults).filter(
     (vault) => !burrBearVaults.includes(vault)
@@ -219,6 +246,7 @@ async function tvl(api) {
   await getSteerVaultTvl(api, steerVaults);
   await getVaultTvl(api, vaults);
   await getBurrBearVaultTvl(api, burrBearVaults);
+  await getStLBGTVaultTvl(api);
   return sumTokens2({ api, resolveLP: true });
 }
 
