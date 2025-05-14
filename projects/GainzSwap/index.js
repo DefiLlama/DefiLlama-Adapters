@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 
 const ROUTER_CONTRACT = '0xd35C85FbA82587c15D2fa255180146A046B67237';
 const WEDU_CONTRACT = ADDRESSES.occ.WEDU;
-const dEDU_CONTRACT = ADDRESSES.occ.dEDU;
+const dEDU_CONTRACT = "0x597FFfA69e133Ee9b310bA13734782605C3549b7";
 const CHAIN = 'occ';
 
 /**
