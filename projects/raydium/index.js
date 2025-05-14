@@ -178,7 +178,11 @@ async function tvlApi(api) {
     const lastItem = data[data.length - 1]
     hasMore = data.length === pageSize && lastItem.tvl > 1000
     api.log('lastItem', lastItem.tvl, page)
-    data.forEach(({ mintA, mintB, mintAmountA, mintAmountB, }) => {
+    data.forEach(({ mintA, mintB, mintAmountA, mintAmountB, tvl, }) => {
+      if (tvl < 20_000) {
+        api.addUSDValue(tvl)
+        return;
+      }
       api.add(mintA.address, mintAmountA * (10 ** mintA.decimals))
       api.add(mintB.address, mintAmountB * (10 ** mintB.decimals))
     })
@@ -187,5 +191,6 @@ async function tvlApi(api) {
 
   api.removeTokenBalance('DS4QiZfkp39PsHXYCRV3NkyDUKV9SpTczp2qnAUg6Nt6') // ZMB
   api.removeTokenBalance('HDa3zJc12ahykSsBRvgiWzr6WLEByf36yzKKbVvy4gnF') // SOS
+  api.removeTokenBalance('2xaPstY4XqJ2gUA1mpph3XmvmPZGuTuJ658AeqX3gJ6F') // QUP
   return api.getBalances()
 }

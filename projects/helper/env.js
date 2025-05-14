@@ -26,6 +26,7 @@ const DEFAULTS = {
   ASSETCHAIN_RPC_MULTICALL: '0xf8ac4BEB2F75d2cFFb588c63251347fdD629B92c',
   FLAME_RPC: "https://rpc.flame.astria.org",
   BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
+  BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
 }
 
 const ENV_KEYS = [
