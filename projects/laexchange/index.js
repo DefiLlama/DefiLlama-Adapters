@@ -14,7 +14,8 @@ async function tvl(api) {
   }
   
   module.exports = {
-    methodology: 'Counts the amount of deposited ETH in the LPETH contract.',
+    methodology: 'Calculates the total amount of ETH, USDT, USDC, and USDX deposited across various pools',
+    misrepresentedTokens: true,
     ethereum: {
       tvl
     }
