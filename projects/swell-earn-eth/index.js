@@ -37,10 +37,18 @@ const vaultTokens = [
   "0x78Fc2c2eD1A4cDb5402365934aE5648aDAd094d0", // Re7 WETH
 ]
 
-const swellTokens = [
+const swellchainEulerVaults = [
+  '0x49C077B74292aA8F589d39034Bf9C1Ed1825a608', // WETH
+  '0x10D0D11A8B693F4E3e33d09BBab7D4aFc3C03ef3', // weETH
+  '0xf34253Ec3Dd0cb39C29cF5eeb62161FB350A9d14', // swETH
+  '0x1773002742A2bCc7666e38454F761CE8fe613DE5', // rswETH
+]
+
+const swellchainTokens = [
   ADDRESSES.swellchain.rswETH, // rswETH
   ADDRESSES.swellchain.swETH, // swETH
   '0xC3d33a0Ea1582410075567c589af895fcaF1127c', // tempest weeth/eth
+  ...swellchainEulerVaults,
 ]
 
 const tokens = [
@@ -64,7 +72,7 @@ const swellTvl = async (api) => {
   return sumTokens2({
     api,
     owner: earnETHVault,
-    tokens: swellTokens
+    tokens: swellchainTokens
   })
 }
 
