@@ -1,31 +1,35 @@
-const { get } = require('./helper/http')
+const utils = require('./helper/utils');
+const { getApiTvl } = require('./helper/historicalApi');
 
-async function fetch({ timestamp }) {
-  if (!timestamp) {
-    timestamp = Math.floor(Date.now() / 1000); // default to current time
-  }
+const TVL_URL = "https://storage.googleapis.com/defillama-stellar-tvl/stellar-tvl.json";
 
-  const dateObj = new Date(timestamp * 1000);
+async function fetchTvlData() {
+  const response = await utils.fetchURL(TVL_URL, { responseType: 'text' });
+  const lines = response.data.trim().split('\n');
+  return lines.map(line => JSON.parse(line));
+}
 
-  const targetDate = dateObj.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+async function current() {
+  const parsed = await fetchTvlData()
+  
+  const latest = parsed.reduce((a, b) => (a.day > b.day ? a : b));
+  return latest.total_tvl_usd;
+}
 
-  // The stellar-tvl.json is newline delimited
-  const response = await get(
-    "https://storage.googleapis.com/defillama-stellar-tvl/stellar-tvl.json",
-    { responseType: 'text' }
-  );
-
-  const lines = response.trim().split('\n');
-  const parsed = lines.map(line => JSON.parse(line));
- 
-  const match = parsed.find(entry => entry.day === targetDate);
-
-  return match.total_tvl_usd
+function tvl(timestamp) {
+  return getApiTvl(timestamp, current, async () => {
+    const parsed = await fetchTvlData()
+    
+    return parsed.map(entry => ({
+      date: Math.round(new Date(entry.day).getTime() / 1e3),
+      totalLiquidityUSD: entry.total_tvl_usd,
+    }));
+  });
 }
 
 module.exports = {
-  timetravel: true,
-  start: 1704067200, // 2025-01-01 UTC
   methodology: 'Total value of all sell offers in the built-in Stellar Decentralized exchange. This includes XLM and assets issued on the network, converting to USD.',
-  fetch,
+  stellar: { tvl },
+  timetravel: true,
+  start: 1659916800, // 2022-08-08 UTC
 };
