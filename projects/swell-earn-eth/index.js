@@ -110,8 +110,6 @@ const swellBTCTvl = async (api) => {
 module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault + LP positions',
   doublecounted: true,
-  // ethereum: { tvl: sdk.util.sumChainTvls([ethTvl, ethBTCTvl]) },
-  // swellchain: { tvl: sdk.util.sumChainTvls([swellTvl, swellBTCTvl]) },
-  ethereum: { tvl: sdk.util.sumChainTvls([ethTvl]) },
-  swellchain: { tvl: sdk.util.sumChainTvls([swellTvl]) },
+  ethereum: { tvl: sdk.util.sumChainTvls([ethTvl, ethBTCTvl]) },
+  swellchain: { tvl: sdk.util.sumChainTvls([swellTvl, swellBTCTvl]) },
 }
