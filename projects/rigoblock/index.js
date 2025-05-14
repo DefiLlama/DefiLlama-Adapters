@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2, unwrapUniswapV4NFTs } = require('../helper/unwrapLPs')
-const { getUniqueAddresses } = require('../helper/tokenMapping')
+const { getUniqueAddresses, getChainTransform } = require('../helper/tokenMapping')
 
 const activeTokensAbi = 'function getActiveTokens() view returns (address[] activeTokens, address baseToken)'
 const tokenIdsAbi = 'function getUniV4TokenIds() view returns (uint256[])'
@@ -81,6 +81,7 @@ Object.keys(config).forEach(chain => {
     return poolData[poolKey]
 
     async function _getPoolInfo() {
+      // Fetch pool addresses from registry logs
       const registeredLogs = await getLogs({
         api,
         target: REGISTRY,
@@ -95,12 +96,11 @@ Object.keys(config).forEach(chain => {
       const tokenData = await api.multiCall({
         abi: activeTokensAbi,
         calls: pools,
-        permitFailure: true, // v3 pools do not have activeTokens
+        permitFailure: true, // V3 pools do not have activeTokens
       })
       const validTokenData = tokenData.filter(data => data !== null)
-      // Aggregate tokens (activeTokens + baseToken)
-      const tokens = validTokenData.flatMap(i => i.activeTokens)
-      const baseTokens = validTokenData.map(i => i.baseToken).filter(Boolean)
+      const tokens = validTokenData.flatMap(i => i[0]) // activeTokens
+      const baseTokens = validTokenData.map(i => i[1]).filter(Boolean) // baseToken
       const allTokens = [...tokens, ...baseTokens]
 
       // Fetch Uniswap V4 position tokenIds for all pools
@@ -110,7 +110,7 @@ Object.keys(config).forEach(chain => {
         permitFailure: true, // Allow pools without tokenIds
       })
 
-      // Verify ownership and prepare nftsAndOwners
+      // Prepare nftsAndOwners for Uniswap V4 positions
       const nftsAndOwners = []
       for (let i = 0; i < pools.length; i++) {
         const pool = pools[i]
@@ -128,29 +128,25 @@ Object.keys(config).forEach(chain => {
         const validTokenIds = tokenIds.filter((id, j) => owners[j] === pool)
         if (validTokenIds.length === 0) continue
 
-        // Add to nftsAndOwners for unwrapUniswapV4NFTs
         nftsAndOwners.push([UNISWAP_V4_POSM, pool, { positionIds: validTokenIds }])
       }
 
       // Unwrap Uniswap V4 positions
-      if (nftsAndOwners.length > 0) {
-        await unwrapUniswapV4NFTs({
-          balances: api.getBalances(),
-          nftsAndOwners: nftsAndOwners.map(([nftAddress, owner, { positionIds }]) => [
-            nftAddress,
-            owner,
-            { positionIds }
-          ]),
-          block: api.block,
-          chain: api.chain,
-          stateViewer: UNISWAP_V4_STATE_VIEWER,
-          blacklistedTokens: [GRG_TOKEN_ADDRESSES]
-        })
-      }
+      await unwrapUniswapV4NFTs({
+        balances: api.getBalances(),
+        nftsAndOwners: nftsAndOwners.map(([nftAddress, owner, { positionIds }]) => [
+          nftAddress,
+          owner,
+          { positionIds }
+        ]),
+        block: api.block,
+        chain: api.chain,
+        stateViewer: UNISWAP_V4_STATE_VIEWER,
+        blacklistedTokens: [GRG_TOKEN_ADDRESSES]
+      })
 
-      // Remove duplicates
       const uniqueTokens = getUniqueAddresses(allTokens)
-      sdk.log('chain: ', api.chain, 'pools: ', pools.length, 'tokens: ', uniqueTokens.length, tokenIdsData.flat().length)
+      sdk.log('chain: ', api.chain, 'pools: ', pools.length, 'tokens: ', uniqueTokens.length, 'uniV4 tokenIds: ', nftsAndOwners.flatMap(([_, __, { positionIds }]) => positionIds).length)
       return { pools, tokens: uniqueTokens }
     }
   }
