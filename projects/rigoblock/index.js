@@ -1,16 +1,17 @@
 const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2, unwrapUniswapV4NFTs } = require('../helper/unwrapLPs')
-const { getUniqueAddresses, getChainTransform } = require('../helper/tokenMapping')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getUniqueAddresses } = require('../helper/tokenMapping')
+const { getChainTransform } = require('../helper/portedTokens')
 
-const activeTokensAbi = 'function getActiveTokens() view returns (address[] activeTokens, address baseToken)'
+const activeTokensAbi = 'function getActiveTokens() view returns ((address[] activeTokens, address baseToken))'
 const tokenIdsAbi = 'function getUniV4TokenIds() view returns (uint256[])'
 const ownerOfAbi = 'function ownerOf(uint256 tokenId) view returns (address)'
 
 const REGISTRY = '0x06767e8090bA5c4Eca89ED00C3A719909D503ED6' // same on all chains
 
 module.exports = {
-  methodology: `RigoBlock TVL on Ethereum, Arbitrum, Optimism, BSC, Base, and Unichain pulled from onchain data, including Uniswap V4 liquidity position balances`,
+  methodology: `RigoBlock TVL on Ethereum, Arbitrum, Optimism, BSC, Base, and Unichain pulled from onchain data, including Uniswap V4 liquidity position balances (excluding GRG balances). Staking TVL includes staked GRG, plus GRG balances in Uniswap V4 liquidity positions, and GRG balances held by smart pool contracts.`,
 }
 
 const config = {
@@ -63,15 +64,33 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const transformAddress = await getChainTransform(chain)
-      const { pools, tokens } = await getPoolInfo(api)
-      return sumTokens2({ owners: pools, tokens, api, blacklistedTokens: [GRG_TOKEN_ADDRESSES], transformAddress })
+      const { pools, tokens, uniV4Ids } = await getPoolInfo(api)
+      return sumTokens2({
+        owners: pools,
+        tokens,
+        api,
+        blacklistedTokens: [GRG_TOKEN_ADDRESSES],
+        transformAddress,
+        resolveUniV4: true,
+        uniV4ExtraConfig: { positionIds: uniV4Ids, nftAddress: UNISWAP_V4_POSM, stateViewer: UNISWAP_V4_STATE_VIEWER }
+      })
     },
     staking: async (api) => {
       const transformAddress = await getChainTransform(chain)
-      const { pools } = await getPoolInfo(api)
+      const { pools, uniV4Ids } = await getPoolInfo(api)
+      // Add GRG balances from vaults
       const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools, target: GRG_VAULT_ADDRESSES })
       bals.forEach(i => api.add(GRG_TOKEN_ADDRESSES, i))
-      return sumTokens2({ owners: pools, tokens: [GRG_TOKEN_ADDRESSES], api, transformAddress })
+      // Aggregate GRG from vaults, ERC20 pool balances, and Uniswap V4 positions in a single call
+      return sumTokens2({
+        owners: pools,
+        tokens: [GRG_TOKEN_ADDRESSES], // Includes GRG ERC20 balances held by pools
+        api,
+        uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES], // Includes GRG from Uniswap V4 positions
+        transformAddress,
+        resolveUniV4: true,
+        uniV4ExtraConfig: { positionIds: uniV4Ids, nftAddress: UNISWAP_V4_POSM, stateViewer: UNISWAP_V4_STATE_VIEWER }
+      })
     },
   }
 
@@ -99,8 +118,9 @@ Object.keys(config).forEach(chain => {
         permitFailure: true, // V3 pools do not have activeTokens
       })
       const validTokenData = tokenData.filter(data => data !== null)
-      const tokens = validTokenData.flatMap(i => i[0]) // activeTokens
-      const baseTokens = validTokenData.map(i => i[1]).filter(Boolean) // baseToken
+
+      const tokens = validTokenData.flatMap(i => i.activeTokens)
+      const baseTokens = validTokenData.map(i => i.baseToken).filter(Boolean)
       const allTokens = [...tokens, ...baseTokens]
 
       // Fetch Uniswap V4 position tokenIds for all pools
@@ -110,8 +130,8 @@ Object.keys(config).forEach(chain => {
         permitFailure: true, // Allow pools without tokenIds
       })
 
-      // Prepare nftsAndOwners for Uniswap V4 positions
-      const nftsAndOwners = []
+      // Prepare Uniswap V4 position IDs
+      const uniV4Ids = []
       for (let i = 0; i < pools.length; i++) {
         const pool = pools[i]
         const tokenIds = tokenIdsData[i] || []
@@ -126,28 +146,12 @@ Object.keys(config).forEach(chain => {
 
         // Filter valid tokenIds where pool is the owner
         const validTokenIds = tokenIds.filter((id, j) => owners[j] === pool)
-        if (validTokenIds.length === 0) continue
-
-        nftsAndOwners.push([UNISWAP_V4_POSM, pool, { positionIds: validTokenIds }])
+        uniV4Ids.push(...validTokenIds)
       }
 
-      // Unwrap Uniswap V4 positions
-      await unwrapUniswapV4NFTs({
-        balances: api.getBalances(),
-        nftsAndOwners: nftsAndOwners.map(([nftAddress, owner, { positionIds }]) => [
-          nftAddress,
-          owner,
-          { positionIds }
-        ]),
-        block: api.block,
-        chain: api.chain,
-        stateViewer: UNISWAP_V4_STATE_VIEWER,
-        blacklistedTokens: [GRG_TOKEN_ADDRESSES]
-      })
-
       const uniqueTokens = getUniqueAddresses(allTokens)
-      sdk.log('chain: ', api.chain, 'pools: ', pools.length, 'tokens: ', uniqueTokens.length, 'uniV4 tokenIds: ', nftsAndOwners.flatMap(([_, __, { positionIds }]) => positionIds).length)
-      return { pools, tokens: uniqueTokens }
+      sdk.log('chain: ', api.chain, 'pools: ', pools.length, 'tokens: ', uniqueTokens.length, 'valid uniV4 tokenIds: ', uniV4Ids.length, 'uniV4 pools: ', pools.filter((_, i) => tokenIdsData[i]?.length > 0).length)
+      return { pools, tokens: uniqueTokens, uniV4Ids }
     }
   }
 })
