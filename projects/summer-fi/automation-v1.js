@@ -56,7 +56,6 @@ const getAutomationV1Data = async ({ api }) => {
         api,
         fromBlock: creationBlocks.ethereum.AutomationV1Contract,
         target: contracts.ethereum.AutomationV1Contract,
-        topics: [logsTopic.automationBotV1[key]],
         eventAbi: abi.automationBotV1[key],
         extraKey: `${api.chain}-${key}V1`,
         onlyArgs: true,

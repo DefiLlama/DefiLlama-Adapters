@@ -81,7 +81,6 @@ const getAutomationV2Data = async ({ api }) => {
         api,
         fromBlock: creationBlocks[api.chain].AutomationV2Contract,
         target: contracts[api.chain].AutomationBotV2,
-        topics: [logsTopic.automationBotV2[key]],
         eventAbi: abi.automationBotV2[key],
         extraKey: `${api.chain}-${key}V2`,
         onlyArgs: true,
