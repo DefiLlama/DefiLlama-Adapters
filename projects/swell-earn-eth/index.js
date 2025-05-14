@@ -29,8 +29,10 @@ const ethTokens = [
 ]
 
 const pendleLPTokens = [
-  "0x7C7FbB2d11803C35Aa3e283985237aD27f64406B", //rswETH 26Dec2024
-  "0x0e1C5509B503358eA1Dac119C1D413e28Cc4b303", //swETH 26December2024
+  "0x7C7FbB2d11803C35Aa3e283985237aD27f64406B", // rswETH 26Dec2024
+  "0x0e1C5509B503358eA1Dac119C1D413e28Cc4b303", // swETH 26December2024
+  "0x86d27c49a6a7a2bc033b5d67a21f93d62894ccb9", // swETH 26June2025
+  "0xfd5cf95e8b886ace955057ca4dc69466e793fbbe", // rswETH 26June2025
 ]
 
 const vaultTokens = [
@@ -108,6 +110,8 @@ const swellBTCTvl = async (api) => {
 module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault + LP positions',
   doublecounted: true,
-  ethereum: { tvl: sdk.util.sumChainTvls([ethTvl, ethBTCTvl]) },
-  swellchain: { tvl: sdk.util.sumChainTvls([swellTvl, swellBTCTvl]) },
+  // ethereum: { tvl: sdk.util.sumChainTvls([ethTvl, ethBTCTvl]) },
+  // swellchain: { tvl: sdk.util.sumChainTvls([swellTvl, swellBTCTvl]) },
+  ethereum: { tvl: sdk.util.sumChainTvls([ethTvl]) },
+  swellchain: { tvl: sdk.util.sumChainTvls([swellTvl]) },
 }
