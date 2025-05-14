@@ -1,12 +1,16 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const { tokens: tokensObj, vaultContracts: owners } = require("./assets");
+const { tokens, vaultContracts } = require("./assets");
 
-const tokens = Object.values(tokensObj).map(chain => Object.values(chain)).flat();
+const plainTokens = Object.values(tokens).map(chain => Object.values(chain)).flat(1);
 
 module.exports = {
     // All vaults currently ethereum
-    doublecounted: true,
     ethereum: {
-        tvl: sumTokensExport({ owners, tokens, permitFailure: true, onlyWhitelisted: false }),
+        tvl: sumTokensExport({
+            owners: vaultContracts,
+            tokens: plainTokens,
+            permitFailure: true,
+            tokenConfig: { onlyWhitelisted: false },
+        }),
     },
 };
