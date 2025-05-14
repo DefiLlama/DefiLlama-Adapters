@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
+const { sumTokens2, PANCAKE_NFT_ADDRESS, unwrapSlipstreamNFT } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const earnETHVault = '0x9Ed15383940CC380fAEF0a75edacE507cC775f22';
@@ -46,6 +46,11 @@ const swellchainEulerVaults = [
   '0x1773002742A2bCc7666e38454F761CE8fe613DE5', // rswETH
 ]
 
+const swellchainVeloPoolsStaked = [{
+  "pool" : "0xf495610d64FA6a32C5F968c947028f9C7Cacfb19", 
+  "gauge": "0x86Bfb23700cE37702D88E5451b8C0ee9d7c07f90"
+}]
+
 const swellchainTokens = [
   ADDRESSES.swellchain.rswETH, // rswETH
   ADDRESSES.swellchain.swETH, // swETH
@@ -59,8 +64,7 @@ const tokens = [
   ...vaultTokens,
 ]
 
-
-const ethTvl = async (api) => {
+const ethErc20Tvl = async (api) => {
   return sumTokens2({
     api,
     owner: earnETHVault, tokens,
@@ -70,18 +74,18 @@ const ethTvl = async (api) => {
   })
 }
 
-const swellTvl = async (api) => {
+const swellErc20Tvl = async (api) => {
   return sumTokens2({
     api,
     owner: earnETHVault,
     tokens: swellchainTokens,
-    resolveSlipstream: true,
+    resolveSlipstream: true, // only handles unstaked positions
   })
 }
 
 const earnBTCVault = '0x66E47E6957B85Cf62564610B76dD206BB04d831a';
 
-const ethBTCTvl = async (api) => {
+const ethBTCErc20Tvl = async (api) => {
   const ethTokens = [
     ADDRESSES.ethereum.WBTC, // WBTC
     '0x8DB2350D78aBc13f5673A411D4700BCF87864dDE', // swBTC
@@ -96,7 +100,26 @@ const ethBTCTvl = async (api) => {
   return sumTokens2({ api, owner: earnBTCVault, tokens: ethTokens, fetchCoValentTokens: true })
 }
 
-const swellBTCTvl = async (api) => {
+const swellVeloStakedTvl = async (api) => {
+  let stakedIds = []
+  for (const pool of swellchainVeloPoolsStaked) {
+    const ids = await api.call({
+      target: pool.gauge,
+      abi: 'function stakedValues(address depositor) external view override returns (uint256[] memory staked)',
+      params: earnETHVault,
+    })
+    // console.log(l)
+    stakedIds = stakedIds.concat(ids)
+  }
+
+  return await unwrapSlipstreamNFT({
+    api, 
+    positionIds: stakedIds, 
+    nftAddress: "0x991d5546C4B442B4c5fdc4c8B8b8d131DEB24702",
+  })
+}
+
+const swellBTCErc20Tvl = async (api) => {
 
   const swellTokens = [
     ADDRESSES.swellchain.stBTC, // stBTC
@@ -110,6 +133,8 @@ const swellBTCTvl = async (api) => {
 module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault + LP positions',
   doublecounted: true,
-  ethereum: { tvl: sdk.util.sumChainTvls([ethTvl, ethBTCTvl]) },
-  swellchain: { tvl: sdk.util.sumChainTvls([swellTvl, swellBTCTvl]) },
+  ethereum: { tvl: sdk.util.sumChainTvls([ethErc20Tvl, ethBTCErc20Tvl]) },
+  swellchain: { tvl: sdk.util.sumChainTvls([swellErc20Tvl, swellBTCErc20Tvl, swellVeloStakedTvl]) },
+  // ethereum: { tvl: sdk.util.sumChainTvls([ethTvl]) },
+  // swellchain: { tvl: sdk.util.sumChainTvls([swellTvl]) },
 }
