@@ -31,6 +31,14 @@ const tvl = async (api) => {
     if (token) api.add(token, bals2[i])
   })
 
+  const apVaults = Object.values(response[chains[api.chain]]).filter(i => i.isIPORVault).map(i => i.vaultAddress)
+  const apTokens = await api.multiCall({ abi: 'address:asset', calls: apVaults, permitFailure: true })
+  const apBals = await api.multiCall({ abi: 'uint256:totalAssets', calls: apVaults, permitFailure: true })
+  
+  apTokens.forEach((token, i) => {
+    if (token) api.add(token, apBals[i])
+  })
+
   return sumTokens2({ api, resolveLP: true, owners: vaults.map(({ vault }) => vault), resolveUniV3: api.chain !== 'base' && api.chain !== 'era', permitFailure: true })
 }
 
