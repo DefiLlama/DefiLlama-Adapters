@@ -56,8 +56,8 @@ const tvl = async (api) => {
   if (chain === 'arbitrum') return getArbTvl(balances, api, vaults)
 
   const assets = await api.multiCall({ abi: abis.asset, calls: vaults })
-  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults })
-  api.add(assets, totalAssets)
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults, permitFailure: true })
+  api.add(assets, totalAssets.map(i => i || 0))
   return sumTokens2({ api, resolveLP: true })
 }
 
