@@ -4,11 +4,12 @@ const methodologies = require('../helper/methodologies');
 
 const endpoint = 'https://cu.ao-testnet.xyz'
 const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
-const tickerTransformations = {
+const geckoTickerTransformations = {
     'qAR': 'arweave',
     'wAR': 'arweave',
     'wUSDC': 'usd-coin',
     'wUSDT': 'tether',
+    'wETH': 'ethereum',
 };
 
 
@@ -57,7 +58,7 @@ async function getTokenInfos(supportedTokens) {
     const tagsObject = Object.fromEntries(
       infoRes.Messages[0].Tags.map((tag) => [tag.name, tag.value])
     );
-    const ticker = tickerTransformations[balanceObject.ticker] || balanceObject.ticker;
+    const ticker = geckoTickerTransformations[balanceObject.ticker] || balanceObject.ticker;
     
     tokenInfo.push({
       ticker: `coingecko:${ticker}`,
@@ -113,4 +114,3 @@ module.exports = {
   ao: { tvl, borrowed },
 };
 // node test.js projects/LiquidOps/index.js
-
