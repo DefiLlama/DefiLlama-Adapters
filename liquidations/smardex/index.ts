@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { Liq } from "../utils/types";
 import axios from "axios";
 interface PositionHistory {
@@ -73,7 +72,7 @@ const calculateLiquidationPrice = (position: Position): number => {
 
 const formatPosition = (position: Position): Liq => {
   const owner =
-    position.mainPosition?.lastOwner?.address || ethers.constants.AddressZero;
+    position.mainPosition?.lastOwner?.address || '0x0000000000000000000000000000000000000000';
     
   const searchParam = position.history && position.history.length > 0 ? 
     position.history[position.history.length - 1].transactionHash : position.index;
