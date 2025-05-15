@@ -76,7 +76,7 @@ Object.keys(config).forEach(chain => {
   const { staking = [], pool2 = [], } = config[chain]
   if (!module.exports[chain])
     module.exports[chain] = {}
-  module.exports.deadFrom='2024-07-09'
+  // module.exports.deadFrom='2024-07-09'
   module.exports[chain].staking = sumTokensExport({ tokensAndOwners: staking })
   module.exports[chain].pool2 = sumTokensExport({ tokensAndOwners: pool2, resolveLP: true, })
   module.exports.ethereum.borrowed = () => ({}) // bad debt
