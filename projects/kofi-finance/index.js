@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { function_view } = require('../helper/chain/aptos')
 
 module.exports = {
