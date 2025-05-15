@@ -4,6 +4,7 @@ async function tvl() {
     return sumTokens2({
       tokenAccounts: [
         "CRFtzwkekKorgdTRSdvsYeqL1vEuVvwGRvweuWCyaRt3", // jitoSOL token account in kySOL Vault address
+        "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd", // JTO token account in kyJTO Vault address
       ]
     })
 }

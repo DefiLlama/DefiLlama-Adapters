@@ -1,4 +1,5 @@
-const { staking } = require('../helper/staking')
+const { stakings } = require("../helper/staking");
+const { pool2s } = require("../helper/pool2");
 
 const VOTING_ESCROW_ADDRESSES = {
   ethereum: '0x8e76Cdf3b14c540aB54aFa7f8492AC1d16Ecfb35',
@@ -12,10 +13,26 @@ const ZBU_ADDRESSES = {
   bsc: '0x4D3dc895a9EDb234DfA3e303A196c009dC918f84',
 };
 
+const lpTokens = [
+  '0xC3889F9764d68BDF2e16f237206746344172A147'
+];
 
-Object.keys(VOTING_ESCROW_ADDRESSES).forEach(chain => {
-  module.exports[chain] = {
-    tvl: () => ({}),
-    staking: staking(VOTING_ESCROW_ADDRESSES[chain], ZBU_ADDRESSES[chain])
-  }
-})
+const stackingcontract = [
+  '0x45dd22aCe398002b34cB37b363B2F02C7dd47842'
+];
+
+module.exports = {
+  ethereum: {
+    staking: stakings([VOTING_ESCROW_ADDRESSES["ethereum"]], ZBU_ADDRESSES["ethereum"]),
+    tvl: () => ({})
+  },
+  base: {
+    staking: stakings([VOTING_ESCROW_ADDRESSES["base"]], ZBU_ADDRESSES["base"]),
+    pool2: pool2s(stackingcontract, lpTokens),
+  },
+  bsc: {
+    staking: stakings([VOTING_ESCROW_ADDRESSES["bsc"]], ZBU_ADDRESSES["bsc"]),
+  },
+  methodology:
+    'Counts ZBU tokens locked in Voting Escrow contracts across Ethereum, Base, and BSC.',
+};
