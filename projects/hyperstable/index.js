@@ -47,25 +47,6 @@ async function tvl(api) {
   return balances
 }
 
-async function borrowed(api) {
-  const [totalSupply, price] = await Promise.all([
-    api.call({
-      target: USH,
-      abi: 'function totalSupply() view returns (uint256)'
-    }),
-    api.call({
-      target: USH_ORACLE,
-      abi: 'function fetchPrice() view returns (uint256)'
-    })
-  ])
-
-  const balances = {}
-  const valueInUsd = (BigInt(totalSupply) * BigInt(price))
-  
-  sdk.util.sumSingleBalance(balances, USH.toLowerCase(), valueInUsd.toString(), api.chain)
-  return balances
-}
-
 async function pool2(api) {
   const tokensAndOwners = POOL2_CONFIG.map(p => ([p.lpToken, p.stakingContract]))
   
@@ -85,7 +66,6 @@ async function pool2(api) {
 module.exports = {
   hyperliquid: {
     tvl,
-    borrowed,
     pool2,
   },
   methodology: "Counts the total assets posted as collateral for TVL. For borrowed, calculates USH total supply × USH price from the protocol's price oracle (Pyth). Pool2 includes Curve LP positions staked in the protocol's staking contracts.",
