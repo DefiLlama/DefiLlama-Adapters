@@ -41,7 +41,7 @@ query get_tvl($block: Int) {
   }
 }
 `;
-async function tvl({timestamp}, ethBlock, chainBlocks) {
+async function tvl({ timestamp }, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
     const tvl = await request(graphEndpoint, currentQuery, {}, {
       "referer": "https://pancakeswap.finance/",
@@ -103,7 +103,7 @@ module.exports = {
   op_bnb: {
     tvl: getUniTVL({ factory: '0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E', useDefaultCoreAssets: true, })
   },
-  arbitrum: {...defaultExport},
+  arbitrum: { ...defaultExport },
   base: defaultExport,
 }
 
@@ -119,6 +119,11 @@ Object.keys(config).forEach(chain => {
   module.exports[chain].staking = async (api) => {
     const logs = await getLogs({ api, target: factory, eventAbi: 'event NewSmartChefContract (address indexed martChef)', onlyArgs: true, fromBlock, })
     pools.push(...logs.map(log => log.martChef))
+    if (chain === 'bsc') {  // https://developer.pancakeswap.finance/contracts/syrup-pools
+      const logs = await getLogs({ api, target: '0x29115Bf4863648BB01a9cEc43d8306EC51800642', eventAbi: 'event NewSmartChefContract (address indexed martChef)', onlyArgs: true, fromBlock: 48432969, })
+      pools.push(...logs.map(log => log.martChef))
+
+    }
     return api.sumTokens({ owners: pools, tokens: [CAKE] })
   }
 })

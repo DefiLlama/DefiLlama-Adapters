@@ -13,6 +13,8 @@ const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
 const uniBTC_Genesis_Gauge = "0x1D20671A21112E85b03B00F94Fd760DE0Bef37Ba"
 const fxUSD_stabilityPool = "0x65C9A641afCEB9C0E6034e558A319488FA0FA3be"
 const FxProtocol_PoolManager = "0x250893CA4Ba5d05626C785e8da758026928FCD24"
+const FxProtocol_PoolManager_AaveV3Strategy = "0xFd3A6540e21D0E285f88FBFd904883B23e08F5C8"
+const FxProtocol_PoolManager_AaveV3Strategy_USDC = "0x376aa9086060740f444c4E7A5411ff235816Aa0C"
 module.exports = {
   doublecounted: true,
   ethereum: {
@@ -34,7 +36,8 @@ async function getGaugeTvl(api) {
 
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:baseToken', calls: treasuries })
-  const tokensAndOwners = [[uniBTC, uniBTC_Genesis_Gauge], [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool], [ADDRESSES.ethereum.WSTETH, FxProtocol_PoolManager]]
+  const tokensAndOwners = [[uniBTC, uniBTC_Genesis_Gauge], [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool], [ADDRESSES.ethereum.WSTETH, FxProtocol_PoolManager], [ADDRESSES.ethereum.WBTC, FxProtocol_PoolManager],["0xc035a7cf15375ce2706766804551791ad035e0c2", FxProtocol_PoolManager_AaveV3Strategy],["0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", FxProtocol_PoolManager_AaveV3Strategy_USDC]
+  ]
   tokens.forEach((v, i) => tokensAndOwners.push([v, treasuries[i]]))
   return api.sumTokens({ tokensAndOwners })
 }
