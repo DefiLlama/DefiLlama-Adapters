@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 async function bscTvl(api) {
-  const stBTCTokenAddress = '0xf6718b2701D4a6498eF77D7c152b2137Ab28b8A3';
+  const stBTCTokenAddress = ADDRESSES.swellchain.stBTC;
   const totalSupply = await api.call({
       abi: 'erc20:totalSupply',
       target: stBTCTokenAddress,

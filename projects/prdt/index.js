@@ -55,6 +55,14 @@ const config = {
       ADDRESSES.polygon.WETH,
     ],
   },
+  //  nibiru: {
+  //    owners: Object.values({
+  //      predictionPROV3: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
+  //    }),
+  //    tokens: [
+  //      ADDRESSES.null,
+  //    ],
+  //  },
   solana: {},
 };
 

@@ -10,6 +10,7 @@ const config = {
         "0x3cc936b795a188f0e246cbb2d74c5bd190aecf18",
         "0x0162cd2ba40e23378bf0fd41f919e1be075f025f",
         "0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88",
+        "0xee136c0389733849dd710ac7104e92c6bf497574"
     ]
   },
   bsc: {

@@ -47,13 +47,14 @@ function v3Tvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], on
       extraKey: 'PoolRegistered',
       topics: ['0xbc1561eeab9f40962e2fb827a7ff9c7cdb47a9d7c84caeefa4ed90e043842dad'],
       onlyUseExistingCache,
+      permitFailure
     })
 
     const pools = logs.map(i => i.pool)
-    const tokens = logs.map(i => i.tokenConfig.map(i => i.token)).flat()
+    const tokens = [...logs.map(i => i.tokenConfig.map(i => i.token)).flat(), ...preLogTokens]
 
     blacklistedTokens = [...blacklistedTokens, ...pools].map(i => i.toLowerCase())
-    return api.sumTokens({ owner: vault, tokens })
+    return api.sumTokens({ owner: vault, tokens, blacklistedTokens })
   }
 }
 

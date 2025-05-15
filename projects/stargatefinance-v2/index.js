@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const CONFIG = {
@@ -87,6 +88,43 @@ const CONFIG = {
     pools: [
       '0x45d417612e177672958dC0537C45a8f8d754Ac2E', //usdc pool
       '0x0dB9afb4C33be43a0a0e396Fd1383B4ea97aB10a'
+    ],
+  },
+  soneium: {
+    pools: [
+      '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B', //usdc pool
+      ADDRESSES.fuse.WETH_3
+    ],
+  },
+  unichain: {
+    pools: [
+      '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7',
+    ],
+  },
+  abstract: {
+    pools: [
+      '0x221F0E1280Ec657503ca55c708105F1e1529527D',
+    ],
+  },
+  xdai: {
+    pools: [
+      '0xB1EeAD6959cb5bB9B20417d6689922523B2B86C3', //usdc pool
+      '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7' //weth pool
+    ],
+  },
+  lightlink_phoenix: {
+    pools: [
+      '0x8731d54E9D02c286767d56ac03e8037C07e01e98', //eth pool
+    ],
+  },
+  hemi: {
+    pools: [
+      ADDRESSES.fuse.WETH_3, //eth pool
+    ],
+  },
+  sonic: {
+    pools: [
+      '0xA272fFe20cFfe769CdFc4b63088DCD2C82a2D8F9', //usdc pool
     ],
   },
 }

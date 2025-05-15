@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 module.exports = {
@@ -7,7 +8,7 @@ module.exports = {
 
 const config = {
   fantom: '0xB458BfC855ab504a8a327720FcEF98886065529b',
-  sonic: '0xe5da20f15420ad15de0fa650600afc998bbe3955',
+  sonic: ADDRESSES.sonic.STS,
 }
 
 Object.keys(config).forEach(chain => {
