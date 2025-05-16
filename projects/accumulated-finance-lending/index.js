@@ -6,12 +6,6 @@ const config = {
     velas: [
         {
             "velas": {
-                address: "0x570ae1d228d54c2a29c52603f962f45331d66680",
-                collateralToken: "0x8f0ecda9679ad16e30be3d83d183c482821f5325"
-            }
-        },
-        {
-            "velas": {
                 address: "0x0acbfff708c9d30684f620b2be23930284af12c5",
                 collateralToken: "0x8f0ecda9679ad16e30be3d83d183c482821f5325"
             }
