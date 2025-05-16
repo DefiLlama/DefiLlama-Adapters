@@ -2,17 +2,21 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/unwrapLPs')
 const { APE_STAKE_CONTRACT } = require('./config')
 
-async function stakingTvl(timestamp, block, chainBlocks) {
+const abi = {
+    getPoolsUI: "function getPoolsUI() view returns ((uint256,uint256,(uint48,uint48,uint96,uint96))[3])"
+}
+
+async function stakingTvl(api) {
     const balances = {};
     
-    const balance = await sdk.api.eth.getBalance({
+    const pools = await api.call({
         target: APE_STAKE_CONTRACT,
-        chain: 'apechain',
-        block: chainBlocks.apechain
+        abi: abi.getPoolsUI,
+        chain: 'apechain'
     });
-
-    sdk.util.sumSingleBalance(balances, nullAddress, balance.output, 'apechain')
     
+    const totalStaked = pools.reduce((sum, pool) => sum + BigInt(pool[1]), 0n);    
+    sdk.util.sumSingleBalance(balances, nullAddress, totalStaked.toString(), 'apechain')    
     return balances;
 }
 
