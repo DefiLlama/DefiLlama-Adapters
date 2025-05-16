@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const config = {
@@ -7,7 +8,7 @@ const config = {
       "0x29Ff7d778890F40ccE8E74de67D082c0e2DCc1Bc"
     ],
     tokens: [
-      "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7"
+      ADDRESSES.avax.USDt
     ]
   },
   polygon: {
@@ -17,7 +18,7 @@ const config = {
       "0xA4F335B528a24eBDeA10e5CcE14E9750929BBE34"
     ],
     tokens: [
-      "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
+      ADDRESSES.polygon.USDT
     ]
   },
   base: {
@@ -26,7 +27,7 @@ const config = {
       "0x29Ff7d778890F40ccE8E74de67D082c0e2DCc1Bc"
     ],
     tokens: [
-      "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      ADDRESSES.base.USDC
     ]
   },
   bsc: {
@@ -35,7 +36,7 @@ const config = {
       "0x29Ff7d778890F40ccE8E74de67D082c0e2DCc1Bc"
     ],
     tokens: [
-      "0x55d398326f99059fF775485246999027B3197955"
+      ADDRESSES.bsc.USDT
     ]
   },
   celo: {
@@ -44,7 +45,7 @@ const config = {
       "0x29Ff7d778890F40ccE8E74de67D082c0e2DCc1Bc"
     ],
     tokens: [
-      "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e"
+      ADDRESSES.celo.USDT_1
     ]
   }
 }

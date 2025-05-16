@@ -92,7 +92,7 @@ async function tvl(api) {
       api.add(token.address, tokenTotalSupply);
     } else {
       const tickerPricing = await axios.post(
-        'https://sailingprotocol.org/api/sailingprotocol/market_data/historical_intraday',
+        'https://sailingprotocol.org/api/market_data/historical_intraday',
         {
           ticker: token.ticker
         }

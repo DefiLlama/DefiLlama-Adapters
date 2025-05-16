@@ -13,9 +13,9 @@ const ADDRESSES = require('../coreAssets.json')
 // https://api.axelarscan.io/api/getTVL
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
-  osmosis: "https://lcd.osmosis.zone",
+  osmosis: "https://rest-osmosis.ecostake.com",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://kuji-api.kleomedes.network",
+  kujira: "https://kujira-rest.publicnode.com",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
   terra2: "https://terra-lcd.publicnode.com",
@@ -41,10 +41,11 @@ const endPoints = {
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
-  nolus: "https://pirin-cl.nolus.network:1317",
+  nolus: "https://lcd.nolus.network",
   nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai",
   joltify: "https://lcd.joltify.io",
+  milkyway: "https://lcd.mainnet.milkyway.zone:443",
   kopi: "https://rest.kopi.money",
   noble: "https://noble-api.polkachu.com",
   mantra: "https://api.mantrachain.io",
@@ -54,8 +55,12 @@ const endPoints = {
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
-  carbon: 'https://rest.lavenderfive.com/carbon/',
+  carbon: 'https://api.carbon.network',
   evmos: 'https://evmos-api.polkachu.com',
+  regen: 'https://rest-regen.ecostake.com',
+  sommelier: 'https://sommelier-rpc.polkachu.com',
+  stride: 'https://stride-api.polkachu.com',
+  babylon: 'https://babylon-api.polkachu.com',
 };
 
 const chainSubpaths = {
@@ -172,7 +177,7 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
   const {
     balances: data,
   } = await get(endpoint);
-  for (const { denom, amount } of data) {
+  for (let { denom, amount } of data) {
     if (blacklistedTokens?.includes(denom)) continue;
     if (tokens && !tokens.includes(denom)) continue;
     if (api) api.add(denom, amount);

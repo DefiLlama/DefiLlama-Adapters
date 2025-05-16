@@ -7,6 +7,5 @@ module.exports = [
   "bc1p7agkadaau66jtva9n8k5pg3lsctuyqur8a2l5y9hzwqkh5nlmd0skuhws3",
   "bc1q6are922g2ltnmdll0mesrmdzn5w2xguu7czred",
   "bc1qcpw6j7j72peplt0j34cd8uu5a886t6kkm57zgn",
-  "bc1qx4xrfsu4ddzu5uglepdef6t4yrtsn9cwqx3csp",
-  "1BKFipgZT2EwiPxKXhiYib82C5tXkTS9GU",
+  "bc1p4yc7cs24v5z5fxxdlj50zke0f3jwnngklswrpfcea9r3egmsmc6qvxjwpu"
 ]

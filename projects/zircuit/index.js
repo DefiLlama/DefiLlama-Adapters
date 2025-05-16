@@ -21,3 +21,5 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports.doublecounted = true

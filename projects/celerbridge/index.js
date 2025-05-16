@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
@@ -530,7 +529,10 @@ let chains = liquidityBridgeTokens.reduce((allChains, token) => {
 }, new Set());
 
 Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
-module.exports = chainExports(chainTvl, Array.from(chains));
+
+Array.from(chains).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [

@@ -1,37 +1,52 @@
 const { getTokenSupplies } = require('../helper/solana')
 const { ripple } = require('../helper/chain/rpcProxy')
 
-const tbill = "0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a"
-const solTbill = '4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6'
-
-async function evmTvl(api) {
-  let contract = tbill
-  if (api.chain === 'arbitrum') contract = '0xF84D28A8D28292842dD73D1c5F99476A80b6666A'
-  const [bal, token] = await api.batchCall([
-    { abi: 'uint256:totalAssets', target: contract },
-    { abi: 'address:underlying', target: contract },
-  ])
-  api.add(token, bal)
+const evmTBILLAddr = {
+    ethereum: '0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a',
+    arbitrum: '0xF84D28A8D28292842dD73D1c5F99476A80b6666A',
 }
 
-async function solTvl (api) {
-  const res = await getTokenSupplies([solTbill])
-  Object.entries(res).forEach(([token, balance]) => {
-    api.add(token, balance)
-  })
+const solTBILLAddr = '4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6'
+
+const xrpTBILLAddr = {
+    issuerAddress: 'rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn',
+    subscriptionOperatorAddress: 'rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM',
 }
 
-async function ripplTvl (api) {
-  const issuerAddress = "rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn";
-  const subscriptionOperatorAddress = "rB56JZWRKvpWNeyqM3QYfZwW4fS9YEyPWM";
+async function ethTVL(api) {
+    const tbill = await api.call({ 
+        abi: 'uint256:totalSupply',
+        target: evmTBILLAddr.ethereum 
+    })
+    api.add(evmTBILLAddr.ethereum, tbill)
+}
 
-  const data = await ripple.gatewayBalances({ account: issuerAddress, hotwallet: subscriptionOperatorAddress })
-  api.add(tbill, Number(data.obligations?.TBL) * 1e6, { skipChain: true })
+async function arbTVL(api) {
+    const tbill = await api.call({ 
+        abi: 'uint256:totalSupply',
+        target: evmTBILLAddr.arbitrum
+    })
+    api.add(evmTBILLAddr.arbitrum, tbill)
+}
+
+async function solTVL(api) {
+    const data = await getTokenSupplies([solTBILLAddr])
+    Object.entries(data).forEach(([addr, tbill]) => {
+        api.add(addr, tbill)
+    })
+}
+
+async function xrpTVL(api) {
+    const data = await ripple.gatewayBalances({
+        account: xrpTBILLAddr.issuerAddress, 
+        hotwallet: xrpTBILLAddr.subscriptionOperatorAddress, 
+    })
+    api.add(evmTBILLAddr.ethereum, Number(data.obligations?.TBL) * 1e6, { skipChain: true })
 }
 
 module.exports = {
-  ethereum: { tvl: evmTvl },
-  arbitrum: { tvl: evmTvl },
-  ripple: { tvl: ripplTvl },
-  solana: { tvl: solTvl }
+    ethereum: { tvl: ethTVL },
+    arbitrum: { tvl: arbTVL },
+    solana: { tvl: solTVL },
+    ripple: { tvl: xrpTVL },
 }

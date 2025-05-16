@@ -134,6 +134,7 @@ module.exports = {
   thundercore: { tvl: tvl2 },
   islm: { tvl: tvl2 },
   sonic: { tvl: tvl2 },
+  hemi: { tvl: getUniTVL({ factory: '0x9B3336186a38E1b6c21955d112dbb0343Ee061eE', useDefaultCoreAssets: true, }),  },
 }
 
 // module.exports.polygon.tvl = getChainTVL('polygon')
