@@ -117,6 +117,7 @@ const ethBTCErc20Tvl = async (api) => {
     '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa', // tBTC
     ADDRESSES.ethereum.LBTC, // LBTC
     '0x7A56E1C57C7475CCf742a1832B028F0456652F97', // solvBTC
+    '0x856ca0217838e9fefefd6141028c85bd423ec54b', // PT-pumpBTC-29May2025
   ]
 
   return sumTokens2({ api, owner: earnBTCVault, tokens: ethTokens, fetchCoValentTokens: true })
