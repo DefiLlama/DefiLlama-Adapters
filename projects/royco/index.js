@@ -36,24 +36,31 @@ const slug = {
 const config = {
   [slug[1].defillama]: {
     chainId: 1,
+    tags: ["recipe", "vault"],
   },
   [slug[146].defillama]: {
     chainId: 146,
+    tags: ["recipe", "vault"],
   },
   [slug[999].defillama]: {
     chainId: 999,
+    tags: ["recipe"],
   },
   [slug[8453].defillama]: {
     chainId: 8453,
+    tags: ["recipe", "vault"],
   },
   [slug[42161].defillama]: {
     chainId: 42161,
+    tags: ["recipe", "vault"],
   },
   [slug[80094].defillama]: {
     chainId: 80094,
+    tags: ["recipe", "vault"],
   },
   [slug[21000000].defillama]: {
     chainId: 21000000,
+    tags: ["recipe", "vault"],
   },
 };
 
@@ -106,27 +113,33 @@ const calculateTvl = async ({ api, chain }) => {
 
     await addToken({ api, rows });
   } else {
-    const recipeSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-recipe-${
-      slug[config[chain].chainId].royco
-    }/2.0.29/gn`;
+    const tags = config[chain].tags;
 
-    const recipeRows = await fetchAllTokenBalanceSubgraphRows({
-      subgraphUrl: recipeSubgraphUrl,
-      queryName: "rawMarketTokenBalanceRecipes",
-    });
+    if (tags.includes("recipe")) {
+      const recipeSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-recipe-${
+        slug[config[chain].chainId].royco
+      }/2.0.30/gn`;
 
-    await addToken({ api, rows: recipeRows });
+      const recipeRows = await fetchAllTokenBalanceSubgraphRows({
+        subgraphUrl: recipeSubgraphUrl,
+        queryName: "rawMarketTokenBalanceRecipes",
+      });
 
-    const vaultSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-vault-${
-      slug[config[chain].chainId].royco
-    }/2.0.18/gn`;
+      await addToken({ api, rows: recipeRows });
+    }
 
-    const vaultRows = await fetchAllTokenBalanceSubgraphRows({
-      subgraphUrl: vaultSubgraphUrl,
-      queryName: "rawMarketTokenBalanceVaults",
-    });
+    if (tags.includes("vault")) {
+      const vaultSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-vault-${
+        slug[config[chain].chainId].royco
+      }/2.0.18/gn`;
 
-    await addToken({ api, rows: vaultRows });
+      const vaultRows = await fetchAllTokenBalanceSubgraphRows({
+        subgraphUrl: vaultSubgraphUrl,
+        queryName: "rawMarketTokenBalanceVaults",
+      });
+
+      await addToken({ api, rows: vaultRows });
+    }
   }
 };
 
