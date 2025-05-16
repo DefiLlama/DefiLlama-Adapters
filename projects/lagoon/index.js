@@ -56,14 +56,14 @@ const config = {
   }
 };
 
-
 const vaultsBlacklist = [
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship
 ]
 
-function removeVault(vault, vaultBlacklist) {
-  return vaultBlacklist.indexOf(vault) != -1;
+function keepVault(vault, vaultBlacklist) {
+  return  vaultBlacklist.indexOf(vault) == -1;
 }
+
 
 
 Object.keys(config).forEach((chain) => {
@@ -71,8 +71,10 @@ Object.keys(config).forEach((chain) => {
   module.exports[chain] = { 
     tvl: async (api) =>  {
       let factoryVaults = await getFactoryVaults({api, factory: factory.address, fromBlock: factory.fromBlock});
-      factoryVaults = factoryVaults.filter((v) => removeVault(v, vaultsBlacklist));
-      return api.erc4626Sum2({
+
+      factoryVaults = factoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
+
+      return await api.erc4626Sum2({
         calls: [...vaults, ...factoryVaults],
       })
     }
