@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk')
+const { nullAddress } = require('../helper/unwrapLPs')
 const { APE_STAKE_CONTRACT } = require('./config')
-
-const WAPE = '0x0000000000000000000000000000000000000000' // Native APE token
 
 async function stakingTvl(timestamp, block, chainBlocks) {
     const balances = {};
@@ -12,7 +11,7 @@ async function stakingTvl(timestamp, block, chainBlocks) {
         block: chainBlocks.apechain
     });
 
-    sdk.util.sumSingleBalance(balances, WAPE, balance.output, 'apechain')
+    sdk.util.sumSingleBalance(balances, nullAddress, balance.output, 'apechain')
     
     return balances;
 }
