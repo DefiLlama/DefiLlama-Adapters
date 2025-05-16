@@ -68,9 +68,9 @@ module.exports = {
   },
   ethereum: {
     tvl: tvlInEthereum,
-    borrowed: borrowedInEthereum,
+    // borrowed: borrowedInEthereum,  // deprecated
   },
-  solana: {
-    borrowed: borrowedInSolana,
-  },
+  // solana: {
+  //   borrowed: borrowedInSolana,  // deprecated
+  // },
 };
