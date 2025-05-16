@@ -170,6 +170,10 @@ const HYPE_REGISTRY = {
   bob: [
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 11706713], // Uniswap
   ],
+  hemi: [
+    ["0x1E86A593E55215957C4755f1BE19a229AF3286f6", 1723870], // Uniswap
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 1723870], // Sushiswap
+  ],
 };
 
 Object.keys(HYPE_REGISTRY).forEach(chain => {
