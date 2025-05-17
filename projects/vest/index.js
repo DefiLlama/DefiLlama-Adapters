@@ -8,6 +8,7 @@ module.exports = {
     tvl: staking([
         "0xf7483A1464DeF6b8d5A6Caca4A8ce7E5be8F1F68",
         "0x7ccF5BbeC69c790D27dA3b5398B9e0d6D6EeC9F3",
+        "0xf0bcF4eDe69e5cb0EB1c9E35b4d408a5e7fdA56b",
       ], ADDRESSES.era.USDC),
   },
   base: {
