@@ -91,9 +91,10 @@ async function tvl() {
 
 
 async function borrowed() {
+    await new Promise(resolve => setTimeout(resolve, 5000)); // don't trigger both functions at the same time to not overload node
   const supportedTokensRes = await DryRun(controllerId, "Get-Tokens");
-  await new Promise(resolve => setTimeout(resolve, 1000)); // don't overload node
   const supportedTokens = JSON.parse(supportedTokensRes.Messages[0].Data);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // don't overload node
   const tokensInfo = await getTokenInfos(supportedTokens);
   const combinedBalances = {};
   
@@ -105,6 +106,8 @@ async function borrowed() {
       combinedBalances[token.ticker] = token.totalBorrows;
     }
   });
+
+  return combinedBalances
   
 }
 
