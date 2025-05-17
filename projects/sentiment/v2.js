@@ -6,8 +6,16 @@ const PORTFOLIO_LENS_ADDRESS = "0x9700750001dDD7C4542684baC66C64D74fA833c0";
 
 const SUPERPOOLS = [
   {
-    superPool: "0x2831775cb5e64b1d892853893858a261e898fbeb",
-    underlyingAsset: "hyperliquid:" + ADDRESSES.hyperliquid.WHYPE,
+    superPool: "0x2831775cb5e64b1d892853893858a261e898fbeb", // wHYPE superpool
+    underlyingAsset: "hyperliquid:" + ADDRESSES.hyperliquid.WHYPE, // wHYPE
+  },
+  {
+    superPool: "0xe45E7272DA7208C7a137505dFB9491e330BF1a4e", // USDe superpool
+    underlyingAsset: "hyperliquid:0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34", // USDe
+  },
+  {
+    superPool: "0x34B2B0DE7d288e79bbcfCEe6C2a222dAe25fF88D", // USDT0 superpool
+    underlyingAsset: "hyperliquid:0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb", // USDT0
   },
 ];
 
