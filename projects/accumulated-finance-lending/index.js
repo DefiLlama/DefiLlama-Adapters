@@ -6,11 +6,27 @@ const config = {
     velas: [
         {
             "velas": {
-                address: "0x570ae1d228d54c2a29c52603f962f45331d66680",
+                address: "0x0acbfff708c9d30684f620b2be23930284af12c5",
                 collateralToken: "0x8f0ecda9679ad16e30be3d83d183c482821f5325"
             }
         }
-    ]
+    ],
+    "zeta": [
+        {
+            "zeta": {
+                address: '0x9b694d0ed151374989a4ec71d8a14764ae47f89d',
+                collateralToken: '0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547'
+            }
+        }
+    ],
+    "oasis": [
+        {
+            "sapphire": {
+                address: '0xaf597bd499ded0575d1469f92a0472b4715f2b7e',
+                collateralToken: '0x3cabbe76ea8b4e7a2c0a69812cbe671800379ec8'
+            }
+        }
+    ],
 };
 
 function transformConfig(config) {
