@@ -344,3 +344,5 @@ async function tvl2(api) {
   })
 
 }
+
+module.exports.hemi =  { tvl: tvl2 }
