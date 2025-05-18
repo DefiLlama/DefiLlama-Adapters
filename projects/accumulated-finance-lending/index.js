@@ -19,6 +19,14 @@ const config = {
             }
         }
     ],
+    "oasis": [
+        {
+            "sapphire": {
+                address: '0xaf597bd499ded0575d1469f92a0472b4715f2b7e',
+                collateralToken: '0x3cabbe76ea8b4e7a2c0a69812cbe671800379ec8'
+            }
+        }
+    ],
 };
 
 function transformConfig(config) {
