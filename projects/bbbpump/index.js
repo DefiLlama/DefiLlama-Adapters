@@ -14,8 +14,7 @@ const bpsXDC="0x24be372f0915b8BAf17AfA150210FFcB79C88845";
 async function bbbPumpTvl(api) {
     const psXDCBalance = await api.call({ abi: 'erc20:balanceOf', target: psXDC,params: [Stake] })
     api.addGasToken(psXDCBalance)
-    const bpsXDCBalance = await api.call({ abi: 'erc20:balanceOf', target: bpsXDC,params: [Stake] })
-    api.addGasToken(bpsXDCBalance)
+
     const bpsXDCSupply = await api.call({ abi: 'erc20:totalSupply', target: bpsXDC })
     api.addGasToken(bpsXDCSupply)
     const toa=[[nullAddress,BBBPump]]
