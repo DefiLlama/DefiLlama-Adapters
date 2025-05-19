@@ -35,12 +35,11 @@ const config = {
   }
 }
 
-async function getAMOTvl(api, network) {
-  const networkConfig = config[network]
+async function getAMOTvl(api) {
+  const networkConfig = config[api.chain]
   if (!networkConfig) return
 
-  const results = {}
-  
+
   for (const [, tokenConfig] of Object.entries(networkConfig)) {
     // Process pools if they exist
     if (tokenConfig.pools) {
@@ -54,33 +53,18 @@ async function getAMOTvl(api, network) {
     }
 
     // Process collateral vault
-    const collaterals = await api.call({ 
-      abi: 'address[]:listCollateral', 
-      target: tokenConfig.collateralVault 
-    })
-
-    const tokenResult = await api.sumTokens({ 
-      owner: tokenConfig.collateralVault, 
-      tokens: collaterals 
-    })
-    
-    Object.assign(results, tokenResult)
+    const collaterals = await api.call({ abi: 'address[]:listCollateral', target: tokenConfig.collateralVault })
+    await api.sumTokens({ owner: tokenConfig.collateralVault, tokens: collaterals })
   }
 
-  return results
-}
-
-const tvl = async (api) => {
-  const network = api.chain
-  return await getAMOTvl(api, network)
 }
 
 module.exports = {
   methodology: 'Includes TVL for dLEND and TVL for dSTABLEs (dUSD, dS, etc).',
   fraxtal: {
-    tvl: (api) => tvl(api),
+    tvl: getAMOTvl
   },
   sonic: {
-    tvl: (api) => tvl(api),
+    tvl: getAMOTvl,
   }
 };
