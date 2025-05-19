@@ -39,6 +39,19 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  prom: {
+    [ADDRESSES['null']]: { coingeckoId: "prometeus", decimals: 18 }, // Native PROM
+    '0x7e942605B5028E3B751dBB5Ef8afC5CF85a5A7eD': { coingeckoId: "tether", decimals: 6 }, // USDT
+    '0xd9c95e2ad330E11D7Dfa58f18504049f625E955e': { coingeckoId: "usd-coin", decimals: 6 }, // USDC
+    '0x6064C9028d069a7822d30EF17065A57524A5FcAb': { coingeckoId: "tether", decimals: 18 }, // USDT (BSC version in  Prom)
+    '0x04A21a38D5E275d6023B27504beB3095dC43B0C0': { coingeckoId: "prometeus", decimals: 18 }, // wPROM
+  },
+  ethereum: {
+    '0xfc82bb4ba86045af6f327323a46e80412b91b27d': { coingeckoId: "prometeus", decimals: 18 }, // PROM (Ethereum)
+  },
+  bsc: {
+    '0xaf53d56ff99f1322515e54fdde93ff8b3b7dafd5': { coingeckoId: "prometeus", decimals: 18 },
+  }, // PROM (BSC)
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
