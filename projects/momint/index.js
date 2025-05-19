@@ -63,4 +63,3 @@ module.exports = {
   [CHAIN]: { tvl },
   hallmarks: [[Date.parse("2025-03-12") / 1000, "Momint Marketplace Lisk / OP Stack Launch"]],
 };
-// Done in 50 lines
