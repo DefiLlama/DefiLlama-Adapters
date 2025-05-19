@@ -10,5 +10,6 @@ module.exports = {
             ADDRESSES.ethereum.WETH,
             ADDRESSES.ethereum.STETH
         ]}),
+        doublecounted: true, //
     }
-}; 
+};
