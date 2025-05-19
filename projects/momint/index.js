@@ -1,3 +1,19 @@
+//
+//    /$$      /$$   /$$$$$$   /$$      /$$  /$$$$$$  /$$   /$$  /$$$$$$$$
+//   | $$$    /$$$  /$$__  $$ | $$$    /$$$ |_  $$_/ | $$$ | $$ |__  $$__/
+//   | $$$$  /$$$$ | $$  \ $$ | $$$$  /$$$$   | $$   | $$$$| $$    | $$   
+//   | $$ $$/$$ $$ | $$  | $$ | $$ $$/$$ $$   | $$   | $$ $$ $$    | $$   
+//   | $$  $$$| $$ | $$  | $$ | $$  $$$| $$   | $$   | $$  $$$$    | $$   
+//   | $$\  $ | $$ | $$  | $$ | $$\  $ | $$   | $$   | $$\  $$$    | $$   
+//   | $$ \/  | $$ |  $$$$$$/ | $$ \/  | $$  /$$$$$$ | $$ \  $$    | $$   
+//   |__/     |__/  \______/  |__/     |__/ |______/ |__/  \__/    |__/   
+//
+// 
+//     Adapter for the Momint marketplace on Lisk/OP stack
+//     This adapter calculates TVL for the Momint marketplace
+//     TVL is calculated as the sum of all listings with valid, 
+//     verifyable on chain sale data
+
 // required constants
 const { ethers } = require("ethers");
 const MARKETPLACE_ADDRESS = "0xb50b1dC8Ba1a4491cC6f18BCEd73101e4ABc7A7f";
