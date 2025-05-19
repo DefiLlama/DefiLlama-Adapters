@@ -18,21 +18,8 @@ async function tvl(api) {
 
   // Pool deposit tokens and collateral tokens
   const ownerTokens = pools.map((pool, i) => [[tokens[i], ct[i]], pool]);
-  const balances = await sumTokens2({ api, ownerTokens, permitFailure: true });
-
-  // Balance of wrapped M tokens in the protocol contracts
-  const balanceOfWrappedM = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: PROTOCOL_CONTRACTS.map(contract => ({
-      target: WRAPPED_M_CONTRACT,
-      params: [contract]
-    }))
-  });
-
-  // Add wrapped M balances
-  balanceOfWrappedM.forEach((balance, i) => {
-    api.addToken(WRAPPED_M_CONTRACT, balance, { skipChain: true })
-  });
+  ownerTokens.push(...PROTOCOL_CONTRACTS.map(contract => [[WRAPPED_M_CONTRACT], contract]));
+  await sumTokens2({ api, ownerTokens, permitFailure: true });
 
   // Immediately claimable wrapped M tokens
   const claimableWrappedM = await api.call({
@@ -41,9 +28,7 @@ async function tvl(api) {
   }) / 10 ** 12; // scale down by 10^12 to match the decimals of the wrapped M token
 
   // Add claimable USDai
-  api.addToken(USDAI_CONTRACT, claimableWrappedM, { skipChain: true })
-  
-  return balances;
+  api.add(WRAPPED_M_CONTRACT, claimableWrappedM)
 }
 
 async function borrowed(api) {
@@ -86,7 +71,6 @@ async function borrowed(api) {
 
   // Add the borrowed value of each pool
   api.addTokens(tokens, poolsBorrowedValue);
-  return api.getBalances();
 }
 
 module.exports = {
