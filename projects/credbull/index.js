@@ -31,7 +31,11 @@ const vaultStablecoins = [
 ];
 
 function normalizeToken(chain, token) {
-  const map = {};
+  const map = {
+    'plume_mainnet': {
+      '0x78add880a697070c1e765ac44d65323a0dcce913': ADDRESSES.plume_mainnet.USDC_e,
+    },
+  };
   return map[chain]?.[token.toLowerCase()] || token;
 }
 
