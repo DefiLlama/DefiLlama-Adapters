@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
@@ -8,7 +9,7 @@ const config = {
         },
         tvlTokens: [
             {
-                token: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC
+                token: ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
                 contract: "0x9797dA129eaFA143E8A50028563b69Cc02ea6444" // USDC TVL contract
             }
         ]
