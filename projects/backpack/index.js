@@ -10,7 +10,10 @@ const config = {
       '9NJmj9VaTU9D7ytdzy5RHMrfAgw2pYwqnUhuMqatcsr',
       'HwDX5eJkzPAJ7y7ENrH23HaDGUgB4nXPxG8UsB4cEMGE',
       'HgTWrWU195u6s4v3JiEjJFCb6J6wxtQh8DAYV63tCx6Q',
-      'DFFN6XgrTYDR2uFvaXJFRcFrMrtt6ZbPxpDs3mVbpxuR'
+      'DFFN6XgrTYDR2uFvaXJFRcFrMrtt6ZbPxpDs3mVbpxuR',
+      'J16ovD5x6kZLYDYAa6CqfrwacHdM7fcKD9iKG5EoNeGR',
+      '4VULyn2PoqzF6EyQ9acJqeAwg7pwmQPppM56NRJyQ1Fi',
+      '5stwKMsakQkH3uzN5eQx9LKzq6N8q3DBjXzkHyvudFde'
     ],
   },
   ethereum: {

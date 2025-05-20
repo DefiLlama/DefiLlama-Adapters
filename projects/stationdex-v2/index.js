@@ -10,5 +10,5 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true, }), }
+  module.exports[chain] = { tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true, }) }
 })

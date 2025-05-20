@@ -24,3 +24,6 @@ module.exports = {
     [Math.floor(new Date('2023-07-11')/1e3), 'Protocol was exploited'],
   ],
 };
+
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.deadFrom = '2023-07-11' 

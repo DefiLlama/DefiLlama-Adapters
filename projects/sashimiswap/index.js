@@ -148,3 +148,5 @@ const blacklistedTokens = [
 
 
 Object.entries(module.exports.heco).forEach(([key, value]) => module.exports.heco[key] = () => ({}))
+
+module.exports.ethereum.borrowed = () => ({})
