@@ -1,7 +1,6 @@
-const { BN, Program } = require('@coral-xyz/anchor');
+const { BN } = require('@coral-xyz/anchor');
 const { PublicKey } = require('@solana/web3.js');
 const { getAssociatedTokenAddress } = require('../helper/solana');
-const ADDRESSES = require('../helper/coreAssets.json');
 
 function calculateSellTokenPerBuyTokenNow(offer, now = new Date()) {
     const start = new Date(offer.startDate).getTime() / 1000;

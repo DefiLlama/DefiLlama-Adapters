@@ -1,16 +1,12 @@
 const {
     sumTokens2,
     getTokenSupplies,
-    getAssociatedTokenAddress,
-    getProvider,
-    getConnection
+    getAssociatedTokenAddress
 } = require('../helper/solana');
 const ADDRESSES = require('../helper/coreAssets.json')
 const {PublicKey} = require('@solana/web3.js')
-const {BN, Program} = require('@coral-xyz/anchor');
 const {default: axios} = require('axios')
-const {BigNumber} = require('bignumber.js')
-const { getLowestOfferPrice, getOfferTokenAccounts, calculateSellTokenPerBuyTokenNow, calculateBuyTokenPerSellTokenNow } = require('./offerUtils');
+const { getLowestOfferPrice, getOfferTokenAccounts } = require('./offerUtils');
 
 
 const MINT = '5Y8NV33Vv7WbnLfq3zBcKSdYPrk7g2KoiQoe7M2tcxp5';
