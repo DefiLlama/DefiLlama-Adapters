@@ -14,7 +14,7 @@ function calculateSellTokenPerBuyTokenNow(offer, now = new Date()) {
     const currentInterval = current - BigInt(start);
     const totalChange = offer.sellTokenEndAmount - offer.sellTokenStartAmount;
     const changePerInterval = totalChange / intervals;
-    const currentSellAmount = offer.sellTokenStartAmount + changePerInterval * (currentInterval + BigInt(1));
+    const currentSellAmount = offer.sellTokenStartAmount + changePerInterval * (currentInterval);
     return currentSellAmount * BigInt(1e9) / offer.buyToken1Amount;
 }
 
@@ -34,6 +34,10 @@ function calculateBuyTokenPerSellTokenNow(offer, now = new Date()) {
 }
 
 function getLowestOfferPrice(offers, usdcAddress) {
+    if (!Array.isArray(offers) || offers.length === 0) {
+        // Return 1 with 6 decimals as BigInt
+        return BigInt(1_000_000);
+    }
     let lowestPrice = null;
     for (const offer of offers) {
         offer.sellTokenStartAmount = BigInt(offer.sellTokenStartAmount);
@@ -52,7 +56,7 @@ function getLowestOfferPrice(offers, usdcAddress) {
         }
     }
     if (lowestPrice === null) {
-        throw new Error('No valid offers found for current time');
+        return BigInt(1_000_000);
     }
     return lowestPrice;
 }
