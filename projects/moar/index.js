@@ -3,8 +3,8 @@ const sdk = require('@defillama/sdk');
 
 const addresses = {
     'aptos': {
-        'moar': "0x4b05ef55bda3c87371454b0901f209e8c6604d4feef40e935ab0af380f860fc1",
-        'moar_package_owner': "0x61abfb32a19170b0b556dc16d0e0d32b81a6526855c17aa930919903b26fc5b3",
+        'moar': "0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07",
+        'moar_package_owner': "0x37e9ce6910ceadd16b0048250a33dac6342549acf31387278ea0f95c9057f110",
     },
 }
 async function tvl(api, chain) {
@@ -65,7 +65,7 @@ async function getPoolAddresses(chain) {
 
 module.exports = {
     timetravel: true,
-    start: 1742947200,
+    start: 1746403200,
     methodology: "Sums assets held by lending pools and all the assets held by all Credit Accounts.",
     aptos: {
         tvl: async (api) => tvl(api, 'aptos'),

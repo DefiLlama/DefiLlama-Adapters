@@ -1,7 +1,7 @@
 module.exports = [
   "bc1qva5m5e7da2zm590z03tdnj42u9q2uye3hgrehwrzgg8j4kxq9seq9rvw0m", // Bitcoin Multisig Addresses
   "bc1qjv2lfrv672rqagycs5zdsggmury0cz2vufek46jj86ddqynyp2qsxm3qfs", // Bitcoin Multisig Addresses
-  
+
   // Bitcoin Custodian Addresses
   "131fpYjELat58RVzPp2A9Bo8oNuKiP4vxg",
   "bc1qr4cpjazz6hhjh44yrshqw4xs4e3eld60wnsq2m",
@@ -11,7 +11,7 @@ module.exports = [
   "bc1qxxgxywxcq0q405849fyrlxa2zu4nxukf4ytg57",
   "bc1quetqhxs809mwgms0rhae4cw98chzqe0er8fryr",
   "34ThPcBtz5ayRybbg1MXnQWBGtUzqUDCMa",
-  "3Gahjd3yHxVtggC1Ygw1YQeoE1codc7js5",
+  "bc1qqdh7mxxrjehxxc75zstexddzff9gvty3uzl9l9",
   "32pdcULaBMkd5o7gvJeoaamPuCFMeqwpDh",
   "3LmiF7qBJt8BteQi4eJdqa2TXLHBHVjE9L",
   "bc1q6jeavew5xwwu26hss2glfg2e3t603nul4evhakdugafnajynn8eq9hrrlf",

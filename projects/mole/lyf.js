@@ -232,11 +232,21 @@ async function calLyfTvlSui(api) {
   const addresses = await getProcolAddresses('sui');
   const workerInfoIds = addresses.Vaults.flatMap(valut => valut.workers).map(worker => worker.workerInfo)
   const workerInfos = await sui.getObjects(workerInfoIds)
+  const workerEntities =  addresses.Vaults.flatMap(valut => valut.workers)
 
   let poolIds = []
   workerInfos.forEach(workerInfo => 
     {
-      let poolId = workerInfo.fields.position_nft.fields.pool
+      const workerInfoId = workerInfo.fields.id.id
+      const workerEntity = workerEntities.find(v => v.workerInfo == workerInfoId)
+      let poolId
+
+      if (workerEntity.isSF) {
+        poolId = workerInfo.fields.clmm_pool_id
+      } else {
+        poolId = workerInfo.fields.position_nft.fields.pool
+      }
+      
       // poolId = poolId.replace('0x0', '0x')
       if (!poolIds.includes(poolId)) {
         poolIds.push(poolId)
@@ -254,10 +264,23 @@ async function calLyfTvlSui(api) {
   )
 
   for (const workerInfo of workerInfos) {
-    const liquidity = workerInfo.fields.position_nft.fields.liquidity
-    const tickLower = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits)
-    const tickUpper = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits)
-    const poolId = workerInfo.fields.position_nft.fields.pool
+    const workerInfoId = workerInfo.fields.id.id
+    const workerEntity = workerEntities.find(v => v.workerInfo == workerInfoId)
+    let liquidity, poolId, tickLower, tickUpper
+
+    if (workerEntity.isSF) {
+      liquidity = workerInfo.fields.stable_farming_position_nft.fields.clmm_postion.fields.liquidity
+      tickLower = i32BitsToNumber(workerInfo.fields.stable_farming_position_nft.fields.clmm_postion.fields.tick_lower_index.fields.bits)
+      tickUpper = i32BitsToNumber(workerInfo.fields.stable_farming_position_nft.fields.clmm_postion.fields.tick_upper_index.fields.bits)
+      poolId = workerInfo.fields.clmm_pool_id
+    } else {
+      liquidity = workerInfo.fields.position_nft.fields.liquidity
+      tickLower = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits)
+      tickUpper = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits)
+      poolId = workerInfo.fields.position_nft.fields.pool
+    }
+
+
     const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
     // https://github.com/DefiLlama/DefiLlama-Adapters/pull/13512#issuecomment-2660797053
     const tick =  Math.floor(Math.log((currentSqrtPrice / 2 ** 64) ** 2) / Math.log(1.0001))
