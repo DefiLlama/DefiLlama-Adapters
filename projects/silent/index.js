@@ -17,49 +17,15 @@ const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 const owners = [GATEWAY, SVAULT, SYFManager, MorphoStrategy_ETH]
 const tokens = [ETH, USDT, USDC]
 
-const ERC4626_ABI = {
-  previewRedeem: "function previewRedeem(uint256 shares) view returns (uint256)",
-  convertToAssets: "function convertToAssets(uint256 shares) view returns (uint256)",
-};
-
-async function getEthenaTvl(balances, owner, underlyingAsset, chain, block) {  
-  const sUSDeBalance = await sumTokens2({
-    owner,
-    tokens: [SUSDE],
-    chain,
-    block,
-  });
-
-  if (sUSDeBalance[SUSDE] > 0) {
-    const { output: underlyingEquivalent } = await sdk.api.abi.call({
-      abi: ERC4626_ABI.convertToAssets,
-      target: SUSDE,
-      params: [sUSDeBalance[SUSDE]],
-      chain,
-      block,
-    });
-    sdk.util.sumSingleBalance(balances, underlyingAsset, underlyingEquivalent);
-  }
-}
 
 async function getMorphoTvl(balances, owner, vault, underlyingAsset, chain, block) {
-  const vaultBalance = await sumTokens2({
+  await sumTokens2({
+    balances,
     owner,
     tokens: [vault],
     chain,
     block,
   });
-
-  if (vaultBalance[vault] > 0) {
-    const { output: redeemableValue } = await sdk.api.abi.call({
-      abi: ERC4626_ABI.previewRedeem,
-      target: vault,
-      params: [vaultBalance[vault]],
-      chain,
-      block,
-    });
-    sdk.util.sumSingleBalance(balances, underlyingAsset, redeemableValue);
-  }
 }
 
 async function tvl(_, _1, _2, { chain, block }) {
