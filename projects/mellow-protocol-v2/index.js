@@ -74,6 +74,13 @@ const config = {
       '0x4b8b426D1a934b9C78f139526dc74249d40960ea',
     ]
   },
+  lisk: {
+    simpleLrtVaults: [
+      '0x1b10E2270780858923cdBbC9B5423e29fffD1A44',
+      '0xa67E8B2E43B70D98E1896D3f9d563f3ABdB8Adcd',
+      '0x8cf94b5A37b1835D634b7a3e6b1EE02Ce7F0CD30',
+    ]
+  }
 }
 
 module.exports = {
@@ -84,13 +91,17 @@ Object.keys(config).forEach(chain => {
   const { mellowLrtVaults, simpleLrtVaults } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const mellowLrtTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[] tokens, uint256[] values)', calls: mellowLrtVaults, permitFailure: true })
-      mellowLrtTvl.forEach((i) => {
-        if (!i) return;
-        const { tokens, values } = i
-        api.add(tokens, values)
-      })
-      await api.erc4626Sum({ calls: simpleLrtVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
+      if (mellowLrtVaults != null && mellowLrtVaults.length > 0) {
+        const mellowLrtTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[] tokens, uint256[] values)', calls: mellowLrtVaults, permitFailure: true })
+        mellowLrtTvl.forEach((i) => {
+          if (!i) return;
+          const { tokens, values } = i
+          api.add(tokens, values)
+        })
+      }
+      if (simpleLrtVaults != null && simpleLrtVaults.length > 0) {
+        await api.erc4626Sum({ calls: simpleLrtVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
+      }
     }
   }
 })
