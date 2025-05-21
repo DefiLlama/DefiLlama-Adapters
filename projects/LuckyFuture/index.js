@@ -73,11 +73,6 @@ async function tvl(api) {
         const quoteTokenMint = getTokenMintFromMarketIndex(0)
         api.add(quoteTokenMint, quoteBalance)
 
-        const { cumulativeFundingRateLong, cumulativeFundingRateShort } = getPerpMarketFundingRates(perpAccountMap[position.market_index])
-        const currentCumulativeFundingRate = position.base_asset_amount > 0n ? cumulativeFundingRateLong : cumulativeFundingRateShort
-        const difference = (currentCumulativeFundingRate - BigInt(position.last_cumulative_funding_rate)) / BigInt(10 ** 6)
-        const fundingRatePnl = (difference * (position.base_asset_amount) / BigInt(10 ** 6))
-        api.add(quoteTokenMint, fundingRatePnl)
       })
     }
   }
