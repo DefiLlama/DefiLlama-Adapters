@@ -12,18 +12,22 @@ const DEFAULTS = {
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
-  SUI_RPC: 'https://fullnode.mainnet.sui.io/',
+  SUI_RPC: 'https://sui-rpc.publicnode.com',
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
   LULO_API_KEY: '',
-  HYPERLIQUID_RPC: 'https://hyperliquid.cloud.blockscout.com/api/eth-rpc',
-  ETLK_RPC: 'https://explorer.etherlink.com/api/eth-rpc',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
-  HEDERA_RPC_MULTICALL: '0x18fa376d92511dd04090566ab6144847c03557d8', // Hedera Multicall3 contract
+  SUPRA_RPC: 'https://rpc-mainnet.supra.com',
+  CORN_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
+  ASSETCHAIN_RPC_MULTICALL: '0xf8ac4BEB2F75d2cFFb588c63251347fdD629B92c',
+  FLAME_RPC: "https://rpc.flame.astria.org",
+  BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
+  BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
+  PLUME_RPC: "https://rpc.plume.org",
 }
 
 const ENV_KEYS = [

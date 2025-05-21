@@ -96,3 +96,6 @@ module.exports = {
     [Math.floor(new Date("2024-04-01") / 1e3), "Protocol was relaunched"],
   ],
 };
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.base.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 
