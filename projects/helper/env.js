@@ -28,7 +28,7 @@ const DEFAULTS = {
   BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
   BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
   PLUME_RPC: "https://rpc.plume.org",
-  CATACLYSM_1_RPC: 'https://evm-rpc.nibiru.fi',
+  NIBIRU_RPC: "https://evm-rpc.nibiru.fi",
 }
 
 const ENV_KEYS = [
