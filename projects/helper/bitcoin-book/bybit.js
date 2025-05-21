@@ -8,5 +8,14 @@ module.exports = [
   "bc1qa2eu6p5rl9255e3xz7fcgm6snn4wl5kdfh7zpt05qp5fad9dmsys0qjg0e",
   "16jVbMCcqq1deKrMB3esL2HPso7kvqUsec",
   "1A724HfXFFpuUJPMjXwRoGTF9tj29E2aYs",
-  "1FkhbrtAgP2q7MYjLF8gL4JH3MuzdpwAis"
-]
+  "1FkhbrtAgP2q7MYjLF8gL4JH3MuzdpwAis",
+  "1LrsskS2hmLvevKiqASDymS8xRmJ7Gp83u",
+  "1Ko6Sbu8VgZaQNZMfRgNjR8zVzVN9wL7aX",
+  "12rFmDggwCNrRL6vuPEjzCDSskTRPjDajP",
+  "14ug9BVtGnxY8ezvd5cr1PXHeXBYXkpsdw",
+  "139RYdfv7vNtbnK88juMR3s4pgwvB4db9Y",
+  "1KHch51TT2eazxYkUXtr38GXtPTjf8Mue",
+  "bc1qpz86ltanq6042k36rs0yl0wjpd6tgu8fwckan7",
+  "bc1q7enk8z5gkuzk2sla4vnmzh5qq8jq6wptx0pty5",
+  "bc1qmv30sf5tnlx52x6vszl0gmey7vae6elzpm2zxw"
+];
