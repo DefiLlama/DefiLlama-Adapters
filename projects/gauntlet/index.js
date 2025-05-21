@@ -86,6 +86,7 @@ const configs = {
         '0xCd347c1e7d600a9A3e403497562eDd0A7Bc3Ef21',
         '0x0FE5b4aF0337Fd5b2E1675D5f5E8c9101E4D3c7e',
         '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657',
+        "0x236919F11ff9eA9550A4287696C2FC9e18E6e890"
       ],
       aera: [
         '0x9f3ef866e769624d9a7a687a669d226c1e327b4d',

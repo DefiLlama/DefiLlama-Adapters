@@ -15,6 +15,7 @@ const configs = {
     base: {
       morpho: [
         '0x5496b42ad0deCebFab0db944D83260e60D54f667',
+        '0xF540D790413FCFAedAC93518Ae99EdDacE82cb78'
       ],
     },
   }
