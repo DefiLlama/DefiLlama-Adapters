@@ -53,12 +53,12 @@ async function tvl(api) {
 }
 
 async function processUniV3Positions(api, positionsApiUrl) {
-  console.log(`Fetching positions from API: ${positionsApiUrl}`);
+  // api.log(`Fetching positions from API: ${positionsApiUrl}`);
   const response = await axios.get(positionsApiUrl);
   const positions = response.data;
 
   if (!Array.isArray(positions) || positions.length === 0) {
-    console.log(`No positions found with api ${positionsApiUrl}`);
+    api.log(`No positions found with api ${positionsApiUrl}`);
     return;
   }
 

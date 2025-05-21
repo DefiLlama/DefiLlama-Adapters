@@ -21,11 +21,9 @@ async function tvl(api) {
                     token1: pool.token1.address,
                     type: pool.type,
                 }))
-            console.log(`Yaka Finance Hypervisor total: ${filteredHypervisors.length}`)
             return filteredHypervisors
 
         },
-        ttl: 3600, //1 Hour
     })
 
     // 2. get Algebra Pool

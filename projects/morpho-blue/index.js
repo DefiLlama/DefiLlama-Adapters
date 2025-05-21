@@ -84,12 +84,13 @@ const config = {
   basecamp:{
     morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
     fromBlock: 4804080,
+    blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
   },
   hyperliquid:{
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
     fromBlock: 1988429,
   },
-  plume:{
+  plume_mainnet: {
     morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
     fromBlock: 765994,
   },

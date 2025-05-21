@@ -413,6 +413,7 @@
   "xdc",
   "xlayer",
   "xpla",
+  "xp",
   "xsat",
   "zeniq",
   "zero_network",
@@ -425,5 +426,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "xpr"
 ]
