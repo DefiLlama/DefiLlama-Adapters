@@ -1,6 +1,6 @@
 const { get } = require('../http')
 const { transformBalances } = require('../portedTokens')
-const { nativeToScVal, rpc, Account, TransactionBuilder, Contract, scValToNative, Networks } = require('@stellar/stellar-sdk')
+const { stellar } = require('../rpcProxy')
 
 async function getAssetSupply(asset) {
   const [assetCode, assetIssuer] = asset.split('-')
@@ -46,23 +46,7 @@ async function sumTokens(config) {
  * @returns {Promise<bigint>}
  */
 async function getTokenBalance(token, address) {
-    const account = new Account('GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGO6V', '123');
-    const tx_builder = new TransactionBuilder(account, {
-      fee: '1000',
-      timebounds: { minTime: 0, maxTime: 0 },
-      networkPassphrase: Networks.PUBLIC,
-    });
-    tx_builder.addOperation(new Contract(token).call('balance', nativeToScVal(address, {type: 'address'})));
-    const stellarRpc = new rpc.Server("https://soroban-rpc.creit.tech/");
-    const scval_result = await stellarRpc.simulateTransaction(
-      tx_builder.build()
-    );
-    if (rpc.Api.isSimulationSuccess(scval_result)) {
-      const val = scValToNative(scval_result.result.retval);
-      return val;
-    } else {
-      throw Error(`unable to fetch balance for token: ${token_id}`);
-    }
+  return stellar.getTokenBalance({ token, address })
 }
 
 module.exports = {

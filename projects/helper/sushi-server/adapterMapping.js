@@ -3,10 +3,10 @@ module.exports = {
     [
       {
         'fxdao': '/fxdao/api.js',
-        'blend-pools': '/blend-pools/api.js',
-        'blend-pools-v2': '/blend-pools-v2/api.js',
-        'blend-backstop': '/blend-backstop/api.js',
-        'blend-backstop-v2': '/blend-backstop-v2/api.js',
+        // 'blend-pools': '/blend-pools/api.js',  // moved to rpc proxy
+        // 'blend-pools-v2': '/blend-pools-v2/api.js',  // moved to rpc proxy
+        // 'blend-backstop': '/blend-backstop/api.js',  // moved to rpc proxy
+        // 'blend-backstop-v2': '/blend-backstop-v2/api.js',  // moved to rpc proxy
         'harvest': '/harvest.js',
         'astar-dapps-staking': '/astar-dapps-staking/api',
         'hydradex-v3': '/hydradex-v3/index.js',
