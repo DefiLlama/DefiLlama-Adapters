@@ -1,6 +1,6 @@
 const { get } = require('../http')
 const { transformBalances } = require('../portedTokens')
-const { stellar } = require('../rpcProxy')
+const { stellar } = require('./rpcProxy')
 
 async function getAssetSupply(asset) {
   const [assetCode, assetIssuer] = asset.split('-')
