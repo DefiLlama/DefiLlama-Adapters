@@ -40,7 +40,7 @@ async function tvl(api) {
   await klp(api, address);
   await iziswap(api, address);
   await derivativeToken(api, address);
-  await vaultBalance(api, graphData);
+  await vaultBalance(api, address, graphData);
   await otherDeposit(api, address);
   await ceffuBalance(api, address, graphData);
   await lpV3PositionsBalance(api, address);
@@ -239,7 +239,7 @@ async function derivativeToken(api, address) {
   api.add(derivativeTokenData.account.underlyingToken, balance)
 }
 
-async function vaultBalance(api, graphData) {
+async function vaultBalance(api, address, graphData) {
   const network = api.chain;
 
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
@@ -265,8 +265,9 @@ async function vaultBalance(api, graphData) {
     }
 
     let vaults = {};
+    const blacklistedOwners = address[network].blacklistedOwners || [];
     for (const key in poolLists) {
-      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && blacklistedOwners.indexOf(poolLists[key]["vault"].toLowerCase()) == -1 && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
         vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
       }
     }
@@ -279,7 +280,6 @@ async function vaultBalance(api, graphData) {
       const key = `${token}-${owner}`.toLowerCase()
       return !blacklisted[key] && !blacklistedTokens.includes(token)
     })
-
     return api.sumTokens({ tokensAndOwners, blacklistedTokens, })
   }
 }
