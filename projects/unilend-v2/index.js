@@ -37,5 +37,5 @@ Object.keys(config).forEach(chain => {
 module.exports.ethereum.borrowed = ()  => ({})
 module.exports.deadFrom = '2025-05-01' 
 module.exports.hallmarks = [
-  [Math.floor(new Date('2025-01-15')/1e3), 'Protocol was exploited'],
+  ['2025-01-15', 'Protocol was exploited'],
 ]
