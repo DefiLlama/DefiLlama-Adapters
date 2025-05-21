@@ -33,12 +33,14 @@ const polygonTokens = [
 const optimismTokens = [
   ADDRESSES.null,
   ADDRESSES.optimism.USDC,
+  ADDRESSES.optimism.USDC_CIRCLE,
   ADDRESSES.optimism.USDT,
 ]
 
 const arbitrumTokens = [
   ADDRESSES.null,
   ADDRESSES.arbitrum.USDC,
+  ADDRESSES.arbitrum.USDC_CIRCLE,
   ADDRESSES.arbitrum.USDT,
 ]
 
@@ -61,7 +63,7 @@ const scrollTokens = [
 ]
 
 module.exports = {
-  start: 1685817000,
+  start: '2023-06-03',
   ethereum: { tvl: sumTokensExport({ owners: ethereumContracts, tokens: ethereumTokens, }) },
   polygon: { tvl: sumTokensExport({ owners: polygonContracts, tokens: polygonTokens}) },
   optimism: { tvl: sumTokensExport({ owners: optimismContracts, tokens: optimismTokens}) },

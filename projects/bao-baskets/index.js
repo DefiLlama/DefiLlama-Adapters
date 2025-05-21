@@ -20,7 +20,7 @@ const basketTvl = async (api) => {
 }
 
 module.exports = {
-  start: 1640995200, // Jan 1 2022 00:00:00 GMT+0000
+  start: '2022-01-01', // Jan 1 2022 00:00:00 GMT+0000
   ethereum: {
     tvl: basketTvl,
     pool2: sumTokensExport({

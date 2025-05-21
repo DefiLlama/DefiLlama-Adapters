@@ -1,30 +1,12 @@
-const { graphQuery, } = require('../helper/http')
-const { sleep, log } = require('../helper/utils')
+const sdk = require("@defillama/sdk");
+const { cachedGraphQuery } = require('../helper/cache')
 const v1Data = require('./v1Data.json')
 
-let allV1Data
 const chainIds = { ethereum: 1, bsc: 56, polygon: 137, }
 const chains = Object.keys(chainIds)
-const waitTime = 301
 
 async function getAllV1Data() {
   return v1Data
-  // if (!allV1Data) allV1Data = _getAllV1Data()
-  // return allV1Data
-
-  async function _getAllV1Data() {
-    const data = {}
-    for (const chain of chains) {
-      const chainId = chainIds[chain]
-      const { allPools } = await graphQuery(GRAPH_ENDPOINT, QUERY, { where: { chainId } })
-      data[chain] = allPools
-      if (chains.indexOf(chain) !== chains.length - 1) {
-        log('fetched data for', chain, allPools.total_pools, '(waiting', waitTime, 'seconds before next call)')
-        await sleep(waitTime * 1e3)
-      }
-    }
-    return data
-  }
 }
 
 const liquidityContract = {
@@ -45,22 +27,6 @@ const ORO = {
   bsc: "0x9f998d62B81AF019E3346AF141f90ccCD679825E", //BSC
 };
 
-const GRAPH_ENDPOINT = "https://graph.unifarm.co/graphql";
-
-const QUERY = `
-query($where: PoolsGroupWhereClause!) {
-  allPools(where: $where) {
-    pools {
-      cohort {
-        cohortAddress
-        proxies
-        tokens
-      }
-    }
-  }
-}
-`;
-
 const v2Query = `
 query MyQuery {
   cohorts {
@@ -77,9 +43,9 @@ query MyQuery {
 `;
 
 const v2EndPoints = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-eth",
-  polygon: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-polygon",
-  bsc: "https://api.thegraph.com/subgraphs/name/themohitmadan/unifarm-bsc",
+  ethereum: sdk.graph.modifyEndpoint('Cquw1hbmvNrSvUjaqoRhu9nWv7AX1Mz2gEb9sapYdMA5'),
+  polygon: sdk.graph.modifyEndpoint('Ami8CcwigwYViJsUrwqK8DWwDPtFVAKbeYfii6ANahax'),
+  bsc: sdk.graph.modifyEndpoint('EsA5LyABgi7ibZJGNr5PQsQ2L8QDPZxNdDvd5qPs5CJj'),
 }
 
 const getV1Calls = async (chain) => {
@@ -95,7 +61,7 @@ const getV1Calls = async (chain) => {
 };
 
 const getV2Calls = async (chain) => {
-  const { cohorts } = await graphQuery(v2EndPoints[chain], v2Query)
+  const { cohorts } = await cachedGraphQuery('unifarm/'+chain, v2EndPoints[chain], v2Query)
   let calls = [];
   for (let i = 0; i < cohorts.length; i++) {
     const owner = cohorts[i].id

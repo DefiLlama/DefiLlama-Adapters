@@ -11,6 +11,11 @@ module.exports = {
         fromBlock: 208756175,
         version: "v1.5",
       },
+      {
+        factory: "0x4a805A6dbaCF824D5A39b9f3559aeFb831C1df95",
+        fromBlock: 220673210,
+        version: "v1.5",
+      },
     ],
   },
   blast: {

@@ -1,16 +1,16 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   bitcoin: {
-    owners: [
-        "13uZyaPbt4rTwYQ8xWFySVUzWH3pk2P5c7"
-    ],
+    owners: bitcoinAddressBook.mexcCex,
   },
   ethereum:{
     owners: [
         "0x3cc936b795a188f0e246cbb2d74c5bd190aecf18",
         "0x0162cd2ba40e23378bf0fd41f919e1be075f025f",
         "0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88",
+        "0xee136c0389733849dd710ac7104e92c6bf497574"
     ]
   },
   bsc: {
@@ -37,6 +37,11 @@ const config = {
   optimism: {
     owners:[
         "0xdf90c9b995a3b10a5b8570a47101e6c6a29eb945",
+    ]
+  },
+  starknet: {
+    owners:[
+        "0x069a7818562b608ce8c5d0039e7f6d1c6ee55f36978f633b151858d85c022d2f",
     ]
   }
 }

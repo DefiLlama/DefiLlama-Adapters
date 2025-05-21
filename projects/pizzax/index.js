@@ -6,7 +6,6 @@ const TOKENS = ["0x488739D593DC2BC13Fd738CBaa35498bad5F8556"]
 module.exports = {
   methodology:
     "PizzaX is a Defi Miners. A fun platform to generate 15%/Day ROI for Lifetime — Pool as a Service (PAAS)",
-  start: 35011373,
   bsc: {
     tvl: sumTokensExport({
       tokensAndOwners: [

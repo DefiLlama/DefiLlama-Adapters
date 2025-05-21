@@ -1,15 +1,8 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-
-async function unirouterLSDTvl(api) {
-  const uBTCBalance = await api.call({
-    abi: "erc20:totalSupply",
-    target: "0x796e4D53067FF374B89b2Ac101ce0c1f72ccaAc2",
-  });
-  return await api.add(ADDRESSES.null, uBTCBalance);
-}
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   bsquared: {
-    tvl: unirouterLSDTvl,
+    tvl: sumTokensExport({ owners: ['0xd5B5f1CA0fa5636ac54b0a0007BA374A1513346e', '0xe677F4B6104726D76DeBc681d7a862CE269aA8F3'], tokens: [ADDRESSES.null] }),
   },
 };

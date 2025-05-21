@@ -1,4 +1,3 @@
-const BigNumber = require("bignumber.js");
 const { get } = require("../helper/http");
 
 const url = 'https://h6uvl-xiaaa-aaaap-qaawa-cai.raw.ic0.app/tvl';
@@ -10,7 +9,7 @@ async function tvl(_timestamp, _block) {
       throw new Error("Unknown");
   }
   return {
-    "coingecko:internet-computer": BigNumber(tvl).div(1e8).toFixed(0),
+    "coingecko:internet-computer": tvl/1e8,
   };
 }
 

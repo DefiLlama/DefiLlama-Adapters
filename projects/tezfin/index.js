@@ -8,7 +8,6 @@ async function tvl() {
       "KT1GYKoownVC1ukP2TBDgKx7bSXRM5XkV1W6", // ꜰXTZ v1
       "KT1MX7D6ZJp2DDSSeDS96JPTFPXKkNiHFhwb", // ꜰUSDtz v1
       "KT1W8P4ZxD8eREKjDnxMe5882NP3GnAgrv46", // ꜰUSDt v1
-
       // v2 contracts
       "KT1MCXxbtS62tk4CUxv29BHnqTBtvsFFGzBm", // ꜰXTZ v2
       "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs", // ꜰUSDtz v2
@@ -54,4 +53,4 @@ module.exports = {
   },
   methodology:
     'TVL includes all deposits in TezFin lending markets (ꜰXTZ, ꜰUSDtz, ꜰUSDt, ꜰtzBTC). Borrowed value is based on totalBorrows from contract storage, adjusted by token decimals.',
-};
+ };

@@ -33,6 +33,17 @@ const _vaults = {
 }
 
 async function tvl(api) {
+  //function to grab the tvl of enigma pools
+  async function fetchEnigmaData(factoryAddress) {
+    const enigmas = await api.fetchList({ lengthAbi: 'enigmaPositionNumber', itemAbi: 'enigmaAtIndex', target: factoryAddress })
+    const token0s = await api.multiCall({ abi: 'address:token0', calls: enigmas })
+    const token1s = await api.multiCall({ abi: 'address:token1', calls: enigmas })
+    const bals = await api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 bal0, uint256 bal1)', calls: enigmas })
+    bals.forEach(({ bal0, bal1 }, i) => {
+      api.add(token0s[i], bal0)
+      api.add(token1s[i], bal1)
+    })
+  }
   //get the total shares from all vaults
   const vaults = _vaults[api.chain]
   const depositTokens = await api.multiCall({ abi: abi.want, calls: vaults })
@@ -61,15 +72,14 @@ async function tvl(api) {
     api.add(JOE_ADDRESS, await api.call({ target: HJOE_ADDRESS, abi: 'erc20:totalSupply' }))
 
     // engima tvl
+    
     const enigmaFactory_AVAX = `0xD751E0940CfadC35f84e60075d0f940a2545FB8d`;
-    const enigmas = await api.fetchList({ lengthAbi: 'enigmaPositionNumber', itemAbi: 'enigmaAtIndex', target: enigmaFactory_AVAX })
-    const token0s = await api.multiCall({ abi: 'address:token0', calls: enigmas })
-    const token1s = await api.multiCall({ abi: 'address:token1', calls: enigmas })
-    const bals = await api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 bal0, uint256 bal1)', calls: enigmas })
-    bals.forEach(({ bal0, bal1 }, i) => {
-      api.add(token0s[i], bal0)
-      api.add(token1s[i], bal1)
-    })
+    const enigmaFactory_AVAX_PHAR = `0x653b809a4fa6ba0fc0a6dc1b3f92a362fcb6086d`;  // Example BSC address
+
+    // Fetch data for both factories
+    await fetchEnigmaData(enigmaFactory_AVAX);
+    await fetchEnigmaData(enigmaFactory_AVAX_PHAR); 
+   
 
   }
 }

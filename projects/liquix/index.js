@@ -46,7 +46,6 @@ Object.keys(config).forEach((chain) => {
         fromBlock,
       });
       const vaults = logs.map(i => i.proxyAddress)
-      console.log(vaults.length)
       const _balances = await api.multiCall({ abi: 'function totalUnderlying(address vault_) external view returns ((address,uint256)[] memory)', target: helper, calls: vaults, permitFailure: true, })
       for (const balances of _balances) {
         if (!balances) continue;
