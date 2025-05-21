@@ -8,14 +8,13 @@ const XDC_BBB_LP = "0x95ab47ff0056cdc81a42b35d96551d9c5534947d";   // XDC-BBB LP
 const BBBPump = "0x2E24BFdE1EEDa0F1EA3E57Ba7Ff10ac6516ab5Ec";      // BBBPump
 const Stake="0x2B3Bb9b3265Fcee484e857506fDCf2C0776E9c43";
 const psXDC="0x9B8e12b0BAC165B86967E771d98B520Ec3F665A6";
-
-
-
+const bpsXDC="0x24be372f0915b8BAf17AfA150210FFcB79C88845";
+const xdcStake="0x5af754f822CEd42deC729c1F1B3EDb9f13485ba7";
 
 async function bbbPumpTvl(api) {
-    const totalSupply = await api.call({ abi: 'erc20:balanceOf', target: psXDC,params: [Stake] })
-    api.addGasToken(totalSupply)
-    const toa=[[nullAddress,BBBPump]]
+    const psXDCBalance = await api.call({ abi: 'erc20:balanceOf', target: psXDC,params: [Stake] })
+    api.addGasToken(psXDCBalance)
+    const toa=[[nullAddress,BBBPump],[nullAddress,xdcStake]]
     return sumTokens2({ tokensAndOwners: toa, api })
  
  

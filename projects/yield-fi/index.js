@@ -3,7 +3,7 @@ const { api2 } = require("@defillama/sdk");
 
 module.exports = {
     hallmarks: [
-      [Math.floor(new Date('2025-05-02')/1e3), 'Launched v2 yUSD'],
+      ['2025-05-02', 'Launched v2 yUSD'],
     ],
   }
 
