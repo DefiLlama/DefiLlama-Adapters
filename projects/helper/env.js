@@ -12,7 +12,7 @@ const DEFAULTS = {
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
-  SUI_RPC: 'https://fullnode.mainnet.sui.io/',
+  SUI_RPC: 'https://sui-rpc.publicnode.com',
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
@@ -27,6 +27,7 @@ const DEFAULTS = {
   FLAME_RPC: "https://rpc.flame.astria.org",
   BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
   BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
+  PLUME_RPC: "https://rpc.plume.org",
 }
 
 const ENV_KEYS = [

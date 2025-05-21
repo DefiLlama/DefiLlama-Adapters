@@ -20,3 +20,5 @@ module.exports = {
     [1671415334, "Goledo Creation timestamp"]
   ],
 };
+module.exports.conflux.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

@@ -76,3 +76,6 @@ module.exports = {
     pool2: okexPool2
   }
 }
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.okexchain.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 
