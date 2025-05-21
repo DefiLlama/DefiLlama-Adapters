@@ -17,6 +17,7 @@ const configs = {
         '0xE87ed29896B91421ff43f69257ABF78300e40c7a',
         '0x43fD147d5319B8Cf39a6e57143684Efca9CF3613',
         '0x64964E162Aa18d32f91eA5B24a09529f811AEB8e',
+        "0x4d52545235A3dF246a8928c583E47AE7eeC4aCfE",
       ],
       euler: [
         '0xa8CC68e15D50c1c586b5B0D6e1D4D0Ef620fdd10',
@@ -130,6 +131,11 @@ const configs = {
         '0xcab7047195019aaea07880487641ba26580ab9db',
       ]
     },
+    polygon:{
+      morpho: [
+        "0xF91D80E43272DBC610551E8c872E0438d62C1c69"
+      ]
+    }
   }
 }
 
