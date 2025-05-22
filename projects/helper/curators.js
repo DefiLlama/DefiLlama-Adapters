@@ -11,8 +11,8 @@ const ABI = {
 }
 
 async function getCuratorTvlErc4626(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults })
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults })
+  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, excludeFailed: true, })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, excludeFailed: true, })
   return api.add(assets, totalAssets)
 }
 
