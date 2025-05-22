@@ -2,7 +2,19 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { sumTokensExport: solExports } = require("../helper/solana");
 
+/**
+ * @typedef {Object} ChainConfig
+ * @property {string[]} owners - List of owner addresses
+ * @property {string[]} tokens - List of token addresses
+ */
 
+/**
+ * Config object mapping chain names to PRDT owner addresses and token addresses 
+ * that exist within the application. Each address is used with `sumTokensExport` 
+ * to calculate TVL.
+ *
+ * @type {Object.<string, ChainConfig>}
+ */
 const config = {
   ethereum: {
     owners: Object.values({
@@ -55,14 +67,31 @@ const config = {
       ADDRESSES.polygon.WETH,
     ],
   },
-  //  nibiru: {
-  //    owners: Object.values({
-  //      predictionPROV3: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
-  //    }),
-  //    tokens: [
-  //      ADDRESSES.null,
-  //    ],
-  //  },
+  nibiru: {
+    owners: Object.values({
+      // Owner from constructor of https://nibiscan.io/address/0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841/contract/6900/code
+      predictionPROOwner: "0x4cbB5d1c808F0FEe11575E77025b40f602793286",
+      predictionPROV3: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
+    }),
+    tokens: [
+      ADDRESSES.null,
+      ...Object.entries(ADDRESSES.nibiru).filter(([symbol, addr]) => {
+        const ok = addr.startsWith("0x") && addr.length === 42
+        console.debug("DEBUG %o: ", { ok, symbol, addr })
+        return ok
+      }).map(([_symbol, addr]) => addr),
+      // ADDRESSES.nibiru,
+    ],
+    // On Ethreeum, the native asset is merged with WETH automatically.
+    // For Nibiru, the native token balance is WNIBI. It has to be WNIBI and not
+    // NIBI because the EVM uses 18 decimals.
+    transformAddress: (addr) => {
+      if (addr === ADDRESSES.null) {
+        return `nibiru:${ADDRESSES.nibiru.WNIBI}` // "coingecko#nibiru"
+      }
+      return addr
+    }
+  },
   solana: {},
 };
 
