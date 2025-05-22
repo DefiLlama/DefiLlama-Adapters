@@ -37,7 +37,7 @@ const assetToAddressMappingBase = {
   "DINO": "0x85E90a5430AF45776548ADB82eE4cD9E33B08077",
   "DRB": "0x3ec2156d4c0a9cbdab4a016633b7bcf6a8d68ea2",
   "CLANKER": "0x1bc0c42215582d5a085795f4badbac3ff36d1bcb",
-}  
+}
 
 // Base
 const USDC_POOL_TUP_CONTRACT = '0x2Fc7641F6A569d0e678C473B95C2Fc56A88aDF75';
@@ -56,13 +56,13 @@ const SMART_LOANS_FACTORY_TUP_BASE = '0x5A6a0e2702cF4603a098C3Df01f3F0DF56115456
  */
 async function addAerodromePositions({ api, accounts }) {
   // Get all owned Aerodrome token IDs for each account
-  const ownedTokenIds = await api.multiCall({ 
-    abi: getOwnedStakedAerodromeTokenIdsAbi, 
-    calls: accounts 
+  const ownedTokenIds = await api.multiCall({
+    abi: getOwnedStakedAerodromeTokenIdsAbi,
+    calls: accounts
   });
 
   const positionCalls = [];
-  
+
   // Prepare calls for getPositionCompositionSimplified for each token ID
   ownedTokenIds.forEach((tokenIds, accountIndex) => {
     const account = accounts[accountIndex];
@@ -74,11 +74,6 @@ async function addAerodromePositions({ api, accounts }) {
     });
   });
 
-  if (positionCalls.length === 0) {
-    sdk.log('No Aerodrome positions found');
-    return;
-  }
-
   // Get position compositions
   const positionCompositions = await api.multiCall({
     abi: getPositionCompositionAbi,
@@ -87,12 +82,8 @@ async function addAerodromePositions({ api, accounts }) {
 
   // Add token amounts to balances
   positionCompositions.forEach(({ token0, token1, token0Amount, token1Amount }) => {
-    if (token0Amount > 0) {
-      api.add(token0, token0Amount);
-    }
-    if (token1Amount > 0) {
-      api.add(token1, token1Amount);
-    }
+    api.add(token0, token0Amount);
+    api.add(token1, token1Amount);
   });
 
   sdk.log(`Added ${positionCalls.length} Aerodrome positions to TVL`);
@@ -115,7 +106,7 @@ async function tvlBase(api) {
 
   let accounts = [];
   const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_BASE, });
-  const batchSize = 500; 
+  const batchSize = 500;
   let batchIndex = 0;
   while (batchIndex * batchSize < numberOfAccounts) {
     let batchPrimeAccounts = await api.call({
