@@ -75,6 +75,12 @@ const fixBalancesTokens = {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'superseed-bridged-weth-superseed', decimals: 18, },
     '0xc316c8252b5f2176d0135ebb0999e99296998f2e': { coingeckoId: 'superseed-bridged-usdc-superseed', decimals: 6, },
     '0x1217BfE6c773EEC6cc4A38b5Dc45B92292B6E189': { coingeckoId: 'openusdt', decimals: 6, },
+  },
+  lens: {
+    '0x6bdc36e20d267ff0dd6097799f82e78907105e2f': { coingeckoId: 'gho', decimals: 18, },
+    '0x88f08e304ec4f90d644cec3fb69b8ad414acf884': { coingeckoId: 'usd-coin', decimals: 6, },
+    '0xe5ecd226b3032910ceaa43ba92ee8232f8237553': { coingeckoId: 'ethereum', decimals: 18, },
+    '0xb0588f9a9cade7cd5f194a5fe77acd6a58250f82': { coingeckoId: 'bonsai-token', decimals: 18, },
   }
 }
 
