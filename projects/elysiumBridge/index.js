@@ -5,7 +5,7 @@ const config = {
 
   polygon: {
     bridges: [
-      ADDRESSES.elsm.PYR,
+      '0x7706b3eaBa0606a71ee52680039f2dBE8f83aC45',
     ],
     tokens: {
       PYR: '0x430ef9263e76dae63c84292c3409d61c598e9682',
@@ -18,7 +18,7 @@ const config = {
   },
   ethereum: {
     bridges: [
-      '0x0AD6741312Fc2a9FdB21D3Ce8AFaA08ad0C8c996',
+      '0x05a58056254cDBB2aC0b4D27f42AD5D33C7E3ddD',
     ],
     tokens: {
       PYR: '0x430ef9263e76dae63c84292c3409d61c598e9682',
