@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const { getChainTransform } = require("../helper/portedTokens");
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 
 const graphUrls = {
@@ -57,26 +56,22 @@ const furoQuery = gql`
 const toAmountAbi = 'function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
 
 function furo(chain, isVesting) {
-  return async (timestamp, ethBlock, { [chain]: block}) => {
-    const balances = {};
+  return async (api) => {
     const graphUrl = graphUrls[chain];
-    const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
-    let { tokens } = await request(graphUrl, furoQuery, { block: block - 100, });
+    let { tokens } = await request(graphUrl, furoQuery, { block: (await api.getBlock()) - 100, });
 
     tokens = tokens.filter(t => isWhitelistedToken(t.symbol, t.id, isVesting))
     const calls = tokens.map(token => ({ params: [token.id, token.liquidityShares, false] }))
 
-    const { output } = await sdk.api.abi.multiCall({
+    const output = await api.multiCall({
       target: bentoboxes[chain],
       abi: toAmountAbi,
       calls,
-      chain, block,
     })
-
-    output.forEach(({ output: amount, input: { params: [token] } }) => sdk.util.sumSingleBalance(balances, transform(token), amount))
-    return balances;
+    const _tokens = tokens.map(t => t.id)
+    api.add(_tokens, output)
   };
 }
 

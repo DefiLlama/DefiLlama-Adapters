@@ -34,7 +34,7 @@ module.exports = {
     staking,
   },
   hallmarks: [
-    [Math.floor(new Date('2023-08-13')/1e3), 'Project was hacked for $2M'],
+    ['2023-08-13', 'Project was hacked for $2M'],
   ],
   methodology: "Total value of digital assets that are locked in Zunami Omnipools",
 };

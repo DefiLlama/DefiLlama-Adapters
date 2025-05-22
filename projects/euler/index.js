@@ -5,7 +5,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 module.exports = {
   hallmarks: [[1654387200, "Whale Deposit"],
   [1667865600, "FTX collapse"],
-  [Math.floor(new Date('2023-03-13') / 1e3), 'Protocol was hacked'],],
+  ['2023-03-13', 'Protocol was hacked'],],
   methodology: `TVL is supply balance minus borrows the euler contract. Borrows are pulled from the subgraph.`,
   ethereum: {
     tvl, 

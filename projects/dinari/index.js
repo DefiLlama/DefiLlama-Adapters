@@ -20,8 +20,11 @@ const config = {
   },
   plume: {
     factory: "0x84ad0De589B0075E057123c800959f10C29869D8"
+  },
+  plume_mainnet: {
+    factory: "0x7a861Ae8C708DC6171006C57c9163BD2BB57a8Aa",
+    usdplus: "0x1fA3671dF7300DF728858B88c7216708f22dA3Fb"
   }
-
 }
 
 async function getTokens(api) {

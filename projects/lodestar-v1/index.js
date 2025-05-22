@@ -1,18 +1,14 @@
-const sdk = require('@defillama/sdk')
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const { transformBalances } = require('../helper/portedTokens')
-const chain = 'arbitrum'
 const controller = '0xa86dd95c210dd186fa7639f93e4177e97d057576'
 const cETHER = '0x2193c45244AF12C280941281c8aa67dD08be0a64'.toLowerCase()
 
-async function getMarkets(block) {
-  let markets = await sdk.api2.abi.call({ target: controller, abi: abis.getAllMarkets, chain, block })
+async function getMarkets(api) {
+  let markets = await api.call({ target: controller, abi: abis.getAllMarkets,  })
   markets = markets.filter(i => i.toLowerCase() !== cETHER)
 
-  const tokens = await sdk.api2.abi.multiCall({
+  const tokens = await api.multiCall({
     abi: abis.underlying,
     calls: markets,
-    chain, block,
   })
 
   markets.push(cETHER)
@@ -20,22 +16,19 @@ async function getMarkets(block) {
   return { markets, tokens }
 }
 
-async function tvl(_, _b, { arbitrum: block }) {
-  const { markets, tokens } = await getMarkets(block)
+async function tvl(api) {
+  const { markets, tokens } = await getMarkets(api)
   const tokensAndOwners = tokens.map((t, i) => ([t, markets[i]]))
-  return sumTokens2({ tokensAndOwners, chain, block, })
+  return sumTokens2({ tokensAndOwners, api, })
 }
 
-async function borrowed(_, _b, { arbitrum: block }) {
-  const { markets, tokens } = await getMarkets(block)
-  const balances = {}
-  const borrows = await sdk.api2.abi.multiCall({
+async function borrowed(api) {
+  const { markets, tokens } = await getMarkets(api)
+  const borrows = await api.multiCall({
     abi: abis.totalBorrows,
     calls: markets,
-    chain, block,
   })
-  borrows.forEach((a, i) => sdk.util.sumSingleBalance(balances, tokens[i], a))
-  return transformBalances(chain, balances)
+  borrows.forEach((a, i) => api.add( tokens[i], a))
 }
 
 module.exports = {
