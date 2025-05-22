@@ -4,7 +4,8 @@ const sdk = require('@defillama/sdk');
 
 function staking(contract, token) {
   return async (api) => {
-    api.add(token, await api.call({ target: contract, abi: 'erc20:totalSupply' }));
+    const totalSupply = await api.call({ target: contract, abi: 'erc20:totalSupply' });
+    api.add(token, totalSupply);
   };
 }
 
@@ -25,42 +26,47 @@ const CBBTC = {
 };
 
 async function ebtc_staking(timestamp) {
-  if (timestamp < 1746507563) return [0, 0, 0];
+  if (timestamp < 1746507563) return [0n, 0n, 0n];
 
   const EBTC = '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642';
-  let wbtc_held = 0, lbtc_held = 0, cbbtc_held = 0;
+  let wbtc_held = 0n, lbtc_held = 0n, cbbtc_held = 0n;
 
-  for (const [chain, token] of Object.entries(WBTC)) {
-    const chainApi = new sdk.ChainApi({ timestamp, chain });
-    const supply = await chainApi.call({ target: token, abi: 'erc20:balanceOf', params: [EBTC] });
-    wbtc_held += Number(supply);
-  }
+  const collectBalances = async (tokens, accumulator) => {
+    for (const [chain, token] of Object.entries(tokens)) {
+      const result = await sdk.api.erc20.balanceOf({
+        target: token,
+        owner: EBTC,
+        chain,
+        timestamp,
+      });
+      accumulator += BigInt(result.output);
+    }
+  };
 
-  for (const [chain, token] of Object.entries(LBTC)) {
-    const chainApi = new sdk.ChainApi({ timestamp, chain });
-    const supply = await chainApi.call({ target: token, abi: 'erc20:balanceOf', params: [EBTC] });
-    lbtc_held += Number(supply);
-  }
+  await collectBalances(WBTC, wbtc_held);
+  await collectBalances(LBTC, lbtc_held);
+  await collectBalances(CBBTC, cbbtc_held);
 
-  for (const [chain, token] of Object.entries(CBBTC)) {
-    const chainApi = new sdk.ChainApi({ timestamp, chain });
-    const supply = await chainApi.call({ target: token, abi: 'erc20:balanceOf', params: [EBTC] });
-    cbbtc_held += Number(supply);
-  }
+  const getEthBalance = async (token, owner) => {
+    const result = await sdk.api.erc20.balanceOf({
+      target: token,
+      owner,
+      chain: 'ethereum',
+      timestamp,
+    });
+    return BigInt(result.output);
+  };
 
-  const ethApi = new sdk.ChainApi({ timestamp, chain: 'ethereum' });
+  const ethExtras = await Promise.all([
+    getEthBalance('0x468c34703F6c648CCf39DBaB11305D17C70ba011', EBTC),
+    getEthBalance('0x126d4dBf752AaF61f3eAaDa24Ab0dB84FEcf6891', EBTC),
+    getEthBalance('0x9C0823D3A1172F9DdF672d438dec79c39a64f448', EBTC),
+    getEthBalance('0x971e5b5D4baa5607863f3748FeBf287C7bf82618', EBTC),
+    getEthBalance(LBTC.ethereum, '0xd4E20ECA1f996Dab35883dC0AD5E3428AF888D45'),
+  ]);
 
-  // Karak & Symbiotic
-  const lbtc_karak = await ethApi.call({ target: '0x468c34703F6c648CCf39DBaB11305D17C70ba011', abi: 'erc20:balanceOf', params: [EBTC] });
-  const wbtc_karak = await ethApi.call({ target: '0x126d4dBf752AaF61f3eAaDa24Ab0dB84FEcf6891', abi: 'erc20:balanceOf', params: [EBTC] });
-  const lbtc_symbiotic = await ethApi.call({ target: '0x9C0823D3A1172F9DdF672d438dec79c39a64f448', abi: 'erc20:balanceOf', params: [EBTC] });
-  const wbtc_symbiotic = await ethApi.call({ target: '0x971e5b5D4baa5607863f3748FeBf287C7bf82618', abi: 'erc20:balanceOf', params: [EBTC] });
-
-  const holder_address = '0xd4E20ECA1f996Dab35883dC0AD5E3428AF888D45';
-  const lbtc_held_holder = await ethApi.call({ target: LBTC.ethereum, abi: 'erc20:balanceOf', params: [holder_address] });
-
-  lbtc_held += Number(lbtc_karak) + Number(lbtc_symbiotic) + Number(lbtc_held_holder);
-  wbtc_held += Number(wbtc_karak) + Number(wbtc_symbiotic);
+  lbtc_held += ethExtras[0] + ethExtras[2] + ethExtras[4];
+  wbtc_held += ethExtras[1] + ethExtras[3];
 
   return [lbtc_held, wbtc_held, cbbtc_held];
 }
@@ -68,44 +74,55 @@ async function ebtc_staking(timestamp) {
 module.exports = {
   doublecounted: true,
 
-  staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"), // ethfi ETH
+  ethereum: {
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"),
 
-  tvl: async ({ timestamp }) => {
-    const [lbtc_held, wbtc_held, cbbtc_held] = await ebtc_staking(timestamp);
-    const optimismApi = new sdk.ChainApi({ timestamp, chain: 'optimism' });
-    const ethereumApi = new sdk.ChainApi({ timestamp, chain: 'ethereum' });
+    tvl: async ({ timestamp }) => {
+      const [lbtc_held, wbtc_held, cbbtc_held] = await ebtc_staking(timestamp);
 
-    const eth_supply = await optimismApi.call({ target: '0x6329004E903B7F420245E7aF3f355186f2432466', abi: 'uint256:getTvl' });
-    let looped_tvl = 0;
-
-    if (timestamp > 1746507563) {
-      looped_tvl = await optimismApi.call({
-        target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da',
-        abi: 'function categoryTVL(string _category) view returns (uint256)',
-        params: ['liquideth']
+      const ethSupply = await sdk.api.abi.call({
+        target: '0x6329004E903B7F420245E7aF3f355186f2432466',
+        abi: 'uint256:getTvl',
+        chain: 'optimism',
+        timestamp,
       });
+
+      let loopedTvl = 0n;
+      if (timestamp > 1746507563) {
+        const looped = await sdk.api.abi.call({
+          target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da',
+          abi: 'function categoryTVL(string _category) view returns (uint256)',
+          params: ['liquideth'],
+          chain: 'optimism',
+          timestamp,
+        });
+        loopedTvl = BigInt(looped.output);
+      }
+
+      const etherfiEthTvl = BigInt(ethSupply.output) - loopedTvl;
+
+      const eusd = await sdk.api.abi.call({
+        target: '0x939778D83b46B456224A33Fb59630B11DEC56663',
+        abi: 'uint256:totalSupply',
+        chain: 'ethereum',
+        timestamp,
+      });
+
+      return {
+        [nullAddress]: etherfiEthTvl.toString(),
+        [ADDRESSES.ethereum.USDC]: (BigInt(eusd.output) / 10n ** 12n).toString(),
+        [LBTC.ethereum]: lbtc_held.toString(),
+        [WBTC.ethereum]: wbtc_held.toString(),
+        [CBBTC.ethereum]: cbbtc_held.toString(),
+      };
     }
-
-    const etherfi_eth_tvl = eth_supply - looped_tvl;
-    const eusd = await ethereumApi.call({
-      target: '0x939778D83b46B456224A33Fb59630B11DEC56663',
-      abi: 'uint256:totalSupply'
-    }) / 1e12;
-
-    return {
-      [nullAddress]: etherfi_eth_tvl,
-      [ADDRESSES.ethereum.USDC]: eusd,
-      [LBTC.ethereum]: lbtc_held,
-      [WBTC.ethereum]: wbtc_held,
-      [CBBTC.ethereum]: cbbtc_held,
-    };
   },
 
   arbitrum: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27") // ethfi
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27")
   },
 
   base: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27") // ethfi
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27")
   }
 };
