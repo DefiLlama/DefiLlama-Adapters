@@ -1,6 +1,6 @@
 const { getLogs2 } = require('../helper/cache/getLogs');
 const { getUniqueAddresses } = require('../helper/tokenMapping');
-const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 const { queryContract } = require("../helper/chain/cosmos");
 const CORE_ASSETS = require('../helper/coreAssets.json');
 
