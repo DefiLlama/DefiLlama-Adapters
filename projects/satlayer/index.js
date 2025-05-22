@@ -6,7 +6,7 @@ const CORE_ASSETS = require('../helper/coreAssets.json');
 const { token } = require('@project-serum/anchor/dist/cjs/utils');
 
 module.exports = {
-  methodology: 'Total amount of BTC and eligible assets restaked on SatLayer.',
+  methodology: 'Total amount of BTC and eligible assets restaked on SatLayer, or through partner vaults specific to SatLayer.',
 };
 
 // Addresses related to SatLayer
