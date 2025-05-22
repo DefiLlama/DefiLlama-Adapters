@@ -90,7 +90,7 @@ const config = {
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
     fromBlock: 1988429,
   },
-  plume:{
+  plume_mainnet: {
     morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
     fromBlock: 765994,
   },

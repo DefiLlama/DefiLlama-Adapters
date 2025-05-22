@@ -92,7 +92,10 @@ module.exports = {
   arbitrum: getMetrics(),
   base: getMetrics(),
   hallmarks: [
-    [Math.floor(new Date('2024-03-28')/1e3), 'Protocol was exploited'],
-    [Math.floor(new Date("2024-04-01") / 1e3), "Protocol was relaunched"],
+    ['2024-03-28', 'Protocol was exploited'],
+    ["2024-04-01", "Protocol was relaunched"],
   ],
 };
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.base.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

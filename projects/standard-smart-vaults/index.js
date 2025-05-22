@@ -12,7 +12,8 @@ const gammaVaults = [
   '0xF08BDBC590C59cb7B27A8D224E419ef058952b5f',
   '0x2BCBDD577616357464CFe307Bc67F9e820A66e80',
   '0x547a116a2622876ce1c8d19d41c683c8f7bec5c0',
-  '0x95375694685E39997828Ed5B17f30f0A3eD90537'
+  '0x95375694685E39997828Ed5B17f30f0A3eD90537',
+  '0xa7fce463815f18dbe246152c5291b84db07c0bcd'
 ].map(i => i.toLowerCase());
 
 const tokens = [
@@ -25,7 +26,8 @@ const tokens = [
   '0x3082CC23568eA640225c2467653dB90e9250AaA0',
   '0xd4d42F0b6DEF4CE0383636770eF773390d85c61A',
   ADDRESSES.arbitrum.USDT,
-  ...gammaVaults,
+  ADDRESSES.arbitrum.WSTETH,
+  ...gammaVaults
 ]
 
 async function getOwners(api) {

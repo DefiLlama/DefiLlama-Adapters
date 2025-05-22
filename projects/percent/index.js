@@ -75,3 +75,5 @@ module.exports = {
 };
 
 module.exports.ethereum.tvl = sdk.util.sumChainTvls([module.exports.ethereum.tvl, ethTvl])
+module.exports.ethereum.tvl = ethTvl
+module.exports.ethereum.borrowed = () => ({})
