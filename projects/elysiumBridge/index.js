@@ -5,7 +5,7 @@ const config = {
 
   polygon: {
     bridges: [
-      '0x7706b3eaBa0606a71ee52680039f2dBE8f83aC45',
+      '0x580F7C02ad1d8B7116B3424AB837B96F7b1ad597',
     ],
     tokens: {
       PYR: '0x430ef9263e76dae63c84292c3409d61c598e9682',
@@ -18,7 +18,7 @@ const config = {
   },
   ethereum: {
     bridges: [
-      '0x05a58056254cDBB2aC0b4D27f42AD5D33C7E3ddD',
+      '0x314D915e947cc2907a704CeEDe7accf10Ea7dA6e',
     ],
     tokens: {
       PYR: '0x430ef9263e76dae63c84292c3409d61c598e9682',
