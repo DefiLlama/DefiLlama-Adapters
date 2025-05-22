@@ -18,9 +18,17 @@ async function getCuratorTvlErc4626(api, vaults) {
 }
 
 async function getCuratorTvlAeraVault(api, vaults) {
-  const assetRegistries =  await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true, excludeFailed: true, })
-  const assets =  await api.multiCall({ abi: ABI.aera.numeraireToken, calls: assetRegistries })
-  const values = await api.multiCall({ abi: ABI.aera.value, calls: vaults, permitFailure: true })
+  const assetRegistries =  await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
+  const existedVaults = []
+  const existedRegistries = []
+  for (let i = 0; i < vaults.length; i++) {
+    if (assetRegistries[i]) {
+      existedVaults.push(vaults[i])
+      existedRegistries.push(assetRegistries[i])
+    }
+  }
+  const assets =  await api.multiCall({ abi: ABI.aera.numeraireToken, calls: existedRegistries })
+  const values = await api.multiCall({ abi: ABI.aera.value, calls: existedVaults, permitFailure: true })
   return api.add(assets, values.map(v => v || 0))
 }
 
