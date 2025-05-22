@@ -41,20 +41,13 @@ async function tvl(_, _1, _2, { api }) {
     const tokensAndOwners = config[chain].tvlTokens.map(({ token, contract }) => [token, contract]);
     const tvlValue = await sumTokens2({ api, tokensAndOwners });
     
-    // Add staking value if it exists
-    const stakingConfig = config[chain].staking;
-    if (stakingConfig) {
-        const stakingValue = await sumTokens2({ api, tokens: [stakingConfig.token], owners: [stakingConfig.contract] });
-        return { ...tvlValue, ...stakingValue };
-    }
-    
     return tvlValue;
 }
 
 module.exports = {
     methodology: "TVL on Arbitrum includes CLUTCH token staking and USDC in lending pools. On APE Chain, TVL includes native APE token and ApeUSD stablecoin in lending pools. Values are calculated separately for staking and lending pools.",
     arbitrum: { 
-        tvl  // Combined TVL and staking
+       staking: stakingTvl, tvl  // Combined TVL and staking
     },
     apechain: { 
         tvl  // Track APE and ApeUSD lending
