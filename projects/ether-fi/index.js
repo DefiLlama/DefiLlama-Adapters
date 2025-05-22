@@ -25,6 +25,24 @@ const CBBTC = {
   arbitrum: '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',
 };
 
+const fetchQueuedWithdrawalsAbi = "function fetchQueuedWithdrawals(address staker) view returns (tuple(address staker, address delegatedTo, uint256 nonce, uint256 start, tuple(address[] vaults, uint256[] shares, address withdrawer) request)[] queuedWithdrawals)"
+const isWithdrawPendingAbi = "function isWithdrawPending(tuple(address staker, address delegatedTo, uint256 nonce, uint256 start, tuple(address[] vaults, uint256[] shares, address withdrawer) request) withdrawal) view returns (bool)"
+
+async function get_karak_btc_withdrawals(timestamp) {
+  const api = new sdk.ChainApi({ timestamp, chain: 'ethereum' })
+  const karak_btc = await api.call({ target: '0xAfa904152E04aBFf56701223118Be2832A4449E0', abi: fetchQueuedWithdrawalsAbi, params: ['0x657e8C867D8B37dCC18fA4Caead9C45EB088C642'] })
+  let total_btc_in_queued_withdrawals = 0
+  for (const withdrawal of karak_btc) {
+    const isWithdrawPending = await api.call({ target: '0xAfa904152E04aBFf56701223118Be2832A4449E0', abi: isWithdrawPendingAbi, params: [withdrawal] })
+    if (isWithdrawPending) {
+      for (const share of withdrawal.request.shares) {
+        total_btc_in_queued_withdrawals += Number(share)
+      }
+    }
+  }
+  return total_btc_in_queued_withdrawals
+}
+
 async function ebtc_staking(timestamp) {
   if (timestamp < 1746507563) return [0n, 0n, 0n];
 
@@ -32,6 +50,7 @@ async function ebtc_staking(timestamp) {
   let wbtc_held = 0n, lbtc_held = 0n, cbbtc_held = 0n;
 
   const collectBalances = async (tokens, accumulator) => {
+    let sum = accumulator;
     for (const [chain, token] of Object.entries(tokens)) {
       const result = await sdk.api.erc20.balanceOf({
         target: token,
@@ -39,13 +58,16 @@ async function ebtc_staking(timestamp) {
         chain,
         timestamp,
       });
-      accumulator += BigInt(result.output);
+      sum += BigInt(result.output);
     }
+    return sum;
   };
+  
+  wbtc_held = await collectBalances(WBTC, wbtc_held);
+  lbtc_held = await collectBalances(LBTC, lbtc_held);
+  cbbtc_held = await collectBalances(CBBTC, cbbtc_held);
 
-  await collectBalances(WBTC, wbtc_held);
-  await collectBalances(LBTC, lbtc_held);
-  await collectBalances(CBBTC, cbbtc_held);
+  console.log(wbtc_held, lbtc_held, cbbtc_held);
 
   const getEthBalance = async (token, owner) => {
     const result = await sdk.api.erc20.balanceOf({
@@ -65,7 +87,9 @@ async function ebtc_staking(timestamp) {
     getEthBalance(LBTC.ethereum, '0xd4E20ECA1f996Dab35883dC0AD5E3428AF888D45'),
   ]);
 
-  lbtc_held += ethExtras[0] + ethExtras[2] + ethExtras[4];
+  const karak_btc_withdrawals = await get_karak_btc_withdrawals(timestamp);
+
+  lbtc_held += ethExtras[0] + ethExtras[2] + ethExtras[4] + BigInt(karak_btc_withdrawals);
   wbtc_held += ethExtras[1] + ethExtras[3];
 
   return [lbtc_held, wbtc_held, cbbtc_held];
