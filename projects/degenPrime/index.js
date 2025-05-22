@@ -7,7 +7,9 @@ const getAllOwnedAssetsAbi = "function getAllOwnedAssets() view returns (bytes32
 const getLoansAbi = "function getLoans(uint256 _from, uint256 _count) view returns (address[] _loans)"
 const getPrimeAccountsLengthAbi = 'uint256:getLoansLength';
 
-
+// Aerodrome position ABIs
+const getOwnedStakedAerodromeTokenIdsAbi = "function getOwnedStakedAerodromeTokenIds() public view returns (uint256[] memory)"
+const getPositionCompositionAbi = "function getPositionCompositionSimplified(uint256 positionId) public view returns (tuple(address token0, address token1, uint256 token0Amount, uint256 token1Amount) positionComposition)"
 
 const assetToAddressMappingBase = {
   "cbBTC": ADDRESSES.base.cbBTC,
@@ -24,7 +26,17 @@ const assetToAddressMappingBase = {
   "VIRTUAL": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
   "MOG": "0x2Da56AcB9Ea78330f947bD57C54119Debda7AF71",
   "AIXBT": "0x4F9Fd6Be4a90f2620860d680c0d4d5Fb53d1A825",
-  "KAITO": "0x98d0baa52b2D063E780DE12F615f963Fe8537553"
+  "KAITO": "0x98d0baa52b2D063E780DE12F615f963Fe8537553",
+  "ezETH": "0x2416092f143378750bb29b79eD961ab195CcEea5",
+  "weETH": "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
+  "EUROC": "0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42",
+  "VVV": "0xacfe6019ed1a7dc6f7b508c02d1b04ec88cc21bf",
+  "COOKIE": "0xc0041ef357b183448b235a8ea73ce4e4ec8c265f",
+  "BNKR": "0x22af33fe49fd1fa80c7149773dde5890d3c76f3b",
+  "ZORA": "0x1111111111166b7fe7bd91427724b487980afc69",
+  "DINO": "0x85E90a5430AF45776548ADB82eE4cD9E33B08077",
+  "DRB": "0x3ec2156d4c0a9cbdab4a016633b7bcf6a8d68ea2",
+  "CLANKER": "0x1bc0c42215582d5a085795f4badbac3ff36d1bcb",
 }  
 
 // Base
@@ -37,11 +49,60 @@ const KAITO_POOL_TUP_CONTRACT = '0x293E41F1405Dde427B41c0074dee0aC55D064825';
 
 const SMART_LOANS_FACTORY_TUP_BASE = '0x5A6a0e2702cF4603a098C3Df01f3F0DF56115456';
 
-  /**
-   * TVL for Base
-   * @param {Object} api - api object from sdk
-   * @returns {Promise<Object>} - TVL object
-   */
+/**
+ * Add Aerodrome LP positions to TVL calculation
+ * @param {Object} api - api object from sdk
+ * @param {Array} accounts - array of account addresses
+ */
+async function addAerodromePositions({ api, accounts }) {
+  // Get all owned Aerodrome token IDs for each account
+  const ownedTokenIds = await api.multiCall({ 
+    abi: getOwnedStakedAerodromeTokenIdsAbi, 
+    calls: accounts 
+  });
+
+  const positionCalls = [];
+  
+  // Prepare calls for getPositionCompositionSimplified for each token ID
+  ownedTokenIds.forEach((tokenIds, accountIndex) => {
+    const account = accounts[accountIndex];
+    tokenIds.forEach(tokenId => {
+      positionCalls.push({
+        target: account,
+        params: [tokenId]
+      });
+    });
+  });
+
+  if (positionCalls.length === 0) {
+    sdk.log('No Aerodrome positions found');
+    return;
+  }
+
+  // Get position compositions
+  const positionCompositions = await api.multiCall({
+    abi: getPositionCompositionAbi,
+    calls: positionCalls
+  });
+
+  // Add token amounts to balances
+  positionCompositions.forEach(({ token0, token1, token0Amount, token1Amount }) => {
+    if (token0Amount > 0) {
+      api.add(token0, token0Amount);
+    }
+    if (token1Amount > 0) {
+      api.add(token1, token1Amount);
+    }
+  });
+
+  sdk.log(`Added ${positionCalls.length} Aerodrome positions to TVL`);
+}
+
+/**
+ * TVL for Base
+ * @param {Object} api - api object from sdk
+ * @returns {Promise<Object>} - TVL object
+ */
 async function tvlBase(api) {
   const tokensAndOwners = [
     [assetToAddressMappingBase.USDC, USDC_POOL_TUP_CONTRACT],
@@ -68,6 +129,8 @@ async function tvlBase(api) {
 
   sdk.log(accounts.length)
 
+  // Add Aerodrome positions to TVL calculation
+  await addAerodromePositions({ api, accounts });
 
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   accounts.forEach((o, i) => {
@@ -86,9 +149,8 @@ async function tvlBase(api) {
   return sumTokens2({ api, tokensAndOwners: tokensAndOwners })
 }
 
-
 module.exports = {
-  methodology: 'Counts TVL of DegenPrime\'s lending pools and individual PrimeAccount contracts\'',
+  methodology: 'Counts TVL of DegenPrime\'s lending pools and individual PrimeAccount contracts including Aerodrome LP positions',
   base: {
     tvl: tvlBase,
   },
