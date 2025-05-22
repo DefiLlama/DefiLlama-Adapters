@@ -11,15 +11,24 @@ const ABI = {
 }
 
 async function getCuratorTvlErc4626(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults })
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults })
+  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true, excludeFailed: true, })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true, excludeFailed: true, })
+
   return api.add(assets, totalAssets)
 }
 
 async function getCuratorTvlAeraVault(api, vaults) {
-  const assetRegistries =  await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults })
-  const assets =  await api.multiCall({ abi: ABI.aera.numeraireToken, calls: assetRegistries })
-  const values = await api.multiCall({ abi: ABI.aera.value, calls: vaults, permitFailure: true })
+  const assetRegistries =  await api.multiCall({ abi: ABI.aera.assetRegistry, calls: vaults, permitFailure: true })
+  const existedVaults = []
+  const existedRegistries = []
+  for (let i = 0; i < vaults.length; i++) {
+    if (assetRegistries[i]) {
+      existedVaults.push(vaults[i])
+      existedRegistries.push(assetRegistries[i])
+    }
+  }
+  const assets =  await api.multiCall({ abi: ABI.aera.numeraireToken, calls: existedRegistries })
+  const values = await api.multiCall({ abi: ABI.aera.value, calls: existedVaults, permitFailure: true })
   return api.add(assets, values.map(v => v || 0))
 }
 
