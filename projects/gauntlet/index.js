@@ -1,7 +1,7 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by Gauntlet.',
+  methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
   blockchains: {
     ethereum: {
       morpho: [
