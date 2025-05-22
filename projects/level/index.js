@@ -41,6 +41,6 @@ module.exports = {
   },
   arbitrum: { tvl: arbtvl },
   hallmarks: [
-    [Math.floor(new Date('2023-05-01')/1e3), 'Referral contract exploited'],
+    ['2023-05-01', 'Referral contract exploited'],
   ],
 };

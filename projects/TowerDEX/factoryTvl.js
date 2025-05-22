@@ -29,7 +29,6 @@ async function getAllPairs(factory, chain, {blacklistedPairs = []} = {}) {
   const dtos = []
   const getPairPool = (async (pair) => {
     const pairRes = await queryContractWithRetries({contract: pair.contract_addr, chain, data: {pool: {}}})
-    // console.log("pairRes: ", pairRes, " pair: ", pair, "");
     const pairDto = {}
     pairDto.assets = []
     pairDto.addr = pair.contract_addr

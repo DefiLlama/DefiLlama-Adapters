@@ -30,7 +30,6 @@ async function tvlCLMM() {
     }]
   })
   const data = accounts.map(i => decodeAccount('raydiumCLMM', i.account))
-  console.log(data.length, 'fetched CLMM accounts')
 
   const tokenAccounts = data.map(i => [i.vaultA, i.vaultB]).flat().map(i => i.toString())
   return sumTokens2({ tokenAccounts })
@@ -45,7 +44,6 @@ async function ammV4Tvl(api) {
   console.time('raydium: ammV4Tvl fetching vault balances')
   const allPoolVaultAmount = await connection.getProgramAccounts(new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'), { filters: [{ dataSize: 165 }, { memcmp: { offset: 32, bytes: auth } }], dataSlice: { offset: 64, length: TokenAmountLayout.span } })
   console.timeEnd('raydium: ammV4Tvl fetching vault balances')
-  console.log(allPoolVaultAmount.length, 'fetched vault amounts')
   const vaultIdToAmount = {}
   for (const item of allPoolVaultAmount) {
     vaultIdToAmount[item.pubkey.toString()] = TokenAmountLayout.decode(item.account.data).amount.toString()

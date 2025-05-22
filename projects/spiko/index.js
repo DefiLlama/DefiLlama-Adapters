@@ -46,7 +46,6 @@ Object.keys(config).forEach(chain => {
         supplies = await multiCall({ abi: totalSupplyAbi, calls: assets })
       else
         supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: assets })
-      // console.log(`Chain: ${chain}, Supplies:`, supplies)
       api.add(assets, supplies)
       return sumTokens2({ api })
     }
