@@ -3,7 +3,6 @@ const { getUniqueAddresses } = require('../helper/tokenMapping');
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs');
 const { queryContract } = require("../helper/chain/cosmos");
 const CORE_ASSETS = require('../helper/coreAssets.json');
-const { token } = require('@project-serum/anchor/dist/cjs/utils');
 
 module.exports = {
   methodology: 'Total amount of BTC and eligible assets restaked on SatLayer, or through partner vaults specific to SatLayer.',
