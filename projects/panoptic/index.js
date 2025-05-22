@@ -16,7 +16,7 @@ query SFPMChunks($lastId: ID, $block: Int) {
     tickLower
     tickUpper
     id
-    pool {      id    }
+    pool {      id, tick, token0 {id}, token1 {id}}
   }
 }`
 
@@ -49,32 +49,23 @@ async function tvl(api) {
   const { startBlock, graphUrl, safeBlockLimit } = config[chain]
 
   const poolDeployedLogs = await getLogs2({ api, target: FACTORY, fromBlock: startBlock, eventAbi: abi.PoolDeployed, })
-  const uniPools = poolDeployedLogs.map(log => log.uniswapPool.toLowerCase())
-  const token0s = await api.multiCall({ abi: 'address:token0', calls: uniPools })
-  const token1s = await api.multiCall({ abi: 'address:token1', calls: uniPools })
-  const slot0s = await api.multiCall({ abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)', calls: uniPools })
 
-  const poolData = {}
+  const isV4 = {}
   const ownerTokens = []
-  uniPools.forEach((pool, i) => {
+  poolDeployedLogs.forEach((poolDeployedLog, i) => {
     // to compte tokens locked in panoptic pools
     ownerTokens.push([[token0s[i], token1s[i]], poolDeployedLogs[i].poolAddress])
 
     // to compute value locked in uni v3 pools
-    poolData[pool] = {
-      token0: token0s[i],
-      token1: token1s[i],
-      tick: slot0s[i].tick,
-    }
+    isV4[poolDeployedLog.poolAddress] = true
   })
 
   await api.sumTokens({ ownerTokens })
 
   const chunks = await cachedGraphQuery(`panoptic/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
   chunks.forEach(chunk => {
-    const { token0, token1, tick, } = poolData[chunk.pool.id.toLowerCase()] ?? {}
-    if (!tick) return;
-    addUniV3LikePosition({ api, token0, token1, tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
+    if (!isV4[chunk.pool.id.toLowerCase()]) return
+    addUniV3LikePosition({ api, token0: chunk.pool.token0.id, token1: chunk.pool.token1.id, tick: chunk.pool.tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
   })
 }
 
