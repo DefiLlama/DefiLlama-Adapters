@@ -39,6 +39,6 @@ module.exports = {
     staking: staking('0x68738a47d40c34d890168ab7b612a6f649f395e4', '0x9ef758ac000a354479e538b8b2f01b917b8e89e7'),
   },
   hallmarks: [
-    [Math.floor(new Date('2022-10-30') / 1e3), 'XUSD is no longer counted as part of tvl'],
+    ['2022-10-30', 'XUSD is no longer counted as part of tvl'],
   ],
 };

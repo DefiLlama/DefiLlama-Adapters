@@ -27,6 +27,7 @@ const config = {
       '0x8a1feCFF181dD770206c0892E09B0243A495152b',
       '0x5eD60B7BFba654342C401f853B55B8dd82f90726',
       '0xa9a99C96e9fCCaC00a100e72A2C19eDe79458698',
+      '0x52b37e6dB2Fe5bB2781355Ac397aE49C9Bd29275',
     ],
   },
   bitcoin: {
@@ -53,11 +54,13 @@ const config = {
       'Cet3t77x2BBVSmiEFm8ZPoDSngbpso2RuWPL79Ky7SpA',
       '9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL',
       'Fe7SEekiKygziaEGKxsDsgLVzrCfNvVBvAYsaJBwFA8s',
-      'AR2ecEWY2vfsXmd4fUxc196LhbX5p8TnhvJg8t3fgYUN',
-      '7Sng9GTnkjjb8WTF2kYX8JWqGHHwJGk5Ke9639zREUAR',
+      '8V51vSJGYssywpKHrZacT3bpFYoeA1oD7hdvi1imnrVa',
+      'CxbHK9geAiCc6yBVT7PhXEMXzwP7BGh8VB1TgbDV3uLq',
       '3jvARuePRR6KpNAeYYGRQzs8W4VYsWWxe4BfoTSTZhUr',
-      'CFvYntdD6o7goAmXXtUKhirr8xLEfhY3txyJ8BpiisxJ',
+      '281BKbWX8f9XqexpmFGTGcrAzPbFtoSiBjTHUkVHQmtv',
       'H9RCk9jQYX1bZ6HmjDAiD4r8GMgF8zpW9P1pacze7L9E',
+      'F98pLYBStoB31WNTWGoQMNz3A6uwoneivaYVCAD7Gim1',
+      '4GiXcDsHVtqBZyUZBW55UcfAAgDcCm2Peojhhc6T3BZb',
     ],
   },
   polkadot: {
@@ -71,8 +74,8 @@ const config = {
     owners: [
       'addr1qxqut96hxv5zxmhcgspmnq9tuaf6xglvq6tdv8jm5zltatv5hnm8tps2jw73pherd4l9yuuetxlp6gkeufq5p6ftjswssk33fx',
       'addr1q9vrcmu4sr7yrspknu8gwrzgrs6wuh0e6pkk9tyz2clg9llt77jyl7422xv72h9mc9kmsgvajssj4a4cpsv07n4e5lpqkfe9ft',
-      'addr1qy9ffv7zmqtmenskcnvsxszhv6zsls8gkl339tc5d2c5davhg2p4nekj924whmlmczq3jkf22yt5wh3ml7f8g3mxud4ss6mwyd',
-      'addr1qx2tzwkx4fjg8cg0htw27cje4029cmf2plsm3nws5qyky45njhmrzd25840eesfu6q33tzaqxtrqarfuqe9wpsc9ks0qea4lcq',
+      'addr1qyy6n8xnyzulrax4mt0d5kdy93qm43qg4wxy09dw6apdxpqzldjpstc72lsna3krj6damxt32gw9jllr4q3u7mhg7jhs5u7jhd',
+      'addr1q8n8jmkaqfwnw9f6f6cwex5uv9vl606s9945qp2t2ffrzypdlx09ue7ha5jvmda4re0pexpl9pshqjx8a8eqfs0kya8qg8hsat',
     ],
   },
   hedera: {
@@ -89,6 +92,7 @@ const config = {
       '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
       '0xff4606bd3884554cdbdabd9b6e25e2fad4f6fc54',
+      '0xE8322f6234B6F1e6e3489600f8b1297aB3dE22ab',
     ]
   },
   avax: {
@@ -99,6 +103,7 @@ const config = {
       '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
       '0x9531AA9883bF11f2a63d86caD7e826f37Acec3c4',
       '0x4DF0BCB425aac41795B40a2B5A563A6a3eC23B41',
+      '0xC6A4e26E07a848F2AB180a455C211d38BF483E3E',
     ]
   },
   polygon: {
@@ -132,6 +137,11 @@ const config = {
   xdai: {
     owners: [
       '0x4c61Fad9b400A8a3E0BbD40C4D57cF05525BF87e',
+    ]
+  },
+  berachain: {
+    owners: [
+      '0x2D6757CE162CccD3EfFc8044751aC174168242E5',
     ]
   }
 }

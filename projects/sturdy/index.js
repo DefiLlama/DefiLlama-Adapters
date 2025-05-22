@@ -10,6 +10,6 @@ module.exports = mergeExports([
   }
 ])
 module.exports.hallmarks = [
-  [Math.floor(new Date('2023-06-11') / 1e3), 'Protocol was hacked'],
+  ['2023-06-11', 'Protocol was hacked'],
 ]
 module.exports.doublecounted = true
