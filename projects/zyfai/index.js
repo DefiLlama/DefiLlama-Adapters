@@ -24,9 +24,9 @@ async function tvl(api) {
     ]);
 
     // Sum up total TVL across all protocols
-    const totalUsd = siloUsd + aaveUsd + pendleUsd + eulerUsd + beetsUsd + penpieUsd;
+    const totalTvl = siloUsd + aaveUsd + pendleUsd + eulerUsd + beetsUsd + penpieUsd;
 
-    return { usd: totalUsd };
+    return { usd: totalTvl };
 }
 
 module.exports = {
