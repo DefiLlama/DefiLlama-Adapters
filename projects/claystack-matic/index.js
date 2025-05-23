@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./clayABIs/clayMain.json');
 
 const abis = {
   "funds": "function funds() view returns (uint256 currentDeposit, uint256 stakedDeposit, uint256 accruedFees)"
