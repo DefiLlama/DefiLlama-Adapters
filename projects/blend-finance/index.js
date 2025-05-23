@@ -1,6 +1,8 @@
 
 const { aaveExports } = require('../helper/aave')
 const methodologies = require('../helper/methodologies')
+//update protocol information
+
 
 module.exports = {
 	methodology: methodologies.lendingMarket,

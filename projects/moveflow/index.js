@@ -16,6 +16,7 @@ const CELL =
   ADDRESSES.aptos.CELL;
 
 
+
 async function tvl(api, isVesting) {
   const faData =
     await function_view({
@@ -29,6 +30,7 @@ async function tvl(api, isVesting) {
   let usdt_value = 0;
   let apt_value = 0;
   let moon_value = 0;
+
 
   faData.map((item, index) => {
     let assetsTvl = []
@@ -47,7 +49,6 @@ async function tvl(api, isVesting) {
       }
     })
   })
-
 
   const coinData = await function_view({
     "functionStr": "0x15a5484b9f8369dd3d60c43e4530e7c1bb82eef041bf4cf8a2090399bebde5d4::stream::get_coin_tvl",
@@ -69,7 +70,6 @@ async function tvl(api, isVesting) {
       }
     })
   })
-
 
   if (isVesting) {
     api.add(MOON, moon_value);
