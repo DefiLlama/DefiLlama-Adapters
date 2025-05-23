@@ -1,6 +1,3 @@
-const { get } = require('../helper/http');
-
-// ---- Protocol Addresses ----
 const SILO_POOL_ADDRESSES = {
     'S-USDC-20': '0x322e1d5384aa4ED66AeCa770B95686271de61dc3',
     'S-USDC-8': '0x4E216C15697C1392fE59e1014B009505E05810Df',
@@ -38,178 +35,79 @@ const BEETS_POOL = {
 const PENPIE_MARKET_ADDRESS = '0x3f5ea53d1160177445b1898afbb16da111182418';
 const PENPIE_CONTRACT = '0x7A89614B596720D4D0f51A69D6C1d55dB97E9aAB';
 
-/**
- * Utility to batch fetch decimals for a list of tokens.
- */
-async function getDecimalsMap(api, tokens) {
-    const decimalsList = await api.multiCall({
-        abi: 'erc20:decimals',
-        calls: tokens.map(token => ({ target: token })),
-    });
-    const map = {};
-    tokens.forEach((token, i) => {
-        map[token.toLowerCase()] = decimalsList[i];
-    });
-    return map;
-}
-
-/**
- * Silo TVL
- */
 async function siloTvl(api, owners) {
     const siloVaults = Object.values(SILO_POOL_ADDRESSES);
-    const assetAddresses = await api.multiCall({
-        abi: 'function asset() view returns (address)',
-        calls: siloVaults.map(vault => ({ target: vault })),
-    });
-    // Map vault address to asset address
-    const vaultToAsset = {};
-    siloVaults.forEach((vault, i) => {
-        vaultToAsset[vault.toLowerCase()] = assetAddresses[i].toLowerCase();
-    });
-    // Fetch decimals for asset addresses
-    const decimalsMap = await getDecimalsMap(api, assetAddresses);
-    // Prepare all balanceOf calls for all owners and vaults
     const balanceCalls = siloVaults.flatMap(vault => owners.map(owner => ({ target: vault, params: [owner] })));
-    const balances = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: balanceCalls,
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    
+    const vaultBalances = {};
+    siloVaults.forEach((vault, i) => {
+        const vaultIndex = i * owners.length;
+        const vaultTotal = balances.slice(vaultIndex, vaultIndex + owners.length)
+            .reduce((sum, bal) => sum + Number(bal), 0);
+        vaultBalances[vault] = vaultTotal;
     });
-    // Only call convertToAssets for non-zero balances
-    const convertToAssetsCalls = balances
-        .map((balance, i) => balance > 0 ? {
-            target: balanceCalls[i].target,
-            params: [balance],
-            index: i,
-        } : null)
-        .filter(Boolean);
-    const assets = await api.multiCall({
-        abi: 'function convertToAssets(uint256) view returns (uint256)',
-        calls: convertToAssetsCalls,
-    });
-    // Calculate USD value for each asset and sum
-    let totalUsdValue = 0;
-    for (let i = 0; i < assets.length; i++) {
-        const originalIndex = convertToAssetsCalls[i].index;
-        const vault = balanceCalls[originalIndex].target.toLowerCase();
-        const asset = vaultToAsset[vault];
-        const decimals = decimalsMap[asset] || 18;
-        totalUsdValue += Number(assets[i]) / (10 ** decimals);
-    }
-    return totalUsdValue;
+    
+    api.add(Object.keys(vaultBalances), Object.values(vaultBalances));
 }
 
-/**
- * Aave TVL
- */
 async function aaveTvl(api, owners) {
     const balanceCalls = owners.map(owner => ({ target: AAVE_TOKEN_ADDRESS, params: [owner] }));
     const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    const decimals = 6;
-    return balances.reduce((sum, bal) => sum + Number(bal) / (10 ** decimals), 0);
+    const total = balances.reduce((sum, bal) => sum + Number(bal) / 1e6, 0);
+    api.add(AAVE_TOKEN_ADDRESS, total);
 }
 
-/**
- * Euler TVL
- */
 async function eulerTvl(api, owners) {
     const eulerPools = Object.values(EULER_POOL_ADDRESSES);
-    // 1. Fetch asset address for each pool
-    const assetAddresses = await api.multiCall({
-        abi: 'function asset() view returns (address)',
-        calls: eulerPools.map(pool => ({ target: pool })),
-    });
-    // 2. Map pool address to asset address
-    const poolToAsset = {};
-    eulerPools.forEach((pool, i) => {
-        poolToAsset[pool.toLowerCase()] = assetAddresses[i].toLowerCase();
-    });
-    // 3. Fetch decimals for each asset
-    const decimalsMap = await getDecimalsMap(api, assetAddresses);
-    // 4. Prepare all balanceOf calls for all owners and pools
     const balanceCalls = eulerPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: balanceCalls,
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
     });
-    // 5. Prepare convertToAssets calls for all balances
-    const convertToAssetsCalls = balances.map((balance, i) => ({
-        target: balanceCalls[i].target,
-        params: [balance],
-    }));
-    const assets = await api.multiCall({
-        abi: 'function convertToAssets(uint256) view returns (uint256)',
-        calls: convertToAssetsCalls,
-    });
-    // 6. Normalize using asset decimals
-    let totalUsdValue = 0;
-    for (let i = 0; i < assets.length; i++) {
-        const pool = balanceCalls[i].target.toLowerCase();
-        const asset = poolToAsset[pool];
-        const decimals = decimalsMap[asset] || 18;
-        totalUsdValue += Number(assets[i]) / (10 ** decimals);
-    }
-    return totalUsdValue;
 }
 
-/**
- * Pendle TVL
- */
 async function pendleTvl(api, owners) {
-    // Gather all token addresses
-    const allTokens = Object.values(PENDLE_MARKET_ADDRESSES).flatMap(market => Object.values(market).map(addr => addr.toLowerCase()));
-    // Fetch prices for all tokens in one batch
-    const priceApiUrl = `https://api-v2.pendle.finance/core/v1/146/assets/prices?addresses=${allTokens.join(",")}&skip=0`;
-    const priceData = await get(priceApiUrl);
-    const prices = priceData.prices || {};
-    // Prepare all balanceOf calls for all owners and all tokens
-    const balanceCalls = allTokens.flatMap(token => owners.map(owner => ({ target: token, params: [owner] })));
-    const balances = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: balanceCalls,
+    const allTokens = Object.values(PENDLE_MARKET_ADDRESSES).flatMap(market => 
+        Object.values(market).map(addr => addr.toLowerCase())
+    );
+    
+    const balanceCalls = allTokens.flatMap(token => 
+        owners.map(owner => ({ target: token, params: [owner] }))
+    );
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
     });
-    // Sum USD value for all balances
-    return balances.reduce((sum, bal, i) => {
-        const token = balanceCalls[i].target.toLowerCase();
-        const price = prices[token] || 0;
-        return sum + (Number(bal) * price) / 1e18;
-    }, 0);
 }
 
-/**
- * Beets TVL
- */
 async function beetsTvl(api, owners) {
     const calls = owners.flatMap(owner => [
         { target: BEETS_POOL.deposit, params: [owner] },
         { target: BEETS_POOL.stake, params: [owner] },
     ]);
-    const balances = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls,
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
+
+    balances.forEach((balance, i) => {
+        api.add(calls[i].target, balance);
     });
-    const total = balances.reduce((sum, bal) => sum + Number(bal) / 1e18, 0);
-    api.add(BEETS_POOL.deposit, total);
-    return total;
 }
 
-/**
- * Penpie TVL
- */
 async function penpieTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({ target: PENPIE_CONTRACT, params: [PENPIE_MARKET_ADDRESS, owner] }));
+    const balanceCalls = owners.map(owner => ({ 
+        target: PENPIE_CONTRACT, 
+        params: [PENPIE_MARKET_ADDRESS, owner] 
+    }));
     const balances = await api.multiCall({
         abi: 'function balance(address,address) view returns (uint256)',
         calls: balanceCalls,
     });
-    const priceApiUrl = `https://api-v2.pendle.finance/core/v1/146/assets/prices?addresses=${PENPIE_MARKET_ADDRESS}&skip=0`;
-    const priceData = await get(priceApiUrl);
-    const price = priceData?.prices?.[PENPIE_MARKET_ADDRESS] || 0;
-    return balances.reduce((sum, bal) => {
-        let usdValue = (Number(bal) * price) / 1e18;
-        if (usdValue < 1) usdValue = parseFloat(usdValue.toFixed(6));
-        return sum + usdValue;
-    }, 0);
+    
+    balances.forEach(balance => {
+        api.add(PENPIE_MARKET_ADDRESS, balance);
+    });
 }
 
 module.exports = {
@@ -219,4 +117,4 @@ module.exports = {
     pendleTvl,
     beetsTvl,
     penpieTvl,
-}; 
+};
