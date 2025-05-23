@@ -17,7 +17,7 @@ async function tvl(api) {
 module.exports = {
   ethereum: { tvl },
   hallmarks: [
-    [Math.floor(new Date('2021-10-14')/1e3), 'Protocol was hacked'],
-    [Math.floor(new Date('2023-03-20')/1e3), 'Balancing arbitrage'],
+    ['2021-10-14', 'Protocol was hacked'],
+    ['2023-03-20', 'Balancing arbitrage'],
   ],
 }

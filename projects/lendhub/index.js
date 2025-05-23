@@ -1,7 +1,7 @@
 module.exports = {
   timetravel: false,
   hallmarks: [
-    [Math.floor(new Date('2023-01-12')/1e3), 'Protocol was hacked'],
+    ['2023-01-12', 'Protocol was hacked'],
   ],
   heco: {
     tvl: () => ({}),
