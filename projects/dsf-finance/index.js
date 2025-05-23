@@ -14,7 +14,7 @@ module.exports = {
     tvl: ethTvl,
   },
   hallmarks: [
-    [Math.floor(new Date('2022-07-30')/1e3), 'The first smart contract was created'],
+    ['2022-07-30', 'The first smart contract was created'],
   ],
   methodology: "Total value of digital assets that are locked in DSF.Finance Omnipools",
 };

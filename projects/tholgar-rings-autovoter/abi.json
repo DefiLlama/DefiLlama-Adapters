@@ -1,0 +1,6 @@
+{
+  "locked": "function locked(uint256 tokenId) external view returns (int128, uint256)",
+  "currentTokenId": "uint256:currentTokenId",
+  "tokenIdToMarionetteId": "function tokenIdToMarionetteId(uint256) external view returns (bytes32)",
+  "getMarionette": {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getMarionette","outputs":[{"components":[{"internalType":"uint256","name":"veId","type":"uint256"},{"components":[{"internalType":"enum Marionette.RewardMode","name":"rewardMode","type":"uint8"},{"internalType":"bytes","name":"data","type":"bytes"}],"internalType":"struct Marionette.RewardConfig","name":"customRewardConfig","type":"tuple"},{"components":[{"internalType":"enum Marionette.LockMode","name":"lockMode","type":"uint8"},{"internalType":"bytes","name":"data","type":"bytes"}],"internalType":"struct Marionette.LockConfig","name":"customLockConfig","type":"tuple"}],"internalType":"struct Marionette.MarionetteState","name":"","type":"tuple"}],"stateMutability":"view","type":"function"}
+}
