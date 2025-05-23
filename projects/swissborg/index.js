@@ -147,6 +147,8 @@ const config = {
   cosmos: {
     owners: [
         'cosmos10dfzd2wpnpeuy2lgan35ah8dg5p4l298v0n8e8',
+        'cosmos197v98nkhnxr54x45hrcagnu2rr2ckyn7dz37t6',
+        'cosmos1trvqv850ft2p7ntewneevd690qde2uvt6dxvnp',
     ]
   },
   arbitrum: {
@@ -160,6 +162,7 @@ const config = {
   osmosis: {
     owners: [
       'osmo1h9sy6z5hnk5wjf6ds8w4syq0yqs706n9m6qlap',
+      'osmo197v98nkhnxr54x45hrcagnu2rr2ckyn79ezwag',
     ]
   },
   xdai: {
@@ -188,6 +191,47 @@ const config = {
     owners: [
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+    ]
+  },
+  tron: {
+    owners: [
+      'TNLKi5Yqa6NoduyXxtveTCrATZQHaYbc2m',
+      'TUiaMVXiyHAsRR5VEX51KCFGWsyUT7Avwv',
+    ]
+  },
+  doge: {
+    owners: [
+      'D9sBdytmsS1adxvzFTwz94tkpsoqXU8TaM',
+      'DUDrC5rjQsRz6eEZQrb6wzh9jmauh2JHpX',
+    ]
+  },
+  injective: {
+    owners: [
+      'inj1xdalk5nsudad3vxnnf3t28w4qljfedlnu7pk5e',
+      'inj105zqcfv3z9z79yhsfg8v6rql3huzhyfp0sana9',
+    ]
+  },
+  celestia: {
+    owners: [
+      'celestia197v98nkhnxr54x45hrcagnu2rr2ckyn7ugqw3h',
+      'celestia1trvqv850ft2p7ntewneevd690qde2uvtt8hufv',
+    ]
+  },
+  ton: {
+    owners: [
+      'UQAvfvh141q7M2ZmPE6YCmTFQW6pdoUXVTGrM2YBpt4iqOBF',
+      'UQDR4lFPsfCx4TdWKsFUmiPdrkpl6xEixZ3VTn474lZsGuTd',
+    ]
+  },
+  stellar: {
+    owners: [
+      'GCKIWBENT6R6F47SATS6ICYE5I7SJGDRK3C4XAOWUDTUH3SBJ7LFF7PZ',
+      'GDFA6BWULOHVY6IXT6OZWYK4IHQC7BPYVMUL3MPJTXCDLMPD6BWLOGXB',
+    ]
+  },
+  algorand: {
+    owners: [
+      '2BNEJ7ZV2SDGRZ2JGXTSVWVIBK5FYKAERAWXXGYZ66TSWWGHWAPXJ52HAE',
     ]
   },
 }
