@@ -54,7 +54,7 @@ async function getDecimalsMap(api, tokens) {
 }
 
 /**
- * Silo TVL (fix: use asset decimals, not vault decimals)
+ * Silo TVL
  */
 async function siloTvl(api, owners) {
     const siloVaults = Object.values(SILO_POOL_ADDRESSES);
@@ -110,21 +110,29 @@ async function aaveTvl(api, owners) {
 }
 
 /**
- * Euler TVL (fix: use correct decimals mapping)
+ * Euler TVL
  */
 async function eulerTvl(api, owners) {
     const eulerPools = Object.values(EULER_POOL_ADDRESSES);
-    // Map pool address to itself for clarity (could be extended if needed)
-    const poolToAsset = {};
-    eulerPools.forEach(pool => {
-        poolToAsset[pool.toLowerCase()] = pool.toLowerCase();
+    // 1. Fetch asset address for each pool
+    const assetAddresses = await api.multiCall({
+        abi: 'function asset() view returns (address)',
+        calls: eulerPools.map(pool => ({ target: pool })),
     });
-    const decimalsMap = await getDecimalsMap(api, eulerPools);
+    // 2. Map pool address to asset address
+    const poolToAsset = {};
+    eulerPools.forEach((pool, i) => {
+        poolToAsset[pool.toLowerCase()] = assetAddresses[i].toLowerCase();
+    });
+    // 3. Fetch decimals for each asset
+    const decimalsMap = await getDecimalsMap(api, assetAddresses);
+    // 4. Prepare all balanceOf calls for all owners and pools
     const balanceCalls = eulerPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
     const balances = await api.multiCall({
         abi: 'erc20:balanceOf',
         calls: balanceCalls,
     });
+    // 5. Prepare convertToAssets calls for all balances
     const convertToAssetsCalls = balances.map((balance, i) => ({
         target: balanceCalls[i].target,
         params: [balance],
@@ -133,6 +141,7 @@ async function eulerTvl(api, owners) {
         abi: 'function convertToAssets(uint256) view returns (uint256)',
         calls: convertToAssetsCalls,
     });
+    // 6. Normalize using asset decimals
     let totalUsdValue = 0;
     for (let i = 0; i < assets.length; i++) {
         const pool = balanceCalls[i].target.toLowerCase();
