@@ -81,6 +81,18 @@ const fixBalancesTokens = {
     '0x88f08e304ec4f90d644cec3fb69b8ad414acf884': { coingeckoId: 'usd-coin', decimals: 6, },
     '0xe5ecd226b3032910ceaa43ba92ee8232f8237553': { coingeckoId: 'ethereum', decimals: 18, },
     '0xb0588f9a9cade7cd5f194a5fe77acd6a58250f82': { coingeckoId: 'bonsai-token', decimals: 18, },
+  },
+  namada: {
+    'tnam1p5z8ruwyu7ha8urhq2l0dhpk2f5dv3ts7uyf2n75': { coingeckoId: 'osmosis', decimals: 6, },
+    'tnam1pkg30gnt4q0zn7j00r6hms4ajrxn6f5ysyyl7w9m': { coingeckoId: 'cosmos', decimals: 6, },
+    'tnam1pklj3kwp0cpsdvv56584rsajty974527qsp8n0nm': { coingeckoId: 'celestia', decimals: 6, },
+    'tnam1pk288t54tg99umhamwx998nh0q2dhc7slch45sqy': { coingeckoId: 'penumbra', decimals: 6, },
+    'tnam1pkl64du8p2d240my5umxm24qhrjsvh42ruc98f97': { coingeckoId: 'usd-coin', decimals: 6, },
+    'tnam1phv4vcuw2ftsjahhvg65w4ux8as09tlysuhvzqje': { coingeckoId: 'nym', decimals: 6, },
+    'tnam1pk6pgu4cpqeu4hqjkt6s724eufu64svpqgu52m3g': { coingeckoId: 'neutron-3', decimals: 6, },
+    'tnam1p4px8sw3am4qvetj7eu77gftm4fz4hcw2ulpldc7': { coingeckoId: 'stride-staked-osmo', decimals: 6, },
+    'tnam1p5z5538v3kdk3wdx7r2hpqm4uq9926dz3ughcp7n': { coingeckoId: 'stride-staked-atom', decimals: 6, },
+    'tnam1ph6xhf0defk65hm7l5ursscwqdj8ehrcdv300u4g': { coingeckoId: 'stride-staked-tia', decimals: 6, },
   }
 }
 
