@@ -144,8 +144,12 @@ function validateHallmarks(hallmark) {
   const passedTimestamp = process.argv[3]
   if (passedTimestamp !== undefined) {
     unixTimestamp = Number(passedTimestamp)
-    const res = await getBlocks(unixTimestamp, chains)
-    chainBlocks = res.chainBlocks
+
+    // other chains than evm will fail to get block at timestamp
+    try {
+      const res = await getBlocks(unixTimestamp, chains)
+      chainBlocks = res.chainBlocks
+    } catch(e) {}
   }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
