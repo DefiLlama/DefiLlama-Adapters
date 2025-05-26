@@ -90,9 +90,16 @@ async function beetsTvl(api, owners) {
     ]);
     const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls });
 
-    balances.forEach((balance, i) => {
-        api.add(calls[i].target, balance);
-    });
+    // Process balances in pairs (deposit + stake) for each owner
+    for (let i = 0; i < balances.length; i += 2) {
+        const depositBalance = Number(balances[i]);
+        const stakeBalance = Number(balances[i + 1]);
+        const totalBalance = depositBalance + stakeBalance;
+        
+        // Add the combined balance for both deposit and stake tokens
+        api.add(calls[i].target, totalBalance);
+        api.add(calls[i + 1].target, totalBalance);
+    }
 }
 
 async function penpieTvl(api, owners) {
