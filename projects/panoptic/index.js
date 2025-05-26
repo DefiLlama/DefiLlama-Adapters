@@ -27,8 +27,18 @@ const abi = {
 
 const config = {
   ethereum: {
-    graphUrl: 'https://api.goldsky.com/api/public/project_cl9gc21q105380hxuh8ks53k3/subgraphs/panoptic-subgraph-mainnet/1.0.2/gn',
+    graphUrl: 'https://api.goldsky.com/api/public/project_cl9gc21q105380hxuh8ks53k3/subgraphs/panoptic-subgraph-mainnet/prod/gn',
     startBlock: 21389983,
+    safeBlockLimit: 50
+  },
+  base: {
+    graphUrl: 'https://api.goldsky.com/api/public/project_cl9gc21q105380hxuh8ks53k3/subgraphs/panoptic-subgraph-base/prod/gn',
+    startBlock: 29279670,
+    safeBlockLimit: 50
+  },
+  unichain: {
+    graphUrl: 'https://api.goldsky.com/api/public/project_cl9gc21q105380hxuh8ks53k3/subgraphs/panoptic-subgraph-unichain/prod/gn',
+    startBlock: 8576605,
     safeBlockLimit: 50
   }
 }
@@ -73,5 +83,15 @@ module.exports = {
     tvl,
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
     start: 1734049991,
+  },
+  base: {
+    tvl,
+    methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
+    start: 1745348687,
+  },
+  unichain: {
+    tvl,
+    methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
+    start: 1739411364,
   },
 }
