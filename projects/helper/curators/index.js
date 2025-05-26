@@ -82,28 +82,23 @@ async function getCuratorTvlAeraVault(api, vaults) {
 }
 
 async function getCuratorTvl(api, vaults) {
-  // dynamic get vaults list from event logs
-  if (vaults.morphoVaultOwners) {
-    if (vaults.morpho) {
-      vaults.morpho = vaults.morpho.concat(await getMorphoVaults(api, vaults.morphoVaultOwners))
-    } else {
-      vaults.morpho = await getMorphoVaults(api, vaults.morphoVaultOwners)
-    }
-  }
-  if (vaults.eulerVaultOwners) {
-    if (vaults.euler) {
-    vaults.euler = vaults.euler.concat(await getEulerVaults(api, vaults.eulerVaultOwners))
-    } else {
-      vaults.euler = await getEulerVaults(api, vaults.eulerVaultOwners)
-    }
+  const allVaults = {
+    morpho: vaults.morpho ? vaults.morpho : [],
+    euler: vaults.euler ? vaults.euler : [],
   }
 
-  if (vaults.morpho) {
-    await getCuratorTvlErc4626(api, vaults.morpho) 
+  // dynamic get vaults list from event logs
+  if (vaults.morphoVaultOwners) {
+    allVaults.morpho = allVaults.morpho.concat(await getMorphoVaults(api, vaults.morphoVaultOwners))
   }
-  if (vaults.euler) {
-    await getCuratorTvlErc4626(api, vaults.euler)
+  if (vaults.eulerVaultOwners) {
+    allVaults.euler = allVaults.euler.concat(await getEulerVaults(api, vaults.eulerVaultOwners))
   }
+
+  await getCuratorTvlErc4626(api, allVaults.morpho) 
+  await getCuratorTvlErc4626(api, allVaults.euler)
+
+  // aera.finance vaults
   if (vaults.aera) {
     await getCuratorTvlAeraVault(api, vaults.aera)
   }
