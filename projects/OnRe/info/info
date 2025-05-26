@@ -1,0 +1,19 @@
+Name (to be shown on DefiLlama): OnRe
+Twitter Link: https://x.com/@onrefinance
+List of audit links if any: TODO
+Website Link: https://www.onre.finance/
+Logo (High resolution, will be shown with rounded borders):
+Current TVL: 1.1M USDC
+Treasury Addresses (if the protocol has treasury)
+Chain: Solana
+Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): TODO
+Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): TODO
+Short Description (to be shown on DefiLlama):  Connecting on-chain capital to real-world reinsurance risk — unlocking stable, uncorrelated returns that are liquid, composable and accessible for the first time.
+Token address and ticker if any: 5Y8NV33Vv7WbnLfq3zBcKSdYPrk7g2KoiQoe7M2tcxp5, ONe
+Category: RWA
+Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): internal oracle
+Implementation Details: Briefly describe how the oracle is integrated into your project: Observing off chain data of an internal system, which tells us the amount and price of the underlying assets.
+Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage: https://onre-api-dev.ew.r.appspot.com/offers
+forkedFrom (Does your project originate from another project): No
+methodology (what is being counted as tvl, how is tvl being calculated): TVL is calculated as the circulating ONe token supply (total supply minus protocol-held tokens) multiplied by the lowest current offer price, converted to USDC.
+Github org/user (Optional, if your code is open source, we can track activity): onre-finance
