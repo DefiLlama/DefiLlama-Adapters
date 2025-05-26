@@ -98,12 +98,6 @@ async function getCuratorTvl(api, vaults) {
     }
   }
 
-  console.log({
-    chain: api.chain,
-    morpho: vaults.morpho,
-    euler: vaults.euler,
-  })
-
   if (vaults.morpho) {
     await getCuratorTvlErc4626(api, vaults.morpho) 
   }
