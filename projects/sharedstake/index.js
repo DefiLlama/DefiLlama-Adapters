@@ -20,6 +20,6 @@ module.exports = {
     staking: staking(sgtStakingPool, sgt)
   },
   hallmarks: [
-    [Math.floor(new Date('2023-09-01')/1e3), 'Protocol was hacked for 102 ETH'],
+    ['2023-09-01', 'Protocol was hacked for 102 ETH'],
   ],
 }
