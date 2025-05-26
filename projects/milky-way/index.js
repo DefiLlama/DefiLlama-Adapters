@@ -40,7 +40,7 @@ async function milkBabyTVL(api) {
   api.add(token, data.total_native_token)
 }
 
-//  milkyway-rollup does not appear to be queryable
+//  milkyway_rollup does not appear to be queryable
 // async function milkINITTVL(api) {
 //   const data = await queryContract({ contract: consts.MILKINIT_CONTRACT, chain: api.chain, data: { state: {} } });
 //   const {batches} = await queryContract({ contract: consts.MILKINIT_CONTRACT, chain: api.chain, data: { batches: {} } });
@@ -59,7 +59,7 @@ module.exports = {
   milkyway: {
     tvl: milkBabyTVL,
   },
-  // 'milkyway-rollup': {
+  // 'milkyway_rollup': {
   //   tvl: milkINITTVL,
   // }
 } //  node test.js projects/milky-way/index.js
