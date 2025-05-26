@@ -4,8 +4,8 @@ const configs = {
   methodology: 'Count all assets are depoisted in all vaults curated by Hyperithm.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0x777791C4d6DC2CE140D00D2828a7C93503c67777',
+      morphoVaultOwners: [
+        '0x16fa314141C76D4a0675f5e8e3CCBE4E0fA22C7c',
       ],
     },
   }
