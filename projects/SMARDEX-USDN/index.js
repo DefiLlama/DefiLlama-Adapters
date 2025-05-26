@@ -28,6 +28,6 @@ const getEthereumTVL = async (api, block, chainBlocks) => {
 };
 
 module.exports["ethereum"] = {
-  timetravel: false,
+  timetravel: true,
   tvl: getEthereumTVL
 };
