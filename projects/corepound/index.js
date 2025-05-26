@@ -2,6 +2,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const aggregator = "0xF822226491a93046DA650ecb4049E43386497C7D";
 const solvBtcMFarmAddress = "0x915Be1EC1153F3Eaef16629fE7fb532b777159AC"
+const solvBtcCoreFarmAddress = "0x6b0365A2217A5Ad90bF220e1Cd4F62d29736ED1D"
 const projectToken = "0x56663F56333717A32Cd91ec41182d6d76D98864e";
 
 const abis = {
@@ -9,7 +10,7 @@ const abis = {
 }
 
 async function tvl(api) {
-  const pools = (await api.multiCall({ calls: [aggregator, solvBtcMFarmAddress], abi: abis.getTotalTvl })).flat()
+  const pools = (await api.multiCall({ calls: [aggregator, solvBtcMFarmAddress, solvBtcCoreFarmAddress], abi: abis.getTotalTvl })).flat()
   pools.forEach(({ assets, tvl }) => { api.add(assets, tvl) })
   await sumTokens2({ api, resolveLP: true })
   api.removeTokenBalance(projectToken)
