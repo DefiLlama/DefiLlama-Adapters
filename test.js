@@ -149,7 +149,7 @@ function validateHallmarks(hallmark) {
     try {
       const res = await getBlocks(unixTimestamp, chains)
       chainBlocks = res.chainBlocks
-    } catch(e) {}
+    } catch(e) { /* ignore empty block statement */}
   }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
