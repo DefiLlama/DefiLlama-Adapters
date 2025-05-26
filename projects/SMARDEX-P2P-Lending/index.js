@@ -25,7 +25,7 @@ const getTokenMetrics = async () => {
   return result?.data?.tokenMetrics_collection || [];
 };
 
-async function getData(isBorrowed = false) {
+async function getP2pData(isBorrowed = false) {
   const tokenMetrics = await getTokenMetrics();
 
   return tokenMetrics.reduce((acc, token) => {
@@ -42,8 +42,8 @@ async function getData(isBorrowed = false) {
 
 module.exports = {
   ethereum: {
-    tvl: () => getData(),
-    borrowed: () => getData(true),
+    tvl: () => getP2pData(),
+    borrowed: () => getP2pData(true),
   },
 };
 // node test.js projects/p2p-lending/index.js

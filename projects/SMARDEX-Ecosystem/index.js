@@ -46,7 +46,7 @@ const getEthereumTVL = async (api, block, chainBlocks) => {
   api.addBalances(uniTVL);
   api.add(WSTETH_TOKEN_ADDRESS, Object.values(usdnData));
 
-  const subgraphTVL = await getData();
+  const subgraphTVL = await getP2pData();
   for (const [token, value] of Object.entries(subgraphTVL)) {
     api.add(token, value);
   }
@@ -72,7 +72,7 @@ const getTokenMetrics = async () => {
   return result?.data?.tokenMetrics_collection || [];
 };
 
-async function getData(isBorrowed = false) {
+async function getP2pData(isBorrowed = false) {
   const tokenMetrics = await getTokenMetrics();
   return tokenMetrics.reduce((acc, token) => {
     const totalBorrowedAmount = parseFloat(token.totalBorrowedAmount || 0);
@@ -99,5 +99,5 @@ module.exports.ethereum = {
     ],
     "0x5de8ab7e27f6e7a1fff3e5b337584aa43961beef"
   ),
-  borrowed: async () => getData(true),
+  borrowed: async () => getP2pData(true),
 };
