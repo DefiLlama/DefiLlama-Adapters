@@ -1,5 +1,8 @@
 const { getCuratorExport } = require("../helper/curators");
 
+// we config vault addresses, we don't use vault owner addresses like other curators
+// because RelendNetwork co-curator with B Protocol on some vaults
+// these vault owners are B Protocol addresses, so we can't use the vault owner configs
 const configs = {
   methodology: 'Count all assets are depoisted in all vaults curated by Relend Network.',
   blockchains: {

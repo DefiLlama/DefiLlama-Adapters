@@ -4,8 +4,8 @@ const configs = {
   methodology: 'Count all assets are depoisted in all vaults curated by Llama Risk.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0x67315dd969B8Cd3a3520C245837Bf71f54579C75',
+      morphoVaultOwners: [
+        '0x0FB44352bcfe4c5A53a64Dd0faD9a41184A1D609',
       ],
     },
   }
