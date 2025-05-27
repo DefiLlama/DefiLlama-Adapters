@@ -2,7 +2,8 @@ const { function_view } = require("../helper/chain/aptos");
 const { compoundExports2 } = require("../helper/compound")
 const { mergeExports } = require("../helper/utils")
 
-const config = {
+/* LayerBank V2 */
+const v2Config = {
   linea: '0x009a0b7C38B542208936F1179151CD08E2943833',
   scroll: '0xEC53c830f4444a8A56455c6836b5D2aA794289Aa',
   manta: '0xB7A23Fc0b066051dE58B922dC1a08f33DF748bbf',
@@ -24,6 +25,17 @@ const abis = {
   totalBorrows: "uint256:totalBorrow",
 }
 
+Object.keys(v2Config).forEach(chain => {
+  const comptroller = v2Config[chain]
+  module.exports[chain] = compoundExports2({ comptroller, abis, })
+})
+
+module.exports = mergeExports([module.exports, {
+  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, }),
+}])
+
+/* LayerBank Move */
+
 // LayerBank pool contract address
 const LAYERBANK_POOL_CONTRACT = "0xf257d40859456809be19dfee7f4c55c4d033680096aeeb4228b7a15749ab68ea";
 
@@ -41,19 +53,6 @@ async function fetchPoolData() {
     return [[], {}]; // Return default value in case of error
   }
 }
-
-async function fetchPoolList() {
-  const poolList = await function_view({
-    functionStr: `${LAYERBANK_POOL_CONTRACT}::ui_pool_data_provider_v3::get_reserves_list`,
-    chain: "move"
-  });
-  return poolList;
-}
-
-Object.keys(config).forEach(chain => {
-  const comptroller = config[chain]
-  module.exports[chain] = compoundExports2({ comptroller, abis, })
-})
 
 module.exports.move = {
   tvl: async (api) => {
@@ -78,7 +77,44 @@ module.exports.move = {
   }
 };
 
-module.exports = mergeExports([module.exports, {
-  linea: compoundExports2({ comptroller: '0x43Eac5BFEa14531B8DE0B334E123eA98325de866', abis, }),
-}])
+/* LayerBank V3 */
 
+const v3Abi = {
+  getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
+  getAllReservesTokens: "function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])",
+  getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+};
+
+const v3Config = {
+  plume_mainnet: [`0xF9642C3B35Cd4Ccd55D22Fb2B35fcc31c5E0B62E`],
+};
+
+const fetchReserveData = async (api, poolDatas, isBorrowed) => {
+  const reserveTokens = await api.multiCall({ calls: poolDatas, abi: v3Abi.getAllReservesTokens });
+  const calls = []
+
+  poolDatas.map((pool, i) => {
+    reserveTokens[i].forEach(({ tokenAddress }) => calls.push({ target: pool, params: tokenAddress }));
+  });
+  const reserveData = await api.multiCall({ abi: isBorrowed ? v3Abi.getReserveData : v3Abi.getReserveTokensAddresses, calls, })
+  const tokensAndOwners = []
+  reserveData.forEach((data, i) => {
+    const token = calls[i].params
+    if (isBorrowed) {
+      api.add(token, data.totalVariableDebt)
+      api.add(token, data.totalStableDebt)
+    } else
+      tokensAndOwners.push([token, data.aTokenAddress])
+  })
+
+  if (isBorrowed) return api.getBalances()
+  return api.sumTokens({ tokensAndOwners })
+}
+
+Object.keys(v3Config).forEach((chain) => {
+  const poolDatas = v3Config[chain];
+  module.exports[chain] = {
+    tvl: (api) => fetchReserveData(api, poolDatas),
+    borrowed: (api) => fetchReserveData(api, poolDatas, true),
+  };
+});
