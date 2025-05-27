@@ -4,7 +4,7 @@ const { getCuratorExport } = require("../helper/curators");
 // because BlockAnalitica co-curator with B Protocol on some vaults
 // these vault owners are B Protocol addresses, so we can't use the vault owner configs
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by Block Analitica.',
+  methodology: 'Count all assets are deposited in all vaults curated by Block Analitica.',
   blockchains: {
     ethereum: {
       morpho: [

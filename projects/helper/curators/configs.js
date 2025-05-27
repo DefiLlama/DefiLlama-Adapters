@@ -59,6 +59,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  corn: {
+    vaultFactories: [
+      {
+        address: '0xe430821595602eA5DD0cD350f86987437c7362fA',
+        fromBlock: 253027,
+      },
+    ],
+  },
 }
 
 const EulerConfigs = {
