@@ -1,7 +1,7 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by B protocol.',
+  methodology: 'Count all assets are deposited in all vaults curated by B protocol.',
   blockchains: {
     ethereum: {
       morphoVaultOwners: [

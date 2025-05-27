@@ -1,7 +1,7 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by K3 Capital.',
+  methodology: 'Count all assets are deposited in all vaults curated by K3 Capital.',
   blockchains: {
     bsc: {
       eulerVaultOwners: [
