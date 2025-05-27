@@ -10,7 +10,6 @@ const abi = {
   
   const fetchReserveData = async (api, poolDatas, isBorrowed) => {
     const reserveTokens = await api.multiCall({ calls: poolDatas, abi: abi.getAllReservesTokens });
-    console.log("reserveTokens:", reserveTokens)  // 檢查獲取的代幣列表
     
     const calls = []
   

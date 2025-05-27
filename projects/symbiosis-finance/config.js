@@ -333,7 +333,7 @@ module.exports = {
       name: 'fraxtal',
       tokens: [
         '0xA8a59D73388D0c4344a7b0Ba287ddb654227c38a', // WETH,
-        '0xFc00000000000000000000000000000000000001', // FRAX
+        '0xFc00000000000000000000000000000000000001', // frxUSD
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
@@ -448,6 +448,15 @@ module.exports = {
       name: 'soneium',
       tokens: [
         '0x4200000000000000000000000000000000000006', // WETH
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
+      ]
+    },
+    {
+      name: 'op_bnb',
+      tokens: [
+        '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea', // WETH
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal

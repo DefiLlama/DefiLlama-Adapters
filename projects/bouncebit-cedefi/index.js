@@ -11,7 +11,7 @@ const config = {
   },
   bsc: {
     subgraphUrl: 'https://api.studio.thegraph.com/query/96517/bb-defillama-bsc/v0.0.2',
-    subgraphUrl2: 'https://api.studio.thegraph.com/query/96517/bb-vip-defillama-bsc/v0.0.1'
+    subgraphUrlVip: 'https://api.studio.thegraph.com/query/96517/bb-vip-defillama-bsc/v0.0.2'
   },
   bouncebit: {
     main: { url: 'https://bitswap-subgraph.bouncebit.io/subgraphs/name/bb-defillama-bb' },
@@ -33,8 +33,8 @@ const TOKEN_MAPPINGS = {
   '0x7f150c293c97172c75983bd8ac084c187107ea19': '0xf5e11df1ebcf78b6b6d26e04ff19cd786a1e81dc', // stBBTC -> bbtc
 }
 
-async function fetchTokens(chain, subgraphUrl) {
-  const prefix = chain === 'bouncebit' ? `bouncebit-cedefi${subgraphUrl.includes('boyya') ? '-boyya' : ''}` : 'bouncebit-cedefi'
+async function fetchTokens(chain, subgraphUrl, cacheKey = '') {
+  const prefix = `bouncebit-cedefi${cacheKey}`
   return cachedGraphQuery(`${prefix}/${chain}`, subgraphUrl, query)
 }
 
@@ -48,12 +48,12 @@ async function cedefiTvl(api) {
     chain === 'bouncebit'
       ? [
           fetchTokens(chain, config[chain].main.url),
-          fetchTokens(chain, config[chain].boyya.url)
+          fetchTokens(chain, config[chain].boyya.url, '-boyya')
         ]
       : chain === 'bsc'
       ? [
           fetchTokens(chain, config[chain].subgraphUrl),
-          fetchTokens(chain, config[chain].subgraphUrl2)
+          fetchTokens(chain, config[chain].subgraphUrlVip, '-vip')
         ]
       : [fetchTokens(chain, config[chain].subgraphUrl)]
   )
