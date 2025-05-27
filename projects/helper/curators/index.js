@@ -33,26 +33,28 @@ async function getEulerVaults(api, owners) {
       abi: ABI.euler.getProxyListLength,
       target: factory,
     });
-    const lists = []
-    for (let i = 0; i < Number(getProxyListLength); i++) {
-      lists.push(i);
-    }
-    const proxyAddresses = await api.multiCall({
-      abi: ABI.euler.proxyList,
-      calls: lists.map(index => {
-        return {
-          target: factory,
-          params: [index],
+    if (getProxyListLength) {
+      const lists = []
+      for (let i = 0; i < Number(getProxyListLength); i++) {
+        lists.push(i);
+      }
+      const proxyAddresses = await api.multiCall({
+        abi: ABI.euler.proxyList,
+        calls: lists.map(index => {
+          return {
+            target: factory,
+            params: [index],
+          }
+        }),
+      })
+      const proxyCreators = await api.multiCall({
+        abi: ABI.euler.creator,
+        calls: proxyAddresses,
+      });
+      for (let i = 0; i < proxyAddresses.length; i++) {
+        if (isOwner(proxyCreators[i], owners)) {
+          allVaults.push(proxyAddresses[i])
         }
-      }),
-    })
-    const proxyCreators = await api.multiCall({
-      abi: ABI.euler.creator,
-      calls: proxyAddresses,
-    });
-    for (let i = 0; i < proxyAddresses.length; i++) {
-      if (isOwner(proxyCreators[i], owners)) {
-        allVaults.push(proxyAddresses[i])
       }
     }
   }
