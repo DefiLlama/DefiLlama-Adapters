@@ -108,13 +108,13 @@ query termVaultStrategiesQuery($lastId: ID) {
 const graphStartBlock = {
   ethereum: 5240462,
   avax: 43162227,
-  base: 30573590,
+  base: 30797402,
 }
 
 const vaultsGraphStartBlock = {
   ethereum: 21433264,
   avax: 54438973,
-  base: 30573590,
+  base: 30797402,
 }
 
 module.exports = {
