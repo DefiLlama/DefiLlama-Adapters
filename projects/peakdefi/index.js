@@ -25,7 +25,7 @@ async function tvl(api) {
 module.exports = {
   start: '2020-12-08',        // Dec-08-2020 05:25:52 PM +UTC
   bsc: {
-    staking: staking(stakingContracts.bsc, peakAddress, "bsc", peakAddress),
+    staking: staking(stakingContracts.bsc, peakAddress),
   },
   ethereum: {
     staking: staking(stakingContracts.ethereum, peakAddress),
