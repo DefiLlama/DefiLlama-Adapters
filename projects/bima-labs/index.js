@@ -1,85 +1,94 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { addressZero } = require("../bent/constants");
+const { getLogs } = require("../helper/cache/getLogs");
 
 const config = {
-  ethereum: { factory: '0xc5790164d3CCB6533b241EeE3Fd7f56862759376', fromBlock: 22095715, },
-  hemi: { factory: '0xc5790164d3CCB6533b241EeE3Fd7f56862759376', fromBlock: 1391406, },
-  core: { factory: '0xc5790164d3CCB6533b241EeE3Fd7f56862759376', fromBlock: 23086081, },
-  sonic: { factory: '0xc5790164d3CCB6533b241EeE3Fd7f56862759376', fromBlock: 23769061, },
-  plume: { factory: '0xc5790164d3CCB6533b241EeE3Fd7f56862759376', fromBlock: 1219008, },
-  goat: { factory: '0xc5790164d3CCB6533b241EeE3Fd7f56862759376', fromBlock: 3742120, },
-}
+  ethereum: {
+    factory: "0xc5790164d3CCB6533b241EeE3Fd7f56862759376",
+    wrapperFactory: "0x76De9B5Df6dCAA70f88E4E0949E17367c4129Dbf",
+    fromBlock: 22095715,
+    psmList: [
+      "0xEA811C2C400EE846E352D45C849657D920A888fe",
+      "0x97bb3167A88FE34B1EC6d7F02560c4F0aa6009E9",
+      "0x42Ad6834a6599a0B7a7812F01f8092B580523d67",
+      "0x705fd2306bf6E4dec47bF8Aaab378B04024792d4",
+    ],
+  },
+  hemi: {
+    factory: "0xc5790164d3CCB6533b241EeE3Fd7f56862759376",
+    wrapperFactory: "0x76De9B5Df6dCAA70f88E4E0949E17367c4129Dbf",
+    fromBlock: 1391406,
+    psmList: [],
+  },
+  core: {
+    factory: "0xc5790164d3CCB6533b241EeE3Fd7f56862759376",
+    wrapperFactory: "0x76De9B5Df6dCAA70f88E4E0949E17367c4129Dbf",
+    fromBlock: 23086081,
+    psmList: [],
+  },
+  sonic: {
+    factory: "0xc5790164d3CCB6533b241EeE3Fd7f56862759376",
+    wrapperFactory: "0x76De9B5Df6dCAA70f88E4E0949E17367c4129Dbf",
+    fromBlock: 23769061,
+    psmList: [],
+  },
+  plume_mainnet: {
+    factory: "0xc5790164d3CCB6533b241EeE3Fd7f56862759376",
+    wrapperFactory: "0x76De9B5Df6dCAA70f88E4E0949E17367c4129Dbf",
+    fromBlock: 1219008,
+    psmList: [],
+  },
+  goat: {
+    factory: "0xc5790164d3CCB6533b241EeE3Fd7f56862759376",
+    wrapperFactory: "0x76De9B5Df6dCAA70f88E4E0949E17367c4129Dbf",
+    fromBlock: 3742120,
+    psmList: [],
+  },
+  bsc: {
+    factory: "0xc5790164d3CCB6533b241EeE3Fd7f56862759376",
+    wrapperFactory: "0x76De9B5Df6dCAA70f88E4E0949E17367c4129Dbf",
+    fromBlock: 50108286,
+    psmList: [],
+  },
+};
 
-
-// Wrapper configuration for each chain
-// This maps the wrapper address to the original asset address
-const wrapper = {
-  ethereum:[
-    {
-      wrapper:'0x59063FBE70d3B0F9312e5c89acDc476f5d2018e1',
-      originalAsset:'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
-    },
-    {
-      wrapper:'0xdc0CcAd18ca645A03870676C78a81524B4655197',
-      originalAsset:'0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf'
-    }
-  ],
-  hemi:[
-    {
-      wrapper:'0xdc0CcAd18ca645A03870676C78a81524B4655197',
-      originalAsset:'0xAA40c0c7644e0b2B224509571e10ad20d9C4ef28'
-    },
-    {
-      wrapper:'0x59063FBE70d3B0F9312e5c89acDc476f5d2018e1',
-      originalAsset:'0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3'
-    },
-  ],
-  core:[],
-  sonic:[
-    {
-      wrapper:'0x59063FBE70d3B0F9312e5c89acDc476f5d2018e1',
-      originalAsset:'0xecAc9C5F704e954931349Da37F60E39f515c11c1'
-    }
-  ],
-  plume:[
-    {
-      wrapper:'0x59063FBE70d3B0F9312e5c89acDc476f5d2018e1',
-      originalAsset:'0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a'
-    }
-  ],
-  goat:[],
-
-}
-
-Object.keys(config).forEach(chain => {
-  const { factory, fromBlock, } = config[chain]
+Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
     tvl: async (api) => {
       const logs = await getLogs({
         api,
-        target: factory,
-        eventAbi: 'event NewDeployment (address collateral, address priceFeed, address troveManager, address sortedTroves)',
+        target: config[chain].factory,
+        eventAbi:
+          "event NewDeployment (address collateral, address priceFeed, address troveManager, address sortedTroves)",
         onlyArgs: true,
-        fromBlock,
+        fromBlock: config[chain].fromBlock,
       });
 
-      const wrappedConfigForChain = wrapper[chain] || [];
-      
-      // Map logs to tokensAndOwners, replacing collateral with wrapper if found
-      const tokensAndOwners = logs.map(log => {
-        // Find if the current log.collateral exists in the wrappedConfigForChain
-        const wrappedAssetInfo = wrappedConfigForChain.find(
-          w => w.wrapper.toLowerCase() === log.collateral.toLowerCase()
-        );
+      const tokensAndOwners = [];
 
-        // If found, use the wrapper address, otherwise use the original collateral
-        if (wrappedAssetInfo) {
-          return [wrappedAssetInfo.originalAsset, wrappedAssetInfo.wrapper];
-        }else{
-         return [log.collateral, log.troveManager]; 
+      for (const log of logs) {
+        const underlyingCollateral = await api.call({
+          abi: "function wrappedCollToColl(address wrapped) view returns (address)",
+          target: config[chain].wrapperFactory,
+          params: [log.collateral],
+        });
+
+        if (underlyingCollateral === addressZero) {
+          tokensAndOwners.push([log.collateral, log.troveManager]);
+        } else {
+          tokensAndOwners.push([underlyingCollateral, log.collateral]);
         }
-      });
-      
+      }
+
+      for (const psm of config[chain].psmList) {
+        const underlyingToken = await api.call({
+          abi: "function underlying() view returns (address)",
+          target: psm,
+        });
+
+        tokensAndOwners.push([underlyingToken, psm]);
+      }
+
       return api.sumTokens({ tokensAndOwners });
-    }
-  }
-})
+    },
+  };
+});
