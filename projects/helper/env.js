@@ -13,7 +13,6 @@ const DEFAULTS = {
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
-  // SUI_RPC: 'https://sui-mainnet.g.allthatnode.com/full/json_rpc/9c64c4d19bee4e338f68f47969c54da0',
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
