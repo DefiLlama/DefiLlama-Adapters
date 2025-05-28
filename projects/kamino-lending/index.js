@@ -1,5 +1,5 @@
 const { PublicKey } = require('@solana/web3.js');
-const { getConnection, sumTokens } = require('../helper/solana');
+const { getConnection, sumTokens2 } = require('../helper/solana');
 const { Program } = require('@project-serum/anchor');
 const kaminoIdl = require('./kamino-lending-idl.json');
 const { MintLayout } = require("../helper/utils/solana/layouts/mixed-layout");
@@ -37,7 +37,7 @@ async function tvl() {
       }
     }
   }
-  return sumTokens(tokensAndOwners)
+  return sumTokens2({ tokensAndOwners })
 }
 
 async function isKToken(mint, connection) {

@@ -22,6 +22,5 @@ module.exports = {
     tvl: () => ({}),
     staking,
   },
-  start: 25647232,
   methodology: "Counts as TVL the CSIX deposited through Staking Contract",
 };

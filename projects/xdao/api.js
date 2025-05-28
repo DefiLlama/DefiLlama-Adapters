@@ -6,6 +6,6 @@ module.exports = {
   timetravel: false,
   ...getExports("xdao", chainKeys),
   hallmarks: [
-    [Math.floor(new Date('2022-10-24')/1e3), 'Remove governance tokens from tvl'],
+    ['2022-10-24', 'Remove governance tokens from tvl'],
   ],
 }

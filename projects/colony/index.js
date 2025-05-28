@@ -29,7 +29,6 @@ function _tvl() {
 
   const colonyDexTVL = getUniTVL({
     factory: colonyDexFactory,
-    fetchBalances: true,
     useDefaultCoreAssets: true
   })
 
@@ -47,7 +46,7 @@ module.exports = {
     "TVL also includes rewards in various tokens distributed in the staking contract, " +
     "actual fundraised stablecoins in projects (Nests), and liquidity from Colony Dex.",
   avax: {
-    start: 1638367059, // CLY Token deployment
+    start: '2021-12-01', // CLY Token deployment
     tvl: _tvl(),
     staking: _staking,
     // vesting: clyVesting(colonyGovernanceToken, vestingContract),
@@ -56,6 +55,7 @@ module.exports = {
   hallmarks: [
       [1651241728, "Staking V2 Launch"],
       [1711370069, "Staking V3 Launch"],
-      [1715688000, "EarlyStage Launch"]
+      [1715688000, "EarlyStage Launch"],
+      [1719792000, "Liquid Vesting DEX Launch"]
   ],
 };

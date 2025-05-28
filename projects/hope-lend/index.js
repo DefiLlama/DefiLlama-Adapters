@@ -7,8 +7,9 @@ module.exports = {
     }
   }),
   hallmarks: [
-    [Math.floor(new Date('2023-10-18')/1e3), 'Protocol was hacked!'],
+    ['2023-10-18', 'Protocol was hacked!'],
   ],
+  deadFrom: '2023-10-18'
 };
 
 delete module.exports.ethereum.borrowed

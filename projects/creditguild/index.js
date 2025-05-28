@@ -12,7 +12,6 @@ Object.keys(config).forEach(chain => {
       const owners = [...PSMs]
 
       const logs = await getLogs2({
-        skipCacheRead: true,
         api,
         factory,
         eventAbi: 'event TermCreated(uint256 indexed when, uint256 indexed gaugeType, address indexed term, bytes params)',

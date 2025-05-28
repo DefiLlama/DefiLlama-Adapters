@@ -13,6 +13,10 @@ const config = {
 
 module.exports = {
   methodology: "We count of smart contract balance in coins",
+  deadFrom: "2024-09-11", 
+  hallmarks: [
+    ['2024-09-11', 'Closed due to lack of interest'],
+  ],
 }
 
 Object.keys(config).forEach(chain => {

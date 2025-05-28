@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { queryV1Beta1 } = require("../helper/chain/cosmos");
 const sdk = require("@defillama/sdk");
 
@@ -5,7 +6,7 @@ async function tvl() {
   const data = await queryV1Beta1({ chain: 'cronos', url: '/staking/v1beta1/delegations/cro1klkxkl2c59m5dcw4w0683ctfaxklsy9py26jg3', })
   let total = data.delegation_responses.reduce((a, i) => a += +i.balance.amount, 0)
   const balances = {}
-  sdk.util.sumSingleBalance(balances, 'cronos:0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23', total * 1e10)
+  sdk.util.sumSingleBalance(balances, 'cronos:' + ADDRESSES.cronos.WCRO_1, total * 1e10)
   return balances
 }
 
