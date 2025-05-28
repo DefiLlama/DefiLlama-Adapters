@@ -76,6 +76,7 @@ async function computeXSTRKStratTVL(api) {
     })),
     abi: { ...endurABIMap.preview_redeem, customInput: 'address' }
   });  
+  console.log({price})
   let xstrk_price = Number(price[0]) / 10**18 // Assuming `price` is returned as a BigInt array
 
   const data = await multiCall({
@@ -86,10 +87,14 @@ async function computeXSTRKStratTVL(api) {
     abi: {...SINGLETONabiMap.position, customInput: 'address'},
   });
 
+  console.log({data})
+
   let collateral = Number(data[0]['2']);
   let debt = Number(data[0]['3']);
 
+  console.log({collateral, debt, xstrk_price})
   let tvl = (collateral * xstrk_price) - debt;
+  if (tvl < 0) throw new Error("Negative TVL detected, check the xSTRK strategy logic");
   
   api.addTokens(contracts[0].token, [tvl]);
 }
