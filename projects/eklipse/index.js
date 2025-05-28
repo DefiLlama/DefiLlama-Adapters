@@ -81,7 +81,9 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 
   const data = (await sdk.api.erc20.balanceOf({ target: EKL_TOKEN, owner: STAKING_ADDRESS, block, chain, })).output
   const value = BigNumber(data).multipliedBy(await getElkPrice()).toFixed(0)
-  return toUSDTBalances(value, 1e-12)
+  return {
+    [ADDRESSES.klaytn.USDT]: BigNumber(value).times(1e-12).toFixed(0),
+  }
 }
 
 

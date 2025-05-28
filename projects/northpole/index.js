@@ -16,7 +16,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   })).output.map(t => t.output);
 
   return {
-    [ADDRESSES.ethereum.USDT]: Number(tvl) / 10 ** 12
+    [`avax:${ADDRESSES.avax.USDt}`]: Number(tvl) / 10 ** 12
   }
 }
 

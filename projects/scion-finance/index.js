@@ -17,8 +17,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
       target: ADDRESS,
       block,
     });
-
-    sdk.util.sumSingleBalance(balances, UNDERLYING, totalHoldings.output);
+    sdk.util.sumSingleBalance(balances, UNDERLYING, totalHoldings.output, chain);
   }
 
   return balances;
@@ -33,7 +32,7 @@ async function fantom(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-      methodology: "Measures the total value deposited in Scion vault contracts",
+  methodology: "Measures the total value deposited in Scion vault contracts",
   moonriver: {
     tvl: moonriver,
   },

@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const BigNumber = require("bignumber.js");
 const abi = require("./abis.json");
 const { staking } = require("../helper/staking");
-const { toUSDTBalances } = require("../helper/balances");
 
 const account = ADDRESSES.null;
 const token = "0x4148d2Ce7816F0AE378d98b40eB3A7211E1fcF0D";
@@ -15,7 +15,9 @@ const tvl = async (api) => {
     target: stats,
     params: [account],
   })
-  return toUSDTBalances(tvl / 1e18);
+  return {
+    [ADDRESSES.aurora.USDC]: BigNumber(tvl).div(1e12).toFixed(0),
+  };
 };
 
 module.exports = {
