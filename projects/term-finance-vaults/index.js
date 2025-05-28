@@ -6,7 +6,7 @@ const vaultsGraphs = {
   avax:
     "https://api.mainnet.termfinance.io/avalanche/subgraph/vaults",
   base:
-    "https://api.base.termfinance.io/base/subgraph/vaults",
+    "https://api.mainnet.termfinance.io/base/subgraph/vaults",
 }
 
 const termVaultStrategiesQuery = `
