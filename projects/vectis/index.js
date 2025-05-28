@@ -38,7 +38,7 @@ async function tvl(api) {
 
   // Get all vault accounts first
   const accounts = await getMultipleAccounts(vaultUserAddresses)
-  const deserializedData = accounts.map(deserializeUserPositions)
+  const deserializedData = accounts.filter((accountInfo) => !!accountInfo).map(deserializeUserPositions)
 
   // Collect unique market indices upfront
   const allSpotIndices = new Set()

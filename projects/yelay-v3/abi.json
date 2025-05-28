@@ -1,0 +1,4 @@
+{
+    "underlyingAsset": "function underlyingAsset() external view returns (address)",
+    "totalAssets": "function totalAssets() external view returns (uint256)"
+}

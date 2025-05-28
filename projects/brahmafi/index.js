@@ -61,6 +61,6 @@ module.exports = {
     tvl: polygonTvl,
   },
   hallmarks: [
-    [Math.floor(new Date('2023-03-28')/1e3), "Brahma vaults discontinued, Brahma Console announced [not tracked here]"],
+    ['2023-03-28', "Brahma vaults discontinued, Brahma Console announced [not tracked here]"],
   ],
 };

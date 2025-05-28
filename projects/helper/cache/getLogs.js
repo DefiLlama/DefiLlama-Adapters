@@ -15,8 +15,13 @@ async function getLogs({ target,
     toBlock = 1e11
   else
     await api.getBlock()
+
   const block = api.block
   const chain = api.chain ?? 'ethereum'
+
+  if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
+
+
   if (!toBlock) toBlock = block
   if (!toBlock) throw new Error('Missing toBlock!')
 

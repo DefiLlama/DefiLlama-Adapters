@@ -28,8 +28,8 @@ module.exports = {
     ),
   },
   hallmarks: [
-    [Math.floor(new Date('2023-02-17') / 1e3), 'Protocol was hacked for $8.5m'],
-    [Math.floor(new Date('2023-10-12') / 1e3), 'Protocol was hacked for $2m'],
+    ['2023-02-17', 'Protocol was hacked for $8.5m'],
+    ['2023-10-12', 'Protocol was hacked for $2m'],
     [1716811215,"Acquired by Stable Jack"]
   ],
 };

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const tokens = [
@@ -14,7 +15,7 @@ const tokens = [
   "0xFf4299bCA0313C20A61dc5eD597739743BEf3f6d",
   "0xb5999795BE0eBb5BAb23144Aa5fD6a02d080299f",
   "0xc1411567D2670E24D9c4Daaa7CdA95686E1250Aa",
-  "0xEf213441a85DF4d7acBdAe0Cf78004E1e486BB96",
+  ADDRESSES.rsk.rUSDT,
   "0xE700691Da7B9851F2F35f8b8182C69C53ccad9DB",
 ]
 

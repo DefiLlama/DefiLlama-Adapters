@@ -119,6 +119,9 @@ const navi_sLP_ID =
 const navi_stSUI_sLP_ID =
   "0xd3f6b8f3c92d8f967f7e177e836770421e351b419ffe074ce57911365b4ede56";
 
+const navi_sbWBTC_LP_ID =
+  "0x208628e8800828b272dfc4cf40ef98e1ba137f65d26a28961176a1718c2bdb4c";
+
 const scallop_sUSDC_LP_ID =
   "0x7b16192d63e6fa111b0dac03f99c5ff965205455089f846804c10b10be55983c";
 
@@ -355,6 +358,9 @@ async function tvl(api) {
     snavistSUILPAmount
   );
 
+  const snavisbWBTCLPAmount = await getStakingLPAmount(navi_sbWBTC_LP_ID);
+  api.add(ADDRESSES.sui.WBTC, snavisbWBTCLPAmount);
+
   const haSuiNaviPondAmount = await getStakingLPAmount(haSUI_Navi_Pond_ID);
   api.add(
     "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
@@ -387,6 +393,8 @@ async function tvl(api) {
 
   const naviFDUSD_LPAmount = await getNaviLPAmount(navi_fdUSD_LP_ID);
   api.add(FDUSD, naviFDUSD_LPAmount);
+
+  api.removeTokenBalance('0x622345b3f80ea5947567760eec7b9639d0582adcfd6ab9fccb85437aeda7c0d0::scallop_wal::SCALLOP_WAL')  // incorrect price, temporarily remove
 }
 
 module.exports = {
