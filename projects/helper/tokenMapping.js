@@ -81,6 +81,10 @@ const fixBalancesTokens = {
     '0x88f08e304ec4f90d644cec3fb69b8ad414acf884': { coingeckoId: 'usd-coin', decimals: 6, },
     '0xe5ecd226b3032910ceaa43ba92ee8232f8237553': { coingeckoId: 'ethereum', decimals: 18, },
     '0xb0588f9a9cade7cd5f194a5fe77acd6a58250f82': { coingeckoId: 'bonsai-token', decimals: 18, },
+  },
+  ethereum: {
+    '0xf53bb90bd20c2a3eb3eb01e8233130a69db58324': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    '0x7fd713fe57fcd0a7636c152faba6bdc2d3b27d15': { coingeckoId: 'coinbase-wrapped-btc', decimals: 18 },
   }
 }
 
