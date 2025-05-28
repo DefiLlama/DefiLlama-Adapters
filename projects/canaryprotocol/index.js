@@ -6,8 +6,8 @@ module.exports = {
 }
 
 const config = {
-  // TODO: update the smart contract address for plume_mainnet
   plume: { factory: '0xbe3c7Bbc504EA41c21D3810c340Cd15624a3cF59', fromBlock: 357721 },
+  plume_mainnet: { factory: '0x5584DC09B1E57628a1A32872fC689f99F02B0AA1', fromBlock: 43336 },
 }
 
 Object.keys(config).forEach(chain => {
@@ -20,3 +20,5 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports.plume.tvl = () => ({})

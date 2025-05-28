@@ -4,7 +4,7 @@ const { compoundExports2 } = require("../helper/compound");
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2023-06-17') / 1e3), 'Protocol was exploited for $600k'],
+    ['2023-06-17', 'Protocol was exploited for $600k'],
   ]
 }
 
