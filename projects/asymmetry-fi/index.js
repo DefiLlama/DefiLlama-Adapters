@@ -1,3 +1,5 @@
+const { getLiquityV2Tvl } = require('../helper/liquity')
+
 const ADDRESSES = require('../helper/coreAssets.json')
 
 // safETH
@@ -17,6 +19,9 @@ const AFCVX = '0x8668a15b7b023Dc77B372a740FCb8939E15257Cf'
 // veASF (for ASF staking)
 const veASF = '0xf119b5aa93a7755b09952b3a88d04cdaf5329034'
 const ASF_TOKEN = '0x59a529070fBb61e6D6c91f952CcB7f35c34Cf8Aa' // ASF token address
+
+// USDaf
+const USDAF_COLLATERAL_REGISTRY = '0xCFf0DcAb01563e5324ef9D0AdB0677d9C167d791'
 
 async function tvl(api) {
   const tokensAndOwners = [
@@ -46,6 +51,8 @@ async function tvl(api) {
   })
   api.add(CVX, afCVXAvailableCVX)
 
+  await getLiquityV2Tvl(USDAF_COLLATERAL_REGISTRY)(api)
+
   return api.sumTokens({ tokensAndOwners })
 }
 
@@ -60,7 +67,7 @@ async function staking(api) {
 
 module.exports = {
   methodology:
-    'TVL counts all assets in safETH, afETH, afCVX, and locked ASF in veASF. Staking includes just the locked ASF in veASF.',
+    'TVL counts all assets in safETH, afETH, afCVX, USDaf, and locked ASF in veASF. Staking includes just the locked ASF in veASF.',
   ethereum: {
     tvl,
     staking,
