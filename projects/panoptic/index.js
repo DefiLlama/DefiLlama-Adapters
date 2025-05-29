@@ -70,7 +70,7 @@ async function tvl(api) {
 
   await api.sumTokens({ ownerTokens })
 
-  const chunks = await cachedGraphQuery(`panoptic/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  const chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
   chunks.forEach(chunk => {
     const { token0, token1, tick, } = poolData[chunk.pool.id.toLowerCase()] ?? {}
     if (!tick) return;

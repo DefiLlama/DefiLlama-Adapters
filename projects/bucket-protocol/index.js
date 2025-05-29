@@ -393,6 +393,8 @@ async function tvl(api) {
 
   const naviFDUSD_LPAmount = await getNaviLPAmount(navi_fdUSD_LP_ID);
   api.add(FDUSD, naviFDUSD_LPAmount);
+
+  api.removeTokenBalance('0x622345b3f80ea5947567760eec7b9639d0582adcfd6ab9fccb85437aeda7c0d0::scallop_wal::SCALLOP_WAL')  // incorrect price, temporarily remove
 }
 
 module.exports = {
