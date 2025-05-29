@@ -12,5 +12,4 @@ async function tvl(api) {
 module.exports = {
   start: '2020-09-24',
   ethereum: { tvl },
-  doublecounted: true, // UMA(Uses Outcome-Finance Pool)
 }
