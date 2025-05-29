@@ -1,5 +1,6 @@
 const { staking } = require("../helper/staking")
 const { pool2 } = require("../helper/pool2")
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const VAULTS = {
   bsc: {
@@ -14,10 +15,17 @@ const VAULTS = {
 }
 
 async function tvl(api) {
+  const balances = {};
   const vaults = Object.values(VAULTS[api.chain])
   const bals  = await api.multiCall({  abi: 'uint256:getTotalDeposit', calls: vaults})
-  const usd = bals.reduce((acc, i) => acc + i.toString()/1e18, 0)
-  api.addUSDValue(usd)
+  let usd = 0
+  if(api.chain === 'bsc') {
+    usd = bals.reduce((acc, i) => Number(acc) + Number(i), 0)
+  } else {
+    usd = bals.reduce((acc, i) => Number(acc) + Number(i)/1e12, 0)
+  }
+  balances[`${api.chain}:${ADDRESSES[api.chain].USDT}`] = usd
+  return balances
 }
 
 module.exports = {

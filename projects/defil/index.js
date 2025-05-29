@@ -80,7 +80,6 @@ module.exports = {
             contracts.bsc.holders.DFL,
             contracts.bsc.tokens.DFL.address,
             'bsc',
-            contracts.ethereum.tokens.DFL.address
         ),
         pool2: pool2(
             contracts.bsc.pool2, 
