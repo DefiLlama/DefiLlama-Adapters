@@ -3,12 +3,10 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const addressBook = {
   polygon: {
-    usdc: ADDRESSES.polygon.USDC,
     native_usdc: ADDRESSES.polygon.USDC_CIRCLE,
-    aave_v3_usdc: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",  // aPolUSDC - AAVE USDC (Bridged)
     aave_v3_native_usdc: "0xA4D94019934D8333Ef880ABFFbF2FDd611C762BD",  // aPolUSDCn - AAVE USDC (Native)
-    compound_v3_usdc: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",  // Compound USDC
-    mountain_usdm: ADDRESSES.ethereum.USDM,  // Mountain USDM
+    compound_blue: "0x781FB7F6d845E3bE129289833b04d43Aa8558c42",  // Compound Blue compUSDC
+    msv: "0x14F6DFEE761455247C6bf2b2b052a1F6245dD6FB", // MultiStrategyVault (holds tokens besides native_usdc)
     reserves: [
       // eTokens
       {name: "eToken Junior Koala BMA", address: "0xBC33c283A37d46ABA17BC5F8C27b27242688DeC6"},
@@ -48,19 +46,30 @@ const addressBook = {
       {name: "PremiumsAccount Cliff Horizon", address: "0x72B74498a400EF16c669D8a23d19e672846a8dcF"},
       {name: "PremiumsAccount Rentennials", address: "0xf7ef82a521D6bD4B2cDAA3a1beB30Fb724930651"},
       // Main CFLs
-      {name: "CFL Spot", address: "0x48Ff8B1493c6A3545Aea3F0812f1303E2f958bF4"},
       {name: "Multi Target CFL", address: "0x6CaCea88486260ef7E6fdE39Bab3236C908D10B5"},
       // MultiStrategy Vault - Vault that aggregates assets of several reserves
-      {name: "MultiStrategy Vault V2", address: "0x14F6DFEE761455247C6bf2b2b052a1F6245dD6FB"},
+      // {name: "MultiStrategy Vault V2", address: "0x14F6DFEE761455247C6bf2b2b052a1F6245dD6FB"},
     ],
   }
 };
 
+async function unwrap4626Tokens({ api, tokensAndOwners, }) {
+  const tokens = tokensAndOwners.map(i => i[0])
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })), })
+  const assets = await api.multiCall({ abi: 'address:asset', calls: tokens, })
+  const balsInAssets = await api.multiCall({ abi: 'function convertToAssets(uint256) view returns (uint256)', calls: tokensAndOwners.map((i, idx) => ({ target: i[0], params: bals[idx] })), })
+  api.addTokens(assets, balsInAssets)
+  return api.getBalances()
+}
+
 async function tvl(api) {
   const addresses = addressBook[api.chain];
-  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.native_usdc, addresses.aave_v3_usdc, addresses.aave_v3_native_usdc, addresses.compound_v3_usdc, addresses.mountain_usdm], i.address])
-
-  return sumTokens2({ api, ownerTokens, });
+  // Most of the reserves can only have USDC
+  const ownerTokens = addresses.reserves.map(i => [[addresses.native_usdc], i.address])
+  // The MSV also has AAVE Native USDC and Compound Blue
+  ownerTokens.push([[addresses.native_usdc, addresses.aave_v3_native_usdc], addresses.msv]);
+  await unwrap4626Tokens({api, tokensAndOwners: [[addresses.compound_blue, addresses.msv]] });
+  return sumTokens2({ api, ownerTokens});
 }
 
 module.exports = {
