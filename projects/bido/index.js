@@ -9,7 +9,7 @@ async function btc(api) {
   });
 
   return {
-    [ADDRESSES.ethereum.WBTC]: (pooledBTC / 1e18) * 1e8,
+    [`ethereum:${ADDRESSES.ethereum.WBTC}`]: (pooledBTC / 1e18) * 1e8,
   };
 }
 
