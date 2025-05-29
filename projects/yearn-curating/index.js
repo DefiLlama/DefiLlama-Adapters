@@ -5,12 +5,13 @@ const configs = {
   blockchains: {
     ethereum: {
       morphoVaultOwners: [
-        '0xe5e2Baf96198c56380dDD5E992D7d1ADa0e989c0',
+        '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
       ],
     },
     base: {
       morphoVaultOwners: [
-        '0xFEaE2F855250c36A77b8C68dB07C4dD9711fE36F',
+        '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
+        '0x50b75d586929ab2f75dc15f07e1b921b7c4ba8fa',
       ],
     },
   }
