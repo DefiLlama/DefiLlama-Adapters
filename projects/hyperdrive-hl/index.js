@@ -14,7 +14,18 @@ const ABI = {
         getCollateralAssetsQuery:
             "function getCollateralAssetsQuery(uint256 marketId) view returns (tuple(address token, string symbol, uint8 decimals, address priceOracle, uint256 price, uint256 totalSupply, uint256 totalValue, uint256 maxSupply, uint256 maxLTV, uint256 liquidationLTV, uint256 liquidationDiscount)[])",
     },
+    Erc4626: {
+        totalAssets:
+            "function totalAssets() view returns (uint256 totalManagedAssets)",
+        asset: "function asset() view returns (address assetTokenAddress)",
+    },
 };
+
+const vaults = [
+    "0x9271A5C684330B2a6775e96B3C140FC1dC3C89be",
+    "0xaEAAD6d9B096829E5F3804a747C9FDD6677d78f0",
+    "0x72EE42bd660e4f676106C3718b00af06257c9d35",
+];
 
 async function lookupAddresses(api, keys) {
     return await api.call({
@@ -73,6 +84,24 @@ async function tvl(api) {
                 0n
             );
             api.add(marketData.marketAsset, totalCollateral);
+        })
+    );
+
+    await Promise.all(
+        vaults.map(async (vault) => {
+            const [totalAssets, asset] = await Promise.all([
+                api.call({
+                    abi: ABI.Erc4626.totalAssets,
+                    target: vault,
+                    params: [],
+                }),
+                api.call({
+                    abi: ABI.Erc4626.asset,
+                    target: vault,
+                    params: [],
+                }),
+            ]);
+            api.add(asset, totalAssets);
         })
     );
 
