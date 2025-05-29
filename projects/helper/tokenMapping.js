@@ -39,50 +39,8 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  prom: {
-    [ADDRESSES['null']]: { coingeckoId: "prometeus", decimals: 18 }, // Native PROM
-    '0x7e942605B5028E3B751dBB5Ef8afC5CF85a5A7eD': { coingeckoId: "tether", decimals: 6 }, // USDT
-    '0xd9c95e2ad330E11D7Dfa58f18504049f625E955e': { coingeckoId: "usd-coin", decimals: 6 }, // USDC
-    '0x6064C9028d069a7822d30EF17065A57524A5FcAb': { coingeckoId: "tether", decimals: 18 }, // USDT (BSC version in  Prom)
-    '0x04A21a38D5E275d6023B27504beB3095dC43B0C0': { coingeckoId: "prometeus", decimals: 18 }, // wPROM
-  },
-  ethereum: {
-    '0xfc82bb4ba86045af6f327323a46e80412b91b27d': { coingeckoId: "prometeus", decimals: 18 }, // PROM (Ethereum)
-    '0xf53bb90bd20c2a3eb3eb01e8233130a69db58324': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
-    '0x7fd713fe57fcd0a7636c152faba6bdc2d3b27d15': { coingeckoId: 'coinbase-wrapped-btc', decimals: 18 },
-  },
-  bsc: {
-    '0xaf53d56ff99f1322515e54fdde93ff8b3b7dafd5': { coingeckoId: "prometeus", decimals: 18 },
-  }, // PROM (BSC)
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  },
-  elys: {
-    'ibc:694A6B26A43A2FBECCFFEAC022DEACB39578E54207FDD32005CD976B57B98004': { coingeckoId: 'weth', decimals: 18, },
-    'ibc:B870E6642B6491779D35F326A895780FC2F7409DFD7F639A98505555AEAF345F': { coingeckoId: 'mantra-dao', decimals: 6, },
-    'ibc:68B5E8DA9270FA00245484BB1C07AD75399AD67D54A1344F6E998B5FB69B664F': { coingeckoId: 'pax-gold', decimals: 18, },
-    'ibc:147B3FF1D005512CCE4089559AF5D0C951F4211A031F15E782E505B85022DF89': { coingeckoId: 'kava', decimals: 6, },
-    'ibc:8BFE59DCD5A7054F0A97CF91F3E3ABCA8C5BA454E548FA512B729D4004584D47': { coingeckoId: 'neutron-3', decimals: 6, },
-    'ibc:E3459360643C2555C57C7DAB0567FA762B42D5D6D45A76615EA7D99D933AEC04': { coingeckoId: 'secret', decimals: 6, },
-    'ibc:343182F79E6450836403252D1122288D480605885A01426085859B43F5ECD3EF': { coingeckoId: 'babylon', decimals: 6, }
-  },
-  aleph_zero: {
-    '0x0000000000000000000000000000000000000000': { coingeckoId: 'aleph-zero', decimals: 18, },
-    '0xB3f0eE446723f4258862D949B4c9688e7e7d35d3': { coingeckoId: 'ethereum', decimals: 18, },
-    '0x18d25B4e18165c97e1285212e5d1f80eDD6d3Aa7': { coingeckoId: 'usd-coin', decimals: 6, },
-    '0xD648529D4803d3467bA8850577BEd4e4b8Ae583C': { coingeckoId: 'tether', decimals: 6, },
-  },
-  sseed: {
-    '0x6ea1ffcbd7f5d210db07d9e773862b0512fa219b': { coingeckoId: 'superseed', decimals: 18, },
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'superseed-bridged-weth-superseed', decimals: 18, },
-    '0xc316c8252b5f2176d0135ebb0999e99296998f2e': { coingeckoId: 'superseed-bridged-usdc-superseed', decimals: 6, },
-    '0x1217BfE6c773EEC6cc4A38b5Dc45B92292B6E189': { coingeckoId: 'openusdt', decimals: 6, },
-  },
-  lens: {
-    '0x6bdc36e20d267ff0dd6097799f82e78907105e2f': { coingeckoId: 'gho', decimals: 18, },
-    '0x88f08e304ec4f90d644cec3fb69b8ad414acf884': { coingeckoId: 'usd-coin', decimals: 6, },
-    '0xe5ecd226b3032910ceaa43ba92ee8232f8237553': { coingeckoId: 'ethereum', decimals: 18, },
-    '0xb0588f9a9cade7cd5f194a5fe77acd6a58250f82': { coingeckoId: 'bonsai-token', decimals: 18, },
   },
 }
 
