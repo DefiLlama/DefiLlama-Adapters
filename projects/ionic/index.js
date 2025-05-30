@@ -17,3 +17,15 @@ module.exports = mergeExports([{
   }, {
     lisk: compoundExports2({ comptroller: '0xF448A36feFb223B8E46e36FF12091baBa97bdF60' })
 }])
+
+module.exports.mode.borrowed = () => ({})
+module.exports.base.borrowed = () => ({})
+module.exports.bob.borrowed = () => ({})
+module.exports.fraxtal.borrowed = () => ({})
+module.exports.optimism.borrowed = () => ({})
+module.exports.lisk.borrowed = () => ({})
+
+module.exports.deadFrom = '2025-02-05'
+module.exports.hallmarks = [
+  [1738713600, "Protocol Exploit"],
+]

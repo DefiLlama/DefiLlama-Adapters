@@ -75,22 +75,10 @@ const config = {
     }),
     tokens: [
       ADDRESSES.null,
-      ...Object.entries(ADDRESSES.nibiru).filter(([symbol, addr]) => {
-        const ok = addr.startsWith("0x") && addr.length === 42
-        console.debug("DEBUG %o: ", { ok, symbol, addr })
-        return ok
-      }).map(([_symbol, addr]) => addr),
-      // ADDRESSES.nibiru,
+      ...Object.values(ADDRESSES.nibiru).filter((addr) => {
+        return addr.startsWith("0x") && addr.length === 42
+      }),
     ],
-    // On Ethreeum, the native asset is merged with WETH automatically.
-    // For Nibiru, the native token balance is WNIBI. It has to be WNIBI and not
-    // NIBI because the EVM uses 18 decimals.
-    transformAddress: (addr) => {
-      if (addr === ADDRESSES.null) {
-        return `nibiru:${ADDRESSES.nibiru.WNIBI}` // "coingecko#nibiru"
-      }
-      return addr
-    }
   },
   solana: {},
 };

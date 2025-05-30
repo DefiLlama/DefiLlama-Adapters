@@ -38,12 +38,12 @@ const config = {
     safeBlockLimit: 50,
     PoolManager: '0x498581ff718922c3f8e6a244956af099b2652b2b'
   },
-//   unichain: {
-//     graphUrl: 'https://api.goldsky.com/api/public/project_cl9gc21q105380hxuh8ks53k3/subgraphs/panoptic-subgraph-unichain/prod/gn',
-//     startBlock: 8576605,
-//     safeBlockLimit: 50,
-//     PoolManager: '0x1f98400000000000000000000000000000000004'
-//   }
+  unichain: {
+    graphUrl: 'https://api.goldsky.com/api/public/project_cl9gc21q105380hxuh8ks53k3/subgraphs/panoptic-subgraph-unichain/prod/gn',
+    startBlock: 17631543,
+    safeBlockLimit: 50,
+    PoolManager: '0x1f98400000000000000000000000000000000004'
+  }
 }
 
 
@@ -56,6 +56,7 @@ async function tvl(api) {
   const isV4 = {}
 
   for (const poolDeployedLog of poolDeployedLogs) {
+    if (poolDeployedLog.poolAddress !== '0x36a3088B94f73853a3964a0352B47605C6354f27') continue
     // get underlying token from each collateral tracker
     const tokens = await api.multiCall({ abi:'function asset() external view returns (address)', calls: [{target: poolDeployedLog.collateralTracker0, params: []}, {target: poolDeployedLog.collateralTracker1, params: []}] })
     
@@ -68,7 +69,7 @@ async function tvl(api) {
   }
 
 
-  const chunks = await cachedGraphQuery(`panoptic/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  const chunks = await cachedGraphQuery(`panoptic/v1_1/${chain}/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
   chunks.forEach(chunk => {
     if (!isV4[chunk.panopticPool.id.toLowerCase()]) return
     addUniV3LikePosition({ api, token0: chunk.pool.token0.id, token1: chunk.pool.token1.id, tick: chunk.pool.tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
@@ -86,9 +87,9 @@ module.exports = {
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
     start: 1745308193,
   },
-//   unichain: {
-//     tvl,
-//     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
-//     start: ,
-//   },
+  unichain: {
+    tvl,
+    methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
+    start: 1748379902,
+  },
 }

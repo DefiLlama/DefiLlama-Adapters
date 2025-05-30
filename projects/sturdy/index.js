@@ -13,3 +13,7 @@ module.exports.hallmarks = [
   ['2023-06-11', 'Protocol was hacked'],
 ]
 module.exports.doublecounted = true
+
+module.exports.ethereum.borrowed = () => ({})
+module.exports.fantom.borrowed = () => ({})
+module.exports.deadFrom = '2024-04-29'

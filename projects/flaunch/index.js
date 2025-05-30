@@ -3,7 +3,7 @@ module.exports = {
     base: {
         tvl: async (api) => {
             return {
-                [ADDRESSES.null]: await api.call({ target: "0x000000000d564d5be76f7f0d28fe52605afc7cf8", abi: "uint:underlyingETHBalance" })
+                [`base:${ADDRESSES.base.WETH}`]: await api.call({ target: "0x000000000d564d5be76f7f0d28fe52605afc7cf8", abi: "uint:underlyingETHBalance" })
             }
         }
     }

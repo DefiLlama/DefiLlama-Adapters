@@ -58,6 +58,7 @@ const marionetteTvl = async (api, tokenType) => {
     balances,
     CONFIG[tokenType].token,
     sum,
+    api.chain
   );
   return balances;
 }
