@@ -5,18 +5,18 @@ const STRATEGIES_URL = 'https://raw.githubusercontent.com/Lynexfi/lynex-lists/ma
 
 async function getCatexPools() {
   const data = await get(STRATEGIES_URL)
-  // Get only Polygon (137) strategies
-  const polygonStrategies = data['137'] || []
+  // Get only Unichain (130) strategies
+  const unichainStrategies = data['130'] || []
   // Filter for uniV4 strategies only since Catex only manages V4 pools
-  return polygonStrategies
+  return unichainStrategies
     .filter(strategy => strategy.variant === 'uniV4')
     .map(strategy => strategy.address)
 }
 
 module.exports = {
-  methodology: 'TVL counts the tokens locked in Gamma ALM vaults that Catex manages on top of Uniswap V4',
+  methodology: 'TVL counts the tokens locked in our ALM vaults that Catex manages on top of Uniswap V4',
   start: 69453847,
-  polygon: {
+  unichain: {
     tvl: async (api) => {
       const CATEX_POOLS = await getCatexPools()
       
