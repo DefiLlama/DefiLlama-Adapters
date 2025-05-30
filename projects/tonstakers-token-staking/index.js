@@ -54,7 +54,7 @@ module.exports = {
   timetravel: false,
   deadFrom: '2025-02-01',
   hallmarks: [
-    [Math.floor(new Date('2025-02-01')/1e3), 'Token staking service is deprecated'],
+    ['2025-02-01', 'Token staking service is deprecated'],
   ],
   ton: {
     tvl: () => ({}),

@@ -21,6 +21,9 @@ module.exports = {
   arbitrum: { tvl, borrowed, },
   methodology: `The TVL shown is the result of subtracting the borrow from the supply for each Rodeo lending pool`,
   hallmarks: [
-    [Math.floor(new Date('2023-07-11')/1e3), 'Protocol was exploited'],
+    ['2023-07-11', 'Protocol was exploited'],
   ],
 };
+
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.deadFrom = '2023-07-11' 

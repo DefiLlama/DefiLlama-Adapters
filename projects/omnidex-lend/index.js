@@ -15,3 +15,6 @@ function v2(chain, v2Registry) {
 module.exports = {
   telos: v2("telos", "0xBD22b441d8Fb855C48aCf7a4142f873a44fe9767"),
 }
+
+module.exports.telos.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-01-01' 
