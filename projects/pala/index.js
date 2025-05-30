@@ -1,5 +1,4 @@
 const ABI = require("./abi.json");
-const { toUSDTBalances } = require("../helper/balances");
 const sdk = require('@defillama/sdk')
 const { PromisePool } = require('@supercharge/promise-pool')
 const ADDRESSES = require('../helper/coreAssets.json')
