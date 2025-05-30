@@ -1,21 +1,37 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const USDC_CONTRACT_BASE = ADDRESSES.base.USDC;
-const CONDITIONAL_TOKENS_CONTRACT_BASE = '0x34AA5631BdAD51583845e5e82e2CAf6cE63bA64D';
+const utils = require('../helper/utils.js');
+const CHAIN_CONFIG = require('./chainConfig')
 
-async function tvl(api) {
-  const collateralBalance = await api.call({
-    abi: 'erc20:balanceOf',
-    target: USDC_CONTRACT_BASE,
-    params: [CONDITIONAL_TOKENS_CONTRACT_BASE],
-  });
+async function chainTVL(api, chainConfig) {
+  const { chainId, conditionalTokensContract } = chainConfig;
 
-  api.add(USDC_CONTRACT_BASE, collateralBalance)
+  // get chain collaterals
+  const response = await utils.fetchURL(`https://api.olab.xyz/api/v2/currency/collateral?chainId=${chainId}`);
+  const collaterals = response.data.result;
+
+  for (const collateral of collaterals) {
+    const collateralBalance = await api.call({
+      abi: 'erc20:balanceOf',
+      target: collateral.Contract,
+      params: [conditionalTokensContract],
+    });
+
+    api.add(collateral.Contract, collateralBalance)
+  }
 }
 
+// Create module for each chain
+const createChainModule = (chain) => {
+  const config = CHAIN_CONFIG[chain]
+  const module = {
+    tvl: (api) => chainTVL(api, config)
+  }
+
+  return module
+}
+
+// Export configuration for each chain
 module.exports = {
   methodology: 'TVL (Total Value Locked) refers to the total amount of USDC held in the Conditional Token smart contract, along with the USDC collateral provided to all O.LAB Prediction markets ever created.',
   start: 23899060,
-  base: {
-    tvl,
-  }
+  base: createChainModule('base'),
 };
