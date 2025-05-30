@@ -31,7 +31,7 @@ const createChainModule = (chain) => {
 
 // Export configuration for each chain
 module.exports = {
-  methodology: 'TVL (Total Value Locked) refers to the total amount of USDC held in the Conditional Token smart contract, along with the USDC collateral provided to all O.LAB Prediction markets ever created.',
+  methodology: 'TVL (Total Value Locked) refers to the total value of all collateral tokens held in the Conditional Token smart contract, including all collateral tokens provided to O.LAB Prediction markets across different chains.',
   start: 23899060,
   base: createChainModule('base'),
 };
