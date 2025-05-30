@@ -1,25 +1,32 @@
-const utils = require('./helper/utils');
-const { getApiTvl } = require('./helper/historicalApi');
+const { BigQuery } = require('@google-cloud/bigquery');
+const { getApiTvl } = require('../helper/historicalApi');
 
-const TVL_URL = "https://storage.googleapis.com/defillama-stellar-tvl/stellar-tvl.json";
+const bigquery = new BigQuery();
 
 async function fetchTvlData() {
-  const response = await utils.fetchURL(TVL_URL, { responseType: 'text' });
-  const lines = response.data.trim().split('\n');
-  return lines.map(line => JSON.parse(line));
+  const [rows] = await bigquery.query(`
+    SELECT
+      DATE_TRUNC(day, DAY) AS day,
+      total_tvl_usd
+    FROM \`crypto-stellar.crypto_stellar_dbt.tvl_agg\`
+    ORDER BY day
+  `);
+
+  return rows.map(row => ({
+    day: row.day.value || row.day,
+    total_tvl_usd: parseFloat(row.total_tvl_usd),
+  }));
 }
 
 async function current() {
-  const parsed = await fetchTvlData()
-  
+  const parsed = await fetchTvlData();
   const latest = parsed.reduce((a, b) => (a.day > b.day ? a : b));
   return latest.total_tvl_usd;
 }
 
 function tvl(timestamp) {
   return getApiTvl(timestamp, current, async () => {
-    const parsed = await fetchTvlData()
-    
+    const parsed = await fetchTvlData();
     return parsed.map(entry => ({
       date: Math.round(new Date(entry.day).getTime() / 1e3),
       totalLiquidityUSD: entry.total_tvl_usd,
@@ -33,3 +40,4 @@ module.exports = {
   timetravel: true,
   start: 1659916800, // 2022-08-08 UTC
 };
+
