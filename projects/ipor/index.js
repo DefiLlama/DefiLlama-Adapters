@@ -68,6 +68,7 @@ module.exports = {
     tvl: calculateTvlForV2
   },
   hallmarks:[
-    [1674648000, "Liquidity Mining Start"]
+    [1674648000, "Liquidity Mining Start"],
+    [1746748800, "The IPOR is mograted to the new token FUSN"],
   ],
 };
