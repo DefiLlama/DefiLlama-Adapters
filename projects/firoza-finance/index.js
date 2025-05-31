@@ -23,8 +23,12 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: "TVL counts the tokens deposited in the Firoza Finance pools.",
-  islm: { tvl, borrowed, },
+  islm: { 
+    tvl, 
+    borrowed: () => ({}),
+  },
   hallmarks: [
     [1688169600, "Launch on ISLM"]
   ],
+  deadFrom: '2025-02-09',
 };

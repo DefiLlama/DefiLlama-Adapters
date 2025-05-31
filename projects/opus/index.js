@@ -11,8 +11,12 @@ const tokensAndOwners = [
   [ADDRESSES.starknet.XSTRK, "0x04a3e7dffd8e74a706be9abe6474e07fbbcf41e1be71387514c4977d54dbc428"],
   [ADDRESSES.starknet.SSTRK, "0x03b709f3ab9bc072a195b907fb2c27688723b6e4abb812a8941def819f929bd8"],
   [ADDRESSES.starknet.EKUBO, "0x06d44c6172f6b68fda893348d33be58b69f0add83ed480d1192d19bc4188c8f6"],
+  // LORDS
+  ["0x0124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49", "0x020c0fbc1f2a724a94ebe3575e54c4111fa3eaaf3dac938cfcbd96cc83317bbf"],
   // Transmuters
-  [ADDRESSES.starknet.USDC, "0x03878595db449e1af7de4fb0c99ddb01cac5f23f9eb921254f4b0723a64a23cb"],
+  [ADDRESSES.starknet.USDC, "0x0560149706f72ce4560a170c5aa72d20d188c314ddca5763f9189adfc45e2557"],
+  // Spiko US MMF
+  ["0x20ff2f6021ada9edbceaf31b96f9f67b746662a6e6b2bc9d30c0d3e290a71f6", "0x0560149706f72ce4560a170c5aa72d20d188c314ddca5763f9189adfc45e2557"],
 ]
 
 async function tvl(api) {

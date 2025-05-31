@@ -67,9 +67,20 @@ const config = {
       '0xD024d4e1B0ac157aa5BDFDF96388e8dc9a43b19f',
       '0x2818464883d4EfA130D25D414B6037570c489a7C',
       '0x883F81511Dae16713b2255B284bad333cd3B7913',
-      '0x883F81511Dae16713b2255B284bad333cd3B7913',
+      '0xf785a3637Fb8DC057a2a23c925e83859Ef212c8d',
+      '0xb2Bb0d53Fff7FF771855ad43F80c769860F627bD',
+      '0x7DD12E437C226018A374Bfa2BdAf48340B9942bC',
+      '0xf08e422d2986FEB7a1d798C92E043d13199EddF2',
+      '0x4b8b426D1a934b9C78f139526dc74249d40960ea',
     ]
   },
+  lisk: {
+    simpleLrtVaults: [
+      '0x1b10E2270780858923cdBbC9B5423e29fffD1A44',
+      '0xa67E8B2E43B70D98E1896D3f9d563f3ABdB8Adcd',
+      '0x8cf94b5A37b1835D634b7a3e6b1EE02Ce7F0CD30',
+    ]
+  }
 }
 
 module.exports = {
@@ -80,13 +91,17 @@ Object.keys(config).forEach(chain => {
   const { mellowLrtVaults, simpleLrtVaults } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const mellowLrtTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[] tokens, uint256[] values)', calls: mellowLrtVaults, permitFailure: true })
-      mellowLrtTvl.forEach((i) => {
-        if (!i) return;
-        const { tokens, values } = i
-        api.add(tokens, values)
-      })
-      await api.erc4626Sum({ calls: simpleLrtVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
+      if (mellowLrtVaults != null && mellowLrtVaults.length > 0) {
+        const mellowLrtTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[] tokens, uint256[] values)', calls: mellowLrtVaults, permitFailure: true })
+        mellowLrtTvl.forEach((i) => {
+          if (!i) return;
+          const { tokens, values } = i
+          api.add(tokens, values)
+        })
+      }
+      if (simpleLrtVaults != null && simpleLrtVaults.length > 0) {
+        await api.erc4626Sum({ calls: simpleLrtVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
+      }
     }
   }
 })
