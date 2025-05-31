@@ -69,6 +69,6 @@ module.exports = {
   },
   hallmarks:[
     [1674648000, "Liquidity Mining Start"],
-    [1746748800, "The IPOR is mograted to the new token FUSN"],
+    ['2025-05-09', "The IPOR token is migrated to the new token FUSN"],
   ],
 };
