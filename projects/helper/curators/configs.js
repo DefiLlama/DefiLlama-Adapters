@@ -1,4 +1,9 @@
+const { allAbi, abi, assets } = require("./vesu")
+
 const ABI = {
+  owner: 'address:owner',
+  decimals: 'uint8:decimals',
+  totalSupply: 'uint256:totalSupply',
   ERC4626: {
     asset: 'address:asset',
     totalAssets: 'uint256:totalAssets',
@@ -15,6 +20,19 @@ const ABI = {
     getProxyListLength: 'uint256:getProxyListLength',
     proxyList: 'function proxyList(uint256) view returns (address)',
     creator: 'address:creator',
+  },
+  silo: {
+    CreateSiloVaultEvent: 'event CreateSiloVault(address indexed vault, address incentivesController, address idleVault)',
+  },
+  boringVault: {
+    hook: 'address:hook',
+    accountant: 'address:accountant',
+    base: 'address:base',
+    getRate: 'uint256:getRate',
+  },
+  symbiotic: {
+    collateral: 'address:collateral',
+    totalStake: 'uint256:totalStake',
   },
 }
 
@@ -117,8 +135,28 @@ const EulerConfigs = {
   },
 }
 
+const SiloConfigs = {
+  sonic: {
+    vaultFactories: [
+      {
+        address: '0x7867f2b584e91d7c3798f4659b6fffa3631ea06a',
+        fromBlock: 21718349,
+      },
+    ],
+  }
+}
+
+const VesuConfigs = {
+  allAbi,
+  abi,
+  assets,
+  singleton: '0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160',
+}
+
 module.exports = { 
   ABI,
   MorphoConfigs,
   EulerConfigs,
+  SiloConfigs,
+  VesuConfigs,
 }

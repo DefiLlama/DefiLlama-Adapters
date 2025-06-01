@@ -13,6 +13,18 @@ const configs = {
         '0xF1B4Ad34B4DbBAab120e4A04Eb3D3707Ea41b6eb',
         '0x6293e97900aA987Cf3Cbd419e0D5Ba43ebfA91c1',
       ],
+      mellow: [
+        '0x5fD13359Ba15A84B76f7F87568309040176167cd',
+      ],
+      symbiotic: [
+        '0x4e0554959A631B3D3938ffC158e0a7b2124aF9c5',
+        '0xdC47953c816531a8CA9E1D461AB53687d48EEA26',
+        '0x9205c82D529A79B941A9dF2f621a160891F57a0d',
+        '0xF60E6E6d8648FdBC2834EF7bC6f5E49aB55bec31',
+        '0x3b512427ca6345e67101ECcb78D9c8508714818c',
+        '0xD25f31806de8d608D05DfeAEB1140C1D365864B3',
+        '0x3cA7d72637FB8A5761AD75FBDA248E007800d75a',
+      ],
     },
     sonic: {
       eulerVaultOwners: [

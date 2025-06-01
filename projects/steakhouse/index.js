@@ -10,6 +10,11 @@ const configs = {
         '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
         '0xc01Ba42d4Bd241892B813FA8bD4589EAA4C60672',
       ],
+      mellow: [
+        '0xBEEF69Ac7870777598A04B2bd4771c71212E6aBc',
+        '0x9707f14B6c8200CBf6c6F2c5498D1D0019A5f15A',
+        '0x4C797D53f4772325A8aDFd509F13A2d60Daa7d02',
+      ]
     },
     base: {
       morphoVaultOwners: [
