@@ -12,6 +12,12 @@ const configs = {
         '0x1E2aAaDcF528b9cC08F43d4fd7db488cE89F5741', // co-curator with tulip-capital
         '0x0bB2751a90fFF62e844b1521637DeD28F3f5046A', // co-curator with tulip-capital
       ],
+      turtleclub: [
+        '0xa853d8f5f253468495c5a92d54a3fe6cca2aa26b',
+        '0x7388d4b5c4cfc96c9105de913717ba7519178129',
+        '0xDe7CFf032D453Ce6B0a796043E75d380Df258812',
+        '0xAF87B90E8a3035905697E07Bb813d2d59D2b0951',
+      ],
     },
     base: {
       morphoVaultOwners: [

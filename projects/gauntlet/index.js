@@ -43,6 +43,18 @@ const configs = {
         '0x2e2e57bb1272acb11a5a0da677ddbcb8c9906255',
         '0x2c9f8043d4b6a37489eea91437c14d206acddeb9',
       ],
+      symbiotic: [
+        '0xc10A7f0AC6E3944F4860eE97a937C51572e3a1Da',
+        '0xB8Fd82169a574eB97251bF43e443310D33FF056C',
+        '0xaF07131C497E06361dc2F75de63dc1d3e113f7cb',
+        '0x81bb35c4152B605574BAbD320f8EABE2871CE8C6',
+        '0x65B560d887c010c4993C8F8B36E595C171d69D63',
+        '0x3ba6930bac1630873f5fd206e293ca543fcea7a2',
+        '0x9e405601B645d3484baeEcf17bBF7aD87680f6e8',
+      ],
+      mellow: [
+        '0x8327b8BD2561d28F914931aD57370d62C7968e40',
+      ],
     },
     base: {
       morphoVaultOwners: [
