@@ -19,4 +19,9 @@ const configs = {
   }
 }
 
-module.exports = getCuratorExport(configs)
+module.exports = {
+  ...getCuratorExport(configs),
+
+  // starknet doesn't support historical queries
+  timetravel: false,
+}
