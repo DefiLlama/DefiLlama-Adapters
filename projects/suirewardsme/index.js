@@ -1,5 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json');
-const { default: BigNumber } = require("bignumber.js");
 const sui = require("../helper/chain/sui");
 
 async function suiTVL(api) {
@@ -9,46 +7,28 @@ async function suiTVL(api) {
     const poolsTableId = factory.fields.pools.fields.id.id;
 
     const poolEntries = await sui.getDynamicFieldObjects({ parent: poolsTableId });
-
     const poolObjectIds = poolEntries.map((entry) => entry.fields.value);
     const poolObjects = await sui.getObjects(poolObjectIds);
 
-    const totalResult = {};
-
     for (const pool of poolObjects) {
         const fields = pool.fields;
-        const balanceA = new BigNumber(fields.balance_a);
-        const balanceB = new BigNumber(fields.balance_b);
 
-        if (!balanceA || !balanceB) {
-            continue;
-        }
-        if (balanceA.isZero() && balanceB.isZero()) continue;
+        const balanceA = fields.balance_a;
+        const balanceB = fields.balance_b;
 
-        const amountA = new BigNumber(balanceA);
-        const amountB = new BigNumber(balanceB);
+        if (!balanceA || !balanceB) continue;
+        if (balanceA === "0" && balanceB === "0") continue;
 
         const coinA = pool.type.split("Pool<")[1].split(",")[0].trim();
         const coinB = pool.type.split(",")[1].replace(">", "").trim();
 
-        setPropertyPriceMap(totalResult, coinA, amountA);
-        setPropertyPriceMap(totalResult, coinB, amountB);
-    }
-
-    for (const token in totalResult) {
-        api.add(token, totalResult[token].toFixed(0));
-    }
-}
-
-function setPropertyPriceMap(map, key, value) {
-    if (map[key]) {
-        map[key] = map[key].plus(value);
-    } else {
-        map[key] = value;
+        api.add(coinA, balanceA);
+        api.add(coinB, balanceB);
     }
 }
 
 module.exports = {
+    timetravel: false,
     sui: {
         tvl: suiTVL,
     },
