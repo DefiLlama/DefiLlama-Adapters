@@ -42,6 +42,9 @@ const configs = {
         '0xF602d3816bC63fC5f5Dc87bB56c537D0d0078532',
         '0x46BA7bCD764a692208781B0Fdc642E272ee597bC',
       ],
+      siloVaultOwners: [
+        '0x3BA1566ED39F865bAf4c1Eb9acE53F3D2062bE65',
+      ],
     },
     bob: {
       eulerVaultOwners: [
@@ -73,11 +76,6 @@ const configs = {
     polygon:{
       morphoVaultOwners: [
         '0x7B41b9891887820A75A51a1025dB1A54f4798521',
-      ],
-    },
-    sonic: {
-      siloVaultOwners: [
-        '0x3BA1566ED39F865bAf4c1Eb9acE53F3D2062bE65',
       ],
     },
     starknet: {
