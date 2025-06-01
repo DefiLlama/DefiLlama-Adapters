@@ -9,11 +9,9 @@ async function suiTVL(api) {
     const poolsTableId = factory.fields.pools.fields.id.id;
 
     const poolEntries = await sui.getDynamicFieldObjects({ parent: poolsTableId });
-    console.log("Found pools from table:", poolEntries.length);
 
     const poolObjectIds = poolEntries.map((entry) => entry.fields.value);
     const poolObjects = await sui.getObjects(poolObjectIds);
-    console.log("Fetched pool object details:", poolObjects.length);
 
     const totalResult = {};
 
@@ -23,7 +21,6 @@ async function suiTVL(api) {
         const balanceB = new BigNumber(fields.balance_b);
 
         if (!balanceA || !balanceB) {
-            console.log("❌ Missing balance fields in pool:", pool.type);
             continue;
         }
         if (balanceA.isZero() && balanceB.isZero()) continue;
@@ -33,8 +30,6 @@ async function suiTVL(api) {
 
         const coinA = pool.type.split("Pool<")[1].split(",")[0].trim();
         const coinB = pool.type.split(",")[1].replace(">", "").trim();
-
-        console.log(`🪙 ${coinA} = ${amountA.toFixed()}, ${coinB} = ${amountB.toFixed()}`);
 
         setPropertyPriceMap(totalResult, coinA, amountA);
         setPropertyPriceMap(totalResult, coinB, amountB);
