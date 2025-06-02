@@ -7,7 +7,7 @@ const tokens = [
   nullAddress,
   dre,
   '0xB781C624397C423Cb62bAe9996cEbedC6734B76b', // dre-usd lp token
-  ADDRESSES.ethereum.WETH, // WETH
+  ADDRESSES.sonic.USDC_e
 ];
 
 module.exports = treasuryExports({
