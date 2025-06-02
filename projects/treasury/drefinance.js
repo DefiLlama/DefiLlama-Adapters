@@ -6,7 +6,7 @@ const dre = "0xF8232259D4F92E44eF84F18A0B9877F4060B26F1";
 const tokens = [
   nullAddress,
   dre,
-  0xB781C624397C423Cb62bAe9996cEbedC6734B76b, // dre-usd lp token
+  '0xB781C624397C423Cb62bAe9996cEbedC6734B76b', // dre-usd lp token
   ADDRESSES.ethereum.WETH, // WETH
 ];
 
