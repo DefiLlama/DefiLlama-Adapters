@@ -15,3 +15,6 @@ module.exports = mergeExports(dataProviders.map(address => ({
 })))
 
 module.exports.methodology = methodology
+module.exports.hallmarks = [
+  ['2025-03-28', "Oracle Manipulation Exploit"],
+]
