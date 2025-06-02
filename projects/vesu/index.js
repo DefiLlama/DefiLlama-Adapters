@@ -3,7 +3,7 @@ const { multiCall, sumTokens } = require("../helper/chain/starknet");
 const { abi, allAbi } = require("./abi");
 
 const INTERNAL_SCALE = 10 ** 18;
-const SINGLETON = "0x02545b2e5d519fc230e9cd781046d3a64e092114f07e44771e0d719d148725ef";
+const SINGLETON = "0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160";
 const POOLS = [
   "0x4dc4f0ca6ea4961e4c8373265bfd5317678f4fe374d76f3fd7135f57763bf28", //  Genesis Pool
   "0x7f135b4df21183991e9ff88380c2686dd8634fd4b09bb2b5b14415ac006fe1d", // Re7 USDC Pool

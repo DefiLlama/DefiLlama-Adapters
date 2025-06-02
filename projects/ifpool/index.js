@@ -16,7 +16,7 @@ async function coinexTVL(timestamp, _, chainBlocks) {
   });
 
   return {
-    "0x081f67afa0ccf8c7b17540767bbe95df2ba8d97f": validatorInfo.output[2], // CET
+    [`csc:${ADDRESSES.findora.WCET}`]: validatorInfo.output[2], // CET
   };
 }
 

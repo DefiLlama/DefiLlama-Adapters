@@ -1,4 +1,5 @@
 const vaultAbi = require('./abi/base.js');
+const ADDRESSES = require('../helper/coreAssets.json')
 const contractsProviderAbi = require('./abi/contract-provider.js');
 const { getOraclePackages } = require('./oracle.js');
 const contractProvider = '0x6544779Ba9747cFA20a9b837C9547DE2e0cbf071';
@@ -49,11 +50,7 @@ const tvl = async (api) => {
         params: [input],
     });
 
-
-    return {
-        tether: Number(totalAssets) / 1e6, // Convert to USDT
-    };
-
+    api.add(ADDRESSES.arbitrum.USDT, totalAssets)
 }
 
 module.exports = {
