@@ -24,4 +24,7 @@ module.exports = {
 
   // starknet doesn't support historical queries
   timetravel: false,
+  hallmarks: [
+    ['2025-06-01', "Start tracking vaults on starknet"],
+  ]
 }
