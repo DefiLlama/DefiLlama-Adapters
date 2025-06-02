@@ -13,7 +13,7 @@ const tokens = [
 module.exports = treasuryExports({
   sonic: {
     tokens,
-    owners: [treasury, operations],
+    owners: [treasury],
     ownTokens: [dre],
     resolveLP: true,
   },
