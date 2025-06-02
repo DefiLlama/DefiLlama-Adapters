@@ -261,7 +261,10 @@ const defaultTokens = {
     ADDRESSES.ton.TON_3,
   ],
   sui: [],
-  aptos: [],
+  aptos: [
+    nullAddress,
+    "0x50788befc1107c0cc4473848a92e5c783c635866ce3c98de71d2eeb7d2a34f85::usdt_coin::USDTether"
+  ],
   mantle: [
     nullAddress,
     ADDRESSES.mantle.USDC,
