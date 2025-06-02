@@ -1,0 +1,7 @@
+{
+  "abiContractRegistryAddressOf": "function addressOf(bytes32 _contractName) view returns (address)",
+  "abiConverterRegistryGetPools": "address[]:getLiquidityPools",
+  "abiRegistryGetConvertersBySmartTokens": "function getConvertersBySmartTokens(address[] _smartTokens) view returns (address[])",
+  "abiConverterConnectorTokens": "function connectorTokens(uint256) view returns (address)",
+  "liquidityPools": "address[]:liquidityPools"
+}

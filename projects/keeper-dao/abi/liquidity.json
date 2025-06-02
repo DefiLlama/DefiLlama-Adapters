@@ -1,0 +1,8 @@
+{
+  "registeredTokens": "function registeredTokens(uint256) view returns (address)",
+  "kToken": "function kToken(address _token) view returns (address)",
+  "tokenByIndex": "function tokenByIndex(uint256) view returns (address)",
+  "getAllMarkets": "address[]:getAllMarkets",
+  "balanceOfUnderlying": "function balanceOfUnderlying(address owner) returns (uint256)",
+  "underlying": "address:underlying"
+}

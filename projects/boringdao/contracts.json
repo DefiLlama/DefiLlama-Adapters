@@ -1,0 +1,254 @@
+{
+  "ethereum": {
+    "contracts": {
+      "NBridge": "0xdBe43C732080271Fd7588aa5fe71bd07456D9173",
+      "BoringChefSatellite": "0x204c87CDA5DAAC87b2Fc562bFb5371a0B066229C",
+      "TwoWayV2": "0xecaD1ab3464ECcC7536af6aFeE414dF873495616",
+      "tunnel": "0x258a1eb6537ae84cf612f06b557b6d53f49cc9a1"
+    },
+    "tokens": {
+      "VEMP": "0xcFEB09C3c5F0f78aD72166D55f9e6E9A60e96eEC",
+      "xVEMP": "0x4a4e2d4859af854d2a3fc6df295843d21e70cc78",
+      "FIN": "0x054f76beed60ab6dbeb23502178c52d6c5debe40",
+      "USDT": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "AMY": "0xb6225104d9434CC148570cDDEEf19B2e46dA350D",
+      "AAVE": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+      "CRV": "0xD533a949740bb3306d119CC777fa900bA034cd52",
+      "USDC": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "FIRE": "0x0f0Dd5E2c0e0c4A41F8908D73D36B8D142F6745a",
+      "iZi": "0x9ad37205d608b8b219e6a2573f922094cec5c200",
+      "ETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "METIS": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
+      "PBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "AAC": "0xe75ad3aAB14E4B0dF8c5da4286608DaBb21Bd864",
+      "NODE": "0x0C3eF32f802967DB75B9D49fE1e76620151cCB81"
+    }
+  },
+  "optimism": {
+    "contracts": {
+      "TwoWayV2": "0x29414EC76d79Ff238E5E773322799d1c7Ca2443F"
+    },
+    "tokens": {
+      "USDT": "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
+      "USDC": "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
+      "ETH": "0x4200000000000000000000000000000000000006",
+      "PBTC": "0x68f180fcCe6836688e9084f035309E29Bf0A2095"
+    }
+  },
+  "bsc": {
+    "contracts": {
+      "NBridge": "0xe7b388d44fA9069385E174efe6f10616B149Fe86",
+      "BoringChefUsdtLP": "0xa056c100cEB4111899916Cf2d361152eE9147aDF",
+      "TwoWayV2": "0x0075Ac0C662a5B655060d1519fF739D834078705"
+    },
+    "tokens": {
+      "VEMP": "0xeDF3ce4Dd6725650a8e9398e5C6398D061Fa7955",
+      "xVEMP": "0xAe9a0E6Bd6CB21cF36B773d47923980b410D3C85",
+      "USDT": "0x55d398326f99059ff775485246999027b3197955",
+      "WSG": "0xA58950F05FeA2277d2608748412bf9F802eA4901",
+      "USDC": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+      "lowb": "0x843d4a358471547f51534e3e51fae91cb4dc3f28",
+      "LOL": "0x55E3f23B563769426f8Aa4059e9977689c74B47E",
+      "FIRE": "0x0f0Dd5E2c0e0c4A41F8908D73D36B8D142F6745a",
+      "ETH": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+      "PBTC": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c"
+    }
+  },
+  "polygon": {
+    "contracts": {
+      "NBridge": "0x64E4E7840bC20959c8BA984Db82fA0132D9b04dD",
+      "BoringChef": "0x5304990549f9f6e24C8d726a153c62dbD7F3333a",
+      "BoringChefUsdtLP": "0x9159b63bFD1566ab4c99Ee1Ff21575C86d2cEBB9",
+      "TwoWayV2": "0x6dc551088AFAf828b95a9c9Ad590AeFE797c8e87",
+      "TwoWayChef": "0xB225cC2207FECC82806042cEB386eF2b23E2464c",
+      "StakingRewardForChefoUSDT": "0x421A538234aF050c77eF735b23A1Db03243B0e4b",
+      "StakingRewardForChefoUSDC": "0xBb5eA9b628f8A93c653c0eaC986238407930059d",
+      "StakingRewardForChefoLOL": "0x70dfE627c3b04FDF8E8C9572FcEC9E098FeD552d",
+      "StakingRewardForChefoiZi": "0x091C23C213945b1F96e4BA660bdee1FD61663d11",
+      "StakingRewardForChefoFIN": "0x6B906d17301447117C83F12DEc183331Ac3BCaa5",
+      "StakingRewardForChefoMETIS": "0xc5e8228b910722C6B7aE77221dd96DC134B9C861",
+      "StakingRewardForChefoETH": "0x775E38077FDbdAfCB777215ccfB41cf8FC949019"
+    },
+    "tokens": {
+      "USDT": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+      "oUSDT": "0x413cfE1C41F98879365D665CACB7E79a60001fEE",
+      "USDC": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "oUSDC": "0x8DE93f998b6b0ddA780Ee12B97dde1F2fADd3B1d",
+      "oLOL": "0x0D9ceFE09299C8c3Cbe1F2706fbcEdBc35d73052",
+      "iZi": "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747",
+      "oiZi": "0x79904eC9De1FCCF7ca50fE3f8430e922d53e07e6",
+      "FIN": "0x576c990a8a3e7217122e9973b2230a3be9678e94",
+      "oFIN": "0x4D98192A8A078D0937c8FCa144C07e741364BdcA",
+      "ETH": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+      "oMETIS": "0x746158B125447C909291cf3B271C929D156cBAd2",
+      "oETH": "0x0caD6ef3383C4349c68f072076BCDE7B7623576B",
+      "PBTC": "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
+      "INS": "0xb988Bd378A0754957d5D9471C96E0F8051645a26"
+    }
+  },
+  "fantom": {
+    "contracts": {
+      "NBridge": "0x77B3aa18D89ea24e4AF7BB9BC221D49FD5534c19",
+      "BoringChef": "0x1f5330323b12c62eB1258FA227D88C8E63fDb855",
+      "BoringChefUsdtLP": "0x6D6D851bE4Ae838f32B0694a2561FDe3a18765e6",
+      "TwoWayV2": "0x66D6A03394dC9D155F3704e14C6c0F03076B40D1"
+    },
+    "tokens": {
+      "USDT": "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+      "USDC": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+      "ETH": "0x74b23882a30290451A17c44f4F05243b6b58C76d"
+    }
+  },
+  "boba": {
+    "contracts": {
+      "NBridge": "0x225247882FD7396c62E29707DA0890151208161a",
+      "BoringChefSec": "0xB238a595e9797E009eFD5f938C9918181662066C"
+    },
+    "tokens": {
+      "USDT": "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d",
+      "USDC": "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc"
+    }
+  },
+  "metis": {
+    "contracts": {
+      "NBridge": "0xD01a5051253007ae0b7123b50410E3B5A3f6cF95",
+      "TwoWayV2": "0x57E05346A576A3f75972aC0E7c9d9f46765B346E"
+    },
+    "tokens": {
+      "CRV": "0x87DD4a7Ad23B95cD9fF9C26B5cF325905CaF8663",
+      "AAVE": "0x68D97B7A961a5239B9F911DA8dEb57F6eF6e5e28",
+      "WSG": "0x4F497F9D85A6fE135fFca99f0f253919fE827211",
+      "USDT": "0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC",
+      "USDC": "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21",
+      "lowb": "0xd5B59f9F35F9a5bE75E7357798BF15A4E958B6B2",
+      "LOL": "0x55E3f23B563769426f8Aa4059e9977689c74B47E",
+      "ETH": "0x420000000000000000000000000000000000000A",
+      "METIS": "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
+    }
+  },
+  "arbitrum": {
+    "contracts": {
+      "TwoWayV2": "0x2e220E3ab85fC4A46F770A34eF2CdDc8074E4689",
+      "BoringChefSec": "0x216f332D17145871D1d5ff5fEB4b08513Ef7Cc21",
+      "NBridge": "0x9d8bDAa1dDE16da55c86cCaF12C81647ff9858B8"
+    },
+    "tokens": {
+      "USDT": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      "AMY": "0x8fbd420956fdd301f4493500fd0bcaaa80f2389c",
+      "USDC": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "ETH": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "PBTC": "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
+    }
+  },
+  "avax": {
+    "contracts": {
+      "NBridge": "0x2e220E3ab85fC4A46F770A34eF2CdDc8074E4689",
+      "BoringChef": "0x61CF453D7930ECf145f3Dd29fCE4d9c15F9405c3",
+      "BoringChefUsdtLP": "0xAf9f062613dF193dCF4d4008ACC3bb9280c87323",
+      "TwoWayV2": "0x12f3a5af0a82af48af89FA5BAcf6307e1b226903"
+    },
+    "tokens": {
+      "USDT": "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+      "USDC": "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+      "ETH": "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
+      "PBTC": "0x50b7545627a5162F82A992c33b87aDc75187B218"
+    }
+  },
+  "harmony": {
+    "contracts": {
+      "NBridge": "0x216f332D17145871D1d5ff5fEB4b08513Ef7Cc21",
+      "TwoWayV2": "0x7F942c3f0F61dE5133447B8A4974969EA36a7f19",
+      "BoringChef": "0xB98863f0a0cFE367496bFa393dA4D408Bee0A5Bf",
+      "BoringChefUsdtLP": "0x39c412fa81dAe9673A3E00e83B2F58a08DD8Fbc9"
+    },
+    "tokens": {
+      "USDT": "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f",
+      "USDC": "0x985458e523db3d53125813ed68c274899e9dfab4",
+      "ONE": "0x323B6b60B286f69D2cEf2277A71038FbDfd18F86",
+      "ETH": "0x6983d1e6def3690c4d616b13597a09e6193ea013"
+    }
+  },
+  "okexchain": {
+    "contracts": {
+      "NBridge": "0xb9A9587eee2Da928f72A5846440E81C7426d595f",
+      "BoringChef": "0xef002868F3Ee02a20ac6d7fd8381A83a8C127005",
+      "BoringChefUsdtLP": "0xAd2F796199ff714AfE4f6716C50fF6dc431322C8",
+      "TwoWayV2": "0xf82B64169f3F43706F423c3246a10D190D12B576"
+    },
+    "tokens": {
+      "FIN": "0x8d3573f24c0aa3819a2f5b02b2985dd82b487715",
+      "WrapFIN": "0x2B21237BA30deF78EC551a10C99d656F90Eb10fC",
+      "USDT": "0x382bB369d343125BfB2117af9c149795C6C65C50",
+      "VEMP": "0x2c9a1d0e1226939edb7bbb68c43a080c28743c5c",
+      "xVEMP": "0x861afdBC2F3DF53F07d397EacfA443683653cA99",
+      "USDC": "0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
+      "ETH": "0xEF71CA2EE68F45B9Ad6F72fbdb33d707b872315C",
+      "PBTC": "0x54e4622dc504176b3bb432dccaf504569699a7ff"
+    }
+  },
+  "xdai": {
+    "contracts": {
+      "NBridge": "0xE3B59FD01c0155A98146a6E0Beb8376B751363fc",
+      "BoringChef": "0x560EB8c4B113ce38da680DafA3388Ffbeb61B14D",
+      "BoringChefUsdtLP": "0x0Bf101ab5CC8C6Be93D9fb6742e1e4d724aFa414",
+      "TwoWayV2": "0x805675c662CF99B0156C8D1D76EAB86a830d9E8D"
+    },
+    "tokens": {
+      "USDT": "0x4ECaBa5870353805a9F068101A40E0f32ed605C6",
+      "USDC": "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83",
+      "ETH": "0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1"
+    }
+  },
+  "heco": {
+    "contracts": {
+      "NBridge": "0xE3B59FD01c0155A98146a6E0Beb8376B751363fc",
+      "BoringChef": "0x560EB8c4B113ce38da680DafA3388Ffbeb61B14D",
+      "BoringChefUsdtLP": "0x0Bf101ab5CC8C6Be93D9fb6742e1e4d724aFa414",
+      "TwoWayV2": "0x66D6A03394dC9D155F3704e14C6c0F03076B40D1"
+    },
+    "tokens": {
+      "USDT": "0xa71edc38d189767582c38a3145b5873052c3e47a",
+      "USDC": "0x9362bbef4b8313a8aa9f0c9808b80577aa26b73b",
+      "ETH": "0x64FF637fB478863B7468bc97D30a5bF3A428a1fD",
+      "HBTC": "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa"
+    }
+  },
+  "oasis": {
+    "contracts": {
+      "NBridge": "0x87DD4a7Ad23B95cD9fF9C26B5cF325905CaF8663"
+    },
+    "tokens": {}
+  },
+  "kcc": {
+    "contracts": {
+      "TwoWayV2": "0x87DD4a7Ad23B95cD9fF9C26B5cF325905CaF8663"
+    },
+    "tokens": {
+      "USDT": "0x0039f574eE5cC39bdD162E9A88e3EB1f111bAF48",
+      "USDC": "0x980a5AfEf3D17aD98635F6C5aebCBAedEd3c3430",
+      "ETH": "0xf55aF137A98607F7ED2eFEfA4cd2DfE70E4253b1",
+      "PBTC": "0xfa93c12cd345c658bc4644d1d4e1b9615952258c"
+    }
+  },
+  "aurora": {
+    "contracts": {
+      "NBridge": "0xB98863f0a0cFE367496bFa393dA4D408Bee0A5Bf",
+      "TwoWayV2": "0x68D97B7A961a5239B9F911DA8dEb57F6eF6e5e28"
+    },
+    "tokens": {
+      "USDC": "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802",
+      "USDT": "0x4988a896b1227218e4A686fdE5EabdcAbd91571f",
+      "ONE": "0x731203A6E33001d76AF6da49096fC8753b9E4932",
+      "ETH": "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB"
+    }
+  },
+  "iotex": {
+    "contracts": {
+      "TwoWayV2": "0x87DD4a7Ad23B95cD9fF9C26B5cF325905CaF8663"
+    },
+    "tokens": {
+      "USDC": "0x3b2bf2b523f54c4e454f08aa286d03115aff326c",
+      "USDT": "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1"
+    }
+  }
+}

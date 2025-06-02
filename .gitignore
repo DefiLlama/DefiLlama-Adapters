@@ -1,0 +1,13 @@
+helper/db.js
+node_modules
+.env
+run.js
+blocks.js
+historical-data.js
+/.idea
+yarn.lock
+.DS_Store
+.vscode
+projects/binance/data.csv
+
+*.log

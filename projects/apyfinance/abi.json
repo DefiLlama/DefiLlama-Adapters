@@ -1,0 +1,4 @@
+{
+  "underlyer": "address:underlyer",
+  "getPoolTotalValue": "uint256:getPoolTotalValue"
+}

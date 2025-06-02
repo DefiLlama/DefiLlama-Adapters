@@ -1,0 +1,5 @@
+{
+  "getPricePerFullShare": "uint256:getPricePerFullShare",
+  "want": "address:want",
+  "balance": "uint256:balance"
+}

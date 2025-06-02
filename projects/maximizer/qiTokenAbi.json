@@ -1,0 +1,4 @@
+{
+  "balanceOf": "function balanceOf(address _token) view returns (uint256)",
+  "exchangeRateStored": "uint256:exchangeRateStored"
+}

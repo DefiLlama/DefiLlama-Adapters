@@ -1,0 +1,16 @@
+{
+  "vaultDebtVal": "uint256:vaultDebtVal",
+  "totalToken": "uint256:totalToken",
+  "token": "address:token",
+  "pid": "uint256:pid",
+  "reservePool": "uint256:reservePool",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "totalSupply": "uint256:totalSupply",
+  "lpToken": "address:lpToken",
+  "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)",
+  "userInfoCake": "function userInfo(address) view returns (uint256 shares, uint256 lastDepositedTime)",
+  "singleAssetPrice": "uint256:getPricePerFullShare",
+  "pId": "uint256:pid",
+  "ausdTotalStablecoinIssued": "uint256:totalStablecoinIssued",
+  "xalpacaTotalSupply": "uint256:supply"
+}

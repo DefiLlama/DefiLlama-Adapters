@@ -1,0 +1,3 @@
+{
+  "getBassets": "function getBassets() view returns (tuple(address addr, uint8 status, bool isTransferFeeCharged, uint256 ratio, uint256 maxWeight, uint256 vaultBalance)[] bAssets, uint256 len)"
+}

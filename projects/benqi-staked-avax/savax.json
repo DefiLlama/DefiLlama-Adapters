@@ -1,0 +1,4 @@
+{
+  "totalPooledAvax": "uint256:totalPooledAvax",
+  "getSharesByPooledAvax": "function getSharesByPooledAvax(uint256 avaxAmount) view returns (uint256)"
+}

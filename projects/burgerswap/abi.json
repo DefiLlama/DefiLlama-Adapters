@@ -1,0 +1,5 @@
+{
+  "poolInfo": "function poolInfo(uint256) view returns (uint256 pid, address depositToken, address earnToken, uint256 allocPoint, uint256 lastUpdateBlock, uint256 lastRewardAmount, uint256 lastEarnAmount, uint256 accRewardPerShare, uint256 accEarnPerShare, uint16 tokenType, bool added)",
+  "poolLength": "uint256:poolLength",
+  "getDepositTokenSupply": "function getDepositTokenSupply(uint256 _pid) view returns (uint256)"
+}

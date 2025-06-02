@@ -1,0 +1,7 @@
+{
+  "poolLength": "uint256:poolLength",
+  "token0": "address:token0",
+  "token1": "address:token1",
+  "wantLockedTotal": "uint256:wantLockedTotal",
+  "poolInfo": "function poolInfo(uint256) view returns (address want, uint256 allocPoint, uint256 lastRewardTime, address strategy, uint256 earlyWithdrawFee, uint256 earlyWithdrawTime)"
+}

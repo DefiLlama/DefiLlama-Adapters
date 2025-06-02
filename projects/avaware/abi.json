@@ -1,0 +1,5 @@
+{
+  "poolCount": "uint256:poolCount",
+  "getPool": "function getPool(uint256 id) view returns (tuple(address pool, string name, uint256 rewardAmount, bool legacy, bool active))",
+  "stakingToken": "address:stakingToken"
+}

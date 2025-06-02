@@ -1,0 +1,4 @@
+{
+  "numPools": "uint256:numPools",
+  "pools": "function pools(uint256) view returns (address)"
+}

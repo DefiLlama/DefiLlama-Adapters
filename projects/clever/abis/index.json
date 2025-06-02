@@ -1,0 +1,13 @@
+{
+    "curve": {
+        "coinsUint": "function coins(uint256 arg0) view returns (address)",
+        "coinsInt": "function coins(int128 arg0) view returns (address out)",
+        "balances": "function balances(uint256 arg0) view returns (uint256)",
+        "balancesOther": "function balances(int128 arg0) view returns (uint256)"
+    },
+    "balancer": {
+        "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)"
+    },
+    "getActiveYieldStrategies": "function getActiveYieldStrategies() view returns (uint256[] _indices, address[] _strategies, address[] _underlyingTokens, address[] _yieldTokens)",
+    "yieldStrategies": "function yieldStrategies(uint256) view returns (bool isActive, address strategy, address underlyingToken, address yieldToken, uint256 totalShare, uint256 activeYieldTokenAmount, uint256 harvestableYieldTokenAmount, uint256 expectedUnderlyingTokenAmount)"
+}

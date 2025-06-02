@@ -1,0 +1,4 @@
+{
+  "get_pool_from_lp_token": "function get_pool_from_lp_token(address arg0) view returns (address)",
+  "get_coins": "function get_coins(address _pool) view returns (address[8])"
+}

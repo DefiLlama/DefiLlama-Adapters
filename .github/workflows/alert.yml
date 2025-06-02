@@ -1,0 +1,15 @@
+name: Alert
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Update unlisted
+      run: curl https://born-to-llama.herokuapp.com/refresh
+    # - name: Deploy to server
+    #   run: curl https://born-to-llama.herokuapp.com/rebuild-server

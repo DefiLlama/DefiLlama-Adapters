@@ -1,0 +1,4 @@
+{
+  "cvxPoolId": "uint256:cvxPoolId",
+  "lpToken": "address:lpToken"
+}

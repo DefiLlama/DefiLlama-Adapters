@@ -1,0 +1,4 @@
+{
+  "underlying": "address:underlying",
+  "getAllMarkets": "address[]:getAllMarkets"
+}

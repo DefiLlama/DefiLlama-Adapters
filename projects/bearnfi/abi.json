@@ -1,0 +1,4 @@
+{
+  "wantAddress": "address:wantAddress",
+  "wantLockedTotal": "uint256:wantLockedTotal"
+}

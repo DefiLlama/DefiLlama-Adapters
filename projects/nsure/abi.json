@@ -1,0 +1,6 @@
+{
+  "totalPledge": "uint256:totalPledge",
+  "totalStake": "uint256:totalStake",
+  "totalSupply": "uint256:totalSupply",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)"
+}

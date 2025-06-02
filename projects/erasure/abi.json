@@ -1,0 +1,4 @@
+{
+  "getInstanceCount": "uint256:getInstanceCount",
+  "getPaginatedInstances": "function getPaginatedInstances(uint256 startIndex, uint256 endIndex) view returns (address[] instances)"
+}

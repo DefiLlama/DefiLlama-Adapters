@@ -1,0 +1,5 @@
+{
+  "getGardens": "address[]:getGardens",
+  "getGardenDetails": "function getGardenDetails(address _garden) view returns (string, string, address[5], address, bool[4], address[], address[], uint256[10], uint256[10], uint256[3])",
+  "getCompleteStrategy": "function getCompleteStrategy(address _strategy) view returns (address, string, uint256[16], bool[], uint256[])"
+}

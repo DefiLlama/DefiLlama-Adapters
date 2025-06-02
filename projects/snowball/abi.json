@@ -1,0 +1,7 @@
+{
+  "getToken": "function getToken(uint8 index) view returns (address)",
+  "want": "address:want",
+  "balanceOf": "uint256:balanceOf",
+  "token": "address:token",
+  "balance": "uint256:balance"
+}

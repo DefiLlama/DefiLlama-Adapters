@@ -1,0 +1,6 @@
+{
+  "getCash": "uint256:getCash",
+  "underlying": "address:underlying",
+  "totalBorrows": "uint256:totalBorrows",
+  "totalReserves": "uint256:totalReserves"
+}

@@ -1,0 +1,5 @@
+{
+  "everRiseAddress": "address:everRiseAddress",
+  "getStats": "function getStats() view returns (tuple(uint256 reservesBalance, uint256 liquidityToken, uint256 liquidityCoin, uint256 staked, uint256 aveMultiplier, uint256 rewards, uint256 volumeTransfers, uint256 volumeBuy, uint256 volumeSell, uint256 volumeTrade, uint256 bridgeVault, uint256 tokenPriceCoin, uint256 coinPriceStable, uint256 tokenPriceStable, uint256 marketCap, uint128 blockNumber, uint32 holders, uint8 tokenDecimals, uint8 coinDecimals, uint8 stableDecimals, uint8 multiplierDecimals) stats)",
+  "wrappedCoinAddress": "address:wrappedCoinAddress"
+}

@@ -1,0 +1,4 @@
+{
+  "pricePerShare": "uint256:pricePerShare",
+  "yCrvDistribution": "function yCrvDistribution() view returns (uint256 here, uint256 total)"
+}
