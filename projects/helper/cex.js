@@ -265,7 +265,7 @@ const defaultTokens = {
     ADDRESSES.aptos.APT,
     ADDRESSES.aptos.USDC,
     ADDRESSES.aptos.USDT,
-    ADDRESSES.aptos.zUSDT,
+    ADDRESSES.aptos.USDt
   ],
   mantle: [
     nullAddress,
