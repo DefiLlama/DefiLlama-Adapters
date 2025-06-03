@@ -1,5 +1,5 @@
-const utils = require('./helper/utils');
-const { getApiTvl } = require('./helper/historicalApi');
+const utils = require('../helper/utils');
+const { getApiTvl } = require('../helper/historicalApi');
 
 const TVL_URL = "https://storage.googleapis.com/defillama-stellar-tvl/stellar-tvl.json";
 
