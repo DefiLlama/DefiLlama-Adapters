@@ -12,3 +12,9 @@ module.exports = mergeExports(dataProviders.map(address => ({
 })))
 
 module.exports.methodology = methodology
+
+module.exports.deadFrom = '2025-03-28'
+module.exports.sonic.borrowed=  () => ({})
+module.exports.hallmarks = [
+  ['2025-03-28', "Oracle Manipulation Exploit"],
+]

@@ -92,7 +92,6 @@ async function borrowed(api) {
     const debtToken = borrowTokens[i]
     const debtAmount = borrowAmounts[i]
     if(!debtToken || !debtAmount) return
-    console.log(debtToken, debtAmount)
     api.addToken(debtToken, debtAmount)
   })
 }

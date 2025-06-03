@@ -261,7 +261,12 @@ const defaultTokens = {
     ADDRESSES.ton.TON_3,
   ],
   sui: [],
-  aptos: [],
+   aptos: [
+    ADDRESSES.aptos.APT,
+    ADDRESSES.aptos.USDC,
+    ADDRESSES.aptos.USDT,
+    ADDRESSES.aptos.USDt
+  ],
   mantle: [
     nullAddress,
     ADDRESSES.mantle.USDC,
