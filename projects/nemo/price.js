@@ -12,7 +12,6 @@ const {
 const {textToBytes} = require("./bytes");
 const {hexToBytes, toU64} = require("../allbridge-core/bytes");
 
-
 const ProgrammableTransactionIndex = 0;
 const ObjectIndex = 1;
 const SharedObjectIndex = 1;
@@ -35,39 +34,32 @@ function parseSuiAddress(str) {
   throw new Error(`Encountered unexpected token when parsing type args for ${str}`);
 }
 
+async function getExchangeRate(coinConfig) {
+  if (coinConfig.provider === 'Scallop') {
+    return await getScallopTokenExchangeRate(coinConfig);
+  } else if (coinConfig.coinType === '0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI') {
+    return await getAfsuiTokenExchangeRate(coinConfig);
+  } else if (coinConfig.coinType === '0x790f258062909e3a0ffc78b3c53ac2f62d7084c3bab95644bdeb05add7250001::super_sui::SUPER_SUI') {
+    return await getSupersuiTokenExchangeRate(coinConfig);
+  } else if (coinConfig.provider === 'AlphaFi') {
+    return await getAlphafiTokenExchangeRate(coinConfig);
+  } else if (coinConfig.provider === 'Winter') {
+    return await getBlizzardTokenExchangeRate(coinConfig);
+  } else if (coinConfig.provider === "SpringSui") {
+    return await getSpringTokenExchangeRate(coinConfig);
+  } else if (coinConfig.provider === "Volo") {
+    return await getVoloTokenExchangeRate(coinConfig);
+  } else if (coinConfig.coinType === "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI") {
+    return await getHasuiTokenExchangeRate(coinConfig);
+  } else if (coinConfig.coinType === "0x8b4d553839b219c3fd47608a0cc3d5fcc572cb25d41b7df3833208586a8d2470::hawal::HAWAL") {
+    return await getHawalTokenExchangeRate(coinConfig);
+  } else if (coinConfig.coinType === "0xd01d27939064d79e4ae1179cd11cfeeff23943f32b1a842ea1a1e15a0045d77d::st_sbuck::ST_SBUCK") {
+    return await getBuckTokenExchangeRate(coinConfig);
+  }
+  return [];
+}
+
 async function getScallopTokenExchangeRate(coinConfig) {
-  // console.log('getScallopTokenExchangeRate', JSON.stringify(coinConfig))
-  // const suiClient = new SuiClient({url: 'https://sui-mainnet.g.allthatnode.com/full/json_rpc/9c64c4d19bee4e338f68f47969c54da0'});
-  // const tx_types = await suiClient.call("unsafe_moveCall", [
-  //   "0x0000000000000000000000000000000000000000000000000000000000000001",
-  //   '0x14c26838b7a307b81169eb7c20d9fd1adaf2de4f0e6ea7853a9c9689ba840567',
-  //   "scallop",
-  //   "get_scallop_token_exchange_rate",
-  //   [coinConfig.syCoinType, coinConfig.underlyingCoinType],
-  //   [
-  //     coinConfig.priceOracleConfigId,
-  //     coinConfig.oracleTicket,
-  //     coinConfig.providerVersion,
-  //     coinConfig.providerMarket,
-  //     coinConfig.syStateId,
-  //     coinConfig.pyStateId,
-  //     coinConfig.marketFactoryConfigId,
-  //     coinConfig.marketStateId,
-  //     "0x6"
-  //   ],
-  //   null, '100000000', "DevInspect"
-  // ]);
-  //
-  // console.log('tx_types', tx_types)
-  //
-  // const devInsRes = await suiClient.dryRunTransactionBlock({
-  //   transactionBlock: tx_types.txBytes
-  // });
-  //
-  // console.log('get_scallop_token_exchange_rate devInsRes', JSON.stringify(devInsRes));
-  // return ;
-
-
   let scallopVersion = getScallopVersion(coinConfig.coinType);
 
   const kind = {
@@ -196,6 +188,1246 @@ async function getScallopTokenExchangeRate(coinConfig) {
   };
 
   return generateTxBytes9Args(kind);
+}
+
+async function getAfsuiTokenExchangeRate(coinConfig) {
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": 497420735,
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": 499209575,
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": '0x2f8f6d5da7f13ea37daa397724280483ed062769813b6f31e9788e59cc88994d',
+              "initialSharedVersion": 32696040,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": '0xeb685899830dd5837b47007809c76d91a098d52aabbf61e8ac467c59e5cc4610',
+              "initialSharedVersion": 32347695,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": '0xccd3898005a269c1e9074fe28bca2ff46784e8ee7c13b576862d9758266c3a4d',
+              "initialSharedVersion": 497420736,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": '0xcb27f9938f140bea67eea396fc5b0c6c6dda51537d22bf4101a38efaa76884af',
+              "initialSharedVersion": 499209572,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": '0x4a8d13937be10f97e450d1b8eb5846b749f9d3f470243b6cfa660e3d75b1fc49',
+              "initialSharedVersion": 497676325,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": '0x2d4f90a110115d08d2a52215582b9176f1d0560cb11e8ae8ec4fe0a553f27b7e',
+              "initialSharedVersion": 499209573,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0xaf839645bf2493a723e8e9aaef46d55a6316a89f6f821f42c9e21b5e5ad86183',
+          "module": "aftermath",
+          "function": "get_exchange_rate_from_aftermath",
+          "typeArguments": [
+            '0x37f1fa1fb1d14d313ed8581ebda56ee34bde20c463a08562f7cb5aadc03e17f5::afSUI::AFSUI',
+            '0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI'
+          ],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            },
+            {
+              "Input": 8
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+
+  return generateTxBytes9Args(kind);
+}
+
+async function getSupersuiTokenExchangeRate(coinConfig) {
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": 497420735,
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": 516127338,
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": SUPER_SUI.REGISTRY,
+              "initialSharedVersion": 487394894,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": SUPER_SUI.VAULT,
+              "initialSharedVersion": 488551027,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.syStateId,
+              "initialSharedVersion": 497420736,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": 516127339,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": 497676325,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": 516127340,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0xaf839645bf2493a723e8e9aaef46d55a6316a89f6f821f42c9e21b5e5ad86183',
+          "module": "aftermath",
+          "function": "get_exchange_rate_from_aftermath",
+          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            },
+            {
+              "Input": 8
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+
+  return generateTxBytes9Args(kind);
+}
+
+async function getAlphafiTokenExchangeRate(coinConfig) {
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": 497420735,
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": 499650241,
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": ALPAHFI.LIQUID_STAKING_INFO,
+              "initialSharedVersion": 443441850,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.syStateId,
+              "initialSharedVersion": 497420736,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": 499747225,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": 497676325,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": 499747226,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0x724fadf3aca4508c83c323a1f4ef6f71983e0110e1800c997938341d8e9ad610',
+          "module": "alphafi",
+          "function": "get_exchange_rate_from_alphafi",
+          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+  return generateTxBytes8Args(kind);
+}
+
+async function getBlizzardTokenExchangeRate(coinConfig) {
+  const blizzardStaking = Winter_Blizzard_Staking_List.find(
+    (item) => item.coinType === coinConfig.coinType,
+  )?.value
+
+  if (!blizzardStaking) {
+    throw new Error("Winter blizzard staking not found")
+  }
+  let blizzardVersion = getBlizzardVersion(coinConfig.coinType);
+
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": blizzardVersion[0],
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": blizzardVersion[1],
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": blizzardStaking,
+              "initialSharedVersion": blizzardVersion[2],
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": WWAL.WALRUS_STAKING,
+              "initialSharedVersion": blizzardVersion[3],
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.syStateId,
+              "initialSharedVersion": blizzardVersion[4],
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": blizzardVersion[5],
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": blizzardVersion[6],
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": blizzardVersion[7],
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0x28aa6089c871dd6a598db5150a79efe987845e77c1c06b9f7238aa29edeb52c2',
+          "module": "haedal",
+          "function": "get_exchange_rate_from_blizzard",
+          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            },
+            {
+              "Input": 8
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+  return generateTxBytes9Args(kind);
+}
+
+async function getSpringTokenExchangeRate(coinConfig) {
+  const lstInfo = SPRING_SUI_STAKING_INFO_LIST.find(
+    (item) => item.coinType === coinConfig.coinType,
+  )?.value
+
+  if (!lstInfo) {
+    throw new Error(`SpringSui: lstInfo not found for ${coinConfig.coinType}`)
+  }
+
+  // console.log('getAfTokenExchangeRate', JSON.stringify(coinConfig))
+  // const suiClient = new SuiClient({url: 'https://sui-mainnet.g.allthatnode.com/full/json_rpc/9c64c4d19bee4e338f68f47969c54da0'});
+  // const tx_types = await suiClient.call("unsafe_moveCall", [
+  //   "0x0000000000000000000000000000000000000000000000000000000000000000",
+  //   '0xa38b880ac63a6da825608778d16f7fb3562aa848699e652aee43a29eff4f61c7',
+  //   "spring",
+  //   "get_exchange_rate_from_spring",
+  //   [coinConfig.syCoinType, coinConfig.coinType],
+  //   [
+  //     coinConfig.priceOracleConfigId,
+  //     coinConfig.oracleTicket,
+  //     lstInfo,
+  //     coinConfig.syStateId,
+  //     coinConfig.pyStateId,
+  //     coinConfig.marketFactoryConfigId,
+  //     coinConfig.marketStateId,
+  //     "0x6"
+  //   ],
+  //   null, '10000000000', "DevInspect"
+  // ]);
+  //
+  // console.log('tx_types', tx_types)
+  //
+  // const devInsRes = await suiClient.dryRunTransactionBlock({
+  //   transactionBlock: tx_types.txBytes
+  // });
+  //
+  // console.log('get_exchange_rate_from_aftermath devInsRes', JSON.stringify(devInsRes));
+  // return ;
+
+  let springVersion = getSpringVersion(coinConfig.coinType);
+
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": springVersion[0],
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": springVersion[1],
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": lstInfo,
+              "initialSharedVersion": springVersion[2],
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.syStateId,
+              "initialSharedVersion": springVersion[3],
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": springVersion[4],
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": springVersion[5],
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": springVersion[6],
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0xa38b880ac63a6da825608778d16f7fb3562aa848699e652aee43a29eff4f61c7',
+          "module": "spring",
+          "function": "get_exchange_rate_from_spring",
+          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+  return generateTxBytes8Args(kind);
+}
+
+async function getVoloTokenExchangeRate(coinConfig) {
+  // console.log('getAfTokenExchangeRate', JSON.stringify(coinConfig))
+  // const suiClient = new SuiClient({url: 'https://sui-mainnet.g.allthatnode.com/full/json_rpc/9c64c4d19bee4e338f68f47969c54da0'});
+  // const tx_types = await suiClient.call("unsafe_moveCall", [
+  //   "0x0000000000000000000000000000000000000000000000000000000000000001",
+  //   '0x29d6005647ecead5562401c7e11045f05aa8105bc3c127730042458432e891cf',
+  //   "volo",
+  //   "get_exchange_rate_from_volo",
+  //   [coinConfig.syCoinType],
+  //   [
+  //     coinConfig.priceOracleConfigId,
+  //     coinConfig.oracleTicket,
+  //     VOLO.NATIVE_POOL,
+  //     VOLO.METADATA,
+  //     coinConfig.syStateId,
+  //     coinConfig.pyStateId,
+  //     coinConfig.marketFactoryConfigId,
+  //     coinConfig.marketStateId,
+  //     "0x6"
+  //   ],
+  //   null, '1000000000', "DevInspect"
+  // ]);
+  //
+  // console.log('tx_types', tx_types)
+  //
+  // const devInsRes = await suiClient.dryRunTransactionBlock({
+  //   transactionBlock: tx_types.txBytes
+  // });
+  //
+  // console.log('get_exchange_rate_from_aftermath devInsRes', JSON.stringify(devInsRes));
+  // return ;
+  //
+  // let springVersion = getSpringVersion(coinConfig.coinType);
+
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": 497420735,
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": 529022459,
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": VOLO.NATIVE_POOL,
+              "initialSharedVersion": 34377055,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": VOLO.METADATA,
+              "initialSharedVersion": 34377055,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.syStateId,
+              "initialSharedVersion": 497420736,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": 508837694,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": 497676325,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": 508837695,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0x29d6005647ecead5562401c7e11045f05aa8105bc3c127730042458432e891cf',
+          "module": "volo",
+          "function": "get_exchange_rate_from_volo",
+          "typeArguments": [coinConfig.syCoinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            },
+            {
+              "Input": 8
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+  return generateTxBytes9Args(kind);
+}
+
+async function getHasuiTokenExchangeRate(coinConfig) {
+  // console.log('getAfTokenExchangeRate', JSON.stringify(coinConfig))
+  // const suiClient = new SuiClient({url: 'https://sui-mainnet.g.allthatnode.com/full/json_rpc/9c64c4d19bee4e338f68f47969c54da0'});
+  // const tx_types = await suiClient.call("unsafe_moveCall", [
+  //   "0x0000000000000000000000000000000000000000000000000000000000000001",
+  //   '0x976e25fbe670f007b5061eb99bf6c6c698bd52ac3863aeab69997cad28a4cefd',
+  //   "haedal",
+  //   "get_exchange_rate_from_haSui",
+  //   [coinConfig.syCoinType, coinConfig.coinType],
+  //   [
+  //     coinConfig.priceOracleConfigId,
+  //     coinConfig.oracleTicket,
+  //     HAEDAL.HAEDAL_STAKING_ID,
+  //     coinConfig.syStateId,
+  //     coinConfig.pyStateId,
+  //     coinConfig.marketFactoryConfigId,
+  //     coinConfig.marketStateId,
+  //     "0x6"
+  //   ],
+  //   null, '1000000000', "DevInspect"
+  // ]);
+  //
+  // console.log('tx_types', tx_types)
+  //
+  // const devInsRes = await suiClient.dryRunTransactionBlock({
+  //   transactionBlock: tx_types.txBytes
+  // });
+  //
+  // console.log('get_exchange_rate_from_aftermath devInsRes', JSON.stringify(devInsRes));
+  // return ;
+  //
+  // let springVersion = getSpringVersion(coinConfig.coinType);
+
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": 497420735,
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": 502433348,
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": HAEDAL.HAEDAL_STAKING_ID,
+              "initialSharedVersion": 24060192,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.syStateId,
+              "initialSharedVersion": 497420736,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": 503058772,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": 497676325,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": 503058773,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0x976e25fbe670f007b5061eb99bf6c6c698bd52ac3863aeab69997cad28a4cefd',
+          "module": "haedal",
+          "function": "get_exchange_rate_from_haSui",
+          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+  return generateTxBytes8Args(kind);
+}
+
+async function getHawalTokenExchangeRate(coinConfig) {
+  // console.log('getAfTokenExchangeRate', JSON.stringify(coinConfig))
+  // const suiClient = new SuiClient({url: 'https://sui-mainnet.g.allthatnode.com/full/json_rpc/9c64c4d19bee4e338f68f47969c54da0'});
+  // const tx_types = await suiClient.call("unsafe_moveCall", [
+  //   "0x0000000000000000000000000000000000000000000000000000000000000001",
+  //   '0x976e25fbe670f007b5061eb99bf6c6c698bd52ac3863aeab69997cad28a4cefd',
+  //   "haedal",
+  //   "get_exchange_rate_from_haWAL",
+  //   [coinConfig.syCoinType, coinConfig.coinType],
+  //   [
+  //     coinConfig.priceOracleConfigId,
+  //     coinConfig.oracleTicket,
+  //     HAEDAL.HAEDAL_STAKING_ID,
+  //     coinConfig.syStateId,
+  //     coinConfig.pyStateId,
+  //     coinConfig.marketFactoryConfigId,
+  //     coinConfig.marketStateId,
+  //     "0x6"
+  //   ],
+  //   null, '1000000000', "DevInspect"
+  // ]);
+  //
+  // console.log('tx_types', tx_types)
+  //
+  // const devInsRes = await suiClient.dryRunTransactionBlock({
+  //   transactionBlock: tx_types.txBytes
+  // });
+  //
+  // console.log('get_exchange_rate_from_aftermath devInsRes', JSON.stringify(devInsRes));
+  // return ;
+  //
+  // let springVersion = getSpringVersion(coinConfig.coinType);
+
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": 497420735,
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": 529022461,
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": HAEDAL.HAEDAL_STAKING_ID,
+              "initialSharedVersion": 24060192,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.syStateId,
+              "initialSharedVersion": 497420736,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": 527717584,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": 497676325,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": 527717585,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0x976e25fbe670f007b5061eb99bf6c6c698bd52ac3863aeab69997cad28a4cefd',
+          "module": "haedal",
+          "function": "get_exchange_rate_from_haSui",
+          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            },
+            {
+              "Input": 7
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+  return generateTxBytes8Args(kind);
+}
+
+async function getBuckTokenExchangeRate(coinConfig) {
+  const kind = {
+    "ProgrammableTransaction": {
+      "inputs": [
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.priceOracleConfigId,
+              "initialSharedVersion": 497420735,
+              "mutable": true
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.oracleTicket,
+              "initialSharedVersion": 497420765,
+              "mutable": false
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": SSBUCK.VAULT,
+              "initialSharedVersion": 261896418,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.pyStateId,
+              "initialSharedVersion": 498195773,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketFactoryConfigId,
+              "initialSharedVersion": 497676325,
+              "mutable": false,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": coinConfig.marketStateId,
+              "initialSharedVersion": 498195774,
+              "mutable": true,
+            }
+          },
+        },
+        {
+          "Object": {
+            "SharedObject": {
+              "objectId": "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "initialSharedVersion": 1,
+              "mutable": false,
+            }
+          },
+        }
+      ],
+      "commands": [{
+        "MoveCall": {
+          "package": '0xf6f12cd63d0d6f44c789a2abfed51ae1a5237c783006b016237736a400724566',
+          "module": "buck",
+          "function": "get_exchange_rate_from_ssbuck",
+          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
+          "arguments": [
+            {
+              "Input": 0
+            },
+            {
+              "Input": 1
+            },
+            {
+              "Input": 2
+            },
+            {
+              "Input": 3
+            },
+            {
+              "Input": 4
+            },
+            {
+              "Input": 5
+            },
+            {
+              "Input": 6
+            }
+          ],
+        }
+      }]
+    }
+  };
+
+  return generateTxBytes7Args(kind);
 }
 
 async function getPriceVoucher(coinConfig) {
@@ -1239,389 +2471,30 @@ function getScallopVersion(coinType) {
   return [0, 0, 0, 0, 0]
 }
 
-
-function getPtOutForExactSyInWithPriceVoucher(syAmount, priceVoucher, coinConfig) {
-  const kind = {
-    "ProgrammableTransaction": {
-      "inputs": [
-        {
-          "Pure": {
-            "U64": {
-              "value": coinConfig.priceOracleConfigId
-            }
-          },
-        },
-        {
-          "Pure": {
-            "U64": {
-              "value": coinConfig.priceOracleConfigId
-            }
-          },
-        },
-        {
-          "Object": {
-            "SharedObject": {
-              "objectId": coinConfig.priceOracleConfigId,
-              "initialSharedVersion": 497420735,
-              "mutable": true
-            }
-          },
-        },
-        {
-          "Object": {
-            "SharedObject": {
-              "objectId": coinConfig.oracleTicket,
-              "initialSharedVersion": 533135484,
-              "mutable": false
-            }
-          },
-        },
-        {
-          "Object": {
-            "SharedObject": {
-              "objectId": lstInfo,
-              "initialSharedVersion": 409234967,
-              "mutable": false
-            }
-          },
-        },
-        {
-          "Object": {
-            "SharedObject": {
-              "objectId": coinConfig.syStateId,
-              "initialSharedVersion": 497420736,
-              "mutable": false
-            }
-          },
-        }
-      ],
-      "commands": [{
-        "MoveCall": {
-          "package": coinConfig.oraclePackageId,
-          "module": "spring",
-          "function": "get_price_voucher_from_spring",
-          "typeArguments": [coinConfig.syCoinType, coinConfig.coinType],
-          "arguments": [{
-            "Input": 0
-          },
-            {
-              "Input": 1
-            },
-            {
-              "Input": 2
-            },
-            {
-              "Input": 3
-            }
-          ],
-        }
-      }]
-    }
-  };
-
-  const moduleArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.module);
-  const functionArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.function);
-
-  const typeArgs = kind.ProgrammableTransaction.commands[0].MoveCall.typeArguments.map(t => {
-    const parsed = parseSuiAddress(t);
-    return {
-      address: parsed.address,
-      module: parsed.module,
-      name: parsed.name,
-      typeParams: parsed.typeParams || []
-    };
-  });
-
-  let bytes = [
-    ProgrammableTransactionIndex,
-    kind.ProgrammableTransaction.inputs.length,
-  ];
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[0].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[1].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[2].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[3].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    kind.ProgrammableTransaction.commands.length,
-    MoveCallIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.package),
-    moduleArg.length,
-    ...moduleArg,
-    functionArg.length,
-    ...functionArg,
-  ]);
-
-  bytes = bytes.concat([
-    typeArgs.length,
-  ]);
-
-  for (const typeArg of typeArgs) {
-    const typeModule = textToBytes(typeArg.module);
-    const typeName = textToBytes(typeArg.name);
-
-    bytes = bytes.concat([
-      StructIndex,
-      ...hexToBytes(typeArg.address),
-      typeModule.length,
-      ...typeModule,
-      typeName.length,
-      ...typeName,
-      typeArg.typeParams.length,
-    ]);
+function getBlizzardVersion(coinType) {
+  if (coinType === '0xb1b0650a8862e30e3f604fd6c5838bc25464b8d3d827fbd58af7cb9685b832bf::wwal::WWAL') {
+    return [497420735, 528577114, 511181119, 317862159, 497420736, 528577115, 497676325, 528577116];
+  } else if (coinType === '0xd8b855d48fb4d8ffbb5c4a3ecac27b00f3712ce58626deb5a16a290e0c6edf84::nwal::NWAL') {
+    return [497420735, 537544775, 512202210, 317862159, 497420736, 538539517, 497676325, 538539518]
   }
-  bytes = bytes.concat([
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments.length,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[0].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[1].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[2].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[3].Input,
-    0,
-  ]);
-  return Uint8Array.from(bytes);
+  return [0, 0, 0, 0, 0]
 }
 
-function generate2CallTxBytes10Args(kind) {
-  const moduleArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.module);
-  const functionArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.function);
-
-  const moduleArg1 = textToBytes(kind.ProgrammableTransaction.commands[1].MoveCall.module);
-  const functionArg1 = textToBytes(kind.ProgrammableTransaction.commands[1].MoveCall.function);
-
-  const typeArgs = kind.ProgrammableTransaction.commands[0].MoveCall.typeArguments.map(t => {
-    const parsed = parseSuiAddress(t);
-    return {
-      address: parsed.address,
-      module: parsed.module,
-      name: parsed.name,
-      typeParams: parsed.typeParams || []
-    };
-  });
-
-  const typeArgs1 = kind.ProgrammableTransaction.commands[1].MoveCall.typeArguments.map(t => {
-    const parsed = parseSuiAddress(t);
-    return {
-      address: parsed.address,
-      module: parsed.module,
-      name: parsed.name,
-      typeParams: parsed.typeParams || []
-    };
-  });
-
-  let bytes = [
-    ProgrammableTransactionIndex,
-    kind.ProgrammableTransaction.inputs.length,
-  ];
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[0].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[1].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[2].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[3].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...toU64(kind.ProgrammableTransaction.inputs[4].Pure.u64.value),
-    // ...toU64(kind.ProgrammableTransaction.inputs[4].Object.SharedObject.initialSharedVersion),
-    // kind.ProgrammableTransaction.inputs[4].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...toU64(kind.ProgrammableTransaction.inputs[5].Pure.u64.value),
-    // ...toU64(kind.ProgrammableTransaction.inputs[5].Object.SharedObject.initialSharedVersion),
-    // kind.ProgrammableTransaction.inputs[5].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[6].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[6].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[6].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[7].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[7].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[7].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[8].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[8].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[8].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    ObjectIndex,
-    SharedObjectIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.inputs[9].Object.SharedObject.objectId),
-    ...toU64(kind.ProgrammableTransaction.inputs[9].Object.SharedObject.initialSharedVersion),
-    kind.ProgrammableTransaction.inputs[9].Object.SharedObject.mutable ? 1 : 0,
-  ]);
-
-  bytes = bytes.concat([
-    kind.ProgrammableTransaction.commands.length,
-    MoveCallIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.package),
-    moduleArg.length,
-    ...moduleArg,
-    functionArg.length,
-    ...functionArg,
-  ]);
-
-  bytes = bytes.concat([
-    typeArgs.length,
-  ]);
-
-  for (const typeArg of typeArgs) {
-    const typeModule = textToBytes(typeArg.module);
-    const typeName = textToBytes(typeArg.name);
-
-    bytes = bytes.concat([
-      StructIndex,
-      ...hexToBytes(typeArg.address),
-      typeModule.length,
-      ...typeModule,
-      typeName.length,
-      ...typeName,
-      typeArg.typeParams.length,
-    ]);
+function getSpringVersion(coinType) {
+  if (coinType === '0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI') {
+    return [497420735, 533135484, 409234967, 497420736, 560611887, 497676325, 560611888];
+  } else if (coinType === '0x922d15d7f55c13fd790f6e54397470ec592caa2b508df292a2e8553f3d3b274f::msui::MSUI') {
+    return [497420735, 537544773, 414622371, 497420736, 560625918, 497676325, 560625919];
+  } else if (coinType === '0x502867b177303bf1bf226245fcdd3403c177e78d175a55a56c0602c7ff51c7fa::trevin_sui::TREVIN_SUI') {
+    return [497420735, 537544769, 437950345, 497420736, 560625921, 497676325, 560625922];
+  } else if (coinType === '0x02358129a7d66f943786a10b518fdc79145f1fc8d23420d9948c4aeea190f603::fud_sui::FUD_SUI') {
+    return [497420735, 537544771, 423864488, 497420736, 560625914, 497676325, 560625915];
+  } else if (coinType === '0x41ff228bfd566f0c707173ee6413962a77e3929588d010250e4e76f0d1cc0ad4::ksui::KSUI') {
+    return [497420735, 537544767, 430422182, 497420736, 560625916, 497676325, 560625917];
+  } else if (coinType === '0x285b49635f4ed253967a2a4a5f0c5aea2cbd9dd0fc427b4086f3fad7ccef2c29::i_sui::I_SUI') {
+    return [497420735, 537544765, 496024418, 497420736, 560625919, 497676325, 560625920];
   }
-  bytes = bytes.concat([
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments.length,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[0].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[1].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[2].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[3].Input,
-    0,
-  ]);
-
-  bytes = bytes.concat([
-    MoveCallIndex,
-    ...hexToBytes(kind.ProgrammableTransaction.commands[1].MoveCall.package),
-    moduleArg1.length,
-    ...moduleArg1,
-    functionArg1.length,
-    ...functionArg1,
-  ]);
-
-  bytes = bytes.concat([
-    typeArgs1.length,
-  ]);
-
-  for (const typeArg of typeArgs1) {
-    const typeModule = textToBytes(typeArg.module);
-    const typeName = textToBytes(typeArg.name);
-
-    bytes = bytes.concat([
-      StructIndex,
-      ...hexToBytes(typeArg.address),
-      typeModule.length,
-      ...typeModule,
-      typeName.length,
-      ...typeName,
-      typeArg.typeParams.length,
-    ]);
-  }
-  bytes = bytes.concat([
-    InputIndex,
-    kind.ProgrammableTransaction.commands[1].MoveCall.arguments[0].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[1].MoveCall.arguments[1].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[1].MoveCall.arguments[2].NestedResult,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[1].MoveCall.arguments[3].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[1].MoveCall.arguments[4].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[1].MoveCall.arguments[5].Input,
-    0,
-    InputIndex,
-    kind.ProgrammableTransaction.commands[1].MoveCall.arguments[6].Input,
-    0,
-  ]);
-  return Uint8Array.from(bytes);
+  return [0, 0, 0, 0, 0, 0, 0]
 }
 
 function generateTxBytes4Args(kind) {
@@ -2078,6 +2951,147 @@ function generateTxBytes7Args(kind) {
   return Uint8Array.from(bytes);
 }
 
+function generateTxBytes8Args(kind) {
+  const moduleArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.module);
+  const functionArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.function);
+
+  const typeArgs = kind.ProgrammableTransaction.commands[0].MoveCall.typeArguments.map(t => {
+    const parsed = parseSuiAddress(t);
+    return {
+      address: parsed.address,
+      module: parsed.module,
+      name: parsed.name,
+      typeParams: parsed.typeParams || []
+    };
+  });
+
+  let bytes = [
+    ProgrammableTransactionIndex,
+    kind.ProgrammableTransaction.inputs.length,
+  ];
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[0].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[0].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[1].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[1].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[2].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[2].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[3].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[3].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[4].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[4].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[4].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[5].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[5].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[5].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[6].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[6].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[6].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    ObjectIndex,
+    SharedObjectIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.inputs[7].Object.SharedObject.objectId),
+    ...toU64(kind.ProgrammableTransaction.inputs[7].Object.SharedObject.initialSharedVersion),
+    kind.ProgrammableTransaction.inputs[7].Object.SharedObject.mutable ? 1 : 0,
+  ]);
+
+  bytes = bytes.concat([
+    kind.ProgrammableTransaction.commands.length,
+    MoveCallIndex,
+    ...hexToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.package),
+    moduleArg.length,
+    ...moduleArg,
+    functionArg.length,
+    ...functionArg,
+  ]);
+
+  bytes = bytes.concat([
+    typeArgs.length,
+  ]);
+
+  for (const typeArg of typeArgs) {
+    const typeModule = textToBytes(typeArg.module);
+    const typeName = textToBytes(typeArg.name);
+
+    bytes = bytes.concat([
+      StructIndex,
+      ...hexToBytes(typeArg.address),
+      typeModule.length,
+      ...typeModule,
+      typeName.length,
+      ...typeName,
+      typeArg.typeParams.length,
+    ]);
+  }
+  bytes = bytes.concat([
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments.length,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[0].Input,
+    0,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[1].Input,
+    0,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[2].Input,
+    0,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[3].Input,
+    0,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[4].Input,
+    0,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[5].Input,
+    0,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[6].Input,
+    0,
+    InputIndex,
+    kind.ProgrammableTransaction.commands[0].MoveCall.arguments[7].Input,
+    0,
+  ]);
+  return Uint8Array.from(bytes);
+}
+
 function generateTxBytes9Args(kind) {
   const moduleArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.module);
   const functionArg = textToBytes(kind.ProgrammableTransaction.commands[0].MoveCall.function);
@@ -2231,5 +3245,5 @@ function generateTxBytes9Args(kind) {
 }
 
 module.exports = {
-  getScallopTokenExchangeRate,
+  getExchangeRate
 }
