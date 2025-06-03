@@ -1,7 +1,5 @@
 const { getProvider, decodeAccount } = require("../helper/solana");
 const { PublicKey } = require("@solana/web3.js");
-const { transformBalances } = require("../helper/portedTokens");
-const sdk = require("@defillama/sdk");
 const { get } = require("../helper/http");
 
 const endpoint = "https://api.mngo.cloud/data/v4/group-metadata";
@@ -10,7 +8,7 @@ const OPENBOOK_ID = new PublicKey(
 );
 const MANGO_GROUP = "78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX";
 
-async function ordersTvl() {
+async function ordersTvl(api) {
   const provider = getProvider();
 
   const [stats, openOrdersAccounts] = await Promise.all([
@@ -61,15 +59,9 @@ async function ordersTvl() {
     const quoteAmount =
       (oo.quoteTokenTotal.toNumber() * quoteLots) / 10 ** quoteToken.decimals;
 
-    sdk.util.sumSingleBalance(balances, baseToken.mint.toString(), baseAmount);
-    sdk.util.sumSingleBalance(
-      balances,
-      quoteToken.mint.toString(),
-      quoteAmount,
-    );
+    api.add(baseToken.mint.toString(), baseAmount);
+    api.add(quoteToken.mint.toString(), quoteAmount);
   });
-
-  return transformBalances("solana", balances);
 }
 
 module.exports = {

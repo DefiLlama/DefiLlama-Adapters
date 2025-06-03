@@ -9,11 +9,11 @@ const {polygonContracts} = require('./polygon');
 const {arbitrumContracts} = require('./arbitrum');
 const {optimismContracts} = require('./optimism');
 
-const weth = ADDRESSES.ethereum.WETH;
-const wbtc = ADDRESSES.ethereum.WBTC;
-const ftm = ADDRESSES.ethereum.FTM;
-const matic = ADDRESSES.ethereum.MATIC;
-const usdc= ADDRESSES.ethereum.USDC;
+// const weth = ADDRESSES.ethereum.WETH;
+// const wbtc = ADDRESSES.ethereum.WBTC;
+// const ftm = ADDRESSES.ethereum.FTM;
+// const matic = ADDRESSES.ethereum.MATIC;
+// const usdc= ADDRESSES.ethereum.USDC;
 
 const marketsupply = async (contract, block, chain) => {
     return await sdk.api.abi.multiCall(
@@ -48,7 +48,7 @@ async function eth(_timestamp, block){
     const supplies = await allMarketSupplies(ethereumContracts.weth, block, "ethereum");
 
     return {
-        [weth]: supplies
+        [`ethereum:${ADDRESSES.ethereum.WETH}`]: supplies
     }
 }
 
@@ -58,9 +58,9 @@ async function fantom(_timestamp, ethBlock, chainBlocks){
     const wethSupplies = await allMarketSupplies(fantomContracts.weth, chainBlocks.fantom, "fantom");
 
     return {
-        [ftm]: ftmSupplies,
-        [wbtc]: wbtcSupplies,
-        [weth]: wethSupplies,
+        [`fantom:${ADDRESSES.fantom.WFTM}`]: ftmSupplies,
+        [`fantom:${ADDRESSES.fantom.WBTC}`]: wbtcSupplies,
+        [`fantom:${ADDRESSES.fantom.WETH}`]: wethSupplies,
     }
 }
 
@@ -69,12 +69,12 @@ async function polygon(_timestamp, ethBlock, chainBlocks){
     const wbtcSupplies = await allMarketSupplies(polygonContracts.wbtc, chainBlocks.polygon, "polygon");
     const wethSupplies = await allMarketSupplies(polygonContracts.weth, chainBlocks.polygon, "polygon");
     const usdcSupplies = await allMarketSupplies(polygonContracts.usdc, chainBlocks.polygon, "polygon");
-
+    console.log(maticSupplies, wbtcSupplies, wethSupplies, usdcSupplies)
     return {
-        [matic]: maticSupplies,
-        [wbtc]: wbtcSupplies,
-        [weth]: wethSupplies,
-        [usdc]: usdcSupplies,
+        [`polygon:${ADDRESSES.polygon.WMATIC_2}`]: maticSupplies,
+        [`polygon:${ADDRESSES.polygon.WBTC}`]: wbtcSupplies,
+        [`polygon:${ADDRESSES.polygon.WETH_1}`]: wethSupplies,
+        [`polygon:${ADDRESSES.polygon.USDC_CIRCLE}`]: usdcSupplies,
     }
 }
 
@@ -83,8 +83,8 @@ async function arbitrum(_timestamp, ethBlock, chainBlocks){
     const usdcSupplies = await allMarketSupplies(arbitrumContracts.usdc, chainBlocks.arbirtum, "arbitrum");
 
     return {
-        [weth]: wethSupplies,
-        [usdc]: usdcSupplies,
+        [`arbitrum:${ADDRESSES.arbitrum.WETH}`]: wethSupplies,
+        [`arbitrum:${ADDRESSES.arbitrum.USDC_CIRCLE}`]: usdcSupplies,
     }
 }
 
@@ -92,14 +92,14 @@ async function optimism(_timestamp, ethBlock, chainBlocks){
     const wethSupplies = await allMarketSupplies(optimismContracts.weth, chainBlocks.optimism, "optimism");
     const usdcSupplies = await allMarketSupplies(optimismContracts.usdc, chainBlocks.optimism, "optimism");
     return {
-        [weth]: wethSupplies,
-        [usdc]: usdcSupplies,
+        [`optimism:${ADDRESSES.optimism.WETH}`]: wethSupplies,
+        [`optimism:${ADDRESSES.optimism.USDC_CIRCLE}`]: usdcSupplies,
     }
 }
 
 module.exports = {
     timetravel: false,
-        methodology: "Counts on-chain balance of receipt tokens in F1155 contracts for all vaults.",
+    methodology: "Counts on-chain balance of receipt tokens in F1155 contracts for all vaults.",
     ethereum:{
         tvl:eth
     },

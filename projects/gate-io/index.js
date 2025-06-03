@@ -27,7 +27,8 @@ const config = {
       "0x4bbe1961bd0a6cd1fe3cd8947be15bd8ae2ee562",
       "0xd793281182a0e3e023116004778f45c29fc14f19",
       "0x354e0184a6a6e634ccb07388e2617e05e427563c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "avax": {
@@ -46,7 +47,8 @@ const config = {
       "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
       "0x85faa6c1f2450b9caea300838981c2e6e120c35c",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "polygon": {
@@ -63,7 +65,8 @@ const config = {
       "0x7750fe679d47a9e00575ad46043297a234e83fa2",
       "0x0fc73ffb9a0ded685234428e103d26b3762df460",
       "0xa2df23519a6059dbc6f027f6cf8e59bdaecaf56f",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "fantom": {
@@ -87,7 +90,8 @@ const config = {
       "0xa4992ccf2a74132936b87cbf28b5d52304ba3be7",
       "0x85faa6c1f2450b9caea300838981c2e6e120c35c",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "optimism": {
@@ -126,7 +130,8 @@ const config = {
       "TCr9697xxWMbZznvpJh8uVQzAQR9cLXZm9",
       "TDyR4wBeodpigiKmnwyBQC8UfsCH1T25XF",
       "THhVZfr2Q4J3spWK84Je4ALiFyrnnSq6nN",
-      "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2"
+      "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2",
+      "TYAavN2xCDro5Gdip8UU6W9oQmM43rNxzQ"
     ]
   },
   "cardano": {
@@ -141,12 +146,13 @@ const config = {
     "owners": [
       "u6PJ8DtQuPFnfmwHbGFULQ4u4EgjDiyYKjVEsynXq2w",
       "HiRpdAZifEsZGdzQ5Xo5wcnaH3D2Jj9SoNsUzcYNK78J",
-      "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
-      "CVMV7614DjSjY114GwHhG1HNFXofceziDpuGz7VjDD5K",
+      // "CLNEVwuSAiGsvPtE74yLhda4beNfd8qfZXVKkUcAJZDL",
+      // "CVMV7614DjSjY114GwHhG1HNFXofceziDpuGz7VjDD5K",
       "G9XFfWz6adb9wFDKN2v7HfmJDgAc2hirrTwBmca4w26C",
-      "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
-      "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
-      "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
+      // "E2tbmDk29G6jHdrgwHC6kXGFfDsyrXUyWjD3e3ZB4oNp",
+      // "EnYo9PZuYwhJNi2hnk5AgsJaoNegscFF5CJkSPx1f7td",
+      // "HMbkbJVNitT3t4EtaDJeUtwfTFGYcjU6vhE7h7dqxDzJ"
+      "Egf5D8NKBivJavLKmCssE93J7X6fKvEPQwFTWLZUnaSN"
     ]
   },
   "ripple": {
@@ -253,7 +259,8 @@ const config = {
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
       "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
       "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+      "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
     ]
   },
   "acala": {
@@ -1653,7 +1660,9 @@ const config = {
   },
 };
 
-const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3',  'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', ]
+const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'tara', 'zkfair',
+  'vinu', 'rollux', 'syscoin', 'aelf',
+]
 
 unsupportedChains.forEach(chain => delete config[chain]);
 

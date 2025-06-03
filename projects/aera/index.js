@@ -8,6 +8,7 @@ const LLAMAPAY_ROUTER_ORACLE_NAME = 'LlamaPayRouterOracle'
 const GEARBOX_TOKEN_PREFIX = 'Farming of'
 const ARRAKIS_TOKEN_PREFIX = 'Arrakis Vault V2'
 const ESXAI_POSITION_ORACLE_NAME = 'EsXai Position Oracle'
+const SYMBIOTIC_TOKEN_PREFIX = 'Symbiotic Vault'
 
 const config = {
   polygon: {
@@ -190,6 +191,7 @@ Object.keys(config).forEach(chain => {
       const arrakisVaults = []
       const xaiPositionVaults = []
       const esXaiVaults = []
+      const symbioticVaults = []
 
       for (let i = 0; i < vaults.length; ++i) {
         const vault = vaults[i]
@@ -220,6 +222,10 @@ Object.keys(config).forEach(chain => {
             }
             if (assetName === ESXAI_POSITION_ORACLE_NAME) {
               xaiPositionVaults.push(vault)
+              continue
+            }
+            if (assetName.startsWith(SYMBIOTIC_TOKEN_PREFIX)) {
+              symbioticVaults.push([vault, assetInfo.asset])
               continue
             }
           }
@@ -256,7 +262,8 @@ Object.keys(config).forEach(chain => {
         processLlamaPayTvl(llamapayRouters, api),
         processGearboxTvl(gearboxFarmingPools, api),
         processArrakisTvl(arrakisVaults, api, ARRAKIS_HELPER),
-        processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI)
+        processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI),
+        processSymbioticTvl(symbioticVaults, api)
       ])
 
       Object.keys(erc4626UnderylingMap).forEach((erc4626Asset, i) => erc4626UnderylingMap[erc4626Asset] = underlyingTokens[i])
@@ -409,6 +416,18 @@ async function processAaveTvl(aaveVaults, api, AAVE_POOL, AAVE_POOL_DATA_PROVIDE
   
 }
 
+async function processSymbioticTvl(symbioticVaults, api) {
+  if (symbioticVaults.length === 0) return
+
+  const collaterals = await api.multiCall({ abi: abi.collateral, calls: symbioticVaults.map(x => ({target: x[1]}))})
+
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: symbioticVaults.map(x => ({target: x[1], params: [x[0]]}))})
+
+  collaterals.forEach((collateral, i) => {
+    api.addToken(collateral, balances[i])
+  })
+}
+
 const abi = {
   "collateralBalanceOf": "function collateralBalanceOf(address account, address asset) view returns (uint128)",
   "getReserveData": "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))",
@@ -438,5 +457,6 @@ const abi = {
   "getPoolIndicesOfUser": "function getPoolIndicesOfUser(address user) returns (address[])",
   "esXaiStakeBucket": "function esXaiStakeBucket() returns (address)",
   "getStakedAmounts": "function getStakedAmounts(address) returns (uint256)",
-  "withdrawableDividendOf": "function withdrawableDividendOf(address) returns (uint256)"
+  "withdrawableDividendOf": "function withdrawableDividendOf(address) returns (uint256)",
+  "collateral": "function collateral() returns (address)"
 }

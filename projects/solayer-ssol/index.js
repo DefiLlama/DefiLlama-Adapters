@@ -23,7 +23,7 @@ async function tvl(api) {
     // Derive the ATA for this LST and vault
     const ata = getAssociatedTokenAddress(lstMint, vaultPubkey);
 
-    return ata.toString()
+    return ata
   });
 
 
