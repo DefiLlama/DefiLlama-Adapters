@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { iziswapExport } = require('../helper/iziswap')
-const { fetchIziswapClassicTvl } = require('./classicHelper')
 
 const nullAddress = ADDRESSES.null
 const poolHelpers = {
@@ -44,10 +43,6 @@ const poolHelpers = {
   'plume_mainnet': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
-const iziswapClassicFactory = {
-  'plume_mainnet': '0x88867BF3bB3321d8c7Da71a8eAb70680037068E4',
-}
-
 const blacklistedTokens = [
   ADDRESSES.bsc.iUSD,
   '0x1382628e018010035999A1FF330447a0751aa84f',
@@ -57,21 +52,7 @@ const blacklistedTokens = [
 ]
 
 Object.keys(poolHelpers).forEach(chain => {
-  module.exports[chain] = {
-    tvl: async function (api) {
-      const tvlV3 = iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens });
-      const v3Tvl = await tvlV3(api);
-
-      if (iziswapClassicFactory[chain]) {
-        const classicTvl = fetchIziswapClassicTvl({ classicFactory: iziswapClassicFactory[chain], blacklistedTokens });
-        const v2Tvl = await classicTvl(api)
-        api.add(v2Tvl);
-      }
-
-      api.add(v3Tvl);
-      return api.getBalances();
-    }
-  }
+  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens }), }
 })
 
 module.exports.hallmarks = [
