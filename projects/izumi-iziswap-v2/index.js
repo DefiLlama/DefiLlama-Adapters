@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { fetchIziswapClassicTvl } = require('../izumi-iziswap-v2/classicHelper')
+const { getUniTVL } = require('../helper/unknownTokens');
 
 const iziswapClassicFactory = {
   'plume_mainnet': '0x88867BF3bB3321d8c7Da71a8eAb70680037068E4',
@@ -14,5 +14,5 @@ const blacklistedTokens = [
 ]
 
 Object.keys(iziswapClassicFactory).forEach(chain => {
-  module.exports[chain] = { tvl: fetchIziswapClassicTvl({ classicFactory: iziswapClassicFactory[chain], blacklistedTokens }), }
+  module.exports[chain] = { tvl: getUniTVL({ factory: iziswapClassicFactory[chain], blacklistedTokens }), }
 })
