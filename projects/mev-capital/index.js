@@ -56,6 +56,11 @@ const configs = {
         '0xC6ac2365C94f007fB3f682F48c7Db9c36d4FA6df',
       ],
     },
+    unichain: {
+      morphoVaultOwners: [
+        '0x6fA5d361Ab8165347F636217001E22a7cEF09B48',
+      ],
+    },
   }
 }
 

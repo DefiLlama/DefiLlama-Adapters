@@ -85,6 +85,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  unichain: {
+    vaultFactories: [
+      {
+        address: '0xe9EdE3929F43a7062a007C3e8652e4ACa610Bdc0',
+        fromBlock: 9316789,
+      },
+    ],
+  },
 }
 
 const EulerConfigs = {
