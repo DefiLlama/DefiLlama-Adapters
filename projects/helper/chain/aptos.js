@@ -44,6 +44,19 @@ async function getResource(account, key, chain = 'aptos') {
   return data
 }
 
+async function getFungibles(tokenAddress, owners, balances) {
+  const url = `https://api.aptoscan.com/public/v1.0/fungible_assets/${tokenAddress}/holders`
+  const res = await http.get(url)
+  const holders = res.data?.coin_holders_list || []
+  if (!holders.length) return;
+  holders.forEach(i => {
+    if (!i.owner_address || i.is_frozen) return;
+    const addr = i.owner_address.toLowerCase()
+    if (!owners.includes(addr)) return;
+    sdk.util.sumSingleBalance(balances, tokenAddress, i.amount)
+  })
+}
+
 function dexExport({
   account,
   poolStr,
@@ -90,12 +103,14 @@ function dexExport({
   }
 }
 
-async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos' }) {
+async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos', fungibleAssets = [] }) {
   if (api) chain = api.chain
   owners = getUniqueAddresses(owners, true)
+  if (fungibleAssets.length > 0) await Promise.all(fungibleAssets.map(i => getFungibles(i, owners, balances)))
   const resources = await Promise.all(owners.map(i => getResources(i, chain)))
   resources.flat().filter(i => i.type.includes('::CoinStore')).forEach(i => {
     const token = i.type.split('<')[1].replace('>', '')
+    if (fungibleAssets.includes(token)) return false // Prevents double counting if, for any reason, the token is present in both CoinStore and fungibleAsset
     if (tokens.length && !tokens.includes(token)) return;
     if (blacklistedTokens.includes(token)) return;
     sdk.util.sumSingleBalance(balances, token, i.data.coin.value)
