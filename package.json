@@ -46,7 +46,8 @@
     "p-limit": "^3.1.0",
     "starknet": "^5.24.3",
     "tron-format-address": "^0.1.8",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@polkadot/api": "^10.9.1"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
