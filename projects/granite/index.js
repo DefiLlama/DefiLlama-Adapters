@@ -10,6 +10,7 @@ async function tvl() {
 
 module.exports = {
   methodology: 'aeUSDC and sBTC currently in the Vault',
+  timetravel: false,
   stacks: {
     tvl,
   },
