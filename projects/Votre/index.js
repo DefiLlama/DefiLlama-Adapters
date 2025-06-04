@@ -1,4 +1,4 @@
-const { sumTokens2 } = require('@defillama/sdk/helper/unwrapLPs');
+const { tokensAndOwners } = require('@defillama/sdk/helper/unwrapLPs');
 
 // Token addresses on Base
 const cbBTC = "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf";
