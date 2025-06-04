@@ -156,5 +156,5 @@ async function omnipoolTvl(api) {
 }
 
 module.exports = {
-  omnipoolTvl,
+  hydradx: { tvl: omnipoolTvl},
 }

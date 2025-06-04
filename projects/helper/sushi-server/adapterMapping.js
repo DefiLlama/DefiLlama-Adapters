@@ -30,9 +30,7 @@ module.exports = {
         'interlay-lending': '/interlay-lending/api',
       },
       {
-        'hydration-dex': '/hydration-dex/index.js',
-        'hydration-borrow': '/hydration-borrow/index.js',
-        'hydration-staking': '/hydration-staking/index.js',
+        'hydradx': '/hydradx/api.js',
       },
     ],
     [
