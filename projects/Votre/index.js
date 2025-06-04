@@ -1,5 +1,3 @@
-const { tokensAndOwners } = require('@defillama/sdk/helper/unwrapLPs');
-
 // Token addresses on Base
 const cbBTC = "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf";
 const WETH = "0x4200000000000000000000000000000000000006";
@@ -43,14 +41,12 @@ async function tvl(_, _1, _2, { api }) {
   return api.sumTokens({ tokensAndOwners });
 }
 
-
 module.exports = {
   methodology:
     "TVL includes cbBTC and WETH locked in escrow contracts, and USDC held in both provider and taker contracts. Balances are fetched via on-chain `balanceOf` calls.",
-  start: 1714608000, // 🔁 Replace with your protocol launch timestamp (e.g., April 2024)
+  start: 1714608000,
   timetravel: true,
   base: {
     tvl,
   },
 };
-
