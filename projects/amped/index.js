@@ -48,7 +48,7 @@ module.exports = {
     staking: staking(baseStakingAddress, baseAmpAddress),
     tvl: gmxExports({ vault: baseVaultAddress, })
   },
-  superseed: {
+  sseed: {
     staking: staking(superseedStakingAddress, superseedAmpAddress),
     tvl: gmxExports({ vault: superseedVaultAddress, })
   }
