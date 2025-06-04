@@ -31,16 +31,18 @@ const USDC_TAKER = [
 ];
 
 async function tvl(_, _1, _2, { api }) {
-  return sumTokens2({
-    api,
-    tokensAndOwners: [
-      [cbBTC, cbBTC_ESCROW],
-      [WETH, WETH_ESCROW],
-      [USDC, USDC_PROVIDER],
-      [USDC, USDC_TAKER],
-    ],
-  });
+  const tokensAndOwners = [
+    [cbBTC, cbBTC_ESCROW],
+    [WETH, WETH_ESCROW],
+    [USDC, USDC_PROVIDER],
+    [USDC, USDC_TAKER],
+  ].flatMap(([token, owners]) =>
+    owners.map(owner => [token, owner])
+  );
+
+  return api.sumTokens({ tokensAndOwners });
 }
+
 
 module.exports = {
   methodology:
