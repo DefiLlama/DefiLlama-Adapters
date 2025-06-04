@@ -1,8 +1,10 @@
 const { queryContract, } = require("../helper/chain/cosmos");
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const hinj = "inj18luqttqyckgpddndh8hvaq25d5nfwjc78m56lc"
+// Contract
 const autoCompound = "inj1mjcg8a73904rj4w7t5qkgn0apua98n059nufma"
+
+const hinj = "inj18luqttqyckgpddndh8hvaq25d5nfwjc78m56lc"
 const xhdro = "inj1qc2tw477wwuvkad0h3g78xqgwx4k8knat6vz0h"
 
 async function staking(api) {
@@ -19,7 +21,7 @@ async function tvl(api) {
 
   api.add(
     ADDRESSES.injective.INJ, +total_supply + +total_bonded
-  )
+  );
 }
 
 module.exports = {
