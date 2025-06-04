@@ -14,6 +14,6 @@ module.exports = {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory })
   },
   hallmarks: [
-    [Math.floor(new Date('2023-05-18')/1e3), 'Project rugged!'],
+    ['2023-05-18', 'Project rugged!'],
   ],
 };

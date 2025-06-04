@@ -76,6 +76,12 @@ const config = {
       "0x9db812a1b55ac6fdbd1d52e628324e2fd2dbb560",
       "0xbdbcb0789b4d1143d391e27a0fbeb90ad205d232",
       "0x863b9fe43ea1490a9084ef0cdf436dbe4c34370f",
+      "0x86dbaa55f0e65857b58109c3cb725deff4da3851",
+      "0x35696b0847ed8428a098cba726b6514582aa5fc7",
+      "0x8d6d3479c94bb95e737b72186192ff5e7fedf3a2",
+      "0xf2f40c3bb444288f6f64d8336dcc14dbd929fd94",
+      "0xbce9aecd3985d4cbb9d273453159a26301fa02ef",
+      "0x70f58622158d7e609ae5839c4ad0d477f468863f"
     ],
   },
   bitcoin: {
@@ -87,6 +93,7 @@ const config = {
       "0xf89d7b9c864f589bbf53a82105107622b35eaa40",
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
       "0x388E52979AC487c6BdaFCC84B251976Cd162790b",
+      "0xc19bb2709321bd6ad6d8396a885b7c151b8d48c5",
     ],
   },
   tron: {
@@ -116,6 +123,10 @@ const config = {
       "TAv8HvZLAyPC2PyLY61i1nvPKpJ2bDURxo",
       "TSLXGsU6kgByy3oCdhMqpWHXq3FFFHUVAn",
       "TG8eS14GvQJ1Qi4iWoePavD8oBiSNVNqzi",
+      "TLXtfWVafCLPSUUfk2UHJWVs2SZtuxBS4F",
+      "TT82s2U3xERKsmvgftM1ekzRqVP6NPo13y",
+      "TP39VvzdkdkxvGhmEMtot4hN5R7czR6GVV",
+      "TMFuCWAvcEDwtW3evtXFAg8eQzoCWtzwnQ",
     ],
   },
   polygon: {
@@ -131,6 +142,7 @@ const config = {
       "0xee5B5B923fFcE93A870B3104b7CA09c3db80047A",
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
       "0x7e8c73462aaa9d61c801bd9f5682db014387621a",
+      "0xa0acdf9fa38b293f0bbdd01ca6bf3e7ed8291dd4"
     ],
   },
   avax: {
@@ -158,6 +170,7 @@ const config = {
       "0x1Db92e2EeBC8E0c075a02BeA49a2935BcD2dFCF4",
       "0xee5B5B923fFcE93A870B3104b7CA09c3db80047A",
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
+      "0x75df67943d35129dd22da5d14fda4983571f553a"
     ],
   },
   era: {
@@ -177,6 +190,8 @@ const config = {
       "CqQ6AX1fiFfHKKY3saGzT5pgbkLwfLVrrAKpFhUG38oe",
       "32cT9eAwkEvAk631rUcUAbXVFPg21DaAXzGiz9AqHTVE",
       "9Z7S8vCj6nDbK9t4m4AU3vZpKm4UufHAwpmRYyKgZf7r",
+      "BunaYnktTigcU1ovzVt9dG7NMv2gW5VX7MBfSS8J38s2",
+      "AaFm2LPX8NUKXe64JaxcRNUc8QPGYCxrPG1HjHcTTGAK"
     ],
   },
   cardano: {
@@ -248,6 +263,11 @@ const config = {
       "0x588846213a30fd36244e0ae0ebb2374516da836c",
       "0xEe6281d94Fed46A90379F2033B6BbdcDa4EF462E",
       "0xe080636a701adb421e077e98f160fddf7710826b",
+      "0x59800fc68c7039566ed7a04b0f735255093cac1d",
+      "0x036c43bebe5fa5dff3c299584b4a6c1923c7d932",
+      "0xcbf446565eddf074b2c99e8f1c15582a0bfe6eba",
+      "0xbce9aecd3985d4cbb9d273453159a26301fa02ef",
+      "0x70f58622158d7e609ae5839c4ad0d477f468863f"
     ],
   },
   cosmos: {
@@ -271,6 +291,11 @@ const config = {
     ],
   },
   dydx: { owners: ["dydx10sdnqxvrwe3mhducn6plyewul84edgd47rfnfe"] },
+  sonic: {
+    owners: [
+      "0x86dbaa55f0e65857b58109c3cb725deff4da3851"
+    ],
+  },
 };
 
 module.exports = cexExports(config);
