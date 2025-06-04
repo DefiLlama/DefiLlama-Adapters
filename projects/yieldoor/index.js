@@ -46,6 +46,10 @@ const vaultAbi = {
   "token1": "function token1() view returns (address)"
 }
 
+const loopedVaultAbi = {
+  "totalAssets": "function totalAssets() view returns (uint256)"
+}
+
 const priceFeedAbi = {
   "getPrice": "function getPrice(address asset) view returns (uint256)"
 }
@@ -55,7 +59,13 @@ const contracts = {
     pricefeed: "0xe4BD4A83c58d93F370f10e4e172259e074c89daB",
     lendingPool: "",
     lp: [],
-    looped: []
+    looped: [
+      {
+        address: "0x67d0bde18945999ff517a04fa156189a07ba6543",
+        asset: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        decimals: 6
+      }
+    ]
   },
   base: {
     pricefeed: "0x8deb1b8b802e27593d631dada78befb166bab8ce",
@@ -213,9 +223,7 @@ const contracts = {
       }
     ],
     looped: [],
-    shadow: [
-
-    ]
+    shadow: []
   }
 }
 
@@ -234,6 +242,8 @@ const calculateBalanceInToken1 = (data) => {
 
 async function fetchLpVaultBalances(api) {
   const vaults = contracts[api.chain].lp;
+
+  if (!vaults.length) return new BigNumber(0);
 
   let totalLpTvl = new BigNumber(0);
 
@@ -262,7 +272,27 @@ async function fetchLpVaultBalances(api) {
   return totalLpTvl;
 }
 
+async function fetchLoopedVaultBalances(api) {
+  const vaultAddresses = contracts[api.chain].looped.map(v => v.address);
+  const assets = contracts[api.chain].looped.map(v => v.asset);
+  const decimals = contracts[api.chain].looped.map(v => v.decimals);
+
+  const balances = await api.multiCall({ abi: loopedVaultAbi.totalAssets, calls: vaultAddresses });
+  const prices = await api.multiCall({ abi: priceFeedAbi.getPrice, calls: assets, target: contracts[api.chain].pricefeed });
+
+  let totalLoopedTvl = new BigNumber(0);
+
+  for (let i = 0; i < vaultAddresses.length; i++) {
+    const tvl = new BigNumber(balances[i]).div(10 ** decimals[i]).times(prices[i]).div('1e18');
+    totalLoopedTvl = totalLoopedTvl.plus(tvl);  
+  }
+
+  return totalLoopedTvl;
+}
+
 async function fetchMarketStats(api) {
+  if (contracts[api.chain].lendingPool === '' || contracts[api.chain].lendingPool === undefined) return new BigNumber(0);
+
   const subgraphUrl = getSubgraphUrl(api.chain);
   const reserves = await request(subgraphUrl, yieldoorReservesQuery);
 
@@ -294,15 +324,17 @@ async function fetchMarketStats(api) {
 }
 
 const chains = {
+  ethereum: 1,
   base: 8453,
   sonic: 146,
 }
 
 async function tvl(api) {
   const vaultTvl = await fetchLpVaultBalances(api);
+  const loopedVaultTvl = await fetchLoopedVaultBalances(api);
   const lendingTvl = await fetchMarketStats(api);
 
-  return toUSDTBalances(vaultTvl.plus(lendingTvl));
+  return toUSDTBalances(vaultTvl.plus(loopedVaultTvl).plus(lendingTvl));
 }
 
 module.exports = {
