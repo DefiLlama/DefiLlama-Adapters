@@ -25,6 +25,7 @@ const config = {
       "0x7712c34205737192402172409a8F7ccef8aA2AEc",
       "0x2255718832bC9fD3bE1CaF75084F4803DA14FF01",
       "0x136471a34f6ef19fE571EFFC1CA711fdb8E49f2b",
+      "0x3DDc84940Ab509C11B20B76B466933f40b750dc9",
     ],
   },
   base: {
@@ -50,4 +51,4 @@ Object.keys(config).forEach((chain) => {
 });
 
 module.exports.methodology =
-  "Counts TBILL, USDC, and BUIDL tokens held in the USDO system wallet on Ethereum, Arbitrum and Base.";
+  "Counts TBILL, USDC, BUIDL and BENJI tokens held in the USDO system wallet on Ethereum, Arbitrum and Base.";
