@@ -1,3 +1,4 @@
+const { getResources } = require("../helper/chain/aptos")
 const { getAssetSupply } = require("../helper/chain/stellar")
 
 const BENJI = {
@@ -27,3 +28,12 @@ Object.keys(BENJI).forEach((chain) => {
 });
 
 module.exports.misrepresentedTokens = true;
+
+
+module.exports.aptos = {
+  tvl: async (api) => {
+    const res = await getResources('0x7b5e9cac3433e9202f28527f707c89e1e47b19de2c33e4db9521a63ad219b739', api.chain)
+    const supply = res.find(i => i.type === '0x1::fungible_asset::ConcurrentSupply').data.current.value
+    api.addUSDValue(supply/1e9) 
+  }
+}
