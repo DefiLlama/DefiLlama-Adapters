@@ -13,6 +13,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  start: '2025-05-17',
   methodology: 'Counts all tokens held by indices deployed through the INDX factory',
   base: {
     tvl,
