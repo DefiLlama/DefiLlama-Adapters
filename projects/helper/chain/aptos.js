@@ -45,16 +45,18 @@ async function getResource(account, key, chain = 'aptos') {
 }
 
 async function getFungibles(tokenAddress, owners, balances) {
-  const url = `https://api.aptoscan.com/public/v1.0/fungible_assets/${tokenAddress}/holders`
-  const res = await http.get(url)
-  const holders = res.data?.coin_holders_list || []
-  if (!holders.length) return;
-  holders.forEach(i => {
-    if (!i.owner_address || i.is_frozen) return;
-    const addr = i.owner_address.toLowerCase()
-    if (!owners.includes(addr)) return;
-    sdk.util.sumSingleBalance(balances, tokenAddress, i.amount)
-  })
+  if (!owners?.length) return;
+
+  await Promise.all(
+    owners.map(async (ownerRaw) => {
+      const owner = ownerRaw.toLowerCase();
+      const url = `${endpointMap['aptos']()}/v1/accounts/${owner}/balance/${tokenAddress}`;
+
+      const tokenAmount = await http.get(url);
+      if (!tokenAmount) return;
+      sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount)
+    })
+  );
 }
 
 function dexExport({
