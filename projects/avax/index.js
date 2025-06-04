@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { call } = require("@defillama/sdk/build/abi/abi2");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const sdk = require('@defillama/sdk')
 
 module.exports = {
   ethereum: {
@@ -14,7 +14,7 @@ module.exports = {
   bitcoin: {
     tvl: async (_, _b, chainBlocks) => ({
       bitcoin:
-        (await call({
+        (await sdk.api2.abi.call({
           chain: "avax",
           abi: "erc20:totalSupply",
           target: ADDRESSES.avax.BTC_b,
