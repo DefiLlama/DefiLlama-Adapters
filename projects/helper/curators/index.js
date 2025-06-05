@@ -94,8 +94,6 @@ async function getCuratorTvlErc4626(api, vaults) {
     if (!assets[i] || !totalAssets[i]) continue;
     api.add(assets[i], totalAssets[i]);
   }
-
-  api.add(assets, totalAssets)
 }
 
 async function getCuratorTvlAeraVault(api, vaults) {
