@@ -11,5 +11,6 @@ async function tvl(api) {
 
 module.exports = {
     methodology: "Returns total amount staked in the LuckyStake No Loss Lottery.",
+    timetravel: false,
     mantra: { tvl },
 };
