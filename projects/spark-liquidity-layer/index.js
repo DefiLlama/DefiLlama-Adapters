@@ -10,10 +10,10 @@ const mainnetAllocatorToTokens = {
   ],
   '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [
     '0x09AA30b182488f769a9824F15E6Ce58591Da4781', // aEthLidoUSDS
-    ADDRESSES.ethereum.sUSDe, // sUSDe
+    ADDRESSES.ethereum.sUSDe,
     '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
     '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // aEthUSDS
-    ADDRESSES.ethereum.USDe, // USDe
+    ADDRESSES.ethereum.USDe,
     '0x6a9DA2D710BB9B700acde7Cb81F10F1fF8C89041', // BUIDL-I
     '0x43415eB6ff9DB7E26A15b704e7A3eDCe97d31C4e', // USTB
     '0x8c213ee79581Ff4984583C6a801e5263418C4b86', // JTSRY
@@ -28,13 +28,25 @@ const baseAllocatorToTokens = {
     '0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB', // aBasUSDC
   ],
   '0x1601843c5E9bC251A3272907010AFa41Fa18347E': [
-    ADDRESSES.base.USDC, // USDC
+    ADDRESSES.base.USDC,
   ]
 }
 
 const arbitrumAllocatorToTokens = {
   '0x2B05F8e1cACC6974fD79A673a341Fe1f58d27266': [
-    ADDRESSES.arbitrum.USDC_CIRCLE // USDC
+    ADDRESSES.arbitrum.USDC_CIRCLE
+  ]
+}
+
+const optimismAllocatorToTokens = {
+  '0xe0F9978b907853F354d79188A3dEfbD41978af62': [
+    ADDRESSES.optimism.USDC_CIRCLE
+  ]
+}
+
+const unichainAllocatorToTokens = {
+  '0x7b42Ed932f26509465F7cE3FAF76FfCe1275312f': [
+    ADDRESSES.unichain.USDC
   ]
 }
 
@@ -42,6 +54,8 @@ const CONFIG = {
   ethereum: mainnetAllocatorToTokens,
   base: baseAllocatorToTokens,
   arbitrum: arbitrumAllocatorToTokens,
+  optimism: optimismAllocatorToTokens,
+  unichain: unichainAllocatorToTokens,
 }
 
 async function tvl(api) {
@@ -65,6 +79,8 @@ const almProxy = {
   ethereum: '0x1601843c5E9bC251A3272907010AFa41Fa18347E',
   base: '0x2917956eFF0B5eaF030abDB4EF4296DF775009cA',
   arbitrum: '0x92afd6F2385a90e44da3a8B60fe36f6cBe1D8709',
+  optimism: '0x876664f0c9Ff24D1aa355Ce9f1680AE1A5bf36fB',
+  unichain: '0x345E368fcCd62266B3f5F37C9a131FD1c39f5869',
 }
 
 const vaultConfigs = {
@@ -87,6 +103,8 @@ const vaultConfigs = {
   ],
   base: [],
   arbitrum: [],
+  optimism: [],
+  unichain: [],
 }
 
 // discards idle supply on aave like markets for USDS and DAI
