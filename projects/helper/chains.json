@@ -182,6 +182,7 @@
   "injective",
   "ink",
   "interlay",
+  "iota",
   "iotaevm",
   "iotex",
   "islm",
@@ -233,6 +234,7 @@
   "milkomeda",
   "milkomeda_a1",
   "milkyway",
+  "milkyway_rollup",
   "mint",
   "mixin",
   "mode",
@@ -413,6 +415,7 @@
   "xdc",
   "xlayer",
   "xpla",
+  "xp",
   "xsat",
   "zeniq",
   "zero_network",
@@ -425,5 +428,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "xpr"
 ]

@@ -8,10 +8,14 @@ const CONFIG = {
 const abis = {
   getStrategies: "function getStrategies() view returns ((address strategy, (uint256 index, uint256 amount) allocation)[])",
   multiSig: 'function multiSig() view returns (address)',
+  withdrawEnabled: "function withdrawEnabled() view returns (bool)",
+  maxWithdraw: "function maxWithdraw(address owner) view returns (uint256)",
+  getAvailableAssetsForWithdrawal: "function getAvailableAssetsForWithdrawal() view returns (uint256)"
 }
 
 const tvl = async (api) => {
   const registry = CONFIG[api.chain]
+  if (!registry.length) return;
   const vaults = (await api.multiCall({ abi: 'address[]:getAllVaults', calls: registry })).flat()
   const rawStrategies = await api.multiCall({ abi: abis.getStrategies, calls: vaults })
 
@@ -23,29 +27,47 @@ const tvl = async (api) => {
 
   const calls = strategies.map(({ strategy }) => ({ target: strategy }))
 
-  const [tokens, multiSigs, balances] = await Promise.all([
+  const [assets, multiSigs, balances, withdrawEnableds] = await Promise.all([
     api.multiCall({ abi: 'address:asset', calls }),
     api.multiCall({ abi: abis.multiSig, calls, permitFailure: true }),
-    api.multiCall({ abi: 'uint256:totalAssets', calls })
+    api.multiCall({ abi: 'uint256:totalAssets', calls }),
+    api.multiCall({ abi: abis.withdrawEnabled, calls, permitFailure: true }),
   ])
 
   const seenMultiSigs = new Set();
+  const strategiesDatas = []
 
-  strategies.forEach((_, i) => {
-    const token = tokens[i];
+  strategies.forEach(({ vault, strategy }, i) => {
+    const asset = assets[i];
     const multiSig = multiSigs[i];
-    const balance = balances[i];
+    const balance = Number(balances[i]);
+    const withdrawEnabled = withdrawEnableds[i];
 
-    if (!token || !multiSig || !balance) return;
-    if (seenMultiSigs.has(multiSig)) return;
-    seenMultiSigs.add(multiSig);
-    api.add(token, balance);
+    if (!asset || !multiSig || !balance || !withdrawEnabled) return;
+
+    if (!seenMultiSigs.has(multiSig)) {
+      seenMultiSigs.add(multiSig);
+      strategiesDatas.push({ vault, strategy, asset, multiSig, balance, withdrawEnabled });
+    }
   });
+
+  const [vaultBalances, multiSigResiduals] = await Promise.all([
+    api.multiCall({ calls: strategiesDatas.map((s) => ({ target: s.vault, params: [s.multiSig] })), abi: 'erc20:balanceOf' }),
+    api.multiCall({ calls: strategiesDatas.map((s) => ({ target: s.asset, params: [s.multiSig] })), abi: 'erc20:balanceOf' }),
+  ])
+
+  strategiesDatas.forEach(({ asset, balance }, i) => {
+    const vaultBalance = Number(vaultBalances[i])
+    const multiSigResidual = Number(multiSigResiduals[i])
+
+    const value = api.chain === 'berachain'
+      ? balance + multiSigResidual - vaultBalance / 10 ** 9
+      : multiSigResidual - vaultBalance / 10 ** 9;
+
+    api.add(asset, value);
+  })
 }
 
-module.exports = {
-  doublecounted: true
-}
 
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = { tvl }
