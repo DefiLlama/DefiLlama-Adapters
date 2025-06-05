@@ -68,7 +68,6 @@ async function getTorchStgUSD(api) {
     abi: 'get_wallet_data',
     params: []
   });
-  console.log('stgUSDBalance', stgUSDBalance[0]);
 
   await sleep(1000 * (2 * Math.random() + 3)); // 3-5 second delay
 
@@ -78,7 +77,6 @@ async function getTorchStgUSD(api) {
     abi: 'get_index',
     params: []
   });
-  console.log("indexData", indexData[0]);
 
   // Convert stgUSD to USDT using the provided formula
   const adjustedUSDT = stgUSDBalance[0] * indexData[0] / indexPrecision;
