@@ -10,6 +10,7 @@ async function tvl() {
 
 module.exports = {
     methodology: "Calculates the amount of IOTA staked in stIota liquid staking contracts.",
+    timetravel: false,
     iota: {
         tvl,
     }
