@@ -1,0 +1,4 @@
+{
+  "pendingApeCoin": "function pendingApeCoin() external view returns (uint256);",
+  "totalAssets": "function totalAssets() public view returns (uint256)"
+}

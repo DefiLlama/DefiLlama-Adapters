@@ -2,7 +2,19 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { sumTokensExport: solExports } = require("../helper/solana");
 
+/**
+ * @typedef {Object} ChainConfig
+ * @property {string[]} owners - List of owner addresses
+ * @property {string[]} tokens - List of token addresses
+ */
 
+/**
+ * Config object mapping chain names to PRDT owner addresses and token addresses 
+ * that exist within the application. Each address is used with `sumTokensExport` 
+ * to calculate TVL.
+ *
+ * @type {Object.<string, ChainConfig>}
+ */
 const config = {
   ethereum: {
     owners: Object.values({
@@ -55,14 +67,19 @@ const config = {
       ADDRESSES.polygon.WETH,
     ],
   },
-   nibiru: {
-     owners: Object.values({
-       predictionPROV3: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
-     }),
-     tokens: [
-       ADDRESSES.null,
-     ],
-   },
+  nibiru: {
+    owners: Object.values({
+      // Owner from constructor of https://nibiscan.io/address/0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841/contract/6900/code
+      predictionPROOwner: "0x4cbB5d1c808F0FEe11575E77025b40f602793286",
+      predictionPROV3: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
+    }),
+    tokens: [
+      ADDRESSES.null,
+      ...Object.values(ADDRESSES.nibiru).filter((addr) => {
+        return addr.startsWith("0x") && addr.length === 42
+      }),
+    ],
+  },
   solana: {},
 };
 
