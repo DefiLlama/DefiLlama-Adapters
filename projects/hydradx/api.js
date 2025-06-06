@@ -40,6 +40,7 @@ const cgMapping = {
   UNQ: 'unique-network',
   MYTH: 'mythos',
   WUD: 'gawun-wud',
+  // GDOT: 'gigadot' // skip for doublecount 
 };
 
 const RAW_STATIC_XYK_POOL_DATA = [
