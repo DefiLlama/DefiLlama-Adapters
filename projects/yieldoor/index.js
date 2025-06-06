@@ -109,6 +109,24 @@ const tvl = async (api) => {
   await api.erc4626Sum({ calls: looped, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
 }
 
+const borrowed = async (api) => {
+  const { lendingPool } = CONFIG[api.chain]
+
+  if (!lendingPool) return;
+  const reservesLists = (await api.fetchList({ target: lendingPool, itemCount: 20, itemAbi: abis.reservesList, permitFailure: true })).filter(Boolean)
+  const reservesDatas = await api.multiCall({ calls: reservesLists.map((reserve) => ({ target: lendingPool, params: [reserve] })), abi: abis.reserves })
+
+  for (let i = 0; i < reservesLists.length; i++) {
+    const asset = reservesLists[i];
+    const { totalBorrows, flags } = reservesDatas[i];
+    if (!flags.isActive || flags.frozen) continue;
+    api.add(asset, Number(totalBorrows));
+  }
+}
+
 Object.keys(CONFIG).forEach((chain) => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = {
+    tvl,
+    borrowed,
+  }
 })
