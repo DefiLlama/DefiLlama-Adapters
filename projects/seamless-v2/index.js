@@ -9,8 +9,7 @@ const getLeverageTokens = async (api) => {
       target: SEAMLESS_LEVERAGE_MANAGER_BASE,
       topics: ["0xc3f4681fb2a57a13e121c6f24fe319c8572bb001497f2b74712695625ee9028e"],
       eventAbi: "event LeverageTokenCreated(address indexed token, address collateralAsset, address debtAsset, (address lendingAdapter, address rebalanceAdapter, uint256 mintTokenFee, uint256 redeemTokenFee) config)",
-      fromBlock: 31051780,
-      skipCache: true
+      fromBlock: 31051780
     })
   )
 }
