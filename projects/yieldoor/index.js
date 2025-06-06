@@ -1,4 +1,4 @@
-const { gql } = require('graphql-request');
+// const { gql } = require('graphql-request');
 
 const CONFIG = {
   ethereum: {
@@ -43,32 +43,32 @@ const abis = {
 }
 
 // Not used for now, possibly in the future
-const yieldoorReservesQuery = gql`
-  query Reserves {
-    reserves(orderBy: asset) {
-      id
-      asset
-      borrowingIndex
-      currentBorrowingRate
-      totalBorrows
-      yTokenAddress
-      stakingAddress
-      reserveCapacity
-      borrowingRateConfig_utilizationA
-      borrowingRateConfig_borrowingRateA
-      borrowingRateConfig_utilizationB
-      borrowingRateConfig_borrowingRateB
-      borrowingRateConfig_maxBorrowingRate
-      leverageParams_maxIndividualBorrow
-      leverageParams_LTV
-      leverageParams_LLTV
-      underlyingBalance
-      flags_isActive
-      flags_frozen
-      flags_borrowingEnabled
-    }
-  }
-`;
+// const yieldoorReservesQuery = gql`
+//   query Reserves {
+//     reserves(orderBy: asset) {
+//       id
+//       asset
+//       borrowingIndex
+//       currentBorrowingRate
+//       totalBorrows
+//       yTokenAddress
+//       stakingAddress
+//       reserveCapacity
+//       borrowingRateConfig_utilizationA
+//       borrowingRateConfig_borrowingRateA
+//       borrowingRateConfig_utilizationB
+//       borrowingRateConfig_borrowingRateB
+//       borrowingRateConfig_maxBorrowingRate
+//       leverageParams_maxIndividualBorrow
+//       leverageParams_LTV
+//       leverageParams_LLTV
+//       underlyingBalance
+//       flags_isActive
+//       flags_frozen
+//       flags_borrowingEnabled
+//     }
+//   }
+// `;
 
 const getVaultBalances = async (api, vaults) => {
   if (!vaults.length) return;
@@ -96,9 +96,9 @@ const getMarketBalances = async (api, lendingPool) => {
 
   for (let i = 0; i < reservesLists.length; i++) {
     const asset = reservesLists[i];
-    const { yTokenAddress, underlyingBalance, totalBorrows, flags } = reservesDatas[i];
+    const { underlyingBalance, totalBorrows, flags } = reservesDatas[i];
     if (!flags.isActive || flags.frozen) continue;
-    api.add(yTokenAddress, Number(underlyingBalance) - Number(totalBorrows));
+    api.add(asset, Number(underlyingBalance) + Number(totalBorrows));
   }
 }
 
