@@ -6,6 +6,7 @@ const omnipoolAccountId = "7L53bUTBbfuj14UpdCNPwmgzzHSsrsTWBHX5pys32mVWM3C1"
 const stablepoolAccountId = "7JP6TvcH5x31TsbC6qVJHEhsW7UNmpREMZuLBpK2bG1goJRS"
 const stablepoolAccountId2 = "7MaKPwwnqN4cqg35PbxsGXUo1dfvjXQ3XfBjWF9UVvKMjJj8"
 const stablepoolAccountId3 = "7LVGEVLFXpsCCtnsvhzkSMQARU7gRVCtwMckG7u7d3V6FVvG"
+const stablepoolAccountId4 = "167UdiHenqFRAFeb8GxRYGT89BpKi2VPDnUjDFT8H8efqueB"
 
 const cgMapping = {
   DAI: 'dai',
@@ -95,13 +96,37 @@ async function omnipoolTvl(api) {
     }
   }
 
+  // Process balances for the gdot stablepool
+  const gdotStablePoolAssets = [
+    { id: 15, cgKey: 'vDOT' },    // Asset ID 15 is vDOT
+    { id: 1001, cgKey: 'DOT' },   // Asset ID 1001 is aDOT, treat as DOT for Coingecko
+  ];
+
+  for (const asset of gdotStablePoolAssets) {
+    try {
+      const balanceData = await polkadotApi.call.currenciesApi.account(asset.id, stablepoolAccountId4);
+      const freeBalance = balanceData.free.toBigInt();
+
+      if (freeBalance > 0n) {
+        const cgId = cgMapping[asset.cgKey];
+        const meta = processedAssetMetadata.find(m => m.assetId === asset.id);
+
+        if (cgId && meta && typeof meta.decimals === 'number' && !isNaN(meta.decimals)) {
+          const readableBalance = Number(freeBalance) / (10 ** meta.decimals);
+          add(cgId, readableBalance);
+        } else {
+          console.warn(`HydraDX: Could not find Coingecko ID or metadata for asset ${asset.id} (${asset.cgKey}) in new stablepool.`);
+        }
+      }
+    } catch (e) {
+      console.error(`HydraDX: Error fetching balance for asset ${asset.id} from new stablepool ${stablepoolAccountId4}:`, e.message);
+    }
+  }
+
   // Add XYK Pool TVL using the refined static list
-  
   const staticXykPools = RAW_STATIC_XYK_POOL_DATA.map(entry => {
     // Basic validation for the entry structure
     if (!entry || !entry[0] || !entry[0][0] || !entry[1] || typeof entry[1][0] === 'undefined' || typeof entry[1][1] === 'undefined') {
-      // This warning can be removed if confident in the static data structure
-      // console.warn('HydraDX XYK: Skipping malformed static pool entry:', entry);
       return null;
     }
     return {
