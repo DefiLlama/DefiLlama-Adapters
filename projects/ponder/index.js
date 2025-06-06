@@ -17,6 +17,6 @@ module.exports = {
       useDefaultCoreAssets: true,
       fetchBalances: true,
     }),
-    staking: staking(addresses.PonderStaking, addresses.PonderToken, "bitkub", addresses.PonderToken)
+    staking: staking(addresses.PonderStaking, addresses.PonderToken, "bitkub", `ethereum:${addresses.PonderToken}`)
   }
 };

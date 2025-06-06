@@ -9,7 +9,7 @@ const sanitizeAndValidateEvmAddresses = (addresses) => {
 
 const LHYPE_VAULT_ADDRESS = ['0x5748ae796AE46A4F1348a1693de4b50560485562'];
 
-const tvl = async () => {
+const tvl = async (api) => {
   const strategies = await getConfig(
     'lhype-tokens',
     `https://backend.nucleusearn.io/v1/vaults/underlying_strategies?vault_address=${LHYPE_VAULT_ADDRESS}&chain_id=999`
@@ -17,16 +17,15 @@ const tvl = async () => {
   const hyperevmStrategies = strategies["999"]
   const tokens = Object.values(hyperevmStrategies).map((strategy) => strategy.tokenAddress);
   const sanitizedTokens = sanitizeAndValidateEvmAddresses([...tokens, ...LHYPE_VAULT_ADDRESS]);
-  console.log(sanitizedTokens);
 
   return sumTokens2({
     owners: LHYPE_VAULT_ADDRESS,
     tokens: sanitizedTokens,
-    chain: 'hyperliquid',
+    api,
     resolveLP: true
   });
 };
 
 module.exports = {
-  hyperliquid: {tvl}
+  hyperliquid: { tvl }
 };

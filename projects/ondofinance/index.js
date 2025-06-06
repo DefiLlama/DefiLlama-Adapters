@@ -68,10 +68,10 @@ Object.keys(config).forEach((chain) => {
         const aptosSupply =
           supply.vec[0].integer.vec[0].value / Math.pow(10, decimals);
 
-        api.addTokens(config.ethereum.USDY, aptosSupply * 1e18, { skipChain: true, });
+        api.addTokens(ADDRESSES.aptos.USDY, aptosSupply * 1e6);
       } else if (chain === "noble") {
         const res = await get(`https://rest.cosmos.directory/noble/cosmos/bank/v1beta1/supply/by_denom?denom=ausdy`);
-        api.addTokens(config.ethereum.USDY, parseInt(res.amount.amount), { skipChain: true, });
+        api.addTokens(config.noble.USDY, parseInt(res.amount.amount));
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);

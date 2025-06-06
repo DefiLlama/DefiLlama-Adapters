@@ -3,7 +3,7 @@ const { nullAddress } = require("../helper/tokenMapping")
 module.exports = {
   methodology: "USDC.e in the vault",
   hallmarks: [
-    [Math.floor(new Date('2024-09-10')/1e3), 'v1 is deprecated'],
+    ['2024-09-10', 'v1 is deprecated'],
   ],
 }
 
