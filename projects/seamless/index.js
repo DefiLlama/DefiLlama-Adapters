@@ -1,53 +1,11 @@
-const { getLogs2 } = require("../helper/cache/getLogs");
+const { aaveExports } = require("../helper/aave");
+const methodologies = require("../helper/methodologies");
 
-const SEAMLESS_LEVERAGE_MANAGER_BASE = "0x38Ba21C6Bf31dF1b1798FCEd07B4e9b07C5ec3a8";
+const AAVE_ADDRESSES_PROVIDER_REGISTRY = "0x90C5055530C0465AbB077FA016a3699A3F53Ef99";
+const AAVE_POOL_DATA_PROVIDER = "0x2A0979257105834789bC6b9E1B00446DFbA8dFBa";
 
-const getLeverageTokens = async (api) => {
-  return (
-    await getLogs2({
-      api,
-      target: SEAMLESS_LEVERAGE_MANAGER_BASE,
-      topics: ["0xc3f4681fb2a57a13e121c6f24fe319c8572bb001497f2b74712695625ee9028e"],
-      eventAbi: "event LeverageTokenCreated(address indexed token, address collateralAsset, address debtAsset, (address lendingAdapter, address rebalanceAdapter, uint256 mintTokenFee, uint256 redeemTokenFee) config)",
-      fromBlock: 31051780,
-      skipCache: true
-    })
-  )
-}
-
-const SeamlessLeverageTokensTVL = () => {
-  return {
-    tvl: async (api) => {
-      const leverageTokens = (await getLeverageTokens(api)).map((log) => ({ lendingAdapter: log.config.lendingAdapter, collateralAsset: log.collateralAsset }));
-
-      const collateralBalances = await api.multiCall({
-        calls: leverageTokens.map(({ lendingAdapter }) => lendingAdapter),
-        abi: "function getCollateral() public view returns (uint256)",
-      });
-
-      leverageTokens.forEach(({ collateralAsset }, i) => {
-        api.add(collateralAsset, collateralBalances[i]);
-      });
-
-      return api.getBalances();
-    },
-    borrowed: async (api) => {
-      const leverageTokens = (await getLeverageTokens(api)).map((log) => ({ lendingAdapter: log.config.lendingAdapter, debtAsset: log.debtAsset }));
-
-      const debtBalances = await api.multiCall({
-        calls: leverageTokens.map(({ lendingAdapter }) => lendingAdapter),
-        abi: "function getDebt() public view returns (uint256)",
-      });
-
-      leverageTokens.forEach(({ debtAsset }, i) => {
-        api.add(debtAsset, debtBalances[i]);
-      });
-
-      return api.getBalances();
-    }
-  };
-};
-
+// Seamless lending platform is deprecated
 module.exports = {
-  base: SeamlessLeverageTokensTVL(),
-};
+  base: aaveExports("base", AAVE_ADDRESSES_PROVIDER_REGISTRY, undefined, [AAVE_POOL_DATA_PROVIDER], { v3: true }),
+  methodology: methodologies.lendingMarket
+}
