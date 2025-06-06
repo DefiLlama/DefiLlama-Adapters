@@ -112,6 +112,12 @@ const config = {
     owners: [
       '0xfcdde971bdb9105fc3cb1c95ca468e8b88d23c6594162b2d2b1dadf16acf5b3a'
     ]
+  },
+  aptos: {
+    fungibleAssets: ['0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b'],
+    owners: [
+      '0x0613f31af70ce983b9dca574e033a52351fd2e67b1959bf48574c6e9c956f95e'
+    ]
   }
 }
 

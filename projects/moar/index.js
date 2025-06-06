@@ -4,9 +4,11 @@ const sdk = require('@defillama/sdk');
 const addresses = {
     'aptos': {
         'moar': "0xa3afc59243afb6deeac965d40b25d509bb3aebc12f502b8592c283070abc2e07",
+        'moar_lens': "0xfa3d17dfdf5037ed9b68c2c85976f899155048fdf96bc77b57ef1ad206c5b007",
         'moar_package_owner': "0x37e9ce6910ceadd16b0048250a33dac6342549acf31387278ea0f95c9057f110",
     },
 }
+
 async function tvl(api, chain) {
     // TVL for moar means the unborrowed assets in the pools + all combined assets in the credit accounts
     const poolAddresses = await getPoolAddresses(chain)
@@ -28,8 +30,8 @@ async function tvl(api, chain) {
     })
 
     for (const creditAccount of creditAccounts) {
-        const [_, assetData] = await function_view({
-            functionStr: `${addresses[chain]['moar']}::lens::get_credit_account_debt_and_asset_amounts`,
+        const assetData = await function_view({
+            functionStr: `${addresses[chain]['moar_lens']}::lens::get_credit_account_combined_asset_amounts`,
             args: [creditAccount],
             chain: chain
         })

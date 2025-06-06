@@ -29,6 +29,9 @@ module.exports = {
         'interlay-dex': '/interlay-dex/api',
         'interlay-lending': '/interlay-lending/api',
       },
+      {
+        'hydradx': '/hydradx/api.js',
+      },
     ],
     [
       {
@@ -61,9 +64,6 @@ module.exports = {
         'jewelswap-lev-farming': '/jewelswap-lev-farming/index',
         'jewelswap-nft': '/jewelswap-nft/index',
 
-      },
-      {
-        'hydradx': '/hydradx/api',
       },
       {
         'newbitcoin': '/newbitcoin/index',

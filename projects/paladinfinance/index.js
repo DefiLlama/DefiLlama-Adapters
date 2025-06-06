@@ -1,8 +1,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
-const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
+const abi = {
+  "underlying": "address:underlying",
+  "underlyingBalance": "uint256:underlyingBalance",
+  "totalBorrowed": "uint256:totalBorrowed",
+  "totalReserve": "uint256:totalReserve"
+}
 
 const poolAddresses = [
   "0x50bE5fE4de4efC3A0adAc6587254836972055423", //palCOMP
@@ -11,51 +13,25 @@ const poolAddresses = [
   "0xCDc3DD86C99b58749de0F697dfc1ABE4bE22216d" //palStkAAVE
 ]
 
-async function ethTvl(timestamp, block) {
+async function ethTvl(api) {
 
-  let balances = {};
+  let calls = poolAddresses
 
-  let calls = [];
-  for(let i = 0; i < poolAddresses.length; i++) {
-    calls.push({target: poolAddresses[i]})
-  }
+  let underlyingTokens = await api.multiCall({ calls, abi: abi["underlying"], })
+  let underlyingBalances = await api.multiCall({ calls, abi: abi["underlyingBalance"], });
+  let totalBorrowed = await api.multiCall({ calls, abi: abi["totalBorrowed"], });
+  let totalReserve = await api.multiCall({ calls, abi: abi["totalReserve"], })
 
-  let underlyingTokens = await sdk.api.abi.multiCall({
-    calls,
-    abi: abi["underlying"],
-    block:block
-  })
+  for (let i = 0; i < poolAddresses.length; i++) {
+    let token = underlyingTokens[i];
 
-  let underlyingBalances = await sdk.api.abi.multiCall({
-    calls,
-    abi: abi["underlyingBalance"],
-    block: block
-  });
-
-  let totalBorrowed = await sdk.api.abi.multiCall({
-    calls,
-    abi: abi["totalBorrowed"],
-    block: block
-  });
-
-  let totalReserve = await sdk.api.abi.multiCall({
-    calls,
-    abi: abi["totalReserve"],
-    block: block
-  })
-
-  for(let i = 0; i < poolAddresses.length; i++) {
-    let token = underlyingTokens.output[i].output;
-    
     //If stkAAVE address then change token address to AAVE address
     if (token === "0x4da27a545c0c5B758a6BA100e3a049001de870f5") {
       token = ADDRESSES.ethereum.AAVE;
     }
-    let tvl = BigNumber(underlyingBalances.output[i].output).plus(totalBorrowed.output[i].output).minus(totalReserve.output[i].output).toFixed(0);
-    sumSingleBalance(balances, token, tvl)
+    const tvl = +underlyingBalances[i] + +totalBorrowed[i] - +totalReserve[i];
+    api.add(token, tvl)
   }
-  
-  return balances;
 }
 
 module.exports = {

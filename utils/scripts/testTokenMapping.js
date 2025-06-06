@@ -1,7 +1,7 @@
-const { sliceIntoChunks } = require('@defillama/sdk/build/util')
 const { default: PromisePool } = require('@supercharge/promise-pool/dist')
 const { default: axios } = require('axios')
 const mapping = require('../../../server/coins/src/adapters/tokenMapping.json')
+const { sliceIntoChunks } = require('../../projects/helper/utils')
 
 const tokens = Object.entries(mapping).map(i => {
   const [chain, obj] = i

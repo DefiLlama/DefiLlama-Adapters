@@ -63,10 +63,11 @@ function getProvider(chain = 'solana') {
 }
 
 
-function getAssociatedTokenAddress(mint, owner,) {
+function getAssociatedTokenAddress(mint, owner,  programId = TOKEN_PROGRAM_ID,  associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID) {
+  if (typeof programId === 'string') programId = new PublicKey(programId)
   if (typeof mint === 'string') mint = new PublicKey(mint)
   if (typeof owner === 'string') owner = new PublicKey(owner)
-  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
+  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), programId.toBuffer(), mint.toBuffer()], associatedTokenProgramId);
   return associatedTokenAddress.toString()
 }
 
@@ -170,7 +171,6 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
 
   async function _getTokenAccounts() {
     const connection = getConnection()
-
 
     const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
     const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);

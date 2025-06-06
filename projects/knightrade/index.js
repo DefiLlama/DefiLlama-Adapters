@@ -1,4 +1,3 @@
-const { ETHER_ADDRESS } = require('@defillama/sdk/build/general')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getMultipleAccounts, getProvider } = require('../helper/solana')
 const { Program, BN } = require("@project-serum/anchor")
@@ -144,7 +143,7 @@ async function tvlArbitrum(api) {
         [ADDRESSES.arbitrum.USDT, vault],
         [ADDRESSES.arbitrum.USDC_CIRCLE, vault],
         [ADDRESSES.arbitrum.WETH, vault],
-        [ETHER_ADDRESS, vault],        
+        [ADDRESSES.null, vault],        
         [ADDRESSES.arbitrum.WBTC, vault],
         // GMXv2 Earn
         [addresses.gmWeth, vault],

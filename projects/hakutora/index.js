@@ -1,11 +1,11 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by Hakutora.',
+  methodology: 'Count all assets are deposited in all vaults curated by Hakutora.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0x974c8FBf4fd795F66B85B73ebC988A51F1A040a9',
+      morphoVaultOwners: [
+        '0x76c303fA012109eCBb34E4bAf1789c3e9FbEb3A4',
       ],
     },
   }

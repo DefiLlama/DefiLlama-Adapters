@@ -17,7 +17,7 @@ function getLiquityV2Tvl(CollateralRegistry, { abis = {}, } = {}) {
     const activePools = await api.multiCall({ abi: abis.activePool ?? 'address:activePool', calls: troves })
     const defaultPools = await api.multiCall({ abi: abis.defaultPoolAddress ?? 'address:defaultPoolAddress', calls: activePools })
     const tokens = await api.multiCall({ abi: abis.collToken ?? 'address:collToken', calls: activePools })
-    return api.sumTokens({ tokensAndOwners2: [tokens.concat(tokens), activePools.concat(defaultPools)] })
+    return sumTokens2({ api, tokensAndOwners2: [tokens.concat(tokens), activePools.concat(defaultPools)] })
   }
 }
 

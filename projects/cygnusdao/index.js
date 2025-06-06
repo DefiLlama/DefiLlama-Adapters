@@ -1,7 +1,7 @@
 const FACTORY_CONTRACT = "0x8796747946871B6b8ea495CCE8d7814b17959296";
 const vaultAbi = require('../charmfinance/vaultAbi.json')
 const { getLogs } = require('../helper/cache/getLogs');
-const { getUniqueAddresses } = require("@defillama/sdk/build/generalUtil");
+const { getUniqueAddresses } = require('../helper/utils');
 
 async function tvl(api) {
   let fromBlock = 0;

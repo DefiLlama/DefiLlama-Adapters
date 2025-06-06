@@ -4,4 +4,5 @@ module.exports = [
   "1NfJSiqBw4fb74KgVQrPsk5W5aqitAD1Xv",
   //    "bc1qlrawqecuwgpzzwh04pkhtfsqsk33kald22ds3c", // bosera funds https://www.bosera.com/english/index.html
   "18oxobhCNKnHjb7nEFDmPdXbCZthFWezrm",
+  "bc1q9d5lq9psmkx9rtgewjgez7csg45faak2cccew8", // 2025-05-26
 ]

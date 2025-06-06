@@ -227,7 +227,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
         sdk.util.sumSingleBalance(balances, i.underlying, value, api.chain)
       }
     })
-    return balances
+    return sumTokens2({ api, balances })
   }
 
   async function getReservesData(api) {
