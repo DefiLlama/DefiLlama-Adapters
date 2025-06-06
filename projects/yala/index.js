@@ -41,21 +41,7 @@ async function tvlInEthereum(api) {
       target: res.ethereum.AssetWrapper.bfBTC.wrapper,
     });
 
-    // bfBTC/BTC price from oracle
-    const price =
-      (await api.call({
-        abi: "uint256:latestAnswer",
-        target: res.ethereum.AssetWrapper.bfBTC.oracle,
-      })) /
-      10 ** res.ethereum.AssetWrapper.bfBTC.decimalsOracle;
-
-    // convert to BTC
-    amt *= price;
-
-    api.addCGToken(
-      "bitcoin",
-      amt / 10 ** res.ethereum.AssetWrapper.bfBTC.decimalsWrapper
-    );
+    api.addToken(res.ethereum.AssetWrapper.bfBTC.address, amt);
   }
 }
 
