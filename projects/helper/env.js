@@ -30,6 +30,7 @@ const DEFAULTS = {
   PLUME_RPC: "https://rpc.plume.org",
   NIBIRU_RPC: "https://evm-rpc.archive.nibiru.fi/",
   IOTA_RPC: "https://api.mainnet.iota.cafe",
+  KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
 }
 
 const ENV_KEYS = [
