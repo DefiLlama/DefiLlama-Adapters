@@ -4,6 +4,8 @@ const BOOL_KEYS = [
   'LLAMA_DEBUG_MODE',
 ]
 
+const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
+
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
@@ -31,6 +33,8 @@ const DEFAULTS = {
   NIBIRU_RPC: "https://evm-rpc.archive.nibiru.fi/",
   IOTA_RPC: "https://api.mainnet.iota.cafe",
   KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
+  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
+  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
 }
 
 const ENV_KEYS = [
