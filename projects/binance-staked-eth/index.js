@@ -10,7 +10,7 @@ module.exports = {
   },
   bsc: {
     tvl: async (_, block, chainBlocks) => ({
-      ["ethereum:" + ADDRESSES.null]: (await sdk.api.erc20.totalSupply({ target: token, chain:"bsc", block: chainBlocks.bsc})).output
+      ["bsc:" + ADDRESSES.bsc.ETH]: (await sdk.api.erc20.totalSupply({ target: token, chain:"bsc", block: chainBlocks.bsc})).output
     })
   }
 }

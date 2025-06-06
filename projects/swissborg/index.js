@@ -189,8 +189,8 @@ const config = {
   },
   sei: {
     owners: [
-      '0x28cC933fecf280E720299b1258e8680355D8841F',
-      '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      'sei1cuqk29f94hnp7zwtuhl0aw69kud5ngdaxqa3u2',
+      'sei105zqcfv3z9z79yhsfg8v6rql3huzhyfpg4mpfu',
     ]
   },
   tron: {
