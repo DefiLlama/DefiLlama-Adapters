@@ -17,7 +17,7 @@ async function tvlInEthereum(api) {
     "https://raw.githubusercontent.com/yalaorg/yala-defillama/refs/heads/main/config.json"
   );
 
-  // psm
+  // PSM
   {
     let tokensAndOwners = [];
     for (let i = 0; i < res.ethereum.PSM.addresses.length; i++) {
@@ -31,6 +31,17 @@ async function tvlInEthereum(api) {
       tokensAndOwners,
       permitFailure: true,
     });
+  }
+
+  // bfBTC in AssetWrapper
+  {
+    // 1:1 bfBTC amt
+    let amt = await api.call({
+      abi: "erc20:totalSupply",
+      target: res.ethereum.AssetWrapper.bfBTC.wrapper,
+    });
+
+    api.addToken(res.ethereum.AssetWrapper.bfBTC.address, amt);
   }
 }
 
