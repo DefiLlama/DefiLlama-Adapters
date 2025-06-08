@@ -1,0 +1,47 @@
+// Currently MatrixDock (STBT) is the only page, and it includes both STBT and XAUm stats. Hope to update it to the following:
+
+Matrixdock
+Matrixdock Gold XAUm
+Matrixdock STBT
+
+Where Matrixdock is the ‘parent’ combined stats, and there are separate pages of Matrixdock Gold XAUm and Matrixdock STBT. (Similar to the pages of Superstate, Superstate USTB, Superstate USCC or pages of Ethena, Ethena USDe, Ethena USDtb).
+
+Page of Matrixdock:
+
+Name: Matrixdock
+Twitter Link: https://x.com/matrixdock
+Website Link: https://www.matrixdock.com
+Logo (High resolution, will be shown with rounded borders): https://file.notion.so/f/f/accf9734-9eb1-4f77-93dd-6fa1b29ff6f9/8c9a52da-175c-4971-85b3-d1825ce51164/Primary_Vertical_Logo.png?table=block&id=12149316-8dcd-8058-9d4b-d223aae6277e&spaceId=accf9734-9eb1-4f77-93dd-6fa1b29ff6f9&expirationTimestamp=1749240000000&signature=o1W53DG9DJpeYc3SLlxYoeDvzocOqFofvQeiyaYSmK4&downloadName=Primary+Vertical+Logo.png
+Current TVL: $55M
+Chain: Ethereum, BNB Chain, Plume
+Protocol Information: Matrixdock is a premier real-world asset (RWA) platform, with trusted products Matrixdock Gold (XAUm) and Short-term Treasury Bill (STBT).
+Category: RWA
+Methodology (what is being counted as tvl, how is tvl being calculated): Sum of STBT and XAUM
+
+Page of Matrixdock Gold XAUm:
+
+Name (to be shown on DefiLlama): Matrixdock Gold XAUm Twitter Link: https://x.com/matrixdock
+Website Link: https://www.matrixdock.com/xaum
+Logo (High resolution, will be shown with rounded borders): https://file.notion.so/f/f/accf9734-9eb1-4f77-93dd-6fa1b29ff6f9/387431f6-1b6f-4c26-bef8-cbcccb1ccf00/XAUm_Token_Logo.png?table=block&id=12149316-8dcd-801d-99c9-df6f5634ac95&spaceId=accf9734-9eb1-4f77-93dd-6fa1b29ff6f9&expirationTimestamp=1749240000000&signature=u6QxQOm5g7HlY5RswGuHKVdRtBvFCPOY0m51UjmGDzo&downloadName=XAUm+Token+Logo.png Current TVL: $42M
+Chain: Ethereum, BNB Chain, Plume
+Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): 29470 Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): 34212 Short Description (to be shown on DefiLlama): Launched in 2024, XAUm is a digital gold token issued by Matrixdock. XAUm provides investors with a secure and efficient way to own and trade gold digitally, with each token representing one gram of LBMA-certified physical gold securely stored in vaults. Token address and ticker if any:
+Ethereum:0x2103E845C5E135493Bb6c2A4f0B8651956eA8682 BSC:0x23AE4fd8E7844cdBc97775496eBd0E8248656028
+Plume: 0xA0C4F78A29ead4ABf6b7f5B3F0d05C0f3EAb8DDf (Plume is new) Ticker: XAUm
+Category: RWA
+Methodology (what is being counted as tvl, how is tvl being calculated): Number of XAUm minted * XAUm price
+
+Page of Matrixdock STBT:
+
+Name (to be shown on DefiLlama): Matrixdock STBT
+Twitter Link: https://x.com/matrixdock
+Website Link: https://www.matrixdock.com/stbt
+Logo (High resolution, will be shown with rounded borders): https://file.notion.so/f/f/accf9734-9eb1-4f77-93dd-6fa1b29ff6f9/3b5b8e9a-fb7a-4b54-bfb3-d28fef771452/STBT_Token_Logo.png?table=block&id=12149316-8dcd-80ee-9460-d9d82daa2024&spaceId=accf9734-9eb1-4f77-93dd-6fa1b29ff6f9&expirationTimestamp=1749240000000&signature=GkGJA5IPKaymsu9bQ1c5Bj0Ok3uaTcge_XQ-MvXscp8&downloadName=STBT+Token+Logo.png Current TVL: $13M
+Chain: Ethereum
+Short Description (to be shown on DefiLlama): Short-Term US Treasury Bill Token enables risk-free yields from U.S. Treasury securities and reverse repos. Pegged 1:1 to USD, interest is rebased to holders’ STBT balances daily. Token address and ticker if any:
+Ethereum: 0x530824da86689c9c17cdc2871ff29b058345b44a Ticker: STBT
+Category: RWA
+Methodology (what is being counted as tvl, how is tvl being calculated): TVL = STBT supply (1 STBT = $1)
+
+NOTE
+
+Please enable "Allow edits by maintainers" while putting up the PR.
