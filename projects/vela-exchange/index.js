@@ -32,12 +32,11 @@ module.exports = {
     staking: async (api) => velaStaking(api,arbitrumEndpoint)
   },
   base: {
-    start: 3566528,
     tvl: staking("0xC4ABADE3a15064F9E3596943c699032748b13352", ADDRESSES.base.USDbC),
     staking: async (api) => velaStaking(api,baseEndpoint)
   },
   hallmarks: [
-    [Math.floor(new Date('2023-04-13') / 1e3), 'Refunded tokens to VLP holders & traders'],
+    ['2023-04-13', 'Refunded tokens to VLP holders & traders'],
     [1693926000, 'Launched on Base Chain'],
     [1721314800, 'Implemented Aave VLP supply integration'],
     [1726596000, 'Burned 65m Vela tokens']

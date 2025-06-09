@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { v1Tvl, onChainTvl } = require('../helper/balancer')
+const { v1Tvl, onChainTvl, balV2GraphExport } = require('../helper/balancer')
 
 module.exports = {
   celo: {
@@ -23,4 +23,7 @@ module.exports = {
   taiko: {
     tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 371729),
   },
+  etlk: {
+    tvl: balV2GraphExport({ vault:'0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', graphURL: '4y4fC3k9DMrJ9XYY6Z1Qi8DXJkpRrQuQCjh7zBRhxjQr', name: 'symmetric-etlk'})
+  }
 }

@@ -34,6 +34,7 @@ function findClosestTvl(data, ts) {
 
   // Sum all unique values together
   let totalTvl = Object.values(aggregatedTvl).reduce((acc, current) => acc + current, 0);
+  if (+totalTvl<0) return 0
 
   return totalTvl;
 }

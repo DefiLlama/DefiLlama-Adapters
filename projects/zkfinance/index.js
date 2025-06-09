@@ -8,3 +8,9 @@ module.exports = {
     cether: zkEther,
   }),
 };
+
+module.exports.deadFrom = '2024-11-11'
+module.exports.era.borrowed=  () => ({})
+module.exports.hallmarks = [
+  ['2024-11-11', "Protocol Exploit"],
+]

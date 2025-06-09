@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getTokenSupply } = require("../helper/solana");
+const { getTokenSupplies } = require("../helper/solana");
 const sui = require("../helper/chain/sui");
 const { aQuery } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
@@ -25,7 +25,7 @@ const config = {
     USDY: "0x5bE26527e817998A7206475496fDE1E68957c5A6",
   },
   sui: {
-    USDY: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY",
+    USDY: ADDRESSES.sui.USDY,
   },
   aptos: {
     USDY: "0xcfea864b32833f157f042618bd845145256b1bf4c0da34a7013b76e42daa53cc",
@@ -53,14 +53,8 @@ Object.keys(config).forEach((chain) => {
     tvl: async (api) => {
       let supplies;
       if (chain === "solana") {
-        supplies = await Promise.all(fundAddresses.map(getTokenSupply)).catch(
-          (error) => {
-            throw error;
-          }
-        );
-
-        const scaledSupplies = supplies.map((supply) => supply * 1_000_000);
-        api.addTokens(fundAddresses, scaledSupplies);
+        supplies = await getTokenSupplies(fundAddresses)
+        api.addTokens(Object.keys(supplies), Object.values(supplies));
       } else if (chain === "sui") {
         let usdySupply = await getUSDYTotalSupplySUI();
         api.addTokens(fundAddresses, [usdySupply]);
@@ -74,10 +68,10 @@ Object.keys(config).forEach((chain) => {
         const aptosSupply =
           supply.vec[0].integer.vec[0].value / Math.pow(10, decimals);
 
-        api.addTokens(config.ethereum.USDY, aptosSupply * 1e18, { skipChain: true, });
+        api.addTokens(ADDRESSES.aptos.USDY, aptosSupply * 1e6);
       } else if (chain === "noble") {
-        const res = await get(`https://noble-api.polkachu.com/cosmos/bank/v1beta1/supply/${config.noble.USDY}`);
-        api.addTokens(config.ethereum.USDY, parseInt(res.amount.amount), { skipChain: true, });
+        const res = await get(`https://rest.cosmos.directory/noble/cosmos/bank/v1beta1/supply/by_denom?denom=ausdy`);
+        api.addTokens(config.noble.USDY, parseInt(res.amount.amount));
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);
