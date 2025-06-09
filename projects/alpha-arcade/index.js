@@ -43,7 +43,7 @@ async function getAlphaArcadeTvl() {
             continue;
         }
     }
-    return tvlUSD / 1e6; // Convert from micro USDC to USDC
+    return tvlUSD / 1e6; // Convert from microUSDC
 }
 
 module.exports = {
@@ -51,15 +51,13 @@ module.exports = {
   timetravel: false,
   algorand: {
     tvl: async () => {
-        const algoPrice = await getCachedPrices();
-        console.log("Algo Price:", algoPrice['0']);
+        const prices = await getCachedPrices();
+        const algoPrice = prices['0'] * 1e6; // Algo Asset Id is 0
 
-        const tvlUSD = await getAlphaArcadeTvl();
-        console.log("Total TVL in USD:", tvlUSD);
+        const tvlUSD = await getAlphaArcadeTvl(); // Total TVL in USD from Alpha Arcade
 
-        const tvlAlgo = tvlUSD / (algoPrice['0'] * 1e6); // Convert USDC to Algo using the price of Algo
+        const tvlAlgo = tvlUSD / algoPrice; // Convert USDC to Algo using the price of Algo
 
-        console.log("Total TVL in Algo:", tvlAlgo);
         return { algorand: tvlAlgo };
     }
   }
