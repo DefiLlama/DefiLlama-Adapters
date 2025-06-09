@@ -2,7 +2,6 @@ const { get } = require("./helper/http");
 const url =
   "https://europe-west3-wormhole-message-db-mainnet.cloudfunctions.net/tvl";
 let _response;
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 
 const chainMap = {
   solana: "1",
@@ -43,18 +42,16 @@ module.exports = {
 
 Object.keys(chainMap).forEach((chain) => {
   module.exports[chain] = {
-    tvl: async () => {
+    tvl: async (api) => {
       if (!_response) _response = get(url);
       const res = await _response;
       const chainId = chainMap[chain];
       if (!(chainId in res.AllTime)) return;
 
-      const balances = {};
       Object.values(res.AllTime[chainId]).map((c) => {
-        sumSingleBalance(balances, c.CoinGeckoId, c.Amount, "");
+        api.addCGToken(c.CoinGeckoId, c.Amount)
       });
 
-      return balances;
     },
   };
 });

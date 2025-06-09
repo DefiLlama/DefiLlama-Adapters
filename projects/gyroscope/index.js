@@ -121,6 +121,13 @@ const config = {
       fromBlock: 33759936,
     },
   ],
+  sonic: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x5364296D19d453D73f84a94e78681A430e620c5f",
+      fromBlock: 5143648,
+    },
+  ]
 };
 
 Object.keys(config).forEach((chain) => {

@@ -9,6 +9,8 @@ const SILO_POOL_ADDRESSES = {
     'Varlamore USDC Growth': '0xF6F87073cF8929C206A77b0694619DC776F89885',
     'Re7 scUSD': '0x592D1e187729C76EfacC6dfFB9355bd7BF47B2a7',
     'Apostro - USDC': '0xcca902f2d3d265151f123d8ce8FdAc38ba9745ed',
+    'Greenhouse USDC': '0xf6bC16B79c469b94Cdd25F3e2334DD4FEE47A581'
+    
 };
 const AAVE_TOKEN_ADDRESS = '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6';
 const EULER_POOL_ADDRESSES = {
@@ -27,6 +29,12 @@ const PENDLE_MARKET_ADDRESSES = {
         pt: '0x9731842ed581816913933c01de142c7ee412a8c8',
         yt: '0x3ab07241db5e87e45edca012ddf4bde84c078920',
         sy: '0x068def65b9dbaff02b4ee54572a9fa7dfb188ea3',
+    },
+    'Lp - wstkscUSD': {
+        lp: '0x004f76045b42ef3e89814b12b37e69da19c8a212',
+        pt: '0x0fb682c9692addcc1769f4d4d938c54420d54fa3',
+        yt: '0x2405243576fdff777d54963bca4782180287b6a1',
+        sy: '0x896f4d49916ac5cfc36d7a260a7039ba4ea317b6',
     },
 };
 const BEETS_POOL = {

@@ -10,6 +10,11 @@ const configs = {
       eulerVaultOwners: [
         '0x7c615e12D1163fc0DdDAA01B51922587034F5C93',
       ],
+      turtleclub: [
+        '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf',
+        '0x7895a046b26cc07272b022a0c9bafc046e6f6396',
+        '0x686c83Aa81ba206354fDcbc2cd282B4531365E29',
+      ],
     },
     berachain: {
       eulerVaultOwners: [

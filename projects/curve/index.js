@@ -31,7 +31,8 @@ const chains = [
   "corn",
   "sonic",
   "ink",
-  "hyperliquid"
+  "hyperliquid",
+  "plume_mainnet"
 ];
 const registryIds = {
   stableswap: 0,
