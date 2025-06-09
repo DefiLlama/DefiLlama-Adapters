@@ -21,42 +21,34 @@ async function getAlphaArcadeTvl() {
     }
 
     for (const marketAppId of markets) {
-        // Get application escrow account
-        // Get amount of USDC in escrow account
-        // Add amount to total tvl
-        const appAddress = await getApplicationAddress(marketAppId);
-        if (!appAddress) {
-            console.warn(`No escrow address found for marketAppId: ${marketAppId}`);
-            continue;
-        }
+        try {
+            // Get application escrow account
+            const appAddress = await getApplicationAddress(marketAppId);
 
-        const addressData = await lookupAccountByID(appAddress);
-        if (!addressData) {
-            console.warn(`No escrow address found for marketAppId: ${marketAppId}`);
+            // Get amount of USDC in escrow account
+            const addressData = await lookupAccountByID(appAddress);
+
+            // Add amount to total tvl
+            const assets = addressData.account.assets;
+            if (assets) {
+                for (const asset of assets) {
+                    if (asset['asset-id'] === USDC_ASSET_ID) {
+                        tvl += asset.amount;
+                    }
+                }
+            }
+        } catch (err) {
+            // No active escrow account for this market
             continue;
         }
-        
-         const assets = addressData.account.assets;
-         if (assets) {
-             for (const asset of assets) {
-                 if (asset['asset-id'] === USDC_ASSET_ID) {
-                     tvl += asset.amount;
-                 }
-             }
-         }
-        console.log(`TVL in USDC: ${tvl}`);
     }
-
-    return tvl; // Currently in micro USDC
+    return tvl / 1e6; // Convert from micro USDC to USDC
 }
 
 module.exports = {
-  methodology: 'TVL represents the total amount of unclaimed USDC held in escrow across all markets on Alpha Arcade.',
+  methodology: 'TVL represents the total amount USDC held in escrow across all markets on Alpha Arcade.',
   timetravel: false,
   algorand: {
-    tvl: async () => {
-      const tvl = await getAlphaArcadeTvl();
-      return tvl;
-    },
+    tvl: getAlphaArcadeTvl,
   }
 };
