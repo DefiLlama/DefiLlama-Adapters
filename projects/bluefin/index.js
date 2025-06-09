@@ -38,6 +38,6 @@ module.exports = {
     staking
   },
   hallmarks: [
-    [Math.floor(new Date('2023-12-22')/1e3), 'Decomission Arbitrum support'],
+    ['2023-12-22', 'Decomission Arbitrum support'],
   ],
 }

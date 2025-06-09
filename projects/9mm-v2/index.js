@@ -9,4 +9,16 @@ module.exports = {
             useDefaultCoreAssets: true,
         }),
     },
+    sonic: {
+        tvl: getUniTVL({
+            factory: '0x0f7B3FcBa276A65dd6E41E400055dcb75BA66750',
+            useDefaultCoreAssets: true,
+        }),
+    },
+    base: {
+        tvl: getUniTVL({
+            factory: '0x4c1b8D4ae77A37b94e195CAB316391d3C687ebd1',
+            useDefaultCoreAssets: true,
+        }),
+    },
 }

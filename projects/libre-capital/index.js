@@ -6,17 +6,7 @@ const { Connection, PublicKey } = require('@solana/web3.js');
 const {  getResource } = require("../helper/chain/aptos");
 
 const NAV_CONTRACT = "0x0f29d042bb26a200b2a507b752e51dbbc05bf2f6";
-const NAV_ABI = {
-  "inputs": [{"internalType": "bytes32","name": "_instrumentId","type": "bytes32"}],
-  "name": "getLatestNAV",
-  "outputs": [
-    {"internalType": "uint256","name": "navPerShare","type": "uint256"},
-    {"internalType": "string","name": "legalDocumentCID","type": "string"},
-    {"internalType": "uint256","name": "timestamp","type": "uint256"}
-  ],
-  "stateMutability": "view",
-  "type": "function"
-};
+const NAV_ABI = "function getLatestNAV(bytes32 _instrumentId) view returns (uint256 navPerShare, string legalDocumentCID, uint256 timestamp)"
 
 const RECEIPT_TOKENS = {
   ethereum: {
