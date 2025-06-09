@@ -12,7 +12,7 @@ const tokensAndOwners = Object.values(bridgeAddresses).map(({ tokenAddress, owne
 
 module.exports = {
     methodology: "TVL is calculated by getting all tokens in the AO bridge and adding up the USD values provided by CoinGecko.",
-    ao: {
+    ethereum: {
         tvl: sumTokensExport({
             tokensAndOwners
         }),
