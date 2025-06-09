@@ -104,23 +104,19 @@ async function omnipoolTvl(api) {
   ];
 
   for (const asset of gdotStablePoolAssets) {
-    try {
-      const balanceData = await polkadotApi.call.currenciesApi.account(asset.id, stablepoolAccountId4);
-      const freeBalance = balanceData.free.toBigInt();
+    const balanceData = await polkadotApi.call.currenciesApi.account(asset.id, stablepoolAccountId4);
+    const freeBalance = balanceData.free.toBigInt();
 
-      if (freeBalance > 0n) {
-        const cgId = cgMapping[asset.cgKey];
-        const meta = processedAssetMetadata.find(m => m.assetId === asset.id);
+    if (freeBalance > 0n) {
+      const cgId = cgMapping[asset.cgKey];
+      const meta = processedAssetMetadata.find(m => m.assetId === asset.id);
 
-        if (cgId && meta && typeof meta.decimals === 'number' && !isNaN(meta.decimals)) {
-          const readableBalance = Number(freeBalance) / (10 ** meta.decimals);
-          add(cgId, readableBalance);
-        } else {
-          console.warn(`HydraDX: Could not find Coingecko ID or metadata for asset ${asset.id} (${asset.cgKey}) in new stablepool.`);
-        }
+      if (cgId && meta && typeof meta.decimals === 'number' && !isNaN(meta.decimals)) {
+        const readableBalance = Number(freeBalance) / (10 ** meta.decimals);
+        add(cgId, readableBalance);
+      } else {
+        console.warn(`HydraDX: Could not find Coingecko ID or metadata for asset ${asset.id} (${asset.cgKey}) in new stablepool.`);
       }
-    } catch (e) {
-      console.error(`HydraDX: Error fetching balance for asset ${asset.id} from new stablepool ${stablepoolAccountId4}:`, e.message);
     }
   }
 
