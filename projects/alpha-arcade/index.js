@@ -42,6 +42,7 @@ async function getAlphaArcadeTvl() {
 }
 
 module.exports = {
+  methodology: 'TVL is the total quantity of unclaimed USDC held in escrow accounts of all the markets on Alpha Aracde.',
   timetravel: false,
   algorand: {
     tvl: async () => {
