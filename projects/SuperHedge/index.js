@@ -5,25 +5,25 @@ const vaults = [
   // BTC Bullish Call-Spread eUSDe
   {
     currency: '0x90d2af7d622ca3141efa4d8f1f24d86e5974cc8f',
-    pt: '0x50d2c7992b802eef16c04feadab310f31866a545',
+    pt: '0x14Bdc3A3AE09f5518b923b69489CBcAfB238e617',
     vault: '0x2324bb9F7d651E0169B9df9194937759E08Acfa9'
   },
   // BTC Bullish Call-Spread lvlUSD
   {
     currency: '0x7c1156e515aa1a2e851674120074968c905aaf37',
-    pt: '0x9bca74f805ab0a22ddd0886db0942199a0feba71',
+    pt: '0x207F7205fd6c4b602Fa792C8b2B60e6006D4a0b8',
     vault: '0x93c318E595F58E4Ffc8779E35E574832D8d9a5Dc'
   },
   // BTC Bearish Put eUSDe
   {
     currency: '0x90d2af7d622ca3141efa4d8f1f24d86e5974cc8f',
-    pt: '0x50d2c7992b802eef16c04feadab310f31866a545',
+    pt: '0x14Bdc3A3AE09f5518b923b69489CBcAfB238e617',
     vault: '0x9021d933D1Ef4c31550201C8A9522Ab15b3e6d65'
   },
   // BTC Bearish Put lvlUSD
   {
     currency: '0x7c1156e515aa1a2e851674120074968c905aaf37',
-    pt: '0x9bca74f805ab0a22ddd0886db0942199a0feba71',
+    pt: '0x207F7205fd6c4b602Fa792C8b2B60e6006D4a0b8',
     vault: '0x1fEcD2E54648476bD6AeA2f5B8BBD5155166816e'
   }
 ]
