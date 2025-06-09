@@ -116,7 +116,8 @@
     "xJOE": "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33",
     "LVTX": "0x574679ec54972cf6d705e0a71467bb5bb362919d",
     "sUSDC": "0x2f28add68e59733d23d5f57d94c31fb965f835d0",
-    "sBUSD": "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd"
+    "sBUSD": "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd",
+    "UTY": "0xdbc5192a6b6ffee7451301bb4ec312f844f02b4a"
   },
   "bsc": {
     "WBNB": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
