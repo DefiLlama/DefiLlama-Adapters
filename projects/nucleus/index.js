@@ -56,7 +56,7 @@ const tvl = async (api, chainId) => {
 
 module.exports = {
   ethereum: { tvl: (api) => tvl(api, 1) },
-  plume: { tvl: (api) => tvl(api, 98866) },
+  plume_mainnet: { tvl: (api) => tvl(api, 98866) },
   arbitrum: { tvl: (api) => tvl(api, 42161) },
   swellchain: { tvl: (api) => tvl(api, 1923) },
 }
