@@ -14,9 +14,9 @@ const addressesProviderRegistryXDAI_old = "0xa5E80AEAa020Ae41b1cBEe75dE7826297F7
 const protocolDataHelper_old = '0xa874f66342a04c24b213BF0715dFf18818D24014'
 
 module.exports = {
-  hallmarks: [
-    [1647302400, "Reentrancy attack"]
-  ],
+  // hallmarks: [
+  //   [1647302400, "Reentrancy attack"]
+  // ],
   methodology: methodologies.lendingMarket,
   xdai: {
     tvl: sdk.util.sumChainTvls([
