@@ -19,6 +19,10 @@ const tsUSDe01Sep2025 = "EQC57U5O4_OGLSEgX498PpmNqSYzcXx63wvOdtkCoe5LHcfo"
 
 const syEvaaMinter01Sep2025 = "EQBY5JE96x_U5fSSsAzBj8d-_ZbK-5AihJ2rzjTZAtNqsntL"
 
+// Torch stgUSD contracts
+const stgUSDWallet = "EQB7mAJdOoatcYNB6dXL722-you09EjGIMEV3nUIN9WQ5jq7"
+const ytContract = "EQBZU_ZFAl8_nACqkJ_Gl6fKEyAJ0uNiMc2borzmrF2KM_Bp"
+
 const indexPrecision = 10 ** 6
 
 const _rateLimited = plimit(1)
@@ -57,6 +61,29 @@ async function getSuppliedToEVAAJettons(api, evaaSyMinters) {
   api.add(ADDRESSES.ton.USDT, totalAdjustedUSDT);
 }
 
+async function getTorchStgUSD(api) {
+  // Get stgUSD balance from the smart contract wallet
+  const stgUSDBalance = await rateLimitedCall({
+    target: stgUSDWallet,
+    abi: 'get_wallet_data',
+    params: []
+  });
+
+  await sleep(1000 * (2 * Math.random() + 3)); // 3-5 second delay
+
+  // Get index from YT contract
+  const indexData = await rateLimitedCall({
+    target: ytContract,
+    abi: 'get_index',
+    params: []
+  });
+
+  // Convert stgUSD to USDT using the provided formula
+  const adjustedUSDT = stgUSDBalance[0] * indexData[0] / indexPrecision;
+  
+  api.add(ADDRESSES.ton.USDT, adjustedUSDT);
+}
+
 async function tvl(api) {
   // balances in the SY minter smart contracts
   await sumTokens({
@@ -73,10 +100,13 @@ async function tvl(api) {
 
   // Evaa tvl - balance in the EVVA protocol supplied by SY minter smartcontract
   await getSuppliedToEVAAJettons(api, [syEvaaMinter, syEvaaMinter01Sep2025]);
+
+  // Get Torch StgUSD balance
+  await getTorchStgUSD(api);
 }
 
 module.exports = {
-  methodology: 'Counts FIVA smartcontract balance as TVL. evaa USDT: Counts amount of USDT supplied to EVAA protocol by SY minter smartcontract.',
+  methodology: 'Counts FIVA smartcontract balance as TVL. EVAA USDT: Counts amount of USDT supplied to EVAA protocol by SY minter smartcontract.',
   ton: {
     tvl
   }
