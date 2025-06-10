@@ -41,7 +41,7 @@ function chainTvl(chain) {
                 }
             }
         }
-        // toa = toa.filter(([i, j]) => i && j && j !== ADDRESSES.null && isValidAddress(i) && isValidAddress(j))
+        toa = toa.filter(([i, j]) => i && j && j !== ADDRESSES.null && isValidAddress(i) && isValidAddress(j))
         return sumTokens2({ api, tokensAndOwners: toa, })
     }
 }
