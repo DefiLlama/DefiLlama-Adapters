@@ -15,9 +15,9 @@ async function getAlphaArcadeMarkets() {
 }
 
 /**
- * Fetches the TVL in USDC held in escrow accounts across all matched markets on Alpha Arcade.
- * It retrieves the list of markets from the Alpha Arcade API, determines the escrow account for each market,
- * and sums the USDC balances found in those accounts.
+ * Fetches the TVL in USDC held in escrow accounts across all markets on Alpha Arcade.
+ * This function retrieves the market data from the Alpha Arcade API, calculates the 
+ * total value locked (TVL) by summing the USDC balances in both matched and open orders.
  *
  * @async
  * @function getAlphaArcadeTvl
@@ -25,24 +25,20 @@ async function getAlphaArcadeMarkets() {
  * @throws {Error} If the markets cannot be fetched from the Alpha Arcade API.
  */
 async function getAlphaArcadeTvl() {
-    let marketIds = [];
     let openOrderTvl = 0;
     let matchedOrderTvl = 0;
     const markets = await getAlphaArcadeMarkets();
 
     for (const market of markets) {
-        if (market.marketAppId) {
-            marketIds.push(market.marketAppId);
-        }
-    }
+        if (!market.marketAppId) continue;
+        const marketAppId = market.marketAppId;
 
-    for (const marketAppId of marketIds) {
         try {
             // Get application escrow account
-            const appAddress = getApplicationAddress(marketAppId);
+            const marketAppAddress = getApplicationAddress(marketAppId);
 
             // Get amount of USDC in escrow account
-            const addressData = await lookupAccountByID(appAddress);
+            const addressData = await lookupAccountByID(marketAppAddress);
 
             // Add amount to total tvl in USD
             const assets = addressData.account.assets;
@@ -55,8 +51,8 @@ async function getAlphaArcadeTvl() {
             }
 
 
-            // For each created application, find application address and add its USDC balance to tvlUSD
-            const createdApplications = await lookupApplicationsCreatedByAccount(appAddress);
+            // For each created application, find application address and add its USDC balance
+            const createdApplications = await lookupApplicationsCreatedByAccount(marketAppAddress);
             for (const app of createdApplications.applications) {
                 const appAddress = getApplicationAddress(app.id);
                 const appData = await lookupAccountByID(appAddress);
