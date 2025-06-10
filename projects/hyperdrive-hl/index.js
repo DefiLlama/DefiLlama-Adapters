@@ -57,73 +57,57 @@ async function getAllMarkets(api) {
 
 async function tvl(api) {
     const markets = await getAllMarkets(api);
+    const marketIds = markets.map((_, i) => i + 1);
 
-    await Promise.all(
-        markets.map(async (_, i) => {
-            const marketId = i + 1;
+    const marketData = await api.multiCall({
+        target: MARKET_LENS,
+        calls: marketIds,
+        abi: ABI.MarketLens.getMarketQuery,
+    });
+    const collateralData = await api.multiCall({
+        target: MARKET_LENS,
+        calls: marketIds,
+        abi: ABI.MarketLens.getCollateralAssetsQuery,
+    });
 
-            const [marketData, collateralData] = await Promise.all([
-                api.call({
-                    abi: ABI.MarketLens.getMarketQuery,
-                    target: MARKET_LENS,
-                    params: [marketId],
-                }),
-                api.call({
-                    abi: ABI.MarketLens.getCollateralAssetsQuery,
-                    target: MARKET_LENS,
-                    params: [marketId],
-                }),
-            ]);
+    marketData.forEach((datum, i) => {
+        api.add(datum.marketAsset, datum.totalAssets);
 
-            api.add(marketData.marketAsset, marketData.totalAssets);
+        const collateralDatum = collateralData[i];
+        const totalCollateral = collateralDatum.reduce((previous, current) => {
+            return previous + BigInt(current.totalValue);
+        }, 0n);
+        api.add(datum.marketAsset, totalCollateral);
+    });
 
-            const totalCollateral = collateralData.reduce(
-                (previous, current) => {
-                    return previous + BigInt(current.totalValue);
-                },
-                0n
-            );
-            api.add(marketData.marketAsset, totalCollateral);
-        })
-    );
-
-    await Promise.all(
-        vaults.map(async (vault) => {
-            const [totalAssets, asset] = await Promise.all([
-                api.call({
-                    abi: ABI.Erc4626.totalAssets,
-                    target: vault,
-                    params: [],
-                }),
-                api.call({
-                    abi: ABI.Erc4626.asset,
-                    target: vault,
-                    params: [],
-                }),
-            ]);
-            api.add(asset, totalAssets);
-        })
-    );
+    const totalAssets = await api.multiCall({
+        calls: vaults,
+        abi: ABI.Erc4626.totalAssets,
+    });
+    const assets = await api.multiCall({
+        calls: vaults,
+        abi: ABI.Erc4626.asset,
+    });
+    assets.forEach((asset, i) => {
+        api.add(asset, totalAssets[i]);
+    });
 
     return api.getBalances();
 }
 
 async function borrowed(api) {
     const markets = await getAllMarkets(api);
+    const marketIds = markets.map((_, i) => i + 1);
 
-    await Promise.all(
-        markets.map(async (_, i) => {
-            const marketId = i + 1;
+    const marketData = await api.multiCall({
+        target: MARKET_LENS,
+        calls: marketIds,
+        abi: ABI.MarketLens.getMarketQuery,
+    });
 
-            const marketData = await api.call({
-                abi: ABI.MarketLens.getMarketQuery,
-                target: MARKET_LENS,
-                params: [marketId],
-            });
-
-            api.add(marketData.marketAsset, marketData.totalLiabilities);
-        })
-    );
+    marketData.forEach((datum) => {
+        api.add(datum.marketAsset, datum.totalLiabilities);
+    });
 
     return api.getBalances();
 }
