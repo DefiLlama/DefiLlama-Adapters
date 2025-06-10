@@ -187,7 +187,7 @@ const COIN_CONFIG = {
     "coinType": "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
     "oraclePackageId": "0xbce03628dfae0e62e9efef485df722ec88f910c23ee09c8bf4e90c48795dfccc",
     "priceOracleConfigId": "0xb9cc723bf7494325be2f3333a3fb72f46d53abe3603e3f326fc761287850db0e",
-    "oracleTicket": "0x888845b5e7a09f9b0ac9c98ac0ccc3b47e89814bdd6295316e27b06e83cf26f8",
+    "oracleTicket": "0xa4949fc466d866220220a490d231ef70784642f65f5513273462551b2248b704",
     "providerVersion": "",
     "providerMarket": "",
     "syStateId": "0xccd3898005a269c1e9074fe28bca2ff46784e8ee7c13b576862d9758266c3a4d",
