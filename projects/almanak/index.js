@@ -1,0 +1,23 @@
+const { getLogs } = require("../helper/cache/getLogs");
+
+const config = {
+  ethereum: {
+    vaults:
+      [
+        "0xDCD0f5ab30856F28385F641580Bbd85f88349124", // alUSD
+      ],
+  },
+};
+
+
+Object.keys(config).forEach((chain) => {
+  const {vaults} = config[chain];
+  module.exports[chain] = { 
+    tvl: async (api) =>  {
+
+      return await api.erc4626Sum2({
+        calls: [...vaults],
+      })
+    }
+}}
+)
