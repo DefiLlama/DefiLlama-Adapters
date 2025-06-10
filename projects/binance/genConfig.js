@@ -9,7 +9,7 @@ const assetList = data.split('\n').map(i => i.split(',')).filter(i=> {
 assetList.pop()
 
 const networkAddresses = {}
-const ignoredChainSet = new Set(['ENJ', 'BEP2', 'STATEMINT'])
+const ignoredChainSet = new Set(['ENJ', 'BEP2', 'STATEMINT', 'BNB', 'MTL'])
 
 assetList.forEach(([_, network, address]) => {
   if (ignoredChainSet.has(network)) return;
@@ -55,7 +55,8 @@ const chainMap = {
   NEAR: 'near',
   DOGE: 'doge',
   XLM: 'stellar',
-  SCROLL: "scroll"
+  SCROLL: "scroll",
+  SONIC: "sonic",
 }
 
 

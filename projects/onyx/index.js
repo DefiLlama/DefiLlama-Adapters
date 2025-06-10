@@ -14,7 +14,7 @@ module.exports = {
     staking: staking(tokensAddress.stakingPool, tokensAddress.onyx),
   },
   hallmarks: [
-    [Math.floor(new Date('2023-11-01')/1e3), 'Protocol was hacked'],
+    ['2023-11-01', 'Protocol was hacked'],
   ],
 };
 

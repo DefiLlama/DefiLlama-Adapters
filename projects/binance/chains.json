@@ -44,6 +44,10 @@
   ],
   "base": [
     "0x3304e22ddaa22bcdc5fca2269b418046ae7b566a",
+    "0x4ed6cf63bd9c009d247ee51224fc1c7041f517f1",
+    "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+    "0x835678a611b28684005a5e2233695fb6cbbb0007",
+    "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
     "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
   "bsc": [
@@ -79,6 +83,7 @@
     "1PJiGp2yDLvUgqeBsuZVCBADArNsk6XEiw",
     "1PPWMe42cywnM61nVatkmiggwdRQYLiCyS",
     "1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7",
+    "32BgTv3NSYbMsBTwDbNNN2GKZPCTJSkqDv",
     "32KqbtrRVxC6GLUJgJhVQtFTaCdq4GrgBb",
     "32bhzEniykYRFADVaRM5PYswsjC23cxtes",
     "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP",
@@ -92,6 +97,7 @@
     "3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN",
     "3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2",
     "3EVVc8e2rxwUuERtdJCduWig8DnpsUqyA6",
+    "3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt",
     "3F9CGMu7JSJnMHA8jFM2KgxuH6hhxtvENP",
     "3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B",
     "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA",
@@ -108,6 +114,7 @@
     "3QK5vQ9hucSg8ZC8Vizq83qEWeHFLAWMud",
     "bc1q5n5dy7jgqhmpnmx44d3780qefzaphjreds0z9y",
     "bc1q5qvs2dzzydqt4ygfn0k0ertjnv8ctytgcdz7l0",
+    "bc1q5rsc4uscnmemlwru8xsys26k3xgxewqfnf3k7j",
     "bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h",
     "bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72",
     "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
@@ -134,6 +141,7 @@
     "DE5opaXjFgDhFBqL6tBDxTAQ56zkX6EToX",
     "DEth4cF3doxmbcv9ofH3vm4j2NCozn8DL6",
     "DFoQ1qrgDM7D9tAhF7Mahbp6zLv8CzK3XH",
+    "DGmd2jn1D7oLXpdpcGkLaGLDMbnRt4qkH3",
     "DGmzv39riELTuigZCUD6sWoHEHPdSbxdUB",
     "DJfU2p6woQ9GiBdiXsWZWJnJ9uDdZfSSNC",
     "DKjcdPpQLoVfkZsN4wJr2RFuyFCoAVvoRe",
@@ -175,6 +183,7 @@
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x835678a611b28684005a5e2233695fb6cbbb0007",
     "0x9696f59e4d72e237be84ffd425dcad154bf96976",
+    "0x98adef6f2ac8572ec48965509d69a8dd5e8bba9d",
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
     "0xad354cfbaa4a8572dd6df021514a3931a8329ef5",
     "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",
@@ -194,10 +203,13 @@
     "LbmGksLBwtwRXyxeazCZqKiAHX6cWN2AzN",
     "LhcTcrMrheBqbthwfit43jkT9qnge5wSs1",
     "LhzEoDXHXASi4hSMxrKeVoSGrED9QsBpPq",
-    "MG9aFQgTH5C4UPcur8S2bh5duKYMfaJFUS",
-    "MGvsTeo5z1uEp61t9Vu9ShjK5NEZM5hGzH",
+    "MGnj7jsQH6vMZRG7rZCSswwBNnGtvdrWPR",
+    "MLj1bgnNs8iAmNxhZNnrymQaAZNqnXXV3E",
     "MQSs17ECe51kqhkFPQY98wiyPvGuK5iCB6",
-    "MQd1fJwqBJvwLuyhr17PhEFx1swiqDbPQS"
+    "MQd1fJwqBJvwLuyhr17PhEFx1swiqDbPQS",
+    "MRTFVNPgsC63Z3i3PoHrSh8J7Y9kTmWbty",
+    "MS56eJAupdvN5bYo6ythw784qahCpTzZ5V",
+    "MW87w56tHzzBYuHS4tfTQ1aYN7Kz6iuSra"
   ],
   "manta": [
     "0x18e226459ccf0eec276514a4fd3b226d8961e4d1",
@@ -270,8 +282,18 @@
     "GK35nWN6ZHSGZrRTf8kTQd8RkFCighChPEb41XwSFVAC",
     "HXsKP7wrBWaQ8T2Vtjry3Nj3oUgwYcqq9vrHDM12G664"
   ],
+  "sonic": [
+    "0x18e226459ccf0eec276514a4fd3b226d8961e4d1",
+    "0x4fdfe365436b5273a42f135c6a6244a20404271e",
+    "0xa4e471dbfe8c95d4c44f520b19cee436c01c3267",
+    "0xab72bd3eb3b5cc90165fa39da85ad0d496330c00",
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
+  ],
   "starknet": [
-    "0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d"
+    "0x00c1ce9c68f1c4a1b05e8d043b9b05784f41685d68e5009ffe379aa7f7c95ccf",
+    "0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d",
+    "0x028ebd4daafaec7e29dad521f083fb7054d05d6571c9c5f13f55d9bad5333291",
+    "0x04164013f90b05d67f026779bf96e9c401c96f3485b645a786166e6935fba116"
   ],
   "sui": [
     "0x5be98f6812b102e8677cb9afa5644b35c4e6198be7330121dbda04ac2aedba44",
