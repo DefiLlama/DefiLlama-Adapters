@@ -17,11 +17,6 @@ const contracts = {
       '0xF9E2AE779a7d25cDe46FccC41a27B8A4381d4e52' // Bastion CV
     ]
   },
-  polygon_zkevm: {
-    cdos: [
-      "0x6b8A1e78Ac707F9b0b5eB4f34B02D9af84D2b689" // IdleCDO_clearpool_portofino_USDT
-    ]
-  },
   optimism: {
     credits: [
       "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B", // FalconX
