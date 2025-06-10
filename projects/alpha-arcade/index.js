@@ -1,30 +1,45 @@
 const { getApplicationAddress } = require("../helper/chain/algorandUtils/address");
-const { lookupAccountByID } = require("../helper/chain/algorand");
+const { lookupAccountByID, lookupApplicationsCreatedByAccount } = require("../helper/chain/algorand");
 const axios = require('axios');
 const { getCachedPrices } = require('../folks-xalgo/prices');
 
 const USDC_ASSET_ID = 31566704; // USDC asset ID on Algorand
 
-async function getAlphaArcadeTvl() {
-    // Get all markets
-    // Loop through each market and add it's marketAppId to an array
-    let markets = [];
-    let tvlUSD = 0;
+
+async function getAlphaArcadeMarkets() {
     const response = await axios.get("https://g08245wvl7.execute-api.us-east-1.amazonaws.com/api/get-markets");
     if (!response.data || !response.data.markets) {
         throw new Error("Failed to fetch markets from Alpha Arcade API");
     }
+    return response.data.markets;
+}
 
-    for (const market of response.data.markets) {
+/**
+ * Fetches the TVL in USDC held in escrow accounts across all matched markets on Alpha Arcade.
+ * It retrieves the list of markets from the Alpha Arcade API, determines the escrow account for each market,
+ * and sums the USDC balances found in those accounts.
+ *
+ * @async
+ * @function getAlphaArcadeTvl
+ * @returns {Promise<number>} The total TVL in USDC across all matched markets.
+ * @throws {Error} If the markets cannot be fetched from the Alpha Arcade API.
+ */
+async function getAlphaArcadeTvl() {
+    let marketIds = [];
+    let openOrderTvl = 0;
+    let matchedOrderTvl = 0;
+    const markets = await getAlphaArcadeMarkets();
+
+    for (const market of markets) {
         if (market.marketAppId) {
-            markets.push(market.marketAppId);
+            marketIds.push(market.marketAppId);
         }
     }
 
-    for (const marketAppId of markets) {
+    for (const marketAppId of marketIds) {
         try {
             // Get application escrow account
-            const appAddress = await getApplicationAddress(marketAppId);
+            const appAddress = getApplicationAddress(marketAppId);
 
             // Get amount of USDC in escrow account
             const addressData = await lookupAccountByID(appAddress);
@@ -34,17 +49,36 @@ async function getAlphaArcadeTvl() {
             if (assets) {
                 for (const asset of assets) {
                     if (asset['asset-id'] === USDC_ASSET_ID) {
-                        tvlUSD += asset.amount;
+                        matchedOrderTvl += asset.amount;
                     }
                 }
             }
+
+
+            // For each created application, find application address and add its USDC balance to tvlUSD
+            const createdApplications = await lookupApplicationsCreatedByAccount(appAddress);
+            for (const app of createdApplications.applications) {
+                const appAddress = getApplicationAddress(app.id);
+                const appData = await lookupAccountByID(appAddress);
+                const assets = appData.account.assets;
+                if (assets) {
+                    for (const asset of assets) {
+                        if (asset['asset-id'] === USDC_ASSET_ID) {
+                            openOrderTvl += asset.amount;
+                        }
+                    }
+                }
+            }
+
         } catch (err) {
             // No active escrow account for this market
             continue;
         }
     }
+    const tvlUSD = matchedOrderTvl + openOrderTvl;
     return tvlUSD / 1e6; // Convert from microUSDC
 }
+
 
 module.exports = {
   methodology: 'TVL represents the total amount USDC held in escrow across all markets on Alpha Arcade.',
