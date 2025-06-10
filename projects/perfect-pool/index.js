@@ -3,12 +3,14 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const NFT_ACE8 = '0x21F3ea812734b6492D88D268622CF068e9E6D596'
 const NFT_ACE16 = '0x70A254c8201adbD88d88D17937d5e8aBb8B8095F'
+const NFT_CLUB_WORLD_CUP = '0x6b08888efd22d694504Bb293Cb135fD2Ea5f1fE4'
+const PERFECT_POOL = '0x0a35174FB79C59F635204D4ae443D94B278742A8'
 
 module.exports = {
   start: '2024-09-02',
   base: {
     tvl: sumTokensExport(
-      { owners: [NFT_ACE8, NFT_ACE16], token: ADDRESSES.base.USDC },
+      { owners: [NFT_ACE8, NFT_ACE16, NFT_CLUB_WORLD_CUP, PERFECT_POOL], token: ADDRESSES.base.USDC },
     ),
   }
 }
