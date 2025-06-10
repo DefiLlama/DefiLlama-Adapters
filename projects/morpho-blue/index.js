@@ -94,6 +94,14 @@ const config = {
     morphoBlue: "0x42b18785CE0Aed7BF7Ca43a39471ED4C0A3e0bB5",
     fromBlock: 765994,
   },
+  lisk: {
+    morphoBlue: "0x00cD58DEEbd7A2F1C55dAec715faF8aed5b27BF8",
+    fromBlock: 15731231,
+  },
+  soneium: {
+    morphoBlue: "0xE75Fc5eA6e74B824954349Ca351eb4e671ADA53a",
+    fromBlock: 6440817,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
