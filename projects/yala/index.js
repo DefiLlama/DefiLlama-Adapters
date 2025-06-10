@@ -33,15 +33,20 @@ async function tvlInEthereum(api) {
     });
   }
 
-  // bfBTC in AssetWrapper
+  // AssetWrapper
   {
-    // 1:1 bfBTC amt
-    let amt = await api.call({
-      abi: "erc20:totalSupply",
-      target: res.ethereum.AssetWrapper.bfBTC.wrapper,
-    });
+    let tokensAndOwners = [];
+    for (let i = 0; i < res.ethereum.AssetWrapper.addresses.length; i++) {
+      const address = res.ethereum.AssetWrapper.addresses[i];
+      const token = res.ethereum.AssetWrapper.tokens[i];
+      tokensAndOwners.push([token, address]);
+    }
 
-    api.addToken(res.ethereum.AssetWrapper.bfBTC.address, amt);
+    await helperUnwrapLPs.sumTokens2({
+      api,
+      tokensAndOwners,
+      permitFailure: true,
+    });
   }
 }
 
