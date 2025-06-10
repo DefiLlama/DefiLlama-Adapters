@@ -53,18 +53,13 @@ async function tvl(api) {
     transform: i => i.market_id
   });
 
-  console.log('marketIds', marketIds);
-
   const markets = await sui.getObjects(marketIds);
-
-  console.log('marketIds', markets);
-
-  const syAmounts = ["1000", "100", "10", "1"]
 
   for (const market of markets) {
     if (!market) continue;
 
     const {type, fields} = market;
+
     try {
       const typeString = type.replace(">", "").split("<")[1];
       if (!typeString) continue;
@@ -84,49 +79,42 @@ async function tvl(api) {
 
       if (!watchCoinType.includes(coinConfig.coinType)) continue;
 
-      for (const syAmount of syAmounts) {
-        try {
-          const txBlockBytes = await getExchangeRate(coinConfig);
+      const txBlockBytes = await getExchangeRate(coinConfig);
 
-          const inspectionResult = await sui.call(
-            'sui_devInspectTransactionBlock',
-            ['0x0000000000000000000000000000000000000000000000000000000000000000',
-              Buffer.from(txBlockBytes).toString('base64')],
-            {withMetadata: true}
-          );
+      const inspectionResult = await sui.call(
+        'sui_devInspectTransactionBlock',
+        ['0x0000000000000000000000000000000000000000000000000000000000000000',
+          Buffer.from(txBlockBytes).toString('base64')],
+        {withMetadata: true}
+      );
 
-          if (inspectionResult?.effects?.status?.status !== 'success') {
-            throw new Error(JSON.stringify(inspectionResult, null, 2));
-          }
-
-          const returnValues = inspectionResult.results[0].returnValues;
-          const res1 = returnValues[0][0];
-          const res2 = returnValues[1][0];
-          const priceVoucher1 = desU128(Uint8Array.from(res1));
-          const priceVoucher2 = desU128(Uint8Array.from(res2));
-
-          let rate1 = new BigNumber(priceVoucher1).div(new BigNumber(2).pow(64)).toString();
-          let rate2 = new BigNumber(priceVoucher2).div(new BigNumber(2).pow(64)).toString();
-
-          console.log('priceVoucher rate1', rate1, rate2, coinConfig.coinType);
-
-          const pt2SyAmount = new BigNumber(fields.total_pt).div(rate1);
-          let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
-
-          sdk.log('devInspectTransactionBlock pt2SyAmount', pt2SyAmount.toString(), syBalance.toString(), rate1, rate2)
-
-          if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
-            api.add(tokens, syBalance.toNumber());
-          } else {
-            let underlyingBalance = syBalance.multipliedBy(rate2);
-            api.add(coinConfig.underlyingCoinType, underlyingBalance.toNumber());
-          }
-
-          break;
-        } catch (e) {
-          console.log('devInspectTransactionBlock error', e);
-        }
+      if (inspectionResult?.effects?.status?.status !== 'success') {
+        throw new Error(JSON.stringify(inspectionResult, null, 2));
       }
+
+      const returnValues = inspectionResult.results[0].returnValues;
+      const res1 = returnValues[0][0];
+      const res2 = returnValues[1][0];
+      const priceVoucher1 = desU128(Uint8Array.from(res1));
+      const priceVoucher2 = desU128(Uint8Array.from(res2));
+
+      let rate1 = new BigNumber(priceVoucher1).div(new BigNumber(2).pow(64)).toString();
+      let rate2 = new BigNumber(priceVoucher2).div(new BigNumber(2).pow(64)).toString();
+
+      console.log('priceVoucher rate1', rate1, rate2, coinConfig.coinType);
+
+      const pt2SyAmount = new BigNumber(fields.total_pt).div(rate1);
+      let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
+
+      sdk.log('devInspectTransactionBlock pt2SyAmount', pt2SyAmount.toString(), syBalance.toString(), rate1, rate2)
+
+      if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
+        api.add(tokens, syBalance.toNumber());
+      } else {
+        let underlyingBalance = syBalance.multipliedBy(rate2);
+        api.add(coinConfig.underlyingCoinType, underlyingBalance.toNumber());
+      }
+
     } catch (error) {
       console.error(`error: ${type}`, error);
     }
