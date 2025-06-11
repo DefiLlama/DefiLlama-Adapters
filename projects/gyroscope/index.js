@@ -74,7 +74,7 @@ const config = {
     {
       name: "Gyro E-CLP V2 Factory - Balancer",
       factory: "0x5F6848976C2914403B425F18B589A65772F082E3",
-      fromBlock: 27590363,
+      fromBlock: 27590349,
     },
   ],
   sei: [
@@ -100,7 +100,7 @@ const config = {
     {
       name: "Gyro E-CLP V2 Factory - Balancer",
       factory: "0x22625eEDd92c81a219A83e1dc48f88d54786B017",
-      fromBlock: 133969704,
+      fromBlock: 133969692,
     },
     
   ],
