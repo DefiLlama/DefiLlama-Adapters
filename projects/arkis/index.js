@@ -25,7 +25,11 @@ const abis = {
   totalBorrowed: "function totalBorrowed() returns (uint256)",
 }
 
-const arkis_wrapped_hype_vault = "0x454F936D5877Daf9366Ef1Fca1bDF888201Bb127";
+// Arkis Wrapped HYPE Vault addresses
+const arkis_wrapped_hype_vaults = [
+  "0x454F936D5877Daf9366Ef1Fca1bDF888201Bb127", // Primary HYPE Vault address
+  "0xA1C0ae02D6B40F6D71bfAee9Aa27f3dCc75a63D8"  // X Upshift HYPE Vault address
+];
 
 const fetchFactoryLogs = async (api, type) => {
   const fromBlock = 21069508;
@@ -80,15 +84,22 @@ const borrowed = async (api) => {
 }
 
 async function tvlHyperliquid(api) {
-  const response = await axios.get(`https://www.hyperscan.com/api/v2/addresses/${arkis_wrapped_hype_vault}`);
-  const hypeBalance = response.data.coin_balance || '0';
-  api.add(ADDRESSES.null, hypeBalance);
+  const responses = await Promise.all(
+    arkis_wrapped_hype_vaults.map(vault => 
+      axios.get(`https://www.hyperscan.com/api/v2/addresses/${vault}`)
+    )
+  );
+  
+  const totalHypeBalance = responses.reduce((sum, response) => 
+    sum + Number(response.data.coin_balance || '0'), 0);
+  
+  api.add(ADDRESSES.null, totalHypeBalance);
 }
 
 
 module.exports = {
   methodology: "On Ethereum, TVL includes leverage assets, collaterals, whitelisted tokens, ETH, and LP tokens held in agreements and margin accounts created by factory contracts. " +
-             "On Hyperliquid, TVL reflects the native HYPE held at the Arkis Wrapped HYPE Vault (0x454F936D5877Daf9366Ef1Fca1bDF888201Bb127), which backs the arkisHYPE token issued on Ethereum.",
+             "On Hyperliquid, TVL reflects the native HYPE held at the Arkis Wrapped HYPE Vaults, which back the tokens issued on Ethereum.",
   ethereum: { tvl, borrowed },
   hyperliquid: { tvl: tvlHyperliquid },
 }
