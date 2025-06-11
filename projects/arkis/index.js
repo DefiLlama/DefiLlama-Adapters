@@ -31,6 +31,12 @@ const arkis_wrapped_hype_vaults = [
   "0xA1C0ae02D6B40F6D71bfAee9Aa27f3dCc75a63D8"  // X Upshift HYPE Vault address
 ];
 
+// ERC-20 tokens to track in Hyperliquid vaults
+const tokens_to_track = [
+  ADDRESSES.hyperliquid.WHYPE,
+  ADDRESSES.hyperliquid.stHYPE 
+];
+
 const fetchFactoryLogs = async (api, type) => {
   const fromBlock = 21069508;
   const topic = type === "agreement" ? topics.agreementCreated : topics.accountDeployed;
@@ -84,22 +90,40 @@ const borrowed = async (api) => {
 }
 
 async function tvlHyperliquid(api) {
-  const responses = await Promise.all(
-    arkis_wrapped_hype_vaults.map(vault => 
+  const [nativeResults, erc20Results] = await Promise.all([
+    Promise.all(arkis_wrapped_hype_vaults.map(vault => 
       axios.get(`https://www.hyperscan.com/api/v2/addresses/${vault}`)
-    )
-  );
-  
-  const totalHypeBalance = responses.reduce((sum, response) => 
-    sum + Number(response.data.coin_balance || '0'), 0);
-  
-  api.add(ADDRESSES.null, totalHypeBalance);
-}
+    )),
+    Promise.all(arkis_wrapped_hype_vaults.map(vault => 
+      axios.get(`https://www.hyperscan.com/api/v2/addresses/${vault}/tokens?type=ERC-20`)
+    ))
+  ]);
 
+  const totalHypeBalance = nativeResults.reduce(
+    (sum, response) => sum + Number(response.data.coin_balance || 0), 0
+  );
+
+  const tokenBalances = Object.fromEntries(tokens_to_track.map(token => [token, 0]));
+  erc20Results.forEach(response => {
+    (response.data.items || []).forEach(item => {
+      const tokenAddress = item.token.address;
+      if (tokenBalances[tokenAddress] !== undefined) {
+        tokenBalances[tokenAddress] += Number(item.value || 0);
+      }
+    });
+  });
+
+  if (totalHypeBalance > 0) {
+    api.add(ADDRESSES.null, totalHypeBalance);
+  }
+  Object.entries(tokenBalances).forEach(([token, balance]) => {
+    if (balance > 0) api.add(token, balance);
+  });
+}
 
 module.exports = {
   methodology: "On Ethereum, TVL includes leverage assets, collaterals, whitelisted tokens, ETH, and LP tokens held in agreements and margin accounts created by factory contracts. " +
-             "On Hyperliquid, TVL reflects the native HYPE held at the Arkis Wrapped HYPE Vaults, which back the tokens issued on Ethereum.",
+             "On Hyperliquid, TVL reflects the native HYPE, WHYPE and stHYPE held at the Arkis Wrapped HYPE Vaults, which back the tokens issued on Ethereum.",
   ethereum: { tvl, borrowed },
   hyperliquid: { tvl: tvlHyperliquid },
 }
