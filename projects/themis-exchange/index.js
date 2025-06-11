@@ -6,7 +6,7 @@ const config = {
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2023-06-27')/1e3), 'Protocol was exploited and lost $370k'],
+    ['2023-06-27', 'Protocol was exploited and lost $370k'],
   ],
 };
 Object.keys(config).forEach(chain => {

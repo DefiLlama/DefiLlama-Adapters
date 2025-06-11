@@ -1,6 +1,6 @@
 const { getConfig } = require('../helper/cache')
 
-const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared", "hemi"];
+const chains = ["ethereum", "arbitrum", "btr", "mode", "zklink", "core", "ailayer", "linea", "merlin", "scroll", "bsquared", "hemi", "bsc", "xsat", "goat"];
 
 const abi = {
   getBalance: "function getBalance(address) view returns (uint256)"

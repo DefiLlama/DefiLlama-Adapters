@@ -29,28 +29,8 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const balances = {}
-      const logs = await getLogs({
-        api,
-        target: registry,
-        topic: 'VaultRegistered(address,address,uint256,address,address)',
-        fromBlock,
-        eventAbi: 'event VaultRegistered (address indexed origin, address indexed sender, uint256 indexed nft, address vault, address owner)',
-        onlyArgs: true,
-        extraKey: 'VaultRegistered'
-      })
-      const vaultKeys = {}
-      logs.forEach(i => vaultKeys[i.nft] = i.vault)
-      const tokenLockedLogs = await getLogs({
-        api,
-        target: registry,
-        topic: 'TokenLocked(address,address,uint256)',
-        fromBlock,
-        eventAbi: 'event TokenLocked (address indexed origin, address indexed sender, uint256 indexed nft)',
-        onlyArgs: true,
-        extraKey: 'TokenLocked'
-      })
-      tokenLockedLogs.forEach(i => delete vaultKeys[i.nft])
-      let vaults = Object.values(vaultKeys)
+
+      const vaults = await api.call({ abi: 'function vaults() view returns (address[])', target: registry })
       const tokens = await api.multiCall({ abi: 'function vaultTokens() view returns (address[])', calls: vaults })
       const bals = await api.multiCall({ abi: 'function tvl() view returns (uint256[] minTokenAmounts, uint256[] maxTokenAmounts)', calls: vaults, permitFailure: true })
       tokens.forEach((tokens, i) => {
@@ -58,6 +38,7 @@ Object.keys(config).forEach(chain => {
         let balsInner = bals[i].minTokenAmounts
         tokens.forEach((v, i) => sdk.util.sumSingleBalance(balances, v, balsInner[i], api.chain))
       })
+
       return balances
     }
   }

@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const config = {
+const v2Config = {
   ethereum: {
     poolAddress: '0x3f390dD6EF69f68f9877aACC086856a200808693',
     fbtcAddress: ADDRESSES.bob.FBTC,
@@ -30,15 +30,33 @@ const config = {
   }
 }
 
-module.exports = {
-  methodology: `FBTC and LFBTC as collateral`,
+const v3Config = {
+  berachain: {
+    poolAddress: '0x02feDCff97942fe28e8936Cdc3D7A480fdD248f0',
+    fbtcAddress: ADDRESSES.berachain.WFBTC,
+    usdaAddress: '0xff12470a969dd362eb6595ffb44c82c959fe9acc',
+    treasuryAddress: '0x0c3616027b7d7AC8BA6FA2a1540a5e6A728cebA5',
+  }
 }
 
-Object.keys(config).forEach(chain => {
-  const { poolAddress, lfbtcAddress, fbtcAddress, owners = [], tokens = [] } = config[chain]
+module.exports = {
+  methodology: `FBTC, LFBTC and WFBTC as collateral`,
+}
+
+// V2
+Object.keys(v2Config).forEach(chain => {
+  const { poolAddress, lfbtcAddress, fbtcAddress, owners = [], tokens = [] } = v2Config[chain]
   owners.push(poolAddress)
   tokens.push(lfbtcAddress, fbtcAddress)
   module.exports[chain] = {
     tvl: sumTokensExport({ owners, tokens, }),
+  }
+})
+
+// V3
+Object.keys(v3Config).forEach(chain => {
+  const { fbtcAddress, treasuryAddress } = v3Config[chain]
+  module.exports[chain] = {
+    tvl: sumTokensExport({ owners: [treasuryAddress], tokens: [ fbtcAddress] }),
   }
 })
