@@ -149,23 +149,21 @@ module.exports = {
     })
   },
   tBTC: async () => {
-    return [
-      "bc1qr5laxd2pyptae847tt32qddujtws305s8ej278",
-      "bc1qwetfspn7fp4dgsh44y4dzwx5y8e3tlc7v0mhf5",
-      "bc1qprkyx79jxvpe69mewfmlat8ydavuth95ppec5m",
-      "bc1q63r464arzp9709tqc2z3hkmcna0lrmzv7sekl5",
-      "bc1q0w68p8gh5egxjjd9edlyqkncns7veexcurqut9",
-      "bc1qlgtalpnsfqsc6wxdm6uvjjdd9ujgq0a8x4yslh",
-      "bc1qpdx8zrkjsjd8mjhaznnz0atz6v9f2upda9xgyn",
-      "bc1qtd8mplu4n7evnmzqtrtt7ljs0rl00th42kcgj5",
-      "bc1qyghykrhmkk5ztn4l5pjaqywpsxkg6e9rdm22mt",
-      "bc1q04phgdeyx7nneh2ux4ynxhew4vwqfduk3wt6hc"
-    ]
-    /* the api is broken
-    const API_URL = 'https://api.threshold.network/tbtc/wallets/pof'
+    // return [
+    //   "bc1qr5laxd2pyptae847tt32qddujtws305s8ej278",
+    //   "bc1qwetfspn7fp4dgsh44y4dzwx5y8e3tlc7v0mhf5",
+    //   "bc1qprkyx79jxvpe69mewfmlat8ydavuth95ppec5m",
+    //   "bc1q63r464arzp9709tqc2z3hkmcna0lrmzv7sekl5",
+    //   "bc1q0w68p8gh5egxjjd9edlyqkncns7veexcurqut9",
+    //   "bc1qlgtalpnsfqsc6wxdm6uvjjdd9ujgq0a8x4yslh",
+    //   "bc1qpdx8zrkjsjd8mjhaznnz0atz6v9f2upda9xgyn",
+    //   "bc1qtd8mplu4n7evnmzqtrtt7ljs0rl00th42kcgj5",
+    //   "bc1qyghykrhmkk5ztn4l5pjaqywpsxkg6e9rdm22mt",
+    //   "bc1q04phgdeyx7nneh2ux4ynxhew4vwqfduk3wt6hc"
+    // ]
+    const API_URL = 'https://api.tbtcscan.com/tbtc/proof-of-funds'
     const { wallets } = await getConfig('tbtc/wallets', API_URL)
     return wallets.filter(i => +i.walletBitcoinBalance > 0).map(wallet => wallet.walletBitcoinAddress)
-         */
   },
   exsatBridge: async () => {
     const API_URL = 'https://raw.githubusercontent.com/exsat-network/exsat-defillama/refs/heads/main/bridge-bitcoin.json'

@@ -1,11 +1,11 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by M11C.',
+  methodology: 'Count all assets are deposited in all vaults curated by M11C.',
   blockchains: {
     ethereum: {
-      morpho: [
-        '0x2C3Cc1C02856894345797Cf6ee76aE76AC0f4031',
+      morphoVaultOwners: [
+        '0x71807287926c5195D92D2872e73FC212C150C112',
       ],
     },
   }
