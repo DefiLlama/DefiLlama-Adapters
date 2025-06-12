@@ -28,7 +28,9 @@ const config = {
       "0xd793281182a0e3e023116004778f45c29fc14f19",
       "0x354e0184a6a6e634ccb07388e2617e05e427563c",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
+      "0x9bbe47fe66b3580551aac3124cf9fc6560252b19",
+      "0xaaac1183d07c69f5befd22a06211690e953dca17"
     ]
   },
   "avax": {
@@ -131,7 +133,8 @@ const config = {
       "TDyR4wBeodpigiKmnwyBQC8UfsCH1T25XF",
       "THhVZfr2Q4J3spWK84Je4ALiFyrnnSq6nN",
       "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2",
-      "TYAavN2xCDro5Gdip8UU6W9oQmM43rNxzQ"
+      "TYAavN2xCDro5Gdip8UU6W9oQmM43rNxzQ",
+      "TLsUUQZCkcrBRxEKqZbpekdq9LWfmnndPg"
     ]
   },
   "cardano": {

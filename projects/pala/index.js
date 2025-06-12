@@ -1,7 +1,7 @@
 const ABI = require("./abi.json");
-const { toUSDTBalances } = require("../helper/balances");
 const sdk = require('@defillama/sdk')
 const { PromisePool } = require('@supercharge/promise-pool')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const VIEWER_ADDR = "0x2B16648ddD1559fc86e0c0617213Ab5dd2Ea01B9";
 const chain = 'klaytn'
@@ -50,7 +50,9 @@ const fetchLiquidity = async (ts, _block, chainBlocks) => {
 	const tvl = poolInfos.reduce((acc, pool) => {
 		return acc + calcPoolLiquidityVolume(pool, tokenMapping)
 	}, 0)
-	return toUSDTBalances(tvl);
+	return {
+		[`klaytn:${ADDRESSES.klaytn.USDT}`]: Number(tvl).toFixed(0) * 1e6
+	};
 }
 
 
