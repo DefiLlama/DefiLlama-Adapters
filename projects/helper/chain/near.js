@@ -3,6 +3,25 @@ const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
 
+// Add success status codes
+const successCodes = [200, 201, 202, 203, 204];
+
+// Add error formatter function
+function formAxiosError(url, error, options = {}) {
+  const { method = 'GET' } = options;
+  if (error.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    throw new Error(`Error ${method}ing ${url}: ${error.response.status} ${error.response.statusText} - ${JSON.stringify(error.response.data)}`);
+  } else if (error.request) {
+    // The request was made but no response was received
+    throw new Error(`Error ${method}ing ${url}: No response received`);
+  } else {
+    // Something happened in setting up the request that triggered an Error
+    throw new Error(`Error ${method}ing ${url}: ${error.message}`);
+  }
+}
+
 function transformAddress(addr) {
   const bridgedAssetIdentifier = ".factory.bridge.near";
   if (addr.endsWith(bridgedAssetIdentifier))
@@ -12,8 +31,9 @@ function transformAddress(addr) {
   return addr
 }
 
-const endpoint = "https://rpc.mainnet.near.org"
+// const endpoint = "https://rpc.mainnet.near.org"
 // const endpoint = "https://near.lava.build"
+const endpoint = "https://free.rpc.fastnear.com"
 
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
@@ -132,6 +152,18 @@ async function sumTokens({ balances = {}, owners = [], tokens = []}) {
   return balances
 }
 
+async function httpGet(url, options, { withMetadata = false } = {}) {
+  try {
+    const res = await axios.get(url, options)
+    if (!successCodes.includes(res.status)) throw new Error(`Error fetching ${url}: ${res.status} ${res.statusText}`)
+    if (!res.data) throw new Error(`Error fetching ${url}: no data`)
+    if (withMetadata) return res
+    return res.data
+  } catch (error) {
+    throw formAxiosError(url, error, { method: 'GET' })
+  }
+}
+
 module.exports = {
   view_account,
   call,
@@ -139,4 +171,5 @@ module.exports = {
   getTokenBalance,
   sumSingleBalance,
   sumTokens,
+  httpGet
 };
