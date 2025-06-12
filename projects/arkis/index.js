@@ -34,7 +34,7 @@ const arkis_wrapped_hype_vaults = [
 // ERC-20 tokens to track in Hyperliquid vaults
 const tokens_to_track = [
   ADDRESSES.hyperliquid.WHYPE,
-  ADDRESSES.hyperliquid.stHYPE 
+  ADDRESSES.hyperliquid.wstHYPE 
 ];
 
 const fetchFactoryLogs = async (api, type) => {
@@ -90,35 +90,8 @@ const borrowed = async (api) => {
 }
 
 async function tvlHyperliquid(api) {
-  const [nativeResults, erc20Results] = await Promise.all([
-    Promise.all(arkis_wrapped_hype_vaults.map(vault => 
-      axios.get(`https://www.hyperscan.com/api/v2/addresses/${vault}`)
-    )),
-    Promise.all(arkis_wrapped_hype_vaults.map(vault => 
-      axios.get(`https://www.hyperscan.com/api/v2/addresses/${vault}/tokens?type=ERC-20`)
-    ))
-  ]);
-
-  const totalHypeBalance = nativeResults.reduce(
-    (sum, response) => sum + Number(response.data.coin_balance || 0), 0
-  );
-
-  const tokenBalances = Object.fromEntries(tokens_to_track.map(token => [token, 0]));
-  erc20Results.forEach(response => {
-    (response.data.items || []).forEach(item => {
-      const tokenAddress = item.token.address;
-      if (tokenBalances[tokenAddress] !== undefined) {
-        tokenBalances[tokenAddress] += Number(item.value || 0);
-      }
-    });
-  });
-
-  if (totalHypeBalance > 0) {
-    api.add(ADDRESSES.null, totalHypeBalance);
-  }
-  Object.entries(tokenBalances).forEach(([token, balance]) => {
-    if (balance > 0) api.add(token, balance);
-  });
+  const tokens = [ADDRESSES.null, ...tokens_to_track];
+  return sumTokens2({ api, owners: arkis_wrapped_hype_vaults, tokens: tokens });
 }
 
 module.exports = {
