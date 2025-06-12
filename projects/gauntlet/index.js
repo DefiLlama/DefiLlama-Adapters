@@ -92,6 +92,11 @@ const configs = {
         '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
       ],
     },
+    hyperliquid: {
+      morphoVaultOwners: [
+        '0x09346F40e324458A8E211C5317981C78FAcDEc57',
+      ],
+    },
   }
 }
 
