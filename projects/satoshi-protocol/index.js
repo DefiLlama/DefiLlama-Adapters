@@ -277,5 +277,15 @@ module.exports = {
       fromBlock: 330837414,
     }],
   }),
+  sonic: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 33129825,
+    }],
+  }),
 }
 
