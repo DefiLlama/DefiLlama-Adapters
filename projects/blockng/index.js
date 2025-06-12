@@ -68,20 +68,15 @@ const VOTER = "0x10EAc6Cf7F386A11B6811F140CA8B9D6Ae7FbDf5"
 const AGG = "0x2bb410bD6c71147A593aCbB1CEB586aA253EFD92"
 
 
-const civilBeams = async (_, _b, { [chain]: block }) => {
+const civilBeams = async (api) => {
 
-  const beamCount = (await sdk.api.abi.call({
-    target: AGG, abi: blockng["numberOfPool"], params: [VOTER], chain, block,
-  })
-  ).output
+  const beamCount = await api.call({ target: AGG, abi: blockng["numberOfPool"], params: [VOTER], })
   //skip pool 0 cause it is nft pool
-  const allbeamInfo = (await sdk.api.abi.call({
+  const allbeamInfo = await api.call({
     abi: blockng["getPoolInfo"],
     target: AGG,
     params: [VOTER, LAW, 1, beamCount],
-    chain, block,
   })
-  ).output
   const gaugeMapping = {}
   for (let i = 0; i < allbeamInfo.length; i++) {
     let { dexFactory, gaugeAddress, lpTokenAddress, } = allbeamInfo[i]
@@ -95,17 +90,19 @@ const civilBeams = async (_, _b, { [chain]: block }) => {
   const toa = []
   Object.entries(gaugeMapping).forEach(([owner, token]) => toa.push([token, owner]))
 
-  return sumUnknownTokens({ chain, block, coreAssets, tokensAndOwners: toa, });
+  return sumUnknownTokens({ api, coreAssets, tokensAndOwners: toa, });
 }
 
 module.exports = {
   smartbch: {
-    tvl: sdk.util.sumChainTvls([lawSwapTVL, masterchefTvl, ...bentoTVLs,  ]),
+    tvl: sdk.util.sumChainTvls([lawSwapTVL, masterchefTvl, ...bentoTVLs,]),
     // borrowed: bentoBorrows,
-    pool2: sdk.util.sumChainTvls([pool2, civilBeams, ]),
-    staking: sumTokensExport({ chain, tokensAndOwners: [
-      [lawETP, lawETP_POOL,],
-      [LAW,LAW_RIGHTS],
-    ], useDefaultCoreAssets: true, lps: [LAW_LAWETP_PAIR], }),
+    pool2: sdk.util.sumChainTvls([pool2, civilBeams,]),
+    staking: sumTokensExport({
+      chain, tokensAndOwners: [
+        [lawETP, lawETP_POOL,],
+        [LAW, LAW_RIGHTS],
+      ], useDefaultCoreAssets: true, lps: [LAW_LAWETP_PAIR],
+    }),
   }
 }
