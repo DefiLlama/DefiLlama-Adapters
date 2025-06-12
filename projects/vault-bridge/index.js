@@ -4,7 +4,7 @@ const configs = {
   methodology: 'Count all assets are deposited in all vaults curated by Vault Bridge and its partners.',
   blockchains: {
     ethereum: {
-      morphoVaultOwners: [
+      morpho: [
         '0xBEefb9f61CC44895d8AEc381373555a64191A9c4',
         '0xc54b4E08C1Dcc199fdd35c6b5Ab589ffD3428a8d',
         '0x31A5684983EeE865d943A696AAC155363bA024f9',
