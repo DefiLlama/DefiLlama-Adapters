@@ -37,7 +37,7 @@ const endPoints = {
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://gravitychain.io:1317",
-  sei: "https://sei-rest.publicnode.com",
+  sei: "https://sei-api.polkachu.com",
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
@@ -60,6 +60,8 @@ const endPoints = {
   regen: 'https://rest-regen.ecostake.com',
   sommelier: 'https://sommelier-rpc.polkachu.com',
   stride: 'https://stride-api.polkachu.com',
+  babylon: 'https://babylon-api.polkachu.com',
+  milkyway_rollup: 'https://archival-rest-moo-1.anvil.asia-southeast.initia.xyz'
 };
 
 const chainSubpaths = {

@@ -31,6 +31,6 @@ module.exports = {
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
   hallmarks: [
-    [Math.floor(new Date('2023-12-12')/1e3), 'Jet Protocol Holdings, LLC is shutting down'], // https://forum.jetprotocol.io/t/community-update-jet-protocol-holdings-llc-is-shutting-down/1560/21
+    ['2023-12-12', 'Jet Protocol Holdings, LLC is shutting down'], // https://forum.jetprotocol.io/t/community-update-jet-protocol-holdings-llc-is-shutting-down/1560/21
   ],
 };

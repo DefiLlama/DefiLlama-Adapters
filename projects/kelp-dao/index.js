@@ -34,7 +34,7 @@ async function tvl(api) {
 
 const oft_tvls = async (api, oft) => {
   const oft_supply = await api.call({  abi: 'erc20:totalSupply', target: oft})
-  api.add(rstETH, oft_supply, { skipChain: true })
+  api.add(`ethereum:${rstETH}`, oft_supply, { skipChain: true })
 }
 
 const oft_supplies = async (api) => {

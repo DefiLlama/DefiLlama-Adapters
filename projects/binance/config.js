@@ -13,6 +13,11 @@ const chainBlacklistedTokens = {
     ADDRESSES.bsc.BTCB,
     ADDRESSES.bsc.TUSD
   ],
+  solana: [
+    // ADDRESSES.null,
+    "7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY", // conan
+    "CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt"  // conan https://prnt.sc/5rolZ0fF58q0 , broke the others field 
+  ],
 }
 const cexConfig = {
   bep2: {}, // for historical data
