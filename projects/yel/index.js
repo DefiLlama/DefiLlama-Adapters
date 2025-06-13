@@ -83,7 +83,7 @@ const config = {
       ['0xddddd1b4a383dcB89938bC8b8964Cad3C632Fad0', '0xBf7D0b0A5F520C7a4E45cf907502072846488d70', '0xd7BF1AeAF3CAf000F735F17d7cf3f88a7F240A45'],
     ],
   },
-  avalanche: {
+  avax: {
     ownTokensAndOwners: [
       //               Token                                         Potion(lToken)                                  slToken]
       ['0x949185D3BE66775Ea648F4a306740EA9eFF9C567', '0x9F240CB3D8115493cf5878385243ffF635BcB233', '0xbF014638011EcFFAc937A51bf232f8720af537b0']
