@@ -64,7 +64,7 @@ const config = {
     USDY: "0x35e050d3C0eC2d29D269a8EcEa763a183bDF9A9D",
   },
   ripple: {
-     OUSG: "rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p.4F55534700000000000000000000000000000000",
+     OUSG: "4F55534700000000000000000000000000000000.rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p",
   },
 };
 
@@ -104,8 +104,8 @@ Object.keys(config).forEach((chain) => {
         api.addTokens(config.noble.USDY, parseInt(res.amount.amount));
       } else if (chain === "ripple") {
         const split = config.ripple.OUSG.split('.');
-        const XRPL_OUSG_ISSUER = split[0];
-        const XRPL_OUSG_CURRENCY = split[1];
+        const XRPL_OUSG_CURRENCY = split[0];
+        const XRPL_OUSG_ISSUER = split[1];
         const ousgSupply = await getXrplTokenBalances(XRPL_OUSG_ISSUER, XRPL_OUSG_CURRENCY);
         api.addTokens(config.ripple.OUSG, ousgSupply);
       } else {
