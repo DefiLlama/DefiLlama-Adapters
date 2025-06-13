@@ -1,0 +1,16 @@
+{
+  "name": "Erratic-Finance",
+  "slug": "airdrop",
+  "chains": ["solana"],
+  "category": "NFT",
+  "url": "https://erratic.finance",
+  "description": "Erratic Identity Mark (EIM) is an exclusive early-stage identity credential within the Erratic Finance ecosystem. Minting and holding an EIM provides permanent rights and privileges within the Erratic ecosystem.",
+  "tokenContracts": {
+    "solana": {
+      "nft_mint": "FPm55sjSoMdBTCMhZzVWeTB5EdDH6EZuRaW5vAyvDqkW",
+      "main_contract": "AC6hxrHufwguXYcPdCibahS7nemw8SQhPSHGEArQ97sJ"
+    }
+  },
+  "module": "Erratic-Finance/index.js",
+  "airdrop": true
+}
