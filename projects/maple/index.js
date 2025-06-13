@@ -14,6 +14,7 @@
 
 const ADDRESSES = require('../helper/coreAssets.json');
 const axios = require('axios');
+const { tvlForMarkets } = require('../kamino-lending/market.js')
 
 const stSYRUP = "0xc7E8b36E0766D9B04c93De68A9D47dD11f260B45";
 
@@ -96,7 +97,10 @@ const staking = async (api) => {
 
 module.exports = {
   hallmarks: [[1670976000, 'V2 Deployment']],
-  solana: { tvl: () => ({})},
+  solana: {
+    tvl: (api) => tvlForMarkets(api, '6WEGfej9B9wjxRs6t4BYpb9iCXd8CpTpJ8fVSNzHCC5y', false),
+    borrowed: (api) => tvlForMarkets(api, '6WEGfej9B9wjxRs6t4BYpb9iCXd8CpTpJ8fVSNzHCC5y', true),
+  },
   ethereum: { 
     tvl: async (api) => processPools(api, "collateralValue"),
     borrowed: async (api) => processPools(api),
