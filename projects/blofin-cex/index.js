@@ -71,7 +71,7 @@ const config = {
     ],
   },
   algorand: {
-    owners: ["0x1cA5aa5b1dd8D948bB0971A5fB1762FE172E0040"],
+    owners: [],
   },
   aptos: {
     owners: [
