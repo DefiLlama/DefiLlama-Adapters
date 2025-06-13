@@ -41,8 +41,7 @@ async function tvlForMarkets(api, market, borrowed = false) {
         // Calculate borrowed amount using this formula
         // liquidity.borrowedAmountSf / 2**60 / 10**liquidity.mintDecimals
         const borrowedAmountSf = reserve.liquidity.borrowedAmountSf;
-        const mintDecimals = reserve.liquidity.mintDecimals;
-        const borrowedAmount = borrowedAmountSf / Math.pow(2, 60) / Math.pow(10, mintDecimals);
+        const borrowedAmount = borrowedAmountSf / Math.pow(2, 60)
         api.add(reserve.liquidity.mintPubkey.toString(), borrowedAmount);
       } else {
         const [authority] = PublicKey.findProgramAddressSync(
