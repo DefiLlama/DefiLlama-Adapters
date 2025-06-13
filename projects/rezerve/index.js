@@ -20,8 +20,6 @@ const toa = [
   [ADDRESSES.sonic.scUSD, coreAddresses.depositContract],
   [ADDRESSES.sonic.wS, coreAddresses.depositContract],
   [ADDRESSES.sonic.STS, coreAddresses.depositContract],
-  [tokens.RZV_scUSD_LP, coreAddresses.depositContract],
-  [tokens.RZV_stS_LP, coreAddresses.depositContract],
 ]
 
 
