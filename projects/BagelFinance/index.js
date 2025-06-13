@@ -17,13 +17,6 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: 'Counts the total value of assets locked in all Bagel Finance vaults.',
-  // Project Information
-  // name: 'Bagel Finance',
-  // description: 'Bagel Finance is an index-based DeFi protocol on TON that enables users to create and invest in smart portfolio strategies.',
-  // category: 'Indexes',
-  // website: 'https://bagel-finance-omniston.0xbagel.com/swap/list',
-  // twitter: 'https://twitter.com/bagel_fi_ton',
-  // telegram: 'https://t.me/bagel_finance',
   ton: {
     tvl: sumTokensExport({ owners: VAULT_ADDRESSES, tokens: [ADDRESSES.null] }),
   }
