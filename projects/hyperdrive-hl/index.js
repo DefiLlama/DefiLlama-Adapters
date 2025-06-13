@@ -14,14 +14,9 @@ const ABI = {
         getCollateralAssetsQuery:
             "function getCollateralAssetsQuery(uint256 marketId) view returns (tuple(address token, string symbol, uint8 decimals, address priceOracle, uint256 price, uint256 totalSupply, uint256 totalValue, uint256 maxSupply, uint256 maxLTV, uint256 liquidationLTV, uint256 liquidationDiscount)[])",
     },
-    Erc4626: {
-        totalAssets:
-            "function totalAssets() view returns (uint256 totalManagedAssets)",
-        asset: "function asset() view returns (address assetTokenAddress)",
-    },
 };
 
-const vaults = [
+const VAULTS = [
     "0x9271A5C684330B2a6775e96B3C140FC1dC3C89be",
     "0xaEAAD6d9B096829E5F3804a747C9FDD6677d78f0",
     "0x72EE42bd660e4f676106C3718b00af06257c9d35",
@@ -36,23 +31,19 @@ async function lookupAddresses(api, keys) {
 }
 
 async function getAllMarkets(api) {
-    const markets = [];
-    let i = 1;
-    let stop = false;
-
-    while (!stop) {
-        const addresses = await lookupAddresses(api, [
-            `hyperdrive.market.${i}`,
-        ]);
-        if (addresses[0] !== "0x0000000000000000000000000000000000000000") {
-            markets.push(addresses[0]);
-            i++;
-        } else {
-            stop = true;
-        }
+    const keys = []
+    for (let i = 0; i < 100; i++) {
+        keys.push(ethers.keccak256(ethers.toUtf8Bytes(`hyperdrive.market.${i}`)))
     }
 
-    return markets;
+    const markets = await api.call({
+        abi: ABI.AddressRegistry.getAddresses,
+        target: ADDRESS_REGISTRY,
+        params: [keys],
+        permitFailure: true,
+    })
+
+    return markets.filter(market => market !== '0x0000000000000000000000000000000000000000')
 }
 
 async function tvl(api) {
@@ -80,19 +71,7 @@ async function tvl(api) {
         api.add(datum.marketAsset, totalCollateral);
     });
 
-    const totalAssets = await api.multiCall({
-        calls: vaults,
-        abi: ABI.Erc4626.totalAssets,
-    });
-    const assets = await api.multiCall({
-        calls: vaults,
-        abi: ABI.Erc4626.asset,
-    });
-    assets.forEach((asset, i) => {
-        api.add(asset, totalAssets[i]);
-    });
-
-    return api.getBalances();
+    return api.erc4626Sum({ calls: VAULTS, permitFailure: true, })
 }
 
 async function borrowed(api) {
@@ -117,5 +96,5 @@ module.exports = {
         tvl,
         borrowed,
     },
-    methodology: "Gets the TVL for the protocol",
+    methodology: "Gets the assets deposited across all lending pools.",
 };
