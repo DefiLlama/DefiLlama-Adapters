@@ -102,7 +102,7 @@ async function getAlphaArcadeTvl() {
 
 
 module.exports = {
-  methodology: 'TVL represents the total amount USDC held in escrow across all markets on Alpha Arcade.',
+  methodology: 'TVL represents the total value held in escrow across all markets for open and matched orders on Alpha Arcade.',
   timetravel: false,
   algorand: {
     tvl: async () => {
