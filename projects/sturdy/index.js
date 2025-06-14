@@ -9,9 +9,9 @@ module.exports = mergeExports([
     methodology,
   }
 ])
-module.exports.hallmarks = [
-  ['2023-06-11', 'Protocol was hacked'],
-]
+// module.exports.hallmarks = [
+//   ['2023-06-11', 'Protocol was hacked'],
+// ]
 module.exports.doublecounted = true
 
 module.exports.ethereum.borrowed = () => ({})

@@ -90,7 +90,7 @@ async function tvl(api) {
 
 module.exports = {
   hallmarks: [
-    [1626656400, "Protocol paused"],
+    // [1626656400, "Protocol paused"],
     [1631754000, "Protocol resumed"],
   ],
   timetravel: false,

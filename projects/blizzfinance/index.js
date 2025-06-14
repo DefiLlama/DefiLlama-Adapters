@@ -8,7 +8,7 @@ module.exports={
         borrowed: ()=>({}) // hacked, it's all bad debt
     },
     deadFrom: 1652356800,
-    hallmarks:[
-        [1652356800, "Outdated Oracle Exploit"],
-      ],
+    // hallmarks:[
+    //     [1652356800, "Outdated Oracle Exploit"],
+    //   ],
 }

@@ -15,11 +15,11 @@ const config = {
   avax: { fsglp: '0x9e295B5B976a184B14aD8cd72413aD846C299660' },
 }
 
-module.exports = {
-  hallmarks: [
-    [1691373600, "Steadefi exploited"],
-  ],
-};
+// module.exports = {
+//   hallmarks: [
+//     [1691373600, "Steadefi exploited"],
+//   ],
+// };
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {

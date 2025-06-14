@@ -23,7 +23,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  hallmarks: [[1733788800, 'The Clober Liquidity Vault has been hacked']],
+  // hallmarks: [[1733788800, 'The Clober Liquidity Vault has been hacked']],
   methodology: "TVL includes all assets deposited into the Clober Liquidity Vault contract, specifically allocated for liquidity provision and market-making within the Clober ecosystem",
   base: { tvl }
 }

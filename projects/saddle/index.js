@@ -8,7 +8,7 @@ module.exports = {
   methodology:
     "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
 
-  hallmarks: [[1651276800, "sUSDv2 hack"]],
+  // hallmarks: [[1651276800, "sUSDv2 hack"]],
 };
 
 Object.keys(contracts).forEach((chain) => {

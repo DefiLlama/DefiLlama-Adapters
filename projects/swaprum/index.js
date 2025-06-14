@@ -13,7 +13,7 @@ module.exports = {
     staking: stakings(pools, SAPR,),
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory })
   },
-  hallmarks: [
-    ['2023-05-18', 'Project rugged!'],
-  ],
+  // hallmarks: [
+  //   ['2023-05-18', 'Project rugged!'],
+  // ],
 };

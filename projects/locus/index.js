@@ -7,9 +7,9 @@ const stLocus = "0xEcc5e0c19806Cf47531F307140e8b042D5Afb952"
 
 module.exports = {
   doublecounted: true,
-  hallmarks: [
-    ['2023-12-30', 'Was hacked for 321k'], // https://twitter.com/Locus_finance/status/1744374506267767267
-  ],
+  // hallmarks: [
+  //   ['2023-12-30', 'Was hacked for 321k'], // https://twitter.com/Locus_finance/status/1744374506267767267
+  // ],
 }
 
 const config = {

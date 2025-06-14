@@ -26,6 +26,6 @@ module.exports.optimism.borrowed = () => ({})
 module.exports.lisk.borrowed = () => ({})
 
 module.exports.deadFrom = '2025-02-05'
-module.exports.hallmarks = [
-  [1738713600, "Protocol Exploit"],
-]
+// module.exports.hallmarks = [
+//   [1738713600, "Protocol Exploit"],
+// ]

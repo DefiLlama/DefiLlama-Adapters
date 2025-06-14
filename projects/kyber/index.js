@@ -66,7 +66,7 @@ module.exports = {
   timetravel: false,
   hallmarks: [
     ['2023-04-17', 'Kyber team identified a vuln'],
-    [1700611200,'Protocol exploit'],
+    // [1700611200,'Protocol exploit'],
   ],
 };
 

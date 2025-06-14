@@ -41,9 +41,9 @@ const config = {
 }
 
 module.exports = {
-  hallmarks: [
-    [1648339200, "Reentrancy attack"]
-  ],
+  // hallmarks: [
+  //   [1648339200, "Reentrancy attack"]
+  // ],
   methodology: "We list all tokens in our vault and sum them together",
 };
 
