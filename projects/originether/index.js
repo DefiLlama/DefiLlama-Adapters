@@ -60,7 +60,6 @@ async function plumeTvl(api) {
   const vault = '0xc8c8F8bEA5631A8AF26440AF32a55002138cB76a'
 
   const vaultBalance = await api.call({ abi: 'erc20:balanceOf', target: ADDRESSES.plume_mainnet.WETH, params: vault })
-  console.log(vaultBalance / 1e18)
   api.add(ADDRESSES.plume_mainnet.WETH, vaultBalance)
 
   return api.sumTokens({ owners: [vault], tokens: [ADDRESSES.plume_mainnet.WETH] })
@@ -74,7 +73,7 @@ module.exports = {
   base: {
     tvl: baseTvl,
   },
-  plume: {
+  plume_mainnet: {
     tvl: plumeTvl,
   }
 };
