@@ -13,7 +13,7 @@ const createChainModule = (chain) => {
 
 // Export configuration for each chain
 module.exports = {
-  methodology: "Calculate TVL for liquidity pools, markets, staking and pool2",
+  methodology: "Calculate TVL for liquidity pools, active markets and pool2",
   optimism: createChainModule('optimism'),
   arbitrum: createChainModule('arbitrum'),
   polygon: createChainModule('polygon'),
