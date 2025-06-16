@@ -66,21 +66,39 @@ const tvl = async (api) => {
     api.multiCall({ abi: 'address[]:strategies', calls: preVaults })
   ])
 
+  const seenRebalancers = new Set();
+
   for (const [index, _preVault] of preVaults.entries()) {
-    const redeemOperator = vaultParams[index].redeemOperator
-    const asset = assets[index]
-    const strategies = rawStrategies[index]
-    if (!redeemOperator || !asset || !strategies) continue
+    const redeemOperator = vaultParams[index].redeemOperator;
+    const asset = assets[index];
+    const strategies = rawStrategies[index];
+    if (!redeemOperator || !asset || !strategies) continue;
 
-    const rebalancers = await api.multiCall({ calls: strategies, abi: 'address:rebalancer', permitFailure: true }) // If the strategy is down, the multisig is removed, so it can return null
-    if (!rebalancers) continue
+    const rebalancers = await api.multiCall({
+      calls: strategies,
+      abi: 'address:rebalancer',
+      permitFailure: true,
+    });
 
-    for (const rebalancer of rebalancers) {
-      const balances = await api.multiCall({ calls: rawVaults.map((v) => ({ target: v, params: [rebalancer] })), abi: 'erc20:balanceOf' })
+    if (!rebalancers) continue;
+
+    const uniqueRebalancers = [...new Set(rebalancers.filter(r => !!r))];
+
+    for (const rebalancer of uniqueRebalancers) {
+      if (seenRebalancers.has(rebalancer)) continue;
+      seenRebalancers.add(rebalancer);
+
+      const balances = await api.multiCall({
+        calls: rawVaults.map((v) => ({ target: v, params: [rebalancer] })),
+        abi: 'erc20:balanceOf',
+      });
+
       rawVaults.forEach((v, i) => {
-        const balance = balances[i]
-        api.add(v, -balance)
-      })
+        const balance = Number(balances[i]);
+        if (balance > 0) {
+          api.add(v, -balance);
+        }
+      });
     }
   }
   
