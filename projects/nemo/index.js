@@ -68,12 +68,9 @@ async function tvl(api) {
       const tokensObject = await sui.getDynamicFieldObject(syTableParentId, syTokens, {idType: "0x1::type_name::TypeName"});
       const tokens = "0x" + tokensObject.fields.value.fields.name;
 
-      console.log("tokens", syTokens, tokens, fields.total_sy, fields.total_pt);
-
       const coinConfig = COIN_CONFIG[tokens];
 
       if (!coinConfig) {
-        console.log('coinConfig undefined', tokens);
         continue;
       }
 
@@ -101,12 +98,8 @@ async function tvl(api) {
       let rate1 = new BigNumber(priceVoucher1).div(new BigNumber(2).pow(64)).toString();
       let rate2 = new BigNumber(priceVoucher2).div(new BigNumber(2).pow(64)).toString();
 
-      console.log('priceVoucher rate1', rate1, rate2, coinConfig.coinType);
-
       const pt2SyAmount = new BigNumber(fields.total_pt).div(rate1);
       let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
-
-      sdk.log('devInspectTransactionBlock pt2SyAmount', pt2SyAmount.toString(), syBalance.toString(), rate1, rate2)
 
       if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
         api.add(tokens, syBalance.toNumber());
@@ -116,13 +109,14 @@ async function tvl(api) {
       }
 
     } catch (error) {
-      console.error(`error: ${type}`, error);
+      // console.error(`error: ${type}`, error);
     }
   }
 }
 
 module.exports = {
   timetravel: false,
+  methodology: 'Count all assets are deposited into Nemo markets.',
   sui: {
     tvl,
   },
