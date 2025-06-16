@@ -48,7 +48,7 @@ async function borrowed(api) {
   const contract = market.address;
   const token    = PRINCIPAL_TOKENS[api.chain];
 
-  // 2) Sum all active loans
+  // 2) Get all active loans
   const loanIdsRaw = await api.call({
     abi: abi.getActiveLoans,
     target: contract,
@@ -57,11 +57,13 @@ async function borrowed(api) {
 
   let sumLoans = BigInt(0);
   for (const id of loanIds) {
-    const { loanAmount } = await api.call({
+    const { loanAmount, status } = await api.call({
       abi:    abi.loans,
       target: contract,
       params: [id],
     });
+    // 3) Only sum loans that are active (status 1)
+    if (!loanAmount || status !== 1) continue; // skip non-active loans
     sumLoans += BigInt(loanAmount);
   }
 
