@@ -81,11 +81,11 @@ const config = {
     fromBlock: 3669141,
   },
   */
-  basecamp:{
-    morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
-    fromBlock: 4804080,
-    blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
-  },
+  // basecamp:{
+  //   morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
+  //   fromBlock: 4804080,
+  //   blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
+  // },
   hyperliquid:{
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
     fromBlock: 1988429,
@@ -118,13 +118,25 @@ Object.keys(config).forEach((chain) => {
         const lowerCaseBlacklist = blacklistedMarketIds.map(id => id.toLowerCase());
         marketIds = marketIds.filter(id => !lowerCaseBlacklist.includes(id.toLowerCase()));
       }
-      const tokens = (
-        await api.multiCall({
-          target: morphoBlue,
-          calls: marketIds,
-          abi: abi.morphoBlueFunctions.idToMarketParams,
-        })
-      )
+      const marketInfo = await api.multiCall({
+        target: morphoBlue,
+        calls: marketIds,
+        abi: abi.morphoBlueFunctions.idToMarketParams,
+      });
+
+      // Filter out MetaMorpho vaults using multiCall
+      const withdrawQueueLengths = await api.multiCall({
+        calls: marketInfo.map(m => m.collateralToken),
+        abi: abi.metaMorphoFunctions.withdrawQueueLength,
+        permitFailure: true,
+      });
+
+      const filteredMarketInfo = marketInfo.filter((_, i) => {
+        const length = withdrawQueueLengths[i];
+        return length === null || length > 30 || length < 0;
+      });
+
+      const tokens = filteredMarketInfo
         .map((i) => [i.collateralToken, i.loanToken])
         .flat();
 
