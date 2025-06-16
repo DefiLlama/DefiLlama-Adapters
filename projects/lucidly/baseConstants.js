@@ -8,7 +8,7 @@ const boringVaultsV0Base = [
         teller: "0xaefc11908fF97c335D16bdf9F2Bf720817423825",
         lens: "0x074F543E7DaA7C67F77bfD8C41C79127c4dd80d9",
         startBlock: 30004947,
-        baseAsset: ADDRESSES.arbitrum.USDC,
+        baseAsset: ADDRESSES.base.USDC,
     },
 ];
 

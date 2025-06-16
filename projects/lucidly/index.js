@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
+const ADDRESSES = require("../helper/coreAssets.json");
 
-const { legacyVaultsEthereum, boringVaultsV0Ethereum } = require("./ethereumConstants");
+const { boringVaultsV0Ethereum } = require("./ethereumConstants");
 const { boringVaultsV0Arbitrum } = require("./arbitrumConstants");
 const { boringVaultsV0Base } = require("./baseConstants");
 const { sumLegacyTvl, sumBoringTvl } = require("./helperMethods");
@@ -25,7 +26,7 @@ function filterActiveBoringVaults(vaults, blockHeight) {
         }));
 }
 
-async function tvl(api) {
+async function legacyTvl(api) {
     const registryAddress = '0x3C2A24c9296eC8B1fdb8039C937DaC7CBca3976c';
     const pools = await api.call({
         abi: 'function getPoolAddresses() view returns (address[])',
@@ -63,6 +64,13 @@ async function chainTvl(api, boringVaults, legacyVaults = []) {
         });
     }
 
+    if (boringVaults[0]?.baseAsset === ADDRESSES.ethereum.USDC) {
+        const legacyBalances = await legacyTvl(api);
+        for (const [token, amount] of Object.entries(legacyBalances)) {
+            api.add(token, Number(amount));
+        }
+    }
+
     return api.getBalances();
 }
 
@@ -71,8 +79,7 @@ module.exports = {
     misrepresentedTokens: false,
     start: 1710745200,
     doublecounted: true,
-    ["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ethereum, legacyVaultsEthereum) },
+    ["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ethereum) },
     ["arbitrum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Arbitrum) },
     ["base"]: { tvl: (api) => chainTvl(api, boringVaultsV0Base) },
-    ethereum: { tvl }
 };
