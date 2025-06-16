@@ -1,8 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { returnEthBalance } = require("../helper/utils")
-const { getChainTransform } = require("../helper/portedTokens");
 
 // taken from https://docs.biconomy.io/products/hyphen-instant-cross-chain-transfers/contract-addresses
 const config = {
@@ -10,6 +7,7 @@ const config = {
     bridges: [
       '0xebaB24F13de55789eC1F3fFe99A285754e15F7b9',
       '0x2A5c2568b10A0E826BfA892Cf21BA7218310180b',
+      '0x3d79007ba1a68de986eb641a3c24d58a0c69587e',
     ],
     tokens: [
       '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
@@ -84,8 +82,8 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => module.exports[chain] = {
-  tvl: async (time, _, { [chain]: block }) => {
+  tvl: async (api) => {
     const { bridges, tokens, } = config[chain]
-    return sumTokens2({ chain, block, owners: bridges, tokens });
+    return sumTokens2({ api, owners: bridges, tokens });
   }
 })

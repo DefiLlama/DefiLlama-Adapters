@@ -34,7 +34,7 @@ module.exports = {
     tvl: tvl_v1,
   },
   hallmarks: [
-    [Math.floor(new Date('2022-08-26') / 1e3), "Add godwoken v1 chain tvl"],
+    ['2022-08-26', "Add godwoken v1 chain tvl"],
   ],
 }
 
