@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const ADDRESSES = require("../helper/coreAssets.json");
 
 const { boringVaultsV0Ethereum } = require("./ethereumConstants");
 const { boringVaultsV0Arbitrum } = require("./arbitrumConstants");
@@ -34,8 +33,13 @@ async function legacyTvl(api) {
     });
 
     const tokens = await api.fetchList({ lengthAbi: 'numTokens', itemAbi: 'tokens', calls: pools, groupedByInput: true, })
-    const ownerTokens = pools.map((v, i) => [tokens[i], v])
-    return api.sumTokens({ ownerTokens })
+    const ownerTokens = pools.map((v, i) => [tokens[i], v]);
+    const balances = await api.sumTokens({ ownerTokens });
+    const numericBalances = {};
+    for (const [token, amount] of Object.entries(balances)) {
+        numericBalances[token] = Number(amount);
+    }
+    return numericBalances;
 }
 
 async function chainTvl(api, boringVaults, legacyVaults = []) {
@@ -64,13 +68,6 @@ async function chainTvl(api, boringVaults, legacyVaults = []) {
         });
     }
 
-    if (boringVaults[0]?.baseAsset === ADDRESSES.ethereum.USDC) {
-        const legacyBalances = await legacyTvl(api);
-        for (const [token, amount] of Object.entries(legacyBalances)) {
-            api.add(token, Number(amount));
-        }
-    }
-
     return api.getBalances();
 }
 
@@ -79,7 +76,12 @@ module.exports = {
     misrepresentedTokens: false,
     start: 1710745200,
     doublecounted: true,
-    ["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ethereum) },
+    ["ethereum"]: {
+        tvl: sdk.util.sumChainTvls([
+            (api) => chainTvl(api, boringVaultsV0Ethereum),
+            (api) => legacyTvl(api)
+        ])
+    },
     ["arbitrum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Arbitrum) },
     ["base"]: { tvl: (api) => chainTvl(api, boringVaultsV0Base) },
 };
