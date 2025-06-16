@@ -184,6 +184,7 @@ const defaultTokens = {
   eos: [
     ["eosio.token", "EOS", "eos"],
     ["tethertether", "USDT", "tether"],
+    ["core.vaulta", "A", "vaulta"],
   ],
   arbitrum: [
     nullAddress,
