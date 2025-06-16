@@ -705,58 +705,6 @@ async function hederaTvl() {
   return balances;
 }
 
-async function nearTvl() {
-  const balances = {}
-  let totalTvl = 0;
-  const fundPrices = await getFundPrices();
-
-  // Query total supply for each token
-  for (const token of Object.values(RECEIPT_TOKENS.near)) {
-    const supply = await call(token.address, 'ft_total_supply', {});
-
-    if (supply) {
-      const balance = supply;
-      const price = fundPrices[token.instrumentId] || 1;
-
-      // Convert balance to human readable and multiply by price
-      const adjustedBalance = Number(balance) / (10 ** token.decimals);
-      const valueUSD = adjustedBalance * price;
-      
-      totalTvl += valueUSD;
-    }
-  }
-
-  // Return the total value in the format DeFiLlama expects
-  balances['usd-coin'] = totalTvl;
-  return balances;
-}
-
-async function aptosTvl() {
-  const balances = {}
-  let totalTvl = 0;
-  const fundPrices = await getFundPrices();
-  
-  // Get total supply for each token
-  for (const token of Object.values(RECEIPT_TOKENS.aptos)) {
-    // Get the concurrent supply
-    const supply = await getResource(token.address, '0x1::fungible_asset::ConcurrentSupply');
-
-    if (!supply) continue;
-
-    // Get total supply and price
-    const totalSupply = supply.current.value || '0';
-    const price = fundPrices[token.instrumentId] || 1;
-    
-    // Convert supply to human readable and multiply by price
-    const adjustedSupply = Number(totalSupply) / (10 ** token.decimals);
-    const valueUSD = adjustedSupply * price;
-    
-    totalTvl += valueUSD;
-  }
-
-  balances['usd-coin'] = totalTvl;
-  return balances;
-}
 
 module.exports = {
   methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, Avalanch and Hedera. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
