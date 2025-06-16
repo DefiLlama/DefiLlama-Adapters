@@ -25,6 +25,18 @@ function filterActiveBoringVaults(vaults, blockHeight) {
         }));
 }
 
+async function tvl(api) {
+    const registryAddress = '0x3C2A24c9296eC8B1fdb8039C937DaC7CBca3976c';
+    const pools = await api.call({
+        abi: 'function getPoolAddresses() view returns (address[])',
+        target: registryAddress,
+    });
+
+    const tokens = await api.fetchList({ lengthAbi: 'numTokens', itemAbi: 'tokens', calls: pools, groupedByInput: true, })
+    const ownerTokens = pools.map((v, i) => [tokens[i], v])
+    return api.sumTokens({ ownerTokens })
+}
+
 async function chainTvl(api, boringVaults, legacyVaults = []) {
     const block = await api.getBlock()
 
@@ -62,4 +74,5 @@ module.exports = {
     ["ethereum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Ethereum, legacyVaultsEthereum) },
     ["arbitrum"]: { tvl: (api) => chainTvl(api, boringVaultsV0Arbitrum) },
     ["base"]: { tvl: (api) => chainTvl(api, boringVaultsV0Base) },
+    ethereum: { tvl }
 };
