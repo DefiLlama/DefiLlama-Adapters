@@ -19,6 +19,7 @@ module.exports = {
     timetravel: false,
     cardano: {
         tvl,
-        staking: stake
+        // staking: stake  // disabled staking because no transactions are recorded and no tokens are locked in smart co
+        
     }
 }

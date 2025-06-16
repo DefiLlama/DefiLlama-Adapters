@@ -13,10 +13,18 @@ Object.keys(config).forEach(chain => {
   const { pool } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+      if (chain === 'plume') {
+        // Deprecated chain, set tvl to 0
+        return {};
+      }
       const tokens = await getTokens(api)
       return api.sumTokens({ owner: pool, tokens })
     },
     borrowed: async (api) => {
+      if (chain === 'plume') {
+        // Deprecated chain, set borrowed to 0
+        return {};
+      }
       const tokens = await getTokens(api)
       const bals = await api.multiCall({ abi: abi.getTotalTokenBorrowed, calls: tokens, target: pool })
       api.add(tokens, bals)

@@ -87,6 +87,18 @@ const configs = {
         '0xC684c6587712e5E7BDf9fD64415F23Bd2b05fAec',
       ],
     },
+    unichain: {
+      morphoVaultOwners: [
+        '0x9E33faAE38ff641094fa68c65c2cE600b3410585',
+        '0x5a4E19842e09000a582c20A4f524C26Fb48Dd4D0',
+      ],
+    },
+    hyperliquid: {
+      morphoVaultOwners: [
+        '0x09346F40e324458A8E211C5317981C78FAcDEc57',
+        '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+      ],
+    },
   }
 }
 
