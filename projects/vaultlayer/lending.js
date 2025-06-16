@@ -5,7 +5,6 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const abi = {
   getActiveLoans:    "function getActiveLoans() view returns (uint256[])",
   loans:             "function loans(uint256) view returns (address borrower, address lender, address nftAddress, uint256 tokenId, uint256 loanAmount, uint256 maxInterestRate, uint256 currentInterestRate, uint256 duration, uint256 startTime, uint8 loanType, uint8 status, address principalToken, uint256 listingTime)",
-  totalUserBalances: "function totalUserBalances(address) view returns (uint256)",
 };
 
 // Markets deployed per chain
