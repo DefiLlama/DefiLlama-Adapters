@@ -1,8 +1,11 @@
+const { request, gql } = require('graphql-request');
+
 // Token addresses on Base
 const cbBTC = "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf";
 const WETH = "0x4200000000000000000000000000000000000006";
 const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-
+// base mainnet subgraph url
+const BASE_MAINNET_SUBGRAPH_URL = 'https://api.goldsky.com/api/public/project_cm3exke617zqh01074tulgtx0/subgraphs/collar-base-mainnet/0.1.2/gn'
 // Contract addresses holding assets
 const cbBTC_ESCROW = [
   "0xa6b0d40e218e29ba626ead3da4e8f146027a802d",
@@ -28,6 +31,24 @@ const USDC_TAKER = [
   "0x68c5a88111b4d300734dbaece7b16b809e712263",
 ];
 
+// Helper to fetch all paginated results from a subgraph
+async function fetchAllSubgraphResults({ url, query, field, variables = {} }) {
+  let skip = 0;
+  let allResults = [];
+  let hasMore = true;
+  while (hasMore) {
+    const data = await request(url, query, { ...variables, skip });
+    const results = data[field];
+    allResults = [...allResults, ...results];
+    if (results.length < 1000) {
+      hasMore = false;
+    } else {
+      skip += 1000;
+    }
+  }
+  return allResults;
+}
+
 async function tvl(_, _1, _2, { api }) {
   const tokensAndOwners = [
     [cbBTC, cbBTC_ESCROW],
@@ -41,6 +62,31 @@ async function tvl(_, _1, _2, { api }) {
   return api.sumTokens({ tokensAndOwners });
 }
 
+async function borrowed(_, _1, _2, { api }) {
+  const query = gql`
+    query FindLoans($skip: Int!) {
+      loans(skip: $skip, first: 1000, where: {status: Active}) {
+        underlyingAmount
+        loansNFT {
+          underlying
+        }
+      }
+    }
+  `;
+  const allLoans = await fetchAllSubgraphResults({
+    url: BASE_MAINNET_SUBGRAPH_URL,
+    query,
+    field: "loans",
+  });
+
+  for (const loan of allLoans) {
+    const underlyingAddress = loan.loansNFT?.underlying;
+    if (!underlyingAddress) continue;
+    api.add(underlyingAddress, loan.underlyingAmount);
+  }
+  return api.getBalances();
+}
+
 module.exports = {
   methodology:
     "TVL includes cbBTC and WETH locked in escrow contracts, and USDC held in both provider and taker contracts. Balances are fetched via on-chain `balanceOf` calls.",
@@ -48,5 +94,6 @@ module.exports = {
   timetravel: true,
   base: {
     tvl,
+    borrowed,
   },
 };
