@@ -14,11 +14,11 @@ const SuiVault = {
   tType: ADDRESSES.sui.SUI
 }
 const UsdcVault = {
-  id: '0x5663035df5f403ad5a015cc2a3264de30370650bc043c4dab4d0012ea5cb7671',
+  id: '0x4974f5d24f3e23fdeea98ff259446bd086e1e3a0d4aefc0c2f5d0e74919991f1',
   tType: ADDRESSES.sui.USDC_CIRCLE
 }
 const suiUsdtVault = {
-  id: '0x7a2e56773ad4d9bd4133c67ed0ae60187f00169b584a55c0204175897e41d166',
+  id: '0xb606452ef941a91dae4d6bf21c4e2ba82b309377570aea151d8ec62ec234f7b6',
   tType: ADDRESSES.sui.suiUSDT
 }
 const usdyVault = {
