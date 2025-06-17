@@ -1,86 +1,45 @@
-const https = require('https');
-const NFT_MINT_ADDRESS = 'FPm55sjSoMdBTCMhZzVWeTB5EdDH6EZuRaW5vAyvDqkW';
-const CONTRACT_ADDRESS = 'AC6hxrHufwguXYcPdCibahS7nemw8SQhPSHGEArQ97sJ';
-
-const SOLANA_RPC_URL = 'https://api.mainnet-beta.solana.com';
-
-async function getSolanaBalance(publicKey) {
-  return new Promise((resolve, reject) => {
-    const postData = JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "getBalance",
-      params: [publicKey]
-    });
-
-    const req = https.request(SOLANA_RPC_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': postData.length
-      }
-    }, (res) => {
-      let data = '';
-      res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
-        try {
-          const result = JSON.parse(data);
-          if (result.error) {
-            reject(result.error.message);
-          } else {
-            resolve(result.result.value);
-          }
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
-
-    req.on('error', reject);
-    req.write(postData);
-    req.end();
-  });
-}
-
-async function getMagicEdenCollectionStats(collectionSymbol) {
-  return new Promise((resolve, reject) => {
-    https.get(`https://api-mainnet.magiceden.io/collection_stats?collection_symbol=${collectionSymbol}`, (res) => {
-      let data = '';
-      res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
-        try {
-          resolve(JSON.parse(data));
-        } catch (e) {
-          reject(e);
-        }
-      });
-    }).on('error', reject);
-  });
-}
+const { getConnection, } = require('@defillama/sdk/build/solana');
+const { PublicKey } = require('@solana/web3.js');
 
 async function tvl() {
-  try {
-    const contractBalance = await getSolanaBalance(CONTRACT_ADDRESS);
-    
-    const stats = await getMagicEdenCollectionStats(NFT_MINT_ADDRESS);
-    
-    const nftValue = (stats.floor_price * stats.total_supply) || 0;
-    
-    const totalSOL = (contractBalance / 1e9) + nftValue;
-    
-    return {
-      solana: totalSOL
-    };
-  } catch (e) {
-    console.error('TVL calculation error:', e);
-    return {
-      solana: 0
-    };
+  const connection = getConnection();
+  const treasuryBalance = await connection.getBalance(
+    new PublicKey('AC6hxrHufwguXYcPdCibahS7nemw8SQhPSHGEArQ97sJ')
+  );
+  
+  return {
+    'solana': treasuryBalance / 1e9 
+  };
+}
+
+async function staking() {
+  const holders = await getHolderCount();
+  return {
+    'solana': holders
+  };
+}
+
+async function getHolderCount() {
+  const connection = getConnection();
+  const mintAddress = new PublicKey('FPm55sjSoMdBTCMhZzVWeTB5EdDH6EZuRaW5vAyvDqkW');
+  const accounts = await connection.getTokenAccountsByOwner(mintAddress, {
+    programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
+  });
+  const holders = new Set();
+  for (const account of accounts.value) {
+    const owner = account.account.data.slice(32, 64); 
+    holders.add(owner.toString('hex'));
   }
+  return holders.size;
 }
 
 module.exports = {
+  timetravel: false,
   solana: {
-    tvl
-  }
+    tvl,
+    staking
+  },
+  hallmarks: [
+    [Math.floor(new Date('2025-06-07')/1000), "NFT Launch"]
+  ]
 };
