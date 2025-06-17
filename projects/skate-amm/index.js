@@ -43,12 +43,12 @@ const abis = {
 module.exports = {
   methodology: "Assets deployed on periphery chains. For EVM chains, we track the token balances in the pools. For SVM chains, we track the token balances owned by the pool addresses.",
   start: 1742169600, // '2025-03-17 GMT+0'
-  timetravel: false, // Set to false for Solana and Eclipse chains
+  timetravel: true,
 }
 
 const evmTvl = async (api) => {
   const { kernelEventEmitter, fromBlock } = evm_config[api.chain]
-  const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true })
+  const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true , skipCache: true})
   const balances = await api.multiCall({ calls: logs.map(([_, pool]) => ({ target: pool })), abi: abis.balances_available })
   logs.forEach(([_, __, token0, token1], i) => {
     const { amount0, amount1 } = balances[i]
