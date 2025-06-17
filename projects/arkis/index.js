@@ -1,6 +1,7 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const axios = require("axios");
 
 const native = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
@@ -23,6 +24,18 @@ const abis = {
   info: "function info() view returns (tuple(address leverage, uint32 apy, uint256 totalDepositThreshold, address[] collaterals, address[] lenders, address[] borrowers) metadata, tuple(address[] tokens, address[] operators) whitelist)",
   totalBorrowed: "function totalBorrowed() returns (uint256)",
 }
+
+// Arkis Wrapped HYPE Vault addresses
+const arkis_wrapped_hype_vaults = [
+  "0x454F936D5877Daf9366Ef1Fca1bDF888201Bb127", // Primary HYPE Vault address
+  "0xA1C0ae02D6B40F6D71bfAee9Aa27f3dCc75a63D8"  // X Upshift HYPE Vault address
+];
+
+// ERC-20 tokens to track in Hyperliquid vaults
+const tokens_to_track = [
+  ADDRESSES.hyperliquid.WHYPE,
+  ADDRESSES.hyperliquid.wstHYPE 
+];
 
 const fetchFactoryLogs = async (api, type) => {
   const fromBlock = 21069508;
@@ -76,7 +89,14 @@ const borrowed = async (api) => {
   })
 }
 
+async function tvlHyperliquid(api) {
+  const tokens = [ADDRESSES.null, ...tokens_to_track];
+  return sumTokens2({ api, owners: arkis_wrapped_hype_vaults, tokens: tokens });
+}
+
 module.exports = {
-  methodology: "TVL is calculated by summing the balances of leverage assets, collaterals, and whitelisted tokens held in agreements and margin accounts deployed by factory contracts. Native tokens and LP tokens are also included.",
-  ethereum : { tvl, borrowed }
+  methodology: "On Ethereum, TVL includes leverage assets, collaterals, whitelisted tokens, ETH, and LP tokens held in agreements and margin accounts created by factory contracts. " +
+             "On Hyperliquid, TVL reflects the native HYPE, WHYPE and stHYPE held at the Arkis Wrapped HYPE Vaults, which back the tokens issued on Ethereum.",
+  ethereum: { tvl, borrowed },
+  hyperliquid: { tvl: tvlHyperliquid },
 }

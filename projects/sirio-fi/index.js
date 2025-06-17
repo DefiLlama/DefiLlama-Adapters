@@ -28,3 +28,9 @@ module.exports = {
   timetravel: false,
   hedera: { tvl, borrowed, }
 }
+
+module.exports.deadFrom = '2025-02-01'
+module.exports.hedera.borrowed=  () => ({})
+module.exports.hallmarks = [
+  ['2025-02-01', "Protocol Exploit"],
+]

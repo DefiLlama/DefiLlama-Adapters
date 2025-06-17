@@ -9,7 +9,10 @@ const SEI_EZ_ETH_ADDRESS = "0x6DCfbF4729890043DFd34A93A2694E5303BA2703";
 async function L2Tvl(api) {
   const targetAddress = api.chain === "sei" ? SEI_EZ_ETH_ADDRESS : L2_EZ_ETH_ADDRESS;
   const supply = await api.call({ target: targetAddress, abi: "erc20:totalSupply" });
-  return { [L1_EZ_ETH_ADDRESS]: supply };
+  if (api.chain === "sei") {
+    return { [`ethereum:${L1_EZ_ETH_ADDRESS}`]: supply };
+  }
+  return { [`${api.chain}:${targetAddress}`]: supply };
 }
 
 async function ethTvl(api) {

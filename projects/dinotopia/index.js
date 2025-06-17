@@ -17,7 +17,7 @@ const Contracts = {
   },
 };
 
-async function calcBscStakingTvl(timestamp, ethBlock, chainBlocks,  {api}) {
+async function calcBscStakingTvl(api) {
   const bscStakingData = await api.call({    target: Contracts.bsc.multiFeeDistribution,    abi: Abis.multiFeeDistribution.totalSupply,  });
   api.add(Contracts.bsc.fossil, bscStakingData)
   return sumUnknownTokens({ api, useDefaultCoreAssets: true, lps: Contracts.bsc.lps, })

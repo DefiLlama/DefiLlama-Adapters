@@ -29,7 +29,6 @@ async function getAllPairs(factory, chain, {blacklistedPairs = []} = {}) {
   const dtos = []
   const getPairPool = (async (pair) => {
     const pairRes = await queryContractWithRetries({contract: pair.contract_addr, chain, data: {pool: {}}})
-    // console.log("pairRes: ", pairRes, " pair: ", pair, "");
     const pairDto = {}
     pairDto.assets = []
     pairDto.addr = pair.contract_addr
@@ -50,7 +49,7 @@ async function getAllPairs(factory, chain, {blacklistedPairs = []} = {}) {
   return dtos
 }
 
-const isNotXYK = (pair) => pair.pair_type && pair.pair_type.custom === 'concentrated'
+const isNotXYK = (pair) => pair.pair_type && pair.pair_type.concentrated
 
 function getFactoryTvl(factory, {blacklistedPairs = []} = {}) {
   return async (api) => {

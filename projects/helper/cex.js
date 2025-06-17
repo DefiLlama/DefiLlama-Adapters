@@ -184,6 +184,7 @@ const defaultTokens = {
   eos: [
     ["eosio.token", "EOS", "eos"],
     ["tethertether", "USDT", "tether"],
+    ["core.vaulta", "A", "vaulta"],
   ],
   arbitrum: [
     nullAddress,
@@ -261,7 +262,12 @@ const defaultTokens = {
     ADDRESSES.ton.TON_3,
   ],
   sui: [],
-  aptos: [],
+  aptos: [
+    ADDRESSES.aptos.APT,
+    ADDRESSES.aptos.USDC,
+    ADDRESSES.aptos.USDT,
+    ADDRESSES.aptos.USDt
+  ],
   mantle: [
     nullAddress,
     ADDRESSES.mantle.USDC,
@@ -283,7 +289,7 @@ function cexExports(config) {
     timetravel: false,
   }
   chains.forEach(chain => {
-    let { tokensAndOwners, owners, tokens, blacklistedTokens, } = config[chain]
+    let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = config[chain]
 
     if (!tokensAndOwners && !tokens && chain !== 'solana') {
       tokens = defaultTokens[chain]
@@ -293,9 +299,10 @@ function cexExports(config) {
       }
     }
 
-    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens, }
+    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens }
     if (chain === 'solana')  options.solOwners = owners
     if (chain === 'ton')  options.onlyWhitelistedTokens = true
+    if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
   if (config.bep2) {
