@@ -22,7 +22,6 @@ async function fluidTvl(api, owners) {
     const fluidPools = Object.values(FLUID_POOL_ADDRESSES);
     const balanceCalls = fluidPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
     const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    
     balances.forEach((balance, i) => {
         api.add(balanceCalls[i].target, balance);
     });
@@ -32,7 +31,6 @@ async function morphoTvl(api, owners) {
     const morphoPools = Object.values(MORPHO_POOL_ADDRESSES);
     const balanceCalls = morphoPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
     const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    
     balances.forEach((balance, i) => {
         api.add(balanceCalls[i].target, balance);
     });
@@ -42,7 +40,6 @@ async function sparkTvl(api, owners) {
     const sparkPools = Object.values(SPARK_POOL_ADDRESSES);
     const balanceCalls = sparkPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
     const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    
     balances.forEach((balance, i) => {
         api.add(balanceCalls[i].target, balance);
     });
