@@ -88,78 +88,71 @@ Object.keys(lockAddress).map((chain) => {
         return {};
       }
       
-      // try catch
-      try {
-        if (isEVMChain) {
-          // if chain is EVM, use sumTokens2
-          // query native token
-          const tokensAndOwners = [
-            [ADDRESSES.null, lockAddress[chain]]
-          ];
+      if (isEVMChain) {
+        // if chain is EVM, use sumTokens2
+        // query native token
+        const tokensAndOwners = [
+          [ADDRESSES.null, lockAddress[chain]]
+        ];
+        
+        // if chain has common tokens, add them
+        if (ADDRESSES[chain]) {
+          // add all tokens defined in coreAssets.json for this chain
+          Object.entries(ADDRESSES[chain]).forEach(([symbol, address]) => {
+            // Skip null address as it's already added
+            if (symbol !== 'null' && address) {
+              tokensAndOwners.push([address, lockAddress[chain]]);
+            }
+          });
           
-          // if chain has common tokens, add them
-          if (ADDRESSES[chain]) {
-            // add all tokens defined in coreAssets.json for this chain
-            Object.entries(ADDRESSES[chain]).forEach(([symbol, address]) => {
-              // Skip null address as it's already added
-              if (symbol !== 'null' && address) {
-                tokensAndOwners.push([address, lockAddress[chain]]);
-              }
-            });
-            
+          // add custom tokens
+          if (chain === 'ethereum') {
             // add custom tokens
-            if (chain === 'ethereum') {
-              // add custom tokens
-              const customEthereumTokens = [
-                '0xAFCdd4f666c84Fed1d8BD825aA762e3714F652c9', // VINU
-                '0xeb986DA994E4a118d5956b02d8b7c3C7CE373674', // GTH
-                '0x97aeE01ed2aabAd9F54692f94461AE761D225f17', // DEGA
-              ];
-              customEthereumTokens.forEach(tokenAddress => {
-                tokensAndOwners.push([tokenAddress, lockAddress[chain]]);
-              });
-            }
-
-            if (chain === 'polygon') {
-              const customPolygonTokens = [
-                '0xAFCdd4f666c84Fed1d8BD825aA762e3714F652c9', // VINU
-              ];
-              customPolygonTokens.forEach(tokenAddress => {
-                tokensAndOwners.push([tokenAddress, lockAddress[chain]]);
-              });
-            }
-
-            if (chain === 'bsc') {
-              const customBscTokens = [
-                '0xeb986DA994E4a118d5956b02d8b7c3C7CE373674', // GTH
-                '0xfEbe8C1eD424DbF688551D4E2267e7A53698F0aa', // VINU
-              ];
-              customBscTokens.forEach(tokenAddress => {
-                tokensAndOwners.push([tokenAddress, lockAddress[chain]]);
-              });
-            }
+            const customEthereumTokens = [
+              '0xAFCdd4f666c84Fed1d8BD825aA762e3714F652c9', // VINU
+              '0xeb986DA994E4a118d5956b02d8b7c3C7CE373674', // GTH
+              '0x97aeE01ed2aabAd9F54692f94461AE761D225f17', // DEGA
+            ];
+            customEthereumTokens.forEach(tokenAddress => {
+              tokensAndOwners.push([tokenAddress, lockAddress[chain]]);
+            });
           }
-          
-          // add permitFailure option, allow some token query failure
-          return sumTokens2({
-            api,
-            tokensAndOwners,
-            chain,
-            resolveLP: true,
-            permitFailure: true,
-          });
-        } else {
-          // if chain is nonEVM, use sumTokens
-          return sumTokens({
-            api,
-            chain,
-            owners: [lockAddress[chain]],
-          });
+
+          if (chain === 'polygon') {
+            const customPolygonTokens = [
+              '0xAFCdd4f666c84Fed1d8BD825aA762e3714F652c9', // VINU
+            ];
+            customPolygonTokens.forEach(tokenAddress => {
+              tokensAndOwners.push([tokenAddress, lockAddress[chain]]);
+            });
+          }
+
+          if (chain === 'bsc') {
+            const customBscTokens = [
+              '0xeb986DA994E4a118d5956b02d8b7c3C7CE373674', // GTH
+              '0xfEbe8C1eD424DbF688551D4E2267e7A53698F0aa', // VINU
+            ];
+            customBscTokens.forEach(tokenAddress => {
+              tokensAndOwners.push([tokenAddress, lockAddress[chain]]);
+            });
+          }
         }
-      } catch (error) {
-        // if error, log error and return empty object
-        console.log(`Error fetching TVL for ${chain}: ${error.message}`);
-        return {};
+        
+        // add permitFailure option, allow some token query failure
+        return sumTokens2({
+          api,
+          tokensAndOwners,
+          chain,
+          resolveLP: true,
+          permitFailure: true,
+        });
+      } else {
+        // if chain is nonEVM, use sumTokens
+        return sumTokens({
+          api,
+          chain,
+          owners: [lockAddress[chain]],
+        });
       }
     },
   };
