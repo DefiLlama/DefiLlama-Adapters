@@ -8,12 +8,15 @@ const createChainModule = (chain) => {
     tvl: (api) => helpers.calculateChainTVL(api, chain)
   }
 
+  if (config.pool2) {
+    module.pool2 = (api) => helpers.calculatePool2TVL(api, chain)
+  }
+
   return module
 }
 
-// Export configuration for each chain
 module.exports = {
-  methodology: "Calculate TVL for liquidity pools, active markets and pool2",
+  methodology: "Calculate TVL for liquidity pools, active markets, speed markets and pool2",
   optimism: createChainModule('optimism'),
   arbitrum: createChainModule('arbitrum'),
   polygon: createChainModule('polygon'),

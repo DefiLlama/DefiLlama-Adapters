@@ -6,6 +6,9 @@ const CHAIN_CONFIG = {
     tokens: CHAIN_TOKENS.optimism,
     speedMarkets: CONTRACTS.optimism.SPEED_MARKETS,
     managers: CONTRACTS.optimism.MANAGERS,
+    pool2: {
+      lpTokens: CONTRACTS.optimism.LP_TOKEN
+    },
     liquidityPools: {
       sports: [
         { address: CONTRACTS.optimism.SPORTS_POOLS.USDC, token: 'USDC' },
@@ -21,6 +24,9 @@ const CHAIN_CONFIG = {
     tokens: CHAIN_TOKENS.arbitrum,
     speedMarkets: CONTRACTS.arbitrum.SPEED_MARKETS,
     managers: CONTRACTS.arbitrum.MANAGERS,
+    pool2: {
+      lpTokens: CONTRACTS.arbitrum.LP_TOKEN
+    },
     liquidityPools: {
       sports: [
         { address: CONTRACTS.arbitrum.SPORTS_POOLS.USDC, token: 'USDC' },
@@ -41,6 +47,9 @@ const CHAIN_CONFIG = {
     tokens: CHAIN_TOKENS.base,
     speedMarkets: CONTRACTS.base.SPEED_MARKETS,
     managers: CONTRACTS.base.MANAGERS,
+    pool2: {
+      lpTokens: CONTRACTS.base.LP_TOKEN
+    },
     liquidityPools: {
       sports: [
         { address: CONTRACTS.base.SPORTS_POOLS.USDC, token: 'USDC' },
