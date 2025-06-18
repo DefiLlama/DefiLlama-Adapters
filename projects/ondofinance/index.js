@@ -106,7 +106,9 @@ Object.keys(config).forEach((chain) => {
         const split = config.ripple.OUSG.split('.');
         const XRPL_OUSG_CURRENCY = split[0];
         const XRPL_OUSG_ISSUER = split[1];
-        const ousgSupply = await getXrplTokenBalances(XRPL_OUSG_ISSUER, XRPL_OUSG_CURRENCY);
+        // XRPL RPCs automatically adjust for the currency's decimal places, but DefiLlama expects the raw value
+        // so we convert to a raw balance by multiplying by 10^6
+        const ousgSupply = (await getXrplTokenBalances(XRPL_OUSG_ISSUER, XRPL_OUSG_CURRENCY)) * Math.pow(10, 6);
         api.addTokens(config.ripple.OUSG, ousgSupply);
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
