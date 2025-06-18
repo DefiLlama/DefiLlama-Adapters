@@ -1,23 +1,17 @@
-const { ethers } = require("ethers");
-
-const ABI = [
-  "function tokenIds() view returns (uint256)"
-];
-
-const CONTRACT_ADDRESS = "0x8cfc6b16b01604c83bef1e315d6693d2e7d4A34d"; // Mainnet
-const COLLATERAL_PER_TOKEN = 0.1; // ETH
+const COLLATERAL_PER_TOKEN = 0.10;           // ETH por fragmento
+const CONTRACT = '0x75DA787FDA32092079dbe113c5c9DBC22CBBC455';
 
 module.exports = {
-  timetravel: false,
-  start: 1718000000, // Aproximado a fecha del despliegue
   ethereum: {
-    tvl: async () => {
-      const provider = new ethers.providers.JsonRpcProvider("https://eth.llamarpc.com");
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
-      const minted = await contract.tokenIds();
+    tvl: async (api) => {
+      // tokenIds() -> uint256 (total fragmentos)
+      const minted = await api.call({
+        target: CONTRACT,
+        abi: 'uint256:tokenIds',
+      });
       return {
-        ethereum: minted.toNumber() * COLLATERAL_PER_TOKEN
+        ethereum: minted.toNumber() * COLLATERAL_PER_TOKEN,
       };
-    }
-  }
+    },
+  },
 };
