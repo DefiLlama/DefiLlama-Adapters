@@ -1,21 +1,12 @@
 const { Connection, PublicKey } = require('@solana/web3.js');
+const { sumTokens2 } = require('../helper/solana');
 const SOLANA_RPC_URL = 'https://api.mainnet-beta.solana.com';
 const connection = new Connection(SOLANA_RPC_URL);
 
+const treasuryAddress = 'AC6hxrHufwguXYcPdCibahS7nemw8SQhPSHGEArQ97sJ';
+
 async function tvl() {
-  try {
-    const treasuryAddress = new PublicKey('AC6hxrHufwguXYcPdCibahS7nemw8SQhPSHGEArQ97sJ');
-    const balance = await connection.getBalance(treasuryAddress);
-    
-    return {
-      'solana': balance / 1e9
-    };
-  } catch (error) {
-    console.error('TVL calculation error:', error);
-    return {
-      'solana': 0 
-    };
-  }
+  return await sumTokens2({solOwners: [treasuryAddress]});
 }
 
 async function staking() {
@@ -68,8 +59,5 @@ module.exports = {
   solana: {
     tvl,
     staking
-  },
-  hallmarks: [
-    [Math.floor(new Date('2025-06-07')/1000), "NFT Launch"]
-  ]
+  }
 };
