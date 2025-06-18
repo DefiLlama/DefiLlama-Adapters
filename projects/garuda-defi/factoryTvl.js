@@ -36,7 +36,6 @@ async function getAllPairs(factory, chain) {
       currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
       allPairs.push(...currentPairs)
     } catch (error) {
-      console.warn(`Failed to fetch pairs batch: ${error.message}`)
       break;
     }
 
@@ -79,7 +78,6 @@ async function getPairPoolSafe(pair, chain, retryCount = 0) {
 
   } catch (error) {
     if (retryCount < CONFIG.MAX_RETRIES) {
-      console.warn(`Retrying pair ${pair.contract} (attempt ${retryCount + 1}): ${error.message}`)
       await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY))
       return getPairPoolSafe(pair, chain, retryCount + 1)
     }
@@ -133,11 +131,9 @@ function getFactoryTvl(factory) {
     const allPairs = await getAllPairs(factory, "terra")
     
     if (allPairs.length === 0) {
-      console.warn(`No pairs found for factory ${factory}`)
       return {}
     }
 
-    console.log(`Processing ${allPairs.length} pairs from factory ${factory}`)
 
     const { results, errors } = await PromisePool
       .withConcurrency(CONFIG.CONCURRENCY)
@@ -150,11 +146,6 @@ function getFactoryTvl(factory) {
     const lowLiquidity = results.filter(r => r.type === 'low_liquidity')
     const failed = results.filter(r => r.type === 'error')
 
-    console.log(`Pair processing results:`)
-    console.log(`- Successful: ${successful.length}`)
-    console.log(`- Low liquidity (filtered): ${lowLiquidity.length}`)
-    console.log(`- Failed: ${failed.length}`)
-    console.log(`- Network errors: ${errors.length}`)
 
     const totalProcessed = allPairs.length
     const totalErrors = failed.length + errors.length
@@ -233,7 +224,6 @@ function getFactoryTvl(factory) {
       token0Bal: String(item.token0Bal || '0'),
       token1Bal: String(item.token1Bal || '0')
     }))
-    console.log(safeData)
     try {
       const result = transformDexBalances({
         data: safeData,
