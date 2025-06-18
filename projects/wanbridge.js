@@ -40,7 +40,7 @@ const lockAddress = {
   xdc: "0xf7ba155556e2cd4dfe3fe26e506a14d2f4b97613",
   tron: "TZ9grqg3LwBKiddGra3WGHPdddJz3tow8N",
   okexchain: "0xf7ba155556e2cd4dfe3fe26e506a14d2f4b97613",
-  clover: "0xf7ba155556e2cd4dfe3fe26e506a14d2f4b97613",
+  // clover: "0xf7ba155556e2cd4dfe3fe26e506a14d2f4b97613",
   astar: "0x592de30bebff484b5a43a6e8e3ec1a814902e0b6",
   telos: "0x201e5de97dfc46aace142b2009332c524c9d8d82",
   functionx: "0xdf935552fac687123c642f589296762b632a9aaf",
