@@ -24,39 +24,22 @@ const v2Vaults = [EMERALD, OPAL, AMBER];
 const liquityVaults = [LIQUITY_VAULT, JADE, AMETHYST, AMBER];
 
 async function tvl(api) {
-  const { chain, block} = api
-  const balances = {}
   // v1 vaults assets
-  const v1VaultBalances = await api.multiCall({
-    abi: 'uint256:totalUnderlying',
-    calls: v1Vaults,
-  })
-  v1VaultBalances.forEach(i => sdk.util.sumSingleBalance(balances, LUSD, i, chain))
+  const v1VaultBalances = await api.multiCall({    abi: 'uint256:totalUnderlying',    calls: v1Vaults,  })
+  api.add(LUSD, v1VaultBalances)
 
   // v2 vaults assets
-  const v2VaultBalances = await api.multiCall({
-    abi: 'uint256:totalAssets',
-    calls: v2Vaults,
-  })
-  sdk.util.sumSingleBalance(balances, WETH, v2VaultBalances[0], chain)
-  sdk.util.sumSingleBalance(balances, USDC, v2VaultBalances[1], chain)
-  sdk.util.sumSingleBalance(balances, LUSD, v2VaultBalances[2], chain)
+  const v2VaultBalances = await api.multiCall({    abi: 'uint256:totalAssets',    calls: v2Vaults,  })
+  api.add(WETH, v2VaultBalances[0])
+  api.add(USDC, v2VaultBalances[1])
+  api.add(LUSD, v2VaultBalances[2])
 
   // LQTY balances in liquity vaults
-  const lqtyBalances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: liquityVaults.map(v => ({ target: LQTY, params: v })),
-  })
-  lqtyBalances.forEach(l => sdk.util.sumSingleBalance(balances, LQTY, l, chain))
+  await api.sumTokens({ owners: liquityVaults, tokens: [LQTY], })
 
   // LQTY gains of liquity vaults in the stability pool
-  const lqtyGains = await api.multiCall({
-    abi: 'function getDepositorLQTYGain(address) external view returns (uint256)',
-    calls: liquityVaults.map(v => ({ target: LIQUITY_STABILITY_POOL, params: v })),
-  });
-  lqtyGains.forEach(g => sdk.util.sumSingleBalance(balances, LQTY, g, chain))
-
-  return sumTokens2({ balances, chain, block, })
+  const lqtyGains = await api.multiCall({    abi: 'function getDepositorLQTYGain(address) external view returns (uint256)',    target: LIQUITY_STABILITY_POOL, calls: liquityVaults,  });
+  api.add(LQTY, lqtyGains)
 }
 
 module.exports = {

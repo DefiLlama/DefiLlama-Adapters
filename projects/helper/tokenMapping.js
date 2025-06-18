@@ -1,4 +1,3 @@
-const { decimals } = require('@defillama/sdk/build/erc20')
 let coreAssets = require('./coreAssets.json')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
@@ -18,9 +17,12 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru']
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
+  'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
+  'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon'
+]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
-  'eclipse',
+  'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
 const transformTokens = {
@@ -29,7 +31,6 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
-
 }
 const ibcMappings = {
   // Sample Code
@@ -38,19 +39,21 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  apechain: {
-    [ADDRESSES.null]: { coingeckoId: "apecoin", decimals: 18 },
-  },
-  vinu: {
-    '0xC0264277fcCa5FCfabd41a8bC01c1FcAF8383E41': { coingeckoId: "tether", decimals: 6 },
-    '0xDd4b9b3Ce03faAbA4a3839c8B5023b7792be6e2C': { coingeckoId: "ethereum", decimals: 18},
-    '0x00c1E515EA9579856304198EFb15f525A0bb50f6': { coingeckoId: "vita-inu", decimals: 18},
-    '0xEd8c5530a0A086a12f57275728128a60DFf04230': { coingeckoId: "vinuchain", decimals: 18},
-  },
+  namada: {
+    'tnam1p5z8ruwyu7ha8urhq2l0dhpk2f5dv3ts7uyf2n75': { coingeckoId: 'osmosis', decimals: 6, },
+    'tnam1pkg30gnt4q0zn7j00r6hms4ajrxn6f5ysyyl7w9m': { coingeckoId: 'cosmos', decimals: 6, },
+    'tnam1pklj3kwp0cpsdvv56584rsajty974527qsp8n0nm': { coingeckoId: 'celestia', decimals: 6, },
+    'tnam1pk288t54tg99umhamwx998nh0q2dhc7slch45sqy': { coingeckoId: 'penumbra', decimals: 6, },
+    'tnam1pkl64du8p2d240my5umxm24qhrjsvh42ruc98f97': { coingeckoId: 'usd-coin', decimals: 6, },
+    'tnam1phv4vcuw2ftsjahhvg65w4ux8as09tlysuhvzqje': { coingeckoId: 'nym', decimals: 6, },
+    'tnam1pk6pgu4cpqeu4hqjkt6s724eufu64svpqgu52m3g': { coingeckoId: 'neutron-3', decimals: 6, },
+    'tnam1p4px8sw3am4qvetj7eu77gftm4fz4hcw2ulpldc7': { coingeckoId: 'stride-staked-osmo', decimals: 6, },
+    'tnam1p5z5538v3kdk3wdx7r2hpqm4uq9926dz3ughcp7n': { coingeckoId: 'stride-staked-atom', decimals: 6, },
+    'tnam1ph6xhf0defk65hm7l5ursscwqdj8ehrcdv300u4g': { coingeckoId: 'stride-staked-tia', decimals: 6, },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

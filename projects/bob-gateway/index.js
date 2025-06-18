@@ -38,6 +38,7 @@ module.exports = {
           ADDRESSES.bob.FBTC,
           ADDRESSES.bob.uniBTC,
           ADDRESSES.bob.pumpBTC,
+          "0xA45d4121b3D47719FF57a947A9d961539Ba33204", // LBTC
         ],
         owners: gateways,
       });

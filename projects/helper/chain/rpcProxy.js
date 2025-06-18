@@ -8,6 +8,24 @@ const client = axios.create({
 
 
 module.exports = {
+  stellar: {
+    tokenBalance: async ({ token, address }) => {
+      const { data } = await client.get(`/stellar/token-balance/${token}/${address}`)
+      return data
+    },
+    nativeBalance: async (address) => {
+      const { data } = await client.get(`/stellar/balances/${address}`)
+      return data
+    },
+    blendBackstopTvl: async (backstopId) => {
+      const { data } = await client.get(`/stellar/blend-get-backstop/${backstopId}`)
+      return data
+    },
+    blendPoolInfo: async (backstopId) => {
+      const { data } = await client.get(`/stellar/blend-get-pool-data/${backstopId}`)
+      return data
+    },
+  },
   fuel: {
     query: async ({ contractId, abi, method }) => {
       const { data } = await client.post('/fuel/query', { contractId, abi, method })
@@ -17,6 +35,12 @@ module.exports = {
   ripple: {
     gatewayBalances: async ({ account, hotwallet }) => {
       const { data } = await client.post('/ripple/gateway_balances', { account, hotwallet })
+      return data
+    }
+  },
+  drift: {
+    vaultTvl: async (vault, version) => {
+      const { data } = await client.get('/drift/vault_tvl', { params: { vault, version } })
       return data
     }
   },

@@ -69,7 +69,8 @@ const config = {
   },
   optimism: {
     factories: [
-      '0xa058Ba91958cD30D44c7B0Cf58A369876Fb70B05'
+      '0xa058Ba91958cD30D44c7B0Cf58A369876Fb70B05',
+      '0x48168439ca4ef9e95975e3e2488bfcbd8fb1a80c'
     ]
   },
   real: {
@@ -81,7 +82,19 @@ const config = {
   blast: { 
     factories: [
       '0x7b816c1ccafa7d3e71e279ed9dc3226484f6ef87',
-      '0xb3c80cfcdd177e3fce2e66870e4768d1ead89f6c'
+      '0xb3c80cfcdd177e3fce2e66870e4768d1ead89f6c',
+      '0xfff3C004D115002E0fe8Ef08bBB127aEF5B97bE1'
+    ]
+  },
+  sonic: { 
+    factories: [
+      '0x26fca5916c20D252feEF7A58E39886d3d3112b91',
+      '0x6e1E988D828D0102BF93434774cd1a2246062564'
+    ]
+  },
+  linea: { 
+    factories: [
+      '0x7A9212D34DD283e952f8f15f084832e9b48ee746'
     ]
   }
 }
@@ -170,7 +183,9 @@ const blacklistedPools = {
   mantle: [],
   optimism: [],
   real: [],
-  blast: []
+  blast: [],
+  sonic: [],
+  linea: []
 }
 
 module.exports = {}
