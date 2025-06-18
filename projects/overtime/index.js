@@ -12,11 +12,15 @@ const createChainModule = (chain) => {
     module.pool2 = (api) => helpers.calculatePool2TVL(api, chain)
   }
 
+  if (config.stakingPools) {
+    module.staking = (api) => helpers.calculateStakingTVL(api, chain)
+  }
+
   return module
 }
 
 module.exports = {
-  methodology: "Calculate TVL for liquidity pools, active markets, speed markets and pool2",
+  methodology: "Calculate TVL for liquidity pools, active markets, speed markets, staking and pool2",
   optimism: createChainModule('optimism'),
   arbitrum: createChainModule('arbitrum'),
   polygon: createChainModule('polygon'),

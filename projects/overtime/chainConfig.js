@@ -9,11 +9,13 @@ const CHAIN_CONFIG = {
     pool2: {
       lpTokens: CONTRACTS.optimism.LP_TOKEN
     },
+    stakingPools: [
+      { address: CONTRACTS.optimism.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' }
+    ],
     liquidityPools: {
       sports: [
         { address: CONTRACTS.optimism.SPORTS_POOLS.USDC, token: 'USDC' },
-        { address: CONTRACTS.optimism.SPORTS_POOLS.WETH, token: 'WETH' },
-        { address: CONTRACTS.optimism.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' }
+        { address: CONTRACTS.optimism.SPORTS_POOLS.WETH, token: 'WETH' }
       ],
       digitalOptions: [
         { address: CONTRACTS.optimism.DIGITAL_POOLS.USDC, token: 'USDC' }
@@ -27,11 +29,13 @@ const CHAIN_CONFIG = {
     pool2: {
       lpTokens: CONTRACTS.arbitrum.LP_TOKEN
     },
+    stakingPools: [
+      { address: CONTRACTS.arbitrum.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' }
+    ],
     liquidityPools: {
       sports: [
         { address: CONTRACTS.arbitrum.SPORTS_POOLS.USDC, token: 'USDC' },
         { address: CONTRACTS.arbitrum.SPORTS_POOLS.WETH, token: 'WETH' },
-        { address: CONTRACTS.arbitrum.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' },
         { address: CONTRACTS.arbitrum.SPORTS_POOLS.WBTC, token: 'WBTC' }
       ],
       digitalOptions: [
@@ -50,11 +54,13 @@ const CHAIN_CONFIG = {
     pool2: {
       lpTokens: CONTRACTS.base.LP_TOKEN
     },
+    stakingPools: [
+      { address: CONTRACTS.base.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' }
+    ],
     liquidityPools: {
       sports: [
         { address: CONTRACTS.base.SPORTS_POOLS.USDC, token: 'USDC' },
         { address: CONTRACTS.base.SPORTS_POOLS.WETH, token: 'WETH' },
-        { address: CONTRACTS.base.SPORTS_POOLS.OVERTIME, token: 'OVERTIME' },
         { address: CONTRACTS.base.SPORTS_POOLS.cbBTC, token: 'cbBTC' }
       ],
       digitalOptions: [

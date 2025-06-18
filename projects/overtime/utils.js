@@ -66,6 +66,17 @@ const utils = {
     })
   },
 
+  calculateStakingTVL: async (api, chain) => {
+    const config = CHAIN_CONFIG[chain]
+    if (!config.stakingPools) return {}
+
+    for (const pool of config.stakingPools) {
+      await utils.addLPTvl(api, pool.address, pool.token)
+    }
+
+    return api.getBalances()
+  },
+
   calculateChainTVL: async (api, chain) => {
     const config = CHAIN_CONFIG[chain]
 
