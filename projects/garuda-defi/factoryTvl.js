@@ -2,6 +2,15 @@ const { queryContract, queryContracts, sumTokens, queryContractWithRetries } = r
 const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 
+const CONFIG = {
+  CONCURRENCY: 10,
+  MAX_ERROR_RATE: 0.15, // error rate threshold
+  MIN_LIQUIDITY_USD: 15, // Minimum $15 liquidity
+  MIN_RESERVE_THRESHOLD: 1000000, // Minimum reserve amount
+  MAX_RETRIES: 3,
+  RETRY_DELAY: 100 // 1 second
+}
+
 async function getAllPairs(factory, chain) {
   let allPairs = []
   let currentPairs;
@@ -23,14 +32,42 @@ async function getAllPairs(factory, chain) {
     }
 
     previousQueryStr = queryStr;
-    currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
-    allPairs.push(...currentPairs)
+    try {
+      currentPairs = (await queryContract({ contract: factory, chain, data: queryStr })).pairs
+      allPairs.push(...currentPairs)
+    } catch (error) {
+      console.warn(`Failed to fetch pairs batch: ${error.message}`)
+      break;
+    }
 
-  } while (allPairs.length > 0)
-  const dtos = []
+  } while (currentPairs && currentPairs.length > 0)
+  
+  return allPairs
+}
 
-  const getPairPool = (async (pair) => {
-    const pairRes = await queryContractWithRetries({ contract: pair.contract, chain, data: { pool: {} } })
+function hasMinimumLiquidity(reserve1, reserve2) {
+  const r1 = Number(safeBalanceToString(reserve1))
+  const r2 = Number(safeBalanceToString(reserve2))
+  
+  return r1 >= 0 && r2 >= 0
+}
+
+async function getPairPoolSafe(pair, chain, retryCount = 0) {
+  try {
+    const pairRes = await queryContractWithRetries({ 
+      contract: pair.contract, 
+      chain, 
+      data: { pool: {} } 
+    })
+
+    if (!hasMinimumLiquidity(pairRes.reserve1, pairRes.reserve2)) {
+      return { 
+        type: 'low_liquidity', 
+        pair: pair.contract,
+        reserves: [pairRes.reserve1, pairRes.reserve2]
+      }
+    }
+
     const assetsPair = []
     let addr1 = pairRes.asset1.cw20 || pairRes.asset1.native
     assetsPair.push({ addr: addr1, balance: pairRes.reserve1 })
@@ -38,17 +75,26 @@ async function getAllPairs(factory, chain) {
     let addr2 = pairRes.asset2.cw20 || pairRes.asset2.native
     assetsPair.push({ addr: addr2, balance: pairRes.reserve2 })
 
-    dtos.push(assetsPair)
-  })
-  const { errors } = await PromisePool
-    .withConcurrency(10)
-    .for(allPairs)
-    .process(getPairPool)
+    return { type: 'success', data: assetsPair }
 
-  if ((errors?.length ?? 0) > 50) {
-    throw new Error(`Too many errors: ${errors.length}/${allPairs.length} on ${chain}`)
+  } catch (error) {
+    if (retryCount < CONFIG.MAX_RETRIES) {
+      console.warn(`Retrying pair ${pair.contract} (attempt ${retryCount + 1}): ${error.message}`)
+      await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY))
+      return getPairPoolSafe(pair, chain, retryCount + 1)
+    }
+
+    const errorType = error.message.includes('timeout') ? 'timeout' : 
+                     error.message.includes('rate limit') ? 'rate_limit' :
+                     error.message.includes('not found') ? 'not_found' : 'unknown'
+
+    return { 
+      type: 'error', 
+      pair: pair.contract, 
+      error: error.message,
+      errorType 
+    }
   }
-  return dtos
 }
 
 function safeBalanceToString(balance) {
@@ -84,9 +130,56 @@ function safeBalanceToString(balance) {
 
 function getFactoryTvl(factory) {
   return async () => {
-    const pairs = await getAllPairs(factory, "terra")
+    const allPairs = await getAllPairs(factory, "terra")
+    
+    if (allPairs.length === 0) {
+      console.warn(`No pairs found for factory ${factory}`)
+      return {}
+    }
 
-    const data = pairs
+    console.log(`Processing ${allPairs.length} pairs from factory ${factory}`)
+
+    const { results, errors } = await PromisePool
+      .withConcurrency(CONFIG.CONCURRENCY)
+      .for(allPairs)
+      .process(async (pair) => {
+        return await getPairPoolSafe(pair, "terra")
+      })
+
+    const successful = results.filter(r => r.type === 'success')
+    const lowLiquidity = results.filter(r => r.type === 'low_liquidity')
+    const failed = results.filter(r => r.type === 'error')
+
+    console.log(`Pair processing results:`)
+    console.log(`- Successful: ${successful.length}`)
+    console.log(`- Low liquidity (filtered): ${lowLiquidity.length}`)
+    console.log(`- Failed: ${failed.length}`)
+    console.log(`- Network errors: ${errors.length}`)
+
+    const totalProcessed = allPairs.length
+    const totalErrors = failed.length + errors.length
+    const errorRate = totalErrors / totalProcessed
+
+    if (errorRate > CONFIG.MAX_ERROR_RATE) {
+      const errorsByType = {}
+      failed.forEach(f => {
+        errorsByType[f.errorType] = (errorsByType[f.errorType] || 0) + 1
+      })
+
+      const errorSummary = Object.entries(errorsByType)
+        .map(([type, count]) => `${type}: ${count}`)
+        .join(', ')
+
+      throw new Error(
+        `High error rate detected: ${(errorRate * 100).toFixed(1)}% ` +
+        `(${totalErrors}/${totalProcessed} pairs failed) on terra. ` +
+        `Error breakdown: ${errorSummary}`
+      )
+    }
+
+    const validPairs = successful.map(r => r.data)
+    
+    const data = validPairs
       .filter(assets => {
         if (!assets || assets.length < 2) return false
         const token0 = assets[0]?.addr
@@ -98,10 +191,14 @@ function getFactoryTvl(factory) {
       })
       .map((assets) => ({
         token0: assets[0].addr,
-        token0Bal: safeBalanceToString(assets[0].balance), // Convert to string
+        token0Bal: safeBalanceToString(assets[0].balance),
         token1: assets[1].addr,
-        token1Bal: safeBalanceToString(assets[1].balance), // Convert to string
+        token1Bal: safeBalanceToString(assets[1].balance),
       }))
+
+    if (data.length === 0) {
+      return {}
+    }
 
     const nativeTokens = new Set()
     const cw20Tokens = new Set()
@@ -130,20 +227,24 @@ function getFactoryTvl(factory) {
         coreTokens.add(token1)
       })
     }
+
     const safeData = data.map(item => ({
       ...item,
       token0Bal: String(item.token0Bal || '0'),
       token1Bal: String(item.token1Bal || '0')
     }))
-    
+    console.log(safeData)
     try {
-      return transformDexBalances({
+      const result = transformDexBalances({
         data: safeData,
         withMetadata: false, 
         chain: "terra",
         coreTokens,
         restrictTokenRatio: 0
       })
+      
+      return result
+      
     } catch (error) {
       const balances = {}
       
@@ -185,5 +286,6 @@ function getFactoryTvl(factory) {
 }
 
 module.exports = {
-  getFactoryTvl
+  getFactoryTvl,
+  CONFIG 
 }
