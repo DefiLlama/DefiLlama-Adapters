@@ -6,7 +6,5 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "Liquidity on the GARUDA DEX",
-  terra: { tvl: getFactoryTvl(FACTORY_CONTRACT) },
-  hallmarks: [
-    [1651881600, "GARUDA DEFI"],]
+  terra: { tvl: getFactoryTvl(FACTORY_CONTRACT) }
 }
