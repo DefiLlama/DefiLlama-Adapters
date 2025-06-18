@@ -113,7 +113,8 @@ const defaultTokens = {
      "0x6982508145454ce325ddbe47a25d4ec3d2311933", // PEPE
      ADDRESSES.ethereum.METH, //METH
      ADDRESSES.mantle.cmETH, // CMETH
-     "0x54d2252757e1672eead234d27b1270728ff90581" // BITGET TOKEN, NEW
+     "0x54d2252757e1672eead234d27b1270728ff90581", // BITGET TOKEN, NEW
+     "0x4c9edd5852cd905f086c759e8383e09bff1e68b3" // USDE
   ],
   tron: [
     nullAddress,
