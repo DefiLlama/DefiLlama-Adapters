@@ -20,8 +20,8 @@ const configV2 = {
   arbitrum: {
     factories: [
       {
-        START_BLOCK: 291201890,
-        SILO_FACTORY: '0xf7dc975C96B434D436b9bF45E7a45c95F0521442', // Silo V2 Arbitrum (Main)
+        START_BLOCK: 334531851,
+        SILO_FACTORY: '0x384DC7759d35313F0b567D42bf2f611B285B657C', // Silo V2 Arbitrum (Main)
       }
     ]
   }
