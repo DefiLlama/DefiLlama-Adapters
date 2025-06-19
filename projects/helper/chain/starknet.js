@@ -11,6 +11,12 @@ const { getUniTVL } = require('../cache/uniswap')
 const { getCache } = require('../cache')
 const { getEnv } = require('../env')
 const ADDRESSES = require('../coreAssets.json')
+const { withRpcFallback } = require('../rpcFallback')
+
+async function rpcFallbackStarknet(body) {
+  const res = await withRpcFallback('starknet', (rpc) => axios.post(rpc, body))
+  return res.data
+}
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
@@ -59,7 +65,7 @@ function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj =
 }
 
 async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}, ...rest) {
-  const { data } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
+  const data = await rpcFallbackStarknet(formCallBody({ abi, target, params, allAbi }))
   return parseOutput(data.result, abi, allAbi, { permitFailure, responseObj: data })
 }
 
@@ -78,7 +84,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   const chunks = sliceIntoChunks(callBodies, 25)
   for (const chunk of chunks) {
     await sleep(200)
-    const { data } = await axios.post(STARKNET_RPC, chunk)
+    const data = await rpcFallbackStarknet(chunk)
     allData.push(...data)
   }
 
@@ -171,13 +177,14 @@ module.exports = {
   sumTokens: rateLimited(sumTokens),
   number,
   dexExport,
+  rpcFallbackStarknet
 }
 
 // WIP
 async function getLogs({ fromBlock, topic, target }) {
   const cache = await getCache('starknet-logs', topic)
   fromBlock = cache.toBlock || fromBlock
-  const { data: { result: to_block } } = await axios.post(STARKNET_RPC, { "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
+  const { result: to_block } = await rpcFallbackStarknet({ "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
   const params = {
     filter: {
       from_block: fromBlock,
@@ -188,7 +195,7 @@ async function getLogs({ fromBlock, topic, target }) {
   }
 
   const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
-  const { data } = await axios.post(STARKNET_RPC, body)
+  const data = await rpcFallbackStarknet(body)
 }
 
 api.call = module.exports.call
