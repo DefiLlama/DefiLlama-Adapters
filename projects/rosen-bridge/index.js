@@ -62,10 +62,10 @@ module.exports = {
       ],
       tokens: [
         ADDRESSES.null,
-        'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235484f534b59', // Hosky
         '3a89cf5f2f18887fcaec3d2e9bd4fee52caeaebc50f338ff23861cec42414e41', // Bana
         '016be5325fd988fea98ad422fcfd53e5352cacfced5c106a932a35a442544e', // BTN
         '5612bee388219c1b76fd527ed0fa5aa1d28652838bcab4ee4ee63197446973636f696e', // DIS
+        'a0028f350aaabe0545fdcb56b039bfb08e4bb4d8c4d7c3c7d481c235484f534b59', // Hosky
         '95a427e384527065f2f8946f5e86320d0117839a5e98ea2c0b55fb0048554e54', // Hunt
         '5d16cc1a177b5d9ba9cfa9793b07e60f1fb70fea1f8aef064415d114494147', // IAG
         '533bb94a8850ee3ccbe483106489399112b74c905342cb1792a797a0494e4459', // INDY
@@ -74,7 +74,11 @@ module.exports = {
         '43b07d4037f0d75ee10f9863097463fc02ff3c0b8b705ae61d9c75bf4d796e746820546f6b656e', // MNT
         'c881c20e49dbaca3ff6cef365969354150983230c39520b917f5cf7c4e696b65', // NIKEPIG
         '2852268cf6e2db42e20f2fd3125f541e5d6c5a3d70b4dda17c2daa82', // O
+        'f6099832f9563e4cf59602b3351c3c5a8a7dda2d44575ef69b82cf8d', // OADA
+        'b7c5cd554f3e83c8aa0900a0c9053284a5348244d23d0406c28eaf4d50414c4d0a', // PALM
+        '279c909f348e533da5808898f87f9a14bb2c3dfbbacccd631d927a3f534e454b', // SNEK
         'f6099832f9563e4cf59602b3351c3c5a8a7dda2d44575ef69b82cf8d', // sOADA
+        'e13f55c16b8718edac43614146c00cadc45991af3a5355d0386a9f0343727970746f536f636b7a', // SOCKZ
         'ececc92aeaaac1f5b665f567b01baec8bc2771804b4c21716a87a4e353504c415348', // Splash
         '766fce8055f39d40fcfc19721677b3deb2e7846950ae08dce757f1e753554741522042555348', // Sugar
         '9a9693a9a37912a5097918f97918d15240c92ab729a0b7c4aa144d7753554e444145', // Sundae
@@ -98,6 +102,7 @@ module.exports = {
     tvl: sumTokensExport({
       owners: [
         '0x4f68032EBe64b353a22FE1d9B7A6Af43Dd38bacB',  //  Binance Hot Wallet
+        '0x34c9f8a268df15fb38811800Cb6e7F6a109cd0E7',  //  Binance Hot Wallet
         '0x5f64a7a5FDAA1CF64e4507E7cA5Be164E59EfBbF',  //  Binance Cold Wallet
       ],
       tokens: [nullAddress,]
