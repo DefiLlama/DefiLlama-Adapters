@@ -8,6 +8,7 @@ const MORPHO_VAULTS_FACTORY_v1_1 = "0xFf62A7c278C62eD665133147129245053Bbf5918";
 const AAVE_POOL_DATA_PROVIDER = "0x2A0979257105834789bC6b9E1B00446DFbA8dFBa";
 const GEYSER_REGISTRY = "0xD5815fC3D736120d07a1fA92bA743c1167dA89d8";
 
+// Geysers are deprecated
 async function geyserTvl(api) {
   const aTokens = await api.call({  abi: "function getAllATokens() view returns (tuple(string symbol, address tokenAddress)[])", target: AAVE_POOL_DATA_PROVIDER })
   const aTokenSet = new Set(aTokens.map(t => t.tokenAddress.toLowerCase()))
@@ -42,7 +43,7 @@ async function geyserTvl(api) {
   return api.getBalances()
 }
 
-const SeamlesMorphoVaultsTVL = async (api) => {
+const SeamlessMorphoVaultsTVL = async (api) => {
   const allVaults = (
     await getLogs2({
       api,
@@ -86,7 +87,7 @@ module.exports = mergeExports([
   { base: { tvl: geyserTvl } },
   {
     doublecounted: true,
-    base: { tvl: SeamlesMorphoVaultsTVL },
+    base: { tvl: SeamlessMorphoVaultsTVL },
   },
   { methodology },
 ]);

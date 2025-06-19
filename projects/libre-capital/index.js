@@ -4,6 +4,7 @@ const sui = require("../helper/chain/sui");
 const { call } = require('../helper/chain/near')
 const { Connection, PublicKey } = require('@solana/web3.js');
 const {  getResource } = require("../helper/chain/aptos");
+const { getHederaTokenSupply } = require("../helper/chain/hedera/hederaTokenSupply");
 
 const NAV_CONTRACT = "0x0f29d042bb26a200b2a507b752e51dbbc05bf2f6";
 const NAV_ABI = "function getLatestNAV(bytes32 _instrumentId) view returns (uint256 navPerShare, string legalDocumentCID, uint256 timestamp)"
@@ -97,6 +98,13 @@ const RECEIPT_TOKENS = {
       underlying: 'security-token',
       instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
       fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: '0xe5631cCF95350948Ba2D4d8c815c05AFBfb47A9F',
+      decimals: 18,
+      underlying: 'security-token',
+      instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
     },
     APCA: {
       address: '0x1b62F1B8b04736e8F9ECc8eEaE8B7D5957c74d5d',
@@ -328,6 +336,50 @@ const RECEIPT_TOKENS = {
       underlying: 'security-token',
       instrumentId:"0x3636653765336666346534363764313238323964396366340000000000000000",
       fundName:'Libre SAF VCC - Access Private Credit Feeder'
+    }
+  },
+  hedera: {
+    UMA: {
+      address: '0.0.9263363',
+      decimals: 8,
+      underlying: 'security-token',
+      instrumentId: "0x3636313431343936306633613839373337393633303932640000000000000000",
+      fundName:'USD I Money Market a sub-fund of Libre SAF VCC'
+    },
+    BHMA: {
+      address: '0.0.9265281',
+      decimals: 8,
+      underlying: 'security-token',
+      instrumentId: "0x3636313431343633306633613839373337393633303932630000000000000000",
+      fundName: ' BH Master Fund Access a sub-fund of Libre SAF VCC'
+    },
+    HLSPC: {
+      address: '0.0.9265299', 
+      decimals: 8,
+      underlying: 'security-token',
+      instrumentId:"0x3636633433643637363564313665353638356639333338340000000000000000",
+      fundName: 'Libre SAF VCC - HL Scope Private Credit Access A'
+    },
+    APCA: {
+      address: '0.0.9265301', 
+      decimals: 8,
+      underlying: 'security-token',
+      instrumentId:"0x3636653765336666346534363764313238323964396366340000000000000000",
+      fundName:'Libre SAF VCC - Access Private Credit Feeder'
+    },
+    LDCFA: {
+      address: '0.0.9265302', 
+      decimals: 8,
+      underlying: 'security-token',
+      instrumentId: "0x3637313739666237366165623037313161373136386634300000000000000000",
+      fundName:'Libre SAF VCC - Laser Digital Carry Fund A'
+    },
+    LDCFB: {
+      address: '0.0.9265306', 
+      decimals: 8,
+      underlying: 'security-token',
+      instrumentId: "0x3637313761303239366165623037313161373136386634310000000000000000",
+      fundName:'Libre SAF VCC - Laser Digital Carry Fund B'
     }
   },
 }
@@ -621,8 +673,31 @@ async function aptosTvl() {
   return balances;
 }
 
+async function hederaTvl() {
+  const balances = {}
+  let totalTvl = 0;
+  const fundPrices = await getFundPrices();
+
+  // Query total supply for each token using the Hedera Mirror Node API
+  for (const token of Object.values(RECEIPT_TOKENS.hedera)) {
+    // Get token supply using our helper function
+    const totalSupply = await getHederaTokenSupply(token.address);
+    
+    if (totalSupply > 0) {
+      const price = fundPrices[token.instrumentId] || 1;
+      const valueUSD = totalSupply * price;
+      totalTvl += valueUSD;
+    }
+  }
+
+  // Return the total value in the format DeFiLlama expects
+  balances['usd-coin'] = totalTvl;
+  return balances;
+}
+
+
 module.exports = {
-  methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, and Avalanche. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
+  methodology: "TVL represents the total value of institutional funds including 'USD I Money Market', 'BH Master Fund Access', 'Laser Carry', 'Hamilton Lane' and 'Access Private Credit Feeder' sub-funds of Libre SAF VCC. These funds are accessible through receipt tokens deployed across multiple blockchains including Ethereum, Polygon, Aptos, Solana, Near, Sui, Injective, Mantra, Immutable X, Avalanch and Hedera. The value is calculated by multiplying the total supply of receipt tokens by their respective NAV prices, denominated in their underlying stablecoin value",
   ethereum: { tvl: ethTvl },
   polygon: { tvl: polygonTvl },
   injective: { tvl: injectiveTvl },
@@ -633,4 +708,5 @@ module.exports = {
   imx: { tvl: imxTvl },
   avax: { tvl: avaxTvl },
   aptos: { tvl: aptosTvl },
+  hedera: { tvl: hederaTvl }
 }

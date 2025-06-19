@@ -4,8 +4,7 @@ const { getLogs2 } = require('../helper/cache/getLogs');
 // from https://docs.uniswap.org/contracts/v4/deployments
 const config = {
   unichain: {
-    factory: "0x1F98400000000000000000000000000000000004", uniderpHook: "0xb4960cd4f9147f9e37a7aa9005df7156f61e4444", fromBlock:
-      14569098
+    factory: "0x1F98400000000000000000000000000000000004", uniderpHook: "0xcc2efb167503f2d7df0eae906600066aec9e8444", fromBlock: 17670688
   },
 }
 
