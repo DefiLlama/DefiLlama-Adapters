@@ -1,4 +1,3 @@
-
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
@@ -53,17 +52,41 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
+  'RPC_AGGREGATOR_URL',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
   if (!process.env[i]) process.env[i] = DEFAULTS[i] // this is done to set the chain RPC details in @defillama/sdk
 })
 
+const aggregatorChains = [
+  'ethereum', 'bsc', 'polygon', 'avax', 'arbitrum', 'optimism', 'fantom', 
+  'cronos', 'okexchain', 'heco', 'kcc', 'metis', 'boba', 'aurora', 'harmony',
+  'moonriver', 'moonbeam', 'celo', 'klaytn', 'iotex', 'kava', 'evmos',
+  'canto', 'mantle', 'linea', 'base', 'scroll', 'opbnb', 'manta', 'zksync',
+  'polygon_zkevm', 'arbitrum_nova', 'mantle', 'fraxtal', 'mode', 'blast',
+  'solana', 'sui'
+]
 
 function getEnv(key) {
   if (!ENV_KEYS.includes(key)) throw new Error(`Unknown env key: ${key}`)
   const value = process.env[key] ?? DEFAULTS[key]
   return BOOL_KEYS.includes(key) ? !!value : value
+}
+
+if (getEnv('RPC_AGGREGATOR_URL')) {
+  aggregatorChains.forEach((chain) => {
+    const envKey = `${chain.toUpperCase()}_RPC`
+    const aggregator = `${getEnv('RPC_AGGREGATOR_URL')}/${chain}`
+
+    // Preserve any value already present (either from process.env or DEFAULTS)
+    const current = process.env[envKey] ?? DEFAULTS[envKey]
+
+    // Prepend the aggregator; if a value exists, append it with a comma to build the list
+    process.env[envKey] = current
+      ? `${aggregator},${current}`
+      : aggregator
+  })
 }
 
 module.exports = {
