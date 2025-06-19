@@ -37,7 +37,7 @@ const v3Config = {
     usdaAddress: '0xff12470a969dd362eb6595ffb44c82c959fe9acc',
     treasuryAddress: '0x0c3616027b7d7AC8BA6FA2a1540a5e6A728cebA5',
   },
-  kaia: {
+  klaytn: {
     poolAddress: '0x45f842F1F7e576cB9BF7E1d50Ccc4D2ea378dbeF',
     fbtcAddress: '0x4353b76E03AD5FF74d40Bf5bb2Ee4d0FC6fE6D3b', // ADDRESSES.kaia.WFBTC
     usdaAddress: '0xdc3cf1961b08da169b078f7df6f26676bf6a4ff6',
