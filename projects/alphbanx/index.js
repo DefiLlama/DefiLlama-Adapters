@@ -47,17 +47,6 @@ async function tvl(api) {
   }
 }
 
-async function borrowed(api) {
-  const results = await alephium.contractMultiCall([
-    { group: 0, address: loanManagerAddress, methodIndex: MethodIndexes.LoanManager.getTotalDebt },
-  ]);
-  
-  const totalDebt = Number(results[0].returns[0].value);
-  if (totalDebt > 0) {
-    api.add(abdTokenId, totalDebt);
-  }
-}
-
 async function staking(api) {
   const results = await alephium.contractMultiCall([
     { group: 0, address: stakeManagerAddress, methodIndex: MethodIndexes.StakeManager.getStakedAmount },
@@ -72,7 +61,6 @@ async function staking(api) {
 module.exports = {
   alephium: {
     tvl,
-    borrowed,
     staking,
   }
 }; 
