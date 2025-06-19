@@ -61,7 +61,7 @@ Object.keys(DEFAULTS).forEach(i => {
 
 const aggregatorChains = [
   'ethereum', 'bsc', 'polygon', 'avax', 'arbitrum', 'optimism', 'fantom', 
-  'cronos', 'okexchain', 'heco', 'kcc', 'metis', 'boba', 'aurora', 'harmony',
+  'cronos', 'okexchain', 'kcc', 'metis', 'boba', 'aurora', 'harmony',
   'moonriver', 'moonbeam', 'celo', 'klaytn', 'iotex', 'kava', 'evmos',
   'canto', 'mantle', 'linea', 'base', 'scroll', 'opbnb', 'manta', 'zksync',
   'polygon_zkevm', 'arbitrum_nova', 'mantle', 'fraxtal', 'mode', 'blast',
