@@ -25,7 +25,7 @@ const POOLS = [
   '0x0b0381a2c4c3a537c614afe71334c9f387718922',
 ]
 
-async function tvl(api) {
+async function staking(api) {
   return sumTokens2({ api, owners: POOLS, tokens: [MAT] })
 }
 
@@ -33,6 +33,7 @@ module.exports = {
   methodology: 'Sums the MAT token balance held by the LiquidStakingPool contract and all staking pools to represent total user deposits.',
   timetravel: true,
   matchain: {
-    tvl,
+    tvl: () => ({}),
+    staking,
   },
 } 
