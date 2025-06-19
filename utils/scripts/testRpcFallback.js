@@ -13,11 +13,6 @@ async function testEclipse () {
   sdk.log('[eclipse] version →', version)
 }
 
-async function testRenec () {
-  const version = await rpcFallbackConnection('renec', conn => conn.getVersion())
-  sdk.log('[renec] version →', version)
-}
-
 async function testSui () {
   const { result, error } = await rpcFallbackSUI('sui', {
     jsonrpc: '2.0',
@@ -42,7 +37,6 @@ async function testStarknet () {
 async function main () {
   await testSolana()
   await testEclipse()
-  await testRenec()
   await testSui()
   await testStarknet()
 }
