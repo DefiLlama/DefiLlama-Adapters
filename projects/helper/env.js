@@ -77,7 +77,7 @@ function getEnv(key) {
 if (getEnv('RPC_AGGREGATOR_URL')) {
   aggregatorChains.forEach((chain) => {
     const envKey = `${chain.toUpperCase()}_RPC`
-    const aggregator = `${getEnv('RPC_AGGREGATOR_URL')}/${chain}`
+    const aggregator = `${getEnv('RPC_AGGREGATOR_URL')}/${chain}?source=tvl_adapters`
 
     // Preserve any value already present (either from process.env or DEFAULTS)
     const current = process.env[envKey] ?? DEFAULTS[envKey]
