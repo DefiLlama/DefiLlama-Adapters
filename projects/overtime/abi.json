@@ -1,6 +1,0 @@
-{
-  "activeMarkets": "function activeMarkets(uint256 index, uint256 pageSize) view returns (address[])",
-  "getActiveTickets": "function getActiveTickets(uint _index, uint _pageSize) external view returns (address[] memory)",
-  "round": "function round() view returns (uint256)",
-  "roundPools": "function roundPools(uint256 _round) view returns (address)"
-}
