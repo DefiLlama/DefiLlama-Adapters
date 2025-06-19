@@ -1,10 +1,21 @@
+const sdk = require('@defillama/sdk')
 const { rpcFallbackSUI } = require('../../projects/helper/chain/sui')
-const { rpcFallbackSolana } = require('../../projects/helper/solana')
+const { rpcFallbackConnection } = require('../../projects/helper/solana')
 const { rpcFallbackStarknet } = require('../../projects/helper/chain/starknet')
 
 async function testSolana () {
-  const version = await rpcFallbackSolana(conn => conn.getVersion())
-  console.log('[solana] version →', version)
+  const version = await rpcFallbackConnection('solana', conn => conn.getVersion())
+  sdk.log('[solana] version →', version)
+}
+
+async function testEclipse () {
+  const version = await rpcFallbackConnection('eclipse', conn => conn.getVersion())
+  sdk.log('[eclipse] version →', version)
+}
+
+async function testRenec () {
+  const version = await rpcFallbackConnection('renec', conn => conn.getVersion())
+  sdk.log('[renec] version →', version)
 }
 
 async function testSui () {
@@ -15,7 +26,7 @@ async function testSui () {
     params: [],
   })
   if (error) throw new Error(error.message)
-  console.log('[sui] latest checkpoint →', Number(result))
+  sdk.log('[sui] latest checkpoint →', Number(result))
 }
 
 async function testStarknet () {
@@ -25,11 +36,13 @@ async function testStarknet () {
     method: 'starknet_blockNumber',
     params: [],
   })
-  console.log('[starknet] latest block →', result)
+  sdk.log('[starknet] latest block →', result)
 }
 
 async function main () {
   await testSolana()
+  await testEclipse()
+  await testRenec()
   await testSui()
   await testStarknet()
 }
