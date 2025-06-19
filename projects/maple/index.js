@@ -1,15 +1,15 @@
 /**
  * Maple Finance TVL & Borrowed Amounts Adapter
- * 
+ *
  * This adapter fetches data from Maple Finance's GraphQL API to calculate:
  * - Total Value Locked (TVL): Sum of all pool cash, cash in DeFi strategies, and collateral
  * - Total Borrowed: Sum of all principal out (active loans)
  * - Total Staking: Sum of all staked assets in stSYRUP ERC-4626 vault
- * 
- * 
+ *
+ *
  * References:
  * - Maple Finance API Docs: https://studio.apollographql.com/public/maple-api/variant/mainnet/home
- * 
+ *
  */
 
 const ADDRESSES = require('../helper/coreAssets.json');
@@ -32,6 +32,7 @@ const POOLS_QUERY = `
       tvl
       assets
       asset {
+        id
         symbol
       }
       poolMeta {
@@ -70,7 +71,7 @@ const getPools = async (block) => {
  */
 const processPools = async (api, key) => {
   const block = await api.getBlock();
-  
+
   if (block < POOL_V2_START_BLOCK) return console.error('Error: Impossible to backfill - The queried block is earlier than the deployment block of poolsV2');
   const pools = await getPools(block);
 
@@ -78,9 +79,58 @@ const processPools = async (api, key) => {
     const { id, name, asset: { symbol }, assets, collateralValue, principalOut, strategiesDeployed, poolMeta } = pool
     const token = ADDRESSES.ethereum[symbol] ?? null
     if (!token) return;
+
     const balance = key === "collateralValue" ? Number(collateralValue) + Number(assets) + Number(strategiesDeployed) : Number(principalOut)
+
+
+
     api.add(token, balance)
   })
+};
+
+const processPoolsV2 = async (api, key) => {
+  const block = await api.getBlock();
+  if (block < POOL_V2_START_BLOCK) {
+    console.error('Error: Impossible to backfill - The queried block is earlier than the deployment block of poolsV2');
+    return;
+  }
+
+  const pools = await getPools(block);
+
+  // Process all pools in parallel with proper error handling
+  await Promise.all(pools.map(async (pool) => {
+    try {
+      const { id, name, asset: { symbol }, assets, collateralValue, principalOut, strategiesDeployed, poolMeta } = pool;
+      const token = ADDRESSES.ethereum[symbol] ?? null;
+
+      if (!token) {
+        console.log(`Pool ${name} has no token address`);
+        return;
+      }
+
+      const balance = key === "collateralValue" ? Number(collateralValue) + Number(assets) + Number(strategiesDeployed) : Number(principalOut)
+
+
+      const fixedBalance = await api.call({
+        abi: 'erc20:balanceOf',
+        target: token,
+        params: [id],
+      });
+
+      console.log(`
+    TVL of Pool ${name} \n
+    Pool Address: ${id} \n
+    Pool Token: ${token} \n
+    Pool Token Symbol: ${symbol} \n
+    *Incorrect Pool Token Balance: ${balance} \n
+    *Fixed Pool Token Balance: ${fixedBalance.toString()} \n
+    ================================================`)
+
+      api.add(token, fixedBalance);
+    } catch (error) {
+      console.error(`Error processing pool ${pool.name}:`, error);
+    }
+  }));
 };
 
 /**
@@ -97,8 +147,8 @@ const staking = async (api) => {
 module.exports = {
   hallmarks: [[1670976000, 'V2 Deployment']],
   solana: { tvl: () => ({})},
-  ethereum: { 
-    tvl: async (api) => processPools(api, "collateralValue"),
+  ethereum: {
+    tvl: async (api) => processPoolsV2(api, "collateralValue"),
     borrowed: async (api) => processPools(api),
     staking
   }
