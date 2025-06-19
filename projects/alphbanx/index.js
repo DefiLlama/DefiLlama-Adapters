@@ -22,62 +22,50 @@ const MethodIndexes = {
 };
 
 async function tvl(api) {
-  try {
-    const coreContractCalls = [
-      { group: 0, address: loanManagerAddress, methodIndex: MethodIndexes.LoanManager.getApproximateTotalCollateral },
-      { group: 0, address: stakeManagerAddress, methodIndex: MethodIndexes.StakeManager.getStakedAmount },
-      { group: 0, address: auctionManagerAddress, methodIndex: MethodIndexes.AuctionManager.getTotalAbdAmount },
-    ];
+  const coreContractCalls = [
+    { group: 0, address: loanManagerAddress, methodIndex: MethodIndexes.LoanManager.getApproximateTotalCollateral },
+    { group: 0, address: stakeManagerAddress, methodIndex: MethodIndexes.StakeManager.getStakedAmount },
+    { group: 0, address: auctionManagerAddress, methodIndex: MethodIndexes.AuctionManager.getTotalAbdAmount },
+  ];
 
-    const results = await alephium.contractMultiCall(coreContractCalls);
-    
-    const totalCollateral = Number(results[0]?.returns?.[0]?.value) || 0;
-    const stakedAmount = Number(results[1]?.returns?.[0]?.value) || 0;
-    const totalAbdInAuctions = Number(results[2]?.returns?.[0]?.value) || 0;
+  const results = await alephium.contractMultiCall(coreContractCalls);
+  
+  const totalCollateral = Number(results[0]?.returns?.[0]?.value) || 0;
+  const stakedAmount = Number(results[1]?.returns?.[0]?.value) || 0;
+  const totalAbdInAuctions = Number(results[2]?.returns?.[0]?.value) || 0;
 
-    if (totalCollateral > 0) {
-      api.add(alphId, totalCollateral);
-    }
-    
-    if (stakedAmount > 0) {
-      api.add(abxTokenId, stakedAmount);
-    }
-    
-    if (totalAbdInAuctions > 0) {
-      api.add(abdTokenId, totalAbdInAuctions);
-    }
-  } catch (error) {
-    console.error('Error in AlphBanx TVL calculation:', error);
+  if (totalCollateral > 0) {
+    api.add(alphId, totalCollateral);
+  }
+  
+  if (stakedAmount > 0) {
+    api.add(abxTokenId, stakedAmount);
+  }
+  
+  if (totalAbdInAuctions > 0) {
+    api.add(abdTokenId, totalAbdInAuctions);
   }
 }
 
 async function borrowed(api) {
-  try {
-    const results = await alephium.contractMultiCall([
-      { group: 0, address: loanManagerAddress, methodIndex: MethodIndexes.LoanManager.getTotalDebt },
-    ]);
-    
-    const totalDebt = Number(results[0].returns[0].value);
-    if (totalDebt > 0) {
-      api.add(abdTokenId, totalDebt);
-    }
-  } catch (error) {
-    console.error('Error fetching borrowed amounts:', error);
+  const results = await alephium.contractMultiCall([
+    { group: 0, address: loanManagerAddress, methodIndex: MethodIndexes.LoanManager.getTotalDebt },
+  ]);
+  
+  const totalDebt = Number(results[0].returns[0].value);
+  if (totalDebt > 0) {
+    api.add(abdTokenId, totalDebt);
   }
 }
 
 async function staking(api) {
-  try {
-    const results = await alephium.contractMultiCall([
-      { group: 0, address: stakeManagerAddress, methodIndex: MethodIndexes.StakeManager.getStakedAmount },
-    ]);
-    
-    const stakedAmount = Number(results[0].returns[0].value);
-    if (stakedAmount > 0) {
-      api.add(abxTokenId, stakedAmount);
-    }
-  } catch (error) {
-    console.error('Error fetching staking amounts:', error);
+  const results = await alephium.contractMultiCall([
+    { group: 0, address: stakeManagerAddress, methodIndex: MethodIndexes.StakeManager.getStakedAmount },
+  ]);
+  
+  const stakedAmount = Number(results[0].returns[0].value);
+  if (stakedAmount > 0) {
+    api.add(abxTokenId, stakedAmount);
   }
 }
 
