@@ -74,9 +74,9 @@ async function staking(api) {
     target: STABILITY_POOL,
     abi: stabilityAbi.totalSettledGenitos
   });
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, basicLockedMinersSupply);
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, advLockedMinersSupply);
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, totalSettledGenitos);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, basicLockedMinersSupply, api.chain);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, advLockedMinersSupply, api.chain);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, totalSettledGenitos, api.chain);
   return balances;
 }
 

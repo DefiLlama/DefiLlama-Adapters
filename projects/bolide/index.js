@@ -1,8 +1,6 @@
 const { staking } = require("../helper/staking")
 const { pool2 } = require("../helper/pool2")
-const { usdtAddress} = require("../helper/balances")
-const sdk = require('@defillama/sdk')
-const BigNumber = require("bignumber.js");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const VAULTS = {
   bsc: {
@@ -13,44 +11,29 @@ const VAULTS = {
   },
   polygon: {
     STABLECOINS: '0x0aF9F3297f34921Acd5Ac81970929964c9f3d0a7',
-  } 
+  }
 }
 
-const getTotalDepositABI = 'uint256:getTotalDeposit'
-
-async function tvl(chain, ts, _block, chainBlocks) {
-  let totalUsdt = new BigNumber(0);
-  
-  
-  for (const item of Object.values(VAULTS[chain])) {
-    const result = await sdk.api.abi.call({
-      target: item,
-      abi: getTotalDepositABI,
-      block: chainBlocks[chain],
-      chain: chain
-    });
-    
-    if (result && result.output) {
-      const usdt = new BigNumber(result.output)
-        .times(1e-12)
-        .toFixed(0);
-
-      totalUsdt = totalUsdt.plus(usdt);
-    }
+async function tvl(api) {
+  const balances = {};
+  const vaults = Object.values(VAULTS[api.chain])
+  const bals  = await api.multiCall({  abi: 'uint256:getTotalDeposit', calls: vaults})
+  let usd = 0
+  if(api.chain === 'bsc') {
+    usd = bals.reduce((acc, i) => Number(acc) + Number(i), 0)
+  } else {
+    usd = bals.reduce((acc, i) => Number(acc) + Number(i)/1e12, 0)
   }
-
-  return {
-    [usdtAddress]: totalUsdt,
-  };
+  balances[`${api.chain}:${ADDRESSES[api.chain].USDT}`] = usd
+  return balances
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
-    tvl: tvl.bind(this, 'bsc'),
+    tvl,
     staking: staking('0x3782c47e62b13d579fe748946aef7142b45b2cf7', '0x766AFcf83Fd5eaf884B3d529b432CA27A6d84617'),
     pool2: pool2('0x3782c47e62b13d579fe748946aef7142b45b2cf7', '0x12c35ed2405bc70721584594723351bf5db6235c'),
   },
-  polygon: {
-    tvl: tvl.bind(this, 'polygon'),
-  }
+  polygon: { tvl, }
 }
