@@ -1,5 +1,5 @@
 const COLLATERAL_PER_TOKEN = 0.10;   // ETH por fragmento
-const CONTRACT = '0xb933f98b5e622463e3f5f25a75cdc2992d0a2ae';  // dirección del contrato
+const CONTRACT = '0xB933F98B5E622463E3F35F25A75CdC2992d0A2ae';  // dirección del contrato
 
 module.exports = {
   ethereum: {
