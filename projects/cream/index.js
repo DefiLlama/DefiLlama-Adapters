@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { compoundExports } = require("../helper/compound");
 
 module.exports = {
-  hallmarks: [[1635292800, "Flashloan exploit"]],
+  // hallmarks: [[1635292800, "Flashloan exploit"]],
   timetravel: false, // bsc and fantom api's for staked coins can't be queried at historical points
   start: '2020-09-08', // 09/08/2020 @ 8:00am (UTC)
   ethereum: compoundExports("0xbdC857eae1D15ad171E11af6FC3e99413Ed57Ec4"),

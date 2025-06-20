@@ -93,6 +93,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  hyperliquid: {
+    vaultFactories: [
+      {
+        address: '0xec051b19d654C48c357dC974376DeB6272f24e53',
+        fromBlock: 1988677,
+      },
+    ],
+  },
 }
 
 const EulerConfigs = {

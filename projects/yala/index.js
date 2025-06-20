@@ -17,12 +17,28 @@ async function tvlInEthereum(api) {
     "https://raw.githubusercontent.com/yalaorg/yala-defillama/refs/heads/main/config.json"
   );
 
-  // psm
+  // PSM
   {
     let tokensAndOwners = [];
     for (let i = 0; i < res.ethereum.PSM.addresses.length; i++) {
       const address = res.ethereum.PSM.addresses[i];
       const token = res.ethereum.PSM.tokens[i];
+      tokensAndOwners.push([token, address]);
+    }
+
+    await helperUnwrapLPs.sumTokens2({
+      api,
+      tokensAndOwners,
+      permitFailure: true,
+    });
+  }
+
+  // AssetWrapper
+  {
+    let tokensAndOwners = [];
+    for (let i = 0; i < res.ethereum.AssetWrapper.addresses.length; i++) {
+      const address = res.ethereum.AssetWrapper.addresses[i];
+      const token = res.ethereum.AssetWrapper.tokens[i];
       tokensAndOwners.push([token, address]);
     }
 

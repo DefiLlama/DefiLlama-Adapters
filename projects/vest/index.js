@@ -41,4 +41,11 @@ module.exports = {
       ADDRESSES.arbitrum.USDC_CIRCLE
     ),
   },
+  bsc: {
+    tvl: staking(
+      "0xef14da66876476C1A75dC057343B97b6Bd372c41",
+      ADDRESSES.bsc.USDC
+    ),
+  },
 }
+
