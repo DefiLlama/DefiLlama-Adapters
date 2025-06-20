@@ -132,6 +132,11 @@ const CONFIG = {
       '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB', // eth pool
     ],
   },
+  swellchain: {
+    pools: [
+      '0xCc0587aeBDa397146cc828b445dB130a94486e74', // eth pool
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {
