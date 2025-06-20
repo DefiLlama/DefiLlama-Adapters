@@ -1,4 +1,5 @@
 module.exports = {
-  fetch: () => 0,
   deadFrom: 1630043620,
+  misrepresentedTokens: true,
+  bsc: { tvl: () => ({ }) }
 }

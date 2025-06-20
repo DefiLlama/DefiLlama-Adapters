@@ -65,41 +65,30 @@ async function getOmmAutoStakingStatus() {
       };
     });
 }
-
-async function fetch() {
-  const [
-    ICXPrice,
-    totalSupply,
-    loanInfo,
-    ommRatesIcx,
-    { fTokenRate, fTokenPool },
-    ommPrice,
-    { ommRate, ommPool },
-   ] = await Promise.all([
-      getICXPrice(),
-      getTotalSupplyLP(),
-      getTotalSupplyBorrower(),
-      ommSIcxRate(),
-      getOMMLendingStatus(),
-      getOMMPrice(),
-      getOmmAutoStakingStatus(),
+const tvl = async (api) => {
+  const [ICXPrice, totalSupply, loanInfo, ommRatesIcx, { fTokenRate, fTokenPool }, ommPrice, { ommRate, ommPool }] = await Promise.all([
+    getICXPrice(),
+    getTotalSupplyLP(),
+    getTotalSupplyBorrower(),
+    ommSIcxRate(),
+    getOMMLendingStatus(),
+    getOMMPrice(),
+    getOmmAutoStakingStatus(),
   ]);
 
   const values = [
-    totalSupply.times(ICXPrice),
-    loanInfo.times(ICXPrice),
-    fTokenPool.times(fTokenRate).times(ommRatesIcx).times(ICXPrice),
-    ommPool.times(ommRate).times(ommPrice),
-  ]
+    Number(totalSupply) * ICXPrice,
+    Number(loanInfo) * ICXPrice,
+    Number(fTokenPool) * fTokenRate * ommRatesIcx * ICXPrice,
+    Number(ommPool) * ommRate * ommPrice,
+  ];
 
-  const tvl = values.reduce((pre, cur) => {
-    return pre.plus(cur || new BigNumber(0));
-  }, new BigNumber(0));
-
-  return tvl;
+  const totalTVL = values.reduce((sum, val) => sum + (isNaN(val) ? 0 : val), 0);
+  api.addUSDValue(Math.round(totalTVL))
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: 'TVL consists of liquidty on the DEX and deposits made to the lending program. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3"',
-  fetch,
+  icon: { tvl }
 }

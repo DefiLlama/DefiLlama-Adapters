@@ -1,6 +1,6 @@
 const { get } = require('../helper/http')
 
-async function fetch() {
+async function tvl(api) {
   //Get all the vaults in the protocol
   const assetsUrl = "https://free-api.vestige.fi/assets/locked";
   const assets = await get(assetsUrl);
@@ -17,17 +17,13 @@ async function fetch() {
       tvl += supplyInTvlLocked * price * 2;
     })
   );
-  tvl = tvl.toFixed(6)
-  return tvl;
-  
+
+  api.addUSDValue(Math.round(tvl))
 }
 
 module.exports = {
   timetravel:false,
   misrepresentedTokens:true,
   methodology:`Counts tokens in LPs only, transforms the price to USD and * them by 2 to account for the other side.`,
-  algorand: {
-    fetch 
-  },
-  fetch
+  algorand: { tvl },
 };
