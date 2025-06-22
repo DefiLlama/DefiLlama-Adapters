@@ -88,10 +88,12 @@ async function getSiloVaults(api, owners) {
 }
 
 async function getCuratorTvlErc4626(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true, excludeFailed: true, })
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true, excludeFailed: true, })
-
-  api.add(assets, totalAssets)
+  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true, })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true, })
+  for (let i = 0; i < assets.length; i++) {
+    if (!assets[i] || !totalAssets[i]) continue;
+    api.add(assets[i], totalAssets[i]);
+  }
 }
 
 async function getCuratorTvlAeraVault(api, vaults) {
