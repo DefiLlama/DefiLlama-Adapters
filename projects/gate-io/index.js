@@ -1673,4 +1673,5 @@ module.exports = mergeExports([
   cexExports(config),
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x287a66c7d9cba7504e90fa638911d74c4dc6a147' }) } },
   { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712' }) } },
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9' }) } },
 ]);
