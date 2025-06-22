@@ -111,9 +111,9 @@ async function tvl(api) {
   await Promise.all(promises);
 }
 
-// module.exports = {
-//   misrepresentedTokens: true, // false, // until all tokens are indexed by defillama
-//   timetravel: false, // true, // until there is enough dex liquidity for the main tokens
-//   kava: { tvl, },
-//   methodology: 'The total supply of their circulating stocks is extracted from their stock token contracts.'
-// }
+module.exports = {
+  misrepresentedTokens: true, // false, // until all tokens are indexed by defillama
+  timetravel: false, // true, // until there is enough dex liquidity for the main tokens
+  // kava: { tvl, },
+  methodology: 'The total supply of their circulating stocks is extracted from their stock token contracts.'
+}
