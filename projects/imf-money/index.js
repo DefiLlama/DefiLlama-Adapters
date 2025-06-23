@@ -5,7 +5,7 @@ const configs = {
   blockchains: {
     ethereum: {
       morphoVaultOwners: [
-        '0x2625bfb6ad9840c2c0abb48f150eb9158393c466',
+        '0x6b22171a3eB9CF39C0f3e56C4713F2E30e1Ba262',
       ],
     },
   }
