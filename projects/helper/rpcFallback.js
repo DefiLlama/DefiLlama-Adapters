@@ -4,6 +4,18 @@ const sdk = require('@defillama/sdk')
 const uniq  = (arr) => [...new Set(arr.filter(Boolean))]
 const cache = Object.create(null)
 
+function buildRpcAggregateError (chain, failures) {
+  const aggErr = new AggregateError(
+    failures.map(f => f.err),
+    `[${chain}] all RPC endpoints failed`
+  )
+
+  aggErr.chain = chain
+  aggErr.failures = failures.map(({ url, err }) => ({ url, message : err.message, code : err.code, stack : err.stack }))
+
+  return aggErr
+}
+
 function buildRpcList(chain) {
   if (cache[chain]) return cache[chain]
 
@@ -26,19 +38,22 @@ function buildRpcList(chain) {
   return cache[chain]
 }
 
-async function withRpcFallback(chain, workFn) {
+async function withRpcFallback (chain, workFn) {
   const urls = buildRpcList(chain)
-  let lastErr
+  const failures = []
+
   for (const url of urls) {
-    // if (process.env.LLAMA_DEBUG_MODE) sdk.log(`[${chain}] try →`, url)
     try {
       return await workFn(url)
     } catch (err) {
-      lastErr = err
-      // if (process.env.LLAMA_DEBUG_MODE) sdk.log(`[${chain}] fail`, err.message)
+      if (process.env.LLAMA_DEBUG_MODE)
+        sdk.log(`[${chain}] fail → ${url}`, err.message)
+
+      failures.push({ url, err })
     }
   }
-  throw lastErr
+
+  throw buildRpcAggregateError(chain, failures)
 }
 
 module.exports = { withRpcFallback, buildRpcList }
