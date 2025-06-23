@@ -2086,8 +2086,7 @@
   "hela": {
     "hUSDC": "0xf5b85320a772b436cb8105441a3db9ba29437b4a",
     "hUSDT": "0xd3442073fa7ccf8a7c39d95dc125cd59497aa078",
-    "WHLUSD": "0x3a035615e101373fa9ba21c5bea7fe4026fc40b4",
-    "sUSD": "0x52b7a374399e3403a852964afd574ab9eeb09db3"
+    "WHLUSD": "0x3a035615e101373fa9ba21c5bea7fe4026fc40b4"
   },
   "lisk": {
     "USDT": "0x05d032ac25d322df992303dca074ee7392c117b9",
