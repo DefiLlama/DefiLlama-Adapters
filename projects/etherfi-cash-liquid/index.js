@@ -1,4 +1,5 @@
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { ethereum } = require('../ether-fi');
 
 const vaults = [
     '0xf0bb20865277aBd641a307eCe5Ee04E79073416C',
@@ -16,13 +17,14 @@ async function tvl(api) {
             target: vault,
             abi: 'function totalSupply() view returns (uint256)',
         })
+        console.log(vault, totalSupply);
         api.add(vault, totalSupply);
     }
   }
   
   module.exports = {
     misrepresentedTokens: true,
-    ethereum: {
+    scroll: {
       tvl,
     },
   };

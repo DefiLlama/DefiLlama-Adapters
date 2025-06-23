@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
 
 
 const EtherFiCashFactory = '0xF4e147Db314947fC1275a8CbB6Cde48c510cd8CF';
@@ -42,7 +42,6 @@ async function getCollateralInCashBorrowMode(api, config) {
 
   // Execute batches in parallel
   for (const [batchIndex, batch] of batches.entries()) {
-    try {
       const batchPromises = batch.map(call => scroll_api.call(call));
       const batchResults = await Promise.all(batchPromises);
       
@@ -59,9 +58,6 @@ async function getCollateralInCashBorrowMode(api, config) {
           }
         }
       });
-    } catch (error) {
-      console.error(`Error in batch ${batchIndex + 1}:`, error);
-    }
   }
 
   const result = {};
@@ -76,13 +72,13 @@ async function tvl(api) {
   const collateralTokensToAmount = await getCollateralInCashBorrowMode(api);
   for (const [token, amount] of Object.entries(collateralTokensToAmount)) {
     api.add(token, amount);
+    console.log(token, amount);
   }
 }
 
 module.exports = {
-  doublecounted: true,
   misrepresentedTokens: true,
-  ethereum: {
+  scroll: {
     tvl,
   },
 };
