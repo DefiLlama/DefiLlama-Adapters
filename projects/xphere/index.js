@@ -1,22 +1,24 @@
-
-const abi = require('./abi.js');
-
 const CHAIN       = 'xp';
 const LOCKUP      = '0x43A15af1D18B8159bA06df4ec66190451e1f4D70';
 const NATIVE_ADDR = '0x8c290B96768210Dc1Ab64970Ff62F0F97be00431';
 const BATCH_SIZE  = 100;
 
+const ABI = {
+  getLockedAccountsCount: 'uint256:getLockedAccountsCount',
+  getLockedAccounts: 'function getLockedAccounts(uint256 offset, uint256 limit) view returns (address[])',
+};
+
 async function tvl(_ts, _eb, _cb, { api }) {
   const total = Number(await api.call({
     target: LOCKUP,
-    abi: abi.LOCKUP_CONTRACT_ABI.find(f => f.name === 'getLockedAccountsCount'),
+    abi: ABI.getLockedAccountsCount,
   }));
 
   const owners = [];
   for (let i = 0; i < total; i += BATCH_SIZE) {
     const batch = await api.call({
       target: LOCKUP,
-      abi: abi.LOCKUP_CONTRACT_ABI.find(f => f.name === 'getLockedAccounts'),
+      abi: ABI.getLockedAccounts,
       params: [i, BATCH_SIZE],
     });
     owners.push(...batch);
