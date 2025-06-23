@@ -2,6 +2,8 @@ const sdk = require('@defillama/sdk')
 const { rpcFallbackSUI } = require('../../projects/helper/chain/sui')
 const { rpcFallbackConnection } = require('../../projects/helper/solana')
 const { rpcFallbackStarknet } = require('../../projects/helper/chain/starknet')
+const { withRpcFallback } = require('../../projects/helper/rpcFallback')
+const http = require('../../projects/helper/http')
 
 async function testSolana () {
   const version = await rpcFallbackConnection('solana', conn => conn.getVersion())
@@ -11,6 +13,11 @@ async function testSolana () {
 async function testEclipse () {
   const version = await rpcFallbackConnection('eclipse', conn => conn.getVersion())
   sdk.log('[eclipse] version →', version)
+}
+
+async function testAptos () {
+  const info = await withRpcFallback('aptos', (url) => http.get(`${url}/v1`))
+  sdk.log('[aptos] ledger info →', info.ledger_version ?? info)
 }
 
 async function testSui () {
@@ -37,6 +44,7 @@ async function testStarknet () {
 async function main () {
   await testSolana()
   await testEclipse()
+  await testAptos()
   await testSui()
   await testStarknet()
 }
