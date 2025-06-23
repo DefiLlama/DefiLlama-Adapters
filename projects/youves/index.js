@@ -49,7 +49,7 @@ async function fetchBalance(balances, token, engineAddress, decimals = 0, shareP
     const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
     const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
     sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6, 'tezos')
-    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC, 'tezos')
+    sdk.util.sumSingleBalance(balances, `${sharePrice.tokenAddress}-0`, balanceBTC, 'tezos')
     return;
   }
 
