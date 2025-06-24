@@ -21,22 +21,50 @@ const config = {
 
 const eventAbi = "event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, uint24 fee, int24 tickSpacing, address hooks, uint160 sqrtPriceX96, int24 tick)"
 
-Object.keys(config).forEach(chain => {
-  const { factory, fromBlock } = config[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, })
-      const tokenSet = new Set()
-      const ownerTokens = []
-      logs.forEach(log => {
-        tokenSet.add(log.currency0)
-        tokenSet.add(log.currency1)
-        if (log.hooks !== nullAddress) {
-          ownerTokens.push([[log.currency0, log.currency1], log.hooks])
-        }
-      })
-      ownerTokens.push([Array.from(tokenSet), factory])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, })
-    }
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const tvl = async (api) => {
+  const { factory, fromBlock } = config[api.chain]
+  const logs = await getLogs2({ api, factory, eventAbi, fromBlock })
+  const tokenSet = new Set()
+  const ownerTokens = []
+
+  logs.forEach(({ currency0, currency1, hooks }) => {
+    tokenSet.add(currency0)
+    tokenSet.add(currency1)
+    if (hooks !== nullAddress) ownerTokens.push([[currency0, currency1], hooks])
+  })
+
+  const BATCH_SIZE = 500
+  const SLEEP_MS = 1_000
+
+  for (let i = 0; i < ownerTokens.length; i += BATCH_SIZE) {
+    const batch = ownerTokens.slice(i, i + BATCH_SIZE)
+    await sumTokens2({ api, ownerTokens: batch, permitFailure: true })
+    await sleep(SLEEP_MS)
   }
+}
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl }
 })
+
+// Object.keys(config).forEach(chain => {
+//   const { factory, fromBlock } = config[chain]
+//   module.exports[chain] = {
+//     tvl: async (api) => {
+//       const logs = await getLogs2({ api, factory, eventAbi, fromBlock, })
+//       const tokenSet = new Set()
+//       const ownerTokens = []
+//       logs.forEach(log => {
+//         tokenSet.add(log.currency0)
+//         tokenSet.add(log.currency1)
+//         if (log.hooks !== nullAddress) {
+//           ownerTokens.push([[log.currency0, log.currency1], log.hooks])
+//         }
+//       })
+//       ownerTokens.push([Array.from(tokenSet), factory])
+//       return sumTokens2({ api, ownerTokens, permitFailure: true })
+//     }
+//   }
+// })
