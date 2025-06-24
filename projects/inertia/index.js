@@ -29,7 +29,7 @@ async function tvl(isBorrowed) {
 }
 module.exports = {
     timetravel: false,
-    civitia: {
+    inertia: {
         tvl: () => tvl(false),
         borrowed: () => tvl(true)
     }

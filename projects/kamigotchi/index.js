@@ -19,7 +19,7 @@ const assetMap = {
 
 module.exports = {
     timetravel: false,
-    civitia: {
+    yominet: {
         tvl: async () => {
             const balances = {}
             const res = await get(url)
@@ -35,7 +35,7 @@ module.exports = {
         staking: async () => {
             const res = await get(url)
             const data = res.supply.find(asset => asset.denom == ONYX.address)
-            
+
             return {
                 [ONYX.id]: data.amount / ONYX.decimals
             }
