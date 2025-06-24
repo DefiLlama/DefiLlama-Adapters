@@ -13,14 +13,15 @@ const { withRpcFallback } = require('./rpcFallback.js')
 const FALLBACK_CHAINS = ['solana', 'eclipse']
 
 async function rpcFallbackConnection(chain, fn) {
-  return withRpcFallback(chain, (rpc) => {
+  return withRpcFallback(chain, (axiosInstance) => {
+    const rpc = axiosInstance.defaults.baseURL
     const conn = new Connection(rpc);
     return fn(conn);
   });
 }
 
 async function rpcFallbackRequest(chain, body) {
-  return withRpcFallback(chain, (rpc) => http.post(rpc, body))
+  return withRpcFallback(chain, (axiosInstance) => axiosInstance.post('', body))
 }
 
 /** Address of the SPL Token program */

@@ -7,6 +7,7 @@ const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 const { GraphQLClient } = require("graphql-request");
 const { withRpcFallback } = require('../rpcFallback.js')
+const axios = require('axios')
 
 const endpoint = () => getEnv('APTOS_RPC')
 const movementEndpoint = () => getEnv('MOVE_RPC')
@@ -17,18 +18,18 @@ const endpointMap = {
 }
 
 async function aQuery(api, chain = 'aptos') {
-  return withRpcFallback(chain, (url) => http.get(`${url}${api}`))
+  return withRpcFallback(chain, (axiosInstance) => axiosInstance.get(api))
 }
 
 async function getResources(account, chain = 'aptos') {
-  return withRpcFallback(chain, async (baseUrl) => {
+  return withRpcFallback(chain, async (axiosInstance) => {
     const data = []
     let lastData
     let cursor
     do {
-      let url = `${baseUrl}/v1/accounts/${account}/resources?limit=9999`
+      let url = `/v1/accounts/${account}/resources?limit=9999`
       if (cursor) url += '&start=' + cursor
-      const res = await http.getWithMetadata(url)
+      const res = await axiosInstance.get(url)
       lastData = res.data
       data.push(...lastData)
       sdk.log('fetched resource length', lastData.length)
@@ -40,23 +41,24 @@ async function getResources(account, chain = 'aptos') {
 
 async function getResource(account, key, chain = 'aptos') {
   if (typeof chain !== 'string') chain = 'aptos'
-  return withRpcFallback(chain, async (baseUrl) => {
-    const url = `${baseUrl}/v1/accounts/${account}/resource/${key}`
-    const { data } = await http.get(url)
-    return data
+  return withRpcFallback(chain, async (axiosInstance) => {
+    const url = `/v1/accounts/${account}/resource/${key}`
+    const res = await axiosInstance.get(url)
+    return res.data
   })
 }
 
 async function getFungibles(tokenAddress, owners, balances) {
   if (!owners?.length) return;
 
-  await withRpcFallback('aptos', async (baseUrl) => {
+  await withRpcFallback('aptos', async (axiosInstance) => {
     await Promise.all(
       owners.map(async (ownerRaw) => {
         const owner = ownerRaw.toLowerCase();
-        const url = `${baseUrl}/v1/accounts/${owner}/balance/${tokenAddress}`;
+        const url = `/v1/accounts/${owner}/balance/${tokenAddress}`;
 
-        const tokenAmount = await http.get(url);
+        const response = await axiosInstance.get(url)
+        const tokenAmount = response.data;
         if (!tokenAmount) return;
         sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount)
       })
@@ -126,16 +128,16 @@ async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], t
 }
 
 async function getTableData({ table, data, chain = 'aptos' }) {
-  const baseUrl = endpointMap[chain]()
-  return http.post(`${baseUrl}/v1/tables/${table}/item`, data)
+  return withRpcFallback(chain, (axiosInstance) => axiosInstance.post(`/v1/tables/${table}/item`, data))
 }
 
 async function function_view({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined, chain = 'aptos' }) {
-  const baseUrl = endpointMap[chain]()
-  let path = `${baseUrl}/v1/view`
-  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
-  const response = await http.post(path, { function: functionStr, type_arguments, arguments: args })
-  return response.length === 1 ? response[0] : response
+  return withRpcFallback(chain, async (axiosInstance) => {
+    let path = `/v1/view`
+    if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
+    const response = await axiosInstance.post(path, { function: functionStr, type_arguments, arguments: args })
+    return response.data.length === 1 ? response.data[0] : response.data
+  })
 }
 
 function hexToString(hexString) {

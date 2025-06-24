@@ -3,7 +3,6 @@ const { rpcFallbackSUI } = require('../../projects/helper/chain/sui')
 const { rpcFallbackConnection } = require('../../projects/helper/solana')
 const { rpcFallbackStarknet } = require('../../projects/helper/chain/starknet')
 const { withRpcFallback } = require('../../projects/helper/rpcFallback')
-const http = require('../../projects/helper/http')
 
 async function testSolana () {
   const version = await rpcFallbackConnection('solana', conn => conn.getVersion())
@@ -16,29 +15,41 @@ async function testEclipse () {
 }
 
 async function testAptos () {
-  const info = await withRpcFallback('aptos', (url) => http.get(`${url}/v1`))
-  sdk.log('[aptos] ledger info →', info.ledger_version ?? info)
+  try {
+    const baseUrl = 'https://fullnode.mainnet.aptoslabs.com'
+    const axios = require('axios')
+    const directTest = await axios.get(`${baseUrl}/v1?source=tvl-adapter`)
+    sdk.log('[aptos] direct test →', JSON.stringify(directTest.data, null, 2))
+    
+    const info = await withRpcFallback('aptos', (axiosInstance) => axiosInstance.get('/v1'))
+    sdk.log('[aptos] full response →', JSON.stringify(info, null, 2))
+    sdk.log('[aptos] ledger info →', info.ledger_version ?? info)
+  } catch (error) {
+    sdk.log('[aptos] error →', error.message)
+  }
 }
 
 async function testSui () {
-  const { result, error } = await rpcFallbackSUI('sui', {
+  const response = await rpcFallbackSUI('sui', {
     jsonrpc: '2.0',
     id: 1,
     method: 'sui_getLatestCheckpointSequenceNumber',
     params: [],
   })
-  if (error) throw new Error(error.message)
-  sdk.log('[sui] latest checkpoint →', Number(result))
+  sdk.log('[sui] full response →', JSON.stringify(response, null, 2))
+  if (response.error) throw new Error(response.error.message)
+  sdk.log('[sui] latest checkpoint →', Number(response.result))
 }
 
 async function testStarknet () {
-  const { result } = await rpcFallbackStarknet({
+  const response = await rpcFallbackStarknet({
     jsonrpc: '2.0',
     id: 1,
     method: 'starknet_blockNumber',
     params: [],
   })
-  sdk.log('[starknet] latest block →', result)
+  sdk.log('[starknet] full response →', JSON.stringify(response, null, 2))
+  sdk.log('[starknet] latest block →', response.result)
 }
 
 async function main () {

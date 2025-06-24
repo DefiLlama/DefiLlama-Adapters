@@ -1,5 +1,6 @@
 const { getEnv } = require('./env')
 const sdk = require('@defillama/sdk')
+const axios = require('axios')
 
 const uniq  = (arr) => [...new Set(arr.filter(Boolean))]
 const cache = Object.create(null)
@@ -22,20 +23,39 @@ function buildRpcList(chain) {
   const list = []
 
   const agg = getEnv('RPC_AGGREGATOR_URL')
+  
   if (agg) {
-    list.push(
-      agg.includes('{chain}')
-        ? agg.replace('{chain}', chain)
-        : `${agg}/${chain}`,
-    )
+    const aggUrl = agg.includes('{chain}')
+      ? agg.replace('{chain}', chain)
+      : `${agg}/${chain}`
+    list.push(aggUrl)
   }
 
   const envKey = `${chain.toUpperCase()}_RPC`
   const direct = getEnv(envKey)
-  if (direct) list.push(...direct.split(','))
+  
+  if (direct) {
+    const directUrls = direct.split(',')
+    list.push(...directUrls)
+  }
 
   cache[chain] = uniq(list)
   return cache[chain]
+}
+
+function createAxiosInstance(url) {
+  const instance = axios.create({ baseURL: url })
+  
+  const aggregatorUrl = getEnv('RPC_AGGREGATOR_URL')
+  if (aggregatorUrl && url.startsWith(aggregatorUrl)) {
+    instance.interceptors.request.use((config) => {
+      const separator = config.url.includes('?') ? '&' : '?'
+      config.url = `${config.url}${separator}source=tvl-adapter`
+      return config
+    })
+  }
+  
+  return instance
 }
 
 async function withRpcFallback (chain, workFn) {
@@ -44,7 +64,14 @@ async function withRpcFallback (chain, workFn) {
 
   for (const url of urls) {
     try {
-      return await workFn(url)
+      const axiosInstance = createAxiosInstance(url)
+      const result = await workFn(axiosInstance)
+      
+      if (result && result.data !== undefined) {
+        return result.data
+      }
+      
+      return result
     } catch (err) {
       if (process.env.LLAMA_DEBUG_MODE)
         sdk.log(`[${chain}] fail → ${url}`, err.message)

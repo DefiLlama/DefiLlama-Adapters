@@ -14,8 +14,7 @@ const ADDRESSES = require('../coreAssets.json')
 const { withRpcFallback } = require('../rpcFallback')
 
 async function rpcFallbackStarknet(body) {
-  const res = await withRpcFallback('starknet', (rpc) => axios.post(rpc, body))
-  return res.data
+  return withRpcFallback('starknet', (axiosInstance) => axiosInstance.post('', body))
 }
 
 const _rateLimited = plimit(1)
@@ -178,24 +177,6 @@ module.exports = {
   number,
   dexExport,
   rpcFallbackStarknet
-}
-
-// WIP
-async function getLogs({ fromBlock, topic, target }) {
-  const cache = await getCache('starknet-logs', topic)
-  fromBlock = cache.toBlock || fromBlock
-  const { result: to_block } = await rpcFallbackStarknet({ "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
-  const params = {
-    filter: {
-      from_block: fromBlock,
-      to_block,
-      keys: [topic],
-      "address": target,
-    }
-  }
-
-  const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
-  const data = await rpcFallbackStarknet(body)
 }
 
 api.call = module.exports.call
