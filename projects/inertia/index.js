@@ -22,7 +22,7 @@ async function tvl(isBorrowed) {
         const { denom, share_deposited, share_lent } = asset_state
         if (!assetMap[denom]) return
         const { decimals, id } = assetMap[denom]
-        balances[id] = (isBorrowed ? share_lent : share_deposited) / 10 ** decimals
+        balances[id] = (isBorrowed ? share_lent : (share_deposited - share_lent)) / 10 ** decimals
     })
 
     return balances
