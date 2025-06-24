@@ -30,6 +30,9 @@ async function getAssets(skip, limit) {
 }
 
 async function getPairedCoin(address) {
+    if (address.split("::").length > 1) {
+        return address;
+    }
     const result = await function_view({
         functionStr: "0x1::coin::paired_coin",
         args: [address],
@@ -40,7 +43,7 @@ async function getPairedCoin(address) {
 
     if (!coinInfo) return null;
 
-    const { account_address, module_name, struct_name } = coinInfo;
+    const {account_address, module_name, struct_name} = coinInfo;
 
     const module = Buffer.from(module_name.replace(/^0x/, ""), "hex").toString("utf-8");
     const struct = Buffer.from(struct_name.replace(/^0x/, ""), "hex").toString("utf-8");
@@ -64,13 +67,8 @@ module.exports = {
                 offset += limit;
             } while (limit <= data.length);
 
-
-
             for (const asset of assets) {
-                let coin = asset.asset_type;
-                if (coin !== APT_COIN_ADDRESS) {
-                 coin = await getPairedCoin(asset.asset_type) || asset.asset_type;
-                }
+                const coin = await getPairedCoin(asset.asset_type) || asset.asset_type;
 
                 api.add(coin, asset.amount);
             }
