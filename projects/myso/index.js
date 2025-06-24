@@ -43,7 +43,6 @@ const getPools = async (chainId) => {
   );
 
   const data = await brotliDecode(response);
-  console.log(data)
 
   return data.pools.map((pool) => pool.poolAddress);
 };
