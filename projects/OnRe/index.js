@@ -6,7 +6,7 @@ const {
 const ADDRESSES = require('../helper/coreAssets.json')
 const {PublicKey} = require('@solana/web3.js')
 const {default: axios} = require('axios')
-const { getLowestOfferPrice, getOfferTokenAccounts } = require('./offerUtils');
+const {getLowestOfferPrice, getOfferTokenAccounts} = require('./offerUtils');
 
 
 const MINT = '5Y8NV33Vv7WbnLfq3zBcKSdYPrk7g2KoiQoe7M2tcxp5';
@@ -34,5 +34,6 @@ async function tvl(api) {
 
 module.exports = {
     timetravel: false,
+    misrepresentedTokens: true,
     solana: {tvl},
 } 
