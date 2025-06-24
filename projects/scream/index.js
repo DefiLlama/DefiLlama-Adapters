@@ -12,3 +12,6 @@ module.exports = {
         ...compoundExports2({ comptroller: "0x260e596dabe3afc463e75b6cc05d8c46acacfb09", }),
     }
 }
+
+module.exports.deadFrom = '2022-05-15'
+module.exports.fantom.borrowed=  () => ({})

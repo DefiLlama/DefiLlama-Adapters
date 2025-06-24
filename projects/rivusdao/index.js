@@ -17,7 +17,7 @@ module.exports = {
   ethereum: {
     tvl,
   },
-  hallmarks: [
-    [Math.floor(new Date('2024-09-16')/1e3), 'Migration contract was hacked'],
-  ],
+  // hallmarks: [
+  //   ['2024-09-16', 'Migration contract was hacked'],
+  // ],
 };

@@ -7,6 +7,7 @@ const config = {
     bridges: [
       '0xebaB24F13de55789eC1F3fFe99A285754e15F7b9',
       '0x2A5c2568b10A0E826BfA892Cf21BA7218310180b',
+      '0x3d79007ba1a68de986eb641a3c24d58a0c69587e',
     ],
     tokens: [
       '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',

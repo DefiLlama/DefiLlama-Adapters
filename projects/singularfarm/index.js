@@ -1,9 +1,4 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const avaxabi = require("./avaxAbi.json");
-const bscabi = require("./bscAbi.json");
-const polyabi = require("./polyAbi.json");
-const ftmabi = require("./ftmAbi.json");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const abiGeneral = require("../helper/abis/masterchef.json");
 
 const SINGTOKEN = {
@@ -20,101 +15,21 @@ const masterChef = {
 	fantom: "0x9ED04B13AB6cae27ee397ee16452AdC15d9d561E",
 };
 const abi = {
-	avax: avaxabi,
-	bsc: bscabi,
-	polygon: polyabi,
-	fantom: ftmabi,
-};
-
-// const ACC_SING_PRECISION = 1e18;
-
-async function getTokensInMasterChef(time, ethBlock, chainBlocks, chain) {
-	const block = chainBlocks[chain];
-	const transformAddress = (addr) => `${chain}:${addr}`;
-	const ignoreAddresses = [SINGTOKEN[chain]];
-
-	const balances = {};
-	const poolLength = (
-		await sdk.api.abi.call({
-			abi: abiGeneral.poolLength,
-			target: masterChef[chain],
-			block,
-			chain,
-		})
-	).output;
-
-	const poolInfo = (
-		await sdk.api.abi.multiCall({
-			block,
-			calls: Array.from(Array(Number(poolLength)).keys()).map((i) => ({
-				target: masterChef[chain],
-				params: i,
-			})),
-			abi: abi[chain].poolInfo,
-			chain,
-		})
-	).output;
-
-	const [symbols] = await Promise.all([
-		sdk.api.abi.multiCall({
-			block,
-			calls: poolInfo.map((p) => ({
-				target: p.output[0],
-			})),
-			abi: "erc20:symbol",
-			chain,
-		}),
-	]);
-
-	const lpPositions = [];
-
-	symbols.output.forEach((symbol, idx) => {
-		const pool = poolInfo[idx].output;
-		const balance = +pool.totalcap;
-		const token = symbol.input.target;
-
-		if (symbol.output.includes("LP") || symbol.output.includes("JLP")) {
-			lpPositions.push({
-				balance,
-				token,
-			});
-		} else {
-			sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
-		}
-	});
-
-	await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
-	return balances;
+  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accSingPerShare, uint16 depositFeeBP, uint256 totalcap, bool isStrat, uint256 stratId, uint256 stratFee, uint256 earned, uint256 accEarnPerShare)"
 }
 
-async function avaxTvl(timestamp, block, chainBlocks) {
-	return await getTokensInMasterChef(timestamp, block, chainBlocks, "avax");
-}
-async function fantomTvl(timestamp, block, chainBlocks) {
-	return await getTokensInMasterChef(timestamp, block, chainBlocks, "fantom");
-}
-
-async function bscTvl(timestamp, block, chainBlocks) {
-	return await getTokensInMasterChef(timestamp, block, chainBlocks, "bsc");
-}
-
-async function polyTvl(timestamp, block, chainBlocks) {
-	return await getTokensInMasterChef(timestamp, block, chainBlocks, "polygon");
+async function tvl(api) {
+	const poolInfo = await api.fetchList({  lengthAbi: abiGeneral.poolLength, itemAbi: abi.poolInfo, target: masterChef[api.chain], });
+	poolInfo.forEach((pool) => api.add(pool.lpToken, pool.totalcap));
+	await sumTokens2({ api, resolveLP: true, })	
+	api.removeTokenBalance(SINGTOKEN[api.chain]);
 }
 
 module.exports = {
 	methodology:
 		"Only staked LP is counted as TVL. Excluded in TVL : Locked SING in the bank, meltingpot, value of BNB & xJOE which aren't on CoinGecko yet.",
-	avax:{
-		tvl: avaxTvl,
-	},
-	bsc: {
-		tvl: bscTvl,
-	},
-	polygon: {
-		tvl: polyTvl,
-	},
-	fantom: {
-		tvl: fantomTvl,
-	},
+	avax: { tvl, },
+	bsc: { tvl, },
+	polygon: { tvl, },
+	fantom: { tvl, },
 };

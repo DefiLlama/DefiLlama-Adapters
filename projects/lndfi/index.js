@@ -37,9 +37,11 @@ Object.keys(CONFIG).forEach((chain) => {
   const poolDatas = CONFIG[chain];
   module.exports[chain] = {
     tvl: (api) => fetchReserveData(api, poolDatas),
-    borrowed: (api) => fetchReserveData(api, poolDatas, true),
+    // borrowed: (api) => fetchReserveData(api, poolDatas, true),
+    borrowed: () => ({}),
   };
 });
 
-module.exports.hallmarks = [
-]
+// module.exports.hallmarks = [
+//   ['2025-05-10', 'Protocol was hacked'],
+// ]

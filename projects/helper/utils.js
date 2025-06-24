@@ -320,26 +320,30 @@ function once(func) {
   return wrapped
 }
 
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000 }) {
+return async (api) => {
+    const addresses = withdrawalAddresses ?? [withdrawalAddress];
 
-function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
-  return async (api) => {
-    let fetchedValidators = skipValidators;
-    let size = 200;
-    api.sumTokens({ owner: withdrawalAddress, tokens: [nullAddress] })
-    do {
-      const validators = (
-        await http.get(
-          `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
-        )
-      ).data.map((i) => i.publickey);
-      fetchedValidators += validators.length;
-      api.log("Fetching balances for validators", validators.length);
-      await addValidatorBalance(validators);
-      await sleep(10000);
-    } while (fetchedValidators % size === 0);
+    for (const addr of addresses) {
+      let fetchedValidators = skipValidators;
 
-    return api.getBalances()
+      api.sumTokens({ owner: addr, tokens: [nullAddress] });
 
+      do {
+        const validators = (
+          await http.get(
+            `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${addr}?limit=${size}&offset=${fetchedValidators}`
+          )
+        ).data.map((i) => i.publickey);
+
+        fetchedValidators += validators.length;
+        api.log(`Fetching balances for validators (${addr})`, validators.length);
+        await addValidatorBalance(validators);
+        if (sleepTime > 0) await sleep(sleepTime);
+      } while (fetchedValidators % size === 0);
+    }
+
+    return api.getBalances();
 
     async function addValidatorBalance(validators) {
       if (validators.length > 100) {
@@ -352,10 +356,9 @@ function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
         indicesOrPubkey: validators.join(","),
       });
 
-
       data.forEach((i) => api.addGasToken(i.balance * 1e9));
     }
-  }
+  };
 }
 
 
