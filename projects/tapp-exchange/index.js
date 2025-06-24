@@ -56,7 +56,14 @@ module.exports = {
         tvl: async (api) => {
             let offset = 0;
             let limit = 100;
-            const assets = await getAssets(offset, limit);
+            let assets = []
+            let data = []
+            do {
+                data = await getAssets(offset, limit);
+                assets = [...assets, ...data];
+                offset += limit;
+            } while (limit <= data.length);
+
 
 
             for (const asset of assets) {
