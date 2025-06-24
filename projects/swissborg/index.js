@@ -234,6 +234,11 @@ const config = {
       '2BNEJ7ZV2SDGRZ2JGXTSVWVIBK5FYKAERAWXXGYZ66TSWWGHWAPXJ52HAE',
     ]
   },
+  chz: {
+    owners: [
+      '0x762DA64958BbF03bB206BF33C520a3846b6Cc93D',
+    ]
+  },
 }
 
 module.exports = cexExports(config)
