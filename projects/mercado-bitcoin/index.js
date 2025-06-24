@@ -1,6 +1,5 @@
 const axios = require("axios");
 
-//const API_URL = "http://localhost:3000/tokens/v1/price/info"; // Dev
 const API_URL = "https://cockpit.wuzu.io/tokens/v1/price/info"; // Prod
 const ADAPTER_NAME = "mercado-bitcoin";
 const START_TIMESTAMP = 1704067200; // Jan 1, 2024
@@ -8,7 +7,7 @@ const START_TIMESTAMP = 1704067200; // Jan 1, 2024
 const methodology = "TVL is calculated per blockchain network by summing the market capitalization of all RWA tokens issued by Mercado Bitcoin. Each token's value is computed as total_supply_normalized × USD price, with data fetched from the public API.";
 
 // List of networks to be monitored initially
-const networks = ["xdc", "plume", "polygon"];
+const networks = ["xdc", "plume_mainnet", "polygon"];
 
 function createTvlFunction(network) {
   return async function tvl() {
