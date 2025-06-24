@@ -27,7 +27,8 @@ const tokenBlacklist = [
 async function getTokenBalances(account, includeTezosBalance = true, { balances = {}, transformAddress = transformAddressDefault } = {}) {
   const response = await http.get(`${RPC_ENDPOINT}/v1/tokens/balances?account=${account}&sort.desc=balance&offset=0&limit=40&select=balance,token.id%20as%20id,token.contract%20as%20contract,token.tokenId%20as%20token_id`)
   response.forEach((item) => {
-    const token = `${item.contract.address}-${item.token_id}`
+    let token = item.contract.address
+    if (item.token_id !== '0') token += '-' + item.token_id
 
     if (!tokenBlacklist.includes(token))
       sdk.util.sumSingleBalance(balances, transformAddress(token), item.balance)
