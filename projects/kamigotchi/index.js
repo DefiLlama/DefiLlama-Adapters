@@ -19,7 +19,7 @@ const assetMap = {
 
 module.exports = {
     timetravel: false,
-    yominet: {
+    yomi: {
         tvl: async () => {
             const balances = {}
             const res = await get(url)
