@@ -43,6 +43,7 @@ const getPools = async (chainId) => {
   );
 
   const data = await brotliDecode(response);
+  console.log(data)
 
   return data.pools.map((pool) => pool.poolAddress);
 };
@@ -73,6 +74,6 @@ async function tvl(api) {
 
 module.exports = {
   ethereum: { tvl },
-  arbitrum: { tvl },
+  arbitrum: { tvl: () => ({ }) },
   methodology: "token held as collateral + liquidity left to be borrowed",
 };
