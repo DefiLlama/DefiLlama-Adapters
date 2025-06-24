@@ -334,6 +334,7 @@ async function sumTokens2({
           }),
         )
       : await runInChunks(accounts, async (chunk) => {
+          chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
           const infos = await getConnection(chain).getMultipleAccountsInfo(chunk)
           return infos.map(acc => acc?.lamports ?? 0)
         })
