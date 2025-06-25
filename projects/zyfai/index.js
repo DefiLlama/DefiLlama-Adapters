@@ -17,11 +17,7 @@ async function sonicTvl(api) {
 
 async function baseTvl(api) {
     // For Base chain
-    // const baseOwners = [
-    //     '0xb50685c25485CA8C520F5286Bbbf1d3F216D6989', 
-    //     '0x952835d17AC55825F198a68DAb2823cD60C8e6bd'
-    // ]; // TODO: make dynamic if needed
-    const owners = await get('https://api.zyf.ai/api/v1/data/active-wallets?chainId=146');
+    const owners = await get('https://api.zyf.ai/api/v1/data/active-wallets?chainId=8453');
     await Promise.all([ 
         aaveTvlBase(api, owners),
         fluidTvl(api, owners),
@@ -33,5 +29,5 @@ async function baseTvl(api) {
 module.exports = {
     methodology: 'Counts the TVL of all smart wallet accounts deployed by ZyFAI protocol across multiple DeFi protocols',
     sonic: { tvl: sonicTvl },
-    // base: { tvl: baseTvl }
+    base: { tvl: baseTvl }
 }
