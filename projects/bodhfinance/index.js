@@ -6,9 +6,12 @@ const bETH = "0xe970c37243F3d0B2AeB041b855Ef6466CB140BcA"
 const unitroller = "0x97b491744587d05ca33e84bB18B61Df9B3986DcE"
 
 const { tvl, borrowed } = compoundExports(
-    unitroller, "boba", bETH, WETH, );
+    unitroller, bETH, );
 
 module.exports = {
+    deadFrom: '2023-04-17',
             methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
     boba: { tvl, borrowed }
 }
+
+module.exports.boba.borrowed = () => ({}) // bad debt

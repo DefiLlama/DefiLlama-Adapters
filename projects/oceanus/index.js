@@ -1,8 +1,5 @@
-const { staking } = require("../helper/staking");
-const { pool2Exports } = require("../helper/pool2");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-
-const treasuryContract = "0xF29EEC2563b1E6a1ed87ff7DDfB164474d1Ecb50";
+const { pool2 } = require("../helper/pool2");
+const {  sumTokensExport } = require("../helper/unwrapLPs");
 
 const OShareRewardPool = "0xc4a5b1CdCcD8CF80aC7cB5B86Fe5a8D64DBA9D0F";
 const lpPool2Addresses = [
@@ -18,30 +15,13 @@ const stakingContracts = [
 const OSHARE = "0x28100159d8b2acc4e45ec7ebdb875265bb752385";
 const SEA = "0x41607272ce6f2a42732ae382f00f8f9ce68d78f3";
 
-async function Staking(timestamp, chainBlocks) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [SEA, false],
-      [OSHARE, false],
-    ],
-    stakingContracts,
-    chainBlocks["metis"],
-    "metis",
-    (addr) => `metis:${addr}`
-  );
-
-  return balances;
-}
 
 module.exports = {
   misrepresentedTokens: true,
   metis: {
-    tvl: (async) => ({}),
-    staking: Staking,
-    pool2: pool2Exports(OShareRewardPool, lpPool2Addresses, "metis"),
+    tvl: () => ({}),
+    staking: sumTokensExport(stakingContracts, [SEA, OSHARE], ),
+    pool2: pool2(OShareRewardPool, lpPool2Addresses,),
   },
   methodology: "Counts liquidity on the Pool2s and Staking parts",
 };

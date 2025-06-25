@@ -12,6 +12,9 @@ const config = {
   bsc: { vault: '0x03c01acae3d0173a93d819efdc832c7c4f153b06', fromBlock: 39148730,},
   base: { vault: '0x03c01acae3d0173a93d819efdc832c7c4f153b06', fromBlock: 14451361,},
   mode: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 7242549,},
+  mantle: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 65689171,},
+  scroll: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 6934854,},
+  linea: { vault: '0xd315a9c38ec871068fec378e4ce78af528c76293', fromBlock: 6052579,},
 }
 
 /**

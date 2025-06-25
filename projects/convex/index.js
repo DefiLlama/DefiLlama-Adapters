@@ -10,7 +10,7 @@ const boosterAddresses = {
 
 const staker = '0x989aeb4d175e16225e39e87d0d97a3360524ad80'
 const cvxRewardsAddress = "0xCF50b810E57Ac33B91dCF525C6ddd9881B139332";
-const cvxLockerAddress = "0x72a19342e8F1838460eBFCCEf09F6585e32db86E";
+const cvxLockerAddress = ADDRESSES.ethereum.vlCVX;
 
 const arbiPoolInfoABI = 'function poolInfo(uint256) view returns (address lptoken, address gauge, address rewards, bool shutdown, address factory)'
 
@@ -58,7 +58,7 @@ async function tvl(chain, block) {
         params: '0x59CFCD384746ec3035299D90782Be065e466800B', // Convex Frax Fraxtal vote proxy
         abi: 'erc20:balanceOf', block, chain
       })
-      sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXS, fxsLockedFraxtal)
+      sdk.util.sumSingleBalance(balances, ADDRESSES.fraxtal.WFRAX, fxsLockedFraxtal, chain)
     }
 
     abiPoolInfo = arbiPoolInfoABI

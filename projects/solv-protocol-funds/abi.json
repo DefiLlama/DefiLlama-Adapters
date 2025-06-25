@@ -12,5 +12,6 @@
   "state": "function state() view returns (uint160 sqrtPriceX96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint256 liquidity, uint256 liquidityX)",
   "stakedAmountsAbi": "function stakedAmounts(address) external view returns (uint256)",
   "stakedMlpAmount": "function stakedMlpAmount(address account) view returns (uint256)",
-  "symbol": "string:symbol"
+  "symbol": "string:symbol",
+  "totalSupply": "function totalSupply() view returns (uint256)"
 }

@@ -1,5 +1,5 @@
 const { staking } = require("../helper/staking");
-const { pool2Exports } = require("../helper/pool2");
+const { pool2 } = require("../helper/pool2");
 
 const hades = "0x88C37E0bc6a237e96bc4A82774A38BBc30efF3Cf";
 const hellshare = "0xEfB15eF34f85632fd1D4C17FC130CcEe3D3D48aE";
@@ -15,6 +15,6 @@ module.exports = {
     metis: {
         tvl: async () => ({}),
         staking: staking(masonry, hellshare),
-        pool2: pool2Exports(hellsharerewardpool, pool2LPs, "metis")
+        pool2: pool2(hellsharerewardpool, pool2LPs, "metis")
     }
 }

@@ -21,7 +21,7 @@ async function tvl(api) {
 
 
 module.exports = {
-  start: 1688162400,
+  start: '2023-07-01',
   hallmarks: [
     [1695396647, "Fees distribution #1"],
     [1705582439, "Fees distribution #2"],

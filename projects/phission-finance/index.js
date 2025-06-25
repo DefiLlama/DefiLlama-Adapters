@@ -8,7 +8,7 @@ const STAKING_CONTRACT = '0x569a157eac744b87a42314e8fc03a2e648ea33a2'
 
 module.exports = {
     methodology: 'Total amount of WETH split, plus the value of Pool2',
-    start: 1661851416,
+    start: '2022-08-30',
     ethereum: {
         tvl: sumTokensExport({ owner: SPLIT_CONTRACT, tokens: [WETH] }),
         pool2: sumTokensExport({ owner: STAKING_CONTRACT, tokens: [GOV_POOL], useDefaultCoreAssets: true }),

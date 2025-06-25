@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
-const {sumTokens} = require('../helper/unwrapLPs')
+const { sumTokensExport } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const yfdaiTokenAddress = "0xf4CD3d3Fda8d7Fd6C5a500203e38640A70Bf9577";
 const YfDaiStakingAdddress = "0x44d771D0C998f524ff39aB6Df64B72bce1d09566";
@@ -15,33 +15,13 @@ const YfDaiETHLP60DayVault = "0x26572bf2620108cb5006987e6348c07dc4e14a0f";
 const YfDaiETHLP90DayVault = "0x175d6cbaeff93734ada4c5430815f2208a6b040c";
 const impulsevenStakingAddress = "0xc0c135D29ba6BB1Ca5F88571A0c45807C3015c64";
 
-async function eth(_timestamp, ethBlock, chainBlocks) {
-    const balances = {}
-  await sumTokens(balances, [
-    [yfdaiTokenAddress, YfDaiSafetradeStakingAddress],
-    [weth, wethVault],
-    [dai, daiVault],
-  ], ethBlock)
-  return balances
-}
-
-async function staking(_timestamp, ethBlock, chainBlocks) {
-    const balances = {}
-  await sumTokens(balances, [
-    [yfdaiTokenAddress, YfDaiETHLP72HRSVault],
-    [yfdaiTokenAddress, YfDaiETHLP30DayVault],
-    [yfdaiTokenAddress, YfDaiETHLP60DayVault],
-    [yfdaiTokenAddress, YfDaiETHLP90DayVault],
-    [yfdaiTokenAddress, impulsevenStakingAddress],
-    [yfdaiTokenAddress, YfDaiStakingAdddress]
-  ], ethBlock)
-  return balances
-}
-
-
 module.exports = {
-    ethereum:{
-        tvl: eth,
-        staking
-    },
+  ethereum: {
+    tvl: sumTokensExport({ tokensAndOwners: [
+      [yfdaiTokenAddress, YfDaiSafetradeStakingAddress],
+      [weth, wethVault],
+      [dai, daiVault],
+    ]}),
+    staking: staking([YfDaiStakingAdddress, YfDaiETHLP72HRSVault, YfDaiETHLP30DayVault, YfDaiETHLP60DayVault, YfDaiETHLP90DayVault, impulsevenStakingAddress,], yfdaiTokenAddress)
+  },
 }

@@ -8,6 +8,7 @@ module.exports = uniV3Export({
   astrzk: { factory: '0x56c2162254b0E4417288786eE402c2B41d4e181e', fromBlock: 93668, },
   imx: { factory: '0x56c2162254b0E4417288786eE402c2B41d4e181e', fromBlock: 356091, },
   xlayer: { factory: '0xd2480162aa7f02ead7bf4c127465446150d58452', fromBlock: 277686, isAlgebra: true, },
+  soneium: { factory: '0x8Ff309F68F6Caf77a78E9C20d2Af7Ed4bE2D7093', fromBlock: 1681559, isAlgebra: true, },
 })
 
 async function tvl(api) {

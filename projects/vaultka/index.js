@@ -1,6 +1,9 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
 const { staking } = require("../helper/staking");
+const { getProvider, getTokenBalance, sumTokens2 } = require("../helper/solana");
+const idl = require('./idl')
+const { Program } = require("@project-serum/anchor");
 // 19/12/2023 ALP Leverage Vault
 // 29/11/2023 GMXV2 Leverage(Neutral) Vault
 // 12/11/2023 GLP Compound Vault
@@ -21,6 +24,44 @@ module.exports = {
     [1707385004, "GLM(basket of GMs)"],
   ],
 
+  solana: {
+    tvl: async (api) => {
+      const lendingSol = "DMhoXyVNpCFeCEfEjEQfS6gzAEcPUUSXM8Xnd2UXJfiS";
+      const jupSol = "jupSoLaHXQiZZTSfEWMTRRgpnyFm8f6sZdosWBjx93v";
+      const jitoSol = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
+      const jupSolProgram = "6j6Fwxf7UzfaXqQA2QraWGEAYUYzjjZP3t6ChzjzkmL9";
+      const jitoSolProgram = "6MAnq2z4ww8nnvfd8sec4sRMhTEdsdZXB1FLgqaYsg4d";
+      const jlpUsdtStrategy = "9vuDo8ZQsmMMe3qsiFCYoxsjhHieQVMNXLsfcfpC4SrX"
+
+
+      const lendingUsdc = "DefkwTSvkHeZASCuaVJ8AxUWS6zvBCwrLFpW2FniLSWo";  //change it to token account 
+      const lendingUsdt = "HDNrMywo5z84uBLdbcdHpgVP3bao8bw2PDiUwtM4hvHk"
+      const usdc = ADDRESSES.solana.USDC;
+      const usdt = ADDRESSES.solana.USDT;
+      const jlp = "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4"
+      const strategyJlp = "5852AnvCSV2GDzgpRVG4ZQ5cNn7abR7pPty5FaBxHLzW" 
+
+      const provider = getProvider()
+      const program = new Program(idl, 'V1enDN8GY531jkFp3DWEQiRxwYYsnir8SADjHmkt4RG', provider)
+      const banks = await program.account.bank.all()
+      const tokenAccounts = banks.map(i => i.account.liquidityVault.toString())
+      
+      return sumTokens2({
+        tokenAccounts,
+        owner: lendingSol,
+        tokensAndOwners: [
+          [jupSol, jupSolProgram],
+          [jitoSol, jitoSolProgram],
+          [jlp, strategyJlp],
+          [usdc, lendingUsdc],
+          [usdt, lendingUsdt],
+          [jlp, jlpUsdtStrategy],   
+          ],
+        solOwners: [lendingSol],
+      });
+    },
+  },
+
   arbitrum: {
     tvl: async (api) => {
       const vaults = [
@@ -30,10 +71,12 @@ module.exports = {
       const bals = await api.multiCall({
         abi: "int256:getVaultMarketValue",
         calls: vaults,
+        permitFailure: true
       });
-      bals.forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
+      bals.filter((bal) => bal !== null).forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
 
       const addresses = {
+        wSol: "0x2bcC6D6CdBbDC0a4071e48bb3B969b06B3330c07",
         whiskey: "0x6532eFCC1d617e094957247d188Ae6d54093718A",
         whiskeyWater: "0xa100E02e861132C4703ae96D6868664f27Eaa431",
         sake: "0x45BeC5Bb0EE87181A7Aa20402C66A6dC4A923758",
@@ -49,6 +92,7 @@ module.exports = {
         gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
         gmBtc: "0x47c031236e19d024b42f8AE6780E44A573170703", // btc/usdc.e
         gmUsdc: "0x9C2433dFD71096C435Be9465220BB2B189375eA7", // usdc/usdc.e
+        gmSol: "0x09400D9DB990D5ed3f35D7be61DfAEB900Af03C9",
         gmLink: "0x7f1fa204bb700853D36994DA19F830b6Ad18455C",
         VLP: "0xc5b2d9fda8a82e8dcecd5e9e6e99b78a9188eb05",
         gDAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
@@ -60,6 +104,7 @@ module.exports = {
         vodkaV2DN_ETH_Water: "0x8A98929750e6709Af765F976c6bddb5BfFE6C06c",
         vodkaV2DN_ARB_Water: "0x175995159ca4F833794C88f7873B3e7fB12Bb1b6",
         vodkaV2DN_BTC_Water: "0x4e9e41Bbf099fE0ef960017861d181a9aF6DDa07",
+        vokdaV2DN_SOL_Water: "0xdCAF7F0Cd114c96B58B70fAC98F3218312E6C28b",
         vodkaV1A: "0x0E8A12e59C2c528333e84a12b0fA4B817A35909A",
         agedVodkaV2_ETH: "0xE502474DfC23Cd11C28c379819Ea97A69aF7E10F",
         agedVodkaV2_BTC: "0x83C8A6B6867A3706a99573d39dc65a6805D26770",
@@ -86,10 +131,12 @@ module.exports = {
           [addresses.gmArb, addresses.vodkaV2],
           [addresses.gmWeth, addresses.vodkaV2],
           [addresses.gmBtc, addresses.vodkaV2],
+          [addresses.gmSol, addresses.vodkaV2],
           [addresses.gmArb, addresses.vodkaV2DN],
           [addresses.gmWeth, addresses.vodkaV2DN],
           [addresses.gmBtc, addresses.vodkaV2DN],
           [addresses.gmUsdc, addresses.vodkaV2DN],
+          [addresses.gmSol, addresses.vodkaV2DN],
           [addresses.hlp, addresses.rum],
           [ADDRESSES.arbitrum.fsGLP, addresses.agedVodka],
           //new water vault
@@ -97,6 +144,7 @@ module.exports = {
           [ADDRESSES.arbitrum.ARB, addresses.vodkaV2DN_ARB_Water],
           [ADDRESSES.arbitrum.WBTC, addresses.vodkaV2DN_BTC_Water],
           [ADDRESSES.arbitrum.fsGLP, addresses.vodkaV1A],
+          [addresses.wSol, addresses.vokdaV2DN_SOL_Water],
           //GmVault
           [addresses.gmWeth, addresses.agedVodkaV2_ETH],
           [addresses.gmBtc, addresses.agedVodkaV2_BTC],
@@ -109,7 +157,7 @@ module.exports = {
       });
 
       const contractAbis = {
-        stakedVlpBalance: "function getStakedVlpBalance() public view returns (uint256)",
+        stakedVlpBalance: "function getStakedVlpBalance() public view returns ( uint256)",
         stakedHlpBalance: "function userTokenAmount(address user) public view returns (uint256)",
         stakedAlpBalance: "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //

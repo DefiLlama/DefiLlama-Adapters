@@ -6,6 +6,11 @@ module.exports = {
   era: compoundExports2({
     comptroller: zksyncComptroller,
     cether: zkEther,
-    fetchBalances: true,
   }),
 };
+
+module.exports.deadFrom = '2024-11-11'
+module.exports.era.borrowed=  () => ({})
+// module.exports.hallmarks = [
+//   ['2024-11-11', "Protocol Exploit"],
+// ]

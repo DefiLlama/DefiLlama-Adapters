@@ -3,7 +3,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
   methodology: 'Get available liquidity for all reserves and include Uniswap V3 positions',
-  start: 1702931986,
+  start: '2023-12-18',
 };
 
 const config = {
