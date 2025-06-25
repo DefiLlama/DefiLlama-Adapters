@@ -1,38 +1,16 @@
-const {GraphQLClient} = require("graphql-request");
 const {function_view} = require("../helper/chain/aptos");
 
-const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql");
+const MODULE_VIEW = "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385"
 
-const ACCOUNT_ADDRESS = "0x57edaae7ac6e3813b057a675c05f155c0296f6757050e213dda7d8941b79609d"
-
-
-const APT_COIN_ADDRESS = '0x1::aptos_coin::AptosCoin';
-
-const getFungibleAssetQuery = `query GetFungibleAssetBalances($address: String, $offset: Int, $limit: Int) {
-  current_fungible_asset_balances(
-    where: {owner_address: {_eq: $address}}
-    offset: $offset
-    limit: $limit
-    order_by: {amount: desc}
-  ) {
-    asset_type
-    amount
-    __typename
-  }
-}`;
-
-async function getAssets(skip, limit) {
-    return await graphQLClient.request(getFungibleAssetQuery, {
-        address: ACCOUNT_ADDRESS,
-        offset: skip,
-        limit: limit,
-    }).then(r => r.current_fungible_asset_balances);
+async function getPools() {
+    return await function_view({
+        functionStr: `${MODULE_VIEW}::tapp_views::get_pool_metas`,
+        args: [],
+        type_arguments: [],
+    });
 }
 
 async function getPairedCoin(address) {
-    if (address.split("::").length > 1) {
-        return address;
-    }
     const result = await function_view({
         functionStr: "0x1::coin::paired_coin",
         args: [address],
@@ -57,20 +35,20 @@ module.exports = {
     timetravel: false,
     aptos: {
         tvl: async (api) => {
-            let offset = 0;
-            let limit = 100;
-            let assets = []
-            let data = []
-            do {
-                data = await getAssets(offset, limit);
-                assets = [...assets, ...data];
-                offset += limit;
-            } while (limit <= data.length);
+            const pools = await getPools();
+            let index = 0
 
-            for (const asset of assets) {
-                const coin = await getPairedCoin(asset.asset_type) || asset.asset_type;
+            for (const pool of pools) {
+                if (index === 0) {
+                    index += 1;
+                    continue
+                }
+                const coinA = await getPairedCoin(pool.assets[0]) || pool.assets[0];
+                const coinB = await getPairedCoin(pool.assets[1]) || pool.assets[1];
 
-                api.add(coin, asset.amount);
+                api.add(coinA, pool.reserves[0]);
+                api.add(coinB, pool.reserves[1]);
+                index += 1;
             }
         },
     },
