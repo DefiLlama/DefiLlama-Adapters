@@ -19,7 +19,7 @@ async function getCollateralInCashBorrowMode(api, config) {
     abi: 'function numContractsDeployed() view returns (uint256)',
   })) - 1;
   
-  const batch_size = 200; 
+  const batch_size = 300; 
   
   const calls = [];
   for (let i = 0; i < Number(lastCollateralModeVault); i += batch_size) {
@@ -34,7 +34,7 @@ async function getCollateralInCashBorrowMode(api, config) {
     });
   }
 
-  const parallelBatchSize = 15;
+  const parallelBatchSize = 30;
   const batches = [];
   for (let i = 0; i < calls.length; i += parallelBatchSize) {
     batches.push(calls.slice(i, Math.min(i + parallelBatchSize, calls.length)));
@@ -72,8 +72,7 @@ async function tvl(api) {
   const collateralTokensToAmount = await getCollateralInCashBorrowMode(api);
   for (const [token, amount] of Object.entries(collateralTokensToAmount)) {
     api.add(token, amount);
-    console.log(token, amount);
-  }
+  } 
 }
 
 module.exports = {
