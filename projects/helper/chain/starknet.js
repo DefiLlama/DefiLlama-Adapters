@@ -4,23 +4,20 @@
 const { getUniqueAddresses } = require('../tokenMapping')
 const { Contract, validateAndParseAddress, number, hash, CallData } = require('starknet')
 const abi = require('../../10kswap/abi')
-const axios = require('axios')
 const plimit = require('p-limit')
 const { sliceIntoChunks, sleep } = require('../utils')
 const { getUniTVL } = require('../cache/uniswap')
-const { getCache } = require('../cache')
-const { getEnv } = require('../env')
 const ADDRESSES = require('../coreAssets.json')
 const { withRpcFallback } = require('../rpcFallback')
 
-async function rpcFallbackStarknet(body) {
-  return withRpcFallback('starknet', (axiosInstance) => axiosInstance.post('', body))
-}
+ async function rpcFallbackStarknet(body) {
+  return withRpcFallback('starknet', async (axiosInstance) => {
+    return (await axiosInstance.post('', body)).data
+  })
+ }
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
-
-const STARKNET_RPC = getEnv('STARKNET_RPC')
 
 function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   if ((params || params === 0) && !Array.isArray(params))
@@ -63,10 +60,10 @@ function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj =
   return response
 }
 
-async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}, ...rest) {
-  const data = await rpcFallbackStarknet(formCallBody({ abi, target, params, allAbi }))
-  return parseOutput(data.result, abi, allAbi, { permitFailure, responseObj: data })
-}
+async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}) {
+  const resp = await rpcFallbackStarknet(formCallBody({ abi, target, params, allAbi }))
+  return parseOutput(resp.result, abi, allAbi, { permitFailure, responseObj: resp })
+ }
 
 async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [], permitFailure = false }) {
   if (!calls.length) return []

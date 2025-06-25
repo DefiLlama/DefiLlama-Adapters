@@ -1,13 +1,12 @@
+
 const sdk = require('@defillama/sdk')
 
-const http = require('../http')
 const { getEnv } = require('../env')
 const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 const { GraphQLClient } = require("graphql-request");
 const { withRpcFallback } = require('../rpcFallback.js')
-const axios = require('axios')
 
 const endpoint = () => getEnv('APTOS_RPC')
 const movementEndpoint = () => getEnv('MOVE_RPC')
@@ -18,24 +17,28 @@ const endpointMap = {
 }
 
 async function aQuery(api, chain = 'aptos') {
-  return withRpcFallback(chain, (axiosInstance) => axiosInstance.get(api))
-}
+  return withRpcFallback(chain, async (axiosInstance) => {
+    return (await axiosInstance.get(api)).data
+  })
+ }
 
 async function getResources(account, chain = 'aptos') {
   return withRpcFallback(chain, async (axiosInstance) => {
-    const data = []
-    let lastData
+    const allData = []
     let cursor
+    let pageLength = 0
     do {
-      let url = `/v1/accounts/${account}/resources?limit=9999`
-      if (cursor) url += '&start=' + cursor
-      const res = await axiosInstance.get(url)
-      lastData = res.data
-      data.push(...lastData)
-      sdk.log('fetched resource length', lastData.length)
-      cursor = res.headers['x-aptos-cursor']
-    } while (lastData.length === 9999)
-    return data
+      const { data: page, headers } = await axiosInstance.get(
+        `/v1/accounts/${account}/resources`,
+        { params: { limit: 9999, ...(cursor ? { start: cursor } : {}) } },
+      )
+      allData.push(...page)
+      pageLength = page.length
+      sdk.log('fetched resource length', pageLength)
+
+      cursor = headers['x-aptos-cursor']
+    } while (pageLength === 9999)
+    return allData
   })
 }
 
@@ -43,8 +46,7 @@ async function getResource(account, key, chain = 'aptos') {
   if (typeof chain !== 'string') chain = 'aptos'
   return withRpcFallback(chain, async (axiosInstance) => {
     const url = `/v1/accounts/${account}/resource/${key}`
-    const res = await axiosInstance.get(url)
-    return res.data
+    return (await axiosInstance.get(url)).data
   })
 }
 
@@ -128,15 +130,19 @@ async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], t
 }
 
 async function getTableData({ table, data, chain = 'aptos' }) {
-  return withRpcFallback(chain, (axiosInstance) => axiosInstance.post(`/v1/tables/${table}/item`, data))
+  return withRpcFallback(chain, async (axiosInstance) => {
+    return (await axiosInstance.post(`/v1/tables/${table}/item`, data)).data
+  })
 }
 
 async function function_view({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined, chain = 'aptos' }) {
   return withRpcFallback(chain, async (axiosInstance) => {
-    let path = `/v1/view`
-    if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
-    const response = await axiosInstance.post(path, { function: functionStr, type_arguments, arguments: args })
-    return response.data.length === 1 ? response.data[0] : response.data
+    const { data } = await axiosInstance.post(
+      '/v1/view',
+      { function: functionStr, type_arguments, arguments: args },
+      ledgerVersion !== undefined ? { params: { ledger_version: ledgerVersion } } : undefined,
+    )
+    return data.length === 1 ? data[0] : data
   })
 }
 

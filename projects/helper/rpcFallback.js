@@ -5,6 +5,13 @@ const axios = require('axios')
 const uniq  = (arr) => [...new Set(arr.filter(Boolean))]
 const cache = Object.create(null)
 
+const stats = new Map()
+function bump(chain, field) {
+  const c = stats.get(chain) || { total: 0, viaAgg: 0, viaDirect: 0, failed: 0 }
+  c[field]++
+  stats.set(chain, c)
+}
+
 function buildRpcAggregateError (chain, failures) {
   const aggErr = new AggregateError(
     failures.map(f => f.err),
@@ -28,7 +35,7 @@ function buildRpcList(chain) {
     const aggUrl = agg.includes('{chain}')
       ? agg.replace('{chain}', chain)
       : `${agg}/${chain}`
-    list.push(aggUrl)
+    list.push(buildInstance(aggUrl, true))
   }
 
   const envKey = `${chain.toUpperCase()}_RPC`
@@ -36,51 +43,60 @@ function buildRpcList(chain) {
   
   if (direct) {
     const directUrls = direct.split(',')
-    list.push(...directUrls)
+    directUrls.forEach(url => list.push(buildInstance(url)))
   }
 
   cache[chain] = uniq(list)
   return cache[chain]
 }
 
-function createAxiosInstance(url) {
-  const instance = axios.create({ baseURL: url })
-  
-  const aggregatorUrl = getEnv('RPC_AGGREGATOR_URL')
-  if (aggregatorUrl && url.startsWith(aggregatorUrl)) {
-    instance.interceptors.request.use((config) => {
-      const separator = config.url.includes('?') ? '&' : '?'
-      config.url = `${config.url}${separator}source=tvl-adapter`
-      return config
+function buildInstance(baseURL, isAgg = false) {
+  const instance = axios.create({ baseURL })
+  instance.__isAgg = isAgg
+  if (isAgg) {
+    instance.interceptors.request.use(cfg => {
+      const sep = cfg.url.includes('?') ? '&' : '?'
+      cfg.url = `${cfg.url}${sep}source=tvl-adapter`
+      return cfg
     })
   }
-  
   return instance
 }
 
-async function withRpcFallback (chain, workFn) {
-  const urls = buildRpcList(chain)
+async function withRpcFallback(chain, workFn) {
+  const instances = buildRpcList(chain)
   const failures = []
 
-  for (const url of urls) {
-    try {
-      const axiosInstance = createAxiosInstance(url)
-      const result = await workFn(axiosInstance)
-      
-      if (result && result.data !== undefined) {
-        return result.data
-      }
-      
-      return result
-    } catch (err) {
-      if (process.env.LLAMA_DEBUG_MODE)
-        sdk.log(`[${chain}] fail → ${url}`, err.message)
+  bump(chain, 'total')
 
-      failures.push({ url, err })
+  for (const axiosInstance of instances) {
+    try {
+      const res = await workFn(axiosInstance)
+      if (process.env.LLAMA_RPC_DEBUG_MODE === 'true') sdk.log(`[${chain}] ✅ success via → ${axiosInstance.defaults.baseURL}`)
+      if (axiosInstance.__isAgg) bump(chain, 'viaAgg')
+      else bump(chain, 'viaDirect')
+      return res
+    } catch (err) {
+      if (process.env.LLAMA_RPC_DEBUG_MODE === 'true') sdk.log(`[${chain}] ❌ fail → ${axiosInstance.defaults.baseURL}`, err.message)
+      failures.push({ url: axiosInstance.defaults.baseURL, err })
     }
   }
 
+  bump(chain, 'failed')
   throw buildRpcAggregateError(chain, failures)
 }
+
+process.on('exit', () => {
+  if (process.env.LLAMA_RPC_DEBUG_MODE === 'false') return
+  console.log('\n====== RPC Fallback Stats ======')
+  for (const [chain, { total, viaAgg, viaDirect, failed }] of stats) {
+    console.log(
+      `${chain.padEnd(10)}  total:${String(total).padStart(4)}  ` +
+      `agg:${String(viaAgg).padStart(4)}  ` +
+      `fallback:${String(viaDirect).padStart(4)}  ` +
+      `failed:${failed}`
+    )
+  }
+})
 
 module.exports = { withRpcFallback, buildRpcList }

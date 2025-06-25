@@ -9,8 +9,11 @@ const { sliceIntoChunks, getUniqueAddresses } = require('../utils')
 //https://docs.sui.io/sui-jsonrpc
 
 async function rpcFallbackSUI(chain, body) {
-  return withRpcFallback(chain, (axiosInstance) => axiosInstance.post('', body))
-}
+  return withRpcFallback(chain, async (axiosInstance) => {
+    const { data } = await axiosInstance.post('', body)
+    return data
+  })
+ }
 
 const endpoint = () => getEnv('SUI_RPC')
 const graphEndpoint = () => getEnv('SUI_GRAPH_RPC')

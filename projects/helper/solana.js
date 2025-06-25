@@ -12,17 +12,25 @@ const sdk = require('@defillama/sdk');
 const { withRpcFallback } = require('./rpcFallback.js')
 const FALLBACK_CHAINS = ['solana', 'eclipse']
 
+const _connByRpc = new Map();
+
 async function rpcFallbackConnection(chain, fn) {
   return withRpcFallback(chain, (axiosInstance) => {
     const rpc = axiosInstance.defaults.baseURL
-    const conn = new Connection(rpc);
-    return fn(conn);
-  });
+    let conn = _connByRpc.get(rpc)
+    if (!conn) {
+      conn = new Connection(rpc)
+      _connByRpc.set(rpc, conn)
+    }
+    return fn(conn)
+  })
 }
 
-async function rpcFallbackRequest(chain, body) {
-  return withRpcFallback(chain, (axiosInstance) => axiosInstance.post('', body))
-}
+ async function rpcFallbackRequest(chain, body) {
+  return withRpcFallback(chain, async (axiosInstance) => {
+    return (await axiosInstance.post('', body)).data
+  })
+ }
 
 /** Address of the SPL Token program */
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -334,7 +342,7 @@ async function sumTokens2({
           }),
         )
       : await runInChunks(accounts, async (chunk) => {
-          chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
+        chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
           const infos = await getConnection(chain).getMultipleAccountsInfo(chunk)
           return infos.map(acc => acc?.lamports ?? 0)
         })
