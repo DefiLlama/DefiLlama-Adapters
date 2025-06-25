@@ -86,10 +86,12 @@ async function computeXSTRKStratTVL(api) {
     abi: {...SINGLETONabiMap.position, customInput: 'address'},
   });
 
+
   let collateral = Number(data[0]['2']);
   let debt = Number(data[0]['3']);
 
   let tvl = (collateral * xstrk_price) - debt;
+  if (tvl < 0) throw new Error("Negative TVL detected, check the xSTRK strategy logic");
   
   api.addTokens(contracts[0].token, [tvl]);
 }
