@@ -1,63 +1,57 @@
-const sdk = require('@defillama/sdk')
-const { rpcFallbackSUI } = require('../../projects/helper/chain/sui')
-const { rpcFallbackConnection } = require('../../projects/helper/solana')
-const { rpcFallbackStarknet } = require('../../projects/helper/chain/starknet')
-const { withRpcFallback } = require('../../projects/helper/rpcFallback')
+const { spawn } = require('child_process')
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 
-async function testSolana () {
-  const version = await rpcFallbackConnection('solana', conn => conn.getVersion())
-  sdk.log('[solana] version →', version)
+const DEFAULT_ADAPTERS = {
+  // helper → solana.js
+  solana:   ['projects/kyros/index.js','projects/solayer-ssol/index.js','projects/parrot.js'],
+  eclipse:  ['projects/astrolend/index.js', 'projects/umbra/index.js', 'projects/neptune-protocol/index.js'],
+  // helper → sui.js
+  sui:      ['projects/suilend/index.js', 'projects/typus-finance/index.js', 'projects/nemo/index.js'],
+  // helper → starknet.js
+  starknet: ['projects/nostra/index.js', 'projects/endur/index.js', 'projects/protoss-dex/index.js'],
+  // helper → aptos.js
+  aptos:    ['projects/echo-lending/index.js', 'projects/aries-markets/index.js', 'projects/thalaswap-v2/index.js'],
+  move:     ['projects/moveposition/index.js', 'projects/canopy/index.js', 'projects/yuzu/index.js'],
 }
 
-async function testEclipse () {
-  const version = await rpcFallbackConnection('eclipse', conn => conn.getVersion())
-  sdk.log('[eclipse] version →', version)
-}
+async function main() {
+  let selectedAdapters;
 
-async function testAptos () {
-  try {
-    const baseUrl = 'https://fullnode.mainnet.aptoslabs.com'
-    const axios = require('axios')
-    const directTest = await axios.get(`${baseUrl}/v1?source=tvl-adapter`)
-    sdk.log('[aptos] direct test →', JSON.stringify(directTest.data, null, 2))
-    
-    const info = await withRpcFallback('aptos', (axiosInstance) => axiosInstance.get('/v1'))
-    sdk.log('[aptos] full response →', JSON.stringify(info, null, 2))
-    sdk.log('[aptos] ledger info →', info.ledger_version ?? info)
-  } catch (error) {
-    sdk.log('[aptos] error →', error.message)
+  const cliChains = process.argv.slice(2);
+
+  if (cliChains.length === 0) {
+    selectedAdapters = Object.entries(DEFAULT_ADAPTERS);
+  } else {
+    selectedAdapters = Object.entries(DEFAULT_ADAPTERS)
+      .filter(([chain]) => cliChains.includes(chain));
+    if (selectedAdapters.length === 0) {
+      console.error('❌  No valid chain provided. Choose from:',
+        Object.keys(DEFAULT_ADAPTERS).join(', '));
+      process.exit(1);
+    }
+  }
+
+  const repoRoot = path.resolve(__dirname, '../../');
+  const testRunner = path.join(repoRoot, 'test.js');
+
+  for (const [chain, list] of selectedAdapters) {
+    for (const relPath of list) {
+      const absPath = path.join(repoRoot, relPath);
+
+      console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log(`▶  TEST [${chain}] ${absPath}`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      await new Promise((resolve) => {
+        const child = spawn('node', [testRunner, absPath], {
+          stdio: 'inherit',
+          env: process.env,
+        });
+        child.on('exit', resolve);
+      });
+    }
   }
 }
 
-async function testSui () {
-  const response = await rpcFallbackSUI('sui', {
-    jsonrpc: '2.0',
-    id: 1,
-    method: 'sui_getLatestCheckpointSequenceNumber',
-    params: [],
-  })
-  sdk.log('[sui] full response →', JSON.stringify(response, null, 2))
-  if (response.error) throw new Error(response.error.message)
-  sdk.log('[sui] latest checkpoint →', Number(response.result))
-}
-
-async function testStarknet () {
-  const response = await rpcFallbackStarknet({
-    jsonrpc: '2.0',
-    id: 1,
-    method: 'starknet_blockNumber',
-    params: [],
-  })
-  sdk.log('[starknet] full response →', JSON.stringify(response, null, 2))
-  sdk.log('[starknet] latest block →', response.result)
-}
-
-async function main () {
-  await testSolana()
-  await testEclipse()
-  await testAptos()
-  await testSui()
-  await testStarknet()
-}
-
-main().catch((e) => { console.error(e); process.exit(1) })
+main();
