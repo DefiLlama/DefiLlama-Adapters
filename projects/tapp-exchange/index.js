@@ -36,19 +36,14 @@ module.exports = {
     aptos: {
         tvl: async (api) => {
             const pools = await getPools();
-            let index = 0
+            pools.shift();
 
             for (const pool of pools) {
-                if (index === 0) {
-                    index += 1;
-                    continue
-                }
                 const coinA = await getPairedCoin(pool.assets[0]) || pool.assets[0];
                 const coinB = await getPairedCoin(pool.assets[1]) || pool.assets[1];
 
                 api.add(coinA, pool.reserves[0]);
                 api.add(coinB, pool.reserves[1]);
-                index += 1;
             }
         },
     },
