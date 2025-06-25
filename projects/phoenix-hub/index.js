@@ -5,7 +5,6 @@ async function tvl() {
     // Fetch all tickers
     const response = await utils.fetchURL("https://stats.phoenix-hub.io/api/tvl");
     const data = response.data;
-    console.log("API Response:", data);
     
     if (data.success && data.data && typeof data.data.total_tvl_usd === 'number') {
       return toUSDTBalances(data.data.total_tvl_usd);
