@@ -471,7 +471,7 @@ setTimeout(() => {
 
 function buildPricesGetQueries(readKeys) {
   if (!readKeys.length) return []
-  const burl = 'https://coins.llama.fi/prices/current/'
+  const burl = process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/prices/current/` : 'https://coins.llama.fi/prices/current/'
   const queries = []
   let query = burl
 

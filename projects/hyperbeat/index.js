@@ -3,21 +3,55 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 
-const USDT0 = '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb';
-const USDT0_VAULT = '0x5e105266db42f78fa814322bce7f388b4c2e61eb';
-
 const morphoVaults = {
   '0x5eEC795d919FA97688Fb9844eeB0072E6B846F9d': '0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34',
   '0x53A333e51E96FE288bC9aDd7cdC4B1EAD2CD2FfA': '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb',
   '0x0571362ba5EA9784a97605f57483f865A37dBEAA': '0xBe6727B535545C67d5cAa73dEa54865B92CF7907',
-  '0xd19e3d00f8547f7d108abfd4bbb015486437b487': '0x5555555555555555555555555555555555555555'
+  '0xd19e3d00f8547f7d108abfd4bbb015486437b487': '0x5555555555555555555555555555555555555555',
+  '0x4346C98E690c17eFbB999aE8e1dA96B089bE320b': '0x9ab96A4668456896d45c301Bc3A15Cee76AA7B8D'
 };
+
+const standaloneVaults = {
+  '0x5e105266db42f78fa814322bce7f388b4c2e61eb': '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', // USDT0
+  '0x6EB6724D8D3D4FF9E24d872E8c38403169dC05f8': '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949'  // xAUT
+};
+
+const sixDecimalTokens = [
+  '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', // USDT0
+  '0x9ab96A4668456896d45c301Bc3A15Cee76AA7B8D', // rUSDC
+  '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949'  // xAUT
+];
 
 const adjustDecimals = (amount, from, to = 6) => {
   return new BigNumber(amount)
     .times(new BigNumber(10).pow(to))
     .div(new BigNumber(10).pow(from))
     .toFixed(0);
+};
+
+const processVaults = async (api, vaults) => {
+  const [supplies, decimals] = await Promise.all([
+    sdk.api.abi.multiCall({
+      calls: Object.keys(vaults).map(v => ({ target: v })),
+      abi: 'erc20:totalSupply',
+      chain: 'hyperliquid'
+    }),
+    sdk.api.abi.multiCall({
+      calls: Object.keys(vaults).map(v => ({ target: v })),
+      abi: 'erc20:decimals',
+      chain: 'hyperliquid'
+    })
+  ]);
+
+  supplies.output.forEach((data, i) => {
+    const vault = data.input.target;
+    const underlying = vaults[vault];
+    const vaultDecimals = decimals.output[i].output;
+    const amount = sixDecimalTokens.includes(underlying)
+      ? adjustDecimals(data.output, vaultDecimals)
+      : data.output;
+    api.add(underlying, amount);
+  });
 };
 
 module.exports = {
@@ -53,35 +87,10 @@ module.exports = {
         isOG4626: true 
       })(api);
       
-      const [supply, decimals] = await Promise.all([
-        sdk.api.erc20.totalSupply({ target: USDT0_VAULT, chain: 'hyperliquid' }),
-        sdk.api.erc20.decimals(USDT0_VAULT, 'hyperliquid')
+      await Promise.all([
+        processVaults(api, standaloneVaults),
+        processVaults(api, morphoVaults)
       ]);
-      
-      api.add(USDT0, adjustDecimals(supply.output, decimals.output));
-
-      const [supplies, vaultDecimals] = await Promise.all([
-        sdk.api.abi.multiCall({
-          calls: Object.keys(morphoVaults).map(v => ({ target: v })),
-          abi: 'erc20:totalSupply',
-          chain: 'hyperliquid'
-        }),
-        sdk.api.abi.multiCall({
-          calls: Object.keys(morphoVaults).map(v => ({ target: v })),
-          abi: 'erc20:decimals',
-          chain: 'hyperliquid'
-        })
-      ]);
-
-      supplies.output.forEach((data, i) => {
-        const vault = data.input.target;
-        const underlying = morphoVaults[vault];
-        const decimals = vaultDecimals.output[i].output;
-        const amount = underlying === USDT0 
-          ? adjustDecimals(data.output, decimals)
-          : data.output;
-        api.add(underlying, amount);
-      });
 
       return api.getBalances();
     }

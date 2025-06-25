@@ -81,7 +81,23 @@ const config = {
       "0x8d6d3479c94bb95e737b72186192ff5e7fedf3a2",
       "0xf2f40c3bb444288f6f64d8336dcc14dbd929fd94",
       "0xbce9aecd3985d4cbb9d273453159a26301fa02ef",
-      "0x70f58622158d7e609ae5839c4ad0d477f468863f"
+      "0x70f58622158d7e609ae5839c4ad0d477f468863f",
+      "0x18e296053cbdf986196903e889b7dca7a73882f6",
+      "0x260b364fe0d3d37e6fd3cda0fa50926a06c54cea",
+      "0xa1abfa21f80ecf401bd41365adbb6fef6fefdf09",
+      "0x70167b76543c4a12b49b2f2b70cbf04d99345786",
+      "0x4865d4bcf4ab92e1c9ba5011560e7d4c36f54106",
+      "0xc6c6a48ee8e9f593724161c72414d76e94cda93f",
+      "0xefef30bd1cca520619306c95091ab18473febc5c",
+      "0x180a1b935d28494f9ff4233985562b18b3dcfa74",
+      "0xad85405cbb1476825b78a021fa9e543bf7937549",
+      "0x8fa129f87b8a11ee1ca35abd46674f8b66984d4a",
+      "0x651641299c7ec0aa44ad7ed9b7e12702fed2022f",
+      "0x187c9fbf5bd0f266883c03f320260c407c7b4100",
+      "0xa4b9569bf942c3aad23c0c2d322fe4aff8e1bf30",
+      "0x6522b7f9d481eceb96557f44753a4b893f837e90",
+      "0xa31231e727ca53ff95f0d00a06c645110c4ab647",
+      "0xf42aac93ab142090db9fdc0bc86aab73cb36f173",
     ],
   },
   bitcoin: {
@@ -94,6 +110,10 @@ const config = {
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
       "0x388E52979AC487c6BdaFCC84B251976Cd162790b",
       "0xc19bb2709321bd6ad6d8396a885b7c151b8d48c5",
+      "0xc3121c4ca7402922e025e62e9bb4d5b244303878",
+      "0xef3aeff9a5f61c6dda33069c58c1434006e13b20",
+      "0x318d2aae4c99c2e74f7b5949fa1c34df837789b8",
+      "0xc851a293ed8b8888a2e4140744973dd23bbcbaf2",
     ],
   },
   tron: {
@@ -127,6 +147,7 @@ const config = {
       "TT82s2U3xERKsmvgftM1ekzRqVP6NPo13y",
       "TP39VvzdkdkxvGhmEMtot4hN5R7czR6GVV",
       "TMFuCWAvcEDwtW3evtXFAg8eQzoCWtzwnQ",
+      "TZBxnLfD3TRr9tHJNN2geTYwC4CYzfvkS9",
     ],
   },
   polygon: {
@@ -142,7 +163,7 @@ const config = {
       "0xee5B5B923fFcE93A870B3104b7CA09c3db80047A",
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
       "0x7e8c73462aaa9d61c801bd9f5682db014387621a",
-      "0xa0acdf9fa38b293f0bbdd01ca6bf3e7ed8291dd4"
+      "0xa0acdf9fa38b293f0bbdd01ca6bf3e7ed8291dd4",
     ],
   },
   avax: {
@@ -170,7 +191,7 @@ const config = {
       "0x1Db92e2EeBC8E0c075a02BeA49a2935BcD2dFCF4",
       "0xee5B5B923fFcE93A870B3104b7CA09c3db80047A",
       "0x88a1493366d48225fc3cefbdae9ebb23e323ade3",
-      "0x75df67943d35129dd22da5d14fda4983571f553a"
+      "0x75df67943d35129dd22da5d14fda4983571f553a",
     ],
   },
   era: {
@@ -191,7 +212,16 @@ const config = {
       "32cT9eAwkEvAk631rUcUAbXVFPg21DaAXzGiz9AqHTVE",
       "9Z7S8vCj6nDbK9t4m4AU3vZpKm4UufHAwpmRYyKgZf7r",
       "BunaYnktTigcU1ovzVt9dG7NMv2gW5VX7MBfSS8J38s2",
-      "AaFm2LPX8NUKXe64JaxcRNUc8QPGYCxrPG1HjHcTTGAK"
+      "AaFm2LPX8NUKXe64JaxcRNUc8QPGYCxrPG1HjHcTTGAK",
+      "i9XvhQqBCTQapqaFKPDuCbtPYMCwELmX8VTCsDhRG7d",
+      "7ReR6syi6gr7qUrKCL1FB9VFzGhVgHwLJ8wtfNtH9Mv4",
+      "iGdFcQoyR2MwbXMHQskhmNsqddZ6rinsipHc4TNSdwu",
+      "9ZifroknFoYu4r6DUk6nYoJiUQnEyyoUyeAwjXbPoL2x",
+      "2qo8jvuc49pFmTjmUHLiARSV6ppPTaE7gw27ZJ6DnNZy",
+      "CK8i4zFXkDE2KWfyg7g9S748r6mwxajbcKcyGhQMR3qQ",
+      "Gem2VAypSg7Ai7vjDKPTtqFahpoQWkfgVkyzx3rPoTka",
+      "5LZkATrLwHYCQj2YuVbjjgsDZzBk6YfL4pFQRJmtboT2",
+      "7cAui6ADtxLnpRr2wYvwJWTkzwgmVF2LYKnjKTLx4xR8",
     ],
   },
   cardano: {
@@ -267,7 +297,11 @@ const config = {
       "0x036c43bebe5fa5dff3c299584b4a6c1923c7d932",
       "0xcbf446565eddf074b2c99e8f1c15582a0bfe6eba",
       "0xbce9aecd3985d4cbb9d273453159a26301fa02ef",
-      "0x70f58622158d7e609ae5839c4ad0d477f468863f"
+      "0x70f58622158d7e609ae5839c4ad0d477f468863f",
+      "0x4a67e97e770de93952b8596f04c13ada0ab9a69c",
+      "0xc868d0ea71243f1580f934cdc59620603bf9f1f1",
+      "0xd8169f099ce16c87a99d2a8494023574b5eea9c5",
+      "0x0d4dc3b8becc98782309e443a6da4b9455b5ca48",
     ],
   },
   cosmos: {
@@ -292,9 +326,7 @@ const config = {
   },
   dydx: { owners: ["dydx10sdnqxvrwe3mhducn6plyewul84edgd47rfnfe"] },
   sonic: {
-    owners: [
-      "0x86dbaa55f0e65857b58109c3cb725deff4da3851"
-    ],
+    owners: ["0x86dbaa55f0e65857b58109c3cb725deff4da3851"],
   },
 };
 

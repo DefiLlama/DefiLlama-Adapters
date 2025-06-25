@@ -36,7 +36,7 @@ Object.keys(config).forEach(chain => {
         }
       })
       ownerTokens.push([Array.from(tokenSet), factory])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, })
+      return sumTokens2({ api, ownerTokens, permitFailure: true,sumChunkSize: 1000, })
     }
   }
 })

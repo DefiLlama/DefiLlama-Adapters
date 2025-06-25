@@ -12,6 +12,7 @@ async function tvl() {
 
 module.exports = {
     methodology: 'counts the liquidity on all Phoenix Hub AMM Pools.',
+    misrepresentedTokens: true,
     stellar: {
         tvl,
     }

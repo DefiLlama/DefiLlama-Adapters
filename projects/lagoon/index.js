@@ -58,6 +58,7 @@ const config = {
 
 const vaultsBlacklist = [
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship
+  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
 ]
 
 function keepVault(vault, vaultBlacklist) {
