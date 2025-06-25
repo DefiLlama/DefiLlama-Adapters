@@ -531,6 +531,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       }
       balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
     })
+    await sleep(3000) // avoid rate limit issues
   }
 
 
