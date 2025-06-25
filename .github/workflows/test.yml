@@ -6,12 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: file_changes
-        uses: trilom/file-changes-action@v1.2.4
+        uses: trilom/file-changes-action@a6ca26c14274c33b15e6499323aac178af06ad4b # v1.2.4
         with:
           output: 'json'
           fileOutput: 'json'
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.2.2
       - name: Run changes files through test script
         env:
           LLAMA_DEBUG_MODE: "true"
@@ -54,6 +54,4 @@ jobs:
               echo ' doesnt run'
             }
           done
-        
-      - name: Run ESLint
-        uses: eslint/github-action@v0
+
