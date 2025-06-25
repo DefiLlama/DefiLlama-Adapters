@@ -36,6 +36,8 @@ module.exports = {
     aptos: {
         tvl: async (api) => {
             const pools = await getPools();
+
+            // The first element is not considered a pool reserve.
             pools.shift();
 
             for (const pool of pools) {
