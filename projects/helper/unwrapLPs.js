@@ -6,7 +6,7 @@ const symbol = 'string:symbol'
 const { bPool, getCurrentTokens, } = require('./abis/balancer.json')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
-const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray } = require('./utils')
+const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray, sleep } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
@@ -531,6 +531,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       }
       balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
     })
+    await sleep(3000) // avoid rate limit issues
   }
 
 
