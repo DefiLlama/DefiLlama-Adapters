@@ -12,7 +12,7 @@ async function tvl(api) {
   const redemptionRate = await query({ contractId: rigContract, abi: rigAbi, method: 'get_sanitized_price' });
   const totalSupply = await query({ contractId: rigContract, abi: rigAbi, method: 'total_supply', params: [stFuelAssetId] });
 
-  const fuelStaked = BigNumber(totalSupply).multipliedBy(redemptionRate).dividedBy(stFuelAssetDecimalPlaces);
+  const fuelStaked = BigNumber(totalSupply).multipliedBy(BigNumber(redemptionRate)).dividedBy(stFuelAssetDecimalPlaces);
   api.add(fuelAssetId, fuelStaked);
 }
 
