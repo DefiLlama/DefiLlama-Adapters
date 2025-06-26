@@ -46,10 +46,21 @@ module.exports = {
         fromBlock: 20966151,
         customCacheFunction,
       })
-      api.addGasToken((fundedLogs + fundedOnBehalfLogs - withdrawnForUserLogs).toString())
 
-      // The withdrawl vault holds validator rewards until withdrawn.
-      return api.sumTokens({ owner: '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13', tokens: [nullAddress] })
+      // Filter out FundedOnBehalf events where funder is 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
+      const filteredFundedOnBehalfLogs = fundedOnBehalfLogs.filter(log => 
+        log.funder !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'
+      )
+
+      // Filter out ETHWithdrawnForUser events where recipient is 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
+      const filteredWithdrawnForUserLogs = withdrawnForUserLogs.filter(log => 
+        log.recipient !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'
+      )
+
+      api.addGasToken((fundedLogs + filteredFundedOnBehalfLogs - filteredWithdrawnForUserLogs).toString())
+
+      // Return empty object since we're excluding the assets of 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
+      return {}
     },
   },
 }
