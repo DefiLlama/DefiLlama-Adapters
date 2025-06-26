@@ -4,8 +4,12 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ABIS = {
   Market: {
+    config: "function config() external view returns (address treasurer, uint64 maturity, tuple(uint32,uint32,uint32,uint32,uint32,uint32) feeConfig)",
     tokens:
       "function tokens() external view override returns (address fixedToken, address xToken, address gearingToken, address collateral, address debt)",
+  },
+  MintableERC20: {
+    totalSupply: 'function totalSupply() external view returns (uint256)',
   },
   Vault: {
     asset: "address:asset",
@@ -140,12 +144,15 @@ async function getTermMaxMarketAddresses(api) {
 
 async function getTermMaxMarketOwnerTokens(api) {
   const marketAddresses = await getTermMaxMarketAddresses(api);
-  const tokens = await api.multiCall({
-    abi: ABIS.Market.tokens,
-    calls: marketAddresses,
-  });
+  const [tokens, configs] = await Promise.all([
+    api.multiCall({ abi: ABIS.Market.tokens, calls: marketAddresses }),
+    api.multiCall({ abi: ABIS.Market.config, calls: marketAddresses }),
+  ]);
   const ownerTokens = [];
   for (let i = 0; i < marketAddresses.length; i += 1) {
+    const { maturity } = configs[i];
+    if (maturity <= api.timestamp) continue;
+
     const marketAddress = marketAddresses[i];
     const { collateral, debt, gearingToken } = tokens[i];
     ownerTokens.push([[collateral], gearingToken]); // TVL factor: collateral on the gearing token
@@ -214,6 +221,42 @@ async function getTermStructureOwnerTokens(api) {
   return tokens.map((token) => [[token], ADDRESSES.zkTrueUpContractAddress]);
 }
 
+async function getTermMaxMarketBorrowed(api) {
+  const marketAddresses = await getTermMaxMarketAddresses(api);
+  const mintableERC20s = new Set(); // includes FT and XT
+  const debtTokens = new Set();
+
+  const [tokens, configs] = await Promise.all([
+    api.multiCall({ abi: ABIS.Market.tokens, calls: marketAddresses }),
+    api.multiCall({ abi: ABIS.Market.config, calls: marketAddresses }),
+  ]);
+  for (let i = 0; i < marketAddresses.length; i += 1) {
+    const { maturity } = configs[i];
+    if (maturity <= api.timestamp) continue;
+
+    const { fixedToken, xToken, debt } = tokens[i];
+    mintableERC20s.add(fixedToken);
+    mintableERC20s.add(xToken);
+    debtTokens.add(debt);
+  }
+  
+  const mintableERC20Array = Array.from(mintableERC20s);
+  const debtTokensArray = Array.from(debtTokens);
+  const [decimals, totalSupplies] = await Promise.all([
+    api.multiCall({ abi: "erc20:decimals", calls: debtTokensArray }),
+    api.multiCall({ abi: ABIS.MintableERC20.totalSupply, calls: mintableERC20Array }),
+  ]);
+
+  for (let i = 0; i < marketAddresses.length; i += 1) {
+    const { fixedToken, xToken, debt } = tokens[i];
+    const debtTokenIndex = debtTokensArray.indexOf(debt);
+    const ftIndex = mintableERC20Array.indexOf(fixedToken);
+    const xtIndex = mintableERC20Array.indexOf(xToken);
+    const amount = (totalSupplies[ftIndex] - totalSupplies[xtIndex]) / 10 ** decimals[debtTokenIndex];
+    api.add(debt, amount);
+  }
+}
+
 module.exports = {
   hallmarks: [
     [
@@ -222,18 +265,21 @@ module.exports = {
     ],
   ],
   arbitrum: {
+    borrowed: getTermMaxMarketBorrowed,
     tvl: async (api) => {
       const ownerTokens = await getTermMaxOwnerTokens(api);
       return sumTokens2({ api, ownerTokens });
     },
   },
   bsc: {
+    borrowed: getTermMaxMarketBorrowed,
     tvl: async (api) => {
       const ownerTokens = await getTermMaxOwnerTokens(api);
       return sumTokens2({ api, ownerTokens });
     },
   },
   ethereum: {
+    borrowed: getTermMaxMarketBorrowed,
     tvl: async (api) => {
       const [termStructureOwnerTokens, termMaxOwnerTokens] = await Promise.all([
         getTermStructureOwnerTokens(api),
