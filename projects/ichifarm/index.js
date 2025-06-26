@@ -193,6 +193,11 @@ const config = {
       { factory: '0x1A58D4CFF22C7E2e0c4cCf4a0010b87822d024A1', fromBlock: 5104000, isAlgebra: true, }, // Ocelex
     ]
   },
+  hemi: {
+    vaultConfigs: [
+      { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 1684964, isAlgebra: false, }, // OKU
+    ],
+  },
 }
 
 Object.keys(config).forEach(chain => {

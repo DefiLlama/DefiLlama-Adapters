@@ -10,6 +10,10 @@ const CONFIG = {
   avax: [
     '0xbb9360d57f68075e98d022784c12f2fda082316b', // XRV1
     '0xad6605f4987031fd2d6d6816be53eb7c5b764bf7', // XTBT
+  ],
+  plume_mainnet: [
+    '0x6688aA2eB549e325C21a16c942827C9c99F40dd9', // XMMF
+    '0xf19d819F23b05C231C0de1dde97289476A0Bcf30', // XHYCB
   ]
 }
 

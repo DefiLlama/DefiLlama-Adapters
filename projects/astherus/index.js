@@ -23,7 +23,8 @@ Object.keys(config).forEach(chain => {
 
 module.exports['solana'] = {
   tvl: async function (...rest) {
-    const { data: tokens } = await getConfig(`astherus/solana`, `https://astherus.finance/bapi/futures/v1/public/future/web3/ae-deposit-asset?network=SOL`)
-    return sumTokens2({ tokenAccounts: tokens.map(({ tokenVault }) => [tokenVault]).flat() })
+    const { data } = await getConfig(`astherus/solana`, `https://astherus.finance/bapi/futures/v1/public/future/web3/ae-deposit-asset?network=SOL`)
+    const tokens = data.filter(({ tokenVault }) => tokenVault && tokenVault.length > 0).map(({ tokenVault }) => tokenVault)
+    return sumTokens2({ tokenAccounts: tokens })
   }
 }

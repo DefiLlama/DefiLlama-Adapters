@@ -1,5 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache')
-
 const { addFraxVaultToTVL } = require("./fraxVault");
 const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
@@ -31,7 +31,8 @@ const abis = {
 
 const getHemiTvl = async (api) => {
   const totalAsset = await api.call({ abi: abis.totalAssets, target: "0x748973D83d499019840880f61B32F1f83B46f1A5" });
-  api.add("0x8BB97A618211695f5a6a889faC3546D1a573ea77", totalAsset, { skipChain: true })
+  
+  api.add(ADDRESSES.hemi.WBTC, totalAsset)  // NBTC Price alternative
 }
 
 const getArbTvl = async (balances, api, vaults) => {
@@ -56,8 +57,8 @@ const tvl = async (api) => {
   if (chain === 'arbitrum') return getArbTvl(balances, api, vaults)
 
   const assets = await api.multiCall({ abi: abis.asset, calls: vaults })
-  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults })
-  api.add(assets, totalAssets)
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: vaults, permitFailure: true })
+  api.add(assets, totalAssets.map(i => i || 0))
   return sumTokens2({ api, resolveLP: true })
 }
 
