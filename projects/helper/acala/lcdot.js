@@ -1,12 +1,12 @@
-const { getWallet } = require('./api')
+const { getAPI } = require('./api')
 
 
 async function staking(chain) {
-  const wallet = await getWallet(chain)
-  const supply = await wallet.getIssuance('lc://13')
+  const api = await getAPI(chain)
+  const data = await api.query.tokens.totalIssuance( { LiquidCrowdLoan: '13' } )
 
   return  {
-    polkadot: supply.toNumber()
+    polkadot: data/1e10
   }
 }
 

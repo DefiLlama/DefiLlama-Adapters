@@ -1,4 +1,4 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
 const v1Vaults = [
@@ -38,18 +38,33 @@ const blacklist = [
   '0x7F83935EcFe4729c4Ea592Ab2bC1A32588409797',
   '0x123964EbE096A920dae00Fb795FFBfA0c9Ff4675',
   '0x39546945695DCb1c037C836925B355262f551f55',
-    ...v1Vaults,
-]
+  ...v1Vaults,
+].map(i => i.toLowerCase())
 
 async function tvl(api) {
-  if(api.chain==="polygon"){
-    const data = await getConfig('yearn/' + api.chain, `https://ydaemon.yearn.finance/vaults/all?chainids=137&limit=100000`)
-    await api.erc4626Sum({ calls: data.filter(v=>v.kind==="Multi Strategy").map(v=>v.address),  balanceAbi: 'totalAssets', tokenAbi: "asset" })
-  } else {
-    const data = await getConfig('yearn/' + api.chain, `https://api.yearn.finance/v1/chains/${api.chainId}/vaults/all`)
-    const vaults = data.map(i => i.address).filter(i => !blacklist.includes(i))
-    await api.erc4626Sum({ calls: vaults,  balanceAbi: 'totalAssets', })
+  let data = await getConfig('yearn/v2-' + api.chain, `https://ydaemon.yearn.finance/vaults/all?chainids=${api.chainId}&limit=100000`)
+  if (!data.length) {
+    data = await getConfig('yearn/old-' + api.chain, `https://api.yexporter.io/v1/chains/${api.chainId}/vaults/all`)
   }
+  let strategies = data.map(v => v.strategies ?? []).flat().map(v => v.address.toLowerCase())
+  let vaults = data.filter(i => i.tvl.tvl > 0).map(v => v.address.toLowerCase()).filter(i => !blacklist.includes(i) && !strategies.includes(i))
+  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
+  const calls = [...vaults]
+  bals.forEach((bal, i) => {
+    if (+bal === 0)
+      calls[i] = nullAddress // skip empty vaults
+  })
+  const tokens = await api.multiCall({ abi: 'address:token', calls, permitFailure: true })
+
+  tokens.forEach((token, i) => {
+    if (token)
+      calls[i] = nullAddress // skip vaults that have a token
+  })
+  const tokensAlt = await api.multiCall({ abi: 'address:asset', calls, permitFailure: true })
+  bals.forEach((bal, i) => {
+    const token = tokens[i] || tokensAlt[i]
+    if (token) api.add(token, bal)
+  })
   if (api.chain === 'ethereum') {
     const tokens = await api.multiCall({ abi: 'address:token', calls: v1Vaults })
     let bals = await api.multiCall({ abi: 'erc20:totalSupply', calls: v1Vaults })
@@ -57,21 +72,19 @@ async function tvl(api) {
     bals = bals.map((bal, i) => bal * ratio[i] / 1e18)
     api.addTokens(tokens, bals)
   }
-  return sumTokens2({ api, resolveLP: true,})
+  return sumTokens2({ api, resolveLP: true, })
 }
+
 
 module.exports = {
   doublecounted: true,
-  misrepresentedTokens: true,
-  timetravel: false,
-  fantom: { tvl },
-  ethereum: { tvl },
-  arbitrum: { tvl },
-  optimism: { tvl },
-  base: { tvl },
-  polygon: { tvl },
   hallmarks: [
     [1594944000, "YFI token Launch"],
   ]
-};
+}
 
+const chains = ['ethereum', 'fantom', 'arbitrum', 'optimism', 'polygon', 'base']
+
+chains.forEach(chain => {
+  module.exports[chain] = { tvl }
+})

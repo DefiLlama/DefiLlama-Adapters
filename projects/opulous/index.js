@@ -33,8 +33,7 @@ const arbitrumTVL = async (api) => {
 }
 
 module.exports = {
-    // timetravel: true,
-    // start: 1660827158,
+    //     // start: '2022-08-18',
     methodology: `Counts the number of OPUL tokens locked in the staking pool.`,
     algorand: {
         tvl: () => ({}),

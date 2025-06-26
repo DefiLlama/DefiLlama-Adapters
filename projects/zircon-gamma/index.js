@@ -3,8 +3,8 @@ const { getLogs, getAddress } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
-const movrUniTvl = getUniTVL({ chain: 'moonriver', factory: '0x6B6071Ccc534fcee7B699aAb87929fAF8806d5bd', useDefaultCoreAssets: true, })
-const bscUniTvl = getUniTVL({ chain: 'bsc', factory: '0x18b7f6A60d5BEE3c3a953A3f213eEa25F7eF43E9', useDefaultCoreAssets: true, })
+const movrUniTvl = getUniTVL({ factory: '0x6B6071Ccc534fcee7B699aAb87929fAF8806d5bd', useDefaultCoreAssets: true, })
+const bscUniTvl = getUniTVL({ factory: '0x18b7f6A60d5BEE3c3a953A3f213eEa25F7eF43E9', useDefaultCoreAssets: true, })
 
 async function tvl(api) {
   const logs = await getLogs({
@@ -37,9 +37,9 @@ async function bscTvl(api) {
 }
 
 module.exports = {
-  hallmarks: [
-    [Math.floor(new Date('2023-03-18')/1e3), 'Protocol was hacked for 350k'],
-  ],
+  // hallmarks: [
+  //   ['2023-03-18', 'Protocol was hacked for 350k'],
+  // ],
   deadFrom: '2023-03-26',
   moonriver: {
     tvl: sdk.util.sumChainTvls([tvl, movrUniTvl]),

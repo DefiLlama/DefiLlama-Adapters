@@ -65,12 +65,44 @@ const config = {
       fromBlock: 41209677,
     },
   ],
+  base: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x15e86be6084c6a5a8c17732d398dfbc2ec574cec",
+      fromBlock: 13035219,
+    },
+    {
+      name: "Gyro E-CLP V2 Factory - Balancer",
+      factory: "0x5F6848976C2914403B425F18B589A65772F082E3",
+      fromBlock: 27590349,
+    },
+  ],
+  sei: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0xB438ea246cefA9241305aD62E5D307D014baF7Fa",
+      fromBlock: 117_480_059,
+    },
+  ],
+  avax: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x41E9ac0bfed353c2dE21a980dA0EbB8A464D946A",
+      fromBlock: 50484541,
+    },
+  ],
   optimism: [
     {
       name: "Gyro E-CLP V2 Factory",
       factory: "0x9b683ca24b0e013512e2566b68704dbe9677413c",
       fromBlock: 97253023,
     },
+    {
+      name: "Gyro E-CLP V2 Factory - Balancer",
+      factory: "0x22625eEDd92c81a219A83e1dc48f88d54786B017",
+      fromBlock: 133969692,
+    },
+    
   ],
   ethereum: [
     {
@@ -93,6 +125,20 @@ const config = {
       fromBlock: 5147666,
     },
   ],
+  xdai: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x5d3Be8aaE57bf0D1986Ff7766cC9607B6cC99b89",
+      fromBlock: 33759936,
+    },
+  ],
+  sonic: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x5364296D19d453D73f84a94e78681A430e620c5f",
+      fromBlock: 5143648,
+    },
+  ]
 };
 
 Object.keys(config).forEach((chain) => {

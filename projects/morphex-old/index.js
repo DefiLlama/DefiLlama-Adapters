@@ -9,7 +9,7 @@ const tokenAddressMPXFantom = "0x66eEd5FF1701E6ed8470DC391F05e27B1d0657eb";
 module.exports = {
     methodology: "Morphex liquidity is calculated by the value of tokens in the MLP pool. TVL also includes MPX staked.",
     fantom: {
-        staking: staking(stakingAddressFantom, tokenAddressMPXFantom, "fantom"),
+        staking: staking(stakingAddressFantom, tokenAddressMPXFantom),
         tvl: gmxExports({ vault: vaultAddressFantom })
     }
 };

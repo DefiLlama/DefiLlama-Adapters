@@ -58,8 +58,7 @@ const ethereum = (borrowed) => {
 };
 
 module.exports = {
-  timetravel: true,
-  doublecounted: true,
+    doublecounted: true,
   methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
   ethereum: {
     tvl: ethereum(false),

@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { v1Tvl, onChainTvl } = require('../helper/balancer')
+const { v1Tvl, onChainTvl, balV2GraphExport } = require('../helper/balancer')
 
 module.exports = {
   celo: {
@@ -14,10 +14,16 @@ module.exports = {
       onChainTvl('0x901E0dC02f64C42F73F0Bdbf3ef21aFc96CF50be', 21343993),
     ])
   },
-  kava: {
-    tvl: onChainTvl('0xA18808989E7EB0FcF0932fd00D007F3C118B78E7', 551649, { onlyUseExistingCache: true} ),
-  },
   telos: {
     tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 308572378),
+  },
+  meter: {
+    tvl: onChainTvl('0x913f21E596790aFC6AA45229E9ff8b7d0A473D5A', 51825430),
+  },
+  taiko: {
+    tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 371729),
+  },
+  etlk: {
+    tvl: balV2GraphExport({ vault:'0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', graphURL: '4y4fC3k9DMrJ9XYY6Z1Qi8DXJkpRrQuQCjh7zBRhxjQr', name: 'symmetric-etlk'})
   }
 }

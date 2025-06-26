@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
+const { sumTokensExport } = require('../helper/unwrapLPs');
 
 const contracts = {
   BUSD: ADDRESSES.bsc.BUSD,
@@ -16,19 +16,10 @@ const contracts = {
 
 const LPs = [contracts.LP_TRUNK, contracts.LP_ELEPHANT_BNB, contracts.LP_ELEPHANT_BUSD]
 
-async function tvl(timestamp, block, chainBlocks) {
-  return { [`bsc:${contracts.BUSD}`] : (await sdk.api.erc20.balanceOf({
-    target: contracts.BUSD,
-    owner: contracts.treasury,
-    block: chainBlocks.bsc,
-    chain: 'bsc'
-  })).output };
-}
-
 module.exports = {
   bsc: {
-    pool2: pool2([contracts.TRUNK, contracts.ELEPHANT], LPs, "bsc"),
-    tvl: tvl,
-    staking: stakings([contracts.staking], contracts.ELEPHANT, 'bsc')
+    pool2: pool2([contracts.TRUNK, contracts.ELEPHANT], LPs),
+    tvl: sumTokensExport({ tokens: [contracts.BUSD], owners: [contracts.treasury], }),
+    staking: stakings([contracts.staking], contracts.ELEPHANT)
   }
 };

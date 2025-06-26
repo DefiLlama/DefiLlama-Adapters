@@ -1,11 +1,14 @@
 const utils = require('./helper/utils')
 
-async function fetch(){
-    const tvl = await utils.fetchURL("https://public1.nuls.io/nuls/tvl")
-    return Number(tvl.data.tvl)
+const url = "https://public1.nuls.io/nuls/tvl"
+
+const tvl = async (api) => {
+  const { data } = await utils.fetchURL(url)
+  return api.addUSDValue(Math.floor(data.tvl))
 }
 
 module.exports={
-    methodology: 'TVL counts native chain staking and data is pulled from: "https://public1.nuls.io/nuls/tvl".',
-    fetch,
+  misrepresentedTokens: true,
+  methodology: 'TVL counts native chain staking and data is pulled from: "https://public1.nuls.io/nuls/tvl".',
+  nuls: { tvl }
 }

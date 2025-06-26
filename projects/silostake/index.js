@@ -36,7 +36,7 @@ Object.keys(config).forEach(chain => {
       // Logic for calculating TVL - just get total ustake.
       let state = await getState(chain, hub);
 
-      let total_ustake = state['total_ustake'];
+      let total_ustake = state['total_utoken'];
 
       api.add(coinGeckoId, total_ustake / 10 ** 6, { skipChain: true });
       

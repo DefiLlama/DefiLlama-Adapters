@@ -1,32 +1,59 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const ADDRESSES = require("../helper/coreAssets.json");
-const VECTOR = require("../vector/vectorContracts.json");
-
-const tokens = {
-  COQ: "0x420FcA0121DC28039145009570975747295f2329",
-};
-const coreModuleProxy = "0xceE74C8c242047c85e6833633AbB7A4Cd8465757";
-const pools = {
-  WAVAX: "0x7F91272ff1A0114743D2df95F5905F9613Fd92b3",
-  USDC: "0x94732A5319e1feAcc7d08e08Fdc4C2c7f5123143",
-  COQ: "0xc97d9B3971BfE1B8Ac8EA7f990Df721d8f695223",
-  SAVAX: "0xe57a4042eA63Df072B2cf6352F9779E4D2445A92",
-  core: "0xceE74C8c242047c85e6833633AbB7A4Cd8465757",
-};
+const { getConfig } = require('../helper/cache')
 
 module.exports = {
   avax: {
-    tvl: sumTokensExport({
-      tokensAndOwners: [
-        [ADDRESSES.avax.WAVAX, pools.WAVAX],
-        [ADDRESSES.avax.USDC, pools.USDC],
-        [tokens.COQ, pools.COQ],
-        [VECTOR.tokens.SAVAX.address, pools.SAVAX],
-        [ADDRESSES.avax.WAVAX, coreModuleProxy],
-        [ADDRESSES.avax.USDC, coreModuleProxy],
-        [tokens.COQ, coreModuleProxy],
-        [VECTOR.tokens.SAVAX.address, coreModuleProxy],
-      ],
-    }),
+    tvl,
   },
-};
+  base: {
+    tvl,
+  },
+  bsc: {
+    tvl,
+  }
+}
+
+const dexes = {
+  avax: [
+    "0x82E90fB94fd9a5C19Bf38648DD2C9639Bde67c74", // xliplessDex
+  ],
+  base: [
+    "0xaf5a41Ad65752B3CFA9c7F90a516a1f7b3ccCdeD" // perp
+  ],
+  bsc: [
+    "0x562a73AcfFcc13b349e3d55D105Ae1498C79702e" // perp
+  ]
+}
+
+async function tvl(api) {
+  const { assets } = await getConfig('fwx/' + api.chain, "https://analytics.fwx.finance/api/assets?chain_id=" + api.chainId)
+
+  let tokensAndOwners = [];
+  for (let i = 0; i < assets.length; i++) {
+    const asset = assets[i]
+    const tokenAddr = asset.token_address
+    const poolAddr = asset.pool_address
+    const coreAddr = asset.core_address
+    const dexAddrs = dexes[api.chain]
+
+    if (poolAddr != "") {
+      tokensAndOwners.push(
+        [tokenAddr, poolAddr],
+      );
+    }
+
+    if (coreAddr != "") {
+      tokensAndOwners.push(
+        [tokenAddr, coreAddr],
+      );
+    }
+
+    for (let i = 0; i < dexAddrs.length; i++) {
+      const dexAddr = dexAddrs[i]
+      tokensAndOwners.push(
+        [tokenAddr, dexAddr],
+      );
+    }
+  }
+
+  return api.sumTokens({ tokensAndOwners })
+}

@@ -32,8 +32,8 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: async () => ({}),
-    staking: stakings(stakingContracts, token, "bsc"),
-    pool2: pool2s(lockedContracts, bmccLP, "bsc"),
+    staking: stakings(stakingContracts, token),
+    pool2: pool2s(lockedContracts, bmccLP),
   },
   methodology: "Counts liquidty on the staking and pool2s",
 };

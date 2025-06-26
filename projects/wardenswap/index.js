@@ -10,7 +10,7 @@ module.exports = {
       factory: '0x3657952d7bA5A0A4799809b5B6fdfF9ec5B46293',
       useDefaultCoreAssets: true,
     }),
-    staking: staking(masterchefAddress, wardenTokenAddress, "bsc")
+    staking: staking(masterchefAddress, wardenTokenAddress)
   },
   hallmarks:[
     [1629910800, `Announcement 2 week left before pool's rewards end`],

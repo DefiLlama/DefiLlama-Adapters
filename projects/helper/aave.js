@@ -104,8 +104,10 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
   })
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], hasV2LPs = false, } = {}) {
-  return async (timestamp, ethBlock, { [chain]: block }) => {
+function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+  return async (api) => {
+    const chain = api.chain
+    const block = api.block
     const balances = {}
     const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances } = await getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, })
     if (borrowed) {
@@ -125,10 +127,10 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
     return balances
   }
 }
-function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
   return {
-    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
+    tvl: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
+    borrowed: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
   }
 }
 
@@ -207,7 +209,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
   }
 
   async function borrowed(api) {
-    const balances = {}
+    const balances = api.getBalances()
     const data = await getReservesData(api)
     const supplyVariable = await api.multiCall({
       abi: 'erc20:totalSupply',
@@ -225,7 +227,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
         sdk.util.sumSingleBalance(balances, i.underlying, value, api.chain)
       }
     })
-    return balances
+    return sumTokens2({ api, balances })
   }
 
   async function getReservesData(api) {

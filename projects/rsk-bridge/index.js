@@ -1,7 +1,21 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const sdk = require('@defillama/sdk')
 
 module.exports = {
+  bitcoin: {
+    tvl: async (api) => {
+      const rskApi = new sdk.ChainApi({ chain: "rsk", timestamp: api.timestamp });
+      const block = await rskApi.getBlock()
+      const unminted = (
+        await sdk.api.eth.getBalance({ target: "0x0000000000000000000000000000000001000006", chain: "rsk", block, })
+      ).output / 1e18;
+
+      const minted = 21e6 - unminted;
+
+      return { "coingecko:bitcoin": minted };
+    },
+  },
   ethereum: {
     tvl: sumTokensExport({
       owner: "0x12eD69359919Fc775bC2674860E8Fe2d2b6a7B5D",

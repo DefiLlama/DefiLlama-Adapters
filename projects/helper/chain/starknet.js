@@ -10,6 +10,7 @@ const { sliceIntoChunks, sleep } = require('../utils')
 const { getUniTVL } = require('../cache/uniswap')
 const { getCache } = require('../cache')
 const { getEnv } = require('../env')
+const ADDRESSES = require('../coreAssets.json')
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
@@ -33,7 +34,13 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   }
 }
 
-function parseOutput(result, abi, allAbi) {
+function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj = {} } = {}) {
+  if (!result) {
+    let errorMessage = responseObj.error?.data?.revert_error ?? responseObj.error?.message ?? 'Call failed'
+    if (permitFailure) return null
+    throw new Error(`Starknet call failed: ${errorMessage}`)
+  }
+
   let response = new CallData([abi, ...allAbi]).parse(abi.name, result)
   // convert BigInt to string
   for (const key in response) {
@@ -51,12 +58,12 @@ function parseOutput(result, abi, allAbi) {
   return response
 }
 
-async function call({ abi, target, params = [], allAbi = [] } = {}, ...rest) {
-  const { data: { result } } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
-  return parseOutput(result, abi, allAbi)
+async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}, ...rest) {
+  const { data } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
+  return parseOutput(data.result, abi, allAbi, { permitFailure, responseObj: data })
 }
 
-async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [] }) {
+async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [], permitFailure = false }) {
   if (!calls.length) return []
   calls = calls.map((callArgs) => {
     if (typeof callArgs !== 'object') {
@@ -70,7 +77,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   const allData = []
   const chunks = sliceIntoChunks(callBodies, 25)
   for (const chunk of chunks) {
-    await sleep(2000)
+    await sleep(200)
     const { data } = await axios.post(STARKNET_RPC, chunk)
     allData.push(...data)
   }
@@ -79,7 +86,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   allData.forEach((i) => {
     const { result, id } = i
     const abi = calls[id].abi ?? rootAbi
-    response[id] = parseOutput(result, abi, allAbi)
+    response[id] = parseOutput(result, abi, allAbi, { permitFailure, responseObj: i })
   })
   return response
 }
@@ -103,8 +110,14 @@ const balanceOfABI = {
   "customInput": 'address',
 }
 
+function replaceNull(i) {
+  return i === ADDRESSES.null ? ADDRESSES.starknet.ETH : i
+}
 
 async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], token, ownerTokens = [], api, }) {
+
+  tokens = tokens.map(replaceNull)
+  tokensAndOwners = tokensAndOwners.map(i => [replaceNull(i[0]), i[1]])
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
@@ -148,7 +161,7 @@ const defaultAbis = {
 }
 
 function dexExport({ factory, abis = {}, fetchBalances = false }) {
-  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(api, undefined, undefined, { api, chain: 'starknet' })
+  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(api, undefined, undefined, { api, })
 }
 
 module.exports = {
@@ -176,7 +189,6 @@ async function getLogs({ fromBlock, topic, target }) {
 
   const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
   const { data } = await axios.post(STARKNET_RPC, body)
-  console.log(data)
 }
 
 api.call = module.exports.call

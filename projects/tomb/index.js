@@ -1,28 +1,24 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 
-const tombTokenAddress = "0x6c021ae822bea943b2e66552bde1d2696a53fbb7";
 const tshareTokenAddress = "0x4cdf39285d7ca8eb3f090fda0c069ba5f4145b37";
 const tshareRewardPoolAddress = "0xcc0a87f7e7c693042a9cc703661f5060c80acb43";
 const masonryAddress = "0x8764de60236c5843d9faeb1b638fbce962773b67";
-const treasuryAddress = "0xF50c6dAAAEC271B56FCddFBC38F0b56cA45E6f0d";
 const lif3GenesisAddress = '0x072f35cfa85af2793348ccc0eaa0e16e898946a8'
-const chain = 'fantom'
 
 const ftmLPs = [
   "0x2a651563c9d3af67ae0388a5c8f89b867038089e", // tombFtmLpAddress
   "0x4733bc45ef91cf7ccecaeedb794727075fb209f2", //tshareFtmLpAddress
 ];
 
-async function pool2(timestamp, _b, { [chain]: block }) {
+async function pool2(api) {
   return sumTokens2({
-    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs,
+    api, owner: tshareRewardPoolAddress, tokens: ftmLPs,
   })
 }
 
-async function staking(timestamp, _b, { [chain]: block }) {
+async function staking(api) {
   const toa = [
     [tshareTokenAddress, masonryAddress, ],
   ]
@@ -36,11 +32,11 @@ async function staking(timestamp, _b, { [chain]: block }) {
   lif3Tokens.forEach(t => toa.push([t, lif3GenesisAddress]))
   
   return sumTokens2({
-    chain, block, tokensAndOwners: toa,
+    api, tokensAndOwners: toa,
   })
 }
 
-async function lif3GenesisTVL(timestamp, _b, { [chain]: block }) {
+async function lif3GenesisTVL(api) {
   const tokens = [
     ADDRESSES.fantom.WFTM, // WFTM
     ADDRESSES.fantom.USDC, // USDC
@@ -54,7 +50,7 @@ async function lif3GenesisTVL(timestamp, _b, { [chain]: block }) {
   ]
   
   return sumTokens2({
-    chain, block, tokens, owner: lif3GenesisAddress,
+    api, tokens, owner: lif3GenesisAddress,
   })
 }
 

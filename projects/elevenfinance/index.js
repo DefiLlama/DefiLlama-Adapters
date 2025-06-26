@@ -3,84 +3,52 @@ const utils = require('../helper/utils');
 const apiUrl = 'https://eleven.finance/api.json';
 
 const excludedPools = {
-    'polygon': [
-        'ELE ',
-        'ELE-MUST cLP',
-        'ELE-QUICK qLP',
-        'ELE-MATIC cLP',
-        'ELE-MATIC qLP',
-        'ELE-MATIC SLP',
-        'ELE-MATIC WLP',
-        'ELE-USDC DLP',
-        'ELE-DFYN DLP',
-    ],
-    'fantom': [
-        'ELE-WFTM SLP',
-    ],
-    'bsc': [
-        'ELE',
-        'ELE-BNB WLP',
-        'ELE-BNB LP V2',
-    ],
-    'avax': [
-        'ELE-WAVAX TLP',
-        'ELE-WAVAX PLP',
-        'ELE-PNG PLP',
-        'ELE  ',
-    ],
-    'okexchain': [
-        'ELE-USDT PLP',
-    ],
+  'polygon': [
+    'ELE ',
+    'ELE-MUST cLP',
+    'ELE-QUICK qLP',
+    'ELE-MATIC cLP',
+    'ELE-MATIC qLP',
+    'ELE-MATIC SLP',
+    'ELE-MATIC WLP',
+    'ELE-USDC DLP',
+    'ELE-DFYN DLP',
+  ],
+  'fantom': [
+    'ELE-WFTM SLP',
+  ],
+  'bsc': [
+    'ELE',
+    'ELE-BNB WLP',
+    'ELE-BNB LP V2',
+  ],
+  'avax': [
+    'ELE-WAVAX TLP',
+    'ELE-WAVAX PLP',
+    'ELE-PNG PLP',
+    'ELE  ',
+  ],
+  'okexchain': [
+    'ELE-USDT PLP',
+  ],
 };
 
-function fetchChain(chainId) {
-    return async()=>{
-    const response = await utils.fetchURL(apiUrl);
-    let tvl = parseFloat(response.data.tvlinfo[chainId]);
+const tvl = async (api) => {
+  const { data } = await utils.fetchURL(apiUrl);
+  let tvl = parseFloat(data.tvlinfo[api.chainId]);
 
-    if (excludedPools[chainId] !== undefined) {
-        excludedPools[chainId].forEach((pool) => {
-            tvl -= parseFloat(response.data[pool]?.tvl ?? 0);
-        })
-    }
+  const poolsToExclude = excludedPools[api.chainId] || [];
+  for (const pool of poolsToExclude) {
+    const poolTVL = parseFloat(data[pool]?.tvl ?? 0);
+    tvl -= poolTVL;
+  }
 
-    return Math.round(tvl);
-    }
-}
+  return api.addUSDValue(Math.round(tvl));
+};
 
-async function fetch() {
-    const response = await utils.fetchURL(apiUrl);
-    let tvl = parseFloat(response.data.totalvaluelocked);
+module.exports.misrepresentedTokens = true
 
-    const chains = Object.keys(excludedPools)
-    chains.forEach((chainId) => {
-        if (excludedPools[chainId] === undefined) {
-            return;
-        }
-
-        excludedPools[chainId].forEach((pool) => {
-            tvl -= parseFloat(response.data[pool]?.tvl ?? 0);
-        })
-    })
-
-    return Math.round(tvl);
-}
-
-module.exports = {
-    bsc: {
-        fetch: fetchChain('bsc'),
-    },
-    polygon: {
-        fetch: fetchChain('polygon'),
-    },
-    fantom: {
-        fetch: fetchChain('fantom'),
-    },
-    avax:{
-        fetch: fetchChain('avax'),
-    },
-    okexchain: {
-        fetch: fetchChain('okexchain'),
-    },
-    fetch,
-}
+const chains = ["bsc", "polygon", "fantom", "avax", "okexchain"]
+chains.forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

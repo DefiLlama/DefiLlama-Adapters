@@ -46,3 +46,4 @@ function getVaultPublicKey(seed, marketIndex) {
       new anchor.BN(marketIndex).toArrayLike(Buffer, 'le', 2),
     ], DRIFT_PROGRAM_ID)[0].toBase58()
 }
+

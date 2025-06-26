@@ -50,8 +50,7 @@ function v2(chain, v2Registry){
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: methodologies.lendingMarket,
+    methodology: methodologies.lendingMarket,
   ethereum: {
     staking: staking(aaveStakingContract, aaveTokenAddress),
     pool2: stakingBalancerTvl,

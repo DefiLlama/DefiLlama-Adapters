@@ -90,9 +90,8 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 1656018000,
-  timetravel: true,
-  polygon: {
+  start: '2022-06-23',
+    polygon: {
     tvl,
   },
   bsc: {

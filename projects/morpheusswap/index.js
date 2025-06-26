@@ -12,7 +12,7 @@ async function tvl(timestamp, block, chainBlocks, api) {
   if (chainBlocks.fantom && chainBlocks.fantom < 21182441) { // Factory deployment block
     await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [morph])
   } else {
-    const dexTvl = getUniTVL({ factory: '0x9C454510848906FDDc846607E4baa27Ca999FBB6', chain: 'fantom', useDefaultCoreAssets: true })
+    const dexTvl = getUniTVL({ factory: '0x9C454510848906FDDc846607E4baa27Ca999FBB6', useDefaultCoreAssets: true })
     return dexTvl(timestamp, block, chainBlocks, api);
   }
   return balances;

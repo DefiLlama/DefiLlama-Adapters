@@ -20,8 +20,8 @@ function fetchallchain(chainId) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
   methodology: "Acryptos TVL is the USD value of token within the vault and farm contracts",
+  misrepresentedTokens: true,
   ethereum: {
     tvl: fetchallchain(1),
   },
@@ -66,6 +66,9 @@ module.exports = {
   },
   base:{
     tvl: fetchallchain(8453),
+  },
+  linea:{
+    tvl: fetchallchain(59144),    
   },
   harmony: {
     tvl: fetchallchain(1666600000),

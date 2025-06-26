@@ -14,9 +14,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
+      methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
   filecoin: {
     tvl,
   }

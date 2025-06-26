@@ -8,6 +8,8 @@ const m2m = {
   era: ["0x240aad990FFc5F04F11593fF4dCF1fF714d6fc80"],
   base: ["0x1F4947Cd5A5c058DD5EA6Fd1CCd5c311aDa9E6Fb", "0x96aa0bBe4D0dea7C4AF4739c53dBFA0300262253"],
   linea: ["0x1F4947Cd5A5c058DD5EA6Fd1CCd5c311aDa9E6Fb"],
+  blast: ["0x93dD104528B35E82c061BB0D521096dCF11628FA", "0x1d48DD3094EbB4B9a2c5Ab96dF4ef05bFF562F26"],
+  sonic: ["0x1b5949147D2BB411b1f99a61cC25068A86C42519"]
 }
 
 const assets = {
@@ -17,7 +19,9 @@ const assets = {
   arbitrum: ADDRESSES.arbitrum.USDC, //USDC
   era: ADDRESSES.era.USDC,
   base: ADDRESSES.base.USDbC, //USDC
-  linea: ADDRESSES.linea.USDC //USDC
+  linea: ADDRESSES.linea.USDC, //USDC
+  blast: ADDRESSES.blast.USDB, // USDB
+  sonic: ADDRESSES.sonic.USDC_e
 }
 
 const abi = "uint256:totalNetAssets"

@@ -1,7 +1,4 @@
-const sdk = require("@defillama/sdk");
 const abiCellarV0815 = require("./cellar-v0-8-15.json");
-
-const chain = "ethereum";
 
 // type Options = {
 //   cellars: string[], // list of cellar addresses
@@ -19,59 +16,22 @@ async function sumTvl(options) {
 
 // target: string, cellar contract address
 // options: same as above
-async function logCellarTvl(target, options) {
-  const { balances, chainBlocks } = options;
+async function logCellarTvl(target, { api }) {
 
   // TVL for the v0.8.15 cellars is the sum of:
   // totalAssets (assets invested into the underlying)
   // totalHoldings (assets deposited into the strategy but uninvested)
   // maxLocked (yield waiting to be distributed and reinvested)
-  const totalAssets = (
-    await sdk.api.abi.call({
-      chain,
-      abi: abiCellarV0815.totalAssets,
-      target,
-      block: chainBlocks[chain],
-    })
-  ).output;
-
-  const totalHoldings = (
-    await sdk.api.abi.call({
-      chain,
-      abi: abiCellarV0815.totalHoldings,
-      target,
-      block: chainBlocks[chain],
-    })
-  ).output;
-
-  const maxLocked = (
-    await sdk.api.abi.call({
-      chain,
-      abi: abiCellarV0815.maxLocked,
-      target,
-      block: chainBlocks[chain],
-    })
-  ).output;
+  const totalAssets = await api.call({ abi: abiCellarV0815.totalAssets, target, })
+  const totalHoldings = await api.call({ abi: abiCellarV0815.totalHoldings, target, })
+  const maxLocked = await api.call({ abi: abiCellarV0815.maxLocked, target, })
 
   // Asset is the underlying ERC20 the cellar is invested in and is accepted for deposit
   // This can change as the cellar chases the underlying pool with the highest yield
-  const assetAddress = (
-    await sdk.api.abi.call({
-      chain,
-      abi: abiCellarV0815.asset,
-      target,
-      block: chainBlocks[chain],
-    })
-  ).output;
+  const assetAddress = await api.call({ abi: abiCellarV0815.asset, target, })
 
   // Sum up total assets, holdings, and locked yield
-  sdk.util.sumSingleBalance(balances, `${chain}:${assetAddress}`, totalAssets);
-  sdk.util.sumSingleBalance(
-    balances,
-    `${chain}:${assetAddress}`,
-    totalHoldings
-  );
-  sdk.util.sumSingleBalance(balances, `${chain}:${assetAddress}`, maxLocked);
+  api.add(assetAddress, [totalAssets, totalHoldings, maxLocked])
 }
 
 module.exports = {

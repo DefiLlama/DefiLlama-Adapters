@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { zombiTvl } = require("../zombi/zombi");
+const { zombiTvl } = require("../zomb2/zombi");
 
 const token = "0xA87bcE04d4a396DF40cC1be3a21CF04592C08290";
 const share = "0x9E594379bC7e2034fCc8607Fb8C57F149Fb68284";
@@ -23,6 +23,6 @@ const listedTokenGeneris = [
   '0xb3584d821109e49a068a8c3a05f367bc54061252',//szombi
 ]
 
-module.exports = {
-  ...zombiTvl(token, share, rewardPool, rewardPoolGeneris, masonry, pool2LPs, listedTokenGeneris, "fantom", undefined, false, "0x7333155e21E13Ce81e1206C80d3c7E3DA41C92a6")
-}
+module.exports = zombiTvl(token, share, rewardPool, rewardPoolGeneris, masonry, pool2LPs, listedTokenGeneris, "fantom", undefined, false, "0x7333155e21E13Ce81e1206C80d3c7E3DA41C92a6")
+
+module.exports.deadFrom = '2022-04-03' 

@@ -11,6 +11,7 @@ module.exports = {
         "0xf9d92BAd7b1410dfFB0a204B7aa418C9fd5A898F",
         "0xf20816C9bdcb25da3ba79b206e9b7107ae02ae10",
         "0x489d6d679F1CA4cFE6976C55B54427D1AaDb8057",
+        "0x184E039D35cce96511E32c1aF85907664fb0e646"
       ],
       tokens: [nullAddress],
     }),

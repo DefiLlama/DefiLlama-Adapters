@@ -1,11 +1,11 @@
+const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('./helper/cache');
 
 const { sumTokens, queryAddresses } = require('./helper/chain/radixdlt');
 const { getConfig } = require('./helper/cache');
 const { get } = require('./helper/http');
-const sdk = require('@defillama/sdk');
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defiplaza';
+const graphUrl = sdk.graph.modifyEndpoint('4z9FBF12CrfoQJhAkWicqzY2fKYN9QRmuzSsizVXhjKa');
 
 module.exports = {
    ethereum: {

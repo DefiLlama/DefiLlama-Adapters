@@ -7,7 +7,7 @@ const fxTokens = {
 
 module.exports = {
   arbitrum: {
-    tvl: sumTokensExport({ owner: hspPool, tokens: [fxTokens.usd] }),
+    tvl: sumTokensExport({ owner: hspPool, tokens: [] }),
   },
   methodology: "TVL on arbitrum is the sum of all handle synthetic perpetuals (hSP) deposits",
 }

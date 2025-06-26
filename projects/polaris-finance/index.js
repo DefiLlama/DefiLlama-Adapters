@@ -35,8 +35,7 @@ const staking = async (_timestamp, _ethBlock, { [chain]: block }) => {
 };
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   methodology:
     "Pool2 TVL accounts for all LPs staked in Dawn, Staking TVL accounts for all tokens staked in Sunrise.",
   aurora: {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLiquityTvl } = require("../helper/liquity");
 const { staking } = require("../helper/staking.js");
 
@@ -8,7 +9,7 @@ const SATOSHI_SATO_STAKING = '0x28c0e5160AB7B821A98745A3236aD2414F5dC041'
 // Contract address for SATO token
 const SATO = '0x708bAac4B235d3F62bD18e58c0594b8B20b2ED5B'
 // Contract address of BTCB collateral
-const BTCB = '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c'
+const BTCB = ADDRESSES.bsc.BTCB
 
 module.exports = {
   bsc: {

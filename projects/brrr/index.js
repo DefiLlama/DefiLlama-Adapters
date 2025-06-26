@@ -1,7 +1,7 @@
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const NFT_CONTRACT = "0x47efb5793b3aa8e15808c6fa794e6d7c93394047";
+const NFT_CONTRACT = "0x58ebebd033dC43aa9ab41ff739C7052eB0A72cd7";
 
 module.exports = {
   blast: {

@@ -35,8 +35,7 @@ async function terra2(api) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  timetravel: false,
+    timetravel: false,
   terra: {
     tvl: () => ({}),
   },
