@@ -55,7 +55,7 @@ module.exports = {
   ],
   avax: {
     tvl: crocGenesisTVL,
-    pool2,
+     //pool2, comment out until pool2 tokens are available
     staking: staking(masonryAddress, gcrocTokenAddress),
   },
 };
