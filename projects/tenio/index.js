@@ -1,15 +1,16 @@
-const COLLATERAL_PER_TOKEN = 0.10;   // ETH por fragmento
-const CONTRACT = '0xb933f98b5e622463e3f5f25a75cdc2992d0a2ae';  // dirección del contrato
+const COLLATERAL_PER_TOKEN = 0.10;  // ETH por fragmento
+const CONTRACT = '0xF0076BFF99424EAC54271E278A73AB60A9f47dF1';  // dirección checksum final
 
 module.exports = {
   ethereum: {
     tvl: async (api) => {
       const minted = await api.call({
         target: CONTRACT,
-        abi: 'uint256:tokenIds',   // cambia si el nombre es distinto
+        abi: 'uint256:tokenIds',
       });
+
       return {
-        ethereum: minted.toNumber() * COLLATERAL_PER_TOKEN,
+        ethereum: Number(minted) * COLLATERAL_PER_TOKEN,
       };
     },
   },
