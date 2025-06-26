@@ -1,4 +1,4 @@
-
+// Solido Grow is a yield protocol subproject of Solido, similar to Solido Cash
 const sdk = require("@defillama/sdk");
 const {
   invokeViewFunction,
