@@ -480,7 +480,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, permitFailure = false, sumChunkSize = undefined } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, permitFailure = false, sumChunkSize = undefined, sumChunkSleep = 3000 } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -510,7 +510,9 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (sumChunkSize)
     chunks = sliceIntoChunks(tokensAndOwners, sumChunkSize)
 
+  let i = 0
   for (const tokensAndOwners of chunks) {
+    i++
     const balanceOfTokens = await sdk.api.abi.multiCall({
       calls: tokensAndOwners.map(t => ({
         target: t[0],
@@ -531,7 +533,11 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       }
       balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
     })
-    await sleep(3000) // avoid rate limit issues
+    if (chunks.length > 3) {
+      sdk.log(`Processed chunk ${i}/${chunks.length} with ${tokensAndOwners.length} tokens, sleeping for ${sumChunkSleep/1e3}s to avoid rate limit issues`)
+    }
+    if (i < chunks.length)
+      await sleep(sumChunkSleep) // avoid rate limit issues
   }
 
 
@@ -747,6 +753,7 @@ async function sumTokens2({
   solidlyVeNfts = [],
   convexRewardPools = [],
   auraPools = [],
+  sumChunkSleep,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -845,7 +852,7 @@ async function sumTokens2({
   log(chain, 'summing tokens', tokensAndOwners.length)
 
 
-  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, sumChunkSize, })
+  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, sumChunkSize, sumChunkSleep, })
 
 
   if (resolveIchiVault)
