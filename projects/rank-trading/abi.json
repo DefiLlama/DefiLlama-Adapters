@@ -2,5 +2,9 @@
   "factorySettings": "function factorySettings() view returns (address asset, address assetPriceFeed, address rankToken, address ranktokenPricePair, address backendAddress, address managedAddress, address rankStakingPool, uint256 rankStakingPoolId, uint256 premiumStakingValue, tuple(uint16 depositFeeBP, uint16 performanceFeeBP, uint16 ownerDepositFeeBP), uint256 MAX_DURATION, bool enabled)",
   "rankStrategiesCount": "function rankStrategiesCount() view returns (uint256)",
   "rankStrategies": "function rankStrategies(uint256) view returns (address)",
-  "totals": "function totals() view returns (uint256 shares, uint256 assetAmount, uint256 withdrawableAssetAmount, uint256 lastAvailUpdate)"
+  "totals": "function totals() view returns (uint256 shares, uint256 assetAmount, uint256 withdrawableAssetAmount, uint256 lastAvailUpdate)",
+  "poolInfo":"function poolInfo(uint256) view returns (address stakingToken, address rewardToken, uint256 lastRewardTimestamp, uint256 accTokenPerShare, uint256 startTime, uint256 endTime, uint256 precision, uint256 totalStaked, uint256 totalReward, address owner)",
+  "positions": "function positions(uint256 tokenId) view returns (uint256 nonce, address operator, address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)",
+  "getPool": "function getPool(address, address, uint24) view returns (address)",
+  "slot0": "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)"
 }
