@@ -98,12 +98,12 @@ async function unwrapUniswapV4NFTs({ balances = {}, nftsAndOwners = [], block, c
       }
 
     if (Array.isArray(nftAddress)) {
-      await Promise.all(nftAddress.map((addr) => unwrapUniswapV4NFT({ ...commonConfig, nftAddress: addr, stateViewer: stateViewer,})))
+      await Promise.all(nftAddress.map((addr) => unwrapUniswapV4NFT({ ...commonConfig, nftAddress: addr, stateViewer: stateViewer, })))
     } else
-      await unwrapUniswapV4NFT({ ...commonConfig, nftAddress, stateViewer: stateViewer,})
+      await unwrapUniswapV4NFT({ ...commonConfig, nftAddress, stateViewer: stateViewer, })
 
   } else
-    await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV4NFT({ ...commonConfig, owner, nftAddress, stateViewer: stateViewer,})))
+    await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV4NFT({ ...commonConfig, owner, nftAddress, stateViewer: stateViewer, })))
   return balances
 }
 
@@ -182,7 +182,7 @@ async function unwrapUniswapV4NFT({ balances, owner, owners, nftAddress, stateVi
       ["address", "address", "uint24", "int24", "address"],
       [token0, token1, fee, tickSpacing, hook]
     );
-    
+
     const poolId = ethers.keccak256(encodedData);
     return poolId;
   }
@@ -193,11 +193,11 @@ async function unwrapUniswapV4NFT({ balances, owner, owners, nftAddress, stateVi
     const value = unsignedValue.toNumber();
     // Check if signed (negative)
     if (value & 0x800000) {
-        // If negative, subtract 2^24 (16777216) to get the signed value
-        return value - (1 << 24);
+      // If negative, subtract 2^24 (16777216) to get the signed value
+      return value - (1 << 24);
     } else {
-        // If positive, return as is
-        return value;
+      // If positive, return as is
+      return value;
     }
   }
 
@@ -513,7 +513,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   let i = 0
   for (const tokensAndOwners of chunks) {
     i++
-    const balanceOfTokens = await sdk.api.abi.multiCall({
+    let call = () => sdk.api.abi.multiCall({
       calls: tokensAndOwners.map(t => ({
         target: t[0],
         params: t[1]
@@ -523,6 +523,23 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       block,
       chain,
     })
+
+    let balanceOfTokens
+    
+    try {
+
+      balanceOfTokens = await call()
+
+    } catch (e) {
+      if (permitFailure) {
+        sdk.log(`Failed to fetch balances for chunk ${i}/${chunks.length}, retrying...`)
+        await sleep(1000)
+        balanceOfTokens = await call()
+      } else
+        throw e
+    }
+
+
     balanceOfTokens.output.forEach((result) => {
       const token = transformAddress(result.input.target)
       let balance = BigNumber(result.output)
@@ -534,7 +551,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
     })
     if (chunks.length > 3) {
-      sdk.log(`Processed chunk ${i}/${chunks.length} with ${tokensAndOwners.length} tokens, sleeping for ${sumChunkSleep/1e3}s to avoid rate limit issues`)
+      sdk.log(`Processed chunk ${i}/${chunks.length} with ${tokensAndOwners.length} tokens, sleeping for ${sumChunkSleep / 1e3}s to avoid rate limit issues`)
     }
     if (i < chunks.length)
       await sleep(sumChunkSleep) // avoid rate limit issues
@@ -1020,7 +1037,7 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
 }
 
 function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick }) {
-  
+
   const sa = tickToPrice(tickLower / 2)
   const sb = tickToPrice(tickUpper / 2)
 
