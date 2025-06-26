@@ -53,6 +53,30 @@ const ADDRESSES = {
       ],
     ],
   },
+  bsc: {
+    Factory: {
+      address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
+      fromBlock: 50519690,
+    },
+    VaultFactory: [
+      {
+        address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
+        fromBlock: 50519690,
+      },
+    ],
+    Vaults: [
+      // TermMax USDT Vault
+      [
+        [CORE_ASSETS.bsc.USDT],
+        "0x86c958CAc8aeE37dE62715691c0D597c710Eca51",
+      ],
+      // TermMax WBNB Vault
+      [
+        [CORE_ASSETS.bsc.WBNB],
+        "0x89653E6523fB73284353252b41AE580E6f96dFad",
+      ],
+    ],
+  },
   ethereum: {
     Factory: {
       address: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
@@ -88,6 +112,16 @@ const ADDRESSES = {
       [
         [CORE_ASSETS.ethereum.WETH],
         "0xDEB8a9C0546A01b7e5CeE8e44Fd0C8D8B96a1f6e",
+      ],
+      // TermMax pufETH Vault
+      [
+        ['0xD9A442856C234a39a81a089C06451EBAa4306a72'], // pufETH
+        "0xdC4d99aB6c69943b4E17431357AbC5b54B4C2F56",
+      ],
+      // TermMax XAU Vault
+      [
+        [CORE_ASSETS.ethereum.USDC],
+        "0x240Dd52089899a71454942b6Ba3ef4dbcBAd57fd",
       ],
     ],
   },
@@ -188,6 +222,12 @@ module.exports = {
     ],
   ],
   arbitrum: {
+    tvl: async (api) => {
+      const ownerTokens = await getTermMaxOwnerTokens(api);
+      return sumTokens2({ api, ownerTokens });
+    },
+  },
+  bsc: {
     tvl: async (api) => {
       const ownerTokens = await getTermMaxOwnerTokens(api);
       return sumTokens2({ api, ownerTokens });
