@@ -5,7 +5,6 @@ module.exports = treasuryExports({
   ethereum: {
     owners: [
       '0xA646E29877d52B9e2De457ECa09C724fF16D0a2B',
-      '0xf348717CFFF01Edc759a4E0cB198f6360975ee39',
       '0xBBF0cC1C63F509d48a4674e270D26d80cCAF6022'
     ],
     tokens: [
