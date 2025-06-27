@@ -22,7 +22,6 @@ const endpointName = "get_net_deposits"
 
 const tvl = async (api) => {
   const url = `${endpointUrl}/${endpointName}/${Object.values(coins).join(',')}/${api.timestamp}`
-  console.log(url);
   const data = await get(url)
   Object.keys(data).forEach(coin => {
     api.add(coin, data[coin])
