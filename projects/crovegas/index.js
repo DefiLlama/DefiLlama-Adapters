@@ -1,3 +1,5 @@
+const { sumTokensExport } = require('../helper/unwrapLPs')
+
 /**
  * CroVegas TVL adapter
  *
@@ -43,8 +45,6 @@ const TOKENS = [
   '0xe1f864aE527d3646c222fe1b65460dB2D6E62228', // NFX
 ]
 
-const { sumTokensExport } = require('../helper/unwrapLPs')
-
 module.exports = {
   cronos: {
     tvl: sumTokensExport({
@@ -56,6 +56,6 @@ module.exports = {
 
   methodology:
     'Sums native CRO and all whitelisted ERC-20 balances sitting in the CroVegas CoinFlip and Lottery contracts.',
-  start: 19870066,
+  start: '2025-06-08',
   timetravel: true, 
 }
