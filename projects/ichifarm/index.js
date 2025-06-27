@@ -161,6 +161,11 @@ const config = {
       { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
     ]
   },
+  nibiru: {
+    vaultConfigs: [
+      { factory: '0x63703A4DdFA51B6CffC1Bb40cc73912dF62535FA', fromBlock: 24151937, isAlgebra: false, }, // Uniswap
+    ]
+  },
   real: {
     vaultConfigs: [
       { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
@@ -229,13 +234,13 @@ Object.keys(config).forEach(chain => {
         await sumTokens2({ api, owners: uniV3NFTHolders, resolveUniV3: true, blacklistedTokens, })
       }
 
-      for (const { 
-        factory, 
-        fromBlock, 
-        isAlgebra, 
+      for (const {
+        factory,
+        fromBlock,
+        isAlgebra,
       } of vaultConfigs) {
-        const topic = isAlgebra ? algebraTopic : defaultTopic 
-        const eventAbi = isAlgebra ? algebraEvent : defaultEvent 
+        const topic = isAlgebra ? algebraTopic : defaultTopic
+        const eventAbi = isAlgebra ? algebraEvent : defaultEvent
         const logs = await getLogs({
           api,
           target: factory,
