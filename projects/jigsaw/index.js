@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const tvl = async (api) => {
-    const apiUrl = "https://api.jigsawdev.org/api/protocol/tvl";
+    const apiUrl = "https://api.jigsaw.finance/api/protocol/tvl";
     try {
         const {data} = await axios.get(apiUrl);
         const totalValueLocked = data ? parseFloat(data.totalValueLocked) : 0;
