@@ -22,7 +22,6 @@ module.exports = {
     ], ETHEREUM_GRACY_TOKEN_CONTRACT),
   },
   base: {
-    tvl: () => ({}),
     staking: stakings([STAKING_CONTRACT_SEASON_9], BASE_GRACY_TOKEN_CONTRACT),
   },
 };
