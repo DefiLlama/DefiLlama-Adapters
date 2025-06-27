@@ -49,7 +49,7 @@ module.exports = {
 
       // Filter out FundedOnBehalf events where funder is 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
       const filteredFundedOnBehalfLogs = fundedOnBehalfLogs.filter(log => 
-        log.funder !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'
+        log.funderAccountAddress !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'
       )
 
       // Filter out ETHWithdrawnForUser events where recipient is 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
