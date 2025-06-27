@@ -179,7 +179,7 @@ module.exports = {
   isHeavyProtocol: true,
   start: '2024-03-25', // Mon Mar 25 2024 18:00:00 GMT+0000
   hallmarks: [
-    [Math.floor(new Date("2024-04-03") / 1e3), "Points program announced."],
+    ["2024-04-03", "Points program announced."],
   ],
 };
 

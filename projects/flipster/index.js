@@ -7,12 +7,16 @@ const config = {
       '0xd49417f37cED33aBA35DDAbf208D5bFcD87b4eBe',
       '0x25F6710AF9866971A3CCaaf8895e286F6ccDa9F6',
       '0x711948E4d826A37Aa564C41c7B50de7E45c9Ee44',
+      '0x8C50172e1534826F40C288A41793cFc57bB37538',
+      '0xd157bD19Ea0953f8B29E34b4Bee08fC4cba2B6a4',
     ],
   },
   tron: {
     owners: [
         'TA6SbszfFYC7NYt48viCM9LMD5F5E1Gbi8',
-        'TL3gWBCybJbvJt8CaLyxzUvQvyFYkCbmQR'
+        'TL3gWBCybJbvJt8CaLyxzUvQvyFYkCbmQR',
+        'TApVQ5DRptVNyhxRpFn9DgYv6mgqtyPRjn',
+        'TS5Btew8Wrk85cFx2kJ4gC28JsrFLXpJjU',
     ]
   },  
   bitcoin: {
@@ -107,6 +111,12 @@ const config = {
   sui: {
     owners: [
       '0xfcdde971bdb9105fc3cb1c95ca468e8b88d23c6594162b2d2b1dadf16acf5b3a'
+    ]
+  },
+  aptos: {
+    fungibleAssets: ['0x357b0b74bc833e95a115ad22604854d6b0fca151cecd94111770e5d6ffc9dc2b'],
+    owners: [
+      '0x0613f31af70ce983b9dca574e033a52351fd2e67b1959bf48574c6e9c956f95e'
     ]
   }
 }

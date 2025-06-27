@@ -1,6 +1,7 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
 const sdk = require('@defillama/sdk')
+const { getEnv } = require('../helper/env')
 
 // node test.js projects/bifrost-dex/api.js
 
@@ -103,7 +104,7 @@ const tokenToCoingecko = {
 };
 
 async function tvl() {
-  const kusamaProvider = new WsProvider("wss://hk.bifrost-rpc.liebi.com/ws");
+  const kusamaProvider = new WsProvider(getEnv('BIFROST_K_RPC'));
   const kusamaApi = await ApiPromise.create(({ provider: kusamaProvider }));
 
   const totalLiquidity = {};
@@ -137,7 +138,7 @@ async function tvl() {
     }
   }));
 
-  const polkadotProvider = new WsProvider("wss://hk.p.bifrost-rpc.liebi.com/ws");
+  const polkadotProvider = new WsProvider(getEnv('BIFROST_P_RPC'));
   const polkadotApi = await ApiPromise.create(({ provider: polkadotProvider }));
 
   const polkadotPools = await polkadotApi.query.zenlinkProtocol.pairStatuses.entries();

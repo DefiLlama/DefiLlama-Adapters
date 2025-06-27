@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { hexToBytes, toU64, textToBytes, desU64 } = require('./bytes');
 const sui = require("../helper/chain/sui");
 

@@ -8,6 +8,9 @@ module.exports = {
   tron: {
     tvl, borrowed,
   },
+  hallmarks: [
+    [1733270400, "TRX token price was increasing over 90%"],
+  ],
 };
 
 async function tvl(api) {

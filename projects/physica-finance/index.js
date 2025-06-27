@@ -1,5 +1,5 @@
-const { uniV3Export } = require("../helper/uniswapV3");
+const { uniV3GraphExport } = require("../helper/uniswapV3");
 
-module.exports = uniV3Export({
-    planq: { factory: "0xFF4F8f857fd60142a135aB139C16370da89c76c2", fromBlock: 9020194, },
-});
+module.exports = {
+    planq: { tvl: uniV3GraphExport({ graphURL: 'https://subgraph.planq.finance/subgraphs/name/ianlapham/uniswap-v3', name: 'physica-v3'}),}
+}
