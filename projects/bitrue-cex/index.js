@@ -127,5 +127,5 @@ vechain: {
 
 module.exports = mergeExports([
   cexExports(config),
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x4fd797f0cC7C87B1b48b0A0db6b66DB63780717d' }) } },
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x4fd797f0cC7C87B1b48b0A0db6b66DB63780717d', size: 100, sleepTime: 15_000 }) } },
 ])
