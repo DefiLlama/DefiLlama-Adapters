@@ -76,12 +76,16 @@ module.exports = {
     lisk: { factory: "0x0d922Fb1Bc191F64970ac40376643808b4B74Df9", fromBlock: 577168 },
     wc: { factory: "0x7a5028BDa40e7B173C278C5342087826455ea25a", fromBlock: 1603366 },
     corn: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 10878 },
+    telos: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 386633562 },
     goat: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 848385 },
     hemi: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 1293598 },
+    nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
     sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
     unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
     lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
-    xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664 }
+    xdc: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 87230664, blacklistedTokens: ['0x5d5f074837f5d4618b3916ba74de1bf9662a3fed'] },
+    lens: { factory: "0xe0704DB90bcAA1eAFc00E958FF815Ab7aa11Ef47", fromBlock: 1 },
+    etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
     // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
   }),
 }

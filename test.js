@@ -41,26 +41,21 @@ async function getTvl(
   tokensBalances,
   usdTokenBalances,
   tvlFunction,
-  isFetchFunction,
   storedKey,
 ) {
   const chain = storedKey.split('-')[0]
   const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, storedKey, })
   api.api = api
   api.storedKey = storedKey
-  if (!isFetchFunction) {
-    let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
-    if (tvlBalances === undefined) tvlBalances = api.getBalances()
-    const tvlResults = await computeTVL(tvlBalances, "now");
-    await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
-    usdTvls[storedKey] = tvlResults.usdTvl;
-    tokensBalances[storedKey] = tvlResults.tokenBalances;
-    usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
-  } else {
-    usdTvls[storedKey] = Number(
-      await tvlFunction(api, ethBlock, chainBlocks, api)
-    );
-  }
+
+  let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
+  if (tvlBalances === undefined) tvlBalances = api.getBalances()
+  const tvlResults = await computeTVL(tvlBalances, "now");
+  await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
+  usdTvls[storedKey] = tvlResults.usdTvl;
+  tokensBalances[storedKey] = tvlResults.tokenBalances;
+  usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
+
   if (
     typeof usdTvls[storedKey] !== "number" ||
     Number.isNaN(usdTvls[storedKey])
@@ -144,8 +139,12 @@ function validateHallmarks(hallmark) {
   const passedTimestamp = process.argv[3]
   if (passedTimestamp !== undefined) {
     unixTimestamp = Number(passedTimestamp)
-    const res = await getBlocks(unixTimestamp, chains)
-    chainBlocks = res.chainBlocks
+
+    // other chains than evm will fail to get block at timestamp
+    try {
+      const res = await getBlocks(unixTimestamp, chains)
+      chainBlocks = res.chainBlocks
+    } catch (e) { /* ignore empty block statement */ }
   }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
@@ -163,32 +162,27 @@ function validateHallmarks(hallmark) {
           return;
         }
         let storedKey = `${chain}-${tvlType}`;
-        let tvlFunctionIsFetch = false;
         if (tvlType === "tvl") {
           storedKey = chain;
-        } else if (tvlType === "fetch") {
-          storedKey = chain;
-          tvlFunctionIsFetch = true;
         }
         try {
 
-        await getTvl(
-          unixTimestamp,
-          ethBlock,
-          chainBlocks,
-          usdTvls,
-          tokensBalances,
-          usdTokenBalances,
-          tvlFunction,
-          tvlFunctionIsFetch,
-          storedKey,
-        );
+          await getTvl(
+            unixTimestamp,
+            ethBlock,
+            chainBlocks,
+            usdTvls,
+            tokensBalances,
+            usdTokenBalances,
+            tvlFunction,
+            storedKey,
+          );
         } catch (e) {
           console.error(`Error in ${storedKey}:`, e)
           process.exit(1)
         }
         let keyToAddChainBalances = tvlType;
-        if (tvlType === "tvl" || tvlType === "fetch") {
+        if (tvlType === "tvl") {
           keyToAddChainBalances = "tvl";
         }
         if (chainTvlsToAdd[keyToAddChainBalances] === undefined) {
@@ -199,26 +193,6 @@ function validateHallmarks(hallmark) {
       })
     );
   });
-  if (module.tvl || module.fetch) {
-    let mainTvlIsFetch;
-    if (module.tvl) {
-      mainTvlIsFetch = false;
-    } else {
-      mainTvlIsFetch = true;
-    }
-    const mainTvlPromise = getTvl(
-      unixTimestamp,
-      ethBlock,
-      chainBlocks,
-      usdTvls,
-      tokensBalances,
-      usdTokenBalances,
-      mainTvlIsFetch ? module.fetch : module.tvl,
-      mainTvlIsFetch,
-      "tvl",
-    );
-    tvlPromises.push(mainTvlPromise);
-  }
   await Promise.all(tvlPromises);
   Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
     if (usdTvls[tvlType] === undefined) {
@@ -467,7 +441,7 @@ setTimeout(() => {
 
 function buildPricesGetQueries(readKeys) {
   if (!readKeys.length) return []
-  const burl = 'https://coins.llama.fi/prices/current/'
+  const burl = process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/prices/current/` : 'https://coins.llama.fi/prices/current/'
   const queries = []
   let query = burl
 

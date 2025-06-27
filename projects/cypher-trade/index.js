@@ -14,9 +14,9 @@ async function tvl() {
 }
 
 module.exports = {
-  hallmarks: [
-    [1691373600,"exploit/security incident"] //https://twitter.com/cypher_protocol/status/1688641036476731393
-  ],
+  // hallmarks: [
+  //   [1691373600,"exploit/security incident"] //https://twitter.com/cypher_protocol/status/1688641036476731393
+  // ],
   deadFrom: '2023-08-07',
   timetravel: false,
   solana: { tvl, },
