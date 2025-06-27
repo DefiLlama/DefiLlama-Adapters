@@ -139,15 +139,9 @@ async function getTermMaxMarketAddresses(api) {
 
 async function getTermMaxMarketOwnerTokens(api) {
   const marketAddresses = await getTermMaxMarketAddresses(api);
-  const [tokens, configs] = await Promise.all([
-    api.multiCall({ abi: ABIS.Market.tokens, calls: marketAddresses }),
-    api.multiCall({ abi: ABIS.Market.config, calls: marketAddresses }),
-  ]);
+  const tokens = await api.multiCall({ abi: ABIS.Market.tokens, calls: marketAddresses });
   const ownerTokens = [];
   for (let i = 0; i < marketAddresses.length; i += 1) {
-    const { maturity } = configs[i];
-    if (maturity <= api.timestamp) continue;
-
     const marketAddress = marketAddresses[i];
     const { collateral, debt, gearingToken } = tokens[i];
     ownerTokens.push([[collateral], gearingToken]); // TVL factor: collateral on the gearing token
