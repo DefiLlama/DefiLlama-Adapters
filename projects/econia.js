@@ -8,7 +8,7 @@ function integerPriceToNominal(price, market) {
   return price * market.tick_size * Math.pow(10, market.base_decimals) / market.lot_size / Math.pow(10, market.quote_decimals)
 }
 
-async function getTvl() {
+async function getTvl(api) {
   const markets = (await axios.get(`${URL}/markets?${USDC_FILTER}&order=market_id.asc`)).data;
   const tvls = (await axios.get(`${URL}/tvl_per_market?${USDC_FILTER}&order=market_id.asc`)).data;
 
@@ -26,14 +26,12 @@ async function getTvl() {
     }
   }))
 
-  const tvl = convertedTvls.reduce((p, c) => p + c, 0);
-
-  return tvl;
+  api.addUSDValue(convertedTvls.reduce((a, b) => +a + +b, 0));
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   aptos: {
-    fetch: getTvl
+    tvl: getTvl
   },
-  fetch: getTvl
 }

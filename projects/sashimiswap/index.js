@@ -6,7 +6,7 @@ module.exports = {
   methodology:
     "We count liquidity on the Farms (LP tokens) threw Factory Contract; and on the lending markets same as compound",
     hallmarks: [
-      [Math.floor(new Date('2021-12-30')/1e3), 'Protocol was hacked for 210K USD'],
+      ['2021-12-30', 'Protocol was hacked for 210K USD'],
     ],
 };
 
@@ -148,3 +148,5 @@ const blacklistedTokens = [
 
 
 Object.entries(module.exports.heco).forEach(([key, value]) => module.exports.heco[key] = () => ({}))
+
+module.exports.ethereum.borrowed = () => ({})

@@ -1,4 +1,5 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
+const { getEnv } = require('../helper/env')
 
 // node test.js projects/bifrost-liquid-crowdloan/api.js
 
@@ -23,10 +24,10 @@ const tokenToCoingecko = {
 
 
 async function tvl() {
-  const kusamaProvider = new WsProvider("wss://hk.bifrost-rpc.liebi.com/ws");
+  const kusamaProvider = new WsProvider(getEnv('BIFROST_K_RPC'));
   const kusamaApi = await ApiPromise.create(({ provider:kusamaProvider }));
 
-  const polkadotProvider = new WsProvider("wss://hk.p.bifrost-rpc.liebi.com/ws");
+  const polkadotProvider = new WsProvider(getEnv('BIFROST_P_RPC'));
   const polkadotApi = await ApiPromise.create(({ provider:polkadotProvider }));
 
   //Get Salp tvl

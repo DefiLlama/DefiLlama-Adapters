@@ -24,3 +24,8 @@ Object.keys(configV2).forEach(chain => {
 
 
 module.exports = mergeExports([exportsV1, exportsV2])
+
+module.exports.hallmarks = [
+  ["2025-02-12", "Issue found in contracts"],
+  ["2025-05-19", "Liquity V2 relaunch"]
+]

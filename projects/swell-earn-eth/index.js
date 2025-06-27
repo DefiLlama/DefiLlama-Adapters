@@ -131,7 +131,6 @@ const swellVeloStakedTvl = async (api) => {
       abi: 'function stakedValues(address depositor) external view override returns (uint256[] memory staked)',
       params: earnETHVault,
     })
-    // console.log(l)
     stakedIds = stakedIds.concat(ids)
   }
 
