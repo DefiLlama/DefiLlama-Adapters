@@ -1,0 +1,13 @@
+const { staking } = require("../helper/staking");
+
+module.exports = {
+  polygon: {
+    staking: staking(
+      "0xf42d252940f642d27d0f20ab1c661268e4e00d06", // contrato de staking (TardigradeToken)
+      "0xf42d252940f642d27d0f20ab1c661268e4e00d06", // token TARDY (mesmo contrato)
+      "polygon"
+    ),
+    tvl: async () => ({}), // Se tiver pools LP ou outros contratos, adicione aqui
+  },
+  methodology: "TVL includes TARDY tokens staked in the TardigradeToken contract on Polygon.",
+};
