@@ -139,7 +139,10 @@ async function getTermMaxMarketAddresses(api) {
 
 async function getTermMaxMarketOwnerTokens(api) {
   const marketAddresses = await getTermMaxMarketAddresses(api);
-  const tokens = await api.multiCall({ abi: ABIS.Market.tokens, calls: marketAddresses });
+  const tokens = await api.multiCall({
+    abi: ABIS.Market.tokens,
+    calls: marketAddresses,
+  });
   const ownerTokens = [];
   for (let i = 0; i < marketAddresses.length; i += 1) {
     const marketAddress = marketAddresses[i];
@@ -238,10 +241,9 @@ async function getTermMaxMarketBorrowed(api) {
     abi: ABIS.MintableERC20.totalSupply,
     calls: mintableERC20Array,
   });
-  const tokenSupplyMap = new Map(totalSupplies.map((supply, index) => [
-    mintableERC20Array[index],
-    supply,
-  ]));
+  const tokenSupplyMap = new Map(
+    totalSupplies.map((supply, index) => [mintableERC20Array[index], supply])
+  );
 
   for (const activeMarket of activeMarkets) {
     const { fixedToken, xToken, debt } = activeMarket;
