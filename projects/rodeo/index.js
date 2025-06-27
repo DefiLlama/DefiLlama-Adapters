@@ -20,9 +20,9 @@ async function tvl(api) {
 module.exports = {
   arbitrum: { tvl, borrowed, },
   methodology: `The TVL shown is the result of subtracting the borrow from the supply for each Rodeo lending pool`,
-  hallmarks: [
-    ['2023-07-11', 'Protocol was exploited'],
-  ],
+  // hallmarks: [
+  //   ['2023-07-11', 'Protocol was exploited'],
+  // ],
 };
 
 module.exports.arbitrum.borrowed = ()  => ({})

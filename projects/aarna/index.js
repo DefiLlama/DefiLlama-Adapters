@@ -2,7 +2,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const ATV_802_VAULT_CONTRACT = "0xb68e430c56ed9e548e864a68a60f9d41f993b32c";
 const ATV_808_VAULT_CONTRACT = "0x60697825812ecC1Fff07f41E2d3f5cf314674Fa6";
-const ATV_111_VAULT_CONTRACT = "0xcb1b3bbcccdcf1420dab54c047786086f4a012aa";
+const ATV_111_VAULT_CONTRACT = "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba";
 const cUSDC = "0x39aa39c021dfbae8fac545936693ac917d5e7563";
 const cUSDCv3 = "0xc3d688B66703497DAA19211EEdff47f25384cdc3";
 const aETHUSDC = "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c";

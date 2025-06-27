@@ -117,7 +117,9 @@
     "bc1q5rsc4uscnmemlwru8xsys26k3xgxewqfnf3k7j",
     "bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h",
     "bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72",
-    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
+    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h",
+    "36oiSkAi1VVuUpfdv8E2V5fZ2EarHRJpis",
+    "3HkgC2R5PhqyXy6RVFyemvxN1VuFbQiQ5V"
   ],
   "celo": [
     "0xef268b5c05452d63a17da12f562368e88a036ef1",
@@ -192,11 +194,7 @@
     "0xf977814e90da44bfa03b6295a0616a897441acec",
     "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
   ],
-  "hedera": [
-    "0.0.1030878",
-    "0.0.4523906",
-    "0.0.652978"
-  ],
+  "hedera": ["0.0.1030878", "0.0.4523906", "0.0.652978"],
   "litecoin": [
     "LXTras9zXwkUvmsAF15hUu86by2UdNLSWk",
     "LZEjckteAtWrugbsy9zU8VHEZ4iUiXo9Nm",
@@ -264,9 +262,7 @@
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0xb32e9a84ae0b55b8ab715e4ac793a61b277bafa3"
   ],
-  "scroll": [
-    "0xf977814e90da44bfa03b6295a0616a897441acec"
-  ],
+  "scroll": ["0xf977814e90da44bfa03b6295a0616a897441acec"],
   "solana": [
     "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S",
     "3gd3dqgtJ4jWfBfLYTX67DALFetjc5iS72sCgRhCkW2u",
