@@ -2,16 +2,15 @@ const { get } = require('../helper/http')
 
 const STRATEGIES_URL = 'https://raw.githubusercontent.com/alma-labs/hydrex-lists/main/strategies/8453.json'
 
-async function getHydrexUniv4Pools(chainId) {
+async function getHydrexUniv4Pools() {
   const data = await get(STRATEGIES_URL)
-  const strategies = data[chainId] || []
-  return strategies
+  return data
     .filter(strategy => strategy.liquidityType === 'uniV4')
     .map(strategy => strategy.address)
 }
 
-async function tvlForChain(api, chainId) {
-  const HYDREX_POOLS = await getHydrexUniv4Pools(chainId)
+async function tvlForChain(api) {
+  const HYDREX_POOLS = await getHydrexUniv4Pools()
   if (!HYDREX_POOLS.length) return {}
 
   const token0s = await api.multiCall({ abi: 'address:token0', calls: HYDREX_POOLS })
@@ -32,5 +31,5 @@ async function tvlForChain(api, chainId) {
 module.exports = {
   methodology: 'TVL counts the tokens locked in ALM vaults that Hydrex manages on top of Uniswap V4',
   start: 31648963,
-  base: { tvl: (api) => tvlForChain(api, '8453') },
+  base: { tvl: (api) => tvlForChain(api) },
 } 
