@@ -6,7 +6,7 @@ async function getHydrexUniv4Pools(chainId) {
   const data = await get(STRATEGIES_URL)
   const strategies = data[chainId] || []
   return strategies
-    .filter(strategy => strategy.liquidityType === 'univ4')
+    .filter(strategy => strategy.liquidityType === 'uniV4')
     .map(strategy => strategy.address)
 }
 
