@@ -32,5 +32,5 @@ async function tvlForChain(api, chainId) {
 module.exports = {
   methodology: 'TVL counts the tokens locked in ALM vaults that Hydrex manages on top of Uniswap V4',
   start: 31648963,
-  linea: { tvl: (api) => tvlForChain(api, '8453') },
+  base: { tvl: (api) => tvlForChain(api, '8453') },
 } 
