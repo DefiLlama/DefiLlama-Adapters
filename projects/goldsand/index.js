@@ -2,6 +2,7 @@ const { getLogs2 } = require("../helper/cache/getLogs");
 const { nullAddress } = require("../helper/tokenMapping");
 
 function customCacheFunction({ cache, logs }) {
+  logs = logs.filter(log => (log.funderAccountAddress !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13') && (log.recipient !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'))
   if (!cache.logs) cache.logs = []
   let sum = cache.logs[0] ?? 0
   sum = logs.reduce((acc, curr) => acc + Number(curr.amount), sum)
@@ -47,20 +48,7 @@ module.exports = {
         customCacheFunction,
       })
 
-      // Filter out FundedOnBehalf events where funder is 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
-      const filteredFundedOnBehalfLogs = fundedOnBehalfLogs.filter(log => 
-        log.funderAccountAddress !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'
-      )
-
-      // Filter out ETHWithdrawnForUser events where recipient is 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
-      const filteredWithdrawnForUserLogs = withdrawnForUserLogs.filter(log => 
-        log.recipient !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'
-      )
-
-      api.addGasToken((fundedLogs + filteredFundedOnBehalfLogs - filteredWithdrawnForUserLogs).toString())
-
-      // Return empty object since we're excluding the assets of 0x22B35d437b3999F5C357C176adEeC1b8b0F35C13
-      return {}
+      api.addGasToken((fundedLogs + fundedOnBehalfLogs - withdrawnForUserLogs).toString())
     },
   },
 }
