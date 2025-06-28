@@ -4,18 +4,20 @@
 const { getUniqueAddresses } = require('../tokenMapping')
 const { Contract, validateAndParseAddress, number, hash, CallData } = require('starknet')
 const abi = require('../../10kswap/abi')
-const axios = require('axios')
 const plimit = require('p-limit')
 const { sliceIntoChunks, sleep } = require('../utils')
 const { getUniTVL } = require('../cache/uniswap')
-const { getCache } = require('../cache')
-const { getEnv } = require('../env')
 const ADDRESSES = require('../coreAssets.json')
+const { withRpcFallback } = require('../rpcFallback')
+
+ async function rpcFallbackStarknet(body) {
+  return withRpcFallback('starknet', async (axiosInstance) => {
+    return (await axiosInstance.post('', body)).data
+  })
+ }
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
-
-const STARKNET_RPC = getEnv('STARKNET_RPC')
 
 function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   if ((params || params === 0) && !Array.isArray(params))
@@ -58,10 +60,10 @@ function parseOutput(result, abi, allAbi, { permitFailure = false, responseObj =
   return response
 }
 
-async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}, ...rest) {
-  const { data } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
-  return parseOutput(data.result, abi, allAbi, { permitFailure, responseObj: data })
-}
+async function call({ abi, target, params = [], allAbi = [], permitFailure = false } = {}) {
+  const resp = await rpcFallbackStarknet(formCallBody({ abi, target, params, allAbi }))
+  return parseOutput(resp.result, abi, allAbi, { permitFailure, responseObj: resp })
+ }
 
 async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [], permitFailure = false }) {
   if (!calls.length) return []
@@ -78,7 +80,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   const chunks = sliceIntoChunks(callBodies, 25)
   for (const chunk of chunks) {
     await sleep(200)
-    const { data } = await axios.post(STARKNET_RPC, chunk)
+    const data = await rpcFallbackStarknet(chunk)
     allData.push(...data)
   }
 
@@ -171,24 +173,7 @@ module.exports = {
   sumTokens: rateLimited(sumTokens),
   number,
   dexExport,
-}
-
-// WIP
-async function getLogs({ fromBlock, topic, target }) {
-  const cache = await getCache('starknet-logs', topic)
-  fromBlock = cache.toBlock || fromBlock
-  const { data: { result: to_block } } = await axios.post(STARKNET_RPC, { "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
-  const params = {
-    filter: {
-      from_block: fromBlock,
-      to_block,
-      keys: [topic],
-      "address": target,
-    }
-  }
-
-  const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
-  const { data } = await axios.post(STARKNET_RPC, body)
+  rpcFallbackStarknet
 }
 
 api.call = module.exports.call
