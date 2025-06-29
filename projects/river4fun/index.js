@@ -5,6 +5,7 @@ function createExports({
 }) {
   return {
     tvl: async api => {
+      const tokensAndOwners = [];
       if (farmList) {
         for (let index = 0; index < farmList.length; index++) {
           const { address: farmAddress, asset } = farmList[index];
