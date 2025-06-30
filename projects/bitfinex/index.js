@@ -116,8 +116,8 @@ const config = {
   },
   zilliqa: {
     owners: [
-      'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
-      'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
+      // 'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
+      // 'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
     ]
   },
   doge: {

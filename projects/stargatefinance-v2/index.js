@@ -127,6 +127,16 @@ const CONFIG = {
       '0xA272fFe20cFfe769CdFc4b63088DCD2C82a2D8F9', //usdc pool
     ],
   },
+  manta: {
+    pools: [
+      '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB', // eth pool
+    ],
+  },
+  swellchain: {
+    pools: [
+      '0xCc0587aeBDa397146cc828b445dB130a94486e74', // eth pool
+    ],
+  },
 }
 
 const createTvlFunction = (pools) => {
