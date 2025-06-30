@@ -1,7 +1,8 @@
 const { sleep } = require('../helper/utils')
 
 async function tvl(api) {
-  for (let tryTime = 0; tryTime < 10; tryTime++) {
+  // we do this because sometimes api returns invalid JSON data with random characters inside
+  do {
     try {
       const {data: reserves} = await fetch("https://proof.universal.xyz/balances", {"method": "GET"}).then(r=>r.json())
 
@@ -24,13 +25,11 @@ async function tvl(api) {
         api.addUSDValue(Number(balance.fiat_amount))
       }
 
-      return api.getBalances();
+      return api.getBalances()
     } catch(e) {}
 
-    await sleep(10000);
-  }
-
-  return api.getBalances();
+    await sleep(10000)
+  } while(true)
 }
 
 module.exports = {
