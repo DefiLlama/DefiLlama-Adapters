@@ -9,9 +9,7 @@ module.exports = treasuryExports({
         ADDRESSES.null,
         ADDRESSES.ethereum.WETH
      ],
-    blacklistedTokens: [
-        '0x686f2404e77ab0d9070a46cdfb0b7fecdd2318b0' // LORDS it is governance token
-    ],
-    owners: [treasury]
+    owners: [treasury],
+    ownTokens: ["0x686f2404e77ab0d9070a46cdfb0b7fecdd2318b0"], // LORDS GOVERNANCE TOKEN
   },
 })

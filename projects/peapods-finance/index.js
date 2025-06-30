@@ -17,7 +17,15 @@ const abi = {
   lpStakingPool: "address:lpStakingPool",
   stakingToken: "address:stakingToken",
   pairedLPToken: "address:PAIRED_LP_TOKEN",
-  lendingPair: "function lendingPairs(address input) view returns (address)"
+  lendingPair: "function lendingPairs(address input) view returns (address)",
+  indexManager: "function allIndexes() view returns (tuple(address index, address creator, bool verified, bool selfLending, bool makePublic)[])"
+}
+
+async function discoverLendingPairs(api) {
+  const pods = ( await api.call({ target: config[api.chain].indexManagerV3, abi: abi.indexManager, chain: api.chain }) );
+  const multicallCalls = pods.map(pod => ({ target: config[api.chain].leverageManager, params: [pod.index], abi: abi.lendingPair }));
+  const multicallResOutput = await api.multiCall({ calls: multicallCalls, chain: api.chain, abi: abi.lendingPair });
+  return multicallResOutput.filter(value => value !== ADDRESSES.null);
 }
 
 const getTvl = async (api, isStaking) => {
@@ -75,6 +83,18 @@ const getTvl = async (api, isStaking) => {
   return api.getBalances();
 };
 
+
+const borrowed = async (api) => {
+  if(config[api.chain].indexManagerV3){
+    const lendingPairs = await discoverLendingPairs(api);
+    const lendingPairAssets = await api.multiCall({ abi: "function asset() view returns (address)", calls: lendingPairs });
+    const previewAddInterest = await api.multiCall({ abi: "function previewAddInterest() view returns (uint256 interestEarned, uint256 feesAmount, uint256 feesShare, (uint32 lastBlock, uint32 feeToProtocolRate, uint64 lastTimestamp, uint64 ratePerSec, uint64 fullUtilizationRate) newCurrentRateInfo, (uint128 amount, uint128 shares) totalAsset, (uint128 amount, uint128 shares) totalBorrow)"
+, calls: lendingPairs });
+    
+    lendingPairAssets.forEach((asset, i) => { api.add(asset, previewAddInterest[i].totalBorrow.amount); });
+  }
+}
+
 module.exports = {
   methodology: "Aggregates TVL in all Peapods Finance indexes created",
   hallmarks: [[1710444951, "Arbitrum launch"],[1715151225, "Base launch"],[1715214483, "Mode launch"],[1738958400, "LVF launch"],[1742269792, "Sonic launch"],[1744292339, "Berachain launch"]],
@@ -84,5 +104,6 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => getTvl(api, false),
     staking: async (api) => getTvl(api, true),
+    borrowed: async (api) => borrowed(api),
   }
 })

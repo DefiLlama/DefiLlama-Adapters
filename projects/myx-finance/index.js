@@ -1,5 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { staking } = require('../helper/staking')
 
 const config = {
   arbitrum: {
@@ -45,3 +46,12 @@ async function tvl(api) {
   ownerTokens.push(...hypeTokens.map((tokens, i) => [tokens, hypeVaults[i]]))
   return api.sumTokens({ ownerTokens })
 }
+
+
+Object.keys(config).forEach((chain) => {
+  const exports = { tvl }
+  if (chain === 'bsc') {
+    exports.staking = staking('0xbb33D58DDd186F46Cab05F7B30848d89dF71C4E9', '0xD82544bf0dfe8385eF8FA34D67e6e4940CC63e16')
+  }
+  module.exports[chain] = exports
+});
