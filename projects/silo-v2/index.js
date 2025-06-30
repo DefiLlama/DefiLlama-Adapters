@@ -33,6 +33,14 @@ const configV2 = {
       }
     ]
   },
+  avax: {
+    factories: [
+      {
+        START_BLOCK: 64050356,
+        SILO_FACTORY: '0x92cECB67Ed267FF98026F814D813fDF3054C6Ff9', // Silo V2 Avalanche (Main)
+      }
+    ]
+  },
 }
 
 async function tvl(api) {
@@ -114,5 +122,6 @@ module.exports = {
   // optimism: { tvl, borrowed, },
   // base: { tvl, borrowed, },
   sonic: { tvl, borrowed, },
+  avax: { tvl, borrowed, },
   hallmarks: []
 }

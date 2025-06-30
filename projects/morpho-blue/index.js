@@ -71,7 +71,7 @@ const config = {
     morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
     fromBlock: 9139027,
   },
-  flame:{
+  flame: {
     morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
     fromBlock: 5991116,
   },
@@ -86,7 +86,7 @@ const config = {
   //   fromBlock: 4804080,
   //   blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
   // },
-  hyperliquid:{
+  hyperliquid: {
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
     fromBlock: 1988429,
   },
@@ -101,6 +101,10 @@ const config = {
   soneium: {
     morphoBlue: "0xE75Fc5eA6e74B824954349Ca351eb4e671ADA53a",
     fromBlock: 6440817,
+  },
+  katana: {
+    morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+    fromBlock: 2741069,
   },
 };
 
