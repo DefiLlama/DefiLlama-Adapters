@@ -96,7 +96,8 @@ module.exports = uniV3Export({
   //europa: { factory: '0x51d15889b66A2c919dBbD624d53B47a9E8feC4bB', fromBlock: 5124251, },
   //rsk: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 6365060, }, //this one
   sonic: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 1, }, //this one
-  hemi: { factory: '0xCdBCd51a5E8728E0AF4895ce5771b7d17fF71959', fromBlock: 507517, }
+  hemi: { factory: '0xCdBCd51a5E8728E0AF4895ce5771b7d17fF71959', fromBlock: 507517, },
+  katana: { factory: "0x203e8740894c8955cB8950759876d7E7E45E04c1", fromBlock: 1858973, },
 });
 
 const config = {
