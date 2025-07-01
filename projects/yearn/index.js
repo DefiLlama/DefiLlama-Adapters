@@ -83,7 +83,7 @@ module.exports = {
   ]
 }
 
-const chains = ['ethereum', 'fantom', 'arbitrum', 'optimism', 'polygon', 'base']
+const chains = ['ethereum', 'fantom', 'arbitrum', 'optimism', 'polygon', 'base', 'katana']
 
 chains.forEach(chain => {
   module.exports[chain] = { tvl }
