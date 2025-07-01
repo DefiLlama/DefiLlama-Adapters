@@ -1,14 +1,7 @@
-const { sumTokensExport } = require('../helper/unwrapLPs');
-
 const APL_TOKEN = '0xfE82012eCcE57a188E5f9f3fC1Cb2D335C58F1f5';
-const STAKING_CONTRACT = '0x73d600Db8E7bea28a99AED83c2B62a7Ea35ac477';
 
 async function tvl(api) {
-  const totalSupply = await api.call({
-    abi: 'uint256:totalSupply',
-    target: APL_TOKEN,
-    params: [],
-  });
+  const totalSupply = await api.call({ abi: 'uint256:totalSupply', target: APL_TOKEN, });
   api.add(APL_TOKEN, totalSupply)
 }
 
@@ -17,10 +10,5 @@ module.exports = {
   start: '2025-06-25',
   sty: {
     tvl,
-    staking: sumTokensExport({
-      tokensAndOwners: [
-        [APL_TOKEN, STAKING_CONTRACT],
-      ],
-    }),
   },
 };
