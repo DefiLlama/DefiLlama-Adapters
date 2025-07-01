@@ -1,4 +1,4 @@
-const { getTokenSupplies } = require('../helper/solana')
+const { getTokenSupplies, sumTokens2 } = require('../helper/solana')
 
 const data = [
   { "name": "Honeywell xStock", "p": { "solana": "XsRbLZthfABAPAfumWNEJhPyiKDW6TvDVeAeW7oKqA2", "arbitrum-one": "0x62a48560861b0b451654bfffdb5be6e47aa8ff1b" } },
@@ -84,6 +84,12 @@ async function solTvl(api) {
   const tokens = data.map(stock => stock.p.solana).filter(Boolean)
   const supplies = await getTokenSupplies(tokens)
   api.add(tokens, tokens.map((token) => supplies[token] || '0'))
+  const mintedBalance = await sumTokens2({ balances: {}, owner: 'S7vYFFWH6BjJyEsdrPQpqpYTqLTrPRK6KW3VwsJuRaS', computedTokenAccounts: true, tokens})
+  tokens.forEach(token => {
+    if (mintedBalance['solana:'+token]) {
+      api.add(token, mintedBalance['solana:'+token] * -1)  // exclude pre-minted tokens
+    }
+  })
 }
 
 module.exports.solana = { tvl: solTvl }
