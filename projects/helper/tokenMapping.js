@@ -53,6 +53,11 @@ const fixBalancesTokens = {
     'tnam1p4px8sw3am4qvetj7eu77gftm4fz4hcw2ulpldc7': { coingeckoId: 'stride-staked-osmo', decimals: 6, },
     'tnam1p5z5538v3kdk3wdx7r2hpqm4uq9926dz3ughcp7n': { coingeckoId: 'stride-staked-atom', decimals: 6, },
     'tnam1ph6xhf0defk65hm7l5ursscwqdj8ehrcdv300u4g': { coingeckoId: 'stride-staked-tia', decimals: 6, },
+  },
+  xrplevm: {
+    '0x7C21a90E3eCD3215d16c3BBe76a491f8f792d4Bf': { coingeckoId: 'ripple', decimals: 18, },
+    '0xa16148c6ac9ede0d82f0c52899e22a575284f131': { coingeckoId: 'usd-coin', decimals: 6, },
+    '0x50498dc52bcd3daeb54b7225a7d2fa8d536f313e': { coingeckoId: 'ethereum', decimals: 18, },
   }
 }
 
