@@ -46,22 +46,20 @@ async function tvl(api) {
   if (!data.length) {
     data = await getConfig('yearn/old-' + api.chain, `https://api.yexporter.io/v1/chains/${api.chainId}/vaults/all`)
   }
+  if (!Array.isArray(data)) return;
   let strategies = data.map(v => v.strategies ?? []).flat().map(v => v.address.toLowerCase())
   let vaults = data.filter(i => i.tvl.tvl > 0).map(v => v.address.toLowerCase()).filter(i => !blacklist.includes(i) && !strategies.includes(i))
   const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
-  const calls = [...vaults]
-  bals.forEach((bal, i) => {
-    if (+bal === 0)
-      calls[i] = nullAddress // skip empty vaults
+  const calls = []
+  const filteredBals = bals.filter((bal, i) => {
+    const hasBal = +bal > 0
+    if (hasBal) calls.push(vaults[i])
+    return hasBal
   })
   const tokens = await api.multiCall({ abi: 'address:token', calls, permitFailure: true })
 
-  tokens.forEach((token, i) => {
-    if (token)
-      calls[i] = nullAddress // skip vaults that have a token
-  })
   const tokensAlt = await api.multiCall({ abi: 'address:asset', calls, permitFailure: true })
-  bals.forEach((bal, i) => {
+  filteredBals.forEach((bal, i) => {
     const token = tokens[i] || tokensAlt[i]
     if (token) api.add(token, bal)
   })
