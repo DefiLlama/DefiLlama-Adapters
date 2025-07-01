@@ -2,13 +2,13 @@ const { fetch } = require('cross-fetch');
 
 module.exports = {
   timetravel: false,
-  start: 1751001480,
-  methodology: 'TVL is fetched from our offchain API which aggregates on-chain balances on Tron.',
+  start: 1751001480, // June 27, 2025 @ 05:18:00 UTC
+  methodology: 'TVL is fetched from our own offchain API which aggregates on-chain balances.',
   tron: {
     tvl: async () => {
-      const res = await fetch('https://usdtf-tvl-production.up.railway.app/api/tvl');
-      const { tvl } = await res.json();
-      return { tether: tvl }; // Custom label instead of "tether"
+      const response = await fetch('https://usdtf-tvl-production.up.railway.app/api/tvl');
+      const { tvl } = await response.json();
+      return { tether: tvl }; // assuming your API returns value in USDT
     },
   },
 };
