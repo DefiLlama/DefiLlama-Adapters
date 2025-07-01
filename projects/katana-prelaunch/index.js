@@ -3,13 +3,13 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function tvl(api) {
   const vaults = [
-    '0xcc6a16Be713f6a714f68b0E1f4914fD3db15fBeF',
-    '0x92C82f5F771F6A44CfA09357DD0575B81BF5F728',
-    '0x7B5A0182E400b241b317e781a4e9dEdFc1429822',
-    '0x48c03B6FfD0008460F8657Db1037C7e09dEedfcb',
+    '0xF470EB50B4a60c9b069F7Fd6032532B8F5cC014d',
+    '0xA5DaB32DbE68E6fa784e1e50e4f620a0477D3896',
+    '0xe1Ac97e2616Ad80f69f705ff007A4bbb3655544a',
+    '0x77570CfEcf83bc6bB08E2cD9e8537aeA9F97eA2F',
   ];
 
-  await api.erc4626Sum({api, calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
+  await api.erc4626Sum({ api, calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
   await sumTokens2({
     api,
     owner: '0x69d210d3b60E939BFA6E87cCcC4fAb7e8F44C16B',
@@ -31,7 +31,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  ethereum: { 
+  ethereum: {
     doublecounted: true,
     tvl: tvl,
   }
