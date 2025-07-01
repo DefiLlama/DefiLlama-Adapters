@@ -59,23 +59,32 @@ const CONFIG = {
  * TODO: Use offset when the contract supports pagination
  */
 async function _getPairs(offset, limit) {
-	const { pairs } = await queryContract({
-		contract: HYPERION_FACTORY_ADDRESS,
-		data: {
-			pairs: { limit: limit },
-		},
-		chain: "titan",
-	});
+	try {
+		const { pairs } = await queryContract({
+			contract: HYPERION_FACTORY_ADDRESS,
+			data: {
+				pairs: { limit: limit },
+			},
+			chain: "titan",
+		});
 
-	return pairs.map((pair) => ({
-		poolAddress: pair.contract_addr,
-		token0:
-			pair.asset_infos[0].native_token.denom ||
-			pair.asset_infos[0].token.contract_addr,
-		token1:
-			pair.asset_infos[1].native_token.denom ||
-			pair.asset_infos[1].token.contract_addr,
-	}));
+		if (!pairs || !Array.isArray(pairs)) {
+			throw new Error("Invalid pairs data received from contract");
+		}
+
+		return pairs.map((pair) => ({
+			poolAddress: pair.contract_addr,
+			token0:
+				pair.asset_infos[0].native_token.denom ||
+				pair.asset_infos[0].token.contract_addr,
+			token1:
+				pair.asset_infos[1].native_token.denom ||
+				pair.asset_infos[1].token.contract_addr,
+		}));
+	} catch (error) {
+		console.error("Error fetching pairs:", error);
+		throw error;
+	}
 }
 
 async function _getPoolInfo(contract) {
@@ -88,11 +97,11 @@ async function _getPoolInfo(contract) {
 	});
 
 	const asset0Denom =
-		poolInfo.assets[0].info.native_token.denom ||
-		poolInfo.assets[0].info.token.contract_addr;
+		poolInfo.assets[0].info?.native_token?.denom ||
+		poolInfo.assets[0].info?.token?.contract_addr;
 	const asset1Denom =
-		poolInfo.assets[1].info.native_token.denom ||
-		poolInfo.assets[1].info.token.contract_addr;
+		poolInfo.assets[1].info?.native_token?.denom ||
+		poolInfo.assets[1].info?.token?.contract_addr;
 
 	return {
 		[asset0Denom]: poolInfo.assets[0].amount,
@@ -142,8 +151,12 @@ async function tvl(api) {
 
 	for (const pair of pairs) {
 		const poolInfo = await _getPoolInfo(pair.poolAddress);
-		balances = _getTokenBalance(pair.token0, poolInfo[pair.token0], balances);
-		balances = _getTokenBalance(pair.token1, poolInfo[pair.token1], balances);
+		if (poolInfo[pair.token0]) {
+			balances = _getTokenBalance(pair.token0, poolInfo[pair.token0], balances);
+		}
+		if (poolInfo[pair.token1]) {
+			balances = _getTokenBalance(pair.token1, poolInfo[pair.token1], balances);
+		}
 	}
 
 	Object.entries(balances).forEach(([coinGeckoId, amount]) => {
