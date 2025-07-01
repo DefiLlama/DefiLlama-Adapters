@@ -16,7 +16,7 @@ const registryIds = {
 const nameCache = {};
 
 const gasTokens = [
-	"0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+	ADDRESSES.GAS_TOKEN_2,
 	ADDRESSES.null,
 ];
 async function getNames(chain, tokens) {

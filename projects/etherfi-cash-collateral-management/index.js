@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 
@@ -77,7 +78,7 @@ async function tvl(api) {
 
 async function borrow(api) {
   const cashDebitCore = '0x0078C5a459132e279056B2371fE8A8eC973A9553'
-  const usdcScroll = '0x06efdbff2a14a7c8e15944d1f4a48f9f95f663a4'
+  const usdcScroll = ADDRESSES.scroll.USDC
   const { timestamp } = api;
   const scroll_api = new sdk.ChainApi({ timestamp, chain: 'scroll' });
   const borrowingAmount  = await scroll_api.call({

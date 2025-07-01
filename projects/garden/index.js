@@ -48,7 +48,7 @@ module.exports = {
   berachain: {
     tvl: sumTokensExport({
       owners: COBI_EVM_ADDRESSES,
-      tokens: ["0xecac9c5f704e954931349da37f60e39f515c11c1"],
+      tokens: [ADDRESSES.corn.LBTC],
     }),
   },
   base: {

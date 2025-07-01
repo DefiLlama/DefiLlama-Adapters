@@ -1,5 +1,6 @@
 {
   "null": "0x0000000000000000000000000000000000000000",
+  "GAS_TOKEN_2": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
   "ethereum": {
     "WETH": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     "WSTETH": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
@@ -2184,7 +2185,6 @@
     "USDM": "0xc26b690773828999c2612549cc815d1f252ea15e"
   },
   "corn": {
-    "BTCN": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     "wBTCN": "0xda5dDd7270381A7C2717aD10D1c0ecB19e3CDFb2",
     "CORN": "0x44f49ff0da2498bCb1D3Dc7C0f999578F67FD8C6",
     "USDT0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
