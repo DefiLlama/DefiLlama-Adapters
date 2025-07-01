@@ -119,7 +119,7 @@ const config = {
       BALD: "0x27d2decb4bfc9c76f0309b8e88dec3a601fe25a8",
       BASIN: "0x4788de271f50ea6f5d5d2a5072b8d3c61d650326",
       BSWAP: "0x78a087d713be963bf307b18f2ff8122ef9a63ae9",
-      cbETH: "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
+      cbETH: ADDRESSES.base.cbETH,
       EDE: "0x0a074378461fb7ed3300ea638c6cc38246db4434",
       TOSHI: "0x8544fe9d190fd7ec52860abbf45088e81ee24a8c",
       COMP: "0x9e1028f5f1d5ede59748ffcee5532509976840e0",
@@ -232,7 +232,7 @@ const config = {
     tokens: {
       USDT: ADDRESSES.scroll.USDT,
       USDC: ADDRESSES.scroll.USDC,
-      WBTC: "0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1",
+      WBTC: ADDRESSES.sonic.WBTC,
       WETH: ADDRESSES.scroll.WETH,
       DAI: "0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97",
     }

@@ -57,7 +57,7 @@ Object.keys(config).forEach(chain => {
       if (chain === 'base')
         ownerTokens.push(...[
           [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDbC], '0x1172035a744ea18161497e94f0bbce244d51de9f'],
-          [[ADDRESSES.optimism.WETH_1, '0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22'], '0xce670438dadb080d7aae65fdaff51355aa30535e'],
+          [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.cbETH], '0xce670438dadb080d7aae65fdaff51355aa30535e'],
           [[ADDRESSES.optimism.WETH_1, '0x78a087d713be963bf307b18f2ff8122ef9a63ae9'], '0x3c388c812dada10e597f802a766e7ce898bc7751'],
           [[ADDRESSES.base.USDbC, ADDRESSES.optimism.WETH_1], '0xd804cf0ac2a4b6dd6d375504a27874f5db073625'],
           [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDbC], '0x72e663c4e8fd50184c8b8135315c20326cc4ad75'],

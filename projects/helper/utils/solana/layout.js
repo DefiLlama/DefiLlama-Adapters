@@ -14,6 +14,7 @@ const { parseSanctumLstStateList } = require("./layouts/sanctum-validators-lsts-
 const { STAKE_POOL_PARTIAL } = require("./layouts/stake-pool-partial-layout");
 const { STAKE_POOL_LAYOUT } = require("./layouts/stakePool");
 const { JITO_VAULT_LAYOUT } = require("./layouts/jito-layout");
+const { BYREAL_LIQUIDITY_STATE_LAYOUT_CLMM } = require("./layouts/byreal-layout");
 
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
@@ -73,6 +74,7 @@ const customDecoders = {
   jitoVault: defaultParseLayout(JITO_VAULT_LAYOUT),
   meteoraStablePool: defaultParseLayout(METEORA_STABLE_SWAP_LAYOUT),
   zeusGuardianSetting: defaultParseLayout(ZEUS_GUARDIAN_SETTING_LAYOUT),
+  byrealCLMM: defaultParseLayout(BYREAL_LIQUIDITY_STATE_LAYOUT_CLMM)
 }
 
 function decodeAccount(layout, accountInfo) {

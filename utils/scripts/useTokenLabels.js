@@ -42,7 +42,7 @@ function updateFile(file) {
 
   Object.entries(allLabels).forEach(([chain, mapping]) => {
     const label = ['ADDRESSES', chain]
-    if (chain === 'null') {
+    if (chain === 'null' || chain === 'GAS_TOKEN_2') {
       updateFileStr([...label].join('.'), mapping)
     } else {
       Object.entries(mapping).forEach(([symbol, addr]) => {

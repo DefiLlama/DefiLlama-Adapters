@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require("../helper/tokenMapping")
 const { sumTokensExport } = require("../helper/unwrapLPs")
 
@@ -18,7 +19,7 @@ Object.keys(config).forEach(chain => {
       tokens.push(nullAddress)
 
       const owners = [exchange, degen,]
-      return api.sumTokens({ owners, tokens, blacklistedTokens: ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'] })
+      return api.sumTokens({ owners, tokens, blacklistedTokens: [ADDRESSES.GAS_TOKEN_2] })
     },
   }
   if (stakingToken)

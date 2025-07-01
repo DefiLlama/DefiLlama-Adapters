@@ -6,7 +6,7 @@ module.exports = {
     tvl: sumTokensExport({
       tokensAndOwners: [
         [ADDRESSES.sonic.scUSD, '0xf41ECda82C54745aF075B79b6b31a18dD986BA4c'], // scUSD
-        ['0xe5da20f15420ad15de0fa650600afc998bbe3955', '0x682D7F02BC57Bc64bfb36078454601Ba0Efbe155'], // stS
+        [ADDRESSES.sonic.STS, '0x682D7F02BC57Bc64bfb36078454601Ba0Efbe155'], // stS
         ['0x9f0df7799f6fdad409300080cff680f5a23df4b1', '0x0A6F4c98D087445Ef92b589c6f39D22C4373615F'], // wOS
       ]
     }),
