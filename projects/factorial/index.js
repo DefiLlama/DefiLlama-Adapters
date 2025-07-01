@@ -72,7 +72,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: 'Total amount of assets locked in Factorial pool',
+  methodology: 'Total amount of assets locked in Affluent pool',
   ton: { tvl, borrowed }
 }
 
