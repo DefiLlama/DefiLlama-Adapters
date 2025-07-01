@@ -21,16 +21,16 @@ const configs = {
       ],
     },
     katana: {
-      ausd: [
-        '0x93Fec6639717b6215A48E5a72a162C50DCC40d68'
-      ],
-      morphoSushi: [
-        '0x9A6bd7B6Fd5C4F87eb66356441502fc7dCdd185B',
-        '0x8Fb1c10Ad4417EcA341a1D903Ff437d25ff87a4e',
-        '0xAa0362eCC584B985056E47812931270b99C91f9d',
-        '0x80c34BD3A3569E126e7055831036aa7b212cB159',
-        '0xE007CA01894c863d7898045ed5A3B4Abf0b18f37',
-      ],
+      // ausd: [  // already counted as part of yearn
+      //   '0x93Fec6639717b6215A48E5a72a162C50DCC40d68'
+      // ],
+      // morphoSushi: [
+      //   '0x9A6bd7B6Fd5C4F87eb66356441502fc7dCdd185B',
+      //   '0x8Fb1c10Ad4417EcA341a1D903Ff437d25ff87a4e',
+      //   '0xAa0362eCC584B985056E47812931270b99C91f9d',
+      //   '0x80c34BD3A3569E126e7055831036aa7b212cB159',
+      //   '0xE007CA01894c863d7898045ed5A3B4Abf0b18f37',
+      // ],
     },
   }
 }
