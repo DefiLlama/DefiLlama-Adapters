@@ -47,12 +47,10 @@ module.exports = {
             for (const closure of closureValues) {
                 if (!closure || !closure.balances) continue;
                 for (let i = 0; i < numTokens; i++) {
-                    // closure.balances may be string or BigNumber, so convert to BigInt
                     tokenBalances[i] += BigInt(closure.balances[i] || 0);
                 }
             }
 
-            // Add each token and its summed balance to the api
             for (let i = 0; i < numTokens; i++) {
                 const balance = toReal(tokenBalances[i], decimals[i]);
                 api.add(tokens[i], balance.toString());
