@@ -13,13 +13,13 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Count total issued APL tokens from bacing RWAs.',
+  methodology: 'Count total issued APL tokens which are backed by reserve RWAs.',
   start: '2025-06-25',
   sty: {
     tvl,
     staking: sumTokensExport({
       tokensAndOwners: [
-        ['0xfE82012eCcE57a188E5f9f3fC1Cb2D335C58F1f5', '0x73d600Db8E7bea28a99AED83c2B62a7Ea35ac477'],
+        [APL_TOKEN, STAKING_CONTRACT],
       ],
     }),
   },
