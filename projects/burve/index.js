@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const ADDRESSES = require('../helper/coreAssets.json')
 const BERACHAIN = "0xa1beD164c12CD9479A1049f97BDe5b3D6EC21089"
 
@@ -7,6 +8,16 @@ const tokens = [
     ADDRESSES.berachain.HONEY,
     "0x1cE0a25D13CE4d52071aE7e02Cf1F6606F4C79d3",
     ADDRESSES.arbitrum.USDe,
+=======
+const BERACHAIN = "0xa1beD164c12CD9479A1049f97BDe5b3D6EC21089"
+
+const tokens = [
+    "0x549943e04f40284185054145c6E4e9568C1D3241",
+    "0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
+    "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
+    "0x1cE0a25D13CE4d52071aE7e02Cf1F6606F4C79d3",
+    "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+>>>>>>> 413652980 (Simple defillama adaptor for usd pool of burve)
 	"0xff12470a969Dd362EB6595FFB44C82c959Fe9ACc"
 ]
 
@@ -48,10 +59,18 @@ module.exports = {
             for (const closure of closureValues) {
                 if (!closure || !closure.balances) continue;
                 for (let i = 0; i < numTokens; i++) {
+<<<<<<< HEAD
+=======
+                    // closure.balances may be string or BigNumber, so convert to BigInt
+>>>>>>> 413652980 (Simple defillama adaptor for usd pool of burve)
                     tokenBalances[i] += BigInt(closure.balances[i] || 0);
                 }
             }
 
+<<<<<<< HEAD
+=======
+            // Add each token and its summed balance to the api
+>>>>>>> 413652980 (Simple defillama adaptor for usd pool of burve)
             for (let i = 0; i < numTokens; i++) {
                 const balance = toReal(tokenBalances[i], decimals[i]);
                 api.add(tokens[i], balance.toString());
