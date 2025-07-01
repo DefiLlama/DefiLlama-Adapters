@@ -11,7 +11,7 @@ const { ibcChains } = require('../../projects/helper/tokenMapping')
 // const rootFolder = projectsDir + '/zharta'
 const rootFolder = projectsDir
 
-const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', ...ibcChains]
+const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', 'ripple', 'noble', ...ibcChains]
 
 function run() {
   ignoredChains.forEach(i => delete allLabels[i])
