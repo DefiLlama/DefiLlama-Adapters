@@ -23,6 +23,7 @@ async function tvl(api) {
   
   module.exports = {
     misrepresentedTokens: true,
+    doublecounted: true,
     scroll: {
       tvl,
     },

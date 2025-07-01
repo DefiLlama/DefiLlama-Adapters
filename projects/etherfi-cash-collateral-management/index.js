@@ -91,7 +91,6 @@ async function borrow(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  doublecounted: true,
   scroll: {
     tvl, 
     borrowed: borrow,
