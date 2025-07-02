@@ -51,6 +51,7 @@ const configs = {
         '0x65B560d887c010c4993C8F8B36E595C171d69D63',
         '0x3ba6930bac1630873f5fd206e293ca543fcea7a2',
         '0x9e405601B645d3484baeEcf17bBF7aD87680f6e8',
+        '0xbA60b6969fAA9b927A0acc750Ea8EEAdcEd644B7',
       ],
       mellow: [
         '0x8327b8BD2561d28F914931aD57370d62C7968e40',
