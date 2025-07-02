@@ -43,8 +43,11 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   vechain: {
+    [ADDRESSES.null]: { coingeckoId: 'vechain', decimals: 18 },
     '0xd8ccdd85abdbf68dfec95f06c973e87b1b5a9997': { coingeckoId: 'vechain', decimals: 18 },
+    '0x45429a2255e7248e57fce99e7239aed3f84b7a53': { coingeckoId: 'vechain', decimals: 18 },
     '0x0000000000000000000000000000456e65726779': { coingeckoId: 'vethor-token', decimals: 18 },
+    '0x5ef79995fe8a89e0812330e4378eb2660cede699': { coingeckoId: 'vebetterdao', decimals: 18 },
   }
 }
 
