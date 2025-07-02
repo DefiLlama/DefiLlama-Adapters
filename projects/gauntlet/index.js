@@ -43,6 +43,9 @@ const configs = {
         '0x2e2e57bb1272acb11a5a0da677ddbcb8c9906255',
         '0x2c9f8043d4b6a37489eea91437c14d206acddeb9',
       ],
+      cove: [
+        '0xeea3edc017877c603e2f332fc1828a46432cdf96',
+      ],
       symbiotic: [
         '0xc10A7f0AC6E3944F4860eE97a937C51572e3a1Da',
         '0xB8Fd82169a574eB97251bF43e443310D33FF056C',
