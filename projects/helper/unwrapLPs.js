@@ -6,7 +6,7 @@ const symbol = 'string:symbol'
 const { bPool, getCurrentTokens, } = require('./abis/balancer.json')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
-const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray } = require('./utils')
+const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray, sleep } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
@@ -98,12 +98,12 @@ async function unwrapUniswapV4NFTs({ balances = {}, nftsAndOwners = [], block, c
       }
 
     if (Array.isArray(nftAddress)) {
-      await Promise.all(nftAddress.map((addr) => unwrapUniswapV4NFT({ ...commonConfig, nftAddress: addr, stateViewer: stateViewer,})))
+      await Promise.all(nftAddress.map((addr) => unwrapUniswapV4NFT({ ...commonConfig, nftAddress: addr, stateViewer: stateViewer, })))
     } else
-      await unwrapUniswapV4NFT({ ...commonConfig, nftAddress, stateViewer: stateViewer,})
+      await unwrapUniswapV4NFT({ ...commonConfig, nftAddress, stateViewer: stateViewer, })
 
   } else
-    await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV4NFT({ ...commonConfig, owner, nftAddress, stateViewer: stateViewer,})))
+    await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV4NFT({ ...commonConfig, owner, nftAddress, stateViewer: stateViewer, })))
   return balances
 }
 
@@ -182,7 +182,7 @@ async function unwrapUniswapV4NFT({ balances, owner, owners, nftAddress, stateVi
       ["address", "address", "uint24", "int24", "address"],
       [token0, token1, fee, tickSpacing, hook]
     );
-    
+
     const poolId = ethers.keccak256(encodedData);
     return poolId;
   }
@@ -193,11 +193,11 @@ async function unwrapUniswapV4NFT({ balances, owner, owners, nftAddress, stateVi
     const value = unsignedValue.toNumber();
     // Check if signed (negative)
     if (value & 0x800000) {
-        // If negative, subtract 2^24 (16777216) to get the signed value
-        return value - (1 << 24);
+      // If negative, subtract 2^24 (16777216) to get the signed value
+      return value - (1 << 24);
     } else {
-        // If positive, return as is
-        return value;
+      // If positive, return as is
+      return value;
     }
   }
 
@@ -471,7 +471,7 @@ function addToken({ balances, token, amount, chain, blacklistedTokens = [], whit
 }
 
 const nullAddress = ADDRESSES.null
-const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+const gasTokens = [nullAddress, ADDRESSES.GAS_TOKEN_2, '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
   '0x000000000000000000000000000000000000800a', // zksync era gas token
 ]
 const gasTokenSet = new Set(gasTokens)
@@ -480,7 +480,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, permitFailure = false, sumChunkSize = undefined } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, permitFailure = false, sumChunkSize = undefined, sumChunkSleep = 3000 } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -510,8 +510,10 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (sumChunkSize)
     chunks = sliceIntoChunks(tokensAndOwners, sumChunkSize)
 
+  let i = 0
   for (const tokensAndOwners of chunks) {
-    const balanceOfTokens = await sdk.api.abi.multiCall({
+    i++
+    let call = () => sdk.api.abi.multiCall({
       calls: tokensAndOwners.map(t => ({
         target: t[0],
         params: t[1]
@@ -521,6 +523,23 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       block,
       chain,
     })
+
+    let balanceOfTokens
+    
+    try {
+
+      balanceOfTokens = await call()
+
+    } catch (e) {
+      if (permitFailure) {
+        sdk.log(`Failed to fetch balances for chunk ${i}/${chunks.length}, retrying...`)
+        await sleep(1000)
+        balanceOfTokens = await call()
+      } else
+        throw e
+    }
+
+
     balanceOfTokens.output.forEach((result) => {
       const token = transformAddress(result.input.target)
       let balance = BigNumber(result.output)
@@ -531,6 +550,11 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       }
       balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
     })
+    if (chunks.length > 3) {
+      sdk.log(`Processed chunk ${i}/${chunks.length} with ${tokensAndOwners.length} tokens, sleeping for ${sumChunkSleep / 1e3}s to avoid rate limit issues`)
+    }
+    if (i < chunks.length)
+      await sleep(sumChunkSleep) // avoid rate limit issues
   }
 
 
@@ -746,6 +770,7 @@ async function sumTokens2({
   solidlyVeNfts = [],
   convexRewardPools = [],
   auraPools = [],
+  sumChunkSleep,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -844,7 +869,7 @@ async function sumTokens2({
   log(chain, 'summing tokens', tokensAndOwners.length)
 
 
-  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, sumChunkSize, })
+  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, sumChunkSize, sumChunkSleep, })
 
 
   if (resolveIchiVault)
@@ -1012,7 +1037,7 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
 }
 
 function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick }) {
-  
+
   const sa = tickToPrice(tickLower / 2)
   const sb = tickToPrice(tickUpper / 2)
 

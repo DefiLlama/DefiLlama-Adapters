@@ -40,7 +40,7 @@ module.exports = {
     pool2: pool2(Contracts.Chef, Contracts.LVL_BNB_LP)
   },
   arbitrum: { tvl: arbtvl },
-  hallmarks: [
-    ['2023-05-01', 'Referral contract exploited'],
-  ],
+  // hallmarks: [
+  //   ['2023-05-01', 'Referral contract exploited'],
+  // ],
 };

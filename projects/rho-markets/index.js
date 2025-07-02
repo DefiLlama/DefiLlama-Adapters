@@ -6,6 +6,6 @@ module.exports = {
 }
 
 
-module.exports.hallmarks = [
-  [1721347200, "Protocol Exploit"],
-]
+// module.exports.hallmarks = [
+//   [1721347200, "Protocol Exploit"],
+// ]

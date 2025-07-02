@@ -15,6 +15,7 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.SAFE,
         '0x4da27a545c0c5b758a6ba100e3a049001de870f5' // stkAAVE
      ],
-    owners: [treasury]
+    owners: [treasury],
+    ownTokens: ["0x8f8221afbb33998d8584a2b05749ba73c37a938a"], // RFQ GOVERNANCE TOKEN
   },
 })

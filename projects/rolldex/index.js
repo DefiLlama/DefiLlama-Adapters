@@ -3,17 +3,23 @@ const abi = {
 };
 
 const CONFIG = {
-  btr: '0x3d0E678776e4287BEfB0449d344D195ad1A2C418',
-  base: '0xa67998d867cd4b64fe9ecc1549341f1d86389c0f',
+  btr: ['0x3d0E678776e4287BEfB0449d344D195ad1A2C418'],
+  base: ['0xa67998d867cd4b64fe9ecc1549341f1d86389c0f','0x823e0F1E91f9851529Ce90c23e144203a59eF40a'],
 };
 
 const tvl = async (api) => {
-  const tokenInfo = await api.call({ abi: abi.totalValue, target: CONFIG[api.chain], });
-  const tokens = tokenInfo.map(i => i.tokenAddress);
-  return api.sumTokens({ tokens, owners: [CONFIG[api.chain]] });
+  var tokens = []
+  for(var i = 0; i < CONFIG[api.chain].length; i++){
+    const tokenInfo = await api.call({ abi: abi.totalValue, target: CONFIG[api.chain][i], });
+    tokenInfo.forEach((item)=>{
+        tokens.push(item.tokenAddress)
+    })
+  }
+  
+  return api.sumTokens({ tokens, owners: CONFIG[api.chain] });
 }
 
-module.exports.methodology = "RollDex functions as a decentralized exchange for crypto derivatives. It offers on-chain perpetuals, providing traders and stakers with exceptional opportunities."
+module.exports.methodology = "RollX functions as a decentralized exchange for crypto derivatives. It offers on-chain perpetuals, providing traders and stakers with exceptional opportunities."
 
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = {

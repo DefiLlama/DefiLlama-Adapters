@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
-const token = '0xa2E3356610840701BDf5611a53974510Ae27E2e1'
+const token = ADDRESSES.bsc.wBETH
 
 module.exports = {
   ethereum: {
