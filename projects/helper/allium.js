@@ -71,13 +71,7 @@ async function _queryAllium(sqlQuery) {
         }
     );
 
-    let response;
-    try {
-        response = await _response
-    } catch (e) {
-        throw e
-    }
-    return response
+    return await _response
 }
 
 const queryAllium = rateLimited(_queryAllium);
