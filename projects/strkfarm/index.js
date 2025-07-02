@@ -4,7 +4,6 @@
  */
 
 const { multiCall } = require("../helper/chain/starknet");
-const { call } = require("../helper/chain/starknet");
 const ADDRESSES = require('../helper/coreAssets.json');
 const { EkuboAbiMap } = require('./ekubo');
 const { SINGLETONabiMap } = require('./singleton');
