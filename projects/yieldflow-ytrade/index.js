@@ -16,13 +16,9 @@ const configAbi = {
   "collateralToken": "function collateralToken() view returns (address)"
 }
 
-const stateAbi = {
-  "getBot": "function getBot() view returns (tuple(address market, uint256 leverage, uint256[] gridLevels, uint256 upperPrice, uint256 lowerPrice, uint256 gridStartPrice, uint256 initialEntryPrice, uint256 initialMargin, uint256 investedMargin, uint256 totalProfit, bool isActive, bool autoCompound, bool isLong, uint256 collateralPerOrder, uint8 gridMode, uint256 createdAt, uint256 updatedAt))",
-  "getSubmittedOrdersPaginated": "function getSubmittedOrdersPaginated(uint256 fromIndex, uint256 toIndex) view returns (tuple(uint256 internalOrderId, bytes32 gmxOrderKey, tuple(address market, uint256 sizeDeltaUsd, uint256 initialCollateralDeltaAmount, uint256 triggerPrice, uint256 acceptablePrice, uint256 executionFee, bool isLong, uint8 orderType, uint8 decreasePositionSwapType, bool shouldAutoCancel, bool shouldUnwrapNativeToken, address receiver, address callbackContract, address uiFeeReceiver, address cancellationReceiver) orderParams, uint8 gridBotOrderType, uint8 status, uint256 gridLevel, uint256 parentInternalOrderId, uint256 executedOutputAmount, uint256 profit, uint256 createdAt, uint256 updatedAt)[])"
-}
-
 const readerAbi = {
-  "getAccountPositions": "function getAccountPositions(address dataStore, address account, uint256 start, uint256 end) view returns (tuple(tuple(address account, address market, address collateralToken) addresses, tuple(uint256 sizeInUsd, uint256 sizeInTokens, uint256 collateralAmount, uint256 borrowingFactor, uint256 fundingFeeAmountPerSize, uint256 longTokenClaimableFundingAmountPerSize, uint256 shortTokenClaimableFundingAmountPerSize, uint256 increasedAtTime, uint256 decreasedAtTime) numbers, tuple(bool isLong) flags)[])"
+  "getAccountPositions": "function getAccountPositions(address dataStore, address account, uint256 start, uint256 end) view returns (tuple(tuple(address account, address market, address collateralToken) addresses, tuple(uint256 sizeInUsd, uint256 sizeInTokens, uint256 collateralAmount, uint256 borrowingFactor, uint256 fundingFeeAmountPerSize, uint256 longTokenClaimableFundingAmountPerSize, uint256 shortTokenClaimableFundingAmountPerSize, uint256 increasedAtTime, uint256 decreasedAtTime) numbers, tuple(bool isLong) flags)[])",
+  "getAccountOrders": "function getAccountOrders(address dataStore, address account, uint256 start, uint256 end) view returns (tuple(tuple(address account, address receiver, address cancellationReceiver, address callbackContract, address uiFeeReceiver, address market, address initialCollateralToken, address[] swapPath) addresses, tuple(uint8 orderType, uint8 decreasePositionSwapType, uint256 sizeDeltaUsd, uint256 initialCollateralDeltaAmount, uint256 triggerPrice, uint256 acceptablePrice, uint256 executionFee, uint256 callbackGasLimit, uint256 minOutputAmount, uint256 updatedAtTime, uint256 validFromTime) numbers, tuple(bool isLong, bool shouldUnwrapNativeToken, bool isFrozen, bool autoCancel) flags)[])"
 }
 
 const erc20Abi = {
@@ -61,17 +57,6 @@ async function getAllActiveSystems(api, userAddress) {
 
 async function getSystemTVL(api, system, readerAddress, datastoreAddress, collateralTokenAddress, decimalsMultiplier, collateralDecimals) {
   try {
-    // Get bot configuration first
-    const botConfig = await api.call({ 
-      target: system.state, 
-      abi: stateAbi.getBot 
-    }).catch((error) => {
-      return null
-    })
-
-    if (!botConfig) {
-      return 0
-    }
     
     // Get position data from GMX reader
     const positions = await api.call({ 
@@ -88,41 +73,32 @@ async function getSystemTVL(api, system, readerAddress, datastoreAddress, collat
       currentPositionCollateral = Number(positions[0]?.numbers?.collateralAmount || 0)
     }
 
-    // Get submitted orders using actual grid levels
+    // Get orders from GMX reader
     let marginUsedByOpenOrders = 0
-    if (botConfig.gridLevels && botConfig.gridLevels.length > 0 && botConfig.leverage > 0) {
+  
       try {
-        const fromGridLevel = 0
-        const toGridLevel = botConfig.gridLevels.length - 1
-        
-        const submittedOrders = await api.call({
-          target: system.state,
-          abi: stateAbi.getSubmittedOrdersPaginated,
-          params: [fromGridLevel, toGridLevel]
+        const orders = await api.call({
+          target: readerAddress,
+          abi: readerAbi.getAccountOrders,
+          params: [datastoreAddress, system.gmxAdapter, 0, 999999999]
         })
 
-        if (submittedOrders && submittedOrders.length > 0) {
-          // Sum margin used by open orders in 30 decimals, then scale to collateral token decimals (exactly like original)
-          const marginUsedByOpenOrders30 = submittedOrders.reduce((sum, order) => {
-            if (order.orderParams && order.orderParams.orderType === '3') { // LimitIncrease
-              const sizeDeltaUsd = new BigNumber(order.orderParams.sizeDeltaUsd)
-              const leverage = Number(botConfig.leverage) || 1
-              
-              // Calculate margin: sizeDeltaUsd / leverage (using BigNumber)
-              const orderMargin = sizeDeltaUsd.div(leverage)
-              return sum.plus(orderMargin)
+        if (orders && orders.length > 0) {
+          // Sum collateral used by open orders directly from initialCollateralDeltaAmount
+          const totalOrderCollateral = orders.reduce((sum, order) => {
+            if (order.numbers && order.numbers.orderType === '3') { // LimitIncrease (uint8 enum value)
+              const collateralAmount = new BigNumber(order.numbers.initialCollateralDeltaAmount || 0)
+              return sum.plus(collateralAmount)
             }
             return sum
           }, new BigNumber(0))
           
-          // Scale from 30 decimals to collateral token decimals (divide by 10^24) exactly like original
-          const scaledMarginUsedByOpenOrders = marginUsedByOpenOrders30.div(new BigNumber(10).pow(24))
-          marginUsedByOpenOrders = Number(scaledMarginUsedByOpenOrders.toString()) / decimalsMultiplier
+          // Convert from token decimals to human readable
+          marginUsedByOpenOrders = Number(totalOrderCollateral.toString()) / decimalsMultiplier
         }
       } catch (orderError) {
         // Silent error handling
       }
-    }
 
     // Get free margin (collateral token balance of the router contract)
     const freeMargin = await api.call({ 
