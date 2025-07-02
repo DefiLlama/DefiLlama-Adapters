@@ -56,6 +56,9 @@ const configs = {
       mellow: [
         '0x8327b8BD2561d28F914931aD57370d62C7968e40',
       ],
+      erc4626: [
+        '0xeea3edc017877c603e2f332fc1828a46432cdf96',
+      ],
     },
     base: {
       morphoVaultOwners: [
