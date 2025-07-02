@@ -42,7 +42,7 @@ const blacklist = [
 ].map(i => i.toLowerCase())
 
 async function tvl(api) {
-  let data = await getConfig('yearn/v2-' + api.chain, `https://ydaemon.yearn.fi/vaults?hideAlways=false&orderBy=featuringScore&orderDirection=desc&strategiesDetails=withDetails&strategiesCondition=inQueue&chainIDs=${api.chainId}&limit=2500`)
+  let data = await getConfig('yearn/v2-' + api.chain, `https://ydaemon.yearn.fi/vaults?highlight_multi_single&hideAlways=false&orderBy=featuringScore&orderDirection=desc&strategiesDetails=withDetails&strategiesCondition=inQueue&chainIDs=${api.chainId}&limit=2500`)
 
   if (!Array.isArray(data))
     return;

@@ -1,5 +1,11 @@
+require('dotenv').config()
 const axios = require("axios");
 const { sleep } = require("./utils");
+const retry = require("async-retry");
+const pLimit = require("p-limit");
+
+const _rateLimited = pLimit(3)
+const rateLimited = (fn) => (...args) => _rateLimited(() => fn(...args))
 
 const token = {}
 
@@ -27,37 +33,54 @@ async function retrieveAlliumResults(queryId) {
     return results.data.data
 }
 
-async function queryAllium(sqlQuery) {
-    for (let i = 0; i < 20; i++) {
-        if (!token[sqlQuery]) {
-            token[sqlQuery] = await startAlliumQuery(sqlQuery);
-        }
-
-        if (!token[sqlQuery]) {
-            throw new Error("Couldn't get a token from allium")
-        }
-
-        const statusReq = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${token[sqlQuery]}/status`, {
-            headers: HEADERS
-        })
-
-        const status = statusReq.data
-        if (status === "success") {
-            try {
-                const results = await retrieveAlliumResults(token[sqlQuery])
-                return results
-            } catch (e) {
-                console.log("query result", e)
-                throw e
+async function _queryAllium(sqlQuery) {
+    const _response = retry(
+        async (bail) => {
+            if (!token[sqlQuery]) {
+                try {
+                    token[sqlQuery] = await startAlliumQuery(sqlQuery);
+                } catch (e) {
+                    console.log("query run-async", e);
+                    throw e
+                }
             }
-        } else if (status === "failed") {
-            console.log(`Query ${sqlQuery} failed`, statusReq.data)
-            throw new Error(`Query ${sqlQuery} failed, error ${JSON.stringify(statusReq.data)}`)
+
+            if (!token[sqlQuery]) {
+                throw new Error("Couldn't get a token from allium")
+            }
+
+            const statusReq = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${token[sqlQuery]}/status`, {
+                headers: HEADERS
+            })
+
+            const status = statusReq.data
+            if (status === "success") {
+                return retrieveAlliumResults(token[sqlQuery])
+            } else if (status === "failed") {
+                console.log(`Query ${sqlQuery} failed`, statusReq.data)
+                bail(new Error(`Query ${sqlQuery} failed, error ${JSON.stringify(statusReq.data)}`))
+                return;
+            }
+            throw new Error("Still running")
+        },
+        {
+            retries: 15,
+            maxTimeout: 1000 * 60 * 2, // 2 minutes
+            minTimeout: 1000 * 10, // 10 seconds
+            randomize: true,
         }
-        await sleep(20e3)
+    );
+
+    let response;
+    try {
+        response = await _response
+    } catch (e) {
+        throw e
     }
-    throw new Error("Not processed in time")
+    return response
 }
+
+const queryAllium = rateLimited(_queryAllium);
 
 module.exports = {
     queryAllium,
