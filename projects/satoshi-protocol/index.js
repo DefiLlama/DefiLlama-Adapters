@@ -203,33 +203,6 @@ module.exports = {
         address: '0xc473754a6e35cC4F45316F9faaeF0a3a86D90E4e'
       },
     ],
-    farmList: [
-      {
-        address: "0xc1BFd0b70D9A8a397437d32039051B1b4814AC02",
-        asset: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // WBNB
-      }, {
-        address: "0x36fcA82042fe13570455f7C9A9b08b0f758000e6",
-        asset: "0xAF558b832C290C29f59Ddf317e6E010fb5758f27", // GOLD
-      }, {
-        address: "0xD480a0Aab2Bc4A536449B18B7d0C1b3a3c326C93",
-        asset: "0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d", // USD1
-      }, {
-        address: "0x9dA4F7DF9d6D4789b9fd47aa98630546FE0DC839",
-        asset: "0x87d00066cf131ff54B72B134a217D5401E5392b6", // PUFFER
-      }, {
-        address: "0x0F1c38CEA75bD9521996d1E6778E0d8Da514ae10",
-        asset: "0x783c3f003f172c6Ac5AC700218a357d2D66Ee2a2", // B2
-      }, {
-        address: "0x1aF72A4A25fef21b6db385c5842Dafc754e703Dc",
-        asset: "0xCAAE2A2F939F51d97CdFa9A86e79e3F085b799f3", // TUT
-      }, {
-        address: "0x527BB020493724aEbAD66744AFc811B15402F032",
-        asset: "0xabE8E5CabE24Cb36df9540088fD7cE1175b9bc52", // SOLV
-      }, {
-        address: "0x67cF8c8CF57587eAD064E02F5FeF73Aa6CFcC038",
-        asset: "0x3aee7602b612de36088f3ffed8c8f10e86ebf2bf", // BANK
-      },
-    ]
   }),
   hemi: createExports({
     troveList: [
@@ -237,6 +210,8 @@ module.exports = {
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // HemiBTC Collateral(V2)
       '0xa7B54413129441e872F42C1c4fE7D1984332CA87', // WBTC Collateral(V2)
       '0xED6E49a1835A50a8FD5511704616B89845Ad5564', // iBTC Collateral(V2)
+      '0x6d991Eb34321609889812050bC7f4604Eb0bfF26', // enzoBTC Collateral(V2)
+      '0xDAc0551246A7F75503e8C908456005E828C35A40', // uBTC Collateral(V2)
     ],
     nymList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
@@ -285,6 +260,16 @@ module.exports = {
     nymList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
       fromBlock: 33129825,
+    }],
+  }),
+  xlayer: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 20436365,
     }],
   }),
 }

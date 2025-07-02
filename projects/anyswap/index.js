@@ -120,7 +120,7 @@ module.exports = {
   // fetch: fetchChain(null),
   hallmarks: [
     [1651881600, "UST depeg"],
-    [1689202800,"Access to Wallets Lost"]
+    // [1689202800,"Access to Wallets Lost"]
   ],
 }
 
