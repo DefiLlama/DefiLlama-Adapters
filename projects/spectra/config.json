@@ -59,7 +59,7 @@
       "fromBlock": 1658441
     }
   ],
-  "avalanche": [
+  "avax": [
     {
       "factory": "0x64FCC3A02eeEba05Ef701b7eed066c6ebD5d4E51",
       "fromBlock": 62814000
