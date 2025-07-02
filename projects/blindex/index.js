@@ -1,5 +1,12 @@
 const sdk = require("@defillama/sdk");
-const abi = require("../helper/abis/blindex.json");
+const abi = {
+  "bdstable_pools_array": "function bdstable_pools_array(uint256) view returns (address)",
+  "getBdStablesPoolsLength": "uint256:getBdStablesPoolsLength",
+  "getBDStablePoolCollateral": "address:collateral_token",
+  "getBDStable": "function bdstables(uint256) view returns (address)",
+  "getBdStablesLength": "uint256:getBdStablesLength",
+  "getBDXPriceUsdD12": "uint256:BDX_price_d12"
+}
 const { getUniTVL, } = require("../helper/unknownTokens");
 
 const chains = {

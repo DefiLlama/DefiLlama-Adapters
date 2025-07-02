@@ -11,7 +11,7 @@ const { ibcChains } = require('../../projects/helper/tokenMapping')
 // const rootFolder = projectsDir + '/zharta'
 const rootFolder = projectsDir
 
-const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', ...ibcChains]
+const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', 'ripple', 'noble', ...ibcChains]
 
 function run() {
   ignoredChains.forEach(i => delete allLabels[i])
@@ -28,7 +28,11 @@ function run() {
 
 run()
 
+const ignoredFolders = ['symbiosis-finance', 'node_modules']
+const blacklistedAddresses = new Set(['XRP'])
+
 function updateFile(file) {
+  if (ignoredFolders.some(s => file.includes(s))) return;
   let relativePath = path.relative(file + '/..', allLabelsFile)
   if (relativePath.startsWith('coreAssets')) relativePath = './' + relativePath
   const requireStr = `const ADDRESSES = require('${relativePath}')\n`
@@ -38,11 +42,11 @@ function updateFile(file) {
 
   Object.entries(allLabels).forEach(([chain, mapping]) => {
     const label = ['ADDRESSES', chain]
-    if (chain === 'null') {
-      updateFileStr([...label].join('.'), mapping, file)
+    if (chain === 'null' || chain === 'GAS_TOKEN_2') {
+      updateFileStr([...label].join('.'), mapping)
     } else {
       Object.entries(mapping).forEach(([symbol, addr]) => {
-        updateFileStr([...label, symbol].join('.'), addr, file)
+        updateFileStr([...label, symbol].join('.'), addr)
       })
     }
   })
@@ -50,7 +54,9 @@ function updateFile(file) {
     fileStr = requireStr + fileStr
   fs.writeFileSync(file, fileStr, { encoding: 'utf-8' })
 
-  function updateFileStr(label, address, file) {
+
+  function updateFileStr(label, address) {
+    if (blacklistedAddresses.has(address)) return;
     if (!address || !address.length) return;
     if (!updateFile) {
       updateFile = (new RegExp(address, 'i')).test(fileStr)

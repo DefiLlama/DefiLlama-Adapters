@@ -209,7 +209,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
   }
 
   async function borrowed(api) {
-    const balances = {}
+    const balances = api.getBalances()
     const data = await getReservesData(api)
     const supplyVariable = await api.multiCall({
       abi: 'erc20:totalSupply',
@@ -227,7 +227,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
         sdk.util.sumSingleBalance(balances, i.underlying, value, api.chain)
       }
     })
-    return balances
+    return sumTokens2({ api, balances })
   }
 
   async function getReservesData(api) {

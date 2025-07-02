@@ -1,27 +1,26 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const { getChainTransform } = require("../helper/portedTokens");
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 
 const graphUrls = {
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-ethereum",
+    sdk.graph.modifyEndpoint('D8vYJpKN5SEHUkUWKSuorsL6FRt7hAQMnywnC4e93ygf'),
   polygon:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-polygon",
-  fantom: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-fantom",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-bsc",
-  avax: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-avalanche",
+    sdk.graph.modifyEndpoint('4KsDNsyJjKX6bjwVNJQmJ7Dm3wovYXSX37UR39rNaMX4'),
+  fantom: sdk.graph.modifyEndpoint('E98zSR5UZBGBgQe2SSLZ5R6yj5GPqKDJcQJNDHTeV3cS'),
+  bsc: sdk.graph.modifyEndpoint('2wBYezghRA3hEJLQB4njUZGDNxCdU3u2gsLP5yVvBqKk'),
+  avax: sdk.graph.modifyEndpoint('8LVoX3JPEVAak8T8GoEfdJudMoP2bsGwd9tszJxo3Rnx'),
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-arbitrum",
+    sdk.graph.modifyEndpoint('8eHhPeKDr646JH5KUBBcabAJzkWmLfu6pqBtpXQHa37F'),
   optimism:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-optimism",
-  xdai: "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-gnosis",
+    sdk.graph.modifyEndpoint('8KnsmppMf9k6Qvyixxwmny7dYugTV7XT4htHTfyq3d69'),
+  xdai: sdk.graph.modifyEndpoint('5ToxB5xubMh9osdEDeX98JBAyzUVwkReGXAT1CzQhZCB'),
   harmony:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-harmony",
+    sdk.graph.modifyEndpoint('9D9C3ppoDE1zuZk5adznngKomLYS8NnC9zxniSS8vzgH'),
   moonbeam:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonbeam",
+    sdk.graph.modifyEndpoint('HJxpcsmaPV3L6PsqGFBHLczeMnL7bEgmL1D65edGx8pf'),
   moonriver:
-    "https://api.thegraph.com/subgraphs/name/sushi-subgraphs/furo-moonriver",
+    sdk.graph.modifyEndpoint('9ZqdKjfu7o9dX1RThXHDV9EqMn5CTvgpsPKKbpANg8yC'),
 };
 
 const bentoboxes = {
@@ -57,26 +56,22 @@ const furoQuery = gql`
 const toAmountAbi = 'function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
 
 function furo(chain, isVesting) {
-  return async (timestamp, ethBlock, { [chain]: block}) => {
-    const balances = {};
+  return async (api) => {
     const graphUrl = graphUrls[chain];
-    const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
-    let { tokens } = await request(graphUrl, furoQuery, { block: block - 100, });
+    let { tokens } = await request(graphUrl, furoQuery, { block: (await api.getBlock()) - 100, });
 
     tokens = tokens.filter(t => isWhitelistedToken(t.symbol, t.id, isVesting))
     const calls = tokens.map(token => ({ params: [token.id, token.liquidityShares, false] }))
 
-    const { output } = await sdk.api.abi.multiCall({
+    const output = await api.multiCall({
       target: bentoboxes[chain],
       abi: toAmountAbi,
       calls,
-      chain, block,
     })
-
-    output.forEach(({ output: amount, input: { params: [token] } }) => sdk.util.sumSingleBalance(balances, transform(token), amount))
-    return balances;
+    const _tokens = tokens.map(t => t.id)
+    api.add(_tokens, output)
   };
 }
 

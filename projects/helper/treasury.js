@@ -13,7 +13,6 @@ function treasuryExports(config) {
     const tvlConfig = { permitFailure: true, ...config[chain], }
     if (chain === 'solana') {
       tvlConfig.solOwners = owners
-      tvlConfig.getAllTokenAccounts = true
     } else if (config[chain].fetchCoValentTokens !== false) {
       if (ankrChainMapping[chain]) {
         tvlConfig.fetchCoValentTokens = true

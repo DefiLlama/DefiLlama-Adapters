@@ -13,7 +13,7 @@ module.exports = {
     tvl: sumTokensExport({
       owner: JITU_CONTRACT_ADDRESS,
       tokens: [
-        '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+        ADDRESSES.GAS_TOKEN_2,
         ADDRESSES.avax.WETH_e,
         ADDRESSES.avax.WBTC_e,
         ADDRESSES.avax.USDT_e,

@@ -12,7 +12,6 @@ async function tvl(api) {
 const steakToken = "0xb279f8DD152B99Ec1D84A489D32c35bC0C7F5674"
 
 module.exports = {
-  start: 14003811,
   methodology: 'Counts the value of JLP tokens staked into SteakMasterChef.',
   avax: {
     tvl,

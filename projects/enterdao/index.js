@@ -1,9 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const StakingContract = "0x3F148612315AaE2514AC630D6FAf0D94B8Cd8E33";
-const USDC_ENTR_SUSHI_LP = "0x83b546e10917432a722444672504f0d459472171";
 const yieldFarms = [
   ADDRESSES.ethereum.SUSHI, //SUSHI
   "0xbb0e17ef65f82ab018d8edd776e8dd940327b28b", //AXS
@@ -15,26 +13,11 @@ const yieldFarms = [
   "0x83b546e10917432a722444672504f0d459472171", //SUSHI-LP
 ];
 
-const ethTvl = async () => {
-  const balances = {};
-
-  for (const yieldFarm of yieldFarms) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      yieldFarm == USDC_ENTR_SUSHI_LP
-        ? [[yieldFarm, true]]
-        : [[yieldFarm, false]],
-      [StakingContract]
-    );
-  }
-
-  return balances;
-};
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    tvl: ethTvl,
+    tvl: sumTokensExport({ owner: StakingContract, tokens: yieldFarms, resolveLP: true, }),
   },
   methodology: "We count as TVL all the Yield Farms through Staking Contract",
 };

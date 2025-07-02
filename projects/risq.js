@@ -32,7 +32,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  start: 10340221, // Aug-25-2021 03:12:42 PM +UTC
   bsc: {
     tvl,
   }

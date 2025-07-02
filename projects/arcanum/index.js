@@ -20,7 +20,6 @@ const SPI_ASSETS_CONTRACTS = [
 
 module.exports = {
     methodology: 'counts the quantities of all tokens in all multipool contracts.',
-    start: 1000235,
     arbitrum: {
         tvl: sumTokensExport({ ownerTokens: [[ARBI_ASSETS_CONTRACTS, ARBI_CONTRACT], [SPI_ASSETS_CONTRACTS, SPI_CONTRACT]] })
     }

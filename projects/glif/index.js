@@ -20,12 +20,11 @@ module.exports = {
     },
   },
   timetravel: true,
-  start: 1677628800, // 2023-03-01
+  start: '2023-03-01', // 2023-03-01
   hallmarks: [
     // timestamp, event
     [1680206490, "Early deposits open"], // 2023-03-30
     [1685035830, "Protocol deployed"], // 2023-05-25
-    [1691781060, "Exit ramp deployed"], // 2023-08-11
     [1711641600, "GLIF Points released"], // 2024-03-28
   ],
 };

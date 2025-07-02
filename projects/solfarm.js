@@ -1,9 +1,7 @@
-const { get } = require('./helper/http')
+const { sumTokens2 } = require('./helper/solana')
 
-async function fetch() {
-  var response = await get('https://api.tulip.garden/tvl')
-
-  return response.total;
+async function tvl() {
+  return sumTokens2({ owner: '8gEGZbUfVE1poBq71VHKX9LU7ca4x8wTUyZgcbyQe51s'})
 }
 
 module.exports = {
@@ -11,5 +9,5 @@ module.exports = {
     [1667865600, "FTX collapse"]
 ],
   timetravel: false,
-  fetch
+  solana: { tvl }
 }

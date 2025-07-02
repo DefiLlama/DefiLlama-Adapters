@@ -4,7 +4,6 @@ const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
 const coreAssets = require('../coreAssets.json')
-const ADDRESSES = coreAssets
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
@@ -39,6 +38,9 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams, })
   return response.data
 }
 
+async function lookupApplicationsCreatedByAccount(accountId) {
+  return (await axiosObj.get(`/v2/accounts/${accountId}/created-applications`)).data
+}
 
 async function searchAccountsAll({ appId, limit = 1000, searchParams = {}, sumTokens = false, api }) {
   const accounts = []
@@ -65,11 +67,14 @@ const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
   return fn(...args);
 }
 
-async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
+async function sumTokens({ owner, owners = [], tokens = [], token, balances, api, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
+  if (!balances) {
+    balances = api ? api.getBalances() : {}
+  }
   if (owner) owners = [owner]
   if (token) tokens = [token]
   if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
-  const accounts = await Promise.all(owners.map(getAccountInfo))
+  const accounts = await Promise.all(owners.map(limitedGetAccountInfo))
   accounts.forEach(({ assets }, i) => {
     if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
@@ -90,11 +95,22 @@ async function getAssetInfo(assetId) {
 
   async function _getAssetInfo() {
     const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
-    const reserveInfo = await getAccountInfo(asset.params.reserve)
+    const reserveInfo = await limitedGetAccountInfo(asset.params.reserve)
     const assetObj = { ...asset.params, ...asset, reserveInfo, }
     assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
     assetObj.assets = { ...reserveInfo.assetMapping }
     delete assetObj.assets[assetId]
+    return assetObj
+  }
+}
+
+async function getAssetInfoWithoutReserve(assetId) {
+  if (!assetCache[assetId]) assetCache[assetId] = _getAssetInfo()
+  return assetCache[assetId]
+
+  async function _getAssetInfo() {
+    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
+    const assetObj = { ...asset.params, ...asset, }
     return assetObj
   }
 }
@@ -159,6 +175,7 @@ const tokens = {
   gard: 684649988,
   gold$: 246516580,
   silver$: 246519683,
+  ASAGold: 1241944285
 };
 
 // store all asset ids as string
@@ -200,16 +217,37 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   throw new Error('Not mapped with any whitelisted assets')
 }
 
+async function lookupTransactionsByID(searchParams = {}) {
+  const urlParams = new URLSearchParams(searchParams).toString();
+  return (await axiosObj.get(`/v2/transactions?${urlParams}`)).data
+}
+
+const limitedGetAccountInfo = withLimiter(getAccountInfo)
+
+async function getApplicationBoxes({ appId, limit = 1000, nexttoken, }) {
+  const response = (await axiosObj.get(`/v2/applications/${appId}/boxes`, {
+    params: {
+      limit,
+      next: nexttoken,
+    }
+  }))
+  return response.data.boxes
+}
+
 module.exports = {
   tokens,
   getAssetInfo: withLimiter(getAssetInfo),
+  getAssetInfoWithoutReserve: withLimiter(getAssetInfoWithoutReserve),
   searchAccountsAll,
-  getAccountInfo,
+  getAccountInfo: limitedGetAccountInfo,
   sumTokens,
   getApplicationAddress,
   lookupApplications: withLimiter(lookupApplications),
   lookupAccountByID: withLimiter(lookupAccountByID),
+  lookupTransactionsByID: withLimiter(lookupTransactionsByID),
   searchAccounts: withLimiter(searchAccounts),
   getAppGlobalState: getAppGlobalState,
   getPriceFromAlgoFiLP,
+  lookupApplicationsCreatedByAccount: withLimiter(lookupApplicationsCreatedByAccount),
+  getApplicationBoxes,
 }

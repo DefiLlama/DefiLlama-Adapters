@@ -20,5 +20,6 @@ async function tvl(api) {
 module.exports = {
   kava: {
     tvl,
-  }
+  },
+  deadFrom: "2023-08-13",
 }

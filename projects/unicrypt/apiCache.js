@@ -1,70 +1,67 @@
 const sdk = require('@defillama/sdk');
 const { config, protocolPairs, tokens, stakingContracts,
-  ethereumContractData, bscContractData, polygonContractData,
-  avalancheContractData, gnosisContractData,arbitrumContractData, } = require('./config')
-  const { getCache, setCache, } = require("../helper/cache")
-  const { vestingHelper,  } = require("../helper/unknownTokens")
+  ethereumContractData, baseContractData, bscContractData, polygonContractData,
+  avalancheContractData, gnosisContractData, arbitrumContractData, } = require('./config')
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper, } = require("../helper/unknownTokens")
 const project = 'bulky/unicrypt'
 
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
+const { getUniqueAddresses } = require('../helper/utils');
 
-function tvl(args) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    let totalBalances = {}
-    for (let i = 0; i < args.length; i++) {
-      const chain = args[i].chain
-      const contract = args[i].contract.toLowerCase()
-      const cache = await getCache(project, chain)
-      if (!cache.vaults) cache.vaults = {}
-      if (!cache.vaults[contract]) cache.vaults[contract] = { tokens: [] }
-      const cCache = cache.vaults[contract]
-      let block = chainBlocks[chain]
-      const { output: totalDepositId } = await sdk.api.abi.call({
-        target: contract,
-        abi: args[i].getNumLockedTokensABI,
-        chain, block,
+async function runInBatches(items, batchSize, fn) {
+  for (let i = 0; i < items.length; i += batchSize) {
+    await Promise.all(items.slice(i, i + batchSize).map(fn))
+  }
+}
+
+function tvl(contracts) {
+  return async function tvl(api) {
+    const balances = {}
+    const cache = await getCache(project, api.chain || { vaults: {} })
+
+    await Promise.all(
+      contracts.map(async (entry, idx) => {
+        const vault = entry.contract.toLowerCase()
+        if (!cache.vaults) cache.vaults = {}
+        if (!cache.vaults[vault]) cache.vaults[vault] = { tokens: [], lastTotalDepositId: 0 }
+        const cCache = cache.vaults[vault]
+
+        const size = await api.call({ target: vault, abi: entry.getNumLockedTokensABI, })
+        const calls = Array.from({ length: +size - cCache.lastTotalDepositId }, (_, i) => ({ target: vault, params: i + cCache.lastTotalDepositId }))
+        cCache.lastTotalDepositId = +size
+
+        const tokens = await api.multiCall({ abi: entry.getLockedTokenAtIndexABI, calls, permitFailure: true })
+        tokens.forEach(({ token } = {}) =>  token  && cCache.tokens.push(token))
+        cCache.tokens = getUniqueAddresses(cCache.tokens.filter(i => i))
       })
+    )
 
-      let tokens = cCache.tokens;
-      let j = cCache.lastTotalDepositId || 0
-      cCache.lastTotalDepositId = +totalDepositId
-      let calls = []
-      for (; j < totalDepositId; j++)
-        calls.push({ target: contract, params: j })
+    await runInBatches(contracts, 5, async (entry) => {
+      const vault = entry.contract.toLowerCase()
+      const cCache = cache.vaults[vault]
 
-      const lpAllTokens = (
-        await sdk.api.abi.multiCall({
-          abi: args[i].getLockedTokenAtIndexABI,
-          calls, chain, block,
-        })
-      ).output
+      const blacklist = [...(entry.pool2 || [])]
+      if (api.chain === 'ethereum') blacklist.push('0x72E5390EDb7727E3d4e3436451DADafF675dBCC0') // HANU
 
-      lpAllTokens.forEach(lp => {
-        if (!lp.success) return;
-        const lpToken = lp.output
-        tokens.push(lpToken)
-      })
-
-      const blacklist = [...(args[i].pool2 || [])]
-
-      if (chain === 'ethereum')
-        blacklist.push('0x72E5390EDb7727E3d4e3436451DADafF675dBCC0') // HANU
-
-      let balances = await vestingHelper({
-        chain, block,
-        owner: contract,
+      const balance = await vestingHelper({
+        chain: api.chain,
+        block: api.block,
+        owner: vault,
         useDefaultCoreAssets: true,
         blacklist,
-        tokens,
+        tokens: cCache.tokens,
         cache,
       })
 
-      for (const [token, balance] of Object.entries(balances))
-        sdk.util.sumSingleBalance(totalBalances, token, balance)
-      await setCache(project, chain, cache)
-    }
-    return totalBalances
+      Object.entries(balance).forEach(([token, bal]) =>
+        sdk.util.sumSingleBalance(balances, token, bal)
+      )
+    })
+
+    await setCache(project, api.chain, cache)
+    return balances
   }
 }
 
@@ -87,6 +84,9 @@ module.exports = {
       [protocolPairs.uncx_WETH],
       config.uniswapv2.chain)
   },
+  base: {
+    tvl: tvl(baseContractData)
+  },
   bsc: {
     tvl: tvl(bscContractData),
 
@@ -97,8 +97,8 @@ module.exports = {
   polygon: {
     tvl: tvl(polygonContractData)
   },
-  avax: {    tvl: tvl(avalancheContractData)  },
-  arbitrum: {    tvl: tvl(arbitrumContractData)  },
+  avax: { tvl: tvl(avalancheContractData) },
+  arbitrum: { tvl: tvl(arbitrumContractData) },
   xdai: {
     tvl: tvl(gnosisContractData),
     pool2: pool2s([config.honeyswap.locker],

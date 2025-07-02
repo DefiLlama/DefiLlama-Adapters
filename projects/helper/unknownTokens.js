@@ -8,6 +8,25 @@ const { vestingHelper } = require('./cache/vestingHelper')
 const { getTokenPrices, sumUnknownTokens, getLPData, } = require('./cache/sumUnknownTokens')
 const { getUniTVL } = require('./cache/uniswap')
 const { getUniqueAddresses, } = require('./utils')
+const stakingHelper = require('./staking')
+
+function uniTvlExports(config, commonOptions = {}) {
+  const exportsObj = {
+    misrepresentedTokens: !commonOptions.useDefaultCoreAssets,
+  }
+  Object.keys(config).forEach(chain => {
+    exportsObj[chain] =  uniTvlExport(chain, config[chain],commonOptions )[chain]
+  })
+  if (commonOptions.hallmarks) exportsObj.hallmarks = commonOptions.hallmarks
+  if (commonOptions.deadFrom) exportsObj.deadFrom = commonOptions.deadFrom
+  if (typeof commonOptions.staking === 'object') {
+    Object.entries(commonOptions.staking).forEach(([chain, stakingArgs]) => {
+      if (!exportsObj[chain]) exportsObj[chain] = {}
+      exportsObj[chain].staking = stakingHelper.staking(...stakingArgs)
+    })
+  }
+  return exportsObj
+}
 
 function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
   useDefaultCoreAssets = false, }) {
@@ -236,10 +255,11 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }
 
 function uniTvlExport(chain, factory, options = {}) {
-  return {
-    misrepresentedTokens: true,
+  const exportsObj= {
+    misrepresentedTokens: !options.useDefaultCoreAssets,
     [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
   }
+  return exportsObj
 }
 
 module.exports = {
@@ -256,4 +276,5 @@ module.exports = {
   sumTokensExport,
   yieldHelper,
   uniTvlExport,
+  uniTvlExports,
 };

@@ -8,6 +8,7 @@ module.exports = {
   hallmarks: [
     [1666656000, "Rug Pull"]
   ],
+  deadFrom: 1666656000,
   dogechain: {
     tvl: sdk.util.sumChainTvls([
       getUniTVL({ factory, useDefaultCoreAssets: true, }),
