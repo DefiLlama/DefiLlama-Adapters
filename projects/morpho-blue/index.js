@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
@@ -11,7 +12,7 @@ const config = {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     blackList: [
       "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
-      "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      ADDRESSES.base.USDC,
     ],
     fromBlock: 18883124,
     blacklistedMarketIds: [

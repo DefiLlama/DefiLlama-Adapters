@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 function createExports({
@@ -23,7 +24,7 @@ module.exports = {
     farmList: [
       {
         address: '0xc1BFd0b70D9A8a397437d32039051B1b4814AC02',
-        asset: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+        asset: ADDRESSES.bsc.WBNB, // WBNB
       },
       {
         address: '0x36fcA82042fe13570455f7C9A9b08b0f758000e6',

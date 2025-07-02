@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getConfig } = require('../helper/cache')
 
@@ -34,7 +35,7 @@ async function getAssetIds(chainId) {
   const result = Object.entries(chainData.assetId || {}).filter(i => i[0].length && !i[1].symbol.startsWith('next')).map(i => i[0])
   // crossChain.json returns the xERC20 representation of ezETH instead of canonical addresses on L1. Manually add these below until a better JSON is available.
   if (chainId === 1) {
-    result.push("0xbf5495Efe5DB9ce00f80364C8B423567e58d2110"); // ezETH
+    result.push(ADDRESSES.linea.rzETH); // ezETH
   }
   return result;
 }

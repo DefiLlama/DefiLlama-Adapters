@@ -8,8 +8,7 @@ async function tvl(api) {
   );
   const tokensAndOwners = mapping.filter(i => i.l1_token_address).map((t) => [
     t.l1_token_address == "0x0000000000000000000000000000000000455448"
-      ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-      : t.l1_token_address,
+      ? [ADDRESSES.GAS_TOKEN_2]: t.l1_token_address,
     t.l1_bridge_address,
   ]);
   tokensAndOwners.push([

@@ -24,8 +24,6 @@ const DEFAULTS = {
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
-  CORN_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
-  ASSETCHAIN_RPC_MULTICALL: '0xf8ac4BEB2F75d2cFFb588c63251347fdD629B92c',
   FLAME_RPC: "https://rpc.flame.astria.org",
   BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
   BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
@@ -36,6 +34,7 @@ const DEFAULTS = {
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
   KATANA_RPC: "https://rpc.katana.network",
+  KATANA_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
 }
 
 const ENV_KEYS = [
