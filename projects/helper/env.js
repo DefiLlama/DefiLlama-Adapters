@@ -35,6 +35,7 @@ const DEFAULTS = {
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
   KATANA_RPC: "https://rpc.katana.network",
   KATANA_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
+  BTNX_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
 }
 
 const ENV_KEYS = [
