@@ -240,7 +240,7 @@ async function tvl(api) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
     } else {
-      api.add(coin, bucket.fields.collateral_vault);
+      if (coin) api.add(coin, bucket.fields.collateral_vault);
     }
   }
 
