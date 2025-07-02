@@ -2,7 +2,7 @@ const { queryAllium } = require("../helper/allium");
 
 async function tvl(api) {
   const endTimestamp = api.timestamp;
-  const startTimestamp = endTimestamp - 86400;
+  const startTimestamp = endTimestamp - (86400 * 30);
 
   const query = `
     WITH pool_vaults AS (
@@ -36,6 +36,7 @@ async function tvl(api) {
         AND b.block_timestamp < TO_TIMESTAMP_NTZ(${endTimestamp})
         AND b.is_voting = false
         AND b.raw_balance > 0
+        AND b.usd_balance > 0
     )
     SELECT 
       mint_address,
