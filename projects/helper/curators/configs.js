@@ -101,6 +101,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  katana: {
+    vaultFactories: [
+      {
+        address: '0x1c8De6889acee12257899BFeAa2b7e534de32E16',
+        fromBlock: 2741420,
+      },
+    ],
+  },
   plume_mainnet: {
     vaultFactories: [
       {

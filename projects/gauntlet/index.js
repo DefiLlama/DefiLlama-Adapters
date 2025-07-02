@@ -100,6 +100,11 @@ const configs = {
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
       ],
     },
+    katana: {
+      morphoVaultOwners: [
+        '0x5D8C96b76A342c640d9605187daB780f8365F69f',
+      ],
+    },
   }
 }
 
