@@ -1,5 +1,8 @@
+const { getUniTVL } = require('../helper/unknownTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
+const V2_FACTORY_CRONOS = '0xCd2E5cC83681d62BEb066Ad0a2ec94Bf301570C9';
+const V2_FACTORY_ZKEVM = '0xEDc17bf0f27afc2e767cA08aE426d095207A7804';
 const SMART_CHEF_FACTORY_CRONOS = "0x1eC6e891Bdaa523da0F538C9556064D909d0c566";
 const SMART_CHEF_FACTORY_ZKEVM = "0x4E5CDf0A7a13f05e4168E3B2b9ba96c740877275";
 const ROBIN_DIAMOND_CONTRACT = "0x6D5599616732Ea278235b47A76Cfd398fDe00DEB";
@@ -21,74 +24,93 @@ const legacyPools = [
   "0x2b4E114828C304DE53bae92200c877a64aC41607",
 ];
 
-async function tvlSmartChef(factoryAddress, api) {
+const liquidityPoolsCronos = async (api) => getUniTVL({
+  factory: V2_FACTORY_CRONOS,
+  useDefaultCoreAssets: true
+})(api);
+
+const liquidityPoolsZkEVM = async (api) => getUniTVL({
+  factory: V2_FACTORY_ZKEVM,
+  useDefaultCoreAssets: true
+})(api);
+
+async function stakingSmartChef(factoryAddress, api) {
   const [poolAddresses, stakedTokens] = await api.call({
     abi: "function getAllPoolTVL() view returns (address[] poolAddresses, address[] stakedTokens, uint256[] stakedAmounts)",
     target: factoryAddress,
   });
-
+  
   const tokensAndOwners = stakedTokens.map((token, i) => [token, poolAddresses[i]]);
   return sumTokens2({ 
     api, 
-    tokensAndOwners,
-    resolveLP: true
+    tokensAndOwners, 
+    resolveLP: true 
   });
 }
 
-async function tvlRobinDiamond(api) {
+async function stakingRobinDiamond(api) {
   const poolLength = await api.call({ target: ROBIN_DIAMOND_CONTRACT, abi: "uint256:poolLength" });
   const tokensAndOwners = [];
-
+  
   for (let i = 0; i < poolLength; i++) {
     const pool = await api.call({
       abi: "function pools(uint256) view returns (address token, address rewardToken, uint256, uint256 totalDeposited, uint256, uint256, uint256, uint256, address, uint256)",
       target: ROBIN_DIAMOND_CONTRACT,
       params: [i],
     });
-
+    
     if (Number(pool.totalDeposited) > 0) {
       tokensAndOwners.push([pool.token, ROBIN_DIAMOND_CONTRACT]);
     }
   }
-
+  
   return sumTokens2({ 
     api, 
-    tokensAndOwners,
-    resolveLP: true  
+    tokensAndOwners, 
+    resolveLP: true 
   });
 }
 
-async function tvlLegacyPools(api) {
+async function stakingLegacyPools(api) {
   const tokens = await api.multiCall({
     abi: "function stakedToken() view returns (address)",
     calls: legacyPools.map((addr) => ({ target: addr })),
   });
-
+  
   const tokensAndOwners = tokens.map((token, i) => [token, legacyPools[i]]);
   return sumTokens2({ 
     api, 
-    tokensAndOwners,
-    resolveLP: true  
+    tokensAndOwners, 
+    resolveLP: true 
   });
 }
 
+async function cronosStaking(api) {
+  const [chefStaking, robinStaking, legacyStaking] = await Promise.all([
+    stakingSmartChef(SMART_CHEF_FACTORY_CRONOS, api),
+    stakingRobinDiamond(api),
+    stakingLegacyPools(api),
+  ]);
+  
+  return {
+    ...chefStaking,
+    ...robinStaking,
+    ...legacyStaking,
+  };
+}
+
+async function zkevmStaking(api) {
+  return stakingSmartChef(SMART_CHEF_FACTORY_ZKEVM, api);
+}
+
 module.exports = {
-  methodology: "TVL includes all tokens staked in Obsidian's SmartChefFactory and RobinDiamondHands contracts across Cronos and Cronos zkEVM. LP tokens are automatically unwrapped to show underlying token values. It reflects the total value locked in active staking and yield farming pools.",
+  methodology: "TVL includes all liquidity pools from Obsidian V2 factories across Cronos and Cronos zkEVM. Staking includes tokens staked in SmartChefFactory, RobinDiamondHands contracts, and legacy pools for yield farming and staking rewards.",
   cronos: {
-    tvl: async (api) => {
-      const [chefTVL, robinTVL, legacyTVL] = await Promise.all([
-        tvlSmartChef(SMART_CHEF_FACTORY_CRONOS, api),
-        tvlRobinDiamond(api),
-        tvlLegacyPools(api),
-      ]);
-      return {
-        ...chefTVL,
-        ...robinTVL,
-        ...legacyTVL,
-      };
-    },
+    tvl: liquidityPoolsCronos,
+    staking: cronosStaking,
   },
   cronos_zkevm: {
-    tvl: (api) => tvlSmartChef(SMART_CHEF_FACTORY_ZKEVM, api),
+    tvl: liquidityPoolsZkEVM,
+    staking: zkevmStaking,
   },
 };
