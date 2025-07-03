@@ -50,22 +50,6 @@ module.exports = {
               eventAbi: eventAbis.SingleDepositorVault_VaultCreated,
               topics: [topics.SingleDepositorVault_VaultCreated]
           },
-          // provisionerFactory: {
-          //     address: '0x5244DbdD39DdE108444cAB4b76aAF5847eacbB20',
-          //     fromBlock: 0,
-          // },
-          // rolesAuthorityFactory: {
-          //     address: '0xd6d82f2226504BD4F280f92afA9222686B20E072',
-          //     fromBlock: 0,
-          // },
-          // forwarderFactory: {
-          //     address: '0xAfEDcb71A234622C7Abf7B88cA7BfE804Cf77403',
-          //     fromBlock: 0,
-          // },
-          // timelockControllerFactory: {
-          //     address: '0x8955e73cBCcbe6754ac957c4d7c937Ab4294d4e0',
-          //     fromBlock: 0,
-          // },
       },    
     },
     base: {
@@ -104,22 +88,6 @@ module.exports = {
               eventAbi: eventAbis.SingleDepositorVault_VaultCreated,
               topics: [topics.SingleDepositorVault_VaultCreated]  
           },
-          // provisionerFactory: {
-          //     address: '0x5244DbdD39DdE108444cAB4b76aAF5847eacbB20',
-          //     fromBlock: 0,
-          // },
-          // rolesAuthorityFactory: {
-          //     address: '0xd6d82f2226504BD4F280f92afA9222686B20E072',
-          //     fromBlock: 0,
-          // },
-          // forwarderFactory: {
-          //     address: '0xAfEDcb71A234622C7Abf7B88cA7BfE804Cf77403',
-          //     fromBlock: 0,
-          // },
-          // timelockControllerFactory: {
-          //     address: '0x8955e73cBCcbe6754ac957c4d7c937Ab4294d4e0',
-          //     fromBlock: 0,
-          // },
       },
     },
   };

@@ -1,5 +1,6 @@
 const { ethers } = require('ethers');
 
+// Ideally, these would be derived from on-chain data, but the transfer logs are too slow to process.
 const tokens = [
     { chain: 'ethereum', address: '0x0404fd1a77756eb029f06b5cdea88b2b2ddc2fee', symbol: 'elixirUSDC' },
     { chain: 'ethereum', address: '0x132e6c9c33a62d7727cd359b1f51e5b566e485eb', symbol: 'resolvUSDC' },
