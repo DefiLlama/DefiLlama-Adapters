@@ -1,0 +1,14 @@
+const { sumTokensExport } = require("../helper/unwrapLPs");
+
+const y-wstkscUSD = "0x8e1e17343b8e4f5e1baa868500163212e00366cc"; // Yield token (y)
+const p-wstkscUSD = "0xe8dcbc94a1a852e7f53713a0e927ef16d980b278"; // Principal token (p)
+const HOLDER_ADDRESS = "0x13b435b9efe154ffc39eea7fe41dd6ded1fd96e6"; // The contract holding both tokens
+
+module.exports = {
+  sonic: {
+    tvl: sumTokensExport({
+      owner: HOLDER_ADDRESS,
+      tokens: [y-wstkscUSD, p-wstkscUSD],
+    }),
+  },
+};
