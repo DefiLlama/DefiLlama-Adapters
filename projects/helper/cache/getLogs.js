@@ -9,7 +9,7 @@ async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
   api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false }) {
   if (!api) throw new Error('Missing sdk api object!')
-  if (!target) throw new Error('Missing target!')
+  // if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
   if (onlyUseExistingCache)
     toBlock = 1e11
@@ -36,8 +36,8 @@ async function getLogs({ target,
     }
   }
 
-  target = target.toLowerCase()
-  const key = extraKey ? `${chain}/${target}-${extraKey}` : `${chain}/${target}`
+  target = target ? target.toLowerCase() : null;
+  const key = extraKey ? `${chain}/${target}-${extraKey}` : `${chain}/${target}`;
 
   let cache = await _getCache(key)
   let response
