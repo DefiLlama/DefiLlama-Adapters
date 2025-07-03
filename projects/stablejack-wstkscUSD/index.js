@@ -6,11 +6,11 @@ const HOLDER_CONTRACT = '0xb27f555175e67783ba16f11de3168f87693e3c8f'; // Contrac
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "TVL tracks wstkscUSD token balance mapped to scUSD price since wstkscUSD is not indexed yet.",
+  methodology: "Track wstkscUSD token balance in vault and map price to scUSD for TVL calculation.",
   sonic: {
     tvl: sumTokensExport({
       tokensAndOwners: [
-        [scUSD, HOLDER_CONTRACT], // Using scUSD as price for wstkscUSD balance
+        [wstkscUSD, HOLDER_CONTRACT], // Using scUSD as price for wstkscUSD balance
       ],
       blacklistedTokens: [
         wstkscUSD, // Blacklist wstkscUSD to avoid double counting
