@@ -2,7 +2,8 @@ const BigNumber = require("bignumber.js");
 const ADDRESSES = require("../helper/coreAssets.json");
 const { getBalance2 } = require("../helper/chain/cosmos.js");
 const { sumTokensExport } = require("../helper/unwrapLPs.js");
-const { sumTokens2 } = require("../helper/solana.js");
+const { getConnection, sumTokens2 } = require("../helper/solana.js");
+const { PublicKey, LAMPORTS_PER_SOL } = require("@solana/web3.js");
 
 const config = {
   titan: {
@@ -66,7 +67,11 @@ async function titanTvl(api) {
   });
 }
 
-const erc20Contracts = [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT];
+const erc20Contracts = [
+  ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.USDT,
+  "0x667102BD3413bFEaa3Dffb48fa8288819E480a88", // TKX
+];
 
 async function ethereumTvl(api) {
   await sumTokensExport({
@@ -85,9 +90,19 @@ async function ethereumTvl(api) {
 }
 
 async function solanaTvl() {
-  return await sumTokens2({
+  const balances = await sumTokens2({
     owner: "Cqv9L3HeevzDQipST26xNR5DBrcRRRqRsg4HTHA1wE9L",
   });
+
+  const connection = getConnection();
+  const lamportAmount = await connection.getBalance(
+    new PublicKey("Cqv9L3HeevzDQipST26xNR5DBrcRRRqRsg4HTHA1wE9L")
+  );
+  const solAmount = lamportAmount / LAMPORTS_PER_SOL;
+
+  balances["solana"] = solAmount;
+
+  return balances;
 }
 
 module.exports = {

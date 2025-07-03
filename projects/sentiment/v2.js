@@ -11,11 +11,11 @@ const SUPERPOOLS = [
   },
   {
     superPool: "0xe45E7272DA7208C7a137505dFB9491e330BF1a4e", // USDe superpool
-    underlyingAsset: "hyperliquid:0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34", // USDe
+    underlyingAsset: "hyperliquid:" + ADDRESSES.arbitrum.USDe, // USDe
   },
   {
     superPool: "0x34B2B0DE7d288e79bbcfCEe6C2a222dAe25fF88D", // USDT0 superpool
-    underlyingAsset: "hyperliquid:0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb", // USDT0
+    underlyingAsset: "hyperliquid:" + ADDRESSES.corn.USDT0, // USDT0
   },
 ];
 

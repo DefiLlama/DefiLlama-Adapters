@@ -1,5 +1,6 @@
 {
   "null": "0x0000000000000000000000000000000000000000",
+  "GAS_TOKEN_2": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   "ethereum": {
     "WETH": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     "WSTETH": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
@@ -506,6 +507,7 @@
     "aDAI_Wormhole_": "0xe9a88c33abf71c902f7581321d05e6516cbca761",
     "USDK": "0xd2137fdf10bd9e4e850c17539eb24cfe28777753",
     "NPT": "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815",
+    "USDT_1": "0xd077a400968890eacc75cdc901f0356c943e4fdb",
     "stKaia": "0x42952B873ed6f7f0A7E4992E2a9818E3A9001995"
   },
   "nova": {
@@ -979,8 +981,8 @@
     "LINK": "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-10",
     "AAVE": "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ",
     "WBTC": "KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2",
-    "UUSD": "KT1XRPEPXBZK25R3HTZP2O1X7XDMMMFOCKNW-0",
-    "ETH": "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-0"
+    "UUSD": "KT1XRPEPXBZK25R3HTZP2O1X7XDMMMFOCKNW",
+    "ETH": "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY"
   },
   "hpb": {
     "WHPB": "0xbe05ac1fb417c9ea435b37a9cecd39bc70359d31"
@@ -2101,6 +2103,8 @@
     "USDF": "0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed"
   },
   "matchain": {
+    "MAT": "0x44a83a012B926853DFc1BBE2ec5BEf37126067e8",
+    "USDT": "0xB6dc6C8b71e88642cEAD3be1025565A9eE74d1C6",
     "WBNB": "0x4200000000000000000000000000000000000006"
   },
   "fuel": {
@@ -2183,7 +2187,6 @@
     "USDM": "0xc26b690773828999c2612549cc815d1f252ea15e"
   },
   "corn": {
-    "BTCN": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     "wBTCN": "0xda5dDd7270381A7C2717aD10D1c0ecB19e3CDFb2",
     "CORN": "0x44f49ff0da2498bCb1D3Dc7C0f999578F67FD8C6",
     "USDT0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
@@ -2510,5 +2513,42 @@
     "DOT": "0x0000000000000000000000000000000100000005",
     "vDOT": "0x000000000000000000000000000000010000000f",
     "tBTC": "0x00000000000000000000000000000001000f453d"
+  },
+  "katana": {
+    "KAT": "0x7f1f4b4b29f5058fa32cc7a97141b8d7e5abdc2d",
+    "AUSD": "0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a",
+    "bvUSD": "0x876aac7648d79f87245e73316eb2d100e75f3df1",
+    "LBTC": "0xecAc9C5F704e954931349Da37F60E39f515c11c1",
+    "VB_WETH": "0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62",
+    "VB_USDC": "0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36",
+    "VB_USDT": "0x2DCa96907fde857dd3D816880A0df407eeB2D2F2",
+    "VB_USDS": "0x62D6A123E8D19d06d68cf0d2294F9A3A0362c6b3",
+    "VB_WBTC": "0x0913DA6Da4b42f538B445599b46Bb4622342Cf52",
+    "wstETH": "0x7Fb4D0f51544F24F385a421Db6e7D4fC71Ad8e5C",
+    "weETH": "0x9893989433e7a383Cb313953e4c2365107dc19a7",
+    "MORPHO": "0x1e5eFCA3D0dB2c6d5C67a4491845c43253eB9e4e",
+    "POL": "0xb24e3035d1FCBC0E43CF3143C3Fd92E53df2009b",
+    "SUSHI": "0x17BFF452dae47e07CeA877Ff0E1aba17eB62b0aB",
+    "YFI": "0x476eaCd417cD65421bD34fca054377658BB5E02b",
+    "uADA": "0xa3A34A0D9A08CCDDB6Ed422Ac0A28a06731335aA",
+    "uSOL": "0x9B8Df6E244526ab5F6e6400d331DB28C8fdDdb55",
+    "uSUI": "0xb0505e5a99abd03d94a1169e638B78EDfEd26ea4",
+    "uXRP": "0x2615a94df961278DcbC41Fb0a54fEc5f10a693aE"
+  },
+  "titan": {
+    "atkx": "atkx",
+    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdc",
+    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/usdt",
+    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/eth",
+    "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol": "factory/titan1pvrwmjuusn9wh34j7y520g8gumuy9xtl3gvprlljfdpwju3x7ucsgehpjy/sol",
+    "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc": "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc"
+  },
+  "xrplevm": {
+    "WXRP": "0x7C21a90E3eCD3215d16c3BBe76a491f8f792d4Bf",
+    "USDC": "0xa16148c6ac9ede0d82f0c52899e22a575284f131",
+    "WETH": "0x50498dc52bcd3daeb54b7225a7d2fa8d536f313e"
+  },
+  "btnx": {
+    "USDC_E": "0x325eEb3AA50014f35861e3374f54B3997Aa8357d"
   }
 }

@@ -150,6 +150,10 @@ const morphoVaultConfigs = {
       {
         allocator: '0x9C259F14E5d9F35A0434cD3C4abbbcaA2f1f7f7E',
         address: '0x73e65DBD630f90604062f6E02fAb9138e713edD9',
+      },
+      {
+        allocator: almProxy.ethereum,
+        address: '0x73e65DBD630f90604062f6E02fAb9138e713edD9',
       }
     ]
   },

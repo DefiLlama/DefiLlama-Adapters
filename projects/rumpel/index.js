@@ -94,6 +94,14 @@ const FLUID_VAULTS = [
   { VAULT: "0xBc345229C1b52e4c30530C614BB487323BA38Da5", TOKEN: TOKENS.SUSDE },
   { VAULT: "0xe210d8ded13Abe836a10E8Aa956dd424658d0034", TOKEN: TOKENS.SUSDE },
   { VAULT: "0x2F3780e21cAba1bEdFB24E37C97917def304dFFA", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0x7503b58Bb29937e7E2980f70D3FD021B7ebeA6d0", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0x989a44CB4dBb7eBe20e0aBf3C1E1d727BF90F881", TOKEN: TOKENS.USDE },
+  { VAULT: "0x43d1cA906c72f09D96291B4913D7255E241F428d", TOKEN: TOKENS.WBTC },
+  { VAULT: "0xB170B94BeFe21098966aa9905Da6a2F569463A21", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0xaEac94D417BF8d8bb3A44507100Ab8c0D3b12cA1", TOKEN: TOKENS.USDE },
+  { VAULT: "0x0a90ED6964f6bA56902fD35EE11857A810Dd5543", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0x91D5884a57E4A3718654B462B32cC628b2c6A39A", TOKEN: TOKENS.SUSDE },
+  { VAULT: "0x4B5fa15996C2E23b35E64f0ca62d30c4945E53Cb", TOKEN: TOKENS.USDE },
 ]
 
 const MORPHO_SUSDE_MARKET_ID =
@@ -102,14 +110,21 @@ const MORPHO_SUSDE_MARKET_ID =
 async function tvl(api) {
   const owners = await getOwners(api);
 
-  await Promise.all([sumBaseTokens, handleLockedUSDE, handleMorphoSuppliedSUSDE, handleZircuitAssets, handleStrategyTokenBalances, handleFluidPositions].map(async (fn) => fn()));
+  await Promise.all([
+    sumBaseTokens, 
+    handleLockedUSDE, 
+    handleMorphoSuppliedSUSDE, 
+    handleZircuitAssets, 
+    handleStrategyTokenBalances, 
+    handleSymbioticTokens,
+    handleFluidPositions
+  ].map(async (fn) => fn()));
 
   async function sumBaseTokens() {
     return api.sumTokens({
       owners, tokens: [TOKENS.AGETH, TOKENS.WEETH, TOKENS.USDE, TOKENS.SUSDE, TOKENS.MSTETH, TOKENS.WSTETH, TOKENS.STETH,TOKENS.WBTC,]
     })
   }
-
 
   async function handleLockedUSDE() {
     const stakes = await api.multiCall({
@@ -162,26 +177,6 @@ async function tvl(api) {
       TOKENS.RSTETH,
       TOKENS.RE7LRT,
       TOKENS.RE7RWBTC,
-      TOKENS.SYMBIOTIC_WSTETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_SUSDE_COLLATERAL,
-      TOKENS.SYMBIOTIC_LBTC_COLLATERAL,
-      TOKENS.SYMBIOTIC_METH_COLLATERAL,
-      TOKENS.SYMBIOTIC_WBTC_COLLATERAL,
-      TOKENS.SYMBIOTIC_RETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_CBETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_ENA_COLLATERAL,
-      TOKENS.SYMBIOTIC_WBETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_SWETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_LSETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_OSETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_SFRXETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_GUANTLET_RESTAKED_SWETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_ETHFI_COLLATERAL,
-      TOKENS.SYMBIOTIC_GAUNTLET_RESTAKED_CBETH_COLLATERAL,
-      TOKENS.SYMBIOTIC_FXS_COLLATERAL,
-      TOKENS.SYMBIOTIC_TBTC_COLLATERAL,
-      TOKENS.SYMBIOTIC_MANTA_COLLATERAL,
-      TOKENS.SYMBIOTIC_GAUNTLET_RESTAKED_WSTETH_COLLATERAL,
       TOKENS.YT_EBTC,
       TOKENS.YT_WEETHK,
       TOKENS.YT_AGETH,
@@ -214,7 +209,56 @@ async function tvl(api) {
       TOKENS.MELLOW_ROETH,
       TOKENS.MELLOW_RSUNIBTC,
     ]
-    return api.sumTokens({ owners, tokens })
+
+    await api.sumTokens({ owners, tokens })
+  }
+
+  async function handleSymbioticTokens() {
+    const symbioticMappings = [
+      { collateral: TOKENS.SYMBIOTIC_WSTETH_COLLATERAL, underlying: TOKENS.WSTETH },
+      { collateral: TOKENS.SYMBIOTIC_SUSDE_COLLATERAL, underlying: TOKENS.SUSDE },
+      { collateral: TOKENS.SYMBIOTIC_LBTC_COLLATERAL, underlying: ADDRESSES.ethereum.LBTC },
+      { collateral: TOKENS.SYMBIOTIC_METH_COLLATERAL, underlying: ADDRESSES.ethereum.METH },
+      { collateral: TOKENS.SYMBIOTIC_WBTC_COLLATERAL, underlying: TOKENS.WBTC },
+      { collateral: TOKENS.SYMBIOTIC_RETH_COLLATERAL, underlying: ADDRESSES.ethereum.RETH },
+      { collateral: TOKENS.SYMBIOTIC_CBETH_COLLATERAL, underlying: ADDRESSES.ethereum.cbETH },
+      { collateral: TOKENS.SYMBIOTIC_ENA_COLLATERAL, underlying: ADDRESSES.ethereum.ENA },
+      { collateral: TOKENS.SYMBIOTIC_ETHFI_COLLATERAL, underlying: ADDRESSES.ethereum.ETHFI },
+      { collateral: TOKENS.SYMBIOTIC_FXS_COLLATERAL, underlying: ADDRESSES.ethereum.FXS },
+      { collateral: TOKENS.SYMBIOTIC_TBTC_COLLATERAL, underlying: ADDRESSES.ethereum.tBTC },
+      { collateral: TOKENS.SYMBIOTIC_SFRXETH_COLLATERAL, underlying: ADDRESSES.ethereum.sfrxETH },
+      { collateral: TOKENS.SYMBIOTIC_GAUNTLET_RESTAKED_CBETH_COLLATERAL, underlying: ADDRESSES.ethereum.cbETH },
+      { collateral: TOKENS.SYMBIOTIC_GAUNTLET_RESTAKED_WSTETH_COLLATERAL, underlying: TOKENS.WSTETH },
+    ]
+
+    const allBalanceCalls = symbioticMappings.flatMap(mapping => 
+      owners.map(owner => ({ 
+        target: mapping.collateral, 
+        params: [owner],
+        mapping 
+      }))
+    )
+
+    const allBalances = await api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: allBalanceCalls.map(call => ({ target: call.target, params: call.params }))
+    })
+
+    const underlyingBalances = {}
+    allBalanceCalls.forEach((call, index) => {
+      const balance = allBalances[index] || 0
+      const underlying = call.mapping.underlying
+      if (!underlyingBalances[underlying]) {
+        underlyingBalances[underlying] = 0n
+      }
+      underlyingBalances[underlying] += BigInt(balance)
+    })
+
+    Object.entries(underlyingBalances).forEach(([underlying, totalBalance]) => {
+      if (totalBalance > 0n) {
+        api.add(underlying, totalBalance.toString())
+      }
+    })
   }
 }
 
