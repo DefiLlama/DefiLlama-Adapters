@@ -58,7 +58,7 @@ async function tvl(chain, block) {
         params: '0x59CFCD384746ec3035299D90782Be065e466800B', // Convex Frax Fraxtal vote proxy
         abi: 'erc20:balanceOf', block, chain
       })
-      sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.FXS, fxsLockedFraxtal)
+      sdk.util.sumSingleBalance(balances, ADDRESSES.fraxtal.WFRAX, fxsLockedFraxtal, chain)
     }
 
     abiPoolInfo = arbiPoolInfoABI

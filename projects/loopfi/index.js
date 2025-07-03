@@ -12,12 +12,13 @@ const LOOP_PRELAUNCH_YNETH = "0xa67C60AE18BE09F074a6c733a1cc06B63Ae53589"
 const lpETH = "0xa684EAf215ad323452e2B2bF6F817d4aa5C116ab"
 const lpUSD = "0x0eecBDbF7331B8a50FCd0Bf2C267Bf47BD876054"
 const lpBNB = "0xED166436559Fd3d7f44cb00CACDA96EB999D789e"
+const lpBTCB = "0xa02fcc8493856b5bd7fA5099f5a631A6cb77fBd1"
 
 
 const tokens = {
   WETH: ADDRESSES.ethereum.WETH,
   weETH: ADDRESSES.ethereum.WEETH,
-  ezETH: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+  ezETH: ADDRESSES.linea.rzETH,
   rsETH: "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
   rswETH: "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",
   uniETH: "0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4",
@@ -49,6 +50,9 @@ const spectraYnETHxLPToken = "0xBc48c48789031A130F957c59e07B7F987aA642dE"
 
 const clisBNBCDPVault = "0x03C07e6d561b664246058974dB31dbF1c1C0B416"
 const clisBNBLPToken = "0x1d9D27f0b89181cF1593aC2B36A37B444Eb66bEE"
+
+const ynCoBTCkCDPVault = "0xF0F67671151FF8B9F2117BD3ac7406D9D3ee8f45"
+const ynCoBTCkLPToken = "0x132376b153d3cFf94615fe25712DB12CaAADf547"
 
 const spectraUSDVault = "0xbb23b7ACdE2B3A2E6446B16Cd3Dd471b0d80342c"
 const spectraUSDLPToken = "0x09d484B738dD85CE3953102453E91507982121d0"
@@ -86,10 +90,11 @@ async function tvlEthereum(api) {
 }
 
 async function tvlBnb(api) {
-  const calls = [lpBNB]
+  const calls = [lpBNB, lpBTCB]
   const assets = await api.multiCall({ abi: 'address:asset', calls, })
   const ownerTokens = [
   [[clisBNBLPToken], clisBNBCDPVault],
+  [[ynCoBTCkLPToken], ynCoBTCkCDPVault]
   ]
   assets.forEach((asset, i) => ownerTokens.push([[asset], calls[i]]))
   return api.sumTokens({ ownerTokens })

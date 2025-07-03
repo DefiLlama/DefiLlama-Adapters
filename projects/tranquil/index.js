@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { compoundExports2 } = require('../helper/compound')
-const { uniTvlExport } = require('../helper/calculateUniTvl.js');
+const { uniTvlExport } = require('../helper/unknownTokens.js');
 const { staking } = require('../helper/staking')
 
 const stONEAddr = "0x22D62b19b7039333ad773b7185BB61294F3AdC19"; // stONE ERC20 contract
@@ -19,12 +19,13 @@ const xtranqToken = "0xb4aa8c8e555b3a2f1bfd04234ff803c011760e59";
 const stakingContract = "0x59a4d6b2a944e8acabbd5d2571e731388918669f";
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: "TVL includes values locked into TqTokens. Pool2 are the liquidity in the TRANQ-WONE SUSHI LPs. Staking TVL are the xTRANQ tokens locked into the staking contract.",
   harmony: {
     tvl: sdk.util.sumChainTvls([
       _tvl,
       tvl,
-      uniTvlExport('0xF166939E9130b03f721B0aE5352CCCa690a7726a', 'harmony', true),
+      uniTvlExport('chain', '0xF166939E9130b03f721B0aE5352CCCa690a7726a').chain.tvl
     ]),
     borrowed: borrowed,
     pool2: () => ({}),

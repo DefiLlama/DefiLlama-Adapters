@@ -17,7 +17,7 @@ async function getV1Assets(lendingPoolCore, block, chain) {
     return reserves
 }
 
-const ethReplacement = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+const ethReplacement = ADDRESSES.GAS_TOKEN_2
 
 async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block, chain, eth) {
     const reserves = await getV1Assets(lendingPoolCore, block, chain);

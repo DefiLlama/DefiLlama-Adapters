@@ -76,6 +76,7 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   owners = getUniqueAddresses(owners, api.chain)
 
   if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
+  if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return sumTokens2({ api, })
 
   for (const addr of owners) {
     await sleep(1000 * (3 * Math.random() + 7))

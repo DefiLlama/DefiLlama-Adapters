@@ -144,7 +144,7 @@ module.exports = {
     },
     hallmarks: [
         [1651881600, "UST depeg"],
-        [Math.floor(new Date('2022-09-13') / 1e3), 'Stop supporting Terra Classic'],
-        [Math.floor(new Date('2023-02-16') / 1e3), 'Relaunch on Osmosis '],
+        ['2022-09-13', 'Stop supporting Terra Classic'],
+        ['2023-02-16', 'Relaunch on Osmosis '],
     ],
 }
