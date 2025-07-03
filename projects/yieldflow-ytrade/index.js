@@ -42,159 +42,120 @@ async function getAllUsers(api) {
   return validUsers
 }
 
-async function getAllActiveSystems(api, userAddress) {
-  try {
-    const systems = await api.call({ 
-      target: FACTORY_ADDRESS,
-      abi: factoryAbi.getAllActiveSystems, 
-      params: [userAddress] 
-    })
-    return systems
-  } catch (error) {
-    return []
-  }
-}
-
-async function getSystemTVL(api, system, readerAddress, datastoreAddress, collateralTokenAddress, decimalsMultiplier, collateralDecimals) {
-  try {
-    
-    // Get position data from GMX reader
-    const positions = await api.call({ 
-      target: readerAddress, 
-      abi: readerAbi.getAccountPositions, 
-      params: [datastoreAddress, system.gmxAdapter, 0, 10] 
-    }).catch((error) => {
-      return []
-    })
-    
-    // Get current position collateral 
-    let currentPositionCollateral = 0
-    if (positions && positions.length > 0) {
-      currentPositionCollateral = Number(positions[0]?.numbers?.collateralAmount || 0)
-    }
-
-    // Get orders from GMX reader
-    let marginUsedByOpenOrders = 0
-  
-      try {
-        const orders = await api.call({
-          target: readerAddress,
-          abi: readerAbi.getAccountOrders,
-          params: [datastoreAddress, system.gmxAdapter, 0, 999999999]
-        })
-
-        if (orders && orders.length > 0) {
-          // Sum collateral used by open orders directly from initialCollateralDeltaAmount
-          const totalOrderCollateral = orders.reduce((sum, order) => {
-            if (order.numbers && order.numbers.orderType === '3') { // LimitIncrease (uint8 enum value)
-              const collateralAmount = new BigNumber(order.numbers.initialCollateralDeltaAmount || 0)
-              return sum.plus(collateralAmount)
-            }
-            return sum
-          }, new BigNumber(0))
-          
-          // Convert from token decimals to human readable
-          marginUsedByOpenOrders = Number(totalOrderCollateral.toString()) / decimalsMultiplier
-        }
-      } catch (orderError) {
-        // Silent error handling
-      }
-
-    // Get free margin (collateral token balance of the router contract)
-    const freeMargin = await api.call({ 
-      target: collateralTokenAddress, 
-      abi: erc20Abi.balanceOf, 
-      params: [system.router] 
-    }).catch((error) => {
-      return 0
-    })
-
-    const freeMarginTokens = Number(freeMargin) / decimalsMultiplier
-
-    // Calculate total TVL
-    const positionCollateralTokens = currentPositionCollateral / decimalsMultiplier
-    const totalTVL = positionCollateralTokens + marginUsedByOpenOrders + freeMarginTokens
-    
-    return totalTVL
-
-  } catch (error) {
-    return 0
-  }
-}
-
 async function tvl(api) {
   if (api.chain !== 'arbitrum') return {}
 
-  try {
-    // Get all required addresses dynamically from factory and config
-    const configAddress = await api.call({
-      target: FACTORY_ADDRESS,
-      abi: factoryAbi.config
-    })
+  const configAddress = await api.call({
+    target: FACTORY_ADDRESS,
+    abi: factoryAbi.config
+  })
 
-    const readerAddress = await api.call({
-      target: configAddress,
-      abi: configAbi.reader
-    })
-    const datastoreAddress = await api.call({
-      target: configAddress,
-      abi: configAbi.datastore
-    })
-    const collateralTokenAddress = await api.call({
-      target: configAddress,
-      abi: configAbi.collateralToken
-    })
+  // Since config calls use different ABI methods, make individual calls
+  const readerAddress = await api.call({
+    target: configAddress,
+    abi: configAbi.reader
+  })
+  const datastoreAddress = await api.call({
+    target: configAddress,
+    abi: configAbi.datastore
+  })
+  const collateralTokenAddress = await api.call({
+    target: configAddress,
+    abi: configAbi.collateralToken
+  })
 
-    // Get collateral token decimals
-    const collateralDecimals = await api.call({
-      target: collateralTokenAddress,
-      abi: erc20Abi.decimals
-    })
-    
-    const decimalsMultiplier = Math.pow(10, Number(collateralDecimals))
+  const collateralDecimals = await api.call({
+    target: collateralTokenAddress,
+    abi: erc20Abi.decimals
+  })
+  
+  const decimalsMultiplier = Math.pow(10, Number(collateralDecimals))
 
-    const users = await getAllUsers(api)
-    let totalTVL = 0
-    
-    // Process users in smaller batches to avoid RPC limits
-    const batchSize = 5
-    for (let i = 0; i < users.length; i += batchSize) {
-      const userBatch = users.slice(i, i + batchSize)
-      
-      const batchPromises = userBatch.map(async (userAddress) => {
-        try {
-          const systems = await getAllActiveSystems(api, userAddress)
-          let userTVL = 0
-          
-          for (const system of systems) {
-            if (system.active) {
-              const systemTVL = await getSystemTVL(api, system, readerAddress, datastoreAddress, collateralTokenAddress, decimalsMultiplier, collateralDecimals)
-              userTVL += systemTVL
-            }
-          }
-          
-          return userTVL
-        } catch (error) {
-          return 0
+  const users = await getAllUsers(api)
+  if (users.length === 0) return api.getBalances()
+
+  // Batch getAllActiveSystems calls for all users
+  const systemCalls = users.map(userAddress => ({
+    target: FACTORY_ADDRESS,
+    params: [userAddress]
+  }))
+  const allUserSystems = await api.multiCall({ abi: factoryAbi.getAllActiveSystems, calls: systemCalls })
+
+  // Collect all active systems across all users
+  const allActiveSystems = []
+  allUserSystems.forEach(systems => {
+    if (systems && Array.isArray(systems)) {
+      systems.forEach(system => {
+        if (system.active) {
+          allActiveSystems.push(system)
         }
       })
+    }
+  })
 
-      const batchResults = await Promise.all(batchPromises)
-      const batchTotal = batchResults.reduce((sum, tvl) => sum + tvl, 0)
-      totalTVL += batchTotal
+  if (allActiveSystems.length === 0) return api.getBalances()
+
+  // Batch position calls for all active systems
+  const positionCalls = allActiveSystems.map(system => ({
+    target: readerAddress,
+    params: [datastoreAddress, system.gmxAdapter, 0, 10]
+  }))
+  const allPositions = await api.multiCall({ abi: readerAbi.getAccountPositions, calls: positionCalls })
+
+  // Batch order calls for all active systems
+  const orderCalls = allActiveSystems.map(system => ({
+    target: readerAddress,
+    params: [datastoreAddress, system.gmxAdapter, 0, 999999999]
+  }))
+  const allOrders = await api.multiCall({ abi: readerAbi.getAccountOrders, calls: orderCalls })
+
+  // Batch balance calls for all router contracts
+  const balanceCalls = allActiveSystems.map(system => ({
+    target: collateralTokenAddress,
+    params: [system.router]
+  }))
+  const allBalances = await api.multiCall({ abi: erc20Abi.balanceOf, calls: balanceCalls })
+
+  // Calculate total TVL from batched results
+  let totalTVL = 0
+  for (let i = 0; i < allActiveSystems.length; i++) {
+    const positions = allPositions[i] || []
+    const orders = allOrders[i] || []
+    const freeMargin = allBalances[i] || 0
+
+    // Get current position collateral
+    let currentPositionCollateral = 0
+    if (positions.length > 0) {
+      currentPositionCollateral = Number(positions[0]?.numbers?.collateralAmount || 0)
     }
 
-    // Add the total TVL as collateral token (convert back to raw token format)
-    if (totalTVL > 0) {
-      const tokenAmount = Math.floor(totalTVL * decimalsMultiplier)
-      api.add(collateralTokenAddress, tokenAmount)
+    // Calculate margin used by open orders
+    let marginUsedByOpenOrders = 0
+    if (orders.length > 0) {
+      const totalOrderCollateral = orders.reduce((sum, order) => {
+        if (order.numbers && order.numbers.orderType === '3') {
+          const collateralAmount = new BigNumber(order.numbers.initialCollateralDeltaAmount || 0)
+          return sum.plus(collateralAmount)
+        }
+        return sum
+      }, new BigNumber(0))
+      
+      marginUsedByOpenOrders = Number(totalOrderCollateral.toString()) / decimalsMultiplier
     }
 
-    return api.getBalances()
+    const freeMarginTokens = Number(freeMargin) / decimalsMultiplier
+    const positionCollateralTokens = currentPositionCollateral / decimalsMultiplier
+    const systemTVL = positionCollateralTokens + marginUsedByOpenOrders + freeMarginTokens
     
-  } catch (error) {
-    return {}
+    totalTVL += systemTVL
   }
+
+  if (totalTVL > 0) {
+    const tokenAmount = Math.floor(totalTVL * decimalsMultiplier)
+    api.add(collateralTokenAddress, tokenAmount)
+  }
+
+  return api.getBalances()
 }
 
 module.exports = {
