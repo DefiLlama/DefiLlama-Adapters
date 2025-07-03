@@ -2,7 +2,7 @@ const { get } = require('../helper/http');
 
 async function tvl() {
   try {
-    const data = await get('https://defillama.shudu.workers.dev/');
+    const data = await get('https://analytics.liquidium.wtf/');
     
     // Initialize balances object
     const balances = {};
@@ -49,7 +49,7 @@ async function tvl() {
 // Enhanced function to get detailed breakdown (for logging/debugging)
 async function getDetailedBreakdown() {
   try {
-    const data = await get('https://defillama.shudu.workers.dev/');
+    const data = await get('https://analytics.liquidium.wtf/');
     
     const breakdown = {
       total: {
