@@ -93,7 +93,7 @@ async function zkevmStaking(api) {
 }
 
 module.exports = {
-  methodology: "TVL includes all liquidity pools from Obsidian V2 factories across Cronos and Cronos zkEVM. Staking includes tokens staked in Fixed Staing, SmartChefFactory, and RobinDiamondHands contracts for yield farming and staking rewards.",
+  methodology: "TVL includes all liquidity pools from Obsidian V2 factories across Cronos and Cronos zkEVM. Staking includes tokens staked in Fixed Staking, SmartChefFactory, and RobinDiamondHands contracts for yield farming and staking rewards.",
   cronos: {
     tvl: liquidityPoolsCronos,
     staking: cronosStaking,
