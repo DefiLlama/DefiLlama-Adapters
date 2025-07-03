@@ -18,7 +18,8 @@ const nameCache = {};
 const gasTokens = [
 	ADDRESSES.GAS_TOKEN_2,
 	ADDRESSES.null,
-];
+].map((i) => i.toLowerCase())
+
 async function getNames(chain, tokens) {
 	const lowerCaseTokens = tokens.map((i) => i.toLowerCase());
 	const mapping = {};

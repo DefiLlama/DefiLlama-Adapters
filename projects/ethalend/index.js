@@ -51,7 +51,7 @@ async function tvl(chain, block, chainId) {
   if (chain === 'polygon') {
     const globalData = (await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 100 })).globalDatas
     await Promise.all(globalData.filter(v => v.type === "lending").map(async v => {
-      if (v.address === ADDRESSES.GAS_TOKEN_2) {
+      if (v.address.toLowerCase() === ADDRESSES.GAS_TOKEN_2.toLowerCase()) {
         v.address = ADDRESSES.polygon.WMATIC_2
       }
       const decimals = await sdk.api.erc20.decimals(v.address, chain)
