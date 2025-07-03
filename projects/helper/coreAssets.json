@@ -2550,5 +2550,10 @@
   },
   "btnx": {
     "USDC_E": "0x325eEb3AA50014f35861e3374f54B3997Aa8357d"
+  },
+  "vechain": {
+    "WVET": "0xd8ccdd85abdbf68dfec95f06c973e87b1b5a9997",
+    "VVET": "0x45429a2255e7248e57fce99e7239aed3f84b7a53",
+    "VTHO": "0x0000000000000000000000000000456e65726779"
   }
 }
