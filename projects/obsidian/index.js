@@ -74,7 +74,7 @@ async function stakingFixedStaking(api) {
 }
 
 async function cronosStaking(api) {
-  const [chefStaking, robinStaking, fixedStaking, legacyStaking] = await Promise.all([
+  const [chefStaking, robinStaking, fixedStaking] = await Promise.all([
     stakingSmartChef(SMART_CHEF_FACTORY_CRONOS, api),
     stakingRobinDiamond(api),
     stakingFixedStaking(api),
@@ -84,7 +84,6 @@ async function cronosStaking(api) {
     ...chefStaking,
     ...robinStaking,
     ...fixedStaking,
-    ...legacyStaking,
   };
 }
 
