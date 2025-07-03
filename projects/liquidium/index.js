@@ -128,7 +128,7 @@ module.exports = {
     TVL represents the total value of Bitcoin locked in Liquidium lending pools across all collateral types.
     
     LIQUIDIUM PROTOCOL BREAKDOWN:
-    • Inscription Tokens: Bitcoin Ordinals and inscriptions used as collateral
+    • Inscription Tokens: Bitcoin Ordinals/Inscriptions used as collateral
     • BRC-20 Tokens: Bitcoin-based BRC-20 tokens used as collateral
     • Volume: 24h lending activity across all token types
     • Revenue: Protocol fees and interest earned
