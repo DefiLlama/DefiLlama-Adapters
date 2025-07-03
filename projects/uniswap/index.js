@@ -87,6 +87,7 @@ module.exports = {
     lens: { factory: "0xe0704DB90bcAA1eAFc00E958FF815Ab7aa11Ef47", fromBlock: 1 },
     etlk: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 14584055 },
     // saga: { factory: "0x454050C4c9190390981Ac4b8d5AFcd7aC65eEffa", fromBlock: 18885 },
+    rbn: { factory: "0x75FC67473A91335B5b8F8821277262a13B38c9b3", fromBlock: 2286057 },
   }),
 }
 

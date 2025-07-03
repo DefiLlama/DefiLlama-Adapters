@@ -56,6 +56,9 @@ const configs = {
       mellow: [
         '0x8327b8BD2561d28F914931aD57370d62C7968e40',
       ],
+      erc4626: [
+        '0xeea3edc017877c603e2f332fc1828a46432cdf96',
+      ],
     },
     base: {
       morphoVaultOwners: [
@@ -98,6 +101,11 @@ const configs = {
       morphoVaultOwners: [
         '0x09346F40e324458A8E211C5317981C78FAcDEc57',
         '0xB47f11484e19f1914D32fd393b17671221C10F1F',
+      ],
+    },
+    katana: {
+      morphoVaultOwners: [
+        '0x5D8C96b76A342c640d9605187daB780f8365F69f',
       ],
     },
   }
