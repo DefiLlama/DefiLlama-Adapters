@@ -3,6 +3,8 @@ const { getMultiDepositorVaults } = require('./utils');
 async function tvl(api) {
     const multiDepositorVaults = await getMultiDepositorVaults(api);
 
+    // Compute TVL for multi depositor vaults
+    // TODO: Add single depositor vaults
     await Promise.all(multiDepositorVaults.map(async (vault) => {
         const [totalSupply, feeCalculator ] = await Promise.all([
             api.call({
