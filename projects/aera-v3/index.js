@@ -6,13 +6,17 @@ async function tvl(api) {
     // Compute TVL for multi depositor vaults
     // TODO: Add single depositor vaults
     await Promise.all(multiDepositorVaults.map(async (vault) => {
-        const [totalSupply, feeCalculator ] = await Promise.all([
+        const [totalSupply, feeCalculator, decimals ] = await Promise.all([
             api.call({
                 abi: 'function totalSupply() view returns (uint256)',
                 target: vault,
             }),
             api.call({
                 abi: 'function feeCalculator() view returns (address)',
+                target: vault,
+            }),
+            api.call({
+                abi: 'function decimals() view returns (uint8)',
                 target: vault,
             }),
         ])
@@ -30,7 +34,8 @@ async function tvl(api) {
         ])
 
         const unitPrice = vaultState[8];
-        const numeraireBalance = totalSupply * unitPrice / 1e18;
+        const numeraireBalance = totalSupply * unitPrice / 10 ** decimals;
+        console.log(numeraireBalance.toString());
 
         api.add(numeraireToken, numeraireBalance);
     }));
