@@ -231,7 +231,7 @@ module.exports = {
       // leverage users
       const ezETH = {
         vault: "0x32a0ce2bDfc37eE606aB905b4f9fC286049A774f",
-        reStakingToken: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+        reStakingToken: ADDRESSES.linea.rzETH,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B", //Renzo
       };
 
@@ -249,7 +249,7 @@ module.exports = {
 
       const ezETH1x = {
         vault: "0xa9A57D0824a613d181e0323b0cA85fBD4E27160B",
-        reStakingToken: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+        reStakingToken: ADDRESSES.linea.rzETH,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B", //Renzo
       };
 
@@ -451,7 +451,7 @@ module.exports = {
 
       const weETH = {
         vault: "0xb8Cfb3406aBE78a2C836DCe69608e9cD80a78301",
-        reStakingToken: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
+        reStakingToken: ADDRESSES.arbitrum.weETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
@@ -468,7 +468,7 @@ module.exports = {
       };
       const weETH1x = {
         vault: "0xF528B8EA22a17000e49a914658d7E0F7d982803e" /*vault*/,
-        reStakingToken: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe" /*reStakingToken*/,
+        reStakingToken: ADDRESSES.arbitrum.weETH /*reStakingToken*/,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B" /*oracle*/,
       };
 

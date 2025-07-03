@@ -1,0 +1,61 @@
+const { sumTokensExport } = require('../helper/unwrapLPs')
+
+/**
+ * CroVegas TVL adapter
+ *
+ * – Counts native CRO plus every ERC-20 token that can be
+ *   deposited in the two game contracts:
+ *      • CoinFlip  0xbD28f3E1BFb443eDaE31fD4fDf394Be2809d59b1
+ *      • Lottery   0xba5b3AA6ED9f5dCE991F53a07D446FF1B5B8E589
+ */
+
+const GAME_CONTRACTS = [
+  '0xbD28f3E1BFb443eDaE31fD4fDf394Be2809d59b1', // CoinFlip
+  '0xba5b3AA6ED9f5dCE991F53a07D446FF1B5B8E589', // Lottery
+]
+
+// All whitelisted ERC-20s (addresses only; decimals auto-detected on chain)
+const TOKENS = [
+  '0x41bc026dABe978bc2FAfeA1850456511ca4B01bc', // ARY
+  '0xD896aA25da8e3832d68d1C05fEE9C851d42F1dC1', // AUT
+  '0xDaAcD0429516832ca1737d1FAa5a739d8F55c097', // BILLS
+  '0xCb49dd81da680ed11d10809B51d5D5D8e36F9B6D', // BMN
+  '0xcCcCcCcCdbEC186DC426F8B5628AF94737dF0E60', // CAW
+  '0x22EAe794BF266f7D46ddbF25ab3c7ba01E6Bc081', // CPB
+  '0xd095BdD744A7a2967651ce7d4F531C0fD1EB35eF', // CRAZE
+  '0x2B986EEB82356b518d0Deb1fCD5D102184BF4F7D', // PRIDE
+  '0xD50f5739A09f36C6f97cC9a4849C5462Ba6129A3', // CROGINAL
+  '0xd677944Df705924AF369d2FCcf4A989f343DbCDf', // FFTB
+  '0x8eBB879557Db19D36E69b53B99f0ab938a703BEF', // FFTBozos
+  '0xaF02D78F39C0002D14b95A3bE272DA02379AfF21', // FRTN
+  '0xF7b1095D2af6C81c2d88f0ab44c7c2341BFfc411', // GAINZ
+  '0x8Ab1C78364eB29aD4aE509fF6b03E3E7bD4f8d10', // GAT
+  '0x7492450cc8897a4e444Ad972eB1619251EF15C23', // GM
+  '0x4d7c922D6C12CfbF5BC85F56c9ccB1F61f49bf61', // KITTY
+  '0x2829955d8Aac64f184E363516FDfbb0394042B90', // KRIS
+  '0x212331e1435A8df230715dB4C02B2a3A0abF8c61', // MAD
+  '0x46E2B5423F6ff46A8A35861EC9DAfF26af77AB9A', // MOON
+  '0x2a697d2D53098e365cf0D9dA7Da1f6c65c4cFbe0', // MSB
+  '0x59BAfb7168972EcCA5e395F7dA88e71eCe47a260', // PPFT
+  '0x664E4b17EA045fE92868821F3eE0a76a5dB38166', // ROBIN
+  '0xD4CD999CbeB4Fb2Ee2E23D092D36221d4e325C68', // STEAKHOUSE
+  '0x679f6863a653251C8C215e77205A7058b5bF676a', // TROLL
+  '0xE036fBd7030fCCe540F999b97E60aB16281a6D92', // WOW
+  '0x61dAC9229E0F0235b3bca542D5034183b096516F', // CAVE
+  '0xe1f864aE527d3646c222fe1b65460dB2D6E62228', // NFX
+]
+
+module.exports = {
+  cronos: {
+    tvl: sumTokensExport({
+      owners: GAME_CONTRACTS,
+      nativeToken: true, // CRO
+      tokens: TOKENS,
+    }),
+  },
+
+  methodology:
+    'Sums native CRO and all whitelisted ERC-20 balances sitting in the CroVegas CoinFlip and Lottery contracts.',
+  start: '2025-06-08',
+  timetravel: true, 
+}

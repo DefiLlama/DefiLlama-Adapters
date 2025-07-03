@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const { uniTvlExports, nullAddress, sumTokensExport } = require('../helper/unknownTokens')
 
-const stakingPools = ["0x634579156A20C50d0c3525233b1C39AAF500F867", "0x43A1dc107BBb06dF266278056055AE7Fc5bd2817"]
+const stakingPools = ["0x634579156A20C50d0c3525233b1C39AAF500F867", "0x43A1dc107BBb06dF266278056055AE7Fc5bd2817","0x5E8040e85D0E6363D798a43BEa939C026449946d"]
 const stakingTokens = [ADDRESSES.rbn.LQDX, nullAddress]
 
 module.exports = uniTvlExports({
