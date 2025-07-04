@@ -37,7 +37,7 @@ module.exports = {
             const data = res.supply.find(asset => asset.denom == ONYX.address)
 
             return {
-                [ONYX.id]: data.amount / ONYX.decimals
+                [ONYX.id]: data.amount / 10 ** ONYX.decimals
             }
         }
     },
