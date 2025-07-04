@@ -16,4 +16,7 @@ module.exports = {
     ],
   }), },
   avax: { tvl },
+  ethereum: { tvl },
+  bsc: { tvl },
+  plume_mainnet: { tvl },
 }
