@@ -1,8 +1,6 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 
-const tokens = [ADDRESSES.null]
-const owners = {
+const config = {
   core: '0xbEF63121a00916d88c4558F2a92f7d931C67115B',
   sonic: '0xbEF63121a00916d88c4558F2a92f7d931C67115B',
   sophon: '0x66Ae13488b281C0aCf731b8D7970E069b673df00',
@@ -12,16 +10,10 @@ const owners = {
   scroll: '0x809c2C530c35Dd0a8877e1EEf139fd60d9b811Eb',
   linea: '0xA74e55412Ffb46747dd45eeFdb68BF1366205036',
   taiko: '0x95e483Ce4acf1F24B6cBD8B369E0735a3e56f5BB',
-};
-
-function generateTVL(owner) {
-  return async function tvl(api) {
-    return await sumTokens2({ owner, tokens, api });
-  };
 }
 
-const exportsByChain = Object.fromEntries(
-  Object.entries(owners).map(([chain, owner]) => [chain, { tvl: generateTVL(owner) }])
-);
-
-module.exports = exportsByChain;
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl: sumTokensExport({ owner: config[chain], tokens: [nullAddress] })
+  }
+})
