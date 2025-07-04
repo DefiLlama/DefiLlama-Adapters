@@ -9,7 +9,8 @@ const contracts = {
     credits: [
       "0xf6223C567F21E33e859ED7A045773526E9E3c2D5", // Fasanara Yield vault,
       "0x4462eD748B8F7985A4aC6b538Dfc105Fce2dD165", // Bastion 
-      "0x14B8E918848349D1e71e806a52c13D4e0d3246E0" // Adaptive Frontier
+      "0x14B8E918848349D1e71e806a52c13D4e0d3246E0", // Adaptive Frontier
+      "0x433D5B175148dA32Ffe1e1A37a939E1b7e79be4d" // FalconX
     ]
   },
   polygon: {
@@ -29,6 +30,32 @@ const contracts = {
   }
 }
 
+async function getUspTvl(api, usp, credits){
+  const [
+    queueAddress,
+    uspTotalSupply,
+  ] = await Promise.all([
+    'address:queue',
+    'uint256:totalSupply',
+  ].map(abi => api.call({ abi, target: usp })))
+
+  const yieldSources = await api.call({
+    abi: 'function getAllYieldSources() view returns (tuple(address token, address source, address vaultToken, uint256 maxCap, tuple(bytes4 method, uint8 methodType)[] allowedMethods, uint8 vaultType)[] yieldSources)',
+    target: queueAddress,
+    chain: api.chain
+  })
+
+  // Exclude amount deposited in credit vaults to avoid double-counting
+  const creditsSources = yieldSources.filter( s => credits.map( addr => addr.toLowerCase() ).includes(s.source.toLowerCase()) )
+  const yieldSourcesAmounts = await Promise.all(creditsSources.map( s => api.call({ abi: 'function getCollateralsYieldSourceScaled(address) returns (uint256)', target: queueAddress, params: [s.source] }) ))
+  const uspTvl = yieldSourcesAmounts.reduce( (acc, amount) => {
+    return BigNumber(acc).minus(amount)
+  }, uspTotalSupply)
+
+  return uspTvl/1e12
+  
+}
+
 async function tvl(api) {
   const { usp = undefined, credits = [] } = contracts[api.chain]
   const balances = {}
@@ -38,15 +65,8 @@ async function tvl(api) {
 
   // Add USP Total Supply
   if (usp){
-    const uspTotalSupply = await api.call({
-      abi: 'uint256:totalSupply',
-      target: usp,
-      chain: api.chain
-    })
-
     const uspUnderlying = ADDRESSES[api.chain].USDC
-    const scaledUSPTvl = uspTotalSupply/1e12
-
+    const scaledUSPTvl = await getUspTvl(api, usp, credits)
     sdk.util.sumSingleBalance(balances, uspUnderlying, scaledUSPTvl, api.chain)
   }
 
