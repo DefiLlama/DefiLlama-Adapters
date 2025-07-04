@@ -1,4 +1,5 @@
-const WETH = '0x4200000000000000000000000000000000000006';
+const ADDRESSES = require('../helper/coreAssets.json')
+const WETH = ADDRESSES.optimism.WETH_1;
 const CONTRACT = '0xEF5E916de82839A8131eaac866280492966cd37C';
 
 async function tvl(api) {

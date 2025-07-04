@@ -12,7 +12,15 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: ["0xBEa9f7FD27f4EE20066F18DEF0bc586eC221055A"],
-      tokens: [ADDRESSES.ethereum.WETH, "0x0000000000000000000000000000000000000000"], 
+      tokens: [ADDRESSES.ethereum.WETH, ADDRESSES.null], 
     }),
   },
+  solana: {
+    tvl: sumTokensExport({
+    chain: 'solana',
+    solOwners: ['9SLPTL41SPsYkgdsMzdfJsxymEANKr5bYoBsQzJyKpKS'],
+    owners: ['9SLPTL41SPsYkgdsMzdfJsxymEANKr5bYoBsQzJyKpKS'],
+    tokens: ['9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump']
+  })
+  }
 };

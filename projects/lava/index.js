@@ -92,7 +92,7 @@ module.exports = {
   arbitrum: getMetrics(),
   base: getMetrics(),
   hallmarks: [
-    ['2024-03-28', 'Protocol was exploited'],
+    // ['2024-03-28', 'Protocol was exploited'],
     ["2024-04-01", "Protocol was relaunched"],
   ],
 };

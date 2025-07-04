@@ -15,6 +15,10 @@ const config = {
     controller: "0x6619871118D144c1c28eC3b23036FC1f0829ed3a",
     gasToken: ADDRESSES.celo.CELO,
   },
+  coti: {
+    fromBlock: 47878,
+    controller: "0x59f21012B2E9BA67ce6a7605E74F945D0D4C84EA",
+  },
 };
 
 Object.keys(config).forEach((chain) => {

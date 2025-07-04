@@ -5,16 +5,30 @@ const evm_config = {
   ethereum: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
   bsc: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 49126003 },
   base: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 29522359 },
-  arbitrum: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 }
+  arbitrum: { kernelEventEmitter: '0x3dDe8E4b5120875B1359b283034F9606D0f2F9eC', fromBlock: 331057353 },
+  hyperliquid: { kernelEventEmitter: '0x5a428F12a55d6E0ABa77Eb5B340f2ff95dE01BF5', fromBlock: 4470476 },
+  plume_mainnet: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 4574846 },
+  mantle: { kernelEventEmitter: '0xD76515844574A7c3f4521704098082371ACEEeB5', fromBlock: 80184784 },
 }
 
 const svm_config = {
   eclipse: [
-    '4wyA3MfcGu9PmFiegCZ3itNADVxmTrnKt4MDFFRxzctm' // tETH/WETH
+    'BvNLQCQKxq5A7AQUsMdUqRhwXwmnYy7bkpVU67QrakJ8', // tETH/WETH (WETH)
+    '8VSpqv9eAtxew8hbGjN3bWoyHCog9gFEcW42URVNpTH', // tETH/WETH (tETH)
+
+    'ECSRM9wkFyABH55vYGoR2kjSNm3tGEFp1cT3htBWmngd', // tUSD/USDC (USDC)
+    '6uoWjgNs8h7VYNmdrdHmXjty8Y8GrMjTxGcmb3EuDoM8', // tUSD/USDC (tUSD)
+
   ],
   solana: [
-    '78auJTs52UmJbn82tCptdMTgQzgTLA2hg4AS6RKnwkxQ', // USDT/USDC
-    'CjfBGMQJTw4rHFCGdF5U4GMPBK7sE4x1rgatjHyqCocG' // WSOL/USDC
+    '5XCdmwR7K2sZAxbWbkqhohnJ6X7v9ZtbuNrzrr19yHgp', // USDT/USDC (USDT)
+    'FL34362VBFeMRqoRuFm3SiFwS2TAXBWhk6C2CBnjbG3E', // USDT/USDC (USDC)
+
+    '6Fv84LR6nWFYeWRJAehHF3KXRi1RWQRQkGn3eLK3QMxb', // SOL/USDC (SOL)
+    '8NGoaasGcpa8h1JjLY598UCrmxpqgpuWVJtm9F5k3sid', // SOL/USDC (USDC)
+
+    'JBfR8XHYRF52WzTqyB14gkNVWtpPr9DUqzfuxASGLmby', // SKATE/USDC (SKATE)
+    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb' // SKATE/USDC (USDC)
   ]
 }
 
@@ -29,12 +43,12 @@ const abis = {
 module.exports = {
   methodology: "Assets deployed on periphery chains. For EVM chains, we track the token balances in the pools. For SVM chains, we track the token balances owned by the pool addresses.",
   start: 1742169600, // '2025-03-17 GMT+0'
-  timetravel: false, // Set to false for Solana and Eclipse chains
+  timetravel: false,
 }
 
 const evmTvl = async (api) => {
   const { kernelEventEmitter, fromBlock } = evm_config[api.chain]
-  const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true })
+  const logs = await getLogs2({ api, target: kernelEventEmitter, eventAbi: eventAbis.pool_created, fromBlock, onlyArgs: true})
   const balances = await api.multiCall({ calls: logs.map(([_, pool]) => ({ target: pool })), abi: abis.balances_available })
   logs.forEach(([_, __, token0, token1], i) => {
     const { amount0, amount1 } = balances[i]
@@ -49,7 +63,8 @@ Object.keys(evm_config).forEach((chain) => {
 
 const svmTvl = async (api) => {
   const pools = svm_config[api.chain]
-  return sumTokens2({ api, owners: pools })
+  const res = await sumTokens2({api, tokenAccounts: pools, computeTokenAccount: true})
+  return res;
 }
 
 Object.keys(svm_config).forEach((chain) => {

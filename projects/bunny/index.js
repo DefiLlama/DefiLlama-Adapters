@@ -152,7 +152,7 @@ module.exports = {
   polygon: {
     tvl: polygon
   },
-  hallmarks: [
-    [1621395248, 'Flash Loan Attack'],
-  ],
+  // hallmarks: [
+  //   [1621395248, 'Flash Loan Attack'],
+  // ],
 }

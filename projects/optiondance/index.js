@@ -1,14 +1,15 @@
 const { get } = require('../helper/http')
 
-const APIs =  "https://api.option.dance/api/v1/statistics/tvl"
+const API =  "https://api.option.dance/api/v1/statistics/tvl"
 
-async function fetch() {
-  const resp = await get(APIs);
-  const tvl = resp.data.total_value;
-  return parseFloat(tvl).toFixed(2);
+async function tvl(api) {
+  const { data } = await get(API);
+  const tvl = data.total_value;
+  return api.addUSDValue(Math.round(tvl))
 }
 
 module.exports = {
   deadFrom: '2025-01-01',
-  fetch,
+  misrepresentedTokens: true,
+  mixin: { tvl },
 };
