@@ -8,18 +8,14 @@ const SUI_COIN_TYPE =
   "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"
 
 async function loadInfo() {
-  try {
-    const obj = await sui.getObject(XSUI_INFO_ID)
-    const totalSupply = BigInt(
-      obj.fields.lst_treasury_cap.fields.total_supply.fields.value,
-    ) 
-    const stakedSui = BigInt(
-      obj.fields.storage.fields.total_sui_supply,
-    ) ; 
-    return { totalSupply, stakedSui }
-  } catch (e) {
-    return { totalSupply: 0n, stakedSui: 0n }
-  }
+  const obj = await sui.getObject(XSUI_INFO_ID)
+  const totalSupply = BigInt(
+    obj.fields.lst_treasury_cap.fields.total_supply.fields.value,
+  ) 
+  const stakedSui = BigInt(
+    obj.fields.storage.fields.total_sui_supply,
+  ) ; 
+  return { totalSupply, stakedSui }
 }
 
 async function tvl(api) {
@@ -28,14 +24,9 @@ async function tvl(api) {
   api.add(SUI_COIN_TYPE, stakedSui)
 }
 
-async function staking(api) {
-  const { totalSupply } = await loadInfo()
-  api.add(XSUI_COIN_TYPE, totalSupply)
-}
-
 module.exports = {
   timetravel: false,
   methodology:
     "Calculates the amount of SUI staked in xSUI liquid staking contracts.",
-  sui: { tvl, staking },
+  sui: { tvl },
 }
