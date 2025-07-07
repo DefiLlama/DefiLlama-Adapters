@@ -18,6 +18,7 @@ async function tvl(api) {
 
   if (!allVaults.length) return {};
 
+  // More Vaults uses EIP-2535 Diamond architecture with ERC4626-compatible facets
   await api.erc4626Sum({
     calls: allVaults,
     tokenAbi: 'address:asset',
@@ -28,7 +29,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "TVL is calculated by summing the total assets of all ERC4626 vaults deployed through the More Vaults registry contracts on Flow.",
+  methodology: "TVL is calculated by summing the total assets of all EIP-2535 Diamond vaults deployed through the More Vaults registry contracts on Flow. Each Diamond vault implements ERC4626-compatible facets for asset management and yield generation.",
   flow: {
     tvl,
   },
