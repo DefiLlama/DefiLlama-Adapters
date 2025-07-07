@@ -1,9 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-module.exports = {
-  hallmarks: [[1667955600, "Hack"]],
-};
+// module.exports = {
+//   hallmarks: [[1667955600, "Hack"]],
+// };
 
 const config = {
   arbitrum: [{ factory: "0x9544995B5312B26acDf09e66E699c34310b7c856", fromBlock: 65832059 }],

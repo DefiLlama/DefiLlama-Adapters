@@ -78,4 +78,20 @@ module.exports = {
     masterchefV3: '0x556B9306565093C855AEA9AE92A594704c2Cd59e',
     fromBlockSickle: 37565801
   },
+  sonic: {
+    factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
+    chainName: 'sonic',
+    fromBlockSickle: 1449481,
+    NonfungiblePositionManager: '0xa05a9efDb6e4FBc6deaDA988306b0dE5C53a8788',
+    gaugeFactory: '0x8CF82D413cA20a40a2Fa43C2bF77D136d81299e9',
+    fromBlock: 4028276,
+    voter: '0x3aF1dD7A2755201F8e2D6dCDA1a61d9f54838f4f',
+  },
+ hemi: {
+    factory: '0xc6013E57a0811C7111A8fB07ACd2E248D9489C99',
+    chainName: 'hemi',
+    fromBlockSickle: 1741373,
+    gaugeFactory: '0x1E97Cd6b8ce5052b3fAee512C04F93a967c4c0E4',
+    fromBlock: 1741373,
+  },
 }

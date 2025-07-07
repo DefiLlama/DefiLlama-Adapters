@@ -52,6 +52,10 @@ const getFullTVl = async (api) => {
 
 module.exports = {
   timetravel: false,
+  deadFrom: '2025-02-01',
+  hallmarks: [
+    ['2025-02-01', 'Token staking service is deprecated'],
+  ],
   ton: {
     tvl: () => ({}),
     staking: getFullTVl,

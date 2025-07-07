@@ -5,12 +5,11 @@ const abi = {
   };
   
   const CONFIG = {
-    soneium: ['0x2BECa16DAa6Decf9C6F85eBA8F0B35696A3200b3']
+    soneium: ['0x2BECa16DAa6Decf9C6F85eBA8F0B35696A3200b3','0x3b5FDb25672A0ea560E66905B97d0c818a00f5eb']
   };
   
   const fetchReserveData = async (api, poolDatas, isBorrowed) => {
     const reserveTokens = await api.multiCall({ calls: poolDatas, abi: abi.getAllReservesTokens });
-    console.log("reserveTokens:", reserveTokens)  // 檢查獲取的代幣列表
     
     const calls = []
   
