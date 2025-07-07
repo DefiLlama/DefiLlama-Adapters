@@ -2100,7 +2100,8 @@
     "ankrFLOWEVM": "0x1b97100eA1D7126C4d60027e231EA4CB25314bdb",
     "USDC_e": "0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52",
     "stgUSDC": "0xf1815bd50389c46847f0bda824ec8da914045d14",
-    "USDF": "0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed"
+    "USDF": "0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed",
+    "WETH": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590"
   },
   "matchain": {
     "MAT": "0x44a83a012B926853DFc1BBE2ec5BEf37126067e8",
