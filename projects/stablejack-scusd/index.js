@@ -7,33 +7,14 @@ module.exports = {
     "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets().",
   sonic: {
     tvl: async (api) => {
-      // Regular token balances
       const tokensAndOwners = [
         [ADDRESSES.sonic.scUSD, '0xf41ECda82C54745aF075B79b6b31a18dD986BA4c'], // scUSD
         [ADDRESSES.sonic.STS, '0x682D7F02BC57Bc64bfb36078454601Ba0Efbe155'], // stS
         ['0x9f0df7799f6fdad409300080cff680f5a23df4b1', '0x0A6F4c98D087445Ef92b589c6f39D22C4373615F'], // wOS
+        ['0x9fb76f7ce5FCeAA2C42887ff441D46095E494206', '0xb27f555175e67783ba16f11de3168f87693e3c8f'], // wstkscUSD
       ];
 
-      await api.sumTokens({ tokensAndOwners });
-
-      // wstkscUSD logic
-      const wstkscUSD = '0x9fb76f7ce5fceaa2c42887ff441d46095e494206';
-      const scUSD = ADDRESSES.sonic.scUSD;
-      const vault = '0xb27f555175e67783ba16f11de3168f87693e3c8f';
-
-      const balance = await api.call({
-        abi: 'erc20:balanceOf',
-        target: wstkscUSD,
-        params: vault,
-      });
-
-      const valueInScUSD = await api.call({
-        abi: 'function convertToAssets(uint256) view returns (uint256)',
-        target: wstkscUSD,
-        params: balance,
-      });
-
-      api.add(scUSD, valueInScUSD);
+      return api.sumTokens({ tokensAndOwners });
     },
   },
   avax: {
