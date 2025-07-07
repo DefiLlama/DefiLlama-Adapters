@@ -4,14 +4,14 @@ const abi = "function toAmount(address token, uint256 share, bool roundUp) view 
 
 const bentobox = async (api) => {
   const chain = api.chain
-  const safeBlock = await api.getBlock() - 1000
+  const block = await api.getBlock()
   if (chain === 'moonriver') return {}
 
   const [bentoTokens = [], tridentTokens = [], kashiTokens = [], furoTokens = []] = await Promise.all([
-    getTokens(api, safeBlock, 'bento'),
-    CONFIG[api.chain]?.trident ? getTokens(api, safeBlock, 'trident') : Promise.resolve([]),
-    CONFIG[api.chain]?.kashi ? getTokens(api, safeBlock, 'kashi') : Promise.resolve([]),
-    CONFIG[api.chain]?.furo ? getTokens(api, safeBlock, 'furo') : Promise.resolve([]),
+    getTokens(api, block, 'bento'),
+    CONFIG[api.chain]?.trident ? getTokens(api, block, 'trident') : Promise.resolve([]),
+    CONFIG[api.chain]?.kashi ? getTokens(api, block, 'kashi') : Promise.resolve([]),
+    CONFIG[api.chain]?.furo ? getTokens(api, block, 'furo') : Promise.resolve([]),
 ]);
 
   const shareBalances = {};

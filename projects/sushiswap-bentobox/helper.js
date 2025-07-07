@@ -162,7 +162,7 @@ async function getLatestIndexedBlock(subgraph) {
   return res?._meta?.block?.number ?? 0;
 }
 
-function wait(ms) {
+function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -174,7 +174,7 @@ async function withRetry(fn, retries = 3, delay = 60_000) {
       return null;
     });
     if (result !== null) return result;
-    if (i < retries - 1) await wait(delay);
+    if (i < retries - 1) await sleep(delay);
   }
   throw lastError;
 }
@@ -187,7 +187,7 @@ async function getTokens(api, block, protocolType) {
   const maxAllowedDrift = 1000;
 
   if (latest === 0 || latest < block - maxAllowedDrift) {
-    console.warn(`[${protocolType}] Subgraph too far behind (${latest} vs expected ${block}) → skipping`);
+    sdk.log(`[${api.chain}-${protocolType}] Subgraph too far behind (${latest} vs expected ${block}) → skipping`);
     return protocolType === 'bento' ? [] : {};
   }
 
