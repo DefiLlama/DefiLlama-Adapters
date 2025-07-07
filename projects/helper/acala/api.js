@@ -8,12 +8,9 @@ const api = {}
 const providers = {
   karura: [
     // Taken from https://wiki.acala.network/integrate/integration-1/networks
-    "wss://karura.api.onfinality.io/public-ws",
-    "wss://pub.elara.patract.io/karura",
-    "wss://karura-rpc-0.aca-api.network",
-    "wss://karura-rpc-1.aca-api.network",
-    "wss://karura-rpc-2.aca-api.network/ws",
-    "wss://karura-rpc-3.aca-api.network/ws",
+    "wss://karura-rpc.aca-api.network",
+    "wss://rpc-karura.luckyfriday.io",
+    "wss://karura-rpc.dwellir.com",
   ],
   polkadot: [
     "wss://polkadot-rpc.dwellir.com",
