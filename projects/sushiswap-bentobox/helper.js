@@ -191,7 +191,9 @@ async function getTokens(api, block, protocolType) {
     return protocolType === 'bento' ? [] : {};
   }
 
-  return await withRetry(() => fetchAllTokens(subgraph, QUERIES[protocolType], latest, protocolType));
+  const safeBlock = latest >= block ? block : latest;
+
+  return await withRetry(() => fetchAllTokens(subgraph, QUERIES[protocolType], safeBlock, protocolType));
 }
 
 async function fetchAllTokens(subgraph, query, block, type) {
