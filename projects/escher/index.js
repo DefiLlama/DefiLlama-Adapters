@@ -21,7 +21,7 @@ async function eBabyTVL(api) {
 
 
 module.exports = {
-  methodology: 'TVL eBABY',
+  methodology: 'TVL counts the tokens that are locked in the Escher staking hub',
   babylon: {
     tvl: eBabyTVL,
   },
