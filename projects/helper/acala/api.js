@@ -8,12 +8,9 @@ const api = {}
 const providers = {
   karura: [
     // Taken from https://wiki.acala.network/integrate/integration-1/networks
-    "wss://karura.api.onfinality.io/public-ws",
-    "wss://pub.elara.patract.io/karura",
-    "wss://karura-rpc-0.aca-api.network",
-    "wss://karura-rpc-1.aca-api.network",
-    "wss://karura-rpc-2.aca-api.network/ws",
-    "wss://karura-rpc-3.aca-api.network/ws",
+    "wss://karura-rpc.aca-api.network",
+    "wss://rpc-karura.luckyfriday.io",
+    "wss://karura-rpc.dwellir.com",
   ],
   polkadot: [
     "wss://polkadot-rpc.dwellir.com",
@@ -26,12 +23,7 @@ const providers = {
     "wss://kusama-rpc.dwellir.com",
   ],
   acala: [
-    "wss://acala-polkadot.api.onfinality.io/public-ws",
-    "wss://acala-rpc-0.aca-api.network",
-    "wss://acala-rpc-1.aca-api.network",
-    "wss://acala-rpc-2.aca-api.network/ws",
-    "wss://acala-rpc-3.aca-api.network/ws",
-    "wss://acala.polkawallet.io",
+    "wss://acala-rpc.aca-api.network",
   ],
   heiko: [
     "wss://heiko-rpc.parallel.fi",
