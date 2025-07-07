@@ -7,8 +7,15 @@ const { decimals } = require('@defillama/sdk/build/erc20');
 
 // const HLP0_VAULT = "0x3D75F2BB8aBcDBd1e27443cB5CBCE8A668046C81";
 const HWLP_VAULT = "0x9FD7466f987Fd4C45a5BBDe22ED8aba5BC8D72d1";
-const BACKING_EOA_1 = "0x97885bC45B300D405E61B397B8f37379B597D809";
-const BACKING_EOA_2 = "0xD73E844755b3d09DB80a277adCa00F9B4B2833e5";
+
+const EOA_1 = "0x128Cc5830214aBAF05A0aC178469a28de56C0BA9";
+const EOA_2 = "0x950e6bc9bba0edf4e093b761df05cf5abd0a32e7";
+const EOA_3 = "0x4E961B977085B673c293a5C022FdcA2ab3A689a2";
+const EOA_4 = "0xc8f969ef6b51a428859f3a606e6b103dc1fb92e9";
+const EOA_5 = "0x2cd4aa47e778fe8fa27cdcd4ce2bc99b6bf90f61";
+const EOAS = [EOA_1, EOA_2, EOA_3, EOA_4, EOA_5];
+
+const HLP_VAULT = "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303"; // Hyperliquid Vault
 const VAULT_TOKENS = [
     ADDRESSES.hyperliquid.USDT0,
     ADDRESSES.hyperliquid.USDe,
@@ -21,7 +28,7 @@ const HYPER_CORE_TOKENS = [
   //   decimals: 6,
   // },
   {
-    symbol: "USDT",
+    symbol: "USDT0",
     address: ADDRESSES.hyperliquid.USDT0,
     decimals: 6,
   },
@@ -46,29 +53,50 @@ const vaultTvl = async (api) => {
   })
 }
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
 async function hlpVaultTvl(api) {
-    let data = await post('https://api.hyperliquid.xyz/info', { type: "userVaultEquities", user: BACKING_EOA_1 })
-    const hlpVault = data.find(v => v.vaultAddress.toLowerCase() === '0xdfc24b077bc1425ad1dea75bcb6f8158e10df303');
-    const hlpEquity = hlpVault ? parseFloat(hlpVault.equity) : 0;
-    const hlpEquityUpscaled = hlpEquity * 1e6; // Convert to wei
-    api.addTokens([ADDRESSES.arbitrum.USDC_CIRCLE], [hlpEquityUpscaled]) 
+    const datas = [];
+    for (const eoa of EOAS) {
+      // await delay(10000); // 10s delay between requests
+      await delay(200); // 200ms delay between requests
+      console.log(`Fetching vault data for ${eoa}`);
+      datas.push(await post('https://api.hyperliquid.xyz/info', { type: "userVaultEquities", user: eoa }));
+      console.log(`Fetched vault data for ${eoa}`);
+    }
+    const hlpVaults = datas.flatMap(data => data.filter(v => v.vaultAddress.toLowerCase() === HLP_VAULT.toLowerCase()));
+    const hlpEquities = hlpVaults.map(v => parseFloat(v.equity));
+    const hlpEquityUpscaled = hlpEquities.reduce((sum, equity) => sum + equity * 1e6, 0); // Convert to wei
+    api.addTokens([ADDRESSES.arbitrum.USDC_CIRCLE], [hlpEquityUpscaled])
 
     return sumUnknownTokens({ api, useDefaultCoreAssets: true})
 }
 
 async function hyperCoreSpotBalance(api) {
-  const data = await post('https://api.hyperliquid.xyz/info', { type: "spotClearinghouseState", user: BACKING_EOA_1 });
-  const balances = data.balances.filter(b =>
-    HYPER_CORE_TOKENS.some(t => t.symbol === b.coin)
-  );
-  
+  const datas = [];
+  for (const eoa of EOAS) {
+    // await delay(10000); // 10s delay between requests
+    await delay(200); // 200ms delay between requests
+    console.log(`Fetching spot balance for ${eoa}`);
+    datas.push(await post('https://api.hyperliquid.xyz/info', { type: "spotClearinghouseState", user: eoa }));
+    console.log(`Fetched spot balance for ${eoa}`);
+  } 
+  const balances = datas.flatMap(data => data.balances)
+  const coinTotals = {};
+  for (const b of balances) {
+    if (!coinTotals[b.coin]) coinTotals[b.coin] = 0;
+    coinTotals[b.coin] += parseFloat(b.total);
+  }
+  console.log(coinTotals)
+  // adding other core tokens
   const tokens = HYPER_CORE_TOKENS.map(t => t.address);
-  const amounts = HYPER_CORE_TOKENS.map(t => {
-    const bal = balances.find(b => b.coin === t.symbol);
-    return bal ? parseFloat(bal.total) * 10**t.decimals : 0;
-  });
-  
+  const amounts = HYPER_CORE_TOKENS.map(t => coinTotals[t.symbol] ? coinTotals[t.symbol] * 10 ** t.decimals : 0);
+  console.log('Adding tokens:', tokens, 'with amounts:', amounts);
   api.addTokens(tokens, amounts);
+
+  // adding USDC balance
+  const usdcBalance = coinTotals['USDC'] ? coinTotals['USDC']: 0; // USDC is in 6 decimals
+  api.addUSDValue(usdcBalance)
+
   return sumUnknownTokens({ api, useDefaultCoreAssets: true})
 }
 
@@ -80,6 +108,5 @@ module.exports = {
   hyperliquid: { tvl: sdk.util.sumChainTvls([
     vaultTvl, 
     hyperCoreSpotBalance
-    // hlpVaultTvl, 
   ])},
 }
