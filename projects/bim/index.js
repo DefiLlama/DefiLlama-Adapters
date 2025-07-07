@@ -1,7 +1,6 @@
 const utils = require('../helper/utils');
 const { toUSDTBalances } = require('../helper/balances');
 
-const apiUrl = 'https://staking-api.bim.finance'
 const vaultEndpointBase = 'https://raw.githubusercontent.com/bim-finance-org/staking-vaults/master/';
 const chainVaultEndpoints = {
   10: vaultEndpointBase + "optimism.json",
@@ -17,7 +16,6 @@ const chains = {
   optimism: 10,
 }
 
-let lpsPrices;
 const getVaultBalances = async (chainId, vaults, api) => {
   if (!vaults) {
     throw new Error(`getVaultBalances: undefined vaults passed for ${chainId}`);
@@ -40,20 +38,31 @@ const getVaultBalances = async (chainId, vaults, api) => {
 
 function fetchChain(chainId) {
   return async (_, _b, _cb, { api, }) => {
+
     const chainVaults = utils.fetchURL(chainVaultEndpoints[chainId])
-    if (!lpsPrices) lpsPrices = utils.fetchURL(apiUrl + "/lps/breakdown")
     const vaults = (await chainVaults).data;
+    if( !vaults || vaults.length === 0) {
+      return toUSDTBalances(0);
+    }
+    const tokens = vaults.map(vault => {
+      return vault.network + ':' + vault.tokenAddress;
+    });
+
+    const lpsPrices = utils.fetchURL('https://coins.llama.fi/prices/current/' + tokens.join(','))
     const balances = await getVaultBalances(chainId, vaults, api);
-    const prices = (await lpsPrices).data;
+    const prices = (await lpsPrices).data.coins;
     let tvl = 0;
     for (let i = 0; i < vaults.length; i++) {
+      const tokenPriceKey = vaults[i].network + ':' + vaults[i].tokenAddress;
       const vault = vaults[i];
 
       const vaultBalance = balances[i];
       let tokenPrice = 0;
-      const price = prices[vault.id];
+      const price = prices[tokenPriceKey];
       if (price) {
         tokenPrice = price.price;
+      } else {
+        console.warn(`No price found for ${tokenPriceKey}`);
       }
       tvl += (vaultBalance / (10**(vault.tokenDecimals ?? 18))) * tokenPrice;
     }
