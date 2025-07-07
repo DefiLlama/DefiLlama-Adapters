@@ -1,8 +1,13 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
+
 const config = {
-  taiko: { dvmFactory: '0x6694eebf40924e04c952EA8F1626d19E7a656Bb7', fromBlock: 452910, dspFactory: '0xd0de7cA3298fff085E2cb82F8a861a0254256BA0', gspFactory: '0x2235bB894b7600F1a370fc595Ee5477999A30441', dppFactory: '0x297A4885a7da4AaeF340FABEd119e7a6E3f2BCe8' },
+  taiko: { dvmFactory: '0x6694eebf40924e04c952EA8F1626d19E7a656Bb7', fromBlock: 452910, dspFactory: '0xd0de7cA3298fff085E2cb82F8a861a0254256BA0', gspFactory: '0x2235bB894b7600F1a370fc595Ee5477999A30441', dppFactory: '0x297A4885a7da4AaeF340FABEd119e7a6E3f2BCe8', blacklistedTokens: [
+    '0x5d5c8Aec46661f029A5136a4411C73647a5714a7',
+    '0xff12470a969Dd362EB6595FFB44C82c959Fe9ACc',
+
+  ] },
  }
 
 Object.keys(config).forEach(chain => {
