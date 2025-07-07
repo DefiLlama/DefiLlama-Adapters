@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request");
 
 const CONFIG = {
@@ -214,4 +213,4 @@ async function fetchAllTokens(subgraph, query, block, type) {
   return allTokens;
 }
 
-module.exports = { CONFIG, getTokens };
+module.exports = { CONFIG, getTokens, fetchAllTokens };
