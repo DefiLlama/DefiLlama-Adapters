@@ -44,30 +44,11 @@ function fetchChain(chainId) {
     if( !vaults || vaults.length === 0) {
       return toUSDTBalances(0);
     }
-    const tokens = vaults.map(vault => {
-      return vault.network + ':' + vault.tokenAddress;
-    });
 
-    const lpsPrices = utils.fetchURL('https://coins.llama.fi/prices/current/' + tokens.join(','))
     const balances = await getVaultBalances(chainId, vaults, api);
-    const prices = (await lpsPrices).data.coins;
-    let tvl = 0;
-    for (let i = 0; i < vaults.length; i++) {
-      const tokenPriceKey = vaults[i].network + ':' + vaults[i].tokenAddress;
-      const vault = vaults[i];
+    const tokens = vaults.map((vault) => vault.tokenAddress)
 
-      const vaultBalance = balances[i];
-      let tokenPrice = 0;
-      const price = prices[tokenPriceKey];
-      if (price) {
-        tokenPrice = price.price;
-      } else {
-        console.warn(`No price found for ${tokenPriceKey}`);
-      }
-      tvl += (vaultBalance / (10**(vault.tokenDecimals ?? 18))) * tokenPrice;
-    }
-
-    return toUSDTBalances(tvl);
+    api.add(tokens, balances)
   }
 }
 
