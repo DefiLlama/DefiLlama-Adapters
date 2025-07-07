@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
-const cbethBase = "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22";
+const cbethBase = ADDRESSES.base.cbETH;
 const agEURbase = "0xA61BeB4A3d02decb01039e378237032B351125B4";
 const tbtcbase = "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b"
 

@@ -73,6 +73,6 @@ async function tvl(api) {
 
 module.exports = {
   ethereum: { tvl },
-  arbitrum: { tvl },
+  arbitrum: { tvl: () => ({ }) },
   methodology: "token held as collateral + liquidity left to be borrowed",
 };

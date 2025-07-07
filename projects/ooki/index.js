@@ -56,3 +56,11 @@ Object.keys(contracts).forEach(chain => {
   }
 })
 module.exports.ethereum.staking = stakings(stakingContracts, [ooki, bzrx])
+
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.polygon.borrowed = ()  => ({})
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.optimism.borrowed = ()  => ({})
+module.exports.ethereum.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

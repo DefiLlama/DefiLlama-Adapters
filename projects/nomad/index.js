@@ -78,9 +78,9 @@ function tvl(api) {
 }
 
 module.exports = {
-  hallmarks: [
-    [1659312000, "trusted root exploit"]
-  ],
+  // hallmarks: [
+  //   [1659312000, "trusted root exploit"]
+  // ],
   methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
 };
 

@@ -77,7 +77,6 @@ async function getCanopyCoreVaults(address, pageSize = 100) {
     if (response.vaults && response.vaults.length > 0) {
       allVaults = allVaults.concat(response.vaults);
       offset += response.vaults.length;
-
       // If we got fewer vaults than the page size, we've reached the end
       if (response.vaults.length < pageSize) {
         hasMoreVaults = false;
@@ -153,7 +152,7 @@ module.exports = {
         const asset_name = vault.asset_name;
 
         // Handle Meridian LP tokens
-        if (asset_name === "Meridian LP Token") {
+        if (asset_name === "Meridian LP Token" && balance !== '0') {
           // Get the underlying assets in the pool
           const poolAssetsMetadata = await function_view({
             functionStr: `${meridianPkg}::pool::pool_assets_metadata`,
