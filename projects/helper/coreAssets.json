@@ -2547,6 +2547,7 @@
     "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc": "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc"
   },
   "xrplevm": {
+    "XRP": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     "WXRP": "0x7C21a90E3eCD3215d16c3BBe76a491f8f792d4Bf",
     "USDC": "0xa16148c6ac9ede0d82f0c52899e22a575284f131",
     "WETH": "0x50498dc52bcd3daeb54b7225a7d2fa8d536f313e"
