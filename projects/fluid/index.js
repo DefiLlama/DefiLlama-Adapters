@@ -68,7 +68,7 @@ async function tvl(api) {
     tokens: [
       ADDRESSES.null,
       ...tokens.filter(
-        (t) => t.toLowerCase() !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        (t) => t.toLowerCase() !== ADDRESSES.GAS_TOKEN_2.toLowerCase()
       ),
     ],
   });

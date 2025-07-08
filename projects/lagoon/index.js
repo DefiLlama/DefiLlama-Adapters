@@ -53,6 +53,13 @@ const config = {
       address: "0x7CF8cF276450BD568187fDC0b0959D30eC599853",
       fromBlock: 4061769
     },
+  },
+  katana: {
+    vaults: [],
+    factory: {
+      address: "0x37F4B3f0102FDC1ff0C7eF644751052fb276dc6e",
+      fromBlock: 4544281
+    },
   }
 };
 

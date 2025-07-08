@@ -471,7 +471,7 @@ function addToken({ balances, token, amount, chain, blacklistedTokens = [], whit
 }
 
 const nullAddress = ADDRESSES.null
-const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+const gasTokens = [nullAddress, ADDRESSES.GAS_TOKEN_2, '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
   '0x000000000000000000000000000000000000800a', // zksync era gas token
 ]
 const gasTokenSet = new Set(gasTokens)

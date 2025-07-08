@@ -12,7 +12,7 @@ const stakingHelper = require('./staking')
 
 function uniTvlExports(config, commonOptions = {}) {
   const exportsObj = {
-    misrepresentedTokens: true,
+    misrepresentedTokens: !commonOptions.useDefaultCoreAssets,
   }
   Object.keys(config).forEach(chain => {
     exportsObj[chain] =  uniTvlExport(chain, config[chain],commonOptions )[chain]
@@ -256,11 +256,8 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 
 function uniTvlExport(chain, factory, options = {}) {
   const exportsObj= {
-    misrepresentedTokens: true,
+    misrepresentedTokens: !options.useDefaultCoreAssets,
     [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
-  }
-  if (Array.isArray(options.uStaking)) {
-    exportsObj[chain].staking = stakingHelper.staking(...options.uStaking)
   }
   return exportsObj
 }

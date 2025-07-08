@@ -64,4 +64,10 @@ module.exports = {
       return data
     },
   },
+  beacon: {
+    balance: async (addresses = []) => {
+      const { data } = await client.get('/beacon/total_staked', { params: { withdrawal_credentials: addresses.join(',') } })
+      return data.total_balance * 1e9
+    },
+  },
 }
