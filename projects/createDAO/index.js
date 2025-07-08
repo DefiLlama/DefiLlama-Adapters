@@ -1,15 +1,16 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { getLogs } = require('../helper/cache/getLogs');
 const config = require('./config');
-const { log } = require('console');
 
-// DAOCreated event signature
+// Event signatures
 const DAO_CREATED_TOPIC = 'DAOCreated(address,address,address,address,string,string)';
+const PRESALE_DEPLOYED_TOPIC = 'PresaleDeployed(uint256,address,uint256,uint256)';
 
-async function tvl(api) {
+async function getDAOAddresses(api) {
   const factoryAddress = config[api.chain].factoryAddress;
+  
   // Get all DAOs created through the factory
-  const logs = await getLogs({
+  const daoLogs = await getLogs({
     api,
     target: factoryAddress,
     topic: DAO_CREATED_TOPIC,
@@ -18,24 +19,97 @@ async function tvl(api) {
     onlyArgs: true,
   });
   
-  // Extract treasury addresses and token addresses
-  const treasuryAddresses = logs.map(log => log.treasuryAddress);
-  const tokenAddresses = logs.map(log => log.tokenAddress);
+  const daoAddresses = daoLogs.map(log => log.daoAddress);
+  const treasuryAddresses = daoLogs.map(log => log.treasuryAddress);
   
-  // Create a set of unique tokens to track
-  const uniqueTokens = new Set(tokenAddresses);
+  console.log(`${api.chain}: Found ${daoLogs.length} DAOs, ${treasuryAddresses.length} treasuries`);
+  if (daoAddresses.length > 0) {
+    console.log(`${api.chain}: DAO addresses:`, daoAddresses);
+  }
   
-  // Sum up all native tokens and ERC20 tokens in treasury contracts
-  return sumTokens2({ 
+  return { daoAddresses, treasuryAddresses };
+}
+
+async function getPresaleAddresses(api, daoAddresses) {
+  if (daoAddresses.length === 0) {
+    console.log(`${api.chain}: No DAOs found, skipping presale discovery`);
+    return [];
+  }
+  
+  console.log(`${api.chain}: Checking for presale events from ${daoAddresses.length} DAOs...`);
+  
+  let allPresaleAddresses = [];
+  
+  // Get presale events from each DAO
+  for (const daoAddress of daoAddresses) {
+    try {
+      const presaleLogs = await getLogs({
+        api,
+        target: daoAddress,
+        topic: PRESALE_DEPLOYED_TOPIC,
+        eventAbi: 'event PresaleDeployed(uint256 indexed proposalId, address indexed presaleContract, uint256 amount, uint256 initialPrice)',
+        fromBlock: config[api.chain].fromBlock,
+        onlyArgs: true,
+      });
+      
+      const presaleAddresses = presaleLogs.map(log => log.presaleContract);
+      allPresaleAddresses.push(...presaleAddresses);
+      
+      if (presaleAddresses.length > 0) {
+        console.log(`${api.chain}: Found ${presaleAddresses.length} presales from DAO ${daoAddress}:`, presaleAddresses);
+      }
+    } catch (error) {
+      console.log(`${api.chain}: Error getting presales from DAO ${daoAddress}:`, error.message);
+    }
+  }
+  
+  // Remove duplicates (normalize addresses to lowercase for comparison)
+  const uniquePresaleAddresses = [...new Set(allPresaleAddresses.map(addr => addr.toLowerCase()))];
+  console.log(`${api.chain}: Total unique presale addresses found: ${uniquePresaleAddresses.length}`);
+  
+  return uniquePresaleAddresses;
+}
+
+async function tvl(api) {
+  // Get DAO and treasury addresses
+  const { daoAddresses, treasuryAddresses } = await getDAOAddresses(api);
+  
+  // Get presale addresses dynamically
+  const presaleAddresses = await getPresaleAddresses(api, daoAddresses);
+  
+  // Combine all contract addresses that hold liquidity
+  const allOwners = [...treasuryAddresses, ...presaleAddresses];
+  
+  console.log(`${api.chain}: Total owners to check: ${allOwners.length}`);
+  if (allOwners.length > 0) {
+    console.log(`${api.chain}: Owner addresses:`, allOwners);
+  }
+  
+  if (allOwners.length === 0) {
+    console.log(`${api.chain}: No owners found, returning 0 TVL`);
+    return {};
+  }
+  
+  // Create tokensAndOwners array to explicitly check for native ETH
+  const ADDRESSES = require('../helper/coreAssets.json');
+  const tokensAndOwners = allOwners.map(owner => [ADDRESSES.null, owner]);
+  
+  console.log(`${api.chain}: Checking native ETH for ${tokensAndOwners.length} tokensAndOwners pairs`);
+  
+  // Only count native tokens (ETH, MATIC, etc.)
+  const result = await sumTokens2({ 
     api, 
-    owners: treasuryAddresses,
-    tokens: [...uniqueTokens], // Include DAO tokens in TVL calculation
+    tokensAndOwners,
   });
+  
+  console.log(`${api.chain}: TVL result:`, result);
+  return result;
 }
 
 // Export TVL functions for each supported chain
 module.exports = {
-  methodology: "TVL consists of funds locked in DAO treasury contracts deployed through the CreateDAO factory",
+  methodology: "TVL consists of native tokens locked in DAO treasury contracts and presale contracts deployed through CreateDAO DAOs",
+  ethereum: { tvl },
   arbitrum: { tvl },
   base: { tvl },
   xdai: { tvl },

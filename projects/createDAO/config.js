@@ -1,4 +1,8 @@
 module.exports = {
+  ethereum: {
+    factoryAddress: '0x22f38c01222E07Efe0B7E0409EF9235B6Ab641d6',
+    fromBlock: 22787281,
+  },
   arbitrum: {
     factoryAddress: '0x8d2D2fb9388B16a51263593323aBBDf80aee54e6',
     fromBlock: 332502010,
