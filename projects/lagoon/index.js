@@ -53,11 +53,19 @@ const config = {
       address: "0x7CF8cF276450BD568187fDC0b0959D30eC599853",
       fromBlock: 4061769
     },
+  },
+  katana: {
+    vaults: [],
+    factory: {
+      address: "0x37F4B3f0102FDC1ff0C7eF644751052fb276dc6e",
+      fromBlock: 4544281
+    },
   }
 };
 
 const vaultsBlacklist = [
   "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship
+  "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets
 ]
 
 function keepVault(vault, vaultBlacklist) {

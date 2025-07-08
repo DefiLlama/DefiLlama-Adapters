@@ -42,6 +42,6 @@ Object.keys(CONFIG).forEach((chain) => {
   };
 });
 
-module.exports.hallmarks = [
-  [Math.floor(new Date('2025-05-10')/1e3), 'Protocol was hacked'],
-]
+// module.exports.hallmarks = [
+//   ['2025-05-10', 'Protocol was hacked'],
+// ]

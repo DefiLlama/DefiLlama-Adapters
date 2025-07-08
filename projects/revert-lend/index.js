@@ -6,6 +6,7 @@ const config = {
   },
   base: {
     owners: ['0x36aeae0e411a1e28372e0d66f02e57744ebe7599'],
+
   }
 }
 

@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
-const cbethBase = "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22";
+const cbethBase = ADDRESSES.base.cbETH;
 const degenBase = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed";
 const mUsdcBase = "0xEdc817A28E8B93B03976FBd4a3dDBc9f7D176c22";
 

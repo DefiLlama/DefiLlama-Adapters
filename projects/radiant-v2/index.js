@@ -73,6 +73,6 @@ Object.keys(rizMarketsConfig).forEach(chain => {
 module.exports = mergeExports([rizMarketExports, coreMarkets])
 
 module.exports.hallmarks = [
-  [1704178500, "flash loan exploit"],
-  [Math.floor(new Date('2024-10-16') / 1e3), 'Multisig was compromised'],
+  // [1704178500, "flash loan exploit"],
+  // ['2024-10-16', 'Multisig was compromised'],
 ]

@@ -12,6 +12,7 @@ function createExports({
   pellStrategyVaults, // { address, asset }[]
   strategyVaultsV2, // { address, fromBlock }[]
   vaultManagerList, // { address }[]
+  farmList, // { address, asset }[]
 }) {
   return {
     tvl: async (api) => {
@@ -62,6 +63,13 @@ function createExports({
           tokens.forEach((token, i) => {
             tokensAndOwners.push([token, vaultManager])
           });
+        }
+      }
+
+      if (farmList) {
+        for (let index = 0; index < farmList.length; index++) {
+          const { address: farmAddress, asset } = farmList[index];
+          tokensAndOwners.push([asset, farmAddress])
         }
       }
 
@@ -202,6 +210,8 @@ module.exports = {
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // HemiBTC Collateral(V2)
       '0xa7B54413129441e872F42C1c4fE7D1984332CA87', // WBTC Collateral(V2)
       '0xED6E49a1835A50a8FD5511704616B89845Ad5564', // iBTC Collateral(V2)
+      '0x6d991Eb34321609889812050bC7f4604Eb0bfF26', // enzoBTC Collateral(V2)
+      '0xDAc0551246A7F75503e8C908456005E828C35A40', // uBTC Collateral(V2)
     ],
     nymList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
@@ -240,6 +250,26 @@ module.exports = {
     nymList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
       fromBlock: 330837414,
+    }],
+  }),
+  sonic: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 33129825,
+    }],
+  }),
+  xlayer: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 20436365,
     }],
   }),
 }

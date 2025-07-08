@@ -186,8 +186,7 @@ const config = {
 
 module.exports = mergeExports([
   cexExports(config),
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x08DeB6278D671E2a1aDc7b00839b402B9cF3375d', skipValidators: 3800 }) } },  // this address is no longer used?
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x08DeB6278D671E2a1aDc7b00839b402B9cF3375d', skipValidators: 3800, size: 200, proxy: true, sleepTime: 20_000 }) } },  // this address is no longer used?
 ]);
-module.exports.methodology =
-  "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
+module.exports.methodology = "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
 module.exports.hallmarks = [[1723066836, "remove usdd collateral"]];

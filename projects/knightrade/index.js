@@ -1,4 +1,3 @@
-const { ETHER_ADDRESS } = require('@defillama/sdk/build/general')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getMultipleAccounts, getProvider } = require('../helper/solana')
 const { Program, BN } = require("@project-serum/anchor")
@@ -59,6 +58,7 @@ async function tvlSolana(api) {
     'J5VbheCue9U4hW7u9DZzwgo5h7BhnBqL8rF9c71MDsfC', // DeltaNeutral-JLP-USDC-SVM-KT5
     'AcN9Mct9dLYQVDsyQinbbHKbsXYB4Tnaq5DgKwzrWaY4', // DeltaNeutral-JLP-SOL-SVM-KT6
     'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9
+    '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
   ];
 
   const accounts = await getMultipleAccounts(vaultUserAddresses)
@@ -107,6 +107,7 @@ async function tvlArbitrum(api) {
     "0xe15A7A5d2f1B7046af75e239a83d052B8fDb4230",
     "0xf13891426ecc002d9b3c9c293bcc176e3ceb04e7",
     "0xd51298f8eaf78943a67535a24f4bcb18b787ba0e",
+    "0x5C83942B7919db30634f9Bc9e0e72aD778852FC8",
   ];
 
   const addresses = {
@@ -144,7 +145,7 @@ async function tvlArbitrum(api) {
         [ADDRESSES.arbitrum.USDT, vault],
         [ADDRESSES.arbitrum.USDC_CIRCLE, vault],
         [ADDRESSES.arbitrum.WETH, vault],
-        [ETHER_ADDRESS, vault],        
+        [ADDRESSES.null, vault],        
         [ADDRESSES.arbitrum.WBTC, vault],
         // GMXv2 Earn
         [addresses.gmWeth, vault],
