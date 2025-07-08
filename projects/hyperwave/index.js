@@ -5,18 +5,19 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const { sumUnknownTokens } = require('../helper/unknownTokens');
 const { decimals } = require('@defillama/sdk/build/erc20');
 
-// const HLP0_VAULT = "0x3D75F2BB8aBcDBd1e27443cB5CBCE8A668046C81";
+// Vault
 const HWLP_VAULT = "0x9FD7466f987Fd4C45a5BBDe22ED8aba5BC8D72d1";
 
-const EOA_1 = "0x128Cc5830214aBAF05A0aC178469a28de56C0BA9";
-const EOA_2 = "0x950e6bc9bba0edf4e093b761df05cf5abd0a32e7";
-const EOA_3 = "0x4E961B977085B673c293a5C022FdcA2ab3A689a2";
-const EOA_4 = "0xc8f969ef6b51a428859f3a606e6b103dc1fb92e9";
-const EOA_5 = "0x2cd4aa47e778fe8fa27cdcd4ce2bc99b6bf90f61";
-const EOAS = [EOA_1, EOA_2, EOA_3, EOA_4, EOA_5];
+// Multi-Sigs
+const MS_1 = "0x128Cc5830214aBAF05A0aC178469a28de56C0BA9";
+const MS_2 = "0x950e6bc9bba0edf4e093b761df05cf5abd0a32e7";
+const MS_3 = "0x4E961B977085B673c293a5C022FdcA2ab3A689a2";
+const MS_4 = "0xc8f969ef6b51a428859f3a606e6b103dc1fb92e9";
+const MS_5 = "0x2cd4aa47e778fe8fa27cdcd4ce2bc99b6bf90f61";
+const EOAS = [MS_1, MS_2, MS_3, MS_4, MS_5];
 
-// const DELAY = 200; // 200ms delay between requests
-const DELAY = 10000; // 10s delay between requests
+const DELAY = 200; // 200ms delay between requests
+// const DELAY = 10000; // 10s delay between requests
 const HLP_VAULT = "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303"; // Hyperliquid Vault
 const VAULT_TOKENS = [
     ADDRESSES.hyperliquid.USDT0,
@@ -46,7 +47,7 @@ const HYPER_CORE_TOKENS = [
   }
 ]
 
-const vaultTvl = async (api) => {
+async function vaultTvl(api) {
   return sumTokens2({
     api,
     owner: HWLP_VAULT,
@@ -102,7 +103,7 @@ async function hyperCoreSpotBalance(api) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL represents the sum of tokens deposited in the vault + HLP positions',
+  methodology: 'TVL represents the sum of tokens deposited in the vault + HLP positions + HyperCore Spot positions.',
   doublecounted: false,
   arbitrum: {tvl: hlpVaultTvl},
   hyperliquid: { tvl: sdk.util.sumChainTvls([
