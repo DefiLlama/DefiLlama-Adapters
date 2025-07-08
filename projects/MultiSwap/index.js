@@ -53,6 +53,9 @@ const config = {
   bsc: {
     positionManager: '0x4eDeDaDFc96E44570b627bbB5c169d91304cF417',
   },
+  dchain: {
+    positionManager: '0x2f811854d65B8C0Cf6DC326F3b8E3A34B55DC1E2',
+  },
 }
 
 module.exports = {}
