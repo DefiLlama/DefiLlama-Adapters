@@ -44,10 +44,53 @@ Object.keys(config).forEach((chain) => {
       // get all underlying tokens
       const tokens = await api.multiCall({ abi: 'address:underlying', calls: lps });
 
-      // get total supplied, not cash
+      // use sumTokens2 to for cash balances in vault
+      return sumTokens2({ 
+        api, 
+        owner: vault, 
+        tokens 
+      });
+    },
+    borrowed: async (api) => {
+      // get all lps
+      const lpListedLogs = await getLogs({
+        api,
+        target: vault,
+        topic: "MarketListed(address)",
+        eventAbi:
+          "event MarketListed(address lpToken)",
+        onlyArgs: true,
+        fromBlock: vaultFromBlock,
+      });
+      const lps = lpListedLogs.map((i) => i.lpToken);
+
+      // get all underlying tokens
+      const tokens = await api.multiCall({ abi: 'address:underlying', calls: lps });
+
+      // get total supplied
       let v2Locked = await api.multiCall({ abi: 'address:totalUnderlying', calls: lps });
-      api.add(tokens, v2Locked);
-      return sumTokens2({ api });
+
+      // get cash balance by reading each token balanceOf from vault
+      let cashBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(token => ({ target: token, params: [vault] })) });
+
+      // merge tokens and their corresponding locked and cash values
+      const tokenData = tokens.map((token, i) => ({
+        token,
+        locked: parseInt(v2Locked[i]),
+        cash: parseInt(cashBalances[i])
+      }));
+
+      // calculate borrowed amounts
+      const borrowedBalances = {};
+      tokenData.forEach(({ token, locked, cash }) => {
+        if (locked > cash) {
+          borrowedBalances[token] = locked - cash;
+        } else {
+          borrowedBalances[token] = 0;
+        }
+      });
+
+      return borrowedBalances;
     },
   };
 });
