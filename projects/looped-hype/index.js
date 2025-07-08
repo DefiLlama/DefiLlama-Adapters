@@ -83,7 +83,6 @@ const fetchHlpBalance = async (userAddress) => {
     }),
   }
 
-  try {
     const data = await fetch(HYPERLIQUID_INFO_URL, payload)
     if (!data.ok) {
       throw new Error(`HTTP error! status: ${data.status}`)
@@ -96,10 +95,7 @@ const fetchHlpBalance = async (userAddress) => {
     }
     const vaultEquity = Number(dataJson.followerState.vaultEquity)
     return vaultEquity
-  } catch (error) {
-    console.error('Error posting vault info:', error)
-    return 0
-  }
+
 }
 
 const tvl = async (api) => {
@@ -108,7 +104,7 @@ const tvl = async (api) => {
   let totalUsdBalances = 0;
   
   for (const multisig of WHLP_HYPER_CORE_MULTISIGS) {
-    try {
+    
       // Fetch HLP balance
       const hlpBalance = await fetchHlpBalance(multisig);
       totalWhlpTvl += hlpBalance;
@@ -116,9 +112,7 @@ const tvl = async (api) => {
       // Fetch USD balances
       const usdBalances = await fetchUsdBalances(multisig);
       totalUsdBalances += usdBalances.totalPerpAndSpotUsdc;
-    } catch (error) {
-      console.error(`Error fetching balances for ${multisig}:`, error);
-    }
+
   }
 
   // Add WHLP TVL to API
@@ -153,5 +147,6 @@ const tvl = async (api) => {
 };
 
 module.exports = {
-  hyperliquid: { tvl }
+  hyperliquid: { tvl },
+  misrepresentedTokens: true
 };
