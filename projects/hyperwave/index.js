@@ -14,7 +14,7 @@ const MS_2 = "0x950e6bc9bba0edf4e093b761df05cf5abd0a32e7";
 const MS_3 = "0x4E961B977085B673c293a5C022FdcA2ab3A689a2";
 const MS_4 = "0xc8f969ef6b51a428859f3a606e6b103dc1fb92e9";
 const MS_5 = "0x2cd4aa47e778fe8fa27cdcd4ce2bc99b6bf90f61";
-const EOAS = [MS_1, MS_2, MS_3, MS_4, MS_5];
+const MS_ALL = [MS_1, MS_2, MS_3, MS_4, MS_5];
 
 const DELAY = 200; // 200ms delay between requests
 // const DELAY = 10000; // 10s delay between requests
@@ -59,7 +59,7 @@ async function vaultTvl(api) {
 const delay = () => new Promise(res => setTimeout(res, DELAY));
 async function hlpVaultTvl(api) {
     const datas = [];
-    for (const eoa of EOAS) {
+    for (const eoa of MS_ALL) {
       await delay();
       console.log(`Fetching vault data for ${eoa}`);
       datas.push(await post('https://api.hyperliquid.xyz/info', { type: "userVaultEquities", user: eoa }));
@@ -75,7 +75,7 @@ async function hlpVaultTvl(api) {
 
 async function hyperCoreSpotBalance(api) {
   const datas = [];
-  for (const eoa of EOAS) {
+  for (const eoa of MS_ALL) {
     await delay();
     console.log(`Fetching spot balance for ${eoa}`);
     datas.push(await post('https://api.hyperliquid.xyz/info', { type: "spotClearinghouseState", user: eoa }));
