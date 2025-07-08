@@ -13,8 +13,6 @@ async function tvl(api) {
   const from = start.toString()
   const to = api.timestamp.toString()
 
-  console.log(token, graphUrl, start, from, to)
-
   const query = `
     query stats($from: String!, $to: String!) {
       dailyHistories(

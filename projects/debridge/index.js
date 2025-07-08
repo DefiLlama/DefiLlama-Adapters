@@ -1,35 +1,21 @@
-const { getConfig } = require('../helper/cache')
-
-const { sumTokens } = require("../helper/unwrapLPs");
+const { getConfig } = require('../helper/cache');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const http_api_url = 'https://api.debridge.finance/api/Pairs/getForChain';
 const debridgeGate = '0x43dE2d77BF8027e25dBD179B491e8d64f38398aA';
-const chainIds = {
-  ethereum: 1,
-  bsc: 56,
-  heco: 128,
-  polygon: 137,
-  arbitrum: 42161,
-};
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, { [chain]: block }) => {
-    const balances = {};
-    const transformAddress = id => `${chain}:${id}`;
-
-    const url = `${http_api_url}?chainId=${chainIds[chain]}`;
+  return async (api) => {
+    const url = `${http_api_url}?chainId=${api.chainId}`;
     const debridge_response = await getConfig('debridge/' + chain, url);
-    const tokensAndOwners = debridge_response
+    const tokens = debridge_response
       .filter(t => !t.tokenName.startsWith('deBridge '))
-      .map(t => [t.tokenAddress, debridgeGate]);
-
-    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
-
-    return balances
+      .map(t => t.tokenAddress);
+    return sumTokens2({ api, owner: debridgeGate, tokens, })
   };
 }
 
-const chains = ['ethereum', 'bsc', 'heco', 'polygon', 'arbitrum',]
+const chains = ['ethereum', 'bsc', 'heco', 'polygon', 'arbitrum', 'sei']
 chains.forEach(chain => {
   module.exports[chain] = { tvl: chainTvl(chain) }
 })

@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 
 const WEETH_ADDRESS = {
   ethereum: ADDRESSES.ethereum.WEETH,
-  arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
+  arbitrum: ADDRESSES.arbitrum.weETH,
   optimism: "0x346e03f8cce9fe01dcb3d0da3e9d00dc2c0e08f0",
   mode: ADDRESSES.blast.weETH,
   manta: "0x77b6F99970f488cFA8bd41892900b6Ce881C2300",
@@ -41,6 +41,34 @@ const THEO_UNDERLYING_ASSETS = {
   "0x0b75e167f8a37179b7044414ee43e94cabeaa2fa": WEETH_ADDRESS.ethereum,
   "0x54602e5cba09e01eee9b2050f1f4f0dc902cee34": WEETH_ADDRESS.arbitrum,
   "0xcf101e13b5181f79094b0726b03e89d1cb95b28c": WEETH_ADDRESS.linea,
+};
+
+const MORPH_CHAIN_ID = 2818;
+
+const MORPH_VAULTS_ADDRESS = [
+  {
+    chainId: MORPH_CHAIN_ID,
+    address: "0xb9e83425cb9715b1f4d105f06ca43084bab86690",
+  },
+  {
+    chainId: MORPH_CHAIN_ID,
+    address: "0x073058aaeb22a1b09912526db7361fa11f23cc42",
+  },
+  {
+    chainId: MORPH_CHAIN_ID,
+    address: "0x2da0f5ff7504eba1cbb2b97f8531bd4852442e39",
+  },
+  {
+    chainId: MORPH_CHAIN_ID,
+    address: "0xae8afc08be496859a96f605b9dad5acd853b3cdd",
+  },
+];
+
+const MORPH_UNDERLYING_ASSETS = {
+  "0xb9e83425cb9715b1f4d105f06ca43084bab86690": ADDRESSES.morph.WETH,
+  "0x073058aaeb22a1b09912526db7361fa11f23cc42": ADDRESSES.morph.USDT,
+  "0x2da0f5ff7504eba1cbb2b97f8531bd4852442e39": ADDRESSES.morph.USDC,
+  "0xae8afc08be496859a96f605b9dad5acd853b3cdd": ADDRESSES.morph.WBTC,
 };
 
 const chainTVL = ({ vaults = [] }) => async (api) => {
@@ -92,6 +120,20 @@ const chainTVL = ({ vaults = [] }) => async (api) => {
         api.add(underlyingAsset, theoTotalSupplies[i]);
       } else {
         api.add(theoVault, theoTotalSupplies[i]);
+      }
+    });
+  }
+
+  if (api.chainId === MORPH_CHAIN_ID && MORPH_VAULTS_ADDRESS.length > 0) {
+    const morphTotalSupplies = await api.multiCall({
+      abi: "uint256:totalSupply",
+      calls: MORPH_VAULTS_ADDRESS.map((i) => i.address),
+    });
+
+    MORPH_VAULTS_ADDRESS.forEach((morphVault, i) => {
+      const underlyingAsset = MORPH_UNDERLYING_ASSETS[morphVault.address];
+      if (underlyingAsset) {
+        api.add(underlyingAsset, morphTotalSupplies[i]);
       }
     });
   }
@@ -172,6 +214,11 @@ module.exports = {
   mantle: {
     tvl: chainTVL({
       vaults: ["0x6FF000453a9c14f7d3bf381925c8cde565DbCe55"],
+    }),
+  },
+  morph: {
+    tvl: chainTVL({
+      vaults: [],
     }),
   },
 };

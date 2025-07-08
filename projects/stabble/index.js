@@ -52,6 +52,11 @@ async function stableSwapTvl() {
 module.exports = {
   timetravel: false,
   solana: { tvl: sdk.util.sumChainTvls([weightedSwapTvl, stableSwapTvl]) },
+  hallmarks: [
+    [1719540000, "Mainnet launch"],
+    // [1727791200, "JupiterExchange integration"],
+    [1747922400, "Token launch"],
+  ],
 };
 
 function findVaultAuthorityAddress(vaultKey) {

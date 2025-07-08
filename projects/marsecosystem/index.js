@@ -1,92 +1,64 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+
+const sdk = require('@defillama/sdk')
+const { unwrapUniswapLPs, } = require("../helper/unwrapLPs");
 const { getConfig } = require('../helper/cache')
 const abi = require("./abi.json");
+const { getUniTVL } = require("../helper/unknownTokens");
 
 const url = 'https://api.marsecosystem.com/api/pools';
 
-async function tvl(timestamp, chainBlocks) {
+async function tvl(api) {
   const rows = (await getConfig('mars-ecosystem', url));
   const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && !v.baseToken.includes('xms'));
   const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && !v.baseToken.includes('xms'));
-  return await calculate(chainBlocks, localPools, remotePools);
+  return await calculate(api, localPools, remotePools);
 }
-async function staking(timstamp, chainBlocks) {
+async function staking(api) {
   const rows = (await getConfig('mars-ecosystem', url));
   const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && v.baseToken.includes('xms'));
   const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && v.baseToken.includes('xms'));
-  return await calculate(chainBlocks, localPools, remotePools);
+  return await calculate(api, localPools, remotePools);
 }
 
-async function calculate(chainBlocks, localPools, remotePools) {
-  let balances = {};
+async function calculate(api, localPools, remotePools) {
+  const localPoolsBalances = await api.multiCall({
+    calls: localPools.map(v => ({ target: v.address, params: v.masterChefAddress })),
+    abi: 'erc20:balanceOf',
+  })
 
-  const localPoolsBalances = (
-    await sdk.api.abi.multiCall({
-      block: chainBlocks["bsc"],
-      calls: localPools.map(v => ({ target: v.address, params: v.masterChefAddress })),
-      abi: 'erc20:balanceOf',
-      chain: "bsc",
-    })
-  ).output.map(v => v.output);
-
-  const transformAdress = i => `bsc:${i}`;
 
   const lpPositions = [];
 
   localPools.map((v, i) => {
     if (v.baseToken == v.quoteToken) {
-      sdk.util.sumSingleBalance(
-        balances,
-        `bsc:${v.address}`,
-        localPoolsBalances[i]
-      );
+      api.add(v.address, localPoolsBalances[i]);
     } else {
-      lpPositions.push({
-        token: v.address,
-        balance: localPoolsBalances[i]
-      });
+      // lpPositions.push({ token: v.address, balance: localPoolsBalances[i] });  // already counted as part of dex
     }
   });
 
-  const remotePoolsBalances = (
-    await sdk.api.abi.multiCall({
-      block: chainBlocks["bsc"],
-      calls: remotePools.map(v => ({ target: v.masterChefAddress, params: [ v.pid ] })),
-      abi: abi.sharesTotal,
-      chain: "bsc",
-    })
-  ).output.map(v => v.output);
+  const remotePoolsBalances = await api.multiCall({
+    calls: remotePools.map(v => ({ target: v.masterChefAddress, params: [v.pid] })),
+    abi: abi.sharesTotal,
+  })
 
   remotePools.map((v, i) => {
     if (v.baseToken == v.quoteToken) {
-      sdk.util.sumSingleBalance(
-        balances,
-        `bsc:${v.address}`,
-        remotePoolsBalances[i]
-      );
+      api.add(v.address, remotePoolsBalances[i]);
     } else {
-      lpPositions.push({
-        token: v.address,
-        balance: remotePoolsBalances[i]
-      });
+      // lpPositions.push({ token: v.address, balance: remotePoolsBalances[i] });  // already counted as part of dex
     }
   });
 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["bsc"],
-    "bsc",
-    transformAdress
-  );
-
-  return balances;
+  api.removeTokenBalance('0xBb0fA2fBE9b37444f5D1dBD22e0e5bdD2afbbE85')  // project related token
+  await unwrapUniswapLPs(api.getBalances(), lpPositions, api.block, api.chain);
+  return api.getBalances();
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
-    tvl,
+    tvl: sdk.util.sumChainTvls([getUniTVL({ factory: '0x6f12482D9869303B998C54D91bCD8bCcba81f3bE', useDefaultCoreAssets: true, }), tvl]),
     staking,
   }
 };

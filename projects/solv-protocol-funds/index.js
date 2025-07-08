@@ -4,13 +4,14 @@ const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { getAmounts } = require("./iziswap");
+const { sumTokens2: sumTokens2Solana, getTokenSupplies } = require('../helper/solana')
 
 // The Graph
 const graphUrlList = {
   ethereum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-prod/version/latest',
   bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
   arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
-  mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mantle/-/gn',
+  mantle: 'https://api.0xgraph.xyz/api/public/65c5cf65-bd77-4da0-b41c-cb6d237e7e2f/subgraphs/solv-payable-factory-mentle-0xgraph/-/gn',
   merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin',
 }
 
@@ -38,12 +39,15 @@ async function tvl(api) {
   await mux(api, address);
   await klp(api, address);
   await iziswap(api, address);
-  await lendle(api, address);
-  await vaultBalance(api, graphData);
+  await derivativeToken(api, address);
+  await vaultBalance(api, address, graphData);
   await otherDeposit(api, address);
   await ceffuBalance(api, address, graphData);
   await lpV3PositionsBalance(api, address);
   await aaveSupplyBalance(api, address);
+  await solanaTvl(api, address);
+  await tokenSupply(api, address);
+  await solanaTokenSupply(api, address);
 
   (solvTokens[api.chain] ?? []).forEach(token => {
     api.removeTokenBalance(token)
@@ -225,18 +229,18 @@ async function concrete(slots, api) {
   return concretes;
 }
 
-async function lendle(api, address) {
-  if (!address[api.chain] || !address[api.chain]["lendle"]) {
+async function derivativeToken(api, address) {
+  if (!address[api.chain] || !address[api.chain]["derivativeData"]) {
     return;
   }
-  let lendleData = address[api.chain]["lendle"];
+  let derivativeTokenData = address[api.chain]["derivativeData"];
 
-  const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
+  const balance = await api.call({ abi: abi.balanceOf, target: derivativeTokenData.derivativeToken, params: derivativeTokenData.account.userAddress });
 
-  api.add(lendleData.account.ethAddress, balance)
+  api.add(derivativeTokenData.account.underlyingToken, balance)
 }
 
-async function vaultBalance(api, graphData) {
+async function vaultBalance(api, address, graphData) {
   const network = api.chain;
 
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
@@ -262,8 +266,9 @@ async function vaultBalance(api, graphData) {
     }
 
     let vaults = {};
+    const blacklistedOwners = address[network].blacklistedOwners || [];
     for (const key in poolLists) {
-      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
+      if (poolBaseInfos[key] && poolBaseInfos[key][1] && poolLists[key]["vault"] && blacklistedOwners.indexOf(poolLists[key]["vault"].toLowerCase()) == -1 && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
         vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
       }
     }
@@ -276,7 +281,6 @@ async function vaultBalance(api, graphData) {
       const key = `${token}-${owner}`.toLowerCase()
       return !blacklisted[key] && !blacklistedTokens.includes(token)
     })
-
     return api.sumTokens({ tokensAndOwners, blacklistedTokens, })
   }
 }
@@ -401,7 +405,6 @@ async function aaveSupplyBalance(api, address) {
       params: [index[1]]
     })));
   }
-
   const balances = await api.multiCall({
     abi: abi.balanceOf,
     calls: allCalls,
@@ -412,6 +415,37 @@ async function aaveSupplyBalance(api, address) {
     const aaveAddress = aavesData[Math.floor(i / Object.values(aavesData[i % aavesData.length]["aaveAddress"]).length)];
     api.add(aaveAddress["assetAddress"], balance);
   }
+}
+
+async function solanaTvl(api, address) {
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaOwners"]) return;
+  const owners = address[api.chain]["solanaOwners"];
+  return sumTokens2Solana({ api, owners });
+}
+
+async function tokenSupply(api, address) {
+  if (!address[api.chain] || !address[api.chain]["tokenSupply"]) {
+    return;
+  }
+  let tokenSupplyData = address[api.chain]["tokenSupply"];
+
+  const totalSupplys = await api.multiCall({
+    abi: abi.totalSupply,
+    calls: tokenSupplyData.map((address) => ({
+      target: address,
+    })),
+  });
+
+
+  for (let i = 0; i < tokenSupplyData.length; i++) {
+    api.add(tokenSupplyData[i], totalSupplys[i]);
+  }
+}
+
+async function solanaTokenSupply(api, address) {
+  if (api.chain !== 'solana' || !address[api.chain] || !address[api.chain]["solanaTokens"]) return;
+  const tokens = address[api.chain]["solanaTokens"];
+  return getTokenSupplies(tokens, { api });
 }
 
 async function getGraphData(timestamp, chain, api) {
@@ -445,7 +479,7 @@ async function getGraphData(timestamp, chain, api) {
 
 
 // node test.js projects/solv-protocol-funds
-['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
+['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin', 'solana', 'soneium'].forEach(chain => {
   module.exports[chain] = {
     tvl
   }

@@ -45,14 +45,14 @@ const config = {
       ADDRESSES.null, // eth
       ADDRESSES.optimism.WETH_1, // eth
       '0x71b35ECb35104773537f849FBC353F81303A5860', // eth
-      '0x2615a94df961278DcbC41Fb0a54fEc5f10a693aE', // xrp
+      ADDRESSES.katana.uXRP, // xrp
       '0x7fdAa50d7399ac436943028edA6ed9a1BD89509f', // bnb
-      '0x9B8Df6E244526ab5F6e6400d331DB28C8fdDdb55', // sol
+      ADDRESSES.katana.uSOL, // sol
       '0x1C61629598e4a901136a81BC138E5828dc150d67', // sol
       '0x12E96C2BFEA6E835CF8Dd38a5834fa61Cf723736', // doge
-      '0xa3A34A0D9A08CCDDB6Ed422Ac0A28a06731335aA', // ada
+      ADDRESSES.katana.uADA, // ada
       '0x88Fb150BDc53A65fe94Dea0c9BA0a6dAf8C6e196', // link
-      '0xb0505e5a99abd03d94a1169e638B78EDfEd26ea4', // sui
+      ADDRESSES.katana.uSUI, // sui
       '0x51436F6bD047797DE7D11E9d32685f029aed1069', // ton
       '0x3992B27dA26848C2b19CeA6Fd25ad5568B68AB98', // om
       '0xc3De830EA07524a0761646a6a4e4be0e114a3C83', // uni

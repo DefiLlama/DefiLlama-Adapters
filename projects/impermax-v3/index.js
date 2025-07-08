@@ -13,14 +13,22 @@ const config = {
   base: {
     factories: [
       '0x175712cD666FbcfE8B69866a3088D7bf17a47685',
+      '0x870fd2c2b502db53d3c9e19ab99725c1129fc120',
     ],
     positionsApi: 'https://base-nftlp-uniswapv3.up.railway.app/positions'
+  },
+  unichain: {
+    factories: [
+      '0x50E7116c4a9624a2d562Ee0Ab5209F3834C15E14',
+    ],
+    positionsApi: 'https://unichain-nftlp-uniswapv3.up.railway.app/positions'
   },
 };
 
 const blacklistedPools = {
   arbitrum: [],
-  base: []
+  base: [],
+  unichain: []
 };
 
 const abi = {
@@ -53,12 +61,12 @@ async function tvl(api) {
 }
 
 async function processUniV3Positions(api, positionsApiUrl) {
-  console.log(`Fetching positions from API: ${positionsApiUrl}`);
+  // api.log(`Fetching positions from API: ${positionsApiUrl}`);
   const response = await axios.get(positionsApiUrl);
   const positions = response.data;
 
   if (!Array.isArray(positions) || positions.length === 0) {
-    console.log(`No positions found with api ${positionsApiUrl}`);
+    api.log(`No positions found with api ${positionsApiUrl}`);
     return;
   }
 
