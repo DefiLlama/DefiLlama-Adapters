@@ -1,29 +1,44 @@
-const utils = require('./helper/utils');
-const { getApiTvl } = require('./helper/historicalApi');
+const { default: BigNumber } = require('bignumber.js')
+const { call, sumSingleBalance, } = require('./helper/chain/near')
 
-async function current() {
-  var deposits = await utils.fetchURL('https://api.stats.ref.finance/api/last-tvl')
-  let tvl = 0;
-  for (let datas of deposits.data) {
 
-    tvl += parseFloat(datas.TVL * datas.price)
-  }
+const PROJECT_CONTRACT = 'v2.ref-finance.near'
+const PROJECT_DCL_CONTRACT = 'dclv2.ref-labs.near'
 
-  return tvl;
-}
-
-function tvl(time){
-  return getApiTvl(time, current, async ()=>{
-    const dayData = await utils.fetchURL('https://api.stats.ref.finance/api/historical-tvl')
-    return dayData.data.map(d=>({
-      date: Math.round(new Date(d.date).getTime()/1e3),
-      totalLiquidityUSD: d.newTvl.reduce((t,c)=>t+c.TLV*c.price, 0)
-    }))
+async function tvl() {
+  const balances = {}
+  let poolIndex = 0
+  const numberOfPools = await call(PROJECT_CONTRACT, 'get_number_of_pools', {})
+  const allDclPools = await call(PROJECT_DCL_CONTRACT, 'list_pools', {});
+  allDclPools.forEach((dclPoolDetail) => {
+    const { token_x, token_y, total_order_x, total_order_y, total_x, total_y } = dclPoolDetail;
+    sumSingleBalance(balances, token_x, BigNumber(total_order_x).plus(total_x).toFixed());
+    sumSingleBalance(balances, token_y, BigNumber(total_order_y).plus(total_y).toFixed());
   })
+  do {
+    const pools = await call(PROJECT_CONTRACT, 'get_pools', { from_index: poolIndex, limit: 500 })
+
+    pools
+      .filter(({ shares_total_supply }) => +shares_total_supply > 0) // Token pair must have some liquidity
+      .map(({ token_account_ids, pool_kind, amounts }) => {
+        // if (!['SIMPLE_POOL', 'STABLE_SWAP', "RATED_SWAP"].includes(pool_kind)) throw new Error('Unknown pool kind.')
+        token_account_ids.forEach((token, index) => {
+          sumSingleBalance(balances, token, amounts[index])
+        })
+      })
+
+    poolIndex += 500
+  } while (poolIndex < numberOfPools)
+  
+  return balances
 }
 
 
 module.exports = {
-  methodology: 'TVL counts the tokens locked in the Ref Finance liquidity pools, data is pulled from the Sodaki API:"https://api.stats.ref.finance/api/last-tvl".',
-  tvl
-}
+  near: {
+    tvl,
+  },
+  hallmarks: [
+    [1666648800,"DCB withdrawn liquidity"]
+  ],
+};

@@ -11,7 +11,6 @@ const vaultChef = '0x2914646e782cc36297c6639734892927b3b6fe56'
 const chain = 'harmony'
 
 const dexTVL = getUniTVL({
-  chain: 'harmony',
   factory: '0xfa53b963a39621126bf45f647f813952cd3c5c66',
   useDefaultCoreAssets: true,
 })
@@ -72,6 +71,6 @@ const vaultTvl = async (_, _b, { [chain]: block }) => {
 module.exports = {
   harmony: {
     tvl: sdk.util.sumChainTvls([vaultTvl, dexTVL]),
-    staking: stakings(['0x15e04418d328c39bA747690F6DaE9Bbf548CD358', '0xA68E643e1942fA8635776b718F6EeD5cEF2a3F15',], '0x0159ed2e06ddcd46a25e74eb8e159ce666b28687', 'harmony')
+    staking: stakings(['0x15e04418d328c39bA747690F6DaE9Bbf548CD358', '0xA68E643e1942fA8635776b718F6EeD5cEF2a3F15',], '0x0159ed2e06ddcd46a25e74eb8e159ce666b28687')
   }
 }

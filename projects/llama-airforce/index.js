@@ -1,43 +1,39 @@
-const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
-
+const sdk = require("@defillama/sdk");
 const contracts = {
-    cvxCRVHolder: "0x83507cc8c8b67ed48badd1f59f684d5d02884c81",
-    cvxCRV: "0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7",
-    cvxFXSHolder: "0xf964b0e3ffdea659c44a5a52bc0b82a24b89ce0e",
-    cvxFXS: "0xFEEf77d3f69374f66429C91d732A244f074bdf74",
-    cvxFXSOracle: "0xd658A338613198204DCa1143Ac3F01A722b5d94A",
-    FXS: "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0"
+  uCRV1: "0x83507cc8c8b67ed48badd1f59f684d5d02884c81",
+  uCRV2: "0x4ebad8dbd4edbd74db0278714fbd67ebc76b89b7",
+  uCRV3: "0xde2bef0a01845257b4aef2a2eaa48f6eaeafa8b7",
+  uFXS1: "0xf964b0e3ffdea659c44a5a52bc0b82a24b89ce0e",
+  uFXS2: "0x3a886455e5b33300a31c5e77bac01e76c0c7b29c",
+  uPRISMA: "0x9bfd08d7b3cc40129132a17b4d5b9ea3351464bd",
+  uCVX: "0x8659fc767cad6005de79af65dafe4249c57927af",
+  uBAL: "0x8c4eb0fc6805ee7337ac126f89a807271a88dd67",
+  pxCvx: "0xBCe0Cf87F513102F22232436CCa2ca49e815C3aC",
 };
 
-async function tvl(time, block){
-    const balances = {};
+const vaults = [
+  contracts.uCRV1,
+  contracts.uCRV2,
+  contracts.uCRV3,
+  contracts.uBAL,
+  contracts.uFXS1,
+  contracts.uFXS2,
+  contracts.uPRISMA,
+]
 
-    balances[contracts.cvxCRV] = (await sdk.api.abi.call({
-        target: contracts.cvxCRVHolder,
-        abi: abi.totalUnderlying,
-        block
-    })).output;
+async function tvl(api,) {
+  const balances = {};
 
-    const cvxFXS = (await sdk.api.abi.call({
-        target: contracts.cvxFXSHolder,
-        abi: abi.totalUnderlying,
-        block
-    })).output;
+  const bals = await api.multiCall({ abi: "uint256:totalUnderlying", calls: vaults })
+  const tokens = await api.multiCall({ abi: 'address:underlying', calls: vaults })
+  bals.forEach((v, i) => sdk.util.sumSingleBalance(balances, tokens[i], v, api.chain))
+  sdk.util.sumSingleBalance(balances, contracts.pxCvx, await api.call({ target: contracts.uCVX, abi: "uint256:totalAssets", }), api.chain)
 
-    const ratio = (await sdk.api.abi.call({
-        target: contracts.cvxFXSOracle,
-        abi: abi.priceOracle,
-        block
-    })).output;
+  return balances;
+}
 
-    balances[contracts.FXS] = cvxFXS * ratio * 10**-18;
-
-    return balances;
-};
-
-module.exports={
-    ethereum:{
-        tvl
-    }
+module.exports = {
+  ethereum: {
+    tvl,
+  },
 };

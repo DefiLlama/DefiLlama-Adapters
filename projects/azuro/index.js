@@ -1,25 +1,17 @@
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-
-const LPContract = '0xac004b512c33D029cf23ABf04513f1f380B3FD0a'
-const token = '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d'
-
-async function tvl(timestamp, ethBlock, chainBlocks) {
-
-  const balance = await sdk.api.erc20.balanceOf({
-    target: token,
-    owner: LPContract,
-    block: chainBlocks['xdai'],
-    chain: 'xdai'
-  })
-
-  return {['xdai:' + token]: balance.output};
+const tokensAndOwners = {
+  xdai: [[ADDRESSES.xdai.WXDAI, '0x14564e6BbbB8DE2f959af8c0e158D334F05393Bb']],
+  polygon: [[ADDRESSES.polygon.USDT, '0x1a0612FE7D0Def35559a1f71Ff155e344Ae69d2C']],
+  chz: [[ADDRESSES.chz.WCHZ_1, '0x32696E01c979E3F542EC49D95729f011eF8F3c28']],
+  base: [[ADDRESSES.base.WETH, '0xbA390F464395fC0940c0B9591847ad4E836C7A0c']],
 }
 
-
 module.exports = {
-  xdai:{
-    tvl,
-  },
-  methodology: `TVL is the total quantity of xDAI held on Liquidity pools’ smart-contracts.`
+  xdai: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.xdai }) },
+  polygon: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.polygon }) },
+  chz: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.chz }) },
+  base: { tvl: async (api) => sumTokens2({ api, tokensAndOwners: tokensAndOwners.base }) },
+  methodology: `TVL is the total amount of WXDAI, WETH, USDT and CHZ held on Liquidity pools' smart-contracts.`
 }

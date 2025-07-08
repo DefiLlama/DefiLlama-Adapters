@@ -1,24 +1,17 @@
-const BigNumber = require("bignumber.js");
+const ADDRESSES = require("../helper/coreAssets.json");
 const { PublicKey } = require("@solana/web3.js");
-const { Program, utils } = require("@project-serum/anchor");
-const {
-  getAssociatedTokenAddress,
-  AccountLayout,
-  u64,
-} = require("@solana/spl-token");
-const { toUSDTBalances } = require("../helper/balances");
-const { getProvider } = require("../helper/solana");
+const { Program, utils,} = require("@project-serum/anchor");
+const { getProvider, sumTokens2, } = require("../helper/solana");
 
-const MAX_NUMBER_OF_ACCOUNT_INFOS = 99;
-const USDC_DECIMALS = 1_000_000;
-const MARKET_SEED = "credix-marketplace";
-const IDL = require("./credix.json");
+const MARKET_SEED_FINTECH = "credix-marketplace";
+const MARKET_SEED_RECEIVABLES = "receivables-factoring";
+const USDC = ADDRESSES.solana.USDC;
 const programId = new PublicKey("CRDx2YkdtYtGZXGHZ59wNv1EwKHQndnRc1gT4p8i2vPX");
 const encodeSeedString = (seedString) =>
   Buffer.from(utils.bytes.utf8.encode(seedString));
 
 const constructProgram = (provider) => {
-  return new Program(IDL, programId, provider);
+  return new Program(idl, programId, provider);
 };
 
 const findPDA = async (seeds) => {
@@ -36,266 +29,23 @@ const findSigningAuthorityPDA = async (globalMarketSeed) => {
   return findPDA(seeds);
 };
 
-const getAssociatedBaseTokenAddressPK = async (publicKey) => {
-  const baseMintPK = new PublicKey(
-    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-  ); //USDC
-  return await getAssociatedTokenAddress(baseMintPK, publicKey, true);
-};
-
-async function fetchLiquidityPoolBalance() {
-  const provider = getProvider();
-  const signingAuthorityKey = await findSigningAuthorityPDA(MARKET_SEED);
-  const liquidityPoolKey = await getAssociatedBaseTokenAddressPK(
-    signingAuthorityKey[0]
-  );
-  const liquidityPool = await provider.connection.getTokenAccountBalance(
-    liquidityPoolKey
-  );
-
-  return new BigNumber(liquidityPool.value.amount.toString());
-}
-
-async function generateRepaymentSchedulePDA(deal) {
-  const marketAdress = await findGlobalMarketStatePDA(MARKET_SEED);
-  const seed = [
-    marketAdress[0].toBuffer(),
-    deal.publicKey.toBuffer(),
-    encodeSeedString("repayment-schedule"),
-  ];
-  return PublicKey.findProgramAddress(seed, programId);
-}
-
-function periodIsRepaid(period) {
-  const principal = period.principal;
-  const principalRepaid = period.principalRepaid;
-  const interest = period.interest;
-  const interestRepaid = period.interestRepaid;
-
-  return principal === principalRepaid && interest === interestRepaid;
-}
-
-function isRepaid(schedule) {
-  return schedule.periods.every((period) => periodIsRepaid(period));
-}
-
-function openedAt(deal) {
-  const openedAt = deal.openedAt;
-  return openedAt.bitLength() > 53 ? null : openedAt.toNumber();
-}
-
-function goLiveAt(deal) {
-  const goLiveAt = deal.goLiveAt;
-  return goLiveAt.bitLength() > 53 ? null : goLiveAt.toNumber();
-}
-
-function status(deal, schedule) {
-  if (!schedule) {
-    return "NO SCHEDULE FOUND";
-  }
-  if (deal.defaulted) {
-    return "DEFAULTED";
-  }
-
-  if (!openedAt(deal)) {
-    return "PENDING";
-  }
-
-  if (!goLiveAt(deal)) {
-    return "OPEN_FOR_FUNDING";
-  }
-
-  if (isRepaid(schedule)) {
-    return "CLOSED";
-  }
-
-  return "IN_PROGRESS";
-}
-
-function isInProgress(deal, schedule) {
-  const dealStatus = status(deal.account, schedule);
-  return dealStatus === "IN_PROGRESS";
-}
-
-function totalPrincipal(repaymentSchedule) {
-  return new BigNumber(
-    repaymentSchedule.periods[
-      repaymentSchedule.periods.length - 1
-    ].totalPrincipalExpected.toString()
-  );
-}
-
-function principalRepaid(repaymentSchedule) {
-  const cumulPrincipalRepaid = repaymentSchedule.periods.reduce(
-    (acc, p) => acc.plus(new BigNumber(p.principalRepaid.toString())),
-    new BigNumber(0)
-  );
-
-  return cumulPrincipalRepaid;
-}
-
-function chunk(inputArray, perChunk) {
-  const result = inputArray.reduce((resultArray, item, index) => {
-    const chunkIndex = Math.floor(index / perChunk);
-
-    if (!resultArray[chunkIndex]) {
-      resultArray[chunkIndex] = []; // start a new chunk
-    }
-
-    resultArray[chunkIndex].push(item);
-
-    return resultArray;
-  }, []);
-
-  return result;
-}
-
-async function asyncMap(arr, map) {
-  return Promise.all(arr.map(map));
-}
-
-async function baseTokenAccount(deal) {
-  const dealTokenAccount = encodeSeedString("deal-token-account");
-  const marketAddress = await findGlobalMarketStatePDA(MARKET_SEED);
-  const seeds = [
-    marketAddress[0].toBuffer(),
-    deal.publicKey.toBuffer(),
-    dealTokenAccount,
-  ];
-
-  // TODO: just ignore the bump and return the public key
-  return PublicKey.findProgramAddress(seeds, programId);
-}
-
-async function fetchRepaymentScheduleForDeals(program, provider, deals) {
-  const pdaPromises = deals.map((d) => generateRepaymentSchedulePDA(d));
-  const pdas = await Promise.all(pdaPromises);
-  const addresses = pdas.map((pda) => pda[0]);
-  const addressesChunks = chunk(addresses, MAX_NUMBER_OF_ACCOUNT_INFOS - 1);
-  const accountInfosChunks = await Promise.all(
-    addressesChunks.map((addressChunk) => {
-      const accInfos =
-        provider.connection.getMultipleAccountsInfo(addressChunk);
-      return accInfos;
-    })
-  );
-  const accountInfos = accountInfosChunks.flat();
-
-  const programVersions = accountInfos.map(
-    (accountInfo) =>
-      accountInfo &&
-      program.coder.accounts.decode("RepaymentSchedule", accountInfo.data)
-  );
-  return programVersions;
-}
-
-// TODO: clean up
 async function tvl() {
-  const provider = getProvider();
-  const program = constructProgram(provider);
-  const liquidityPoolBalanceTokenAmount = await fetchLiquidityPoolBalance();
-  const allDeals = await program.account.deal.all();
-  const allRepaymentSchedules = await fetchRepaymentScheduleForDeals(
-    program,
-    provider,
-    allDeals
+  // Fintech pool
+  const [signingAuthorityKeyFintech] = await findSigningAuthorityPDA(
+    MARKET_SEED_FINTECH
   );
 
-  const tvlDealSchedulePairs = (
-    await allDeals.map((deal, index) => {
-      const schedule = allRepaymentSchedules[index];
-
-      // Return early so we don't try to get the status of a deal without a schedule
-      if (schedule === null) {
-        return null;
-      }
-
-      const dealStatus = status(deal.account, schedule);
-
-      switch (dealStatus) {
-        case "OPEN_FOR_FUNDING":
-        case "IN_PROGRESS":
-        case "CLOSED":
-          return [deal, schedule, dealStatus];
-        default:
-          return null;
-      }
-    })
-  ).filter((pair) => pair !== null);
-
-  const tvlDeals = tvlDealSchedulePairs.map((p) => p[0]);
-
-  let dealsTokenAccountBalance = new BigNumber(0);
-  let dealsAmountWithdrawn = new BigNumber(0);
-  const schedulesPrincipal = tvlDealSchedulePairs.reduce(
-    (principalSum, pair) => {
-      if (pair[2] === "OPEN_FOR_FUNDING") {
-        return principalSum;
-      }
-
-      return principalSum.plus(totalPrincipal(pair[1]));
-    },
-    new BigNumber(0)
+  // Receivables factoring pool
+  const [signingAuthorityKeyReceivables] = await findSigningAuthorityPDA(
+    MARKET_SEED_RECEIVABLES
   );
-
-  //////// Temp solution
-  // TODO: cleanup
-  const tokenAccountAddresses = (
-    await asyncMap(tvlDeals, (deal) => baseTokenAccount(deal))
-  ).map((pda) => pda[0]);
-  const chunks = chunk(tokenAccountAddresses, MAX_NUMBER_OF_ACCOUNT_INFOS - 1);
-  const tokenAccountInfos = (
-    await asyncMap(chunks, (chunk) =>
-      provider.connection.getMultipleAccountsInfo(chunk)
-    )
-  )
-    .flat()
-    .filter((info) => info !== null);
-
-  dealsTokenAccountBalance = tokenAccountInfos
-    .map((info) => AccountLayout.decode(info.data))
-    .reduce(
-      (total, info) => total.plus(new BigNumber(info.amount.toString())),
-      new BigNumber(0)
-    );
-  /////////
-  for (const deal of tvlDeals) {
-    dealsAmountWithdrawn = dealsAmountWithdrawn.plus(
-      new BigNumber(deal.account.amountWithdrawn.toString())
-    );
-  }
-  const dealsLiquidity = dealsTokenAccountBalance.minus(
-    schedulesPrincipal.minus(dealsAmountWithdrawn)
-  );
-  const tvl = liquidityPoolBalanceTokenAmount.plus(dealsLiquidity);
-
-  return toUSDTBalances(tvl.dividedBy(USDC_DECIMALS));
-}
-
-async function borrowed() {
-  const provider = getProvider();
-  const program = constructProgram(provider);
-  const allDeals = await program.account.deal.all();
-  const allRepaymentSchedules = await fetchRepaymentScheduleForDeals(
-    program,
-    provider,
-    allDeals
-  );
-  const inProgressSchedules = allDeals.map((deal, index) => {
-    const schedule = allRepaymentSchedules[index];
-    const dealIsInProgress = isInProgress(deal, schedule);
-    return dealIsInProgress ? schedule : null;
+  const tokens = await sumTokens2({
+    tokensAndOwners: [
+      [USDC, signingAuthorityKeyFintech],
+      [USDC, signingAuthorityKeyReceivables],
+    ],
   });
-
-  const totalOutstandingCredit = inProgressSchedules
-    .filter((schedule) => schedule !== null)
-    .reduce((principalSum, schedule) => {
-      return principalSum
-        .plus(totalPrincipal(schedule))
-        .minus(principalRepaid(schedule));
-    }, new BigNumber(0));
-
-  return toUSDTBalances(totalOutstandingCredit.dividedBy(USDC_DECIMALS));
+  return tokens;
 }
 
 module.exports = {
@@ -305,3 +55,156 @@ module.exports = {
     borrowed,
   },
 };
+
+async function borrowed(api) {
+  
+  const provider = getProvider();
+  const program = constructProgram(provider);
+  const states = await program.account.globalMarketState.all();
+
+  states.forEach(({ account }) => {
+    api.add(account.baseTokenMint.toBase58(), account.poolOutstandingCredit.toString())
+  })
+}
+
+async function tvl1(api) {
+  
+  const provider = getProvider();
+  const program = constructProgram(provider);
+  const states = await program.account.globalMarketState.all();
+
+  const tokenAccounts = states.map(({ account }) => account.treasuryPoolTokenAccount.toBase58())
+  return sumTokens2({ tokenAccounts })
+}
+
+const idl = {
+  version: '3.11.0',
+  name: 'credix',
+  instructions: [],
+  accounts: [{
+    name: 'globalMarketState',
+    type: {
+      kind: 'struct',
+      fields: [
+        {
+          name: 'baseTokenMint',
+          type: 'publicKey'
+        },
+        {
+          name: 'lpTokenMint',
+          type: 'publicKey'
+        },
+        {
+          name: 'poolOutstandingCredit',
+          docs: [
+            'The amount from senior tranche lent'
+          ],
+          type: 'u64'
+        },
+        {
+          name: 'treasuryPoolTokenAccount',
+          type: 'publicKey'
+        },
+        {
+          name: 'signingAuthorityBump',
+          type: 'u8'
+        },
+        {
+          name: 'bump',
+          type: 'u8'
+        },
+        {
+          name: 'credixFeePercentage',
+          type: {
+            defined: 'Fraction'
+          }
+        },
+        {
+          name: 'withdrawalFee',
+          docs: [
+            'The fee charged for withdrawals'
+          ],
+          type: {
+            defined: 'Fraction'
+          }
+        },
+        {
+          name: 'frozen',
+          type: 'bool'
+        },
+        {
+          name: 'seed',
+          type: 'string'
+        },
+        {
+          name: 'poolSizeLimitPercentage',
+          docs: [
+            'Maximum possible deposit limit in addition the pool outstanding credit',
+            'pool_size_limit = pool_outstanding_credit + pool_size_limit_percentage * pool_outstanding_credit'
+          ],
+          type: {
+            defined: 'Fraction'
+          }
+        },
+        {
+          name: 'withdrawEpochRequestSeconds',
+          type: 'u32'
+        },
+        {
+          name: 'withdrawEpochRedeemSeconds',
+          type: 'u32'
+        },
+        {
+          name: 'withdrawEpochAvailableLiquiditySeconds',
+          type: 'u32'
+        },
+        {
+          name: 'latestWithdrawEpochIdx',
+          type: 'u32'
+        },
+        {
+          name: 'latestWithdrawEpochEnd',
+          type: 'i64'
+        },
+        {
+          name: 'lockedLiquidity',
+          type: 'u64'
+        },
+        {
+          name: 'totalRedeemedBaseAmount',
+          type: 'u64'
+        },
+        {
+          name: 'hasWithdrawEpochs',
+          type: 'bool'
+        },
+        {
+          name: 'redeemAuthorityBump',
+          docs: [
+            'This is only used for wormhole related token transfer occurs.'
+          ],
+          type: 'u8'
+        }
+      ]
+    }
+  }],
+  types: [
+    {
+      name: 'Fraction',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'numerator',
+            type: 'u32'
+          },
+          {
+            name: 'denominator',
+            type: 'u32'
+          }
+        ]
+      }
+    }],
+  events: [],
+  errors: [ ]
+}

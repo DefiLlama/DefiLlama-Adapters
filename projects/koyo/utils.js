@@ -2,7 +2,7 @@ const chainTypeExports = (chainType, chainFn, chains) => {
   const chainTypeProps = chains.reduce(
     (obj, chain) => ({
       ...obj,
-      [chain === "avax" ? "avalanche" : chain]: {
+      [chain]: {
         [chainType]: chainFn(chain),
       },
     }),
@@ -15,7 +15,6 @@ const chainTypeExports = (chainType, chainFn, chains) => {
 const chainJoinExports = (cExports, chains) => {
   const createdCExports = cExports.map((cExport) => cExport(chains));
   const chainJoins = chains.reduce((obj, chain) => {
-    chain = chain === "avax" ? "avalanche" : chain;
 
     return {
       ...obj,

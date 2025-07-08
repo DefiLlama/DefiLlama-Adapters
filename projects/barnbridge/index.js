@@ -1,224 +1,32 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
-const { fetchURL } = require('../helper/utils');
+const { getLogs } = require('../helper/cache/getLogs')
+const { getUniqueAddresses } = require('../helper/utils')
 
-const syPoolAPIs = {
-    'ethereum': 'https://api-v2.barnbridge.com/api/smartyield/pools',
-    'polygon': 'https://prod-poly-v2.api.barnbridge.com/api/smartyield/pools',
-}
-const saPoolAPIs = {
-    'ethereum': 'https://api-v2.barnbridge.com/api/smartalpha/pools',
-    'polygon': 'https://prod-poly-v2.api.barnbridge.com/api/smartalpha/pools',
-    'avax': 'https://prod-avalanche.api.barnbridge.com/api/smartalpha/pools',
-    'arbitrum': 'https://prod-arbitrum.api.barnbridge.com/api/smartalpha/pools',
-    'optimism': 'https://prod-optimistic.api.barnbridge.com/api/smartalpha/pools',
-    'bsc': 'https://prod-bsc.api.barnbridge.com/api/smartalpha/pools',
-}
-
-const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
-const AAVE_ADDRESS = '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9';
-
-async function fetchSyPools(apiUrl) {
-    return fetchURL(apiUrl)
-        .then(res => res.data)
-        .then(({status, data}) => status === 200 ? data : []);
-}
-
-async function fetchSaPools(apiUrl) {
-    return fetchURL(apiUrl)
-        .then(res => res.data)
-        .then(({status, data}) => status === 200 ? data : []);
-}
-
-function syGetUnderlyingTotal(chain, smartYieldAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "underlyingTotal",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "total",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartYieldAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function saGetEpochBalance(chain, smartAlphaAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "epochBalance",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "balance",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartAlphaAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function saGetQueuedJuniorsUnderlyingIn(chain, smartAlphaAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "queuedJuniorsUnderlyingIn",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "amount",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartAlphaAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function saGetQueuedSeniorsUnderlyingIn(chain, smartAlphaAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "queuedSeniorsUnderlyingIn",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "amount",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartAlphaAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function resolveAddress(address) {
-    switch (address) {
-        case STK_AAVE_ADDRESS:
-            return AAVE_ADDRESS;
-        default:
-            return address;
-    }
-}
-
-function sumTvl(tvlList = []) {
-    return async (...args) => {
-        const results = await Promise.all(tvlList.map(fn => fn(...args)));
-        return results.reduce((a, c) => Object.assign(a, c), {});
-    };
-}
-
-async function tvl(chain, block) {
-    const balances = {};
-
-    if (chain in syPoolAPIs) {
-        // calculate TVL from SmartYield pools
-        const syPools = await fetchSyPools(syPoolAPIs[chain]);
-
-        await Promise.all(syPools.map(async syPool => {
-            const {smartYieldAddress, underlyingAddress} = syPool;
-            const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
-
-            sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
-        }));
-    };
-    if (chain in saPoolAPIs) {
-        // calculate TVL from SmartAlpha pools
-        const saPools = await fetchSaPools(saPoolAPIs[chain]);
-
-        await Promise.all(saPools.map(async saPool => {
-            const {poolAddress, poolToken} = saPool;
-            const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
-                saGetEpochBalance(chain, poolAddress, block),
-                saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
-                saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
-            ]);
-
-            const underlyingTotal = epochBalance
-                .plus(queuedJuniorsUnderlyingIn)
-                .plus(queuedSeniorsUnderlyingIn);
-            sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
-        }));
-    };
-
-    return balances;
-}
-
-async function mainnetTvl(timestamp, block, chainBlocks) {
-    return tvl('ethereum', block)
-}
-
-async function polygonTvl(timestamp, block, chainBlocks) {
-    return tvl('polygon', chainBlocks['polygon'])
-}
-
-async function avaxTvl(timestamp, block, chainBlocks) {
-    return tvl('avax', chainBlocks['avax'])
-}
-
-async function arbitrumTvl(timestamp, block, chainBlocks) {
-    return tvl('arbitrum', chainBlocks['arbitrum'])
-}
-
-async function optimismTvl(timestamp, block, chainBlocks) {
-    return tvl('optimism', chainBlocks['optimism'])
-}
-
-async function bscTvl(timestamp, block, chainBlocks) {
-    return tvl('bsc', chainBlocks['bsc'])
+const config = {
+  ethereum: { factory: '0xc67cb09d08521cD1dE6BAAC46824261eb1dB8800', fromBlock: 16828337, },
+  arbitrum: { factory: '0xf878a060D4d51704B14e8f68B51185bF5DbFE3A1', fromBlock: 69857947, },
+  optimism: { factory: '0x45c158E0ee76c76E525BaB941991268249e95331', fromBlock: 80641123, },
 }
 
 module.exports = {
-    start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
-    doublecounted: true,
-    timetravel: false,
-    misrepresentedTokens: true,
-    ethereum: {
-        tvl: mainnetTvl,
-    },
-    polygon: {
-        tvl: polygonTvl
-    },
-    arbitrum: {
-        tvl: arbitrumTvl
-    },
-    optimism: {
-        tvl: optimismTvl
-    },
-    bsc: {
-        tvl: bscTvl
-    },
-    avax:{
-        tvl: avaxTvl
-    },
 };
+
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        topics: ['0x4f2ce4e40f623ca765fc0167a25cb7842ceaafb8d82d3dec26ca0d0e0d2d4896'],
+        eventAbi: 'event PoolCreated(address indexed controller, address provider)',
+        onlyArgs: true,
+        fromBlock,
+      })
+      const providers = getUniqueAddresses(logs.map(i => i.provider))
+      const tokens = await api.multiCall({  abi: 'address:underlying', calls: providers}) 
+      const balances = await api.multiCall({  abi: 'uint256:underlyingBalance', calls: providers}) 
+      api.addTokens(tokens, balances)
+      return api.getBalances()
+    }
+  }
+})

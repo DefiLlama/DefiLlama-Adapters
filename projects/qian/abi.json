@@ -1,53 +1,11 @@
 {
   "asset": {
-    "balances": {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
-        }
-      ],
-      "name": "balances",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "balances": "function balances(address token) view returns (uint256)"
   },
   "balance": {
-    "gsupply": {
-      "inputs": [],
-      "name": "gsupply",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "gsupply": "uint256:gsupply"
   },
   "env": {
-    "tokens": {
-      "inputs": [],
-      "name": "tokens",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "tokens": "address[]:tokens"
   }
 }

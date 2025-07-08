@@ -1,31 +1,29 @@
-const { vaults, getTVLData, getVaultL1Funds } = require("./helper");
-const MAX_BPS = 1e3;
-const sdk = require('@defillama/sdk')
+const {
+  getTVLData,
+  getERC4626VaultFundsByChain,
+  getL1VaultOnlyFundsByChain,
+} = require("./helper");
 
-const tvl = async (_, block) => {
-  const { pendingDeposits, tokens, totalSupplies } = await getTVLData(block);
+const ethTvl = async (api) => {
+  await getTVLData(api);
+  await getL1VaultOnlyFundsByChain(api);
+};
 
-  const balances = {};
-
-  for (const [idx, { address }] of vaults.entries()) {
-    const wantToken = tokens[idx].output;
-    const totalSupply = totalSupplies[idx].output;
-
-    const totalFunds = await getVaultL1Funds(address, wantToken, block);
-    const sharePrice = totalFunds * MAX_BPS / totalSupply;
-
-    const value = totalSupply * sharePrice / MAX_BPS + +pendingDeposits[idx].output
-    // console.log(value, value.toFixed(0))
-    sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0))
-  }
-
-  return balances
+const polygonTvl = async (api) => {
+  await getERC4626VaultFundsByChain(api)
+  await getL1VaultOnlyFundsByChain(api)
 };
 
 module.exports = {
   methodology:
     "TVL is the total supply of our vault tokens, multiplied by their corresponding share price. The share price is calculated based on the value of positions taken by vaults both on ethereum and optimism networks",
   ethereum: {
-    tvl,
+    tvl: ethTvl,
   },
+  polygon: {
+    tvl: polygonTvl,
+  },
+  hallmarks: [
+    ['2023-03-28', "Brahma vaults discontinued, Brahma Console announced [not tracked here]"],
+  ],
 };

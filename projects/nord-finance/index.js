@@ -14,7 +14,7 @@ Object.keys(config).forEach(chain => {
     exportObj.staking = async (_, _b, { [chain]: block }) => sumTokens({}, staking, block, chain)
 
   if (pool2.length)
-    exportObj.pool2 = async (_, _b, { [chain]: block }) => sumTokens({}, pool2, block, chain, undefined, { resolveLP: true })
+    exportObj.pool2 = async (_, _b, { [chain]: block }) => sumTokens({}, pool2, block, chain)
 
   module.exports[chain] = exportObj
 

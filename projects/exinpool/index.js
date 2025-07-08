@@ -1,19 +1,14 @@
-const retry = require('async-retry');
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
+const { get } = require('../helper/http')
 
-const APIs = {
-  exinpool: 'https://mixin.exinpool.com/api/v1/node/status',
-}
+const API = 'https://mixin.exinpool.com/api/v1/node/status'
 
-async function fetch() {
-  const resp = await retry(async bail => await axios.get(APIs.exinpool))
-  let result = new BigNumber(0);
-  const tvl = resp.data.data.totalValueUsd;
-  result = parseFloat(tvl);
-  return result.toFixed(2);
+const tvl = async (api) => {
+  const { data } = await get(API)
+  const tvl = data.totalValueUsd;
+  api.addUSDValue(Math.round(tvl))
 }
 
 module.exports = {
-  fetch
+  misrepresentedTokens: true,
+  mixin: { tvl }
 }

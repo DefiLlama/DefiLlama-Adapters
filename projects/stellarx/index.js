@@ -1,11 +1,13 @@
-const utils = require('../helper/utils');
+const { get } = require('../helper/http');
 
-async function fetch() {
-  var totalTvl = await utils.fetchURL('https://amm-api.stellarx.com/api/pools/30d-statistic/?pool_string=');
-  return totalTvl.data[totalTvl.data.length-1].liquidity;
+async function tvl(api) {
+  const { pools } = await get('https://amm-api.stellarx.com/api/pools/?cursor=1&format=json&limit=500&order=desc&orderField=liquidity');
+  pools.forEach(({ liquidity }) => {
+    api.addUSDValue(Math.round(liquidity))
+  })
 }
 
 module.exports = {
-  fetch,
-  
+  misrepresentedTokens: true,
+  stellar: { tvl },
 }

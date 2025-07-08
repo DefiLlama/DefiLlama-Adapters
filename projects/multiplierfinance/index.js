@@ -1,113 +1,72 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const YieldContract = "0xE4Baf69B887843aB6A0e82E8BAeA49010fF619af";
-
-const ETH = "0x0000000000000000000000000000000000000000";
-
 const LendingPool = "0xbc3534b076EDB8E8Ef254D81b81DC193c53057F7";
+const LendingPoolV2 = "0x503fba251cdc4c06a1eeea4faf89e3fafc5923a6";
 
-/*** ETH TVL Portion ***
-* Yield Contract is in ethereum network, neither at the protocol web nor at their docs, 
-* they didn't mentioned anything about that.
-*/
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const ethBalance = (
-    await sdk.api.eth.getBalance({
-      target: YieldContract,
-      ethBlock,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, ETH, ethBalance);
-
-  const getNoOfErc20s = (
-    await sdk.api.abi.call({
-      abi: abi.getNoOfErc20s,
-      target: YieldContract,
-      ethBlock,
-    })
-  ).output;
-
-  for (let index = 0; index < getNoOfErc20s; index++) {
-    const erc20List = (
-      await sdk.api.abi.call({
-        abi: abi.erc20List,
-        target: YieldContract,
-        params: index,
-        ethBlock,
-      })
-    ).output;
-
-    try {
-      const erc20Balance = (
-        await sdk.api.erc20.balanceOf({
-          target: erc20List,
-          owner: YieldContract,
-          ethBlock,
-        })
-      ).output;
-
-      sdk.util.sumSingleBalance(balances, erc20List, erc20Balance);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  return balances;
+const ethTvl = async (api) => {
+  const tokens = await api.fetchList({ lengthAbi: abi.getNoOfErc20s, itemAbi: abi.erc20List, target: YieldContract })
+  tokens.push(nullAddress)
+  return sumTokens2({ tokens, owner: YieldContract, })
 };
 
-// *** BSC TVL Portion ***
+async function getReservesData(api) {
+  const tokens = await api.call({ abi: abi.getReserves, target: LendingPool, })
+  const res = await api.multiCall({ abi: abi.getReserveData, target: LendingPool, calls: tokens, })
+  tokens.map((v, i) => res[i].token = v)
+  return res
+}
 
-const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
+async function tvl(api) {
+  const data = await getReservesData(api)
+  const tokensAndOwners = data.map(i => ([i.token, i.mTokenAddress]))
+  return sumTokens2({ tokensAndOwners, api, })
+}
 
-  const getReserves = (
-    await sdk.api.abi.call({
-      abi: abi.getReserves,
-      target: LendingPool,
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-  ).output;
+async function borrowed(api) {
+  const data = await getReservesData(api)
+  data.forEach(i => api.add(i.token, i.totalBorrowsVariable))
+  return api.getBalances()
+}
 
-  for (let index = 0; index < getReserves.length; index++) {
-    const mTokenAddress = (
-      await sdk.api.abi.call({
-        abi: abi.getReserveData,
-        target: LendingPool,
-        params: getReserves[index],
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output[11];
+async function tvlV2(api) {
+  const data = await getReservesDataV2(api)
+  const tokensAndOwners = data.map(i => ([i.token, i.aTokenAddress]))
+  return sumTokens2({ tokensAndOwners, api, })
+}
 
-    const totalSupply = (
-      await sdk.api.abi.call({
-        abi: abi.totalSupply,
-        target: mTokenAddress,
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output;
+async function borrowedV2(api) {
+  const data = await getReservesDataV2(api)
+  const supplyVariable = await api.multiCall({ abi: 'erc20:totalSupply', calls: data.map(i => i.variableDebtTokenAddress), })
+  const supplyStable = await api.multiCall({ abi: 'erc20:totalSupply', calls: data.map(i => i.stableDebtTokenAddress), })
+  data.forEach((i, idx) => {
+    api.add(i.token, supplyVariable[idx])
+    api.add(i.token, supplyStable[idx])
+  })
+  return api.getBalances()
+}
 
-    sdk.util.sumSingleBalance(
-      balances,
-      `bsc:${getReserves[index]}`,
-      totalSupply
-    );
-  }
 
-  return balances;
-};
+async function getReservesDataV2(api) {
+  const tokens = await api.call({ abi: abiv2.getReservesList, target: LendingPoolV2, })
+  const res = await api.multiCall({ abi: abiv2.getReserveData, target: LendingPoolV2, calls: tokens, })
+  tokens.map((v, i) => res[i].token = v)
+  return res
+}
+
+const abiv2 = {
+  getReservesList: "address[]:getReservesList",
+  getReserveData: "function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
+}
 
 module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
   bsc: {
-    tvl: bscTvl,
+    tvl: sdk.util.sumChainTvls([tvl, tvlV2]),
+    borrowed: sdk.util.sumChainTvls([borrowedV2, ]),
   },
 };

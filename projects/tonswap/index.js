@@ -1,22 +1,23 @@
-const retry = require("../helper/retry");
-const axios = require("axios");
-const BigNumber = require('bignumber.js')
+const { post } = require('../helper/http')
 
-async function fetch() {
-  const tvl = (await retry(async (bail) =>
-        await axios.post("https://api.flatqube.io/v1/pairs", {
-          currencyAddresses: [],
-          limit: 1000,
-          offset: 0,
-          ordering: "tvldescending",
-          whiteListUri: "https://raw.githubusercontent.com/broxus/flatqube-assets/master/manifest.json",
-        })
-    )).data.pairs.map(p => p.tvl).reduce(
-      (a, c) => new BigNumber(a).plus(c));
+const url = 'https://api.flatqube.io/v1/pairs'
 
-  return tvl;
-};
+const payload = {
+  currencyAddresses: [],
+  limit: 1000,
+  offset: 0,
+  ordering: "tvldescending",
+  whiteListUri: "https://raw.githubusercontent.com/broxus/flatqube-assets/master/manifest.json",
+}
+
+const tvl = async (api) => {
+  const { pairs } = await post(url, payload)
+  pairs.forEach(( { tvl }) => {
+    api.addUSDValue(Math.round(tvl))
+  })
+}
 
 module.exports = {
-    fetch
+  misrepresentedTokens: true,
+  everscale: { tvl }
 };

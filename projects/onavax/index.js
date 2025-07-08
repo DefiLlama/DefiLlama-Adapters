@@ -6,7 +6,6 @@ module.exports = {
   avax: {
     tvl: getUniTVL({
       factory,
-      chain: 'avax',
       useDefaultCoreAssets: true,
     }),
   },

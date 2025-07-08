@@ -1,4 +1,4 @@
-const { sumTokens } = require('../helper/unwrapLPs');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 // taken from https://docs.spicetrade.ai/misc/official-addresses
 const contracts = require('./contracts.json');
 const chains = Object.keys(contracts);
@@ -17,26 +17,25 @@ function getTokens(chain, type) {
 
         case 'pool2':
             return Object.values(contracts[chain].tokens.pool2)
-    };
-};
+    }
+}
 
 const tvl = (chain, type) => {
-    return async (_t, _e, { [chain]: block}) => {
+    return async (api) => {
         let holders = []
         for (let key in contracts[chain].tokenHolders) {
             holders.push(...Object.values(contracts[chain].tokenHolders[key]));
-        };
+        }
 
         const tokens = getTokens(chain, type)
         const toa = tokens.map(t => holders.map(o => [t, o])).flat()
-        return sumTokens({}, toa, block, chain, undefined, { resolveCrv: true, resolveLP: true })
+        return sumTokens2( { api, tokensAndOwners: toa, resolveLP: true })
     };
 };
 
 const chainTypeExports = (chains) => {
     return chains.reduce((obj, chain) => {
         const uniTVL = getUniTVL({
-            chain, 
             factory: contracts[chain].factory,
             useDefaultCoreAssets: true,
         })

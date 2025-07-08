@@ -15,9 +15,9 @@ const PRED = "0xbdD2E3fdb879AA42748E9D47b7359323f226BA22";
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    staking: staking(farmContract, PRED, "bsc"),
-    pool2: pool2s([farmContract], lpContracts, "bsc"),
+    tvl: (async) => ({}),
+    staking: staking(farmContract, PRED),
+    pool2: pool2s([farmContract], lpContracts),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and Farming",
 };

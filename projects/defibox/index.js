@@ -1,63 +1,70 @@
 const axios = require("axios");
 const utils = require("../helper/utils");
-const {get_account_tvl} = require('../helper/eos')
 const {lendingMarket} = require("../helper/methodologies")
+const { getUniTVL } = require('../helper/unknownTokens')
 
-const eosEndpoint = "https://dapp.defibox.io/api/"
-const bscEndpoint = "https://bsc.defibox.io/api/"
+const endpoint = (chain) => `https://${chain}.defibox.io/api/`
 
 async function eos() {
-  const eosPrice = (await utils.getPricesfromString("eos")).data.eos.usd;
-  const swap = await utils.fetchURL(eosEndpoint + "swap/get24HInfo")
-  const lend = await utils.fetchURL(eosEndpoint + "lend/getGlobalOpenPositionStat")
-  const usn = await utils.fetchURL(eosEndpoint + "st/open/getGlobalOpenStat")
-  const tvl = Number(swap.data.data.eosBalance) * eosPrice * 2 + // swap TVL
-              lend.data.data.practicalBalance - lend.data.data.totalBorrowsVariable + // lend TVL
-              usn.data.globalOpenStat.totalMortgage // usn (stable token) TVL
-  return tvl
+  const swap = await utils.fetchURL(endpoint("eos") + "swap/get24HInfo");
+  const lend = await utils.postURL(endpoint("eos") + "lend/getGlobalOpenPositionStat")
+  const usn = await utils.postURL(endpoint("eos") + "st/open/getGlobalOpenStat")
+  const bal = await utils.fetchURL(endpoint("eos") + "bal/get24HInfo");
+  const vault = await utils.postURL(endpoint("eos") + "vault/getVaultStat");
+
+  // Calculate TVL (in $EOS value)
+  const eos = Number(swap.data.data.eosBalance) * 2; // swap TVL (dual sided 50/50 AMM pool)
+
+  // Calculate TVL (in $USDT value)
+  const lend_tvl = Number(lend.data.data.practicalBalance) - Number(lend.data.data.totalBorrowsVariable); // lending protocol (deposits - borrowed assets)
+  const usn_tvl = Number(usn.data.globalOpenStat.totalMortgage) // USN (over-collaterized stable token)
+  const bal_tvl = Number(bal.data.data.balUsdtBalance) // balance protocol TVL (total in USDT value)
+  const vault_tvl = Number(vault.data.data) // vault protocol TVL (time deposit EOS & USDT valued in $USD)
+  const tether = lend_tvl + usn_tvl + bal_tvl + vault_tvl;
+
+  return {
+    tether,
+    eos,
+  }
+}
+
+async function borrowed() {
+  const lend = await utils.postURL(endpoint("eos") + "lend/getGlobalOpenPositionStat")
+  const tether = Number(lend.data.data.totalBorrowsVariable) // total TVL that is borrowed from lend protocol
+  
+  return {tether};
 }
 
 async function wax() {
-  const tokens = [
-    ["eosio.token", "WAX", "wax"],
-    ["alien.worlds", "TLM", "alien-worlds"],
-    // ["e.rplanet", "AETHER", null], // no CoinGecko price support
-    // ["e.rplanet", "RDAO", null], // no CoinGecko price support
-    // ["prospectorsw", "PGL", null], // no CoinGecko price support
-  ];
-  return await get_account_tvl("swap.box", tokens, "wax");
-}
+  const swap = await utils.fetchURL(endpoint("wax") + "swap/get24HInfo");
+  const wax = Number(swap.data.data.waxBalance) * 2; // swap TVL (dual sided 50/50 AMM pool)
 
-async function balancesToTvl( balances ) {
-  let tvl = 0;
-  for ( const [ key, balance ] of Object.entries(balances)) {
-    const price = (await utils.getPricesfromString(key)).data[key].usd;
-    tvl += price * balance;
+  return {
+    wax,
   }
-  return tvl;
 }
 
 async function bsc() {
-  const bnbPrice = (await utils.getPricesfromString("binancecoin")).data.binancecoin.usd;
-  const swap = await axios.default.post(bscEndpoint + "swap/get24HInfo", {}, { headers: { chainid: 56 }})
-  const tvl = swap.data.data.usd_balance + swap.data.data.wbnb_balance * bnbPrice // swap TVL
-  return tvl
-}
+  const swap = await axios.post(endpoint("bsc") + "swap/get24HInfo", {}, {headers: {chainid: 56}});
+  const wbnb = Number(swap.data.data.wbnb_balance) * 2; // swap TVL (dual sided 50/50 AMM pool)
 
-async function fetch() {
-  return await eos() + await bsc() + await balancesToTvl(await wax());
+  return {
+    wbnb,
+  }
 }
 
 module.exports = {
-  methodology: `${lendingMarket}. Defibox TVL is achieved by making a call to its API: https://dapp.defibox.io/api/.`,
+  methodology: `${lendingMarket}. Defibox TVL is achieved by making a call to its API: https://<chain>.defibox.io/api/.`,
+  timetravel: false,
+  misrepresentedTokens: true,
   eos: {
-    fetch: eos
-  },
-  bsc: {
-    fetch: bsc
+    tvl: eos,
+    borrowed,
   },
   wax: {
     tvl: wax
   },
-  fetch
+  bsc: {
+    tvl: getUniTVL({ factory: '0xDB984fd8371d07db9cBf4A48Eb9676b09B12161D'})
+  }
 }

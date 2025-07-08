@@ -5,10 +5,11 @@ module.exports = {
   misrepresentedTokens: true,
   juno: {
     tvl: async () => {
-      const data = await get('https://api-junoswap.enigma-validator.com/summary/pools/current/')
       return {
-        tether: Object.values(data).reduce((a, i) => a + i.token_liquidity_usd, 0)
+        tether: 0
       }
     }
   }
 }
+
+module.exports.deadFrom = '2023-02-03'

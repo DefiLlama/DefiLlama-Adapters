@@ -1,61 +1,29 @@
-/*==================================================
-  Modules
-  ==================================================*/
+const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
+const { getUniqueAddresses } = require('../helper/utils')
 
-const sdk = require('@defillama/sdk');
-
-const axios = require('axios');
-const BigNumber = require('bignumber.js');
 const ddexMarginContractAddress = '0x241e82c79452f51fbfc89fac6d912e021db1a3b7'
+const SAI = ADDRESSES.ethereum.SAI
 
-/*==================================================
-  Helper Functions
-  ==================================================*/
-
-async function GenerateCallList() {
-  let assets = await axios.get('https://api.ddex.io/v4/assets');
-  assets = assets.data.data.assets;
-  assets = assets.filter((asset) => {
-    let symbol = asset.symbol;
-    return symbol !== "ETH";
-  });
-
-  let calls = [];
-  assets.forEach((asset) => {
-    calls.push({
-      target: asset.address,
-      params: ddexMarginContractAddress
-    })
-  });
-
-  return calls;
+async function tvl(api) {
+  const infos = await api.fetchList({  lengthAbi: abis.getAllMarketsCount, itemAbi: abis.getMarket, target: ddexMarginContractAddress})
+  const tokens = []
+  infos.forEach(({ baseAsset, quoteAsset }) => {
+    tokens.push(baseAsset, quoteAsset)
+  })
+  tokens.forEach((t, i) => {
+    if (t === '0x000000000000000000000000000000000000000E')
+      tokens[i] = nullAddress
+  })
+  return sumTokens2({ owner: ddexMarginContractAddress, tokens: getUniqueAddresses(tokens), blacklistedTokens: [SAI], api })
 }
-
-/*==================================================
-  TVL
-  ==================================================*/
-
-async function tvl(timestamp, block) {
-  let balances = {
-    '0x0000000000000000000000000000000000000000': (await sdk.api.eth.getBalance({target: ddexMarginContractAddress, block})).output
-  };
-
-  let balanceOfResults = await sdk.api.abi.multiCall({
-    block,
-    calls: await GenerateCallList(),
-    abi: 'erc20:balanceOf'
-  });
-
-  await sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
-
-  return balances;
-}
-
-/*==================================================
-  Exports
-  ==================================================*/
 
 module.exports = {
-  start: 1566470505, // 2019-08-22T18:41:45+08:00
+  start: '2019-08-22', // 2019-08-22T18:41:45+08:00
   ethereum: { tvl }
+}
+
+const abis = {
+  getMarket: "function getMarket(uint16 marketID) view returns (tuple(address baseAsset, address quoteAsset, uint256 liquidateRate, uint256 withdrawRate, uint256 auctionRatioStart, uint256 auctionRatioPerBlock, bool borrowEnable) market)",
+  getAllMarketsCount: "uint256:getAllMarketsCount",
 }

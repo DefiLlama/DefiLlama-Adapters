@@ -1,146 +1,51 @@
-const sdk = require('@defillama/sdk');
-
-const BigNumber = require('bignumber.js');
-const curvePools = require('../convex/pools-crv.js')
+const { getLogs } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const abi = require('./abi');
 
-const gusd = '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd'
-const curveFactoryPools = [
-  "0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA",
-  "0x4807862AA8b2bF68830e4C8dc86D0e9A998e085a"
-].map(pool => pool.toLowerCase())
-
-async function getBscTvl(time, ethBlock, chainBlocks) {
-  let bscBalances = {}
-  const block = chainBlocks.bsc
-
+async function getBscTvl(api) {
   const poolAddress = "0x40E46dE174dfB776BB89E04dF1C47d8a66855EB3"
-  /*
-  const poolAddress = await sdk.api.util.getLogs({
-    keys: ['topics'],
-    toBlock: block,
-    target: '0x37c4a7E826a7F6606628eb5180df7Be8d6Ca4B2C',
-    fromBlock: 10481280,
-    topic: 'LOG_NEW_POOL(address,address,address)',
-    chain: 'bsc'
-  }).then(r => `0x${r.output[0][2].slice(26)}`);
-  */
-  
-  let poolTokens = await sdk.api.abi.call({
-    chain: 'bsc',
-    abi: abi.getCurrentTokens,
+  const tokens = await api.call({
     target: poolAddress,
-    block
-  });
-
-  let poolBalances = await sdk.api.abi.multiCall({
-    chain: 'bsc',
-    block,
-    abi: 'erc20:balanceOf',
-    calls: poolTokens.output.map(
-      (poolToken) => ({ target: poolToken, params: poolAddress}))
+    abi: abi.getCurrentTokens,
   })
-
-  poolBalances.output.forEach((poolBalance) => { 
-    bscBalances[`bsc:${poolBalance.input.target}`] = poolBalance.output
-  })
-  
-  return bscBalances;
+  return sumTokens2({ api, tokens, owner: poolAddress })
 }
 
-async function eth(timestamp, block) {
-  let balances = {};
-
-  let poolLogs = await sdk.api.util.getLogs({
+async function eth(api) {
+  let poolLogs = await getLogs({
     target: '0x0Ba2e75FE1368d8d517BE1Db5C39ca50a1429441',
     topic: 'LOG_NEW_POOL(address,address)',
-    keys: ['topics'],
     fromBlock: 11362346,
-    toBlock: block
-  }).then(r => r.output);
+    api,
+  })
 
-  poolLogs = poolLogs.concat(await sdk.api.util.getLogs({
+  poolLogs = poolLogs.concat(await getLogs({
     target: '0x967D77f1fBb5fD1846Ce156bAeD3AAf0B13020D1',
     topic: 'LOG_NEW_POOL(address,address,address)',
-    keys: ['topics'],
     fromBlock: 11706591,
-    toBlock: block
-  }).then(r => r.output))
-
-  let poolCalls = [];
+    api,
+  }))
 
   let pools = poolLogs.map((poolLog) => {
-    return `0x${poolLog[2].slice(26)}`
+    return `0x${poolLog.topics[2].slice(26)}`
   });
 
-  const poolTokenData = (await sdk.api.abi.multiCall({
-    calls: pools.map((poolAddress) => ({ target: poolAddress })),
+  const tokensAndOwners = []
+  const tokens = await api.multiCall({
     abi: abi.getCurrentTokens,
-  })).output;
+    calls: pools,
+  })
+  tokens.forEach((t, i) => {
+    const owner = pools[i]
+    tokensAndOwners.push(...t.map(j => ([j, owner])))
+  })
+  return sumTokens2({ api, tokensAndOwners, })
 
-  poolTokenData.forEach((poolToken) => {
-    let poolTokens = poolToken.output;
-    if(poolTokens === null){
-      throw new Error("poolTokens failed call")
-    }
-    let poolAddress = poolToken.input.target;
-
-    poolTokens.forEach((token) => {
-      poolCalls.push({
-        target: token,
-        params: poolAddress,
-      });
-    })
-  });
-
-  const [{ output: poolBalances }, { output: tokensUnderlyings }, { output: pricesPerFullShare }, { output: tokens }, { output: v2PricePerShare }] = await Promise.all([
-    sdk.api.abi.multiCall({ block, calls: poolCalls, abi: 'erc20:balanceOf' }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.underlying }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.getPricePerFullShare }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.token }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.pricePerShare }),
-  ]);
-
-  for (let i = 0; i < poolBalances.length; i++) {
-    const balanceOf = poolBalances[i];
-    const tokenAddress = balanceOf.input.target;
-    let underlying = tokensUnderlyings.find(t => t.input.target === tokenAddress);
-    let pricePerFullShare = pricesPerFullShare[i];
-    if (v2PricePerShare[i].success) {
-      pricePerFullShare = v2PricePerShare[i];
-    }
-    if (pricePerFullShare.success) {
-      underlying = tokens[i];
-      const underlyingAddr = underlying.output.toLowerCase()
-
-      const curvePool = curvePools.find(pool => pool.addresses.lpToken.toLowerCase() === underlyingAddr)?.addresses.swap ?? curveFactoryPools.find(underlyingAddr)
-      if (curvePool !== undefined) {
-        const virtualPrice = await sdk.api.abi.call({
-          target: curvePool,
-          abi: abi.get_virtual_price,
-          block
-        })
-        underlying.output = gusd // Wrong, we just count all curve lp underlyings as GUSD
-        balanceOf.output = BigNumber(balanceOf.output).times(virtualPrice.output).div(BigNumber(10).pow(18 + 18 - 2)).toFixed(0) // 2 decimals for GUSD
-      }
-      balanceOf.output = BigNumber(balanceOf.output).times(pricePerFullShare.output).div(BigNumber(10).pow(18)).toFixed(0)
-    }
-    const balance = balanceOf.output;
-    const address = underlying.success ? underlying.output : tokenAddress;
-
-    if (BigNumber(balance).toNumber() <= 0) {
-      continue;
-    }
-
-    balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-  }
-
-  return balances;
 }
 
 module.exports = {
-  start: 1606768668, // 11/30/2021 @ 08:37am (UTC)
+  start: '2020-11-30', // 11/30/2021 @ 08:37am (UTC)
   bsc:{
     tvl: getBscTvl,
   },

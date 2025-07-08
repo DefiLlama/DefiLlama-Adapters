@@ -1,18 +1,17 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const bankAddress = "0x18C32E273D0F13D5b8268B3Bc5acD30f26A8F91a";
 const tokens = [
-  "0x55d398326f99059ff775485246999027b3197955",
-  "0xe9e7cea3dedca5984780bafc599bd69add087d56",
-  "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
-  "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+  ADDRESSES.bsc.USDT,
+  ADDRESSES.bsc.BUSD,
+  ADDRESSES.bsc.BTCB,
+  ADDRESSES.bsc.ETH,
   "0x9c65ab58d8d978db963e63f2bfb7121627e3a739",
   "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
-  "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+  ADDRESSES.bsc.USDC,
   "0xbb238fce6e2ee90781cd160c9c6eaf3a4cfad801",
+  ADDRESSES.null,
 ];
 
 const lps = [
@@ -132,94 +131,17 @@ const lps = [
     0: "0x661FFF9Da7Be79Ffc5c745Cd5fe164Eb7f19560D",
     1: "0x82E8F9e7624fA038DfF4a39960F5197A43fa76aa",
   },
-];
-async function bnbTvl(bankAddress, block) {
-  let balances = {
-    "0x0000000000000000000000000000000000000000": (
-      await sdk.api.eth.getBalance({ target: bankAddress, block, chain: "bsc" })
-    ).output,
-  };
-  return balances;
-}
+]
 
-function getBSCAddress(address) {
-  return `bsc:${address}`;
-}
-
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  /// @dev Initialized variables
-  const balances = {};
-  const block = chainBlocks.bsc;
-  const banksInfos = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.banks,
-      calls: tokens.map((token) => ({
-        target: bankAddress,
-        params: token,
-      })),
-      chain: "bsc",
-    })
-  ).output;
-
-  const lendingBalances = banksInfos
-    .filter((n) => {
-      return true;
-    })
-    .map((n) => {
-      const stakingTokenAddr = n.input.params[0];
-      const i5 = n.output["5"];
-      const i6 = n.output["6"];
-      const i8 = n.output["8"];
-      return {
-        token: stakingTokenAddr,
-        balance: BigNumber(i5).plus(BigNumber(i8)).toFixed(0),
-      };
-    });
-  lendingBalances.forEach((s) => {
-    balances[getBSCAddress(s.token)] = BigNumber(
-      balances[getBSCAddress(s.token)] || 0
-    )
-      .plus(BigNumber(s.balance))
-      .toFixed(0);
-  });
-
-  /// @dev bnb
-  const bnbBalance = await bnbTvl(bankAddress, block);
-  balances[getBSCAddress("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")] =
-    BigNumber(bnbBalance["0x0000000000000000000000000000000000000000"]);
-
-  const lpTotalSupplys = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.totalSupply,
-      calls: lps.map((n) => ({
-        target: n["0"],
-      })),
-      chain: "bsc",
-    })
-  ).output;
-
-  /// @dev unwrap LP to get underlaying token balances for workers that are working with LPs
-  await unwrapUniswapLPs(
-    balances,
-    lps.map((info, index) => {
-      /// @dev getting LP address and return the object that unwrapUniswapLPs want
-      const lpAddr = info["1"];
-      return {
-        token: lpAddr,
-        balance: BigNumber(lpTotalSupplys[index].output),
-      };
-    }),
-    block,
-    "bsc",
-    (addr) => `bsc:${addr}`
-  );
-
-  return balances;
+async function tvl(api) {
+  const owner = bankAddress;
+  const lpTokens = lps.map((n) => n['1']);
+  const lpBals  = await api.multiCall({  abi: 'erc20:totalSupply', calls: lps.map((n) => n['0']), })
+  api.add(lpTokens, lpBals)
+  return sumTokens2({ api, owner, tokens, resolveLP: true });
 }
 
 module.exports = {
-  start: 1602054167,
-  tvl,
+  start: '2020-10-07',
+  bsc: { tvl },
 };

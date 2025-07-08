@@ -1,4 +1,3 @@
-const { chainExports: getChainExports } = require('../helper/exports');
 const { getUniTVL } = require('../helper/unknownTokens')
 
 const factories = {
@@ -20,15 +19,29 @@ const factories = {
   iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42",
   ethereum: "0x6511eBA915fC1b94b2364289CCa2b27AE5898d80",
   optimism: "0xedfad3a0F42A8920B011bb0332aDe632e552d846",
-  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0"
+  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0",
+  kava: "0xC012C4b3d253A8F22d5e4ADA67ea2236FF9778fc",
+  bittorrent: "0xc06348AEE3f3E92eE452816E0D3F25C919F6fB04",
+  bitgert: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  metis: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  wan: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  neon_evm: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  astar: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  base: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  linea: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  velas: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  q: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
+  rsk: "0x69D10bc18cd588a4B70F836A471D4e9c2Fd86092"
 }
 
 function chainTvl(chain) {
-  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, })
+  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, blacklistedTokens: ['0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978'] })
 }
 
-const chainExports = getChainExports(chainTvl, Object.keys(factories))
-chainExports.misrepresentedTokens = true;
-chainExports.timetravel = true
+Object.keys(factories).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})
+module.exports.misrepresentedTokens = true;
+module.exports.timetravel = true
 
-module.exports = chainExports
+module.exports.hoo.tvl = () => ({})

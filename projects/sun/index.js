@@ -1,91 +1,82 @@
-const sdk = require('@defillama/sdk')
-const { getTokenBalance, getTrxBalance, unverifiedCall } = require('../helper/tron');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const pools = [
   {
     pool: 'TKcEU8ekq2ZoFzLSGFYCUY6aocJBX9X31b', stablecoins: [
-      ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
-      ["TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT", "just-stablecoin"], // USDJ
-      ["TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", "true-usd"] // TUSD 
+      ADDRESSES.tron.USDT, // USDT
+      ADDRESSES.tron.USDJ,
+      ADDRESSES.tron.TUSD,
     ]
   },
   {
     pool: 'TKVsYedAY23WFchBniU7kcx1ybJnmRSbGt', stablecoins: [  // USDD 3pool
-    ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
-    ["TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn", "usdd"], // USDD
-    ["TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", "true-usd"] // TUSD 
+      ADDRESSES.tron.USDT, // USDT
+      ADDRESSES.tron.USDD, // USDD
+      ADDRESSES.tron.TUSD,
     ]
   },
   {
     pool: 'TAUGwRhmCP518Bm4VBqv7hDun9fg8kYjC4', stablecoins: [  // USDD 2pool
-    ["TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn", "usdd"], // USDD
-    ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
+      ADDRESSES.tron.USDD, // USDD
+      ADDRESSES.tron.USDT, // USDT
     ]
   },
   {
     pool: 'TQx6CdLHqjwVmJ45ecRzodKfVumAsdoRXH', stablecoins: [
-      ["TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "usd-coin"], // USDC
+      ADDRESSES.tron.USDC, // // USDC
     ]
   },
   {
     pool: 'TB6zgiG14iQkNxqU4mYe7cMiS5aCYfyidL', stablecoins: [
-      ["TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "usd-coin"], // USDC
+      ADDRESSES.tron.USDC, // // USDC
     ]
   },
   {
-    pool: 'TNTfaTpkdd4AQDeqr8SGG7tgdkdjdhbP5c', stablecoins: [  // new USDD 2pool
-      ["TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn", "usdd"], // USDD
-      ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
+    pool: 'TNTfaTpkdd4AQDeqr8SGG7tgdkdjdhbP5c', stablecoins: [  // USDD 2pool
+      ADDRESSES.tron.USDD, // USDD
+      ADDRESSES.tron.USDT, // USDT
+    ]
+  },
+  {
+    pool: 'TExeaZuD5YPi747PN5yEwk3Ro9eT2jJfB6', stablecoins: [  // USDC 2pool
+      ADDRESSES.tron.USDC, // // USDC
+      ADDRESSES.tron.USDT, // USDT
+    ]
+  },
+  {
+    pool: 'TS8d3ZrSxiGZkqhJqMzFKHEC1pjaowFMBJ', stablecoins: [  // new TUSD 2pool
+      ADDRESSES.tron.TUSD,
+      ADDRESSES.tron.USDT, // USDT
+    ]
+  },
+  {
+    pool: 'TE7SB1v9vRbYRe5aJMWQWp9yfE2k9hnn3s', stablecoins: [  // new USDD/2USD
+      ADDRESSES.tron.USDC, // // USDC
+    ]
+  },
+  {
+    pool: 'TKBqNLyGJRQbpuMhaT49qG7adcxxmFaVxd', stablecoins: [  // new USDJ/2USD
+      ADDRESSES.tron.USDJ,
+    ]
+  },
+  {
+    pool: 'TLssvTsY4YZeDPwemQvUzLdoqhFCbVxDGo', stablecoins: [  // new USDC/2USD
+      ADDRESSES.tron.USDD, // USDD
     ]
   }
 ]
 
-  async function tvl() {
-    const balances = {}
-    for( let poolConfig of pools) {
-      const {
-        pool, 
-        stablecoins
-      } = poolConfig
-      for ( let [token, label] of stablecoins) {
-        const tokenBalace= await getTokenBalance(token, pool)
-        sdk.util.sumSingleBalance(balances, label, tokenBalace)
-      }
-    }
-
-    return balances
-  }
+const ownerTokens = pools.map(({ pool, stablecoins }) => {
+  return [stablecoins, pool]
+})
 
 const stakingContract = "TXbA1feyCqWAfAQgXvN1ChTg82HpBT8QPb"
-const sun = "TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S"
-async function staking() {
-  return {
-    "sun-token": await getTokenBalance(sun, stakingContract)
-  }
-}
-
-const lpToken = 'TDQaYrhQynYV9aXTYj63nwLAafRffWSEj6'
-const oldLpStaking = "TGsymdggp98tLKZWGHcGX58TjTcaQr9s4x"
-const lpStaking = "TAkrcKsS5FW9f3ZfzvWy6Zvsz9uEjUxPoV"
-
-async function pool2() {
-  const [lpTokenAmount, sunInLp, trxInLp, totalSupply] = await Promise.all([
-    getTokenBalance(lpToken, lpStaking),
-    getTokenBalance(sun, lpToken),
-    getTrxBalance(lpToken),
-    unverifiedCall(lpToken, 'totalSupply()', [])
-  ])
-  return {
-    "sun-token": sunInLp * lpTokenAmount / (totalSupply / 10 ** 6),
-    "tron": trxInLp * lpTokenAmount / totalSupply,
-  }
-}
-
+const sun = ADDRESSES.tron.SUN
 
 module.exports = {
   tron: {
-    tvl,
-    staking,
-    pool2
+    tvl: sumTokensExport({ ownerTokens }),
+    staking: sumTokensExport({ owner: stakingContract, tokens: [sun] }),
   },
 }

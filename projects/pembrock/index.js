@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { BigNumber } = require('bignumber.js');
-const { call, addTokenBalances, sumSingleBalance } = require('../helper/near');
+const { call, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
 
 const PEMBROCK_CONTRACT = "v1.pembrock.near";
 const REF_FINANCE_CONTRACT = "v2.ref-finance.near";
@@ -13,6 +14,7 @@ async function addFarmBalances(farms, seeds, balances) {
     ]);
     const seed = seeds[`${REF_FINANCE_CONTRACT}@${farm.ref_pool_id}`];
 
+    if (!seed) return;
     const shares = BigNumber(nonStakedShares).plus(seed.free_amount).plus(seed.locked_amount);
 
     const firstTokenAmount = shares.multipliedBy(pool.amounts[0]).dividedBy(pool.shares_total_supply);
@@ -31,15 +33,23 @@ async function tvl() {
   ]);
 
   const balances = {};
+  const tokenAddresses = Object.keys(tokens).filter(address => typeof address === 'string' && address.length > 0 && address.includes('.'));
   await Promise.all([
-    addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances),
+    addTokenBalances(tokenAddresses, PEMBROCK_CONTRACT, balances),
     addFarmBalances(farms, seeds, balances)
   ]);
   return balances;
 }
 
+async function staking() {
+  const balances = {};
+  sumSingleBalance(balances, ADDRESSES.near.PEMBROCK, await call('staking.v1.pembrock.near', "get_total_staked", {}))
+  return balances;
+}
+
 module.exports = {
-  near: {
-    tvl
-  },
+  near: { tvl, staking },
+  hallmarks: [
+    [1666648800,"DCB withdrawn liquidity from Ref Finance's "]
+  ],
 }

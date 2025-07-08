@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const assetsOnExchange = {
@@ -5,35 +6,35 @@ const assetsOnExchange = {
     // * KUSD
     '0x940Ff63e82d15fb47371BFE5a4ed7D7D183dE1A5',
     // * BUSD
-    "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    ADDRESSES.bsc.BUSD,
     // * USDT
-    "0x55d398326f99059fF775485246999027B3197955",
+    ADDRESSES.bsc.USDT,
     // * USDC
-    "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    ADDRESSES.bsc.USDC,
     // * DAI
     "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
     // * UST
     "0x23396cF899Ca06c4472205fC903bDB4de249D6fC",
     // * BTCB
-    "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+    ADDRESSES.bsc.BTCB,
     // * renBTC
     '0xfCe146bF3146100cfe5dB4129cf6C82b0eF4Ad8c',
     // * USDN
     '0x03ab98f5dc94996F8C33E15cD4468794d12d41f9',
     // * TUSD
-    '0x14016E85a25aeb13065688cAFB43044C2ef86784',
+    ADDRESSES.bsc.BTUSD,
     // * DOLLY
     "0xfF54da7CAF3BC3D34664891fC8f3c9B6DeA6c7A5"
   ],
   fantom: [
     // * USDC
-    '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
+    ADDRESSES.fantom.USDC,
     // * fUSDT
-    '0x049d68029688eabf473097a2fc38ef61633a3c7a',
+    ADDRESSES.fantom.fUSDT,
     // * DAI
-    '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e',
+    ADDRESSES.fantom.DAI,
     // * MIM
-    '0x82f0b8b456c1a451378467398982d4834b6829c1',
+    ADDRESSES.fantom.MIM,
   ],
   harmony: [
     // * KUSD
@@ -66,7 +67,7 @@ async function bscTVL(_, _b, { bsc: block }) {
     '0x830e287ac5947b1c0da865dfb3afd7cdf7900464',
   ]
   const toa = [
-    ['0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', '0xa275769Fb6fF34A1a01C8CE61D0182f5d36AD27A',], // USDC collateral for minting KUSD
+    [ADDRESSES.bsc.USDC, '0xa275769Fb6fF34A1a01C8CE61D0182f5d36AD27A',], // USDC collateral for minting KUSD
   ]
   assetsOnExchange.bsc.forEach(t => pools.forEach(o => toa.push([t, o])))
   return sumTokens2({ tokensAndOwners: toa, chain, block, })
@@ -82,7 +83,7 @@ async function fantom(_, _b, { fantom: block }) {
   return sumTokens2({ tokensAndOwners: toa, chain, block, })
 }
 
-async function harmony(_, _b, { fantom: block }) {
+async function harmony(_, _b, { harmony: block }) {
   const chain = 'harmony'
   const pools = [
     '0xccb7c3166729fe92c914fb38b850696748d83db8',

@@ -1,160 +1,118 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-
-const contracts_old = {
-  ethereum: {
-    usdcToken: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    synthCollateralContracts: ['0x48546bdd57d34cb110f011cdd1ccaae75ee17a70', '0x182d5993106573a95a182ab3a77c892713ffda56', '0x496b179d5821d1a8b6c875677e3b89a9229aab77', "0x911f0Dfc9d98Fcf6E4d07410E7aC460F19843599", "0xF47Ff36956105255E64455BfEDe4538768439066", "0x2431b64cDD6D7E9A630046d225BA4F01B3AC9D3b", "0x4e3Decbb3645551B8A19f0eA1678079FCB33fB4c", "0x767058F11800FBA6A682E73A6e79ec5eB74Fac8c", "0xbD1463F02f61676d53fd183C2B19282BFF93D099", "0xCbbA8c0645ffb8aA6ec868f6F5858F2b0eAe34DA", "0xeF4Db4AF6189aae295a680345e07E00d25ECBAAb", "0x10d00f5788c39a2bf248adfa2863fa55d83dce36"],
-    liquidityPools: ['0x833407f9c6C55df59E7fe2Ed6fB86bb413536359', '0x2D8b421F3C6F14Df2887dce70b517d87d11af1E0', '0x6FF556740b30dFb092602dd5721F6D42c66A1580'] // Not AMM LP pools, just pools where money is waiting to be used for minting
-  },
-  polygon: {
-    usdcToken: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-    synthCollateralContracts: ['0x0fa1a6b68be5dd9132a09286a166d75480be9165', '0xa87b3e78d128dab9db656cf459c9266c4c1d5255', '0x9b0a1c61f234e2d21b6f7c0da6178dfbbaa3756f', '0x2076648e2d9d452d55f4252cba9b162a1850db48', '0x0d1534bcc572288156b97e2a2651383f1029138c', '0xd016daf08017a0647b8fff5d82b629b93c6c91f3', '0xe25d6cd64c08b986e19cab507e67e8eec6b87156', '0xb6C683B89228455B15cF1b2491cC22b529cdf2c4', '0xA4B72abA6793Ef9f5a6773941d9d039af9258d65', '0x606ac601324e894dc20e0ac9698ccaf180960456'],
-    liquidityPools: ['0xcbba8c0645ffb8aa6ec868f6f5858f2b0eae34da', '0x10d00f5788c39a2bf248adfa2863fa55d83dce36', '0xef4db4af6189aae295a680345e07e00d25ecbaab', '0x6ca82a7e54053b102e7ec452788cc19204e831de', '0xf1a69f6937a7661a6e6f2f521f9497822bfa854c', '0x715995b91c4fa32a35514971f2f88ee2a7f59796', '0x86413032f772596034AEf76438aeF1A62Ec6121e', '0x91436EB8038ecc12c60EE79Dfe011EdBe0e6C777', '0x60E5db98d156B68bC079795096D8599d12F2DcA6', '0x09757f36838aaacd47df9de4d3f0add57513531f']
-  }
-}
-
-function chainTvl_old(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    let balances = {};
-    const block = chainBlocks[chain]
-    const { synthCollateralContracts, liquidityPools, usdcToken } = contracts_old[chain]
-
-    const collateralTokens = await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: synthCollateralContracts.concat(liquidityPools).map(contract => ({
-        target: usdcToken,
-        params: [contract]
-      })),
-      block,
-      chain
-    })
-    sdk.util.sumMultiBalanceOf(balances, collateralTokens, true, t => `${chain}:${t}`)
-    return balances
-  }
-}
-
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // The synthpoolRegistry addresses can be found in this repo
 // https://gitlab.com/jarvis-network/apps/exchange/mono-repo/-/tree/dev/libs/contracts/networks
 const contracts = {
   polygon: { // 137
-    version: 4, synthpoolRegistry: '0xdCE12741DF9d2CcF2A8bB611684C8151De91a7d2',
-  },
-  'polygon-6': { // 137
-    version: 6, synthpoolRegistry: '0xdCE12741DF9d2CcF2A8bB611684C8151De91a7d2',
-  },
-  ethereum: { // 1
-    version: 4, synthpoolRegistry: '0xaB77024DdC68A3Fe942De8dDb0014738ED01A5e5',
+    version: 6, synthpoolRegistry: '0xA5BB18ca30fB27045ec0aA4d7039Fc37a7A03BD1',
+    fixedRateVersion: 1, fixedRateRegistry: '0xBdE9c05FeA7a7fB1173024eac529a9c46bD0307f',
+    creditLineVersion: 2, selfMintingRegistry: '0x1eA5022a81bd0dF1Bb85085083cDDd1e6A4cf61C'
   },
   bsc: { // 56
     version: 5, synthpoolRegistry: '0x930A54D8Af945F6D1BED5AAF63b63fAb50a8197f',
+    fixedRateVersion: 1, fixedRateRegistry: '0x80eB7668AEC208af0dA10F8BB70ca99F3604E076',
+    creditLineVersion: 2, selfMintingRegistry: '0xBD8FdDa057de7e0162b7A386BeC253844B5E07A5'
   },
   xdai: { // 100
     version: 5, synthpoolRegistry: '0x43a98e5C4A7F3B7f11080fc9D58b0B8A80cA954e',
+  },
+  optimism: { // 10
+    version: 6, synthpoolRegistry: '0x811F78b7d6bCF1C0E94493C2eC727B50eE32B974',
+    creditLineVersion: 2, selfMintingRegistry: '0xBD8FdDa057de7e0162b7A386BeC253844B5E07A5'
+  },
+  avax: { // 43114
+    version: 5, synthpoolRegistry: '0x8FEceC5629EED60D18Fd3438aae4a8E69723D190',
+  },
+  arbitrum: { // 42161
+    version: 6, synthpoolRegistry: '0xf844826e986a2ad77Bf24a491Fe1D8b9ef2d3B03',
+    creditLineVersion: 2, selfMintingRegistry: '0x58741E9137a8aF31955D42AEc99a1aD4771EeC23'
   }
 }
-function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const { synthpoolRegistry, version } = contracts[chain]
-    chain = chain.split('-')[0]
-    const block = chainBlocks[chain]
 
-    // Get liquidityPools by calling getElements(synth, collateral, version)
-    // For v4, these are not AMM LP pools, just pools where money is waiting to be used for minting
-    // For v5, the collateral is stored in the liquidity pools directly
-    // Get collaterals, usually single collat, USDC on polygon, BUSD on BSC, but might be multiple collats later on
-    const { output: collaterals } = await sdk.api.abi.call({
-      abi: abi["SynthereumPoolRegistry_getCollaterals"],
-      target: synthpoolRegistry,
-      block,
-      chain
+async function tvl(api) {
+  const chain = api.chain
+  const { synthpoolRegistry, version } = contracts[chain]
+  const { fixedRateRegistry, fixedRateVersion } = contracts[chain]
+  const { selfMintingRegistry, creditLineVersion } = contracts[chain]
+
+  // Get liquidityPools by calling getElements(synth, collateral, version)
+  // For v5, the collateral is stored in the liquidity pools directly
+  // Get collaterals, usually single collat, USDC on polygon, BUSD on BSC, but might be multiple collats later on
+
+  const collaterals = await api.call({ abi: abi["SynthereumPoolRegistry_getCollaterals"], target: synthpoolRegistry, })
+  // Get synth token symbols - jEUR, jCHF etc
+  const syntheticTokens = await api.call({ abi: abi["SynthereumPoolRegistry_getSyntheticTokens"], target: synthpoolRegistry, })
+  if (chain === 'polygon' || chain === 'bsc') {
+    // Get collateral for SynthereumFixedRate Wrappers
+    const fixedRateCollaterals = await api.call({ abi: abi["SynthereumFixedRateRegistry_getCollaterals"], target: fixedRateRegistry, })
+
+    // Get synthTokens for SynthereumFixedRate Wrappers - jEUR, jCHF etc.
+    const fixedRateSynthTokens = await api.call({ abi: abi["SynthereumFixedRateRegistry_getSyntheticTokens"], target: fixedRateRegistry, })
+
+    // Get fixedRateWrappers by calling SynthereumFixedRateRegistry_getElements
+    const params_list_fixedRate = fixedRateCollaterals.map(fixedRateCollateral => fixedRateSynthTokens.map(fixedRateSynth => [fixedRateSynth, fixedRateCollateral, fixedRateVersion])).flat().map(i => ({ params: i }))
+    const elements_obj_fixedRate = await api.multiCall({ abi: abi["SynthereumFixedRateRegistry_getElements"], target: fixedRateRegistry, calls: params_list_fixedRate })
+    const fixedRateWrappers = elements_obj_fixedRate.flat(2)
+    const fixedRateCalls = fixedRateWrappers
+    const fixedRateCollateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: fixedRateCalls, })
+    const fixedRateTotalCollateralAmounts = await api.multiCall({ abi: abi.totalPegCollateral, calls: fixedRateCalls, })
+    api.add(fixedRateCollateralTokens, fixedRateTotalCollateralAmounts)
+  }
+
+  // Get synthereumPools by calling SynthereumPoolRegistry_getElements
+  const params_list = collaterals.map(collateral => syntheticTokens.map(synth => ({ params: [synth, collateral, version]}))).flat()
+  const elements_obj = await api.multiCall({ abi: abi["SynthereumPoolRegistry_getElements"], target: synthpoolRegistry, calls: params_list })
+  const liquidityPools = elements_obj.flat(2)
+
+  if (version === 6) {
+    const blacklistedPools = [
+      '0x63B5891895A57C31d5Ec2a8A5521b6EE67700f9F',
+      '0x1493607042C5725cEf277A83CFC94caA4fc6278F',
+      '0xBC988A0146178825C26c255989cfd5083Bae672C',
+      '0x8FEceC5629EED60D18Fd3438aae4a8E69723D190',
+    ].map(i => i.toLowerCase())
+    const calls = liquidityPools.filter(i => !blacklistedPools.includes(i.toLowerCase()))
+    const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls })
+    const totalCollateralAmounts = await api.multiCall({ abi: abi.totalCollateralAmount, calls, permitFailure: true })
+    collateralTokens.forEach((data, i) => {
+      const totalCollateralAmount = totalCollateralAmounts[i]
+      if (!totalCollateralAmount) return
+      api.add(data, totalCollateralAmount.totalCollateral)
     })
-
-    // Get synth token symbols - jEUR, jCHF etc
-    const { output: syntheticTokens } = await sdk.api.abi.call({
-      abi: abi["SynthereumPoolRegistry_getSyntheticTokens"],
-      target: synthpoolRegistry,
-      block,
-      chain
-    })
-
-    // Get liquidityPools by calling SynthereumPoolRegistry_getElements
-    const params_list = collaterals.map(collateral => syntheticTokens.map(synth => [synth, collateral, version])).flat()
-    const { output: elements_obj } = await sdk.api.abi.multiCall({
-      abi: abi["SynthereumPoolRegistry_getElements"],
-      calls: params_list.map(params => ({
-        target: synthpoolRegistry,
-        params: params
-      })),
-      block,
-      chain
-    })
-    const liquidityPools = elements_obj.map(e => e.output).flat(2)
-
-    if (version === 6) {
-      const { output: collateralTokens } = await sdk.api.abi.multiCall({
-        abi: abi.collateralToken,
-        calls: liquidityPools.map(a => ({ target: a })),
-        chain, block,
-      })
-      const { output: totalCollateralAmounts } = await sdk.api.abi.multiCall({
-        abi: abi.totalCollateralAmount,
-        calls: liquidityPools.map(a => ({ target: a })),
-        chain, block,
-      })
-
-      const balances = {};
-      collateralTokens.forEach((data, i) => {
-        sdk.util.sumSingleBalance(balances, chain + ':' + data.output, totalCollateralAmounts[i].output.totalCollateral)
-      })
-      return balances
-    }
-
-    // Retrieve synthCollateralContracts where most of the collateral is held for v4 
-    if (version <= 4) {
-      const synthCollateralContracts = (await sdk.api.abi.multiCall({
-        abi: abi['LiquidityPool_getAllDerivatives'],
-        calls: liquidityPools.map(a => ({ target: a })),
-        block,
-        chain
-      })).output.map(e => e.output).flat().filter(c => c) // filter out null contracts
-      liquidityPools.push(...synthCollateralContracts)
-    } 
-
-
+  } else if (version === 5) {
     // Get balances of every LiquidityPool and SynthToken Contracts
-    const tokenBalances_calls = collaterals.map(collat =>
-      liquidityPools.map(contract => ({
-        target: collat,
-        params: [contract]
-      }))
-    ).flat()
-    const collateralTokens = await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: tokenBalances_calls,
-      block,
-      chain
+    await sumTokens2({ api, owners: liquidityPools, tokens: collaterals })
+  }
+
+  if (chain === 'polygon' || chain === 'bsc' || chain === 'optimism' || chain === 'arbitrum') {
+    // Get collateral token addresses from self minting registry
+    const selfMintingCollaterals = await api.call({ abi: abi["SynthereumSelfMintingRegistry_getCollaterals"], target: selfMintingRegistry, })
+    // Get synth token symbols - jEUR, jCHF etc
+    const selfMintingSyntheticTokens = await api.call({ abi: abi["SynthereumSelfMintingRegistry_getSyntheticTokens"], target: selfMintingRegistry, })
+    // Get creditLineDerivatives by calling SynthereumSelfMintingRegistry_getElements
+    const params_list_creditline = selfMintingCollaterals.map(selfMintingCollateral => selfMintingSyntheticTokens.map(selfMintingSynth => ({ params: [selfMintingSynth, selfMintingCollateral, creditLineVersion]}))).flat()
+    const elements_obj_creditline = await api.multiCall({
+      abi: abi["SynthereumSelfMintingRegistry_getElements"], target: selfMintingRegistry, calls: params_list_creditline,
     })
-    const balances = {};
-    sdk.util.sumMultiBalanceOf(balances, collateralTokens, true, t => `${chain}:${t}`)
-    return balances
+
+    const creditLineDerivatives = elements_obj_creditline.flat(2)
+
+    const creditLineCalls = creditLineDerivatives
+    const creditLineCollateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: creditLineCalls, })
+    const creditLineTotalCollateralAmounts = await api.multiCall({ abi: abi.getGlobalPositionData, calls: creditLineCalls, })
+    creditLineCollateralTokens.forEach((data, i) => {
+      api.add(data, creditLineTotalCollateralAmounts[i].totCollateral)
+    })
   }
 }
-
 
 module.exports = {
-  ethereum: {
-    tvl: chainTvl('ethereum')
-  },
-  polygon: {
-    tvl: sdk.util.sumChainTvls([chainTvl('polygon'), chainTvl('polygon-6')])
-  },
-  xdai: {
-    tvl: chainTvl('xdai')
-  },
-  bsc: {
-    tvl: chainTvl('bsc')
-  }, 
-  methodology: 'Count collateral used to mint jFIAT - in v4 it is held by liquidityPools and synthCollateralContracts, in v5 only in liquidityPools'
-}
+  methodology: 'Sum all collateral deposited by liquidity providers and users on SynthereumPools (V5 and V6) and FixedRateWrappers'
+};
+
+
+Object.keys(contracts).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

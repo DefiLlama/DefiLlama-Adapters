@@ -1,46 +1,26 @@
-const sdk = require("@defillama/sdk")
 const abi = require('./abi.json');
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
+const { eulerTokens } = require('../helper/tokenMapping')
 
 const aztecRollupProcessor = '0x737901bea3eeb88459df9ef1BE8fF3Ae1B42A2ba'
-// "getSupportedAssets" "getTotalDeposited" "getTotalPendingDeposit" "getTotalWithdrawn" "getTotalFees" 
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' 
+const aztecConnect = '0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455'
 
-async function tvl(timestamp, ethBlock, chainBlocks) { 
-    const balances = {}
-  
-    // Get aztec supported assets
-    const { output: supportedAssets } = await sdk.api.abi.call({
-        abi: abi['getSupportedAssets'],
-        target: aztecRollupProcessor, 
-        block: ethBlock, 
-        chain: 'ethereum' 
-    })
-
-    // Get eth balance
-    const { output: ethBalance } = await sdk.api.eth.getBalance({
-        target: aztecRollupProcessor,
-        block: ethBlock, 
-        chain: 'ethereum' 
-    });
-    sdk.util.sumSingleBalance( balances, weth, ethBalance );
-    
-    // Get supported assets balances
-    const assetsBalances = await sdk.api.abi.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: supportedAssets.map( asset => ({
-            params: aztecRollupProcessor,
-            target: asset,
-        })), 
-        block: ethBlock, 
-        chain: 'ethereum' 
-    })
-    sdk.util.sumMultiBalanceOf( balances, assetsBalances, true);
-
-    return balances
+async function tvl(api) {
+  // Get aztec supported assets
+  const supportedAssets = await api.call({ target: aztecRollupProcessor, abi: abi['getSupportedAssets'], })
+  const tokensAndOwners = ([nullAddress, ...supportedAssets]).map(i => ([i, aztecRollupProcessor]))
+  const supportedAssetsConnect = await api.fetchList({ target: aztecConnect, lengthAbi: abi.getSupportedAssetsLength, itemAbi: abi.getSupportedAsset, })
+  tokensAndOwners.push([nullAddress, aztecConnect])
+  supportedAssetsConnect.map(i => tokensAndOwners.push([i, aztecConnect]))
+  return sumTokens2({ tokensAndOwners, api, blacklistedTokens: eulerTokens, })
 }
 
 module.exports = {
-  methodology: "TVL of Aztec consists of ethereum and supported assets (DAI and renBTC at the moment) locked into the rollup processor",
+  hallmarks: [
+    ['2023-03-13', 'Euler was hacked'],
+    ['2023-03-13', 'AztecConnect sunset announced'],
+  ],
+  methodology: "TVL of Aztec consists of ethereum and supported assets locked into the rollup processor",
   ethereum: {
     tvl,
   }

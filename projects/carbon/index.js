@@ -1,10 +1,8 @@
-const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const BigNumber = require("bignumber.js");
-const { getBlock } = require("../helper/getBlock");
+const { pool2 } = require('../helper/pool2')
+const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs');
 
 const stakingETHContract = "0x27F0408729dCC6A4672e1062f5003D2a07E4E10D";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 const stakingCARBONContract = "0x2C5058325373d02Dfd6c08E48d91FcAf8fD49f45";
 const CARBON = "0xfa42da1bd08341537a44a4ca9d236d1c00a98b40";
@@ -22,77 +20,12 @@ const lpAddresses = [
   "0x89450F6C7d7f2c5971E9Ee28e94d8b199d17f673",
 ];
 
-const WETH_arb = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1";
-const NYAN = "0xed3fb761414da74b74f33e5c5a1f78104b188dfc";
-
-async function pool2(time, ethBlock, chainBlocks) {
-  const balances = {};
-
-  for (let idx = 0; idx < lpAddresses.length; idx++) {
-    const balances_slp = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: lpAddresses[idx],
-        params: stakingPool2Contracts[idx],
-        chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
-      })
-    ).output;
-
-    const totalSupply_slp = (
-      await sdk.api.erc20.totalSupply({
-        target: lpAddresses[idx],
-        chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
-      })
-    ).output;
-
-    const underlyingsBalance = (
-      await sdk.api.abi.multiCall({
-        calls: [CARBON, NYAN, WETH_arb].map((token) => ({
-          target: token,
-          params: lpAddresses[idx],
-        })),
-        abi: 'erc20:balanceOf',
-        chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
-      })
-    ).output;
-
-    underlyingsBalance.forEach((call) => {
-      const underlyingSetBalance = BigNumber(call.output)
-        .times(balances_slp)
-        .div(totalSupply_slp);
-
-      sdk.util.sumSingleBalance(
-        balances,
-        `arbitrum:${call.input.target}`,
-        underlyingSetBalance.toFixed(0)
-      );
-    });
-  }
-
-  return balances;
-}
-
-async function arbTvl(time, _ethBlock, chainBlocks) {
-  const block = await getBlock(time, "arbitrum", chainBlocks);
-  const eth = await sdk.api.eth.getBalance({
-    target: stakingETHContract,
-    block,
-    chain: "arbitrum",
-  });
-  return {
-    [WETH]: eth.output,
-  };
-}
-
 module.exports = {
   misrepresentedTokens: true,
   arbitrum: {
-    staking: staking(stakingCARBONContract, CARBON, "arbitrum"),
-    pool2: pool2,
-    tvl: arbTvl,
+    staking: staking(stakingCARBONContract, CARBON),
+    pool2: pool2(stakingPool2Contracts, lpAddresses),
+    tvl: sumTokensExport({tokensAndOwners: [[nullAddress, stakingETHContract]]}),
   },
   methodology:
     "Counts as TVL the ETH asset deposited through StakingETH Contract, and we count Staking and Pool2 parts in the same way",

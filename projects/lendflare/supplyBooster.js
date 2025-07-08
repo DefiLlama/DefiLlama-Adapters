@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const BN = require("bignumber.js");
-const utils = require('./utils.js');
 
 const supplyPools = [
     // usdc
@@ -13,7 +12,7 @@ const supplyPools = [
     { virtualBalance: "0x6d18E830A938F0eAF206f1BD80b79a851E5f37A3", decimals: 18, coinName: "ethereum" },
 ]
 
-async function getTotalSupply(pools, timestamp, block, chainBlocks) {
+async function getTotalSupply(pools, chainBlocks) {
     const output = (await sdk.api.abi.multiCall({
         block: chainBlocks.ethereum,
         chain: "ethereum",
@@ -36,20 +35,12 @@ async function getTotalSupply(pools, timestamp, block, chainBlocks) {
 }
 
 async function tvl(timestamp, block, chainBlocks) {
-    let tvl = new BN(0);
+    const balances = {}
+    const pools = await getTotalSupply(supplyPools, chainBlocks);
+    for (let pool of pools)
+        sdk.util.sumSingleBalance(balances, pool.coinName, pool.totalSupply/(10 ** pool.decimals))
 
-    const pools = await getTotalSupply(supplyPools, timestamp, block, chainBlocks);
-    const prices = await utils.getPricesfromString().then(result => {
-        return result.data;
-    });
-
-    for (let pool of pools) {
-        pool.tvl = pool.totalSupply.dividedBy(10 ** pool.decimals).multipliedBy(new BN(prices[pool.coinName].usd));
-
-        tvl = tvl.plus(pool.tvl);
-    };
-
-    return tvl;
+    return balances;
 }
 
 module.exports = {

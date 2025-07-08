@@ -1,12 +1,11 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
-async function fetch() {
-  var response = await retry(async bail => await axios.get('https://btn.group/pools/tvl'))
-
-  return response.data;
+async function tvl(api) {
+  const result = await get('https://btn.group/pools/tvl')
+  return api.addUSDValue(result)
 }
 
 module.exports = {
-  fetch
+  misrepresentedTokens: true,
+  secret: { tvl },
 }

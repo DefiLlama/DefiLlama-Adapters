@@ -1,6 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const { getTokenPrices } = require('../helper/unknownTokens')
-const { getFixBalances } = require('../helper/portedTokens')
 const { createIncrementArray } = require('../helper/utils')
 const masterChefABI = require('../helper/abis/masterchef.json')
 const abi = require('./abi')
@@ -8,8 +8,8 @@ const sdk = require('@defillama/sdk')
 
 const chain = 'astar'
 const MASTER_CHEF = '0xfa1Cfa75bFae8303A9Fe8aF711AacD59015eE6d4'
-const USDC = '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98'
-const ibUSDC = '0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c'
+const USDC = ADDRESSES.moonbeam.USDC
+const ibUSDC = ADDRESSES.astar.lUSDC
 const ORU = '0xCdB32eEd99AA19D39e5d6EC45ba74dC4afeC549F'
 const STAKE_ADDRESS = '0x243e038685209B9B68e0521bD5838C6C937d666A'
 const BANK_SAFE = '0xd89dEa2daC8Fb73F4107C2cbeA5Eb36dab511F64'
@@ -20,7 +20,6 @@ async function getTVL(chainBlocks) {
   const balances = {}
   const pool2Balances = {}
   const stakeBalances = {}
-  const fixBalances = await getFixBalances(chain)
   const block = chainBlocks[chain]
 
   // resolve masterchef
@@ -33,19 +32,16 @@ async function getTVL(chainBlocks) {
   } = await getTokenPrices({ block, chain, lps: pools, 
     useDefaultCoreAssets: true, })
   await updateBalances(pool2Balances)
-  await fixBalances(pool2Balances)
 
 
   // resolve pool2
   await sumTokens(stakeBalances, [[ORU, STAKE_ADDRESS]], block, chain)
   await updateBalances(stakeBalances)
-  await fixBalances(stakeBalances)
 
 
   // resolve bank
   await sumTokens(balances, [[USDC, BANK_SAFE], [ibUSDC, BANK_SAFE]], block, chain)
   await updateBalances(balances)
-  await fixBalances(balances)
 
   return {
     tvl: balances,

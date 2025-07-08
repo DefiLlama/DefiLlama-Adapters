@@ -1,35 +1,3 @@
-const sdk = require('@defillama/sdk')
-const { getChainTransform } = require('./helper/portedTokens')
-const { unwrapLPsAuto, } = require('./helper/unwrapLPs')
-const abi = {
-  balance: {
-    "inputs": [],
-    "name": "balance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token: {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-}
-
 const config = {
   ethereum: {
     vaults: [
@@ -107,24 +75,9 @@ module.exports = {
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      const balances = {}
-      const transform = await getChainTransform(chain)
+    tvl: async (api) => {
       const vaults = config[chain].vaults
-      const calls = vaults.map(i => ({ target: i }))
-      const { output: tokens } = await sdk.api.abi.multiCall({
-        abi: abi.token,
-        calls, chain, block,
-      })
-      const { output: balance } = await sdk.api.abi.multiCall({
-        abi: abi.balance,
-        calls, chain, block,
-      })
-
-      tokens.forEach(({ output: token }, i) => {
-        sdk.util.sumSingleBalance(balances, transform(token), balance[i].output)
-      })
-      return unwrapLPsAuto({ balances, chain, block, transformAddress: transform, })
+      return api.erc4626Sum({ calls: vaults, permitFailure: true, })
     }
   }
 })

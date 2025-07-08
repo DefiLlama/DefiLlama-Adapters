@@ -1,24 +1,15 @@
-const retry = require('async-retry');
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
+const { get } = require('../helper/http')
 
-const APIs = {
-  pools: 'https://hodl-api.fox.one/api/pools',
-}
+const API = 'https://hodl-api.fox.one/api/pools'
 
-async function fetch() {
-  const resp = await retry(async bail => await axios.get(APIs.pools))
-  const pools = resp.data.data.pools;
-  let sum = new BigNumber(0);
-  for (let ix = 0; ix < pools.length; ix++) {
-    const pool = pools[ix];
-    const amount = BigNumber(pool.amount);
-    const price = BigNumber(pool.price);
-    sum = amount.times(price).plus(sum);
-  }
-  return sum.toFixed(2);
+const tvl = async (api) => {
+  const { data } = await get(API)
+  data.pools.forEach(({ amount, price }) => {
+    api.addUSDValue(Math.round(amount * price))
+  })
 }
 
 module.exports = {
-  fetch
+  misrepresentedTokens: true,
+  mixin: { tvl }
 }

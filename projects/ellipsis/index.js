@@ -1,101 +1,23 @@
-const { createIncrementArray } = require('../helper/utils');
-const { get } = require('../helper/http');
-const sdk = require('@defillama/sdk')
-const chain = 'bsc'
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
-const abis = {
-  wrapped_coins: {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "wrapped_coins",
-    "inputs": [
-      {
-        "name": "arg0",
-        "type": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "gas": 3345
-  },
-  coins: {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "coins",
-    "inputs": [
-      {
-        "name": "arg0",
-        "type": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "gas": 3375
-  },
+async function tvl(api) {
+  const ownerTokens = []
+  const poolInfo = await getConfig('ellipsis', 'https://api.ellipsis.finance/api/getPoolsCrypto')
+  const lpTokens = poolInfo.data.allPools.map(i => i.lpToken.address.toLowerCase())
+  poolInfo.data.allPools.map(pool => {
+    ownerTokens.push([pool.tokens.map(i => i.erc20address ?? i.address), pool.address])
+  })
+
+  ownerTokens.push([[nullAddress], '0xfd4afeac39da03a05f61844095a75c4fb7d766da'])
+  return sumTokens2({ api, ownerTokens, blacklistedTokens: lpTokens })
 }
 
-async function tvl(_, _b, { [chain]: block }) {
-  const poolInfo = await get('https://api.ellipsis.finance/api/getPoolsCrypto')
-  const lpTokens = poolInfo.data.allPools.map(i => i.lpToken.address)
-  const pools = poolInfo.data.allPools.map(i => i.address)
-  const tokensAndOwners = []
-  const params = createIncrementArray(3)
-  const wrappedCoinCalls = []
-  const coinCalls = []
-  pools.forEach(pool => {
-    params.forEach(i => {
-      wrappedCoinCalls.push({ target: pool, params: [i]})
-      coinCalls.push({ target: pool, params: [i]})
-    })
-  })
-
-  const { output: wrappedCoins } = await sdk.api.abi.multiCall({
-    abi: abis.wrapped_coins,
-    calls: wrappedCoinCalls,
-    chain, block,
-  })
-
-  const { output: coins } = await sdk.api.abi.multiCall({
-    abi: abis.coins,
-    calls: coinCalls,
-    chain, block,
-  })
-
-  wrappedCoins.forEach(i => {
-    if (i.output) tokensAndOwners.push([i.output, i.input.target])
-  })
-  coins.forEach(i => {
-    if (i.output) tokensAndOwners.push([i.output, i.input.target])
-  })
-
-  return sumTokens2({
-    chain, block, tokensAndOwners, blacklistedTokens: lpTokens,
-  })
-
-}
-
-const lockedSupply = { "inputs": [], "name": "lockedSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }
-const stakingContract = "0x4076cc26efee47825917d0fec3a79d0bb9a6bb5c"
-const eps = "0xa7f552078dcc247c2684336020c03648500c6d9f"
-async function staking(time, ethBlock, chainBlocks) {
-  const locked = await sdk.api.abi.call({
-    target: stakingContract,
-    block: chainBlocks.bsc,
-    chain: 'bsc',
-    abi: lockedSupply
-  })
-  return {
-    ["bsc:" + eps]: locked.output
-  }
+async function staking(api) {
+  const stakingContract = "0x4076cc26efee47825917d0fec3a79d0bb9a6bb5c"
+  const eps = "0xa7f552078dcc247c2684336020c03648500c6d9f"
+  const locked = await api.call({ target: stakingContract, abi: 'uint256:lockedSupply' })
+  api.add(eps, locked)
 }
 
 module.exports = {

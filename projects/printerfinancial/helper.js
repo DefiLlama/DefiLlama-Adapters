@@ -1,18 +1,18 @@
 const { staking, stakingUnknownPricedLP } = require("../helper/staking");
-const { pool2Exports } = require("../helper/pool2");
+const { pool2 } = require("../helper/pool2");
 const sdk = require("@defillama/sdk");
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { default: BigNumber } = require("bignumber.js");
 
 function printerTvl(token, share, rewardPool, masonry, pool2LPs, chain = "ethereum", transform = undefined, tokensOnCoingecko = true, lpWithShare = undefined) {
     if (transform === undefined) transform = addr => `${chain}:${addr}`;
     if (tokensOnCoingecko) {
         return {
-            [chain === "avax" ? "avalanche" : chain]: {
+            [chain]: {
                 tvl: async () => ({}),
                 staking: staking(masonry, share, chain),
-                pool2: pool2Exports(rewardPool, pool2LPs, chain, transform)
+                pool2: pool2(rewardPool, pool2LPs, chain, transform)
             }
         }
     }
@@ -89,7 +89,7 @@ function printerTvl(token, share, rewardPool, masonry, pool2LPs, chain = "ethere
         }
 
         return {
-            [chain === "avax" ? "avalanche" : chain]: {
+            [chain]: {
                 tvl: async () => ({}),
                 staking: stakingUnknownPricedLP(masonry, share, chain, lpWithShare),
                 pool2

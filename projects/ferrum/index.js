@@ -34,10 +34,10 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: stakings(stakingContracts, FRM),
+    tvl: (async) => ({}),
   },
   polygon: {
-    pool2: pool2(stakingPoolContract, FRM_DFYN_LP, "polygon"),
+    pool2: pool2(stakingPoolContract, FRM_DFYN_LP),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };

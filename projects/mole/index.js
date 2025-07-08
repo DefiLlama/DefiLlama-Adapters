@@ -1,22 +1,31 @@
-const { calLyfTvl } = require("./lyf");
+const { calLyfTvl, calLyfTvlAptos, calLyfTvlSui } = require("./lyf");
 const { calxMOLEtvl } = require('./xmole');
 
+// async function avaxTvl(timestamp, ethBlock, chainBlocks) {
+//   const lyfTvl = await calLyfTvl('avax', chainBlocks.avax);
+//   return {...lyfTvl};
+// }
 
-async function avaxTvl(timestamp, ethBlock, chainBlocks) {
-  const lyfTvl = await calLyfTvl('avax', chainBlocks.avax);
-  return {...lyfTvl};
+// async function avaxStaking(timestamp, ethBlock, chainBlocks) {
+//   return await calxMOLEtvl('avax', chainBlocks.avax);
+// }
+
+async function aptosTvl(api) {
+  return calLyfTvlAptos(api)
 }
 
-async function avaxStaking(timestamp, ethBlock, chainBlocks) {
-  return await calxMOLEtvl('avax', chainBlocks.avax);
+async function suiTvl(api) {
+  return calLyfTvlSui(api)
 }
 
-
-// node test.js projects/mole/index.js
+// run command： node test.js projects/mole/index.js
 module.exports = {
-  start: 1653840000,
-  avax: {
-    tvl: avaxTvl,
-    staking: avaxStaking,
-  }
+  timetravel: false,
+  start: '2022-05-29',
+  // avax: {
+  //   tvl: avaxTvl,
+  //   staking: avaxStaking,
+  // },
+  aptos: { tvl: aptosTvl },
+  sui: { tvl: suiTvl }
 };

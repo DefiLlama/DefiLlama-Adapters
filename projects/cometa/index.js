@@ -1,21 +1,19 @@
-const axios = require('axios');
-const retry = require('../helper/retry');
 const { toUSDTBalances } = require('../helper/balances');
+const { get } = require('../helper/http')
 
 async function tvl() {
     const response = (
-        await retry(
-            async () => await axios.get(
+        await get(
                 'https://api.cometa.farm/stats/tvl'
             )
-        )
     )
 
-    return toUSDTBalances(response.data.total);
+    return toUSDTBalances(response.total);
 }
 
 module.exports = {
     timetravel: false,
+    misrepresentedTokens: true,
     algorand: {
         tvl
     }

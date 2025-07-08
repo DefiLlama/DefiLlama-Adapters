@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require('../helper/ohm')
 
 const treasury = "0xF1081555011689cCCfa29CCA6a9E6AFcB907B0bC"
 module.exports = ohmTvl(treasury, [
     //BUSD
-    ["0xe9e7cea3dedca5984780bafc599bd69add087d56", false],
+    [ADDRESSES.bsc.BUSD, false],
     //DAI
     ["0xE50c40B0B84946D7491337613059F181700ddBEa", false],
     //pancakeswap LP

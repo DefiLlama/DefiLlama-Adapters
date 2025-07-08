@@ -1,99 +1,67 @@
-const BigNumber = require("bignumber.js");
-const { PublicKey, } = require("@solana/web3.js");
-const { parseReserve } = require("./utils");
-const { getTokenBalance, getCoingeckoId, getConnection, } = require("../helper/solana");
-const { fetchURL } = require('../helper/utils')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2, decodeAccount, getMultipleAccounts, } = require("../helper/solana");
+const { getConfig } = require('../helper/cache')
 
-const solendConfigEndpoint = "https://api.solend.fi/v1/config?deployment=production";
-const assetToCoinGeckoIdMap = {
-  "USDT-USDC": "usd-coin",
-  "mSOL-SOL": "msol",
-  "BTC": "bitcoin",
-  "soETH": "ethereum",
-  "SBR": "saber",
-  "lsIN": "invictus",
-  "xSTEP": "step",
-  "PAI": "usd-coin",
-  "USDH": "usd-coin",
-  "stSOL": "lido-staked-sol",
-  "GMT": "stepn",
-}
+const solendConfigEndpoint = "https://api.solend.fi/v1/markets/configs?scope=all&deployment=production";
 
-// v3/coins/solana/contract/${contract_address} sometime fails to return certain assets
-function getAssetToCoingeckoIDFallback(asset) {
-  return assetToCoinGeckoIdMap[asset] || asset;
-}
+async function borrowed(api) {
+  const markets = (await getConfig('solend', solendConfigEndpoint))
+  const reserves = []
 
-async function borrowed() {
-  const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
-  const getCg = await getCoingeckoId();
-  const borrowed = {};
-  for (const market of solendConfig.markets) {
-    for (const reserve of market.reserves) {
-      const asset = solendConfig.assets.find(asset => asset.symbol === reserve.asset);
-      const { mintAddress } = asset;
-      let coingeckoId = reserve.asset
-        coingeckoId = getCg(mintAddress);
-      if(coingeckoId === undefined){
-        coingeckoId = getAssetToCoingeckoIDFallback(reserve.asset);
-      }
-      const connection = getConnection()
-      const accountInfo = await connection.getAccountInfo(new PublicKey(reserve.address), "processed");
-      const parsedReserve = parseReserve(PublicKey.default, accountInfo);
-      const amount = new BigNumber(
-        parsedReserve.info.liquidity.borrowedAmountWads.toString()
-      ).dividedBy(
-        new BigNumber(
-          `1${Array(parsedReserve.info.liquidity.mintDecimals + 19)
-            .fill("")
-            .join("0")}`
-        )
-      );
-      if (!borrowed[coingeckoId]) {
-        borrowed[coingeckoId] = new BigNumber(0);
-      }
+  for (const market of markets)
+    for (const reserve of market.reserves)
+      reserves.push(reserve.address)
 
-      borrowed[coingeckoId] = borrowed[coingeckoId].plus(amount)
-    }
-  }
-
-  return borrowed;
+  const infos = await getMultipleAccounts(reserves)
+  infos.forEach(i => {
+    const { info: { liquidity } } = decodeAccount('reserve', i)
+    const amount = liquidity.borrowedAmountWads.toString() / 1e18
+    api.add(liquidity.mintPubkey.toString(), amount)
+  })
 }
 
 async function tvl() {
-  const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
-  const getCg = await getCoingeckoId();
-  const tvl = {};
+  const markets = (await getConfig('solend', solendConfigEndpoint))
+  return sumTokens2({ owners: markets.map(i => i.authorityAddress) });
+}
 
-  for (const market of solendConfig.markets) {
-    for (const reserve of market.reserves) {
-      const asset = solendConfig.assets.find(asset => asset.symbol === reserve.asset);
-      const { mintAddress } = asset;
-      let coingeckoId = reserve.asset
-      
-        coingeckoId = getCg(mintAddress);
-      if(coingeckoId === undefined){
-        coingeckoId = getAssetToCoingeckoIDFallback(reserve.asset);
-      }
-      const amount = await getTokenBalance(mintAddress, market.authorityAddress);
-      if (!tvl[coingeckoId]) {
-        tvl[coingeckoId] = new BigNumber(0);
-      }
-      tvl[coingeckoId] = tvl[coingeckoId].plus(amount)
+// TODO: Find a dynamic way to obtain this mapping
+const TOKEN_MINT_TO_TOKEN2022_MINT = {
+  [ADDRESSES.solana.SOL]: ADDRESSES.solana.SOL,
+  '8gEs8igcTdyrKzvEQh3oPpZm4HqNYozyczBCPQmZrsyp': 'GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn',
+  '7rCPN5Lcaxomf92ssF4M9dd8FVMoM43NLsWZyMd6DpNp': ADDRESSES.eclipse.WIF,
+  '7mZCsut9beY53V9VWWovrRTBurGv6dozAmuhbwbyHsqk': ADDRESSES.eclipse.SOL,
+  'Hke78vy1Mzzt5eEJ2jMeKtdqddedDe2rmzjsq16p9ETW': ADDRESSES.eclipse.USDC,
+};
+
+async function eclipseTvl(api) {
+  const balances = await sumTokens2({ api, owners: ['5Gk1kTdDqqacmA2UF3UbNhM7eEhVFvF3p8nd9p3HbXxk'] });
+
+  const token2022MappedBalances = {};
+  for (const [key, value] of Object.entries(balances)) {
+    const token = key.split(':')[1];
+    if (TOKEN_MINT_TO_TOKEN2022_MINT[token]) {
+      token2022MappedBalances[`eclipse:${TOKEN_MINT_TO_TOKEN2022_MINT[token]}`] = value;
+    } else {
+      token2022MappedBalances[key] = value;
     }
   }
 
-  return tvl;
+  return token2022MappedBalances;
 }
 
 module.exports = {
   timetravel: false,
-  solana:{
+  solana: {
     tvl,
-    borrowed
+    borrowed,
   },
+  eclipse: { tvl: eclipseTvl },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
-  hallmarks: [[1635940800, "SLND launch"]],
+  hallmarks: [
+    [1635940800, "SLND launch"],
+    [1667826000, "FTX collapse, SOL whale liquidated"],
+  ],
 };
 

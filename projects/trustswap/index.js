@@ -1,56 +1,27 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const ADDRESSES = require('../helper/coreAssets.json')
+const abi = {
+  "token": "address:token",
+  "currentTotalStake": "uint256:currentTotalStake"
+}
 
 const staking_contract = "0x5A753021CE28CBC5A7c51f732ba83873D673d8cC";
 
 const assets = [
   // other tokens which probably for some reason was sent to the contract accidentally
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  "0xdac17f958d2ee523a2206206994597c13d831ec7",
-  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+  ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.UNI,
 ];
 
-const stakingTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const token = (
-    await sdk.api.abi.call({
-      abi: abi.token,
-      target: staking_contract,
-      block: ethBlock,
-    })
-  ).output;
-
-  const currentTotalStake = (
-    await sdk.api.abi.call({
-      abi: abi.currentTotalStake,
-      target: staking_contract,
-      block: ethBlock,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, token, currentTotalStake);
-
-  return balances;
+const stakingTvl = async (api) => {
+  const token = await api.call({  abi: abi.token, target: staking_contract})
+  const bal = await api.call({  abi: abi.currentTotalStake, target: staking_contract})
+  api.add(token, bal)
 };
 
-async function ethTvl(timestamp, ethBlock, chainBlocks) {
-  let balances = {};
-  for (let i = 0; i < assets.length; i++) {
-    const assetsBalance = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: assets[i],
-        params: staking_contract,
-        block: ethBlock,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, assets[i], assetsBalance);
-  }
-
-return balances
-};
+async function ethTvl(api) {
+  return api.sumTokens({ owner: staking_contract, tokens: assets })
+}
 
 
 module.exports = {

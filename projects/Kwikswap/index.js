@@ -15,12 +15,10 @@ const STAKING_CONTRACTS = {
 };
 
 module.exports = {
-  timetravel: true,
   misrepresentedTokens: true,
   ethereum: {
     tvl: getUniTVL({
       factory: '0xdD9EFCbDf9f422e2fc159eFe77aDD3730d48056d',
-      chain: 'ethereum',
       useDefaultCoreAssets: true,
     }),
     staking: staking(
@@ -32,7 +30,6 @@ module.exports = {
   polygon: {
     tvl: getUniTVL({
       factory: '0x0B29D7a989D6647E4A56eE9899DaF7535FF9620c',
-      chain: 'polygon',
       useDefaultCoreAssets: true,
     }),
     staking: staking(
@@ -44,7 +41,6 @@ module.exports = {
   shiden: {
     tvl: getUniTVL({
       factory: '0xf5fC2D145381A2eBAFb93Cc2B60fB2b97FB405aa',
-      chain: 'shiden',
       useDefaultCoreAssets: true,
     }),
     staking: staking(
@@ -56,7 +52,6 @@ module.exports = {
   },
   bsc: {
     tvl: getUniTVL({
-      chain: 'bsc',
       useDefaultCoreAssets: true,
       factory: '0x64eBD6CaCece790e9C4DDeA1a24952Ddb2715279',
     }),

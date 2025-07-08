@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
@@ -32,13 +33,13 @@ const tokens = {
     TXL: "0x8eEF5a82E6Aa222a60F009ac18c24EE12dBf4b41",
     BRIDGE: "0x92868a5255c628da08f550a858a802f5351c5223",
     // Stablecoins
-    BUSD: "0x4Fabb145d64652a948d72533023f6E7A623C7C53",
-    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
-    USDC: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    USDT: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    BUSD: ADDRESSES.ethereum.BUSD,
+    DAI: ADDRESSES.ethereum.DAI,
+    USDC: ADDRESSES.ethereum.USDC,
+    USDT: ADDRESSES.ethereum.USDT,
     // Network Tokens
-    WETH: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    WMATIC: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+    WETH: ADDRESSES.ethereum.WETH,
+    WMATIC: ADDRESSES.ethereum.MATIC,
     // Further tokens
     BULK: "0xa143ac515dca260a46c742c7251ef3b268639593",
     DAX: "0x77e9618179820961ee99a988983bc9ab41ff3112",
@@ -57,12 +58,12 @@ const tokens = {
     TXL: "0x1ffd0b47127fdd4097e54521c9e2c7f0d66aafc5",
     BRIDGE: "0x92868a5255c628da08f550a858a802f5351c5223",
     // Stablecoins
-    BUSD: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    BUSD: ADDRESSES.bsc.BUSD,
     DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
-    USDC: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-    USDT: "0x55d398326f99059fF775485246999027B3197955",
+    USDC: ADDRESSES.bsc.USDC,
+    USDT: ADDRESSES.bsc.USDT,
     // Network Tokens
-    WETH: "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+    WETH: ADDRESSES.bsc.ETH,
     WMATIC: "0xcc42724c6683b7e57334c4e856f4c9965ed682bd",
     // Further tokens
     ARNX: "0x0c37bcf456bc661c14d596683325623076d7e283",
@@ -90,12 +91,12 @@ const tokens = {
     BRIDGE: "0x92868a5255c628da08f550a858a802f5351c5223",
     // Stablecoins
     BUSD: "0xdab529f40e671a1d4bf91361c21bf9f0c9712ab7",
-    DAI: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-    USDC: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    USDT: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+    DAI: ADDRESSES.polygon.DAI,
+    USDC: ADDRESSES.polygon.USDC,
+    USDT: ADDRESSES.polygon.USDT,
     // Network Tokens
-    WETH: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
-    WMATIC: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    WETH: ADDRESSES.polygon.WETH_1,
+    WMATIC: ADDRESSES.polygon.WMATIC_2,
     // Further tokens
     DAF: "0x2f0e07e881363bb1cdff32971b2f8c87ef8ff432",
     GFX: "0x65ad6a2288b2dd23e466226397c8f5d1794e58fc",
@@ -106,17 +107,17 @@ const tokens = {
     // Project tokens
     BRIDGE: "0xC0367f9b1f84Ca8DE127226AC2A994EA4bf1e41b",
     // Stablecoins
-    USDC: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
-    USDT: "0xc7198437980c041c805a1edcba50c1ce5db95118",
+    USDC: ADDRESSES.avax.USDC_e,
+    USDT: ADDRESSES.avax.USDT_e,
     // Network Tokens
-    WETH: "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+    WETH: ADDRESSES.avax.WETH_e,
   },
   fantom: {
     // Project tokens
     BRIDGE: "0x92868A5255C628dA08F550a858A802f5351C5223",
     // Stablecoins
-    USDC: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
-    USDT: "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+    USDC: ADDRESSES.fantom.USDC,
+    USDT: ADDRESSES.fantom.fUSDT,
     // Network Tokens
     WETH: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
   }

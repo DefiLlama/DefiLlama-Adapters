@@ -1,17 +1,23 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require("../helper/portedTokens");
-const { staking } = require("../helper/staking");
-const { pool2 } = require("../helper/pool2");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { stakings } = require("../helper/staking");
+const { unwrapLPsAuto } = require("../helper/unwrapLPs");
+const { BigNumber } = require("bignumber.js");
 
-const abi = {
-  inputs: [],
-  name: "grizzlyStrategyDeposits",
-  outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-  stateMutability: "view",
-  type: "function"
-};
-const hives = [
+const abiGrizzly = "uint256:grizzlyStrategyDeposits"
+const abiStandard = "uint256:standardStrategyDeposits"
+const abiStable = "uint256:stablecoinStrategyDeposits"
+const abiFarm = "uint256:totalDeposits"
+const abiYearn = "uint256:totalAssets"
+const abiV3 = "function getUnderlyingBalances() view returns (uint256, uint256)"
+
+const lpReservesAbi = 'function balances(uint256 index) view returns (uint256)'
+const tokenAbi = 'function coins(uint256 index) view returns (address)'
+const lpSuppliesAbi = "uint256:totalSupply"
+const transformAddress = i => 'bsc:' + i
+
+const pcsHives = [
+  // PCS hives
   {
     hive: "0xDa0Ae0710b080AC64e72Fa3eC44203F27750F801",
     token: "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16"
@@ -39,61 +45,201 @@ const hives = [
   {
     hive: "0x6fc2FEed99A97105B988657f9917B771CD809f40",
     token: "0xF45cd219aEF8618A92BAa7aD848364a158a24F33"
-  }
+  },
+  // Biswap hives
+  {
+    hive: "0x0286A72F055A425af9096b187bf7f88e9f7D96A9",
+    token: "0x8840C6252e2e86e545deFb6da98B2a0E26d8C1BA"
+  },
+  {
+    hive: "0xB07a180735657a92d8e2b77D213bCBE5ab819089",
+    token: "0xa987f0b7098585c735cD943ee07544a84e923d1D"
+  },
+  {
+    hive: "0xe178eaDBcb4A64476B8E4673D99192C25ef1B42e",
+    token: "0x63b30de1A998e9E64FD58A21F68D323B9BcD8F85"
+  },
 ];
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  block = chainBlocks.bsc;
+const farms = [
+  {
+    hive: "0x3641676bFe07F07DD2f79244BcdBb751f95F67Ca",
+    token: "0x2b702b4e676b51f98c6b4af1b2cafd6a9fc2a3e0"
+  },
+  {
+    hive: "0xF530B259fFf408aaB2B02aa60dd6fe48FCDC2FC9",
+    token: "0x352008bf4319c3b7b8794f1c2115b9aa18259ebb"
+  },
+]
 
-  const [{ output: bnbBalance }, { output: hiveBalances }] = await Promise.all([
-    sdk.api.eth.getBalance({
-      target: "0x1022a84f347fc1E6D47128E5364C9Aa1f43a2630",
-      block: chainBlocks.bsc,
-      chain: "bsc"
-    }),
-    sdk.api.abi.multiCall({
-      calls: hives.map(h => ({ target: h.hive })),
-      abi,
-      chain: "bsc",
-      block
-    })
-  ]);
+const stableHives = [
+  {
+    hive: "0x7Bf5005F9a427cB4a3274bFCf36125cE979F77cb",
+    token: "0x36842f8fb99d55477c0da638af5ceb6bbf86aa98",
+    swap: "0x169f653a54acd441ab34b73da9946e2c451787ef"
+  },
+  {
+    hive: "0x7E5762A7D68Fabcba39349229014c59Db6dc5eB0",
+    token: "0xee1bcc9f1692e81a281b3a302a4b67890ba4be76",
+    swap: "0x3efebc418efb585248a0d2140cfb87afcc2c63dd"
+  },
+  {
+    hive: "0xCCf6356C96Eadd2702fe6f5Ef99B1C0a3966EDf7",
+    token: "0x1a77c359d0019cd8f4d36b7cdf5a88043d801072",
+    swap: "0xc2f5b9a3d9138ab2b74d581fc11346219ebf43fe"
+  },
+]
 
-  const lpPositions = hiveBalances.map((b, i) => ({
-    balance: b.output,
-    token: hives[i].token
-  }));
+const yearnHives = [
+  // Thena hives
+  {
+    hive: "0x5Aa6dd6bA3091ba151B4E5c0C0c4f06335e91482",
+    token: "0xa97e46dc17e2b678e5f049a2670fae000b57f05e"
+  },
+  {
+    hive: "0x38b2f5038F70b8A4a54A2CC8d35d85Cc5f0794e4",
+    token: "0xc8da40f8a354530f04ce2dde98ebc2960a9ea449"
+  },
+  {
+    hive: "0x3dF96fE4E92f38F7C931fA5A00d1f644D1c60dbF",
+    token: "0x075e794f631ee81df1aadb510ac6ec8803b0fa35"
+  },
+  {
+    hive: "0x9Ce89aba449135539A61C57665547444a92784aB",
+    token: "0x3c552e8ac4473222e3d794adecfa432eace85929"
+  },
+  {
+    hive: "0xc750432473eABE034e84d373CB92f16e6EB0d273",
+    token: "0x3ec80a1f547ee6fd5d7fc0dc0c1525ff343d087c"
+  },
+  {
+    hive: "0xf01F9e8A5C6B9Db49e851e8d72B70569042F0e1C",
+    token: "0x63db6ba9e512186c2faadacef342fb4a40dc577c"
+  },
+  {
+    hive: "0xF7DE4A13669CB33D54b59f35FE71dFcD67e4635E",
+    token: "0x34b897289fccb43c048b2cea6405e840a129e021"
+  }
+]
 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    "bsc",
-    await transformBscAddress()
-  );
+const pcsV3 = [
+  {
+    hive: "0x25223015ee4dbaf9525ddd43797cae1dcd83f6b5",
+    token0: ADDRESSES.bsc.USDT,
+    token1: ADDRESSES.bsc.BUSD
+  },
+  {
+    hive: "0x9eab3bf245da9b6d8705b1a906ee228382c38f93",
+    token0: ADDRESSES.bsc.USDT,
+    token1: ADDRESSES.bsc.USDC
+  },
+  {
+    hive: "0x76ab668d93135bcd64df8e4a7ab9dd05fac4cdbf",
+    token0: ADDRESSES.bsc.USDC,
+    token1: ADDRESSES.bsc.BUSD
+  }
+]
 
-  sdk.util.sumSingleBalance(
-    balances,
-    "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-    bnbBalance
-  );
+async function tvl(api) {
+  const balances = api.getBalances();
 
+  const getHive = i => i.hive
+
+  const [hiveBalancesGrizzly,
+    hiveBalancesStandard,
+    hiveBalancesStable,
+    stableHiveBalancesGrizzly,
+    stableHiveBalancesStandard,
+    stableHiveBalancesStable,
+    farmBalances,
+    yearnBalances,
+    pcsV3Balances] = await Promise.all([
+      api.multiCall({ calls: pcsHives.map(getHive), abi: abiGrizzly, }),
+      api.multiCall({ calls: pcsHives.map(getHive), abi: abiStandard, }),
+      api.multiCall({ calls: pcsHives.map(getHive), abi: abiStable, }),
+      api.multiCall({ calls: stableHives.map(getHive), abi: abiGrizzly, }),
+      api.multiCall({ calls: stableHives.map(getHive), abi: abiStandard, }),
+      api.multiCall({ calls: stableHives.map(getHive), abi: abiStable, }),
+      api.multiCall({ calls: farms.map(getHive), abi: abiFarm, }),
+      api.multiCall({ calls: yearnHives.map(getHive), abi: abiYearn, }),
+      api.multiCall({ calls: pcsV3.map(getHive), abi: abiV3, }),
+    ]);
+
+  hiveBalancesGrizzly.map((b, i) => {
+    const token = pcsHives[i].token
+    api.add(token, b)
+    api.add(token, hiveBalancesStandard[i])
+    api.add(token, hiveBalancesStable[i])
+  });
+
+  const lpPositionsStable = stableHiveBalancesGrizzly.map((b, i) => {
+    const grizzly = new BigNumber(b);
+    const standard = new BigNumber(stableHiveBalancesStandard[i]);
+    const stable = new BigNumber(stableHiveBalancesStable[i]);
+
+    return {
+      balance: grizzly.plus(standard).plus(stable).toString(),
+      token: stableHives[i].token,
+      swap: stableHives[i].swap
+    }
+  });
+
+  farmBalances.forEach((b, i) => api.add(farms[i].token, b));
+  yearnBalances.forEach((b, i) => api.add(yearnHives[i].token, b));
+
+  pcsV3Balances.forEach((b, i) => {
+    api.add(pcsV3[i].token0, b[0])
+    api.add(pcsV3[i].token1, b[1])
+  });
+
+  await unwrapStablePcsLPs(balances, lpPositionsStable, api)
+  await unwrapLPsAuto({ ...api, balances, })
   return balances;
-} // node test.js projects/grizzlyfi/index.js
+}
+
+async function unwrapStablePcsLPs(balances, lpPositions, api) {
+  lpPositions = lpPositions.filter(i => +i.balance > 0)
+  const swaps = lpPositions.map(i => i.swap)
+
+  const [
+    lpReserves0,
+    lpReserves1,
+    lpSupplies,
+    tokens0,
+    tokens1,
+  ] = await Promise.all([
+    api.multiCall({ abi: lpReservesAbi, calls: swaps.map(i => ({ target: i, params: [0] })) }),
+    api.multiCall({ abi: lpReservesAbi, calls: swaps.map(i => ({ target: i, params: [1] })) }),
+    api.multiCall({ abi: lpSuppliesAbi, calls: lpPositions.map(i => i.token), }),
+    api.multiCall({ abi: tokenAbi, calls: swaps.map(i => ({ target: i, params: [0] })), }),
+    api.multiCall({ abi: tokenAbi, calls: swaps.map(i => ({ target: i, params: [1] })), }),
+  ])
+
+
+  lpPositions.map((lpPosition, i) => {
+    const token0 = tokens0[i].toLowerCase()
+    const token1 = tokens1[i].toLowerCase()
+    const supply = lpSupplies[i]
+    const _reserve0 = lpReserves0[i]
+    const _reserve1 = lpReserves1[i]
+
+    const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
+    sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance.toFixed(0))
+    const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
+    sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance.toFixed(0))
+  })
+}
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
     tvl,
-    pool2: pool2(
-      "0xF530B259fFf408aaB2B02aa60dd6fe48FCDC2FC9",
-      "0x352008bf4319c3B7B8794f1c2115B9Aa18259EBb",
-      "bsc"
-    ),
-    staking: staking(
-      "0x6F42895f37291ec45f0A307b155229b923Ff83F1",
+    staking: stakings(
+      [
+        "0x6F42895f37291ec45f0A307b155229b923Ff83F1",
+        "0xB80287c110a76e4BbF0315337Dbc8d98d7DE25DB"
+      ],
       "0xa045e37a0d1dd3a45fefb8803d22457abc0a728a",
-      "bsc"
     )
   }
 };

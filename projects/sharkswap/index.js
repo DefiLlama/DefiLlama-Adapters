@@ -1,11 +1,6 @@
-const { getUniTVL } = require("../helper/unknownTokens")
+const { uniTvlExports } = require('../helper/unknownTokens')
 
-module.exports = {
-  sx: {
-    tvl: getUniTVL({
-      chain: 'sx',
-      factory: '0x5Da4BEe3E6B545e9E28a7A303168A51eBd14C2Cf',
-      useDefaultCoreAssets: true,
-    })
-  }
-}
+module.exports = uniTvlExports({
+  'sx': '0x6A482aC7f61Ed75B4Eb7C26cE8cD8a66bd07B88D',
+  'sxr': '0x610CfC3CBb3254fE69933a3Ab19aE1bF2aaaD7C8',
+})

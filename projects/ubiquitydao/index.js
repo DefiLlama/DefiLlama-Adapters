@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const crvPool = "0x20955CB69Ae1515962177D164dfC9522feef567E";
@@ -25,7 +26,7 @@ async function tvl(timestamp, block) {
   poolBalances.forEach((p) => {
     let token = p.input.target;
     if (token === "0x0F644658510c95CB46955e55D7BA9DDa9E9fBEc6") {
-      token = "0x6b175474e89094c44da98b954eedeac495271d0f";
+      token = ADDRESSES.ethereum.DAI;
     }
     sdk.util.sumSingleBalance(balances, token, p.output);
   });

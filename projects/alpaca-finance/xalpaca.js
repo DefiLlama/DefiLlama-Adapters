@@ -1,43 +1,30 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 async function getProcolXAlpacaAddresses(chain) {
   if (chain == "bsc") {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/x-bsc',
         "https://raw.githubusercontent.com/alpaca-finance/xALPACA-contract/main/.mainnet.json"
       )
-    ).data;
+    )
   }
   if (chain == "fantom") {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/x-fantom',
         "https://raw.githubusercontent.com/alpaca-finance/xALPACA-contract/main/.fantom_mainnet.json"
       )
-    ).data;
+    )
   }
 }
-  
 
-async function calxALPACAtvl(chain, block) {
-  const xalpacaAddresses = await getProcolXAlpacaAddresses(chain);
 
-  const xalpacaTVL = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.xalpacaTotalSupply,
-      calls: [
-        {
-          target: xalpacaAddresses["xALPACA"],
-        },
-      ],
-      chain,
-    })
-  ).output;
+async function calxALPACAtvl(api) {
+  const xalpacaAddresses = await getProcolXAlpacaAddresses(api.chain);
+
+  const xalpacaTVL = await api.call({ abi: abi.xalpacaTotalSupply, target: xalpacaAddresses["xALPACA"], })
   const alpacaAddress = xalpacaAddresses["Tokens"]["ALPACA"];
-  return { [`${chain}:${alpacaAddress}`]: xalpacaTVL[0].output };
+  api.add(alpacaAddress, xalpacaTVL)
 }
 
 module.exports = {

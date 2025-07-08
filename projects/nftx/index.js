@@ -1,116 +1,27 @@
-const { gql } = require("graphql-request");
-const { blockQuery } = require('../helper/graph')
-const { getTokenPrices } = require('../helper/unknownTokens')
-const sdk = require('@defillama/sdk')
+const { getLogs2 } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
-  ethereum: {
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    graphUrl: 'https://graph-proxy.nftx.xyz/c/nftx-indexer/subgraphs/id/QmTCMt7aWvxCnEwTQAB1r9a5QMk9cpoFTMfefm4D1c2ewT'
-  },
-  arbitrum: {
-    weth: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-    graphUrl: 'https://graph-proxy.nftx.xyz/nftx-arbitrum/subgraphs/name/nftx-hosted/nftx-v2-arbitrum'
-  },
+  ethereum: { factory: '0xBE86f647b167567525cCAAfcd6f881F1Ee558216', fromBlock: 12675821, },
+  arbitrum: { factory: '0xE77b89FEc41A7b7dC74eb33602e82F0672FbB33C', fromBlock: 12080098, },
 }
-function getTvl(chain) {
-  const { weth, graphUrl } = config[chain]
-  return async (_timestamp, block) => {
-    const { vaults } = await blockQuery(graphUrl, graphQuery, block, 100)
-    const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
-    const tokens = new Set(vaults.map(v => v.token.id))
-  
-    const weth_balances = await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: Array.from(LPs).map(lp => ({
-        target: weth,
-        params: lp
-      })),
-      block, chain, 
-    })
-  
-    const token_balances = await sdk.api.abi.multiCall({
-      abi: 'erc20:totalSupply',
-      calls: Array.from(tokens).map(token => ({
-        target: token,
-      })),
-      block, chain, 
-    })
-  
-    const balances = {}
-  
-    sdk.util.sumMultiBalanceOf(balances, token_balances)
-    //sdk.util.sumMultiBalanceOf(balances, weth_balances)
-  
-    const lps = weth_balances.output
-      .filter(({ output }) => +output > 2 * 1e18) // only pick pools with minimum 2 eth in it
-      .map(({ input }) => input.params[0])
-  
-    const { updateBalances, prices } = await getTokenPrices({
-      block,
-      useDefaultCoreAssets: true, lps, allLps: true, chain, 
-    })
-  
-    const print = []
-    vaults.forEach(vault => {
-      const price = prices[vault.token.id]
-      const balance = (balances[vault.token.id] || 0) / 1e18
-      if (!price || !balance) return;
-      const total = balance * price[1]
-      if (total < 50) return;
-      print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
-    })
-    print.sort((a, b) => b.val - a.val)
-    // console.table(print)
-    // console.log(print.reduce((a, i) => a + i.val, 0))
-  
-    updateBalances(balances)
-  
-    return balances
-  }
-}
-
 module.exports = {
-  methodology: "Counts total value of all vaults",
-  ethereum: { tvl: getTvl('ethereum') },
-  arbitrum: { tvl: getTvl('arbitrum') },
+  methodology: "Counts total value of nfts in all the vaults",
 }
 
-const graphQuery = gql`
-query get_vaults($block: Int) {
-  vaults(
-    first: 1000, 
-    where: { vaultId_gte: 0 },
-    block: { number: $block }  
-  ) {
-    vaultId
-    id
-    is1155
-    isFinalized
-    totalHoldings
-    allocTotal
-    token {
-      id
-      name
-      symbol
-    }
-    asset {
-      id
-      name
-      symbol
-    }
-    lpStakingPool {
-      stakingToken {
-        id
-        name
-        symbol
-      }
-      rewardToken{
-        id
-        name
-        symbol
-      }
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      if (chain === 'arbitrum') return {}  // we dont price any token in arbitrum
+      const logs = await getLogs2({
+        api,
+        factory,
+        eventAbi: 'event NewVault (uint256 indexed vaultId, address vaultAddress, address assetAddress)',
+        fromBlock,
+      })
+      const tokensAndOwners = logs.map(log => [log.assetAddress, log.vaultAddress])
+      return sumTokens2({ api, tokensAndOwners, permitFailure: true })
     }
   }
-}
-`
+})

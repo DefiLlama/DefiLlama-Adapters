@@ -1,46 +1,38 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // proxy contract:
 //     https://github.com/nomad-xyz/config/blob/main/production.json
 // token holdings:
 //     https://etherscan.io/tokenholdings?a=PUT CONTRACT ADDRESS HERE
 
-const { sumTokens } = require('../helper/unwrapLPs')
-const { chainExports } = require("../helper/exports");
-
 const HOME_CHAINS = {
-  'ethereum': '0x88A69B4E698A4B090DF6CF5Bd7B2D47325Ad30A3', 
-  'moonbeam': '0xD3dfD3eDe74E0DCEBC1AA685e151332857efCe2d', 
+  'ethereum': '0x88A69B4E698A4B090DF6CF5Bd7B2D47325Ad30A3',
+  'moonbeam': '0xD3dfD3eDe74E0DCEBC1AA685e151332857efCe2d',
   'milkomeda': '0x9faF7f27c46ACdeCEe58Eb4B0Ab6489E603EC251',
   'evmos': '0x2eff94f8c56c20f85d45e9752bfec3c0522c55c7'
 };
 
 const TOKEN_ADDRESSES = [
   {
-    // FRAX
-    'ethereum': '0x853d955aCEf822Db058eb8505911ED77F175b99e'
+    'ethereum': ADDRESSES.ethereum.FRAX
   },
   {
-    // USDC
-    'ethereum': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+    'ethereum': ADDRESSES.ethereum.USDC
   },
   {
-    // DAI
-    'ethereum': '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+    'ethereum': ADDRESSES.ethereum.DAI
   },
   {
-    // USDT
-    'ethereum': '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+    'ethereum': ADDRESSES.ethereum.USDT
   },
   {
     // FXS
-    'ethereum': '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0'
+    'ethereum': ADDRESSES.ethereum.FXS
   },
   {
-    // WETH
-    'ethereum': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+    'ethereum': ADDRESSES.ethereum.WETH
   },
   {
-    // WBTC
-    'ethereum': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+    'ethereum': ADDRESSES.ethereum.WBTC
   },
   {
     // IAG
@@ -76,24 +68,22 @@ const TOKEN_ADDRESSES = [
   }
 ];
 
-function tvl(chain) {
-  return async (time, _, { [chain]: block }) => {
-    const toa = []
-    const owner = HOME_CHAINS[chain]
-    TOKEN_ADDRESSES.forEach(t => {
-      if (t[chain]) toa.push([t[chain], owner])
-    })
-    return sumTokens({}, toa, block, chain)
-  }
+function tvl(api) {
+  const toa = []
+  const owner = HOME_CHAINS[api.chain]
+  TOKEN_ADDRESSES.forEach(t => {
+    if (t[api.chain]) toa.push([t[api.chain], owner])
+  })
+  return api.sumTokens({ tokensAndOwners: toa })
 }
 
 module.exports = {
-  hallmarks: [
-    [1659312000,"trusted root exploit"]
-  ],
-  timetravel: true,
-  misrepresentedTokens: false,
+  // hallmarks: [
+  //   [1659312000, "trusted root exploit"]
+  // ],
   methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
-  start: 13983843,
-  ...chainExports(tvl, Object.keys(HOME_CHAINS))
-}; 
+};
+
+Object.keys(HOME_CHAINS).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

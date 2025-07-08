@@ -12,13 +12,13 @@ const NUM_bsc = "0xeceb87cf00dcbf2d4e2880223743ff087a995ad9";
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
+    tvl: (async) => ({}),
     staking: staking(farmContract, NUM),
     pool2: pool2(farmContract, USDC_NUM_UNIV2),   
   },
   bsc: {
-    staking: staking(farmContract_bsc, NUM_bsc, "bsc"),
-    pool2: pool2(farmContract_bsc, BUSD_NUM_CakeLP, "bsc"),
+    staking: staking(farmContract_bsc, NUM_bsc),
+    pool2: pool2(farmContract_bsc, BUSD_NUM_CakeLP),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };

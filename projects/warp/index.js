@@ -1,148 +1,63 @@
-const sdk = require('@defillama/sdk')
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
+const { sumTokens2, } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
-function isLP(symbol){
-  return symbol.includes('LP') || symbol === "UNI-V2"
-}
-
-async function tvl(_timestamp, block){
-  const balances = {}
-  for(const group of tokenHolderMap){
-    const holders = await sdk.api.util.getLogs({
-      ...group.holders.logConfig,
-      keys: [],
-      toBlock: block
-    }).then(logs=>logs.output.map((poolLog) => `0x${poolLog.data.substr(26, 40)}`))
-    const tokens = await sdk.api.abi.multiCall({
-      calls: holders.map(h=>({target: h})),
-      block,
-      abi: group.tokens.abi
+async function tvl(api) {
+  const owners = []
+  const tokens = []
+  for (const group of tokenHolderMap) {
+    let holders = await getLogs({
+      ...group.logConfig,
+      api,
+    }).then(logs => logs.map((poolLog) => `0x${poolLog.data.substr(26, 40)}`))
+    const _tokens = await api.multiCall({ abi: 'address:LPtoken', calls: holders, permitFailure: true, })
+    const failedHolders = holders.filter((holder, i) => {
+      if (_tokens[i]) {
+        owners.push(holder)
+        tokens.push(_tokens[i])
+        return false
+      }
+      return true
     })
-    const symbols = (await sdk.api.abi.multiCall({
-      calls: tokens.output.map(t=>({target: t.output})),
-      block,
-      abi: 'erc20:symbol'
-    })).output
-    await sumTokensAndLPsSharedOwners(balances, 
-      tokens.output.map((t, i)=>[t.output, isLP(symbols[i].output)]),
-      holders, block
-    )
+
+    const _tokens2 = await api.multiCall({ abi: 'address:stablecoin', calls: failedHolders })
+    owners.push(...failedHolders)
+    tokens.push(..._tokens2)
   }
-  return balances
+  return sumTokens2({ api, tokensAndOwners2: [tokens, owners], })
 }
 
 module.exports = {
-  start: 1610650220,
-  tvl
+  start: '2021-01-14',
+  ethereum: { tvl },
 }
 
 const tokenHolderMap = [
   {
-    holders: {
-      pullFromLogs: true,
-      logConfig: {
-        target: "0x6C74E2A1074ABe18969Be37210B93e681A40b35A",
-        topic: "NewLPVault(address)",
-        fromBlock: 11803584,
-      },
-      transform: (poolLog) => `0x${poolLog.substr(26, 40)}`,
-    },
-    tokens: {
-      pullFromPools: true,
-      abi: {
-        inputs: [],
-        name: "LPtoken",
-        outputs: [
-          {
-            internalType: "contract IUniswapV2ERC20",
-            name: "",
-            type: "address",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
+    logConfig: {
+      target: "0x6C74E2A1074ABe18969Be37210B93e681A40b35A",
+      topic: "NewLPVault(address)",
+      fromBlock: 11803584,
     },
   },
   {
-    holders: {
-      pullFromLogs: true,
-      logConfig: {
-        target: "0x6C74E2A1074ABe18969Be37210B93e681A40b35A",
-        topic: "NewSCVault(address,address)",
-        fromBlock: 11803584,
-      },
-      transform: (poolLog) => `0x${poolLog.substr(26, 40)}`,
-    },
-    tokens: {
-      pullFromPools: true,
-      abi: {
-        inputs: [],
-        name: "stablecoin",
-        outputs: [
-          {
-            internalType: "contract ERC20",
-            name: "",
-            type: "address",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
+    logConfig: {
+      target: "0x6C74E2A1074ABe18969Be37210B93e681A40b35A",
+      topic: "NewSCVault(address,address)",
+      fromBlock: 11803584,
     },
   },
   {
-    holders: {
-      pullFromLogs: true,
-      logConfig: {
-        target: "0x8E0Fa7c5C7Fa86A059e865A90b50a90351df716a",
-        topic: "NewLPVault(address)",
-        fromBlock: 11654924,
-      },
-      transform: (poolLog) => `0x${poolLog.substr(26, 40)}`,
-    },
-    tokens: {
-      pullFromPools: true,
-      abi: {
-        inputs: [],
-        name: "LPtoken",
-        outputs: [
-          {
-            internalType: "contract IUniswapV2ERC20",
-            name: "",
-            type: "address",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
+    logConfig: {
+      target: "0x8E0Fa7c5C7Fa86A059e865A90b50a90351df716a",
+      topic: "NewLPVault(address)",
+      fromBlock: 11654924,
     },
   },
   {
-    holders: {
-      pullFromLogs: true,
-      logConfig: {
-        target: "0x8E0Fa7c5C7Fa86A059e865A90b50a90351df716a",
-        topic: "NewSCVault(address,address)",
-        fromBlock: 11654924,
-      },
-      transform: (poolLog) => `0x${poolLog.substr(26, 40)}`,
-    },
-    tokens: {
-      pullFromPools: true,
-      abi: {
-        inputs: [],
-        name: "stablecoin",
-        outputs: [
-          {
-            internalType: "contract ERC20",
-            name: "",
-            type: "address",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
+    logConfig: {
+      target: "0x8E0Fa7c5C7Fa86A059e865A90b50a90351df716a",
+      topic: "NewSCVault(address,address)",
+      fromBlock: 11654924,
     },
   },
 ]

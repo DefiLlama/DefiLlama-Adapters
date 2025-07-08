@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // const { ethereum } = require(".")
 
 const { getNumLockedTokens, getLockedTokenAtIndex,
@@ -24,7 +25,7 @@ const { getNumLockedTokens, getLockedTokenAtIndex,
   
   const tokens = {
     uncx_eth: '0xaDB2437e6F65682B85F814fBc12FeC0508A7B1D0',
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+    weth: ADDRESSES.ethereum.WETH
   }
   
   const governanceTokens = { // UNCX
@@ -83,23 +84,41 @@ const config = {
     factory: '0x553990f2cba90272390f62c5bdb1681ffc899675',
     startBlock: 5281114
   },
+  babydogeswap: {
+    chain: 'bsc',
+    locker: '0xb89a15a4f3518c14c21be04b55546162b0cb39f0',
+    factory: '0x4693b62e5fc9c0a45f89d62e6300a03c85f43137',
+    startBlock: 22263319
+  },
   quickswap: {
     chain: 'polygon',
     locker: '0xadb2437e6f65682b85f814fbc12fec0508a7b1d0',
     factory: '0x5757371414417b8c6caad45baef941abc7d3ab32',
-    startingBlock: 11936505
+    startBlock: 11936505
   },
   traderjoe: {
     chain: 'avax',
     locker: '0xa9f6aefa5d56db1205f36c34e6482a6d4979b3bb',
     factory: '0x9ad6c38be94206ca50bb0d90783181662f0cfa10',
-    startingBlock: 11933326
+    startBlock: 11933326
   },
   honeyswap: {
     chain: 'xdai',
     locker: '0xe3D32266974f1E8f8549cAf9F54977040e7D1c07',
     factory: '0xa818b4f111ccac7aa31d0bcc0806d64f2e0737d7',
     startBlock: 14476818
+  },
+  uniswapV2_base: {
+    chain: 'base',
+    locker: '0xc4E637D37113192F4F1F060DaEbD7758De7F4131',
+    factory: '0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6',
+    startBlock: 12110643
+  },
+  sushiswapV2_base: {
+    chain: 'base',
+    locker: '0xBeddF48499788607B4c2e704e9099561ab38Aae8',
+    factory: '0x71524B4f93c58fcbF659783284E38825f0622859',
+    startBlock: 10577634
   }
 }
 
@@ -129,6 +148,23 @@ const ethereumContractData = [
     isMixedTokenContract: true,
     factory: config.pol.factory
   }
+]
+
+const baseContractData = [
+  { // Uniswap v2
+    chain: config.uniswapV2_base.chain,
+    contract: config.uniswapV2_base.locker, 
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    factory: config.uniswapV2_base.factory
+  },
+  { // Sushiswap
+    chain: config.sushiswapV2_base.chain,
+    contract: config.sushiswapV2_base.locker, 
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    factory: config.sushiswapV2_base.factory
+  },
 ]
 
 const bscContractData = [
@@ -171,6 +207,14 @@ const bscContractData = [
     getLockedTokenAtIndexABI: getLockedTokenAtIndex,
     pool2: [protocolPairs.uncx_BNB],
     factory: config.biswap.factory
+  },
+  { // BabyDogeSwap  
+    chain: config.babydogeswap.chain,
+    contract: config.babydogeswap.locker,
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [protocolPairs.uncx_BNB],
+    factory: config.babydogeswap.factory
   }
 ]
 
@@ -208,14 +252,26 @@ const gnosisContractData = [
   }
 
 ]
+const arbitrumContractData = [
+  {
+    chain: 'arbitrum',
+    contract: '0x275720567E5955F5f2D53A7A1Ab8a0Fc643dE50E', 
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  }
+
+]
 
 
 module.exports = {
+  baseContractData,
   ethereumContractData,
   bscContractData,
   polygonContractData,
   avalancheContractData,
   gnosisContractData,
+  arbitrumContractData,
   governanceTokens,
   stakingContracts,
   protocolPairs,

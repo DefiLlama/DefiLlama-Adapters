@@ -6,8 +6,7 @@ const CHAIN = "smartbch"
 const CLY = "0x7642df81b5beaeeb331cc5a104bd13ba68c34b91"
 
 module.exports = {
-    misrepresentedTokens: false,
-    methodology: "Staked CLY tokens are counted towards staking metric",
+        methodology: "Staked CLY tokens are counted towards staking metric",
     smartbch: {
         tvl: () => ({}),
         staking: staking(CLY, CLY, CHAIN, "celery", 18),

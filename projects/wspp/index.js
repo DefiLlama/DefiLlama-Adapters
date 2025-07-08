@@ -1,7 +1,7 @@
 const { masterchefExports, sumUnknownTokens } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk');
 
-const poolAddressesABI = { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolAddresses", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }
+const poolAddressesABI = 'function poolAddresses(uint256) view returns (address)'
 
 const config = {
   bsc: {
@@ -57,7 +57,7 @@ Object.keys(config).forEach(chain => {
   if (masterchef)
     module.exports[chain] = masterchefExports({ masterchef, nativeTokens, useDefaultCoreAssets: true, chain, poolInfoABI, getToken, })[chain]
   if (staking) {
-    const stakingFn = (_, _b, { [chain]: block }) => sumUnknownTokens({ chain, block, tokensAndOwners: staking, useDefaultCoreAssets: true, })
+    const stakingFn = (api) => sumUnknownTokens({ api, tokensAndOwners: staking, useDefaultCoreAssets: true, })
     if (module.exports[chain])
       module.exports[chain].staking = sdk.util.sumChainTvls([module.exports[chain].staking, stakingFn])
     else

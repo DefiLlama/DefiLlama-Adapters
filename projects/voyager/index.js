@@ -6,7 +6,7 @@ const stakingContract = "0x8692e782ea478623f3342e0fb3936f6530c5d54f";
 module.exports = {
   ethereum: {
     tvl: () => ({}),
-    staking: staking(stakingContract, VGX, "ethereum"), 
+    staking: staking(stakingContract, VGX), 
   },
   methodology: "Voyager token VGX can be staked",
 };

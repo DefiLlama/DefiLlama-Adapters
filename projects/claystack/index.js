@@ -1,30 +1,22 @@
-const sdk = require('@defillama/sdk');
-const abi = require('./clayABIs/clayMain.json');
+const ADDRESSES = require('../helper/coreAssets.json')
+
+const abis = {
+  "funds": "function funds() view returns (uint256 currentDeposit, uint256 stakedDeposit, uint256 accruedFees)"
+}
 
 const clayAddresses = {
-  clayMatic: "0x91730940DCE63a7C0501cEDfc31D9C28bcF5F905",
+  clayEth: "0x331312DAbaf3d69138c047AaC278c9f9e0E8FFf8"
 };
 
-const coinAddresses = {
-  matic: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-};
-
-async function getClayMaticTvl(block) {
-  const deposits = (
-    await sdk.api.abi.call({
-      target: clayAddresses.clayMatic,
-      abi: abi.funds,
-      chain: "ethereum",
-      block
-    })
-  ).output;
-  return { [coinAddresses.matic]: deposits.currentDeposit };
+async function tvl(api) {
+  const ethDeposits = await api.call({ target: clayAddresses.clayEth, abi: abis.funds, })
+  api.add(ADDRESSES.null, ethDeposits.currentDeposit)
 }
 
 module.exports = {
-
-  ethereum: {
-    tvl: getClayMaticTvl,
-  },
-  methodology: `We get the total token deposited in clay contracts and convert it to USD.`
+  deadFrom: '2025-05-20',
+  doublecounted: true,
+  hallmarks: [[1707315338,"Split Adapter"]],
+  ethereum: { tvl },
+  methodology: `We get the total ETH deposited in clay contracts and convert it to USD.`
 }

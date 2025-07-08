@@ -46,6 +46,7 @@ class EnigmaUtils {
     // const txEncryptionIkm = curve25519.sharedKey(this.privkey, consensusIoPubKey);
     // const txEncryptionKey = crypto.hkdfSync("sha256", Uint8Array.from([...txEncryptionIkm, ...nonce]), hkdfSalt, '', 32)
     // const { key: txEncryptionKey } = await hkdf.compute(Uint8Array.from([...txEncryptionIkm, ...nonce]), "SHA-256", 32, "", hkdfSalt)
+    // console.log(txEncryptionKey, 'txEncryptionKey', new Uint8Array(txEncryptionKey))
     const txEncryptionKey = fakeKey
     return new Uint8Array(txEncryptionKey)
   }
@@ -64,7 +65,7 @@ class EnigmaUtils {
       return new Uint8Array();
     }
     const txEncryptionKey = await this.getTxEncryptionKey(nonce);
-    //console.log(`decrypt tx encryption key: ${Encoding.toHex(txEncryptionKey)}`);
+    //sdk.log(`decrypt tx encryption key: ${Encoding.toHex(txEncryptionKey)}`);
     const siv = await miscreant.SIV.importKey(txEncryptionKey, "AES-SIV", cryptoProvider);
     const plaintext = await siv.open(ciphertext, [new Uint8Array()]);
     return plaintext;
@@ -115,4 +116,4 @@ EnigmaUtils.toBase64 = toBase64
 
 module.exports = EnigmaUtils
 
-const fakeKey = new Uint8Array([104, 52, 184, 163, 49, 137, 219, 71, 54, 99, 223, 160, 48, 83, 58, 92, 175, 118, 60, 103, 134, 11, 44, 191, 210, 206, 164, 120, 48, 100, 9, 130]).buffer
+const fakeKey = new Uint8Array([248, 24, 153, 160, 20, 71, 22, 226, 185, 239, 57, 17, 11, 65, 67, 231, 36, 199, 102, 223, 164, 45, 133, 137, 223, 33, 119, 169, 155, 169, 194, 224]).buffer

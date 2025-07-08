@@ -1,92 +1,63 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
-const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { stakings } = require("../helper/staking");
 
-const TimeStaking = "0x4456B87Af11e87E329AB7d7C7A246ed1aC2168B9"
-const time = "0xb54f16fB19478766A268F172C9480f8da1a7c9C3"
+const TimeStaking = "0x4456B87Af11e87E329AB7d7C7A246ed1aC2168B9";
+const RevenueSharingFarm = "0xC172c84587bEa6d593269bFE08632bf2Da2Bc0f6";
+const TIME = "0xb54f16fB19478766A268F172C9480f8da1a7c9C3";
+const wMEMO = "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b";
 
-// https://app.wonderland.money/#/bonds
-const treasury = "0x1c46450211CB2646cc1DA3c5242422967eD9e04c"
-const dao = "0x78a9e536EBdA08b5b9EDbE5785C9D1D50fA3278C"
-const mim = "0x130966628846BFd36ff31a822705796e8cb8C18D"
-const wavax = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
-const wMEMO = "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b"
+const Treasury_Eth = "0x355D72Fb52AD4591B2066E43e89A7A38CF5cb341";
+const Treasury_Avax = "0x88bbE6dE858B179841c8f49a56b99fb0522a263a";
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const balances = {};
-  const transform = addr => addr.toLowerCase() === "0x130966628846bfd36ff31a822705796e8cb8c18d" ? "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3" : `avax:${addr}`
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [mim, false],
-      [wavax, false],
-      ["0x113f413371fC4CC4C9d6416cf1DE9dFd7BF747Df", true], // mim-time
-      ["0x781655d802670bba3c89aebaaea59d3182fd755d", true], // wavax-mim
-      ["0x8ea6dd9482a49791e8c3d0f7c515bbd3be702f74", true], // MIM-WETH
-      ["0xf64e1c5B6E17031f5504481Ac8145F4c3eab4917", true], // wavax-time
-      ["0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab", false], // WETH
-      ["0x4d308c46ea9f234ea515cc51f16fba776451cac8", true], // wmemo-mim
-
-      ["0xc7198437980c041c805a1edcba50c1ce5db95118", false], // USDT
-      ["0xce1bffbd5374dac86a2893119683f4911a2f7814", false], // SPELL
-      ["0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd", false], // JOE
-      ["0xcbb424fd93cdec0ef330d8a8c985e8b147f62339", true], // wavax-mim
-      ["0x6cb6cb160bd629aaf07d2e51b3a435d909d01dd0", true], // mim-time
-      ["0xb599E3Cc5e7730865E74d78F2b9B67fDC627b743", true], // mim-??
-      ["0x0da67235dd5787d67955420c84ca1cecd4e5bb3b", false], //wMEMO
-    ],
-    [treasury, dao],
-    chainBlocks.avax,
-    'avax',
-    transform
-  );
-
-  const wmemoAddress = transform(wMEMO)
-  const memo = await sdk.api.abi.call({
-    target: wMEMO,
-    abi: { "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }], "name": "wMEMOToMEMO", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-    chain:'avax',
-    block: chainBlocks.avax,
-    params: [balances[wmemoAddress]]
+async function avaxTvl(api) {
+  await api.sumTokens({
+    owner: Treasury_Avax, tokens: [ADDRESSES.avax.USDt,
+    ADDRESSES.avax.USDC_e,
+      "0x39fC9e94Caeacb435842FADeDeCB783589F50f5f", // KNC
+      "0x63682bDC5f875e9bF69E201550658492C9763F89", // BSGG
+      "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b", //wMEMO
+    ]
   })
-  balances[transform(time)] = memo.output
-  delete balances[wmemoAddress]
-
-  return balances;
+  api.removeTokenBalance(wMEMO)
 }
 
-const ethTransforms = {
-  "0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9": "0x090185f2135308bad17527004364ebcc2d37e5f6"
+async function ethTvl(api) {
+  return api.sumTokens({
+    owner: Treasury_Eth, tokens: [     
+       ADDRESSES.ethereum.LUSD, 
+      ADDRESSES.ethereum.FXS,  // FRAX
+      ADDRESSES.ethereum.CVX, 
+      ADDRESSES.ethereum.cvxCRV, 
+      "0x55C08ca52497e2f1534B59E2917BF524D4765257",  // UwU
+      "0x69570f3E84f51Ea70b7B68055c8d667e77735a25",  // BSGG
+      "0x04906695D6D12CF5459975d7C3C03356E4Ccd460",  // sOHM
+      "0x29127fE04ffa4c32AcAC0fFe17280ABD74eAC313",  // sifu
+      ADDRESSES.ethereum.TUSD, 
+      "0x66761Fa41377003622aEE3c7675Fc7b5c1C2FaC5",  // CPOOL
+      "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF",  // ALCX
+      "0xdB25f211AB05b1c97D595516F45794528a807ad8",  // EURS
+      ADDRESSES.ethereum.GNO,  // GNO
+      "0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68",  // INV
+      "0xE80C0cd204D654CEbe8dd64A4857cAb6Be8345a3",  // JPEG
+      "0x0C10bF8FcB7Bf5412187A595ab97a3609160b5c6",  // USDD
+      "0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6",  // STG
+      "0x6243d8CEA23066d098a15582d81a598b4e8391F4",  // FLX
+      ADDRESSES.ethereum.SNX, 
+      ADDRESSES.ethereum.USDT, 
+      ADDRESSES.ethereum.DAI, 
+
+    ]
+  })
 }
-
-async function ethTvl(timestamp, ethBlock, chainBlocks) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      ["0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", false], //cvx
-      ["0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3", false], //mim
-      ["0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9", false], // sSPELL
-    ],
-    ["0x355d72fb52ad4591b2066e43e89a7a38cf5cb341"],
-    ethBlock,
-    'ethereum',
-    addr=>ethTransforms[addr.toLowerCase()]??addr
-  );
-  return balances
-}
-
 
 module.exports = {
-  avax:{
-    tvl,
-    staking: staking(TimeStaking, time, "avax")
+  avax: {
+    tvl: avaxTvl,
+    staking: stakings([TimeStaking, RevenueSharingFarm], [TIME, wMEMO]),
   },
-  ethereum:{
-    tvl:ethTvl
+  ethereum: {
+    tvl: ethTvl,
   },
   methodology:
-    "Counts tokens on the treasury for tvl and staked TIME for staking",
+    "Counts tokens on the treasury for TVL, Staked TIME for Staking and Revenue Sharing Farm.",
 };

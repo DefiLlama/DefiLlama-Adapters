@@ -1,19 +1,4 @@
-const sdk = require('@defillama/sdk');
-const { sumTokens } = require('../helper/unwrapLPs')
-
-const abi = { 
-  "constant": true, 
-  "inputs": [], 
-  "name": "exchangeRateStored", 
-  "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], 
-  "payable": false, 
-  "stateMutability": "view", 
-  "type": "function" 
-};
-
-const cLINK = '0xface851a4921ce59e912d19329929ce6da6eb0c7';
-
-async function getTokenHolderList(chain) {
+function getTokenHolderList(chain) {
   if (chain === 'ethereum') {
     return {
       tokenList: [
@@ -68,41 +53,17 @@ async function getTokenHolderList(chain) {
       ]
     }
   }
-};
+}
 
-function tvl(chain) {
-  return {
-    tvl: async(timestamp, _block, chainBlocks) => {
-      const balances = {};
-      const calls = [];
-      const block = chainBlocks[chain]
-      let { tokenList, holderList } = await getTokenHolderList(chain)
-      tokenList.forEach(t => holderList.forEach(h => calls.push([t, h])))
-    
-      await sumTokens(balances, calls, block, chain, undefined, { unwrapAll: true })
-    
-      if (cLINK in balances) {
-        const exchangeRate = (await sdk.api.abi.call({
-          block,
-          target: cLINK,
-          abi,
-          chain
-        })).output;
-    
-        balances['0x514910771af9ca656af840dff83e8264ecf986ca'] = 
-          balances[cLINK] * (exchangeRate / 10 ** 28);
-        delete balances[cLINK];
-      };
-    
-      return balances;
-    }
-  }
-};
+async function tvl(api) {
+  const { tokenList, holderList } = getTokenHolderList(api.chain)
+  return api.sumTokens({ owners: holderList, tokens: tokenList, })
+}
 
 module.exports = {
-  start: 1621340071,
-  ethereum: tvl('ethereum'),
-  fantom: tvl('fantom'),
-  avax: tvl('avax'),
-  polygon: tvl('polygon'),
+  start: '2021-05-18',
+  ethereum: { tvl, },
+  fantom: { tvl, },
+  avax: { tvl, },
+  polygon: { tvl, },
 };

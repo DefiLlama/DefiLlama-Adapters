@@ -1,10 +1,5 @@
-const sdk = require('@defillama/sdk');
 const marketsJSON = require('./market.json');
 const abi = require('./abi.json');
-const { unwrapCrv, unwrapYearn } = require('../helper/unwrapLPs')
-const { transformAvaxAddress, transformArbitrumAddress, transformFantomAddress 
-    } = require("../helper/portedTokens");
-const { getBlock } = require('../helper/getBlock');
 
 // --------------------------
 // cvx3pool & yvcrvIB tokens
@@ -12,86 +7,56 @@ const { getBlock } = require('../helper/getBlock');
 // on eth (~$169M tvl)
 // --------------------------
 const bentoBoxAddresses = {
-    "ethereum": "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966",
-    "arbitrum": "0x74c764D41B77DBbb4fe771daB1939B00b146894A",
-    "avax": "0xf4F46382C2bE1603Dc817551Ff9A7b333Ed1D18f",
-    "fantom": "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966"
+  "arbitrum": ["0x74c764D41B77DBbb4fe771daB1939B00b146894A", "0x7c8fef8ea9b1fe46a7689bfb8149341c90431d38"],
+  "avax": ["0xf4F46382C2bE1603Dc817551Ff9A7b333Ed1D18f", "0x1fC83f75499b7620d53757f0b01E2ae626aAE530"],
+  "blast": ["0xC8f5Eb8A632f9600D1c7BC91e97dAD5f8B1e3748"],
+  "bsc": ["0x090185f2135308BaD17527004364eBcC2D37e5F6"],
+  "ethereum": ["0xF5BCE5077908a1b7370B9ae04AdC565EBd643966", "0xd96f48665a1410C0cd669A88898ecA36B9Fc2cce"],
+  "fantom": ["0xF5BCE5077908a1b7370B9ae04AdC565EBd643966", "0x74A0BcA2eeEdf8883cb91E37e9ff49430f20a616"],
+  "kava": ["0x630fc1758de85c566bdec1d75a894794e1819d7e"],
+  "optimism": ["0xa93c81f564579381116ee3e007c9fcfd2eba1723"],
 };
-async function transformEthAddress() {
-    return (addr) => {
-        switch(addr.toLowerCase()) {
-            case '0xca76543cf381ebbb277be79574059e32108e3e65':
-                return '0x383518188c0c6d7730d91b2c03a03c837814a899';
-            default:
-                return addr;
-        };
-    };
-};
-async function ethTvl(timestamp, ethBlock, chainBlocks) {
-    return tvl(timestamp, chainBlocks, 'ethereum', (await transformEthAddress()));
-};
-async function ftmTvl(timestamp, ethBlock, chainBlocks) {
-    return tvl(timestamp, chainBlocks, 'fantom', (await transformFantomAddress()));
-};
-async function arbiTvl(timestamp, ethBlock, chainBlocks) {
-    return tvl(timestamp, chainBlocks, 'arbitrum', (await transformArbitrumAddress()));
-};
-async function avaxTvl(timestamp, ethBlock, chainBlocks) {
-    return tvl(timestamp, chainBlocks, 'avax', (await transformAvaxAddress()));
-};
-async function tvl(timestamp, chainBlocks, chain, transformAddress=addr=>addr) {
-    let marketsArray = [];
-    let balances = {};
-    let block;
 
-    for (const [marketContract, lockedToken] of Object.entries(marketsJSON[chain])) {
-        marketsArray.push([lockedToken, marketContract]);
-    };
-
-    if (chainBlocks[chain]) {
-        block = chainBlocks[chain];
-    } else {
-        block = await getBlock(timestamp, chain, chainBlocks);
-    };
-
-    let tokenBalances = (await sdk.api.abi.multiCall({
-        block: block,
-        calls: marketsArray.map((market) => ({
-            target: bentoBoxAddresses[chain],
-            params: market
-        })),
-        abi: abi.balanceOf,
-        chain: chain
-    })).output.map(t => t.output);
-
-    for (let index = 0; index < marketsArray.length; index++) {
-        sdk.util.sumSingleBalance(
-          balances,
-          transformAddress(marketsArray[index][0]),
-          tokenBalances[index]
-        );
-        await unwrapYearn(balances, marketsArray[index][0], block, chain, transformAddress);
-      };
-    for (let [token, balance] of Object.entries(balances)) {
-        await unwrapCrv(balances, token, balance, block, chain, transformAddress);
-    };
-    if ('0x383518188c0c6d7730d91b2c03a03c837814a899' in balances) {
-        balances['0x383518188c0c6d7730d91b2c03a03c837814a899'] = 
-            balances['0x383518188c0c6d7730d91b2c03a03c837814a899'] / 10**9;
-    };
-    return balances;
+const underlyingTokens = {
+  arbitrum: {
+    "0x3477Df28ce70Cecf61fFfa7a95be4BEC3B3c7e75": "0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf",
+  },
+  avax: {},
+  blast: {},
+  bsc: {},
+  ethereum: {
+    "0x9447c1413DA928aF354A114954BFc9E6114c5646": "0x903C9974aAA431A765e60bC07aF45f0A1B3b61fb",
+    "0x4985cc58C9004772c225aEC9C36Cc9A56EcC8c20": "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+  },
+  fantom: {},
+  kava: {},
+  optimism: {},
 };
-module.exports = {
-    ethereum: {
-        tvl: ethTvl
-    },
-    arbitrum: {
-        tvl: arbiTvl
-    },
-    avax: {
-        tvl: avaxTvl
-    },
-    fantom: {
-        tvl: ftmTvl
-    },
+
+async function tvl(api) {
+  const { chain } = api
+  const marketsArray = [];
+
+  for (const [marketContract, lockedToken] of Object.entries(marketsJSON[chain]))
+    marketsArray.push([lockedToken, marketContract]);
+
+
+  const calls = bentoBoxAddresses[chain].map(bentoBoxAddress => marketsArray.map((market) => ({
+    target: bentoBoxAddress,
+    params: market
+  }))).flat()
+  const tokens = bentoBoxAddresses[chain].map(_ =>
+    marketsArray.map(([lockedToken]) => underlyingTokens[chain][lockedToken] ?? lockedToken)
+  ).flat()
+  const bals = await api.multiCall({ calls, abi: abi.balanceOf, })
+  api.addTokens(tokens, bals)
 }
+
+const chains = ['arbitrum', 'avax', 'blast', 'bsc', 'ethereum', 'fantom', 'kava', 'optimism'];
+chains.forEach(chain => module.exports[chain] = { tvl })
+
+module.exports.hallmarks = [
+  [1651881600, "UST depeg"],
+  [1643245200, "0xSifu revealed as QuadrigaCX founder"],
+  [1667826000, "FTX collapse, Alameda repays FTT loans"],
+]

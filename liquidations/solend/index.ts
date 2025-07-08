@@ -1,7 +1,7 @@
 import { PublicKey, Connection } from "@solana/web3.js";
 import { SolendMarket, SolendObligation, parseObligation } from "@solendprotocol/solend-sdk";
 import { BigNumber } from "bignumber.js";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 
 const endpoint = process.env.SOLANA_RPC || "https://solana-api.projectserum.com/"; // or "https://api.mainnet-beta.solana.com"
 const connection = new Connection(endpoint, "confirmed");

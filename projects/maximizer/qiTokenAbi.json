@@ -1,33 +1,4 @@
 {
-    "balanceOf": {
-        "inputs": [
-            {
-                "internalType":"address",
-                "name":"_token",
-                "type":"address"
-            }
-        ],
-        "name":"balanceOf",
-        "outputs": [
-            {
-                "internalType":"uint256",
-                "name":"",
-                "type":"uint256"
-            }
-        ],
-        "stateMutability":"view",
-        "type":"function"
-    },
-    "exchangeRateStored": {
-        "constant": true,
-        "inputs": [],
-        "name": "exchangeRateStored",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type":"uint256"
-            }
-        ]
-    }
+  "balanceOf": "function balanceOf(address _token) view returns (uint256)",
+  "exchangeRateStored": "uint256:exchangeRateStored"
 }

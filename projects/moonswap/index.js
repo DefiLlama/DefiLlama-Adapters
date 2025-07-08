@@ -3,7 +3,6 @@ const { getUniTVL } = require('../helper/unknownTokens')
 module.exports = {
   moonriver: {
     tvl: getUniTVL({
-      chain: 'moonriver',
       factory: '0x056973f631a5533470143bb7010c9229c19c04d2',
       useDefaultCoreAssets: true,
       blacklist: [
@@ -12,4 +11,4 @@ module.exports = {
     })
   },
   misrepresentedTokens: true,
-} // node test.js projects/moonswap/index.js
+}

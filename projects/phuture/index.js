@@ -1,50 +1,46 @@
-const { getBlock } = require("../helper/getBlock");
 const sdk = require("@defillama/sdk");
+const indexAbi = require("./abis/Index.abi.json");
 const vTokenAbi = require("./abis/vToken.abi.json");
-const BigNumber = require("bignumber.js");
+const vTokenFactoryAbi = require("./abis/vTokenFactory.abi.json");
+const networks = require("./networks.json");
+const { sumERC4626Vaults } = require("../helper/erc4626");
+const { getUniqueAddresses } = require("../helper/utils");
 
-const networks = {
-  ethereum: {
-    vTokenFactory: {
-      address: "0x24aD48f31CAb5E35D0E9CDfa9213b5451f22FB92",
-      blockNumber: 14832754
-    }
-  }
+const indexTvl = async (api) => {
+  const { indexes } = networks[api.chain]
+  const anatomy = (await api.multiCall({ abi: indexAbi.anatomy, calls: indexes })).map(i => i._assets)
+  const inactiveAnatomy = await api.multiCall({ abi: indexAbi.inactiveAnatomy, calls: indexes })
+  const vFactories = await api.multiCall({ abi: indexAbi.vTokenFactory, calls: indexes })
+  const indexTokens = anatomy.map((v, i) => getUniqueAddresses(v.concat(inactiveAnatomy[i])))
+  const tokens = []
+  const vTokenCalls = []
+  vFactories.forEach((v, i) => {
+    indexTokens[i].forEach((token) => {
+      tokens.push(token)
+      vTokenCalls.push({ target: v, params: token })
+    })
+  })
+  const vTokenOf = await api.multiCall({ abi: vTokenFactoryAbi.vTokenOf, calls: vTokenCalls })
+  const bals = await api.multiCall({ abi: vTokenAbi.virtualTotalAssetSupply, calls: vTokenOf })
+  api.add(tokens, bals)
+  return api.getBalances()
 };
 
-const tvl = (chain) => async (timestamp, block, chainBlocks) => {
-  const vTokenFactory = networks[chain].vTokenFactory;
-  const toBlock = await getBlock(timestamp, chain, chainBlocks);
-  const { output: logs } = await sdk.api.util.getLogs({
-    target: vTokenFactory.address,
-    topic: "VTokenCreated(address,address)",
-    keys: [],
-    fromBlock: vTokenFactory.blockNumber,
-    toBlock,
-    chain
-  });
-
-  const vTokens = logs.map(({ data }) => ({
-    target: `0x${data.substr(26, 40)}`.toLowerCase(),
-    asset: `0x${data.substr(-40)}`.toLowerCase()
-  }));
-
-  const { output } = await sdk.api.abi.multiCall({
-    abi: vTokenAbi.virtualTotalAssetSupply,
-    calls: vTokens.map(({ target }) => ({ target })),
-    block,
-    chain
-  });
-
-  return Object.fromEntries(output
-    .filter(({ output }) => output)
-    .map(({ output }, index) => [vTokens[index].asset, output])
-  );
+const savingsVaultTvl = async (api) => {
+  const calls = networks[api.chain]["savingsVaults"]
+  return sumERC4626Vaults({ api, calls, isOG4626: true, permitFailure: true })
 };
 
 module.exports = {
-  methodology: "TVL considers tokens deposited to Phuture Indices",
+  methodology: "TVL considers tokens deposited to Phuture Products",
+  misrepresentedTokens: true,
   ethereum: {
-    tvl: tvl("ethereum")
+    tvl: sdk.util.sumChainTvls([
+      indexTvl,
+      savingsVaultTvl
+    ])
+  },
+  avax: {
+    tvl: indexTvl
   }
 };
