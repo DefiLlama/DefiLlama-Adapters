@@ -41,7 +41,8 @@ const config = {
   hyperliquid: [
     '0xf44f49E6577B3934f981C6f0629d15154d2606E6',
     '0x7410E69958a8ECE2A51C231C8528513d4d668C7a',
-    '0xade27c7dec9211973278876f3819aedc28cd50ca'
+    '0xade27c7dec9211973278876f3819aedc28cd50ca',
+    '0x6bf9345b5d6b27b5cbf2e463dc5e0b2afcedc21c'
   ]
 }
 

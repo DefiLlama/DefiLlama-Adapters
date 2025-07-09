@@ -242,5 +242,12 @@
     "CurveStableswapFactoryNG": "0x5aEa9aaDd0974e8914229a23699bB6b343c97B09",
     "CurveTwocryptoFactoryNG": "0xa17b39BF1c2FE776Af38a999bE7Bb7bEa737a6EC",
     "CurveTricryptoFactoryNG": "0x729c764aE95e7a9DEA9F950B5AEdbF1A9F3D7c03"
+  },
+  "xdc": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x951857744785E80e2De051c32EE7b25f9c458C42",
+    "CurveStableswapFactoryNG": "0x5aEa9aaDd0974e8914229a23699bB6b343c97B09",
+    "CurveTwocryptoFactoryNG": "0xa17b39BF1c2FE776Af38a999bE7Bb7bEa737a6EC",
+    "CurveTricryptoFactoryNG": "0x729c764aE95e7a9DEA9F950B5AEdbF1A9F3D7c03"
   }
 }

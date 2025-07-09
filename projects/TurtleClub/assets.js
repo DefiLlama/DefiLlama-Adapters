@@ -32,7 +32,7 @@ const tokens = {
         ezREZ: '0x77B1183e730275f6A8024Ce53d54bcC12B368f60',
         REZ: '0x3B50805453023a91a8bf641e279401a0b23FA6F9',
         USUALX: '0x06B964d96f5dCF7Eae9d7C559B09EDCe244d4B8E',
-        USD0: '0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5',
+        USD0: ADDRESSES.ethereum.USD0,
         ynETH: '0x09db87A538BD693E9d08544577d5cCfAA6373A48',
         aEthUSDT: '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a',
         rsWETH: '0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0',
@@ -44,7 +44,7 @@ const tokens = {
         WETH: ADDRESSES.ethereum.WETH,
         stETH: ADDRESSES.ethereum.STETH,
         cbBTC: ADDRESSES.ethereum.cbBTC,
-        FBTC: '0xc96de26018a54d51c097160568752c4e3bd6c364',
+        FBTC: ADDRESSES.mantle.FBTC,
         tsSwellRswETH: '0xd4c9AA3FFDDc3EeE1d624849872EA3Eae2529972', // TODO not priced properly
         aEthUSDC: '0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c',
         eUSDC_2: '0x797DD80692c3b2dAdabCe8e30C07fDE5307D48a9',
@@ -59,7 +59,7 @@ const tokens = {
         SYO: '0x577Fd586c9E6BA7f2E85E025D5824DBE19896656',
         WBTC: ADDRESSES.arbitrum.WBTC,
         ARB: ADDRESSES.arbitrum.ARB,
-        'USD₮0': '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+        'USD₮0': ADDRESSES.arbitrum.USDT,
     },
     avax: {
         USDC: ADDRESSES.avax.USDC,
