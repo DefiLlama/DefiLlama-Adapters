@@ -791,7 +791,7 @@ async function cardanoTvl() {
 
   // Query total supply for each token
   for (const token of Object.values(RECEIPT_TOKENS.cardano)) {
-    try {
+
       // Get the total minted amount of the token
       const totalMinted = await getTokensMinted(token.address);
 
@@ -801,9 +801,6 @@ async function cardanoTvl() {
         const valueUSD = adjustedBalance * price;
         totalTvl += valueUSD;
       }
-    } catch (error) {
-      console.error(`Error fetching Cardano token data for ${token.address}: ${error}`);
-    }
   }
 
   // Return the total value in the format DeFiLlama expects
