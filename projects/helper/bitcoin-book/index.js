@@ -97,6 +97,7 @@ const cygnus = require('./cygnus.js')
 const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
+const coinbaseltc = require('./coinbase-ltc.js')
 const prosper = require('./prosper.js')
 const hotcoin = require('./hotcoin.js')
 const orangex = require('./orangex.js')
@@ -256,6 +257,7 @@ module.exports = {
   unitbtc,
   backpack,
   coinbasebtc,
+  coinbaseltc,
   prosper,
   lbank,
   hotcoin,
