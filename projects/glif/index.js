@@ -9,7 +9,7 @@ const BASE_ICNT_VAULT = "0xAeD7C2eD7Bb84396AfCB55fF72c8F8E87FFb68f3";
 
 module.exports = {
   methodology:
-    "This TVL calculation combines our two pools: (1) Filecoin pool (on Filecoin network) and (2) Impossible Cloud Network pool (on Base network). For the Filecoin pool, we track the total amount of FIL deposited into the protocol, and the total amount of locked FIL collateral by borrowers, to arrive at TVL. For the Impossible Cloud Network pool, we track the total ICNT assets locked in the pool.",
+    "This TVL calculation combines GLIF's two pools: (1) Filecoin pool (on Filecoin network) and (2) Impossible Cloud Network pool (on Base network). For the Filecoin pool, tvl tracks the total amount of FIL deposited into the protocol, and the total amount of locked FIL collateral by borrowers, to arrive at TVL. For the Impossible Cloud Network pool, tvl tracks the total ICNT assets locked in the pool.",
   filecoin: {
     tvl: async (api) => {
       let url = INDEXER_API;
