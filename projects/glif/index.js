@@ -9,7 +9,7 @@ const BASE_ICNT_VAULT = "0xAeD7C2eD7Bb84396AfCB55fF72c8F8E87FFb68f3";
 
 module.exports = {
   methodology:
-    "GLIF creates capital markets for Decentralized Phyiscal Infrastructure (DePIN) networks. Token holders of specific DePIN network tokens earn rewards by putting them to use with hardware providers in the network. Hardware operators borrow against locked stake, hardware receipts, or future revenue, expanding storage, compute, and energy capacity. This TVL calculation combines our two pools: (1) Filecoin pool (on Filecoin network) and (2) Impossible Cloud Network pool (on Base network). For the Filecoin pool, we track the total amount of FIL deposited into the protocol, and the total amount of locked FIL collateral by borrowers, to arrive at TVL. For the Impossible Cloud Network pool, we track the total ICNT assets locked in the pool.",
+    "This TVL calculation combines our two pools: (1) Filecoin pool (on Filecoin network) and (2) Impossible Cloud Network pool (on Base network). For the Filecoin pool, we track the total amount of FIL deposited into the protocol, and the total amount of locked FIL collateral by borrowers, to arrive at TVL. For the Impossible Cloud Network pool, we track the total ICNT assets locked in the pool.",
   filecoin: {
     tvl: async (api) => {
       let url = INDEXER_API;
