@@ -88,6 +88,7 @@
     "32bhzEniykYRFADVaRM5PYswsjC23cxtes",
     "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP",
     "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo",
+    "36oiSkAi1VVuUpfdv8E2V5fZ2EarHRJpis",
     "378GLcve92X2Q4UrCyoMFDL5k5QrzeG7JN",
     "395vnFScKQ1ay695C6v7gf89UzoFpx3WuJ",
     "39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v",
@@ -97,10 +98,10 @@
     "3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN",
     "3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2",
     "3EVVc8e2rxwUuERtdJCduWig8DnpsUqyA6",
-    "3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt",
     "3F9CGMu7JSJnMHA8jFM2KgxuH6hhxtvENP",
     "3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B",
     "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA",
+    "3HkgC2R5PhqyXy6RVFyemvxN1VuFbQiQ5V",
     "3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ",
     "3JqPhvKkAPcFB3oLELBT7z2tQdjpnxuDi9",
     "3LQUu4v9z6KNch71j7kbj8GPeAGUo1FW6a",
@@ -117,9 +118,7 @@
     "bc1q5rsc4uscnmemlwru8xsys26k3xgxewqfnf3k7j",
     "bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h",
     "bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72",
-    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h",
-    "36oiSkAi1VVuUpfdv8E2V5fZ2EarHRJpis",
-    "3HkgC2R5PhqyXy6RVFyemvxN1VuFbQiQ5V"
+    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
   ],
   "celo": [
     "0xef268b5c05452d63a17da12f562368e88a036ef1",
@@ -175,6 +174,7 @@
     "0x1b46970cfe6a271e884f636663c257a5a571fb2c",
     "0x21a31ee1afc51d94c2efccaa2092ad1028285549",
     "0x28c6c06298d514db089934071355e5743bf21d60",
+    "0x308a2a0712570daeea77c8ba9c27a32cdc4000d4",
     "0x43684d03d81d3a4c70da68febdd61029d426f042",
     "0x4976a4a02f38326660d17bf34b431dc6e2eb2327",
     "0x4aec0e98fc1fb55b9cc2faaa7a81acca42cb4e96",
@@ -185,7 +185,7 @@
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x835678a611b28684005a5e2233695fb6cbbb0007",
     "0x9696f59e4d72e237be84ffd425dcad154bf96976",
-    "0x98adef6f2ac8572ec48965509d69a8dd5e8bba9d",
+    "0xa64b436964e7415c0e70b9989a53e1fb9a90e726",
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
     "0xad354cfbaa4a8572dd6df021514a3931a8329ef5",
     "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",
@@ -194,7 +194,11 @@
     "0xf977814e90da44bfa03b6295a0616a897441acec",
     "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
   ],
-  "hedera": ["0.0.1030878", "0.0.4523906", "0.0.652978"],
+  "hedera": [
+    "0.0.1030878",
+    "0.0.4523906",
+    "0.0.652978"
+  ],
   "litecoin": [
     "LXTras9zXwkUvmsAF15hUu86by2UdNLSWk",
     "LZEjckteAtWrugbsy9zU8VHEZ4iUiXo9Nm",
@@ -262,7 +266,9 @@
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0xb32e9a84ae0b55b8ab715e4ac793a61b277bafa3"
   ],
-  "scroll": ["0xf977814e90da44bfa03b6295a0616a897441acec"],
+  "scroll": [
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
+  ],
   "solana": [
     "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S",
     "3gd3dqgtJ4jWfBfLYTX67DALFetjc5iS72sCgRhCkW2u",
@@ -281,6 +287,7 @@
   "sonic": [
     "0x18e226459ccf0eec276514a4fd3b226d8961e4d1",
     "0x4fdfe365436b5273a42f135c6a6244a20404271e",
+    "0x64de13c46f627d9c86212050d48756fb65c06d8a",
     "0xa4e471dbfe8c95d4c44f520b19cee436c01c3267",
     "0xab72bd3eb3b5cc90165fa39da85ad0d496330c00",
     "0xf977814e90da44bfa03b6295a0616a897441acec"

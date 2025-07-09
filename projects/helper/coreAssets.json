@@ -2100,7 +2100,8 @@
     "ankrFLOWEVM": "0x1b97100eA1D7126C4d60027e231EA4CB25314bdb",
     "USDC_e": "0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52",
     "stgUSDC": "0xf1815bd50389c46847f0bda824ec8da914045d14",
-    "USDF": "0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed"
+    "USDF": "0x2aabea2058b5ac2d339b163c6ab6f2b6d53aabed",
+    "WETH": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590"
   },
   "matchain": {
     "MAT": "0x44a83a012B926853DFc1BBE2ec5BEf37126067e8",
@@ -2397,7 +2398,9 @@
   },
   "hyperliquid": {
     "WHYPE": "0x5555555555555555555555555555555555555555",
-    "wstHYPE": "0x94e8396e0869c9f2200760af0621afd240e1cf38"
+    "wstHYPE": "0x94e8396e0869c9f2200760af0621afd240e1cf38",
+    "USDe": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+    "USDT0": "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb"
   },
   "hsk": {
     "WHSK": "0xb210d2120d57b758ee163cffb43e73728c471cf1",
@@ -2544,6 +2547,7 @@
     "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc": "factory/titan1eyfccmjm6732k7wp4p6gdjwhxjwsvje44j0hfx8nkgrm8fs7vqfsalaj2e/wbtc"
   },
   "xrplevm": {
+    "XRP": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     "WXRP": "0x7C21a90E3eCD3215d16c3BBe76a491f8f792d4Bf",
     "USDC": "0xa16148c6ac9ede0d82f0c52899e22a575284f131",
     "WETH": "0x50498dc52bcd3daeb54b7225a7d2fa8d536f313e"
