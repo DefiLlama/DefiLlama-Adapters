@@ -1,0 +1,2788 @@
+{
+  "1pulse": {"functionName": "uniTvlExports", "args": [{"pulse": "0x17C335D22456c798D5A3D021583eDAcbD4Ef6444"}, {}], "misrepresentedTokens": true},
+  "3xcalibur": {
+    "args": [{"arbitrum": "0xD158bd9E8b6efd3ca76830B66715Aa2b7Bad2218"}, {"hasStablePools": true, "hallmarks": [[1668038400, "Emissions started"]]}]
+  },
+  "9mm-v2": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "pulse": "0x3a0Fa7884dD93f3cd234bBE2A0958Ef04b05E13b",
+        "sonic": "0x0f7B3FcBa276A65dd6E41E400055dcb75BA66750",
+        "base": "0x4c1b8D4ae77A37b94e195CAB316391d3C687ebd1"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Factory addresses (0x3a0Fa7884dD93f3cd234bBE2A0958Ef04b05E13b for PulseChain) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "Akitaswap": {"functionName": "uniTvlExports", "args": [{"blast": "0x27C429dfF0e6d3B43B2C404C35f58C2b36cef916"}, {}], "misrepresentedTokens": true},
+  "Astra": {
+    "functionName": "uniTvlExports",
+    "args": [{"airdao": "0x2b6852CeDEF193ece9814Ee99BE4A4Df7F463557"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x2b6852CeDEF193ece9814Ee99BE4A4Df7F463557) address to find and price Liquidity Pool pairs."
+  },
+  "Blinkswap": {"functionName": "uniTvlExports", "args": [{"blast": "0xFfbDb302f29B29ee45D650DF44889450d252d868"}, {}], "misrepresentedTokens": true},
+  "BombFinance": {"args": [{"fantom": "0xD9473A05b2edf4f614593bA5D1dBd3021d8e0Ebe"}]},
+  "BroSwap": {"functionName": "uniTvlExports", "args": [{"core": "0x8edF7B8411b2e5dB740dbbf949E011e59fc7980a"}, {}], "misrepresentedTokens": true},
+  "ChewySwap": {
+    "functionName": "uniTvlExports",
+    "args": [{"shibarium": "0xEDedDbde5ffA62545eDF97054edC11013ED72125", "dogechain": "0x7C10a3b7EcD42dd7D79C0b9d58dDB812f92B574A"}, {}]
+  },
+  "Chocoinu": {"functionName": "uniTvlExports", "args": [{"avax": "0x49a5044268A54467a94905d1458A88413695afc1"}, {}], "misrepresentedTokens": true},
+  "CirclePacific": {
+    "functionName": "uniTvlExports",
+    "args": [{"manta": "0xD8c3DBE9C3953Fda5e4573533e662C58A37E1455"}, {}],
+    "misrepresentedTokens": true
+  },
+  "DegenDex": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x858FdBfD94C298D511F5Fb839d1f59eb1d8840D2", "dogechain": "0xfc5F561aa36D4f85BfA9A89Dbf058932223d43dB"}, {}],
+    "misrepresentedTokens": true
+  },
+  "Dexland": {"functionName": "uniTvlExports", "args": [{"core": "0x3D6Cb82318f8c5DAAA9498a379D047a369c1E4aA"}, {}], "misrepresentedTokens": true},
+  "Dopinprotocol": {
+    "functionName": "uniTvlExports",
+    "args": [{"tara": "0x6074dfbdCCA72e8CD69C97eE81873Ea5cd6d4E0f", "xp": "0x1721ee881963EeA953108805fa8d435a864DDF6c"}, {}]
+  },
+  "ElonSwap": {"functionName": "uniTvlExports", "args": [{"dogechain": "0x8B8CFD13ec09454E6440A4812ed306796a4Fb3eE"}, {}], "misrepresentedTokens": true},
+  "Equalizer": {
+    "args": [
+      {"fantom": "0xc6366EFD0AF1d09171fe0EBF32c7943BB310832a", "sonic": "0xDDD9845Ba0D8f38d3045f804f67A1a8B9A528FcC"},
+      {
+        "hasStablePools": true,
+        "stablePoolSymbol": "s-",
+        "staking": {"fantom": ["0x8313f3551C4D3984FfbaDFb42f780D0c8763Ce94", "0x3Fd3A0c85B70754eFc07aC9Ac0cbBDCe664865A6"]}
+      }
+    ]
+  },
+  "FirepotSwap": {
+    "functionName": "uniTvlExports",
+    "args": [{"airdao": "0xe63Cf585Dae8273A5e37AfF6da2f823FBf3Eb5BE"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0xe63Cf585Dae8273A5e37AfF6da2f823FBf3Eb5BE) address to find and price Liquidity Pool pairs."
+  },
+  "FlashLiquidity": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "polygon": "0x6e553d5f028bD747a27E138FA3109570081A23aE",
+        "polygon_zkevm": "0x6e553d5f028bD747a27E138FA3109570081A23aE",
+        "avax": "0x6e553d5f028bD747a27E138FA3109570081A23aE",
+        "base": "0x6e553d5f028bD747a27E138FA3109570081A23aE",
+        "arbitrum": "0x6e553d5f028bD747a27E138FA3109570081A23aE"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "TVL comes from the DEX liquidity pools"
+  },
+  "FlitSwap": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0x243f0218EF4cB8FC922ddd6d44e2DdE5b95DCa89"}, {}], "misrepresentedTokens": true},
+  "Gas404Swap": {"functionName": "uniTvlExports", "args": [{"bsc": "0xb6aC3914b53Cd3b39F11Fc9B380c3E605E994E20"}, {}], "misrepresentedTokens": true},
+  "GlyphExchange": {
+    "functionName": "uniTvlExports",
+    "args": [{"core": "0x3e723c7b6188e8ef638db9685af45c7cb66f77b9"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"core": ["0x6bf16B2645b13db386ecE6038e1dEF76d95696fc", "0xb3A8F0f0da9ffC65318aA39E55079796093029AD"]}
+  },
+  "GoSwap": {
+    "functionName": "uniTvlExports",
+    "args": [{"gochain": "0xe93c2cD333902d8dd65bF9420B68fC7B1be94bB3"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xe93c2cD333902d8dd65bF9420B68fC7B1be94bB3) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "HyperBlast": {"functionName": "uniTvlExports", "args": [{"blast": "0xD97fFc2041a8aB8f6bc4aeE7eE8ECA485381D088"}, {}], "misrepresentedTokens": true},
+  "Kwikswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "ethereum": "0xdD9EFCbDf9f422e2fc159eFe77aDD3730d48056d",
+        "polygon": "0x0B29D7a989D6647E4A56eE9899DaF7535FF9620c",
+        "shiden": "0xf5fC2D145381A2eBAFb93Cc2B60fB2b97FB405aa",
+        "bsc": "0x64eBD6CaCece790e9C4DDeA1a24952Ddb2715279"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "staking": {
+      "ethereum": ["0x57Caec63E87e1496E946181e3Fc59086e589D4c0", "0x286c0936c7eaf6651099ab5dab9ee5a6cb5d229d"],
+      "polygon": ["0x7965e5F759caB3d5a1b737b9Bb24e94ef6747FA7", "0x8df74088b3aecfd0cb97bcfd053b173782f01e3a", "polygon"],
+      "shiden": [
+        "0x212CB413c48221cA6fE2100578a9ABED26840380",
+        "0xd67de0e0a0fd7b15dc8348bb9be742f3c5850454",
+        "shiden",
+        "0x286c0936c7eaf6651099ab5dab9ee5a6cb5d229d"
+      ]
+    }
+  },
+  "LFIswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0xB702C2917f47012C331C6c65B74e07dA61260Bd4"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory addresses (0xB702C2917f47012C331C6c65B74e07dA61260Bd4 for kava) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "deadFrom": "2023-04-09"
+  },
+  "LemonBlast": {"functionName": "uniTvlExports", "args": [{"blast": "0x31329BcDC90faD4d65764ccf91f833ec1d5fB5A4"}, {}], "misrepresentedTokens": true},
+  "Liquify": {
+    "functionName": "uniTvlExports",
+    "args": [{"core": "0x0Ed2a54c8fD6dcc3cF0f8fd97c748438f0f32eAD"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "Liquify-Manta": {
+    "functionName": "uniTvlExports",
+    "args": [{"manta": "0x951f08e103570C0385649B24bE892eefFb5Ce067"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "LizardExchange": {"functionName": "uniTvlExports", "args": [{"oasis": "0xefA6861931991CCE372c477a015619A21dfEBE8c"}, {}]},
+  "LuigiSwap": {
+    "functionName": "uniTvlExports",
+    "args": [{"op_bnb": "0x0dAe6d22182c20AB9150a4DCB3160591Dc41027a", "scroll": "0x0dAe6d22182c20AB9150a4DCB3160591Dc41027a"}, {}],
+    "misrepresentedTokens": true
+  },
+  "Omnidrome": {
+    "args": [
+      {"zeta": "0x769d1BcB5FDf30F5a9D19f1ab8A3cF8b60a6e855"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "OpankeSwap": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0x4523A7f5414bAc9BfbDfc6eF0932Bf580C3cf9f1"}, {}], "misrepresentedTokens": true},
+  "OreSwap": {"functionName": "uniTvlExports", "args": [{"core": "0xbA862e0B955c612EEd514E722c84F1E70962457e"}, {}], "misrepresentedTokens": true},
+  "PattieSwap": {"functionName": "uniTvlExports", "args": [{"bsc": "0x71f6a913b317d2BF0Bf51Fd48d90e4cC6e62C4Dd"}, {}], "misrepresentedTokens": true},
+  "PinSwap": {"functionName": "uniTvlExports", "args": [{"iotex": "0x0A753dD1AFDE272a2d4bf55dF616568744201577"}, {}], "misrepresentedTokens": true},
+  "PowSea": {"functionName": "uniTvlExports", "args": [{"ethpow": "0x1Ee0fe7f80BeA6353b137B2E7DCA9e26F3c6F442"}, {}], "misrepresentedTokens": true},
+  "Produs": {"functionName": "uniTvlExports", "args": [{"bsc": "0x8ae5527706446943cBA8589313EC217a4a7288a4"}, {}], "misrepresentedTokens": true},
+  "PyreSwap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "fantom": "0x045d720873f0260e23da812501a7c5930e510aa4",
+        "bsc": "0x045d720873f0260e23da812501a7c5930e510aa4",
+        "avax": "0x045d720873f0260e23da812501a7c5930e510aa4"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "Scale": {
+    "args": [
+      {"base": "0xEd8db60aCc29e14bC867a497D94ca6e3CeB5eC04"},
+      {"hasStablePools": true, "staking": {"base": ["0x28c9c71c776a1203000b56c0cca48bef1cd51c53", "0x54016a4848a38f257b6e96331f7404073fd9c32c"]}}
+    ]
+  },
+  "Shibafantom": {"args": [{"fantom": "0xeAcC845E4db0aB59A326513347a37ed4E999aBD8"}]},
+  "Solidpulse": {
+    "functionName": "uniTvlExports",
+    "args": [{"pulse": "0xEb60163cb688e4d605407025f761AA66B293d82D"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "SwapMode": {"functionName": "uniTvlExports", "args": [{"mode": "0xfb926356BAf861c93C3557D7327Dbe8734A71891"}, {}], "misrepresentedTokens": true},
+  "SwapX-v2": {"args": [{"sonic": "0x05c1be79d3aC21Cc4B727eeD58C9B2fF757F5663"}, {"hasStablePools": true}]},
+  "SweetSwap": {"functionName": "uniTvlExports", "args": [{"dogechain": "0xf1036CA4762cD601BDc630cd32942f90d19ED970"}, {}]},
+  "TAKOSWAP": {"functionName": "uniTvlExports", "args": [{"ogpu": "0xEC03D5dc44143257F72B5a8e900bF2aAa0E702B0"}, {}], "misrepresentedTokens": true},
+  "VAX": {"functionName": "uniTvlExports", "args": [{"multivac": "0xbaC576111e2BC5EfBbE7c5d765b9DC44083901fD"}, {}], "misrepresentedTokens": true},
+  "Velocimeter": {
+    "functionName": "uniTvlExports",
+    "args": [{"canto": "0xb12aF64E128A1D4489D13314eB4Df81cBCE126aC"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "staking": {"canto": ["0x990efF367C6c4aece43c1E98099061c897730F27", "0x2Baec546a92cA3469f71b7A091f7dF61e5569889", "canto"]}
+  },
+  "Viridian": {
+    "functionName": "uniTvlExports",
+    "args": [{"core": "0xb54a83cfEc6052E05BB2925097FAff0EC22893F3"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL shows the sum of tokens deposited in our pools and Staking shows the number of $VIRI locked in the Voting Escrow contract.",
+    "staking": {"core": ["0x49360Bc1727113F56f5A256678AC27F93ee6D368", "0x189d2849AF2031e20c670E755Fa3F0121f2be409"]}
+  },
+  "XDX": {"functionName": "uniTvlExports", "args": [{"blast": "0xF55dE36072beCebF162d2d54C49964f3b0683711"}, {}], "misrepresentedTokens": true},
+  "Zebra": {"functionName": "uniTvlExports", "args": [{"scroll": "0xa63eb44c67813cad20A9aE654641ddc918412941"}, {}]},
+  "abstraDex": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "xlayer": "0xa7afb6163c331ddb0845843889d6f9544328846f",
+        "zkfair": "0x174c4C03DfeA09682728A5959A253bf1F7C7766F",
+        "zeta": "0x174c4C03DfeA09682728A5959A253bf1F7C7766F",
+        "blast": "0xA7afB6163c331DDb0845843889D6f9544328846F",
+        "cyeth": "0x174c4c03dfea09682728a5959a253bf1f7c7766f",
+        "cronos_zkevm": "0x76D1fC018676f8A973474C24F40A2e14e401b770",
+        "morph": "0x174c4C03DfeA09682728A5959A253bf1F7C7766F"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "aceofbase": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x46C6706E81CAD3173773c1ffb5D84C9eb652d570"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x46C6706E81CAD3173773c1ffb5D84C9eb652d570) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $ACE staking."
+  },
+  "adaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"milkomeda": "0xe07C22C184ca252A525511B798BB8Ce96abDCc5b"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xe07C22C184ca252A525511B798BB8Ce96abDCc5b) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "adenafinance": {
+    "functionName": "uniTvlExports",
+    "args": [{"harmony": "0x44485473431fAF6EFA11D346d1057182d2A0A290"}, {}],
+    "misrepresentedTokens": true
+  },
+  "aerodrome": {
+    "args": [
+      {"base": "0x420DD381b31aEf6683db6B902084cB0FFECe40Da"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "aerodrome-CL": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"base": "0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A"},
+      {
+        "blacklistedTokens": ["0xdbfefd2e8460a6ee4955a68582f85708baea60a3"],
+        "fetchBalances": true,
+        "abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint) view returns (address)"}
+      }
+    ]
+  },
+  "agsfinance": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0x6A6a541FFb214ca228A58c27bD61b5A099Dc82CC"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "AGS Finance Tvl Calculation"
+  },
+  "agus": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x1aEa6414e7F7A9581Ce53385b2902c59b34D4a94", "core": "0x1aEa6414e7F7A9581Ce53385b2902c59b34D4a94"}, {}],
+    "misrepresentedTokens": true
+  },
+  "akronswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "ethereum": "0xAf39606bec181887951Ab6912Ac7EA216Bd6E4B4",
+        "arbitrum": "0xAf39606bec181887951Ab6912Ac7EA216Bd6E4B4",
+        "base": "0xAf39606bec181887951Ab6912Ac7EA216Bd6E4B4",
+        "bsc": "0xAf39606bec181887951Ab6912Ac7EA216Bd6E4B4"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "alienbase": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x3E84D913803b02A4a7f027165E8cA42C14C0FdE7"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses Uniswap-style factory address to find and price liquidity pairs.",
+    "staking": {
+      "base": [
+        ["0x52eaecac2402633d98b95213d0b473e069d86590", "0x365c6d588e8611125De3bEA5B9280C304FA54113"],
+        "0x1dd2d631c92b1aCdFCDd51A0F7145A50130050C4"
+      ]
+    }
+  },
+  "alienbase-area51": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x2d5dd5fa7B8a1BFBDbB0916B42280208Ee6DE51e"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses Uniswap-style factory address to find and price liquidity pairs."
+  },
+  "alita-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xC7a506ab3ac668EAb6bF9eCf971433D6CFeF05D9"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0x4f7b2Be2bc3C61009e9aE520CCfc830612A10694", "0x557233E794d1a5FbCc6D26dca49147379ea5073c"]}
+  },
+  "alligator-exchange": {
+    "args": [
+      {"avax": "0xD9362AA8E0405C93299C573036E7FB4ec3bE1240"},
+      {"staking": {"avax": ["0x32A948F018870548bEd7e888Cd97a257b700D4c6", "0x43C812Ba28cb061b1Be7514145A15C9E18a27342"]}}
+    ]
+  },
+  "allinxswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"op_bnb": "0xAFcA85A70Bd1C2Bf98DB7F24b2380134F76Af7f1", "bsc": "0xB755953681f0b54f59336294f6758aE9e2E3aB5e"}, {}],
+    "misrepresentedTokens": true
+  },
+  "alphadex": {
+    "functionName": "uniTvlExports",
+    "args": [{"moonriver": "0xdD9EFCbDf9f422e2fc159eFe77aDD3730d48056d", "kava": "0x7e666D934F7525dF840d0CfFEaa3d6Bf3b3253a3"}, {}],
+    "methodology": "Uses factory(0xdD9EFCbDf9f422e2fc159eFe77aDD3730d48056d) address and whitelisted tokens address to find and price Liquidity Pool pairs",
+    "misrepresentedTokens": true
+  },
+  "amaterasu": {
+    "functionName": "uniTvlExports",
+    "args": [{"aurora": "0x34696b6cE48051048f07f4cAfa39e3381242c3eD"}, {}],
+    "methodology": "Uses factory(0x34696b6cE48051048f07f4cAfa39e3381242c3eD) address and whitelisted tokens address to find and price Liquidity Pool pairs",
+    "misrepresentedTokens": true
+  },
+  "ancora": {"functionName": "uniTvlExports", "args": [{"linea": "0xE7aC188E018f954A83c157ac686De7F66e819a51"}, {}], "misrepresentedTokens": true},
+  "andromeada": {"args": [{"base": "0xB9e611CaD79f350929C8E36cAbbe5D2Ce9502D51"}, {"hasStablePools": true}]},
+  "antfarm-finance": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "arbitrum": "0x61f4ECD130291e5D5D7809A112f9F9081b8Ed3A5",
+        "ethereum": "0xE48AEE124F9933661d4DD3Eb265fA9e153e32CBe",
+        "polygon_zkevm": "0x8aF94528FBE3c4C148523E7aAD48BcEbcC0A71d7",
+        "avax": "0xDC0BD72CdeF330786BF6f331a6Aca539c0bb4EaB"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "doublecounted": true,
+    "staking": {"ethereum": ["0x6142b36B3dD1812993C2ecaa300b962A7Da0A900", "0x518b63Da813D46556FEa041A88b52e3CAa8C16a8", "ethereum"]}
+  },
+  "apeswap-amm": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6",
+        "polygon": "0xcf083be4164828f00cae704ec15a36d711491284",
+        "ethereum": "0xBAe5dc9B19004883d0377419FeF3c2C8832d7d7B",
+        "telos": "0x411172Dfcd5f68307656A1ff35520841C2F7fAec",
+        "arbitrum": "0xCf083Be4164828f00cAE704EC15a36D711491284"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "staking": {
+      "bsc": [
+        ["0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9", "0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B"],
+        ["0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95", "0x34294AfABCbaFfc616ac6614F6d2e17260b78BEd"],
+        "bsc"
+      ]
+    },
+    "methodology": "TVL comes from the DEX liquidity pools, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9 and 0x71354AC3c695dfB1d3f595AfA5D4364e9e06339B"
+  },
+  "apexswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0x21cadeb92c8bbfbef98c3098846f0999209c3a97"}, {}],
+    "misrepresentedTokens": true,
+    "hallmarks": [[1665532800, "Rug Pull"]],
+    "deadFrom": "2022-10-12"
+  },
+  "aquas-trade": {"functionName": "uniTvlExports", "args": [{"europa": "0xc318a82CB7c2B0faf7e355BB8F285016956aBF55"}, {}]},
+  "arbiswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x88F1E030eb4C6C4320Da3992070bAF6c648ce37f"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x88F1E030eb4C6C4320Da3992070bAF6c648ce37f) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $ARBI staking."
+  },
+  "arbswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum_nova": "0xf6239423FcF1c19ED2791D9648A90836074242Fd", "arbitrum": "0xd394e9cc20f43d2651293756f8d320668e850f1b"}, {}],
+    "misrepresentedTokens": true
+  },
+  "archerswap": {"functionName": "uniTvlExports", "args": [{"core": "0xe0b8838e8d73ff1CA193E8cc2bC0Ebf7Cf86F620"}, {}], "misrepresentedTokens": true},
+  "arena-dex": {"args": [{"avax": "0xF16784dcAf838a3e16bEF7711a62D12413c39BD1"}]},
+  "artexswap_xyz": {"args": [{"artela": "0xa65f38efbE4b0b602C9FEBE887448263547aaeeD"}]},
+  "arthswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0xA9473608514457b4bF083f9045fA63ae5810A03E"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"astar": ["0x42d175a498Cb517Ad29d055ea7DcFD3D99045404", "0xde2578edec4669ba7f41c5d5d2386300bcea4678"]}
+  },
+  "astarexchange": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0x95f506E72777efCB3C54878bB4160b00Cd11cd84"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Astar Exchange Tvl Calculation"
+  },
+  "asteroneo": {"functionName": "uniTvlExports", "args": [{"neox": "0x1dAbb81D9Faeb1DF4a8c97A60C5269c7D45e66B0"}, {}]},
+  "astroswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"velas": "0xe82d721A6CdeC2f86e9Fca074Ff671c8621F8459"},
+      {"blacklist": ["0xcd7509b76281223f5b7d3ad5d47f8d7aa5c2b9bf", "0xd12f7a98c0d740e7ec82e8caf94eb79c56d1b623"]}
+    ],
+    "misrepresentedTokens": true
+  },
+  "auragi-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0xa36b55DBe8e83Eb69C686368cF93ABC8A238CC5f"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "auraswap": {
+    "args": [
+      {"polygon": "0x015DE3ec460869eb5ceAe4224Dc7112ac0a39303"},
+      {"staking": {"polygon": ["0x44Bb1a3E56Cb12b7B1a8E925f09A170e3646346d", "0x1b7805e2829fd7D194DCc3078a4199b13c77E467"]}}
+    ]
+  },
+  "auroraswap": {
+    "args": [
+      {"aurora": "0xC5E1DaeC2ad401eBEBdd3E32516d90Ab251A3aA3"},
+      {"staking": {"aurora": ["0x35CC71888DBb9FfB777337324a4A60fdBAA19DDE", "0x12c87331f086c3C926248f964f8702C0842Fd77F"]}}
+    ]
+  },
+  "autoshark": {
+    "args": [
+      {"bsc": "0xe759Dd4B9f99392Be64f1050a6A8018f73B53a13"},
+      {"staking": {"bsc": ["0x5D2112Ba0969EC66012380C1fb88F2A3D182Eb90", "0xdd97ab35e3c0820215bc85a395e13671d84ccba2"]}}
+    ]
+  },
+  "autotronic": {"functionName": "uniTvlExports", "args": [{"base": "0x55b3409335B81E7A8B7C085Bbb4047DDc23f7257"}, {}], "start": "2023-08-24"},
+  "babydogeswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x4693B62E5fc9c0a45F89D62e6300a03C85f43137"}, {"blacklistedTokens": ["0xe320df552e78d57e95cf1182b6960746d5016561"]}],
+    "methodology": "Total TVL in all farms and BabyDoge staking pool",
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0xcecd3e7eadae1ad0c94f53bf6a2af188df1a90d0", "0xc748673057861a797275CD8A068AbB95A902e8de"]}
+  },
+  "babyswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da"}, {}],
+    "methodology": "Uses factory(0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da) address and whitelisted tokens address to find and price Liquidity Pool pairs",
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0xdfAa0e08e357dB0153927C7EaBB492d1F60aC730", "0x53E562b9B7E5E94b81f10e96Ee70Ad06df3D2657"]}
+  },
+  "baguette": {"functionName": "uniTvlExports", "args": [{"avax": "0x3587B8c0136c2C3605a9E5B03ab54Da3e4044b50"}, {}], "misrepresentedTokens": true},
+  "bakeryswap": {
+    "args": [
+      {"bsc": "0x01bF7C66c6BD861915CdaaE475042d3c4BaE16A7"},
+      {"staking": {"bsc": ["0x6a8dbbfbb5a57d07d14e63e757fb80b4a7494f81", "0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5"]}}
+    ]
+  },
+  "balloonswap": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0xCF8B8Ca7B70880c90C635672eB3D4882a52B4890"}, {}], "misrepresentedTokens": true},
+  "bamboodefi": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "ethereum": "0x3823Ac41b77e51bf0E6536CE465479cBdedcaEa9",
+        "bsc": "0xFC2604a3BCB3BA6016003806A288E7aBF75c8Aa3",
+        "polygon": "0x25cc30af6b2957b0ed7ceca026fc204fdbe04e59",
+        "velas": "0xFC2604a3BCB3BA6016003806A288E7aBF75c8Aa3"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "TVL is calculated from the Bamboo DeFi factory smart contracts on each chain."
+  },
+  "baseswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB"}, {"permitFailure": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $BSWAP staking."
+  },
+  "baso": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0xcEFbebF0b85B1638C19b01cE2A02C262F421B07d"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "beamswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"moonbeam": "0x985BcA32293A7A496300a48081947321177a86FD"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x985BcA32293A7A496300a48081947321177a86FD) is used to find the LP pairs. TVL is equal to the liquidity on the AMM & Staking balance is equal to the amount of GLINT staked within the SHARE token contract(0x4204cAd97732282d261FbB7088e07557810A6408) - deprecated and stGLINT contract(0x63d43D0EDda7DE4B5ed9B2F2AA855f81FBd71697)",
+    "staking": {
+      "moonbeam": [
+        ["0x4204cAd97732282d261FbB7088e07557810A6408", "0x63d43D0EDda7DE4B5ed9B2F2AA855f81FBd71697"],
+        "0xcd3b51d98478d53f4515a306be565c6eebef1d58"
+      ]
+    }
+  },
+  "becoswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"kardia": "0x58b54BCDF2aF8a70dD6433EB39b308148261bB49"}, {"blacklistedTokens": ["0x551a5dcac57c66aa010940c2dcff5da9c53aa53b"]}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://becoswap.com/info as the source. Staking accounts for the BECO locked in MasterChef (0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e)",
+    "staking": {"kardia": ["0x20e8Ff1e1d9BC429489dA76B1Fc20A9BFbF3ee7e", "0x2Eddba8b949048861d2272068A94792275A51658"]}
+  },
+  "beracaine": {
+    "functionName": "uniTvlExports",
+    "args": [{"berachain": "0x0Ec621393958dD9865B912CBdFf808d175B1B9f4"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x0Ec621393958dD9865B912CBdFf808d175B1B9f4) address and whitelisted tokens address to find and price Liquidity Pool pairs."
+  },
+  "beralis-v2": {"args": [{"berachain": "0x9A40c6dCBB0c0BAeB58C41839C057a6431f96C55"}], "deadFrom": "2025-02-12"},
+  "binaryswap": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0xd50aaE6C73E2486B0Da718D23F35Dcf5aad25911"}, {}]},
+  "bitgert-swap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bitgert": "0x456405E3d355ad27010Fd87e3c7cC8a2DcA372fD"}, {}],
+    "misrepresentedTokens": true
+  },
+  "blaspace": {"functionName": "uniTvlExports", "args": [{"blast": "0xCAb98fEd113d403EbD9E294D80Bf92E3f19ddD57"}, {}], "misrepresentedTokens": true},
+  "blastdex": {"functionName": "uniTvlExports", "args": [{"blast": "0x66346aac17d0e61156AC5F2A934ccF2a9BDe4c65"}, {}], "misrepresentedTokens": true},
+  "blazeswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"songbird": "0x875b815a1D1b12a6fee3c068a7c43F80e4a50234", "flare": "0x440602f459D7Dd500a74528003e6A20A46d6e2A6"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "bluemeteor": {"functionName": "uniTvlExports", "args": [{"pulse": "0x2c68d8942fD4B5eC45a671fA230fb3dEBF224176"}, {}], "misrepresentedTokens": true},
+  "boomswap": {"args": [{"bsc": "0xB438dee6a8875AFAbB8a82e86ef56C4DEEe5D1b5"}]},
+  "boss-swap": {"functionName": "uniTvlExports", "args": [{"harmony": "0x7f107365E6Ef1F8824C724EA6aF7654AFB742963"}, {}]},
+  "bourbon": {"functionName": "uniTvlExports", "args": [{"dogechain": "0x6B09Aa7a03d918b08C8924591fc792ce9d80CBb5"}, {}], "misrepresentedTokens": true},
+  "brewswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x563c86d9F17914FF868BCbe3903B3ef829A82F9E", "bsc": "0xFe2bF5fc2D131dB07C5Ef7076856FD7f342738fF"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x563c86d9F17914FF868BCbe3903B3ef829A82F9E) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "brightside": {
+    "functionName": "uniTvlExports",
+    "args": [{"milkomeda_a1": "0x65be76efd12e7932bcd99acfefb8d531ec4f7e0d"}, {}],
+    "deadFrom": "04-04-2024",
+    "misrepresentedTokens": true
+  },
+  "brise-swap": {"functionName": "uniTvlExports", "args": [{"bitgert": "0x1379a7f0bfc346d48508B4b162c37a4c43dd89dc"}, {}], "misrepresentedTokens": true},
+  "bscswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0x7B2dAC429DF0b39390cD3D4E6a8b8bcCeB331E2D", "0xacc234978a5eb941665fd051ca48765610d82584"]},
+    "methodology": "Factory address on BSC (0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "bswap": {"functionName": "uniTvlExports", "args": [{"chainx": "0x356FD03E73ce821d5F7dFea51d1cB336EeFd67b1"}, {}], "misrepresentedTokens": true},
+  "bulbaswap-v2": {"args": [{"morph": "0x8D2A8b8F7d200d75Bf5F9E84e01F9272f90EFB8b"}]},
+  "burgerswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x8a1E9d3aEbBBd5bA2A64d3355A48dD5E9b511256"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0x9154c2684aeF8d106babcB19Aa81d4FabF7581ec", "0xae9269f27437f0fcbc232d39ec814844a51d6b8f"]},
+    "methodology": "TVL is equal to AMMs liquidity plus the Assets deposited on Burger Shack"
+  },
+  "butterswap": {
+    "args": [
+      {"heco": "0x874D01CA682C9c26BA7E6D9f6F801d1a1fb49201", "bsc": "0x1Ba94C0851D96b2c0a01382Bf895B5b25361CcB2"},
+      {
+        "staking": {
+          "heco": ["0x89a3BfA840CF4C9022789CC60500Ec03df8C2935", "0xbf84214ea409A369774321727595F218889eD943"],
+          "bsc": ["0xa49f4CF57eaFE0098D398DF3eD3A7dF10EAaBfAB", "0x5eF7814f4cB17b38408F1F641e4b5b61c5D023a8"]
+        }
+      }
+    ]
+  },
+  "bxh": {
+    "args": [
+      {
+        "heco": "0xe0367ec2bd4ba22b1593e4fefcb91d29de6c512a",
+        "bsc": "0x7897c32cbda1935e97c0b59f244747562d4d97c1",
+        "ethereum": "0x8d0fCA60fDf50CFE65e3E667A37Ff3010D6d1e8d",
+        "avax": "0xDeC9231b2492ccE6BA01376E2cbd2bd821150e8C",
+        "okexchain": "0xff65bc42c10dcc73ac0924b674fd3e30427c7823"
+      }
+    ]
+  },
+  "cafeswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x3e708fdbe3ada63fc94f8f61811196f1302137ad", "polygon": "0x5ede3f4e7203bf1f12d57af1810448e5db20f46c"}, {}],
+    "staking": {
+      "bsc": ["0xc772955c33088a97d56d0bbf473d05267bc4febb", "0x790be81c3ca0e53974be2688cdb954732c9862e1"],
+      "polygon": [
+        "0xca2DeAc853225f5a4dfC809Ae0B7c6e39104fCe5",
+        "0xb5106A3277718eCaD2F20aB6b86Ce0Fee7A21F09",
+        "polygon",
+        "bsc:0x790be81c3ca0e53974be2688cdb954732c9862e1"
+      ]
+    }
+  },
+  "cakewwap": {"functionName": "uniTvlExports", "args": [{"ethpow": "0xe97352E2d3a4F418044a91533a2379dbd11b425d"}, {}], "misrepresentedTokens": true},
+  "camelot": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "arbitrum": "0x6EcCab422D763aC031210895C81787E87B43A652",
+        "sanko": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4",
+        "xai": "0x18E621B64d7808c3C47bccbbD7485d23F257D26f",
+        "rari": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4",
+        "reya": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4",
+        "gravity": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4",
+        "apechain": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4",
+        "duckchain": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4",
+        "occ": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4",
+        "spn": "0x7d8c6B58BA2d40FC6E34C25f9A488067Fe0D2dB4"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "start": "2022-11-22"
+  },
+  "canary": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0xCFBA329d49C24b70F3a8b9CC0853493d4645436b", "scroll": "0x8D88e48465F30Acfb8daC0b3E35c9D6D7d36abaf"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"avax": ["0x39124Af473501Ccd83a5791eA1eFBc2e6dd78f10", "0x8D88e48465F30Acfb8daC0b3E35c9D6D7d36abaf"]}
+  },
+  "canto-dex": {
+    "functionName": "uniTvlExports",
+    "args": [{"canto": "0xE387067f12561e579C5f7d4294f51867E0c1cFba"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "canto-forte": {"functionName": "uniTvlExports", "args": [{"canto": "0x759e390D946249c63e0A1d8a810C5A577a591719"}, {}], "misrepresentedTokens": true},
+  "cantoswap": {"functionName": "uniTvlExports", "args": [{"canto": "0x6eE19E5e5F1018c26bDa107cB2CCd9dA461A698c"}, {}], "misrepresentedTokens": true},
+  "capitaldex": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0x03407772F5EBFB9B10Df007A2DD6FFf4EdE47B53"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address in Ethereum(0x03407772F5EBFB9B10Df007A2DD6FFf4EdE47B53) and in Curio(0xc36f5180b181f1b949e0ff4d65b258e0987f443f) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "carbonswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"energyweb": "0x17854c8d5a41d5A89B275386E24B2F38FD0AfbDd"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x17854c8d5a41d5A89B275386E24B2F38FD0AfbDd) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "carrotswap": {"functionName": "uniTvlExports", "args": [{"neox": "0x753df473702cB31BB81a93966e658e1AA4f10DD8"}, {}]},
+  "casinocronos": {
+    "functionName": "uniTvlExports",
+    "args": [{"cronos": "0x570aA1E0aa3d679Bc9DaAA47564ed3Daba1208FE"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x570aA1E0aa3d679Bc9DaAA47564ed3Daba1208FE) is used to find the LP pairs. TVL is equal to the liquidity on the AMM, while staking is the amount of CASINO tokens found in the Masterchef(0x81b5118bF8A720B19FEC6F3078d2b555790cb0AB).",
+    "staking": {"cronos": ["0x81b5118bF8A720B19FEC6F3078d2b555790cb0AB", "0x95ac4a86c0677971c4125ACe494e3C17a87a4C61"]}
+  },
+  "ceto-swap": {"functionName": "uniTvlExports", "args": [{"manta": "0xf50c8e257ccf3e2b58651f78e3c2dc83446d9c47"}, {}]},
+  "champagne-swap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xb31A337f1C3ee7fA2b2B83c6F8ee0CA643D807a0"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://champagne.finance/ as the source. Staking accounts for the CHAM locked in MasterChef (0x15C17442eb2Cd3a56139e877ec7784b2dbD97270)",
+    "staking": {"bsc": ["0x15C17442eb2Cd3a56139e877ec7784b2dbD97270", "0x4957c1c073557BFf33C01A7cA1436D0d2409d439"]}
+  },
+  "cherryswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"okexchain": "0x709102921812b3276a65092fe79edfc76c4d4afe"}, {}],
+    "methodology": "Staking is the CHE staked on 0x9Ab8BCf67fE8d8D2aD27D42Ec2A0fD5C206DAE60, tvl is the liquidity on the exchange and the money locked on the pools that distribute CHE",
+    "staking": {"okexchain": ["0x9Ab8BCf67fE8d8D2aD27D42Ec2A0fD5C206DAE60", "0x8179d97eb6488860d816e3ecafe694a4153f216c"]}
+  },
+  "chickendefi": {"functionName": "uniTvlExports", "args": [{"sonic": "0x796F21EFA35bf3b0360aC8e3c108241f88E47A3a"}, {}], "misrepresentedTokens": true},
+  "chiliswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"scroll": "0x2627161e60fFa589f8bD3798F0947d572A7EdF68"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools"
+  },
+  "chilizswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"chz": "0xcF4A2be8Fe92fEe8e350AD8D876274749Ae0CBb1"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through Factory Contract."
+  },
+  "chimeradex": {
+    "functionName": "uniTvlExports",
+    "args": [{"scroll": "0x661B92cc18a8d73209dBa1394aE56fca2F9DDb4D", "arbitrum": "0x661B92cc18a8d73209dBa1394aE56fca2F9DDb4D"}, {}],
+    "misrepresentedTokens": true
+  },
+  "chronos": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0xCe9240869391928253Ed9cc9Bcb8cb98CB5B0722"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0xCe9240869391928253Ed9cc9Bcb8cb98CB5B0722) address to count liquidity in pools as TVL."
+  },
+  "claimswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"klaytn": "0x3679c3766E70133Ee4A7eb76031E49d3d1f2B50c"}, {}],
+    "methodology": "Tvl counts the tokens locked on AMM pools and staking counts the CLA that has been staked",
+    "staking": {"klaytn": ["0x5f5dec0d6402408ee81f52ab985a9c665b6e6010", "0xcf87f94fd8f6b6f0b479771f10df672f99eada63"]},
+    "misrepresentedTokens": true
+  },
+  "cleopatra-exchange-v1": {
+    "functionName": "uniTvlExports",
+    "args": [{"mantle": "0xAAA16c016BF556fcD620328f0759252E29b1AB57"}, {"hasStablePools": true, "stablePoolSymbol": "crAMM"}],
+    "misrepresentedTokens": true,
+    "staking": {"mantle": ["0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F", "0xC1E0C8C30F251A07a894609616580ad2CEb547F2"]}
+  },
+  "clever-protocol": {
+    "functionName": "uniTvlExports",
+    "args": [{"dogechain": "0xf5833b5f514613beB33b4259a08aa64326E95c53"}, {}],
+    "misrepresentedTokens": true
+  },
+  "coffeefi": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"scroll": "0x23537BCe0533e53609A49dffdd400e54A825cb81", "arbitrum": "0xdAF8b79B3C46db8bE754Fc5E98b620ee243eb279"},
+      {"hasStablePools": true}
+    ],
+    "misrepresentedTokens": true
+  },
+  "coinswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xC2D8d27F3196D9989aBf366230a47384010440c0"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL counts the liquidity of the DEX. The factory address(0xC2D8d27F3196D9989aBf366230a47384010440c0) is used to find every LP pair that has been created."
+  },
+  "comfyswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"shibarium": "0x09aBAdE821e55d7944965688eA6699a9830BAE45", "op_bnb": "0x9946468d90DE3fD885b7FEE9BF73a956Dc363349"}, {}],
+    "misrepresentedTokens": true
+  },
+  "complus": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "polygon": "0x973c934137dd687eca67bdd1c5a8b74286964ac6",
+        "heco": "0xc32cccf795940ca8491cd4f31161509db28ab719",
+        "bsc": "0xdf97982bf70be91df4acd3d511c551f06a0d19ec",
+        "avax": "0x5c02e78a3969d0e64aa2cfa765acc1d671914ac0"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "cone": {"functionName": "uniTvlExports", "args": [{"bsc": "0x0EFc2D2D054383462F2cD72eA2526Ef7687E1016"}, {"hasStablePools": true}]},
+  "convergence": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0x4eef5746ED22A2fD368629C1852365bf5dcb79f1", "moonbeam": "0x9504d0d43189d208459e15c7f643aac1abe3735d"}, {}],
+    "start": "2021-05-17",
+    "misrepresentedTokens": true
+  },
+  "cookiebase": {"functionName": "uniTvlExports", "args": [{"base": "0x05b00D63DbC67874ad44d039213b7DAfB999d184"}, {}], "misrepresentedTokens": true},
+  "coreswap": {"functionName": "uniTvlExports", "args": [{"core": "0x97814a1F542aFe7fd02de53926621b0D40e8Ad6C"}, {}], "misrepresentedTokens": true},
+  "crodex": {
+    "functionName": "uniTvlExports",
+    "args": [{"cronos": "0xe9c29cB475C0ADe80bE0319B74AD112F1e80058F"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xe9c29cB475C0ADe80bE0319B74AD112F1e80058F) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "cronaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"cronos": "0x73A48f8f521EB31c55c0e1274dB0898dE599Cb11"}, {"blacklist": ["0x5b5fe1238aca91c65683acd7f9d9bf922e271eaa"]}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x73A48f8f521EB31c55c0e1274dB0898dE599Cb11) is used to find the LP pairs. TVL is equal to the liquidity on the AMM, while staking is the amount of CRONA tokens found in the Masterchef(0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254).",
+    "staking": {"cronos": ["0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254", "0xadbd1231fb360047525BEdF962581F3eee7b49fe"]}
+  },
+  "cronus": {
+    "functionName": "uniTvlExports",
+    "args": [{"evmos": "0x20570b7bFf86B2f92068622D0805160f318554Be"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x20570b7bFf86B2f92068622D0805160f318554Be) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "crust-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"mantle": "0x62DbCa39067f99C9D788a253cB325c6BA50e51cE"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x62DbCa39067f99C9D788a253cB325c6BA50e51cE) address and whitelisted tokens address to find and price liquidity pool pairs"
+  },
+  "cryptoswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x4136A450861f5CFE7E860Ce93e678Ad12158695C"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "The CryptoSwap subgraph and the CryptoSwap factory contract address are used to obtain the balance held in every LP pair.",
+    "start": "2022-05-02"
+  },
+  "crystalvale": {
+    "functionName": "uniTvlExports",
+    "args": [{"dfk": "0x794C07912474351b3134E6D6B3B7b3b4A07cbAAa"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x794C07912474351b3134E6D6B3B7b3b4A07cbAAa) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "staking": {"dfk": ["0x6E7185872BCDf3F7a6cBbE81356e50DAFFB002d2", "0x04b9dA42306B023f3572e106B11D82aAd9D32EBb", "dfk", "defi-kingdoms-crystal", 18]}
+  },
+  "cuanswap": {"functionName": "uniTvlExports", "args": [{"core": "0x23556027Ad3C3e76160AcA51e8098C395a6d815C"}, {}], "misrepresentedTokens": true},
+  "cubiswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"op_bnb": "0xE6c8488a3078f474D0B75E4ac06a369e3Fb39d76"}, {"permitFailure": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0xE6c8488a3078f474D0B75E4ac06a369e3Fb39d76) address to find and price Liquidity Pool pairs."
+  },
+  "cyberblast-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"blast": "0x32132625Cd02988Fb105FbbD3138bD383df3aF65"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses Uniswap-style factory address to find and price liquidity pairs."
+  },
+  "daomaker-swap": {"functionName": "uniTvlExports", "args": [{"bsc": "0x940BEb635cbEeC04720AC97FADb97205676e6aa4"}, {}], "misrepresentedTokens": true},
+  "darkswap": {"functionName": "uniTvlExports", "args": [{"dogechain": "0x643038270f316552A4FBfd5c100489982d076f86"}, {}], "misrepresentedTokens": true},
+  "dbx-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x41755a88d4ab443d5d8ef73ec64dd3df71fb5559"}, {}],
+    "misrepresentedTokens": true
+  },
+  "defi-swap": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0x9DEB29c9a4c7A88a3C0257393b7f3335338D9A9D"}, {}],
+    "misrepresentedTokens": true,
+    "start": "2020-09-08"
+  },
+  "defikingdoms": {
+    "functionName": "uniTvlExports",
+    "args": [{"harmony": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "klaytn": "0x36fAE766e51f17F8218C735f58426E293498Db2B"}, {}],
+    "staking": {
+      "harmony": ["0xa9ce83507d872c5e1273e745abcfda849daa654f", "0x72cb10c6bfa5624dd07ef608027e366bd690048f"],
+      "klaytn": ["0xaa8548665bcc12c202d5d0c700093123f2463ea6", "0x30c103f8f5a3a732dfe2dce1cc9446f545527b43"]
+    },
+    "hallmarks": [[1655991120, "Horizon bridge Hack $100m"]]
+  },
+  "defily-dex": {"functionName": "uniTvlExports", "args": [{"onus": "0xf57578DD26422e80ab4051165Fb64DA1F25E740A"}, {}], "misrepresentedTokens": true},
+  "definix": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x43eBb0cb9bD53A3Ed928Dd662095aCE1cef92D19", "klaytn": "0xdee3df2560bceb55d3d7ef12f76dcb01785e6b29"}, {}]
+  },
+  "degenhaus": {
+    "args": [
+      {"fantom": "0xA01C3d760738c79e10334408aE59684Aa36B1131"},
+      {"staking": {"fantom": ["0x72A7A3770B4BC999026F3663F1534581E0c59f2a", "0xd948efcc99be419ca9bdace89b2bec31edf13adb"]}}
+    ]
+  },
+  "demodyfi": {
+    "functionName": "uniTvlExports",
+    "args": [{"moonbeam": "0x61999fAb7fdcEe1B26b82b5c2f825BCC8F8c2458"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {
+      "ethereum": ["0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683", "0x5f6c5c2fb289db2228d159c69621215e354218d7"],
+      "bsc": ["0xc94e085E2E2D92A950fa4A6B923263C0B47c6dBa", "0x002D8563759f5e1EAf8784181F3973288F6856e4"]
+    },
+    "pool2": {
+      "ethereum": ["0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683", "0xD5B1Cd8D245A93E0697707AEe82497388508b132"],
+      "bsc": ["0xc94e085E2E2D92A950fa4A6B923263C0B47c6dBa", "0x0f35d854C267D29C0E418F561b75aE09B9E413D4"]
+    }
+  },
+  "dexswap-arbi": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x3E40739d8478c58f9B973266974C58998D4F9e8b"}, {}],
+    "misrepresentedTokens": true
+  },
+  "dfyn": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "polygon": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B",
+        "okexchain": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B",
+        "fantom": "0xd9820a17053d6314B20642E465a84Bf01a3D64f5"
+      },
+      {}
+    ]
+  },
+  "diamondswap": {
+    "args": [
+      {
+        "odyssey": "0x7d57C45dC107497C5c5c0F544a84691D2b06BC83",
+        "base": "0xdc93aca9bf72ceb35d1f2cd305bd8335b5b88757",
+        "avax": "0x7ab5ac142799b0a3b6f95c27a1f2149ebcf5287d"
+      }
+    ]
+  },
+  "dinoexchange": {
+    "args": [
+      {"bsc": "0x35E9455c410EacD6B4Dc1D0ca3144031f6251Dc2"},
+      {"staking": {"bsc": ["0x26CB55795Cff07Df3a1Fa9Ad0f51d6866a80943b", "0xf317932ee2c30fa5d0e14416775977801734812d"]}}
+    ]
+  },
+  "dinosaureggs": {"args": [{"bsc": "0x73d9f93d53505cb8c4c7f952ae42450d9e859d10"}]},
+  "direct-exchange": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0xcE08c3d20Ff00a9Cf0D28922768bD606592B5D4C"}, {}],
+    "misrepresentedTokens": true
+  },
+  "dmusk": {"functionName": "uniTvlExports", "args": [{"dogechain": "0x4e5E0739231A3BdE1c51188aCfEabC19983541E6"}, {}], "misrepresentedTokens": true},
+  "dojoswap-ancient8": {"args": [{"ancient8": "0x7d6eb409e2540d27Ea6Dc976E1a549a3dBcBfFBC"}]},
+  "donkeswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"sei": "0x4B4746216214f9e972c5D35D3Fe88e6Ec4C28A6B"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x4B4746216214f9e972c5D35D3Fe88e6Ec4C28A6B) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "dracula-era": {"args": [{"era": "0x68e03D7B8B3F9669750C1282AD6d36988f4FE18e"}, {"hasStablePools": true}]},
+  "dtx-dex": {"args": [{"taiko": "0x2EA9051d5a48eA2350b26306f2b959D262cf67e1"}]},
+  "duckydefi": {"args": [{"cronos": "0x796E38Bb00f39a3D39ab75297D8d6202505f52e2"}]},
+  "duneswap": {"functionName": "uniTvlExports", "args": [{"oasis": "0x9dd422B52618f4eDD13E08c840f2b6835F3C0585"}, {}]},
+  "dynastyswap-xyz": {
+    "functionName": "uniTvlExports",
+    "args": [{"pulse": "0x7abcEc2e35505aF1720431A6c414067717342B1F"}, {}],
+    "misrepresentedTokens": true
+  },
+  "dyorswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "mode": "0xE470699f6D0384E3eA68F1144E41d22C6c8fdEEf",
+        "blast": "0xA1da7a7eB5A858da410dE8FBC5092c2079B58413",
+        "merlin": "0xA1da7a7eB5A858da410dE8FBC5092c2079B58413",
+        "zeta": "0xA1da7a7eB5A858da410dE8FBC5092c2079B58413",
+        "degen": "0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09",
+        "xlayer": "0x2ccadb1e437aa9cdc741574bda154686b1f04c09",
+        "bob": "0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09",
+        "ink": "0x6c86ab200661512fDBd27Da4Bb87dF15609A2806",
+        "sonic": "0xd8863d794520285185197F97215c8B8AD04E8815",
+        "soneium": "0x4f0c1b4c6FdF983f2d385Cf24DcbC8c68f345E40",
+        "unichain": "0x6c86ab200661512fDBd27Da4Bb87dF15609A2806"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "dyson": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "linea": "0xecD30C099c222AbffDaf3E2A3d2455FC8e8c739E",
+        "polygon_zkevm": "0x51a0d4b81400581d8722627dafcd0c1ff9357d1d",
+        "blast": "0x51a0d4b81400581d8722627dafcd0c1ff9357d1d"
+      },
+      {"fetchBalances": true}
+    ],
+    "misrepresentedTokens": true
+  },
+  "dystopia": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x1d21Db6cde1b18c7E47B0F7F42f4b3F68b9beeC9"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "ebisus-bay": {
+    "functionName": "uniTvlExports",
+    "args": [{"cronos": "0x5f1d751f447236f486f4268b883782897a902379", "cronos_zkevm": "0x1A695B3aC30D41F9A1D856A27DD0D9DdaaCe750d"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "The TVL accounts for all LP on the dex, using the factory address 0x5f1d751f447236f486f4268b883782897a902379). Staking accounts for the FRTN staked in the bank on our platform.",
+    "staking": {"cronos": ["0x1E16Aa4Bb965478Df310E8444CD18Fa56603A25F", "0xaF02D78F39C0002D14b95A3bE272DA02379AfF21"]}
+  },
+  "echodex": {"functionName": "uniTvlExports", "args": [{"linea": "0x6D1063F2187442Cc9adbFAD2f55A96B846FCB399"}, {}], "misrepresentedTokens": true},
+  "eddyfinance": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"zeta": "0x9fd96203f7b22bCF72d9DCb40ff98302376cE09c"},
+      {"abis": {"getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)"}}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Sum of tvl of UniV2 pools"
+  },
+  "eggtartswap": {"functionName": "uniTvlExports", "args": [{"harmony": "0x65CED3c0Af7CDcC64Fb3eE5F021F9b4E65467812"}, {}]},
+  "electroswap-v2": {"args": [{"etn": "0x203D550ed6fA9dAB8A4190720CF9F65138abd15B"}]},
+  "elephantdex": {"functionName": "uniTvlExports", "args": [{"harmony": "0x0Dea90EC11032615E027664D2708BC292Bbd976B"}, {}]},
+  "elvesdex": {
+    "functionName": "uniTvlExports",
+    "args": [{"alv": "0xcadB0365436cbdB05D71C355F209AdaB214D8Dab"}, {"permitFailure": true}],
+    "misrepresentedTokens": true
+  },
+  "elysiumswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"elsm": "0x5bec5d65fAba8E90e4a74f3da787362c60F22DaE"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x5bec5d65fAba8E90e4a74f3da787362c60F22DaE) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "energiswap": {"functionName": "uniTvlExports", "args": [{"energi": "0x875aDBaF8109c9CC9AbCC708a42607F573f594E4"}, {}]},
+  "energyfi": {"functionName": "uniTvlExports", "args": [{"moonbeam": "0x7c7EaEa389d958BB37a3fd08706Ca884D53Dc1F3"}, {}], "misrepresentedTokens": true},
+  "eoswap": {"functionName": "uniTvlExports", "args": [{"eos_evm": "0xC0C6CCC0E73fcA8904596D558B73e0918A35018b"}, {}], "misrepresentedTokens": true},
+  "equilibre": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0xA138FAFc30f6Ec6980aAd22656F2F11C38B56a95"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "staking": {"kava": ["0x35361C9c2a324F5FB8f3aed2d7bA91CE1410893A", "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73"]}
+  },
+  "esper-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"mantle": "0x69C4515C926ac3db7A547044145495240961a7B5"}, {}],
+    "misrepresentedTokens": true
+  },
+  "etcswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereumclassic": "0x0307cd3d7da98a29e6ed0d2137be386ec1e4bc9c"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x0307cd3d7da98a29e6ed0d2137be386ec1e4bc9c) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "ethervista": {"args": [{"ethereum": "0x9a27cb5ae0B2cEe0bb71f9A85C0D60f3920757B4"}]},
+  "ethwswap": {"functionName": "uniTvlExports", "args": [{"ethpow": "0x78376072F4945b2A5450B1A6B41a85ff20034527"}, {}], "misrepresentedTokens": true},
+  "excalibur": {"args": [{"fantom": "0x08b3CCa975a82cFA6f912E0eeDdE53A629770D3f"}]},
+  "fairyswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"findora": "0xA9a6E17a05c71BFe168CA972368F4b98774BF6C3"}, {}],
+    "methodology": "Uses factory(0xA9a6E17a05c71BFe168CA972368F4b98774BF6C3) address and whitelisted tokens address to find and price Liquidity Pool pairs"
+  },
+  "fairyswap-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"findora": "0xA2DD9611675927281070dB095599D31a8D4a007A"}, {}],
+    "methodology": "Uses factory(0xA2DD9611675927281070dB095599D31a8D4a007A) address and whitelisted tokens address to find and price Liquidity Pool pairs"
+  },
+  "fathom-dex": {"functionName": "uniTvlExports", "args": [{"xdc": "0x9fAb572F75008A42c6aF80b36Ab20C76a38ABc4B"}, {}], "misrepresentedTokens": true},
+  "fcondex": {
+    "functionName": "uniTvlExports",
+    "args": [{"mantle": "0x3eF942017d51BA257c4B61BE2f8f641209C8b341"}, {"fetchBalanes": true}],
+    "misrepresentedTokens": true
+  },
+  "fedex": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0xfb3AD00B272449AF3ea44e5C6ADbdfaB1655A046"}, {}], "misrepresentedTokens": true},
+  "fenix-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"blast": "0xa19c51d91891d3df7c13ed22a2f89d328a82950f"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "fizzswap-v2": {"args": [{"silicon_zk": "0xCB72354080A1d3B8A48425B889025d0799c52095"}]},
+  "flair-dex": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0x634e02EB048eb1B5bDDc0CFdC20D34503E9B362d"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x634e02EB048eb1B5bDDc0CFdC20D34503E9B362d) address and whitelisted tokens address to find and price liquidity pool pairs"
+  },
+  "flashpulse": {"functionName": "uniTvlExports", "args": [{"pulse": "0xD2871d0d39A9cb0cB0505309A5C1F521df25a987"}, {}], "misrepresentedTokens": true},
+  "fluxusbase": {"args": [{"base": "0x27c2d144b106B26Be3d0dEB6c14c5CFA2e9a507C"}, {"hasStablePools": true}]},
+  "foodcourt": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xc801C7980c8C7900Bc898B1F38392b235fF64097", "reichain": "0xC437190E5c4F85EbBdE74c86472900b323447603"}, {}],
+    "misrepresentedTokens": true
+  },
+  "forge-sx-dex": {"functionName": "uniTvlExports", "args": [{"arbitrum": "0x2f0a2b314eecc6ba33b3dd4f46816a2196c8af3a"}, {}]},
+  "fourdex": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0x0f93649C2BA0F64fA939eCe899f1afD0b15C7Bd2"}, {}]},
+  "freeriver": {
+    "functionName": "uniTvlExports",
+    "args": [{"moonriver": "0x52abD262B13bef4E65Ff624880E8A0595a17af48"}, {}],
+    "misrepresentedTokens": true
+  },
+  "frogge-fi": {"functionName": "uniTvlExports", "args": [{"eos_evm": "0xe725dDEBfc425b9AfF7e4fcA094ac9f4dcA35C89"}, {}], "misrepresentedTokens": true},
+  "fstswap": {"functionName": "uniTvlExports", "args": [{"bsc": "0x9A272d734c5a0d7d84E0a892e891a553e8066dce"}, {}], "misrepresentedTokens": true},
+  "funbeast": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0xb99978440F310658C5E69D5042724327EF6D3CE7"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Astar Exchange Tvl Calculation"
+  },
+  "fusionx-fi": {"functionName": "uniTvlExports", "args": [{"mantle": "0xe5020961fa51ffd3662cdf307def18f9a87cce7c"}, {}], "misrepresentedTokens": true},
+  "fuzzfinance": {
+    "args": [
+      {"harmony": "0x5245d2136dc79Df222f00695C0c29d0c4d0E98A6"},
+      {"staking": {"harmony": ["0x847b46ed6c3df75e34a0496ef148b89bf5eb41b1", "0x984b969a8e82f5ce1121ceb03f96ff5bb3f71fee"]}}
+    ]
+  },
+  "fvm": {
+    "functionName": "uniTvlExports",
+    "args": [{"fantom": "0x472f3C3c9608fe0aE8d702f3f8A2d12c410C881A"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "fwx-dex": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0x2131Bdb0E0B451BC1C5A53F2cBC80B16D43634Fa", "base": "0x3512DA8F30D9AE6528e8e0787663C14Fe263Fbea"}, {}],
+    "misrepresentedTokens": true
+  },
+  "fxswap": {"functionName": "uniTvlExports", "args": [{"functionx": "0x9E229BE3812228454499FAf771b296bedFe8c904"}, {}], "misrepresentedTokens": true},
+  "galador-io": {"functionName": "uniTvlExports", "args": [{"mantle": "0x6F602b6F11F174c627813262fA713F334ca20aA6"}, {}], "misrepresentedTokens": true},
+  "galoswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x48E571C645bbeD451b7C58650E643F534fCaB693"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Counts liquidity in pools"
+  },
+  "gammaswap-deltaswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "arbitrum": "0xcb85e1222f715a81b8edaeb73b28182fa37cffa8",
+        "base": "0x9a9a171c69cc811dc6b59bb2f9990e34a22fc971",
+        "ethereum": "0x5fbe219e88f6c6f214ce6f5b1fcaa0294f31ae1b"
+      },
+      {}
+    ]
+  },
+  "gassswap": {"functionName": "uniTvlExports", "args": [{"blast": "0x9637ac15c3830d9b32378593693f968cc33eecb1"}, {}], "misrepresentedTokens": true},
+  "gemswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x065c8703132F2A38Be3d2dbF7Be6BE455930560c"}, {}],
+    "hallmarks": [[1681430400, "Rug Pull"]],
+    "misrepresentedTokens": true
+  },
+  "ghost-ex": {"functionName": "uniTvlExports", "args": [{"blast": "0xbf246e99a848d9bf592c216118973204162d9650"}, {}], "misrepresentedTokens": true},
+  "gibxswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x97bCD9BB482144291D77ee53bFa99317A82066E8"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0xC31A355277228C1bf9A88599647faEaaE664Ea1f", "0xAe28714390e95B8dF1Ef847C58AEaC23ED457702"]},
+    "methodology": "Factory address on BSC (0x97bCD9BB482144291D77ee53bFa99317A82066E8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "ginfinance": {"functionName": "uniTvlExports", "args": [{"boba": "0x06350499760aa3ea20FEd2837321a84a92417f39"}, {}]},
+  "glacier-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0xaC7B7EaC8310170109301034b8FdB75eCa4CC491"}, {"hasStablePools": true}],
+    "staking": {"avax": ["0xed1eE3f892fe8a13A9BE02F92E8FB7410AA84739", "0x3712871408a829C5cd4e86DA1f4CE727eFCD28F6"]}
+  },
+  "globiancedex": {"functionName": "uniTvlExports", "args": [{"xdc": "0xA8334Aae58e5bDee692B26679c1817F9c42f8f51"}, {}], "misrepresentedTokens": true},
+  "gloom": {
+    "args": [
+      {"sonic": "0x385AC659B50dF7f90755f974409D02dc21ea8bB0"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "goatswap-v2": {"functionName": "uniTvlExports", "args": [{"goat": "0xbF8c8B5D27e76890416eA95a50d4732BB4906741"}, {}]},
+  "gravis-finance": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0x4a3b76860c1b76f0403025485de7bfa1f08c48fd",
+        "polygon": "0x17c1d25d5a2d833c266639de5fbe8896bdbeb234",
+        "heco": "0x4a3B76860C1b76f0403025485DE7bfa1F08C48fD"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "gravity-finance": {"args": [{"polygon": "0x3ed75AfF4094d2Aaa38FaFCa64EF1C152ec1Cf20"}]},
+  "grokswap": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0x01D434704aFf3edDb37eFB49f4bFE697e67b3BD0"}, {}], "misrepresentedTokens": true},
+  "gt3": {"args": [{"polygon": "0x2d7360Db7216792cfc2c73B79C0cA629007E2af4"}]},
+  "gullnetwork-amm": {
+    "functionName": "uniTvlExports",
+    "args": [{"manta": "0x31a78894a2B5dE2C4244cD41595CD0050a906Db3"}, {}],
+    "misrepresentedTokens": true
+  },
+  "gxypad": {"functionName": "uniTvlExports", "args": [{"era": "0xdCBA2077FE5261753AB29Cc886Bd5CFe1786a7D6"}, {}], "misrepresentedTokens": true},
+  "hakuswap": {
+    "args": [
+      {"avax": "0x2Db46fEB38C57a6621BCa4d97820e1fc1de40f41"},
+      {"staking": {"avax": ["0xa95C238B5a72f481f6Abd50f951F01891130b441", "0x695Fa794d59106cEbd40ab5f5cA19F458c723829"]}}
+    ]
+  },
+  "hamburger": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x989CF6bFA8997E8A01Fa07F3009392d1C734c719"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "hebeswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereumclassic": "0x09fafa5eecbc11C3e5d30369e51B7D9aab2f3F53"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x09fafa5eecbc11C3e5d30369e51B7D9aab2f3F53) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "heraswap": {"functionName": "uniTvlExports", "args": [{"onus": "0x6CD368495D90b9Ba81660e2b35f7Ea2AcE2B8cD6"}, {}], "misrepresentedTokens": true},
+  "hexaswap": {"functionName": "uniTvlExports", "args": [{"telos": "0x7853cDd20592aaff59D6e89B59bF67499564C525"}, {}], "misrepresentedTokens": true},
+  "hippowswap": {"functionName": "uniTvlExports", "args": [{"ethpow": "0x8cF9A887e53be909C221A2708E72898546dAB7Cc"}, {}], "misrepresentedTokens": true},
+  "honkswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"smartbch": "0x34D7ffF45108De08Ca9744aCdf2e8C50AAC1C73C"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x34D7ffF45108De08Ca9744aCdf2e8C50AAC1C73C) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "hope-swap": {"functionName": "uniTvlExports", "args": [{"ethereum": "0x26F53fbADeEb777fb2A122dC703433d79241b64e"}, {}], "misrepresentedTokens": true},
+  "hopswap": {"functionName": "uniTvlExports", "args": [{"cronos": "0x918cefF586C00c1fa4726Dc50697172fd87df8e9"}, {}], "misrepresentedTokens": true},
+  "hpdex": {
+    "functionName": "uniTvlExports",
+    "args": [{"hpb": "0xE1d563BcFD4E2a5A9ce355CC8631421186521aAA"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xE1d563BcFD4E2a5A9ce355CC8631421186521aAA) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "hunnyswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0x0c6A0061F9D0afB30152b8761a273786e51bec6d"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x0c6A0061F9D0afB30152b8761a273786e51bec6d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "hybra-v2": {"args": [{"hyperliquid": "0x9c7397c9C5ecC400992843408D3A283fE9108009"}, {"hasStablePools": true}]},
+  "hydrometer": {
+    "args": [
+      {"base": "0xF60caCf0A3daa5B6a79ca6594BEF38F85391AE0A"},
+      {
+        "deadFrom": 1732734407,
+        "abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"},
+        "hasStablePools": true,
+        "hallmarks": [[1732734407, "Rug Pull"]]
+      }
+    ]
+  },
+  "hyperjump": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0xac653ce27e04c6ac565fd87f18128ad33ca03ba2",
+        "fantom": "0x991152411A7B5A14A8CF0cDDE8439435328070dF",
+        "metis": "0xAA1504c878B158906B78A471fD6bDbf328688aeB"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "hyperswap-v2": {"args": [{"hyperliquid": "0x724412C00059bf7d6ee7d4a1d0D5cd4de3ea1C48"}]},
+  "icecreamswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "shimmer_evm": "0x24cb308a4e2F3a4352F513681Bd0c31a0bd3BA31",
+        "bob": "0x7b2a5C88AB9367147F6ac384F857CbaDF5aA70a7",
+        "lightlink_phoenix": "0xC87De04e2EC1F4282dFF2933A2D58199f688fC3d",
+        "taiko": "0xC87De04e2EC1F4282dFF2933A2D58199f688fC3d",
+        "base": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "telos": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "core": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "dogechain": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "fuse": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "xdc": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "bitgert": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "scroll": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "neon_evm": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f",
+        "blast": "0x9E6d21E759A7A288b80eef94E4737D313D31c13f"
+      },
+      {}
+    ]
+  },
+  "iceswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x79b8F15a3bEEcd5014B748499Ec89692665ea368"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x79b8F15a3bEEcd5014B748499Ec89692665ea368) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $IKE staking."
+  },
+  "ifswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"csc": "0x44b7864D360BFf7879402E3B860aF47e6e371208"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through MasterChef Contract."
+  },
+  "iguana-v2": {"args": [{"etlk": "0x3eebf549D2d8839E387B63796327eE2C8f64A0C4"}]},
+  "in_dex": {"args": [{"hsk": "0x09ee9eCc6E2B458508E05Da7f90E324AE54620D2"}]},
+  "incaswap": {"args": [{"matchain": "0x1d9e11881Fca0e692B09AF0C0cbE70A643CB06FB"}]},
+  "infusion": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x2D9A3a2bd6400eE28d770c7254cA840c82faf23f"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "inkswap": {"args": [{"ink": "0xBD5B41358A6601924F1Fd708aF1535a671f530A9"}]},
+  "inkyswap": {"args": [{"ink": "0x458C5d5B75ccBA22651D2C5b61cB1EA1e0b0f95D"}]},
+  "inuswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"dogechain": "0xbDe460e12B5dcD955e70da8889754958113E988a"}, {}],
+    "hallmarks": [[1663200000, "Rug Pull"]],
+    "deadFrom": "2022-09-15"
+  },
+  "issuaa": {
+    "functionName": "uniTvlExports",
+    "args": [{"scroll": "0xC7e06CAF7880421cD21E98656B4755B3Df61537b"}, {"hasStablePools": true, "fetchBalances": true}],
+    "misrepresentedTokens": true
+  },
+  "izumi-iziswap-v2": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"plume_mainnet": "0x88867BF3bB3321d8c7Da71a8eAb70680037068E4"},
+      {
+        "blacklistedTokens": [
+          "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d",
+          "0x1382628e018010035999A1FF330447a0751aa84f",
+          "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d",
+          "0x078f712f038A95BeEA94F036cADB49188a90604b",
+          "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d"
+        ]
+      }
+    ]
+  },
+  "jetswap": {
+    "args": [
+      {
+        "bsc": "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5",
+        "polygon": "0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7",
+        "fantom": "0xf6488205957f0b4497053d6422F49e27944eE3Dd"
+      },
+      {
+        "staking": {
+          "bsc": ["0x63d6EC1cDef04464287e2af710FFef9780B6f9F5", "0x0487b824c8261462f88940f97053e65bdb498446"],
+          "polygon": ["0x4e22399070aD5aD7f7BEb7d3A7b543e8EcBf1d85", "0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25"],
+          "fantom": ["0x9180583C1ab03587b545629dd60D2be0bf1DF4f2", "0x3D8f1ACCEe8e263F837138829B6C4517473d0688"]
+        }
+      }
+    ]
+  },
+  "jlswap": {"functionName": "uniTvlExports", "args": [{"eos_evm": "0x84c81cbC482B7BDB02470bB820F5323aa77C50F3"}, {}], "misrepresentedTokens": true},
+  "jswap-finance": {"functionName": "uniTvlExports", "args": [{"okexchain": "0xd654CbF99F2907F06c88399AE123606121247D5C"}, {}]},
+  "juggler-red": {
+    "functionName": "uniTvlExports",
+    "args": [{"optimism": "0x0bef94f16ce5b7c83b0bdbd9924cf80239ba9837"}, {}],
+    "misrepresentedTokens": true
+  },
+  "julswap": {"functionName": "uniTvlExports", "args": [{"bsc": "0x553990F2CBA90272390f62C5BDb1681fFc899675"}, {}], "misrepresentedTokens": true},
+  "jupiterswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0xc08BAEA14C14f25bcafe3e3E05550715505eF3dE"}, {}],
+    "hallmarks": [[1660521600, "incentives not given"]],
+    "misrepresentedTokens": true,
+    "methodology": "Factory addresses (0xc08BAEA14C14f25bcafe3e3E05550715505eF3dE for kava) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "justmoney": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0xF2Fb1b5Be475E7E1b3C31082C958e781f73a1712",
+        "bittorrent": "0x4dEb2f0976DC3Bf351555524B3A24A4feA4e137E",
+        "ethereum": "0xd36Aba9Ec96523b0A89886c76065852aDFE2Eb39",
+        "polygon": "0xD36ABA9EC96523B0A89886C76065852ADFE2EB39",
+        "tron": "TBfTeNjh7k8PbkTad8z6WS2vqh7SQZUfQ8"
+      },
+      {}
+    ]
+  },
+  "kaco": {
+    "args": [
+      {"bsc": "0xa5e48a6E56e164907263e901B98D9b11CCB46C47", "shiden": "0xcd8620889c1dA22ED228e6C00182177f9dAd16b7"},
+      {
+        "staking": {
+          "bsc": ["0x81b71D0bC2De38e37978E6701C342d0b7AA67D59", "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB"],
+          "shiden": ["0x293A7824582C56B0842535f94F6E3841888168C8", "0xb12c13e66ade1f72f71834f2fc5082db8c091358"]
+        }
+      }
+    ]
+  },
+  "kaoyaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xbFB0A989e12D49A0a3874770B1C1CdDF0d9162aA"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0x21F17c2eC5741c1bEb76d50F08171138A6BA97bf", "0xa8a33e365D5a03c94C3258A10Dd5d6dfE686941B"]}
+  },
+  "kapaswap": {"functionName": "uniTvlExports", "args": [{"kava": "0xAb9F1D773Bde5657BC1492dfaF57b0b9EB59FDDc"}, {}]},
+  "kapinus": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x70e881fa43a7124e36639b54162395451cef1922"}, {"abi": "uint256:allPairs"}],
+    "misrepresentedTokens": true
+  },
+  "kasavadex": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0x8F1fD6Ed57B0806FF114135F5b50B5f76e9542F2"}, {}],
+    "hallmarks": [[1660521600, "incentives not given"]],
+    "misrepresentedTokens": true,
+    "methodology": "Factory addresses (0x8F1fD6Ed57B0806FF114135F5b50B5f76e9542F2 for kava) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "katana-ronin": {
+    "functionName": "uniTvlExports",
+    "args": [{"ronin": "0xb255d6a720bb7c39fee173ce22113397119cb930"}, {}],
+    "hallmarks": [[1653744720, "Ronin Bridge Hack $625m"]]
+  },
+  "katanaswap": {"functionName": "uniTvlExports", "args": [{"zeta": "0xc6ef2008a5a717329648420F429dA53d3351cF5E"}, {}], "misrepresentedTokens": true},
+  "kayen": {
+    "functionName": "uniTvlExports",
+    "args": [{"chz": "0xE2918AA38088878546c1A18F2F9b1BC83297fdD3"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through Factory Contract."
+  },
+  "kdex": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0x9a6d197e85e61c23146F5b7FA55fc8a6EDDD2D57"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory addresses (0x9a6d197e85e61c23146F5b7FA55fc8a6EDDD2D57 for kava) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "kefirswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0xeEAbe2F15266B19f3aCF743E69105016277756Fb"}, {}],
+    "hallmarks": [[1656806400, "Rug Pull"]],
+    "deadFrom": "2022-07-03",
+    "methodology": "Count TVL as liquidity on the dex",
+    "misrepresentedTokens": true
+  },
+  "keller": {
+    "functionName": "uniTvlExports",
+    "args": [{"scroll": "0xbc83f7dF70aE8A3e4192e1916d9D0F5C2ee86367"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL shows the sum of tokens deposited in our pools and Staking shows the number of $KELL locked in the Voting Escrow contract.",
+    "staking": {"scroll": ["0x3aC0Bd8433bFC451BB1E1E90CcEF697750512CA2", "0xCF4706120623c527e32493057A4DC0cae5FC8201"]}
+  },
+  "kewl": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "chz": "0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0",
+        "avax": "0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0",
+        "arbitrum": "0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0",
+        "sonic": "0xA0BB8f9865f732C277d0C162249A4F6c157ae9D0"
+      },
+      {}
+    ],
+    "methodology": "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through Factory Contract.",
+    "start": "2023-12-02",
+    "misrepresentedTokens": true
+  },
+  "kim-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"mode": "0xc02155946dd8C89D3D3238A6c8A64D04E2CD4500", "base": "0x14658340D7D1c112b62509bbF449be1897e8dE01"}, {}],
+    "misrepresentedTokens": true
+  },
+  "kinetix-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0xE8E917BC80A26CDacc9aA42C0F4965d2E1Fa52da", "base": "0x8aD3d3e6B1b7B65138bD508E48330B544539b2C3"}, {}],
+    "misrepresentedTokens": true
+  },
+  "kittenswap": {"args": [{"hyperliquid": "0xDa12F450580A4cc485C3b501BAB7b0B3cbc3B31B"}]},
+  "kittypunch": {"args": [{"flow": "0x29372c22459a4e373851798bFd6808e71EA34A71"}]},
+  "kizuna": {"functionName": "uniTvlExports", "args": [{"mode": "0x05CDC3ec49C623dCE7947172fECFc5d3cD8d16cD"}, {}], "misrepresentedTokens": true},
+  "knightdex": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0xAe9F4488CC751637b18070c5453a3b7Acc137a3b"}, {}]},
+  "knightswap": {
+    "args": [
+      {"bsc": "0xf0bc2E21a76513aa7CC2730C7A1D6deE0790751f", "fantom": "0x7d82F56ea0820A9d42b01C3C28F1997721732218"},
+      {
+        "staking": {
+          "bsc": ["0xE50cb76A71b0c52Ab091860cD61b9BA2FA407414", "0xd23811058eb6e7967d9a00dc3886e75610c4abba"],
+          "fantom": ["0xb02e3A4B5ebC315137753e24b6Eb6aEF7D602E40", "0x6cc0e0aedbbd3c35283e38668d959f6eb3034856"]
+        }
+      }
+    ]
+  },
+  "kodiak-v2": {"args": [{"berachain": "0x5e705e184d233ff2a7cb1553793464a9d0c3028f"}]},
+  "koffeeswap": {"functionName": "uniTvlExports", "args": [{"kcc": "0xc0ffee00000e1439651c6ad025ea2a71ed7f3eab"}, {}]},
+  "kokomoswap": {"functionName": "uniTvlExports", "args": [{"bsc": "0x971A5f6Ef792bA565cdF61C904982419AA77989f"}, {}]},
+  "kokoswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x971A5f6Ef792bA565cdF61C904982419AA77989f"}, {}],
+    "methodology": "TVL could the liquidity on the DEX, pairs are found using the Factory address: '0x971A5f6Ef792bA565cdF61C904982419AA77989f'.",
+    "misrepresentedTokens": true
+  },
+  "koone": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x6167ce530e710e29d0F32CFe50062028800e5918"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Counts liquidity in pools"
+  },
+  "kronosdao": {
+    "args": [
+      {"bsc": "0xcc045ebC2664Daf316aa0652E72237609EA6CB4f"},
+      {"staking": {"bsc": ["0x30e9f20414515116598D073F3EBA116c68A6f4aC", "0xbeC68a941feCC79E57762e258fd1490F29235D75"]}}
+    ]
+  },
+  "kswapfinance": {
+    "functionName": "uniTvlExports",
+    "args": [{"okexchain": "0x60DCD4a2406Be12dbe3Bb2AaDa12cFb762A418c1"}, {}],
+    "methodology": "We count tvl on LiquidityPool(pairs) through factory contract"
+  },
+  "kuswap": {"functionName": "uniTvlExports", "args": [{"kcc": "0xAE46cBBCDFBa3bE0F02F463Ec5486eBB4e2e65Ae"}, {}], "misrepresentedTokens": true},
+  "ladex-exchange": {"functionName": "uniTvlExports", "args": [{"lachain": "0xD707d9038C1d976d3a01c770f01CB73a1fd305Cd"}, {}], "deadFrom": "2024-01-01"},
+  "laserswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"thundercore": "0x23c7FA9A9f81B322684F25b8079e22C37e00b46b"}, {}],
+    "methodology": "Uses factory(0x23c7FA9A9f81B322684F25b8079e22C37e00b46b) address and whitelisted tokens address to find and price Liquidity Pool pairs"
+  },
+  "latte": {
+    "args": [
+      {"bsc": "0x4DcE5Bdb81B8D5EdB66cA1b8b2616A8E0Dd5f807"},
+      {
+        "staking": {
+          "bsc": [
+            "0xbCeE0d15a4402C9Cc894D52cc5E9982F60C463d6",
+            ["0x8D78C2ff1fB4FBA08c7691Dfeac7bB425a91c81A", "0xa269A9942086f5F87930499dC8317ccC9dF2b6CB"]
+          ]
+        }
+      }
+    ]
+  },
+  "leetswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "polygon_zkevm": "0xcE87E0960f4e2702f4bFFE277655E993Ae720e84",
+        "canto": "0x116e8a41E8B0A5A87058AF110C0Ddd55a0ed82B7",
+        "linea": "0x4DDf0fa98B5f9Bd7Cb0645c25bA89A574fe9Be8c",
+        "shibarium": "0xd3Ea3BC1F5A3F881bD6cE9761cbA5A0833a5d737",
+        "op_bnb": "0xa2899c776baaf9925d432f83c950d5054a6cf59c",
+        "base": "0x169C06b4cfB09bFD73A81e6f2Bb1eB514D75bB19",
+        "manta": "0xa2899c776baaf9925d432f83c950d5054a6cf59c",
+        "scroll": "0xa2899c776baaf9925d432f83c950d5054a6cf59c"
+      },
+      {"hasStablePools": true, "stablePoolSymbol": "sLS2"}
+    ],
+    "misrepresentedTokens": true
+  },
+  "levinswap": {
+    "args": [
+      {"xdai": "0x965769C9CeA8A7667246058504dcdcDb1E2975A5"},
+      {"staking": {"xdai": ["0xafa57Fb9d8D63Ff8124E17c1495C73bc3a7678D0", "0x1698cD22278ef6E7c0DF45a8dEA72EDbeA9E42aa"]}}
+    ]
+  },
+  "lfgswap": {"functionName": "uniTvlExports", "args": [{"ethpow": "0xf66cef53c518659bFA0A9a4Aa07445AF08bf9B3a"}, {}], "misrepresentedTokens": true},
+  "lfgswap-arbitrum": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0xE5552e0318531F9Ec585c83bDc8956C08Bf74b71"}, {}],
+    "misrepresentedTokens": true
+  },
+  "lfgswap-core": {"functionName": "uniTvlExports", "args": [{"core": "0xA1ADD165AED06D26fC1110b153ae17a5A5ae389e"}, {}], "misrepresentedTokens": true},
+  "linehub-v2": {"functionName": "uniTvlExports", "args": [{"linea": "0x7811DeF28977060784cC509641f2DD23584b7671"}, {}], "misrepresentedTokens": true},
+  "linkswap": {"functionName": "uniTvlExports", "args": [{"zklink": "0x87929083ac2215cF3CE4936857D314aF6687C978"}, {}]},
+  "liquid-bolt": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0xBDEc20d9cdf8E222EDd536268A9883a4C2ca172D",
+        "fantom": "0xdE08A0860B5971201f4d621B6eD4bb5BFed454be",
+        "polygon": "0xF301aE81800Aa97f68148531D487696EF939170E",
+        "arbitrum": "0x3D225a66c4A609634fb2c2d75d30Fd6610EBb1BD"
+      },
+      {}
+    ],
+    "methodology": "Uses factory addresses to find and price Liquidity Pools TVL"
+  },
+  "lobsterswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xF936CDe5138282eDC6370F9f5ac70d9a1AFC6F78", "ozone": "0xE6E64C926af9ABEc9D819f52c9572AB961CEF6C1"}, {}],
+    "misrepresentedTokens": true
+  },
+  "lootswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"harmony": "0x021AeF70c404aa9d70b71C615F17aB3a4038851A"}, {}],
+    "hallmarks": [[1655991120, "Horizon bridge Hack $100m"]]
+  },
+  "lovelyswap-v2": {
+    "args": [
+      {
+        "bsc": "0x7db16925214B2F5D65dB741D59208A1187B9961c",
+        "base": "0x7db16925214B2F5D65dB741D59208A1187B9961c",
+        "polygon": "0x177aeb3727c91c4796766336923c4da431c59637"
+      }
+    ]
+  },
+  "luaswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"tomochain": "0x28c79368257CD71A122409330ad2bEBA7277a396", "ethereum": "0x0388C1E0f210AbAe597B7DE712B9510C6C36C857"},
+      {"permitFailure": true}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address on tomochain (0x0eAC91966b12b81db18f59D8e893b9ccef7e2c30) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "lydia": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"avax": "0xe0C1bb6DF4851feEEdc3E14Bd509FEAF428f7655"},
+      {"misrepresentedTokens": true, "blacklistedTokens": ["0xc1a49c0b9c10f35850bd8e15eaef0346be63e002"]}
+    ],
+    "misrepresentedTokens": true
+  },
+  "magicianmv": {"functionName": "uniTvlExports", "args": [{"polygon": "0xf08ae17c2a2728a788bb1b6c243fe7eb3e5bbadc"}, {}], "misrepresentedTokens": true},
+  "makiswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"heco": "0x11cdC9Bd86fF68b6A6152037342bAe0c3a717f56"}, {"abis": {"allPairsLength": "uint256:totalPairs"}}],
+    "misrepresentedTokens": true,
+    "staking": {"heco": ["0x4cb4c9C8cC67B171Ce86eB947cf558AFDBcAB17E", "0x5FaD6fBBA4BbA686bA9B8052Cf0bd51699f38B93"]},
+    "deadFrom": "2025-01-15"
+  },
+  "mantaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"manta": "0x60Ad4aB0659C3b83320f3D43d3797553b55D52c6"}, {}],
+    "hallmarks": [[1696809600, "Rug Pull"]],
+    "misrepresentedTokens": true
+  },
+  "manxswap": {"functionName": "uniTvlExports", "args": [{"manta": "0xFF073cEd2867F7085eC058f5C5Bd6Cf0d9B1Af8f"}, {}], "misrepresentedTokens": true},
+  "megalon": {"functionName": "uniTvlExports", "args": [{"era": "0xb618Db8D97db96f31C1eb0Fb99D9b5b372c2BdD3"}, {}]},
+  "memebox-fi": {"args": [{"sonic": "0x079463f811e6EB2E226908E79144CDDB59a7fB71"}]},
+  "memedex": {"functionName": "uniTvlExports", "args": [{"conflux": "0x62283c20Ac4c7B1E61BB3C27bE2fA0880ee982Ea"}, {}], "misrepresentedTokens": true},
+  "merchant-moe": {"functionName": "uniTvlExports", "args": [{"mantle": "0x5bef015ca9424a7c07b68490616a4c1f094bedec"}, {}]},
+  "meridian-swap": {
+    "functionName": "uniTvlExports",
+    "args": [{"telos": "0x1F2542D8F784565D526eeaDC9F1ca8Fbb75e5996"}, {}],
+    "misrepresentedTokens": true
+  },
+  "metaswap": {"functionName": "uniTvlExports", "args": [{"eos_evm": "0x589ca5Ab00443681e2eA427971BB1460823A36f9"}, {}], "misrepresentedTokens": true},
+  "metavault-amm-v2": {"args": [{"scroll": "0xCc570Ec20eCB62cd9589FA33724514BDBc98DC7E", "linea": "0xCc570Ec20eCB62cd9589FA33724514BDBc98DC7E"}]},
+  "metropolis-exchange-amm": {"args": [{"sonic": "0x1570300e9cFEC66c9Fb0C8bc14366C86EB170Ad0"}]},
+  "miaswap": {"functionName": "uniTvlExports", "args": [{"onus": "0xA5DA4dC244c7aD33a0D8a10Ed5d8cFf078E86Ef3"}, {}], "misrepresentedTokens": true},
+  "milkydex": {
+    "functionName": "uniTvlExports",
+    "args": [{"milkomeda": "0x194Db21D9108f9da7a4E21f367d0eb8f8979144e"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x194Db21D9108f9da7a4E21f367d0eb8f8979144e) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "milkyswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"milkomeda": "0xD6Ab33Ad975b39A8cc981bBc4Aaf61F957A5aD29"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xD6Ab33Ad975b39A8cc981bBc4Aaf61F957A5aD29) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "mimoswap": {"functionName": "uniTvlExports", "args": [{"iotex": "0xda257cBe968202Dea212bBB65aB49f174Da58b9D"}, {}], "misrepresentedTokens": true},
+  "minidex": {"functionName": "uniTvlExports", "args": [{"ethereum": "0x1E2C2102cf8EfCaAAf20fFe926469EC7cD0d0f6E"}, {}]},
+  "mistswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"smartbch": "0x6008247F53395E7be698249770aa1D2bfE265Ca0"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x6008247F53395E7be698249770aa1D2bfE265Ca0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "staking": {"smartbch": ["0xC41C680c60309d4646379eD62020c534eB67b6f4", "0x5fA664f69c2A4A3ec94FaC3cBf7049BD9CA73129", "smartbch", "mistswap", 18]}
+  },
+  "mm-finance": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"cronos": "0xd590cC180601AEcD6eeADD9B7f2B7611519544f4"},
+      {
+        "blacklist": [
+          "0xd8d40dcee0c2b486eebd1fedb3f507b011de7ff0",
+          "0xa60943a1B19395C999ce6c21527b6B278F3f2046",
+          "0x388c07066aa6cea2be4db58e702333df92c3a074"
+        ]
+      }
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://mm.finance as the source. Staking accounts for the MMF locked in MasterChef (0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc)",
+    "staking": {"cronos": ["0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc", "0x97749c9B61F878a880DfE312d2594AE07AEd7656"]}
+  },
+  "mm-finance-arbitrum": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0xfe3699303D3Eb460638e8aDA2bf1cFf092C33F22"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://arbimm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa73Ae666CEB460D5E884a20fb30DE2909604557A)",
+    "staking": {"arbitrum": ["0xa73Ae666CEB460D5E884a20fb30DE2909604557A", "0x56b251d4b493ee3956e3f899d36b7290902d2326"]}
+  },
+  "mm-finance-polygon": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x7cFB780010e9C861e03bCbC7AC12E013137D47A5"}, {}],
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://polymm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa2B417088D63400d211A4D5EB3C4C5363f834764)",
+    "staking": {"polygon": ["0xa2B417088D63400d211A4D5EB3C4C5363f834764", "0x22a31bD4cB694433B6de19e0aCC2899E553e9481"]}
+  },
+  "mobiusdex-xyz": {"args": [{"sonic": "0x475f2dDfA1A5da19F4a3F282F1305f285E742C45"}]},
+  "mobydex": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0x9864C78acCe7837Ad1DA8f9BbECcf2dbE562e698"}, {}]},
+  "modSwapDefi": {"functionName": "uniTvlExports", "args": [{"mode": "0x703ADd44002379AD963d6Cc506b8F2292C831644"}, {}], "misrepresentedTokens": true},
+  "modemax-dex": {"args": [{"mode": "0x423A079C43e4eD7ca561Ef04765eDB796F0Ec6c6"}]},
+  "modeswap": {"functionName": "uniTvlExports", "args": [{"mode": "0x50fd14f0eba5a678c1ebc16bdd3794f09362a95c"}, {}], "misrepresentedTokens": true},
+  "moonbase": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x44B678F32a2f6aBB72eeFA2df58f12D17c3eD403"}, {}],
+    "methodology": "Uses factory(0x44B678F32a2f6aBB72eeFA2df58f12D17c3eD403) address and whitelisted tokens address to find and price Liquidity Pool pairs",
+    "misrepresentedTokens": true
+  },
+  "moonchainswap": {"functionName": "uniTvlExports", "args": [{"mxczkevm": "0x8bC7cf83f5F83781Ec85B78d866222987Ae24657"}, {}]},
+  "moonlift": {"functionName": "uniTvlExports", "args": [{"bsc": "0xe9cABbC746C03010020Fd093cD666e40823E0D87"}, {}], "misrepresentedTokens": true},
+  "moonswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"moonriver": "0x056973f631a5533470143bb7010c9229c19c04d2"}, {"blacklist": ["0xfd301ca82d007880e678bb750a771550c5104ff2"]}],
+    "misrepresentedTokens": true
+  },
+  "mswap": {"args": [{"matchain": "0x338bCC4efd3cA000D123d7352b362Fc6D5B3D829"}]},
+  "mute": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x40be1cba6c5b47cdf9da7f963b6f761f4c60627d"}, {"hasStablePools": true, "stablePoolSymbol": "sMLP"}],
+    "misrepresentedTokens": true,
+    "staking": {"era": [["0x98dB4e3Df6502369dAD7AC99f3aEE5D064721C4C"], ["0xa995ad25ce5eb76972ab356168f5e1d9257e4d05"]]},
+    "methodology": "Counts liquidity in pools and KOI token in the veKOI contract"
+  },
+  "mversex": {"functionName": "uniTvlExports", "args": [{"kava": "0x266F951c525130a4E230bB40F0e3525C6C99B9c5"}, {}], "misrepresentedTokens": true},
+  "nanoswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x41726eb94341fD27D5103DF3Cd6C387560c75B70"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses Uniswap-style factory address to find and price liquidity pairs."
+  },
+  "narwhalswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xB9fA84912FF2383a617d8b433E926Adf0Dd3FEa1"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://narwhalswap.org/#/dashboard as the source"
+  },
+  "nearpad": {"functionName": "uniTvlExports", "args": [{"aurora": "0x34484b4E416f5d4B45D4Add0B6eF6Ca08FcED8f1"}, {}], "misrepresentedTokens": true},
+  "neptune": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"swellchain": "0xD78a40cA54090f4178c9c9212c78e9E0C2722231"},
+      {"fetchBalances": true, "abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint) view returns (address)"}}
+    ],
+    "misrepresentedTokens": true
+  },
+  "neptunex": {"functionName": "uniTvlExports", "args": [{"blast": "0x922FeCbE8dbFDfe85FfF4734046347B8E2ee7c82"}, {}], "misrepresentedTokens": true},
+  "netswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"metis": "0x70f51d68D16e8f9e418441280342BD43AC9Dff9f"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x70f51d68D16e8f9e418441280342BD43AC9Dff9f) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "neutroswap": {"functionName": "uniTvlExports", "args": [{"eos_evm": "0x2140AB15bfdfa3fa1037DB7204a92429f816794D"}, {}], "misrepresentedTokens": true},
+  "newswap": {"functionName": "uniTvlExports", "args": [{"new": "0x723913136a42684B5e3657e3cD2f67ee3e83A82D"}, {}], "misrepresentedTokens": true},
+  "nexus-dex": {"functionName": "uniTvlExports", "args": [{"xdc": "0xAf2977827a72e3CfE18104b0EDAF61Dd0689cd31"}, {}], "misrepresentedTokens": true},
+  "niifi": {"functionName": "uniTvlExports", "args": [{"nahmii": "0xe3DcF89D0c90A877cD82283EdFA7C3Bd03e77E86"}, {}], "misrepresentedTokens": true},
+  "nile-exchange-v1": {
+    "functionName": "uniTvlExports",
+    "args": [{"linea": "0xAAA16c016BF556fcD620328f0759252E29b1AB57"}, {"hasStablePools": true, "stablePoolSymbol": "cAMM"}],
+    "misrepresentedTokens": true,
+    "staking": {"linea": ["0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F", "0xAAAac83751090C6ea42379626435f805DDF54DC8"]}
+  },
+  "noahark": {"functionName": "uniTvlExports", "args": [{"eos_evm": "0x75782A57c6522B8B17FCc01Ff11759f4535b2752"}, {}], "misrepresentedTokens": true},
+  "nowswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0xa556E2d77060A42516C9A8002E9156d8d3c832CE"}, {}],
+    "hallmarks": [[1631664000, "Hacked"]]
+  },
+  "noxa-fi": {"args": [{"abstract": "0xE1e98623082f662BCA1009a05382758f86F133b3"}]},
+  "nuri-exchange-v1": {
+    "functionName": "uniTvlExports",
+    "args": [{"scroll": "0xAAA16c016BF556fcD620328f0759252E29b1AB57"}, {"hasStablePools": true, "stablePoolSymbol": "crAMM"}],
+    "misrepresentedTokens": true,
+    "staking": {"scroll": ["0xAAAEa1fB9f3DE3F70E89f37B69Ab11B47eb9Ce6F", "0xAAAE8378809bb8815c08D3C59Eb0c7D1529aD769"]}
+  },
+  "oaswap": {"functionName": "uniTvlExports", "args": [{"oasis": "0x84b11e8fb9a5dE10347eEA24c73d02B835505FDd"}, {}]},
+  "occam": {"functionName": "uniTvlExports", "args": [{"milkomeda": "0x2ef06A90b0E7Ae3ae508e83Ea6628a3987945460"}, {}]},
+  "ocelot-dex": {"functionName": "uniTvlExports", "args": [{"zeta": "0xA26E383c04013fB43F9E0b9F7903431d12FEa6d6"}, {}], "misrepresentedTokens": true},
+  "octopow": {"functionName": "uniTvlExports", "args": [{"ethpow": "0x3a69E908fA1614e445720Ab816a0CD51e5dc6FeC"}, {}], "misrepresentedTokens": true},
+  "okcswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"okexchain": "0x7b9F0a56cA7D20A44f603C03C6f45Db95b31e539"}, {}],
+    "methodology": "tvl is the liquidity on the exchange"
+  },
+  "omnidex": {"functionName": "uniTvlExports", "args": [{"telos": "0x7a2A35706f5d1CeE2faa8A254dd6F6D7d7Becc25"}, {}], "misrepresentedTokens": true},
+  "omniswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"nibiru": "0x2043d6f72CcD82c4Eae36fF331ADAE8C77bA5897"},
+      {
+        "coreAssets": {
+          "NIBI": "unibi",
+          "WNIBI": "0x0CaCF669f8446BeCA826913a3c6B96aCD4b02a97",
+          "stNIBI": "0xcA0a9Fb5FBF692fa12fD13c0A900EC56Bb3f0a7b",
+          "stNIBI.nibi": "tf/nibi1udqqx30cw8nwjxtl4l28ym9hhrp933zlq8dqxfjzcdhvl8y24zcqpzmh8m/ampNIBI",
+          "USDC": "0x0829F361A05D993d5CEb035cA6DF3446b060970b",
+          "USDT": "0x43F2376D5D03553aE72F4A8093bbe9de4336EB08",
+          "WETH": "0xcdA5b77E2E2268D9E09c874c1b9A4c3F07b37555",
+          "AXV": "0x7168634Dd1ee48b1C5cC32b27fD8Fc84E12D00E6"
+        }
+      }
+    ],
+    "methodology": "TVL consists of liquidity pools created through the factory contract",
+    "misrepresentedTokens": true
+  },
+  "onavax": {"functionName": "uniTvlExports", "args": [{"avax": "0xE01cF83a89e8C32C0A9f91aCa7BfE554EBEE7141"}, {}]},
+  "onsenswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x0E15a1a03bD356B17F576c50d23BF7FC00305590"}, {}],
+    "misrepresentedTokens": true,
+    "start": "2023-04-22"
+  },
+  "oolongswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"boba": "0x7DDaF116889D655D1c486bEB95017a8211265d29"}, {}],
+    "hallmarks": [[1658312537, "Alameda Research exits"]]
+  },
+  "oortswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"rei": "0xac15fe2C74bD635EfAF687F302633C7e5EbfF973"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xac15fe2C74bD635EfAF687F302633C7e5EbfF973) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "opbanana": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0xdF9161aa1D60f129E185D43e2862BD4826E88Aa8"}, {}], "misrepresentedTokens": true},
+  "openex": {"functionName": "uniTvlExports", "args": [{"core": "0x6Edf8aecAA888896385d7fA19D2AA4eaff3C10D8"}, {}], "misrepresentedTokens": true},
+  "openocean": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0xd76d8c2a7ca0a1609aea0b9b5017b3f7782891bf",
+        "polygon": "0xd76d8C2A7CA0a1609Aea0b9b5017B3F7782891bf",
+        "kava": "0x6dd434082EAB5Cd134B33719ec1FF05fE985B97b",
+        "arbitrum": "0x01Ec93c289cB003e741f621cDD4FE837243f8905",
+        "manta": "0x8D2B7e5501Eb6D92F8e349f2FEbe785DD070bE74",
+        "avax": "0x042AF448582d0a3cE3CFa5b65c2675e88610B18d",
+        "ethereum": "0x1f8c25f8da3990ecd3632ee4f02c2ea37755c3c6",
+        "rsk": "0x6Dd434082EaB5cD134B33719ec1ff05fe985B97b"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "staking": {
+      "bsc": ["0x44eB0f1ce777394564070f9E50dD8784FCDB7e6a", "0x9029fdfae9a03135846381c7ce16595c3554e10a"],
+      "avax": ["0x4C431b568e8baAB20F004BB16E44570e8E0cD6D7", "0x0ebd9537a25f56713e34c45b38f421a1e7191469"],
+      "ethereum": ["0xb99d38eb69214e493b1183ffa3d561fc9f75d519", "0x7778360f035c589fce2f4ea5786cbd8b36e5396b"]
+    }
+  },
+  "openswap_harmony": {
+    "functionName": "uniTvlExports",
+    "args": [{"harmony": "0x5d2f9817303b940c9bb4f47c8c566c5c034d9848"}, {"blacklist": ["0xed0b4b0f0e2c17646682fc98ace09feb99af3ade"]}],
+    "hallmarks": [[1655991120, "Horizon bridge Hack $100m"]]
+  },
+  "openxswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"optimism": "0xf3C7978Ddd70B4158b53e897f980093183cA5c52"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"optimism": ["0x2513486f18eeE1498D7b6281f668B955181Dd0D9", "0xc3864f98f2a61A7cAeb95b039D031b4E2f55e0e9"]}
+  },
+  "orbitalswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x1A04Afe9778f95829017741bF46C9524B91433fB"}, {}],
+    "methodology": "Uses factory(0x1A04Afe9778f95829017741bF46C9524B91433fB) address and whitelisted tokens address to find and price Liquidity Pool pairs",
+    "misrepresentedTokens": true,
+    "staking": {"bsc": ["0xd67a0CE4B1484DBa8dB53349F9b26a3272dB04F5", "0x42b98A2f73a282D731b0B8F4ACfB6cAF3565496B"]}
+  },
+  "orionprotocol": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "ethereum": "0x5FA0060FcfEa35B31F7A5f6025F0fF399b98Edf1",
+        "bsc": "0xE52cCf7B6cE4817449F2E6fA7efD7B567803E4b4",
+        "fantom": "0xb8baf2195BfC67845049f49af9d4858F7D9c2b30",
+        "polygon": "0xd956dEd6BFc7ED1C1Aa8c7954EB0ECd1E00e71b8"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "staking": {
+      "ethereum": [
+        ["0x3e902c462103D45C073826bD9d134799fb427669", "0x587FBF916f9e4F046F8525c55B0E59Bb10ddC8ba"],
+        "0x0258F474786DdFd37ABCE6df6BBb1Dd5dfC4434a"
+      ],
+      "bsc": [["0xd2C8b8915C8D8548Bf4F16a8CdCe73dE7796c39E", "0x3dc27D9973DFB583989B1C876e9723C32C2F9429"], "0xe4ca1f75eca6214393fce1c1b316c237664eaa8e"]
+    }
+  },
+  "paintswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"fantom": "0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"fantom": ["0xCb80F529724B9620145230A0C866AC2FACBE4e3D", "0x85dec8c4b2680793661bca91a8f129607571863d"]}
+  },
+  "pandora-digital": {"args": [{"bsc": "0xFf9A4E72405Df3ca3D909523229677e6B2b8dC71"}]},
+  "pandoraswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0x8D4f9b98FC21787382647BFCfC9ce75C08B50481"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "PandoraswapFinance Tvl Calculation"
+  },
+  "pankuku": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x24dF3F586b3d313A98704478f83a4315ae5b19A9"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x24dF3F586b3d313A98704478f83a4315ae5b19A9) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "pantherswap": {"args": [{"bsc": "0x670f55c6284c629c23baE99F585e3f17E8b9FC31"}]},
+  "passdex": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "soneium": "0x48E07EE0E8450811AD472fFf10aB68B895EA747A",
+        "unichain": "0x242c913Ff5FE010430A709baab977e88435b7EBF",
+        "hemi": "0x242c913Ff5FE010430A709baab977e88435b7EBF"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "pearl-v1-5": {
+    "functionName": "uniTvlExports",
+    "args": [{"real": "0xAed0A784f357BE9C3f8113BB227a7517a3444Efe"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "pearlfi": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0xEaF188cdd22fEEBCb345DCb529Aa18CA9FcB4FBd"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0xd541Bc203Cc2B85810d9b8E6a534eed1615528E2) address to count liquidity in pools as TVL."
+  },
+  "pegasys": {
+    "functionName": "uniTvlExports",
+    "args": [{"syscoin": "0x7Bbbb6abaD521dE677aBe089C85b29e3b2021496"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x7Bbbb6abaD521dE677aBe089C85b29e3b2021496) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "pepedex": {"functionName": "uniTvlExports", "args": [{"ethereum": "0x460b2005b3318982feADA99f7ebF13e1D6f6eFfE"}, {}], "misrepresentedTokens": true},
+  "perfectswap": {
+    "args": [
+      {"arbitrum": "0xC7ee0B06c2d9c97589bEa593c6E9F6965451Fe93"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "pharaoh-exchange-v1": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0xAAA16c016BF556fcD620328f0759252E29b1AB57"}, {"hasStablePools": true, "stablePoolSymbol": "crAMM"}],
+    "misrepresentedTokens": true,
+    "staking": {"avax": ["0xAAA3249511DE3E7A5c61FbA8313170c1Bef9A65e", "0xAAAB9D12A30504559b0C5a9A5977fEE4A6081c6b"]}
+  },
+  "pheasantswap": {"functionName": "uniTvlExports", "args": [{"enuls": "0x7bf960B15Cbd9976042257Be3F6Bb2361E107384"}, {}]},
+  "phenix-dex": {
+    "functionName": "uniTvlExports",
+    "args": [{"cronos": "0x6Bae09822c36a9359d563A22fc7d134eF27a5f60", "polygon": "0x9A3F01dfA086C2E234fC88742c692368438fBb30"}, {}],
+    "methodology": "TVL of staked assets across the Phenix DEX on both Cronos Mainnet and Polygon POS chains."
+  },
+  "photonswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "cronos": "0x462C98Cae5AffEED576c98A55dAA922604e2D875",
+        "evmos": "0x1c671d6fEC45Ec0de88C82e6D8536bFe33F00c8a",
+        "kava": "0x4FD2c40c25Dd40e9Bf0CE8479bA384178b8671b5"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Factory addresses (0x462C98Cae5AffEED576c98A55dAA922604e2D875 for cronos, 0x4FD2c40c25Dd40e9Bf0CE8479bA384178b8671b5 for kava, 0x1c671d6fEC45Ec0de88C82e6D8536bFe33F00c8a for evmos) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "pinkswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x7D2Ce25C28334E40f37b2A068ec8d5a59F11Ea54"}, {}],
+    "staking": {"bsc": ["0xe981676633dCf0256Aa512f4923A7e8DA180C595", "0x702b3f41772e321aacCdea91e1FCEF682D21125D"]}
+  },
+  "piperx-v2": {"args": [{"sty": "0x6D3e2f58954bf4E1d0C4bA26a85a1b49b2e244C6"}]},
+  "pippifinance": {"functionName": "uniTvlExports", "args": [{"heco": "0x979efE7cA072b72d6388f415d042951dDF13036e"}, {}], "deadFrom": "2025-01-15"},
+  "pixelswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "base": "0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9",
+        "op_bnb": "0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9",
+        "linea": "0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9",
+        "arbitrum": "0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9",
+        "era": "0x8435bd22e705DCeFCf6EF8b921E6dB534a4E9902",
+        "scroll": "0xD07739a9E9C46D3DedeD97c0edC49cea8BAB1Bb9"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Uses Uniswap-style factory address to find and price liquidity pairs."
+  },
+  "planar-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"blast": "0xdC401B87Ee940F5050f6a17f49763635653eb496"}, {}],
+    "misrepresentedTokens": true,
+    "start": "2024-05-10"
+  },
+  "planet-blue": {"functionName": "uniTvlExports", "args": [{"bsc": "0xa053582601214FEb3778031a002135cbBB7DBa18"}, {}], "misrepresentedTokens": true},
+  "pls2e": {"functionName": "uniTvlExports", "args": [{"bsc": "0x0944AB692786D9104AE9a29778285c41C33c0415"}, {}], "misrepresentedTokens": true},
+  "polyDEX-cryption-network": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x5bdd1cd910e3307582f213b33699e676e61dead9"}, {}],
+    "misrepresentedTokens": true
+  },
+  "polycat-dex": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x477Ce834Ae6b7aB003cCe4BC4d8697763FF456FA"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL are from the pools created by the factory and TVL in vaults",
+    "staking": {"polygon": ["0xfaBC099AD582072d26375F65d659A3792D1740fB", "0xbc5b59ea1b6f8da8258615ee38d40e999ec5d74f"]}
+  },
+  "polydex": {"args": [{"polygon": "0xEAA98F7b5f7BfbcD1aF14D0efAa9d9e68D82f640"}]},
+  "pond": {"args": [{"fuse": "0x1d1f1A7280D67246665Bb196F38553b469294f3a"}]},
+  "ponder": {
+    "functionName": "uniTvlExports",
+    "args": [{"bitkub": "0x20b17e92dd1866ec647acaa38fe1f7075e4b359e"}, {"fetchBalances": true}],
+    "methodology": "TVL includes the liquidity in all Ponder trading pairs on Bitkub Chain. Staking counts PONDER tokens locked in the staking contract.",
+    "start": 1704067200,
+    "staking": {
+      "bitkub": [
+        "0x6c8119d33fd43f6b254d041cd5d2675586731dd5",
+        "0xe0432224871917fb5a137f4a153a51ecf9f74f57",
+        "bitkub",
+        "ethereum:0xe0432224871917fb5a137f4a153a51ecf9f74f57"
+      ]
+    }
+  },
+  "ponyswap": {"args": [{"arbitrum": "0x66020547Ce3c861dec7632495D86e1b93dA6542c"}]},
+  "ponytaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"rpg": "0x1589DD24f11e1e49566fE99744E7487CbcAb2d43"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {
+      "rpg": [
+        ["0x5E51E0a62121f3edDe63a45DaA178C1107EA8ee1", "0xE32C24CA6AddEb28F28e6361c88Ca41FB24a62Bc", "0x177b396560cDDB3876a32BEDA1887476566C1f1a"],
+        "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
+      ]
+    }
+  },
+  "potatoswap": {"functionName": "uniTvlExports", "args": [{"xlayer": "0x630db8e822805c82ca40a54dae02dd5ac31f7fcf"}, {}], "misrepresentedTokens": true},
+  "powerswap": {"functionName": "uniTvlExports", "args": [{"ethpow": "0xD51CFEb0fa23101f67cF62EB02D0a82A4BaD52b7"}, {}], "misrepresentedTokens": true},
+  "powswap": {"functionName": "uniTvlExports", "args": [{"ethpow": "0x62009bD6349A3A1d7f1bcC7C69492Cd26F1FBF75"}, {}], "misrepresentedTokens": true},
+  "printy": {"args": [{"avax": "0xc62Ca231Cd2b0c530C622269dA02374134511a36"}, {"hasStablePools": true}]},
+  "protofi": {"args": [{"fantom": "0x39720E5Fe53BEEeb9De4759cb91d8E7d42c17b76"}]},
+  "pulsex": {
+    "functionName": "uniTvlExports",
+    "args": [{"pulse": "0x1715a3E4A142d8b698131108995174F37aEBA10D"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x1715a3E4A142d8b698131108995174F37aEBA10D) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "pulsex-v2": {"functionName": "uniTvlExports", "args": [{"pulse": "0x29ea7545def87022badc76323f373ea1e707c523"}, {}], "misrepresentedTokens": true},
+  "punkswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "op_bnb": "0x5640113EA7F369E6DAFbe54cBb1406E5BF153E90",
+        "shibarium": "0x5640113EA7F369E6DAFbe54cBb1406E5BF153E90",
+        "scroll": "0x5640113EA7F369E6DAFbe54cBb1406E5BF153E90"
+      },
+      {}
+    ]
+  },
+  "pureswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x94b4188D143b9dD6bd7083aE38A461FcC6AAd07E"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address on bsc (0x94b4188D143b9dD6bd7083aE38A461FcC6AAd07E) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "purple-bridge-dex": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x9c9238b2E47D61482D36deaFcDCD448D8bAAd75b"}, {}],
+    "misrepresentedTokens": true
+  },
+  "pyeswap": {"functionName": "uniTvlExports", "args": [{"bsc": "0xb664bdce35b5ee182e8832d4f3b615232e98a51e"}, {}], "misrepresentedTokens": true},
+  "raccoonswap": {"args": [{"parex": "0x933A81E5d5aF4A182C1CE7FD0F96599Dd469e66A"}]},
+  "ramses": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0xAAA20D08e59F6561f242b08513D36266C5A29415"}, {"hasStablePools": true, "stablePoolSymbol": "crAMM"}],
+    "misrepresentedTokens": true,
+    "staking": {"arbitrum": ["0xAAA343032aA79eE9a6897Dab03bef967c3289a06", "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418"]}
+  },
+  "rcpswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum_nova": "0xF9901551B4fDb1FE8d5617B5deB6074Bb8E1F6FB"}, {}],
+    "misrepresentedTokens": true
+  },
+  "reactor": {"functionName": "uniTvlExports", "args": [{"blast": "0xe9ecf70a6e8a00fafab980dc59ca7d3a4b800db9"}, {}], "misrepresentedTokens": true},
+  "reddex": {
+    "args": [
+      {
+        "ethereum": "0xBC7D212939FBe696e514226F3FAfA3697B96Bf59",
+        "bsc": "0x6D642253B6fD96d9D155279b57B8039675E49D8e",
+        "rbn": "0x262E06314Af8f4EEd70dbd8C7EFe2a5De686C142"
+      },
+      {
+        "staking": {
+          "rbn": [
+            ["0x634579156A20C50d0c3525233b1C39AAF500F867", "0x43A1dc107BBb06dF266278056055AE7Fc5bd2817"],
+            ["0x0233971bd2de29e81029336c46997055df3b5282", "0x0000000000000000000000000000000000000000"]
+          ]
+        }
+      }
+    ]
+  },
+  "redemption": {"functionName": "uniTvlExports", "args": [{"fantom": "0xa2dF50d1401afF182D19Bb41d76cf35953942c51"}, {}], "misrepresentedTokens": true},
+  "reservoir-tools-v2": {
+    "args": [
+      {
+        "abstract": "0x566d7510dEE58360a64C9827257cF6D0Dc43985E",
+        "zero_network": "0x1B4427e212475B12e62f0f142b8AfEf3BC18B559",
+        "shape": "0xb411eaf2f2070822b26e372e3ea63c5060ba45e6",
+        "ink": "0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04"
+      }
+    ]
+  },
+  "revoswap": {"functionName": "uniTvlExports", "args": [{"xlayer": "0xa38498983e7b31DE851e36090bc9D1D8fB96BE5E"}, {}], "misrepresentedTokens": true},
+  "ring-dex": {
+    "args": [
+      {
+        "ethereum": "0xeb2A625B704d73e82946D8d026E1F588Eed06416",
+        "blast": "0x24F5Ac9A706De0cF795A8193F6AB3966B14ECfE6",
+        "base": "0x9BfFC3B30D6659e3D84754cc38865B3D60B4980E",
+        "arbitrum": "0x1246Fa62467a9AC0892a2d2A9F9aafC2F5609442"
+      }
+    ]
+  },
+  "rocketswap-cc": {"functionName": "uniTvlExports", "args": [{"base": "0x1b8128c3a1b7d20053d10763ff02466ca7ff99fc"}, {}], "misrepresentedTokens": true},
+  "rockswap": {"functionName": "uniTvlExports", "args": [{"bitrock": "0x02c73ecb9B82e545E32665eDc42Ae903F8AA86a9"}, {}]},
+  "rskswap": {"functionName": "uniTvlExports", "args": [{"rsk": "0xfaa7762f551bba9b0eba34d6443d49d0a577c0e1"}, {}]},
+  "ruby-exchange": {"functionName": "uniTvlExports", "args": [{"europa": "0x71f7BbbB33550fa5d70CA3F7eeAD87529f2DC3C8"}, {}]},
+  "safeswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x5be44d6C5634161CdaDcC2bc35389325aa493e83", "ethereum": "0xB919aD419688F7C274f11F180112514941a910CB"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xe9c29cB475C0ADe80bE0319B74AD112F1e80058F) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "saharaexchange": {
+    "functionName": "uniTvlExports",
+    "args": [{"oasis": "0x9D7B4519C7bED9a1e1307F8f84975DBc7a1D3C75"}, {}],
+    "methodology": "Count TVL as liquidity on the dex",
+    "misrepresentedTokens": true
+  },
+  "saitaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0x35113a300ca0D7621374890ABFEAC30E88f214b1", "bsc": "0x19e5ebc005688466d11015e646fa182621c1881e"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x35113a300ca0D7621374890ABFEAC30E88f214b1 on Ethereum & 0x19e5ebc005688466d11015e646fa182621c1881e on BSC) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "sandyswap": {"functionName": "uniTvlExports", "args": [{"polygon_zkevm": "0xdb9908b6e0b87338194ae8627583194994bd992d"}, {"hasStablePools": true}]},
+  "saru": {"functionName": "uniTvlExports", "args": [{"apechain": "0x57bfFa72db682f7eb6C132DAE03FF36bBEB0c459"}, {}], "misrepresentedTokens": true},
+  "satin": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0x30030Aa4bc9bF07005cf61803ac8D0EB53e576eC"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "satoriSwap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "base": "0x4858C605862A91A34d83C19a9704f837f64fa405",
+        "linea": "0xfF5859B60BCb3F153431cA216B1b269EB66A2020",
+        "xlayer": "0xd967A2A9B873ccD5a5Ede00869e353949F24c3dc"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "satoshiswap": {"functionName": "uniTvlExports", "args": [{"core": "0x8f5c03a1c86bf79ae0baC0D72E75aee662083e26"}, {}], "misrepresentedTokens": true},
+  "saucerswap": {"args": [{"hedera": "0x0000000000000000000000000000000000103780"}]},
+  "sboomfi": {"args": [{"sonic": "0x3638Ca700D67D560Be2A2d0DD471640957564829"}]},
+  "scribeswap": {"functionName": "uniTvlExports", "args": [{"scroll": "0xb11826635f9253Bae9C426862b0f100950a71f8f"}, {}], "misrepresentedTokens": true},
+  "sdex": {"functionName": "uniTvlExports", "args": [{"ethf": "0x425D988a209125C58d16A9376f997D24009f569b"}, {}], "misrepresentedTokens": true},
+  "sealightswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon": "0xd0B30Fc63169bAaa3702ad7ec33EBe3f9e8627c0"}, {}],
+    "misrepresentedTokens": true
+  },
+  "seascape": {"functionName": "uniTvlExports", "args": [{"moonriver": "0xD184B1317125b166f01e8a0d6088ce1de61D00BA"}, {}], "misrepresentedTokens": true},
+  "secta-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"linea": "0x8Ad39bf99765E24012A28bEb0d444DE612903C43"}, {}],
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://www.secta.finance/info as the source."
+  },
+  "seedfi-amm": {"args": [{"sseed": "0x76454AC9dF69875443D492128D059cE6e1A9091F"}]},
+  "selfex": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"kava": "0x98a3567692Eb055fA1F05D616cad494DE9B05512"},
+      {
+        "blacklistedTokens": [
+          "0xa0eeda2e3075092d66384fe8c91a1da4bca21788",
+          "0x472402d47da0587c1cf515dafbafc7bce6223106",
+          "0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9"
+        ]
+      }
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Using DefiLlama's SDK for making on-chain calls to Selfex Factory Contract to iterate over Liquidity Pools & count token balances therein."
+  },
+  "sevenswap": {"functionName": "uniTvlExports", "args": [{"kava": "0x72b97F61fdb9a3aD34cd284B2f9c55d04127019c"}, {}]},
+  "shadow-legacy": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"sonic": "0x2dA25E7446A70D7be65fd4c053948BEcAA6374c8"},
+      {"hasStablePools": true, "blacklistedTokens": ["0xc31e2ac1a6fd9f80aaaa36a36530e035d2be8ac4"]}
+    ],
+    "misrepresentedTokens": true
+  },
+  "shadowswap": {"functionName": "uniTvlExports", "args": [{"core": "0x326Ee96748E7DcC04BE1Ef8f4E4F6bdd54048932"}, {}], "misrepresentedTokens": true},
+  "sharelock": {"functionName": "uniTvlExports", "args": [{"era": "0xea51CE8A1f9C1Cbbf5B89D9B1dA4A94fB1557866"}, {}]},
+  "sharkswap": {"args": [{"sx": "0x6A482aC7f61Ed75B4Eb7C26cE8cD8a66bd07B88D", "sxr": "0x610CfC3CBb3254fE69933a3Ab19aE1bF2aaaD7C8"}]},
+  "sharkswap-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x57592D44eb60011500961EF177BFf8D8691D5a8B"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x57592D44eb60011500961EF177BFf8D8691D5a8B) address and whitelisted tokens address to find and price Liquidity Pool pairs."
+  },
+  "sharkyswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x36800286f652dDC9bDcFfEDc4e71FDd207C1d07C"}, {}],
+    "staking": {"arbitrum": ["0xD5f406eB9E38E3B3E35072A8A35E0DcC671ea8DB", "0x73eD68B834e44096eB4beA6eDeAD038c945722F1"]}
+  },
+  "shibance": {
+    "functionName": "uniTvlExports",
+    "args": [{"kcc": "0x1aDb92364888C9A65e65C287DaE48032681327c8", "bsc": "0x092EE062Baa0440B6df6BBb7Db7e66D8902bFdF7"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "We count liquidity on the dexes, pulling data from subgraphs"
+  },
+  "shibaswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"ethereum": "0x115934131916c8b277dd010ee02de363c09d037c", "shibarium": "0xc2b4218F137e3A5A9B98ab3AE804108F0D312CBC"},
+      {
+        "blacklist": [
+          "0x6ADb2E268de2aA1aBF6578E4a8119b960E02928F",
+          "0xab167E816E4d76089119900e941BEfdfA37d6b32",
+          "0xF33893DE6eB6aE9A67442E066aE9aBd228f5290c",
+          "0x84FA8f52E437Ac04107EC1768764B2b39287CB3e",
+          "0x7121D00b4fA18F13Da6c2e30d19C04844E6AfDC8",
+          "0xC1bfcCd4c29813eDe019D00D2179Eea838a67703"
+        ]
+      }
+    ],
+    "misrepresentedTokens": true
+  },
+  "shibshift": {"functionName": "uniTvlExports", "args": [{"pulse": "0xD56B9f53A1CAf0a6b66B209a54DAE5C5D40dE622"}, {}], "misrepresentedTokens": true},
+  "shimmersea": {"args": [{"shimmer_evm": "0x4fb5d3a06f5de2e88ce490e2e11d22b840d5ac47", "iotaevm": "0x349aaAc3a500014981CBA11b64C76c66a6c1e8D0"}]},
+  "shinobi": {
+    "functionName": "uniTvlExports",
+    "args": [{"ubiq": "0xba831e62ac14d8500cef0367b14f383d7b1b1b0a"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xba831e62ac14d8500cef0367b14f383d7b1b1b0a) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "smartdex": {"functionName": "uniTvlExports", "args": [{"polygon": "0xBE087BeD88539d28664c9998FE3f180ea7b9749C"}, {}], "misrepresentedTokens": true},
+  "smbswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x2Af5c23798FEc8E433E11cce4A8822d95cD90565"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "The SMBswap subgraph and the SMBswap factory contract address are used to obtain the balance held in every LP pair.",
+    "start": "2022-02-19"
+  },
+  "snowswap-xyz": {
+    "functionName": "uniTvlExports",
+    "args": [{"crab": "0x36ABF1A7851fBF9ae9D79dc3E39C1227068158B3", "darwinia": "0x5669a449D892f03B4c541A321926f18e272c64A2"}, {}],
+    "misrepresentedTokens": true
+  },
+  "solarflare": {
+    "functionName": "uniTvlExports",
+    "args": [{"moonbeam": "0x19B85ae92947E0725d5265fFB3389e7E4F191FDa"}, {}],
+    "misrepresentedTokens": true
+  },
+  "solidblast": {
+    "functionName": "uniTvlExports",
+    "args": [{"blast": "0x5a79cC04Ad1494A8Ec04cE5C1E25bB50A10111eA"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x5a79cC04Ad1494A8Ec04cE5C1E25bB50A10111eA) address and whitelisted tokens address to find and price liquidity pool pairs"
+  },
+  "solidlizard": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x734d84631f00dC0d3FCD18b04b6cf42BFd407074"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "solidly": {"args": [{"fantom": "0x3fAaB499b519fdC5819e3D7ed0C26111904cbc28"}, {"hasStablePools": true}]},
+  "solidly-v2": {
+    "args": [
+      {"ethereum": "0x777de5Fe8117cAAA7B44f396E93a401Cf5c9D4d6"},
+      {
+        "staking": {"ethereum": ["0x77730ed992D286c53F3A0838232c3957dAeaaF73", "0x777172D858dC1599914a1C4c6c9fC48c99a60990"]},
+        "hallmarks": [[1678410000, "USDC depeg (90% TVL in USDC-USDT)"], [1678842000, "Solidly V2 sunset"]]
+      }
+    ]
+  },
+  "solisnek": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0xeeee1F1c93836B2CAf8B9E929cb978c35d46657E"}, {"hasStablePools": true, "stablePoolSymbol": "ssAMM"}],
+    "misrepresentedTokens": true
+  },
+  "solunea": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x5892Dc61d3f243Fa397197BaBC3Bb709Af4a0787", "arbitrum": "0x6ef065573cd3fff4c375d4d36e6ca93cd6e3d499"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "sonefi-xyz": {"args": [{"soneium": "0x82d2d0aAE77967d42ACf4F30B53e2de0055338De"}]},
+  "sonic-market-amm": {"args": [{"sonic": "0x01D6747dD2d65dDD90FAEC2C84727c2706ee28E2"}]},
+  "sonicswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"harmony": "0x653FB617210ca72DC938f8f4C75738F2B4b88d7B"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "TVL accounts for the liquidity found in each liquidity pair."
+  },
+  "sonicxswap": {"args": [{"sonic": "0x0569F2A6B281b139bC164851cf86E4a792ca6e81"}]},
+  "sonusexchange": {
+    "functionName": "uniTvlExports",
+    "args": [{"soneium": "0xdb5D9562C80AEab3aeaED35ecaAe40Fd8DC9a4c8"}, {}],
+    "misrepresentedTokens": true
+  },
+  "soswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x539db2B4FE8016DB2594d7CfbeAb4d2B730b723E"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x539db2B4FE8016DB2594d7CfbeAb4d2B730b723E) address and whitelisted tokens address to find and price Liquidity Pool pairs."
+  },
+  "soyfinance": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "callisto": "0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5",
+        "ethereumclassic": "0x23675f1Ac7cce101Aff647B96d7201EfCf66E4b0",
+        "bittorrent": "0xbf6c50889d3a620eb42c0f188b65ade90de958c4",
+        "bsc": "0x23675f1Ac7cce101Aff647B96d7201EfCf66E4b0"
+      },
+      {"blacklistedTokens": ["0x9fae2529863bd691b4a7171bdfcf33c7ebb10a65"]}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x9CC7C769eA3B37F1Af0Ad642A268b80dc80754c5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "spacefi": {"functionName": "uniTvlExports", "args": [{"evmos": "0x868A71EbfC46B86a676768C7b7aD65055CC293eE"}, {}], "misrepresentedTokens": true},
+  "spacefi-scroll": {
+    "functionName": "uniTvlExports",
+    "args": [{"scroll": "0x6cC370Ed99f1C11e7AC439F845d0BA6aed55cf50"}, {}],
+    "misrepresentedTokens": true
+  },
+  "spacefi-zksync": {"functionName": "uniTvlExports", "args": [{"era": "0x0700Fb51560CfC8F896B2c812499D17c5B0bF6A7"}, {}], "misrepresentedTokens": true},
+  "sparkdex-v2": {"functionName": "uniTvlExports", "args": [{"flare": "0x16b619B04c961E8f4F06C10B42FDAbb328980A89"}, {}], "misrepresentedTokens": true},
+  "spartacus-exchange": {"args": [{"fantom": "0x535646cf57E4155Df723bb24625f356d98ae9D2F"}]},
+  "spartadex": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0xFe8EC10Fe07A6a6f4A2584f8cD9FE232930eAF55", "linea": "0x9E4Fc4a5A0769ba74088856C229c4a1Db2Ea5A9e"}, {}],
+    "misrepresentedTokens": true
+  },
+  "sphynx": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0x8BA1a4C24DE655136DEd68410e222cCA80d43444",
+        "cronos": "0x5019EF5dd93A7528103BB759Bb2F784D065b826a",
+        "bitgert": "0xd4688F52e9944A30A7eaD808E9A86F95a0661DF8",
+        "loop": "0xc0246b4f24475a11ee4383d29575394dc237fc36"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "spinaqdex": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x36E0F99A19481976C42CC45Aec7205B10807E275"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses Uniswap-style factory address to find and price liquidity pairs."
+  },
+  "spookyswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "fantom": "0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3",
+        "eon": "0xa6AD18C2aC47803E193F75c3677b14BF19B94883",
+        "bittorrent": "0xee4bc42157cf65291ba2fe839ae127e3cc76f741",
+        "sonic": "0xEE4bC42157cf65291Ba2FE839AE127e3Cc76f741"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "spoon-exchange": {
+    "functionName": "uniTvlExports",
+    "args": [{"core": "0x097665669d8bd2ad7554E1434A3B93a42F03b435"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "squidswap": {"args": [{"ink": "0x63b54dBBD2DAbf89D5c536746e534711f6094199"}]},
+  "standard-tech": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "shiden": "0x073386AE3292299a5814B00bC1ceB8f2bfC92c51",
+        "ethereum": "0x53AC1d1FA4F9F6c604B8B198cE29A50d28cbA893",
+        "metis": "0xFA68bAAdBDCf014fA20bD1A4542967AE40Ddca53"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x073386AE3292299a5814B00bC1ceB8f2bfC92c51) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "starmaker": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x7096Cebc52012e2611a1E88c45bC54ee2A88dcB4", "mantle": "0x2a34936cd9441B7E7FB152c9C4e304be58e14830"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Counts liquidity in pools"
+  },
+  "starswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0x0b657e81a0C3E903cbe1228579fBd49AC5D81Ac1"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "StarSwap TVL Calculation",
+    "staking": {"astar": ["0x0262592d5f489e19afe070abc88a0808afc75250", "0x8489f4554790F5A103F2B0398537eAEe68B73884"]}
+  },
+  "stationdex-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"xlayer": "0xF7c16c5C5AF8838A884cF409543fdBE4Abd3D81d"}, {}],
+    "misrepresentedTokens": true
+  },
+  "sterling-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0xF7A23B9A9dCB8d0aff67012565C5844C20C11AFC"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "straxswap": {"args": [{"stratis": "0xDC29A634611914ed73261A71C8F20D828cA2c09F"}]},
+  "sumswap": {"functionName": "uniTvlExports", "args": [{"ethereum": "0x96FF042f8c6757fCE515d171F194b5816CAFEe11"}, {}]},
+  "sunswap-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"tron": "TKWJdrQkqHisa1X8HUdHEfREvTzw4pMAaY"}, {"queryBatched": 11}],
+    "timetravel": false,
+    "misrepresentedTokens": true
+  },
+  "superswap-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"optimism": "0x22505cb4d5d10b2c848a9d75c57ea72a66066d8c"}, {"permitFailure": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x22505cb4d5d10b2c848a9d75c57ea72a66066d8c) address and whitelisted tokens address to find and price Liquidity Pool pairs."
+  },
+  "surfswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"kava": "0xc449665520C5a40C9E88c7BaDa149f02241B1f9F"}, {}],
+    "hallmarks": [[1660521600, "incentives not given"]],
+    "misrepresentedTokens": true
+  },
+  "swapbase": {"functionName": "uniTvlExports", "args": [{"base": "0x04C9f118d21e8B767D2e50C946f0cC9F6C367300"}, {}], "misrepresentedTokens": true},
+  "swapblast": {"functionName": "uniTvlExports", "args": [{"blast": "0x04C9f118d21e8B767D2e50C946f0cC9F6C367300"}, {}], "misrepresentedTokens": true},
+  "swapfish": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x71539D09D3890195dDa87A6198B98B75211b72F3", "bsc": "0x71539D09D3890195dDa87A6198B98B75211b72F3"}, {}],
+    "methodology": "Uses factory(0x71539D09D3890195dDa87A6198B98B75211b72F3) address and whitelisted tokens address to find and price Liquidity Pool pairs",
+    "staking": {
+      "arbitrum": ["0x33141e87ad2DFae5FBd12Ed6e61Fa2374aAeD029", "0xb348B87b23D5977E2948E6f36ca07E1EC94d7328"],
+      "bsc": ["0x671eFBa3F6874485cC39535fa7b525fe764985e9", "0xb348B87b23D5977E2948E6f36ca07E1EC94d7328"]
+    }
+  },
+  "swapp": {
+    "functionName": "uniTvlExports",
+    "args": [{"cronos": "0xEe4fa96b695De795071d40EEad0e8Fd42cdB9951"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xEe4fa96b695De795071d40EEad0e8Fd42cdB9951) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "swapperchan": {"functionName": "uniTvlExports", "args": [{"boba": "0x3d97964506800d433fb5dbebdd0c202ec9b62557"}, {}]},
+  "swappi": {"functionName": "uniTvlExports", "args": [{"conflux": "0xe2a6f7c0ce4d5d300f97aa7e125455f5cd3342f5"}, {}], "misrepresentedTokens": true},
+  "swapr": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "ethereum": "0xd34971BaB6E5E356fd250715F5dE0492BB070452",
+        "xdai": "0x5d48c95adffd4b40c1aaadc4e08fc44117e02179",
+        "arbitrum": "0x359f20ad0f42d75a5077e65f30274cabe6f4f01a"
+      },
+      {}
+    ],
+    "misrepresentedTokens": true
+  },
+  "swipeswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0x8a93b6865c4492ff17252219b87ea6920848edc0", "bsc": "0x7810d4b7bc4f7faee9deec3242238a39c4f1197d"}, {}]
+  },
+  "tachyswap": {"functionName": "uniTvlExports", "args": [{"etlk": "0x033eff22bC5Bd30c597e1fdE8Ca6fB1C1274C688"}, {}], "misrepresentedTokens": true},
+  "tangoswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"smartbch": "0x2F3f70d13223EDDCA9593fAC9fc010e912DF917a"}, {}],
+    "methodology": "Count TVL as liquidity on the dex",
+    "misrepresentedTokens": true,
+    "staking": {"smartbch": ["0x98Ff640323C059d8C4CB846976973FEEB0E068aA", "0x73BE9c8Edf5e951c9a0762EA2b1DE8c8F38B5e91", "smartbch", "tangoswap", 18]}
+  },
+  "tarina": {"args": [{"avax": "0xb334a709dd2146caced08e698c05d4d22e2ac046"}]},
+  "tealswap": {"functionName": "uniTvlExports", "args": [{"oas": "0x5200000000000000000000000000000000000018"}, {}], "misrepresentedTokens": true},
+  "tendieswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xb5b4aE9413dFD4d1489350dCA09B1aE6B76BD3a8"}, {}],
+    "staking": {"bsc": ["0x6dDb25ca46656767f8f2385D653992dC1cdb4470", "0x9853A30C69474BeD37595F9B149ad634b5c323d9"]},
+    "methodology": "TVL counts the liquidity in each of the Tendieswap pairs. Pairs are found using the factory address. Staking TVL accounts for TENDIE on its masterchef contract."
+  },
+  "tendieswap-app": {
+    "functionName": "uniTvlExports",
+    "args": [{"tenet": "0x2D2ee1a4aec9f3c8c14dFcE837e1C89b639dd1E4"}, {}],
+    "misrepresentedTokens": true
+  },
+  "tethys": {
+    "functionName": "uniTvlExports",
+    "args": [{"metis": "0x2CdFB20205701FF01689461610C9F321D1d00F80"}, {}],
+    "methodology": "Metis tokens, USDC, USDT, WETH, TETHYS allocated in LP",
+    "misrepresentedTokens": true,
+    "staking": {"metis": ["0x54A8fB8c634dED694D270b78Cb931cA6bF241E21", "0x69fdb77064ec5c84FA2F21072973eB28441F43F3"]}
+  },
+  "tetu-swap": {"functionName": "uniTvlExports", "args": [{"polygon": "0x684d8c187be836171a1af8d533e4724893031828"}, {}], "misrepresentedTokens": true},
+  "themis-capital-dex": {
+    "functionName": "uniTvlExports",
+    "args": [{"filecoin": "0xe250A89d23F466c14B26BDF60a0DC3b54974FBE9"}, {}],
+    "misrepresentedTokens": true
+  },
+  "thena": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0xafd89d21bdb66d00817d4153e055830b1c2b3970", "op_bnb": "0xFC1bC666A98703505534477E651A2470508C99A4"}, {}],
+    "misrepresentedTokens": true
+  },
+  "thetaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"theta": "0xe8b97478ae8ab1fcfd46cdb2f62869ec63bbf69f"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0xe8b97478ae8ab1fcfd46cdb2f62869ec63bbf69f) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "thorusfi": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef", "moonbeam": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef"}, {}],
+    "staking": {
+      "avax": ["0x871d68cFa4994170403D9C1c7b3D3E037c76437d", "0xAE4AA155D2987B454C29450ef4f862CF00907B61"],
+      "moonbeam": [
+        "0xEeB84a24e10502D8A5c97B11df381D1550B25b9d",
+        "0x735abe48e8782948a37c7765ecb76b98cde97b0f",
+        "moonbeam",
+        "avax:0xAE4AA155D2987B454C29450ef4f862CF00907B61"
+      ]
+    },
+    "methodology": "We count liquidity on all AMM pools, using the TVL chart on https://app.thorus.fi/dashboard as the source. The staking portion of TVL includes the THO within the ThorusMaster contracts."
+  },
+  "throne-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0xe4806BdD8E010828324928d25587721F6B58BEA2"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses Uniswap-style factory address to find and price liquidity pairs."
+  },
+  "titano-swych": {"functionName": "uniTvlExports", "args": [{"bsc": "0x80f112CD8Ac529d6993090A0c9a04E01d495BfBf"}, {}], "misrepresentedTokens": true},
+  "tokan-exchange": {
+    "functionName": "uniTvlExports",
+    "args": [{"scroll": "0x92aF10c685D2CF4CD845388C5f45aC5dc97C5024"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "tomb-swap": {
+    "functionName": "uniTvlExports",
+    "args": [{"fantom": "0xE236f6890F1824fa0a7ffc39b1597A5A6077Cfe9"}, {}],
+    "methodology": "Counts the tokens locked on AMM pools using the factory contract(0xE236f6890F1824fa0a7ffc39b1597A5A6077Cfe9) to find all of the pairs"
+  },
+  "torusfarm": {
+    "functionName": "uniTvlExports",
+    "args": [{"base": "0x259b3217A01878ea9d64b45eE48231e660863ee7"}, {"permitFailure": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x259b3217A01878ea9d64b45eE48231e660863ee7) address and whitelisted tokens address to find and price Liquidity Pool pairs"
+  },
+  "traderjoe": {
+    "functionName": "uniTvlExports",
+    "args": [{"avax": "0x9ad6c38be94206ca50bb0d90783181662f0cfa10", "bsc": "0x4f8bdc85e3eec5b9de67097c3f59b6db025d9986"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "We count liquidity on the pairs and we get that information from the \"traderjoe-xyz/exchange\" subgraph. The staking portion of TVL includes the JoeTokens within the JoeBar contract.",
+    "staking": {"avax": ["0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33", "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"]}
+  },
+  "tulip": {
+    "functionName": "uniTvlExports",
+    "args": [{"oasis": "0x90a5e676EFBdeFeeeb015cd87484B712fd54C96A"}, {}],
+    "staking": {"oasis": ["0xceF2f95f185D49bcd1c10DE7f23BEaCBaae6eD0f", "0x2736643C7fFFe186984f60a2d34b91b1b7398bF1"]}
+  },
+  "twindex": {
+    "args": [
+      {"bsc": "0x4E66Fda7820c53C1a2F601F84918C375205Eac3E"},
+      {"staking": {"bsc": ["0x22A5C7376C76D2D7ddC88D314912217B20d6eEc0", "0x41171d5770c4c68686d1af042ada88a45b02f82b"]}}
+    ]
+  },
+  "ubeswap": {"functionName": "uniTvlExports", "args": [{"celo": "0x62d5b84bE28a183aBB507E125B384122D2C25fAE"}, {}], "misrepresentedTokens": true},
+  "ucs-finance": {"args": [{"unichain": "0x1ee365b3230Cd52c17A7a40633A0C53b2f11411B"}]},
+  "unicly": {"functionName": "uniTvlExports", "args": [{"ethereum": "0xbacc776b231c571a7e6ab7bc2c8a099e07153377"}, {}], "misrepresentedTokens": true},
+  "unifi-protocol": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "avax": "0x839547067bc885db205F5fA42dcFeEcDFf5A8530",
+        "bsc": "0xA5Ba037Ec16c45f8ae09e013C1849554C01385f5",
+        "iotex": "0x839547067bc885db205F5fA42dcFeEcDFf5A8530",
+        "ontology_evm": "0x839547067bc885db205F5fA42dcFeEcDFf5A8530",
+        "ethereum": "0x08e7974CacF66C5a92a37c221A15D3c30C7d97e0",
+        "fantom": "0x839547067bc885db205F5fA42dcFeEcDFf5A8530",
+        "harmony": "0x7aB6ef0cE51a2aDc5B673Bad7218C01AE9B04695",
+        "polygon": "0x4FEE52912f81B78C3CdcB723728926ED6a893D27",
+        "bittorrent": "0xCAaB36C77841647dC9955B3b1D03710E9B9F127f",
+        "tron": "TUtmsH4DZewoihrybFU2RG1pdW9sBhuSRZ"
+      },
+      {}
+    ],
+    "timetravel": false,
+    "misrepresentedTokens": true,
+    "staking": {"ethereum": ["0x2e2fb3db9ecdb9b7d9eb05e00964c8941f7171a7", "0x441761326490cACF7aF299725B6292597EE822c2"]}
+  },
+  "uniwswap": {"functionName": "uniTvlExports", "args": [{"ethpow": "0xaBC4325bAD182076EAa5877c68437833d596D3Ee"}, {}], "misrepresentedTokens": true},
+  "usesugarswap": {"functionName": "uniTvlExports", "args": [{"era": "0x0A592988aBE9017a3c0285B9aa251A4bE8683394"}, {}], "misrepresentedTokens": true},
+  "uswap-me": {"functionName": "uniTvlExports", "args": [{"tron": "TQ4F8Gr1qRKcMva64qYweAJNAVtgfj6ZJd"}, {}]},
+  "v2swap": {
+    "functionName": "uniTvlExports",
+    "args": [{"op_bnb": "0x4811110638201b5878abe23e406DdA9De9Ad7B20"}, {"permitFailure": true}],
+    "misrepresentedTokens": true,
+    "methodology": "Uses factory(0x4811110638201b5878abe23e406DdA9De9Ad7B20) address to find and price Liquidity Pool pairs."
+  },
+  "v60": {"functionName": "uniTvlExports", "args": [{"prom": "0x3B73a7eDc9dfE4847a20BcCfEf6Eb1c90439f5C9"}, {}], "misrepresentedTokens": true},
+  "valleyswap": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {"oasis": "0xa25464822b505968eEc9A45C43765228c701d35f"},
+      {"blacklistedTokens": ["0x6Cb9750a92643382e020eA9a170AbB83Df05F30B", "0x94fbffe5698db6f54d6ca524dbe673a7729014be"]}
+    ],
+    "misrepresentedTokens": true,
+    "hallmarks": [[1681743600, "Remove Fake USDT"], [1654214400, "EvoDefi bridge depeg"]]
+  },
+  "vampireswap": {
+    "args": [
+      {"fantom": "0xdf0a0a62995ae821d7a5cf88c4112c395fc41358"},
+      {"staking": {"fantom": ["0xa9d452E3CEA2b06d7DBE812A6C3ec81cf52334dD", "0x97058c0B5ff0E0E350e241EBc63b55906a9EADbc"]}}
+    ]
+  },
+  "vapordex": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "telos": "0xDef9ee39FD82ee57a1b789Bc877E2Cbd88fd5caE",
+        "avax": "0xc009a670e2b02e21e7e75ae98e254f467f7ae257",
+        "apechain": "0xc009a670e2b02e21e7e75ae98e254f467f7ae257"
+      },
+      {}
+    ],
+    "methodology": "TVL comes from the DEX liquidity pools, and is pulled from the factory contract:"
+  },
+  "varen": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0x696708db871b77355d6c2be7290b27cf0bb9b24b"}, {}],
+    "start": "2020-11-26",
+    "staking": {"ethereum": ["0x25a25e2f0d2c211a96fa35e8c670ef6f5b3aba57", "0x72377f31e30a405282b522d588aebbea202b4f23"]},
+    "pool2": {"ethereum": ["0x25a25e2f0d2c211a96fa35e8c670ef6f5b3aba57", "0x88024deacdc2e9eda02a3051377ed635381faa54"]}
+  },
+  "velocimeter-v2": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "canto": "0xF80909DF0A01ff18e4D37BF682E40519B21Def46",
+        "pulse": "0x6B4449C74a9aF269A5f72B88B2B7B8604685D9B9",
+        "base": "0xe21Aac7F113Bd5DC2389e4d8a8db854a87fD6951",
+        "mantle": "0x99F9a4A96549342546f9DAE5B2738EDDcD43Bf4C"
+      },
+      {"hasStablePools": true}
+    ],
+    "misrepresentedTokens": true
+  },
+  "velocimeter-v4": {
+    "functionName": "uniTvlExports",
+    "args": [{"iotaevm": "0x10A288eF87586BE54ea690998cAC82F7Cc90BC50"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "velodrome": {
+    "args": [
+      {"optimism": "0x25CbdDb98b35ab1FF77413456B31EC81A6B6B746"},
+      {"hasStablePools": true, "hallmarks": [[1657760400, "First OP grant awarded"], [1659618000, "Loss $350k Operational Funds"]]}
+    ]
+  },
+  "venera": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x95F9c44fA1585811e1D1a0F59e74174B657B37A5"}, {}],
+    "staking": {"bsc": ["0xE947062374759D9Dad48B375030099b1ADe1a9c7", "0x94174f59c009f49b6aBC362706fdA402616b0427"]}
+  },
+  "veniceswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"findora": "0x5a75C65a96445eD0a4dDC1C1E35DF24B1DA3fe6a"}, {}],
+    "methodology": "Uses factory(0x5a75C65a96445eD0a4dDC1C1E35DF24B1DA3fe6a) address and whitelisted tokens address to find and price Liquidity Pool pairs"
+  },
+  "veplus": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x5Bcd9eE6C31dEf33334b255EE7A767B6EEDcBa4b"}, {"hasStablePools": true}],
+    "misrepresentedTokens": true
+  },
+  "versa": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0x4346A7C8C39Bf91b8a80933c2fdb10d815c401dB"}, {}],
+    "methodology": "Versa Tvl Calculation"
+  },
+  "versedex": {
+    "functionName": "uniTvlExports",
+    "args": [{"ethereum": "0xee3E9E46E34a27dC755a63e2849C9913Ee1A06E2", "smartbch": "0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x16bc2B187D7C7255b647830C05a6283f2B9A3AF8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "viperswap": {
+    "args": [
+      {"harmony": "0x7d02c116b98d0965ba7b642ace0183ad8b8d2196"},
+      {
+        "staking": {"harmony": ["0xe064a68994e9380250cfee3e8c0e2ac5c0924548", "0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79"]},
+        "hallmarks": [[1655991120, "Horizon bridge Hack $100m"]]
+      }
+    ]
+  },
+  "voltswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"meter": "0x56aD9A9149685b290ffeC883937caE191e193135", "theta": "0xa2De4F2cC54dDFdFb7D27E81b9b9772bd45bf89d"}, {}]
+  },
+  "voltswap-v2": {
+    "functionName": "uniTvlExports",
+    "args": [{"meter": "0xb33dE8C0843F90655ad6249F20B473a627443d21", "base": "0x2A5478bE24F9E536cCb91DBF650EFD6cE6C00398"}, {}],
+    "misrepresentedTokens": true
+  },
+  "vultureswap": {"args": [{"cronos": "0x45523BD2aB7E563E3a0F286be1F766e77546d579"}]},
+  "vvs-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"cronos": "0x3b44b2a187a7b3824131f8db5a74194d0a42fc15"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x3b44b2a187a7b3824131f8db5a74194d0a42fc15) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "w3swap": {
+    "functionName": "uniTvlExports",
+    "args": [{"pg": "0x94274b1Ed6E1BDe55fa631f502Aa18512Aa3007b", "bsc": "0xD04A80baeeF12fD7b1D1ee6b1f8ad354f81bc4d7"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Counts the tokens locked on AMM pools. Data is getting from the 'satoshirock/w3infov2' subgraph."
+  },
+  "wagmidao": {
+    "args": [
+      {"harmony": "0xfe33b03a49a1fcd095a8434dd625c2d2735e84b8"},
+      {
+        "staking": {
+          "harmony": [
+            ["0xaa2c3396cc6b3dc7b857e6bf1c30eb9717066366", "0xf046e84439813bb0a26fb26944001c7bb4490771"],
+            "0x8750f5651af49950b5419928fecefca7c82141e3"
+          ]
+        }
+      }
+    ]
+  },
+  "wagyuswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"velas": "0x69f3212344a38b35844cce4864c2af9c717f35e3"}, {"blacklist": ["0xcd7509b76281223f5b7d3ad5d47f8d7aa5c2b9bf"]}],
+    "misrepresentedTokens": true
+  },
+  "wakafinance": {"functionName": "uniTvlExports", "args": [{"fantom": "0xb2435253c71fca27be41206eb2793e44e1df6b6d"}, {}], "misrepresentedTokens": true},
+  "wannaswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"aurora": "0x7928D4FeA7b2c90C732c10aFF59cf403f0C38246"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {"aurora": ["0x5205c30bf2E37494F8cF77D2c19C6BA4d2778B9B", "0x7faA64Faf54750a2E3eE621166635fEAF406Ab22"]}
+  },
+  "wardenswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x3657952d7bA5A0A4799809b5B6fdfF9ec5B46293"}, {}],
+    "methodology": "TVL is calculated from total liquidity of WardenSwap's active pools listed on our farm page https://farm.wardenswap.finance/?t=1&s=1/#/farm, excluding pools at PancakeSwap and inactive pools are not included, plus total warden staked in Warden pool",
+    "staking": {"bsc": ["0xde866dD77b6DF6772e320dC92BFF0eDDC626C674", "0x0fEAdcC3824E7F3c12f40E324a60c23cA51627fc"]},
+    "hallmarks": [
+      [1629910800, "Announcement 2 week left before pool's rewards end"],
+      [1630083600, "Start pool's reward 100x warden pool"],
+      [1631293200, "Pool's rewards end"]
+    ]
+  },
+  "wigoswap": {
+    "args": [
+      {"fantom": "0xC831A5cBfb4aC2Da5ed5B194385DFD9bF5bFcBa7"},
+      {"staking": {"fantom": ["0xA1a938855735C0651A6CfE2E93a32A28A236d0E9", "0xE992bEAb6659BFF447893641A378FbbF031C5bD6"]}}
+    ]
+  },
+  "winery-swap": {"functionName": "uniTvlExports", "args": [{"bsc": "0x79C342FddBBF376cA6B4EFAc7aaA457D6063F8Cb"}, {}], "misrepresentedTokens": true},
+  "woken": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x0Dee376e1DCB4DAE68837de8eE5aBE27e629Acd0", "bsc": "0x0Dee376e1DCB4DAE68837de8eE5aBE27e629Acd0"}, {}],
+    "misrepresentedTokens": true
+  },
+  "wraithswap": {
+    "args": [
+      {"fantom": "0xCC738D2fDE18fe66773b84c8E6C869aB233766D1"},
+      {"staking": {"fantom": ["0x37b106f101a63D9d06e53140E52Eb6F8A3aC5bBc", "0x4cf098d3775bd78a4508a13e126798da5911b6cd"]}}
+    ]
+  },
+  "wtfdex": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50"}, {}],
+    "methodology": "Uses factory(0x63FD0a6acBfFB128E7BC7753BFA3B8639A233d50) address and whitelisted tokens address to find and price Liquidity Pool pairs",
+    "staking": {"arbitrum": ["0x8F4Ed4Cf0300E22c739d2E5A22220497B123b66e", "0x4e6482b05D13085f1C4A7e2Ef612ba43104f71b9"]}
+  },
+  "xbased": {"args": [{"base": "0x7a9ACeB13bc00eEC11460A5D7122793461Da96E0"}]},
+  "xops-finance": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0x6b5F5C4E0076c5841726a3B20B87Eb0709741842"}, {}]},
+  "xspswap": {"functionName": "uniTvlExports", "args": [{"xdc": "0x347D14b13a68457186b2450bb2a6c2Fd7B38352f"}, {}], "misrepresentedTokens": true},
+  "xswap": {"functionName": "uniTvlExports", "args": [{"crossfi": "0x3ca837175312070f4E4fF64972a199122Ee03805"}, {}]},
+  "yapeswap": {"functionName": "uniTvlExports", "args": [{"ethereum": "0x46aDc1C052Fafd590F56C42e379d7d16622835a2"}, {}], "misrepresentedTokens": true},
+  "yetiswap": {"functionName": "uniTvlExports", "args": [{"avax": "0x58C8CD291Fa36130119E6dEb9E520fbb6AcA1c3a"}, {}], "misrepresentedTokens": true},
+  "yieldfields": {
+    "functionName": "uniTvlExports",
+    "args": [{"bsc": "0x0A376eE063184B444ff66a9a22AD91525285FE1C"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "The YieldFields subgraph and the YieldFields factory contract address are used to obtain the balance held in every LP pair.",
+    "start": "2021-05-17"
+  },
+  "yoshi-exchange": {
+    "args": [
+      {
+        "fantom": "0xc5bc174cb6382fbab17771d05e6a918441deceea",
+        "bsc": "0x542b6524abf0bd47dc191504e38400ec14d0290c",
+        "ethereum": "0x773cadc167deafa46f603d96172fa45686c4fa58"
+      }
+    ]
+  },
+  "youswap": {
+    "args": [
+      {
+        "heco": "0x9f1cd0e59e78f5288e2fcf43030c9010d4f2991d",
+        "bsc": "0x137f34df5bcdb30f5e858fc77cb7ab60f8f7a09a",
+        "ethereum": "0xa7028337d3da1f04d638cc3b4dd09411486b49ea"
+      }
+    ]
+  },
+  "yumiswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"astar": "0xD3CFB8A232Ad5D0A7ABc817ae3BD1F3E7AE4b5E0"}, {}],
+    "methodology": "TVL comes from the DEX liquidity pools"
+  },
+  "yuzu": {"functionName": "uniTvlExports", "args": [{"oasis": "0x5F50fDC22697591c1D7BfBE8021163Fc73513653"}, {}]},
+  "zappy": {
+    "functionName": "uniTvlExports",
+    "args": [{"telos": "0x4be5Bf2233a0fd2c7D1472487310503Ec8E857be"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x4be5Bf2233a0fd2c7D1472487310503Ec8E857be) is used to find the LP pairs. TVL is equal to the liquidity on the AMM."
+  },
+  "zena-v2": {"functionName": "uniTvlExports", "args": [{"op_bnb": "0x8b4FC88973E5b8348640d35E49b1e9cE8AAc180A"}, {}]},
+  "zenithswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"arbitrum": "0x8F086a081621bbc13B6d02A9e1123212CF07fdf8"}, {}],
+    "misrepresentedTokens": true,
+    "methodology": "Factory address (0x8F086a081621bbc13B6d02A9e1123212CF07fdf8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "staking": {"arbitrum": ["0xa3b19C3aFD545900B778Cc7B3e2dC35848672aC2", "0xb2dcbd5258a22385240e4ac13fc6726b66f0de96"]}
+  },
+  "zerodex": {
+    "functionName": "uniTvlExports",
+    "args": [
+      {
+        "avax": "0x2Ef422F30cdb7c5F1f7267AB5CF567A88974b308",
+        "bsc": "0x52abdb3536a3a966056e096f2572b2755df26eac",
+        "polygon": "0x6fd98cf211134081fe02f551d64cf89671d5443b"
+      },
+      {}
+    ]
+  },
+  "zkSwap-finance": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0x3a76e377ed58c8731f9df3a36155942438744ce3", "sonic": "0xCe98a0E578b639AA90EE96eD5ba8E5a4022de529"}, {}],
+    "misrepresentedTokens": true,
+    "staking": {
+      "era": [
+        ["0x9F9D043fB77A194b4216784Eb5985c471b979D67", "0x4Ca2aC3513739ceBF053B66a1d59C88d925f1987", "0x056f1960b5CF53676AD9C0A7113363A812DC0c8e"],
+        ["0x31C2c031fDc9d33e974f327Ab0d9883Eae06cA4A"]
+      ]
+    },
+    "methodology": "TVL is total liquidity of all liquidity pools."
+  },
+  "zkdefi": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon_zkevm": "0xfDC8ec444F482Fe8aFe0a00114548DC9ff729568"}, {}],
+    "misrepresentedTokens": true
+  },
+  "zkevmswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon_zkevm": "0x213c25900f365f1be338df478cd82bef7fd43f85"}, {}],
+    "misrepresentedTokens": true
+  },
+  "zkmoonswap": {
+    "functionName": "uniTvlExports",
+    "args": [{"polygon_zkevm": "0x49841094F19659e044671825d7ecb3B79368e6E5"}, {}],
+    "misrepresentedTokens": true
+  },
+  "zkswap-2": {
+    "functionName": "uniTvlExports",
+    "args": [{"era": "0xeeE1Af1CE68D280e9cAfD861B7d4af776798F18d", "zkfair": "0x028e8aB8C7556C7F42315f5afe08bB7392aA6878"}, {}],
+    "hallmarks": [[1704844800, "Whale Withdraw"]],
+    "misrepresentedTokens": true
+  },
+  "zoodex": {"args": [{"fantom": "0x6178C3B21F7cA1adD84c16AD35452c85a85F5df4"}]},
+  "zprotocol-dex": {"args": [{"scroll": "0xED93e976d43AF67Cc05aa9f6Ab3D2234358F0C81"}]},
+  "zswap-plus": {"functionName": "uniTvlExports", "args": [{"avax": "0xcDE3F9e6D452be6d955B1C7AaAEE3cA397EAc469"}, {}]}
+}

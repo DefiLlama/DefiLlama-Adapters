@@ -20,6 +20,7 @@ const chainList = require('./projects/helper/chains.json')
 const { log, diplayUnknownTable, sliceIntoChunks, sleep } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
+const { getModule } = require('./adapters')
 
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
@@ -119,7 +120,7 @@ function validateHallmarks(hallmark) {
 
 (async () => {
   let module = {};
-  module = require(passedFile)
+  module = getModule(process.argv[2]) ?? require(passedFile)
   if (module.hallmarks) {
     if (!Array.isArray(module.hallmarks)) {
       throw new Error("Hallmarks should be an array of arrays")

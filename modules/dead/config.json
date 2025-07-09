@@ -1,0 +1,402 @@
+{
+  "3xcalibur": {
+    "function": "uniTvlExports",
+    "args": [{"arbitrum": "0xD158bd9E8b6efd3ca76830B66715Aa2b7Bad2218"}, {"hasStablePools": true, "hallmarks": [[1668038400, "Emissions started"]]}]
+  },
+  "BombFinance": {"function": "uniTvlExports", "args": [{"fantom": "0xD9473A05b2edf4f614593bA5D1dBd3021d8e0Ebe"}]},
+  "Equalizer": {
+    "function": "uniTvlExports",
+    "args": [
+      {"fantom": "0xc6366EFD0AF1d09171fe0EBF32c7943BB310832a", "sonic": "0xDDD9845Ba0D8f38d3045f804f67A1a8B9A528FcC"},
+      {
+        "hasStablePools": true,
+        "stablePoolSymbol": "s-",
+        "staking": {"fantom": ["0x8313f3551C4D3984FfbaDFb42f780D0c8763Ce94", "0x3Fd3A0c85B70754eFc07aC9Ac0cbBDCe664865A6"]}
+      }
+    ]
+  },
+  "Omnidrome": {
+    "function": "uniTvlExports",
+    "args": [
+      {"zeta": "0x769d1BcB5FDf30F5a9D19f1ab8A3cF8b60a6e855"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "Scale": {
+    "function": "uniTvlExports",
+    "args": [
+      {"base": "0xEd8db60aCc29e14bC867a497D94ca6e3CeB5eC04"},
+      {"hasStablePools": true, "staking": {"base": ["0x28c9c71c776a1203000b56c0cca48bef1cd51c53", "0x54016a4848a38f257b6e96331f7404073fd9c32c"]}}
+    ]
+  },
+  "Shibafantom": {"function": "uniTvlExports", "args": [{"fantom": "0xeAcC845E4db0aB59A326513347a37ed4E999aBD8"}]},
+  "SwapX-v2": {"function": "uniTvlExports", "args": [{"sonic": "0x05c1be79d3aC21Cc4B727eeD58C9B2fF757F5663"}, {"hasStablePools": true}]},
+  "aerodrome": {
+    "function": "uniTvlExports",
+    "args": [
+      {"base": "0x420DD381b31aEf6683db6B902084cB0FFECe40Da"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "alligator-exchange": {
+    "function": "uniTvlExports",
+    "args": [
+      {"avax": "0xD9362AA8E0405C93299C573036E7FB4ec3bE1240"},
+      {"staking": {"avax": ["0x32A948F018870548bEd7e888Cd97a257b700D4c6", "0x43C812Ba28cb061b1Be7514145A15C9E18a27342"]}}
+    ]
+  },
+  "andromeada": {"function": "uniTvlExports", "args": [{"base": "0xB9e611CaD79f350929C8E36cAbbe5D2Ce9502D51"}, {"hasStablePools": true}]},
+  "arena-dex": {"function": "uniTvlExports", "args": [{"avax": "0xF16784dcAf838a3e16bEF7711a62D12413c39BD1"}]},
+  "artexswap_xyz": {"function": "uniTvlExports", "args": [{"artela": "0xa65f38efbE4b0b602C9FEBE887448263547aaeeD"}]},
+  "auraswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"polygon": "0x015DE3ec460869eb5ceAe4224Dc7112ac0a39303"},
+      {"staking": {"polygon": ["0x44Bb1a3E56Cb12b7B1a8E925f09A170e3646346d", "0x1b7805e2829fd7D194DCc3078a4199b13c77E467"]}}
+    ]
+  },
+  "auroraswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"aurora": "0xC5E1DaeC2ad401eBEBdd3E32516d90Ab251A3aA3"},
+      {"staking": {"aurora": ["0x35CC71888DBb9FfB777337324a4A60fdBAA19DDE", "0x12c87331f086c3C926248f964f8702C0842Fd77F"]}}
+    ]
+  },
+  "autoshark": {
+    "function": "uniTvlExports",
+    "args": [
+      {"bsc": "0xe759Dd4B9f99392Be64f1050a6A8018f73B53a13"},
+      {"staking": {"bsc": ["0x5D2112Ba0969EC66012380C1fb88F2A3D182Eb90", "0xdd97ab35e3c0820215bc85a395e13671d84ccba2"]}}
+    ]
+  },
+  "bakeryswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"bsc": "0x01bF7C66c6BD861915CdaaE475042d3c4BaE16A7"},
+      {"staking": {"bsc": ["0x6a8dbbfbb5a57d07d14e63e757fb80b4a7494f81", "0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5"]}}
+    ]
+  },
+  "beralis-v2": {"function": "uniTvlExports", "args": [{"berachain": "0x9A40c6dCBB0c0BAeB58C41839C057a6431f96C55"}]},
+  "boomswap": {"function": "uniTvlExports", "args": [{"bsc": "0xB438dee6a8875AFAbB8a82e86ef56C4DEEe5D1b5"}]},
+  "bulbaswap-v2": {"function": "uniTvlExports", "args": [{"morph": "0x8D2A8b8F7d200d75Bf5F9E84e01F9272f90EFB8b"}]},
+  "bxh": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "heco": "0xe0367ec2bd4ba22b1593e4fefcb91d29de6c512a",
+        "bsc": "0x7897c32cbda1935e97c0b59f244747562d4d97c1",
+        "ethereum": "0x8d0fCA60fDf50CFE65e3E667A37Ff3010D6d1e8d",
+        "avax": "0xDeC9231b2492ccE6BA01376E2cbd2bd821150e8C",
+        "okexchain": "0xff65bc42c10dcc73ac0924b674fd3e30427c7823"
+      }
+    ]
+  },
+  "degenhaus": {
+    "function": "uniTvlExports",
+    "args": [
+      {"fantom": "0xA01C3d760738c79e10334408aE59684Aa36B1131"},
+      {"staking": {"fantom": ["0x72A7A3770B4BC999026F3663F1534581E0c59f2a", "0xd948efcc99be419ca9bdace89b2bec31edf13adb"]}}
+    ]
+  },
+  "diamondswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "odyssey": "0x7d57C45dC107497C5c5c0F544a84691D2b06BC83",
+        "base": "0xdc93aca9bf72ceb35d1f2cd305bd8335b5b88757",
+        "avax": "0x7ab5ac142799b0a3b6f95c27a1f2149ebcf5287d"
+      }
+    ]
+  },
+  "dinoexchange": {
+    "function": "uniTvlExports",
+    "args": [
+      {"bsc": "0x35E9455c410EacD6B4Dc1D0ca3144031f6251Dc2"},
+      {"staking": {"bsc": ["0x26CB55795Cff07Df3a1Fa9Ad0f51d6866a80943b", "0xf317932ee2c30fa5d0e14416775977801734812d"]}}
+    ]
+  },
+  "dinosaureggs": {"function": "uniTvlExports", "args": [{"bsc": "0x73d9f93d53505cb8c4c7f952ae42450d9e859d10"}]},
+  "dojoswap-ancient8": {"function": "uniTvlExports", "args": [{"ancient8": "0x7d6eb409e2540d27Ea6Dc976E1a549a3dBcBfFBC"}]},
+  "dracula-era": {"function": "uniTvlExports", "args": [{"era": "0x68e03D7B8B3F9669750C1282AD6d36988f4FE18e"}, {"hasStablePools": true}]},
+  "dtx-dex": {"function": "uniTvlExports", "args": [{"taiko": "0x2EA9051d5a48eA2350b26306f2b959D262cf67e1"}]},
+  "duckydefi": {"function": "uniTvlExports", "args": [{"cronos": "0x796E38Bb00f39a3D39ab75297D8d6202505f52e2"}]},
+  "ethervista": {"function": "uniTvlExports", "args": [{"ethereum": "0x9a27cb5ae0B2cEe0bb71f9A85C0D60f3920757B4"}]},
+  "excalibur": {"function": "uniTvlExports", "args": [{"fantom": "0x08b3CCa975a82cFA6f912E0eeDdE53A629770D3f"}]},
+  "fizzswap-v2": {"function": "uniTvlExports", "args": [{"silicon_zk": "0xCB72354080A1d3B8A48425B889025d0799c52095"}]},
+  "fluxusbase": {"function": "uniTvlExports", "args": [{"base": "0x27c2d144b106B26Be3d0dEB6c14c5CFA2e9a507C"}, {"hasStablePools": true}]},
+  "fuzzfinance": {
+    "function": "uniTvlExports",
+    "args": [
+      {"harmony": "0x5245d2136dc79Df222f00695C0c29d0c4d0E98A6"},
+      {"staking": {"harmony": ["0x847b46ed6c3df75e34a0496ef148b89bf5eb41b1", "0x984b969a8e82f5ce1121ceb03f96ff5bb3f71fee"]}}
+    ]
+  },
+  "gloom": {
+    "function": "uniTvlExports",
+    "args": [
+      {"sonic": "0x385AC659B50dF7f90755f974409D02dc21ea8bB0"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "gravity-finance": {"function": "uniTvlExports", "args": [{"polygon": "0x3ed75AfF4094d2Aaa38FaFCa64EF1C152ec1Cf20"}]},
+  "gt3": {"function": "uniTvlExports", "args": [{"polygon": "0x2d7360Db7216792cfc2c73B79C0cA629007E2af4"}]},
+  "hakuswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"avax": "0x2Db46fEB38C57a6621BCa4d97820e1fc1de40f41"},
+      {"staking": {"avax": ["0xa95C238B5a72f481f6Abd50f951F01891130b441", "0x695Fa794d59106cEbd40ab5f5cA19F458c723829"]}}
+    ]
+  },
+  "hybra-v2": {"function": "uniTvlExports", "args": [{"hyperliquid": "0x9c7397c9C5ecC400992843408D3A283fE9108009"}, {"hasStablePools": true}]},
+  "hydrometer": {
+    "function": "uniTvlExports",
+    "args": [
+      {"base": "0xF60caCf0A3daa5B6a79ca6594BEF38F85391AE0A"},
+      {
+        "deadFrom": 1732734407,
+        "abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"},
+        "hasStablePools": true,
+        "hallmarks": [[1732734407, "Rug Pull"]]
+      }
+    ]
+  },
+  "hyperswap-v2": {"function": "uniTvlExports", "args": [{"hyperliquid": "0x724412C00059bf7d6ee7d4a1d0D5cd4de3ea1C48"}]},
+  "iguana-v2": {"function": "uniTvlExports", "args": [{"etlk": "0x3eebf549D2d8839E387B63796327eE2C8f64A0C4"}]},
+  "in_dex": {"function": "uniTvlExports", "args": [{"hsk": "0x09ee9eCc6E2B458508E05Da7f90E324AE54620D2"}]},
+  "incaswap": {"function": "uniTvlExports", "args": [{"matchain": "0x1d9e11881Fca0e692B09AF0C0cbE70A643CB06FB"}]},
+  "inkswap": {"function": "uniTvlExports", "args": [{"ink": "0xBD5B41358A6601924F1Fd708aF1535a671f530A9"}]},
+  "inkyswap": {"function": "uniTvlExports", "args": [{"ink": "0x458C5d5B75ccBA22651D2C5b61cB1EA1e0b0f95D"}]},
+  "jetswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5",
+        "polygon": "0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7",
+        "fantom": "0xf6488205957f0b4497053d6422F49e27944eE3Dd"
+      },
+      {
+        "staking": {
+          "bsc": ["0x63d6EC1cDef04464287e2af710FFef9780B6f9F5", "0x0487b824c8261462f88940f97053e65bdb498446"],
+          "polygon": ["0x4e22399070aD5aD7f7BEb7d3A7b543e8EcBf1d85", "0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25"],
+          "fantom": ["0x9180583C1ab03587b545629dd60D2be0bf1DF4f2", "0x3D8f1ACCEe8e263F837138829B6C4517473d0688"]
+        }
+      }
+    ]
+  },
+  "kaco": {
+    "function": "uniTvlExports",
+    "args": [
+      {"bsc": "0xa5e48a6E56e164907263e901B98D9b11CCB46C47", "shiden": "0xcd8620889c1dA22ED228e6C00182177f9dAd16b7"},
+      {
+        "staking": {
+          "bsc": ["0x81b71D0bC2De38e37978E6701C342d0b7AA67D59", "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB"],
+          "shiden": ["0x293A7824582C56B0842535f94F6E3841888168C8", "0xb12c13e66ade1f72f71834f2fc5082db8c091358"]
+        }
+      }
+    ]
+  },
+  "kittenswap": {"function": "uniTvlExports", "args": [{"hyperliquid": "0xDa12F450580A4cc485C3b501BAB7b0B3cbc3B31B"}]},
+  "kittypunch": {"function": "uniTvlExports", "args": [{"flow": "0x29372c22459a4e373851798bFd6808e71EA34A71"}]},
+  "knightswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"bsc": "0xf0bc2E21a76513aa7CC2730C7A1D6deE0790751f", "fantom": "0x7d82F56ea0820A9d42b01C3C28F1997721732218"},
+      {
+        "staking": {
+          "bsc": ["0xE50cb76A71b0c52Ab091860cD61b9BA2FA407414", "0xd23811058eb6e7967d9a00dc3886e75610c4abba"],
+          "fantom": ["0xb02e3A4B5ebC315137753e24b6Eb6aEF7D602E40", "0x6cc0e0aedbbd3c35283e38668d959f6eb3034856"]
+        }
+      }
+    ]
+  },
+  "kodiak-v2": {"function": "uniTvlExports", "args": [{"berachain": "0x5e705e184d233ff2a7cb1553793464a9d0c3028f"}]},
+  "kronosdao": {
+    "function": "uniTvlExports",
+    "args": [
+      {"bsc": "0xcc045ebC2664Daf316aa0652E72237609EA6CB4f"},
+      {"staking": {"bsc": ["0x30e9f20414515116598D073F3EBA116c68A6f4aC", "0xbeC68a941feCC79E57762e258fd1490F29235D75"]}}
+    ]
+  },
+  "latte": {
+    "function": "uniTvlExports",
+    "args": [
+      {"bsc": "0x4DcE5Bdb81B8D5EdB66cA1b8b2616A8E0Dd5f807"},
+      {
+        "staking": {
+          "bsc": [
+            "0xbCeE0d15a4402C9Cc894D52cc5E9982F60C463d6",
+            ["0x8D78C2ff1fB4FBA08c7691Dfeac7bB425a91c81A", "0xa269A9942086f5F87930499dC8317ccC9dF2b6CB"]
+          ]
+        }
+      }
+    ]
+  },
+  "levinswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"xdai": "0x965769C9CeA8A7667246058504dcdcDb1E2975A5"},
+      {"staking": {"xdai": ["0xafa57Fb9d8D63Ff8124E17c1495C73bc3a7678D0", "0x1698cD22278ef6E7c0DF45a8dEA72EDbeA9E42aa"]}}
+    ]
+  },
+  "lovelyswap-v2": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "bsc": "0x7db16925214B2F5D65dB741D59208A1187B9961c",
+        "base": "0x7db16925214B2F5D65dB741D59208A1187B9961c",
+        "polygon": "0x177aeb3727c91c4796766336923c4da431c59637"
+      }
+    ]
+  },
+  "memebox-fi": {"function": "uniTvlExports", "args": [{"sonic": "0x079463f811e6EB2E226908E79144CDDB59a7fB71"}]},
+  "metavault-amm-v2": {
+    "function": "uniTvlExports",
+    "args": [{"scroll": "0xCc570Ec20eCB62cd9589FA33724514BDBc98DC7E", "linea": "0xCc570Ec20eCB62cd9589FA33724514BDBc98DC7E"}]
+  },
+  "metropolis-exchange-amm": {"function": "uniTvlExports", "args": [{"sonic": "0x1570300e9cFEC66c9Fb0C8bc14366C86EB170Ad0"}]},
+  "mobiusdex-xyz": {"function": "uniTvlExports", "args": [{"sonic": "0x475f2dDfA1A5da19F4a3F282F1305f285E742C45"}]},
+  "modemax-dex": {"function": "uniTvlExports", "args": [{"mode": "0x423A079C43e4eD7ca561Ef04765eDB796F0Ec6c6"}]},
+  "mswap": {"function": "uniTvlExports", "args": [{"matchain": "0x338bCC4efd3cA000D123d7352b362Fc6D5B3D829"}]},
+  "noxa-fi": {"function": "uniTvlExports", "args": [{"abstract": "0xE1e98623082f662BCA1009a05382758f86F133b3"}]},
+  "pandora-digital": {"function": "uniTvlExports", "args": [{"bsc": "0xFf9A4E72405Df3ca3D909523229677e6B2b8dC71"}]},
+  "pantherswap": {"function": "uniTvlExports", "args": [{"bsc": "0x670f55c6284c629c23baE99F585e3f17E8b9FC31"}]},
+  "perfectswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"arbitrum": "0xC7ee0B06c2d9c97589bEa593c6E9F6965451Fe93"},
+      {"abis": {"allPairsLength": "uint256:allPoolsLength", "allPairs": "function allPools(uint256) view returns (address)"}, "hasStablePools": true}
+    ]
+  },
+  "piperx-v2": {"function": "uniTvlExports", "args": [{"sty": "0x6D3e2f58954bf4E1d0C4bA26a85a1b49b2e244C6"}]},
+  "polydex": {"function": "uniTvlExports", "args": [{"polygon": "0xEAA98F7b5f7BfbcD1aF14D0efAa9d9e68D82f640"}]},
+  "pond": {"function": "uniTvlExports", "args": [{"fuse": "0x1d1f1A7280D67246665Bb196F38553b469294f3a"}]},
+  "ponyswap": {"function": "uniTvlExports", "args": [{"arbitrum": "0x66020547Ce3c861dec7632495D86e1b93dA6542c"}]},
+  "printy": {"function": "uniTvlExports", "args": [{"avax": "0xc62Ca231Cd2b0c530C622269dA02374134511a36"}, {"hasStablePools": true}]},
+  "protofi": {"function": "uniTvlExports", "args": [{"fantom": "0x39720E5Fe53BEEeb9De4759cb91d8E7d42c17b76"}]},
+  "raccoonswap": {"function": "uniTvlExports", "args": [{"parex": "0x933A81E5d5aF4A182C1CE7FD0F96599Dd469e66A"}]},
+  "reddex": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "ethereum": "0xBC7D212939FBe696e514226F3FAfA3697B96Bf59",
+        "bsc": "0x6D642253B6fD96d9D155279b57B8039675E49D8e",
+        "rbn": "0x262E06314Af8f4EEd70dbd8C7EFe2a5De686C142"
+      },
+      {
+        "staking": {
+          "rbn": [
+            ["0x634579156A20C50d0c3525233b1C39AAF500F867", "0x43A1dc107BBb06dF266278056055AE7Fc5bd2817"],
+            ["0x0233971bd2de29e81029336c46997055df3b5282", "0x0000000000000000000000000000000000000000"]
+          ]
+        }
+      }
+    ]
+  },
+  "reservoir-tools-v2": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "abstract": "0x566d7510dEE58360a64C9827257cF6D0Dc43985E",
+        "zero_network": "0x1B4427e212475B12e62f0f142b8AfEf3BC18B559",
+        "shape": "0xb411eaf2f2070822b26e372e3ea63c5060ba45e6",
+        "ink": "0xfe57a6ba1951f69ae2ed4abe23e0f095df500c04"
+      }
+    ]
+  },
+  "ring-dex": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "ethereum": "0xeb2A625B704d73e82946D8d026E1F588Eed06416",
+        "blast": "0x24F5Ac9A706De0cF795A8193F6AB3966B14ECfE6",
+        "base": "0x9BfFC3B30D6659e3D84754cc38865B3D60B4980E",
+        "arbitrum": "0x1246Fa62467a9AC0892a2d2A9F9aafC2F5609442"
+      }
+    ]
+  },
+  "saucerswap": {"function": "uniTvlExports", "args": [{"hedera": "0x0000000000000000000000000000000000103780"}]},
+  "sboomfi": {"function": "uniTvlExports", "args": [{"sonic": "0x3638Ca700D67D560Be2A2d0DD471640957564829"}]},
+  "seedfi-amm": {"function": "uniTvlExports", "args": [{"sseed": "0x76454AC9dF69875443D492128D059cE6e1A9091F"}]},
+  "sharkswap": {
+    "function": "uniTvlExports",
+    "args": [{"sx": "0x6A482aC7f61Ed75B4Eb7C26cE8cD8a66bd07B88D", "sxr": "0x610CfC3CBb3254fE69933a3Ab19aE1bF2aaaD7C8"}]
+  },
+  "shimmersea": {
+    "function": "uniTvlExports",
+    "args": [{"shimmer_evm": "0x4fb5d3a06f5de2e88ce490e2e11d22b840d5ac47", "iotaevm": "0x349aaAc3a500014981CBA11b64C76c66a6c1e8D0"}]
+  },
+  "sonefi-xyz": {"function": "uniTvlExports", "args": [{"soneium": "0x82d2d0aAE77967d42ACf4F30B53e2de0055338De"}]},
+  "sonic-market-amm": {"function": "uniTvlExports", "args": [{"sonic": "0x01D6747dD2d65dDD90FAEC2C84727c2706ee28E2"}]},
+  "sonicxswap": {"function": "uniTvlExports", "args": [{"sonic": "0x0569F2A6B281b139bC164851cf86E4a792ca6e81"}]},
+  "spartacus-exchange": {"function": "uniTvlExports", "args": [{"fantom": "0x535646cf57E4155Df723bb24625f356d98ae9D2F"}]},
+  "squidswap": {"function": "uniTvlExports", "args": [{"ink": "0x63b54dBBD2DAbf89D5c536746e534711f6094199"}]},
+  "straxswap": {"function": "uniTvlExports", "args": [{"stratis": "0xDC29A634611914ed73261A71C8F20D828cA2c09F"}]},
+  "tarina": {"function": "uniTvlExports", "args": [{"avax": "0xb334a709dd2146caced08e698c05d4d22e2ac046"}]},
+  "ucs-finance": {"function": "uniTvlExports", "args": [{"unichain": "0x1ee365b3230Cd52c17A7a40633A0C53b2f11411B"}]},
+  "vampireswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"fantom": "0xdf0a0a62995ae821d7a5cf88c4112c395fc41358"},
+      {"staking": {"fantom": ["0xa9d452E3CEA2b06d7DBE812A6C3ec81cf52334dD", "0x97058c0B5ff0E0E350e241EBc63b55906a9EADbc"]}}
+    ]
+  },
+  "velodrome": {
+    "function": "uniTvlExports",
+    "args": [
+      {"optimism": "0x25CbdDb98b35ab1FF77413456B31EC81A6B6B746"},
+      {"hasStablePools": true, "hallmarks": [[1657760400, "First OP grant awarded"], [1659618000, "Loss $350k Operational Funds"]]}
+    ]
+  },
+  "vultureswap": {"function": "uniTvlExports", "args": [{"cronos": "0x45523BD2aB7E563E3a0F286be1F766e77546d579"}]},
+  "wagmidao": {
+    "function": "uniTvlExports",
+    "args": [
+      {"harmony": "0xfe33b03a49a1fcd095a8434dd625c2d2735e84b8"},
+      {
+        "staking": {
+          "harmony": [
+            ["0xaa2c3396cc6b3dc7b857e6bf1c30eb9717066366", "0xf046e84439813bb0a26fb26944001c7bb4490771"],
+            "0x8750f5651af49950b5419928fecefca7c82141e3"
+          ]
+        }
+      }
+    ]
+  },
+  "wigoswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"fantom": "0xC831A5cBfb4aC2Da5ed5B194385DFD9bF5bFcBa7"},
+      {"staking": {"fantom": ["0xA1a938855735C0651A6CfE2E93a32A28A236d0E9", "0xE992bEAb6659BFF447893641A378FbbF031C5bD6"]}}
+    ]
+  },
+  "wraithswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {"fantom": "0xCC738D2fDE18fe66773b84c8E6C869aB233766D1"},
+      {"staking": {"fantom": ["0x37b106f101a63D9d06e53140E52Eb6F8A3aC5bBc", "0x4cf098d3775bd78a4508a13e126798da5911b6cd"]}}
+    ]
+  },
+  "xbased": {"function": "uniTvlExports", "args": [{"base": "0x7a9ACeB13bc00eEC11460A5D7122793461Da96E0"}]},
+  "yoshi-exchange": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "fantom": "0xc5bc174cb6382fbab17771d05e6a918441deceea",
+        "bsc": "0x542b6524abf0bd47dc191504e38400ec14d0290c",
+        "ethereum": "0x773cadc167deafa46f603d96172fa45686c4fa58"
+      }
+    ]
+  },
+  "youswap": {
+    "function": "uniTvlExports",
+    "args": [
+      {
+        "heco": "0x9f1cd0e59e78f5288e2fcf43030c9010d4f2991d",
+        "bsc": "0x137f34df5bcdb30f5e858fc77cb7ab60f8f7a09a",
+        "ethereum": "0xa7028337d3da1f04d638cc3b4dd09411486b49ea"
+      }
+    ]
+  },
+  "zoodex": {"function": "uniTvlExports", "args": [{"fantom": "0x6178C3B21F7cA1adD84c16AD35452c85a85F5df4"}]},
+  "zprotocol-dex": {"function": "uniTvlExports", "args": [{"scroll": "0xED93e976d43AF67Cc05aa9f6Ab3D2234358F0C81"}]}
+}
