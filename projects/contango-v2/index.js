@@ -134,7 +134,7 @@ async function vaultTvl(api, contango, graphUrl) {
   const assets = await cachedGraphQuery(cacheKey, graphUrl, graphQueries.asset, {
     api,
     useBlock: true,
-    fetchById: true,
+    fetchById: false,
     safeBlockLimit: 3000,
   })
 
@@ -150,13 +150,13 @@ const abis = {
 
 const graphQueries = {
   position: `
-query MyQuery($lastId: ID, $block: Int) {
+query MyQuery($lastId: BigInt, $block: Int) {
   positions(
     block: {number: $block}
-    where: {and: [{id_gt: $lastId}, {quantity_not: "0"}]}
-    first: 1000
+    where: {and: [{number_gt: $lastId}, {quantity_not: "0"}]}
+    first: 10000
   ) {
-    id
+    id: number
     instrument {
       base {
         id
@@ -168,8 +168,8 @@ query MyQuery($lastId: ID, $block: Int) {
   }
 }`,
   asset: `
-query MyQuery($lastId: ID, $block: Int) {
-  assets(block: {number: $block}, where: {id_gt: $lastId} first: 1000) {
+query MyQuery($block: Int) {
+  assets(block: {number: $block}, first: 10000) {
     id
   }
 }`,

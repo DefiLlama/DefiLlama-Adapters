@@ -2,6 +2,7 @@ const { getLogs2 } = require("../helper/cache/getLogs");
 const { nullAddress } = require("../helper/tokenMapping");
 
 function customCacheFunction({ cache, logs }) {
+  logs = logs.filter(log => (log.funderAccountAddress !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13') && (log.recipient !== '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13'))
   if (!cache.logs) cache.logs = []
   let sum = cache.logs[0] ?? 0
   sum = logs.reduce((acc, curr) => acc + Number(curr.amount), sum)
@@ -46,10 +47,8 @@ module.exports = {
         fromBlock: 20966151,
         customCacheFunction,
       })
-      api.addGasToken((fundedLogs + fundedOnBehalfLogs - withdrawnForUserLogs).toString())
 
-      // The withdrawl vault holds validator rewards until withdrawn.
-      return api.sumTokens({ owner: '0x22B35d437b3999F5C357C176adEeC1b8b0F35C13', tokens: [nullAddress] })
+      api.addGasToken((fundedLogs + fundedOnBehalfLogs - withdrawnForUserLogs).toString())
     },
   },
 }
