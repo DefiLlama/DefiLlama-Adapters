@@ -1,7 +1,6 @@
 const { cexExports } = require("../helper/cex");
-const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
-
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   bitcoin: {
@@ -186,7 +185,8 @@ const config = {
 
 module.exports = mergeExports([
   cexExports(config),
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddress: '0x08DeB6278D671E2a1aDc7b00839b402B9cF3375d', skipValidators: 3800, size: 200, proxy: true, sleepTime: 20_000 }) } },  // this address is no longer used?
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x08deb6278d671e2a1adc7b00839b402b9cf3375d', '0x39fd78fe6a72faae2ab5f1f053c253b2e3685c15'], size: 200, proxy: true, sleepTime: 20_000 }) } },
 ]);
+
 module.exports.methodology = "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
 module.exports.hallmarks = [[1723066836, "remove usdd collateral"]];
