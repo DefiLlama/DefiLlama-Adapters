@@ -1,11 +1,9 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require("../helper/solana.js");
-
 module.exports = {
-  soon: {
+  bsc: {
     tvl: async (api) => {
-      const balances = await sumTokens2({api, owner:"6JFxidiQiWZhk5aVFETHr3mNoA5zbauxoHkGQYZL5srG"})
-      return balances
+      const token = await api.call({  abi: 'address:asset', target: '0xcC48B55F6c16d4248EC6D78c11Ba19c1183Fe0F7'})
+      const bal = await api.call({  abi: 'uint256:totalAssets', target: '0xcC48B55F6c16d4248EC6D78c11Ba19c1183Fe0F7'})
+      api.add(token, bal)
     },
   },
 
