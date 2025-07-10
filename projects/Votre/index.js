@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require('graphql-request');
 
 // Token addresses on Base
-const cbBTC = "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf";
-const WETH = "0x4200000000000000000000000000000000000006";
-const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+const cbBTC = ADDRESSES.ethereum.cbBTC;
+const WETH = ADDRESSES.optimism.WETH_1;
+const USDC = ADDRESSES.base.USDC;
 // base mainnet subgraph url
 const BASE_MAINNET_SUBGRAPH_URL = 'https://api.goldsky.com/api/public/project_cm3exke617zqh01074tulgtx0/subgraphs/collar-base-mainnet/0.1.2/gn'
 // Contract addresses holding assets

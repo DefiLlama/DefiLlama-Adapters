@@ -301,7 +301,7 @@ async function tvl(api) {
       { collateral: TOKENS.SYMBIOTIC_GUANTLET_RESTAKED_SWETH_COLLATERAL, underlying: TOKENS.SWETH },
       { collateral: TOKENS.SYMBIOTIC_MANTA_COLLATERAL, underlying: TOKENS.MANTA },
     ]
-
+    
     const allBalanceCalls = symbioticMappings.flatMap(mapping => 
       owners.map(owner => ({ 
         target: mapping.collateral, 

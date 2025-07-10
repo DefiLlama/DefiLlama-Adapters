@@ -30,7 +30,7 @@ const boringVaultsV0Scroll = [
   },
     {
     name: "eBTC",
-    vault: "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642",
+    vault: ADDRESSES.ethereum.EBTC,
     accountant: "0x1b293DC39F94157fA0D1D36d7e0090C8B8B8c13F",
     teller: "0xe19a43B1b8af6CeE71749Af2332627338B3242D1",
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
@@ -39,7 +39,7 @@ const boringVaultsV0Scroll = [
   },
     {
     name: "eUSD",
-    vault: "0x939778D83b46B456224A33Fb59630B11DEC56663",
+    vault: ADDRESSES.ethereum.EUSD,
     accountant: "0xEB440B36f61Bf62E0C54C622944545f159C3B790",
     teller: "0xCc9A7620D0358a521A068B444846E3D5DebEa8fA",
     lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
