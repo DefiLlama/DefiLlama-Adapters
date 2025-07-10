@@ -18,6 +18,10 @@ const DEPLOYMENT = {
     block: 20696108,
     timestamp: 1725680627000,
   },
+  HYPEREVM_RUMPEL_WALLET_FACTORY: {
+    block: 4536816,
+    timestamp: 1748632980000,
+  },
 };
 
 const TOKENS = {
@@ -92,7 +96,7 @@ const TOKENS = {
   USR: "0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110",
   RLP: "0x4956b52aE2fF65D74CA2d61207523288e4528f96",
   STUSR: "0x6c8984bc7DBBeDAf4F6b2FD766f16eBB7d10AAb4",
-  
+
   WBETH: "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
   SWETH: "0xf951E335afb289353dc249e82926178EaC7DEd78",
   LSETH: "0x7BfEe91193d9Df2Ac0bFe90191D40F23c773C060",
@@ -335,7 +339,6 @@ async function tvl(api) {
   async function handleHyperEVMERC4626Vaults() {
     if (api.chain !== 'hyperliquid') return;
     
-    // Define ERC4626 vault mappings (vault -> underlying asset)
     const vaultMappings = [
       { vault: TOKENS.HYPEREVM_HBHYPE, underlying: TOKENS.HYPEREVM_WHYPE },
       { vault: TOKENS.HYPEREVM_HBBTC, underlying: TOKENS.HYPEREVM_UBTC },
@@ -409,7 +412,6 @@ async function tvl(api) {
     if (convertCalls.length === 0) return;
 
     // Convert vault shares to underlying assets
-    // Use permitFailure to handle vaults that might not implement convertToAssets
     const underlyingAmounts = await api.multiCall({
       abi: 'function convertToAssets(uint256 shares) view returns (uint256)',
       calls: convertCalls.map(call => ({ target: call.target, params: call.params })),
@@ -438,7 +440,7 @@ async function getOwners(api) {
     pointTokenVault = CONTRACTS.RUMEPL_POINT_TOKENIZATION_VAULT;
   } else if (chain === 'hyperliquid') {
     factoryAddress = CONTRACTS.HYPEREVM_RUMPEL_WALLET_FACTORY;
-    fromBlock = 1; // Start from block 1 for HyperEVM
+    fromBlock = DEPLOYMENT.HYPEREVM_RUMPEL_WALLET_FACTORY.block;
     pointTokenVault = CONTRACTS.HYPEREVM_POINT_TOKEN_VAULT;
   } else {
     return [];
