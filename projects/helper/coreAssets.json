@@ -749,11 +749,6 @@
     "CMDX": "ucmdx",
     "CMST": "ucmst"
   },
-  "xion": {
-    "XION": "uxion",
-    "OSMO": "uosmo",
-    "KYVE": "ukyve"
-  },
   "near": {
     "JUMBO": "token.jumbo_exchange.near",
     "PARAS": "token.paras.near",
