@@ -62,12 +62,14 @@ const endPoints = {
   stride: 'https://stride-api.polkachu.com',
   babylon: 'https://babylon-api.polkachu.com',
   milkyway_rollup: 'https://archival-rest-moo-1.anvil.asia-southeast.initia.xyz',
-  titan: 'https://titan-lcd.titanlab.io'
+  titan: 'https://titan-lcd.titanlab.io',
+  provenance: 'https://api.provenance.io',
 };
 
 const chainSubpaths = {
   crescent: "crescent",
   osmosis: "osmosis",
+  provenance: 'provenance',
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
