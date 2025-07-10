@@ -22,7 +22,6 @@ const config = {
   scroll: {
     owners: [
       "0xB54259245da3578C02591565Fa88a678aD542146",
-      "0xB54259245da3578C02591565Fa88a678aD542146",
     ],
   },
   optimism: {
