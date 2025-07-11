@@ -64,5 +64,11 @@
       "factory": "0x64FCC3A02eeEba05Ef701b7eed066c6ebD5d4E51",
       "fromBlock": 62814000
     }
+  ],
+  "bsc": [
+    {
+      "factory": "0x64FCC3A02eeEba05Ef701b7eed066c6ebD5d4E51",
+      "fromBlock": 50421500
+    }
   ]
 }
