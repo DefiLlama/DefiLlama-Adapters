@@ -70,7 +70,7 @@ async function tvl(api) {
     bals = bals.map((bal, i) => bal * ratio[i] / 1e18)
     api.addTokens(tokens, bals)
   }
-  return sumTokens2({ api, resolveLP: true, })
+  return sumTokens2({ api, resolveLP: true, blacklistedLPs: ['0x917aa69d539d6518440dd0bea2eaac142a8d5610'] })
 }
 
 
