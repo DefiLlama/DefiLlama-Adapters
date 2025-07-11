@@ -93,7 +93,6 @@
   "cyeth",
   "darwinia",
   "dash",
-  "dchain",
   "dchainmainnet",
   "defichain",
   "defichain_evm",
@@ -419,6 +418,7 @@
   "xai",
   "xdai",
   "xdc",
+  "xion",
   "xlayer",
   "xp",
   "xpla",
@@ -436,6 +436,5 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx",
-  "xion"
+  "zyx"
 ]
