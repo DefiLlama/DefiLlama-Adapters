@@ -40,11 +40,13 @@ const endpoint = (isClient) => {
 
 const renecEndpoint = () => getEnv('RENEC_RPC')
 const eclipseEndpoint = () => getEnv('ECLIPSE_RPC')
+const soonEndpoint = () => getEnv('SOON_RPC')
 
 const endpointMap = {
   solana: endpoint,
   renec: renecEndpoint,
   eclipse: eclipseEndpoint,
+  soon: soonEndpoint
 }
 
 function getConnection(chain = 'solana') {
