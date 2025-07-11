@@ -12,27 +12,11 @@ async function tvl(api) {
 
     const sumOfCollateralSupplies = collateralSupplies.reduce((acc, curr) => acc + BigInt(curr), BigInt(0))
 
-    const issuanceSuppliesFromCurves = await api.multiCall({
-        abi: abi.getVirtualIssuanceSupply,
-        calls: Object.values(config).map(c => ({
-            target: c.bondingCurve,
-        })),
-    })
-
-    const issuanceSupplies = Object.values(config).map((configItem, index) => ({
-        symbol: configItem.symbol,
-        token: configItem.token,
-        supply: BigInt(issuanceSuppliesFromCurves[index])
-    }))
-
-    const tokens = [ADDRESSES.polygon.WMATIC, ...issuanceSupplies.map(issuance => issuance.token)]
-    const balances = [sumOfCollateralSupplies, ...issuanceSupplies.map(issuance => issuance.supply)]
-
-    return api.addTokens(tokens, balances)
+    return api.addTokens([ADDRESSES.polygon.WMATIC], [sumOfCollateralSupplies])
 }
 
 module.exports = {
-    methodology: "TVL is counted as the value of WPOL and ABC tokens locked in the bonding curves",
+    methodology: "TVL is counted as the value of WPOL tokens locked in the bonding curves",
     timetravel: false,
     misrepresentedTokens: true,
     polygon: {
