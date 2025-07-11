@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports } = require("../helper/treasury");
 
 const tokens = [
@@ -11,10 +12,10 @@ const tokens = [
   '0x8245FD9Ae99A482dFe76576dd4298f799c041D61', // uUSCC++ 
   '0x28d24D4380B26A1Ef305Ad8D8DB258159E472F33', // Usual_MV
   '0x35D8949372D46B7a3D5A56006AE77B215fc69bC0', // USD0++
-  '0x73A15FeD60Bf67631dC6cd7Bc5B6e8da8190aCF5', // USD0
+  ADDRESSES.ethereum.USD0, // USD0
   '0x437cc33344a0B27A429f795ff6B469C72698B291',  // wM
   '0xC139190F447e929f090Edeb554D95AbB8b18aC1C', // USDtb
-  '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0' // wstEth
+  ADDRESSES.ethereum.WSTETH // wstEth
 ]
 
 const owners = [

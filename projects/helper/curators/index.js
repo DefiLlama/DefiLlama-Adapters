@@ -191,7 +191,7 @@ async function getCuratorTvl(api, vaults) {
   await getCuratorTvlErc4626(api, allVaults.morpho)
   await getCuratorTvlErc4626(api, allVaults.euler)
   await getCuratorTvlErc4626(api, allVaults.silo)
-  
+
   // mellow.finance vaults
   if (vaults.mellow) {
     await getCuratorTvlErc4626(api, vaults.mellow)
@@ -220,6 +220,11 @@ async function getCuratorTvl(api, vaults) {
   // symiotic.fi
   if (vaults.symbiotic) {
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
+  }
+
+  // custom ERC4626 vaults {
+  if (vaults.erc4626) {
+    await getCuratorTvlErc4626(api, vaults.erc4626)
   }
 }
 

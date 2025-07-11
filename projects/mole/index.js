@@ -26,10 +26,6 @@ module.exports = {
   //   tvl: avaxTvl,
   //   staking: avaxStaking,
   // },
-  aptos: {
-    tvl: aptosTvl
-  },
-  sui: {
-    tvl: suiTvl
-  }
+  aptos: { tvl: aptosTvl },
+  sui: { tvl: suiTvl }
 };

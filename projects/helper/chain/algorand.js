@@ -224,6 +224,16 @@ async function lookupTransactionsByID(searchParams = {}) {
 
 const limitedGetAccountInfo = withLimiter(getAccountInfo)
 
+async function getApplicationBoxes({ appId, limit = 1000, nexttoken, }) {
+  const response = (await axiosObj.get(`/v2/applications/${appId}/boxes`, {
+    params: {
+      limit,
+      next: nexttoken,
+    }
+  }))
+  return response.data.boxes
+}
+
 module.exports = {
   tokens,
   getAssetInfo: withLimiter(getAssetInfo),
@@ -239,4 +249,5 @@ module.exports = {
   getAppGlobalState: getAppGlobalState,
   getPriceFromAlgoFiLP,
   lookupApplicationsCreatedByAccount: withLimiter(lookupApplicationsCreatedByAccount),
+  getApplicationBoxes,
 }
