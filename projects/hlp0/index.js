@@ -14,4 +14,4 @@ module.exports = {
     tvl,
   },
   methodology: "TVL is calculated by summing the total assets of the HLP0 vault on Arbitrum. The HLP0 token is a LayerZero OFT, but the underlying assets are held in the Arbitrum vault.",
-}
+};
