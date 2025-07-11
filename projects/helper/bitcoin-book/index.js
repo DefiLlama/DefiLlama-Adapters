@@ -97,7 +97,14 @@ const cygnus = require('./cygnus.js')
 const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
+const coinbaseltc = require('./coinbase-ltc.js')
 const prosper = require('./prosper.js')
+const hotcoin = require('./hotcoin.js')
+const orangex = require('./orangex.js')
+const exmo = require('./exmo.js')
+const esbtc = require('./esbtc.js')
+const bimaCdp = require('./bima-cdp.js')
+const tzbtc = require('./tezos-btc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -116,6 +123,10 @@ const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
 ]
 
+const lbank = [
+  '1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn',
+]
+
 const stacksSBTC = [
   // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
   'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc',
@@ -127,6 +138,9 @@ const zeusZBTC = [
   'bc1p698gf9gm8j34gvars97j6spsgrlxlhvyfajt2tsz2vnw9fcat9cqjcjn4v',
   'bc1p96utmwdngv3xwdn90d7wg4tyqke70fs6js8ajgqkk89zn08z8d5q8xzchd',
   'bc1pd46txhc0a3t8juc2r4njyuk4rv3099dcn039ny0hzgt24tgx3qlszg5e6f',
+  'bc1p795t8whcfpl6uyxj38enzt43cg8scphrgvn2e79y3xgflv6s6nrsrmudk6',
+  'bc1pq7pr972ckfwrwrprqw5en54ytr58jndcaafr780hm35ttz4ekmas3fctx4',
+  'bc1qlw9h7fspehfvrgyhnr334936y2x6vurw7svxq3'
 ]
 
 const magpie = [
@@ -149,6 +163,7 @@ module.exports = {
   allo,
   avalanche,
   bevm,
+  bimaCdp,
   binance,
   binance2,
   bitstable,
@@ -242,5 +257,12 @@ module.exports = {
   unitbtc,
   backpack,
   coinbasebtc,
-  prosper
+  coinbaseltc,
+  prosper,
+  lbank,
+  hotcoin,
+  orangex,
+  exmo,
+  esbtc,
+  tzbtc
 }

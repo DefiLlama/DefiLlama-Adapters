@@ -1,5 +1,6 @@
 const { get } = require('../http')
 const { transformBalances } = require('../portedTokens')
+const { stellar } = require('./rpcProxy')
 
 async function getAssetSupply(asset) {
   const [assetCode, assetIssuer] = asset.split('-')
@@ -38,8 +39,19 @@ async function sumTokens(config) {
 
 }
 
+/**
+ * Read the "balance" function of a token for a given address
+ * @param {string} token
+ * @param {string} address 
+ * @returns {Promise<bigint>}
+ */
+async function getTokenBalance(token, address) {
+  return stellar.getTokenBalance({ token, address })
+}
+
 module.exports = {
   getAssetSupply,
   addUSDCBalance,
   sumTokens,
+  getTokenBalance
 }

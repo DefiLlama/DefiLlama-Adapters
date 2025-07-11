@@ -87,4 +87,11 @@ module.exports = {
     fromBlock: 4028276,
     voter: '0x3aF1dD7A2755201F8e2D6dCDA1a61d9f54838f4f',
   },
+ hemi: {
+    factory: '0xc6013E57a0811C7111A8fB07ACd2E248D9489C99',
+    chainName: 'hemi',
+    fromBlockSickle: 1741373,
+    gaugeFactory: '0x1E97Cd6b8ce5052b3fAee512C04F93a967c4c0E4',
+    fromBlock: 1741373,
+  },
 }

@@ -19,8 +19,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
-  'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride',
-
+  'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion'
 ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
@@ -40,21 +39,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  hemi: {
-    '0x6c851f501a3f24e29a8e39a29591cddf09369080': { coingeckoId: 'dai', decimals: 18 },
-    '0xad11a8beb98bbf61dbb1aa0f6d6f2ecd87b35afa': { coingeckoId: 'usd-coin', decimals: 6 },
-    '0xbb0d083fb1be0a9f6157ec484b6c79e0a4e31c2e': { coingeckoId: 'tether', decimals: 6 },
-    '0x03c7054bcb39f7b2e5b2c7acb37583e32d70cfa3': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-    '0xc3eacf0612346366db554c991d7858716db09f58': { coingeckoId: 'kelp-dao-restaked-eth', decimals: 18 },
-  },
-  stellar: {
-    XLM: { coingeckoId: 'stellar', decimals: 7 },
-    'USDC-GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN-1': { coingeckoId: 'usd-coin', decimals: 7 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

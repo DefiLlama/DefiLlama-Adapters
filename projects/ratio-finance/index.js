@@ -5,7 +5,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   hallmarks: [
-    [1670025600, "Private key compromised"],
+    // [1670025600, "Private key compromised"],
     [1675728000, "Announcement to move from Ratio to PHNX"]
   ],
   solana: {

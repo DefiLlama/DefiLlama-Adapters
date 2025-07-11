@@ -20,7 +20,7 @@ const config = {
   ]}
 }
 
-module.exports.hallmarks=[[1714435200, "Protocol exploit"]]
+// module.exports.hallmarks=[[1714435200, "Protocol exploit"]]
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {

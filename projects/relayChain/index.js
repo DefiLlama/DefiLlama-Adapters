@@ -57,7 +57,7 @@ const usdtFantom = "0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9";
 const daiFantom = ADDRESSES.fantom.DAI;
 const usdcFantom = ADDRESSES.fantom.USDC;
 const wFantom = ADDRESSES.fantom.WFTM;
-const btcFantom = "0x321162Cd933E2Be498Cd2267a90534A804051b11";
+const btcFantom = ADDRESSES.fantom.WBTC;
 
 
 const usdtHarmony = "0x224e64ec1bdce3870a6a6c777edd450454068fec";
