@@ -46,7 +46,7 @@ const HubPools = {
     },
     { // aUSD
       poolAddress: '0xc7DdB440666c144c2F27a3a5156D636Bacfc769C',
-      tokenAddress: '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a',
+      tokenAddress: ADDRESSES.mantle.AUSD,
       chainPoolAddress: '0x666aea026bC606220ec6eb83a83D81881fA48e0f',
     },
     { // savUSD
@@ -214,13 +214,13 @@ const HubPools = {
     },
     { // rsETH_arb
       poolAddress: '0x60f2682Ab38e3C9a51b07fbd69f42Ad2Cfe731db',
-      tokenAddress: '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
+      tokenAddress: ADDRESSES.berachain.rsETH,
       chainPoolAddress: '0xC0a3536E0b6799014A14664bA4370BBd5D0c7590',
     },
     {
       // USDT0_arb
       poolAddress: '0x1b5a1dCe059E6069Ed33C3656826Ad04bE536465',
-      tokenAddress: '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
+      tokenAddress: ADDRESSES.arbitrum.USDT,
       chainPoolAddress: '0xe69e068539Ee627bAb1Ce878843a6C76484CBd2c',
     }
   ],
@@ -259,7 +259,7 @@ const HubPools = {
     {
       // aUSD_pol
       poolAddress: '0x34f1BA5808EB5Bf60c9B1C343d86e410466F4860',
-      tokenAddress: '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a',
+      tokenAddress: ADDRESSES.mantle.AUSD,
       spokeAddress: '0xaB07AfCf16fecdCC3D83dB7513c7839aEd626322',
     },
     {

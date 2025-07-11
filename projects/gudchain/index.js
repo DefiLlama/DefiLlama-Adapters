@@ -10,7 +10,7 @@ module.exports = {
       tokens: [
         ADDRESSES.null,
         ADDRESSES.ethereum.STETH,
-        "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
+        ADDRESSES.bsc.wBETH,
         ADDRESSES.ethereum.METH,
         ADDRESSES.ethereum.DAI,
         ADDRESSES.ethereum.SDAI,

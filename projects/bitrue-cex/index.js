@@ -1,6 +1,6 @@
 const { cexExports } = require('../helper/cex')
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
-const { mergeExports, getStakedEthTVL } = require('../helper/utils.js');
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   ethereum: {

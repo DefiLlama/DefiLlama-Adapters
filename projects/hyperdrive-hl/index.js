@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const ethers = require("ethers");
 
 const MARKET_LENS = "0x7fB0d63E84D847569ca75A6cdbA283bA1401F9f6";
@@ -43,7 +44,7 @@ async function getAllMarkets(api) {
         permitFailure: true,
     })
 
-    return markets.filter(market => market !== '0x0000000000000000000000000000000000000000')
+    return markets.filter(market => market !== ADDRESSES.null)
 }
 
 async function tvl(api) {

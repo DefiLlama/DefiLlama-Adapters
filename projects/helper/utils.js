@@ -5,6 +5,7 @@ const http = require('./http')
 const { getEnv } = require('./env')
 const erc20 = require('./abis/erc20.json');
 const { fetchThroughProxy } = require('./proxyRequest');
+const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
   return axios.get(url)
@@ -322,10 +323,16 @@ function once(func) {
 }
 
 function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
-return async (api) => {
-    const addresses = withdrawalAddresses ?? [withdrawalAddress];
+  return async (api) => {
 
-    for (const addr of addresses) {
+    if (!withdrawalAddress && !withdrawalAddresses?.length)
+      throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
+
+    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    api.addGasToken(await beacon.balance(addresses))
+    return api.getBalances()
+
+/*     for (const addr of addresses) {
       let fetchedValidators = skipValidators;
       api.sumTokens({ owner: addr, tokens: [nullAddress] });
 
@@ -355,6 +362,11 @@ return async (api) => {
       } while (fetchedValidators % size === 0);
     }
 
+    const bals = api.getBalances()
+    Object.keys(bals).forEach((i) => {
+      bals[i] = bals[i] / 1e18
+    })
+    console.log(api.getBalances(), )
     return api.getBalances();
 
     async function addValidatorBalance(validators) {
@@ -369,7 +381,7 @@ return async (api) => {
       });
 
       data.forEach((i) => api.addGasToken(i.balance * 1e9));
-    }
+    } */
   };
 }
 

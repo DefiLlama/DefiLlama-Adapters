@@ -10,19 +10,19 @@ function staking(contract, token) {
 }
 
 const WBTC = {
-  ethereum: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-  arbitrum: '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f',
-  berachain: '0x0555e30da8f98308edb960aa94c0db47230d2b9c',
+  ethereum: ADDRESSES.ethereum.WBTC,
+  arbitrum: ADDRESSES.arbitrum.WBTC,
+  berachain: ADDRESSES.bsc.WBTC,
 };
 const LBTC = {
-  ethereum: '0x8236a87084f8b84306f72007f36f2618a5634494',
-  base: '0xecac9c5f704e954931349da37f60e39f515c11c1',
-  berachain: '0xecac9c5f704e954931349da37f60e39f515c11c1',
+  ethereum: ADDRESSES.ethereum.LBTC,
+  base: ADDRESSES.corn.LBTC,
+  berachain: ADDRESSES.corn.LBTC,
 };
 const CBBTC = {
-  ethereum: '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',
-  base: '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',
-  arbitrum: '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',
+  ethereum: ADDRESSES.ethereum.cbBTC,
+  base: ADDRESSES.ethereum.cbBTC,
+  arbitrum: ADDRESSES.ethereum.cbBTC,
 };
 
 const fetchQueuedWithdrawalsAbi = "function fetchQueuedWithdrawals(address staker) view returns (tuple(address staker, address delegatedTo, uint256 nonce, uint256 start, tuple(address[] vaults, uint256[] shares, address withdrawer) request)[] queuedWithdrawals)"
@@ -30,7 +30,7 @@ const isWithdrawPendingAbi = "function isWithdrawPending(tuple(address staker, a
 
 async function get_karak_btc_withdrawals(timestamp) {
   const api = new sdk.ChainApi({ timestamp, chain: 'ethereum' })
-  const karak_btc = await api.call({ target: '0xAfa904152E04aBFf56701223118Be2832A4449E0', abi: fetchQueuedWithdrawalsAbi, params: ['0x657e8C867D8B37dCC18fA4Caead9C45EB088C642'] })
+  const karak_btc = await api.call({ target: '0xAfa904152E04aBFf56701223118Be2832A4449E0', abi: fetchQueuedWithdrawalsAbi, params: [ADDRESSES.ethereum.EBTC] })
   let total_btc_in_queued_withdrawals = 0
   for (const withdrawal of karak_btc) {
     const isWithdrawPending = await api.call({ target: '0xAfa904152E04aBFf56701223118Be2832A4449E0', abi: isWithdrawPendingAbi, params: [withdrawal] })
@@ -46,7 +46,7 @@ async function get_karak_btc_withdrawals(timestamp) {
 async function ebtc_staking(timestamp) {
   if (timestamp < 1746507563) return [0n, 0n, 0n];
 
-  const EBTC = '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642';
+  const EBTC = ADDRESSES.ethereum.EBTC;
   let wbtc_held = 0n, lbtc_held = 0n, cbbtc_held = 0n;
 
   const collectBalances = async (tokens, accumulator) => {
@@ -99,7 +99,7 @@ module.exports = {
   doublecounted: true,
 
   ethereum: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0xFe0c30065B384F05761f15d0CC899D4F9F9Cc0eB"),
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", ADDRESSES.ethereum.ETHFI),
 
     tvl: async ({ timestamp }) => {
       const [lbtc_held, wbtc_held, cbbtc_held] = await ebtc_staking(timestamp);
@@ -126,7 +126,7 @@ module.exports = {
       const etherfiEthTvl = BigInt(ethSupply.output) - loopedTvl;
 
       const eusd = await sdk.api.abi.call({
-        target: '0x939778D83b46B456224A33Fb59630B11DEC56663',
+        target: ADDRESSES.ethereum.EUSD,
         abi: 'uint256:totalSupply',
         chain: 'ethereum',
         timestamp,
@@ -143,10 +143,10 @@ module.exports = {
   },
 
   arbitrum: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27")
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", ADDRESSES.arbitrum.ETHFI)
   },
 
   base: {
-    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", "0x7189fb5b6504bbff6a852b13b7b82a3c118fdc27")
+    staking: staking("0x86B5780b606940Eb59A062aA85a07959518c0161", ADDRESSES.arbitrum.ETHFI)
   }
 };
