@@ -15,6 +15,15 @@ async function calculateGSUIunderlyingSui(gSuiAmount) {
   return percentage * Number(gSuiAmount)
 }
 
+async function calculateGUPUSDunderlyingUSD(gUpusdAmount) {
+  const fields = (await getObject("0x13766a4d5c180f004f9bfd19e65f622fbb2b9498736131b948599054c0129f42")).fields
+  const pool = Number(fields.pool)
+  const pipe = Number(fields.pipe_debt.fields.value)
+  const supply = Number(fields.supply.fields.value)
+  const percentage = (pool + pipe) / supply
+  return percentage * Number(gUpusdAmount)
+}
+
 async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
   const suiHasuiPool = await getObject(SUI_HASUI_POOL_ID)
   const vaultObject = await getObject(SUI_HASUI_VAULT_ID)
@@ -41,6 +50,7 @@ const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI";
 const GSUI = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x2::sui::SUI>";
+const GUPUSD = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x5de877a152233bdd59c7269e2b710376ca271671e9dd11076b1ff261b2fd113c::up_usd::UP_USD>";
 const USDC_CIRCLE = ADDRESSES.sui.USDC_CIRCLE;
 const FDUSD = "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD";
 const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC";
@@ -239,6 +249,9 @@ async function tvl(api) {
     } else if(coin == GSUI) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
+    }else if(coin == GUPUSD) {
+      const usdAmount = await calculateGUPUSDunderlyingUSD(bucket.fields.collateral_vault)
+      api.add(USDC, usdAmount);
     } else {
       if (coin) api.add(coin, bucket.fields.collateral_vault);
     }
