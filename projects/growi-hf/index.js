@@ -1,7 +1,7 @@
 const { get } = require("../helper/http");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const VAULT_ADDRESS = "0x1e37a337ed460039d1b15bd3bc489de789768d5e";
-const ADDRESSES = require('../helper/coreAssets.json')
 
 async function tvl(api) {
   const data = await get("https://stats-data.hyperliquid.xyz/Mainnet/vaults");
