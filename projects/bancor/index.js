@@ -32,7 +32,6 @@ async function generateCallsByBlockchain(api) {
       params: [1]
     });
     owners.push(converterAddresses[i]);
-    owners.push(converterAddresses[i]);
   }
 
   const tokens = await api.multiCall({ calls: reserveTokenCalls, abi: abi['abiConverterConnectorTokens'], });

@@ -83,7 +83,6 @@ const configs = {
         '0xdb223128a4524ce733c575421267dc56992c796d',
         '0x70f6fd99a43fce03648b20d44b9f0cd2b14eea68',
         '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
-        '0x94bca6d21907b8275daa3803fe432cd916c4fdd2',
       ]
     },
     polygon: {

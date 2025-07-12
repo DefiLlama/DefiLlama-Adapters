@@ -35,7 +35,6 @@ async function pool2(api) {
       P1_UNI_GRO_GVT,
       P2_UNI_GRO_USDC,
       P5_BAL_GRO_WETH,
-      P5_BAL_GRO_WETH,
     ],
   })
 }
