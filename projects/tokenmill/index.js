@@ -92,7 +92,7 @@ async function tvlSolana(_, _b, { api }) {
 
 module.exports = {
   methodology: "TVL is calculated by summing the balances of base and quote tokens held in all Token Mill markets deployed via the factory contracts on each chain (Avalanche and Solana).",
-  avalanche: {
+  avax: {
     tvl: tvlAvax,
   },
   solana: {
