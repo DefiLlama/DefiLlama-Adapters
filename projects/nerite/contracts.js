@@ -1,0 +1,56 @@
+const COLL_0_CONTRACT_ACTIVE_POOL="0x9981abdbc8af32f8e660314b3497e4033e15f054" // WETH
+const COLL_1_CONTRACT_ACTIVE_POOL="0xfb002caf4d75061959cb40a0b6c294f9b6a86e82" // WSTETH
+const COLL_2_CONTRACT_ACTIVE_POOL="0xbc86903e82cd5d815e595e4a0de9b2b7ba9a2042" // RETH
+const COLL_3_CONTRACT_ACTIVE_POOL="0x268dc0089d71a89800f3f4aaa3f9a7f0a950c7a7" // RSETH
+const COLL_4_CONTRACT_ACTIVE_POOL="0x7bb26e1e65e41c96bf4b56c6b9037391bcaa04c5" // WEETH
+const COLL_5_CONTRACT_ACTIVE_POOL="0xff27f56681613dbd002ee89ec895ec2e39ea8d3a" // ARB
+const COLL_6_CONTRACT_ACTIVE_POOL="0xc26ff6e1edabafba55ba18854cbc9706b2ec0543" // COMP
+const COLL_7_CONTRACT_ACTIVE_POOL="0x620fe90b1eacaea936ea199e7b05f998ca65836a" // TBTC
+
+// List of collateral types by index
+const collaterals = {
+  0: {
+    id: "WETH",
+    token: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+    activePool: COLL_0_CONTRACT_ACTIVE_POOL,
+  },
+  1: {
+    id: "WSTETH",
+    token: "0x5979D7b546E38E414F7E9822514be443A4800529",
+    activePool: COLL_1_CONTRACT_ACTIVE_POOL,
+  },
+  2: {
+    id: "RETH",
+    token: "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
+    activePool: COLL_2_CONTRACT_ACTIVE_POOL,
+  },
+  3: {
+    id: "RSETH",
+    token: "0x4186BFC76E2E237523CBC30FD220FE055156b41F",
+    activePool: COLL_3_CONTRACT_ACTIVE_POOL,
+  },
+  4: {
+    id: "WEETH",
+    token: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
+    activePool: COLL_4_CONTRACT_ACTIVE_POOL,
+  },
+  5: {
+    id: "ARB",
+    token: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    activePool: COLL_5_CONTRACT_ACTIVE_POOL,
+  },
+  6: {
+    id: "COMP",
+    token: "0x354A6dA3fcde098F8389cad84b0182725c6C91dE",
+    activePool: COLL_6_CONTRACT_ACTIVE_POOL,
+  },
+  7: {
+    id: "TBTC",
+    token: "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40",
+    activePool: COLL_7_CONTRACT_ACTIVE_POOL,
+  },
+}
+
+module.exports = {
+  collaterals,
+}
