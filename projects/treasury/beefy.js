@@ -21,7 +21,17 @@ const chains = [
   "bsc",
   "polygon",
   "avax",
-  "canto"
+  "canto",
+  "sonic",
+  "base",
+  "era",
+  "berachain",
+  "mantle",
+  "xdai",
+  "scroll",
+  "mode",
+  "linea",
+  "saga"
 ]
 
 const chainMap = {

@@ -10,14 +10,18 @@ function createExports({
   nymList, // { address, fromBlock }[]
   aaveStrategyVaults, // { address, asset, aToken }[]
   pellStrategyVaults, // { address, asset }[]
-  pellStrategyVaultsV2, // { address, fromBlock }[]
+  strategyVaultsV2, // { address, fromBlock }[]
+  vaultManagerList, // { address }[]
+  farmList, // { address, asset }[]
+  safeVaultManagerList, // {vaultAddress, asset}[]
 }) {
   return {
     tvl: async (api) => {
-      const tokensAndOwners = []
+      const tokensAndOwners = []; // [address, address][]
+      let tokens = []; // address[]
       if (troveList) {
         // owners.push(...troveList);
-        await getCollateralsFromTrove(api, troveList, tokensAndOwners);
+        tokens = await getCollateralsFromTrove(api, troveList, tokensAndOwners);
       }
 
       if (nymList && nymList.length > 0) {
@@ -43,9 +47,9 @@ function createExports({
         api.add(tokens, bals)
       }
 
-      if (pellStrategyVaultsV2) {
-        for (let i = 0; i < pellStrategyVaultsV2.length; i++) {
-          const { address: vaultAddress, fromBlock } = pellStrategyVaultsV2[i];
+      if (strategyVaultsV2) {
+        for (let i = 0; i < strategyVaultsV2.length; i++) {
+          const { address: vaultAddress, fromBlock } = strategyVaultsV2[i];
           const logs = await getLogs({ api, target: vaultAddress, fromBlock, eventAbi: VaultTokenStrategySetEventABI, onlyArgs: true });
           const assets = logs.map(item => item.token);
           const calls = assets.map((asset) => ({ target: vaultAddress, params: asset }))
@@ -54,7 +58,29 @@ function createExports({
         }
       }
 
-      return sumTokens2({ api, tokensAndOwners, })
+      if (vaultManagerList) {
+        for (let i = 0; i < vaultManagerList.length; i++) {
+          const { address: vaultManager } = vaultManagerList[i];
+          tokens.forEach((token, i) => {
+            tokensAndOwners.push([token, vaultManager])
+          });
+        }
+      }
+
+      if (farmList) {
+        for (let index = 0; index < farmList.length; index++) {
+          const { address: farmAddress, asset } = farmList[index];
+          tokensAndOwners.push([asset, farmAddress])
+        }
+      }
+
+      if (safeVaultManagerList) {
+        safeVaultManagerList.forEach((item) => {
+          tokensAndOwners.push([item.asset, item.vaultAddress])
+        });
+      }
+
+      return sumTokens2({ api, tokensAndOwners, });
     },
   }
 }
@@ -62,6 +88,7 @@ function createExports({
 async function getCollateralsFromTrove(api, troveList, tokensAndOwners) {
   const tokens = await api.multiCall({ abi: 'address:collateralToken', calls: troveList })
   tokens.forEach((token, i) => tokensAndOwners.push([token, troveList[i]]))
+  return tokens;
 }
 
 async function getAssetListFromNymContract(api, nymContractAddress, fromBlock, tokensAndOwners) {
@@ -83,7 +110,12 @@ module.exports = {
     nymList: [{
       address: '0xdd0bD4F817bDc108e31EE534931eefc855CAf7Df',
       fromBlock: 5081750,
-    }]
+    }],
+    vaultManagerList: [
+      {
+        address: '0xcCFD19e331fFcE8506718ec3DddDDf9f23029825'
+      }
+    ],
   }),
   btr: createExports({
     troveList: [
@@ -98,7 +130,12 @@ module.exports = {
     }, {
       address: '0x95E5b977c8c33DE5b3B5D2216F1097C2017Bdf71',
       fromBlock: 8880614,
-    }]
+    }],
+    vaultManagerList: [
+      {
+        address: '0x32db5c3D64aa7e100B73786000704aee61072981'
+      }
+    ],
   }),
   bob: createExports({
     troveList: [
@@ -134,6 +171,11 @@ module.exports = {
         asset: ADDRESSES.bob.WBTC, // BOB WBTC
       }
     ],
+    vaultManagerList: [
+      {
+        address: '0x954C6f00E361dA33c9b8E5f2660b2D4024a04634'
+      }
+    ],
   }),
   bsquared: createExports({
     troveList: [
@@ -143,28 +185,103 @@ module.exports = {
       '0xa03B86E93c98FE95caC2A6645fF271Bb67040eab', // uBTC Collateral(V2)
       '0xb38653A0190252487FC6502D1D7B41A9647fB84b', // uniBTC Collateral(V2)
     ],
-    pellStrategyVaultsV2: [
+    strategyVaultsV2: [
       {
         address: '0x1F745AEC91A7349E4F846Ae1D94915ec4f6cF053',
         fromBlock: 11581100,
       }
-    ]
+    ],
+    vaultManagerList: [
+      {
+        address: '0x21d9a468196665AEc3d3c289EfF7BD5725507972'
+      },
+      {
+        address: '0x03d9C4E4BC5D3678A9076caC50dB0251D8676872'
+      },
+    ],
   }),
   bsc: createExports({
     troveList: [
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WBTC Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // BTCB Collateral(V2)
     ],
+    vaultManagerList: [
+      {
+        address: '0xc473754a6e35cC4F45316F9faaeF0a3a86D90E4e'
+      },
+    ],
   }),
   hemi: createExports({
+    safeVaultManagerList: [{
+      vaultAddress: '0xceBd9461e494Fe3190b4755CFf63815C5cf2605D',
+      asset: '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a', // enzoBTC
+    }],
     troveList: [
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // HemiBTC Collateral(V2)
       '0xa7B54413129441e872F42C1c4fE7D1984332CA87', // WBTC Collateral(V2)
+      '0xED6E49a1835A50a8FD5511704616B89845Ad5564', // iBTC Collateral(V2)
+      '0x6d991Eb34321609889812050bC7f4604Eb0bfF26', // enzoBTC Collateral(V2)
+      '0xDAc0551246A7F75503e8C908456005E828C35A40', // uBTC Collateral(V2)
     ],
     nymList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
       fromBlock: 1191810,
     }],
   }),
+  base: createExports({
+    troveList: [
+      '0xddac7d4e228c205197FE9961865FFE20173dE56B', // WETH Collateral(V2)
+      '0x4B37F38DF39C9E6D876b830ED3FF444533Aa2E45', // WBTC Collateral(V2)
+      '0x50B02283f3c39A463DF3d84d44d46b5432D7D193', // cbBTC Collateral(V2)
+      '0x01DF7D28c51639F2f2F95dcF2FdFF374269327B0', // clBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x9a3c724ee9603A7550499bE73DC743B371811dd3',
+      fromBlock: 28842761,
+    }],
+    strategyVaultsV2: [
+      {
+        address: '0xE8c5b4517610006C1fb0eD5467E01e4bAd43558D',
+        fromBlock: 29316928,
+      }
+    ],
+    vaultManagerList: [
+      {
+        address: '0x9Dda31F8a07B216AB5E153456DE251E0ed2e6372'
+      },
+    ],
+  }),
+  arbitrum: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+      '0xa7B54413129441e872F42C1c4fE7D1984332CA87', // clBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 330837414,
+    }],
+  }),
+  sonic: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 33129825,
+    }],
+  }),
+  xlayer: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 20436365,
+    }],
+  }),
 }
+

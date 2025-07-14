@@ -1,23 +1,11 @@
 const ADDRESSES = require('./coreAssets.json')
-const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
-const erc20 = require('./abis/erc20.json')
-
-async function returnBalance(token, address, block, chain) {
-  const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
-  let { output: balance } = await sdk.api.erc20.balanceOf({ target: token, owner: address, chain, block })
-  balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
-  return parseFloat(balance);
-}
-
-async function returnEthBalance(address) {
-  const output = await sdk.api.eth.getBalance({ target: address })
-  let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
-  return parseFloat(ethAmount);
-}
+const erc20 = require('./abis/erc20.json');
+const { fetchThroughProxy } = require('./proxyRequest');
+const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
   return axios.get(url)
@@ -334,26 +322,52 @@ function once(func) {
   return wrapped
 }
 
-
-function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
   return async (api) => {
-    let fetchedValidators = skipValidators;
-    let size = 200;
-    api.sumTokens({ owner: withdrawalAddress, tokens: [nullAddress] })
-    do {
-      const validators = (
-        await http.get(
-          `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
-        )
-      ).data.map((i) => i.publickey);
-      fetchedValidators += validators.length;
-      api.log("Fetching balances for validators", validators.length);
-      await addValidatorBalance(validators);
-      await sleep(10000);
-    } while (fetchedValidators % size === 0);
 
+    if (!withdrawalAddress && !withdrawalAddresses?.length)
+      throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
+
+    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    api.addGasToken(await beacon.balance(addresses))
     return api.getBalances()
 
+/*     for (const addr of addresses) {
+      let fetchedValidators = skipValidators;
+      api.sumTokens({ owner: addr, tokens: [nullAddress] });
+
+      do {
+        const url = `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${addr}?limit=${size}&offset=${fetchedValidators}`
+        let validatorList;
+
+        if (proxy) {
+          const res = await fetchThroughProxy(url);
+          validatorList = res.data;
+        } else {
+          const res = await http.get(url);
+          validatorList = res.data;
+        }
+
+        if (!Array.isArray(validatorList)) {
+          console.error(`Invalid validator list for ${addr} at offset ${fetchedValidators}`);
+          break;
+        }
+
+        const validators = validatorList.map(i => i.publickey);
+
+        fetchedValidators += validators.length;
+        api.log(`Fetching balances for validators (${addr})`, validators.length);
+        await addValidatorBalance(validators);
+        if (sleepTime > 0) await sleep(sleepTime);
+      } while (fetchedValidators % size === 0);
+    }
+
+    const bals = api.getBalances()
+    Object.keys(bals).forEach((i) => {
+      bals[i] = bals[i] / 1e18
+    })
+    console.log(api.getBalances(), )
+    return api.getBalances();
 
     async function addValidatorBalance(validators) {
       if (validators.length > 100) {
@@ -366,10 +380,9 @@ function getStakedEthTVL({ withdrawalAddress, skipValidators = 0 }) {
         indicesOrPubkey: validators.join(","),
       });
 
-
       data.forEach((i) => api.addGasToken(i.balance * 1e9));
-    }
-  }
+    } */
+  };
 }
 
 
@@ -378,8 +391,6 @@ module.exports = {
   createIncrementArray,
   fetchURL,
   postURL,
-  returnBalance,
-  returnEthBalance,
   isLP,
   mergeExports,
   getBalance,

@@ -18,6 +18,8 @@ const mainMarket = {
 	corn: aaveExports('', '', undefined, ['0x56552f4407113894Bfce34b5b88C57b941AFc519'], { v3: true }), // Corn V3 Main
 	duckchain: aaveExports('', '', undefined, ['0x100AC26ad2c253B18375f1dC4BC0EeeB66DEBc88'], { v3: true }), // Duckchain V3 Main
 	taiko: aaveExports('', '', undefined, ['0x43248dF19B9B55f7b488CF68A1224308Af2D81eC'], { v3: true }), // Taiko - Main
+	goat: aaveExports('', '', undefined, ['0x2c4aEB7C9f0D196a51136B3c7bec49cB2DBD1966'], { v3: true }), // Goat - Main
+	plume: aaveExports('', '', undefined, ['0x522b3bc00f7DfC5657f8e195868FD062027859e8'], { v3: true }), // Plume - Main
 }
 
 const innovativeMarket = {

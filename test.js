@@ -17,7 +17,7 @@ const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
-const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { log, diplayUnknownTable, sliceIntoChunks, sleep } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
@@ -27,7 +27,7 @@ const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
@@ -41,26 +41,21 @@ async function getTvl(
   tokensBalances,
   usdTokenBalances,
   tvlFunction,
-  isFetchFunction,
   storedKey,
 ) {
   const chain = storedKey.split('-')[0]
   const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, storedKey, })
   api.api = api
   api.storedKey = storedKey
-  if (!isFetchFunction) {
-    let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
-    if (tvlBalances === undefined) tvlBalances = api.getBalances()
-    const tvlResults = await computeTVL(tvlBalances, "now");
-    await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
-    usdTvls[storedKey] = tvlResults.usdTvl;
-    tokensBalances[storedKey] = tvlResults.tokenBalances;
-    usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
-  } else {
-    usdTvls[storedKey] = Number(
-      await tvlFunction(api, ethBlock, chainBlocks, api)
-    );
-  }
+
+  let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
+  if (tvlBalances === undefined) tvlBalances = api.getBalances()
+  const tvlResults = await computeTVL(tvlBalances, "now");
+  await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
+  usdTvls[storedKey] = tvlResults.usdTvl;
+  tokensBalances[storedKey] = tvlResults.tokenBalances;
+  usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
+
   if (
     typeof usdTvls[storedKey] !== "number" ||
     Number.isNaN(usdTvls[storedKey])
@@ -144,8 +139,12 @@ function validateHallmarks(hallmark) {
   const passedTimestamp = process.argv[3]
   if (passedTimestamp !== undefined) {
     unixTimestamp = Number(passedTimestamp)
-    const res = await getBlocks(unixTimestamp, chains)
-    chainBlocks = res.chainBlocks
+
+    // other chains than evm will fail to get block at timestamp
+    try {
+      const res = await getBlocks(unixTimestamp, chains)
+      chainBlocks = res.chainBlocks
+    } catch (e) { /* ignore empty block statement */ }
   }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
@@ -163,32 +162,27 @@ function validateHallmarks(hallmark) {
           return;
         }
         let storedKey = `${chain}-${tvlType}`;
-        let tvlFunctionIsFetch = false;
         if (tvlType === "tvl") {
           storedKey = chain;
-        } else if (tvlType === "fetch") {
-          storedKey = chain;
-          tvlFunctionIsFetch = true;
         }
         try {
 
-        await getTvl(
-          unixTimestamp,
-          ethBlock,
-          chainBlocks,
-          usdTvls,
-          tokensBalances,
-          usdTokenBalances,
-          tvlFunction,
-          tvlFunctionIsFetch,
-          storedKey,
-        );
+          await getTvl(
+            unixTimestamp,
+            ethBlock,
+            chainBlocks,
+            usdTvls,
+            tokensBalances,
+            usdTokenBalances,
+            tvlFunction,
+            storedKey,
+          );
         } catch (e) {
           console.error(`Error in ${storedKey}:`, e)
           process.exit(1)
         }
         let keyToAddChainBalances = tvlType;
-        if (tvlType === "tvl" || tvlType === "fetch") {
+        if (tvlType === "tvl") {
           keyToAddChainBalances = "tvl";
         }
         if (chainTvlsToAdd[keyToAddChainBalances] === undefined) {
@@ -199,26 +193,6 @@ function validateHallmarks(hallmark) {
       })
     );
   });
-  if (module.tvl || module.fetch) {
-    let mainTvlIsFetch;
-    if (module.tvl) {
-      mainTvlIsFetch = false;
-    } else {
-      mainTvlIsFetch = true;
-    }
-    const mainTvlPromise = getTvl(
-      unixTimestamp,
-      ethBlock,
-      chainBlocks,
-      usdTvls,
-      tokensBalances,
-      usdTokenBalances,
-      mainTvlIsFetch ? module.fetch : module.tvl,
-      mainTvlIsFetch,
-      "tvl",
-    );
-    tvlPromises.push(mainTvlPromise);
-  }
   await Promise.all(tvlPromises);
   Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
     if (usdTvls[tvlType] === undefined) {
@@ -397,9 +371,28 @@ async function computeTVL(balances, timestamp) {
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const queries = buildPricesGetQueries(readKeys)
-  const { errors } = await PromisePool.withConcurrency(5)
+  let queryCount = queries.length;
+  if (queryCount > 7)
+    sdk.log('price query count:', queryCount, 'readKeys:', readKeys.length)
+  let i = 0
+  let foundError = false
+  const { errors } = await PromisePool.withConcurrency(3)
     .for(queries).process(async (query) => {
-      tokenData.push((await axios.get(query)).data.coins)
+      if (foundError) return;
+      try {
+
+        tokenData.push((await axios.get(query)).data.coins)
+        i++;
+        if (queries.length > 6) {
+          sdk.log(`Processed ${i}/${queryCount} queries, ${tokenData.length} responses received`)
+          if (i < queryCount - 2) {
+            await sleep(5000) // avoid rate limiting
+          }
+        }
+      } catch (e) {
+        foundError = true;
+        throw e
+      }
     })
 
   if (errors && errors.length)
@@ -467,12 +460,13 @@ setTimeout(() => {
 
 function buildPricesGetQueries(readKeys) {
   if (!readKeys.length) return []
-  const burl = 'https://coins.llama.fi/prices/current/'
+  console.log(`Building prices get queries for ${readKeys.length} tokens`)
+  const burl = process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/prices/current/` : 'https://coins.llama.fi/prices/current/'
   const queries = []
   let query = burl
 
   for (const key of readKeys) {
-    if (query.length + key.length > 2000) {
+    if (query.length + key.length > 2500) {
       queries.push(query.slice(0, -1))
       query = burl
     }

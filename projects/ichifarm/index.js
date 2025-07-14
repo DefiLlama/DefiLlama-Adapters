@@ -51,6 +51,7 @@ const config = {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
       { factory: '0x51a0D74e1791399cE02aafD9a21dc4637Fe57959', fromBlock: 24832870, isAlgebra: true, }, // Henjin
+      { factory: '0x2b52c416F723F16e883E53f3f16435B51300280a', fromBlock: 24832870, isAlgebra: true, }, // Hydrex
       { factory: '0x28cF3b462a1ADdE87fe7144d110BcF0D464C97b7', fromBlock: 22972345, isAlgebra: true, }, // Kim
       { factory: '0x24430E837efB64EF87bb32be03437fc6005EEF74', fromBlock: 22095330, isAlgebra: false, }, // PancakeSwap
       { factory: '0xbA096706A850caF1cADAEfE7529Db1343a0c187E', fromBlock: 25174764, isAlgebra: true, }, // Trebleswap 
@@ -67,6 +68,7 @@ const config = {
     vaultConfigs: [
       { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, isAlgebra: false, },
       { factory: '0xAc93148e93d1C49D89b1166BFd74942E80F5D501', fromBlock: 32489803, isAlgebra: true, }, // Thena
+      { factory: '0x076e46A317DfAE50eEF30dca94Ff41A63118948D', fromBlock: 48359303, isAlgebra: true, }, // Thena V3
       { factory: '0x065356d9f628cDd1bb9F2384E2972CdAC50f51b7', fromBlock: 34595133, isAlgebra: false, }, // Uni v3
     ],
   },
@@ -112,11 +114,11 @@ const config = {
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 30026180, isAlgebra: false, }, // Voltage
     ]
   },
-  /* hedera: {
+  hedera: {
     vaultConfigs: [
       { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
     ]
-  }, */
+  }, 
   kava: {
     vaultConfigs: [
       { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
@@ -161,6 +163,11 @@ const config = {
       { factory: '0x1721cB3ff3cAF70a79bDE9d771B27646ed8115b1', fromBlock: 11102475, isAlgebra: true, }, // QuickSwap
     ]
   },
+  nibiru: {
+    vaultConfigs: [
+      { factory: '0x63703A4DdFA51B6CffC1Bb40cc73912dF62535FA', fromBlock: 24151937, isAlgebra: false, }, // Uniswap
+    ]
+  },
   real: {
     vaultConfigs: [
       { factory: '0x860F3881aCBbF05D48a324C5b8ca9004D31A146C', fromBlock: 599247, isAlgebra: false, }, // Pearl
@@ -193,6 +200,11 @@ const config = {
       { factory: '0x1A58D4CFF22C7E2e0c4cCf4a0010b87822d024A1', fromBlock: 5104000, isAlgebra: true, }, // Ocelex
     ]
   },
+  hemi: {
+    vaultConfigs: [
+      { factory: '0x8cCd02E769e6A668a447Bd15e134C31bEccd8182', fromBlock: 1684964, isAlgebra: false, }, // OKU
+    ],
+  },
 }
 
 Object.keys(config).forEach(chain => {
@@ -224,13 +236,13 @@ Object.keys(config).forEach(chain => {
         await sumTokens2({ api, owners: uniV3NFTHolders, resolveUniV3: true, blacklistedTokens, })
       }
 
-      for (const { 
-        factory, 
-        fromBlock, 
-        isAlgebra, 
+      for (const {
+        factory,
+        fromBlock,
+        isAlgebra,
       } of vaultConfigs) {
-        const topic = isAlgebra ? algebraTopic : defaultTopic 
-        const eventAbi = isAlgebra ? algebraEvent : defaultEvent 
+        const topic = isAlgebra ? algebraTopic : defaultTopic
+        const eventAbi = isAlgebra ? algebraEvent : defaultEvent
         const logs = await getLogs({
           api,
           target: factory,

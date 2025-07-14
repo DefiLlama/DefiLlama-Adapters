@@ -3,7 +3,8 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 async function styTvl(api) {
   const protocols = [
-    '0x555ad3261c0eD6119Ab291b8dC383111d83C67c7'
+    '0x555ad3261c0eD6119Ab291b8dC383111d83C67c7',
+    '0xB5eD29BCf541aebcb3ee179cb590d92D3d9F9445'
   ]
 
   const tokensAndOwners = []

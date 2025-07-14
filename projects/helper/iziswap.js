@@ -6,7 +6,7 @@ function iziswapExport({ poolHelpers, blacklistedTokens = [] }) {
   return async (api) => {
     const isMerlin = api.chain === 'merlin'
     const toa = []
-    const chunkSize = isMerlin ? 3 : 10
+    const chunkSize = 10
 
     for (const manager of poolHelpers) {
       let foundLastPool = false
@@ -38,7 +38,7 @@ function iziswapExport({ poolHelpers, blacklistedTokens = [] }) {
       await setCache('iziswap', key, { allPools, allPoolMetas, })
     }
 
-    return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, permitFailure: !isMerlin, sumChunkSize: isMerlin ? 1 : 100,})
+    return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, permitFailure: !isMerlin, sumChunkSize: isMerlin ? 10 : 100, sumChunkSleep: 1000 })
   }
 }
 
