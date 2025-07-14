@@ -21,7 +21,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
   'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion'
 ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
@@ -42,6 +42,26 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  soon: {
+    [ADDRESSES.soon.USDT]: { coingeckoId: "tether", decimals: 6 },
+    [ADDRESSES.soon.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.soon.DAI]: { coingeckoId: "dai", decimals: 9 },
+    [ADDRESSES.soon.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    [ADDRESSES.soon.weETH]: { coingeckoId: "wrapped-eeth", decimals: 9 },
+    [ADDRESSES.solana.SOL]: { coingeckoId: "ethereum", decimals: 9 },
+    [ADDRESSES.soon.ezETH]: { coingeckoId: "renzo-restaked-eth", decimals: 9 },
+    [ADDRESSES.soon.STONE]: { coingeckoId: "stakestone-ether", decimals: 9 },
+    [ADDRESSES.soon.sUSDe]: { coingeckoId: "ethena-staked-usde", decimals: 9 },
+    [ADDRESSES.soon.EIGEN]: { coingeckoId: "eigenlayer", decimals: 9 },
+    [ADDRESSES.soon.mUSD]: { coingeckoId: "manta-musd", decimals: 9 },
+    [ADDRESSES.soon.mETH]: { coingeckoId: "manta-meth", decimals: 9 },
+    [ADDRESSES.soon.rsETH]: { coingeckoId: "kelp-dao-restaked-eth", decimals: 9 },
+    [ADDRESSES.soon.pufETH]: { coingeckoId: "pufeth", decimals: 9 },
+    [ADDRESSES.soon.SOON]: { coingeckoId: "soon-2", decimals: 9 },
+    [ADDRESSES.soon.WETH]: { coingeckoId: "ethereum", decimals: 9 },
+    [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
+    [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

@@ -613,6 +613,26 @@
     "aaUSDT": "FwEHs3kJEdMa2qZHv7SgzCiFXUQPEycEXksfBkwmS8gj",
     "BUSDbs": "5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2"
   },
+  "soon": {
+    "USDT":"742wcXVzkhNuEePAot7L3GvPseh93pvYFPgyHLX8mUy9",
+    "USDC":"ExYxyorY2x3h8gLcuypnHFQV3F36rmMkQVn7HHV8KjtA",
+    "DAI":"9ZqSLnPMAUnuegB1WTp1k17JgwFGKc925f8VqD2SC9K7",
+    "WBTC":"5YMPvTWDoZ7T7rNEsUR2EDFgZ96A96KrvEP2ia3Ph96h",
+    "weETH":"Gb71cUtTQenthP9bJ9Hzdvju2oSfnxSL3EdXdb9KbW4j",
+    "ezETH":"5WHhWejtJgb64LWT1F6wzyJffWQr4iaXvyjU5ANwxZkR",
+    "STONE":"55pkdBQKoXHY2fegxDdAmvZkJEiWvoD5Vh1q11AXLnaP",
+    "sUSDe":"4rVFtdkkAXV3FqynyaNPNcSX4VEL37wZqGxfMWreHD6F",
+    "EIGEN":"D9nSKTP1QbfS8XiwdWyF5dy3zCTXVqe9hikcVkUDjNQ5",
+    "mUSD":"F5CrG2kRLPZ1ATjmg4Lpd3hdtGfDYTEjY9augntA5uax",
+    "mETH":"J42WE4ATU918SStRKUm3U7Rg9K5dXy4b7yD4w1tnc578",
+    "msUSD":"tBpTpx1243BNWRucrkmJNjWw4j9Q5CsiadMZGNZt2Qn",
+    "rsETH":"2H3DybcjJLmhmGkWxpyanFQB5SpaVwz48CRfwGKg3hR6",
+    "pufETH":"5Wa1qqFk7qrtB486znrHNPbZZDq9nwDc9DGPtPH36TW1",
+    "SOON":"HUTwjERBrBqzrvSQoqQEvzTL2h5AhybJUqMAQ2vgY3JL",
+    "WETH":"So11111111111111111111111111111111111111112",
+    "SOL": "ERFzpDteGNo8LTDKW1WwVGrkRMmA2y9WZHXNHxMA6BSV",
+    "BONK": "71kRXzJMvSeArtXYNEWa8KAjpRJosdMQ7Dpgy5Jt5zfd"
+  },
   "astar": {
     "WASTR_1": "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720",
     "WASTR": "0xecc867de9f5090f55908aaa1352950b9eed390cd",

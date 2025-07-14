@@ -12,6 +12,7 @@ const DEFAULTS = {
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
+  SOON_RPC: "https://rpc.mainnet.soo.network/rpc",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://sui-rpc.publicnode.com',
