@@ -14,6 +14,25 @@ async function getObject(objectId) {
   }])).content
 }
 
+async function getObjects(objectIds) {
+  if (objectIds.length > 9) {
+    const chunks = sliceIntoChunks(objectIds, 9)
+    const res = []
+    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
+    return res
+  }
+  const {
+    result
+  } = await http.post(endpoint(), {
+    jsonrpc: "2.0", id: 1, method: 'iota_multiGetObjects', params: [objectIds, {
+      "showType": true,
+      "showOwner": true,
+      "showContent": true,
+    }],
+  })
+  return objectIds.map(i => result.find(j => j.data?.objectId === i)?.data?.content)
+}
+
 async function call(method, params, { withMetadata = false } = {}) {
   if (!Array.isArray(params)) params = [params]
   const {
@@ -28,4 +47,5 @@ module.exports = {
   endpoint: endpoint(),
   call,
   getObject,
+  getObjects
 };
