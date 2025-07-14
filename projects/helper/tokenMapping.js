@@ -48,6 +48,7 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.DAI]: { coingeckoId: "dai", decimals: 9 },
     [ADDRESSES.soon.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
     [ADDRESSES.soon.weETH]: { coingeckoId: "wrapped-eeth", decimals: 9 },
+    [ADDRESSES.solana.SOL]: { coingeckoId: "ethereum", decimals: 9 },
     [ADDRESSES.soon.ezETH]: { coingeckoId: "renzo-restaked-eth", decimals: 9 },
     [ADDRESSES.soon.STONE]: { coingeckoId: "stakestone-ether", decimals: 9 },
     [ADDRESSES.soon.sUSDe]: { coingeckoId: "ethena-staked-usde", decimals: 9 },
