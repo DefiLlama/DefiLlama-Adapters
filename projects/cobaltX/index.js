@@ -1,26 +1,17 @@
+const { PublicKey } = require("@solana/web3.js");
+const { getConnection, decodeAccount, sumTokens2 } = require("../helper/solana");
 
-const { getConnection, sumTokens2 } = require("../helper/solana.js");
-const { PublicKey, } = require("@solana/web3.js")
-const { Program } = require("@coral-xyz/anchor");
-const CobaltXIdl = require("./idl/amm_v3.json")
-
-const CobaltXProgramAddress = new PublicKey("2TnjBuwqyBB9to5jURagDT7jLmBPefGRiKL2yh1zPZ4V")
-
-// get all pool token accounts
-async function getPoolTokenAccounts() {
-  const connection = getConnection("soon")
-  const program = new Program(CobaltXIdl, { connection, });
-  const data = await program.account.poolState.all()
-  const tokenAccounts = data.map((item) => ([item.account.tokenVault0, item.account.tokenVault1])).flat()
-  return tokenAccounts
+async function tvl(api) {
+  const connection = getConnection(api.chain);
+  const programId = '2TnjBuwqyBB9to5jURagDT7jLmBPefGRiKL2yh1zPZ4V'
+  const allPoolKeyInfo = await connection.getProgramAccounts(new PublicKey(programId), { filters: [{ dataSize: 1544 }],  })
+  const tokenAccounts = allPoolKeyInfo.map(i => {
+    const data = decodeAccount('byrealCLMM', i.account)
+    return [data.vaultA.toString(), data.vaultB.toString()]
+  }).flat()
+  return sumTokens2({ api, tokenAccounts })
 }
 
 module.exports = {
-  soon: {
-    tvl: async (api) => {
-      const poolTokenAccounts = await getPoolTokenAccounts()
-      const balances = await sumTokens2({ api, tokenAccounts: poolTokenAccounts })
-      return balances
-    },
-  },
+  soon: { tvl }
 }
