@@ -30,7 +30,7 @@ async function fetch() {
 }
 
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   misrepresentedTokens: false,
   methodology:
     "TVL tracks the KDA-equivalent value of all locked cTokens and kWATT tokens using on-chain DEX pricing. The contract returns a single 'coin' value in KDA, excluding USD-only fields.",
