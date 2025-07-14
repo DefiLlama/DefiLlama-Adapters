@@ -12,4 +12,5 @@ module.exports = {
     methodology: "TVL is calculated directly from Hyperliquid API by getting GrowiHF Vault TVL.",
     timetravel: false,
     hyperliquid: { tvl },
+    misrepresentedTokens: true
 };
