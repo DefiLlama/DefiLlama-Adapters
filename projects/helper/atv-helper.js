@@ -1,7 +1,6 @@
 const { sumTokens2 } = require('./unwrapLPs');
 
 /**
- * Generic helper f/**
  * Calculate cumulative TVL for multiple vaults with fallback strategy
  * @param {Object} api - DefiLlama API object
  * @param {Array} vaultConfigs - Array of vault configuration objects
