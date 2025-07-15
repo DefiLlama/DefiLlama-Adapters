@@ -16,10 +16,10 @@ const tokenMapper = {
 
 // Returns all leveraged pools in Figure Markets Democratized Prime
 // https://www.figuremarkets.com/c/democratized-prime/lending-pools
-const leveragePoolsUrl = 'https://www.figuremarkets.com/service-lending/api/v1/leverage-pools?location=US'
+const leveragePoolsUrl = 'https://www.figuremarkets.com/service-lending/api/v1/leverage-pools?location=CAYMAN'
 
 // Returns offer information for a specific asset
-const offersUrl = (asset) => `https://www.figuremarkets.com/service-lending/api/v1/offers?asset=${asset}&location=US`
+const offersUrl = (asset) => `https://www.figuremarkets.com/service-lending/api/v1/offers?asset=${asset}&location=CAYMAN`
 
 // Returns all assets, including lending facilities (specific to YLDS)
 const lendingFacilities = `https://www.figuremarkets.com/service-hft-exchange/api/v1/assets?page=1&size=100&include_lending_facility_assets=true`

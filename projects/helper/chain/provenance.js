@@ -1,5 +1,3 @@
-const { get } = require("../http")
-
 /**
  * Token Mapping for Provenance. Note that
  * YLDS is pending on CoinGecko, but is a stablecoin.
