@@ -1,25 +1,11 @@
-const sdk = require('@defillama/sdk');
-const { collaterals } = require('./contracts');
+const { getLiquityV2Tvl } = require('../helper/liquity')
 
-
-async function tvl(api) {
-  const collateralBalance = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: Object.values(collaterals).map((collateral) => ({
-      target: collateral.token,
-      params: [collateral.activePool],
-    })),
-  });
-
-  collateralBalance.output.forEach((balance, index) => {
-    api.add(collaterals[index].id, balance.output);
-  });
+const config = {
+  arbitrum: '0x7f7fbc2711c0d6e8ef757dbb82038032dd168e68'
 }
 
-module.exports = {
-  methodology: 'counts the collateral tokens in the active pools for TVL.',
-  start: 356661350,
-  arbitrum: {
-    tvl,
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl: getLiquityV2Tvl(config[chain])
   }
-}; 
+})
