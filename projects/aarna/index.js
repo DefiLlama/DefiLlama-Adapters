@@ -1,58 +1,17 @@
 const { generateAtvExport } = require('../helper/atv-helper');
 
-// Configuration for all Aarna ATV products
-const AARNA_CONFIG = {
-  methodology: `TVL is calculated using direct on-chain storage contract queries via calculatePoolInUsd function for all Aarna ATV vault contracts across multiple chains. This includes multi-chain deployments on Ethereum, Arbitrum, and Sonic, with individual vault breakdowns (ATV-802, ATV-808, ATV-111) and total protocol TVL. Falls back to token balance calculation using dynamic token discovery for ATV-802/808 and dynamic+hardcoded tokens for ATV-111 vaults when storage contracts are not configured.`,
-  
-  doublecounted: false,
-  
-  // Multi-chain vault configurations
-  vaults: {
-    ethereum: {
-      'ATV-802': {
-        address: "0xb68e430c56ed9e548e864a68a60f9d41f993b32c",
-        name: "ATV-802 Conservative Strategy",
-        description: "Conservative yield farming strategy with lower risk profile"
-      },
-      'ATV-808': {
-        address: "0x60697825812ecC1Fff07f41E2d3f5cf314674Fa6", 
-        name: "ATV-808 Balanced Strategy", 
-        description: "Balanced yield strategy with moderate risk/reward"
-      },
-      'ATV-111': {
-        address: "0x72ec8447074dc0bfbedfb516cc250b525f3a4aba",
-        name: "ATV-111 Aggressive Strategy",
-        description: "Aggressive yield strategy with higher potential returns"
-      }
-    },
-    arbitrum: {
-      'ATV-111': {
-        address: "0xe1a6bda42fbafae38607598386a1050613c1a64b",
-        name: "ATV-111 Arbitrum Aggressive Strategy",
-        description: "Aggressive yield strategy deployed on Arbitrum for L2 efficiency"
-      }
-    },
-    sonic: {
-      'ATV-111': {
-        address: "0x1cb934e1f5acdb5b805c609a2c5a09aa8489f124",
-        name: "ATV-111 Sonic Aggressive Strategy", 
-        description: "Aggressive yield strategy deployed on Sonic blockchain"
-      }
-    }
-  },
-
   // Storage contracts for direct TVL calculation (TO BE FILLED BY USER)
   storageContracts: {
     ethereum: {
-      'ATV-802': "STORAGE_ADDRESS_TO_BE_FILLED",
-      'ATV-808': "STORAGE_ADDRESS_TO_BE_FILLED", 
-      'ATV-111': "STORAGE_ADDRESS_TO_BE_FILLED"
+      'ATV-802': "0x6a38305d86a032db1b677c975e6fe5863cf1edd2",
+      'ATV-808': "0xE3cb06cB58E84F96AEde7D2d703F0B969bB69A81", 
+      'ATV-111': "0xceb202d3075be4abd24865fd8f307374923948ad"
     },
     arbitrum: {
-      'ATV-111': "STORAGE_ADDRESS_TO_BE_FILLED"
+      'ATV-111': "0x4700bd9cc7232f243945b4a55834ab84563e4e9d"
     },
     sonic: {
-      'ATV-111': "STORAGE_ADDRESS_TO_BE_FILLED"
+      'ATV-111': "0x13da4847c80732cab3341f459a094e042af98691"
     }
   },
 

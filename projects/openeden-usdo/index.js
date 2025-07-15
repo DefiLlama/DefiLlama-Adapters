@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const config = {
@@ -21,7 +22,7 @@ const config = {
     ],
     tokens: [
       "0xdd50C053C096CB04A3e3362E2b622529EC5f2e8a",
-      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      ADDRESSES.ethereum.USDC,
       "0x7712c34205737192402172409a8F7ccef8aA2AEc",
       "0x2255718832bC9fD3bE1CaF75084F4803DA14FF01",
       "0x136471a34f6ef19fE571EFFC1CA711fdb8E49f2b",
@@ -30,7 +31,7 @@ const config = {
   },
   base: {
     owners: ["0x5EaFF7af80488033Bc845709806D5Fae5291eB88"],
-    tokens: ["0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"],
+    tokens: [ADDRESSES.base.USDC],
   },
   polygon: {
     owners: [

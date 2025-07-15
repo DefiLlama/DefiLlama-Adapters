@@ -30,10 +30,10 @@ module.exports = {
         if (item.id.toLocaleLowerCase() !== USDT.toLocaleLowerCase()) liquidated = liquidated.plus(item.bituLiquidated);
       }
 
-      const nativeToken = collateralAssets.find((p) => p.id === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+      const nativeToken = collateralAssets.find((p) => p.id === ADDRESSES.GAS_TOKEN_2);
 
       const erc20Tokens = collateralAssets
-        .filter((p) => p.id !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        .filter((p) => p.id !== ADDRESSES.GAS_TOKEN_2)
         .map((p) => {
           if (p.id.toLocaleLowerCase() === USDT.toLocaleLowerCase()) {
             p.totalValueLocked = liquidated.plus(p.totalValueLocked).multipliedBy(Math.pow(10, p.decimals)).toString();

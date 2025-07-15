@@ -83,6 +83,12 @@ const configs = {
         '0x187620a61f4f00Cb629b38e1b38BEe8Ea60d2B8D',
       ],
     },
+    plume_mainnet:{
+      morphoVaultOwners: [
+        '0x7B41b9891887820A75A51a1025dB1A54f4798521',
+        '0x06590Fef209Ebc1f8eEF83dA05984cD4eFf0d0E3',
+      ],
+    },
     starknet: {
       vesu: [
         '0x7f135b4df21183991e9ff88380c2686dd8634fd4b09bb2b5b14415ac006fe1d',

@@ -46,13 +46,18 @@ const HubPools = {
     },
     { // aUSD
       poolAddress: '0xc7DdB440666c144c2F27a3a5156D636Bacfc769C',
-      tokenAddress: '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a',
+      tokenAddress: ADDRESSES.mantle.AUSD,
       chainPoolAddress: '0x666aea026bC606220ec6eb83a83D81881fA48e0f',
     },
     { // savUSD
       poolAddress: '0xE6B7713854620076B5716E2743262D315bf8609D',
       tokenAddress: '0x06d47F3fb376649c3A9Dafe069B3D6E35572219E',
       chainPoolAddress: '0xe396E1246B7341Eb6EDA05DCfef9EaB9E661f80C',
+    },
+    { // USDt_ava
+      poolAddress: '0xA1E1024c49c77297bA6367F624cFbEFC80E697c6',
+      tokenAddress: ADDRESSES.avax.USDt,
+      chainPoolAddress: '0x66dD1c6bEAdFFcA88365BAdE7928323672323d11',
     },
   ],
   'ethereum': [
@@ -98,6 +103,13 @@ const HubPools = {
       tokenAddress: ADDRESSES.ethereum.WEETH,
       chainPoolAddress: '0x63BCB60165E7EC30F03883Fcb800AEf304EE7eEa',
     },
+    {
+      // USDt_eth
+      poolAddress: '0xf51a72b92cB9C16376Da04f48eF071c966B9C50B',
+      tokenAddress: ADDRESSES.ethereum.USDT,
+      chainPoolAddress: '0x12d4FeDD9cE1b4d7dB90b07366284ac1675a5a90',
+    },
+      
   ],
   'base': [
     // excluding USDC cause bridged
@@ -139,7 +151,7 @@ const HubPools = {
     {
       // VIRTUAL_base
       poolAddress: '0x331a1938f94af7bB41d57691119Aee416495202a',
-      tokenAddress: '0x8D9aad601f384C596B9e2b9124a73b278DB4C51C',
+      tokenAddress: '0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b',
       chainPoolAddress: '0x9009c929873f0e68dbc253b16aC4c3E4426E6E35',
     },
     {
@@ -202,9 +214,15 @@ const HubPools = {
     },
     { // rsETH_arb
       poolAddress: '0x60f2682Ab38e3C9a51b07fbd69f42Ad2Cfe731db',
-      tokenAddress: '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
+      tokenAddress: ADDRESSES.berachain.rsETH,
       chainPoolAddress: '0xC0a3536E0b6799014A14664bA4370BBd5D0c7590',
     },
+    {
+      // USDT0_arb
+      poolAddress: '0x1b5a1dCe059E6069Ed33C3656826Ad04bE536465',
+      tokenAddress: ADDRESSES.arbitrum.USDT,
+      chainPoolAddress: '0xe69e068539Ee627bAb1Ce878843a6C76484CBd2c',
+    }
   ],
   'polygon': [
     // excluding USDC cause bridged
@@ -241,9 +259,15 @@ const HubPools = {
     {
       // aUSD_pol
       poolAddress: '0x34f1BA5808EB5Bf60c9B1C343d86e410466F4860',
-      tokenAddress: '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a',
+      tokenAddress: ADDRESSES.mantle.AUSD,
       spokeAddress: '0xaB07AfCf16fecdCC3D83dB7513c7839aEd626322',
     },
+    {
+      // USDt_pol
+      poolAddress: '0x11f82b5Ea7408Ff257F6031E6A3e29203557A1DD',
+      tokenAddress: ADDRESSES.polygon.USDT,
+      chainPoolAddress: '0xf2ee689fd3f7A7358bEDA46f83E7968Ad894abF0',
+    }
   ],
 }
 

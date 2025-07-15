@@ -34,7 +34,8 @@ async function borrowed() {
   for (const { address, decimals } of markets) {
     const storage = await getStorage(address);
     let borrows = Number(storage.totalBorrows || 0);
-    let tokenAddress = storage.fa1_2_TokenAddress || storage.fa2_TokenAddress || "tezos";
+
+    let tokenAddress = storage.fa1_2_TokenAddress ? `${storage.fa1_2_TokenAddress}-0` : storage.fa2_TokenAddress ? `${storage.fa2_TokenAddress}-${storage.tokenId}` : "tezos";
 
     borrows = borrows / 10 ** decimals;
 
