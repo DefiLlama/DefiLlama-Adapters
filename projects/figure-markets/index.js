@@ -1,4 +1,4 @@
-const { convertToCoinGeckoApiId } = require("../helper/chain/provenance");
+const { convertToCoinGeckoApiId, tokenMapping, mapTokens } = require("../helper/chain/provenance");
 const { get } = require("../helper/http")
 
 const paginationLimit = 1000;
@@ -43,7 +43,7 @@ const getCommittedTokens = async (acc, key) => {
 const tvl = async (api) => {
     const tokens = await getCommittedTokens({}, null)
     await convertToCoinGeckoApiId(tokens)
-    Object.keys(tokens).map(coin => api.addCGToken(coin, tokens[coin]))
+    Object.keys(tokens).map(coin => mapTokens(tokens, coin, api))
 }
 
 module.exports = {

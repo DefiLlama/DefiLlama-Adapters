@@ -1,3 +1,4 @@
+const { mapTokens } = require("../helper/chain/provenance")
 const { get } = require("../helper/http")
 
 const tokenMapper = {
@@ -9,17 +10,18 @@ const tokenMapper = {
     "XRP": 'ripple',
     "SOL": 'solana',
     "LRWA": 'usd-coin',
-    "YLDS": 'usd-coin',
+    "YLDS": 'uylds.fcc',
     "USDC": 'usd-coin',
+    "USD": 'usd-coin',
     "USDT": 'tether',
 }
 
 // Returns all leveraged pools in Figure Markets Democratized Prime
 // https://www.figuremarkets.com/c/democratized-prime/lending-pools
-const leveragePoolsUrl = 'https://www.figuremarkets.com/service-lending/api/v1/leverage-pools?location=CAYMAN'
+const leveragePoolsUrl = 'https://www.figuremarkets.com/service-lending/api/v1/leverage-pools?location=US'
 
 // Returns offer information for a specific asset
-const offersUrl = (asset) => `https://www.figuremarkets.com/service-lending/api/v1/offers?asset=${asset}&location=CAYMAN`
+const offersUrl = (asset) => `https://www.figuremarkets.com/service-lending/api/v1/offers?asset=${asset}&location=US`
 
 // Returns all assets, including lending facilities (specific to YLDS)
 const lendingFacilities = `https://www.figuremarkets.com/service-hft-exchange/api/v1/assets?page=1&size=100&include_lending_facility_assets=true`
@@ -41,27 +43,32 @@ const getBalances = async () => {
             const totalLendingFacilitiesValue = facilities.reduce((acc, cur) => acc += Number(cur.lendingFacilitiesDetails.unpaidBalance), 0)
             // Also pull the existing YLDS loan amount
             const borrowed = (await get(offersUrl(p))).totalLoanAmount
-            balances[p] = {collateral: (totalLendingFacilitiesValue - Number(borrowed)).toString(), borrowed }
+            // Convert final YLDS to uylds (exponent of 6)
+            balances[p] = {collateral: (totalLendingFacilitiesValue - Number(borrowed)) * 1e6, borrowed: borrowed * 1e6 }
         }
     }))
     return balances
 }
 
 const tvl = async (api) => {
-    const collateral = await getBalances()
-    Object.keys(collateral).map(coin => api.addCGToken(tokenMapper[coin], collateral[coin].collateral ))
+    const balances = await getBalances()
+    let collateral = {}
+    Object.keys(balances).map(b => collateral[tokenMapper[b]] = balances[b].collateral)
+    Object.keys(collateral).map(coin => mapTokens(collateral, coin, api ))
 }
 
 const borrowed = async (api) => {
-    const collateral = await getBalances()
-    Object.keys(collateral).map(coin => api.addCGToken(tokenMapper[coin], collateral[coin].borrowed ))
+    const balances = (await getBalances())
+    let borrowed = {}
+    Object.keys(balances).map(b => borrowed[tokenMapper[b]] = balances[b].borrowed)
+    Object.keys(borrowed).map(coin => mapTokens(borrowed, coin, api ))
 }
 
 module.exports = {
     timetravel: false,
     doublecounted: true,
     misrepresentedTokens: true,
-    methodology: 'Figure Markets Democratized Prime calculates the loan pool amount as TVL, with outstanding loans as the borrowed amount.',
+    methodology: 'Figure Markets DeFi Prime calculates the loan pool amount as TVL, with outstanding loans as the borrowed amount.',
     provenance: {
         tvl,
         borrowed,

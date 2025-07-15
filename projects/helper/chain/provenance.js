@@ -8,7 +8,7 @@ const tokenMapping = {
     "eth.figure.se": "ethereum",
     "usd.trading": "usd-coin",
     "usdc.figure.se": "usd-coin",
-    "ylds.fcc": "ylds",
+    // "ylds.fcc": "ylds",
     "usdt.figure.se": "tether",
     "xrp.figure.se": "ripple",
     "sol.figure.se": "solana",
@@ -54,7 +54,14 @@ const convertToCoinGeckoApiId = async (tokenObject) =>
         })
     );
 
+// Map tokens. If they exist in coingecko, add to coingecko.
+// Otherwise, keep in provenance
+const mapTokens = (tokens, coin, api) =>  
+        Object.values(tokenMapping).includes(coin) ? 
+        api.addCGToken(coin, tokens[coin]) : api.add(coin, tokens[coin])
+
 module.exports = {
     tokenMapping,
-    convertToCoinGeckoApiId
+    convertToCoinGeckoApiId,
+    mapTokens,
 }
