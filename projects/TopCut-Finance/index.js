@@ -16,4 +16,7 @@ module.exports = {
   methodology:
     "TVL is calculated based on the amount of ETH in the TopCut Vault.",
   arbitrum: { tvl },
+  hallmarks: [
+    [1750107221, "TopCut Vault Launch"]
+  ]
 };
