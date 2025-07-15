@@ -2,9 +2,11 @@ const { cachedGraphQuery } = require('../helper/cache')
 
 const vaultsGraphs = {
   ethereum:
-    "https://graphql-gateway-vaults.mainnet.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/mainnet/subgraph/vaults",
   avax:
-    "https://graphql-gateway-vaults.avalanche.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/avalanche/subgraph/vaults",
+  base:
+    "https://api.mainnet.termfinance.io/base/subgraph/vaults",
 }
 
 const termVaultStrategiesQuery = `
@@ -43,6 +45,7 @@ query termVaultStrategiesQuery($lastId: ID) {
 const vaultsGraphStartBlock = {
   ethereum: 21433264,
   avax: 54438973,
+  base: 30797402,
 }
 
 module.exports = {

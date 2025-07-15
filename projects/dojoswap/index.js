@@ -6,7 +6,8 @@ const factory = {
 
 async function staking() {
 
-  /// POOLS
+  return {}
+ /*  /// POOLS
   const response = await fetch('https://analytics.dojo.trading/dashboard/pools/tvl');
   const data = await response.json();
   const keys = Object.keys(data);
@@ -14,7 +15,7 @@ async function staking() {
 
   return {
     tether: tvl
-  }
+  } */
 }
 
 module.exports = {
