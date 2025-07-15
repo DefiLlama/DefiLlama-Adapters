@@ -64,6 +64,11 @@ const endPoints = {
   milkyway_rollup: 'https://archival-rest-moo-1.anvil.asia-southeast.initia.xyz',
   titan: 'https://titan-lcd.titanlab.io',
   provenance: 'https://api.provenance.io',
+  xion: 'https://api.xion-mainnet-1.burnt.com',
+  embr: 'https://rest-embrmainnet-1.anvil.asia-southeast.initia.xyz', 
+  civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
+  echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
+  inertia: 'https://rest.inrt.fi'
 };
 
 const chainSubpaths = {

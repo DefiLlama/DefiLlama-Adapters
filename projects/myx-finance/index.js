@@ -51,7 +51,7 @@ async function tvl(api) {
 Object.keys(config).forEach((chain) => {
   const exports = { tvl }
   if (chain === 'bsc') {
-    exports.staking = staking('0xbb33D58DDd186F46Cab05F7B30848d89dF71C4E9', '0xD82544bf0dfe8385eF8FA34D67e6e4940CC63e16')
+    exports.staking = staking(['0xbb33D58DDd186F46Cab05F7B30848d89dF71C4E9', '0x36f4b2e82355020181a4583507375F0c606d61F9'], '0xD82544bf0dfe8385eF8FA34D67e6e4940CC63e16')
   }
   module.exports[chain] = exports
 });

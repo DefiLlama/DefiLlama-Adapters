@@ -741,6 +741,7 @@ async function sumTokens2({
   unwrapAll = false,
   blacklistedLPs = [],
   blacklistedTokens = [],
+  blacklistedOwners = [],
   skipFixBalances = false,
   abis = {},
   api,
@@ -866,6 +867,11 @@ async function sumTokens2({
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
   tokensAndOwners = getUniqueToA(tokensAndOwners)
+  
+  if (blacklistedOwners?.length) {
+    const blacklistedOwnersSet = new Set(blacklistedOwners.map(o => normalizeAddress(o, chain)))
+    tokensAndOwners = tokensAndOwners.filter(([_, owner]) => !blacklistedOwnersSet.has(owner))
+  }
   log(chain, 'summing tokens', tokensAndOwners.length)
 
 
