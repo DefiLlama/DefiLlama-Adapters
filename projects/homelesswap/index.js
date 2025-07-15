@@ -1,7 +1,7 @@
 const { sumTokensExport } = require('../helper/sumTokens')
 
 module.exports = {
-  zksync: {
+  era: {
     tvl: sumTokensExport({
       owner: '0x3ca616C60aAe4c2c067e81DF4B1531e38e602C5a',
       tokens: [
