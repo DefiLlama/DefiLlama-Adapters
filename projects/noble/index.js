@@ -8,7 +8,6 @@ async function tvl(api) {
   do {
     const { supply, pagination } = await queryV1Beta1({ api, url: `${NOBLE_SUPPLY_URL}?pagination.key=${key || ''}` })
     key = pagination.next_key
-    console.log(key)
     supply.forEach(i => api.add(i.denom, i.amount))
   } while (key);
   IGNORE_DENOMS.forEach(denom => api.removeTokenBalance(denom))

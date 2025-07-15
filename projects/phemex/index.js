@@ -8,12 +8,15 @@ const config = {
   ethereum: {
     owners: [
       '0xf7D13C7dBec85ff86Ee815f6dCbb3DEDAc78ca49',
+      '0xdb861e302ef7b7578a448e951aede06302936c28',
+      '0x9022B72D67999A3b0d1330eCefCa56f83d2ec52C',
       '0x50be13b54f3eebbe415d20250598d81280e56772'
     ],
   },
   bsc: {
     owners: [
-      '0x50be13b54f3eebbe415d20250598d81280e56772'
+      '0x50be13b54f3eebbe415d20250598d81280e56772',
+      '0xdb861e302ef7b7578a448e951aede06302936c28',
     ],
   },
   base: {
@@ -69,7 +72,8 @@ const config = {
   },
   tron: {
     owners: [
-      'THAABzWrhp84Nr7gxss7qhtzA5mp3d1qUo'
+      'THAABzWrhp84Nr7gxss7qhtzA5mp3d1qUo',
+      'TMHKjGvQ2trQkBEnAgx7RvV77Xn8w1JDP7',
     ],
   },
   solana: {

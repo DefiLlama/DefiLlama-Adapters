@@ -38,7 +38,7 @@ module.exports = {
   },
    manta: {
     pool2: async (api) => {
-      const STONE = '0xEc901DA9c68E90798BbBb74c11406A32A70652C3'
+      const STONE = ADDRESSES.berachain.STONE
       const WUSDM = '0xbdAd407F77f44F7Da6684B416b1951ECa461FB07'
       const IZI = '0x91647632245cabf3d66121f86c387ae0ad295f9a'
       const miningContract = '0x2C9bFcA337bAc7cBdA3B80D1b2d10ed6482D7C0f'

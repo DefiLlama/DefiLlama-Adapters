@@ -16,7 +16,6 @@ const config = {
       "0x3c22c17501047d862b3a98e296079966aefd8df7",
       "0xbbb72ba600d8493fea284d5fe44919f7b60d53f5",
       "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9",
-      "0xee5b5b923ffce93a870b3104b7ca09c3db80047a"
     ],
   },
   bitcoin: {
@@ -33,7 +32,6 @@ const config = {
       "TLK8GVBqJNmcyaN5mpSPSzQfTjsSxb7sC9",
       "TGgMNPxdyUgdYwMSbMkpTPvaSkrRakKqcK",
       "TAA7sxJ259JgstGPjanb5sB6ZJuCPtCobs",
-      "TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe",
       "TKRksVBKDBATKcifm4FXFHcD1FmJQ2bp3x"
     ],
   },
@@ -60,7 +58,11 @@ const config = {
       "0x67be8ce27ef8158d51d8593bb5b26eafacc955d9"
     ]
   },
-
+  avax: {
+    owners: [
+      "0xF6D4E5a7c5215F91f59a95065190CCa24bf64554",
+    ]
+  },
 }
 
 module.exports = cexExports(config)

@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
-const token = '0xa2E3356610840701BDf5611a53974510Ae27E2e1'
+const token = ADDRESSES.bsc.wBETH
 
 module.exports = {
   ethereum: {
@@ -10,7 +10,7 @@ module.exports = {
   },
   bsc: {
     tvl: async (_, block, chainBlocks) => ({
-      ["ethereum:" + ADDRESSES.null]: (await sdk.api.erc20.totalSupply({ target: token, chain:"bsc", block: chainBlocks.bsc})).output
+      ["bsc:" + ADDRESSES.bsc.ETH]: (await sdk.api.erc20.totalSupply({ target: token, chain:"bsc", block: chainBlocks.bsc})).output
     })
   }
 }
