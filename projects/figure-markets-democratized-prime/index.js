@@ -68,7 +68,7 @@ module.exports = {
     timetravel: false,
     doublecounted: true,
     misrepresentedTokens: true,
-    methodology: 'Figure Markets DeFi Prime calculates the loan pool amount as TVL, with outstanding loans as the borrowed amount.',
+    methodology: 'Figure Markets Democratized Prime calculates the loan pool amount as TVL, with outstanding loans as the borrowed amount.',
     provenance: {
         tvl,
         borrowed,
