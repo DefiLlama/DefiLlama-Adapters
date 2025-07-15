@@ -11,9 +11,9 @@ async function tvl() {
 }
 
 module.exports = {
-  hallmarks: [
-    [1659009600, "Flash-Loan & Price Manipulation Attack"]
-  ],
+  // hallmarks: [
+  //   [1659009600, "Flash-Loan & Price Manipulation Attack"]
+  // ],
   timetravel: false,
   methodology:
     "The total value of ANA tokens locked in the protocol, either as staking or as collateral for loans.",

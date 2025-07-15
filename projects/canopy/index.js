@@ -77,7 +77,6 @@ async function getCanopyCoreVaults(address, pageSize = 100) {
     if (response.vaults && response.vaults.length > 0) {
       allVaults = allVaults.concat(response.vaults);
       offset += response.vaults.length;
-
       // If we got fewer vaults than the page size, we've reached the end
       if (response.vaults.length < pageSize) {
         hasMoreVaults = false;
