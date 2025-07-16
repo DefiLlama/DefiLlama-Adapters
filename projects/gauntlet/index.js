@@ -1,4 +1,5 @@
 const { getCuratorExport } = require("../helper/curators");
+const axios = require('axios');
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
@@ -226,9 +227,20 @@ async function tvl(api) {
   }
 }
 
+async function megavaultTvl(api) {
+  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
+  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
+  const pnlArr = data.megavaultPnl;
+  if (!pnlArr || !pnlArr.length) return;
+  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
+  // Report as Noble USDC (uusdc, 6 decimals)
+  api.add('uusdc', (currentTvl * 1e6).toFixed(0));
+}
+
 module.exports = {
   ...getCuratorExport(configs),
   solana: { tvl },
+  dydx: { tvl: megavaultTvl },
   timetravel: false,
   methodology: configs.methodology,
 }
