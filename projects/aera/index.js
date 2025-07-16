@@ -502,7 +502,16 @@ async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
     const marketInfo = marketInfos[index];
 
     if (position.collateral > 0) {
-      api.addToken(marketParam.collateralToken, position.collateral, vault);
+      try {
+        // If the collateral token is an ERC4626, we need to convert it to the underlying asset
+        const [underlyingAsset, collateralAssets] = await Promise.all([
+          api.call({ abi: 'address:asset', target: marketParam.collateralToken }),
+          api.call({ abi: abi.convertToAssets, target: marketParam.collateralToken, params: [position.collateral] })
+        ]);
+        api.addToken(underlyingAsset, collateralAssets, vault);
+      } catch (e) {
+        api.addToken(marketParam.collateralToken, position.collateral, vault);
+      }
     }
 
     if (position.supplyShares > 0) {
