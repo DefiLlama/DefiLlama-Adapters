@@ -15,6 +15,15 @@ async function calculateGSUIunderlyingSui(gSuiAmount) {
   return percentage * Number(gSuiAmount)
 }
 
+async function calculateGUPUSDunderlyingUSD(gUpusdAmount) {
+  const fields = (await getObject("0x13766a4d5c180f004f9bfd19e65f622fbb2b9498736131b948599054c0129f42")).fields
+  const pool = Number(fields.pool)
+  const pipe = Number(fields.pipe_debt.fields.value)
+  const supply = Number(fields.supply.fields.value)
+  const percentage = (pool + pipe) / supply
+  return percentage * Number(gUpusdAmount)
+}
+
 async function calculatehaSuiSuiVaultShares(api, token0, token1, lpAmount) {
   const suiHasuiPool = await getObject(SUI_HASUI_POOL_ID)
   const vaultObject = await getObject(SUI_HASUI_VAULT_ID)
@@ -41,6 +50,7 @@ const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 const HASUI = "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI";
 const GSUI = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x2::sui::SUI>";
+const GUPUSD = "0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x5de877a152233bdd59c7269e2b710376ca271671e9dd11076b1ff261b2fd113c::up_usd::UP_USD>";
 const USDC_CIRCLE = ADDRESSES.sui.USDC_CIRCLE;
 const FDUSD = "0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a::fdusd::FDUSD";
 const SCALLOP_swUSDC = "0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC";
@@ -55,6 +65,7 @@ const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cc
 const SUI_HASUI_CETUS_VAULT_LP_ADDRESS = '0x828b452d2aa239d48e4120c24f4a59f451b8cd8ac76706129f4ac3bd78ac8809::lp_token::LP_TOKEN';
 const xBTC_ADDRESS = "0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC";
 const mUSD_ADDRESS = "0xe44df51c0b21a27ab915fa1fe2ca610cd3eaa6d9666fe5e62b988bf7f0bd8722::musd::MUSD";
+const TBTC_ADDRESS = "0x77045f1b9f811a7a8fb9ebd085b5b0c55c5cb0d1520ff55f7037f89b5da9f5f1::TBTC::TBTC";
 
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
@@ -185,6 +196,8 @@ function convertUnderlyingAssets(coin) {
   if(coin === xBTC_ADDRESS) return ADDRESSES.sui.xBTC
   // mUSD
   if(coin === mUSD_ADDRESS) return ADDRESSES.sui.mUSD
+  // tBTC
+  if(coin === TBTC_ADDRESS) return ADDRESSES.sui.TBTC
   return coin
 }
 
@@ -239,6 +252,9 @@ async function tvl(api) {
     } else if(coin == GSUI) {
       const suiAmount = await calculateGSUIunderlyingSui(bucket.fields.collateral_vault)
       api.add(SUI, suiAmount);
+    }else if(coin == GUPUSD) {
+      const usdAmount = await calculateGUPUSDunderlyingUSD(bucket.fields.collateral_vault)
+      api.add(USDC, usdAmount);
     } else {
       if (coin) api.add(coin, bucket.fields.collateral_vault);
     }
