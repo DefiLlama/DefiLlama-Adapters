@@ -9,11 +9,13 @@ const GEARBOX_TOKEN_PREFIX = 'Farming of'
 const ARRAKIS_TOKEN_PREFIX = 'Arrakis Vault V2'
 const ESXAI_POSITION_ORACLE_NAME = 'EsXai Position Oracle'
 const SYMBIOTIC_TOKEN_PREFIX = 'Symbiotic Vault'
+const MORPHO_BLUE_POSITION_ORACLE_NAME = 'MorphoBluePositionOracle'
 
 const config = {
   polygon: {
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     aavePoolDataProvider: '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654',
+    morphoBlue: '0x1bF0c2541F820E775182832f06c0B7Fc27A25f67',
     comets: [
       {
         address: '0xF25212E676D1F7F89Cd72fFEe66158f541246445',
@@ -44,6 +46,7 @@ const config = {
   ethereum: {
     aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
     aavePoolDataProvider: '0x7B4EB56E7CD4b454BA8ff71E4518426369a138a3',
+    morphoBlue: '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb',
     comets: [
       {
         address: '0xA17581A9E3356d9A858b789D68B4d866e593aE94',
@@ -82,6 +85,7 @@ const config = {
   arbitrum: {
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     aavePoolDataProvider: '0x6b4E260b765B3cA1514e618C0215A6B7839fF93e',
+    morphoBlue: '0x6c247b1F6182318877311737BaC0844bAa518F5e',
     comets: [
       {
         address: '0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA',
@@ -111,6 +115,7 @@ const config = {
   base: {
     aavePool: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5',
     aavePoolDataProvider: '0x2d8A3C5677189723C4cB8873CfC9C8976FDF38Ac',
+    morphoBlue: '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb',
     comets: [
       {
         address: '0x46e6b214b524310239732D51387075E0e70970bf',
@@ -148,6 +153,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       const AAVE_POOL = config[chain].aavePool
       const AAVE_POOL_DATA_PROVIDER = config[chain].aavePoolDataProvider
+      const MORPHO_BLUE = config[chain].morphoBlue
       const COMETS = config[chain].comets
       const COMET_REWARD = config[chain].cometReward
       const ARRAKIS_HELPER = config[chain].arrakisHelper
@@ -192,7 +198,7 @@ Object.keys(config).forEach(chain => {
       const xaiPositionVaults = []
       const esXaiVaults = []
       const symbioticVaults = []
-
+      const morphoBlueVaults = []
       for (let i = 0; i < vaults.length; ++i) {
         const vault = vaults[i]
         for (let j = 0; j < assets[i].length; ++j) {
@@ -226,6 +232,10 @@ Object.keys(config).forEach(chain => {
             }
             if (assetName.startsWith(SYMBIOTIC_TOKEN_PREFIX)) {
               symbioticVaults.push([vault, assetInfo.asset])
+              continue
+            }
+            if (assetName === MORPHO_BLUE_POSITION_ORACLE_NAME) {
+              morphoBlueVaults.push([vault, assetInfo.asset])
               continue
             }
           }
@@ -424,8 +434,93 @@ async function processSymbioticTvl(symbioticVaults, api) {
   const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: symbioticVaults.map(x => ({target: x[1], params: [x[0]]}))})
 
   collaterals.forEach((collateral, i) => {
-    api.addToken(collateral, balances[i])
+    api.addToken(collateral, balances[i], symbioticVaults[i][0])
   })
+}
+
+async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
+  if (morphoBlueVaults.length === 0) return;
+
+  // Get the number of markets for each oracle
+  const marketLengths = await api.multiCall({
+    abi: 'function getMarketsLength() view returns (uint256)',
+    calls: morphoBlueVaults.map(x => ({target: x[1], params: []}))
+  });
+
+
+  // Build calls to get each market by index
+  const marketCalls = [];
+  morphoBlueVaults.forEach(([vault, oracle], oracleIndex) => {
+    const length = marketLengths[oracleIndex];
+    for (let i = 0; i < length; i++) {
+      marketCalls.push({
+        target: oracle,
+        params: [i],
+        vault: vault,
+        oracleIndex: oracleIndex
+      });
+    }
+  });
+
+  if (marketCalls.length === 0) return;
+
+  // Get all markets from the Morpho Blue position oracles
+  const markets = await api.multiCall({
+    abi: 'function markets(uint256) view returns ((bytes32, address, uint80, uint8, bool))',
+    calls: marketCalls
+  });
+
+  const marketInfos = await api.multiCall({
+    abi: 'function market(bytes32) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares)',
+    calls: markets.map(market => ({target: MORPHO_BLUE, params: [market[0]]}))
+  });
+
+  // Get market parameters for each market ID
+  const marketParams = await api.multiCall({
+    abi: 'function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)',
+    calls: markets.map(market => ({ target: MORPHO_BLUE, params: [market[0]] }))
+  });
+
+  // Get positions for each vault across all markets
+  const positionCalls = [];
+  marketCalls.forEach((call, index) => {
+    const marketId = markets[index][0]; // Extract the market ID (bytes32)
+    positionCalls.push({
+      target: MORPHO_BLUE,
+      params: [marketId, call.vault]
+    });
+  });
+
+  const positions = await api.multiCall({
+    abi: 'function position(bytes32, address) view returns (uint256 supplyShares, uint256 borrowShares, uint256 collateral)',
+    calls: positionCalls
+  });
+
+  // Process positions and add to TVL
+  await Promise.all(positionCalls.map(async (call, index) => {
+    const [marketId, vault] = call.params;
+    const position = positions[index];
+    const marketParam = marketParams[index];
+    const marketInfo = marketInfos[index];
+
+    // const loanToken = marketParam.loanToken;
+    // const loanDecimals = await api.call({ abi: 'uint8:decimals', target: loanToken });
+
+    console.log(position);
+
+    if (position.collateral > 0) {
+      api.addToken(marketParam.collateralToken, position.collateral, vault);
+    }
+
+    if (position.supplyShares > 0) {
+      const supplyAssets = Math.round(position.supplyShares * marketInfo.totalSupplyAssets / marketInfo.totalSupplyShares);
+      api.addToken(marketParam.loanToken, supplyAssets, vault);
+    }
+    if (position.borrowShares > 0) {
+      const borrowAssets = Math.round(position.borrowShares * marketInfo.totalBorrowAssets / marketInfo.totalBorrowShares);
+      api.addToken(marketParam.loanToken, -borrowAssets, vault);
+    }
+  }));
 }
 
 const abi = {
