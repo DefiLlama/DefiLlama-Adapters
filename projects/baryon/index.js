@@ -20,7 +20,13 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
     staking: async (...args) => {
-      const { stakeContract, lpToken } = await fetchData(key)
+      let { stakeContract, lpToken } = await fetchData(key)
+
+      if (chain === 'tomochain') {
+        // this is not staking contract on tomochain
+        stakeContract = stakeContract.filter(item => String(item).toLowerCase() !== '0x0afdbe5989cab06e66244cc2583f0caeecb6ea8e')
+      }
+
       return stakings(stakeContract, lpToken)(...args)
     }
   }
