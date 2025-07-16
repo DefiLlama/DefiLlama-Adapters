@@ -105,6 +105,7 @@ const exmo = require('./exmo.js')
 const esbtc = require('./esbtc.js')
 const bimaCdp = require('./bima-cdp.js')
 const tzbtc = require('./tezos-btc.js')
+const indodax = require('./indodax.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -264,5 +265,6 @@ module.exports = {
   orangex,
   exmo,
   esbtc,
-  tzbtc
+  tzbtc,
+  indodax
 }
