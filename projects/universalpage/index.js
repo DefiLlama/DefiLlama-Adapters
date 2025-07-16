@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*
  * UniversalPage adapter for DefiLlama
  * Tracks TVL for LUKSO staking 
  */
 
 const STAKING_CONTRACT = '0xa5b37D755B97C272853b9726C905414706A0553a';
-const LYX_ADDRESS = '0x0000000000000000000000000000000000000000'; // Native token null address
+const LYX_ADDRESS = ADDRESSES.null; // Native token null address
 
 /**
  * TVL function - calculates the total value of LYX staked in the staking contract
