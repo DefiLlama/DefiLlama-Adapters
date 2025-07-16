@@ -107,6 +107,18 @@ const config = {
     morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
     fromBlock: 2741069,
   },
+  btnx: {
+    morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
+    fromBlock: 450759,
+  },
+  // tacchain_239_1: {
+  //   morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
+  //   fromBlock: 853025,
+  // },
+  zircuit: {
+    morphoBlue: "0xA902A365Fe10B4a94339B5A2Dc64F60c1486a5c8",
+    fromBlock: 14640172,
+  }
 };
 
 Object.keys(config).forEach((chain) => {
