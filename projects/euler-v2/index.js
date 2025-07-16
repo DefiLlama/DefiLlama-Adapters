@@ -13,6 +13,7 @@ const config = {
   bob: { factory: '0x046a9837A61d6b6263f54F4E27EE072bA4bdC7e4', },
   berachain: { factory: '0x5C13fb43ae9BAe8470f646ea647784534E9543AF', },
   avax: { factory: '0xaf4B4c18B17F6a2B32F6c398a3910bdCD7f26181', },
+  bsc: { factory: '0x7F53E2755eB3c43824E162F7F6F087832B9C9Df6', },
 }
 
 Object.keys(config).forEach(chain => {

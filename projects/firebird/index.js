@@ -7,10 +7,8 @@ const FACTORY = '0x5De74546d3B86C8Df7FEEc30253865e1149818C8';
 const stablePool = "0x01C9475dBD36e46d1961572C8DE24b74616Bae9e"
 const stablePoolTokens = [ADDRESSES.polygon.USDT, ADDRESSES.polygon.USDC, ADDRESSES.polygon.DAI]
 
-async function tvl(_, ethBlock, chainBlocks) {
-  const block = chainBlocks['polygon']
-  const chain = 'polygon'
-  return sumTokens2({ chain, block, owner: stablePool, tokens: stablePoolTokens, })
+async function tvl(api) {
+  return sumTokens2({ api, owner: stablePool, tokens: stablePoolTokens, })
 }
 
 module.exports = {

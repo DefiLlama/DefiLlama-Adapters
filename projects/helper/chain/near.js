@@ -124,6 +124,7 @@ function sumSingleBalance(balances, token, balance) {
 }
 
 async function sumTokens({ balances = {}, owners = [], tokens = []}) {
+  tokens = tokens.filter(i => i !== 'aurora')
   await Promise.all(owners.map(i => addTokenBalances(tokens, i, balances)))
   const bals = await Promise.all(owners.map(view_account))
   const nearBalance = bals.reduce((a,i) => a + (i.amount/1e24), 0)

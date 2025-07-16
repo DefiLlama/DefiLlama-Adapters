@@ -6,9 +6,13 @@ const config = {
     dropContract: "neutron15v5acjfttf3umzatmj7rqfjy6yzcgekh266ehjsxclvaem0hpd7q9qpscr"
   },
   {
+    coinGeckoId: "neutron-3",
+    dropContract: "neutron17jsl4t4hhaw37tnhenskrfntm7mv44wzjr3f990hx4p9r5m0gzdqquhtd3"
+  },
+  {
     coinGeckoId: "celestia",
     dropContract: "neutron1vqtnu54addf87qp73fnjvqafruzkr2zjgswkhsmsg45t08wla2nqqan0hc"
-  }],
+  }],  
 };
 
 async function tvl(api) {

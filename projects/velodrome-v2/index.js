@@ -19,6 +19,7 @@ module.exports = {
   fraxtal: { tvl },
   ink: { tvl },
   soneium: { tvl },
+  sseed: { tvl },
   unichain: { tvl },
   swellchain: { tvl },
   hallmarks: [

@@ -13,11 +13,11 @@ const SuiVault = {
   id: '0x16272b75d880ab944c308d47e91d46b2027f55136ee61b3db99098a926b3973c',
   tType: ADDRESSES.sui.SUI
 }
-const UsdcVault = {
+const pausedUsdcVault = {
   id: '0x5663035df5f403ad5a015cc2a3264de30370650bc043c4dab4d0012ea5cb7671',
   tType: ADDRESSES.sui.USDC_CIRCLE
 }
-const suiUsdtVault = {
+const pausedSuiUsdtVault = {
   id: '0x7a2e56773ad4d9bd4133c67ed0ae60187f00169b584a55c0204175897e41d166',
   tType: ADDRESSES.sui.suiUSDT
 }
@@ -29,9 +29,20 @@ const deepVault = {
   id: '0x6e58792dccbaa1d1d708d9a847a7c5b3f90c7878d1b76fd79afa48d31063bca6',
   tType: ADDRESSES.sui.DEEP
 }
+const UsdcVault = {
+  id: '0x3e8a6d1e29d2c86aed50d6055863b878a7dd382de22ea168177c80c1d7150061',
+  tType: ADDRESSES.sui.USDC_CIRCLE
+}
+const suiUsdtVault = {
+  id: '0xbfcab5f22e253be0768e2cc5e75e170c5266edf7b68c813af0d676e84285681c',
+  tType: ADDRESSES.sui.suiUSDT
+}
 
 async function tvl(api) {
-  const vaults = [wUsdcVault, wUsdtVault, SuiVault, UsdcVault, suiUsdtVault, usdyVault, deepVault]
+  const vaults = [
+    wUsdcVault, wUsdtVault, SuiVault, pausedUsdcVault, pausedSuiUsdtVault,
+    usdyVault, deepVault, UsdcVault, suiUsdtVault
+  ]
   const vaultObjs = await sui.getObjects(vaults.map(v => v.id))
 
   for (let i = 0; i < vaults.length; i++) {

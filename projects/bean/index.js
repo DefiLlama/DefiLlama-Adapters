@@ -326,7 +326,7 @@ module.exports = {
     staking
   },
   hallmarks: [
-    [EXPLOIT_TIME, "Governance Exploit"],
+    // [EXPLOIT_TIME, "Governance Exploit"],
     [REPLANT_TIME, "Replant"],
     [ARB_MIGRATION_TIME, "Migration to Arbitrum"],
   ]

@@ -1,7 +1,10 @@
 const { get } = require('../helper/http');
 const { toUSDTBalances } = require('../helper/balances');
 
-const blacklist = ['0xb008022F676a8918299E046c91Af65Fc06b52B1C','0xca907dD0044D673e878E08Af32E2Dc2AdC731369'];
+const blacklist = ['0xb008022F676a8918299E046c91Af65Fc06b52B1C',
+  '0xca907dD0044D673e878E08Af32E2Dc2AdC731369',
+  '0x23326213C37a3c0615a0693B4525c25e167626B5',
+  '0xbd34Ef075eeDD591F9eB7b1b196c6aFA32Eaaa38'];
 
 async function tvl() {
   const data = await get('https://api.vexchange.io/v1/pairs');

@@ -53,6 +53,7 @@ const SCALLOP_sDEEP = "0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0
 const SCALLOP_sbUSDT = "0xb1d7df34829d1513b73ba17cb7ad90c88d1e104bb65ab8f62f13e0cc103783d3::scallop_sb_usdt::SCALLOP_SB_USDT";
 const SCA_ADDRESS = "0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6::sca::SCA";
 const SUI_HASUI_CETUS_VAULT_LP_ADDRESS = '0x828b452d2aa239d48e4120c24f4a59f451b8cd8ac76706129f4ac3bd78ac8809::lp_token::LP_TOKEN';
+const xBTC_ADDRESS = "0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC"
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
   "0x885e09419b395fcf5c8ee5e2b7c77e23b590e58ef3d61260b6b4eb44bbcc8c62",
@@ -178,6 +179,8 @@ function convertUnderlyingAssets(coin) {
   if (coin === SCALLOP_sDEEP) return ADDRESSES.sui.DEEP
   // sSBUSDT
   if(coin === SCALLOP_sbUSDT) return ADDRESSES.sui.suiUSDT
+  // xBTC
+  if(coin === xBTC_ADDRESS) return ADDRESSES.sui.WBTC
   return coin
 }
 
@@ -393,6 +396,8 @@ async function tvl(api) {
 
   const naviFDUSD_LPAmount = await getNaviLPAmount(navi_fdUSD_LP_ID);
   api.add(FDUSD, naviFDUSD_LPAmount);
+
+  api.removeTokenBalance('0x622345b3f80ea5947567760eec7b9639d0582adcfd6ab9fccb85437aeda7c0d0::scallop_wal::SCALLOP_WAL')  // incorrect price, temporarily remove
 }
 
 module.exports = {

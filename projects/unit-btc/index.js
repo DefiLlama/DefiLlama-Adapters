@@ -15,4 +15,12 @@ module.exports = {
       tokens: [ADDRESSES.ethereum.WETH, "0x0000000000000000000000000000000000000000"], 
     }),
   },
+  solana: {
+    tvl: sumTokensExport({
+    chain: 'solana',
+    solOwners: ['9SLPTL41SPsYkgdsMzdfJsxymEANKr5bYoBsQzJyKpKS'],
+    owners: ['9SLPTL41SPsYkgdsMzdfJsxymEANKr5bYoBsQzJyKpKS'],
+    tokens: ['9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump']
+  })
+  }
 };

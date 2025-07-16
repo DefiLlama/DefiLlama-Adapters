@@ -153,7 +153,7 @@ module.exports = {
         const asset_name = vault.asset_name;
 
         // Handle Meridian LP tokens
-        if (asset_name === "Meridian LP Token") {
+        if (asset_name === "Meridian LP Token" && balance !== '0') {
           // Get the underlying assets in the pool
           const poolAssetsMetadata = await function_view({
             functionStr: `${meridianPkg}::pool::pool_assets_metadata`,

@@ -1,0 +1,30 @@
+{
+  "address": "spicyTHtbmarmUxwFSHYpA8G4uP2nRNq38RReMpoZ9c",
+  "metadata": {"name": "wasabi_solana", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [{"name": "LpVault", "discriminator": [189, 45, 167, 23, 91, 118, 105, 190]}],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "LpVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "bump", "docs": ["Bump seed for the LpVault's PDA"], "type": "u8"},
+          {"name": "asset", "docs": ["The SPL Mint address of the token that sits in this vault"], "type": "pubkey"},
+          {"name": "vault", "docs": ["The SPL Token account that stores the unborrowed tokens"], "type": "pubkey"},
+          {"name": "shares_mint", "docs": ["The SPL Mint address that represents shares in the vault"], "type": "pubkey"},
+          {
+            "name": "total_assets",
+            "docs": ["Count of the total assets owned by the vault, including tokens that are currently borrowed"],
+            "type": "u64"
+          },
+          {"name": "max_borrow", "docs": ["Maximum amount that can be borrowed by admin"], "type": "u64"},
+          {"name": "total_borrowed", "docs": ["Total amount currently borrowed from the vault that is to be paid back by the admin"], "type": "u64"}
+        ]
+      }
+    }
+  ],
+  "constants": [{"name": "SEED", "type": "string", "value": "\"anchor\""}]
+}

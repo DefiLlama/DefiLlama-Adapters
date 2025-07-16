@@ -44,6 +44,16 @@ const HubPools = {
       tokenAddress: '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3',
       chainPoolAddress: '0xe53189D00D1b4F231A2a208a7967E0dCaE8Db073',
     },
+    { // aUSD
+      poolAddress: '0xc7DdB440666c144c2F27a3a5156D636Bacfc769C',
+      tokenAddress: '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a',
+      chainPoolAddress: '0x666aea026bC606220ec6eb83a83D81881fA48e0f',
+    },
+    { // savUSD
+      poolAddress: '0xE6B7713854620076B5716E2743262D315bf8609D',
+      tokenAddress: '0x06d47F3fb376649c3A9Dafe069B3D6E35572219E',
+      chainPoolAddress: '0xe396E1246B7341Eb6EDA05DCfef9EaB9E661f80C',
+    },
   ],
   'ethereum': [
     // excluding USDC cause bridged
@@ -55,8 +65,38 @@ const HubPools = {
     },
     { // wBTC_eth      
       poolAddress: "0x9936812835476504D6Cf495F4F0C718Ec19B3Aff",
-      chainPoolAddress: "0xb39c03297E87032fF69f4D42A6698e4c4A934449",
       tokenAddress: ADDRESSES.ethereum.WBTC,
+      chainPoolAddress: "0xb39c03297E87032fF69f4D42A6698e4c4A934449",
+    },
+    {
+      // ATH_eth
+      poolAddress: '0x391201cEC4F80e69C87Dee364d599c1FCAE3c363',
+      tokenAddress: '0xbe0Ed4138121EcFC5c0E56B40517da27E6c5226B',
+      chainPoolAddress: '0x91461B9117B3644609EeB0889ecc89Cab4644bb2',
+    },
+    {
+      // pyUSD_eth
+      poolAddress: '0x279b3E185F64e99141d4CE363657A5F3B5B32Fb9',
+      tokenAddress: '0x6c3ea9036406852006290770BEdFcAbA0e23A0e8',
+      chainPoolAddress: '0xff785fb7BfBbe03eD09089f73151AE563B211723',
+    },
+    {
+      // rlUSD_eth
+      poolAddress: '0x7178bF2a8A50153549e0d95A4C6Cb816448840F0',
+      tokenAddress: '0x8292bb45bf1ee4d140127049757c2e0ff06317ed',
+      chainPoolAddress: '0x7967B0fe720E676f41640855a203B409cEcc8f92',
+    },
+    {
+      // wstETH_eth
+      poolAddress: '0xe7897052FAC4bfF9EB3ABc073CBC1e17Fce5709C',
+      tokenAddress: ADDRESSES.ethereum.WSTETH,
+      chainPoolAddress: '0xB3ABD8cc35619b907F3f2E974Fe3d43956AA7cda',
+    },
+    {
+      // weETH_eth
+      poolAddress: '0x4E6dD5E35638008cdB1E9004F3E952bCDd920E6D',
+      tokenAddress: ADDRESSES.ethereum.WEETH,
+      chainPoolAddress: '0x63BCB60165E7EC30F03883Fcb800AEf304EE7eEa',
     },
   ],
   'base': [
@@ -69,8 +109,44 @@ const HubPools = {
     },
     { // cbBTC_base      
       poolAddress: "0x9eD81F0b5b0E9b6dE00F374fFc7f270902576EF7",
-      tokenAddress: ADDRESSES.ethereum.cbBTC,
+      tokenAddress: ADDRESSES.base.cbBTC,
       chainPoolAddress: '0x50d5Bb3Cf57D2fB003b602A6fD10F90baa8567EA',
+    },
+    {
+      // AERO_base
+      poolAddress: '0xb5327c35E083248E3a0f79122FaB3b6018e5584a',
+      tokenAddress: '0x940181a94a35a4569e4529a3cdfb74e38fd98631',
+      chainPoolAddress: '0x7Ace2Bc1C79954B56C65C7B326035C4468ac12BB',
+    },
+    {
+      // cbETH_base
+      poolAddress: '0x0b09E1Ffd28040654021A85A49284597F3d0e41C',
+      tokenAddress: ADDRESSES.base.cbETH,
+      chainPoolAddress: '0x31A324D233AB3E73A6e1039D64907bBb2742606C',
+    },
+    {
+      // wstETH_base
+      poolAddress: '0xC96820695217c7dd8F696f8892de76F7a48432CB',
+      tokenAddress: ADDRESSES.base.wstETH,
+      chainPoolAddress: '0x7c7961E590B7e005540B72238b739ae513B605fB',
+    },
+    {
+      // weETH_base
+      poolAddress: '0xf727EC8D6e565328f2cf0Ff8aC4e7c9e7f8d24B2',
+      tokenAddress: ADDRESSES.base.weETH,
+      chainPoolAddress: '0x8D9aad601f384C596B9e2b9124a73b278DB4C51C',
+    },
+    {
+      // VIRTUAL_base
+      poolAddress: '0x331a1938f94af7bB41d57691119Aee416495202a',
+      tokenAddress: '0x8D9aad601f384C596B9e2b9124a73b278DB4C51C',
+      chainPoolAddress: '0x9009c929873f0e68dbc253b16aC4c3E4426E6E35',
+    },
+    {
+      // KAITO_base
+      poolAddress: '0x04C8B9d8AF87a6D670B646125B2D99740D8eBa5E',
+      tokenAddress: '0x98d0baa52b2D063E780DE12F615f963Fe8537553',
+      chainPoolAddress: '0x123f831a762A165107EE2e07416f4AA713dA9bFD',
     },
   ],
   'bsc': [
@@ -104,6 +180,31 @@ const HubPools = {
       tokenAddress: ADDRESSES.arbitrum.ARB,
       chainPoolAddress: '0x1b2a8d56967d00700DD5C94E27B1a116a1deF8Df',
     },
+    { // wBTC_arb
+      poolAddress: '0x3445055F633fEF5A64F852aaCD6dA76143aCA109',
+      tokenAddress: ADDRESSES.arbitrum.WBTC,
+      chainPoolAddress: '0x2d1c07209696456b7901949fdf81037016d541A5',
+    },
+    { // tBTC_arb
+      poolAddress: '0xdd9eFBf83572f5387381aD3A04b1318221d545A2',
+      tokenAddress: '0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40',
+      chainPoolAddress: '0xDF2da9288C4D0aDF6c52CCbb5062b8C73fb19111',
+    },
+    { // wstETH_arb
+      poolAddress: '0x9f0c0aDEc9fd4ef946aCe1e2b4F32e49aE45C8F3',
+      tokenAddress: ADDRESSES.arbitrum.WSTETH,
+      chainPoolAddress: '0x74416b0121DAadFeb2A9C2306827CCf80a6EE097',
+    },
+    { // weETH_arb
+      poolAddress: '0x78B4e5cda33C898b546dB7925162879E7bd2A9d1',
+      tokenAddress: ADDRESSES.arbitrum.weETH,
+      chainPoolAddress: '0x624363570A6b6Fee5531CcA341b794B286Af091c',
+    },
+    { // rsETH_arb
+      poolAddress: '0x60f2682Ab38e3C9a51b07fbd69f42Ad2Cfe731db',
+      tokenAddress: '0x4186BFC76E2E237523CBC30FD220FE055156b41F',
+      chainPoolAddress: '0xC0a3536E0b6799014A14664bA4370BBd5D0c7590',
+    },
   ],
   'polygon': [
     // excluding USDC cause bridged
@@ -121,6 +222,27 @@ const HubPools = {
       poolAddress: "0x88Ae56886233C706409c74c3D4EA9A9Ac1D65ab2",
       tokenAddress: ADDRESSES.polygon.WETH_1,
       chainPoolAddress: '0x2e6e4603536078bd7661338F06FB93cf6F9b7A98',
+    },
+    { // wstETH_pol
+      poolAddress: '0xD77b920A9c05B3e768FEaE0bcB5839cd224328fE',
+      tokenAddress: ADDRESSES.polygon.WSTETH,
+      chainPoolAddress: '0xa526f90c0CAab6A0E6085830e75b084cd3c84000',
+    },
+    { // LINK_pol
+      poolAddress: '0x84C420D5e077cF0ed8a20c44d803C380172eD5D5',
+      tokenAddress: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39',
+      chainPoolAddress: '0x63ad90A703e95e39be7CB9e460C2b05870c982B8',
+    },
+    { // MaticX
+      poolAddress: '0x59023eFDB22B9d8b2C7aeD842aC1fd2f6110e5B5',
+      tokenAddress: ADDRESSES.polygon.MATICX,
+      chainPoolAddress: '0xCB66564d0cF3D28B26a1b6D4eCb830D6E216a75a',
+    },
+    {
+      // aUSD_pol
+      poolAddress: '0x34f1BA5808EB5Bf60c9B1C343d86e410466F4860',
+      tokenAddress: '0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a',
+      spokeAddress: '0xaB07AfCf16fecdCC3D83dB7513c7839aEd626322',
     },
   ],
 }

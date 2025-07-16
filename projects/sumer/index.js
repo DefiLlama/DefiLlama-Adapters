@@ -69,5 +69,11 @@ module.exports = {
       '0xb1FdC3f660b0953253141B2509c43014d5d3d733', // suETH
       '0xc7fFEAa5949d50A408bD92DdB0D1EAcef3F8a3Bc', // suBTC
     ]
+  }),
+  btr: compoundExports2({
+    comptroller: '0xAbcdc5827f92525F56004540459045Ec3e432ebF',
+    blacklistedTokens: [
+      '0x1fbDb3b715c82DCD52BCF06fcc18819951aa9264', // suBTC
+    ]
   })
 }

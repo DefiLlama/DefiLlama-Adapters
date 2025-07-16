@@ -71,6 +71,11 @@ const config = {
       factory: "0x15e86be6084c6a5a8c17732d398dfbc2ec574cec",
       fromBlock: 13035219,
     },
+    {
+      name: "Gyro E-CLP V2 Factory - Balancer",
+      factory: "0x5F6848976C2914403B425F18B589A65772F082E3",
+      fromBlock: 27590349,
+    },
   ],
   sei: [
     {
@@ -92,6 +97,12 @@ const config = {
       factory: "0x9b683ca24b0e013512e2566b68704dbe9677413c",
       fromBlock: 97253023,
     },
+    {
+      name: "Gyro E-CLP V2 Factory - Balancer",
+      factory: "0x22625eEDd92c81a219A83e1dc48f88d54786B017",
+      fromBlock: 133969692,
+    },
+    
   ],
   ethereum: [
     {
@@ -121,6 +132,13 @@ const config = {
       fromBlock: 33759936,
     },
   ],
+  sonic: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x5364296D19d453D73f84a94e78681A430e620c5f",
+      fromBlock: 5143648,
+    },
+  ]
 };
 
 Object.keys(config).forEach((chain) => {

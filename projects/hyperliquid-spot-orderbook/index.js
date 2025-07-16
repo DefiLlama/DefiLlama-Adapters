@@ -14,12 +14,14 @@ const assetsInfos = async () => {
     return { ...token, ...ctxToken };
   });
 }
+let ws = null
 
 const nSigFigs = 2
 const getOrderbooks = async () => {
   const assets = await assetsInfos()
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket('wss://api-ui.hyperliquid.xyz/ws');
+    if (!ws)
+      ws = new WebSocket('wss://api-ui.hyperliquid.xyz/ws');
     let coins = []
     let spotCoins = assets.map(asset => asset.coin).filter(Boolean)
     const receivedMessages = new Map(); // Track messages received per coin
@@ -61,7 +63,7 @@ const getOrderbooks = async () => {
           ws.send(JSON.stringify(subscriptionMsg));
         });
       } else if(response.channel !== "subscriptionResponse"){
-        console.log(response)
+        // console.log(response)
       }
     });
 
@@ -88,6 +90,8 @@ const tvl = async (api) => {
     const totalFromCoin =  buySide + sellSide
     totalBalance += totalFromCoin
   })
+
+  if (ws) ws.close()
 
   return api.add(USDC, totalBalance * 1e6, { skipChain: true })
 }

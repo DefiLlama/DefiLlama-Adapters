@@ -375,6 +375,7 @@ async function unwrapSlipstreamNFTs({ balances, nftsAndOwners = [], api, owner, 
       switch (chain) {
         case 'optimism': nftAddress = '0xbB5DFE1380333CEE4c2EeBd7202c80dE2256AdF4'; break;
         case 'base': nftAddress = '0x827922686190790b37229fd06084350e74485b72'; break;
+        case 'swellchain': nftAddress = '0x991d5546C4B442B4c5fdc4c8B8b8d131DEB24702'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 

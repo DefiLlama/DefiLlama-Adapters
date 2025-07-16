@@ -63,10 +63,11 @@ function getProvider(chain = 'solana') {
 }
 
 
-function getAssociatedTokenAddress(mint, owner,) {
+function getAssociatedTokenAddress(mint, owner,  programId = TOKEN_PROGRAM_ID,  associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID) {
+  if (typeof programId === 'string') programId = new PublicKey(programId)
   if (typeof mint === 'string') mint = new PublicKey(mint)
   if (typeof owner === 'string') owner = new PublicKey(owner)
-  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
+  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), programId.toBuffer(), mint.toBuffer()], associatedTokenProgramId);
   return associatedTokenAddress.toString()
 }
 
@@ -147,7 +148,7 @@ async function getMultipleAccounts(accountsArray, {api} = {}) {
   return runInChunks(accountsArray, chunk => connection.getMultipleAccountsInfo(chunk))
 }
 
-function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
+function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { coreTokens} = {}) {
   return async () => {
     if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
 
@@ -162,15 +163,14 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
     for (let i = 0; i < results.length; i = i + 2) {
       const tokenA = results[i]
       const tokenB = results[i + 1]
-      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
+      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount,  })
     }
 
-    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, })
+    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, coreTokens  })
   }
 
   async function _getTokenAccounts() {
     const connection = getConnection()
-
 
     const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
     const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);
