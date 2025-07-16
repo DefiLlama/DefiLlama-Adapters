@@ -34,6 +34,7 @@ const DEFAULTS = {
   KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
+  TAC_RPC: "https://rpc.tac.build",
 }
 
 const ENV_KEYS = [
