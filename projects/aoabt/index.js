@@ -1,7 +1,6 @@
-
 const sdk = require('@defillama/sdk');
 
-const tokenAddress = "0x7f69a2ba074dA1Fd422D994ee05C4B8CA83A32C7"; 
+const tokenAddress = "0x80C080acd48ED66a35Ae8A24BC1198672215A9bD"; 
 
 module.exports = {
   hsk: {
