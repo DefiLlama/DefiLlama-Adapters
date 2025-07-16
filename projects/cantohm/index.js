@@ -12,7 +12,7 @@ module.exports = {
     tvl: sumTokensExport({
       owner: '0xB8Ce90A08bdAdd3e6e6cD3173c0661FA94Aa81c5',
       tokens: [
-        '0x4e71a2e537b7f9d9413d3991d37958c0b5e1e503',
+        ADDRESSES.canto.NOTE,
         ADDRESSES.canto.WCANTO,
         ...lps,
       ],

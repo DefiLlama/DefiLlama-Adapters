@@ -17,3 +17,4 @@ module.exports={
         transforms[addr.toLowerCase()] ,
         undefined, false)
 }
+module.exports.deadFrom = '2022-01-16' 

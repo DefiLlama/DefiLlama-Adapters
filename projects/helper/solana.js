@@ -40,11 +40,13 @@ const endpoint = (isClient) => {
 
 const renecEndpoint = () => getEnv('RENEC_RPC')
 const eclipseEndpoint = () => getEnv('ECLIPSE_RPC')
+const soonEndpoint = () => getEnv('SOON_RPC')
 
 const endpointMap = {
   solana: endpoint,
   renec: renecEndpoint,
   eclipse: eclipseEndpoint,
+  soon: soonEndpoint
 }
 
 function getConnection(chain = 'solana') {
@@ -63,16 +65,19 @@ function getProvider(chain = 'solana') {
 }
 
 
-function getAssociatedTokenAddress(mint, owner,) {
+function getAssociatedTokenAddress(mint, owner,  programId = TOKEN_PROGRAM_ID,  associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID) {
+  if (typeof programId === 'string') programId = new PublicKey(programId)
   if (typeof mint === 'string') mint = new PublicKey(mint)
   if (typeof owner === 'string') owner = new PublicKey(owner)
-  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
-  return associatedTokenAddress;
+  if (typeof associatedTokenProgramId === 'string') associatedTokenProgramId = new PublicKey(associatedTokenProgramId)
+  const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), programId.toBuffer(), mint.toBuffer()], associatedTokenProgramId);
+  return associatedTokenAddress.toString()
 }
 
 
 async function getTokenSupplies(tokens, { api } = {}) {
-  const sleepTime = tokens.length > 2000 ? 2000 : 200
+  // const sleepTime = tokens.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   const connection = getConnection()
   tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
   const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
@@ -94,7 +99,8 @@ async function getTokenSupplies(tokens, { api } = {}) {
 }
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, allowError = false, chain = 'solana' } = {}) {
-  const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  // const sleepTime = tokenAccounts.length > 2000 ? 2000 : 200
+  const sleepTime = 200
   log('total token accounts: ', tokenAccounts.length, 'sleepTime: ', sleepTime)
   tokenAccounts.forEach((val, i) => {
     if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
@@ -145,7 +151,7 @@ async function getMultipleAccounts(accountsArray, {api} = {}) {
   return runInChunks(accountsArray, chunk => connection.getMultipleAccountsInfo(chunk))
 }
 
-function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
+function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { coreTokens} = {}) {
   return async () => {
     if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
 
@@ -160,15 +166,14 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
     for (let i = 0; i < results.length; i = i + 2) {
       const tokenA = results[i]
       const tokenB = results[i + 1]
-      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
+      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount,  })
     }
 
-    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, })
+    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, coreTokens  })
   }
 
   async function _getTokenAccounts() {
     const connection = getConnection()
-
 
     const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
     const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);
@@ -409,6 +414,21 @@ async function runInChunks(inputs, fn, { chunkSize = 99, sleepTime } = {}) {
   return results.flat()
 }
 
+function i80f48ToNumber(i80f48) {
+  if (i80f48.value) i80f48 = i80f48.value
+  // Create a mask with the lower 48 bits set to 1
+  const mask = BigInt((1n << 48n) - 1n)
+
+  // Shift right by 48 bits to get the integer part
+  const integerPart = BigInt(i80f48) >> BigInt(48)
+
+  // Use bitwise AND to get the fractional part
+  const fractionalPart = BigInt(i80f48) & mask
+
+  // Convert to regular numbers and add together
+  return Number(integerPart) + Number(fractionalPart) / Number(1n << 48n)
+}
+
 module.exports = {
   endpoint: endpoint(),
   getMultipleAccounts,
@@ -428,4 +448,6 @@ module.exports = {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
   getAssociatedTokenAddress,
+  i80f48ToNumber,
+  runInChunks,
 };

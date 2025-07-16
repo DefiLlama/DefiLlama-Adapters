@@ -13,6 +13,10 @@ const coinGeckoIds = {
   usaga: "saga-2",
   ubld: "agoric",
   utia: "celestia",
+  aarch: "archway",
+  ppica: "picasso",
+  uflix: "omniflix-network",
+  inj: "injective",
 };
 
 async function tvl() {
@@ -23,7 +27,7 @@ async function tvl() {
   zones.forEach((zone) => {
     const balance = supply.find((coin) => coin.denom === zone.local_denom);
     if (!balance) return
-    const amount = zone.base_denom === "adydx" ? balance.amount / 1e18 : balance.amount / Math.pow(10, 6)
+    const amount = balance.amount / Math.pow(10, zone.decimals)
     const id = coinGeckoIds[zone.base_denom]
     sdk.util.sumSingleBalance(balances, id, amount * zone.redemption_rate);
   });

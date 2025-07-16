@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
 
 const PirexCVX = "0x35A398425d9f1029021A92bc3d2557D42C8588D7";
 const pxGMX = "0x9a592b4539e22eeb8b2a3df679d572c7712ef999";
@@ -15,7 +14,7 @@ async function ethereum(api) {
   const chain = "ethereum";
 
   const { locked: lockedCVX } = await api.call({
-    abi: abi.balances,
+    abi: "function balances(address) view returns (uint112 locked, uint112 boosted, uint32 nextUnlockIndex)",
     target: ADDRESSES.ethereum.vlCVX,
     params: [PirexCVX],
   });

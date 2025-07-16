@@ -29,6 +29,7 @@ const config = {
   arbitrum: { target: '0x4f1627be4C72aEB9565D4c751550C4D262a96B51', fromBlock: 168473054 },
   base: { target: '0x605145d263482684590f630e9e581b21e4938eb8', fromBlock: 7529192 },
   sanko: { target: '0x5bfE2ef160EaaAa4aFa89A8fa09775b6580162c9', fromBlock: 5317 },
+  berachain: { target: '0x910B26A51084578bAab25f49741cF0979Fc41cD6', fromBlock: 974070 },
 }
 
 Object.keys(config).forEach(chain => {

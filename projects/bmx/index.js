@@ -3,6 +3,7 @@ const { gmxExports } = require("../helper/gmx");
 
 const vaultAddresses = {
     base: "0xec8d8D4b215727f3476FF0ab41c406FA99b4272C",
+    sonic: "0x9cC4E8e60a2c9a67Ac7D20f54607f98EfBA38AcF",
     mode: "0xff745bdB76AfCBa9d3ACdCd71664D4250Ef1ae49"
 };
 const stakingAddresses = {
@@ -19,6 +20,9 @@ module.exports = {
     base: {
         tvl: gmxExports({ vault: vaultAddresses.base }),
         staking: staking(stakingAddresses.base, tokenAddresses.base)
+    },
+    sonic: {
+        tvl: gmxExports({ vault: vaultAddresses.sonic })
     },
     mode: {
         tvl: gmxExports({ vault: vaultAddresses.mode }),

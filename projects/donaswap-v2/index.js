@@ -11,3 +11,4 @@ module.exports = {
 };
 
 chains.forEach(chain => module.exports[chain] = { tvl })
+module.exports.cmp.tvl = () => ({})

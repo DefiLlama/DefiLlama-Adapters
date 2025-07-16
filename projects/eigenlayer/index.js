@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const { getLogs2 } = require("../helper/cache/getLogs");
 const { startAlliumQuery, retrieveAlliumResults } = require("../helper/allium");
 const { getCache, setCache } = require("../helper/cache");
 
-const EIGEN = '0xec53bF9167f50cDEB3Ae105f56099aaaB9061F83'
+const EIGEN = ADDRESSES.ethereum.EIGEN
 const eigenStrategy = '0xaCB55C530Acdb2849e6d4f36992Cd8c9D50ED8F7'
 const bEIGEN = '0x83e9115d334d248ce39a6f36144aeab5b3456e75'
 
@@ -30,9 +31,8 @@ async function getEigenPods(timestamp) {
     from beacon.validator.balances
     where
       status in ('active_ongoing', 'pending_queued', 'pending_initialized', 'withdrawal_possible')
-  and slot_timestamp = '${
-    new Date(timestamp * 1e3 - offset * 24 * 3600e3).toISOString().split("T")[0]
-  }T23:59:59'
+  and slot_timestamp = '${new Date(timestamp * 1e3 - offset * 24 * 3600e3).toISOString().split("T")[0]
+    }T23:59:59'
   ) beacon where pods.params['eigenPod'] = beacon.WITHDRAWAL_ADDRESS`);
   await setCache("eigenlayer", "eigenpods-query", newQuery);
   const eigenPods = await retrieveAlliumResults(queryId);
@@ -43,25 +43,26 @@ async function getEigenPods(timestamp) {
   return sum;
 }
 
-const fetchLogs = async (api, eventAbi) => getLogs2({
+const fetchLogs = async (api, eventAbi, extraKey) => getLogs2({
   api,
   target: "0x858646372cc42e1a627fce94aa7a7033e7cf075a",
   eventAbi,
   fromBlock: 17445564,
-  skipCacheRead: true
+  extraKey,
 });
 
 const tvl = async ({ timestamp }, _b, _cb, { api }) => {
   api.add(nullAddress, await getEigenPods(timestamp) * 1e18)
 
   const [addeds, removeds] = await Promise.all([
-    fetchLogs(api, "event StrategyAddedToDepositWhitelist(address strategy)"),
-    fetchLogs(api, "event StrategyRemovedFromDepositWhitelist(address strategy)"),
+    fetchLogs(api, "event StrategyAddedToDepositWhitelist(address strategy)", "StrategyAddedToDepositWhitelist"),
+    fetchLogs(api, "event StrategyRemovedFromDepositWhitelist(address strategy)", "StrategyRemovedFromDepositWhitelist"),
   ]);
-  
+  const removeIdsSet = new Set(removeds.map((removed) => removed.strategy));
+
   const activeStrategies = addeds
     .map(item => item[0])
-    .filter(strategy => !removeds.some(removed => removed[0] === strategy));
+    .filter(strategy => !removeIdsSet.has(strategy));
 
   const rawUnderlyingTokens = await api.multiCall({ abi: 'address:underlyingToken', calls: activeStrategies })
   const underlyingTokens = rawUnderlyingTokens.filter((t) => t.toLowerCase() !== bEIGEN) // filter out bEIGEN

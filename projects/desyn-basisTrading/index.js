@@ -7,6 +7,7 @@ module.exports = {
 
 chains.forEach(chain => {
   module.exports[chain] = {
-    tvl: getTvlFunction('strategy3', true)
+    // rest api type:: StrategyType3
+    tvl: getTvlFunction('StrategyType3', true)
   }
 })
