@@ -19,7 +19,7 @@ const tvl = async (api) => {
   return api.sumTokens({ tokens, owners: CONFIG[api.chain] });
 }
 
-module.exports.methodology = "RollDex functions as a decentralized exchange for crypto derivatives. It offers on-chain perpetuals, providing traders and stakers with exceptional opportunities."
+module.exports.methodology = "RollX functions as a decentralized exchange for crypto derivatives. It offers on-chain perpetuals, providing traders and stakers with exceptional opportunities."
 
 Object.keys(CONFIG).forEach((chain) => {
   module.exports[chain] = {

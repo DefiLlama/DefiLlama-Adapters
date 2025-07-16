@@ -53,7 +53,7 @@ async function getDecimals(chain, token) {
 
 
 const gasTokens = [
-  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+  ADDRESSES.GAS_TOKEN_2,
   ADDRESSES.null,
 ]
 

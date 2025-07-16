@@ -19,9 +19,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
-  'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon'
+  'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion'
 ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
@@ -42,17 +42,28 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  namada: {
-    'tnam1p5z8ruwyu7ha8urhq2l0dhpk2f5dv3ts7uyf2n75': { coingeckoId: 'osmosis', decimals: 6, },
-    'tnam1pkg30gnt4q0zn7j00r6hms4ajrxn6f5ysyyl7w9m': { coingeckoId: 'cosmos', decimals: 6, },
-    'tnam1pklj3kwp0cpsdvv56584rsajty974527qsp8n0nm': { coingeckoId: 'celestia', decimals: 6, },
-    'tnam1pk288t54tg99umhamwx998nh0q2dhc7slch45sqy': { coingeckoId: 'penumbra', decimals: 6, },
-    'tnam1pkl64du8p2d240my5umxm24qhrjsvh42ruc98f97': { coingeckoId: 'usd-coin', decimals: 6, },
-    'tnam1phv4vcuw2ftsjahhvg65w4ux8as09tlysuhvzqje': { coingeckoId: 'nym', decimals: 6, },
-    'tnam1pk6pgu4cpqeu4hqjkt6s724eufu64svpqgu52m3g': { coingeckoId: 'neutron-3', decimals: 6, },
-    'tnam1p4px8sw3am4qvetj7eu77gftm4fz4hcw2ulpldc7': { coingeckoId: 'stride-staked-osmo', decimals: 6, },
-    'tnam1p5z5538v3kdk3wdx7r2hpqm4uq9926dz3ughcp7n': { coingeckoId: 'stride-staked-atom', decimals: 6, },
-    'tnam1ph6xhf0defk65hm7l5ursscwqdj8ehrcdv300u4g': { coingeckoId: 'stride-staked-tia', decimals: 6, },
+  soon: {
+    [ADDRESSES.soon.USDT]: { coingeckoId: "tether", decimals: 6 },
+    [ADDRESSES.soon.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.soon.DAI]: { coingeckoId: "dai", decimals: 9 },
+    [ADDRESSES.soon.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    [ADDRESSES.soon.weETH]: { coingeckoId: "wrapped-eeth", decimals: 9 },
+    [ADDRESSES.solana.SOL]: { coingeckoId: "ethereum", decimals: 9 },
+    [ADDRESSES.soon.ezETH]: { coingeckoId: "renzo-restaked-eth", decimals: 9 },
+    [ADDRESSES.soon.STONE]: { coingeckoId: "stakestone-ether", decimals: 9 },
+    [ADDRESSES.soon.sUSDe]: { coingeckoId: "ethena-staked-usde", decimals: 9 },
+    [ADDRESSES.soon.EIGEN]: { coingeckoId: "eigenlayer", decimals: 9 },
+    [ADDRESSES.soon.mUSD]: { coingeckoId: "manta-musd", decimals: 9 },
+    [ADDRESSES.soon.mETH]: { coingeckoId: "manta-meth", decimals: 9 },
+    [ADDRESSES.soon.rsETH]: { coingeckoId: "kelp-dao-restaked-eth", decimals: 9 },
+    [ADDRESSES.soon.pufETH]: { coingeckoId: "pufeth", decimals: 9 },
+    [ADDRESSES.soon.SOON]: { coingeckoId: "soon-2", decimals: 9 },
+    [ADDRESSES.soon.WETH]: { coingeckoId: "ethereum", decimals: 9 },
+    [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
+    [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
+  },
+  ripple: {
+    'TBL.rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn': { coingeckoId: "openeden-tbill", decimals: 0 },
   }
 }
 
