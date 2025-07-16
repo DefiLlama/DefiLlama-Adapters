@@ -468,16 +468,18 @@ async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
   // Get all markets from the Morpho Blue position oracles
   const markets = await api.multiCall({ abi: abi.markets, calls: marketCalls });
 
-  const marketInfos = await api.multiCall({
-    abi: abi.market,
-    calls: markets.map(market => ({target: MORPHO_BLUE, params: [market[0]]}))
-  });
-
-  // Get market parameters for each market ID
-  const marketParams = await api.multiCall({
-    abi: abi.idToMarketParams,
-    calls: markets.map(market => ({ target: MORPHO_BLUE, params: [market[0]] }))
-  });
+  const [marketInfos, marketParams] = await Promise.all(
+    [
+      api.multiCall({
+        abi: abi.market,
+        calls: markets.map(market => ({target: MORPHO_BLUE, params: [market[0]]}))
+      }),
+      api.multiCall({
+        abi: abi.idToMarketParams,
+        calls: markets.map(market => ({ target: MORPHO_BLUE, params: [market[0]] }))
+      })
+    ]
+  );
 
   // Get positions for each vault across all markets
   const positionCalls = [];
