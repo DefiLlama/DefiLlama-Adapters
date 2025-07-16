@@ -63,7 +63,7 @@ async function staking() {
 		url: "/staking/v1beta1/pool",
 	});
 	return {
-		xion: stakingData.bonded_tokens / 10 ** assetMap.uxion.decimals,
+		xion: stakingData.pool.bonded_tokens / 10 ** assetMap['uxion'].decimals,
 	};
 }
 
