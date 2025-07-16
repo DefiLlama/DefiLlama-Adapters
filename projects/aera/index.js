@@ -273,7 +273,8 @@ Object.keys(config).forEach(chain => {
         processGearboxTvl(gearboxFarmingPools, api),
         processArrakisTvl(arrakisVaults, api, ARRAKIS_HELPER),
         processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI),
-        processSymbioticTvl(symbioticVaults, api)
+        processSymbioticTvl(symbioticVaults, api),
+        processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE)
       ])
 
       Object.keys(erc4626UnderylingMap).forEach((erc4626Asset, i) => erc4626UnderylingMap[erc4626Asset] = underlyingTokens[i])
@@ -292,7 +293,7 @@ Object.keys(config).forEach(chain => {
 
 async function processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI) {
   if (xaiPositionVaults.length === 0) return
-  
+
   const pools = await api.multiCall({ abi: abi.getPoolIndicesOfUser, calls: xaiPositionVaults.map(x => ({target: ESXAI_POOL_FACTORY, params: [x]}))})
   const vaultPools = xaiPositionVaults.flatMap((vault, i) => pools[i].map(pool => ([vault, pool])))
 
@@ -320,7 +321,7 @@ async function processArrakisTvl(arrakisVaults, api, arrakisHelper) {
     api.multiCall({ abi: abi.token1, calls: arrakisVaults}),
     api.multiCall({ abi: abi.totalUnderlying, calls: arrakisVaults.map(x => ({target: arrakisHelper, params: [x]}))})
   ])
-  
+
   totalUnderlyings.forEach((v, i) => {
     api.addToken(tokens0[i], v.totalAmount0)
     api.addToken(tokens1[i], v.totalAmount1)
@@ -423,7 +424,7 @@ async function processAaveTvl(aaveVaults, api, AAVE_POOL, AAVE_POOL_DATA_PROVIDE
     api.addToken(aaveReserveDetails[reserveIdx].stableDebtTokenAddress, aavePosition.currentStableDebt);
     api.addToken(aaveReserveDetails[reserveIdx].variableDebtTokenAddress, aavePosition.currentVariableDebt);
   }
-  
+
 }
 
 async function processSymbioticTvl(symbioticVaults, api) {
@@ -434,7 +435,7 @@ async function processSymbioticTvl(symbioticVaults, api) {
   const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: symbioticVaults.map(x => ({target: x[1], params: [x[0]]}))})
 
   collaterals.forEach((collateral, i) => {
-    api.addToken(collateral, balances[i], symbioticVaults[i][0])
+    api.addToken(collateral, balances[i])
   })
 }
 
@@ -443,7 +444,7 @@ async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
 
   // Get the number of markets for each oracle
   const marketLengths = await api.multiCall({
-    abi: 'function getMarketsLength() view returns (uint256)',
+    abi: abi.getMarketsLength,
     calls: morphoBlueVaults.map(x => ({target: x[1], params: []}))
   });
 
@@ -465,19 +466,16 @@ async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
   if (marketCalls.length === 0) return;
 
   // Get all markets from the Morpho Blue position oracles
-  const markets = await api.multiCall({
-    abi: 'function markets(uint256) view returns ((bytes32, address, uint80, uint8, bool))',
-    calls: marketCalls
-  });
+  const markets = await api.multiCall({ abi: abi.markets, calls: marketCalls });
 
   const marketInfos = await api.multiCall({
-    abi: 'function market(bytes32) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares)',
+    abi: abi.market,
     calls: markets.map(market => ({target: MORPHO_BLUE, params: [market[0]]}))
   });
 
   // Get market parameters for each market ID
   const marketParams = await api.multiCall({
-    abi: 'function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)',
+    abi: abi.idToMarketParams,
     calls: markets.map(market => ({ target: MORPHO_BLUE, params: [market[0]] }))
   });
 
@@ -492,32 +490,33 @@ async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
   });
 
   const positions = await api.multiCall({
-    abi: 'function position(bytes32, address) view returns (uint256 supplyShares, uint256 borrowShares, uint256 collateral)',
+    abi: abi.position,
     calls: positionCalls
   });
 
   // Process positions and add to TVL
   await Promise.all(positionCalls.map(async (call, index) => {
-    const [marketId, vault] = call.params;
+    const [_, vault] = call.params;
     const position = positions[index];
     const marketParam = marketParams[index];
     const marketInfo = marketInfos[index];
-
-    // const loanToken = marketParam.loanToken;
-    // const loanDecimals = await api.call({ abi: 'uint8:decimals', target: loanToken });
-
-    console.log(position);
 
     if (position.collateral > 0) {
       api.addToken(marketParam.collateralToken, position.collateral, vault);
     }
 
     if (position.supplyShares > 0) {
-      const supplyAssets = Math.round(position.supplyShares * marketInfo.totalSupplyAssets / marketInfo.totalSupplyShares);
+      const supplyAssets = (
+        BigInt(position.supplyShares) *
+        BigInt(marketInfo.totalSupplyAssets) / BigInt(marketInfo.totalSupplyShares)
+      );
       api.addToken(marketParam.loanToken, supplyAssets, vault);
     }
     if (position.borrowShares > 0) {
-      const borrowAssets = Math.round(position.borrowShares * marketInfo.totalBorrowAssets / marketInfo.totalBorrowShares);
+      const borrowAssets = (
+        BigInt(position.borrowShares) *
+        BigInt(marketInfo.totalBorrowAssets) / BigInt(marketInfo.totalBorrowShares)
+      );
       api.addToken(marketParam.loanToken, -borrowAssets, vault);
     }
   }));
@@ -553,5 +552,10 @@ const abi = {
   "esXaiStakeBucket": "function esXaiStakeBucket() returns (address)",
   "getStakedAmounts": "function getStakedAmounts(address) returns (uint256)",
   "withdrawableDividendOf": "function withdrawableDividendOf(address) returns (uint256)",
-  "collateral": "function collateral() returns (address)"
+  "collateral": "function collateral() returns (address)",
+  "getMarketsLength": "function getMarketsLength() view returns (uint256)",
+  "markets": "function markets(uint256) view returns ((bytes32, address, uint80, uint8, bool))",
+  "idToMarketParams": "function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)",
+  "position": "function position(bytes32, address) view returns (uint256 supplyShares, uint256 borrowShares, uint256 collateral)",
+  "market": "function market(bytes32) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares)"
 }
