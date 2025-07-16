@@ -3,7 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const config = {
   ethereum: { poolsAndAssets: [
-    { pool: '0x6818809eefce719e480a7526d76bd3e561526b46', assets: [ADDRESSES.GAS_TOKEN_2]}
+    { pool: '0x6818809eefce719e480a7526d76bd3e561526b46', assets: [ADDRESSES.GAS_TOKEN_2, '0xdC035D45d973E3EC169d2276DDab16f1e407384F']}
   ]},
 }
 
