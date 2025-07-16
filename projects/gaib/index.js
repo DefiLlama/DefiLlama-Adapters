@@ -49,12 +49,6 @@ const mainnetContracts = {
             poolToken: '0xDc45e7027A0489FE6C2E4A0735097d8E6952A340' // AIDollarAlphaUSDT Pool
         }
     ],
-    // story: [
-    //     {
-    //         token: '0xF1815bd50389c46847f0Bda824eC8da914045D14', // USDC
-    //         poolToken: '0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42' // AIDollarAlphaUSDC Pool
-    //     }
-    // ]
 };
 
 const totalAssetsABI = {
@@ -119,7 +113,4 @@ module.exports = {
     sei: {
         tvl,
     },
-    // story: {
-    //     tvl,
-    // },
 };
