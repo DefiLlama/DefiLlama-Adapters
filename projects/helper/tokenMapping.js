@@ -62,6 +62,18 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
   },
+  tac: {
+    [ADDRESSES.null]: { coingeckoId: "tac", decimals: 18 },
+    '0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9': { coingeckoId: "tac", decimals: 18 },
+    '0xb76d91340f5ce3577f0a056d29f6e3eb4e88b140': { coingeckoId: "the-open-network", decimals: 9 },
+    '0xd44f691aed69fe43180b95b6f82f89c18fb93094': { coingeckoId: "tonstakers", decimals: 9 },
+    '0x61d66bc21fed820938021b06e9b2291f3fb91945': { coingeckoId: "ethereum", decimals: 18 },
+    '0xaf368c91793cb22739386dfcbbb2f1a9e4bcbebf': { coingeckoId: "wrapped-steth", decimals: 18 },
+    '0x51a30e647d33a044967fa3dbb04d6ed6f45455f6': { coingeckoId: "noon-usn", decimals: 18 },
+    '0xaf988c3f7cb2aceabb15f96b19388a259b6c438f': { coingeckoId: "tether", decimals: 6 },
+    '0x7048c9e4abd0cf0219e95a17a8c6908dfc4f0ee4': { coingeckoId: "coinbase-wrapped-btc", decimals: 8 },
+    '0xecac9c5f704e954931349da37f60e39f515c11c1': { coingeckoId: "lombard-staked-btc", decimals: 8 },
+  },
   ripple: {
     'TBL.rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn': { coingeckoId: "openeden-tbill", decimals: 0 },
   }
