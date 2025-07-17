@@ -61,6 +61,9 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.WETH]: { coingeckoId: "ethereum", decimals: 9 },
     [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
+  },
+  ripple: {
+    'TBL.rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn': { coingeckoId: "openeden-tbill", decimals: 0 },
   }
 }
 
