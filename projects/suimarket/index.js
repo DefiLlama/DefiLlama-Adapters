@@ -13,6 +13,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  // deadFrom: '2025-04-01',
   timetravel: false,
   sui: {
     tvl

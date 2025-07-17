@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const targets = [
   '0x6DfbE3A1a0e835C125EEBb7712Fffc36c4D93b25', // eigenPos1
   '0x021180A06Aa65A7B5fF891b5C146FbDaFC06e2DA', // eigenPos2
@@ -5,7 +6,7 @@ const targets = [
   '0x919531146f9a25dfc161d5ab23b117feae2c1d36', // symbioticPos
 ]
 
-const mETH = '0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa'
+const mETH = ADDRESSES.ethereum.METH
 const boringVault = '0x33272D40b247c4cd9C646582C9bbAD44e85D4fE4'
 const delayedWithdraw = '0x12be34be067ebd201f6eaf78a861d90b2a66b113'
 

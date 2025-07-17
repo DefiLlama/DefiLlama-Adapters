@@ -12,14 +12,14 @@ const config = {
       ADDRESSES.ethereum.WEETH,
       "0xE95A203B1a91a908F9B9CE46459d101078c2c3cb",
       "0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38",
-      "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+      ADDRESSES.linea.rzETH,
     ]
   },
   arbitrum: {
     tokens: [
       ADDRESSES.arbitrum.WSTETH,
       "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8",
-      "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
+      ADDRESSES.arbitrum.weETH,
       ADDRESSES.berachain.rsETH,
       ADDRESSES.blast.ezETH
     ]
