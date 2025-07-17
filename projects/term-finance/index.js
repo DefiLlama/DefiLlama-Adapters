@@ -4,16 +4,20 @@ const { ethereum } = require('../helper/whitelistedNfts');
 
 const graphs = {
   ethereum:
-    "https://graphql-gateway-term.mainnet.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/mainnet/subgraph/term",
   avax:
-    "https://graphql-gateway-term.avalanche.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/avalanche/subgraph/term",
+  base:
+    "https://api.mainnet.termfinance.io/base/subgraph/term",
 };
 
 const vaultsGraphs = {
   ethereum:
-    "https://graphql-gateway-vaults.mainnet.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/mainnet/subgraph/vaults",
   avax:
-    "https://graphql-gateway-vaults.avalanche.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/avalanche/subgraph/vaults",
+  base:
+    "https://api.mainnet.termfinance.io/base/subgraph/vaults",
 }
 
 const query = `
@@ -104,11 +108,13 @@ query termVaultStrategiesQuery($lastId: ID) {
 const graphStartBlock = {
   ethereum: 5240462,
   avax: 43162227,
+  base: 30797402,
 }
 
 const vaultsGraphStartBlock = {
   ethereum: 21433264,
   avax: 54438973,
+  base: 30797402,
 }
 
 module.exports = {

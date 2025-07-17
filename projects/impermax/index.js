@@ -69,7 +69,8 @@ const config = {
   },
   optimism: {
     factories: [
-      '0xa058Ba91958cD30D44c7B0Cf58A369876Fb70B05'
+      '0xa058Ba91958cD30D44c7B0Cf58A369876Fb70B05',
+      '0x48168439ca4ef9e95975e3e2488bfcbd8fb1a80c'
     ]
   },
   real: {
@@ -87,7 +88,8 @@ const config = {
   },
   sonic: { 
     factories: [
-      '0x26fca5916c20D252feEF7A58E39886d3d3112b91'
+      '0x26fca5916c20D252feEF7A58E39886d3d3112b91',
+      '0x6e1E988D828D0102BF93434774cd1a2246062564'
     ]
   },
   linea: { 
@@ -176,13 +178,16 @@ const blacklistedPools = {
     "0xE8f4895DF06a0c69A9BA87509EfdBBFBAFe86c2d", // weth/tkn - stakedlp
     "0x7c80Be56a6f23A3E598822648baaFD7524fe1239", // chi/wUKRE stakedlp
     "0xDD14d0c651C63e1EeA5bd8b250cf99757425D68F", // chi/usdc stakedlp
+    "0xc90073e1cabcf5069e00c5a6cb10023c9e1d5c4f", // wbtc/eth stakedlp
   ],
   base: [],
   mantle: [],
   optimism: [],
   real: [],
   blast: [],
-  sonic: [],
+  sonic: [
+    "0xd9de9f15994182518a688933d09787a9a9fb5bc9" // s/shadow stakedlp
+  ],
   linea: []
 }
 

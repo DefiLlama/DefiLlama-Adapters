@@ -4,26 +4,38 @@ const BOOL_KEYS = [
   'LLAMA_DEBUG_MODE',
 ]
 
+const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
+
 const DEFAULTS = {
   EVMOS_MULTICALL_CHUNK_SIZE: "3", // evmos reduced gas limit, this is a workaround to make multicall work
   STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
+  SOON_RPC: "https://rpc.mainnet.soo.network/rpc",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
-  SUI_RPC: 'https://fullnode.mainnet.sui.io/',
+  SUI_RPC: 'https://sui-rpc.publicnode.com',
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
   LULO_API_KEY: '',
-  HYPERLIQUID_RPC: 'https://hyperliquid.cloud.blockscout.com/api/eth-rpc',
-  ETLK_RPC: 'https://explorer.etherlink.com/api/eth-rpc',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
-  HEDERA_RPC_MULTICALL: '0x18fa376d92511dd04090566ab6144847c03557d8', // Hedera Multicall3 contract
+  SUPRA_RPC: 'https://rpc-mainnet.supra.com',
+  FLAME_RPC: "https://rpc.flame.astria.org",
+  BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
+  BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
+  PLUME_RPC: "https://rpc.plume.org",
+  NIBIRU_RPC: "https://evm-rpc.archive.nibiru.fi/",
+  IOTA_RPC: "https://api.mainnet.iota.cafe",
+  KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
+  BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
+  BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
+  TAC_RPC: "https://rpc.tac.build",
+  TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
 }
 
 const ENV_KEYS = [
