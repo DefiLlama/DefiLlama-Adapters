@@ -59,13 +59,12 @@ const INDEX_ADDRESSES = [
 ];
 
 async function tvl(api) {
-  // Check token balances in each index contract wallet
   return api.sumTokens({ owners: INDEX_ADDRESSES });
 }
 
 module.exports = {
-  start: '2025-05-17',
   methodology: 'Counts all tokens held by INDX index contracts',
+  start: '2025-05-17',
   base: {
     tvl,
   }
