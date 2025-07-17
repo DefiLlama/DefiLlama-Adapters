@@ -21,3 +21,11 @@ async function tvl(api) {
   
   return api.sumTokens({ owners: allIndices });
 }
+
+module.exports = {
+  start: '2025-05-17',
+  methodology: 'Counts all tokens held by indices deployed through the INDX v2 and v3 factories',
+  base: {
+    tvl,
+  }
+};
