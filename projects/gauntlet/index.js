@@ -196,8 +196,8 @@ const VAULT_USER_ACCOUNTS = [
   'EC2w198qubUWA2Xf73hz2d7vFKNaQc1XN7SYYqXbfLKQ', // dSOL Plus
   '4Kayz1HkWJiEcYQgyQkXDC8Y6CeCoV5MYFXg3KwaL9ii', // jitoSOL Plus
   '68oTjvenFJfrr2iYPtBTRiFyXA8N2pXdHDP82YvuhLaC', // DRIFT Plus
+  'GYxrPXFhCQamBxUc4wMYHnB235Aei7GZsjFCfZgfYJ6b', // Carrot hJLP 
   'FbbcWcg5FfiPdBhkxuBAeoFCyVN2zzSvNPyM7bRiSKAL', // JTO Plus
-  'GYxrPXFhCQamBxUc4wMYHnB235Aei7GZsjFCfZgfYJ6b', // Carrot hJLP
 ]
 
 async function tvl(api) {
