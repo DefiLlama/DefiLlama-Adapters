@@ -1,5 +1,3 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-
 // List of all INDX index contract addresses
 const INDEX_ADDRESSES = [
   "0xe40106154d24a9c1400715366313f1620ecdf114",
@@ -60,12 +58,27 @@ const INDEX_ADDRESSES = [
   "0xbec4f4b9913f1e4e2fb37597cc61f393530502fd"
 ];
 
+async function tvl(api) {
+  // Use SDK's native token discovery - force it to look harder
+  const balances = await api.sumTokens({ 
+    owners: INDEX_ADDRESSES,
+    // Force token discovery  
+    blacklistedTokens: [],
+    // Enable LP resolution if any tokens are LPs
+    resolveLP: true,
+    // Allow some failures and continue
+    permitFailure: true,
+    // Use v2 which is more robust
+    useDefaultCoreAssets: true
+  });
+  
+  return balances;
+}
+
 module.exports = {
-  methodology: 'Counts all tokens held by INDX index contracts',
+  methodology: 'Counts all tokens held by INDX index contracts using SDK auto-discovery',
   start: '2025-05-17',
   base: {
-    tvl: sumTokensExport({
-      owners: INDEX_ADDRESSES,
-    }),
+    tvl,
   }
 };
