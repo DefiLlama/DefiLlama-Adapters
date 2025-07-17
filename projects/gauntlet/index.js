@@ -229,13 +229,24 @@ async function tvl(api) {
 }
 
 async function megavaultTvl(api) {
-  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
-  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
-  const pnlArr = data.megavaultPnl;
-  if (!pnlArr || !pnlArr.length) return;
-  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
-  // Report as Noble USDC (uusdc, 6 decimals)
-  api.add('uusdc', (currentTvl * 1e6).toFixed(0));
+  try {
+    const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
+    
+    const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
+    
+    const pnlArr = data.megavaultPnl;
+    if (!pnlArr || !pnlArr.length) {
+      return;
+    }
+    
+    const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
+    
+    // Report as USD value (this should work with DeFiLlama's backend)
+    api.add('tether', (currentTvl * 1e6).toFixed(0));
+    
+  } catch (error) {
+    console.error("Error fetching MegaVault TVL:", error.message);
+  }
 }
 
 module.exports = {
