@@ -3,6 +3,8 @@ const sdk = require('@defillama/sdk')
 
 const http = require('../http')
 const { getEnv } = require('../env')
+const { sliceIntoChunks } = require('../utils')
+
 
 const endpoint = () => getEnv('IOTA_RPC')
 
