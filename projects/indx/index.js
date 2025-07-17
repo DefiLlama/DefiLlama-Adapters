@@ -1,3 +1,5 @@
+const { sumTokensExport } = require("../helper/unwrapLPs");
+
 // List of all INDX index contract addresses
 const INDEX_ADDRESSES = [
   "0xe40106154d24a9c1400715366313f1620ecdf114",
@@ -58,14 +60,12 @@ const INDEX_ADDRESSES = [
   "0xbec4f4b9913f1e4e2fb37597cc61f393530502fd"
 ];
 
-async function tvl(api) {
-  return api.sumTokens({ owners: INDEX_ADDRESSES });
-}
-
 module.exports = {
   methodology: 'Counts all tokens held by INDX index contracts',
   start: '2025-05-17',
   base: {
-    tvl,
+    tvl: sumTokensExport({
+      owners: INDEX_ADDRESSES,
+    }),
   }
 };
