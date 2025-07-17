@@ -201,7 +201,7 @@ const VAULT_USER_ACCOUNTS = [
 
 async function tvl(api) {
   const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
-  const idl = require("./drift_idl.json")
+  const idl = require("../knightrade/drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
   const provider = getProvider()
   const program = new Program(idl, programId, provider)
