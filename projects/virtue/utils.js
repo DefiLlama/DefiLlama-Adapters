@@ -48,6 +48,12 @@ function getIotaObjectData(resp) {
   return resp.data;
 }
 
+function isIotaObjectDataWithContent(
+  data,
+) {
+  return data.content !== undefined;
+}
+
 function getMoveObject(data) {
   const obj = "data" in data ? getIotaObjectData(data) : data;
   if (!obj || !isIotaObjectDataWithContent(obj) || obj.content.dataType !== "moveObject") {
