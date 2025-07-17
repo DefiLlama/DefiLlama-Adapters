@@ -17,7 +17,7 @@ const V2_ADDRESSES = [
   "0x14c11a6f813d075148a9964e71f74b602d667d51",
   "0x7be276bed3a1a79c11dd5724a92ef38cdd5ddbfa",
   "0xd8aa445b33298096f9d3fec4be9e04f03d2bc006",
-  "0xefeb5a4a3986e44095c44eda5daf1d7aa1539e10",
+  "0xefeb5a4a3986e44095c44eda5daf1d3aa1539e10",
   "0x1feb5976881a3cb7f55c7c87b52bda88c7a00a95",
   "0xe5a945b49dbab576e10942f1d3ffbfdf2622b6fc",
   "0x7f8be72844d84d12402e9c7037c1e8a9624b4be4",
@@ -66,88 +66,77 @@ const V3_ADDRESSES = [
 async function tvl(api) {
   const tokenBalances = {};
   
-  // Process v2 contracts
-  for (const contractAddress of V2_ADDRESSES) {
-    try {
-      // Get number of tokens (v2 approach)
-      const numTokens = await api.call({
+  // Process v2 contracts - get all numTokens at once
+  const numTokensCalls = V2_ADDRESSES.map(target => ({ target }));
+  const numTokensResults = await api.multiCall({
+    calls: numTokensCalls,
+    abi: "uint256:NUM_TOKENS"
+  });
+  
+  // Build calls for all token addresses and staked amounts
+  const tokenCalls = [];
+  const stakedCalls = [];
+  
+  for (let contractIndex = 0; contractIndex < V2_ADDRESSES.length; contractIndex++) {
+    const contractAddress = V2_ADDRESSES[contractIndex];
+    const numTokens = Number(numTokensResults[contractIndex]);
+    
+    for (let tokenIndex = 0; tokenIndex < numTokens; tokenIndex++) {
+      tokenCalls.push({
         target: contractAddress,
-        abi: "uint256:NUM_TOKENS"
+        params: [tokenIndex]
       });
-      
-      // Get each token address and its staked amount
-      for (let i = 0; i < Number(numTokens); i++) {
-        try {
-          const tokenAddress = await api.call({
-            target: contractAddress,
-            abi: "function tokens(uint256) view returns (address)",
-            params: [i]
-          });
-          
-          const stakedAmount = await api.call({
-            target: contractAddress, 
-            abi: "function totalStaked(uint256) view returns (uint256)",
-            params: [i]
-          });
-          
-          if (stakedAmount && BigInt(stakedAmount) > 0n) {
-            if (!tokenBalances[tokenAddress]) {
-              tokenBalances[tokenAddress] = 0n;
-            }
-            tokenBalances[tokenAddress] += BigInt(stakedAmount);
-          }
-        } catch (tokenError) {
-          // Skip this token if we can't get its info
-          continue;
-        }
-      }
-      
-    } catch (contractError) {
-      // Skip this contract if we can't read it
-      continue;
+      stakedCalls.push({
+        target: contractAddress,
+        params: [tokenIndex]
+      });
     }
   }
   
-  // Process v3 contracts  
-  for (const contractAddress of V3_ADDRESSES) {
-    try {
-      // Use getIndexInfo() for v3 contracts
-      const indexInfo = await api.call({
-        target: contractAddress,
-        abi: {
-          "inputs": [],
-          "name": "getIndexInfo", 
-          "outputs": [
-            {"type": "address", "name": "indexOwner"},
-            {"type": "address", "name": "curator"},
-            {"type": "uint256", "name": "tokenCount"},
-            {"type": "uint256", "name": "activeCount"},
-            {"type": "address[]", "name": "allTokens"},
-            {"type": "bool[]", "name": "activeStatus"},
-            {"type": "uint256[]", "name": "totalStakedAmounts"},
-            {"type": "address[]", "name": "activeTokensOnly"}
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        }
-      });
-      
-      const [, , , , allTokens, activeStatus, totalStakedAmounts] = indexInfo;
-      
-      // Add balances for active tokens only
-      for (let i = 0; i < allTokens.length; i++) {
-        if (activeStatus[i] && totalStakedAmounts[i] > 0) {
-          const token = allTokens[i];
-          if (!tokenBalances[token]) {
-            tokenBalances[token] = 0n;
-          }
-          tokenBalances[token] += BigInt(totalStakedAmounts[i]);
-        }
+  // Get all token addresses and staked amounts at once
+  const tokenAddresses = await api.multiCall({
+    calls: tokenCalls,
+    abi: "function tokens(uint256) view returns (address)"
+  });
+  
+  const stakedAmounts = await api.multiCall({
+    calls: stakedCalls,
+    abi: "function totalStaked(uint256) view returns (uint256)"
+  });
+  
+  // Process v2 results
+  for (let i = 0; i < tokenAddresses.length; i++) {
+    const tokenAddress = tokenAddresses[i];
+    const stakedAmount = stakedAmounts[i];
+    
+    if (stakedAmount && BigInt(stakedAmount) > 0n) {
+      if (!tokenBalances[tokenAddress]) {
+        tokenBalances[tokenAddress] = 0n;
       }
-      
-    } catch (contractError) {
-      // Skip this contract if we can't read it
-      continue;
+      tokenBalances[tokenAddress] += BigInt(stakedAmount);
+    }
+  }
+  
+  // Process v3 contracts - get all index info at once
+  const v3Calls = V3_ADDRESSES.map(target => ({ target }));
+  const v3Results = await api.multiCall({
+    calls: v3Calls,
+    abi: "function getIndexInfo() view returns (address indexOwner, address curator, uint256 tokenCount, uint256 activeCount, address[] allTokens, bool[] activeStatus, uint256[] totalStakedAmounts, address[] activeTokensOnly)"
+  });
+  
+  // Process v3 results
+  for (const indexInfo of v3Results) {
+    const [, , , , allTokens, activeStatus, totalStakedAmounts] = indexInfo;
+    
+    // Add balances for active tokens only
+    for (let i = 0; i < allTokens.length; i++) {
+      if (activeStatus[i] && totalStakedAmounts[i] > 0) {
+        const token = allTokens[i];
+        if (!tokenBalances[token]) {
+          tokenBalances[token] = 0n;
+        }
+        tokenBalances[token] += BigInt(totalStakedAmounts[i]);
+      }
     }
   }
   
