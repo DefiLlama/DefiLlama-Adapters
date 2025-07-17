@@ -2,28 +2,26 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
-async function getInFlightLidoRedemptionNav(api) {
+async function getInFlightLidoRedemptionNav(api, strategies) {
   const unStEth = '0x889edc2edab5f40e902b864ad4d7ade8e412f9b1';
-  const strategy = '0x60d2D94aCB969CA54e781007eE89F04c1A2e5943';
-  const navHelper = '0xf22Ca896427677507a9EF99D30B261659775ff56';
+  const navUnStEth = '0x4c82F6829797A4174a082CE9FEE0B9BDDc1E5E39';
 
-  const requestIds = await api.call({
-    abi: "function getWithdrawalRequests(address _owner) external view returns (uint256[] memory requestsIds)",
-    target: unStEth,
-    chain: 'ethereum',
-    params: [strategy]
-  });
-
-
-  // NAV of lido in-flight redemptions in wstETH.
-  const nav = await api.call({
-    abi: 'function getLidoRedemptionsNav(uint[], address) external view returns (uint)',
-    target: navHelper,
-    chain: 'ethereum',
-    params: [requestIds, strategy]
+  // uint[][]
+  const requestIdsArr = await api.multiCall({
+    abi: "function getWithdrawalRequests(address) external view returns (uint256[])", calls: strategies.map(strategyAddress => ({ target: unStEth, params: strategyAddress }))
   })
 
-  api.add(ADDRESSES.ethereum.WSTETH, nav)
+  // skip further calls if no unStEth requests
+  if(requestIdsArr.flat().length == 0) return;
+
+  // uint[]
+  const navArr = await api.multiCall({
+    abi: "function nav(address, uint[]) external view returns (uint)", calls: requestIdsArr.map((requestIds, i) => ({ target: navUnStEth, params: [strategies[i], requestIds] }))
+  })
+
+  for (let i=0;i<navArr.length;i++) {
+    api.add(ADDRESSES.ethereum.WSTETH, navArr[i])
+  }
 }
 
 // count the value in the grow autovault and exclude the value of tETH in the vault to avoid double counting
@@ -82,15 +80,46 @@ async function tvl(api) {
   const tokens = await api.call({ abi: 'address[]:getAllowableAssets', target: vault })
   await api.sumTokens({ owner: vault, tokens })
 
-  await getInFlightLidoRedemptionNav(api)
-
   const storage = await api.call({ abi: 'address:strategyStorage', target: vault })
   const strategies = await api.fetchList({ lengthAbi: 'getStrategyCount', itemAbi: 'getStrategyAddress', target: storage })
-  return sumTokens2({
-    api, owners: strategies, fetchCoValentTokens: true, resolveUniV3: true, tokenConfig: {
+  await getInFlightLidoRedemptionNav(api, strategies)
+
+  await sumTokens2({
+    api, owners: [strategies[0]], fetchCoValentTokens: true, resolveUniV3: true, tokenConfig: {
       onlyWhitelisted: false,
     }
   })
+
+  // covalent doesn't returns these tokens in sumTokens2 above when strategies[1] and [2] are owners,
+  // they may include other unlisted debt and collateral tokens, so we will be using our own nav module
+
+  // strategies[1]
+  // tokensAndOwners:[
+  //     [ADDRESSES.ethereum.WSTETH, '0x5ae0e44de96885702bd99a6914751c952d284938'], // wstETH
+  //     ['0x12B54025C112Aa61fAce2CDB7118740875A566E9', '0x5ae0e44de96885702bd99a6914751c952d284938'], // spark collateral wsteth
+  //     ['0x2e7576042566f8D6990e07A1B61Ad1efd86Ae70d', '0x5ae0e44de96885702bd99a6914751c952d284938'], // spark debt weth
+  // ]
+
+  // strategies[2]
+  // tokensAndOwners:[
+  //     ['0xC035a7cf15375cE2706766804551791aD035E0C2', '0xB27D688Ac06a441c005657971B11521e80CdcE98'], // aavePrime collateral wsteth
+  // ]
+
+  const navRegistry = '0xe2d60463dE3a0221276D737b87C605e0BB5451E9'
+  const navArr = await api.multiCall({
+    abi: "function getStrategyNav(address,(bytes4,bytes)[]) external view returns (uint)", calls: strategies.slice(1).map((e) => ({ target: navRegistry, params: [e, [
+      [
+        `0x75418615`,
+        `0xab311908000000000000000000000000${e.slice(2).toLowerCase()}00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000`
+      ]
+    ]]}))
+  })
+
+  for (let i=0;i<navArr.length;i++) {
+    api.add(ADDRESSES.ethereum.WSTETH, navArr[i])
+  }
+
+  return
 }
 
 async function tvlMantle(api) {

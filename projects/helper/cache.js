@@ -48,6 +48,15 @@ async function setCache(project, chain, cache) {
 }
 
 const configCache = {}
+let lastCacheReset = Date.now()
+const cacheResetInterval = 1000 * 30 // 30 seconds
+
+function resetCache() { 
+  if (Date.now() - lastCacheReset > cacheResetInterval) {
+    Object.keys(configCache).forEach(key => delete configCache[key])
+    lastCacheReset = Date.now()
+  }
+}
 
 async function _setCache(project, chain, json) {
   if (!json || json?.error?.message) return;
@@ -58,6 +67,7 @@ async function _setCache(project, chain, json) {
 }
 
 async function getConfig(project, endpoint, { fetcher } = {}) {
+  resetCache()
   if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
@@ -128,7 +138,7 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
       return json
     } catch (e) {
       // sdk.log(e)
-      sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+      sdk.log(project, 'trying to fetch from cache, failed to fetch data from endpoint:', endpoint)
       return getCache(key, project)
     }
   }

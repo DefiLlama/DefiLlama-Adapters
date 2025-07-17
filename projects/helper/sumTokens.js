@@ -33,6 +33,7 @@ const helpers = {
   "bittensor": require("./chain/bittensor"),
   "fuel": require("./chain/fuel"),
   "radixdlt": require("./chain/radixdlt"),
+  "stellar": require("./chain/stellar"),
 }
 
 
@@ -76,7 +77,7 @@ async function sumTokens(options) {
   if (token) tokens = [token]
   if (owner) owners = [owner]
   const evmAddressExceptions = new Set(['tron', 'xdc'])
-  const nonEvmOwnerFound = !evmAddressExceptions.has(chain) &&  owners.some(o => !o.startsWith('0x'))
+  const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
 
   if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
@@ -87,7 +88,7 @@ async function sumTokens(options) {
 
   if (!isAltEvm)
     owners = getUniqueAddresses(owners, chain)
-  else 
+  else
     owners = [...new Set(owners)] // retain case sensitivity
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
@@ -147,8 +148,36 @@ async function getRippleBalance(account) {
   return res.result.account_data.Balance / 1e6
 }
 
+async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
+
+  if (Array.isArray(whitelistedTokens) && whitelistedTokens.length)
+    whitelistedTokens = new Set(whitelistedTokens.map(i => i.toLowerCase()))
+  const body = {
+    "method": "account_lines",
+    "params": [{
+      account,
+      ledger_index: "validated"
+    }]
+  }
+  const res = await post('https://s1.ripple.com:51234', body)
+  if (res.result.error === 'actNotFound') return {}
+
+
+  // Add token balances
+  if (res.result.lines) {
+    res.result.lines.forEach(line => {
+      const tokenKey = `${line.currency}.${line.account}`
+      if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
+      api.add(tokenKey, parseFloat(line.balance))
+    })
+  }
+
+  return api.getBalances()
+}
+
 module.exports = {
   nullAddress,
   sumTokensExport,
   sumTokens,
+  addRippleTokenBalance,
 }
