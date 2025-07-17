@@ -112,8 +112,8 @@ const config = {
     fromBlock: 450759,
   },
    tacchain: {
-     morphoBlue: "0xF0453e7368Ea01d6d6d6a222C26B5a06F1d816e9",
-     fromBlock: 4296528,
+     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
+     fromBlock: 1308542,
    },
   zircuit: {
     morphoBlue: "0xA902A365Fe10B4a94339B5A2Dc64F60c1486a5c8",
