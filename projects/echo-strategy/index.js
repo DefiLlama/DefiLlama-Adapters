@@ -1,6 +1,6 @@
 const { function_view } = require("../helper/chain/aptos");
 
-const strategyModuleList = ['aries_strategy', 'cellana_strategy', 'lsd_strategy']
+const strategyModuleList = ['aries_strategy', 'aries_strategy_fa', 'cellana_strategy', 'cellana_strategy_fa', 'lsd_strategy']
 const strategyAddress = '0xf52c075a823612700387d175f466f4e9b8016ed55191c52539ab78dc6698ca7f'
 async function getTVL() {
   try {
