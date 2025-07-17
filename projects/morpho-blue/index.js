@@ -111,7 +111,7 @@ const config = {
     morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
     fromBlock: 450759,
   },
-   tacchain: {
+   tac: {
      morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
      fromBlock: 1308542,
    },
