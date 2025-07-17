@@ -35,14 +35,3 @@ module.exports = {
     }),
   },
 
-  polygon_zkevm: {
-    tvl: sumTokensExport({
-      owner: '0x0Ad3DaE92e136D363864CCd10c794B36922ccEa0',
-      tokens: [
-        '0xa8CE8Aee21BC2A48a5EF670AFCc9274c7BBBC035', // USDC
-        '0xB24a0ed5084817de0Cd20e2F07b0196EF5DAA1e3', // USDT
-        '0x4200000000000000000000000000000000000006'  // WETH
-      ]
-    }),
-  },
-}
