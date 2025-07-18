@@ -9,6 +9,8 @@ const SILO_POOL_ADDRESSES = {
     'Varlamore USDC Growth': '0xF6F87073cF8929C206A77b0694619DC776F89885',
     'Re7 scUSD': '0x592D1e187729C76EfacC6dfFB9355bd7BF47B2a7',
     'Apostro - USDC': '0xcca902f2d3d265151f123d8ce8FdAc38ba9745ed',
+    'Greenhouse USDC': '0xf6bC16B79c469b94Cdd25F3e2334DD4FEE47A581'
+    
 };
 const AAVE_TOKEN_ADDRESS = '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6';
 const EULER_POOL_ADDRESSES = {
@@ -28,6 +30,12 @@ const PENDLE_MARKET_ADDRESSES = {
         yt: '0x3ab07241db5e87e45edca012ddf4bde84c078920',
         sy: '0x068def65b9dbaff02b4ee54572a9fa7dfb188ea3',
     },
+    'Lp - wstkscUSD': {
+        lp: '0x004f76045b42ef3e89814b12b37e69da19c8a212',
+        pt: '0x0fb682c9692addcc1769f4d4d938c54420d54fa3',
+        yt: '0x2405243576fdff777d54963bca4782180287b6a1',
+        sy: '0x896f4d49916ac5cfc36d7a260a7039ba4ea317b6',
+    },
 };
 const BEETS_POOL = {
     deposit: '0x54Ca9aad90324C022bBeD0A94b7380c03aA5884A',
@@ -35,6 +43,9 @@ const BEETS_POOL = {
 };
 const PENPIE_MARKET_ADDRESS = '0x3f5ea53d1160177445b1898afbb16da111182418';
 const PENPIE_CONTRACT = '0x7A89614B596720D4D0f51A69D6C1d55dB97E9aAB';
+const YIELDFI_POOL = {
+    'yUSD': "0x4772D2e014F9fC3a820C444e3313968e9a5C8121"
+}
 
 async function siloTvl(api, owners) {
     const siloVaults = Object.values(SILO_POOL_ADDRESSES);
@@ -118,6 +129,15 @@ async function penpieTvl(api, owners) {
     });
 }
 
+async function yieldfiTvl(api, owners) {
+    const balanceCalls = owners.map(owner => ({ target: YIELDFI_POOL.yUSD, params: [owner] }));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
+    });
+}
+
 module.exports = {
     siloTvl,
     aaveTvl,
@@ -125,4 +145,5 @@ module.exports = {
     pendleTvl,
     beetsTvl,
     penpieTvl,
+    yieldfiTvl,
 };

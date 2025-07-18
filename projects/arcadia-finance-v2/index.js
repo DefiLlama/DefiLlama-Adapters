@@ -90,7 +90,7 @@ async function tvl (api) {
   // 4. Return format is then transformed to be identical to the format of the V1 assetData
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const batchSize = 5;
+  const batchSize = 25;
   for (let i = 0; i < v2Accounts.length; i += batchSize) {
     const batch = v2Accounts.slice(i, i + batchSize);
     await Promise.all(batch.map(async (account) => {
@@ -102,7 +102,7 @@ async function tvl (api) {
         // Since the return of the ownership data comes from a "blackbox" backend,
         // we verify onchain that the ownership of the NFTs is indeed correct
         // We check this for each asset where ID != 0
-        const verificationCalls = assetData[0][1].map((tokenId, index) => {
+        /* const verificationCalls = assetData[0][1].map((tokenId, index) => {
           if (tokenId === "0") return null; // Skip if tokenId is 0, just an erc20, balance will be fetched through sdk
           return {
             target: assetData[0][0][index],
@@ -119,7 +119,7 @@ async function tvl (api) {
           // Verify all owners match the account
           const allOwnersMatch = owners.every(owner => owner.toLowerCase() === account.toLowerCase());
           if (!allOwnersMatch) return; // Skip this account if any ownership verification fails
-        }
+        } */
   
         ownerTokens.push([assetData[0][0], account])
         if (!assetData[0][0].length || !assetData[0][1].length || assetData[0][1] == "0") return;
@@ -138,9 +138,11 @@ async function tvl (api) {
       }
     }));
 
+    api.log(`[arcadia] Processed batch ${Math.ceil((i + 1) / batchSize)} of ${Math.ceil(v2Accounts.length / batchSize)} for v2 accounts.`);
+
     // Add small delay between batches to prevent rate limiting
     if (i + batchSize < v2Accounts.length) {  // Only sleep if there are more batches to process
-      await sleep(1000);
+      await sleep(500);
     }
   }
 

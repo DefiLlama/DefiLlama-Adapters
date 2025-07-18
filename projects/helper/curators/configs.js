@@ -1,4 +1,9 @@
+const { allAbi, abi, assets } = require("./vesu")
+
 const ABI = {
+  owner: 'address:owner',
+  decimals: 'uint8:decimals',
+  totalSupply: 'uint256:totalSupply',
   ERC4626: {
     asset: 'address:asset',
     totalAssets: 'uint256:totalAssets',
@@ -15,6 +20,19 @@ const ABI = {
     getProxyListLength: 'uint256:getProxyListLength',
     proxyList: 'function proxyList(uint256) view returns (address)',
     creator: 'address:creator',
+  },
+  silo: {
+    CreateSiloVaultEvent: 'event CreateSiloVault(address indexed vault, address incentivesController, address idleVault)',
+  },
+  boringVault: {
+    hook: 'address:hook',
+    accountant: 'address:accountant',
+    base: 'address:base',
+    getRate: 'uint256:getRate',
+  },
+  symbiotic: {
+    collateral: 'address:collateral',
+    totalStake: 'uint256:totalStake',
   },
 }
 
@@ -64,6 +82,38 @@ const MorphoConfigs = {
       {
         address: '0xe430821595602eA5DD0cD350f86987437c7362fA',
         fromBlock: 253027,
+      },
+    ],
+  },
+  unichain: {
+    vaultFactories: [
+      {
+        address: '0xe9EdE3929F43a7062a007C3e8652e4ACa610Bdc0',
+        fromBlock: 9316789,
+      },
+    ],
+  },
+  hyperliquid: {
+    vaultFactories: [
+      {
+        address: '0xec051b19d654C48c357dC974376DeB6272f24e53',
+        fromBlock: 1988677,
+      },
+    ],
+  },
+  katana: {
+    vaultFactories: [
+      {
+        address: '0x1c8De6889acee12257899BFeAa2b7e534de32E16',
+        fromBlock: 2741420,
+      },
+    ],
+  },
+  plume_mainnet: {
+    vaultFactories: [
+      {
+        address: '0x2525D453D9BA13921D5aB5D8c12F9202b0e19456',
+        fromBlock: 1912478,
       },
     ],
   },
@@ -117,8 +167,28 @@ const EulerConfigs = {
   },
 }
 
+const SiloConfigs = {
+  sonic: {
+    vaultFactories: [
+      {
+        address: '0x7867f2b584e91d7c3798f4659b6fffa3631ea06a',
+        fromBlock: 21718349,
+      },
+    ],
+  }
+}
+
+const VesuConfigs = {
+  allAbi,
+  abi,
+  assets,
+  singleton: '0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160',
+}
+
 module.exports = { 
   ABI,
   MorphoConfigs,
   EulerConfigs,
+  SiloConfigs,
+  VesuConfigs,
 }

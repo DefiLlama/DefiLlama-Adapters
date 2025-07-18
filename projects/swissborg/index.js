@@ -71,6 +71,8 @@ const config = {
       'J6wLEPrT8Jd2NiNSJAQwxdK7FDtDssawsMtLqkZ5E1ZP',
       'EcGfuxwkM3ujBWaty5VW7H9mjJLd7LkY3m7nJZ6Sv7Sy',
       'C57RBagtGDYpTGxwG92gSKQ5ptQr4Wa9qz3yDBB6uu1B',
+      'EbUkjPNjzcbjK3iELhZS6PpNCr62pUsE7VkUvNdQpEYB',
+      'FQxGUUAX3BdFArA2XdvPcRHt4CmRMCw5wLt8F5uDXmwa',
     ],
   },
   polkadot: {
@@ -189,8 +191,8 @@ const config = {
   },
   sei: {
     owners: [
-      '0x28cC933fecf280E720299b1258e8680355D8841F',
-      '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      'sei1cuqk29f94hnp7zwtuhl0aw69kud5ngdaxqa3u2',
+      'sei105zqcfv3z9z79yhsfg8v6rql3huzhyfpg4mpfu',
     ]
   },
   tron: {
@@ -232,6 +234,11 @@ const config = {
   algorand: {
     owners: [
       '2BNEJ7ZV2SDGRZ2JGXTSVWVIBK5FYKAERAWXXGYZ66TSWWGHWAPXJ52HAE',
+    ]
+  },
+  chz: {
+    owners: [
+      '0x762DA64958BbF03bB206BF33C520a3846b6Cc93D',
     ]
   },
 }
