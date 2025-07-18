@@ -113,6 +113,8 @@ const config = {
     }
 }
 
+const excludedVaults = ["0xa9d939b440889946E6CEC3E1D4218E069605af6f"]
+
 const abis = {
   getTotalValue: "function getTotalValue() view returns (uint256 totalValue)",
   getVaultConfig: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses)",
@@ -139,7 +141,10 @@ Object.keys(config).forEach(chain => {
             onlyArgs: true,
             fromBlock: fromBlock,
           })
-          logs.forEach(i => vaultAddressesCustomOwnerFee.push(i.vault))
+          logs.forEach(i => {
+            if (excludedVaults.includes(i.vault)) return;
+            vaultAddressesCustomOwnerFee.push(i.vault)
+          })
         } else {
           const logs = await getLogs({
             api,
@@ -149,15 +154,18 @@ Object.keys(config).forEach(chain => {
             onlyArgs: true,
             fromBlock: fromBlock,
           })
-          logs.forEach(i => vaultAddresses.push(i.vault))
+          logs.forEach(i => {
+            if (excludedVaults.includes(i.vault)) return;
+            vaultAddresses.push(i.vault)
+          })
         }
       }
 
       const [vaultConfigs, vaultTotalValues, vaultCustomOwnerFeeConfigs, vaultCustomOwnerFeeTotalValues] = await Promise.all([
-        api.multiCall({ abi: abis.getVaultConfig, calls: vaultAddresses, chain: chain, permitFailure: true }),
-        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddresses, chain: chain, permitFailure: true }),
-        api.multiCall({ abi: abis.getVaultConfigWithCustomOwnerFee, calls: vaultAddressesCustomOwnerFee, chain: chain, permitFailure: true }),
-        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddressesCustomOwnerFee, chain: chain, permitFailure: true }),
+        api.multiCall({ abi: abis.getVaultConfig, calls: vaultAddresses }),
+        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddresses }),
+        api.multiCall({ abi: abis.getVaultConfigWithCustomOwnerFee, calls: vaultAddressesCustomOwnerFee }),
+        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddressesCustomOwnerFee }),
       ])
 
       const principleTokens = vaultConfigs.map(i => i.principalToken)
