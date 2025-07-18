@@ -37,9 +37,9 @@ async function bscTvl(api) {
 }
 
 module.exports = {
-  hallmarks: [
-    [Math.floor(new Date('2023-03-18')/1e3), 'Protocol was hacked for 350k'],
-  ],
+  // hallmarks: [
+  //   ['2023-03-18', 'Protocol was hacked for 350k'],
+  // ],
   deadFrom: '2023-03-26',
   moonriver: {
     tvl: sdk.util.sumChainTvls([tvl, movrUniTvl]),

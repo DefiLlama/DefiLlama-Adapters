@@ -36,12 +36,20 @@ const vaultsArbitrum = [
   '0x951c846aa10cc3da45defed784c3802605f71769',
   '0x6f0acbaac51f3c72ddaa4edc6e20fc388d20adbc',
   '0x320cd9d00961fb45857a043efea77dc6b9db5d95',
+  '0x4e433ae90f0d1be9d88bed9f7707fcff20a455ac',
+  '0x1310b9de457675d65f3838c1e9d19a5ca6619440',
 ]
 
 const vaultsBase = [
   '0x459a3d995d66798b1ab114f702b8bc8655484e78',
   '0xa7517b9930d0556175a1971bd62084e16f21881f',
   '0x0655e391e0c6e0b8cbe8c2747ae15c67c37583b9',
+  '0x578e7261b9d3c143700a735526bfd63713f639c5',
+  '0xdd996648b02bf22d9c348e11d470938f8ae50f2b',
+]
+
+const vaultsBSC = [
+  '0x5351d748eb97116755b423bcc207f3613b487ade',
 ]
 
 const dexes = [
@@ -79,10 +87,15 @@ async function tvlBase(api) {
   return api.erc4626Sum2({ calls: vaultsBase });
 }
 
+async function tvlBSC(api) {
+  return api.erc4626Sum2({ calls: vaultsBSC });
+}
+
 module.exports = {
   doublecounted: true,
   methodology: "We calculate TVL based on the Total Supply of our proxy contracts through which users interact with vault's contracts",
   base: { tvl: tvlBase },
   blast: { tvl: tvlBlast, staking: stakings(cybroStakingBlast, "0x963eec23618bbc8e1766661d5f263f18094ae4d5") },
   arbitrum: { tvl: tvlArbitrum },
+  bsc: { tvl: tvlBSC },
 };

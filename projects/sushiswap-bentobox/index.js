@@ -4,7 +4,7 @@ const bentobox_chains = [
   "ethereum",
   "polygon",
   // "fantom",
-//  "bsc",
+  //  "bsc",
   "avax",
   "arbitrum",
   "optimism",
@@ -19,6 +19,6 @@ const bentobox_chains = [
 
 bentobox_chains.forEach((chain) => {
   module.exports[chain] = {
-    tvl: chain === "fantom" ? () => ({}) : bentobox(chain),
+    tvl: chain === "fantom" || chain === "avax" ? () => ({ }) : (api) => bentobox(api),
   };
 });

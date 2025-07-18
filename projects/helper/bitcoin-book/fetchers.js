@@ -10,7 +10,7 @@ module.exports = {
   btcfi_cdp: async () => {
     const target = "0x0000000000000000000000000000000000000100";
     const api = new sdk.ChainApi({ chain: 'bfc' })
-    const round = await api.call({  abi: 'uint32:current_round', target})
+    const round = await api.call({ abi: 'uint32:current_round', target })
 
     const utxoVault = await api.call({ abi: 'function registration_info(address target, uint32 pool_round) view returns (address, string, string, address[], bytes[])', target, params: [target, round] })
     const vault = await api.call({ abi: 'function vault_addresses(uint32 pool_round) view returns (string[])', target, params: round });
@@ -104,7 +104,13 @@ module.exports = {
   lombard: async () => {
     const API_URL = 'https://mainnet.prod.lombard.finance/api/v1/addresses'
     const BATCH_SIZE = 1000
-    const blacklisted = new Set(['bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w'])
+    const blacklisted = new Set([ // blacklisted addresses , using the corresponding amount in LFBTC here 0x838f0c257ab27856ee9be57f776b186140834b58 , token : 0xfe4ecd930a1282325aef8e946f17c0e25744de45
+      'bc1phz9f27wshtset37f96xl266w9zaq0wdmls749qad2rj3zz4zc8psmgts3w',
+      'bc1pkzlqekjjylsrt9eh57pcd8ynz5w4jv6k3wlj39x8y59fhm4pjdxs9xvs46',
+      'bc1pntj998mddtc4ketfvh8jhvn4tgrvv5870hsfpwhttxwtgv4mrvmqmr6s3f',
+      'bc1pt3rf4ml95sfc8svqjtl8d6h5hjkej60ruvtfry44g35uchjt2seqxx7tfm',
+      'bc1pwffr0etqcg3awczl6lfs4dne987y64rgnnael577yj02jvuvnrssqyxdsj',
+    ])
 
     return getConfig('lombard', undefined, {
       fetcher: async () => {
@@ -143,7 +149,19 @@ module.exports = {
     })
   },
   tBTC: async () => {
-    const API_URL = 'https://api.threshold.network/tbtc/wallets/pof'
+    // return [
+    //   "bc1qr5laxd2pyptae847tt32qddujtws305s8ej278",
+    //   "bc1qwetfspn7fp4dgsh44y4dzwx5y8e3tlc7v0mhf5",
+    //   "bc1qprkyx79jxvpe69mewfmlat8ydavuth95ppec5m",
+    //   "bc1q63r464arzp9709tqc2z3hkmcna0lrmzv7sekl5",
+    //   "bc1q0w68p8gh5egxjjd9edlyqkncns7veexcurqut9",
+    //   "bc1qlgtalpnsfqsc6wxdm6uvjjdd9ujgq0a8x4yslh",
+    //   "bc1qpdx8zrkjsjd8mjhaznnz0atz6v9f2upda9xgyn",
+    //   "bc1qtd8mplu4n7evnmzqtrtt7ljs0rl00th42kcgj5",
+    //   "bc1qyghykrhmkk5ztn4l5pjaqywpsxkg6e9rdm22mt",
+    //   "bc1q04phgdeyx7nneh2ux4ynxhew4vwqfduk3wt6hc"
+    // ]
+    const API_URL = 'https://api.tbtcscan.com/tbtc/proof-of-funds'
     const { wallets } = await getConfig('tbtc/wallets', API_URL)
     return wallets.filter(i => +i.walletBitcoinBalance > 0).map(wallet => wallet.walletBitcoinAddress)
   },
@@ -186,7 +204,7 @@ module.exports = {
   },
   dlcLink: async () => {
     const config = await getConfig('dlc-link', 'https://api.dlc.link/v1/ibtc/proof-of-reserve')
-    const addresses= []
+    const addresses = []
     config.chains.forEach(c => {
       addresses.push(...(c.vaultAddresses ?? []))
     })

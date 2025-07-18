@@ -1,5 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs");
 
 module.exports = {
   ethereum: {
@@ -35,6 +35,7 @@ module.exports = {
         ADDRESSES.arbitrum.WETH, // WETH
         "0x186cf879186986a20aadfb7ead50e3c20cb26cec", // 2BTC-ng
         "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978", // CRV
+        ADDRESSES.arbitrum.WBTC, // WBTC
       ],
     }),
   },
@@ -213,21 +214,50 @@ module.exports = {
     }),
   },
   sonic: {
-    tvl: sumTokensExport({
-      owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
-      tokens: [
-        ADDRESSES.sonic.WETH, // WETH
-        ADDRESSES.sonic.USDC_e, // usdc.e
-      ],
-    }),
+    tvl: async (api) => {
+      const portalBalances = await sumTokens2({
+        api,
+        owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
+        tokens: [
+          ADDRESSES.sonic.WETH, // WETH
+          ADDRESSES.sonic.USDC_e, // usdc.e
+        ],
+      });
+
+      const poolBalances = await sumTokens2({
+        api,
+        owners: [
+          "0xF1232a1aB5661aBdD6E02c6D8Ac9940a23Bb0b84", // xfrxUSD
+          "0x346704605c72d9f5f9f02d651e5a3dcce6964f3d", // xfrxETH
+          "0x09679c768d17b52bfa059010475f9a0bdb0d6fea", // xbEthereum
+          "0x1c404afffba0e70426dc601aeaa6205eca8c9078", // xbArbitrum
+          "0x7b823067ece11047f83f48647110e7a777e2bf5a", // xbOptimism
+          "0x538a5534543752d5abbc8cd11760f8be3625e7b1", // xbAvalanche
+          "0xdb0a43327626c0e3e87ce936bc0cdf2ee9475c22", // xbPolygon
+          "0x5fa5168497db4ec1964b3208c18cb6157e5652e4", // xbBSC
+          "0x1894a7203faa464f7afa3b8c319a3cac8beb6cda", // xbBase
+          "0xee05755051e8b1ccf85747a83d0ef8b00f161180", // xbLinea
+          "0x9b78e02ddddda4117ddf6be8a0fbd15c45907895", // xbGnosis
+        ],
+        tokens: [
+          ADDRESSES.sonic.scUSD,
+          "0x80eede496655fb9047dd39d9f418d5483ed600df", // frxUSD
+          ADDRESSES.sonic.scETH,
+          "0x43edd7f3831b08fe70b7555ddd373c8bf65a9050", // frxETH
+          "0xbb30e76d9bb2cc9631f7fc5eb8e87b5aff32bfbd", // scBTC
+        ],
+      });
+
+      return { ...portalBalances, ...poolBalances };
+    },
   },
   fantom: {
     tvl: sumTokensExport({
       owner: "0xac8f44ceca92b2a4b30360e5bd3043850a0ffcbe",
       tokens: [
         ADDRESSES.fantom.USDC, // USDC,
-        '0x2F733095B80A04b38b0D10cC884524a3d09b836a', // USDC.e
-      ]
-    })
-  }
+        "0x2F733095B80A04b38b0D10cC884524a3d09b836a", // USDC.e
+      ],
+    }),
+  },
 };
