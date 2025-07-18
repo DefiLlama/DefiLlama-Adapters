@@ -12,6 +12,7 @@ const TONSlpSyMinter = "EQB9nQdgwdaTXG6F7mDEErPuuJza6lmCfQjun-PXK3iJXm2h"
 const syEvaaMinter = "EQDi9blCcyT-k8iMpFMYY0t7mHVyiCB50ZsRgyUECJDuGvIl" // Evaa USDT (maturity 2025-06-01)
 
 // i2 pools
+const tsTON01Sep2025 = "EQAPICp-A_2QNEb7xiBwAoeypEnhrtY5tJ_1vGGujjVvflTl"
 const USDTSlpSyMinter01Sep2025 = "EQDLqPppdVfv4bVqV6bpCYwmDUVCsem2LV5zda3fMIKgCxkH"
 const TONSlpSyMinter01Sep2025 = "EQBeLuWFjniPGnAyy7gVKJkA1mXptxP-dgBswKIY5su6NHFd"
 const USDe01Sep2025 = "EQDafE9flDXaRCnhrprgPj_sJNJb502Dov1GDruIRjarHscs"
@@ -94,6 +95,7 @@ async function tvl(api) {
       TONSlpSyMinter01Sep2025,
       USDe01Sep2025,
       tsUSDe01Sep2025,
+      tsTON01Sep2025
     ],
     tokens: [ADDRESSES.null],
   })

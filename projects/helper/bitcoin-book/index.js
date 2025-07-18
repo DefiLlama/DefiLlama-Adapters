@@ -97,12 +97,15 @@ const cygnus = require('./cygnus.js')
 const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
+const coinbaseltc = require('./coinbase-ltc.js')
 const prosper = require('./prosper.js')
 const hotcoin = require('./hotcoin.js')
 const orangex = require('./orangex.js')
 const exmo = require('./exmo.js')
 const esbtc = require('./esbtc.js')
 const bimaCdp = require('./bima-cdp.js')
+const tzbtc = require('./tezos-btc.js')
+const indodax = require('./indodax.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -255,10 +258,13 @@ module.exports = {
   unitbtc,
   backpack,
   coinbasebtc,
+  coinbaseltc,
   prosper,
   lbank,
   hotcoin,
   orangex,
   exmo,
-  esbtc
+  esbtc,
+  tzbtc,
+  indodax
 }

@@ -88,6 +88,7 @@ const v3Abi = {
 const v3Config = {
   plume_mainnet: [`0xF9642C3B35Cd4Ccd55D22Fb2B35fcc31c5E0B62E`],
   hemi: [`0x8D45801736F3504BEfA35ABEf8bc7a1C4d610651`],
+  nibiru: [`0x7F5f9E5D4643B4333464c18d072167B452C20d28`],
 };
 
 const fetchReserveData = async (api, poolDatas, isBorrowed) => {
