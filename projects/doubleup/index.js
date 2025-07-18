@@ -27,11 +27,8 @@ async function tvl(api) {
     const housePool = house?.fields?.house_pool;
     const houseTvl = Number(housePipeDebt) + Number(housePool);
 
-    // api.add(coinType, houseTvl);
-
     const pipeDebt = house?.fields?.pipe_debt?.fields?.value;
     const _tvl = Number(pipeDebt) + Number(house?.fields?.pool);
-
 
     if(coinType === UPUSD || coinType === "0x49f123d62df1db5a735463f3817dcd53aa084173cbe4593db6b30647b9801cb8::unihouse::FeeTag, 0x49f123d62df1db5a735463f3817dcd53aa084173cbe4593db6b30647b9801cb8::unihouse::HouseFeeConfig"){
       continue;
