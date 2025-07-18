@@ -2,23 +2,22 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const BITS_VAULTS = [
-  '0x0000000000000000000000000000000000000000', // add finalized address here
+  '0x02ad570A8f361c1F8ba630D015fcA02862F2478f', // WBTC vault on Ethereum
 ]
 
-// CoreDAO token addresses
-const WCORE = ADDRESSES.core.WCORE
-const COREBTC = ADDRESSES.core.coreBTC
+// Ethereum token addresses
+const WBTC = ADDRESSES.ethereum.WBTC
 
-// Token configuration for different vaults - only COREBTC is supported
+// Token configuration for different vaults - only WBTC is supported
 const VAULT_TOKENS = {
-  [BITS_VAULTS[0]]: [COREBTC],
+  [BITS_VAULTS[0]]: [WBTC],
 }
 
 async function tvl(api) {
   // Track TVL for all vaults
   for (const vault of BITS_VAULTS) {
     
-    const tokens = VAULT_TOKENS[vault] || [COREBTC]
+    const tokens = VAULT_TOKENS[vault] || [WBTC]
     
     // Get balances for each token in the vault
     for (const token of tokens) {
@@ -33,9 +32,9 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'Counts the total value of COREBTC assets locked in Bits yield product contracts on CoreDAO network.',
+  methodology: 'Counts the total value of WBTC assets locked in Bits yield product contracts on Ethereum network.',
   start: 1749621314, // Replace with actual start timestamp
-  core: {
+  ethereum: {
     tvl,
   }
 } 
