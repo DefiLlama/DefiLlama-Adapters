@@ -12,7 +12,6 @@ const getConfig = async () => {
   data.forEach(({ address, blockchain }) => {
     let chain = blockchain.toLowerCase()
     if (chain === 'avalanche') chain = 'avax'
-    if (chain === 'bitcoin') return config.bitcoin = { owners: bitcoinAddressBook.backpack }
     if (!config[chain]) config[chain] = { owners: [] }
     config[chain].owners.push(address)
   })
