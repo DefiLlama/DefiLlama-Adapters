@@ -9,6 +9,8 @@ const graphs = {
     "https://api.mainnet.termfinance.io/avalanche/subgraph/term",
   base:
     "https://api.mainnet.termfinance.io/base/subgraph/term",
+  arbitrum:
+    "https://api.mainnet.termfinance.io/arbitrum/subgraph/term",
 };
 
 const vaultsGraphs = {
@@ -18,6 +20,8 @@ const vaultsGraphs = {
     "https://api.mainnet.termfinance.io/avalanche/subgraph/vaults",
   base:
     "https://api.mainnet.termfinance.io/base/subgraph/vaults",
+  arbitrum:
+    "https://api.mainnet.termfinance.io/arbitrum/subgraph/vaults",
 }
 
 const query = `
@@ -109,12 +113,14 @@ const graphStartBlock = {
   ethereum: 5240462,
   avax: 43162227,
   base: 30797402,
+  arbitrum: 359134348,
 }
 
 const vaultsGraphStartBlock = {
   ethereum: 21433264,
   avax: 54438973,
   base: 30797402,
+  arbitrum: 359134348,
 }
 
 module.exports = {
