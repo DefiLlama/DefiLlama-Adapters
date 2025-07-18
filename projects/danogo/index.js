@@ -85,7 +85,18 @@ const fetchAssetValue = async (assetsInfo) => {
   let totalAssetsValue = 0;
   const gatewayResponse = await postURL(`${DANOGO_GATEWAY_ENDPOINT}/cardano-asset-value`, { assetIds: assetIds});
   gatewayResponse.data.data.assetValues.forEach((asset) => {
-    const assetValue = Number(BigInt(asset.adaValue) * BigInt(100) / BigInt(ADA_TO_LOVELACE)) / 100;
+    let price = BigInt(0);
+    if (asset.adaValue !== undefined && asset.adaValue !== null) {
+      price = BigInt(asset.adaValue);
+    } else if (
+      asset.exchangeRateNum &&
+      asset.exchangeRateDenom &&
+      BigInt(asset.exchangeRateDenom) !== BigInt(0)
+    ) {
+      price = BigInt(asset.exchangeRateNum) / BigInt(asset.exchangeRateDenom);
+    }
+
+    const assetValue = Number(price * BigInt(100) / BigInt(ADA_TO_LOVELACE)) / 100;
     totalAssetsValue += assetValue * assetsInfo[asset.assetId];
   });
   return totalAssetsValue;
