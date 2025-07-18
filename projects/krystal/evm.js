@@ -169,10 +169,10 @@ Object.keys(config).forEach(chain => {
       ])
 
       const principleTokens = vaultConfigs.map(i => i.principalToken)
-      api.addTokens(principleTokens, vaultTotalValues.map(i => i || 0))
+      api.addTokens(principleTokens, vaultTotalValues)
 
       const principleTokensCustomOwnerFee = vaultCustomOwnerFeeConfigs.map(i => i.principalToken)
-      api.addTokens(principleTokensCustomOwnerFee, vaultCustomOwnerFeeTotalValues.map(i => i || 0))
+      api.addTokens(principleTokensCustomOwnerFee, vaultCustomOwnerFeeTotalValues)
     }
   }
 })
