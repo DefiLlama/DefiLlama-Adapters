@@ -202,7 +202,7 @@ const VAULT_USER_ACCOUNTS = [
 
 async function tvl(api) {
   const accounts = await getMultipleAccounts(VAULT_USER_ACCOUNTS)
-  const idl = require("./drift_idl.json")
+  const idl = require("../knightrade/drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
   const provider = getProvider()
   const program = new Program(idl, programId, provider)
@@ -229,30 +229,33 @@ async function tvl(api) {
 }
 
 async function megavaultTvl(api) {
-  try {
-    const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
-    
-    const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
-    
-    const pnlArr = data.megavaultPnl;
-    if (!pnlArr || !pnlArr.length) {
-      return;
-    }
-    
-    const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
-    
-    // Report as USD value (this should work with DeFiLlama's backend)
-    api.add('tether', (currentTvl * 1e6).toFixed(0));
-    
-  } catch (error) {
-    console.error("Error fetching MegaVault TVL:", error.message);
+  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
+  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
+  const pnlArr = data.megavaultPnl;
+  if (!pnlArr || !pnlArr.length) return;
+  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
+
+  // Report as USD Coin using coingecko identifier
+  api.add('coingecko:usd-coin', (currentTvl * 1e6).toFixed(0));
+}
+
+async function combinedEthereumTvl(api) {
+  // First, get the existing curator TVL
+  const curatorExport = getCuratorExport(configs);
+  if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
+    await curatorExport.ethereum.tvl(api);
   }
+  
+  // Then add MegaVault TVL
+  console.log("Adding MegaVault TVL to ethereum...");
+  await megavaultTvl(api);
+  console.log("MegaVault TVL added to ethereum");
 }
 
 module.exports = {
   ...getCuratorExport(configs),
   solana: { tvl },
-  dydx: { tvl: megavaultTvl },
+  ethereum: { tvl: combinedEthereumTvl },
   timetravel: false,
   methodology: configs.methodology,
 }
