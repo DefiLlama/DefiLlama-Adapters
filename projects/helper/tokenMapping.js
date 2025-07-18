@@ -42,6 +42,9 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  flow: {
+    "0x1b97100ea1d7126c4d60027e231ea4cb25314bdb": { coingeckoId: "ankr-staked-flow", decimals: 18 },
+  },
   soon: {
     [ADDRESSES.soon.USDT]: { coingeckoId: "tether", decimals: 6 },
     [ADDRESSES.soon.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
