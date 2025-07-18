@@ -9,6 +9,7 @@ const { EkuboAbiMap } = require('./ekubo');
 const { SINGLETONabiMap } = require('./singleton');
 const { endurABIMap } = require('./endur');
 const { FusionAbiMap } = require('./fusionAbi');
+const { hex } = require("@coral-xyz/anchor/dist/cjs/utils/bytes");
 
 const STRATEGIES = {
   "AutoCompounding": [{ // auto-compounds user tokens (e.g. STRK) by investing in zkLend
@@ -125,6 +126,7 @@ async function computeEkuboTVL(api) {
 
   const hexValues = totalShares.map(v => '0x' + v.toString(16));
 
+  // get assets ( liquidity, xstrk, strk ) for the total supply 
   const assets = await multiCall({
     calls: ekuboContracts.map(c => ({
       target: c.address,
@@ -132,9 +134,21 @@ async function computeEkuboTVL(api) {
     })),
     abi: { ...EkuboAbiMap.convert_to_assets, customInput: 'address' }
   })
+
+  // convert to bigInt and then to hex for contract call 
+  let xstrk = BigInt(assets[0]['1']);
+  let hex_strk = '0x' + xstrk.toString(16);
   
-  api.addTokens(ADDRESSES.starknet.XSTRK, [assets[0]['1']])
-  api.addTokens(ADDRESSES.starknet.STRK, [assets[0]['2']])
+  // convert xstrk to strk
+  const strk_eq = await multiCall({
+    calls: ekuboContracts.map(c => ({
+      target: ADDRESSES.starknet.XSTRK,
+      params: [hex_strk, '0x0'] 
+    })),
+    abi: { ...endurABIMap.convert_to_assets, customInput: 'address' }
+  })
+
+  api.addTokens(ADDRESSES.starknet.STRK, Number(strk_eq[0]) + Number(assets[0]['2']) );
 }
 
 async function tvl(api) {
