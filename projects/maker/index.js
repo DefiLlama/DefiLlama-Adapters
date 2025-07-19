@@ -93,6 +93,6 @@ module.exports = {
   start: '2017-12-18', // 12/18/2017 @ 12:00am (UTC)
   ethereum: {
     tvl,
-    staking: staking("0xc6132FAF04627c8d05d6E759FAbB331Ef2D8F8fD","0xc20059e0317DE91738d13af027DfC4a50781b066")
+    staking: staking("0xCe01C90dE7FD1bcFa39e237FE6D8D9F569e8A6a3","0x56072C95FAA701256059aa122697B133aDEd9279")
   },
 };
