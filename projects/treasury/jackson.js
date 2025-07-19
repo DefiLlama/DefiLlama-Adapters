@@ -13,6 +13,5 @@ module.exports = treasuryExports({
         WBTC,
      ],
     owners: treasuryOwners,
-    ownTokens: [WBTC],
   },
 })
