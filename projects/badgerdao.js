@@ -11,6 +11,7 @@ chains.forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const data = await getConfig(`badgerdao/tvl/${chain}`, `https://api.badger.com/v2/vaults?chain=${oChain}&currency=usd`)
+      if (!data || Object.keys(data).length === 0) return;
       const calls = data.map(i => i.vaultToken)
       return api.erc4626Sum({ calls, permitFailure: true, })
     }

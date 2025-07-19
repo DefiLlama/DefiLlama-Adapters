@@ -387,8 +387,42 @@ async function unwrapSlipstreamNFTs({ balances, nftsAndOwners = [], api, owner, 
     else
       nftsAndOwners = owners.map(o => [nftAddress, o])
   }
-  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapSlipstreamNFT({ balances, owner, nftAddress, api, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })))
+  const positionIdsByNftAddress = await getPositionIdsByNftAddress({ api, nftsAndOwners, })
+  for (const [nftAddress, positionIds] of Object.entries(positionIdsByNftAddress)) {
+    await unwrapSlipstreamNFT({ balances, positionIds, nftAddress, api, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })
+  }
   return balances
+}
+
+async function getPositionIdsByNftAddress({ api, nftsAndOwners, }) {
+  const ownersByNFT = {}
+  nftsAndOwners.forEach(([nftAddress, owner]) => {
+    nftAddress = normalizeAddress(nftAddress, api.chain)
+    if (!ownersByNFT[nftAddress]) ownersByNFT[nftAddress] = new Set()
+    ownersByNFT[nftAddress].add(normalizeAddress(owner, api.chain))
+  })
+
+  const positionIdsByNftAddress = {}
+  for (let [nftAddress, owners] of Object.entries(ownersByNFT)) {
+    owners = Array.from(owners)
+    const positionIdBalances = await api.multiCall({ abi: 'erc20:balanceOf', target: nftAddress, calls: owners })
+    const positionIdCalls = []
+    positionIdBalances.forEach((idCount, i) => {
+      const count = +idCount
+      if (count > 0) {
+        positionIdCalls.push(...Array(count).fill(0).map((_, index) => ({ params: [owners[i], index] })))
+      }
+    })
+    positionIdsByNftAddress[nftAddress] = await api.multiCall({
+      abi: wildCreditABI.tokenOfOwnerByIndex, target: nftAddress,
+      calls: positionIdCalls,
+    })
+
+    if (owners.length > 10)
+      api.log(`Found ${positionIdsByNftAddress[nftAddress].length} positions for NFT ${nftAddress} owned by ${owners.length} owners`)
+  }
+
+  return positionIdsByNftAddress
 }
 
 async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nftAddress, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
@@ -403,7 +437,7 @@ async function unwrapSlipstreamNFT({ api, balances, owner, positionIds = [], nft
   if (!factories[factoryKey]) factories[factoryKey] = api.call({ target: nftAddress, abi: wildCreditABI.factory, })
   let factory = (await factories[factoryKey])
 
-  if (!positionIds || positionIds.length === 0) {
+  if ((!positionIds || positionIds.length === 0) && owner) {  // if positionIds are not provided and owner address is passed
     const nftPositions = await api.call({ target: nftIdFetcher, params: owner, abi: 'erc20:balanceOf' })
     positionIds = (await api.multiCall({
       abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
@@ -525,7 +559,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     })
 
     let balanceOfTokens
-    
+
     try {
 
       balanceOfTokens = await call()
@@ -867,7 +901,7 @@ async function sumTokens2({
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
   tokensAndOwners = getUniqueToA(tokensAndOwners)
-  
+
   if (blacklistedOwners?.length) {
     const blacklistedOwnersSet = new Set(blacklistedOwners.map(o => normalizeAddress(o, chain)))
     tokensAndOwners = tokensAndOwners.filter(([_, owner]) => !blacklistedOwnersSet.has(owner))
