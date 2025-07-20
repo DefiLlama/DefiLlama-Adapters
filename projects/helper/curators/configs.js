@@ -101,6 +101,22 @@ const MorphoConfigs = {
       },
     ],
   },
+  katana: {
+    vaultFactories: [
+      {
+        address: '0x1c8De6889acee12257899BFeAa2b7e534de32E16',
+        fromBlock: 2741420,
+      },
+    ],
+  },
+  plume_mainnet: {
+    vaultFactories: [
+      {
+        address: '0x2525D453D9BA13921D5aB5D8c12F9202b0e19456',
+        fromBlock: 1912478,
+      },
+    ],
+  },
 }
 
 const EulerConfigs = {

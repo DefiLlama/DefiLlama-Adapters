@@ -16,9 +16,9 @@ const exportsV1 = aaveExports('', addressesProviderRegistryXDAI, undefined, [pro
 const exportsV2 = aaveExports('', addressesProviderRegistryXDAI_old, undefined, [protocolDataHelper_old])
 
 module.exports = {
-  hallmarks: [
-    [1647302400, "Reentrancy attack"]
-  ],
+  // hallmarks: [
+  //   [1647302400, "Reentrancy attack"]
+  // ],
   methodology: methodologies.lendingMarket,
   xdai: {
     tvl: sdk.util.sumChainTvls([exportsV1.tvl, exportsV2.tvl,]),

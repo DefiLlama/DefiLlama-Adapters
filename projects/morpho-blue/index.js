@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
@@ -11,7 +12,7 @@ const config = {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     blackList: [
       "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
-      "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      ADDRESSES.base.USDC,
     ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
@@ -71,7 +72,7 @@ const config = {
     morphoBlue: "0x8f5ae9CddB9f68de460C77730b018Ae7E04a140A",
     fromBlock: 9139027,
   },
-  flame:{
+  flame: {
     morphoBlue: "0x63971484590b054b6Abc4FEe9F31BC6F68CfeC04",
     fromBlock: 5991116,
   },
@@ -86,7 +87,7 @@ const config = {
   //   fromBlock: 4804080,
   //   blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
   // },
-  hyperliquid:{
+  hyperliquid: {
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
     fromBlock: 1988429,
   },
@@ -102,6 +103,22 @@ const config = {
     morphoBlue: "0xE75Fc5eA6e74B824954349Ca351eb4e671ADA53a",
     fromBlock: 6440817,
   },
+  katana: {
+    morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
+    fromBlock: 2741069,
+  },
+  btnx: {
+    morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
+    fromBlock: 450759,
+  },
+   tac: {
+     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
+     fromBlock: 1308542,
+   },
+  zircuit: {
+    morphoBlue: "0xA902A365Fe10B4a94339B5A2Dc64F60c1486a5c8",
+    fromBlock: 14640172,
+  }
 };
 
 Object.keys(config).forEach((chain) => {
