@@ -17,6 +17,53 @@ const MOONWELL_POOL_ADDRESSES = {
     'USDC': '0xEdc817A28E8B93B03976FBd4a3dDBc9f7D176c22'
 };
 
+const HARVEST_POOLS = { 
+    'USDC': '0x90613e167D42CA420942082157B42AF6fc6a8087', 
+    'USDC - Autopilot': '0x0d877Dc7C8Fa3aD980DfDb18B48eC9F8768359C4'
+};
+const WASABI_POOLS = { 'USDC': '0x1C4a802FD6B591BB71dAA01D8335e43719048B24' };
+const AURA_POOLS = { 'USDC - GHO': "0x28a002a98F4DA7A7B541b5e4d7a42E0F64E4aeF1"};
+const YIELDFI_BASE_POOLS = {
+    'yUSD': '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
+    'vyUSD': '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
+};
+
+async function harvestTvl(api, owners) {
+    const harvestPools = Object.values(HARVEST_POOLS);
+    const balanceCalls = harvestPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
+    }); 
+}
+
+async function wasabiTvl(api, owners) {
+    const wasabiPools = Object.values(WASABI_POOLS);
+    const balanceCalls = wasabiPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
+    });
+}
+
+async function auraTvl(api, owners) {
+    const auraPools = Object.values(AURA_POOLS);
+    const balanceCalls = auraPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
+    });
+}
+
+async function yieldfiTvl(api, owners) {
+    const yieldfiPools = Object.values(YIELDFI_BASE_POOLS);
+    const balanceCalls = yieldfiPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
+    });
+}
+
 async function compoundTvl(api, owners) {
     const balanceCalls = owners.map(owner => ({ target: COMPOUND_TOKEN_ADDRESS, params: [owner] }));
     const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
@@ -73,5 +120,9 @@ module.exports = {
     morphoTvl,
     sparkTvl,
     compoundTvl,
-    moonwellTvl
+    moonwellTvl,
+    harvestTvl,
+    wasabiTvl,
+    auraTvl,
+    yieldfiTvl
 };
