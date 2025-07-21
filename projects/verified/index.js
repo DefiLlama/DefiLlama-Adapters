@@ -1,6 +1,6 @@
 const { request, gql } = require("graphql-request");
 
-//supported chains configuration for Verified.
+//supported chain subgraphs configuration for Verified.
 //TODO: add more chains
 const chainsConfig = {
   base: {
@@ -13,13 +13,18 @@ const chainsConfig = {
   },
 };
 
-//Todo: first 1000 pools?
 //fetch pools with at least 1 primarySubscriptions or orders or marginOrders
 const getChainSecurities = async (url) => {
-  const QUERY = gql`
+  let allPools = [];
+  let skip = 0;
+  const pageSize = 1000;
+  let hasMore = true;
+
+  const QUERY = (skip) => gql`
     query {
       pools: pools(
-        first: 1000
+        first: ${pageSize}
+        skip: ${skip}
         where: {
           or: [
             { primarySubscriptions_: { executionDate_gt: 0 } }
@@ -78,7 +83,6 @@ const getChainSecurities = async (url) => {
           investor {
             id
           }
-          executionDate
         }
         marginOrders {
           id
@@ -121,13 +125,20 @@ const getChainSecurities = async (url) => {
       }
     }
   `;
-  return await request(url, QUERY)
-    .then((res) => {
-      return res.pools;
-    })
-    .catch((err) => {
-      return [];
-    });
+
+  while (hasMore) {
+    try {
+      const data = await request(url, QUERY(skip));
+      const pools = data?.pools || [];
+      allPools.push(...pools);
+      skip += pageSize;
+      if (pools.length < pageSize) hasMore = false;
+    } catch (err) {
+      break;
+    }
+  }
+
+  return allPools;
 };
 
 const getChainTvls = (chain) => {
