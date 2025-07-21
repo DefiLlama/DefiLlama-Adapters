@@ -105,12 +105,11 @@ async function getDeposits(connection) {
     const collateralBalances = getCollateralValuesForLoans(loans);
 
     const strats = await getStrategies(connection);
-    const outstandingDebt = getOutstandingDebt(strats);
     const idleCapitalBalances = getIdleCapital(strats);
 
     let rawDeposits = {};
 
-    for (const obj of [collateralBalances, outstandingDebt, idleCapitalBalances]) {
+    for (const obj of [collateralBalances, idleCapitalBalances]) {
       for (const [key, value] of Object.entries(obj)) {
         rawDeposits[key] = (rawDeposits[key] || 0) + value;
       }
