@@ -1,6 +1,6 @@
 const { request, gql } = require("graphql-request");
 
-//supported chains configuration for Verified.
+//supported chain subgraphs configuration for Verified.
 //TODO: add more chains
 const chainsConfig = {
   base: {
@@ -13,139 +13,194 @@ const chainsConfig = {
   },
 };
 
-//gets and record tvl for each token
-const getTokensTvl = async (tokens, tvls) => {
-  let table = {};
-  tokens.forEach((token, idx) => {
-    if (!table[token]) {
-      table[token] = tvls[idx];
-    } else {
-      table[token] = table[token] + tvls[idx];
-    }
-  });
-  return table;
-};
+//fetch pools with at least 1 primarySubscriptions or orders or marginOrders
+const getChainSecurities = async (url) => {
+  let allPools = [];
+  let skip = 0;
+  const pageSize = 1000;
+  let hasMore = true;
 
-//customise table indicating the address and tvl of each token with the total of all tvl
-const customiseTable = async (tokens, tvls) => {
-  let table = [];
-  tokens.forEach((token, idx) => {
-    table.push({ Token: token, Tvl: tvls[idx] });
-  });
-  table.push({
-    Total: tvls.reduce((a, b) => {
-      return a + b;
-    }, 0),
-  });
-  return table;
-};
-
-//Todo: first 100 pools?
-//fetch secondary, primary and margin issue pools
-const getChainPools = async (url) => {
-  const QUERY = gql`
+  const QUERY = (skip) => gql`
     query {
       pools: pools(
-        first: 100
+        first: ${pageSize}
+        skip: ${skip}
         where: {
-          poolType_in: ["MarginIssue", "SecondaryIssue", "PrimaryIssue"]
+          or: [
+            { primarySubscriptions_: { executionDate_gt: 0 } }
+            { orders_: { timestamp_gt: 0 } }
+            { marginOrders_: { timestamp_gt: 0 } }
+          ]
         }
       ) {
-        id
-        address
-        poolType
         security
         currency
         tokens {
-          id
-          address
           symbol
           name
           decimals
-          priceRate
-          balance
+          index
+          address
+        }
+        orders {
+          id
+          pool {
+            id
+            address
+            security
+            currency
+            tokens {
+              symbol
+              name
+              decimals
+              index
+              address
+            }
+            tokensList
+          }
+          tokenIn {
+            address
+          }
+          tokenOut {
+            address
+          }
+          amountOffered
+          priceOffered
+          orderReference
+          creator
+          timestamp
+        }
+        primarySubscriptions {
+          subscription
+          price
+          executionDate
+          assetIn {
+            address
+          }
+          assetOut {
+            address
+          }
+          investor {
+            id
+          }
+        }
+        marginOrders {
+          id
+          pool {
+            id
+            address
+            security
+            currency
+            margin
+            tokensList
+            tokens {
+              symbol
+              name
+              decimals
+              index
+              address
+            }
+          }
+          creator
+          tokenIn {
+            id
+            symbol
+            name
+            decimals
+            address
+          }
+          tokenOut {
+            id
+            symbol
+            name
+            decimals
+            address
+          }
+          amountOffered
+          priceOffered
+          stoplossPrice
+          timestamp
+          orderReference
         }
       }
     }
   `;
-  return await request(url, QUERY)
-    .then((res) => {
-      return res.pools;
-    })
-    .catch((err) => {
-      return [];
-    });
+
+  while (hasMore) {
+    try {
+      const data = await request(url, QUERY(skip));
+      const pools = data?.pools || [];
+      allPools.push(...pools);
+      skip += pageSize;
+      if (pools.length < pageSize) hasMore = false;
+    } catch (err) {
+      break;
+    }
+  }
+
+  return allPools;
 };
 
 const getChainTvls = (chain) => {
   const subgraphUrl = chainsConfig[chain].subgraphUrl;
   let allCurrencies = [];
   let allTvls = [];
-  let secondaryTvls = [];
-  let secondarySecurities = [];
-  let primaryTvls = [];
-  let primarySecurities = [];
-  let marginTvls = [];
-  let marginSecurities = [];
   return async (_, _1, _2, { api }) => {
-    const pools = await getChainPools(subgraphUrl);
-    pools.map((pool) => {
-      const currencyDetails = pool.tokens.find(
-        (tk) => tk.address.toLowerCase() === pool.currency.toLowerCase()
-      ); //get currency details since TVL will be in currency worth.
-      pool.tokens.map((tkn) => {
-        if (
-          tkn.address.toLowerCase() === pool.security.toLowerCase() &&
-          Number(tkn.balance) > 0
-        ) {
-          const currencyRate = Number(currencyDetails.priceRate);
-          allCurrencies.push(pool.currency);
-          allTvls.push(
-            Number(tkn.balance) *
-              currencyRate *
-              10 ** Number(currencyDetails.decimals)
-          ); //upscaled balance in currency decimals
-          if (pool.poolType.toLowerCase() === "SecondaryIssue".toLowerCase()) {
-            secondarySecurities.push(tkn.symbol); //track secondary securities locked in pool
-            secondaryTvls.push(Number(tkn.balance)); //track secondary securities balance locked in pool
+    const pools = await getChainSecurities(subgraphUrl);
+
+    const securitiesPromise = pools.map(async (pool) => {
+      const currencyDetails = pool?.tokens.find(
+        (tkn) => tkn?.address?.toLowerCase() === pool?.currency?.toLowerCase()
+      );
+
+      //get TVL of currency for primary orders
+      if (pool?.primarySubscriptions?.length > 0) {
+        pool?.primarySubscriptions.map((sub) => {
+          if (
+            sub?.assetIn?.address?.toLowerCase() ===
+            pool?.currency?.toLowerCase()
+          ) {
+            allTvls.push(
+              Number(sub.subscription) * 10 ** Number(currencyDetails.decimals)
+            );
+            allCurrencies.push(sub.assetIn.address);
           }
-          if (pool.poolType.toLowerCase() === "PrimaryIssue".toLowerCase()) {
-            primarySecurities.push(tkn.symbol); //track primary securities locked in pool
-            primaryTvls.push(Number(tkn.balance)); //track primary securities balance locked in pool
+        });
+      }
+
+      //get TVL of currency for secondary orders
+      if (pool?.orders?.length > 0) {
+        pool?.orders.map((ord) => {
+          if (
+            ord?.tokenIn?.address?.toLowerCase() ===
+            pool?.currency?.toLowerCase()
+          ) {
+            allTvls.push(
+              Number(ord.amountOffered) * 10 ** Number(currencyDetails.decimals)
+            );
+            allCurrencies.push(ord.tokenIn.address);
           }
-          if (pool.poolType.toLowerCase() === "MarginIssue".toLowerCase()) {
-            marginSecurities.push(tkn.symbol); //track margin securities locked in pool
-            marginTvls.push(Number(tkn.balance)); //track margin securities balance locked in pool
+        });
+      }
+
+      //get TVL of currency for margin orders
+      if (pool?.marginOrders?.length > 0) {
+        pool?.marginOrders.map((ord) => {
+          if (
+            ord?.tokenIn?.address?.toLowerCase() ===
+            pool?.currency?.toLowerCase()
+          ) {
+            allTvls.push(
+              Number(ord.amountOffered) * 10 ** Number(currencyDetails.decimals)
+            );
+            allCurrencies.push(ord.tokenIn.address);
           }
-        }
-      });
+        });
+      }
     });
-    if (secondarySecurities.length > 0) {
-      const Tvls = await getTokensTvl(secondarySecurities, secondaryTvls);
-      const tabl = await customiseTable(Object.keys(Tvls), Object.values(Tvls));
-      console.log(
-        "---------",
-        chain,
-        "TVL Details For Secondary Pools ---------"
-      );
-      console.table(tabl);
-    }
-    if (primarySecurities.length > 0) {
-      const Tvls = await getTokensTvl(primarySecurities, primaryTvls);
-      const tabl = await customiseTable(Object.keys(Tvls), Object.values(Tvls));
-      console.log(
-        "---------",
-        chain,
-        "TVL Details For Primary Pools ---------"
-      );
-      console.table(tabl);
-    }
-    if (marginSecurities.length > 0) {
-      const Tvls = await getTokensTvl(marginSecurities, marginTvls);
-      const tabl = await customiseTable(Object.keys(Tvls), Object.values(Tvls));
-      console.log("---------", chain, "TVL Details For Margin Pools ---------");
-      console.table(tabl);
-    }
+
+    await Promise.all(securitiesPromise);
+
     if (allCurrencies.length > 0) {
       return api.addTokens(allCurrencies, allTvls);
     } else {
