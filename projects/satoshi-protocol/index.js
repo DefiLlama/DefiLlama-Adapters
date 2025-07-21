@@ -13,6 +13,7 @@ function createExports({
   strategyVaultsV2, // { address, fromBlock }[]
   vaultManagerList, // { address }[]
   farmList, // { address, asset }[]
+  safeVaultManagerList, // {vaultAddress, asset}[]
 }) {
   return {
     tvl: async (api) => {
@@ -73,7 +74,13 @@ function createExports({
         }
       }
 
-      return sumTokens2({ api, tokensAndOwners, })
+      if (safeVaultManagerList) {
+        safeVaultManagerList.forEach((item) => {
+          tokensAndOwners.push([item.asset, item.vaultAddress])
+        });
+      }
+
+      return sumTokens2({ api, tokensAndOwners, });
     },
   }
 }
@@ -197,6 +204,7 @@ module.exports = {
     troveList: [
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WBTC Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // BTCB Collateral(V2)
+      '0xDAc0551246A7F75503e8C908456005E828C35A40', // SolvBTC Collateral(V2)
     ],
     vaultManagerList: [
       {
@@ -205,6 +213,10 @@ module.exports = {
     ],
   }),
   hemi: createExports({
+    safeVaultManagerList: [{
+      vaultAddress: '0xceBd9461e494Fe3190b4755CFf63815C5cf2605D',
+      asset: '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a', // enzoBTC
+    }],
     troveList: [
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // HemiBTC Collateral(V2)
