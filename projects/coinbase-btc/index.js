@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 const { sumTokens } = require('../helper/chain/bitcoin.js');
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
-async function tvl() {
+async function tvl(api) {
   const response = await fetch("https://www.coinbase.com/cbbtc/proof-of-reserves.json", {
     "headers": {
       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
@@ -33,7 +33,7 @@ async function tvl() {
 
   const bitcoinWallets = res.reserveAddresses.map(item => item.address)
 
-  return sumTokens({ owners: bitcoinWallets })
+  return sumTokens({ timestamp: api.timestamp, owners: bitcoinWallets })
 }
 
 module.exports = {
