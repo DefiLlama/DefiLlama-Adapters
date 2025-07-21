@@ -204,6 +204,7 @@ module.exports = {
     troveList: [
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WBTC Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // BTCB Collateral(V2)
+      '0xDAc0551246A7F75503e8C908456005E828C35A40', // SolvBTC Collateral(V2)
     ],
     vaultManagerList: [
       {
