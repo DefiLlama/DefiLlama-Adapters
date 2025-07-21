@@ -8,27 +8,18 @@ const BITS_VAULTS = [
 // Ethereum token addresses
 const WBTC = ADDRESSES.ethereum.WBTC
 
-// Token configuration for different vaults - only WBTC is supported
-const VAULT_TOKENS = {
-  [BITS_VAULTS[0]]: [WBTC],
-}
-
 async function tvl(api) {
-  // Track TVL for all vaults
-  for (const vault of BITS_VAULTS) {
-    
-    const tokens = VAULT_TOKENS[vault] || [WBTC]
-    
-    // Get balances for each token in the vault
-    for (const token of tokens) {
-      const balance = await api.call({
-        abi: 'erc20:balanceOf',
-        target: token,
-        params: [vault],
-      })
-      api.add(token, balance)
-    }
-  }
+  // Get WBTC balances for all vaults using multicall
+  const balances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: BITS_VAULTS.map(vault => ({
+      target: WBTC,
+      params: [vault]
+    }))
+  })
+  
+  // Add all balances to the API
+  api.add(WBTC, balances)
 }
 
 module.exports = {
