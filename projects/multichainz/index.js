@@ -19,6 +19,9 @@ async function getTokens(api, pool) {
 const tvl = async (api) => {
   const { pool } = config[api.chain]
   const tokens = await getTokens(api, pool)
+  // Note: This counts all tokens held by the pool contract
+  // For lending protocols, this includes both supplied and borrowed amounts
+  // DefiLlama will automatically subtract borrowed amounts when both tvl and borrowed functions are exported
   return api.sumTokens({ owner: pool, tokens })
 }
 
@@ -29,6 +32,8 @@ const borrowed = async (api) =>  {
   api.add(tokens, bals)
 }
 
+module.exports.methodology = "Counts the tokens locked in the multichainz pool contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. The TVL calculation includes all tokens held by the pool contract, and DefiLlama automatically subtracts borrowed amounts to show available liquidity."
 Object.entries(config).forEach(([chain]) => {
+  // Deprecated chain, set borrowed to 0
   module.exports[chain] = chain === 'plume' ? { tvl: () => ({}) } : { tvl, borrowed }
 });
