@@ -1,5 +1,5 @@
 const { siloTvl, aaveTvl, eulerTvl, pendleTvl, beetsTvl, penpieTvl, yieldfiTvl } = require('./helpers');
-const { aaveTvl: aaveTvlBase, fluidTvl, morphoTvl, sparkTvl } = require('./base');
+const { aaveTvl: aaveTvlBase, fluidTvl, morphoTvl, sparkTvl, compoundTvl, moonwellTvl } = require('./base');
 const { get } = require('../helper/http');
 
 async function sonicTvl(api) {
@@ -23,7 +23,9 @@ async function baseTvl(api) {
         aaveTvlBase(api, owners),
         fluidTvl(api, owners),
         morphoTvl(api, owners),
-        sparkTvl(api, owners)
+        sparkTvl(api, owners),
+        compoundTvl(api, owners),
+        moonwellTvl(api, owners)
     ]);
 }
 

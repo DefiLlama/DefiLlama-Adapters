@@ -19,7 +19,7 @@ module.exports = {
   },
   hyperliquid: {
     tvl: sumTokensExport(
-      { owners: [NFT_CLUB_WORLD_CUP_HYPERLIQUID], token: "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb" },
+      { owners: [NFT_CLUB_WORLD_CUP_HYPERLIQUID], token: ADDRESSES.corn.USDT0 },
     ),
   }
 }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function tvl(api) {
@@ -50,8 +51,8 @@ async function tvlSonic(api) {
 
   // wS and scUSD address
   const tokens = [
-    '0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38',
-    '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
+    ADDRESSES.sonic.wS,
+    ADDRESSES.sonic.scUSD,
   ]
   return sumTokens2({ api, owners, tokens})
 }

@@ -10,6 +10,28 @@ const MORPHO_POOL_ADDRESSES = {
 const SPARK_POOL_ADDRESSES = {
     'USDC': '0x3128a0F7f0ea68E7B7c9B00AFa7E41045828e858'
 };
+const COMPOUND_TOKEN_ADDRESS = '0xb125E6687d4313864e53df431d5425969c15Eb2F';
+
+const MOONWELL_POOL_ADDRESSES = {
+    'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
+    'USDC': '0xEdc817A28E8B93B03976FBd4a3dDBc9f7D176c22'
+};
+
+async function compoundTvl(api, owners) {
+    const balanceCalls = owners.map(owner => ({ target: COMPOUND_TOKEN_ADDRESS, params: [owner] }));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    const total = balances.reduce((sum, bal) => sum + Number(bal) / 1e6, 0);
+    api.add(COMPOUND_TOKEN_ADDRESS, total);
+}
+
+async function moonwellTvl(api, owners) {
+    const moonwellPools = Object.values(MOONWELL_POOL_ADDRESSES);
+    const balanceCalls = moonwellPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
+    });
+}
 
 async function aaveTvl(api, owners) {
     const balanceCalls = owners.map(owner => ({ target: AAVE_TOKEN_ADDRESS, params: [owner] }));
@@ -49,5 +71,7 @@ module.exports = {
     aaveTvl,
     fluidTvl,
     morphoTvl,
-    sparkTvl
+    sparkTvl,
+    compoundTvl,
+    moonwellTvl
 };

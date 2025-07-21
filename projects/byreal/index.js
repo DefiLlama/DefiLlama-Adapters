@@ -3,7 +3,7 @@ const { PublicKey } = require('@solana/web3.js')
 
 const CLMM = 'REALQqNEomY6cQGZJUGwywTBD2UmDT32rZcNnfxQ5N2'
 
-async function tv() {
+async function tvl() {
   const connection = getConnection()
   const accounts = await connection.getProgramAccounts(new PublicKey(CLMM), {
     filters: [{
@@ -21,7 +21,7 @@ async function tv() {
 
 module.exports = {
   timetravel: false,
-  solana: { tv },
+  solana: { tvl },
 
 };
 

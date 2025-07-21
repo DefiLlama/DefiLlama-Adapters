@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const MCD_VAT = '0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b'
 const VAT_topic = '0x65fae35e00000000000000000000000000000000000000000000000000000000'
@@ -91,6 +92,7 @@ module.exports = {
   methodology: `Counts all the tokens being used as collateral of CDPs. On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko. Also includes PSM USDC balance.`,
   start: '2017-12-18', // 12/18/2017 @ 12:00am (UTC)
   ethereum: {
-    tvl
+    tvl,
+    staking: staking("0xc6132FAF04627c8d05d6E759FAbB331Ef2D8F8fD","0xc20059e0317DE91738d13af027DfC4a50781b066")
   },
 };
