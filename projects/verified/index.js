@@ -5,106 +5,125 @@ const { request, gql } = require("graphql-request");
 const chainsConfig = {
   base: {
     subgraphUrl:
-      "https://api.studio.thegraph.com/query/77016/wallet-base/version/0.2.0",
+      "https://api.studio.thegraph.com/query/77016/vault-base/version/latest",
   },
   ethereum: {
     subgraphUrl:
-      "https://api.studio.thegraph.com/query/77016/wallet-mainnet/version/latest",
+      "https://api.studio.thegraph.com/query/77016/vault-mainnet/version/latest",
   },
 };
 
-//gets and record tvl for each token
-const getTokensTvl = async (tokens, tvls) => {
-  let table = {};
-  tokens.forEach((token, idx) => {
-    if (!table[token]) {
-      table[token] = tvls[idx];
-    } else {
-      table[token] = table[token] + tvls[idx];
-    }
-  });
-  return table;
-};
-
-//customise table indicating the address and tvl of each token
-const customiseTable = async (tokens, tvls) => {
-  let table = [];
-  tokens.forEach((token, idx) => {
-    table.push({ Token: token, Tvl: tvls[idx] });
-  });
-  return table;
-};
-
-//Todo: first 1000 securities?
-//fetch securities with at least 1 primarySubscribers_ or secondaryInvestors_ or marginTraders_
+//Todo: first 1000 pools?
+//fetch pools with at least 1 primarySubscriptions or orders or marginOrders
 const getChainSecurities = async (url) => {
   const QUERY = gql`
     query {
-      securities: securities(
+      pools: pools(
         first: 1000
         where: {
           or: [
-            { primarySubscribers_: { timestamp_gt: 0 } }
-            { secondaryInvestors_: { timestamp_gt: 0 } }
-            { marginTraders_: { timestamp_gt: 0 } }
+            { primarySubscriptions_: { executionDate_gt: 0 } }
+            { orders_: { timestamp_gt: 0 } }
+            { marginOrders_: { timestamp_gt: 0 } }
           ]
         }
       ) {
         security
         currency
-        isin
-        id
-        primarySubscribers {
-          id
-          pool
-          currency
-          security {
-            id
-          }
-          cashSwapped
-          investor {
-            id
-          }
-          securitySwapped
-          timestamp
-          bought
+        tokens {
+          symbol
+          name
+          decimals
+          index
+          address
         }
-        secondaryInvestors {
+        orders {
           id
-          currency
-          security {
+          pool {
             id
-          }
-          amount
-          investor {
-            id
-          }
-          issuer {
-            id
-          }
-          price
-          timestamp
-          tradeRef
-          DPID
-        }
-        marginTraders {
-          id
-          security {
-            id
+            address
             security
+            currency
+            tokens {
+              symbol
+              name
+              decimals
+              index
+              address
+            }
+            tokensList
           }
-          securityTraded
-          currency
-          cashTraded
-          orderRef
+          tokenIn {
+            address
+          }
+          tokenOut {
+            address
+          }
+          amountOffered
+          priceOffered
+          orderReference
+          creator
           timestamp
+        }
+        primarySubscriptions {
+          subscription
+          price
+          executionDate
+          assetIn {
+            address
+          }
+          assetOut {
+            address
+          }
+          investor {
+            id
+          }
+          executionDate
+        }
+        marginOrders {
+          id
+          pool {
+            id
+            address
+            security
+            currency
+            margin
+            tokensList
+            tokens {
+              symbol
+              name
+              decimals
+              index
+              address
+            }
+          }
+          creator
+          tokenIn {
+            id
+            symbol
+            name
+            decimals
+            address
+          }
+          tokenOut {
+            id
+            symbol
+            name
+            decimals
+            address
+          }
+          amountOffered
+          priceOffered
+          stoplossPrice
+          timestamp
+          orderReference
         }
       }
     }
   `;
   return await request(url, QUERY)
     .then((res) => {
-      return res.securities;
+      return res.pools;
     })
     .catch((err) => {
       return [];
@@ -116,111 +135,56 @@ const getChainTvls = (chain) => {
   let allCurrencies = [];
   let allTvls = [];
   return async (_, _1, _2, { api }) => {
-    const securities = await getChainSecurities(subgraphUrl);
+    const pools = await getChainSecurities(subgraphUrl);
 
-    const securitiesPromise = securities.map(async (security) => {
+    const securitiesPromise = pools.map(async (pool) => {
+      const currencyDetails = pool?.tokens.find(
+        (tkn) => tkn?.address?.toLowerCase() === pool?.currency?.toLowerCase()
+      );
+
       //get TVL of currency for primary orders
-      if (security?.primarySubscribers?.length > 0) {
-        const primaryTvls = security?.primarySubscribers
-          .map((sub) => (sub.bought ? Number(sub.cashSwapped) : 0))
-          .flat(); //get all currency amount in
-        const primaryCurrencies = security?.primarySubscribers
-          .map((i) => i.currency)
-          .flat();
-        primaryTvls.forEach((tvl) => {
-          allTvls.push(tvl);
+      if (pool?.primarySubscriptions?.length > 0) {
+        pool?.primarySubscriptions.map((sub) => {
+          if (
+            sub?.assetIn?.address?.toLowerCase() ===
+            pool?.currency?.toLowerCase()
+          ) {
+            allTvls.push(
+              Number(sub.subscription) * 10 ** Number(currencyDetails.decimals)
+            );
+            allCurrencies.push(sub.assetIn.address);
+          }
         });
-        primaryCurrencies.forEach((curr) => {
-          allCurrencies.push(curr);
-        });
-        const names = await api.multiCall({
-          abi: "string:name",
-          calls: primaryCurrencies,
-        }); //use each currency per subcription instead of single currency??
-        const currencyTvls = await getTokensTvl(names, primaryTvls);
-        const tabl = await customiseTable(
-          Object.keys(currencyTvls),
-          Object.values(currencyTvls)
-        );
-        console.log(
-          "---------",
-          chain,
-          "TVL Details For Primary Pool ---------"
-        );
-        console.table(tabl);
       }
 
       //get TVL of currency for secondary orders
-      if (security?.secondaryInvestors?.length > 0) {
-        const secondaryCurrencies = security?.secondaryInvestors
-          .map((i) => i.currency)
-          .flat();
-        const currenciesDecimals = await api.multiCall({
-          abi: "uint:decimals",
-          calls: secondaryCurrencies,
-        }); //use each currency per investor instead of single currency??
-        const secondaryTvls = security?.secondaryInvestors
-          .map((i, idx) => {
-            const rawAmount = Number(i.amount) / 10 ** 18;
-            const rawPrice = Number(i.price) / 10 ** 18;
-            const currencyAmt = rawAmount * rawPrice;
-            return currencyAmt * 10 ** currenciesDecimals[idx];
-          })
-          .flat();
-        secondaryTvls.forEach((tvl) => {
-          allTvls.push(tvl);
+      if (pool?.orders?.length > 0) {
+        pool?.orders.map((ord) => {
+          if (
+            ord?.tokenIn?.address?.toLowerCase() ===
+            pool?.currency?.toLowerCase()
+          ) {
+            allTvls.push(
+              Number(ord.amountOffered) * 10 ** Number(currencyDetails.decimals)
+            );
+            allCurrencies.push(ord.tokenIn.address);
+          }
         });
-        secondaryCurrencies.forEach((curr) => {
-          allCurrencies.push(curr);
-        });
-        const names = await api.multiCall({
-          abi: "string:name",
-          calls: secondaryCurrencies,
-        });
-        const currencyTvls = await getTokensTvl(names, secondaryTvls);
-        const tabl = await customiseTable(
-          Object.keys(currencyTvls),
-          Object.values(currencyTvls)
-        );
-        console.log(
-          "---------",
-          chain,
-          "TVL Details For Secondary Pool ---------"
-        );
-        console.table(tabl);
       }
 
       //get TVL of currency for margin orders
-      if (security?.marginTraders?.length > 0) {
-        const marginTvls = security?.marginTraders
-          .map((i) => {
-            return Number(i.cashTraded);
-          })
-          .flat();
-        const marginCurrencies = security?.marginTraders
-          .map((i) => i.currency)
-          .flat();
-        marginTvls.forEach((tvl) => {
-          allTvls.push(tvl);
+      if (pool?.marginOrders?.length > 0) {
+        pool?.marginOrders.map((ord) => {
+          if (
+            ord?.tokenIn?.address?.toLowerCase() ===
+            pool?.currency?.toLowerCase()
+          ) {
+            allTvls.push(
+              Number(ord.amountOffered) * 10 ** Number(currencyDetails.decimals)
+            );
+            allCurrencies.push(ord.tokenIn.address);
+          }
         });
-        marginCurrencies.forEach((curr) => {
-          allCurrencies.push(curr);
-        });
-        const names = await api.multiCall({
-          abi: "string:name",
-          calls: marginCurrencies,
-        }); //use each currency per margin traders instead of single currency??
-        const currencyTvls = await getTokensTvl(names, marginTvls);
-        const tabl = await customiseTable(
-          Object.keys(currencyTvls),
-          Object.values(currencyTvls)
-        );
-        console.log(
-          "---------",
-          chain,
-          "TVL Details For Margin Pool ---------"
-        );
-        console.logTable(tabl);
       }
     });
 
