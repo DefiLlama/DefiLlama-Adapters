@@ -1,6 +1,7 @@
 const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { get } = require('../helper/http')
 
 const readerContract = {
   arbitrum: '0x437CEa956B415e97517020490205c07f4a845168',
@@ -9,6 +10,8 @@ const readerContract = {
   fantom: '0xfb0DCDC30BF892Ec981255e7133AEcb8ea642b76',
   optimism: '0x572E9467b2585c3Ab6D9CbEEED9619Fd168254D5',
 }
+
+const arbUSDCAddress = '0xaf88d065e77c8cc2239327c5edb3a432268e5831'
 
 async function tvl(chain, block) {
   const { output: storage } = await sdk.api.abi.call({
@@ -34,6 +37,13 @@ async function tvl(chain, block) {
       sdk.util.sumSingleBalance(balances,chain+':'+token.tokenAddress,balance.toString())
     })
   })
+
+  // mux3 tvl
+  if (chain === 'arbitrum') {
+      let data = await get('https://app.mux.network/api/mux3/liquidityAsset')
+      sdk.util.sumSingleBalance(balances,chain+':'+arbUSDCAddress,data.totalLiquidity*1e6)
+  }
+
   return balances
 }
 
