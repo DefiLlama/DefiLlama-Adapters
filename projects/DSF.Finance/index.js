@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { getData } = require('../../helper/http');
+const { get } = require('../helper/http');  
 
 const dsfPoolStables = '0x22586ea4fdaa9ef012581109b336f0124530ae69';
 
@@ -48,7 +48,7 @@ async function getTVL(contractAddress) {
 
 async function getAPYFromAPI() {
   try {
-    const response = await getData(
+    const response = await get(
       'https://yields.llama.fi/chart/8a20c472-142c-4442-b724-40f2183c073e',
     );
     if (response && response.status === 'success' && response.data && response.data.length > 0) {
