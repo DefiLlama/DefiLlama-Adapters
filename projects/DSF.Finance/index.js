@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { getData, formatChain } = require('../../utils/shared');
+const { getData } = require('../../helper/http');
 
 const dsfPoolStables = '0x22586ea4fdaa9ef012581109b336f0124530ae69';
 
@@ -20,7 +20,7 @@ const collectPools = async () => {
   return [
     {
       pool: `${dsfPoolStables}-ethereum`,
-      chain: formatChain('ethereum'),
+      chain: 'ethereum',
       project: 'dsf.finance',
       symbol: 'USDT-USDC-DAI',
       tvlUsd: tvl / 1e18,
@@ -48,7 +48,9 @@ async function getTVL(contractAddress) {
 
 async function getAPYFromAPI() {
   try {
-    const response = await getData('https://yields.llama.fi/chart/8a20c472-142c-4442-b724-40f2183c073e');
+    const response = await getData(
+      'https://yields.llama.fi/chart/8a20c472-142c-4442-b724-40f2183c073e',
+    );
     if (response && response.status === 'success' && response.data && response.data.length > 0) {
       const latestData = response.data[response.data.length - 1];
       return { apy: latestData.apy };
