@@ -10,6 +10,10 @@ const ARRAKIS_TOKEN_PREFIX = 'Arrakis Vault V2'
 const ESXAI_POSITION_ORACLE_NAME = 'EsXai Position Oracle'
 const SYMBIOTIC_TOKEN_PREFIX = 'Symbiotic Vault'
 const MORPHO_BLUE_POSITION_ORACLE_NAME = 'MorphoBluePositionOracle'
+const MORPHO_ERC4626_ASSETS = [
+  '0xd9a442856c234a39a81a089c06451ebaa4306a72',
+  '0x9d60947d49911e3c262c108f97fe07cde209f9a7'
+]
 
 const config = {
   polygon: {
@@ -504,14 +508,14 @@ async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
     const marketInfo = marketInfos[index];
 
     if (position.collateral > 0) {
-      try {
+      if (MORPHO_ERC4626_ASSETS.includes(marketParam.collateralToken.toLowerCase())) {
         // If the collateral token is an ERC4626, we need to convert it to the underlying asset
         const [underlyingAsset, collateralAssets] = await Promise.all([
           api.call({ abi: 'address:asset', target: marketParam.collateralToken }),
           api.call({ abi: abi.convertToAssets, target: marketParam.collateralToken, params: [position.collateral] })
         ]);
         api.addToken(underlyingAsset, collateralAssets, vault);
-      } catch (e) {
+      } else {
         api.addToken(marketParam.collateralToken, position.collateral, vault);
       }
     }
