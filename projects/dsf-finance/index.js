@@ -1,4 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('./coreAssets.json')
 
 const DSF_Contract_usdLP = "0x22586ea4fdaa9ef012581109b336f0124530ae69";
 const DSF_Contract_Old_contract = "0x68837EefaA5852775928E9695079bF6444e99253";
