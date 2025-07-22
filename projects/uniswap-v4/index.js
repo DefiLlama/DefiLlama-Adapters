@@ -40,3 +40,5 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
+
+module.exports.isHeavyProtocol = true;

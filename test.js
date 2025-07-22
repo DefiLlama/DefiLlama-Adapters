@@ -136,7 +136,7 @@ function validateHallmarks(hallmark) {
 
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
-  const passedTimestamp = process.argv[3]
+  const passedTimestamp = process.argv[3] ? Math.floor(new Date(process.argv[3]) / 1000) : undefined
   if (passedTimestamp !== undefined) {
     unixTimestamp = Number(passedTimestamp)
 
@@ -466,7 +466,7 @@ function buildPricesGetQueries(readKeys) {
   let query = burl
 
   for (const key of readKeys) {
-    if (query.length + key.length > 3000) {
+    if (query.length + key.length > 2500) {
       queries.push(query.slice(0, -1))
       query = burl
     }

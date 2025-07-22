@@ -1,4 +1,17 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { function_view } = require("../helper/chain/aptos");
+const ADDRESSES = require("../helper/coreAssets.json");
+
+async function get_tvl_aptos() {
+  const tvl = await function_view({
+    functionStr:
+      "0xdc223ee5e19919d3f7f65c41d2dec698496e07b703a0575bc49b1615a1973b56::vault::get_total_assets",
+    args: [],
+    type_arguments: [],
+  });
+
+  return tvl;
+}
 
 const config = {
   ethereum: {
@@ -52,42 +65,43 @@ const config = {
 
 const stablecoins = {
   ethereum: [
-    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-    "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
+    ADDRESSES.ethereum.USDC, // USDC
+    ADDRESSES.ethereum.USDT, // USDT
   ],
   bsc: [
-    "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC
-    "0x55d398326f99059ff775485246999027b3197955", // USDT
+    ADDRESSES.bsc.USDC, // USDC
+    ADDRESSES.bsc.USDT, // USDT
   ],
 
   base: [
-    "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", //USDC
-    "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2", // USDT
+    ADDRESSES.base.USDC, //USDC
+    ADDRESSES.base.USDT, // USDT
   ],
 
   arbitrum: [
-    "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC
-    "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9", // USDT
+    ADDRESSES.arbitrum.USDC_CIRCLE, // USDC
+    ADDRESSES.arbitrum.USDT, // USDT
   ],
   optimism: [
-    "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", // USDC
-    "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", // USDT
+    ADDRESSES.optimism.USDC_CIRCLE, // USDC
+    ADDRESSES.optimism.USDT, // USDT
   ],
   core: [
-    "0xa4151B2B3e269645181dCcF2D426cE75fcbDeca9", // USDC
-    "0x900101d06A7426441Ae63e9AB3B9b0F63Be145F1", // USDT
+    ADDRESSES.core.USDC, // USDC
+    ADDRESSES.core.USDT, // USDT
   ],
   soneium: [
-    "0xbA9986D2381edf1DA03B0B9c1f8b00dc4AacC369", // USDC
+    ADDRESSES.soneium.USDC, // USDC
     "0x102d758f688a4C1C5a80b116bD945d4455460282", // USDT
   ],
 };
+const chainExports = {};
 
 Object.keys(config).forEach((chain) => {
   const chainConfig = config[chain];
   const tokens = stablecoins[chain];
 
-  module.exports[chain] = {
+  chainExports[chain] = {
     tvl: async (api) => {
       await sumTokens2({
         api,
@@ -109,3 +123,19 @@ Object.keys(config).forEach((chain) => {
     },
   };
 });
+
+chainExports.aptos = {
+  tvl: async (api) => {
+    const [addresses, amounts] = await get_tvl_aptos();
+    for (let i = 0; i < addresses.length; ++i) {
+      api.add(addresses[i], amounts[i]);
+    }
+  },
+};
+
+module.exports = {
+  ...chainExports,
+  timetravel: true,
+  methodology:
+    "TVL counts stablecoins in fundVault, dexBridgeVault, and all strategies contracts.",
+};
