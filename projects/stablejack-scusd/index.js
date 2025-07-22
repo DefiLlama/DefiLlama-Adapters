@@ -1,10 +1,12 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const ADDRESSES = require('../helper/coreAssets.json');
 
+const BTCB = '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E'; // BTCB token on Goat (underlying for artBTC)
+
 module.exports = {
   misrepresentedTokens: true,
   methodology:
-    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, tracks artBTC tokens held by SJ-wartBTC contract.",
+    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, tracks artBTC tokens held by SJ-wartBTC contract, mapped to BTCB price for valuation.",
   sonic: {
     tvl: async (api) => {
       const tokensAndOwners = [
@@ -26,11 +28,15 @@ module.exports = {
     }),
   },
   goat: {
+    misrepresentedTokens: true,
     tvl: sumTokensExport({
       chain: 'goat',
       tokensAndOwners: [
-        ['0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4', '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3'], // artBTC in SJ-wartBTC
+        ['0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4', '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3'], // artBTC in SJ-wartBTC vault
       ],
+      tokenMappings: {
+        '0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4': BTCB, // map artBTC price to BTCB
+      },
     }),
   },
 };
