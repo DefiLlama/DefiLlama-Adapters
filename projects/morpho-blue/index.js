@@ -78,11 +78,11 @@ const config = {
     fromBlock: 3669141,
   },
   */
-  basecamp:{
-    morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
-    fromBlock: 4804080,
-    blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
-  },
+  // basecamp:{
+  //   morphoBlue: "0xc7CAd9B1377Eb8103397Cb07Cb5c4f03eb2eBEa8",
+  //   fromBlock: 4804080,
+  //   blackList: ['0x68d6024e5168f16d3453a23b36f393a559be7aef'],
+  // },
   hyperliquid: {
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
     blackList: ['0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110'],
