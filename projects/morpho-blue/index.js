@@ -3,10 +3,6 @@ const { getLogs } = require("../helper/cache/getLogs");
 const abi = require("../helper/abis/morpho.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-module.exports = {
-  methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
-};
-
 const config = {
   ethereum: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
@@ -89,6 +85,7 @@ const config = {
   // },
   hyperliquid: {
     morphoBlue: "0x68e37dE8d93d3496ae143F2E900490f6280C57cD",
+    blackList: ['0x66a1e37c9b0eaddca17d3662d6c05f4decf3e110'],
     fromBlock: 1988429,
   },
   plume_mainnet: {
@@ -107,10 +104,10 @@ const config = {
     morphoBlue: "0xD50F2DffFd62f94Ee4AEd9ca05C61d0753268aBc",
     fromBlock: 2741069,
   },
-  btnx: {
-    morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
-    fromBlock: 450759,
-  },
+  // btnx: {
+  //   morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
+  //   fromBlock: 450759,
+  // },
    tac: {
      morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
      fromBlock: 1308542,
@@ -119,87 +116,45 @@ const config = {
     morphoBlue: "0xA902A365Fe10B4a94339B5A2Dc64F60c1486a5c8",
     fromBlock: 14640172,
   }
-};
+}
+
+const eventAbis = {
+  createMarket: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)'
+}
+
+const nullAddress = ADDRESSES.null
+
+const getMarket = async (api) => {
+  const { morphoBlue, fromBlock, blacklistedMarketIds = [] } = config[api.chain]
+  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true })
+  return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
+}
+
+const tvl = async (api) => {
+  const { morphoBlue, blackList = [] } = config[api.chain]
+  const markets = await getMarket(api)
+  const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
+  const collCalls = [...new Set(marketInfos.map(m => m.collateralToken.toLowerCase()).filter(addr => addr !== nullAddress))];
+  const withdrawQueueLengths = await api.multiCall({ calls: collCalls, abi: abi.metaMorphoFunctions.withdrawQueueLength, permitFailure: true })
+  const filterMarkets = marketInfos.filter((_, i) => withdrawQueueLengths[i] == null || withdrawQueueLengths[i] > 30 || withdrawQueueLengths[i] < 0);
+  const tokens = filterMarkets.flatMap(({ collateralToken, loanToken }) => [collateralToken, loanToken])
+  return sumTokens2({ api, owner: morphoBlue, tokens, blacklistedTokens: blackList })
+}
+
+const borrowed = async (api) => {
+  const { morphoBlue } = config[api.chain]
+  const markets = await getMarket(api)
+  const marketInfos = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.idToMarketParams })
+  const marketDatas = await api.multiCall({ target: morphoBlue, calls: markets, abi: abi.morphoBlueFunctions.market })
+
+  marketDatas.forEach((data, idx) => {
+    const { collateralToken, loanToken } = marketInfos[idx];
+    if (collateralToken.toLowerCase() !== '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') {
+      api.add(loanToken, data.totalBorrowAssets);
+    }
+  });
+}
 
 Object.keys(config).forEach((chain) => {
-  const {
-    morphoBlue,
-    fromBlock,
-    blackList = [],
-    blacklistedMarketIds = [],
-  } = config[chain];
-  module.exports[chain] = {
-    tvl: async (api) => {
-      let marketIds = await getMarkets(api);
-      if (blacklistedMarketIds.length > 0) {
-        const lowerCaseBlacklist = blacklistedMarketIds.map(id => id.toLowerCase());
-        marketIds = marketIds.filter(id => !lowerCaseBlacklist.includes(id.toLowerCase()));
-      }
-      const marketInfo = await api.multiCall({
-        target: morphoBlue,
-        calls: marketIds,
-        abi: abi.morphoBlueFunctions.idToMarketParams,
-      });
-
-      // Filter out MetaMorpho vaults using multiCall
-      const withdrawQueueLengths = await api.multiCall({
-        calls: marketInfo.map(m => m.collateralToken),
-        abi: abi.metaMorphoFunctions.withdrawQueueLength,
-        permitFailure: true,
-      });
-
-      const filteredMarketInfo = marketInfo.filter((_, i) => {
-        const length = withdrawQueueLengths[i];
-        return length === null || length > 30 || length < 0;
-      });
-
-      const tokens = filteredMarketInfo
-        .map((i) => [i.collateralToken, i.loanToken])
-        .flat();
-
-      return sumTokens2({
-        api,
-        owner: morphoBlue,
-        tokens,
-        blacklistedTokens: blackList,
-      });
-    },
-    borrowed: async (api) => {
-      let marketIds = await getMarkets(api);
-      if (blacklistedMarketIds.length > 0) {
-        const lowerCaseBlacklist = blacklistedMarketIds.map(id => id.toLowerCase());
-        marketIds = marketIds.filter(id => !lowerCaseBlacklist.includes(id.toLowerCase()));
-      }
-      const marketInfo = await api.multiCall({
-        target: morphoBlue,
-        calls: marketIds,
-        abi: abi.morphoBlueFunctions.idToMarketParams,
-      });
-      const marketData = await api.multiCall({
-        target: morphoBlue,
-        calls: marketIds,
-        abi: abi.morphoBlueFunctions.market,
-      });
-      marketData.forEach((i, idx) => {
-        if (marketInfo[idx].collateralToken.toLowerCase() === '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd'.toLowerCase()) return;
-        api.add(marketInfo[idx].loanToken, i.totalBorrowAssets);
-      });
-      return api.getBalances();
-    },
-  };
-
-  async function getMarkets(api) {
-    const logs = await getLogs({
-      api,
-      target: morphoBlue,
-      eventAbi:
-        "event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)",
-      onlyArgs: true,
-      fromBlock,
-      topics: [
-        "0xac4b2400f169220b0c0afdde7a0b32e775ba727ea1cb30b35f935cdaab8683ac",
-      ],
-    });
-    return logs.map((i) => i.id);
-  }
+  module.exports[chain] = { tvl, borrowed }
 })
