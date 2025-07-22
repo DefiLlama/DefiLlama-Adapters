@@ -1,19 +1,14 @@
-const { call } = require("../helper/chain/ton");
+const { sumTokensExport } = require("../helper/chain/ton");
 
 
-const vauldWalletAddress = 'EQC47kTbsuZTXAs-rgegRvg3nwNCyqKp5bVZZqrncyV8xVk5'
+const vaultAddress = 'EQChGuD1u0e7KUWHH5FaYh_ygcLXhsdG2nSHPXHW8qqnpZXW'
+const USDe = 'EQAIb6KmdfdDR7CN1GBqVJuP25iCnLKCvBlJ07Evuu2dzP5f'
 
-async function tvl(api){
-     const result = await call({ target: vauldWalletAddress, abi: "get_wallet_data"})
-     return {
-        "coingecko:tether": result[0]/1e6
-     }
-}
 
 module.exports = {
   timetravel: false,
   methodology: "USDe is locked on the vault smart contract (EQChGuD1u0e7KUWHH5FaYh_ygcLXhsdG2nSHPXHW8qqnpZXW)",
   ton: {
-    tvl: tvl
+    tvl: sumTokensExport({ owners: [vaultAddress], tokens: [USDe], }),
   }
 }
