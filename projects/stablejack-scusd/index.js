@@ -4,7 +4,8 @@ const ADDRESSES = require('../helper/coreAssets.json');
 module.exports = {
   misrepresentedTokens: true,
   methodology:
-    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets().",
+    "TVL includes scUSD, STS, wOS, and wstkscUSD on Sonic and Avalanche chains. Also includes artBTC held by SJ-wartBTC wrapper contract on Goat chain.",
+
   sonic: {
     tvl: async (api) => {
       const tokensAndOwners = [
@@ -17,6 +18,7 @@ module.exports = {
       return api.sumTokens({ tokensAndOwners });
     },
   },
+
   avax: {
     tvl: sumTokensExport({
       tokensAndOwners: [
@@ -24,5 +26,21 @@ module.exports = {
         ['0x06d47F3fb376649c3A9Dafe069B3D6E35572219E', '0xC37914DacF56418A385a4883512Be8b8279c94C5'], // savUSD
       ],
     }),
+  },
+
+  goat: {
+    tvl: async (api) => {
+      const artBTC = '0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4'; // artBTC
+      const sjWartBTC = '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3'; // SJ-wartBTC (wrapper contract)
+
+      const balance = await api.call({
+        abi: 'erc20:balanceOf',
+        target: artBTC,
+        params: [sjWartBTC],
+      });
+
+      api.add(artBTC, balance);
+      return api.getBalances();
+    },
   },
 };
