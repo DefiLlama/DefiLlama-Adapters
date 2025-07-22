@@ -225,7 +225,6 @@ module.exports = {
           //   'access-token': token
           // }
         })
-        console.log('watch', data)
         return data.map(address => address)
       }
     })
