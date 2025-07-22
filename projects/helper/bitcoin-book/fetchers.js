@@ -215,4 +215,21 @@ module.exports = {
     const res = await getConfig('solv-protocol/solv-btc-non-lst', API_URL)
     return res.bitcoin
   },
+
+  btnx: async () => {
+    const staticAddresses = await getConfig('btnx', undefined, {
+      fetcher: async () => {
+        // const token = getEnv('FBTC_ACCESS_TOKEN')
+        const { data } = await axios.get('https://sidecar.botanixlabs.com/api/addressList', {
+          // headers: {
+          //   'access-token': token
+          // }
+        })
+        console.log('watch', data)
+        return data.map(address => address)
+      }
+    })
+   
+    return Array.from(new Set(staticAddresses))
+  },
 }
