@@ -15,7 +15,7 @@ const configBalancer = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -53,7 +53,7 @@ Object.keys(config).forEach(chain => {
 Object.keys(configBalancer).forEach(chain => {
   const { factory, fromBlock } = configBalancer[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const managedPoolFactory = await api.call({ target: factory, abi: 'address:managedPoolFactory'})
       const vault = await api.call({ target: managedPoolFactory, abi: 'address:getVault'})
       const logs = await getLogs({

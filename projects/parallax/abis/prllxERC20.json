@@ -1,5 +1,5 @@
 {
   "strategyToId": "function strategyToId(address) view returns (uint256)",
   "strategiesERA": "function strategies(uint256) view returns (uint256 fee, uint256 totalStaked, uint256 totalShares, uint256 lastCompoundTimestamp, uint256 cap, address strategy, address incentivization, uint32 timelock, bool isActive, uint256 usersCount)",
-  "strategies": "function strategies(uint256) view returns (tuple fees, uint256 totalDeposited, uint256 totalStaked, uint256 lastCompoundTimestamp, uint256 cap, uint256 rewardPerBlock, uint256 rewardPerShare, uint256 lastUpdatedBlockNumber, address strategy, uint32 timelock, bool isActive, address rewardToken, uint256 usersCount)"
+  "strategies": "function strategies(uint256) view returns (uint256 fees, uint256 totalDeposited, uint256 totalStaked, uint256 lastCompoundTimestamp, uint256 cap, uint256 rewardPerBlock, uint256 rewardPerShare, uint256 lastUpdatedBlockNumber, address strategy, uint32 timelock, bool isActive, address rewardToken, uint256 usersCount)"
 }

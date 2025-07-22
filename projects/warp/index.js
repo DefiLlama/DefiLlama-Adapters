@@ -1,7 +1,7 @@
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(_timestamp, block, _1, { api }) {
+async function tvl(api) {
   const owners = []
   const tokens = []
   for (const group of tokenHolderMap) {
@@ -27,7 +27,7 @@ async function tvl(_timestamp, block, _1, { api }) {
 }
 
 module.exports = {
-  start: 1610650220,
+  start: '2021-01-14',
   ethereum: { tvl },
 }
 

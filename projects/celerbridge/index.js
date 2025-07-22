@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
@@ -133,9 +132,9 @@ const liquidityBridgeTokens = [
   {
     // WBTC
     arbitrum: ADDRESSES.arbitrum.WBTC,
-    avax: "0x50b7545627a5162F82A992c33b87aDc75187B218",
+    avax: ADDRESSES.avax.WBTC_e,
     ethereum: ADDRESSES.ethereum.WBTC,
-    fantom: "0x321162Cd933E2Be498Cd2267a90534A804051b11",
+    fantom: ADDRESSES.fantom.WBTC,
     polygon: ADDRESSES.polygon.WBTC,
   },
   {
@@ -227,7 +226,7 @@ const liquidityBridgeTokens = [
     arbitrum: "0xaE6aab43C4f3E0cea4Ab83752C278f8dEbabA689",
     bsc: "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623",
     ethereum: "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0",
-    optimism: ADDRESSES.op_bnb.USDC,
+    optimism: ADDRESSES.op_bnb.USDT,
     polygon: "0x08C15FA26E519A78a666D19CE5C646D55047e0a3",
   },
   {
@@ -334,9 +333,9 @@ const liquidityBridgeTokens = [
   },
   {
     // GOVI
-    arbitrum: "0x07E49d5dE43DDA6162Fa28D24d5935C151875283",
+    arbitrum: ADDRESSES.arbitrum.GOVI,
     ethereum: "0xeEAA40B28A2d1b0B08f6f97bB1DD4B75316c6107",
-    polygon: "0x43Df9c0a1156c96cEa98737b511ac89D0e2A1F46",
+    polygon: ADDRESSES.polygon.GOVI,
   },
   {
     // PEOPLE
@@ -376,7 +375,7 @@ const liquidityBridgeTokens = [
   },
   {
     // FXS
-    ethereum: "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+    ethereum: ADDRESSES.ethereum.FXS,
   },
   {
     // MAI
@@ -530,7 +529,10 @@ let chains = liquidityBridgeTokens.reduce((allChains, token) => {
 }, new Set());
 
 Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
-module.exports = chainExports(chainTvl, Array.from(chains));
+
+Array.from(chains).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [

@@ -11,7 +11,7 @@ const tokens = [
     '0xDCd92eb568157D3c1a6b3AE53ADF18a230bc304A', // HBLP
 ];
 // node test.js projects/rivrkitty.js
-async function pool2(timestamp, _block, { moonriver: block }, { api }) {
+async function pool2(api) {
     const { amount } = await api.call({
         target: masterchefContract,
         abi: abi.userInfo,

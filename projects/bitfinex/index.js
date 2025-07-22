@@ -1,12 +1,10 @@
 const { cexExports } = require('../helper/cex')
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   bitcoin: {
-    owners: [
-      '1Kr6QSydW9bFQG1mXiPNNu6WpJGmUa9i1g',  //BTC hot wallet
-      '3JZq4atUahhuA9rLhXLMhhTo133J9rF97j',  //BTC cold wallet
-      'bc1qgdjqv0av3q56jvd82tkdjpy7gdp9ut8tlqmgrpmv24sq90ecnvqqjwvw97', // BTC cold wallet
-    ],
+    owners: bitcoinAddressBook.bitfinex,
   },
   ethereum: {
     owners: [
@@ -119,15 +117,21 @@ const config = {
   },
   zilliqa: {
     owners: [
-      'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
-      'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
+      // 'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
+      // 'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
     ]
   },
-/*
   doge: {
     owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']
   }
-*/
 }
 
-module.exports = cexExports(config)
+const withdrawalAddresses = [
+  '0xe733455faddf4999176e99a0ec084e978f5552ed',
+  '0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec',
+]
+
+module.exports = mergeExports([
+  cexExports(config),
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])

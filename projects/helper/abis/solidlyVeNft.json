@@ -1,0 +1,7 @@
+{
+    "tokensOfOwner": "function tokensOfOwner(address) view returns (uint256[])",
+    "ownerToNFTokenIdList": "function ownerToNFTokenIdList(address, uint256) view returns (uint256)",
+    "tokenOfOwnerByIndex": "function tokenOfOwnerByIndex(address _owner, uint256 _tokenIndex) view returns (uint256)",
+    "locked": "function locked(uint256 _tokenId) view returns (tuple(int128 amount, uint256 end, bool isPermanent))",
+    "lockedSimple": "function locked(uint256 _tokenId) view returns (tuple(int128 amount, uint256 end))"
+}

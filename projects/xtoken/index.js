@@ -46,7 +46,7 @@ async function ethTvl(api) {
   const aaveBals = await api.multiCall({ abi: abi.getFundHoldings, calls: [xaaveaAddr, xaavebAddr] })
   const xu3lpsBals = (await api.multiCall({ abi: abi.getNav, calls: xu3lps })).reduce((acc, curr) => acc + +curr / 1e12, 0)
   const xu3lpsdBals = (await api.multiCall({ abi: abi.getNav, calls: [xu3lpdAddr] })).reduce((acc, curr) => acc + +curr, 0)
-  const xu3lpsedBals = (await api.multiCall({ abi: abi.getNav, calls: [xu3lpeAddr] })).reduce((acc, curr) => acc + +curr / 1e10, 0)
+  // const xu3lpsedBals = (await api.multiCall({ abi: abi.getNav, calls: [xu3lpeAddr] })).reduce((acc, curr) => acc + +curr / 1e10, 0)
   const xinchTvlRaw = (await api.multiCall({ abi: abi.getNav, calls: [xinchaAddr, xinchbAddr] })).reduce((acc, curr) => acc + +curr, 0)
   const xalphaaTvlRaw = (await api.multiCall({ abi: abi.getNav, calls: [xalphaaAddr] })).reduce((acc, curr) => acc + +curr, 0)
   const xbntaStakedRaw = (await api.multiCall({ abi: abi.totalAllocatedNav, calls: [xbntaAddr] })).reduce((acc, curr) => acc + +curr, 0)
@@ -58,7 +58,7 @@ async function ethTvl(api) {
   api.addTokens(aaveAddr, aaveBals)
   api.addTokens(usdcAddr, xu3lpsBals)
   api.addTokens(wethAddr, xu3lpsdBals)
-  api.addTokens(wbtcAddr, xu3lpsedBals)
+  // api.addTokens(wbtcAddr, xu3lpsedBals)
   api.addTokens(inchAddr, xinchTvlRaw)
   api.addTokens(bntAddr, xbntaStakedRaw)
   api.addTokens(bntAddr, xbntaBufferRaw)
@@ -89,7 +89,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,

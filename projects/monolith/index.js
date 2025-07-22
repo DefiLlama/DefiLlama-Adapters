@@ -6,7 +6,7 @@ const solidAddress = "0x777172D858dC1599914a1C4c6c9fC48c99a60990";
 const solidlyLensAddress = "0x7778D2091E3c97a259367c2cfc621cF839Bbbe2c";
 const lpDepositor = "0x822ef744c568466d40ba28b0f9e4a4961837a46a";
 
-async function tvl(time, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
     const balances = {};
 
     const addBalance = (tokenAddress, amount) => sdk.util.sumSingleBalance(balances, tokenAddress, amount, api.chain)

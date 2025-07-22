@@ -2,7 +2,7 @@
 const { getConfig } = require('./helper/cache')
 const { sumUnknownTokens } = require('./helper/unknownTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   let data = await getConfig('goosedefi', 'https://api.goosedefi.com/vaults/getGusdVaultsData')
   const pools = data.map(i => i.stratAddress)
   const tokens = data.map(i => i.stakeTokenAddress)

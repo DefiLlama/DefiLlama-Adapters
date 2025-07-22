@@ -1,8 +1,7 @@
-const axios = require("axios");
-
+const { get } = require('../helper/http')
 async function tvl() {
-  const tvlData = await axios.get("https://preserver.mytokenpocket.vip/v1/pledge/global")
-  return { ethereum: tvlData.data.data.data.staking_total} 
+  const tvlData = await get("https://preserver.mytokenpocket.vip/v1/pledge/global")
+  return { ethereum: tvlData.data.data.staking_total} 
 }
 
 module.exports = {

@@ -2,7 +2,7 @@
 const { getConfig } = require('./helper/cache')
 const { sumUnknownTokens } = require('./helper/unknownTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   let data = await getConfig('lemuria', 'https://raw.githubusercontent.com/lemuriafinance/lemuria-frontend-pub/main/src/features/configure/vault/milkomeda_pools.js')
   data = JSON.parse(data.slice(data.indexOf('[')).replaceAll('\'', '"').replaceAll(/\n\s+(\w+)/g, '"$1"').split('\n').map(i => i.replaceAll(/\s+\/\/.*/g, '').trim()).join('').replaceAll(';', '').replaceAll(/,(\]|\})/g, '$1'))
   const pools = data.map(i => i.earnContractAddress)

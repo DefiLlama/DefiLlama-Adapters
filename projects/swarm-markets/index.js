@@ -12,9 +12,9 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock, wrapper } = config[chain]
   const tvlFunc = v1Tvl(factory, fromBlock)
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
-      const balances_ = await tvlFunc(_, _b, _cb, { api, })
+      const balances_ = await tvlFunc(api)
       const tokens = Object.keys(balances_)
       const uTokens = await api.multiCall({ abi: 'function xTokenToToken(address) view returns (address)', target: wrapper, calls: tokens.map(i => i.replace(api.chain + ':', '')) })
       tokens.forEach((v, i) => {

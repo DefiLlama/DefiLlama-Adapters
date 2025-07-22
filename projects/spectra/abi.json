@@ -1,0 +1,13 @@
+{
+  "markets": {
+    "balances": "function balances(uint256 index) view returns (uint256)"
+  },
+  "pt": {
+    "getIBT": "function getIBT() view returns (address)",
+    "balanceOf": "function balanceOf(address account) view returns (uint256)"
+  },
+  "vault": {
+    "convertToAsset": "function convertToAssets(uint256 shares) view returns (uint256 assets)",
+    "asset": "function asset() view returns (address assetTokenAddress)"
+  }
+}

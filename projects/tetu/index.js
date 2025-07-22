@@ -17,7 +17,7 @@ const EXCLUDED_VAULTS = {
 }
 
 module.exports = {
-  start: 1628024400,  //Tue Aug 03 2021 21:00:00 GMT+0000
+  start: '2021-08-03',  //Tue Aug 03 2021 21:00:00 GMT+0000
   misrepresentedTokens: true,
 };
 
@@ -50,7 +50,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { bookkeeper, contract_Reader, controllerV2, veTETU } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
+    tvl: async (api) => {
 
       // * ############### Tetu V1 vaults
       const vaultsCall = [];

@@ -14,7 +14,7 @@ const Contracts = {
   DIP_ETH_LP: "0x0BE2EF4a1CC597dDd2a354505E08d7934802029d"
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens2({ api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
 }
 
@@ -24,6 +24,6 @@ module.exports = {
     pool2: pool2(Contracts.DIP_ETH_LBP, Contracts.DIP_ETH_LP),
   },
   hallmarks: [
-    [Math.floor(new Date('2023-08-14') / 1e3), 'Referral contract exploited'],
+    ['2023-08-14', 'Referral contract exploited'],
   ],
 };

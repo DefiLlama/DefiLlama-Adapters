@@ -1,6 +1,5 @@
-const { ethers } = require('ethers');
 const { erc4626Abi, stargateLpStakingAbi, stargatePoolAbi } = require('./abi');
-
+const ADDRESSES = require('../helper/coreAssets.json')
 const sgETHMapping = {
   ethereum: '0x72E2F4830b9E45d52F80aC08CB2bEC0FeF72eD9c',
   arbitrum: '0x82CbeCF39bEe528B5476FE6d1550af59a9dB6Fc0',
@@ -36,7 +35,7 @@ const getStrategyVaultValues = async (api, vaultAddresses) => {
   // map stETH to ETH
   const stETH = sgETHMapping[api.chain]?.toLowerCase();
   assets = assets.map((asset) => {
-    return asset.toLowerCase() === stETH ? ethers.constants.AddressZero : asset;
+    return asset.toLowerCase() === stETH ? ADDRESSES.null : asset;
   });
 
   return [assets, convertedAmounts];

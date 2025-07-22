@@ -1,14 +1,13 @@
-const sdk = require('@defillama/sdk');
-const axios = require('axios');
+const { get } = require('../helper/http');
 
 
 //Full Calculations for computing TVL for Resonate Finance is done internally by Resonate and exposed via API
 //API Endpoint: https://api.resonate.finance/{chainId}/tvl
 //https://github.com/Revest-Finance/railway-monorepo/blob/main/src/api.ts",
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let usdValue = 0;
   do {
-      const {data, success} = await axios.get(`https://api.resonate.finance/${api.chainId}/tvl`);
+      const data = await get(`https://api.resonate.finance/${api.chainId}/tvl`);
       usdValue = data;
   } while (usdValue == 0)
   

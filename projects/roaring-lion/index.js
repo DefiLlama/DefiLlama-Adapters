@@ -8,7 +8,7 @@ const rewardPool = "0x119ad97096fff8629347f5af7f36ac1a32de4f2d";
 
 
 //users can only lock lps in the boardroom
-async function pool2(timestamp, block, chainBlocks, { api }) {
+async function pool2(api) {
   return unwrapBalancerToken({ api, balancerToken: "0x950667EF678bAe44Ef037c721E564C365FC8303E",    owner: boardroom, }) 
 }
 

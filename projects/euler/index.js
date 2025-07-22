@@ -5,7 +5,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 module.exports = {
   hallmarks: [[1654387200, "Whale Deposit"],
   [1667865600, "FTX collapse"],
-  [Math.floor(new Date('2023-03-13') / 1e3), 'Protocol was hacked'],],
+  // ['2023-03-13', 'Protocol was hacked'],
+],
   methodology: `TVL is supply balance minus borrows the euler contract. Borrows are pulled from the subgraph.`,
   ethereum: {
     tvl, 
@@ -13,7 +14,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const EULER = '0x27182842e098f60e3d576794a5bffb0777e025d3'
   const logs = await getLogs({
     api,
@@ -27,7 +28,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return sumTokens2({ api, owner: EULER, tokens: logs.map(i => i.underlying)})
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const EULER = '0x27182842e098f60e3d576794a5bffb0777e025d3'
   const logs = await getLogs({
     api,

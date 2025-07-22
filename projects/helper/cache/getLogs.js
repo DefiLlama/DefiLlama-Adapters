@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction,  skipCacheRead = false}) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -15,17 +15,20 @@ async function getLogs({ target,
     toBlock = 1e11
   else
     await api.getBlock()
+
   const block = api.block
   const chain = api.chain ?? 'ethereum'
+
+  if (chain === 'xlayer') onlyUseExistingCache = true // xlayer rpcs severely limit the number of logs that can be fetched, so we need to use the cache
+
+
   if (!toBlock) toBlock = block
-  if (!toBlock) throw new Error('Missing fromBlock!')
+  if (!toBlock) throw new Error('Missing toBlock!')
 
   let iface
 
   if (eventAbi) {
-    iface = new ethers.utils.Interface([eventAbi])
-    if (typeof eventAbi === 'object')
-      sdk.log(iface.format(ethers.utils.FormatTypes.full))
+    iface = new ethers.Interface([eventAbi])
     if (!topics?.length) {
       const fragment = iface.fragments[0]
       topics = undefined
@@ -53,6 +56,7 @@ async function getLogs({ target,
     const res = iface.parseLog(log)
     if (onlyArgs) return res.args
     res.topics = log.topics.map(i => `0x${i.slice(26)}`)
+    res.blockNumber = log.blockNumber
     return res
   })
 
@@ -78,9 +82,9 @@ async function getLogs({ target,
     // remove possible duplicates
     if (!customCacheFunction)
       cache.logs = cache.logs.filter(i => {
-        let key = i.transactionHash + i.logIndex
-        if (!i.hasOwnProperty('logIndex') || !i.hasOwnProperty('transactionHash')) {
-          sdk.log(i)
+        let key = i.transactionHash + (i.logIndex ?? i.index)
+        if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !i.hasOwnProperty('transactionHash')) {
+          sdk.log(i, i.logIndex, i.index, i.transactionHash)
           throw new Error('Missing crucial field')
         }
         if (logIndices.has(key)) return false
@@ -101,7 +105,7 @@ async function getLogs({ target,
 
     if (skipCache || skipCacheRead) return defaultRes
 
-    let cache = await getCache(cacheFolder, key)
+    let cache = await getCache(cacheFolder, key, { checkIfRecent: true })
     // set initial structure if it is missing / reset if from block is moved to something older
     if (!cache.logs || fromBlock < cache.fromBlock) {
       return defaultRes
@@ -111,7 +115,13 @@ async function getLogs({ target,
   }
 }
 
+async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i }) {
+  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead })
+  return res.map(transform)
+}
+
 module.exports = {
   getLogs,
+  getLogs2,
   getAddress: s => "0x" + s.slice(26, 66),
 }

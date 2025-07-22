@@ -6,7 +6,7 @@ const RS = "0xc25b7244e192d531495c400c64ea914a77e730a2";
 
 const BANK_CONTRACT = "0xc18907269640D11E2A91D7204f33C5115Ce3419e";
 
-const bscTvl = async (timestamp, ethBlock, _, { api }) => {
+const bscTvl = async (api) => {
 
   const poolsInfo = [
     ADDRESSES.bsc.USDT,
@@ -32,6 +32,6 @@ module.exports = {
     staking: staking(rabbitStaking, RS),
     tvl: bscTvl,
   },
-  // deadFrom: "2023-20-20",
+  deadFrom: "2023-20-20",
   methodology: "Counts TVL on all the Farms through Bank Contract; and the Treasury portion on the Rabbit DAO product",
 };

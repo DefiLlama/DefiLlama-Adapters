@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { utils } = require("ethers");
 const { getConfig } = require('../helper/cache');
 
 const tokens = [
@@ -20,7 +19,7 @@ const getActiveMinersFromRPC = async () => {
         let bytes = Buffer.alloc(20);
         bytes.writeUint8(0xff, 0);
         bytes.writeBigUint64BE(BigInt(node), 12);
-        return utils.getAddress('0x' + bytes.toString('hex'));
+        return '0x' + bytes.toString('hex')
     });
 
     if (resp.data.independent !== null) {
@@ -31,7 +30,7 @@ const getActiveMinersFromRPC = async () => {
             let bytes = Buffer.alloc(20);
             bytes.writeUint8(0xff, 0);
             bytes.writeBigUint64BE(BigInt(node), 12);
-            return utils.getAddress('0x' + bytes.toString('hex'));
+            return '0x' + bytes.toString('hex')
         });
     }
     nodes = nodes.concat(node_i)
@@ -40,7 +39,7 @@ const getActiveMinersFromRPC = async () => {
 
 module.exports = {
     filecoin: {
-        tvl: async (_, _1, _2, { api }) => {
+        tvl: async (api) => {
 
             let balances = await sumTokens2({ owner: LENDING_POOL_ADDRESS, tokens, api });
 

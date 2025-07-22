@@ -8,6 +8,25 @@ const { vestingHelper } = require('./cache/vestingHelper')
 const { getTokenPrices, sumUnknownTokens, getLPData, } = require('./cache/sumUnknownTokens')
 const { getUniTVL } = require('./cache/uniswap')
 const { getUniqueAddresses, } = require('./utils')
+const stakingHelper = require('./staking')
+
+function uniTvlExports(config, commonOptions = {}) {
+  const exportsObj = {
+    misrepresentedTokens: !commonOptions.useDefaultCoreAssets,
+  }
+  Object.keys(config).forEach(chain => {
+    exportsObj[chain] =  uniTvlExport(chain, config[chain],commonOptions )[chain]
+  })
+  if (commonOptions.hallmarks) exportsObj.hallmarks = commonOptions.hallmarks
+  if (commonOptions.deadFrom) exportsObj.deadFrom = commonOptions.deadFrom
+  if (typeof commonOptions.staking === 'object') {
+    Object.entries(commonOptions.staking).forEach(([chain, stakingArgs]) => {
+      if (!exportsObj[chain]) exportsObj[chain] = {}
+      exportsObj[chain].staking = stakingHelper.staking(...stakingArgs)
+    })
+  }
+  return exportsObj
+}
 
 function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
   useDefaultCoreAssets = false, }) {
@@ -75,9 +94,9 @@ function pool2({ stakingContract, lpToken, chain, transformAddress, coreAssets =
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
-  return async (_timestamp, _ethBlock, chainBlocks, { api }) => {
-    if (!chain) chain = api.chain
-    const block = chainBlocks[chain]
+  return async (api) => {
+    const chain = api.chain
+    const block = api.block
     if (!transformAddress)
       transformAddress = await getChainTransform(chain)
 
@@ -95,7 +114,7 @@ function sumTokensExport({ tokensAndOwners = [],
   coreAssets = [], owner, tokens, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, abis,
 }) {
-  return (_, _b, _cb, { api }) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, abis, })
+  return (api) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, abis, })
 }
 
 function staking({ tokensAndOwners = [],
@@ -103,7 +122,8 @@ function staking({ tokensAndOwners = [],
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
 
-  return async (_, _b, _cb, { api, chain = 'ethereum', block, }) => {
+  return async (api) => {
+    const { chain, block } = api
     if (!coreAssets.length && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
 
@@ -117,7 +137,7 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = true, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   let allTvl = {}
@@ -206,9 +226,13 @@ const yieldApis = {
 }
 
 async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
-  useDefaultCoreAssets = false, balanceAPI = yieldApis.balance, tokenAPI = yieldApis.token,
+  useDefaultCoreAssets = false, balanceAPI = yieldApis.balance, tokenAPI = yieldApis.token, api,
   restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
 }) {
+  if (api) {
+    chain = api.chain
+    block = api.block
+  }
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
@@ -235,10 +259,11 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }
 
 function uniTvlExport(chain, factory, options = {}) {
-  return {
-    misrepresentedTokens: true,
+  const exportsObj= {
+    misrepresentedTokens: !options.useDefaultCoreAssets,
     [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
   }
+  return exportsObj
 }
 
 module.exports = {
@@ -255,4 +280,5 @@ module.exports = {
   sumTokensExport,
   yieldHelper,
   uniTvlExport,
+  uniTvlExports,
 };

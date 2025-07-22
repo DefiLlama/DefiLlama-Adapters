@@ -17,3 +17,7 @@ Object.keys(config).forEach(chain => {
     tvl: sumTokensExport({ owners: Object.values(contracts), fetchCoValentTokens: true, })
   }
 })
+
+module.exports.hallmarks = [
+  ['2024-01-22', 'Nocturne V1 is being sunset'],
+]

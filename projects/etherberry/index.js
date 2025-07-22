@@ -8,7 +8,7 @@ const WETH_ADDRESS = ADDRESSES.arbitrum.WETH;
 const BERRY_ETH_LP_ADDRESS = "0x6eF6eCD8AC5626525383d72AfaA9a7e7e39C0959";
 const BERRY_ETH_STAKING_POOL = "0xcA4319D51472D7111fa3A103b07fc08fC8b20655";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: FACTORY_CONTRACT,

@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
 const vaults = [
@@ -13,31 +12,10 @@ const vaults = [
   "0x7Cd28e21a89325EB5b2395591E86374522396E77", // WBTC old
 ];
 
-async function tvl(time, ethBlock, chainBlocks) {
-  const chain = "polygon";
-  const block = chainBlocks[chain];
-  const calls = vaults.map((v) => ({ target: v }));
-  const tokens = await sdk.api.abi.multiCall({
-    calls,
-    block,
-    chain,
-    abi: abi.token,
-  });
-  const amounts = await sdk.api.abi.multiCall({
-    calls,
-    block,
-    chain,
-    abi: abi.totalAssets,
-  });
-  const balances = {};
-  for (let i = 0; i < tokens.output.length; i++) {
-    sdk.util.sumSingleBalance(
-      balances,
-      chain + ":" + tokens.output[i].output,
-      amounts.output[i].output
-    );
-  }
-  return balances;
+async function tvl(api) {
+  const tokens = await api.multiCall({ abi: abi.token, calls: vaults })
+  const amounts = await api.multiCall({ abi: abi.totalAssets, calls: vaults })
+  api.addTokens(tokens, amounts)
 }
 
 module.exports = {

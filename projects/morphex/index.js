@@ -16,11 +16,11 @@ const tokenAddressMPXBSC = "0x94C6B279b5df54b335aE51866d6E2A56BF5Ef9b7";
 module.exports = {
     methodology: "Morphex liquidity is calculated by the value of tokens in the MLP pool. TVL also includes MPX staked.",
     fantom: {
-        staking: staking(stakingAddressFantom, tokenAddressMPXFantom, "fantom"),
+        staking: staking(stakingAddressFantom, tokenAddressMPXFantom),
         tvl: sdk.util.sumChainTvls([gmxExports({ vault: vaultAddressFantom }), gmxExports({ vault: vaultAddressFantomMultichain })])
     },
     bsc: {
-        staking: staking(stakingAddressBSC, tokenAddressMPXBSC, "bsc"),
+        staking: staking(stakingAddressBSC, tokenAddressMPXBSC),
         tvl: gmxExports({ vault: vaultAddressBSC })
     },
 };

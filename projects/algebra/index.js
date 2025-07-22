@@ -9,7 +9,7 @@ const startBlocks = {
 }
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const  START_BLOCK = startBlocks[chain]
     const logs = await getLogs({
         api,
@@ -28,6 +28,6 @@ function chainTvl(chain) {
 module.exports = {
   polygon: {
     tvl: chainTvl('polygon'),
-    staking: staking('0x32CFF674763b06B983C0D55Ef2e41B84D16855bb', '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', 'polygon')
+    staking: staking('0x32CFF674763b06B983C0D55Ef2e41B84D16855bb', '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6')
   }
 }

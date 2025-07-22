@@ -86,7 +86,7 @@ async function getApeDepositAddresses(api) {
 /**
  * @returns the amount of JPEG locked on JPEG'd (trait or ltv boosts)
  */
-async function stakingJPEGD(_, _1, _2, { api }) {
+async function stakingJPEGD(api) {
   const providersAddresses = await api.multiCall({
     abi: "address:nftValueProvider",
     calls: VAULTS_ADDRESSES,
@@ -170,7 +170,7 @@ async function autocompoundingTvl(api) {
   );
 }
 
-async function tvl(ts, b, cb, { api }) {
+async function tvl(api) {
   await Promise.all([
     getStakedApeAmount(api),
     vaultsTvl(api),

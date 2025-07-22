@@ -48,8 +48,7 @@ async function tvl(_, _b, {iotex: block}) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: "All the assets in the pool.",
+    methodology: "All the assets in the pool.",
   iotex:{
     tvl,
   },

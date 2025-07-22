@@ -4,7 +4,7 @@ module.exports = {
     [1670856656, "Launch GLP Vaults"]
   ],
   arbitrum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const vaults = [
         '0x1d42783E7eeacae12EbC315D1D2D0E3C6230a068',  // tricrypto
         '0xf9305009fba7e381b3337b5fa157936d73c2cf36',  // dnGmxSeniorVault

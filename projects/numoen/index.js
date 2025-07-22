@@ -14,7 +14,7 @@ const blocks = {
   polygon: 40648569,
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const ownerTokens = []
 
   const logs = await getLogs({

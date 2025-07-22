@@ -3,8 +3,9 @@ const { sumTokensExport } = require("../helper/unknownTokens");
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2023-03-13') / 1e3), 'Euler was hacked'],
+    ['2023-03-13', 'Euler was hacked'],
   ],
+  deadFrom: '2023-03-13',
   ethereum: {
     tvl: sumTokensExport({
       owners: [

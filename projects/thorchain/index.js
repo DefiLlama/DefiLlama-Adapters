@@ -42,7 +42,7 @@ const tokenGeckoMapping = {
 
 const blacklistedPools = []
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const pools = await getCache('https://midgard.ninerealms.com/v2/pools')
   const aChain = api.chain
 
@@ -90,7 +90,7 @@ async function tvl(_, _1, _2, { api }) {
 
 module.exports = {
   hallmarks: [
-    [1626656400, "Protocol paused"],
+    // [1626656400, "Protocol paused"],
     [1631754000, "Protocol resumed"],
   ],
   timetravel: false,

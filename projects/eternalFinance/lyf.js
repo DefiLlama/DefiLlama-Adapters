@@ -1,7 +1,5 @@
-const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
-const { getResource, coreTokens } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
+const { getResource, coreTokensAptos } = require("../helper/chain/aptos");
 const { getPancakeReserveAndLpSupply } = require("./pancake");
 const { getTypeArgs, moduleAddress, resourceAddress } = require("./helper");
 
@@ -23,7 +21,7 @@ function deserializeLyfPool(pools) {
     return lpPools;
 }
 
-function calculateLyfPoolTokens(lyfPools) {
+function calculateLyfPoolTokens(lyfPools, api) {
     const balances = {};
     Object.keys(lyfPools).map((key) => {
         const pool = lyfPools[key];
@@ -38,22 +36,22 @@ function calculateLyfPoolTokens(lyfPools) {
             balanceY,
         }
 
-        const isCoreAssetX = coreTokens.includes(tokenX);
-        const isCoreAssetY = coreTokens.includes(tokenY);
+        const isCoreAssetX = coreTokensAptos.includes(tokenX);
+        const isCoreAssetY = coreTokensAptos.includes(tokenY);
         const nonNeglibleReserves = reserveX !== '0' && reserveY !== '0';
         /// @dev calculate total core assets
         if (isCoreAssetX && isCoreAssetY) {
-            sdk.util.sumSingleBalance(balances, tokenX, balanceX);
-            sdk.util.sumSingleBalance(balances, tokenY, balanceY);
+            api.add(tokenX, balanceX);
+            api.add(tokenY, balanceY);
         } else if (isCoreAssetX) {
-            sdk.util.sumSingleBalance(balances, tokenX, balanceX);
+            api.add(tokenX, balanceX);
             if (nonNeglibleReserves) {
-                sdk.util.sumSingleBalance(balances, tokenX, balanceX);
+                api.add(tokenX, balanceX);
             }
         } else if (isCoreAssetY) {
-            sdk.util.sumSingleBalance(balances, tokenY, balanceY);
+            api.add(tokenY, balanceY);
             if (nonNeglibleReserves) {
-                sdk.util.sumSingleBalance(balances, tokenY, balanceY);
+                api.add(tokenY, balanceY);
             }
         }
     })
@@ -61,15 +59,12 @@ function calculateLyfPoolTokens(lyfPools) {
     return balances;
 }
 
-async function lyfTvl() {
+async function lyfTvl(api) {
     /// @dev get pool resources
     const { pools } = await getResource(resourceAddress, allPoolsStruct);
     const allLyfPools = deserializeLyfPool(pools);
     await getPancakeReserveAndLpSupply(allLyfPools);
-    const balances = calculateLyfPoolTokens(allLyfPools);
-    const tvl = await transformBalances('aptos', balances);
-
-    return tvl;
+    calculateLyfPoolTokens(allLyfPools, api);
 }
 
 module.exports = {

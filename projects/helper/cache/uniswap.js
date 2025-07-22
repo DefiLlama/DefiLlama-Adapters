@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 
 const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
@@ -24,13 +25,11 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
   const abi = { ...uniswapAbi, ...abis }
 
-  return async (_, _b, cb, { api, chain } = {}) => {
-    // console.log(await api.call({ abi: 'address:factory', target: factory }))
-    // console.log(await api.call({ abi: 'address:factory', target: '0x5f0776386926e554cb088df5848ffd7c5f02ebfa' }))
-
-    chain = chain ?? api?.chain
+  return async (api) => {
+    let chain = api?.chain
     if (!chain)
       chain = _chain
+    // console.log(await api.call({ target: factory, abi: 'address:factory' }))
     factory = normalizeAddress(factory, chain)
     blacklist = (blacklistedTokens || blacklist).map(i => normalizeAddress(i, chain))
     const key = `${factory}-${chain}`
@@ -106,7 +105,6 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
           sdk.log('found stable pool: ', stablePoolSymbol)
           sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
-          sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
           sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
         } else {
           data.push({
@@ -134,7 +132,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (cache.pairs) {
       for (let i = 0; i < cache.pairs.length; i++) {
         if (!cache.pairs[i]) {
-          cache.pairs[i] = await api.call({ abi: abi.allPairsLength, target: factory, params: i })
+          cache.pairs[i] = await api.call({ abi: abi.allPairs, target: factory, params: i })
           updateCache = true
         }
         let pair = cache.pairs[i]

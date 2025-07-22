@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('../helper/abis/aave.json');
+const { getLogs } = require('../helper/cache/getLogs')
 
 const addressesProviderRegistry = '0x01b76559D512Fa28aCc03630E8954405BcBB1E02';
 const balanceOfAbi = "function balanceOf(address account) view returns (uint256)";
@@ -8,10 +9,12 @@ const getReserveDataAbi = "function getReserveData(address asset) view returns (
 const getUnderlyingAbi = "function getTokenAmounts(uint amount) external view returns (uint token0Amount, uint token1Amount)";
 const token0Abi = "function TOKEN0() view returns (address token, uint8 decimals)";
 const token1Abi = "function TOKEN1() view returns (address token, uint8 decimals)";
+// v2 getReserves ABI
+const vaultReservesAbi = "function getReserves() view returns (uint baseAmount, uint quoteAmount, uint valueX8)";
+const factory = "0xddec418c1a825ac09ad83cc1a28a2c5bcd746050"
 
-// Aave helper doesnt recognize tokenized Uniswap positions, need to manually
-
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
+  // GoodEntry v1
   const addressesProviders = await api.call({ target: addressesProviderRegistry, abi: abi["getAddressesProvidersList"], })
   const validAddressesProviders = addressesProviders.filter((ap) => ap != ADDRESSES.null)
   const lendingPools = await api.multiCall({ calls: validAddressesProviders, abi: getLpAbi, })
@@ -40,11 +43,25 @@ async function tvl(timestamp, ethBlock, _, { api }) {
       })
     })
   )
+
+  const logs = await getLogs({ api, target: factory, eventAbi: 'event VaultCreated(address vault, address baseToken, address quoteToken, address vaultUpgradeableBeacon)', onlyArgs: true, fromBlock: 155743986, })
+  const vaults = logs.map(log => log.vault)
+
+  // GoodEntry v2
+  let reserves = await api.multiCall({ calls: vaults, abi: vaultReservesAbi })
+  reserves.forEach((v, i) => {
+    api.add(logs[i].baseToken, v.baseAmount)
+    api.add(logs[i].quoteToken, v.quoteAmount)
+  })
+
 }
 
 
 module.exports = {
   methodology:
-    "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending",
+    "For GoodEntry v1, counts the tokens locked in the Aave lending pool fork. For v2, calls a dedicated getReserves() function on the vault.",
+  hallmarks: [
+    [1701376109, "V2 Launch"]
+  ],
   arbitrum: { tvl, }
 };

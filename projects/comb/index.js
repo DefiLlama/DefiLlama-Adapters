@@ -9,7 +9,7 @@ const vaults = [
   '0x77ce0b0e9e629474c69a5d8d5fd9c3e6113dd058',
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const balances = {}
   let pools = await get('https://comb-breakdown.herokuapp.com/pools');
   const prices = {}
@@ -56,6 +56,6 @@ module.exports = {
   methodology: 'Fetches pools (masterchef), vaults, and zcomb data from external APIs and sums up the total locked values (TVL). The TVLs are calculated by taking the lp balances and its price of the strategies and adding them up. The zcomb tvl is calculated by taking the total locked comb and multiplying it by its market value.',
   fantom: {
     tvl,
-    staking: staking('0xdecce40d4176abefb4c709b2220c8396fe710cf7', '0xae45a827625116d6c0c40b5d7359ecf68f8e9afd', 'fantom'),
+    staking: staking('0xdecce40d4176abefb4c709b2220c8396fe710cf7', '0xae45a827625116d6c0c40b5d7359ecf68f8e9afd'),
   }
 }

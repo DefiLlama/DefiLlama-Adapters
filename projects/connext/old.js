@@ -136,7 +136,7 @@ async function xdai(timestamp, ethBlock, {xdai: block}) {
 }
 
 module.exports = {
-  start: 1552065900,  // 03/08/2019 @ 5:25pm (UTC)
+  start: '2019-03-08',  // 03/08/2019 @ 5:25pm (UTC)
   ethereum: {
     tvl: ethereum
   },

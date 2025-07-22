@@ -21,7 +21,7 @@ async function getStaking() {
   return toUSDTBalances(staking)
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { balancerVaults: [{ pools }] } = await cachedGraphQuery('mayfair', url, `{  balancerVaults { pools{ id vaultId } } }`)
   const data = await api.multiCall({ abi: 'function getPoolTokens(bytes32) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)', calls: pools.map(i => ({ target: i.vaultId, params: i.id })) })
   data.forEach(({ tokens, balances }) => api.addTokens(tokens.slice(1), balances.slice(1)))

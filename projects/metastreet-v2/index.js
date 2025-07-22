@@ -1,127 +1,73 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { blockQuery } = require("../helper/http");
 
-const query = (skip) => `
-query nfts($block: Int) {
-  loans(first: 1000, skip: ${skip}, where: { or: [{ status: "Active" }, { status: "Liquidated" }] } block: { number: $block }) {
-    collateralTokenIds
-    collateralToken {
-      id
-    }
-    pool {
-      id
-    }
-  }
-}
-`;
-
-const endpoint =
-  "https://api.studio.thegraph.com/query/49216/metastreet-v2-mainnet-devel/version/latest";
-
-// Constants
-const METASTREET_POOL_FACTORY = "0x1c91c822F6C5e117A2abe2B33B0E64b850e67095";
+const METASTREET_POOL_FACTORY = {
+  ethereum: "0x1c91c822F6C5e117A2abe2B33B0E64b850e67095",
+  base: "0x41cF7ea4Ba650191e829A6bD31B9e2049C78D858",
+  blast: "0x5F42c24Af1227c3c669035a6cB549579ed0F99dF",
+};
 const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 
-// Gets all MetaStreet V2 pools created by PoolFactory and their
-// corresponding currency token
-async function getAllPoolsAndTokens(block) {
-  const pools = (
-    await sdk.api.abi.call({
-      target: METASTREET_POOL_FACTORY,
-      abi: abi.getPools,
-      block,
-    })
-  ).output;
-
-  const tokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.currencyToken,
-      calls: pools.map((pool) => ({
-        target: pool,
-      })),
-      block,
-    })
-  ).output.map((response) => response.output);
-
-  return [pools, tokens];
+async function tvl(api) {
+  const pools = await api.call({
+    target: METASTREET_POOL_FACTORY[api.chain],
+    abi: abi.getPools,
+  });
+  const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools });
+  const ct = await api.multiCall({ abi: abi.collateralToken, calls: pools });
+  const ownerTokens = pools.map((pool, i) => [[tokens[i], ct[i]], pool]);
+  return sumTokens2({ api, ownerTokens, permitFailure: true });
 }
 
-// Calculates total borrowed value across all MetaStreet pools
-async function getBorrowedValue(values, block, pools, tokens) {
+async function borrowed(api) {
+  const pools = await api.call({
+    target: METASTREET_POOL_FACTORY[api.chain],
+    abi: abi.getPools,
+  });
+  const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools });
+  const tokenDecimals = await api.multiCall({
+    abi: "erc20:decimals",
+    calls: tokens.map((token) => ({ target: token })),
+  });
+  const decimalsMap = {};
+  tokens.forEach((token, index) => {
+    decimalsMap[token] = tokenDecimals[index];
+  });
   const poolsBorrowedValue = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       abi: abi.liquidityNodes,
       calls: pools.map((pool) => ({
         target: pool,
         params: [0, MAX_UINT_128],
       })),
-      block,
     })
-  ).output.map((response) =>
-    response.output.reduce(
-      (partialSum, node) => partialSum + +node.value - +node.available,
-      0
-    )
-  );
+  ).map((liquidityNodes, poolIndex) => {
+    const token = tokens[poolIndex];
+    const decimals = decimalsMap[token];
+    const scalingFactor = 10 ** (18 - decimals);
 
-  // Sum up borrowed value of each pool
-  for (let i = 0; i < pools.length; i++) {
-    sdk.util.sumSingleBalance(values, tokens[i], poolsBorrowedValue[i]);
-  }
-
-  return values;
-}
-
-function getMetaStreetBorrowedValue() {
-  return async (_, block) => {
-    const values = {};
-    // Get all pools and tokens
-    const [pools, tokens] = await getAllPoolsAndTokens(block);
-    await getBorrowedValue(values, block, pools, tokens);
-    return values;
-  };
+    return liquidityNodes.reduce((partialSum, node) => {
+      const scaledValue = (+node.value - +node.available) / scalingFactor;
+      return partialSum + scaledValue;
+    }, 0);
+  });
+  api.addTokens(tokens, poolsBorrowedValue);
+  return api.getBalances();
 }
 
 module.exports = {
   ethereum: {
     tvl,
-    borrowed: getMetaStreetBorrowedValue(),
+    borrowed,
+  },
+  base: {
+    tvl,
+    borrowed,
+  },
+  blast: {
+    tvl,
+    borrowed,
   },
   methodology:
     "TVL is calculated by summing the value of token balances and NFTs across all MetaStreet pools. Total borrowed is calculated by subtracting the tokens available from the total value of all liquidity nodes across all pools.",
-  start: 17497132, // Block number of PoolFactory creation
 };
-
-async function tvl(_, _b, _cb, { api }) {
-  const pools = await api.call({
-    target: METASTREET_POOL_FACTORY,
-    abi: abi.getPools,
-  });
-  const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools });
-  const ownerTokens = pools.map((pool, i) => [[tokens[i]], pool]);
-
-  let skip = 0;
-  let allLoans = [];
-
-  /* Maximum subgraph queries: 100000 / 1000 = 100 */
-  while (skip <= 100000) {
-    const { loans } = await blockQuery(endpoint, query(skip), {
-      api,
-      blockCatchupLimit: 600,
-    });
-    if (loans.length === 0) {
-      break;
-    }
-
-    allLoans = allLoans.concat(loans);
-    skip += 1000;
-  }
-
-  allLoans.forEach(async (loan) =>
-    api.add(loan.collateralToken.id, loan.collateralTokenIds.length)
-  );
-
-  return sumTokens2({ api, ownerTokens });
-}

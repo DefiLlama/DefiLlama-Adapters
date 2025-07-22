@@ -1,10 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const sdk = require('@defillama/sdk')
 
 module.exports = {
   doublecounted: true,
   methodology: 'Counts the tokens locked in Strategy Vaults in Uniswap v3 Pools.',
-  start: 1667197843, // Mon Oct 31 2022 06:30:43 GMT+0000
+  start: '2022-10-31', // Mon Oct 31 2022 06:30:43 GMT+0000
 };
 
 const config = {
@@ -33,7 +32,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
 
       const logs = await getLogs({
@@ -50,17 +49,15 @@ Object.keys(config).forEach(chain => {
       const [token0, token1, bals] = await Promise.all([
         api.multiCall({ abi: 'address:token0', calls }),
         api.multiCall({ abi: 'address:token1', calls }),
-        api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 amount0, uint256 amount1)', calls }),
+        api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 amount0, uint256 amount1)', calls, permitFailure: true }),
       ])
 
       bals.forEach((val, i) => {
         if (!val) return;
         const { amount0, amount1 } = val
-        sdk.util.sumSingleBalance(balances, token0[i], amount0, api.chain)
-        sdk.util.sumSingleBalance(balances, token1[i], amount1, api.chain)
+        api.add(token0[i], amount0)
+        api.add(token1[i], amount1)
       })
-
-      return balances
     }
   }
 })

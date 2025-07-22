@@ -76,7 +76,7 @@ module.exports = {
   },
   boba: {
     staking: sdk.util.sumChainTvls([
-      staking(L2LiquidityPool, L2StakingTokens[0], "boba"),
+      staking(L2LiquidityPool, L2StakingTokens[0]),
       staking(L2LiquidityPool, L2StakingTokens[1], "boba", L1StakingTokens[1]),
     ]),
     tvl: bobaTvl_L2,

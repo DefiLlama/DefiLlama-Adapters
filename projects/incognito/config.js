@@ -1,0 +1,76 @@
+const ADDRESSES = require("../helper/coreAssets.json");
+const contract = "0x43D037A562099A4C2c95b1E2120cc43054450629";
+
+module.exports = {
+  chains: [
+    {
+      name: "ethereum",
+      tokens: [
+        ADDRESSES.null,
+        ADDRESSES.ethereum.DAI,
+        ADDRESSES.ethereum.SAI,
+        ADDRESSES.ethereum.LINK,
+        ADDRESSES.ethereum.INU,
+        "0x4F9254C83EB525f9FCf346490bbb3ed28a81C667",
+        "0x4CC19356f2D37338b9802aa8E8fc58B0373296E7",
+        "0x595832F8FC6BF59c85C527fEC3740A1b7a361269",
+        ADDRESSES.ethereum.BAT,
+        "0x55296f69f40Ea6d20E478533C15A6B08B654E758",
+        ADDRESSES.ethereum.AAVE,
+        "0x83e6f1E41cdd28eAcEB20Cb649155049Fac3D5Aa",
+        "0x6c6EE5e31d828De241282B9606C8e98Ea48526E2",
+        "0xaaAEBE6Fe48E54f431b0C390CfaF0b017d09D42d",
+        "0xf34960d9d60be18cC1D5Afc1A6F012A723a28811",
+        "0x4c11249814f11b9346808179Cf06e71ac328c1b5",
+        "0xBBbbCA6A901c926F240b89EacB641d8Aec7AEafD",
+      ],
+      holders: [contract],
+    },
+    {
+      name: "bsc",
+      tokens: [
+        ADDRESSES.null,
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.USDT,
+        "0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE",
+        ADDRESSES.bsc.BUSD,
+        "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+        "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD",
+        ADDRESSES.bsc.ETH,
+        ADDRESSES.bsc.BTCB,
+        "0xbA2aE424d960c26247Dd6c32edC70B295c744C43",
+        "0xd5d0322b6bAb6a762C79f8c81A0B674778E13aeD",
+        "0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47",
+        "0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402",
+        ADDRESSES.bsc.WBNB,
+        "0x4338665CBB7B2485A8855A139b75D5e34AB0DB94",
+      ],
+      holders: [contract],
+    },
+    {
+      name: "avax",
+      tokens: [ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt],
+      holders: [contract],
+    },
+    {
+      name: "polygon",
+      tokens: [
+        ADDRESSES.null,
+        ADDRESSES.polygon.WMATIC_1,
+        ADDRESSES.polygon.USDC,
+        ADDRESSES.polygon.USDT,
+        ADDRESSES.polygon.WBTC,
+        ADDRESSES.polygon.USDC_CIRCLE,
+        ADDRESSES.polygon.DAI,
+        ADDRESSES.polygon.WETH_1,
+        "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",
+      ],
+      holders: [contract],
+    },
+    {
+      name: "fantom",
+      tokens: [ADDRESSES.null, ADDRESSES.fantom.WFTM],
+      holders: [contract],
+    },
+  ],
+};

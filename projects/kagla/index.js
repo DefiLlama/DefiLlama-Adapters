@@ -4,7 +4,7 @@ const { staking } = require('../helper/staking')
 
 const START_BLOCK = 724359
 
-async function astar(_timestamp, _block, {astar: block}, { api }) {
+async function astar(api) {
   return getBalances(api)
 }
 

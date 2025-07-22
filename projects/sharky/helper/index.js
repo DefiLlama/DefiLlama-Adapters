@@ -16,7 +16,7 @@ const getLoans = once(async () => {
 const SHARKY_PROGRAM_ID = "SHARKobtfF1bHhxD2eqftjHBdVSCbKo9JtgK71FhELP";
 const SHARKY_IDL = require("./sharky.json");
 
-async function borrowed(timestamp, _, _1, { api }) {
+async function borrowed(api) {
   let loans = await getLoans()
   loans = loans.map(i => i.account)
   api.log('loan count: ',loans.length)
@@ -24,13 +24,13 @@ async function borrowed(timestamp, _, _1, { api }) {
 
     const time = i.loanState?.taken?.taken?.terms?.time
     if (!time) return false
-    return +time.start + +time.duration > timestamp
+    return +time.start + +time.duration > api.timestamp
   })
   api.log('active loans count: ',loans.length)
   loans.forEach(i => api.add(i.valueTokenMint.toString(), i.principalLamports.toString()))
 }
 
-async function tvl(timestamp, _, _1, { api }) {
+async function tvl(api) {
   let loans = await getLoans()
   loans = loans.map(i => i.account)
   api.log('loan count: ',loans.length)

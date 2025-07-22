@@ -59,11 +59,11 @@ async function getData(api) {
       fromBlock,
     })
     let closedBidSet = new Set()
-    repaidLogs.forEach(i => closedBidSet.add(+i.bidId))
-    liquidatedLogs.forEach(i => closedBidSet.add(+i.bidId))
+    repaidLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
+    liquidatedLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
     const escrowMap = {}
     escrowLogs.forEach(i => {
-      const bidId = +i._bidId
+      const bidId = Number(i._bidId)
       if (closedBidSet.has(bidId)) return;
       if (escrowMap[bidId]) throw new Error('Escrow address already found for ' + bidId)
       escrowMap[bidId] = {
@@ -72,7 +72,7 @@ async function getData(api) {
       }
     })
     collateralDepositedLogs.forEach(i => {
-      const bidId = +i._bidId
+      const bidId = Number(i._bidId)
       if (closedBidSet.has(bidId)) return;
       if (!escrowMap[bidId]) throw new Error('Escrow address missing for ' + bidId)
       escrowMap[bidId].tokens.push(i._collateralAddress)
@@ -81,12 +81,12 @@ async function getData(api) {
   }
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = await getData(api)
   return sumTokens2({ api, ownerTokens: Object.values(data).map(i => [i.tokens, i.owner]), blacklistedTokens, permitFailure: true, })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const data = await getData(api)
   const activeLoans = Object.keys(data)
   const { tellerV2 } = config[api.chain]

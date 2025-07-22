@@ -8,7 +8,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, ACT } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -33,7 +33,7 @@ Object.keys(config).forEach(chain => {
       tokens.forEach((t, i) => tokensAndOwners.push([t, vaults[i]]))
       return sumTokens2({ api, tokensAndOwners })
     }, 
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,

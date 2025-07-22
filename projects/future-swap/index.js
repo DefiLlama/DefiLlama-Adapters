@@ -16,7 +16,7 @@ const FutureSwapContracts = {
 
 const abiPools = `function getPools() view returns (tuple(address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accRewardPerShare)[])`;
 
-async function farmStakings(timestamp, block, _, { api }) {
+async function farmStakings(api) {
   const pools = await api.call({ target: FutureSwapContracts.Farm, abi: abiPools, })
 
   return sumUnknownTokens({ api, tokens: pools.map(i => i.lpToken), owner: FutureSwapContracts.Farm, blacklistedTokens: [FutureSwapContracts.USDF], resolveLP: true, useDefaultCoreAssets: true, })
@@ -24,7 +24,7 @@ async function farmStakings(timestamp, block, _, { api }) {
 
 module.exports = {
   findora: {
-    start: 1677029212, // 2023-02-22 01:26:52 UTC
+    start: '2023-02-22', // 2023-02-22 01:26:52 UTC
     methodology: `Sum of liqudities backed USDF; and tokens values staked in the FutureSwap Farm.`,
     tvl: sumTokensExport({
       owner: FutureSwapContracts.USDF,

@@ -16,7 +16,7 @@ const farms = [
   },
 ]
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const tokens = farms.map(farm => farm.token)
   const addresses = farms.map(farm => farm.address)
   const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: addresses})
@@ -29,3 +29,5 @@ module.exports = {
     tvl,
   },
 }
+
+module.exports.deadFrom = '2025-01-15'  // Heco chain is retired

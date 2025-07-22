@@ -1,9 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-module.exports = {
-  hallmarks: [[1667955600, "Hack"]],
-};
+// module.exports = {
+//   hallmarks: [[1667955600, "Hack"]],
+// };
 
 const config = {
   arbitrum: [{ factory: "0x9544995B5312B26acDf09e66E699c34310b7c856", fromBlock: 65832059 }],
@@ -14,7 +14,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const configs = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = []
       for (const { factory, fromBlock } of configs) {
         logs.push(await getLogs({

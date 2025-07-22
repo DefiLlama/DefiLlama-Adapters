@@ -18,7 +18,6 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       ADDRESSES.ethereum.USDC,//USDC
-      '0x55c08ca52497e2f1534b59e2917bf524d4765257', // uwu
       ADDRESSES.ethereum.cvxFXS, // cvxFXS
       '0x3E04863DBa602713Bb5d0edbf7DB7C3A9A2B6027', // SLP
       ADDRESSES.ethereum.DAI,//DAI
@@ -42,7 +41,7 @@ module.exports = treasuryExports({
       '0x67fadbd9bf8899d7c578db22d7af5e2e500e13e5',// uwu lend token
     ],
     owners: [ethWallet],
-    ownTokens: ['0x3b79a28264fc52c7b4cea90558aa0b162f7faf57'],
+    ownTokens: ['0x3b79a28264fc52c7b4cea90558aa0b162f7faf57', '0x9b06f3c5de42d4623d7a2bd940ec735103c68a76', '0x55c08ca52497e2f1534b59e2917bf524d4765257'], //wmemo, volta, uwu,  
   },
   avax: {
     tokens: [
@@ -55,7 +54,7 @@ module.exports = treasuryExports({
       "0x9e295b5b976a184b14ad8cd72413ad846c299660",//fsGLP
     ],
     owners: treasuries,
-    ownTokens: [TIME, '0x0da67235dd5787d67955420c84ca1cecd4e5bb3b'],
+    ownTokens: [TIME, '0x0da67235dd5787d67955420c84ca1cecd4e5bb3b', '0x9b06f3c5de42d4623d7a2bd940ec735103c68a76'], //last is volta
   },
   arbitrum: {
     tokens: [
@@ -64,7 +63,8 @@ module.exports = treasuryExports({
       ADDRESSES.arbitrum.GMX,//gmx
       "0xd2D1162512F927a7e282Ef43a362659E4F2a728F",//sbfGMX
     ],
-    owners: treasuries
+    owners: treasuries,
+    ownTokens: ['0x9b06f3c5de42d4623d7a2bd940ec735103c68a76'], //volta
   },
   polygon: {
     tokens: [
@@ -98,7 +98,7 @@ module.exports = treasuryExports({
 })
 
 module.exports.ethereum.tvl = sdk.util.sumChainTvls([module.exports.ethereum.tvl, uwuPositions])
-async function uwuPositions(_, _b, _cb, { api, }) {
+async function uwuPositions(api) {
   // 
   //  LUSD in stability pool
   const {initialValue : LUSDBal} = await api.call({ abi: "function deposits(address) view returns (uint256 initialValue, address frontEndTag)", target: '0x66017D22b0f8556afDd19FC67041899Eb65a21bb', params: ethWallet })

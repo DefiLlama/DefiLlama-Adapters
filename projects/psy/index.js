@@ -6,14 +6,14 @@ const tokenAddresses = [
 ]
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, tokens: tokenAddresses, owner: activePool})
 }
 
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral on the Gravita platform",
-  start: 1689519600, // Sun Jul 16 2023 15:00:00 GMT+0000
+  start: '2023-07-16', // Sun Jul 16 2023 15:00:00 GMT+0000
   arbitrum: {
     tvl,
   },

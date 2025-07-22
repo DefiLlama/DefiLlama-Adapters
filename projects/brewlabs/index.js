@@ -23,6 +23,7 @@ const blacklist = [
 ];
 
 module.exports = {
+  deadFrom: "2025-04-01",
   timetravel: false,
   misrepresentedTokens: true,
 };
@@ -53,7 +54,7 @@ chainsList.forEach(chain => {
   }
 })
 
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
   const pools = await getStakingPools(api.chain, 'staking')
   const tokensAndOwners = pools.map(i => ([i.stakingToken.address, i.contractAddress]))
   return sumUnknownTokens({ api, tokensAndOwners, blacklist})
@@ -61,7 +62,7 @@ async function staking(_, _b, _cb, { api, }) {
 
 const poolInfoAbi = "function poolInfo(uint256) view returns (address lpToken,  uint256,  uint256,  uint256,  uint256,  uint256,  uint16,  uint16)"
 
-async function pool2(_, _b, _cb, { api, }) {
+async function pool2(api) {
   const pools = (await getStakingPools(api.chain, 'pool2'))
   const tokensAndOwners = pools.map((v, i) => ([v.lpAddress, v.contractAddress]))
   return sumUnknownTokens({ api, tokensAndOwners, blacklist})

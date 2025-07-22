@@ -69,9 +69,9 @@ async function quickswapTVL({ balances, chain, block, app }) {
   });
 }
 
-async function tvl(_, _1, chainBlocks, { api }) {
+async function tvl(api) {
   const chain = api.chain;
-  const block = chainBlocks[chain];
+  const block = api.block;
   let balances = {};
   const promises = [];
   const arrayOfApps = apps[chain];
@@ -90,9 +90,8 @@ async function tvl(_, _1, chainBlocks, { api }) {
 }
 
 module.exports = {
-  start: 1656018000,
-  timetravel: true,
-  polygon: {
+  start: '2022-06-23',
+    polygon: {
     tvl,
   },
   bsc: {
