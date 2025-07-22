@@ -12,11 +12,15 @@ const treasuryList = [
     '3fKaQf2uLSped6HUEPQkQtTpPo1xnhZRsmfW7htFBBuQ'
 ]
 
+const tokens = [
+    '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4', //JLP
+    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', //USDC
+    'So11111111111111111111111111111111111111111'   //SOL
+]
+
 module.exports = treasuryExports({
   solana: {
     owners: treasuryList,
-    ownTokens: [
-      '',
-    ]
+    ownTokens: tokens
   },
 })
