@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const utils = require('../utils');
+const utils = require('../../utils');
 
 const dsfPoolStables = '0x22586ea4fdaa9ef012581109b336f0124530ae69';
 
