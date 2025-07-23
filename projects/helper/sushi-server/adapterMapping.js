@@ -9,7 +9,7 @@ module.exports = {
         // 'blend-backstop-v2': '/blend-backstop-v2/api.js',  // moved to rpc proxy
         'harvest': '/harvest.js',
         'astar-dapps-staking': '/astar-dapps-staking/api',
-        'hydradex-v3': '/hydradex-v3/index.js',
+        // 'hydradex-v3': '/hydradex-v3/index.js',  // project is dead, there is a new chain hydragon
         'injective-orderbook': '/injective-orderbook/api',
         'lisa': '/lisa/api',
       },
@@ -30,7 +30,7 @@ module.exports = {
         'interlay-lending': '/interlay-lending/api',
       },
       {
-        'hydradx': '/hydradx/api.js',
+        // 'hydradx': '/hydradx/api.js',  // project is dead, there is a new chain hydragon
       },
     ],
     [
