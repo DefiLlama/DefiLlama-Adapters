@@ -20,23 +20,19 @@ async function tvl() {
   }
 
   for (const poolId of poolIds) {
-    try {
-      const pool = await iota.getObject(poolId)
-      if (pool && pool.fields && pool.type) {
-        const match = pool.type.match(/<(.+), (.+)>/)
-        if (!match) continue
-        const [ , tokenA, tokenB ] = match
-        if (pool.fields.coin_a && DECIMALS[tokenA] !== undefined) {
-          const value = Number(BigInt(pool.fields.coin_a) / BigInt(10 ** DECIMALS[tokenA]))
-          balances[tokenA] += value
-        }
-        if (pool.fields.coin_b && DECIMALS[tokenB] !== undefined) {
-          const value = Number(BigInt(pool.fields.coin_b) / BigInt(10 ** DECIMALS[tokenB]))
-          balances[tokenB] += value
-        }
+    const pool = await iota.getObject(poolId)
+    if (pool && pool.fields && pool.type) {
+      const match = pool.type.match(/<(.+), (.+)>/)
+      if (!match) continue
+      const [ , tokenA, tokenB ] = match
+      if (pool.fields.coin_a && DECIMALS[tokenA] !== undefined) {
+        const value = Number(BigInt(pool.fields.coin_a) / BigInt(10 ** DECIMALS[tokenA]))
+        balances[tokenA] += value
       }
-    } catch (error) {
-      console.error(`Error fetching pool ${poolId}:`, error)
+      if (pool.fields.coin_b && DECIMALS[tokenB] !== undefined) {
+        const value = Number(BigInt(pool.fields.coin_b) / BigInt(10 ** DECIMALS[tokenB]))
+        balances[tokenB] += value
+      }
     }
   }
 
@@ -62,7 +58,7 @@ async function tvl() {
 }
 
 module.exports = {
-  methodology: "Calculates the TVL of Pools Finance on IOTA",
+  methodology: "Calculates the TVL of Pools Finance on IOTA.",
   timetravel: false,
   iota: {
     tvl,
