@@ -35,40 +35,41 @@ async function getAtvCumulativeTvl(api, vaultConfigs) {
  * @returns {Array} Array of token addresses
  */
 async function getAtvVaultTokens(api, vaultAddress, vaultType = 'ATV-111', additionalTokens = []) {
-  try {
-    // Always try to get dynamic tokens from vault contract
-    const [_, inputTokens] = await api.call({
-      abi: ATV_ABIS.getInputToken,
-      target: vaultAddress,
-      permitFailure: true,
-    });
+  // Always try to get dynamic tokens from vault contract
+  const [_, inputTokens] = await api.call({
+    abi: ATV_ABIS.getInputToken,
+    target: vaultAddress,
+    permitFailure: true,
+  });
 
-    const uTokens = await api.call({
-      abi: ATV_ABIS.getUTokens,
-      target: vaultAddress,
-      permitFailure: true,
-    });
+  const uTokens = await api.call({
+    abi: ATV_ABIS.getUTokens,
+    target: vaultAddress,
+    permitFailure: true,
+  });
 
-    // Combine dynamic tokens
-    const dynamicTokens = []
-      .concat(inputTokens || [])
-      .concat(uTokens || []);
+  // Combine dynamic tokens
+  const dynamicTokens = []
+    .concat(inputTokens || [])
+    .concat(uTokens || []);
 
-    let allTokens = dynamicTokens;
+  let allTokens = dynamicTokens;
 
-    // For ATV-111 vaults, add additional hardcoded tokens (compound/aave USDC)
-    if (vaultType === 'ATV-111') {
-      allTokens = dynamicTokens.concat(additionalTokens);
-    }
-    
-    // Remove duplicates and filter out null/undefined
-    return [...new Set(allTokens.filter(Boolean))];
-  } catch (error) {
-    console.warn(`Warning: Could not fetch dynamic tokens for vault ${vaultAddress}, using additional tokens only`);
-    // For ATV-802 and ATV-808, if dynamic fetch fails, return empty array (no hardcoded fallback)
-    // For ATV-111, return additional tokens
-    return vaultType === 'ATV-111' ? additionalTokens : [];
+  // For ATV-111 vaults, add additional hardcoded tokens (compound/aave USDC)
+  if (vaultType === 'ATV-111') {
+    allTokens = dynamicTokens.concat(additionalTokens);
   }
+  
+  // Remove duplicates and filter out null/undefined
+  const finalTokens = [...new Set(allTokens.filter(Boolean))];
+  
+  // If no dynamic tokens found and vault type doesn't support fallback, return empty
+  if (finalTokens.length === 0 && vaultType !== 'ATV-111') {
+    return [];
+  }
+  
+  // For ATV-111, always include additional tokens even if dynamic fetch fails
+  return vaultType === 'ATV-111' && finalTokens.length === 0 ? additionalTokens : finalTokens;
 }
 
 /**
@@ -178,15 +179,16 @@ function generateAtvExport(config) {
 
           for (const config of vaultConfigs) {
             if (config.storage && !config.storage.startsWith('STORAGE_ADDRESS')) {
-              try {
-                const tvlInUsd = await api.call({
-                  abi: ATV_ABIS.calculatePoolInUsd,
-                  target: config.storage,
-                  params: [config.address],
-                });
+              const tvlInUsd = await api.call({
+                abi: ATV_ABIS.calculatePoolInUsd,
+                target: config.storage,
+                params: [config.address],
+                permitFailure: true,
+              });
+              
+              if (tvlInUsd) {
                 totalUsd += Number(tvlInUsd) / 1e18;
-              } catch (error) {
-                console.warn(`Direct TVL failed for vault ${config.address}, adding to fallback list`);
+              } else {
                 fallbackVaults.push(config);
               }
             } else {
@@ -243,17 +245,24 @@ function generateSingleVaultExport(config) {
       tvl: async (api) => {
         // Check if storage contract is configured and valid
         if (storageContract && storageContract !== 'STORAGE_ADDRESS_TO_BE_FILLED') {
-          try {
-            // Use direct method
-            return await getAtvVaultTvlDirect(api, storageContract, vaultAddress);
-          } catch (error) {
-            console.warn(`Direct TVL failed for vault ${vaultAddress}, falling back to token method:`, error.message);
-            // Fall back to token-based method
-            return await getAtvVaultTvl(api, vaultAddress, vaultType, fallbackTokens);
+          // Try direct method first
+          const tvlInUsd = await api.call({
+            abi: ATV_ABIS.calculatePoolInUsd,
+            target: storageContract,
+            params: [vaultAddress],
+            permitFailure: true,
+          });
+          
+          if (tvlInUsd) {
+            const usdValue = Number(tvlInUsd) / 1e18;
+            api.addUSDValue(usdValue);
+            return api.getBalances();
           }
+          
+          // If direct method failed, fall back to token-based method
+          return await getAtvVaultTvl(api, vaultAddress, vaultType, fallbackTokens);
         } else {
           // Use fallback token-based method
-          console.warn(`Storage contract not configured for vault ${vaultAddress}, using fallback method`);
           return await getAtvVaultTvl(api, vaultAddress, vaultType, fallbackTokens);
         }
       },
@@ -279,22 +288,23 @@ const ATV_ABIS = {
  * @returns {Object} Balances object with USD value
  */
 async function getAtvVaultTvlDirect(api, storageContract, vaultAddress) {
-  try {
-    const tvlInUsd = await api.call({
-      abi: ATV_ABIS.calculatePoolInUsd,
-      target: storageContract,
-      params: [vaultAddress],
-    });
+  const tvlInUsd = await api.call({
+    abi: ATV_ABIS.calculatePoolInUsd,
+    target: storageContract,
+    params: [vaultAddress],
+    permitFailure: true,
+  });
 
-    // Convert from wei to USD (assuming the contract returns value in wei scale)
-    // If contract returns direct USD value, remove the division by 1e18
-    const usdValue = Number(tvlInUsd) / 1e18;
-    api.addUSDValue(usdValue);
+  if (!tvlInUsd) {
+    // Return empty balances if call failed
     return api.getBalances();
-  } catch (error) {
-    console.error(`Error fetching direct TVL for vault ${vaultAddress}:`, error);
-    throw error;
   }
+
+  // Convert from wei to USD (assuming the contract returns value in wei scale)
+  // If contract returns direct USD value, remove the division by 1e18
+  const usdValue = Number(tvlInUsd) / 1e18;
+  api.addUSDValue(usdValue);
+  return api.getBalances();
 }
 
 /**
@@ -307,17 +317,17 @@ async function getAtvCumulativeTvlDirect(api, vaultConfigs) {
   let totalUsd = 0;
 
   for (const config of vaultConfigs) {
-    try {
-      const tvlInUsd = await api.call({
-        abi: ATV_ABIS.calculatePoolInUsd,
-        target: config.storage,
-        params: [config.vault],
-      });
+    const tvlInUsd = await api.call({
+      abi: ATV_ABIS.calculatePoolInUsd,
+      target: config.storage,
+      params: [config.vault],
+      permitFailure: true,
+    });
+    
+    if (tvlInUsd) {
       // Convert from wei to USD (assuming the contract returns value in wei scale)
       // If contract returns direct USD value, remove the division by 1e18
       totalUsd += Number(tvlInUsd) / 1e18;
-    } catch (error) {
-      console.warn(`Warning: Could not fetch TVL for vault ${config.vault}:`, error.message);
     }
   }
 
