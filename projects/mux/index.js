@@ -1,7 +1,7 @@
 const abi = require("./abi.json");
+const mux3CoreAbi = require("./mux3CoreAbi.json");
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { get } = require('../helper/http')
 
 const readerContract = {
   arbitrum: '0x437CEa956B415e97517020490205c07f4a845168',
@@ -11,7 +11,26 @@ const readerContract = {
   optimism: '0x572E9467b2585c3Ab6D9CbEEED9619Fd168254D5',
 }
 
-const arbUSDCAddress = '0xaf88d065e77c8cc2239327c5edb3a432268e5831'
+const mux3CoreAddress = '0x85c8F4a67F4f9AD7b38e875c8FeDE7F4c878bFAc'
+
+async function getMux3Tvl(chain, block) {
+  // get all mux3 collateral pools
+  const { output: pools } = await sdk.api.abi.call({
+    target: mux3CoreAddress,
+    abi: mux3CoreAbi.listCollateralPool,
+    chain, block,
+  })
+
+  // get all supported collateral tokens
+  const { output: collateralTokens } = await sdk.api.abi.call({
+    target: mux3CoreAddress,
+    abi: mux3CoreAbi.listCollateralTokens,
+    chain, block,
+  })
+
+  // get balances of all collateral tokens in all collateral pools
+  return await sumTokens2({ chain, block, tokens: collateralTokens, owners: pools, })
+}
 
 async function tvl(chain, block) {
   const { output: storage } = await sdk.api.abi.call({
@@ -38,10 +57,9 @@ async function tvl(chain, block) {
     })
   })
 
-  // mux3 tvl
+  // get mux3 tvl, only for arbitrum
   if (chain === 'arbitrum') {
-      let data = await get('https://app.mux.network/api/mux3/liquidityAsset')
-      sdk.util.sumSingleBalance(balances,chain+':'+arbUSDCAddress,data.totalLiquidity*1e6)
+    sdk.util.mergeBalances(balances, await getMux3Tvl(chain, block))
   }
 
   return balances
