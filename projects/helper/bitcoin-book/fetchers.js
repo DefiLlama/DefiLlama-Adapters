@@ -219,11 +219,7 @@ module.exports = {
   btnx: async () => {
     const staticAddresses = await getConfig('btnx', undefined, {
       fetcher: async () => {
-        // const token = getEnv('BTNX_ACCESS_TOKEN')
         const { data } = await axios.get('https://sidecar.botanixlabs.com/api/addressList', {
-          // headers: {
-          //   'access-token': token
-          // }
         })
         return data.map(address => address)
       }
