@@ -18,7 +18,7 @@ async function tvl(api) {
     if (farmingLpData['base_response']['status_code'] == 200){
        const lpPositions = farmingLpData['lps'];
        let farmingTokenBals = {};
-	   
+       
        lpPositions.forEach((lp) => {
           const lpValue = lp['current_value']
           if (lpValue > 0) {
@@ -26,7 +26,7 @@ async function tvl(api) {
               addTokenBalance(farmingTokenBals, lp['token1_address'], lp['token1_amount']);
           }
        });
-	   
+       
        for (const [token, balance] of Object.entries(farmingTokenBals)) {
           api.add(token, balance)
        }
@@ -36,7 +36,7 @@ async function tvl(api) {
 
   if (api.chain === 'ethereum'){
     let _vaults = earnVaults[api.chain];
-
+    
     // query totalAssets from earn vaults
     const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: _vaults })
     const calls = []
@@ -52,7 +52,7 @@ async function tvl(api) {
        const token = tokensAsset[i]
        if (token) api.add(token, bal)
     })
-	  
+      
   }
   
   return sumTokens2({ api, resolveLP: true })
