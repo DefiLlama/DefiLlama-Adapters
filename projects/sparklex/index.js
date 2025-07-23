@@ -12,7 +12,7 @@ earnVaults['ethereum'] = ethereumEarnVaults;
 async function tvl(api) {  
   // fetch farming lp posisitons
   if (api.chain === 'bsc' || api.chain === 'ethereum' || api.chain === 'base'){
-    const farmingLpData = await post('https://backend-api.sparklex.io/metrics/farm/lp/list', "{'chain_id':" + api.chainId + "}");
+    const farmingLpData = await post('https://backend-api.sparklex.io/metrics/farm/lp/list', {chain_id: api.chainId}, {headers: {'Content-Type': 'application/json'}});
     //console.log(farmingLpData);
 	
     if (farmingLpData['base_response']['status_code'] == 200){
