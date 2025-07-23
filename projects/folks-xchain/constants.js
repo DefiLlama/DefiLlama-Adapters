@@ -109,7 +109,6 @@ const HubPools = {
       tokenAddress: ADDRESSES.ethereum.USDT,
       chainPoolAddress: '0x12d4FeDD9cE1b4d7dB90b07366284ac1675a5a90',
     },
-      
   ],
   'base': [
     // excluding USDC cause bridged
@@ -269,6 +268,33 @@ const HubPools = {
       chainPoolAddress: '0xf2ee689fd3f7A7358bEDA46f83E7968Ad894abF0',
     }
   ],
+  'sei': [
+    { // SEI
+      poolAddress: "0x63EFdA4bf91Ba13D678C58AF47304e6180dD46DF",
+      tokenAddress: ADDRESSES.null,
+      chainPoolAddress: '0x5f2F4771B7dc7e2F7E9c1308B154E1e8957ecAB0',
+    },
+    { // iSEI
+      poolAddress: "0x2B7995fd223dCf3A660Cc5a514349E3fa7B16168",
+      tokenAddress: "0x5Cf6826140C1C56Ff49C808A1A75407Cd1DF9423",
+      chainPoolAddress: '0x4Db12F554623E4B0b3F5bAcF1c8490D4493380A5',
+    },
+    { // USDT0_sei 
+      poolAddress: "0x213299AC40Ce76117C2c4B13945D9d935686BB85",
+      tokenAddress: "0x9151434b16b9763660705744891fA906F660EcC5",
+      chainPoolAddress: '0x12Db9758c4D9902334C523b94e436258EB54156f',
+    },
+    { // wETH_sei
+      poolAddress: "0x9A102080970043B96773c15E6520d182565C68Ff",
+      tokenAddress: "0x160345fc359604fc6e70e3c5facbde5f7a9342d8",
+      chainPoolAddress: '0x802063A23E78D0f5D158feaAc605028Ee490b03b',
+    },
+    { // wBTC_sei
+      poolAddress: "0x7Cd4afD7F4DB51A0bF06Bf4630752A5B28e0B6C1",
+      tokenAddress: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
+      chainPoolAddress: '0x7218Bd1050D41A9ECfc517abdd294FB8116aEe81',
+    },
+  ]
 }
 
 module.exports = {
