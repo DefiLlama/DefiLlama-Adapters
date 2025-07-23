@@ -1,26 +1,16 @@
 const { treasuryExports } = require("../helper/treasury");
 
 const treasuryList = [
-    'AR2ZCCyB5nXb7TesCz2pcCWbQsH8TAwixetDRrm3Z9wr',
-    '8Qo4oKTM5jiZEAKzhBLKwTKjCJrDHsUUux5K5DaQDxLR',
-    '5ZbLoA6DSnXoDeU7jsdmmkua4X1ugHUFYzbByzrbJDST',
-    'EjwCRUh3HhBaR7vaTrFzuNpDAnTX9h3ddZuiQgKqCadz',
-    'HZQdNWYBv23A3cfCAWDm4BQJ7XVARtDGJKhezmwvzfxo',
-    '2QfKMyrkFNACCmPw1EHCAxcH7MHvsChuR9MduWk6TfD6',
-    'USDUY49DCh6wAHvx5jZn1xHSyDc8fvMa7YBnFi1aYEy',
-    'DLzMXMSZLW8QEx563QBZNca8Gg6NrHGJZdJJ3Y4rcKEe',
-    '3fKaQf2uLSped6HUEPQkQtTpPo1xnhZRsmfW7htFBBuQ'
+    'ENcCimzGPU6dNih1qnsSShTYBu9rRERnF4Wwx7BVVt7h',
 ]
 
-const tokens = [
-    '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4', //JLP
-    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', //USDC
-    'So11111111111111111111111111111111111111111'   //SOL
+const ownTokens = [
+    '9ckR7pPPvyPadACDTzLwK2ZAEeUJ3qGSnzPs8bVaHrSy' //USDu
 ]
 
 module.exports = treasuryExports({
   solana: {
     owners: treasuryList,
-    ownTokens: tokens
+    ownTokens: ownTokens
   },
 })
