@@ -173,11 +173,24 @@ async function pool2(api) {
   return retval;
 }
 
+async function tvl(api) {
+  if (invalidTime(api)) {
+    return {};
+  }
+  const [stakingTvl, pool2Tvl] = await Promise.all([staking(api), pool2(api)]);
+  const tokens = new Set(Object.keys(stakingTvl).concat(Object.keys(pool2Tvl)));
+  const retval = {};
+  for (const token of tokens) {
+    retval[token] = (stakingTvl[token] ?? 0) + (pool2Tvl[token] ?? 0);
+  }
+  return retval;
+}
+
 module.exports = {
   methodology: "Counts the value of deposited Pinto and LP tokens in the Silo.",
   start: '2024-11-19',
   base: {
-    tvl: () => ({}),
+    tvl,
     pool2,
     staking
   },
