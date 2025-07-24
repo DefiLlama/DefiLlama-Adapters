@@ -7,6 +7,8 @@ const vaultsGraphs = {
     "https://api.mainnet.termfinance.io/avalanche/subgraph/vaults",
   base:
     "https://api.mainnet.termfinance.io/base/subgraph/vaults",
+  arbitrum:
+    "https://api.mainnet.termfinance.io/arbitrum/subgraph/vaults",
 }
 
 const termVaultStrategiesQuery = `
@@ -46,6 +48,7 @@ const vaultsGraphStartBlock = {
   ethereum: 21433264,
   avax: 54438973,
   base: 30797402,
+  arbitrum: 359134348,
 }
 
 module.exports = {
