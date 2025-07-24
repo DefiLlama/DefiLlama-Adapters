@@ -268,26 +268,8 @@ function uniTvlExport(chain, factory, options = {}) {
 
 // Default ABI for CLM vaults that expose wants() => (token0, token1) and balances() => (amount0, amount1)
 const pairApis = {
-  balances: {
-    name: 'balances',
-    outputs: [
-      { type: 'uint256', name: 'amount0' },
-      { type: 'uint256', name: 'amount1' },
-    ],
-    inputs: [],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  wants: {
-    name: 'wants',
-    outputs: [
-      { type: 'address', name: 'token0' },
-      { type: 'address', name: 'token1' },
-    ],
-    inputs: [],
-    stateMutability: 'view',
-    type: 'function',
-  },
+  balances: 'function balances() view returns (uint256 amount0, uint256 amount1)',
+  wants:    'function wants() view returns (address token0, address token1)',
 }
 
 // Helper for CLM-style vaults (wants() + balances()) returning two tokens and two balances
