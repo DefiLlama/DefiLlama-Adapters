@@ -8,12 +8,19 @@ const CONTRACTS = {
   MORPHO_BLUE: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
   ZIRCUIT_RESTAKING_POOL: "0xF047ab4c75cebf0eB9ed34Ae2c186f3611aEAfa6",
   FLUID_POSITION_RESOLVER: "0x3E3dae4F30347782089d398D462546eb5276801C",
+  // HyperEVM contracts
+  HYPEREVM_RUMPEL_WALLET_FACTORY: "0xbC89e0B2716079b46A971ce50C208730F73503De",
+  HYPEREVM_POINT_TOKEN_VAULT: "0xEa333eb11FC6ea62F6f4c2d73Cd9F2d994Ff3587",
 };
 
 const DEPLOYMENT = {
   RUMPEL_WALLET_FACTORY: {
     block: 20696108,
     timestamp: 1725680627000,
+  },
+  HYPEREVM_RUMPEL_WALLET_FACTORY: {
+    block: 4536816,
+    timestamp: 1748632980000,
   },
 };
 
@@ -23,7 +30,7 @@ const TOKENS = {
   USDE: ADDRESSES.ethereum.USDe,
   WSTETH: ADDRESSES.ethereum.WSTETH,
   WBTC: ADDRESSES.ethereum.WBTC,
-  AMPHRETH:"0x5fD13359Ba15A84B76f7F87568309040176167cd",
+  AMPHRETH: "0x5fD13359Ba15A84B76f7F87568309040176167cd",
   WEETH: ADDRESSES.ethereum.WEETH,
   WEETHS: "0x917ceE801a67f933F2e6b33fC0cD1ED2d5909D88",
   MSTETH: "0x49446A0874197839D15395B908328a74ccc96Bc0",
@@ -68,6 +75,7 @@ const TOKENS = {
   YT_SUSDE_27MAR2025: "0x96512230bF0Fa4E20Cf02C3e8A7d983132cd2b9F",
   YT_SUSDE_29MAY2025: "0x1de6Ff19FDA7496DdC12f2161f6ad6427c52aBBe",
   YT_USDE_27MAR2025: "0x4A8036EFA1307F1cA82d932C0895faa18dB0c9eE",
+  YT_SUSDE_31JUL2025: "0xb7E51D15161C49C823f3951D579DEd61cD27272B",
   MELLOW_DVSTETH: "0x5E362eb2c0706Bd1d134689eC75176018385430B",
   MELLOW_RENZO_PZETH: "0x8c9532a60E0E7C6BbD2B2c1303F63aCE1c3E9811",
   MELLOW_RSENA: "0xc65433845ecD16688eda196497FA9130d6C47Bd8",
@@ -85,6 +93,39 @@ const TOKENS = {
   MELLOW_LUGAETH: "0x82dc3260f599f4fC4307209A1122B6eAa007163b",
   MELLOW_ROETH: "0x7b31F008c48EFb65da78eA0f255EE424af855249",
   MELLOW_RSUNIBTC: "0x08F39b3d75712148dacDB2669C3EAcc7F1152547",
+  // Resolv tokens
+  USR: "0x66a1E37c9b0eAddca17d3662D6c05F4DECf3e110",
+  RLP: "0x4956b52aE2fF65D74CA2d61207523288e4528f96",
+  STUSR: "0x6c8984bc7DBBeDAf4F6b2FD766f16eBB7d10AAb4",
+
+  WBETH: "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
+  SWETH: "0xf951E335afb289353dc249e82926178EaC7DEd78",
+  LSETH: "0x7BfEe91193d9Df2Ac0bFe90191D40F23c773C060",
+  OSETH: "0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38",
+  MANTA: "0x95CeF13441Be50d20cA4558CC0a27B601aC544E5",
+  // Additional tokens
+  WSTUSR: "0x1202F5C7b4B9E47a1A484E8B270be34dbbC75055",
+  EBTC: "0x657e8C867D8B37dCC18fA4Caead9C45EB088C642",
+  CBBTC: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+  POND: "0x57B946008913B82E4dF85f501cbAeD910e58D26C",
+  SENA: "0x8bE3460A480c80728a8C4D7a5D5303c85ba7B3b9",
+  // HyperEVM tokens
+  HYPEREVM_WHYPE: "0x5555555555555555555555555555555555555555",
+  HYPEREVM_WSTHYPE: "0x94e8396e0869c9F2200760aF0621aFd240E1CF38",
+  HYPEREVM_UBTC: "0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463",
+  HYPEREVM_UETH: "0xBe6727B535545C67d5cAa73dEa54865B92CF7907",
+  HYPEREVM_USDT0: "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb",
+  HYPEREVM_XAUT0: "0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949",
+  HYPEREVM_USDHL: "0xb50A96253aBDF803D85efcDce07Ad8becBc52BD5",
+  HYPEREVM_HBHYPE: "0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB",
+  HYPEREVM_HBBTC: "0xc061d38903b99aC12713B550C2CB44B221674F94",
+  HYPEREVM_HBXAUT: "0x6EB6724D8D3D4FF9E24d872E8c38403169dC05f8",
+  HYPEREVM_GTUSDT0: "0x53A333e51E96FE288bC9aDd7cdC4B1EAD2CD2FfA",
+  HYPEREVM_MCHYPE: "0xd19e3d00f8547f7d108abFD4bbb015486437B487",
+  HYPEREVM_GTUETH: "0x0571362ba5ea9784a97605f57483f865a37dbeaa",
+  HYPEREVM_SENTIMENT_HYPE_SUPER_POOL: "0x2831775cb5e64b1d892853893858a261e898fbeb",
+  HYPEREVM_USDT0_FELIX_METAMORPHO_VAULT: "0xFc5126377F0efc0041C0969Ef9BA903Ce67d151e",
+  HYPEREVM_USDHL_FELIX_METAMORPHO_VAULT: "0x9c59a9389D8f72DE2CdAf1126F36EA4790E2275e",
 };
 
 const FLUID_VAULTS = [
@@ -117,16 +158,27 @@ async function tvl(api) {
     handleZircuitAssets, 
     handleStrategyTokenBalances, 
     handleSymbioticTokens,
-    handleFluidPositions
+    handleFluidPositions,
+    handleHyperEVMERC4626Vaults
   ].map(async (fn) => fn()));
 
   async function sumBaseTokens() {
-    return api.sumTokens({
-      owners, tokens: [TOKENS.AGETH, TOKENS.WEETH, TOKENS.USDE, TOKENS.SUSDE, TOKENS.MSTETH, TOKENS.WSTETH, TOKENS.STETH,TOKENS.WBTC,]
-    })
+    const chain = api.chain;
+    
+    if (chain === 'ethereum') {
+      return api.sumTokens({
+        owners, tokens: [TOKENS.AGETH, TOKENS.WEETH, TOKENS.USDE, TOKENS.SUSDE, TOKENS.MSTETH, TOKENS.WSTETH, TOKENS.STETH, TOKENS.WBTC, TOKENS.WEETHS, TOKENS.AMPHRETH, TOKENS.USR, TOKENS.RLP, TOKENS.STUSR, TOKENS.WSTUSR, TOKENS.EBTC, TOKENS.CBBTC, TOKENS.POND, TOKENS.SENA]
+      })
+    } else if (chain === 'hyperliquid') {
+      return api.sumTokens({
+        owners, tokens: [TOKENS.HYPEREVM_WHYPE, TOKENS.HYPEREVM_WSTHYPE, TOKENS.HYPEREVM_UBTC, TOKENS.HYPEREVM_UETH, TOKENS.HYPEREVM_USDT0, TOKENS.HYPEREVM_XAUT0, TOKENS.HYPEREVM_USDHL]
+      })
+    }
   }
 
   async function handleLockedUSDE() {
+    if (api.chain !== 'ethereum') return;
+    
     const stakes = await api.multiCall({
       target: CONTRACTS.ETHENA_LP_STAKING,
       abi: "function stakes(address,address) view returns (uint256 amount,uint152,uint104)",
@@ -136,6 +188,8 @@ async function tvl(api) {
   }
 
   async function handleMorphoSuppliedSUSDE() {
+    if (api.chain !== 'ethereum') return;
+    
     const positions = await api.multiCall({
       target: CONTRACTS.MORPHO_BLUE,
       abi: "function position(bytes32,address) view returns (uint256,uint128,uint128 amount)",
@@ -145,6 +199,8 @@ async function tvl(api) {
   }
 
   async function handleFluidPositions() {
+    if (api.chain !== 'ethereum') return;
+    
     const positions = await api.multiCall({
       target: CONTRACTS.FLUID_POSITION_RESOLVER,
       abi: "function getAllVaultPositions(address) view returns ((uint256,address owner,uint256 supply,uint256)[])",
@@ -158,6 +214,8 @@ async function tvl(api) {
   }
 
   async function handleZircuitAssets() {
+    if (api.chain !== 'ethereum') return;
+    
     const assets = [TOKENS.WEETH, TOKENS.WEETHS, TOKENS.USDE, TOKENS.MSTETH, TOKENS.AMPHRETH]
     const calls = []
     for (const asset of assets)
@@ -169,51 +227,64 @@ async function tvl(api) {
   }
   
   async function handleStrategyTokenBalances() {
-    const tokens = [
-      TOKENS.KWEETH,
-      TOKENS.KUSDE,
-      TOKENS.MSTETH,
-      TOKENS.RSUSDE,
-      TOKENS.RSTETH,
-      TOKENS.RE7LRT,
-      TOKENS.RE7RWBTC,
-      TOKENS.YT_EBTC,
-      TOKENS.YT_WEETHK,
-      TOKENS.YT_AGETH,
-      TOKENS.YT_WEETHS,
-      TOKENS.YT_SUSDE,
-      TOKENS.YT_USDE,
-      TOKENS.YT_RE7LRT,
-      TOKENS.YT_RSTETH,
-      TOKENS.YT_AMPHRETH,
-      TOKENS.YT_KARAK_SUSDE_30JAN2025,
-      TOKENS.YT_RSUSDE_27MAR2025,
-      TOKENS.YT_SUSDE_27MAR2025,
-      TOKENS.YT_SUSDE_29MAY2025,
-      TOKENS.YT_USDE_27MAR2025,
-      TOKENS.MELLOW_DVSTETH,
-      TOKENS.MELLOW_RENZO_PZETH,
-      TOKENS.MELLOW_RSENA,
-      TOKENS.MELLOW_AMPHRBTC,
-      TOKENS.MELLOW_STEAKLRT,
-      TOKENS.MELLOW_HYVEX,
-      TOKENS.MELLOW_RE7RTBTC,
-      TOKENS.MELLOW_IFSETH,
-      TOKENS.MELLOW_CP0XLRT,
-      TOKENS.MELLOW_URLRT,
-      TOKENS.MELLOW_COETH,
-      TOKENS.MELLOW_HCETH,
-      TOKENS.MELLOW_ISETH,
-      TOKENS.MELOW_SIBTC,
-      TOKENS.MELLOW_LUGAETH,
-      TOKENS.MELLOW_ROETH,
-      TOKENS.MELLOW_RSUNIBTC,
-    ]
+    const chain = api.chain;
+    let tokens = [];
+    
+    if (chain === 'ethereum') {
+      tokens = [
+        TOKENS.KWEETH,
+        TOKENS.KUSDE,
+        TOKENS.MSTETH,
+        TOKENS.RSUSDE,
+        TOKENS.RSTETH,
+        TOKENS.RE7LRT,
+        TOKENS.RE7RWBTC,
+        TOKENS.YT_EBTC,
+        TOKENS.YT_WEETHK,
+        TOKENS.YT_AGETH,
+        TOKENS.YT_WEETHS,
+        TOKENS.YT_SUSDE,
+        TOKENS.YT_USDE,
+        TOKENS.YT_RE7LRT,
+        TOKENS.YT_RSTETH,
+        TOKENS.YT_AMPHRETH,
+        TOKENS.YT_KARAK_SUSDE_30JAN2025,
+        TOKENS.YT_RSUSDE_27MAR2025,
+        TOKENS.YT_SUSDE_27MAR2025,
+        TOKENS.YT_SUSDE_29MAY2025,
+        TOKENS.YT_USDE_27MAR2025,
+        TOKENS.YT_SUSDE_31JUL2025,
+        TOKENS.MELLOW_DVSTETH,
+        TOKENS.MELLOW_RENZO_PZETH,
+        TOKENS.MELLOW_RSENA,
+        TOKENS.MELLOW_AMPHRBTC,
+        TOKENS.MELLOW_STEAKLRT,
+        TOKENS.MELLOW_HYVEX,
+        TOKENS.MELLOW_RE7RTBTC,
+        TOKENS.MELLOW_IFSETH,
+        TOKENS.MELLOW_CP0XLRT,
+        TOKENS.MELLOW_URLRT,
+        TOKENS.MELLOW_COETH,
+        TOKENS.MELLOW_HCETH,
+        TOKENS.MELLOW_ISETH,
+        TOKENS.MELOW_SIBTC,
+        TOKENS.MELLOW_LUGAETH,
+        TOKENS.MELLOW_ROETH,
+        TOKENS.MELLOW_RSUNIBTC,
+      ]
+    } else if (chain === 'hyperliquid') {
+      // Strategy tokens are handled by handleHyperEVMERC4626Vaults which converts them to underlying assets
+      tokens = []
+    }
 
-    await api.sumTokens({ owners, tokens })
+    if (tokens.length > 0) {
+      await api.sumTokens({ owners, tokens });
+    }
   }
 
   async function handleSymbioticTokens() {
+    if (api.chain !== 'ethereum') return;
+    
     const symbioticMappings = [
       { collateral: TOKENS.SYMBIOTIC_WSTETH_COLLATERAL, underlying: TOKENS.WSTETH },
       { collateral: TOKENS.SYMBIOTIC_SUSDE_COLLATERAL, underlying: TOKENS.SUSDE },
@@ -229,8 +300,14 @@ async function tvl(api) {
       { collateral: TOKENS.SYMBIOTIC_SFRXETH_COLLATERAL, underlying: ADDRESSES.ethereum.sfrxETH },
       { collateral: TOKENS.SYMBIOTIC_GAUNTLET_RESTAKED_CBETH_COLLATERAL, underlying: ADDRESSES.ethereum.cbETH },
       { collateral: TOKENS.SYMBIOTIC_GAUNTLET_RESTAKED_WSTETH_COLLATERAL, underlying: TOKENS.WSTETH },
+      { collateral: TOKENS.SYMBIOTIC_WBETH_COLLATERAL, underlying: TOKENS.WBETH },
+      { collateral: TOKENS.SYMBIOTIC_SWETH_COLLATERAL, underlying: TOKENS.SWETH },
+      { collateral: TOKENS.SYMBIOTIC_LSETH_COLLATERAL, underlying: TOKENS.LSETH },
+      { collateral: TOKENS.SYMBIOTIC_OSETH_COLLATERAL, underlying: TOKENS.OSETH },
+      { collateral: TOKENS.SYMBIOTIC_GUANTLET_RESTAKED_SWETH_COLLATERAL, underlying: TOKENS.SWETH },
+      { collateral: TOKENS.SYMBIOTIC_MANTA_COLLATERAL, underlying: TOKENS.MANTA },
     ]
-
+    
     const allBalanceCalls = symbioticMappings.flatMap(mapping => 
       owners.map(owner => ({ 
         target: mapping.collateral, 
@@ -260,20 +337,129 @@ async function tvl(api) {
       }
     })
   }
+
+  async function handleHyperEVMERC4626Vaults() {
+    if (api.chain !== 'hyperliquid') return;
+    
+    const vaultMappings = [
+      { vault: TOKENS.HYPEREVM_HBHYPE, underlying: TOKENS.HYPEREVM_WHYPE },
+      { vault: TOKENS.HYPEREVM_HBBTC, underlying: TOKENS.HYPEREVM_UBTC },
+      // hbXAUt has 18 decimals, XAUt0 has 6 decimals, so we need decimal conversion
+      { vault: TOKENS.HYPEREVM_HBXAUT, underlying: TOKENS.HYPEREVM_XAUT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 },
+      { vault: TOKENS.HYPEREVM_GTUSDT0, underlying: TOKENS.HYPEREVM_USDT0 },
+      { vault: TOKENS.HYPEREVM_MCHYPE, underlying: TOKENS.HYPEREVM_WHYPE },
+      { vault: TOKENS.HYPEREVM_GTUETH, underlying: TOKENS.HYPEREVM_UETH },
+      { vault: TOKENS.HYPEREVM_SENTIMENT_HYPE_SUPER_POOL, underlying: TOKENS.HYPEREVM_WHYPE },
+      { vault: TOKENS.HYPEREVM_USDT0_FELIX_METAMORPHO_VAULT, underlying: TOKENS.HYPEREVM_USDT0 },
+      { vault: TOKENS.HYPEREVM_USDHL_FELIX_METAMORPHO_VAULT, underlying: TOKENS.HYPEREVM_USDHL },
+    ];
+
+    // Get vault balances for all owners
+    const balanceCalls = [];
+    for (const mapping of vaultMappings) {
+      for (const owner of owners) {
+        balanceCalls.push({
+          target: mapping.vault,
+          params: [owner],
+          mapping
+        });
+      }
+    }
+
+    const vaultBalances = await api.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: balanceCalls.map(call => ({ target: call.target, params: call.params }))
+    });
+
+    // Filter out zero balances and prepare convertToAssets calls
+    const convertCalls = [];
+    const oneToOneBalances = [];
+    
+    for (let i = 0; i < balanceCalls.length; i++) {
+      if (vaultBalances[i] && vaultBalances[i] > 0) {
+        if (balanceCalls[i].mapping.isOneToOne) {
+          // For 1:1 vaults, directly add to oneToOneBalances
+          let amount = BigInt(vaultBalances[i]);
+          
+          // Handle decimal conversion if needed
+          if (balanceCalls[i].mapping.vaultDecimals && balanceCalls[i].mapping.underlyingDecimals) {
+            const decimalDiff = balanceCalls[i].mapping.vaultDecimals - balanceCalls[i].mapping.underlyingDecimals;
+            if (decimalDiff > 0) {
+              // Convert from vault decimals to underlying decimals
+              amount = amount / (10n ** BigInt(decimalDiff));
+            }
+          }
+          
+          oneToOneBalances.push({
+            underlying: balanceCalls[i].mapping.underlying,
+            amount: amount
+          });
+        } else {
+          // For ERC4626 vaults, prepare convertToAssets calls
+          convertCalls.push({
+            target: balanceCalls[i].target,
+            params: [vaultBalances[i]],
+            mapping: balanceCalls[i].mapping,
+            vaultBalance: vaultBalances[i]
+          });
+        }
+      }
+    }
+
+    // Add 1:1 balances first
+    for (const balance of oneToOneBalances) {
+      api.add(balance.underlying, balance.amount);
+    }
+
+    if (convertCalls.length === 0) return;
+
+    // Convert vault shares to underlying assets
+    const underlyingAmounts = await api.multiCall({
+      abi: 'function convertToAssets(uint256 shares) view returns (uint256)',
+      calls: convertCalls.map(call => ({ target: call.target, params: call.params })),
+      permitFailure: true
+    });
+
+    // Add underlying assets to the API
+    for (let i = 0; i < convertCalls.length; i++) {
+      const underlyingAmount = underlyingAmounts[i];
+      const underlying = convertCalls[i].mapping.underlying;
+      
+      if (underlyingAmount && underlyingAmount > 0) {
+        api.add(underlying, underlyingAmount);
+      }
+    }
+  }
 }
 
 async function getOwners(api) {
+  const chain = api.chain;
+  let factoryAddress, fromBlock, pointTokenVault;
+  
+  if (chain === 'ethereum') {
+    factoryAddress = CONTRACTS.RUMPEL_WALLET_FACTORY;
+    fromBlock = DEPLOYMENT.RUMPEL_WALLET_FACTORY.block;
+    pointTokenVault = CONTRACTS.RUMEPL_POINT_TOKENIZATION_VAULT;
+  } else if (chain === 'hyperliquid') {
+    factoryAddress = CONTRACTS.HYPEREVM_RUMPEL_WALLET_FACTORY;
+    fromBlock = DEPLOYMENT.HYPEREVM_RUMPEL_WALLET_FACTORY.block;
+    pointTokenVault = CONTRACTS.HYPEREVM_POINT_TOKEN_VAULT;
+  } else {
+    return [];
+  }
+  
   const logs = await getLogs2({
     api,
-    target: CONTRACTS.RUMPEL_WALLET_FACTORY,
+    target: factoryAddress,
     topic: "SafeCreated(address,address[],uint256)",
     eventAbi:
       "event SafeCreated(address indexed safe, address[] indexed owners, uint256 threshold)",
-    fromBlock: DEPLOYMENT.RUMPEL_WALLET_FACTORY.block,
+    fromBlock: fromBlock,
   });
+  
   return logs
     .map((log) => log.safe)
-    .concat(CONTRACTS.RUMEPL_POINT_TOKENIZATION_VAULT);
+    .concat(pointTokenVault);
 }
 
 module.exports = {
@@ -281,6 +467,9 @@ module.exports = {
     "Sums up the supported tokens in Rumpel Wallets + Deposits in the Rumpel Point Tokenization Vault",
   start: DEPLOYMENT.RUMPEL_WALLET_FACTORY.timestamp,
   ethereum: {
+    tvl,
+  },
+  hyperliquid: {
     tvl,
   },
 };
