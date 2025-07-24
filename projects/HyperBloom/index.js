@@ -1,28 +1,20 @@
-const utils = require('../helper/utils');
-const { toUSDTBalances } = require('../helper/balances');
-let _response
+const { getConfig } = require('../helper/cache')
+const { yieldHelperPair } = require('../helper/unknownTokens')
 
-function fetchChain(chainId) {
-  return async () => {
-    if (!_response) _response = utils.fetchURL('https://api-vaults.hyperbloom.xyz/tvl')
-    const response = await _response;
-
-    let tvl = 0;
-    const chain = response.data[chainId];
-    for (const vault in chain) {
-      tvl += Number(chain[vault]);
-    }
-
-    return toUSDTBalances(tvl);
-  }
-}
-
+const chain = "hyperliquid";
 
 module.exports = {
-  timetravel: false,
   misrepresentedTokens: true,
-  doublecounted: true,
-  hyperliquid: {
-    tvl: fetchChain(999)
-  },
+};
+
+module.exports[chain] = {
+  tvl: async () => {
+    const pools = await getConfig('hyperbloom', 'https://raw.githubusercontent.com/hyperbloomxyz/vaults.config/refs/heads/master/hyperliquid.json');
+
+    const beefyPools = pools.filter(p => p.platformId === 'beefy');
+
+    const vaults = beefyPools.map(p => p.earnedTokenAddress).filter(Boolean);
+
+    return yieldHelperPair({ vaults, chain, useDefaultCoreAssets: true });
+  }
 }
