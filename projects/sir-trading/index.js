@@ -1,4 +1,4 @@
-const VAULT_ADDRESS = '0xB91AE2c8365FD45030abA84a4666C4dB074E53E7';
+const VAULT_ADDRESS = '0x7Dad75dD36dE234C937C105e652B6E50d68b0309';
 const abi = {
   "paramsById": "function paramsById(uint48 vaultId) view returns ((address debtToken, address collateralToken, int8 leverageTier))"
 }

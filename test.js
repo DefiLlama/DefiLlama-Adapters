@@ -136,7 +136,7 @@ function validateHallmarks(hallmark) {
 
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
-  const passedTimestamp = process.argv[3]
+  const passedTimestamp = process.argv[3] ? Math.floor(new Date(process.argv[3]) / 1000) : undefined
   if (passedTimestamp !== undefined) {
     unixTimestamp = Number(passedTimestamp)
 

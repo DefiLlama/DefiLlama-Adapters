@@ -33,7 +33,8 @@ const chains = [
   "ink",
   "hyperliquid",
   "plume_mainnet",
-  "xdc"
+  "xdc",
+  'tac',
 ];
 const registryIds = {
   stableswap: 0,

@@ -24,6 +24,10 @@ const VAULT_TOKENS = [
     ADDRESSES.hyperliquid.USDe,
     '0xb50A96253aBDF803D85efcDce07Ad8becBc52BD5' // USDHl
 ];
+const MAINNET_VAULT_TOKENS = [
+  ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.USDe,
+]
 const HYPER_CORE_TOKENS = [
   // {
   //   symbol: "USDC",
@@ -53,6 +57,15 @@ async function vaultTvl(api) {
     owner: HWLP_VAULT,
     chain: 'hyperliquid',
     tokens: VAULT_TOKENS,
+  })
+}
+
+async function mainnetVaultTvl(api) {
+  return sumTokens2({
+    api,
+    owner: HWLP_VAULT,
+    chain: 'ethereum',
+    tokens: MAINNET_VAULT_TOKENS
   })
 }
 
@@ -105,6 +118,7 @@ module.exports = {
   timetravel: false,
   methodology: 'TVL represents the sum of tokens deposited in the vault + HLP positions + HyperCore Spot positions.',
   doublecounted: false,
+  ethereum: {tvl: mainnetVaultTvl},
   arbitrum: {tvl: hlpVaultTvl},
   hyperliquid: { tvl: sdk.util.sumChainTvls([
     vaultTvl, 
