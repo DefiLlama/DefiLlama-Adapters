@@ -75,5 +75,12 @@ module.exports = {
     blacklistedTokens: [
       '0x1fbDb3b715c82DCD52BCF06fcc18819951aa9264', // suBTC
     ]
+  }),
+  goat:compoundExports2({
+    comptroller: '0x98Ec4C9605D69083089eCAf353037b40017b758e',
+    blacklistedTokens: [
+      '0xAbcdc5827f92525F56004540459045Ec3e432ebF', // suBTC
+      '0x7465fedB29023d11effe8C74E82A7ecEBf15E947', // suETH
+    ]
   })
 }

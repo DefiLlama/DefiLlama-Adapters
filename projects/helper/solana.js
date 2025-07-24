@@ -40,11 +40,13 @@ const endpoint = (isClient) => {
 
 const renecEndpoint = () => getEnv('RENEC_RPC')
 const eclipseEndpoint = () => getEnv('ECLIPSE_RPC')
+const soonEndpoint = () => getEnv('SOON_RPC')
 
 const endpointMap = {
   solana: endpoint,
   renec: renecEndpoint,
   eclipse: eclipseEndpoint,
+  soon: soonEndpoint
 }
 
 function getConnection(chain = 'solana') {
@@ -67,6 +69,7 @@ function getAssociatedTokenAddress(mint, owner,  programId = TOKEN_PROGRAM_ID,  
   if (typeof programId === 'string') programId = new PublicKey(programId)
   if (typeof mint === 'string') mint = new PublicKey(mint)
   if (typeof owner === 'string') owner = new PublicKey(owner)
+  if (typeof associatedTokenProgramId === 'string') associatedTokenProgramId = new PublicKey(associatedTokenProgramId)
   const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), programId.toBuffer(), mint.toBuffer()], associatedTokenProgramId);
   return associatedTokenAddress.toString()
 }

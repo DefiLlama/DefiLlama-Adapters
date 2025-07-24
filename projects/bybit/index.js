@@ -328,6 +328,9 @@ const config = {
   sonic: {
     owners: ["0x86dbaa55f0e65857b58109c3cb725deff4da3851"],
   },
+  klaytn: {
+    owners: ['0x0051ef9259c7ec0644a80e866ab748a2f30841b3'],
+  },
 };
 
 module.exports = cexExports(config);

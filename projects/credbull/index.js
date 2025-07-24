@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache');
-
-const { getFixBalances } = require('../helper/portedTokens');
+const {api} = require("@defillama/sdk");
 
 const addresses = {
   arbitrum: {
@@ -57,10 +56,7 @@ async function tvl(api) {
 
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults });
 
-  await api.sumTokens({ tokensAndOwners2: [tokens, vaults] });
-
-  const fixBalances = await getFixBalances(api.chain);
-  await fixBalances(api.getBalances());
+  return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
 }
 
 // Credbull Fund (e.g. LiquidStone Fund)
@@ -99,10 +95,6 @@ async function borrowedVaults(api) {
   api.add(tokens, bals)
   const tBals = (await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map((t, i) => ({ target: t, params: vaults[i] })) })).map(i => i * -1)
   api.add(tokens, tBals)
-
-  // apply fixBalances to correct token labels
-  const fixBalances = await getFixBalances(api.chain);
-  await fixBalances(api.getBalances());
 }
 
 // get Credbull DeFi vaults
