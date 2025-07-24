@@ -64,4 +64,4 @@ module.exports = {
   goat: {
     tvl: goatTVL,
   },
-};
+}; 
