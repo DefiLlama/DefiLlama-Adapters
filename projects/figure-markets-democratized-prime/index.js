@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 
 // node test.js projects/figure-markets-democratized-prime/index.js
 
-// Scopes holding the pool metadata
+// Contracts holding the pool collateral
 const demoPrimePools = [
     "scope1qp4lyqj9xkp570uj9l0sf6vhh46q599mcf",
     "scope1qpjqqp93nfn537acqgl6aauhj6ws8xk5ug",
@@ -15,8 +15,8 @@ const demoPrimePools = [
 ]
 
 // Endpoint to retrieve the pool details
-const recordsEndpoint = (scopeId) => 
-    `https://rest.cosmos.directory/provenance/provenance/metadata/v1/scope/${scopeId}/record/pool-details`
+const recordsEndpoint = (contractId) => 
+    `https://rest.cosmos.directory/provenance/provenance/metadata/v1/scope/${contractId}/record/pool-details`
 
 const getBalances = async () => {
     const balances = {}
@@ -27,7 +27,6 @@ const getBalances = async () => {
             let asset = poolInfo.leveragePool.asset
             let collateral = poolInfo.currentPeriod.totalOfferAmount - poolInfo.currentPeriod.totalLoanAmount
             let borrowed = poolInfo.currentPeriod.totalLoanAmount
-            // Convert YLDS to uylds (exponent of 6)
             if (asset === 'YLDS') {
                 collateral = poolInfo.collateralValue
             }
@@ -56,7 +55,7 @@ module.exports = {
     timetravel: false,
     doublecounted: true,
     misrepresentedTokens: true,
-    methodology: 'Figure Markets Democratized Prime calculates the loan pool amount as TVL, with outstanding loans as the borrowed amount.',
+    methodology: 'TVL is calculated based on the total amount of collateral pledged to all lending pools.',
     provenance: {
         tvl,
         borrowed,
