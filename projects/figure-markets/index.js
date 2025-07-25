@@ -1,12 +1,13 @@
 const { get } = require("../helper/http")
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { endPoints: { provenance } } = require('../helper/chain/cosmos.js');
 
 const paginationLimit = 1000;
 
 const figureMarketsExchangeID = '1'
 
 const lockedTokensQuery = (nextKey) =>
-    `https://rest.cosmos.directory/provenance/provenance/exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=${
+    `${provenance}/provenance/exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=${
         paginationLimit
     }${
         nextKey ? `&pagination.key=${nextKey}` : ""
@@ -38,7 +39,7 @@ const demoPrimePools = [
 ]
 
 const recordsEndpoint = (contractId) => 
-    `https://rest.cosmos.directory/provenance/provenance/metadata/v1/scope/${contractId}/record/pool-details`
+    `${provenance}/provenance/metadata/v1/scope/${contractId}/record/pool-details`
 
 const collateralizedAssets = 'pm.sale.pool.3dxq3fk9llvhrqqwhodiap'
 

@@ -1,5 +1,6 @@
 const { get } = require("../helper/http")
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { endPoints: { provenance } } = require('../helper/chain/cosmos.js');
 
 // node test.js projects/figure-markets-democratized-prime/index.js
 
@@ -16,7 +17,7 @@ const demoPrimePools = [
 
 // Endpoint to retrieve the pool details
 const recordsEndpoint = (contractId) => 
-    `https://rest.cosmos.directory/provenance/provenance/metadata/v1/scope/${contractId}/record/pool-details`
+    `${provenance}/provenance/metadata/v1/scope/${contractId}/record/pool-details`
 
 const getBalances = async () => {
     const balances = {}
