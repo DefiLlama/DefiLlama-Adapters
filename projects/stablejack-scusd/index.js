@@ -10,11 +10,11 @@ const sequencerPools = [
 
 // token mapping for Goat sequencer pools
 const tokenMapping = {
-  '0xbC10000000000000000000000000000000000001': ADDRESSES.goat.GOAT,    // Goat
-  '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf': ADDRESSES.goat.BTC,     // BTC
-  '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf': ADDRESSES.goat.DOGEB,   // Dogeb
-  '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E': ADDRESSES.goat.BTCB,    // BTCB
-};
+  '0xbC10000000000000000000000000000000000001': '0xbC10000000000000000000000000000000000001', // Goat
+  '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf': '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf', // BTC
+  '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf': '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf', // Dogeb
+  '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E': '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E', // BTCB
+}
 
 // goatTVL implementation
 async function goatTVL(api) {
