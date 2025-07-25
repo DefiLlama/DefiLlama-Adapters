@@ -1,50 +1,40 @@
-const { mapTokens } = require("../helper/chain/provenance")
 const { get } = require("../helper/http")
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
-const tokenMapper = {
-    "HASH" : 'hash-2',
-    "LINK": 'chainlink',
-    "UNI": 'uniswap', 
-    "BTC": 'bitcoin',
-    "ETH": 'ethereum',
-    "XRP": 'ripple',
-    "SOL": 'solana',
-    "LRWA": 'usd-coin',
-    "YLDS": 'uylds.fcc',
-    "USDC": 'usd-coin',
-    "USD": 'usd-coin',
-    "USDT": 'tether',
-}
+// node test.js projects/figure-markets-democratized-prime/index.js
 
-// Returns all leveraged pools in Figure Markets Democratized Prime
-// https://www.figuremarkets.com/c/democratized-prime/lending-pools
-const leveragePoolsUrl = 'https://www.figuremarkets.com/service-lending/api/v1/leverage-pools?location=US'
+// Scopes holding the pool metadata
+const demoPrimePools = [
+    "scope1qp4lyqj9xkp570uj9l0sf6vhh46q599mcf",
+    "scope1qpjqqp93nfn537acqgl6aauhj6ws8xk5ug",
+    "scope1qq4ghl8h8dv5ugdyty66acmsc0ksld5llq",
+    "scope1qqq6xkv4g9y50649l0r96us54aasd4ur5l",
+    "scope1qz6rjfu4ympyxs5wd2nzpa3z0t7s0tw3ud",
+    "scope1qz8xvt4mckfyssyln509g5ck3ejs7aq9yc",
+    "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n",
+]
 
-// Returns offer information for a specific asset
-const offersUrl = (asset) => `https://www.figuremarkets.com/service-lending/api/v1/offers?asset=${asset}&location=US`
-
-// Returns all assets, including lending facilities (specific to YLDS)
-const lendingFacilities = `https://www.figuremarkets.com/service-hft-exchange/api/v1/assets?page=1&size=100&include_lending_facility_assets=true`
+// Endpoint to retrieve the pool details
+const recordsEndpoint = (scopeId) => 
+    `https://rest.cosmos.directory/provenance/provenance/metadata/v1/scope/${scopeId}/record/pool-details`
 
 const getBalances = async () => {
     const balances = {}
-    // Get all available pools
-    const pools = (await get(leveragePoolsUrl)).map(p => p.asset)
-    await Promise.all(pools.map(async p => {
-        if (p !== 'YLDS') {
-            // Get offers on each type that isn't YLDS
-            const details = (await get(offersUrl(p)))
-            // For collateral, subtracted the loan amount from the total amount
-            balances[p] = { collateral: Number(details.totalOfferAmount) - Number(details.totalLoanAmount), borrowed: details.totalLoanAmount }
-        } else {
-            // For YLDS, get all existing lending facility pools
-            const facilities = (await get(lendingFacilities)).data.filter(l => l.type === 'LENDING_FACILITY')
-            // Reduce existing pools into a single amount, which represents the total pool collateral in the protocol
-            const totalLendingFacilitiesValue = facilities.reduce((acc, cur) => acc += Number(cur.lendingFacilitiesDetails.unpaidBalance), 0)
-            // Also pull the existing YLDS loan amount
-            const borrowed = (await get(offersUrl(p))).totalLoanAmount
-            // Convert final YLDS to uylds (exponent of 6)
-            balances[p] = {collateral: (totalLendingFacilitiesValue - Number(borrowed)) * 1e6, borrowed: borrowed * 1e6 }
+    await Promise.all(demoPrimePools.map(async pool => {
+        const poolHash = (await get(recordsEndpoint(pool))).records[0]?.record?.outputs[0]?.hash
+        if (poolHash) {
+            const poolInfo = JSON.parse(poolHash)
+            let asset = poolInfo.leveragePool.asset
+            let collateral = poolInfo.currentPeriod.totalOfferAmount - poolInfo.currentPeriod.totalLoanAmount
+            let borrowed = poolInfo.currentPeriod.totalLoanAmount
+            // Convert YLDS to uylds (exponent of 6)
+            if (asset === 'YLDS') {
+                collateral = poolInfo.collateralValue
+            }
+            balances[asset] = { 
+                collateral,
+                borrowed
+            }
         }
     }))
     return balances
@@ -52,16 +42,14 @@ const getBalances = async () => {
 
 const tvl = async (api) => {
     const balances = await getBalances()
-    let collateral = {}
-    Object.keys(balances).map(b => collateral[tokenMapper[b]] = balances[b].collateral)
-    Object.keys(collateral).map(coin => mapTokens(collateral, coin, api ))
+    Object.keys(balances).map(token => api.add(token, balances[token].collateral))
+    return sumTokens2({ api })
 }
 
 const borrowed = async (api) => {
     const balances = (await getBalances())
-    let borrowed = {}
-    Object.keys(balances).map(b => borrowed[tokenMapper[b]] = balances[b].borrowed)
-    Object.keys(borrowed).map(coin => mapTokens(borrowed, coin, api ))
+    Object.keys(balances).map(token => {api.add(token, balances[token].borrowed)})
+    return sumTokens2({ api })
 }
 
 module.exports = {
