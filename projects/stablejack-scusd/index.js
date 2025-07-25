@@ -26,7 +26,12 @@ async function goatTVL(api) {
         params: [token],
       });
 
-      api.add(tokenMapping[token], locked.toString());
+      if (!tokenMapping[token]) return;
+if (tokenMapping[token] === undefined) return;
+if (tokenMapping[token] === null) return;
+
+api.add(tokenMapping[token], locked.toString());
+
     }
   }
   return api.getBalances();
