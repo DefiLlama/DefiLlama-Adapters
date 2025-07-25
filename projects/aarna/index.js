@@ -2,7 +2,8 @@ const { generateAtvExport } = require('../helper/atv-helper');
 
 // Configuration for all Aarna ATV vaults across chains
 const AARNA_CONFIG = {
-  methodology: 'TVL is calculated using direct on-chain storage contract queries via calculatePoolInUsd function for each âtv vault. This includes âtv802 (quant AI), âtv808 (asymmetric alpha), and âtv111 (multi layer yield) vaults deployed across Ethereum, Arbitrum, and Sonic chains.',
+  methodology: `TVL: Total value of all coins held in the smart contracts of the protocol
+  Fees: 1% deposit and 10% profit sharing (whereever applicable) fees from the vaults`,
   
   // Vault addresses by chain and type
   vaults: {
