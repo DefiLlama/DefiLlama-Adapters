@@ -1,5 +1,4 @@
 const { function_view } = require("../helper/chain/aptos");
-const { PromisePool } = require('@supercharge/promise-pool')
 
 // Constants
 const YUZU_CLMM_PACKAGE =
@@ -55,13 +54,12 @@ module.exports = {
     tvl: async api => {
       const poolIds = await getPoolIds(api.chain);
 
-      const poolsData = await PromisePool
-        .withConcurrency(10)
-        .for(poolIds)
-        .process(id => getPoolData(id, api.chain))
+      // Process pools in parallel for better performance
+      const poolDataPromises = poolIds.map(id => getPoolData(id, api.chain));
+      const poolsData = await Promise.all(poolDataPromises);
 
       // Add token reserves to TVL
-      poolsData.results.forEach(pool => {
+      poolsData.forEach(pool => {
         if (pool) {
           api.add(pool.token_0, pool.token_0_reserve);
           api.add(pool.token_1, pool.token_1_reserve);

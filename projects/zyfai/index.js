@@ -1,16 +1,5 @@
 const { siloTvl, aaveTvl, eulerTvl, pendleTvl, beetsTvl, penpieTvl, yieldfiTvl } = require('./helpers');
-const { 
-    aaveTvl: aaveTvlBase, 
-    fluidTvl, 
-    morphoTvl, 
-    sparkTvl, 
-    compoundTvl, 
-    moonwellTvl,
-    harvestTvl,
-    wasabiTvl,
-    auraTvl,
-    yieldfiTvl: yieldfiTvlBase
-} = require('./base');
+const { aaveTvl: aaveTvlBase, fluidTvl, morphoTvl, sparkTvl } = require('./base');
 const { get } = require('../helper/http');
 
 async function sonicTvl(api) {
@@ -30,19 +19,11 @@ async function sonicTvl(api) {
 async function baseTvl(api) {
     // For Base chain
     const owners = await get('https://api.zyf.ai/api/v1/data/active-wallets?chainId=8453');
-
     await Promise.all([ 
         aaveTvlBase(api, owners),
         fluidTvl(api, owners),
         morphoTvl(api, owners),
-        sparkTvl(api, owners),
-        compoundTvl(api, owners),
-        moonwellTvl(api, owners),
-
-        harvestTvl(api, owners),
-        wasabiTvl(api, owners),
-        auraTvl(api, owners),
-        yieldfiTvlBase(api, owners)
+        sparkTvl(api, owners)
     ]);
 }
 

@@ -1,5 +1,4 @@
 const { getCuratorExport } = require("../helper/curators");
-const axios = require('axios');
 
 const configs = {
   methodology: 'Counts all assets that are deposited in all vaults curated by Gauntlet.',
@@ -228,34 +227,9 @@ async function tvl(api) {
   }
 }
 
-async function megavaultTvl(api) {
-  const url = "https://indexer.dydx.trade/v4/vault/v1/megavault/historicalPnl?resolution=hour";
-  const { data } = await axios.get(url, { headers: { 'Accept': 'application/json' } });
-  const pnlArr = data.megavaultPnl;
-  if (!pnlArr || !pnlArr.length) return;
-  const currentTvl = Number(pnlArr[pnlArr.length - 1].equity);
-
-  // Report as USD Coin using coingecko identifier
-  api.add('coingecko:usd-coin', (currentTvl * 1e6).toFixed(0));
-}
-
-async function combinedEthereumTvl(api) {
-  // First, get the existing curator TVL
-  const curatorExport = getCuratorExport(configs);
-  if (curatorExport.ethereum && curatorExport.ethereum.tvl) {
-    await curatorExport.ethereum.tvl(api);
-  }
-  
-  // Then add MegaVault TVL
-  console.log("Adding MegaVault TVL to ethereum...");
-  await megavaultTvl(api);
-  console.log("MegaVault TVL added to ethereum");
-}
-
 module.exports = {
   ...getCuratorExport(configs),
   solana: { tvl },
-  ethereum: { tvl: combinedEthereumTvl },
   timetravel: false,
   methodology: configs.methodology,
 }
