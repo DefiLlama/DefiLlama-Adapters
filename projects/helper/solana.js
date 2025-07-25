@@ -9,6 +9,28 @@ const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk');
+const { withRpcFallback } = require('./rpcFallback.js')
+const FALLBACK_CHAINS = ['solana', 'eclipse']
+
+const _connByRpc = new Map();
+
+async function rpcFallbackConnection(chain, fn) {
+  return withRpcFallback(chain, (axiosInstance) => {
+    const rpc = axiosInstance.defaults.baseURL
+    let conn = _connByRpc.get(rpc)
+    if (!conn) {
+      conn = new Connection(rpc)
+      _connByRpc.set(rpc, conn)
+    }
+    return fn(conn)
+  })
+}
+
+ async function rpcFallbackRequest(chain, body) {
+  return withRpcFallback(chain, async (axiosInstance) => {
+    return (await axiosInstance.post('', body)).data
+  })
+ }
 
 /** Address of the SPL Token program */
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -78,9 +100,10 @@ function getAssociatedTokenAddress(mint, owner,  programId = TOKEN_PROGRAM_ID,  
 async function getTokenSupplies(tokens, { api } = {}) {
   // const sleepTime = tokens.length > 2000 ? 2000 : 200
   const sleepTime = 200
-  const connection = getConnection()
   tokens = tokens.map(i => typeof i === 'string' ? new PublicKey(i) : i)
-  const res = await runInChunks(tokens, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
+  const res = FALLBACK_CHAINS.includes(api.chain)
+    ? await rpcFallbackConnection('solana', conn => runInChunks(tokens, chunk => conn.getMultipleAccountsInfo(chunk), { sleepTime }))
+    : await runInChunks(tokens, chunk => getConnection('solana').getMultipleAccountsInfo(chunk), { sleepTime })
   const response = {}
   res.forEach((data, idx) => {
     if (!data) {
@@ -105,10 +128,11 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   tokenAccounts.forEach((val, i) => {
     if (typeof val === 'string') tokenAccounts[i] = new PublicKey(val)
   })
-  const connection = getConnection(chain)
   const balancesIndividual = []
   const balances = {}
-  const res = await runInChunks(tokenAccounts, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
+  const res = FALLBACK_CHAINS.includes(chain)
+    ? await rpcFallbackConnection(chain, conn => runInChunks(tokenAccounts, chunk => conn.getMultipleAccountsInfo(chunk), { sleepTime }))
+    : await runInChunks(tokenAccounts, chunk => getConnection(chain).getMultipleAccountsInfo(chunk), { sleepTime })
   res.forEach((data, idx) => {
 
     if (!data) {
@@ -143,12 +167,12 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
 
 async function getMultipleAccounts(accountsArray, {api} = {}) {
   const chain = api?.chain ?? 'solana'
-  const connection = getConnection(chain)
   if (!accountsArray.length) return []
   accountsArray.forEach((val, i) => {
     if (typeof val === 'string') accountsArray[i] = new PublicKey(val)
   })
-  return runInChunks(accountsArray, chunk => connection.getMultipleAccountsInfo(chunk))
+  if (FALLBACK_CHAINS.includes(chain)) return rpcFallbackConnection(chain, conn => runInChunks(accountsArray, chunk => conn.getMultipleAccountsInfo(chunk) ))
+  return runInChunks(accountsArray, c => getConnection(chain).getMultipleAccountsInfo(c))
 }
 
 function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { coreTokens} = {}) {
@@ -284,7 +308,9 @@ async function sumTokens2({
     sdk.log('fetching sol token balances for', owners.length, 'owners', chain,)
     return runInChunks(owners, async (chunk) => {
       const body = chunk.map(i => formOwnerBalanceQuery(i))
-      const tokenBalances = await http.post(endpoint, body)
+      const tokenBalances = FALLBACK_CHAINS.includes(chain)
+       ? await rpcFallbackRequest(chain, body)
+       : await http.post(endpoint, body)
       return tokenBalances.map(i => i.result.value).flat().map(i => ({
         account: i.pubkey,
         mint: i.account.data.parsed.info.mint,
@@ -309,14 +335,20 @@ async function sumTokens2({
     }
   }
 
-  async function getSolBalances(accounts, { chain} = {}) {
-    const connection = getConnection(chain)
-
-    const balances = await runInChunks(accounts, async (chunk) => {
-      chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
-      const accountInfos = await connection.getMultipleAccountsInfo(chunk)
-      return accountInfos.map(account => account?.lamports ?? 0)
-    })
+  async function getSolBalances(accounts, { chain } = {}) {
+    const balances = FALLBACK_CHAINS.includes(chain)
+      ? await rpcFallbackConnection(chain, conn =>
+          runInChunks(accounts, async (chunk) => {
+            chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
+            const infos = await conn.getMultipleAccountsInfo(chunk)
+            return infos.map(acc => acc?.lamports ?? 0)
+          }),
+        )
+      : await runInChunks(accounts, async (chunk) => {
+        chunk = chunk.map(i => typeof i === 'string' ? new PublicKey(i) : i)
+          const infos = await getConnection(chain).getMultipleAccountsInfo(chunk)
+          return infos.map(acc => acc?.lamports ?? 0)
+        })
     return balances.reduce((a, b) => a + +b, 0)
   }
 
@@ -337,7 +369,9 @@ async function sumTokens2({
   async function getTokenBalances(tokensAndAccounts, chain) {
     const endpoint = getEndpoint(chain)
     const body = tokensAndAccounts.map(([token, account], i) => formTokenBalanceQuery(token, account, i))
-    const tokenBalances = await http.post(endpoint, body);
+    const tokenBalances = FALLBACK_CHAINS.includes(chain)
+      ? await rpcFallbackRequest(chain, body)
+      : await http.post(endpoint, body)
     const balances = {}
     tokenBalances.forEach(({ result: { value } = {} } = {}) => {
       if (!value) return;
@@ -450,4 +484,5 @@ module.exports = {
   getAssociatedTokenAddress,
   i80f48ToNumber,
   runInChunks,
+  rpcFallbackConnection
 };
