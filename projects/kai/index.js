@@ -37,11 +37,28 @@ const suiUsdtVault = {
   id: '0xbfcab5f22e253be0768e2cc5e75e170c5266edf7b68c813af0d676e84285681c',
   tType: ADDRESSES.sui.suiUSDT
 }
+const walVault = {
+  id: '0x4ee20ca2594e137a1388d5de03c0b1f3dd7caddefb4c55b1c7bca15d0fe18c86',
+  tType: '0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL'
+}
+const wbtcVault = {
+  id: '0x5674aae155d38e09edaf3163f2e3f85fe77790f484485f0b480ca55915d7c446',
+  tType: '0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC'
+}
+const lbtcVault = {
+  id: '0x362ce1fc1425ec0bdf958f2023b07cda52c924fa42e4ff88a9a48c595fd8437d',
+  tType: '0x3e8e9423d80e1774a7ca128fccd8bf5f1f7753be658c5e645929037f7c819040::lbtc::LBTC'
+}
+const xbtcVault = {
+  id: '0x653beede5a005272526f0c835c272ef37491dc5bff3f8e466175e02675510137',
+  tType: '0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC'
+}
 
 async function tvl(api) {
   const vaults = [
     wUsdcVault, wUsdtVault, SuiVault, pausedUsdcVault, pausedSuiUsdtVault,
-    usdyVault, deepVault, UsdcVault, suiUsdtVault
+    usdyVault, deepVault, UsdcVault, suiUsdtVault, walVault, wbtcVault, lbtcVault,
+    xbtcVault
   ]
   const vaultObjs = await sui.getObjects(vaults.map(v => v.id))
 
