@@ -44,12 +44,13 @@ const getClosestRecord = async (api) => {
 const tvl = async (api) => {
   const record = await getClosestRecord(api);
   if (!record) return;
+  const { spotUsdc, perpUsdc, assetBreakdown } = record.breakdown
+  api.addUSDValue(spotUsdc+perpUsdc)
 
-  record.breakdown.assetBreakdown.forEach(({ perpName, totalValue, spotHolding, perpHolding, weightedAverageLeverage, perpMarginUsed }) => {
+  assetBreakdown.forEach(({ perpName, spotHolding, perpMarginUsed }) => {
     const cgName = COINGECKO_MAPPING[perpName] || perpName.toLowerCase();
-    // const balance = spotHolding + (perpHolding / weightedAverageLeverage)
     api.addCGToken(cgName, spotHolding);
-    api.addUSDValue(-perpMarginUsed);
+    api.addUSDValue(perpMarginUsed);
   });
 }
 
