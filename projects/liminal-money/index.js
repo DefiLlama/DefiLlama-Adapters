@@ -10,6 +10,8 @@ const COINGECKO_MAPPING = {
   ETH: "ethereum",
   SOL: "solana",
   USDE: "ethena-usde",
+  PUMP: "pump-fun",
+  USDC: "usd-coin",
 };
 
 async function fetchAssetList() {
@@ -45,12 +47,12 @@ const tvl = async (api) => {
   const record = await getClosestRecord(api);
   if (!record) return;
   const { spotUsdc, perpUsdc, assetBreakdown } = record.breakdown
-  api.addUSDValue(spotUsdc+perpUsdc)
+  api.addCGToken('usd-coin', spotUsdc+perpUsdc)
 
   assetBreakdown.forEach(({ perpName, spotHolding, perpMarginUsed }) => {
     const cgName = COINGECKO_MAPPING[perpName] || perpName.toLowerCase();
     api.addCGToken(cgName, spotHolding);
-    api.addUSDValue(perpMarginUsed);
+    api.addCGToken('usd-coin', perpMarginUsed);
   });
 }
 
