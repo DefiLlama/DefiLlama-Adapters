@@ -10,14 +10,29 @@ async function styTvl(api) {
   const canonicalUSDC = ADDRESSES.sty.USDC_e
 
   // Get balances directly
-  const [vipBal, usdcBal] = await Promise.all([
+  const [vipBal, aidaUsdcBal] = await Promise.all([
     api.call({ abi: 'erc20:balanceOf', target: vIP, params: [styTreasury] }),
     api.call({ abi: 'erc20:balanceOf', target: AIDaUSDC, params: [styTreasury] }),
   ])
 
-  // Add balances manually, mapping AIDaUSDC to canonical USDC
+  // Add vIP balance
   api.add(vIP, vipBal)
-  api.add(canonicalUSDC, usdcBal)
+
+  // Convert AIDaUSDC to actual USDC using convertToAssets
+  if (aidaUsdcBal > 0) {
+    try {
+      const convertedBalance = await api.call({
+        abi: 'function convertToAssets(uint256) view returns (uint256)',
+        target: AIDaUSDC,
+        params: [aidaUsdcBal]
+      })
+      api.add(canonicalUSDC, convertedBalance)
+    } catch (e) {
+      console.log("Error converting AIDaUSDC:", e.message)
+      // Fallback to original balance if conversion fails
+      api.add(canonicalUSDC, aidaUsdcBal)
+    }
+  }
 
   return api.getBalances()
 }

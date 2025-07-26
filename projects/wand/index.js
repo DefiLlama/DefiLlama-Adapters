@@ -28,10 +28,7 @@ async function styTvl(api) {
     
     // For each asset, map it to its vaults
     vaultArrays.forEach((vaultArray, assetIndex) => {
-      let asset = assets[assetIndex]
-      // Map AIDaUSDC to canonical USDC
-      if (asset.toLowerCase() === AIDaUSDC)
-        asset = canonicalUSDC
+      const asset = assets[assetIndex]
       vaultArray.forEach(vault => {
         expandedAssets.push(asset)
         vaults.push(vault)
@@ -41,16 +38,35 @@ async function styTvl(api) {
     // Now expandedAssets[i] corresponds to vaults[i]
     const assetBals = await api.multiCall({ abi: 'uint256:assetBalance', calls: vaults, permitFailure: true })
     
-    // Add balances with correct asset-vault mapping
+    // Add balances with correct asset-vault mapping and convert AIDaUSDC
     for (let i = 0; i < vaults.length; i++) {
-      api.add(expandedAssets[i], assetBals[i] || 0)
+      const asset = expandedAssets[i]
+      let balance = assetBals[i] || 0
+      
+      if (asset.toLowerCase() === AIDaUSDC && balance > 0) {
+        // Convert AIDaUSDC to actual USDC using convertToAssets
+        try {
+          const convertedBalance = await api.call({
+            abi: 'function convertToAssets(uint256) view returns (uint256)',
+            target: asset,
+            params: [balance]
+          })
+          api.add(canonicalUSDC, convertedBalance)
+        } catch (e) {
+          console.log("Error converting AIDaUSDC:", e.message)
+          // Fallback to original balance if conversion fails
+          api.add(asset, balance)
+        }
+      } else {
+        api.add(asset, balance)
+      }
     }
 
     // Add redeem pool balances
     const epochInfoAbi = 'function epochInfoById(uint256 epochId) public view returns (uint256 epochId, uint256 startTime, uint256 duration, address redeemPool, address stakingBribesPool, address adhocBribesPool)'
     try {
       for (let i = 0; i < vaults.length; i++) {
-        let asset = expandedAssets[i]
+        const asset = expandedAssets[i]
         const vault = vaults[i]
 
         const epochInfos = await api.fetchList({ 
@@ -65,7 +81,30 @@ async function styTvl(api) {
         
         for (const { redeemPool } of infos) {
           if (redeemPool && redeemPool !== ADDRESSES.null) {
-            tokensAndOwners.push([asset, redeemPool])
+            // For redeem pools, we'll handle AIDaUSDC conversion in sumTokens
+            if (asset.toLowerCase() === AIDaUSDC) {
+              // Get AIDaUSDC balance in redeem pool and convert it
+              try {
+                const poolBalance = await api.call({
+                  abi: 'function balanceOf(address) view returns (uint256)',
+                  target: asset,
+                  params: [redeemPool]
+                })
+                if (poolBalance > 0) {
+                  const convertedBalance = await api.call({
+                    abi: 'function convertToAssets(uint256) view returns (uint256)',
+                    target: asset,
+                    params: [poolBalance]
+                  })
+                  api.add(canonicalUSDC, convertedBalance)
+                }
+              } catch (e) {
+                console.log("Error converting AIDaUSDC in redeem pool:", e.message)
+                tokensAndOwners.push([asset, redeemPool])
+              }
+            } else {
+              tokensAndOwners.push([asset, redeemPool])
+            }
           }
         }
       }
