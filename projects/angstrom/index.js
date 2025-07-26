@@ -34,7 +34,6 @@ module.exports.ethereum = {
       api.add(pool.token1.id, Number(pool.totalValueLockedToken1) * (10**Number(pool.token1.decimals)))
     }
   },
-  methodology: ''
 }
 
 module.exports.doublecounted = true
