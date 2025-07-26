@@ -31,14 +31,10 @@ async function tvl(api) {
     fetchView('get_token_price_in_usd', 'utils', [`"${INIT_METADATA_ADDRESS}"`]),
     fetchView('get_lp_token_value_in_usd', 'utils', [`"${USDC_INIT_LP_METADATA_ADDRESS}"`, '"1000000"'])
   ])
-
-//   console.log(initStakes, initPrice)
-//   console.log(lpStakes, lpPrice)
-
+  
   const initValueUsd = toNum(initStakes) * toNum(initPrice)
   const lpValueUsd = toNum(lpStakes) * toNum(lpPrice)
   const totalTvl = (initValueUsd + lpValueUsd) / 10 ** 6
-//   console.log(totalTvl)
 
   api.addUSDValue(totalTvl)
 }
