@@ -22,16 +22,17 @@ module.exports = {
       owners: bitcoinAddressBook.multibit,
       blacklistedTokens: ['MUBI', 'BSSB', 'savm'] // more SAVM is bridged than circulating supply according to coingecko & etherscan
     }), sumBRC20TokensExport({ owners: bitcoinAddressBook.multibit, blacklistedTokens: ['MUBI', 'BSSB', 'savm'] })]),
-
   },
 }
 Object.keys(config).forEach(chain => {
-  const { stakingPool, tokens = [ADDRESSES.null], chainKey = chain } = config[chain]
+  const { stakingPool,  chainKey = chain } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
       const data = await getConfig('multibit', BRIDGE_TOKENS)
       const owner = data.find(v => v.chain === chainKey)?.real?.contract
       if (!owner) return {}
+      
+      const tokens = Object.values(data.find(v => v.chain === chainKey)?.real?.data || [ADDRESSES.null])
       return api.sumTokens({ owner, tokens, })
     }
   }
