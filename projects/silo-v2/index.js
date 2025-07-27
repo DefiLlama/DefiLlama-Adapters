@@ -14,6 +14,10 @@ const configV2 = {
       {
         START_BLOCK: 2672166,
         SILO_FACTORY: '0xa42001d6d2237d2c74108fe360403c4b796b7170', // Silo V2 Sonic (Main)
+      },
+      {
+        START_BLOCK: 25244110, // Silo V2 Sonic (Main Revised Deployment)
+        SILO_FACTORY: '0x4e9dE3a64c911A37f7EB2fCb06D1e68c3cBe9203',
       }
     ]
   },

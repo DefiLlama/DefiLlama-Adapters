@@ -19,6 +19,10 @@ const config = {
     fromBlock: 47878,
     controller: "0x59f21012B2E9BA67ce6a7605E74F945D0D4C84EA",
   },
+  tac: {
+    fromBlock: 975648,
+    controller: "0xA4682A2A5Fe02feFF8Bd200240A41AD0E6EaF8d5",
+  },
 };
 
 Object.keys(config).forEach((chain) => {
