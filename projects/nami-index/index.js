@@ -28,6 +28,7 @@ async function tvl(api) {
 module.exports = {
   methodology: "TVL is calculated by retrieving the USD value of each index and aggregating the results using the official Rujira Network GraphQL API.",
   timetravel: false,
+  misrepresentedTokens: true,
   thorchain: {
     tvl
   }
