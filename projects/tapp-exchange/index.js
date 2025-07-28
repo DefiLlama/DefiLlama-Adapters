@@ -35,7 +35,7 @@ module.exports = {
     timetravel: false,
     aptos: {
         tvl: async (api) => {
-            const pools = await getPools();
+            const pools = (await getPools()).filter(pool=> pool.hook_type == 2 || pool.hook_type == 3 || pool.hook_type == 4);
 
             // The first element is not considered a pool reserve.
             pools.shift();
