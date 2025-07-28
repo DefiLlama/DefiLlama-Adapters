@@ -7,6 +7,7 @@ const { staking } = require('../helper/staking');
 const near = require('../helper/chain/near');
 const { default: BigNumber } = require('bignumber.js');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const ripple = require('./ripple');
 const NATIVE_ADDRESS = nullAddress;
 
 const data = {
@@ -18,11 +19,14 @@ const data = {
             decimals: 18
         },
         tokens: [
-            {name: "celo-dollar", address: ADDRESSES.celo.cUSD, decimals: 18},
-            {name: "usd-coin", address: ADDRESSES.celo.USDC, decimals: 6},
-            {name: "poofcash", address: "0x00400FcbF0816bebB94654259de7273f4A05c762", decimals: 18},
-            {name: "celo-euro", address: "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73", decimals: 18},
+            {name: "apyswap", address: "0x8D2c7789652342E9405A15FA4f4721362495f92D", decimals: 18},
+            {name: "avalanche-2", address: "0x8e3670fd7b0935d3fe832711debfe13bb689b690", decimals: 18},
             {name: "celo", address: NATIVE_ADDRESS, decimals: 18},
+            {name: "celo-dollar", address: ADDRESSES.celo.cUSD, decimals: 18},
+            {name: "celo-euro", address: "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73", decimals: 18},
+            {name: "saber", address: "0x47264ae1fc0c8e6418ebe78630718e11a07346a8", decimals: 18},
+            {name: "solana", address: "0x173234922eb27d5138c5e481be9df5261faed450", decimals: 18},
+            {name: "usd-coin", address: ADDRESSES.celo.USDC, decimals: 6},
         ]
     },
     avax: {
@@ -48,24 +52,8 @@ const data = {
             decimals: 18
         },
         tokens: [
-            {name: "bitcoin", address: "0x321162Cd933E2Be498Cd2267a90534A804051b11", decimals: 8},
-            {name: "ethereum", address: "0x74b23882a30290451A17c44f4F05243b6b58C76d", decimals: 18},
-            {name: "usd-coin", address: ADDRESSES.fantom.USDC, decimals: 6},
             {name: "fantom", address: NATIVE_ADDRESS, decimals: 18},
-        ]
-    },
-    heco: {
-        contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
-        staking: {
-            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
-            abrAddress: "0x2D7E64def6c3311A75c2F6eB45E835CD58e52CDE",
-            decimals: 18
-        },
-        tokens: [
-            {name: "bitcoin", address: "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa", decimals: 18},
-            {name: "tether", address: ADDRESSES.heco.USDT, decimals: 18},
-            {name: "apyswap", address: "0x90e8896b12a92D51CD213b681C2CaD83A9a6bD49", decimals: 18},
-
+            {name: "solana", address: "0x44F7237df00E386af8e79B817D05ED9f6FE0f296", decimals: 18},
         ]
     },
     polygon: {
@@ -76,13 +64,15 @@ const data = {
             decimals: 18
         },
         tokens: [
-            {name: "mimatic", address: "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1", decimals: 18},
-            {name: "usd-coin", address: ADDRESSES.polygon.USDC, decimals: 6},
-            {name: "tether", address: ADDRESSES.polygon.USDT, decimals: 6},
-            {name: "matic-network", address: NATIVE_ADDRESS, decimals: 18},
-            {name: "ethereum", address: ADDRESSES.polygon.WETH_1, decimals: 18},
-            {name: "bitcoin", address: ADDRESSES.polygon.WBTC, decimals: 8},
             {name: "apyswap", address: "0x14743E1c6f812154F7ecc980D890F0F5234103e7", decimals: 18},
+            {name: "ariadne", address: "0xB6EBc3ca1741a8f37551E44A51eC00aD417B38CA", decimals: 18},
+            {name: "duckies", address: "0x18e73A5333984549484348A94f4D219f4faB7b81", decimals: 8},
+            {name: "hapi", address: "0xbE276e3d5060B0e770FE0260bB6BE94ac19b4B19", decimals: 18},
+            {name: "mimatic", address: "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1", decimals: 18},
+            {name: "near", address: "0x72bd80445b0db58ebe3E8dB056529D4C5FAF6F2f", decimals: 18},
+            {name: "solana", address: "0x7dff46370e9ea5f0bad3c4e29711ad50062ea7a4", decimals: 18},
+            {name: "tether", address: ADDRESSES.polygon.USDT, decimals: 6},
+            {name: "usd-coin", address: ADDRESSES.polygon.USDC, decimals: 6},
         ]
     },
     bsc: {
@@ -93,33 +83,32 @@ const data = {
             decimals: 18
         },
         tokens: [
-            {name: "impossible-finance", address: "0xB0e1fc65C1a741b4662B813eB787d369b8614Af1", decimals: 18},
+            {name: "apyswap", address: "0x37dfACfaeDA801437Ff648A1559d73f4C40aAcb7", decimals: 18},
+            {name: "ariadne", address: "0xa0A9961b7477D1a530f06a1ee805d5E532e73d97", decimals: 18},
+            {name: "binance-bitcoin", address: ADDRESSES.bsc.BTCB, decimals: 18},
             {name: "binance-usd", address: ADDRESSES.bsc.BUSD, decimals: 18},
+            {name: "binancecoin", address: NATIVE_ADDRESS, decimals: 18},
+            {name: "genopets", address: "0x9df465460938f9ebdf51c38cc87d72184471f8f0", decimals: 18},
+            {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
+            {name: "hedget", address: "0xc7d8d35eba58a0935ff2d5a33df105dd9f071731", decimals: 6},
+            {name: "impossible-finance", address: "0xB0e1fc65C1a741b4662B813eB787d369b8614Af1", decimals: 18},
             {name: "investin", address: ADDRESSES.bsc.IVN, decimals: 18},
+            {name: "solo-coin", address: "0xc2c28b58db223DA89b567A0A98197Fc17C115148", decimals: 15},
             {name: "tether", address: ADDRESSES.bsc.USDT, decimals: 18},
             {name: "usd-coin", address: ADDRESSES.bsc.USDC, decimals: 18},
-            {name: "bitcoin", address: ADDRESSES.bsc.BTCB, decimals: 18},
-            {name: "ethereum", address: ADDRESSES.bsc.ETH, decimals: 18},
-            {name: "binancecoin", address: NATIVE_ADDRESS, decimals: 18},
-            {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
-            {name: "apyswap", address: "0x37dfACfaeDA801437Ff648A1559d73f4C40aAcb7", decimals: 18},
-            {name: "solo-coin", address: "0xc2c28b58db223DA89b567A0A98197Fc17C115148", decimals: 15},
         ]
     },
     ethereum: {
         contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
         tokens: [
             {name: "apyswap", address: "0xf7413489c474ca4399eeE604716c72879Eea3615", decimals: 18},
-            {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
             {name: "ariadne", address: "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2", decimals: 18},
+            {name: "duckies", address: "0x90b7E285ab6cf4e3A2487669dba3E339dB8a3320", decimals: 8},
             {name: "ethereum", address: NATIVE_ADDRESS, decimals: 18},
-            {name: "usd-coin", address: ADDRESSES.ethereum.USDC, decimals: 6},
+            {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
+            {name: "pentagon-games", address: "0x5Ee3188A3f8aDee1D736EdD4AE85000105C88f66", decimals: 18},
             {name: "tether", address: ADDRESSES.ethereum.USDT, decimals: 6},
-            {name: "ftx-token", address: "0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9", decimals: 18},
-            {name: "magic-internet-money", address: "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3", decimals: 18},
-            {name: "fei-usd", address: "0x956F47F50A910163D8BF957Cf5846D573E7f87CA", decimals: 18},
-            {name: "thorstarter", address: "0x69fa0feE221AD11012BAb0FdB45d444D3D2Ce71c", decimals: 18},
-            {name: "smartpad", address: "0x5067006f830224960fb419d7f25a3a53e9919bb0", decimals: 18},
+            {name: "usd-coin", address: ADDRESSES.ethereum.USDC, decimals: 6},
         ]
     },
     aurora: {
@@ -139,13 +128,16 @@ const data = {
         },
     },
     fuse: {
-        tokens: [],
+        tokens: [
+            {name: "ethereum", address: "0xCC9d144a8a8A1e71D5EC66A13F301b9E0137e71C", decimals: 18},
+            {name: "solana", address: "0x5Cb5249d420639619fFd637C79f0AA5C0a9FcD4B", decimals: 9},
+        ],
         staking: {
             contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
             abrAddress: "0xa21AaB22A0bAF9fff3392B0aFc5115b955664FD4",
             decimals: 18
         },
-    }
+    },
 }
 
 const solanaData = {
@@ -155,11 +147,12 @@ const solanaData = {
     },
     tokens: [
         {name: "apyswap", tokenAccount: '8fdkYq4XWb1LfkNcAByZUHspyvasyqH7CmFBCkoqSK5d'},
+        {name: "ben-the-dog", tokenAccount: '8WgpKyaBKdG93YqHWM675S6rsZgjMZmhtJjfWriC3hX5'},
         {name: "genopets", tokenAccount: 'Cko5gjsiFMaqoBFF7bEUZZ7neqNtJd7VJpYvfBcxYjQX'},
         {name: "mimatic", tokenAccount: '3xxvGGE3StCEHwJbrYXWv6jsYgTbEWhcCN166Bx8kfJL'},
+        {name: "saber", tokenAccount: '7KkMhrF9Hv7dfaX5xXFtTTrfJfVjHYZ5ymwAuXVgJ6Kf'},
         {name: "solana", tokenAccount: 'HHC3niNsTB3hNN1kZH9BHMLiwLvCSegKBLu82tAT2iG8'},
         {name: "usd-coin", tokenAccount: 'AxsSzB2JvyHZr6uDjV3Prmak2JEqYUoaSQh9rPMSUvf2'},
-        {name: "saber", tokenAccount: '7KkMhrF9Hv7dfaX5xXFtTTrfJfVjHYZ5ymwAuXVgJ6Kf'},
     ]
 }
 
@@ -171,10 +164,7 @@ const terraData = {
         abrAddress: "terra1a7ye2splpfzyenu0yrdu8t83uzgusx2malkc7u",
         decimals: 6
     },
-    tokens: [
-        {name: "terrausd", address: "uusd", decimals: 6},
-        {name: "terra-luna", address: "uluna", decimals: 6},
-    ]
+    tokens: []
 }
 
 const nearData = {
@@ -184,7 +174,19 @@ const nearData = {
         decimals: 24
     },
     tokens: [
+        {name: "apyswap", address: "apys.token.a11bd.near", decimals: 24},
+        {name: "ben-the-dog", address: "benthedog.near", decimals: 9},
+        {name: "celo", address: "celo.token.a11bd.near", decimals: 24},
+        {name: "celo-dollar", address: "cusd.token.a11bd.near", decimals: 24},
         {name: "near", address: "wrap.near", decimals: 24},
+        {name: "solana", address: "sol.token.a11bd.near", decimals: 24},
+    ]
+}
+
+const rippleData = {
+    contractAddress: "r4w1LrneWZqX5RrgFPx2gto66dwo2Zymqy",
+    tokens: [
+        {name: "solo-coin", issuer: "rsoLo2S1kiGeCcn6hCUXVrCpGMWLrRrLZz", currency: "534F4C4F00000000000000000000000000000000"},
     ]
 }
 
@@ -218,8 +220,6 @@ async function terraTvl() {
     return cosmos.sumTokens({ chain: "terra", owner: terraData.contractAddress })
 }
 
-
-
 async function terraStaking() {
     const balance = await cosmos.getBalance({ token: terraData.staking.abrAddress, owner: terraData.staking.contractAddress, chain: "terra"});
     return { allbridge: toNumber(terraData.staking.decimals, balance) }
@@ -239,6 +239,10 @@ async function nearStaking() {
     return { allbridge: toNumber(nearData.staking.decimals, balance) }
 }
 
+async function rippleTvl() {
+    return ripple.sumTokens({tokens: rippleData.tokens, owners: [rippleData.contractAddress]});
+}
+
 module.exports={
     methodology: "All tokens locked in Allbridge Classic contracts.",
     timetravel: false,
@@ -254,6 +258,9 @@ module.exports={
         tvl: nearTvl,
         staking: nearStaking
     },
+    ripple: {
+        tvl: rippleTvl,
+    },
     hallmarks:[
         [1651881600, "UST depeg"],
       ],
@@ -265,3 +272,4 @@ Object.keys(data).forEach(chain => {
         staking: getStakingFunction(chain),
     }
 })
+

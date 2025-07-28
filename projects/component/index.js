@@ -153,6 +153,7 @@ async function ftmTvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     ethereum: {
         tvl,
         staking: staking(ethStakingPool, cmp)

@@ -10,14 +10,14 @@ const path = require("path");
 require("dotenv").config();
 const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
-  blocks: { getCurrentBlocks },
+  blocks: { getBlocks },
   humanizeNumber: { humanizeNumber },
 } } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
-const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { log, diplayUnknownTable, sliceIntoChunks, sleep } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
@@ -27,7 +27,7 @@ const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'GRAPH_API_KEY', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
@@ -41,26 +41,21 @@ async function getTvl(
   tokensBalances,
   usdTokenBalances,
   tvlFunction,
-  isFetchFunction,
   storedKey,
 ) {
   const chain = storedKey.split('-')[0]
   const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, storedKey, })
   api.api = api
   api.storedKey = storedKey
-  if (!isFetchFunction) {
-    let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
-    if (tvlBalances === undefined) tvlBalances = api.getBalances()
-    const tvlResults = await computeTVL(tvlBalances, "now");
-    await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
-    usdTvls[storedKey] = tvlResults.usdTvl;
-    tokensBalances[storedKey] = tvlResults.tokenBalances;
-    usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
-  } else {
-    usdTvls[storedKey] = Number(
-      await tvlFunction(api, ethBlock, chainBlocks, api)
-    );
-  }
+
+  let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
+  if (tvlBalances === undefined) tvlBalances = api.getBalances()
+  const tvlResults = await computeTVL(tvlBalances, "now");
+  await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
+  usdTvls[storedKey] = tvlResults.usdTvl;
+  tokensBalances[storedKey] = tvlResults.tokenBalances;
+  usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
+
   if (
     typeof usdTvls[storedKey] !== "number" ||
     Number.isNaN(usdTvls[storedKey])
@@ -103,22 +98,54 @@ sdk.api.abi.call = async (...args) => {
   }
 }
 
+function validateHallmarks(hallmark) {
+  if (!Array.isArray(hallmark)) {
+    throw new Error("Hallmarks should be an array of [unixTimestamp, eventText] but got " + JSON.stringify(hallmark))
+  }
+  const [timestamp, text] = hallmark
+  if (typeof timestamp !== 'number' && isNaN(+new Date(timestamp))) {
+    throw new Error("Hallmark timestamp should be a number/dateString")
+  }
+  const year = new Date(timestamp * 1000).getFullYear()
+  const currentYear = new Date().getFullYear()
+  if (year < 2010 || year > currentYear) {
+    throw new Error("Hallmark timestamp should be between 2010 and " + currentYear + " but got " + year)
+  }
+
+  if (typeof text !== 'string') {
+    throw new Error("Hallmark text should be a string")
+  }
+}
+
 (async () => {
   let module = {};
-  try {
-    module = require(passedFile)
-  } catch (e) {
-    console.log(e)
-  }
-  if(module.hallmarks && module.hallmarks.length > 6){
-    console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+  module = require(passedFile)
+  if (module.hallmarks) {
+    if (!Array.isArray(module.hallmarks)) {
+      throw new Error("Hallmarks should be an array of arrays")
+    }
+    if (module.hallmarks.length > 6) {
+      console.error("WARNING: Hallmarks should only be set for events that led to a big change in TVL, please reduce hallmarks to only those that meet this condition")
+    }
+
+    module.hallmarks.forEach(validateHallmarks)
   }
   // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
-  const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  // const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
-  const chainBlocks = {}
+
+  let unixTimestamp = Math.round(Date.now() / 1000) - 60;
+  let chainBlocks = {}
+  const passedTimestamp = process.argv[3] ? Math.floor(new Date(process.argv[3]) / 1000) : undefined
+  if (passedTimestamp !== undefined) {
+    unixTimestamp = Number(passedTimestamp)
+
+    // other chains than evm will fail to get block at timestamp
+    try {
+      const res = await getBlocks(unixTimestamp, chains)
+      chainBlocks = res.chainBlocks
+    } catch (e) { /* ignore empty block statement */ }
+  }
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
@@ -135,26 +162,27 @@ sdk.api.abi.call = async (...args) => {
           return;
         }
         let storedKey = `${chain}-${tvlType}`;
-        let tvlFunctionIsFetch = false;
         if (tvlType === "tvl") {
           storedKey = chain;
-        } else if (tvlType === "fetch") {
-          storedKey = chain;
-          tvlFunctionIsFetch = true;
         }
-        await getTvl(
-          unixTimestamp,
-          ethBlock,
-          chainBlocks,
-          usdTvls,
-          tokensBalances,
-          usdTokenBalances,
-          tvlFunction,
-          tvlFunctionIsFetch,
-          storedKey,
-        );
+        try {
+
+          await getTvl(
+            unixTimestamp,
+            ethBlock,
+            chainBlocks,
+            usdTvls,
+            tokensBalances,
+            usdTokenBalances,
+            tvlFunction,
+            storedKey,
+          );
+        } catch (e) {
+          console.error(`Error in ${storedKey}:`, e)
+          process.exit(1)
+        }
         let keyToAddChainBalances = tvlType;
-        if (tvlType === "tvl" || tvlType === "fetch") {
+        if (tvlType === "tvl") {
           keyToAddChainBalances = "tvl";
         }
         if (chainTvlsToAdd[keyToAddChainBalances] === undefined) {
@@ -165,26 +193,6 @@ sdk.api.abi.call = async (...args) => {
       })
     );
   });
-  if (module.tvl || module.fetch) {
-    let mainTvlIsFetch;
-    if (module.tvl) {
-      mainTvlIsFetch = false;
-    } else {
-      mainTvlIsFetch = true;
-    }
-    const mainTvlPromise = getTvl(
-      unixTimestamp,
-      ethBlock,
-      chainBlocks,
-      usdTvls,
-      tokensBalances,
-      usdTokenBalances,
-      mainTvlIsFetch ? module.fetch : module.tvl,
-      mainTvlIsFetch,
-      "tvl",
-    );
-    tvlPromises.push(mainTvlPromise);
-  }
   await Promise.all(tvlPromises);
   Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
     if (usdTvls[tvlType] === undefined) {
@@ -204,11 +212,16 @@ sdk.api.abi.call = async (...args) => {
 
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
     console.log(`--- ${chain} ---`);
-    Object.entries(balances)
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([symbol, balance]) => {
-        console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
-      });
+    let entries = Object.entries(balances)
+    entries.sort((a, b) => b[1] - a[1])
+
+    if (entries.length > 30) {
+      console.log("Showing top 30 tokens, total tokens:", entries.length)
+      entries = entries.slice(0, 30)
+    }
+    entries.forEach(([symbol, balance]) => {
+      console.log(symbol.padEnd(25, " "), humanizeNumber(balance));
+    });
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
   });
   console.log(`------ TVL ------`);
@@ -235,6 +248,7 @@ function checkExportKeys(module, filePath, chains) {
     || (filePath.length === 2 &&
       !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
         || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
+        || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
       )))
     process.exit(0)
 
@@ -314,7 +328,7 @@ function fixBalances(balances) {
     else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
-      sdk.util.sumSingleBalance(balances, newKey, BigNumber(value).toFixed(0))
+      sdk.util.sumSingleBalance(balances, newKey, value)
     }
   })
 }
@@ -357,9 +371,28 @@ async function computeTVL(balances, timestamp) {
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const queries = buildPricesGetQueries(readKeys)
-  const { errors } = await PromisePool.withConcurrency(5)
+  let queryCount = queries.length;
+  if (queryCount > 7)
+    sdk.log('price query count:', queryCount, 'readKeys:', readKeys.length)
+  let i = 0
+  let foundError = false
+  const { errors } = await PromisePool.withConcurrency(3)
     .for(queries).process(async (query) => {
-      tokenData.push((await axios.get(query)).data.coins)
+      if (foundError) return;
+      try {
+
+        tokenData.push((await axios.get(query)).data.coins)
+        i++;
+        if (queries.length > 6) {
+          sdk.log(`Processed ${i}/${queryCount} queries, ${tokenData.length} responses received`)
+          if (i < queryCount - 2) {
+            await sleep(5000) // avoid rate limiting
+          }
+        }
+      } catch (e) {
+        foundError = true;
+        throw e
+      }
     })
 
   if (errors && errors.length)
@@ -384,7 +417,7 @@ async function computeTVL(balances, timestamp) {
 
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {
-        amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
+        amount = Number(balance) / 10 ** data.decimals
         usdAmount = amount * data.price;
       } else {
         amount = Number(balance);
@@ -427,12 +460,13 @@ setTimeout(() => {
 
 function buildPricesGetQueries(readKeys) {
   if (!readKeys.length) return []
-  const burl = 'https://coins.llama.fi/prices/current/'
+  console.log(`Building prices get queries for ${readKeys.length} tokens`)
+  const burl = process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/prices/current/` : 'https://coins.llama.fi/prices/current/'
   const queries = []
   let query = burl
 
   for (const key of readKeys) {
-    if (query.length + key.length > 2000) {
+    if (query.length + key.length > 2500) {
       queries.push(query.slice(0, -1))
       query = burl
     }

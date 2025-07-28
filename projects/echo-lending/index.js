@@ -1,6 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { transformBalances } = require("../helper/portedTokens");
 const { function_view } = require("../helper/chain/aptos");
 
 let _data
@@ -29,7 +27,7 @@ async function getData() {
       item.debt = item.reserve[3]
       item.balance = +item.reserve[2] - +item.debt
     }
-    return resources.filter(i => i.uToken && i.uToken !== '0x4e1854f6d332c9525e258fb6e66f84b6af8aba687bbcb832a24768c4e175feec::abtc::ABTC')
+    return resources.filter(i => i.uToken);
   }
 }
 

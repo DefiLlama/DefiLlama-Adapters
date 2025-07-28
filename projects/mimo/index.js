@@ -1,39 +1,45 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs');
-const config = {
-  ethereum: {
-    vaultCore: ['0x4026BdCD023331D52533e3374983ded99CcBB6d4'],
-    collaterals: [
-    ADDRESSES.ethereum.WETH, //wETH
-    ADDRESSES.ethereum.WBTC, //wBTC
-    ADDRESSES.ethereum.USDC, //USDC
-    ],
-  },
-  polygon: {
-    vaultCore: ['0x03175c19cb1d30fa6060331a9ec181e04cac6ab0'],
-    collaterals: [
-      ADDRESSES.polygon.WMATIC_2, //wMATIC
-      ADDRESSES.polygon.WETH_1, //wETH
-      ADDRESSES.polygon.WBTC, //wBTC
-      ADDRESSES.polygon.USDC, //USDC
-    ],
-  },
-  fantom: {
-    vaultCore: ['0xB2b4feB22731Ae013344eF63B61f4A0e09fa370e'],
-    collaterals:[
-      ADDRESSES.fantom.WFTM, //wFTM
-      '0x74b23882a30290451A17c44f4F05243b6b58C76d', //ETH
-      '0x321162Cd933E2Be498Cd2267a90534A804051b11', //BTC
-      ADDRESSES.fantom.USDC, //USDC
-    ],
-  }
+const {sumTokens2 } = require("../helper/unwrapLPs.js")
+const {
+    config,
+  } = require("./config.js");
+
+module.exports = {
+    methodology: `TVL is retrieved on-chain by getting the total assets managed by the Parallelizer contracts`,
+};
+
+async function tvl(api) {
+    const chainConfig = config[api.chain]
+    const ownerTokens = []
+    if(chainConfig.vaultCore){
+        const v2TokensAndOwners = await getOwnerTokensV2(api, chainConfig.vaultCore)
+        ownerTokens.push(...v2TokensAndOwners)
+    }
+    if(chainConfig.parallelizer){
+        const v3TokensAndOwners = await getOwnerTokensV3(api, chainConfig.parallelizer)
+        ownerTokens.push(v3TokensAndOwners)
+    }
+    return sumTokens2({ api, ownerTokens })
 }
 
-module.exports = {};
+async function getOwnerTokensV2(api, vaultCore){
+    const ownerTokens = []
+    for (const vault of vaultCore) {
+      const addressProvider = await api.call({  abi: 'address:a', target: vault})
+      const config = await api.call({  abi: 'address:config', target: addressProvider})
+      const tokenConfig = await api.fetchList({  lengthAbi: 'numCollateralConfigs', itemAbi: "function collateralConfigs(uint256 _id) view returns ((address collateralType, uint256 debtLimit, uint256 liquidationRatio, uint256 minCollateralRatio, uint256 borrowRate, uint256 originationFee, uint256 liquidationBonus, uint256 liquidationFee))", target: config})
+      const tokens = tokenConfig.map(t => t.collateralType)
+      ownerTokens.push([tokens, vault])
+    }
+    return ownerTokens
+}
+
+async function getOwnerTokensV3(api, parallelizer){
+    const {address: parallelizerAddress, fromBlock} = parallelizer
+    const collaterals = await api.call({  abi: 'address[]:getCollateralList', target: parallelizerAddress, block: fromBlock})
+    return [collaterals, parallelizerAddress]
+}
+
 
 Object.keys(config).forEach(chain => {
-  const { vaultCore: owners, collaterals: tokens } = config[chain]
-  module.exports[chain] = {
-    tvl: sumTokensExport({ chain, owners, tokens, })
-  }
-})
+    module.exports[chain] = { tvl }
+});

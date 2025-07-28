@@ -15,7 +15,6 @@ async function tvl(api) {
 
 module.exports = {
       methodology: 'gets the balance of the strategy contract',
-  start: 5793963,
   kava: {
     tvl,
   }

@@ -1,52 +1,31 @@
 const abi = require("./abi.json");
 const config = require("./config");
-const { sumTokens, unwrapUniswapLPs, } = require("../helper/unwrapLPs");
-const sdk = require("@defillama/sdk");
-
-const { getChainTransform, } = require("../helper/portedTokens");
-
-module.exports = {}
+const { sumTokensExport, sumTokens2, } = require("../helper/unwrapLPs");
 
 function setChainTVL(chain) {
-  const { masterchef, pools, vaults_json, chainId, erc20s, LPs, token, } = config[chain]
-  let getTvl
-
-  async function getAllTVL(ts, _block, chainBlocks) {
-    const transform = await getChainTransform(chain)
-    const block = chainBlocks[chain]
-    const balances = {
-      tvl: {},
-      staking: {},
-      pool2: {},
-    }
-
-    const lengthOfPool = (
-      await sdk.api.abi.call({
-        abi: abi.poolLength,
-        target: masterchef,
-        chain, block,
-      })
-    ).output
-
-    const lpPositionCalls = [];
-
-    for (let index = 0; index < lengthOfPool; index++)
-      lpPositionCalls.push({ params: [index] })
-
-    const { output: mcPools } = await sdk.api.abi.multiCall({
-      target: masterchef, calls: lpPositionCalls, block, chain, abi: abi.poolInfo
+  const { masterchef, pools, vaults_json, LPs, token, } = config[chain]
+  const stakingOwners = [masterchef]
+  const pool2Owners = [masterchef]
+  if (vaults_json) {
+    vaults_json.forEach(pool => {
+      const symbol = pool.stakingToken?.symbol?.toLowerCase()
+      const addr = pool.stakingToken.address.toLowerCase()
+      if (symbol === 'mcrn')
+        stakingOwners.push(addr)
+      else if (symbol.includes('mcrn') && symbol.endsWith('lp')) {
+        LPs.push(addr)
+        pool2Owners.push(pool.contractAddress.toLowerCase())
+      }
     })
+  }
 
-    const masterchefPools = []
+  const blacklistedTokens = [...LPs, token]
+  async function tvl(api) {
+    const tokensAndOwners = []
 
-    mcPools.forEach(({ output }) => {
-      masterchefPools.push(output)
-    })
+    const masterchefPools = await api.fetchList({ target: masterchef, lengthAbi: abi.poolLength, itemAbi: abi.poolInfo })
 
-    const toaTvl = []
     const toaSyrup = []
-    const toaPool2 = []
-    const toaStaking = []
     const syrupMapping = {}
 
     // handle masterchef
@@ -58,12 +37,7 @@ function setChainTVL(chain) {
         syrupMapping[syrup] = addr
         return;
       }
-      if (addr === token)
-        toaStaking.push([addr, masterchef])
-      else if (LPs.includes(addr))
-        toaPool2.push([addr, masterchef])
-      else
-        toaTvl.push([addr, masterchef])
+      tokensAndOwners.push([addr, masterchef])
     })
 
     // handle chocochef and boost pools
@@ -71,52 +45,27 @@ function setChainTVL(chain) {
       pools.push(...vaults_json)
 
     pools.forEach(pool => {
-      const symbol = pool.stakingToken?.symbol?.toLowerCase()
-      const masterchef = pool.contractAddress[chainId].toLowerCase()
-      const addr = pool.stakingToken.address[chainId].toLowerCase()
-      if (symbol === 'mcrn')
-        toaStaking.push([addr, masterchef])
-      else if (symbol.includes('mcrn') && symbol.endsWith('lp'))
-        toaPool2.push([addr, masterchef])
-      else
-        toaTvl.push([addr, masterchef])
+      const masterchef = pool.contractAddress
+      const addr = pool.stakingToken.address
+      tokensAndOwners.push([addr, masterchef])
     })
 
 
     const balanceCalls = toaSyrup.map(([token, address]) => ({ target: token, params: [address] }))
-    const { output: syrupBalances } = await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf', calls: balanceCalls, block, chain
+    const syrupBalances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls, })
+
+    syrupBalances.forEach((bal, i) => {
+      api.add(syrupMapping[toaSyrup[i][0]], bal)
     })
 
-    const lpPositions = []
-    syrupBalances.forEach(({ input, output }) => {
-      lpPositions.push({
-        token: syrupMapping[input.target],
-        balance: output
-      })
-    })
-
-    await sumTokens(balances.tvl, toaTvl, block, chain, transform)
-    await sumTokens(balances.pool2, toaPool2, block, chain, transform)
-    await sumTokens(balances.staking, toaStaking, block, chain, transform)
-    await unwrapUniswapLPs(balances.tvl, lpPositions, block, chain, transform)
-    return balances
+    return sumTokens2({ api, tokensAndOwners, blacklistedTokens, resolveLP: true })
   }
 
-  function getTvlFunction(key) {
-    return async (ts, _block, chainBlocks) => {
-      if (!getTvl) getTvl = getAllTVL(ts, _block, chainBlocks)
-      return (await getTvl)[key]
-    }
+  module.exports[chain] = {
+    tvl,
+    pool2: sumTokensExport({ tokens: LPs, owners: pool2Owners, resolveLP: true }),
+    staking: sumTokensExport({ token, owners: stakingOwners, }),
   }
-
-  const chainExports = {
-    tvl: getTvlFunction('tvl'),
-    pool2: getTvlFunction('pool2'),
-    staking: getTvlFunction('staking'),
-  }
-
-  module.exports[chain] = chainExports
 }
 
 Object.keys(config).forEach(setChainTVL)

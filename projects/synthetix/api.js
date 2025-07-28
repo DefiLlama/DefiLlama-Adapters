@@ -3,7 +3,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/http');
-const { requery } = require('../helper/requery');
 const { sliceIntoChunks, } = require('../helper/utils');
 const { request, gql } = require("graphql-request");
 
@@ -72,8 +71,6 @@ function chainTvl(chain) {
         })
       ])
       
-      await requery(ratio, chain, block, abi['collateralisationRatio'])
-      await requery(collateral, chain, block, abi['collateral'])
       const ratios = {}
       ratio.output.forEach(r => ratios[r.input.params[0]] = r.output)
       const collaterals = {}
@@ -136,7 +133,7 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
 }
 
 module.exports = {
-  start: 1565287200,  // Fri Aug 09 2019 00:00:00
+  start: '2019-08-08',  // Fri Aug 09 2019 00:00:00
   optimism: {
     tvl: chainTvl("optimism")
   },

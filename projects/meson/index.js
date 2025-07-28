@@ -101,7 +101,8 @@ const config = {
   era: { id: 'zksync'},
   btr: { id: 'bitlayer'},
   bouncebit: { id: 'bb'},
-  europa: { id: 'skale-europa' }
+  europa: { id: 'skale-europa' },
+  hemi: { id: 'hemi' }
 }
 
 async function addCoinfg(id, ownerTokens) {

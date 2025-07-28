@@ -9,7 +9,7 @@ const LP_LQDX_LAMA = "0x3a74922803415Dfc43c0030d47707b20f4c1b05d"
 module.exports = {
   misrepresentedTokens: true,
   methodology: 'counts the number of LAMA tokens in the Lama Miner contract.',
-  start: 1711962980,
+  start: '2024-04-01',
   avax: {
     tvl: sumTokensExport({ owner: LAMA_MINER_CONTRACT, tokens: [LAMA_TOKEN_CONTRACT], lps: [LP_LAMA_WAVAX], useDefaultCoreAssets: true, }),
     staking: sumTokensExport({ owner: LAMA_STAKING_CONTRACT, tokens: [LAMA_TOKEN_CONTRACT], lps: [LP_LAMA_WAVAX, LP_LQDX_LAMA], useDefaultCoreAssets: true, }) 

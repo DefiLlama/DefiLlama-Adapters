@@ -1,5 +1,6 @@
 const { compoundExports2 } = require("../helper/compound");
 const { mergeExports } = require("../helper/utils");
+const { aaveExports } = require("../helper/aave");
 
 module.exports = mergeExports([
     {
@@ -87,4 +88,8 @@ module.exports = mergeExports([
             cether: "0x4dA697a89ea1D166881362b56E6863294820eC97",
         }),
     }, 
+    {
+        zeta: aaveExports(undefined, undefined, undefined, ['0x2B6647f63f6Fab5c73e96FBf974f4ed2AB8a4308'], { v3: true })
+    }
+
 ]);

@@ -1,0 +1,4 @@
+{
+  "getAllAssets": "address[]:getAllAssets",
+  "checkBalance": "function checkBalance(address _asset) view returns (uint256 balance)"
+}

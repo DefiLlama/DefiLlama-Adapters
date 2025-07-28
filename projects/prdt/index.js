@@ -1,6 +1,20 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport, } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokensExport: solExports } = require("../helper/solana");
 
+/**
+ * @typedef {Object} ChainConfig
+ * @property {string[]} owners - List of owner addresses
+ * @property {string[]} tokens - List of token addresses
+ */
+
+/**
+ * Config object mapping chain names to PRDT owner addresses and token addresses 
+ * that exist within the application. Each address is used with `sumTokensExport` 
+ * to calculate TVL.
+ *
+ * @type {Object.<string, ChainConfig>}
+ */
 const config = {
   ethereum: {
     owners: Object.values({
@@ -14,7 +28,11 @@ const config = {
       predictionPROV2: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
       predictionPROV3: "0xe2ca0a434effea151d5b2c649b754acd3c8a20f0",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE],
+    tokens: [
+      ADDRESSES.null,
+      ADDRESSES.arbitrum.USDT,
+      ADDRESSES.arbitrum.USDC_CIRCLE,
+    ],
   },
   bsc: {
     owners: Object.values({
@@ -26,7 +44,12 @@ const config = {
       predictionclassicV3: "0x00199E444155f6a06d74CF36315419d39b874f5c",
       predictionPROV3: "0x49eFb44831aD88A9cFFB183d48C0c60bF4028da8",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, ADDRESSES.bsc.ETH],
+    tokens: [
+      ADDRESSES.null,
+      ADDRESSES.bsc.USDT,
+      ADDRESSES.bsc.USDC,
+      ADDRESSES.bsc.ETH,
+    ],
   },
   polygon: {
     owners: Object.values({
@@ -37,11 +60,34 @@ const config = {
       predictionclassicv3: "0x9f9564BE7b566dfE4B091a83a591752102aF3F33",
       predictionPROV3: "0x0b9c8c0a04354f41b985c10daf7db30bc66998f5",
     }),
-    tokens: [ADDRESSES.null, ADDRESSES.polygon.USDT, ADDRESSES.polygon.USDC_CIRCLE, ADDRESSES.polygon.WETH],
+    tokens: [
+      ADDRESSES.null,
+      ADDRESSES.polygon.USDT,
+      ADDRESSES.polygon.USDC_CIRCLE,
+      ADDRESSES.polygon.WETH,
+    ],
   },
+  nibiru: {
+    owners: Object.values({
+      // Owner from constructor of https://nibiscan.io/address/0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841/contract/6900/code
+      predictionPROOwner: "0x4cbB5d1c808F0FEe11575E77025b40f602793286",
+      predictionPROV3: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
+    }),
+    tokens: [
+      ADDRESSES.null,
+      ...Object.values(ADDRESSES.nibiru).filter((addr) => {
+        return addr.startsWith("0x") && addr.length === 42
+      }),
+    ],
+  },
+  solana: {},
 };
 
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl: sumTokensExport(config[chain]) };
+});
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: sumTokensExport(config[chain]) }
-})
+const solOwners = ["CcccPbvfmpNE5q4JFS5qU3mszP8obUy5Fp2BQ6Hm9Mnp"]
+module.exports.solana = {
+  tvl: solExports({ owners: solOwners, solOwners })
+}

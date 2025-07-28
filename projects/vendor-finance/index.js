@@ -30,7 +30,6 @@ const config = {
 
 module.exports = {
   methodology: 'The sum of the balance of all listed collateral and lend tokens in all deployed pools.',
-  start: 20274088,
   deadFrom: '2024-08-30'
 };
 
