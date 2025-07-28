@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const {pool2Exports} = require("../helper/pool2");
+const {pool2} = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
 const token = "0x522348779DCb2911539e76A1042aA922F9C47Ee3";
@@ -16,6 +16,6 @@ module.exports = {
     bsc: {
         tvl: async () => ({}),
         staking: staking(masonry, shares),
-        pool2: pool2Exports(shareRewardPool, pancakeLPs, "bsc", addr=>`bsc:${addr}`)
+        pool2: pool2(shareRewardPool, pancakeLPs, "bsc", addr=>`bsc:${addr}`)
     }
 }

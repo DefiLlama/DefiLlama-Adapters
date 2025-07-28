@@ -8,6 +8,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const treasury = "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB";
 const daiMKRLP = "0x517F9dD285e75b599234F7221227339478d0FcC8";
 const MKR = ADDRESSES.ethereum.MKR;
+const SKY = '0x56072c95faa701256059aa122697b133aded9279'
 const DAI = ADDRESSES.ethereum.DAI
 
 async function tvl(timestamp, block, chainBlocks, {api}) {
@@ -19,6 +20,7 @@ async function tvl(timestamp, block, chainBlocks, {api}) {
     '0xc00e94Cb662C3520282E6f5717214004A7f26888',//comp
     ADDRESSES.ethereum.AAVE,//aave
     '0x8f8221aFbB33998d8584A2B05749bA73c37a938a',//req
+    '0xc20059e0317DE91738d13af027DfC4a50781b066' //spk
  ].map(t=>[t, treasury])
   await sumTokens(balances, tokensAndOwners, block);
 
@@ -34,7 +36,7 @@ module.exports = {
   ethereum: {
     tvl,
     ownTokens: sumTokensExport({
-      tokens: [MKR,daiMKRLP],
+      tokens: [MKR,daiMKRLP,SKY],
       owners: [treasury],
     }),
   },

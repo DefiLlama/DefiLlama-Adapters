@@ -12,6 +12,13 @@ const config = {
     factories: [
       { factory: '0xfd513630f697a9c1731f196185fb9eba6eaac20b', fromBlock: 12475877 },
     ],
+    deltaswapFactory: '0x9a9a171c69cc811dc6b59bb2f9990e34a22fc971'
+  },
+  ethereum: {
+    factories: [
+      { factory: '0xfd513630f697a9c1731f196185fb9eba6eaac20b', fromBlock: 19961383 },
+    ],
+    deltaswapFactory: '0x5fbe219e88f6c6f214ce6f5b1fcaa0294f31ae1b'
   },
 }
 

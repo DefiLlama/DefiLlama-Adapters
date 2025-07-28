@@ -185,6 +185,39 @@ const RAYDIUM_STABLE_STATE_LAYOUT_V1 = struct([
   seq(u64("padding"), 64, "padding"),
 ])
 
+const KeyLayoutv4 = struct([
+  publicKey('vaultA'),
+  publicKey('vaultB'),
+  publicKey('mintA'),
+  publicKey('mintB'),
+])
+
+const TokenAmountLayout = struct([
+  u64('amount'),
+])
+
+const PositionRewardInfoLayout = struct([u128("growthInsideLastX64"), u64("rewardAmountOwed")]);
+const RAYDIUM_POSITION_INFO_LAYOUT = struct([
+  blob(8),
+  u8("bump"),
+  publicKey("nftMint"),
+  publicKey("poolId"),
+
+  s32("tickLower"),
+  s32("tickUpper"),
+  u128("liquidity"),
+  u128("feeGrowthInsideLastX64A"),
+  u128("feeGrowthInsideLastX64B"),
+  u64("tokenFeesOwedA"),
+  u64("tokenFeesOwedB"),
+
+  seq(PositionRewardInfoLayout, 3, "rewardInfos"),
+
+  seq(u64(), 8, ""),
+]);
+
+
 module.exports = {
   RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1,
+  KeyLayoutv4, TokenAmountLayout, RAYDIUM_POSITION_INFO_LAYOUT
 }

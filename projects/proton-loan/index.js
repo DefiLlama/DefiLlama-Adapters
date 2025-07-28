@@ -1,5 +1,6 @@
 const { getTableRows, getCurrencyBalance, getAllOracleData, getTokenPriceUsd } = require("../helper/chain/proton");
 const { toUSDTBalances } = require('../helper/balances');
+const { staking } = require('../helper/staking')
 
 const LENDING_CONTRACT = 'lending.loan';
 const LOAN_TOKEN_CONTRACT = 'loan.token';
@@ -65,20 +66,21 @@ function getLendingTvl(returnBorrowed = false) {
   }
 }
 
-async function getTotalStaking() {
-  const loanPrice = await getTokenPriceUsd('LOAN', LOAN_TOKEN_CONTRACT)
+async function getTotalStaking(api) {
   const [staked] = await getCurrencyBalance(LOAN_TOKEN_CONTRACT, STAKING_CONTRACT, 'LOAN')
   const [stakedAmount] = staked.split(' ');
-  let stakingTvl = toUSDTBalances(stakedAmount * loanPrice)
-  return stakingTvl
+  api.addCGToken('proton-loan', BigInt(Math.floor(stakedAmount)))
+  return api.getBalances()
 }
 
 module.exports = {
+  deadFrom: '2024-09-09',
   misrepresentedTokens: true,
   methodology: `Proton Loan TVL is the sum of all lending deposits in the Proton Loan smart contract and single-side staked LOAN.`,
   proton: {
     tvl: getLendingTvl(false),
-    borrowed: getLendingTvl(true),
+    borrowed: () => ({}), // bad debt getLendingTvl(true),
     staking: getTotalStaking
   }, 
 }
+

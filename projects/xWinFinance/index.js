@@ -25,7 +25,7 @@ Object.keys(config).forEach(chain => {
   const { portfolioURL, strategyUrl, privateKey, } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const vaults = (await getConfig('xWinFinance/vaults/' + api.chain, strategyUrl)).map(i => i.contractaddress)
+      let vaults = (await getConfig('xWinFinance/vaults/' + api.chain, strategyUrl)).map(i => i.contractaddress)
       const privateVaults = await getConfig('xWinFinance/privateVaults', PrivateURL)
 
       vaults.push(...privateVaults[privateKey])
@@ -34,14 +34,18 @@ Object.keys(config).forEach(chain => {
         vaults.push(...portfolioVaults.map(i => i.contractaddress))
       }
 
-      const bals = await api.multiCall({ abi: 'uint256:getVaultValues', calls: vaults })
+
+      const isValidVault = await api.multiCall({ abi: 'uint256:getVaultValues', calls: vaults, permitFailure: true })
+      vaults = vaults.filter((_, i) => isValidVault[i])
+
+      const bals = await api.multiCall({ abi: 'uint256:getVaultValues', calls: vaults, permitFailure: true })
       const tokens = await api.multiCall({ abi: 'address:baseToken', calls: vaults })
       const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
 
 
       //Get Vault Values returns 18 decimals even if the base token is not
       //For loop that removes the extra zeros if the base token is not 18 decimals.
-      bals.forEach((bal, i) => bals[i] = bal / 10 ** (18 - decimals[i]))
+      bals.forEach((bal, i) => bals[i] = (bal ?? 0) / 10 ** (18 - decimals[i]))
 
       api.addTokens(tokens, bals)
     }

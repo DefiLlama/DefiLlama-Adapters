@@ -1,3 +1,4 @@
+const { deadFrom } = require("../mosquitos-finance");
 
 module.exports = {
   methodology: "Count TVL as liquidity on the dex",
@@ -6,6 +7,7 @@ module.exports = {
     tvl: () => 0
   },
   hallmarks: [
-    [Math.floor(new Date('2023-01-20')/1e3), 'Project rugged'],
+    ['2023-01-20', 'Project rugged'],
   ],
+  deadFrom: '2023-01-20'
 } 

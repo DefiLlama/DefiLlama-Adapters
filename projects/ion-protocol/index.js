@@ -1,41 +1,68 @@
-
+const { getConfig } = require("../helper/cache");
 const { lendingMarket } = require("../helper/methodologies");
+
 const abi = {
-  debt: "uint256:debt",
+  debt: "function debt(address pool) external view returns (uint256)",
   totalCollateral: "uint256:totalGem",
   totalSupply: "uint256:totalSupply",
   underlyingLender: "address:underlying",
   underlyingCollateral: "address:GEM",
 };
 
+async function getMarkets() {
+  return getConfig('ion-markets', "https://ion-backend.vercel.app/v1/bigbrother/markets");
+}
+
+async function calculateTvl(api, markets) {
+  const gems = markets.map((m) => m.gemJoin);
+  const pools = await api.multiCall({ abi: "address:POOL", calls: gems });
+  const tokens = await api.multiCall({
+    abi: abi.underlyingLender,
+    calls: pools,
+  });
+  const gemUnderlyings = await api.multiCall({
+    abi: abi.underlyingCollateral,
+    calls: gems,
+  });
+  return api.sumTokens({
+    tokensAndOwners2: [tokens.concat(gemUnderlyings), pools.concat(gems)],
+  });
+}
+
+async function calculateBorrowed(api, markets) {
+  const gems = markets.map((m) => m.gemJoin);
+  const pools = await api.multiCall({ abi: "address:POOL", calls: gems });
+  const tokens = await api.multiCall({
+    abi: abi.underlyingLender,
+    calls: pools,
+  });
+  const ionLens = markets.map((m) => m.ionLens);
+  const debtCalls = pools.map((pool, index) => ({
+    target: ionLens[index],
+    params: [pool],
+  }));
+
+  const debt = await api.multiCall({ abi: abi.debt, calls: debtCalls });
+  api.add(
+    tokens,
+    debt.map((b) => b / 1e27)
+  );
+}
+
+const tvl = async (api) => {
+  const markets = await getMarkets();
+  return calculateTvl(api, markets);
+};
+
+const borrowed = async (api) => {
+  const markets = await getMarkets();
+  return calculateBorrowed(api, markets);
+};
+
 module.exports = {
   methodology: lendingMarket,
-}
-
-const config = {
   ethereum: {
-    gems: [
-      "0x3f6119B0328C27190bE39597213ea1729f061876", // weETH/wstETH GemJoin
-      "0x3bC3AC09d1ee05393F2848d82cb420f347954432", // rsETH/wstETH GemJoin
-      "0xD696f9EA3299113324B9065ab19b70758256cf16", // rswETH/wstETH GemJoin
-    ]
+    tvl,
+    borrowed,
   },
-}
-
-Object.keys(config).forEach(chain => {
-  const { gems } = config[chain]
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const pools = await api.multiCall({ abi: 'address:POOL', calls: gems })
-      const tokens = await api.multiCall({ abi: abi.underlyingLender, calls: pools })
-      const gemUnderlyings = await api.multiCall({ abi: abi.underlyingCollateral, calls: gems })
-      return api.sumTokens({ tokens: tokens.concat(gemUnderlyings), owners: pools.concat(gems) })
-    },
-    borrowed: async (api) => {
-      const pools = await api.multiCall({ abi: 'address:POOL', calls: gems })
-      const tokens = await api.multiCall({ abi: abi.underlyingLender, calls: pools })
-      const debt = await api.multiCall({ abi: abi.debt, calls: pools })
-      api.add(tokens, debt.map(b => b / 1e27))
-    }
-  }
-})
+};

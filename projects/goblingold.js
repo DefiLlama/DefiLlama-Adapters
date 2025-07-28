@@ -1,5 +1,4 @@
-const { getProvider, transformBalances, } = require('./helper/solana')
-const sdk = require('@defillama/sdk')
+const { getProvider, } = require('./helper/solana')
 const { Program, } = require("@project-serum/anchor");
 const vaults = {
   "BTC": "FvqYV2Cg7s7iWKUBTWkyybKuz1m85ny6ijDqDXEXVyNv",
@@ -17,16 +16,14 @@ const vaults = {
   "stSOL": "47hnvWxWo4PpPNqPF78cJ4abjpT45qY9of8hokeLzEUX"
 }
 
-async function tvl() {
+async function tvl(api) {
+
   const provider = getProvider()
   const programId = 'GGo1dnYpjKfe9omzUaFtaCyizvwpAMf3NhxSCMD61F3A'
   const idl = await Program.fetchIdl(programId, provider)
   const program = new Program(idl, programId, provider)
   const data = await program.account.vaultAccount.fetchMultiple(Object.values(vaults))
-  const tokenBalances = {}
-  data.forEach((i, idx) =>
-    sdk.util.sumSingleBalance(tokenBalances, i.inputMintPubkey.toString(), +i.currentTvl))
-  return transformBalances({ tokenBalances })
+  data.forEach(i => api.add(i.inputMintPubkey.toString(), i.currentTvl))
 }
 
 module.exports = {

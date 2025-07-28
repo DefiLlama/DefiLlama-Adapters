@@ -9,6 +9,8 @@ const sdk = require('@defillama/sdk')
 async function covalentGetTokens(address, api, {
   onlyWhitelisted = true,
   useCovalent = false,
+  skipCacheRead = false,
+  ignoreMissingChain = false,
 } = {}) {
   const chainId = api?.chainId
   const chain = api?.chain
@@ -18,8 +20,11 @@ async function covalentGetTokens(address, api, {
   if (['mantle', 'blast'].includes(chain)) useCovalent = true
 
   if (!useCovalent) {
-    if (!ankrChainMapping[chain]) throw new Error('Chain Not supported: ' + chain)
-    const tokens = await ankrGetTokens(address, { onlyWhitelisted })
+    if (!ankrChainMapping[chain]) {
+      if (ignoreMissingChain) return Object.values(ADDRESSES[chain] ?? []).concat([ADDRESSES.null])
+      throw new Error('Chain Not supported: ' + chain)
+    }
+    const tokens = await ankrGetTokens(address, { onlyWhitelisted, skipCacheRead, })
     return tokens[ankrChainMapping[chain]] ?? []
   }
 
@@ -61,7 +66,7 @@ const ankrChainMapping = {
   fantom: 'fantom',
   polygon: 'polygon',
   polygon_zkevm: 'polygon_zkevm',
-  era: 'zksync_era',
+  era: 'zksync_era',  // ankr has issues
   avax: 'avalanche',
   flare: 'flare',
   xdai: 'gnosis',
@@ -69,9 +74,10 @@ const ankrChainMapping = {
   rollux: 'rollux',
   scroll: 'scroll',
   syscoin: 'syscoin',
+  moonbeam: 'moonbeam'  // ankr has issues
 }
 
-async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
+async function ankrGetTokens(address, { onlyWhitelisted = true, skipCacheRead = false } = {}) {
   address = address.toLowerCase()
 
   if (!ankrTokenCalls[address]) ankrTokenCalls[address] = _call()
@@ -83,43 +89,75 @@ async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
     const timeNow = Math.floor(Date.now() / 1e3)
     const THREE_DAYS = 3 * 24 * 3600
     const cache = (await getCache(project, key)) ?? {}
-    if (cache.timestamp && (timeNow - cache.timestamp) < THREE_DAYS)
+    if (!skipCacheRead && cache.timestamp && (timeNow - cache.timestamp) < THREE_DAYS)
       return cache.tokens
-    
+
     sdk.log('Pulling tokens for ' + address)
 
-    const options = {
-      method: 'POST',
-      url: `https://rpc.ankr.com/multichain/${getEnv('ANKR_API_KEY')}`,
-      params: { ankr_getAccountBalance: '' },
-      headers: { accept: 'application/json', 'content-type': 'application/json' },
-      data: {
-        jsonrpc: '2.0',
-        method: 'ankr_getAccountBalance',
-        params: {
-          onlyWhitelisted,
-          nativeFirst: true,
-          skipSyncCheck: true,
-          walletAddress: address
+    try {
+      const cachedTokens = cache?.tokens ?? {}
+      const problemChains = ['zksync_era', 'moonbeam']
+      const problemChainSet = new Set(problemChains)
+      const options = {
+        method: 'POST',
+        url: `https://rpc.ankr.com/multichain/${getEnv('ANKR_API_KEY')}`,
+        params: { ankr_getAccountBalance: '' },
+        headers: { accept: 'application/json', 'content-type': 'application/json' },
+        data: {
+          jsonrpc: '2.0',
+          method: 'ankr_getAccountBalance',
+          params: {
+            blockchain: Object.values(ankrChainMapping).filter(c => !problemChainSet.has(c)),
+            onlyWhitelisted,
+            nativeFirst: true,
+            skipSyncCheck: true,
+            walletAddress: address
+          },
+          id: 42
         },
-        id: 42
+        timeout: 30000, // 30 seconds timeout
+      };
+      const tokens = cache.tokens ?? {}
+      const { data: { result: { assets } } } = await axios.request(options)
+      const tokenCache = { timestamp: timeNow, tokens, }
+      for (const asset of assets) {
+        const { contractAddress, blockchain } = asset
+        if (!tokens[blockchain]) tokens[blockchain] = []
+        tokens[blockchain].push(contractAddress ?? ADDRESSES.null)
       }
-    };
-    const tokens = {}
-    const { data: { result: { assets } } } = await axios.request(options)
-    const tokenCache = { timestamp: timeNow, tokens, }
-    for (const asset of assets) {
-      const { contractAddress, blockchain } = asset
-      if (!tokens[blockchain]) tokens[blockchain] = []
-      tokens[blockchain].push(contractAddress ?? ADDRESSES.null)
-    }
-    for (const [chain, values] of Object.entries(tokens)) {
-      tokens[chain] = getUniqueAddresses(values)
-    }
+      problemChains.forEach(chain => {
+        if (cachedTokens[chain]) tokens[chain] = cachedTokens[chain]
+      })
 
-    await setCache(project, key, tokenCache)
-    return tokens
+      // Remove duplicates
+      for (const [chain, values] of Object.entries(tokens)) {
+        tokens[chain] = getUniqueAddresses(values)
+      }
+      // tokens.eth = await getETHTokens(address, onlyWhitelisted)
+
+      await setCache(project, key, tokenCache)
+      return tokens
+    } catch (e) {
+      sdk.log('Error fetching tokens for ' + address, e)
+      if (cache.tokens)
+        return cache.tokens
+      throw e
+    }
   }
+}
+
+async function getETHTokens(address, onlyWhitelisted) {
+  const endpoint = getEnv('ETHEREUM_TOKENS_ENDPOINT')
+  if (!endpoint) throw new Error('Missing endpoint for ethereum tokens')
+  const url = `${endpoint}/v1/1/address/${address}/balances_v2/`
+  const { data: { items } } = await get(url)
+  const tokenSet = new Set()
+  items.forEach(i => {
+    const token = i.native_token ? ADDRESSES.null : i.contract_address
+    if (i.is_spam && onlyWhitelisted) return;
+    tokenSet.add(token)
+  })
+  return Array.from(tokenSet)
 }
 
 async function getComplexTreasury(owners) {

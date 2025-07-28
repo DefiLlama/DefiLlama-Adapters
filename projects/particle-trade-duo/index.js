@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = {
   blast: {
     weth90d: '0xc932317385fDc794633f612874BD687eA987B151',
@@ -24,6 +25,13 @@ const wrappedNativeTokenMap = {
   }
 }
 
+const usdeVaults = {
+  blast: {
+    vault: '0xeEa70D690C6c9c5534FcB90b6b0aE71199C7d4d3',
+    fwUSDe: '0x04efc000dC9c27445b092622f42e09E173beE61f',
+  }
+}
+
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
@@ -41,6 +49,15 @@ Object.keys(config).forEach(chain => {
       const wrappedBalances = await api.multiCall({  abi: 'uint256:totalSupply', calls: wrappedTokens})
       const nativeTokens = wrappedTokens.map(wrappedToken => wrappedNativeTokenMap[chain][wrappedToken])
       api.add(nativeTokens, wrappedBalances);
+
+      let usdeVault = usdeVaults[chain]
+      const wrappedUSDeBalance = await api.call({
+        abi: 'erc20:balanceOf',
+        target: usdeVault.fwUSDe,
+        params: usdeVault.vault
+      });
+      api.add(ADDRESSES.arbitrum.USDe, wrappedUSDeBalance)
+      return sumTokens2({ api })
     }
   }
 })

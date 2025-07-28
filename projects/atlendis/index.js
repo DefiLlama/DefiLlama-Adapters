@@ -1,81 +1,12 @@
-const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/http')
-const sdk = require('@defillama/sdk')
-
-
-async function fetchData(block, balances, transform, borrowed = false) {
-  const baseUrl = 'https://api.thegraph.com/subgraphs/name/atlendis';
-  const urlPolygon = `${baseUrl}/atlendis-hosted-service-polygon`;
-  const graphQLClient = new GraphQLClient(urlPolygon)
-
-  const query = gql`
-  query get_tvl($block: Int) {
-    poolStatuses (block: { number: $block }) {
-      state
-      pool {
-        id
-        identifier
-        parameters {
-          underlyingToken
-        }
-      }
-      normalizedAvailableAmount
-      normalizedBorrowedAmount
-      adjustedPendingAmount
-    }
-  }
-  `;
-
-  // pull data
-  const data = await graphQLClient.request(query, {
-    block: block - 50
-  });
-
-  // calculate TVL
-  const agEUR = 'polygon:0xe0b52e49357fd4daf2c15e02058dce6bc0057db4'.toLowerCase()
-  if (!borrowed) {
-    for (let i = 0; i < data.poolStatuses.length; i++) {
-      let amount = parseInt(data.poolStatuses[i].normalizedAvailableAmount)
-      let assetAddress = data.poolStatuses[i].pool.parameters.underlyingToken;
-
-      assetAddress = transform(assetAddress);
-      if (assetAddress === agEUR) amount *= 1e12
-      sdk.util.sumSingleBalance(balances, assetAddress, amount / 1e12)
-    }
-  } else {
-    for (let i = 0; i < data.poolStatuses.length; i++) {
-      let amount = parseInt(data.poolStatuses[i].normalizedBorrowedAmount)
-        + parseInt(data.poolStatuses[i].adjustedPendingAmount);
-      let assetAddress = data.poolStatuses[i].pool.parameters.underlyingToken;
-
-      assetAddress = transform(assetAddress);
-      if (assetAddress === agEUR) amount *= 1e12
-      sdk.util.sumSingleBalance(balances, assetAddress, amount / 1e12)
-    }
-  }
-}
-
-
-async function tvl(timestamp, _, chainBlocks) {
-  const balances = {};
-  const block = await getBlock(timestamp, 'polygon', chainBlocks)
-  const transform = i => `polygon:${i}`;
-  await fetchData(block, balances, transform);
-  return balances;
-}
-
-async function borrowed(timestamp, _, chainBlocks) {
-  const balances = {};
-  const transform = i => `polygon:${i}`;
-  const block = await getBlock(timestamp, 'polygon', chainBlocks)
-  await fetchData(block, balances, transform, true);
-  return balances;
-}
-
+const { sumTokensExport } = require('../helper/unwrapLPs');
 
 module.exports = {
-      polygon: {
-    tvl,
-    borrowed,
+  polygon: {
+    tvl: sumTokensExport({ owners: ['0xbc13e1B5DA083b10622Ff5B52c9cFa1912F10B1F', '0x2fA375961A0cB525dB0f00af4E081a806A8639Fd'], tokens: [
+      '0x60D55F02A771d515e077c9C2403a1ef324885CeC',
+      '0x1a13f4ca1d028320a707d99520abfefca3998b7f',
+      '0xE0B52e49357Fd4DAf2c15e02058DCE6BC0057db4',
+    ], }),
+    borrowed: () => ({}),
   }
 };

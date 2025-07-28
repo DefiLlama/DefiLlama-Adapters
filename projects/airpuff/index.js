@@ -1,6 +1,7 @@
 const { staking } = require("../helper/staking");
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
+  getDeposits: "function getDeposits(address) view returns (address[], address[], uint256[], uint256[])",
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
   getPrice: "function answer() external view returns (uint256)",
@@ -12,10 +13,72 @@ const contractAbis = {
   getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
   getUniswapPrice:
     "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 observationCardinalityNext, uint8 observationCardinalityNext)",
+  getMantleBalance: "function balances(address) view returns (uint256)",
 };
 
 module.exports = {
   misrepresentedTokens: true,
+
+  mantle: {
+    tvl: async (api) => {
+      const mantle = {
+        vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
+        lending: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
+        staking: "0x9f39dC8eA0a73ab462d23104699AFAE9c30d1E4f",
+      };
+
+      const stakedBalance = await api.call({
+        abi: contractAbis.getMantleBalance,
+        target: mantle.staking,
+        params: [mantle.vault],
+      });
+
+      api.add(ADDRESSES.mantle.WMNT, stakedBalance);
+
+      await api.sumTokens({
+        tokensAndOwners: [[ADDRESSES.mantle.WMNT, mantle.lending]],
+      });
+    },
+  },
+
+  karak: {
+    tvl: async (api) => {
+      const KUSDC = {
+        vault: "0x4c18E80b801AA24066D8B1C6E65ee245497Cb741",
+        token: ADDRESSES.karak.USDC,
+      };
+
+      const KWETH = {
+        vault: "0x9a9631F7BEcE5C6E0aBA1f73f0e5796c534dc4db",
+        token: ADDRESSES.optimism.WETH_1,
+      };
+
+      const wethLending = {
+        vault: "0xd6034F9147CF7528e857403Dea93bc45743295eb",
+        token: ADDRESSES.optimism.WETH_1,
+      };
+
+      const usdcLending = {
+        vault: "0x475820E4bCE0E3d233Ad7f6A8c9DD1f66974c5d6",
+        token: ADDRESSES.karak.USDC,
+      };
+
+      const KarakUSDCBal = await api.call({ target: KUSDC.vault, abi: contractAbis.getTotalSupply });
+
+      const KarakWETHbal = await api.call({ target: KWETH.vault, abi: contractAbis.getTotalSupply });
+
+      const strategies = [wethLending, usdcLending];
+
+      const tokensAndOwners = [];
+
+      strategies.forEach(({ vault, token }) => tokensAndOwners.push([token, vault]));
+
+      await api.sumTokens({ tokensAndOwners });
+
+      api.add(KUSDC.token, KarakUSDCBal);
+      api.add(KWETH.token, KarakWETHbal);
+    },
+  },
 
   zklink: {
     tvl: async (api) => {
@@ -159,18 +222,22 @@ module.exports = {
         reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
         oracle: "0xb09cbB6Aa95A004F9aeE4349DF431aF5ad03ECe4",
       };
+
+
       tokensAndOwners.push([eETH.reStakingToken, eETH.vault]);
+
+    
 
       // leverage users
       const ezETH = {
         vault: "0x32a0ce2bDfc37eE606aB905b4f9fC286049A774f",
-        reStakingToken: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+        reStakingToken: ADDRESSES.linea.rzETH,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B", //Renzo
       };
 
       const weETH = {
         vault: "0x5e0a74cb0F74D57F9d69914575b972ba6A14e27c",
-        reStakingToken: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+        reStakingToken: ADDRESSES.ethereum.WEETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
@@ -182,13 +249,13 @@ module.exports = {
 
       const ezETH1x = {
         vault: "0xa9A57D0824a613d181e0323b0cA85fBD4E27160B",
-        reStakingToken: "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110",
+        reStakingToken: ADDRESSES.linea.rzETH,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B", //Renzo
       };
 
       const weETH1x = {
         vault: "0x9320AB04E319018842BD59e2817054d19850Abc0",
-        reStakingToken: "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee",
+        reStakingToken: ADDRESSES.ethereum.WEETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
@@ -271,6 +338,11 @@ module.exports = {
         pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
       };
 
+      const bptrswETH1x2 = {
+        vault: "0x76338fca82925Fe2Df2C4F2c6e9545247617C634",
+        pendleAddress: "0x7bAf258049cc8B9A78097723dc19a8b103D4098F"
+      };
+
       //new 1x strats on pendle v2
 
       //PT Tensorplex Staked TAO 27JUN2024 (PT-stTAO-...)
@@ -325,6 +397,7 @@ module.exports = {
         bptzrsETH1x,
         bptzUSDe1x,
         bptrswETH1x,
+        bptrswETH1x2,
         pTEzETHDEC30,
       ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);
@@ -378,13 +451,13 @@ module.exports = {
 
       const weETH = {
         vault: "0xb8Cfb3406aBE78a2C836DCe69608e9cD80a78301",
-        reStakingToken: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
+        reStakingToken: ADDRESSES.arbitrum.weETH,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
       const rsETH = {
         vault: "0x65E7C3C88806FF010BB197B2577cCddA9704fA2F",
-        reStakingToken: "0x4186BFC76E2E237523CBC30FD220FE055156b41F",
+        reStakingToken: ADDRESSES.berachain.rsETH,
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 
@@ -395,13 +468,13 @@ module.exports = {
       };
       const weETH1x = {
         vault: "0xF528B8EA22a17000e49a914658d7E0F7d982803e" /*vault*/,
-        reStakingToken: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe" /*reStakingToken*/,
+        reStakingToken: ADDRESSES.arbitrum.weETH /*reStakingToken*/,
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B" /*oracle*/,
       };
 
       const rsETH1x = {
         vault: "0xe929BF8368171a76D4A828ee2cD4A50CcE31d203" /*vault*/,
-        reStakingToken: "0x4186BFC76E2E237523CBC30FD220FE055156b41F" /*reStakingToken*/,
+        reStakingToken: ADDRESSES.berachain.rsETH /*reStakingToken*/,
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 

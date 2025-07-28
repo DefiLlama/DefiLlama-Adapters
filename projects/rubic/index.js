@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const solana = require('../helper/solana')
 const { stakings } = require('../helper/staking');
 
 const stakingContractRoundOne = '0x8d9Ae5a2Ecc16A66740A53Cc9080CcE29a7fD9F5';
@@ -50,16 +49,6 @@ function chainTvl(chain) {
   }
 }
 
-function solanaTvl() {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-    const poolBalance = await solana.getTokenBalance(usdcByChain['solana'], pools['solana']);
-
-    sdk.util.sumSingleBalance(balances, 'usd-coin', poolBalance);
-
-    return balances;
-  }
-}
 
 module.exports = {
   timetravel: false, // solana :cries:
@@ -74,31 +63,4 @@ module.exports = {
   kava: {
     tvl: chainTvl('kava')
   }
-  // ethereum: {
-  //   tvl: chainTvl('ethereum')
-  // },
-  // polygon: {
-  //   tvl: chainTvl('polygon')
-  // },
-  // fantom: {
-  //   tvl: chainTvl('fantom')
-  // },
-  // avax:{
-  //   tvl: chainTvl('avax')
-  // },
-  // harmony: {
-  //   tvl: chainTvl('harmony')
-  // },
-  // moonriver: {
-  //   tvl: chainTvl('moonriver')
-  // },
-  // arbitrum: {
-  //   tvl: chainTvl('arbitrum')
-  // },
-  // aurora: {
-  //   tvl: chainTvl('aurora')
-  // },
-  // solana: {
-  //   tvl: solanaTvl()
-  // }
 }

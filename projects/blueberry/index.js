@@ -8,7 +8,8 @@ const sdk = require('@defillama/sdk');
 const BANK = '0xa34F59F634d48E2c3606048f2367326c46a4B5fA';
 
 async function tvl(timestamp, block, chainBlocks, {api}) {
-  const positionValues = await api.fetchList({  lengthAbi: abi.getNextPositionId, itemAbi: abi.getPositionValue, target: BANK})
+  const positionValuesRes = await api.fetchList({  lengthAbi: abi.getNextPositionId, itemAbi: abi.getPositionValue, target: BANK, permitFailure: true})
+  const positionValues = positionValuesRes.filter(value => value != null)
   api.addCGToken('tether', positionValues.reduce((acc, i) => acc + i/1e18, 0))
   return api.getBalances()
 }

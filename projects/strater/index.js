@@ -36,6 +36,8 @@ const STAPREAL_VAULT_ID =
 const STAPEARL_PAIR_METADTA_ID =
   "0x243096d976a44de24fde33f087665f8265543a533b5cdbae60fc72a939669867";
 
+const ST_SBUCK_VAULT_OBJECT_ID = "0xe83e455a9e99884c086c8c79c13367e7a865de1f953e75bcf3e529cdf03c6224"
+
 function asIntN(int, bits = 32) {
   return Number(BigInt.asIntN(bits, BigInt(int)));
 }
@@ -92,8 +94,18 @@ async function tvl(api) {
   const stapearlUSDTAmount =
     (stapearlLpAmount * stapearlReserveY) / stapearlLpSupply;
 
+  // saving vault
+  const savingVaultcObj = await sui.getObject(ST_SBUCK_VAULT_OBJECT_ID)
+  let savingVaultTVL = Number(savingVaultcObj.fields.free_balance) + Number(savingVaultcObj.fields.time_locked_profit.fields.locked_balance) + Number(savingVaultcObj.fields.time_locked_profit.fields.unlocked_balance)
+  const strategies = savingVaultcObj.fields.strategies.fields.contents
+  for(const strategy of strategies){
+    const botrrowedAmount = Number(strategy.fields.value.fields.borrowed)
+    savingVaultTVL += botrrowedAmount
+  }
+
   api.add(ADDRESSES.sui.USDC, stapearlUSDCAmount);
   api.add(ADDRESSES.sui.USDT, stapearlUSDTAmount);
+  api.add(ADDRESSES.sui.BUCK, savingVaultTVL)
 }
 
 module.exports = {

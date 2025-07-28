@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 const { mergeExports } = require('../helper/utils');
 
@@ -20,11 +21,14 @@ module.exports = treasuryExports({
 async function tvl(api) {
   if(api.timestamp > 1687828149){
     // Staked 100k ETH in validators
-    api.add("0x0000000000000000000000000000000000000000", 100e3*1e18)
+    api.add(ADDRESSES.null, 100e3*1e18)
   }
   return api.getBalances()
 }
 
 module.exports = mergeExports([module.exports, {
-  ethereum: { tvl }
+  ethereum: { tvl },
+  
 }])
+
+module.exports.methodology = "The Golem Foundation has staked 100,000 ETH on top of what they hold on the treasury address. https://golem.foundation/2023/12/05/diva-announcement.html . Wallet that accrues the staking rewards https://etherscan.io/address/0xba1951dF0C0A52af23857c5ab48B4C43A57E7ed1"

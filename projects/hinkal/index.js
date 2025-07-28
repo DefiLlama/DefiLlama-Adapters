@@ -1,17 +1,57 @@
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const registryTokensByChain = require("./registryTokens.js");
+const registryTokensWithUnderlyingAddressesByChain = require("./registryTokensWithUnderlyingAddresses.js");
+const { getAllTokenBalances } = require("./hinkalUtils.js");
+const { toUSDTBalances } = require("../helper/balances.js");
 
-const config = {
-  ethereum: "0x2ea81946fF675d5Eb88192144ffc1418fA442E28",
-  arbitrum: "0x41658B0DaF59Bb2FbB2D9A5249207011d2B364De",
-  optimism: "0x41658B0DaF59Bb2FbB2D9A5249207011d2B364De",
-  polygon: "0xeEeeb52E36c78b153caaB2761c369a50b066cDD5",
-  avax: "0x41658B0DaF59Bb2FbB2D9A5249207011d2B364De",
-  bsc: "0x0036E884Cab4F427193839788EDEBB4B92B9a069",
-  base: "0x41658B0DaF59Bb2FbB2D9A5249207011d2B364De",
-}
+const tvl = async (_, _1, _2, { chain, api }) => {
+  const tokenBalances = await getAllTokenBalances(
+    registryTokensByChain[chain],
+    chain
+  );
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = {
-    tvl: sumTokensExport({ owner: config[chain], fetchCoValentTokens: true, tokenConfig: { onlyWhitelisted: false, } })
-  }
-})
+  const chainTokensWithUnderlyingAddresses =
+    registryTokensWithUnderlyingAddressesByChain[chain];
+
+  const mappedTokens = tokenBalances.map((token) => {
+    const tokenUnderlyingAddress = chainTokensWithUnderlyingAddresses
+      ? chainTokensWithUnderlyingAddresses[token.address]
+      : undefined;
+
+    return {
+      address: tokenUnderlyingAddress ? tokenUnderlyingAddress : token.address,
+      balance: token.balance,
+    };
+  });
+
+  return api.addTokens(
+    mappedTokens.map((token) => token.address),
+    mappedTokens.map((token) => token.balance)
+  );
+};
+
+module.exports = {
+  ethereum: {
+    tvl,
+  },
+  base: {
+    tvl,
+  },
+  arbitrum: {
+    tvl,
+  },
+  optimism: {
+    tvl,
+  },
+  polygon: {
+    tvl,
+  },
+  avax: {
+    tvl,
+  },
+  bsc: {
+    tvl,
+  },
+  blast: {
+    tvl,
+  },
+};
