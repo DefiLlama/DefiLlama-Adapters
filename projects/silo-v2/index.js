@@ -14,6 +14,10 @@ const configV2 = {
       {
         START_BLOCK: 2672166,
         SILO_FACTORY: '0xa42001d6d2237d2c74108fe360403c4b796b7170', // Silo V2 Sonic (Main)
+      },
+      {
+        START_BLOCK: 25244110, // Silo V2 Sonic (Main Revised Deployment)
+        SILO_FACTORY: '0x4e9dE3a64c911A37f7EB2fCb06D1e68c3cBe9203',
       }
     ]
   },
@@ -30,6 +34,14 @@ const configV2 = {
       {
         START_BLOCK: 22616413,
         SILO_FACTORY: '0x22a3cF6149bFa611bAFc89Fd721918EC3Cf7b581', // Silo V2 Ethereum (Main)
+      }
+    ]
+  },
+  avax: {
+    factories: [
+      {
+        START_BLOCK: 64050356,
+        SILO_FACTORY: '0x92cECB67Ed267FF98026F814D813fDF3054C6Ff9', // Silo V2 Avalanche (Main)
       }
     ]
   },
@@ -114,5 +126,6 @@ module.exports = {
   // optimism: { tvl, borrowed, },
   // base: { tvl, borrowed, },
   sonic: { tvl, borrowed, },
+  avax: { tvl, borrowed, },
   hallmarks: []
 }

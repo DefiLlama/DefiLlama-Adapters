@@ -27,7 +27,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: "The Folks Finance xChain states are saved in the Hub chain contracts i.e. Avalanche; TVL counts deposited total amount values for each pool, borrowed counts variable and stable borrowed total amount values for each pool",
+  methodology: "In Folks Finance's xChain lending native assets remain on their native chains while crosschain assets like USDC are pooled together, which can be accessed equally from all connected networks. TVL counts for each pool: deposited, borrowed variable and borrowed stable total amounts.",
 }
 
 Object.keys(HubPools).forEach(chain => {
