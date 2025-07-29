@@ -183,4 +183,5 @@ module.exports = [
   '3DuUe32HgxGg8RQ5sFk9drcKRVmwNCAHhV',
   '3MoQyLh75Niz1s573waSP8pc95sqQcdJXd',
   '3Bvj92ASRnTnqj9kdABSgXJgrBDy6XEgzq',
+  'bc1qxe6nlda4y4h6ekj7jm9klr6vn6h9pmy8pn6yzycceqzj08532z4qxxrlza'
 ]

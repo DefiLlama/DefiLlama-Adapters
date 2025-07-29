@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const { get } = require('../helper/http')
 
 async function tvl() {
-  throw new Error('Api response include NFT value')
   const balances = {};
 
   /**

@@ -20,11 +20,27 @@ const helpers = {
   "bitcoin": require("./chain/bitcoin"),
   "litecoin": require("./chain/litecoin"),
   "polkadot": require("./chain/polkadot"),
+  "acala": require("./chain/acala"),
+  "bifrost": require("./chain/bifrost"),
+  "aelf": require("./chain/aelf"),
+  "aeternity": require("./chain/aeternity"),
+  "alephium": require("./chain/alephium"),
   "hedera": require("./chain/hbar"),
   "stacks": require("./chain/stacks"),
   "starknet": require("./chain/starknet"),
   "brc20": require("./chain/brc20"),
   "doge": require("./chain/doge"),
+  "bittensor": require("./chain/bittensor"),
+  "fuel": require("./chain/fuel"),
+  "radixdlt": require("./chain/radixdlt"),
+  "stellar": require("./chain/stellar"),
+}
+
+
+// some chains support both evm & non-evm, this is to handle if address provided is not evm
+const altEVMHelper = {
+  "astar": require("./chain/astar"),
+  "evmos": helpers.cosmos,
 }
 
 const geckoMapping = {
@@ -60,11 +76,21 @@ async function sumTokens(options) {
 
   if (token) tokens = [token]
   if (owner) owners = [owner]
+  const evmAddressExceptions = new Set(['tron', 'xdc'])
+  const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
+  const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
 
-  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain))
+  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
+    if (nonEvmOwnerFound) throw new Error('chain handler missing: ' + chain)
     return sumTokensEVM(options)
+  }
 
-  owners = getUniqueAddresses(owners, chain)
+
+  if (!isAltEvm)
+    owners = getUniqueAddresses(owners, chain)
+  else
+    owners = [...new Set(owners)] // retain case sensitivity
+
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   if (!['eos'].includes(chain))
     tokens = getUniqueAddresses(tokens, chain).filter(t => !blacklistedTokens.includes(t))
@@ -80,7 +106,7 @@ async function sumTokens(options) {
   options.owners = owners
   options.tokens = tokens
   options.blacklistedTokens = blacklistedTokens
-  let helper = helpers[chain]
+  let helper = helpers[chain] || altEVMHelper[chain]
 
   if (ibcChains.includes(chain)) helper = helpers.cosmos
 
@@ -118,11 +144,40 @@ async function sumTokens(options) {
 async function getRippleBalance(account) {
   const body = { "method": "account_info", "params": [{ account }] }
   const res = await post('https://s1.ripple.com:51234', body)
+  if (res.result.error === 'actNotFound') return 0
   return res.result.account_data.Balance / 1e6
+}
+
+async function addRippleTokenBalance({ account, api, whitelistedTokens }) {
+
+  if (Array.isArray(whitelistedTokens) && whitelistedTokens.length)
+    whitelistedTokens = new Set(whitelistedTokens.map(i => i.toLowerCase()))
+  const body = {
+    "method": "account_lines",
+    "params": [{
+      account,
+      ledger_index: "validated"
+    }]
+  }
+  const res = await post('https://s1.ripple.com:51234', body)
+  if (res.result.error === 'actNotFound') return {}
+
+
+  // Add token balances
+  if (res.result.lines) {
+    res.result.lines.forEach(line => {
+      const tokenKey = `${line.currency}.${line.account}`
+      if (whitelistedTokens && !whitelistedTokens.has(tokenKey.toLowerCase())) return;
+      api.add(tokenKey, parseFloat(line.balance))
+    })
+  }
+
+  return api.getBalances()
 }
 
 module.exports = {
   nullAddress,
   sumTokensExport,
   sumTokens,
+  addRippleTokenBalance,
 }

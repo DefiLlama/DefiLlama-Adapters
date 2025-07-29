@@ -36,7 +36,6 @@ const idl = {
   "errors": []
 }
 
-
 const BRIDGE_DEPOSITOR_EVM = '0xaEA5Bf79F1E3F2069a99A99928927988EC642e0B';
 const BRIDGE_DEPOSITOR_SOL = 'HYDqq5GfUj4aBuPpSCs4fkmeS7jZHRhrrQ3q72KsJdD4';
 
@@ -56,7 +55,7 @@ module.exports = {
         ADDRESSES.null, // ETH
         ADDRESSES.ethereum.WBTC, // WBTC
         ADDRESSES.ethereum.WETH, // WETH
-        "0xd31a59c85ae9d8edefec411d448f90841571b89c", // WSOL
+        ADDRESSES.ethereum.WSOL, // WSOL
         ADDRESSES.ethereum.WSTETH, // Lido WSTETH
         ADDRESSES.ethereum.EETH, // EETH
         '0xd9a442856c234a39a81a089c06451ebaa4306a72', // pufETH
@@ -64,7 +63,7 @@ module.exports = {
         ADDRESSES.ethereum.USDT, // USDT
         ADDRESSES.ethereum.USDC, // USDC
         ADDRESSES.ethereum.DAI, // DAI
-        '0xbf5495Efe5DB9ce00f80364C8B423567e58d2110', // ezETH
+        ADDRESSES.linea.rzETH, // ezETH
         ADDRESSES.ethereum.USDe, // Ethena USD
       ],
     }),
@@ -142,6 +141,30 @@ module.exports = {
         ADDRESSES.blast.USDB, // USDB
       ],
     }),
+  },
+  manta: {
+    tvl: sumTokensExport({
+      owner: BRIDGE_DEPOSITOR_EVM,
+      tokens: [
+        ADDRESSES.null, // ETH
+        ADDRESSES.manta.WETH, // WETH
+        ADDRESSES.manta.USDC, // USDC
+        ADDRESSES.manta.USDT, // USDT
+        "0x1468177dbcb2a772f3d182d2f1358d442b553089", // Manta mBTC
+        "0xaccbc418a994a27a75644d8d591afc22faba594e", // Manta mETH
+        "0x649d4524897ce85a864dc2a2d5a11adb3044f44a", // Manta mUSD
+      ],
+    })
+  },
+  bsquared: {
+    tvl: sumTokensExport({
+      owner: BRIDGE_DEPOSITOR_EVM,
+      tokens: [
+        ADDRESSES.null, // BTC
+        ADDRESSES.bsquared.WBTC, // WBTC
+        ADDRESSES.bsquared.USDT, // USDT
+      ],
+    })
   },
   solana: {
     tvl: sol_tvl

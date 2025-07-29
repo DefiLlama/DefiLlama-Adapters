@@ -7,11 +7,19 @@ const AAVE_ORACLE_NAME = 'AaveV3PositionOracle'
 const LLAMAPAY_ROUTER_ORACLE_NAME = 'LlamaPayRouterOracle'
 const GEARBOX_TOKEN_PREFIX = 'Farming of'
 const ARRAKIS_TOKEN_PREFIX = 'Arrakis Vault V2'
+const ESXAI_POSITION_ORACLE_NAME = 'EsXai Position Oracle'
+const SYMBIOTIC_TOKEN_PREFIX = 'Symbiotic Vault'
+const MORPHO_BLUE_POSITION_ORACLE_NAME = 'MorphoBluePositionOracle'
+const MORPHO_ERC4626_ASSETS = [
+  '0xd9a442856c234a39a81a089c06451ebaa4306a72',
+  '0x9d60947d49911e3c262c108f97fe07cde209f9a7'
+]
 
 const config = {
   polygon: {
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     aavePoolDataProvider: '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654',
+    morphoBlue: '0x1bF0c2541F820E775182832f06c0B7Fc27A25f67',
     comets: [
       {
         address: '0xF25212E676D1F7F89Cd72fFEe66158f541246445',
@@ -42,6 +50,7 @@ const config = {
   ethereum: {
     aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
     aavePoolDataProvider: '0x7B4EB56E7CD4b454BA8ff71E4518426369a138a3',
+    morphoBlue: '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb',
     comets: [
       {
         address: '0xA17581A9E3356d9A858b789D68B4d866e593aE94',
@@ -80,6 +89,7 @@ const config = {
   arbitrum: {
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     aavePoolDataProvider: '0x6b4E260b765B3cA1514e618C0215A6B7839fF93e',
+    morphoBlue: '0x6c247b1F6182318877311737BaC0844bAa518F5e',
     comets: [
       {
         address: '0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA',
@@ -92,6 +102,9 @@ const config = {
     ],
     cometReward: '0x88730d254A2f7e6AC8388c3198aFd694bA9f7fae',
     arrakisHelper: '0x89E4bE1F999E3a58D16096FBe405Fc2a1d7F07D6',
+    esXaiPoolFactory: '0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5',
+    xai: '0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66',
+    esXai: '0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c',
     vaultFactories: [
       {
         address: "0xaF2762E1F75DeCdb8d240576e7A2CEc1A365cD46",
@@ -106,6 +119,7 @@ const config = {
   base: {
     aavePool: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5',
     aavePoolDataProvider: '0x2d8A3C5677189723C4cB8873CfC9C8976FDF38Ac',
+    morphoBlue: '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb',
     comets: [
       {
         address: '0x46e6b214b524310239732D51387075E0e70970bf',
@@ -126,12 +140,16 @@ const config = {
       {
         address: "0x5CD0Cb0DcDEF98a8d07a8D44054a13F2c35C53E1",
         fromBlock: 13582859
+      },
+      {
+        address: "0x1395C314782bba704ca984ad41e57275f6E77b09",
+        fromBlock: 23294637
       }
     ]
   },
 }
 
-module.exports.methodology = 'Counts tokens held directly in vaults, as well as aave and compound positions.'
+module.exports.methodology = 'Counts tokens held directly in vaults, as well as all managed DeFi positions.'
 module.exports.start = 1682619377
 
 Object.keys(config).forEach(chain => {
@@ -139,10 +157,14 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       const AAVE_POOL = config[chain].aavePool
       const AAVE_POOL_DATA_PROVIDER = config[chain].aavePoolDataProvider
+      const MORPHO_BLUE = config[chain].morphoBlue
       const COMETS = config[chain].comets
       const COMET_REWARD = config[chain].cometReward
       const ARRAKIS_HELPER = config[chain].arrakisHelper
       const vaultFactories = config[chain].vaultFactories
+      const ESXAI_POOL_FACTORY = config[chain].esXaiPoolFactory
+      const XAI = config[chain].xai
+      const ESXAI = config[chain].esXai
 
       const vaultCreateds = []
       for (const { address, fromBlock } of vaultFactories) {
@@ -177,7 +199,10 @@ Object.keys(config).forEach(chain => {
       const llamapayRouters = []
       const gearboxFarmingPools = []
       const arrakisVaults = []
-
+      const xaiPositionVaults = []
+      const esXaiVaults = []
+      const symbioticVaults = []
+      const morphoBlueVaults = []
       for (let i = 0; i < vaults.length; ++i) {
         const vault = vaults[i]
         for (let j = 0; j < assets[i].length; ++j) {
@@ -187,19 +212,42 @@ Object.keys(config).forEach(chain => {
           if (assetName) {
             if (assetName === COMPOUND_ORACLE_NAME) {
               compoundVaults.push(vault)
+              continue
             }
             if (assetName === AAVE_ORACLE_NAME) {
               aaveVaults.push(vault)
+              continue
             }
             if (assetName === LLAMAPAY_ROUTER_ORACLE_NAME) {
               llamapayRouters.push(assetInfo.asset)
+              continue
             }
             if (assetName.startsWith(GEARBOX_TOKEN_PREFIX)) {
               gearboxFarmingPools.push([vault, assetInfo.asset])
+              continue
             }
             if (assetName.startsWith(ARRAKIS_TOKEN_PREFIX)) {
               arrakisVaults.push(assetInfo.asset)
+              continue
             }
+            if (assetName === ESXAI_POSITION_ORACLE_NAME) {
+              xaiPositionVaults.push(vault)
+              continue
+            }
+            if (assetName.startsWith(SYMBIOTIC_TOKEN_PREFIX)) {
+              symbioticVaults.push([vault, assetInfo.asset])
+              continue
+            }
+            if (assetName === MORPHO_BLUE_POSITION_ORACLE_NAME) {
+              morphoBlueVaults.push([vault, assetInfo.asset])
+              continue
+            }
+          }
+
+
+          if (ESXAI && assetInfo.asset.toLowerCase() === ESXAI.toLowerCase()) {
+            esXaiVaults.push(vault)
+            continue
           }
 
 
@@ -212,16 +260,25 @@ Object.keys(config).forEach(chain => {
         }
       }
 
-      const [underlyingTokens, vaultErc4626Balances] = await Promise.all([
+      const [underlyingTokens, vaultErc4626Balances, esXaiVaultBalances] = await Promise.all([
         api.multiCall({ abi: 'address:asset', calls: Object.keys(erc4626UnderylingMap) }),
         api.multiCall({ abi: 'erc20:balanceOf', calls: erc4626sAndOwners.map(x => ({ target: x[0], params: x[1] })) }),
+        api.multiCall({ abi: 'erc20:balanceOf', calls: esXaiVaults.map(x => ({target: ESXAI, params: [x]}))})
       ])
+
+      esXaiVaultBalances.forEach(x => {
+        api.addToken(XAI, x)
+      })
+
       await Promise.all([
         processAaveTvl(aaveVaults, api, AAVE_POOL, AAVE_POOL_DATA_PROVIDER),
         processCompoundTvl(compoundVaults, api, COMETS, vaults, COMET_REWARD),
         processLlamaPayTvl(llamapayRouters, api),
         processGearboxTvl(gearboxFarmingPools, api),
-        processArrakisTvl(arrakisVaults, api, ARRAKIS_HELPER)
+        processArrakisTvl(arrakisVaults, api, ARRAKIS_HELPER),
+        processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI),
+        processSymbioticTvl(symbioticVaults, api),
+        processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE)
       ])
 
       Object.keys(erc4626UnderylingMap).forEach((erc4626Asset, i) => erc4626UnderylingMap[erc4626Asset] = underlyingTokens[i])
@@ -238,6 +295,28 @@ Object.keys(config).forEach(chain => {
   }
 })
 
+async function processXaiTvl(xaiPositionVaults, api, ESXAI_POOL_FACTORY, XAI) {
+  if (xaiPositionVaults.length === 0) return
+
+  const pools = await api.multiCall({ abi: abi.getPoolIndicesOfUser, calls: xaiPositionVaults.map(x => ({target: ESXAI_POOL_FACTORY, params: [x]}))})
+  const vaultPools = xaiPositionVaults.flatMap((vault, i) => pools[i].map(pool => ([vault, pool])))
+
+  const [bucketTrackers, stakedAmounts] = await Promise.all([
+    api.multiCall({ abi: abi.esXaiStakeBucket, calls: vaultPools.map(x => x[1]) }),
+    api.multiCall({ abi: abi.getStakedAmounts, calls: vaultPools.map(x => ({target: x[1], params: [x[0]]}))})
+  ])
+
+  stakedAmounts.forEach(x => {
+    api.addToken(XAI, x)
+  })
+
+  const bucketWithdrawables = await api.multiCall({ abi: abi.withdrawableDividendOf, calls: vaultPools.map((x, i) => ({target: bucketTrackers[i], params: [x[0]]}))})
+
+  bucketWithdrawables.forEach(x => {
+    api.addToken(XAI, x)
+  })
+}
+
 async function processArrakisTvl(arrakisVaults, api, arrakisHelper) {
   if (arrakisVaults.length === 0) return
 
@@ -246,7 +325,7 @@ async function processArrakisTvl(arrakisVaults, api, arrakisHelper) {
     api.multiCall({ abi: abi.token1, calls: arrakisVaults}),
     api.multiCall({ abi: abi.totalUnderlying, calls: arrakisVaults.map(x => ({target: arrakisHelper, params: [x]}))})
   ])
-  
+
   totalUnderlyings.forEach((v, i) => {
     api.addToken(tokens0[i], v.totalAmount0)
     api.addToken(tokens1[i], v.totalAmount1)
@@ -349,7 +428,113 @@ async function processAaveTvl(aaveVaults, api, AAVE_POOL, AAVE_POOL_DATA_PROVIDE
     api.addToken(aaveReserveDetails[reserveIdx].stableDebtTokenAddress, aavePosition.currentStableDebt);
     api.addToken(aaveReserveDetails[reserveIdx].variableDebtTokenAddress, aavePosition.currentVariableDebt);
   }
-  
+
+}
+
+async function processSymbioticTvl(symbioticVaults, api) {
+  if (symbioticVaults.length === 0) return
+
+  const collaterals = await api.multiCall({ abi: abi.collateral, calls: symbioticVaults.map(x => ({target: x[1]}))})
+
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: symbioticVaults.map(x => ({target: x[1], params: [x[0]]}))})
+
+  collaterals.forEach((collateral, i) => {
+    api.addToken(collateral, balances[i])
+  })
+}
+
+async function processMorphoBlueTvl(morphoBlueVaults, api, MORPHO_BLUE) {
+  if (morphoBlueVaults.length === 0) return;
+
+  // Get the number of markets for each oracle
+  const marketLengths = await api.multiCall({
+    abi: abi.getMarketsLength,
+    calls: morphoBlueVaults.map(x => ({target: x[1], params: []}))
+  });
+
+
+  // Build calls to get each market by index
+  const marketCalls = [];
+  morphoBlueVaults.forEach(([vault, oracle], oracleIndex) => {
+    const length = marketLengths[oracleIndex];
+    for (let i = 0; i < length; i++) {
+      marketCalls.push({
+        target: oracle,
+        params: [i],
+        vault: vault,
+        oracleIndex: oracleIndex
+      });
+    }
+  });
+
+  if (marketCalls.length === 0) return;
+
+  // Get all markets from the Morpho Blue position oracles
+  const markets = await api.multiCall({ abi: abi.markets, calls: marketCalls });
+
+  const [marketInfos, marketParams] = await Promise.all(
+    [
+      api.multiCall({
+        abi: abi.market,
+        calls: markets.map(market => ({target: MORPHO_BLUE, params: [market[0]]}))
+      }),
+      api.multiCall({
+        abi: abi.idToMarketParams,
+        calls: markets.map(market => ({ target: MORPHO_BLUE, params: [market[0]] }))
+      })
+    ]
+  );
+
+  // Get positions for each vault across all markets
+  const positionCalls = [];
+  marketCalls.forEach((call, index) => {
+    const marketId = markets[index][0]; // Extract the market ID (bytes32)
+    positionCalls.push({
+      target: MORPHO_BLUE,
+      params: [marketId, call.vault]
+    });
+  });
+
+  const positions = await api.multiCall({
+    abi: abi.position,
+    calls: positionCalls
+  });
+
+  // Process positions and add to TVL
+  await Promise.all(positionCalls.map(async (call, index) => {
+    const [_, vault] = call.params;
+    const position = positions[index];
+    const marketParam = marketParams[index];
+    const marketInfo = marketInfos[index];
+
+    if (position.collateral > 0) {
+      if (MORPHO_ERC4626_ASSETS.includes(marketParam.collateralToken.toLowerCase())) {
+        // If the collateral token is an ERC4626, we need to convert it to the underlying asset
+        const [underlyingAsset, collateralAssets] = await Promise.all([
+          api.call({ abi: 'address:asset', target: marketParam.collateralToken }),
+          api.call({ abi: abi.convertToAssets, target: marketParam.collateralToken, params: [position.collateral] })
+        ]);
+        api.addToken(underlyingAsset, collateralAssets, vault);
+      } else {
+        api.addToken(marketParam.collateralToken, position.collateral, vault);
+      }
+    }
+
+    if (position.supplyShares > 0) {
+      const supplyAssets = (
+        BigInt(position.supplyShares) *
+        BigInt(marketInfo.totalSupplyAssets) / BigInt(marketInfo.totalSupplyShares)
+      );
+      api.addToken(marketParam.loanToken, supplyAssets, vault);
+    }
+    if (position.borrowShares > 0) {
+      const borrowAssets = (
+        BigInt(position.borrowShares) *
+        BigInt(marketInfo.totalBorrowAssets) / BigInt(marketInfo.totalBorrowShares)
+      );
+      api.addToken(marketParam.loanToken, -borrowAssets, vault);
+    }
+  }));
 }
 
 const abi = {
@@ -377,5 +562,15 @@ const abi = {
   "strategy": "function stakerStrategyShares() returns (address)",
   "underlyingToken": "function underlyingToken() returns (address)",
   "sharesToUnderlyingView": "function sharesToUnderlyingView(uint256) returns (uint256)",
-  "queuedWithdrawals": "function queuedWithdrawals(uint256) returns (bytes32 root, uint256 shares)"
+  "queuedWithdrawals": "function queuedWithdrawals(uint256) returns (bytes32 root, uint256 shares)",
+  "getPoolIndicesOfUser": "function getPoolIndicesOfUser(address user) returns (address[])",
+  "esXaiStakeBucket": "function esXaiStakeBucket() returns (address)",
+  "getStakedAmounts": "function getStakedAmounts(address) returns (uint256)",
+  "withdrawableDividendOf": "function withdrawableDividendOf(address) returns (uint256)",
+  "collateral": "function collateral() returns (address)",
+  "getMarketsLength": "function getMarketsLength() view returns (uint256)",
+  "markets": "function markets(uint256) view returns ((bytes32, address, uint80, uint8, bool))",
+  "idToMarketParams": "function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)",
+  "position": "function position(bytes32, address) view returns (uint256 supplyShares, uint256 borrowShares, uint256 collateral)",
+  "market": "function market(bytes32) view returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares)"
 }

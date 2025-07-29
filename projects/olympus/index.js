@@ -158,12 +158,13 @@ function buildTvl(isOwnTokensMode = false){
     const tokens = tokensToBalances.map(i => i.tokenAddress)
 
 
-    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+    const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true, })
     const ownTokens = new Set(olympusTokens.map(i => i.toLowerCase()))
     tokensToBalances.map(async (token, i) => {
       if (ownTokens.has(token.tokenAddress.toLowerCase())) {
         if (!isOwnTokensMode) return;
       } else if (isOwnTokensMode) return;
+      if (!decimals[i]) return;
       api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
     })
     return await sumTokens2({ api, resolveLP: true, })

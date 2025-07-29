@@ -1,4 +1,4 @@
-const { getLogs } = require("../helper/cache/getLogs");
+const { getLogs2 } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const config = require("./config");
 
@@ -14,8 +14,6 @@ Object.keys(config).forEach((chain) => {
     tvl: async (api) => {
       await getPoolTvl(api, factories);
       await getVaultTvl(api, contractRegistries);
-
-      return api.getBalances();
     },
   };
 });
@@ -28,24 +26,20 @@ async function getPoolTvl(api, factories){
       let logs;
       if (version === "v1") {
         // v1.0 contract
-        logs = await getLogs({
+        logs = await getLogs2({
           api,
           target: factory,
-          topic: "PoolCreated(address,address)",
           eventAbi:
             "event PoolCreated(address indexed quoteToken, address indexed baseToken, address uniswapPool, bool quoteTokenIsToken0, address pool)",
-          onlyArgs: true,
           fromBlock,
         });
       } else {
         // v1.5 contract
-        logs = await getLogs({
+        logs = await getLogs2({
           api,
           target: factory,
-          topic: "PoolCreated(address,address,address)",
           eventAbi:
             "event PoolCreated(address indexed quoteToken, address indexed baseToken, address indexed priceOracle, uint32 defaultSwapCallData, address pool)",
-          onlyArgs: true,
           fromBlock,
         });
       }
@@ -64,12 +58,10 @@ async function getVaultTvl(api, contractRegistries) {
   const vaults = [];
   // Retrieve logs from each contract registry to identify vaults
   for (const { address, fromBlock } of contractRegistries) {
-    const logs = await getLogs({
+    const logs = await getLogs2({
       api,
       target: address,
-      topic: "ContractRegistered",
       eventAbi: "event ContractRegistered(uint64 contractType, address contractAddress, bytes data)",
-      onlyArgs: true,
       fromBlock,
     });
 
@@ -80,31 +72,13 @@ async function getVaultTvl(api, contractRegistries) {
     });
   }
 
-  // Iterate over each vault to calculate TVL
-  for (const vault of vaults) {
-    const token = await api.call({
-      abi: 'function asset() returns (address)',
-      target: vault,
-    });
-
-    const marginlyLent = await api.call({
-      abi: 'function getLentAmount(uint8 protocol) view returns(uint256)',
-      target: vault,
-      params: [0]
-    });
-
-    const totalLent = await api.call({
-      abi: 'function getTotalLent() view returns(uint256)',
-      target: vault,
-      permitFailure: true
-    });
-
-    // Add total lent amount to balances
-    api.add(token, totalLent);
-
-    // Subtract marginlyLent from balances since it is counted as marginly pool TVL
-    api.getBalancesV2().subtractToken(token, marginlyLent);
-  }
+  const tokens = await api.multiCall({  abi: 'address:asset', calls: vaults})
+  const marginlyLent = await api.multiCall({  abi: 'function getLentAmount(uint8 protocol) view returns (uint256)', calls: vaults.map((i) => ({ target: i, params: 0})) })
+  const totalLent = await api.multiCall({  abi: 'uint256:getTotalLent', calls: vaults })
+  // Add total lent amount to balances
+  api.add(tokens, totalLent)
+  // Subtract marginlyLent from balances since it is counted as marginly pool TVL
+  api.add(tokens, marginlyLent.map(i => i * -1))
 
   // Add free amount in ERC4626 
   await api.erc4626Sum({ calls: vaults, tokenAbi: 'asset', balanceAbi: 'getFreeAmount' });
