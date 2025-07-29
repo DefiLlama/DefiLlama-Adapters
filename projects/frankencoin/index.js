@@ -10,6 +10,7 @@ const VCHFBridge = ["0x79d4f0232A66c4c91b89c76362016A1707CFBF4f", "0x3b71ba73299
 const ChainAddressMap = {
   ethereum: {
     frankencoin: '0xB58E61C3098d85632Df34EecfB899A1Ed80921cB',
+    equity: '0x1bA26788dfDe592fec8bcB0Eaff472a42BE341B2',
     savingsV2: '0x3BF301B0e2003E75A3e86AB82bD1EFF6A9dFB2aE',
     savingsReferral: '0x27d9AD987BdE08a0d083ef7e0e4043C857A17B38',
   },
@@ -57,6 +58,53 @@ async function tvl(api) {
   positionV2s?.items?.forEach(i => tokensAndOwners.push([i.collateral, i.position]));
 
   return sumTokens2({ api, tokensAndOwners, });
+}
+
+async function fees(api) {
+  // @dev: query the latest FrankencoinProfitLoss entry for this chain
+  const { frankencoinProfitLosss } = await cachedGraphQuery(
+    'frankencoinProfitLosss',
+    'https://ponder.test.frankencoin.com',
+    `{
+      frankencoinProfitLosss(
+        orderBy: "count",
+        orderDirection: "desc",
+        limit: 1,
+      ) {
+        items {
+          profits
+          losses
+        }
+      }
+    }`
+  );
+
+  const profits = frankencoinProfitLosss?.items?.[0]?.profits ?? "0";
+  return BigInt(profits);
+}
+
+async function revenue(api) {
+  // @dev: query the latest FrankencoinProfitLoss entry for this chain
+  const { frankencoinProfitLosss } = await cachedGraphQuery(
+    'frankencoinProfitLosss',
+    'https://ponder.test.frankencoin.com',
+    `{
+      frankencoinProfitLosss(
+        orderBy: "count",
+        orderDirection: "desc",
+        limit: 1,
+      ) {
+        items {
+          profits
+          losses
+        }
+      }
+    }`
+  );
+
+  const profits = frankencoinProfitLosss?.items?.[0]?.profits ?? "0";
+  const losses = frankencoinProfitLosss?.items?.[0]?.losses ?? "0";
+  return (BigInt(profits) - BigInt(losses));
 }
 
 module.exports = {
@@ -111,3 +159,6 @@ module.exports = {
   },
   start: '2023-10-28',
 };
+
+module.exports.fees = fees;
+module.exports.revenue = revenue;
