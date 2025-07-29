@@ -103,21 +103,20 @@ async function routerEvents(api, routerV2) {
     });
 
     const filteredCancelWithdrawLogs = cancelWithdrawLogs.filter(log => {
-        const currencyMatch = log.currency?.toLowerCase() === currency.toLowerCase();
         const requesterMatch = log.requester?.toLowerCase() === requester.toLowerCase();
-        return currencyMatch && requesterMatch;
+        return requesterMatch;
     });
 
     let totalBalance = BigNumber(0);
     filteredDepositLogs.forEach(log => {
-        if (log.currencyAmount) {
-            totalBalance = totalBalance.plus(BigNumber(log.currencyAmount));
+        if (log.targetTokenAmount) {
+            totalBalance = totalBalance.plus(BigNumber(log.targetTokenAmount));
         }
     });
 
     filteredWithdrawLogs.forEach(log => {
-        if (log.targetTokenAmount) {
-            totalBalance = totalBalance.minus(BigNumber(log.targetTokenAmount));
+        if (log.withdrawAmount) {
+            totalBalance = totalBalance.minus(BigNumber(log.withdrawAmount));
         }
     });
 
