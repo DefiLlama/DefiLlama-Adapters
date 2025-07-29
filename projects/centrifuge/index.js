@@ -65,15 +65,8 @@ const getTokens = async (api, block, factories) => {
       }
 
       if (factory.TOKEN_FACTORY_V3) {
-        const [tranches, shareClasses] = await Promise.all([
-          api.getLogs({ target: factory.TOKEN_FACTORY_V3, fromBlock: factory.START_BLOCK, toBlock: block, eventAbi: eventAbis.deployTranches, onlyArgs: true }),
-          api.getLogs({ target: factory.TOKEN_FACTORY_V3, fromBlock: factory.START_BLOCK, toBlock: block, eventAbi: eventAbis.addShareClass, onlyArgs: true })
-        ])
-
-        allTranches.push(
-          ...tranches.map(({ tranche }) => tranche),
-          ...shareClasses.map(({ token }) => token)
-        )
+        const shareClasses = await api.getLogs({  target: factory.TOKEN_FACTORY_V3, fromBlock: factory.START_BLOCK, toBlock: block, eventAbi: eventAbis.addShareClass, onlyArgs: true })
+        allTranches.push(...shareClasses.map(({ token }) => token))
       }
 
       return allTranches
