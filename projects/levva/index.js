@@ -15,7 +15,6 @@ Object.keys(config).forEach((chain) => {
       await getPoolTvl(api, factories);
       await getVaultTvl(api, contractRegistries);
       await getVaultV2Tvl(api, levvaV2Factories);
-      return api.getBalances();
     },
   };
 });
