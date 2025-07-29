@@ -7,146 +7,66 @@ const { mergeExports } = require('../helper/utils');
 // Omni token address constant
 const OMNI_TOKEN = '0xf7178122a087ef8f5c7bea362b7dabe38f20bf05';
 
-// TEMPORARY WORKAROUND: Convert OMNI to WETH value until CoinGecko lists OMNI
-// TO REVERT TO PROPER OMNI PRICING LATER:
-// 1. Remove all manual WETH conversion logic
-// 2. Just use: api.addToken(OMNI_TOKEN) and api.add(OMNI_TOKEN, amount)
-// 3. DeFiLlama will automatically price it once CoinGecko has it
-const USE_OMNI_WORKAROUND = true;
-
-// 1) V2 (Uniswap V2 style) factory: OmniFactory
-const v2 = {
-  bsc: { 
-    tvl: async (api) => {
-      // Add OMNI to ensure it gets detected
-      api.addToken(OMNI_TOKEN);
-      return getUniTVL({ 
-        chain: 'bsc', 
-        factory: '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087', 
-        useDefaultCoreAssets: true,
-        // Add OMNI as a core asset for this chain
-        coreAssets: [OMNI_TOKEN]
-      })(api);
-    }
-  },
-  arbitrum: { 
-    tvl: async (api) => {
-      api.addToken(OMNI_TOKEN);
-      return getUniTVL({ 
-        chain: 'arbitrum', 
-        factory: '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087', 
-        useDefaultCoreAssets: true,
-        coreAssets: [OMNI_TOKEN]
-      })(api);
-    }
-  },
-  avax: { 
-    tvl: async (api) => {
-      api.addToken(OMNI_TOKEN);
-      return getUniTVL({ 
-        chain: 'avax', 
-        factory: '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087', 
-        useDefaultCoreAssets: true,
-        coreAssets: [OMNI_TOKEN]
-      })(api);
-    }
-  },
-  base: { 
-    tvl: async (api) => {
-      
-      // Run standard V2 TVL first
-      const result = await getUniTVL({ 
-        chain: 'base', 
-        factory: '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087', 
-        useDefaultCoreAssets: true
-      })(api);
-      
-      // Then manually add OMNI from both V2 pairs
-      const weth = '0x4200000000000000000000000000000000000006';
-      const usdc = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
-      
-      let totalOmniInWeth = 0;
-      
-      const pairs = [
-        { token: weth, name: 'WETH', decimals: 18 },
-        { token: usdc, name: 'USDC', decimals: 6 }
-      ];
-      
-      for (const { token, name, decimals } of pairs) {
-        try {
-          const pair = await api.call({
-            target: '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087',
-            abi: 'function getPair(address,address) view returns (address)',
-            params: [OMNI_TOKEN, token]
-          });
-          
-          if (pair && pair !== '0x0000000000000000000000000000000000000000') {
-            const omniBalance = await api.call({
-              target: OMNI_TOKEN,
-              abi: 'function balanceOf(address) view returns (uint256)',
-              params: [pair]
-            });
-            
-            if (omniBalance > 0) {
-              const omniTokens = omniBalance / 1e18;
-              
-              const otherBalance = await api.call({
-                target: token,
-                abi: 'function balanceOf(address) view returns (uint256)',
-                params: [pair]
-              });
-              
-              const otherTokens = otherBalance / (10 ** decimals);
-              
-              if (name === 'USDC') {
-                // Convert USDC value to WETH equivalent
-                const omniValueInUsdc = omniTokens * (otherTokens / omniTokens);
-                const omniValueInWeth = omniValueInUsdc / 3400; // Approximate ETH price
-                totalOmniInWeth += omniValueInWeth;
-              } else {
-                // Direct WETH value
-                const omniValueInWeth = omniTokens * (otherTokens / omniTokens);
-                totalOmniInWeth += omniValueInWeth;
-              }
-            }
-          }
-        } catch (e) {
-        }
-      }
-      
-      if (totalOmniInWeth > 0) {
-        const omniValueInWei = Math.floor(totalOmniInWeth * 1e18).toString();
-        api.add(weth, omniValueInWei);
-      }
-      
-      return result;
-    }
-  },
-  optimism: { 
-    tvl: async (api) => {
-      api.addToken(OMNI_TOKEN);
-      return getUniTVL({ 
-        chain: 'optimism', 
-        factory: '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087', 
-        useDefaultCoreAssets: true,
-        coreAssets: [OMNI_TOKEN]
-      })(api);
-    }
-  },
-  sonic: { 
-    tvl: async (api) => {
-      api.addToken(OMNI_TOKEN);
-      return getUniTVL({ 
-        chain: 'sonic', 
-        factory: '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087', 
-        useDefaultCoreAssets: true,
-        coreAssets: [OMNI_TOKEN]
-      })(api);
-    }
-  },
+// Module-level cache
+const priceCache = {
+  omniToWethRatio: null
 };
 
-// 2) V3 (Uniswap V3 style) factory: OmniV3Factory
+// Get OMNI/WETH ratio from V3 pool (DeFiLlama will handle WETH pricing)
+async function getOmniToWethRatio(api) {
+  if (priceCache.omniToWethRatio) {
+    return priceCache.omniToWethRatio;
+  }
+  
+    const OMNI_WETH_POOL = '0x2019deb4e18107a2fd8b4acbc7e3878037336fc2';
+    
+    // Get pool price from slot0
+    const slot0 = await api.call({
+      target: OMNI_WETH_POOL,
+      abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
+      params: []
+    });
+    
+    // Calculate WETH per OMNI ratio
+    const sqrtPrice = Number(slot0.sqrtPriceX96) / Math.pow(2, 96);
+    const omniPerWeth = sqrtPrice * sqrtPrice;
+    const wethPerOmni = 1 / omniPerWeth;
+    
+    priceCache.omniToWethRatio = wethPerOmni;
+    
+    return wethPerOmni;
+  
+  // Fallback ratio (from UI data)
+  priceCache.omniToWethRatio = 0.0002083;
+  return 0.0002083;
+}
+
+// V2 adapters - BASE DOES STANDARD ONLY (V3 handles OMNI)
+const v2Factory = '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087';
+const v2 = {
+  bsc: { tvl: getUniTVL({ chain: 'bsc', factory: v2Factory, useDefaultCoreAssets: true }) },
+  arbitrum: { tvl: getUniTVL({ chain: 'arbitrum', factory: v2Factory, useDefaultCoreAssets: true }) },
+  avax: { tvl: getUniTVL({ chain: 'avax', factory: v2Factory, useDefaultCoreAssets: true }) },
+  optimism: { tvl: getUniTVL({ chain: 'optimism', factory: v2Factory, useDefaultCoreAssets: true }) },
+  sonic: { tvl: getUniTVL({ chain: 'sonic', factory: v2Factory, useDefaultCoreAssets: true }) },
+  
+  // Base: Standard V2 only - let V3 handle OMNI
+  base: {
+    tvl: async (api) => {
+      
+      // Get standard V2 TVL only - let V3 handle all OMNI pricing
+      const result = await getUniTVL({ 
+        chain: 'base', 
+        factory: v2Factory, 
+        useDefaultCoreAssets: true 
+      })(api);
+
+      return result;
+    }
+  }
+};
+
+// V3 adapters - BASE HANDLES ALL OMNI PRICING
 const rawV3 = uniV3Export({
   bsc:      { factory: '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2', fromBlock: 54053000 },
   arbitrum: { factory: '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2', fromBlock: 357770000 },
@@ -156,63 +76,123 @@ const rawV3 = uniV3Export({
   sonic:    { factory: '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2', fromBlock: 38533000 },
 });
 
-// Enhanced V3 adapter - handle V3 OMNI pools only
+// Create enhanced V3 adapters
 const v3 = {};
 Object.entries(rawV3).forEach(([chain, adapter]) => {
   v3[chain] = {
     tvl: async api => {
-      // Just run standard V3 adapter and add OMNI detection
-      const result = await adapter.tvl(api);
-      
-      // Only check V3 OMNI pools if this is base chain
       if (chain === 'base') {
         
-        const weth = '0x4200000000000000000000000000000000000006';
-        const v3Factory = '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2';
+        // Get OMNI to WETH conversion ratio
+        const wethPerOmni = await getOmniToWethRatio(api);
         
-        try {
-          const feeTiers = [500, 3000, 10000];
+        // Get standard V3 TVL first
+        const result = await adapter.tvl(api);
+        
+        const WETH = '0x4200000000000000000000000000000000000006';
+        const USDC = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
+        
+        // Check all OMNI tokens found across all adapters
+        const omniKey = `base:${OMNI_TOKEN}`;
+        if (result[omniKey]) {
+          const omniAmount = Number(result[omniKey]) / 1e18;
           
-          for (const fee of feeTiers) {
-            const pool = await api.call({
-              target: v3Factory,
-              abi: 'function getPool(address,address,uint24) view returns (address)',
-              params: [OMNI_TOKEN, weth, fee]
-            }).catch(() => null);
+          if (omniAmount > 0) {
+            const omniValueInWeth = omniAmount * wethPerOmni;
+            const wethKey = `base:${WETH}`;
+            const additionalWethWei = Math.floor(omniValueInWeth * 1e18);
+            const originalWeth = result[wethKey] || 0;
             
-            if (pool && pool !== '0x0000000000000000000000000000000000000000') {
-              const omniBalance = await api.call({
-                target: OMNI_TOKEN,
-                abi: 'function balanceOf(address) view returns (uint256)',
-                params: [pool]
-              }).catch(() => 0);
+            result[wethKey] = (BigInt(originalWeth) + BigInt(additionalWethWei)).toString();
+
+          }
+        }
+        
+        // Also manually check V2 pools for any OMNI the standard adapters missed
+        
+          const v2Factory = '0x7d9D51267f7e9e6b46a48E0A75c0086F46777087';
+          
+          // Check OMNI/WETH V2 pool
+          const omniWethPair = await api.call({
+            target: v2Factory,
+            abi: 'function getPair(address,address) view returns (address)',
+            params: [OMNI_TOKEN, WETH]
+          });
+          
+          if (omniWethPair !== '0x0000000000000000000000000000000000000000') {
+            const omniBalance = await api.call({
+              target: OMNI_TOKEN,
+              abi: 'function balanceOf(address) view returns (uint256)',
+              params: [omniWethPair]
+            });
+            
+            const omniAmountV2 = omniBalance / 1e18;
+            if (omniAmountV2 > 0) {
+              const omniValueInWeth = omniAmountV2 * wethPerOmni;
+              const wethKey = `base:${WETH}`;
+              const additionalWethWei = Math.floor(omniValueInWeth * 1e18);
+              const originalWeth = result[wethKey] || 0;
               
-              const wethBalance = await api.call({
-                target: weth,
-                abi: 'function balanceOf(address) view returns (uint256)',
-                params: [pool]
-              }).catch(() => 0);
-              
-              if (omniBalance > 0) {
-                const omniTokens = omniBalance / 1e18;
-                const wethTokens = wethBalance / 1e18;
-                const omniValueInWeth = omniTokens * (wethTokens / omniTokens);
-         
-                const omniValueInWei = Math.floor(omniValueInWeth * 1e18).toString();
-                api.add(weth, omniValueInWei);
-              }
+              result[wethKey] = (BigInt(originalWeth) + BigInt(additionalWethWei)).toString();
             }
           }
-        } catch (e) {
-        }
+          
+          // Check OMNI/USDC V2 pool
+          const omniUsdcPair = await api.call({
+            target: v2Factory,
+            abi: 'function getPair(address,address) view returns (address)',
+            params: [OMNI_TOKEN, USDC]
+          });
+          
+          if (omniUsdcPair !== '0x0000000000000000000000000000000000000000') {
+            const omniBalance = await api.call({
+              target: OMNI_TOKEN,
+              abi: 'function balanceOf(address) view returns (uint256)',
+              params: [omniUsdcPair]
+            });
+            
+            const omniAmountV2 = omniBalance / 1e18;
+            if (omniAmountV2 > 0) {
+              const omniValueInWeth = omniAmountV2 * wethPerOmni;
+              const wethKey = `base:${WETH}`;
+              const additionalWethWei = Math.floor(omniValueInWeth * 1e18);
+              const originalWeth = result[wethKey] || 0;
+              
+              result[wethKey] = (BigInt(originalWeth) + BigInt(additionalWethWei)).toString();
+            }
+          }
+        
+        // Check V4 vault for OMNI
+        
+          const v4Vault = '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa';
+          
+          const omniInVault = await api.call({
+            target: OMNI_TOKEN,
+            abi: 'function balanceOf(address) view returns (uint256)',
+            params: [v4Vault]
+          });
+          
+          const omniAmountV4 = omniInVault / 1e18;
+          if (omniAmountV4 > 0) {
+            const omniValueInWeth = omniAmountV4 * wethPerOmni;
+            const wethKey = `base:${WETH}`;
+            const additionalWethWei = Math.floor(omniValueInWeth * 1e18);
+            const originalWeth = result[wethKey] || 0;
+            
+            result[wethKey] = (BigInt(originalWeth) + BigInt(additionalWethWei)).toString();
+            
+          }
+        
+        return result;
+      } else {
+        // For other chains, just return standard V3 TVL
+        return await adapter.tvl(api);
       }
-      
-      return result;
     }
   };
 });
 
-// 3) CLAMM (Concentrated Liquidity) using vault & CLPoolManager
+// V4 CLAMM/LBAMM configs
 const clammCfg = {
   bsc:      { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xAa74c0492DB7661D6Ca52145205534061F8470CB', fromBlock: 54053000 },
   arbitrum: { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xAa74c0492DB7661D6Ca52145205534061F8470CB', fromBlock: 357770000 },
@@ -222,142 +202,45 @@ const clammCfg = {
   sonic:    { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xAa74c0492DB7661D6Ca52145205534061F8470CB', fromBlock: 38533000 },
 };
 
-// 4) LBAMM (TradeJoe LBAMM) using vault & BinPoolManager
-const lbammCfg = {
-  bsc:      { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xBF7927161C04a80e533fE8d03b8C511ac310fD28', fromBlock: 54053000 },
-  arbitrum: { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xBF7927161C04a80e533fE8d03b8C511ac310fD28', fromBlock: 357770000 },
-  avax:     { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xBF7927161C04a80e533fE8d03b8C511ac310fD28', fromBlock: 65460000 },
-  base:     { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xBF7927161C04a80e533fE8d03b8C511ac310fD28', fromBlock: 32873000 },
-  optimism: { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xBF7927161C04a80e533fE8d03b8C511ac310fD28', fromBlock: 138469000 },
-  sonic:    { vault: '0xDd179D5BF71B884793F1C213FfBdD702F399ECaa', mgr: '0xBF7927161C04a80e533fE8d03b8C511ac310fD28', fromBlock: 38533000 },
-};
+// V4 adapters - BASE DOES STANDARD ONLY (V3 handles OMNI)
+const v4Vault = {};
+Object.keys(clammCfg).forEach(chain => {
+  const { vault, mgr, fromBlock } = clammCfg[chain];
+  
+  v4Vault[chain] = {
+    tvl: async api => {
+      if (chain === 'base') {
+        
+          const logs = await getLogs2({
+            api,
+            target: mgr,
+            fromBlock,
+            eventAbi: 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, address hooks, uint24 fee, bytes32 parameters, uint160 sqrtPriceX96, int24 tick)',
+          });
 
-// Smart vault adapter that separates CLAMM and LBAMM tokens
-function makeSmartVaultAdapter(clammCfg, lbammCfg) {
-  const result = {};
-  
-  // Combine both configs
-  const allChains = new Set([...Object.keys(clammCfg), ...Object.keys(lbammCfg)]);
-  
-  for (const chain of allChains) {
-    const clammConfig = clammCfg[chain];
-    const lbammConfig = lbammCfg[chain];
-    
-    if (!clammConfig && !lbammConfig) continue;
-    
-    result[chain] = {
-      tvl: async api => {
-        
-        const vault = clammConfig?.vault || lbammConfig?.vault;
-        const clammMgr = clammConfig?.mgr;
-        const lbammMgr = lbammConfig?.mgr;
-        const fromBlock = Math.min(clammConfig?.fromBlock || Infinity, lbammConfig?.fromBlock || Infinity);
-        
-        let clammTokens = new Set();
-        let lbammTokens = new Set();
-        let allTokens = new Set();
-        
-        // Try to get CLAMM pool tokens
-        if (clammMgr) {
-          try {
-            const clammLogs = await getLogs2({
-              api,
-              target: clammMgr,
-              fromBlock,
-              eventAbi: 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, address hooks, uint24 fee, bytes32 parameters, uint160 sqrtPriceX96, int24 tick)',
-            });
-            
-            clammLogs.forEach(log => {
-              if (log.currency0) clammTokens.add(log.currency0);
-              if (log.currency1) clammTokens.add(log.currency1);
-              allTokens.add(log.currency0);
-              allTokens.add(log.currency1);
-            });
-          } catch (e) {
-          }
-        }
-        
-        // Try to get LBAMM pool tokens (try multiple event signatures)
-        if (lbammMgr) {
-          const lbammEventSigs = [
-            'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, address hooks, uint24 fee, bytes32 parameters, uint24 activeId)',
-            'event PoolCreated(address indexed tokenX, address indexed tokenY, uint256 indexed binStep, address pool, uint256 pid)',
-          ];
+          const tokens = [...new Set(logs.flatMap(l => [l.currency0, l.currency1]))];
           
-          for (const eventAbi of lbammEventSigs) {
-            try {
-              const lbammLogs = await getLogs2({
-                api,
-                target: lbammMgr,
-                fromBlock,
-                eventAbi,
-              });
-              
-              if (lbammLogs.length > 0) {
-                lbammLogs.forEach(log => {
-                  const token0 = log.currency0 || log.tokenX;
-                  const token1 = log.currency1 || log.tokenY;
-                  if (token0) lbammTokens.add(token0);
-                  if (token1) lbammTokens.add(token1);
-                  allTokens.add(token0);
-                  allTokens.add(token1);
-                });
-                break;
-              }
-            } catch (e) {
-              continue;
-            }
-          }
-          
-          if (lbammTokens.size === 0) {
-          }
-        }
+          // Standard V4 TVL only - let V3 handle OMNI
+          const result = await api.sumTokens({ owner: vault, tokens });
+          return result;
         
-        // If we couldn't detect pool-specific tokens, fall back to checking vault directly
-        if (allTokens.size === 0) {
-          
-          const fallbackTokens = {
-            base: ['0x4200000000000000000000000000000000000006', '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'],
-            arbitrum: ['0x82af49447d8a07e3bd95bd0d56f35241523fbab1', '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'],
-            optimism: ['0x4200000000000000000000000000000000000006', '0x0b2c639c533813f4aa9d7837caf62653d097ff85'],
-            bsc: ['0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'],
-            avax: ['0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'],
-            sonic: ['0x039e2fB66102314Ce7b64Ce5Ce3E5183bc94aD38', '0x29219dd400f2Bf60E5a23d13Be72B486D4038894']
-          };
-          
-          const chainTokens = fallbackTokens[chain] || [];
-          chainTokens.forEach(token => allTokens.add(token));
-          
-          // Since we can't distinguish, split 50/50 between CLAMM and LBAMM
-          // This is not ideal but better than double-counting
-          chainTokens.forEach(token => clammTokens.add(token));
-        }
+      } else {
+        // Standard V4 for other chains
         
-        // Add OMNI to all token sets
-        allTokens.add(OMNI_TOKEN);
-        clammTokens.add(OMNI_TOKEN);
-       
-        // For now, only count CLAMM tokens to avoid double-counting
-        // TODO: Improve this when LBAMM usage increases
-        const tokensToCount = Array.from(clammTokens);
-        
-        if (vault && tokensToCount.length > 0) {
-          return api.sumTokens({ owner: vault, tokens: tokensToCount });
-        }
-        
-        return {};
+          const logs = await getLogs2({
+            api,
+            target: mgr,
+            fromBlock,
+            eventAbi: 'event Initialize(bytes32 indexed id, address indexed currency0, address indexed currency1, address hooks, uint24 fee, bytes32 parameters, uint160 sqrtPriceX96, int24 tick)',
+          });
+          
+          const tokens = [...new Set(logs.flatMap(l => [l.currency0, l.currency1]))];
+          return api.sumTokens({ owner: vault, tokens });
+          
       }
-    };
-  }
-  
-  return result;
-}
+    }
+  };
+});
 
-// Use the smart vault adapter instead of separate CLAMM/LBAMM
-const vaultTvl = makeSmartVaultAdapter(clammCfg, lbammCfg);
-
-// composite all TVL sources
-const composite = mergeExports([v2, v3, vaultTvl]);
-
-// export composite TVL per chain
-module.exports = composite;
+// Export merged adapters  
+module.exports = mergeExports([v2, v3, v4Vault]);
