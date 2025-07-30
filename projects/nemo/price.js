@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {
   SPRING_SUI_STAKING_INFO_LIST,
   Winter_Blizzard_Staking_List,
