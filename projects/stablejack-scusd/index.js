@@ -18,22 +18,22 @@ const tokenMapping = {
 
 // goatTVL implementation
 async function goatTVL(api) {
-  for (const pool of sequencerPools) {
-    for (const token of Object.keys(tokenMapping)) {
-      const locked = await api.call({
-        abi: 'function totalLocked(address) view returns (uint256)',
-        target: pool,
-        params: [token],
-      });
+  const calls = []
+  const tokens = []
+  sequencerPools.map(target => Object.keys(tokenMapping).map(token => {
+    calls.push({
+      target,
+      params: [token],
+    })
+    tokens.push(token)
+  }))
 
-      if (!tokenMapping[token]) return;
-if (tokenMapping[token] === undefined) return;
-if (tokenMapping[token] === null) return;
+  const locked = await api.multiCall({
+    abi: 'function totalLocked(address) view returns (uint256)',
+    calls
+  });
 
-api.add(tokenMapping[token], locked.toString());
-
-    }
-  }
+  api.add(tokens, locked)
   return api.getBalances();
 }
 
