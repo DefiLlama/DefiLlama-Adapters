@@ -1,12 +1,14 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
+// StableJack WToken contracts on Goat chain (artBTC wrapper)
 const stablejackWTokens = [
-  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3', // StableJack artBTC (WToken)
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3', // StableJack artBTC WToken
 ];
 
-// token mapping for WTokens (1:1 with underlying, useful for labeling if needed)
+// Mapping from WToken to underlying tokens for clarity/pricing
 const tokenMapping = {
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3': '0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4', // artBTC
   '0xbC10000000000000000000000000000000000001': '0xbC10000000000000000000000000000000000001', // Goat (mock)
   '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf': '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf', // BTC (mock)
   '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf': '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf', // Dogeb
@@ -19,9 +21,10 @@ async function stablejackTVL(api) {
     calls: stablejackWTokens,
   });
 
-  // Assuming these are all BTC-pegged or Goat-related tokens; adjust mapping if needed
-  stablejackWTokens.forEach((token, i) => {
-    api.add(token, totalUnderlyingValues[i]);
+  // Add balances for the underlying tokens (mapped from WTokens)
+  stablejackWTokens.forEach((wToken, i) => {
+    const underlyingToken = tokenMapping[wToken];
+    api.add(underlyingToken, totalUnderlyingValues[i]);
   });
 
   return api.getBalances();
@@ -31,7 +34,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology:
-    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts.",
+    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts such as artBTC wrapper.",
   start: 1719292800, // 2024-06-25
   sonic: {
     tvl: async (api) => {
