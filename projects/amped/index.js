@@ -25,39 +25,48 @@ const superseedVaultAddress = '0x7f27Ce4B02b51Ea3a433eD130259F8A173F7c6C7';
 const superseedStakingAddress = '0x5ac57B6034590E53fC214Dd31E30b7C7D9D627C9';
 const superseedAmpedAddress = '0x9951bC662dFA91DE9a893d68055B6f086669b025';
 
-// Helper function to create TVL that includes both vault and staking
-function createCombinedTvl(vaultAddress, stakingAddress, ampedAddress) {
-  return async (api) => {
-    // Get vault TVL
-    const vaultTvl = gmxExports({ vault: vaultAddress });
-    await vaultTvl(api);
-    
-    // Add staked AMPED tokens to TVL
-    await sumTokens2({ api, owner: stakingAddress, tokens: [ampedAddress] });
-    
-    return api.getBalances();
-  }
-}
-
-
 module.exports = {
   start: '2024-06-06',
   lightlink_phoenix: {
-    tvl: createCombinedTvl(phoenixVaultAddress, phoenixStakingAddress, phoenixAmpedAddress)
+    tvl: gmxExports({ vault: phoenixVaultAddress }),
+    staking: async (api) => {
+      await sumTokens2({ api, owner: phoenixStakingAddress, tokens: [phoenixAmpedAddress] });
+      return api.getBalances();
+    }
   },
   bsc: {
-    tvl: createCombinedTvl(bscVaultAddress, bscStakingAddress, bscAmpedAddress)
+    tvl: gmxExports({ vault: bscVaultAddress }),
+    staking: async (api) => {
+      await sumTokens2({ api, owner: bscStakingAddress, tokens: [bscAmpedAddress] });
+      return api.getBalances();
+    }
   },
   sonic: {
-    tvl: createCombinedTvl(sonicVaultAddress, sonicStakingAddress, sonicAmpedAddress)
+    tvl: gmxExports({ vault: sonicVaultAddress }),
+    staking: async (api) => {
+      await sumTokens2({ api, owner: sonicStakingAddress, tokens: [sonicAmpedAddress] });
+      return api.getBalances();
+    }
   },
   berachain: {
-    tvl: createCombinedTvl(berachainVaultAddress, berachainStakingAddress, berachainAmpedAddress)
+    tvl: gmxExports({ vault: berachainVaultAddress }),
+    staking: async (api) => {
+      await sumTokens2({ api, owner: berachainStakingAddress, tokens: [berachainAmpedAddress] });
+      return api.getBalances();
+    }
   },
   base: {
-    tvl: createCombinedTvl(baseVaultAddress, baseStakingAddress, baseAmpedAddress)
+    tvl: gmxExports({ vault: baseVaultAddress }),
+    staking: async (api) => {
+      await sumTokens2({ api, owner: baseStakingAddress, tokens: [baseAmpedAddress] });
+      return api.getBalances();
+    }
   },
   sseed: {
-    tvl: createCombinedTvl(superseedVaultAddress, superseedStakingAddress, superseedAmpedAddress)
+    tvl: gmxExports({ vault: superseedVaultAddress }),
+    staking: async (api) => {
+      await sumTokens2({ api, owner: superseedStakingAddress, tokens: [superseedAmpedAddress] });
+      return api.getBalances();
+    }
   }
 };
