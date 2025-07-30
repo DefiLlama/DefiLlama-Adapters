@@ -1,11 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// Goat chain sequencer pool logic
 const sequencerPools = [
-  '0x873B88EDF1d639632DC7D6A734eAdb2Bf18C5bEF',
-  '0xeAa3E755d65F34a15c1d461bf54b92b8eFE76c35',
-  '0x578296a9A1cf8b84E91ABd101B7c5880b4068678',
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3', // StableJack's artBTC pool
 ];
 
 // token mapping for Goat sequencer pools
