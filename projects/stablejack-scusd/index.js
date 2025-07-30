@@ -1,16 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// StableJack WToken contracts on Goat chain (artBTC wrapper)
 const stablejackWTokens = [
-  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3', // StableJack artBTC WToken
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3',
 ];
 
-// Mapping from WToken to underlying tokens for clarity/pricing
+// Mapping is no longer necessary for price, but can keep for clarity
 const tokenMapping = {
-  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3': '0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4', // artBTC only
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3': '0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4', // artBTC
 };
 
+const BTCB_TOKEN = '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E'; // Use BTCB token for pricing
 
 async function stablejackTVL(api) {
   const totalUnderlyingValues = await api.multiCall({
@@ -18,10 +18,9 @@ async function stablejackTVL(api) {
     calls: stablejackWTokens,
   });
 
-  // Add balances for the underlying tokens (mapped from WTokens)
   stablejackWTokens.forEach((wToken, i) => {
-    const underlyingToken = tokenMapping[wToken];
-    api.add(underlyingToken, totalUnderlyingValues[i]);
+    // Use BTCB token address for pricing instead of artBTC
+    api.add(BTCB_TOKEN, totalUnderlyingValues[i]);
   });
 
   return api.getBalances();
@@ -29,9 +28,9 @@ async function stablejackTVL(api) {
 
 module.exports = {
   timetravel: true,
-  misrepresentedTokens: true,
+  misrepresentedTokens: true, // Because we use BTCB price for artBTC tokens
   methodology:
-    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts such as artBTC wrapper.",
+    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts such as artBTC wrapper, priced as BTCB since artBTC price is not indexed.",
   start: 1719292800, // 2024-06-25
   sonic: {
     tvl: async (api) => {
