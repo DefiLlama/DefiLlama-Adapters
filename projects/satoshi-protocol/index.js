@@ -45,12 +45,6 @@ function createExports({
   }
 }
 
-async function getCollateralsFromTrove(api, troveList, tokensAndOwners) {
-  const tokens = await api.multiCall({ abi: 'address:collateralToken', calls: troveList })
-  tokens.forEach((token, i) => tokensAndOwners.push([token, troveList[i]]))
-  return tokens;
-}
-
 async function addCollateralBalanceFromTrove(api, troveList) {
   const balances = {};
   const chains = api.chain;
