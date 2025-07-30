@@ -8,11 +8,37 @@ const TEMPLAR_ROOT_CONTRACT = 'templar-alpha.near'
  * @typedef {Object} Snapshot
  * @property {string} time_chunk - Time chunk information
  * @property {string} end_timestamp_ms - End timestamp in milliseconds
- * @property {string} deposited_active - Active deposits amount
- * @property {string} deposited_incoming - Incoming deposits amount
- * @property {string} borrowed - Total borrowed amount
+ * @property {string} deposited_active - Active deposits amount (in borrow asset)
+ * @property {string} deposited_incoming - Incoming deposits amount (in borrow asset)
+ * @property {string} borrowed - Total borrowed amount (in borrow asset)
  * @property {string} yield_distribution - Yield distribution amount
  * @property {string} interest_rate - Current interest rate
+ */
+
+/**
+ * @typedef {Object} AssetConfig
+ * @property {string} [Nep141] - NEP-141 token contract address
+ * @property {Object} [Nep245] - NEP-245 token config
+ * @property {string} [Nep245.contract_id] - NEP-245 contract ID
+ * @property {string} [Nep245.token_id] - NEP-245 token ID
+ */
+
+/**
+ * @typedef {Object} BalanceOracle
+ * @property {string} account_id - Oracle account ID
+ * @property {string} collateral_asset_price_id - Collateral asset price ID
+ * @property {number} collateral_asset_decimals - Collateral asset decimals
+ * @property {string} borrow_asset_price_id - Borrow asset price ID
+ * @property {number} borrow_asset_decimals - Borrow asset decimals
+ * @property {number} price_maximum_age_s - Maximum price age in seconds
+ */
+
+/**
+ * @typedef {Object} Configuration
+ * @property {AssetConfig} borrow_asset - Borrow asset configuration
+ * @property {AssetConfig} collateral_asset - Collateral asset configuration
+ * @property {BalanceOracle} balance_oracle - Balance oracle configuration
+ * @property {string} protocol_account_id - Protocol account ID
  */
 
 async function tvl() {
@@ -53,19 +79,37 @@ async function tvl() {
 
         const results = await Promise.allSettled(
             deployments.map(async (marketContract) => {
-                /** @type {Snapshot} */
-                const snapshot = await call(marketContract, 'get_current_snapshot', {})
+                const [snapshotRaw, configurationRaw] = await Promise.all([
+                    call(marketContract, 'get_current_snapshot', {}),
+                    call(marketContract, 'get_configuration', {})
+                ])
 
-                if (!snapshot || typeof snapshot.deposited_active !== 'string' || typeof snapshot.borrowed !== 'string') {
+                /** @type {Snapshot} */
+                const snapshot = snapshotRaw
+                /** @type {Configuration} */
+                const configuration = configurationRaw
+
+                if (!snapshot ||
+                    typeof snapshot.deposited_active !== 'string' ||
+                    typeof snapshot.deposited_incoming !== 'string' ||
+                    typeof snapshot.borrowed !== 'string') {
                     throw new Error('Invalid snapshot data received')
                 }
 
+                if (!configuration || !configuration.borrow_asset || !configuration.borrow_asset.Nep141) {
+                    throw new Error('Invalid configuration or missing borrow asset')
+                }
+
+                const borrowAssetToken = configuration.borrow_asset.Nep141
+                const borrowAssetDecimals = configuration.balance_oracle?.borrow_asset_decimals || 18
+
+                // Calculate net liquidity in raw amounts (all in borrow asset)
                 const totalDeposited = BigNumber(snapshot.deposited_active)
                     .plus(snapshot.deposited_incoming)
                 const totalBorrowed = BigNumber(snapshot.borrowed)
                 const netLiquidity = totalDeposited.minus(totalBorrowed)
 
-                return { marketContract, netLiquidity }
+                return { marketContract, borrowAssetToken, netLiquidity, borrowAssetDecimals }
             })
         )
 
