@@ -1,6 +1,8 @@
 const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { getLogs } = require('../helper/cache/getLogs')
+const sdk = require('@defillama/sdk')
+const ethers = require('ethers');
 
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance/solv-protocol-defillama/refs/heads/main/solv-strategies.json';
 
@@ -56,56 +58,114 @@ async function routerEvents(api, routerV2, solvbtcAddress) {
     let { contractAddress, fromBlock, tokenAddress, requester } = routerV2;
 
     const toBlock = api.block;
-
-    const [depositLogs, withdrawLogs, cancelWithdrawLogs] = await Promise.all([
-        getLogs({
-            api,
+    
+    let [depositLogsRaw, withdrawLogsRaw, cancelWithdrawLogsRaw] = await Promise.all([
+        sdk.api.util.getLogs({
             target: contractAddress,
             topic: '0x6937da7733b7e101e4ab6e3a3ec12fe857d7a7ca921348ef12feff7abfcee01a',
-            eventAbi: 'event Deposit(address indexed targetToken, address indexed currency, address indexed depositor, uint256 targetTokenAmount, uint256 currencyAmount, address[] path, bytes32[] poolIds)',
-            onlyArgs: true,
-            fromBlock,
-            toBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            chain: api.chain
         }),
-        getLogs({
-            api,
+        sdk.api.util.getLogs({
             target: contractAddress,
             topic: '0x50aa488fffd286866bc78078718365f7c3880cf5f95179a61e37cf84c5fd76c5',
-            eventAbi: 'event WithdrawRequest (address indexed targetToken, address indexed currency, address indexed requester, bytes32 poolId, uint256 withdrawAmount, uint256 redemptionId)',
-            onlyArgs: true,
-            fromBlock,
-            toBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            chain: api.chain
         }),
-        getLogs({
-            api,
+        sdk.api.util.getLogs({
             target: contractAddress,
             topic: '0xbcab14a9990bc1fc30373acf248d280252f63653e6ccdcbd1f7929552a84c738',
-            eventAbi: 'event CancelWithdrawRequest (address indexed targetToken, address indexed redemption, address indexed requester, bytes32 poolId, uint256 redemptionId, uint256 targetTokenAmount)',
-            onlyArgs: true,
-            fromBlock,
-            toBlock,
+            fromBlock: fromBlock,
+            toBlock: toBlock,
+            chain: api.chain
         })
     ]);
+    
+    depositLogsRaw = depositLogsRaw || { output: [] };
+    withdrawLogsRaw = withdrawLogsRaw || { output: [] };
+    cancelWithdrawLogsRaw = cancelWithdrawLogsRaw || { output: [] };
 
+    const depositInterface = new ethers.Interface([
+        'event Deposit(address indexed targetToken, address indexed currency, address indexed depositor, uint256 targetTokenAmount, uint256 currencyAmount, address[] path, bytes32[] poolIds)'
+    ]);
+
+    const depositLogs = (depositLogsRaw.output || []).map(log => {
+        try {
+            const parsed = depositInterface.parseLog(log);
+            return {
+                targetToken: parsed.args.targetToken,
+                currency: parsed.args.currency,
+                depositor: parsed.args.depositor,
+                targetTokenAmount: parsed.args.targetTokenAmount.toString(),
+                currencyAmount: parsed.args.currencyAmount.toString(),
+                path: parsed.args.path,
+                poolIds: parsed.args.poolIds
+            };
+        } catch (error) {
+            return null;
+        }
+    }).filter(Boolean);
+
+    const withdrawInterface = new ethers.Interface([
+        'event WithdrawRequest(address indexed targetToken, address indexed currency, address indexed requester, bytes32 poolId, uint256 withdrawAmount, uint256 redemptionId)'
+    ]);
+
+    const withdrawLogs = (withdrawLogsRaw.output || []).map(log => {
+        try {
+            const parsed = withdrawInterface.parseLog(log);
+            return {
+                targetToken: parsed.args.targetToken,
+                currency: parsed.args.currency,
+                requester: parsed.args.requester,
+                poolId: parsed.args.poolId,
+                withdrawAmount: parsed.args.withdrawAmount.toString(),
+                redemptionId: parsed.args.redemptionId.toString()
+            };
+        } catch (error) {
+            return null;
+        }
+    }).filter(Boolean);
+
+    const cancelWithdrawInterface = new ethers.Interface([
+        'event CancelWithdrawRequest(address indexed targetToken, address indexed redemption, address indexed requester, bytes32 poolId, uint256 redemptionId, uint256 targetTokenAmount)'
+    ]);
+
+    const cancelWithdrawLogs = (cancelWithdrawLogsRaw.output || []).map(log => {
+        try {
+            const parsed = cancelWithdrawInterface.parseLog(log);
+            return {
+                targetToken: parsed.args.targetToken,
+                redemption: parsed.args.redemption,
+                requester: parsed.args.requester,
+                poolId: parsed.args.poolId,
+                redemptionId: parsed.args.redemptionId.toString(),
+                targetTokenAmount: parsed.args.targetTokenAmount.toString()
+            };
+        } catch (error) {
+            return null;
+        }
+    }).filter(Boolean);
 
     const filteredDepositLogs = depositLogs.filter(log => {
         const currencyMatch = log.currency?.toLowerCase() === solvbtcAddress.toLowerCase();
-        const targetTokenyMatch = log.targetToken?.toLowerCase() === tokenAddress.toLowerCase();
+        const targetTokenMatch = log.targetToken?.toLowerCase() === tokenAddress.toLowerCase();
         const depositorMatch = log.depositor?.toLowerCase() === requester.toLowerCase();
-        return currencyMatch && depositorMatch && targetTokenyMatch;
+        return currencyMatch && depositorMatch && targetTokenMatch;
     });
 
     const filteredWithdrawLogs = withdrawLogs.filter(log => {
         const currencyMatch = log.currency?.toLowerCase() === tokenAddress.toLowerCase();
-        const targetTokenyMatch = log.targetToken?.toLowerCase() === solvbtcAddress.toLowerCase();
+        const targetTokenMatch = log.targetToken?.toLowerCase() === solvbtcAddress.toLowerCase();
         const requesterMatch = log.requester?.toLowerCase() === requester.toLowerCase();
-        return currencyMatch && requesterMatch && targetTokenyMatch;
+        return currencyMatch && requesterMatch && targetTokenMatch;
     });
 
     const filteredCancelWithdrawLogs = cancelWithdrawLogs.filter(log => {
-        const targetTokenyMatch = log.targetToken?.toLowerCase() === tokenAddress.toLowerCase();
+        const targetTokenMatch = log.targetToken?.toLowerCase() === tokenAddress.toLowerCase();
         const requesterMatch = log.requester?.toLowerCase() === requester.toLowerCase();
-        return targetTokenyMatch && requesterMatch;
+        return targetTokenMatch && requesterMatch;
     });
 
     let totalBalance = BigNumber(0);
