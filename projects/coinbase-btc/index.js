@@ -17,6 +17,12 @@ const XRP_ADDRESSES = [
     "rGsMk4nK4M8MtcjVbjUeaJBppjjKpXyJ7F"
 ];
 
+const DOGE_ADDRESSES = [
+  "DLuceb7v8vHknepvYRTzz5bSMUAqax8vTN",
+  "DCqkF26vcqG1FGJiB7L73jyTDeFkjeEPvJ",
+  "DNhLqkURqaQDW4f4J9wxtVzRw1XxhkjZ6m"
+  ];
+
 async function btcTvl(api) {
     const response = await fetch("https://www.coinbase.com/cbbtc/proof-of-reserves.json", {
       "headers": {
@@ -72,5 +78,8 @@ module.exports = {
         tvl: sdk.util.sumChainTvls([
           sumTokensExport({ owners: bitcoinAddressBook.coinbaseltc }),
         ]),
+    },
+    doge: {
+      tvl: sumTokensExport({ owners: DOGE_ADDRESSES }),
     },
   };

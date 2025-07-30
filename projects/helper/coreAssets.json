@@ -2050,7 +2050,8 @@
     "WXTZ": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
     "USDC": "0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9",
     "USDT": "0x2c03058c8afc06713be23e58d2febc8337dbfe6a",
-    "WETH": "0xfc24f770f94edbca6d6f885e12d4317320bcb401"
+    "WETH": "0xfc24f770f94edbca6d6f885e12d4317320bcb401",
+    "LBTC": "0xecAc9C5F704e954931349Da37F60E39f515c11c1"
   },
   "rari": {
     "WETH": "0xf037540e51d71b2d2b1120e8432ba49f29edfbd0",
@@ -2590,7 +2591,7 @@
     "WETH": "0x50498dc52bcd3daeb54b7225a7d2fa8d536f313e"
   },
   "btnx": {
-    "USDC_E": "0x325eEb3AA50014f35861e3374f54B3997Aa8357d"
+    "USDC_E": "0x29ee6138dd4c9815f46d34a4a1ed48f46758a402"
   },
   "vechain": {
     "WVET": "0xd8ccdd85abdbf68dfec95f06c973e87b1b5a9997",
