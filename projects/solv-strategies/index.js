@@ -28,7 +28,7 @@ async function tvl(api) {
 
         let adjustedTotalSupply = totalSupply;
         if (routerV2) {
-            const balance = await routerEvents(api, routerV2);
+            const balance = await routerEvents(api, routerV2, solvbtcAddress);
             adjustedTotalSupply = BigNumber(totalSupply).minus(BigNumber(balance)).toString();
         }
 
@@ -49,11 +49,11 @@ async function tvl(api) {
 }
 
 
-async function routerEvents(api, routerV2) {
-    if (!routerV2["contractAddress"] && !routerV2["currency"] && !routerV2["requester"]) {
+async function routerEvents(api, routerV2, solvbtcAddress) {
+    if (!routerV2["contractAddress"] && !routerV2["tokenAddress"] && !routerV2["requester"] && !solvbtcAddress) {
         return;
     }
-    let { contractAddress, fromBlock, currency, requester } = routerV2;
+    let { contractAddress, fromBlock, tokenAddress, requester } = routerV2;
 
     const toBlock = api.block;
 
@@ -71,7 +71,7 @@ async function routerEvents(api, routerV2) {
             api,
             target: contractAddress,
             topic: '0x50aa488fffd286866bc78078718365f7c3880cf5f95179a61e37cf84c5fd76c5',
-            eventAbi: 'event WithdrawRequest (address indexed targetToken, address indexed currency, address indexed requester, bytes32 poolId, uint256 redemptionId)',
+            eventAbi: 'event WithdrawRequest (address indexed targetToken, address indexed currency, address indexed requester, bytes32 poolId, uint256 withdrawAmount, uint256 redemptionId)',
             onlyArgs: true,
             fromBlock,
             toBlock,
@@ -87,21 +87,25 @@ async function routerEvents(api, routerV2) {
         })
     ]);
 
+
     const filteredDepositLogs = depositLogs.filter(log => {
-        const currencyMatch = log.currency?.toLowerCase() === currency.toLowerCase();
+        const currencyMatch = log.currency?.toLowerCase() === solvbtcAddress.toLowerCase();
+        const targetTokenyMatch = log.targetToken?.toLowerCase() === tokenAddress.toLowerCase();
         const depositorMatch = log.depositor?.toLowerCase() === requester.toLowerCase();
-        return currencyMatch && depositorMatch;
+        return currencyMatch && depositorMatch && targetTokenyMatch;
     });
 
     const filteredWithdrawLogs = withdrawLogs.filter(log => {
-        const currencyMatch = log.currency?.toLowerCase() === currency.toLowerCase();
+        const currencyMatch = log.currency?.toLowerCase() === tokenAddress.toLowerCase();
+        const targetTokenyMatch = log.targetToken?.toLowerCase() === solvbtcAddress.toLowerCase();
         const requesterMatch = log.requester?.toLowerCase() === requester.toLowerCase();
-        return currencyMatch && requesterMatch;
+        return currencyMatch && requesterMatch && targetTokenyMatch;
     });
 
     const filteredCancelWithdrawLogs = cancelWithdrawLogs.filter(log => {
+        const targetTokenyMatch = log.targetToken?.toLowerCase() === tokenAddress.toLowerCase();
         const requesterMatch = log.requester?.toLowerCase() === requester.toLowerCase();
-        return requesterMatch;
+        return targetTokenyMatch && requesterMatch;
     });
 
     let totalBalance = BigNumber(0);
@@ -123,7 +127,7 @@ async function routerEvents(api, routerV2) {
         }
     });
 
-    return totalBalance.toString();
+    return totalBalance.gt(0) ? totalBalance.toString() : 0;
 }
 
 ['bsc', 'ethereum', 'avax', 'bob', 'berachain'].forEach(chain => {
