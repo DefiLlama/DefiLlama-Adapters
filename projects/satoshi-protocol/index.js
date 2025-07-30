@@ -36,11 +36,7 @@ function createExports({
       }
 
       api.addBalances(sumTokens2({ api, tokensAndOwners, }));
-      const result = api.getBalances();
-      console.log({
-        result,
-      })
-      return result;
+      return api.getBalances();
     },
   }
 }
@@ -77,8 +73,6 @@ async function getAssetListFromNymContract(api, nymContractAddress, fromBlock, t
   const assetList = logs.map(item => item.asset);
   assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
 }
-
-// tvl: sdk.util.sumChainTvls([dexTVL, stablePoolTVL]),
 
 module.exports = {
   bevm: createExports({
