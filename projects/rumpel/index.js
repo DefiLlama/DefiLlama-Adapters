@@ -236,34 +236,30 @@ async function tvl(api) {
       const vault = FLUID_VAULTS[i];
 
       if (vault.IS_SMART) {
-        try {
-          const [totalSupplySharesRaw, reserves] = await Promise.all([
-            api.call({
-              target: CONTRACTS.FLUID_DEX_RESOLVER,
-              abi: 'function getTotalSupplySharesRaw(address dex_) view returns (uint)',
-              params: [vault.LP_TOKEN]
-            }),
-            api.call({
-              target: CONTRACTS.FLUID_DEX_RESERVES_RESOLVER,
-              abi: 'function getDexCollateralReserves(address) view returns (uint256,uint256,uint256,uint256)',
-              params: [vault.LP_TOKEN]
-            })
-          ]);
+        const [totalSupplySharesRaw, reserves] = await Promise.all([
+          api.call({
+            target: CONTRACTS.FLUID_DEX_RESOLVER,
+            abi: 'function getTotalSupplySharesRaw(address dex_) view returns (uint)',
+            params: [vault.LP_TOKEN]
+          }),
+          api.call({
+            target: CONTRACTS.FLUID_DEX_RESERVES_RESOLVER,
+            abi: 'function getDexCollateralReserves(address) view returns (uint256,uint256,uint256,uint256)',
+            params: [vault.LP_TOKEN]
+          })
+        ]);
 
-          const totalSupplyShares = BigInt(totalSupplySharesRaw) & BigInt('0xffffffffffffffffffffffffffffffff');
-          const [token0Reserves, token1Reserves] = reserves;
+        const totalSupplyShares = BigInt(totalSupplySharesRaw) & BigInt('0xffffffffffffffffffffffffffffffff');
+        const [token0Reserves, token1Reserves] = reserves;
 
-          const totalPositionShares = rumpelPositions.reduce((sum, p) => sum + BigInt(p.supply), 0n);
-          const ratio = Number(totalPositionShares) / Number(totalSupplyShares);
+        const totalPositionShares = rumpelPositions.reduce((sum, p) => sum + BigInt(p.supply), 0n);
+        const ratio = Number(totalPositionShares) / Number(totalSupplyShares);
 
-          const token0Amount = Number(token0Reserves) * ratio;
-          const token1Amount = Number(token1Reserves) * ratio;
+        const token0Amount = Number(token0Reserves) * ratio;
+        const token1Amount = Number(token1Reserves) * ratio;
 
-          if (token0Amount > 0) api.add(vault.TOKEN0, token0Amount.toFixed(0));
-          if (token1Amount > 0) api.add(vault.TOKEN1, token1Amount.toFixed(0));
-        } catch (error) {
-          // If smart vault processing fails, skip without fallback
-        }
+        if (token0Amount > 0) api.add(vault.TOKEN0, token0Amount.toFixed(0));
+        if (token1Amount > 0) api.add(vault.TOKEN1, token1Amount.toFixed(0));
       } else {
         api.add(vault.TOKEN, rumpelPositions.map(p => p.supply));
       }
