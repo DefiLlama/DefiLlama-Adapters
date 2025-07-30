@@ -64,7 +64,6 @@ async function routerEvents(api, routerV2) {
             topic: '0x6937da7733b7e101e4ab6e3a3ec12fe857d7a7ca921348ef12feff7abfcee01a',
             eventAbi: 'event Deposit(address indexed targetToken, address indexed currency, address indexed depositor, uint256 targetTokenAmount, uint256 currencyAmount, address[] path, bytes32[] poolIds)',
             onlyArgs: true,
-            onlyUseExistingCache: true,
             fromBlock,
             toBlock,
         }),
@@ -74,7 +73,6 @@ async function routerEvents(api, routerV2) {
             topic: '0x50aa488fffd286866bc78078718365f7c3880cf5f95179a61e37cf84c5fd76c5',
             eventAbi: 'event WithdrawRequest (address indexed targetToken, address indexed currency, address indexed requester, bytes32 poolId, uint256 redemptionId)',
             onlyArgs: true,
-            onlyUseExistingCache: true,
             fromBlock,
             toBlock,
         }),
@@ -84,7 +82,6 @@ async function routerEvents(api, routerV2) {
             topic: '0xbcab14a9990bc1fc30373acf248d280252f63653e6ccdcbd1f7929552a84c738',
             eventAbi: 'event CancelWithdrawRequest (address indexed targetToken, address indexed redemption, address indexed requester, bytes32 poolId, uint256 redemptionId, uint256 targetTokenAmount)',
             onlyArgs: true,
-            onlyUseExistingCache: true,
             fromBlock,
             toBlock,
         })
