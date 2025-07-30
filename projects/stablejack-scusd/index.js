@@ -1,48 +1,37 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-// Goat chain sequencer pool logic
-const sequencerPools = [
-  '0x873B88EDF1d639632DC7D6A734eAdb2Bf18C5bEF',
-  '0xeAa3E755d65F34a15c1d461bf54b92b8eFE76c35',
-  '0x578296a9A1cf8b84E91ABd101B7c5880b4068678',
+const stablejackWTokens = [
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3',
 ];
 
-// token mapping for Goat sequencer pools
+// Mapping is no longer necessary for price, but can keep for clarity
 const tokenMapping = {
-  '0xbC10000000000000000000000000000000000001': '0xbC10000000000000000000000000000000000001', // Goat
-  '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf': '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf', // BTC
-  '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf': '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf', // Dogeb
-  '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E': '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E', // BTCB
-}
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3': '0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4', // artBTC
+};
 
-// goatTVL implementation
-async function goatTVL(api) {
-  const calls = []
-  const tokens = []
-  sequencerPools.map(target => Object.keys(tokenMapping).map(token => {
-    calls.push({
-      target,
-      params: [token],
-    })
-    tokens.push(token)
-  }))
+const BTCB_TOKEN = '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E'; // Use BTCB token for pricing
 
-  const locked = await api.multiCall({
-    abi: 'function totalLocked(address) view returns (uint256)',
-    calls
+async function stablejackTVL(api) {
+  const totalUnderlyingValues = await api.multiCall({
+    abi: 'function totalUnderlying() view returns (uint256)',
+    calls: stablejackWTokens,
   });
 
-  api.add(tokens, locked)
+  stablejackWTokens.forEach((wToken, i) => {
+    // Use BTCB token address for pricing instead of artBTC
+    api.add(BTCB_TOKEN, totalUnderlyingValues[i]);
+  });
+
   return api.getBalances();
 }
 
 module.exports = {
   timetravel: true,
-  misrepresentedTokens: true,
+  misrepresentedTokens: true, // Because we use BTCB price for artBTC tokens
   methodology:
-    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, tracks totalLocked value from Goat's sequencerPool contracts.",
-  start: 1719292800, // 2024-06-25 or earlier if needed
+    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts such as artBTC wrapper, priced as BTCB since artBTC price is not indexed.",
+  start: 1719292800, // 2024-06-25
   sonic: {
     tvl: async (api) => {
       const tokensAndOwners = [
@@ -64,6 +53,6 @@ module.exports = {
     },
   },
   goat: {
-    tvl: goatTVL,
+    tvl: stablejackTVL,
   },
 };
