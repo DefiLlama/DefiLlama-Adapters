@@ -13,6 +13,7 @@ async function tvl(api) {
 }
 
 module.exports = {
+  doublecounted: true,  // same contracts are used in UMA
   ethereum: {
     tvl
   },

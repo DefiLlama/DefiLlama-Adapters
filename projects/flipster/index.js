@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require('../helper/cex')
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
@@ -16,6 +17,7 @@ const config = {
         'TA6SbszfFYC7NYt48viCM9LMD5F5E1Gbi8',
         'TL3gWBCybJbvJt8CaLyxzUvQvyFYkCbmQR',
         'TApVQ5DRptVNyhxRpFn9DgYv6mgqtyPRjn',
+        'TS5Btew8Wrk85cFx2kJ4gC28JsrFLXpJjU',
     ]
   },  
   bitcoin: {
@@ -110,6 +112,12 @@ const config = {
   sui: {
     owners: [
       '0xfcdde971bdb9105fc3cb1c95ca468e8b88d23c6594162b2d2b1dadf16acf5b3a'
+    ]
+  },
+  aptos: {
+    fungibleAssets: [ADDRESSES.aptos.USDt],
+    owners: [
+      '0x0613f31af70ce983b9dca574e033a52351fd2e67b1959bf48574c6e9c956f95e'
     ]
   }
 }

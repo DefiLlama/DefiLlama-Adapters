@@ -66,7 +66,7 @@ const stellarTvl = async (api, assets) => {
   const supplies = await Promise.all(assets.map(fetchStellarSupply));
   supplies.forEach((supply, index) => {
     const ethereumAsset = MAPPINGS.stellar[assets[index]];
-    api.add(ethereumAsset, supply, { skipChain: true });
+    api.add(`ethereum:${ethereumAsset}`, supply, { skipChain: true });
   });
 };
 
@@ -76,7 +76,7 @@ const evmTvl = (chain, assets) => {
     if (chain === 'q') {
       totalSupplies.forEach((supply, index) => {
         const ethereumAsset = MAPPINGS.q[assets[index]];
-        api.add(ethereumAsset, supply, { skipChain: true });
+        api.add(`ethereum:${ethereumAsset}`, supply, { skipChain: true });
       });
     } else {
       api.add(assets, totalSupplies);

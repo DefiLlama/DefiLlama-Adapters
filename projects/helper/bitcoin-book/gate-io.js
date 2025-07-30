@@ -7,5 +7,6 @@ module.exports = [
   '3HroDXv8hmzKRtaSfBffRgedKpru8fgy6M',
   '1ECeVF6wfbiihCRrrpRnkbwrWsZfYmixMG',
   '1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG',
-  '1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv'
+  '1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv',
+  '1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR',
 ]
