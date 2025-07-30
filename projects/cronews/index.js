@@ -16,6 +16,6 @@ module.exports = {
     tvl,
   },
   methodology: 'cronews is a decentralized news platform powered by community. No TVL as it has no smart contracts or on-chain value.',
-  start: '2025-01-01', // Adjust to your actual launch date
+  start: '2025-08-01',
   timetravel: false,
 } 
