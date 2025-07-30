@@ -1,5 +1,5 @@
 const { gmxExports } = require('../helper/gmx')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const phoenixVaultAddress = '0xa6b88069EDC7a0C2F062226743C8985FF72bB2Eb';
 const phoenixStakingAddress = '0x3c9586567a429BA0467Bc63FD38ea71bB6B912E0';
@@ -29,44 +29,26 @@ module.exports = {
   start: '2024-06-06',
   lightlink_phoenix: {
     tvl: gmxExports({ vault: phoenixVaultAddress }),
-    staking: async (api) => {
-      await sumTokens2({ api, owner: phoenixStakingAddress, tokens: [phoenixAmpedAddress] });
-      return api.getBalances();
-    }
+    staking: staking(phoenixStakingAddress, phoenixAmpedAddress)
   },
   bsc: {
     tvl: gmxExports({ vault: bscVaultAddress }),
-    staking: async (api) => {
-      await sumTokens2({ api, owner: bscStakingAddress, tokens: [bscAmpedAddress] });
-      return api.getBalances();
-    }
+    staking: staking(bscStakingAddress, bscAmpedAddress)
   },
   sonic: {
     tvl: gmxExports({ vault: sonicVaultAddress }),
-    staking: async (api) => {
-      await sumTokens2({ api, owner: sonicStakingAddress, tokens: [sonicAmpedAddress] });
-      return api.getBalances();
-    }
+    staking: staking(sonicStakingAddress, sonicAmpedAddress)
   },
   berachain: {
     tvl: gmxExports({ vault: berachainVaultAddress }),
-    staking: async (api) => {
-      await sumTokens2({ api, owner: berachainStakingAddress, tokens: [berachainAmpedAddress] });
-      return api.getBalances();
-    }
+    staking: staking(berachainStakingAddress, berachainAmpedAddress)
   },
   base: {
     tvl: gmxExports({ vault: baseVaultAddress }),
-    staking: async (api) => {
-      await sumTokens2({ api, owner: baseStakingAddress, tokens: [baseAmpedAddress] });
-      return api.getBalances();
-    }
+    staking: staking(baseStakingAddress, baseAmpedAddress)
   },
   sseed: {
     tvl: gmxExports({ vault: superseedVaultAddress }),
-    staking: async (api) => {
-      await sumTokens2({ api, owner: superseedStakingAddress, tokens: [superseedAmpedAddress] });
-      return api.getBalances();
-    }
+    staking: staking(superseedStakingAddress, superseedAmpedAddress)
   }
 };
