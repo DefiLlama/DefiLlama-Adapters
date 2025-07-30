@@ -51,5 +51,10 @@ module.exports = {
     [1699050203, "Leverage Tokens on Optimism Release"],
     [1701468842, "First Arbitrum Vault Release"],
     [1706569200, "First Base Vault Release"],
+    [1747632800, "Limit Orders Release"],
+    [1750763200, "First 1X Leveraged Tokens Release"],
+    [1751444400, "First GMX Leveraged Tokens Release"],
+    [1753182400, "Protected Leveraged Tokens Using Options Release"],
+    [1753335200, "Removal of Yield Products to Focus on Derivatives"],
   ],
 };
