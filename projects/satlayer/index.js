@@ -15,6 +15,7 @@ const consts = {
   BITLAYER_FACTORY: "0x2E3c78576735802eD94e52B7e71830e9E44a9a1C",
   BERACHAIN_FACTORY: "0x50198b5E1330753F167F6e0544e4C8aF829BC99d",
   BOB_FACTORY: "0x32fD8E43114Fb0a292Ca3127EAF4D1D69739Fb83",
+  TAC_FACTORY: "0x32fD8E43114Fb0a292Ca3127EAF4D1D69739Fb83",
   BABYLON_GENESIS_CBABY_HUB: "bbn1tng5u7fls4lyg356zkh2g32e80a286m8p2n0hqugc5467n9y6nksamehyj",
   SUI_FACTORY: "0x25646e1cac13d6198e821aac7a94cbb74a8e49a2b3bed2ffd22346990811fcc6",
 };
@@ -26,6 +27,7 @@ const evmConfig = {
   btr: { factory: consts.BITLAYER_FACTORY, fromBlock: 4532898 },
   berachain: { factory: consts.BERACHAIN_FACTORY, fromBlock: 262893 },
   bob: { factory: consts.BOB_FACTORY, fromBlock: 17866931 },
+  tac: { factory: consts.TAC_FACTORY, fromBlock: 2129845 },
 };
 
 // TVL for Turtle Club Vaults
