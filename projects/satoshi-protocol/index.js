@@ -16,28 +16,35 @@ function createExports({
   return {
     tvl: async (api) => {
       const tokensAndOwners = []; // [address, address][]
-      let tokens = []; // address[]
       if (troveList) {
-        const { tokens: _tokens } = await addCollateralBalanceFromTrove(api, troveList);
-        tokens = _tokens;
+        await addCollateralBalanceFromTrove(api, troveList);
       }
 
-      if (nymList && nymList.length > 0) {
-        for (let i = 0; i < nymList.length; i++) {
-          await getAssetListFromNymContract(api, nymList[i].address, nymList[i].fromBlock, tokensAndOwners);
-        }
+      if (nymList) {
+        await processNymList(nymList, tokensAndOwners);
       }
 
       if (farmList) {
-        for (let index = 0; index < farmList.length; index++) {
-          const { address: farmAddress, asset } = farmList[index];
-          tokensAndOwners.push([asset, farmAddress])
-        }
+        processFarmList(farmList, tokensAndOwners);
       }
 
       api.addBalances(sumTokens2({ api, tokensAndOwners, }));
       return api.getBalances();
     },
+  }
+}
+
+async function processNymList(nymList, tokensAndOwners) {
+  for (let i = 0; i < nymList.length; i++) {
+    const { address: nymContractAddress, fromBlock } = nymList[i];
+    await getAssetListFromNymContract(api, nymContractAddress, fromBlock, tokensAndOwners);
+  }
+}
+
+function processFarmList(farmList, tokensAndOwners) {
+  for (let index = 0; index < farmList.length; index++) {
+    const { address: farmAddress, asset } = farmList[index];
+    tokensAndOwners.push([asset, farmAddress])
   }
 }
 
