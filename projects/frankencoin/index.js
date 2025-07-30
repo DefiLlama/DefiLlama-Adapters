@@ -60,53 +60,6 @@ async function tvl(api) {
   return sumTokens2({ api, tokensAndOwners, });
 }
 
-async function fees(api) {
-  // @dev: query the latest FrankencoinProfitLoss entry for this chain
-  const { frankencoinProfitLosss } = await cachedGraphQuery(
-    'frankencoinProfitLosss',
-    'https://ponder.test.frankencoin.com',
-    `{
-      frankencoinProfitLosss(
-        orderBy: "count",
-        orderDirection: "desc",
-        limit: 1,
-      ) {
-        items {
-          profits
-          losses
-        }
-      }
-    }`
-  );
-
-  const profits = frankencoinProfitLosss?.items?.[0]?.profits ?? "0";
-  return BigInt(profits);
-}
-
-async function revenue(api) {
-  // @dev: query the latest FrankencoinProfitLoss entry for this chain
-  const { frankencoinProfitLosss } = await cachedGraphQuery(
-    'frankencoinProfitLosss',
-    'https://ponder.test.frankencoin.com',
-    `{
-      frankencoinProfitLosss(
-        orderBy: "count",
-        orderDirection: "desc",
-        limit: 1,
-      ) {
-        items {
-          profits
-          losses
-        }
-      }
-    }`
-  );
-
-  const profits = frankencoinProfitLosss?.items?.[0]?.profits ?? "0";
-  const losses = frankencoinProfitLosss?.items?.[0]?.losses ?? "0";
-  return (BigInt(profits) - BigInt(losses));
-}
-
 module.exports = {
   ethereum: {
     tvl,
@@ -159,6 +112,3 @@ module.exports = {
   },
   start: '2023-10-28',
 };
-
-module.exports.fees = fees;
-module.exports.revenue = revenue;
