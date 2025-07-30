@@ -9,7 +9,6 @@ const TEMPLAR_ROOT_CONTRACT = 'templar-alpha.near'
  * @property {string} time_chunk - Time chunk information
  * @property {string} end_timestamp_ms - End timestamp in milliseconds
  * @property {string} deposited_active - Active deposits amount (in borrow asset)
- * @property {string} deposited_incoming - Incoming deposits amount (in borrow asset)
  * @property {string} borrowed - Total borrowed amount (in borrow asset)
  * @property {string} yield_distribution - Yield distribution amount
  * @property {string} interest_rate - Current interest rate
@@ -91,12 +90,12 @@ async function tvl() {
 
                 if (!snapshot ||
                     typeof snapshot.deposited_active !== 'string' ||
-                    typeof snapshot.deposited_incoming !== 'string' ||
                     typeof snapshot.borrowed !== 'string') {
                     throw new Error('Invalid snapshot data received')
                 }
 
-                if (!configuration || !configuration.borrow_asset || !configuration.borrow_asset.Nep141) {
+                // Validate configuration and extract borrow asset
+                if (!configuration || !configuration.borrow_asset) {
                     throw new Error('Invalid configuration or missing borrow asset')
                 }
 
@@ -115,25 +114,22 @@ async function tvl() {
                 } else {
                     throw new Error('Unsupported borrow asset format')
                 }
-                const borrowAssetDecimals = configuration.balance_oracle?.borrow_asset_decimals || 18
 
                 // Calculate net liquidity in raw amounts (all in borrow asset)
                 const totalDeposited = BigNumber(snapshot.deposited_active)
-                    .plus(snapshot.deposited_incoming)
                 const totalBorrowed = BigNumber(snapshot.borrowed)
                 const netLiquidity = totalDeposited.minus(totalBorrowed)
 
-                return { borrowAssetToken, netLiquidity, borrowAssetDecimals }
+                return { borrowAssetToken, netLiquidity }
             })
         )
 
         // Process results and add to balances
         results.forEach((result, index) => {
             if (result.status === 'fulfilled') {
-                const { borrowAssetToken, netLiquidity, borrowAssetDecimals } = result.value
-                const tokenAmount = netLiquidity.div(BigNumber(10).pow(borrowAssetDecimals))
+                const { borrowAssetToken, netLiquidity } = result.value
 
-                sumSingleBalance(balances, borrowAssetToken, tokenAmount.toFixed())
+                sumSingleBalance(balances, borrowAssetToken, netLiquidity.toFixed())
             } else {
                 console.log(`Error processing market ${deployments[index]}:`, result.reason)
             }
