@@ -1,36 +1,29 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-const sequencerPools = [
-  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3', // StableJack's artBTC pool
+const stablejackWTokens = [
+  '0x0238E736166e07D6F857A0E322dAd4e7C1AFF4F3', // StableJack artBTC (WToken)
 ];
 
-// token mapping for Goat sequencer pools
+// token mapping for WTokens (1:1 with underlying, useful for labeling if needed)
 const tokenMapping = {
-  '0xbC10000000000000000000000000000000000001': '0xbC10000000000000000000000000000000000001', // Goat
-  '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf': '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf', // BTC
+  '0xbC10000000000000000000000000000000000001': '0xbC10000000000000000000000000000000000001', // Goat (mock)
+  '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf': '0xeFEfeFEfeFeFEFEFEfefeFeFefEfEfEfeFEFEFEf', // BTC (mock)
   '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf': '0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf', // Dogeb
   '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E': '0xfe41e7e5cB3460c483AB2A38eb605Cda9e2d248E', // BTCB
-}
+};
 
-// goatTVL implementation
-async function goatTVL(api) {
-  const calls = []
-  const tokens = []
-  sequencerPools.map(target => Object.keys(tokenMapping).map(token => {
-    calls.push({
-      target,
-      params: [token],
-    })
-    tokens.push(token)
-  }))
-
-  const locked = await api.multiCall({
-    abi: 'function totalLocked(address) view returns (uint256)',
-    calls
+async function stablejackTVL(api) {
+  const totalUnderlyingValues = await api.multiCall({
+    abi: 'function totalUnderlying() view returns (uint256)',
+    calls: stablejackWTokens,
   });
 
-  api.add(tokens, locked)
+  // Assuming these are all BTC-pegged or Goat-related tokens; adjust mapping if needed
+  stablejackWTokens.forEach((token, i) => {
+    api.add(token, totalUnderlyingValues[i]);
+  });
+
   return api.getBalances();
 }
 
@@ -38,8 +31,8 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology:
-    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, tracks totalLocked value from Goat's sequencerPool contracts.",
-  start: 1719292800, // 2024-06-25 or earlier if needed
+    "TVL includes scUSD, STS, wOS held in various contracts. Also includes wstkscUSD tokens in the vault, converted to scUSD via convertToAssets(). For Goat chain, includes totalUnderlying() from StableJack WToken contracts.",
+  start: 1719292800, // 2024-06-25
   sonic: {
     tvl: async (api) => {
       const tokensAndOwners = [
@@ -61,6 +54,6 @@ module.exports = {
     },
   },
   goat: {
-    tvl: goatTVL,
+    tvl: stablejackTVL,
   },
 };
