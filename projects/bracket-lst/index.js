@@ -11,5 +11,6 @@ const tvl = async (api) => {
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: { tvl }
 }
