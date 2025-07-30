@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { BigNumber } = require("bignumber.js");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
@@ -21,7 +20,7 @@ function createExports({
       }
 
       if (nymList) {
-        await processNymList(nymList, tokensAndOwners);
+        await processNymList(api, nymList, tokensAndOwners);
       }
 
       if (farmList) {
@@ -34,7 +33,7 @@ function createExports({
   }
 }
 
-async function processNymList(nymList, tokensAndOwners) {
+async function processNymList(api, nymList, tokensAndOwners) {
   for (let i = 0; i < nymList.length; i++) {
     const { address: nymContractAddress, fromBlock } = nymList[i];
     await getAssetListFromNymContract(api, nymContractAddress, fromBlock, tokensAndOwners);
