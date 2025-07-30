@@ -266,11 +266,16 @@ function checkExportKeys(module, filePath, chains) {
   if (hallmarks.length) {
     const TIMESTAMP_LENGTH = 10;
     hallmarks.forEach(([timestamp, text]) => {
-      const strTimestamp = String(timestamp)
-      if (strTimestamp.length !== TIMESTAMP_LENGTH) {
-        throw new Error(`
+      if (Array.isArray(timestamp)) timestamp.map(validateDateString)  // it is a range timestamp [start, end]
+      else validateDateString(timestamp);
+
+      function validateDateString(timestamp) {
+        const strTimestamp = String(timestamp)
+        if (strTimestamp.length !== TIMESTAMP_LENGTH) {
+          throw new Error(`
         Incorrect time format for the hallmark: [${strTimestamp}, ${text}] ,please use unix timestamp
         `)
+        }
       }
     })
   }

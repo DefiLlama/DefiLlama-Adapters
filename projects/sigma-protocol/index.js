@@ -8,6 +8,10 @@ const poolManager = "0x0a43ca87954ED1799b7b072F6E9D51d88Cca600E"
 module.exports = {
   doublecounted: true,
   bsc: {
-    tvl: (api) => sumTokens2({ api, owners: [staticPool, poolManager], tokens: [staticPoolStableToken, sy] }),
+    tvl: async (api) => {
+      const stableTotal = await api.call({ target: staticPool, abi: "uint256:totalStableToken" })
+      api.add(staticPoolStableToken, stableTotal)
+      await sumTokens2({ api, owners: [poolManager], tokens: [sy] })
+    }
   },
 };
