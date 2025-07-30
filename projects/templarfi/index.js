@@ -100,7 +100,21 @@ async function tvl() {
                     throw new Error('Invalid configuration or missing borrow asset')
                 }
 
-                const borrowAssetToken = configuration.borrow_asset.Nep141
+                let borrowAssetToken
+                if (configuration.borrow_asset.Nep141) {
+                    borrowAssetToken = configuration.borrow_asset.Nep141
+                } else if (configuration.borrow_asset.Nep245?.token_id) {
+                    const tokenId = configuration.borrow_asset.Nep245.token_id
+                    const parts = tokenId.split(':')
+
+                    if (parts.length === 2 && parts[0] === 'nep141') {
+                        borrowAssetToken = parts[1]
+                    } else {
+                        throw new Error(`Unsupported NEP-245 token type: ${parts[0] || 'unknown'}`)
+                    }
+                } else {
+                    throw new Error('Unsupported borrow asset format')
+                }
                 const borrowAssetDecimals = configuration.balance_oracle?.borrow_asset_decimals || 18
 
                 // Calculate net liquidity in raw amounts (all in borrow asset)
@@ -109,16 +123,17 @@ async function tvl() {
                 const totalBorrowed = BigNumber(snapshot.borrowed)
                 const netLiquidity = totalDeposited.minus(totalBorrowed)
 
-                return { marketContract, borrowAssetToken, netLiquidity, borrowAssetDecimals }
+                return { borrowAssetToken, netLiquidity, borrowAssetDecimals }
             })
         )
 
         // Process results and add to balances
         results.forEach((result, index) => {
             if (result.status === 'fulfilled') {
-                const { marketContract, netLiquidity } = result.value
+                const { borrowAssetToken, netLiquidity, borrowAssetDecimals } = result.value
+                const tokenAmount = netLiquidity.div(BigNumber(10).pow(borrowAssetDecimals))
 
-                sumSingleBalance(balances, marketContract, netLiquidity.toFixed())
+                sumSingleBalance(balances, borrowAssetToken, tokenAmount.toFixed())
             } else {
                 console.log(`Error processing market ${deployments[index]}:`, result.reason)
             }
