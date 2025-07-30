@@ -19,10 +19,35 @@ async function tvl() {
     const balances = {}
 
     try {
-        const deployments = await call(TEMPLAR_ROOT_CONTRACT, 'list_deployments', {})
+        // Get all market deployments from the root contract with pagination
+        let deployments = []
+        let offset = 0
+        const limit = 100 // Reasonable batch size
+        let hasMore = true
 
-        if (!deployments || !Array.isArray(deployments) || deployments.length === 0) {
-            console.log('No Templar deployments found or invalid response')
+        while (hasMore) {
+            const deploymentsBatch = await call(TEMPLAR_ROOT_CONTRACT, 'list_deployments', {
+                offset: offset,
+                count: limit
+            })
+
+            if (!deploymentsBatch || !Array.isArray(deploymentsBatch) || deploymentsBatch.length === 0) {
+                hasMore = false
+                break
+            }
+
+            deployments = deployments.concat(deploymentsBatch)
+
+            // If we got fewer than the limit, we're done
+            if (deploymentsBatch.length < limit) {
+                hasMore = false
+            } else {
+                offset += limit
+            }
+        }
+
+        if (deployments.length === 0) {
+            console.log('No Templar deployments found')
             return balances
         }
 
