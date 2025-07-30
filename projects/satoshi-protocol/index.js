@@ -50,9 +50,12 @@ function processFarmList(farmList, tokensAndOwners) {
 async function addCollateralBalanceFromTrove(api, troveList) {
   const balances = {};
   const chains = api.chain;
-  const tokens = await api.multiCall({ abi: GetCollateralTokenABI, calls: troveList })
-  const colls = await api.multiCall({ abi: GetEntireSystemCollABI, calls: troveList })
+  const tokens = await api.multiCall({ abi: GetCollateralTokenABI, calls: troveList, permitFailure: true })
+  const colls = await api.multiCall({ abi: GetEntireSystemCollABI, calls: troveList, permitFailure: true })
   tokens.forEach((token, i) => {
+    if(!token) return;
+    if(!colls[i]) return;
+    console.log(`${chains}: ${token} - ${colls[i]}`);
     const key = `${chains}:${token}`;
     if (!balances[key]) {
       balances[key] = new BigNumber(0);
