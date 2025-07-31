@@ -1,137 +1,133 @@
 const { getCuratorExport, getCuratorTvl } = require("../helper/curators");
-const {ABI} = require("../helper/curators/configs");
+const { ABI } = require("../helper/curators/configs");
 
-// Custom Terminal TVL function for MEV Capital
-async function getCuratorTvlTerminal(api, vaults) {
-  // Terminal tokens are ERC20 representing T-Bills, use totalSupply
-  const totalSupplies = await api.multiCall({ 
-    abi: 'uint256:totalSupply', 
-    calls: vaults, 
-    permitFailure: true 
-  })
+// ==============================================
+// HYPERBEAT MAPPINGS CONFIGURATION
+// ==============================================
+const HYPERBEAT_MAPPINGS = [
+  { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
+  { vault: '0x441794d6a8f9a3739f5d4e98a728937b33489d29', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
+  { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat lstHYPE -> WHYPE
+  { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
+  { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
+  { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat WHYPE -> WHYPE
+  { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
+];
 
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue
-    api.add(vaults[i], totalSupplies[i])
-  }
-}
-
-// Custom MIDAS TVL function for MEV Capital
-async function getCuratorTvlMidas(api, vaults) {
-  // MIDAS tokens are ERC20 similar to Terminal, use totalSupply
-  const totalSupplies = await api.multiCall({ 
-    abi: 'uint256:totalSupply', 
-    calls: vaults, 
-    permitFailure: true 
-  })
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue
-    api.add(vaults[i], totalSupplies[i])
-  }
-}
-
-// Custom MIZU TVL function for MEV Capital
-async function getCuratorTvlMizu(api, vaults) {
-  // MIZU deposit vaults that mint mTokens, get total balance via getTotalBalance
-  const totalBalances = await api.multiCall({ 
-    abi: 'function getTotalBalance() view returns (uint256)', 
-    calls: vaults, 
-    permitFailure: true 
-  })
-  
-  const underlyingAssets = await api.multiCall({ 
-    abi: 'function asset() view returns (address)', 
-    calls: vaults, 
-    permitFailure: true 
-  })
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalBalances[i] === null || totalBalances[i] === undefined) continue
-    if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue
-    api.add(underlyingAssets[i], totalBalances[i])
-  }
-}
-
-// Custom Napier TVL function for MEV Capital
-async function getCuratorTvlNapier(api, vaults) {
-  // Napier Principal Tokens (PTs) with underlying asset conversion
-  const totalSupplies = await api.multiCall({ 
-    abi: 'uint256:totalSupply', 
-    calls: vaults, 
-    permitFailure: true 
-  })
-  
-  const underlyingAssets = await api.multiCall({ 
-    abi: 'function underlying() view returns (address)', 
-    calls: vaults, 
-    permitFailure: true 
-  })
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue
-    if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue
-    api.add(underlyingAssets[i], totalSupplies[i])
-  }
-}
+// ==============================================
+// CUSTOM TVL CALCULATION FUNCTIONS
+// ==============================================
 
 async function getCuratorTvlErc4626(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true, })
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true, })
+  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true });
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true });
+  
   for (let i = 0; i < assets.length; i++) {
     if (!assets[i] || !totalAssets[i]) continue;
     api.add(assets[i], totalAssets[i]);
   }
 }
 
-// Custom Hyperbeat TVL function for MEV Capital
-async function getCuratorTvlHyperbeat(api, vaults) {
-  // Hyperbeat vault mappings to their underlying assets (using Hyperliquid addresses from Rumpel)
-  const hyperbeatMappings = [
-    { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
-    { vault: '0x441794d6a8f9a3739f5d4e98a728937b33489d29', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
-    { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat lstHYPE -> WHYPE
-    { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
-    { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
-    { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat WHYPE -> WHYPE
-    { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
-  ]
-
-  // Get total supplies for all vaults
+async function getCuratorTvlTerminal(api, vaults) {
   const totalSupplies = await api.multiCall({ 
     abi: 'uint256:totalSupply', 
     calls: vaults, 
     permitFailure: true 
-  })
+  });
 
-  // Map each vault to its underlying asset using totalSupply
   for (let i = 0; i < vaults.length; i++) {
-    if (!totalSupplies[i] || totalSupplies[i] === '0') continue
+    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
+    api.add(vaults[i], totalSupplies[i]);
+  }
+}
+
+async function getCuratorTvlMidas(api, vaults) {
+  const totalSupplies = await api.multiCall({ 
+    abi: 'uint256:totalSupply', 
+    calls: vaults, 
+    permitFailure: true 
+  });
+
+  for (let i = 0; i < vaults.length; i++) {
+    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
+    api.add(vaults[i], totalSupplies[i]);
+  }
+}
+
+async function getCuratorTvlMizu(api, vaults) {
+  const totalBalances = await api.multiCall({ 
+    abi: 'function getTotalBalance() view returns (uint256)', 
+    calls: vaults, 
+    permitFailure: true 
+  });
+  
+  const underlyingAssets = await api.multiCall({ 
+    abi: 'function asset() view returns (address)', 
+    calls: vaults, 
+    permitFailure: true 
+  });
+
+  for (let i = 0; i < vaults.length; i++) {
+    if (totalBalances[i] === null || totalBalances[i] === undefined) continue;
+    if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue;
+    api.add(underlyingAssets[i], totalBalances[i]);
+  }
+}
+
+async function getCuratorTvlNapier(api, vaults) {
+  const totalSupplies = await api.multiCall({ 
+    abi: 'uint256:totalSupply', 
+    calls: vaults, 
+    permitFailure: true 
+  });
+  
+  const underlyingAssets = await api.multiCall({ 
+    abi: 'function underlying() view returns (address)', 
+    calls: vaults, 
+    permitFailure: true 
+  });
+
+  for (let i = 0; i < vaults.length; i++) {
+    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
+    if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue;
+    api.add(underlyingAssets[i], totalSupplies[i]);
+  }
+}
+
+async function getCuratorTvlHyperbeat(api, vaults) {
+  const totalSupplies = await api.multiCall({ 
+    abi: 'uint256:totalSupply', 
+    calls: vaults, 
+    permitFailure: true 
+  });
+
+  for (let i = 0; i < vaults.length; i++) {
+    if (!totalSupplies[i] || totalSupplies[i] === '0') continue;
     
-    const mapping = hyperbeatMappings.find(m => 
+    const mapping = HYPERBEAT_MAPPINGS.find(m => 
       m.vault.toLowerCase() === vaults[i].toLowerCase()
-    )
+    );
     
     if (mapping) {
-      let amount = BigInt(totalSupplies[i])
+      let amount = BigInt(totalSupplies[i]);
       
-      // Handle decimal conversion if needed (like Rumpel)
       if (mapping.isOneToOne && mapping.vaultDecimals && mapping.underlyingDecimals) {
-        const decimalDiff = mapping.vaultDecimals - mapping.underlyingDecimals
+        const decimalDiff = mapping.vaultDecimals - mapping.underlyingDecimals;
         if (decimalDiff > 0) {
-          // Convert from vault decimals to underlying decimals
-          amount = amount / (10n ** BigInt(decimalDiff))
+          amount = amount / (10n ** BigInt(decimalDiff));
         }
       }
       
-      api.add(mapping.underlying, amount.toString())
+      api.add(mapping.underlying, amount.toString());
     } else {
-      // Fallback: use the vault address itself if no mapping found
-      api.add(vaults[i], totalSupplies[i])
+      api.add(vaults[i], totalSupplies[i]);
     }
   }
 }
 
+// ==============================================
+// VAULT CONFIGURATIONS BY BLOCKCHAIN
+// ==============================================
 const configs = {
   methodology: 'Count all assets are deposited in all vaults curated by MEV Capital.',
   blockchains: {
@@ -322,24 +318,22 @@ const configs = {
 
 
 
-const adapterExport = getCuratorExport(configs)
+// ==============================================
+// ADAPTER CONFIGURATION AND EXPORT
+// ==============================================
+const adapterExport = getCuratorExport(configs);
 
-// Custom TVL for ethereum chain using our custom functions
 adapterExport.ethereum.tvl = async (api) => {
-  const vaultConfigs = configs.blockchains.ethereum
+  const vaultConfigs = configs.blockchains.ethereum;
   
-  // Handle all vault types with appropriate functions
   await Promise.all([
-    // Standard ERC4626 vaults handled by default curator function
     getCuratorTvl(api, {
       morpho: vaultConfigs.morpho || [],
       mellow: vaultConfigs.mellow || [],
       symbiotic: vaultConfigs.symbiotic || [],
       euler: vaultConfigs.euler || [],
-
     }),
     
-    // Custom vault types with specialized functions
     vaultConfigs.upshift ? getCuratorTvlErc4626(api, vaultConfigs.upshift) : Promise.resolve(),
     vaultConfigs.term ? getCuratorTvlErc4626(api, vaultConfigs.term) : Promise.resolve(),
     vaultConfigs.termmax ? getCuratorTvlErc4626(api, vaultConfigs.termmax) : Promise.resolve(),
@@ -347,17 +341,15 @@ adapterExport.ethereum.tvl = async (api) => {
     vaultConfigs.midas ? getCuratorTvlMidas(api, vaultConfigs.midas) : Promise.resolve(),
     vaultConfigs.mizu ? getCuratorTvlMizu(api, vaultConfigs.mizu) : Promise.resolve(),
     vaultConfigs.napier ? getCuratorTvlNapier(api, vaultConfigs.napier) : Promise.resolve()
-  ])
-}
+  ]);
+};
 
-// Custom TVL for hyperliquid chain using our Hyperbeat function
 adapterExport.hyperliquid.tvl = async (api) => {
-  const vaultConfigs = configs.blockchains.hyperliquid
+  const vaultConfigs = configs.blockchains.hyperliquid;
   
-  // Handle Hyperbeat vaults with custom logic
   if (vaultConfigs.hyperbeat) {
-    await getCuratorTvlHyperbeat(api, vaultConfigs.hyperbeat)
+    await getCuratorTvlHyperbeat(api, vaultConfigs.hyperbeat);
   }
-}
+};
 
-module.exports = adapterExport
+module.exports = adapterExport;
