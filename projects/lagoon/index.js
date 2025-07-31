@@ -104,16 +104,17 @@ const config = {
       fromBlock: 21645993,
     }
   },
-  tac: {
+    tac: {
     optinProxyFactory:{
       address: "0x66Ab87A9282dF99E38C148114F815a9C073ECA8D",
       fromBlock: 2334460
     },
     beaconFactory: {
       address: "0x3e39E287B4c94aC18831A63E5a6183Aa42cd85c3",
-      fromBlock: 333643,
+      fromBlock: 1817048,
     },
   },
+  
   unichain: {
     vaults: [],
     optinProxyFactory:{
@@ -138,15 +139,14 @@ const config = {
 };
 
 const vaultsBlacklist = [
-  "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship
+  "0xDe7CFf032D453Ce6B0a796043E75d380Df258812", // vault tac 9S, used mostly by another vault: 9s flagship, on Eth mainnet
+  "0xd6DaBAf70977a867Fa884844FC5DCb21DE81c498", // vault tac 9s. but on TAC chain
   "0xd730f24d993398d29dbaa537b6e1bd71a55df775", // test vault with fake totalAssets 
 ]
 
 function keepVault(vault, vaultBlacklist) {
   return  vaultBlacklist.indexOf(vault) == -1;
 }
-
-
 
 Object.keys(config).forEach((chain) => {
   let {vaults, beaconFactory, optinProxyFactory} = config[chain];
@@ -155,7 +155,6 @@ Object.keys(config).forEach((chain) => {
     tvl: async (api) =>  {
       let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory.address, fromBlock: beaconFactory.fromBlock});
       let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory.address, fromBlock: optinProxyFactory.fromBlock});
-
       beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
       optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
 
@@ -166,9 +165,9 @@ Object.keys(config).forEach((chain) => {
 }}
 )
 
+
+
 const BeaconProxyDeployed = "0xfa8e336138457120a1572efbe25f72698abd5cca1c9be0bce42ad406ff350a2b";
-
-
 async function getBeaconFactoryVaults({api, factory, fromBlock})  {
   if (!api || !factory || !fromBlock) return [];
   const logs = await getLogs({
@@ -178,17 +177,19 @@ async function getBeaconFactoryVaults({api, factory, fromBlock})  {
     eventAbi: "event BeaconProxyDeployed(address proxy, address deployer)",
     onlyArgs: true,
     fromBlock: fromBlock,
+  
+
   });
   if (!logs) return [];
   return logs.map((vault) => vault.proxy);
 }
-
+const ProxyDeployed = "0x8b5fd0eb1f997b4ecac1f234109294d6ace2519fc7abeab9f315fef38e2eb1dc";
 async function getOptinProxyFactoryVaults({api, factory, fromBlock})  {
   if (!api || !factory || !fromBlock) return [];
   const logs = await getLogs({
     api,
     target: factory,
-    topic: BeaconProxyDeployed,
+    topic: ProxyDeployed,
     eventAbi: "event ProxyDeployed(address proxy, address deployer)",
     onlyArgs: true,
     fromBlock: fromBlock,
