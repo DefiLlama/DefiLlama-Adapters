@@ -28,5 +28,6 @@ module.exports = [
   "bc1qqrmpk72h9d4jrx63vqzz88uf8qsue6m7wm23jf",
   "bc1qn8vnl94k2dsvgntqtrj4jttshqyxt95073s8x9",
   "bc1qxx3ehup2yet758ve8ft483tq9u5anw2k0trqps",
-  "bc1qcwk60napcfcljv6phg69gfyfmp3emsgdj9cn5v"
+  "bc1qcwk60napcfcljv6phg69gfyfmp3emsgdj9cn5v",
+  "bc1q4rtnrtnu829eet3m27huh6ld7x0xczjxd5dg5r"
 ]
