@@ -9,9 +9,6 @@ async function styTvl(api) {
   ]
 
   const tokensAndOwners = []
-  const AIDaUSDC = "0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42".toLowerCase()
-  const canonicalUSDC = ADDRESSES.sty.USDC_e
-
   for (const protocol of protocols) {
     const assets = await api.call({ abi: 'address[]:assetTokens', target: protocol })
 
@@ -38,28 +35,9 @@ async function styTvl(api) {
     // Now expandedAssets[i] corresponds to vaults[i]
     const assetBals = await api.multiCall({ abi: 'uint256:assetBalance', calls: vaults, permitFailure: true })
     
-    // Add balances with correct asset-vault mapping and convert AIDaUSDC
+    // Add balances with correct asset-vault mapping
     for (let i = 0; i < vaults.length; i++) {
-      const asset = expandedAssets[i]
-      let balance = assetBals[i] || 0
-      
-      if (asset.toLowerCase() === AIDaUSDC && balance > 0) {
-        // Convert AIDaUSDC to actual USDC using convertToAssets
-        try {
-          const convertedBalance = await api.call({
-            abi: 'function convertToAssets(uint256) view returns (uint256)',
-            target: asset,
-            params: [balance]
-          })
-          api.add(canonicalUSDC, convertedBalance)
-        } catch (e) {
-          console.log("Error converting AIDaUSDC:", e.message)
-          // Fallback to original balance if conversion fails
-          api.add(asset, balance)
-        }
-      } else {
-        api.add(asset, balance)
-      }
+      api.add(expandedAssets[i], assetBals[i] || 0)
     }
 
     // Add redeem pool balances
@@ -81,30 +59,7 @@ async function styTvl(api) {
         
         for (const { redeemPool } of infos) {
           if (redeemPool && redeemPool !== ADDRESSES.null) {
-            // For redeem pools, we'll handle AIDaUSDC conversion in sumTokens
-            if (asset.toLowerCase() === AIDaUSDC) {
-              // Get AIDaUSDC balance in redeem pool and convert it
-              try {
-                const poolBalance = await api.call({
-                  abi: 'function balanceOf(address) view returns (uint256)',
-                  target: asset,
-                  params: [redeemPool]
-                })
-                if (poolBalance > 0) {
-                  const convertedBalance = await api.call({
-                    abi: 'function convertToAssets(uint256) view returns (uint256)',
-                    target: asset,
-                    params: [poolBalance]
-                  })
-                  api.add(canonicalUSDC, convertedBalance)
-                }
-              } catch (e) {
-                console.log("Error converting AIDaUSDC in redeem pool:", e.message)
-                tokensAndOwners.push([asset, redeemPool])
-              }
-            } else {
-              tokensAndOwners.push([asset, redeemPool])
-            }
+            tokensAndOwners.push([asset, redeemPool])
           }
         }
       }

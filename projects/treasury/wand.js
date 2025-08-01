@@ -7,7 +7,6 @@ async function styTvl(api) {
   // Token addresses
   const vIP = "0x5267F7eE069CEB3D8F1c760c215569b79d0685aD"
   const AIDaUSDC = "0xd5255Cc08EBAf6D54ac9448822a18d8A3da29A42"
-  const canonicalUSDC = ADDRESSES.sty.USDC_e
 
   // Get balances directly
   const [vipBal, aidaUsdcBal] = await Promise.all([
@@ -17,22 +16,8 @@ async function styTvl(api) {
 
   // Add vIP balance
   api.add(vIP, vipBal)
-
-  // Convert AIDaUSDC to actual USDC using convertToAssets
-  if (aidaUsdcBal > 0) {
-    try {
-      const convertedBalance = await api.call({
-        abi: 'function convertToAssets(uint256) view returns (uint256)',
-        target: AIDaUSDC,
-        params: [aidaUsdcBal]
-      })
-      api.add(canonicalUSDC, convertedBalance)
-    } catch (e) {
-      console.log("Error converting AIDaUSDC:", e.message)
-      // Fallback to original balance if conversion fails
-      api.add(canonicalUSDC, aidaUsdcBal)
-    }
-  }
+  // Add AIDaUSDC balance
+  api.add(AIDaUSDC, aidaUsdcBal)
 
   return api.getBalances()
 }
