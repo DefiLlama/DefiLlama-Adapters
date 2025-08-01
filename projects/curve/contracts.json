@@ -257,7 +257,7 @@
     "CurveTwocryptoFactoryNG": "0xa17b39BF1c2FE776Af38a999bE7Bb7bEa737a6EC",
     "CurveTricryptoFactoryNG": "0x729c764aE95e7a9DEA9F950B5AEdbF1A9F3D7c03"
   },
-  "etherlink": {
+  "etlk": {
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
     "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
