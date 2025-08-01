@@ -45,8 +45,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Get collateral balances from users personal escrows",
-  hallmarks: [    
-    [1696204800, "Borrow against INV on FiRM"],
+  hallmarks: [
     [1707177600, "Launch of sDOLA"],
     [1718236800, "CRV liquidation"]    
   ],

@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -19,6 +18,9 @@ const configV2 = {
         START_BLOCK: 25244110, // Silo V2 Sonic (Main Revised Deployment)
         SILO_FACTORY: '0x4e9dE3a64c911A37f7EB2fCb06D1e68c3cBe9203',
       }
+    ],
+    blacklistedTokens: [
+      '0x9731842ed581816913933c01de142c7ee412a8c8',// PT-Silo-46-scUSD-14AUG2025 is mispriced
     ]
   },
   arbitrum: {
@@ -50,7 +52,8 @@ const configV2 = {
 async function tvl(api) {
   // Handle V2 silos
   let toaV2 = [];
-  if(configV2[api.chain]) {
+  const blacklistedTokens = configV2[api.chain]?.blacklistedTokens || [];
+  if (configV2[api.chain]) {
     const siloArrayV2 = await getSilosV2(api);
     const assetsV2 = await api.multiCall({
       abi: getAssetAbiV2,
@@ -59,14 +62,14 @@ async function tvl(api) {
     toaV2 = assetsV2.map((asset, i) => [[asset], siloArrayV2[i]]);
   }
 
-  return sumTokens2({ api, ownerTokens: toaV2, blacklistedTokens: [XAI], });
+  return sumTokens2({ api, ownerTokens: toaV2, blacklistedTokens: [XAI], blacklistedTokens, });
 }
 
 async function borrowed(api) {
-  if(configV2[api.chain]) {
+  if (configV2[api.chain]) {
     // Handle V2 silos
     const siloArrayV2 = await getSilosV2(api);
-    
+
     // Get asset address for each silo
     const siloAssets = await api.multiCall({
       abi: getAssetAbiV2,
@@ -91,8 +94,8 @@ async function getSilosV2(api) {
   const chain = api.chain;
   let logs = [];
   let siloAddresses = [];
-  if(configV2[chain]) {
-    for(let factory of configV2[chain].factories) {
+  if (configV2[chain]) {
+    for (let factory of configV2[chain].factories) {
       const { SILO_FACTORY, START_BLOCK } = factory;
       let logChunk = await getLogs({
         api,

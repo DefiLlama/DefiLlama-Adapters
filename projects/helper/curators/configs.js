@@ -174,7 +174,35 @@ const SiloConfigs = {
         address: '0x7867f2b584e91d7c3798f4659b6fffa3631ea06a',
         fromBlock: 21718349,
       },
+      {
+        address: '0x02BbB86731EC6aA81B52961e14dD1AebE5171b1d',
+        fromBlock: 32865457,
+      }
     ],
+  },
+  ethereum: {
+    vaultFactories: [
+      {
+        address: '0xe7Ed54e4e432Cf85024f8D4434cB3756338469B0',
+        fromBlock: 22666249,
+      }
+    ]
+  },
+  arbitrum: {
+    vaultFactories: [
+      {
+        address: '0x451b35b2dF223a7Ef71c4ecb451C1C15019e28A5',
+        fromBlock: 345527587,
+      }
+    ]
+  },
+  avax: {
+    vaultFactories: [
+      {
+        address: '0x77cbCB96fFFe44d344c54A5868C49ad1C5AaAC6A',
+        fromBlock: 64052773,
+      }
+    ]
   }
 }
 
