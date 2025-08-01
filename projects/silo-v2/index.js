@@ -50,6 +50,7 @@ async function tvl(api) {
   // Handle V2 silos
   let toaV2 = [];
   const blacklistedTokens = configV2[api.chain]?.blacklistedTokens || [];
+  blacklistedTokens.push(XAI);
   if (configV2[api.chain]) {
     const siloArrayV2 = await getSilosV2(api);
     const assetsV2 = await api.multiCall({
@@ -59,7 +60,7 @@ async function tvl(api) {
     toaV2 = assetsV2.map((asset, i) => [[asset], siloArrayV2[i]]);
   }
 
-  return sumTokens2({ api, ownerTokens: toaV2, blacklistedTokens: [XAI], blacklistedTokens, });
+  return sumTokens2({ api, ownerTokens: toaV2, blacklistedTokens: blacklistedTokens, });
 }
 
 async function borrowed(api) {
