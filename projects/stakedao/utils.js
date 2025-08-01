@@ -43,11 +43,16 @@ const LOCKERS_GATEWAY = {
 
 const SPECIFIC_CASE_LOCKERS = ["pendle", "mav", "ynd", "fxs", "spectra", "zero"]
 
+const ABI = {
+  pricePerShare: 'function pricePerShare() public view returns (uint256)'
+}
+
 module.exports = {
   STRATEGIES_ENDPOINT,
   LOCKERS_ENDPOINT,
   LEGACY_VAULTS,
   LOCKERS,
   LOCKERS_GATEWAY,
-  SPECIFIC_CASE_LOCKERS
+  SPECIFIC_CASE_LOCKERS,
+  ABI
 }
