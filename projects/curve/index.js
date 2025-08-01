@@ -35,7 +35,7 @@ const chains = [
   "plume_mainnet",
   "xdc",
   'tac',
-  "etherlink",
+  "etlk",
 ];
 const registryIds = {
   stableswap: 0,
