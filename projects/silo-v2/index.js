@@ -60,7 +60,7 @@ async function tvl(api) {
     toaV2 = assetsV2.map((asset, i) => [[asset], siloArrayV2[i]]);
   }
 
-  return sumTokens2({ api, ownerTokens: toaV2, blacklistedTokens: blacklistedTokens, });
+  return sumTokens2({ api, ownerTokens: toaV2, blacklistedTokens });
 }
 
 async function borrowed(api) {
