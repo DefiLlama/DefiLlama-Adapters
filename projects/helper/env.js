@@ -56,12 +56,12 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
+  'RPC_AGGREGATOR_URL'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
   if (!process.env[i]) process.env[i] = DEFAULTS[i] // this is done to set the chain RPC details in @defillama/sdk
 })
-
 
 function getEnv(key) {
   if (!ENV_KEYS.includes(key)) throw new Error(`Unknown env key: ${key}`)
