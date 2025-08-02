@@ -1,11 +1,11 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 
 const config = {
-  ethereum: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493'], fromBlock: 21747552 },
-  base: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493'], fromBlock: 25786936 },
-  arbitrum: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493'], fromBlock: 301323941 },
-  unichain: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x00000091cb2d7914c9cd196161da0943ab7b92e1'], fromBlock: 11682827 },
-  bsc: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493'], fromBlock: 48224121 },
+  ethereum: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x000000000049c7bcbca294e63567b4d21eb765f1'], fromBlock: 21747552 },
+  base: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x000000000049c7bcbca294e63567b4d21eb765f1'], fromBlock: 25786936 },
+  arbitrum: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x000000000049c7bcbca294e63567b4d21eb765f1'], fromBlock: 301323941 },
+  unichain: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x00000091cb2d7914c9cd196161da0943ab7b92e1', '0x000000000049c7bcbca294e63567b4d21eb765f1'], fromBlock: 11682827 },
+  bsc: { factories: ['0x000000dceb71f3107909b1b748424349bfde5493', '0x000000000049c7bcbca294e63567b4d21eb765f1'], fromBlock: 48224121 },
 }
 
 Object.keys(config).forEach(chain => {
