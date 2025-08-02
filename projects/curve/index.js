@@ -33,7 +33,9 @@ const chains = [
   "ink",
   "hyperliquid",
   "plume_mainnet",
-  "xdc"
+  "xdc",
+  'tac',
+  "etlk",
 ];
 const registryIds = {
   stableswap: 0,
@@ -53,7 +55,7 @@ async function getDecimals(chain, token) {
 
 
 const gasTokens = [
-  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+  ADDRESSES.GAS_TOKEN_2,
   ADDRESSES.null,
 ]
 

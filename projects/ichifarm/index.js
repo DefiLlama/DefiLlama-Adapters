@@ -51,6 +51,7 @@ const config = {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
       { factory: '0x51a0D74e1791399cE02aafD9a21dc4637Fe57959', fromBlock: 24832870, isAlgebra: true, }, // Henjin
+      { factory: '0x2b52c416F723F16e883E53f3f16435B51300280a', fromBlock: 24832870, isAlgebra: true, }, // Hydrex
       { factory: '0x28cF3b462a1ADdE87fe7144d110BcF0D464C97b7', fromBlock: 22972345, isAlgebra: true, }, // Kim
       { factory: '0x24430E837efB64EF87bb32be03437fc6005EEF74', fromBlock: 22095330, isAlgebra: false, }, // PancakeSwap
       { factory: '0xbA096706A850caF1cADAEfE7529Db1343a0c187E', fromBlock: 25174764, isAlgebra: true, }, // Trebleswap 
@@ -67,6 +68,7 @@ const config = {
     vaultConfigs: [
       { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, isAlgebra: false, },
       { factory: '0xAc93148e93d1C49D89b1166BFd74942E80F5D501', fromBlock: 32489803, isAlgebra: true, }, // Thena
+      { factory: '0x076e46A317DfAE50eEF30dca94Ff41A63118948D', fromBlock: 48359303, isAlgebra: true, }, // Thena V3
       { factory: '0x065356d9f628cDd1bb9F2384E2972CdAC50f51b7', fromBlock: 34595133, isAlgebra: false, }, // Uni v3
     ],
   },
@@ -112,11 +114,11 @@ const config = {
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 30026180, isAlgebra: false, }, // Voltage
     ]
   },
-  /* hedera: {
+  hedera: {
     vaultConfigs: [
       { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
     ]
-  }, */
+  }, 
   kava: {
     vaultConfigs: [
       { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 

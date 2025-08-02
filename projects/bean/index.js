@@ -30,7 +30,7 @@ const ADDR = {
     // Underlying non-bean tokens
     WETH: ADDRESSES.arbitrum.WETH,
     WSTETH: ADDRESSES.arbitrum.WSTETH,
-    WEETH: "0x35751007a407ca6feffe80b3cb397736d2cf4dbe",
+    WEETH: ADDRESSES.arbitrum.weETH,
     WBTC: ADDRESSES.arbitrum.WBTC,
     USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
     USDT: ADDRESSES.arbitrum.USDT
