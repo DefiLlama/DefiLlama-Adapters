@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { Interface } = require('ethers');
 
-const B3T_CONTRACT = '0x5ef79995FE8a89e0812330E4378eB2660ceDe699';
+const B3TR_CONTRACT = '0x5ef79995FE8a89e0812330E4378eB2660ceDe699';
 const VOT3_CONTRACT = '0x76Ca782B59C74d088C7D2Cce2f211BC00836c602';
 const NODE_URL = 'https://mainnet.vechain.org';
 
@@ -43,7 +43,7 @@ async function tvl(api) {
   // The price of B3TR is equivalent to the price of VOT3, and on coingecko only B3TR is tracked
   // So we can use the totalSupply of VOT3 to get the total value locked, 
   // and use B3TR price to convert it to USD
-  api.add(B3T_CONTRACT, totalSupply)
+  api.add(B3TR_CONTRACT, totalSupply)
 }
 
 module.exports = {
