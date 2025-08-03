@@ -67,6 +67,10 @@ async function getTokenRates({ tokens = [] }) {
   return tokenPrices
 }
 
+async function getJettonsInfo(tokens){
+  return (await post("https://tonapi.io/v2/jettons/_bulk", {"account_ids": tokens}))["jettons"]
+}
+
 const sumTokensAccount = rateLimited(_sumTokensAccount)
 
 async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false, useTonApiForPrices = true }) {
@@ -139,4 +143,5 @@ module.exports = {
   sumTokensExport,
   call,
   getJettonBalances,
+  getJettonsInfo,
 }

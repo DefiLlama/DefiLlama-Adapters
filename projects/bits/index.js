@@ -27,7 +27,6 @@ async function tvl(api) {
       params: [vault]
     }))
   })
-  
   // Add all Ethereum balances to the API
   api.add(WBTC, balances)
 }
@@ -62,7 +61,7 @@ async function tvlBase(api) {
 
 module.exports = {
   methodology: 'Counts the total value of WBTC assets locked in Bits yield product contracts on Ethereum network, COREBTC assets on CoreDAO network, and BASEBTC assets on Base network.',
-  start: 1749621314, // Replace with actual start timestamp
+  start: 1749621314,
   ethereum: {
     tvl,
   },
