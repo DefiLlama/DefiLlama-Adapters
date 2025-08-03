@@ -1,5 +1,6 @@
 const { getTableRows, getCurrencyBalance, getAllOracleData, getTokenPriceUsd } = require("../helper/chain/proton");
 const { toUSDTBalances } = require('../helper/balances');
+const { staking } = require('../helper/staking')
 
 const LENDING_CONTRACT = 'lending.loan';
 const LOAN_TOKEN_CONTRACT = 'loan.token';
@@ -65,12 +66,11 @@ function getLendingTvl(returnBorrowed = false) {
   }
 }
 
-async function getTotalStaking() {
-  const loanPrice = await getTokenPriceUsd('LOAN', LOAN_TOKEN_CONTRACT)
+async function getTotalStaking(api) {
   const [staked] = await getCurrencyBalance(LOAN_TOKEN_CONTRACT, STAKING_CONTRACT, 'LOAN')
   const [stakedAmount] = staked.split(' ');
-  let stakingTvl = toUSDTBalances(stakedAmount * loanPrice)
-  return stakingTvl
+  api.addCGToken('proton-loan', BigInt(Math.floor(stakedAmount)))
+  return api.getBalances()
 }
 
 module.exports = {

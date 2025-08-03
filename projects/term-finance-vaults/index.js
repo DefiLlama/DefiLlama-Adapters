@@ -2,9 +2,15 @@ const { cachedGraphQuery } = require('../helper/cache')
 
 const vaultsGraphs = {
   ethereum:
-    "https://graphql-gateway-vaults.mainnet.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/mainnet/subgraph/vaults",
   avax:
-    "https://graphql-gateway-vaults.avalanche.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/avalanche/subgraph/vaults",
+  base:
+    "https://api.mainnet.termfinance.io/base/subgraph/vaults",
+  bsc:
+    "https://api.mainnet.termfinance.io/bnb/subgraph/vaults",
+  arbitrum:
+    "https://api.mainnet.termfinance.io/arbitrum/subgraph/vaults",
 }
 
 const termVaultStrategiesQuery = `
@@ -43,10 +49,13 @@ query termVaultStrategiesQuery($lastId: ID) {
 const vaultsGraphStartBlock = {
   ethereum: 21433264,
   avax: 54438973,
+  base: 30797402,
+  bsc: 54505207,
+  arbitrum: 359134348,
 }
 
 module.exports = {
-  methodology: `Counts the purchase tokens locked in Term Finance's vaults.`,
+  methodology: `Counts deposits in Term Strategy Vaults allocated to other protocols.`,
   // hallmarks: [[1588610042, "TermFinance Launch"]],
 };
 

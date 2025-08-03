@@ -23,7 +23,7 @@ const tokenAddress = {
 }
 
 async function tvl() {
-  let ftTokens = (await call(ASSET_MANAGER_CONTRACT, GET_LISTED_TOKENS_METHOD, {}));
+  let ftTokens = (await call(ASSET_MANAGER_CONTRACT, GET_LISTED_TOKENS_METHOD, {})).filter(address => address.includes('.'));
 
   // NOTE: balances for FT tokens
   let balances = await addTokenBalances(ftTokens, ASSET_MANAGER_CONTRACT);
@@ -37,7 +37,7 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  near: {    tvl,  },
+  near: { tvl },
   solana: { tvl: () => sumTokens2({ tokenAccounts: ['77puyQ4K4ov82qzBuda4q9iMh2Ux49YnnBNWqxQkcrXE']})},
   methodology: 'All the tokens deposited into Orderly Network by chain'
 };

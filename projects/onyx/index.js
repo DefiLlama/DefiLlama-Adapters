@@ -13,9 +13,9 @@ module.exports = {
     ...compoundExports2({ comptroller: tokensAddress.unitroller, cether: tokensAddress.oEth}),
     staking: staking(tokensAddress.stakingPool, tokensAddress.onyx),
   },
-  hallmarks: [
-    [Math.floor(new Date('2023-11-01')/1e3), 'Protocol was hacked'],
-  ],
+  // hallmarks: [
+  //   ['2023-11-01', 'Protocol was hacked'],
+  // ],
 };
 
 module.exports.ethereum.borrowed = () => ({})

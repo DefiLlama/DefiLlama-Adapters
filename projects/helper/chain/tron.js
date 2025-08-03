@@ -9,7 +9,6 @@ async function getStakedTron(account) {
 
 // not used anywhere?
 async function getTrxBalance(account) {
-  console.log(getEnv('TRON_RPC')+'/wallet/getaccount')
   const data = await post(getEnv('TRON_RPC')+'/wallet/getaccount', {
     address: account,
     visible: true,

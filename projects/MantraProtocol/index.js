@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const MANTRA_CONTRACT_PER_CHAIN = {

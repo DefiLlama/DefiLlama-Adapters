@@ -8,6 +8,7 @@ const sydeSolPool = "EQCuFUhl6rrSZWT8Ozl7b4jpiadODlPxAaaDnQv7wUnyJqcT"
 const sydeXauPool = "EQCi9ogNps1Jbj5t7GcIb8iA1ghjHHAadljVgY80ONnEvHyM"
 const sydeTonPool = "EQBhwJfdCFVImLYzAfFzk6-jbsiUhX78YhOUJEYteFBVHnJq"
 
+
 module.exports = {
   methodology: 'Counts Syde smartcontract balance as TVL.',
   ton: {

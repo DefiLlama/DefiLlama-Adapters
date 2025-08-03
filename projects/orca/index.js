@@ -1,6 +1,27 @@
 const { getProvider, sumTokens2, exportDexTVL, } = require('../helper/solana')
-const { Program, } = require("@project-serum/anchor");
+const { Program, AnchorProvider } = require("@project-serum/anchor");
 const sdk = require('@defillama/sdk')
+const { Connection, PublicKey } = require('@solana/web3.js')
+
+const eclipseRpc = 'https://eclipse.helius-rpc.com'
+
+async function eclipseTvl (api) {
+  const connection = new Connection(eclipseRpc)
+  const provider = new AnchorProvider(connection, getProvider(api.chain).wallet)
+  const programId = new PublicKey('whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc')
+  const program = new Program(whirpoolIDL, programId, provider)
+
+  const rawAccounts = await connection.getProgramAccounts(programId, {
+    filters: [{ dataSize: 653 }],
+  })
+
+  const whirlpools = rawAccounts.map(({ account }) =>
+    program.account.whirlpool.coder.accounts.decode('whirlpool', account.data)
+  )
+
+  const tokenAccounts = whirlpools.flatMap(({ tokenVaultA, tokenVaultB }) => [tokenVaultA, tokenVaultB])
+  return sumTokens2({ tokenAccounts, api })
+}
 
 async function tvl(api) {
   const provider = getProvider(api.chain)
@@ -27,10 +48,8 @@ const orcaV2Tvl = exportDexTVL('9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP')
 
 module.exports = {
   timetravel: false,
-  solana: {
-    tvl: sdk.util.sumChainTvls([orcaV1Tvl, orcaV2Tvl, tvl])
-  },
-  eclipse: { tvl },
+  solana: { tvl: sdk.util.sumChainTvls([orcaV1Tvl, orcaV2Tvl, tvl]) },
+  eclipse: { tvl: eclipseTvl },
   hallmarks: [
     [1628565707, "Token+LM launch"],
     [1667865600, "FTX collapse"]

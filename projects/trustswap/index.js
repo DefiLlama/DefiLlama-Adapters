@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+  "token": "address:token",
+  "currentTotalStake": "uint256:currentTotalStake"
+}
 
 const staking_contract = "0x5A753021CE28CBC5A7c51f732ba83873D673d8cC";
 
@@ -11,46 +13,14 @@ const assets = [
   ADDRESSES.ethereum.UNI,
 ];
 
-const stakingTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const token = (
-    await sdk.api.abi.call({
-      abi: abi.token,
-      target: staking_contract,
-      block: ethBlock,
-    })
-  ).output;
-
-  const currentTotalStake = (
-    await sdk.api.abi.call({
-      abi: abi.currentTotalStake,
-      target: staking_contract,
-      block: ethBlock,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, token, currentTotalStake);
-
-  return balances;
+const stakingTvl = async (api) => {
+  const token = await api.call({  abi: abi.token, target: staking_contract})
+  const bal = await api.call({  abi: abi.currentTotalStake, target: staking_contract})
+  api.add(token, bal)
 };
 
-async function ethTvl(timestamp, ethBlock, chainBlocks) {
-  let balances = {};
-  for (let i = 0; i < assets.length; i++) {
-    const assetsBalance = (
-      await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: assets[i],
-        params: staking_contract,
-        block: ethBlock,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, assets[i], assetsBalance);
-  }
-
-return balances
+async function ethTvl(api) {
+  return api.sumTokens({ owner: staking_contract, tokens: assets })
 }
 
 
