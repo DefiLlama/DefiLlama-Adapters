@@ -25,17 +25,17 @@ async function tvl(api) {
     // Add native CRO balance
     api.add('0x0000000000000000000000000000000000000000', nativeBalance)
 
-    // Add supported token balances
-    for (const token of tokens) {
-        const balance = await api.call({
+    // Add supported token balances using multicall
+    const balances = await api.multiCall({
+        calls: tokens.map(token => ({
             target: token,
-            abi: 'erc20:balanceOf',
             params: [GAME_POOL]
-        })
-        if (balance > 0) {
-            api.add(token, balance)
-        }
-    }
+        })),
+        abi: 'erc20:balanceOf'
+    })
+    
+    // Add all token balances
+    api.addTokens(tokens, balances)
 
     return api.getBalances()
 }
