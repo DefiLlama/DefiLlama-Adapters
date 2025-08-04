@@ -14,6 +14,7 @@ const CONFIG = {
   bsc: {
     pools: [
       '0x138EB30f73BC423c6455C53df6D89CB01d9eBc63',
+      '0x962Bd449E630b0d928f308Ce63f1A21F02576057'
     ],
   },
   avax: {
@@ -119,12 +120,22 @@ const CONFIG = {
   },
   hemi: {
     pools: [
-      '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590', //eth pool
+      ADDRESSES.fuse.WETH_3, //eth pool
     ],
   },
   sonic: {
     pools: [
       '0xA272fFe20cFfe769CdFc4b63088DCD2C82a2D8F9', //usdc pool
+    ],
+  },
+  manta: {
+    pools: [
+      '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB', // eth pool
+    ],
+  },
+  swellchain: {
+    pools: [
+      '0xCc0587aeBDa397146cc828b445dB130a94486e74', // eth pool
     ],
   },
 }

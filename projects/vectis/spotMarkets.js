@@ -2,7 +2,9 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const anchor = require('@coral-xyz/anchor');
 const { PublicKey } = require("@solana/web3.js");
 const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+const DRIFT_VAULT_PROGRAM_ID = new PublicKey('vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR')
 const CUSTOM_PROGRAM_ID = new PublicKey('EDnxACbdY1GeXnadh5gRuCJnivP7oQSAHGGAHCma4VzG')
+const VOLTR_PROGRAM_ID = new PublicKey('vVoLTRjQmtFpiYoegx285Ze4gsLJ8ZxgFKVcuvmG1a8')
 
 const SPOT_MARKETS = {
   0: {
@@ -171,6 +173,8 @@ module.exports = {
   getPerpMarketFundingRates,
   getPerpTokenMintFromMarketIndex,
   getVaultPublicKey,
+  VOLTR_PROGRAM_ID,
+  DRIFT_VAULT_PROGRAM_ID,
 };
 
 function getVaultPublicKey(seed, marketIndex) {
