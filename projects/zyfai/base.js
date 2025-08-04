@@ -4,7 +4,7 @@ const FLUID_POOL_ADDRESSES = {
 };
 const MORPHO_POOL_ADDRESSES = {
     'Universal - USDC': '0xB7890CEE6CF4792cdCC13489D36D9d42726ab863',
-    'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
+    // 'Moonwell Flagship USDC': '0xc1256Ae5FF1cf2719D4937adb3bbCCab2E00A2Ca',
     'Seamless USDC Vault': '0x616a4E1db48e22028f6bbf20444Cd3b8e3273738',
     'HighYield Clearstar USDC': '0xE74c499fA461AF1844fCa84204490877787cED56',
     'Clearstar Reactor OpenEden Boosted USDC': '0x1D3b1Cd0a0f242d598834b3F2d126dC6bd774657'

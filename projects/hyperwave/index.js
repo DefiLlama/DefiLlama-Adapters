@@ -7,8 +7,9 @@ const { decimals } = require('@defillama/sdk/build/erc20');
 
 // Vault
 const HWLP_VAULT = "0x9FD7466f987Fd4C45a5BBDe22ED8aba5BC8D72d1";
+const HWHYPE_VAULT = "0x4DE03cA1F02591B717495cfA19913aD56a2f5858";
 
-// Multi-Sigs
+// HyperLiquid Multi-Sigs
 const MS_1 = "0x128Cc5830214aBAF05A0aC178469a28de56C0BA9";
 const MS_2 = "0x950e6bc9bba0edf4e093b761df05cf5abd0a32e7";
 const MS_3 = "0x4E961B977085B673c293a5C022FdcA2ab3A689a2";
@@ -19,14 +20,23 @@ const MS_ALL = [MS_1, MS_2, MS_3, MS_4, MS_5];
 const DELAY = 200; // 200ms delay between requests
 // const DELAY = 10000; // 10s delay between requests
 const HLP_VAULT = "0xdfc24b077bc1425ad1dea75bcb6f8158e10df303"; // Hyperliquid Vault
-const VAULT_TOKENS = [
+const HWLP_VAULT_TOKENS = [
     ADDRESSES.hyperliquid.USDT0,
     ADDRESSES.hyperliquid.USDe,
     '0xb50A96253aBDF803D85efcDce07Ad8becBc52BD5' // USDHl
 ];
-const MAINNET_VAULT_TOKENS = [
+const MAINNET_HWLP_VAULT_TOKENS = [
   ADDRESSES.ethereum.USDT,
   ADDRESSES.ethereum.USDe,
+]
+const HWHYPE_VAULT_TOKENS = [
+  ADDRESSES.hyperliquid.WHYPE,
+  ADDRESSES.hyperliquid.wstHYPE,
+  '0x0000000000000000000000000000000000000000', // HYPE gas token
+  '0xfFaa4a3D97fE9107Cef8a3F48c069F577Ff76cC1', // stHYPE
+  '0xfD739d4e423301CE9385c1fb8850539D657C296D', // kHYPE
+  '0x5748ae796AE46A4F1348a1693de4b50560485562', // LHYPE
+  '0x4DE03cA1F02591B717495cfA19913aD56a2f5858', // hyHYPE (hypurrfi)
 ]
 const HYPER_CORE_TOKENS = [
   // {
@@ -51,26 +61,35 @@ const HYPER_CORE_TOKENS = [
   }
 ]
 
-async function vaultTvl(api) {
+async function hwhlpVaultTvl(api) {
   return sumTokens2({
     api,
     owner: HWLP_VAULT,
     chain: 'hyperliquid',
-    tokens: VAULT_TOKENS,
+    tokens: HWLP_VAULT_TOKENS,
   })
 }
 
-async function mainnetVaultTvl(api) {
+async function hwhypeVaultTvl(api) {
+  return sumTokens2({
+    api,
+    owner: HWHYPE_VAULT,
+    chain: 'hyperliquid',
+    tokens: HWHYPE_VAULT_TOKENS,
+  })
+}
+
+async function mainnetHwhlpVaultTvl(api) {
   return sumTokens2({
     api,
     owner: HWLP_VAULT,
     chain: 'ethereum',
-    tokens: MAINNET_VAULT_TOKENS
+    tokens: MAINNET_HWLP_VAULT_TOKENS
   })
 }
 
 const delay = () => new Promise(res => setTimeout(res, DELAY));
-async function hlpVaultTvl(api) {
+async function hypercoreHwhlpVaultTvl(api) {
     const datas = [];
     for (const eoa of MS_ALL) {
       await delay();
@@ -118,10 +137,11 @@ module.exports = {
   timetravel: false,
   methodology: 'TVL represents the sum of tokens deposited in the vault + HLP positions + HyperCore Spot positions.',
   doublecounted: false,
-  ethereum: {tvl: mainnetVaultTvl},
-  arbitrum: {tvl: hlpVaultTvl},
+  ethereum: {tvl: mainnetHwhlpVaultTvl},
+  arbitrum: {tvl: hypercoreHwhlpVaultTvl},
   hyperliquid: { tvl: sdk.util.sumChainTvls([
-    vaultTvl, 
-    hyperCoreSpotBalance
+    hwhlpVaultTvl, 
+    hyperCoreSpotBalance,
+    hwhypeVaultTvl
   ])},
 }
