@@ -54,14 +54,17 @@ const V2_ADDRESSES = [
         "0x07a643f82fe44b7d58483320e4bf67cf33bc1b4d",
         "0x92fd60ba502e3fca3c71b28b58bd194994327fc0",
         "0x089e6bd925f11963daea2d4dea8c51c3cf562f75",
-				"0x4e9A00BDE25901f59272928723FF7934D999Fac1"
+	"0x4e9A00BDE25901f59272928723FF7934D999Fac1"
         
 ];
 
 const V3_ADDRESSES = [
   "0x871fbd1d0cbd80917d4f6fc5b1353d45b3ba68e4",
   "0xd860dcd2f8b31dff84030b36c3160295a0d9cb39",
-  "0xbec4f4b9913f1e4e2fb37597cc61f393530502fd"
+  "0xbec4f4b9913f1e4e2fb37597cc61f393530502fd",
+  "0x3d169a9ceda1ba8cbedbbbd5a8abf976aa5a0f45",
+  "0xfa064ba05fef454a74c39c2dfbe13f4728b480f7"
+
 ];
 
 async function tvl(api) {

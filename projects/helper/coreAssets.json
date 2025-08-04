@@ -2050,7 +2050,8 @@
     "WXTZ": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
     "USDC": "0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9",
     "USDT": "0x2c03058c8afc06713be23e58d2febc8337dbfe6a",
-    "WETH": "0xfc24f770f94edbca6d6f885e12d4317320bcb401"
+    "WETH": "0xfc24f770f94edbca6d6f885e12d4317320bcb401",
+    "LBTC": "0xecAc9C5F704e954931349Da37F60E39f515c11c1"
   },
   "rari": {
     "WETH": "0xf037540e51d71b2d2b1120e8432ba49f29edfbd0",
