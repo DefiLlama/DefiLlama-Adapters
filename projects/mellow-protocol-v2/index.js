@@ -1,39 +1,24 @@
-const axios = require('axios')
+const { getConfig } = require('../helper/cache');
 
 const config = {
-  ethereum: {
-    chainId: 1,
-  },
-  lisk: {
-    chainId: 1135,
-  },
-  bsc: {
-    chainId: 56,
-  },
-  fraxtal: {
-    chainId: 252,
-  }
+  ethereum: {},
+  lisk: {},
+  bsc: {},
+  fraxtal: {}
 }
 
 let _vaultsApiResponse
 
-async function fetchTvl(api, chainId) {
-  if (!_vaultsApiResponse) _vaultsApiResponse = axios.get('https://points.mellow.finance/v1/vaults')
+async function tvl(api) {
+  if (!_vaultsApiResponse) _vaultsApiResponse = getConfig('mellow-v2', 'https://points.mellow.finance/v1/vaults')
   const vaultsApiResponse = await _vaultsApiResponse;
 
-  const vaults = vaultsApiResponse.data.filter(vault => vault.chain_id === chainId).map(vault => vault.address)
-
-  if (vaults != null && vaults.length > 0) {
-    await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
-  }
+  const vaults = vaultsApiResponse.filter(vault => vault.chain_id === api.chainId).map(vault => vault.address)
+  await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
 }
 
 module.exports = {
   doublecounted: true,
 };
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = {
-    tvl: (api) => fetchTvl(api, config[chain].chainId)
-  }
-})
+Object.keys(config).forEach(chain => module.exports[chain] = { tvl })
