@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const { sumTokensExport } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const tokens = [
   '0x136471a34f6ef19fe571effc1ca711fdb8e49f2b', // USYC
@@ -19,6 +20,8 @@ const owners = [
 
 module.exports = {
   methodology: 'TVL represents the value in RWA held by the protocol',
-  ethereum: { tvl: sumTokensExport({ tokens, owners })}, 
+  ethereum: { 
+    staking: staking('0x06B964d96f5dCF7Eae9d7C559B09EDCe244d4B8E', '0xc4441c2be5d8fa8126822b9929ca0b81ea0de38e'), // USUAL
+    tvl: sumTokensExport({ tokens, owners })}, 
   doublecounted: true 
 }
