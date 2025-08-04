@@ -69,7 +69,7 @@ async function getLogs({ target,
     })).output
 
     if (!customCacheFunction)
-      cache.logs.push(...logs)
+      cache.logs = cache.logs.concat(logs)
     else {
       logs = logs.map(i => iface.parseLog(i))
       if (onlyArgs) logs = logs.map(i => i.args)
