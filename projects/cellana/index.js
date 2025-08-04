@@ -21,10 +21,10 @@ async function _getTvl() {
 
   for (const pool of pools) {
     try {
-      poolAddress = pool.inner
+      const poolAddress = pool.inner
       const reserves = await _getPoolReserves(poolAddress);
       const tokens = await _getTokenOfPool(poolAddress); 
-      
+
       if (!reserves || !tokens || tokens.length < 2) {
         console.warn(`Invalid data for pool ${poolAddress}`);
         continue;
