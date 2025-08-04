@@ -113,14 +113,16 @@ const config = {
     }
 }
 
+const excludedVaults = ["0xa9d939b440889946E6CEC3E1D4218E069605af6f"]
+
 const abis = {
-    getTotalValue: "function getTotalValue() external returns (uint256)",
-    getVaultConfig: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses)",
-    getVaultConfigWithCustomOwnerFee: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses,uint16 vaultOwnerFeeBasisPoint)",
-    eventVaultCreatedTopic: "0xbdbed56de8b743294aafeb7bc338aac69f80294b14d029f6b73168946225f817",
-    eventVaultCreatedAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)",
-    eventVaultCreatedWithCustomOwnerFeeTopic: "0x64ebc17e4f1cfa3b3dc33c6b6e50fd0cb0f9fe4fd739a3742ddfad53b50107c7",
-    eventVaultCreatedWithCustomOwnerFeeAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, uint16 vaultOwnerFeeBasisPoint, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)"
+  getTotalValue: "function getTotalValue() view returns (uint256 totalValue)",
+  getVaultConfig: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses)",
+  getVaultConfigWithCustomOwnerFee: "function getVaultConfig() view returns (bool allowDeposit,uint8 rangeStrategyType,uint8 tvlStrategyType,address principalToken,address[] memory supportedAddresses,uint16 vaultOwnerFeeBasisPoint)",
+  eventVaultCreatedTopic: "0xbdbed56de8b743294aafeb7bc338aac69f80294b14d029f6b73168946225f817",
+  eventVaultCreatedAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)",
+  eventVaultCreatedWithCustomOwnerFeeTopic: "0x64ebc17e4f1cfa3b3dc33c6b6e50fd0cb0f9fe4fd739a3742ddfad53b50107c7",
+  eventVaultCreatedWithCustomOwnerFeeAbi: "event VaultCreated(address owner, address vault, tuple(string name, string symbol, uint256 principalTokenAmount, uint16 vaultOwnerFeeBasisPoint, tuple(bool allowDeposit, uint8 rangeStrategyType, uint8 tvlStrategyType, address principalToken, address[] supportedAddresses) config) params)"
 }
 
 Object.keys(config).forEach(chain => {
@@ -139,7 +141,10 @@ Object.keys(config).forEach(chain => {
             onlyArgs: true,
             fromBlock: fromBlock,
           })
-          logs.forEach(i => vaultAddressesCustomOwnerFee.push(i.vault))
+          logs.forEach(i => {
+            if (excludedVaults.includes(i.vault)) return;
+            vaultAddressesCustomOwnerFee.push(i.vault)
+          })
         } else {
           const logs = await getLogs({
             api,
@@ -149,15 +154,18 @@ Object.keys(config).forEach(chain => {
             onlyArgs: true,
             fromBlock: fromBlock,
           })
-          logs.forEach(i => vaultAddresses.push(i.vault))
+          logs.forEach(i => {
+            if (excludedVaults.includes(i.vault)) return;
+            vaultAddresses.push(i.vault)
+          })
         }
       }
 
       const [vaultConfigs, vaultTotalValues, vaultCustomOwnerFeeConfigs, vaultCustomOwnerFeeTotalValues] = await Promise.all([
-        api.multiCall({  abi: abis.getVaultConfig, calls: vaultAddresses }),
-        api.multiCall({  abi: abis.getTotalValue, calls: vaultAddresses }),
-        api.multiCall({  abi: abis.getVaultConfigWithCustomOwnerFee, calls: vaultAddressesCustomOwnerFee }),
-        api.multiCall({  abi: abis.getTotalValue, calls: vaultAddressesCustomOwnerFee }),
+        api.multiCall({ abi: abis.getVaultConfig, calls: vaultAddresses }),
+        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddresses }),
+        api.multiCall({ abi: abis.getVaultConfigWithCustomOwnerFee, calls: vaultAddressesCustomOwnerFee }),
+        api.multiCall({ abi: abis.getTotalValue, calls: vaultAddressesCustomOwnerFee }),
       ])
 
       const principleTokens = vaultConfigs.map(i => i.principalToken)
