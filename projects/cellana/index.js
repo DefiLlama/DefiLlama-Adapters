@@ -20,8 +20,8 @@ async function _getTvl() {
   const tokenTvlMap = new Map();
 
   for (const pool of pools) {
+    const poolAddress = pool.inner
     try {
-      const poolAddress = pool.inner
       const reserves = await _getPoolReserves(poolAddress);
       const tokens = await _getTokenOfPool(poolAddress); 
 
