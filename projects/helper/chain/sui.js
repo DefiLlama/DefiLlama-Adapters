@@ -1,12 +1,19 @@
-
 const sdk = require('@defillama/sdk')
 
 const http = require('../http')
 const { getEnv } = require('../env')
+const { withRpcFallback } = require('../rpcFallback')
 const { transformDexBalances } = require('../portedTokens')
 const { sliceIntoChunks, getUniqueAddresses } = require('../utils')
 
 //https://docs.sui.io/sui-jsonrpc
+
+async function rpcFallbackSUI(chain, body) {
+  return withRpcFallback(chain, async (axiosInstance) => {
+    const { data } = await axiosInstance.post('', body)
+    return data
+  })
+ }
 
 const endpoint = () => getEnv('SUI_RPC')
 const graphEndpoint = () => getEnv('SUI_GRAPH_RPC')
@@ -37,22 +44,22 @@ async function queryEvents({ eventType, transform = i => i }) {
 }
 
 async function getObjects(objectIds) {
+  if (!objectIds.length) return []
   if (objectIds.length > 9) {
     const chunks = sliceIntoChunks(objectIds, 9)
     const res = []
     for (const chunk of chunks) res.push(...(await getObjects(chunk)))
     return res
   }
-  const {
-    result
-  } = await http.post(endpoint(), {
+
+  const response = await rpcFallbackSUI('sui', {
     jsonrpc: "2.0", id: 1, method: 'sui_multiGetObjects', params: [objectIds, {
       "showType": true,
       "showOwner": true,
       "showContent": true,
     }],
   })
-  return objectIds.map(i => result.find(j => j.data?.objectId === i)?.data?.content)
+  return objectIds.map(i => response.result.find(j => j.data?.objectId === i)?.data?.content)
 }
 
 async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } = {}) {
@@ -64,9 +71,13 @@ async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } 
 
 async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set(), sleep }) {
   if (sleep) await fnSleep(sleep)
-  const {
-    result: { data, hasNextPage, nextCursor }
-  } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
+  const response = await rpcFallbackSUI('sui', {
+    jsonrpc: '2.0',
+    id: 1,
+    method: 'suix_getDynamicFields',
+    params: [parent, cursor, limit],
+  })
+  const { data, hasNextPage, nextCursor } = response.result
   sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
   const fetchIds = data.filter(idFilter).map(i => i.objectId).filter(i => !addedIds.has(i))
   fetchIds.forEach(i => addedIds.add(i))
@@ -78,9 +89,13 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items
 
 async function call(method, params, { withMetadata = false } = {}) {
   if (!Array.isArray(params)) params = [params]
-  const {
-    result, error
-  } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method, params, })
+  const response = await rpcFallbackSUI('sui', {
+    jsonrpc: '2.0',
+    id: 1,
+    method,
+    params,
+  })
+  const { result, error } = response
   if (!result && error) throw new Error(`[sui] ${error.message}`)
   if (['suix_getAllBalances'].includes(method)) return result
   return withMetadata ? result : result.data
@@ -89,7 +104,6 @@ async function call(method, params, { withMetadata = false } = {}) {
 async function multiCall(calls) {
   return Promise.all(calls.map(i => call(...i)))
 }
-
 
 function dexExport({
   account,
@@ -137,7 +151,6 @@ function dexExport({
     }
   }
 }
-
 
 async function sumTokens({ owners = [], blacklistedTokens = [], api, tokens = [], }) {
   owners = getUniqueAddresses(owners, true)
@@ -193,4 +206,5 @@ module.exports = {
   sumTokens,
   sumTokensExport,
   queryEventsByType,
+  rpcFallbackSUI
 };

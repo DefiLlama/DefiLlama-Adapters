@@ -1,12 +1,12 @@
+
 const sdk = require('@defillama/sdk')
 
-const http = require('../http')
 const { getEnv } = require('../env')
 const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 const { GraphQLClient } = require("graphql-request");
-
+const { withRpcFallback } = require('../rpcFallback.js')
 
 const endpoint = () => getEnv('APTOS_RPC')
 const movementEndpoint = () => getEnv('MOVE_RPC')
@@ -16,47 +16,56 @@ const endpointMap = {
   move: movementEndpoint,
 }
 
-
 async function aQuery(api, chain = 'aptos') {
-  return http.get(`${endpointMap[chain]()}${api}`)
-}
+  return withRpcFallback(chain, async (axiosInstance) => {
+    return (await axiosInstance.get(api)).data
+  })
+ }
 
 async function getResources(account, chain = 'aptos') {
-  const data = []
-  let lastData
-  let cursor
-  do {
-    let url = `${endpointMap[chain]()}/v1/accounts/${account}/resources?limit=9999`
-    if (cursor) url += '&start=' + cursor
-    const res = await http.getWithMetadata(url)
-    lastData = res.data
-    data.push(...lastData)
-    sdk.log('fetched resource length', lastData.length)
-    cursor = res.headers['x-aptos-cursor']
-  } while (lastData.length === 9999)
-  return data
+  return withRpcFallback(chain, async (axiosInstance) => {
+    const allData = []
+    let cursor
+    let pageLength = 0
+    do {
+      const { data: page, headers } = await axiosInstance.get(
+        `/v1/accounts/${account}/resources`,
+        { params: { limit: 9999, ...(cursor ? { start: cursor } : {}) } },
+      )
+      allData.push(...page)
+      pageLength = page.length
+      sdk.log('fetched resource length', pageLength)
+
+      cursor = headers['x-aptos-cursor']
+    } while (pageLength === 9999)
+    return allData
+  })
 }
 
 async function getResource(account, key, chain = 'aptos') {
   if (typeof chain !== 'string') chain = 'aptos'
-  let url = `${endpointMap[chain]()}/v1/accounts/${account}/resource/${key}`
-  const { data } = await http.get(url)
-  return data
+  return withRpcFallback(chain, async (axiosInstance) => {
+    const url = `/v1/accounts/${account}/resource/${key}`
+    return (await axiosInstance.get(url)).data
+  })
 }
 
 async function getFungibles(tokenAddress, owners, balances) {
   if (!owners?.length) return;
 
-  await Promise.all(
-    owners.map(async (ownerRaw) => {
-      const owner = ownerRaw.toLowerCase();
-      const url = `${endpointMap['aptos']()}/v1/accounts/${owner}/balance/${tokenAddress}`;
+  await withRpcFallback('aptos', async (axiosInstance) => {
+    await Promise.all(
+      owners.map(async (ownerRaw) => {
+        const owner = ownerRaw.toLowerCase();
+        const url = `/v1/accounts/${owner}/balance/${tokenAddress}`;
 
-      const tokenAmount = await http.get(url);
-      if (!tokenAmount) return;
-      sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount)
-    })
-  );
+        const response = await axiosInstance.get(url)
+        const tokenAmount = response.data;
+        if (!tokenAmount) return;
+        sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount)
+      })
+    );
+  });
 }
 
 function dexExport({
@@ -112,7 +121,7 @@ async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], t
   const resources = await Promise.all(owners.map(i => getResources(i, chain)))
   resources.flat().filter(i => i.type.includes('::CoinStore')).forEach(i => {
     const token = i.type.split('<')[1].replace('>', '')
-    if (fungibleAssets.includes(token)) return false // Prevents double counting if, for any reason, the token is present in both CoinStore and fungibleAsset
+    if (fungibleAssets.includes(token)) return false
     if (tokens.length && !tokens.includes(token)) return;
     if (blacklistedTokens.includes(token)) return;
     sdk.util.sumSingleBalance(balances, token, i.data.coin.value)
@@ -121,15 +130,20 @@ async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], t
 }
 
 async function getTableData({ table, data, chain = 'aptos' }) {
-  const response = await http.post(`${endpointMap[chain]()}/v1/tables/${table}/item`, data)
-  return response
+  return withRpcFallback(chain, async (axiosInstance) => {
+    return (await axiosInstance.post(`/v1/tables/${table}/item`, data)).data
+  })
 }
 
 async function function_view({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined, chain = 'aptos' }) {
-  let path = `${endpointMap[chain]()}/v1/view`
-  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
-  const response = await http.post(path, { "function": functionStr, "type_arguments": type_arguments, arguments: args })
-  return response.length === 1 ? response[0] : response
+  return withRpcFallback(chain, async (axiosInstance) => {
+    const { data } = await axiosInstance.post(
+      '/v1/view',
+      { function: functionStr, type_arguments, arguments: args },
+      ledgerVersion !== undefined ? { params: { ledger_version: ledgerVersion } } : undefined,
+    )
+    return data.length === 1 ? data[0] : data
+  })
 }
 
 function hexToString(hexString) {
@@ -154,14 +168,12 @@ function sumTokensExport(options) {
 
 const graphQLClient = new GraphQLClient("https://api.mainnet.aptoslabs.com/v1/graphql");
 
-// Query to get the latest block.
 const latestBlockQuery = `query LatestBlock {
   block_metadata_transactions(order_by: {version: desc}, limit: 1) {
     block_height
   }
 }`;
 
-// Query to get a block.
 const blockQuery = `query Block($block: bigint) {
   block_metadata_transactions(limit: 1, where: {block_height: {_eq: $block}}) {
     timestamp
@@ -169,7 +181,6 @@ const blockQuery = `query Block($block: bigint) {
   }
 }`;
 
-// Query to get a block range.
 const blockRangeQuery = `query Block($firstBlock: bigint, $limit: Int) {
   block_metadata_transactions(limit: $limit, where: {block_height: {_gte: $firstBlock}}, order_by: {block_height: asc}) {
     timestamp
@@ -177,7 +188,6 @@ const blockRangeQuery = `query Block($firstBlock: bigint, $limit: Int) {
   }
 }`;
 
-// Given a timestamp, returns the transaction version that is closest to that timestamp.
 const timestampToVersion = async (timestamp, minBlock = 0, chain = 'aptos') => {
   if (chain !== 'aptos') throw new Error('Unsupported chain');
   let left = minBlock;
