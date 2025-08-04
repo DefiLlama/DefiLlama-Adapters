@@ -3,38 +3,37 @@ const axios = require('axios')
 const config = {
   ethereum: {
     chainId: 1,
-    mellowLrtVaults: [
-      '0x5E362eb2c0706Bd1d134689eC75176018385430B',
-    ],
   },
   lisk: {
     chainId: 1135,
+  },
+  bsc: {
+    chainId: 56,
+  },
+  fraxtal: {
+    chainId: 252,
   }
 }
 
-const simpleLrtVaultsApiList = () => 'https://points.mellow.finance/v1/vaults'
+let _vaultsApiResponse
+
+async function fetchTvl(api, chainId) {
+  if (!_vaultsApiResponse) _vaultsApiResponse = axios.get('https://points.mellow.finance/v1/vaults')
+  const vaultsApiResponse = await _vaultsApiResponse;
+
+  const vaults = vaultsApiResponse.data.filter(vault => vault.chain_id === chainId).map(vault => vault.address)
+
+  if (vaults != null && vaults.length > 0) {
+    await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
+  }
+}
 
 module.exports = {
   doublecounted: true,
 };
 
 Object.keys(config).forEach(chain => {
-  const { mellowLrtVaults } = config[chain]
   module.exports[chain] = {
-    tvl: async (api) => {
-      if (mellowLrtVaults != null && mellowLrtVaults.length > 0) {
-        const mellowLrtTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[] tokens, uint256[] values)', calls: mellowLrtVaults, permitFailure: true })
-        mellowLrtTvl.forEach((i) => {
-          if (!i) return;
-          const { tokens, values } = i
-          api.add(tokens, values)
-        })
-      }
-
-      const simpleLrtVaults = (await axios.get(simpleLrtVaultsApiList())).data.filter(vault => vault.chain_id === config[api.chain].chainId).map(vault => vault.address)
-      if (simpleLrtVaults != null && simpleLrtVaults.length > 0) {
-        await api.erc4626Sum({ calls: simpleLrtVaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true });
-      }
-    }
+    tvl: (api) => fetchTvl(api, config[chain].chainId)
   }
 })
