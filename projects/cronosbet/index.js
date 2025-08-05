@@ -6,27 +6,19 @@
  *   as the central treasury for all games
  */
 
-const GAME_POOL_PROXY = '0x9Cf9Bb2526e23783002bd5d774987268c2Ddc115'
+const { sumTokens2, nullAddress } = require("../helper/unwrapLPs")
+
+const GAME_POOL = '0xdF697B906AE26a5dB263517c3d1CAf52d19bD8Ac'
 
 async function tvl(api) {
-  const tokens = await api.call({
-    target: GAME_POOL_PROXY,
-    abi: 'function getSupportedTokens() view returns (address[])',
-  })
-
-  return api.sumTokens({
-    owner: GAME_POOL_PROXY,
-    tokens: tokens,
-    nativeToken: true,
-  })
+  // Get supported ERC-20 tokens from the tokenList array
+  const tokens = await api.fetchList({ lengthAbi: 'getSupportedTokensLength', itemAbi: 'tokenList', target: GAME_POOL, })
+  tokens.push(nullAddress)
+  return sumTokens2({ owner: GAME_POOL, tokens, api })
 }
 
 module.exports = {
-  cronos: {
-    tvl,
-  },
-  methodology:
-    'TVL is calculated by summing the balances of all supported native CRO and ERC-20 tokens held by the GamePoolUpgradeable contract, which acts as the central treasury for all CronosBet games.',
+  cronos: { tvl, },
+  methodology: 'Value of tokens in the game pool contract',
   start: '2025-06-28',
-  timetravel: true,
 }

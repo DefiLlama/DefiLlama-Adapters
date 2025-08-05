@@ -2,7 +2,8 @@ const { api2 } = require("@defillama/sdk");
 
 module.exports = {
     hallmarks: [
-      ['2025-05-02', 'Launched v2 yUSD'],
+      ['2025-05-02', 'v2 yUSD Launch'],
+      ['2025-06-16', 'vyUSD Launch'],
     ],
   }
 
@@ -13,6 +14,7 @@ const yusd_config = {
     base: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
     sonic: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
     plume_mainnet: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
+    katana: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
 }
 
 const vyusd_config = {
@@ -22,6 +24,7 @@ const vyusd_config = {
     base: '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
     sonic: '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
     plume_mainnet: '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
+    katana: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
 }
 
 const lockbox = "0x659b5bc7F2F888dB3D5901b78Cdb34DF270E2231";
