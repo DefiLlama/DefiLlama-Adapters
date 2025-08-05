@@ -365,6 +365,13 @@ const ALPHAFI_BLUEFIN_AUTOBALANCE_TVL_IDS = [
     token0Type: "0x356a26eb9e012a68958082340d4c4116e7f55615cf27affcff209cf0ae544f59::wal::WAL",
     token1Type: ADDRESSES.sui.USDC_CIRCLE
   },
+  { //suiusdt usdc (0.001)
+    poolID: "0xce921f354d7eb15f356b274c55834f9098290f08e1e7f1f49f056a2eecb02cf6",
+    parentPoolID: "0x62af128423465822e5a0979ccad2b0b5ee50a58c6a2c8ea3dd7fda1cda3cfbe7",
+    investorID: "0xd26173539584dbce0020a9eb69dc1bf6cfe7b7be8a55e94b2db4e0261d9a5e1d",
+    token0Type: ADDRESSES.sui.suiUSDT,
+    token1Type: ADDRESSES.sui.USDC_CIRCLE
+  },
 ]
 const ALPHAFI_NAVI_TVL_IDS = [
   {

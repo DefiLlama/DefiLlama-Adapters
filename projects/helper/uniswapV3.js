@@ -46,6 +46,7 @@ function uniV3Export(config) {
 
 function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0,}) {
   return async (api) => {
+    if (!name) throw new Error('name is required for uniV3GraphExport')
     const size = 1000
     // let lastId = ''
     // let pools

@@ -42,7 +42,8 @@ module.exports = {
       '0x3fa729b4548becbad4eab6ef18413470e6d5324c',
       '0xcd62b1c403fa761baadfc74c525ce2b51780b184',
       '0x30dcf96a8a0c742aa1f534fac79e99d320c97901',
-      '0xfbc4f3f645c4003a2e4f4e9b51077d2daa9a9341'
+      '0xfbc4f3f645c4003a2e4f4e9b51077d2daa9a9341',
+      '0x18acf236eb40c0d4824fb8f2582ebbecd325ef6a'
     ]
   },
 }
