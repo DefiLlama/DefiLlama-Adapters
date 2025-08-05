@@ -3,21 +3,10 @@ const AMPLIFY_VAULT = '0x89678540206E7d6964a4e22aE5Cf4ac55926651A'; //AmplifyFin
 
 async function tvl(api) {
   // Get all strategies inside the vault
-  const strategies = await api.call({
-    abi: "address[]:get_default_queue",
-    target: AMPLIFY_VAULT,
-  });
-
-  // If no strategies, return 0 TVL
-  if (!strategies || strategies.length === 0) {
-    return;
-  }
+  const strategies = await api.call({ abi: "address[]:get_default_queue", target: AMPLIFY_VAULT, });
 
   // Get collateral balance for each strategy
-  const collateralBalances = await api.multiCall({
-    abi: "uint256:balanceOfCollateral",
-    calls: strategies.map(strategy => ({ target: strategy })),
-  });
+  const collateralBalances = await api.multiCall({ abi: "uint256:balanceOfCollateral", calls: strategies, });
 
   // Add the collateral balances as wstETH to the balances
   api.add(ADDRESSES.ethereum.WSTETH, collateralBalances);
