@@ -35,10 +35,9 @@ module.exports = {
     timetravel: false,
     aptos: {
         tvl: async (api) => {
-            const pools = await getPools();
+            const hookTypes = [2,3,4]
 
-            // The first element is not considered a pool reserve.
-            pools.shift();
+            const pools = (await getPools()).filter(pool=> hookTypes.includes(pool.hook_type));
 
             for (const pool of pools) {
                 const coinA = await getPairedCoin(pool.assets[0]) || pool.assets[0];
