@@ -1,6 +1,8 @@
 const { request, gql } = require("graphql-request");
+const sdk = require('@defillama/sdk');
 
-//supported chain subgraphs configuration for Verified.
+
+//Supported chain subgraphs configuration for Verified Network
 //TODO: add more chains
 const chainsConfig = {
   base: {
@@ -13,7 +15,8 @@ const chainsConfig = {
   },
 };
 
-//fetch pools with at least 1 primarySubscriptions or orders or marginOrders
+
+//Fetch pools with at least 1 primarySubscriptions or orders or marginOrders
 const getChainSecurities = async (url) => {
   let allPools = [];
   let skip = 0;
@@ -43,84 +46,20 @@ const getChainSecurities = async (url) => {
           address
         }
         orders {
-          id
-          pool {
-            id
-            address
-            security
-            currency
-            tokens {
-              symbol
-              name
-              decimals
-              index
-              address
-            }
-            tokensList
-          }
-          tokenIn {
-            address
-          }
-          tokenOut {
-            address
-          }
+
+          tokenIn { address }
           amountOffered
-          priceOffered
-          orderReference
-          creator
           timestamp
         }
         primarySubscriptions {
           subscription
-          price
+          assetIn { address }
           executionDate
-          assetIn {
-            address
-          }
-          assetOut {
-            address
-          }
-          investor {
-            id
-          }
         }
         marginOrders {
-          id
-          pool {
-            id
-            address
-            security
-            currency
-            margin
-            tokensList
-            tokens {
-              symbol
-              name
-              decimals
-              index
-              address
-            }
-          }
-          creator
-          tokenIn {
-            id
-            symbol
-            name
-            decimals
-            address
-          }
-          tokenOut {
-            id
-            symbol
-            name
-            decimals
-            address
-          }
+          tokenIn { address }
           amountOffered
-          priceOffered
-          stoplossPrice
           timestamp
-          orderReference
         }
       }
     }
@@ -132,8 +71,9 @@ const getChainSecurities = async (url) => {
       const pools = data?.pools || [];
       allPools.push(...pools);
       skip += pageSize;
-      if (pools.length < pageSize) hasMore = false;
+      hasMore = pools.length === pageSize;
     } catch (err) {
+      console.error("GraphQL fetch error:", err);
       break;
     }
   }
@@ -141,77 +81,61 @@ const getChainSecurities = async (url) => {
   return allPools;
 };
 
+
+// Format TVL using DefiLlama SDK
 const getChainTvls = (chain) => {
   const subgraphUrl = chainsConfig[chain].subgraphUrl;
-  let allCurrencies = [];
-  let allTvls = [];
-  return async (_, _1, _2, { api }) => {
+
+  return async (_, __, ___) => {
+    const balances = {};
     const pools = await getChainSecurities(subgraphUrl);
 
-    const securitiesPromise = pools.map(async (pool) => {
-      const currencyDetails = pool?.tokens.find(
-        (tkn) => tkn?.address?.toLowerCase() === pool?.currency?.toLowerCase()
+    for (const pool of pools) {
+      const currency = pool?.currency?.toLowerCase();
+
+      const currencyToken = pool?.tokens.find(
+        (tkn) => tkn?.address?.toLowerCase() === currency
       );
+      if (!currencyToken || !currencyToken?.decimals) continue;
 
-      //get TVL of currency for primary orders
-      if (pool?.primarySubscriptions?.length > 0) {
-        pool?.primarySubscriptions.map((sub) => {
-          if (
-            sub?.assetIn?.address?.toLowerCase() ===
-            pool?.currency?.toLowerCase()
-          ) {
-            allTvls.push(
-              Number(sub.subscription) * 10 ** Number(currencyDetails.decimals)
-            );
-            allCurrencies.push(sub.assetIn.address);
-          }
-        });
-      }
+      const decimals = Number(currencyToken.decimals);
 
-      //get TVL of currency for secondary orders
-      if (pool?.orders?.length > 0) {
-        pool?.orders.map((ord) => {
-          if (
-            ord?.tokenIn?.address?.toLowerCase() ===
-            pool?.currency?.toLowerCase()
-          ) {
-            allTvls.push(
-              Number(ord.amountOffered) * 10 ** Number(currencyDetails.decimals)
-            );
-            allCurrencies.push(ord.tokenIn.address);
-          }
-        });
-      }
+      const addBalance = (amount, tokenAddress) => {
+        const token = `${chain}:${tokenAddress.toLowerCase()}`;
+        const scaledAmount = Number(amount) * (10 ** decimals);
+        sdk.util.sumSingleBalance(balances, token, scaledAmount);
+      };
 
-      //get TVL of currency for margin orders
-      if (pool?.marginOrders?.length > 0) {
-        pool?.marginOrders.map((ord) => {
-          if (
-            ord?.tokenIn?.address?.toLowerCase() ===
-            pool?.currency?.toLowerCase()
-          ) {
-            allTvls.push(
-              Number(ord.amountOffered) * 10 ** Number(currencyDetails.decimals)
-            );
-            allCurrencies.push(ord.tokenIn.address);
-          }
-        });
-      }
-    });
+      // Primary Subscriptions
+      pool.primarySubscriptions?.forEach((sub) => {
+        if (sub?.assetIn?.address?.toLowerCase() === currency) {
+          addBalance(sub.subscription, sub.assetIn.address);
+        }
+      });
 
-    await Promise.all(securitiesPromise);
+      // Orders 
+      pool.orders?.forEach((ord) => {
+        if (ord?.tokenIn?.address?.toLowerCase() === currency) {
+          addBalance(ord.amountOffered, ord.tokenIn.address);
+        }
+      });
 
-    if (allCurrencies.length > 0) {
-      return api.addTokens(allCurrencies, allTvls);
-    } else {
-      return () => ({});
+      // Margin Orders
+      pool.marginOrders?.forEach((ord) => {
+        if (ord?.tokenIn?.address?.toLowerCase() === currency) {
+          addBalance(ord.amountOffered, ord.tokenIn.address);
+        }
+      });
     }
+
+    return balances;
+
   };
 };
 
 module.exports = {
   methodology:
-    "TVL is digital assests paid in to purchase security tokens on the Verified Network",
+    "TVL is digital assets paid in to purchase security tokens on the Verified Network",
   timetravel: true,
   misrepresentedTokens: false,
 };
