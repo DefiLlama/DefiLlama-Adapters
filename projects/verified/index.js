@@ -46,6 +46,7 @@ const getChainSecurities = async (url) => {
           address
         }
         orders {
+
           tokenIn { address }
           amountOffered
           timestamp
@@ -79,6 +80,7 @@ const getChainSecurities = async (url) => {
 
   return allPools;
 };
+
 
 // Format TVL using DefiLlama SDK
 const getChainTvls = (chain) => {
@@ -127,6 +129,7 @@ const getChainTvls = (chain) => {
     }
 
     return balances;
+
   };
 };
 
