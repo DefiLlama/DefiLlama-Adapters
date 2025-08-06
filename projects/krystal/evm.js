@@ -19,6 +19,16 @@ const config = {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 32253341,
             customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 32588280,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 33537305,
+            customOwnerFee: true
           }
         ],
     },
@@ -40,6 +50,16 @@ const config = {
               factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
               fromBlock: 353725498,
               customOwnerFee: true
+            },
+            {
+              factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+              fromBlock: 359319739,
+              customOwnerFee: true
+            },
+            {
+              factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+              fromBlock: 365137843,
+              customOwnerFee: true
             }
         ]
     },
@@ -56,6 +76,16 @@ const config = {
             {
               factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
               fromBlock: 73516877,
+              customOwnerFee: true
+            },
+            {
+              factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+              fromBlock: 74146941,
+              customOwnerFee: true
+            },
+            {
+              factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+              fromBlock: 74819808,
               customOwnerFee: true
             }
         ]
@@ -74,6 +104,16 @@ const config = {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 52701228,
             customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 54567569,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 56504339,
+            customOwnerFee: true
           }
       ]
     },
@@ -91,6 +131,16 @@ const config = {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 22836895,
             customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 22952824,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 23073168,
+            customOwnerFee: true
           }
       ]
     },
@@ -107,6 +157,16 @@ const config = {
           {
             factory: "0xdf2deefe9e905db881d06b063d3e96c27bcfda7a",
             fromBlock: 46556861,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x3a35f9fef2ba83702b6e20d79fff96f77c922cf3",
+            fromBlock: 46876463,
+            customOwnerFee: true
+          },
+          {
+            factory: "0x87077592b446e9207c544c5614e19b56bc6970d5",
+            fromBlock: 47505286,
             customOwnerFee: true
           }
       ]
