@@ -2085,7 +2085,8 @@
     "ausdy": "ausdy"
   },
   "ripple": {
-    "XRP": "XRP"
+    "XRP": "XRP",
+    "RLUSD": "RLUSD"
   },
   "polynomial": {
     "USDC": "0x17C9D8Cef7Ef072844EEaEdE1F9f54C7E3fa8743",
