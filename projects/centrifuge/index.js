@@ -82,7 +82,7 @@ const tvl = async (api) => {
   const { factories, assets: { USDC } } = CONFIG[chain]
   const tokens = await getTokens(api, block, factories)
   if (!tokens) return;
-  const vaults = (await api.multiCall({ calls: tokens.map((t) => ({ target: t, params: [USDC] })), abi: abis.getVault, permitFailure: true })).filter(addr => addr.toLowerCase() !== nullAddress)
+  const vaults = (await api.multiCall({ calls: tokens.map((t) => ({ target: t, params: [USDC] })), abi: abis.getVault })).filter(addr => addr.toLowerCase() !== nullAddress)
   await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
 }
 
