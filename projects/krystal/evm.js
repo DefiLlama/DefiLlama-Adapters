@@ -173,7 +173,7 @@ const config = {
     }
 }
 
-const excludedVaults = ["0xa9d939b440889946E6CEC3E1D4218E069605af6f"]
+const excludedVaults = ["0xa9d939b440889946E6CEC3E1D4218E069605af6f", "0xC1592E4Ce1FB6B9E278E209483CC9B2107a1736f"]
 
 const abis = {
   getTotalValue: "function getTotalValue() view returns (uint256 totalValue)",
