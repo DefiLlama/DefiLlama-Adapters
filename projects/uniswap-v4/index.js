@@ -25,7 +25,9 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, })
+      let compressType
+      if (chain === 'base') compressType = 'v1'
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType })
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
@@ -36,7 +38,9 @@ Object.keys(config).forEach(chain => {
         }
       })
       ownerTokens.push([Array.from(tokenSet), factory])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, })
+      return sumTokens2({ api, ownerTokens, permitFailure: true, sumChunkSize: 30000, sumChunkSleep: 5000 })
     }
   }
 })
+
+module.exports.isHeavyProtocol = true;

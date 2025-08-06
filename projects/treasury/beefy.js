@@ -30,7 +30,8 @@ const chains = [
   "xdai",
   "scroll",
   "mode",
-  "linea"
+  "linea",
+  "saga"
 ]
 
 const chainMap = {

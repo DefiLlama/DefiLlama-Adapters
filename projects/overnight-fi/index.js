@@ -75,7 +75,6 @@ const CONFIG = {
     ],
     assets: [
       ADDRESSES.blast.USDB,
-      ADDRESSES.blast.USDB,
     ]
   },
   polygon: {

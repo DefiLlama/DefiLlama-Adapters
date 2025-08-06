@@ -80,7 +80,7 @@ let chains = bridgedTokensPerPrimaryChain.reduce((allChains, token) => {
 module.exports.methodology = `Tokens bridged via shimmerbridge.org are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [
-  [Math.floor(new Date("2023-12-27") / 1e3), "First Launch"],
+  ["2023-12-27", "First Launch"],
 ];
 
 

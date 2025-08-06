@@ -1,5 +1,6 @@
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   ethereum: {
@@ -46,6 +47,15 @@ const config = {
       "0x0f1836312d18524368d05d537c0fabaff6ca6ccc",
       "0x06679e7b7f91487cc9d59779501c414a1b3eb89d",
       "0x2933782b5a8d72f2754103d1489614f29bfa4625",
+      "0xdd276dc5223d0120f9bf1776f38957cc8da23cb0",
+      "0xE8C15AAD9D4CD3F59C9DFA18828B91A8B2C49596",
+      "0x37e4d1cd3fe31edf473ebcf3b6a75f419c8839d1",
+      "0xAA10DB8804D076601999C7CD769E02E44A99D5B2",
+      "0x3B6D76719A4EA8C53A7A26B50175B8DE23C8E956",
+      "0xB514C67824443868D3A70352398F524EF6AF6207",
+      "0x189b24f3EB15dc71b4Fc57C5914e7e9B3246E449",
+      "0x1B14376EE2D46AE5C27A43D902D96D4F3F264B83",
+      "0xa2d69adf0b62fa32825d73f086cd4689743543db",
     ],
   },
   tron: {
@@ -69,6 +79,8 @@ const config = {
       "TBov1DfeF1r29p7P2LWQMrP6D9j5ej8wPs",
       "TJRu7dW92bmq8kDQyPZUDRTKmALTcJNXdD",
       "TGeCMTmmQKBrs8Vmx7YNGbPa2d3ZspDLNN",
+      "TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9",
+      "THyqxuWrRPLZDdvSLVEWLofJ3qYvBhyc4R",
     ],
   },
   bitcoin: {
@@ -101,6 +113,7 @@ const config = {
       "NDVDIGWEP77WQDDU5M6F7AAS77AOFXLML7DNNPUEVLQMKTIFHYTTMAG6OU",
       "WBI5LT2BQ7FFYBXW2PEDVB6KBX2F3C77WXBJ2FPVERBXXBUV6SC7XXPGWM",
       "YXDKDH5XHXL6OYMH2HYCJCXOZWPOBEUNK5ICFVJRFW3JVQXZ6HQ6QPVQVA",
+      "T6MXHXMGXURKJ7AD5NCB4IYPLWXYXKKFLLO5KAPJ56GKS7BFXHNHOODZCM",
     ],
   },
   kcc: {
@@ -109,6 +122,13 @@ const config = {
       "0x2a8c8b09bd77c13980495a959b26c1305166a57f",
       "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
+    ],
+  },
+  near: {
+    owners: [
+      "kucoinc.near",
+      "e589457354361489a89039b8be6737cbc2db4d13919b6ccf23889a60f3b0d8f3",
+      "7b865db190b966fe6ea30d0e7cc44ce42c4ea4f159a4b0b937122f166fc3ae28",
     ],
   },
   eos: {
@@ -135,6 +155,16 @@ const config = {
       "GL8T72PKygWaYrLKtSteN9UUvYYnuC8azNDunk4eaqqQ",
     ],
   },
+  ripple: {
+    owners: [
+      "rLpvuHZFE46NUyZH5XaMvmYRJZF7aory7t",
+      "rBxszqhQkhPALtkSpGuVeqR6hNtZ8xTH3T",
+      "rBXAyXMwp2WVPg13nKxUz8iCVn5RjihueQ",
+      "raxYwsodnM9NjTTc4mFsKMEb8eCn3UH9ZZ",
+      "rfZ1kn1AUwD8bVMnDsD6ifzw7y2zMRp1Ci",
+      "rPjmhP2WK4mfTZX9Ywoqz3eMPzfWj2vezU",
+    ],
+  },
   bsc: {
     owners: [
       "0x1692e170361cefd1eb7240ec13d048fd9af6d667",
@@ -144,6 +174,7 @@ const config = {
       "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
       "0xf8ba3ec49212ca45325a2335a8ab1279770df6c0",
+      "0x2933782B5A8D72F2754103D1489614F29BFA4625",
     ],
   },
   kava: {
@@ -158,6 +189,13 @@ const config = {
       "0x0566ec9d06c79b1ca32970519715a27f066e76fac8971bbd21b96a50db826d90",
     ],
   },
+  aptos: {
+    owners: [
+      "0xaa0090c74e4976834ff1b9b9ef945e1c4b6cdb49cccf37c2554ef026081312f1",
+      "0x7cab5cb050630b957e54f0a9e757cd57fac5b64f64860559930f22e008560cfd",
+      "0xbb74f7a3f369c84e7d9bf60aeb778c91be8e63d08ad91583340cc8f46d313f72",
+    ],
+  },
   base: {
     owners: [
       "0x26c8e06590f73c2571d68a41ebccec38e12ddd9f",
@@ -168,6 +206,42 @@ const config = {
       "0x2933782b5a8d72f2754103d1489614f29bfa4625",
       "0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23",
       "0xd6216fc19db775df9774a6e33526131da7d19a2c",
+    ],
+  },
+  cardano: {
+    owners: [
+      // "addr1q87n2sy2n3k844h98wxt530rr70vhkrg05prkqls60qtpeqq38w20v22ed8lufl5llnz6h3yl0mgcm9h8jsx406t6qssu03",
+      // "addr1q9vespgxm3dk5kfgg9zgkfae8j5f8r3gnz405tm83tfwgj6enqzsdhzmdfvjss2y3vnmj09gjw8z3x92lghk0zkju39spn4",
+      // "addr1qywgh46dqu7lq6mp5c6tzldpmzj6uwx335ydrpq8k7rru4q6yhkfqn5pc9f3z76e4cr64e5mf98aaeht6zwf8xl2nc9qr66",
+      // "addr1q9h4f2vhh5vnqgnsejan3psw6mj3a504fxlqm2eh3262qufesdvfs83ulr22vprsv9mwnt0vgkfwxlflxkns32twqzdqjpq",
+      // "addr1x9qy3qeu59ngqfwe2uv4qz7n8y2wzzk0n5h3t0r2sdmflrzqfzpnegtxsqjaj4ce2q9axwg5uy9vl8f0zk7x4qmkn7xq27p",
+      // "addr1x99gcg9us9jfp6gtsrgsenjjreg9ytevv7ha8nvyzuz4ef623ssteqtyjr5shqx3pn89y8js2ghjcea060xcg9c9tjnspxv",
+      'addr1q87n2sy2n3k844h98wxt530rr70vhkrg05prkqls60qtpeqq38w20v22ed8lufl5llnz6h3yl0mgcm9h8jsx406t6qssu03ga8',
+      'addr1q9vespgxm3dk5kfgg9zgkfae8j5f8r3gnz405tm83tfwgj6enqzsdhzmdfvjss2y3vnmj09gjw8z3x92lghk0zkju39spn42mj',
+      'addr1x99gcg9us9jfp6gtsrgsenjjreg9ytevv7ha8nvyzuz4ef623ssteqtyjr5shqx3pn89y8js2ghjcea060xcg9c9tjnspxv0pn',
+      'addr1x9qy3qeu59ngqfwe2uv4qz7n8y2wzzk0n5h3t0r2sdmflrzqfzpnegtxsqjaj4ce2q9axwg5uy9vl8f0zk7x4qmkn7xq27ppet',
+      'addr1q9h4f2vhh5vnqgnsejan3psw6mj3a504fxlqm2eh3262qufesdvfs83ulr22vprsv9mwnt0vgkfwxlflxkns32twqzdqjpq2na',
+    ],
+  },
+  sui: {
+    owners: [
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0x13c075644dad21bf10cb12447b825b535c24ddae428e27abc5858d1511e24c6d",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0x13c075644dad21bf10cb12447b825b535c24ddae428e27abc5858d1511e24c6d",
+      "0x2de3bc906d1fa9c85e44cf9b0642447126879cb776f5ee3749bd2e32247ba52e",
+      "0xd5ccdf77cab59778ad6c6d599af3819b0281c3fe434f7df4b82290620331bb01",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0x2de3bc906d1fa9c85e44cf9b0642447126879cb776f5ee3749bd2e32247ba52e",
+      "0xd5ccdf77cab59778ad6c6d599af3819b0281c3fe434f7df4b82290620331bb01",
+      "0x2de3bc906d1fa9c85e44cf9b0642447126879cb776f5ee3749bd2e32247ba52e",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
+      "0xf3bfda04092a842d4c57c61f9d8fb99058792ab2622b2a0c0d83a6ea41de325f",
+      "0xb18af8bf1b54e5b283ed5a35eb105699fe4d25c1f69c9de1dc8a832676b412bc",
     ],
   },
   ton: {
@@ -207,8 +281,32 @@ const config = {
       // "EQC3TvP0xyKgkrU0ugz4k-MgymahgzsWlsEz_ohNPtL6MaCU",
       // "EQB4tenLXVbU58tFHcXEWY4UCldJBYx2hRa9aioMvLP74isO",
       // "EQCoXkxpimacDL-4KgoxVlc4cRzga3M1_oTapjTGO80S9MXC",
+      "EQDyoucGvxKV-mOI4wqZxDHOKUrvACcnlG0BOoXfwVVDF57R",
     ],
   },
+  polygon: {
+    owners: [
+      "0x2933782B5A8D72F2754103D1489614F29BFA4625",
+    ],
+  },
+  polkadot: {
+    owners: ['165tzcxR1o2EUkpZVr17DxQsdJwtEkB6HAh69hQubmKGL93f'],
+  },
+  avax: {
+    owners: ['0xD6216FC19DB775DF9774A6E33526131DA7D19A2C', '0x2933782B5A8D72F2754103D1489614F29BFA4625',],
+  }
 };
 
-module.exports = cexExports(config);
+module.exports = mergeExports([
+  cexExports(config),
+  {
+    ethereum: {
+      tvl: getStakedEthTVL({
+        withdrawalAddress: "0x9f4cf329f4cf376b7aded854d6054859dd102a2a",
+        size: 200,
+        sleepTime: 20_000,
+        proxy: true,
+      }),
+    },
+  },
+]);
