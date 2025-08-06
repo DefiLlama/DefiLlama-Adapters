@@ -35,19 +35,7 @@ const mainnetContracts = {
     ],
 };
 
-const totalAssetsABI = {
-    "inputs": [],
-    "name": "totalAssets",
-    "outputs": [
-        {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-        }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-};
+const totalAssetsABI = "function totalAssets() external view returns (uint256)";
 
 async function tvl(api) {
     const chain = api.chain;
@@ -60,7 +48,7 @@ async function tvl(api) {
     }
 
     const calls = poolsForChain.map(poolInfo => ({
-        target: poolInfo.poolToken, 
+        target: poolInfo.poolToken,
     }));
 
     const totalAssetsAmounts = await api.multiCall({
@@ -78,10 +66,10 @@ async function tvl(api) {
 
 module.exports = {
     methodology: 'Counts the total underlying assets (e.g., USDC, USDT, USR, CUSDO) reported by GAIB protocol pool contracts using their `totalAssets()` function across supported mainnet chains.',
-    start: 1715490671, 
-    timetravel: true, 
-    misrepresentedTokens: false, 
-    
+    start: 1715490671,
+    timetravel: true,
+    misrepresentedTokens: false,
+
     ethereum: {
         tvl,
     },
