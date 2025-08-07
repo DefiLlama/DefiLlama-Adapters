@@ -99,7 +99,7 @@ module.exports = {
     tvl,
   },
   misrepresentedTokens: true,
-  methodology: "Aggregates total value of each dHEDGE vault ever created",
+  methodology: "Aggregates total value of each dHEDGE vault ever created.",
   hallmarks: [
     [1627693200, "dHEDGE V2 Launch"],
     [1639616400, "Optimism Launch"],
