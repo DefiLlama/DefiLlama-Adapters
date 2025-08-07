@@ -1,6 +1,12 @@
 const https = require('https')
 
-const STORAGE_KEY_TOTAL_ISSUANCE = '0xc2261276cc9d1f8598ea4b6a74b15c2f57c875e4cff74148e4628f264b974c80'
+// Substrate storage keys for staking data
+const STORAGE_KEYS = {
+  // Staking.ErasTotalStake for current era  
+  erasTotalStakePrefix: '0x5f3e4907f716ac89b6347d15ececedca87a42226fbe19e1c774fa0a564a9e182',
+  // Staking.CurrentEra
+  currentEra: '0x5f3e4907f716ac89b6347d15ececedca487df464e44a534ba6b0cbb32407b587',
+}
 
 async function querySubstrateStorage(key) {
   return new Promise((resolve) => {
@@ -51,22 +57,59 @@ function decodeU128(hex) {
   return '0'
 }
 
+function decodeU32(hex) {
+  if (!hex || hex === '0x') return 0
+  const bytes = hex.slice(2)
+  if (bytes.length >= 8) {
+    const u32Hex = bytes.slice(0, 8)
+    const reversed = u32Hex.match(/.{2}/g).reverse().join('')
+    return parseInt('0x' + reversed, 16)
+  }
+  return 0
+}
+
 async function staking(api) {
-  const totalIssuanceHex = await querySubstrateStorage(STORAGE_KEY_TOTAL_ISSUANCE)
-  const totalStaked = decodeU128(totalIssuanceHex)
+  // Get current era
+  const currentEraHex = await querySubstrateStorage(STORAGE_KEYS.currentEra)
+  const currentEra = decodeU32(currentEraHex)
   
-  if (totalStaked !== '0') {
-    api.addGasToken(totalStaked)
+  if (currentEra > 0) {
+    // Build storage key for current era total stake
+    const eraBytes = currentEra.toString(16).padStart(8, '0')
+    const eraKey = STORAGE_KEYS.erasTotalStakePrefix + eraBytes
+    
+    // Get total staked amount for current era
+    const totalStakedHex = await querySubstrateStorage(eraKey)
+    const totalStaked = decodeU128(totalStakedHex)
+    
+    if (totalStaked !== '0') {
+      api.addGasToken(totalStaked)
+    }
   }
   
   return api.getBalances()
 }
 
+async function tvl(api) {
+  // TODO: Add tracking for:
+  // 1. Cross-chain bridged assets (when bridges are deployed)
+  // 2. DEX liquidity pools (when DEX is deployed) 
+  // 3. Lending protocol deposits (when lending protocols are deployed)
+  // 4. NFT collateral values (when NFT-Fi is deployed)
+  
+  // Currently no TVL outside of staking on testnet
+  return api.getBalances()
+}
+
 module.exports = {
-  methodology: "Tracks total ZTC issuance via direct Substrate RPC queries to the Balances pallet.",
+  methodology: "Tracks ZTC tokens actually staked by validators and nominators in the current era via Substrate storage queries. Additional DeFi protocols will be tracked when deployed. Currently tracking testnet data.",
   start: 1704067200,
-  zenchain: {
-    tvl: () => ({}),
+  zenchain: { // Testnet
+    tvl,
     staking,
   },
+  // zenchain_mainnet: {  // Ready for mainnet launch
+  //   tvl,
+  //   staking,
+  // },
 }
