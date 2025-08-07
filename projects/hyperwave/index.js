@@ -8,6 +8,7 @@ const { decimals } = require('@defillama/sdk/build/erc20');
 // Vault
 const HWLP_VAULT = "0x9FD7466f987Fd4C45a5BBDe22ED8aba5BC8D72d1";
 const HWHYPE_VAULT = "0x4DE03cA1F02591B717495cfA19913aD56a2f5858";
+const HWHYPE_VAULT = "0x4DE03cA1F02591B717495cfA19913aD56a2f5858";
 
 // HyperLiquid Multi-Sigs
 const MS_1 = "0x128Cc5830214aBAF05A0aC178469a28de56C0BA9";
@@ -25,6 +26,7 @@ const HWLP_VAULT_TOKENS = [
     ADDRESSES.hyperliquid.USDe,
     '0xb50A96253aBDF803D85efcDce07Ad8becBc52BD5' // USDHl
 ];
+const MAINNET_HWLP_VAULT_TOKENS = [
 const MAINNET_HWLP_VAULT_TOKENS = [
   ADDRESSES.ethereum.USDT,
   ADDRESSES.ethereum.USDe,
