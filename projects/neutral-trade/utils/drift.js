@@ -3,6 +3,57 @@ const { Program, BN } = require("@project-serum/anchor");
 const { PublicKey } = require("@solana/web3.js");
 const { DRIFT_VAULTS } = require("../constants");
 
+const TOKEN_INFO = {
+  USDC: {
+    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    decimals: 6,
+  },
+  SOL: {
+    mint: 'So11111111111111111111111111111111111111112',
+    decimals: 9,
+  },
+  jitoSOL: {
+    mint: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn',
+    decimals: 9,
+  },
+  JTO: {
+    mint: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL',
+    decimals: 9,
+  },
+  WIF: {
+    mint: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+    decimals: 6,
+  },
+  DRIFT: {
+    mint: 'DriFtupJYLTosbwoN8koMbEYSx54aFAVLddWsbksjwg7',
+    decimals: 6,
+  },
+  INF: {
+    mint: '5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm',
+    decimals: 9,
+  },
+  dSOL: {
+    mint: 'Dso1bDeDjCQxTrWHqUUi63oBvV7Mdm6WaobLbQ7gnPQ',
+    decimals: 9,
+  },
+  JLP: {
+    mint: '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4',
+    decimals: 6,
+  },
+  cbBTC: {
+    mint: 'cbbtcf3aa214zXHbiAZQwf4122FBYbraNdFqgw4iMij',
+    decimals: 8,
+  },
+  USDS: {
+    mint: 'USDSwr9ApdHk5bvJKMjzff41FfuX8bSxdKcR81vTwcA',
+    decimals: 6,
+  },
+  BONK: {
+    mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+    decimals: 5,
+  },
+}
+
 function getTokenInfo(marketIndex) {
   switch (marketIndex) {
     case 0: return TOKEN_INFO.USDC
@@ -57,4 +108,5 @@ async function getTvl(api) {
 module.exports = {
   getTvl
 };
+
 
