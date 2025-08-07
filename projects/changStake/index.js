@@ -8,7 +8,7 @@ module.exports = {
     tvl: () => ({}),
     staking: staking({
       owner: '0x0e6cF7C13aB088fBb216Db1DD768E622f838a382', 
-      tokens: [ADDRESSES.changchain.changcoin], 
+      tokens: ['0x0000000000000000000000000000000000000000'], 
       chain: 'changchain'
     })
   }
