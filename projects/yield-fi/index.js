@@ -32,38 +32,13 @@ const vyusd_config = {
 
 const lockbox = "0x659b5bc7F2F888dB3D5901b78Cdb34DF270E2231";
 
-async function getExchangeRates(api, chain) {
-    const exchangeRates = await api.multiCall({
-        calls: [yusd_config[chain], vyusd_config[chain]],
-        abi: {
-            inputs: [],
-            name: 'exchangeRate',
-            outputs: [
-                {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                },
-            ],
-            stateMutability: 'view',
-            type: 'function',
-        },
-        permitFailure: true
-    });
-    return {
-        yusdExrate: exchangeRates[0]/1e6,
-        vyusdExrate: exchangeRates[1]/1e6
-    };
-}
-
 const l2Chains = Object.keys(yusd_config).filter(chain => chain !== 'ethereum')
 
 l2Chains.forEach(chain => {
     module.exports[chain] = {
         tvl: async (api) => {
-            const { yusdExrate, vyusdExrate } = await getExchangeRates(api, chain);
             const supply = await api.multiCall({ calls: [yusd_config[chain], vyusd_config[chain]], abi: 'erc20:totalSupply' })
-            api.add([yusd_config[chain], vyusd_config[chain]], [(supply[0] * yusdExrate), (supply[1] * vyusdExrate)]);
+            api.add([yusd_config[chain], vyusd_config[chain]], [supply[0], supply[1]]);
         }
     }
 });
@@ -78,10 +53,9 @@ module.exports['ethereum'] = {
             target: vyusd_config['ethereum'],
             owner: lockbox
         })
-        const { yusdExrate, vyusdExrate } = await getExchangeRates(api, 'ethereum');
         const ethSupply = await api.multiCall({ calls: [yusd_config['ethereum'], vyusd_config['ethereum']], abi: 'erc20:totalSupply' })
         const supply = (ethSupply[0] - lockboxSupply.output);
         const supplyVyusd = (ethSupply[1] - lockboxSupplyVyusd.output);
-        api.add([yusd_config['ethereum'], vyusd_config['ethereum']], [(supply * yusdExrate), (supplyVyusd * vyusdExrate)]);
+        api.add([yusd_config['ethereum'], vyusd_config['ethereum']], [supply, supplyVyusd]);
     }
 }
