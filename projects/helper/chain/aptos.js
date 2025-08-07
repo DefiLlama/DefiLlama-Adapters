@@ -105,18 +105,26 @@ function dexExport({
   }
 }
 
-async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos', fungibleAssets = [] }) {
+async function getBalance(account, token, chain = 'aptos') {
+  let url = `${endpointMap[chain]()}/v1/accounts/${account}/balance/${token}`
+  return await http.get(url)
+}
+
+async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos' }) {
   if (api) chain = api.chain
-  owners = getUniqueAddresses(owners, true)
-  if (fungibleAssets.length > 0) await Promise.all(fungibleAssets.map(i => getFungibles(i, owners, balances)))
-  const resources = await Promise.all(owners.map(i => getResources(i, chain)))
-  resources.flat().filter(i => i.type.includes('::CoinStore')).forEach(i => {
-    const token = i.type.split('<')[1].replace('>', '')
-    if (fungibleAssets.includes(token)) return false // Prevents double counting if, for any reason, the token is present in both CoinStore and fungibleAsset
-    if (tokens.length && !tokens.includes(token)) return;
-    if (blacklistedTokens.includes(token)) return;
-    sdk.util.sumSingleBalance(balances, token, i.data.coin.value)
-  })
+  const uniqueOwners = getUniqueAddresses(owners, true)
+  const validTokens = tokens.filter(token => !blacklistedTokens.includes(token));
+
+  for (const owner of uniqueOwners) {
+    const balancesPerToken = await Promise.all(
+        validTokens.map(token => getBalance(owner, token))
+    );
+
+    validTokens.forEach((token, index) => {
+      sdk.util.sumSingleBalance(balances, token, balancesPerToken[index]);
+    });
+  }
+
   return transformBalances(chain, balances)
 }
 
