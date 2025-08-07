@@ -25,7 +25,9 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, })
+      let compressType
+      if (chain === 'base') compressType = 'v1'
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType })
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
