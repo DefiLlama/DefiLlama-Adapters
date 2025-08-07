@@ -208,6 +208,16 @@ const timestampToVersion = async (timestamp, minBlock = 0, chain = 'aptos') => {
   return mappedBlocks[0].version;
 }
 
+async function functionViewWithApiKey({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined, apiKey = undefined, chain = 'aptos' }) {
+  let path = `${endpointMap[chain]()}/v1/view`
+  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
+  const headers = {
+    "Authorization": "Bearer " + apiKey
+  }
+  const response = await http.post(path, { "function": functionStr, "type_arguments": type_arguments, arguments: args }, {headers: headers})
+  return response.length === 1 ? response[0] : response
+}
+
 module.exports = {
   endpoint: endpoint(),
   endpointMap,
@@ -221,5 +231,6 @@ module.exports = {
   getTableData,
   function_view,
   hexToString,
-  timestampToVersion
+  timestampToVersion,
+  functionViewWithApiKey
 };
