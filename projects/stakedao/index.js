@@ -1,8 +1,8 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getConfig } = require('../helper/cache');
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getConfig } = require("../helper/cache");
 
-const lockers = require('./lockers')
-const { STRATEGIES_ENDPOINT, LOCKERS_ENDPOINT, LEGACY_VAULTS, LOCKERS, LOCKERS_GATEWAY } = require('./utils')
+const lockers = require("./lockers");
+const { ABI, STRATEGIES_ENDPOINT, LOCKERS_ENDPOINT, LEGACY_VAULTS, LOCKERS, LOCKERS_GATEWAY } = require("./utils");
 
 // ********************************************************************************
 // ********                                                                ********
@@ -11,7 +11,7 @@ const { STRATEGIES_ENDPOINT, LOCKERS_ENDPOINT, LEGACY_VAULTS, LOCKERS, LOCKERS_G
 // ********************************************************************************
 
 async function handleLegacyProducts(api) {
-  await api.erc4626Sum({ calls: LEGACY_VAULTS[api.chainId] })
+  await api.erc4626Sum({ calls: LEGACY_VAULTS[api.chainId] });
 }
 
 // ********************************************************************************
@@ -21,49 +21,90 @@ async function handleLegacyProducts(api) {
 // ********************************************************************************
 
 async function handleStrategies(api, holder, underlying, strats, onlyboost) {
-  const calls = []
-  const tokens = []
-  
+  const calls = [];
+  const tokens = [];
+
+  const llamalend = [];
+  const yearn = [];
+
   for (let i = 0; i < strats.length; ++i) {
-    const strat = strats[i]
-    const token = strat.lpToken.address
-    const receipt = underlying === "pendle" ? strat.lpToken.address : strat.gaugeAddress
+    const strat = strats[i];
 
-    tokens.push(token)
-    calls.push({ target: receipt, params: holder })
+    if (strat.isLending) {
+      llamalend.push({
+        token: { target: strat.lpToken.address },
+        balance: { target: strat.gaugeAddress, params: holder },
+      });
+    } else if (strat.protocol === "yearn") {
+      yearn.push({
+        token: strat.underlyingReward[0].address,
+        vault: { target: strat.lpToken.address },
+        balance: { target: strat.gaugeAddress, params: holder },
+      });
+    } else {
+      const token = strat.lpToken.address;
+      const receipt = underlying === "pendle" ? strat.lpToken.address : strat.gaugeAddress;
 
-    if (onlyboost) { 
-      const receipt = strat[onlyboost.poolKey]?.crvRewards
-      const holder = strat.onlyboost?.implementations?.find((os) => os.key === onlyboost.key)?.address
-          
-      if (holder && receipt) {
-        tokens.push(token)
-        calls.push({ target: receipt, params: holder })
+      tokens.push(token);
+      calls.push({ target: receipt, params: holder });
+
+      if (onlyboost) {
+        const receipt = strat[onlyboost.poolKey]?.crvRewards;
+        const holder = strat.onlyboost?.implementations?.find(
+          (os) => os.key === onlyboost.key
+        )?.address;
+
+        if (holder && receipt) {
+          tokens.push(token);
+          calls.push({ target: receipt, params: holder });
+        }
       }
     }
   }
 
-  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls })
+  if (llamalend.length > 0) {
+    const llBalance = await api.multiCall({ abi: "erc20:balanceOf", calls: llamalend.map((el) => el.balance) });
+    const llTokens = await api.multiCall({ abi: "function borrowed_token() public view returns (address)", calls: llamalend.map((el) => el.token) });
+    const llPricePerShare = await api.multiCall({ abi: ABI.pricePerShare, calls: llamalend.map((el) => el.token) });
 
-  api.addTokens(tokens, balances)
+    for (let i = 0; i < llamalend.length; ++i) {
+      const tokenBalance = (llBalance[i] * llPricePerShare[i]) / 1e18;
+      api.add(llTokens[i], tokenBalance);
+    }
+  }
+
+  if (yearn.length > 0) {
+    const yearnBalance = await api.multiCall({ abi: "erc20:balanceOf", calls: yearn.map((el) => el.balance) });
+    const yearnPricePerShare = await api.multiCall({ abi: ABI.pricePerShare, calls: yearn.map((el) => el.vault) });
+
+    for (let i = 0; i < yearn.length; ++i) {
+      const tokenBalance = (yearnBalance[i] * yearnPricePerShare[i]) / 1e18;
+      api.add(yearn[i].token, tokenBalance);
+    }
+  }
+
+  if (calls.length > 0) {
+    const balances = await api.multiCall({ abi: "erc20:balanceOf", calls });
+    api.addTokens(tokens, balances);
+  }
 }
 
 async function getV1Strategies(api, underlying, onlyboost) {
   const res = await getConfig(
     `stakedao/${api.chainId}-${underlying}`,
     `${STRATEGIES_ENDPOINT}/${underlying}/${api.chainId}.json`
-  )
+  );
 
-  await handleStrategies(api, LOCKERS[underlying][api.chainId], underlying, res.deployed, onlyboost)
+  await handleStrategies(api, LOCKERS[underlying][api.chainId], underlying, res.deployed, onlyboost);
 }
 
 async function getV2Strategies(api, underlying, onlyboost) {
   const res = await getConfig(
     `stakedao/${api.chainId}-v2-${underlying}`,
     `${STRATEGIES_ENDPOINT}/v2/${underlying}/${api.chainId}.json`
-  )
+  );
 
-  await handleStrategies(api, LOCKERS_GATEWAY[underlying][api.chainId], underlying, res, onlyboost)
+  await handleStrategies(api, LOCKERS_GATEWAY[underlying][api.chainId], underlying, res, onlyboost);
 }
 
 // ********************************************************************************
@@ -73,9 +114,12 @@ async function getV2Strategies(api, underlying, onlyboost) {
 // ********************************************************************************
 
 async function handleLockers(api) {
-  const res = await getConfig(`stakedao/${api.chainId}-lockers`, `${LOCKERS_ENDPOINT}/`).then(res => res.parsed)
+  const res = await getConfig(
+    `stakedao/${api.chainId}-lockers`,
+    `${LOCKERS_ENDPOINT}/`
+  ).then((res) => res.parsed);
 
-  const promises = [lockers.common(api, res)]
+  const promises = [lockers.common(api, res)];
 
   if (api.chainId === 1) {
     promises.push(
@@ -84,17 +128,17 @@ async function handleLockers(api) {
         lockers.yieldnest(api, res),
         lockers.maverick(api, res),
         lockers.frax(api, res),
-      ],
-    )
+      ]
+    );
   } else if (api.chainId === 252) {
-    promises.push(lockers.frax(api, res))
+    promises.push(lockers.frax(api, res));
   } else if (api.chainId === 8453) {
-    promises.push(lockers.spectra(api, res))
+    promises.push(lockers.spectra(api, res));
   } else if (api.chainId === 59144) {
-    promises.push(lockers.zero(api, res))
+    promises.push(lockers.zero(api, res));
   }
 
-  await Promise.all(promises)
+  await Promise.all(promises);
 }
 
 // ********************************************************************************
@@ -114,9 +158,9 @@ async function ethereum(api) {
     getV1Strategies(api, "yearn"),
     // Strategies v2
     getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }),
-  ])
+  ]);
 
-  return sumTokens2({ api, resolveLP: true })
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function arbitrum(api) {
@@ -125,9 +169,9 @@ async function arbitrum(api) {
     getV1Strategies(api, "curve"),
     // Strategies v2
     getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function fraxtal(api) {
@@ -136,18 +180,18 @@ async function fraxtal(api) {
     handleLockers(api),
     // Strategies v2
     getV2Strategies(api, "curve", { key: "convex", poolKey: "convexPool" }),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function sonic(api) {
   await Promise.all([
     // Strategies v2
     getV2Strategies(api, "curve"),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function base(api) {
@@ -156,79 +200,79 @@ async function base(api) {
     handleLockers(api),
     // Strategies v2
     getV2Strategies(api, "curve"),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function xdai(api) {
   await Promise.all([
     // Strategies v2
     getV2Strategies(api, "curve"),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function optimism(api) {
   await Promise.all([
     // Strategies v2
     getV2Strategies(api, "curve"),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function polygon(api) {
   await Promise.all([
     // Legacy Products
     handleLegacyProducts(api),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function avax(api) {
   await Promise.all([
     // Legacy Products
     handleLegacyProducts(api),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function linea(api) {
   await Promise.all([
     // Lockers
     handleLockers(api),
-  ])
-  
-  return sumTokens2({ api, resolveLP: true })
+  ]);
+
+  return sumTokens2({ api, resolveLP: true });
 }
 
 async function staking(api) {
-  const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
-  const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
-  const veSdt = '0x0C30476f66034E11782938DF8e4384970B6c9e8a'
-  const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
+  const sanctuary = "0xaC14864ce5A98aF3248Ffbf549441b04421247D3";
+  const arbStrat = "0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3";
+  const veSdt = "0x0C30476f66034E11782938DF8e4384970B6c9e8a";
+  const sdtToken = "0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F";
 
   return sumTokens2({
     api,
-    owners: [sanctuary, arbStrat, veSdt,],
-    tokens: [sdtToken]
-  })
+    owners: [sanctuary, arbStrat, veSdt],
+    tokens: [sdtToken],
+  });
 }
 
 module.exports = {
   misrepresentedTokens: true,
-  ethereum:  { tvl: ethereum, staking },
-  optimism:  { tvl: optimism },
-  polygon:   { tvl: polygon },
-  avax:      { tvl: avax },
-  arbitrum:  { tvl: arbitrum },
-  sonic:     { tvl: sonic },
-  fraxtal:   { tvl: fraxtal },
-  base:      { tvl: base },
-  xdai:      { tvl: xdai },
-  linea:     { tvl: linea }
-}
+  ethereum: { tvl: ethereum, staking },
+  optimism: { tvl: optimism },
+  polygon: { tvl: polygon },
+  avax: { tvl: avax },
+  arbitrum: { tvl: arbitrum },
+  sonic: { tvl: sonic },
+  fraxtal: { tvl: fraxtal },
+  base: { tvl: base },
+  xdai: { tvl: xdai },
+  linea: { tvl: linea },
+};

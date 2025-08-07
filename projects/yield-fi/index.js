@@ -1,5 +1,6 @@
 const { api2 } = require("@defillama/sdk");
 
+
 module.exports = {
     hallmarks: [
       ['2025-05-02', 'v2 yUSD Launch'],
@@ -15,6 +16,7 @@ const yusd_config = {
     sonic: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
     plume_mainnet: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
     katana: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
+    bsc: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
 }
 
 const vyusd_config = {
@@ -25,6 +27,7 @@ const vyusd_config = {
     sonic: '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
     plume_mainnet: '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
     katana: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    bsc: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
 }
 
 const lockbox = "0x659b5bc7F2F888dB3D5901b78Cdb34DF270E2231";
@@ -33,7 +36,10 @@ const l2Chains = Object.keys(yusd_config).filter(chain => chain !== 'ethereum')
 
 l2Chains.forEach(chain => {
     module.exports[chain] = {
-        tvl: async (api) => api.add([yusd_config[chain], vyusd_config[chain]], await api.multiCall({ calls: [yusd_config[chain], vyusd_config[chain]], abi: 'erc20:totalSupply' }))
+        tvl: async (api) => {
+            const supply = await api.multiCall({ calls: [yusd_config[chain], vyusd_config[chain]], abi: 'erc20:totalSupply' })
+            api.add([yusd_config[chain], vyusd_config[chain]], [supply[0], supply[1]]);
+        }
     }
 });
 
@@ -47,13 +53,9 @@ module.exports['ethereum'] = {
             target: vyusd_config['ethereum'],
             owner: lockbox
         })
-        try {
-            const ethSupply = await api.multiCall({ calls: [yusd_config['ethereum'], vyusd_config['ethereum']], abi: 'erc20:totalSupply' })
-            const supply = (ethSupply[0] - lockboxSupply.output);
-            const supplyVyusd = (ethSupply[1] - lockboxSupplyVyusd.output);
-            api.add([yusd_config['ethereum'], vyusd_config['ethereum']], [supply, supplyVyusd]);
-        } catch (e) {
-            console.log(e)
-        } 
+        const ethSupply = await api.multiCall({ calls: [yusd_config['ethereum'], vyusd_config['ethereum']], abi: 'erc20:totalSupply' })
+        const supply = (ethSupply[0] - lockboxSupply.output);
+        const supplyVyusd = (ethSupply[1] - lockboxSupplyVyusd.output);
+        api.add([yusd_config['ethereum'], vyusd_config['ethereum']], [supply, supplyVyusd]);
     }
 }
