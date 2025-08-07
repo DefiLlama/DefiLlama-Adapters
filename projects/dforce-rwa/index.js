@@ -15,22 +15,20 @@ function getTVLByChain(chain) {
   const controllers = allControllers[chain];
   
   return async (api) => {
-    let tvl = BigNumber(0);
+    // let tvl = BigNumber(0);
     controllers.map(async (controller) => {
       const oracle = await api.call({ abi: 'address:priceOracle', target: controller });
       const iTokens = await api.call({ abi: "address[]:getAlliTokens", target: controller });
       const uTokens = await api.multiCall({ abi: 'address:underlying', calls: iTokens });
-      const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: uTokens });
-      const prices = await api.multiCall({ abi: 'function getUnderlyingPrice(address uToken) view returns (uint256)', calls: iTokens.map(iToken => ({ target: oracle, params: iToken })) });
+      // const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: uTokens });
+      // const prices = await api.multiCall({ abi: 'function getUnderlyingPrice(address uToken) view returns (uint256)', calls: iTokens.map(iToken => ({ target: oracle, params: iToken })) });
       const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: iTokens.map((iToken, i) => ({ target: uTokens[i], params: iToken })) });
-      balances.forEach((bal, i) => {
-        const value = BigNumber(bal).times(prices[i]).div(BASE).div(BigNumber(10).pow(decimals[i]));
-        tvl = tvl.plus(value);
-      })
+      // balances.forEach((bal, i) => {
+      //   const value = BigNumber(bal).times(prices[i]).div(BASE).div(BigNumber(10).pow(decimals[i]));
+      //   tvl = tvl.plus(value);
+      // })
+      return api.addTokens(uTokens, balances);
     })
-
-    // api.addUSDValue(tvl.toNumber());
-    return tvl.toNumber();
   }
 }
 
