@@ -352,4 +352,8 @@ adapterExport.hyperliquid.tvl = async (api) => {
   }
 };
 
-module.exports = adapterExport;
+
+module.exports = {
+  ...adapterExport,
+  hallmarks: [["2025-08-02", "Expanded tracking beyond Morpho & Euler vaults"]]
+};
