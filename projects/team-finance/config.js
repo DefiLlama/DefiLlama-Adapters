@@ -54,13 +54,6 @@ module.exports = {
       contractABI: abi_v2,
     },
   ],
-  velas: [
-    {
-      contract: "0x586c21A779C24eFd2a8aF33C9F7Df2a2EA9aF55c",
-      contractABI: abi_v2,
-      blacklist: ["0xc2995a065106b5c5c738b2320387460ebd12c12d"],
-    },
-  ],
   fantom: [
     {
       contract: "0xccebbe9e2b8f46c2c6862238e60a396af790b63e",
@@ -71,6 +64,68 @@ module.exports = {
   cronos: [
     {
       contract: "0x05b711Df32d73ECaa877d45a637a2eB415e7995f",
+      contractABI: abi_v2,
+    },
+  ],
+  /* etherlink: [
+    {
+      chain: "etherlink",
+      contract: "0xb6061efc3259a886cf3274efdf9b61753e1bc194",
+      contractABI: abi_v2,
+    },
+  ], */
+  blast: [
+    {
+      contract: "0x624a4cb48a52a29d97eb1127bd0585ea1e02143c",
+      contractABI: abi_v2,
+    },
+  ],
+/*   zksync: [
+    {
+      contract: "0xe6fcefa80c6eec28b2682ebb6b4b476e7f2b9bdf",
+      contractABI: abi_v2,
+    },
+  ], */
+  mantle: [
+    {
+      contract: "0xd03450a71b81d408fc3d4f4bf928ca4da5328b14",
+      contractABI: abi_v2,
+    },
+  ],
+  pulse: [
+    {
+      contract: "0xe2fe530c047f2d85298b07d9333c05737f1435fb",
+      contractABI: abi_v2,
+    },
+  ],
+  odyssey: [
+    {
+      contract: "0x5dd3d67af1b31823dd3eee8548bdc070640c14b8",
+      contractABI: abi_v2,
+    },
+  ],
+  flare: [
+    {
+      contract: "0x93ff61ac1ab23c5847c422d03be359c2b6c723c7",
+      contractABI: abi_v2,
+    },
+  ],
+  klaytn: [
+    {
+      chain: "klaytn",
+      contract: "0xb5c902ee211bae91ddb5c30b502c7ac6dfcd73f7",
+      contractABI: abi_v2,
+    },
+  ],
+  lukso: [
+    {
+      contract: "0x7c2aa307c3542d8346bea3290385359c78778934",
+      contractABI: abi_v2,
+    },
+  ],
+  berachain: [
+    {
+      contract: "0x5dd3d67af1b31823dd3eee8548bdc070640c14b8",
       contractABI: abi_v2,
     },
   ],

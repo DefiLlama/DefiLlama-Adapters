@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking, } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -46,9 +47,9 @@ async function tvl(api) {
 
 
   const tokensAndOwners = [
-    ['0x1aDDD80E6039594eE970E5872D247bf0414C8903', '0xbec7635c7A475CbE081698ea110eF411e40f8dd9',], // fsGLP
+    [ADDRESSES.arbitrum.fsGLP, '0xbec7635c7A475CbE081698ea110eF411e40f8dd9',], // fsGLP
     ['0x460c2c075340EbC19Cf4af68E5d83C194E7D21D0', '0xC12a53AbC62Cd380BC952dEcEe825Fd4869a3bff',], // plsJones
-    ['0x912CE59144191C1204E64559FE8253a0e49E6548', '0x8163A7425c0a5988edf60e98DE186c931e2ce4C7',], // ARB
+    [ADDRESSES.arbitrum.ARB, '0x8163A7425c0a5988edf60e98DE186c931e2ce4C7',], // ARB
   ]
   await sumTokens2({ api, tokensAndOwners, resolveLP: true, })
 }

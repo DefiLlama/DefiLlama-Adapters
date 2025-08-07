@@ -50,7 +50,8 @@ const tvl = async (api) => {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: true
+  misrepresentedTokens: true,
+  deadFrom: '2024-09-30',
 }
 
 Object.keys(CONFIG).forEach((chain) => {

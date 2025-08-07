@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
+  deadFrom: '2024-10-08',
   mantle: {
     tvl: sumTokensExport({
       owner: '0x78B2fa94A94bF3E96fcF9CE965bed55bE49FA9E7',
