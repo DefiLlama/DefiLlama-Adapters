@@ -3,6 +3,23 @@ const { Program, BN } = require("@project-serum/anchor");
 const { PublicKey } = require("@solana/web3.js");
 const { DRIFT_VAULTS } = require("../constants");
 
+function getTokenInfo(marketIndex) {
+  switch (marketIndex) {
+    case 0: return TOKEN_INFO.USDC
+    case 1: return TOKEN_INFO.SOL
+    case 6: return TOKEN_INFO.jitoSOL
+    case 9: return TOKEN_INFO.JTO
+    case 10: return TOKEN_INFO.WIF
+    case 15: return TOKEN_INFO.DRIFT
+    case 16: return TOKEN_INFO.INF
+    case 17: return TOKEN_INFO.dSOL
+    case 19: return TOKEN_INFO.JLP
+    case 27: return TOKEN_INFO.cbBTC
+    case 28: return TOKEN_INFO.USDS
+    case 32: return TOKEN_INFO.BONK
+    default: return undefined
+  }
+}
 
 function getProgram() {
   const idl = require("../idl/drift_idl.json");
@@ -40,3 +57,4 @@ async function getTvl(api) {
 module.exports = {
   getTvl
 };
+
