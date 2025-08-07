@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/unknownTokens')
 
 
