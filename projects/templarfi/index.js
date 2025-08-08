@@ -1,14 +1,17 @@
+
 const { default: BigNumber } = require('bignumber.js')
 const { call, sumSingleBalance } = require('../helper/chain/near')
 
 // Root contract that keeps track of all market deployments
-const TEMPLAR_ROOT_CONTRACT = 'templar-alpha.near'
+const TEMPLAR_ROOT_ALPHA_CONTRACT = 'templar-alpha.near'
 
 /**
  * @typedef {Object} Snapshot
  * @property {string} time_chunk - Time chunk information
  * @property {string} end_timestamp_ms - End timestamp in milliseconds
- * @property {string} deposited_active - Active deposits amount (in borrow asset)
+ * @property {string} borrow_asset_deposited_active - Active deposits amount (in borrow asset)
+ * @property {string} borrow_asset_deposited_inflight - In-flight deposits amount (in borrow asset)
+ * @property {string} collateral_asset_deposited - Deposit amount (in collateral asset)
  * @property {string} borrowed - Total borrowed amount (in borrow asset)
  * @property {string} yield_distribution - Yield distribution amount
  * @property {string} interest_rate - Current interest rate
@@ -40,36 +43,118 @@ const TEMPLAR_ROOT_CONTRACT = 'templar-alpha.near'
  * @property {string} protocol_account_id - Protocol account ID
  */
 
+/**
+ * Extract token address from asset configuration
+ * @param {AssetConfig} assetConfig - The asset configuration
+ * @param {string} assetType - Type of asset for error messages ('borrow' or 'collateral')
+ * @returns {string} The token address
+ */
+function extractTokenAddress(assetConfig, assetType) {
+    if (assetConfig.Nep141) {
+        return assetConfig.Nep141
+    }
+
+    if (assetConfig.Nep245?.token_id) {
+        const tokenId = assetConfig.Nep245.token_id
+        const parts = tokenId.split(':')
+
+        if (parts.length === 2 && parts[0] === 'nep141') {
+            return parts[1]
+        }
+
+        throw new Error(`Unsupported NEP-245 token type for ${assetType} asset: ${parts[0] || 'unknown'}`)
+    }
+
+    throw new Error(`Unsupported ${assetType} asset format`)
+}
+
+/**
+ * Validate snapshot data
+ * @param {Snapshot} snapshot - The snapshot to validate
+ */
+function validateSnapshot(snapshot) {
+    const requiredFields = [
+        'borrow_asset_deposited_active',
+        'borrowed',
+        'collateral_asset_deposited'
+    ]
+
+    for (const field of requiredFields) {
+        if (!snapshot || typeof snapshot[field] !== 'string') {
+            throw new Error(`Invalid snapshot data: missing or invalid ${field}`)
+        }
+    }
+}
+
+/**
+ * Fetch all deployments with pagination
+ * @param {string} rootContract - The root contract address
+ * @returns {Promise<string[]>} Array of deployment contract addresses
+ */
+async function fetchAllDeployments(rootContract) {
+    const deployments = []
+    let offset = 0
+    const limit = 100
+    let hasMore = true
+
+    while (hasMore) {
+        const batch = await call(rootContract, 'list_deployments', {
+            offset: offset,
+            count: limit
+        })
+
+        if (!batch || !Array.isArray(batch) || batch.length === 0) {
+            hasMore = false
+            break
+        }
+
+        deployments.push(...batch)
+        hasMore = batch.length === limit
+        offset += limit
+    }
+
+    return deployments
+}
+
+/**
+ * Process a single market contract
+ * @param {string} marketContract - The market contract address
+ * @returns {Promise<{borrowAssetToken: string, collateralAssetToken: string, netBorrowed: BigNumber, netCollateral: BigNumber}>}
+ */
+async function processMarket(marketContract) {
+    const [snapshotRaw, configurationRaw] = await Promise.all([
+        call(marketContract, 'get_current_snapshot', {}),
+        call(marketContract, 'get_configuration', {})
+    ])
+
+    /** @type {Snapshot} */
+    const snapshot = snapshotRaw
+    /** @type {Configuration} */
+    const configuration = configurationRaw
+
+    validateSnapshot(snapshot)
+
+    if (!configuration?.borrow_asset || !configuration?.collateral_asset) {
+        throw new Error('Invalid configuration: missing borrow_asset or collateral_asset')
+    }
+
+    const borrowAssetToken = extractTokenAddress(configuration.borrow_asset, 'borrow')
+    const collateralAssetToken = extractTokenAddress(configuration.collateral_asset, 'collateral')
+
+    // Calculate net liquidity in raw amounts
+    const totalBorrowDeposited = BigNumber(snapshot.borrow_asset_deposited_active)
+    const netCollateral = BigNumber(snapshot.collateral_asset_deposited)
+    const totalBorrowed = BigNumber(snapshot.borrowed)
+    const netBorrowed = totalBorrowDeposited.minus(totalBorrowed)
+
+    return { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral }
+}
+
 async function tvl() {
     const balances = {}
 
     try {
-        // Get all market deployments from the root contract with pagination
-        let deployments = []
-        let offset = 0
-        const limit = 100 // Reasonable batch size
-        let hasMore = true
-
-        while (hasMore) {
-            const deploymentsBatch = await call(TEMPLAR_ROOT_CONTRACT, 'list_deployments', {
-                offset: offset,
-                count: limit
-            })
-
-            if (!deploymentsBatch || !Array.isArray(deploymentsBatch) || deploymentsBatch.length === 0) {
-                hasMore = false
-                break
-            }
-
-            deployments = deployments.concat(deploymentsBatch)
-
-            // If we got fewer than the limit, we're done
-            if (deploymentsBatch.length < limit) {
-                hasMore = false
-            } else {
-                offset += limit
-            }
-        }
+        const deployments = await fetchAllDeployments(TEMPLAR_ROOT_ALPHA_CONTRACT)
 
         if (deployments.length === 0) {
             console.log('No Templar deployments found')
@@ -77,66 +162,23 @@ async function tvl() {
         }
 
         const results = await Promise.allSettled(
-            deployments.map(async (marketContract) => {
-                const [snapshotRaw, configurationRaw] = await Promise.all([
-                    call(marketContract, 'get_current_snapshot', {}),
-                    call(marketContract, 'get_configuration', {})
-                ])
-
-                /** @type {Snapshot} */
-                const snapshot = snapshotRaw
-                /** @type {Configuration} */
-                const configuration = configurationRaw
-
-                if (!snapshot ||
-                    typeof snapshot.deposited_active !== 'string' ||
-                    typeof snapshot.borrowed !== 'string') {
-                    throw new Error('Invalid snapshot data received')
-                }
-
-                // Validate configuration and extract borrow asset
-                if (!configuration || !configuration.borrow_asset) {
-                    throw new Error('Invalid configuration or missing borrow asset')
-                }
-
-                let borrowAssetToken
-                if (configuration.borrow_asset.Nep141) {
-                    borrowAssetToken = configuration.borrow_asset.Nep141
-                } else if (configuration.borrow_asset.Nep245?.token_id) {
-                    const tokenId = configuration.borrow_asset.Nep245.token_id
-                    const parts = tokenId.split(':')
-
-                    if (parts.length === 2 && parts[0] === 'nep141') {
-                        borrowAssetToken = parts[1]
-                    } else {
-                        throw new Error(`Unsupported NEP-245 token type: ${parts[0] || 'unknown'}`)
-                    }
-                } else {
-                    throw new Error('Unsupported borrow asset format')
-                }
-
-                // Calculate net liquidity in raw amounts (all in borrow asset)
-                const totalDeposited = BigNumber(snapshot.deposited_active)
-                const totalBorrowed = BigNumber(snapshot.borrowed)
-                const netLiquidity = totalDeposited.minus(totalBorrowed)
-
-                return { borrowAssetToken, netLiquidity }
-            })
+            deployments.map(processMarket)
         )
 
         // Process results and add to balances
         results.forEach((result, index) => {
             if (result.status === 'fulfilled') {
-                const { borrowAssetToken, netLiquidity } = result.value
+                const { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral } = result.value
 
-                sumSingleBalance(balances, borrowAssetToken, netLiquidity.toFixed())
+                sumSingleBalance(balances, borrowAssetToken, netBorrowed.toFixed())
+                sumSingleBalance(balances, collateralAssetToken, netCollateral.toFixed())
             } else {
                 console.log(`Error processing market ${deployments[index]}:`, result.reason)
             }
         })
 
     } catch (err) {
-        console.log(`Error fetching deployments from ${TEMPLAR_ROOT_CONTRACT}:`, err)
+        console.log(`Error fetching deployments from ${TEMPLAR_ROOT_ALPHA_CONTRACT}:`, err)
     }
 
     return balances
