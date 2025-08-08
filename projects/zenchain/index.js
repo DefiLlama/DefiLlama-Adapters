@@ -1,279 +1,275 @@
 const https = require('https')
 
 /**
- * Substrate storage keys for Zenchain staking data
- * 
- * Zenchain uses a custom storage format that differs from standard Substrate chains.
- * These hex keys map to specific storage locations in the runtime state trie.
+ * Error handling utility for precompile debugging
  */
-const STORAGE_KEYS = {
-  // Staking.ErasTotalStake prefix for discovering validator entries
-  erasTotalStakePrefix: '0x5f3e4907f716ac89b6347d15ececedca87a42226fbe19e1c774fa0a564a9e182',
-  // Staking.CurrentEra key for era information
-  currentEra: '0x5f3e4907f716ac89b6347d15ececedca487df464e44a534ba6b0cbb32407b587',
+function parsePrecompileError(error) {
+  if (!error) return 'Unknown error occurred'
+  
+  const errorMsg = error.message || error.toString()
+  const errorData = error.data
+  
+  let details = {
+    message: errorMsg,
+    code: error.code || 'Unknown',
+    data: errorData
+  }
+  
+  // Decode standard Solidity Error(string) format
+  if (errorData && errorData.startsWith && errorData.startsWith('0x08c379a0')) {
+    try {
+      const dataWithoutPrefix = errorData.slice(10)
+      const length = parseInt(dataWithoutPrefix.slice(64, 128), 16)
+      const stringHex = dataWithoutPrefix.slice(128, 128 + (length * 2))
+      const decodedMessage = Buffer.from(stringHex, 'hex').toString('utf8')
+      details.decodedError = decodedMessage
+    } catch (e) {
+      details.decodeError = e.message
+    }
+  }
+  
+  return details
 }
 
 /**
- * Configuration constants for Zenchain adapter
+ * Zenchain staking precompile contract address
+ * Documentation: https://docs.zenchain.io/docs/build-on-zenchain/precompiled-smart-contracts
  */
-const CONFIG = {
-  // RPC endpoint for Zenchain testnet
-  rpcEndpoint: 'zenchain-testnet.api.onfinality.io',
-  rpcPath: '/public',
-  // Conservative estimate per validator (in wei: 10,000 ZTC)
-  estimatedStakePerValidator: BigInt(10000) * BigInt(1e18),
-  // Maximum number of storage keys to fetch in one request
-  maxStorageKeys: 100,
-  // Validator detection pattern in storage keys
-  validatorKeyPattern: '3ed14b45ed20d054f05e37e2542cfe70',
-}
+const STAKING_PRECOMPILE = '0x0000000000000000000000000000000000000800'
 
 /**
- * Queries Substrate storage for a specific key
- * 
- * @param {string} storageKey - Hex-encoded storage key to query
- * @returns {Promise<string|null>} Hex-encoded storage value or null if not found/error
- * 
- * Uses state_getStorage RPC method to retrieve raw storage data from Zenchain.
- * Returns null on any error to ensure the adapter continues functioning.
+ * Query Zenchain RPC endpoint
+ * @param {string} method - RPC method name
+ * @param {Array} params - Method parameters
+ * @returns {Promise<Object>} RPC response
  */
-async function querySubstrateStorage(storageKey) {
+async function queryRPC(method, params = []) {
   return new Promise((resolve) => {
-    const requestPayload = JSON.stringify({
+    const postData = JSON.stringify({
       jsonrpc: '2.0',
-      method: 'state_getStorage',
-      params: [storageKey],
+      method: method,
+      params: params,
       id: 1
     })
     
-    const requestOptions = {
-      hostname: CONFIG.rpcEndpoint,
-      path: CONFIG.rpcPath,
+    const options = {
+      hostname: 'zenchain-testnet.api.onfinality.io',
+      path: '/public',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(requestPayload)
+        'Content-Length': Buffer.byteLength(postData)
       }
     }
     
-    const request = https.request(requestOptions, (response) => {
-      let responseData = ''
-      response.on('data', (chunk) => responseData += chunk)
-      response.on('end', () => {
+    const req = https.request(options, (res) => {
+      let data = ''
+      res.on('data', (chunk) => data += chunk)
+      res.on('end', () => {
         try {
-          const parsedResponse = JSON.parse(responseData)
-          resolve(parsedResponse?.result || null)
-        } catch (parseError) {
-          // Return null on JSON parse errors
+          const result = JSON.parse(data)
+          resolve(result)
+        } catch {
           resolve(null)
         }
       })
     })
     
-    // Handle network errors gracefully
-    request.on('error', () => resolve(null))
-    request.write(requestPayload)
-    request.end()
+    req.on('error', () => resolve(null))
+    req.write(postData)
+    req.end()
   })
 }
 
 /**
- * Retrieves paginated storage keys with a given prefix
+ * Get staking TVL for Zenchain testnet
  * 
- * @param {string} keyPrefix - Hex-encoded prefix to search for storage keys
- * @param {number} maxKeys - Maximum number of keys to return (default: 100)
- * @returns {Promise<string[]>} Array of hex-encoded storage keys, empty array on error
+ * Attempts to get real-time staking data from NativeStaking precompile.
+ * If precompile is not implemented, throws detailed error information for debugging.
  * 
- * This is crucial for Zenchain's custom storage format discovery.
- * We use this to find all validator-related storage entries since Zenchain
- * doesn't follow standard Substrate staking storage patterns.
- */
-async function getStorageKeys(keyPrefix, maxKeys = CONFIG.maxStorageKeys) {
-  return new Promise((resolve) => {
-    const requestPayload = JSON.stringify({
-      jsonrpc: '2.0',
-      method: 'state_getKeysPaged',
-      params: [keyPrefix, maxKeys],
-      id: 1
-    })
-    
-    const requestOptions = {
-      hostname: CONFIG.rpcEndpoint,
-      path: CONFIG.rpcPath,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(requestPayload)
-      }
-    }
-    
-    const request = https.request(requestOptions, (response) => {
-      let responseData = ''
-      response.on('data', (chunk) => responseData += chunk)
-      response.on('end', () => {
-        try {
-          const parsedResponse = JSON.parse(responseData)
-          resolve(parsedResponse?.result || [])
-        } catch (parseError) {
-          // Return empty array on JSON parse errors
-          resolve([])
-        }
-      })
-    })
-    
-    // Handle network errors gracefully
-    request.on('error', () => resolve([]))
-    request.write(requestPayload)
-    request.end()
-  })
-}
-
-/**
- * Decodes a little-endian encoded u128 value from hex string
+ * Interface reference: https://github.com/zenchain-protocol/precompile-interfaces/blob/main/INativeStaking.sol
  * 
- * @param {string} hexValue - Hex-encoded bytes (with 0x prefix)
- * @returns {string} Decoded u128 value as string (to handle large numbers)
- * 
- * Substrate uses little-endian encoding for numeric values in storage.
- * This function reverses the byte order and converts to a decimal string.
- */
-function decodeU128(hexValue) {
-  if (!hexValue || hexValue === '0x') return '0'
-  
-  const hexBytes = hexValue.slice(2) // Remove 0x prefix
-  if (hexBytes.length >= 32) {
-    const u128Bytes = hexBytes.slice(0, 32) // Take first 32 hex chars (16 bytes)
-    // Reverse byte order for little-endian decoding
-    const reversedHex = u128Bytes.match(/.{2}/g).reverse().join('')
-    return BigInt('0x' + reversedHex).toString()
-  }
-  return '0'
-}
-
-/**
- * Decodes a little-endian encoded u32 value from hex string
- * 
- * @param {string} hexValue - Hex-encoded bytes (with 0x prefix)
- * @returns {number} Decoded u32 value as integer
- * 
- * Used for decoding era numbers and other small integer values from storage.
- */
-function decodeU32(hexValue) {
-  if (!hexValue || hexValue === '0x') return 0
-  
-  const hexBytes = hexValue.slice(2) // Remove 0x prefix
-  if (hexBytes.length >= 8) {
-    const u32Bytes = hexBytes.slice(0, 8) // Take first 8 hex chars (4 bytes)
-    // Reverse byte order for little-endian decoding
-    const reversedHex = u32Bytes.match(/.{2}/g).reverse().join('')
-    return parseInt('0x' + reversedHex, 16)
-  }
-  return 0
-}
-
-/**
- * Calculates staked ZTC tokens on Zenchain
- * 
- * @param {Object} api - DefiLlama API object for balance tracking
- * @returns {Promise<Object>} Balance object with staked token amounts
- * 
- * Zenchain uses a custom storage format that differs from standard Substrate chains.
- * The validator stake amounts are encoded in a non-standard way, so we use
- * conservative estimates based on validator count and typical staking patterns.
- * 
- * Current implementation tracks ~97 validators on testnet using pattern matching
- * to identify validator entries in the storage trie.
+ * @param {Object} api - DefiLlama SDK API object
+ * @returns {Promise<Object>} Balance object with staked ZTC
+ * @throws {Error} Detailed error information if precompile calls fail
  */
 async function staking(api) {
+  console.log('=== ZENCHAIN STAKING PRECOMPILE DEBUGGING ===')
+  console.log(`Precompile address: ${STAKING_PRECOMPILE}`)
+  console.log(`Interface: https://github.com/zenchain-protocol/precompile-interfaces/blob/main/INativeStaking.sol`)
+  console.log('')
+  
+  // Check if precompile has any code deployed
+  console.log('1. Checking precompile deployment status...')
   try {
-    // Discover all staking-related storage keys
-    // Zenchain's custom storage format requires us to scan for entries
-    const stakingStorageKeys = await getStorageKeys(STORAGE_KEYS.erasTotalStakePrefix)
-    
-    let totalEstimatedStake = 0n
-    let detectedValidatorCount = 0
-    
-    // Process each discovered storage entry
-    for (const storageKey of stakingStorageKeys) {
-      const storageValue = await querySubstrateStorage(storageKey)
-      if (!storageValue) continue
-      
-      // Filter out small metadata entries (era numbers, counts, etc.)
-      // These are typically short hex values
-      if (storageValue.length <= 10) continue
-      
-      // Detect validator entries using the observed pattern
-      // Validators have a specific key pattern and value length (42 chars = 21 bytes)
-      const isValidatorEntry = storageValue.length === 42 && 
-                              storageKey.includes(CONFIG.validatorKeyPattern)
-      
-      if (isValidatorEntry) {
-        detectedValidatorCount++
+    const codeResult = await queryRPC('eth_getCode', [STAKING_PRECOMPILE, 'latest'])
+    if (codeResult?.result) {
+      console.log(`   Code at address: ${codeResult.result}`)
+      if (codeResult.result !== '0x' && codeResult.result.length > 2) {
+        const hex = codeResult.result.slice(2)
+        const ascii = Buffer.from(hex, 'hex').toString('ascii')
+        console.log(`   Decoded as ASCII: "${ascii}"`)
         
-        // Note: Individual validator stakes use custom encoding that we haven't
-        // fully decoded yet. Using conservative estimates for now.
-        // TODO: Decode actual stake amounts when format is understood
-        totalEstimatedStake += CONFIG.estimatedStakePerValidator
+        if (ascii === 'Unizen') {
+          console.log('   ⚠️  WARNING: Precompile contains placeholder code')
+        }
+      } else {
+        console.log('   ⚠️  WARNING: No code deployed at precompile address')
       }
     }
-    
-    // Fallback calculation if validator detection worked but no stakes calculated
-    if (detectedValidatorCount > 0 && totalEstimatedStake === 0n) {
-      totalEstimatedStake = BigInt(detectedValidatorCount) * CONFIG.estimatedStakePerValidator
-    }
-    
-    // Add the estimated staked amount to the balance tracker
-    if (totalEstimatedStake > 0n) {
-      api.addGasToken(totalEstimatedStake.toString())
-    }
-    
-    return api.getBalances()
-  } catch (error) {
-    // Graceful degradation: return empty balances on any error
-    // This ensures the adapter doesn't break DefiLlama's data collection
-    return api.getBalances()
+  } catch (e) {
+    console.log(`   ERROR checking code: ${e.message}`)
   }
-}
-
-/**
- * Calculates Total Value Locked (TVL) on Zenchain
- * 
- * @param {Object} api - DefiLlama API object for balance tracking
- * @returns {Promise<Object>} Balance object with TVL amounts
- * 
- * Currently returns empty as Zenchain testnet only has validators active.
- * Future implementations should track:
- * - Cross-chain bridged assets (when bridges are deployed)
- * - DEX liquidity pools (when DEX protocols are deployed)
- * - Lending protocol deposits (when lending protocols are deployed)
- * - NFT collateral values (when NFT-Fi protocols are deployed)
- */
-async function tvl(api) {
-  // Zenchain testnet currently only has staking functionality active
-  // TVL tracking will be implemented as DeFi protocols are deployed
+  console.log('')
+  
+  // Test core NativeStaking interface functions
+  console.log('2. Testing NativeStaking interface functions...')
+  const nativeStakingFunctions = [
+    { name: 'currentEra()', selector: '0x359877a6', critical: true },
+    { name: 'idealValidatorCount()', selector: '0x130218e5', critical: false },
+    { name: 'minValidatorBond()', selector: '0x1fe520d2', critical: false }
+  ]
+  
+  const errors = []
+  let successfulCalls = 0
+  
+  for (const func of nativeStakingFunctions) {
+    console.log(`   Testing ${func.name} (selector: ${func.selector})...`)
+    
+    try {
+      const result = await queryRPC('eth_call', [{
+        to: STAKING_PRECOMPILE,
+        data: func.selector,
+        gas: '0x100000'
+      }, 'latest'])
+      
+      if (result?.result && !result?.error && result.result !== '0x') {
+        console.log(`   ✅ SUCCESS: ${result.result}`)
+        successfulCalls++
+        
+        // Process successful results
+        if (func.name === 'currentEra()') {
+          const currentEra = parseInt(result.result, 16)
+          console.log(`      Current era: ${currentEra}`)
+          
+          // Try to get staking data for current era
+          console.log(`   Attempting to get era staking data...`)
+          // This would be the next step once currentEra() works
+        }
+        
+      } else if (result?.error) {
+        const errorDetails = parsePrecompileError(result.error)
+        console.log(`   ❌ FAILED: ${errorDetails.decodedError || errorDetails.message}`)
+        console.log(`      Error code: ${errorDetails.code}`)
+        console.log(`      Raw data: ${errorDetails.data}`)
+        
+        errors.push({
+          function: func.name,
+          selector: func.selector,
+          critical: func.critical,
+          error: errorDetails
+        })
+      } else {
+        console.log(`   ❌ FAILED: No result returned`)
+        errors.push({
+          function: func.name,
+          selector: func.selector,
+          critical: func.critical,
+          error: { message: 'No result returned', data: result }
+        })
+      }
+    } catch (callError) {
+      console.log(`   ❌ EXCEPTION: ${callError.message}`)
+      console.log(`      Stack: ${callError.stack}`)
+      errors.push({
+        function: func.name,
+        selector: func.selector,
+        critical: func.critical,
+        error: { message: callError.message, stack: callError.stack }
+      })
+    }
+  }
+  
+  console.log('')
+  console.log('3. Summary:')
+  console.log(`   Successful calls: ${successfulCalls}/${nativeStakingFunctions.length}`)
+  console.log(`   Failed calls: ${errors.length}`)
+  console.log('')
+  
+  if (successfulCalls === 0) {
+    console.log('=== PRECOMPILE FAILURE ANALYSIS ===')
+    console.log('No precompile functions are working. Detailed error report:')
+    console.log('')
+    
+    errors.forEach((err, idx) => {
+      console.log(`${idx + 1}. ${err.function} (${err.critical ? 'CRITICAL' : 'optional'})`)
+      console.log(`   Selector: ${err.selector}`)
+      console.log(`   Error: ${err.error.decodedError || err.error.message}`)
+      if (err.error.code) {
+        console.log(`   Code: ${err.error.code}`)
+      }
+      if (err.error.data) {
+        console.log(`   Data: ${err.error.data}`)
+      }
+      if (err.error.stack) {
+        console.log(`   Stack: ${err.error.stack}`)
+      }
+      console.log('')
+    })
+    
+    console.log('RECOMMENDATIONS:')
+    console.log('1. Verify the NativeStaking precompile is deployed to testnet')
+    console.log('2. Check if the precompile implementation matches the interface')
+    console.log('3. Ensure the precompile is activated in the runtime')
+    console.log('4. Test with a simple contract call outside DefiLlama infrastructure')
+    console.log('')
+    
+    // Throw detailed error for debugging
+    const errorMessage = `Zenchain NativeStaking precompile is not functional. ${errors.length} function calls failed. ` +
+                         `Most common error: "${errors[0]?.error?.decodedError || errors[0]?.error?.message}". ` +
+                         `This indicates the precompile is not yet implemented on testnet.`
+    
+    const detailedError = new Error(errorMessage)
+    detailedError.precompileErrors = errors
+    detailedError.precompileAddress = STAKING_PRECOMPILE
+    detailedError.interfaceUrl = 'https://github.com/zenchain-protocol/precompile-interfaces/blob/main/INativeStaking.sol'
+    
+    throw detailedError
+  }
+  
+  // If we reach here, at least some functions worked
+  console.log('✅ Precompile is partially functional!')
+  console.log('TODO: Implement staking data aggregation using working functions')
+  
+  // For now, return empty balances until we can aggregate staking data
   return api.getBalances()
 }
 
 /**
- * Zenchain DefiLlama Adapter Configuration
+ * Get TVL for Zenchain testnet (non-staking)
  * 
- * This adapter tracks staked ZTC tokens on Zenchain's custom Substrate implementation.
- * The network uses non-standard storage formats that require specialized parsing.
+ * @param {Object} api - DefiLlama SDK API object
+ * @returns {Promise<Object>} Balance object
  */
+async function tvl(api) {
+  // TODO: Add tracking for:
+  // 1. Cross-chain bridged assets (when bridges are deployed)
+  // 2. DEX liquidity pools (when DEX is deployed) 
+  // 3. Lending protocol deposits (when lending protocols are deployed)
+  // 4. NFT collateral values (when NFT-Fi is deployed)
+  
+  // Currently no TVL outside of staking on testnet
+  return api.getBalances()
+}
+
 module.exports = {
-  methodology: "Tracks ZTC tokens staked by validators on Zenchain testnet using conservative estimates. Due to Zenchain's custom storage format that differs from standard Substrate chains, individual validator stakes are estimated based on validator count (~97 active validators) and typical staking patterns (10k ZTC per validator).",
-  
-  // Adapter start timestamp (January 1, 2024)
+  methodology: "Attempts to track ZTC tokens staked by validators and nominators on Zenchain testnet using the NativeStaking precompile interface (https://github.com/zenchain-protocol/precompile-interfaces/blob/main/INativeStaking.sol). Currently fails with detailed error reporting as the precompile is not yet implemented on testnet. Will return actual staking data once the precompile is deployed and functional.",
   start: 1704067200,
-  
-  // Zenchain testnet configuration
-  zenchain: {
-    tvl,      // Total Value Locked tracking
-    staking,  // Staked token tracking
+  zenchain_testnet: { // Testnet: Precompile not yet implemented
+    tvl,
+    staking,
   },
-  
-  // Placeholder for mainnet when launched
-  // zenchain_mainnet: {
+  // zenchain: {  // Reserved for mainnet
   //   tvl,
   //   staking,
   // },
