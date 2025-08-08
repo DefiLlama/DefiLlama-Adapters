@@ -117,7 +117,7 @@ const config = {
         tokens: {
             USDT: ADDRESSES.scroll.USDT,
             USDC: ADDRESSES.scroll.USDC,
-            WBTC: ADDRESSES.sonic.WBTC,
+            WBTC: ADDRESSES.scroll.WBTC,
             WETH: ADDRESSES.scroll.WETH,
         }
     },
