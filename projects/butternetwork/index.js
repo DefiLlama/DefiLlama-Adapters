@@ -232,7 +232,7 @@ const config = {
     tokens: {
       USDT: ADDRESSES.scroll.USDT,
       USDC: ADDRESSES.scroll.USDC,
-      WBTC: ADDRESSES.sonic.WBTC,
+      WBTC: ADDRESSES.scroll.WBTC,
       WETH: ADDRESSES.scroll.WETH,
       DAI: "0xcA77eB3fEFe3725Dc33bccB54eDEFc3D9f764f97",
     }
