@@ -44,7 +44,7 @@ const cellarsV2 = [
 ];
 
 // v2.5 Cellars
-const TURBO_SWETH = "0xd33dad974b938744dac81fe00ac67cb5aa13958e";
+// const TURBO_SWETH = "0xd33dad974b938744dac81fe00ac67cb5aa13958e";
 const TURBO_GHO = "0x0c190ded9be5f512bd72827bdad4003e9cc7975c";
 const ETH_GROWTH = "0x6c51041a91c91c86f3f08a72cb4d3f67f1208897";
 const TURBO_STETH = "0xfd6db5011b171b05e1ea3b92f9eacaeeb055e971";
@@ -59,7 +59,7 @@ const TURBO_RSETH = "0x1dffb366b5c5A37A12af2C127F31e8e0ED86BDbe";
 const TURBO_EZETH = "0x27500De405a3212D57177A789E30bb88b0AdbeC5";
 
 const cellarsV2p5 = [
-  { id: TURBO_SWETH, startBlock: 17910374 },
+  // { id: TURBO_SWETH, startBlock: 17910374 },
   { id: TURBO_GHO, startBlock: 18118614 },
   { id: ETH_GROWTH, startBlock: 18144591 },
   { id: TURBO_STETH, startBlock: 18330620 },
@@ -82,6 +82,12 @@ const arbitrumCellarsV2p5 = [
   { id: REAL_YIELD_ETH_ARB, startBlock: 178830458 },
   { id: REAL_YIELD_USD_ARB, startBlock: 178141655 }];
 
+  // v2.5 Cellars on Optimism
+  const REAL_YIELD_ETH_OPT = "0xC47bB288178Ea40bF520a91826a3DEE9e0DbFA4C";
+
+  const optimismCellarsV2p5 = [
+    { id: REAL_YIELD_ETH_OPT, startBlock: 
+      116609168 }];
 
 
 module.exports = {
@@ -90,5 +96,6 @@ module.exports = {
   cellarsV2,
   cellarsV2p5,
   arbitrumCellarsV2p5,
+  optimismCellarsV2p5,
 };
 

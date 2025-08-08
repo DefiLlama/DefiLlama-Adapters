@@ -6,7 +6,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const comptroller = config[chain]
   module.exports[chain] = compoundExports2({
-    comptroller, fetchBalances: true, abis: {
+    comptroller, abis: {
       getAllMarkets: "address[]:allMarkets",
       totalBorrows: "uint256:totalBorrow",
     },

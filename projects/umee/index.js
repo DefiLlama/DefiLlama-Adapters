@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-const { transformBalances } = require("../helper/portedTokens");
 const { aaveV2Export } = require("../helper/aave");
 const { queryV1Beta1 } = require("../helper/chain/cosmos");
 
@@ -22,22 +20,18 @@ async function getData() {
   }
 }
 
-async function tvl() {
-  const balances = {};
+async function tvl(api) {
   const data = await getData();
   data.forEach((i) =>
-    sdk.util.sumSingleBalance(balances, i.base_denom, i.supplied - i.borrowed)
+    api.add(i.base_denom, i.supplied - i.borrowed)
   );
-  return transformBalances("umee", balances);
 }
 
-async function borrowed() {
-  const balances = {};
+async function borrowed(api) {
   const data = await getData();
   data.forEach((i) =>
-    sdk.util.sumSingleBalance(balances, i.base_denom, i.borrowed)
+    api.add(i.base_denom, i.borrowed)
   );
-  return transformBalances("umee", balances);
 }
 
 module.exports = {

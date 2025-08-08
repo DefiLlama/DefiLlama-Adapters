@@ -12,7 +12,7 @@ async function staking(api) {
 }
 
 // Safety Module staking of 20WETH_80PSP balancer LP
-// pool2(safetyModuleBalStaking, balancerLP_20WETH_80PSP, "ethereum") // not working as it is a balancer and not a uniswap LP
+// pool2(safetyModuleBalStaking, balancerLP_20WETH_80PSP) // not working as it is a balancer and not a uniswap LP
 const balancerLP_20WETH_80PSP = '0xcb0e14e96f2cefa8550ad8e4aea344f211e5061d'
 const safetyModuleBalStaking = '0xc8dc2ec5f5e02be8b37a8444a1931f02374a17ab'
 async function safetyModuleStaking(api) {
@@ -27,8 +27,8 @@ module.exports = {
     tvl: () => ({}), 
   },
   optimism: {
-    staking: stakings(["0x8C934b7dBc782568d14ceaBbEAeDF37cB6348615"], "0xd3594E879B358F430E20F82bea61e83562d49D48", "optimism"),
-    pool2: stakings(["0x26Ee65874f5DbEfa629EB103E7BbB2DEAF4fB2c8"], "0x11f0b5cca01b0f0a9fe6265ad6e8ee3419c68440", "optimism"),
+    staking: stakings(["0x8C934b7dBc782568d14ceaBbEAeDF37cB6348615"], "0xd3594E879B358F430E20F82bea61e83562d49D48"),
+    pool2: stakings(["0x26Ee65874f5DbEfa629EB103E7BbB2DEAF4fB2c8"], "0x11f0b5cca01b0f0a9fe6265ad6e8ee3419c68440"),
     tvl: () => ({}), 
   },
 }

@@ -53,17 +53,20 @@ async function tvl(api) {
 }
 
 async function addEquityValuationToBalances(address, api) {
-  var usdc_balance = await api.call({
+  var [usdc_balance] = await api.multiCall({
     target: address,
     abi: "function getEquityValuation(bool startIndex_, bool endIndex_) view returns (uint256)",
-    params: [true, false],
+    calls: [{ params: [true, false] }],
+    permitFailure: true,
   })
+  if (!usdc_balance)
+    return
   api.add(USDC_TOKEN_CONTRACT, usdc_balance)
 }
 
 
 module.exports = {
-  start: 1554848955,  // 04/09/2019 @ 10:29pm (UTC)
+  start: '2019-04-10',  // 04/09/2019 @ 10:29pm (UTC)
   doublecounted: true,
   avax: {
     tvl,

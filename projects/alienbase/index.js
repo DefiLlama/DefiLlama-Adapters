@@ -8,7 +8,7 @@ module.exports = {
     misrepresentedTokens: true,
     methodology: `Uses Uniswap-style factory address to find and price liquidity pairs.`,
     base: {
-        staking: staking("0x52eaecac2402633d98b95213d0b473e069d86590", ALB),
+        staking: staking(["0x52eaecac2402633d98b95213d0b473e069d86590", '0x365c6d588e8611125De3bEA5B9280C304FA54113'], ALB),
         tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, }),
     }
 };

@@ -1,7 +1,0 @@
-{
-  "getDeployers": "address[]:getDeployers",
-  "getPools": "function getPools(address deployer) view returns (address[])",
-  "token0": "address:token0",
-  "token1": "address:token1",
-  "getUnderlyingBalances": "function getUnderlyingBalances() view returns (uint256 amount0Current, uint256 amount1Current)"
-}

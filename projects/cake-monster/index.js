@@ -5,7 +5,6 @@ const CM_STAKING_CONTRACT = "0xF7CDDF60CD076d4d64c613489aA00dCCf1E518F6";
 module.exports = {
   methodology:
     "counts the number of $MONSTA tokens in the Cake Monster Staking contract, excluding the amount reserved for the staking rewards.",
-  start: 15765654,
   bsc: {
     tvl: () => ({}),
     staking: staking(CM_STAKING_CONTRACT, CM_TOKEN_CONTRACT),

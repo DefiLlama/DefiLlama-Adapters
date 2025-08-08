@@ -14,12 +14,13 @@ async function eos() {
 // Alcor
 // https://wax.alcor.exchange
 async function wax() {
-  const accounts = ["swap.alcor", "alcordexmain"];
+  const accounts = ["swap.alcor", "alcordexmain", "liquid.alcor"];
   const tokens = [
       ["eosio.token", "WAX", "wax"],
       ["alien.worlds", "TLM", "alien-worlds"],
       ["token.rfox", "USD", "redfox-labs"],
       ["usdt.alcor", "USDT", "usdt-alcor"],
+      ["token.fusion", "LSWAX", "waxfusion-staked-wax"],
   ];
   return await get_account_tvl(accounts, tokens, "wax");
 }

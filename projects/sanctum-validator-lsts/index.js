@@ -5,8 +5,8 @@ async function tvl() {
   // https://github.com/igneous-labs/sanctum-lst-list
   const connection = getConnection();
 
-  // get sanctum stake pool pools
-  const poolAccounts = await connection.getParsedProgramAccounts(new PublicKey("SP12tWFxD9oJsVWNavTTBZvMbA6gkAmxtVgxdqvyvhY"), {
+  // get sanctum single validator stake pools (SVSP)
+  const singleValidatorStakePoolAccounts = await connection.getParsedProgramAccounts(new PublicKey("SP12tWFxD9oJsVWNavTTBZvMbA6gkAmxtVgxdqvyvhY"), {
       filters: [
         {
           dataSize: 611, // number of bytes
@@ -14,24 +14,33 @@ async function tvl() {
       ],
     })
 
-  // decode pool data
-  const poolAccountsDecoded = poolAccounts.map(poolAccount => decodeAccount("scnStakePool", poolAccount.account))
+  // get sanctum multiple validators stake pools (MVSP)
+  const multipleValidatorStakePoolAccounts = await connection.getParsedProgramAccounts(new PublicKey("SPMBzsVUuoHA4Jm6KunbsotaahvVikZs1JyTW6iJvbn"), {
+      filters: [
+        {
+          dataSize: 611, // number of bytes
+        },
+      ],
+    })
 
-  const poolMints = poolAccountsDecoded.map(value => value.poolMint)
+  // join SVSP and MVSP and decode pool data
+  const allValidatorStakePoolAccounts = [...singleValidatorStakePoolAccounts,...multipleValidatorStakePoolAccounts].map(poolAccount => decodeAccount("stakePoolPartial", poolAccount.account))
 
-  // get all lsts inside infinity
+  // get sanctum LSTs mints
+  const poolMints = allValidatorStakePoolAccounts.map(value => value.poolMint)
+
+  // get LSTs inside Infinity
   const lstStateListAccount = await connection.getAccountInfo(
     new PublicKey("Gb7m4daakbVbrFLR33FKMDVMHAprRZ66CSYt4bpFwUgS")
   );
 
-  // decode state list data
+  // decode state list data and get Infinity LST mints
   const infinityLstsAccount = decodeAccount("sanctumValidatorLsts", lstStateListAccount);
 
-  // filter out non sanctum deployed lsts
+  // filter out non-sanctum LSTs
   const sanctumDeployedLstsInfinity = infinityLstsAccount.filter(item => poolMints.find(mint => mint.equals(item.mint)));
   
-
-  const totalSanctumDeployedLstsStake = poolAccountsDecoded.map(value => value.totalStakeLamports / 1e9).reduce((acc, curr) => acc + curr)
+  const totalSanctumDeployedLstsStake = allValidatorStakePoolAccounts.map(value => value.totalStakeLamports / 1e9).reduce((acc, curr) => acc + curr)
   const totalSanctumDeployedLstsInfinity = sanctumDeployedLstsInfinity.map(value => value.solValue / 1e9).reduce((acc, curr) => acc + curr)
 
   return {
@@ -42,7 +51,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology:
-    "Uses the SPL Stake Pool SDK to fetch the total supply of deposited SOL into the various Sanctum-powered stake pools",
+    "Uses GPA to fetch the total supply of deposited SOL into the various Sanctum LSTs",
   solana: {
     tvl,
   },

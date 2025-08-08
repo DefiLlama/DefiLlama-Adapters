@@ -12,7 +12,7 @@ async function tvl(api) {
   const getReservesABI = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
   const pairs = logs.map(log => log.pair)
-  const res = await api.multiCall({ abi: getReservesABI, calls: pairs, permitFailure: true })
+  const res = await api.multiCall({ abi: getReservesABI, calls: pairs,  })
   const data = []
   res.forEach((r, i) => {
     if (!r) return;
