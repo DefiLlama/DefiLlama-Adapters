@@ -4,6 +4,8 @@ const axios = require('axios');
 const DOPPLER_API_URL = "https://api.doppler.finance/v2/staking-info";
 const XRPL = "xrpl";
 const ETHEREUM = "ethereum";
+const XRPL_RLUSD_ADDRESS = "524C555344000000000000000000000000000000.rMxCKbEDwqr76QuheSUMdEGf4B9xJ8m5De";
+const ETHEREUM_RLUSD_ADDRESS = "0x8292Bb45bf1Ee4d140127049757C2E0fF06317eD";
 // ref: https://docs.doppler.finance/xrpfi/cedefi-yields#what-makes-doppler-finance-different-from-other-cedefi
 // rEPQxsSVER2r4HeVR4APrVCB45K68rqgp2: Fireblocks, A wallet which filters out abnormal deposits
 // rprFy94qJB5riJpMmnPDp3ttmVKfcrFiuq: Fireblocks, A wallet which receives and stores properly deposited funds from the deposit wallet. The funds accumulated in this wallet are transferred to ceffu once a week.
@@ -18,9 +20,10 @@ const xrplTvl = async (api) => {
     }
 
     for (const d of data) {
-        const { totalStaked, chain } = d;
+        const { totalStaked, pendingWithdrawalAmount, chain } = d;
         if (chain === XRPL) {
-            api.add(ADDRESSES.ripple.XRP, totalStaked * 1e6); // Convert to drops (1 XRP = 1,000,000 drops)
+            const total = Number(totalStaked) + Number(pendingWithdrawalAmount);
+            api.add(ADDRESSES.ripple.XRP, total * 1e6); // Convert to drops (1 XRP = 1,000,000 drops)
         }
     }
 
@@ -31,9 +34,10 @@ const xrplTvl = async (api) => {
     }
 
     for (const d of rlUSDData) {
-        const { totalStaked, chain } = d;
+        const { totalStaked, pendingWithdrawalAmount, chain } = d;
         if (chain === XRPL) {
-            api.add(ADDRESSES.ripple.RLUSD, totalStaked * 1e18);
+            const total = Number(totalStaked) + Number(pendingWithdrawalAmount);
+            api.add(XRPL_RLUSD_ADDRESS, total * 1e6);
         }
     }
 }
@@ -45,9 +49,10 @@ const ethereumTvl = async (api) => {
     }
 
     for (const d of data) {
-        const { totalStaked, chain } = d;
+        const { totalStaked, pendingWithdrawalAmount, chain } = d;
         if (chain === ETHEREUM) {
-            api.add(ADDRESSES.ripple.RLUSD, totalStaked * 1e18);
+            const total = Number(totalStaked) + Number(pendingWithdrawalAmount);
+            api.add(ETHEREUM_RLUSD_ADDRESS, total * 1e18);
         }
     }
 }
