@@ -33,6 +33,11 @@ const blacklistedSuperTokens = new Set(
   ["0x441bb79f2da0daf457bad3d401edb68535fb3faa"].map((i) => i.toLowerCase())
 );
 
+// ALEPH custom locker address used on Base and Avalanche
+const ALEPH_LOCKER = "0xb6e45ADfa0C7D70886bBFC990790d64620F1BAE8".toLowerCase();
+// ALEPH SuperToken address (same on Base and Avalanche)
+const ALEPH_SUPERTOKEN = "0xc0Fbc4967259786C743361a5885ef49380473dCF".toLowerCase();
+
 // Main function for all chains to get balances of superfluid tokens
 async function getChainBalances(allTokens, chain, block, isVesting, api) {
   // Init empty balances
@@ -44,7 +49,8 @@ async function getChainBalances(allTokens, chain, block, isVesting, api) {
     calls: allTokens.map(token => token.id),
   });
 
-  supply.forEach((totalSupply, i) => {
+  for (let i = 0; i < supply.length; i++) {
+    const totalSupply = supply[i];
     const {
       id,
       underlyingAddress,
@@ -54,27 +60,44 @@ async function getChainBalances(allTokens, chain, block, isVesting, api) {
       symbol,
       isNativeAssetSuperToken,
     } = allTokens[i];
-    let underlyingTokenBalance =
-      (totalSupply * 10 ** (underlyingToken || { decimals: 18 }).decimals) /
-      10 ** decimals;
+
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = underlyingAddress;
-    // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) sdk.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
-    // if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
-    if (blacklistedSuperTokens.has(underlyingAddress.toLowerCase()))
-      return;
+    if (
+      underlyingAddress &&
+      blacklistedSuperTokens.has(underlyingAddress.toLowerCase())
+    )
+      continue;
+
+    // ALEPH custom logic (Base and Avalanche): no underlying; circulating = totalSupply - locker balance
+    if (
+      (chain === 'base' || chain === 'avax') &&
+      id.toLowerCase() === ALEPH_SUPERTOKEN
+    ) {
+      const lockerHolding = await api.call({ abi: 'erc20:balanceOf', target: id, params: [ALEPH_LOCKER] });
+      const circulating = Math.max(0, totalSupply - lockerHolding);
+      api.add(id, circulating);
+      continue;
+    }
 
     if (isNativeAssetSuperToken) {
       // For native asset SuperTokens (like ETHx), use the chain's native token
       api.add('0x0000000000000000000000000000000000000000', totalSupply);
-    } else if (underlyingToken) {
-      // For wrapped tokens, use the underlying token's address
-      api.add(prefixedUnderlyingAddress, underlyingTokenBalance);
-    } else {
-      // For pure SuperTokens (no underlying), use the SuperToken's own address
-      api.add(id, totalSupply);
+      continue;
     }
-  });
+
+    if (underlyingToken) {
+      // For wrapped tokens (default), convert to underlying units
+      const underlyingDecimals = (underlyingToken || { decimals: 18 }).decimals;
+      const underlyingTokenBalance =
+        (totalSupply * 10 ** underlyingDecimals) / 10 ** decimals;
+      api.add(prefixedUnderlyingAddress, underlyingTokenBalance);
+      continue;
+    }
+
+    // For pure SuperTokens (no underlying), use the SuperToken's own address
+    api.add(id, totalSupply);
+  }
 }
 
 async function retrieveSupertokensBalances(
