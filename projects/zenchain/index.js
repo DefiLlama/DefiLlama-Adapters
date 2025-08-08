@@ -230,7 +230,26 @@ async function staking(api) {
                          `This indicates the precompile is not yet implemented on testnet.`
     
     const detailedError = new Error(errorMessage)
-    detailedError.precompileErrors = errors
+    
+    // Ensure error objects are fully serializable and display properly
+    // Use completely flattened structure to avoid any [Object] display issues
+    detailedError.precompileErrors = errors.map(err => ({
+      function: err.function,
+      selector: err.selector,
+      critical: err.critical,
+      // All error details flattened to prevent [Object] in console output
+      errorMessage: err.error.message || err.error.toString(),
+      errorDecodedMessage: err.error.decodedError || 'N/A',
+      errorCode: err.error.code || 'Unknown',
+      errorData: err.error.data || 'None',
+      errorStack: err.error.stack || 'No stack trace',
+      // Quick summary for easy reading
+      errorSummary: `${err.error.decodedError || err.error.message} (Code: ${err.error.code})`,
+      // Additional context
+      isCritical: err.critical ? 'YES' : 'NO',
+      functionType: err.critical ? 'CRITICAL_FUNCTION' : 'OPTIONAL_FUNCTION'
+    }))
+    
     detailedError.precompileAddress = STAKING_PRECOMPILE
     detailedError.interfaceUrl = 'https://github.com/zenchain-protocol/precompile-interfaces/blob/main/INativeStaking.sol'
     
