@@ -1,6 +1,6 @@
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
-const owners = [/*'0x5da07af8913a4eaf09e5f569c20138b658906c17', */'0xf930ebbd05ef8b25b1797b9b2109ddc9b0d43063']
+const owners = ['0x5da07af8913a4eaf09e5f569c20138b658906c17', '0xf930ebbd05ef8b25b1797b9b2109ddc9b0d43063']
 
 const config = {
   isComplex: true,
