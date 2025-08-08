@@ -1,6 +1,6 @@
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
-const owners = ['0x5da07af8913a4eaf09e5f569c20138b658906c17', '0xf930ebbd05ef8b25b1797b9b2109ddc9b0d43063']
+const owners = [/*'0x5da07af8913a4eaf09e5f569c20138b658906c17', */'0xf930ebbd05ef8b25b1797b9b2109ddc9b0d43063']
 
 const config = {
   isComplex: true,
@@ -10,7 +10,6 @@ const config = {
     ownTokens: ['0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'],
     tokens: [
       nullAddress,
-      '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F',
       '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
       '0x320623b8e4ff03373931769a31fc52a4e78b5d70',
       '0xd1b5651e55d4ceed36251c61c50c889b36f6abb5',
@@ -44,9 +43,9 @@ const config = {
   },
   polygon: {
     owners,
+    ownTokens: ['0x361a5a4993493ce00f61c32d4ecca5512b82ce90'],
     tokens: [
       nullAddress,
-      '0x361a5a4993493ce00f61c32d4ecca5512b82ce90'
     ],
   },
   fraxtal: {}

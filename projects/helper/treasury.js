@@ -2,6 +2,7 @@ const ADDRESSES = require('./coreAssets.json')
 const { sumTokensExport, nullAddress } = require('./sumTokens')
 const { ankrChainMapping } = require('./token')
 const { defaultTokens } = require('./cex')
+const { mergeExports, getUniqueAddresses } = require('./utils')
 const axios = require('axios')
 const { getEnv } = require('./env')
 
@@ -32,41 +33,28 @@ function treasuryExports(config) {
 
   const exportObj = {};
 
-  let fetchedComplexData = null;
   let fetchPromise = null;
 
   async function getComplexData() {
-    if (!fetchedComplexData) {
-      if (!fetchPromise) {
-        fetchPromise = Promise.all(
-          complexOwners.map(id =>
-            axios.get(API_URL_COMPLEX, {
-              params: { id, is_all: true },
-              headers: {
-                'accept': 'application/json',
-                'AccessKey': ACCESSKEY,
-              },
-            }).then(r => ({ id, tokens: r.data }))
-          )
-        );
-      }
-      fetchedComplexData = await fetchPromise;
+    if (!fetchPromise) {
+      fetchPromise = Promise.all(
+        complexOwners.map(id =>
+          axios.get(API_URL_COMPLEX, {
+            params: { id, is_all: true },
+            headers: {
+              'accept': 'application/json',
+              'AccessKey': ACCESSKEY,
+            },
+          }).then(r => ({ id, tokens: r.data }))
+        )
+      );
     }
-
-    return fetchedComplexData;
+    return await fetchPromise;
   }
 
   Object.keys(chains).forEach(chain => {
-    let { ownTokenOwners = [], ownTokens = [], owners = [], tokens = [], blacklistedTokens= [] } = config[chain];
-
-    tokens = tokens.filter(addr => !!addr);
-    ownTokens = ownTokens.filter(addr => !!addr);
-    blacklistedTokens = blacklistedTokens.filter(addr => !!addr);
-
+    let { ownTokenOwners = [], ownTokens = [], owners = [], tokens = [], blacklistedTokens = [] } = config[chain]
     const tvlConfig = { permitFailure: true, ...config[chain] };
-
-    if (!Array.isArray(tvlConfig.tokens)) tvlConfig.tokens = [];
-    if (!Array.isArray(tvlConfig.blacklistedTokens)) tvlConfig.blacklistedTokens = [];
 
     if (chain === 'solana') {
       tvlConfig.solOwners = owners;
@@ -84,38 +72,38 @@ function treasuryExports(config) {
     if (chain === 'arbitrum') tvlConfig.tokens = [...tokens, ARB];
     if (!Array.isArray(tvlConfig.tokens)) tvlConfig.tokens = [];
 
-    exportObj[chain] = {
-      tvl: isComplex
-        ? async (timestamp, ethBlock, chainBlocks, { api }) => {
-            await sumTokensExport(tvlConfig)(timestamp, ethBlock, chainBlocks, { api });
+    const baseExport = { [chain]: { tvl: sumTokensExport(tvlConfig) } };
 
-            if (!complexOwners.length) return api.getBalances();
-            const data = await getComplexData();
-            if (!data.length) return api.getBalances();
+    const complexExport = isComplex ? {
+      [chain]: {
+        tvl: async (api) => {
+          if (!complexOwners.length) return api.getBalances();
+          const data = await getComplexData();
+          if (!data.length) return api.getBalances();
 
-            const blacklist = new Set([
-              ...ownTokens.map(a => a.toLowerCase()),
-              ...blacklistedTokens.map(a => a.toLowerCase()),
-            ]);
+          const blacklist = new Set(getUniqueAddresses([...ownTokens, ...blacklistedTokens], false));
 
-            for (const entry of data) {
-              for (const token of entry.tokens || []) {
-                if (getLlamaChain(token.chain) !== chain) continue;
-                for (const { asset_token_list = [], pool } of token.portfolio_item_list || []) {
-                  for (const { id: rawId, decimals, amount } of asset_token_list) {
-                    if (!rawId) continue;
-                    const addr = rawId === 'eth' ? nullAddress : rawId.toLowerCase();
-                    if (blacklist.has(addr)) continue;
-                    api.add(addr, amount * 10 ** decimals);
-                    if (pool && pool.id) api.removeTokenBalance(pool.id.toLowerCase());
-                  }
+          for (const entry of data) {
+            for (const token of entry.tokens || []) {
+              if (getLlamaChain(token.chain) !== chain) continue;
+              for (const { asset_token_list = [], pool } of token.portfolio_item_list || []) {
+                for (const { id: rawId, decimals, amount } of asset_token_list) {
+                  if (!rawId) continue;
+                  const addr = rawId === 'eth' ? nullAddress : rawId.toLowerCase();
+                  if (blacklist.has(addr)) continue;
+                  api.add(addr, amount * 10 ** decimals);
+                  if (pool && pool.id) api.removeTokenBalance(pool.id.toLowerCase());
                 }
               }
             }
-            return api.getBalances();
           }
-        : sumTokensExport(tvlConfig)
-    };
+          return api.getBalances();
+        }
+      }
+    } : null;
+
+    const merged = isComplex ? mergeExports([baseExport, complexExport]) : baseExport;
+    exportObj[chain] = merged[chain];
 
     if (ownTokens.length > 0) {
       const { solOwners, ...other } = config[chain];
