@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const {sumTokensExport} = require('../helper/sumTokens')
+const {sumTokensExport, sumTokens} = require('../helper/sumTokens')
+const {sumTokens2} = require('../helper/unwrapLPs');
 
 const config = {
     ethereum: {
@@ -72,7 +73,7 @@ const config = {
             ETH: ADDRESSES.mantle.WETH,
         }
     },
-
+    
     klaytn: {
         mosContract: "0x0000317Bec33Af037b5fAb2028f52d14658F6A56",
         tokens: {
@@ -114,13 +115,13 @@ const config = {
     scroll: {
         mosContract: "0x0000317Bec33Af037b5fAb2028f52d14658F6A56",
         tokens: {
-          USDT: ADDRESSES.scroll.USDT,
-          USDC: ADDRESSES.scroll.USDC,
-          WBTC: ADDRESSES.sonic.WBTC,
-          WETH: ADDRESSES.scroll.WETH,
+            USDT: ADDRESSES.scroll.USDT,
+            USDC: ADDRESSES.scroll.USDC,
+            WBTC: ADDRESSES.sonic.WBTC,
+            WETH: ADDRESSES.scroll.WETH,
         }
     },
-
+    
     tron: {
         mosContract: "TXsDYB9ovFEFg4cja6gn1t1tpmrnSbYhHA",
         tokens: {
@@ -129,6 +130,7 @@ const config = {
             USDT: ADDRESSES.tron.USDT,
         }
     },
+    
     // solana: {
     //   mosContract: "AGwu8gfXJshkB9UMM3eexeq26m7zf8wM1FgNdBt5wkqN",
     //   tokens: {
@@ -137,7 +139,7 @@ const config = {
     //     USDT: ADDRESSES.solana.USDT,
     //   }
     // },
-
+    
     // near: {
     //   mosContract: "mosv21.mfac.butternetwork.near",
     //   tokens: {
@@ -148,15 +150,15 @@ const config = {
     //     // MAP: "mapo.mfac.butternetwork.near"
     //   }
     // },
-
+    
 }
 module.exports = {
-  methodology: 'get the amount of token deposited in MOS contract on each supported chain.',
+    methodology: 'get the amount of token deposited in MOS contract on each supported chain.',
 };
 
 Object.keys(config).forEach(chain => {
-  const {mosContract, tokens} = config[chain]
-  module.exports[chain] = {
-    tvl: sumTokensExport({owners: Object.values(mosContract), tokens: Object.values(tokens), logCalls: true})
-  }
+    const {mosContract, tokens} = config[chain]
+    module.exports[chain] = {
+        tvl: sumTokensExport({owners:[mosContract], tokens: Object.values(tokens), logCalls: true})
+    }
 })
