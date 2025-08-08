@@ -143,12 +143,12 @@ const DRIFT_VAULTS = [
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/fuelmaxi.json`
   },
-  {
-    name: "USDC Savings",
-    address: "4i2L5zvzUM5LXqUYm35Ytv4BGSmnFVTqG5xtFfJesm14",
-    token: TOKENS.USDC,
-    dataUrl: `${DATA_URL}/earnusdc.json`
-  },
+  // { // disabled to avoid double counting
+  //   name: "USDC Savings",
+  //   address: "4i2L5zvzUM5LXqUYm35Ytv4BGSmnFVTqG5xtFfJesm14",
+  //   token: TOKENS.USDC,
+  //   dataUrl: `${DATA_URL}/earnusdc.json`
+  // },
   {
     name: "SOL Savings",
     address: "A6cPV4DrePTUUamBM87MDqK9kBy9vbucjhrCxtxzExK9",
