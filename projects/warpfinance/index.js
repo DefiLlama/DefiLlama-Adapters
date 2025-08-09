@@ -1,5 +1,5 @@
 const { uniV3Export } = require('../helper/uniswapV3')
 
 module.exports = uniV3Export({
-  ethereum: { factory: '0x312a6be6bD9850D6a2F793b8425c39eFC01C3585', fromBlock: 'block when factory contract was deployed' },
+  ethereum: { factory: '0x86A74536f7C5548EFE9e935863eA7bE333380288', fromBlock: 'block when factory contract was deployed' },
 })
