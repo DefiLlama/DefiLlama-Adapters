@@ -117,9 +117,25 @@ async function fetchAllDeployments(rootContract) {
 }
 
 /**
- * Process a single market contract
+ * Process a single market contract and calculate its net contribution to TVL
+ *
+ * TVL CALCULATION METHODOLOGY:
+ * For each market, we calculate net liquidity using the formula:
+ * TVL = (Total Deposits - Outstanding Loans) + Collateral Deposits
+ *
+ * Where:
+ * - Total Deposits = borrow_asset_deposited_active + borrow_asset_deposited_inflight
+ * - Outstanding Loans = borrowed (amount currently borrowed out)
+ * - Collateral Deposits = collateral_asset_deposited (full amount, not netted)
+ *
+ * This approach ensures:
+ * 1. We only count net available liquidity in the borrow asset (deposits minus what's borrowed)
+ * 2. We count full collateral since it backs loans but isn't directly borrowed from
+ * 3. Each token amount is converted to USD by DefiLlama's sumSingleBalance function
+ * 4. Final TVL = Sum of all market contributions converted to USD
+ *
  * @param {string} marketContract - The market contract address
- * @returns {Promise<{borrowAssetToken: string, collateralAssetToken: string, netBorrowed: BigNumber, netCollateral: BigNumber}>}
+ * @returns {Promise<{netBorrowed: BigNumber, netCollateral: BigNumber, collateralAssetToken: string, borrowAssetToken: string}>}
  */
 async function processMarket(marketContract) {
     const [snapshotRaw, configurationRaw] = await Promise.all([
@@ -150,6 +166,18 @@ async function processMarket(marketContract) {
     return { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral }
 }
 
+/**
+ * Calculate Total Value Locked (TVL) for Templar Protocol
+ *
+ * OVERALL TVL CALCULATION:
+ * 1. For each market deployment:
+ *    - Calculate net borrow asset liquidity = total borrow deposits - outstanding loans
+ *    - Include full collateral deposits
+ * 2. Return all borrow and collateral assets with their net amounts
+ *
+ * This methodology follows DeFi standards where TVL represents actual value
+ * locked in the protocol, accounting for outstanding obligations.
+ */
 async function tvl() {
     const balances = {}
 
