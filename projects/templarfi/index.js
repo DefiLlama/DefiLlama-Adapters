@@ -119,22 +119,39 @@ async function safeCall(contractId, method, args = {}) {
  * @returns {string} The token address
  */
 function extractTokenAddress(assetConfig, assetType) {
+    if (!assetConfig || typeof assetConfig !== 'object') {
+        throw new Error(`Invalid ${assetType} asset config: not an object`)
+    }
+
     if (assetConfig.Nep141) {
+        if (typeof assetConfig.Nep141 !== 'string' || assetConfig.Nep141.length === 0) {
+            throw new Error(`Invalid NEP-141 address for ${assetType} asset`)
+        }
         return assetConfig.Nep141
     }
 
     if (assetConfig.Nep245?.token_id) {
         const tokenId = assetConfig.Nep245.token_id
-        const parts = tokenId.split(':')
+        if (typeof tokenId !== 'string' || tokenId.length === 0) {
+            throw new Error(`Invalid NEP-245 token ID for ${assetType} asset`)
+        }
 
-        if (parts.length === 2 && parts[0] === 'nep141') {
+        const parts = tokenId.split(':')
+        if (parts.length !== 2) {
+            throw new Error(`Invalid NEP-245 token ID format for ${assetType} asset: ${tokenId}`)
+        }
+
+        if (parts[0] === 'nep141') {
+            if (parts[1].length === 0) {
+                throw new Error(`Empty NEP-141 address in NEP-245 token for ${assetType} asset`)
+            }
             return parts[1]
         }
 
-        throw new Error(`Unsupported NEP-245 token type for ${assetType} asset: ${parts[0] || 'unknown'}`)
+        throw new Error(`Unsupported NEP-245 token type for ${assetType} asset: ${parts[0]}`)
     }
 
-    throw new Error(`Unsupported ${assetType} asset format`)
+    throw new Error(`Unsupported ${assetType} asset format: missing both Nep141 and valid Nep245`)
 }
 
 /**
