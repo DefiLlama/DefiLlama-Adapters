@@ -8,6 +8,11 @@ const TEMPLAR_ROOT_CONTRACTS = [
     'templar-alpha.near',     // Alpha/testnet contract
 ]
 
+// Configuration constants
+const MAX_RETRY_ATTEMPTS = 3 // Maximum retry attempts for fetching deployments
+const RETRY_DELAY_MS = 1000 // Delay between retries in milliseconds
+const CALL_TIMEOUT_MS = 30000 // Timeout for each contract call in milliseconds
+
 /**
  * @typedef {Object} Snapshot
  * @property {string} time_chunk - Time chunk information
@@ -45,6 +50,67 @@ const TEMPLAR_ROOT_CONTRACTS = [
  * @property {BalanceOracle} balance_oracle - Balance oracle configuration
  * @property {string} protocol_account_id - Protocol account ID
  */
+
+/**
+ * Sleep for a specified number of milliseconds for retry logic
+ * @param ms - Number of milliseconds to sleep
+ */
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/**
+ * Retry wrapper for contract calls
+ * @param {Function} fn - Function to retry
+ * @param {number} maxAttempts - Maximum retry attempts
+ * @param {number} delayMs - Delay between retries
+ * @returns {Promise<any>}
+ */
+async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_DELAY_MS) {
+    let lastError
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            return await fn()
+        } catch (error) {
+            lastError = error
+
+            if (attempt === maxAttempts) {
+                throw lastError
+            }
+
+            console.log(`Attempt ${attempt} failed, retrying in ${delayMs}ms: ${error.message}`)
+            await sleep(delayMs)
+            delayMs *= 1.5 // Exponential backoff
+        }
+    }
+}
+
+/**
+ * Safe contract call with timeout and validation
+ * @param {string} contractId - Contract to call
+ * @param {string} method - Method to call
+ * @param {Object} args - Arguments
+ * @returns {Promise<any>}
+ */
+async function safeCall(contractId, method, args = {}) {
+    if (!contractId || typeof contractId !== 'string') {
+        throw new Error(`Invalid contract ID: ${contractId}`)
+    }
+    if (!method || typeof method !== 'string') {
+        throw new Error(`Invalid method name: ${method}`)
+    }
+
+    return withRetry(async () => {
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error(`Call timeout after ${CALL_TIMEOUT_MS}ms`)), CALL_TIMEOUT_MS)
+        })
+
+        const callPromise = call(contractId, method, args)
+
+        return Promise.race([callPromise, timeoutPromise])
+    })
+}
 
 /**
  * Extract token address from asset configuration
@@ -127,7 +193,7 @@ async function fetchDeploymentsFromContract(rootContract) {
     let hasMore = true
 
     while (hasMore) {
-        const batch = await call(rootContract, 'list_deployments', {
+        const batch = await safeCall(rootContract, 'list_deployments', {
             offset: offset,
             count: limit
         })
@@ -168,8 +234,8 @@ async function fetchDeploymentsFromContract(rootContract) {
  */
 async function processMarket(marketContract) {
     const [snapshotRaw, configurationRaw] = await Promise.all([
-        call(marketContract, 'get_current_snapshot', {}),
-        call(marketContract, 'get_configuration', {})
+        safeCall(marketContract, 'get_current_snapshot', {}),
+        safeCall(marketContract, 'get_configuration', {})
     ])
 
     /** @type {Snapshot} */
