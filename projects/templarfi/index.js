@@ -213,6 +213,8 @@ async function tvl() {
 }
 
 module.exports = {
+    methodology: 'TVL is calculated by summing the net borrow asset liquidity (deposits minus outstanding loans) and full collateral deposits for each market deployment.',
+    start: 1747976677, // Fri May 23 2025 05:04:37 TODO: update this to the actual start date of Templar Protocol post-alpha launch
     near: {
         tvl,
     },
