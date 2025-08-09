@@ -159,9 +159,10 @@ async function processMarket(marketContract) {
 
     // Calculate net liquidity in raw amounts
     const totalBorrowDeposited = BigNumber(snapshot.borrow_asset_deposited_active)
+    const totalBorrowInflight = BigNumber(snapshot.borrow_asset_deposited_inflight)
     const netCollateral = BigNumber(snapshot.collateral_asset_deposited)
     const totalBorrowed = BigNumber(snapshot.borrowed)
-    const netBorrowed = totalBorrowDeposited.minus(totalBorrowed)
+    const netBorrowed = totalBorrowDeposited.plus(totalBorrowInflight).minus(totalBorrowed)
 
     return { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral }
 }
