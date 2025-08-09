@@ -4,7 +4,7 @@ const { call, sumSingleBalance } = require('../helper/chain/near')
 
 // Root contracts that keep track of all market deployments (in priority order)
 const TEMPLAR_ROOT_CONTRACTS = [
-    'todo.near',              // TODO: update this to the actual root contract post-alpha launch
+    'tmplr.near',              // TODO: update this to the actual root contract post-alpha launch
     'templar-alpha.near',     // Alpha/testnet contract
 ]
 
