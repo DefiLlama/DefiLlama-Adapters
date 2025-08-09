@@ -2,8 +2,11 @@
 const { default: BigNumber } = require('bignumber.js')
 const { call, sumSingleBalance } = require('../helper/chain/near')
 
-// Root contract that keeps track of all market deployments
-const TEMPLAR_ROOT_ALPHA_CONTRACT = 'templar-alpha.near'
+// Root contracts that keep track of all market deployments (in priority order)
+const TEMPLAR_ROOT_CONTRACTS = [
+    'todo.near',              // TODO: update this to the actual root contract post-alpha launch
+    'templar-alpha.near',     // Alpha/testnet contract
+]
 
 /**
  * @typedef {Object} Snapshot
@@ -87,11 +90,37 @@ function validateSnapshot(snapshot) {
 }
 
 /**
+ * Fetch all deployments with pagination, trying contracts in priority order
+ * @param {string[]} contracts - Array of contract addresses to try in order
+ * @returns {Promise<string[]>} Array of deployment contract addresses
+ */
+async function fetchAllDeployments(contracts) {
+    const errors = []
+
+    for (const contract of contracts) {
+        try {
+            const deployments = await fetchDeploymentsFromContract(contract)
+            if (deployments.length > 0) {
+                console.log(`Successfully using contract: ${contract}`)
+                return deployments
+            } else {
+                console.log(`Contract ${contract} returned no deployments, trying next...`)
+            }
+        } catch (error) {
+            console.log(`Contract ${contract} failed: ${error.message}`)
+            errors.push(`${contract}: ${error.message}`)
+        }
+    }
+
+    throw new Error(`All contracts failed. Errors: ${errors.join('; ')}`)
+}
+
+/**
  * Fetch all deployments with pagination
  * @param {string} rootContract - The root contract address
  * @returns {Promise<string[]>} Array of deployment contract addresses
  */
-async function fetchAllDeployments(rootContract) {
+async function fetchDeploymentsFromContract(rootContract) {
     const deployments = []
     let offset = 0
     const limit = 100
