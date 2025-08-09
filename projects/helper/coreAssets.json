@@ -2600,5 +2600,9 @@
     "WVET": "0xd8ccdd85abdbf68dfec95f06c973e87b1b5a9997",
     "VVET": "0x45429a2255e7248e57fce99e7239aed3f84b7a53",
     "VTHO": "0x0000000000000000000000000000456e65726779"
+  },
+  "eni": {
+    "USDT": "0xdc1a8a35b0baa3229b13f348ed708a2fd50b5e3a",
+    "WEGAS": "0x6d1e851446f4d004ae2a72f9afed85e8829a205e"
   }
 }
