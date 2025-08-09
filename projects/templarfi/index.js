@@ -212,7 +212,7 @@ async function tvl() {
     const balances = {}
 
     try {
-        const deployments = await fetchAllDeployments(TEMPLAR_ROOT_ALPHA_CONTRACT)
+        const deployments = await fetchAllDeployments(TEMPLAR_ROOT_CONTRACTS)
 
         if (deployments.length === 0) {
             console.log('No Templar deployments found')
@@ -236,7 +236,7 @@ async function tvl() {
         })
 
     } catch (err) {
-        console.log(`Error fetching deployments from ${TEMPLAR_ROOT_ALPHA_CONTRACT}:`, err)
+        console.log(`Error fetching deployments:`, err)
     }
 
     return balances
