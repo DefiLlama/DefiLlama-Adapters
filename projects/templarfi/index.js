@@ -159,16 +159,50 @@ function extractTokenAddress(assetConfig, assetType) {
  * @param {Snapshot} snapshot - The snapshot to validate
  */
 function validateSnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') {
+        throw new Error('Snapshot is not an object')
+    }
+
     const requiredFields = [
         'borrow_asset_deposited_active',
+        'borrow_asset_deposited_inflight',
         'borrowed',
         'collateral_asset_deposited'
     ]
 
     for (const field of requiredFields) {
+        if (typeof snapshot[field] !== 'string') {
+            throw new Error(`Invalid snapshot field ${field}: must be string, got ${typeof snapshot[field]}`)
+        }
+
+        // Validate it's a valid number string
+        if (!/^\d+$/.test(snapshot[field])) {
+            throw new Error(`Invalid snapshot field ${field}: not a valid number string: ${snapshot[field]}`)
+        }
+    }
+
+    for (const field of requiredFields) {
         if (!snapshot || typeof snapshot[field] !== 'string') {
             throw new Error(`Invalid snapshot data: missing or invalid ${field}`)
         }
+    }
+}
+
+/**
+ * Validate configuration with comprehensive checks
+ * @param {Configuration} configuration - The configuration to validate
+ */
+function validateConfiguration(configuration) {
+    if (!configuration || typeof configuration !== 'object') {
+        throw new Error('Configuration is not an object')
+    }
+
+    if (!configuration.borrow_asset) {
+        throw new Error('Missing borrow_asset in configuration')
+    }
+
+    if (!configuration.collateral_asset) {
+        throw new Error('Missing collateral_asset in configuration')
     }
 }
 
@@ -261,6 +295,7 @@ async function processMarket(marketContract) {
     const configuration = configurationRaw
 
     validateSnapshot(snapshot)
+    validateConfiguration(configuration)
 
     if (!configuration?.borrow_asset || !configuration?.collateral_asset) {
         throw new Error('Invalid configuration: missing borrow_asset or collateral_asset')
