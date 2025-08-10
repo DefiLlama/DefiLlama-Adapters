@@ -362,12 +362,12 @@ const DRIFT_VAULTS = [
 ];
 
 const KAMINO_VAULTS = [
-  {
-    name: "USDC Max Yield",
-    address: "67dqmR76uAbjX6e81A1ganKv3ou31WUMEdeWJkwVfeXy",
-    token: TOKENS.USDC,
-    dataUrl: `${DATA_URL}/klend-usdc-max.json`
-  },
+  // { // disabled to avoid double counting
+  //   name: "USDC Max Yield",
+  //   address: "67dqmR76uAbjX6e81A1ganKv3ou31WUMEdeWJkwVfeXy",
+  //   token: TOKENS.USDC,
+  //   dataUrl: `${DATA_URL}/klend-usdc-max.json`
+  // },
 ];
 
 const HYPERLIQUID_VAULTS = [
