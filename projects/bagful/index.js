@@ -5,6 +5,6 @@ module.exports = {
   },
   // deadFrom: '2025-01-26',
   hallmarks: [
-    [Math.floor(new Date('2025-01-26') / 1e3), 'Rug Pull!'],
+    ['2025-01-26', 'Rug Pull!'],
   ],
 }
