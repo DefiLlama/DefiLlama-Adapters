@@ -46,7 +46,7 @@ async function tvl(api) {
 module.exports = {
   start: START_TIMESTAMP,
   timetravel: false,
-  doublecounted: true,
+  doublecounted: false,
   methodology: "The combined TVL and PnL of all public and private vaults.",
   solana: { tvl },
 };
