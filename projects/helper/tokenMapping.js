@@ -65,6 +65,11 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
   },
+  camp: {
+    [ADDRESSES.camp.WCAMP]: { coingeckoId: "wcamp", decimals: 18 },
+    [ADDRESSES.camp.ETH]: { coingeckoId: "campETH", decimals: 18 },
+    [ADDRESSES.camp.USDC]: { coingeckoId: "USDC.c", decimals: 6 },
+  },
   tac: {
     [ADDRESSES.null]: { coingeckoId: "tac", decimals: 18 },
     '0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9': { coingeckoId: "tac", decimals: 18 },
