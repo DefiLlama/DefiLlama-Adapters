@@ -352,4 +352,8 @@ adapterExport.hyperliquid.tvl = async (api) => {
   }
 };
 
+module.exports = {
+  ...adapterExport,
+  
+};
 
