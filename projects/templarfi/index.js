@@ -212,21 +212,55 @@ function validateConfiguration(configuration) {
  * @returns {Promise<string[]>} Array of deployment contract addresses
  */
 async function fetchAllDeployments(contracts) {
+    const allDeployments = []
     const errors = []
+    const successfulContracts = []
 
-    for (const contract of contracts) {
-        try {
-            const deployments = await fetchDeploymentsFromContract(contract)
-            if (deployments.length > 0) {
-                console.log(`Successfully using contract: ${contract}`)
-                return deployments
-            } else {
-                console.log(`Contract ${contract} returned no deployments, trying next...`)
+    const contractResults = await Promise.allSettled(
+        contracts.map(async (contract) => {
+            if (!contract || typeof contract !== 'string') {
+                throw new Error(`Invalid contract address: ${contract}`)
             }
-        } catch (error) {
-            console.log(`Contract ${contract} failed: ${error.message}`)
-            errors.push(`${contract}: ${error.message}`)
+
+            const deployments = await fetchDeploymentsFromContract(contract)
+            return { contract, deployments}
+        })
+    )
+
+    for (const result of contractResults) {
+        const index = contractResults.indexOf(result);
+        const contract = contracts[index]
+
+        if (result.status === 'fulfilled') {
+            const { deployments } = result.value
+
+            if (deployments.length > 0) {
+                console.log(`Contract ${contract}: found ${deployments.length} deployments`)
+                allDeployments.push(...deployments)
+                successfulContracts.push(contract)
+            } else {
+                console.log(`Contract ${contract}: no deployments found`)
+            }
+        } else {
+            const errorMsg = result.reason?.message || result.reason
+            console.log(`Contract ${contract} failed: ${errorMsg}`)
+            errors.push(`${contract}: ${errorMsg}`)
         }
+    }
+
+    // Remove potential duplicates (in case there was a mistake, or in the future there will be
+    // more registries)
+    const uniqueDeployments = [...new Set(allDeployments)]
+
+    if (uniqueDeployments.length !== allDeployments.length) {
+        console.log(`Removed ${allDeployments.length - uniqueDeployments.length} duplicate deployments`)
+    }
+
+    console.log(`Total deployments from ${successfulContracts.length} contracts: ${uniqueDeployments.length}`)
+
+    if (successfulContracts.length > 0) {
+        console.log(`Successfully fetched deployments from contracts: ${successfulContracts.join(', ')}`)
+        return uniqueDeployments
     }
 
     throw new Error(`All contracts failed. Errors: ${errors.join('; ')}`)
