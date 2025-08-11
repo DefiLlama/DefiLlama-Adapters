@@ -58,6 +58,7 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
+  'DEBANK_API_KEY'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
