@@ -363,33 +363,28 @@ async function processMarket(marketContract) {
 async function tvl() {
     const balances = {}
 
-    try {
-        const deployments = await fetchAllDeployments(TEMPLAR_REGISTRY_CONTRACTS)
+    const deployments = await fetchAllDeployments(TEMPLAR_REGISTRY_CONTRACTS)
 
-        if (deployments.length === 0) {
-            console.log('No Templar deployments found')
-            return balances
-        }
-
-        const results = await Promise.allSettled(
-            deployments.map(processMarket)
-        )
-
-        // Process results and add to balances
-        results.forEach((result, index) => {
-            if (result.status === 'fulfilled') {
-                const { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral } = result.value
-
-                sumSingleBalance(balances, borrowAssetToken, netBorrowed.toFixed())
-                sumSingleBalance(balances, collateralAssetToken, netCollateral.toFixed())
-            } else {
-                console.log(`Error processing market ${deployments[index]}:`, result.reason)
-            }
-        })
-
-    } catch (err) {
-        console.log(`Error fetching deployments:`, err)
+    if (deployments.length === 0) {
+        console.log('No Templar deployments found')
+        return balances
     }
+
+    const results = await Promise.allSettled(
+        deployments.map(processMarket)
+    )
+
+    // Process results and add to balances
+    results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+            const { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral } = result.value
+
+            sumSingleBalance(balances, borrowAssetToken, netBorrowed.toFixed())
+            sumSingleBalance(balances, collateralAssetToken, netCollateral.toFixed())
+        } else {
+            throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
+        }
+    })
 
     return balances
 }
