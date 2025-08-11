@@ -53,7 +53,7 @@ async function tvlNear() {
 
 async function tvl(api) {
   return sumTokensEvm({ owner: OWNER_MAP[api.chain], tokens: await fetchTokenData(api), api, })
-};
+}
 
 module.exports = {
   timetravel: false,
