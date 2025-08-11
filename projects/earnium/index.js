@@ -19,27 +19,18 @@ async function _getTvl() {
 
   for (const pool of allPools) {
     const poolAddress = pool.inner
-    try {
-      const reserves = await _getPoolReserves(poolAddress);
-      const tokens = await _getTokenOfPool(poolAddress); 
-
-      if (!reserves || !tokens || tokens.length < 2) {
-        console.warn(`Invalid data for pool ${poolAddress}`);
-        continue;
-      }
-
-      const reserveX = Number(reserves[0] || 0);
-      const reserveY = Number(reserves[1] || 0);
-
-      const tokenX = tokens[0];
-      const tokenY = tokens[1];
-
-      tokenTvlMap.set(tokenX, (tokenTvlMap.get(tokenX) || 0) + reserveX);
-      tokenTvlMap.set(tokenY, (tokenTvlMap.get(tokenY) || 0) + reserveY);
-
-    } catch (error) {
-      console.error(`Error processing pool ${poolAddress}:`, error);
+    const reserves = await _getPoolReserves(poolAddress);
+    const tokens = await _getTokenOfPool(poolAddress); 
+    if (!reserves || !tokens || tokens.length < 2) {
+      console.warn(`Invalid data for pool ${poolAddress}`);
+      continue;
     }
+    const reserveX = Number(reserves[0] || 0);
+    const reserveY = Number(reserves[1] || 0);
+    const tokenX = tokens[0];
+    const tokenY = tokens[1];
+    tokenTvlMap.set(tokenX, (tokenTvlMap.get(tokenX) || 0) + reserveX);
+    tokenTvlMap.set(tokenY, (tokenTvlMap.get(tokenY) || 0) + reserveY);
   }
   return tokenTvlMap
 }
