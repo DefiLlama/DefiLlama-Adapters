@@ -55,6 +55,7 @@ const tokenMapping = {
   'purge-558.meme-cooking.near': { name: 'forgive-me-father', decimals: 18 },
   'mpdao-token.near': { name: 'meta-pool-dao', decimals: 6 },
   'kat.token0.near': { name: 'nearkat', decimals: 18 },
+  'btc.omft.near': { name: 'bitcoin', decimals: 8 },
 }
 
 async function view_account(account_id) {
