@@ -113,6 +113,16 @@ const fixBalancesTokens = {
   scroll: {
     '0x056a5fa5da84ceb7f93d36e545c5905607d8bd81': { coingeckoId: "ether-fi", decimals: 18 },
     '0x03569cc076654f82679c4ba2124d64774781b01d': { coingeckoId: "liquity-bold", decimals: 18 },
+  },
+  bitci: {
+    [nullAddress]: { coingeckoId: "bitcicoin", decimals: 18 },
+    '0xe0d0f25b5fcfa4d3edd9c2186451d9e04c4b9f11': { coingeckoId: "bitcicoin", decimals: 18 },
+    '0x57b8adf3f708e33e9d9bdedc1b1ac4b2c06ab5e1': { coingeckoId: "bitci-bonk", decimals: 18 },
+    '0xffdcc0eb46be4ac8f9520e14fd5553605b06a0d6': { coingeckoId: "bitcix", decimals: 18 },
+    '0xed8186908cb406c6f72f8bdd70dc67ae02fb3dbd': { coingeckoId: "peruvian-national-football-team-fan-token", decimals: 18 },
+    '0x3e6f1be54feb9cc37dbfc31a894a8810357c3f9c': { coingeckoId: "spain-national-fan-token", decimals: 18 },
+    '0x4270a3d1a61fc6b86ea9e19730e529acee592c3b': { coingeckoId: "brazil-fan-token", decimals: 18 },
+    '0x38b0b761c90eaaea748bd3a43199377818d280e6': { coingeckoId: "mclaren-f1-fan-token", decimals: 18 },
   }
 }
 
