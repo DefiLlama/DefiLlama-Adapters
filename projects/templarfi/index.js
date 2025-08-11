@@ -18,9 +18,9 @@ const CALL_TIMEOUT_MS = 30000 // Timeout for each contract call in milliseconds
  * @property {string} time_chunk - Time chunk information
  * @property {string} end_timestamp_ms - End timestamp in milliseconds
  * @property {string} borrow_asset_deposited_active - Active deposits amount (in borrow asset)
- * @property {string} borrow_asset_deposited_inflight - In-flight deposits amount (in borrow asset)
+ * @property {string} borrow_asset_deposited_incoming - In-flight deposits amount (in borrow asset)
  * @property {string} collateral_asset_deposited - Deposit amount (in collateral asset)
- * @property {string} borrowed - Total borrowed amount (in borrow asset)
+ * @property {string} borrow_asset_borrowed - Total borrowed amount (in borrow asset)
  * @property {string} yield_distribution - Yield distribution amount
  * @property {string} interest_rate - Current interest rate
  */
@@ -165,8 +165,8 @@ function validateSnapshot(snapshot) {
 
     const requiredFields = [
         'borrow_asset_deposited_active',
-        'borrow_asset_deposited_inflight',
-        'borrowed',
+        'borrow_asset_deposited_incoming',
+        'borrow_asset_borrowed',
         'collateral_asset_deposited'
     ]
 
@@ -270,7 +270,7 @@ async function fetchDeploymentsFromContract(rootContract) {
  * TVL = (Total Deposits - Outstanding Loans) + Collateral Deposits
  *
  * Where:
- * - Total Deposits = borrow_asset_deposited_active + borrow_asset_deposited_inflight
+ * - Total Deposits = borrow_asset_deposited_active + borrow_asset_deposited_incoming
  * - Outstanding Loans = borrowed (amount currently borrowed out)
  * - Collateral Deposits = collateral_asset_deposited (full amount, not netted)
  *
@@ -306,10 +306,10 @@ async function processMarket(marketContract) {
 
     // Calculate net liquidity in raw amounts
     const totalBorrowDeposited = BigNumber(snapshot.borrow_asset_deposited_active)
-    const totalBorrowInflight = BigNumber(snapshot.borrow_asset_deposited_inflight)
+    const totalBorrowIncoming = BigNumber(snapshot.borrow_asset_deposited_incoming)
     const netCollateral = BigNumber(snapshot.collateral_asset_deposited)
-    const totalBorrowed = BigNumber(snapshot.borrowed)
-    const netBorrowed = totalBorrowDeposited.plus(totalBorrowInflight).minus(totalBorrowed)
+    const totalBorrowed = BigNumber(snapshot.borrow_asset_borrowed)
+    const netBorrowed = totalBorrowDeposited.plus(totalBorrowIncoming).minus(totalBorrowed)
 
     return { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral }
 }
