@@ -6,6 +6,7 @@ const { call, sumSingleBalance } = require('../helper/chain/near')
 const TEMPLAR_REGISTRY_CONTRACTS = [
     'v1.tmplr.near',          // V1 mainnet contract
     // 'templar-alpha.near',  // Alpha/testnet contract, high-effort low reward to add in for now
+    // Additional future registry contracts can be added here
 ]
 
 // Configuration constants
@@ -315,7 +316,7 @@ async function fetchDeploymentsFromContract(registryContract) {
  * 4. Final TVL = Sum of all market contributions converted to USD
  *
  * @param {string} marketContract - The market contract address
- * @returns {Promise<{netBorrowed: BigNumber, netCollateral: BigNumber, collateralAssetToken: string, borrowAssetToken: string}>}
+ * @returns {Promise<{availableLiquidity: BigNumber, totalBorrowed: (*|BigNumber), totalCollateral: (*|BigNumber), collateralAssetToken: string, borrowAssetToken: string}>}
  */
 async function processMarket(marketContract) {
     const [snapshotRaw, configurationRaw] = await Promise.all([
@@ -338,27 +339,34 @@ async function processMarket(marketContract) {
     const borrowAssetToken = extractTokenAddress(configuration.borrow_asset, 'borrow')
     const collateralAssetToken = extractTokenAddress(configuration.collateral_asset, 'collateral')
 
-    // Calculate net liquidity in raw amounts
-    const totalBorrowDeposited = BigNumber(snapshot.borrow_asset_deposited_active)
-    const totalBorrowIncoming = BigNumber(snapshot.borrow_asset_deposited_incoming)
-    const netCollateral = BigNumber(snapshot.collateral_asset_deposited)
-    const totalBorrowed = BigNumber(snapshot.borrow_asset_borrowed)
-    const netBorrowed = totalBorrowDeposited.plus(totalBorrowIncoming).minus(totalBorrowed)
+    // Calculate amounts in raw format
+    const borrow_asset_deposited_active = BigNumber(snapshot.borrow_asset_deposited_active)
+    const borrow_asset_deposited_incoming = BigNumber(snapshot.borrow_asset_deposited_incoming)
+    const collateral_asset_deposited = BigNumber(snapshot.collateral_asset_deposited)
+    const borrow_asset_borrowed = BigNumber(snapshot.borrow_asset_borrowed)
 
-    return { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral }
+    // Available liquidity = total deposits - outstanding loans
+    const availableLiquidity = borrow_asset_deposited_active.plus(borrow_asset_deposited_incoming).minus(borrow_asset_borrowed)
+
+    return {
+        borrowAssetToken,
+        collateralAssetToken,
+        availableLiquidity,
+        totalBorrowed: borrow_asset_borrowed,
+        totalCollateral: collateral_asset_deposited
+    }
 }
 
 /**
  * Calculate Total Value Locked (TVL) for Templar Protocol
  *
- * OVERALL TVL CALCULATION:
- * 1. For each market deployment:
- *    - Calculate net borrow asset liquidity = total borrow deposits - outstanding loans
- *    - Include full collateral deposits
- * 2. Return all borrow and collateral assets with their net amounts
+ * TVL CALCULATION METHODOLOGY:
+ * TVL represents the total value of assets available in the protocol, which includes:
+ * 1. Available liquidity in borrow assets (deposits minus outstanding loans)
+ * 2. Total collateral deposits
  *
- * This methodology follows DeFi standards where TVL represents actual value
- * locked in the protocol, accounting for outstanding obligations.
+ * This follows DeFi standards where TVL shows actual liquidity available in the protocol,
+ * not including funds that are currently borrowed out.
  */
 async function tvl() {
     const balances = {}
@@ -366,7 +374,7 @@ async function tvl() {
     const deployments = await fetchAllDeployments(TEMPLAR_REGISTRY_CONTRACTS)
 
     if (deployments.length === 0) {
-        console.log('No Templar deployments found')
+        console.log('No Templar deployments found for TVL calculation')
         return balances
     }
 
@@ -377,10 +385,40 @@ async function tvl() {
     // Process results and add to balances
     results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
-            const { borrowAssetToken, collateralAssetToken, netBorrowed, netCollateral } = result.value
+            const { borrowAssetToken, collateralAssetToken, availableLiquidity, totalCollateral } = result.value
 
-            sumSingleBalance(balances, borrowAssetToken, netBorrowed.toFixed())
-            sumSingleBalance(balances, collateralAssetToken, netCollateral.toFixed())
+            sumSingleBalance(balances, borrowAssetToken, availableLiquidity.toFixed())
+            sumSingleBalance(balances, collateralAssetToken, totalCollateral.toFixed())
+        } else {
+            throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
+        }
+    })
+
+    return balances
+}
+
+/**
+ * Calculate total borrowed funds across all Templar markets
+ */
+async function borrowed() {
+    const balances = {}
+
+    const deployments = await fetchAllDeployments(TEMPLAR_REGISTRY_CONTRACTS)
+
+    if (deployments.length === 0) {
+        console.log('No Templar deployments found for borrowed calculation')
+        return balances
+    }
+
+    const results = await Promise.allSettled(
+        deployments.map(processMarket)
+    )
+
+    results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+            const { borrowAssetToken, totalBorrowed } = result.value
+
+            sumSingleBalance(balances, borrowAssetToken, totalBorrowed.toFixed())
         } else {
             throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
         }
@@ -394,5 +432,6 @@ module.exports = {
     start: 1754902109, // August 11, 2025 08:48:29+UTC
     near: {
         tvl,
+        borrowed,
     },
 }
