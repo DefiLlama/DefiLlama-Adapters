@@ -268,17 +268,17 @@ async function fetchAllDeployments(contracts) {
 
 /**
  * Fetch all deployments with pagination
- * @param {string} rootContract - The root contract address
+ * @param {string} registryContract - The registry contract address
  * @returns {Promise<string[]>} Array of deployment contract addresses
  */
-async function fetchDeploymentsFromContract(rootContract) {
+async function fetchDeploymentsFromContract(registryContract) {
     const deployments = []
     let offset = 0
     const limit = 100
     let hasMore = true
 
     while (hasMore) {
-        const batch = await safeCall(rootContract, 'list_deployments', {
+        const batch = await safeCall(registryContract, 'list_deployments', {
             offset: offset,
             count: limit
         })
@@ -364,7 +364,7 @@ async function tvl() {
     const balances = {}
 
     try {
-        const deployments = await fetchAllDeployments(TEMPLAR_ROOT_CONTRACTS)
+        const deployments = await fetchAllDeployments(TEMPLAR_REGISTRY_CONTRACTS)
 
         if (deployments.length === 0) {
             console.log('No Templar deployments found')
