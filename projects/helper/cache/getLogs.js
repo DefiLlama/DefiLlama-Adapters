@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -82,7 +82,7 @@ async function getLogs({ target,
     // remove possible duplicates
     if (!customCacheFunction)
       cache.logs = cache.logs.filter(i => {
-        let key = i.transactionHash + (i.logIndex ?? i.index)
+        let key = (i.transactionHash ?? i.hash) + (i.logIndex ?? i.index)
         if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !i.hasOwnProperty('transactionHash')) {
           sdk.log(i, i.logIndex, i.index, i.transactionHash)
           throw new Error('Missing crucial field')
@@ -92,8 +92,22 @@ async function getLogs({ target,
         return true
       })
 
-    if (!skipCache)
+    if (!skipCache) {
+
+      const whitelistedFields = ['topics', 'data', 'hash', 'index', 'blockNumber']
+      if (compressType === 'v1') {
+        cache.logs.forEach(i => {
+          i.hash = i.hash ?? i.transactionHash
+          i.index = i.index ?? i.logIndex
+          Object.keys(i).forEach(key => {
+            if (!whitelistedFields.includes(key)) {
+              delete i[key]
+            }
+          })
+        })
+      }
       await setCache(cacheFolder, key, cache)
+    }
 
     return cache.logs
   }
@@ -115,8 +129,8 @@ async function getLogs({ target,
   }
 }
 
-async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i }) {
-  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead })
+async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType }) {
+  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead,compressType, })
   return res.map(transform)
 }
 
