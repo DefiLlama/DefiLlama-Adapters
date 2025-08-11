@@ -22,8 +22,11 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const { data } = await getConfig('ufarm-digital/' + api.chain, endpoint)
-      const ownerTokens = data.map(i => [i.assetAllocation.map(i => i.asset), i.poolAddress])
-      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, owners: ownerTokens.map(i => i[1]) })
+      const ownerTokens = data
+        .map(i => [i.assetAllocation?.map(a => a.asset) || [], i.poolAddress])
+        .filter(([assets, poolAddress]) => assets.length > 0 && !!poolAddress);
+
+      return sumTokens2({ api, ownerTokens, resolveLP: true, resolveUniV3: true, owners: ownerTokens.map(i => i[1]), permitFailure: true })
 
       /* const logs = await getLogs2({
         api,
