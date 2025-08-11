@@ -2,7 +2,8 @@ const ADDRESSES = require('./coreAssets.json')
 const { sumTokensExport, nullAddress } = require('./sumTokens')
 const { ankrChainMapping } = require('./token')
 const { defaultTokens } = require('./cex')
-const { mergeExports, getUniqueAddresses } = require('./utils')
+const { getUniqueAddresses } = require('./utils')
+const sdk = require('@defillama/sdk')
 const axios = require('axios')
 const { getEnv } = require('./env')
 
@@ -49,7 +50,7 @@ function treasuryExports(config) {
         )
       );
     }
-    return await fetchPromise;
+    return fetchPromise;
   }
 
   Object.keys(chains).forEach(chain => {
@@ -102,8 +103,13 @@ function treasuryExports(config) {
       }
     } : null;
 
-    const merged = isComplex ? mergeExports([baseExport, complexExport]) : baseExport;
-    exportObj[chain] = merged[chain];
+    if (isComplex) {
+      exportObj[chain] = {
+        tvl: sdk.util.sumChainTvls([baseExport[chain].tvl, complexExport[chain].tvl])
+      };
+    } else {
+      exportObj[chain] = baseExport[chain];
+    }
 
     if (ownTokens.length > 0) {
       const { solOwners, ...other } = config[chain];
