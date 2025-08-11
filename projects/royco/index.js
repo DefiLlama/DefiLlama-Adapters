@@ -118,7 +118,7 @@ const calculateTvl = async ({ api, chain }) => {
     if (tags.includes("recipe")) {
       const recipeSubgraphUrl = `https://api.goldsky.com/api/public/project_cm07c8u214nt801v1b45zb60i/subgraphs/royco-recipe-${
         slug[config[chain].chainId].royco
-      }/2.0.30/gn`;
+      }/2.0.31/gn`;
 
       const recipeRows = await fetchAllTokenBalanceSubgraphRows({
         subgraphUrl: recipeSubgraphUrl,
