@@ -6,6 +6,8 @@ async function solanaTvl() {
     sumTokens2({ tokenAccounts: [HASTRA_SOLANA_USDC_VAULT_ID]})
 }
 
+// TODO: Add in Provenance YLDS account info
+
 module.exports = {
   doublecounted: false,
   timetravel: false,
