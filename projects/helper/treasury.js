@@ -73,7 +73,7 @@ function treasuryExports(config) {
     if (chain === 'arbitrum') tvlConfig.tokens = [...tokens, ARB];
     if (!Array.isArray(tvlConfig.tokens)) tvlConfig.tokens = [];
 
-    const baseExport = { [chain]: { tvl: sumTokensExport(tvlConfig) } };
+    const baseExport = { tvl: sumTokensExport(tvlConfig) };
 
     const complexExport = isComplex ? {
       [chain]: {
@@ -105,10 +105,10 @@ function treasuryExports(config) {
 
     if (isComplex) {
       exportObj[chain] = {
-        tvl: sdk.util.sumChainTvls([baseExport[chain].tvl, complexExport[chain].tvl])
+        tvl: sdk.util.sumChainTvls([baseExport.tvl, complexExport[chain].tvl])
       };
     } else {
-      exportObj[chain] = baseExport[chain];
+      exportObj[chain] = baseExport;
     }
 
     if (ownTokens.length > 0) {
