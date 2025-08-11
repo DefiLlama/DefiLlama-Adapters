@@ -2,10 +2,10 @@
 const { default: BigNumber } = require('bignumber.js')
 const { call, sumSingleBalance } = require('../helper/chain/near')
 
-// Root contracts that keep track of all market deployments (in priority order)
-const TEMPLAR_ROOT_CONTRACTS = [
-    'v1.tmplr.near',              // TODO: update this to the actual root contract post-alpha launch
-    'templar-alpha.near',     // Alpha/testnet contract
+// Registry contracts that keep track of all market deployments (in priority order)
+const TEMPLAR_REGISTRY_CONTRACTS = [
+    'v1.tmplr.near',          // V1 mainnet contract
+    // 'templar-alpha.near',  // Alpha/testnet contract, high-effort low reward to add in for now
 ]
 
 // Configuration constants
