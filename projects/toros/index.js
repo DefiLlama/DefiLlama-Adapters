@@ -59,5 +59,6 @@ module.exports = {
     [1750763200, "First 1X Leveraged Tokens Release"],
     [1753182400, "Protected Leveraged Tokens Using Options Release"],
     [1753335200, "Removal of Yield Products to Focus on Derivatives"],
+    [1754392480, "First Ethereum Mainnet Leveraged Tokens Released"],
   ],
 };
