@@ -66,6 +66,7 @@ async function tvl(api) {
   const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls })
   await addAaveBalances(api)
   await addMorphoBalances(api)
+  await addEthenaUnstakeBalance(api)
 
   const allTokens = Object.values(tokenRecords).flat()
   api.add(allTokens, balances)
@@ -154,6 +155,10 @@ const morphoVaultConfigs = {
       {
         allocator: almProxy.ethereum,
         address: '0x73e65DBD630f90604062f6E02fAb9138e713edD9',
+      },
+      {
+        allocator: almProxy.ethereum,
+        address: '0xe41a0583334f0dc4E023Acd0bFef3667F6FE0597',
       }
     ]
   },
@@ -211,4 +216,18 @@ async function addMorphoBalances(api) {
     const discountedBalance = Number(allocatorBalance) * utilization
     api.add(vault.address, discountedBalance)
   }
+}
+
+async function addEthenaUnstakeBalance(api) {
+  if (api.chain !== 'ethereum') {
+    return
+  }
+
+  const response = await api.call({
+    abi: 'function cooldowns(address) public view returns (tuple(uint104 cooldownEnd, uint152 underlyingAmount))',
+    target: ADDRESSES.ethereum.sUSDe,
+    params: almProxy.ethereum,
+  })
+
+  api.add(ADDRESSES.ethereum.USDe, response.underlyingAmount)
 }
