@@ -7,4 +7,7 @@ module.exports = {
   optimism: {
     tvl: onChainTvl('0xBA12222222228d8Ba445958a75a0704d566BF2C8', 7003431),
   },
+  sonic: {
+    tvl: onChainTvl('0xBA12222222228d8Ba445958a75a0704d566BF2C8', 368312),
+  },
 };

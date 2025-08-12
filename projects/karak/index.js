@@ -2,7 +2,7 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const config = {
-  ethereum: { v1: { factory: '0x54e44dbb92dba848ace27f44c0cb4268981ef1cc' } },
+  ethereum: { v1: { factory: '0x54e44dbb92dba848ace27f44c0cb4268981ef1cc' }, v2: { factory: '0x7A91498D5fA6705d35c9406b752d6D50f49C9510', block: 21189340 }},
   arbitrum: { v1: { factory: '0x399f22ae52a18382a67542b3de9bed52b7b9a4ad' }, v2: { factory: '0xc4B3D494c166eBbFF9C716Da4cec39B579795A0d', block: 261874079 }},
   karak: { v1: { factory:'0xB308474350D75447cA8731B7Ce87c9ee9DA03B1C' }, v2: { factory: '0x1368AE21e85c9FA25f1aB579b6D3C6e20Ad6db04', block: 13814008 }},
   mantle: { v1: { factory: '0x4a2b015CcB8658998692Db9eD4522B8e846962eD'}, v2: { factory: '0x993E140Ba530E8Ffe1135ecef07ce7484f26CAA3', block: 71616200 }},

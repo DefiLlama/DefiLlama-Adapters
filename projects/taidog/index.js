@@ -79,7 +79,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "TVL counts user deposits of assets like (ETH, USDC, TAIKO) into protocol, counts pool2 (lp tokens) in staking contract 0xD664c3b22c60b4927ab1e0035b99F157bc2d8F1B, and counts the number of TAIDOG tokens in the staking contract 0x9b4484D5A2665930702d09f74086CAD86d96b25E",
-  start: 84000,
   taiko: {
     tvl: sumTokensExport({
       tokensAndOwners: [

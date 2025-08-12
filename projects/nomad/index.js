@@ -4,12 +4,9 @@ const ADDRESSES = require('../helper/coreAssets.json')
 // token holdings:
 //     https://etherscan.io/tokenholdings?a=PUT CONTRACT ADDRESS HERE
 
-const { sumTokens } = require('../helper/unwrapLPs')
-const { chainExports } = require("../helper/exports");
-
 const HOME_CHAINS = {
-  'ethereum': '0x88A69B4E698A4B090DF6CF5Bd7B2D47325Ad30A3', 
-  'moonbeam': '0xD3dfD3eDe74E0DCEBC1AA685e151332857efCe2d', 
+  'ethereum': '0x88A69B4E698A4B090DF6CF5Bd7B2D47325Ad30A3',
+  'moonbeam': '0xD3dfD3eDe74E0DCEBC1AA685e151332857efCe2d',
   'milkomeda': '0x9faF7f27c46ACdeCEe58Eb4B0Ab6489E603EC251',
   'evmos': '0x2eff94f8c56c20f85d45e9752bfec3c0522c55c7'
 };
@@ -71,22 +68,22 @@ const TOKEN_ADDRESSES = [
   }
 ];
 
-function tvl(chain) {
-  return async (time, _, { [chain]: block }) => {
-    const toa = []
-    const owner = HOME_CHAINS[chain]
-    TOKEN_ADDRESSES.forEach(t => {
-      if (t[chain]) toa.push([t[chain], owner])
-    })
-    return sumTokens({}, toa, block, chain, undefined)
-  }
+function tvl(api) {
+  const toa = []
+  const owner = HOME_CHAINS[api.chain]
+  TOKEN_ADDRESSES.forEach(t => {
+    if (t[api.chain]) toa.push([t[api.chain], owner])
+  })
+  return api.sumTokens({ tokensAndOwners: toa })
 }
 
 module.exports = {
-  hallmarks: [
-    [1659312000,"trusted root exploit"]
-  ],
-      methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
-  start: 13983843,
-  ...chainExports(tvl, Object.keys(HOME_CHAINS))
-}; 
+  // hallmarks: [
+  //   [1659312000, "trusted root exploit"]
+  // ],
+  methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
+};
+
+Object.keys(HOME_CHAINS).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

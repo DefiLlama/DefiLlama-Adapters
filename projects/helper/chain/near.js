@@ -12,8 +12,10 @@ function transformAddress(addr) {
   return addr
 }
 
-const endpoint = "https://rpc.mainnet.near.org"
-// const endpoint = "https://near.lava.build"
+const endpoints = [
+  "https://rpc.mainnet.near.org",
+  "https://near.lava.build"
+]
 
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
@@ -51,42 +53,65 @@ const tokenMapping = {
   'blackdragon.tkn.near': { name: 'black-dragon', decimals: 24 },
   'gear.enleap.near': { name: 'near-tinker-union-gear', decimals: 18 },
   'token.0xshitzu.near': { name: 'shitzu', decimals: 18 },
+  'purge-558.meme-cooking.near': { name: 'forgive-me-father', decimals: 18 },
+  'mpdao-token.near': { name: 'meta-pool-dao', decimals: 6 },
+  'kat.token0.near': { name: 'nearkat', decimals: 18 },
+}
+
+function shouldRetry(error) {
+  if (!error.response) return true;
+  const retriable = [400, 429, 500, 504];
+  return retriable.includes(error.response.status);
+}
+
+async function rpcRequest(payload) {
+  let lastError;
+
+  for (const url of endpoints) {
+    try {
+      return await axios.post(url, payload, { validateStatus: status => status < 400 });
+    } catch (err) {
+      if (!shouldRetry(err)) throw err;
+      lastError = err;
+    }
+  }
+  throw lastError;
 }
 
 async function view_account(account_id) {
-  const result = await axios.post(endpoint, {
-    "jsonrpc": "2.0",
-    "id": "1",
-    "method": "query",
-    "params": {
-      "request_type": "view_account",
-      "finality": "final",
-      "account_id": account_id
+  const payload = {
+    jsonrpc: "2.0",
+    id: "1",
+    method: "query",
+    params: {
+      request_type: "view_account",
+      finality: "final",
+      account_id
     }
-  });
-  if (result.data.error) {
-    throw new Error(`${result.data.error.message}: ${result.data.error.data}`)
-  }
+  };
+
+  const result = await rpcRequest(payload);
+  if (result.data.error) throw new Error(`${result.data.error.message}: ${result.data.error.data}`);
   return result.data.result;
 }
 
 async function call(contract, method, args = {}) {
-  const result = await axios.post(endpoint, {
-    "jsonrpc": "2.0",
-    "id": "1",
-    "method": "query",
-    "params": {
-      "request_type": "call_function",
-      "finality": "final",
-      "account_id": contract,
-      "method_name": method,
-      "args_base64": Buffer.from(JSON.stringify(args)).toString("base64")
+  const payload = {
+    jsonrpc: "2.0",
+    id: "1",
+    method: "query",
+    params: {
+      request_type: "call_function",
+      finality: "final",
+      account_id: contract,
+      method_name: method,
+      args_base64: Buffer.from(JSON.stringify(args)).toString("base64")
     }
-  });
-  if (result.data.error) {
-    throw new Error(`${result.data.error.message}: ${result.data.error.data}`)
-  }
-  return JSON.parse(Buffer.from(result.data.result.result).toString())
+  };
+
+  const result = await rpcRequest(payload);
+  if (result.data.error) throw new Error(`${result.data.error.message}: ${result.data.error.data}`);
+  return JSON.parse(Buffer.from(result.data.result.result).toString());
 }
 
 async function getTokenBalance(token, account) {
@@ -121,6 +146,7 @@ function sumSingleBalance(balances, token, balance) {
 }
 
 async function sumTokens({ balances = {}, owners = [], tokens = []}) {
+  tokens = tokens.filter(i => i !== 'aurora')
   await Promise.all(owners.map(i => addTokenBalances(tokens, i, balances)))
   const bals = await Promise.all(owners.map(view_account))
   const nearBalance = bals.reduce((a,i) => a + (i.amount/1e24), 0)

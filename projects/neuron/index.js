@@ -1,5 +1,4 @@
 const { getConfig } = require('../helper/cache')
-const { chainExports } = require('../helper/exports');
 
 const http_api_url = 'https://brain.goneuron.xyz/api_special/getChainTVL';
 const operator = '0xebb14128e98b2966EAb5b7da3a83e8c2edca0313';
@@ -27,5 +26,8 @@ function chainTvl(chain) {
   };
 }
 
-module.exports = chainExports(chainTvl, Object.keys(chainIds)),
 module.exports.methodology = 'neuron TVL is made of token balances of the neuron Outpost constracts. The deployed tokens are retrieved using HTTP REST API.'
+
+Object.keys(chainIds).forEach(chain => {
+  module.exports[chain] = { tvl: chainTvl(chain) }
+})

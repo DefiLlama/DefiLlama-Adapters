@@ -6,7 +6,7 @@ const PINGU = "0x83E60B9F7f4DB5cDb0877659b1740E73c662c55B"; // PINGU
 const assets = [nullAddress, ADDRESSES.arbitrum.USDC_CIRCLE] // ETH, USDC
 
 module.exports = {
-	start: 1704844800,
+	start: '2024-01-10',
 	arbitrum: {
 		tvl: sumTokensExport({ owners: [fundStore], tokens: assets }),
 		staking: sumTokensExport({ owners: [fundStore], tokens: [PINGU] }),

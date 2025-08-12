@@ -60,16 +60,16 @@ async function fuseTvl(api) {
 
 module.exports = {
   doublecounted: true,
-  start: 1596236058,        // July 14, 2020
+  start: '2020-08-01',        // July 14, 2020
   ethereum: {
     tvl,
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
   },
   arbitrum: compoundExports2({ comptroller: '0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716' }),
   hallmarks: [
-    [1651276800, "FEI hack"],
+    // [1651276800, "FEI hack"],
     [1649548800, "ICHI sell-off"],
-    [1620432000, "First Rari hack"],
+    // [1620432000, "First Rari hack"],
     [1654905600, "Bhavnani's announcement"]
   ]
 }

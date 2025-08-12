@@ -2,6 +2,8 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { staking } = require("../helper/staking");
 const { getProvider, getTokenBalance, sumTokens2 } = require("../helper/solana");
+const idl = require('./idl')
+const { Program } = require("@project-serum/anchor");
 // 19/12/2023 ALP Leverage Vault
 // 29/11/2023 GMXV2 Leverage(Neutral) Vault
 // 12/11/2023 GLP Compound Vault
@@ -39,7 +41,13 @@ module.exports = {
       const jlp = "27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4"
       const strategyJlp = "5852AnvCSV2GDzgpRVG4ZQ5cNn7abR7pPty5FaBxHLzW" 
 
+      const provider = getProvider()
+      const program = new Program(idl, 'V1enDN8GY531jkFp3DWEQiRxwYYsnir8SADjHmkt4RG', provider)
+      const banks = await program.account.bank.all()
+      const tokenAccounts = banks.map(i => i.account.liquidityVault.toString())
+      
       return sumTokens2({
+        tokenAccounts,
         owner: lendingSol,
         tokensAndOwners: [
           [jupSol, jupSolProgram],
@@ -48,7 +56,7 @@ module.exports = {
           [usdc, lendingUsdc],
           [usdt, lendingUsdt],
           [jlp, jlpUsdtStrategy],   
-        ],
+          ],
         solOwners: [lendingSol],
       });
     },

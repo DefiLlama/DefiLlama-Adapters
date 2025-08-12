@@ -24,7 +24,7 @@ async function farmStakings(api) {
 
 module.exports = {
   findora: {
-    start: 1677029212, // 2023-02-22 01:26:52 UTC
+    start: '2023-02-22', // 2023-02-22 01:26:52 UTC
     methodology: `Sum of liqudities backed USDF; and tokens values staked in the FutureSwap Farm.`,
     tvl: sumTokensExport({
       owner: FutureSwapContracts.USDF,

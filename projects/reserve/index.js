@@ -13,21 +13,34 @@ const chainConfigs = {
     deployerAddresses: [
       "0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377",
       "0x5c46b718Cd79F2BBA6869A3BeC13401b9a4B69bB",
+      "0x1bd20253c49515d348dad1af70ff2c0473fea358",
       "0x15480f5b5ed98a94e1d36b52dd20e9a35453a38e",
       "0x43587CAA7dE69C3c2aD0fb73D4C9da67A8E35b0b",
+      "0x2204ec97d31e2c9ee62ead9e6e2d5f7712d3f1bf"
     ],
     rsr: "0x320623b8E4fF03373931769A31Fc52A4E78B5d70",
     vault: "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f",
     fromBlock: 16680995,
     erc4626Wrapped: ["0xaa91d24c2f7dbb6487f61869cd8cd8afd5c5cab2"],
+    subgraph_url: "https://subgraph.satsuma-prod.com/327d6f1d3de6/reserve/reserve-mainnet/api",
   },
   base: {
     deployerAddresses: [
       "0xf1B06c2305445E34CF0147466352249724c2EAC1",
       "0x9C75314AFD011F22648ca9C655b61674e27bA4AC",
+      "0xfd18ba9b2f9241ce40cde14079c1cda1502a8d0a",
     ],
     rsr: "0xab36452dbac151be02b16ca17d8919826072f64a",
     fromBlock: 5000000,
+    subgraph_url: "https://subgraph.satsuma-prod.com/327d6f1d3de6/reserve/reserve-base/api",
+  },
+  arbitrum: {
+    deployerAddresses: [
+      "0xfd7eb6b208e1fa7b14e26a1fb10ffc17cf695d68"
+    ],
+    rsr: "0xCa5Ca9083702c56b481D1eec86F1776FDbd2e594",
+    fromBlock: 64464546,
+    subgraph_url: "https://subgraph.satsuma-prod.com/327d6f1d3de6/reserve/reserve-arbitrum/api",
   },
 };
 
@@ -173,6 +186,10 @@ module.exports = {
     tvl,
     staking,
   },
+  arbitrum: {
+    tvl,
+    staking,
+  },
   methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens.`,
 };
 
@@ -205,20 +222,26 @@ async function unwrapCreamTokens(api, tokensAndOwners,) {
 }
 
 async function genericUnwrapCvxDeposit(api, tokensAndOwners) {
-  const tokens = [...new Set(tokensAndOwners.map(t => t[0]))]
-  const uTokens = await api.multiCall({ abi: 'address:curveToken', calls: tokens })
-  const tokenMapping = {}
+  if (!tokensAndOwners.length) return;
+  const tokens = [...new Set(tokensAndOwners.map((t) => t[0]))];
+  const uTokens = await api.multiCall({ abi: "address:curveToken", calls: tokens, permitFailure: true });
+  const tokenMapping = {};
   tokens.forEach((token, i) => {
-    tokenMapping[token] = uTokens[i]
-  })
+    if (uTokens[i]) {
+      tokenMapping[token] = uTokens[i];
+    }
+  });
+  // Filter out tokens without curveToken
+  const validTokensAndOwners = tokensAndOwners.filter((t) => tokenMapping[t[0]]);
   const balances = await api.multiCall({
-    calls: tokensAndOwners.map(t => ({
+    calls: validTokensAndOwners.map((t) => ({
       target: t[0],
-      params: t[1]
+      params: t[1],
     })),
-    abi: 'erc20:balanceOf',
-  })
+    abi: "erc20:balanceOf",
+  });
   balances.forEach((balance, i) => {
-    api.add(tokenMapping[tokensAndOwners[i][0]], balance)
-  })
+    const token = validTokensAndOwners[i][0];
+    api.add(tokenMapping[token], balance);
+  });
 }
