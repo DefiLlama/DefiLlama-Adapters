@@ -22,9 +22,9 @@ const fetch = async (options: FetchOptions) => {
 
 
 const methodology = {
- Fees: 'All fees paid by users for swap and bridge tokens via LI.FI.',
- Revenue: 'Fees are distributed to LI.FI.',
- ProtocolRevenue: 'Fees are distributed to LI.FI.',
+ Fees: 'All fees paid by trading volume via Warp Finance.',
+ Revenue: 'Fees are distributed to Warp Finance.',
+ ProtocolRevenue: 'Fees are distributed to Warp Finance.',
 }
 
 
