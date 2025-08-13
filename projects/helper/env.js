@@ -12,6 +12,7 @@ const DEFAULTS = {
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   // SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   SOLANA_RPC: "https://api.mainnet-beta.solana.com",
+  SOON_RPC: "https://rpc.mainnet.soo.network/rpc",
   ECLIPSE_RPC: 'https://mainnetbeta-rpc.eclipse.xyz',
   APTOS_RPC: 'https://fullnode.mainnet.aptoslabs.com',
   SUI_RPC: 'https://sui-rpc.publicnode.com',
@@ -24,8 +25,6 @@ const DEFAULTS = {
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
   SUPRA_RPC: 'https://rpc-mainnet.supra.com',
-  CORN_RPC_MULTICALL: '0xca11bde05977b3631167028862be2a173976ca11',
-  ASSETCHAIN_RPC_MULTICALL: '0xf8ac4BEB2F75d2cFFb588c63251347fdD629B92c',
   FLAME_RPC: "https://rpc.flame.astria.org",
   BASECAMP_RPC: "https://rpc.basecamp.t.raas.gelato.cloud",
   BERACHAIN_ARCHIVAL_RPC: "https://bera.blockscout.com/api/eth-rpc",
@@ -35,6 +34,12 @@ const DEFAULTS = {
   KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
+  HYDRAGON_RPC: "https://rpc-mainnet.hydrachain.org",
+  TAC_RPC: "https://rpc.tac.build",
+  FRAXTAL_RPC: "https://rpc.frax.com",
+  TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
 }
 
 const ENV_KEYS = [
@@ -53,6 +58,7 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
+  'DEBANK_API_KEY'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

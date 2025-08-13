@@ -3,6 +3,7 @@ const { getLogs2 } = require('../helper/cache/getLogs')
 // https://developer.pancakeswap.finance/contracts/infinity/resources/addresses
 const config = {
   bsc: { vault: '0x238a358808379702088667322f80ac48bad5e6c4', clPoolManager: '0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b', fromBlock: 47214308 },
+  base: { vault: '0x238a358808379702088667322f80ac48bad5e6c4', clPoolManager: '0xa0ffb9c1ce1fe56963b0321b32e7a0302114058b', fromBlock: 30544106 },
 }
 
 Object.keys(config).forEach(chain => {
