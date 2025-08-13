@@ -1,7 +1,7 @@
-const NOVAFOX_STAKING_CONTRACT = '0xE85400a27878bCe5379f6136110646f97B293c47'; // NovaFoxStakeV1
+const NOVAFOX_STAKING_CONTRACT = '0x4803a6f0a93f4adb96318304a03f8dfddb15e423'; // NovaFoxStakeV2
 const NFX_TOKEN = '0xe1f864aE527d3646c222fe1b65460dB2D6E62228';
 
-async function tvl(api) {
+async function staking(api) {
   // Call getTotalStaked() to get total staked NFX
   const totalStaked = await api.call({
     abi: {
@@ -14,13 +14,14 @@ async function tvl(api) {
     target: NOVAFOX_STAKING_CONTRACT,
   });
 
-  // Add the NFX token and its balance to TVL
+  // Add the NFX token and its balance
   api.add(NFX_TOKEN, totalStaked);
 }
 
 module.exports = {
-  methodology: 'TVL is calculated as the total NFX tokens staked in the NovaFoxStake contract on Cronos.',
+  methodology: 'Staking TVL is calculated as the total NFX tokens staked in the NovaFoxStake contract on Cronos.',
   cronos: {
-    tvl,
+    tvl: () => ({}), // No base TVL since only staking
+    staking,
   },
 };
