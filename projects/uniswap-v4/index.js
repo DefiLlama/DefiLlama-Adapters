@@ -27,7 +27,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       let compressType
       if (chain === 'base') compressType = 'v1'
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType })
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType, splitCache: true })
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
