@@ -359,6 +359,12 @@ const DRIFT_VAULTS = [
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/#`
   },
+  {
+    name: "vip23",
+    address: "8oZhUFmrA7p3SkVX7o4nFfSLsmt3KfCyW8grFydtvvuj",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/#`
+  },
 ];
 
 const KAMINO_VAULTS = [
