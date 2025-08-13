@@ -80,7 +80,7 @@ async function getLogs({ target,
     const logIndices = new Set()
 
     // remove possible duplicates
-    if (!splitCache || !customCacheFunction)
+     if (!splitCache && !customCacheFunction)
       cache.logs = cache.logs.filter(i => {
         let key = (i.transactionHash ?? i.hash) + (i.logIndex ?? i.index)
         if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !i.hasOwnProperty('transactionHash')) {
