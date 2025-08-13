@@ -17,8 +17,8 @@ module.exports = {
     bsc: {
         tvl: () => getTvlByChain('bsc')
     },
-    avalanche:{
-        tvl: () => getTvlByChain('avalanche')
+    avax:{
+        tvl: () => getTvlByChain('avax')
     }
 }
 
