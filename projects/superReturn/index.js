@@ -11,7 +11,7 @@ const protocols = {
     sake: '0x5D7Af17B88Ad600EAb35957CC99eaa30D6330cFD',
     sakeProvider: '0x73a35ca19Da0357651296c40805c31585f19F741'
   },
-  plume: {
+  plume_mainnet: {
     morpho: ['0x0b14D0bdAf647c541d3887c5b1A4bd64068fCDA7']
   }
 };
@@ -72,7 +72,7 @@ async function soneiumTvl(api) {
 
 async function plumeTvl(api) {
     // Morpho Protocol
-    const morphoAddresses = protocols.plume.morpho;
+    const morphoAddresses = protocols.plume_mainnet.morpho;
     
     const collateralBalances = await api.multiCall({
         abi: 'erc20:balanceOf',
@@ -108,5 +108,5 @@ module.exports = {
   methodology: 'Tracks the deposits in yield-generating protocols',
   ethereum: { tvl: ethereumTvl },
   soneium: { tvl: soneiumTvl },
-  plume: { tvl: plumeTvl }
+  plume_mainnet: { tvl: plumeTvl }
 }; 
