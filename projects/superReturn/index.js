@@ -72,21 +72,27 @@ async function soneiumTvl(api) {
 
 async function plumeTvl(api) {
     // Morpho Protocol
-    for (const morphoAddress of protocols.plume.morpho) {
-        const collateralBalance = await api.call({
-            abi: 'erc20:balanceOf',
+    const morphoAddresses = protocols.plume.morpho;
+    
+    const collateralBalances = await api.multiCall({
+        abi: 'erc20:balanceOf',
+        calls: morphoAddresses.map(morphoAddress => ({
             target: morphoAddress,
-            params: [SUPERUSD_CONTRACT],
-        });
+            params: [SUPERUSD_CONTRACT]
+        }))
+    });
 
-        const previewShare = await api.call({
-            abi: 'function convertToAssets(uint256 shares) view returns (uint256 assets)',
+    const previewShares = await api.multiCall({
+        abi: 'function convertToAssets(uint256 shares) view returns (uint256 assets)',
+        calls: morphoAddresses.map((morphoAddress, i) => ({
             target: morphoAddress,
-            params: [collateralBalance],
-        });
+            params: [collateralBalances[i]]
+        }))
+    });
 
-        api.add(ADDRESSES.plume_mainnet.pUSD, previewShare);
-    }
+    previewShares.forEach(share => {
+        api.add(ADDRESSES.plume_mainnet.pUSD, share);
+    });
 
     // Vault funds
     const vaultFunds = await api.call({
