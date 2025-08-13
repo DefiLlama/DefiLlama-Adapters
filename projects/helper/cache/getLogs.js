@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, compressType, splitCache = false }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -106,7 +106,7 @@ async function getLogs({ target,
           })
         })
       }
-      await setCache(cacheFolder, key, cache)
+      await setCache(cacheFolder, key, cache, { splitCache })
     }
 
     return cache.logs
@@ -119,7 +119,7 @@ async function getLogs({ target,
 
     if (skipCache || skipCacheRead) return defaultRes
 
-    let cache = await getCache(cacheFolder, key, { checkIfRecent: true })
+    let cache = await getCache(cacheFolder, key, { checkIfRecent: true, splitCache })
     // set initial structure if it is missing / reset if from block is moved to something older
     if (!cache.logs || fromBlock < cache.fromBlock) {
       return defaultRes
@@ -129,8 +129,8 @@ async function getLogs({ target,
   }
 }
 
-async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType }) {
-  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead,compressType, })
+async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i, compressType, splitCache = false }) {
+  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead,compressType, splitCache })
   return res.map(transform)
 }
 
