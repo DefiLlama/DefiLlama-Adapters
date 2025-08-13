@@ -1,94 +1,85 @@
+const { BigNumber } = require("bignumber.js");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getLogs } = require("../helper/cache/getLogs");
 const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint256 feeIn,uint256 feeOut,uint256 debtTokenMintCap,uint256 dailyMintCap,address oracle,bool isUsingOracle,uint256 swapWaitingPeriod,uint256 maxPrice,uint256 minPrice)";
 const VaultTokenStrategySetEventABI = "event TokenStrategySet(address token, address strategy)";
-
+const GetEntireSystemCollABI = 'uint256:getEntireSystemColl';
+const GetCollateralTokenABI = 'address:collateralToken';
+const GetSmartVaultTotalDepositedUnderlyingABI = 'uint256:getTotalDepositedUnderlying';
 
 function createExports({
   troveList,
   nymList, // { address, fromBlock }[]
-  aaveStrategyVaults, // { address, asset, aToken }[]
-  pellStrategyVaults, // { address, asset }[]
-  strategyVaultsV2, // { address, fromBlock }[]
-  vaultManagerList, // { address }[]
   farmList, // { address, asset }[]
-  safeVaultManagerList, // {vaultAddress, asset}[]
+  smartVaultList, // { address, fromBlock }[]
 }) {
   return {
     tvl: async (api) => {
       const tokensAndOwners = []; // [address, address][]
-      let tokens = []; // address[]
       if (troveList) {
-        // owners.push(...troveList);
-        tokens = await getCollateralsFromTrove(api, troveList, tokensAndOwners);
+        await addCollateralBalanceFromTrove(api, troveList);
       }
 
-      if (nymList && nymList.length > 0) {
-        for (let i = 0; i < nymList.length; i++) {
-          await getAssetListFromNymContract(api, nymList[i].address, nymList[i].fromBlock, tokensAndOwners);
-        }
-      }
-
-      if (aaveStrategyVaults) {
-        for (let index = 0; index < aaveStrategyVaults.length; index++) {
-          const { address: vault, aToken, asset } = aaveStrategyVaults[index];
-          tokensAndOwners.push([asset, vault])
-          tokensAndOwners.push([aToken, vault])
-        }
-      }
-
-      if (pellStrategyVaults) {
-        const vaults = pellStrategyVaults.map(i => i.address)
-        const tokens = pellStrategyVaults.map(i => i.asset)
-        const strategies = await api.multiCall({ abi: 'address:pellStrategy', calls: vaults })
-        const calls2 = strategies.map((v, i) => ({ target: v, params: vaults[i] }))
-        const bals = await api.multiCall({ abi: "function userUnderlyingView(address) external view returns (uint256)", calls: calls2 })
-        api.add(tokens, bals)
-      }
-
-      if (strategyVaultsV2) {
-        for (let i = 0; i < strategyVaultsV2.length; i++) {
-          const { address: vaultAddress, fromBlock } = strategyVaultsV2[i];
-          const logs = await getLogs({ api, target: vaultAddress, fromBlock, eventAbi: VaultTokenStrategySetEventABI, onlyArgs: true });
-          const assets = logs.map(item => item.token);
-          const calls = assets.map((asset) => ({ target: vaultAddress, params: asset }))
-          const assetAmounts = await api.multiCall({ abi: "function getPosition(address) external view returns (uint256)", calls: calls })
-          api.add(assets, assetAmounts)
-        }
-      }
-
-      if (vaultManagerList) {
-        for (let i = 0; i < vaultManagerList.length; i++) {
-          const { address: vaultManager } = vaultManagerList[i];
-          tokens.forEach((token, i) => {
-            tokensAndOwners.push([token, vaultManager])
-          });
-        }
+      if (nymList) {
+        await processNymList(api, nymList, tokensAndOwners);
       }
 
       if (farmList) {
-        for (let index = 0; index < farmList.length; index++) {
-          const { address: farmAddress, asset } = farmList[index];
-          tokensAndOwners.push([asset, farmAddress])
-        }
+        processFarmList(farmList, tokensAndOwners);
       }
 
-      if (safeVaultManagerList) {
-        safeVaultManagerList.forEach((item) => {
-          tokensAndOwners.push([item.asset, item.vaultAddress])
-        });
+      if (smartVaultList) {
+        await addSmartVaultList(api, smartVaultList);
       }
 
-      return sumTokens2({ api, tokensAndOwners, });
+      api.addBalances(sumTokens2({ api, tokensAndOwners, }));
+      return api.getBalances();
     },
   }
 }
 
-async function getCollateralsFromTrove(api, troveList, tokensAndOwners) {
-  const tokens = await api.multiCall({ abi: 'address:collateralToken', calls: troveList })
-  tokens.forEach((token, i) => tokensAndOwners.push([token, troveList[i]]))
-  return tokens;
+async function processNymList(api, nymList, tokensAndOwners) {
+  for (let i = 0; i < nymList.length; i++) {
+    const { address: nymContractAddress, fromBlock } = nymList[i];
+    await getAssetListFromNymContract(api, nymContractAddress, fromBlock, tokensAndOwners);
+  }
+}
+
+function processFarmList(farmList, tokensAndOwners) {
+  for (let index = 0; index < farmList.length; index++) {
+    const { address: farmAddress, asset } = farmList[index];
+    tokensAndOwners.push([asset, farmAddress])
+  }
+}
+
+async function addCollateralBalanceFromTrove(api, troveList) {
+  const balances = {};
+  const chains = api.chain;
+  const tokens = await api.multiCall({ abi: GetCollateralTokenABI, calls: troveList, permitFailure: true })
+  const colls = await api.multiCall({ abi: GetEntireSystemCollABI, calls: troveList, permitFailure: true })
+  tokens.forEach((token, i) => {
+    if(!token) return;
+    if(!colls[i]) return;
+    const key = `${chains}:${token}`;
+    if (!balances[key]) {
+      balances[key] = new BigNumber(0);
+    }
+    balances[key] = balances[key].plus(colls[i]);
+  });
+  Object.keys(balances).forEach((key) => {
+    if (balances[key].isZero()) {
+      delete balances[key];
+    } else {
+      balances[key] = balances[key].toFixed(0);
+    }
+  });
+  api.addBalances(balances);
+
+  return {
+    balances,
+    tokens,
+  };
 }
 
 async function getAssetListFromNymContract(api, nymContractAddress, fromBlock, tokensAndOwners) {
@@ -97,7 +88,36 @@ async function getAssetListFromNymContract(api, nymContractAddress, fromBlock, t
   assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
 }
 
+async function addSmartVaultList(api, smartVaultList) {
+  const chains = api.chain;
+  const vaults = smartVaultList.map(t => t.smartVaultAddress);
+  const tokens = smartVaultList.map(t => t.asset);
+  const balances = {};
+  const amounts = await api.multiCall({ abi: GetSmartVaultTotalDepositedUnderlyingABI, calls: vaults, permitFailure: true })
 
+  tokens.forEach((token, i) => {
+    if(!token) return;
+    if(!amounts[i]) return;
+    const key = `${chains}:${token}`;
+    if (!balances[key]) {
+      balances[key] = new BigNumber(0);
+    }
+    balances[key] = balances[key].plus(amounts[i]);
+  });
+  Object.keys(balances).forEach((key) => {
+    if (balances[key].isZero()) {
+      delete balances[key];
+    } else {
+      balances[key] = balances[key].toFixed(0);
+    }
+  });
+  api.addBalances(balances);
+
+  return {
+    balances,
+    tokens,
+  };
+}
 
 module.exports = {
   bevm: createExports({
@@ -176,6 +196,16 @@ module.exports = {
         address: '0x954C6f00E361dA33c9b8E5f2660b2D4024a04634'
       }
     ],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0x3eeF93169c34F50919063eF56A118BFF26C8dfb8',
+        asset: '0x4CBE838E2BD3B46247f80519B6aC79363298aa09', // satUniBTC
+      },
+      {
+        smartVaultAddress: '0xd62E2F6b6616271001DCd0988AD2D73DEeE1b491',
+        asset: '0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894', // uniBTC
+      },
+    ]
   }),
   bsquared: createExports({
     troveList: [
@@ -204,6 +234,7 @@ module.exports = {
     troveList: [
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WBTC Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // BTCB Collateral(V2)
+      '0xDAc0551246A7F75503e8C908456005E828C35A40', // SolvBTC Collateral(V2)
     ],
     vaultManagerList: [
       {
@@ -281,6 +312,16 @@ module.exports = {
     nymList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
       fromBlock: 20436365,
+    }],
+  }),
+  ethereum: createExports({
+    troveList: [
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+    ],
+    nymList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      fromBlock: 23017053,
     }],
   }),
 }

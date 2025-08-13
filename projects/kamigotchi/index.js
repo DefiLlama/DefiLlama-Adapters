@@ -8,15 +8,6 @@ const ONYX = {
     id: "kamigotchi-onyx",
 }
 
-const assetMap = {
-    "evm/856aB2c9F35B9187aB3eB0Fcd11DCc6160427e96": {
-        decimals: 18, id: "initia",
-    },
-    "evm/E1Ff7038eAAAF027031688E1535a055B2Bac2546": {
-        decimals: 18, id: "ethereum",
-    },
-}
-
 module.exports = {
     timetravel: false,
     yomi: {
@@ -25,9 +16,13 @@ module.exports = {
             const res = await get(url)
 
             res.supply.map(({ denom, amount }) => {
-                if (!assetMap[denom]) return
-                const { decimals, id } = assetMap[denom]
-                balances[id] = amount / 10 ** decimals
+                let id;
+                if (denom.startsWith("evm/")) {
+                    id = `yomi:${denom.replace("evm/", "0x")}`
+                } else if (denom.startsWith("ibc/")) {
+                    id = denom.replace("/", ":")
+                } 
+                balances[id] = amount 
             })
 
             return balances

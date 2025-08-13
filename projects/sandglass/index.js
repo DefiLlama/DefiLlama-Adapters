@@ -22,6 +22,8 @@ const tokensAndOwners = {
     ["9Mbo33isosQXQAg2VNTD4pobCDHtmFAkMwuUo3Vb11fh", "3XGavdreqzWoa5kw3tUT7UpPmF3yACsF5GeyTtzzxJ8v"],
     ["52EBWh8t1yHK5AA7RsKVaCU44YpgGsatbDSNPSbBpWUr", "DQckbqNQBsF2BusNYwFpb4BFoPJC7VeAmM4ZudHAwebn"],
     ["7sxrDsyfuEryDsHurLi4Fkd8RitkmbojQZFELfR1QcKQ", "H55YhH1arcF2pBPmuKbVdTvRVXUyD4L3jzjY2n1Nt7Lp"],
+    ["6SK4WhZTD3fwpkYzE4oaGyqfPU9367MCWPYeNBLrrt1S", "x4bUfTYz26hyJNSZEB3AHSw2FT8vtjvo6hLBaXvFgYn"],
+    ["EbSf4fhDBDw137wLxfjAitf4p6M43VmkpFk6AZGMJo5M", "2CipgvXpArFUgCNZu5fruLDBETkEHP55HhtJkxfHcRz9"]
   ]
 }
 
