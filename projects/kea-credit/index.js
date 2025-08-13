@@ -134,59 +134,31 @@ function calculatePoolTVL(poolInfo, version) {
 }
 
 /**
- * Detect pool version by trying V2 call first, fallback to V1
+ * Get pool info using the appropriate ABI based on pool index
+ * First 12 pools (index 0-11) are V1, rest are V2
  */
-async function getPoolInfoWithVersion(poolAddress) {
-  try {
-    // Try V2 first (has more parameters)
-    // This will fail for V1 pools, and thats by design.
-    const v2Result = await sdk.api.abi.call({
-      target: poolAddress,
-      abi: POOL_ABI[0],
-      chain: "hedera",
-    });
+async function getPoolInfoWithVersion(poolAddress, poolIndex) {
+  // Determine version based on pool index (first 12 are V1)
+  const version = poolIndex < 12 ? "v1" : "v2";
+  const abi = version === "v1" ? POOL_V1_ABI[0] : POOL_ABI[0];
 
-    if (v2Result.output && v2Result.output.length >= 14) {
-      const tokenId = Number(v2Result.output[0]);
-      const version = getVersionFromTokenId(tokenId);
-      return {
-        success: true,
-        poolInfo: v2Result.output,
-        version,
-        tokenId,
-      };
-    } else {
-      console.log("");
-    }
-  } catch (e) {
-    console.log("");
+  const result = await sdk.api.abi.call({
+    target: poolAddress,
+    abi: abi,
+    chain: "hedera",
+  });
+
+  if (result.output) {
+    const tokenId = Number(result.output[0]);
+    return {
+      success: true,
+      poolInfo: result.output,
+      version,
+      tokenId,
+    };
+  } else {
+    return { success: false, error: "No output from pool call" };
   }
-
-  try {
-    // Try V1 format
-    const v1Result = await sdk.api.abi.call({
-      target: poolAddress,
-      abi: POOL_V1_ABI[0],
-      chain: "hedera",
-    });
-
-    if (v1Result.output) {
-      const tokenId = Number(v1Result.output[0]);
-      const version = getVersionFromTokenId(tokenId);
-      return {
-        success: true,
-        poolInfo: v1Result.output,
-        version,
-        tokenId,
-      };
-    } else {
-      console.log("");
-    }
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-
-  return { success: false };
 }
 
 /**
@@ -198,86 +170,64 @@ async function hederaTvl() {
   let totalV2TVL = 0;
   let processedPools = 0;
 
-  try {
-    // Get total NFTs to understand scale
-    // Try getNextTokenId first (KEA Credit specific function)
-    let totalNFTs = 0;
-    try {
-      const nextTokenIdResult = await sdk.api.abi.call({
-        target: INVOICE_NFT_PROXY,
-        abi: NFT_ABI[0], // getNextTokenId
-        chain: "hedera",
-      });
+  // Get total NFTs to understand scale
+  // Try getNextTokenId first (KEA Credit specific function)
+  let totalNFTs = 0;
 
-      if (nextTokenIdResult.output !== undefined) {
-        totalNFTs = Number(nextTokenIdResult.output) - 1; // Next token ID - 1 = current total
-      } else {
-        throw new Error("getNextTokenId returned undefined");
-      }
-    } catch (error) {
-      // Fallback to standard totalSupply
-      const totalSupplyResult = await sdk.api.abi.call({
-        target: INVOICE_NFT_PROXY,
-        abi: NFT_ABI[1], // totalSupply
-        chain: "hedera",
-      });
+  const nextTokenIdResult = await sdk.api.abi.call({
+    target: INVOICE_NFT_PROXY,
+    abi: NFT_ABI[0], // getNextTokenId
+    chain: "hedera",
+  });
 
-      if (totalSupplyResult.output !== undefined) {
-        totalNFTs = Number(totalSupplyResult.output);
-      } else {
-        throw new Error(`Both getNextTokenId and totalSupply failed`);
-      }
-    }
-
-    // Get all pool addresses
-    const poolsResult = await sdk.api.abi.call({
-      target: INVOICE_FACTORY_PROXY,
-      abi: FACTORY_ABI[0],
-      chain: "hedera",
-    });
-
-    if (poolsResult.output === undefined) {
-      throw new Error(
-        `Factory getAllPools call failed: ${JSON.stringify(poolsResult)}`
-      );
-    }
-
-    const poolAddresses = poolsResult.output || [];
-
-    // Process each pool
-    for (let i = 0; i < poolAddresses.length; i++) {
-      const poolAddress = poolAddresses[i];
-
-      try {
-        const poolResult = await getPoolInfoWithVersion(poolAddress);
-
-        if (!poolResult.success) {
-          continue;
-        }
-
-        const { poolInfo, version, tokenId } = poolResult;
-
-        // Calculate TVL for this pool
-        const poolTVL = calculatePoolTVL(poolInfo, version);
-
-        if (version === "v1") {
-          totalV1TVL += poolTVL;
-        } else {
-          totalV2TVL += poolTVL;
-        }
-
-        processedPools++;
-      } catch (poolError) {
-        continue;
-      }
-    }
-
-    const totalTVL = totalV1TVL + totalV2TVL;
-
-    balances["usd-coin"] = totalTVL;
-  } catch (error) {
-    balances["usd-coin"] = 0;
+  if (nextTokenIdResult.output !== undefined) {
+    totalNFTs = Number(nextTokenIdResult.output) - 1; // Next token ID - 1 = current total
+  } else {
+    throw new Error("getNextTokenId returned undefined");
   }
+
+  // Get all pool addresses
+  const poolsResult = await sdk.api.abi.call({
+    target: INVOICE_FACTORY_PROXY,
+    abi: FACTORY_ABI[0],
+    chain: "hedera",
+  });
+
+  if (poolsResult.output === undefined) {
+    throw new Error(
+      `Factory getAllPools call failed: ${JSON.stringify(poolsResult)}`
+    );
+  }
+
+  const poolAddresses = poolsResult.output || [];
+
+  // Process each pool
+  for (let i = 0; i < poolAddresses.length; i++) {
+    const poolAddress = poolAddresses[i];
+
+    const poolResult = await getPoolInfoWithVersion(poolAddress, i);
+
+    if (!poolResult.success) {
+      continue;
+    }
+
+    const { poolInfo, version, tokenId } = poolResult;
+
+    // Calculate TVL for this pool
+    const poolTVL = calculatePoolTVL(poolInfo, version);
+
+    if (version === "v1") {
+      totalV1TVL += poolTVL;
+    } else {
+      totalV2TVL += poolTVL;
+    }
+
+    processedPools++;
+  }
+
+  const totalTVL = totalV1TVL + totalV2TVL;
+
+  balances["usd-coin"] = totalTVL;
 
   return balances;
 }
