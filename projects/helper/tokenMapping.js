@@ -17,7 +17,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'provenance', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify', 'nibiru',
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
   'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion'
 ]
@@ -86,6 +86,43 @@ const fixBalancesTokens = {
     '0x0000000000000000000000000000000000001013': { coingeckoId: "liquid-hydra", decimals: 18 },
     '0xbbf6f2d2d462185df545c744974b7eb6ddadfcfd': { coingeckoId: "usd-coin", decimals: 6 },
     '0xb8043294eff43bcd01bd33968c7ae9dbc6a4bf8b': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+  },
+  provenance: {
+    nhash: { coingeckoId: 'hash-2', decimals: 9},
+    'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
+    'uusdc.figure.se': { coingeckoId: 'usd-coin', decimals: 6 },
+    'uylds.fcc': { coingeckoId: 'usd-coin', decimals: 6 },
+    'nbtc.figure.se': { coingeckoId: 'bitcoin', decimals: 9 },
+    'neth.figure.se': { coingeckoId: 'ethereum', decimals: 9 },
+    'uusdt.figure.se': { coingeckoId: 'tether', decimals: 6 },
+    'nlink.figure.se': { coingeckoId: 'chainlink', decimals: 9 },
+    'nsol.figure.se': { coingeckoId: 'solana', decimals: 9 },
+    'nuni.figure.se': { coingeckoId: 'uniswap', decimals: 9 },
+    'uxrp.figure.se': { coingeckoId: 'ripple', decimals: 6 },
+    'ulrwa.figure.markets': { coingeckoId: 'usd-coin', decimals: 6 },
+    'ureit.figure.markets': { coingeckoId: 'usd-coin', decimals: 6 },
+    SOL: { coingeckoId: 'solana', decimals: 0 },
+    ETH: { coingeckoId: 'ethereum', decimals: 0 },
+    USDT: { coingeckoId: 'tether', decimals: 0 },
+    BTC: { coingeckoId: 'bitcoin', decimals: 0 },
+    USDC: { coingeckoId: 'usd-coin', decimals: 0 },
+    USD: { coingeckoId: 'usd-coin', decimals: 0 },
+    YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
+    'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
+  },
+  scroll: {
+    '0x056a5fa5da84ceb7f93d36e545c5905607d8bd81': { coingeckoId: "ether-fi", decimals: 18 },
+    '0x03569cc076654f82679c4ba2124d64774781b01d': { coingeckoId: "liquity-bold", decimals: 18 },
+  },
+  bitci: {
+    [nullAddress]: { coingeckoId: "bitcicoin", decimals: 18 },
+    '0xe0d0f25b5fcfa4d3edd9c2186451d9e04c4b9f11': { coingeckoId: "bitcicoin", decimals: 18 },
+    '0x57b8adf3f708e33e9d9bdedc1b1ac4b2c06ab5e1': { coingeckoId: "bitci-bonk", decimals: 18 },
+    '0xffdcc0eb46be4ac8f9520e14fd5553605b06a0d6': { coingeckoId: "bitcix", decimals: 18 },
+    '0xed8186908cb406c6f72f8bdd70dc67ae02fb3dbd': { coingeckoId: "peruvian-national-football-team-fan-token", decimals: 18 },
+    '0x3e6f1be54feb9cc37dbfc31a894a8810357c3f9c': { coingeckoId: "spain-national-fan-token", decimals: 18 },
+    '0x4270a3d1a61fc6b86ea9e19730e529acee592c3b': { coingeckoId: "brazil-fan-token", decimals: 18 },
+    '0x38b0b761c90eaaea748bd3a43199377818d280e6': { coingeckoId: "mclaren-f1-fan-token", decimals: 18 },
   }
 }
 

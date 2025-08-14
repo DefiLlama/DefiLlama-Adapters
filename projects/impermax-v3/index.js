@@ -8,20 +8,21 @@ const config = {
     factories: [
       '0x4FF3262Ba2983Ee8950d9d082f03277a58BF7eb1'
     ],
-    positionsApi: 'https://arbitrum-nftlp-uniswapv3.up.railway.app/positions'
+    positionsApi: ['https://arbitrum-nftlp-uniswapv3.up.railway.app/positions'] // UniswapV3
   },
   base: {
     factories: [
       '0x175712cD666FbcfE8B69866a3088D7bf17a47685',
       '0x870fd2c2b502db53d3c9e19ab99725c1129fc120',
     ],
-    positionsApi: 'https://base-nftlp-uniswapv3.up.railway.app/positions'
+    positionsApi: [
+      'https://base-nftlp-uniswapv3.up.railway.app/positions', // UniswapV3
+      'https://base-nftlp-aerov3.up.railway.app/positions'     // Aerodrome
+    ]
   },
   unichain: {
-    factories: [
-      '0x50E7116c4a9624a2d562Ee0Ab5209F3834C15E14',
-    ],
-    positionsApi: 'https://unichain-nftlp-uniswapv3.up.railway.app/positions'
+    factories: ['0x50E7116c4a9624a2d562Ee0Ab5209F3834C15E14'],
+    positionsApi: ['https://unichain-nftlp-uniswapv3.up.railway.app/positions']
   },
 };
 
@@ -44,6 +45,7 @@ const abi = {
 
   // UniV3 pools
   slot0: "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)",
+  slot0Aero: "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, bool unlocked)",
 };
 
 async function tvl(api) {
@@ -52,7 +54,9 @@ async function tvl(api) {
 
   // All NFTLP positions
   if (positionsApi) {
-    await processUniV3Positions(api, positionsApi);
+    for (const apiUrl of positionsApi) {
+      await processUniV3Positions(api, apiUrl);
+    }
   }
 
   await processBorrowables(api, factories, blacklist);
@@ -61,7 +65,6 @@ async function tvl(api) {
 }
 
 async function processUniV3Positions(api, positionsApiUrl) {
-  // api.log(`Fetching positions from API: ${positionsApiUrl}`);
   const response = await axios.get(positionsApiUrl);
   const positions = response.data;
 
@@ -92,8 +95,9 @@ async function processUniV3Positions(api, positionsApiUrl) {
 
   // Get tick of all unique pools
   const poolAddresses = Object.keys(poolsMap);
+
   const slot0 = await api.multiCall({
-    abi: abi.slot0,
+    abi: positionsApiUrl.includes("aerov3") ? abi.slot0Aero : abi.slot0,
     calls: poolAddresses,
     permitFailure: true
   });
@@ -101,6 +105,11 @@ async function processUniV3Positions(api, positionsApiUrl) {
   poolAddresses.forEach((poolAddress, i) => {
     const poolData = poolsMap[poolAddress];
     const slotData = slot0[i];
+
+    if (!slotData || slotData.tick === undefined) {
+      console.log("Skipping pool no slot0: ", poolAddress);
+      return;
+    }
 
     poolData.positions.forEach(position => {
       addUniV3LikePosition({

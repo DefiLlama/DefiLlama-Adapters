@@ -36,6 +36,11 @@ const configs = {
       //   '0xE007CA01894c863d7898045ed5A3B4Abf0b18f37',
       // ],
     },
+    arbitrum: {
+      morphoVaultOwners: [
+        '0xFc5F89d29CCaa86e5410a7ad9D9d280d4455C12B',
+      ],
+    },
   }
 }
 
