@@ -51,7 +51,8 @@ const endPoints = {
   mantra: "https://api.mantrachain.io",
   elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
   pryzm: "https://api.pryzm.zone",
-  agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  agoric: 'https://agoric-api.polkachu.com/',
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',

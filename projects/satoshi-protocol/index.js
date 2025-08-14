@@ -6,11 +6,13 @@ const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint2
 const VaultTokenStrategySetEventABI = "event TokenStrategySet(address token, address strategy)";
 const GetEntireSystemCollABI = 'uint256:getEntireSystemColl';
 const GetCollateralTokenABI = 'address:collateralToken';
+const GetSmartVaultTotalDepositedUnderlyingABI = 'uint256:getTotalDepositedUnderlying';
 
 function createExports({
   troveList,
   nymList, // { address, fromBlock }[]
   farmList, // { address, asset }[]
+  smartVaultList, // { address, fromBlock }[]
 }) {
   return {
     tvl: async (api) => {
@@ -25,6 +27,10 @@ function createExports({
 
       if (farmList) {
         processFarmList(farmList, tokensAndOwners);
+      }
+
+      if (smartVaultList) {
+        await addSmartVaultList(api, smartVaultList);
       }
 
       api.addBalances(sumTokens2({ api, tokensAndOwners, }));
@@ -55,7 +61,6 @@ async function addCollateralBalanceFromTrove(api, troveList) {
   tokens.forEach((token, i) => {
     if(!token) return;
     if(!colls[i]) return;
-    console.log(`${chains}: ${token} - ${colls[i]}`);
     const key = `${chains}:${token}`;
     if (!balances[key]) {
       balances[key] = new BigNumber(0);
@@ -81,6 +86,37 @@ async function getAssetListFromNymContract(api, nymContractAddress, fromBlock, t
   const logs = await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventABI, onlyArgs: true });
   const assetList = logs.map(item => item.asset);
   assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
+}
+
+async function addSmartVaultList(api, smartVaultList) {
+  const chains = api.chain;
+  const vaults = smartVaultList.map(t => t.smartVaultAddress);
+  const tokens = smartVaultList.map(t => t.asset);
+  const balances = {};
+  const amounts = await api.multiCall({ abi: GetSmartVaultTotalDepositedUnderlyingABI, calls: vaults, permitFailure: true })
+
+  tokens.forEach((token, i) => {
+    if(!token) return;
+    if(!amounts[i]) return;
+    const key = `${chains}:${token}`;
+    if (!balances[key]) {
+      balances[key] = new BigNumber(0);
+    }
+    balances[key] = balances[key].plus(amounts[i]);
+  });
+  Object.keys(balances).forEach((key) => {
+    if (balances[key].isZero()) {
+      delete balances[key];
+    } else {
+      balances[key] = balances[key].toFixed(0);
+    }
+  });
+  api.addBalances(balances);
+
+  return {
+    balances,
+    tokens,
+  };
 }
 
 module.exports = {
@@ -160,6 +196,16 @@ module.exports = {
         address: '0x954C6f00E361dA33c9b8E5f2660b2D4024a04634'
       }
     ],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0x3eeF93169c34F50919063eF56A118BFF26C8dfb8',
+        asset: '0x4CBE838E2BD3B46247f80519B6aC79363298aa09', // satUniBTC
+      },
+      {
+        smartVaultAddress: '0xd62E2F6b6616271001DCd0988AD2D73DEeE1b491',
+        asset: '0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894', // uniBTC
+      },
+    ]
   }),
   bsquared: createExports({
     troveList: [
