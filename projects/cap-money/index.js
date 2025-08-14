@@ -34,10 +34,35 @@ const tvl = async (api) => {
     }
 }
 
+const borrowed = async (api) => {
+    const infra = capConfig[chain].infra;
+
+    const assetAddresses = await fetchAssetAddresses(api, chain)
+    const agentConfigs = await fetchAgentConfigs(api, chain)
+
+    const agentAndAsset = agentConfigs.map(({ agent }) => assetAddresses.map(asset => ({
+        agent: agent,
+        asset: asset,
+    }))).flat()
+
+    const results = await api.batchCall(
+        agentAndAsset.map(({ agent, asset }) => ({
+            abi: capABI.Lender.debt,
+            target: infra.lender.address,
+            params: [agent, asset]
+        }))
+    );
+
+    for (const [{ asset }, debt] of arrayZip(agentAndAsset, results)) {
+        api.add(asset, debt)
+    }
+}
+
 module.exports = {
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
     start: 1000235,
     ethereum: {
         tvl,
+        borrowed,
     }
 };
