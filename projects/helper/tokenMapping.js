@@ -21,7 +21,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
   'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion'
 ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'soonBase', 'svmBNB', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'soon_base', 'soon_bsc', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
@@ -65,28 +65,28 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
   },
-  svmBNB: {
-    [ADDRESSES.svmBNB.USDT]: { coingeckoId: "tether", decimals: 9 },
-    [ADDRESSES.svmBNB.USDC]: { coingeckoId: "usd-coin", decimals: 9 },
-    [ADDRESSES.svmBNB.ETH]: { coingeckoId: "ethereum", decimals: 9 },
-    [ADDRESSES.svmBNB.Bedrock]: { coingeckoId: "bedrock", decimals: 9  },
-    [ADDRESSES.svmBNB.cheems]: { coingeckoId: "cheems-token", decimals: 9 },
-    [ADDRESSES.svmBNB.koma]: { coingeckoId: "koma-inu", decimals: 9 },
-    [ADDRESSES.svmBNB['Broccoli (Broccoli)']]: { coingeckoId: "broccoli", decimals: 9 },
-    [ADDRESSES.svmBNB['Broccoli (CZS Dog)']]: { coingeckoId: "czs-dog", decimals: 9 },
-    [ADDRESSES.svmBNB.TUT]: { coingeckoId: "tutorial", decimals: 9 },
-    [ADDRESSES.svmBNB.WHY]: { coingeckoId: "why", decimals: 9 },
-    [ADDRESSES.svmBNB.BID]: { coingeckoId: "creatorbid", decimals: 9 },
-    [ADDRESSES.svmBNB.mubarak]: { coingeckoId: "mubarak", decimals: 9 },
-    [ADDRESSES.svmBNB.SIREN]: { coingeckoId: "siren-2", decimals: 9 },
-    [ADDRESSES.svmBNB.BANANAS31]: { coingeckoId: "banana-for-scale-2", decimals: 9 },
-    [ADDRESSES.svmBNB.SOON]: { coingeckoId: "soon-2", decimals: 9 },
+  soon_bsc: {
+    [ADDRESSES.soon_bsc.USDT]: { coingeckoId: "tether", decimals: 9 },
+    [ADDRESSES.soon_bsc.USDC]: { coingeckoId: "usd-coin", decimals: 9 },
+    [ADDRESSES.soon_bsc.ETH]: { coingeckoId: "ethereum", decimals: 9 },
+    [ADDRESSES.soon_bsc.Bedrock]: { coingeckoId: "bedrock", decimals: 9  },
+    [ADDRESSES.soon_bsc.cheems]: { coingeckoId: "cheems-token", decimals: 9 },
+    [ADDRESSES.soon_bsc.koma]: { coingeckoId: "koma-inu", decimals: 9 },
+    [ADDRESSES.soon_bsc['Broccoli (Broccoli)']]: { coingeckoId: "broccoli", decimals: 9 },
+    [ADDRESSES.soon_bsc['Broccoli (CZS Dog)']]: { coingeckoId: "czs-dog", decimals: 9 },
+    [ADDRESSES.soon_bsc.TUT]: { coingeckoId: "tutorial", decimals: 9 },
+    [ADDRESSES.soon_bsc.WHY]: { coingeckoId: "why", decimals: 9 },
+    [ADDRESSES.soon_bsc.BID]: { coingeckoId: "creatorbid", decimals: 9 },
+    [ADDRESSES.soon_bsc.mubarak]: { coingeckoId: "mubarak", decimals: 9 },
+    [ADDRESSES.soon_bsc.SIREN]: { coingeckoId: "siren-2", decimals: 9 },
+    [ADDRESSES.soon_bsc.BANANAS31]: { coingeckoId: "banana-for-scale-2", decimals: 9 },
+    [ADDRESSES.soon_bsc.SOON]: { coingeckoId: "soon-2", decimals: 9 },
   },
-  soonBase: {
-    [ADDRESSES.soonBase.USDT]: { coingeckoId: "tether", decimals: 6 },
-    [ADDRESSES.soonBase.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
-    [ADDRESSES.soonBase.DAI]: { coingeckoId: "dai", decimals: 9 },
-    [ADDRESSES.soonBase.SOON]: { coingeckoId: "soon-2", decimals: 9 },
+  soon_base: {
+    [ADDRESSES.soon_base.USDT]: { coingeckoId: "tether", decimals: 6 },
+    [ADDRESSES.soon_base.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.soon_base.DAI]: { coingeckoId: "dai", decimals: 9 },
+    [ADDRESSES.soon_base.SOON]: { coingeckoId: "soon-2", decimals: 9 },
   },
   tac: {
     [ADDRESSES.null]: { coingeckoId: "tac", decimals: 18 },
