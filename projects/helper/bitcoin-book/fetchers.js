@@ -227,4 +227,10 @@ module.exports = {
    
     return Array.from(new Set(staticAddresses))
   },
+  zeusZBTC: async () => {
+    const API_URL = 'https://indexer.zeuslayer.io/api/v2/chainlink/proof-of-reserves'
+    const data = await getConfig('zeus/zbtc', API_URL)
+    const list = data.result.map(item => item.address)
+    return list
+  },
 }

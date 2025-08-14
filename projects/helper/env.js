@@ -36,7 +36,10 @@ const DEFAULTS = {
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
   HYDRAGON_RPC: "https://rpc-mainnet.hydrachain.org",
   TAC_RPC: "https://rpc.tac.build",
+  FRAXTAL_RPC: "https://rpc.frax.com",
   TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
 }
 
 const ENV_KEYS = [
@@ -55,6 +58,7 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
+  'DEBANK_API_KEY'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
