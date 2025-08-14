@@ -21,7 +21,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
   'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon'
 ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'soonBase', 'svmBNB', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
@@ -61,6 +61,29 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.WETH]: { coingeckoId: "ethereum", decimals: 9 },
     [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
+  },
+  svmBNB: {
+    [ADDRESSES.svmBNB.USDT]: { coingeckoId: "tether", decimals: 9 },
+    [ADDRESSES.svmBNB.USDC]: { coingeckoId: "usd-coin", decimals: 9 },
+    [ADDRESSES.svmBNB.ETH]: { coingeckoId: "ethereum", decimals: 9 },
+    [ADDRESSES.svmBNB.Bedrock]: { coingeckoId: "bedrock", decimals: 9  },
+    [ADDRESSES.svmBNB.cheems]: { coingeckoId: "cheems-token", decimals: 9 },
+    [ADDRESSES.svmBNB.koma]: { coingeckoId: "koma-inu", decimals: 9 },
+    [ADDRESSES.svmBNB['Broccoli (Broccoli)']]: { coingeckoId: "broccoli", decimals: 9 },
+    [ADDRESSES.svmBNB['Broccoli (CZS Dog)']]: { coingeckoId: "czs-dog", decimals: 9 },
+    [ADDRESSES.svmBNB.TUT]: { coingeckoId: "tutorial", decimals: 9 },
+    [ADDRESSES.svmBNB.WHY]: { coingeckoId: "why", decimals: 9 },
+    [ADDRESSES.svmBNB.BID]: { coingeckoId: "creatorbid", decimals: 9 },
+    [ADDRESSES.svmBNB.mubarak]: { coingeckoId: "mubarak", decimals: 9 },
+    [ADDRESSES.svmBNB.SIREN]: { coingeckoId: "siren-2", decimals: 9 },
+    [ADDRESSES.svmBNB.BANANAS31]: { coingeckoId: "banana-for-scale-2", decimals: 9 },
+    [ADDRESSES.svmBNB.SOON]: { coingeckoId: "soon-2", decimals: 9 },
+  },
+  soonBase: {
+    [ADDRESSES.soonBase.USDT]: { coingeckoId: "tether", decimals: 6 },
+    [ADDRESSES.soonBase.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.soonBase.DAI]: { coingeckoId: "dai", decimals: 9 },
+    [ADDRESSES.soonBase.SOON]: { coingeckoId: "soon-2", decimals: 9 },
   }
 }
 
