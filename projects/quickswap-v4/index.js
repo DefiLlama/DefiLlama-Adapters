@@ -1,6 +1,6 @@
-import { uniV3Export } from '../helper/uniswapV3'
+const { uniV3Export } = require("../helper/uniswapV3");
 
-export default uniV3Export({
+module.exports = uniV3Export({
   base: {
     factory: '0xC5396866754799B9720125B104AE01d935Ab9C7b',
     isAlgebra: true,
