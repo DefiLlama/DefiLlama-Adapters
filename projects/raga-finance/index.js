@@ -1,58 +1,42 @@
 
-const USDC_STRATEGY_ADDRESS = '0xA2b648cE3ECFCa0BdE6eF353169cE97c4CcBE127';
-const DAI_STRATEGY_ADDRESS = '0xFf222313F328a9A555f068137e08e85b6aAe214A';
-const STRATEGY_MANAGER_ADDRESS = '0x751b60E27B6a722c0d1D1a48446DA0e52618228E';
+const sdk = require('@defillama/sdk');
 
-const VAULT_ABI = [
+const vaults = [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_strategy",
-        "type": "address"
-      }
-    ],
-    "name": "fetchStrategyDeposit",
-    "outputs": [
-      {
-        "components": [
-          { "internalType": "uint256", "name": "valueDeposited", "type": "uint256" },
-          { "internalType": "uint256", "name": "rewardsEarned", "type": "uint256" },
-          { "internalType": "uint256", "name": "amountSlashed", "type": "uint256" },
-          { "internalType": "uint256", "name": "valueWithdrawn", "type": "uint256" }
-        ],
-        "internalType": "struct IStrategyManager.StrategyStruct",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+    vault: "0xd735DD1499C5e5F30633f6B25Cc170d3D15d90Ad",  // WBERA_IBGT vault
+    lpToken: "0x564f011d557aad1ca09bfc956eb8a17c35d490e0",
+  },
+  {
+    vault: "0x4EcDe8C0b9A0c30CDd78C35A245F4afEDEF43d65",  // WBERA_LBGT vault
+    lpToken: "0x705Fc16BA5A1EB67051934F2Fb17EacaE660F6c7",
+  },
+  {
+    vault: "0xa62bf96CbC8508cEd7056c12258a0e12cC113c7c",  // HONEY_BYUSD vault
+    lpToken: "0xde04c469ad658163e2a5e860a03a86b52f6fa8c8",
+  },
 ];
 
-async function fetchVaultData(api, strategyAddress, strategyManagerAddress) {
-  const { valueDeposited, rewardsEarned, amountSlashed, valueWithdrawn } = await api.call({
-    abi: VAULT_ABI.find(f => f.name === "fetchStrategyDeposit"),
-    target: strategyManagerAddress,
-    params: [strategyAddress]
-  });
 
-  return valueDeposited.add(rewardsEarned).sub(valueWithdrawn).sub(amountSlashed);
-}
+const vaultAbi = "function totalAssets() view returns (uint256)";
 
 async function tvl(api) {
-  const usdcTVL = await fetchVaultData(api, USDC_STRATEGY_ADDRESS, STRATEGY_MANAGER_ADDRESS);
-  const daiTVL = await fetchVaultData(api, DAI_STRATEGY_ADDRESS, STRATEGY_MANAGER_ADDRESS);
+  const totalAssets = await api.multiCall({
+    abi: vaultAbi,
+    calls: vaults.map(v => ({ target: v.vault })),
+  });
 
-  api.add('0x6B175474E89094C44Da98b954EedeAC495271d0F', daiTVL); // DAI address on Ethereum
-  api.add('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', usdcTVL); // USDC address on Ethereum
+  totalAssets.forEach((amount, i) => {
+    api.add(vaults[i].lpToken, amount);
+  });
 }
 
 module.exports = {
-  methodology: 'Calculates TVL as Deposited + RewardsEarned - Withdrawn - SlashingAmount from the specified DAI and USDC strategy contracts.',
-  start: 21986569,
-  ethereum: {
+  timetravel: true,
+  misrepresentedTokens: false,
+  start: 1751923200,  // July 1, 2025 (putted random here)
+  hallmarks: [[1751932800, "Launch of Raga Finance"]],
+  methodology: "TVL is calculated from LP tokens",
+  berachain: {
     tvl,
   },
 };
