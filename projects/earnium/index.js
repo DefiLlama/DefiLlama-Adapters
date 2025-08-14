@@ -9,6 +9,10 @@ async function _getPoolReserves(poolAddress) {
   return function_view({ functionStr: `${contractAddress}::liquidity_pool::pool_reserves`, type_arguments: [], args: [poolAddress] })
 }
 
+async function _getOriginal(tokenAddress) {
+  return function_view({ functionStr: `${contractAddress}::coin_wrapper::get_original`, type_arguments: [], args: [tokenAddress] })
+}
+
 async function _getTokenOfPool(poolAddress) {
   return function_view({ functionStr: `${contractAddress}::liquidity_pool::supported_inner_assets`, type_arguments: [], args: [poolAddress] })
 }
@@ -16,6 +20,7 @@ async function _getTokenOfPool(poolAddress) {
 async function _getTvl() {
   const allPools = (await _getAllPools())
   const tokenTvlMap = new Map();
+  const mapOriginal = new Map();
 
   for (const pool of allPools) {
     const poolAddress = pool.inner
@@ -27,8 +32,25 @@ async function _getTvl() {
     }
     const reserveX = Number(reserves[0] || 0);
     const reserveY = Number(reserves[1] || 0);
-    const tokenX = tokens[0];
-    const tokenY = tokens[1];
+
+    let tokenX = tokens[0];
+    if (mapOriginal.has(tokens[0].inner)) {
+      tokenX = { inner: mapOriginal.get(tokens[0].inner) };
+    } else {
+      const originalX = await _getOriginal(tokens[0].inner);
+      mapOriginal.set(tokens[0].inner, originalX);
+      tokenX = { inner: originalX };
+    }
+    
+    let tokenY = tokens[1];
+    if (mapOriginal.has(tokens[1].inner)) {
+      tokenY = { inner: mapOriginal.get(tokens[1].inner) };
+    } else {
+      const originalY = await _getOriginal(tokens[1].inner);
+      mapOriginal.set(tokens[1].inner, originalY);
+      tokenY = { inner: originalY };
+    }
+    
     tokenTvlMap.set(tokenX, (tokenTvlMap.get(tokenX) || 0) + reserveX);
     tokenTvlMap.set(tokenY, (tokenTvlMap.get(tokenY) || 0) + reserveY);
   }
