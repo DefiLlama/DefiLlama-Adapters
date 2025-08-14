@@ -45,30 +45,34 @@ async function tvl(api) {
     payoutReported: market.payoutReported,
   }))
 
-  // Fetch token supplies for all outcome tokens
-  const supplyCalls = []
-  const supplyMapping = [] // Track which supply belongs to which market/outcome
-
+  // Fetch token supplies (deduplicated to avoid redundant calls for shared tokens)
+  const uniqueTokens = new Set()
+  const tokenToMarkets = new Map()
   marketsData.forEach((market, marketIdx) => {
     market.wrappedTokens.forEach((token, outcomeIdx) => {
-      supplyCalls.push(token)
-      supplyMapping.push({ marketIdx, outcomeIdx })
+      uniqueTokens.add(token)
+      if (!tokenToMarkets.has(token)) {
+        tokenToMarkets.set(token, [])
+      }
+      tokenToMarkets.get(token).push({ marketIdx, outcomeIdx })
     })
   })
 
-  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: supplyCalls })
-
-  // Map supplies back to markets
+  const uniqueTokenArray = Array.from(uniqueTokens)
+  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: uniqueTokenArray })
   supplies.forEach((supply, i) => {
-    const { marketIdx, outcomeIdx } = supplyMapping[i]
-    marketsData[marketIdx].outcomesSupply[outcomeIdx] = BigInt(supply)
+    const token = uniqueTokenArray[i]
+    const marketMappings = tokenToMarkets.get(token) || []
+    
+    marketMappings.forEach(({ marketIdx, outcomeIdx }) => {
+      marketsData[marketIdx].outcomesSupply[outcomeIdx] = BigInt(supply)
+    })
   })
 
   // Process resolved markets - fetch payout data from ConditionalTokens
   await fetchPayoutData(api, marketsData, conditionalTokens)
 
   const totalSupply = calculateTotalSupply(marketsData);
-
   api.add(collateralToken, totalSupply);
 }
 
@@ -112,7 +116,7 @@ async function fetchPayoutData(api, marketsData, conditionalTokens) {
   const numeratorCalls = []
   const callMapping = [] // Maps each call back to market and outcome
 
-  marketsWithPayouts.forEach((market, marketIdx) => {
+  marketsWithPayouts.forEach((market) => {
     const outcomeCount = market.wrappedTokens?.length || 0
     for (let outcomeIdx = 0; outcomeIdx < outcomeCount; outcomeIdx++) {
       numeratorCalls.push({
@@ -143,76 +147,74 @@ async function fetchPayoutData(api, marketsData, conditionalTokens) {
 }
 
 /**
- * Calculates the effective supply for a market based on its resolution status
- */
-function getEffectiveSupply(market, supplies) {
-  if (!supplies || supplies.length === 0) return 0n
-
-  // For resolved markets with payout data, calculate weighted supply
-  if (market.payoutReported && market.payoutNumeratorsBig && market.payoutDenominatorBig > 0n) {
-    let weightedSupply = 0n
-    const numerators = market.payoutNumeratorsBig
-    const denominator = market.payoutDenominatorBig
-
-    for (let i = 0; i < supplies.length && i < numerators.length; i++) {
-      weightedSupply += (supplies[i] * numerators[i]) / denominator
-    }
-    return weightedSupply
-  }
-
-  // For unresolved markets, use the maximum supply (all outcomes should be equal)
-  return supplies.reduce((max, supply) => supply > max ? supply : max, 0n)
-}
-
-/**
  * Calculates total TVL by:
- * 1. Deduplicating token supplies (tokens can appear in multiple markets)
- * 2. Rolling up child market supplies into parent markets
- * 3. Summing only parent market supplies (to avoid double counting)
+ * 1. Rolling up child market supplies into parent markets (recursively)
+ * 2. Deduplicating markets that share wrapped tokens (via CREATE2 deterministic addresses)
+ * 3. Properly weighting resolved markets by their payout ratios
+ * 4. Only counting root markets (which hold actual sDAI)
  */
 function calculateTotalSupply(marketsData) {
-  // Step 1: Deduplicate token supplies across markets
-  const marketSupplies = new Map()
-  const processedTokens = new Set()
-
+  // Build parent-child relationships for efficient lookup
+  const childrenByParent = new Map()
   marketsData.forEach(market => {
-    const uniqueSupplies = []
-    market.wrappedTokens.forEach((token, i) => {
-      if (!processedTokens.has(token)) {
-        uniqueSupplies.push(market.outcomesSupply[i])
-        processedTokens.add(token)
+    if (market.parentMarket && market.parentMarket !== ADDRESSES.null) {
+      if (!childrenByParent.has(market.parentMarket)) {
+        childrenByParent.set(market.parentMarket, [])
+      }
+      childrenByParent.get(market.parentMarket).push(market)
+    }
+  })
+  
+  // Recursively calculate effective supply for a market including child markets
+  function getEffectiveSupplyWithChildren(market) {
+    const supplies = [...market.outcomesSupply] // Clone to avoid mutation
+    
+    // Add supplies from child markets to the corresponding parent outcome
+    const children = childrenByParent.get(market.id) || []
+    children.forEach(child => {
+      // Recursively get child's effective supply (including its own children)
+      const childEffectiveSupply = getEffectiveSupplyWithChildren(child)
+      // Add to parent's outcome that child is conditional on
+      const parentOutcome = child.parentOutcome
+      if (parentOutcome < supplies.length) {
+        supplies[parentOutcome] = (supplies[parentOutcome] || 0n) + childEffectiveSupply
       }
     })
-    marketSupplies.set(market.id, uniqueSupplies)
-  })
-
-  // Step 2: Roll up child market supplies into parent markets
-  marketsData.forEach(market => {
-    if (market.parentMarket === ADDRESSES.null) return // Skip parent markets
-
-    const parentSupply = marketSupplies.get(market.parentMarket)
-    const childSupply = marketSupplies.get(market.id)
-
-    if (!parentSupply || !childSupply) return
-
-    // Calculate child's effective supply and add to parent's outcome
-    const childEffectiveSupply = getEffectiveSupply(market, childSupply)
-    const parentOutcome = market.parentOutcome
-    parentSupply[parentOutcome] = (parentSupply[parentOutcome] || 0n) + childEffectiveSupply
-  })
-
-  // Step 3: Sum up only parent markets (markets with no parent)
+    
+    // Calculate market's effective supply based on resolution status
+    if (market.payoutReported && market.payoutNumeratorsBig && market.payoutDenominatorBig > 0n) {
+      // Resolved: weight by payout ratios
+      let weighted = 0n
+      supplies.forEach((supply, i) => {
+        const numerator = market.payoutNumeratorsBig[i] || 0n
+        weighted += (supply * numerator) / market.payoutDenominatorBig
+      })
+      return weighted
+    } else {
+      // Unresolved: all outcomes represent equal collateral
+      return supplies.reduce((max, supply) => supply > max ? supply : max, 0n)
+    }
+  }
+  
   let totalSupply = 0n
+  const processedTokenSets = new Set()
+  
   marketsData.forEach(market => {
-    if (market.parentMarket !== ADDRESSES.null) return // Skip child markets
-
-    const marketSupply = marketSupplies.get(market.id)
-    if (!marketSupply) return
-
-    totalSupply += getEffectiveSupply(market, marketSupply)
+    if (!market.wrappedTokens || market.wrappedTokens.length === 0) return
+    
+    // Only count root markets (they hold the actual sDAI)
+    if (market.parentMarket !== ADDRESSES.null) return
+    
+    // Deduplicate markets sharing the same wrapped tokens
+    const tokenSetId = [...market.wrappedTokens].sort().join('|')
+    if (processedTokenSets.has(tokenSetId)) return
+    processedTokenSets.add(tokenSetId)
+    
+    // Calculate total including child market supplies
+    totalSupply += getEffectiveSupplyWithChildren(market)
   })
-
-  return totalSupply;
+  
+  return totalSupply
 }
 
 module.exports = {
