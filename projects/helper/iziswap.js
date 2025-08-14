@@ -2,7 +2,7 @@ const { sumTokens2 } = require("./unwrapLPs")
 const { getCache, setCache, } = require('../helper/cache')
 const ADDRESSES = require('../helper/coreAssets.json')
 
-function iziswapExport({ poolHelpers, blacklistedTokens = [] }) {
+function iziswapExport({ poolHelpers, blacklistedTokens = [], blacklistedPools = [], }) {
   return async (api) => {
     const isMerlin = api.chain === 'merlin'
     const toa = []
@@ -38,7 +38,7 @@ function iziswapExport({ poolHelpers, blacklistedTokens = [] }) {
       await setCache('iziswap', key, { allPools, allPoolMetas, })
     }
 
-    return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, permitFailure: !isMerlin, sumChunkSize: isMerlin ? 10 : 100, sumChunkSleep: 1000 })
+    return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, permitFailure: !isMerlin, sumChunkSize: isMerlin ? 10 : 100, sumChunkSleep: 1000, blacklistedOwners: blacklistedPools, })
   }
 }
 

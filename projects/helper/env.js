@@ -36,10 +36,12 @@ const DEFAULTS = {
   KAVA_ARCHIVAL_RPC: "https://evm.kava.io",
   BIFROST_P_RPC: "wss://api-bifrost-polkadot.n.dwellir.com/"+_yek,
   BIFROST_K_RPC: "wss://api-bifrost-kusama.n.dwellir.com/"+_yek,
-  KATANA_RPC: "https://rpc.katana.network",
-  KATANA_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
-  BTNX_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
-  VECHAIN_RPC_MULTICALL: '0x8B2fF167683c5e1DFD6717d934B560F20cf9F2a3',
+  HYDRAGON_RPC: "https://rpc-mainnet.hydrachain.org",
+  TAC_RPC: "https://rpc.tac.build",
+  FRAXTAL_RPC: "https://rpc.frax.com",
+  TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
 }
 
 const ENV_KEYS = [
@@ -58,6 +60,7 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
+  'DEBANK_API_KEY'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
