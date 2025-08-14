@@ -19,6 +19,10 @@ async function tvl() {
       "DvKHN9YNoWERUNcxpEfUvd1UmPwHjoDgyDiwWntMfba4",
       // Jito JTO Vault
       "3Fz1WVV7N3h5VScoveHyote6Y129F3Gmc3PcfnBuSbV3",
+      // fragBTC Fund
+      "B5eYu4dKBS8bTvLdeZungomcaQx52rDprdKEcyHzgbBD",
+      "9fvyDGfUJta9ShCagSHZirWTX4TxU4aTQVc9ndUbSoCz",
+      "C14KEN37y1jei1RFxcKLP46AQkgpUokEmp45GvX8Ch9P",
     ],
     solOwners: [
       "3H22A3T3CMyoGzAURZ4szV5Hmt64Dooo5g9Ns8h1kYy7",

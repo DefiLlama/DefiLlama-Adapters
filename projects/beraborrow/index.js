@@ -34,7 +34,7 @@ const getAllCollateralsAndDenManagersAbi = "function getAllCollateralsAndDenMana
 
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const beraTokens = await api.multiCall({ abi: 'address:collVault', calls: vaults })
+  // const beraTokens = await api.multiCall({ abi: 'address:collVault', calls: vaults })
   const pTokens = await api.multiCall({ abi: 'address:stable', calls: PSMs })
   const denInfos = await api.call({ abi: getAllCollateralsAndDenManagersAbi, target: '0xFA7908287c1f1B256831c812c7194cb95BB440e6' })
   const tokensAndOwners = tokens.map((t, i) => [t, vaults[i]])
@@ -49,8 +49,8 @@ async function tvl(api) {
   const names = await api.multiCall({ abi: 'string:name', calls: infraAssets, permitFailure: true, })
   const bbInfraWrappers = infraAssets.filter((a, i) => names[i] && names[i].startsWith('Beraborrow: '))
   const bbInfraWrapperUnderlyings = await api.multiCall({ abi: 'address:underlying', calls: bbInfraWrappers })
-  beraTokens.push(beraBorrowWberaToken, ...bbInfraWrappers)
   bbInfraWrapperUnderlyings.forEach((u, i) => tokensAndOwners.push([u, bbInfraWrappers[i]]))
+  const beraTokens = bbInfraWrappers.push(beraBorrowWberaToken)
   return api.sumTokens({ tokensAndOwners, blacklistedTokens: beraTokens })
 }
 

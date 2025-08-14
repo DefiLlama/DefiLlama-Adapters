@@ -1,4 +1,4 @@
 const { uniTvlExports } = require('../helper/unknownTokens')
 module.exports = uniTvlExports({
-  'parex': '0x97A772D08E38f0976a214cD7a32b29B43A91f277'
+  parex: '0x933A81E5d5aF4A182C1CE7FD0F96599Dd469e66A'
 })

@@ -67,6 +67,10 @@ async function getTokenRates({ tokens = [] }) {
   return tokenPrices
 }
 
+async function getJettonsInfo(tokens){
+  return (await post("https://tonapi.io/v2/jettons/_bulk", {"account_ids": tokens}))["jettons"]
+}
+
 const sumTokensAccount = rateLimited(_sumTokensAccount)
 
 async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false, useTonApiForPrices = true }) {
@@ -76,8 +80,10 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   owners = getUniqueAddresses(owners, api.chain)
 
   if (tokens.includes(ADDRESSES.null)) await addTonBalances({ api, addresses: owners })
+  if (onlyWhitelistedTokens && tokens.length === 1 && tokens.includes(ADDRESSES.ton.TON)) return sumTokens2({ api, })
 
   for (const addr of owners) {
+    await sleep(1000 * (3 * Math.random() + 7))
     await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens, useTonApiForPrices })
   }
   return sumTokens2({ api, })
@@ -93,7 +99,7 @@ async function call({ target, abi, params = [], rawStack = false, }) {
     "method": abi,
     "stack": params
   }
-  const { ok, result } = await post('https://ton.drpc.org/rest/runGetMethod', requestBody)
+  const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
   if (!ok) {
     throw new Error("Unknown");
   }
@@ -137,4 +143,5 @@ module.exports = {
   sumTokensExport,
   call,
   getJettonBalances,
+  getJettonsInfo,
 }

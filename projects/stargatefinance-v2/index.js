@@ -14,6 +14,7 @@ const CONFIG = {
   bsc: {
     pools: [
       '0x138EB30f73BC423c6455C53df6D89CB01d9eBc63',
+      '0x962Bd449E630b0d928f308Ce63f1A21F02576057'
     ],
   },
   avax: {
@@ -104,6 +105,37 @@ const CONFIG = {
   abstract: {
     pools: [
       '0x221F0E1280Ec657503ca55c708105F1e1529527D',
+    ],
+  },
+  xdai: {
+    pools: [
+      '0xB1EeAD6959cb5bB9B20417d6689922523B2B86C3', //usdc pool
+      '0xe9aBA835f813ca05E50A6C0ce65D0D74390F7dE7' //weth pool
+    ],
+  },
+  lightlink_phoenix: {
+    pools: [
+      '0x8731d54E9D02c286767d56ac03e8037C07e01e98', //eth pool
+    ],
+  },
+  hemi: {
+    pools: [
+      ADDRESSES.fuse.WETH_3, //eth pool
+    ],
+  },
+  sonic: {
+    pools: [
+      '0xA272fFe20cFfe769CdFc4b63088DCD2C82a2D8F9', //usdc pool
+    ],
+  },
+  manta: {
+    pools: [
+      '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB', // eth pool
+    ],
+  },
+  swellchain: {
+    pools: [
+      '0xCc0587aeBDa397146cc828b445dB130a94486e74', // eth pool
     ],
   },
 }

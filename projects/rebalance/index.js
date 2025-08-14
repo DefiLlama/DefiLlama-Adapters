@@ -11,6 +11,9 @@ const config = {
     '0xf96e2F8a47F0d274c4ce5Daaf82636B1E6AC3C66', // rUSDT
     '0xE6bFb5cbF6a3f3717C703a033251C34b91877a08', // rUSDC
   ],
+  base: [
+    '0x5c8340B18DC1cA7c6894BD493b7A2717AE1A5BAa', // rUSDC
+  ]
 };
 
 const abi = "function getDepositBalance(address user, address vault) view returns (uint256 balance)";

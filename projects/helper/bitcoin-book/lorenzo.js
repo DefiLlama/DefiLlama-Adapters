@@ -48,5 +48,26 @@ module.exports = [
   // Babylon unstake relay address
   "bc1p9ta9m4h6z5hz5mvu2450qqrd5x507a25c4uper8nkxllhs94x7msv77l0s",
   "bc1plh54q8p2e870cc9yunza4509ulna54dara2vz38c44f0jdgce4rseupqy7",
-  "bc1p8lqq8u7rlr38fgttp2hypz9t2vl4r486gkm67mkawyn769e7njmqhyz0tn"
+  "bc1p8lqq8u7rlr38fgttp2hypz9t2vl4r486gkm67mkawyn769e7njmqhyz0tn",
+
+  // Ceffu
+  'bc1qjvvw0rur4jl503yu9umwpzlryyg6rr8j97nz80',
+  
+  // Cobo
+  'bc1pj9r40wqjwscrqxma2a52sjt8c8pk975m4fjawekf43lk0v34e4qqt4xm9n',
+  'bc1pxwcre508c6fkafuyt65utjv8enul2dmc79rhufq7u22tgtx26u0qajmflu',
+  // staking gathering address
+  'bc1p9mcc69rz8wdcc4yxxg0uj9qygpsepc6628pzq5l3a08u76d6f3pq246syk',
+  // other
+  '36tKXKVAUqEkMx9NyErJv4c3KVEJNnJJYT',
+  
+  // small balances left
+  'bc1ppwfa95ug52ufc2azau5wn8qvlss8xkmf8jutydg0azkwegks7wfs7cd98n',
+  'bc1q606v608m2nrpzlqjn9gfwlsaw4dwxhjp82mrps',
+  '1FopykmQHhF51JwZ5co9nEDuQHHL6PqCTn',
+  '1EVosahWYJKUj5b861eiHWvwZxfq5SuXqk',
+  'bc1pzd6luyardlle9f7lul2y8fl72c22p6vxspc4k4g4gzgjf8975s0sr042yt',
+
+  'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0'
+
 ]
