@@ -8,6 +8,7 @@ const config = {
   },
   'xdai': {
     marketFactory: ['0x83183DA839Ce8228E31Ae41222EaD9EDBb5cDcf1'],
+    futarchyFactory: '0xa6cb18fcdc17a2b44e5cad2d80a6d5942d30a345', // Futarchy markets with multiple collaterals
     marketView: '0x995dC9c89B6605a1E8cc028B37cb8e568e27626f',
     collateralToken: ADDRESSES.xdai.SDAI,
     conditionalTokens: '0xCeAfDD6bc0bEF976fdCd1112955828E00543c0Ce'
@@ -18,7 +19,7 @@ const MARKET_VIEW_ABI =
   'function getMarket(address marketFactory, address market) public view returns (tuple(address id, string marketName, string[] outcomes, address parentMarket, uint256 parentOutcome, address[] wrappedTokens, uint256 outcomesSupply, uint256 lowerBound, uint256 upperBound, bytes32 parentCollectionId, bytes32 conditionId, bytes32 questionId, uint256 templateId, tuple(bytes32 content_hash, address arbitrator, uint32 opening_ts, uint32 timeout, uint32 finalize_ts, bool is_pending_arbitration, uint256 bounty, bytes32 best_answer, bytes32 history_hash, uint256 bond, uint256 min_bond)[] questions, bytes32[] questionsIds, string[] encodedQuestions,bool payoutReported) memory)'
 
 async function tvl(api) {
-  const { marketFactory, marketView, collateralToken, conditionalTokens } = config[api.chain]
+  const { marketFactory, futarchyFactory, marketView, collateralToken, conditionalTokens } = config[api.chain]
   // get all markets
   const markets = await api.multiCall({ abi: 'address[]:allMarkets', calls: marketFactory })
   const dataCalls = markets.map((v, i) => {
@@ -39,6 +40,7 @@ async function tvl(api) {
     id: market.id,
     parentMarket: market.parentMarket,
     parentOutcome: market.parentOutcome,
+    parentCollectionId: market.parentCollectionId,
     wrappedTokens: market.wrappedTokens,
     outcomesSupply: (market.wrappedTokens ?? []).map(_ => 0),
     conditionId: market.conditionId,
@@ -59,8 +61,14 @@ async function tvl(api) {
   })
 
   const uniqueTokenArray = Array.from(uniqueTokens)
-  const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: uniqueTokenArray })
+  const supplies = await api.multiCall({ 
+    abi: 'erc20:totalSupply', 
+    calls: uniqueTokenArray,
+    permitFailure: true  // Allow individual failures
+  })
+  
   supplies.forEach((supply, i) => {
+    if (!supply) return // Skip failed calls
     const token = uniqueTokenArray[i]
     const marketMappings = tokenToMarkets.get(token) || []
     
@@ -74,6 +82,15 @@ async function tvl(api) {
 
   const totalSupply = calculateTotalSupply(marketsData);
   api.add(collateralToken, totalSupply);
+  
+  // Add futarchy market TVL (Gnosis chain only)
+  if (futarchyFactory && api.chain === 'xdai') {
+    try {
+      await processFutarchyMarkets(api, futarchyFactory)
+    } catch (error) {
+      // Silent fail - futarchy markets are optional
+    }
+  }
 }
 
 /**
@@ -147,11 +164,13 @@ async function fetchPayoutData(api, marketsData, conditionalTokens) {
 }
 
 /**
- * Calculates total TVL by:
- * 1. Rolling up child market supplies into parent markets (recursively)
- * 2. Deduplicating markets that share wrapped tokens (via CREATE2 deterministic addresses)
- * 3. Properly weighting resolved markets by their payout ratios
- * 4. Only counting root markets (which hold actual sDAI)
+ * Calculates total TVL for regular Seer markets.
+ * Handles hierarchical markets where child markets use parent outcome tokens as collateral.
+ * Ensures accurate TVL by:
+ * - Including child market supplies in parent outcomes (recursive bubbling)
+ * - Deduplicating shared wrapped tokens (CREATE2 deterministic addresses)
+ * - Weighting resolved markets by payout ratios
+ * - Only counting root markets that hold actual sDAI
  */
 function calculateTotalSupply(marketsData) {
   // Build parent-child relationships for efficient lookup
@@ -176,7 +195,7 @@ function calculateTotalSupply(marketsData) {
       const childEffectiveSupply = getEffectiveSupplyWithChildren(child)
       // Add to parent's outcome that child is conditional on
       const parentOutcome = child.parentOutcome
-      if (parentOutcome < supplies.length) {
+      if (typeof parentOutcome === 'number' && parentOutcome >= 0 && parentOutcome < supplies.length) {
         supplies[parentOutcome] = (supplies[parentOutcome] || 0n) + childEffectiveSupply
       }
     })
@@ -187,7 +206,9 @@ function calculateTotalSupply(marketsData) {
       let weighted = 0n
       supplies.forEach((supply, i) => {
         const numerator = market.payoutNumeratorsBig[i] || 0n
-        weighted += (supply * numerator) / market.payoutDenominatorBig
+        if (supply > 0n && numerator > 0n) {
+          weighted += (supply * numerator) / market.payoutDenominatorBig
+        }
       })
       return weighted
     } else {
@@ -197,7 +218,7 @@ function calculateTotalSupply(marketsData) {
   }
   
   let totalSupply = 0n
-  const processedTokenSets = new Set()
+  const processedMarkets = new Set()
   
   marketsData.forEach(market => {
     if (!market.wrappedTokens || market.wrappedTokens.length === 0) return
@@ -205,10 +226,11 @@ function calculateTotalSupply(marketsData) {
     // Only count root markets (they hold the actual sDAI)
     if (market.parentMarket !== ADDRESSES.null) return
     
-    // Deduplicate markets sharing the same wrapped tokens
-    const tokenSetId = [...market.wrappedTokens].sort().join('|')
-    if (processedTokenSets.has(tokenSetId)) return
-    processedTokenSets.add(tokenSetId)
+    // Deduplicate markets by their unique wrapped token set
+    // Markets with same wrapped tokens are duplicates (CREATE2 deterministic addresses)
+    const marketId = [...market.wrappedTokens].sort().join('|')
+    if (processedMarkets.has(marketId)) return
+    processedMarkets.add(marketId)
     
     // Calculate total including child market supplies
     totalSupply += getEffectiveSupplyWithChildren(market)
@@ -217,8 +239,200 @@ function calculateTotalSupply(marketsData) {
   return totalSupply
 }
 
+/**
+ * Processes futarchy markets with dual collateral tokens.
+ * Futarchy markets have 4 wrapped outcomes but only 2 resolution states (YES/NO).
+ * For resolved markets, only winning outcomes contribute to TVL.
+ */
+async function processFutarchyMarkets(api, futarchyFactory) {
+  // Get the total count of futarchy proposals
+  let marketsCount = await api.call({
+    abi: 'function marketsCount() view returns (uint256)',
+    target: futarchyFactory
+  })
+  
+  if (!marketsCount || marketsCount === 0) return
+  
+  // Fetch all futarchy proposals efficiently
+  const proposalCalls = Array.from({ length: Number(marketsCount) }, (_, i) => ({ 
+    target: futarchyFactory, 
+    params: [i] 
+  }))
+  
+  const proposals = await api.multiCall({ 
+    abi: 'function proposals(uint256) view returns (address)',
+    calls: proposalCalls,
+    permitFailure: true 
+  })
+  
+  const futarchyMarkets = proposals.filter(Boolean)
+  if (futarchyMarkets.length === 0) return
+  
+  // Fetch collateral tokens and condition IDs for each market
+  const [token1Calls, token2Calls, conditionIdCalls] = await Promise.all([
+    api.multiCall({
+      abi: 'function collateralToken1() view returns (address)',
+      calls: futarchyMarkets,
+      permitFailure: true
+    }),
+    api.multiCall({
+      abi: 'function collateralToken2() view returns (address)',
+      calls: futarchyMarkets,
+      permitFailure: true
+    }),
+    api.multiCall({
+      abi: 'function conditionId() view returns (bytes32)',
+      calls: futarchyMarkets,
+      permitFailure: true
+    })
+  ])
+  
+  // Get wrapped tokens and their supplies
+  const wrappedTokenCalls = futarchyMarkets.flatMap(market => 
+    [0, 1, 2, 3].map(i => ({ target: market, params: [i] }))
+  )
+  
+  const wrappedTokens = await api.multiCall({
+    abi: 'function wrappedOutcome(uint256) view returns (address)',
+    calls: wrappedTokenCalls,
+    permitFailure: true
+  })
+  
+  // Get supplies for all wrapped tokens
+  const validTokens = wrappedTokens.filter(Boolean)
+  if (validTokens.length === 0) return
+  
+  const supplies = await api.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: validTokens,
+    permitFailure: true
+  })
+  
+  // Check resolution status for all markets with valid condition IDs
+  const conditionalTokens = '0xCeAfDD6bc0bEF976fdCd1112955828E00543c0Ce' // ConditionalTokens on Gnosis
+  const validConditionIds = conditionIdCalls.filter(id => id && id !== '0x0000000000000000000000000000000000000000000000000000000000000000')
+  
+  // Fetch payout denominators to check resolution status
+  const payoutDenominators = await api.multiCall({
+    abi: 'function payoutDenominator(bytes32) view returns (uint256)',
+    calls: validConditionIds.map(id => ({ target: conditionalTokens, params: [id] })),
+    permitFailure: true
+  })
+  
+  // For resolved markets, fetch the payout numerators (only 2 outcomes for futarchy: YES/NO)
+  const resolvedMarketIndices = []
+  const numeratorCalls = []
+  
+  validConditionIds.forEach((conditionId, idx) => {
+    if (payoutDenominators[idx] && BigInt(payoutDenominators[idx]) > 0n) {
+      resolvedMarketIndices.push(idx)
+      // Binary resolution: YES (index 0) or NO (index 1)
+      numeratorCalls.push({ target: conditionalTokens, params: [conditionId, 0] }) // YES
+      numeratorCalls.push({ target: conditionalTokens, params: [conditionId, 1] }) // NO
+    }
+  })
+  
+  const payoutNumerators = numeratorCalls.length > 0 ? await api.multiCall({
+    abi: 'function payoutNumerators(bytes32, uint256) view returns (uint256)',
+    calls: numeratorCalls,
+    permitFailure: true
+  }) : []
+  
+  // Track TVL by collateral token
+  const collateralTVL = new Map()
+  const processedMarkets = new Set() // Avoid double-counting shared markets
+  
+  // Process each futarchy market
+  for (let i = 0; i < futarchyMarkets.length; i++) {
+    const collateralToken1 = token1Calls[i]
+    const collateralToken2 = token2Calls[i]
+    const conditionId = conditionIdCalls[i]
+    
+    if (!collateralToken1 || !collateralToken2 || !conditionId) continue
+    
+    // Skip if we've already processed this market
+    // Futarchy markets don't have parentCollectionId, so we use conditionId + collateral tokens
+    const marketId = `${conditionId}|${collateralToken1}|${collateralToken2}`
+    if (processedMarkets.has(marketId)) continue
+    processedMarkets.add(marketId)
+    
+    // Get supplies for this market's 4 outcomes
+    const marketSupplies = []
+    for (let j = 0; j < 4; j++) {
+      const tokenIdx = i * 4 + j
+      if (tokenIdx < wrappedTokens.length && wrappedTokens[tokenIdx]) {
+        const supplyIdx = validTokens.indexOf(wrappedTokens[tokenIdx])
+        if (supplyIdx >= 0 && supplies[supplyIdx]) {
+          marketSupplies.push(BigInt(supplies[supplyIdx]))
+        } else {
+          marketSupplies.push(0n)
+        }
+      } else {
+        marketSupplies.push(0n)
+      }
+    }
+    
+    // Check if market is resolved
+    const conditionIdx = validConditionIds.indexOf(conditionId)
+    const isResolved = conditionIdx >= 0 && payoutDenominators[conditionIdx] && BigInt(payoutDenominators[conditionIdx]) > 0n
+    
+    if (isResolved) {
+      // Market is resolved - check which outcome won (YES or NO)
+      const resolvedIdx = resolvedMarketIndices.indexOf(conditionIdx)
+      if (resolvedIdx < 0) continue // Safety check
+      
+      const yesNumerator = payoutNumerators[resolvedIdx * 2] ? BigInt(payoutNumerators[resolvedIdx * 2]) : 0n
+      const noNumerator = payoutNumerators[resolvedIdx * 2 + 1] ? BigInt(payoutNumerators[resolvedIdx * 2 + 1]) : 0n
+      
+      if (yesNumerator > 0n) {
+        // YES won - outcomes 0 and 2 are redeemable
+        if (marketSupplies[0] > 0n) {
+          const current1 = collateralTVL.get(collateralToken1) || 0n
+          collateralTVL.set(collateralToken1, current1 + marketSupplies[0])
+        }
+        if (marketSupplies[2] > 0n) {
+          const current2 = collateralTVL.get(collateralToken2) || 0n
+          collateralTVL.set(collateralToken2, current2 + marketSupplies[2])
+        }
+      } else if (noNumerator > 0n) {
+        // NO won - outcomes 1 and 3 are redeemable
+        if (marketSupplies[1] > 0n) {
+          const current1 = collateralTVL.get(collateralToken1) || 0n
+          collateralTVL.set(collateralToken1, current1 + marketSupplies[1])
+        }
+        if (marketSupplies[3] > 0n) {
+          const current2 = collateralTVL.get(collateralToken2) || 0n
+          collateralTVL.set(collateralToken2, current2 + marketSupplies[3])
+        }
+      }
+    } else {
+      // Unresolved market - use max supply approach
+      // Outcomes 0-1 are for collateralToken1
+      if (marketSupplies[0] + marketSupplies[1] > 0n) {
+        const maxSupply1 = marketSupplies[0] > marketSupplies[1] ? marketSupplies[0] : marketSupplies[1]
+        const current1 = collateralTVL.get(collateralToken1) || 0n
+        collateralTVL.set(collateralToken1, current1 + maxSupply1)
+      }
+      
+      // Outcomes 2-3 are for collateralToken2
+      if (marketSupplies[2] + marketSupplies[3] > 0n) {
+        const maxSupply2 = marketSupplies[2] > marketSupplies[3] ? marketSupplies[2] : marketSupplies[3]
+        const current2 = collateralTVL.get(collateralToken2) || 0n
+        collateralTVL.set(collateralToken2, current2 + maxSupply2)
+      }
+    }
+  }
+  
+  // Add each collateral token to the API
+  for (const [token, amount] of collateralTVL) {
+    if (amount > 0n) {
+      api.add(token, amount)
+    }
+  }
+}
+
 module.exports = {
   ethereum: { tvl },
   xdai: { tvl },
-  methodology: 'TVL represents the total quantity of sDAI held in the conditional tokens contract. The sDAI is withdrawn when the participants merge or redeem their tokens.',
+  methodology: 'TVL counts collateral locked in Seer prediction markets. Futarchy markets with dual collaterals are counted separately by token type. Resolved markets are weighted by payout ratios.',
 }
