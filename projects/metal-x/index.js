@@ -9,15 +9,15 @@ const accounts = [
 const cgIdMapping = {
   XXRP: 'ripple',
   XBTC: 'bitcoin',
-  // XMT: 'metal', 
+  XMT: 'metal', 
   XDOGE: 'dogecoin',
   XETH: 'ethereum',
   XUSDC: 'usd-coin',
   LOAN: 'proton-loan', 
   XLTC: 'litecoin',
   XUSDT: 'tether',
-  // XMD: 'metal-dollar', 
-  // METAL: 'metal-blockchain', 
+  XMD: 'metal-dollar', 
+  METAL: 'metal-blockchain', 
   XHBAR: 'hedera-hashgraph',
   XSOL: 'solana'
 }
