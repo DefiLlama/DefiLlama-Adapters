@@ -1,11 +1,9 @@
 const sui = require("../helper/chain/sui");
 const BigNumber = require("bignumber.js");
-const {COIN_CONFIG} = require("./coinConfig.js");
-
-const {desU64, desU128} = require("./bytes");
-const {getExchangeRate} = require("./price");
-const {MMT_TYPE_CONFIG} = require("./coinConfig");
-const {getVaultTvlByAmountB} = require("./util");
+const {COIN_CONFIG, MMT_TYPE_CONFIG} = require("../nemo/coinConfig.js");
+const {desU64} = require("../nemo/bytes");
+const {getExchangeRate} = require("../nemo/price");
+const {getVaultTvlByAmountB} = require("../nemo/util");
 const {sleep} = require("../helper/utils");
 
 const nemoPackageId = "0x2b71664477755b90f9fb71c9c944d5d0d3832fec969260e3f18efc7d855f57c4";
@@ -101,9 +99,12 @@ async function getTvl(type, fields, api) {
   if (!typeString) return null;
 
   const syTokens = typeString.split(", ")[0].slice(2);
+  console.log(`[syTokens:] ${typeString} ${syTokens}`);
 
   const tokensObject = await sui.getDynamicFieldObject(syTableParentId, syTokens, {idType: "0x1::type_name::TypeName"});
   const tokens = "0x" + tokensObject.fields.value.fields.name;
+
+  console.log(`[${typeString}] ${tokens}`);
 
   const coinConfig = COIN_CONFIG[tokens];
 
@@ -119,8 +120,6 @@ async function getTvl(type, fields, api) {
     {withMetadata: true}
   );
 
-  // console.log(`inspectionResult: ${JSON.stringify(inspectionResult)}`);
-
   if (inspectionResult?.effects?.status?.status !== 'success') {
     throw new Error(JSON.stringify(inspectionResult, null, 2));
   }
@@ -128,12 +127,17 @@ async function getTvl(type, fields, api) {
   const returnValues = inspectionResult.results[inspectionResult.results?.length - 1].returnValues;
   const res1 = returnValues[0][0];
   const res2 = returnValues[1][0];
+  const priceVoucher1 = desU64(Uint8Array.from(res1));
+  const priceVoucher2 = desU64(Uint8Array.from(res2));
+
+  const pyState = await sui.getObject(fields.py_state_id);
+  const ptSupply = pyState.fields.pt_supply;
+  const floatingPt = BigNumber(ptSupply).minus(fields.total_pt);
 
   if (coinConfig.provider === 'Nemo') {
-    const priceVoucher1 = desU64(Uint8Array.from(res1));
-    const priceVoucher2 = desU64(Uint8Array.from(res2));
-    const pt2SyAmount = new BigNumber(fields.total_pt).div(priceVoucher1).times(priceVoucher2);
-    let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
+    const pt2SyAmount = floatingPt.div(priceVoucher1).times(priceVoucher2);
+
+    console.log(`floatingPt: ${floatingPt.toString()}, ptSupply: ${ptSupply}, pt2SyAmount: ${pt2SyAmount.toString()}, marketId: ${fields.id.id}`);
 
     const vault = await sui.getObject(MMT_TYPE_CONFIG[coinConfig.coinType].VAULT_ID);
     const amountB = await getVaultTvlByAmountB(vault);
@@ -142,34 +146,27 @@ async function getTvl(type, fields, api) {
 
     const lpTokenPrice = BigNumber(amountB).div(BigNumber(totalSupply));
 
-    // console.log(`lpTokenPrice: ${lpTokenPrice.toString()}, amountB: ${amountB}, totalSupply: ${totalSupply}`);
+    console.log(`lpTokenPrice: ${lpTokenPrice.toString()}, amountB: ${amountB}, totalSupply: ${totalSupply}`);
 
-    console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.times(lpTokenPrice).toFixed(0)}, marketId: ${fields.id.id}`);
-    api.add(coinConfig.underlyingCoinType, syBalance.times(lpTokenPrice).toFixed(0));
+    api.add(coinConfig.underlyingCoinType, pt2SyAmount.times(lpTokenPrice).toFixed(0));
   } else {
-    const priceVoucher1 = desU128(Uint8Array.from(res1));
-    const priceVoucher2 = desU128(Uint8Array.from(res2));
-
     let rate1 = new BigNumber(priceVoucher1).div(new BigNumber(2).pow(64)).toString();
     let rate2 = new BigNumber(priceVoucher2).div(new BigNumber(2).pow(64)).toString();
 
-    const pt2SyAmount = new BigNumber(fields.total_pt).div(rate1);
-    let syBalance = BigNumber.sum(pt2SyAmount, new BigNumber(fields.total_sy));
+    const pt2SyAmount = floatingPt.div(rate1);
 
     if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${syBalance.toNumber()}, marketId: ${fields.id.id}`);
-      api.add(tokens, syBalance.toNumber());
+      api.add(tokens, pt2SyAmount.toFixed(0));
     } else {
-      let underlyingBalance = syBalance.multipliedBy(rate2);
-      console.log(`coinType: ${coinConfig.coinType}, syBalance: ${underlyingBalance.toNumber()}, marketId: ${fields.id.id}, rate1: ${rate1}, rate2: ${rate2}`);
-      api.add(coinConfig.underlyingCoinType, underlyingBalance.toNumber());
+      let underlyingBalance = pt2SyAmount.multipliedBy(rate2);
+      api.add(coinConfig.underlyingCoinType, underlyingBalance.toFixed(0));
     }
   }
 }
 
 module.exports = {
   timetravel: false,
-  methodology: 'Count all assets are deposited into Nemo markets.',
+  methodology: 'Count all floating PT assets in the Nemo markets.',
   sui: {
     tvl,
   },
