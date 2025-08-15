@@ -1,3 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const abi = {
   getTokensForBorrowingArray: "function getTokensForBorrowingArray() view returns ((address tokenAddress, uint256 LTV, uint256 rate, string name, uint256 liquidationThreshold)[])",
   getTotalTokenBorrowed: "function getTotalTokenBorrowed(address tokenAddress) view returns (uint256)",
@@ -27,7 +29,7 @@ const tvl = async (api) => {
 
 const borrowed = async (api) =>  {
   const { pool } = config[api.chain]
-  const tokens = await getTokens(api, pool)
+  const tokens = (await getTokens(api, pool)).filter(addr => addr.toLowerCase() !== ADDRESSES.null)
   const bals = await api.multiCall({ abi: abi.getTotalTokenBorrowed, calls: tokens, target: pool })
   api.add(tokens, bals)
 }

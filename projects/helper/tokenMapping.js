@@ -21,7 +21,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
   'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion'
 ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'soon_base', 'soon_bsc', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
@@ -64,6 +64,29 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.WETH]: { coingeckoId: "ethereum", decimals: 9 },
     [ADDRESSES.soon.SOL]: { coingeckoId: "solana", decimals: 9 },
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
+  },
+  soon_bsc: {
+    [ADDRESSES.soon_bsc.USDT]: { coingeckoId: "tether", decimals: 9 },
+    [ADDRESSES.soon_bsc.USDC]: { coingeckoId: "usd-coin", decimals: 9 },
+    [ADDRESSES.soon_bsc.ETH]: { coingeckoId: "ethereum", decimals: 9 },
+    [ADDRESSES.soon_bsc.Bedrock]: { coingeckoId: "bedrock", decimals: 9  },
+    [ADDRESSES.soon_bsc.cheems]: { coingeckoId: "cheems-token", decimals: 9 },
+    [ADDRESSES.soon_bsc.koma]: { coingeckoId: "koma-inu", decimals: 9 },
+    [ADDRESSES.soon_bsc['Broccoli (Broccoli)']]: { coingeckoId: "broccoli", decimals: 9 },
+    [ADDRESSES.soon_bsc['Broccoli (CZS Dog)']]: { coingeckoId: "czs-dog", decimals: 9 },
+    [ADDRESSES.soon_bsc.TUT]: { coingeckoId: "tutorial", decimals: 9 },
+    [ADDRESSES.soon_bsc.WHY]: { coingeckoId: "why", decimals: 9 },
+    [ADDRESSES.soon_bsc.BID]: { coingeckoId: "creatorbid", decimals: 9 },
+    [ADDRESSES.soon_bsc.mubarak]: { coingeckoId: "mubarak", decimals: 9 },
+    [ADDRESSES.soon_bsc.SIREN]: { coingeckoId: "siren-2", decimals: 9 },
+    [ADDRESSES.soon_bsc.BANANAS31]: { coingeckoId: "banana-for-scale-2", decimals: 9 },
+    [ADDRESSES.soon_bsc.SOON]: { coingeckoId: "soon-2", decimals: 9 },
+  },
+  soon_base: {
+    [ADDRESSES.soon_base.USDT]: { coingeckoId: "tether", decimals: 6 },
+    [ADDRESSES.soon_base.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.soon_base.DAI]: { coingeckoId: "dai", decimals: 9 },
+    [ADDRESSES.soon_base.SOON]: { coingeckoId: "soon-2", decimals: 9 },
   },
   tac: {
     [ADDRESSES.null]: { coingeckoId: "tac", decimals: 18 },
@@ -113,6 +136,16 @@ const fixBalancesTokens = {
   scroll: {
     '0x056a5fa5da84ceb7f93d36e545c5905607d8bd81': { coingeckoId: "ether-fi", decimals: 18 },
     '0x03569cc076654f82679c4ba2124d64774781b01d': { coingeckoId: "liquity-bold", decimals: 18 },
+  },
+  bitci: {
+    [nullAddress]: { coingeckoId: "bitcicoin", decimals: 18 },
+    '0xe0d0f25b5fcfa4d3edd9c2186451d9e04c4b9f11': { coingeckoId: "bitcicoin", decimals: 18 },
+    '0x57b8adf3f708e33e9d9bdedc1b1ac4b2c06ab5e1': { coingeckoId: "bitci-bonk", decimals: 18 },
+    '0xffdcc0eb46be4ac8f9520e14fd5553605b06a0d6': { coingeckoId: "bitcix", decimals: 18 },
+    '0xed8186908cb406c6f72f8bdd70dc67ae02fb3dbd': { coingeckoId: "peruvian-national-football-team-fan-token", decimals: 18 },
+    '0x3e6f1be54feb9cc37dbfc31a894a8810357c3f9c': { coingeckoId: "spain-national-fan-token", decimals: 18 },
+    '0x4270a3d1a61fc6b86ea9e19730e529acee592c3b': { coingeckoId: "brazil-fan-token", decimals: 18 },
+    '0x38b0b761c90eaaea748bd3a43199377818d280e6': { coingeckoId: "mclaren-f1-fan-token", decimals: 18 },
   }
 }
 
