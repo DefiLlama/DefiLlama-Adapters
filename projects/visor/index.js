@@ -9,7 +9,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 module.exports = {
   doublecounted: true,
-  start: 1616679762, // (Mar-25-2021 01:42:42 PM +UTC)
+  start: '2021-03-25', // (Mar-25-2021 01:42:42 PM +UTC)
 };
 
 Object.keys(config).forEach(chain => {

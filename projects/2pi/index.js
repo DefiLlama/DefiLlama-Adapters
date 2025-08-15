@@ -27,7 +27,6 @@ const tvl = async (api) => {
       tokens.push(res[i][j].want)
     }
   }
-  console.log(res, api.chain)
   const bals = await api.multiCall({  abi: archimedesAbi.balance, calls})
   api.add(tokens, bals)
 }

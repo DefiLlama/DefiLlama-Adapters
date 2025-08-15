@@ -48,7 +48,7 @@ async function tvl({timestamp}) {
 
 module.exports = {
   methodology: "Scrape the blockchain and filter for spent transaction outputs that match the contract's input script template. Aggregate them to compute TVL. The TVL data lags by contract duration since contracts are secret until settled. So, TVL at the current time will always be 0 and can only be calculated in retrospect and stats back-filled when contracts are revealed. For this reason, the code cuts-off the data at 91 days ago. See here for more details: https://gitlab.com/0353F40E/anyhedge-stats/-/blob/master/readme.md",
-  start: 1654787405,
+  start: '2022-06-09',
   bitcoincash: { tvl },
   hallmarks: [
     [1681725240, "BCH Bull public release (AnyHedge v0.11 contract)"],

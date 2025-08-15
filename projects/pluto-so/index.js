@@ -72,4 +72,7 @@ module.exports = {
     tvl,
     // borrowed,
   },
+  hallmarks: [
+      [1733534040, "Referral-only launch"],
+  ]
 };

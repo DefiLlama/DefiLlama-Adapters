@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/sumTokens');
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
@@ -6,9 +5,7 @@ const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 module.exports = {
   methodology: "Staking tokens via AINN Layer2 Dataset counts as TVL.",
   bitcoin: {
-    tvl: sdk.util.sumChainTvls([
-      sumTokensExport({ owners: bitcoinAddressBook.ainn }),
-    ]),
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.ainn }),
   },
   zklink: {
     tvl: sumTokensExport({

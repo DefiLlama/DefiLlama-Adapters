@@ -84,6 +84,29 @@ const toobit = require('./toobit.js')
 const indiaCovid = require('./india-covid.js')
 const wooCEX = require('./woo-cex.js')
 const bitlayerBridge = require('./bitlayer-bridge.js')
+const arkhamExchange = require('./arkham-exchange.js')
+const chakra = require('./chakra.js')
+const nerveNetworkBridge = require('./nervenetworkbridge.js')
+const nexusbtc = require('./nexusbtc')
+const tapbit = require('./tapbit-cex.js')
+const jbtc = require('./jbtc')
+const bitkub = require('./bitkub-cex.js')
+const coin8 = require('./coin8.js')
+const bitrue = require('./bitrue-cex.js')
+const cygnus = require('./cygnus.js')
+const unitbtc = require('./unit-btc.js')
+const backpack = require('./backpack.js')
+const coinbasebtc = require('./coinbase-btc.js')
+const coinbaseltc = require('./coinbase-ltc.js')
+const prosper = require('./prosper.js')
+const hotcoin = require('./hotcoin.js')
+const orangex = require('./orangex.js')
+const exmo = require('./exmo.js')
+const esbtc = require('./esbtc.js')
+const bimaCdp = require('./bima-cdp.js')
+const tzbtc = require('./tezos-btc.js')
+const tothemoon = require('./tothemoon.js')
+const indodax = require('./indodax.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -94,14 +117,44 @@ const teleswap = [
   '3LNsey3ceG9ZHkQ7bcfAjwnew7KVujHt29', // BRC20_LOCKER
 ]
 
+const ssiProtocol = [
+  '1BH4rZH7ptWyjim6fLJDp9t8Jp2DgXiBDM'
+]
+
+const bitomato = [
+  'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
+]
+
+const lbank = [
+  '1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn',
+]
+
+const stacksSBTC = [
+  // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
+  'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc',
+  'bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy',
+]
+
+const magpie = [
+  '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
+  'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
+]
+
 module.exports = {
   ...fetchers,
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo'],
+  cygnus,
+  magpie,
+  stacksSBTC,
+  bitomato,
   bitlayerBridge,
   teleswap,
+  ssiProtocol,
   ainn,
   allo,
   avalanche,
   bevm,
+  bimaCdp,
   binance,
   binance2,
   bitstable,
@@ -183,4 +236,26 @@ module.exports = {
   indiaCovid,
   wooCEX,
   p2pb2b,
+  arkhamExchange,
+  chakra,
+  nerveNetworkBridge,
+  nexusbtc,
+  tapbit,
+  jbtc,
+  bitkub,
+  coin8,
+  bitrue,
+  unitbtc,
+  backpack,
+  coinbasebtc,
+  coinbaseltc,
+  prosper,
+  lbank,
+  hotcoin,
+  orangex,
+  exmo,
+  esbtc,
+  tzbtc,
+  tothemoon,
+  indodax
 }

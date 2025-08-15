@@ -41,7 +41,7 @@ const chains = [
 ]
 
 module.exports = {
-  start: 1695873578, // Sep-28-2023 03:59:38 AM +UTC
+  start: '2023-09-28', // Sep-28-2023 03:59:38 AM +UTC
   doublecounted: true,
   methodology: "TVL is equal to users' running positions' liquidity value plus uncollected fees.",
 };

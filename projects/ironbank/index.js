@@ -1,7 +1,7 @@
 const { compoundExports2 } = require("../helper/compound");
 
 module.exports = {
-  start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
+  start: '2020-09-08', // 09/08/2020 @ 8:00am (UTC)
   ethereum: compoundExports2({
     comptroller: '0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB',
     blacklistedTokens: [
@@ -19,3 +19,6 @@ module.exports = {
   avax: compoundExports2({ comptroller: '0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc' }),
   optimism: compoundExports2({ comptroller: '0xE0B57FEEd45e7D908f2d0DaCd26F113Cf26715BF' }),
 }
+
+module.exports.ethereum.borrowed = () => ({}) // bad debt, likely will never be repaid
+module.exports.fantom.borrowed = () => ({}) // bad debt, likely will never be repaid

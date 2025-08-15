@@ -21,7 +21,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 
 
 module.exports = {
-  start: 1639872000,            // 19/12/2021 @ 00:00am (UTC)
+  start: '2021-12-19',            // 19/12/2021 @ 00:00am (UTC)
   avax:{
       staking,
       tvl: async()=>({})
