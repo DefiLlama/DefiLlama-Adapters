@@ -1,12 +1,11 @@
 const sdk = require('@defillama/sdk')
 const { getBlock } = require('../helper/http');
 
-
 const abi = {
   getBasket: 'function getBasket() view returns ((string chain, string symbol, string addr, uint8 decimals, uint256 amount)[])'
 }
 
-ssi_tokens = [
+const ssi_tokens = [
   // MAG7.ssi
   '0x9E6A46f294bB67c20F1D1E7AfB0bBEf614403B55',
   // DEFI.ssi
@@ -34,6 +33,8 @@ function underlyingExports(chains) {
         baskets.forEach(basket => {
           basket.forEach(token => {
             if (token.chain == chain_name) {
+              let token_addr;
+              let token_amount;
               if (token.addr != '') {
                 token_addr = chain + ':' + token.addr;
                 token_amount = token.amount;
