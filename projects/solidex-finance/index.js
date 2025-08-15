@@ -1,6 +1,6 @@
 const { uniTvlExports } = require('../helper/unknownTokens')
 const { uniV3Export } = require('../helper/uniswapV3')
-const { sumChainTvls } = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
 const CHAIN = 'cronos'
 
@@ -25,7 +25,7 @@ const v3 = uniV3Export({
 module.exports = {
     methodology: 'TVL = sum of reserves from Solidly (V2) pools + Concentrated Liquidity (V3) pools, fetched from their factories.',
     [CHAIN]: {
-        tvl: sumChainTvls([v2[CHAIN].tvl, v3[CHAIN].tvl]),
+        tvl: sdk.util.sumChainTvls([v2[CHAIN].tvl, v3[CHAIN].tvl]),
     },
 }
 
