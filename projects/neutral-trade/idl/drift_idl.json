@@ -1,279 +1,2821 @@
 {
-  "version": "2.106.0",
-  "name": "drift",
-  "instructions": [],
+  "version": "0.2.0",
+  "name": "drift_vaults",
+  "instructions": [
+    {
+      "name": "initializeVault",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarket",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "VaultParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "initializeVaultWithProtocol",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultProtocol",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarket",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "VaultWithProtocolParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateDelegate",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "delegate",
+          "type": "publicKey"
+        }
+      ]
+    },
+    {
+      "name": "updateMarginTradingEnabled",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "updateVaultProtocol",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "protocol",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "vaultProtocol",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "UpdateVaultProtocolParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateVault",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "UpdateVaultParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "initializeVaultDepositor",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initializeTokenizedVaultDepositor",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mintAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "metadataAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "InitializeTokenizedVaultDepositorParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tokenizeShares",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenizedVaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "unit",
+          "type": {
+            "defined": "WithdrawUnit"
+          }
+        }
+      ]
+    },
+    {
+      "name": "redeemTokens",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenizedVaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "tokensToBurn",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "deposit",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "requestWithdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "withdrawAmount",
+          "type": "u64"
+        },
+        {
+          "name": "withdrawUnit",
+          "type": {
+            "defined": "WithdrawUnit"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cancelRequestWithdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "withdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "liquidate",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "authority",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "resetDelegate",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "managerDeposit",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "managerRequestWithdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "withdrawAmount",
+          "type": "u64"
+        },
+        {
+          "name": "withdrawUnit",
+          "type": {
+            "defined": "WithdrawUnit"
+          }
+        }
+      ]
+    },
+    {
+      "name": "mangerCancelWithdrawRequest",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "managerWithdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "applyProfitShare",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "applyRebase",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "applyRebaseTokenizedDepositor",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenizedVaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "forceWithdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "vaultDepositor",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initializeInsuranceFundStake",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarket",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "marketIndex",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "addInsuranceFundStake",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "driftSpotMarket",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "managerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultIfTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "marketIndex",
+          "type": "u16"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "requestRemoveInsuranceFundStake",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftSpotMarket",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "marketIndex",
+          "type": "u16"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "removeInsuranceFundStake",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftSpotMarket",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "managerTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultIfTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "marketIndex",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "cancelRequestRemoveInsuranceFundStake",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "manager",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftSpotMarket",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundStake",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "insuranceFundVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "marketIndex",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "protocolRequestWithdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultProtocol",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "protocol",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "withdrawAmount",
+          "type": "u64"
+        },
+        {
+          "name": "withdrawUnit",
+          "type": {
+            "defined": "WithdrawUnit"
+          }
+        }
+      ]
+    },
+    {
+      "name": "protocolCancelWithdrawRequest",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultProtocol",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "protocol",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "protocolWithdraw",
+      "accounts": [
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultProtocol",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "protocol",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUserStats",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftUser",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "driftSpotMarketVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "driftProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
   "accounts": [
     {
-      "name": "User",
+      "name": "tokenizedVaultDepositor",
       "type": {
         "kind": "struct",
         "fields": [
-          {"name": "authority", "docs": ["The owner/authority of the account"], "type": "publicKey"},
           {
-            "name": "delegate",
-            "docs": ["An addresses that can control the account on the authority's behalf. Has limited power, cant withdraw"],
+            "name": "vault",
+            "docs": [
+              "The vault deposited into"
+            ],
             "type": "publicKey"
           },
-          {"name": "name", "docs": ["Encoded display name e.g. \"toly\""], "type": {"array": ["u8", 32]}},
-          {"name": "spotPositions", "docs": ["The user's spot positions"], "type": {"array": [{"defined": "SpotPosition"}, 8]}},
-          {"name": "perpPositions", "docs": ["The user's perp positions"], "type": {"array": [{"defined": "PerpPosition"}, 8]}},
-          {"name": "orders", "docs": ["The user's orders"], "type": {"array": [{"defined": "Order"}, 32]}},
-          {"name": "lastAddPerpLpSharesTs", "docs": ["The last time the user added perp lp positions"], "type": "i64"},
-          {"name": "totalDeposits", "docs": ["The total values of deposits the user has made", "precision: QUOTE_PRECISION"], "type": "u64"},
-          {"name": "totalWithdraws", "docs": ["The total values of withdrawals the user has made", "precision: QUOTE_PRECISION"], "type": "u64"},
           {
-            "name": "totalSocialLoss",
-            "docs": ["The total socialized loss the users has incurred upon the protocol", "precision: QUOTE_PRECISION"],
-            "type": "u64"
-          },
-          {
-            "name": "settledPerpPnl",
-            "docs": ["Fees (taker fees, maker rebate, referrer reward, filler reward) and pnl for perps", "precision: QUOTE_PRECISION"],
-            "type": "i64"
-          },
-          {
-            "name": "cumulativeSpotFees",
-            "docs": ["Fees (taker fees, maker rebate, filler reward) for spot", "precision: QUOTE_PRECISION"],
-            "type": "i64"
-          },
-          {"name": "cumulativePerpFunding", "docs": ["Cumulative funding paid/received for perps", "precision: QUOTE_PRECISION"], "type": "i64"},
-          {
-            "name": "liquidationMarginFreed",
+            "name": "pubkey",
             "docs": [
-              "The amount of margin freed during liquidation. Used to force the liquidation to occur over a period of time",
-              "Defaults to zero when not being liquidated",
-              "precision: QUOTE_PRECISION"
+              "The vault depositor account's pubkey. It is a pda of vault"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "The token mint for tokenized shares owned by this VaultDepositor"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultShares",
+            "docs": [
+              "share of vault owned by this depositor. vault_shares / vault.total_shares is depositor's ownership of vault_equity"
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "lastVaultShares",
+            "docs": [
+              "stores the vault_shares from the most recent liquidity event (redeem or issuance) before a spl token",
+              "CPI is done, used to track invariants"
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "lastValidTs",
+            "docs": [
+              "creation ts of vault depositor"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "netDeposits",
+            "docs": [
+              "lifetime net deposits of vault depositor for the vault"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "totalDeposits",
+            "docs": [
+              "lifetime total deposits"
             ],
             "type": "u64"
           },
-          {"name": "lastActiveSlot", "docs": ["The last slot a user was active. Used to determine if a user is idle"], "type": "u64"},
-          {"name": "nextOrderId", "docs": ["Every user order has an order id. This is the next order id to be used"], "type": "u32"},
-          {"name": "maxMarginRatio", "docs": ["Custom max initial margin ratio for the user"], "type": "u32"},
-          {"name": "nextLiquidationId", "docs": ["The next liquidation id to be used for user"], "type": "u16"},
-          {"name": "subAccountId", "docs": ["The sub account id for this user"], "type": "u16"},
-          {"name": "status", "docs": ["Whether the user is active, being liquidated or bankrupt"], "type": "u8"},
-          {"name": "isMarginTradingEnabled", "docs": ["Whether the user has enabled margin trading"], "type": "bool"},
           {
-            "name": "idle",
+            "name": "totalWithdraws",
             "docs": [
-              "User is idle if they haven't interacted with the protocol in 1 week and they have no orders, perp positions or borrows",
-              "Off-chain keeper bots can ignore users that are idle"
+              "lifetime total withdraws"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProfitShareAmount",
+            "docs": [
+              "the token amount of gains the vault depositor has paid performance fees on"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "profitShareFeePaid",
+            "type": "u64"
+          },
+          {
+            "name": "vaultSharesBase",
+            "docs": [
+              "The exponent for vault_shares decimal places at the time the tokenized vault depositor was initialized.",
+              "If the vault undergoes a rebase, this TokenizedVaultDepositor can no longer issue new tokens, only redeem",
+              "is possible."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "The bump for the vault pda"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                10
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "vaultDepositor",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "docs": [
+              "The vault deposited into"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "pubkey",
+            "docs": [
+              "The vault depositor account's pubkey. It is a pda of vault and authority"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "authority",
+            "docs": [
+              "The authority is the address w permission to deposit/withdraw"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultShares",
+            "docs": [
+              "share of vault owned by this depositor. vault_shares / vault.total_shares is depositor's ownership of vault_equity"
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "lastWithdrawRequest",
+            "docs": [
+              "last withdraw request"
+            ],
+            "type": {
+              "defined": "WithdrawRequest"
+            }
+          },
+          {
+            "name": "lastValidTs",
+            "docs": [
+              "creation ts of vault depositor"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "netDeposits",
+            "docs": [
+              "lifetime net deposits of vault depositor for the vault"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "totalDeposits",
+            "docs": [
+              "lifetime total deposits"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "totalWithdraws",
+            "docs": [
+              "lifetime total withdraws"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProfitShareAmount",
+            "docs": [
+              "the token amount of gains the vault depositor has paid performance fees on"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "profitShareFeePaid",
+            "type": "u64"
+          },
+          {
+            "name": "vaultSharesBase",
+            "docs": [
+              "the exponent for vault_shares decimal places"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "padding1",
+            "type": "u32"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                8
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "vaultProtocol",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "protocol",
+            "docs": [
+              "The protocol, company, or entity that services the product using this vault.",
+              "The protocol is not allowed to deposit into the vault but can profit share and collect annual fees just like the manager."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "protocolProfitAndFeeShares",
+            "docs": [
+              "The shares from profit share and annual fee unclaimed by the protocol."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "protocolFee",
+            "docs": [
+              "The annual fee charged on deposits by the protocol (traditional hedge funds typically charge 2% per year on assets under management).",
+              "Unlike the management fee this can't be negative."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protocolTotalWithdraws",
+            "docs": [
+              "Total withdraws for the protocol"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protocolTotalFee",
+            "docs": [
+              "Total fee charged by the protocol (annual management fee + profit share).",
+              "Unlike the management fee this can't be negative."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protocolTotalProfitShare",
+            "docs": [
+              "Total profit share charged by the protocol"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lastProtocolWithdrawRequest",
+            "type": {
+              "defined": "WithdrawRequest"
+            }
+          },
+          {
+            "name": "protocolProfitShare",
+            "docs": [
+              "Percentage the protocol charges on all profits realized by depositors: PERCENTAGE_PRECISION"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "version",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "vault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "docs": [
+              "The name of the vault. Vault pubkey is derived from this name."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "pubkey",
+            "docs": [
+              "The vault's pubkey. It is a pda of name and also used as the authority for drift user"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "manager",
+            "docs": [
+              "The manager of the vault who has ability to update vault params"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAccount",
+            "docs": [
+              "The vaults token account. Used to receive tokens between deposits and withdrawals"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "userStats",
+            "docs": [
+              "The drift user stats account for the vault"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "user",
+            "docs": [
+              "The drift user account for the vault"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "delegate",
+            "docs": [
+              "The vaults designated delegate for drift user account",
+              "can differ from actual user delegate if vault is in liquidation"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "liquidationDelegate",
+            "docs": [
+              "The delegate handling liquidation for depositor"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "userShares",
+            "docs": [
+              "The sum of all shares held by the users (vault depositors)"
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "totalShares",
+            "docs": [
+              "The sum of all shares: deposits from users, manager deposits, manager profit/fee, and protocol profit/fee.",
+              "The manager deposits are total_shares - user_shares - protocol_profit_and_fee_shares."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "lastFeeUpdateTs",
+            "docs": [
+              "Last fee update unix timestamp"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "liquidationStartTs",
+            "docs": [
+              "When the liquidation starts"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "redeemPeriod",
+            "docs": [
+              "The period (in seconds) that a vault depositor must wait after requesting a withdrawal to finalize withdrawal.",
+              "Currently, the maximum is 90 days."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "totalWithdrawRequested",
+            "docs": [
+              "The sum of all outstanding withdraw requests"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "maxTokens",
+            "docs": [
+              "Max token capacity, once hit/passed vault will reject new deposits (updatable)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "managementFee",
+            "docs": [
+              "The annual fee charged on deposits by the manager.",
+              "Traditional funds typically charge 2% per year on assets under management."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "initTs",
+            "docs": [
+              "Timestamp vault initialized"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "netDeposits",
+            "docs": [
+              "The net deposits for the vault"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "managerNetDeposits",
+            "docs": [
+              "The net deposits for the manager"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "totalDeposits",
+            "docs": [
+              "Total deposits"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "totalWithdraws",
+            "docs": [
+              "Total withdraws"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "managerTotalDeposits",
+            "docs": [
+              "Total deposits for the manager"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "managerTotalWithdraws",
+            "docs": [
+              "Total withdraws for the manager"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "managerTotalFee",
+            "docs": [
+              "Total management fee accrued by the manager"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "managerTotalProfitShare",
+            "docs": [
+              "Total profit share accrued by the manager"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "minDepositAmount",
+            "docs": [
+              "The minimum deposit amount"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lastManagerWithdrawRequest",
+            "type": {
+              "defined": "WithdrawRequest"
+            }
+          },
+          {
+            "name": "sharesBase",
+            "docs": [
+              "The base 10 exponent of the shares (given massive share inflation can occur at near zero vault equity)"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "profitShare",
+            "docs": [
+              "Percentage the manager charges on all profits realized by depositors: PERCENTAGE_PRECISION"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "hurdleRate",
+            "docs": [
+              "Vault manager only collect incentive fees during periods when returns are higher than this amount: PERCENTAGE_PRECISION"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "spotMarketIndex",
+            "docs": [
+              "The spot market index the vault deposits into/withdraws from"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "The bump for the vault pda"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "permissioned",
+            "docs": [
+              "Whether anybody can be a depositor"
             ],
             "type": "bool"
           },
-          {"name": "openOrders", "docs": ["number of open orders"], "type": "u8"},
-          {"name": "hasOpenOrder", "docs": ["Whether or not user has open order"], "type": "bool"},
-          {"name": "openAuctions", "docs": ["number of open orders with auction"], "type": "u8"},
-          {"name": "hasOpenAuction", "docs": ["Whether or not user has open order with auction"], "type": "bool"},
-          {"name": "marginMode", "type": {"defined": "MarginMode"}},
-          {"name": "poolId", "type": "u8"},
-          {"name": "padding1", "type": {"array": ["u8", 3]}},
-          {"name": "lastFuelBonusUpdateTs", "type": "u32"},
-          {"name": "padding", "type": {"array": ["u8", 12]}}
+          {
+            "name": "vaultProtocol",
+            "docs": [
+              "The optional [`VaultProtocol`] account."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                7
+              ]
+            }
+          }
         ]
       }
     }
   ],
   "types": [
     {
-      "name": "SpotPosition",
+      "name": "InitializeTokenizedVaultDepositorParams",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "scaledBalance",
-            "docs": [
-              "The scaled balance of the position. To get the token amount, multiply by the cumulative deposit/borrow",
-              "interest of corresponding market.",
-              "precision: SPOT_BALANCE_PRECISION"
-            ],
-            "type": "u64"
+            "name": "tokenName",
+            "type": "string"
           },
-          {"name": "openBids", "docs": ["How many spot bids the user has open", "precision: token mint precision"], "type": "i64"},
-          {"name": "openAsks", "docs": ["How many spot asks the user has open", "precision: token mint precision"], "type": "i64"},
           {
-            "name": "cumulativeDeposits",
-            "docs": ["The cumulative deposits/borrows a user has made into a market", "precision: token mint precision"],
-            "type": "i64"
+            "name": "tokenSymbol",
+            "type": "string"
           },
-          {"name": "marketIndex", "docs": ["The market index of the corresponding spot market"], "type": "u16"},
-          {"name": "balanceType", "docs": ["Whether the position is deposit or borrow"], "type": {"defined": "SpotBalanceType"}},
-          {"name": "openOrders", "docs": ["Number of open orders"], "type": "u8"},
-          {"name": "padding", "type": {"array": ["u8", 4]}}
+          {
+            "name": "tokenUri",
+            "type": "string"
+          },
+          {
+            "name": "decimals",
+            "type": "u8"
+          }
         ]
       }
     },
-    {"name": "SpotBalanceType", "type": {"kind": "enum", "variants": [{"name": "Deposit"}, {"name": "Borrow"}]}},
     {
-      "name": "PerpPosition",
+      "name": "VaultWithProtocolParams",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lastCumulativeFundingRate",
-            "docs": [
-              "The perp market's last cumulative funding rate. Used to calculate the funding payment owed to user",
-              "precision: FUNDING_RATE_PRECISION"
-            ],
-            "type": "i64"
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
           },
-          {"name": "baseAssetAmount", "docs": ["the size of the users perp position", "precision: BASE_PRECISION"], "type": "i64"},
           {
-            "name": "quoteAssetAmount",
-            "docs": [
-              "Used to calculate the users pnl. Upon entry, is equal to base_asset_amount * avg entry price - fees",
-              "Updated when the user open/closes position or settles pnl. Includes fees/funding",
-              "precision: QUOTE_PRECISION"
-            ],
+            "name": "redeemPeriod",
             "type": "i64"
           },
           {
-            "name": "quoteBreakEvenAmount",
-            "docs": [
-              "The amount of quote the user would need to exit their position at to break even",
-              "Updated when the user open/closes position or settles pnl. Includes fees/funding",
-              "precision: QUOTE_PRECISION"
-            ],
-            "type": "i64"
-          },
-          {
-            "name": "quoteEntryAmount",
-            "docs": [
-              "The amount quote the user entered the position with. Equal to base asset amount * avg entry price",
-              "Updated when the user open/closes position. Excludes fees/funding",
-              "precision: QUOTE_PRECISION"
-            ],
-            "type": "i64"
-          },
-          {"name": "openBids", "docs": ["The amount of open bids the user has in this perp market", "precision: BASE_PRECISION"], "type": "i64"},
-          {"name": "openAsks", "docs": ["The amount of open asks the user has in this perp market", "precision: BASE_PRECISION"], "type": "i64"},
-          {
-            "name": "settledPnl",
-            "docs": ["The amount of pnl settled in this market since opening the position", "precision: QUOTE_PRECISION"],
-            "type": "i64"
-          },
-          {
-            "name": "lpShares",
-            "docs": [
-              "The number of lp (liquidity provider) shares the user has in this perp market",
-              "LP shares allow users to provide liquidity via the AMM",
-              "precision: BASE_PRECISION"
-            ],
+            "name": "maxTokens",
             "type": "u64"
           },
           {
-            "name": "lastBaseAssetAmountPerLp",
-            "docs": ["The last base asset amount per lp the amm had", "Used to settle the users lp position", "precision: BASE_PRECISION"],
+            "name": "managementFee",
             "type": "i64"
           },
           {
-            "name": "lastQuoteAssetAmountPerLp",
-            "docs": ["The last quote asset amount per lp the amm had", "Used to settle the users lp position", "precision: QUOTE_PRECISION"],
-            "type": "i64"
+            "name": "minDepositAmount",
+            "type": "u64"
           },
           {
-            "name": "remainderBaseAssetAmount",
-            "docs": [
-              "Settling LP position can lead to a small amount of base asset being left over smaller than step size",
-              "This records that remainder so it can be settled later on",
-              "precision: BASE_PRECISION"
-            ],
-            "type": "i32"
+            "name": "profitShare",
+            "type": "u32"
           },
-          {"name": "marketIndex", "docs": ["The market index for the perp market"], "type": "u16"},
-          {"name": "openOrders", "docs": ["The number of open orders"], "type": "u8"},
-          {"name": "perLpBase", "type": "i8"}
+          {
+            "name": "hurdleRate",
+            "type": "u32"
+          },
+          {
+            "name": "spotMarketIndex",
+            "type": "u16"
+          },
+          {
+            "name": "permissioned",
+            "type": "bool"
+          },
+          {
+            "name": "vaultProtocol",
+            "type": {
+              "defined": "VaultProtocolParams"
+            }
+          }
         ]
       }
     },
     {
-      "name": "Order",
+      "name": "VaultProtocolParams",
       "type": {
         "kind": "struct",
         "fields": [
-          {"name": "slot", "docs": ["The slot the order was placed"], "type": "u64"},
           {
-            "name": "price",
+            "name": "protocol",
+            "type": "publicKey"
+          },
+          {
+            "name": "protocolFee",
+            "type": "u64"
+          },
+          {
+            "name": "protocolProfitShare",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VaultParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "redeemPeriod",
+            "type": "i64"
+          },
+          {
+            "name": "maxTokens",
+            "type": "u64"
+          },
+          {
+            "name": "managementFee",
+            "type": "i64"
+          },
+          {
+            "name": "minDepositAmount",
+            "type": "u64"
+          },
+          {
+            "name": "profitShare",
+            "type": "u32"
+          },
+          {
+            "name": "hurdleRate",
+            "type": "u32"
+          },
+          {
+            "name": "spotMarketIndex",
+            "type": "u16"
+          },
+          {
+            "name": "permissioned",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateVaultProtocolParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "protocolFee",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "protocolProfitShare",
+            "type": {
+              "option": "u32"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateVaultParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "redeemPeriod",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "maxTokens",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "managementFee",
+            "type": {
+              "option": "i64"
+            }
+          },
+          {
+            "name": "minDepositAmount",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "profitShare",
+            "type": {
+              "option": "u32"
+            }
+          },
+          {
+            "name": "hurdleRate",
+            "type": {
+              "option": "u32"
+            }
+          },
+          {
+            "name": "permissioned",
+            "type": {
+              "option": "bool"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawRequest",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shares",
             "docs": [
-              "The limit price for the order (can be 0 for market orders)",
-              "For orders with an auction, this price isn't used until the auction is complete",
-              "precision: PRICE_PRECISION"
+              "request shares of vault withdraw"
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "value",
+            "docs": [
+              "requested value (in vault spot_market_index) of shares for withdraw"
             ],
             "type": "u64"
           },
           {
-            "name": "baseAssetAmount",
-            "docs": ["The size of the order", "precision for perps: BASE_PRECISION", "precision for spot: token mint precision"],
-            "type": "u64"
-          },
-          {
-            "name": "baseAssetAmountFilled",
-            "docs": ["The amount of the order filled", "precision for perps: BASE_PRECISION", "precision for spot: token mint precision"],
-            "type": "u64"
-          },
-          {"name": "quoteAssetAmountFilled", "docs": ["The amount of quote filled for the order", "precision: QUOTE_PRECISION"], "type": "u64"},
-          {
-            "name": "triggerPrice",
-            "docs": ["At what price the order will be triggered. Only relevant for trigger orders", "precision: PRICE_PRECISION"],
-            "type": "u64"
-          },
-          {
-            "name": "auctionStartPrice",
-            "docs": ["The start price for the auction. Only relevant for market/oracle orders", "precision: PRICE_PRECISION"],
+            "name": "ts",
+            "docs": [
+              "request ts of vault withdraw"
+            ],
             "type": "i64"
-          },
-          {
-            "name": "auctionEndPrice",
-            "docs": ["The end price for the auction. Only relevant for market/oracle orders", "precision: PRICE_PRECISION"],
-            "type": "i64"
-          },
-          {"name": "maxTs", "docs": ["The time when the order will expire"], "type": "i64"},
-          {
-            "name": "oraclePriceOffset",
-            "docs": ["If set, the order limit price is the oracle price + this offset", "precision: PRICE_PRECISION"],
-            "type": "i32"
-          },
-          {"name": "orderId", "docs": ["The id for the order. Each users has their own order id space"], "type": "u32"},
-          {"name": "marketIndex", "docs": ["The perp/spot market index"], "type": "u16"},
-          {"name": "status", "docs": ["Whether the order is open or unused"], "type": {"defined": "OrderStatus"}},
-          {"name": "orderType", "docs": ["The type of order"], "type": {"defined": "OrderType"}},
-          {"name": "marketType", "docs": ["Whether market is spot or perp"], "type": {"defined": "MarketType"}},
-          {"name": "userOrderId", "docs": ["User generated order id. Can make it easier to place/cancel orders"], "type": "u8"},
-          {
-            "name": "existingPositionDirection",
-            "docs": ["What the users position was when the order was placed"],
-            "type": {"defined": "PositionDirection"}
-          },
-          {"name": "direction", "docs": ["Whether the user is going long or short. LONG = bid, SHORT = ask"], "type": {"defined": "PositionDirection"}},
-          {"name": "reduceOnly", "docs": ["Whether the order is allowed to only reduce position size"], "type": "bool"},
-          {"name": "postOnly", "docs": ["Whether the order must be a maker"], "type": "bool"},
-          {"name": "immediateOrCancel", "docs": ["Whether the order must be canceled the same slot it is placed"], "type": "bool"},
-          {
-            "name": "triggerCondition",
-            "docs": ["Whether the order is triggered above or below the trigger price. Only relevant for trigger orders"],
-            "type": {"defined": "OrderTriggerCondition"}
-          },
-          {"name": "auctionDuration", "docs": ["How many slots the auction lasts"], "type": "u8"},
-          {"name": "padding", "type": {"array": ["u8", 3]}}
+          }
         ]
       }
     },
-    {"name": "OrderStatus", "type": {"kind": "enum", "variants": [{"name": "Init"}, {"name": "Open"}, {"name": "Filled"}, {"name": "Canceled"}]}},
     {
-      "name": "OrderType",
+      "name": "VaultDepositorAction",
       "type": {
         "kind": "enum",
-        "variants": [{"name": "Market"}, {"name": "Limit"}, {"name": "TriggerMarket"}, {"name": "TriggerLimit"}, {"name": "Oracle"}]
+        "variants": [
+          {
+            "name": "Deposit"
+          },
+          {
+            "name": "WithdrawRequest"
+          },
+          {
+            "name": "CancelWithdrawRequest"
+          },
+          {
+            "name": "Withdraw"
+          },
+          {
+            "name": "FeePayment"
+          },
+          {
+            "name": "TokenizeShares"
+          },
+          {
+            "name": "RedeemTokens"
+          }
+        ]
       }
     },
-    {"name": "MarketType", "type": {"kind": "enum", "variants": [{"name": "Spot"}, {"name": "Perp"}]}},
-    {"name": "PositionDirection", "type": {"kind": "enum", "variants": [{"name": "Long"}, {"name": "Short"}]}},
     {
-      "name": "OrderTriggerCondition",
-      "type": {"kind": "enum", "variants": [{"name": "Above"}, {"name": "Below"}, {"name": "TriggeredAbove"}, {"name": "TriggeredBelow"}]}
-    },
-    {"name": "MarginMode", "type": {"kind": "enum", "variants": [{"name": "Default"}, {"name": "HighLeverage"}]}}
+      "name": "WithdrawUnit",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Shares"
+          },
+          {
+            "name": "Token"
+          },
+          {
+            "name": "SharesPercent"
+          }
+        ]
+      }
+    }
   ],
-  "events": [],
-  "errors": []
+  "events": [
+    {
+      "name": "VaultRecord",
+      "fields": [
+        {
+          "name": "ts",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "spotMarketIndex",
+          "type": "u16",
+          "index": false
+        },
+        {
+          "name": "vaultEquityBefore",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "VaultDepositorRecord",
+      "fields": [
+        {
+          "name": "ts",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "vault",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "depositorAuthority",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "action",
+          "type": {
+            "defined": "VaultDepositorAction"
+          },
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "spotMarketIndex",
+          "type": "u16",
+          "index": false
+        },
+        {
+          "name": "vaultSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "vaultSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "vaultEquityBefore",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "userVaultSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "totalVaultSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "userVaultSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "totalVaultSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "profitShare",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "managementFee",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "managementFeeShares",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "VaultDepositorV1Record",
+      "fields": [
+        {
+          "name": "ts",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "vault",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "depositorAuthority",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "action",
+          "type": {
+            "defined": "VaultDepositorAction"
+          },
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "spotMarketIndex",
+          "type": "u16",
+          "index": false
+        },
+        {
+          "name": "vaultSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "vaultSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "vaultEquityBefore",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "userVaultSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "totalVaultSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "userVaultSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "totalVaultSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "protocolSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "protocolSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "protocolProfitShare",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "protocolFee",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "protocolFeeShares",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "managerProfitShare",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "managementFee",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "managementFeeShares",
+          "type": "i64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "ShareTransferRecord",
+      "fields": [
+        {
+          "name": "ts",
+          "type": "i64",
+          "index": false
+        },
+        {
+          "name": "vault",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "fromVaultDepositor",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "toVaultDepositor",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "shares",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "value",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "fromDepositorSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "fromDepositorSharesAfter",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "toDepositorSharesBefore",
+          "type": "u128",
+          "index": false
+        },
+        {
+          "name": "toDepositorSharesAfter",
+          "type": "u128",
+          "index": false
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Default",
+      "msg": "Default"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidVaultRebase",
+      "msg": "InvalidVaultRebase"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidVaultSharesDetected",
+      "msg": "InvalidVaultSharesDetected"
+    },
+    {
+      "code": 6003,
+      "name": "CannotWithdrawBeforeRedeemPeriodEnd",
+      "msg": "CannotWithdrawBeforeRedeemPeriodEnd"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidVaultWithdraw",
+      "msg": "InvalidVaultWithdraw"
+    },
+    {
+      "code": 6005,
+      "name": "InsufficientVaultShares",
+      "msg": "InsufficientVaultShares"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidVaultWithdrawSize",
+      "msg": "InvalidVaultWithdrawSize"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidVaultForNewDepositors",
+      "msg": "InvalidVaultForNewDepositors"
+    },
+    {
+      "code": 6008,
+      "name": "VaultWithdrawRequestInProgress",
+      "msg": "VaultWithdrawRequestInProgress"
+    },
+    {
+      "code": 6009,
+      "name": "VaultIsAtCapacity",
+      "msg": "VaultIsAtCapacity"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidVaultDepositorInitialization",
+      "msg": "InvalidVaultDepositorInitialization"
+    },
+    {
+      "code": 6011,
+      "name": "DelegateNotAvailableForLiquidation",
+      "msg": "DelegateNotAvailableForLiquidation"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidEquityValue",
+      "msg": "InvalidEquityValue"
+    },
+    {
+      "code": 6013,
+      "name": "VaultInLiquidation",
+      "msg": "VaultInLiquidation"
+    },
+    {
+      "code": 6014,
+      "name": "DriftError",
+      "msg": "DriftError"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidVaultInitialization",
+      "msg": "InvalidVaultInitialization"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidVaultUpdate",
+      "msg": "InvalidVaultUpdate"
+    },
+    {
+      "code": 6017,
+      "name": "PermissionedVault",
+      "msg": "PermissionedVault"
+    },
+    {
+      "code": 6018,
+      "name": "WithdrawInProgress",
+      "msg": "WithdrawInProgress"
+    },
+    {
+      "code": 6019,
+      "name": "SharesPercentTooLarge",
+      "msg": "SharesPercentTooLarge"
+    },
+    {
+      "code": 6020,
+      "name": "InvalidVaultDeposit",
+      "msg": "InvalidVaultDeposit"
+    },
+    {
+      "code": 6021,
+      "name": "OngoingLiquidation",
+      "msg": "OngoingLiquidation"
+    },
+    {
+      "code": 6022,
+      "name": "VaultProtocolMissing",
+      "msg": "VaultProtocolMissing"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidTokenization",
+      "msg": "InvalidTokenization"
+    }
+  ]
 }
