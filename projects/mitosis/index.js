@@ -71,6 +71,24 @@ const MORPH_UNDERLYING_ASSETS = {
   "0xae8afc08be496859a96f605b9dad5acd853b3cdd": ADDRESSES.morph.WBTC,
 };
 
+const BASE_CHAIN_ID = 8453;
+
+const EOL_VAULTS_ADDRESS = [
+  {
+    chainId: BASE_CHAIN_ID,
+    address: "0x747a3d7a65bd105e058f6ceca1af5a530b809c55",
+  },
+  {
+    chainId: BASE_CHAIN_ID,
+    address: "0x8a7f5457eb8dab4d48abb6bd2bdf9ebebe97a98b",
+  },
+];
+
+const EOL_UNDERLYING_ASSETS = {
+  "0x747a3d7a65bd105e058f6ceca1af5a530b809c55": ADDRESSES.base.WETH,
+  "0x8a7f5457eb8dab4d48abb6bd2bdf9ebebe97a98b": ADDRESSES.base.USDC,
+};
+
 const chainTVL = ({ vaults = [] }) => async (api) => {
   const caps = [];
   if (CAP_ADDRESS[api.chain] && WEETH_ADDRESS[api.chain]) {
@@ -138,6 +156,21 @@ const chainTVL = ({ vaults = [] }) => async (api) => {
     });
   }
 
+  if (api.chainId === BASE_CHAIN_ID && EOL_VAULTS_ADDRESS.length > 0) {
+    const eolTotalSupplies = await api.multiCall({
+      abi: "uint256:totalSupply",
+      calls: EOL_VAULTS_ADDRESS.map((i) => i.address),
+    });
+
+    EOL_VAULTS_ADDRESS.forEach((eolVault, i) => {
+      const underlyingAsset = EOL_UNDERLYING_ASSETS[eolVault.address];
+      if (underlyingAsset) {
+        // Divide EOL vault totalSupply by 1e6 to adjust decimals
+        api.add(underlyingAsset, eolTotalSupplies[i] / 1e6);
+      }
+    });
+  }
+
   return balances;
 };
 
@@ -151,6 +184,7 @@ module.exports = {
         "0xA1eBd23c4364e7491633237A0d9359D82c629182",
         "0x0109e9f292516dAB3E15EfC61811C5e5a7FA5358",
         "0x0B75e167F8A37179b7044414EE43e94cabeAA2FA",
+        "0xdfb48ac96c69aab9e80e02e50f7b371749c1042d", // yarm_deposit
       ],
     }),
   },
@@ -208,7 +242,10 @@ module.exports = {
   },
   bsc: {
     tvl: chainTVL({
-      vaults: ["0xaDd58517c5D45c8ed361986f193785F8Ed1ABFc2"],
+      vaults: [
+        "0xaDd58517c5D45c8ed361986f193785F8Ed1ABFc2",
+        "0x4320e5ae6f08ffcf6175fb558ee4c0ec41b86de9", // yarm_deposit
+      ],
     }),
   },
   mantle: {
@@ -219,6 +256,11 @@ module.exports = {
   morph: {
     tvl: chainTVL({
       vaults: [],
+    }),
+  },
+  base: {
+    tvl: chainTVL({
+      vaults: [], // EOL vaults handled separately
     }),
   },
 };
