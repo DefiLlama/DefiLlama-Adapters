@@ -1,4 +1,4 @@
-import { BigNumber } from "bignumber.js";
+const BigNumber = require("bignumber.js");
 const { get } = require("../helper/http");
 
 module.exports = {
