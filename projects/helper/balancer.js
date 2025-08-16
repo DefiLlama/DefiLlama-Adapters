@@ -4,6 +4,14 @@ const { cachedGraphQuery } = require('./cache');
 
 function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], onlyUseExistingCache, permitFailure } = {}) {
   return async (api) => {
+    let poolRegisteredKey = 'PoolRegistered'
+    let tokensRegisteredKey = 'TokensRegistered'
+
+    // there is some bug in the cache, this will force reset it
+    if (vault.toLowerCase() === '0xba12222222228d8ba445958a75a0704d566bf2c8' && api.chain === 'xdai') {
+      poolRegisteredKey = 'PoolRegistered-xdai'
+      tokensRegisteredKey = 'TokensRegistered-xdai'
+    }
     const logs = await getLogs({
       api,
       target: vault,
@@ -11,7 +19,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
       fromBlock,
       eventAbi: 'event PoolRegistered(bytes32 indexed poolId, address indexed poolAddress, uint8 specialization)',
       onlyArgs: true,
-      extraKey: 'PoolRegistered',
+      extraKey: poolRegisteredKey,
       onlyUseExistingCache,
     })
     const logs2 = await getLogs({
@@ -21,7 +29,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
       fromBlock,
       eventAbi: 'event TokensRegistered(bytes32 indexed poolId, address[] tokens, address[] assetManagers)',
       onlyArgs: true,
-      extraKey: 'TokensRegistered',
+      extraKey: tokensRegisteredKey,
       onlyUseExistingCache,
     })
 
@@ -47,13 +55,14 @@ function v3Tvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], on
       extraKey: 'PoolRegistered',
       topics: ['0xbc1561eeab9f40962e2fb827a7ff9c7cdb47a9d7c84caeefa4ed90e043842dad'],
       onlyUseExistingCache,
+      permitFailure
     })
 
     const pools = logs.map(i => i.pool)
-    const tokens = logs.map(i => i.tokenConfig.map(i => i.token)).flat()
+    const tokens = [...logs.map(i => i.tokenConfig.map(i => i.token)).flat(), ...preLogTokens]
 
     blacklistedTokens = [...blacklistedTokens, ...pools].map(i => i.toLowerCase())
-    return api.sumTokens({ owner: vault, tokens })
+    return api.sumTokens({ owner: vault, tokens, blacklistedTokens })
   }
 }
 

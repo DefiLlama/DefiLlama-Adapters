@@ -100,7 +100,7 @@ module.exports = {
     staking
   },
   hallmarks: [
-    [Math.floor(new Date("2023-01-01") / 1e3), "Count only active loans"],
-    [Math.floor(new Date("2023-06-27") / 1e3), "ADA loaned out is counted under borrowed"],
+    ["2023-01-01", "Count only active loans"],
+    ["2023-06-27", "ADA loaned out is counted under borrowed"],
   ],
 };

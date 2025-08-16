@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 
 const WEETH_ADDRESS = {
   ethereum: ADDRESSES.ethereum.WEETH,
-  arbitrum: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe",
+  arbitrum: ADDRESSES.arbitrum.weETH,
   optimism: "0x346e03f8cce9fe01dcb3d0da3e9d00dc2c0e08f0",
   mode: ADDRESSES.blast.weETH,
   manta: "0x77b6F99970f488cFA8bd41892900b6Ce881C2300",
@@ -88,7 +88,6 @@ const EOL_UNDERLYING_ASSETS = {
   "0x747a3d7a65bd105e058f6ceca1af5a530b809c55": ADDRESSES.base.WETH,
   "0x8a7f5457eb8dab4d48abb6bd2bdf9ebebe97a98b": ADDRESSES.base.USDC,
 };
-
 const chainTVL = ({ vaults = [] }) => async (api) => {
   const caps = [];
   if (CAP_ADDRESS[api.chain] && WEETH_ADDRESS[api.chain]) {
@@ -170,7 +169,6 @@ const chainTVL = ({ vaults = [] }) => async (api) => {
       }
     });
   }
-
   return balances;
 };
 

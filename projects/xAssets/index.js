@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const CONTRACT_ADDRESS = '0x10baa5c14ebde8681e83b2503682b3f45b8dc4c2';
@@ -27,17 +26,11 @@ const TOKENS = {
   }
 };
 
-async function tvl(timestamp, block, chainBlocks) {
-    const balances = await sumTokens2({
-        chain: 'crossfi',
-        block: chainBlocks['crossfi'],
-        owner: CONTRACT_ADDRESS,
-        tokens: Object.values(TOKENS).map(token => token.address),
-        resolveLP: false,
-        failOnError: false,
-    });
-
-    return balances;
+async function tvl(api) {
+  return sumTokens2({
+    api, owner: CONTRACT_ADDRESS,
+    tokens: Object.values(TOKENS).map(token => token.address),
+  });
 }
 
 module.exports = {
@@ -55,6 +48,4 @@ module.exports = {
   crossfi: {
     tvl,
   },
-  timetravel: false,
-  misrepresentedTokens: false,
 };
