@@ -88,6 +88,25 @@ const EOL_UNDERLYING_ASSETS = {
   "0x747a3d7a65bd105e058f6ceca1af5a530b809c55": ADDRESSES.base.WETH,
   "0x8a7f5457eb8dab4d48abb6bd2bdf9ebebe97a98b": ADDRESSES.base.USDC,
 };
+
+const BSC_CHAIN_ID = 56;
+
+const BSC_VAULTS_ADDRESS = [
+  {
+    chainId: BSC_CHAIN_ID,
+    address: "0x6d1703d913c74afaedd4b78deee7f32aa91a5943",
+  },
+  {
+    chainId: BSC_CHAIN_ID,
+    address: "0xa5deb178c729e058018db8bd68a9ffb8418df42d",
+  },
+];
+
+const BSC_UNDERLYING_ASSETS = {
+  "0x6d1703d913c74afaedd4b78deee7f32aa91a5943": ADDRESSES.bsc.USDT,
+  "0xa5deb178c729e058018db8bd68a9ffb8418df42d": ADDRESSES.bsc.WBNB,
+};
+
 const chainTVL = ({ vaults = [] }) => async (api) => {
   const caps = [];
   if (CAP_ADDRESS[api.chain] && WEETH_ADDRESS[api.chain]) {
@@ -157,18 +176,32 @@ const chainTVL = ({ vaults = [] }) => async (api) => {
 
   if (api.chainId === BASE_CHAIN_ID && EOL_VAULTS_ADDRESS.length > 0) {
     const eolTotalSupplies = await api.multiCall({
-      abi: "uint256:totalSupply",
+      abi: "uint256:totalAssets", // get underlying asset amount
       calls: EOL_VAULTS_ADDRESS.map((i) => i.address),
     });
 
     EOL_VAULTS_ADDRESS.forEach((eolVault, i) => {
       const underlyingAsset = EOL_UNDERLYING_ASSETS[eolVault.address];
       if (underlyingAsset) {
-        // Divide EOL vault totalSupply by 1e6 to adjust decimals
-        api.add(underlyingAsset, eolTotalSupplies[i] / 1e6);
+        api.add(underlyingAsset, eolTotalSupplies[i]);
       }
     });
   }
+
+  if (api.chainId === BSC_CHAIN_ID && BSC_VAULTS_ADDRESS.length > 0) {
+    const bscEolTotalSupplies = await api.multiCall({
+      abi: "uint256:totalAssets", // get underlying asset amount
+      calls: BSC_VAULTS_ADDRESS.map((i) => i.address),
+    });
+
+    BSC_VAULTS_ADDRESS.forEach((bscEolVault, i) => {
+      const underlyingAsset = BSC_UNDERLYING_ASSETS[bscEolVault.address];
+      if (underlyingAsset) {
+        api.add(underlyingAsset, bscEolTotalSupplies[i]);
+      }
+    });
+  }
+
   return balances;
 };
 
@@ -243,6 +276,7 @@ module.exports = {
       vaults: [
         "0xaDd58517c5D45c8ed361986f193785F8Ed1ABFc2",
         "0x4320e5ae6f08ffcf6175fb558ee4c0ec41b86de9", // yarm_deposit
+        // BSC EOL vaults handled separately
       ],
     }),
   },
