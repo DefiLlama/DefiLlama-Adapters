@@ -460,32 +460,53 @@ const ALPHAFI_NAVI_LOOP_TVL_IDS = [
     poolID: "0xd013a1a0c6f2bad46045e3a1ba05932b4a32f15864021d7e0178d5c2fdcc85e3",
     investorID: "0x36cc3135c255632f9275a5b594145745f8344ce8f6e46d9991ffb17596195869", 
     tokenType: "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT",
-    expo: 9
+    expo: 9,
+    protocol: "ALPHALEND"
   },
   { //usdt usdc
     poolID: "0xdd886dd4828a44b7ae48bb7eaceca1cecedd1dcc06174f66ee398dc0feb71451",
     investorID: "0xe512e692f4d48a79abcfd5970ccb44d6f7f149e81bb077ccd58b89d4ab557d0e",
     tokenType: ADDRESSES.sui.USDT,
-    expo: 6
+    expo: 6,
+    protocol: "NAVI"
   },
   { //usdc usdt
     poolID: "0xb90c7250627e0113df2e60d020df477cac14ca78108e3c5968230f3e7d4d8846",
     investorID: "0x3b9fe28a07e8dd5689f3762ba45dbdf10bd5f7c85a14432928d9108a61ef2dc2",
     tokenType: ADDRESSES.sui.USDC_CIRCLE,
-    expo: 6
+    expo: 6,
+    protocol: "NAVI"
   },
   { //hasui sui
     poolID: "0x4b22c2fc59c7697eea08c1cc1eadf231415d66b842875ba4730a8619efa38ced",
     investorID: "0xa65eaadb556a80e4cb02fe35efebb2656d82d364897530f45dabc1e99d15a8a9",
     tokenType: "0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d::hasui::HASUI",
-    expo: 9
+    expo: 9,
+    protocol: "NAVI"
   },
   { //stsui sui
     poolID: "0xc4caf2d31693974b838ffb83b0c8ae880a6b09ca251a07062cf66453bf3e3ce0",
     investorID: "0x3e8937974f3dac64eb8ee9f86a80ccc24852bd2f74d18753d071bbdad73a4c97",
     tokenType: "0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI",
-    expo: 9
+    expo: 9,
+    protocol: "NAVI"
   },
+  {
+    //TBTC SINGLE LOOP
+    poolID: "0x185c2124971c44836ce303ed5cdf8a3f614105a4d8948bb98c81a816d087dba9",
+    investorID: "0x46bd2afe728ee1e64935d4c46c426237fda647b9d577da206507864b8fd446aa",
+    tokenType: "0x77045f1b9f811a7a8fb9ebd085b5b0c55c5cb0d1520ff55f7037f89b5da9f5f1::TBTC::TBTC",
+    expo: 8,
+    protocol: "ALPHALEND"
+  },
+  {
+    //wBTC SINGLE LOOP
+    poolID: "0xc38279f945d14b4ec7f8c7b6956d0485ee8fa31a6cf710e462d17714bff028a2",
+    investorID: "0x0f03b5c37f49c18d6e13ddc58939df17586a0b80cb83ceda2e4494addd571990",
+    tokenType: "0xaafb102dd0902f5055cadecd687fb5b71ca82ef0e0285d90afde828ec58ca96b::btc::BTC",
+    expo: 8,
+    protocol: "ALPHALEND"
+  }
 ]
 const ALPHAFI_BUCKET_TVL_IDS = [
   {
@@ -560,7 +581,7 @@ async function addPoolTVL2(api, alphafiNaviPools){
 
 async function addPoolTVL3(api, alphafiNaviLoopPools){
  
-  for (const { poolID, investorID, tokenType, expo } of alphafiNaviLoopPools){
+  for (const { poolID, investorID, tokenType, expo, protocol } of alphafiNaviLoopPools){
     let poolObject = await sui.getObject(poolID);
     let investorObject = await sui.getObject(investorID);
     let tokensInvested = poolObject.fields.tokensInvested;
@@ -576,7 +597,10 @@ async function addPoolTVL3(api, alphafiNaviLoopPools){
     
     tokensInvested = (liquidity.toString().split('.')[0]);
     
-    let balance = BigInt(tokensInvested)/BigInt(Math.pow(10, 9-expo));
+    let balance = BigInt(tokensInvested);
+    if(protocol === "NAVI"){
+      balance /= BigInt(Math.pow(10, 9-expo));
+    }
     api.add(tokenType, balance);
   }
 }
