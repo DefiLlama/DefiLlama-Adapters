@@ -13,7 +13,7 @@ const tvl = async (api) => {
 
     const results = await api.batchCall([
         ...assetAddresses.map(asset => ({
-            abi: capABI.Vault.totalSupplies,
+            abi: capABI.Vault.availableBalance,
             target: tokens.cUSD.address,
             params: [asset]
         })),
@@ -23,11 +23,11 @@ const tvl = async (api) => {
             params: [agent.network, agent.agent, agent.vault, infra.oracle.address, api.timestamp]
         }))
     ]);
-    const assetSuppliesResults = results.slice(0, assetAddresses.length)
+    const assetAvailableBalancesResults = results.slice(0, assetAddresses.length)
     const coverageResults = results.slice(assetAddresses.length)
 
-    for (const [asset, supplied] of arrayZip(assetAddresses, assetSuppliesResults)) {
-        api.add(asset, supplied)
+    for (const [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
+        api.add(asset, availableBalance)
     }
     for (const [agent, coverage] of arrayZip(agentConfigs, coverageResults)) {
         api.add(agent.vaultCollateral, coverage)
