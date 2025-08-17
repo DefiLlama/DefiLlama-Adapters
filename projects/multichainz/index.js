@@ -41,7 +41,6 @@ const tvl = async (api) => {
   // DefiLlama will automatically subtract borrowed amounts when both tvl and borrowed functions are exported
 
    if (isStakingPool) {
-      console.log('total staked', tokens)
     // For Ethereum staking pool, tokens is an object with ETH balance
     return tokens
   }
