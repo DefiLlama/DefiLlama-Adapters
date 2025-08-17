@@ -45,6 +45,13 @@ const v3Config = {
   }
 }
 
+const movementConfig = {
+  movement: {
+    treasuryAddress: '0xb79ef25caca96b35a45d58d771f162bd4c2e87984a2776a1cb029d7941cc9af8',
+    fbtcAddress: '0x0eac3fe6113d7172d686382836547ea25d6ddc9a617536f32ff7cfc4a6e26beb'
+  },
+}
+
 module.exports = {
   methodology: `FBTC, LFBTC and WFBTC as collateral`,
 }
@@ -64,5 +71,13 @@ Object.keys(v3Config).forEach(chain => {
   const { fbtcAddress, treasuryAddress } = v3Config[chain]
   module.exports[chain] = {
     tvl: sumTokensExport({ owners: [treasuryAddress], tokens: [ fbtcAddress] }),
+  }
+})
+
+// Movement
+Object.keys(movementConfig).forEach(chain => {
+  const { treasuryAddress, fbtcAddress } = movementConfig[chain]
+  module.exports[chain] = {
+    tvl: sumTokensExport({ owners: [treasuryAddress], tokens: [fbtcAddress] }),
   }
 })
