@@ -11,6 +11,7 @@ module.exports = {
 // Addresses related to SatLayer
 const consts = {
   ETHEREUM_FACTORY: "0x42a856dbEBB97AbC1269EAB32f3bb40C15102819",
+  ETHEREUM_SLAY_FACTORY: "0xf80361e9f6b5f75b3e9be82bd1b3c87938e773b0",
   BNB_FACTORY: "0x42a856dbEBB97AbC1269EAB32f3bb40C15102819",
   BITLAYER_FACTORY: "0x2E3c78576735802eD94e52B7e71830e9E44a9a1C",
   BERACHAIN_FACTORY: "0x50198b5E1330753F167F6e0544e4C8aF829BC99d",
@@ -30,17 +31,25 @@ const evmConfig = {
   tac: { factory: consts.TAC_FACTORY, fromBlock: 2129845 },
 };
 
-// TVL for Turtle Club Vaults
-const turtleClub = {
+// TVL of additional SatLayer vaults
+const vaults = {
   ethereum: [
     {
       tokenAddress: "0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568", // uniBTC
-      vaultAddresses: ["0x65939777a9dC5A370707bb6b44b1ad0BC9e2D8a4"], // SatLayer uniBTC
+      vaultAddresses: ["0x65939777a9dC5A370707bb6b44b1ad0BC9e2D8a4"], // SatLayer uniBTC for TAC
     },
     {
       tokenAddress: "0xd9d920aa40f578ab794426f5c90f6c731d159def", // xSolvBTC
-      vaultAddresses: ["0x76f31800eFdE39A5f98189447c7a514d974f4364"], // SatLayer xSolvBTC
+      vaultAddresses: ["0x76f31800eFdE39A5f98189447c7a514d974f4364"], // SatLayer xSolvBTC for TAC
     },
+    {
+      tokenAddress: "0x51477A3002ee04B7542aDfe63ccdb50c00Ee5147", // SLAY
+      vaultAddresses: ["0xf80361e9f6b5f75b3e9be82bd1b3c87938e773b0"], // 60d SLAY vault
+    },
+    {
+      tokenAddress: "0x51477A3002ee04B7542aDfe63ccdb50c00Ee5147", // SLAY
+      vaultAddresses: ["0xf80361e9f6b5f75b3e9be82bd1b3c87938e773b0"], // 30d SLAY vault
+    }
   ],
 };
 
@@ -49,15 +58,15 @@ Object.keys(evmConfig).forEach(chain => {
 
   module.exports[chain] = {
     tvl: async (api) => {
-      // Only Ethereum has Turtle Club vaults
       if (chain === 'ethereum') {
-        for (const turtleClubVault of turtleClub['ethereum']) {
+        // Additional vaults
+        for (const vault of vaults['ethereum']) {
           const tokenBalance = await api.call({
             abi: 'erc20:balanceOf',
-            target: turtleClubVault.tokenAddress,
-            params: turtleClubVault.vaultAddresses,
+            target: vault.tokenAddress,
+            params: vault.vaultAddresses,
           });
-          api.add(turtleClubVault.tokenAddress, tokenBalance);
+          api.add(vault.tokenAddress, tokenBalance);
         }
       }
 
