@@ -1,18 +1,23 @@
-const { trySumTokens } = require("../helper/chain/cardano");
-const { assetsAddresses } = require("../helper/chain/cardano/blockfrost");
-const poolAssetAssetID = "f91c399aa9d544edc8059d4856acdbd8331f462cdcbd56733d6a85185374616b65506f6f6c"
-
-async function tvl() {
-    let poolScriptAddresses = (await assetsAddresses(poolAssetAssetID)).map(item => item.address);
-  let assetsLocked = await trySumTokens({
-    owners: poolScriptAddresses,
-  });
-  return assetsLocked;
-}
+const ADDRESSES = require('../helper/coreAssets.json')
+const target = ADDRESSES.bsc.wBETH
 
 module.exports = {
-  timetravel: false,
-  cardano: {
-    tvl,
+  ethereum: {
+    tvl: async (api) => ({
+      ["ethereum:" + ADDRESSES.null]: (
+        await api.call({ target, abi: 'erc20:totalSupply' })
+      ) * (
+        await api.call({ target, abi: "uint256:exchangeRate" })
+      ) / 1e18
+    })
   },
-};
+  bsc: {
+    tvl: async (api) => ({
+      ["bsc:" + ADDRESSES.bsc.ETH]: (
+        await api.call({ target, abi: 'erc20:totalSupply' })
+      ) * (
+        await api.call({ target, abi: "uint256:exchangeRate" })
+      ) / 1e18
+    })
+  }
+}
