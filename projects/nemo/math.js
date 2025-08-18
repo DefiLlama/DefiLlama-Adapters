@@ -79,9 +79,7 @@ class MathUtil {
   }
 
   static getPriceFromSqrtPrice(sqrtPrice, decimalA, decimalB) {
-    console.log('sqrtPrice:', sqrtPrice.toString());
     const a2bPrice = MathUtil.u64ToRatio(sqrtPrice).pow(2)
-    console.log('a2bPrice:', a2bPrice.toFixed(4));
     return a2bPrice.div(BigNumber(10).pow(BigNumber(decimalA - decimalB)))
   }
 }

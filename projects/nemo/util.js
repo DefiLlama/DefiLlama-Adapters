@@ -18,16 +18,6 @@ async function getObjects(objectIds) {
   const result = await call('sui_multiGetObjects', [objectIds, {
     "showOwner": true,
   }], { withMetadata: true })
-  // console.log('getObjects result:', result)
-  // const {
-  //   result
-  // } = await http.post(endpoint(), {
-  //   jsonrpc: "2.0", id: 1, method: 'sui_multiGetObjects', params: [objectIds, {
-  //     "showType": true,
-  //     "showOwner": true,
-  //     "showContent": true,
-  //   }],
-  // })
   return objectIds.map(i => result.find(j => j.data?.objectId === i))
 }
 
@@ -58,20 +48,6 @@ function getCoinAmountFromLiquidity(
     coin_amount_a: coin_a.toString(),
     coin_amount_b: coin_b.toString(),
   }
-}
-
-function getCoinBAmountFromLiquidity(
-  liquidity,
-  pool_liquidity,
-  cur_sqrt_price,
-  decimal_a,
-  decimal_b,
-  reserve_x,
-  reserve_y
-) {
-  const priceFromSqrtPrice = MathUtil.getPriceFromSqrtPrice(cur_sqrt_price, decimal_a, decimal_b);
-  const pool_amount_y = BigNumber(reserve_y).plus(priceFromSqrtPrice.times(reserve_x));
-  return BigNumber(liquidity).div(BigNumber(pool_liquidity)).times(pool_amount_y).toFixed(0);
 }
 
 function asIntN(int, bits = 32) {
@@ -105,7 +81,15 @@ async function getVaultTvlByAmountB(vault) {
   ).plus(amount.coin_amount_b).toFixed(0)
 }
 
+async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } = {}) {
+  return (await call('suix_getDynamicFieldObject', [parent, {
+    "type": idType,
+    "value": id
+  }]))
+}
+
 module.exports = {
   getObjects,
   getVaultTvlByAmountB,
+  getDynamicFieldObject
 }

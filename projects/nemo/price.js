@@ -606,7 +606,7 @@ async function getBuckTokenExchangeRate(coinConfig) {
     ],
     [497420735, 497420765, 261896418, 498195773, 497676325, 498195774, 1],
     [true, false, false, true, false, true, false],
-    '0xf6f12cd63d0d6f44c789a2abfed51ae1a5237c783006b016237736a400724566',
+    '0xe33adb7bec8ddc73e73444f15b6703c89a86fa642b3974208228910b8d59f091',
     'buck',
     'get_exchange_rate_from_ssbuck',
     [coinConfig.syCoinType, coinConfig.coinType]

@@ -1,6 +1,5 @@
 const sui = require("../helper/chain/sui");
 const {getVaultTvlByAmountB} = require("../nemo/util");
-const {sleep} = require("../helper/utils");
 
 const VAULT_LIST = [
   "0x18fe46d697a3ce2c87b62db5435678ff8df179efc913e250e888019d2f1c4105",
@@ -14,20 +13,8 @@ async function tvl(api) {
 
   for (let vault of vaults) {
     const vaultTypes = vault.type.replace(">", "").split("<")[1].split(', ');
-    try {
-      const tvl = await getVaultTvlByAmountB(vault);
-      api.add(vaultTypes[1], tvl);
-    } catch (error) {
-      console.error(`Error processing vault ${vault.fields.id}:`, error);
-
-      await sleep(10000); // Wait for 10 seconds before retrying
-      try {
-        const tvl = await getVaultTvlByAmountB(vault);
-        api.add(vaultTypes[1], tvl);
-      } catch (error) {
-        console.error(`Retry failed for vault ${vault.fields.id}:`, error);
-      }
-    }
+    const tvl = await getVaultTvlByAmountB(vault);
+    api.add(vaultTypes[1], tvl);
   }
 }
 
