@@ -1,3 +1,4 @@
+const { get } = require("../helper/http");
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const config = {
@@ -48,6 +49,7 @@ Object.keys(config).forEach(chain => {
     }
   }
   else if (chain === 'ethereum') {
+
     const funds = config[chain]
     module.exports[chain] = {
       tvl: async (api) => {
@@ -71,9 +73,13 @@ Object.keys(config).forEach(chain => {
 
         api.add(ADDRESSES.ethereum.USDC, assetBalance)
 
+        const info = await get("https://api.coingecko.com/api/v3/simple/price?ids=reservoir&vs_currencies=usd")
         const totalSupply = await api.call({ abi: 'function totalSupply() view returns (uint256)', target: '0x0FedbA9178b70e8b54e2Af08eBffcf28A1e5A43B' })
 
-        api.add('0x0FedbA9178b70e8b54e2Af08eBffcf28A1e5A43B', totalSupply)
+        const price = info['reservoir']['usd']
+        api.add(ADDRESSES.ethereum.USDC, price * totalSupply)
+
+        // api.add('0x0FedbA9178b70e8b54e2Af08eBffcf28A1e5A43B', price * totalSupply)
 
         return api.getBalances()
       }
