@@ -14,8 +14,8 @@ const contractAddresses = {
 };
 
 const poolsApis = {
-  osmosis: 'https://api.astroport.fi/api/pools?chainId=osmosis-1',
-  neutron: 'https://api.astroport.fi/api/pools?chainId=neutron-1',
+  osmosis: 'https://cache.marsprotocol.io/api/osmosis-1/tokens?x-apikey=7e3642de',
+  neutron: 'https://cache.marsprotocol.io/api/neutron-1/tokens?x-apikey=7e3642de',
 };
 
 async function tvl(api) {
@@ -66,7 +66,7 @@ async function tvl(api) {
         });
         // check if the token is a liquidity pool share (deposited via farm)
         // and find it in the api data
-        const poolInfo = poolInfos.data.find((pool) => pool.lpAddress === denom);
+        const poolInfo = poolInfos.data.tokens.find((pool) => pool.lpAddress === denom);
 
         if (poolInfo) {
           // check for the underlying asset and calculate how much underlying assets a pool share holds
@@ -109,13 +109,10 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  methodology:
-    "For each chain, sum token balances by querying the total deposit amount for each asset in the chain's params contract.",
+  methodology: "For each chain, sum token balances by querying the total deposit amount for each asset in the chain's params contract.",
   osmosis: { tvl },
   neutron: { tvl },
-  terra: {
-    tvl: () => 0,
-  },
+  terra: { tvl: () => 0 },
   hallmarks: [
     [1651881600, 'UST depeg'],
     [1675774800, 'Relaunch on Osmosis'],

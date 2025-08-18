@@ -32,13 +32,9 @@ const morphoBlueAbis = {
   idToMarketParams: 'function idToMarketParams(bytes32) view returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)',
 }
 
-async function tvl(api) {
-  const assets = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })   
-  api.add(assets, totalAssets)
-}
+async function getBorrowed(api) {
+  const balances = {}
 
-async function borrowed(api) {
   const idToMarketParams = await api.multiCall({ abi: morphoBlueAbis.idToMarketParams, calls: markets.map(marketId=> {
     return {
       target: morphoBlue,
@@ -51,7 +47,43 @@ async function borrowed(api) {
       params: [marketId],
     }
   }) })
-  api.add(idToMarketParams.map(params => params.loanToken), marketData.map(item => item.totalBorrowAssets))
+
+  const loanTokens = idToMarketParams.map(params => params.loanToken)
+  for (let i = 0; i < loanTokens.length; i++) {
+    const token = String(loanTokens[i]).toLowerCase()
+    if (!balances[token]) {
+      balances[token] = BigInt(0)
+    }
+    balances[token] += BigInt(marketData[i].totalBorrowAssets)
+  }
+
+  return balances
+}
+
+async function tvl(api) {
+  const assets = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })   
+  
+  const balances = {}
+  for (let i = 0; i < assets.length; i++) {
+    const token = String(assets[i]).toLowerCase()
+    if (!balances[token]) {
+      balances[token] = BigInt(0)
+    }
+    balances[token] += BigInt(totalAssets[i])
+  }
+
+  const totalBorrowed = await getBorrowed(api)
+
+  for (const [token, balance] of Object.entries(balances)) {
+    const tvl = balance - totalBorrowed[token]
+    api.add(token, tvl)
+  }
+}
+
+async function borrowed(api) {
+  const totalBorrowed = await getBorrowed(api)
+  api.add(Object.keys(totalBorrowed), Object.values(totalBorrowed))
 }
 
 module.exports = {

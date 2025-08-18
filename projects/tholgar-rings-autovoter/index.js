@@ -1,15 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
 const CONFIG = {
   USD: {
     veToken: "0x0966CAE7338518961c2d35493D3EB481A75bb86B",
-    token: "0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE",
+    token: ADDRESSES.sonic.scUSD,
     pupeeter: "0x82136B5B2FA53AEFaB8d7C87467D8e7036Bb3f72",
   },
   ETH: {
     veToken: "0x1Ec2b9a77A7226ACD457954820197F89B3E3a578",
-    token: "0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812",
+    token: ADDRESSES.sonic.scETH,
     pupeeter: "0x113166Ad6E99c5346aDF41d5821A6856e1510812",
   },
 }
@@ -58,6 +59,7 @@ const marionetteTvl = async (api, tokenType) => {
     balances,
     CONFIG[tokenType].token,
     sum,
+    api.chain
   );
   return balances;
 }
