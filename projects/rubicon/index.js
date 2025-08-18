@@ -1,9 +1,14 @@
 const sdk = require("@defillama/sdk");
 const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { uniTvlExport } = require('../helper/unknownTokens')
 
 const RUBICON_MARKET_OPTIMISM = '0x7a512d3609211e719737E82c7bb7271eC05Da70d'
 const RUBICON_MARKET_ARBITRUM = '0xC715a30FDe987637A082Cf5F19C74648b67f2db8'
+
+const baseFactory = '0xA5cA8Ba2e3017E9aF3Bd9EDa69e9E8C263Abf6cD'
+
+const base = 'base'
 
 
 module.exports = {
@@ -15,6 +20,8 @@ module.exports = {
     [1688616374, "Arbitrum Launch"]
   ]
 }
+
+module.exports = uniTvlExport(base, baseFactory)
 
 const config = {
   optimism: {

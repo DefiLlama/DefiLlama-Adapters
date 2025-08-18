@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 const sdk = require("@defillama/sdk");
 const http = require("../http");
 const { getEnv } = require("../env");

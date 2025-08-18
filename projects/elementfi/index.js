@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-const abi = require('./abi.json');
 const { getLogs } = require('../helper/cache/getLogs')
 
 const trancheFactoryAddress = "0x62F161BF3692E4015BefB05A03a94A40f520d1c0";
@@ -18,61 +16,53 @@ const wps = [
   '0x9e030b67a8384cbba09D5927533Aa98010C87d91'
 ]
 
-async function tvl(api) {
+const abis = {
+  "underlying": "address:underlying",
+  "tranche": "address:tranche",
+  "valueSupplied": "uint256:valueSupplied",
+  "getPoolId": "function getPoolId() view returns (bytes32)",
+  "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)"
+}
 
-  const logs = (await getLogs({
-    target: trancheFactoryAddress,
-    eventAbi: 'event TrancheCreated (address indexed trancheAddress, address indexed wpAddress, uint256 indexed expiration)',
-    fromBlock: 12685765, api, onlyArgs: true,
-  }))
-  const tranches = logs.map(i => i.trancheAddress)
-  const underlying = await api.multiCall({ abi: abi['underlying'], calls: tranches, })
-  const valueSupplied = await api.multiCall({ abi: abi['valueSupplied'], calls: tranches, })
-  api.add(underlying, valueSupplied)
+const eventAbis = {
+  trancheCreated: 'event TrancheCreated (address indexed trancheAddress, address indexed wpAddress, uint256 indexed expiration)',
+  ccPoolCreated: "event CCPoolCreated(address indexed pool, address indexed bondToken)"
+}
+
+const trancheTvl = async (api) => {
+  const tranchesLogs = await getLogs({ api, extraKey: 'tranche', target: trancheFactoryAddress, eventAbi: eventAbis.trancheCreated, fromBlock: 12685765, onlyArgs: true })
+  const tranches = tranchesLogs.map(i => i.trancheAddress)
+  const [underlyings, valueSupplies] = await Promise.all([
+    api.multiCall({ abi: abis.underlying, calls: tranches }),
+    api.multiCall({ abi: abis.valueSupplied, calls: tranches })
+  ])
+  api.add(underlyings, valueSupplies)
+}
+
+const wpTvl = async (api) => {
+  const poolIds = await api.multiCall({ calls: wps, abi: abis.getPoolId })
+  const poolTokens = (await api.multiCall({ calls: poolIds.map((id) => ({ target: balVault, params: [id] })), abi: abis.getPoolTokens }))
+  poolTokens.forEach(({ tokens, balances }) => { 
+    api.add(tokens,balances)
+   })
+}
+
+const ccTvl = async (api) => {
+  const ccsLogs = (await getLogs({ api, extraKey: 'ccs', target: ccpFactory, fromBlock: 12686198, eventAbi: eventAbis.ccPoolCreated, onlyArgs: true })).map(i => i.pool)
+  const poolIds = await api.multiCall({ calls: ccsLogs, abi: abis.getPoolId })
+  const poolTokens = (await api.multiCall({ calls: poolIds.map((id) => ({ target: balVault, params: [id] })), abi: abis.getPoolTokens })) 
+  poolTokens.forEach(({ tokens, balances }) => { 
+    api.add(tokens,balances)
+   })
+}
 
 
-  // wp tvl
-  await Promise.all(wps.map(async wp => {
-    try {
-      let poolId = await api.call({ target: wp, abi: abi['getPoolId'], })
-      let poolTokens = await api.call({ target: balVault, abi: abi['getPoolTokens'], params: poolId })
-      const names = await api.multiCall({ abi: 'string:name', calls: poolTokens.tokens })
-
-      for (let i = 0; i < poolTokens.tokens.length; i++) {
-        let token = poolTokens.tokens[i];
-        if (names[i].startsWith('Element'))
-          return;
-
-        api.add(token, poolTokens.balances[i])
-      }
-    } catch (e) {
-      sdk.log(e)
-    }
-  }))
-
-  // // // cc tvl
-  let cc = (await getLogs({
-    api,
-    target: ccpFactory,
-    fromBlock: 12686198,
-    eventAbi: 'event CCPoolCreated (address indexed pool, address indexed bondToken)',
-    onlyArgs: true,
-  })).map(i => i.pool);
-
-  await Promise.all(cc.map(async i => {
-    const poolId = await api.call({ target: i, abi: abi['getPoolId'], })
-    const poolTokens = await api.call({ target: balVault, abi: abi['getPoolTokens'], params: poolId })
-
-    for (let i = 0; i < poolTokens.tokens.length; i++) {
-      let token = poolTokens.tokens[i];
-      if (tranches.indexOf(token.toLowerCase()) >= 0) {
-        continue;
-      }
-      api.add(token, poolTokens.balances[i])
-    }
-  }))
+const tvl = async (api) => {
+  await trancheTvl(api)
+  await wpTvl(api)
+  await ccTvl(api)
 }
 
 module.exports = {
-  ethereum: { tvl },
-};
+  ethereum: { tvl }
+}

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 // Correct contract addresses
@@ -6,8 +7,8 @@ const priceFeedAddress = '0x689eca147677167bc86503D90D75b8943089040f'; // Price 
 
 // Collateral token addresses
 const validCollaterals = [
-  '0x5555555555555555555555555555555555555555', // HYPE
-  '0x94e8396e0869c9F2200760aF0621aFd240E1CF38', // wstHYPE
+  ADDRESSES.hyperliquid.WHYPE, // HYPE
+  ADDRESSES.hyperliquid.wstHYPE, // wstHYPE
   '0x5748ae796AE46A4F1348a1693de4b50560485562', // LHYPE
   '0x9b498C3c8A0b8CD8BA1D9851d40D186F1872b44E',  // PURR
   '0x9FDBdA0A5e284c32744D2f17Ee5c74B284993463' // UBTC

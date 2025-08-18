@@ -1,25 +1,15 @@
-const erc20Abi = {
-  balanceOf: 'function balanceOf(address) view returns (uint256)',
-  totalSupply: 'function totalSupply() view returns (uint256)' // Kept for reference, but unused now
-};
-
-const usdcAddress = '0x549943e04f40284185054145c6E4e9568C1D3241'; 
+const ADDRESSES = require('../helper/coreAssets.json')
 const twinUSDCAddress = '0x1b7678F6991b8dCcf9bB879929e12f1005d80E94';
-// Replace with the actual address of your deposit/staking/vault contract
 const depositContractAddress = '0xF77B36ba4691c5e3e022D9e7b5a8f78103ccC57a'; 
 
 async function tvl(api) {
   // Get the amount of twinUSDC or USDC held by the deposit contract
   const depositedAmount = await api.call({
-    abi: erc20Abi.balanceOf,
+    abi: 'erc20:balanceOf',
     target: twinUSDCAddress, // The token contract
     params: [depositContractAddress], // The contract holding the deposits
   });
-  console.log('Deposited Amount:', depositedAmount);
-
-  return {
-    [`berachain:${usdcAddress}`]: depositedAmount.toString()
-  };
+  api.add(ADDRESSES.berachain.USDC, depositedAmount);
 }
 
 module.exports = {
