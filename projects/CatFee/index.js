@@ -4,7 +4,7 @@ const {
 
 async function getCurrentStake() {
 	let result = await fetchURL('https://catfee.io/api/stake/public/project/stat'); 
-	let trx = parseInt(result.data.data.total_staked_amount_sun);
+	let trx = parseInt(result.data.data.total_staked_amount_sun)/ 1000_000;
 	return trx;
 }
 
