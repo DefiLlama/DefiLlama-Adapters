@@ -7,9 +7,10 @@ async function arbitrumTvl(api) {
   const response = await axios.get(url)
   const tvl = new BigNumber(response.data.data.total_holding).times(1e6).toFixed(0)
 
-  api.add(ADDRESSES.arbitrum.USDC_CIRCLE, +tvl)
+  api.add(ADDRESSES.arbitrum.USDC_CIRCLE, tvl)
 }
 
 module.exports = {
+  start: '2025-08-19',
   arbitrum: { tvl: arbitrumTvl },
 };
