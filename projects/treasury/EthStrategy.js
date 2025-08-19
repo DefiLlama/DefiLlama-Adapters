@@ -10,7 +10,6 @@ const OWNERS = [
 module.exports = {
   ethereum: {
     tvl: async (api) => {
-      console.log('--- EthStrategy TVL function invoked ---');
       const OWNERS = [
         "0xC53CCed6332D06972A7eaEDc64FDF6d4aF5220b8", // ETH Strategy Main
         "0x75eFa088E34DA03966a5D2b84fA16C77fF25Adfa", // Puttable Warrant (4200 ETH)
