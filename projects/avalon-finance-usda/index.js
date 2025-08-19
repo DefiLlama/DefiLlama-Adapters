@@ -48,7 +48,7 @@ const v3Config = {
 const move = {
   move: {
     treasuryAddress: '0xb79ef25caca96b35a45d58d771f162bd4c2e87984a2776a1cb029d7941cc9af8',
-    fbtcAddress: '0x0eac3fe6113d7172d686382836547ea25d6ddc9a617536f32ff7cfc4a6e26beb'
+    fbtcAddress: '0x16e733c5c943d78dbbaf1fc5beebbcc8db4ed647d2bdfcab74c2a527184a16aa'
   },
 }
 
