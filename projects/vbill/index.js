@@ -1,4 +1,3 @@
-const { sumTokens2, getResources } = require('../helper/chain/aptos')
 const { getTokenSupplies } = require('../helper/solana');
 
 const CONFIG = {
