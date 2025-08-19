@@ -31,7 +31,11 @@ const chains = [
   "corn",
   "sonic",
   "ink",
-  "hyperliquid"
+  "hyperliquid",
+  "plume_mainnet",
+  "xdc",
+  'tac',
+  "etlk",
 ];
 const registryIds = {
   stableswap: 0,
@@ -51,7 +55,7 @@ async function getDecimals(chain, token) {
 
 
 const gasTokens = [
-  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+  ADDRESSES.GAS_TOKEN_2,
   ADDRESSES.null,
 ]
 
@@ -286,5 +290,5 @@ module.exports.hallmarks = [
   [1651881600, "UST depeg"],
   [1654822801, "stETH depeg"],
   [1667692800, "FTX collapse"],
-  [1690715622, "Reentrancy hack"]
+  // [1690715622, "Reentrancy hack"]
 ];

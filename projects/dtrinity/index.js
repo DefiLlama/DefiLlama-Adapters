@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const config = {
   fraxtal: {
     dUSD: {
@@ -6,7 +7,7 @@ const config = {
       pools: [{
         // Curve frxUSD/dUSD
         lpAddress: '0x9CA648D2f51098941688Db9a0beb1DadC2D1B357',
-        collateralAddress: '0xfc00000000000000000000000000000000000001',
+        collateralAddress: ADDRESSES.fraxtal.FRAX,
         amoVault: '0x0B0BD5F8A6f4c72a09748fA915Af12Ca423B7240'
       }, {
         // Curve dUSD/sfrxUSD
@@ -16,7 +17,7 @@ const config = {
       }, {
         // Curve dUSD/sUSDe
         lpAddress: '0xF16f226Baa419d9DC9D92C040CCBC8c0E25F36D7',
-        collateralAddress: '0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2',
+        collateralAddress: ADDRESSES.arbitrum.sUSDe,
         amoVault: '0x0B0BD5F8A6f4c72a09748fA915Af12Ca423B7240'
       }],
     },

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require('../helper/cex')
 const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
@@ -114,6 +115,7 @@ const config = {
     ]
   },
   aptos: {
+    fungibleAssets: [ADDRESSES.aptos.USDt],
     owners: [
       '0x0613f31af70ce983b9dca574e033a52351fd2e67b1959bf48574c6e9c956f95e'
     ]
