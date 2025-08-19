@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { stakings } = require("../helper/staking");
+const { balanceOf } = require('@defillama/sdk/build/erc20');
+const { ethereum } = require('../helper/whitelistedNfts');
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
@@ -30,6 +32,7 @@ const CONFIG = {
       '0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f', // GHO
       '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // AAVEUSDC
       '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a', // AAVEUSDT
+      '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // AAVESUSDS
       '0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d', // STKGHO
       '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
       '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // AAVEWETH
@@ -37,9 +40,11 @@ const CONFIG = {
       '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB', // STEAK_USDC
       '0x6A29A46E21C730DcA1d8b23d637c101cec605C5B', // FGHO
       '0x5C20B550819128074FD538Edf79791733ccEdd18', // FUSDT
+      '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // FUSDC
       '0x2371e134e3455e0593363cBF89d3b6cf53740618', // GAUNTLET WETH
+      '0xFF94993fA7EA27Efc943645F95Adb36C1b81244b', // GEARBOX STETH
       ADDRESSES.ethereum.WBTC,
-      '0x657e8C867D8B37dCC18fA4Caead9C45EB088C642', // EBTC
+      ADDRESSES.ethereum.EBTC, // EBTC
       ADDRESSES.ethereum.LBTC // LBTC
     ]
   },

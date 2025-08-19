@@ -8,14 +8,23 @@ const { vestingHelper } = require('./cache/vestingHelper')
 const { getTokenPrices, sumUnknownTokens, getLPData, } = require('./cache/sumUnknownTokens')
 const { getUniTVL } = require('./cache/uniswap')
 const { getUniqueAddresses, } = require('./utils')
+const stakingHelper = require('./staking')
 
-function uniTvlExports(config, commonOptions) {
+function uniTvlExports(config, commonOptions = {}) {
   const exportsObj = {
-    misrepresentedTokens: true,
+    misrepresentedTokens: !commonOptions.useDefaultCoreAssets,
   }
   Object.keys(config).forEach(chain => {
     exportsObj[chain] =  uniTvlExport(chain, config[chain],commonOptions )[chain]
   })
+  if (commonOptions.hallmarks) exportsObj.hallmarks = commonOptions.hallmarks
+  if (commonOptions.deadFrom) exportsObj.deadFrom = commonOptions.deadFrom
+  if (typeof commonOptions.staking === 'object') {
+    Object.entries(commonOptions.staking).forEach(([chain, stakingArgs]) => {
+      if (!exportsObj[chain]) exportsObj[chain] = {}
+      exportsObj[chain].staking = stakingHelper.staking(...stakingArgs)
+    })
+  }
   return exportsObj
 }
 
@@ -217,9 +226,13 @@ const yieldApis = {
 }
 
 async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
-  useDefaultCoreAssets = false, balanceAPI = yieldApis.balance, tokenAPI = yieldApis.token,
+  useDefaultCoreAssets = false, balanceAPI = yieldApis.balance, tokenAPI = yieldApis.token, api,
   restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
 }) {
+  if (api) {
+    chain = api.chain
+    block = api.block
+  }
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
@@ -246,11 +259,74 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }
 
 function uniTvlExport(chain, factory, options = {}) {
-  return {
-    misrepresentedTokens: true,
+  const exportsObj= {
+    misrepresentedTokens: !options.useDefaultCoreAssets,
     [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
   }
+  return exportsObj
 }
+
+// Default ABI for CLM vaults that expose wants() => (token0, token1) and balances() => (amount0, amount1)
+const pairApis = {
+  balances: 'function balances() view returns (uint256 amount0, uint256 amount1)',
+  wants:    'function wants() view returns (address token0, address token1)',
+}
+
+// Helper for CLM-style vaults (wants() + balances()) returning two tokens and two balances
+async function yieldHelperPair({
+  chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
+  useDefaultCoreAssets = false,
+  balanceAPI = pairApis.balances,
+  tokenAPI   = pairApis.wants,
+  restrictTokenRatio,
+}) {
+
+  if (!balanceAPI || !tokenAPI)
+    throw new Error('yieldHelperPair requires both balanceAPI and tokenAPI')
+
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets.push(...getCoreAssets(chain))
+
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
+
+  const calls = vaults.map(i => ({ target: i }))
+
+  const { output: balanceRes } = await sdk.api.abi.multiCall({ abi: balanceAPI, calls, chain, block })
+  const { output: tokenRes }    = await sdk.api.abi.multiCall({ abi: tokenAPI,  calls, chain, block })
+
+  const allTokens = []
+  const allBalances = []
+
+  balanceRes.forEach((balObj, i) => {
+    const tokensObj = tokenRes[i]?.output || {}
+
+    const token0 = tokensObj.token0 ?? tokensObj[0]
+    const token1 = tokensObj.token1 ?? tokensObj[1]
+
+    const amount0 = balObj.output?.amount0 ?? balObj.output?.[0] ?? 0
+    const amount1 = balObj.output?.amount1 ?? balObj.output?.[1] ?? 0
+
+    if (token0) {
+      allTokens.push(token0)
+      allBalances.push(amount0)
+    }
+    if (token1) {
+      allTokens.push(token1)
+      allBalances.push(amount1)
+    }
+  })
+
+  const { updateBalances } = await getTokenPrices({ chain, block, lps: allTokens, coreAssets, blacklist, whitelist, transformAddress, restrictTokenRatio, useDefaultCoreAssets, })
+
+  const balances = {}
+  allTokens.forEach((t, idx) => sdk.util.sumSingleBalance(balances, transformAddress(t), allBalances[idx]))
+
+  await updateBalances(balances)
+  return transformBalances(chain, balances)
+}
+
+// --------------------------------------------------------------------------
 
 module.exports = {
   nullAddress,
@@ -267,4 +343,5 @@ module.exports = {
   yieldHelper,
   uniTvlExport,
   uniTvlExports,
+  yieldHelperPair,
 };
