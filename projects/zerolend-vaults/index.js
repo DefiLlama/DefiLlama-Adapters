@@ -7,7 +7,7 @@ const multisigs = [
 ]
 
 const configs = {
-  methodology: 'Count all assets are deposited in all vaults curated by ZeroLend',
+  methodology: 'Count all assets deposited into vaults curated by ZeroLend',
   ethereum: {
     eulerVaultOwners: multisigs,
     euler: [
