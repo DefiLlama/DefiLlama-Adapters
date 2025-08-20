@@ -36,7 +36,7 @@ async function sumOneAddress(to) {
 		value: to,
 		visible: true
 	})
-	const perRequestDelayMs = 500
+	const perRequestDelayMs = 100
 	// console.log(response)
 	let totalSun = 0;
 	for (const from of response.fromAccounts) {
