@@ -37,15 +37,12 @@ async function sumOneAddress(to) {
 		visible: true
 	})
 	const perRequestDelayMs = 100
-	// console.log(response)
 	let totalSun = 0;
 	for (const from of response.fromAccounts) {
 		const a = await getDelegatedAmountSun(from, to);
-		// console.log("sum from to ",from,to,a)
 		totalSun += a || 0;
 		if (perRequestDelayMs > 0) await sleep(perRequestDelayMs);
 	}
-	// console.log("totalSun:",totalSun)
 	return totalSun
 }
 async function getStakedTron() {
