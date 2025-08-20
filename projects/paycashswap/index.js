@@ -9,7 +9,9 @@ async function eos(api) {
     query: "query TotalLiquidity { totalLiquidityChart { value24h } token(id:100) {liquidity} }"
   }
   const { data: { data: { totalLiquidityChart: { value24h }, token: { liquidity } } } } = await utils.postURL("https://api.paycashswap.com/", data);
-  api.addUSDValue(value24h - liquidity)  // exclude self-issued tokens
+  // exclude self-issued tokens
+  const tvlValue = Number(value24h) - Number(liquidity)
+  api.addUSDValue(tvlValue > 0 ? tvlValue : 0)
 }
 
 module.exports = {
