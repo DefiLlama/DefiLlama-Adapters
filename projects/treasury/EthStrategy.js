@@ -13,7 +13,7 @@ module.exports = {
       const treasuryModule = treasuryExports({
         ethereum: {
           owners: OWNERS,
-          tokens: [nullAddress], // native ETH only
+          tokens: [nullAddress, "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110", "0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8", "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", "0x8c1BEd5b9a0928467c9B1341Da1D7BD5e10b6549"], // native ETH only
           ownTokens: ["0x14cF922aa1512Adfc34409b63e18D391e4a86A2f"],         // no protocol token to separate
         },
       });
