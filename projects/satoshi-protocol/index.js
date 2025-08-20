@@ -241,6 +241,12 @@ module.exports = {
         address: '0xc473754a6e35cC4F45316F9faaeF0a3a86D90E4e'
       },
     ],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0x30349Af0cDcC2a93Ea4101953101BC0DEc43c53E',
+        asset: '0x623F2774d9f27B59bc6b954544487532CE79d9DF', // bfBTC
+      },
+    ],
   }),
   hemi: createExports({
     safeVaultManagerList: [{
