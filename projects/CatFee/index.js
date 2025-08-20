@@ -8,7 +8,7 @@ const addresses = [
 	'TKoffapJgw2E586kp9taJvjqdfpiKrWKWG',
 	'TSmrfRFesHf9of94mNKLgrunbFzrPYGiPZ',
 	'TYEMUMKBmkTRMa1CNh7xkNYZ2mTVFw9f1a',
-	'TXtt43tfe6SUL8HU6KNutXNm4Ybuj1Ro25',
+	'TQmxShUFhs8bHxdQKeWWFNPYJJp5mzUz38',
 	'TXtt43tfe6SUL8HU6KNutXNm4Ybuj1Ro25',
 	'TGinDyFgTLYcnoJtFatxictWB1dfN6no26'
 ]
