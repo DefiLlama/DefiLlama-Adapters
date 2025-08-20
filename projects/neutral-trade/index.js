@@ -11,7 +11,7 @@ const { getTvl: getHyperliquidVaultTvl } = require("./utils/hyperliquid");
 const { getTvl: getNtVaultTvl } = require("./utils/ntVaults");
 
 async function drift_vaults_tvl(api) {
-  await getDriftVaultTvl(api);
+  await getDriftVaultTvl(api, DRIFT_VAULTS.map(vault => vault.address));
 }
 
 async function kamino_vaults_tvl(api) {
