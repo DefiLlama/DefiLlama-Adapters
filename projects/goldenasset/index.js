@@ -4,8 +4,7 @@ const { fetchURL } = require('../helper/utils');
 const PRICE_DISCOUNT = 0.098;
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
+  misrepresentedTokens: true,
   start: 1727914080, // Protocol launch: October 3, 2024 UTC
 
   sei: {

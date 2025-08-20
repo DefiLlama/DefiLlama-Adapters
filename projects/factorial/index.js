@@ -10,12 +10,16 @@ const pools = [
   "EQA3m4H3vTUOeXGW-o6AEyZxv6i79tR-i1f4XiW588HJoqND", // slp-ton
   "EQAYJdU9JFRcKAwMZv3MqD0QVjBEMGO_4mgwOJtTBOHR22ec", // slp-usdt
 ];
-   
+  
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function tvl(api) { 
   const pools = await get('https://api.factorial.finance/info/pools');
 
   for(const pool of pools) {
+    await sleep(3000);
     const pool_data = await call({ target: pool.address, abi: "get_pool_data" })
 
     const _kv = 1;
@@ -44,6 +48,7 @@ async function borrowed(api) {
   const pools = await get('https://api.factorial.finance/info/pools');
 
   for(const pool of pools) {
+    await sleep(3000);
     const pool_data = await call({ target: pool.address, abi: "get_pool_data" })
 
     const _kv = 1;
@@ -67,9 +72,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: 'Total amount of assets locked in Factorial pool',
-  ton: {
-    tvl, borrowed,
-  }
+  methodology: 'Total amount of assets locked in Affluent pool',
+  ton: { tvl, borrowed }
 }
 
