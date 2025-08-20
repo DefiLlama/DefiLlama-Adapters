@@ -163,9 +163,9 @@ const subgraphEndpoints = {
   bsc: {
     graph: "https://bsc-mainnet.subgraph.x.superfluid.dev",
   },
-  degen: {
-    graph: "https://degenchain.subgraph.x.superfluid.dev",
-  },
+  // degen: {
+  //   graph: "https://degenchain.subgraph.x.superfluid.dev",
+  // },
   ethereum: {
     graph: "https://eth-mainnet.subgraph.x.superfluid.dev",
   },
