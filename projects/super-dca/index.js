@@ -69,25 +69,20 @@ const POSITIONS_QUERY = gql`
 
 // Get all position IDs for a specific poolId using subgraph
 async function getAllPositionIdsForPool(api, poolId, config) {
-  try {
-    const subgraphEndpoint = sdk.graph.modifyEndpoint(config.SUBGRAPH_ID)
-    const result = await request(subgraphEndpoint, POSITIONS_QUERY, { poolId })
-    
-    // Extract unique token IDs
-    const tokenIdSet = new Set()
-    result.transactions.forEach(tx => {
-      tx.transfers.forEach(transfer => {
-        tokenIdSet.add(transfer.tokenId)
-      })
+  const subgraphEndpoint = sdk.graph.modifyEndpoint(config.SUBGRAPH_ID)
+  const result = await request(subgraphEndpoint, POSITIONS_QUERY, { poolId })
+  
+  // Extract unique token IDs
+  const tokenIdSet = new Set()
+  result.transactions.forEach(tx => {
+    tx.transfers.forEach(transfer => {
+      tokenIdSet.add(transfer.tokenId)
     })
-    
-    const uniqueTokenIds = Array.from(tokenIdSet)
-    api.log(`Found ${uniqueTokenIds.length} unique position IDs for pool ${poolId}`)
-    return uniqueTokenIds
-  } catch (error) {
-    api.log(`Error fetching positions for pool ${poolId}:`, error)
-    return []
-  }
+  })
+  
+  const uniqueTokenIds = Array.from(tokenIdSet)
+  api.log(`Found ${uniqueTokenIds.length} unique position IDs for pool ${poolId}`)
+  return uniqueTokenIds
 }
 
 
