@@ -6,7 +6,7 @@ query get_supertokens($block: Int) {
   tokens(
     first: ${first},
     block: { number: $block },
-    where: { isSuperToken: true${id_gt ? `, id_gt: \"${id_gt}\"` : ""} },
+    where: { isSuperToken: true${id_gt ? `, id_gt: "${id_gt}"` : ""} },
     orderBy: id,
     orderDirection: asc
   ) {
@@ -130,18 +130,20 @@ async function retrieveSupertokensBalances(
   const PAGE_SIZE = 1000;
   let lastId = "";
   let allTokens = [];
-  while (true) {
+  let tokens = [];
+  do {
     const query = supertokensQuery({ first: PAGE_SIZE, id_gt: lastId });
 
-    const { tokens } = await blockQuery(graphUrl, query, {
+    const { queriedTokens } = await blockQuery(graphUrl, query, {
       api: { getBlock: () => blockForQuery, block: blockForQuery },
     });
 
+    tokens = queriedTokens
+
     if (!tokens?.length) break;
     allTokens.push(...tokens);
-    if (tokens.length < PAGE_SIZE) break;
     lastId = tokens[tokens.length - 1].id;
-  }
+  } while (tokens.length < PAGE_SIZE)
 
   const filteredTokens = allTokens.filter((t) => t.isSuperToken);
   return getChainBalances(filteredTokens, chain, block, isVesting, api);
