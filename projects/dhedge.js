@@ -3,7 +3,7 @@
 const { sliceIntoChunks } = require("@defillama/sdk/build/util");
 
 const DHEDGE_FACTORY_PROXIES = {
-  ethereum: "0x03D20ef9bdc19736F5e8Baf92D02C8661a5941F7",
+  ethereum: "0x96d33bcf84dde326014248e2896f79bbb9c13d6d",
   polygon: "0xfdc7b8bFe0DD3513Cc669bB8d601Cb83e2F69cB0",
   optimism: "0x5e61a079A178f0E5784107a4963baAe0c5a680c6",
   arbitrum: "0xffFb5fB14606EB3a548C113026355020dDF27535",
@@ -82,7 +82,7 @@ const getV2StakingTotalAmount = async (api) => ({
 
 module.exports = {
   ethereum: {
-    tvl: getV1TotalValueLocked,
+    tvl,
     staking: getV1StakingTotalAmount,
   },
   polygon: {
