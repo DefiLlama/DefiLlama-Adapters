@@ -100,7 +100,32 @@ async function retrieveSupertokensBalances(
   api,
   graphUrl
 ) {
-  const blockNum = await getBlock(api.timestamp, chain, { [chain]: block });
+  let blockNum;
+  try {
+    blockNum = await getBlock(api.timestamp, chain, { [chain]: block });
+  } catch (e) {
+    // If block lookup fails for this chain/date (e.g. pre-genesis), skip it
+    return;
+  }
+
+  // Ensure we don't query subgraphs before their start block set in the manifest (pre protocol deployment)
+  const subgraphStartBlocks = {
+    scroll: 2_575_000,
+    degen: 26188017,
+    base: 1000000,
+    ethereum: 15870000,
+    celo: 16393000,
+    bsc: 18800000,
+    avax: 14700000,
+    arbitrum: 7600000,
+    optimism: 4300000,
+    polygon: 11650500,
+    xdai: 14820000,
+  };
+  const minStart = subgraphStartBlocks[chain] || 0;
+  // If requested block is before the subgraph started indexing ( protocol deployment ), return 0 for this chain
+  if (minStart && blockNum < minStart) return;
+  const blockForQuery = (blockNum || 0);
 
   const PAGE_SIZE = 1000;
   let lastId = "";
@@ -109,13 +134,13 @@ async function retrieveSupertokensBalances(
     const query = supertokensQuery({ first: PAGE_SIZE, id_gt: lastId });
 
     const { tokens } = await blockQuery(graphUrl, query, {
-      api: { getBlock: () => blockNum - 20, block: blockNum - 20 },
+      api: { getBlock: () => blockForQuery, block: blockForQuery },
     });
 
     if (!tokens?.length) break;
     allTokens.push(...tokens);
     if (tokens.length < PAGE_SIZE) break;
-    cursorAfterId = tokens[tokens.length - 1].id;
+    lastId = tokens[tokens.length - 1].id;
   }
 
   const filteredTokens = allTokens.filter((t) => t.isSuperToken);
