@@ -1,33 +1,26 @@
 const { getBlock } = require("./helper/http");
 const { blockQuery } = require("./helper/http");
 
-const supertokensQuery = `
+const supertokensQuery = ({ first = 1000, id_gt = "" } = {}) => `
 query get_supertokens($block: Int) {
   tokens(
-    first: 1000, 
-    block: { number: $block } 
-    where:{
-     isSuperToken:true,
-     isListed:true
-   }
+    first: ${first},
+    block: { number: $block },
+    where: { isSuperToken: true${id_gt ? `, id_gt: \"${id_gt}\"` : ""} },
+    orderBy: id,
+    orderDirection: asc
   ) {
-    id
-    underlyingAddress
-    name
-    underlyingToken {
-      name
-      decimals
-      symbol
       id
-    }
-    symbol
-    decimals
-    isSuperToken
-    isNativeAssetSuperToken
-    isListed
+  underlyingAddress
+  name
+  underlyingToken { name decimals symbol id }
+  symbol
+  decimals
+  isSuperToken
+  isNativeAssetSuperToken
+  isListed
   }
-}
-`;
+}`;
 
 const blacklistedSuperTokens = new Set(
   ["0x441bb79f2da0daf457bad3d401edb68535fb3faa"].map((i) => i.toLowerCase())
@@ -108,15 +101,25 @@ async function retrieveSupertokensBalances(
   graphUrl
 ) {
   const blockNum = await getBlock(api.timestamp, chain, { [chain]: block });
-  const { tokens } = await blockQuery(graphUrl, supertokensQuery, {
-    //Abit of a delay to avoid subgraph being out sync erroring the query
-    api: { getBlock: () => blockNum - 20, block: blockNum - 20 },
-  });
 
-  // Use active supertokens only
-  const allTokens = tokens.filter((t) => t.isSuperToken && t.isListed);
+  const PAGE_SIZE = 1000;
+  let lastId = "";
+  let allTokens = [];
+  while (true) {
+    const query = supertokensQuery({ first: PAGE_SIZE, id_gt: lastId });
 
-  return getChainBalances(allTokens, chain, block, isVesting, api);
+    const { tokens } = await blockQuery(graphUrl, query, {
+      api: { getBlock: () => blockNum - 20, block: blockNum - 20 },
+    });
+
+    if (!tokens?.length) break;
+    allTokens.push(...tokens);
+    if (tokens.length < PAGE_SIZE) break;
+    cursorAfterId = tokens[tokens.length - 1].id;
+  }
+
+  const filteredTokens = allTokens.filter((t) => t.isSuperToken);
+  return getChainBalances(filteredTokens, chain, block, isVesting, api);
 }
 
 /**
@@ -168,5 +171,5 @@ Object.keys(subgraphEndpoints).forEach((chain) => {
   module.exports[chain] = {
     tvl: async (api, _b, { [chain]: block }) =>
       retrieveSupertokensBalances(chain, block, false, api, graph),
-}
+  }
 });
