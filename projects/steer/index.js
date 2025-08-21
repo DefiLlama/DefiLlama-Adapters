@@ -245,6 +245,30 @@ const supportedChains = [
     chainId: 130,
     identifier: 'unichain'
   },
+  {
+    name: 'Katana',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/D6CST1Az8c8KvMf8ktcEcWds89YVQxbKG6v8yo7FAzzM',
+    chainId: 747474,
+    identifier: 'katana'
+  },
+  {
+    name: 'Saga',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-saga-evm/prod/gn',
+    chainId: 5464,
+    identifier: 'saga'
+  },
+  {
+    name: 'Ronin',
+    subgraphEndpoint: 'https://subgraph-proxy-server-xf2uthetka-as.a.run.app/gateway-arbitrum/793Lz5oiK51wdm9kCLtHqunkAPk2qjg7denpCrHqrLcA',
+    chainId: 2020,
+    identifier: 'ronin'
+  },
+  {
+    name: 'Nibiru',
+    subgraphEndpoint: 'https://index-api.onfinality.io/sq/rakeshbhatt10/steer-protocol-nibiru',
+    chainId: 6900,
+    identifier: 'nibiru'
+  },
 ]
 
 // Fetch active vaults and associated data @todo limited to 1000 per chain

@@ -29,6 +29,7 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
+  misrepresentedTokens: true,
   methodology: 'TVL is the total AUM based on the price of the underlying assets, price is from NexaAggregator Oracle',
   hsk: {
     tvl,

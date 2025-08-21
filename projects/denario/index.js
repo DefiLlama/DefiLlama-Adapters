@@ -36,17 +36,18 @@ async function tvl(api) {
 	// 	target: goldAddress,
 	// })
 
-	const silverDecimals = await api.call({
-		target: silverAddress,
-		abi: 'erc20:decimals'
-	})
 	const silverPrice = await api.call({
 		target: priceOracle,
 		params: 'silvercoin/latest/USD',
-		abi: 'function getValue(string key) view returns (uint128,uint128)'
+		abi: priceOracleABI[0]
 	}).then(res => res[0])
-	const silverPriceInUSD = silverPrice / 10 ** silverDecimals
-	silverAddress.price = silverPriceInUSD
+	
+	// Oracle price is in 8 decimals (standard for USD prices)
+	const silverPriceInUSD = silverPrice / 1e8
+	
+	// Calculate total value in USD and add to balances
+	const totalValueInUSD = (totalSilverSupply * silverPriceInUSD) / 1e18 // token has 18 decimals
+	api.add(ADDRESSES.polygon.USDC, totalValueInUSD * 1e6) // USDC has 6 decimals
 
 	return {
 		[silverAddress]: totalSilverSupply,
