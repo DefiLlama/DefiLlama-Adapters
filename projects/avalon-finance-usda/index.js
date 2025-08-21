@@ -57,9 +57,10 @@ const v3MoveConfig = {
 const getMovementTvl = async (api) => {
   const primary_fungible_asset_balance = "0x1::primary_fungible_store::balance"
   const tvl = await function_view({
-    "functionStr": primary_fungible_asset_balance,
-    "type_arguments": ["0x1::fungible_asset::Metadata"],
-    "args": [v3MoveConfig.move.treasuryAddress, v3MoveConfig.move.fbtcAddress]
+    functionStr: primary_fungible_asset_balance,
+    type_arguments: ["0x1::fungible_asset::Metadata"],
+    args: [v3MoveConfig.move.treasuryAddress, v3MoveConfig.move.fbtcAddress],
+    chain: "move"
   })
   return tvl
 }
@@ -89,6 +90,9 @@ Object.keys(v3Config).forEach(chain => {
 // Movement
 Object.keys(v3MoveConfig).forEach(chain => {
   module.exports[chain] = {
-    tvl: getMovementTvl,
+    tvl: async (api) => {
+      const tvl = await getMovementTvl(api)
+      api.add(v3MoveConfig.move.fbtcAddress, tvl)
+    },
   }
 })
