@@ -1,33 +1,26 @@
 const { getBlock } = require("./helper/http");
 const { blockQuery } = require("./helper/http");
 
-const supertokensQuery = `
+const supertokensQuery = ({ first = 1000, id_gt = "" } = {}) => `
 query get_supertokens($block: Int) {
   tokens(
-    first: 1000, 
-    block: { number: $block } 
-    where:{
-     isSuperToken:true,
-     isListed:true
-   }
+    first: ${first},
+    block: { number: $block },
+    where: { isSuperToken: true${id_gt ? `, id_gt: "${id_gt}"` : ""} },
+    orderBy: id,
+    orderDirection: asc
   ) {
-    id
-    underlyingAddress
-    name
-    underlyingToken {
-      name
-      decimals
-      symbol
       id
-    }
-    symbol
-    decimals
-    isSuperToken
-    isNativeAssetSuperToken
-    isListed
+  underlyingAddress
+  name
+  underlyingToken { name decimals symbol id }
+  symbol
+  decimals
+  isSuperToken
+  isNativeAssetSuperToken
+  isListed
   }
-}
-`;
+}`;
 
 const blacklistedSuperTokens = new Set(
   ["0x441bb79f2da0daf457bad3d401edb68535fb3faa"].map((i) => i.toLowerCase())
@@ -107,16 +100,53 @@ async function retrieveSupertokensBalances(
   api,
   graphUrl
 ) {
-  const blockNum = await getBlock(api.timestamp, chain, { [chain]: block });
-  const { tokens } = await blockQuery(graphUrl, supertokensQuery, {
-    //Abit of a delay to avoid subgraph being out sync erroring the query
-    api: { getBlock: () => blockNum - 20, block: blockNum - 20 },
-  });
+  let blockNum;
+  try {
+    blockNum = await getBlock(api.timestamp, chain, { [chain]: block });
+  } catch (e) {
+    // If block lookup fails for this chain/date (e.g. pre-genesis), skip it
+    return;
+  }
 
-  // Use active supertokens only
-  const allTokens = tokens.filter((t) => t.isSuperToken && t.isListed);
+  // Ensure we don't query subgraphs before their start block set in the manifest (pre protocol deployment)
+  const subgraphStartBlocks = {
+    scroll: 2_575_000,
+    degen: 26188017,
+    base: 1000000,
+    ethereum: 15870000,
+    celo: 16393000,
+    bsc: 18800000,
+    avax: 14700000,
+    arbitrum: 7600000,
+    optimism: 4300000,
+    polygon: 11650500,
+    xdai: 14820000,
+  };
+  const minStart = subgraphStartBlocks[chain] || 0;
+  // If requested block is before the subgraph started indexing ( protocol deployment ), return 0 for this chain
+  if (minStart && blockNum < minStart) return;
+  const blockForQuery = (blockNum || 0);
 
-  return getChainBalances(allTokens, chain, block, isVesting, api);
+  const PAGE_SIZE = 1000;
+  let lastId = "";
+  let allTokens = [];
+  let tokens = [];
+  do {
+    const query = supertokensQuery({ first: PAGE_SIZE, id_gt: lastId });
+
+    const { queriedTokens } = await blockQuery(graphUrl, query, {
+      api: { getBlock: () => blockForQuery, block: blockForQuery },
+    });
+
+    tokens = queriedTokens
+
+    if (!tokens?.length) break;
+    allTokens.push(...tokens);
+    lastId = tokens[tokens.length - 1].id;
+  } while (tokens.length < PAGE_SIZE)
+
+  const filteredTokens = allTokens.filter((t) => t.isSuperToken);
+  return getChainBalances(filteredTokens, chain, block, isVesting, api);
 }
 
 /**
@@ -135,9 +165,9 @@ const subgraphEndpoints = {
   bsc: {
     graph: "https://bsc-mainnet.subgraph.x.superfluid.dev",
   },
-  degen: {
-    graph: "https://degenchain.subgraph.x.superfluid.dev",
-  },
+  // degen: {
+  //   graph: "https://degenchain.subgraph.x.superfluid.dev",
+  // },
   ethereum: {
     graph: "https://eth-mainnet.subgraph.x.superfluid.dev",
   },
@@ -168,5 +198,5 @@ Object.keys(subgraphEndpoints).forEach((chain) => {
   module.exports[chain] = {
     tvl: async (api, _b, { [chain]: block }) =>
       retrieveSupertokensBalances(chain, block, false, api, graph),
-}
+  }
 });

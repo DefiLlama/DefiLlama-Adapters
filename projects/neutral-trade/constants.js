@@ -1,5 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const DATA_URL = 'https://raw.githubusercontent.com/neutral-trade/vaults-data/main';
+const DRIFT_PROGRAM_ID = 'dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH';
+const DRIFT_VAULT_PROGRAM_ID = 'vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR';
 
 const START_TIMESTAMP = 1730419200; // 2024-11-01
 
@@ -359,6 +361,12 @@ const DRIFT_VAULTS = [
     token: TOKENS.USDC,
     dataUrl: `${DATA_URL}/#`
   },
+  {
+    name: "vip23",
+    address: "8oZhUFmrA7p3SkVX7o4nFfSLsmt3KfCyW8grFydtvvuj",
+    token: TOKENS.USDC,
+    dataUrl: `${DATA_URL}/#`
+  },
 ];
 
 const KAMINO_VAULTS = [
@@ -429,6 +437,8 @@ const NT_VAULTS = [
 module.exports = {
   DATA_URL,
   START_TIMESTAMP,
+  DRIFT_PROGRAM_ID,
+  DRIFT_VAULT_PROGRAM_ID,
   TOKENS,
   DRIFT_VAULTS,
   KAMINO_VAULTS,

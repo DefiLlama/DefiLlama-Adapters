@@ -9,7 +9,8 @@ const treasuryList = [
     '2QfKMyrkFNACCmPw1EHCAxcH7MHvsChuR9MduWk6TfD6',
     'USDUY49DCh6wAHvx5jZn1xHSyDc8fvMa7YBnFi1aYEy',
     'DLzMXMSZLW8QEx563QBZNca8Gg6NrHGJZdJJ3Y4rcKEe',
-    '3fKaQf2uLSped6HUEPQkQtTpPo1xnhZRsmfW7htFBBuQ'
+    '3fKaQf2uLSped6HUEPQkQtTpPo1xnhZRsmfW7htFBBuQ',
+    '6REMwMUhkh9PLNGxRUsue49otacp76pAWAU3C7itQ4AP'
 ]
 
 const tokens = [

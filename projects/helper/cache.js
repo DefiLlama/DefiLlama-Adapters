@@ -15,23 +15,11 @@ function getLink(project, chain) {
   return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
-async function getCache(project, chain, options = {}) {
+async function getCache(project, chain, { _ } = {}) {
   const Key = getKey(project, chain)
   const fileKey = getFileKey(project, chain)
 
   try {
-    if (options.splitCache) {
-      const baseKey = fileKey.split('.')[0]
-      const [json0, json1] = await Promise.all([
-        sdk.cache.readCache(`${baseKey}-0.json`),
-        sdk.cache.readCache(`${baseKey}-1.json`)
-      ])
-      return {
-        fromBlock: json0.fromBlock,
-        toBlock: json0.toBlock,
-        logs: [...json0.logs, ...json1.logs]
-      }
-    }
     const json = await sdk.cache.readCache(fileKey)
     if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
@@ -48,21 +36,10 @@ async function getCache(project, chain, options = {}) {
   }
 }
 
-async function setCache(project, chain, cache, options = {}) {
+async function setCache(project, chain, cache, { _ } = {}) {
   const Key = getKey(project, chain)
 
   try {
-    if (options.splitCache) {
-      const { fromBlock, toBlock, logs } = cache
-      const half = Math.ceil(logs.length / 2);    
-      const logs0 = logs.slice(0,half);
-      const logs1 = logs.slice(half, logs.length)
-      await Promise.all([ 
-        sdk.cache.writeCache(getFileKey(project, `${chain}-0`), { fromBlock, toBlock, logs: logs0 }),
-        sdk.cache.writeCache(getFileKey(project, `${chain}-1`), { fromBlock, toBlock, logs: logs1 })
-      ])
-      return 
-    }
     await sdk.cache.writeCache(getFileKey(project, chain), cache)
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
