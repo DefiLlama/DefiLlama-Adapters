@@ -149,6 +149,9 @@ const fixBalancesTokens = {
     '0x3e6f1be54feb9cc37dbfc31a894a8810357c3f9c': { coingeckoId: "spain-national-fan-token", decimals: 18 },
     '0x4270a3d1a61fc6b86ea9e19730e529acee592c3b': { coingeckoId: "brazil-fan-token", decimals: 18 },
     '0x38b0b761c90eaaea748bd3a43199377818d280e6': { coingeckoId: "mclaren-f1-fan-token", decimals: 18 },
+  },
+  peaq: {
+    [nullAddress]: { coingeckoId: "peaq", decimals: 18 },
   }
 }
 
