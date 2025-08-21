@@ -16,9 +16,9 @@ module.exports = {
   base: {
     tvl: getUniTVL({factory: '0xEC6540261aaaE13F236A032d454dc9287E52e56A'})
   },
-  dogechain: {
-    tvl: getUniTVL({factory: '0xC3550497E591Ac6ed7a7E03ffC711CfB7412E57F'})
-  },
+  // dogechain: {
+  //   tvl: getUniTVL({factory: '0xC3550497E591Ac6ed7a7E03ffC711CfB7412E57F'})
+  // },
   hallmarks:[
     [1611917218, "Aavegotchi LM"],
     [1619095618, "QUICK staking - Dragon's Liar launch"],
