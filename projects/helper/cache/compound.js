@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 
 const sdk = require('@defillama/sdk');
 const abi = require('../abis/compound.json');
@@ -41,7 +42,7 @@ function compoundExports(comptroller, { blacklistedTokens = [], transformAdress,
         calls: markets,
       })
       underlying = underlying.map((token, i) => {
-        if (!token || token === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') token = nullAddress
+        if (!token || token === ADDRESSES.GAS_TOKEN_2) token = nullAddress
         token = transformAdress(token)
         sdk.util.sumSingleBalance(balances.tvl,token,values[i])
         sdk.util.sumSingleBalance(balances.borrowed,token,borrowed[i])
