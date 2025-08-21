@@ -1,3 +1,5 @@
+
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getUniqueAddresses } = require('../helper/utils')
@@ -7,7 +9,7 @@ const abi = {
 }
 
 const config = {
-  abstract: { arcade: '0x0b4429576e5eD44a1B8f676c8217eb45707AFa3D', fromBlock: 447140, },
+  abstract: { arcade: '0x0b4429576e5eD44a1B8f676c8217eb45707AFa3D', fromBlock: 6490616, },
 }
 
 function customCacheFunction({ cache, logs }) {
@@ -21,6 +23,7 @@ function customCacheFunction({ cache, logs }) {
 async function tvl(api) {
   const { arcade, fromBlock } = config[api.chain]
   const tokens = await getLogs2({ api, factory: arcade, eventAbi: abi.depositEvent, fromBlock, extraKey: 'deposit-address',  customCacheFunction,})
+  tokens.push(ADDRESSES.abstract.WETH, ADDRESSES.abstract.USDC)
   return sumTokens2({ api, owner: arcade, tokens, permitFailure: true })
 }
 

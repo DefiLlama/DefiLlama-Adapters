@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const evoq = '0xF9C74A65B04C73B911879DB0131616C556A626bE'
@@ -10,6 +11,7 @@ const tokens = [
     "0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8", // vUSDC
     "0xC4eF4229FEc74Ccfe17B2bdeF7715fAC740BA0ba", // vFDUSD
     "0xf508fCD89b8bd15579dc79A6827cB4686A3592c8", // vETH
+    "0x0C1DA220D301155b87318B90692Da8dc43B67340", // vUSD1
 ]
 
 async function borrowed(api) {
@@ -18,7 +20,7 @@ async function borrowed(api) {
   await Promise.all(borrowDatas.map(async (v, i) => {
     let underlyingToken;
     if(tokens[i] === "0xA07c5b74C9B40447a954e1466938b865b6BBea36") {
-      underlyingToken = "0x0000000000000000000000000000000000000000"
+      underlyingToken = ADDRESSES.null
     } else {
       underlyingToken = await api.call({ abi: 'address:underlying', target: tokens[i] })
     }

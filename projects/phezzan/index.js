@@ -40,7 +40,7 @@ module.exports = {
         tvl: async () => ({})
     },
     hallmarks: [
-      [Math.floor(new Date('2023-04-23')/1e3), 'Protocol shutdown'],
+      ['2023-04-23', 'Protocol shutdown'],
     ],
     deadFrom: '2023-04-23',
 };
