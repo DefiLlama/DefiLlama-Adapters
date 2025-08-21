@@ -78,40 +78,36 @@ Object.keys(config).forEach(chain => {
 
       async function addCurveLogs(target) {
         if (!target) return;
-        try {
-          // Get pool count from factory
-          const poolCount = await api.call({ target, abi: 'uint256:pool_count' });
-          
-          // Get all pool addresses
-          const poolCalls = [];
-          for (let i = 0; i < poolCount; i++) {
-            poolCalls.push({ target, params: [i] });
-          }
-          
-          const poolResults = await api.multiCall({
-            abi: 'function pool_list(uint256) view returns (address)',
-            calls: poolCalls
-          });
-          
-          // Get coins for each pool using factory's get_coins method
-          const coinCalls = poolResults.map(pool => ({ target, params: [pool] }));
-          
-          const coinResults = await api.multiCall({
-            abi: 'function get_coins(address _pool) view returns (address[])',
-            calls: coinCalls,
-            permitFailure: true
-          });
-          
-          // Process coins for each pool
-          poolResults.forEach((pool, poolIndex) => {
-            const coins = coinResults[poolIndex];
-            if (coins && Array.isArray(coins)) {
-              ownerTokens.push([coins, pool]);
-            }
-          });
-        } catch (e) {
-          console.log('Error fetching Curve pools:', e);
+        // Get pool count from factory
+        const poolCount = await api.call({ target, abi: 'uint256:pool_count' });
+        
+        // Get all pool addresses
+        const poolCalls = [];
+        for (let i = 0; i < poolCount; i++) {
+        poolCalls.push({ target, params: [i] });
         }
+        
+        const poolResults = await api.multiCall({
+        abi: 'function pool_list(uint256) view returns (address)',
+        calls: poolCalls
+        });
+        
+        // Get coins for each pool using factory's get_coins method
+        const coinCalls = poolResults.map(pool => ({ target, params: [pool] }));
+        
+        const coinResults = await api.multiCall({
+        abi: 'function get_coins(address _pool) view returns (address[])',
+        calls: coinCalls,
+        permitFailure: true
+        });
+        
+        // Process coins for each pool
+        poolResults.forEach((pool, poolIndex) => {
+        const coins = coinResults[poolIndex];
+        if (coins && Array.isArray(coins)) {
+            ownerTokens.push([coins, pool]);
+        }
+        });
       }
     }
   }
