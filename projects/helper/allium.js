@@ -9,10 +9,10 @@ const rateLimited = (fn) => (...args) => _rateLimited(() => fn(...args))
 
 const token = {}
 
-const HEADERS = {
+const HEADERS = () => ({
     "Content-Type": "application/json",
-    "X-API-KEY": process.env.ALLIUM_API_KEY,
-};
+    "X-API-KEY": getEnv('ALLIUM_API_KEY'),
+})
 
 async function startAlliumQuery(sqlQuery) {
     const query = await axios.post(`https://api.allium.so/api/v1/explorer/queries/phBjLzIZ8uUIDlp0dD3N/run-async`, {
@@ -20,7 +20,7 @@ async function startAlliumQuery(sqlQuery) {
             fullQuery: sqlQuery
         }
     }, {
-        headers: HEADERS
+        headers: HEADERS()
     })
 
     return query.data["run_id"]
@@ -28,7 +28,7 @@ async function startAlliumQuery(sqlQuery) {
 
 async function retrieveAlliumResults(queryId) {
     const results = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${queryId}/results?f=json`, {
-        headers: HEADERS
+        headers: HEADERS()
     })
     return results.data.data
 }
@@ -50,7 +50,7 @@ async function _queryAllium(sqlQuery) {
             }
 
             const statusReq = await axios.get(`https://api.allium.so/api/v1/explorer/query-runs/${token[sqlQuery]}/status`, {
-                headers: HEADERS
+                headers: HEADERS()
             })
 
             const status = statusReq.data
