@@ -134,6 +134,7 @@ const fixBalancesTokens = {
     USDC: { coingeckoId: 'usd-coin', decimals: 0 },
     USD: { coingeckoId: 'usd-coin', decimals: 0 },
     YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
+    FIGR_HELOC: { coingeckoId: 'usd-coin', decimals: 0},
     'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
   },
   scroll: {
