@@ -322,12 +322,19 @@ module.exports = {
   }),
   ethereum: createExports({
     troveList: [
-      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
-      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2) deprecated
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2) deprecated
+
+      '0xb97E6219B0836E21ae671358e746f03dcdbCb6D8', // WETH Collateral(V2) new
+      '0xc03403DD8f27CEFA314Fc109D26777c81b0De895', // WBTC Collateral(V2) new
+      '0x2135EfEF5aC35ba549Cc791cEc4D15E8C8115611', // weETH Collateral(V2)
     ],
     nymList: [{
-      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
       fromBlock: 23017053,
+    }, {
+      address: '0xb8374e4DfF99202292da2FE34425e1dE665b67E6',
+      fromBlock: 23180734,
     }],
   }),
 }
