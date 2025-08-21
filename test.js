@@ -24,10 +24,12 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
+const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', ...ENV_KEYS])
+
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (whitelistedEnvKeys.has(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
@@ -254,6 +256,15 @@ function checkExportKeys(module, filePath, chains) {
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
+
+  const badChainNames = chains.filter(chain => !/^[a-z0-9_]+$/.test(chain));
+  if (badChainNames.length) {
+    throw new Error(`
+    Invalid chain names: ${badChainNames.join(', ')}
+    Chain names should only contain lowercase letters, numbers and underscores
+    `)
+  }
+
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
   let exportKeys = chains.map(chain => Object.keys(module[chain])).flat()

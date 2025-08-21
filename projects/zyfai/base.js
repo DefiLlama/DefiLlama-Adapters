@@ -35,101 +35,19 @@ const YIELDFI_BASE_POOLS = {
     'vyUSD': '0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de',
 };
 
-async function harvestTvl(api, owners) {
-    const harvestPools = Object.values(HARVEST_POOLS);
-    const balanceCalls = harvestPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    }); 
-}
-
-async function wasabiTvl(api, owners) {
-    const wasabiPools = Object.values(WASABI_POOLS);
-    const balanceCalls = wasabiPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function auraTvl(api, owners) {
-    const auraPools = Object.values(AURA_POOLS);
-    const balanceCalls = auraPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function yieldfiTvl(api, owners) {
-    const yieldfiPools = Object.values(YIELDFI_BASE_POOLS);
-    const balanceCalls = yieldfiPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function compoundTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({ target: COMPOUND_TOKEN_ADDRESS, params: [owner] }));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    const total = balances.reduce((sum, bal) => sum + Number(bal) / 1e6, 0);
-    api.add(COMPOUND_TOKEN_ADDRESS, total);
-}
-
-async function moonwellTvl(api, owners) {
-    const moonwellPools = Object.values(MOONWELL_POOL_ADDRESSES);
-    const balanceCalls = moonwellPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function aaveTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({ target: AAVE_TOKEN_ADDRESS, params: [owner] }));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    const total = balances.reduce((sum, bal) => sum + Number(bal) / 1e6, 0);
-    api.add(AAVE_TOKEN_ADDRESS, total);
-}
-
-async function fluidTvl(api, owners) {
-    const fluidPools = Object.values(FLUID_POOL_ADDRESSES);
-    const balanceCalls = fluidPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function morphoTvl(api, owners) {
-    const morphoPools = Object.values(MORPHO_POOL_ADDRESSES);
-    const balanceCalls = morphoPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function sparkTvl(api, owners) {
-    const sparkPools = Object.values(SPARK_POOL_ADDRESSES);
-    const balanceCalls = sparkPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
+const allPoolTokens = [
+    ...Object.values(HARVEST_POOLS),
+    ...Object.values(WASABI_POOLS),
+    ...Object.values(AURA_POOLS),
+    ...Object.values(YIELDFI_BASE_POOLS),
+    ...Object.values(MOONWELL_POOL_ADDRESSES),
+    ...Object.values(SPARK_POOL_ADDRESSES),
+    ...Object.values(MORPHO_POOL_ADDRESSES),
+    ...Object.values(FLUID_POOL_ADDRESSES),
+    COMPOUND_TOKEN_ADDRESS,
+    AAVE_TOKEN_ADDRESS,
+]
 
 module.exports = {
-    aaveTvl,
-    fluidTvl,
-    morphoTvl,
-    sparkTvl,
-    compoundTvl,
-    moonwellTvl,
-    harvestTvl,
-    wasabiTvl,
-    auraTvl,
-    yieldfiTvl
+  allPoolTokens
 };
