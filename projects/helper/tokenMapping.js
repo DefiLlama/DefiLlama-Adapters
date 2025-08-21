@@ -151,7 +151,16 @@ const fixBalancesTokens = {
     '0x38b0b761c90eaaea748bd3a43199377818d280e6': { coingeckoId: "mclaren-f1-fan-token", decimals: 18 },
   },
   peaq: {
-    [nullAddress]: { coingeckoId: "peaq", decimals: 18 },
+     '0xf4d9235269a96aadafc9adae454a0618ebe37949': { coingeckoId: "tether", decimals: 6 },
+     '0xbba60da06c2c5424f03f7434542280fcad453d10': { coingeckoId: "usd-coin", decimals: 6 },
+     '0xe4103e80c967f58591a1d7ca443ed7e392fed862': { coingeckoId: "peaq-2", decimals: 18 },
+     '0x1eef208926667594e5136e89d0e9dd6907959197': { coingeckoId: "peaq-2", decimals: 18 },
+     '0x3cd66d2e1fac1751b0a20bebf6ca4c9699bb12d7': { coingeckoId: "peaq-2", decimals: 18 },
+     '0xF67Db9d00401D9e883208882F5c100d7482b083D': { coingeckoId: "auki-labs", decimals: 18 },
+     '0x5c3126bfb9a68a7021d461230127470b3824886b': { coingeckoId: "silencio", decimals: 18 },
+     '0x08e6d50169863fd9beb88687ce1573cf9d6d1484': { coingeckoId: "ovr", decimals: 18 },
+     '0xe67f39fbe8c24ef8b3542efed1ee9963cefc1f2a': { coingeckoId: "airtor-protocol", decimals: 18 },
+     '0xe5330a9fba99504c534127d39727729899c9a506': { coingeckoId: "peaq-2", decimals: 18 }
   }
 }
 
