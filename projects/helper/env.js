@@ -2,6 +2,8 @@
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
+  'STORE_IN_R2',
+  'IS_RUN_FROM_CUSTOM_JOB',
 ]
 
 const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
@@ -60,7 +62,10 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
-  'DEBANK_API_KEY'
+  'DEBANK_API_KEY',
+  'SMARDEX_SUBGRAPH_API_KEY',
+  'PROXY_AUTH',
+  'ALLIUM_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
