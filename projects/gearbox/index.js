@@ -17,8 +17,9 @@
    ethereum: "0x9ea7b04da02a5373317d745c1571c84aad03321d",
    arbitrum: "0x7d04eCdb892Ae074f03B5D0aBA03796F90F3F2af",
    optimism: "0x3761ca4BFAcFCFFc1B8034e69F19116dD6756726",
+   sonic: "0x4b27b296273B72d7c7bfee1ACE93DC081467C41B",
  };
- 
+
  // src/adapter/pools/abi.ts
  var poolAbis = {
    getAddressOrRevert:
@@ -513,6 +514,10 @@
      borrowed,
    },
    optimism: {
+     tvl,
+     borrowed,
+   },
+   sonic: {
      tvl,
      borrowed,
    },

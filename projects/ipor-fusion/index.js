@@ -13,4 +13,7 @@ module.exports = {
   ethereum: { tvl },
   arbitrum: { tvl },
   base: { tvl },
+  unichain: { tvl },
+  ink: { tvl },
+  tac: { tvl }
 };

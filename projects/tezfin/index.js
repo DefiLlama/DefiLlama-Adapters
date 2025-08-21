@@ -13,6 +13,11 @@ async function tvl() {
       "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs", // ꜰUSDtz v2
       "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB", // ꜰUSDt v2
       "KT19gZac3vqV3ZeMJbhMX7Xy8kcocKK4Tbz1", // ꜰtzBTC v2
+      // v3 contracts
+      "KT1Gm29ynxQcS3m6Srwd77xxMhposuNvNsRV", // ꜰXTZ v3
+      "KT1DcgX4Lj1XYyB6yyg76gwpfCBaoUZsg5dE", // ꜰUSDtz v3
+      "KT1HxMHg859teFpXXCZamuPiEyJa6YfHiagn", // ꜰUSDt v3
+      "KT1DrELZukfWQNo3J3HTUqMS9vVTjBPLT5nQ", // ꜰtzBTC v3
     ],
     includeTezos: true,
   });
@@ -27,6 +32,10 @@ async function borrowed() {
     { address: "KT1WQM7wj64GHCndwV8REccQ6N4tqZ3uRNqs", decimals: 6 }, // ꜰUSDtz v2
     { address: "KT1HCRJhfqmWKRJtZXzvTkY4iisfuR4w6pkB", decimals: 6 }, // ꜰUSDt v2
     { address: "KT19gZac3vqV3ZeMJbhMX7Xy8kcocKK4Tbz1", decimals: 8 }, // ꜰtzBTC v2
+    { address: "KT1Gm29ynxQcS3m6Srwd77xxMhposuNvNsRV", decimals: 6 }, // ꜰXTZ v3
+    { address: "KT1DcgX4Lj1XYyB6yyg76gwpfCBaoUZsg5dE", decimals: 6 }, // ꜰUSDtz v3
+    { address: "KT1HxMHg859teFpXXCZamuPiEyJa6YfHiagn", decimals: 6 }, // ꜰUSDt v3
+    { address: "KT1DrELZukfWQNo3J3HTUqMS9vVTjBPLT5nQ", decimals: 8 }, // ꜰtzBTC v3
   ];
 
   const balances = {};
@@ -34,7 +43,8 @@ async function borrowed() {
   for (const { address, decimals } of markets) {
     const storage = await getStorage(address);
     let borrows = Number(storage.totalBorrows || 0);
-    let tokenAddress = storage.fa1_2_TokenAddress || storage.fa2_TokenAddress || "tezos";
+
+    let tokenAddress = storage.fa1_2_TokenAddress ? `${storage.fa1_2_TokenAddress}-0` : storage.fa2_TokenAddress ? `${storage.fa2_TokenAddress}-${storage.tokenId}` : "tezos";
 
     borrows = borrows / 10 ** decimals;
 
@@ -52,5 +62,5 @@ module.exports = {
     borrowed,
   },
   methodology:
-    'TVL includes all deposits in TezFin lending markets (ꜰXTZ, ꜰUSDtz, ꜰUSDt, ꜰtzBTC). Borrowed value is based on totalBorrows from contract storage, adjusted by token decimals.',
+    'TVL includes all deposits in TezFin lending markets (ꜰXTZ, ꜰUSDtz, ꜰUSDt, ꜰtzBTC) across v1, v2, and v3. Borrowed value is based on totalBorrows from contract storage, adjusted by token decimals.',
  };

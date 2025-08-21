@@ -9,5 +9,6 @@ async function tvl(api) {
 }
 
 module.exports = {
-  ethereum: { tvl }
+  ethereum: { tvl },
+  deadFrom: '2025-08-18'
 }

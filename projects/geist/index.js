@@ -1,6 +1,6 @@
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { aaveChainTvl } = require("../helper/aave");
+const { aaveExports } = require("../helper/aave");
 const methodologies = require("../helper/methodologies");
 
 const stakingContract = "0x49c93a95dbcc9A6A4D8f77E59c038ce5020e82f8";
@@ -13,7 +13,7 @@ module.exports = {
   deadFrom: '2023-10-18',
   methodology: methodologies.lendingMarket,
   fantom: {
-    tvl: aaveChainTvl("fantom", "0x4CF8E50A5ac16731FA2D8D9591E195A285eCaA82",),
+    ...aaveExports("", "0x4CF8E50A5ac16731FA2D8D9591E195A285eCaA82",),
     staking: staking(stakingContract, GEIST),
     pool2: pool2(stakingContractPool2, GEIST_WFTM_spLP),
   },
