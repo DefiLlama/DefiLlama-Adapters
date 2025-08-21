@@ -65,8 +65,6 @@ const POSITIONS_QUERY = gql`
   }
 `
 
-
-
 // Get all position IDs for a specific poolId using subgraph
 async function getAllPositionIdsForPool(api, poolId, config) {
   const subgraphEndpoint = sdk.graph.modifyEndpoint(config.SUBGRAPH_ID)
@@ -85,9 +83,7 @@ async function getAllPositionIdsForPool(api, poolId, config) {
   return uniqueTokenIds
 }
 
-
-
-function createPool2Function(chain) {
+function createTvlFunction(chain) {
   return async (api) => {
     const config = CONFIG[chain]
     if (!config) throw new Error(`Config not found for chain: ${chain}`)
@@ -118,18 +114,15 @@ function createPool2Function(chain) {
   }
 }
 
-
-
 module.exports = {
-  methodology: "The pool2 TVL is calculated by summing the value of tokens in Uniswap V4 liquidity pools that have the Super DCA Hook associated with them. The Pool2 value represents the value of all non-DCA tokens (e.g., ETH, USDC, WBTC, AAVE, etc.) in these pools.",
+  doublecounted: true,
+  methodology: "The TVL is calculated by summing the value of tokens in Uniswap V4 liquidity pools that have the Super DCA Hook associated with them. The value represents the value of all non-DCA tokens (e.g., ETH, USDC, WBTC, AAVE, etc.) in these pools.",
   optimism: {
-    tvl: () => ({}),
-    pool2: createPool2Function('optimism'),
+    tvl: createTvlFunction('optimism'),
     start: CONFIG.optimism.FROM_BLOCK
   },
   base: {
-    tvl: () => ({}),
-    pool2: createPool2Function('base'),
+    tvl: createTvlFunction('base'),
     start: CONFIG.base.FROM_BLOCK
   }
 }; 
