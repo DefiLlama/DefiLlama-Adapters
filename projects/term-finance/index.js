@@ -1,20 +1,18 @@
 const { cachedGraphQuery, graphFetchById } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { ethereum } = require('../helper/whitelistedNfts');
 
 const graphs = {
   ethereum:
-    "https://graphql-gateway-term.mainnet.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/mainnet/subgraph/term",
   avax:
-    "https://graphql-gateway-term.avalanche.mainnet.termfinance.io/graphql",
+    "https://api.mainnet.termfinance.io/avalanche/subgraph/term",
+  base:
+    "https://api.mainnet.termfinance.io/base/subgraph/term",
+  // bsc:
+  //   "https://api.mainnet.termfinance.io/bnb/subgraph/term",
+  // arbitrum:
+  //   "https://api.mainnet.termfinance.io/arbitrum/subgraph/term",
 };
-
-const vaultsGraphs = {
-  ethereum:
-    "https://graphql-gateway-vaults.mainnet.mainnet.termfinance.io/graphql",
-  avax:
-    "https://graphql-gateway-vaults.avalanche.mainnet.termfinance.io/graphql",
-}
 
 const query = `
 query poolQuery($lastId: ID) {
@@ -68,47 +66,12 @@ query borrowedQuery($lastId: ID) {
   }
 }`
 
-const termVaultStrategiesQuery = `
-query termVaultStrategiesQuery($lastId: ID, $block: Int) {
-  termVaultStrategies(
-    where: {
-      id_gt: $lastId,
-    },
-    first: 1000,
-    block: {
-      number: $block
-    }
-  ) {
-    id
-    asset {
-      id
-    }
-  }
-}`
-
-const termVaultStrategiesQueryHeadBlock = `
-query termVaultStrategiesQuery($lastId: ID) {
-  termVaultStrategies(
-    where: {
-      id_gt: $lastId,
-    },
-    first: 1000
-  ) {
-    id
-    asset {
-      id
-    }
-  }
-}`
-
 const graphStartBlock = {
   ethereum: 5240462,
   avax: 43162227,
-}
-
-const vaultsGraphStartBlock = {
-  ethereum: 21433264,
-  avax: 54438973,
+  base: 30797402,
+  bsc: 54505207,
+  arbitrum: 359134348,
 }
 
 module.exports = {
@@ -118,27 +81,8 @@ module.exports = {
 
 Object.keys(graphs).forEach(chain => {
   const host = graphs[chain]
-  const vaultsHost = vaultsGraphs[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      // Vaults TVL
-      let vaultsData;
-      if (!api.block) {
-        vaultsData = await cachedGraphQuery(`term-finance-vaults-${chain}-head`, vaultsHost, termVaultStrategiesQueryHeadBlock, { fetchById: true, useBlock: false })
-      } else if (api.block >= vaultsGraphStartBlock[chain]) {
-        vaultsData = await cachedGraphQuery(`term-finance-vaults-${chain}`, vaultsHost, termVaultStrategiesQuery, { fetchById: true, useBlock: true, variables: { block: api.block } })
-      } else {
-        vaultsData = []
-      }
-      const strategyBalances = await api.multiCall({
-        abi: 'uint256:totalLiquidBalance',
-        calls: vaultsData.map(({ id }) => ({ target: id })),
-        permitFailure: false,
-      })
-      vaultsData.forEach(({ asset: { id } }, i) => {
-        api.add(id, strategyBalances[i])
-      });
-
       // Auctions/Repos TVL
       const data = await cachedGraphQuery(`term-finance-${chain}`, host, query, { fetchById: true })
       return sumTokens2({ api, tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker]), permitFailure: true })

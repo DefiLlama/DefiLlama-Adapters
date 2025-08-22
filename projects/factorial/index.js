@@ -10,17 +10,22 @@ const pools = [
   "EQA3m4H3vTUOeXGW-o6AEyZxv6i79tR-i1f4XiW588HJoqND", // slp-ton
   "EQAYJdU9JFRcKAwMZv3MqD0QVjBEMGO_4mgwOJtTBOHR22ec", // slp-usdt
 ];
-   
+  
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function tvl(api) { 
   const pools = await get('https://api.factorial.finance/info/pools');
 
   for(const pool of pools) {
+    await sleep(3000);
     const pool_data = await call({ target: pool.address, abi: "get_pool_data" })
 
     const _kv = 1;
     const assetDicIdx = 13;
     const supplyAmountIdx = 4;
+    const borrowAmountIdx = 5;
     const addressIdx = 15;
 
     const assets = pool_data[assetDicIdx][_kv]["elements"];
@@ -28,12 +33,13 @@ async function tvl(api) {
     assets.forEach((asset) => {
       const assetInfo = asset["tuple"]["elements"];
       const supplied = assetInfo[supplyAmountIdx]["number"]["number"]; 
+      const borrowed = assetInfo[borrowAmountIdx]["number"]["number"]; 
       const address = assetInfo[addressIdx]["slice"]["bytes"];
 
       const assetAddress = processTVMSliceReadAddress(address);
       const addressToAdd = assetAddress === factorial_ton ? ADDRESSES.ton.TON : assetAddress;
       
-      api.add(addressToAdd, supplied);
+      api.add(addressToAdd, supplied - borrowed);
     });
   }
 }
@@ -42,6 +48,7 @@ async function borrowed(api) {
   const pools = await get('https://api.factorial.finance/info/pools');
 
   for(const pool of pools) {
+    await sleep(3000);
     const pool_data = await call({ target: pool.address, abi: "get_pool_data" })
 
     const _kv = 1;
@@ -65,9 +72,7 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: 'Total amount of assets locked in Factorial pool',
-  ton: {
-    tvl, borrowed,
-  }
+  methodology: 'Total amount of assets locked in Affluent pool',
+  ton: { tvl, borrowed }
 }
 

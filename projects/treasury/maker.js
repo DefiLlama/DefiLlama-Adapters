@@ -35,7 +35,7 @@ module.exports = {
   ethereum: {
     tvl,
     ownTokens: sumTokensExport({
-      tokens: [MKR,daiMKRLP,SKY],
+      tokens: [MKR,daiMKRLP,SKY, '0xc20059e0317DE91738d13af027DfC4a50781b066'],
       owners: [treasury],
     }),
   },

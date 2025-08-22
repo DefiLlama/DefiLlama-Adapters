@@ -1,8 +1,8 @@
 const axios = require('axios');
 
 async function tvl(api) {
-  const response = await axios.get('https://staking-api.babylonlabs.io/v1/stats');
-  const activeTvlSatoshis = response.data.data.active_tvl;
+  const response = await axios.get('https://staking-api.babylonlabs.io/v2/stats');
+  const activeTvlSatoshis = response.data.data.total_active_tvl;
   const activeTvlBitcoin = activeTvlSatoshis / 1e8;
 
   if (activeTvlBitcoin > 0)

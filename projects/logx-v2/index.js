@@ -22,6 +22,8 @@ const config = {
   abstract: ['0x816B55fF6E204d5825cf2792955daF449E819494',],
   apechain: ['0x4Ae1be658c57e5785e6D9a72d3e2214678fD80F2',],
   sonic: ['0x4Ae1be658c57e5785e6D9a72d3e2214678fD80F2', '0xaaA97fe165526dC29Cca977eCeA4CFcfe4FE64Cc',],
+  manta: ['0x88665E6044f5FDeb6d96E1e268546F961Da591a0', '0xaaA97fe165526dC29Cca977eCeA4CFcfe4FE64Cc'],
+  blast: ['0x60711A4520871AAbE5D9aa8b0E33425659e0d160'],
 }
 
 Object.keys(config).forEach(chain => {
