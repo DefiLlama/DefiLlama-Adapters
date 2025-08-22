@@ -116,17 +116,6 @@ const TVL_HANDLERS = {
   }
 };
 
-function createTvlFunction(handlerType) {
-  return (api, vaults) => TVL_HANDLERS[handlerType](api, vaults);
-}
-
-const getCuratorTvlErc4626 = createTvlFunction('erc4626');
-const getCuratorTvlTerminal = createTvlFunction('totalSupply');
-const getCuratorTvlMidas = createTvlFunction('totalSupply');
-const getCuratorTvlMizu = createTvlFunction('mizuType');
-const getCuratorTvlNapier = createTvlFunction('napierType');
-const getCuratorTvlHyperbeat = createTvlFunction('hyperbeat');
-
 // ==============================================
 // VAULT CONFIGURATIONS BY BLOCKCHAIN
 // ==============================================
@@ -339,8 +328,7 @@ function createChainTvlFunction(chainConfig) {
       mellow: chainConfig.mellow || [],
       symbiotic: chainConfig.symbiotic || [],
       euler: chainConfig.euler || [],
-      silo: chainConfig.silo || [],
-      lista: chainConfig.lista || []
+      silo: chainConfig.silo || []
     };
     
     const hasStandardProtocols = Object.values(standardProtocols).some(arr => arr.length > 0);
@@ -368,5 +356,10 @@ const adapterExport = getCuratorExport(configs);
 adapterExport.ethereum.tvl = createChainTvlFunction(configs.blockchains.ethereum);
 adapterExport.hyperliquid.tvl = createChainTvlFunction(configs.blockchains.hyperliquid);
 adapterExport.bsc.tvl = createChainTvlFunction(configs.blockchains.bsc);
+adapterExport.unichain.tvl = createChainTvlFunction(configs.blockchains.unichain);
+adapterExport.plume.tvl = createChainTvlFunction(configs.blockchains.plume);
+adapterExport.berachain.tvl = createChainTvlFunction(configs.blockchains.berachain);
+adapterExport.sonic.tvl = createChainTvlFunction(configs.blockchains.sonic);
+adapterExport.avax.tvl = createChainTvlFunction(configs.blockchains.avax);
 
 module.exports = adapterExport;
