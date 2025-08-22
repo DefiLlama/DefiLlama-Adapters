@@ -1,7 +1,10 @@
 ﻿const sdk = require('@defillama/sdk');
+const { staking } = require('../helper/staking');
 
+// Engyx token contract (BEP-20)
 const ENGYX_TOKEN_CONTRACT = '0xe1ec410835e5dFA47A6893448Cbc0AC216dBE642';
 
+// Wallets holding ENGX (not used in TVL until token has market value)
 const ENGYX_WALLETS = [
   '0x058BAA4a1466Ac45D383c1813089f95e11658fD4',
   '0x792871536771e9DD3e9141158B0D86b8F56E1F89',
@@ -12,24 +15,13 @@ const ENGYX_WALLETS = [
   '0xD20fF9eBa96CfB12E95804544870B141184deC80',
 ];
 
-async function tvl(api) {
-  const balances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: ENGYX_WALLETS.map(wallet => ({ target: ENGYX_TOKEN_CONTRACT, params: [wallet] })),
-  });
-
-  await api.addTokens(
-    ENGYX_WALLETS.map(() => ENGYX_TOKEN_CONTRACT),
-    balances
-  );
-
-  return api.getBalances();
-}
-
 module.exports = {
-  methodology: 'Cuenta los tokens Engyx bloqueados en todas las wallets del protocolo.',
+  methodology: 'Counts Engyx tokens locked in staking contract (pre-launch). Wallet balances are documented but not included in TVL.',
   start: 0,
-  timetravel: false,
-  misrepresentedTokens: true,
-  bsc: { tvl },
+  timetravel: true,
+  misrepresentedTokens: false,
+  bsc: {
+    tvl: () => ({}), // No TVL counted until ENGX has market value
+    staking: staking(ENGYX_TOKEN_CONTRACT),
+  },
 };
