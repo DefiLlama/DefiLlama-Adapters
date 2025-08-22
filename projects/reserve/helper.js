@@ -110,8 +110,105 @@ const _getLogs = async (api, config) => {
   return resLog;
 };
 
+const unwrapCreamTokens = async (api, tokensAndOwners) => {
+  const [balanceOfTokens, exchangeRates, underlyingTokens] = await Promise.all([
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+        params: t[1]
+      })),
+      abi: 'erc20:balanceOf',
+    }),
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+      })),
+      abi: "uint256:exchangeRateStored",
+    }),
+    api.multiCall({
+      calls: tokensAndOwners.map(t => ({
+        target: t[0],
+      })),
+      abi: "address:underlying",
+    })
+  ])
+  balanceOfTokens.forEach((balanceCall, i) => {
+    api.add(underlyingTokens[i], balanceCall * exchangeRates[i] / 1e18)
+  })
+}
+
+const genericUnwrapCvxDeposit = async (api, tokensAndOwners) => {
+  if (!tokensAndOwners.length) return;
+  const tokens = [...new Set(tokensAndOwners.map((t) => t[0]))];
+  const uTokens = await api.multiCall({ abi: "address:curveToken", calls: tokens, permitFailure: true });
+  const tokenMapping = {};
+  tokens.forEach((token, i) => {
+    if (uTokens[i]) {
+      tokenMapping[token] = uTokens[i];
+    }
+  });
+  const validTokensAndOwners = tokensAndOwners.filter((t) => tokenMapping[t[0]]);
+  const balances = await api.multiCall({
+    calls: validTokensAndOwners.map((t) => ({
+      target: t[0],
+      params: t[1],
+    })),
+    abi: "erc20:balanceOf",
+  });
+  balances.forEach((balance, i) => {
+    const token = validTokensAndOwners[i][0];
+    api.add(tokenMapping[token], balance);
+  });
+}
+
+const _getFolioLogs = async (api, folioDeployers) => {
+  const allLogs = await Promise.all(
+    folioDeployers.flatMap((deployer) => [
+      getLogs({
+        api,
+        target: deployer.address,
+        eventAbi: "event FolioDeployed(address indexed folioOwner, address indexed folio, address folioAdmin)",
+        fromBlock: deployer.startBlock,
+        onlyArgs: true,
+      }).catch(() => []),
+      getLogs({
+        api,
+        target: deployer.address,
+        eventAbi: "event GovernedFolioDeployed(address indexed stToken, address indexed folio, address ownerGovernor, address ownerTimelock, address tradingGovernor, address tradingTimelock)",
+        fromBlock: deployer.startBlock,
+        onlyArgs: true,
+      }).catch(() => [])
+    ])
+  );
+
+  const folios = allLogs.flat().map(log => log.folio).filter(Boolean);
+  return [...new Set(folios)];
+};
+
+const getFolioTotalAssets = async (api, folios) => {
+  if (!folios.length) return;
+
+  const totalAssetsResults = await api.multiCall({
+    abi: "function totalAssets() view returns (address[] _assets, uint256[] _amounts)",
+    calls: folios,
+    permitFailure: true,
+  });
+
+  totalAssetsResults.forEach((result) => {
+    if (!result) return;
+    const [assets, amounts] = result;
+    assets.forEach((asset, i) => {
+      api.add(asset, amounts[i]);
+    });
+  });
+};
+
 module.exports = {
   getStargateLpValues,
   getCompoundUsdcValues,
   _getLogs,
+  unwrapCreamTokens,
+  genericUnwrapCvxDeposit,
+  _getFolioLogs,
+  getFolioTotalAssets,
 };
