@@ -203,6 +203,43 @@ const getFolioTotalAssets = async (api, folios) => {
   });
 };
 
+const _getStakingTokenLogs = async (api, governanceDeployers) => {
+  if (!governanceDeployers) return [];
+  
+  const allLogs = await Promise.all(
+    governanceDeployers.map((deployer) =>
+      getLogs({
+        api,
+        target: deployer.address,
+        eventAbi: "event DeployedGovernedStakingToken(address indexed underlying, address indexed stToken, address governor, address timelock)",
+        fromBlock: deployer.startBlock,
+        onlyArgs: true,
+      }).catch(() => [])
+    )
+  );
+  
+  return allLogs.flat();
+};
+
+const getStakingTokenAssets = async (api, stakingTokenLogs) => {
+  if (!stakingTokenLogs.length) return;
+  
+  const stTokens = stakingTokenLogs.map(log => log.stToken);
+  const underlyings = stakingTokenLogs.map(log => log.underlying);
+  
+  const totalAssets = await api.multiCall({
+    abi: "uint256:totalAssets",
+    calls: stTokens,
+    permitFailure: true,
+  });
+  
+  totalAssets.forEach((assets, i) => {
+    if (assets) {
+      api.add(underlyings[i], assets);
+    }
+  });
+};
+
 module.exports = {
   getStargateLpValues,
   getCompoundUsdcValues,
@@ -211,4 +248,6 @@ module.exports = {
   genericUnwrapCvxDeposit,
   _getFolioLogs,
   getFolioTotalAssets,
+  _getStakingTokenLogs,
+  getStakingTokenAssets,
 };
