@@ -632,8 +632,34 @@
     "pufETH":"5Wa1qqFk7qrtB486znrHNPbZZDq9nwDc9DGPtPH36TW1",
     "SOON":"HUTwjERBrBqzrvSQoqQEvzTL2h5AhybJUqMAQ2vgY3JL",
     "WETH":"So11111111111111111111111111111111111111112",
-    "SOL":"ERFzpDteGNo8LTDKW1WwVGrkRMmA2y9WZHXNHxMA6BSV",
-    "BONK":"71kRXzJMvSeArtXYNEWa8KAjpRJosdMQ7Dpgy5Jt5zfd"
+    "SOL": "ERFzpDteGNo8LTDKW1WwVGrkRMmA2y9WZHXNHxMA6BSV",
+    "BONK": "71kRXzJMvSeArtXYNEWa8KAjpRJosdMQ7Dpgy5Jt5zfd"
+  },
+  "soon_base": {
+    "ETH":"So11111111111111111111111111111111111111112",
+    "USDT":"J87bysZjwfS3n6KR21cwbdPZVJWNSFcXpWF5kiChAwQH",
+    "USDC":"BoYN2f2gLQS4jpvMSV9dAZwfzKJiKGk4NPck5BjXfujo",
+    "DAI":"FkvCG5DcuYCQ1BnPH4ZzTkCdk3VzutgyDAFBec4qAjhh",
+    "cbETH":"7e92r2doXdundQd4P85NANenQynDP2dawpmszKCZyRZh",
+    "SOON":"HUTwjERBrBqzrvSQoqQEvzTL2h5AhybJUqMAQ2vgY3JL"
+  },
+  "soon_bsc": {
+    "BNB": "So11111111111111111111111111111111111111112",
+    "USDT": "s8cRDxnp3VxjB6khRnGDdxv6QbCUPyY9Vn1bgSQQsnG",
+    "USDC": "5odzAHDpDETYhupMkc6kjiYen3K2nrf8oPmvqmsoNW4L",
+    "ETH": "H3xpFH1yN5E1zFdAoBrC9Y7m7RfJUeQNLvkHi8kNf9Qu",
+    "Bedrock": "Cr5yErCvPBwoMckaJceu7sDt3T7sGTmyi57SoPzNhnnP",
+    "cheems": "4UTuyKxGotW9hXNyur2Smei3Cnp5t8mnGYF84gCUZXzk",
+    "koma": "9E1bppiKWqFBwouLBrNvEBgypqxQJEUwY8G4YGwjx47q",
+    "Broccoli (Broccoli)":"CZVWVVb1zSvkacjJmAH7HRrYFoScLHxTtjmcGth17Vut",
+    "Broccoli (CZS Dog)":"CZ5iEjXk8wNU8FmVz34fSuZ1UMFFFM1chLFVUnxE6n6S",
+    "TUT": "Ee2SMWUcnv8ZNBs9fjyh7bfuV2RquUuwqbbxKKPexCdp",
+    "WHY": "3yu7UF19ypptzdABpQtA225V6iXSHtadDogE7atWcjJU",
+    "BID": "9dgaou5D9t95kJ9YxvePoKrAisEWwPFFcEYHaTNDcbnL",
+    "mubarak": "CwkNr2GWZLj2vw5Kph9By6fuvn6u6YGdxxuwzLoi5N3x",
+    "SIREN": "66TZMxTmCQUo2ZrSD5szgSycfJayTWqJnnjhVaiUxL1k",
+    "BANANAS31": "MbkbmEaCFskHjsRpBP4nZ2y8AbnBQJAwEcRE9MwtkZY",
+    "SOON": "HUTwjERBrBqzrvSQoqQEvzTL2h5AhybJUqMAQ2vgY3JL"
   },
   "astar": {
     "WASTR_1": "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720",
@@ -2162,7 +2188,9 @@
     "USDC_e": "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
     "WLD": "0x2cFc85d8E48F8EAB294be644d9E25C3030863003",
     "WBTC": "0x03c7054bcb39f7b2e5b2c7acb37583e32d70cfa3",
-    "WETH": "0x4200000000000000000000000000000000000006"
+    "WETH": "0x4200000000000000000000000000000000000006",
+    "WARS": "0x0DC4F92879B7670e5f4e4e6e3c801D229129D90D",
+    "LAC": "0x0fe75cae44e409af8c9e631985d6b3de8e1138de"
   },
   "apechain": {
     "WAPE": "0x48b62137EdfA95a428D35C09E44256a739F6B557",
@@ -2600,5 +2628,9 @@
     "WVET": "0xd8ccdd85abdbf68dfec95f06c973e87b1b5a9997",
     "VVET": "0x45429a2255e7248e57fce99e7239aed3f84b7a53",
     "VTHO": "0x0000000000000000000000000000456e65726779"
+  },
+  "eni": {
+    "USDT": "0xdc1a8a35b0baa3229b13f348ed708a2fd50b5e3a",
+    "WEGAS": "0x6d1e851446f4d004ae2a72f9afed85e8829a205e"
   }
 }
