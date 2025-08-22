@@ -1,3 +1,4 @@
+const BigNumber = require('bignumber.js');
 async function tvl(api) {
   const protocols = [
     '0xc0fA386aE92f18A783476d09121291A1972C30Dc',
@@ -33,7 +34,33 @@ async function tvl(api) {
   return api.sumTokens({ tokensAndOwners })
 }
 
+const lnts = {
+ arbitrum: [
+  {
+      // Aethir LntVault
+      asset: '0xc87B37a581ec3257B734886d9d3a581F5A9d056c',
+      vthook: '0xbf4b4A83708474528A93C123F817e7f2A0637a88',
+      vt: '0x24ef95c39DfaA8f9a5ADf58edf76C5b22c34Ef46'
+  }
+ ],
+}
+async function tvlLNT(api) {
+  const lntconfigs = lnts[api.chain] || []
+  for (const lnt of lntconfigs) {
+    const [isToken0VT, reserve0, reserve1, vtTotal] = await api.batchCall([
+      { abi: 'bool:isToken0VT', target: lnt.vthook },
+      { abi: 'uint256:reserve0', target: lnt.vthook },
+      { abi: 'uint256:reserve1', target: lnt.vthook },
+      { abi: 'uint256:totalSupply', target: lnt.vt }
+    ])
+    const assetBalance = isToken0VT ? reserve1 : reserve0
+    const vtConvertToAsset = isToken0VT ? BigNumber(reserve1).multipliedBy(vtTotal).dividedBy(reserve0) : BigNumber(reserve0).multipliedBy(vtTotal).dividedBy(reserve1)
+    api.add(lnt.asset, BigNumber(assetBalance).plus(vtConvertToAsset).toFixed(0))
+  }
+}
+
 module.exports = {
   doublecounted: true,
-  berachain: { tvl }
+  berachain: { tvl },
+  arbitrum: { tvl: tvlLNT }
 }
