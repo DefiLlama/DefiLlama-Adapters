@@ -1,5 +1,5 @@
-const { post } = require('../helper/http');
-const sdk = require('@defillama/sdk');
+const { post } = require('../helper/http')
+const sdk = require('@defillama/sdk')
 
 const tokenMapping = {
   'xtokens:XBTC': 'bitcoin',
@@ -8,20 +8,20 @@ const tokenMapping = {
   'xtokens:XXRP': 'ripple',
   'eosio.token:XPR': 'proton',
   'xtokens:XMT': 'metal',
-  'xtokens:XUST': 'terrausd-wormhole',   // optional/legacy
-  'xtokens:XLUNA': 'terra-luna-2',       // optional/legacy
   'xtokens:XUSDC': 'usd-coin',
   'xtokens:XDOGE': 'dogecoin',
   'xtokens:XUSDT': 'tether',
-};
+  'xtokens:XUST': 'terrausd-wormhole',
+  'xtokens:XLUNA': 'terra-luna-2',
+}
 
-const API_ENDPOINT = 'https://proton.eosusa.io';
-const LENDING_CONTRACT = 'lending.loan';
+const API_ENDPOINT = 'https://proton.eosusa.io'
+const LENDING_CONTRACT = 'lending.loan'
 
 function parseAsset(assetString) {
-  if (!assetString) return { amount: 0, symbol: '' };
-  const [amount, symbol] = assetString.split(' ');
-  return { amount: parseFloat(amount), symbol };
+  if (!assetString) return { amount: 0, symbol: '' }
+  const [amount, symbol] = assetString.split(' ')
+  return { amount: parseFloat(amount), symbol }
 }
 
 async function fetchMarkets() {
@@ -31,81 +31,74 @@ async function fetchMarkets() {
     table: 'markets',
     limit: 100,
     json: true,
-  });
-  return res.rows || [];
+  })
+  return res.rows || []
 }
 
 async function fetchLiquidity(tokenContract, symbol) {
+  // available liquidity (cash) held by lending.loan for a given token
   const res = await post(`${API_ENDPOINT}/v1/chain/get_table_rows`, {
     code: tokenContract,
     scope: LENDING_CONTRACT,
     table: 'accounts',
     limit: 100,
     json: true,
-  });
-  const rows = res.rows || [];
-  const tokenBalance = rows.find(b => parseAsset(b.balance).symbol === symbol);
-  return tokenBalance ? parseAsset(tokenBalance.balance).amount : 0;
+  })
+  const rows = res.rows || []
+  const tokenBalance = rows.find(b => parseAsset(b.balance).symbol === symbol)
+  return tokenBalance ? parseAsset(tokenBalance.balance).amount : 0
 }
 
 // ----------------------------
-// TVL = borrows + cash reserves
+// TVL = only available liquidity (cash)
 // ----------------------------
 async function tvl() {
-  const balances = {};
-  const markets = await fetchMarkets();
+  const balances = {}
+  const markets = await fetchMarkets()
 
   const promises = markets.map(async (market) => {
-    const totalVar = parseAsset(market.total_variable_borrows.quantity).amount;
-    const totalStable = parseAsset(market.total_stable_borrows.quantity).amount;
-    const totalBorrows = totalVar + totalStable;
+    const [ , symbol ] = market.underlying_symbol.sym.split(',')
+    const tokenContract = market.underlying_symbol.contract
+    const internalId = `${tokenContract}:${symbol}`
+    const cgkId = tokenMapping[internalId]
+    if (!cgkId) return
 
-    const [ , symbol ] = market.underlying_symbol.sym.split(',');
-    const tokenContract = market.underlying_symbol.contract;
+    const cashAvailable = await fetchLiquidity(tokenContract, symbol)
+    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, cashAvailable)
+  })
 
-    // liquidity available in lending contract
-    const cashAvailable = await fetchLiquidity(tokenContract, symbol);
-    const totalSupplied = totalBorrows + cashAvailable;
-
-    const internalId = `${tokenContract}:${symbol}`;
-    const cgkId = tokenMapping[internalId];
-    if (!cgkId) return;
-
-    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, totalSupplied);
-  });
-
-  await Promise.all(promises);
-  return balances;
+  await Promise.all(promises)
+  return balances
 }
 
 // ----------------------------
-// Borrowed = borrows only
+// Borrowed = total variable + stable borrows
 // ----------------------------
 async function borrowed() {
-  const balances = {};
-  const markets = await fetchMarkets();
+  const balances = {}
+  const markets = await fetchMarkets()
 
   markets.forEach(market => {
-    const totalVar = parseAsset(market.total_variable_borrows.quantity).amount;
-    const totalStable = parseAsset(market.total_stable_borrows.quantity).amount;
-    const totalBorrows = totalVar + totalStable;
+    const totalVar = parseAsset(market.total_variable_borrows.quantity).amount
+    const totalStable = parseAsset(market.total_stable_borrows.quantity).amount
+    const totalBorrows = totalVar + totalStable
 
-    const [ , symbol ] = market.underlying_symbol.sym.split(',');
-    const tokenContract = market.underlying_symbol.contract;
-    const internalId = `${tokenContract}:${symbol}`;
-    const cgkId = tokenMapping[internalId];
-    if (!cgkId) return;
+    const [ , symbol ] = market.underlying_symbol.sym.split(',')
+    const tokenContract = market.underlying_symbol.contract
+    const internalId = `${tokenContract}:${symbol}`
+    const cgkId = tokenMapping[internalId]
+    if (!cgkId) return
 
-    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, totalBorrows);
-  });
+    sdk.util.sumSingleBalance(balances, `coingecko:${cgkId}`, totalBorrows)
+  })
 
-  return balances;
+  return balances
 }
 
 module.exports = {
-  methodology: 'TVL = variable borrows + stable borrows + available liquidity in lending.loan. Borrowed = total outstanding borrows (variable + stable). Mapping is to CoinGecko IDs.',
+  methodology: 'TVL = only available liquidity (cash held by lending.loan). Borrowed = total variable + stable borrows (outstanding debt). Deposits = TVL + Borrowed, but we report liquidity as TVL per DefiLlama standards.',
   proton: {
     tvl,
     borrowed,
   }
-};
+}
