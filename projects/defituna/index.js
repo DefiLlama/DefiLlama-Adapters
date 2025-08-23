@@ -1,18 +1,34 @@
-const { getProvider, sumTokens2 } = require('../helper/solana');
+const { getProvider, sumTokens2 } = require("../helper/solana");
 const { Program } = require("@project-serum/anchor");
+const { PublicKey } = require("@solana/web3.js");
 
 async function tvl(api) {
   const provider = getProvider(api.chain);
   const programId = fusionammIDL.address;
   const program = new Program(fusionammIDL, programId, provider);
+  const pools = await program.account.fusionPool.all()
+  const tokenAccounts = pools
+    .map(({ account }) => [account.tokenVaultA, account.tokenVaultB])
+    .flat();
+  return sumTokens2({ tokenAccounts, api, });
+};
+
+async function pool2(api) {
+  const TUNA_MINT = new PublicKey("TUNAfXDZEdQizTMTh3uEvNvYqJmqFHZbEJt8joP4cyx");
+  const provider = getProvider(api.chain);
+  const programId = fusionammIDL.address;
+  const program = new Program(fusionammIDL, programId, provider);
   const pools = await program.account.fusionPool.all();
-  const tokenAccounts = pools.map(({ account }) => [account.tokenVaultA, account.tokenVaultB]).flat();
+  const tokenAccounts = pools
+    .filter(({ account }) => (account.tokenMintA.equals(TUNA_MINT) || account.tokenMintB.equals(TUNA_MINT)))
+    .map(({ account }) => [account.tokenVaultA, account.tokenVaultB])
+    .flat();
   return sumTokens2({ tokenAccounts, api, });
 };
 
 module.exports = {
   timetravel: false,
-  solana: { tvl },
+  solana: { tvl, pool2 },
 };
 
 const fusionammIDL = {
@@ -26,16 +42,6 @@ const fusionammIDL = {
   "accounts": [
     {
       "name": "FusionPool",
-      "discriminator": [
-        254,
-        204,
-        207,
-        98,
-        25,
-        181,
-        29,
-        67
-      ],
       "type": {
         "kind": "struct",
         "fields": [
