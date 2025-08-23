@@ -11,7 +11,7 @@ async function tvl(api) {
     .map(({ account }) => [account.tokenVaultA, account.tokenVaultB])
     .flat();
   return sumTokens2({ tokenAccounts, api });
-};
+}
 
 async function pool2(api) {
   const TUNA_MINT = new PublicKey("TUNAfXDZEdQizTMTh3uEvNvYqJmqFHZbEJt8joP4cyx");
@@ -24,7 +24,7 @@ async function pool2(api) {
     .map(({ account }) => [account.tokenVaultA, account.tokenVaultB])
     .flat();
   return sumTokens2({ tokenAccounts, api });
-};
+}
 
 module.exports = {
   timetravel: false,
