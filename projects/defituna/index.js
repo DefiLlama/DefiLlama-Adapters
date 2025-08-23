@@ -10,7 +10,7 @@ async function tvl(api) {
   const tokenAccounts = pools
     .map(({ account }) => [account.tokenVaultA, account.tokenVaultB])
     .flat();
-  return sumTokens2({ tokenAccounts, api, });
+  return sumTokens2({ tokenAccounts, api });
 };
 
 async function pool2(api) {
@@ -23,7 +23,7 @@ async function pool2(api) {
     .filter(({ account }) => (account.tokenMintA.equals(TUNA_MINT) || account.tokenMintB.equals(TUNA_MINT)))
     .map(({ account }) => [account.tokenVaultA, account.tokenVaultB])
     .flat();
-  return sumTokens2({ tokenAccounts, api, });
+  return sumTokens2({ tokenAccounts, api });
 };
 
 module.exports = {
