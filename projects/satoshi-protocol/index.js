@@ -13,7 +13,6 @@ function createExports({
   nymList, // { address, fromBlock }[]
   farmList, // { address, asset }[]
   smartVaultList, // { address, fromBlock }[]
-  safeVaultManagerList, // { vaultAddress, asset }[]
 }) {
   return {
     tvl: async (api) => {
