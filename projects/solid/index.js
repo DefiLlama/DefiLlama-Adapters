@@ -122,7 +122,10 @@ async function getBLunaRateWeighted(lunaUsd) {
       const rate = lunaRes / blunaRes;
       totalWeighted += rate * lunaRes;
       totalWeight   += lunaRes;
-    } catch {}
+    } catch (e) {
+      // skip this pair if query fails
+      continue;
+    }
   }
 
   if (totalWeight === 0) return 1;
