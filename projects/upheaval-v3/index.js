@@ -19,65 +19,19 @@ async function makeRPCCall(method, params = []) {
 }
 
 async function tvl(api) {
+  // This is PCS forked v3 subgraph. We can use it to get TVL of all pools.
   const { pools } = await cachedGraphQuery('upheaval-v3/' + api.chain, 'https://api.upheaval.fi/subgraphs/name/upheaval/exchange-v3', `{
     pools(first: 1000) {
       id
-      token0 {
-        id
-      }
-      token1 {
-        id
-      }
+      totalValueLockedUSD
     }
   }`)
-  
-  console.log(`Found ${pools.length} pools from subgraph`)
-  
-  const balances = {}
-  
-  // Process each pool and get token balances manually
+
+  let totalTVL = 0
   for (const pool of pools) {
-    try {
-      const token0 = pool.token0.id
-      const token1 = pool.token1.id
-      const poolAddress = pool.id
-      
-      // Get token balances in the pool using direct RPC calls
-      const [token0Balance, token1Balance] = await Promise.all([
-        makeRPCCall('eth_call', [{
-          to: token0,
-          data: '0x70a08231' + poolAddress.slice(2).padStart(64, '0') // balanceOf(pool)
-        }, 'latest']),
-        makeRPCCall('eth_call', [{
-          to: token1,
-          data: '0x70a08231' + poolAddress.slice(2).padStart(64, '0') // balanceOf(pool)
-        }, 'latest'])
-      ])
-      
-      if (token0Balance && token0Balance !== '0x') {
-        const balance0 = parseInt(token0Balance, 16)
-        if (balance0 > 0) {
-          balances[token0] = (balances[token0] || 0) + balance0
-        }
-      }
-      
-      if (token1Balance && token1Balance !== '0x') {
-        const balance1 = parseInt(token1Balance, 16)
-        if (balance1 > 0) {
-          balances[token1] = (balances[token1] || 0) + balance1
-        }
-      }
-    } catch (error) {
-      console.log(`Error processing pool ${pool.id}:`, error.message)
-    }
+    totalTVL += parseFloat(pool.totalValueLockedUSD)
   }
-  
-  // Add balances to API
-  Object.keys(balances).forEach(token => {
-    api.add(token, balances[token])
-  })
-  
-  return api.getBalances()
+  return { 'usd-coin': totalTVL }
 }
 
 module.exports = {
