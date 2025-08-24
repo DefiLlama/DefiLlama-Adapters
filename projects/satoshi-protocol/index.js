@@ -13,6 +13,7 @@ function createExports({
   nymList, // { address, fromBlock }[]
   farmList, // { address, asset }[]
   smartVaultList, // { address, fromBlock }[]
+  safeVaultManagerList, // { vaultAddress, asset }[]
 }) {
   return {
     tvl: async (api) => {
@@ -33,6 +34,10 @@ function createExports({
         await addSmartVaultList(api, smartVaultList);
       }
 
+      if (safeVaultManagerList) {
+        processSafeVaultManagerList(safeVaultManagerList, tokensAndOwners);
+      }
+
       api.addBalances(sumTokens2({ api, tokensAndOwners, }));
       return api.getBalances();
     },
@@ -43,6 +48,13 @@ async function processNymList(api, nymList, tokensAndOwners) {
   for (let i = 0; i < nymList.length; i++) {
     const { address: nymContractAddress, fromBlock } = nymList[i];
     await getAssetListFromNymContract(api, nymContractAddress, fromBlock, tokensAndOwners);
+  }
+}
+
+function processSafeVaultManagerList(list, tokensAndOwners) {
+  for (let index = 0; index < list.length; index++) {
+    const { vaultAddress, asset } = list[index];
+    tokensAndOwners.push([asset, vaultAddress])
   }
 }
 
