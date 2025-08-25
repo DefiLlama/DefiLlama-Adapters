@@ -30,7 +30,7 @@ const tvl = async (api) => {
         api.add(asset, availableBalance)
     }
     for (const [agent, coverage] of arrayZip(agentConfigs, coverageResults)) {
-        api.add(agent.vaultCollateral, coverage)
+        api.add(agent.vaultCollateral, coverage[1])
     }
 }
 
