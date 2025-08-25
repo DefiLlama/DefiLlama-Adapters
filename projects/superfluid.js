@@ -30,15 +30,22 @@ async function fetchAllSuperTokens(graphUrl, blockForQuery) {
   const PAGE_SIZE = 1000;
   let lastId = "";
   const allTokens = [];
-  while (true) {
+  let hasMore = true
+  while (hasMore) {
     const query = supertokensQuery({ first: PAGE_SIZE, id_gt: lastId });
     const res = await blockQuery(graphUrl, query, {
       api: { getBlock: () => blockForQuery, block: blockForQuery },
     });
     const tokens = res.tokens;
-    if (!tokens?.length) break;
+    if (!tokens?.length) {
+      hasMore = false
+      break;
+    }
     allTokens.push(...tokens);
-    if (tokens.length < PAGE_SIZE) break;
+    if (tokens.length < PAGE_SIZE) {
+      hasMore = false
+      break;
+    }
     lastId = tokens[tokens.length - 1].id;
   }
   return allTokens;
