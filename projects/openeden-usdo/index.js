@@ -44,6 +44,10 @@ const config = {
       "0x2893ef551b6dd69f661ac00f11d93e5dc5dc0e99",
     ],
   },
+  bsc: {
+    owners: ["0x5eaff7af80488033bc845709806d5fae5291eb88"],
+    tokens: ["0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"],
+  },
 };
 
 Object.keys(config).forEach((chain) => {
