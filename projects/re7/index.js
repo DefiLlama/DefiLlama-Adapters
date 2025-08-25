@@ -83,6 +83,12 @@ const configs = {
         '0x187620a61f4f00Cb629b38e1b38BEe8Ea60d2B8D',
       ],
     },
+    tac:{
+      eulerVaultOwners: [
+        '0x6D3AB84Fb7Fc04961a15663C980feC275b889402',
+        '0x93db2e90F8B2b073010B425f9350202330bd923E',
+      ],
+    },
     plume_mainnet:{
       morphoVaultOwners: [
         '0x7B41b9891887820A75A51a1025dB1A54f4798521',
