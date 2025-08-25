@@ -3,6 +3,7 @@ const axios = require("axios");
 const { sleep } = require("./utils");
 const retry = require("async-retry");
 const pLimit = require("p-limit");
+const { getEnv } = require('./env');
 
 const _rateLimited = pLimit(3)
 const rateLimited = (fn) => (...args) => _rateLimited(() => fn(...args))
