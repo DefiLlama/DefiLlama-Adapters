@@ -27,9 +27,7 @@ function parseAsset(assetString) {
   };
 }
 
-async function tvl() {
-  const balances = {};
-
+async function fetchMetrics() {
   const { rows: markets } = await post(`${API_ENDPOINT}/v1/chain/get_table_rows`, {
     json: true,
     code: LENDING_CONTRACT,
@@ -41,7 +39,7 @@ async function tvl() {
   const promises = markets.map(async (market) => {
     const totalVariableBorrows = parseAsset(market.total_variable_borrows.quantity).amount;
     const totalStableBorrows = parseAsset(market.total_stable_borrows.quantity).amount;
-    const totalBorrows = totalVariableBorrows + totalStableBorrows;
+    const borrowedAmount = totalVariableBorrows + totalStableBorrows;
 
     const underlyingToken = market.underlying_symbol;
     const tokenContract = underlyingToken.contract;
@@ -56,24 +54,42 @@ async function tvl() {
     });
 
     const tokenBalance = balancesData.find(b => parseAsset(b.balance).symbol === symbol);
-    const cashAvailable = tokenBalance ? parseAsset(tokenBalance.balance).amount : 0;
-    const totalTvlAmount = totalBorrows + cashAvailable;
+    const availableAmount = tokenBalance ? parseAsset(tokenBalance.balance).amount : 0;
     const internalTokenId = `${tokenContract}:${symbol}`;
-
     const finalTokenId = tokenMapping[internalTokenId];
 
     return {
       tokenId: finalTokenId,
-      amount: totalTvlAmount,
+      borrowedAmount,
+      availableAmount,
     };
   });
 
-  const allMarketsTvl = await Promise.all(promises);
+  return Promise.all(promises);
+}
 
-  allMarketsTvl.forEach(market => {
-    if (market.amount > 0 && market.tokenId) {
+async function tvl() {
+  const balances = {};
+  const allMarkets = await fetchMetrics();
+
+  allMarkets.forEach(market => {
+    if (market.availableAmount > 0 && market.tokenId) {
       const token = `coingecko:${market.tokenId}`;
-      sdk.util.sumSingleBalance(balances, token, market.amount);
+      sdk.util.sumSingleBalance(balances, token, market.availableAmount);
+    }
+  });
+
+  return balances;
+}
+
+async function borrowed() {
+  const balances = {};
+  const allMarkets = await fetchMetrics();
+
+  allMarkets.forEach(market => {
+    if (market.borrowedAmount > 0 && market.tokenId) {
+      const token = `coingecko:${market.tokenId}`;
+      sdk.util.sumSingleBalance(balances, token, market.borrowedAmount);
     }
   });
 
@@ -83,6 +99,7 @@ async function tvl() {
 module.exports = {
   xpr: {
     tvl,
+    borrowed,
   },
-  methodology: "Counts the total assets supplied to the lending markets. TVL is calculated as the sum of all borrowed assets and all available liquidity (cash) held by the lending contract."
+  methodology: "TVL counts the available liquidity in each market. Borrows are counted separately."
 };
