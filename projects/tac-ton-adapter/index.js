@@ -3,19 +3,12 @@ const { getTonBalance } = require("../helper/chain/ton");
 async function tvl() {
   const contractAddress = "EQAgpWmO8nBUrmfOOldIEmRkLEwV-IIfVAlJsphYswnuL80R";
 
-  try {
-    const balanceNanoTon = await getTonBalance(contractAddress);
-    const balanceTon = parseInt(balanceNanoTon) / 1e9; 
+  const balanceNanoTon = await getTonBalance(contractAddress);
+  const balanceTon = parseInt(balanceNanoTon) / 1e9; 
 
-    return {
-      "coingecko:the-open-network": balanceTon,
-    };
-  } catch (error) {
-    console.error("Error fetching TAC contract balance:", error.message);
-    return {
-      "coingecko:the-open-network": 0,
-    };
-  }
+  return {
+    "coingecko:the-open-network": balanceTon,
+  };
 }
 
 module.exports = {
