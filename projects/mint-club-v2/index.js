@@ -48,63 +48,22 @@ async function getStakingTvl(api, stakingContract) {
 
   if (poolCount == 0) return;
 
-  const BATCH_SIZE = 50;
   const stakingTokensSet = new Set();
   
-  for (let i = 0; i < poolCount; i += BATCH_SIZE) {
-    const fromId = i;
-    const toId = Math.min(i + BATCH_SIZE - 1, poolCount - 1);
-    
-    try {
-      const resp = await api.call({
-        target: stakingContract,
-        abi: 'function getPools(uint256 poolIdFrom, uint256 poolIdTo) view returns (tuple(tuple(address stakingToken, bool isStakingTokenERC20, address rewardToken, address creator, uint104 rewardAmount, uint32 rewardDuration, uint32 totalSkippedDuration, uint40 rewardStartedAt, uint40 cancelledAt, uint128 totalStaked, uint32 activeStakerCount, uint40 lastRewardUpdatedAt, uint256 accRewardPerShare) pool, tuple(string symbol, string name, uint8 decimals) stakingToken, tuple(string symbol, string name, uint8 decimals) rewardToken)[] poolList)',
-        params: [fromId, toId]
-      });
-      const pools = resp?.poolList ?? resp; 
-
-      for (const poolView of pools) {
-        const pool = poolView.pool;
-        if (pool?.isStakingTokenERC20 && pool?.cancelledAt == 0) {
-          stakingTokensSet.add(pool.stakingToken);
-        }
-      }
-    } catch (error) {
-      // Fallback: read individual pool structs via mapping
-      try {
-        const ids = Array.from({ length: toId - fromId + 1 }, (_, k) => fromId + k)
-        const pools = await api.multiCall({
-          target: stakingContract,
-          abi: 'function pools(uint256) view returns (address stakingToken, bool isStakingTokenERC20, address rewardToken, address creator, uint104 rewardAmount, uint32 rewardDuration, uint32 totalSkippedDuration, uint40 rewardStartedAt, uint40 cancelledAt, uint128 totalStaked, uint32 activeStakerCount, uint40 lastRewardUpdatedAt, uint256 accRewardPerShare)',
-          calls: ids,
-          permitFailure: true,
-        })
-        for (const pool of pools) {
-          if (!pool) continue
-          if (pool.isStakingTokenERC20 && pool.cancelledAt == 0) stakingTokensSet.add(pool.stakingToken)
-        }
-      } catch (e2) {
-        console.warn(`Failed to fetch pools ${fromId}-${toId} for staking contract ${stakingContract}:`, error.message);
-      }
-    }
+  const ids = Array.from({ length: Number(poolCount) }, (_, k) => k)
+  const pools = await api.multiCall({
+    target: stakingContract,
+    abi: 'function pools(uint256) view returns (address stakingToken, bool isStakingTokenERC20, address rewardToken, address creator, uint104 rewardAmount, uint32 rewardDuration, uint32 totalSkippedDuration, uint40 rewardStartedAt, uint40 cancelledAt, uint128 totalStaked, uint32 activeStakerCount, uint40 lastRewardUpdatedAt, uint256 accRewardPerShare)',
+    calls: ids,
+    permitFailure: true,
+  })
+  for (const pool of pools) {
+    if (pool.isStakingTokenERC20 && pool.cancelledAt == 0) stakingTokensSet.add(pool.stakingToken)
   }
 
   const tokens = Array.from(stakingTokensSet);
   if (tokens.length === 0) return;
-  try {
-    const balances = await api.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: tokens.map(t => ({ target: t, params: [stakingContract] })),
-      permitFailure: true,
-    })
-    for (let i = 0; i < tokens.length; i++) {
-      const bal = balances[i]
-      if (!bal) continue
-      api.add(tokens[i], bal)
-    }
-  } catch (e) {
-    await sumTokens2({ api, owner: stakingContract, tokens, permitFailure: true })
-  }
+  await sumTokens2({ api, owner: stakingContract, tokens, permitFailure: true })
   return api.getBalances()
 }
 
