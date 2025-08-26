@@ -1,4 +1,4 @@
-const { getProvider, sumTokens2 } = require("../helper/solana");
+const { getProvider, sumTokens2 } = require("./helper/solana");
 const { Program } = require("@project-serum/anchor");
 
 async function tvl(api) {
