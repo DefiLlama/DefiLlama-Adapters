@@ -1,11 +1,17 @@
 const { sumTokensExport } = require("../helper/chain/ton");
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const BagelLpPool = "UQAqcydSR5paeZTvCSN5XwAuaHB1T5aE33rofhvpz0B59gKr"
+// Bagel Finance Vault Contract Addresses
+const VAULT_ADDRESSES = [
+// Restore the original vault address
+  "UQCAE4qPVnHfpJ-iMF736utV1q8rruv2KRwi-wPw9Bx9ldAC"
+];
 
 module.exports = {
-  methodology: 'Counts LP smartcontract balance as TVL.',
+  timetravel: false,
+  misrepresentedTokens: true,
+  methodology: 'Counts the total value of assets locked in all Bagel Finance vaults.',
   ton: {
-    tvl: sumTokensExport({ owners: [BagelLpPool], tokens: [ADDRESSES.null]}),
+    tvl: sumTokensExport({ owners: VAULT_ADDRESSES, tokens: [ADDRESSES.null] }),
   }
 }

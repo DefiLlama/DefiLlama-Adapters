@@ -1,4 +1,3 @@
-const { ETHER_ADDRESS } = require('@defillama/sdk/build/general')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getMultipleAccounts, getProvider } = require('../helper/solana')
 const { Program, BN } = require("@project-serum/anchor")
@@ -59,6 +58,7 @@ async function tvlSolana(api) {
     'J5VbheCue9U4hW7u9DZzwgo5h7BhnBqL8rF9c71MDsfC', // DeltaNeutral-JLP-USDC-SVM-KT5
     'AcN9Mct9dLYQVDsyQinbbHKbsXYB4Tnaq5DgKwzrWaY4', // DeltaNeutral-JLP-SOL-SVM-KT6
     'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9
+    '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
   ];
 
   const accounts = await getMultipleAccounts(vaultUserAddresses)
@@ -66,36 +66,36 @@ async function tvlSolana(api) {
   const idl = require("./drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
   const provider = getProvider()
-  const program = new Program(idl, programId, provider)    
+  const program = new Program(idl, programId, provider)
 
   for (const account of accounts) {
-      const userData = program.coder.accounts.decode("User", account.data);
-      for (const spotPosition of userData.spotPositions) {
-        if (!new BN(spotPosition.scaledBalance).isZero()) {
-          const marketIndex = spotPosition.marketIndex
-          const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
-          const scaledBalance = new BN(spotPosition.scaledBalance)
-          const token = getTokenInfo(true, marketIndex)
-          if (!token) continue;
-          const balance = scaledBalance
-            .mul(new BN(balanceType === 'deposit' ? 1 : -1))
-            .div(new BN(10).pow(new BN(token.decimals - 9)));
-  
-          api.add(token.mint, balance.toString()) 
-        }        
+    const userData = program.coder.accounts.decode("User", account.data);
+    for (const spotPosition of userData.spotPositions) {
+      if (!new BN(spotPosition.scaledBalance).isZero()) {
+        const marketIndex = spotPosition.marketIndex
+        const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
+        const scaledBalance = new BN(spotPosition.scaledBalance)
+        const token = getTokenInfo(true, marketIndex)
+        if (!token) continue;
+        const balance = scaledBalance
+          .mul(new BN(balanceType === 'deposit' ? 1 : -1))
+          .div(new BN(10).pow(new BN(token.decimals - 9)));
+
+        api.add(token.mint, balance.toString())
       }
-      for (const perpPosition of userData.perpPositions) {
-        if (!new BN(perpPosition.baseAssetAmount).isZero()) {
-          const marketIndex = perpPosition.marketIndex
-          const token = getTokenInfo(false, marketIndex)
-          if (!token) continue;
-          const baseAssetAmount = new BN(perpPosition.baseAssetAmount)
-            .div(new BN(10).pow(new BN(token.decimals - 9))); 
-          const quoteAssetAmount = new BN(perpPosition.quoteAssetAmount)
-          api.add(TOKEN_INFO['USDC'].mint, quoteAssetAmount.toString())
-          api.add(token.mint, baseAssetAmount.toString())
-        }        
+    }
+    for (const perpPosition of userData.perpPositions) {
+      if (!new BN(perpPosition.baseAssetAmount).isZero()) {
+        const marketIndex = perpPosition.marketIndex
+        const token = getTokenInfo(false, marketIndex)
+        if (!token) continue;
+        const baseAssetAmount = new BN(perpPosition.baseAssetAmount)
+          .div(new BN(10).pow(new BN(token.decimals - 9)));
+        const quoteAssetAmount = new BN(perpPosition.quoteAssetAmount)
+        api.add(TOKEN_INFO['USDC'].mint, quoteAssetAmount.toString())
+        api.add(token.mint, baseAssetAmount.toString())
       }
+    }
   }
 }
 
@@ -105,6 +105,9 @@ async function tvlArbitrum(api) {
     "0xd468808cc9e30f0ae5137805fff7ffb213984250",
     "0x148D779ABAD372C080844F3bF14002a5659858a7",
     "0xe15A7A5d2f1B7046af75e239a83d052B8fDb4230",
+    "0xf13891426ecc002d9b3c9c293bcc176e3ceb04e7",
+    "0xd51298f8eaf78943a67535a24f4bcb18b787ba0e",
+    "0x5C83942B7919db30634f9Bc9e0e72aD778852FC8",
   ];
 
   const addresses = {
@@ -121,54 +124,54 @@ async function tvlArbitrum(api) {
   const v2ReaderAbi = require('./v2_reader_abi.json');
   const v2ReaderAddress = '0xf60becbba223EEA9495Da3f606753867eC10d139';
   const dataStoreAddress = '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8';
-  
-  const getAccountPositionsAbi = v2ReaderAbi.find(f => f.name === 'getAccountPositions');
 
-  const getMarketsAbi = v2ReaderAbi.find(f => f.name === 'getMarkets');
   const markets = await api.call({
-    abi: getMarketsAbi,
+    abi: v2ReaderAbi.getMarkets,
     target: v2ReaderAddress,
     params: [dataStoreAddress, 0, 32]
-  });
+  })
+
   const marketToTokenMap = {};
   for (const market of markets) {
     marketToTokenMap[market[0]] = market[1];
   }
-  for (const vault of vaults) {
-    await api.sumTokens({
-      tokensAndOwners: [
-        // Wallet
-        [ADDRESSES.arbitrum.USDC, vault],
-        [ADDRESSES.arbitrum.USDT, vault],
-        [ADDRESSES.arbitrum.USDC_CIRCLE, vault],
-        [ADDRESSES.arbitrum.WETH, vault],
-        [ETHER_ADDRESS, vault],        
-        [ADDRESSES.arbitrum.WBTC, vault],
-        // GMXv2 Earn
-        [addresses.gmWeth, vault],
-        [addresses.gmBtc, vault],
-        // Aave
-        [addresses.aaveEthAToken, vault],
-        [addresses.aaveBtcAToken, vault],
-        [addresses.aaveUsdcAToken, vault],
-        [addresses.aaveEthDebtToken, vault],
-        [addresses.aaveBtcDebtToken, vault],
-        [addresses.aaveUsdcDebtToken, vault],
-      ]
-    });
-    // GMXv2 Trade
-    const positions = await api.call({
-      abi: getAccountPositionsAbi,
-      target: v2ReaderAddress,
-      params: [dataStoreAddress, vault, 0, 999999999999]
-    });
-    for (const pos of positions) {
-      // collateral
-      await api.add(pos.addresses.collateralToken, pos.numbers.collateralAmount);
-      // pnl = sizeInTokens * tokenPrice - sizeInUsd
-      await api.add(marketToTokenMap[pos.addresses.market], pos.numbers.sizeInTokens);
-      await api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -pos.numbers.sizeInUsd * 1e-24);
-    }
+  await api.sumTokens({
+    tokens: [
+      // Wallet
+      ADDRESSES.arbitrum.USDC,
+      ADDRESSES.arbitrum.USDT,
+      ADDRESSES.arbitrum.USDC_CIRCLE,
+      ADDRESSES.arbitrum.WETH,
+      ADDRESSES.null,
+      ADDRESSES.arbitrum.WBTC,
+      // GMXv2 Earn
+      addresses.gmWeth,
+      addresses.gmBtc,
+      // Aave
+      addresses.aaveEthAToken,
+      addresses.aaveBtcAToken,
+      addresses.aaveUsdcAToken,
+      addresses.aaveEthDebtToken,
+      addresses.aaveBtcDebtToken,
+      addresses.aaveUsdcDebtToken,
+    ],
+    owners: vaults
+  })
+
+  // GMXv2 Trade
+  const calls = vaults.map(vault => ({ params: [dataStoreAddress, vault, 0, 999999999999], }))
+  const positions = await api.multiCall({
+    abi: v2ReaderAbi.getAccountPositions,
+    target: v2ReaderAddress,
+    calls,
+  });
+  for (const pos of positions) {
+    if (!pos || !pos.addresses || !pos.numbers) continue;
+    // collateral
+    api.add(pos.addresses.collateralToken, pos.numbers.collateralAmount);
+    // pnl = sizeInTokens * tokenPrice - sizeInUsd
+    api.add(marketToTokenMap[pos.addresses.market], pos.numbers.sizeInTokens);
+    api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -pos.numbers.sizeInUsd * 1e-24);
   }
 }
 

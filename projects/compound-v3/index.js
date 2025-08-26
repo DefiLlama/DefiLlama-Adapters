@@ -54,7 +54,8 @@ module.exports = compoundV3Exports({
   },
   unichain:{
     markets: [
-      '0x2c7118c4C88B9841FCF839074c26Ae8f035f2921' // USDC Market
+      '0x2c7118c4C88B9841FCF839074c26Ae8f035f2921', // USDC Market
+      '0x6C987dDE50dB1dcDd32Cd4175778C2a291978E2a'  // WETH Market
     ]
   }
 })
