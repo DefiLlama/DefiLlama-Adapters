@@ -11,6 +11,7 @@ async function arbitrumTvl(api) {
 }
 
 module.exports = {
-  start: '2025-08-19',
+  start: '2025-06-17',
+  misrepresentedTokens: true,
   arbitrum: { tvl: arbitrumTvl },
 };
