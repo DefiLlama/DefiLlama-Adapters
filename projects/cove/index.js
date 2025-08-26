@@ -1,5 +1,3 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-
 const basketManager = "0x716c39658Ba56Ce34bdeCDC1426e8768E61912f8";
 const basketTokensAbi = "function basketTokens() view returns (address[])";
 const basketAssetsAbi = "function basketAssets(address basket) view returns (address[])";
@@ -16,7 +14,7 @@ async function tvl(api) {
     abi: basketAssetsAbi,
     calls: basketTokens.map((token) => ({ target: basketManager, params: [token] })),
   });
-  
+
   // Create calls for each basket-asset pair
   const calls = [];
   basketTokens.forEach((basketToken, i) => {
@@ -24,7 +22,7 @@ async function tvl(api) {
       calls.push({ target: basketManager, params: [basketToken, asset] });
     });
   });
-  
+
   const basketBalances = await api.multiCall({
     abi: basketBalanceOfAbi,
     calls: calls,
@@ -42,11 +40,11 @@ async function tvl(api) {
       callIndex++;
     });
   });
-  
+
   // Add balances and handle special tokens that need recursive unwrapping
   const recursiveTokens = {};
   const directTokens = {};
-  
+
   for (const [asset, balance] of Object.entries(assetBalances)) {
     if (RECURSIVE_4626_LIST.includes(asset)) {
       recursiveTokens[asset] = balance;
@@ -54,12 +52,12 @@ async function tvl(api) {
       directTokens[asset] = balance;
     }
   }
-  
+
   // Add direct tokens
   for (const [asset, balance] of Object.entries(directTokens)) {
     api.add(asset, balance);
   }
-  
+
   // Recursively unwrap nested tokens
   if (Object.keys(recursiveTokens).length > 0) {
     await unwrap4626RecursiveBatch(api, recursiveTokens);
@@ -75,21 +73,21 @@ async function unwrap4626RecursiveBatch(api, tokensAndBalances, depth = 0) {
     }
     return;
   }
-  
+
   const tokens = Object.keys(tokensAndBalances);
-  
+
   // Batch call to get underlying assets
   const underlyingAssets = await api.multiCall({
     abi: "function asset() view returns (address)",
     calls: tokens,
     permitFailure: true
   });
-  
+
   // Prepare calls for convertToAssets
   const convertCalls = [];
   const vaultsToUnwrap = {};
   const baseAssets = {};
-  
+
   tokens.forEach((token, i) => {
     if (underlyingAssets[i]) {
       convertCalls.push({
@@ -102,33 +100,33 @@ async function unwrap4626RecursiveBatch(api, tokensAndBalances, depth = 0) {
       baseAssets[token] = tokensAndBalances[token];
     }
   });
-  
+
   // Add base assets
   for (const [token, balance] of Object.entries(baseAssets)) {
     api.add(token, balance);
   }
-  
+
   if (convertCalls.length === 0) return;
-  
+
   // Batch call to convert balances
   const underlyingBalances = await api.multiCall({
     abi: "function convertToAssets(uint256) view returns (uint256)",
     calls: convertCalls
   });
-  
+
   // Prepare next iteration
   const nextTokensAndBalances = {};
   let callIndex = 0;
   for (const [vaultToken, underlyingToken] of Object.entries(vaultsToUnwrap)) {
     const underlyingBalance = underlyingBalances[callIndex++];
     if (nextTokensAndBalances[underlyingToken]) {
-      nextTokensAndBalances[underlyingToken] = 
+      nextTokensAndBalances[underlyingToken] =
         (BigInt(nextTokensAndBalances[underlyingToken]) + BigInt(underlyingBalance)).toString();
     } else {
       nextTokensAndBalances[underlyingToken] = underlyingBalance;
     }
   }
-  
+
   // Recursive call for next level
   await unwrap4626RecursiveBatch(api, nextTokensAndBalances, depth + 1);
 }
