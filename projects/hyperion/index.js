@@ -30,7 +30,7 @@ async function _getCoinInfo(faType) {
 
 async function getPoolInfo() {
   let offset = 0;
-  let limit = 1000;
+  let limit = 100;
   let poolInfo = [];
   let [data, pager] = await _getPoolInfo(offset, limit);
 
