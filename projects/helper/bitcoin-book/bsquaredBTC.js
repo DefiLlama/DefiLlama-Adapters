@@ -4,11 +4,9 @@ module.exports = [
 
   // Bitcoin Custodian Addresses
   "131fpYjELat58RVzPp2A9Bo8oNuKiP4vxg",
-  "bc1qr4cpjazz6hhjh44yrshqw4xs4e3eld60wnsq2m",
   "14UwPgMLZY6rLZRDxxvmNWQ9rMkg2iraHG",
   "1Fh3uu6UjtWWrPMEph2kMK1FQ6zor3ovQZ",
   "1Eyg5NRf5dTPeFGZ5CPJ5o6v1a3dYpeZsi",
-  "bc1qxxgxywxcq0q405849fyrlxa2zu4nxukf4ytg57",
   "bc1quetqhxs809mwgms0rhae4cw98chzqe0er8fryr",
   "155FvRapVDRbFYxaxGxJ9eCQjgr7X2yC6g",
   "bc1q745ywhqsssknaw8s5ycgkv0gulddnasn4tfsjwgm66tvgp2pqpys0zjzt8",
@@ -21,5 +19,13 @@ module.exports = [
   "bc1qmvvnxu7739hk9xvgtk4evsx9ycm20ae25gfand",
   "3LcCJLivWmaomMyhnyt4pqg8iWi2ECU92T",
   "bc1qvz0zun6cqsp95t8tw4mfe3svcq25nvhg65qj8m",
-  "bc1p0hdr6tteyvg9nu4u74fqlyvk6qfusnf4r5u8l27jw273l749f4aqh08jln"
+  "bc1p0hdr6tteyvg9nu4u74fqlyvk6qfusnf4r5u8l27jw273l749f4aqh08jln",
+  "bc1q2rs75dywjdcakvm0r433e8f5r4k3e09jnd0gxl",
+  "bc1qchv7lyyyvf7v98pqfxk8h0x3w2dd7v6e89c7hk",
+  "bc1qd459g807zre4r4nelgmvkef5ddxcv5yh04vakt",
+  "bc1que9dvsgwlm6vr5chrxm2gu586c5alnq3uxa4e2",
+  "bc1qnp5dfweymkfyl3wzmzqxjyq0ejf2cnpynnfkmr",
+  "bc1qe0srwsmxx2z0mkksqxx72nsgc9m2lvj4777aq8",
+  "bc1qsxdn6hwlsezptz5urppq63qchp8lc5pfpv0fa4",
+  "1EsyGikimSjFDSdaNMrfH77a5WwGxaLHoh"
 ]

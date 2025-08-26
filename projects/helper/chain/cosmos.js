@@ -51,7 +51,8 @@ const endPoints = {
   mantra: "https://api.mantrachain.io",
   elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
   pryzm: "https://api.pryzm.zone",
-  agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  agoric: 'https://agoric-api.polkachu.com/',
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
@@ -63,6 +64,7 @@ const endPoints = {
   babylon: 'https://babylon-api.polkachu.com',
   milkyway_rollup: 'https://archival-rest-moo-1.anvil.asia-southeast.initia.xyz',
   titan: 'https://titan-lcd.titanlab.io',
+  provenance: 'https://rest.cosmos.directory/provenance',
   xion: 'https://api.xion-mainnet-1.burnt.com',
   embr: 'https://rest-embrmainnet-1.anvil.asia-southeast.initia.xyz', 
   civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
@@ -73,6 +75,7 @@ const endPoints = {
 const chainSubpaths = {
   crescent: "crescent",
   osmosis: "osmosis",
+  provenance: 'provenance',
   comdex: "comdex",
   umee: "umee",
   kava: "kava",

@@ -55,7 +55,7 @@ const config = {
       { factory: '0x28cF3b462a1ADdE87fe7144d110BcF0D464C97b7', fromBlock: 22972345, isAlgebra: true, }, // Kim
       { factory: '0x24430E837efB64EF87bb32be03437fc6005EEF74', fromBlock: 22095330, isAlgebra: false, }, // PancakeSwap
       { factory: '0xbA096706A850caF1cADAEfE7529Db1343a0c187E', fromBlock: 25174764, isAlgebra: true, }, // Trebleswap 
-      { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, isAlgebra: false, }, // Uniswap 
+      // { factory: '0xaBe5B5AC472Ead17B4B4CaC7fAF42430748ab3b3', fromBlock: 12978552, isAlgebra: false, }, // Uniswap 
     ]
   },
   blast: {

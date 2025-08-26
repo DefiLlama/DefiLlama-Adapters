@@ -24,10 +24,12 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
+const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', ...ENV_KEYS])
+
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
     if (key.endsWith('_RPC')) return;
-    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    if (whitelistedEnvKeys.has(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
 process.env.SKIP_RPC_CHECK = 'true'
@@ -136,7 +138,7 @@ function validateHallmarks(hallmark) {
 
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
-  const passedTimestamp = process.argv[3]
+  const passedTimestamp = process.argv[3] ? Math.floor(new Date(process.argv[3]) / 1000) : undefined
   if (passedTimestamp !== undefined) {
     unixTimestamp = Number(passedTimestamp)
 
@@ -254,6 +256,15 @@ function checkExportKeys(module, filePath, chains) {
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
+
+  const badChainNames = chains.filter(chain => !/^[a-z0-9_]+$/.test(chain));
+  if (badChainNames.length) {
+    throw new Error(`
+    Invalid chain names: ${badChainNames.join(', ')}
+    Chain names should only contain lowercase letters, numbers and underscores
+    `)
+  }
+
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
   let exportKeys = chains.map(chain => Object.keys(module[chain])).flat()
@@ -266,11 +277,16 @@ function checkExportKeys(module, filePath, chains) {
   if (hallmarks.length) {
     const TIMESTAMP_LENGTH = 10;
     hallmarks.forEach(([timestamp, text]) => {
-      const strTimestamp = String(timestamp)
-      if (strTimestamp.length !== TIMESTAMP_LENGTH) {
-        throw new Error(`
+      if (Array.isArray(timestamp)) timestamp.map(validateDateString)  // it is a range timestamp [start, end]
+      else validateDateString(timestamp);
+
+      function validateDateString(timestamp) {
+        const strTimestamp = String(timestamp)
+        if (strTimestamp.length !== TIMESTAMP_LENGTH) {
+          throw new Error(`
         Incorrect time format for the hallmark: [${strTimestamp}, ${text}] ,please use unix timestamp
         `)
+        }
       }
     })
   }
