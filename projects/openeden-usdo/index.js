@@ -1,5 +1,6 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json');
+const { addRippleTokenBalance } = require('../helper/sumTokens');
+const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
   arbitrum: {
@@ -50,6 +51,13 @@ Object.keys(config).forEach((chain) => {
     tvl: sumTokensExport({ ...config[chain] }),
   };
 });
+
+module.exports.ripple = {
+  tvl: async (api) => {
+    await addRippleTokenBalance({ api, account: 'rEsMDrPYTDRqCCYMiEuHpCHbq1c4tzkffZ', whitelistedTokens: ['TBL.rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn']})
+    return sumTokens2({ api })
+  }
+}
 
 module.exports.methodology =
   "Counts TBILL, USDC, BUIDL and BENJI tokens held in the USDO system wallet on Ethereum, Arbitrum and Base.";

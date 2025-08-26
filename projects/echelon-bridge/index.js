@@ -8,7 +8,7 @@ const mappings = {
 
 module.exports = {
     timetravel: false,
-    echelon_initia: {
+    initia: {
         tvl: async () => {
             const balances = {}
             const res = await queryV1Beta1({
