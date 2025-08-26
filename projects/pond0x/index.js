@@ -31,11 +31,7 @@ module.exports = {
     staking: staking(ETH_STAKING_CONTRACT, PONDOX_ETH)
   },
   solana: {
-    tvl: solanaTVL
+    tvl: () => ({}),
+    staking: solanaTVL
   }
 };
-
-
-
-
-
