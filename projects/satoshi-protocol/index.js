@@ -241,12 +241,14 @@ module.exports = {
         address: '0xc473754a6e35cC4F45316F9faaeF0a3a86D90E4e'
       },
     ],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0x30349Af0cDcC2a93Ea4101953101BC0DEc43c53E',
+        asset: '0x623F2774d9f27B59bc6b954544487532CE79d9DF', // bfBTC
+      },
+    ],
   }),
   hemi: createExports({
-    safeVaultManagerList: [{
-      vaultAddress: '0xceBd9461e494Fe3190b4755CFf63815C5cf2605D',
-      asset: '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a', // enzoBTC
-    }],
     troveList: [
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // HemiBTC Collateral(V2)
@@ -316,12 +318,19 @@ module.exports = {
   }),
   ethereum: createExports({
     troveList: [
-      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
-      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
+      '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2) deprecated
+      '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2) deprecated
+
+      '0xb97E6219B0836E21ae671358e746f03dcdbCb6D8', // WETH Collateral(V2) new
+      '0xc03403DD8f27CEFA314Fc109D26777c81b0De895', // WBTC Collateral(V2) new
+      '0x2135EfEF5aC35ba549Cc791cEc4D15E8C8115611', // weETH Collateral(V2)
     ],
     nymList: [{
-      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
       fromBlock: 23017053,
+    }, {
+      address: '0xb8374e4DfF99202292da2FE34425e1dE665b67E6',
+      fromBlock: 23180734,
     }],
   }),
 }
