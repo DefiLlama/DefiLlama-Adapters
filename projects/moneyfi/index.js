@@ -5,7 +5,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 async function get_tvl_aptos() {
   const tvl = await function_view({
     functionStr:
-      "0xdc223ee5e19919d3f7f65c41d2dec698496e07b703a0575bc49b1615a1973b56::vault::get_total_assets",
+      "0x97c9ffc7143c5585090f9ade67d19ac95f3b3e7008ed86c73c947637e2862f56::vault::get_assets",
     args: [],
     type_arguments: [],
   });
