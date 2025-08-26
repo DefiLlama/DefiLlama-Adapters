@@ -11,6 +11,10 @@ const LCD = process.env.TERRA_LCD || 'https://terra-api.cosmosrescue.dev:8443'
 
 // ----- Addresses -----
 const ADDR = {
+  // SOLID stablecoin contract (borrowed supply)
+  SOLID: {
+    token: 'terra10aa3zdkrc7jwuf8ekl3zq7e7m42vmzqehcmu74e4egc7xkm5kr2s0muyst',
+  },
   // CW20 collaterals
   ampLUNA: {
     token:   'terra1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2s5lvsct',
@@ -78,6 +82,11 @@ async function cw20Decimals(token) {
   return r.decimals ?? r.token_info?.decimals ?? 6
 }
 
+async function cw20TotalSupply(token) {
+  const r = await smartQuery(token, { token_info: {} })
+  return BigInt(r.total_supply || r?.token_info?.total_supply || '0')
+}
+
 function addBig(balances, key, amount) {
   if (!amount) return
   const prev = BigInt(balances[key] || 0)
@@ -119,11 +128,21 @@ async function tvl() {
   return balances
 }
 
+// ----- Borrowed (SOLID totalSupply) -----
+async function borrowed() {
+  try {
+    const total = await cw20TotalSupply(ADDR.SOLID.token)
+    return { [`terra2:${ADDR.SOLID.token}`]: total.toString() }
+  } catch {
+    return {}
+  }
+}
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology:
     'TVL = sum of custody balances for SOLID collaterals (ampLUNA, bLUNA, USDC (Noble IBC), axl.WETH, axl.WBTC, wSOL (Wormhole), wBNB (Wormhole)). ' +
     'Adapter returns token balances only; pricing (including LST exchange rates) is handled by DefiLlama coin-prices infra.',
-  terra2: { tvl },
+  terra2: { tvl, borrowed },
 }
