@@ -232,6 +232,7 @@ const config = {
     owners: [
       'UQAvfvh141q7M2ZmPE6YCmTFQW6pdoUXVTGrM2YBpt4iqOBF',
       'UQDR4lFPsfCx4TdWKsFUmiPdrkpl6xEixZ3VTn474lZsGuTd',
+      'UQCL3aiqqyo5FKgKJOscigFey15rouAz2ZrLOVBq6axIZslU',
     ]
   },
   stellar: {
@@ -248,11 +249,6 @@ const config = {
   chz: {
     owners: [
       '0x762DA64958BbF03bB206BF33C520a3846b6Cc93D',
-    ]
-  },
-  ton: {
-    owners: [
-      'UQCL3aiqqyo5FKgKJOscigFey15rouAz2ZrLOVBq6axIZslU',
     ]
   },
 }
