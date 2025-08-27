@@ -12,6 +12,7 @@ const HYPERBEAT_MAPPINGS = [
   { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
   { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat WHYPE -> WHYPE
   { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
 ];
 
 // ==============================================
@@ -203,11 +204,19 @@ const configs = {
     unichain: {
       morpho: [
         '0xc063181747e56c034ac14dc82db663409566fdf6', // MEV Capital USDC (Unichain)
+        '0x3f93576d13091bfbf6825f7421ef33cc353dc433' // Morpho WETH Unichain Cluster
       ]
     },
     plume: {
       morpho: [
         '0x0b14d0bdaf647c541d3887c5b1a4bd64068fcda7', // Mystic pUSD MEV Capital
+      ]
+    },
+    arbitrum: {
+      morpho: [
+          '0xa60643c90a542a95026c0f1dbdb0615ff42019cf', // Morpho USDC Cluster
+          '0x9B33073eB98A9a1eb408DedcD08616fE850b3f09', // Morpho WETH Cluster
+          '0x6d57dAd0F1c4da0C1d5443AE8F7f8a50BDb9Cf75'  // Morpho USDT0 Cluster
       ]
     },
     // solana: {
@@ -261,7 +270,8 @@ const configs = {
         '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Hyperbeat USR (price not in the api yet)
         '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
         '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Hyperbeat WHYPE (price not in the api yet)
-        '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8' // Hyperbeat USDT0 (price not in the api yet)
+        '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
+        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29'
       ]
     },
     sonic: {
