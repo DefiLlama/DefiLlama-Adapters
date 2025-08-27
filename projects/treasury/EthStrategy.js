@@ -5,7 +5,6 @@ const OWNERS = [
   "0xC53CCed6332D06972A7eaEDc64FDF6d4aF5220b8", // ETH Strategy Main
   "0x75eFa088E34DA03966a5D2b84fA16C77fF25Adfa", // Puttable Warrant (4200 ETH)
   "0xF89f49e21A2Bd1fb24332462cB21dc1378aA25e1", // Staking Multisig
-  "0x9371352CCef6f5b36EfDFE90942fFE622Ab77F1D", // Derive Vault contract 
 ]
 
 module.exports = {
