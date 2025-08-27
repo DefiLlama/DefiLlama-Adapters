@@ -36,8 +36,6 @@ module.exports.solana = {
     const mints = ['GyWgeqpy5GueU2YbkE8xqUeVEokCMMCEeUrfbtMw6phr']
     const res = await getTokenSupplies(mints, api.chain) // align with aptos style of passing api.chain
     const supply = res[mints[0]]
-
-    // Map the SOL asset to its Ethereum-referenced token for pricing
-    api.add('ethereum:0x7712c34205737192402172409a8f7ccef8aa2aec', supply, { skipChain: true })
+    api.add(mints[0], supply)
   }
 }
