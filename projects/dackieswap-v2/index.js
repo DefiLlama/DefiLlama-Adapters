@@ -1,5 +1,6 @@
 const { getUniTVL } = require("../helper/unknownTokens");
 const { stakings } = require("../helper/staking");
+const { ethereum } = require("../pancake-swap");
 
 const DACKIE = "0x73326b4d0225c429bed050c11C4422d91470AaF4";
 
@@ -12,6 +13,12 @@ const config = {
   mode: '0x757cd583004400ee67e5cc3c7a60c6a62e3f6d30',
   base: '0x591f122D1df761E616c13d265006fcbf4c6d6551',
   wc: '0x757cD583004400ee67e5cC3c7A60C6a62E3F6d30',
+  arbitrum: '0x507940c2469e6E3B33032F1d4FF8d123BDDe2f5C',
+  unichain: '0x507940c2469e6E3B33032F1d4FF8d123BDDe2f5C',
+  linea: '0x9790713770039CeFcf4FAaf076E2846c9B7a4630',
+  blast: '0xF5190E64dB4cbf7ee5E72B55cC5b2297e20264c2',
+  xlayer: '0x757cD583004400ee67e5cC3c7A60C6a62E3F6d30',
+  ethereum: '0x3D237AC6D2f425D2E890Cc99198818cc1FA48870'
 }
 
 module.exports = {
