@@ -1,6 +1,5 @@
 const { getUniTVL } = require("../helper/unknownTokens");
 const { stakings } = require("../helper/staking");
-const { ethereum } = require("../pancake-swap");
 
 const DACKIE = "0x73326b4d0225c429bed050c11C4422d91470AaF4";
 
