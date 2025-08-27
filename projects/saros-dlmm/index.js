@@ -106,12 +106,11 @@ async function tvl() {
 
     return tokenAccounts;
   }).flat();
-  return sumTokens2({ tokenAccounts, })
+  return sumTokens2({ tokenAccounts, allowError: true, })
 }
 
 module.exports = {
   timetravel: false,
-  isHeavyProtocol: true,
   methodology:
     "TVL includes the total token value inside the protocol's liquidity pools.",
   solana: {
