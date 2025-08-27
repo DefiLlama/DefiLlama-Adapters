@@ -2,6 +2,8 @@ const { BigNumber } = require("bignumber.js");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getLogs } = require("../helper/cache/getLogs");
+const { sumTokensExport } = require('../helper/sumTokens.js')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint256 feeIn,uint256 feeOut,uint256 debtTokenMintCap,uint256 dailyMintCap,address oracle,bool isUsingOracle,uint256 swapWaitingPeriod,uint256 maxPrice,uint256 minPrice)";
 const VaultTokenStrategySetEventABI = "event TokenStrategySet(address token, address strategy)";
 const GetEntireSystemCollABI = 'uint256:getEntireSystemColl';
@@ -333,5 +335,8 @@ module.exports = {
       fromBlock: 23180734,
     }],
   }),
+  bitcoin: {
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.river }),
+  },
 }
 
