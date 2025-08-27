@@ -1,6 +1,6 @@
 const { cexExports } = require("../helper/cex");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
-
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   "ethereum": {
@@ -28,7 +28,9 @@ const config = {
       "0xd793281182a0e3e023116004778f45c29fc14f19",
       "0x354e0184a6a6e634ccb07388e2617e05e427563c",
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421",
-      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7"
+      "0xf379a3d1ab6625eef34347d054cfaeafdf8f24a7",
+      "0x9bbe47fe66b3580551aac3124cf9fc6560252b19",
+      "0xaaac1183d07c69f5befd22a06211690e953dca17"
     ]
   },
   "avax": {
@@ -131,7 +133,8 @@ const config = {
       "TDyR4wBeodpigiKmnwyBQC8UfsCH1T25XF",
       "THhVZfr2Q4J3spWK84Je4ALiFyrnnSq6nN",
       "TZJNuEg5VaYLR9kdQfjj7WE6jh4vt9JMp2",
-      "TYAavN2xCDro5Gdip8UU6W9oQmM43rNxzQ"
+      "TYAavN2xCDro5Gdip8UU6W9oQmM43rNxzQ",
+      "TLsUUQZCkcrBRxEKqZbpekdq9LWfmnndPg"
     ]
   },
   "cardano": {
@@ -434,6 +437,7 @@ const config = {
       "1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv"
     ]
   },
+  /*
   "bitgert": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -442,6 +446,7 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  */
   "bitkub": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -496,14 +501,14 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "bouncebit": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
-    ]
-  },
+  // "bouncebit": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
+  //   ]
+  // },
   "bsquared": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -527,6 +532,7 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  /*
   "canto": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
@@ -535,6 +541,7 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
+  */
   "celestia": {
     "owners": [
       "celestia155svs6sgxe55rnvs6ghprtqu0mh69kehje7a6w",
@@ -1263,6 +1270,7 @@ const config = {
       "waPau5WwZ2fbKrhe0L6GEzoVv-OoD6AXy7gyFnYKgYE"
     ]
   },
+  /*
   "persistence": {
     "owners": [
       "persistence155svs6sgxe55rnvs6ghprtqu0mh69kehdlf7w8",
@@ -1271,6 +1279,7 @@ const config = {
       "persistence1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn90shtef"
     ]
   },
+  */
   "pokt": {
     "owners": [
       "ab04976668dd739f34df43e912d20dc487ac85d2",
@@ -1666,4 +1675,7 @@ const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoinc
 
 unsupportedChains.forEach(chain => delete config[chain]);
 
-module.exports = cexExports(config);
+module.exports = mergeExports([
+  cexExports(config),
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x287a66c7d9cba7504e90fa638911d74c4dc6a147', '0xbcf03ce48091e6b820a7c33e166e5d0109d8e712', '0x7a3f9b7120386249528c93e5eb373b78e54d5ba9'], sleepTime: 20_000, size: 200, proxy: true }) } },
+]);

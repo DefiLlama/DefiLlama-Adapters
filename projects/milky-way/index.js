@@ -40,16 +40,15 @@ async function milkBabyTVL(api) {
   api.add(token, data.total_native_token)
 }
 
-//  milkyway_rollup does not appear to be queryable
-// async function milkINITTVL(api) {
-//   const data = await queryContract({ contract: consts.MILKINIT_CONTRACT, chain: api.chain, data: { state: {} } });
-//   const {batches} = await queryContract({ contract: consts.MILKINIT_CONTRACT, chain: api.chain, data: { batches: {} } });
-//   const token = 'ibc/'+'37A3FB4FED4CA04ED6D9E5DA36C6D27248645F0E22F585576A1488B8A89C5A50'
+async function milkINITTVL(api) {
+  const data = await queryContract({ contract: consts.MILKINIT_CONTRACT, chain: api.chain, data: { state: {} } });
+  const {batches} = await queryContract({ contract: consts.MILKINIT_CONTRACT, chain: api.chain, data: { batches: {} } });
+  const token = 'ibc/'+ADDRESSES.ibc.INIT
 
-//   //  when calculating TVL, current unbonding batches with TIA should be added since they are 'locked' inside the contract at that current point in time
-//   batches.filter(b => b.status !== 'received').forEach((b) => api.add(token, b.expected_native_unstaked))
-//   api.add(token, data.total_native_token)
-// }
+  //  when calculating TVL, current unbonding batches with TIA should be added since they are 'locked' inside the contract at that current point in time
+  batches.filter(b => b.status !== 'received').forEach((b) => api.add(token, b.expected_native_unstaked))
+  api.add(token, data.total_native_token)
+}
 
 module.exports = {
   methodology: 'TVL counts the tokens that are locked in the Milky Way protocol',
@@ -59,7 +58,7 @@ module.exports = {
   milkyway: {
     tvl: milkBabyTVL,
   },
-  // 'milkyway_rollup': {
-  //   tvl: milkINITTVL,
-  // }
+  'milkyway_rollup': {
+    tvl: milkINITTVL,
+  }
 } //  node test.js projects/milky-way/index.js
