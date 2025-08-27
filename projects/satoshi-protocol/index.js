@@ -248,6 +248,10 @@ module.exports = {
         smartVaultAddress: '0x30349Af0cDcC2a93Ea4101953101BC0DEc43c53E',
         asset: '0x623F2774d9f27B59bc6b954544487532CE79d9DF', // bfBTC
       },
+      {
+        smartVaultAddress: '0x8f10C801B62Ae0b67B87B56a5f8ce05437ba6b7f',
+        asset: '0x623F2774d9f27B59bc6b954544487532CE79d9DF', // bfBTC
+      },
     ],
   }),
   hemi: createExports({
@@ -334,6 +338,12 @@ module.exports = {
       address: '0xb8374e4DfF99202292da2FE34425e1dE665b67E6',
       fromBlock: 23180734,
     }],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0xDd7eCb0dc1686020A8a23EE55126D7596a2eA03b',
+        asset: '0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568', // uniBTC
+      },
+    ],
   }),
   bitcoin: {
     tvl: sumTokensExport({ owners: bitcoinAddressBook.river }),
