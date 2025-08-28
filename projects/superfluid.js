@@ -1,4 +1,4 @@
-const ADDRESSES = require('helper/coreAssets.json')
+const ADDRESSES = require('./helper/coreAssets.json')
 const { getBlock, blockQuery } = require("./helper/http");
 
 const supertokensQuery = ({ first = 1000, id_gt = "" } = {}) => `
