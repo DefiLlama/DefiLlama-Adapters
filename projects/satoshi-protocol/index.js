@@ -205,7 +205,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0xd62E2F6b6616271001DCd0988AD2D73DEeE1b491',
-        asset: '0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894', // uniBTC
+        asset: ADDRESSES.bob.uniBTC, // uniBTC
       },
     ]
   }),

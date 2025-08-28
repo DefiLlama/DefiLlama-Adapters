@@ -44,7 +44,7 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   flow: {
-    "0x1b97100ea1d7126c4d60027e231ea4cb25314bdb": { coingeckoId: "ankr-staked-flow", decimals: 18 },
+    [ADDRESSES.flow.ankrFLOWEVM]: { coingeckoId: "ankr-staked-flow", decimals: 18 },
   },
   soon: {
     [ADDRESSES.soon.USDT]: { coingeckoId: "tether", decimals: 6 },
@@ -101,7 +101,7 @@ const fixBalancesTokens = {
     '0x51a30e647d33a044967fa3dbb04d6ed6f45455f6': { coingeckoId: "noon-usn", decimals: 18 },
     '0xaf988c3f7cb2aceabb15f96b19388a259b6c438f': { coingeckoId: "tether", decimals: 6 },
     '0x7048c9e4abd0cf0219e95a17a8c6908dfc4f0ee4': { coingeckoId: "coinbase-wrapped-btc", decimals: 8 },
-    '0xecac9c5f704e954931349da37f60e39f515c11c1': { coingeckoId: "lombard-staked-btc", decimals: 8 },
+    [ADDRESSES.etlk.LBTC]: { coingeckoId: "lombard-staked-btc", decimals: 8 },
   },
   ripple: {
     'TBL.rJNE2NNz83GJYtWVLwMvchDWEon3huWnFn': { coingeckoId: "openeden-tbill", decimals: 0 },
