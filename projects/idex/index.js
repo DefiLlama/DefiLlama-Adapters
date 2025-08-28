@@ -12,7 +12,7 @@ Object.keys(config).forEach(chain => {
   const { exchange, custodian, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const logs = await getLogs2({ api, target: exchange, eventAbi: "event TokenRegistered(address indexed assetAddress, string assetSymbol, uint8 decimals)", fromBlock, })
+      const logs = await getLogs2({ api, target: exchange, eventAbi: "event TokenRegistered(address indexed assetAddress, string assetSymbol, uint8 decimals)", fromBlock, onlyUseExistingCache: true, })
       const tokens = logs.map(log => log.assetAddress)
       tokens.push(nullAddress)
       if (api.chain === 'polygon') {
