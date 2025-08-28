@@ -117,6 +117,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  arbitrum: {
+    vaultFactories: [
+      {
+        address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
+        fromBlock: 296447195,
+      },
+    ],
+  },
 }
 
 const EulerConfigs = {

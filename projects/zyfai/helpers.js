@@ -10,7 +10,7 @@ const SILO_POOL_ADDRESSES = {
     'Re7 scUSD': '0x592D1e187729C76EfacC6dfFB9355bd7BF47B2a7',
     'Apostro - USDC': '0xcca902f2d3d265151f123d8ce8FdAc38ba9745ed',
     'Greenhouse USDC': '0xf6bC16B79c469b94Cdd25F3e2334DD4FEE47A581'
-    
+
 };
 const AAVE_TOKEN_ADDRESS = '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6';
 const EULER_POOL_ADDRESSES = {
@@ -47,54 +47,6 @@ const YIELDFI_POOL = {
     'yUSD': "0x4772D2e014F9fC3a820C444e3313968e9a5C8121"
 }
 
-async function siloTvl(api, owners) {
-    const siloVaults = Object.values(SILO_POOL_ADDRESSES);
-    const balanceCalls = siloVaults.flatMap(vault => owners.map(owner => ({ target: vault, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    
-    const vaultBalances = {};
-    siloVaults.forEach((vault, i) => {
-        const vaultIndex = i * owners.length;
-        const vaultTotal = balances.slice(vaultIndex, vaultIndex + owners.length)
-            .reduce((sum, bal) => sum + Number(bal), 0);
-        vaultBalances[vault] = vaultTotal;
-    });
-    
-    api.add(Object.keys(vaultBalances), Object.values(vaultBalances));
-}
-
-async function aaveTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({ target: AAVE_TOKEN_ADDRESS, params: [owner] }));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    const total = balances.reduce((sum, bal) => sum + Number(bal) / 1e6, 0);
-    api.add(AAVE_TOKEN_ADDRESS, total);
-}
-
-async function eulerTvl(api, owners) {
-    const eulerPools = Object.values(EULER_POOL_ADDRESSES);
-    const balanceCalls = eulerPools.flatMap(pool => owners.map(owner => ({ target: pool, params: [owner] })));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
-async function pendleTvl(api, owners) {
-    const allTokens = Object.values(PENDLE_MARKET_ADDRESSES).flatMap(market => 
-        Object.values(market).map(addr => addr.toLowerCase())
-    );
-    
-    const balanceCalls = allTokens.flatMap(token => 
-        owners.map(owner => ({ target: token, params: [owner] }))
-    );
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
-
 async function beetsTvl(api, owners) {
     const calls = owners.flatMap(owner => [
         { target: BEETS_POOL.deposit, params: [owner] },
@@ -107,7 +59,7 @@ async function beetsTvl(api, owners) {
         const depositBalance = Number(balances[i]);
         const stakeBalance = Number(balances[i + 1]);
         const totalBalance = depositBalance + stakeBalance;
-        
+
         // Add the combined balance for both deposit and stake tokens
         api.add(calls[i].target, totalBalance);
         api.add(calls[i + 1].target, totalBalance);
@@ -115,35 +67,32 @@ async function beetsTvl(api, owners) {
 }
 
 async function penpieTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({ 
-        target: PENPIE_CONTRACT, 
-        params: [PENPIE_MARKET_ADDRESS, owner] 
+    const balanceCalls = owners.map(owner => ({
+        target: PENPIE_CONTRACT,
+        params: [PENPIE_MARKET_ADDRESS, owner]
     }));
     const balances = await api.multiCall({
         abi: 'function balance(address,address) view returns (uint256)',
         calls: balanceCalls,
     });
-    
+
     balances.forEach(balance => {
         api.add(PENPIE_MARKET_ADDRESS, balance);
     });
 }
 
-async function yieldfiTvl(api, owners) {
-    const balanceCalls = owners.map(owner => ({ target: YIELDFI_POOL.yUSD, params: [owner] }));
-    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
-    
-    balances.forEach((balance, i) => {
-        api.add(balanceCalls[i].target, balance);
-    });
-}
+const sonicTokens = [
+    YIELDFI_POOL.yUSD,
+    ...Object.values(PENDLE_MARKET_ADDRESSES).flatMap(market =>
+        Object.values(market)),
+    ...Object.values(EULER_POOL_ADDRESSES),
+    AAVE_TOKEN_ADDRESS,
+    ...Object.values(SILO_POOL_ADDRESSES),
+
+]
 
 module.exports = {
-    siloTvl,
-    aaveTvl,
-    eulerTvl,
-    pendleTvl,
     beetsTvl,
     penpieTvl,
-    yieldfiTvl,
+    sonicTokens,
 };

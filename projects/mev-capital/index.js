@@ -12,118 +12,110 @@ const HYPERBEAT_MAPPINGS = [
   { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
   { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat WHYPE -> WHYPE
   { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
 ];
 
 // ==============================================
-// CUSTOM TVL CALCULATION FUNCTIONS
+// GENERIC TVL CALCULATION FUNCTIONS
 // ==============================================
 
-async function getCuratorTvlErc4626(api, vaults) {
-  const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true });
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true });
-  
-  for (let i = 0; i < assets.length; i++) {
-    if (!assets[i] || !totalAssets[i]) continue;
-    api.add(assets[i], totalAssets[i]);
-  }
-}
-
-async function getCuratorTvlTerminal(api, vaults) {
-  const totalSupplies = await api.multiCall({ 
-    abi: 'uint256:totalSupply', 
-    calls: vaults, 
-    permitFailure: true 
-  });
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
-    api.add(vaults[i], totalSupplies[i]);
-  }
-}
-
-async function getCuratorTvlMidas(api, vaults) {
-  const totalSupplies = await api.multiCall({ 
-    abi: 'uint256:totalSupply', 
-    calls: vaults, 
-    permitFailure: true 
-  });
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
-    api.add(vaults[i], totalSupplies[i]);
-  }
-}
-
-async function getCuratorTvlMizu(api, vaults) {
-  const totalBalances = await api.multiCall({ 
-    abi: 'function getTotalBalance() view returns (uint256)', 
-    calls: vaults, 
-    permitFailure: true 
-  });
-  
-  const underlyingAssets = await api.multiCall({ 
-    abi: 'function asset() view returns (address)', 
-    calls: vaults, 
-    permitFailure: true 
-  });
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalBalances[i] === null || totalBalances[i] === undefined) continue;
-    if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue;
-    api.add(underlyingAssets[i], totalBalances[i]);
-  }
-}
-
-async function getCuratorTvlNapier(api, vaults) {
-  const totalSupplies = await api.multiCall({ 
-    abi: 'uint256:totalSupply', 
-    calls: vaults, 
-    permitFailure: true 
-  });
-  
-  const underlyingAssets = await api.multiCall({ 
-    abi: 'function underlying() view returns (address)', 
-    calls: vaults, 
-    permitFailure: true 
-  });
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
-    if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue;
-    api.add(underlyingAssets[i], totalSupplies[i]);
-  }
-}
-
-async function getCuratorTvlHyperbeat(api, vaults) {
-  const totalSupplies = await api.multiCall({ 
-    abi: 'uint256:totalSupply', 
-    calls: vaults, 
-    permitFailure: true 
-  });
-
-  for (let i = 0; i < vaults.length; i++) {
-    if (!totalSupplies[i] || totalSupplies[i] === '0') continue;
+const TVL_HANDLERS = {
+  erc4626: async (api, vaults) => {
+    const assets = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true });
+    const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true });
     
-    const mapping = HYPERBEAT_MAPPINGS.find(m => 
-      m.vault.toLowerCase() === vaults[i].toLowerCase()
-    );
+    for (let i = 0; i < assets.length; i++) {
+      if (!assets[i] || !totalAssets[i]) continue;
+      api.add(assets[i], totalAssets[i]);
+    }
+  },
+  
+  totalSupply: async (api, vaults) => {
+    const totalSupplies = await api.multiCall({
+      abi: 'uint256:totalSupply',
+      calls: vaults,
+      permitFailure: true
+    });
     
-    if (mapping) {
-      let amount = BigInt(totalSupplies[i]);
-      
-      if (mapping.isOneToOne && mapping.vaultDecimals && mapping.underlyingDecimals) {
-        const decimalDiff = mapping.vaultDecimals - mapping.underlyingDecimals;
-        if (decimalDiff > 0) {
-          amount = amount / (10n ** BigInt(decimalDiff));
-        }
-      }
-      
-      api.add(mapping.underlying, amount.toString());
-    } else {
+    for (let i = 0; i < vaults.length; i++) {
+      if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
       api.add(vaults[i], totalSupplies[i]);
     }
+  },
+  
+  mizuType: async (api, vaults) => {
+    const [totalBalances, underlyingAssets] = await Promise.all([
+      api.multiCall({
+        abi: 'function getTotalBalance() view returns (uint256)',
+        calls: vaults,
+        permitFailure: true
+      }),
+      api.multiCall({
+        abi: 'function asset() view returns (address)',
+        calls: vaults,
+        permitFailure: true
+      })
+    ]);
+    
+    for (let i = 0; i < vaults.length; i++) {
+      if (totalBalances[i] === null || totalBalances[i] === undefined) continue;
+      if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue;
+      api.add(underlyingAssets[i], totalBalances[i]);
+    }
+  },
+  
+  napierType: async (api, vaults) => {
+    const [totalSupplies, underlyingAssets] = await Promise.all([
+      api.multiCall({
+        abi: 'uint256:totalSupply',
+        calls: vaults,
+        permitFailure: true
+      }),
+      api.multiCall({
+        abi: 'function underlying() view returns (address)',
+        calls: vaults,
+        permitFailure: true
+      })
+    ]);
+    
+    for (let i = 0; i < vaults.length; i++) {
+      if (totalSupplies[i] === null || totalSupplies[i] === undefined) continue;
+      if (underlyingAssets[i] === null || underlyingAssets[i] === undefined) continue;
+      api.add(underlyingAssets[i], totalSupplies[i]);
+    }
+  },
+  
+  hyperbeat: async (api, vaults) => {
+    const totalSupplies = await api.multiCall({
+      abi: 'uint256:totalSupply',
+      calls: vaults,
+      permitFailure: true
+    });
+    
+    for (let i = 0; i < vaults.length; i++) {
+      if (!totalSupplies[i] || totalSupplies[i] === '0') continue;
+      
+      const mapping = HYPERBEAT_MAPPINGS.find(m =>
+          m.vault.toLowerCase() === vaults[i].toLowerCase()
+      );
+      
+      if (mapping) {
+        let amount = BigInt(totalSupplies[i]);
+        
+        if (mapping.isOneToOne && mapping.vaultDecimals && mapping.underlyingDecimals) {
+          const decimalDiff = mapping.vaultDecimals - mapping.underlyingDecimals;
+          if (decimalDiff > 0) {
+            amount = amount / (10n ** BigInt(decimalDiff));
+          }
+        }
+        
+        api.add(mapping.underlying, amount.toString());
+      } else {
+        api.add(vaults[i], totalSupplies[i]);
+      }
+    }
   }
-}
+};
 
 // ==============================================
 // VAULT CONFIGURATIONS BY BLOCKCHAIN
@@ -212,11 +204,19 @@ const configs = {
     unichain: {
       morpho: [
         '0xc063181747e56c034ac14dc82db663409566fdf6', // MEV Capital USDC (Unichain)
+        '0x3f93576d13091bfbf6825f7421ef33cc353dc433' // Morpho WETH Unichain Cluster
       ]
     },
     plume: {
       morpho: [
         '0x0b14d0bdaf647c541d3887c5b1a4bd64068fcda7', // Mystic pUSD MEV Capital
+      ]
+    },
+    arbitrum: {
+      morpho: [
+          '0xa60643c90a542a95026c0f1dbdb0615ff42019cf', // Morpho USDC Cluster
+          '0x9B33073eB98A9a1eb408DedcD08616fE850b3f09', // Morpho WETH Cluster
+          '0x6d57dAd0F1c4da0C1d5443AE8F7f8a50BDb9Cf75'  // Morpho USDT0 Cluster
       ]
     },
     // solana: {
@@ -270,7 +270,8 @@ const configs = {
         '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Hyperbeat USR (price not in the api yet)
         '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
         '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Hyperbeat WHYPE (price not in the api yet)
-        '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8' // Hyperbeat USDT0 (price not in the api yet)
+        '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
+        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29'
       ]
     },
     sonic: {
@@ -321,35 +322,54 @@ const configs = {
 // ==============================================
 // ADAPTER CONFIGURATION AND EXPORT
 // ==============================================
+
+const PROTOCOL_HANDLERS = {
+  erc4626: ['upshift', 'term', 'termmax', 'lista'],
+  totalSupply: ['terminal', 'midas'],
+  mizuType: ['mizu'],
+  napierType: ['napier'],
+  hyperbeat: ['hyperbeat']
+};
+
+function createChainTvlFunction(chainConfig) {
+  return async (api) => {
+    const standardProtocols = {
+      morpho: chainConfig.morpho || [],
+      mellow: chainConfig.mellow || [],
+      symbiotic: chainConfig.symbiotic || [],
+      euler: chainConfig.euler || [],
+      silo: chainConfig.silo || []
+    };
+    
+    const hasStandardProtocols = Object.values(standardProtocols).some(arr => arr.length > 0);
+    
+    const promises = [];
+    
+    if (hasStandardProtocols) {
+      promises.push(getCuratorTvl(api, standardProtocols));
+    }
+    
+    Object.entries(PROTOCOL_HANDLERS).forEach(([handlerType, protocols]) => {
+      protocols.forEach(protocol => {
+        if (chainConfig[protocol]) {
+          promises.push(TVL_HANDLERS[handlerType](api, chainConfig[protocol]));
+        }
+      });
+    });
+    
+    await Promise.all(promises);
+  };
+}
+
 const adapterExport = getCuratorExport(configs);
 
-adapterExport.ethereum.tvl = async (api) => {
-  const vaultConfigs = configs.blockchains.ethereum;
-  
-  await Promise.all([
-    getCuratorTvl(api, {
-      morpho: vaultConfigs.morpho || [],
-      mellow: vaultConfigs.mellow || [],
-      symbiotic: vaultConfigs.symbiotic || [],
-      euler: vaultConfigs.euler || [],
-    }),
-    
-    vaultConfigs.upshift ? getCuratorTvlErc4626(api, vaultConfigs.upshift) : Promise.resolve(),
-    vaultConfigs.term ? getCuratorTvlErc4626(api, vaultConfigs.term) : Promise.resolve(),
-    vaultConfigs.termmax ? getCuratorTvlErc4626(api, vaultConfigs.termmax) : Promise.resolve(),
-    vaultConfigs.terminal ? getCuratorTvlTerminal(api, vaultConfigs.terminal) : Promise.resolve(),
-    vaultConfigs.midas ? getCuratorTvlMidas(api, vaultConfigs.midas) : Promise.resolve(),
-    vaultConfigs.mizu ? getCuratorTvlMizu(api, vaultConfigs.mizu) : Promise.resolve(),
-    vaultConfigs.napier ? getCuratorTvlNapier(api, vaultConfigs.napier) : Promise.resolve()
-  ]);
-};
-
-adapterExport.hyperliquid.tvl = async (api) => {
-  const vaultConfigs = configs.blockchains.hyperliquid;
-  
-  if (vaultConfigs.hyperbeat) {
-    await getCuratorTvlHyperbeat(api, vaultConfigs.hyperbeat);
-  }
-};
+adapterExport.ethereum.tvl = createChainTvlFunction(configs.blockchains.ethereum);
+adapterExport.hyperliquid.tvl = createChainTvlFunction(configs.blockchains.hyperliquid);
+adapterExport.bsc.tvl = createChainTvlFunction(configs.blockchains.bsc);
+adapterExport.unichain.tvl = createChainTvlFunction(configs.blockchains.unichain);
+adapterExport.plume.tvl = createChainTvlFunction(configs.blockchains.plume);
+adapterExport.berachain.tvl = createChainTvlFunction(configs.blockchains.berachain);
+adapterExport.sonic.tvl = createChainTvlFunction(configs.blockchains.sonic);
+adapterExport.avax.tvl = createChainTvlFunction(configs.blockchains.avax);
 
 module.exports = adapterExport;
