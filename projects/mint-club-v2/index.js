@@ -17,53 +17,59 @@ const V2_BOND_CONTRACTS = {
 }
 
 const STAKE_CONTRACTS = {
-  ethereum: '0x5b64cECC5cF3E4B1A668Abd895D16BdDC0c77a17',
-  optimism: '0x29b0E6D2C2884aEa3FB4CB5dD1C7002A8E10c724',
-  arbitrum: '0x7B09b728ee8c6a714dC3F10367b5DF9b217FE633',
-  avax: '0x95BDA90196c4e737933360F4639c46Ace657AAb7',
-  polygon: '0x5b64cECC5cF3E4B1A668Abd895D16BdDC0c77a17',
-  bsc: '0x5b64cECC5cF3E4B1A668Abd895D16BdDC0c77a17',
-  base: '0x364e0f814a2c5524d26e82937815c574f8bB86C1',
-  blast: '0x95BDA90196c4e737933360F4639c46Ace657AAb7',
-  degen: '0x9a176d09b3824cf50417e348696cBbBc43d7818d',
-  zora: '0x621c335b4BD8f2165E120DC70d3AfcAfc6628681',
-  klaytn: '0x06FD26c092Db44E5491abB7cDC580CE24D93030c',
-  cyber: '0x621c335b4BD8f2165E120DC70d3AfcAfc6628681',
-  apeChain: '0xF44939c1613143ad587c79602182De7DcF593e33',
-  shibarium: '0xF44939c1613143ad587c79602182De7DcF593e33',
-  hashkey: '0xF44939c1613143ad587c79602182De7DcF593e33',
-  unichain: '0xF44939c1613143ad587c79602182De7DcF593e33',
-  over: '0xF44939c1613143ad587c79602182De7DcF593e33',
+  ethereum: ['0xF187645D1C5AE70C3ddCDeE6D746E5A7619a2A65'],
+  optimism: ['0x5b64cECC5cF3E4B1A668Abd895D16BdDC0c77a17'],
+  arbitrum: ['0x9a176d09b3824cf50417e348696cBbBc43d7818d'],
+  avax: ['0x364e0f814a2c5524d26e82937815c574f8bB86C1'],
+  polygon: ['0xF187645D1C5AE70C3ddCDeE6D746E5A7619a2A65'],
+  bsc: ['0x841A2bD2fc97DCB865b4Ddb352540148Bad2dB09'],
+  base: [
+    // legacy v1 contract
+    '0x364e0f814a2c5524d26e82937815c574f8bB86C1', 
+    // v1.1 contract
+    '0x3460E2fD6cBC9aFB49BF970659AfDE2909cf3399'
+  ],
+  blast: ['0x364e0f814a2c5524d26e82937815c574f8bB86C1'],
+  degen: ['0xf7e2cDe9E603F15118E6E389cF14f11f19C1afbc'],
+  zora: ['0x06FD26c092Db44E5491abB7cDC580CE24D93030c'],
+  klaytn: ['0x3Fd5B4DcDa968C8e22898523f5343177F94ccfd1'],
+  cyber: ['0x06FD26c092Db44E5491abB7cDC580CE24D93030c'],
+  apeChain: ['0x5DaE94e149CF2112Ec625D46670047814aA9aC2a'],
+  shibarium: ['0x5DaE94e149CF2112Ec625D46670047814aA9aC2a'],
+  hashkey: ['0x5DaE94e149CF2112Ec625D46670047814aA9aC2a'],
+  unichain: ['0x5DaE94e149CF2112Ec625D46670047814aA9aC2a'],
+  over: ['0xa4021a8907197Df92341F1218B32E26b250F6798'],
 }
 
 const ownTokens = {
   bsc: ['0x1f3Af095CDa17d63cad238358837321e95FC5915']
 }
 
-async function getStakingTvl(api, stakingContract) {
-  const poolCount = await api.call({
-    target: stakingContract,
-    abi: 'function poolCount() view returns (uint256)'
-  });
+async function getStakingTvl(api, stakingContracts) {
+  for (const stakingContract of stakingContracts) {
+    const poolCount = await api.call({
+      target: stakingContract,
+      abi: 'function poolCount() view returns (uint256)'
+    })
 
-  if (poolCount == 0) return;
+    const stakingTokensSet = new Set()
 
-  const stakingTokensSet = new Set();
-  
-  const ids = Array.from({ length: Number(poolCount) }, (_, k) => k)
-  const pools = await api.multiCall({
-    target: stakingContract,
-    abi: 'function pools(uint256) view returns (address stakingToken, bool isStakingTokenERC20, address rewardToken, address creator, uint104 rewardAmount, uint32 rewardDuration, uint32 totalSkippedDuration, uint40 rewardStartedAt, uint40 cancelledAt, uint128 totalStaked, uint32 activeStakerCount, uint40 lastRewardUpdatedAt, uint256 accRewardPerShare)',
-    calls: ids,
-    permitFailure: true,
-  })
-  for (const pool of pools) {
-    if (pool.isStakingTokenERC20 && pool.cancelledAt == 0) stakingTokensSet.add(pool.stakingToken)
+    const ids = Array.from({ length: Number(poolCount) }, (_, k) => k)
+    const pools = await api.multiCall({
+      target: stakingContract,
+      abi: 'function pools(uint256) view returns (address stakingToken, bool isStakingTokenERC20, address rewardToken, address creator, uint104 rewardAmount, uint32 rewardDuration, uint32 totalSkippedDuration, uint40 rewardStartedAt, uint40 cancelledAt, uint128 totalStaked, uint32 activeStakerCount, uint40 lastRewardUpdatedAt, uint256 accRewardPerShare)',
+      calls: ids,
+      permitFailure: true,
+    })
+
+    for (const pool of pools) {
+      if (pool.isStakingTokenERC20 && pool.cancelledAt == 0) stakingTokensSet.add(pool.stakingToken)
+    }
+
+    const tokens = Array.from(stakingTokensSet)
+    if (tokens.length === 0) continue
+    await sumTokens2({ api, owner: stakingContract, tokens, permitFailure: true })
   }
-
-  const tokens = Array.from(stakingTokensSet);
-  if (tokens.length === 0) return;
-  await sumTokens2({ api, owner: stakingContract, tokens, permitFailure: true })
   return api.getBalances()
 }
 

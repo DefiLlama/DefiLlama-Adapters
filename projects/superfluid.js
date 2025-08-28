@@ -1,3 +1,4 @@
+const ADDRESSES = require('helper/coreAssets.json')
 const { getBlock, blockQuery } = require("./helper/http");
 
 const supertokensQuery = ({ first = 1000, id_gt = "" } = {}) => `
@@ -131,7 +132,7 @@ async function getChainBalances(allTokens, chain, block, isVesting, api) {
 
     if (isNativeAssetSuperToken) {
       // For native asset SuperTokens (like ETHx), use the chain's native token
-      api.add('0x0000000000000000000000000000000000000000', totalSupply);
+      api.add(ADDRESSES.null, totalSupply);
       continue;
     }
 
