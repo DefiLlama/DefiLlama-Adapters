@@ -38,7 +38,7 @@ const config = {
   },
   polygon: {
     morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
-    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd"],
+    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719"],
     fromBlock: 66931042,
   },
   scroll: {
