@@ -1,29 +1,160 @@
-const { getProvider,} = require('./helper/solana')
-const sdk = require('@defillama/sdk')
-const { PublicKey } = require('@solana/web3.js')
-const { Program } = require("@coral-xyz/anchor");
+const { getProvider, sumTokens2 } = require("./helper/solana");
+const { Program } = require("@project-serum/anchor");
 
-const DEFITUNA_CLMM_PROGRAM_ID = "tuna4uSQZncNeeiAMKbstuxA9CUkHH6HmC64wgmnogD";
-
-async function tvl() {
-  const balances = {}
-  const defiTunaProgramId = new PublicKey(DEFITUNA_CLMM_PROGRAM_ID)
-  const provider = getProvider()
-
-  const defiTunaIDL = await Program.fetchIdl(defiTunaProgramId, provider)
-  const defiTunaProgram = new Program(defiTunaIDL, provider)
-  const vaults = await defiTunaProgram.account.vault.all()
-
-  vaults.forEach((data, i) => {
-    const lpMint = data.account.mint.toString()
-    sdk.util.sumSingleBalance(balances, lpMint, data.account.depositedFunds, 'solana')
-  })
-  return balances
+async function tvl(api) {
+  const provider = getProvider(api.chain);
+  const programId = fusionammIDL.address;
+  const program = new Program(fusionammIDL, programId, provider);
+  const pools = await program.account.fusionPool.all()
+  const tokenAccounts = pools
+    .map(({ account }) => [account.tokenVaultA, account.tokenVaultB])
+    .flat();
+  return sumTokens2({ tokenAccounts, api });
 }
 
 module.exports = {
-  doublecounted: false,
   timetravel: false,
-  methodology: 'TVL consists of LP token deposits made to DefiTuna, a decentralized platform offering concentrated liquidity market making (CLMM) with leveraged positions. The platform enables users to open leveraged positions on liquid trading pairs. TVL is calculated by summing the total value of LP tokens deposited into DefiTuna vaults on Solana.',
   solana: { tvl },
+  methodology: "The TVL is calculated by aggregating the balances of all token vaults across every DefiTuna DEX pool",
 };
+
+const fusionammIDL = {
+  "address": "fUSioN9YKKSa3CUC2YUc4tPkHJ5Y6XW1yz8y6F7qWz9",
+  "metadata": {
+    "name": "fusionamm",
+    "version": "1.0.10",
+    "spec": "0.1.0"
+  },
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "FusionPool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "version",
+            "type": "u16"
+          },
+          {
+            "name": "token_mint_a",
+            "type": "publicKey"
+          },
+          {
+            "name": "token_mint_b",
+            "type": "publicKey"
+          },
+          {
+            "name": "token_vault_a",
+            "type": "publicKey"
+          },
+          {
+            "name": "token_vault_b",
+            "type": "publicKey"
+          },
+          {
+            "name": "tick_spacing",
+            "type": "u16"
+          },
+          {
+            "name": "tick_spacing_seed",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
+          },
+          {
+            "name": "fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "protocol_fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "clp_reward_rate",
+            "type": "u16"
+          },
+          {
+            "name": "order_protocol_fee_rate",
+            "type": "u16"
+          },
+          {
+            "name": "liquidity",
+            "type": "u128"
+          },
+          {
+            "name": "sqrt_price",
+            "type": "u128"
+          },
+          {
+            "name": "tick_current_index",
+            "type": "i32"
+          },
+          {
+            "name": "protocol_fee_owed_a",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_owed_b",
+            "type": "u64"
+          },
+          {
+            "name": "fee_growth_global_a",
+            "type": "u128"
+          },
+          {
+            "name": "fee_growth_global_b",
+            "type": "u128"
+          },
+          {
+            "name": "orders_total_amount_a",
+            "type": "u64"
+          },
+          {
+            "name": "orders_total_amount_b",
+            "type": "u64"
+          },
+          {
+            "name": "orders_filled_amount_a",
+            "type": "u64"
+          },
+          {
+            "name": "orders_filled_amount_b",
+            "type": "u64"
+          },
+          {
+            "name": "olp_fee_owed_a",
+            "type": "u64"
+          },
+          {
+            "name": "olp_fee_owed_b",
+            "type": "u64"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                140
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "types": []
+}

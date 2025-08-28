@@ -39,6 +39,16 @@ const HWHYPE_VAULT_TOKENS = [
   '0x4DE03cA1F02591B717495cfA19913aD56a2f5858', // hyHYPE (hypurrfi)
   '0x0D745EAA9E70bb8B6e2a0317f85F1d536616bD34', // hHYPE (hyperlend)
 ]
+
+const META_MORPHO_VAULTS = [
+  {
+    wallet: HWHYPE_VAULT,
+    vault: "0x2900ABd73631b2f60747e687095537B673c06A76",
+    underlying: '0x5555555555555555555555555555555555555555',
+    decimals: 18,
+  },
+]
+
 const HYPER_CORE_TOKENS = [
   // {
   //   symbol: "USDC",
@@ -87,6 +97,35 @@ async function mainnetHwhlpVaultTvl(api) {
     chain: 'ethereum',
     tokens: MAINNET_HWLP_VAULT_TOKENS
   })
+}
+
+async function processVaults(api) {
+  const vaults = [...META_MORPHO_VAULTS]
+  const [supplies, rates] = await Promise.all([
+    sdk.api.abi.multiCall({
+      calls: vaults.map(v => ({ target: v.vault, params: [v.wallet]  })),
+      abi: 'erc20:balanceOf',
+      chain: 'hyperliquid'
+    }),
+    sdk.api.abi.multiCall({
+      calls: vaults.map(v => ({ target: v.vault, params: [(10**v.decimals).toString()] })),
+      abi: "function convertToAssets(uint256 shares) view returns (uint256 assets)",
+      chain: 'hyperliquid'
+    }),
+  ]);
+
+  supplies.output.forEach((data, i) => {
+    const vault = data.input.target;
+    const decimals = vaults[i].decimals;
+    const decimalScaling = 10 ** decimals;
+    const underlying = vaults[i].underlying;
+    const amount = data.output;
+    const rate = rates.output[i].output;
+    const correctedAmount = (amount / decimalScaling)*(rate / decimalScaling)*decimalScaling;
+    api.add(underlying, correctedAmount);
+  });
+
+  return sumUnknownTokens({ api, useDefaultCoreAssets: true})
 }
 
 const delay = () => new Promise(res => setTimeout(res, DELAY));
@@ -143,6 +182,7 @@ module.exports = {
   hyperliquid: { tvl: sdk.util.sumChainTvls([
     hwhlpVaultTvl, 
     hyperCoreSpotBalance,
-    hwhypeVaultTvl
+    hwhypeVaultTvl,
+    processVaults
   ])},
 }

@@ -1,4 +1,5 @@
 let coreAssets = require('./coreAssets.json')
+const { svmChains } = require('./svmChainConfig')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
 
@@ -21,7 +22,7 @@ const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 's
   'kopi', 'elys', "pryzm", "mantra", 'agoric', 'band',
   'celestia', 'dydx', 'carbon', 'milkyway', 'regen', 'sommelier', 'stride', 'prom', 'babylon', 'xion'
 ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'soon', 'soon_base', 'soon_bsc', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
+const caseSensitiveChains = [...ibcChains, ...svmChains, 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', 'massa',
   'eclipse', 'acala', 'aelf', 'aeternity', 'alephium', 'bifrost', 'bittensor', 'verus',
 ]
 
@@ -66,6 +67,7 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
   },
   soon_bsc: {
+    [ADDRESSES.soon_bsc.BNB]: { coingeckoId: "binancecoin", decimals: 9 },
     [ADDRESSES.soon_bsc.USDT]: { coingeckoId: "tether", decimals: 9 },
     [ADDRESSES.soon_bsc.USDC]: { coingeckoId: "usd-coin", decimals: 9 },
     [ADDRESSES.soon_bsc.ETH]: { coingeckoId: "ethereum", decimals: 9 },
@@ -83,6 +85,7 @@ const fixBalancesTokens = {
     [ADDRESSES.soon_bsc.SOON]: { coingeckoId: "soon-2", decimals: 9 },
   },
   soon_base: {
+    [ADDRESSES.soon_base.ETH]: { coingeckoId: "ethereum", decimals: 9 },
     [ADDRESSES.soon_base.USDT]: { coingeckoId: "tether", decimals: 6 },
     [ADDRESSES.soon_base.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
     [ADDRESSES.soon_base.DAI]: { coingeckoId: "dai", decimals: 9 },
@@ -146,6 +149,9 @@ const fixBalancesTokens = {
     '0x3e6f1be54feb9cc37dbfc31a894a8810357c3f9c': { coingeckoId: "spain-national-fan-token", decimals: 18 },
     '0x4270a3d1a61fc6b86ea9e19730e529acee592c3b': { coingeckoId: "brazil-fan-token", decimals: 18 },
     '0x38b0b761c90eaaea748bd3a43199377818d280e6': { coingeckoId: "mclaren-f1-fan-token", decimals: 18 },
+  },
+  idex: {
+    '0xD56768A659D4c7e2a0a18b6D96F1f74Ce3566b97': { coingeckoId: "usd-coin", decimals: 6 },
   }
 }
 

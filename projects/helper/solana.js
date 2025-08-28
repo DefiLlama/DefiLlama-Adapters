@@ -1,6 +1,5 @@
 const ADDRESSES = require('./coreAssets.json')
 const http = require('./http')
-const { getEnv } = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
 const { getUniqueAddresses } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair, StakeProgram, } = require("@solana/web3.js")
@@ -9,6 +8,7 @@ const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk');
+const { endpointMap, endpoint } = require('./svmChainConfig.js')
 
 /** Address of the SPL Token program */
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -33,25 +33,6 @@ const blacklistedTokens_default = [
 let connection = {}
 let provider = {}
 
-const endpoint = (isClient) => {
-  if (isClient) return getEnv('SOLANA_RPC_CLIENT') ?? getEnv('SOLANA_RPC')
-  return getEnv('SOLANA_RPC')
-}
-
-const renecEndpoint = () => getEnv('RENEC_RPC')
-const eclipseEndpoint = () => getEnv('ECLIPSE_RPC')
-const soonEndpoint = () => getEnv('SOON_RPC')
-const soonBaseEndpoint = () => getEnv('SOON_BASE_RPC')
-const soonBscEndpoint = () => getEnv('SOON_BSC_RPC')
-
-const endpointMap = {
-  solana: endpoint,
-  renec: renecEndpoint,
-  eclipse: eclipseEndpoint,
-  soon: soonEndpoint,
-  soon_base: soonBaseEndpoint,
-  soon_bsc: soonBscEndpoint,
-}
 
 function getConnection(chain = 'solana') {
   if (!connection[chain]) connection[chain] = new Connection(endpointMap[chain](true))
