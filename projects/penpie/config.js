@@ -53,4 +53,22 @@ module.exports = {
     vlPNP: "",
     PNP: "",
   },
+  berachain: {
+    masterPenpie: "0x367e7A694B9BE5339Cd861F7ee200cb829CDef96",
+    vePENDLE: "0x6875e4A945E498FE1B90BbB13CFbAF0b68658C9C",
+    mPENDLE: "",
+    PENDLE: "0xFf9c599D51C407A45D631c6e89cB047Efb88AeF6",
+    pendleStaking: "0xC4a65A93dD6CD9717551ebE827E8baEe025d1d7E",
+    vlPNP: "",
+    PNP: "",
+  },
+  hyperliquid: {
+   masterPenpie: "0xb664342D02A71cc16e7f88dc5711fF6cC28512E7",
+    vePENDLE: "0x1fBaCedf510dAA79dfD9B41227A7ba192d5D548D",
+    mPENDLE: "",
+    PENDLE: "0xD6Eb81136884713E843936843E286FD2a85A205A",
+    pendleStaking: "0xDAe38aE946F95206d9b687d7d53b2856379A21c0",
+    vlPNP: "",
+    PNP: "",
+  }
 };
