@@ -40,6 +40,6 @@ module.exports = {
     borrowed: borrowed,
   },
   hallmarks: [
-    [Math.floor(new Date('2025-05-07')/1e3), 'AlphaLend Launched'],
+    ['2025-05-07', 'AlphaLend Launched'],
   ],
 };

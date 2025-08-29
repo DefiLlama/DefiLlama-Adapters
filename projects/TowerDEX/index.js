@@ -8,10 +8,10 @@ const deadPools = [
 ]
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
+  timetravel: false,
+  misrepresentedTokens: true,
   methodology: "Liquidity on the Tower DEX",
   babylon: {
-    tvl: getFactoryTvl("bbn1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrs3tkuvr", deadPools)
+    tvl: getFactoryTvl("bbn1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrs3tkuvr", { blacklistedPairs: deadPools }),
   },
 }

@@ -36,7 +36,7 @@ async function getCache(project, chain, { _ } = {}) {
   }
 }
 
-async function setCache(project, chain, cache) {
+async function setCache(project, chain, cache, { _ } = {}) {
   const Key = getKey(project, chain)
 
   try {
