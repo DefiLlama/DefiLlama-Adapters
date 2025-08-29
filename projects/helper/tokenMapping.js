@@ -69,6 +69,7 @@ const fixBalancesTokens = {
     [ADDRESSES.camp.WCAMP]: { coingeckoId: "wcamp", decimals: 18 },
     [ADDRESSES.camp.ETH]: { coingeckoId: "campETH", decimals: 18 },
     [ADDRESSES.camp.USDC]: { coingeckoId: "USDC.c", decimals: 6 },
+    [ADDRESSES.camp.campUSD]: { coingeckoId: "campUSD", decimals: 6 },
   },
   tac: {
     [ADDRESSES.null]: { coingeckoId: "tac", decimals: 18 },
