@@ -11,7 +11,9 @@ const abi = {
 const config = {
    plume: { pool: '0x8bd47bC14f38840820d1DC7eD5Eb57b85d2c7808', deprecated: true },
   plume_mainnet: { pool: '0x3AF7D19aAeCf142C91FF1A8575A316807a0f611A' },
-  ethereum: { pool: '0xf0523452484491515686936bEb976B41a45fD3a9', isStakingPool: true }
+  ethereum: { pool: '0xf0523452484491515686936bEb976B41a45fD3a9', isStakingPool: true },
+  arbitrum: {pool: '0x0a01b006c471032b3ec816ede297c05c4459d6c7'},
+  base: {pool: '0xD2E1d1bBbC963DE56F27C4c078f9622F7a723601'}
   
 }
 
