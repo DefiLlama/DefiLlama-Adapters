@@ -76,6 +76,12 @@ async function tvl(api) {
     if (!tick) return;
     addUniV3LikePosition({ api, token0, token1, tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
   })
+
+  const usdValue = await api.getUSDValue()
+  if (usdValue < 0) {
+    api.log(`Panoptic: skipping negative USD value: $${usdValue}`)
+    return {}
+  }
 }
 
 module.exports = {
