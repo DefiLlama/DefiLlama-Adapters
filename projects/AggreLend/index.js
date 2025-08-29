@@ -15,7 +15,7 @@ const tvl = async (api) => {
 }
 
 module.exports = {
-  methodology: 'Sum of all tokens deposited into the AggreLend protocol for yield aggregation.',
+  methodology: 'Sum of all assets deposited into the AggreLend protocol for yield aggregation.',
   doublecounted: true,
   timetravel: false,
   solana: { tvl },
