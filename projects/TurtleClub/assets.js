@@ -96,6 +96,8 @@ const tokens = {
         WBTC: '0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4',
         FOXY: '0x5FBDF89403270a1846F5ae7D113A989F850d1566',
         CROAK: '0xaCb54d07cA167934F57F829BeE2cC665e1A5ebEF',
+        REX33: '0xe4eeb461ad1e4ef8b8ef71a33694ccd84af051c4',
+        xREX: '0xc93b315971a4f260875103f5da84cb1e30f366cc',
         z0weETH: '0x77E305B4D4D3b9DA4e82Cefd564F5b948366A44b', // TODO all ZeroLend not priced properly
         z0WETH: '0xB4FFEf15daf4C02787bC5332580b838cE39805f5',
         z0ezETH: '0x0684FC172a0B8e6A65cF4684eDb2082272fe9050',
@@ -137,7 +139,16 @@ const tokens = {
     }
 };
 
-const exceptions = {
+const tokenMapping = {
+    linea: {
+        [tokens.linea.xREX]: {
+            coingeckoId: 'etherex',
+            decimals: 18,
+        },
+    },
+}
+
+const tokenMappingERC20 = {
     ethereum: [
         { token: tokens.ethereum.rEUL, use: tokens.ethereum.EUL },
         { token: tokens.ethereum.ezREZ, use: tokens.ethereum.REZ }, // TODO ezREZ not priced properly
@@ -146,6 +157,8 @@ const exceptions = {
     ],
     linea: [
         { token: tokens.linea.oLYNX, use: tokens.linea.LYNX },
+        { token: tokens.linea.xREX, coingeckoId: "etherex", decimals: 18 },
+        { token: tokens.linea.REX33, coingeckoId: "etherex", decimals: 18 },
         // { token: tokens.linea.z0WETH, use: tokens.linea.ETH },
         // { token: tokens.linea.z0ezETH, use: tokens.linea.ETH },
         // { token: tokens.linea.z0rsETH, use: tokens.linea.ETH },
@@ -190,13 +203,18 @@ const vaultContracts = [
     '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', // tacETH
     '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', // tacBTC
     '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', // tacUSD
+    '0xbca723C30d55F0915e32019a95AA29ea21fd555C', // Lagoon WETH
+    '0x423b469268b15821107C38d1E1f702877219bc52', // Lagoon WBTC
+    '0xd56031b6E6860Bd41dCe2729D1beD21c387B26ce', // Lagoon USDC
+    '0xE0dfbE4748eD96350754f1328679bd9647bf9621', // Lagoon USDT
 ];
 
 module.exports = {
     defaultTokens,
     tokens,
     treasuryMultisigs,
-    exceptions,
+    tokenMapping,
+    tokenMappingERC20,
     treasuryNFTs,
     vaultContracts,
 };
