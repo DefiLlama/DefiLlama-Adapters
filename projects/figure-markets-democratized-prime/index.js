@@ -1,6 +1,5 @@
-const { get } = require("../helper/http")
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { endPoints: { provenance } } = require('../helper/chain/cosmos.js');
+const { queryV1Beta1 } = require('../helper/chain/cosmos.js');
 
 // node test.js projects/figure-markets-democratized-prime/index.js
 
@@ -15,14 +14,13 @@ const demoPrimePools = [
     "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n",
 ]
 
-// Endpoint to retrieve the pool details
-const recordsEndpoint = (contractId) => 
-    `${provenance}/provenance/metadata/v1/scope/${contractId}/record/pool-details`
-
 const getBalances = async () => {
     const balances = {}
     await Promise.all(demoPrimePools.map(async pool => {
-        const poolHash = (await get(recordsEndpoint(pool))).records[0]?.record?.outputs[0]?.hash
+        const poolHash = (await queryV1Beta1({
+            chain: 'provenance',
+            url: `metadata/v1/scope/${pool}/record/pool-details`
+        })).records[0]?.record?.outputs[0]?.hash
         if (poolHash) {
             const poolInfo = JSON.parse(poolHash)
             let asset = poolInfo.leveragePool.asset
