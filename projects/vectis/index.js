@@ -1,7 +1,10 @@
-const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey } = require("./spotMarkets");
+const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey, DRIFT_VAULT_PROGRAM_ID, VOLTR_PROGRAM_ID } = require("./spotMarkets");
 const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses} = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
-const { getMultipleAccounts} = require('../helper/solana')
+const { getMultipleAccounts, getProvider} = require('../helper/solana');
+const { Program } = require("@coral-xyz/anchor");
+const voltrIdl = require("./voltr-idl");
+const { PublicKey } = require("@solana/web3.js");
 
 
 
@@ -33,8 +36,10 @@ const { getMultipleAccounts} = require('../helper/solana')
 async function tvl(api) {
 
   const vaultAddresses = await fetchVaultAddresses();
+  const driftVaultAddresses = vaultAddresses.filter(vault => vault.programId === DRIFT_VAULT_PROGRAM_ID.toBase58());
+  const voltrVaultAddresses = vaultAddresses.filter(vault => vault.programId === VOLTR_PROGRAM_ID.toBase58());
 
-  const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(vaultAddresses, 168);
+  const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
 
   // Get all vault accounts first
   const accounts = await getMultipleAccounts(vaultUserAddresses)
@@ -97,4 +102,16 @@ async function tvl(api) {
       })
     }
   }
+
+  // Voltr vaults
+  const provider = getProvider();
+  const voltrProgram = new Program(voltrIdl, provider);
+  const voltrVaults = await voltrProgram.account.vault.fetchMultiple(voltrVaultAddresses.map(vault => new PublicKey(vault.address)));
+
+  voltrVaults.forEach(vault => {
+    const mint = vault.asset.mint.toBase58();
+    const balance = vault.asset.totalValue;
+    api.add(mint, balance)
+  })
+
 }

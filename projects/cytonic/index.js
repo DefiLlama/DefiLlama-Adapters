@@ -63,7 +63,7 @@ module.exports = {
         ADDRESSES.ethereum.USDT, // USDT
         ADDRESSES.ethereum.USDC, // USDC
         ADDRESSES.ethereum.DAI, // DAI
-        '0xbf5495Efe5DB9ce00f80364C8B423567e58d2110', // ezETH
+        ADDRESSES.linea.rzETH, // ezETH
         ADDRESSES.ethereum.USDe, // Ethena USD
       ],
     }),

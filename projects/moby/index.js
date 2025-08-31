@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
   hallmarks: [
-    [1736294400,"Private-key Leak Exploit"],
+    // [1736294400,"Private-key Leak Exploit"],
     [1737072000,"Moby Restored"]
   ],
   arbitrum: {
