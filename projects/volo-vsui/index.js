@@ -66,5 +66,6 @@ module.exports = {
     sui: {
         tvl: tvl,
     },
+    tvl: tvl,
 }
 
