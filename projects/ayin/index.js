@@ -1,54 +1,96 @@
 const alephium = require('../helper/chain/alephium')
 
-const Addresses = {
-  alphAyinPool: '25ywM8iGxKpZWuGA5z6DXKGcZCXtPBmnbQyJEsjvjjWTy',
-  alphUsdtPool: '2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX',
-  alphUsdcPool: '283R192Z8n6PhXSpSciyvCsLEiiEVFkSE6MbRBA4KSaAj',
-  alphWethPool: 'yXMFxdoKcE86W9NAyajc8Z3T3k2f5FGiHqHtuA69DYT1',
-  alphWbtcPool: '28XY326TxvSekaAwiWDLFg2QBRfacSga8dyNJCYGUYNbq',
-  alphApadPool: 'vFpZ1DF93x1xGHoXM8rsDBFjpcoSsCi5ZEuA5NG5UJGX',
-  alphChengPool: '25b5aNfdrNRjJ7ugPTkxThT51L1NSvf8igQyDHKZhweiK',
-  alphAnsdPool: 'uM4QJwHqFoTF2Pou8TqwhaDiHYLk4SHG65uaQG8r7KkT',
-  alphAlphagaPool: '23cXw23ZjRqKc7i185ZoH8vh9KT4XTumVRWpVLUecgLMd',
-  ayinUsdtPool: '21NEBCk8nj5JBKpS7eN8kX6xGJoLHNqTS3WBFnZ7q8L9m',
-  ayinUsdcPool: '2961aauvprhETv6TXGQRc3zZY4FbLnqKon2a4wK6ABH9q',
-  ayinApadPool: '247rZysrruj8pj2GnFyK2bqB2nU4JsUj7k2idksAp4XMy',
-  usdtUsdcPool: '27C75V9K5o9CkkGTMDQZ3x2eP82xnacraEqTYXA35Xuw5',
-}
+// Pool addresses - TODO: Could be made dynamic by querying factory contract
+const poolAddresses = [
+  '25ywM8iGxKpZWuGA5z6DXKGcZCXtPBmnbQyJEsjvjjWTy', // alphAyinPool
+  '2A5R8KZQ3rhKYrW7bAS4JTjY9FCFLJg6HjQpqSFZBqACX', // alphUsdtPool
+  '283R192Z8n6PhXSpSciyvCsLEiiEVFkSE6MbRBA4KSaAj', // alphUsdcPool
+  'yXMFxdoKcE86W9NAyajc8Z3T3k2f5FGiHqHtuA69DYT1',  // alphWethPool
+  '28XY326TxvSekaAwiWDLFg2QBRfacSga8dyNJCYGUYNbq', // alphWbtcPool
+  'vFpZ1DF93x1xGHoXM8rsDBFjpcoSsCi5ZEuA5NG5UJGX',  // alphApadPool
+  '25b5aNfdrNRjJ7ugPTkxThT51L1NSvf8igQyDHKZhweiK', // alphChengPool
+  'uM4QJwHqFoTF2Pou8TqwhaDiHYLk4SHG65uaQG8r7KkT',  // alphAnsdPool
+  '23cXw23ZjRqKc7i185ZoH8vh9KT4XTumVRWpVLUecgLMd', // alphAlphagaPool
+  '21NEBCk8nj5JBKpS7eN8kX6xGJoLHNqTS3WBFnZ7q8L9m', // ayinUsdtPool
+  '2961aauvprhETv6TXGQRc3zZY4FbLnqKon2a4wK6ABH9q', // ayinUsdcPool
+  '247rZysrruj8pj2GnFyK2bqB2nU4JsUj7k2idksAp4XMy', // ayinApadPool
+  '27C75V9K5o9CkkGTMDQZ3x2eP82xnacraEqTYXA35Xuw5', // usdtUsdcPool
+]
+
+// Tokens that have market prices available
+const knownTokens = new Set([
+  '556d9582463fe44fbd108aedc9f409f69086dc78d994b88ea6c9e65f8bf98e00', // USDTeth
+  '722954d9067c5a5ad532746a024f2a9d7a18ed9b90e27d0a3a504962160b5600', // USDCeth
+  '19246e8c2899bc258a1156e08466e3cdd3323da756d8a543c7fc911847b96f00', // WETH
+  '383bc735a4de6722af80546ec9eeb3cff508f2f68e97da19489ce69f3e703200', // WBTC
+])
+
 const alephId = '0000000000000000000000000000000000000000000000000000000000000000'
+const xAyinAddress = 'zst5zMzizEeFYFis6DNSknY5GCYTpM85D3yXeRLe2ug3'
 
-const XAyinAddress = 'zst5zMzizEeFYFis6DNSknY5GCYTpM85D3yXeRLe2ug3'
+function isValidToken(balance) {
+  return balance < 1e70 && balance > 1e6 // Filter out LP tokens and dust
+}
 
-async function ayinTvlForXAyin() {
+async function getStakingValue() {
   const results = await alephium.contractMultiCall([
-    { group: 0, address: XAyinAddress, methodIndex: 3 },
-    { group: 0, address: XAyinAddress, methodIndex: 11 }
+    { group: 0, address: xAyinAddress, methodIndex: 3 }, // totalSupply
+    { group: 0, address: xAyinAddress, methodIndex: 11 } // currentPrice
   ])
-
-  const totalSupply = results[0].returns[0].value
-  const currentPrice = results[1].returns[0].value
-  return (Number(totalSupply) / 1e18) * (Number(currentPrice) / 1e18)
+  
+  const totalSupply = Number(results[0].returns[0].value) / 1e18
+  const currentPrice = Number(results[1].returns[0].value) / 1e18
+  return totalSupply * currentPrice
 }
 
 async function tvl(api) {
-  const alphTvls = await Promise.all([
-    Addresses.alphAyinPool, Addresses.alphUsdtPool, Addresses.alphUsdcPool, Addresses.alphWethPool, Addresses.alphApadPool, Addresses.alphChengPool, Addresses.alphAnsdPool, Addresses.alphAlphagaPool
-  ].map(poolAddress => alephium.getAlphBalance(poolAddress)))
-  const alphTvl = alphTvls.reduce((tvl, res) => tvl + Number(res.balance), 0)
-  api.add(alephId, alphTvl)
-  const tokensTvls = await Promise.all(Object.values(Addresses).map(poolAddress => alephium.getTokensBalance(poolAddress)))
-  tokensTvls.forEach((tokenTvls) => {
-    tokenTvls.forEach(tokenTvl => {
-      api.add(tokenTvl.tokenId, tokenTvl.balance)
-    });
+  // Get balances from all pools
+  const [alphBalances, tokenBalances] = await Promise.all([
+    Promise.all(poolAddresses.map(addr => alephium.getAlphBalance(addr))),
+    Promise.all(poolAddresses.map(addr => alephium.getTokensBalance(addr)))
+  ])
+  
+  // Add all ALPH reserves
+  const totalAlph = alphBalances.reduce((sum, { balance }) => sum + Number(balance), 0)
+  api.add(alephId, totalAlph)
+  
+  // Calculate prices for unknown tokens using ALPH pairs
+  const tokenPrices = new Map()
+  
+  poolAddresses.forEach((poolAddr, i) => {
+    const alphBalance = Number(alphBalances[i].balance)
+    const tokens = tokenBalances[i]
+    
+    // Only use pools with significant ALPH for price calculation
+    if (alphBalance > 1e18) {
+      tokens.forEach(({ tokenId, balance }) => {
+        const tokenBalance = Number(balance)
+        if (isValidToken(tokenBalance) && !knownTokens.has(tokenId)) {
+          // Store ALPH equivalent value for this token type
+          if (!tokenPrices.has(tokenId)) {
+            tokenPrices.set(tokenId, { alphPerToken: alphBalance / tokenBalance })
+          }
+        }
+      })
+    }
+  })
+  
+  // Add all valid tokens
+  tokenBalances.flat().forEach(({ tokenId, balance }) => {
+    const tokenBalance = Number(balance)
+    if (isValidToken(tokenBalance)) {
+      if (knownTokens.has(tokenId)) {
+        api.add(tokenId, tokenBalance) // Let DefiLlama price these
+      } else if (tokenPrices.has(tokenId)) {
+        const { alphPerToken } = tokenPrices.get(tokenId)
+        api.add(alephId, tokenBalance * alphPerToken) // Convert to ALPH equivalent
+      }
+    }
   })
 }
 
 async function staking() {
-  const xAyinTvl = await ayinTvlForXAyin()
-  return {
-    ayin: xAyinTvl,
-  }
+  return { ayin: await getStakingValue() }
 }
 
 module.exports = {
