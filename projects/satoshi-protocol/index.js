@@ -41,7 +41,8 @@ function createExports({
         await addSmartVaultList(api, smartVaultList);
       }
 
-      api.addBalances(sumTokens2({ api, tokensAndOwners, }));
+      const tokenBalances = await sumTokens2({ api, tokensAndOwners, });
+      api.addBalances(tokenBalances);
       return api.getBalances();
     },
   }
