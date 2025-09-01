@@ -7,14 +7,19 @@ const KOM_STAKING_CONTRACT_POLYGON = [
 ];
 const KOM_TOKEN_CONTRACT_ARBITRUM = '0xA58663FAEF461761e44066ea26c1FCddF2927B80';
 const KOM_STAKING_CONTRACT_ARBITRUM = ["0x5b63bdb6051CcB9c387252D8bd2364D7A86eFC70"];
+const KOM_TOKEN_CONTRACT_BSC = '0x3cd886be588685484528cbf6494729922e4e89c6';
+const KOM_STAKING_CONTRACT_BSC = ["0x47fEAab70363fBE9eD3eb5E3037c18361FA7Bb74"];
 
 module.exports = {
     polygon: {
         tvl: () => ({}),
-        staking: stakings(KOM_STAKING_CONTRACT_POLYGON, KOM_TOKEN_CONTRACT_POLYGON)
+        staking: () => ({}), // old KOM token staking contract
     },
     arbitrum: {
         tvl: () => ({}),
-        staking: stakings(KOM_STAKING_CONTRACT_ARBITRUM, KOM_TOKEN_CONTRACT_ARBITRUM)
+        staking: () => ({}), // old KOM token staking contract
     },
+    bsc: {
+        staking: stakings(KOM_STAKING_CONTRACT_BSC, KOM_TOKEN_CONTRACT_BSC)
+    }
 };

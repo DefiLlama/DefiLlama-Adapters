@@ -304,7 +304,7 @@ const HubPools = {
     },
     { // wBTC_sei
       poolAddress: "0x7Cd4afD7F4DB51A0bF06Bf4630752A5B28e0B6C1",
-      tokenAddress: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
+      tokenAddress: ADDRESSES.bsc.WBTC,
       chainPoolAddress: '0x7218Bd1050D41A9ECfc517abdd294FB8116aEe81',
     },
   ]
