@@ -2,8 +2,9 @@ const alephium = require('../helper/chain/alephium')
 const axios = require('axios')
 
 const CL_FACTORY_ADDRESS = 'z73CeQLRpbaQ5gF7bJ1yoYqmmonwC9h9wEwLxGF9EjVy'
+
+const EXPLORER_API_HOST = "https://backend.mainnet.alephium.org"
 const NODE_API_HOST = "https://node.mainnet.alephium.org"
-const BACKEND_API_HOST = "https://backend.mainnet.alephium.org"
 
 // AMM pool addresses
 const poolAddresses = [
@@ -43,7 +44,8 @@ async function fetchSubContracts(address, start = 0, limit = 100) {
         params: { start: start.toString(), limit: limit.toString() }
       })
     } catch {
-      response = await axios.get(`${BACKEND_API_HOST}/contracts/${address}/sub-contracts`, {
+      // Explorer API fallback (standard pattern)
+      response = await axios.get(`${EXPLORER_API_HOST}/contracts/${address}/sub-contracts`, {
         params: { start: start.toString(), limit: limit.toString() }
       })
     }
@@ -74,7 +76,7 @@ async function fetchAllCLPools() {
   return allPools.slice(0, maxPools)
 }
 
-async function calculateCLPoolTVL(poolAddress, api) {
+async function calculateCLPoolTVL(poolAddress, api, tokenPrices = new Map()) {
   try {
     const [alphBalance, tokenBalances] = await Promise.all([
       alephium.getAlphBalance(poolAddress).catch(() => ({ balance: '0' })),
@@ -82,20 +84,28 @@ async function calculateCLPoolTVL(poolAddress, api) {
     ])
     
     let hasValidBalance = false
+    const alphAmount = Number(alphBalance.balance)
     
     // Add ALPH balance
-    const alphAmount = Number(alphBalance.balance)
     if (alphAmount > 1e15) {
       api.add(alephId, alphAmount)
       hasValidBalance = true
     }
     
-    // Add known token balances only
+    // Process tokens
     tokenBalances.forEach(({ tokenId, balance }) => {
       const tokenAmount = Number(balance)
-      if (isValidToken(tokenAmount) && knownTokens.has(tokenId)) {
-        api.add(tokenId, tokenAmount)
-        hasValidBalance = true
+      if (isValidToken(tokenAmount)) {
+        if (knownTokens.has(tokenId)) {
+          // Add known tokens directly
+          api.add(tokenId, tokenAmount)
+          hasValidBalance = true
+        } else if (tokenPrices.has(tokenId)) {
+          // Use AMM-derived prices for unknown tokens
+          const { alphPerToken } = tokenPrices.get(tokenId)
+          api.add(alephId, tokenAmount * alphPerToken)
+          hasValidBalance = true
+        }
       }
     })
     
@@ -105,7 +115,7 @@ async function calculateCLPoolTVL(poolAddress, api) {
   }
 }
 
-async function addCLPoolsTVL(api) {
+async function addCLPoolsTVL(api, tokenPrices = new Map()) {
   const clPools = await fetchAllCLPools()
   if (!clPools?.length) return 0
   
@@ -119,7 +129,7 @@ async function addCLPoolsTVL(api) {
     
     const batch = clPools.slice(i, i + batchSize)
     const results = await Promise.all(
-      batch.map(addr => calculateCLPoolTVL(addr, api).catch(() => 0))
+      batch.map(addr => calculateCLPoolTVL(addr, api, tokenPrices).catch(() => 0))
     )
     
     successCount += results.reduce((sum, result) => sum + result, 0)
@@ -170,6 +180,8 @@ async function processAMMPools(api) {
       }
     }
   })
+  
+  return tokenPrices // Return token prices for use in CL pools
 }
 
 async function getStakingValue() {
@@ -184,8 +196,8 @@ async function getStakingValue() {
 }
 
 async function tvl(api) {
-  await processAMMPools(api)
-  await addCLPoolsTVL(api)
+  const tokenPrices = await processAMMPools(api)
+  await addCLPoolsTVL(api, tokenPrices)
 }
 
 async function tvlV2(api) {
