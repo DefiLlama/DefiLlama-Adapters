@@ -13,8 +13,7 @@ const AssetConfigSettingEventV2ABI = "event AssetConfigSetting(address asset, tu
 
 function createExports({
   troveList,
-  nymList, // { address, fromBlock }[]
-  nymV2List, // { address, fromBlock }[]
+  nymWithAssetList, // { address, assetList }[]
   farmList, // { address, asset }[]
   smartVaultList, // { address, fromBlock }[]
 }) {
@@ -25,12 +24,8 @@ function createExports({
         await addCollateralBalanceFromTrove(api, troveList);
       }
 
-      if (nymList) {
-        await processNymList(api, nymList, tokensAndOwners, 'v1');
-      }
-
-      if (nymV2List) {
-        await processNymList(api, nymV2List, tokensAndOwners, 'v2');
+      if (nymWithAssetList) {
+        processNymWithAssetList(nymWithAssetList, tokensAndOwners);
       }
 
       if (farmList) {
@@ -48,13 +43,9 @@ function createExports({
   }
 }
 
-async function processNymList(api, nymList, tokensAndOwners, version = 'v2') {
-  for (let i = 0; i < nymList.length; i++) {
-    const { address: nymContractAddress, fromBlock } = nymList[i];
-    const logs = version === 'v1'
-     ? await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventV1ABI, onlyArgs: true, skipCache: true })
-     : await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventV2ABI, onlyArgs: true, skipCache: true })
-    const assetList = logs.map(item => item.asset);
+function processNymWithAssetList(nymWithAssetList, tokensAndOwners) {
+  for (let i = 0; i < nymWithAssetList.length; i++) {
+    const { address: nymContractAddress, assetList } = nymWithAssetList[i];
     assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
   }
 }
@@ -134,9 +125,9 @@ module.exports = {
       '0xe7E23aD9c455c2Bcd3f7943437f4dFBe9149c0D2', // BEVM WBTC Collateral(V2)
       '0xD63e204F0aB688403205cFC144CAdfc0D8C68458', // BEVM wstBTC Collateral(V2)
     ],
-    nymList: [{
+    nymWithAssetList: [{
       address: '0xdd0bD4F817bDc108e31EE534931eefc855CAf7Df',
-      fromBlock: 5081750,
+      assetList: [ADDRESSES.bevm.USDT, ],
     }],
     vaultManagerList: [
       {
@@ -151,14 +142,13 @@ module.exports = {
       '0x3DC0565bcA627823828Aa3F2f8d805ec8a16005a', // BITLAYER WBTC Collateral(V2)
       '0x404dCd7E15947D04063B436f71d93E2d79023aa9', // BITLAYER stBTC Collateral(V2)
     ],
-    nymList: [{
+    nymWithAssetList: [{
       address: '0xC562321a494290bE5FeDF9092cee35DE6f884D50',
-      fromBlock: 3442163,
-    }, ],
-    nymV2List: [{
+      assetList: [ADDRESSES.btr.USDT, ADDRESSES.btr.USDC, ],
+    }, {
       address: '0x95E5b977c8c33DE5b3B5D2216F1097C2017Bdf71',
-      fromBlock: 8880614,
-    }, ],
+      assetList: [ADDRESSES.btr.USDT, ADDRESSES.btr.USDC, ],
+    }],
     vaultManagerList: [
       {
         address: '0x32db5c3D64aa7e100B73786000704aee61072981'
@@ -179,13 +169,12 @@ module.exports = {
       '0x1F6eF853341037c5C057101F2E38C15c95130807', // SolvBTC_BBN Collateral(V2)
       '0x4dEA4c11bDd3Ad05063405C7167Fa9B3f95Aea90', // FBTC Collateral(V2)
     ],
-    nymList: [{
+    nymWithAssetList: [{
       address: '0x7253493c3259137431a120752e410b38d0c715C2',
-      fromBlock: 4614620,
-    }],
-    nymV2List: [{
+      assetList: [ADDRESSES.bob.USDT, ADDRESSES.bob.USDC, ],
+    }, {
       address: '0xEC272aF6e65C4D7857091225fa8ED300Df787CCF',
-      fromBlock: 13021825,
+      assetList: [ADDRESSES.bob.USDT, ADDRESSES.bob.USDC, ],
     }],
     aaveStrategyVaults: [
       {
@@ -238,9 +227,9 @@ module.exports = {
         address: '0x03d9C4E4BC5D3678A9076caC50dB0251D8676872'
       },
     ],
-    nymV2List: [{
+    nymWithAssetList: [{
       address: '0x2863E3D0f29E2EEC6adEFC0dF0d3171DaD542c02',
-      fromBlock: 12871190,
+      assetList: [ADDRESSES.bsquared.USDT, ADDRESSES.bsquared.USDC ],
     }],
   }),
   bsc: createExports({
@@ -254,9 +243,9 @@ module.exports = {
         address: '0xc473754a6e35cC4F45316F9faaeF0a3a86D90E4e'
       },
     ],
-    nymV2List: [{
+    nymWithAssetList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
-      fromBlock: 46861855,
+      assetList: [ADDRESSES.bsc.USDT, ADDRESSES.bsc.USDC, ADDRESSES.bsc.DAI, ADDRESSES.bsc.USD1, ADDRESSES.bsc.FDUSD],
     }],
     smartVaultList: [
       {
@@ -278,9 +267,9 @@ module.exports = {
       '0x6d991Eb34321609889812050bC7f4604Eb0bfF26', // enzoBTC Collateral(V2)
       '0xDAc0551246A7F75503e8C908456005E828C35A40', // uBTC Collateral(V2)
     ],
-    nymV2List: [{
+    nymWithAssetList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
-      fromBlock: 1191810,
+      assetList: [ADDRESSES.hemi.USDT, ADDRESSES.hemi.USDC_e, ADDRESSES.hemi.DAI],
     }],
   }),
   base: createExports({
@@ -290,9 +279,9 @@ module.exports = {
       '0x50B02283f3c39A463DF3d84d44d46b5432D7D193', // cbBTC Collateral(V2)
       '0x01DF7D28c51639F2f2F95dcF2FdFF374269327B0', // clBTC Collateral(V2)
     ],
-    nymV2List: [{
+    nymWithAssetList: [{
       address: '0x9a3c724ee9603A7550499bE73DC743B371811dd3',
-      fromBlock: 28842761,
+      assetList: [ADDRESSES.base.USDT, ADDRESSES.base.USDC, ADDRESSES.base.DAI, ],
     }],
     strategyVaultsV2: [
       {
@@ -312,9 +301,9 @@ module.exports = {
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
       '0xa7B54413129441e872F42C1c4fE7D1984332CA87', // clBTC Collateral(V2)
     ],
-    nymV2List: [{
+    nymWithAssetList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
-      fromBlock: 330837414,
+      assetList: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDe, ADDRESSES.arbitrum.sUSDe, ADDRESSES.arbitrum.DAI],
     }],
   }),
   sonic: createExports({
@@ -322,9 +311,9 @@ module.exports = {
       '0xb655775C4C7C6e0C2002935133c950FB89974928', // WETH Collateral(V2)
       '0x5EA26D0A1a9aa6731F9BFB93fCd654cd1C3079Ec', // WBTC Collateral(V2)
     ],
-    nymV2List: [{
+    nymWithAssetList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
-      fromBlock: 33129825,
+      assetList: [ADDRESSES.sonic.USDT, ADDRESSES.sonic.USDC_e],
     }],
   }),
   xlayer: createExports({
@@ -334,13 +323,13 @@ module.exports = {
       '0xbe223F331f05a8cf18F98675033FEFD6b23c7176', // WETH Collateral(V2)
       '0xd19BC6B110896d136D9456E8fD45C71C8d8C5abB', // WBTC Collateral(V2)
     ],
-    nymV2List: [{
-      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
-      fromBlock: 20436365,
+    nymWithAssetList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
     }, {
       address: '0xB4d4793a1CD57b6EceBADf6FcbE5aEd03e8e93eC',
-      fromBlock: 32838540,
-    }, ]
+      assetList: [ADDRESSES.xlayer.USDT, ADDRESSES.xlayer.USDC],
+    }],
   }),
   ethereum: createExports({
     troveList: [
@@ -353,12 +342,12 @@ module.exports = {
       '0x43891fa695f17E47C9b2A0DFD9fb48147d331934', // uniBTC Collateral(V2)
       '0x9644652540f78f9e27899a655067f205f9454a4a', // LBTC Collateral(V2)
     ],
-    nymV2List: [{
-      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec', // deprecated
-      fromBlock: 23017053,
+    nymWithAssetList: [{
+      address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
+      assetList: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
     }, {
       address: '0xb8374e4DfF99202292da2FE34425e1dE665b67E6',
-      fromBlock: 23180734,
+      assetList: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
     }],
     smartVaultList: [
       {
