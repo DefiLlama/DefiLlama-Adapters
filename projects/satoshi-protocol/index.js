@@ -2,6 +2,8 @@ const { BigNumber } = require("bignumber.js");
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getLogs } = require("../helper/cache/getLogs");
+const { sumTokensExport } = require('../helper/sumTokens.js')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 const AssetConfigSettingEventABI = "event AssetConfigSetting(address asset,uint256 feeIn,uint256 feeOut,uint256 debtTokenMintCap,uint256 dailyMintCap,address oracle,bool isUsingOracle,uint256 swapWaitingPeriod,uint256 maxPrice,uint256 minPrice)";
 const VaultTokenStrategySetEventABI = "event TokenStrategySet(address token, address strategy)";
 const GetEntireSystemCollABI = 'uint256:getEntireSystemColl';
@@ -203,7 +205,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0xd62E2F6b6616271001DCd0988AD2D73DEeE1b491',
-        asset: '0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894', // uniBTC
+        asset: ADDRESSES.bob.uniBTC, // uniBTC
       },
     ]
   }),
@@ -244,6 +246,10 @@ module.exports = {
     smartVaultList: [
       {
         smartVaultAddress: '0x30349Af0cDcC2a93Ea4101953101BC0DEc43c53E',
+        asset: '0x623F2774d9f27B59bc6b954544487532CE79d9DF', // bfBTC
+      },
+      {
+        smartVaultAddress: '0x8f10C801B62Ae0b67B87B56a5f8ce05437ba6b7f',
         asset: '0x623F2774d9f27B59bc6b954544487532CE79d9DF', // bfBTC
       },
     ],
@@ -332,6 +338,15 @@ module.exports = {
       address: '0xb8374e4DfF99202292da2FE34425e1dE665b67E6',
       fromBlock: 23180734,
     }],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0xDd7eCb0dc1686020A8a23EE55126D7596a2eA03b',
+        asset: '0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568', // uniBTC
+      },
+    ],
   }),
+  bitcoin: {
+    tvl: sumTokensExport({ owners: bitcoinAddressBook.river }),
+  },
 }
 

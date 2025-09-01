@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport, getCuratorTvl } = require("../helper/curators");
 const { ABI } = require("../helper/curators/configs");
 
@@ -5,13 +6,14 @@ const { ABI } = require("../helper/curators/configs");
 // HYPERBEAT MAPPINGS CONFIGURATION
 // ==============================================
 const HYPERBEAT_MAPPINGS = [
-  { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
+  { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
   { vault: '0x441794d6a8f9a3739f5d4e98a728937b33489d29', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
-  { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat lstHYPE -> WHYPE
+  { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat lstHYPE -> WHYPE
   { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
   { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
-  { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat WHYPE -> WHYPE
-  { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
+  { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat WHYPE -> WHYPE
+  { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
 ];
 
 // ==============================================
@@ -203,11 +205,19 @@ const configs = {
     unichain: {
       morpho: [
         '0xc063181747e56c034ac14dc82db663409566fdf6', // MEV Capital USDC (Unichain)
+        '0x3f93576d13091bfbf6825f7421ef33cc353dc433' // Morpho WETH Unichain Cluster
       ]
     },
     plume: {
       morpho: [
         '0x0b14d0bdaf647c541d3887c5b1a4bd64068fcda7', // Mystic pUSD MEV Capital
+      ]
+    },
+    arbitrum: {
+      morpho: [
+          '0xa60643c90a542a95026c0f1dbdb0615ff42019cf', // Morpho USDC Cluster
+          '0x9B33073eB98A9a1eb408DedcD08616fE850b3f09', // Morpho WETH Cluster
+          '0x6d57dAd0F1c4da0C1d5443AE8F7f8a50BDb9Cf75'  // Morpho USDT0 Cluster
       ]
     },
     // solana: {
@@ -261,7 +271,8 @@ const configs = {
         '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', // Hyperbeat USR (price not in the api yet)
         '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
         '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Hyperbeat WHYPE (price not in the api yet)
-        '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8' // Hyperbeat USDT0 (price not in the api yet)
+        '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
+        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29'
       ]
     },
     sonic: {
