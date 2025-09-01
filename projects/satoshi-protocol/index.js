@@ -53,7 +53,7 @@ async function processNymList(api, nymList, tokensAndOwners, version = 'v2') {
     const logs = 
      version === 'v1'
      ? await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventV1ABI, onlyArgs: true })
-     : await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventV2ABI, onlyArgs: true, skipCache: true })
+     : await getLogs({ api, target: nymContractAddress, fromBlock, eventAbi: AssetConfigSettingEventV2ABI, onlyArgs: true })
     const assetList = logs.map(item => item.asset);
     assetList.forEach(asset => tokensAndOwners.push([asset, nymContractAddress]));
   }
