@@ -1,5 +1,6 @@
 const sui = require('../helper/chain/sui')
 const axios = require("axios");
+const ADDRESSES = require('../helper/coreAssets.json');
 
 const naviApiURL = 'https://open-api.naviprotocol.io';
 
@@ -18,54 +19,48 @@ async function liquidStakingTVL() {
 
     const totalStakedSui = totalStakedValue + totalPendingRewards - unstakeTicketsSupply;
 
-    return totalStakedSui / 1e9;
+    return totalStakedSui;
 }
 
 async function getVaultTVL() {
-    try {
-        const response = await axios.get(`${naviApiURL}/api/volo/volo-vaults?type=tvl`);
-        
-        if (response.data && response.data.code === 0 && response.data.data) {
-            return response.data.data;
-        } else {
-            console.error('Invalid response format from NAVI API:', response.data);
-            return {};
-        }
-    } catch (error) {
-        console.error('Error fetching vault TVL from NAVI API:', error.message);
-        return {};
+    const response = await axios.get(`${naviApiURL}/api/volo/volo-vaults?type=tvl`);
+    
+    if (response.data && response.data.code === 0 && response.data.data) {
+        return response.data.data;
     }
+    
+    return {};
 }
 
 async function tvl(api) {
     const lstTVL = await liquidStakingTVL();
-    api.add('0x2::sui::SUI', lstTVL);
+    api.add(ADDRESSES.sui.SUI, lstTVL);
 
     const vaultData = await getVaultTVL();
     
-    for (const [vaultAddress, tvlValue] of Object.entries(vaultData)) {
+    for (const [tokenAddress, tvlValue] of Object.entries(vaultData)) {
         if (tvlValue && tvlValue > 0) {
-            const coinType = extractCoinType(vaultAddress);
-            if (coinType) {
-                api.add(coinType, tvlValue);
+            let adjustedValue = tvlValue;
+            
+            if (tokenAddress.includes('usdc::USDC')) {
+                adjustedValue = tvlValue * 1e6; 
+            } else if (tokenAddress.includes('xbtc::XBTC')) {
+                adjustedValue = tvlValue * 1e8; 
+            } else if (tokenAddress.includes('btc::BTC')) {
+                adjustedValue = tvlValue * 1e8; 
             }
+            
+            api.add(tokenAddress, adjustedValue);
         }
     }
 }
 
-function extractCoinType(vaultAddress) {
-    const parts = vaultAddress.split('::');
-    if (parts.length >= 3) {
-        return vaultAddress;
-    }
-    return null;
-}
+
 
 module.exports = {
     methodology: "Calculates the amount of SUI staked in Volo liquid staking contracts and tokens in Volo vaults. TVL includes LST (Liquid Staking) and all vault types combined.",
     sui: {
-        tvl: tvl,
-    },
-    tvl: tvl,
+        tvl: tvl
+    }
 }
 
