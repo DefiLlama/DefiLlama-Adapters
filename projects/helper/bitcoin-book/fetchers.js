@@ -215,4 +215,22 @@ module.exports = {
     const res = await getConfig('solv-protocol/solv-btc-non-lst', API_URL)
     return res.bitcoin
   },
+
+  btnx: async () => {
+    const staticAddresses = await getConfig('btnx', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://sidecar.botanixlabs.com/api/addressList', {
+        })
+        return data.map(address => address)
+      }
+    })
+   
+    return Array.from(new Set(staticAddresses))
+  },
+  zeusZBTC: async () => {
+    const API_URL = 'https://indexer.zeuslayer.io/api/v2/chainlink/proof-of-reserves'
+    const data = await getConfig('zeus/zbtc', API_URL)
+    const list = data.result.map(item => item.address)
+    return list
+  },
 }
