@@ -1,4 +1,4 @@
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { sumTokens2 } = require('../helper/unwrapLPs.js');
 const { queryV1Beta1 } = require('../helper/chain/cosmos.js');
 
 const figureContract = 'scope1qrm5d0wjzamyywvjuws6774ljmrqu8kh9x'
