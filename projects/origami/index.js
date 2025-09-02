@@ -91,6 +91,17 @@ async function processBalanceSheetVaults(api, vaults) {
   })
 }
 
+async function processAutoStakingVaults(api, vaults) {
+  const [stakingToken, totalSupply] = await Promise.all([
+    api.multiCall({ abi: 'function stakingToken() external view returns (address)', calls: vaults, permitFailure: false }),
+    api.multiCall({ abi: 'function totalSupply() external view returns (uint256)', calls: vaults, permitFailure: false })
+  ])
+
+  vaults.forEach((_vault, i) => {
+    api.addToken(stakingToken[i], totalSupply[i])
+  })
+}
+
 async function tvl(api) {
   const { vaults } = await cachedGraphQuery('origami/' + api.chain, GRAPH_URLS[api.chain], '{ vaults { id vaultKinds } }')
 
@@ -98,6 +109,7 @@ async function tvl(api) {
   await processRepricingVaults(api, vaultsOfKind(vaults, 'REPRICING'))
   await processErc4626Vaults(api, vaultsOfKind(vaults, 'ERC4626'))
   await processBalanceSheetVaults(api, vaultsOfKind(vaults, 'BALANCE_SHEET'))
+  await processAutoStakingVaults(api, vaultsOfKind(vaults, 'AUTO_STAKING'))
 }
 
 async function borrowedLeveragedVaults(api, leveragedVaults) {

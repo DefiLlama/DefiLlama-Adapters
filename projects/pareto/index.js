@@ -2,15 +2,20 @@ const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const BigNumber = require("bignumber.js");
 const ADDRESSES = require('../helper/coreAssets.json')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const contracts = {
   ethereum: {
     usp: '0x97cCC1C046d067ab945d3CF3CC6920D3b1E54c88', // USP
+    factory: {
+      block: 22938055,
+      address: '0x59aabdad8fdabd227cc71543b128765f93906626',
+    },
     credits: [
       "0xf6223C567F21E33e859ED7A045773526E9E3c2D5", // Fasanara Yield vault,
       "0x4462eD748B8F7985A4aC6b538Dfc105Fce2dD165", // Bastion 
       "0x14B8E918848349D1e71e806a52c13D4e0d3246E0", // Adaptive Frontier
-      "0x433D5B175148dA32Ffe1e1A37a939E1b7e79be4d" // FalconX
+      "0x433D5B175148dA32Ffe1e1A37a939E1b7e79be4d", // FalconX
     ]
   },
   polygon: {
@@ -57,7 +62,7 @@ async function getUspTvl(api, usp, credits){
 }
 
 async function tvl(api) {
-  const { usp = undefined, credits = [] } = contracts[api.chain]
+  const { usp = undefined, credits = [], factory } = contracts[api.chain]
   const balances = {}
   const ownerTokens = {}
   const blacklistedTokens = []
@@ -68,6 +73,24 @@ async function tvl(api) {
     const uspUnderlying = ADDRESSES[api.chain].USDC
     const scaledUSPTvl = await getUspTvl(api, usp, credits)
     sdk.util.sumSingleBalance(balances, uspUnderlying, scaledUSPTvl, api.chain)
+  }
+
+  // Add credit vaults from factory
+  if (factory) {
+    const logs = await getLogs({
+      api,
+      target: factory.address,
+      topics: ['0x22d236b886e994153ab139e04b213355a725846284c6018c26c6af0988bd58d7'],
+      eventAbi: 'event CreditVaultDeployed(address proxy)',
+      onlyArgs: true,
+      fromBlock: factory.block,
+    })
+
+    logs.forEach( l => {
+      if (!credits.find( addr => addr.toLowerCase() === l.proxy.toLowerCase())){
+        credits.push(l.proxy)
+      }
+    })
   }
 
   const [
