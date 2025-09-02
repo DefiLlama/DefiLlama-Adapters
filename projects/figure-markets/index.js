@@ -6,6 +6,8 @@ const paginationLimit = 1000;
 
 const figureMarketsExchangeID = '1'
 
+const collateralizedAssets = 'pm.sale.pool.3dxq3fk9llvhrqqwhodiap'
+
 const lockedTokensQuery = (nextKey) =>
     `${provenance}/provenance/exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=${
         paginationLimit
@@ -41,8 +43,6 @@ const demoPrimePools = [
 const recordsEndpoint = (contractId) => 
     `${provenance}/provenance/metadata/v1/scope/${contractId}/record/pool-details`
 
-const collateralizedAssets = 'pm.sale.pool.3dxq3fk9llvhrqqwhodiap'
-
 const getPoolsCollateralValue = async (api) => {
     const collateralTotal = (await Promise.all(demoPrimePools.map(async pool => {
         const poolHash = (await get(recordsEndpoint(pool))).records[0]?.record?.outputs[0]?.hash
@@ -53,7 +53,10 @@ const getPoolsCollateralValue = async (api) => {
             }
         }
     }))).reduce((acc, cur) => acc += cur || 0, 0)
-    api.add(collateralizedAssets, collateralTotal)
+    // Multiply by 1000 due to decimal conversion in token mapping
+    api.add('FIGR_HELOC', collateralTotal * 1000)
+    // Remove collateralized assets token
+    api.removeTokenBalance(collateralizedAssets)
 }
 
 const tvl = async (api) => {
