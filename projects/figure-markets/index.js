@@ -44,7 +44,7 @@ const collateralizedAssets = 'pm.sale.pool.3dxq3fk9llvhrqqwhodiap'
 
 const getPoolsCollateralValue = async (api) => {
     const collateralTotal = (await Promise.all(demoPrimePools.map(async pool => {
-        const poolHash = (await await queryV1Beta1({
+        const poolHash = (await queryV1Beta1({
             chain: 'provenance',
             url: `metadata/v1/scope/${pool}/record/pool-details`
         })).records[0]?.record?.outputs[0]?.hash
