@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports } = require("../helper/treasury");
 
 const treasuryList = [
@@ -15,7 +16,7 @@ const treasuryList = [
 
 const tokens = [
     '27G8MtK7VtTcCHkpASjSDdkWWYfoqT6ggEuKidVJidD4', //JLP
-    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', //USDC
+    ADDRESSES.solana.USDC, //USDC
     'So11111111111111111111111111111111111111111'   //SOL
 ]
 
