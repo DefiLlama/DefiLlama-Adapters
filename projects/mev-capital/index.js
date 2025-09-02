@@ -200,7 +200,11 @@ const configs = {
         '0xa97087d21d0b470cb1a09255d26e34e1a392cbfd', // MEV Capital Resolv USR (Morpho)
         '0xdc87d00d83153374e150d17b960fc74aa413d03a', // MEV Capital wETH (Morpho)
         '0x8eb9f9e97d6a63aab7572ad0d96fa3f09255cce9', // yUSD (v1)
-      ]
+      ],
+        ipor: [
+
+            '0xd731f94c778f7c1090e2e0d797150a647de5188a'
+        ]
     },
     unichain: {
       morpho: [
@@ -325,7 +329,7 @@ const configs = {
 // ==============================================
 
 const PROTOCOL_HANDLERS = {
-  erc4626: ['upshift', 'term', 'termmax', 'lista'],
+  erc4626: ['upshift', 'term', 'termmax', 'lista', 'ipor'],
   totalSupply: ['terminal', 'midas'],
   mizuType: ['mizu'],
   napierType: ['napier'],
