@@ -154,22 +154,8 @@ async function computeEkuboTVL(api) {
     abi: { ...EkuboAbiMap.convert_to_assets, customInput: 'address' }
   })
 
-  // convert to bigInt and then to hex for contract call 
-  let xstrk = BigInt(assets[0]['1']);
-  let hex_strk = '0x' + xstrk.toString(16);
-  
-  // convert xstrk to strk
-  const strk_eq = await multiCall({
-    calls: ekuboContracts.map(c => ({
-      target: ADDRESSES.starknet.XSTRK,
-      params: [hex_strk, '0x0'] 
-    })),
-    abi: { ...endurABIMap.convert_to_assets, customInput: 'address' }
-  })
-
-  api.addTokens(ADDRESSES.starknet.STRK, Number(strk_eq[0]) + Number(assets[0]['2']) );
-  // api.addTokens(ADDRESSES.starknet.STRK, assets[0]['2'] );
-  // api.addTokens(ADDRESSES.starknet.XSTRK, assets[0]['1'] );
+  api.addTokens(ADDRESSES.starknet.STRK, assets[0]['2'] );
+  api.addTokens(ADDRESSES.starknet.XSTRK, assets[0]['1'] );
 }
 
 async function computeEvergreenTVL(api) {
