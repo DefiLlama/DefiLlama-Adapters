@@ -17,9 +17,6 @@ module.exports = {
   solana: {
     tvl,
   },
-  arbitrum: {
-    tvl: hyperliquidTvl,
-  },
 };
 /**
  * Vault Equity Calculation Formula:
@@ -137,10 +134,8 @@ async function tvl(api) {
     getAssociatedTokenAddress(ADDRESSES.solana.USDC, address)
   );
   await sumTokens2({ tokenAccounts, api });
-}
 
-async function hyperliquidTvl(api) {
-  const positionAddresses = await fetchPositionAddresses();
+
   for (const address of positionAddresses.hyperliquid) {
     let hyperliquidData = await post("https://api.hyperliquid.xyz/info", {
       type: "clearinghouseState",
@@ -150,3 +145,4 @@ async function hyperliquidTvl(api) {
     api.addCGToken("usd-coin", hyperliquidData);
   }
 }
+
