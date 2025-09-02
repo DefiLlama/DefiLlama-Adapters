@@ -6,6 +6,7 @@
 const { multiCall } = require("../helper/chain/starknet");
 const ADDRESSES = require('../helper/coreAssets.json');
 const { EkuboAbiMap } = require('./ekubo');
+const { ERC4626AbiMap } = require('./erc4626');
 const { SINGLETONabiMap } = require('./singleton');
 const { endurABIMap } = require('./endur');
 const { FusionAbiMap } = require('./fusionAbi');
@@ -59,6 +60,22 @@ const STRATEGIES = {
     address: "0x01f083b98674bc21effee29ef443a00c7b9a500fd92cf30341a3da12c73f2324",
     token1: ADDRESSES.starknet.STRK,
     token2: ADDRESSES.starknet.XSTRK
+  }],
+  "EvergreenVaults": [{
+    address: "0x7e6498cf6a1bfc7e6fc89f1831865e2dacb9756def4ec4b031a9138788a3b5e",
+    token: ADDRESSES.starknet.USDC
+  }, {
+    address: "0x446c22d4d3f5cb52b4950ba832ba1df99464c6673a37c092b1d9622650dbd8",
+    token: ADDRESSES.starknet.ETH
+  }, {
+    address: "0x5a4c1651b913aa2ea7afd9024911603152a19058624c3e425405370d62bf80c",
+    token: ADDRESSES.starknet.WBTC
+  }, {
+    address: "0x1c4933d1880c6778585e597154eaca7b428579d72f3aae425ad2e4d26c6bb3",
+    token: ADDRESSES.starknet.USDT
+  }, {
+    address: "0x55d012f57e58c96e0a5c7ebbe55853989d01e6538b15a95e7178aca4af05c21",
+    token: ADDRESSES.starknet.STRK
   }]
 }
 
@@ -151,6 +168,17 @@ async function computeEkuboTVL(api) {
   })
 
   api.addTokens(ADDRESSES.starknet.STRK, Number(strk_eq[0]) + Number(assets[0]['2']) );
+  // api.addTokens(ADDRESSES.starknet.STRK, assets[0]['2'] );
+  // api.addTokens(ADDRESSES.starknet.XSTRK, assets[0]['1'] );
+}
+
+async function computeEvergreenTVL(api) {
+  const evergreenContracts = STRATEGIES.EvergreenVaults;
+  const totalAssets = await multiCall({
+    calls: evergreenContracts.map(c => c.address),
+    abi: ERC4626AbiMap.total_assets
+  })
+  api.addTokens(evergreenContracts.map(c => c.token), totalAssets);
 }
 
 async function tvl(api) {
@@ -159,6 +187,7 @@ async function tvl(api) {
   await computeXSTRKStratTVL(api);
   await computeFusionTVL(api);
   await computeEkuboTVL(api);
+  await computeEvergreenTVL(api);
 }
 
 module.exports = {
