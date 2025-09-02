@@ -55,8 +55,6 @@ const getPoolsCollateralValue = async (api) => {
     }))).reduce((acc, cur) => acc += cur || 0, 0)
     // Multiply by 1000 due to decimal conversion in token mapping
     api.add('FIGR_HELOC', collateralTotal * 1000)
-    // Remove collateralized assets token
-    api.removeTokenBalance(collateralizedAssets)
 }
 
 const tvl = async (api) => {

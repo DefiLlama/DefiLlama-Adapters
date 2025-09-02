@@ -65,7 +65,6 @@ const fixBalancesTokens = {
     USDC: { coingeckoId: 'usd-coin', decimals: 0 },
     USD: { coingeckoId: 'usd-coin', decimals: 0 },
     YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
-    'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'figure-heloc', decimals: 3 },
     FIGR_HELOC: { coingeckoId: 'figure-heloc', decimals: 3 },
   },
 }
