@@ -36,7 +36,7 @@ const endPoints = {
   kava: "https://api2.kava.io",
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
-  gravitybridge: "https://gravitychain.io:1317",
+  gravitybridge: "https://gravity-api.polkachu.com",
   sei: "https://sei-api.polkachu.com",
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
@@ -51,7 +51,8 @@ const endPoints = {
   mantra: "https://api.mantrachain.io",
   elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
   pryzm: "https://api.pryzm.zone",
-  agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  agoric: 'https://agoric-api.polkachu.com/',
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',

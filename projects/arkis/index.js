@@ -1,7 +1,6 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const axios = require("axios");
 
 const native = ADDRESSES.GAS_TOKEN_2;
 
@@ -37,6 +36,11 @@ const tokens_to_track = [
   ADDRESSES.hyperliquid.wstHYPE 
 ];
 
+const blacklist = [
+  '0x8fccfd6404da2026eee7e4f529b45f3caaf0594e',
+  '0x4956b52ae2ff65d74ca2d61207523288e4528f96'
+]
+
 const fetchFactoryLogs = async (api, type) => {
   const fromBlock = 21069508;
   const topic = type === "agreement" ? topics.agreementCreated : topics.accountDeployed;
@@ -64,14 +68,13 @@ const getTokens = async (api, agreementAddresses) => {
   return Array.from(tokenSet);
 }
 
-
 const tvl = async (api) => {
   const [agreements, marginAccounts] = await Promise.all([
     fetchFactoryLogs(api, "agreement"),
     fetchFactoryLogs(api, "marginAccount")
   ])
 
-  const tokens = await getTokens(api, agreements);
+  const tokens = (await getTokens(api, agreements)).filter(t => !blacklist.includes(t.toLowerCase()))
   const owners = [...agreements, ...marginAccounts]
   return sumTokens2({ api, owners, tokens, resolveLP: true, unwrapAll: true });
 }
@@ -96,7 +99,7 @@ async function tvlHyperliquid(api) {
 
 module.exports = {
   methodology: "On Ethereum, TVL includes leverage assets, collaterals, whitelisted tokens, ETH, and LP tokens held in agreements and margin accounts created by factory contracts. " +
-             "On Hyperliquid, TVL reflects the native HYPE, WHYPE and stHYPE held at the Arkis Wrapped HYPE Vaults, which back the tokens issued on Ethereum.",
+               "On Hyperliquid, TVL reflects the native HYPE, WHYPE and stHYPE held at the Arkis Wrapped HYPE Vaults, which back the tokens issued on Ethereum.",
   ethereum: { tvl, borrowed },
   hyperliquid: { tvl: tvlHyperliquid },
 }

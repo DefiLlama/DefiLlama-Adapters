@@ -30,7 +30,8 @@ module.exports = {
         '0x76A797A59Ba2C17726896976B7B3747BfD1d220f', // WTON,
         '0xB3F4D70C6a18cC0F2D1205dbF3B21cB73e1B0592', // GPTW,
         '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,
-        '0x4b3a2187648902082db0a44e8235d57F3f23DD10', // PINEYE
+        '0x4b3a2187648902082db0a44e8235d57F3f23DD10', // PINEYE,
+        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -224,9 +225,9 @@ module.exports = {
     {
       name: 'ftn',
       tokens: [
+        '0xDeF886C55a79830C47108eeb9c37e78a49684e41', // USDT,
         '0x4237e0A5b55233D5B6D6d1D9BF421723954130D8', // USDC,
         '0xE5b3562A0fa9eC3e718C96FfE349e1280D2Be591', // WETH,
-        '0xDeF886C55a79830C47108eeb9c37e78a49684e41', // USDT,
         '0x6B6301dcBA742E2320dD083A8d8fDbaB9527484B', // WBTC
       ],
       holders: [
@@ -245,9 +246,11 @@ module.exports = {
     {
       name: 'rsk',
       tokens: [
+        '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // USD₮0,
         '0xef213441A85dF4d7ACbDaE0Cf78004e1E486bB96', // rUSDT,
         '0x74c9f2b00581F1B11AA7ff05aa9F608B7389De67', // USDC.e,
-        '0x542fDA317318eBF1d3DEAf76E0b632741A7e677d', // WRBTC
+        '0x542fDA317318eBF1d3DEAf76E0b632741A7e677d', // WRBTC,
+        '0xB52E582263c1d0189b3cc1402c1B7205b7F2E9Ba', // syBTC
       ],
       holders: [
         '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4' // portal
@@ -303,7 +306,7 @@ module.exports = {
       name: 'sei',
       tokens: [
         '0xB75D0B03c06A926e488e2659DF1A861F860bD3d1', // USDT,
-        '0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1', // USDC,
+        '0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1', // USDC.n,
         '0xcB0DdC112EF317271266c83D7179Bf9186b9C658', // GPTW
       ],
       holders: [
@@ -361,14 +364,13 @@ module.exports = {
     {
       name: 'ton',
       tokens: [
-        'EQD8AErK5HbmnftlHQuk8bXC_JuX1COLPeNIfMriw23gfO3I', // TON,
         'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', // USDT,
         'EQBh9XACT0B60U8Q48VnjyqCxzxpM4oA0c8rqKt4h70yk1V5', // UXLINK,
         'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI,
         'EQDY2MzMJY_9OWm9UyQNLTU2Qs_8BRomlMUbbADnh-tFkLaU', // PINEYE
       ],
       holders: [
-        'EQDpUHhVl5lJ6Y47DCd0TWdXB_kd-U-N6KyAELePNjfj15HT' // portal
+        'EQBZh9CpLZyNlwI7am0PHpVy8T8zdJxAhlG3m3xMi0BoVaUh' // portal
       ]
     },
     {
@@ -456,7 +458,8 @@ module.exports = {
     {
       name: 'op_bnb',
       tokens: [
-        '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea', // WETH
+        '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea', // WETH,
+        '0x4200000000000000000000000000000000000006', // WBNB
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
@@ -472,12 +475,14 @@ module.exports = {
       ]
     },
     {
-      name: 'boba_bnb',
+      name: 'katana',
       tokens: [
-        '0x9f98f9f312d23d078061962837042b8918e6aff2', // USDC
+        '0x4200000000000000000000000000000000000006', // WETH,
+        '0xEE7D8BCFb72bC1880D0Cf19822eB0A2e6577aB62', // WETH,
+        '0x203A662b0BD271A6ed5a60EdFbd04bFce608FD36', // USDC
       ],
       holders: [
-        '0x6148FD6C649866596C3d8a971fC313E5eCE84882' // portal
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62' // portal
       ]
     }
   ]
