@@ -16,7 +16,7 @@ const tvl = async (api) => {
 module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
-    methodology: 'TVL is calculated based on the value of the total amount of loans placed on the blockchain',
+    methodology: 'TVL is calculated based on the value of the total amount of loans placed on the blockchain represented by FIGR_HELOC token',
     provenance: {
         tvl,
     }
