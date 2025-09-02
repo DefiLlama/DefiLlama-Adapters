@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const contracts = {
   KAIA : {
     stKAIA: '0x42952B873ed6f7f0A7E4992E2a9818E3A9001995',
@@ -7,7 +8,7 @@ const contracts = {
     restakingManager: '0x66611Ba2aa5deB46e6138aD21a202b40ecE5b6AB',
   },
   BERA: {
-    WBERA: '0x6969696969696969696969696969696969696969',
+    WBERA: ADDRESSES.berachain.WBERA,
     LAIR: '0xf3530788DEB3d21E8fA2c3CBBF93317FB38a0D3C',
     LrBGT: '0x66611Ba2aa5deB46e6138aD21a202b40ecE5b6AB',
     iBGT: '0xac03caba51e17c86c921e1f6cbfbdc91f8bb2e6b',
