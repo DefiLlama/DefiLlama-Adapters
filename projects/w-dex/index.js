@@ -1,8 +1,7 @@
-const { modifyEndpoint } = require("@defillama/sdk/build/util/graph")
 const { uniV3GraphExport } = require("../helper/uniswapV3")
 
 const config = {
-  polygon: modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/GRjn45pSybSFfpht8CgZdJ2XDGexcVcWEfMgKjwo7WwA')
+  polygon: 'GRjn45pSybSFfpht8CgZdJ2XDGexcVcWEfMgKjwo7WwA'
 }
 
 Object.keys(config).forEach(chain => {
