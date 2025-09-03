@@ -1,11 +1,32 @@
-const { getProvider  } = require("./helper/solana");
+const { getProvider, getAssociatedTokenAddress, sumTokens2 } = require("./helper/solana");
 const { Program } = require("@project-serum/anchor");
+
+async function getAccountsInBatches(connection, pubkeys, batchSize = 100) {
+  const result = [];
+  for (let i = 0; i < pubkeys.length; i += batchSize) {
+    const batch = pubkeys.slice(i, i + batchSize);
+    const infos = await connection.getMultipleAccountsInfo(batch);
+    result.push(...infos);
+  }
+  return result;
+}
 
 async function tvl(api) {
   const provider = getProvider(api.chain);
   const program = new Program(tunaIDL, tunaIDL.address, provider);
   const vaults = await program.account.vault.all();
-  vaults.forEach(vault => api.add(vault.account.mint.toBase58(), vault.account.depositedFunds));
+
+  // Available funds are held in token accounts whose ATA addresses are derived from the mint,
+  // the vault’s public key, and the mint program’s public key
+  const mints = vaults.map((vault) => vault.account.mint);
+  const mintAccounts = await getAccountsInBatches(provider.connection, mints);
+  const mintPrograms = mintAccounts.map((account) => account.owner);
+  const tokenAccounts = vaults.map(
+    (vault, i) =>
+    getAssociatedTokenAddress(vault.account.mint, vault.publicKey, mintPrograms[i])
+  );
+
+  return sumTokens2({ tokenAccounts, api });
 }
 
 async function borrowed(api) {
