@@ -69,7 +69,7 @@ const fixBalancesTokens = {
     [ADDRESSES.camp.WCAMP]: { coingeckoId: "camp", decimals: 18 }, // Wrapped CAMP (ERC-20 wrapper of native CAMP)
     [ADDRESSES.camp.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
     [ADDRESSES.camp.USDC]: { coingeckoId: "usdc", decimals: 6 }, // Wrapped USDC
-    // [ADDRESSES.camp.campUSD]: { coingeckoId: "campUSD", decimals: 6 }, // Not listed on CoinGecko yet
+    [ADDRESSES.camp.campUSD]: { coingeckoId: "usdc", decimals: 6 }, // Not listed on CoinGecko yet
   },
   tac: {
     [ADDRESSES.null]: { coingeckoId: "tac", decimals: 18 },
