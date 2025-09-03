@@ -66,10 +66,10 @@ const fixBalancesTokens = {
     [ADDRESSES.soon.BONK]: { coingeckoId: "bonk", decimals: 5 },
   },
   camp: {
-    [ADDRESSES.camp.WCAMP]: { coingeckoId: "camp", decimals: 18 }, // Wrapped CAMP (ERC-20 wrapper of native CAMP)
+    [ADDRESSES.camp.WCAMP]: { coingeckoId: "camp-network", decimals: 18 }, // Wrapped CAMP (ERC-20 wrapper of native CAMP)
     [ADDRESSES.camp.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
     [ADDRESSES.camp.USDC]: { coingeckoId: "usdc", decimals: 6 }, // Wrapped USDC
-    [ADDRESSES.camp.campUSD]: { coingeckoId: "usdc", decimals: 6 }, // Not listed on CoinGecko yet
+    '0x9fD4E94182Aa115DbC0f667ba2D3a67ed6486a3F': { coingeckoId: "usdc", decimals: 6 }, // Not listed on CoinGecko yet
   },
   tac: {
     [ADDRESSES.null]: { coingeckoId: "tac", decimals: 18 },
