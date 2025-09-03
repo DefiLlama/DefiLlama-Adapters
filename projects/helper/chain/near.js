@@ -30,6 +30,7 @@ const tokenMapping = {
   'meta-token.near': { name: 'meta-near', decimals: 24 },
   'v3.oin_finance.near': { name: 'oin-finance', decimals: 8, },
   'usdt.tether-token.near': { name: 'tether', decimals: 6, },
+  'eth-0xdac17f958d2ee523a2206206994597c13d831ec7.omft.near': { name: 'tether', decimals: 6 },
   // 'gems.l2e.near': { name: '', }, // https://www.landtoempire.com/
   // 'nd.tkn.near': { name: '', },   // nearDog
   // 'gold.l2e.near': { name: '', }, // https://www.landtoempire.com/
@@ -56,6 +57,7 @@ const tokenMapping = {
   'purge-558.meme-cooking.near': { name: 'forgive-me-father', decimals: 18 },
   'mpdao-token.near': { name: 'meta-pool-dao', decimals: 6 },
   'kat.token0.near': { name: 'nearkat', decimals: 18 },
+  'btc.omft.near': { name: 'bitcoin', decimals: 8 },
 }
 
 function shouldRetry(error) {
