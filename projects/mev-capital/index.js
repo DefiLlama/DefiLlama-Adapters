@@ -13,7 +13,8 @@ const HYPERBEAT_MAPPINGS = [
   { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
   { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat WHYPE -> WHYPE
   { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
-  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
+  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
 ];
 
 // ==============================================
@@ -276,7 +277,8 @@ const configs = {
         '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
         '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Hyperbeat WHYPE (price not in the api yet)
         '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
-        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29'
+        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', // Hyperbeat dnHYPE (price not in the api yet)
+        '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', // Hyperbeat wVLP (price not in the api yet)
       ]
     },
     sonic: {
