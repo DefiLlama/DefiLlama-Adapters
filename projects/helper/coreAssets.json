@@ -639,6 +639,11 @@
     "USDC": "5odzAHDpDETYhupMkc6kjiYen3K2nrf8oPmvqmsoNW4L",
     "ETH": "H3xpFH1yN5E1zFdAoBrC9Y7m7RfJUeQNLvkHi8kNf9Qu"
   },
+  "camp": {
+    "WCAMP": "0x3bd5C81a8Adf3355078Dc5F73c41d3194B316690",
+    "ETH": "0xb55066f2793773B3784f8c57c415a8b5932B33Cd",
+    "USDC": "0x977fdEF62CE095Ae8750Fd3496730F24F60dea7a"
+  },
   "astar": {
     "WASTR_1": "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720",
     "WASTR": "0xecc867de9f5090f55908aaa1352950b9eed390cd",
