@@ -67,6 +67,15 @@ const fixBalancesTokens = {
     YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
     'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
   },
+  xone: {
+    [ADDRESSES.xone.WXOC]: { coingeckoId: "xone", decimals: 18 }, // Wrapped XOC (ERC-20 wrapper of native Xone Coin)
+    [ADDRESSES.xone.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
+    [ADDRESSES.xone.USDC]: { coingeckoId: "usdc", decimals: 18 }, // Wrapped USDC
+    [ADDRESSES.xone.USDT]: { coingeckoId: "tether", decimals: 6 }, // Wrapped USDT
+    [ADDRESSES.xone.BNB]: { coingeckoId: "binancecoin", decimals: 18 }, // Wrapped BNB
+    [ADDRESSES.xone.TRX]: { coingeckoId: "tron", decimals: 6 }, // Wrapped TRX
+    [ADDRESSES.xone.USDH]: { coingeckoId: "xone", decimals: 6 }, // Wrapped USDH
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
