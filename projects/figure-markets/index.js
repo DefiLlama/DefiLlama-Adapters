@@ -1,6 +1,5 @@
-const { get } = require("../helper/http")
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { endPoints: { provenance } } = require('../helper/chain/cosmos.js');
+const { queryV1Beta1 } = require('../helper/chain/cosmos.js');
 
 const paginationLimit = 1000;
 
@@ -9,14 +8,17 @@ const figureMarketsExchangeID = '1'
 const collateralizedAssets = 'pm.sale.pool.3dxq3fk9llvhrqqwhodiap'
 
 const lockedTokensQuery = (nextKey) =>
-    `${provenance}/provenance/exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=${
+    `exchange/v1/market/${figureMarketsExchangeID}/commitments?pagination.limit=${
         paginationLimit
     }${
         nextKey ? `&pagination.key=${nextKey}` : ""
     }`;
 
 const getLockedTokens = async (key, api) => {
-    const nextTokens = await get(lockedTokensQuery(key));
+    const nextTokens = await queryV1Beta1({
+        chain: 'provenance',
+        url: lockedTokensQuery(key)
+    })
     nextTokens.commitments.map((c) =>
         c.amount.map((a) => {
             api.add(a.denom, a.amount)
@@ -40,12 +42,12 @@ const demoPrimePools = [
     "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n",
 ]
 
-const recordsEndpoint = (contractId) => 
-    `${provenance}/provenance/metadata/v1/scope/${contractId}/record/pool-details`
-
 const getPoolsCollateralValue = async (api) => {
     const collateralTotal = (await Promise.all(demoPrimePools.map(async pool => {
-        const poolHash = (await get(recordsEndpoint(pool))).records[0]?.record?.outputs[0]?.hash
+        const poolHash = (await queryV1Beta1({
+            chain: 'provenance',
+            url: `metadata/v1/scope/${pool}/record/pool-details`
+        })).records[0]?.record?.outputs[0]?.hash
         if (poolHash) {
             const poolInfo = JSON.parse(poolHash)
             if (poolInfo.leveragePool.collateralAssets.length > 0 && poolInfo.leveragePool.collateralAssets[0] === collateralizedAssets) {
