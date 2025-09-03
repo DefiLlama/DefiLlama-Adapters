@@ -4,7 +4,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const vaults = [
   // ETH Bullish Call-Spread USDe
   {
-    currency: '0x4c9EDD5852cd905f086C759E8383e09bff1E68B3',
+    currency: ADDRESSES.ethereum.USDe,
     pt: '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a',
     vault: '0xD0407E1c58Ce32a7fE672f331Af120E0C30aD45b'
   },
@@ -16,7 +16,7 @@ const vaults = [
   },
   // ETH Bearish Put-Spread USDe
   {
-    currency: '0x4c9EDD5852cd905f086C759E8383e09bff1E68B3',
+    currency: ADDRESSES.ethereum.USDe,
     pt: '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a',
     vault: '0x9AbbA395c4db06467B5C19A69F7e320EE962f2CB'
   },

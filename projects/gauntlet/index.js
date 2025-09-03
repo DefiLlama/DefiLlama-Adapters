@@ -119,11 +119,11 @@ const { PublicKey } = require("@solana/web3.js")
 
 const TOKEN_INFO = {
   USDC: {
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6,
   },
   SOL: {
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     decimals: 9,
   },
   jitoSOL: {
@@ -163,7 +163,7 @@ const TOKEN_INFO = {
     decimals: 6,
   },
   BONK: {
-    mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+    mint: ADDRESSES.solana.BONK,
     decimals: 5,
   },
 }

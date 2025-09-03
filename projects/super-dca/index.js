@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { request, gql } = require('graphql-request')
 const sdk = require('@defillama/sdk')
@@ -10,9 +11,9 @@ const CONFIG = {
     FROM_BLOCK: 130947675,
     SUBGRAPH_ID: '6RBtsmGUYfeLeZsYyxyKSUiaA6WpuC69shMEQ1Cfuj9u',
     WHITELISTED_TOKENS: [
-      '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85', // USDC
-      '0x0000000000000000000000000000000000000000', // WETH
-      '0x68f180fcCe6836688e9084f035309E29Bf0A2095'  // WBTC
+      ADDRESSES.optimism.USDC_CIRCLE, // USDC
+      ADDRESSES.null, // WETH
+      ADDRESSES.optimism.WBTC  // WBTC
     ],
     POOL_IDS: [
       // List of pools with the Super DCA Hook: 0xb4f4Ad63BCc0102B10e6227236e569Dce0d97A80
@@ -27,9 +28,9 @@ const CONFIG = {
     FROM_BLOCK: 30838244,
     SUBGRAPH_ID: 'HNCFA9TyBqpo5qpe6QreQABAA1kV8g46mhkCcicu6v2R',
     WHITELISTED_TOKENS: [
-      '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
-      '0x0000000000000000000000000000000000000000', // WETH
-      '0x0555E30da8f98308EdB960aa94C0Db47230d2B9c', // WBTC
+      ADDRESSES.base.USDC, // USDC
+      ADDRESSES.null, // WETH
+      ADDRESSES.bsc.WBTC, // WBTC
       '0x63706e401c06ac8513145b7687A14804d17f814b'  // AAVE
     ],
     POOL_IDS: [
