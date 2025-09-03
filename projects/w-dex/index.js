@@ -1,12 +1,2 @@
-const { uniV3GraphExport } = require("../helper/uniswapV3")
-
-const config = {
-  polygon: 'GRjn45pSybSFfpht8CgZdJ2XDGexcVcWEfMgKjwo7WwA'
-}
-
-Object.keys(config).forEach(chain => {
-  const graphURL = config[chain]
-  module.exports[chain] = {
-    tvl: uniV3GraphExport({ graphURL, name: 'w-dex' + chain })
-  }
-})
+const { uniV3Export } = require('../helper/uniswapV3')
+module.exports = uniV3Export({ polygon: { factory: '0x215fDE4B415B9Ce21DEE6CAcEfc27Aa92441C4AA', fromBlock: 65913036, isAlgebra: true, } })
