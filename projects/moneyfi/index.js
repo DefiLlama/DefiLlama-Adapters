@@ -14,6 +14,7 @@ async function get_tvl_aptos() {
 }
 
 const config = {
+  
   ethereum: {
     fundVault: "0x5E672Af2d78dAaBbe8A8bF52D4D921A5c2DD41a4",
     dexBridgeVault: "0xf9139312E668EE8011F6c594ba24271eE5C913d5",
@@ -35,6 +36,7 @@ const config = {
     strategies: [
       "0xE2e326496dc7A7bC75a10E3Fb29E52AdAFCB342c",
       "0x4cb9289b27FAF51D1FC9E434D5384B376DbB48C0",
+      "0x21D5b4352878415846785B923622B504D65cd5DF"
     ],
   },
 
