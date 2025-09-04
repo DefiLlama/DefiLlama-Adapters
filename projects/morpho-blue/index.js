@@ -128,7 +128,7 @@ const nullAddress = ADDRESSES.null
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [] } = config[api.chain]
   const extraKey = api.chain === 'lisk' ? 'reset-v1' : undefined
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey })
+  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, skipCache: true })
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
