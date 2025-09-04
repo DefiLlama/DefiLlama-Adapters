@@ -31,6 +31,7 @@ const config = {
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
       '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
+      '0x49841B9bb1dc499B36C4F618bf8feAC85fDFE889',
     ],
   },
   bitcoin: {
@@ -231,6 +232,7 @@ const config = {
     owners: [
       'UQAvfvh141q7M2ZmPE6YCmTFQW6pdoUXVTGrM2YBpt4iqOBF',
       'UQDR4lFPsfCx4TdWKsFUmiPdrkpl6xEixZ3VTn474lZsGuTd',
+      'UQCL3aiqqyo5FKgKJOscigFey15rouAz2ZrLOVBq6axIZslU',
     ]
   },
   stellar: {

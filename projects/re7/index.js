@@ -83,12 +83,6 @@ const configs = {
         '0x187620a61f4f00Cb629b38e1b38BEe8Ea60d2B8D',
       ],
     },
-    tac:{
-      eulerVaultOwners: [
-        '0x6D3AB84Fb7Fc04961a15663C980feC275b889402',
-        '0x93db2e90F8B2b073010B425f9350202330bd923E',
-      ],
-    },
     plume_mainnet:{
       morphoVaultOwners: [
         '0x7B41b9891887820A75A51a1025dB1A54f4798521',
@@ -104,6 +98,11 @@ const configs = {
         '0x59ae5a41c9ae05eae8d136ad3d7dc48e5a0947c10942b00091aeb7f42efabb7',
         '0x3de03fafe6120a3d21dc77e101de62e165b2cdfe84d12540853bd962b970f99',
       ]
+    },
+    tac:{
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
     },
   }
 }
