@@ -1,9 +1,9 @@
-const stakingPools = require('./staking.json');
+const poolconfig = require('./staking.json');
 
 const vaultRegistry = {
-  // 1: "",
-  // 56: "",
-  8453: "0x414F0e07cd833cE73c9d59280699f910b48E1ECb",
+  1: [],
+  56: [],
+  8453: ["0x414F0e07cd833cE73c9d59280699f910b48E1ECb"],
 };
 
 const CHAIN_IDS = {
@@ -12,39 +12,38 @@ const CHAIN_IDS = {
   base: 8453
 };
 
-// calculates the tvl of the SFI dyna vaults by calling totalAsset which is a representation of the vault tvl in in a reference asset
-async function calculateVaultTVL(api, chainId) {
-  // Fetch vaults from registry
-  const vaultsFromRegistry = vaultRegistry[chainId] != undefined ? await api.call({
-    abi: 'function allVaults() view returns (tuple(address vault, uint8 VaultType, bool active)[] memory)',
-    target: vaultRegistry[chainId],
-  }) : [];
+// calculates the tvl of the SFI dynavaults by calling totalAsset which is a representation of the vault tvl in in a reference asset
+async function calculateDynaVaultTVL(api, chainId) {
+  for (let r = 0; r < vaultRegistry[chainId].length; r++) {
+    // Fetch vaults from registry
+    const dynaVaults = await api.call({
+      abi: 'function allVaults() view returns (tuple(address vault, uint8 VaultType, bool active)[] memory)',
+      target: vaultRegistry[chainId][r],
+    });
 
 
-  // Filter vaults by chain
-  const chainVaults = vaultsFromRegistry.map((vault) => ({ address: vault.vault }));
+    // Get tvl of each vault
+    for (let i = 0; i < dynaVaults.length; i++) {
+      try {
+        // Get total assets from vault
+        let totalAssets = await api.call({
+          abi: 'function totalAssets() view returns (uint256)',
+          target: dynaVaults[i].vault,
+        });
 
-  // Get tvl of each vault
-  for (const vault of chainVaults) {
-    try {
-      // Get total assets from vault
-      let totalAssets = await api.call({
-        abi: 'function totalAssets() view returns (uint256)',
-        target: vault.address,
-      });
+        // Get the asset address
+        const assetAddress = await api.call({
+          abi: 'function asset() view returns (address)',
+          target: dynaVaults[i].vault,
+        });
 
-      // Get the asset address
-      const assetAddress = await api.call({
-        abi: 'function asset() view returns (address)',
-        target: vault.address,
-      });
-
-      // Add the vault's assets to TVL
-      if (assetAddress && totalAssets) {
-        api.add(assetAddress, totalAssets);
+        // Add the vault's assets to TVL
+        if (assetAddress && totalAssets) {
+          api.add(assetAddress, totalAssets);
+        }
+      } catch (e) {
+        console.log(`Error processing vault ${dynaVaults[i].vault}:`, e);
       }
-    } catch (e) {
-      console.log(`Error processing vault ${vault.address}:`, e);
     }
   }
 }
@@ -52,10 +51,10 @@ async function calculateVaultTVL(api, chainId) {
 // calculates the tlv of the SFI staking pools. Each pool takes a deposit token and has a rewardToken.
 async function calculateStakingTVL(api, chainId) {
   // Filter staking pools by chain
-  const chainStakingPools = stakingPools.filter(pool => pool.chainId === chainId);
+  const stakingPools = poolconfig.filter(pool => pool.chainId === chainId);
 
   // Get tvl of each pool
-  for (const pool of chainStakingPools) {
+  for (const pool of stakingPools) {
     try {
       const depositToken = pool.depositTokenAddress;
       const rewardToken = pool.rewardsTokenAddress
@@ -93,23 +92,22 @@ async function calculateStakingTVL(api, chainId) {
 
 // Calculate the TVL for each supported chain
 async function tvlEthereum(api) {
-  await calculateVaultTVL(api, CHAIN_IDS.ethereum);
+  await calculateDynaVaultTVL(api, CHAIN_IDS.ethereum);
   await calculateStakingTVL(api, CHAIN_IDS.ethereum);
 }
 
 async function tvlBsc(api) {
-  await calculateVaultTVL(api, CHAIN_IDS.bsc);
+  await calculateDynaVaultTVL(api, CHAIN_IDS.bsc);
   await calculateStakingTVL(api, CHAIN_IDS.bsc);
 }
 
 async function tvlBase(api) {
-  await calculateVaultTVL(api, CHAIN_IDS.base);
+  await calculateDynaVaultTVL(api, CHAIN_IDS.base);
   await calculateStakingTVL(api, CHAIN_IDS.base);
 }
 
 module.exports = {
-  methodology: 'Counts the total value locked in DynaVaults (via totalAssets), staking contracts (token balances).',
-  start: 1000235,
+  methodology: 'Counts the total value locked in DynaVaults (via totalAssets) and staking contracts (token balances).',
   ethereum: {
     tvl: tvlEthereum,
   },
