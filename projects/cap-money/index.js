@@ -24,7 +24,7 @@ const tvl = async (api) => {
         }))
     ]);
     const assetAvailableBalancesResults = results.slice(0, assetAddresses.length)
-    const coverageResults = results.slice(assetAddresses.length)
+    const coverageResults = results.slice(agentConfigs.length)
 
     for (const [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
         api.add(asset, availableBalance)
