@@ -13,6 +13,7 @@ const FLUID_POOLS = {
 };
 const ARBITRUM_SILO_POOLS = {
     'USDC - Varlamore USDC Growth': '0x2BA39e5388aC6C702Cb29AEA78d52aa66832f1ee',
+    'Silo Optima Vault': '0x2514A2Ce842705EAD703d02fABFd8250BfCfb8bd',
 };
 
 const allPoolTokens = [
