@@ -1,4 +1,4 @@
-const winnieFactory = '0x76fD9D07d5e4D889CAbED96884F15f7ebdcd6B63'
+const winnieFactory = '0x18B9ABf2E821E2fE7A08Dc255d5a7e77fFc0b844'
 
 const abis = {
   token0: 'address:token0',
