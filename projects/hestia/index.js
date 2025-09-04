@@ -4,8 +4,7 @@ const vault = "0xC10aA720dFde56be6fB37F91189a64215a61ddc3";
 const hestiaToken = "0xBC7755a153E852CF76cCCDdb4C2e7c368f6259D8";
 const pHestiaToken = "0xF760fD8fEB1F5E3bf3651E2E4f227285a82470Ff";
 
-const abi = [
-  // getState() returns pHestia balance
+const abiVault = [
   {
     inputs: [],
     name: "getState",
@@ -22,7 +21,9 @@ const abi = [
     stateMutability: "view",
     type: "function",
   },
-  // convertPtknToTkn(uint256) returns Hestia amount from pHestia
+];
+
+const abiPHestia = [
   {
     inputs: [{ internalType: "uint256", name: "ptknAmount", type: "uint256" }],
     name: "convertPtknToTkn",
@@ -38,7 +39,7 @@ module.exports = {
       // 1️⃣ Get pHestia balance from vault
       const state = await sdk.api.abi.call({
         target: vault,
-        abi: abi[0],
+        abi: abiVault[0],
         chain: "base",
       });
 
@@ -47,10 +48,10 @@ module.exports = {
         state.output?.[0]?.pHestiaBalance?.toString() ||
         "0";
 
-      // 2️⃣ Convert pHestia to Hestia
+      // 2️⃣ Convert pHestia to Hestia using pHestia contract
       const converted = await sdk.api.abi.call({
-        target: vault,
-        abi: abi[1],
+        target: pHestiaToken,  // <- call is on pHestia contract, not vault
+        abi: abiPHestia[0],
         params: [pHestiaBalance],
         chain: "base",
       });
