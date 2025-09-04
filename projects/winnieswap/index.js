@@ -13,16 +13,16 @@ const tvl = async (api) => {
   const stickyvaults = (await api.multiCall({ calls: deployers.map((d) => ({ target: winnieFactory, params: [d] })), abi: abis.getStickyVault })).flat()
 
   const [token0s, token1s, balances] = await Promise.all([
-    api.multiCall({ calls: stickyvault, abi: abis.token0, permitFailure: true }),
-    api.multiCall({ calls: stickyvault, abi: abis.token1, permitFailure: true }),
-    api.multiCall({ calls: stickyvault, abi: abis.getUnderlyingBalances, permitFailure: true })
+    api.multiCall({ calls: stickyvaults, abi: abis.token0, permitFailure: true }),
+    api.multiCall({ calls: stickyvaults, abi: abis.token1, permitFailure: true }),
+    api.multiCall({ calls: stickyvaults, abi: abis.getUnderlyingBalances, permitFailure: true })
   ])
 
-  stickyvault.forEach((_, i) => {
+  stickyvaults.forEach((_, i) => {
     const token0 = token0s[i]
     const token1 = token1s[i]
     const balance = balances[i]
-    if (!token0  !token1  !balance) return
+    if (!token0 || !token1 || !balance) return
     const { amount0Current, amount1Current } = balance
     api.add(token0, amount0Current)
     api.add(token1, amount1Current)
