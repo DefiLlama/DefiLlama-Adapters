@@ -7,7 +7,7 @@ function parseTypeTag(type){
 	return parseStructTag(type);
 }
 
-export function splitGenericParameters(
+function splitGenericParameters(
 	str,
 	genericSeparators= ['<', '>'],
 ) {
@@ -45,7 +45,7 @@ function normalizeSuiAddress(value, forceAdd0x = false){
 	return `0x${address.padStart(32 * 2, '0')}`;
 }
 
-export function parseStructTag(type) {
+function parseStructTag(type) {
 	const [address, module] = type.split('::');
 
 	const rest = type.slice(address.length + module.length + 4);
@@ -64,7 +64,7 @@ export function parseStructTag(type) {
 	};
 }
 
-export function normalizeStructTag(type) {
+function normalizeStructTag(type) {
 	const { address, module, name, typeParams } =
 		typeof type === 'string' ? parseStructTag(type) : type;
 
@@ -80,7 +80,7 @@ export function normalizeStructTag(type) {
 	return `${address}::${module}::${name}${formattedTypeParams}`;
 }
 
-export async function getAllVaultIds() {
+async function getAllVaultIds() {
    const newVaultEventType =
   "0x9f835c21d21f8ce519fec17d679cd38243ef2643ad879e7048ba77374be4036e::events::VaultCreated";
   const res = await queryEvents({eventType: newVaultEventType});
@@ -98,7 +98,7 @@ export async function getAllVaultIds() {
   },{});
 }
 
-export async function getAllPoolIds() {
+async function getAllPoolIds() {
    const newPSMPoolEventType =
   "0xc2ae6693383e4a81285136effc8190c7baaf0e75aafa36d1c69cd2170cfc3803::events::NewPsmPool";
   const res = await queryEvents({eventType: newPSMPoolEventType});
@@ -116,7 +116,7 @@ export async function getAllPoolIds() {
   },{});
 }
 
-export function mappingTokenAsset(type){
+function mappingTokenAsset(type){
     switch (type) {
         case '0x2f2226a22ebeb7a0e63ea39551829b238589d981d1c6dd454f01fcc513035593::house::StakedHouseCoin<0x5de877a152233bdd59c7269e2b710376ca271671e9dd11076b1ff261b2fd113c::up_usd::UP_USD>':
             return ADDRESSES.sui.USDC
@@ -139,4 +139,11 @@ export function mappingTokenAsset(type){
         default:
             return type
     }
+}
+
+module.exports = {
+	parseStructTag,
+	getAllVaultIds,
+	getAllPoolIds,
+	mappingTokenAsset
 }

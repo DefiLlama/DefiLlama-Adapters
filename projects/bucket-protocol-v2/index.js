@@ -1,4 +1,3 @@
-const ADDRESSES = require("../helper/coreAssets.json");
 const {getAllVaultIds, getAllPoolIds, mappingTokenAsset} = require("./utils")
 const { getObject } = require("../helper/chain/sui");
 
