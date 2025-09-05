@@ -1,5 +1,11 @@
 const poolconfig = require('./staking.json');
 
+const sfiToken = {
+  1: "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF",
+  56: "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF",
+  8453: "0x7636D8722Fdf7cd34232a915E48e96aA3eB386BF"
+};
+
 const vaultRegistry = {
   1: [],
   56: [],
@@ -14,107 +20,129 @@ const CHAIN_IDS = {
 
 // calculates the tvl of the SFI dynavaults by calling totalAsset which is a representation of the vault tvl in in a reference asset
 async function calculateDynaVaultTVL(api, chainId) {
-  for (let r = 0; r < vaultRegistry[chainId].length; r++) {
-    // Fetch vaults from registry
-    const dynaVaults = await api.call({
+  for (let i = 0; i < vaultRegistry[chainId].length; i++) {
+    const dynaVaults = await api.multiCall({
       abi: 'function allVaults() view returns (tuple(address vault, uint8 VaultType, bool active)[] memory)',
-      target: vaultRegistry[chainId][r],
+      calls: vaultRegistry[chainId],
     });
 
+    const assets = await api.multiCall({
+      abi: "function asset() view returns (address)",
+      calls: dynaVaults[0].map(vault => ({
+        target: vault.vault,
+      })),
+    });
 
-    // Get tvl of each vault
-    for (let i = 0; i < dynaVaults.length; i++) {
-      try {
-        // Get total assets from vault
-        let totalAssets = await api.call({
-          abi: 'function totalAssets() view returns (uint256)',
-          target: dynaVaults[i].vault,
-        });
+    const totalAssets = await api.multiCall({
+      abi: "function totalAssets() view returns (uint256)",
+      calls: dynaVaults[0].map(vault => ({
+        target: vault.vault,
+      })),
+    });
 
-        // Get the asset address
-        const assetAddress = await api.call({
-          abi: 'function asset() view returns (address)',
-          target: dynaVaults[i].vault,
-        });
-
-        // Add the vault's assets to TVL
-        if (assetAddress && totalAssets) {
-          api.add(assetAddress, totalAssets);
-        }
-      } catch (e) {
-        console.log(`Error processing vault ${dynaVaults[i].vault}:`, e);
-      }
-    }
+    assets.forEach((asset, i) => {
+      api.add(asset, totalAssets[i]);
+    })
   }
 }
 
-// calculates the tlv of the SFI staking pools. Each pool takes a deposit token and has a rewardToken.
-async function calculateStakingTVL(api, chainId) {
-  // Filter staking pools by chain
-  const stakingPools = poolconfig.filter(pool => pool.chainId === chainId);
+// calculates the tvl of the SFI staking pools. Each pool takes a deposit token and has a rewardToken.
+async function calculateStaking(api, chainId) {
+  const stakingPools = poolconfig.filter(pool => pool.chainId === chainId && pool.depositTokenAddress != sfiToken[chainId]);
 
-  // Get tvl of each pool
-  for (const pool of stakingPools) {
-    try {
-      const depositToken = pool.depositTokenAddress;
-      const rewardToken = pool.rewardsTokenAddress
+  const stakingBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: stakingPools.map(pool => ({
+      target: pool.depositTokenAddress,
+      params: [pool.stakingContractAddress],
+    })),
+  });
 
-      // Get balance from main staking contract
-      const stakingBalance = await api.call({
-        abi: 'erc20:balanceOf',
-        target: depositToken,
-        params: [pool.stakingContractAddress],
-      });
+  stakingBalances.forEach((balance, i) => {
+    api.add(stakingPools[i].depositTokenAddress, balance);
+  })
 
-      // Add staking contract balance
-      if (stakingBalance) {
-        api.add(depositToken, stakingBalance);
-      }
+  const rewardBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: stakingPools.map(pool => ({
+      target: pool.rewardsTokenAddress,
+      params: [pool.rewardsContractAddress],
+    })),
+  });
 
-      // If there's a rewards contract, check its balance
-      if (pool.rewardsContractAddress) {
-        const rewardsBalance = await api.call({
-          abi: 'erc20:balanceOf',
-          target: rewardToken,
-          params: [pool.rewardsContractAddress],
-        });
-
-        // Add rewards contract balance
-        if (rewardsBalance) {
-          api.add(rewardToken, rewardsBalance);
-        }
-      }
-    } catch (e) {
-      console.log(`Error processing staking pool ${pool.stakingContractAddress}:`, e);
-    }
-  }
+  rewardBalances.forEach((balance, i) => {
+    api.add(stakingPools[i].rewardsTokenAddress, balance);
+  })
 }
 
-// Calculate the TVL for each supported chain
+async function calculateSFIStaking(api, chainId) {
+  const stakingPools = poolconfig.filter(pool => pool.chainId === chainId && pool.depositTokenAddress == sfiToken[chainId]);
+
+  const stakingBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: stakingPools.map(pool => ({
+      target: pool.depositTokenAddress,
+      params: [pool.stakingContractAddress],
+    })),
+  });
+
+  stakingBalances.forEach((balance, i) => {
+    api.add(stakingPools[i].depositTokenAddress, balance);
+  })
+
+  const rewardBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: stakingPools.map(pool => ({
+      target: pool.rewardsTokenAddress,
+      params: [pool.rewardsContractAddress],
+    })),
+  });
+
+  rewardBalances.forEach((balance, i) => {
+    api.add(stakingPools[i].rewardsTokenAddress, balance);
+  })
+}
+
+// Calculate the tvl for each supported chain
 async function tvlEthereum(api) {
   await calculateDynaVaultTVL(api, CHAIN_IDS.ethereum);
-  await calculateStakingTVL(api, CHAIN_IDS.ethereum);
+  await calculateStaking(api, CHAIN_IDS.ethereum);
+}
+
+async function sfiStakedOnEthereum(api) {
+  await calculateSFIStaking(api, CHAIN_IDS.ethereum);
 }
 
 async function tvlBsc(api) {
   await calculateDynaVaultTVL(api, CHAIN_IDS.bsc);
-  await calculateStakingTVL(api, CHAIN_IDS.bsc);
+  await calculateStaking(api, CHAIN_IDS.bsc);
+}
+
+async function sfiStakedOnBsc(api) {
+  await calculateSFIStaking(api, CHAIN_IDS.bsc);
 }
 
 async function tvlBase(api) {
   await calculateDynaVaultTVL(api, CHAIN_IDS.base);
-  await calculateStakingTVL(api, CHAIN_IDS.base);
+  await calculateStaking(api, CHAIN_IDS.base);
+}
+
+async function sfiStakedOnBase(api) {
+  await calculateSFIStaking(api, CHAIN_IDS.base);
 }
 
 module.exports = {
   methodology: 'Counts the total value locked in DynaVaults (via totalAssets) and staking contracts (token balances).',
   ethereum: {
     tvl: tvlEthereum,
+    staking: sfiStakedOnEthereum
   },
   bsc: {
     tvl: tvlBsc,
+    staking: sfiStakedOnBsc
   },
   base: {
     tvl: tvlBase,
+    staking: sfiStakedOnBase
   }
 };
