@@ -62,19 +62,14 @@ Object.keys(config).forEach(chain => {
           owner: '0x4809010926aec940b550D34a46A52739f996D75D', token: ADDRESSES.ethereum.USDC
         })
 
-        // count USDC deposited in Euler eUSDC vault
-        // vault: 0xe0a80d35bb6618cba260120b279d357978c42bce
-        // account: 0x3063C5907FAa10c01B242181Aa689bEb23D2BD65
-
         let shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0xe0a80d35bb6618cba260120b279d357978c42bce', params: ['0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'] })
         let assetBalance = await api.call({ abi: 'function convertToAssets(uint256) view returns (uint256)', target: '0xe0a80d35bb6618cba260120b279d357978c42bce', params: [shareBalance.toString()] })
 
         api.add(ADDRESSES.ethereum.USDC, assetBalance)
 
         shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', params: ['0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'] })
-        assetBalance = await api.call({ abi: 'function convertToAssets(uint256) view returns (uint256)', target: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', params: [shareBalance.toString()] })
 
-        api.add(ADDRESSES.ethereum.USDe, assetBalance)
+        api.add(ADDRESSES.ethereum.USDe, shareBalance)
 
         return api.getBalances()
       }
