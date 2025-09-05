@@ -7,9 +7,9 @@ const sfiToken = {
 };
 
 const vaultRegistry = {
-  1: [],
-  56: [],
-  8453: ["0x414F0e07cd833cE73c9d59280699f910b48E1ECb"],
+  // 1: "",
+  // 56: "",
+  8453: "0x414F0e07cd833cE73c9d59280699f910b48E1ECb",
 };
 
 const CHAIN_IDS = {
@@ -20,30 +20,30 @@ const CHAIN_IDS = {
 
 // calculates the tvl of the SFI dynavaults by calling totalAsset which is a representation of the vault tvl in in a reference asset
 async function calculateDynaVaultTVL(api, chainId) {
-  for (let i = 0; i < vaultRegistry[chainId].length; i++) {
-    const dynaVaults = await api.multiCall({
-      abi: 'function allVaults() view returns (tuple(address vault, uint8 VaultType, bool active)[] memory)',
-      calls: vaultRegistry[chainId],
-    });
+  if (vaultRegistry[chainId] == undefined) return;
 
-    const assets = await api.multiCall({
-      abi: "function asset() view returns (address)",
-      calls: dynaVaults[0].map(vault => ({
-        target: vault.vault,
-      })),
-    });
+  const dynaVaults = await api.call({
+    abi: 'function allVaults() view returns (tuple(address vault, uint8 VaultType, bool active)[] memory)',
+    target: vaultRegistry[chainId]
+  });
 
-    const totalAssets = await api.multiCall({
-      abi: "function totalAssets() view returns (uint256)",
-      calls: dynaVaults[0].map(vault => ({
-        target: vault.vault,
-      })),
-    });
+  const assets = await api.multiCall({
+    abi: "function asset() view returns (address)",
+    calls: dynaVaults.map(vault => ({
+      target: vault.vault,
+    })),
+  });
 
-    assets.forEach((asset, i) => {
-      api.add(asset, totalAssets[i]);
-    })
-  }
+  const totalAssets = await api.multiCall({
+    abi: "function totalAssets() view returns (uint256)",
+    calls: dynaVaults.map(vault => ({
+      target: vault.vault,
+    })),
+  });
+
+  assets.forEach((asset, i) => {
+    api.add(asset, totalAssets[i]);
+  })
 }
 
 // calculates the tvl of the SFI staking pools. Each pool takes a deposit token and has a rewardToken.
