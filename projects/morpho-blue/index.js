@@ -38,7 +38,7 @@ const config = {
   },
   polygon: {
     morphoBlue: "0x1bF0c2541F820E775182832f06c0B7Fc27A25f67",
-    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719"],
+    blackList: ["0x45d4a31854f09a257ff6b3c3ae0d0f479a898da9", "0xaffcf1312772583d9d0b9f6e68f5767154b29dfd", "0xa39c45a857bb82df069f63ca8741a02ebe7e9719", "0xc69e948a9a5c123704580c46332f90cff1cb215b", "0x316c0b5cd67aa7c2da7a576d3724e3763981d08f", "0xd59a2e7d5110dc379910925aa0472a13e09a093e", "0xc7a357293a35ce4c8d7f2000571043313987aab7", "0xf14c4fd60765e36d63f6c8b8161bd41ba995fb44"],
     fromBlock: 66931042,
   },
   scroll: {
@@ -109,10 +109,10 @@ const config = {
   //   morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
   //   fromBlock: 450759,
   // },
-   tac: {
-     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
-     fromBlock: 1308542,
-   },
+  tac: {
+    morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
+    fromBlock: 1308542,
+  },
   zircuit: {
     morphoBlue: "0xA902A365Fe10B4a94339B5A2Dc64F60c1486a5c8",
     fromBlock: 14640172,
@@ -127,7 +127,8 @@ const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [] } = config[api.chain]
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true })
+  const extraKey = 'reset-v2'
+  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, })
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport, getCuratorTvl } = require("../helper/curators");
 const { ABI } = require("../helper/curators/configs");
 
@@ -5,14 +6,15 @@ const { ABI } = require("../helper/curators/configs");
 // HYPERBEAT MAPPINGS CONFIGURATION
 // ==============================================
 const HYPERBEAT_MAPPINGS = [
-  { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
+  { vault: '0x5e105266db42f78fa814322bce7f388b4c2e61eb', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT -> USDT0
   { vault: '0x441794d6a8f9a3739f5d4e98a728937b33489d29', underlying: '0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB' }, // Hyperbeat beHYPE -> HBHYPE
-  { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat lstHYPE -> WHYPE
+  { vault: '0x81e064d0eb539de7c3170edf38c1a42cbd752a76', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat lstHYPE -> WHYPE
   { vault: '0xd3a9cb7312b9c29113290758f5adfe12304cd16a', underlying: '0x5C9f0d8057bE5eD36EEEAB9b78B9c5c3f8126aB1' }, // Hyperbeat USR -> USR (ethereum address)
   { vault: '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', underlying: '0xf4D9235269a96aaDaFc9aDAe454a0618eBE37949', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat XAUt -> XAUT0
-  { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: '0x5555555555555555555555555555555555555555' }, // Hyperbeat WHYPE -> WHYPE
-  { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
-  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
+  { vault: '0xd19e3d00f8547f7d108abfd4bbb015486437b487', underlying: ADDRESSES.hyperliquid.WHYPE }, // Hyperbeat WHYPE -> WHYPE
+  { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
+  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
+  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
 ];
 
 // ==============================================
@@ -199,7 +201,11 @@ const configs = {
         '0xa97087d21d0b470cb1a09255d26e34e1a392cbfd', // MEV Capital Resolv USR (Morpho)
         '0xdc87d00d83153374e150d17b960fc74aa413d03a', // MEV Capital wETH (Morpho)
         '0x8eb9f9e97d6a63aab7572ad0d96fa3f09255cce9', // yUSD (v1)
-      ]
+      ],
+        ipor: [
+
+            '0xd731f94c778f7c1090e2e0d797150a647de5188a'
+        ]
     },
     unichain: {
       morpho: [
@@ -271,7 +277,8 @@ const configs = {
         '0x6eb6724d8d3d4ff9e24d872e8c38403169dc05f8', // Hyperbeat XAUt (price not in the api yet)
         '0xd19e3d00f8547f7d108abfd4bbb015486437b487', // Hyperbeat WHYPE (price not in the api yet)
         '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', // Hyperbeat USDT0 (price not in the api yet)
-        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29'
+        '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', // Hyperbeat dnHYPE (price not in the api yet)
+        '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', // Hyperbeat wVLP (price not in the api yet)
       ]
     },
     sonic: {
@@ -324,7 +331,7 @@ const configs = {
 // ==============================================
 
 const PROTOCOL_HANDLERS = {
-  erc4626: ['upshift', 'term', 'termmax', 'lista'],
+  erc4626: ['upshift', 'term', 'termmax', 'lista', 'ipor'],
   totalSupply: ['terminal', 'midas'],
   mizuType: ['mizu'],
   napierType: ['napier'],

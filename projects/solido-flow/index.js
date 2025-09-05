@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const {
   invokeViewFunction,
@@ -9,7 +10,7 @@ const CDP_GET_TOTAL_STATS_FUNCTION_TYPE =
   
 const calculateSolidoFlowTVL = async (api) => {
   const chain = api.chain;
-  const SUPRA = "0x1::supra_coin::SupraCoin";
+  const SUPRA = ADDRESSES.supra.SUPRA;
   let balances = {};
     const totalCollateral = await invokeViewFunction(
       CDP_GET_TOTAL_STATS_FUNCTION_TYPE,

@@ -24,7 +24,7 @@ const tvl = async (api) => {
         }))
     ]);
     const assetAvailableBalancesResults = results.slice(0, assetAddresses.length)
-    const coverageResults = results.slice(assetAddresses.length)
+    const coverageResults = results.slice(agentConfigs.length)
 
     for (const [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
         api.add(asset, availableBalance)
@@ -58,18 +58,11 @@ const borrowed = async (api) => {
     }
 }
 
-const staking = async (api) => {
-    const tokens = capConfig[chain].tokens;
-    const stcUSD = tokens.stcUSD;
-    return api.erc4626Sum({ calls: [stcUSD.address], tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
-}
-
 module.exports = {
     methodology: 'count the total supplied assets on capToken vaults and the total delegated assets on networks (symbiotic, eigenlayer, etc.)',
     start: 1000235,
     ethereum: {
         tvl,
         borrowed,
-        staking,
     }
 };

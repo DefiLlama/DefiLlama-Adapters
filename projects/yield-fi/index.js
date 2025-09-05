@@ -10,6 +10,7 @@ const yusd_config = {
     katana: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     bsc: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     avax: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
+    tac: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
 }
 
 const vyusd_config = {
@@ -22,6 +23,7 @@ const vyusd_config = {
     katana: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     bsc: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     avax: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    tac: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
 }
 
 const lockbox = "0x659b5bc7F2F888dB3D5901b78Cdb34DF270E2231";
