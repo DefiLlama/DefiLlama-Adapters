@@ -12,7 +12,15 @@ function sumERC4626VaultsExport({ vaults, ...options }) {
   }
 }
 
+function sumERC4626VaultsExport2({ vaults, ...options }) {
+  return async (api) => {
+    await sumERC4626Vaults({ isOG4626: true, ...options, api, calls: vaults })
+    return sumTokens2({ api }) // hack to transform tokens
+  }
+}
+
 module.exports = {
   sumERC4626Vaults,
   sumERC4626VaultsExport,
+  sumERC4626VaultsExport2,
 }
