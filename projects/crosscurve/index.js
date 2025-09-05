@@ -1,7 +1,7 @@
 const { getConfig } = require("../helper/cache");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const loadProtalBalances = async (api, config, chainKey) => {
+const loadPortalBalances = async (api, config, chainKey) => {
   const chainId = config[chainKey].chainId;
   const tokensLockedInPortal = Object.values(config)
     .flatMap(x => x.tokens
@@ -18,13 +18,30 @@ const loadProtalBalances = async (api, config, chainKey) => {
   return portalBalances;
 }
 
+const tagsRelatedToCrossCurve = [
+  'farming_pool',
+  'voting_pool',
+  'hub_v3_lp',
+  'hub_v2_lp',
+  'hub_v1_5_lp',
+  'hub_crypto_v2_lp',
+];
+
 const loadPoolsBalances = async (api, config, chainKey) => {
-  const crosscurvePools = config[chainKey].pools.filter(pool => pool.tags.includes('voting_pool'))
+  const crosscurvePools = config[chainKey].pools.filter(pool => tagsRelatedToCrossCurve.some(x => pool.tags.includes(x)))
   const tokensInPools = crosscurvePools.flatMap(pool => {
     return pool.coins.map(coin => {
       const token = config[chainKey].tokens.find(t => t.address.toLowerCase() === coin.toLowerCase())
 
-      return token?.address
+      if (
+        !token ||
+        token.tags.includes('curve_lp') ||
+        token.tags.includes('synth')
+      ) {
+        return
+      }
+
+      return token.address
     }).filter(Boolean)
   })
 
@@ -48,7 +65,7 @@ const loadTvl = (chainKey) => async (api) => {
     throw new Error(`Unsupported chain ${chainKey}`)
   }
   
-  const portalBalances = await loadProtalBalances(api, config, chainKey);
+  const portalBalances = await loadPortalBalances(api, config, chainKey);
   const poolsBalances = await loadPoolsBalances(api, config, chainKey);
 
   return { ...portalBalances, ...poolsBalances };
