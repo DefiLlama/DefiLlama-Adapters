@@ -1,0 +1,24 @@
+{
+  "name": "GalaChain",
+  "slug": "galachain",
+  "nonEvm": true,
+  "explorers": [
+    {
+      "name": "Gala Explorer",
+      "url": "https://explorer.galachain.com",
+      "standard": "none"
+    },
+    {
+      "name": "GalaScan",
+      "url": "https://galascan.gala.com",
+      "standard": "none"
+    }
+  ],
+  "nativeCurrency": {
+    "name": "Gala",
+    "symbol": "GALA",
+    "decimals": 8
+  },
+  "gecko_id": "gala",
+  "shortName": "gala"
+}
