@@ -6,7 +6,7 @@ const MIAMI_CONTRACT = 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-core-
 const MIAMI_CONTRACT_V2 = 'SP1H1733V5MZ3SZ9XRW9FKYGEZT0JDGEB8Y634C7R.miamicoin-core-v2'
 const MIAMI_CITY_WALLET = 'SM2MARAVW6BEJCD13YV2RHGYHQWT7TDDNMNRB1MVT'
 const NYC_CITY_WALLET = 'SM18VBF2QYAAHN57Q28E2HSM15F6078JZYZ2FQBCX'
-const MIAM_REWARDS = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3'
+const MIAMI_REWARDS = 'SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd002-treasury-mia-rewards-v3'
 
 module.exports = {
   stacks: {
@@ -15,7 +15,7 @@ module.exports = {
       tokens: [nullAddress]
     }),
     treasury: sumTokensExport({
-      owners: [MIAM_REWARDS],
+      owners: [MIAMI_REWARDS],
       tokens: [nullAddress]
     }),
     staking: sumTokensExport({
