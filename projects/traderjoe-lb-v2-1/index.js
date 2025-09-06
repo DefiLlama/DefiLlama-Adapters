@@ -3,7 +3,10 @@ const { joeV2Export } = require('../helper/traderJoeV2')
 
 module.exports = joeV2Export({
   avax: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
-  arbitrum: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
+  arbitrum: {
+    factory: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
+    blacklistedTokens: ['0xef261714f7e5ba6b86f4780eb6e3bf26b10729cf'],
+  },
   bsc: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
   ethereum: '0xDC8d77b69155c7E68A95a4fb0f06a71FF90B943a',
 })

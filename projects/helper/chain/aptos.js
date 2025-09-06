@@ -44,6 +44,21 @@ async function getResource(account, key, chain = 'aptos') {
   return data
 }
 
+async function getFungibles(tokenAddress, owners, balances) {
+  if (!owners?.length) return;
+
+  await Promise.all(
+    owners.map(async (ownerRaw) => {
+      const owner = ownerRaw.toLowerCase();
+      const url = `${endpointMap['aptos']()}/v1/accounts/${owner}/balance/${tokenAddress}`;
+
+      const tokenAmount = await http.get(url);
+      if (!tokenAmount) return;
+      sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount)
+    })
+  );
+}
+
 function dexExport({
   account,
   poolStr,
@@ -90,16 +105,26 @@ function dexExport({
   }
 }
 
+async function getBalance(account, token, chain = 'aptos') {
+  let url = `${endpointMap[chain]()}/v1/accounts/${account}/balance/${token}`
+  return await http.get(url)
+}
+
 async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [], api, chain = 'aptos' }) {
   if (api) chain = api.chain
-  owners = getUniqueAddresses(owners, true)
-  const resources = await Promise.all(owners.map(i => getResources(i, chain)))
-  resources.flat().filter(i => i.type.includes('::CoinStore')).forEach(i => {
-    const token = i.type.split('<')[1].replace('>', '')
-    if (tokens.length && !tokens.includes(token)) return;
-    if (blacklistedTokens.includes(token)) return;
-    sdk.util.sumSingleBalance(balances, token, i.data.coin.value)
-  })
+  const uniqueOwners = getUniqueAddresses(owners, true)
+  const validTokens = tokens.filter(token => !blacklistedTokens.includes(token));
+
+  for (const owner of uniqueOwners) {
+    const balancesPerToken = await Promise.all(
+        validTokens.map(token => getBalance(owner, token))
+    );
+
+    validTokens.forEach((token, index) => {
+      sdk.util.sumSingleBalance(balances, token, balancesPerToken[index]);
+    });
+  }
+
   return transformBalances(chain, balances)
 }
 
@@ -191,6 +216,16 @@ const timestampToVersion = async (timestamp, minBlock = 0, chain = 'aptos') => {
   return mappedBlocks[0].version;
 }
 
+async function functionViewWithApiKey({ functionStr, type_arguments = [], args = [], ledgerVersion = undefined, apiKey = undefined, chain = 'aptos' }) {
+  let path = `${endpointMap[chain]()}/v1/view`
+  if (ledgerVersion !== undefined) path += `?ledger_version=${ledgerVersion}`
+  const headers = {
+    "Authorization": "Bearer " + apiKey
+  }
+  const response = await http.post(path, { "function": functionStr, "type_arguments": type_arguments, arguments: args }, {headers: headers})
+  return response.length === 1 ? response[0] : response
+}
+
 module.exports = {
   endpoint: endpoint(),
   endpointMap,
@@ -204,5 +239,6 @@ module.exports = {
   getTableData,
   function_view,
   hexToString,
-  timestampToVersion
+  timestampToVersion,
+  functionViewWithApiKey
 };

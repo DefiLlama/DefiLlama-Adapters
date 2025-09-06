@@ -33,9 +33,9 @@ module.exports = {
     staking: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT_ARBITRUM, tokens: [ASTRA_TOKEN_CONTRACT_ARBITRUM] }),
   },
   hallmarks: [
-    [Math.floor(new Date('2023-09-14') / 1e3), 'Security Incident'],
-    [Math.floor(new Date('2024-01-04') / 1e3), 'Arbitrum Launch'],
-    [Math.floor(new Date('2024-03-29') / 1e3), 'Shutdown Indices and Distributed User Funds'],
-    [Math.floor(new Date('2024-04-05') / 1e3), 'Launched New Indices'],
+    ['2023-09-14', 'Security Incident'],
+    ['2024-01-04', 'Arbitrum Launch'],
+    ['2024-03-29', 'Shutdown Indices and Distributed User Funds'],
+    ['2024-04-05', 'Launched New Indices'],
   ],
 };

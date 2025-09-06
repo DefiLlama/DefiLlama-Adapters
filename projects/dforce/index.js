@@ -198,7 +198,7 @@ const chains = ['ethereum', "bsc", "arbitrum", "optimism", "polygon", "avax", "k
 module.exports = {
   start: '2019-07-26', // Jul-27-2019 02:17:24 AM +UTC
   hallmarks: [
-    [Math.floor(new Date('2023-12-19')/1e3), 'Unitus spin-off'],
+    ['2023-12-19', 'Unitus spin-off'],
   ],
 }
 chains.forEach(chain => {

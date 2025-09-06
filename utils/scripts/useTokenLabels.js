@@ -11,7 +11,7 @@ const { ibcChains } = require('../../projects/helper/tokenMapping')
 // const rootFolder = projectsDir + '/zharta'
 const rootFolder = projectsDir
 
-const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', ...ibcChains]
+const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', 'ripple', 'noble', ...ibcChains]
 
 function run() {
   ignoredChains.forEach(i => delete allLabels[i])
@@ -42,7 +42,7 @@ function updateFile(file) {
 
   Object.entries(allLabels).forEach(([chain, mapping]) => {
     const label = ['ADDRESSES', chain]
-    if (chain === 'null') {
+    if (chain === 'null' || chain === 'GAS_TOKEN_2') {
       updateFileStr([...label].join('.'), mapping)
     } else {
       Object.entries(mapping).forEach(([symbol, addr]) => {
