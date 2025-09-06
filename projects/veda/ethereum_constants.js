@@ -270,6 +270,15 @@ const boringVaultsV0Ethereum = [
     startBlock: 22639318,
     baseAsset: ADDRESSES.ethereum.USDT,
   },
+  {
+    name: "Golden Goose",
+    vault: "0xef417FCE1883c6653E7dC6AF7c6F85CCDE84Aa09",
+    accountant: "0xc873F2b7b3BA0a7faA2B56e210E3B965f2b618f5",
+    teller: "0x0baAb6db8d694E1511992b504476ef4073fe614B",
+    lens: "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
+    startBlock: 23231987,
+    baseAsset: ADDRESSES.ethereum.WETH,
+  }
 ];
 
 module.exports = {
