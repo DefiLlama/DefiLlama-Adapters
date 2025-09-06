@@ -20,7 +20,7 @@ module.exports = {
       const { data: poolsData } = await getConfig('thalaswap-v3', 'https://app.thala.fi/api/liquidity-pools');
 
       // Filter for V3 pools and get lptAddresses
-      const v3Pools = poolsData.filter(pool => pool.version === 3);
+      const v3Pools = poolsData.filter(pool => pool.metadata.version === 3);
 
       const { errors } = await PromisePool.for(v3Pools)
         .withConcurrency(2)
