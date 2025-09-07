@@ -1,4 +1,3 @@
-const { staking } = require("../helper/staking");
 
 const finsFactory = "0xe759Dd4B9f99392Be64f1050a6A8018f73B53a13";
 
@@ -8,6 +7,4 @@ const jawsPool = "0x5D2112Ba0969EC66012380C1fb88F2A3D182Eb90";
 const { uniTvlExports } = require('../helper/unknownTokens')
 module.exports = uniTvlExports({
   'bsc': finsFactory
-})
-
-module.exports.bsc.staking = staking(jawsPool, jaws)
+}, {staking: { bsc: [jawsPool, jaws] }})

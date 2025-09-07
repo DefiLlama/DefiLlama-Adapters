@@ -1,23 +1,11 @@
 const ADDRESSES = require('./coreAssets.json')
-const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { getEnv } = require('./env')
-const erc20 = require('./abis/erc20.json')
-
-async function returnBalance(token, address, block, chain) {
-  const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
-  let { output: balance } = await sdk.api.erc20.balanceOf({ target: token, owner: address, chain, block })
-  balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
-  return parseFloat(balance);
-}
-
-async function returnEthBalance(address) {
-  const output = await sdk.api.eth.getBalance({ target: address })
-  let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
-  return parseFloat(ethAmount);
-}
+const erc20 = require('./abis/erc20.json');
+const { fetchThroughProxy } = require('./proxyRequest');
+const { beacon } = require('./chain/rpcProxy');
 
 async function fetchURL(url) {
   return axios.get(url)
@@ -52,7 +40,7 @@ const blacklisted_LPS = new Set([
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
-  if (chain === 'bsc' && symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  if (symbol.startsWith('IV-')) return true
   return false
 }
 
@@ -94,7 +82,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
   if (chain === 'arbitrum' && /^(DLP|LP-)/.test(symbol)) return false // DODO or Wombat
-  if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
+  if (['base', 'sonic',].includes(chain) && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
@@ -259,7 +247,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel']
+    const blacklistedChains = ['starknet', 'solana', 'sui', 'aptos', 'fuel', 'move']
     if (!token.startsWith('0x') || blacklistedChains.includes(chain)) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
@@ -315,7 +303,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     return true
   })
   if (filtered.length > 300) {
-    sdk.log('Too many unknowns to display #'+filtered.length, 'displaying first 100')
+    sdk.log('Too many unknowns to display #' + filtered.length, 'displaying first 100')
     filtered = filtered.slice(0, 100)
   }
   if (filtered.length)
@@ -334,13 +322,75 @@ function once(func) {
   return wrapped
 }
 
+function getStakedEthTVL({ withdrawalAddress, withdrawalAddresses, skipValidators = 0, size = 200, sleepTime = 10000, proxy = false }) {
+  return async (api) => {
+
+    if (!withdrawalAddress && !withdrawalAddresses?.length)
+      throw new Error('Please provide withdrawalAddress or withdrawalAddresses')
+
+    const addresses = withdrawalAddresses ?? [withdrawalAddress]
+    api.addGasToken(await beacon.balance(addresses))
+    return api.getBalances()
+
+/*     for (const addr of addresses) {
+      let fetchedValidators = skipValidators;
+      api.sumTokens({ owner: addr, tokens: [nullAddress] });
+
+      do {
+        const url = `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${addr}?limit=${size}&offset=${fetchedValidators}`
+        let validatorList;
+
+        if (proxy) {
+          const res = await fetchThroughProxy(url);
+          validatorList = res.data;
+        } else {
+          const res = await http.get(url);
+          validatorList = res.data;
+        }
+
+        if (!Array.isArray(validatorList)) {
+          console.error(`Invalid validator list for ${addr} at offset ${fetchedValidators}`);
+          break;
+        }
+
+        const validators = validatorList.map(i => i.publickey);
+
+        fetchedValidators += validators.length;
+        api.log(`Fetching balances for validators (${addr})`, validators.length);
+        await addValidatorBalance(validators);
+        if (sleepTime > 0) await sleep(sleepTime);
+      } while (fetchedValidators % size === 0);
+    }
+
+    const bals = api.getBalances()
+    Object.keys(bals).forEach((i) => {
+      bals[i] = bals[i] / 1e18
+    })
+    console.log(api.getBalances(), )
+    return api.getBalances();
+
+    async function addValidatorBalance(validators) {
+      if (validators.length > 100) {
+        const chunks = sliceIntoChunks(validators, 100);
+        for (const chunk of chunks) await addValidatorBalance(chunk);
+        return;
+      }
+
+      const { data } = await http.post("https://beaconcha.in/api/v1/validator", {
+        indicesOrPubkey: validators.join(","),
+      });
+
+      data.forEach((i) => api.addGasToken(i.balance * 1e9));
+    } */
+  };
+}
+
+
 module.exports = {
   log,
   createIncrementArray,
   fetchURL,
   postURL,
-  returnBalance,
-  returnEthBalance,
   isLP,
   mergeExports,
   getBalance,
@@ -355,4 +405,5 @@ module.exports = {
   getParamCalls,
   once,
   isICHIVaultToken,
+  getStakedEthTVL,
 }

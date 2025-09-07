@@ -9,7 +9,7 @@ const DEUSD_LP_STAKING = "0xC7963974280261736868f962e3959Ee1E1B99712";
 const COMMITS_CONTRACT = "0x4265f5D6c0cF127d733EeFA16D66d0df4b650D53";
 const COMMITS_VAULT = "0x4B4EEC1DDC9420a5cc35a25F5899dC5993f9e586";
 const COMMITS_VAULT_2 = "0x704377f719651C3eE6902Ff3C9D5522e5054d429";
-const deUSD = "0x15700b564ca08d9439c58ca5053166e8317aa138";
+const deUSD = ADDRESSES.ethereum.deUSD;
 
 const LP_TOKENS = [
   "0xb478Bf40dD622086E0d0889eeBbAdCb63806ADde", // DEUSD/DAI Curve LP
@@ -55,5 +55,10 @@ module.exports = {
       ])
       await integration(api, ORDERLY_MANAGER, Array.from({ length: 10 }, (_, i) => i + 1))
     }
+  },
+  sei: {
+    tvl: sumTokensExport({ tokensAndOwners: [
+      ['0xBE574b6219C6D985d08712e90C21A88fd55f1ae8', '0x3490a00b308C5A1f0bBF67BA71361F543deBd08F']
+    ]})
   }
 };

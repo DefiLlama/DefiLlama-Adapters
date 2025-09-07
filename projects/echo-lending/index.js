@@ -1,6 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { transformBalances } = require("../helper/portedTokens");
 const { function_view } = require("../helper/chain/aptos");
 
 let _data
