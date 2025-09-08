@@ -1,9 +1,12 @@
 const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/solana')
 
+// https://docs.asterdex.com/overview/what-is-aster/our-smart-contracts
 const config = {
   bsc: '0x128463A60784c4D3f46c23Af3f65Ed859Ba87974',
-  ethereum: '0x604DD02d620633Ae427888d41bfd15e38483736E'
+  ethereum: '0x604DD02d620633Ae427888d41bfd15e38483736E',
+  scroll: '0x7BE980E327692Cf11E793A0d141D534779AF8Ef4',
+  arbitrum: '0x9E36CB86a159d479cEd94Fa05036f235Ac40E1d5',
 }
 
 module.exports = {
