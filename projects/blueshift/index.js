@@ -6,6 +6,7 @@ const { registry, manualPool, blueschain, } = require("./config.json");
 async function staking(api) {
   const chain = api.chain
   if (chain === 'milkomeda_a1') return {}
+  if (chain === 'milkomeda') return {}
   if (!manualPool[chain]) return {}
   const value = await api.call({ abi: abi.BlueshiftEarning.getAccDeposit, target: manualPool[chain], })
   const tokenAddress = await api.call({ abi: abi.BlueshiftEarning.getToken, target: manualPool[chain], })
@@ -16,6 +17,7 @@ async function staking(api) {
 async function tvl(api) {
   const chain = api.chain
   if (chain === 'milkomeda_a1') return {}
+  if (chain === 'milkomeda') return {}
   const { reserve, tokens } = blueschain[chain] ?? {}
 
   // Blueschain reserves
