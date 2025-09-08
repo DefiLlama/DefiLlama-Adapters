@@ -14,6 +14,11 @@ const config = {
   berachain: [],
 }
 
+const assets = {
+  sUSDe: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', 
+  'eUSDC-22': '0xe0a80d35bb6618cba260120b279d357978c42bce'
+}
+
 Object.keys(config).forEach(chain => {
   if (chain === 'berachain') {
     // BYUSD-HONEY-LP
@@ -62,14 +67,13 @@ Object.keys(config).forEach(chain => {
           owner: '0x4809010926aec940b550D34a46A52739f996D75D', token: ADDRESSES.ethereum.USDC
         })
 
-        let shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0xe0a80d35bb6618cba260120b279d357978c42bce', params: ['0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'] })
-        let assetBalance = await api.call({ abi: 'function convertToAssets(uint256) view returns (uint256)', target: '0xe0a80d35bb6618cba260120b279d357978c42bce', params: [shareBalance.toString()] })
+        let shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets['eUSDC-22'], params: ['0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'] })
 
-        api.add(ADDRESSES.ethereum.USDC, assetBalance)
+        api.add(assets['eUSDC-22'], shareBalance)
 
-        shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', params: ['0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'] })
+        shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets.sUSDe, params: ['0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'] })
 
-        api.add(ADDRESSES.ethereum.USDe, shareBalance)
+        api.add(assets.sUSDe, shareBalance)
 
         return api.getBalances()
       }
