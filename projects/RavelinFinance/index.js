@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { tombTvl } = require("../helper/tomb");
+const { milkomeda } = require("../adaswap");
 
 const ravTokenAddress = "0x9B7c74Aa737FE278795fAB2Ad62dEFDbBAedFBCA";
 const rshareTokenAddress = "0xD81E377E9cd5093CE752366758207Fc61317fC70";
@@ -13,5 +14,6 @@ const mADALPs = [
 ];
 
 module.exports = {
-  ...tombTvl(ravTokenAddress, rshareTokenAddress, rshareRewardPoolAddress, boardroomAddress, mADALPs, "milkomeda", undefined, false, mADALPs[1])
+  // ...tombTvl(ravTokenAddress, rshareTokenAddress, rshareRewardPoolAddress, boardroomAddress, mADALPs, "milkomeda", undefined, false, mADALPs[1])
+  milkomeda: { tvl: () => ({  }) }
 }

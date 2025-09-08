@@ -14,9 +14,6 @@ async function tvl(api) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology:
-    'TVL data is pulled from the Lemuria Financial API "https://api.lemuria.finance/tvl".',
-  milkomeda: {
-    tvl
-  },
+  methodology: 'TVL data is pulled from the Lemuria Financial API "https://api.lemuria.finance/tvl".',
+  milkomeda: { tvl: () => ({  }) },
 };

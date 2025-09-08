@@ -99,11 +99,9 @@ module.exports = {
     misrepresentedTokens: true,
     timetravel: false,
     methodology: "The factory addresses are used to find the LP pairs on Smart BCH and Milkomeda. For Cardano we calculate the tokens on resting orders on the order book contracts. TVL is equal to the liquidity on the AMM plus the open orders in the order book",
-    cardano: {
-        tvl: adaTvl,
-        // staking
-    },
+    cardano: { tvl: adaTvl }, // staking
     milkomeda: {
-        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', useDefaultCoreAssets: true }),
+        // tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', useDefaultCoreAssets: true }),
+        tvl: () => ({  })
     }
 }
