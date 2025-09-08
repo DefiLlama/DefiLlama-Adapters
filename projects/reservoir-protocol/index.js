@@ -14,63 +14,69 @@ const config = {
   berachain: [],
 }
 
+const assets = {
+  sUSDe: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', 
+  'eUSDC-22': '0xe0a80d35bb6618cba260120b279d357978c42bce'
+}
+
 Object.keys(config).forEach(chain => {
-    if (chain === 'berachain') {
-      // BYUSD-HONEY-LP
-      const byusd_honey_lp_vault = '0xbbB228B0D7D83F86e23a5eF3B1007D0100581613';
-      const byusd_honey_lp_token = '0xdE04c469Ad658163e2a5E860a03A86B52f6FA8C8';
-      const byusd_honey_lp_owner = '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181';
+  if (chain === 'berachain') {
+    // BYUSD-HONEY-LP
+    const byusd_honey_lp_vault = '0xbbB228B0D7D83F86e23a5eF3B1007D0100581613';
+    const byusd_honey_lp_token = '0xdE04c469Ad658163e2a5E860a03A86B52f6FA8C8';
+    const byusd_honey_lp_owner = '0x0db79c0770E1C647b8Bb76D94C22420fAA7Ac181';
 
-      // HONEY in rUSD-HONEY LP
-      const rusd_honey_lp_vault = '0x1C5879B75be9E817B1607AFb6f24F632eE6F8820';
-      const rusd_honey_lp_token = '0x7fd165B73775884a38AA8f2B384A53A3Ca7400E6';
-      const rusd_honey_lp_owner = '0x6811742721DcCe83942739d44E40f140B5BCee37';
-      
-      // USDT0 in rUSD-USDT0 LP
-      const rusd_usdt0_lp_vault = '0xc6De36eceD67db9c17919708865b3eE94a7D987C'; 
-      const rusd_usdt0_lp_token = '0x1fb6c1aDE4F9083b2EA42ED3fa9342e41788D4b5'; 
-      const rusd_usdt0_lp_owner = '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3'; 
+    // HONEY in rUSD-HONEY LP
+    const rusd_honey_lp_vault = '0x1C5879B75be9E817B1607AFb6f24F632eE6F8820';
+    const rusd_honey_lp_token = '0x7fd165B73775884a38AA8f2B384A53A3Ca7400E6';
+    const rusd_honey_lp_owner = '0x6811742721DcCe83942739d44E40f140B5BCee37';
 
-      module.exports[chain] = {
-        tvl: async (api) => {
-          const lpBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: byusd_honey_lp_vault, params: byusd_honey_lp_owner })
-          api.add(byusd_honey_lp_token, lpBalance);
-          
-          const honeyBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: rusd_honey_lp_vault, params: rusd_honey_lp_owner })
-          api.add(rusd_honey_lp_token, Number(honeyBalance) / 2);
+    // USDT0 in rUSD-USDT0 LP
+    const rusd_usdt0_lp_vault = '0xc6De36eceD67db9c17919708865b3eE94a7D987C';
+    const rusd_usdt0_lp_token = '0x1fb6c1aDE4F9083b2EA42ED3fa9342e41788D4b5';
+    const rusd_usdt0_lp_owner = '0x8Cc5a546408C6cE3C9eeB99788F9EC3b8FA6b9F3';
 
-          const usdt0Balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: rusd_usdt0_lp_vault, params: rusd_usdt0_lp_owner })
-          api.add(rusd_usdt0_lp_token, Number(usdt0Balance) / 2);
+    module.exports[chain] = {
+      tvl: async (api) => {
+        const lpBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: byusd_honey_lp_vault, params: byusd_honey_lp_owner })
+        api.add(byusd_honey_lp_token, lpBalance);
 
-          return api.getBalances()
-        }
+        const honeyBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: rusd_honey_lp_vault, params: rusd_honey_lp_owner })
+        api.add(rusd_honey_lp_token, Number(honeyBalance) / 2);
+
+        const usdt0Balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: rusd_usdt0_lp_vault, params: rusd_usdt0_lp_owner })
+        api.add(rusd_usdt0_lp_token, Number(usdt0Balance) / 2);
+
+        return api.getBalances()
       }
     }
-    else if (chain === 'ethereum') {
-      const funds = config[chain]
-      module.exports[chain] = {
-        tvl: async (api) => {
-          // count assets on tvl adapters
-          const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
-          const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
-          const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
-          bals.forEach((v, i) => bals[i] = v * 10 ** (decimals[i] - 18))
-          api.add(tokens, bals)
+  }
+  else if (chain === 'ethereum') {
+    const funds = config[chain]
+    module.exports[chain] = {
+      tvl: async (api) => {
+        // count assets on tvl adapters
+        const tokens = await api.multiCall({ abi: 'address:underlying', calls: funds })
+        const bals = await api.multiCall({ abi: 'uint256:totalValue', calls: funds })
+        const decimals = await api.multiCall({ abi: 'uint8:decimals', calls: tokens })
+        bals.forEach((v, i) => bals[i] = v * 10 ** (decimals[i] - 18))
+        api.add(tokens, bals)
 
-          // count USDC locked in 0x4809010926aec940b550D34a46A52739f996D75D
-          api.sumTokens({
-            owner: '0x4809010926aec940b550D34a46A52739f996D75D', token: ADDRESSES.ethereum.USDC
-          })
+        // count USDC locked in 0x4809010926aec940b550D34a46A52739f996D75D
+        api.sumTokens({
+          owner: '0x4809010926aec940b550D34a46A52739f996D75D', token: ADDRESSES.ethereum.USDC
+        })
 
-          // count USDC deposited in Euler eUSDC vault
-          // vault: 0xe0a80d35bb6618cba260120b279d357978c42bce
-          // account: 0x3063C5907FAa10c01B242181Aa689bEb23D2BD65
-          const shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0xe0a80d35bb6618cba260120b279d357978c42bce', params: ['0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'] })
-          const assetBalance = await api.call({ abi: 'function convertToAssets(uint256) view returns (uint256)', target: '0xe0a80d35bb6618cba260120b279d357978c42bce', params: [shareBalance.toString()] })
-          api.add(ADDRESSES.ethereum.USDC, assetBalance)
+        let shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets['eUSDC-22'], params: ['0x3063C5907FAa10c01B242181Aa689bEb23D2BD65'] })
 
-          return api.getBalances()
-        }
+        api.add(assets['eUSDC-22'], shareBalance)
+
+        shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets.sUSDe, params: ['0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'] })
+
+        api.add(assets.sUSDe, shareBalance)
+
+        return api.getBalances()
       }
     }
+  }
 })
