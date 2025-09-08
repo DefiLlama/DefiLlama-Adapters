@@ -9,6 +9,8 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Counts the total balance of Fragmented tokens held in the Token Merger contract on Milkomeda C1 MACC.',
-  milkomeda: { tvl: () => ({  }) },
+  milkomeda: {
+    tvl,
+  },
 };
 

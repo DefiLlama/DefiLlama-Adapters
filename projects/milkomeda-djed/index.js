@@ -8,5 +8,7 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'The TVL of each Djed deployment on Milkomeda C1.',
-  milkomeda: { tvl: () => ({  }) },
+  milkomeda: {
+    tvl,
+  },
 };

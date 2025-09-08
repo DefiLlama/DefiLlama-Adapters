@@ -139,4 +139,3 @@ Object.keys(config).forEach(chain => {
 })
 
 module.exports.dexit.tvl = () => ({})
-module.exports.milkomeda.tvl = () => ({})
