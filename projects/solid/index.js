@@ -4,17 +4,12 @@
  */
 
 const fetch = require('node-fetch')
-const { sumSingleBalance } = require('@defillama/sdk/build/generalUtil')
 
 // ----- LCD endpoint (overridable) -----
 const LCD = process.env.TERRA_LCD || 'https://terra-api.cosmosrescue.dev:8443'
 
 // ----- Addresses -----
 const ADDR = {
-  // SOLID stablecoin contract (borrowed supply)
-  SOLID: {
-    token: 'terra10aa3zdkrc7jwuf8ekl3zq7e7m42vmzqehcmu74e4egc7xkm5kr2s0muyst',
-  },
   // CW20 collaterals
   ampLUNA: {
     token:   'terra1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2s5lvsct',
@@ -118,7 +113,7 @@ async function tvl() {
     try {
       const list = await bankBalances(custody)
       const row = list.find((x) => x.denom === denom)
-      if (row && row.amount) addBig(balances, `terra2:${denom}`, row.amount)
+      if (row && row.amount) addBig(balances, denom.replace('/', ':'), row.amount)
     } catch (e) {
       // console.error('bank fetch error', key, e)
       continue
@@ -128,21 +123,11 @@ async function tvl() {
   return balances
 }
 
-// ----- Borrowed (SOLID totalSupply) -----
-async function borrowed() {
-  try {
-    const total = await cw20TotalSupply(ADDR.SOLID.token)
-    return { [`terra2:${ADDR.SOLID.token}`]: total.toString() }
-  } catch {
-    return {}
-  }
-}
-
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology:
     'TVL = sum of custody balances for SOLID collaterals (ampLUNA, bLUNA, USDC (Noble IBC), axl.WETH, axl.WBTC, wSOL (Wormhole), wBNB (Wormhole)). ' +
     'Adapter returns token balances only; pricing (including LST exchange rates) is handled by DefiLlama coin-prices infra.',
-  terra2: { tvl, borrowed },
+  terra2: { tvl },
 }
