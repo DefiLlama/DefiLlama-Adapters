@@ -48,6 +48,11 @@ const fixBalancesTokens = {
     [ADDRESSES.camp.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
     [ADDRESSES.camp.USDC]: { coingeckoId: "usd-coin", decimals: 18 }, // Wrapped USDC
   },
+  goat: {
+    [ADDRESSES.goat.USDC]: { coingeckoId: "stargate-bridged-usdc-goat", decimals: 6 },
+    [ADDRESSES.goat.BTCB]: { coingeckoId: "goat-bridged-binance-bitcoin-goat", decimals: 18 },
+    [ADDRESSES.goat.uBTC]: { coingeckoId: "ubtc", decimals: 18 }
+  },
   provenance: {
     nhash: { coingeckoId: 'hash-2', decimals: 9 },
     'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
