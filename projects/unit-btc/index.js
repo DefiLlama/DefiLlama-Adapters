@@ -20,7 +20,7 @@ module.exports = {
     chain: 'solana',
     solOwners: ['9SLPTL41SPsYkgdsMzdfJsxymEANKr5bYoBsQzJyKpKS'],
     owners: ['9SLPTL41SPsYkgdsMzdfJsxymEANKr5bYoBsQzJyKpKS'],
-    tokens: ['9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump', 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn', 'J3NKxxXZcnNiMjKw9hYb2K4LUxgwB6t1FtPtQVsv3KFr', 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263']
+    tokens: ['9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump', 'pumpCmXqMfrsAkQ5r49WcJnRayYRqmXz6ae8H7H9Dfn', 'J3NKxxXZcnNiMjKw9hYb2K4LUxgwB6t1FtPtQVsv3KFr', ADDRESSES.solana.BONK]
   })
   }
 };
