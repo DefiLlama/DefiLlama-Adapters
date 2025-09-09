@@ -4,6 +4,8 @@ module.exports = {
     hallmarks: [
       ['2025-05-02', 'v2 yUSD Launch'],
       ['2025-06-16', 'vyUSD Launch'],
+      ['2025-08-25', 'yETH & yBTC Launch'],
+      ['2025-08-29', 'vyETH & vyBTC Launch'],
     ],
 }
 
