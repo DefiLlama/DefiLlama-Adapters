@@ -4,6 +4,7 @@ const sui = require("../helper/chain/sui");
 const { aQuery } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
 const {post} = require("../helper/http");
+const { getAssetSupply } = require("../helper/chain/stellar");
 
 const RIPPLE_ENDPOINT = 'https://s1.ripple.com:51234';
 
@@ -67,6 +68,9 @@ const config = {
   ripple: {
      OUSG: "4F55534700000000000000000000000000000000.rHuiXXjHLpMP8ZE9sSQU5aADQVWDwv6h5p",
   },
+  stellar: {
+    USDY: "USDY-GAJMPX5NBOG6TQFPQGRABJEEB2YE7RFRLUKJDZAZGAD5GFX4J7TADAZ6",
+  },
 };
 
 async function getUSDYTotalSupplySUI() {
@@ -111,6 +115,9 @@ Object.keys(config).forEach((chain) => {
         // so we convert to a raw balance by multiplying by 10^6
         const ousgSupply = (await getXrplTokenBalances(XRPL_OUSG_ISSUER, XRPL_OUSG_CURRENCY)) * Math.pow(10, 6);
         api.addTokens(config.ripple.OUSG, ousgSupply);
+      } else if (chain === "stellar") {
+        const usdySupply = await getAssetSupply(config.stellar.USDY);
+        api.addTokens(config.stellar.USDY, usdySupply);
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);
