@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { aaveExports } = require('../helper/aave')
 const methodologies = require('../helper/methodologies')
@@ -7,7 +8,7 @@ const { mergeExports } = require('../helper/utils')
 
 //@note Main & Innovative Markets
 const mainMarket = {
-	merlin: aaveExports('', '0x6aB5d5E96aC59f66baB57450275cc16961219796', undefined, ['0x5F314b36412765f3E1016632fD1Ad528929536CA'], { v3: true, blacklistedTokens: ['0xb880fd278198bd590252621d4cd071b1842e9bcd'] }),
+	merlin: aaveExports('', '0x6aB5d5E96aC59f66baB57450275cc16961219796', undefined, ['0x5F314b36412765f3E1016632fD1Ad528929536CA'], { v3: true, blacklistedTokens: [ADDRESSES.merlin.WBTC_1] }),
 	btr: aaveExports('', '0x6aB5d5E96aC59f66baB57450275cc16961219796', undefined, ['0x5F314b36412765f3E1016632fD1Ad528929536CA'], {v3: true}),
 	scroll: aaveExports('', '0xFBb77A68ee35e7902F1ABE0Bd34B263023e90c70', undefined, ['0x18cbe70602Ee17f79D56971F685E9EaF49DA53F2'], { v3: true }),
 	iotex: aaveExports('', '', undefined, ['0xBa77520d38953BF6a8395D118CfF714Ed672533f'], { v3: true }),
@@ -33,10 +34,10 @@ const solvMarkets = {
 	ethereum: aaveExports('', '0xff12470a969Dd362EB6595FFB44C82c959Fe9ACc', undefined, ['0xfabb0fDca4348d5A40EB1BB74AEa86A1C4eAd7E2'], { v3: true }),
 	core: aaveExports('', '0x410d2D3Dc79ec66A2Cfc3A4a0AD4af3a38D38bd0', undefined, ['0x802CB61844325dc9A161bC3A498E3BE1B7b6FE00'], { v3: true }),
 	arbitrum: aaveExports('', '0xa2ddc06baDc817C612111137c0cf6Bd43634EE1a', undefined, ['0xEc579d2cE07401258710199Ff12a5bb56e086a6F'], { v3: true }),
-	bob: aaveExports('', '', undefined, ['0xfabb0fDca4348d5A40EB1BB74AEa86A1C4eAd7E2'], { v3: true, blacklistedTokens: ['0x541fd749419ca806a8bc7da8ac23d346f2df8b77', '0xcc0966d8418d412c599a6421b760a847eb169a8c'] }),
+	bob: aaveExports('', '', undefined, ['0xfabb0fDca4348d5A40EB1BB74AEa86A1C4eAd7E2'], { v3: true, blacklistedTokens: [ADDRESSES.bob.SolvBTC, ADDRESSES.bob.SolvBTC_BBN] }),
 	corn: aaveExports('', '', undefined, ['0xf0d077728D424Ee6C6Eba82d23ce56C2e91E57Ea'], { v3: true }),
 	sonic: aaveExports('', '', undefined, ['0x23f02C2eeFe2010298Ab74059393326d3df59a02'], { v3: true }),
-	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true, blacklistedTokens: ['0x541fd749419ca806a8bc7da8ac23d346f2df8b77'] }), // Taiko - Solv
+	taiko: aaveExports('', '', undefined, ['0xF6Aa54a5b60c324602C9359E8221423793e5205d'], { v3: true, blacklistedTokens: [ADDRESSES.bob.SolvBTC] }), // Taiko - Solv
 	sei: aaveExports('', '', undefined, ['0x16b9b88B773C1a1aBA6D305e0560171405d45121'], { v3: true }),
 }
 
