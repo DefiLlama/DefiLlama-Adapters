@@ -21,20 +21,20 @@ const fetchAgentConfigs = async (api, chain) => {
 
     const networks = agentAndNetworkMiddleware.map(({ networkMiddleware }) => networkMiddlewareToNetwork[networkMiddleware] ?? networkMiddlewareToNetwork.default)
 
-    const vaults = await api.batchCall(
-        agentAndNetworkMiddleware.map(({ agent, networkMiddleware }) => ({
-            abi: capABI.SymbioticNetworkMiddleware.vaults,
+    const vaults = await api.multiCall({
+        abi: capABI.SymbioticNetworkMiddleware.vaults,
+        calls: agentAndNetworkMiddleware.map(({ agent, networkMiddleware }) => ({
             target: networkMiddleware,
             params: [agent]
         }))
-    );
+    });
 
-    const vaultsCollateral = await api.batchCall(
-        vaults.map((vault) => ({
-            abi: symbioticABI.Vault.collateral,
+    const vaultsCollateral = await api.multiCall({
+        abi: symbioticABI.Vault.collateral,
+        calls: vaults.map((vault) => ({
             target: vault
         }))
-    );
+    });
 
     const agentConfigs = arrayZip(agentAndNetworkMiddleware, networks, vaults, vaultsCollateral)
         .map(([config, network, vault, vaultCollateral]) => ({
@@ -42,9 +42,9 @@ const fetchAgentConfigs = async (api, chain) => {
             network: network.toLowerCase(),
             vault: vault.toLowerCase(),
             vaultCollateral: vaultCollateral.toLowerCase()
-        }))
+        }));
 
-    return agentConfigs
+    return agentConfigs;
 }
 
 const fetchAssetAddresses = async (api, chain) => {
