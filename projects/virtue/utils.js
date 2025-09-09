@@ -26,6 +26,18 @@ const VAULT_MAP = {
       initialSharedVersion: 22329896,
     },
   },
+    iBTC: {
+    priceAggregater: {
+      objectId: "0x8a00ca5bae51c5d001e92e5b2188b7ec20a1c530aeac327b3ab86049bf9540ed",
+      mutable: false,
+      initialSharedVersion: 172291113,
+    },
+    vault: {
+      objectId: "0xcc094d9e3b491b0c943bb18daf07a49bd951f34688f9610d90982de06fc0c5c9",
+      mutable: true,
+      initialSharedVersion: 172291112,
+    },
+  },
 };
 
 const formatUnits = (value, decimals) => {
