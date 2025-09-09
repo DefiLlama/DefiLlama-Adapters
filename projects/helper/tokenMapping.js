@@ -43,7 +43,11 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-
+  camp: {
+    [ADDRESSES.camp.WCAMP]: { coingeckoId: "camp-network", decimals: 18 }, // Wrapped CAMP (ERC-20 wrapper of native CAMP)
+    [ADDRESSES.camp.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
+    [ADDRESSES.camp.USDC]: { coingeckoId: "usd-coin", decimals: 18 }, // Wrapped USDC
+  },
   provenance: {
     nhash: { coingeckoId: 'hash-2', decimals: 9 },
     'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
