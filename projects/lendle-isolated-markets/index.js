@@ -25,72 +25,60 @@ const abi = {
 };
 
 async function tvl(api) {
-  for (const configurator of DATA_PROVIDERS_CONTRACTS) {
-    try {
-      const allReservesTokens = await api.call({ 
-        abi: abi.getAllReservesTokens, 
-        target: configurator
-      });
+  const allReservesTokens = await api.multiCall({ 
+    abi: abi.getAllReservesTokens, 
+    calls: DATA_PROVIDERS_CONTRACTS
+  });
 
-      if (!allReservesTokens || allReservesTokens.length < 2) continue;
+  const collateralAddresses = allReservesTokens.map(i => i[0].tokenAddress);
+  const debtAddresses = allReservesTokens.map(i => i[1].tokenAddress);
 
-      const collateralAddress = allReservesTokens[0].tokenAddress;
-      const debtAddress = allReservesTokens[1].tokenAddress;
+  const debtReserveDatas = await api.multiCall({ 
+    abi: abi.getReserveData, 
+    calls: DATA_PROVIDERS_CONTRACTS.map((target, i) => ({ target, params: debtAddresses[i] })),
+  });
 
-      // Get reserve data for this configurator (the configurator address is the reserve)
-      const debtReserveData = await api.call({ 
-        abi: abi.getReserveData, 
-        target: configurator,
-        params: [debtAddress]
-      });
+  const collateralReserveDatas = await api.multiCall({ 
+    abi: abi.getReserveData, 
+    calls: DATA_PROVIDERS_CONTRACTS.map((target, i) => ({ target, params: collateralAddresses[i] })),
+  });
+  
+  api.add(collateralAddresses, collateralReserveDatas.map(i => i.totalAToken));
+  api.add(debtAddresses, debtReserveDatas.map(i => i.totalAToken));
 
-      const collateralReserveData = await api.call({ 
-        abi: abi.getReserveData, 
-        target: configurator,
-        params: [collateralAddress]
-      });
-      
-      api.add(collateralAddress, collateralReserveData.totalAToken);
-      api.add(debtAddress, debtReserveData.totalAToken);
-
-    } catch (error) {
-      console.log(`Error processing getting tvl for configurator ${configurator}:`, error.message);
-    }
-  }
+  debtReserveDatas.forEach((debtReserveData, i) => {
+    const totalStableDebt = +debtReserveData.totalStableDebt || 0;
+    const totalVariableDebt = +debtReserveData.totalVariableDebt || 0;
+    const totalBorrowed = totalStableDebt + totalVariableDebt;
+    
+    api.add(debtAddresses[i], -totalBorrowed);
+  });
   
   return api.getBalances();
 }
 
 async function borrowed(api) {
-  for (const configurator of DATA_PROVIDERS_CONTRACTS) {
-    try {
-      const allReservesTokens = await api.call({ 
-        abi: abi.getAllReservesTokens, 
-        target: configurator
-      });
+  const allReservesTokens = await api.multiCall({ 
+    abi: abi.getAllReservesTokens, 
+    calls: DATA_PROVIDERS_CONTRACTS
+  });
 
-      const debtAddress = allReservesTokens[1].tokenAddress;
+  const debtAddresses = allReservesTokens.map(i => i[1].tokenAddress);
 
-      // Get reserve data for this configurator (the configurator address is the reserve)
-      const debtReserveData = await api.call({ 
-        abi: abi.getReserveData, 
-        target: configurator,
-        params: [debtAddress]
-      });
+  // Get reserve data for this configurator (the configurator address is the reserve)
+  const debtReserveDatas = await api.multiCall({ 
+    abi: abi.getReserveData, 
+    calls: DATA_PROVIDERS_CONTRACTS.map((target, i) => ({ target, params: debtAddresses[i] })),
+  });
 
-      if (debtReserveData) {
-        const totalStableDebt = +debtReserveData.totalStableDebt || 0;
-        const totalVariableDebt = +debtReserveData.totalVariableDebt || 0;
-        const totalBorrowed = totalStableDebt + totalVariableDebt;
-        
-        api.add(debtAddress, totalBorrowed);
-      }
+  debtReserveDatas.forEach((debtReserveData, i) => {
+    const totalStableDebt = +debtReserveData.totalStableDebt || 0;
+    const totalVariableDebt = +debtReserveData.totalVariableDebt || 0;
+    const totalBorrowed = totalStableDebt + totalVariableDebt;
+    
+    api.add(debtAddresses[i], totalBorrowed);
+  });
 
-    } catch (error) {
-      console.log(`Error processing getting borrowed for configurator ${configurator}:`, error.message);
-    }
-  }
-  
   return api.getBalances();
 }
 
