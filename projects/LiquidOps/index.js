@@ -10,6 +10,9 @@ const geckoTickerTransformations = {
     'wUSDC': 'usd-coin',
     'wUSDT': 'tether',
     'wETH': 'ethereum',
+    'USDA': 'usd-coin',
+    'vAR': 'arweave',
+    'vUSDC': 'usd-coin',
 };
 
 

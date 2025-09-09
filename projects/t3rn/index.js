@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const CONFIG = {
   ethereum: {
@@ -67,11 +68,21 @@ const CONFIG = {
   },
 }
 
+// TRN token address on Arbitrum
+const TRN_ARBITRUM = '0x1114982539A2Bfb84e8B9e4e320bbC04532a9e44'
+
+// Staking contracts on Arbitrum
+const ARBITRUM_STAKING = [
+  '0xC5a87664DCFD45B1bF646cFD209c5a54118B146B', // stakedTRNChef
+  '0x536e9D7328276BAaE13Df7028dCF8d37bBa2F2Cd', // govAdapter
+  '0x8B09F3B41203ec18Ec2E80eEc1bd57A91f21DB7D', // syrupBar
+]
+
 module.exports = {
     hallmarks:[
   ],
   methodology:
-    "t3rn TVL is the USD value of token balances in the bridge contracts.",
+    "t3rn TVL is the USD value of token balances in the bridge contracts and TRN tokens staked on Arbitrum.",
 }
 
 Object.keys(CONFIG).forEach(chain => module.exports[chain] = {
@@ -80,3 +91,23 @@ Object.keys(CONFIG).forEach(chain => module.exports[chain] = {
     return sumTokens2({ api, owners: remoteOrder, tokens });
   }
 })
+
+// Add staking as a separate function for Arbitrum
+module.exports.arbitrum.staking = async (api) => {
+  // Get TRN balances from staking contracts
+  const balances = await sumTokens2({ 
+    api, 
+    owners: ARBITRUM_STAKING, 
+    tokens: [TRN_ARBITRUM]
+  });
+  
+  // Transform the arbitrum TRN address to coingecko ID for proper pricing
+  const arbTrnKey = `arbitrum:${TRN_ARBITRUM.toLowerCase()}`;
+  if (balances[arbTrnKey]) {
+    // Convert from wei to token amount (divide by 10^18) for coingecko pricing
+    balances['coingecko:t3rn'] = balances[arbTrnKey] / 1e18;
+    delete balances[arbTrnKey];
+  }
+  
+  return balances;
+}
