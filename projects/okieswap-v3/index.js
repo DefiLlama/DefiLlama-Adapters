@@ -1,5 +1,7 @@
-const { uniV3Export } = require('../helper/uniswapV3')
+const { uniV3GraphExport } = require('../helper/uniswapV3')
 
-module.exports = uniV3Export({
-    xlayer: { factory: '0x3cea59ae7cd3c1bea32ccc80f68dd47576662c90', fromBlock: 31015016, } ,
-})
+module.exports = {
+  xlayer: {
+    tvl: uniV3GraphExport({ graphURL: "https://subgraph.okiedokie.fun/subgraphs/name/okieswap-v3", name: 'okieswap-v3-xlayer', })
+  },
+};

@@ -60,6 +60,12 @@ async function handleStrategies(api, holder, underlying, strats, onlyboost) {
         }
       }
     }
+
+    // Asset for shutdown vaults (ready to migrate) are idle in the vault
+    if (strat.version !== 2) {
+      tokens.push(strat.lpToken.address)
+      calls.push({ target: strat.lpToken.address, params: strat.vault });
+    }
   }
 
   if (llamalend.length > 0) {
