@@ -74,6 +74,11 @@ const SPRING_SUI_STAKING_INFO_LIST = [
       "0x922d15d7f55c13fd790f6e54397470ec592caa2b508df292a2e8553f3d3b274f::msui::MSUI",
     value: "0x985dd33bc2a8b5390f2c30a18d32e9a63a993a5b52750c6fe2e6ac8baeb69f48",
   },
+  {
+    coinType:
+      "0x2b6602099970374cf58a2a1b9d96f005fccceb81e92eb059873baf420eb6c717::x_sui::X_SUI",
+    value: "0x0431232199873db77a92aa645cd43521437e9cc5c6fff07fd03edb88afe0b25a",
+  }
 ]
 
 const HAEDAL = {

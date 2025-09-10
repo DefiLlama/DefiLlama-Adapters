@@ -3,7 +3,8 @@ const { Program, AnchorProvider } = require("@project-serum/anchor");
 const sdk = require('@defillama/sdk')
 const { Connection, PublicKey } = require('@solana/web3.js')
 
-const eclipseRpc = 'https://eclipse.helius-rpc.com'
+// const eclipseRpc = 'https://eclipse.helius-rpc.com'
+const eclipseRpc = 'https://mainnetbeta-rpc.eclipse.xyz'
 
 async function eclipseTvl (api) {
   const connection = new Connection(eclipseRpc)
