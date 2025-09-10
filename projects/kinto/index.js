@@ -13,4 +13,5 @@ module.exports = {
         fetchCoValentTokens: true,
       }),
   },
+  deadFrom: '2025-09-07', // https://x.com/KintoXYZ/status/1964721235675537573
 };

@@ -4,7 +4,7 @@ const markets = ['3P4uA5etnZi4AmBabKinq2bMiWU8KcnHZdH', '3P8Df2b7ywHtLBHBe8PBVQY
 module.exports = {
   timetravel: false,
   waves: {
-    tvl: api => sumTokens({ api, owners: markets, includeWaves: true, }),
+    tvl: api => sumTokens({ api, owners: markets, includeWaves: true, blacklistedTokens: ['HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS'] }),
     borrowed,
   }
 }
