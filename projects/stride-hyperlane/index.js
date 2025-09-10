@@ -6,7 +6,7 @@ async function tvl() {
   const hyperlaneAddressDenom = "ibc/BF3B4F53F3694B66E13C23107C84B6485BD2B96296BB7EC680EA77BBA75B4801"
 
   const { balances: hyperlaneBalances } = await get(
-    "https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/balances/stride1h4rhlwcmdwnnd99agxm3gp7uqkr4vcjd73m4586hcuklh3vdtldqgqmjxc"
+    "https://stride-walk-214t-api.polkachu.com//cosmos/bank/v1beta1/balances/stride1h4rhlwcmdwnnd99agxm3gp7uqkr4vcjd73m4586hcuklh3vdtldqgqmjxc"
   )
 
   const hyperlaneBalance = hyperlaneBalances.find((balance) => balance.denom === hyperlaneAddressDenom)

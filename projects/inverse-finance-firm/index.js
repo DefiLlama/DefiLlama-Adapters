@@ -1,8 +1,8 @@
 
 const abi = require("./abi.json");
 const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk")
+const { staking } = require('../helper/staking')
 
 // Firm
 const firmStart = 16159015;
@@ -45,11 +45,13 @@ async function tvl(api) {
 
 module.exports = {
   methodology: "Get collateral balances from users personal escrows",
-  hallmarks: [    
-    [1696204800, "Borrow against INV on FiRM"],
+  hallmarks: [
     [1707177600, "Launch of sDOLA"],
     [1718236800, "CRV liquidation"]    
   ],
   start: '2022-12-10', // Dec 10 2022
-  ethereum: { tvl }
+  ethereum: {
+    tvl,
+    staking: staking("0x1637e4e9941D55703a7A5E7807d6aDA3f7DCD61B", "0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68")
+  }
 };

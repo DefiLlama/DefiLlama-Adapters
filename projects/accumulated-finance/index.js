@@ -78,6 +78,11 @@ const config = {
       },
     }
   ],
+  "bitkub": [{
+    "bitkub": {
+      "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+    }
+  }],
   "stETH": [
     {
       "ethereum": {

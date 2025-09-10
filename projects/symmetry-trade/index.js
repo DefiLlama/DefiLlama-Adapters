@@ -6,7 +6,7 @@ const TOKENS = [
     ADDRESSES.scroll.USDC, // USDC
     ADDRESSES.scroll.USDT, // USDT
     ADDRESSES.scroll.WETH, // WETH
-    "0x3c1bca5a656e69edcd0d4e36bebb3fcdaca60cf1", // WBTC
+    ADDRESSES.scroll.WBTC, // WBTC
     "0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32", // WSTETH
 ];
 

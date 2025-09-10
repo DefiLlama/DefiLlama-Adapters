@@ -57,7 +57,7 @@ Object.keys(config).forEach(chain => {
   if (masterchef)
     module.exports[chain] = masterchefExports({ masterchef, nativeTokens, useDefaultCoreAssets: true, chain, poolInfoABI, getToken, })[chain]
   if (staking) {
-    const stakingFn = (_, _b, { [chain]: block }) => sumUnknownTokens({ chain, block, tokensAndOwners: staking, useDefaultCoreAssets: true, })
+    const stakingFn = (api) => sumUnknownTokens({ api, tokensAndOwners: staking, useDefaultCoreAssets: true, })
     if (module.exports[chain])
       module.exports[chain].staking = sdk.util.sumChainTvls([module.exports[chain].staking, stakingFn])
     else
