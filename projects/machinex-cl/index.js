@@ -1,5 +1,12 @@
-const { uniV3Export } = require('../helper/uniswapV3')
+const { getConfig } = require('../helper/cache')
 
-module.exports = uniV3Export({
-  peaq: { factory: '0x2646DCbE025D21A2925fdaCeB639e998E17d6060', fromBlock: 6047765, },
-})
+module.exports = {
+  peaq: {
+    tvl: async (api) => {
+      const { pairs } = await getConfig('machinex-cl-peaq', 'https://machinex-api-production.up.railway.app/data')
+      console.log(pairs.length, pairs.filter(i => !i.hasOwnProperty('stable')).length)
+      const ownerTokens = pairs.filter(i => !i.hasOwnProperty('stable')).map(i => [[i.token0, i.token1], i.id])
+      return api.sumTokens({ ownerTokens })
+    }
+  }
+}
