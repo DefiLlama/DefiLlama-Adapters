@@ -278,6 +278,7 @@ module.exports = {
       '0x4B37F38DF39C9E6D876b830ED3FF444533Aa2E45', // WBTC Collateral(V2)
       '0x50B02283f3c39A463DF3d84d44d46b5432D7D193', // cbBTC Collateral(V2)
       '0x01DF7D28c51639F2f2F95dcF2FdFF374269327B0', // clBTC Collateral(V2)
+      '0x5245E3CaD937C7086294A6d21F3C67a20309e313', // uniBTC Collateral(V2)
     ],
     nymWithAssetList: [{
       address: '0x9a3c724ee9603A7550499bE73DC743B371811dd3',
@@ -292,6 +293,15 @@ module.exports = {
     vaultManagerList: [
       {
         address: '0x9Dda31F8a07B216AB5E153456DE251E0ed2e6372'
+      },
+      {
+        address: '0xa38e1aeb8336A3768DFcd17D9bbc74A312648608'
+      },
+    ],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0xCe07D2B5CC6Ff466BF497ceEa8eD168fB0Eb8F97',
+        asset: '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e', // uniBTC
       },
     ],
   }),
@@ -341,6 +351,7 @@ module.exports = {
       '0x2135EfEF5aC35ba549Cc791cEc4D15E8C8115611', // weETH Collateral(V2)
       '0x43891fa695f17E47C9b2A0DFD9fb48147d331934', // uniBTC Collateral(V2)
       '0x9644652540f78f9e27899a655067f205f9454a4a', // LBTC Collateral(V2)
+      '0x4077ACA146357E1FbFF981939D7229aF9Fdc329A', // enzoBTC Collateral(V2)
     ],
     nymWithAssetList: [{
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
@@ -357,6 +368,14 @@ module.exports = {
       {
         smartVaultAddress: '0x05EA42F72F2e627497423663Faf7b00eA7DdA2C1',
         asset: '0x8236a87084f8B84306f72007F36F2618A5634494', // LBTC
+      },
+      {
+        smartVaultAddress: '0x11054D3584F94B542379Ff4Cf9e7897D50AE8317',
+        asset: '0x6A9A65B84843F5fD4aC9a0471C4fc11AFfFBce4a', // enzoBTC
+      },
+      {
+        smartVaultAddress: '0xaC586e941d5846B79cEF71c8aef3ecC50BE12DCb',
+        asset: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
       },
     ],
   }),
