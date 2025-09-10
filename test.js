@@ -52,7 +52,7 @@ async function getTvl(
 
   let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
   if (tvlBalances === undefined) tvlBalances = api.getBalances()
-  const tvlResults = await computeTVL(tvlBalances, "now");
+  const tvlResults = await computeTVL(tvlBalances, unixTimestamp);
   await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
   usdTvls[storedKey] = tvlResults.usdTvl;
   tokensBalances[storedKey] = tvlResults.tokenBalances;
@@ -252,7 +252,7 @@ function checkExportKeys(module, filePath, chains) {
         || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
         || /v\d+\.js$/.test(filePath[1]) // matches .../projects/projectXYZ/v1.js
       )))
-    process.exit(0)
+    process.exit(0)    
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
@@ -386,7 +386,7 @@ async function computeTVL(balances, timestamp) {
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
 
-  const queries = buildPricesGetQueries(readKeys)
+  const queries = buildPricesGetQueries(readKeys, timestamp)
   let queryCount = queries.length;
   if (queryCount > 7)
     sdk.log('price query count:', queryCount, 'readKeys:', readKeys.length)
@@ -426,7 +426,7 @@ async function computeTVL(balances, timestamp) {
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
       if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
-      if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
+      if (Math.abs(data.timestamp - (timestamp ?? Date.now() / 1e3)) > (24 * 3600)) {
         console.log(`Price for ${address} is stale, ignoring...`)
         return
       }
@@ -474,11 +474,12 @@ setTimeout(() => {
     process.exit(1);
 }, 10 * 60 * 1000) // 10 minutes
 
-function buildPricesGetQueries(readKeys) {
+function buildPricesGetQueries(readKeys, timestamp) {
   if (!readKeys.length) return []
   console.log(`Building prices get queries for ${readKeys.length} tokens`)
-  const burl = process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/prices/current/` : 'https://coins.llama.fi/prices/current/'
-  const queries = []
+  const burl = (process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/` : 'https://coins.llama.fi/')
+   + (timestamp && timestamp < (Date.now() / 1000 - 30 * 60) ? `prices/historical/${timestamp}/` : 'prices/current/')
+  const queries = []  
   let query = burl
 
   for (const key of readKeys) {
