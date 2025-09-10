@@ -1,6 +1,7 @@
 const { nullAddress, sumTokensExport } = require("../helper/unwrapLPs");
 
 	const addresses = [
+		'TPJtvpmtvBTydEfCtdaT9XAH5oTTkFNPXX',
 		'TKoffapJgw2E586kp9taJvjqdfpiKrWKWG',
 		'TN9EhKWtH4jvtx9xr8fFaA3qfuopdpvjhf',
 		'TYEMUMKBmkTRMa1CNh7xkNYZ2mTVFw9f1a',
