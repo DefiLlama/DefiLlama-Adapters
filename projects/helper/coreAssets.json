@@ -2628,6 +2628,9 @@
     "USDT": "0xdc1a8a35b0baa3229b13f348ed708a2fd50b5e3a",
     "WEGAS": "0x6d1e851446f4d004ae2a72f9afed85e8829a205e"
   },
+  "peaq": {
+    "WPEAQ": "0x3cD66d2e1fac1751B0A20BeBF6cA4c9699Bb12d7"
+  },
   "tac": {
     "WTAC": "0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9",
     "TON": "0xb76d91340f5ce3577f0a056d29f6e3eb4e88b140",
