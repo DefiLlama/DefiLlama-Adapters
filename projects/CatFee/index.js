@@ -1,66 +1,19 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-const { post } = require('../helper/http');
+const { nullAddress, sumTokensExport } = require("../helper/unwrapLPs");
 
-const { getEnv } = require('../helper/env')
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+	const addresses = [
+		'TKoffapJgw2E586kp9taJvjqdfpiKrWKWG',
+		'TN9EhKWtH4jvtx9xr8fFaA3qfuopdpvjhf',
+		'TYEMUMKBmkTRMa1CNh7xkNYZ2mTVFw9f1a',
+		'TTWkCVPbRdjzLHcrYaMYecuqpQSHQ37hWZ',
+		'TELWKqZ2oCU8KwdMafysD7hDrmaMMo9nRc',
+		'TAA5NR8zCfzFpDJDeQ4316uE1LAQfiiQpK',
+		'THVmdJwcuXi3So9U3v6an4dTkXmQdNQ9BB',
+		'TB8XwKU6agKskNUqFK3mcNc8eu4VVd31WV'
+	]
 
-const addresses = [
-	'TKoffapJgw2E586kp9taJvjqdfpiKrWKWG',
-	'TSmrfRFesHf9of94mNKLgrunbFzrPYGiPZ',
-	'TYEMUMKBmkTRMa1CNh7xkNYZ2mTVFw9f1a',
-	'TQmxShUFhs8bHxdQKeWWFNPYJJp5mzUz38',
-	'TXtt43tfe6SUL8HU6KNutXNm4Ybuj1Ro25',
-	'TGinDyFgTLYcnoJtFatxictWB1dfN6no26'
-]
-
-async function callApi(api, body) {
-	return await post(getEnv('TRON_RPC') + api, body)
-}
-async function getDelegatedAmountSun(from, to) {
-	const data = await callApi('/wallet/getdelegatedresourcev2', {
-		fromAddress: from,
-		toAddress: to,
-		visible: true
-	})
-	const list = data.delegatedResource || [];
-	let bw = 0, en = 0;
-	for (const it of list) {
-		bw += Number(it.frozen_balance_for_bandwidth || 0);
-		en += Number(it.frozen_balance_for_energy || 0);
-	}
-	return bw + en
-}
-
-async function sumOneAddress(to) {
-	const response = await callApi('/wallet/getdelegatedresourceaccountindexv2', {
-		value: to,
-		visible: true
-	})
-	const perRequestDelayMs = 100
-	let totalSun = 0;
-	for (const from of response.fromAccounts) {
-		const a = await getDelegatedAmountSun(from, to);
-		totalSun += a || 0;
-		if (perRequestDelayMs > 0) await sleep(perRequestDelayMs);
-	}
-	return totalSun
-}
-async function getStakedTron() {
-	let total = 0
-	for (const address of addresses) {
-		total += await sumOneAddress(address)
-	}
-	return total / 1000_000
-}
-
-
-module.exports = {
-	tron: {
-		tvl: async () => {
-			return {
-				tron: await getStakedTron(),
-			};
+	module.exports = {
+		tron: {
+			tvl: sumTokensExport({owners: addresses, tokens: [nullAddress] }),
 		},
-	},
-	timetravel: false,
-};
+		timetravel: false,
+	};
