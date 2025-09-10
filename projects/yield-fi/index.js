@@ -1,14 +1,5 @@
 const { api2 } = require("@defillama/sdk");
 
-module.exports = {
-    hallmarks: [
-      ['2025-05-02', 'v2 yUSD Launch'],
-      ['2025-06-16', 'vyUSD Launch'],
-      ['2025-08-25', 'yETH & yBTC Launch'],
-      ['2025-08-29', 'vyETH & vyBTC Launch'],
-    ],
-}
-
 const yusd_config = {
     ethereum: "0x19Ebd191f7A24ECE672ba13A302212b5eF7F35cb", 
     optimism: '0x4772D2e014F9fC3a820C444e3313968e9a5C8121',
