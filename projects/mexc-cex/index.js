@@ -87,11 +87,11 @@ const config = {
   base: {
     owners: ["0x4e3ae00e8323558fa5cac04b152238924aa31b60"],
   },
-  // ton: {
-  //   owners: [
-  //     "eqdyh9di0ct8qsbnhjcnm6sylpqaaorna7sats7mgwd3497j",
-  //   ],
-  // }, 
+  ton: {
+    owners: [
+      "EQDYh9Di0cT8QSbnHJcNM6sYlpQAAOrnA7sats7Mgwd3497j",
+    ],
+  }, 
   ripple: {
     owners: [
       "r3BFHL2EXZN4darZ7vH7BT7tP9tN7tyd6W",
