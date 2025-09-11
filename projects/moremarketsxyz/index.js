@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { post } = require('../helper/http')
-const { XRP_MPC_WALLET, TERM_RLUSD_VAULT, RLUSD_TOKEN, RIPPLE_ENDPOINT } = require('./addresses')
+const { XRP_MPC_ADDRESS, TERM_RLUSD_VAULT, RLUSD_TOKEN, RIPPLE_ENDPOINT } = require('./addresses')
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MoreMarkets DeFiLlama adapter
@@ -24,7 +24,7 @@ function makeTVL(param) {
   return async (api) => {
     if (param === 'xrp') {
       // Get XRP balance directly from XRPL
-      const xrpBalance = await getXrpBalance(XRP_MPC_WALLET);
+      const xrpBalance = await getXrpBalance(XRP_MPC_ADDRESS);
       api.add(ADDRESSES.ripple.XRP, xrpBalance);
     } else if (param === 'rlusd') {
       await getRlusdBalance(api);

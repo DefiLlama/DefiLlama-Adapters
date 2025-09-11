@@ -1,7 +1,7 @@
 // MoreMarkets contract addresses
 module.exports = {
   // XRPL
-  XRP_MPC_WALLET: 'rPRcZswAjfHzUbCj44YzFhNdB1c8Yux5aT',
+  XRP_MPC_ADDRESS: 'rPRcZswAjfHzUbCj44YzFhNdB1c8Yux5aT',
   
   // Ethereum
   TERM_RLUSD_VAULT: '0xb962fd1aBd9A365140493Bd499AcF1eC0AcfF040',
