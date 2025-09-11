@@ -11,5 +11,5 @@ async function tvl(api) {
 
 module.exports = {
   solana: { tvl },
-  methodology: 'Counts the amount SOL/LST in the vault',
+  methodology: 'Counts multi type of SOL/LST in the vault',
 }
