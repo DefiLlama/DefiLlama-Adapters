@@ -31,13 +31,13 @@ const BASE = 'https://api.moremarkets.xyz/api'
 
 function makeTVL(param) {
   return async (api) => {
-    const { data } = await get(`${BASE}/defillama/balances?token=${param}`)
-    const balances = data?.balances || {}
+    const response = await get(`${BASE}/defillama/balances?token=${param}`)
+    const balances = response?.balances || {}
 
     for (const [addr, raw] of Object.entries(balances)) {
       const key = (param === 'xrp' && addr === 'XRP')
         ? ADDRESSES.ripple.XRP // XRP, value is drops
-        : addr // RLUSD, value is WEI
+        : addr // RLUSD, value is WEI - use the actual contract address
       api.add(key, raw)
     }
     return api.getBalances()
