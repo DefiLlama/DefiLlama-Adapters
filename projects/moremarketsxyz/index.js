@@ -1,5 +1,6 @@
 const axios = require('axios')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { get } = require('../helper/http')
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MoreMarkets DeFiLlama adapter
@@ -30,7 +31,7 @@ const BASE = 'https://api.moremarkets.xyz/api'
 
 function makeTVL(param) {
   return async (api) => {
-    const { data } = await axios.get(`${BASE}/defillama/balances?token=${param}`)
+    const { data } = await get(`${BASE}/defillama/balances?token=${param}`)
     const balances = data?.balances || {}
 
     for (const [addr, raw] of Object.entries(balances)) {
