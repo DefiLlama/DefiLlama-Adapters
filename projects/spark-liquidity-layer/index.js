@@ -210,7 +210,7 @@ async function addMorphoBalances(api) {
 
     const marketsData = await api.multiCall({
       abi: morphoAbi.morphoBlueFunctions.market,
-      calls: activeMarkets.filter((market) => market !== vault.idleMarketId).map((market) => ({
+      calls: activeMarkets.map((market) => ({
         target: vaultConfig.morphoSingleton,
         params: market,
       })),
