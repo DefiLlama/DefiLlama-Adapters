@@ -8,7 +8,8 @@ const config = {
     '0x99A95a9E38e927486fC878f41Ff8b118Eb632b10',
     '0xE45321525c85fcc418C88E606B96daD8cBcc047f',
     '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',
-    '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc'
+    '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc',
+    '0x2Adf038b67a8a29cDA82f0Eceb1fF0dba704b98d'
     // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
   ],
   berachain: [],
