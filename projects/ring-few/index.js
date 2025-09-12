@@ -36,11 +36,16 @@ Object.keys(fewFactoryConfig).forEach(chain => {
       const token0s = await api.multiCall({ abi: uniswapAbi.token0, calls })
       const token1s = await api.multiCall({ abi: uniswapAbi.token1, calls })
       const reserves = await api.multiCall({ abi: uniswapAbi.getReserves, calls })
+      const fewSymbols = await api.multiCall({ abi: 'string:symbol', calls: fewTokens, permitFailure: true })
       reserves.forEach(({ _reserve0, _reserve1 }, i) => {
         const index0 = fewTokens.findIndex(token => token === token0s[i])
         const index1 = fewTokens.findIndex(token => token === token1s[i])
-        sdk.util.sumSingleBalance(balances, index0 !== -1 ? originTokens[index0] : token0s[i], _reserve0, chain)
-        sdk.util.sumSingleBalance(balances, index1 !== -1 ? originTokens[index1] : token1s[i], _reserve1, chain)
+        if (fewSymbols[index0] && !(fewSymbols[index0].includes('fwRING') || fewSymbols[index0].includes('fwRNG'))) {
+          sdk.util.sumSingleBalance(balances, index0 !== -1 ? originTokens[index0] : token0s[i], _reserve0, chain)
+        }
+        if (fewSymbols[index1] && !(fewSymbols[index1].includes('fwRING') || fewSymbols[index1].includes('fwRNG'))) {
+          sdk.util.sumSingleBalance(balances, index1 !== -1 ? originTokens[index1] : token1s[i], _reserve1, chain)
+        }
       })
       const tokens = new Set([...token0s, ...token1s, ...originTokens])
 
