@@ -1,5 +1,6 @@
 const { getLogs2 } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/solana')
+const { getObjects } = require("../helper/chain/sui");
 
 const evm_config = {
   ethereum: { kernelEventEmitter: '0x6984DC28Bf473160805AE0fd580bCcaB77f4bD7C', fromBlock: 22330649 },
@@ -13,12 +14,27 @@ const evm_config = {
 
 const svm_config = {
   eclipse: [
-    '4wyA3MfcGu9PmFiegCZ3itNADVxmTrnKt4MDFFRxzctm' // tETH/WETH
+    'BvNLQCQKxq5A7AQUsMdUqRhwXwmnYy7bkpVU67QrakJ8', // tETH/WETH (WETH)
+    '8VSpqv9eAtxew8hbGjN3bWoyHCog9gFEcW42URVNpTH', // tETH/WETH (tETH)
+
+    'ECSRM9wkFyABH55vYGoR2kjSNm3tGEFp1cT3htBWmngd', // tUSD/USDC (USDC)
+    '6uoWjgNs8h7VYNmdrdHmXjty8Y8GrMjTxGcmb3EuDoM8', // tUSD/USDC (tUSD)
+
   ],
   solana: [
-    '78auJTs52UmJbn82tCptdMTgQzgTLA2hg4AS6RKnwkxQ', // USDT/USDC
-    'CjfBGMQJTw4rHFCGdF5U4GMPBK7sE4x1rgatjHyqCocG' // WSOL/USDC
+    '5XCdmwR7K2sZAxbWbkqhohnJ6X7v9ZtbuNrzrr19yHgp', // USDT/USDC (USDT)
+    'FL34362VBFeMRqoRuFm3SiFwS2TAXBWhk6C2CBnjbG3E', // USDT/USDC (USDC)
+
+    '6Fv84LR6nWFYeWRJAehHF3KXRi1RWQRQkGn3eLK3QMxb', // SOL/USDC (SOL)
+    '8NGoaasGcpa8h1JjLY598UCrmxpqgpuWVJtm9F5k3sid', // SOL/USDC (USDC)
+
+    'JBfR8XHYRF52WzTqyB14gkNVWtpPr9DUqzfuxASGLmby', // SKATE/USDC (SKATE)
+    '8munm11k8XjmjkyXygXWoZadfJuweNiFztKmgNzxccWb' // SKATE/USDC (USDC)
   ]
+}
+
+const sui_config = {
+  sui: ['0x6ab1e3d7c02dff309504d53fa06302cb66ce50f576432c369afe07c164c0a853']
 }
 
 const eventAbis = {
@@ -32,7 +48,7 @@ const abis = {
 module.exports = {
   methodology: "Assets deployed on periphery chains. For EVM chains, we track the token balances in the pools. For SVM chains, we track the token balances owned by the pool addresses.",
   start: 1742169600, // '2025-03-17 GMT+0'
-  timetravel: false, // Set to false for Solana and Eclipse chains
+  timetravel: false,
 }
 
 const evmTvl = async (api) => {
@@ -52,9 +68,28 @@ Object.keys(evm_config).forEach((chain) => {
 
 const svmTvl = async (api) => {
   const pools = svm_config[api.chain]
-  return sumTokens2({ api, owners: pools })
+  const res = await sumTokens2({ api, tokenAccounts: pools, computeTokenAccount: true })
+  return res;
 }
 
 Object.keys(svm_config).forEach((chain) => {
   module.exports[chain] = { tvl: svmTvl }
+})
+
+const suiTvl = async (api) => {
+  const pools = sui_config[api.chain]
+  const objs = await getObjects(pools)
+  objs.forEach((obj) => {
+    const { fields: { pool_coin0_liquidity, pool_coin1_liquidity } } = obj
+    const coin0Type = pool_coin0_liquidity.type.split('<')[1].replace('>', '')
+    const coin1Type = pool_coin1_liquidity.type.split('<')[1].replace('>', '')
+    const coin0Amount = pool_coin0_liquidity.fields.balance
+    const coin1Amount = pool_coin1_liquidity.fields.balance
+    api.add(coin0Type, coin0Amount)
+    api.add(coin1Type, coin1Amount)
+  })
+}
+
+Object.keys(sui_config).forEach((chain) => {
+  module.exports[chain] = { tvl: suiTvl }
 })

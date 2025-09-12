@@ -10,7 +10,7 @@ const config = {
       '0x3d79007ba1a68de986eb641a3c24d58a0c69587e',
     ],
     tokens: [
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.GAS_TOKEN_2,
       ADDRESSES.ethereum.DAI,
       ADDRESSES.ethereum.USDC,
       ADDRESSES.ethereum.USDT,
@@ -57,7 +57,7 @@ const config = {
       '0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8',
     ],
     tokens: [
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.GAS_TOKEN_2,
       ADDRESSES.optimism.USDC,
     ]
   },
@@ -67,7 +67,7 @@ const config = {
       '0x856cb5c3cbbe9e2e21293a644aa1f9363cee11e8',
     ],
     tokens: [
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      ADDRESSES.GAS_TOKEN_2,
       ADDRESSES.arbitrum.USDC,
     ]
   },

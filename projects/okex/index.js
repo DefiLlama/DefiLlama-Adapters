@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { cexExports } = require("../helper/cex");
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 
 const config = {
@@ -501,40 +502,51 @@ const config = {
   ton: {
     owners: [
       "UQD5vcDeRhwaLgAvralVC7sJXI-fc2aNcMUXqcx-BQ-OWi5c",
-     // "UQC0yf82SZehkJPvG26G0XYnIBlzFTCDth04ZnLu9-Avw0_s",
-     // "UQA-Wv4t1zUyWWDBfs2H6EgQqOooDPIuj3gVsa3XJ7KHStEM",
-     // "UQBK5nQVwGHBt_28JZZHjFxrCBaULx0SiqHIKth-Ks0AU4lm",
-     // "UQAtl5i8vh3gUmASO1xTEDcCm2MZSkDKAt0dZiEIOKo88evz",
-     // "UQAgSnzOzIZZhMGhXWnx7rGGbjIkB4yvnzecm777KgzejU7I",
+      // "UQC0yf82SZehkJPvG26G0XYnIBlzFTCDth04ZnLu9-Avw0_s",
+      // "UQA-Wv4t1zUyWWDBfs2H6EgQqOooDPIuj3gVsa3XJ7KHStEM",
+      // "UQBK5nQVwGHBt_28JZZHjFxrCBaULx0SiqHIKth-Ks0AU4lm",
+      // "UQAtl5i8vh3gUmASO1xTEDcCm2MZSkDKAt0dZiEIOKo88evz",
+      // "UQAgSnzOzIZZhMGhXWnx7rGGbjIkB4yvnzecm777KgzejU7I",
       "UQBfAN7LfaUYgXZNw5Wc7GBgkEX2yhuJ5ka95J1JJwXXf9t5",
       "UQDn6G2gh0LtkzQ0_-uPCKY8fhAO6ELiX1manL8IkVdKbDEu",
       "UQBQAGSnFqLxvMV-PXzPH1_hmPDDjG5mhxp4ZABEBKz_cm8D",
-     // "UQDtQfz1ZaHdEzCj5taHbAPULBbU-IU5Blba020x_6PFcUkG",
-     // "UQDcaktrqeiLZbMS-piyBJ0Te7AttkVwYHKJEHIzJxvhDt9I",
-     // "UQDV3FPAkxE-U97RrBilbxyzTd_Big1T7UTX9qoTcMrXnDI9",
+      // "UQDtQfz1ZaHdEzCj5taHbAPULBbU-IU5Blba020x_6PFcUkG",
+      // "UQDcaktrqeiLZbMS-piyBJ0Te7AttkVwYHKJEHIzJxvhDt9I",
+      // "UQDV3FPAkxE-U97RrBilbxyzTd_Big1T7UTX9qoTcMrXnDI9",
       "UQB0Pe-86bTQrmztmIL2MXMT4fZTHw2UwXEG8rpv-vRTP4np",
-     // "UQBImtSyquflZFlf-fhIcCuWWtIvhZC57iVGYk8RGdg-nOUT",
-     // "UQBN8d2IB2mXuAwtM0dOSJBeR3zjLn1bDmqN_y07IwUo33g5",
+      // "UQBImtSyquflZFlf-fhIcCuWWtIvhZC57iVGYk8RGdg-nOUT",
+      // "UQBN8d2IB2mXuAwtM0dOSJBeR3zjLn1bDmqN_y07IwUo33g5",
       "UQBmoechltZNb69I-ksuqGH2ewSE0tFKWcr3AdjChs5E5Uii",
-     // "UQBH2w_CBbd1SOnm0V6vAasHQ8lFzJklB38BiiHNRQ_9hSha",
-     // "UQC5KG5acrwZkKlARnPJr8Quv5TGBw7-KEqO9-ABJwnynwwv",
+      // "UQBH2w_CBbd1SOnm0V6vAasHQ8lFzJklB38BiiHNRQ_9hSha",
+      // "UQC5KG5acrwZkKlARnPJr8Quv5TGBw7-KEqO9-ABJwnynwwv",
       "UQCqa-8NrR5jikSFbt9Q5Ry-E0zEnVcym-GuhkDBZlDg8dIw",
-     // "UQAawqXJa-36E9QjwT_fngWaNZurgeyT69k4emi0XivPRsN-",
-     // "UQBZ6_nFZa785vHPmc7Us35Ty8vwK8-xwepQU9xXgoNXW6CG",
-     // "UQBuEzDgQDpjAQNlclN7VdzCUQJLKKr20tFTO40ObVp1Y6ac",
-     // "UQANNUgJOcNeT6x1wB8AmuRyOoDP0YV-XS9xYJjuwxucaGgE",
+      // "UQAawqXJa-36E9QjwT_fngWaNZurgeyT69k4emi0XivPRsN-",
+      // "UQBZ6_nFZa785vHPmc7Us35Ty8vwK8-xwepQU9xXgoNXW6CG",
+      // "UQBuEzDgQDpjAQNlclN7VdzCUQJLKKr20tFTO40ObVp1Y6ac",
+      // "UQANNUgJOcNeT6x1wB8AmuRyOoDP0YV-XS9xYJjuwxucaGgE",
       "UQDQ8idzyoTNTe2FbARQoAbl4VxCSeECJJsGN6pEbSIVsrVb",
       "UQChmtt-KnSLq15DeqwCvw4Dt0dlyU6xVwaCegCkDrYHHBwo",
       "UQD53f8QA0j34oehKI2PwTnsGR8uSia63N2P2Zcaq975LXYy",
       "UQD3HSnYqkhMxae_K6vngnzRmmrOSOWugdfFxcWyR4hV_34f",
-     // "UQBlYkm2HyAivZoKP6skaw02bfZQyxPj_3NJjAJp61pC3P0a",
-     // "UQCiV97n9efLmFi8qeAU0SafSkbjZhbWNYABYb38lvln4gGh",
+      // "UQBlYkm2HyAivZoKP6skaw02bfZQyxPj_3NJjAJp61pC3P0a",
+      // "UQCiV97n9efLmFi8qeAU0SafSkbjZhbWNYABYb38lvln4gGh",
       "UQDgwX5u7w7s0DNyXV4ApByxlhdwp6xzGYHpaO1GWqZ2qcHC",
       "UQA2ogqg4sy7KfGuQVXWtbOm3vnE7NVGCeBCl6-XdJkqy3pq",
       "UQAqc2WkItRXN4xB6n5tBzNxhT8pP-e3MtTlReU3UdIJVI-s",
-     // "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
+      // "UQDY4-KtVxawZU_Vva7KTOhlhx8Ho0jI0ahyebYT5YuJkYSf",
     ],
   },
 };
 
-module.exports = cexExports(config);
+const withdrawalAddresses = [
+  '0x33baf43a1e7534fe46507a7d4a001881ae9cca44',
+  '0x52a66f3402dfa160458a3cb97577610b564c4db2',
+  '0xe839a3e9efb32c6a56ab7128e51056585275506c',
+  '0x9c595f9518b11b2876b2a5e89996b1fd2c748726',
+  '0x32ddc4d173745a41e428ccf3756b907673301992',
+]
+
+module.exports = mergeExports([
+  cexExports(config),
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
+])
