@@ -23,5 +23,6 @@ module.exports = treasuryExports({
      ],
     owners: [synthetixTreasury, treasury],
     ownTokens: [SNX],
+    blacklistedTokens: ['0xC25a3A3b969415c80451098fa907EC722572917F']
   },
 })

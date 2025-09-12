@@ -1,16 +1,16 @@
 /**
- * STRKFarm is a yield aggregator and strategy builder on Starknet
+ * Troves is a yield aggregator and strategy builder on Starknet
  * - We use various DeFi protocols on starknet to design yield strategies
  */
 
 const { multiCall } = require("../helper/chain/starknet");
-const { call } = require("../helper/chain/starknet");
 const ADDRESSES = require('../helper/coreAssets.json');
+const { EkuboAbiMap } = require('./ekubo');
 const { ERC4626AbiMap } = require('./erc4626');
 const { SINGLETONabiMap } = require('./singleton');
 const { endurABIMap } = require('./endur');
 const { FusionAbiMap } = require('./fusionAbi');
-const { ERC721StratAbiMap } = require('./sensei');
+const { hex } = require("@coral-xyz/anchor/dist/cjs/utils/bytes");
 
 const STRATEGIES = {
   "AutoCompounding": [{ // auto-compounds user tokens (e.g. STRK) by investing in zkLend
@@ -41,7 +41,7 @@ const STRATEGIES = {
     address: "0x7023a5cadc8a5db80e4f0fde6b330cbd3c17bbbf9cb145cbabd7bd5e6fb7b0b",
     token: ADDRESSES.starknet.STRK,
     xSTRK: ADDRESSES.starknet.XSTRK,
-    vesu: "0x02545b2e5d519fc230e9cd781046d3a64e092114f07e44771e0d719d148725ef"
+    vesu: "0x000d8d6dfec4d33bfb6895de9f3852143a17c6f92fd2a21da3d6924d34870160"
   }],
   "FusionVaults": [{
     address: "0x07fb5bcb8525954a60fde4e8fb8220477696ce7117ef264775a1770e23571929",
@@ -55,6 +55,27 @@ const STRATEGIES = {
   }, {
     address: "0x0115e94e722cfc4c77a2f15c4aefb0928c1c0029e5a57570df24c650cb7cec2c",
     token: ADDRESSES.starknet.USDT, // Fusion USDT
+  }], 
+  "EkuboVaults": [{
+    address: "0x01f083b98674bc21effee29ef443a00c7b9a500fd92cf30341a3da12c73f2324",
+    token1: ADDRESSES.starknet.STRK,
+    token2: ADDRESSES.starknet.XSTRK
+  }],
+  "EvergreenVaults": [{
+    address: "0x7e6498cf6a1bfc7e6fc89f1831865e2dacb9756def4ec4b031a9138788a3b5e",
+    token: ADDRESSES.starknet.USDC
+  }, {
+    address: "0x446c22d4d3f5cb52b4950ba832ba1df99464c6673a37c092b1d9622650dbd8",
+    token: ADDRESSES.starknet.ETH
+  }, {
+    address: "0x5a4c1651b913aa2ea7afd9024911603152a19058624c3e425405370d62bf80c",
+    token: ADDRESSES.starknet.WBTC
+  }, {
+    address: "0x1c4933d1880c6778585e597154eaca7b428579d72f3aae425ad2e4d26c6bb3",
+    token: ADDRESSES.starknet.USDT
+  }, {
+    address: "0x55d012f57e58c96e0a5c7ebbe55853989d01e6538b15a95e7178aca4af05c21",
+    token: ADDRESSES.starknet.STRK
   }]
 }
 
@@ -84,7 +105,7 @@ async function computeXSTRKStratTVL(api) {
       params: [pool_id, c.xSTRK, c.token, c.address] 
     })),
     abi: {...SINGLETONabiMap.position, customInput: 'address'},
-  });
+  })
 
 
   let collateral = Number(data[0]['2']);
@@ -114,11 +135,45 @@ async function computeFusionTVL(api) {
   api.addTokens(fusionContracts.map(c => c.token), totalAssets);
 }
 
+async function computeEkuboTVL(api) {
+  const ekuboContracts = STRATEGIES.EkuboVaults
+  // calculate tvl for each 
+  const totalShares = await multiCall({
+    calls: ekuboContracts.map(c => c.address),
+    abi: EkuboAbiMap.total_supply
+  });
+
+  const hexValues = totalShares.map(v => '0x' + v.toString(16));
+
+  // get assets ( liquidity, xstrk, strk ) for the total supply 
+  const assets = await multiCall({
+    calls: ekuboContracts.map(c => ({
+      target: c.address,
+      params: [hexValues[0], '0x0'] 
+    })),
+    abi: { ...EkuboAbiMap.convert_to_assets, customInput: 'address' }
+  })
+
+  api.addTokens(ADDRESSES.starknet.STRK, assets[0]['2'] );
+  api.addTokens(ADDRESSES.starknet.XSTRK, assets[0]['1'] );
+}
+
+async function computeEvergreenTVL(api) {
+  const evergreenContracts = STRATEGIES.EvergreenVaults;
+  const totalAssets = await multiCall({
+    calls: evergreenContracts.map(c => c.address),
+    abi: ERC4626AbiMap.total_assets
+  })
+  api.addTokens(evergreenContracts.map(c => c.token), totalAssets);
+}
+
 async function tvl(api) {
   await computeAutoCompoundingTVL(api);
   await computeSenseiTVL(api);
   await computeXSTRKStratTVL(api);
   await computeFusionTVL(api);
+  await computeEkuboTVL(api);
+  await computeEvergreenTVL(api);
 }
 
 module.exports = {

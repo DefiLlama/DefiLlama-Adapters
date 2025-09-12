@@ -5,9 +5,11 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const tokens = {
   USDC: ADDRESSES.sonic.USDC_e,
+  scUSD: ADDRESSES.sonic.scUSD,
 
   DRE: "0xd4eee4c318794bA6FFA7816A850a166FFf8310a9",
   DRE_USDC_LP:  "0x18b6963ebe82b87c338032649aaad4eec43d3ecb",
+  DRE_scUSD_LP:  "0x88640D840614BB63cfb1545897D6d228B381C659",
 
   DRE_Old: '0xF8232259D4F92E44eF84F18A0B9877F4060B26F1',
   DRE_USDC_LP_Old:  "0xB781C624397C423Cb62bAe9996cEbedC6734B76b",
@@ -27,26 +29,28 @@ const coreAddresses = {
   dreOracle: "0xd23E9485b76E43d8808B0eCE846D0db3bCb09B93",
 }
 
-async function tvl(api) {
-  const toa = [
-    [ADDRESSES.sonic.USDC_e, coreAddresses.depositContract],
-    [tokens.DRE, coreAddresses.depositContract],
-    [tokens.DRE_USDC_LP, coreAddresses.depositContract],
+const toa = [
+  [ADDRESSES.sonic.USDC_e, coreAddresses.depositContract],
+  [ADDRESSES.sonic.scUSD, coreAddresses.depositContract],
+  [tokens.DRE, coreAddresses.depositContract],
+  [tokens.DRE_USDC_LP, coreAddresses.depositContract],
+  [tokens.DRE_scUSD_LP, coreAddresses.depositContract],
 
-    [tokens.sonic.USDC_e, coreAddresses_Old.depositContract],
-    [tokens.DRE_Old, coreAddresses_Old.depositContract],
-    [tokens.DRE_USDC_LP_Old, coreAddresses_Old.depositContract],
-  ]
+  [tokens.DRE_Old, coreAddresses_Old.depositContract],
+  [tokens.DRE_USDC_LP_Old, coreAddresses_Old.depositContract],
+]
 
-  return api.sumTokens({ tokensAndOwners: toa })
+
+const pool2 = {
+  depositContracts: [coreAddresses.depositContract, coreAddresses_Old.depositContract],
+  assets: [tokens.DRE_USDC_LP, tokens.DRE_USDC_LP_Old, tokens.DRE_scUSD_LP]
 }
-
 
 const data = {
   sonic: {
-    tvl: tvl,
+    tvl: (api) => api.sumTokens({ tokensAndOwners: toa }),
     staking: staking(coreAddresses.stakingContract, tokens.DRE, "sonic"),
-    pool2: pool2s([coreAddresses.depositContract, coreAddresses_Old.depositContract], [tokens.DRE_USDC_LP, tokens.DRE_USDC_LP_Old], "sonic"),
+    pool2: pool2s(pool2.depositContracts, pool2.assets, "sonic"),
   }
 };
 

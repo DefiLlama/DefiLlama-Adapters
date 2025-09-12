@@ -88,10 +88,12 @@ async function getSiloVaults(api, owners) {
 }
 
 async function getCuratorTvlErc4626(api, vaults) {
-  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true, excludeFailed: true, })
-  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true, excludeFailed: true, })
-
-  api.add(assets, totalAssets)
+  const assets =  await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true, })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true, })
+  for (let i = 0; i < assets.length; i++) {
+    if (!assets[i] || !totalAssets[i]) continue;
+    api.add(assets[i], totalAssets[i]);
+  }
 }
 
 async function getCuratorTvlAeraVault(api, vaults) {
@@ -189,7 +191,7 @@ async function getCuratorTvl(api, vaults) {
   await getCuratorTvlErc4626(api, allVaults.morpho)
   await getCuratorTvlErc4626(api, allVaults.euler)
   await getCuratorTvlErc4626(api, allVaults.silo)
-  
+
   // mellow.finance vaults
   if (vaults.mellow) {
     await getCuratorTvlErc4626(api, vaults.mellow)
@@ -218,6 +220,11 @@ async function getCuratorTvl(api, vaults) {
   // symiotic.fi
   if (vaults.symbiotic) {
     await getCuratorTvlSymbioticVault(api, vaults.symbiotic)
+  }
+
+  // custom ERC4626 vaults {
+  if (vaults.erc4626) {
+    await getCuratorTvlErc4626(api, vaults.erc4626)
   }
 }
 
