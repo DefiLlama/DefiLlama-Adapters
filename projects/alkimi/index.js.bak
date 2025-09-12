@@ -9,7 +9,7 @@ module.exports = {
   methodology: "Staking counts all ALKIMI tokens locked in the StakingVault (user + admin)",
 
   sui: {
-    tvl: async () => 0,
+	tvl: async () => 0,
     staking: async () => {
       // fetch vault data from Sui fullnode
       const resp = await axios.post("https://fullnode.mainnet.sui.io:443", {
