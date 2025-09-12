@@ -7,8 +7,11 @@ const USDC_FA = "0xbae207659db88bea0cbead6da0ed00aac12edcdda169e591cd41c94180b46
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology:
-    "TVL includes USDC tokens deposited in Nova pools (RWA) and Rental pools. PROPS tokens are reported under staking.",
+  methodology: `TVL includes USDC tokens deposited in Nova pools (RWA) and Rental pools. 
+  RWA assets are paired with USDC in on - chain liquidity pools built on Trader Joe’s CLMM contracts,
+  which allows users to buy and sell property tokens directly against USDC.
+  Redemption is AMM- based and depends on pool liquidity and active price bins,
+  not a guaranteed 1: 1 stablecoin redemption.PROPS tokens are reported separately under staking.`,
 
   aptos: {
     tvl: async (api) => {
