@@ -116,7 +116,8 @@ const defaultTokens = {
     "0x54d2252757e1672eead234d27b1270728ff90581", // BITGET TOKEN, NEW
     ADDRESSES.ethereum.USDe, // USDE
     "0x136471a34f6ef19fe571effc1ca711fdb8e49f2b", //USYC
-    "0x7712c34205737192402172409a8f7ccef8aa2aec" // BUIDL 
+    "0x7712c34205737192402172409a8f7ccef8aa2aec", // BUIDL
+    '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
   ],
   tron: [
     nullAddress,
