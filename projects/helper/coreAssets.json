@@ -2071,6 +2071,7 @@
   "etlk": {
     "OGV1WXTZ": "0x3571aed54ccea5b69b00516d5a149a6baea77118",
     "WXTZ": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
+    "STXTZ": "0x01F07f4d78d47A64F4C3B2b65f513f15Be6E1854",
     "USDC": "0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9",
     "USDT": "0x2c03058c8afc06713be23e58d2febc8337dbfe6a",
     "WETH": "0xfc24f770f94edbca6d6f885e12d4317320bcb401",
@@ -2517,7 +2518,8 @@
     "DOGEB": "0x1E0d0303a8c4aD428953f5ACB1477dB42bb838cf",
     "ArtBTC": "0x02F294cC9Ceb2c80FbA3fD779e17FE191Cc360C4",
     "ArtDOGEB": "0xa3027972E2bf168d3Df12a1533f073b330126f34",
-    "ArtBTCB": "0x941508f0B823f1BC40a9beEFCE5e544E525a94c3"
+    "ArtBTCB": "0x941508f0B823f1BC40a9beEFCE5e544E525a94c3",
+    "uBTC": "0x78E26E8b953C7c78A58d69d8B9A91745C2BbB258"
   },
   "supra": {
     "SUPRA": "0x1::supra_coin::SupraCoin",
@@ -2628,6 +2630,9 @@
     "USDT": "0xdc1a8a35b0baa3229b13f348ed708a2fd50b5e3a",
     "WEGAS": "0x6d1e851446f4d004ae2a72f9afed85e8829a205e"
   },
+  "peaq": {
+    "WPEAQ": "0x3cD66d2e1fac1751B0A20BeBF6cA4c9699Bb12d7"
+  },
   "tac": {
     "WTAC": "0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9",
     "TON": "0xb76d91340f5ce3577f0a056d29f6e3eb4e88b140",
@@ -2643,5 +2648,8 @@
   },
   "bitci": {
     "WBITCI": "0xe0d0f25b5fcfa4d3edd9c2186451d9e04c4b9f11"
+  },
+  "somnia": {
+    "WSOMI": "0x046ede9564a72571df6f5e44d0405360c0f4dcab"
   }
 }
