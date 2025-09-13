@@ -49,7 +49,7 @@ module.exports = {
 };
 
 // ---------- Local test block ----------
-
+/*
 if (require.main === module) {
   (async () => {
     const now = Math.floor(Date.now() / 1000);
@@ -91,3 +91,4 @@ if (require.main === module) {
     console.log("=======================================");
   })().catch(console.error);
 }
+*/
