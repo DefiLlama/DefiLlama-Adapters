@@ -53,23 +53,23 @@ async function getP2pData(subgraphUrl, chainName, isBorrowed = false) {
 
 module.exports = {
   ethereum: {
-    tvl: () => getP2pData(ethereumSubgraphUrl, false, 'ethereum'),
+    tvl: () => getP2pData(ethereumSubgraphUrl, 'ethereum'),
     borrowed: () => getP2pData(ethereumSubgraphUrl, true, 'ethereum'),
   },
   arbitrum: {
-    tvl: () => getP2pData(arbitrumSubgraphUrl, false, 'arbitrum'),
+    tvl: () => getP2pData(arbitrumSubgraphUrl, 'arbitrum'),
     borrowed: () => getP2pData(arbitrumSubgraphUrl, true, 'arbitrum'),
   },
   bsc: {
-    tvl: () => getP2pData(bscSubgraphUrl, false, 'bsc'),
+    tvl: () => getP2pData(bscSubgraphUrl, 'bsc'),
     borrowed: () => getP2pData(bscSubgraphUrl, true, 'bsc'),
   },
   base: {
-    tvl: () => getP2pData(baseSubgraphUrl, false, 'base'),
+    tvl: () => getP2pData(baseSubgraphUrl, 'base'),
     borrowed: () => getP2pData(baseSubgraphUrl, true, 'base'),
   },
   polygon: {
-    tvl: () => getP2pData(polygonPosSubgraphUrl, false, 'polygon'),
+    tvl: () => getP2pData(polygonPosSubgraphUrl, 'polygon'),
     borrowed: () => getP2pData(polygonPosSubgraphUrl, true, 'polygon'),
   },
 };
