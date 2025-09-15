@@ -14,7 +14,9 @@ async function tvl(api) {
       const ownerTokens = []
       let hasMore = false
       do {
-        const { data: { pairs, pageCount } } = await get(`https://api.hyperswap.exchange/api/pairs?page=${page}&maxPerPage=50`)
+        const { data: { pairs, pageCount } } = await get(`https://api-partner.hyperswap.exchange/api/pairs?page=${page}&maxPerPage=50`, { headers: {
+          'x-internal-access' : 1
+        }})
         page++
         hasMore = page < pageCount
         pairs.forEach(p => {

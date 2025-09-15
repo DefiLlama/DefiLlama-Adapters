@@ -36,8 +36,8 @@ const endPoints = {
   kava: "https://api2.kava.io",
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
-  gravitybridge: "https://gravitychain.io:1317",
-  sei: "https://sei-rest.publicnode.com",
+  gravitybridge: "https://gravity-api.polkachu.com",
+  sei: "https://sei-api.polkachu.com",
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
@@ -51,7 +51,8 @@ const endPoints = {
   mantra: "https://api.mantrachain.io",
   elys: "https://api.elys.network", // https://api.elys.network/#/Query/ElysAmmPoolAll
   pryzm: "https://api.pryzm.zone",
-  agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  // agoric: 'https://as-proxy.gateway.atomscan.com/agoric-lcd',
+  agoric: 'https://agoric-api.polkachu.com/',
   band: 'https://laozi1.bandchain.org/api',
   celestia: 'https://celestia-rest.publicnode.com',
   dydx: 'https://dydx-rest.publicnode.com',
@@ -61,11 +62,20 @@ const endPoints = {
   sommelier: 'https://sommelier-rpc.polkachu.com',
   stride: 'https://stride-api.polkachu.com',
   babylon: 'https://babylon-api.polkachu.com',
+  milkyway_rollup: 'https://archival-rest-moo-1.anvil.asia-southeast.initia.xyz',
+  titan: 'https://titan-lcd.titanlab.io',
+  provenance: 'https://api.provenance.io',
+  xion: 'https://api.xion-mainnet-1.burnt.com',
+  embr: 'https://rest-embrmainnet-1.anvil.asia-southeast.initia.xyz', 
+  civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
+  echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
+  inertia: 'https://rest.inrt.fi'
 };
 
 const chainSubpaths = {
   crescent: "crescent",
   osmosis: "osmosis",
+  provenance: 'provenance',
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
