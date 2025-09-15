@@ -1,5 +1,6 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { staking } = require('../helper/staking')
 
 const LOANS_FROM_BLOCK = 20973423;
 
@@ -87,5 +88,6 @@ module.exports = {
   ethereum: {
     tvl,
     borrowed,
+    staking: staking('0xb397aa1d78109115dcc57b907dcd9d61bb6b2dce', "0xe412D46a0fBD567332b7689cFFfE1F8A4f19A9d2"),
   },
 };
