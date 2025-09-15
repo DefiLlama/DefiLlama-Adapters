@@ -35,7 +35,11 @@ const getTokenMetrics = async (subgraphUrl, chainName) => {
     }),
   }).then((res) => res.json());
   
-  return result?.data?.tokenMetrics_collection || [];
+  if (!result || !result.data || !result.data.tokenMetrics_collection) {
+    throw new Error(`Failed to fetch valid subgraph response for ${chainName} from ${subgraphUrl}`);
+  }
+  
+  return result.data.tokenMetrics_collection;
 };
 
 
@@ -59,23 +63,23 @@ async function getP2pData(subgraphUrl, chainName, isBorrowed = false) {
 module.exports = {
   ethereum: {
     tvl: () => getP2pData(ethereumSubgraphUrl, 'ethereum'),
-    borrowed: () => getP2pData(ethereumSubgraphUrl, true, 'ethereum'),
+    borrowed: () => getP2pData(ethereumSubgraphUrl, 'ethereum', true),
   },
   arbitrum: {
     tvl: () => getP2pData(arbitrumSubgraphUrl, 'arbitrum'),
-    borrowed: () => getP2pData(arbitrumSubgraphUrl, true, 'arbitrum'),
+    borrowed: () => getP2pData(arbitrumSubgraphUrl, 'arbitrum', true),
   },
   bsc: {
     tvl: () => getP2pData(bscSubgraphUrl, 'bsc'),
-    borrowed: () => getP2pData(bscSubgraphUrl, true, 'bsc'),
+    borrowed: () => getP2pData(bscSubgraphUrl, 'bsc', true),
   },
   base: {
     tvl: () => getP2pData(baseSubgraphUrl, 'base'),
-    borrowed: () => getP2pData(baseSubgraphUrl, true, 'base'),
+    borrowed: () => getP2pData(baseSubgraphUrl, 'base', true),
   },
   polygon: {
     tvl: () => getP2pData(polygonPosSubgraphUrl, 'polygon'),
-    borrowed: () => getP2pData(polygonPosSubgraphUrl, true, 'polygon'),
+    borrowed: () => getP2pData(polygonPosSubgraphUrl, 'polygon', true),
   },
 };
 // node test.js projects/p2p-lending/index.js
