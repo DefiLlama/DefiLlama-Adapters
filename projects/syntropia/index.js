@@ -5,7 +5,7 @@ async function tvl(api) {
   const data = await get("https://syntropia.ai/api/balances/aum");
   const tvl = data.aum;
 
-  api.add(ADDRESSES.ethereum.USDC, tvl);
+  api.add(ADDRESSES.ethereum.USDC, tvl * 1e6);
 }
 
 module.exports = {
