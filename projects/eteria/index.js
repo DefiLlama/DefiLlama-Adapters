@@ -11,5 +11,5 @@ module.exports = {
         fetchCoValentTokens: true,
         permitFailure: true
       }),
-  },
+  }
 };
