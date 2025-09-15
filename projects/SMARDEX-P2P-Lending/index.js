@@ -1,3 +1,5 @@
+const { getChainTransform } = require('../helper/portedTokens');
+
 const headers = {
   origin: "https://subgraph.smardex.io",
   referer: "https://subgraph.smardex.io",
@@ -19,7 +21,7 @@ const tokenMetricsQuery = `{
   }
 }`;
 
-const getTokenMetrics = async (subgraphUrl) => {
+const getTokenMetrics = async (subgraphUrl, chainName) => {
   const result = await fetch(subgraphUrl, {
     method: "POST",
     headers,
@@ -27,41 +29,48 @@ const getTokenMetrics = async (subgraphUrl) => {
       query: tokenMetricsQuery,
     }),
   }).then((res) => res.json());
+  
   return result?.data?.tokenMetrics_collection || [];
 };
 
 
-async function getP2pData(subgraphUrl, isBorrowed = false) {
-  const tokenMetrics = await getTokenMetrics(subgraphUrl);
+async function getP2pData(subgraphUrl, isBorrowed = false, chainName = '') {
+  const tokenMetrics = await getTokenMetrics(subgraphUrl, chainName);
+  const transform = await getChainTransform(chainName);
+  
   return tokenMetrics.reduce((acc, token) => {
     const totalBorrowedAmount = parseFloat(token.totalBorrowedAmount);
-    return {
-      ...acc,
-      [token.id]: totalBorrowedAmount + parseFloat(isBorrowed ? 0 : token.totalCollateralAmount),
-    };
+    const amount = totalBorrowedAmount + parseFloat(isBorrowed ? 0 : token.totalCollateralAmount);
+    
+    if (amount > 0) {
+      const transformedToken = transform(token.id);
+      acc[transformedToken] = amount;
+    }
+    
+    return acc;
   }, {});
 }
 
 module.exports = {
   ethereum: {
-    tvl: () => getP2pData(ethereumSubgraphUrl),
-    borrowed: () => getP2pData(ethereumSubgraphUrl, true),
+    tvl: () => getP2pData(ethereumSubgraphUrl, false, 'ethereum'),
+    borrowed: () => getP2pData(ethereumSubgraphUrl, true, 'ethereum'),
   },
   arbitrum: {
-    tvl: () => getP2pData(arbitrumSubgraphUrl),
-    borrowed: () => getP2pData(arbitrumSubgraphUrl, true),
+    tvl: () => getP2pData(arbitrumSubgraphUrl, false, 'arbitrum'),
+    borrowed: () => getP2pData(arbitrumSubgraphUrl, true, 'arbitrum'),
   },
   bsc: {
-    tvl: () => getP2pData(bscSubgraphUrl),
-    borrowed: () => getP2pData(bscSubgraphUrl, true),
+    tvl: () => getP2pData(bscSubgraphUrl, false, 'bsc'),
+    borrowed: () => getP2pData(bscSubgraphUrl, true, 'bsc'),
   },
   base: {
-    tvl: () => getP2pData(baseSubgraphUrl),
-    borrowed: () => getP2pData(baseSubgraphUrl, true),
+    tvl: () => getP2pData(baseSubgraphUrl, false, 'base'),
+    borrowed: () => getP2pData(baseSubgraphUrl, true, 'base'),
   },
   polygon: {
-    tvl: () => getP2pData(polygonPosSubgraphUrl),
-    borrowed: () => getP2pData(polygonPosSubgraphUrl, true),
+    tvl: () => getP2pData(polygonPosSubgraphUrl, false, 'polygon'),
+    borrowed: () => getP2pData(polygonPosSubgraphUrl, true, 'polygon'),
   },
 };
 // node test.js projects/p2p-lending/index.js
