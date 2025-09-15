@@ -2650,6 +2650,7 @@
     "WBITCI": "0xe0d0f25b5fcfa4d3edd9c2186451d9e04c4b9f11"
   },
   "somnia": {
-    "WSOMI": "0x046ede9564a72571df6f5e44d0405360c0f4dcab"
+    "WSOMI": "0x046ede9564a72571df6f5e44d0405360c0f4dcab",
+    "USDC": "0x28BEc7E30E6faee657a03e19Bf1128AaD7632A00"
   }
 }
