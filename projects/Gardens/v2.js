@@ -40,7 +40,8 @@ async function tvl(api) {
   const poolCreationLogs = await api.getLogs({
     targets: factories,
     topics: [POOL_CREATED_EVENT_TOPIC],
-    fromBlock: 0, // You might want to set a specific start block
+    fromBlock: 1, // Start from recent block
+    toBlock: "latest", // Up to latest block
   });
 
   // Decode all pool events to get strategy addresses and their tokens
@@ -135,7 +136,8 @@ async function getAllStrategies(api) {
   const poolCreationLogs = await api.getLogs({
     targets: factories,
     topics: [POOL_CREATED_EVENT_TOPIC],
-    fromBlock: 0,
+    fromBlock: 1,
+    toBlock: "latest",
   });
 
   const strategies = poolCreationLogs.map(log => {
@@ -153,7 +155,8 @@ async function getStrategyTokenPairs(api) {
   const poolCreationLogs = await api.getLogs({
     targets: factories,
     topics: [POOL_CREATED_EVENT_TOPIC],
-    fromBlock: 0,
+    fromBlock: 1,
+    toBlock: "latest",
   });
 
   return poolCreationLogs.map(log => decodePoolCreatedEvent(log));
