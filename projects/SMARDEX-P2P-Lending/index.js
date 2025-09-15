@@ -34,7 +34,7 @@ const getTokenMetrics = async (subgraphUrl, chainName) => {
 };
 
 
-async function getP2pData(subgraphUrl, isBorrowed = false, chainName = '') {
+async function getP2pData(subgraphUrl, chainName, isBorrowed = false) {
   const tokenMetrics = await getTokenMetrics(subgraphUrl, chainName);
   const transform = await getChainTransform(chainName);
   
