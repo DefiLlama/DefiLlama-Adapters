@@ -3,7 +3,7 @@ const POOL_CREATED_EVENT_TOPIC = '0x778cac0ae0b66477341553a4a89398c61ccf448313d3
 
 // Factory addresses for each chain
 const FACTORY_ADDRESSES = {
-  gnosis: ['0x08Df82f74D1f56F650E98da2dd4240F1A31711bc'],
+  xdai: ['0x08Df82f74D1f56F650E98da2dd4240F1A31711bc'], // Gnosis chain is called "xdai" in DefiLlama
   arbitrum: ['0xc1c2E092b7DbC8413E1aC02e92C161b0BDA783f6'],
   base: ['0xc93830dd463516ED5f28f6cd4F837173B87FF389'],
   optimism: ['0x1FAC47Cf25f1ca9F20ba366099D26b28401F5715'],
@@ -103,10 +103,10 @@ async function tvlWithHardcodedPrices(api) {
 }
 
 module.exports = {
-  methodology: 'Tracks TVL by summing token balances held in strategy addresses of funding pools. Pools are identified by PoolCreated events, and TVL represents tokens currently locked in strategy contracts across multiple chains.',
+  methodology: 'Tracks TVL by summing token balances held in strategy addresses of funding pools. Pools are identified by PoolCreated events, and TVL represents tokens currently locked in strategy contracts across multiple chains (Gnosis chain is labeled as "xdai" in DefiLlama).',
   start: 1640995200, // January 1, 2022 - adjust based on when first pools were created
   
-  gnosis: {
+  xdai: {
     tvl,
   },
   arbitrum: {
