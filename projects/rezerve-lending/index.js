@@ -9,8 +9,6 @@ const configs = {
     ],
     euler: [
       '0xc42d337861878baa4dc820d9e6b6c667c2b57e8a', // USDC
-      '0x1ab9e92cfde84f38868753d30ffc43f812b803c5', // RZR
-      '0xc364fd9637fe562a2d5a1cbc7d1ab7f32be900ef', // lstRZR
       '0xBAfC1A885e25C6F594e06F12edaeB46858547724', // frxUSD
       '0x3036155a3eD3e7F6FFf1E96e88f1FE51b6D2f3aD', // FRAX
     ],
