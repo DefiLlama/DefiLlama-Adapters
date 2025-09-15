@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // projects/treasury/your-protocol.js
 const { nullAddress, treasuryExports } = require("../helper/treasury")
 
@@ -13,7 +14,7 @@ module.exports = {
       const treasuryModule = treasuryExports({
         ethereum: {
           owners: OWNERS,
-          tokens: [nullAddress], // native ETH only
+          tokens: [nullAddress, ADDRESSES.linea.rzETH, "0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8", ADDRESSES.ethereum.STETH, "0x8c1BEd5b9a0928467c9B1341Da1D7BD5e10b6549",ADDRESSES.ethereum.WETH,"0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3","0x04c154b66cb340f3ae24111cc767e0184ed00cc6"], // native ETH only
           ownTokens: ["0x14cF922aa1512Adfc34409b63e18D391e4a86A2f"],         // no protocol token to separate
         },
       });

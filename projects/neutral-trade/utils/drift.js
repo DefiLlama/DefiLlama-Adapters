@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require('@coral-xyz/anchor');
 const { getConfig } = require('../../helper/cache');
@@ -11,7 +12,7 @@ const QUOTE_PRECISION_EXP = 6;
 const QUOTE_PRECISION = Math.pow(10, QUOTE_PRECISION_EXP);
 const LAMPORTS_PRECISION = LAMPORTS_PER_SOL;
 const LAMPORTS_EXP = Math.log10(LAMPORTS_PER_SOL);
-const WRAPPED_SOL_MINT = 'So11111111111111111111111111111111111111112';
+const WRAPPED_SOL_MINT = ADDRESSES.solana.SOL;
 const OracleSource = {}; // mock
 
 const MainnetSpotMarkets = [
@@ -21,7 +22,7 @@ const MainnetSpotMarkets = [
     poolId: 0,
     oracle: new PublicKey('9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV'),
     oracleSource: OracleSource.PYTH_LAZER_STABLE_COIN,
-    mint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+    mint: new PublicKey(ADDRESSES.solana.USDC),
     precision: QUOTE_PRECISION,
     precisionExp: QUOTE_PRECISION_EXP,
     pythFeedId:
@@ -100,7 +101,7 @@ const MainnetSpotMarkets = [
     poolId: 0,
     oracle: new PublicKey('JDKJSkxjasBGL3ce1pkrN6tqDzuVUZPWzzkGuyX8m9yN'),
     oracleSource: OracleSource.PYTH_LAZER_STABLE_COIN,
-    mint: new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'),
+    mint: new PublicKey(ADDRESSES.solana.USDT),
     precision: QUOTE_PRECISION,
     precisionExp: QUOTE_PRECISION_EXP,
     serumMarket: new PublicKey('B2na8Awyd7cpC59iEU43FagJAPLigr3AP3s38KM982bu'),
@@ -490,7 +491,7 @@ const MainnetSpotMarkets = [
     poolId: 0,
     oracle: new PublicKey('BERaNi6cpEresbq6HC1EQGaB1H1UjvEo4NGnmYSSJof4'),
     oracleSource: OracleSource.PYTH_LAZER,
-    mint: new PublicKey('DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263'),
+    mint: new PublicKey(ADDRESSES.solana.BONK),
     precision: Math.pow(10, 5),
     precisionExp: 5,
     pythFeedId:
@@ -520,7 +521,7 @@ const MainnetSpotMarkets = [
     poolId: 1,
     oracle: new PublicKey('9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV'),
     oracleSource: OracleSource.PYTH_LAZER_STABLE_COIN,
-    mint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+    mint: new PublicKey(ADDRESSES.solana.USDC),
     precision: Math.pow(10, 6),
     precisionExp: 6,
     pythFeedId:
@@ -684,7 +685,7 @@ const MainnetSpotMarkets = [
     poolId: 4,
     oracle: new PublicKey('9VCioxmni2gDLv11qufWzT3RDERhQE4iY5Gf7NTfYyAV'),
     oracleSource: OracleSource.PYTH_LAZER_STABLE_COIN,
-    mint: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'),
+    mint: new PublicKey(ADDRESSES.solana.USDC),
     precision: QUOTE_PRECISION,
     precisionExp: QUOTE_PRECISION_EXP,
     pythFeedId:
@@ -698,7 +699,7 @@ const MainnetSpotMarkets = [
     poolId: 4,
     oracle: new PublicKey('JDKJSkxjasBGL3ce1pkrN6tqDzuVUZPWzzkGuyX8m9yN'),
     oracleSource: OracleSource.PYTH_LAZER_STABLE_COIN,
-    mint: new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'),
+    mint: new PublicKey(ADDRESSES.solana.USDT),
     precision: QUOTE_PRECISION,
     precisionExp: QUOTE_PRECISION_EXP,
     serumMarket: new PublicKey('B2na8Awyd7cpC59iEU43FagJAPLigr3AP3s38KM982bu'),

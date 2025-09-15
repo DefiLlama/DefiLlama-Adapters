@@ -4,8 +4,9 @@ const abi = {
   getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
 };
 
+// https://aave.com/docs/resources/addresses
 const CONFIG = {
-  ethereum: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758'],
+  ethereum: ['0x41393e5e337606dc3821075Af65AeE84D7688CBD', '0x08795CFE08C7a81dCDFf482BbAAF474B240f31cD', '0xE7d490885A68f00d9886508DF281D67263ed5758', '0x53519c32f73fE1797d10210c4950fFeBa3b21504'],
   polygon: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   avax: ['0x7F23D86Ee20D869112572136221e173428DD740B'],
   arbitrum: ['0x7F23D86Ee20D869112572136221e173428DD740B'],

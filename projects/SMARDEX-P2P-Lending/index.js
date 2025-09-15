@@ -1,3 +1,4 @@
+const { getEnv } = require("../helper/env");
 const { getChainTransform } = require('../helper/portedTokens');
 
 const headers = {
@@ -24,7 +25,11 @@ const tokenMetricsQuery = `{
 const getTokenMetrics = async (subgraphUrl, chainName) => {
   const result = await fetch(subgraphUrl, {
     method: "POST",
-    headers,
+    headers: {
+      origin: "https://subgraph.smardex.io",
+      referer: "https://subgraph.smardex.io",
+      "x-api-key": getEnv('SMARDEX_SUBGRAPH_API_KEY'),
+    },
     body: JSON.stringify({
       query: tokenMetricsQuery,
     }),
