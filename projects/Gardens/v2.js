@@ -40,7 +40,6 @@ async function fetchStrategiesAndCommunities(api) {
   if (!data.cvstrategies || !data.registryCommunities) throw new Error(`Missing data from subgraph for chain ${api.chain}`);
   const strategies = data.cvstrategies;
   const communities = data.registryCommunities;
-  console.log(`Fetched ${communities.length} communities and ${strategies.length} strategies from the ${api.chain} subgraph`);
 
   return { strategies, communities };
 }
@@ -66,7 +65,6 @@ async function tvl(api) {
 
   balances.forEach((balance, i) => {
     if (BigInt(balance || 0) > 0n) {
-      console.log(`Adding balance for ${calls[i].target} token on ${calls[i].params[0]} contract on ${api.chain}: ${balance}`);
       const token = getAddress(calls[i].target);
       api.add(token, balance);
     }
