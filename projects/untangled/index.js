@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const Contracts = {
   SecuritizationManager: "0x4DCC7a839CE7e952Cd90d03d65C70B9CCD6BA4C2",
-  USDC: "0xcebA9300f2b948710d2653dD7B07f33A8B32118C",
+  USDC: ADDRESSES.celo.USDC,
   SecuritizationPoolValueService: "0x8dA445046281e6FBf2aBAd56952331B9D5Ea8d45"
 };
 
