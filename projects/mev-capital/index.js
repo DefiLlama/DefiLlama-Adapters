@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getCuratorExport, getCuratorTvl } = require("../helper/curators");
 const { ABI } = require("../helper/curators/configs");
+const sui = require("../helper/chain/sui");
 
 // ==============================================
 // HYPERBEAT MAPPINGS CONFIGURATION
@@ -15,6 +16,14 @@ const HYPERBEAT_MAPPINGS = [
   { vault: '0x3bcc0a5a66bb5bdceef5dd8a659a4ec75f3834d8', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6 }, // Hyperbeat USDT0 -> USDT0
   { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
   { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
+];
+
+// ==============================================
+// EMBER MAPPINGS CONFIGURATION 
+// ==============================================
+const EMBER_MAPPINGS = [
+  { vault: '0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642', type: 'btc', symbol: 'EBTC', coingeckoId: 'bitcoin' }, // Ember eBTC -> BTC (uses rate)
+  { vault: '0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505', type: 'basis', symbol: 'EBASIS', coingeckoId: 'usd-coin' } // Ember eBASIS -> USDC (direct)
 ];
 
 // ==============================================
@@ -114,6 +123,60 @@ const TVL_HANDLERS = {
         api.add(mapping.underlying, amount.toString());
       } else {
         api.add(vaults[i], totalSupplies[i]);
+      }
+    }
+  },
+  
+  ember: async (api, vaults) => {
+    for (const vault of vaults) {
+      try {
+        const obj = await sui.getObject(vault);
+        
+        if (obj && obj.fields && obj.fields.receipt_token_treasury_cap) {
+          const totalSupply = obj.fields.receipt_token_treasury_cap.fields.total_supply.fields.value;
+          const rate = obj.fields.rate?.fields?.value; // Rate field for BTC calculation
+          
+          if (totalSupply) {
+            const mapping = EMBER_MAPPINGS.find(m =>
+              m.vault.toLowerCase() === vault.toLowerCase()
+            );
+            
+            if (mapping) {
+              let amount;
+              
+              if (mapping.type === 'basis') {
+                // eBASIS: shares_supply_raw / 1e6
+                amount = Number(totalSupply) / 1e6;
+              } else if (mapping.type === 'btc' && rate) {
+                // eBTC: (shares_supply_raw / 1e8) * (rate / 1e9)
+                amount = (Number(totalSupply) / 1e8) * (Number(rate) / 1e9);
+              } else {
+                // Fallback
+                amount = Number(totalSupply);
+              }
+              
+              // Add using standard Sui token addresses
+              if (mapping.coingeckoId === 'bitcoin') {
+                // For BTC, use Sui WBTC address and convert to proper decimals
+                const amountInSatoshi = Math.floor(amount * 1e8).toString();
+                api.add(ADDRESSES.sui.WBTC, amountInSatoshi);
+              } else if (mapping.coingeckoId === 'usd-coin') {
+                // For USDC, use Sui USDC address and convert to proper decimals
+                const amountInUsdc = Math.floor(amount * 1e6).toString();
+                api.add(ADDRESSES.sui.USDC, amountInUsdc);
+              } else {
+                // Fallback: add as vault token
+                api.add(vault, totalSupply);
+              }
+            } else {
+              // Fallback to vault token
+              api.add(vault, totalSupply);
+            }
+          }
+        }
+      } catch (error) {
+        // If RPC call fails, add vault as token (fallback)
+        api.add(vault, 0);
       }
     }
   }
@@ -320,7 +383,13 @@ const configs = {
         '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8', // USDC
         '0x4c9edf85b8b33198f0c29a799965b6df1ae67435' // AVAX
       ]
-    }
+    },
+      sui: {
+        ember: [
+            "0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642", // ember ebtc
+            "0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505" // ember basis
+        ]
+      }
   }
 }
 
@@ -335,7 +404,8 @@ const PROTOCOL_HANDLERS = {
   totalSupply: ['terminal', 'midas'],
   mizuType: ['mizu'],
   napierType: ['napier'],
-  hyperbeat: ['hyperbeat']
+  hyperbeat: ['hyperbeat'],
+  ember: ['ember']
 };
 
 function createChainTvlFunction(chainConfig) {
@@ -378,5 +448,6 @@ adapterExport.plume.tvl = createChainTvlFunction(configs.blockchains.plume);
 adapterExport.berachain.tvl = createChainTvlFunction(configs.blockchains.berachain);
 adapterExport.sonic.tvl = createChainTvlFunction(configs.blockchains.sonic);
 adapterExport.avax.tvl = createChainTvlFunction(configs.blockchains.avax);
+adapterExport.sui.tvl = createChainTvlFunction(configs.blockchains.sui);
 
 module.exports = adapterExport;
