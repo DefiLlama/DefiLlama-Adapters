@@ -24,8 +24,6 @@ const HYPERBEAT_MAPPINGS = [
 const EMBER_MAPPINGS = [
   { vault: '0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642', type: 'btc', symbol: 'EBTC', coingeckoId: 'bitcoin' }, // Ember eBTC -> BTC (uses rate)
   { vault: '0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505', type: 'basis', symbol: 'EBASIS', coingeckoId: 'usd-coin' } // Ember eBASIS -> USDC (direct)
-  { vault: '0x949a7250Bb55Eb79BC6bCC97fCd1C473DB3e6F29', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6},
-  { vault: '0xD66d69c288d9a6FD735d7bE8b2e389970fC4fD42', underlying: ADDRESSES.corn.USDT0, isOneToOne: true, vaultDecimals: 18, underlyingDecimals: 6}
 ];
 
 // ==============================================
