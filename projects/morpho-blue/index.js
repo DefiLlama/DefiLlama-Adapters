@@ -109,10 +109,10 @@ const config = {
   //   morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
   //   fromBlock: 450759,
   // },
-   tac: {
-     morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
-     fromBlock: 1308542,
-   },
+  tac: {
+    morphoBlue: "0x918B9F2E4B44E20c6423105BB6cCEB71473aD35c",
+    fromBlock: 1308542,
+  },
   zircuit: {
     morphoBlue: "0xA902A365Fe10B4a94339B5A2Dc64F60c1486a5c8",
     fromBlock: 14640172,
@@ -127,8 +127,8 @@ const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
   const { morphoBlue, fromBlock, blacklistedMarketIds = [] } = config[api.chain]
-  const extraKey = api.chain === 'lisk' ? 'reset-v1' : undefined
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey })
+  const extraKey = 'reset-v2'
+  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, })
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
