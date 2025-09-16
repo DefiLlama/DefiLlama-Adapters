@@ -383,6 +383,12 @@ const configs = {
         '0x4dc1ce9b9f9ef00c144bfad305f16c62293dc0e8', // USDC
         '0x4c9edf85b8b33198f0c29a799965b6df1ae67435' // AVAX
       ]
+    },
+    sui: {
+      ember: [
+        "0x323578c2b24683ca845c68c1e2097697d65e235826a9dc931abce3b4b1e43642", // ember ebtc
+        "0x1fdbd27ba90a7a5385185e3e0b76477202f2cadb0e4343163288c5625e7c5505" // ember basis
+      ]
     }
   }
 }
