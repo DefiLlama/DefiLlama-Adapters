@@ -20,7 +20,7 @@ const ABI = {
         accountant: 'function accountant() view returns (address)',
         base: 'function base() view returns (address)',
         getRateSafe: 'function getRateSafe() view returns (uint256)',
-        decimals: 'function decimals() view returns (uint8)', // scale for rate
+        decimals: 'function decimals() view returns (uint8)',
     },
 }
 
@@ -44,13 +44,13 @@ const CONFIG = {
             '0x9A6340ce1282e01Cb4Ec9faae5fc5F4b60Ca8839', // Mellow UltraYield × Edge × Allnodes
         ],
 
-        // Midas issuance tokens (USD TVL via on-chain oracle on this chain)
+        // Midas issuance tokens
         issuanceTokens: [
             '0xbB51E2a15A9158EBE2b0Ceb8678511e063AB7a55', // mEDGE
             '0x2a8c22E3b10036f3AEF5875d04f8441d4188b656', // mBASIS
         ],
 
-        // Pre-deposit tokens (treated like issuance; USD TVL via oracle)
+        // Pre-deposit tokens
         predeposit: [
             '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', // tacUSD (using provided feed)
         ],
@@ -69,29 +69,28 @@ const CONFIG = {
         ],
     },
 
-    // Plume mainnet (issuance tokens present; only mEDGE has an on-chain oracle per the table)
+    // Plume mainnet
     plume_mainnet: {
         issuanceTokens: [
             '0x69020311836D29BA7d38C1D3578736fD3dED03ED', // mEDGE (Plume)
-            // mBASIS (Plume) token exists but no oracle provided in the table:
-            '0x0c78Ca789e826fE339dE61934896F5D170b66d78',
+            '0x0c78Ca789e826fE339dE61934896F5D170b66d78', // mBASIS (Plume)
         ],
     },
 
-    // Base (mBASIS token exists; no Base oracle provided in the table)
+    // Base (mBASIS token)
     base: {
         issuanceTokens: [
             '0x1C2757c1FeF1038428b5bEF062495ce94BBe92b2', // mBASIS (Base)
         ],
     },
 
-    // Etherlink (mBASIS & mMEV tokens exist; no Etherlink oracles provided in the table)
+    // Etherlink (mBASIS tokens exist)
     etlk: {
         issuanceTokens: [
             '0x2247B5A46BB79421a314aB0f0b67fFd11dd37Ee4', // mBASIS (Etherlink)
         ],
     },
-    // TAC (mEDGE tokens exist; no TAC oracles provided in the table)
+    // TAC (mEDGE tokens exist)
     tac: {
         issuanceTokens: [
             '0x0e07999AFFF029894277C785857b4cA30ec07a5e',
