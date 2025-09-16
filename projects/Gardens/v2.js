@@ -1,163 +1,85 @@
-// Constants
-const POOL_CREATED_EVENT_TOPIC = '0x778cac0ae0b66477341553a4a89398c61ccf448313d3354ad0ca85a5a825d283';
+const {  getAddress } = require('ethers');
+const { gql } = require('graphql-request');
 
-// Factory addresses for each chain
-const FACTORY_ADDRESSES = {
-  xdai: ['0x08Df82f74D1f56F650E98da2dd4240F1A31711bc'], // Gnosis chain is called "xdai" in DefiLlama
-  arbitrum: ['0xc1c2E092b7DbC8413E1aC02e92C161b0BDA783f6'],
-  base: ['0xc93830dd463516ED5f28f6cd4F837173B87FF389'],
-  optimism: ['0x1FAC47Cf25f1ca9F20ba366099D26b28401F5715'],
-  polygon: ['0x57a9835B204DbCc101Dbf981625A3625e8043B9c'],
-  celo: ['0xA71023bc64c9711C2037ab491DE80fd74504bd55']
+const subgraphs = {
+  polygon: 'https://api.studio.thegraph.com/query/102093/gardens-v2---polygon/version/latest/',
+  xdai: 'https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/version/latest/',
+  arbitrum: 'https://api.studio.thegraph.com/query/102093/gardens-v2---arbitrum/version/latest/',
+  base: 'https://api.studio.thegraph.com/query/102093/gardens-v2---base/version/latest/',
+  celo: 'https://api.studio.thegraph.com/query/102093/gardens-v2---celo/version/latest/',
+  optimism: 'https://api.studio.thegraph.com/query/102093/gardens-v2---optimism/version/latest/',
 };
 
-// Helper function to decode pool creation event data
-function decodePoolCreatedEvent(log) {
-  const data = log.data;
-  
-  // Extract data based on the Dune query structure
-  const poolId = `0x${data.slice(2, 66)}`; // First 32 bytes
-  const strategy = `0x${data.slice(90, 130)}`; // Extract address from bytes 33-64
-  const community = `0x${data.slice(154, 194)}`; // Extract address from bytes 65-96  
-  const token = `0x${data.slice(218, 258)}`; // Extract address from bytes 97-128
-  
-  return {
-    poolId,
-    strategy,
-    community,
+
+const query = gql`
+{
+  cvstrategies(where: {config_:{
+    proposalType_not: 0
+  }}) {
+    id
     token
-  };
+  }
+  
+  registryCommunities {
+    id
+    garden {
+      id
+    }
+  }
+}
+`
+
+async function fetchStrategiesAndCommunities(api) {
+  const subgraph = subgraphs[api.chain];
+  if (!subgraph) throw new Error(`No subgraph for chain ${api.chain}`);
+
+  const data = await fetch(subgraph, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) })
+    .then(res => res.json())
+    .then(res => res.data);
+  if (!data) throw new Error(`No data from subgraph for chain ${api.chain}`);
+  if (!data.cvstrategies || !data.registryCommunities) throw new Error(`Missing data from subgraph for chain ${api.chain}`);
+  const strategies = data.cvstrategies;
+  const communities = data.registryCommunities;
+  console.log(`Fetched ${communities.length} communities and ${strategies.length} strategies from the ${api.chain} subgraph`);
+
+  return { strategies, communities };
 }
 
 async function tvl(api) {
-  const factories = FACTORY_ADDRESSES[api.chain] || [];
-  
-  if (factories.length === 0) {
-    return; // No factories on this chain
-  }
+  const { strategies, communities } = await fetchStrategiesAndCommunities(api);
 
-  // Get all pool creation events
-  const poolCreationLogs = await api.getLogs({
-    targets: factories,
-    topics: [POOL_CREATED_EVENT_TOPIC],
-    fromBlock: 1, // Start from recent block
-    toBlock: "latest", // Up to latest block
-  });
-
-  // Decode all pool events to get strategy addresses and their tokens
-  const pools = poolCreationLogs.map(log => decodePoolCreatedEvent(log));
-  
-  // Remove duplicates (same strategy-token pairs)
-  const uniquePools = pools.reduce((acc, pool) => {
-    const key = `${pool.strategy}-${pool.token}`;
-    if (!acc.has(key)) {
-      acc.set(key, pool);
+  // Multi calls 
+  const calls = strategies.map(s => ({ target: s.token, params: [s.id] }));
+  communities.forEach(c => {
+    if (c.garden?.id) {
+      calls.push({ target: c.garden.id, params: [c.id] });
     }
-    return acc;
-  }, new Map());
-
-  const poolsArray = Array.from(uniquePools.values());
-
-  if (poolsArray.length === 0) {
-    return; // No pools found
-  }
-
-  // Get token balances for all strategy addresses
-  const strategyAddresses = poolsArray.map(pool => pool.strategy);
-  const tokenAddresses = poolsArray.map(pool => pool.token);
-
-  // Batch call to get all balances
-  const balances = await api.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: poolsArray.map(pool => ({
-      target: pool.token,
-      params: [pool.strategy]
-    }))
   });
 
-  // Add all balances to the API
+  // Multicall
+  const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure: true });
+
+  // If not same length, something went wrong
+  if (balances.length !== calls.length) {
+    throw new Error(`Mismatched balances and calls length on ${api.chain}`);
+  }
+
   balances.forEach((balance, i) => {
-    const pool = poolsArray[i];
-    if (balance && balance > 0) {
-      api.add(pool.token, balance);
+    if (BigInt(balance || 0) > 0n) {
+      console.log(`Adding balance for ${calls[i].target} token on ${calls[i].params[0]} contract on ${api.chain}: ${balance}`);
+      const token = getAddress(calls[i].target);
+      api.add(token, balance);
     }
-  });
-}
-
-// Alternative approach if you need to handle hardcoded token prices
-async function tvlWithHardcodedPrices(api) {
-  // Hardcoded prices from the Dune query
-  const HARDCODED_PRICES = {
-    // Gnosis
-    '0x71850b7E9Ee3f13Ab46d67167341E4bDc905Eef9': 2.0, // Honey
-    '0xa555d5344f6FB6c65da19e403Cb4c1eC4a1a5Ee3': 1.0, // Bread
-    // Optimism & Celo
-    '0x4F604735c1cF31399C6E711D5962b2B3E0225AD3': 1.0, // Glo Dollar
-  };
-
-  // First run the standard TVL calculation
-  await tvl(api);
-  
-  // Then handle tokens with hardcoded prices
-  // Note: This is tricky in DefiLlama as it usually handles pricing automatically
-  // You might need to discuss with the DefiLlama team about these specific tokens
+  });  
 }
 
 module.exports = {
-  methodology: 'Tracks TVL by summing token balances held in strategy addresses of funding pools. Pools are identified by PoolCreated events, and TVL represents tokens currently locked in strategy contracts across multiple chains (Gnosis chain is labeled as "xdai" in DefiLlama).',
-  start: 1640995200, // January 1, 2022 - adjust based on when first pools were created
-  
-  xdai: {
-    tvl,
-  },
-  arbitrum: {
-    tvl,
-  },
-  base: {
-    tvl,
-  },
-  optimism: {
-    tvl,
-  },
-  polygon: {
-    tvl,
-  },
-  celo: {
-    tvl,
-  }
+  methodology: 'Uses ethers.getLogs with chunking to read CommunityCreated events from proxy factories.',
+  start: 1640995200,
+  xdai: { tvl },
+  arbitrum: { tvl },
+  base: { tvl },
+  optimism: { tvl },
+  polygon: { tvl },
+  celo: { tvl },
 };
-
-// Additional helper functions you might need:
-
-// Function to get all unique strategy addresses (useful for debugging)
-async function getAllStrategies(api) {
-  const factories = FACTORY_ADDRESSES[api.chain] || [];
-  
-  const poolCreationLogs = await api.getLogs({
-    targets: factories,
-    topics: [POOL_CREATED_EVENT_TOPIC],
-    fromBlock: 1,
-    toBlock: "latest",
-  });
-
-  const strategies = poolCreationLogs.map(log => {
-    const decoded = decodePoolCreatedEvent(log);
-    return decoded.strategy;
-  });
-
-  return [...new Set(strategies)]; // Remove duplicates
-}
-
-// Function to get strategy-token pairs (useful for debugging)
-async function getStrategyTokenPairs(api) {
-  const factories = FACTORY_ADDRESSES[api.chain] || [];
-  
-  const poolCreationLogs = await api.getLogs({
-    targets: factories,
-    topics: [POOL_CREATED_EVENT_TOPIC],
-    fromBlock: 1,
-    toBlock: "latest",
-  });
-
-  return poolCreationLogs.map(log => decodePoolCreatedEvent(log));
-}
