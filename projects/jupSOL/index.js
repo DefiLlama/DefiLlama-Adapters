@@ -10,6 +10,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
+  methodology: 'Total SOL staked in jupSOL and SOL staked from Jupiter Perpetual Exchange',
   solana: {
     tvl
   }
