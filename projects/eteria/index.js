@@ -1,4 +1,4 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getUniTVL } = require("../helper/unknownTokens");
 
 module.exports = {
   eteria: {
