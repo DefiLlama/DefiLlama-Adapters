@@ -116,7 +116,8 @@
     "xJOE": "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33",
     "LVTX": "0x574679ec54972cf6d705e0a71467bb5bb362919d",
     "sUSDC": "0x2f28add68e59733d23d5f57d94c31fb965f835d0",
-    "sBUSD": "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd"
+    "sBUSD": "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd",
+    "UTY": "0xdbc5192a6b6ffee7451301bb4ec312f844f02b4a"
   },
   "bsc": {
     "WBNB": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -2071,6 +2072,7 @@
   "etlk": {
     "OGV1WXTZ": "0x3571aed54ccea5b69b00516d5a149a6baea77118",
     "WXTZ": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
+    "STXTZ": "0x01F07f4d78d47A64F4C3B2b65f513f15Be6E1854",
     "USDC": "0x796ea11fa2dd751ed01b53c372ffdb4aaa8f00f9",
     "USDT": "0x2c03058c8afc06713be23e58d2febc8337dbfe6a",
     "WETH": "0xfc24f770f94edbca6d6f885e12d4317320bcb401",
@@ -2629,6 +2631,9 @@
     "USDT": "0xdc1a8a35b0baa3229b13f348ed708a2fd50b5e3a",
     "WEGAS": "0x6d1e851446f4d004ae2a72f9afed85e8829a205e"
   },
+  "peaq": {
+    "WPEAQ": "0x3cD66d2e1fac1751B0A20BeBF6cA4c9699Bb12d7"
+  },
   "tac": {
     "WTAC": "0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9",
     "TON": "0xb76d91340f5ce3577f0a056d29f6e3eb4e88b140",
@@ -2644,5 +2649,15 @@
   },
   "bitci": {
     "WBITCI": "0xe0d0f25b5fcfa4d3edd9c2186451d9e04c4b9f11"
+  },
+  "alephium": {
+    "USDT": "556d9582463fe44fbd108aedc9f409f69086dc78d994b88ea6c9e65f8bf98e00",
+    "USDC": "722954d9067c5a5ad532746a024f2a9d7a18ed9b90e27d0a3a504962160b5600",
+    "WETH": "19246e8c2899bc258a1156e08466e3cdd3323da756d8a543c7fc911847b96f00",
+    "WBTC": "383bc735a4de6722af80546ec9eeb3cff508f2f68e97da19489ce69f3e703200"
+  },
+  "somnia": {
+    "WSOMI": "0x046ede9564a72571df6f5e44d0405360c0f4dcab",
+    "USDC": "0x28BEc7E30E6faee657a03e19Bf1128AaD7632A00"
   }
 }

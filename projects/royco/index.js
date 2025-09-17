@@ -1,6 +1,6 @@
-const BigNumber = require("bignumber.js");
 const { request, gql } = require("graphql-request");
 const { sumUnknownTokens } = require("../helper/unknownTokens");
+const { sliceIntoChunks } = require("../helper/utils");
 
 const slug = {
   1: {
@@ -202,7 +202,7 @@ async function deduplicateAndAdd({ vaults, assets, bals, api, ownersToDedupe = [
   ]);
 
   // Process shares to ignore
-  const chunkedShares = chunk(sharesToIgnore, ownersToDedupe.length);
+  const chunkedShares = sliceIntoChunks(sharesToIgnore, ownersToDedupe.length);
   const summedShares = chunkedShares.map(shares => 
     shares.reduce((sum, share) => sum + Number(share), 0)
   );

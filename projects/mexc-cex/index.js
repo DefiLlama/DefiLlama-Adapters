@@ -89,7 +89,7 @@ const config = {
   },
   ton: {
     owners: [
-      "eqdyh9di0ct8qsbnhjcnm6sylpqaaorna7sats7mgwd3497j",
+      "EQDYh9Di0cT8QSbnHJcNM6sYlpQAAOrnA7sats7Mgwd3497j",
     ],
   }, 
   ripple: {
