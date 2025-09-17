@@ -4,7 +4,6 @@ const sui = require("../helper/chain/sui");
 const { aQuery } = require("../helper/chain/aptos");
 const { get } = require("../helper/http");
 const {post} = require("../helper/http");
-const { getAssetSupply } = require("../helper/chain/stellar");
 
 const RIPPLE_ENDPOINT = 'https://s1.ripple.com:51234';
 
