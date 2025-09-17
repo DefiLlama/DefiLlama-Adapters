@@ -49,7 +49,7 @@ async function getP2pData(subgraphUrl, chainName, isBorrowed = false) {
   
   return tokenMetrics.reduce((acc, token) => {
     const totalBorrowedAmount = parseFloat(token.totalBorrowedAmount);
-    const amount = totalBorrowedAmount + parseFloat(isBorrowed ? 0 : token.totalCollateralAmount);
+    const amount = isBorrowed ? totalBorrowedAmount : parseFloat(token.totalCollateralAmount);
     
     if (amount > 0) {
       const transformedToken = transform(token.id);
