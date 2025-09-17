@@ -1,17 +1,30 @@
 const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const { getUniTVL } = require('../helper/unknownTokens');
 const { staking } = require('../helper/staking');
+const { toUSDTBalances } = require("../helper/balances");
+const { gql, default: request } = require("graphql-request");
 
+const graphQuery = gql`
+  query get_tvl {
+    uniswapFactories {
+      totalLiquidityUSD
+    }
+  }
+`
+
+const tvl = async () => {
+  const endpoint = sdk.graph.modifyEndpoint('FUWdkXWpi8JyhAnhKL5pZcVshpxuaUQG8JHMDqNCxjPd')
+  const { uniswapFactories } = await request(endpoint, graphQuery);
+  const usdTvl = uniswapFactories[0].totalLiquidityUSD
+  return toUSDTBalances(usdTvl)
+}
 
 module.exports = {
   misrepresentedTokens: true,
   polygon:{
     staking: staking("0x958d208Cdf087843e9AD98d23823d32E17d723A1", ADDRESSES.polygon.QUICK),
-    tvl: getChainTvl({
-      polygon: sdk.graph.modifyEndpoint('FUWdkXWpi8JyhAnhKL5pZcVshpxuaUQG8JHMDqNCxjPd')
-    })('polygon')
+    tvl
   },
   base: {
     tvl: getUniTVL({factory: '0xEC6540261aaaE13F236A032d454dc9287E52e56A'})
