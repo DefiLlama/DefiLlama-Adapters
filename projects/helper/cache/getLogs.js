@@ -64,6 +64,15 @@ async function getLogs({ target,
     cache.fromBlock = fromBlock
     fromBlock = cache.toBlock ?? fromBlock
 
+    // remove tuple baseType from type
+    // ex: CreateMarket(bytes32,tuple(address,address,address,address,uint256)) -> CreateMarket(bytes32,(address,address,address,address,uint256))
+    if (eventAbi) {
+      const fragment = iface.fragments[0]
+      if (!topics?.length) {
+        const fragment = iface.fragments[0]
+        topic = `${fragment.name}(${fragment.inputs.map(i => i.baseType === 'tuple' ? i.type.replace('tuple', '') : i.type).join(',')})`
+      }
+    }
     let logs = (await sdk.api.util.getLogs({
       chain, target, topic, keys, topics, fromBlock, toBlock,
     })).output

@@ -11,26 +11,50 @@ const tvl = async (api) => {
     const assetAddresses = await fetchAssetAddresses(api, chain)
     const agentConfigs = await fetchAgentConfigs(api, chain)
 
-    const results = await api.batchCall([
-        ...assetAddresses.map(asset => ({
-            abi: capABI.Vault.totalSupplies,
+    const assetAvailableBalancesResults = await api.multiCall({
+        abi: capABI.Vault.availableBalance,
+        calls: assetAddresses.map(asset => ({
             target: tokens.cUSD.address,
             params: [asset]
-        })),
-        ...agentConfigs.map(agent => ({
-            abi: capABI.SymbioticNetworkMiddleware.coverageByVault,
+        }))
+    })
+    const coverageResults = await api.multiCall({
+        abi: capABI.SymbioticNetworkMiddleware.coverageByVault,
+        calls: agentConfigs.map(agent => ({
             target: agent.networkMiddleware,
             params: [agent.network, agent.agent, agent.vault, infra.oracle.address, api.timestamp]
         }))
-    ]);
-    const assetSuppliesResults = results.slice(0, assetAddresses.length)
-    const coverageResults = results.slice(assetAddresses.length)
+    })
 
-    for (const [asset, supplied] of arrayZip(assetAddresses, assetSuppliesResults)) {
-        api.add(asset, supplied)
+    for (const [asset, availableBalance] of arrayZip(assetAddresses, assetAvailableBalancesResults)) {
+        api.add(asset, availableBalance)
     }
     for (const [agent, coverage] of arrayZip(agentConfigs, coverageResults)) {
-        api.add(agent.vaultCollateral, coverage)
+        api.add(agent.vaultCollateral, coverage[1])
+    }
+}
+
+const borrowed = async (api) => {
+    const infra = capConfig[chain].infra;
+
+    const assetAddresses = await fetchAssetAddresses(api, chain)
+    const agentConfigs = await fetchAgentConfigs(api, chain)
+
+    const agentAndAsset = agentConfigs.map(({ agent }) => assetAddresses.map(asset => ({
+        agent: agent,
+        asset: asset,
+    }))).flat()
+
+    const results = await api.batchCall(
+        agentAndAsset.map(({ agent, asset }) => ({
+            abi: capABI.Lender.debt,
+            target: infra.lender.address,
+            params: [agent, asset]
+        }))
+    );
+
+    for (const [{ asset }, debt] of arrayZip(agentAndAsset, results)) {
+        api.add(asset, debt)
     }
 }
 
@@ -39,5 +63,6 @@ module.exports = {
     start: 1000235,
     ethereum: {
         tvl,
+        borrowed,
     }
 };

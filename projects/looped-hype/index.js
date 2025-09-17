@@ -22,7 +22,8 @@ const tvl = async (api) => {
     owners: LHYPE_VAULT_ADDRESS,
     tokens: sanitizedTokens,
     api,
-    resolveLP: true
+    resolveLP: true,
+    permitFailure: true
   });
 };
 
