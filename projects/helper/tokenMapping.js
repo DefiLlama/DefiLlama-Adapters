@@ -40,6 +40,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  plasma: {
+    '0x6100E367285b01F48D07953803A2d8dCA5D19873': { coingeckoId: "plasma", decimals: 18 }, // Wrapped XPL (ERC-20 wrapper of native XPL)
+    '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB': { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
