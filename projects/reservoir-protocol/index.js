@@ -17,6 +17,7 @@ const config = {
 
 const assets = {
   sUSDe: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497',
+  'PT-USDe': '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a',
   'PT-sUSDE': '0x9F56094C450763769BA0EA9Fe2876070c0fD5F77',
   'eUSDC-22': '0xe0a80d35bb6618cba260120b279d357978c42bce'
 }
@@ -80,6 +81,10 @@ Object.keys(config).forEach(chain => {
         shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets['PT-sUSDE'], params: ['0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'] })
 
         api.add(assets['PT-sUSDE'], shareBalance)
+
+        shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets['PT-USDe'], params: ['0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'] })
+
+        api.add(assets['PT-USDe'], shareBalance)
 
         return api.getBalances()
       }
