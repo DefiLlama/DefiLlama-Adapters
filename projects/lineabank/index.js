@@ -87,6 +87,10 @@ const v3Abi = {
 
 const v3Config = {
   plume_mainnet: [`0xF9642C3B35Cd4Ccd55D22Fb2B35fcc31c5E0B62E`],
+  hemi: [`0x8D45801736F3504BEfA35ABEf8bc7a1C4d610651`],
+  nibiru: [`0x7F5f9E5D4643B4333464c18d072167B452C20d28`],
+  bob: [`0xeb1Bea032d0DDCAFd29fb3b8c33A67BCAfCaFD8c`],
+  rsk: ['0x47C1ef207d49cfC519F48b8251857CA6BE6c2caf'],
 };
 
 const fetchReserveData = async (api, poolDatas, isBorrowed) => {
@@ -111,10 +115,14 @@ const fetchReserveData = async (api, poolDatas, isBorrowed) => {
   return api.sumTokens({ tokensAndOwners })
 }
 
+const v3Exports = {};
+
 Object.keys(v3Config).forEach((chain) => {
   const poolDatas = v3Config[chain];
-  module.exports[chain] = {
+  v3Exports[chain] = {
     tvl: (api) => fetchReserveData(api, poolDatas),
     borrowed: (api) => fetchReserveData(api, poolDatas, true),
   };
 });
+
+module.exports = mergeExports([module.exports, v3Exports]);
