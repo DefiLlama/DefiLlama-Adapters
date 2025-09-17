@@ -117,7 +117,9 @@ Object.keys(config).forEach((chain) => {
         api.addTokens(config.ripple.OUSG, ousgSupply);
       } else if (chain === "stellar") {
         const usdySupply = await getAssetSupply(config.stellar.USDY);
-        api.addTokens(config.stellar.USDY, usdySupply);
+        // Stellar represents amounts as integers scaled by 10^7 (7 decimal places)
+        // DefiLlama expects the raw value, so we multiply by 10^7 to get the proper scale
+        api.addTokens(config.stellar.USDY, usdySupply * Math.pow(10, 7));
       } else {
         supplies = await api.multiCall({ abi: "erc20:totalSupply", calls: fundAddresses, })
         api.addTokens(fundAddresses, supplies);
