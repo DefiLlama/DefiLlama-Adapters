@@ -1,8 +1,4 @@
-const headers = {
-  origin: "https://subgraph.smardex.io",
-  referer: "https://subgraph.smardex.io",
-  "x-api-key": process.env.SMARDEX_SUBGRAPH_API_KEY,
-};
+const { getEnv } = require("../helper/env");
 
 const subgraphUrl = "https://subgraph.smardex.io/ethereum/spro";
 
@@ -17,7 +13,11 @@ const getTokenMetrics = async () => {
 
   const result = await fetch(subgraphUrl, {
     method: "POST",
-    headers,
+    headers: {
+      origin: "https://subgraph.smardex.io",
+      referer: "https://subgraph.smardex.io",
+      "x-api-key": getEnv('SMARDEX_SUBGRAPH_API_KEY'),
+    },
     body: JSON.stringify({
       query: tokenMetricsQuery,
     }),

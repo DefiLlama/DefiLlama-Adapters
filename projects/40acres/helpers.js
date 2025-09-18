@@ -3,7 +3,7 @@ const { erc4626Abi, fortyAcresAbi } = require('./abi');
 const vaultMapping = {
   optimism: '0x08dCDBf7baDe91Ccd42CB2a4EA8e5D199d285957',
   base: '0xB99B6dF96d4d5448cC0a5B3e0ef7896df9507Cf5',
-  avax: '0xbeD7C02887EfD6b5Eb9A547Ac1A4D5e582791647'
+  avax: '0x124D00b1ce4453Ffc5a5F65cE83aF13A7709baC7'
 }
 
 const fortyAcresMapping = {

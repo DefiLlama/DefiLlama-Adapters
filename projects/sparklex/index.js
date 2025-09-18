@@ -13,17 +13,25 @@ async function tvl(api) {
   // fetch farming lp posisitons
   if (api.chain === 'bsc' || api.chain === 'ethereum' || api.chain === 'base'){
     const farmingLpData = await post('https://backend-api.sparklex.io/metrics/farm/lp/list', {chain_id: api.chainId}, {headers: {'Content-Type': 'application/json'}});
-    //console.log(farmingLpData);
 	
     if (farmingLpData['base_response']['status_code'] == 200){
        const lpPositions = farmingLpData['lps'];
        let farmingTokenBals = {};
        
        lpPositions.forEach((lp) => {
+          if (!lp) return;
           const lpValue = lp['current_value']
           if (lpValue > 0) {
-              addTokenBalance(farmingTokenBals, lp['token0_address'], lp['token0_amount']);
-              addTokenBalance(farmingTokenBals, lp['token1_address'], lp['token1_amount']);
+              // Validate token amounts before adding them
+              const token0Amount = lp['token0_amount'];
+              const token1Amount = lp['token1_amount'];
+              
+              if (token0Amount && token0Amount > 0 && token0Amount < Number.MAX_SAFE_INTEGER) {
+                  addTokenBalance(farmingTokenBals, lp['token0_address'], token0Amount);
+              }
+              if (token1Amount && token1Amount > 0 && token1Amount < Number.MAX_SAFE_INTEGER) {
+                  addTokenBalance(farmingTokenBals, lp['token1_address'], token1Amount);
+              }
           }
        });
        
