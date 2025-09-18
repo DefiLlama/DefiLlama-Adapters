@@ -23,6 +23,7 @@ const tvl = async (api) => {
   if (head < block) throw new Error(`Subgraph behind: head=${head}, need >= ${block}`)
 
   const usdTvl = Number(uniswapFactories?.[0]?.totalLiquidityUSD ?? 0)
+  if (usdTvl < 200_000_000) throw new Error(`Suspicious TVL: ${usdTvl} < 200,000,000 (likely bad indexer/stale data)`)
   return toUSDTBalances(usdTvl)
 }
 
