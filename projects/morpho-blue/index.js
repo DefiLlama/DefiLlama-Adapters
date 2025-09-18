@@ -22,6 +22,7 @@ const config = {
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
+    blackList: ["0xf8b3fa720a9cd8abeed5a81f11f80cd8f93e6b57"],
     fromBlock: 296446593,
   },
   fraxtal: {
