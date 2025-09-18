@@ -1,4 +1,8 @@
+
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const uniswapAbi = require("../helper/abis/uniswap")
+const { getUniqueAddresses, } = require("../helper/utils")
+const sdk = require('@defillama/sdk')
 
 const fewFactoryConfig = {
   ethereum: { factory: '0x7D86394139bf1122E82FDF45Bb4e3b038A4464DD' },
@@ -21,18 +25,41 @@ const factoryConfig = {
 Object.keys(fewFactoryConfig).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
+      const balances = {}
       const fewTokens = await api.fetchList({ lengthAbi: 'allWrappedTokensLength', itemAbi: 'allWrappedTokens', target: fewFactoryConfig[chain].factory })
-      const pairs = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factoryConfig[chain].factory })
-      const token0s = await api.multiCall({ abi: 'address:token0', calls: pairs })
-      const token1s = await api.multiCall({ abi: 'address:token1', calls: pairs })
-      const allTokens = token0s.concat(token1s)
-      const names = await api.multiCall({ abi: 'string:name', calls: allTokens, permitFailure: true })
-      names.forEach((name, i) => {
-        if (!name) return;
-        if (name.startsWith('Few Wrapped')) fewTokens.push(allTokens[i])
+      const originTokens = await api.multiCall({ abi: 'address:token', calls: fewTokens })
+      const calls = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factoryConfig[chain].factory })
+      const token0s = await api.multiCall({ abi: uniswapAbi.token0, calls })
+      const token1s = await api.multiCall({ abi: uniswapAbi.token1, calls })
+      const reserves = await api.multiCall({ abi: uniswapAbi.getReserves, calls })
+      const token0symbols = await api.multiCall({ abi: 'string:symbol', calls: token0s, permitFailure: true })
+      const token1symbols = await api.multiCall({ abi: 'string:symbol', calls: token1s, permitFailure: true })
+      const fewSymbols = await api.multiCall({ abi: 'string:symbol', calls: fewTokens, permitFailure: true })
+
+      reserves.forEach(({ _reserve0, _reserve1 }, i) => {
+        const index0 = fewTokens.findIndex(token => token === token0s[i])
+        const index1 = fewTokens.findIndex(token => token === token1s[i])
+        if (token0symbols[i] && !(token0symbols[i].includes('RING') || token0symbols[i].includes('RNG'))) {
+          if (fewSymbols[index0]) {
+            sdk.util.sumSingleBalance(balances, originTokens[index0], _reserve0, chain)
+          } else {
+            sdk.util.sumSingleBalance(balances, token0s[i], _reserve0, chain)
+          }
+        }
+        if (token1symbols[i] && !(token1symbols[i].includes('RING') || token1symbols[i].includes('RNG'))) {
+          if (fewSymbols[index1]) {
+            sdk.util.sumSingleBalance(balances, originTokens[index1], _reserve1, chain)
+          } else {
+            sdk.util.sumSingleBalance(balances, token1s[i], _reserve1, chain)
+          }
+        }
       })
-      const ownerTokens = pairs.map(((pair, i) => [[token0s[i], token1s[i]], pair]))
-      return sumTokens2({ api, ownerTokens, blacklistedTokens: fewTokens, })
+
+      const tokens = new Set([...token0s, ...token1s, ...originTokens])
+
+      return sumTokens2({
+        chain, owner: factoryConfig[chain].factory, tokens: getUniqueAddresses(tokens), balances,
+      })
     }
   }
-});
+}); 
