@@ -63,7 +63,8 @@ const V3_ADDRESSES = [
   "0xd860dcd2f8b31dff84030b36c3160295a0d9cb39",
   "0xbec4f4b9913f1e4e2fb37597cc61f393530502fd",
   "0x3d169a9ceda1ba8cbedbbbd5a8abf976aa5a0f45",
-  "0xfa064ba05fef454a74c39c2dfbe13f4728b480f7"
+  "0xfa064ba05fef454a74c39c2dfbe13f4728b480f7",
+  "0xde80058973c55e4928be58c502231abef2c453f0"
 
 ];
 

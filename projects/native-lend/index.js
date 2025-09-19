@@ -15,12 +15,12 @@ const config = {
     vaultFromBlock: 47980948,
   },
   base: {
-    vault: "0x097534f09EB81Cc5B69aDF36df3d3fA11b7FE1B1",
-    vaultFromBlock: 28407972,
+    vault: "0x74a4Cd023e5AfB88369E3f22b02440F2614a1367",
+    vaultFromBlock: 32578350,
   },
   arbitrum: {
-    vault: "0x273EcF5BDac92bae19ea2B525EA99F54108F03bd",
-    vaultFromBlock: 355259594,
+    vault: "0xbA1cf8A63227b46575AF823BEB4d83D1025eff09",
+    vaultFromBlock: 355397381,
   },
 };
 

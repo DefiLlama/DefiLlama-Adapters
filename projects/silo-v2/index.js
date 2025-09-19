@@ -6,6 +6,7 @@ const blacklistedSilos = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa",];
 
 const getAssetAbiV2 = "address:asset";
 const getAssetStateAbiV2 = 'function getTotalAssetsStorage(uint8 _assetType) external view returns (uint256 totalAssetsByType)';
+const xSILO = '0x4451765739b2D7BCe5f8BC95Beaf966c45E1Dcc9';
 
 const configV2 = {
   sonic: {
@@ -118,6 +119,13 @@ async function getSilosV2(api) {
   return siloAddresses;
 }
 
+async function staking(api) {
+  const stakedSilo = await api.call({
+    target: xSILO,
+    abi: 'function totalAssets() external view returns (uint256 total)',
+  });
+  return api.addCGToken('silo-finance-2', stakedSilo / 1e18)
+}
 
 module.exports = {
   methodology: `We calculate TVL by interacting with Silo Factory smart contracts on Ethereum, Arbitrum, Base & Optimism. For Ethereum, it queries Silo(Main-V2)(0xa42001d6d2237d2c74108fe360403c4b796b7170). On Arbitrum, we query the Silo Arbitrum factory (Main-V2)(0xf7dc975C96B434D436b9bF45E7a45c95F0521442), we query the factories to obtain the addresses of Silos, retrieve the assets of each Silo, and then calculate the sum of the deposited tokens, borrowed amounts are calculated separately from TVL.`,
@@ -125,7 +133,7 @@ module.exports = {
   ethereum: { tvl, borrowed, },
   // optimism: { tvl, borrowed, },
   // base: { tvl, borrowed, },
-  sonic: { tvl, borrowed, },
+  sonic: { tvl, borrowed, staking},
   avax: { tvl, borrowed, },
   hallmarks: []
 }
