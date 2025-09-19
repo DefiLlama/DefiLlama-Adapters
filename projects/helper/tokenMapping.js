@@ -74,7 +74,7 @@ const fixBalancesTokens = {
     USDC: { coingeckoId: 'usd-coin', decimals: 0 },
     USD: { coingeckoId: 'usd-coin', decimals: 0 },
     YLDS: { coingeckoId: 'usd-coin', decimals: 0 },
-    'pm.sale.pool.3dxq3fk9llvhrqqwhodiap': { coingeckoId: 'usd-coin', decimals: 0 },
+    FIGR_HELOC: { coingeckoId: 'figure-heloc', decimals: 3 },
   },
   neo: {
     '0x68b938cc42b6a2d54fb9040f5facf4290ebb8c5f': { coingeckoId: 'tether', decimals: 6 },
