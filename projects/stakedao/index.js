@@ -41,6 +41,9 @@ async function handleStrategies(api, holder, underlying, strats, onlyboost) {
         vault: { target: strat.lpToken.address },
         balance: { target: strat.gaugeAddress, params: holder },
       });
+    } else if (strat.protocol === "curve" && strat.version !== 2) {
+      tokens.push(strat.lpToken.address)
+      calls.push({ target: strat.lpToken.address, params: strat.vault });
     } else {
       const token = strat.lpToken.address;
       const receipt = underlying === "pendle" ? strat.lpToken.address : strat.gaugeAddress;
@@ -59,12 +62,6 @@ async function handleStrategies(api, holder, underlying, strats, onlyboost) {
           calls.push({ target: receipt, params: holder });
         }
       }
-    }
-
-    // Asset for shutdown vaults (ready to migrate) are idle in the vault
-    if (strat.version !== 2) {
-      tokens.push(strat.lpToken.address)
-      calls.push({ target: strat.lpToken.address, params: strat.vault });
     }
   }
 
