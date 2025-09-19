@@ -10,6 +10,9 @@ const moonbeamConfig = {
 
 const moonbeamStaking = staking(  moonbeamConfig.stakingContract,  moonbeamConfig.stakingTokenAddress,)
 
+const baseStaking = staking('0xe66E3A37C3274Ac24FE8590f7D84A2427194DC17',
+  '0xa88594d404727625a9437c3f886c7643872296ae');
+
 const baseConfig = {
   comptroller: '0xfBb21d0380beE3312B33c4353c8936a0F13EF26C',
 }
@@ -26,3 +29,4 @@ module.exports = {
 }
 
 module.exports.moonbeam.staking = moonbeamStaking
+module.exports.base.staking = baseStaking

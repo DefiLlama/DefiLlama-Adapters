@@ -14,6 +14,7 @@ const CONFIG = {
   bsc: {
     pools: [
       '0x138EB30f73BC423c6455C53df6D89CB01d9eBc63',
+      '0x962Bd449E630b0d928f308Ce63f1A21F02576057'
     ],
   },
   avax: {

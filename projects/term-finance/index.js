@@ -8,10 +8,10 @@ const graphs = {
     "https://api.mainnet.termfinance.io/avalanche/subgraph/term",
   base:
     "https://api.mainnet.termfinance.io/base/subgraph/term",
-  bsc:
-    "https://api.mainnet.termfinance.io/bnb/subgraph/term",
-  arbitrum:
-    "https://api.mainnet.termfinance.io/arbitrum/subgraph/term",
+  // bsc:
+  //   "https://api.mainnet.termfinance.io/bnb/subgraph/term",
+  // arbitrum:
+  //   "https://api.mainnet.termfinance.io/arbitrum/subgraph/term",
 };
 
 const query = `

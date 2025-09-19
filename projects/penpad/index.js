@@ -28,7 +28,7 @@ module.exports = {
           '0x25D710AC957A54bdD6578b5DC8187a355c805edb',
         ], // weETH (Scroll Bridged)
         [
-          ADDRESSES.sonic.WBTC,
+          ADDRESSES.scroll.WBTC,
           '0x1C04CedF3Aac5fE35A7811689Ac6Da25b01BDc81',
         ], // WBTC
         [

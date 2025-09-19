@@ -14,7 +14,6 @@ module.exports = {
   arbitrum: { tvl },
   base: { tvl },
   unichain: { tvl },
-  ink: { tvl }
-  // TODO: add TAC when it will be added on DefiLlama:
-  // tac: { tvl }
+  ink: { tvl },
+  tac: { tvl }
 };
