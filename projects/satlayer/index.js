@@ -131,7 +131,6 @@ module.exports['sui'] = {
   tvl: async (api) => {
     const vaultIds = consts.SUI_VAULTS.map(v => v.vault);
     const vaults = await sui.getObjects(vaultIds);
-    console.log("vaults:", vaults);
 
     for (let i = 0; i < vaults.length; i++) {
       const vault = vaults[i];
