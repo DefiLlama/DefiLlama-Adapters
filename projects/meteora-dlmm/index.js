@@ -1,6 +1,7 @@
 const { getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
-const idl = require('./idl.json')
+const idl = require('./idl.json');
+const { getEnv } = require('../helper/env');
 
 // https://docs.meteora.ag/dlmm/dlmm-integration/dlmm-sdk
 async function tvl() {
