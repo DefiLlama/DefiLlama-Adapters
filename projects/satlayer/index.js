@@ -19,6 +19,7 @@ const consts = {
   TAC_FACTORY: "0x32fD8E43114Fb0a292Ca3127EAF4D1D69739Fb83",
   BABYLON_GENESIS_CBABY_HUB: "bbn1tng5u7fls4lyg356zkh2g32e80a286m8p2n0hqugc5467n9y6nksamehyj",
   SUI_FACTORY: "0x25646e1cac13d6198e821aac7a94cbb74a8e49a2b3bed2ffd22346990811fcc6",
+  BASE_FACTORY: "0xb57752dDc2Ec2DEFE9eDBb1fdb99dB1ca9b0b9b3",
 };
 
 // TVL for EVM chains
@@ -29,6 +30,7 @@ const evmConfig = {
   berachain: { factory: consts.BERACHAIN_FACTORY, fromBlock: 262893 },
   bob: { factory: consts.BOB_FACTORY, fromBlock: 17866931 },
   tac: { factory: consts.TAC_FACTORY, fromBlock: 2129845 },
+  base: { factory: consts.BASE_FACTORY, fromBlock: 34752522 },
 };
 
 // TVL of additional SatLayer vaults

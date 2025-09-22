@@ -23,6 +23,11 @@ const config = {
       "0x469AfE803C54A36674C55231489Cf4b61da8c1bC",
       "0x9642b23ed1e01df1092b92641051881a322f5d4e",
       "0xb5a6fd438017dbb0a2e5fcdcca715da227582ce4",
+      "0x3cc936b795a188f0e246cbb2d74c5bd190aecf18", 
+      "0x9642b23ed1e01df1092b92641051881a322f5d4e", 
+      "0x1Ed0be7d0A9580e202F6b98c29725d5C11D10b71", 
+      "0x6e5a3b0021949452D31A43BE17D808De54752a44", 
+      "0x2fF5fc5b63f2bfCE5d6BB9Ea4d170cf1aa40693c"
     ],
   },
   bsc: {
@@ -31,6 +36,7 @@ const config = {
       "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64",
       "0x7354abb551e41bbd9fb32e2e79f44631349119b8",
       "0x9bb6a22da110c6c9bab745bcaf0ee142ee83af37",
+      "0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64"
     ],
   },
   polygon: {
@@ -69,6 +75,8 @@ const config = {
     owners: [
       "5PAhQiYdLBd6SVdjzBQDxUAEFyDdF5ExNPQfcscnPRj5",
       "ASTyfSima4LLAdDgoFGkgqoKowG1LZFDr9fAQrg7iaJZ",
+      "5PAhQiYdLBd6SVdjzBQDxUAEFyDdF5ExNPQfcscnPRj5", 
+      "ASTyfSima4LLAdDgoFGkgqoKowG1LZFDr9fAQrg7iaJZ"
     ],
   },
   aptos: {
@@ -79,6 +87,17 @@ const config = {
   base: {
     owners: ["0x4e3ae00e8323558fa5cac04b152238924aa31b60"],
   },
+  ton: {
+    owners: [
+      "EQDYh9Di0cT8QSbnHJcNM6sYlpQAAOrnA7sats7Mgwd3497j",
+    ],
+  }, 
+  ripple: {
+    owners: [
+      "r3BFHL2EXZN4darZ7vH7BT7tP9tN7tyd6W",
+      "rs2dgzYeqYqsk8bvkQR5YPyqsXYcA24MP2",
+    ],
+  }
 };
 
 module.exports = cexExports(config);

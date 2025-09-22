@@ -26,6 +26,7 @@ const DEFAULTS = {
   SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  CAMP_RPC: 'https://rpc.camp.raas.gelato.cloud',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
@@ -45,6 +46,7 @@ const DEFAULTS = {
   TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
+  PLASMA_RPC: "https://rpc.plasma.to"
 }
 
 const ENV_KEYS = [
