@@ -60,13 +60,20 @@ const config = {
   },
   abstract: {
     v3: {
-      contract: '0x3e0F5F8F5Fb043aBFA475C0308417Bf72c463289',
+      contracts: [
+        '0x4f4988A910f8aE9B3214149A8eA1F2E4e3Cd93CC',
+        '0xAeef2840081EAd9DDFB2f52cF16c0226320b8C6D',
+        '0x3e0F5F8F5Fb043aBFA475C0308417Bf72c463289'
+      ],
       tokens: [ADDRESSES.abstract.USDC],
     }
   },
   linea: {
     v3: {
-      contract: '0x39E66eE6b2ddaf4DEfDEd3038E0162180dbeF340',
+      contracts: [
+        '0x756cc76895B4b87aE6CFd3cB66F51b97D13131b5',
+        '0x39E66eE6b2ddaf4DEfDEd3038E0162180dbeF340'
+      ],
       tokens: [ADDRESSES.linea.USDC],
     }
   }
@@ -84,7 +91,11 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = []
       if (v1) ownerTokens.push([[ADDRESSES.null], v1])
       if (v2) ownerTokens.push([v2.tokens, v2.contract])
-      if (v3) ownerTokens.push([v3.tokens, v3.contract])
+      if (v3) {
+        v3.contracts.forEach(contract => {
+          ownerTokens.push([v3.tokens, contract])
+        })
+      }
       return sumTokens2({ api, ownerTokens, blacklistedTokens: polk ? [polk] : [] })
     },
     staking: staking(stakingContracts, polk ?? []),
