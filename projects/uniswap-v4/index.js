@@ -1,6 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getLogs2 } = require('../helper/cache/getLogs');
 const { nullAddress } = require("../helper/tokenMapping");
+const { getEnv } = require("../helper/env");
 
 // from https://docs.uniswap.org/contracts/v4/deployments
 const config = {
@@ -25,7 +26,11 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, })
+      if (!getEnv('IS_RUN_FROM_CUSTOM_JOB')) throw new Error('This job is not meant to be run directly, please use the custom job feature')
+
+      let compressType
+      if (chain === 'base') compressType = 'v1'
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType, })
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
@@ -36,7 +41,9 @@ Object.keys(config).forEach(chain => {
         }
       })
       ownerTokens.push([Array.from(tokenSet), factory])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, sumChunkSize: 10000, sumChunkSleep: 20000 })
+      return sumTokens2({ api, ownerTokens, permitFailure: true, sumChunkSize: 30000, sumChunkSleep: 5000 })
     }
   }
 })
+
+module.exports.isHeavyProtocol = true;

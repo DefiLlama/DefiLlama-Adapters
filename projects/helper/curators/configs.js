@@ -101,11 +101,27 @@ const MorphoConfigs = {
       },
     ],
   },
+  katana: {
+    vaultFactories: [
+      {
+        address: '0x1c8De6889acee12257899BFeAa2b7e534de32E16',
+        fromBlock: 2741420,
+      },
+    ],
+  },
   plume_mainnet: {
     vaultFactories: [
       {
         address: '0x2525D453D9BA13921D5aB5D8c12F9202b0e19456',
         fromBlock: 1912478,
+      },
+    ],
+  },
+  arbitrum: {
+    vaultFactories: [
+      {
+        address: '0x878988f5f561081deEa117717052164ea1Ef0c82',
+        fromBlock: 296447195,
       },
     ],
   },
@@ -157,6 +173,11 @@ const EulerConfigs = {
       '0x7f53e2755eb3c43824e162f7f6f087832b9c9df6',
     ],
   },
+  tac: {
+    vaultFactories: [
+      '0x2b21621b8Ef1406699a99071ce04ec14cCd50677',
+    ],
+  },
 }
 
 const SiloConfigs = {
@@ -166,7 +187,35 @@ const SiloConfigs = {
         address: '0x7867f2b584e91d7c3798f4659b6fffa3631ea06a',
         fromBlock: 21718349,
       },
+      {
+        address: '0x02BbB86731EC6aA81B52961e14dD1AebE5171b1d',
+        fromBlock: 32865457,
+      }
     ],
+  },
+  ethereum: {
+    vaultFactories: [
+      {
+        address: '0xe7Ed54e4e432Cf85024f8D4434cB3756338469B0',
+        fromBlock: 22666249,
+      }
+    ]
+  },
+  arbitrum: {
+    vaultFactories: [
+      {
+        address: '0x451b35b2dF223a7Ef71c4ecb451C1C15019e28A5',
+        fromBlock: 345527587,
+      }
+    ]
+  },
+  avax: {
+    vaultFactories: [
+      {
+        address: '0x77cbCB96fFFe44d344c54A5868C49ad1C5AaAC6A',
+        fromBlock: 64052773,
+      }
+    ]
   }
 }
 

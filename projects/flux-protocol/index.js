@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { queryAddresses, sumTokens } = require("../helper/chain/radixdlt");
 
 const FLUX_COMPONENT =
@@ -33,7 +34,7 @@ async function tvl(api) {
 
   //add LSULP value to tvl
   api.add(
-    "resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd",
+    ADDRESSES.radixdlt.XRD,
     lsuLpAmount * lsuLpMultiplier
   );
 
