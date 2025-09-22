@@ -1,0 +1,12 @@
+const { sumTokensExport } = require("../helper/unwrapLPs");
+
+module.exports = {
+  ethereum: {
+    tvl: sumTokensExport({
+      tokensAndOwners: [
+        // [Token kontrat adresi, TVL]
+        ["0x243cACb4D5fF6814AD668C3e225246efA886AD5a", "0xEB17518E88744b9ac37229A7170dCFe326ee2edd"],
+      ],
+    }),
+  },
+};
