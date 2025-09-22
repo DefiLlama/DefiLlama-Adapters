@@ -137,7 +137,6 @@ module.exports['sui'] = {
       const vault = vaults[i];
       const token = consts.SUI_VAULTS[i].token;
       const balance = vault.fields.balance;
-      console.log("token:", token, "balance:", balance);
       api.add(token, balance);
     }
   }
