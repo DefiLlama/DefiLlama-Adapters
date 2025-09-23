@@ -1,19 +1,22 @@
-const { getTonBalance } = require("../helper/chain/ton");
+const { sumTokens } = require("../helper/chain/ton");
+const ADDRESSES = require('../helper/coreAssets.json');
 
-async function tvl() {
-  const contractAddress = "EQAgpWmO8nBUrmfOOldIEmRkLEwV-IIfVAlJsphYswnuL80R";
+async function tvl(api) {
+  const cclContract = "EQAgpWmO8nBUrmfOOldIEmRkLEwV-IIfVAlJsphYswnuL80R";
+  const jettonProxyContract = "EQAChAswsPNsU2k3A5ZDO_cfhWknCGS6WMG2Jz15USMwxMdw";
 
-  const balanceNanoTon = await getTonBalance(contractAddress);
-  const balanceTon = parseInt(balanceNanoTon) / 1e9; 
+  await sumTokens({ 
+    api,
+    owners: [cclContract, jettonProxyContract],
+    tokens: [ADDRESSES.ton.TON],
+    useTonApiForPrices: false
+  });
 
-  return {
-    "coingecko:the-open-network": balanceTon,
-  };
+  return api.getBalances();
 }
 
 module.exports = {
-  methodology:
-    "Counts the TON tokens held in the TAC (TON Adapter) cross-chain layer contract.",
+  methodology: "Tracks TVL across TAC's two main contracts: the Cross-Chain Layer (CCL) contract and the Jetton Proxy contract. Automatically detects and counts all native TON and jetton tokens held in both contracts.",
   timetravel: false,
   ton: {
     tvl,

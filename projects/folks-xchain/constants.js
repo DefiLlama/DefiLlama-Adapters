@@ -68,6 +68,16 @@ const HubPools = {
       poolAddress: '0x13A21bC65844CD530098Ab15431c57078ea90737',
       tokenAddress: '0x2cd3CdB3bd68Eea0d3BE81DA707bC0c8743D7335',
     },
+    { // USDe_ava
+      poolAddress: '0x5431e7f480C4985e9C3FaAcd3Bd1fc7143eAdEFa',
+      tokenAddress: '0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34',
+      chainPoolAddress: '0x07C911b5a1657126B14C25e697E3d00f3a134A23',
+    },
+    { // sUSDe_ava
+      poolAddress: '0x94307E63eF02Cf9B39894553f14b21378Ef20adB',
+      tokenAddress: '0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2',
+      chainPoolAddress: '0x1C7EC7198F297119D4e9f359d91127c8B2f9A9D2',
+    },
   ],
   'ethereum': [
     // excluding USDC cause bridged

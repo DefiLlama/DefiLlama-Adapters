@@ -84,6 +84,12 @@ const config = {
       fromBlock: 4544281
     },
   },
+  linea: {
+    optinProxyFactory:{
+      address: "0x8D6f5479B14348186faE9BC7E636e947c260f9B1",
+      fromBlock: 23119208
+    },
+  },
   mantle:{
     optinProxyFactory:{
       address: "0xc094c224ce0406bc338e00837b96ad2e265f7287",
@@ -104,7 +110,7 @@ const config = {
       fromBlock: 21645993,
     }
   },
-    tac: {
+  tac: {
     optinProxyFactory:{
       address: "0x66Ab87A9282dF99E38C148114F815a9C073ECA8D",
       fromBlock: 2334460
@@ -153,8 +159,8 @@ Object.keys(config).forEach((chain) => {
   if (!vaults) vaults = [];
   module.exports[chain] = { 
     tvl: async (api) =>  {
-      let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory.address, fromBlock: beaconFactory.fromBlock});
-      let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory.address, fromBlock: optinProxyFactory.fromBlock});
+      let beaconFactoryVaults = await getBeaconFactoryVaults({api, factory: beaconFactory?.address, fromBlock: beaconFactory?.fromBlock});
+      let optinProxyFactoryVaults = await getOptinProxyFactoryVaults({api, factory: optinProxyFactory?.address, fromBlock: optinProxyFactory?.fromBlock});
       beaconFactoryVaults = beaconFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
       optinProxyFactoryVaults = optinProxyFactoryVaults.filter((v) => keepVault(v, vaultsBlacklist));
 

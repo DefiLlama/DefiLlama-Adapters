@@ -17,11 +17,12 @@ const config = {
   },
   base: {
     morphoBlue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
-    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd'],
+    blackList: ["0x6ee1955afb64146b126162b4ff018db1eb8f08c3", '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd', '0x46415998764c29ab2a25cbea6254146d50d22687', '0x5e331e9ae6e1a5d375f699811736527222a9db15', '0x2dc205f24bcb6b311e5cdf0745b0741648aebd3d', '0xadcdd085ad2887758255090589f72237bdd33d8a'],
     fromBlock: 13977148,
   },
   arbitrum: {
     morphoBlue: "0x6c247b1F6182318877311737BaC0844bAa518F5e",
+    blackList: ["0xf8b3fa720a9cd8abeed5a81f11f80cd8f93e6b57"],
     fromBlock: 296446593,
   },
   fraxtal: {

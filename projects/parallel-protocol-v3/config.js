@@ -1,5 +1,9 @@
 
 const config = {
+    avax: {
+        address: "0x41d58951cbd12D4Ef49b0437897677bbF5547C80",
+        fromBlock: 68122215,
+    },
     ethereum: {
         address: "0x6efeDDF9269c3683Ba516cb0e2124FE335F262a2",
         fromBlock: 22676220,
