@@ -44,15 +44,6 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
 
-  xone: {
-    [ADDRESSES.xone.WXOC]: { coingeckoId: "xone", decimals: 18 }, // Wrapped XOC (ERC-20 wrapper of native Xone Coin)
-    [ADDRESSES.xone.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
-    [ADDRESSES.xone.USDC]: { coingeckoId: "usdc", decimals: 18 }, // Wrapped USDC
-    [ADDRESSES.xone.USDT]: { coingeckoId: "tether", decimals: 6 }, // Wrapped USDT
-    [ADDRESSES.xone.BNB]: { coingeckoId: "binancecoin", decimals: 18 }, // Wrapped BNB
-    [ADDRESSES.xone.TRX]: { coingeckoId: "tron", decimals: 6 }, // Wrapped TRX
-    [ADDRESSES.xone.USDH]: { coingeckoId: "xone", decimals: 6 }, // Wrapped USDH
-  },
   neo: {
     '0x68b938cc42b6a2d54fb9040f5facf4290ebb8c5f': { coingeckoId: 'tether', decimals: 6 },
     '0xd3a41b53888a733b549f5d4146e7a98d3285fa21': { coingeckoId: 'ethereum', decimals: 18 },
