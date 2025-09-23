@@ -79,7 +79,6 @@ module.exports = {
     telos: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 386633562 },
     goat: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 848385 },
     hemi: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 1293598 },
-    nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
     sonic: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 322744 },
     unichain: { factory: "0x1F98400000000000000000000000000000000003", fromBlock: 1 },
     lightlink_phoenix: { factory: "0xcb2436774C3e191c85056d248EF4260ce5f27A9D", fromBlock: 131405097 },
@@ -103,6 +102,7 @@ chains.forEach(chain => {
 const okuGraphMap = {
   filecoin: 'https://omni.v2.icarus.tools/filecoin',
   rsk: 'https://omni.v2.icarus.tools/rootstock',
+  nibiru: 'https://omni.v2.icarus.tools/nibiru', // nibiru: { factory: "0x346239972d1fa486FC4a521031BC81bFB7D6e8a4", fromBlock: 23658062 },
   saga: 'https://omni.v2.icarus.tools/saga',
   sei: 'https://omni.v2.icarus.tools/sei',
   // lightlink_phoenix: 'https://omni.v2.icarus.tools/lightlink',
