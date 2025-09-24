@@ -11,8 +11,10 @@ const config = {
 async function getCollateralsTvl(api) {
   const networkConfig = config[api.chain]
   if (!networkConfig) return
-  const collaterals = await api.call({ abi: 'address[]:listCollateral', target: tokenConfig.collateralVault })
-  await api.sumTokens({ owner: tokenConfig.collateralVault, tokens: collaterals })
+  for (const [, tokenConfig] of Object.entries(networkConfig)) {
+    const collaterals = await api.call({ abi: 'address[]:listCollateral', target: tokenConfig.collateralVault })
+    await api.sumTokens({ owner: tokenConfig.collateralVault, tokens: collaterals })
+  }
 }
 
 module.exports = {
