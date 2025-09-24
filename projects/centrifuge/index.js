@@ -40,7 +40,7 @@ const CONFIG = {
     factories : [
       { START_BLOCK: 15715268, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
     ],
-    assets: { USDC: ADDRESSES.plume_mainnet.USDC }
+    assets: { USDC: ADDRESSES.plume_mainnet.USDC, "0x222365EF19F7947e5484218551B56bb3965Aa7aF" }
   },
 }
 
