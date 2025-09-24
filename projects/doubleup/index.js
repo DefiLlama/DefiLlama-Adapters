@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 
 const UNI_HOUSE_OBJ_ID = "0x75c63644536b1a7155d20d62d9f88bf794dc847ea296288ddaf306aa320168ab"
 
-const BUCK = "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK"
+const BUCK = ADDRESSES.sui.BUCK
 const UPUSD = "0x5de877a152233bdd59c7269e2b710376ca271671e9dd11076b1ff261b2fd113c::up_usd::UP_USD"
 const UPUSD_FACTORY = "0x35507cec814a779e23393aa8e17746c51e38fb5efa18afdc8434a670da4d3338"
 

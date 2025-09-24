@@ -90,6 +90,7 @@ const v3Config = {
   hemi: [`0x8D45801736F3504BEfA35ABEf8bc7a1C4d610651`],
   nibiru: [`0x7F5f9E5D4643B4333464c18d072167B452C20d28`],
   bob: [`0xeb1Bea032d0DDCAFd29fb3b8c33A67BCAfCaFD8c`],
+  rsk: ['0x47C1ef207d49cfC519F48b8251857CA6BE6c2caf'],
 };
 
 const fetchReserveData = async (api, poolDatas, isBorrowed) => {

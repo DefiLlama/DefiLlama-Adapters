@@ -36,6 +36,11 @@ const config = {
       { factory: '0x9176B8Eb7Fdff309BE258F2F2eDB32a8b79f19B5', fromBlock: 4739302, }, // Sushi
     ]
   },
+  hemi: {
+    vaultConfigs:[
+      { factory: '0x5541Bcd3d163326CF12267D1cF6207dbde788348', fromBlock: 2624151, }, // Sushi
+    ]
+  },
 }
 
 Object.keys(config).forEach(chain => {

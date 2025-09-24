@@ -212,7 +212,7 @@ const config = {
       "0xf89d7b9c864f589bbF53a82105107622B35EaA40",
       "0x1Db92e2EeBC8E0c075a02BeA49a2935BcD2dFCF4",
       "0xee5B5B923fFcE93A870B3104b7CA09c3db80047A",
-      "0xacf9a5610cb9e6ec9c84ca7429815e95b6607e9f"
+      "0xacf9a5610cb9e6ec9c84ca7429815e95b6607e9f",
     ],
   },
   solana: {
@@ -236,6 +236,18 @@ const config = {
       "Gem2VAypSg7Ai7vjDKPTtqFahpoQWkfgVkyzx3rPoTka",
       "5LZkATrLwHYCQj2YuVbjjgsDZzBk6YfL4pFQRJmtboT2",
       "7cAui6ADtxLnpRr2wYvwJWTkzwgmVF2LYKnjKTLx4xR8",
+      "F6iEboP31qwgewVfonux3bdgWonJQHLgsky5uztmHDng",
+      "4SQQkqaouajAj9HaALAE1GUYhrkis96AhGr4gfnSDiUA",
+      "giPVBame6yenRbuYdsjXwku6TS3FaEkw7Nwy2VHiq8X",
+      "AL63c8ZNNAHZbAub6v1EGqQLt1fwyGQbVnFudw8xTPa5",
+      "8vHZDc2VTtynUizstoJHtXaH5VNKzynySMLZRZ8rj8Vc",
+      "BEyAq6ZgDkBwms5tNnYEjjvxsT7RaL8HVjxZvdu7XnJJ",
+      "FCgSWpNqaTvYydABHVCBxs7MRpgPBemhVDEYUcudj3Zv",
+      "CSSJFgoeqidqVtHKSNP7i7s6WX8APHfH2kYGdLV195Jb",
+      "FQEmsV5A6jZdmb3KuP3YBLmHfFNoKuoWddBGMQuW1M9f",
+      "CMivUnnbDHxLq9ChV1bSuiQE5ycZf6JVvFFDePMHhHYK",
+      "6fJxHzqAvnmsfb61Hkh7dNtUqLCaZdBtCvYq5X8BqHYj",
+      "6coXmZ8FRDRcuGQnoa1wH9GTrzJ7d1cD7NhiVDdMKt7F",
     ],
   },
   cardano: {
@@ -250,7 +262,10 @@ const config = {
     owners: ["0xf89d7b9c864f589bbF53a82105107622B35EaA40"],
   },
   celo: {
-    owners: ["0xf89d7b9c864f589bbF53a82105107622B35EaA40", "0x5768d8a89da933e15c5cb2f1a8f3e0627aa2c92a"],
+    owners: [
+      "0xf89d7b9c864f589bbF53a82105107622B35EaA40",
+      "0x5768d8a89da933e15c5cb2f1a8f3e0627aa2c92a",
+    ],
   },
   base: {
     owners: [
@@ -268,7 +283,10 @@ const config = {
     owners: ["0xf89d7b9c864f589bbF53a82105107622B35EaA40"],
   },
   linea: {
-    owners: ["0xf89d7b9c864f589bbF53a82105107622B35EaA40", "0x46958006fc6c826ea5318b42ffdd99ae3f8deaf4"],
+    owners: [
+      "0xf89d7b9c864f589bbF53a82105107622B35EaA40",
+      "0x46958006fc6c826ea5318b42ffdd99ae3f8deaf4",
+    ],
   },
   litecoin: {
     owners: [

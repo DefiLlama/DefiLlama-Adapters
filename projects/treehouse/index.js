@@ -73,7 +73,7 @@ async function addGrowAutovaultNav(api) {
 }
 
 
-async function tvl(api) {
+async function tvlEthereum(api) {
   await addGrowAutovaultNav(api)
 
   const vault = '0x551d155760ae96050439ad24ae98a96c765d761b'
@@ -126,14 +126,38 @@ async function tvlMantle(api) {
   return api.sumTokens({ owner: '0x5E4ACCa7a9989007cD74aE4ed1b096c000779DCC', tokens: [ADDRESSES.mantle.cmETH] })
 }
 
+async function tvlAvalanche(api) {
+  const vault = '0x3fc60aAc1d843e4e181C7Ab727A4027cb1Ac99ED'
+  const tokens = await api.call({ abi: 'address[]:getAllowableAssets', target: vault, })
+  await api.sumTokens({ owner: vault, tokens })
+
+  const storage = await api.call({ abi: 'address:strategyStorage', target: vault })
+  const strategies = await api.fetchList({ lengthAbi: 'getStrategyCount', itemAbi: 'getStrategyAddress', target: storage })
+
+
+  const navRegistry = '0x950d8545BB4E58B61230D47314549Cae5bcedCc6'
+  const navArr = await api.multiCall({
+    abi: "function getStrategyNav(address,(bytes4,bytes)[]) external view returns (uint)", calls: strategies.map((e) => ({ target: navRegistry, params: [e, []]}))
+  })
+
+  for (let i=0;i<navArr.length;i++) {
+    api.add(ADDRESSES.avax.SAVAX, navArr[i])
+  }
+
+  return
+}
+
 module.exports = {
   methodology: 'Token balance in vault and strategy contracts',
   doublecounted: true,
   start: '2024-09-10', // Tuesday, September 10, 2024 12:00:00 AM,
   ethereum: {
-    tvl,
+    tvl: tvlEthereum,
   },
   mantle: {
     tvl: tvlMantle
+  },
+  avax: {
+    tvl: tvlAvalanche
   }
 }
