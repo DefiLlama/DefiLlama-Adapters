@@ -29,7 +29,7 @@
 ##### Logo (High resolution, will be shown with rounded borders): https://static.sunperp.com/dex-web/logo.png
 
 
-##### Current TVL: 2.39M
+##### Current TVL: 2.29M
 
 
 ##### Treasury Addresses (if the protocol has treasury)
