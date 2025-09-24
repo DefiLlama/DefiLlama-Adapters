@@ -12,14 +12,14 @@ async function tvl_ethereum(api) {
   await tvl_ethereum_predeposit(api);
 
   const vaults = await getConfig('nest-vaults', "https://app.nest.credit/api/vaults?includeHidden=true");
-  const ethereumVaults = vaults?.map(vault => vault.plume?.contractAddress) ?? [];
+  const ethereumVaults = (vaults?.map(vault => vault.plume?.contractAddress) ?? []).filter(Boolean);
   const details = await api.multiCall({ abi: 'erc20:totalSupply', calls: ethereumVaults })
   api.add(ethereumVaults, details)
 }
 
 async function tvl_plume(api) {
   const vaults = await getConfig('nest-vaults', "https://app.nest.credit/api/vaults?includeHidden=true");
-  const plumeVaults = vaults?.map(vault => vault.plume?.contractAddress) ?? [];
+  const plumeVaults = (vaults?.map(vault => vault.plume?.contractAddress) ?? []).filter(Boolean);
   const details = await api.multiCall({ abi: 'erc20:totalSupply', calls: plumeVaults })
   api.add(plumeVaults, details)
 }
