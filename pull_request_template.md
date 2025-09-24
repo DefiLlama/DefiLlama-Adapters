@@ -15,27 +15,27 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama): SunPerp
+##### Name (to be shown on DefiLlama):
 
 
-##### Twitter Link: https://x.com/SunPerp_DEX
+##### Twitter Link:
 
 
-##### List of audit links if any: https://github.com/slowmist/Knowledge-Base/blob/master/open-report-V2/smart-contract/Sunperp%20Dex%20-%20SlowMist%20Audit%20Report.pdf
+##### List of audit links if any:
 
-##### Website Link: https://www.sunperp.com/
-
-
-##### Logo (High resolution, will be shown with rounded borders): https://static.sunperp.com/dex-web/logo.png
+##### Website Link:
 
 
-##### Current TVL: 2.29M
+##### Logo (High resolution, will be shown with rounded borders):
+
+
+##### Current TVL:
 
 
 ##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain: Tron
+##### Chain:
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -44,13 +44,13 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama): SunPerp is the first top-tier decentralized perpetual contract trading platform on the TRON blockchain, dedicated to providing users with an institutional-grade trading experience and ultimate asset security.
+##### Short Description (to be shown on DefiLlama):
 
 
 ##### Token address and ticker if any:
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one: Dexs
+##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
 
 ##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
@@ -63,4 +63,4 @@
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity): https://github.com/SunPerp-DEX/Sunperp-contracts
+##### Github org/user (Optional, if your code is open source, we can track activity):
