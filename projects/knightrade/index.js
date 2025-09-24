@@ -83,38 +83,7 @@ async function tvlJupiter(api) {
   }
 }
 
-function getPositions(userData, api) {
-  for (const spotPosition of userData.spotPositions) {
-    if (!new BN(spotPosition.scaledBalance).isZero()) {
-      const marketIndex = spotPosition.marketIndex
-      const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
-      const scaledBalance = new BN(spotPosition.scaledBalance)
-      const token = getTokenInfo(true, marketIndex)
-      if (!token) continue;
-      const balance = scaledBalance
-        .mul(new BN(balanceType === 'deposit' ? 1 : -1))
-        .div(new BN(10).pow(new BN(token.decimals - 9)));
-
-      api.add(token.mint, balance.toString())
-    }
-  }
-  for (const perpPosition of userData.perpPositions) {
-    if (!new BN(perpPosition.baseAssetAmount).isZero()) {
-      const marketIndex = perpPosition.marketIndex
-      const token = getTokenInfo(false, marketIndex)
-      if (!token) continue;
-      const baseAssetAmount = new BN(perpPosition.baseAssetAmount)
-        .div(new BN(10).pow(new BN(token.decimals - 9)));
-      const quoteAssetAmount = new BN(perpPosition.quoteAssetAmount)
-      api.add(TOKEN_INFO['USDC'].mint, quoteAssetAmount.toString())
-      api.add(token.mint, baseAssetAmount.toString())
-    }
-  }
-
-}
-
 async function getDriftTvl(api) {
-
   const vaultUserAddresses = [
     '3Wg1GaW4Szame9bzKScxM56DHgDAKTq4c9674LPEuNNP', // DeltaNeutral-JLP-USDC-SOL-KT1
     'FmrEVTqKUG9npwaQBbrHKt1VXL5LJPPhzQazjCh1fwwB', // DeltaNeutral-JLP-USDC-EVM-KT4
@@ -123,25 +92,14 @@ async function getDriftTvl(api) {
     'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9
     '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
   ];
-
   const walletUserAddresses = [
     'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv', // DeltaNeutral-JLP-USDC-KT0
   ]
-
-  const accounts = await getMultipleAccounts(vaultUserAddresses)
 
   const idl = require("./drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
   const provider = getProvider()
   const program = new Program(idl, programId, provider)
-
-
-
-  for (const account of accounts) {
-    const userData = program.coder.accounts.decode("User", account.data);
-    getPositions(userData, api)
-
-  }
 
   for (const account of walletUserAddresses) {
     const authorityPk = new PublicKey(account);
@@ -153,23 +111,47 @@ async function getDriftTvl(api) {
       ],
       programId,
     )[0];
-    const info = await getConnection().getAccountInfo(userPda);
-    const userData = program.coder.accounts.decode("User", info.data);
+    vaultUserAddresses.push(userPda)
+  }
 
-    getPositions(userData, api)
+  const accounts = await getMultipleAccounts(vaultUserAddresses)
+  for (const account of accounts) {
+    const userData = program.coder.accounts.decode("User", account.data);
+    for (const spotPosition of userData.spotPositions) {
+      if (!new BN(spotPosition.scaledBalance).isZero()) {
+        const marketIndex = spotPosition.marketIndex
+        const balanceType = Object.keys(spotPosition.balanceType ?? {})?.[0]
+        const scaledBalance = new BN(spotPosition.scaledBalance)
+        const token = getTokenInfo(true, marketIndex)
+        if (!token) continue;
+        const balance = scaledBalance
+          .mul(new BN(balanceType === 'deposit' ? 1 : -1))
+          .div(new BN(10).pow(new BN(token.decimals - 9)));
+
+        api.add(token.mint, balance.toString())
+      }
+    }
+    for (const perpPosition of userData.perpPositions) {
+      if (!new BN(perpPosition.baseAssetAmount).isZero()) {
+        const marketIndex = perpPosition.marketIndex
+        const token = getTokenInfo(false, marketIndex)
+        if (!token) continue;
+        const baseAssetAmount = new BN(perpPosition.baseAssetAmount)
+          .div(new BN(10).pow(new BN(token.decimals - 9)));
+        const quoteAssetAmount = new BN(perpPosition.quoteAssetAmount)
+        api.add(TOKEN_INFO['USDC'].mint, quoteAssetAmount.toString())
+        api.add(token.mint, baseAssetAmount.toString())
+      }
+    }
   }
 }
 
 async function tvlSolana(api) {
-
   await getDriftTvl(api);
-
   await tvlJupiter(api);
-
 }
 
 async function tvlArbitrum(api) {
-
   const vaults = [
     "0xd468808cc9e30f0ae5137805fff7ffb213984250",
     "0x148D779ABAD372C080844F3bF14002a5659858a7",
@@ -180,7 +162,6 @@ async function tvlArbitrum(api) {
     "0x34931CeF6b414b08E04AA98b251fBA96B9Ec363c",
     "0xA163c206D11d888935f3203C27c4C876eD275fE9",
   ];
-
   const addresses = {
     gmWeth: "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336",
     gmBtc: "0x47c031236e19d024b42f8AE6780E44A573170703",
@@ -191,7 +172,6 @@ async function tvlArbitrum(api) {
     aaveUsdcAToken: "0x724dc807b04555b71ed48a6896b6F41593b8C637",
     aaveUsdcDebtToken: "0xf611aEb5013fD2c0511c9CD55c7dc5C1140741A6",
   };
-
   const v2ReaderAbi = require('./v2_reader_abi.json');
   const v2ReaderAddress = '0xf60becbba223EEA9495Da3f606753867eC10d139';
   const dataStoreAddress = '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8';
