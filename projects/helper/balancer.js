@@ -118,10 +118,9 @@ function v3Tvl(
 
       if (!tokenBalances.length) throw new Error("null value of tokens");
 
-      if (tokenBalances.length) {
-        const blSet = new Set([...blacklistedTokens, ...pools].map((s) => s.toLowerCase()));
-        tokenBalances = tokenBalances.filter(([t]) => !blSet.has(String(t).toLowerCase()));
-      }
+      const blSet = new Set([...blacklistedTokens, ...pools].map((s) => s.toLowerCase()));
+      // eslint-disable-next-line no-const-assign
+      tokenBalances = tokenBalances.filter(([t]) => !blSet.has(String(t).toLowerCase()));
 
       await api.addTokens(tokenBalances);
 
