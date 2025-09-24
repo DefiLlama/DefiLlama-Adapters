@@ -28,6 +28,7 @@ async function tvl(api) {
 
 }
 
+
 module.exports = {
     methodology: 'Counts Number in The SunPerp Vault.',
     tron: { tvl }
