@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const STAKING = "0x151669B501b561a52ad95574603AD52546F46Bf4";
 
 async function tvl(api) {
@@ -7,7 +8,7 @@ async function tvl(api) {
         params: [],
     });
 
-    const SEI_TOKEN = "0x0000000000000000000000000000000000000000";
+    const SEI_TOKEN = ADDRESSES.null;
 
     api.add(SEI_TOKEN, totalSei);
 }

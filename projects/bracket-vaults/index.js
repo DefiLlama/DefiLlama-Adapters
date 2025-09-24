@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const CONFIG = {
   BBOR1: '0x7A859B5aa0E8294be505af730Ec75E81B14d2788', //  ETH+ Vault
   CBOR2: '0xb8ca40E2c5d77F0Bc1Aa88B2689dddB279F7a5eb', //  USDC+ Vault
   brktETH: '0x6C8550167BbD06D4610a6A443eCbEd84Bd1AccD6',
-  USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+  USDC: ADDRESSES.ethereum.USDC
 }
 
 const abis = {

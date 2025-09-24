@@ -116,7 +116,9 @@ function processSpotPosition(position, spotMarketAccountInfo) {
     return -balance;  // Return negative for borrows
   }
 
-  return balance;  // Return positive for deposits
+  const cumulativeDepositInterest = getSpotMarketCumulativeDepositInterest(spotMarketAccountInfo);
+
+  return balance * cumulativeDepositInterest / BigInt(10 ** 10);  // Return positive for deposits
 }
 
 function getSpotMarketCumulativeBorrowInterest(accountInfo) {
@@ -128,6 +130,20 @@ function getSpotMarketCumulativeBorrowInterest(accountInfo) {
   
     const lower64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET);
     const upper64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_BORROW_INTEREST_OFFSET + 8);
+    
+    return (upper64Bits << 64n) + lower64Bits;
+  }
+
+
+function getSpotMarketCumulativeDepositInterest(accountInfo) {
+    if (!accountInfo) { 
+      throw new Error(`No account info found for market`);
+    }
+  
+    const CUMULATIVE_DEPOSIT_INTEREST_OFFSET = 8 + 48 + 32 + 256 + (16 * 8) + 8 - 16; // 16 bytes before the borrow interest
+  
+    const lower64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_DEPOSIT_INTEREST_OFFSET);
+    const upper64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_DEPOSIT_INTEREST_OFFSET + 8);
     
     return (upper64Bits << 64n) + lower64Bits;
   }
