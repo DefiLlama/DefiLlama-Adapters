@@ -1,4 +1,6 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { covalentGetTokens } = require('../helper/token');
+const { getUniqueAddresses } = require('../helper/utils');
 
 const config = {
   ethereum: {
@@ -31,10 +33,21 @@ const config = {
   },
 };
 
+async function getTokens(api, owners) {
+  let tokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false })))).flat()
+  tokens = getUniqueAddresses(tokens)
+  return tokens
+}
+
 Object.keys(config).forEach(chain => {
   const { owners, fromBlock } = config[chain]
   module.exports[chain] = { 
-    tvl: sumTokensExport({ owners }), 
+    tvl: async (api) => {
+      const tokens = await getTokens(api, owners)
+      return sumTokens2({ tokens, owners, api })
+    },
     start: fromBlock 
   }
 })
+
+module.exports.methodology = "UniVoucher TVL is calculated by summing all ETH and ERC20 tokens held in the UniVoucher contract across all supported chains. These represent funds deposited into active (unredeemed/uncancelled) gift cards."
