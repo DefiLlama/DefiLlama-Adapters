@@ -11,7 +11,8 @@ const BASE_AA = "A336I77COVXUCN3L2YOYVIZF7PKMFCAV";
 const STAKING_BASE_AA = "HPJQ6ZCB2T3JTIVAMDM5QESZWNJNJERO";
 
 // TODO support time travel for the exchange rate, currently it always returns the latest rates
-async function tvl({ timestamp }) {
+async function tvl(api) {
+    const timestamp = api.timestamp;
     const [exchangeRates, assetMetadata] = await Promise.all([
         fetchOswapExchangeRates(),
         fetchOswapAssets()
@@ -29,16 +30,15 @@ async function tvl({ timestamp }) {
         return baseAABalances.reduce(summingBaseAABalancesToTvl(assetMetadata, exchangeRates), 0)
     });
 
-    return baseAASumBalances + stakingBaseAASumBalances;
+    api.addUSDValue(baseAASumBalances + stakingBaseAASumBalances);
 }
 
 module.exports = {
     timetravel: false,
-        misrepresentedTokens: true,
+    misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that implement the Pythagorean protocol.",
     obyte: {
-        fetch: tvl
+        tvl
     },
-    fetch: tvl
 }

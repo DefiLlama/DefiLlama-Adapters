@@ -85,5 +85,19 @@ module.exports = {
   },
   kroma: {
     tvl: () => ({})
+  },
+  hemi: {
+    tvl: sumTokensExport({
+      owners: [
+        '0x25aB3Efd52e6470681CE037cD546Dc60726948D3',
+      ],
+      tokens: [
+        '0xF469fBD2abcd6B9de8E169d128226C0Fc90a012e',
+        '0x9BFA177621119e64CecbEabE184ab9993E2ef727',
+        '0xF9775085d726E782E83585033B58606f7731AB18',
+        '0x93919784C523f39CACaa98Ee0a9d96c3F32b593e',
+        '0x78E26E8b953C7c78A58d69d8B9A91745C2BbB258',
+      ]
+    })
   }
 };

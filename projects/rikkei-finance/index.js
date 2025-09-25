@@ -8,3 +8,5 @@ module.exports = {
         ADDRESSES.bsc.WBNB
     )
 };
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

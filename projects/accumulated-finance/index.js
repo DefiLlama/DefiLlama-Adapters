@@ -78,6 +78,19 @@ const config = {
       },
     }
   ],
+  "bitkub": [{
+    "bitkub": {
+      "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+    }
+  }],
+  "coti": [
+    {
+      "coti": {
+        "baseToken": "0xddb3422497e61e13543bea06989c0789117555c5",
+        "LST": "0xcf1a40eff1a4d4c56dc4042a1ae93013d13c3217",
+      }
+    }
+  ],
   "stETH": [
     {
       "ethereum": {

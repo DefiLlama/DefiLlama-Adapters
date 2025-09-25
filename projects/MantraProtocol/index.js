@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
-
-const NATIVE_TOKEN_INTERNAL_ADDRESS = ADDRESSES.null
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const MANTRA_CONTRACT_PER_CHAIN = {
   shibarium: '0xf27B9704a15fFe47818fD48660D952235e9C39aF',
@@ -20,33 +18,7 @@ async function tvl(api) {
     target: MANTRA_CONTRACT
   })
 
-
-  // -- BALANCE OF NATIVE COIN
-  const balanceNative = await sdk.api.eth.getBalance({
-    target: MANTRA_CONTRACT,
-    chain: api.chain
-  })
-
-  api.add(NATIVE_TOKEN_INTERNAL_ADDRESS, balanceNative.output)
-
-
-  // -- BALANCE OF OTHER TOKENS (non native)
-
-  // Filter out native coin from whitelistedTokens
-  const nonNativeTokens = whitelistedTokens.filter(t => t != NATIVE_TOKEN_INTERNAL_ADDRESS)
-
-  const balanceCalls = []
-  for (let i = 0; i < nonNativeTokens.length; i++) {
-    balanceCalls.push({
-      abi: 'erc20:balanceOf',
-      target: nonNativeTokens[i],
-      params: [MANTRA_CONTRACT],
-    });
-  }
-
-  const balances = await api.batchCall(balanceCalls)
-
-  api.addTokens(nonNativeTokens, balances)
+  return sumTokens2({ api, tokens: whitelistedTokens, owner: MANTRA_CONTRACT })
 }
 
 module.exports = {

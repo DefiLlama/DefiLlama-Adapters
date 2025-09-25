@@ -149,6 +149,7 @@ class Address {
               address: new Address(r.workchain, r.hashPart)
           };
       } else {
+        // eslint-disable-next-line no-useless-escape
           let addr = source.replace(/\-/g, '+').replace(/_/g, '\/'); // Convert from url-friendly to true base64
           let r = parseFriendlyAddress(addr);
           return {
