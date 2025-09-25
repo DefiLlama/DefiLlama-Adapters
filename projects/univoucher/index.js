@@ -34,6 +34,7 @@ const config = {
 };
 
 async function getTokens(api, owners) {
+  // Auto-discover all ERC20 tokens held by UniVoucher contracts
   let tokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false })))).flat()
   tokens = getUniqueAddresses(tokens)
   return tokens
