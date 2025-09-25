@@ -31,6 +31,10 @@ const config = {
   },
 };
 
-module.exports = {
-  ...sumTokensExport(config),
-};
+Object.keys(config).forEach(chain => {
+  const { owners, fromBlock } = config[chain]
+  module.exports[chain] = { 
+    tvl: sumTokensExport({ owners }), 
+    start: fromBlock 
+  }
+})
