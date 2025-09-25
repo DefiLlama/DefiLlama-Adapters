@@ -31,4 +31,6 @@ const config = {
   },
 };
 
-module.exports = sumTokensExport(config);
+module.exports = {
+  ...sumTokensExport(config),
+};
