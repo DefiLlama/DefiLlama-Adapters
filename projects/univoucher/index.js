@@ -1,6 +1,5 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
-const { covalentGetTokens } = require('../helper/token');
-const { getUniqueAddresses } = require('../helper/utils');
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
 
 const config = {
   ethereum: {
@@ -33,20 +32,31 @@ const config = {
   },
 };
 
-async function getTokens(api, owners) {
-  // Auto-discover all ERC20 tokens held by UniVoucher contracts
-  let tokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false })))).flat()
-  tokens = getUniqueAddresses(tokens)
-  return tokens
-}
-
 Object.keys(config).forEach(chain => {
   const { owners, fromBlock } = config[chain]
+  const tokens = [ADDRESSES.null] // Native token (ETH/BNB/MATIC/etc)
+  
+  // Add common stablecoins and tokens
+  if (ADDRESSES[chain]) {
+    // Major stablecoins
+    if (ADDRESSES[chain].USDT) tokens.push(ADDRESSES[chain].USDT)
+    if (ADDRESSES[chain].USDC) tokens.push(ADDRESSES[chain].USDC) 
+    if (ADDRESSES[chain].DAI) tokens.push(ADDRESSES[chain].DAI)
+    if (ADDRESSES[chain].BUSD) tokens.push(ADDRESSES[chain].BUSD)
+    if (ADDRESSES[chain].TUSD) tokens.push(ADDRESSES[chain].TUSD)
+    if (ADDRESSES[chain].FDUSD) tokens.push(ADDRESSES[chain].FDUSD)
+    
+    // Other popular tokens
+    if (ADDRESSES[chain].WETH) tokens.push(ADDRESSES[chain].WETH)
+    if (ADDRESSES[chain].WBTC) tokens.push(ADDRESSES[chain].WBTC)
+    
+    // Gold-backed tokens
+    if (ADDRESSES[chain].XAUT) tokens.push(ADDRESSES[chain].XAUT)
+    if (ADDRESSES[chain].PAXG) tokens.push(ADDRESSES[chain].PAXG)
+  }
+  
   module.exports[chain] = { 
-    tvl: async (api) => {
-      const tokens = await getTokens(api, owners)
-      return sumTokens2({ tokens, owners, api })
-    },
+    tvl: sumTokensExport({ owners, tokens }), 
     start: fromBlock 
   }
 })
