@@ -20,6 +20,7 @@ const config = {
     owners: Object.values({
       predictionPROV2: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
       predictionPROV3: "0x792b18ec0d39093f10f8b34676e2f8669a495e9b",
+      balancePool: "0xd9632d09518D940E307580Dd1D7B4abd22A77dd4",
     }),
     tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
   },
@@ -43,6 +44,7 @@ const config = {
       predictionPROV2: "0x22dB94d719659d7861612E0f43EE28C9FF9909C7",
       predictionclassicV3: "0x00199E444155f6a06d74CF36315419d39b874f5c",
       predictionPROV3: "0x49eFb44831aD88A9cFFB183d48C0c60bF4028da8",
+      balancePool: "0xd9632d09518D940E307580Dd1D7B4abd22A77dd4",
     }),
     tokens: [
       ADDRESSES.null,
@@ -59,6 +61,7 @@ const config = {
       predictionPROV2: "0x8251E5EBc2d2C20f6a116144800D569FAF75d746",
       predictionclassicv3: "0x9f9564BE7b566dfE4B091a83a591752102aF3F33",
       predictionPROV3: "0x0b9c8c0a04354f41b985c10daf7db30bc66998f5",
+      balancePool: "0xd9632d09518D940E307580Dd1D7B4abd22A77dd4",
     }),
     tokens: [
       ADDRESSES.null,
