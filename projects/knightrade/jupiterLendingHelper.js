@@ -1,11 +1,11 @@
-const { getProvider, getEndpoint } = require('../helper/solana')
+const { getProvider, getEndpoint } = require('../helper/solana.js')
 const { Program } = require("@coral-xyz/anchor");
-const http = require('../helper/http')
+const http = require('../helper/http.js')
 const { PublicKey } = require("@solana/web3.js")
 const sdk = require('@defillama/sdk');
 const { endpointMap } = require('../helper/svmChainConfig.js')
 const { BN } = require("@coral-xyz/anchor");
-const { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } = require('../helper/solana')
+const { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } = require('../helper/solana.js')
 const provider = getProvider()
 
 const LENDING_PROGRAM_ID = new PublicKey('jup3YeL8QhtSx1e253b2FDvsMNC87fDrgQZivbrndc9')

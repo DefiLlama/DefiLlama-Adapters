@@ -1,8 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider, getConnection, sumTokens2 } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, getConnection } = require('../helper/solana')
 const { Program, BN, utils } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
-const { getLendingToken, getTokenBalance, lendingProgram, convertToAssets } = require('./jupiterHelper');
+const { getLendingToken, getTokenBalance, lendingProgram, convertToAssets } = require('./jupiterLendingHelper');
 
 
 const TOKEN_INFO = {
@@ -87,14 +87,11 @@ async function tvlJupiter(api) {
     const userKey = new PublicKey(vault);
     for (const asset of tokensMints) {
       const lendingTokenBalance = await getTokenBalance(userKey, getLendingToken(asset), connection)
-      console.log(vault, lendingTokenBalance)
       const assets = await convertToAssets(
         asset,
         new BN(lendingTokenBalance.toString()),
         connection
       );
-
-      console.log("assets", vault, assets, assets.toString())
       api.add(asset.toBase58(), assets.toString())
     }
   }
