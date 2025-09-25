@@ -1,7 +1,7 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const { tokens, vaultContracts } = require("./assets");
 
-const plainTokens = Object.values(tokens).map(chain => Object.values(chain)).flat(1);
+const plainTokens = Object.values(tokens).flatMap(chain => Object.values(chain));
 
 module.exports = {
     // All vaults currently ethereum
