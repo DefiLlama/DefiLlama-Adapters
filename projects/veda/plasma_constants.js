@@ -8,7 +8,7 @@ const boringVaultsV0Plasma = [
     teller: "0x4E7d2186eB8B75fBDcA867761636637E05BaeF1E",
     lens: "0xC67Af7c42b64c2Bb5BdF20716cCFa995a07F6903",
     startBlock: 687884,
-    baseAsset: ADDRESSES.plasma.USDT
+    baseAsset: ADDRESSES.plasma.USDT0
   },
 ];
 
