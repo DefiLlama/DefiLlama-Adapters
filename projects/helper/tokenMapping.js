@@ -49,7 +49,7 @@ const fixBalancesTokens = {
     [ADDRESSES.camp.USDC]: { coingeckoId: "usd-coin", decimals: 18 }, // Wrapped USDC
   },
   plasma: {
-    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "plasma", deciamsl: 18}, // Native XPL
+    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "plasma", deciamsl: 18 }, // Native XPL
     '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb': { coingeckoId: "usdt0", decimals: 6 }, // USDT0
     '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB': { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
   },
@@ -87,9 +87,13 @@ const fixBalancesTokens = {
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
 function getUniqueAddresses(addresses, chain = 'ethereum') {
+
   const toLowerCase = !caseSensitiveChains.includes(chain)
   const set = new Set()
-  addresses.forEach(i => set.add(toLowerCase ? i.toLowerCase() : i))
+  addresses.forEach(i => {
+    if (typeof i !== 'string') i = i.toString()
+    set.add(toLowerCase ? i.toLowerCase() : i)
+  })
   return [...set]
 }
 
