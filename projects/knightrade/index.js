@@ -57,6 +57,7 @@ const connection = getConnection()
 async function tvlJupiter(api) {
   const jupiterVaults = [
     'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
+    "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
   ]
 
   // /**
@@ -110,12 +111,12 @@ async function tvlJupiter(api) {
 
 async function getDriftTvl(api) {
   const vaultUserAddresses = [
-    // '3Wg1GaW4Szame9bzKScxM56DHgDAKTq4c9674LPEuNNP', // DeltaNeutral-JLP-USDC-SOL-KT1
-    // 'FmrEVTqKUG9npwaQBbrHKt1VXL5LJPPhzQazjCh1fwwB', // DeltaNeutral-JLP-USDC-EVM-KT4
-    // 'J5VbheCue9U4hW7u9DZzwgo5h7BhnBqL8rF9c71MDsfC', // DeltaNeutral-JLP-USDC-SVM-KT5
-    // 'AcN9Mct9dLYQVDsyQinbbHKbsXYB4Tnaq5DgKwzrWaY4', // DeltaNeutral-JLP-SOL-SVM-KT6
-    // 'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9 //
-    // '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
+    '3Wg1GaW4Szame9bzKScxM56DHgDAKTq4c9674LPEuNNP', // DeltaNeutral-JLP-USDC-SOL-KT1
+    'FmrEVTqKUG9npwaQBbrHKt1VXL5LJPPhzQazjCh1fwwB', // DeltaNeutral-JLP-USDC-EVM-KT4
+    'J5VbheCue9U4hW7u9DZzwgo5h7BhnBqL8rF9c71MDsfC', // DeltaNeutral-JLP-USDC-SVM-KT5
+    'AcN9Mct9dLYQVDsyQinbbHKbsXYB4Tnaq5DgKwzrWaY4', // DeltaNeutral-JLP-SOL-SVM-KT6
+    'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9
+    '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
     'GTitYk2qbV7LhXPGLNc6XRtwhAake3Nqt3csmdtD2KB1', // DeltaNeutral-JLP-USDC-HB1
   ];
 
@@ -162,14 +163,14 @@ async function tvlSolana(api) {
 
 async function tvlArbitrum(api) {
   const vaults = [
-    // "0xd468808cc9e30f0ae5137805fff7ffb213984250",
-    // "0x148D779ABAD372C080844F3bF14002a5659858a7",
-    // "0xe15A7A5d2f1B7046af75e239a83d052B8fDb4230",
-    // "0xf13891426ecc002d9b3c9c293bcc176e3ceb04e7",
-    // "0xd51298f8eaf78943a67535a24f4bcb18b787ba0e",
+    "0xd468808cc9e30f0ae5137805fff7ffb213984250",
+    "0x148D779ABAD372C080844F3bF14002a5659858a7",
+    "0xe15A7A5d2f1B7046af75e239a83d052B8fDb4230",
+    "0xf13891426ecc002d9b3c9c293bcc176e3ceb04e7",
+    "0xd51298f8eaf78943a67535a24f4bcb18b787ba0e",
     "0x5C83942B7919db30634f9Bc9e0e72aD778852FC8",
-    // "0x34931CeF6b414b08E04AA98b251fBA96B9Ec363c",
-    // "0xA163c206D11d888935f3203C27c4C876eD275fE9",
+    "0x34931CeF6b414b08E04AA98b251fBA96B9Ec363c",
+    "0xA163c206D11d888935f3203C27c4C876eD275fE9",
   ];
   const addresses = {
     gmWeth: "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336",
@@ -195,28 +196,28 @@ async function tvlArbitrum(api) {
   for (const market of markets) {
     marketToTokenMap[market[0]] = market[1];
   }
-  // await api.sumTokens({
-  //   tokens: [
-  //     // Wallet
-  //     ADDRESSES.arbitrum.USDC,
-  //     ADDRESSES.arbitrum.USDT,
-  //     ADDRESSES.arbitrum.USDC_CIRCLE,
-  //     ADDRESSES.arbitrum.WETH,
-  //     ADDRESSES.null,
-  //     ADDRESSES.arbitrum.WBTC,
-  //     // GMXv2 Earn
-  //     addresses.gmWeth,
-  //     addresses.gmBtc,
-  //     // Aave
-  //     addresses.aaveEthAToken,
-  //     addresses.aaveBtcAToken,
-  //     addresses.aaveUsdcAToken,
-  //     addresses.aaveEthDebtToken,
-  //     addresses.aaveBtcDebtToken,
-  //     addresses.aaveUsdcDebtToken,
-  //   ],
-  //   owners: vaults
-  // })
+  await api.sumTokens({
+    tokens: [
+      // Wallet
+      ADDRESSES.arbitrum.USDC,
+      ADDRESSES.arbitrum.USDT,
+      ADDRESSES.arbitrum.USDC_CIRCLE,
+      ADDRESSES.arbitrum.WETH,
+      ADDRESSES.null,
+      ADDRESSES.arbitrum.WBTC,
+      // GMXv2 Earn
+      addresses.gmWeth,
+      addresses.gmBtc,
+      // Aave
+      addresses.aaveEthAToken,
+      addresses.aaveBtcAToken,
+      addresses.aaveUsdcAToken,
+      addresses.aaveEthDebtToken,
+      addresses.aaveBtcDebtToken,
+      addresses.aaveUsdcDebtToken,
+    ],
+    owners: vaults
+  })
 
   // GMXv2 Trade
   const calls = vaults.map(vault => ({ params: [dataStoreAddress, vault, 0, 999999999999], }))
@@ -249,13 +250,6 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   methodology: "Solana: Drift | Arbitrum: Aave, GMX",
-  // solana: { tvl: tvlSolana },
+  solana: { tvl: tvlSolana },
   arbitrum: { tvl: tvlArbitrum },
 };
-// account 0x5C83942B7919db30634f9Bc9e0e72aD778852FC8
-// collateral 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1 246031799390395646122 >> 246.0317993904 * 4009.71 = 986, 516.1663336808
-// sizeInTokens 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1 1361233691070673854992 >> 1, 361.2336910707 * 4009.71 = 5, 458, 152.3434230965
-// sizeInUsd 0xaf88d065e77c8cC2239327C5EDb3A432268e5831 - 6034542078748.097 >> 6,034,542.078748
-
-
-// 986, 516.1663336808 + 5, 458, 152.3434230965 = 6, 444, 668.5097567773 
