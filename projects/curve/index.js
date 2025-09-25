@@ -36,6 +36,7 @@ const chains = [
   "xdc",
   'tac',
   "etlk",
+  "plasma",
 ];
 const registryIds = {
   stableswap: 0,
