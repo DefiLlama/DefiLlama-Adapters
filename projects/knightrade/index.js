@@ -57,32 +57,42 @@ const connection = getConnection()
 async function tvlJupiter(api) {
   const jupiterVaults = [
     'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
-    // '86ma4NFmrZEh5idEL4EVbywHcHpVA9BkfxTrqZwq5Bvy',
-    // 'GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q',
   ]
 
-  const program = lendingProgram;
-  console.log("Program inited ID:", program.programId.toString());
+  // /**
+  //  * Jupiter perp Lend
+  // */
+  const JUP_PERP_PROGRAM_ID = "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu";
+  const idl = await Program.fetchIdl(JUP_PERP_PROGRAM_ID, provider);
+  const perpProgram = new Program(idl, JUP_PERP_PROGRAM_ID, provider);
 
-  // // **
-  // // const allTokens = await getLendingTokens({ connection });
-  // //
+  for (const walletAddress of jupiterVaults) {
+    const walletPubkey = new PublicKey(walletAddress);
+    const accounts = await perpProgram.account.borrowPosition.all([
+      {
+        memcmp: {
+          offset: 8, // Adjust based on your account structure
+          bytes: walletPubkey.toBase58(),
+        },
+      },
+    ]);
+
+    if (accounts.length === 0) continue;
+    const account = accounts[0].account;
+    api.add(TOKEN_INFO['JLP'].mint, account.lockedCollateral);
+    const BORROW_SIZE_PRECISION = 1000;
+    api.add(ADDRESSES.solana.USDC, -account.borrowSize / BORROW_SIZE_PRECISION);
+  }
+
+  // /**
+  //  * Jupiter Earn
+  // */
+  const program = lendingProgram;
   const lending = await program.account.lending.all();
   const data = lending.map((l) => l.account);
   data.sort((a, b) => a.lendingId - b.lendingId);
-  // // const tokensMints = lending.map((l) => l.account.fTokenMint);
-  const tokensMints = [new PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB")]
-  // const tokensMints = lending.map((l) => l.account.mint);
+  const tokensMints = lending.map((l) => l.account.mint);
 
-  console.log(
-    "Tokens:",
-    tokensMints.map((t) => t.toBase58()),
-  );
-
-
-  /**
-   * Jupiter lend
-   */
   for (const vault of jupiterVaults) {
     const userKey = new PublicKey(vault);
     for (const asset of tokensMints) {
@@ -95,18 +105,6 @@ async function tvlJupiter(api) {
       api.add(asset.toBase58(), assets.toString())
     }
   }
-
-
-  // const testaddress = "2uQsyo1fXXQkDtcpXnLofWy88PxcvnfH2L8FPSE62FVU"
-  // const lendingaccount = await program.account.lending.fetch(
-  //   getLending(testaddress)
-  // );
-  // const account = await program.account.tokenReserve.fetch(
-  //   getReserve(lendingaccount.mint)
-  // );
-
-  // console.log(account.supplyExchangePrice)
-
 
 }
 
@@ -173,7 +171,7 @@ async function getDriftTvl(api) {
 }
 
 async function tvlSolana(api) {
-  // await getDriftTvl(api);
+  await getDriftTvl(api);
   await tvlJupiter(api);
 }
 
@@ -261,5 +259,5 @@ module.exports = {
   doublecounted: true,
   methodology: "Solana: Drift | Arbitrum: Aave, GMX",
   solana: { tvl: tvlSolana },
-  // arbitrum: { tvl: tvlArbitrum },
+  arbitrum: { tvl: tvlArbitrum },
 };
