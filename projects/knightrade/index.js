@@ -54,11 +54,8 @@ function getTokenInfo(isSpotMarket, marketIndex) {
 const provider = getProvider()
 const connection = getConnection()
 
-async function tvlJupiter(api) {
-  const jupiterVaults = [
-    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
-    "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
-  ]
+async function tvlJupiter(api, jupiterVaults) {
+
 
   // /**
   //  * Jupiter perp Lend
@@ -109,20 +106,32 @@ async function tvlJupiter(api) {
 
 }
 
-async function getDriftTvl(api) {
+async function getDriftTvl(api, vaults) {
   const vaultUserAddresses = [
     '3Wg1GaW4Szame9bzKScxM56DHgDAKTq4c9674LPEuNNP', // DeltaNeutral-JLP-USDC-SOL-KT1
     'FmrEVTqKUG9npwaQBbrHKt1VXL5LJPPhzQazjCh1fwwB', // DeltaNeutral-JLP-USDC-EVM-KT4
     'J5VbheCue9U4hW7u9DZzwgo5h7BhnBqL8rF9c71MDsfC', // DeltaNeutral-JLP-USDC-SVM-KT5
     'AcN9Mct9dLYQVDsyQinbbHKbsXYB4Tnaq5DgKwzrWaY4', // DeltaNeutral-JLP-SOL-SVM-KT6
     'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9
-    '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
-    'GTitYk2qbV7LhXPGLNc6XRtwhAake3Nqt3csmdtD2KB1', // DeltaNeutral-JLP-USDC-HB1
   ];
 
   const idl = require("./drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
   const program = new Program(idl, programId, provider)
+
+
+  for (const account of vaults) {
+    const authorityPk = new PublicKey(account);
+    const userPda = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from(utils.bytes.utf8.encode('user')),
+        authorityPk.toBuffer(),
+        new BN(0).toArrayLike(Buffer, 'le', 2),
+      ],
+      programId,
+    )[0];
+    vaultUserAddresses.push(userPda)
+  }
 
   const accounts = await getMultipleAccounts(vaultUserAddresses)
   for (const account of accounts) {
@@ -157,8 +166,12 @@ async function getDriftTvl(api) {
 }
 
 async function tvlSolana(api) {
-  await getDriftTvl(api);
-  await tvlJupiter(api);
+  const vaults = [
+    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
+    "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
+  ]
+  await getDriftTvl(api, vaults);
+  await tvlJupiter(api, vaults);
 }
 
 async function tvlArbitrum(api) {
@@ -232,13 +245,8 @@ async function tvlArbitrum(api) {
       if (!p.addresses || !p.numbers) continue;
       const flag = p.flags.isLong ? 1 : -1;
       // collateral
-      console.log('collateral', p.addresses.collateralToken, p.numbers.collateralAmount);
       api.add(p.addresses.collateralToken, p.numbers.collateralAmount);
       // pnl = sizeInTokens * tokenPrice - sizeInUsd
-      console.log('sizeInTokens', marketToTokenMap[p.addresses.market], p.numbers.sizeInTokens);
-      console.log('sizeInTokens', marketToTokenMap[p.addresses.market], p.numbers.sizeInTokens * flag);
-      console.log('sizeInUsd', ADDRESSES.arbitrum.USDC_CIRCLE, -p.numbers.sizeInUsd * 1e-24 * flag);
-
       api.add(marketToTokenMap[p.addresses.market], p.numbers.sizeInTokens * flag);
       api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -p.numbers.sizeInUsd * 1e-24 * flag);
     }
