@@ -1,8 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider, getConnection } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, getConnection, sumTokens2 } = require('../helper/solana')
 const { Program, BN, utils } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
-const { get } = require('../helper/http');
+const { getLendingToken, getTokenBalance, lendingProgram, convertToAssets } = require('./jupiterHelper');
+
 
 const TOKEN_INFO = {
   USDC: {
@@ -50,37 +51,66 @@ function getTokenInfo(isSpotMarket, marketIndex) {
   }
   return undefined
 }
+const provider = getProvider()
+const connection = getConnection()
 
 async function tvlJupiter(api) {
   const jupiterVaults = [
     'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
+    // '86ma4NFmrZEh5idEL4EVbywHcHpVA9BkfxTrqZwq5Bvy',
+    // 'GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q',
   ]
-  const url = "https://lite-api.jup.ag/lend/v1/earn/tokens";
-  const lendTokensRes = await get(url);
-  const addresses = lendTokensRes.map((token) => token.address).join(",");
 
+  const program = lendingProgram;
+  console.log("Program inited ID:", program.programId.toString());
+
+  // // **
+  // // const allTokens = await getLendingTokens({ connection });
+  // //
+  const lending = await program.account.lending.all();
+  const data = lending.map((l) => l.account);
+  data.sort((a, b) => a.lendingId - b.lendingId);
+  // // const tokensMints = lending.map((l) => l.account.fTokenMint);
+  const tokensMints = [new PublicKey("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB")]
+  // const tokensMints = lending.map((l) => l.account.mint);
+
+  console.log(
+    "Tokens:",
+    tokensMints.map((t) => t.toBase58()),
+  );
+
+
+  /**
+   * Jupiter lend
+   */
   for (const vault of jupiterVaults) {
-    // Jupiter Earn
-    const earnUrl = `https://lite-api.jup.ag/lend/v1/earn/earnings?user=${vault}&positions=${addresses}`;
-    const data = await get(earnUrl);
-    for (const token of data) {
-      if (!token.totalAssets || token.totalAssets === 0) continue;
-      const assetAddress = lendTokensRes.find((t) => t.address === token.address).assetAddress;
-      api.add(assetAddress, token.totalAssets);
+    const userKey = new PublicKey(vault);
+    for (const asset of tokensMints) {
+      const lendingTokenBalance = await getTokenBalance(userKey, getLendingToken(asset), connection)
+      console.log(vault, lendingTokenBalance)
+      const assets = await convertToAssets(
+        asset,
+        new BN(lendingTokenBalance.toString()),
+        connection
+      );
+
+      console.log("assets", vault, assets, assets.toString())
+      api.add(asset.toBase58(), assets.toString())
     }
-
-    // Jupiter Loan
-    const loanUrl = `https://perps-api.jup.ag/v1/lending/positions?walletAddress=${vault}`;
-    const loanResponse = await get(loanUrl);
-
-    if (!loanResponse || loanResponse.dataList.length === 0) continue;
-    const loanData = loanResponse.dataList[0];
-
-    api.add(TOKEN_INFO['JLP'].mint, loanData.collateralTokenAmount);
-    api.add(loanData.borrowTokenMint, -loanData.borrowSizeTokenAmount);
-
-
   }
+
+
+  // const testaddress = "2uQsyo1fXXQkDtcpXnLofWy88PxcvnfH2L8FPSE62FVU"
+  // const lendingaccount = await program.account.lending.fetch(
+  //   getLending(testaddress)
+  // );
+  // const account = await program.account.tokenReserve.fetch(
+  //   getReserve(lendingaccount.mint)
+  // );
+
+  // console.log(account.supplyExchangePrice)
+
+
 }
 
 async function getDriftTvl(api) {
@@ -98,7 +128,6 @@ async function getDriftTvl(api) {
 
   const idl = require("./drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
-  const provider = getProvider()
   const program = new Program(idl, programId, provider)
 
   for (const account of walletUserAddresses) {
@@ -147,7 +176,7 @@ async function getDriftTvl(api) {
 }
 
 async function tvlSolana(api) {
-  await getDriftTvl(api);
+  // await getDriftTvl(api);
   await tvlJupiter(api);
 }
 
@@ -235,5 +264,5 @@ module.exports = {
   doublecounted: true,
   methodology: "Solana: Drift | Arbitrum: Aave, GMX",
   solana: { tvl: tvlSolana },
-  arbitrum: { tvl: tvlArbitrum },
+  // arbitrum: { tvl: tvlArbitrum },
 };
