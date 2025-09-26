@@ -48,6 +48,17 @@ const fixBalancesTokens = {
     [ADDRESSES.camp.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
     [ADDRESSES.camp.USDC]: { coingeckoId: "usd-coin", decimals: 18 }, // Wrapped USDC
   },
+  mezo: {
+    [ADDRESSES.mezo.MUSD]: { coingeckoId: "mezo-usd", decimals: 18 }, 
+    [ADDRESSES.mezo.BTC]: { coingeckoId: "bitcoin", decimals: 18 },
+    [ADDRESSES.mezo.mUSDC]: { coingeckoId: "usd-coin", decimals: 18 }, 
+    [ADDRESSES.mezo.mUSDT]: { coingeckoId: "tether", decimals: 18 }, 
+    [ADDRESSES.mezo.mDAI]: { coingeckoId: "dai", decimals: 18 },  
+    [ADDRESSES.mezo.mSolvBTC]: { coingeckoId: "solv-protocol-btc", decimals: 18 }, 
+    [ADDRESSES.mezo.mT]: { coingeckoId: "threshold-network-token", decimals: 18 }, 
+    [ADDRESSES.mezo.mUSDe]: { coingeckoId: "ethena-usde", decimals: 18 }, 
+    [ADDRESSES.mezo.mcbBTC]: { coingeckoId: "coinbase-wrapped-btc", decimals: 18 }, 
+  },
   plasma: {
     '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "plasma", deciamsl: 18 }, // Native XPL
     '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb': { coingeckoId: "usdt0", decimals: 6 }, // USDT0
