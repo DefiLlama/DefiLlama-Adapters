@@ -41,7 +41,7 @@ module.exports = {
     polygon_zkevm: { factory, fromBlock: 750148, },
     linea: { factory, fromBlock: 1445, },
     era: { factory: '0x1BB72E0CbbEA93c08f535fc7856E0338D7F7a8aB', fromBlock: 9413438, },
-    arbitrum: { factory, fromBlock: 101028949, blacklistedTokens: ['0x12d773bb0c679d4dfbaf700086dc5e399656f892']},
+    arbitrum: { factory, fromBlock: 101028949, blacklistedTokens: ['0x12d773bb0c679d4dfbaf700086dc5e399656f892', '0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1']},
     base: { factory, fromBlock: 2912007, },
     op_bnb: { factory, fromBlock: 1721753, },
   })

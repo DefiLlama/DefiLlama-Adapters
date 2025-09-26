@@ -8,6 +8,8 @@ const config = {
   blast: { factory: '0x8C554F200B1EEECdE99370Fe6284B15d23E50E07' },
   scroll: { factory: '0xc2cC57a62982c4C92C69B856B5d03c6DECa32E77' },
   linea: { factory: '0x8C554F200B1EEECdE99370Fe6284B15d23E50E07' },
+  katana: {factory: '0xF0F42C62923c6e741C64E0163C5C50965C05dF61'},
+  berachain: {factory: '0x189bD734C2f1beeaca81e0edbB1cE3B8A16ed137'},
 }
 
 module.exports = {
