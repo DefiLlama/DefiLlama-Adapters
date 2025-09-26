@@ -34,7 +34,7 @@ const chains = [
   "hyperliquid",
   "plume_mainnet",
   "xdc",
-  'tac',
+  "tac",
   "etlk",
   "plasma",
 ];
