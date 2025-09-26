@@ -81,6 +81,9 @@ const fixBalancesTokens = {
     '0xd3a41b53888a733b549f5d4146e7a98d3285fa21': { coingeckoId: 'ethereum', decimals: 18 },
     '0xd2a4cff31913016155e38e474a2c06d08be276cf': { coingeckoId: 'gas', decimals: 8 },
     '0x4548a3bcb3c2b5ce42bf0559b1cf2f1ec97a51d0': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+  },
+  plasma: {
+    [nullAddress]: { coingeckoId: "plasma", decimals: 18 }, // Native XPL
   }
 }
 
