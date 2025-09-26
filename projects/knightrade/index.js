@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider, getConnection } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, getConnection, sumTokens2 } = require('../helper/solana')
 const { Program, BN, utils } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
 const { getLendingToken, getTokenBalance, lendingProgram, convertToAssets } = require('./jupiterLendingHelper');
@@ -170,8 +170,12 @@ async function tvlSolana(api) {
     'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
     "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
   ]
+
   await getDriftTvl(api, vaults);
   await tvlJupiter(api, vaults);
+
+  // add wallet balance 
+  return await sumTokens2({ tokens: [ADDRESSES.solana.SOL, ADDRESSES.solana.USDC, ADDRESSES.solana.USDT], owners: vaults })
 }
 
 async function tvlArbitrum(api) {
