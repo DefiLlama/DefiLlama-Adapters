@@ -57,6 +57,7 @@ const chains = {
   saga: 5464,
   canto: 7700,
   base: 8453,
+  plasma: 9745,
   mode: 34443,
   arbitrum: 42161,
   celo: 42220,
