@@ -59,12 +59,13 @@ const fixBalancesTokens = {
     [ADDRESSES.mezo.mUSDe]: { coingeckoId: "ethena-usde", decimals: 18 }, 
     [ADDRESSES.mezo.mcbBTC]: { coingeckoId: "coinbase-wrapped-btc", decimals: 18 }, 
   },
-  plasma: {
-    [nullAddress]: { coingeckoId: "plasma", deciamsl: 18 }, // Native XPL
-    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "plasma", deciamsl: 18 }, // Native XPL
-    '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb': { coingeckoId: "usdt0", decimals: 6 }, // USDT0
-    '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB': { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
-  },
+ plasma: {
+  [nullAddress]: { coingeckoId: "plasma", decimals: 18 }, // Native XPL
+  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "plasma", decimals: 18 }, // Native XPL
+  '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb': { coingeckoId: "usdt0", decimals: 6 }, // USDT0
+  '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB': { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
+},
+
   provenance: {
     nhash: { coingeckoId: 'hash-2', decimals: 9 },
     'uusd.trading': { coingeckoId: 'usd-coin', decimals: 6 },
