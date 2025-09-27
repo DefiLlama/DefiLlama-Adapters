@@ -12,6 +12,7 @@ const COINGECKO_MAPPING = {
   USDE: "ethena-usde",
   PUMP: "pump-fun",
   USDC: "usd-coin",
+  XPL: "plasma"
 };
 
 async function fetchAssetList() {
