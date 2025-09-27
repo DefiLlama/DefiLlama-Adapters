@@ -1,66 +1,64 @@
-**NOTE**
+📋 DefiLlama PR Template (BESCswap & BESC Hyperchain)
 
-#### Please enable "Allow edits by maintainers" while putting up the PR.
+Name (to be shown on DefiLlama):
+CHAIN: BESC HyperChain 
+DEX: BESCSWAP
 
----
+Twitter Link:
+https://twitter.com/BESCecosystem
 
-> - If you would like to add a `volume/fees/revenue` adapter please submit the PR [here](https://github.com/DefiLlama/adapters).
-> - If you would like to add a `liquidations` adapter, please refer to [this readme document](https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/liquidations) for details.
+List of audit links if any:
+https://skynet.certik.com/projects/besc-hyperchain
 
-1. Once your adapter has been merged, it takes time to show on the UI. If more than 24 hours have passed, please let us know in Discord.
-2. Sorry, We no longer accept fetch adapter for new projects, we prefer the tvl to computed from blockchain data, if you have trouble with creating a the adapter, please hop onto our discord, we are happy to assist you.
-3. Please fill the form below  **only if the PR is for listing a new protocol** else it can be ignored/replaced with reason/details about the PR
-4. **For updating listing info** It is a different repo, you can find your listing in this file: https://github.com/DefiLlama/defillama-server/blob/master/defi/src/protocols/data2.ts, you can  edit it there and put up a PR
-5. Do not edit/push `package-lock.json` file as part of your changes, we use lockfileVersion 2, and most use v1 and using that messes up our CI
-6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
+Website Link:
+https://bescswap.com
+https://bescfinancial.com
 
----
-##### Name (to be shown on DefiLlama):
+Logo (High resolution, will be shown with rounded borders):
+https://ibb.co/qYZm5n3c
 
+Current TVL:
+125k
 
-##### Twitter Link:
+Treasury Addresses (if the protocol has treasury):
 
+Chain:
+BESC Hyperchain
+Supported on chainlist 
 
-##### List of audit links if any:
+Coingecko ID:
+https://www.coingecko.com/en/chains/besc-hyperchain
 
-##### Website Link:
+Coinmarketcap ID:
 
+Short Description (to be shown on DefiLlama):
+BESCswap is the flagship AMM DEX on BESC Hyperchain, supporting swaps, liquidity pools, farming, and cross-chain BUSDC pairs.
 
-##### Logo (High resolution, will be shown with rounded borders):
+Token address and ticker if any:
+	•	BESC: 0x33e22F85CC1877697773ca5c85988663388883A0
+	•	BUSDC: 0xB54aD626E127f0f228dBeab6F2A61e8e6e029A4B
 
+Category (choose only one):
+Dexes
+Blockchain
 
-##### Current TVL:
-
-
-##### Treasury Addresses (if the protocol has treasury)
-
-
-##### Chain:
-
-
-##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
-
-
-##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
-
-
-##### Short Description (to be shown on DefiLlama):
-
-
-##### Token address and ticker if any:
+Oracle Provider(s):
+Internal TWAP oracles (UniswapV2-style on-chain pricing)
+http://72.60.125.197:8000/subgraphs/name/bescswap/exchange-v2
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+Implementation Details:
+BESCswap uses a UniswapV2-based factory and router deployed on BESC Hyperchain. The TVL adapter queries the factory to aggregate pool liquidity.
+
+Factory:0x20EE72D1B7E36e97566f31761dfF14eDc35Fbf22
+Router:0x2600E57E2044d62277775A925709af0047c28Eb7
 
 
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
-##### Implementation Details: Briefly describe how the oracle is integrated into your project:
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+forkedFrom:
+UniswapV2 / PancakeSwap
 
-##### forkedFrom (Does your project originate from another project):
+methodology:
+TVL is calculated as the total liquidity of tokens in all BESCswap AMM pools, valued using token price data from DefiLlama’s pricing adapters.
 
-
-##### methodology (what is being counted as tvl, how is tvl being calculated):
-
-
-##### Github org/user (Optional, if your code is open source, we can track activity):
+Github org/user (Optional):
+https://github.com/BESCLLC
