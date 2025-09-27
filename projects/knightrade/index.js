@@ -1,8 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider, getConnection } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, getConnection, sumTokens2 } = require('../helper/solana')
 const { Program, BN, utils } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
-const { get } = require('../helper/http');
+const { getLendingToken, getTokenBalance, lendingProgram, convertToAssets } = require('./jupiterLendingHelper');
+
 
 const TOKEN_INFO = {
   USDC: {
@@ -50,58 +51,76 @@ function getTokenInfo(isSpotMarket, marketIndex) {
   }
   return undefined
 }
+const provider = getProvider()
+const connection = getConnection()
 
-async function tvlJupiter(api) {
-  const jupiterVaults = [
-    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
-  ]
-  const url = "https://lite-api.jup.ag/lend/v1/earn/tokens";
-  const lendTokensRes = await get(url);
-  const addresses = lendTokensRes.map((token) => token.address).join(",");
+async function tvlJupiter(api, jupiterVaults) {
+
+
+  // /**
+  //  * Jupiter perp Lend
+  // */
+  const JUP_PERP_PROGRAM_ID = "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu";
+  const idl = await Program.fetchIdl(JUP_PERP_PROGRAM_ID, provider);
+  const perpProgram = new Program(idl, JUP_PERP_PROGRAM_ID, provider);
+
+  for (const walletAddress of jupiterVaults) {
+    const walletPubkey = new PublicKey(walletAddress);
+    const accounts = await perpProgram.account.borrowPosition.all([
+      {
+        memcmp: {
+          offset: 8, // Adjust based on your account structure
+          bytes: walletPubkey.toBase58(),
+        },
+      },
+    ]);
+
+    if (accounts.length === 0) continue;
+    const account = accounts[0].account;
+    api.add(TOKEN_INFO['JLP'].mint, account.lockedCollateral);
+    const BORROW_SIZE_PRECISION = 1000;
+    api.add(ADDRESSES.solana.USDC, -account.borrowSize / BORROW_SIZE_PRECISION);
+  }
+
+  // /**
+  //  * Jupiter Earn
+  // */
+  const program = lendingProgram;
+  const lending = await program.account.lending.all();
+  const data = lending.map((l) => l.account);
+  data.sort((a, b) => a.lendingId - b.lendingId);
+  const tokensMints = lending.map((l) => l.account.mint);
 
   for (const vault of jupiterVaults) {
-    // Jupiter Earn
-    const earnUrl = `https://lite-api.jup.ag/lend/v1/earn/earnings?user=${vault}&positions=${addresses}`;
-    const data = await get(earnUrl);
-    for (const token of data) {
-      if (!token.totalAssets || token.totalAssets === 0) continue;
-      const assetAddress = lendTokensRes.find((t) => t.address === token.address).assetAddress;
-      api.add(assetAddress, token.totalAssets);
+    const userKey = new PublicKey(vault);
+    for (const asset of tokensMints) {
+      const lendingTokenBalance = await getTokenBalance(userKey, getLendingToken(asset), connection)
+      const assets = await convertToAssets(
+        asset,
+        new BN(lendingTokenBalance.toString()),
+        connection
+      );
+      api.add(asset.toBase58(), assets.toString())
     }
-
-    // Jupiter Loan
-    const loanUrl = `https://perps-api.jup.ag/v1/lending/positions?walletAddress=${vault}`;
-    const loanResponse = await get(loanUrl);
-
-    if (!loanResponse || loanResponse.dataList.length === 0) continue;
-    const loanData = loanResponse.dataList[0];
-
-    api.add(TOKEN_INFO['JLP'].mint, loanData.collateralTokenAmount);
-    api.add(loanData.borrowTokenMint, -loanData.borrowSizeTokenAmount);
-
-
   }
+
 }
 
-async function getDriftTvl(api) {
+async function getDriftTvl(api, vaults) {
   const vaultUserAddresses = [
     '3Wg1GaW4Szame9bzKScxM56DHgDAKTq4c9674LPEuNNP', // DeltaNeutral-JLP-USDC-SOL-KT1
     'FmrEVTqKUG9npwaQBbrHKt1VXL5LJPPhzQazjCh1fwwB', // DeltaNeutral-JLP-USDC-EVM-KT4
     'J5VbheCue9U4hW7u9DZzwgo5h7BhnBqL8rF9c71MDsfC', // DeltaNeutral-JLP-USDC-SVM-KT5
     'AcN9Mct9dLYQVDsyQinbbHKbsXYB4Tnaq5DgKwzrWaY4', // DeltaNeutral-JLP-SOL-SVM-KT6
     'B84ppdVLsqk8L2rGPYkV1R3w1UxL71RCmuDQJHNLZGHT', // DeltaNeutral-JLP-USDC-KT9
-    '5VvCRz6fezgJEDdqqkrsUJNjGHDLxZZXvLm214qqQ2Jt', // DeltaNeutral-JLP-USDC-HB1
   ];
-  const walletUserAddresses = [
-    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv', // DeltaNeutral-JLP-USDC-KT0
-  ]
 
   const idl = require("./drift_idl.json")
   const programId = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
-  const provider = getProvider()
   const program = new Program(idl, programId, provider)
 
-  for (const account of walletUserAddresses) {
+
+  for (const account of vaults) {
     const authorityPk = new PublicKey(account);
     const userPda = PublicKey.findProgramAddressSync(
       [
@@ -147,8 +166,16 @@ async function getDriftTvl(api) {
 }
 
 async function tvlSolana(api) {
-  await getDriftTvl(api);
-  await tvlJupiter(api);
+  const vaults = [
+    'BKVWqzbwXGFqQvnNVfGiM2kSrWiR88fYhFNmJDX5ccyv',
+    "GYfHKWyvYN6DLHxZeptq6Drnb6hxqKgaKteMBsMG7u8Q"
+  ]
+
+  await getDriftTvl(api, vaults);
+  await tvlJupiter(api, vaults);
+
+  // add wallet balance 
+  return await sumTokens2({ tokens: [ADDRESSES.solana.SOL, ADDRESSES.solana.USDC, ADDRESSES.solana.USDT], owners: vaults })
 }
 
 async function tvlArbitrum(api) {
@@ -220,11 +247,12 @@ async function tvlArbitrum(api) {
     if (!pos) continue;
     for (const p of pos) {
       if (!p.addresses || !p.numbers) continue;
+      const flag = p.flags.isLong ? 1 : -1;
       // collateral
       api.add(p.addresses.collateralToken, p.numbers.collateralAmount);
       // pnl = sizeInTokens * tokenPrice - sizeInUsd
-      api.add(marketToTokenMap[p.addresses.market], p.numbers.sizeInTokens);
-      api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -p.numbers.sizeInUsd * 1e-24);
+      api.add(marketToTokenMap[p.addresses.market], p.numbers.sizeInTokens * flag);
+      api.add(ADDRESSES.arbitrum.USDC_CIRCLE, -p.numbers.sizeInUsd * 1e-24 * flag);
     }
   }
 
