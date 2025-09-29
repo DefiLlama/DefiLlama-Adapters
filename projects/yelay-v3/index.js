@@ -1,5 +1,6 @@
 const abi = require("./abi.json");
 const {fetchURL} = require("../helper/utils");
+const { staking } = require('../helper/staking')
 
 const vaultsEndpoint = (chainId) =>
     `https://lite.api.yelay.io/v2/vaults?chainId=${chainId}`;
@@ -31,5 +32,8 @@ chains.forEach(({chainId, name}) => {
             underlying.forEach((u, i) => api.addTokens(u, balances[i]));
             return api.getBalances();
         },
+        ...(name === 'ethereum' && {
+            staking: staking('0x8e933387AFc6F0F67588e5Dac33EBa97eF988C69', '0xAEe5913FFd19dBcA4Fd1eF6F3925ed0414407d37'),
+        }),
     };
 });
