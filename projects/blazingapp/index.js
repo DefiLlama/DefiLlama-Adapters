@@ -1,6 +1,3 @@
-const { getLogs } = require("../helpers/cache/getLogs");
-const { ARBITRUM, AVAX, BASE, BSC, ETHEREUM, BERACHAIN, SONIC } = require("../helpers/chains");
-
 // Minimal placeholder adapter: reports zero TVL while we wire real contracts.
 // This lets us submit the PR and iterate addresses quickly with maintainers.
 
