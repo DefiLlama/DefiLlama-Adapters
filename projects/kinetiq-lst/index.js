@@ -3,6 +3,14 @@ const sdk = require('@defillama/sdk')
 
 const HYPERLIQUID_MAINNET_RPC_URL = 'https://api.hyperliquid.xyz';
 
+const kHype = '0xfD739d4e423301CE9385c1fb8850539D657C296D'
+const accountant = '0x9209648Ec9D448EF57116B73A2f081835643dc7A'
+
+const abis = {
+  kHYPEToHYPE: "function kHYPEToHYPE(uint256 kHYPEAmount) view returns (uint256)",
+  totalQueuedWithdrawals: "function totalQueuedWithdrawals() view returns (uint256)",
+}
+
 const managers = [
   '0x393D0B87Ed38fc779FD9611144aE649BA6082109', // kHype
   '0xaD492f9CADcccE9c3c213edd8aE55c152cD3A3ad', // hiHype
@@ -21,6 +29,10 @@ const tvl = async (api) => {
     Promise.all(managers.map((m) => sdk.api.eth.getBalance({ target: m, chain: 'hyperliquid' }))),
     Promise.all(managers.map((m) => getUserStakingSummary(m)))
   ]);
+
+  const buffBalance = await api.call({ target: "0x393D0B87Ed38fc779FD9611144aE649BA6082109", abi: abis.totalQueuedWithdrawals })
+  const hypeBalance = await api.call({ target: accountant, params: [buffBalance], abi: abis.kHYPEToHYPE })
+  api.addGasToken(hypeBalance)
 
   managers.forEach((_, index) => {
     const hypeBalance = _hypeBalances[index].output
