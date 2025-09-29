@@ -41,9 +41,6 @@ module.exports = {
   solana: { tvl, borrowed },
   methodology: "TVL is calculated based on the amount of deposited tokens.",
   start: "2024-11-29",
-  hallmarks: [
-    [1753297176, 'TUNA token launched']
-  ],
 };
 
 const tunaIDL = {

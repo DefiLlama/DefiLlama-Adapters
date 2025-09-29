@@ -8,14 +8,17 @@ const config = {
     '0x99A95a9E38e927486fC878f41Ff8b118Eb632b10',
     '0xE45321525c85fcc418C88E606B96daD8cBcc047f',
     '0x841DB2cA7E8A8C2fb06128e8c58AA162de0CfCbC',
-    '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc'
+    '0x99E8903bdEFB9e44cd6A24B7f6F97dDd071549bc',
+    '0x2Adf038b67a8a29cDA82f0Eceb1fF0dba704b98d'
     // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
   ],
   berachain: [],
 }
 
 const assets = {
-  sUSDe: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497', 
+  sUSDe: '0x9D39A5DE30e57443BfF2A8307A4256c8797A3497',
+  'PT-USDe': '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a',
+  'PT-sUSDE': '0x9F56094C450763769BA0EA9Fe2876070c0fD5F77',
   'eUSDC-22': '0xe0a80d35bb6618cba260120b279d357978c42bce'
 }
 
@@ -74,6 +77,14 @@ Object.keys(config).forEach(chain => {
         shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets.sUSDe, params: ['0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'] })
 
         api.add(assets.sUSDe, shareBalance)
+
+        shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets['PT-sUSDE'], params: ['0x5563CDA70F7aA8b6C00C52CB3B9f0f45831a22b1'] })
+
+        api.add(assets['PT-sUSDE'], shareBalance)
+
+        shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets['PT-USDe'], params: ['0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'] })
+
+        api.add(assets['PT-USDe'], shareBalance)
 
         return api.getBalances()
       }

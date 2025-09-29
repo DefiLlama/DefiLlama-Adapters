@@ -16,7 +16,9 @@ const cvx_abi = {
 
 const AUTOPILOT_SYSTEM_REGISTRIES_BY_CHAIN = {
   1: '0x2218F90A98b0C070676f249EF44834686dAa4285',
-  8453: '0x18Dc926095A7A007C01Ef836683Fdef4c4371b4e'
+  8453: '0x18Dc926095A7A007C01Ef836683Fdef4c4371b4e',
+  146: '0x1a912EB51D3cF8364eBAEE5A982cA37f25aD8848',
+  42161: '0xBFd8E6C9bF2CD5466f5651746f8E946A6C7b4220',
 }
 
 const autopilotContracts = {
@@ -189,6 +191,16 @@ async function baseTvl(api) {
   return sumTokens2({ api })
 }
 
+async function sonicTvl(api) {
+  await populateAutopilotDetails(146, api);
+  return sumTokens2({ api })
+}
+
+async function arbitrumTvl(api) {
+  await populateAutopilotDetails(42161, api);
+  return sumTokens2({ api })
+}
+
 function lpBalances(holdings, toa, tokens, calls) {
   const manager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14"
   let masterChef
@@ -237,5 +249,11 @@ module.exports = {
   },
   base: {
     tvl: baseTvl
-  }
+  },
+  sonic: {
+    tvl: sonicTvl
+  },
+  arbitrum: {
+    tvl: arbitrumTvl
+  },
 }
