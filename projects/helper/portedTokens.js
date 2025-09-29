@@ -37,7 +37,6 @@ function fixBalances(balances, mapping, { chain, } = {}) {
       return;
     }
     const currentBalance = balances[token];
-    console.log(currentBalance, coingeckoId)
     delete balances[token];
     sdk.util.sumSingleBalance(
       balances,
