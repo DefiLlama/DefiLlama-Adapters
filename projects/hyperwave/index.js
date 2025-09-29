@@ -1,9 +1,10 @@
 const sdk = require('@defillama/sdk');
 
 // Import vault TVL calculation functions
-const { processVaults } = require('./vaults/morpho');
+const { processVaults } = require('./evm/morpho');
 const { hypercoreHwhlpVaultTvl, hyperCoreSpotBalance } = require('./hypercore/index');
-const { mainnetHwhlpVaultTvl, hwhlpVaultTvl, hwhypeVaultTvl } = require('./vaults/erc20');
+const { mainnetHwhlpVaultTvl, hwhlpVaultTvl, hwhypeVaultTvl } = require('./evm/erc20');
+const { khypeUnstaking } = require('./evm/khype');
 
 module.exports = {
     timetravel: false,
@@ -16,7 +17,8 @@ module.exports = {
             hwhlpVaultTvl,
             hyperCoreSpotBalance,
             hwhypeVaultTvl,
-            processVaults
+            processVaults,
+            khypeUnstaking,
         ])
     },
 };
