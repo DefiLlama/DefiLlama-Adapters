@@ -1,9 +1,9 @@
-const { getProvider } = require('../helper/solana.js')
+const { getProvider, } = require('../helper/solana.js')
 const { Program } = require("@coral-xyz/anchor");
 const { PublicKey } = require("@solana/web3.js")
 const { BN } = require("@coral-xyz/anchor");
+const idl = require("./jupiter_lending_idl.json")
 const { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } = require('../helper/solana.js')
-const provider = getProvider()
 
 const LENDING_PROGRAM_ID = new PublicKey('jup3YeL8QhtSx1e253b2FDvsMNC87fDrgQZivbrndc9')
 const LIQUIDITY_PROGRAM_ID = new PublicKey('jupeiUmn818Jg1ekPURTpr4mFo29p46vygyykFJ3wZC')
@@ -13,8 +13,11 @@ const EXCHANGE_PRICES_PRECISION = new BN(1e12);
 const SECONDS_PER_YEAR = new BN(31536e3);
 const MAX_REWARDS_RATE = new BN(50 * 1e12);
 
-const lendingProgram = new Program(require("./jupiter_lending_idl.json"), provider)
+let lendingProgram
 const getLendingProgram = () => {
+  const provider = getProvider()
+  if (!lendingProgram)
+    lendingProgram = new Program(idl, provider)
   return lendingProgram;
 }
 const getReserve = (asset) => {
@@ -51,12 +54,8 @@ const getLendingRewardsRateModel = (assetAddress) => {
   );
   return pda;
 };
-const getAccountOwner = async (account, connection) => {
-  const info = await connection.getAccountInfo(account);
-  if (!info)
-    throw new Error(`Account info not found for ${account.toString()}`);
-  return info.owner;
-};
+
+
 function getAssociatedTokenAddressSync(
   mint,
   owner,
@@ -69,21 +68,9 @@ function getAssociatedTokenAddressSync(
   );
   return address;
 }
-const getTokenBalance = async (owner, mintAddress, conn) => {
-  if (mintAddress.equals(PublicKey.default) || mintAddress.toBase58() === "So11111111111111111111111111111111111111111") {
-    const balance = await conn.getBalance(owner);
-    return balance;
-  }
-  const tokenAccount = await getAssociatedTokenAddressSync(
-    mintAddress,
-    owner,
-    await getAccountOwner(mintAddress, conn)
-  );
-  const tokenAmount = await conn.getTokenAccountBalance(tokenAccount);
-  return Number(tokenAmount.value.amount);
-};
-async function getLiquidityExchangePrices(assetAddress, connection) {
-  const program = lendingProgram;
+
+async function getLiquidityExchangePrices(assetAddress) {
+  const program = getLendingProgram();
   const account = await program.account.tokenReserve.fetch(
     getReserve(assetAddress)
   );
@@ -97,7 +84,7 @@ const getTokenTotalSupply = async (asset, conn) => {
   const { value } = await conn.getTokenSupply(asset);
   return value.amount;
 };
-async function getRewardsRate(asset, totalAssets, connection) {
+async function getRewardsRate(asset, totalAssets) {
   const program = getLendingProgram();
   const currentRateModel = await program.account.lendingRewardsRateModel.fetch(
     getLendingRewardsRateModel(asset)
@@ -153,20 +140,23 @@ async function getNewExchangePrice(lending, connection) {
 }
 
 async function convertToAssets(asset, shares, connection) {
-  const lending$1 = await lendingProgram.account.lending.fetch(
-    getLending(asset)
-  );
+  if (typeof asset === 'string') asset = new PublicKey(asset)
+  if (typeof shares === 'string') shares = new BN(shares)
+  const lendingProgram = getLendingProgram();
+  const lending$1 = await lendingProgram.account.lending.fetch(getLending(asset));
   const exchangePrice = await getNewExchangePrice(lending$1, connection);
+  console.log({ shares, exchangePrice: exchangePrice.toString() })
   return shares.mul(exchangePrice).divRound(EXCHANGE_PRICES_PRECISION);
 }
+
 
 module.exports = {
   getReserve,
   getLendingToken,
   getLending,
-  getTokenBalance,
   convertToAssets,
   LENDING_PROGRAM_ID,
   LIQUIDITY_PROGRAM_ID,
-  lendingProgram,
+  getLendingProgram,
+  getAssociatedTokenAddressSync
 }
