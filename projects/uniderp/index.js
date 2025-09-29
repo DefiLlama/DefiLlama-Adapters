@@ -10,7 +10,8 @@ const config = {
     fromBlock: 17670688,
     supportedTokens: [
       ADDRESSES.null, // ETH
-      "0xbde8a5331e8ac4831cf8ea9e42e229219eafab97" // Wrapped SOL: https://uniscan.xyz/token/0xbde8a5331e8ac4831cf8ea9e42e229219eafab97
+      "0xbde8a5331e8ac4831cf8ea9e42e229219eafab97", // Wrapped SOL: https://uniscan.xyz/token/0xbde8a5331e8ac4831cf8ea9e42e229219eafab97
+      "0x8f187aA05619a017077f5308904739877ce9eA21", // UNI: https://uniscan.xyz/token/0x8f187aA05619a017077f5308904739877ce9eA21
     ]
   },
 }
@@ -28,7 +29,7 @@ Object.keys(config).forEach(chain => {
         if (log.hooks.toLowerCase() === uniderpHook) {
           if (supportedTokens.includes(log.currency0.toLowerCase())) {
             tokenSet.add(log.currency1)
-          } else {
+          } else if (supportedTokens.includes(log.currency1.toLowerCase())) {
             tokenSet.add(log.currency0)
           }
         }
