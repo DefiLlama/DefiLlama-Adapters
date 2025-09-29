@@ -70,21 +70,17 @@ function getAssociatedTokenAddressSync(
   return address;
 }
 const getTokenBalance = async (owner, mintAddress, conn) => {
-  try {
-    if (mintAddress.equals(PublicKey.default) || mintAddress.toBase58() === "So11111111111111111111111111111111111111111") {
-      const balance = await conn.getBalance(owner);
-      return balance;
-    }
-    const tokenAccount = await getAssociatedTokenAddressSync(
-      mintAddress,
-      owner,
-      await getAccountOwner(mintAddress, conn)
-    );
-    const tokenAmount = await conn.getTokenAccountBalance(tokenAccount);
-    return Number(tokenAmount.value.amount);
-  } catch {
-    return 0;
+  if (mintAddress.equals(PublicKey.default) || mintAddress.toBase58() === "So11111111111111111111111111111111111111111") {
+    const balance = await conn.getBalance(owner);
+    return balance;
   }
+  const tokenAccount = await getAssociatedTokenAddressSync(
+    mintAddress,
+    owner,
+    await getAccountOwner(mintAddress, conn)
+  );
+  const tokenAmount = await conn.getTokenAccountBalance(tokenAccount);
+  return Number(tokenAmount.value.amount);
 };
 async function getLiquidityExchangePrices(assetAddress, connection) {
   const program = lendingProgram;
