@@ -19,6 +19,7 @@ module.exports = {
   berachain: { tvl },
   sonic: { tvl },
   solana: { tvl },
+  story: { tvl },
 };
 
 
