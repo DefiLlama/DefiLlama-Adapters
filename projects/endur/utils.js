@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const tBTC = "0x04daa17763b286d1e59b97c283c0b8c949994c361e426a28f743c67bdfe9a32f"
 const LBTC = "0x036834a40984312f7f7de8d31e3f6305b325389eaeea5b1c0664b2fb936461a4"
-const solvBTC = "0x036834a40984312f7f7de8d31e3f6305b325389eaeea5b1c0664b2fb936461a4"
+const solvBTC = "0x0593e034dda23eea82d2ba9a30960ed42cf4a01502cc2351dc9b9881f9931a68"
 
 // todo: change BTC variant addresses when defillama support kicks in 
 const LSTDATA = [
@@ -31,5 +31,5 @@ const LSTDATA = [
 ]
 
 module.exports = {
-    LSTDATA
+    LSTDATA,
 }
