@@ -48,9 +48,12 @@ const fixBalancesTokens = {
     [ADDRESSES.camp.ETH]: { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
     [ADDRESSES.camp.USDC]: { coingeckoId: "usd-coin", decimals: 18 }, // Wrapped USDC
   },
+  bsc: {
+    '0x82f0508797a7167add9274b3aee4293158a8645e': { coingeckoId: 'tordess', decimals: 18, name: 'TORDESS', symbol: 'TDS'}, // Tordess
+  },
   plasma: {
-    [nullAddress]: { coingeckoId: "plasma", deciamsl: 18 }, // Native XPL
-    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "plasma", deciamsl: 18 }, // Native XPL
+    [nullAddress]: { coingeckoId: "plasma", decimals: 18 }, // Native XPL
+    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "plasma", decimals: 18 }, // Native XPL
     '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb': { coingeckoId: "usdt0", decimals: 6 }, // USDT0
     '0x9895D81bB462A195b4922ED7De0e3ACD007c32CB': { coingeckoId: "ethereum", decimals: 18 }, // Wrapped ETH
   },
