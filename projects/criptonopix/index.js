@@ -21,8 +21,6 @@ const TARGET_ADDRESSES = [
   "0x16F1b9B34F2596c5538E0ad1B10C85D4B2820b82",
 ]
 
-
-
 async function tvl(api) {
   // sumTokens2 automatically performs balanceOf calls
   return sumTokens2({
@@ -42,4 +40,3 @@ module.exports = {
     tvl,
   },
 }
-

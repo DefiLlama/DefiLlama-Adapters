@@ -4,6 +4,10 @@ const ADDRESSES = require('../helper/coreAssets.json');
 
 // https://docs.hyperunit.xyz/developers/key-addresses
 
+const tvl = async (api) => {
+  return api.sumTokens({ token: ADDRESSES.null, owner: '0x8e88826F42A0f5f199a9c91C3798c626326730b4' })
+}
+
 module.exports = {
   methodology: 'HyperUnit Hot wallets For BTC/ETH/SOL',
   bitcoin: {
@@ -15,7 +19,7 @@ module.exports = {
       tokens: [ADDRESSES.ethereum.WETH, ADDRESSES.null],
     }),
   },
-  plasma: { tvl: sumTokensExport({ owners: ["0x8e88826F42A0f5f199a9c91C3798c626326730b4"], tokens: [ADDRESSES.null] }) },
+  plasma: { tvl },
   solana: {
     tvl: sumTokensExport({
       chain: 'solana',
