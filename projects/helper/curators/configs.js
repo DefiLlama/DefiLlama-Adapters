@@ -178,6 +178,11 @@ const EulerConfigs = {
       '0x2b21621b8Ef1406699a99071ce04ec14cCd50677',
     ],
   },
+  plasma: {
+    vaultFactories: [
+      '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3',
+    ],
+  },
 }
 
 const SiloConfigs = {

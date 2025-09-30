@@ -112,11 +112,11 @@ const config = {
     morphoBlue: "0xc85CE8ffdA27b646D269516B8d0Fa6ec2E958B55",
     fromBlock: 13947713,
   },
-  btr :{
+  btr: {
     morphoBlue: "0xaea7eff1bd3c875c18ef50f0387892df181431c6",
     fromBlock: 13516997,
   },
-  bsc :{
+  bsc: {
     morphoBlue: "0x01b0Bd309AA75547f7a37Ad7B1219A898E67a83a",
     fromBlock: 54344680,
   },
@@ -131,6 +131,7 @@ const config = {
   sei: {
     morphoBlue: "0xc9cDAc20FCeAAF616f7EB0bb6Cd2c69dcfa9094c",
     fromBlock: 166036723,
+    onlyUseExistingCache: true,
   },
   btnx: {
     morphoBlue: "0x8183d41556Be257fc7aAa4A48396168C8eF2bEAD",
@@ -145,9 +146,9 @@ const eventAbis = {
 const nullAddress = ADDRESSES.null
 
 const getMarket = async (api) => {
-  const { morphoBlue, fromBlock, blacklistedMarketIds = [] } = config[api.chain]
+  const { morphoBlue, fromBlock, blacklistedMarketIds = [], onlyUseExistingCache, } = config[api.chain]
   const extraKey = 'reset-v2'
-  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, })
+  const logs = await getLogs({ api, target: morphoBlue, eventAbi: eventAbis.createMarket, fromBlock, onlyArgs: true, extraKey, onlyUseExistingCache, })
   return logs.map((i) => i.id.toLowerCase()).filter((id) => !blacklistedMarketIds.includes(id))
 }
 
