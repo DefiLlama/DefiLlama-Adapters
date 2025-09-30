@@ -16,7 +16,8 @@ const config = {
   plasma: {
     diamond246: '0x2460a05cc7c9e0f1e20b9b98c6f54acaad221b98',
     aavePool: '0x925a2A7214Ed92428B5b1B090F80b25700095e12',
-    fromBlock: 1520925,
+    fromBlock: 1520925, // Sep-21-2025 10:16:25 UTC
+
   },
 };
 
