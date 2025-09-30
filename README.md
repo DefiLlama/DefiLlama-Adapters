@@ -28,9 +28,9 @@ If you have any suggestions, want to contribute or want to chat, please join [ou
 ```bash
 node test.js projects/pangolin/index.js
 # Add a timestamp at the end to run the adapter at a historical timestamp
-node test.js projects/aave/v3.js 1729080692
+node test.js projects/aave-v3/index.js 1729080692
 # or using YYYY-MM-DD
-node test.js projects/aave/v3.js 2024-10-16
+node test.js projects/aave-v3/index.js 2024-10-16
 ```
 
 ## Changing RPC providers
