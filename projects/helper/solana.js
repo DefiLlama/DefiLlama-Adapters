@@ -439,4 +439,5 @@ module.exports = {
   getAssociatedTokenAddress,
   i80f48ToNumber,
   runInChunks,
+  getTokenAccountBalances,
 };
