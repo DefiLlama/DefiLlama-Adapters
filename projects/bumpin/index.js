@@ -28,15 +28,11 @@ async function tvl() {
         tokenAccounts.push(i.vaultKey.toString())
     });
 
-    // 使用 Set 去重，避免重复计数
     const uniqueTokenAccounts = [...new Set(tokenAccounts)];
-
     return sumTokens2({
         tokenAccounts: uniqueTokenAccounts.filter(i => i !== '11111111111111111111111111111111'),
         blacklistedTokens, 
         api: api => {
-            // 添加已借出的金额到 TVL
-            // 因为 vaultKey 中的余额已经扣除了借出的部分
             tokenVault.forEach((data) => {
                 const mint = data.account.mintKey.toString()
                 api.add(mint, data.account.totalBorrowed)
