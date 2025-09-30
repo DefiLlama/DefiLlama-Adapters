@@ -15,7 +15,13 @@ const POOLS = [
   "0x27f2bb7fb0e232befc5aa865ee27ef82839d5fad3e6ec1de598d0fab438cb56", // Alterscope xSTRK Pool
   "0x5c678347b60b99b72f245399ba27900b5fc126af11f6637c04a193d508dda26", // Alterscope wstETH Pool
   "0x2906e07881acceff9e4ae4d9dacbcd4239217e5114001844529176e1f0982ec", // Alterscope Cornerstone Pool
-  "0x3de03fafe6120a3d21dc77e101de62e165b2cdfe84d12540853bd962b970f99", // Re7 rUSDC Pool
+  "0x3de03fafe6120a3d21dc77e101de62e165b2cudfe84d12540853bd962b970f99", // Re7 rUSDC Pool
+  "0x3a8416bf20d036df5b1cf3447630a2e1cb04685f6b0c3a70ed7fb1473548ecf", // Re7 xBTC 
+  "0x3976cac265a12609934089004df458ea29c776d77da423c96dc761d09d24124", // Re7 USDC Core 
+  "0x2eef0c13b10b487ea5916b54c0a7f98ec43fb3048f60fdeedaf5b08f6f88aaf", // Re7 USDC Prime 
+  "0x5c03e7e0ccfe79c634782388eb1e6ed4e8e2a013ab0fcc055140805e46261bd", // Re7 USDC Frontier
+  "0x73702fce24aba36da1eac539bd4bae62d4d6a76747b7cdd3e016da754d7a135", // Re7 USDC Stable Core
+  "0x451fe483d5921a2919ddd81d0de6696669bccdacd859f72a4fba7656b97c3b5" // Prime
 ];
 const ASSETS = [
   ADDRESSES.starknet.ETH,
@@ -29,7 +35,19 @@ const ASSETS = [
   ADDRESSES.starknet.SSTRK,
   ADDRESSES.starknet.EKUBO,
   "0x498edfaf50ca5855666a700c25dd629d577eb9afccdf3b5977aec79aee55ada", // CASH
-  "0x02019e47A0Bc54ea6b4853C6123FfC8158EA3AE2Af4166928b0dE6e89f06De6C" // rUSDC
+  "0x02019e47A0Bc54ea6b4853C6123FfC8158EA3AE2Af4166928b0dE6e89f06De6C", // rUSDC
+  ADDRESSES.starknet.SOLVBTC,
+  ADDRESSES.starknet.TBTC,
+  ADDRESSES.starknet.LBTC,
+  ADDRESSES.starknet.UNIBTC,
+  ADDRESSES.starknet.XWBTC,
+  ADDRESSES.starknet.XSBTC,
+  ADDRESSES.starknet.XTBTC,
+  ADDRESSES.starknet.XLBTC,
+  ADDRESSES.starknet.MRE7YIELD,
+  ADDRESSES.starknet.MRE7BTC,
+  ADDRESSES.starknet.YBTC_B
+
 ];
 
 async function tvl(api) {
