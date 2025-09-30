@@ -19,7 +19,7 @@ module.exports = {
     isComplex: true,
     complexOwners: evm_owners,
     bitcoin: { owners: btc_owners },
-    ethereum: { owners: evm_owners },
-    mantle: { owners: evm_owners },
+    ethereum: {  },
+    mantle: {  },
   })
 }
