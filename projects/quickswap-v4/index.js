@@ -16,4 +16,9 @@ module.exports = uniV3Export({
     isAlgebra: true,
     fromBlock: 3073933,
   },
+  somnia: {
+    factory: '0x0ccff3D02A3a200263eC4e0Fdb5E60a56721B8Ae',
+    isAlgebra: true,
+    fromBlock: 40341077,
+  },
 })

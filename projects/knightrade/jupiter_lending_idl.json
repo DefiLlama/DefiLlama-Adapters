@@ -1,0 +1,88 @@
+{
+  "address": "jup3YeL8QhtSx1e253b2FDvsMNC87fDrgQZivbrndc9",
+  "metadata": {"name": "lending", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [
+    {"name": "Lending", "discriminator": [135, 199, 82, 16, 249, 131, 182, 241]},
+    {"name": "LendingRewardsRateModel", "discriminator": [166, 72, 71, 131, 172, 74, 166, 181]},
+    {"name": "TokenReserve", "discriminator": [21, 18, 59, 135, 120, 20, 31, 12]}
+  ],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "Lending",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "mint", "type": "pubkey"},
+          {"name": "f_token_mint", "type": "pubkey"},
+          {"name": "lending_id", "type": "u16"},
+          {"name": "decimals", "docs": ["@dev number of decimals for the fToken, same as ASSET"], "type": "u8"},
+          {"name": "rewards_rate_model", "docs": ["@dev To read PDA of rewards rate model to get_rate instruction"], "type": "pubkey"},
+          {
+            "name": "liquidity_exchange_price",
+            "docs": ["@dev exchange price for the underlying asset in the liquidity protocol (without rewards)"],
+            "type": "u64"
+          },
+          {"name": "token_exchange_price", "docs": ["@dev exchange price between fToken and the underlying asset (with rewards)"], "type": "u64"},
+          {"name": "last_update_timestamp", "docs": ["@dev timestamp when exchange prices were updated the last time"], "type": "u64"},
+          {"name": "token_reserves_liquidity", "type": "pubkey"},
+          {"name": "supply_position_on_liquidity", "type": "pubkey"},
+          {"name": "bump", "type": "u8"}
+        ]
+      }
+    },
+    {
+      "name": "LendingRewardsRateModel",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "mint", "docs": ["@dev mint address"], "type": "pubkey"},
+          {
+            "name": "start_tvl",
+            "docs": [
+              "@dev tvl below which rewards rate is 0. If current TVL is below this value, triggering `update_rate()` on the fToken",
+              "might bring the total TVL above this cut-off."
+            ],
+            "type": "u64"
+          },
+          {"name": "duration", "docs": ["@dev for how long current rewards should run"], "type": "u64"},
+          {"name": "start_time", "docs": ["@dev when current rewards got started"], "type": "u64"},
+          {"name": "yearly_reward", "docs": ["@dev current annualized reward based on input params (duration, rewardAmount)"], "type": "u64"},
+          {"name": "next_duration", "docs": ["@dev Duration for the next rewards phase"], "type": "u64"},
+          {"name": "next_reward_amount", "docs": ["@dev Amount of rewards for the next phase"], "type": "u64"},
+          {"name": "bump", "type": "u8"}
+        ]
+      }
+    },
+    {
+      "name": "TokenReserve",
+      "docs": ["Token configuration and exchange prices"],
+      "serialization": "bytemuck",
+      "repr": {"kind": "c", "packed": true},
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {"name": "mint", "type": "pubkey"},
+          {"name": "vault", "type": "pubkey"},
+          {"name": "borrow_rate", "type": "u16"},
+          {"name": "fee_on_interest", "type": "u16"},
+          {"name": "last_utilization", "type": "u16"},
+          {"name": "last_update_timestamp", "type": "u64"},
+          {"name": "supply_exchange_price", "type": "u64"},
+          {"name": "borrow_exchange_price", "type": "u64"},
+          {"name": "max_utilization", "type": "u16"},
+          {"name": "total_supply_with_interest", "type": "u64"},
+          {"name": "total_supply_interest_free", "type": "u64"},
+          {"name": "total_borrow_with_interest", "type": "u64"},
+          {"name": "total_borrow_interest_free", "type": "u64"},
+          {"name": "total_claim_amount", "type": "u64"},
+          {"name": "interacting_protocol", "type": "pubkey"},
+          {"name": "interacting_timestamp", "type": "u64"},
+          {"name": "interacting_balance", "type": "u64"}
+        ]
+      }
+    }
+  ]
+}
