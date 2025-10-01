@@ -5,6 +5,7 @@ const config = {
     owners:[
         "rpWpGbeMQSQLhitEHVtfTrArByj3xh5Rt1",  // core vault
         "rDvuj6yYU6sT1waeaqW2f2pVQkvDUaDKrg",  // escrow
+        "rfkXSaCZKTg1EZzec2rLDyrWHxRVJdtVXj",  // escrow
     ]
   },
   flare: {
@@ -16,4 +17,4 @@ const config = {
 
 module.exports = cexExports(config)
 
-module.exports.methodology = "Value of XRP held in the core vault and USDT in the escrows on flare";
+module.exports.methodology = "Value of XRP & USDT held in the core vault and the escrows";

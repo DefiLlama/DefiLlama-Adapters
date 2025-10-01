@@ -21,9 +21,5 @@ module.exports = {
       owner: config.base.owner,
       tokens: config.base.tokens,
     }),
-    staking: sumTokensExport({
-      owner: config.base.owner,
-      tokens: config.base.tokens,
-    })
   }
 };

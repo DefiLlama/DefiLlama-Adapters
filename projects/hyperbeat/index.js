@@ -1,5 +1,9 @@
 const { sumERC4626VaultsExport } = require('../helper/erc4626');
 
+const liquidHypeStrategist = "0x83a80e5b64086197c01cbb123df2aea79a149c1d"
+const oracle = "0x1ceab703956e24b18a0af6b272e0bf3f499aca0f"
+const beHype = "0xd8FC8F0b03eBA61F64D08B0bef69d80916E5DdA9"
+
 const config = {
   morphoVaults: {
     '0x5eEC795d919FA97688Fb9844eeB0072E6B846F9d': '0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34',
@@ -34,18 +38,37 @@ const sixDecimalTokens = [
   '0xf4d9235269a96aadafc9adae454a0618ebe37949', // xAUT
   '0xb88339cb7199b77e23db6e890353e22632ba630f', // USDC
 ]
+
+const unwrapBeHype = async (api, underlying, supply) => {
+  const [lastAnswer, beHypeBalance] = await Promise.all([
+    api.call({ target: oracle, abi: 'uint256:lastAnswer' }),
+    api.call({ target: beHype, params: [liquidHypeStrategist], abi: 'erc20:balanceOf' })
+  ])
+
+
+  const beHypeToHypeShare = beHypeBalance * lastAnswer / 1e8
+  api.add(underlying, supply-beHypeToHypeShare) // subtraction of beHype’s share present in the vault
+  api.add(beHype, beHypeBalance)
+}
+
 const tvl = async (api) => {
   const { morphoVaults = {}, standaloneVaults = {} } = config
   const vaultToUnderlyings = { ...morphoVaults, ...standaloneVaults }
   const vaults = Object.keys(vaultToUnderlyings)
   const supplies = await api.multiCall({ calls: vaults, abi: 'erc20:totalSupply' })
 
-  vaults.forEach((vault, i) => {
+  for (const [index, vault] of vaults.entries()) {
     const underlying = vaultToUnderlyings[vault].toLowerCase()
-    const supply = supplies[i]
+    const supply = supplies[index]
+
+    if (vault == "0x441794D6a8F9A3739F5D4E98a728937b33489D29") {
+      await unwrapBeHype(api, underlying, supply);
+      continue
+    }
+
     const scaled = sixDecimalTokens.includes(underlying) ? supply / 1e18 * 1e6 : supply
     api.add(underlying, scaled)
-  })
+  }
 
   return sumERC4626VaultsExport({ vaults: ['0x96C6cBB6251Ee1c257b2162ca0f39AA5Fa44B1FB', '0xc061d38903b99aC12713B550C2CB44B221674F94'], isOG4626: true })(api) 
 }

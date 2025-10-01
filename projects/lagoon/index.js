@@ -99,7 +99,25 @@ const config = {
       address: "0x57D969B556C6AebB3Ac8f54c98CF3a3f921d5659",
       fromBlock: 79901742,
     },
-  }, 
+  },
+  optimism: {
+    optinProxyFactory:{
+      address: "0xA8E0684887b9475f8942DF6a89bEBa5B25219632",
+      fromBlock: 141662524
+    },
+  },
+  plasma: {
+    optinProxyFactory:{
+      address: "0xF838E8Bd649fc6fBC48D44E9D87273c0519C45c9",
+      fromBlock: 2236159
+    },
+  },
+  polygon: {
+    optinProxyFactory:{
+      address: "0x0C0E287f6e4de685f4b44A5282A3ad4A29D05a91",
+      fromBlock: 76939871
+    },
+  },
   sonic: {
     optinProxyFactory:{
       address: "0x6FC0F2320483fa03FBFdF626DDbAE2CC4B112b51",
