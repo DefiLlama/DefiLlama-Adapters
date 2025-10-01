@@ -1,10 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getMultipleAccounts, getProvider, sumTokens2, getConnection, getTokenAccountBalances } = require('../helper/solana')
+const { getMultipleAccounts, getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, BN, utils } = require("@project-serum/anchor")
 const { PublicKey } = require("@solana/web3.js")
-const { getLendingToken, getLendingProgram, convertToAssets, getAssociatedTokenAddressSync } = require('./jupiterLendingHelper');
 
-let blacklistedTokens = []
 const TOKEN_INFO = {
   USDC: {
     mint: ADDRESSES.solana.USDC,
@@ -54,7 +52,6 @@ function getTokenInfo(isSpotMarket, marketIndex) {
 const provider = getProvider()
 
 async function tvlJupiter(api, jupiterVaults) {
-  const connection = getConnection()
 
   // /**
   //  * Jupiter perp Lend
@@ -84,36 +81,9 @@ async function tvlJupiter(api, jupiterVaults) {
   // /**
   //  * Jupiter Earn
   // */
-  const program = getLendingProgram();
-  const lending = await program.account.lending.all();
-  const tokensMints = lending.map((l) => l.account.mint);
-  const lendingTokens = tokensMints.map(getLendingToken)
-  blacklistedTokens.push(...lendingTokens)  // since we are already unwinding them here
-  const lendingTokenOwners = (await  connection.getMultipleAccountsInfo(lendingTokens)).map(i => i?.owner)
-
-  const tokenAccounts = []
-  const tokens = []
-  const lendingTokenToMintMap = {}
-
-  tokensMints.forEach((mint, idx) => {
-    const mintOwner = lendingTokenOwners[idx]
-    const lendingToken = lendingTokens[idx]
-    lendingTokenToMintMap[lendingToken.toBase58()] = mint.toBase58()
-    if (!mintOwner) return;
-    jupiterVaults.forEach(vault => {
-      const userKey = new PublicKey(vault);
-      const tokenAccount = getAssociatedTokenAddressSync(lendingToken, userKey, mintOwner)
-      tokens.push(mint)
-      tokenAccounts.push(tokenAccount)
-    })
-  })
-
-  const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError: true,})
-  for (const [lendingToken, lendingTokenBalance] of Object.entries(tokenBalances)) {
-    const mint = lendingTokenToMintMap[lendingToken]
-    const balance = await convertToAssets(mint, lendingTokenBalance, connection)
-    api.add(mint, balance)
-  }
+  /* 
+    added price support for jupiter earn tokens here: https://github.com/DefiLlama/defillama-server/commit/e496acfb4bec2f8da309da1d18b0f0f9e10cbc3f   
+    */
 }
 
 async function getDriftTvl(api, vaults) {
@@ -185,7 +155,7 @@ async function tvlSolana(api) {
   await tvlJupiter(api, vaults);
 
   // add wallet balance 
-  return sumTokens2({ api, owners: vaults, blacklistedTokens, })
+  return sumTokens2({ api, owners: vaults, })
 }
 
 async function tvlArbitrum(api) {
