@@ -16,6 +16,7 @@ const managers = [
   '0xaD492f9CADcccE9c3c213edd8aE55c152cD3A3ad', // hiHype
   '0xfdd35c5179E8594E237031dd945E0584Af29572b', // flowHype
   '0x0c5d890Cf52973aE4A7b10fA7EE18e146d13D87B', // asxnHype
+  '0x09B4cdA849037D1717e91D201EE416bf1c113895', // hylqHype
 ]
 
 const getUserStakingSummary = async (user) => {
