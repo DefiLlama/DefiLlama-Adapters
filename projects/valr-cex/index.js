@@ -59,7 +59,7 @@ const config = {
       "rDseVXFK1SkWhFH65cqAxf3HmvHCF6b94t",
       "rfrnxmLBiXHj38a2ZUDNzbks3y6yd3wJnV",
     ],
-  }, 
+  },
 };
 
 module.exports = cexExports(config);
