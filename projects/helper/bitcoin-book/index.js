@@ -97,11 +97,19 @@ const cygnus = require('./cygnus.js')
 const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
+const coinbaseltc = require('./coinbase-ltc.js')
 const prosper = require('./prosper.js')
 const hotcoin = require('./hotcoin.js')
 const orangex = require('./orangex.js')
 const exmo = require('./exmo.js')
 const esbtc = require('./esbtc.js')
+const bimaCdp = require('./bima-cdp.js')
+const tzbtc = require('./tezos-btc.js')
+const tothemoon = require('./tothemoon.js')
+const indodax = require('./indodax.js')
+const river = require('./river.js')
+const xbtc = require('./okx-xbtc.js')
+const leadbtc = require('./leadbtc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -130,16 +138,6 @@ const stacksSBTC = [
   'bc1prcs82tvrz70jk8u79uekwdfjhd0qhs2mva6e526arycu7fu25zsqhyztuy',
 ]
 
-const zeusZBTC = [
-  // https://docs.zeusnetwork.xyz/intro/welcome-to-zeus-network/how-it-works-bitcoin-and-solana
-  'bc1p698gf9gm8j34gvars97j6spsgrlxlhvyfajt2tsz2vnw9fcat9cqjcjn4v',
-  'bc1p96utmwdngv3xwdn90d7wg4tyqke70fs6js8ajgqkk89zn08z8d5q8xzchd',
-  'bc1pd46txhc0a3t8juc2r4njyuk4rv3099dcn039ny0hzgt24tgx3qlszg5e6f',
-  'bc1p795t8whcfpl6uyxj38enzt43cg8scphrgvn2e79y3xgflv6s6nrsrmudk6',
-  'bc1pq7pr972ckfwrwrprqw5en54ytr58jndcaafr780hm35ttz4ekmas3fctx4',
-  'bc1qlw9h7fspehfvrgyhnr334936y2x6vurw7svxq3'
-]
-
 const magpie = [
   '1FoGLbVfpN6e35J45vXSwqsTSajcSxXcYF',
   'bc1ppgxcpqq7vm5ckl3unryndeqheut8lanjtpng9jwxjdv6m53w9wuqx4fqy8'
@@ -147,8 +145,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
-  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo'],
-  zeusZBTC,
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf'],
   cygnus,
   magpie,
   stacksSBTC,
@@ -160,6 +157,7 @@ module.exports = {
   allo,
   avalanche,
   bevm,
+  bimaCdp,
   binance,
   binance2,
   bitstable,
@@ -253,10 +251,17 @@ module.exports = {
   unitbtc,
   backpack,
   coinbasebtc,
+  coinbaseltc,
   prosper,
   lbank,
   hotcoin,
   orangex,
   exmo,
-  esbtc
+  esbtc,
+  tzbtc,
+  tothemoon,
+  indodax,
+  river,
+  xbtc,
+  leadbtc,
 }

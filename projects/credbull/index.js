@@ -7,9 +7,6 @@ const addresses = {
     cbl: "0xD6b3d81868770083307840F513A3491960b95cb6",
     cblStakingV2: "0xc0C1DaA773570C041c47cE12c397AdDFD6B7403F",
   },
-  plume: { // legacy plume (ETH Gas)
-    v2Vaults: ["0x2b9d2023DbF3c7473f1cec42F78713d09DdC9FBF"]  // liquidStone X Plume
-  },
   plume_mainnet: { // plume ($PLUME gas)
     v2Vaults: ["0x577349C99830D3c078034087A532581EF5381A08"]  // liquidStone X Plume
   },
@@ -29,15 +26,6 @@ const vaultStablecoins = [
   ADDRESSES.polygon.USDC_CIRCLE,
   ADDRESSES.polygon.USDT,
 ];
-
-function normalizeToken(chain, token) {
-  const map = {
-    'plume_mainnet': {
-      '0x78add880a697070c1e765ac44d65323a0dcce913': ADDRESSES.plume_mainnet.USDC_e,
-    },
-  };
-  return map[chain]?.[token.toLowerCase()] || token;
-}
 
 async function includeStablecoins(api, vaultAddresses) {
   await Promise.all(
@@ -63,9 +51,10 @@ async function handleStablecoinBalance(api, vaultAddresses, erc20address, isIncl
 
 // Credbull DeFi Vaults v1 TVL (6 or 12 month fixed APY)
 async function tvl(api) {
-  let vaults = await getConfig('credbull', "https://incredbull.io/api/vaults")
-  vaults = vaults[api.chain]
-  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  const vaults = await getVaultsForChain(api.chain);
+  if (vaults.length === 0) return; // no vaults for this chain, return early
+
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults });
 
   return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
 }
@@ -100,8 +89,7 @@ async function borrowedVaults(api) {
   const vaults = await getVaultsForChain(api.chain);
   if (vaults.length === 0) return; // no vaults for this chain, return early
 
-  let tokens = await api.multiCall({ abi: 'address:asset', calls: vaults });
-  tokens = tokens.map(t => normalizeToken(api.chain, t));
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults });
 
   const bals = await api.multiCall({ abi: 'address:totalAssets', calls: vaults })
   api.add(tokens, bals)
@@ -128,6 +116,6 @@ module.exports = {
   methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
   arbitrum: { tvl, borrowed: borrowedVaults, staking: stakedCbl },
   btr: { tvl, borrowed: borrowedVaults, },
-  plume_mainnet: { borrowed: borrowedVaults},
+  plume_mainnet: { tvl, borrowed: borrowedVaults},
   polygon: { borrowed: borrowedFund, tvl: polygonTvl },
 };

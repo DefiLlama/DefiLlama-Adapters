@@ -44,8 +44,9 @@ function uniV3Export(config) {
   return exports
 }
 
-function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0,}) {
+function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 0, poolName = 'pools'}) {
   return async (api) => {
+    if (!name) throw new Error('name is required for uniV3GraphExport')
     const size = 1000
     // let lastId = ''
     // let pools
@@ -63,7 +64,7 @@ function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 
   `
     const graphQueryPagedWithoutBlock = `
     query poolQuery($lastId: String) {
-      pools(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
+      ${poolName}(first:${size} where: {id_gt: $lastId ${minTvlFilter}}) {
         id
         token0 { id }
         token1 { id }
