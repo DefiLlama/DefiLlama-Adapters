@@ -236,10 +236,10 @@ async function tvlEthereum(api) {
     "0x5C83942B7919db30634f9Bc9e0e72aD778852FC8",
   ];
   const addresses = {
-    weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    usdt: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
-    usde: '0x4c9EDD5852cd905f086C759E8383e09bff1E68B3',
+    weth: ADDRESSES.ethereum.WETH,
+    usdc: ADDRESSES.ethereum.USDC,
+    usdt: ADDRESSES.ethereum.USDT,
+    usde: ADDRESSES.ethereum.USDe,
     aaveWethAToken: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8',
     aaveUsdcAToken: '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c',
     aaveUsdtAToken: '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a',
