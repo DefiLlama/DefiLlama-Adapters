@@ -208,6 +208,13 @@
     "CurveTwocryptoFactoryNG": "0xFAbC421e3368D158d802684A217a83c083c94CeB",
     "CurveTricryptoFactoryNG": "0x0C9D8c7e486e822C29488Ff51BFf0167B4650953"
   },
+  "plasma": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x6100E367285b01F48D07953803A2d8dCA5D19873",
+    "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
+    "CurveTwocryptoFactoryNG": "0xe7FBd704B938cB8fe26313C3464D4b7B7348c88C",
+    "CurveTricryptoFactoryNG": "0x6E28493348446503db04A49621d8e6C9A40015FB"
+  },
   "corn": {
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0xda5dDd7270381A7C2717aD10D1c0ecB19e3CDFb2",
@@ -260,6 +267,13 @@
   "etlk": {
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0xc9B53AB2679f573e480d01e0f49e2B5CFB7a3EAb",
+    "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
+    "CurveTwocryptoFactoryNG": "0xe7FBd704B938cB8fe26313C3464D4b7B7348c88C",
+    "CurveTricryptoFactoryNG": "0x6E28493348446503db04A49621d8e6C9A40015FB"
+  },
+  "plasma": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0x6100E367285b01F48D07953803A2d8dCA5D19873",
     "CurveStableswapFactoryNG": "0x8271e06E5887FE5ba05234f5315c19f3Ec90E8aD",
     "CurveTwocryptoFactoryNG": "0xe7FBd704B938cB8fe26313C3464D4b7B7348c88C",
     "CurveTricryptoFactoryNG": "0x6E28493348446503db04A49621d8e6C9A40015FB"
