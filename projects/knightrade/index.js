@@ -26,6 +26,7 @@ const TOKEN_INFO = {
   },
 }
 
+
 function getTokenInfo(isSpotMarket, marketIndex) {
   if (isSpotMarket) {
     switch (marketIndex) {
@@ -238,10 +239,49 @@ async function tvlArbitrum(api) {
 
 }
 
+async function tvlEthereum(api) {
+  const vaults = [
+    "0x5C83942B7919db30634f9Bc9e0e72aD778852FC8",
+  ];
+  const addresses = {
+    weth: ADDRESSES.ethereum.WETH,
+    usdc: ADDRESSES.ethereum.USDC,
+    usdt: ADDRESSES.ethereum.USDT,
+    usde: ADDRESSES.ethereum.USDe,
+    aaveWethAToken: '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8',
+    aaveUsdcAToken: '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c',
+    aaveUsdtAToken: '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a',
+    aaveUsdeAToken: '0x4F5923Fc5FD4a93352581b38B7cD26943012DECF',
+    aaveWethDebtToken: '0xeA51d7853EEFb32b6ee06b1C12E6dcCA88Be0fFE',
+    aaveUsdcDebtToken: '0x72E95b8931767C79bA4EeE721354d6E99a61D004',
+    aaveUsdtDebtToken: '0x6df1C1E379bC5a00a7b4C6e67A203333772f45A8',
+    aaveUsdeDebtToken: '0x015396E1F286289aE23a762088E863b3ec465145',
+  };
+
+  await api.sumTokens({
+    tokens: [
+      addresses.weth,
+      addresses.usdc,
+      addresses.usdt,
+      addresses.usde,
+      addresses.aaveWethAToken,
+      addresses.aaveUsdcAToken,
+      addresses.aaveUsdtAToken,
+      addresses.aaveUsdeAToken,
+      addresses.aaveWethDebtToken,
+      addresses.aaveUsdcDebtToken,
+      addresses.aaveUsdtDebtToken,
+      addresses.aaveUsdeDebtToken,
+    ],
+    owners: vaults
+  });
+}
+
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  methodology: "Solana: Drift | Arbitrum: Aave, GMX",
+  methodology: "Solana: Drift | Arbitrum: Aave, GMX | Ethereum: Aave",
   solana: { tvl: tvlSolana },
   arbitrum: { tvl: tvlArbitrum },
+  ethereum: { tvl: tvlEthereum },
 };
