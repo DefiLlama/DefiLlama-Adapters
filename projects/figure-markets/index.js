@@ -38,6 +38,7 @@ const demoPrimePools = [
     "scope1qz6rjfu4ympyxs5wd2nzpa3z0t7s0tw3ud",
     "scope1qz8xvt4mckfyssyln509g5ck3ejs7aq9yc",
     "scope1qzh44upjuvzyh25usrsl6w3rv9yqxs9w6n",
+    "scope1qr84e8k4u2p5tn99wd5ra97mj8sq73e3xk"
 ]
 
 const collateralizedAssets = 'pm.sale.pool.3dxq3fk9llvhrqqwhodiap'
