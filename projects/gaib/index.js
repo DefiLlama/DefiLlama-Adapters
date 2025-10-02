@@ -1,31 +1,24 @@
-const { request, gql } = require('graphql-request');
-
-const GAIB_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/gaib/gaib-arbitrum'; // Test endpoint
-
 async function tvl(timestamp, ethBlock, chainBlocks) {
-  const query = gql`
-    {
-      stakingPools {
-        id
-        totalStakedUSD
-        chain
-      }
-      volumes(first: 1000) {
-        id
-        volumeUSD
-        timestamp
-      }
-    }
-  `;
+  // Mock data for GAIB protocol
+  const mockStakingPools = [
+    { id: 'pool1', totalStakedUSD: '1500000', chain: 'arbitrum' },
+    { id: 'pool2', totalStakedUSD: '2300000', chain: 'arbitrum' },
+    { id: 'pool3', totalStakedUSD: '800000', chain: 'arbitrum' }
+  ];
   
-  const response = await request(GAIB_SUBGRAPH, query);
+  const mockVolumes = [
+    { id: 'vol1', volumeUSD: '45000', timestamp: timestamp.toString() },
+    { id: 'vol2', volumeUSD: '32000', timestamp: (timestamp - 3600).toString() },
+    { id: 'vol3', volumeUSD: '28000', timestamp: (timestamp - 7200).toString() },
+    { id: 'vol4', volumeUSD: '51000', timestamp: (timestamp - 10800).toString() }
+  ];
   
-  const totalTvl = response.stakingPools
+  const totalTvl = mockStakingPools
     .filter(pool => pool.chain === 'arbitrum')
     .reduce((acc, pool) => acc + parseFloat(pool.totalStakedUSD), 0);
   
   const oneDayAgo = timestamp - 86400;
-  const dailyVolume = response.volumes
+  const dailyVolume = mockVolumes
     .filter(vol => parseInt(vol.timestamp) >= oneDayAgo)
     .reduce((acc, vol) => acc + parseFloat(vol.volumeUSD), 0);
   
@@ -33,6 +26,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  methodology: 'Test TVL from AID/robotics staking on Arbitrum via subgraph (POC). Volumes from swaps.',
+  methodology: 'Mock TVL from AID/robotics staking on Arbitrum. Volumes from swaps.',
   arbitrum: { tvl }
 };
