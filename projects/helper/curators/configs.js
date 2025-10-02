@@ -183,6 +183,16 @@ const EulerConfigs = {
       '0x42388213C6F56D7E1477632b58Ae6Bba9adeEeA3',
     ],
   },
+  linea: {
+    vaultFactories: [
+      '0x84711986fd3bf0bfe4a8e6d7f4e22e67f7f27f04',
+    ],
+  },
+  arbitrum: {
+    vaultFactories: [
+      '0x78df1cf5bf06a7f27f2acc580b934238c1b80d50',
+    ],
+  },
 }
 
 const SiloConfigs = {
