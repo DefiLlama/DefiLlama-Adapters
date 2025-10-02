@@ -1,4 +1,6 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens } = require('../helper/sumTokens');
+const { post } = require('../helper/http')
 
 const agentVaults = [
   '0xe56f464c23760d563dd4c73dADA05159aE71FC50', // Au
@@ -18,7 +20,32 @@ const agentPools = [
   '0xa7F4335e5233C50e1022c2607dfE83c3d73d516B', // WK
 ]
 
-async function tvl(api) {
+const coreVault = "rfkXSaCZKTg1EZzec2rLDyrWHxRVJdtVXj"
+const escrowAccount = "rMLNvZR9dascY5jtCfCv3whAp8HdUSZAQ"
+
+async function XRPLLocked(api) {
+  const baseTokens = await sumTokens({ api, owner: coreVault, chain: 'ripple' })
+
+  // escrows
+  const response = await post('https://s1.ripple.com:51234', 
+    { "method": "account_objects", "params": [{
+        "account": coreVault,
+        "ledger_index": "validated",
+        "type": "escrow"
+      }]
+    }
+  )
+  if (response.result.error === 'actNotFound') return baseTokens;
+  const escrowed = response.result.account_objects.filter(
+    (obj) => obj.LedgerEntryType === 'Escrow' && obj.Destination === escrowAccount
+  ).reduce((acc, escrow) => acc + (+escrow.Amount / 1e6), 0)
+
+  return {
+    "ripple": baseTokens.ripple + escrowed,
+  }
+}
+
+async function flareTvl(api) {
   return sumTokens2({
     api,
     tokensAndOwners: [
@@ -29,6 +56,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: "Value of USDT0 and WFLR held in Agent's vaults and pools",
-  flare: { tvl },
+  methodology: "Value of USDT0 and WFLR held in Agent's vaults and pools together with XRP tokens locked on XRPL either in core vault or in the escrows.",
+  flare: { tvl: flareTvl },
+  ripple: { tvl: XRPLLocked },
 }
