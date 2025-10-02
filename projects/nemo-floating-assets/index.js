@@ -113,18 +113,6 @@ async function getTvl(type, fields, api) {
     console.log(`lpTokenPrice: ${lpTokenPrice.toString()}, amountB: ${amountB}, totalSupply: ${totalSupply}`);
 
     api.add(coinConfig.underlyingCoinType, pt2SyAmount.times(lpTokenPrice).toFixed(0));
-  } else {
-    let rate1 = new BigNumber(priceVoucher1).div(new BigNumber(2).pow(64)).toString();
-    let rate2 = new BigNumber(priceVoucher2).div(new BigNumber(2).pow(64)).toString();
-
-    const pt2SyAmount = floatingPt.div(rate1);
-
-    if (watchCoinTypeNotConvert.includes(coinConfig.coinType)) {
-      api.add(tokens, pt2SyAmount.toFixed(0));
-    } else {
-      let underlyingBalance = pt2SyAmount.multipliedBy(rate2);
-      api.add(coinConfig.underlyingCoinType, underlyingBalance.toFixed(0));
-    }
   }
 }
 
