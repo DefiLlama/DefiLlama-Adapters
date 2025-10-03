@@ -23,6 +23,7 @@ const CONFIG = {
   sonic: ['0x306c124fFba5f2Bc0BcAf40D249cf19D492440b9'],
   celo: ['0x33b7d355613110b4E842f5f7057Ccd36fb4cee28'],
   soneium: ['0xa0208CE8356ad6C5EC6dFb8996c9A6B828212022'],
+  plasma: ['0xf2D6E38B407e31E7E7e4a16E6769728b76c7419F'],
 };
 
 const fetchReserveData = async (api, poolDatas, isBorrowed) => {

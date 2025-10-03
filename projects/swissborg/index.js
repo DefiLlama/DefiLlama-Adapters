@@ -32,6 +32,7 @@ const config = {
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
       '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
       '0x49841B9bb1dc499B36C4F618bf8feAC85fDFE889',
+      '0xaCA8FB892Ac27d2f84Fa78EDb32F3AD221538c3e',
     ],
   },
   bitcoin: {

@@ -9,17 +9,18 @@ const tvl = async (api) => {
   const assets = await get(assetsUrl);
   const coins = Object.values(assets).map(a => a.asset_type);
   const url = `${endpointUrl}/${endpointName}/${coins.join(',')}/${api.timestamp}`
-  console.log(url);
+  // console.log(url);
   const data = await get(url)
   coins.forEach(coin => {
     api.add(coin, data[coin])
   })
+
+  const { usdTvl } = await api.getUSDJSONs();
+  if (usdTvl < 0) throw new Error("Something might be wrong: TVL returned a negative value");
 }
 
 module.exports = {
   methodology: "All deposits into all BalanceManagers minutes all withdrawals from all BalanceManagers",
   start: '2024-10-14',
-  sui: {
-    tvl,
-  }
+  sui: { tvl }
 }
