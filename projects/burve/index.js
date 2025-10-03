@@ -1,32 +1,11 @@
-const ADDRESSES = require("../helper/coreAssets.json");
 const BERACHAIN = "0xa1beD164c12CD9479A1049f97BDe5b3D6EC21089";
-
-const tokens = [
-	ADDRESSES.berachain.USDC,
-	"0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
-	ADDRESSES.berachain.HONEY,
-	"0x1cE0a25D13CE4d52071aE7e02Cf1F6606F4C79d3",
-	ADDRESSES.arbitrum.USDe,
-	"0xff12470a969Dd362EB6595FFB44C82c959Fe9ACc",
-	"0xEDB5180661F56077292C92Ab40B1AC57A279a396", // MEAD
-	"0x09D4214C03D01F49544C0448DBE3A27f768F2b34", // rUSD
-	"0x688e72142674041f8f6Af4c808a4045cA1D6aC82", // BYUSD
-];
-
-const decimals = [
-	6, // USDC.e
-	6, // USDT
-	18,
-	18,
-	18,
-	18,
-	18,
-	18,
-	18,
-];
 
 const getClosureValueAbi =
 	"function getClosureValue(uint16 closureId) view returns (uint8 n, uint256 targetX128, uint256[16] balances, uint256 valueStaked, uint256 bgtValueStaked)";
+
+const getTokensAbi = "function getTokens() external view returns (address[] memory)";
+
+const decimalsAbi = "function decimals() external view returns (uint8)";
 
 // Helper to normalize balances to 18 decimals
 function toReal(amount, decimals) {
@@ -38,7 +17,21 @@ module.exports = {
 	start: 6660733,
 	berachain: {
 		tvl: async (api) => {
-			const numTokens = tokens.length;
+			// Fetch tokens dynamically from the contract
+			const fetchedTokens = await api.call({
+				abi: getTokensAbi,
+				target: BERACHAIN,
+			});
+
+			// Fetch decimals for each token
+			const tokenDecimals = await api.multiCall({
+				abi: decimalsAbi,
+				calls: fetchedTokens.map((token) => ({
+					target: token,
+				})),
+			});
+
+			const numTokens = fetchedTokens.length;
 			const closureIds = [];
 			for (let i = 3; i < 1 << numTokens; i++) {
 				closureIds.push(i);
@@ -63,8 +56,8 @@ module.exports = {
 			}
 
 			for (let i = 0; i < numTokens; i++) {
-				const balance = toReal(tokenBalances[i], decimals[i]);
-				api.add(tokens[i], balance.toString());
+				const balance = toReal(tokenBalances[i], tokenDecimals[i]);
+				api.add(fetchedTokens[i], balance.toString());
 			}
 		},
 	},
