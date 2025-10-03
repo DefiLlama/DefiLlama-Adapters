@@ -53,6 +53,13 @@ const config = {
       "0x7348332ee364590f2292577AD42d4Fe419d085D3",
     ],
   },
+  ripple: {
+    owners: [
+      "r3EjD8wKrtWbsjZxaSfAoifEDWosh49Twe",
+      "rDseVXFK1SkWhFH65cqAxf3HmvHCF6b94t",
+      "rfrnxmLBiXHj38a2ZUDNzbks3y6yd3wJnV",
+    ],
+  },
 };
 
 module.exports = cexExports(config);
