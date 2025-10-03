@@ -1,17 +1,52 @@
 const { getEnv } = require("../helper/env");
-const { getChainTransform } = require('../helper/portedTokens');
+const { post } = require('../helper/http')
 
-const headers = {
-  origin: "https://subgraph.smardex.io",
-  referer: "https://subgraph.smardex.io",
-  "x-api-key": process.env.SMARDEX_SUBGRAPH_API_KEY,
-};
+const blacklistedTokenSet = new Set([
+  '0x5de8ab7e27f6e7a1fff3e5b337584aa43961beef', // project's own governance token
+  '0xfdc66a08b0d0dc44c17bbd471b88f49f50cdd20f', // project's own governance token
+].map(t => t.toLowerCase()));
 
-const ethereumSubgraphUrl = "https://subgraph.smardex.io/ethereum/spro";
-const arbitrumSubgraphUrl = "https://subgraph.smardex.io/arbitrum/spro";
-const bscSubgraphUrl = "https://subgraph.smardex.io/bsc/spro";
-const baseSubgraphUrl = "https://subgraph.smardex.io/base/spro";
-const polygonPosSubgraphUrl = "https://subgraph.smardex.io/polygon/spro";
+const config = {
+  ethereum: { graphId: 'ethereum' },
+  arbitrum: { graphId: 'arbitrum' },
+  bsc: { graphId: 'bsc' },
+  base: { graphId: 'base' },
+  polygon: { graphId: 'polygon' },
+}
+
+Object.keys(config).forEach(chain => {
+
+  async function getData() {
+    const { graphId, } = config[chain]
+    const subgraphUrl = `https://subgraph.smardex.io/${graphId}/spro`
+    const result = await post(subgraphUrl, { query: tokenMetricsQuery, }, {
+      headers: {
+        origin: "https://subgraph.smardex.io",
+        referer: "https://subgraph.smardex.io",
+        "x-api-key": getEnv('SMARDEX_SUBGRAPH_API_KEY'),
+      },
+    })
+
+    return result.data.tokenMetrics_collection;
+  }
+
+  module.exports[chain] = {
+    tvl:  async (api) => {
+      const data = await getData()
+      data.forEach((token) => {
+        if (blacklistedTokenSet.has(token.id.toLowerCase())) return;
+        api.add(token.id, token.totalCollateralAmount);
+      })
+      api.getBalancesV2().removeNegativeBalances()
+    }, 
+    borrowed: async (api) => {
+      const data = await getData()
+      data.forEach((token) => {
+        api.add(token.id, token.totalBorrowedAmount);
+      })
+    },
+  }
+})
 
 
 const tokenMetricsQuery = `{
@@ -21,65 +56,3 @@ const tokenMetricsQuery = `{
     totalBorrowedAmount
   }
 }`;
-
-const getTokenMetrics = async (subgraphUrl, chainName) => {
-  const result = await fetch(subgraphUrl, {
-    method: "POST",
-    headers: {
-      origin: "https://subgraph.smardex.io",
-      referer: "https://subgraph.smardex.io",
-      "x-api-key": getEnv('SMARDEX_SUBGRAPH_API_KEY'),
-    },
-    body: JSON.stringify({
-      query: tokenMetricsQuery,
-    }),
-  }).then((res) => res.json());
-  
-  if (!result || !result.data || !result.data.tokenMetrics_collection) {
-    throw new Error(`Failed to fetch valid subgraph response for ${chainName} from ${subgraphUrl}`);
-  }
-  
-  return result.data.tokenMetrics_collection;
-};
-
-
-async function getP2pData(subgraphUrl, chainName, isBorrowed = false) {
-  const tokenMetrics = await getTokenMetrics(subgraphUrl, chainName);
-  const transform = await getChainTransform(chainName);
-  
-  return tokenMetrics.reduce((acc, token) => {
-    const totalBorrowedAmount = parseFloat(token.totalBorrowedAmount);
-    const amount = isBorrowed ? totalBorrowedAmount : parseFloat(token.totalCollateralAmount);
-    
-    if (amount > 0) {
-      const transformedToken = transform(token.id);
-      acc[transformedToken] = amount;
-    }
-    
-    return acc;
-  }, {});
-}
-
-module.exports = {
-  ethereum: {
-    tvl: () => getP2pData(ethereumSubgraphUrl, 'ethereum'),
-    borrowed: () => getP2pData(ethereumSubgraphUrl, 'ethereum', true),
-  },
-  arbitrum: {
-    tvl: () => getP2pData(arbitrumSubgraphUrl, 'arbitrum'),
-    borrowed: () => getP2pData(arbitrumSubgraphUrl, 'arbitrum', true),
-  },
-  bsc: {
-    tvl: () => getP2pData(bscSubgraphUrl, 'bsc'),
-    borrowed: () => getP2pData(bscSubgraphUrl, 'bsc', true),
-  },
-  base: {
-    tvl: () => getP2pData(baseSubgraphUrl, 'base'),
-    borrowed: () => getP2pData(baseSubgraphUrl, 'base', true),
-  },
-  polygon: {
-    tvl: () => getP2pData(polygonPosSubgraphUrl, 'polygon'),
-    borrowed: () => getP2pData(polygonPosSubgraphUrl, 'polygon', true),
-  },
-};
-// node test.js projects/p2p-lending/index.js
