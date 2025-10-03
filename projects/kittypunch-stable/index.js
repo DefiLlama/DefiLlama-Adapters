@@ -16,7 +16,7 @@ async function tvl(api) {
 		ownerTokens.push(...tokens.map((t, i) => [t, pools[i]]))
 	}
 	return api.sumTokens({ ownerTokens, blacklistedTokens })
-};
+}
 
 module.exports = {
 	flow: { tvl }
