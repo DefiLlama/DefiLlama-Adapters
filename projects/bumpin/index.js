@@ -10,7 +10,6 @@ async function tvl(api) {
     const poolData = await program.account.pool.all()
     const tokenData = await program.account.tradeToken.all()
     
-    // 安全检查是否存在 tokenVault 账户
     const tokenVault = program.account.tokenVault ? await program.account.tokenVault.all() : [];
     const tokenAccounts = []
     const blacklistedTokens = []
