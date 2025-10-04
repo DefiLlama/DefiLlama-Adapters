@@ -107,6 +107,9 @@ const bimaCdp = require('./bima-cdp.js')
 const tzbtc = require('./tezos-btc.js')
 const tothemoon = require('./tothemoon.js')
 const indodax = require('./indodax.js')
+const river = require('./river.js')
+const xbtc = require('./okx-xbtc.js')
+const leadbtc = require('./leadbtc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -142,7 +145,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
-  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo'],
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf'],
   cygnus,
   magpie,
   stacksSBTC,
@@ -257,5 +260,8 @@ module.exports = {
   esbtc,
   tzbtc,
   tothemoon,
-  indodax
+  indodax,
+  river,
+  xbtc,
+  leadbtc,
 }

@@ -2,6 +2,8 @@
 const BOOL_KEYS = [
   'HISTORICAL',
   'LLAMA_DEBUG_MODE',
+  'STORE_IN_R2',
+  'IS_RUN_FROM_CUSTOM_JOB',
 ]
 
 const _yek = "b523cf66-7a5a-4fe8-8d67-f604fd0492c2"  // bifrost
@@ -21,8 +23,10 @@ const DEFAULTS = {
   SUI_GRAPH_RPC: 'https://sui-mainnet.mystenlabs.com/graphql',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
+  SUBSCAN_API_KEY: 'ca3ba5ed1ff44b689c5f81dfc6b1644b',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   FLOW_RPC: 'https://rest-mainnet.onflow.org',
+  CAMP_RPC: 'https://rpc.camp.raas.gelato.cloud',
   LULO_API_KEY: '',
   TRON_RPC: 'https://api.trongrid.io',
   MOVE_RPC: 'https://mainnet.movementnetwork.xyz',
@@ -42,6 +46,8 @@ const DEFAULTS = {
   TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
+  PLASMA_RPC: "https://rpc.plasma.to",
+  PLASMA_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",  // plasma multicall3
 }
 
 const ENV_KEYS = [
@@ -60,7 +66,10 @@ const ENV_KEYS = [
   'RPC_PROXY_URL',
   'BLACKSAIL_API_KEY',
   'BITCOIN_CACHE_API',
-  'DEBANK_API_KEY'
+  'DEBANK_API_KEY',
+  'SMARDEX_SUBGRAPH_API_KEY',
+  'PROXY_AUTH',
+  'ALLIUM_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
