@@ -27,7 +27,7 @@ const config = {
 
 const payload = `
 {
-  contracts { id address category }
+  contracts { id address }
   assets { id chainId symbol }
 }
 `
@@ -40,10 +40,8 @@ async function getTokensConfig(api, isVesting) {
   const owners = contracts.map(i => i.address)
 
   const tokens = assets
-    .filter((asset) => isWhitelistedToken(asset.symbol, asset.id, isVesting))
-    .map(asset => {
-			return asset.id.split('-').slice(2)[0];
-		})
+    .filter(asset => isWhitelistedToken(asset.symbol, asset.id, isVesting))
+    .map(asset => asset.id.split('-').slice(2)[0])
   
   const ownerTokens = owners.map(owner => [tokens, owner])
   return { ownerTokens }
