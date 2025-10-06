@@ -76,8 +76,8 @@ async function getTokensConfig(api, isVesting) {
   const owners = contracts.map(i => i.address);
 
   const tokens = assets
-    .filter(a => isWhitelistedToken(a.symbol, a.id, isVesting))
-    .map(a => a.id.split('-')[2]);
+    .filter(asset => isWhitelistedToken(asset.symbol, asset.id, isVesting))
+    .map(asset => asset.id.split('-')[2]);
 
   const ownerTokens = owners.map(owner => [tokens, owner]);
   return { ownerTokens };
