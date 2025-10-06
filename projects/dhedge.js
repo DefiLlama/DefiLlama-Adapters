@@ -1,6 +1,7 @@
 /* *** Common config *** */
 
 const { sliceIntoChunks } = require("@defillama/sdk/build/util");
+const { CONFIG_DATA } = require("./toros/config");
 
 const DHEDGE_FACTORY_PROXIES = {
   ethereum: "0x96d33bcf84dde326014248e2896f79bbb9c13d6d",
@@ -35,13 +36,18 @@ const DHEDGE_V2_VAULTS_ABI =
   "function getDeployedFunds() view returns (address[])";
 const DHEDGE_V2_VAULT_SUMMARY_ABI =
   "function getFundSummary() view returns (tuple(string name, uint256 totalSupply, uint256 totalFundValue))";
+const DHEDGE_V2_FACTORY_ABI =
+  "function getManagedPools(address manager) view returns (address[] managedPools)";
 
 const tvl = async (api) => {
   const { chain } = api
   const target = DHEDGE_FACTORY_PROXIES[chain];
-  const vaults = await api.call({ abi: DHEDGE_V2_VAULTS_ABI, target, })
+  const allVaults = await api.call({ abi: DHEDGE_V2_VAULTS_ABI, target, })
+  const torosVaults = await getTorosVaultsAddresses(api);
+  const dhedgeVaults = allVaults.filter(v => !torosVaults.includes(v));
+
   let chunkSize = chain === 'optimism' ? 42 : 51 // Optimism has a lower gas limit
-  const vaultChunks = sliceIntoChunks(vaults, chunkSize);
+  const vaultChunks = sliceIntoChunks(dhedgeVaults, chunkSize);
   const summaries = [];
   for (const chunk of vaultChunks) {
     summaries.push(...await api.multiCall({ abi: DHEDGE_V2_VAULT_SUMMARY_ABI, calls: chunk, permitFailure: true,  }))
@@ -51,6 +57,16 @@ const tvl = async (api) => {
     tether: totalValueLocked / 1e18,
   };
 };
+
+const getTorosVaultsAddresses = async (api) =>{
+  const { chain } = api
+  const { dhedgeFactory, torosMultisigManager } = CONFIG_DATA[chain];
+  return await api.call({
+    abi: DHEDGE_V2_FACTORY_ABI,
+    target: dhedgeFactory,
+    params: [torosMultisigManager],
+  });
+}
 
 /* *** DHT Staking V1 *** */
 
