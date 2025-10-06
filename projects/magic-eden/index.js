@@ -1,8 +1,12 @@
 const { sumTokens: sumBitcoinTokens } = require('../helper/chain/bitcoin');
 const { magicEden } = require('../helper/bitcoin-book/index.js');
 const { sumTokens2: sumSolTokens, } = require('../helper/solana')
+const { sumTokens2: sumEvmTokens } = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json');
 
-// '0x5ebc127fae83ed5bdd91fc6a5f5767E259dF5642',
+const trustForwarder = [
+    '0x5ebc127fae83ed5bdd91fc6a5f5767E259dF5642',
+]
 
 module.exports = {
     methodology:
@@ -10,6 +14,33 @@ module.exports = {
     bitcoin: {
         tvl: () => sumBitcoinTokens({
             owners: [ magicEden ],
+        })
+    },
+    ethereum: {
+        tvl: () => sumEvmTokens({
+            owners: trustForwarder,
+            tokens: [
+                ADDRESSES.null
+            ],
+            chain: 'ethereum'
+        })
+    },
+    base: {
+        tvl: () => sumEvmTokens({
+            owners: trustForwarder,
+            tokens: [
+                ADDRESSES.null
+            ],
+            chain: 'base'
+        })
+    },
+    arbitrum: {
+        tvl: () => sumEvmTokens({
+            owners: trustForwarder,
+            tokens: [
+                ADDRESSES.null
+            ],
+            chain: 'arbitrum'
         })
     },
     solana: {
@@ -41,6 +72,8 @@ module.exports = {
                 'DWrR2aenAeXaTZm8oZ1V5GSmEXZMaFJxkj8hNtQdftE8',
                 //Payment Account
                 '8EMedxp8fSSmL1fr6Pn7AmypyZAGfnckcfjTujaeWhFf',
+                //Seller Trade State
+                'NTYeYJ1wr4bpM5xo6zx5En44SvJFAd35zTxxNoERYqd',
             ]
         })
     }
