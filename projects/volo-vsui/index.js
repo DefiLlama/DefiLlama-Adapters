@@ -9,16 +9,9 @@ const VAULTS = [
 ]
 
 async function liquidStakingTVL() {
-    const obj = await sui.getObject('0x7fa2faa111b8c65bea48a23049bfd81ca8f971a262d981dcd9a17c3825cb5baf')
-    const staked = +(await sui.getDynamicFieldObject(
-        obj.fields.total_staked.fields.id.id,
-        obj.fields.staked_update_epoch,
-        { idType: 'u64' }
-    )).fields.value
-    const pending = +obj.fields.pending.fields.balance
-    const rewards = +obj.fields.total_rewards - obj.fields.collected_rewards
-    const tickets = +obj.fields.ticket_metadata.fields.total_supply
-    return staked + pending + rewards - tickets
+    const obj = await sui.getObject('0x2d914e23d82fedef1b5f56a32d5c64bdcc3087ccfea2b4d6ea51a71f587840e5')
+    const totalSuiSupply = +obj.fields.validator_pool.fields.total_sui_supply
+    return totalSuiSupply
 }
 
 async function getVaultTVL(api) {
@@ -50,6 +43,7 @@ async function tvl(api) {
 
 module.exports = {
     methodology: "Calculates the amount of SUI staked in Volo liquid staking contracts and tokens in Volo vaults. TVL includes LST (Liquid Staking) and all vault types combined.",
+    misrepresentedTokens: true,
     sui: {
         tvl: tvl,
     },
