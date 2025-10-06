@@ -57,31 +57,12 @@ const config = {
       "0x1f021be85d6b4d1867c43ef98d30ccc5a44791de", // predictionMarketV3Manager
       "0x0ec82449555efbe9a67cc51de3ef23a56dd79352", // predictionMarketV3Factory
     ],
-  },
-  abstract: {
-    v3: {
-      contracts: [
-        '0x4f4988A910f8aE9B3214149A8eA1F2E4e3Cd93CC',
-        '0xAeef2840081EAd9DDFB2f52cF16c0226320b8C6D',
-        '0x3e0F5F8F5Fb043aBFA475C0308417Bf72c463289'
-      ],
-      tokens: [ADDRESSES.abstract.USDC],
-    }
-  },
-  linea: {
-    v3: {
-      contracts: [
-        '0x756cc76895B4b87aE6CFd3cB66F51b97D13131b5',
-        '0x39E66eE6b2ddaf4DEfDEd3038E0162180dbeF340'
-      ],
-      tokens: [ADDRESSES.linea.USDC],
-    }
   }
 }
 
 module.exports = {
   methodology:
-    "Polkamarkets TVL equals the V1 contracts' EVM balance + V2/V3 contracts tokens balance.\n Polkamarkets staking TVL is the POLK balance of the V1+V2 bonds contracts, plus the POLK balance of V3 predictionMarketManager and predictionMarketFactory contracts.",
+    "Polkamarkets TVL equals the V1 contracts' EVM balance + V2 contracts tokens balance.\n Polkamarkets staking TVL is the POLK balance of the V1+V2 bonds contracts, plus the POLK balance of V3 predictionMarketManager and predictionMarketFactory contracts.",
 }
 
 Object.keys(config).forEach(chain => {
@@ -91,11 +72,6 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = []
       if (v1) ownerTokens.push([[ADDRESSES.null], v1])
       if (v2) ownerTokens.push([v2.tokens, v2.contract])
-      if (v3) {
-        v3.contracts.forEach(contract => {
-          ownerTokens.push([v3.tokens, contract])
-        })
-      }
       return sumTokens2({ api, ownerTokens, blacklistedTokens: polk ? [polk] : [] })
     },
     staking: staking(stakingContracts, polk ?? []),
