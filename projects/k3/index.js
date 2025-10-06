@@ -29,6 +29,16 @@ const configs = {
         '0xe34A3fb26B3121F4E68bE89Ea553BaC2149F975d',
       ],
     },
+    plasma: {
+      eulerVaultOwners: [
+        '0x060DB084bF41872861f175d83f3cb1B5566dfEA3',
+      ],
+    },
+    arbitrum: {
+      eulerVaultOwners: [
+        '0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C',
+      ],
+    },
   }
 }
 

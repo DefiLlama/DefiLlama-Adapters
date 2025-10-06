@@ -2,7 +2,6 @@ const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getUniqueAddresses } = require('../helper/tokenMapping')
-const { getChainTransform } = require('../helper/portedTokens')
 
 const activeTokensAbi = 'function getActiveTokens() view returns ((address[] activeTokens, address baseToken))'
 const tokenIdsAbi = 'function getUniV4TokenIds() view returns (uint256[])'
@@ -63,20 +62,17 @@ Object.keys(config).forEach(chain => {
   const { fromBlock, GRG_TOKEN_ADDRESSES, GRG_VAULT_ADDRESSES, UNISWAP_V4_POSM, UNISWAP_V4_STATE_VIEWER } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const transformAddress = await getChainTransform(chain)
       const { pools, tokens, uniV4Ids } = await getPoolInfo(api)
       return sumTokens2({
         owners: pools,
         tokens,
         api,
         blacklistedTokens: [GRG_TOKEN_ADDRESSES],
-        transformAddress,
         resolveUniV4: true,
         uniV4ExtraConfig: { positionIds: uniV4Ids, nftAddress: UNISWAP_V4_POSM, stateViewer: UNISWAP_V4_STATE_VIEWER }
       })
     },
     staking: async (api) => {
-      const transformAddress = await getChainTransform(chain)
       const { pools, uniV4Ids } = await getPoolInfo(api)
       // Add GRG balances from vaults
       const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: pools, target: GRG_VAULT_ADDRESSES })
@@ -87,7 +83,6 @@ Object.keys(config).forEach(chain => {
         tokens: [GRG_TOKEN_ADDRESSES], // Includes GRG ERC20 balances held by pools
         api,
         uniV3WhitelistedTokens: [GRG_TOKEN_ADDRESSES], // Includes GRG from Uniswap V4 positions
-        transformAddress,
         resolveUniV4: true,
         uniV4ExtraConfig: { positionIds: uniV4Ids, nftAddress: UNISWAP_V4_POSM, stateViewer: UNISWAP_V4_STATE_VIEWER }
       })

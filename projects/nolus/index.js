@@ -123,7 +123,7 @@ async function tvl(api, protocols) {
 }
 
 module.exports = {
-  methodology: 'The combined total of lending pool assets and the current market value of active leases',
+  methodology: 'The combined total of lending pool assets and the current market value of active margin positions',
   nolus: {
     tvl: async () => {
       return {

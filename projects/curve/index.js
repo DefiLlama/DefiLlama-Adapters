@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
 const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
@@ -296,7 +295,6 @@ function tvl(chain) {
   return async (api) => {
     const { block } = api
     let balances = {};
-    const transform = await getChainTransform(chain);
     let poolLists = await getPools(block, chain);
     const bl = new Set((blacklistedPools[chain] || []).map(a => a.toLowerCase()));
 
@@ -333,7 +331,7 @@ function tvl(chain) {
     }
     tokensAndOwners = filteredTOA
 
-    await sumTokens2({ balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
+    await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens })
     await handleUnlistedFxTokens(balances, chain);
     return balances;
   };
