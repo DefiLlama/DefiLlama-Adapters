@@ -70,4 +70,10 @@ module.exports = {
       return data.total_balance * 1e9
     },
   },
+  sui: {
+    query: async ({ target, contractId, typeArguments, sender }) => {
+      const { data } = await client.post('/sui/query', { target, contractId, typeArguments, sender })
+      return data
+    }
+  }
 }

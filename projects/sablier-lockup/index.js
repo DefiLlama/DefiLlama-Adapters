@@ -19,8 +19,8 @@ const config = {
   optimism: 'NZHzd2JNFKhHP5EWUiDxa5TaxGCFbSD4g6YnYr8JGi6',
   polygon: '8fgeQMEQ8sskVeWE5nvtsVL2VpezDrAkx2d1VeiHiheu',
   scroll: 'GycpYx8c9eRqxvEAfqnpNd1ZfXeuLzjRhnG7vvYaqEE1',
+  sonic: 'GnaSPX9XLkPn219CqbGFU1NgveuQk2Hh3c8WxjtesaEh',
   sei: 'AJU5rBfbuApuJpeZeaz6NYuYnnhAhEy4gFkqsSdAT6xb',
-  xdc: '',
   unichain: '3MUG4H3gZcp9fpGLiJMTMeUFcQQ6QdT317P4wYKyns9M',
   era: '7SuEYGYwZ835LjVGB85ZE8z5zmqdKgmRh8kAEeJefWQN',
 }
@@ -41,8 +41,10 @@ async function getTokensConfig(api, isVesting) {
 
   const tokens = assets
     .filter((asset) => isWhitelistedToken(asset.symbol, asset.id, isVesting))
-    .map(asset => asset.id)
-  
+    .map(asset => {
+			return asset.id.split('-').slice(2)[0];
+		})
+
   const ownerTokens = owners.map(owner => [tokens, owner])
   return { ownerTokens }
 }
