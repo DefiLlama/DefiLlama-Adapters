@@ -1,8 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { queryAddresses, sumTokens } = require('../helper/chain/radixdlt');
 
-const LSU_POOL =
-  'component_rdx1cppy08xgra5tv5melsjtj79c0ngvrlmzl8hhs7vwtzknp9xxs63mfp';
 const LSU_LP =
   'resource_rdx1thksg5ng70g9mmy9ne7wz0sc7auzrrwy7fmgcxzel2gvp8pj0xxfmf';
 
@@ -82,28 +80,8 @@ async function fetchData(addresses) {
   return await queryAddresses({ addresses });
 }
 
-// --- Reusable LSULP handler ---
-async function handleLSULP(api, lsulpAmount) {
-  if (!lsulpAmount) return;
-
-  const items = await queryAddresses({ addresses: [LSU_LP, LSU_POOL] });
-  const lsuLpItem = items.find((i) => i.address === LSU_LP);
-  const lsuPoolItem = items.find((i) => i.address === LSU_POOL);
-
-  const totalLsulpSupply = lsuLpItem.details.total_supply;
-  const lsuPoolXrdValue = lsuPoolItem.details.state.fields[4].value;
-
-  const multiplier = lsuPoolXrdValue / totalLsulpSupply;
-
-  api.add(ADDRESSES.radixdlt.XRD, lsulpAmount * multiplier);
-  api.add(LSU_LP, -lsulpAmount);
-}
-
 async function tvl(api) {
   await sumTokens({ api, owners: pools.map((p) => p.pool) });
-
-  const lsulpAmount = api.getBalances()[`radixdlt:${LSU_LP}`];
-  await handleLSULP(api, lsulpAmount);
 }
 
 async function borrowed(api) {
@@ -113,9 +91,6 @@ async function borrowed(api) {
     const { details } = poolData.find((item) => item.address === pool.pool);
     api.add(pool.resource, Number(details.state.fields[1].value));
   });
-
-  const lsulpAmount = api.getBalances()[`radixdlt:${LSU_LP}`];
-  await handleLSULP(api, lsulpAmount);
 }
 
 module.exports = {
