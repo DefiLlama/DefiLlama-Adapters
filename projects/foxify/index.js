@@ -17,32 +17,12 @@ async function sonicTvl(api) {
   });
 
   // Sum total supplies from both contracts
-  const totalSupply = supplies.reduce((sum, supply) => sum + BigInt(supply), 0n);
+  const staking = supplies.reduce((sum, supply) => sum + BigInt(supply), 0n);
 
-  // Fetch Fox token price from CoinGecko
-  // First try to get price by CoinGecko ID, fallback to contract address if available
-  let foxPrice = 0;
-  try {
-    // Try CoinGecko ID first (replace 'fox' with actual CoinGecko ID if known)
-    const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=foxify&vs_currencies=usd');
-    const priceData = await priceResponse.json();
-    foxPrice = priceData.foxify?.usd || 0;
-    
-    // If fox ID doesn't work, you might need to find the correct CoinGecko ID
-    // or use contract address approach if Sonic is supported
-    if (foxPrice === 0) {
-      console.warn('Fox token price not found on CoinGecko with ID "fox"');
-    }
-  } catch (error) {
-    console.warn('Failed to fetch Fox price from CoinGecko:', error.message);
-    foxPrice = 0;
-  }
-
-  // Calculate TVL: total supply * price
-  const tvlValue = (Number(totalSupply) / 1e18) * foxPrice;
+  api.add("coingecko:foxify", staking);
 
   // Return TVL as a balance object
-  api.addUSDValue(tvlValue);
+  api.addUSDValue(staking);
   return api.getBalances();
 }
 
@@ -53,9 +33,7 @@ async function arbitrumTvl(api) {
     target: arbitrumKitsuneVaultContract,
   });
 
-  // Add the totalAssets to TVL (assuming it's already in the correct token units)
-  // For now, adding as USD value - you should replace this with the actual token
-  api.addUSDValue(Number(totalAssets) / 1e6);
+  api.addUSDValue(Number(totalAssets));
   return api.getBalances();
 }
 
