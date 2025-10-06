@@ -1,28 +1,39 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const CONFIG = {
-  BBOR1: '0x7A859B5aa0E8294be505af730Ec75E81B14d2788', //  ETH+ Vault
-  CBOR2: '0xb8ca40E2c5d77F0Bc1Aa88B2689dddB279F7a5eb', //  USDC+ Vault
-  brktETH: '0x6C8550167BbD06D4610a6A443eCbEd84Bd1AccD6',
+  brUSDC: '0xb8ca40E2c5d77F0Bc1Aa88B2689dddB279F7a5eb', //  USDC+ Vault
+  brETH: '0x3588e6Cb5DCa99E35bA2E2a5D42cdDb46365e71B', // ETH+ Vault
+  bravUSDC: '0x9f96E4B65059b0398B922792d3fF9F10B4567533', // Avant+ Vault
+  bracketLens: '0xcdc3a8374532Ddb762c76604f30F6a9FDd29082c',
+  WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   USDC: ADDRESSES.ethereum.USDC
 }
 
-const abis = {
-  totalActiveShares: 'uint256:totalActiveShares',
-  assetsPerShare: 'uint256:assetsPerShare',
-  precision: 'uint256:PRECISION'
-}
-
 const tvl = async (api) => {
-  const { BBOR1, CBOR2, brktETH } = CONFIG
+  const { brUSDC, brETH, bravUSDC, bracketLens, WETH, USDC } = CONFIG
 
-  const [share, nav, precision] = await Promise.all([
-    api.call({ abi: abis.totalActiveShares, target: BBOR1 }),
-    api.call({ abi: abis.assetsPerShare, target: BBOR1 }),
-    api.call({ abi: abis.precision, target: BBOR1 }),
-  ])
+  const brUSDCTvl = await api.call({
+    abi: 'function getTVL(address) external view returns (uint256)',
+    target: bracketLens,
+    params: [brUSDC],
+  });
 
-  api.add(brktETH, share * nav / precision)
-  await api.erc4626Sum({ calls: [CBOR2], tokenAbi: 'address:token', balanceAbi: 'uint256:activeSupply' })
+  api.add(USDC, brUSDCTvl)
+
+  const brETHTvl = await api.call({
+    abi: 'function getTVL(address) external view returns (uint256)',
+    target: bracketLens,
+    params: [brETH],
+  });
+
+  api.add(WETH, brETHTvl)
+
+  const bravUSDCVtl = await api.call({
+    abi: 'function getTVL(address) external view returns (uint256)',
+    target: bracketLens,
+    params: [bravUSDC],
+  });
+
+  api.add(USDC, bravUSDCVtl)
 }
 
 module.exports = {
