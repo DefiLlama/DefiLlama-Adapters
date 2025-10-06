@@ -1,8 +1,8 @@
 const CHAINS = [
-  'ethereum', 'base', 'optimism', 'arbitrum', 'polygon', 'avalanche', 'bsc',
+  'ethereum', 'base', 'optimism', 'arbitrum', 'polygon', 'bsc',
   'scroll', 'mantle', 'linea', 'zksync', 'taiko', 'blast', 'mode', 'zora', 'metis',
-  'cronos', 'celo', 'gnosis', 'conflux', 'ronin', 'lisk',
-  'berachain', 'kaia', 'core', 'redstone', 'cyber', 'story', 'morph', 'zircuit',
+  'cronos', 'celo','conflux', 'ronin', 'lisk',
+  'berachain','core', 'redstone', 'morph', 'zircuit',
   'apechain', 'ancient8', 'degen', 'botanix', 'mezo', 'bob',
   'abstract', 'soneium', 'ink', 'unichain', 'plume', 'gravity', 'sonic', 'manta',
 ];
