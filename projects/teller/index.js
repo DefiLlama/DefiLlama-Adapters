@@ -1,13 +1,67 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { request, gql } = require("graphql-request");
+const { cachedGraphQuery, getConfig } = require('../helper/cache')
+
+const sdk = require('@defillama/sdk')
+
+
+
+/*
+ TO TEST 
+node test.js projects/teller/index.js
+*/
+
+// see aave gotchi  and yield-yak 
+
+const teller_graph_config = {
+
+  ethereum:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/4JruhWH1ZdwvUuMg2xCmtnZQYYHvmEq6cmTcZkpM6pW') 
+
+
+}
+
+const tellerGraphQuery = gql`
+  {
+    bids(first:100) {
+      
+      id
+    }
+  }
+
+
+`
+
+
+
+
+
+const pools_graph_config = {
+
+  ethereum: { url: ""  }
+
+
+}
+
+const poolsGraphQuery = gql`
+  query {} 
+
+
+`
+
+
+
+
+
+
+
 
 // https://docs.teller.org/teller-v2-protocol/l96ARgEDQcTgx4muwINt/resources/deployed-contracts
-const config = {
+/*const config = {
   ethereum: { factory: '0x2551a099129ad9b0b1fec16f34d9cb73c237be8b', fromBlock: 16472616, tellerV2: '0x00182FdB0B880eE24D428e3Cc39383717677C37e', },
   polygon: { factory: '0x76888a882a4ff57455b5e74b791dd19df3ba51bb', fromBlock: 38446227, tellerV2: '0xD3D79A066F2cD471841C047D372F218252Dbf8Ed', },
   arbitrum: { factory: '0x71B04a8569914bCb99D5F95644CF6b089c826024', fromBlock: 108629315, tellerV2: '0x5cfD3aeD08a444Be32839bD911Ebecd688861164', },
-  base: { factory: '0x71B04a8569914bCb99D5F95644CF6b089c826024', fromBlock: 2935376, tellerV2: '0x5cfD3aeD08a444Be32839bD911Ebecd688861164', },
-  mantle: { factory: '0x6eB9b34913Bd96CA2695519eD0F8B8752d43FD2b', fromBlock: 3480394, tellerV2: '0xe6774DAAEdf6e95b222CD3dE09456ec0a46672C4', },
+  base: { factory: '0x71B04a8569914bCb99D5F95644CF6b089c826024', fromBlock: 2935376, tellerV2: '0x5cfD3aeD08a444Be32839bD911Ebecd688861164', }
 }
 
 const blacklistedTokens = ['0x8f9bbbb0282699921372a134b63799a48c7d17fc', '0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401']
@@ -79,23 +133,46 @@ async function getData(api) {
     })
     return escrowMap
   }
-}
+}*/
 
 async function tvl(api) {
-  const data = await getData(api)
-  return sumTokens2({ api, ownerTokens: Object.values(data).map(i => [i.tokens, i.owner]), blacklistedTokens, permitFailure: true, })
+ // const data = await getData(api)
+ // return sumTokens2({ api, ownerTokens: Object.values(data).map(i => [i.tokens, i.owner]), blacklistedTokens, permitFailure: true, })
+
+  let tellerGraphUrl = teller_graph_config[ api.chain ]
+
+    const tellerGraphResponse = await request(
+      tellerGraphUrl,
+      tellerGraphQuery,
+      {   }
+    );
+
+
+    console.log( { tellerGraphResponse  } );
+
+
+
+
 }
 
 async function borrowed(api) {
-  const data = await getData(api)
+  /*const data = await getData(api)
   const activeLoans = Object.keys(data)
   const { tellerV2 } = config[api.chain]
   const loanData = await api.multiCall({ abi: "function bids(uint256) view returns (address borrower, address receiver, address lender, uint256 marketplaceId, bytes32 _metadataURI, tuple(address lendingToken, uint256 principal, tuple(uint256 principal, uint256 interest) totalRepaid, uint32 timestamp, uint32 acceptedTimestamp, uint32 lastRepaidTimestamp, uint32 loanDuration) loanDetails, tuple(uint256 paymentCycleAmount, uint32 paymentCycle, uint16 APR) terms, uint8 state, uint8 paymentType)", calls: activeLoans, target: tellerV2 })
   loanData.forEach(i => {
     api.add(i.loanDetails.lendingToken, i.loanDetails.principal - i.loanDetails.totalRepaid.principal)
-  })
+  })*/
+
+
+
+
+
+
 }
 
-Object.keys(config).forEach(chain => {
+const chains_config = ["ethereum"] ;
+
+chains_config.forEach(chain => {
   module.exports[chain] = { tvl, borrowed, }
 })
