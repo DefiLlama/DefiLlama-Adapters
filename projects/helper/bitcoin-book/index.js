@@ -109,6 +109,7 @@ const tothemoon = require('./tothemoon.js')
 const indodax = require('./indodax.js')
 const river = require('./river.js')
 const xbtc = require('./okx-xbtc.js')
+const leadbtc = require('./leadbtc.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -261,5 +262,6 @@ module.exports = {
   tothemoon,
   indodax,
   river,
-  xbtc
+  xbtc,
+  leadbtc,
 }
