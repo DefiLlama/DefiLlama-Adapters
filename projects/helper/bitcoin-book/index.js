@@ -78,6 +78,7 @@ const pionexCex = require('./pionex-cex.js')
 const probit = require('./probit.js')
 const robinhood = require('./robinhood.js')
 const rosenBridge = require('./rosen-bridge.js')
+const rskBridge = require('./rsk-bridge.js')
 const silkroad = require('./silkroad.js')
 const swissborg = require('./swissborg.js')
 const toobit = require('./toobit.js')
@@ -233,6 +234,7 @@ module.exports = {
   probit,
   robinhood,
   rosenBridge,
+  rskBridge,
   silkroad,
   swissborg,
   toobit,
