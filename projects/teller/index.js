@@ -1,7 +1,5 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
-const { request, gql } = require("graphql-request");
-const { cachedGraphQuery, getConfig } = require('../helper/cache')
+const { gql, request } = require("graphql-request");
+const { cachedGraphQuery } = require('../helper/cache')
 
 const sdk = require('@defillama/sdk')
 
@@ -23,32 +21,45 @@ const teller_graph_config = {
 
 const tellerGraphQuery = gql`
  {
-   
     tokenVolumes (orderBy: totalActive, orderDirection: desc ){
       id
       token {
         id
-        address 
-        symbol 
+        address
+        symbol
         decimals
       }
       collateralToken {
         id
         address
-        symbol 
+        symbol
+        decimals
       }
       totalAvailable,
       outstandingCapital,
       totalLoaned
       totalActive
-      totalAccepted 
-      
+      totalAccepted
     }
-     
-  
 }
+`
 
-
+const bidCollateralQuery = gql`
+  query ($skip: Int!) {
+    bidCollaterals(first: 1000, skip: $skip, where: { status: "Deposited" }) {
+      id
+      amount
+      collateralAddress
+      token {
+        address
+        symbol
+        decimals
+      }
+      bid {
+        status
+      }
+    }
+  }
 `
 
 
@@ -176,39 +187,48 @@ async function getData(api) {
 }*/
 
 async function tvl(api) {
- // const data = await getData(api)
- // return sumTokens2({ api, ownerTokens: Object.values(data).map(i => [i.tokens, i.owner]), blacklistedTokens, permitFailure: true, })
+  const tellerGraphUrl = teller_graph_config[api.chain]
 
-  let tellerGraphUrl = teller_graph_config[ api.chain ]
+  // Fetch all BidCollateral entries with status "Deposited" and active bids
+  let allCollaterals = []
+  let skip = 0
+  const pageSize = 1000
 
-    const tellerGraphResponse = await request(
-      tellerGraphUrl,
-      tellerGraphQuery,
-      {   }
-    );
+  while (true) {
+    const data = await request(tellerGraphUrl, bidCollateralQuery, { skip })
+    if (!data.bidCollaterals || data.bidCollaterals.length === 0) break
 
+    allCollaterals = allCollaterals.concat(data.bidCollaterals)
 
-    console.log( { tellerGraphResponse  } );
+    if (data.bidCollaterals.length < pageSize) break
+    skip += pageSize
+  }
 
+  // Filter for active loans only (status: Accepted)
+  const activeCollaterals = allCollaterals.filter(c => c.bid.status === 'Accepted')
 
-
-
+  // Sum collateral by token
+  activeCollaterals.forEach(collateral => {
+    api.add(collateral.token.address, collateral.amount)
+  })
 }
 
 async function borrowed(api) {
-  /*const data = await getData(api)
-  const activeLoans = Object.keys(data)
-  const { tellerV2 } = config[api.chain]
-  const loanData = await api.multiCall({ abi: "function bids(uint256) view returns (address borrower, address receiver, address lender, uint256 marketplaceId, bytes32 _metadataURI, tuple(address lendingToken, uint256 principal, tuple(uint256 principal, uint256 interest) totalRepaid, uint32 timestamp, uint32 acceptedTimestamp, uint32 lastRepaidTimestamp, uint32 loanDuration) loanDetails, tuple(uint256 paymentCycleAmount, uint32 paymentCycle, uint16 APR) terms, uint8 state, uint8 paymentType)", calls: activeLoans, target: tellerV2 })
-  loanData.forEach(i => {
-    api.add(i.loanDetails.lendingToken, i.loanDetails.principal - i.loanDetails.totalRepaid.principal)
-  })*/
+  const tellerGraphUrl = teller_graph_config[api.chain]
 
+  const { tokenVolumes } = await cachedGraphQuery(
+    `teller/${api.chain}`,
+    tellerGraphUrl,
+    tellerGraphQuery
+  );
 
-
-
-
-
+  // Borrowed is the outstandingCapital for each principal token
+  // Use only protocol-level entries (id starts with "protocol-v2-") to avoid duplicates
+  tokenVolumes.forEach(volume => {
+    if (volume.token && volume.outstandingCapital && volume.id.startsWith('protocol-v2-') && !volume.collateralToken) {
+      api.add(volume.token.address, volume.outstandingCapital)
+    }
+  });
 }
 
 const chains_config = ["ethereum"] ;
