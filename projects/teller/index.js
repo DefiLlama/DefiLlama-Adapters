@@ -22,12 +22,31 @@ const teller_graph_config = {
 }
 
 const tellerGraphQuery = gql`
-  {
-    bids(first:100) {
-      
+ {
+   
+    tokenVolumes (orderBy: totalActive, orderDirection: desc ){
       id
+      token {
+        id
+        address 
+        symbol 
+        decimals
+      }
+      collateralToken {
+        id
+        address
+        symbol 
+      }
+      totalAvailable,
+      outstandingCapital,
+      totalLoaned
+      totalActive
+      totalAccepted 
+      
     }
-  }
+     
+  
+}
 
 
 `
@@ -44,7 +63,28 @@ const pools_graph_config = {
 }
 
 const poolsGraphQuery = gql`
-  query {} 
+    query groupPoolMetrics($block: Block_height) {
+      group_pool_metric(limit: 1000) {
+        id
+        group_pool_address
+        principal_token_address
+        collateral_token_address
+        shares_token_address
+        market_id
+        total_principal_tokens_committed
+        total_principal_tokens_withdrawn
+        total_principal_tokens_borrowed
+        total_interest_collected 
+        token_difference_from_liquidations
+        total_principal_tokens_repaid
+        total_collateral_tokens_escrowed
+        total_collateral_withdrawn
+        interest_rate_upper_bound
+        interest_rate_lower_bound
+        liquidity_threshold_percent
+        collateral_ratio
+      }
+    }
 
 
 `
