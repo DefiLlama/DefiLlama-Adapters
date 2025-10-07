@@ -12,16 +12,16 @@ const STAKING_DATA_ADDRESSES = {
 }
 
 const fetchReserveData = async (api, poolDataAddress, isBorrowed) => {
-  const reservesData = await api.call({ target: poolDataAddress, abi: poolDataAbi.getAllMarketData });
-  if (reservesData) {
-    reservesData.mainPoolReservesData.forEach((mainPool) => {
+  const allMarketData = await api.call({ target: poolDataAddress, abi: poolDataAbi.getAllMarketData });
+  if (allMarketData) {
+    allMarketData.mainPoolReservesData.forEach((mainPool) => {
       const amounts = 
         isBorrowed 
           ? [mainPool.totalScaledVariableDebt] 
           : [mainPool.availableLiquidity, mainPool.totalScaledVariableDebt];
       api.add(mainPool.underlyingAsset, amounts);
     }); 
-    reservesData.miniPoolData.forEach((miniPool) => {
+    allMarketData.miniPoolData.forEach((miniPool) => {
       miniPool.reservesData.forEach((mpReservesData) => {
         const amounts = 
           isBorrowed 

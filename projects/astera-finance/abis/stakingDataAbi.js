@@ -1,4 +1,3 @@
 module.exports = {
-  totalSupply: `
-    function totalSupply() view returns (uint256 total)`,
+  totalSupply: `function totalSupply() view returns (uint256 total)`,
 };
