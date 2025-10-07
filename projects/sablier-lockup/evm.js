@@ -2,9 +2,9 @@ const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { request } = require("graphql-request");
 const sdk = require("@defillama/sdk");
 
-const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/3b4ea6b/v1/graphql';
+const ENVIO_ENDPOINT = 'https://indexer.hyperindex.xyz/53b7e25/v1/graphql';
 
-// Chains using Envio endpoint
+// Chains using Envio indexer.
 const CHAIN_IDS_ENVIO = {
   abstract: 2741,
   arbitrum: 42161,
@@ -34,12 +34,11 @@ const CHAIN_IDS_ENVIO = {
   era: 324,
 };
 
-// Chains using graph endpoints
+// Chains that are not using the Envio indexer but using the Graph.
 const SUBGRAPH_ENDPOINTS = {
-  sei: '41ZGYcFgL2N7L5ng78S4sD6NHDNYEYcNFxnz4T8Zh3iU',
-  iotex: '6No3QmRiC8HXLEerDFoBpF47jUPRjhntmv28HHEMxcA2',
+  sei: 'AJU5rBfbuApuJpeZeaz6NYuYnnhAhEy4gFkqsSdAT6xb',
+  iotex: '2P3sxwmcWBjMUv1C79Jh4h6VopBaBZeTocYWDUQqwWFV',
 };
-
 
 const config = {
   ...Object.fromEntries(Object.keys(CHAIN_IDS_ENVIO).map(k => [k, ENVIO_ENDPOINT])),
@@ -52,9 +51,10 @@ query getChainData($chainId: numeric!) {
   Asset(where: { chainId: { _eq: $chainId } }) { id chainId symbol }
 }
 `
+
 const subgraphPayload = `
 {
-  contracts { id address }
+  contracts { id address category }
   assets { id chainId symbol }
 }
 `
@@ -77,10 +77,10 @@ async function getTokensConfig(api, isVesting) {
 
   const tokens = assets
     .filter(asset => isWhitelistedToken(asset.symbol, asset.id, isVesting))
-    .map(asset => asset.id.split('-').slice(2)[0])
-  
-  const ownerTokens = owners.map(owner => [tokens, owner])
-  return { ownerTokens }
+    .map(asset => asset.id.split('-')[2]);
+
+  const ownerTokens = owners.map(owner => [tokens, owner]);
+  return { ownerTokens };
 }
 
 const tvl = async (api) => api.sumTokens(await getTokensConfig(api, false));
