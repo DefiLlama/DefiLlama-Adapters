@@ -94,8 +94,8 @@ Object.keys(config).forEach(chain => {
     module.exports[chain] = {
       tvl: async (api) => {
 
+        let value
         let balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x7519403E12111ff6b710877Fcd821D0c12CAF43A', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
-        let value = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x7519403E12111ff6b710877Fcd821D0c12CAF43A', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
 
         api.add('0x7519403E12111ff6b710877Fcd821D0c12CAF43A', balance)
 
