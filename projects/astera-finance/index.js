@@ -25,7 +25,7 @@ const fetchReserveData = async (api, poolDataAddress, isBorrowed) => {
       miniPool.reservesData.forEach((mpReservesData) => {
         const amounts = 
           isBorrowed 
-            ?  [mpReservesData.totalScaledVariableDebt] 
+            ? [mpReservesData.totalScaledVariableDebt] 
             : [mpReservesData.availableLiquidity, mpReservesData.totalScaledVariableDebt];
         api.add(mpReservesData.underlyingAsset, amounts);
       });
