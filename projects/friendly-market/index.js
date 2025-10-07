@@ -5,6 +5,7 @@ module.exports = compoundV3Exports({
     markets: [
       '0x37a1efd3a3f37e01a856f836e5f680efed6a1714', // NIBI Market
       '0xb63de139c110468976f105f4f35a66869f45ba00', // USDC Market
+      '0xfa5e2c325e482e52cf2a86c394759283feeea3bc', // ETH Market
     ],
   }
   
