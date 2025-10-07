@@ -32,8 +32,7 @@ module.exports = {
         '0xB3F4D70C6a18cC0F2D1205dbF3B21cB73e1B0592', // GPTW,
         '0xA67c48F86Fc6d0176Dca38883CA8153C76a532c7', // syBTC,
         '0x4b3a2187648902082db0a44e8235d57F3f23DD10', // PINEYE,
-        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB,
-        '0xaa036928c9c0Df07d525B55ea8EE690Bb5a628C1', // EVAA
+        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
       ],
       holders: [
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4' // portal
@@ -370,8 +369,7 @@ module.exports = {
         'EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs', // USDT,
         'EQBh9XACT0B60U8Q48VnjyqCxzxpM4oA0c8rqKt4h70yk1V5', // UXLINK,
         'EQD-cvR0Nz6XAyRBvbhz-abTrRC6sI5tvHvvpeQraV9UAAD7', // CATI,
-        'EQDY2MzMJY_9OWm9UyQNLTU2Qs_8BRomlMUbbADnh-tFkLaU', // PINEYE,
-        'EQBKMfjX_a_dsOLm-juxyVZytFP7_KKnzGv6J01kGc72gVBp', // EVAA
+        'EQDY2MzMJY_9OWm9UyQNLTU2Qs_8BRomlMUbbADnh-tFkLaU', // PINEYE
       ],
       holders: [
         'EQBZh9CpLZyNlwI7am0PHpVy8T8zdJxAhlG3m3xMi0BoVaUh' // portal
