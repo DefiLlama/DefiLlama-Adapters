@@ -86,6 +86,8 @@ async function unwrapUniswapV4NFTs({ balances = {}, nftsAndOwners = [], block, c
   const commonConfig = { balances, owner, owners, chain, block, blacklistedTokens, whitelistedTokens, uniV4ExtraConfig, }
   if (!stateViewer)
     switch (chain) {
+      // https://docs.uniswap.org/contracts/v4/deployments
+      case 'ethereum': stateViewer = '0x7ffe42c4a5deea5b0fec41c94c136cf115597227'; break;
       case 'base': stateViewer = '0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71'; break;
       default: throw new Error('missing default uniswap state viewer address chain: ' + chain)
     }
@@ -93,6 +95,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, nftsAndOwners = [], block, c
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
+        case 'ethereum': nftAddress = '0xbd216513d74c8cf14cf4747e6aaa6420ff64ee9e'; break;
         case 'base': nftAddress = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
