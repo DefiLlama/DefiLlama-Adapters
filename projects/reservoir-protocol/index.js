@@ -13,6 +13,7 @@ const config = {
     // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
   ],
   berachain: [],
+  plasma: []
 }
 
 const assets = {
