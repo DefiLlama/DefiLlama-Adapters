@@ -1,8 +1,9 @@
 const {CONFIG_DATA} = require("./config");
-const {DHEDGE_FACTORY_ABI, MSTABLE_POOL_ABI} = require("./abis");
+const {DHEDGE_FACTORY_ABI, DHEDGE_POOL_LOGIC_ABI, MSTABLE_POOL_MANAGER_LOGIC_ABI} = require("./abis");
+const sdk = require("@defillama/sdk");
 
 
-async function tvl(api) {
+async function getLockedAssetsForFunds(api) {
     const { chain, } = api
     const { dhedgeFactory, mstableManager } = CONFIG_DATA[chain];
 
@@ -12,22 +13,47 @@ async function tvl(api) {
         params: [mstableManager],
     });
 
-    const poolSummariesRes = await api.multiCall({
-        abi: MSTABLE_POOL_ABI,
+    const poolManagerLogicAddresses = await api.multiCall({
+        abi: DHEDGE_POOL_LOGIC_ABI,
         calls: pools,
         permitFailure: true
     });
 
-    const poolSummaries = poolSummariesRes.filter(i => i && i.totalFundValue !== null && i.totalFundValue !== undefined);
+    const fundCompositions = await api.multiCall({
+        abi: MSTABLE_POOL_MANAGER_LOGIC_ABI,
+        calls: poolManagerLogicAddresses,
+        permitFailure: true
+    });
 
-    const totalValue = poolSummaries.reduce(
-        (acc, i) => acc + +i.totalFundValue,
-        0
-    );
+    return fundCompositions.map(composition => {
+        return composition.assets.reduce(
+            (lockedTokens, [address], i) => ({ ...lockedTokens, [address]: composition.balances[i] }),
+        {},
+        )
+    })
+}
 
-    return {
-        tether: totalValue / 1e18,
-    };
+
+async function tvlForChain(api) {
+    const { chain, } = api
+    const isEthereum = chain === 'ethereum';
+
+    const assetBalances = await getLockedAssetsForFunds(api);
+
+    const lockedBalances = {};
+
+    assetBalances
+        .forEach((locked) => Object.entries(locked)
+            .map(([underlying, balance]) => (
+                [isEthereum ? underlying : `${chain}:${underlying}`, balance]
+            ))
+            .forEach(([address, balance]) =>
+                sdk.util.sumSingleBalance(lockedBalances, address, balance)
+            )
+        );
+
+    return lockedBalances;
+
 }
 
 module.exports = {
@@ -36,7 +62,7 @@ module.exports = {
     methodology:
         "Aggregates total value of each mStable vaults on Ethereum",
     ethereum: {
-        tvl,
+        tvl: tvlForChain,
     },
 
 };
