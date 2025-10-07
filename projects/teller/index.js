@@ -9,9 +9,17 @@ const pools_graph_config = {
   ethereum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-pools-mainnet/version/0.4.21.6/api',
   base: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-pools-base/version/0.4.21.4/api', 
   arbitrum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-pools-arbitrum/version/0.4.21.4/api' , 
-  katana: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-katana/0.4.21.12/gn',
-  hyperevm: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-hyperevm/0.4.21.11/gn'
 }
+
+
+const pools_v2_graph_config = {
+  ethereum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-poolsv2-mainnet/version/0.4.21.5/api',
+  base: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-poolsv2-base/version/0.4.21.5/api', 
+  arbitrum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-poolsv2-arbitrum/version/0.4.21.5/api' , 
+  katana: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-katana/0.4.21.12/gn',
+//   hyperevm: 'https://api.goldsky.com/api/public/project_cme01oezy1dwd01um5nile55y/subgraphs/teller-pools-v2-hyperevm/0.4.21.11/gn'
+}
+
 
 const poolsGraphQuery = gql`
   {
@@ -24,7 +32,8 @@ const poolsGraphQuery = gql`
       total_principal_tokens_withdrawn
       total_principal_tokens_borrowed
       total_principal_tokens_repaid
-      
+      total_interest_collected
+      token_difference_from_liquidations
       total_collateral_tokens_deposited
       total_collateral_tokens_withdrawn
     }
@@ -36,28 +45,62 @@ const poolsGraphQuery = gql`
 
 
 async function tvl(api) {
-  const poolsGraphUrl = pools_graph_config[api.chain]
+  let allPools = []
 
-  const { groupPoolMetrics } = await request(poolsGraphUrl, poolsGraphQuery);
+  // Fetch from v1 pools if available
+  if (pools_graph_config[api.chain]) {
+    const { groupPoolMetrics } = await request(pools_graph_config[api.chain], poolsGraphQuery);
+    allPools = allPools.concat(groupPoolMetrics)
+  }
 
-  // TVL = total_collateral_tokens_deposited - total_collateral_tokens_withdrawn
-  groupPoolMetrics.forEach(pool => {
-    const deposited = pool.total_collateral_tokens_deposited || '0'
-    const withdrawn = pool.total_collateral_tokens_withdrawn || '0'
-    const netCollateral = BigInt(deposited) - BigInt(withdrawn)
-    if (netCollateral > 0n) {
-      api.add(pool.collateral_token_address, netCollateral.toString())
+  // Fetch from v2 pools if available
+  if (pools_v2_graph_config[api.chain]) {
+    const { groupPoolMetrics } = await request(pools_v2_graph_config[api.chain], poolsGraphQuery);
+    allPools = allPools.concat(groupPoolMetrics)
+  }
+
+  allPools.forEach(pool => {
+    const totalInterestCollected = BigInt(pool.total_interest_collected || '0')
+    const tokenDifferenceFromLiquidations = BigInt(pool.token_difference_from_liquidations || '0')
+    const totalCollateralEscrowedNet = BigInt(pool.total_collateral_tokens_deposited || '0') - BigInt(pool.total_collateral_tokens_withdrawn || '0')
+
+    const totalTokensActivelyBorrowed = BigInt(pool.total_principal_tokens_borrowed || '0') - BigInt(pool.total_principal_tokens_repaid || '0')
+    const totalTokensActivelyCommitted =
+      BigInt(pool.total_principal_tokens_committed || '0') +
+      totalInterestCollected +
+      tokenDifferenceFromLiquidations -
+      BigInt(pool.total_principal_tokens_withdrawn || '0')
+
+    // Add collateral TVL 
+    if (totalCollateralEscrowedNet > 0n) {
+      api.add(pool.collateral_token_address, totalCollateralEscrowedNet.toString())
+    }
+
+    // Add net principal TVL (committed - borrowed)
+    const netPrincipalTvl = totalTokensActivelyCommitted - totalTokensActivelyBorrowed
+    if (netPrincipalTvl > 0n) {
+      api.add(pool.principal_token_address, netPrincipalTvl.toString())
     }
   })
 }
 
 async function borrowed(api) {
-  const poolsGraphUrl = pools_graph_config[api.chain]
+  let allPools = []
 
-  const { groupPoolMetrics } = await request(poolsGraphUrl, poolsGraphQuery);
+  // Fetch from v1 pools if available
+  if (pools_graph_config[api.chain]) {
+    const { groupPoolMetrics } = await request(pools_graph_config[api.chain], poolsGraphQuery);
+    allPools = allPools.concat(groupPoolMetrics)
+  }
+
+  // Fetch from v2 pools if available
+  if (pools_v2_graph_config[api.chain]) {
+    const { groupPoolMetrics } = await request(pools_v2_graph_config[api.chain], poolsGraphQuery);
+    allPools = allPools.concat(groupPoolMetrics)
+  }
 
   // Borrowed = total_principal_tokens_borrowed - total_principal_tokens_repaid
-  groupPoolMetrics.forEach(pool => {
+  allPools.forEach(pool => {
     const borrowed = pool.total_principal_tokens_borrowed || '0'
     const repaid = pool.total_principal_tokens_repaid || '0'
     const netBorrowed = BigInt(borrowed) - BigInt(repaid)
@@ -67,8 +110,9 @@ async function borrowed(api) {
   })
 }
 
-const chains_config = ["ethereum","base","arbitrum","katana"] ;
+// All chains that have either v1 or v2 pools
+const allChains = ["ethereum", "base", "arbitrum", "katana" ]
 
-chains_config.forEach(chain => {
-  module.exports[chain] = { tvl, borrowed, }
+allChains.forEach(chain => {
+  module.exports[chain] = { tvl, borrowed }
 })
