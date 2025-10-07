@@ -162,6 +162,7 @@
   "fuse",
   "fusion",
   "gala",
+  "gatelayer",
   "genesys",
   "genshiro",
   "goat",
@@ -456,5 +457,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "xone"
 ]

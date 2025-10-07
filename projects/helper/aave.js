@@ -193,7 +193,9 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [] } = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [], isAaveV3Fork } = {}) {
+  if (isAaveV3Fork && !abis.getReserveData)
+    abis.getReserveData = "function getReserveData(address asset) view returns (((uint256 data) configuration, uint128 liquidityIndex, uint128 currentLiquidityRate, uint128 variableBorrowIndex, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, uint16 id, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint128 accruedToTreasury, uint128 unbacked, uint128 isolationModeTotalDebt))"
 
   async function tvl(api) {
     const data = await getReservesData(api)
@@ -202,6 +204,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
       return sumTokens2({ tokensAndOwners, api, blacklistedTokens })
     const balances = {}
     const res = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
+    
     res.forEach((v, i) => {
       sdk.util.sumSingleBalance(balances, data[i].currency, v * data[i].price, api.chain)
     })
