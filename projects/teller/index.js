@@ -1,13 +1,13 @@
 const { gql, request } = require("graphql-request");
  
- const { getLogs } = require('../helper/cache/getLogs')
 
 const { cachedGraphQuery } = require('../helper/cache')
 
 const sdk = require('@defillama/sdk')
 
-
+/*
 const { sumTokens2 } = require('../helper/unwrapLPs')
+ const { getLogs } = require('../helper/cache/getLogs')
 
 
 
@@ -20,7 +20,7 @@ const ogconfig = {
 }
 
 const blacklistedTokens = ['0x8f9bbbb0282699921372a134b63799a48c7d17fc', '0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401']
-
+*/
 
 /*
  TO TEST
@@ -132,84 +132,7 @@ const poolsGraphQuery = gql`
   }
 `
 
- 
-/*
-async function ogBidCollateral(api) {
-  const { factory, fromBlock, tellerV2 } = ogconfig[api.chain]
-
-  const collateralDepositedLogs = await getLogs({
-    api,
-    target: factory,
-    topics: ['0x1a7f128dbc559fb97831b7681dee32957c2917e95d1c5070da20fb89e91f9d7a'],
-    eventAbi: 'event CollateralDeposited (uint256 _bidId, uint8 _type, address _collateralAddress, uint256 _amount, uint256 _tokenId)',
-    onlyArgs: true,
-    extraKey: 'CollateralDeposited',
-    fromBlock,
-  })
-
-  const escrowLogs = await getLogs({
-    api,
-    target: factory,
-    topics: ['0xc201bfb915e3eed80ff17e013f3d88db1c51ac7fc12728fce91a2afc659128ef'],
-    eventAbi: 'event CollateralEscrowDeployed (uint256 _bidId, address _collateralEscrow)',
-    onlyArgs: true,
-    extraKey: 'CollateralEscrowDeployed',
-    fromBlock,
-  })
-
-  const repaidLogs = await getLogs({
-    api,
-    target: tellerV2,
-    topic: 'LoanRepaid(uint256)',
-    eventAbi: 'event LoanRepaid(uint256 indexed bidId)',
-    extraKey: 'LoanRepaid',
-    onlyArgs: true,
-    fromBlock,
-  })
-
-  const liquidatedLogs = await getLogs({
-    api,
-    target: tellerV2,
-    topic: 'LoanLiquidated(uint256,address)',
-    eventAbi: 'event LoanLiquidated(uint256 indexed bidId, address indexed liquidator)',
-    onlyArgs: true,
-    extraKey: 'LoanLiquidated',
-    fromBlock,
-  })
-
-  // Build set of closed bids
-  const closedBidSet = new Set()
-  repaidLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
-  liquidatedLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
-
-  // Build escrow map
-  const escrowMap = {}
-  escrowLogs.forEach(i => {
-    const bidId = Number(i._bidId)
-    if (closedBidSet.has(bidId)) return
-    escrowMap[bidId] = {
-      owner: i._collateralEscrow,
-      tokens: [],
-    }
-  })
-
-  // Add collateral tokens to each escrow
-  collateralDepositedLogs.forEach(i => {
-    const bidId = Number(i._bidId)
-    if (closedBidSet.has(bidId)) return
-    if (escrowMap[bidId]) {
-      escrowMap[bidId].tokens.push(i._collateralAddress)
-    }
-  })
-
-  // Sum tokens from all active escrows
-  const ownerTokens = Object.values(escrowMap).map(escrow => [escrow.tokens, escrow.owner])
-  await sumTokens2({ api, ownerTokens, blacklistedTokens, permitFailure: true })
-}
-
-*/
-
-
+  
 async function bidCollateralTvl(api) {
 
     const tellerGraphUrl = teller_graph_config[api.chain]
@@ -287,10 +210,7 @@ async function poolsLenderTvl( api ) {
 
 async function tvl(api) {
 
-
-  //add OG collateral data  
-
-    // await ogBidCollateral ( api )
+ 
 
      await bidCollateralTvl ( api )
 
@@ -300,103 +220,7 @@ async function tvl(api) {
 }
 
 
-
-
-
-/*
-async function ogBorrowed(api) {
-  const { factory, fromBlock, tellerV2 } = ogconfig[api.chain]
-
-  const escrowLogs = await getLogs({
-    api,
-    target: factory,
-    topics: ['0xc201bfb915e3eed80ff17e013f3d88db1c51ac7fc12728fce91a2afc659128ef'],
-    eventAbi: 'event CollateralEscrowDeployed (uint256 _bidId, address _collateralEscrow)',
-    onlyArgs: true,
-    extraKey: 'CollateralEscrowDeployed',
-    fromBlock,
-  })
-
-  const repaidLogs = await getLogs({
-    api,
-    target: tellerV2,
-    topic: 'LoanRepaid(uint256)',
-    eventAbi: 'event LoanRepaid(uint256 indexed bidId)',
-    extraKey: 'LoanRepaid',
-    onlyArgs: true,
-    fromBlock,
-  })
-
-  const liquidatedLogs = await getLogs({
-    api,
-    target: tellerV2,
-    topic: 'LoanLiquidated(uint256,address)',
-    eventAbi: 'event LoanLiquidated(uint256 indexed bidId, address indexed liquidator)',
-    onlyArgs: true,
-    extraKey: 'LoanLiquidated',
-    fromBlock,
-  })
-
-  // Build set of closed bids
-  const closedBidSet = new Set()
-  repaidLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
-  liquidatedLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
-
-  // Get active loan IDs
-  const activeLoans = []
-  escrowLogs.forEach(i => {
-    const bidId = Number(i._bidId)
-    if (!closedBidSet.has(bidId)) {
-      activeLoans.push(bidId)
-    }
-  })
-
-  const loanData = await api.multiCall({
-    abi: "function bids(uint256) view returns (address borrower, address receiver, address lender, uint256 marketplaceId, bytes32 _metadataURI, tuple(address lendingToken, uint256 principal, tuple(uint256 principal, uint256 interest) totalRepaid, uint32 timestamp, uint32 acceptedTimestamp, uint32 lastRepaidTimestamp, uint32 loanDuration) loanDetails, tuple(uint256 paymentCycleAmount, uint32 paymentCycle, uint16 APR) terms, uint8 state, uint8 paymentType)",
-    calls: activeLoans,
-    target: tellerV2
-  })
-
-  loanData.forEach(i => {
-    const borrowed = i.loanDetails.principal - i.loanDetails.totalRepaid.principal
-    if (borrowed > 0) {
-      api.add(i.loanDetails.lendingToken, borrowed)
-    }
-  })
-}
-
-
-
-
-async function poolsBorrowed( api) {
-
-     let allPools = []
-
-  // Fetch from v1 pools if available
-  if (pools_graph_config[api.chain]) {
-    const { groupPoolMetrics } = await request(pools_graph_config[api.chain], poolsGraphQuery);
-    allPools = allPools.concat(groupPoolMetrics)
-  }
-
-  // Fetch from v2 pools if available
-  if (pools_v2_graph_config[api.chain]) {
-    const { groupPoolMetrics } = await request(pools_v2_graph_config[api.chain], poolsGraphQuery);
-    allPools = allPools.concat(groupPoolMetrics)
-  }
-
-  // Borrowed = total_principal_tokens_borrowed - total_principal_tokens_repaid
-  allPools.forEach(pool => {
-    const borrowed = pool.total_principal_tokens_borrowed || '0'
-    const repaid = pool.total_principal_tokens_repaid || '0'
-    const netBorrowed = BigInt(borrowed) - BigInt(repaid)
-    if (netBorrowed > 0n) {
-      api.add(pool.principal_token_address, netBorrowed.toString())
-    }
-  })
-
-
-}
-*/
+ 
 
 async function bidBorrowed(api){
   const tellerGraphUrl = teller_graph_config[api.chain]
