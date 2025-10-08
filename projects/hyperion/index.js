@@ -1,4 +1,5 @@
 const { function_view } = require("../helper/chain/aptos");
+const { sleep } = require("../helper/utils");
 
 async function _getPoolInfo(offset, limit) {
   const poolInfo = await function_view({
@@ -49,11 +50,12 @@ async function getPoolInfo() {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   methodology: "Counts the total liquidity in all pools on Hyperion.",
   aptos: {
     tvl: async (api) => {
       const poolInfo = await getPoolInfo();
-      let balances = {};
+      api.log(`Hyperion Number of pools: ${poolInfo.length}`);
 
       for (const pool of poolInfo) {
         const coin1 = await _getCoinInfo(pool.token_a.inner) || pool.token_a.inner;
@@ -61,6 +63,7 @@ module.exports = {
 
         api.add(coin1, pool.token_a_reserve);
         api.add(coin2, pool.token_b_reserve);
+        await sleep(2000); // to avoid rate limit
       }
     },
   },

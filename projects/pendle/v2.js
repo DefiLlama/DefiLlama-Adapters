@@ -137,6 +137,12 @@ const config = {
       }, // v5
     ],
   },
+  plasma: {
+    factories: [{
+      factory: "0x28dE02Ac3c3F5ef427e55c321F73fDc7F192e8E4",
+      fromBlock: 1887344
+    }], // v5
+  }
 };
 
 

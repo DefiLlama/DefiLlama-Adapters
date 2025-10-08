@@ -78,6 +78,7 @@ const pionexCex = require('./pionex-cex.js')
 const probit = require('./probit.js')
 const robinhood = require('./robinhood.js')
 const rosenBridge = require('./rosen-bridge.js')
+const rskBridge = require('./rsk-bridge.js')
 const silkroad = require('./silkroad.js')
 const swissborg = require('./swissborg.js')
 const toobit = require('./toobit.js')
@@ -109,6 +110,8 @@ const tothemoon = require('./tothemoon.js')
 const indodax = require('./indodax.js')
 const river = require('./river.js')
 const xbtc = require('./okx-xbtc.js')
+const leadbtc = require('./leadbtc.js')
+const bitgetBtc = require('./bitget-bgBTC.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -187,6 +190,7 @@ module.exports = {
   bingCex,
   bitfinex,
   bitget,
+  bitgetBtc,
   bitmake,
   bitmark,
   bitmex,
@@ -232,6 +236,7 @@ module.exports = {
   probit,
   robinhood,
   rosenBridge,
+  rskBridge,
   silkroad,
   swissborg,
   toobit,
@@ -261,5 +266,6 @@ module.exports = {
   tothemoon,
   indodax,
   river,
-  xbtc
+  xbtc,
+  leadbtc,
 }
