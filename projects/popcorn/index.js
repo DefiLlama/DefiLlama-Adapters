@@ -34,10 +34,9 @@ const abis = {
 }
 
 const getHemiTvl = async (api) => {
-  for (vault of hemiBTCVaults) {
-    const totalAssets = await api.call({ abi: abis.totalAssets, target: vault });
-    api.add(ADDRESSES.hemi.WBTC, totalAssets)  // NBTC Price alternative
-  }
+  const assets = hemiBTCVaults.map(vault => ADDRESSES.hemi.WBTC) // NBTC/bgBTC Price alternative on hemi
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: hemiBTCVaults });
+  api.add(assets, totalAssets)  
 }
 
 const getArbTvl = async (balances, api, vaults) => {
