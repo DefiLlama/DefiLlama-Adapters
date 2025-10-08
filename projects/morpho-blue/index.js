@@ -9,6 +9,7 @@ const config = {
     blackList: [
       "0x8413D2a624A9fA8b6D3eC7b22CF7F62E55D6Bc83",
       ADDRESSES.base.USDC,
+      ADDRESSES.optimism.WSTETH,
     ],
     fromBlock: 18883124,
     blacklistedMarketIds: [
