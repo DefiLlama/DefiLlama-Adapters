@@ -14,7 +14,7 @@ const mainMarket = {
 	iotex: aaveExports('', '', undefined, ['0xBa77520d38953BF6a8395D118CfF714Ed672533f'], { v3: true }),
 	bsquared: aaveExports('', '', undefined, ['0x4Ea93E846b8C6E7b3D5a5BEDF4fe6B8AED58FCEe'], { v3: true }),
 	mode: aaveExports('', '', undefined, ['0xC5b05b7092257Ee3eEAf013198d30F1E8179B6C9'], { v3: true }),
-	klaytn: aaveExports('', '', undefined, ['0xddD3D480521bc027596e078BCd1b838d50Daa076'], { v3: true }), // Kaia V3 Main
+	klaytn: aaveExports('', '', undefined, ['0xddD3D480521bc027596e078BCd1b838d50Daa076'], { v3: true, blacklistedTokens: ['0x585e26627c3b630b3c45b4f0e007db5d90fae9b2'] }), // Kaia V3 Main
 	zeta: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }), // Zetachain V3 Main
 	corn: aaveExports('', '', undefined, ['0x56552f4407113894Bfce34b5b88C57b941AFc519'], { v3: true }), // Corn V3 Main
 	duckchain: aaveExports('', '', undefined, ['0x100AC26ad2c253B18375f1dC4BC0EeeB66DEBc88'], { v3: true }), // Duckchain V3 Main
@@ -69,7 +69,7 @@ const otherProtocolTokenMarkets = {
 	// BSC - WBTC
 	bsc: aaveExports('', '', undefined, ['0xA34F1a928024E3609C8968fEA90C747e8D1fA20f'], { v3: true }),
 	// Kaia - stKaia
-	klaytn: aaveExports('', '', undefined, ['0x276c5119f63119921667842dA3B71EE10Ac486eA'], { v3: true }),
+	klaytn: aaveExports('', '', undefined, ['0x276c5119f63119921667842dA3B71EE10Ac486eA'], { v3: true, blacklistedTokens: ['0x585e26627c3b630b3c45b4f0e007db5d90fae9b2'] }),
 	// Sonic - beetSonic
 	sonic: aaveExports('', '', undefined, ['0x28350E38f241d7F24106CE5eaB1684D6ebEB4700'], { v3: true }),
 	// Duckchain - MBTC

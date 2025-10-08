@@ -6,6 +6,10 @@ const config = {
   manta: { factory: '0x7Ff9315f538dF7eC76Ec4815249Dd30519726460', },
   telos: { factory: '0x2Bb9cFF524C76eb2eA27bC6cDbB93447115D8dcC', },
   polygon: { factory: '0x06fd710fD167f1f08b61e457F41D6e7c7DD9AF3D',  lockedDealV2: '0x9D13B213852669077131f8A24A676f27ab0C2931', },
+  coti: { factory: '0x7Ff9315f538dF7eC76Ec4815249Dd30519726460',  },
+  avax: { factory: '0x9c8F78E0aeAB8190c9d1DF7BEd0B26c1EDcB8DE6', lockedDealV2: '0xb16bbdf683ffd6d92290f7610bb10f22f9c71e9e',  },
+  unichain: { factory: '0x7Ff9315f538dF7eC76Ec4815249Dd30519726460',  },
+  moonbeam: { factory: '0x2Bb9cFF524C76eb2eA27bC6cDbB93447115D8dcC',  },
 }
 
 Object.keys(config).forEach(chain => {

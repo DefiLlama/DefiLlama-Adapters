@@ -100,4 +100,7 @@ module.exports = {
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
     start: 1739411364,
   },
+  hallmarks: [
+    ["2025-08-27", "Whitehack by team"]
+  ]
 }
