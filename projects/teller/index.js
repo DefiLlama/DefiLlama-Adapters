@@ -1,9 +1,74 @@
 const { gql, request } = require("graphql-request");
+ 
+const { cachedGraphQuery } = require('../helper/cache')
+
+const sdk = require('@defillama/sdk')
+
+
+
 
 /*
  TO TEST
 node test.js projects/teller/index.js
 */
+
+const teller_graph_config = {
+
+  ethereum:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/4JruhWH1ZdwvUuMg2xCmtnZQYYHvmEq6cmTcZkpM6pW'),
+  base:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/8jSq7mzq9HEiJEcAZfvrTT4wYk59oMxm82xUpcVBzryF'),
+  arbitrum:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/F2Cgx4q4ATiopuZ13nr1EMKmZXwfAdevF3EujqfayK7a'),
+  katana:  sdk.graph.modifyEndpoint('https://gateway.thegraph.com/api/[api-key]/subgraphs/id/CfcwmqFDd425rEFQVFk52tJmquETeBiUCmK7kv2DHkPs'),
+
+
+}
+
+
+const tellerGraphQuery = gql`
+ {
+    tokenVolumes (orderBy: totalActive, orderDirection: desc ){
+      id
+      token {
+        id
+        address
+        symbol
+        decimals
+      }
+      collateralToken {
+        id
+        address
+        symbol
+        decimals
+      }
+      totalAvailable,
+      outstandingCapital,
+      totalLoaned
+      totalActive
+      totalAccepted
+    }
+}
+`
+
+const bidCollateralQuery = gql`
+  query ($skip: Int!) {
+    bidCollaterals(first: 1000, skip: $skip, where: { status: "Deposited" }) {
+      id
+      amount
+      collateralAddress
+      token {
+        address
+        symbol
+        decimals
+      }
+      bid {
+        status
+      }
+    }
+  }
+`
+
+
+
+
 
 const pools_graph_config = {
   ethereum: 'https://subgraph.satsuma-prod.com/daba7a4f162f/teller--16564/tellerv2-pools-mainnet/version/0.4.21.6/api',
@@ -42,9 +107,38 @@ const poolsGraphQuery = gql`
 
 
 
+async function bidCollateralTvl(api) {
+
+    const tellerGraphUrl = teller_graph_config[api.chain]
+
+    // Fetch all BidCollateral entries with status "Deposited" and active bids
+    let allCollaterals = []
+    let skip = 0
+    const pageSize = 1000
+
+    while (true) {
+      const data = await request(tellerGraphUrl, bidCollateralQuery, { skip })
+      if (!data.bidCollaterals || data.bidCollaterals.length === 0) break
+
+      allCollaterals = allCollaterals.concat(data.bidCollaterals)
+
+      if (data.bidCollaterals.length < pageSize) break
+      skip += pageSize
+    }
+
+    // Filter for active loans only (status: Accepted)
+    const activeCollaterals = allCollaterals.filter(c => c.bid.status === 'Accepted')
+
+    // Sum collateral by token
+    activeCollaterals.forEach(collateral => {
+      api.add(collateral.token.address, collateral.amount)
+    })
 
 
-async function tvl(api) {
+}
+
+async function poolsLenderTvl( api ) {
+
   let allPools = []
 
   // Fetch from v1 pools if available
@@ -72,9 +166,9 @@ async function tvl(api) {
       BigInt(pool.total_principal_tokens_withdrawn || '0')
 
     // Add collateral TVL 
-    if (totalCollateralEscrowedNet > 0n) {
-      api.add(pool.collateral_token_address, totalCollateralEscrowedNet.toString())
-    }
+  //  if (totalCollateralEscrowedNet > 0n) {
+   //   api.add(pool.collateral_token_address, totalCollateralEscrowedNet.toString())
+   // }
 
     // Add net principal TVL (committed - borrowed)
     const netPrincipalTvl = totalTokensActivelyCommitted - totalTokensActivelyBorrowed
@@ -82,6 +176,22 @@ async function tvl(api) {
       api.add(pool.principal_token_address, netPrincipalTvl.toString())
     }
   })
+
+
+}
+
+
+
+async function tvl(api) {
+
+
+  //add OG collateral data
+
+    await bidCollateralTvl ( api )
+
+    await poolsLenderTvl( api)
+
+
 }
 
 async function borrowed(api) {
