@@ -197,17 +197,28 @@ const treasuryNFTs = {
     mode: [
         // { name: 'MODE', veNft: '0x06ab1Dc3c330E9CeA4fDF0C7C6F6Fb6442A4273C', baseToken: tokens.mode.MODE, owner: '0x41FC0479A3E67Ac6d26760D1205dC523abee8b94', useLocked: false },
     ]
-};
+};  
 
-const vaultContracts = [
-    '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', // tacETH
-    '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', // tacBTC
-    '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', // tacUSD
-    '0xbca723C30d55F0915e32019a95AA29ea21fd555C', // Lagoon WETH
-    '0x423b469268b15821107C38d1E1f702877219bc52', // Lagoon WBTC
-    '0xd56031b6E6860Bd41dCe2729D1beD21c387B26ce', // Lagoon USDC
-    '0xE0dfbE4748eD96350754f1328679bd9647bf9621', // Lagoon USDT
-];
+const turtleVaults = {
+    linea: [
+        {address: '0x1b316fA2D6C44b65C1ed6D29b37743Cd362F0f71', strategy: "erc4626" }, // Turtle Linea ETH
+        {address: '0x7df7e45ab573ace8f872b5d5a1689af7ff1a07f7', strategy: "erc4626" }, // Turtle Linea USDC
+    ],
+    ethereum: [
+        {address: '0x6Bf340dB729d82af1F6443A0Ea0d79647b1c3DDf', strategy: "erc20" }, // tacBTC
+        {address: '0x294eecec65A0142e84AEdfD8eB2FBEA8c9a9fbad', strategy: "erc20" }, // tacETH
+        {address: '0x699e04F98dE2Fc395a7dcBf36B48EC837A976490', strategy: "erc20" }, // tacUSD
+        {address: '0xe0dfbe4748ed96350754f1328679bd9647bf9621', strategy: "erc20" }, // Lagoon USDT
+        {address: '0xbca723C30d55F0915e32019a95AA29ea21fd555C', strategy: "erc20" }, // Lagoon WETH
+        {address: '0x423b469268b15821107C38d1E1f702877219bc52', strategy: "erc20" }, // Lagoon WBTC
+        {address: '0xd56031b6E6860Bd41dCe2729D1beD21c387B26ce', strategy: "erc20" }, // Lagoon USDC
+        {address: '0x1E2aAaDcF528b9cC08F43d4fd7db488cE89F5741', strategy: "erc4626" }, // Morpho USDC
+        {address: '0xb5e4576C2FAA16b0cC59D1A2f3366164844Ef9E0', strategy: "erc4626" }, // Morpho cbBTC
+        {address: '0x0bB2751a90fFF62e844b1521637DeD28F3f5046A', strategy: "erc4626" }, // Morpho WETH
+    ],
+}
+
+
 
 module.exports = {
     defaultTokens,
@@ -216,5 +227,5 @@ module.exports = {
     tokenMapping,
     tokenMappingERC20,
     treasuryNFTs,
-    vaultContracts,
+    turtleVaults,
 };
