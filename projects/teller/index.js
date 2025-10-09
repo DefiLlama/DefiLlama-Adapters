@@ -142,13 +142,20 @@ async function bidCollateralTvl(api) {
     let skip = 0
     const pageSize = 1000
 
-    while (true) {
+    let hasMore = true
+    while (hasMore) {
       const data = await request(tellerGraphUrl, bidCollateralQuery, { skip })
-      if (!data.bidCollaterals || data.bidCollaterals.length === 0) break
+      if (!data.bidCollaterals || data.bidCollaterals.length === 0) {
+        hasMore = false
+        break
+      }
 
       allCollaterals = allCollaterals.concat(data.bidCollaterals)
 
-      if (data.bidCollaterals.length < pageSize) break
+      if (data.bidCollaterals.length < pageSize) {
+        hasMore = false
+        break
+      }
       skip += pageSize
     }
 
@@ -230,13 +237,20 @@ async function bidBorrowed(api){
   let skip = 0
   const pageSize = 1000
 
-  while (true) {
+  let hasMore = true
+  while (hasMore) {
     const data = await request(tellerGraphUrl, activeBidsQuery, { skip })
-    if (!data.bids || data.bids.length === 0) break
+    if (!data.bids || data.bids.length === 0) {
+      hasMore = false
+      break
+    }
 
     allBids = allBids.concat(data.bids)
 
-    if (data.bids.length < pageSize) break
+    if (data.bids.length < pageSize) {
+      hasMore = false
+      break
+    }
     skip += pageSize
   }
 
