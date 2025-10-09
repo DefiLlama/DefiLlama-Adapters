@@ -1,11 +1,14 @@
-const { getLogs2 } = require('../helper/cache/getLogs');
-const { getUniqueAddresses } = require('../helper/tokenMapping');
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { getLogs2 } = require("../helper/cache/getLogs");
+const { getUniqueAddresses } = require("../helper/tokenMapping");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { queryContract } = require("../helper/chain/cosmos");
-const CORE_ASSETS = require('../helper/coreAssets.json');
+const sui = require("../helper/chain/sui");
+const CORE_ASSETS = require("../helper/coreAssets.json");
+
+// To test, run: node test.js projects/satlayer/index.js
 
 module.exports = {
-  methodology: 'Total amount of BTC and eligible assets restaked on SatLayer, or through partner vaults specific to SatLayer.',
+  methodology: "Total amount of BTC and eligible assets restaked on SatLayer, or through partner vaults specific to SatLayer.",
 };
 
 // Addresses related to SatLayer
@@ -19,6 +22,22 @@ const consts = {
   TAC_FACTORY: "0x32fD8E43114Fb0a292Ca3127EAF4D1D69739Fb83",
   BABYLON_GENESIS_CBABY_HUB: "bbn1tng5u7fls4lyg356zkh2g32e80a286m8p2n0hqugc5467n9y6nksamehyj",
   SUI_FACTORY: "0x25646e1cac13d6198e821aac7a94cbb74a8e49a2b3bed2ffd22346990811fcc6",
+  BASE_FACTORY: "0xb57752dDc2Ec2DEFE9eDBb1fdb99dB1ca9b0b9b3",
+
+  SUI_VAULTS: [
+    {
+      token: "0x3e8e9423d80e1774a7ca128fccd8bf5f1f7753be658c5e645929037f7c819040::lbtc::LBTC",
+      vault: "0x505ec475423b9d3adbad91e1ec20363d58a9f0f90536190c69f4699f1bb87cb1" // satLBTC
+    },
+    {
+      token: "0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC",
+      vault: "0x4c550885133adbca1ef0c3d1fddac0a8496a9d8fa7bb52556e6cf60fe70bb1e8" // satXBTC
+    },
+    {
+      token: "0x9e998601660bba48e7fabefa97de5b6c80c970f2a18ee31a028c7fc02a4e97f5::ybtc::YBTC",
+      vault: "0x828dcef43c2c0ecf3720d26136aab40e819688b96bad0e262fbaa3672110d2d9" // satYBTC.B
+    }
+  ]
 };
 
 // TVL for EVM chains
@@ -29,6 +48,7 @@ const evmConfig = {
   berachain: { factory: consts.BERACHAIN_FACTORY, fromBlock: 262893 },
   bob: { factory: consts.BOB_FACTORY, fromBlock: 17866931 },
   tac: { factory: consts.TAC_FACTORY, fromBlock: 2129845 },
+  base: { factory: consts.BASE_FACTORY, fromBlock: 34752522 },
 };
 
 // TVL of additional SatLayer vaults
@@ -53,12 +73,17 @@ const vaults = {
   ],
 };
 
+// TVL of Sui
+async function suiTVL() {
+
+}
+
 Object.keys(evmConfig).forEach(chain => {
   const { factory, fromBlock } = evmConfig[chain];
 
   module.exports[chain] = {
     tvl: async (api) => {
-      if (chain === 'ethereum') {
+      if (chain === "ethereum") {
         // Additional vaults
         for (const vault of vaults['ethereum']) {
           const tokenBalance = await api.call({
@@ -99,4 +124,19 @@ module.exports['babylon'] = {
     api.add(token, total_native_token_balance);
     return api.getBalances();
   },
+};
+
+// TVL for Sui
+module.exports['sui'] = {
+  tvl: async (api) => {
+    const vaultIds = consts.SUI_VAULTS.map(v => v.vault);
+    const vaults = await sui.getObjects(vaultIds);
+
+    for (let i = 0; i < vaults.length; i++) {
+      const vault = vaults[i];
+      const token = consts.SUI_VAULTS[i].token;
+      const balance = vault.fields.balance;
+      api.add(token, balance);
+    }
+  }
 };
