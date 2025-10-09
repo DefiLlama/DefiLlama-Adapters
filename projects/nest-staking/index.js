@@ -12,20 +12,28 @@ async function tvl_ethereum(api) {
   await tvl_ethereum_predeposit(api);
 
   const vaults = await getConfig('nest-vaults', "https://app.nest.credit/api/vaults?includeHidden=true");
-  const ethereumVaults = vaults?.map(vault => vault.plume?.contractAddress) ?? [];
+  const ethereumVaults = (vaults?.map(vault => vault.ethereum?.contractAddress) ?? []).filter(Boolean);
   const details = await api.multiCall({ abi: 'erc20:totalSupply', calls: ethereumVaults })
   api.add(ethereumVaults, details)
 }
 
 async function tvl_plume(api) {
   const vaults = await getConfig('nest-vaults', "https://app.nest.credit/api/vaults?includeHidden=true");
-  const plumeVaults = vaults?.map(vault => vault.plume?.contractAddress) ?? [];
+  const plumeVaults = (vaults?.map(vault => vault.plume?.contractAddress) ?? []).filter(Boolean);
   const details = await api.multiCall({ abi: 'erc20:totalSupply', calls: plumeVaults })
   api.add(plumeVaults, details)
+}
+
+async function tvl_plasma(api) {
+    const vaults = await getConfig('nest-vaults', "https://app.nest.credit/api/vaults?includeHidden=true");
+    const plasmaVaults = (vaults?.map(vault => vault.plasma?.contractAddress) ?? []).filter(Boolean);
+    const details = await api.multiCall({ abi: 'erc20:totalSupply', calls: plasmaVaults })
+    api.add(plasmaVaults, details)
 }
 
 module.exports = {
   methodology: "TVL is calculated from the value of Nest tokens, which represent user shares in vaults backed by yield-generating assets.",
   ethereum: { tvl: tvl_ethereum },
   plume_mainnet: { tvl: tvl_plume },
+  plasma: { tvl: tvl_plasma },
 }

@@ -14,6 +14,7 @@ const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
 const { tickToPrice } = require('./utils/tick');
 const { queryAllium } = require('./allium');
+const { cachedGraphQuery } = require('./cache');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -80,35 +81,90 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
 const gelatoPoolsAbi = 'address:pool'
 
 const PANCAKE_NFT_ADDRESS = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
+let uniV4PositionCallCount = 0  // we want to limit these calls as they are expensive
+async function unwrapUniswapV4NFTs({ balances = {}, block, chain = 'ethereum', owner, nftAddress, stateViewer, owners, blacklistedTokens = [], whitelistedTokens = [], uniV4ExtraConfig = {} }) {
 
-async function unwrapUniswapV4NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', owner, nftAddress, stateViewer, owners, blacklistedTokens = [], whitelistedTokens = [], uniV4ExtraConfig = {} }) {
   nftAddress = nftAddress ?? uniV4ExtraConfig.nftAddress
   stateViewer = stateViewer ?? uniV4ExtraConfig.stateViewer
+  if (!whitelistedTokens.length) whitelistedTokens = uniV4ExtraConfig.whitelistedTokens ?? []
+  if (!blacklistedTokens.length) blacklistedTokens = uniV4ExtraConfig.blacklistedTokens ?? []
+
   const commonConfig = { balances, owner, owners, chain, block, blacklistedTokens, whitelistedTokens, uniV4ExtraConfig, }
+
   if (!stateViewer)
     switch (chain) {
+      // https://docs.uniswap.org/contracts/v4/deployments
+      case 'ethereum': stateViewer = '0x7ffe42c4a5deea5b0fec41c94c136cf115597227'; break;
+      case 'arbitrum': stateViewer = '0x76Fd297e2D437cd7f76d50F01AfE6160f86e9990'; break;
+      case 'optimism': stateViewer = '0xc18a3169788F4F75A170290584ECA6395C75Ecdb'; break;
+      case 'bsc': stateViewer = '0xd13Dd3D6E93f276FAfc9Db9E6BB47C1180aeE0c4'; break;
+      case 'unichain': stateViewer = '0x86e8631A016F9068C3f085fAF484Ee3F5fDee8f2'; break;
       case 'base': stateViewer = '0xA3c0c9b65baD0b08107Aa264b0f3dB444b867A71'; break;
       default: throw new Error('missing default uniswap state viewer address chain: ' + chain)
     }
 
-  if (!nftsAndOwners.length) {
-    if (!nftAddress)
-      switch (chain) {
-        case 'base': nftAddress = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'; break;
-        default: throw new Error('missing default uniswap nft address chain: ' + chain)
-      }
+  if (!nftAddress)
+    switch (chain) {
+      case 'ethereum': nftAddress = '0xbd216513d74c8cf14cf4747e6aaa6420ff64ee9e'; break;
+      case 'arbitrum': nftAddress = '0xd88F38F930b7952f2DB2432Cb002E7abbF3dD869'; break;
+      case 'optimism': nftAddress = '0x3C3Ea4B57a46241e54610e5f022E5c45859A1017'; break;
+      case 'bsc': nftAddress = '0x7A4a5c919aE2541AeD11041A1AEeE68f1287f95b'; break;
+      case 'unichain': nftAddress = '0x4529A01c7A0410167c5740C487A8DE60232617bf'; break;
+      case 'base': nftAddress = '0x7C5f5A4bBd8fD63184577525326123B519429bDc'; break;
+      default: throw new Error('missing default uniswap nft address chain: ' + chain)
+    }
 
-    if (Array.isArray(nftAddress)) {
-      await Promise.all(nftAddress.map((addr) => unwrapUniswapV4NFT({ ...commonConfig, nftAddress: addr, stateViewer: stateViewer, })))
-    } else
-      await unwrapUniswapV4NFT({ ...commonConfig, nftAddress, stateViewer: stateViewer, })
+  if (owners?.length > 1 || (owners?.length === 1 && owners[0].toLowerCase() !== owner.toLowerCase())) throw new Error('owners not supported for uniswap v4, use owner param instead')
+  if (!commonConfig.uniV4ExtraConfig.positionIds?.length) {
+    if (!owner)
+      throw new Error('owner or uniV4ExtraConfig.positionIds param is required for uniswap v4')
 
-  } else
-    await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV4NFT({ ...commonConfig, owner, nftAddress, stateViewer: stateViewer, })))
+    commonConfig.uniV4ExtraConfig.positionIds = await getPositionIds()
+  }
+
+  await unwrapUniswapV4NFT({ ...commonConfig, nftAddress, stateViewer: stateViewer, })
+
   return balances
+
+  async function getPositionIds() {
+    uniV4PositionCallCount++
+
+    if (uniV4PositionCallCount > 51) throw new Error('too many uniswap v4 position calls, find some other solution or remove caching, or batch owners')
+
+    const defaultGraphEndpoints = {
+      ethereum: 'AdA6Ax3jtct69NnXfxNjWtPTe9gMtSEZx2tTQcT4VHu',
+      base: '6UjxSFHTUa98Y4Uh4Tb6suPVyYxgPHpPEPfmFNihzTHp',
+      unichain: 'Bd8UnJU8jCRJKVjcW16GHM3FNdfwTojmWb3QwSAmv8Uc',
+      bsc: '7JTFXJdejseGj6cnTo3V3SNu2AkWyXpGieZm5NL2eYAA',
+      arbitrum: '655x11nEGRudi5Nh4attV1uMt2YnyFRMaSKRM5QndXLK',
+      polygon: '2UKncUpdgZeJVyh6Dv8ai2fTL2MQnig8ySh7YkYcHCsL',
+      optimism: '3Tn7Y1NJAr4ySKm7KFu1dwvH2WM3mHJnXzXAxQsdBDvW',
+    }
+
+    let endpoint = commonConfig.uniV4ExtraConfig.subgraph ?? defaultGraphEndpoints[chain]
+    if (!endpoint) throw new Error('missing uniswap v4 subgraph endpoint for chain: ' + chain)
+
+    const query = `query getIds($lastId: String!) {
+            positions(first:1000 where:{
+              id_gt: $lastId
+              owner_in: ["${owner.toLowerCase()}"]
+            }) {    id      }}`
+    const data = await cachedGraphQuery(`uni-v4-positions/${chain}-${owner}`, endpoint, query, { fetchById: true, })
+    const positionIds = data.map(i => i.id)
+    const verifiedPositionIds = []
+
+
+    // in case the graph is stale or down, we use cached data, to ensure that owners still hold the v4 nfts, verify it on chain
+    const positionOwners = await sdk.api2.abi.multiCall({ chain, block, abi: 'function ownerOf(uint256) view returns (address)', calls: positionIds, target: nftAddress })
+    positionOwners.forEach((pOwner, i) => {
+      if (pOwner.toLowerCase() === owner.toLowerCase()) verifiedPositionIds.push(positionIds[i])
+    })
+
+    return verifiedPositionIds
+  }
 }
 
-async function unwrapUniswapV4NFT({ balances, owner, owners, nftAddress, stateViewer, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], uniV4ExtraConfig = {}, }) {
+async function unwrapUniswapV4NFT({ balances, nftAddress, stateViewer, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], uniV4ExtraConfig = {}, }) {
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
@@ -304,7 +360,7 @@ async function unwrapUniswapV3NFT({ balances, owner, owners, nftAddress, block, 
       const length = lengths[i].output
       positionIDCalls.push(...createIncrementArray(length).map(j => ({ params: [owners[i], j] })))
     }
-    
+
     positionIds = (await sdk.api.abi.multiCall({
       block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
       calls: positionIDCalls,
@@ -802,6 +858,8 @@ async function sumTokens2({
     // positionIds
     // nftAddress
     // nftIdFetcher
+    // whitelistedTokens
+    // blacklistedTokens
   },
   resolveIchiVault = false,
   solidlyVeNfts = [],

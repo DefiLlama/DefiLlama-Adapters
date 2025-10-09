@@ -4,7 +4,11 @@ const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/i
 
 async function tvl(api) {
   const config  = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
-  const calls = config[api.chain].vaults.map(vault => vault.PlasmaVault);
+  const chainConfig = config[api.chain];
+  if (!chainConfig || !chainConfig.vaults) {
+    return {};
+  }
+  const calls = chainConfig.vaults.map(vault => vault.PlasmaVault);
   return api.erc4626Sum2({ calls })
 }
 
@@ -15,5 +19,7 @@ module.exports = {
   base: { tvl },
   unichain: { tvl },
   ink: { tvl },
-  tac: { tvl }
+  tac: { tvl },
+  plasma: { tvl },
+  avax: { tvl }
 };

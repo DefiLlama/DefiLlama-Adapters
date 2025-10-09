@@ -65,6 +65,15 @@ const CONFIG = {
       '0x5Bff88cA1442c2496f7E475E9e7786383Bc070c0' // sfrxUSD
     ],
   },
+  plasma: {
+    vaults: [
+      '0xd1E70089Bd036896B7454ED5dc5E74C656CC0F7a',
+    ],
+    supportedAssets: [
+      '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B',
+      '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb'
+    ],
+  }
 }
 
 Object.keys(CONFIG).forEach((chain) => {
