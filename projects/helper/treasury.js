@@ -22,7 +22,8 @@ const debankToLlamaChain = {
   sonic: 'sonic',
   base: 'base',
   matic: 'polygon',
-  frax: 'fraxtal'
+  frax: 'fraxtal',
+  mnt: 'mantle'
 };
 
 function getLlamaChain(debankChain) {
