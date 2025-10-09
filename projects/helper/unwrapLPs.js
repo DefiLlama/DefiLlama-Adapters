@@ -13,6 +13,7 @@ const slipstreamNftABI = require('../arcadia-finance-v2/slipstreamNftABI.json');
 const { covalentGetTokens, } = require("./token");
 const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
 const { tickToPrice } = require('./utils/tick');
+const { queryAllium } = require('./allium');
 const { cachedGraphQuery } = require('./cache');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
@@ -875,6 +876,25 @@ async function sumTokens2({
     api = new sdk.ChainApi({ chain, block })
   }
 
+  const useCurrentBalances = api.timestamp > (Date.now()/1e3 - 3600)
+  if(fetchCoValentTokens && !useCurrentBalances) {
+    const chainMap = {
+      avax: 'avalanche',
+      xdai: 'gnosis',
+    }
+    const sql = `select
+  token_address
+from
+  ${chainMap[chain] ?? chain}.assets.erc20_token_transfers
+where
+  to_address in (${owners.map(o => `'${o.toLowerCase()}'`).join(',')})
+  and block_timestamp < TO_TIMESTAMP(${api.timestamp})
+group by
+  token_address`
+    const alltokens = await queryAllium(sql)
+    tokens = tokens.concat(alltokens.map(t => t.token_address)).concat(["0x0000000000000000000000000000000000000000"])
+  }
+
   if (owner) owners.push(owner)
   if (token) tokens.push(token)
   tokens = getUniqueAddresses(tokens, chain)
@@ -897,7 +917,7 @@ async function sumTokens2({
     vlCVXBals.forEach((v) => sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.vlCVX, v, chain))
   }
 
-  if (fetchCoValentTokens) {
+  if (fetchCoValentTokens && useCurrentBalances) {
     const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, tokenConfig))))
     cTokens.forEach((tokens, i) => ownerTokens.push([tokens, owners[i]]))
   }
