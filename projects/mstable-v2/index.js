@@ -35,10 +35,12 @@ async function getLockedAssetsForFunds(api) {
     });
 
     return fundCompositions.map(composition => {
-        return composition.assets.reduce(
-            (lockedTokens, [address], i) => ({ ...lockedTokens, [address]: composition.balances[i] }),
-        {},
-        )
+        if (composition.assets) {
+            return composition.assets.reduce(
+                (lockedTokens, [address], i) => ({...lockedTokens, [address]: composition.balances[i]}),
+                {},
+            )
+        }
     })
 }
 
