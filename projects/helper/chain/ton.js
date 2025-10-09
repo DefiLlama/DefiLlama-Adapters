@@ -68,7 +68,11 @@ async function getTokenRates({ tokens = [] }) {
 }
 
 async function getJettonsInfo(tokens){
-  return (await post("https://tonapi.io/v2/jettons/_bulk", {"account_ids": tokens}))["jettons"]
+  const result = []
+  for (let chunk of sliceIntoChunks(tokens, 100)) {
+    result.push(...(await post("https://tonapi.io/v2/jettons/_bulk", {"account_ids": chunk}))["jettons"])
+  }
+  return result
 }
 
 const sumTokensAccount = rateLimited(_sumTokensAccount)

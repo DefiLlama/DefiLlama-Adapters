@@ -171,8 +171,13 @@ async function tvl (api) {
   // add all Arcadia-wrapped LP positions
   await unwrapArcadiaAeroLP({ api, ownerIds });
 
-  //add all native LP positions
-  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true, resolveUniV4: true, uniV4ExtraConfig: {"positionIds":uniV4Ids}})
+  // add all native LP positions
+  // first add all uniswap v4 positions, without the owner(s) param
+  // only call sumTokens2 if any uniswapv4 position is found, otherwise it will throw an error
+  if (uniV4Ids.length > 0) {
+    await sumTokens2({ api, resolveUniV4: true, uniV4ExtraConfig: {"positionIds":uniV4Ids}})
+  }
+  return sumTokens2({ api, owners: accs, resolveUniV3: true, resolveSlipstream: true})
 }
 
 module.exports = {

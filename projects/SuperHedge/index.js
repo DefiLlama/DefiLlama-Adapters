@@ -2,11 +2,11 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 // Vault configs
 const vaults = [
-  // BTC Bullish Call-Spread eUSDe
+  // ETH Bullish Call-Spread USDe
   {
-    currency: '0x90d2af7d622ca3141efa4d8f1f24d86e5974cc8f',
-    pt: '0x14Bdc3A3AE09f5518b923b69489CBcAfB238e617',
-    vault: '0x2324bb9F7d651E0169B9df9194937759E08Acfa9'
+    currency: ADDRESSES.ethereum.USDe,
+    pt: '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a',
+    vault: '0xD0407E1c58Ce32a7fE672f331Af120E0C30aD45b'
   },
   // BTC Bullish Call-Spread lvlUSD
   {
@@ -14,11 +14,11 @@ const vaults = [
     pt: '0x207F7205fd6c4b602Fa792C8b2B60e6006D4a0b8',
     vault: '0x93c318E595F58E4Ffc8779E35E574832D8d9a5Dc'
   },
-  // BTC Bearish Put eUSDe
+  // ETH Bearish Put-Spread USDe
   {
-    currency: '0x90d2af7d622ca3141efa4d8f1f24d86e5974cc8f',
-    pt: '0x14Bdc3A3AE09f5518b923b69489CBcAfB238e617',
-    vault: '0x9021d933D1Ef4c31550201C8A9522Ab15b3e6d65'
+    currency: ADDRESSES.ethereum.USDe,
+    pt: '0xBC6736d346a5eBC0dEbc997397912CD9b8FAe10a',
+    vault: '0x9AbbA395c4db06467B5C19A69F7e320EE962f2CB'
   },
   // BTC Bearish Put lvlUSD
   {

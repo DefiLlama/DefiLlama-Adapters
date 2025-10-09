@@ -40,7 +40,7 @@ const CONFIG = {
     factories : [
       { START_BLOCK: 15715268, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
     ],
-    assets: { USDC: ADDRESSES.plume_mainnet.USDC_e }
+    assets: { USDC: ADDRESSES.plume_mainnet.USDC }
   },
 }
 
@@ -83,7 +83,7 @@ const tvl = async (api) => {
   const tokens = await getTokens(api, block, factories)
   if (!tokens) return;
   const vaults = (await api.multiCall({ calls: tokens.map((t) => ({ target: t, params: [USDC] })), abi: abis.getVault })).filter(addr => addr.toLowerCase() !== nullAddress)
-  await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets' })
+  await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
 }
 
 module.exports.methodology = `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`
