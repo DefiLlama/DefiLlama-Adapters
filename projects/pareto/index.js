@@ -16,7 +16,7 @@ const contracts = {
       "0x4462eD748B8F7985A4aC6b538Dfc105Fce2dD165", // Bastion 
       "0x14B8E918848349D1e71e806a52c13D4e0d3246E0", // Adaptive Frontier
       "0x433D5B175148dA32Ffe1e1A37a939E1b7e79be4d", // FalconX
-    ]
+    ],
   },
   polygon: {
     credits: [
@@ -26,7 +26,10 @@ const contracts = {
   optimism: {
     credits: [
       "0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B", // FalconX
-    ]
+    ],
+    excludeVaultsAfterTimestamp: {
+      '0xD2c0D848aA5AD1a4C12bE89e713E70B73211989B': 1756936799
+    }
   },
   arbitrum: {
     credits: [
@@ -62,7 +65,7 @@ async function getUspTvl(api, usp, credits){
 }
 
 async function tvl(api) {
-  const { usp = undefined, credits = [], factory } = contracts[api.chain]
+  const { usp = undefined, credits = [], excludeVaultsAfterTimestamp = [], factory } = contracts[api.chain]
   const balances = {}
   const ownerTokens = {}
   const blacklistedTokens = []
@@ -92,6 +95,12 @@ async function tvl(api) {
       }
     })
   }
+  
+  // Exclude credit vaults by block
+  const creditsFiltered = credits.filter( addr => {
+    const foundTimestamp = excludeVaultsAfterTimestamp[addr]
+    return !foundTimestamp || !api.timestamp || Number(foundTimestamp)>Number(api.timestamp)
+  } )
 
   const [
     cdoToken,
@@ -105,9 +114,9 @@ async function tvl(api) {
     "address:BBTranche",
     "uint256:priceAA",
     "uint256:priceBB"
-  ].map(abi => api.multiCall({ abi, calls: credits })))
+  ].map(abi => api.multiCall({ abi, calls: creditsFiltered })))
 
-  blacklistedTokens.push(...credits)
+  blacklistedTokens.push(...creditsFiltered)
   blacklistedTokens.push(...aatrances)
   blacklistedTokens.push(...bbtrances)
 
@@ -120,7 +129,7 @@ async function tvl(api) {
     return tokensDecimals
   }, {})
 
-  const [creditsStrategies, creditsTokens] = await Promise.all(['address:strategy', 'address:token'].map( abi => api.multiCall({ abi, calls: credits })))
+  const [creditsStrategies, creditsTokens] = await Promise.all(['address:strategy', 'address:token'].map( abi => api.multiCall({ abi, calls: creditsFiltered })))
 
   // Get CDOs contract values
   const [
@@ -128,7 +137,7 @@ async function tvl(api) {
     pendingWithdraws,
     pendingInstantWithdraws
   ] = await Promise.all([
-    api.multiCall({ abi: 'uint256:getContractValue', calls: credits }),
+    api.multiCall({ abi: 'uint256:getContractValue', calls: creditsFiltered }),
     api.multiCall({ abi: 'uint256:pendingWithdraws', calls: creditsStrategies }),
     api.multiCall({ abi: 'uint256:pendingInstantWithdraws', calls: creditsStrategies }),
   ])
