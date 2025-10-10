@@ -97,6 +97,14 @@ const HWUSD_META_MORPHO_VAULTS = [
         chain: 'hyperliquid'
     },
     {
+        // feUSDC
+        wallet: HWUSD_VAULT,
+        vault: "0x8A862fD6c12f9ad34C9c2ff45AB2b6712e8CEa27",
+        underlying: "0xb88339CB7199b77E23DB6E890353E22632Ba630f", // USDC on HyperLiquid
+        decimals: 18,
+        chain: 'hyperliquid'
+    },
+    {
         // steakhouse USDT
         wallet: HWUSD_VAULT,
         vault: "0xbEef047a543E45807105E51A8BBEFCc5950fcfBa",
