@@ -1,49 +1,76 @@
+const { cachedGraphQuery } = require('../helper/cache');
+
+////////////////////////////////////////////////////////////////////////////////
+
+const SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_ETH = "0x8F18f2C97d2f5EC0e1d5B91c1D2ce245a9151972";
 const SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC = "0x4F2760B32720F013E900DC92F65480137391199b";
 
-/**
- * Calculate TVL for Lorenzo sUSD1+ on BSC
- * @param {import('@defillama/sdk').ChainApi} api - DefiLlama Chain API instance
- * @returns {Promise<Object>} Balances object with TVL data
- */
-/** TODO: The following implementation assumes sUSD1+ is a USD-pegged stablecoin vault. 
-async function bscTvl(api) {
-  // Get total supply of sUSD1+ tokens
-  const totalSupply = await api.call({
-    abi: 'erc20:totalSupply',
-    target: SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC,
-  });
+const SUBGRAPH_URL = "https://lorenzo-api.lorenzo-protocol.xyz/v1/graphql/otf";
 
-  // Get current unit NAV (Net Asset Value)
-  const currentUnitNav = await api.call({
-    abi: 'function getCurrentUnitNav() external view returns (uint256)',
-    target: SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC,
-  });
+////////////////////////////////////////////////////////////////////////////////
 
-  // Calculate TVL = totalSupply * currentUnitNav
-  // Both values are in wei (18 decimals), so we need to divide by 1e18 once
-  const tvlInWei = BigInt(totalSupply) * BigInt(currentUnitNav) / BigInt(1e18);
+const config = {
+  ethereum: {
+    contractAddr: SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_ETH,
+    query: `
+      {
+        tvlByChain(targetChainName: "ethereum") {
+          targetChainName
+          tokenName
+          tvl
+          readableTvl
+        }
+      }
+    `,
+  },
+  bsc: {
+    contractAddr: SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC,
+    query: `
+      {
+        tvlByChain(targetChainName: "bnb") {
+          targetChainName
+          tokenName
+          tvl
+          readableTvl
+        }
+      }
+    `,
+  },
+};
 
-  // Add as USD1 since sUSD1+ is a USD-pegged stablecoin vault
-  api.add(ADDRESSES.bsc.USD1, tvlInWei.toString());
+// susd1p to usd1
+const TOKEN_MAPPINGS = {
+  [SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_ETH]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
+  [SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC]: '0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d',
 }
-*/
+
+////////////////////////////////////////////////////////////////////////////////
 
 /**
-  * Simplified TVL calculation assuming sUSD1+ is a USD-pegged stablecoin vault.
-  * This implementation just uses the total supply as TVL.
   * @param {import('@defillama/sdk').ChainApi} api - DefiLlama Chain API instance
-  * @returns {Promise<void>}
+  * @returns {Promise<import('@defillama/sdk').BalancesV1>} - The balances object containing token balances
   */
-async function bscTvl(api) {
-  api.add(SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC, await api.call({
-    abi: 'erc20:totalSupply',
-    target: SUSD1PLUS_TOKEN_CONTRACT_ADDRESS_BSC,
-  }));
+async function tvl(api) {
+  const chain = api.chain;
+  const { contractAddr, query } = config[chain];
+
+  const data = await cachedGraphQuery(`lorenzo-protocol-susd1plus/${chain}`, SUBGRAPH_URL, query);
+  const tvlValue = data?.tvlByChain?.tvl;
+
+  if (tvlValue) {
+    const targetToken = TOKEN_MAPPINGS[contractAddr] || contractAddr;
+    api.add(targetToken, tvlValue);
+  }
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 module.exports = {
-  methodology: "Lorenzo sUSD1+ is a vault that represents tokenized real-world assets.  The protocol maintains a Net Asset Value (NAV) that reflects the current value of the underlying asset portfolio per token. For simplified calculation, the current implementation uses total supply as TVL, assuming the vault maintains close to $1 NAV per token through its underlying asset management strategy.",
+  methodology: "Lorenzo sUSD1+ is a vault that represents tokenized real-world assets. The protocol maintains a Net Asset Value (NAV) that reflects the current value of the underlying asset portfolio per token.",
+  ethereum: {
+    tvl,
+  },
   bsc: {
-    tvl: bscTvl,
+    tvl,
   }
 };
