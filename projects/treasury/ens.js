@@ -9,7 +9,7 @@ const ENS= "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72";
 
 module.exports={
   ethereum:{
-    tvl: async (timestamp)=>karpatKeyTvl(timestamp, "ENS DAO", "ENS"),
+    tvl: async (api)=>karpatKeyTvl(api, "ENS DAO", "ENS"),
     ownTokens: sumTokensExport({
       tokens: [ENS],
       owners: [treasury, vestingAddress, treasury2],

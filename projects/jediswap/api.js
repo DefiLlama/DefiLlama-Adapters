@@ -42,6 +42,7 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  isHeavyProtocol: true,
   starknet: {
     tvl,
   }

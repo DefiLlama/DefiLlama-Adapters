@@ -1,0 +1,167 @@
+{
+  "version": "0.1.0",
+  "name": "nx_lend",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "CollateralPool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nxMarket",
+            "docs": [
+              "Market's pubkey"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "marketAuthority",
+            "docs": [
+              "The pool authority to act"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenMint",
+            "docs": [
+              "The token the pool allows lending and borrowing on"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "depositTokens",
+            "docs": [
+              "The total amount of tokens available in the pool's vault"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "depositNotes",
+            "docs": [
+              "The total amount of notes issued to depositors of tokens."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LendingPool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nxMarket",
+            "docs": [
+              "Market's pubkey"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenMint",
+            "docs": [
+              "The pool authority to act",
+              "The token the pool allows lending and borrowing on"
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "borrowTokens",
+            "docs": [
+              "The total amount of tokens borrowed, that need to be repaid to",
+              "the pool."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "borrowNotes",
+            "docs": [
+              "The total amount of notes issued to borrowers of tokens"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "depositTokens",
+            "docs": [
+              "The total amount of tokens available in the pool's vault"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "depositNotes",
+            "docs": [
+              "The total amount of notes issued to depositors of tokens."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "depositInterest",
+            "type": "u64"
+          },
+          {
+            "name": "borrowInterest",
+            "docs": [
+              "Amount of unrepaid interest by borrowers, for loan note exchange rate calculation"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protocolFee",
+            "docs": [
+              "10% of interest goes to the protocol,"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "accruedUntil",
+            "docs": [
+              "The time the interest was last accrued up to"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "utilizationFlag",
+            "docs": [
+              "If the utilization rate is flagged as full"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "interestRateConfigs",
+            "type": {
+              "vec": {
+                "defined": "InterestRateData"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "InterestRateData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "utilizationRate",
+            "docs": [
+              "y=kx+b x=utilization_rate y=interest_rate"
+            ],
+            "type": "i32"
+          },
+          {
+            "name": "kValue",
+            "type": "i32"
+          },
+          {
+            "name": "bValue",
+            "type": "i32"
+          }
+        ]
+      }
+    }
+  ]
+}

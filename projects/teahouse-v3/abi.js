@@ -1,6 +1,7 @@
 module.exports = {
+  assetToken0: "function assetToken0() view returns (address)",
   assetToken1: "function assetToken1() view returns (address)",
-  estimatedValueIntoken1: "function estimatedValueInToken1() view returns (uint256 value1)",
+  vaultAllUnderlyingAssets: "function vaultAllUnderlyingAssets() view returns (uint256 amount0, uint256 amount1)",
   getAssets: "function getAssets() view returns (address[])",
   getAssetsBalance: "function getAssetsBalance() view returns (uint256[])",
   assetType: "function assetType(address) external returns (uint8)",
@@ -13,11 +14,19 @@ module.exports = {
     outputs: [{ name: "address", type: "felt" }],
     customType: "address",
   },
-  estimated_value_in_token0: {
+  asset_token1: {
     type: "function",
     state_mutability: "view",
-    name: "estimated_value_in_token0",
+    name: "asset_token1",
     inputs: [],
-    outputs: [{ name: "value", type: "Uint256" }],
+    outputs: [{ name: "address", type: "felt" }],
+    customType: "address",
+  },
+  vault_all_underlying_assets: {
+    type: "function",
+    state_mutability: "view",
+    name: "vault_all_underlying_assets",
+    inputs: [],
+    outputs: [{ name: "amount", "type": "(core::integer::u256, core::integer::u256)" }],
   },
 };

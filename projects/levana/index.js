@@ -1,4 +1,10 @@
-const { queryContract, sumTokens } = require('../helper/chain/cosmos')
+const { queryContract } = require('../helper/chain/cosmos')
+const { sumTokens } = require('../helper/sumTokens')
+
+// Blacklist suspicious tokens
+const blacklistedTokens = [
+  'ibc:FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668' // yieldeth-wei - is returing the wrong price: price: 155633670
+]
 
 async function tvl(api) {
   const { chain } = api
@@ -7,7 +13,19 @@ async function tvl(api) {
   // Iterate over the markets and request the balance of each market's collateral token
   const marketIds = await getMarketIds(chain, factory)
   const _getMarketAddr = (marketId) => getMarketAddr(chain, factory, marketId)
-  return sumTokens({ chain, owners: await Promise.all(marketIds.map(_getMarketAddr)), })
+  
+  const result = await sumTokens({ 
+    chain, 
+    owners: await Promise.all(marketIds.map(_getMarketAddr)),
+    blacklistedTokens 
+  })
+  
+  // Filter out the blacklisted token from the results
+  if (result['ibc:FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668']) {
+    delete result['ibc:FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668']
+  }
+  
+  return result
 }
 
 async function getMarketIds(chain, factory) {
@@ -56,6 +74,7 @@ const config = {
   osmosis: { factory: 'osmo1ssw6x553kzqher0earlkwlxasfm2stnl3ms3ma2zz4tnajxyyaaqlucd45' },
   sei: { factory: 'sei18rdj3asllguwr6lnyu2sw8p8nut0shuj3sme27ndvvw4gakjnjqqper95h' },
   injective: { factory: 'inj1vdu3s39dl8t5l88tyqwuhzklsx9587adv8cnn9' },
+  neutron: { factory: 'neutron1an8ls6d57c4qcvjq0jmm27jtrpk65twewfjqzdn7annefv7gadqsjs7uc3' }
 }
 
 

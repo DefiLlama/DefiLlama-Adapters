@@ -1,4 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const config = {
   "accumulate": [
@@ -62,6 +63,41 @@ const config = {
         "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
       },
     }
+  ],
+  "oasis": [
+    {
+      "sapphire": {
+        "LST": "0xed57966f1566de1a90042d07403021ea52ad4724"
+      }
+    }
+  ],
+  "artela": [
+    {
+      "artela": {
+        "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+      },
+    }
+  ],
+  "bitkub": [{
+    "bitkub": {
+      "LST": "0xcba2aeec821b0b119857a9ab39e09b034249681a"
+    }
+  }],
+  "coti": [
+    {
+      "coti": {
+        "baseToken": "0xddb3422497e61e13543bea06989c0789117555c5",
+        "LST": "0xcf1a40eff1a4d4c56dc4042a1ae93013d13c3217",
+      }
+    }
+  ],
+  "stETH": [
+    {
+      "ethereum": {
+        "baseToken": ADDRESSES.ethereum.STETH,
+        "LST": "0x684d7fd1067ed8e9686e6fd764d048b9bf92dfa9"
+      }
+    },
   ]
 }
 
@@ -100,7 +136,7 @@ Object.entries(transformedConfig).forEach(([chain, configs]) => {
         totalSupply += parseInt(supply, 10);
         api.add(token ?? baseToken ?? ADDRESSES.null, supply, { skipChain: !!baseToken })
       }
-      return api.getBalances();
+      return sumTokens2({ api })
     },
   }
 })

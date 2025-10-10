@@ -5,7 +5,7 @@ const USDC_TOKEN = ADDRESSES.arbitrum.USDC
 
 module.exports = {
   methodology: 'counts the number of USDC tokens deposited as collateral in the Forge.sol contract.',
-  start: 1680643295,
+  start: '2023-04-04',
   arbitrum: {
     tvl: sumTokensExport({ owner: FORGE_SOL, tokens: [USDC_TOKEN]}),
   }

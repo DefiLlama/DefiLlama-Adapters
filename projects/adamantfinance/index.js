@@ -1,12 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
 const { stakings } = require("../helper/staking");
 const { getConfig } = require('../helper/cache')
-const { unwrapLPsAuto, sumTokens2, } = require("../helper/unwrapLPs");
-const {
-  getChainTransform,
-} = require("../helper/portedTokens");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 const { staking: stakingUnknown, } = require("../helper/unknownTokens");
 
 const vaultsUrl = {
@@ -21,15 +16,6 @@ const vaultsUrl = {
 };
 
 const allVaultsUrl = "https://raw.githubusercontent.com/eepdev/vaults/main/current_vaults_all_chains.json";
-
-const NetworkID = {
-  ETH_MAINNET: 1,
-  POLYGON: 137,
-  ARBITRUM: 42161,
-  CRONOS: 25,
-  FRAXTAL: 252,
-  OPTIMISM: 10
-};
 
 /*** Polygon Addresses ***/
 const stakingContracts_polygon = [
@@ -50,7 +36,6 @@ const stakingContracts_Arbitrum = [
   "0x9d5d0cb1B1210d4bf0e0FdCC6aCA1583fA48f0fD",
 ];
 
-const lpAddresses_arbitrum = [];
 const ARBY = ADDRESSES.arbitrum.ARBY
 
 /*** Cronos Addresses ***/
@@ -61,11 +46,6 @@ const stakingContracts_cronos = [
 ];
 const CADDY = ADDRESSES.arbitrum.ARBY;
 
-const vaultAddresses_cronos = [
-  "0x3a9645ee664DCE6529Af678aaB4fE3AD9d68323f",
-  "0x6681EDBf50C0758C719F3024C282de1694807CcB",
-];
-
 const lpAddresses_cronos = [
   "0x332937463df26f46a1a715a41205765774beef80", //CADDY-WCRO Cronos
   "0x2a008ef8ec3ef6b03eff10811054e989aad1cf71", //CADDY-WCRO Cronos
@@ -73,119 +53,60 @@ const lpAddresses_cronos = [
 
 
 async function pool2Polygon(api) {
-  const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: vaultAddresses_polygon})
-  const tokens = await api.multiCall({  abi: 'address:stakingToken', calls: vaultAddresses_polygon})
+  const bals = await api.multiCall({ abi: 'erc20:totalSupply', calls: vaultAddresses_polygon })
+  const tokens = await api.multiCall({ abi: 'address:stakingToken', calls: vaultAddresses_polygon })
   api.addTokens(tokens, bals)
   return sumTokens2({ api, resolveLP: true })
 }
 
-async function polygonTvl(timestamp, block, chainBlocks) {
-  return await tvl2(timestamp, "polygon", NetworkID.POLYGON, chainBlocks, lpAddresses_polygon);
-}
+const blacklistedTokens = [
+  ...lpAddresses_polygon,
+  ...lpAddresses_cronos,
+]
 
-async function arbitrumTvl(timestamp, block, chainBlocks) {
-  return await tvl(timestamp, "arbitrum", chainBlocks, lpAddresses_arbitrum);
-}
+const blacklistedOwners = new Set([
+  adMESH,
+  "0x01d2833e6d86D5Ad8380044DEb2cA520fc60D326", //adMESH related token/deposit
+  "0xbe6aa0AF32984fE3f65a73071DECC09Ab607e310", //adMESH related token/deposit
+].map(i => i.toLowerCase()))
 
-async function cronosTvl(timestamp, block, chainBlocks) {
-  return await tvl2(timestamp, "cronos", NetworkID.CRONOS, chainBlocks, lpAddresses_cronos);
-}
+const tvl = async (api) => {
+  let info = await getConfig('adamant-fi/allVaults', allVaultsUrl)
+  if (api.chain === 'arbitrum') {
+    info = await getConfig('adamant-fi/arbitrumVaults', vaultsUrl.arbitrum)
 
-async function fraxtalTvl(timestamp, block, chainBlocks) {
-  return await tvl2(timestamp, "fraxtal", NetworkID.FRAXTAL, chainBlocks, []); //no Adamant platform token on Fraxtal
-}
-
-async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress = (a) => a) {
-  const vault_balances = (
-    await sdk.api.abi.multiCall({
-      chain: chain,
-      block: block,
-      calls: uniVaults.map((vault) => ({
-        target: vault.vaultAddress,
-      })),
-      abi: abi.balance,
-    })
-  ).output.map((val) => val.output);
-
-  uniVaults.forEach((v, idx) => {
-    if (
-      !lpAddressesIgnored.some(
-        (addr) => addr.toLowerCase() === v.lpAddress.toLowerCase()
-      )
-    ) {
-      sdk.util.sumSingleBalance(balances, chain + ':' + v.lpAddress, vault_balances[idx])
-    }
-  });
-  await unwrapLPsAuto({ balances, block, chain, });
-  return balances;
-}
-
-const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
-
-  const block = chainBlocks[chain];
-  const transformAddress = await getChainTransform(chain)
-  let balances = {};
-
-  let resp = await getConfig('adamant-fi/'+chain, vaultsUrl[chain]);
-
-  let uniVaults = resp
-    .filter(
-      (vault) =>
-        vault.vaultAddress !== adMESH &&
-        vault.platform !== "dodo"
+    info = info.filter((vault) => vault.platform !== "dodo" && !blacklistedOwners.has(vault.lpAddress.toLowerCase())
     )
-    .map((vault) => ({
-      vaultAddress: vault.vaultAddress,
-      lpAddress: vault.lpAddress,
-    }));
-  balances = await uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress);
+  } else {
+    info = info
+      .filter((vault) => vault.platform !== "dodo" && vault.chainId == api.chainId && !blacklistedOwners.has(vault.lpAddress.toLowerCase()))
+  }
 
-  return balances;
-};
 
-const tvl2 = async (timestamp, chain, chainId, chainBlocks, lpAddressesIgnored) => {
-
-  const block = chainBlocks[chain];
-  const transformAddress = await getChainTransform(chain)
-  let balances = {};
-
-  let resp = await getConfig('adamant-fi/'+chain, allVaultsUrl);
-
-  let uniVaults = resp
-    .filter(
-      (vault) =>
-        vault.vaultAddress !== adMESH &&
-        vault.vaultAddress !== "0x01d2833e6d86D5Ad8380044DEb2cA520fc60D326" && //adMESH related token/deposit
-        vault.vaultAddress !== "0xbe6aa0AF32984fE3f65a73071DECC09Ab607e310" && //adMESH related token/deposit
-        vault.platform !== "dodo" &&
-        vault.chainId == chainId
-    )
-    .map((vault) => ({
-      vaultAddress: vault.vaultAddress,
-      lpAddress: vault.lpAddress,
-    }));
-
-  balances = await uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress);
-  return balances;
+  const tokens = info.map(i => i.lpAddress)
+  const vaults = info.map(i => i.vaultAddress)
+  const bals = await api.multiCall({ abi: "uint256:balance", calls: vaults, permitFailure: true, })
+  api.addTokens(tokens, bals.map(i => i ?? 0))
+  for (const token of blacklistedTokens)
+    api.removeTokenBalance(token)
+  return sumTokens2({ api, resolveLP: true })
 };
 
 module.exports = {
   polygon: {
     staking: stakings(stakingContracts_polygon, ADDY),
     pool2: pool2Polygon,
-    tvl: polygonTvl,
+    tvl,
   },
   arbitrum: {
     staking: stakings(stakingContracts_Arbitrum, ARBY),
-    tvl: arbitrumTvl,
+    tvl,
   },
   cronos: {
     staking: stakingUnknown({ owners: stakingContracts_cronos, tokens: [CADDY], chain: 'cronos', lps: lpAddresses_cronos, useDefaultCoreAssets: true }),
-    tvl: cronosTvl,
+    tvl,
   },
-  fraxtal: {
-    tvl: fraxtalTvl,
-  },
+  fraxtal: { tvl, },
   methodology:
     "The current vaults on Adamant Finance are found on the Github. Once we have the vaults, we filter out the LP addresses of each vault and unwrap the LPs so that each token can be accounted for. Coingecko is used to price the tokens and the sum of all tokens is provided as the TVL",
 };

@@ -20,7 +20,6 @@ async function borrowed(api) {
 
 module.exports = {
   methodology: 'Fetches the list of pools and collaterals from the Core and sums up their balances',
-  start: 14684731,
   base: {
     tvl, borrowed
   },

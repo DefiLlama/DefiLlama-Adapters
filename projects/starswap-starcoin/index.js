@@ -18,7 +18,6 @@ module.exports = {
     methodology: `Starswap's TVL is achieved by making a call to it's API: https://swap-api.starcoin.org/main/v1/farmingTvlInUsd (Farming) and https://swap-api.starcoin.org/main/v1/syrupPoolTvlInUsd (Stake).`,
     misrepresentedTokens: true,
     timetravel: false,
-    incentivized: true,
     starcoin: {
         tvl,
         staking,

@@ -4,10 +4,11 @@ const { getUniqueAddresses } = require("../helper/utils")
 const sdk = require('@defillama/sdk')
 
 const config = {
-  base: { postionManager: '0x3eF54A2Cf152f6E06C0928722412883D448F92eC', factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD', limWETH: '0x845d629D2485555514B93F05Bdbe344cC2e4b0ce', marginContract: '0x536801AaE40cb214c08f178c6727d7594a7c655b', graphEndpoint: 'https://api.studio.thegraph.com/query/71042/limitless-subgraph-base/version/latest', dataProvider: '0x87E697c3EBe41eD707E4AD52541f19292Be81177', lmQuoter: '0xED14586763578147136e55D20a0Ee884Cd8fBC6d', },
-  arbitrum: { postionManager: '0x6D73fc6F4C299E369377C0e60CebFef2409f86A0', factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984', limWETH: '0xdEe4326E0a8B5eF94E50a457F7c70d4821be9f4C', },
+  base: { postionManager: '0x6822063E39f1b8F40373402Ac96963B383877B3C', factory: '0x33128a8fC17869897dcE68Ed026d694621f6FDfD', limWETH: '0x845d629D2485555514B93F05Bdbe344cC2e4b0ce', marginContract: '0x536801AaE40cb214c08f178c6727d7594a7c655b', graphEndpoint: 'https://api.studio.thegraph.com/query/71042/limitless-subgraph-base/version/latest', dataProvider: '0x87E697c3EBe41eD707E4AD52541f19292Be81177', lmQuoter: '0xED14586763578147136e55D20a0Ee884Cd8fBC6d', },
+  arbitrum: { postionManager: '0xf3B0362a5F210Fd826E74b3b10b269D4044085e5', factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984', limWETH: '0x3a4F8E8512624226d2aC14fE496Bb9A4DdB73a9a', marginContract: '0x3611CD2B957514222a94C93e1A9a5be66b0b2841', graphEndpoint: 'https://api.studio.thegraph.com/query/71042/limitless-subgraph-arbitrum/version/latest', dataProvider: '0x9139929dFbEeDfB03bbF8B59b4005BC631529b14', lmQuoter: '0x2E4a9Eb87375D518F4c4473a845D56AAbf1967FE', },
   linea: { postionManager: '0x726e3116AE07f43A7E1921c635352B75e2DEa4Ad', factory: '0x31FAfd4889FA1269F7a13A66eE0fB458f27D72A9', limWETH: '0x5188b47Cb80D1A3E22Cc6221792F199f1Fb0DD3c', },
 }
+
 const liquidityProvidedQuery = `
 query($lastId: String, $block: Int) {
   liquidityProvideds(
@@ -107,7 +108,6 @@ Object.keys(config).forEach(chain => {
           }
         })
       
-        console.log(provided.length, withdrawn.length)
         const pools = getUniqueAddresses(provided.map(entry => entry.pool).concat(withdrawn.map(entry => entry.pool)))
         const token0s = await api.multiCall({  abi: 'address:token0', calls: pools})
         const token1s = await api.multiCall({  abi: 'address:token1', calls: pools})

@@ -1,63 +1,69 @@
-const { nullAddress } = require('../helper/tokenMapping');
-const { get } = require('../helper/http')
+const { nullAddress } = require("../helper/tokenMapping");
+const { get } = require("../helper/http");
 const sdk = require("@defillama/sdk");
-
+const { sumTokensExport } = require("../helper/sumTokens");
 
 async function bsctvl(api) {
-  const bal = await api.call({ abi: 'function exchangeRate() external view returns (uint256 totalWei, uint256  poolTokenSupply)', target: '0xc228cefdf841defdbd5b3a18dfd414cc0dbfa0d8' })
+  const bal = await api.call({
+    abi: "function exchangeRate() external view returns (uint256 totalWei, uint256  poolTokenSupply)",
+    target: "0xc228cefdf841defdbd5b3a18dfd414cc0dbfa0d8",
+  });
 
   return {
-    ['bsc:' + nullAddress]: bal.totalWei
+    ["bsc:" + nullAddress]: bal.totalWei,
   };
 }
 
-const baseEndpoint = 'https://api.persistence.one/pstake'
+const baseEndpoint = "https://api.persistence.one/pstake";
 
 const chainInfos = {
   cosmos: {
     name: "cosmos",
     decimals: 1e6,
-    endpoint: "/stkatom/atom_tvu"
+    endpoint: "/stkatom/atom_tvu",
   },
   osmosis: {
     name: "osmosis",
     decimals: 1e6,
-    endpoint: "/stkosmo/osmo_tvu"
+    endpoint: "/stkosmo/osmo_tvu",
   },
   dydx: {
     name: "dydx-chain",
     decimals: 1e18,
-    endpoint: "/stkdydx/dydx_tvu"
+    endpoint: "/stkdydx/dydx_tvu",
   },
   stargaze: {
     name: "stargaze",
     decimals: 1e6,
-    endpoint: "/stkstars/stars_tvu"
+    endpoint: "/stkstars/stars_tvu",
   },
   persistence: {
     name: "persistence",
     decimals: 1e6,
-    endpoint: "/stkxprt/xprt_tvu"
-  }
-}
+    endpoint: "/stkxprt/xprt_tvu",
+  },
+};
 
 function cosmostvl() {
   return async () => {
-
-    let tvl = {}
+    let tvl = {};
     for (const chain of Object.values(chainInfos)) {
-      const api = baseEndpoint + chain.endpoint
+      const api = baseEndpoint + chain.endpoint;
 
-      const amount = await get(api)
+      const amount = await get(api);
 
       const balance = {};
-      sdk.util.sumSingleBalance(balance, chain.name, amount.amount.amount / chain.decimals);
+      sdk.util.sumSingleBalance(
+        balance,
+        chain.name,
+        amount.amount.amount / chain.decimals
+      );
 
-      tvl[chain.name] = balance[chain.name]
+      tvl[chain.name] = balance[chain.name];
     }
 
-    return tvl
-  }
+    return tvl;
+  };
 }
 
 module.exports = {

@@ -21,10 +21,9 @@ async function tvl() {
 }
 
 module.exports = {
+  deadFrom: "2024-09-30",
+  hallmarks: [[1727654400, "Clone Sunset"]],
   timetravel: false,
-  solana: {
-    tvl,
-  },
-  methodology:
-    'Return the amount of collateral in the vault.'
+  solana: { tvl : () => ({})},
+  methodology: 'Return the amount of collateral in the vault.'
 }

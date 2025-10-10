@@ -11,9 +11,9 @@ module.exports = {
           'EQDynReiCeK8xlKRbYArpp4jyzZuF6-tYfhFM0O5ulOs5H0L', // jUSDT vault
           'EQDpJnZP89Jyxz3euDaXXFUhwCWtaOeRmiUJTi3jGYgF8fnj', // TON-M vault
           'EQAz6ehNfL7_8NI7OVh1Qg46HsuC4kFpK-icfqK9J3Frd6CJ', // USDT vault
-          'EQBwfRtqEf3ZzhkeGsmXiC7hzTh1C5zZZzLgDH5VL8gENQ2A'  // Notcoin pre-market vault
+          'EQAG8_BzwlWkmqb9zImr9RJjjgZZCLMOQXP9PR0B1PYHvfSS',  // Notcoin vault
         ],
-        tokens: [ADDRESSES.ton.jUSDT, ADDRESSES.ton.USDT, ADDRESSES.ton.TON]
+        tokens: [ADDRESSES.ton.jUSDT, ADDRESSES.ton.USDT, ADDRESSES.ton.TON, ADDRESSES.ton.NOT]
       })
     )
   }

@@ -1,0 +1,4 @@
+{
+    "totalSupply": "uint256:totalSupply",
+    "exchangeRate": "uint256:getExchangeRateToUnderlying"
+}
