@@ -1,4 +1,4 @@
-const { sumTokensExport } = require("./helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   methodology: "Counts ARY tokens and CRO held by ZenStake, ZenRecharge, and ZenSwapAuto contracts using sumTokens helper.",
