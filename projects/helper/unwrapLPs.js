@@ -873,11 +873,15 @@ async function sumTokens2({
     if (!balances) balances = api.getBalances()
   } else if (!balances) {
     balances = {}
+  }
+
+  if (!api) {
     api = new sdk.ChainApi({ chain, block })
   }
 
-  const useCurrentBalances = api.timestamp > (Date.now()/1e3 - 3600)
-  if(fetchCoValentTokens && !useCurrentBalances) {
+  const useCurrentBalances = !api?.timestamp || api?.timestamp > (Date.now() / 1e3 - 3600)  // if timestamp field is missing or within the last hour, we use current balances
+
+  if (fetchCoValentTokens && !useCurrentBalances) {
     const chainMap = {
       avax: 'avalanche',
       xdai: 'gnosis',
