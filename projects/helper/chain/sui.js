@@ -173,11 +173,24 @@ async function queryEventsByType({ eventType, transform = i => i }) {
   const items = []
   let after = null
   do {
-    const { events: { pageInfo: { endCursor, hasNextPage}, nodes } } = await sdk.graph.request(graphEndpoint(), query, {variables: { after, eventType}})
+    const { events: { pageInfo: { endCursor, hasNextPage }, nodes } } = await sdk.graph.request(graphEndpoint(), query, { variables: { after, eventType } })
     after = hasNextPage ? endCursor : null
     items.push(...nodes.map(i => i.contents.json).map(transform))
   } while (after)
   return items
+}
+
+
+async function getTokenSupply(token) {
+  const query = `{
+  coinMetadata(coinType:"${token}") {
+    decimals
+    symbol
+    supply
+  }
+}`
+  const { coinMetadata: { supply, decimals } } = await sdk.graph.request(graphEndpoint(), query)
+  return { supply, decimals, normalized: supply / 10 ** decimals }
 }
 
 module.exports = {
@@ -193,4 +206,5 @@ module.exports = {
   sumTokens,
   sumTokensExport,
   queryEventsByType,
+  getTokenSupply,
 };

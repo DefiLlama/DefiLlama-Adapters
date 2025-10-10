@@ -14,5 +14,13 @@ module.exports = {
         [ADDRESSES.tron.USDT, 'TSUYvQ5tdd3DijCD1uGunGLpftHuSZ12sQ'],
       ]
     })
+  },
+  ethereum: {
+    tvl: sumTokensExport({
+      tokensAndOwners: [
+        [ADDRESSES.ethereum.USDT, '0x217e42CEB2eAE9ECB788fDF0e31c806c531760A3'], // PSM-USDT-A GemJoin
+        [ADDRESSES.ethereum.USDC, '0x9A7E1B324060dB7342aeA08c0dc56F55CEd6F519'], // PSM-USDC-A GemJoin
+      ]
+    })
   }
 }
