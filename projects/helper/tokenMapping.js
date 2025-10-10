@@ -105,7 +105,15 @@ const fixBalancesTokens = {
   },
   somnia: {
     '0x936ab8c674bcb567cd5deb85d8a216494704e9d8': { coingeckoId: 'ethereum', decimals: 18 }
-  }
+  },
+  juchain: {
+    [nullAddress]: { coingeckoId: "ju", decimals: 18 },
+    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': { coingeckoId: "ju", decimals: 18 },
+    '0x4d1B49B424afd7075d3c063adDf97D5575E1c7E2': { coingeckoId: "wju", decimals: 18 },
+    '0x80077F108Dd73B709C43A1a13F0EEF25e48f7D0e': { coingeckoId: "ethereum", decimals: 18 },
+    '0x5a68b722098F559F275baC1E64AedEA39b3E97c1': { coingeckoId: "usdc", decimals: 18 },
+    '0xc8e19C19479a866142B42fB390F2ea1Ff082E0D2': { coingeckoId: "tether", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
