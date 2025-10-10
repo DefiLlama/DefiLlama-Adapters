@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const axios = require("axios");
 
-const native = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+const native = ADDRESSES.GAS_TOKEN_2;
 
 const factories = {
   agreement: "0xEA623eebd9c5bFd56067e36C89Db0C13e6c70ba8",

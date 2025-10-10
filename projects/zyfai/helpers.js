@@ -43,6 +43,9 @@ const BEETS_POOL = {
 };
 const PENPIE_MARKET_ADDRESS = '0x3f5ea53d1160177445b1898afbb16da111182418';
 const PENPIE_CONTRACT = '0x7A89614B596720D4D0f51A69D6C1d55dB97E9aAB';
+const YIELDFI_POOL = {
+    'yUSD': "0x4772D2e014F9fC3a820C444e3313968e9a5C8121"
+}
 
 async function siloTvl(api, owners) {
     const siloVaults = Object.values(SILO_POOL_ADDRESSES);
@@ -126,6 +129,15 @@ async function penpieTvl(api, owners) {
     });
 }
 
+async function yieldfiTvl(api, owners) {
+    const balanceCalls = owners.map(owner => ({ target: YIELDFI_POOL.yUSD, params: [owner] }));
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls });
+    
+    balances.forEach((balance, i) => {
+        api.add(balanceCalls[i].target, balance);
+    });
+}
+
 module.exports = {
     siloTvl,
     aaveTvl,
@@ -133,4 +145,5 @@ module.exports = {
     pendleTvl,
     beetsTvl,
     penpieTvl,
+    yieldfiTvl,
 };
