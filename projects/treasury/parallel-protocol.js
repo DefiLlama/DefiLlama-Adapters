@@ -3,12 +3,12 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const TREASURY = {
     arbitrum: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
-    avalanche: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
+    avax: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
     base: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
     berachain: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
     bsc: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
     ethereum:  "0x25Fc7ffa8f9da3582a36633d04804F0004706F9b",
-    hyperevm: "0x5C1232b4F5fdb34d487C934ADF5d4e5c01fE34be",
+    hyperliquid: "0x5C1232b4F5fdb34d487C934ADF5d4e5c01fE34be",
     ink: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
     opitmism: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
     polygon: "0x2046c0416A558C40cb112E5ebB0Ca764c3C5c32a",
@@ -16,7 +16,7 @@ const TREASURY = {
     sei: "0x1AD681fa147f35AB7B35c7a289B1938Bc0171e8b",
     sonic: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
     unichain: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95",
-    gnosis: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95"
+    xdai: "0xC5201FFE258a95Af986E7cD1fcaD54f3f63f2C95"
 }
 
 const BOUGHT_BACK_MIMO= {
@@ -43,12 +43,12 @@ const PRL = {
 
 const USDp = {
     arbitrum: "0x76A9A0062ec6712b99B4f63bD2b4270185759dd5",
-    avalanche: "0x9eE1963f05553eF838604Dd39403be21ceF26AA4",
+    avax: "0x9eE1963f05553eF838604Dd39403be21ceF26AA4",
     base: "0x76A9A0062ec6712b99B4f63bD2b4270185759dd5",
     berachain: "0x9eE1963f05553eF838604Dd39403be21ceF26AA4",
     bsc: "0x048C4e07D170eEdEE8772cA76AEE1C4e2D133d5c",
     ethereum:  "0x9B3a8f7CEC208e247d97dEE13313690977e24459",
-    hyperevm: "0xBE65F0F410A72BeC163dC65d46c83699e957D588",
+    hyperliquid: "0xBE65F0F410A72BeC163dC65d46c83699e957D588",
     ink: "0x9eE1963f05553eF838604Dd39403be21ceF26AA4",
     opitmism: "0x90337e484B1Cb02132fc150d3Afa262147348545",
     polygon: "0x1250304F66404cd153fA39388DDCDAec7E0f1707",
@@ -56,14 +56,14 @@ const USDp = {
     sei: "0x048C4e07D170eEdEE8772cA76AEE1C4e2D133d5c",
     sonic: "0x08417cdb7F52a5021bB4eb6E0deAf3f295c3f182",
     unichain: "0x9eE1963f05553eF838604Dd39403be21ceF26AA4",
-    gnosis: "0x9eE1963f05553eF838604Dd39403be21ceF26AA4"
+    xdai: "0x9eE1963f05553eF838604Dd39403be21ceF26AA4"
 }
 
 const sUSDp = {
-    avalanche: "0x9d92c21205383651610f90722131655a5b8ed3e0",
+    avax: "0x9d92c21205383651610f90722131655a5b8ed3e0",
     base: "0x472eD57b376fE400259FB28e5C46eB53f0E3e7E7",
     ethereum:  "0x0d45b129dc868963025Db79A9074EA9c9e32Cae4",
-    hyperevm: "0x9B3a8f7CEC208e247d97dEE13313690977e24459",
+    hyperliquid: "0x9B3a8f7CEC208e247d97dEE13313690977e24459",
     sonic: "0xe8a3DA6f5ed1cf04c58ac7f6A7383641e877517b",
 
 }
@@ -81,13 +81,13 @@ module.exports = treasuryExports({
         owners: [TREASURY.arbitrum],
         ownTokens: [PRL.arbitrum]
     },
-    avalanche: {
+    avax: {
         tokens: [
             nullAddress,
-            USDp.avalanche,
-            sUSDp.avalanche
+            USDp.avax,
+            sUSDp.avax
         ],
-        owners: [TREASURY.avalanche],
+        owners: [TREASURY.avax],
         ownTokens: []
     },
     base: {
@@ -147,13 +147,13 @@ module.exports = treasuryExports({
         owners: [TREASURY.fantom, BOUGHT_BACK_MIMO.fantom],
         ownTokens: [MIMO.fantom,],
       },
-    hyperevm: {
+    hyperliquid: {
         tokens: [
             nullAddress,
-            USDp.hyperevm,
-            sUSDp.hyperevm
+            USDp.hyperliquid,
+            sUSDp.hyperliquid
         ],
-        owners: [TREASURY.hyperevm],
+        owners: [TREASURY.hyperliquid],
         ownTokens: []
     },
     ink: {
@@ -218,12 +218,12 @@ module.exports = treasuryExports({
         owners: [TREASURY.unichain],
         ownTokens: []
     },
-    gnosis: {
+    xdai: {
         tokens: [
             nullAddress,
-            USDp.gnosis
+            USDp.xdai
         ],
-        owners: [TREASURY.gnosis],
+        owners: [TREASURY.xdai],
         ownTokens: []
     }
 })
