@@ -2,10 +2,10 @@ const {function_view} = require("../helper/chain/aptos");
 
 const MODULE_VIEW = "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385"
 
-async function getPools() {
+async function getPools(offset = "0", limit = "200") {
     return await function_view({
-        functionStr: `${MODULE_VIEW}::tapp_views::get_pool_metas`,
-        args: [],
+        functionStr: `${MODULE_VIEW}::tapp_views::get_pool_metas_paginated`,
+        args: [0,offset,limit],
         type_arguments: [],
     });
 }
@@ -29,24 +29,47 @@ async function getPairedCoin(address) {
     return `${account_address}::${module}::${struct}`;
 }
 
+const tvl = async (api) => {
+    const hookTypes = [2,3,4]
+    let allPools = [];
+    let offset = "0";
+    const limit = "200";
+    let hasMore = true;
+
+    // Fetch all pools using pagination
+    while (hasMore) {
+        const pools = await getPools(offset, limit);
+        if (pools.length === 0) {
+            hasMore = false;
+        } else {
+            allPools = allPools.concat(pools);
+            offset = (parseInt(offset) + pools.length).toString();
+            // If we got fewer pools than the limit, we've reached the end
+            if (pools.length < parseInt(limit)) {
+                hasMore = false;
+            }
+        }
+    }
+
+    // Filter pools by hook types
+    const filteredPools = allPools.filter(pool => hookTypes.includes(pool.hook_type));
+
+    for (const pool of filteredPools) {
+        const coinA = await getPairedCoin(pool.assets[0]) || pool.assets[0];
+        const coinB = await getPairedCoin(pool.assets[1]) || pool.assets[1];
+        api.add(coinA, pool.reserves[0]);
+        api.add(coinB, pool.reserves[1]);
+    }
+}
+
+tvl();
+
 
 module.exports = {
     methodology: "Measures the total liquidity across all pools on TAPP Exchange.",
     timetravel: false,
     aptos: {
-        tvl: async (api) => {
-            const hookTypes = [2,3,4]
-
-            const pools = (await getPools()).filter(pool=> hookTypes.includes(pool.hook_type));
-
-            for (const pool of pools) {
-                const coinA = await getPairedCoin(pool.assets[0]) || pool.assets[0];
-                const coinB = await getPairedCoin(pool.assets[1]) || pool.assets[1];
-
-                api.add(coinA, pool.reserves[0]);
-                api.add(coinB, pool.reserves[1]);
-            }
-        },
+        tvl,
     },
 };
 
