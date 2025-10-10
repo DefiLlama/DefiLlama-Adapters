@@ -2,7 +2,7 @@ const {function_view} = require("../helper/chain/aptos");
 
 const MODULE_VIEW = "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385"
 
-async function getPools(offset = "0", limit = "200") {
+async function getPools(offset, limit) {
     return await function_view({
         functionStr: `${MODULE_VIEW}::tapp_views::get_pool_metas_paginated`,
         args: [0,offset,limit],
