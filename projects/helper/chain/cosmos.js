@@ -35,7 +35,7 @@ const endPoints = {
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
-  neutron: "https://rest-kralum.neutron-1.neutron.org",
+  neutron: "https://rest-solara.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://gravity-api.polkachu.com",
   sei: "https://sei-api.polkachu.com",
