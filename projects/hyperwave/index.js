@@ -13,7 +13,7 @@ module.exports = {
     ethereum: { 
         tvl: sdk.util.sumChainTvls([
             // hwHLP
-            // mainnetHwhlpVaultTvl,
+            mainnetHwhlpVaultTvl,
             // hwUSD
             mainnetHwusdVaultTvl,
             mainnetHwusdMorphoTvl,
@@ -26,16 +26,16 @@ module.exports = {
             baseHwusdMorphoTvl,
         ])
     },
-    // arbitrum: { tvl: hypercoreHwhlpVaultTvl },
+    arbitrum: { tvl: hypercoreHwhlpVaultTvl },
     hyperliquid: { 
         tvl: sdk.util.sumChainTvls([
             // hwHLP
-            // hwhlpVaultTvl,
-            // hyperCoreSpotBalance,
-            // // hwHYPE
-            // hwhypeVaultTvl,
-            // hyperevmHwhypeMorphoTvl,
-            // khypeUnstaking,
+            hwhlpVaultTvl,
+            hyperCoreSpotBalance,
+            // hwHYPE
+            hwhypeVaultTvl,
+            hyperevmHwhypeMorphoTvl,
+            khypeUnstaking,
             // hwUSD
             hyperevmHwhusdVaultTvl,
             hyperevmHwusdMorphoTvl,
