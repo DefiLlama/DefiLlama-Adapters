@@ -20,7 +20,6 @@ async function tvl(timestamp, block, chainBlocks, {api}) {
     '0xc00e94Cb662C3520282E6f5717214004A7f26888',//comp
     ADDRESSES.ethereum.AAVE,//aave
     '0x8f8221aFbB33998d8584A2B05749bA73c37a938a',//req
-    '0xc20059e0317DE91738d13af027DfC4a50781b066' //spk
  ].map(t=>[t, treasury])
   await sumTokens(balances, tokensAndOwners, block);
 
@@ -36,7 +35,7 @@ module.exports = {
   ethereum: {
     tvl,
     ownTokens: sumTokensExport({
-      tokens: [MKR,daiMKRLP,SKY],
+      tokens: [MKR,daiMKRLP,SKY, '0xc20059e0317DE91738d13af027DfC4a50781b066'],
       owners: [treasury],
     }),
   },

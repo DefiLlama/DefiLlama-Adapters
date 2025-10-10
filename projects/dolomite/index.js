@@ -11,8 +11,6 @@ const basePar = '1000000000000000000'
 async function getTokensAndBalances(api, supplyOrBorrow) {
   const dolomiteMargin = config[api.chain].margin
   let tokens = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTokenAddress, target: dolomiteMargin })
-  const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens, permitFailure: true, })
-  tokens = tokens.filter((_, i) => !symbols[i]?.startsWith('pol-'));
   
   const underlyingTokens = await api.multiCall({ abi: 'address:UNDERLYING_TOKEN', calls: tokens, permitFailure: true, })
   let bals
@@ -23,8 +21,12 @@ async function getTokensAndBalances(api, supplyOrBorrow) {
     const indices = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketCurrentIndex, target: dolomiteMargin })
     bals = res.map((v, i) => BigNumber(v.borrow.toString()).times(indices[i].borrow).div(basePar).toFixed(0))
   }
+
+  const symbols = await api.multiCall({ abi: 'string:symbol', calls: tokens, permitFailure: true, })
   tokens.forEach((v, i) => {
-    api.add(underlyingTokens[i] ?? v, bals[i])
+    if (!symbols[i]?.startsWith('pol-')) {
+      api.add(underlyingTokens[i] ?? v, bals[i])
+    }
   })
 }
 
@@ -42,6 +44,7 @@ module.exports = {
 
 const config = {
   arbitrum: { margin: '0x6bd780e7fdf01d77e4d475c821f1e7ae05409072', },
+  btnx: { margin: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D', },
   ethereum: { margin: '0x003Ca23Fd5F0ca87D01F6eC6CD14A8AE60c2b97D', },
   polygon_zkevm: { margin: '0x836b557Cf9eF29fcF49C776841191782df34e4e5', },
   mantle: { margin: '0xE6Ef4f0B2455bAB92ce7cC78E35324ab58917De8', },

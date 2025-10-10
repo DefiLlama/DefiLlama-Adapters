@@ -11,6 +11,10 @@ const config = {
     factory: '0x820FB8127a689327C863de8433278d6181123982',
     fromBlock: 18512550,
   },
+  bsc: {
+    factory: '0x820FB8127a689327C863de8433278d6181123982',
+    fromBlock: 56792490,
+  },
 }
 
 module.exports = {
