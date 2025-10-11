@@ -40,6 +40,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ethereum: {
+    // OwO (Emote Frog) – https://etherscan.io/token/0x806a72273b961145cf5c5f040ad1fcd112b3f11a
+    '0x806a72273b961145cf5c5f040ad1fcd112b3f11a': { coingeckoId: 'owo', decimals: 18 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
