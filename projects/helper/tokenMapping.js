@@ -40,6 +40,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  bsc: {
+    // TORDESS (TDS) – https://www.coingecko.com/en/coins/tordess
+    '0x82f0508797a7167add9274b3aee4293158a8645e': { coingeckoId: 'tordess', decimals: 18 },
+  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
