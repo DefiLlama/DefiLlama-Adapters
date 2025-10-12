@@ -3,8 +3,8 @@ module.exports = {
   era: {
     tvl: () => 0,
   },
-  hallmarks: [
-    ['2023-04-26', 'Project Rugged!'],
-  ],
+  // hallmarks: [
+  //   ['2023-04-26', 'Project Rugged!'],
+  // ],
   deadFrom: '2023-04-26'
 };

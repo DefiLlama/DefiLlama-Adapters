@@ -76,6 +76,12 @@ async function tvl(api) {
     if (!tick) return;
     addUniV3LikePosition({ api, token0, token1, tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
   })
+
+  const usdValue = await api.getUSDValue()
+  if (usdValue < 0) {
+    api.log(`Panoptic: skipping negative USD value: $${usdValue}`)
+    return {}
+  }
 }
 
 module.exports = {
@@ -94,4 +100,7 @@ module.exports = {
     methodology: 'This adapter counts tokens held by all PanopticPool contracts created by the PanopticFactory, as well as the token composition of all Uniswap liquidity held by the SemiFungiblePositionManager (which is used by every PanopticPool to manage liquidity).',
     start: 1739411364,
   },
+  hallmarks: [
+    ["2025-08-27", "Whitehack by team"]
+  ]
 }

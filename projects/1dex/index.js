@@ -8,6 +8,8 @@ async function eos() {
         ["eosio.token", "EOS", "eos"],
         ["usdt.xsat", "USDT", "tether"],
         ["btc.xsat", "BTC", "bitcoin"],
+        ["core.vaulta", "A", "vaulta"],
+        ["usdc.xsat", "USDC", "usd-coin"],
     ];
     return await get_account_tvl(accounts, tokens, "eos");
 }

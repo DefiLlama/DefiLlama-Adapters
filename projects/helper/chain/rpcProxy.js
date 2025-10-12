@@ -27,8 +27,8 @@ module.exports = {
     },
   },
   fuel: {
-    query: async ({ contractId, abi, method }) => {
-      const { data } = await client.post('/fuel/query', { contractId, abi, method })
+    query: async ({ contractId, abi, method, params = [] }) => {
+      const { data } = await client.post('/fuel/query', { contractId, abi, method, params})
       return data
     }
   },
@@ -64,4 +64,16 @@ module.exports = {
       return data
     },
   },
+  beacon: {
+    balance: async (addresses = []) => {
+      const { data } = await client.get('/beacon/total_staked', { params: { withdrawal_credentials: addresses.join(',') } })
+      return data.total_balance * 1e9
+    },
+  },
+  sui: {
+    query: async ({ target, contractId, typeArguments, sender }) => {
+      const { data } = await client.post('/sui/query', { target, contractId, typeArguments, sender })
+      return data
+    }
+  }
 }

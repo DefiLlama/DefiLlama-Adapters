@@ -14,7 +14,8 @@
     "treasury": "cd utils;npm i; cd ..; node utils/testInteractive treasury",
     "entities": "cd utils;npm i; cd ..; node utils/testInteractive entities",
     "useTokenLabels": "node utils/scripts/useTokenLabels.js",
-    "biggest-files": "find ./projects -name '*.js' -not -path './projects/helper/*' -not -path './projects/curve/*' -not -path './projects/sigmao/*' -exec du -sh {} \\; | sort -rh | head -n 100",
+    "_biggest-files-old": "find ./projects -name '*.js' -not -path './projects/helper/*' -not -path './projects/curve/*' -not -path './projects/sigmao/*' -exec du -sh {} \\; | sort -rh | head -n 100",
+    "biggest-files": "node utils/scripts/sortTopFilesByLines.js",
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
     "string-timestamp": "node utils/scripts/stringTimestamp.js",
     "sort-chains": "node projects/helper/getChainList.js",
@@ -45,7 +46,6 @@
     "miscreant": "^0.3.2",
     "p-limit": "^3.1.0",
     "starknet": "^5.24.3",
-    "tron-format-address": "^0.1.8",
     "typescript": "^5.0.0"
   },
   "overrides": {
@@ -59,8 +59,6 @@
   },
   "description": "",
   "devDependencies": {
-    "@types/async-retry": "^1.4.5",
-    "@types/bn.js": "^5.1.0",
     "eslint": "^8.32.0",
     "ts-node": "^10.8.1"
   }

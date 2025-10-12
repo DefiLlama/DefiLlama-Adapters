@@ -22,5 +22,6 @@ const tvl = async (api) => {
 module.exports = {
   methodology: 'TVL (Total Value Locked) refers to the total value of all collateral tokens held in the Conditional Token smart contract, including all collateral tokens provided to O.LAB Prediction markets across different chains.',
   start: 23899060,
+  deadFrom: 1752422400,
   base: { tvl }
 }
