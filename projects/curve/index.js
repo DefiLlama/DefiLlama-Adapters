@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
 const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
@@ -34,7 +33,7 @@ const chains = [
   "hyperliquid",
   "plume_mainnet",
   "xdc",
-  'tac',
+  "tac",
   "etlk",
   "plasma",
 ];
@@ -220,7 +219,7 @@ const excludePoolsIfTheyHoldToken = {
     // "0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3", // oETH
   ],
   base: [
-  //   "0xdbfefd2e8460a6ee4955a68582f85708baea60a3", // superOETHb
+    //   "0xdbfefd2e8460a6ee4955a68582f85708baea60a3", // superOETHb
   ]
 }
 
@@ -291,57 +290,55 @@ function excludePoolsThatHoldCertainTokens({ tokensAndOwners, tokensToAvoid }) {
   return { tokensAndOwners: filtered, excludedPools: Array.from(poolsToExclude), poolReasons, tokenToPools }
 }
 
-function tvl(chain) {
+async function tvl(api) {
+  const chain = api.chain
   const { plainFactoryConfig = [] } = config[chain] ?? {}
-  return async (api) => {
-    const { block } = api
-    let balances = {};
-    const transform = await getChainTransform(chain);
-    let poolLists = await getPools(block, chain);
-    const bl = new Set((blacklistedPools[chain] || []).map(a => a.toLowerCase()));
+  const { block } = api
+  let balances = {};
+  let poolLists = await getPools(block, chain);
+  const bl = new Set((blacklistedPools[chain] || []).map(a => a.toLowerCase()));
 
-    for (const [registry, pools] of Object.entries(poolLists)) {
-      poolLists[registry] = pools.filter(p => !bl.has(p.output.toLowerCase()))
-    }
+  for (const [registry, pools] of Object.entries(poolLists)) {
+    poolLists[registry] = pools.filter(p => !bl.has(p.output.toLowerCase()))
+  }
 
-    const promises = []
-    for (const [registry, poolList] of Object.entries(poolLists))
-      promises.push(unwrapPools({ poolList, registry, chain, block }))
+  const promises = []
+  for (const [registry, poolList] of Object.entries(poolLists))
+    promises.push(unwrapPools({ poolList, registry, chain, block }))
 
-    const res = (await Promise.all(promises)).filter(i => i)
-    let tokensAndOwners = res.map(i => i.tokensAndOwners).flat()
-    const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
-    if (blacklists[chain])
-      blacklistedTokens.push(...blacklists[chain])
-    await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
+  const res = (await Promise.all(promises)).filter(i => i)
+  let tokensAndOwners = res.map(i => i.tokensAndOwners).flat()
+  const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
+  if (blacklists[chain])
+    blacklistedTokens.push(...blacklists[chain])
+  await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
 
-    const tokensToAvoid = (excludePoolsIfTheyHoldToken[chain] || []).map(s => s.toLowerCase())
-    const { tokensAndOwners: filteredTOA, excludedPools, poolReasons, tokenToPools } =
-      excludePoolsThatHoldCertainTokens({ tokensAndOwners, tokensToAvoid })
+  const tokensToAvoid = (excludePoolsIfTheyHoldToken[chain] || []).map(s => s.toLowerCase())
+  const { tokensAndOwners: filteredTOA, excludedPools, poolReasons, tokenToPools } =
+    excludePoolsThatHoldCertainTokens({ tokensAndOwners, tokensToAvoid })
 
-    if (tokensToAvoid.length) {
-      Object.entries(tokenToPools).forEach(([t, pools]) => {
-        if (pools.length) sdk.log(chain, 'token triggers exclusion:', t, 'in pools:', pools)
-        else sdk.log(chain, 'token triggers exclusion:', t, 'but no pools found')
-      })
-    }
-    if (excludedPools?.length) {
-      sdk.log(chain, 'excluded pools (by token content):', excludedPools)
-      Object.entries(poolReasons).forEach(([pool, tokens]) => {
-        sdk.log(chain, 'excluded pool reason:', pool, 'contains tokens:', tokens)
-      })
-    }
-    tokensAndOwners = filteredTOA
+  if (tokensToAvoid.length) {
+    Object.entries(tokenToPools).forEach(([t, pools]) => {
+      if (pools.length) sdk.log(chain, 'token triggers exclusion:', t, 'in pools:', pools)
+      else sdk.log(chain, 'token triggers exclusion:', t, 'but no pools found')
+    })
+  }
+  if (excludedPools?.length) {
+    sdk.log(chain, 'excluded pools (by token content):', excludedPools)
+    Object.entries(poolReasons).forEach(([pool, tokens]) => {
+      sdk.log(chain, 'excluded pool reason:', pool, 'contains tokens:', tokens)
+    })
+  }
+  tokensAndOwners = filteredTOA
 
-    await sumTokens2({ balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
-    await handleUnlistedFxTokens(balances, chain);
-    return balances;
-  };
+  await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens })
+  await handleUnlistedFxTokens(balances, chain);
+  return balances;
 }
 
 const chainTypeExports = chains => {
   let exports = chains.reduce(
-    (obj, chain) => ({ ...obj, [chain]: { tvl: tvl(chain) } }),
+    (obj, chain) => ({ ...obj, [chain]: { tvl } }),
     {}
   );
   return exports;
@@ -356,7 +353,7 @@ module.exports.ethereum["staking"] = staking(
 
 module.exports.harmony = {
   tvl: async (api) => {
-    if (api.timestamp > 1655989200) {
+    if (api?.timestamp && api.timestamp > 1655989200) {
       // harmony hack
       return {};
     }
