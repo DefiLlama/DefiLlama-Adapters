@@ -5,6 +5,7 @@ async function tvl() {
       tokenAccounts: [
         "CRFtzwkekKorgdTRSdvsYeqL1vEuVvwGRvweuWCyaRt3", // jitoSOL token account in kySOL Vault address
         "HzwDsHJBtuSTRx3VV6bz1R8yrLywxKgfGte7FASXU8Gd", // JTO token account in kyJTO Vault address
+        "Ct8QS77TMFF98gvN1ZXrNjGqUmdkJQACi5Xi2sCTSC7D", // KYROS account in kyKYROS Vault address
       ]
     })
 }
