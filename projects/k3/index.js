@@ -52,7 +52,10 @@ const configs = {
         '0x060DB084bF41872861f175d83f3cb1B5566dfEA3',
       ],
       erc4626: [
-        '0x539b2ee4f3a04f33d53c0813f77e65148963f72b'
+        '0x539b2ee4f3a04f33d53c0813f77e65148963f72b',
+        '0xAADEA03f6D6F198Bdc9229bD8113aceD19031773',
+        '0x767d33217e7d2670695FfE2a104548B780f4F5d8',
+        '0x141A6f77ca186861BFB323b07012e80Ef4e09041',
       ],
     },
     arbitrum: {
