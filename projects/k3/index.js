@@ -50,6 +50,7 @@ const configs = {
     plasma: {
       eulerVaultOwners: [
         '0x060DB084bF41872861f175d83f3cb1B5566dfEA3',
+        '0x3F1297Da87bf2B4c819F7d888fd81095F8dAA57E',
       ],
       erc4626: [
         '0x539b2ee4f3a04f33d53c0813f77e65148963f72b'
