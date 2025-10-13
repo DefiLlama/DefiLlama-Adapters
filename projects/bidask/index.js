@@ -51,8 +51,7 @@ async function listFactoryPools() {
                 token0 = processTVMSliceReadAddress(stack0[2][1].bytes) // https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md#get-methods
                 await sleep(1500);
             } catch (e) {
-                console.log(xWallet, e)
-                continue
+                continue // sometimes it's ok, jetton wallet might be uninit
             }
         }
 
@@ -64,7 +63,6 @@ async function listFactoryPools() {
                 token1 = processTVMSliceReadAddress(stack1[2][1].bytes)
                 await sleep(1500);
             } catch (e) {
-                console.log(yWallet, e)
                 continue
             }
         }
@@ -74,7 +72,9 @@ async function listFactoryPools() {
         const token1Bal = tvl?.[1]?.toString?.() || String(tvl?.[1] ?? 0)
   
         data.push({ pool, token0, token1, token0Bal, token1Bal })
-      } catch (_) {}
+      } catch (e) {
+        console.log(e);
+      }
       await sleep(1500)
     }
 
@@ -85,8 +85,6 @@ async function tvl(api) {
     const pools = await listFactoryPools()
     if (!pools.length) return {}
 
-    console.log(pools);
-  
     return transformDexBalances({
         chain: 'ton',
         data: pools.map(i => ({
