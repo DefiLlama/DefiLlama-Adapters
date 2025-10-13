@@ -131,6 +131,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
   async function getPositionIds() {
     uniV4PositionCallCount++
 
+    let block = await api.getBlock()
     if (uniV4PositionCallCount > 51) throw new Error('too many uniswap v4 position calls, find some other solution or remove caching, or batch owners')
 
     const defaultGraphEndpoints = {
