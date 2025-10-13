@@ -11,7 +11,7 @@ async function tvl(api) {
     params: [WRAPPED_WBTC_CONTRACT],
   });
 
-  api.add(WRAPPED_WBTC_CONTRACT, wrapperBalance)
+  api.addTokens([WBTC_CONTRACT], [wrapperBalance])
 }
 
 module.exports = {
