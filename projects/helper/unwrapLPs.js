@@ -158,7 +158,7 @@ async function unwrapUniswapV4NFTs({ balances = {}, api, owner, nftAddress, stat
 
 
     // in case the graph is stale or down, we use cached data, to ensure that owners still hold the v4 nfts, verify it on chain
-    const positionOwners = await sdk.api2.abi.multiCall({ chain, block, abi: 'function ownerOf(uint256) view returns (address)', calls: positionIds, target: nftAddress })
+    const positionOwners = await sdk.api2.abi.multiCall({ chain, abi: 'function ownerOf(uint256) view returns (address)', calls: positionIds, target: nftAddress })
     positionOwners.forEach((pOwner, i) => {
       if (pOwner.toLowerCase() === owner.toLowerCase()) verifiedPositionIds.push(positionIds[i])
     })
