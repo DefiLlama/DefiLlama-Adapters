@@ -23,7 +23,7 @@ async function sonicTvl(api) {
 
   // Return TVL as a balance object
   api.addUSDValue(staking);
-  return api.getBalances();
+  return api.getBalances() / 1e18;
 }
 
 async function arbitrumTvl(api) {
@@ -34,7 +34,7 @@ async function arbitrumTvl(api) {
   });
 
   api.addUSDValue(Number(totalAssets));
-  return api.getBalances();
+  return api.getBalances() / 1e6;
 }
 
 module.exports = {
