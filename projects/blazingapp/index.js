@@ -12,7 +12,7 @@ module.exports = {
   ethereum: { tvl },
   base: { tvl },
   bsc: { tvl },
-  avalanche: { tvl },
+  avax: { tvl },
   berachain: { tvl },
   sonic: { tvl },
   solana: { tvl },
