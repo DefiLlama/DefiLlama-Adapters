@@ -39,6 +39,10 @@ const ARBITRUM_PROTOCOLS = {
         "0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899", // Euler USDC
         "0x7e97fa6893871A2751B5fE961978DCCb2c201E65", // Morpho Gauntlet USDC Core
         "0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed", // Morpho Gauntlet USDC Prime
+        "0xa53Cf822FE93002aEaE16d395CD823Ece161a6AC", // Morpho Clearstar USDC Reactor
+        "0x4B6F1C9E5d470b97181786b26da0d0945A7cf027", // Morpho Hyperithm USDC
+        "0xa60643c90A542A95026C0F1dbdB0615fF42019Cf", // Morpho MEV Capital USDC
+        "0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA", // Morpho Steakhouse High Yield USDC
     ]
 };
 
