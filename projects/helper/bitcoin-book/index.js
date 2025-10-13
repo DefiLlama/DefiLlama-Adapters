@@ -109,8 +109,11 @@ const tzbtc = require('./tezos-btc.js')
 const tothemoon = require('./tothemoon.js')
 const indodax = require('./indodax.js')
 const river = require('./river.js')
+const echoMBTC = require('./echo-mBTC.js')
 const xbtc = require('./okx-xbtc.js')
 const leadbtc = require('./leadbtc.js')
+const bitgetBtc = require('./bitget-bgBTC.js')
+const magicEden = require('./magic-eden.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -189,6 +192,7 @@ module.exports = {
   bingCex,
   bitfinex,
   bitget,
+  bitgetBtc,
   bitmake,
   bitmark,
   bitmex,
@@ -264,6 +268,8 @@ module.exports = {
   tothemoon,
   indodax,
   river,
+  echoMBTC,
   xbtc,
   leadbtc,
+  magicEden,
 }
