@@ -109,6 +109,10 @@ Object.keys(config).forEach(chain => {
 
         api.add('0xd8f824d4252caE7d5E49B95d47B0EfAfe6f2d570', balance)
 
+        balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        api.add('0x66bE42a0BdA425A8C3b3c2cF4F4Cb9EDfcAEd21d', balance)
+
         return api.getBalances()
       }
     }
