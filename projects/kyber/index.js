@@ -2,8 +2,27 @@ const sdk = require("@defillama/sdk")
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
+
+const KYBER_STAKING_ADDRESS = "0xECf0bdB7B3F349AbfD68C3563678124c5e8aaea3";
+const KYBER_STAKING_ADDRESS_2 = "0xeadb96F1623176144EBa2B24e35325220972b3bD";
+const KNC = "0xdd974d5c2e2928dea5f71b9825b8b646686bd200";
+const KNC_V2 = "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202";
+const UNISWAP_KNC = "0x49c4f9bc14884f6210F28342ceD592A633801a8b";
+const UNISWAP_KNC_V2 = "0xf49C43Ae0fAf37217bDcB00DF478cF793eDd6687";
+const UNISWAP_KNC_V3 = "0x32263442a49650D89B2AB3dCB46B8C8DeC612F4D";
+const KYBER_AGGREGATOR = "0x6E4141d33021b52C91c28608403db4A0FFB50Ec6";
 const CONFIG = {
-  ethereum: { graphId: "mainnet" },
+  ethereum: {
+    graphId: "mainnet",
+    staking: sumTokens2.bind(null, {
+      owners: [ KYBER_STAKING_ADDRESS, KYBER_STAKING_ADDRESS_2 ],
+      tokens: [
+        KNC,
+        KNC_V2
+      ],
+      chain: 'ethereum'
+    })
+  },
   arbitrum: { graphId: "arbitrum-one", blacklistedTokens: ['0x0df5dfd95966753f01cb80e76dc20ea958238c46'] }, // rWETH
   polygon: { graphId: "matic" },
   avax: { graphId: "avalanche" },
@@ -71,8 +90,11 @@ module.exports = {
 };
 
 Object.keys(CONFIG).forEach((chain) => {
-  const { graphId, blacklistedTokens } = CONFIG[chain]
-  module.exports[chain] = { tvl: elastic(graphId, blacklistedTokens)}
+  const { graphId, blacklistedTokens, staking } = CONFIG[ chain ]
+  module.exports[ chain ] = {
+    tvl: elastic(graphId, blacklistedTokens),
+    staking: staking || (() => ({})),
+  }
 })
 
 module.exports.base.tvl = () => ({})  // setting base to 0 for now as I could not find the graph endpoint
