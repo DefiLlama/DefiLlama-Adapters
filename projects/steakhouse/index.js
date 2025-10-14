@@ -44,6 +44,38 @@ const configs = {
         '0x0A0e559bc3b0950a7e448F0d4894db195b9cf8DD',
       ],
     },
+    solana: {
+      kaminoVaults: [
+        'HDsayqAsDWy3QvANGqh2yNraqcD8Fnjgh73Mhb3WRS5E',
+        'BqBsS4myH82S4yfqeKjXSF7yErWwSi5WTshSzKmHQgzw',
+        'BEEfo7xwgK2ZP13Pxo7qqTPzAteKJmXjVWtMWcXSvbn2',
+        'BoZDRc1RDY9FzUZZ19WT4GbtTnnbXQ8AGSU5ByEw3ut5',
+      ]
+    }
   }
 }
+
 module.exports = getCuratorExport(configs)
+
+if (configs.blockchains.solana?.kaminoVaults?.length > 0) {
+  if (!module.exports.solana) module.exports.solana = {}
+
+  module.exports.solana.tvl = async (api) => {
+    const { get } = require('../helper/http')
+
+    for (const vaultAddress of configs.blockchains.solana.kaminoVaults) {
+      try {
+        const metrics = await get(`https://api.kamino.finance/kvaults/${vaultAddress}/metrics?env=mainnet-beta`)
+        if (metrics?.tokensInvestedUsd) {
+          api.addUSDValue(parseFloat(metrics.tokensInvestedUsd))
+        } else {
+          console.error(`Could not fetch TVL for Kamino vault ${vaultAddress}: Unexpected response format`)
+        }
+      } catch (e) {
+        console.error(`Could not fetch TVL for Kamino vault ${vaultAddress}:`, e.message)
+      }
+    }
+
+    return api.getBalances()
+  }
+}
