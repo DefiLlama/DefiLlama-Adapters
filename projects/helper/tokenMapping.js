@@ -1,9 +1,9 @@
-let coreAssets = require("./coreAssets.json");
-const { svmChains } = require("./svmChainConfig");
-const ADDRESSES = coreAssets;
-const nullAddress = ADDRESSES.null;
+let coreAssets = require('./coreAssets.json')
+const { svmChains } = require('./svmChainConfig')
+const ADDRESSES = coreAssets
+const nullAddress = ADDRESSES.null
 
-coreAssets = JSON.parse(JSON.stringify(coreAssets));
+coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
