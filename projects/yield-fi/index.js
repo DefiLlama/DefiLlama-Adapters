@@ -28,10 +28,14 @@ const vyusd_config = {
 
 const yeth_config = {
     ethereum: "0x8464F6eCAe1EA58EC816C13f964030eAb8Ec123A",
+    arbitrum: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
+    base: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8"
 }
 
 const vyeth_config = {
     ethereum: "0x3073112c2c4800b89764973d5790ccc7fba5c9f9",
+    arbitrum: "0x8c93a6752Bfe29FDA26EbA8df4390c642e6A7f90",
+    base: "0x8c93a6752Bfe29FDA26EbA8df4390c642e6A7f90"
 }
 
 const ybtc_config = {
