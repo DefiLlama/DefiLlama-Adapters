@@ -33,6 +33,11 @@ const configs = {
         '0x30988479C2E6a03E7fB65138b94762D41a733458',
       ],
     },
+    hemi: {
+      morphoVaultOwners: [
+        '0x30988479C2E6a03E7fB65138b94762D41a733458'
+      ],
+    },
   }
 }
 
