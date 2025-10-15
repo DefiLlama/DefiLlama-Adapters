@@ -20,6 +20,7 @@ const configs = {
       erc4626: [
         '0x50bd66d59911f5e086ec87ae43c811e0d059dd11',
         '0xf5503d3d4bd254c2c17690eed523bcb2935db6de',
+        '0x866C6c6627303Be103814150fC0e886BE5D9ea83',
       ],
     },
     bsc: {
