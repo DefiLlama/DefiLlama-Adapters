@@ -1,7 +1,5 @@
 // 使用 Subgraph 接口直接获取 USD 价格
 async function tvl(api) {
-  console.log('Using Subgraph USD values for TVL calculation')
-  
   // 使用完整的 GraphQL 查询
   const query = `
     query PoolList(
