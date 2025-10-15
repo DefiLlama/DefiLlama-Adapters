@@ -41,7 +41,6 @@ async function listFactoryPools() {
         let stack = await rateLimitedCall({ target: pool, abi: 'get_pool_info', rawStack: true })
         const xWallet = processTVMSliceReadAddress(stack[0][1].bytes)
         const yWallet = processTVMSliceReadAddress(stack[1][1].bytes)
-        await sleep(1500);
 
         if (xWallet == 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c') { // bidask assigns this address for TON jetton wallet (which doesn't exist)
             token0 = ADDRESSES.ton.TON;
@@ -49,7 +48,6 @@ async function listFactoryPools() {
             try {
                 const stack0 = await rateLimitedCall({ target: xWallet, abi: 'get_wallet_data', rawStack: true})
                 token0 = processTVMSliceReadAddress(stack0[2][1].bytes) // https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md#get-methods
-                await sleep(1500);
             } catch (e) {
                 continue // sometimes it's ok, jetton wallet might be uninit
             }
@@ -61,9 +59,8 @@ async function listFactoryPools() {
             try {
                 let stack1 = await rateLimitedCall({ target: yWallet, abi: 'get_wallet_data', rawStack: true})
                 token1 = processTVMSliceReadAddress(stack1[2][1].bytes)
-                await sleep(1500);
             } catch (e) {
-                continue
+              continue
             }
         }
   
