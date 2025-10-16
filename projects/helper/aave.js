@@ -3,7 +3,7 @@ const ADDRESSES = require('./coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
-const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
+const { getChainTransform, getFixBalances, } = require('../helper/portedTokens')
 const { sumTokens2, } = require('../helper/unwrapLPs');
 const methodologies = require('./methodologies');
 
@@ -157,8 +157,8 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
   async function _getData() {
     sdk.log('get aava metadata:', key)
 
-    const transformAddress = transformAddressRaw || await getChainTransform(chain)
-    const fixBalances = await getFixBalancesSync(chain)
+    const transformAddress = transformAddressRaw || getChainTransform(chain)
+    const fixBalances = getFixBalances(chain)
     const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses, abis)
     let updateBalances
 
