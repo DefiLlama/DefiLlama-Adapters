@@ -87,6 +87,14 @@ const fixBalancesTokens = {
   },
   plasma: {
     [nullAddress]: { coingeckoId: "plasma", decimals: 18 }, // Native XPL
+  chromia: {
+    '9bacd576f40b6674aa76b8bfa1330077a3b94f581bfdb2ef806122c384dcdf25': { coingeckoId: 'usd-coin', decimals: 18 },
+  },
+  somnia: {
+    '0x936ab8c674bcb567cd5deb85d8a216494704e9d8': { coingeckoId: 'ethereum', decimals: 18 }
+  },
+  ink: {
+    '0xfc421ad3c883bf9e7c4f42de845c4e4405799e73': { coingeckoId: 'gho', decimals: 18 }
   }
 }
 

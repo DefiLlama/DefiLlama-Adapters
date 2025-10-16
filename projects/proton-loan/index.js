@@ -21,6 +21,7 @@ const tokenMapping = {
   'xtokens:XADA': 'cardano',
   'xtokens:XXLM': 'stellar',
   'xtokens:XHBAR': 'hedera-hashgraph',
+  'xtokens:XSOL': 'solana',
 }
 
 const API_ENDPOINT = 'https://proton.eosusa.io'

@@ -95,16 +95,21 @@ Object.keys(config).forEach(chain => {
     module.exports[chain] = {
       tvl: async (api) => {
 
-        let value
         let balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x7519403E12111ff6b710877Fcd821D0c12CAF43A', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
 
         api.add('0x7519403E12111ff6b710877Fcd821D0c12CAF43A', balance)
 
         balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0xd8f824d4252caE7d5E49B95d47B0EfAfe6f2d570', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
-        // value = await api.call({ abi: 'function convertToAssets(uint256) view returns (uint256)', target: '0xd8f824d4252caE7d5E49B95d47B0EfAfe6f2d570', params: [balance] })
 
         api.add('0xd8f824d4252caE7d5E49B95d47B0EfAfe6f2d570', balance)
-        // api.add(ADDRESSES.ethereum.USDC, value)
+
+        balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x7519403E12111ff6b710877Fcd821D0c12CAF43A', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        api.add('0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34', balance)
+
+        balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        api.add('0x66bE42a0BdA425A8C3b3c2cF4F4Cb9EDfcAEd21d', balance)
 
         return api.getBalances()
       }
