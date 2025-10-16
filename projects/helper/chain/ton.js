@@ -1,15 +1,17 @@
 const { get, post, } = require('../http')
 const ADDRESSES = require('../coreAssets.json')
 const plimit = require('p-limit')
-const _rateLimited = plimit(1)
+const _rateLimited = plimit(9)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 const { sumTokens2 } = require('../unwrapLPs')
 const tonUtils = require('../utils/ton')
-
 const { getUniqueAddresses, sleep, sliceIntoChunks } = require('../utils')
+require('dotenv').config()
+
+const key = process.env.TONCENTER_API_KEY;
 
 async function getTonBalance(addr) {
-  const res = await get(`https://toncenter.com/api/v3/account?address=${addr}`)
+  const res = await get(`https://toncenter.com/api/v3/account?address=${addr}` + (key ? `?api_key=${key}` : ''))
   return res.balance
 }
 
@@ -104,7 +106,6 @@ async function call({ target, abi, params = [], rawStack = false, }) {
     "stack": params
   }
 
-  const key = process.env.TONCENTER_API_KEY; // TODO: add api key to env
   const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod' + (key ? `?api_key=${key}` : ''), requestBody)
   if (!ok) {
     throw new Error("Unknown");
@@ -131,7 +132,7 @@ async function addTonBalances({ api, addresses }) {
   let i = 0
   for (const chunk of chunks) {
     api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
-    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
+    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + (key ? `?api_key=${key}` : '') + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
     accounts.forEach(({ balance }) => {
       api.add(ADDRESSES.null, balance)
     })
