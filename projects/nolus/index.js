@@ -1,5 +1,56 @@
+const axios = require('axios')
+axios.defaults.headers.common['User-Agent'] = 'DefiLlama-Nolus-Adapter/1.0 (https://defillama.com)'
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
 const { sleep } = require('../helper/utils')
+
+// define batch configs for throttled requests
+const BATCH = {
+  size: 20,         // how many contracts per queryManyContracts
+  pauseMs: 300,     // base pause between batches
+  jitterMs: 120,    // add 0..jitterMs random jitter
+  maxRetries: 2,    // retry a failed batch up to N times
+}
+
+async function getLeasesThrottled(leaseAddresses) {
+  const results = new Array(leaseAddresses.length).fill(null)
+
+  for (let i = 0; i < leaseAddresses.length; i += BATCH.size) {
+    const start = i
+    const end = Math.min(i + BATCH.size, leaseAddresses.length)
+    const chunk = leaseAddresses.slice(start, end)
+
+    let attempt = 0
+    while (attempt <= BATCH.maxRetries) {
+      try {
+        const res = await queryManyContracts({
+          contracts: chunk,
+          chain: 'nolus',
+          data: { state: {} },
+          permitFailure: true,
+        })
+        // place results (guard index and undefineds)
+        for (let j = 0; j < chunk.length; j++) {
+          const val = res && res[j] !== undefined ? res[j] : null
+          results[start + j] = val
+        }
+        break
+      } catch (e) {
+        attempt++
+        if (attempt > BATCH.maxRetries) {
+          console.warn(`[states] batch ${start}-${end} failed after ${attempt} attempts: ${e?.message || e}`)
+          break
+        }
+        await sleep(300 * attempt + Math.floor(Math.random() * 200))
+      }
+    }
+
+    // small pacing between batches
+    const pause = BATCH.pauseMs + Math.floor(Math.random() * BATCH.jitterMs)
+    if (end < leaseAddresses.length) await sleep(pause)
+  }
+
+  return results
+}
 
 // Osmosis Noble USDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_NOBLE) pirin-1
 const osmosisNobleOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
@@ -53,9 +104,12 @@ async function getLeaseContracts(leaseCodeId) {
   return await queryContracts({ chain: 'nolus', codeId: leaseCodeId, })
 }
 
+// Commented out and replaced by throttled alternative
+/*
 async function getLeases(leaseAddresses) {
   return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {"state":{}} })
 }
+*/
 
 async function getLppTvl(lppAddresses) {  
   const lpps = await queryManyContracts({ contracts: lppAddresses, chain: 'nolus', data: { 'lpp_balance': [] } })
@@ -77,16 +131,19 @@ async function getLppTvl(lppAddresses) {
   return totalLpp / divisor;
 }
 
-function sumAssests(api, leases, currencies) {
+function sumAssets(api, leases, currencies) {
+  if (!Array.isArray(leases)) return
   leases.forEach(v => {
-    if (v.opened) {
-      let ticker = v.opened.amount.ticker
-      const amount = parseInt(v.opened.amount.amount, 10)
-      const currencyData = find(currencies, (n) => n.ticker == ticker)
-      if (currencyData) { 
-        api.add(currencyData.dex_symbol, amount)
-      }
-    }
+    if (!v || !v.opened || !v.opened.amount) return
+    const ticker = v.opened.amount.ticker
+    const amount = parseInt(v.opened.amount.amount, 10)
+    // skip weird/empty
+    if (!Number.isFinite(amount)) return
+
+    const currencyData = find(currencies, (n) => n && n.ticker === ticker)
+    if (!currencyData || !currencyData.dex_symbol) return
+
+    api.add(currencyData.dex_symbol, amount)
   })
 }
 
@@ -107,8 +164,8 @@ async function tvl(api, protocols) {
     const oracleData = await queryContract({ contract: p.oracle, chain: 'nolus', data: { 'currencies': {} } })
     const leaseCodeId = await getLeaseCodeId(p.leaser)
     const leaseContracts = await getLeaseContracts(leaseCodeId)
-    const leases = await getLeases(leaseContracts)
-    sumAssests(api, leases, oracleData)
+    const leases = await getLeasesThrottled(leaseContracts)
+    sumAssets(api, leases, oracleData)
   }
 }
 
