@@ -8,7 +8,7 @@ const config = {
     },
     ethereum: {
         vault_address: ["0x4d1Be6c39Fe3fB1362ff602a6c0CBB5B3BF64eC7", "0xabc02c4f217f5f1d6b1e7e2d3415eae096acb5ad", "0xa9c99a9f70ccf9fcd23fc05f1ebdc76040ebeb1e"],
-        token_address: [ADDRESSES.ethereum.USDT],
+        token_address: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
     },
     bsc: {
         vault_address: ["0x4d1Be6c39Fe3fB1362ff602a6c0CBB5B3BF64eC7", "0xabc02c4f217f5f1d6b1e7e2d3415eae096acb5ad", "0xa9c99a9f70ccf9fcd23fc05f1ebdc76040ebeb1e"],
