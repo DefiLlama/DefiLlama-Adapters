@@ -3,64 +3,14 @@ axios.defaults.headers.common['User-Agent'] = 'DefiLlama-Nolus-Adapter/1.0 (http
 const { queryContract, queryManyContracts, queryContracts } = require('../helper/chain/cosmos')
 const { sleep } = require('../helper/utils')
 
-// define batch configs for throttled requests
-const BATCH = {
-  size: 20,         // how many contracts per queryManyContracts
-  pauseMs: 300,     // base pause between batches
-  jitterMs: 120,    // add 0..jitterMs random jitter
-  maxRetries: 2,    // retry a failed batch up to N times
-}
-
-async function getLeasesThrottled(leaseAddresses) {
-  const results = new Array(leaseAddresses.length).fill(null)
-
-  for (let i = 0; i < leaseAddresses.length; i += BATCH.size) {
-    const start = i
-    const end = Math.min(i + BATCH.size, leaseAddresses.length)
-    const chunk = leaseAddresses.slice(start, end)
-
-    let attempt = 0
-    while (attempt <= BATCH.maxRetries) {
-      try {
-        const res = await queryManyContracts({
-          contracts: chunk,
-          chain: 'nolus',
-          data: { state: {} },
-          permitFailure: true,
-        })
-        // place results (guard index and undefineds)
-        for (let j = 0; j < chunk.length; j++) {
-          const val = res && res[j] !== undefined ? res[j] : null
-          results[start + j] = val
-        }
-        break
-      } catch (e) {
-        attempt++
-        if (attempt > BATCH.maxRetries) {
-          console.warn(`[states] batch ${start}-${end} failed after ${attempt} attempts: ${e?.message || e}`)
-          break
-        }
-        await sleep(300 * attempt + Math.floor(Math.random() * 200))
-      }
-    }
-
-    // small pacing between batches
-    const pause = BATCH.pauseMs + Math.floor(Math.random() * BATCH.jitterMs)
-    if (end < leaseAddresses.length) await sleep(pause)
-  }
-
-  return results
-}
+// batch config
+const BATCH = { size: 30, pauseMs: 300, jitterMs: 120, maxRetries: 2 }
+const sleepMs = (n) => new Promise(r => setTimeout(r, n))
 
 // Osmosis Noble USDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_NOBLE) pirin-1
 const osmosisNobleOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
 const osmosisNobleLppAddr = 'nolus1ueytzwqyadm6r0z8ajse7g6gzum4w3vv04qazctf8ugqrrej6n4sq027cf'
 const osmosisNobleLeaserAddr = 'nolus1dca9sf0knq3qfg55mv2sn03rdw6gukkc4n764x5pvdgrgnpf9mzsfkcjp6'
-
-// Osmosis axlUSDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_AXELAR) pirin-1
-const osmosisAxlOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
-const osmosisAxlLeaserAddr = 'nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f'
-const osmosisAxlLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
 
 // Osmosis ATOM Protocol Contracts (OSMOSIS-OSMOSIS-ATOM) pirin-1
 const osmosisAtomOracleAddr = 'nolus16xt97qd5mc2zkya7fs5hvuavk92cqds82qjuq6rf7p7akxfcuxcs5u2280'
@@ -104,12 +54,61 @@ async function getLeaseContracts(leaseCodeId) {
   return await queryContracts({ chain: 'nolus', codeId: leaseCodeId, })
 }
 
-// Commented out and replaced by throttled alternative
+// Commented out and replaced by throttled alternative below
 /*
 async function getLeases(leaseAddresses) {
   return await queryManyContracts({ permitFailure: true, contracts: leaseAddresses, chain: 'nolus', data: {"state":{}} })
 }
 */
+
+async function getLeasesThrottled(leaseAddresses) {
+  const results = new Array(leaseAddresses.length).fill(null)
+
+  for (let i = 0; i < leaseAddresses.length; i += BATCH.size) {
+    const start = i
+    const end = Math.min(i + BATCH.size, leaseAddresses.length)
+    const chunk = leaseAddresses.slice(start, end)
+
+    let ok = false
+    for (let attempt = 0; attempt <= BATCH.maxRetries; attempt++) {
+      try {
+        const res = await queryManyContracts({
+          contracts: chunk,
+          chain: 'nolus',
+          data: { state: {} },
+          permitFailure: true,
+        })
+        // place results (guard undefined)
+        for (let j = 0; j < chunk.length; j++) {
+          results[start + j] = (res && res[j] !== undefined) ? res[j] : null
+        }
+        ok = true
+        break
+      } catch (e) {
+        if (attempt === BATCH.maxRetries) {
+          // if we've gone through all the retries, throw an error if something is wrong (e.g. rate limiting in the node)
+          throw new Error(`[states] batch ${start}-${end} failed after ${attempt + 1} attempts: ${e?.message || e}`)
+        }
+        await sleepMs(300 * (attempt + 1) + Math.floor(Math.random() * 200))
+      }
+    }
+
+    // pacing between batches
+    if (ok && end < leaseAddresses.length) {
+      const pause = BATCH.pauseMs + Math.floor(Math.random() * BATCH.jitterMs)
+      await sleepMs(pause)
+    }
+  }
+
+  // End-to-end invariant: no missing states`
+  const missing = results.reduce((n, v) => n + (v == null ? 1 : 0), 0)
+  if (missing > 0) {
+    // HARD FAIL - better to error than publish partial TVL
+    throw new Error(`[states] incomplete data: missing ${missing} of ${results.length}`)
+  }
+
+  return results
+}
 
 async function getLppTvl(lppAddresses) {  
   const lpps = await queryManyContracts({ contracts: lppAddresses, chain: 'nolus', data: { 'lpp_balance': [] } })
@@ -174,7 +173,6 @@ module.exports = {
   nolus: {
     tvl: async () => {
       return {
-        'axlusdc': await getLppTvl([osmosisAxlLppAddr]),
         'usd-coin': await getLppTvl([osmosisNobleLppAddr, astroportNobleLppAddr]),
         'osmosis-allbtc': await getLppTvl([osmosisBtcLppAddr]),
         'osmosis-allsol': await getLppTvl([osmosisSolLppAddr]),
@@ -194,7 +192,6 @@ module.exports = {
     tvl: async (api) => {
       return await tvl(api, [
         { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
-        { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
         { leaser: osmosisAtomLeaserAddr, oracle: osmosisAtomOracleAddr },
         { leaser: osmosisBtcLeaserAddr, oracle: osmosisBtcOracleAddr },
         { leaser: osmosisSolLeaserAddr, oracle: osmosisSolOracleAddr },
