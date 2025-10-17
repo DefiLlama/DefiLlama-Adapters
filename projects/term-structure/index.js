@@ -41,7 +41,6 @@ const ADDRESSES = {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
       fromBlock: 322193553,
     },
-    FactoryV2: [],
     VaultFactory: [
       {
         address: "0x929CBcb8150aD59DB63c92A7dAEc07b30d38bA79",
@@ -60,7 +59,6 @@ const ADDRESSES = {
       address: "0x8Df05E11e72378c1710e296450Bf6b72e2F12019",
       fromBlock: 50519690,
     },
-    FactoryV2: [],
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
@@ -110,6 +108,34 @@ const ADDRESSES = {
       },
     ],
   },
+  berachain: {
+    FactoryV2: [
+      {
+        address: "0x4BC4F8f9B212B5a3F9f7Eeb35Ae1A91902670F7f",
+        fromBlock: 11541942,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0x65fC69DE62E11592E8Acf57a0c97535209090Ef1",
+        fromBlock: 11541942,
+      },
+    ],
+  },
+  hyperliquid: {
+    FactoryV2: [
+      {
+        address: "0xDeC5E1D1E1bC3E3c6b8b7b5E3f0F1A2B3C4D5E6F",
+        fromBlock: 12345678,
+      },
+    ],
+    VaultFactoryV2: [
+      {
+        address: "0xF1E2D3C4B5A697887766554433221100FFEEDDCC",
+        fromBlock: 12345678,
+      },
+    ],
+  },
 };
 
 const VAULT_BLACKLIST = {
@@ -123,6 +149,7 @@ const VAULT_BLACKLIST = {
 };
 
 async function getTermMaxMarketAddresses(api) {
+  if (!ADDRESSES[api.chain].Factory) return [];
   const logs = await getLogs({
     api,
     eventAbi: EVENTS.V1.CreateMarket,
@@ -135,6 +162,7 @@ async function getTermMaxMarketAddresses(api) {
 }
 
 async function getTermMaxMarketV2Addresses(api) {
+  if (!ADDRESSES[api.chain].FactoryV2) return [];
   const addresses = [];
   const tasks = [];
   for (const factory of ADDRESSES[api.chain].FactoryV2) {
@@ -178,6 +206,7 @@ async function getTermMaxMarketOwnerTokens(api) {
 }
 
 async function getTermMaxVaultAddresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactory) return [];
   const addresses = [];
   const promises = [];
   for (const vaultFactory of ADDRESSES[api.chain].VaultFactory) {
@@ -199,6 +228,7 @@ async function getTermMaxVaultAddresses(api) {
 }
 
 async function getTermMaxVaultV2Addresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactoryV2) return [];
   const addresses = [];
   const promises = [];
   for (const vaultFactory of ADDRESSES[api.chain].VaultFactoryV2) {
@@ -315,6 +345,7 @@ module.exports = {
       "Sunset Term Structure and launch TermMax",
     ],
   ],
+  // 1st batch deployment
   arbitrum: {
     borrowed: getTermMaxMarketBorrowed,
     tvl: async (api) => {
@@ -339,6 +370,21 @@ module.exports = {
       const ownerTokens = []
         .concat(termStructureOwnerTokens)
         .concat(termMaxOwnerTokens);
+      return sumTokens2({ api, ownerTokens });
+    },
+  },
+  // 2nd batch deployment
+  berachain: {
+    borrowed: getTermMaxMarketBorrowed,
+    tvl: async (api) => {
+      const ownerTokens = await getTermMaxOwnerTokens(api);
+      return sumTokens2({ api, ownerTokens });
+    },
+  },
+  hyperliquid: {
+    borrowed: getTermMaxMarketBorrowed,
+    tvl: async (api) => {
+      const ownerTokens = await getTermMaxOwnerTokens(api);
       return sumTokens2({ api, ownerTokens });
     },
   },
