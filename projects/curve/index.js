@@ -53,8 +53,12 @@ const blacklistedPools = {
     '0xc528b0571D0BE4153AEb8DdB8cCeEE63C3Dd7760',
     '0x8272E1A3dBef607C04AA6e5BD3a1A134c8ac063B'
   ],
+  base: [  ]
+}
+
+const globalBlacklistedTokens = {
   base: [
-    '0x302A94E3C28c290EAF2a4605FC52e11Eb915f378', // superOETH
+    '0xdbfefd2e8460a6ee4955a68582f85708baea60a3', // superOETHb
   ]
 }
 
@@ -197,7 +201,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   let calls = aggregateBalanceCalls({ coins, nCoins, wrapped });
   const allTokens = getUniqueAddresses(calls.map(i => i[0]))
   const tokenNames = await getNames(chain, allTokens)
-  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases))]
+  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases)), ...(globalBlacklistedTokens[chain] ?? [])]
   Object.entries(tokenNames).forEach(([token, name]) => {
     if ((name ?? '').startsWith('Curve.fi ')) {
       sdk.log(chain, 'blacklisting', name)
