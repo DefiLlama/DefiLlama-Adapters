@@ -7,14 +7,14 @@ const osmosisNobleLppAddr = 'nolus1ueytzwqyadm6r0z8ajse7g6gzum4w3vv04qazctf8ugqr
 const osmosisNobleLeaserAddr = 'nolus1dca9sf0knq3qfg55mv2sn03rdw6gukkc4n764x5pvdgrgnpf9mzsfkcjp6'
 
 // Osmosis axlUSDC Protocol Contracts (OSMOSIS-OSMOSIS-USDC_AXELAR) pirin-1
-const osmosisAxlOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
+// const osmosisAxlOracleAddr = 'nolus1vjlaegqa7ssm2ygf2nnew6smsj8ref9cmurerc7pzwxqjre2wzpqyez4w6'
 const osmosisAxlLeaserAddr = 'nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f'
 const osmosisAxlLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
 
 // Osmosis stATOM Protocol Contracts (OSMOSIS-OSMOSIS-ST_ATOM) pirin-1
-const osmosisStAtomOracleAddr = 'nolus1mtcv0vhpt94s82mcemj5sc3v94pq3k2g62yfa5p82npfnd3xqx8q2w8c5f'
+// const osmosisStAtomOracleAddr = 'nolus1mtcv0vhpt94s82mcemj5sc3v94pq3k2g62yfa5p82npfnd3xqx8q2w8c5f'
 const osmosisStAtomLeaserAddr = 'nolus1xv0erzdcphnpkf8tr76uynldqx6sspw7782zg9wthz8xpemh7rnsv4nske'
-const osmosisStAtomLppAddr = 'nolus1jufcaqm6657xmfltdezzz85quz92rmtd88jk5x0hq9zqseem32ysjdm990'
+// const osmosisStAtomLppAddr = 'nolus1jufcaqm6657xmfltdezzz85quz92rmtd88jk5x0hq9zqseem32ysjdm990'
 
 // Osmosis ATOM Protocol Contracts (OSMOSIS-OSMOSIS-ATOM) pirin-1
 const osmosisAtomOracleAddr = 'nolus16xt97qd5mc2zkya7fs5hvuavk92cqds82qjuq6rf7p7akxfcuxcs5u2280'
@@ -123,13 +123,13 @@ async function tvl(api, protocols) {
 }
 
 module.exports = {
-  methodology: 'The combined total of lending pool assets and the current market value of active leases',
+  methodology: 'The combined total of lending pool assets and the current market value of active margin positions',
   nolus: {
     tvl: async () => {
       return {
         'axlusdc': await getLppTvl([osmosisAxlLppAddr, astroportLppAddr]),
         'usd-coin': await getLppTvl([osmosisNobleLppAddr, astroportNobleLppAddr]),
-        'stride-staked-atom': await getLppTvl([osmosisStAtomLppAddr]),
+        // 'stride-staked-atom': await getLppTvl([osmosisStAtomLppAddr]),
         'osmosis-allbtc': await getLppTvl([osmosisBtcLppAddr]),
         'osmosis-allsol': await getLppTvl([osmosisSolLppAddr]),
         'akash-network': await getLppTvl([osmosisAktLppAddr]),
@@ -149,8 +149,8 @@ module.exports = {
     tvl: async (api) => {
       return await tvl(api, [
         { leaser: osmosisNobleLeaserAddr, oracle: osmosisNobleOracleAddr },
-        { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
-        { leaser: osmosisStAtomLeaserAddr, oracle: osmosisStAtomOracleAddr },
+        // { leaser: osmosisAxlLeaserAddr, oracle: osmosisAxlOracleAddr },
+        // { leaser: osmosisStAtomLeaserAddr, oracle: osmosisStAtomOracleAddr },
         { leaser: osmosisAtomLeaserAddr, oracle: osmosisAtomOracleAddr },
         { leaser: osmosisBtcLeaserAddr, oracle: osmosisBtcOracleAddr },
         { leaser: osmosisSolLeaserAddr, oracle: osmosisSolOracleAddr },

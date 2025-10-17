@@ -1,13 +1,14 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getLogs2 } = require('../helper/cache/getLogs');
 const { nullAddress } = require("../helper/tokenMapping");
+const { getEnv } = require("../helper/env");
 
 // from https://docs.uniswap.org/contracts/v4/deployments
 const config = {
   ethereum: { factory: "0x000000000004444c5dc75cB358380D2e3dE08A90", fromBlock: 21688329 },
   optimism: { factory: "0x9a13f98cb987694c9f086b1f5eb990eea8264ec3", fromBlock: 130947675 },
   base: { factory: "0x498581ff718922c3f8e6a244956af099b2652b2b", fromBlock: 25350988 },
-  arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872 },
+  arbitrum: { factory: "0x360e68faccca8ca495c1b759fd9eee466db9fb32", fromBlock: 297842872, blacklistedTokens: ['0x1a6b3a62391eccaaa992ade44cd4afe6bec8cff1'] },
   polygon: { factory: "0x67366782805870060151383f4bbff9dab53e5cd6", fromBlock: 66980384 },
   blast: { factory: "0x1631559198a9e474033433b2958dabc135ab6446", fromBlock: 14377311 },
   zora: { factory: "0x0575338e4c17006ae181b47900a84404247ca30f", fromBlock: 25434534 },
@@ -25,7 +26,11 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, })
+      if (!getEnv('IS_RUN_FROM_CUSTOM_JOB')) throw new Error('This job is not meant to be run directly, please use the custom job feature')
+
+      let compressType
+      if (chain === 'base') compressType = 'v1'
+      const logs = await getLogs2({ api, factory, eventAbi, fromBlock, compressType, })
       const tokenSet = new Set()
       const ownerTokens = []
       logs.forEach(log => {
@@ -36,7 +41,7 @@ Object.keys(config).forEach(chain => {
         }
       })
       ownerTokens.push([Array.from(tokenSet), factory])
-      return sumTokens2({ api, ownerTokens, permitFailure: true, sumChunkSize: 10000, sumChunkSleep: 20000 })
+      return sumTokens2({ api, ownerTokens, permitFailure: true, sumChunkSize: 30000, sumChunkSleep: 5000, blacklistedTokens: config[chain].blacklistedTokens ? config[chain].blacklistedTokens : [] })
     }
   }
 })

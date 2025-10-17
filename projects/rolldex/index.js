@@ -4,7 +4,10 @@ const abi = {
 
 const CONFIG = {
   btr: ['0x3d0E678776e4287BEfB0449d344D195ad1A2C418'],
-  base: ['0xa67998d867cd4b64fe9ecc1549341f1d86389c0f','0x823e0F1E91f9851529Ce90c23e144203a59eF40a'],
+  base: [
+    '0xa67998d867cd4b64fe9ecc1549341f1d86389c0f',
+    // '0x823e0F1E91f9851529Ce90c23e144203a59eF40a', // no activites and liquitiy for token in this vault
+  ],
 };
 
 const tvl = async (api) => {

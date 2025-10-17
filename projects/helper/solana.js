@@ -1,6 +1,5 @@
 const ADDRESSES = require('./coreAssets.json')
 const http = require('./http')
-const { getEnv } = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
 const { getUniqueAddresses } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair, StakeProgram, } = require("@solana/web3.js")
@@ -9,6 +8,7 @@ const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk');
+const { endpointMap, endpoint } = require('./svmChainConfig.js')
 
 /** Address of the SPL Token program */
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA')
@@ -33,19 +33,6 @@ const blacklistedTokens_default = [
 let connection = {}
 let provider = {}
 
-const endpoint = (isClient) => {
-  if (isClient) return getEnv('SOLANA_RPC_CLIENT') ?? getEnv('SOLANA_RPC')
-  return getEnv('SOLANA_RPC')
-}
-
-const renecEndpoint = () => getEnv('RENEC_RPC')
-const eclipseEndpoint = () => getEnv('ECLIPSE_RPC')
-
-const endpointMap = {
-  solana: endpoint,
-  renec: renecEndpoint,
-  eclipse: eclipseEndpoint,
-}
 
 function getConnection(chain = 'solana') {
   if (!connection[chain]) connection[chain] = new Connection(endpointMap[chain](true))
@@ -63,10 +50,11 @@ function getProvider(chain = 'solana') {
 }
 
 
-function getAssociatedTokenAddress(mint, owner,  programId = TOKEN_PROGRAM_ID,  associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID) {
+function getAssociatedTokenAddress(mint, owner, programId = TOKEN_PROGRAM_ID, associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID) {
   if (typeof programId === 'string') programId = new PublicKey(programId)
   if (typeof mint === 'string') mint = new PublicKey(mint)
   if (typeof owner === 'string') owner = new PublicKey(owner)
+  if (typeof associatedTokenProgramId === 'string') associatedTokenProgramId = new PublicKey(associatedTokenProgramId)
   const [associatedTokenAddress] = PublicKey.findProgramAddressSync([owner.toBuffer(), programId.toBuffer(), mint.toBuffer()], associatedTokenProgramId);
   return associatedTokenAddress.toString()
 }
@@ -105,6 +93,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
   const connection = getConnection(chain)
   const balancesIndividual = []
   const balances = {}
+  const debugData = []
   const res = await runInChunks(tokenAccounts, chunk => connection.getMultipleAccountsInfo(chunk), { sleepTime })
   res.forEach((data, idx) => {
 
@@ -119,6 +108,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
       data = decodeAccount('tokenAccount', data)
       const mint = data.mint.toString()
       const amount = data.amount.toString()
+      debugData.push({ account: tokenAccounts[idx].toString(), mint, amount })
       if (individual)
         balancesIndividual.push({ mint, amount })
       else
@@ -135,10 +125,12 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, allo
 
   })
 
+  // console.log('debugData:', JSON.stringify(debugData))
+
   return individual ? balancesIndividual : balances
 }
 
-async function getMultipleAccounts(accountsArray, {api} = {}) {
+async function getMultipleAccounts(accountsArray, { api } = {}) {
   const chain = api?.chain ?? 'solana'
   const connection = getConnection(chain)
   if (!accountsArray.length) return []
@@ -148,7 +140,7 @@ async function getMultipleAccounts(accountsArray, {api} = {}) {
   return runInChunks(accountsArray, chunk => connection.getMultipleAccountsInfo(chunk))
 }
 
-function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { coreTokens} = {}) {
+function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { coreTokens } = {}) {
   return async () => {
     if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
 
@@ -163,10 +155,10 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana', { core
     for (let i = 0; i < results.length; i = i + 2) {
       const tokenA = results[i]
       const tokenB = results[i + 1]
-      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount,  })
+      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
     }
 
-    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, coreTokens  })
+    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, coreTokens })
   }
 
   async function _getTokenAccounts() {
@@ -232,9 +224,9 @@ async function sumTokens2({
       const tokenBalances = {}
       for (const item of data) {
         if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
-        sdk.util.sumSingleBalance(tokenBalances,item.mint, item.amount)
+        sdk.util.sumSingleBalance(tokenBalances, item.mint, item.amount)
       }
-      await transformBalances({ tokenBalances, balances, chain, })
+      transformBalances({ tokenBalances, balances, chain, })
     }
   }
 
@@ -257,7 +249,7 @@ async function sumTokens2({
     tokenAccounts = getUniqueAddresses(tokenAccounts, chain)
 
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError, chain })
-    await transformBalances({ tokenBalances, balances, chain, })
+    transformBalances({ tokenBalances, balances, chain, })
   }
 
   if (solOwners.length) {
@@ -306,7 +298,7 @@ async function sumTokens2({
     }
   }
 
-  async function getSolBalances(accounts, { chain} = {}) {
+  async function getSolBalances(accounts, { chain } = {}) {
     const connection = getConnection(chain)
 
     const balances = await runInChunks(accounts, async (chunk) => {
@@ -359,8 +351,8 @@ async function sumTokens2({
   }
 }
 
-async function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
-  await transformBalancesOrig(chain, tokenBalances)
+function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
+  transformBalancesOrig(chain, tokenBalances)
   for (const [token, balance] of Object.entries(tokenBalances))
     sdk.util.sumSingleBalance(balances, token, balance)
   return balances
@@ -447,4 +439,5 @@ module.exports = {
   getAssociatedTokenAddress,
   i80f48ToNumber,
   runInChunks,
+  getTokenAccountBalances,
 };

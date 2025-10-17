@@ -51,8 +51,19 @@ const blacklistedTokens = [
   ADDRESSES.bsc.iUSD, // merlin iUSD
 ]
 
+const blacklistedPools = {
+  'hemi': [
+    '0x469a5066578e22a1222cc78b2ccaca602db6bb4a',  // bfBTC/hemiBTC
+    '0x98a3a18583138474aedd2ceec034cba1fa783613',  // brBTC/suBTC
+    '0xe9635693b7606f1914c0cd698065ec84267a62a1',  // mBTC/uniBTC
+  ],
+  'taiko': [
+    '0x5e1e8c9c77b0de88f1c4597a3c145b0c7abcf485',  // mBTC/uniBTC
+  ]
+}
+
 Object.keys(poolHelpers).forEach(chain => {
-  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens }), }
+  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens, blacklistedPools: blacklistedPools[chain], }), }
 })
 
 module.exports.hallmarks = [

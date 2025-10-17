@@ -13,7 +13,8 @@ const abi = {
 async function getMarketIds(api) {
   const { vaultInfo } = config[api.chain]
   const { data: { list: vaults } } = await getConfig('lista/lending-' + api.chain, vaultInfo)
-  return vaults.map(vault => vault.collaterals.map(collateral => collateral.id)).flat()
+  const ids = vaults.map(vault => vault.collaterals.map(collateral => collateral.id)).flat()
+  return [...new Set(ids)]
 }
 
 module.exports = {

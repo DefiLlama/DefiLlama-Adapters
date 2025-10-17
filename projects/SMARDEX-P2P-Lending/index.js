@@ -1,49 +1,58 @@
-const headers = {
-  origin: "https://subgraph.smardex.io",
-  referer: "https://subgraph.smardex.io",
-  "x-api-key": process.env.SMARDEX_SUBGRAPH_API_KEY,
-};
+const { getEnv } = require("../helper/env");
+const { post } = require('../helper/http')
 
-const subgraphUrl = "https://subgraph.smardex.io/ethereum/spro";
+const blacklistedTokenSet = new Set([
+  '0x5de8ab7e27f6e7a1fff3e5b337584aa43961beef', // project's own governance token
+  '0xfdc66a08b0d0dc44c17bbd471b88f49f50cdd20f', // project's own governance token
+].map(t => t.toLowerCase()));
 
-const getTokenMetrics = async () => {
-  const tokenMetricsQuery = `{
-    tokenMetrics_collection {
-      id
-      totalCollateralAmount
-      totalBorrowedAmount
-    }
-  }`;
-
-  const result = await fetch(subgraphUrl, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      query: tokenMetricsQuery,
-    }),
-  }).then((res) => res.json());
-  return result?.data?.tokenMetrics_collection || [];
-};
-
-async function getP2pData(isBorrowed = false) {
-  const tokenMetrics = await getTokenMetrics();
-
-  return tokenMetrics.reduce((acc, token) => {
-    const totalBorrowedAmount = parseFloat(token.totalBorrowedAmount);
-
-    return {
-      ...acc,
-      [token.id]:
-        // We only need to add the total collateral amount if it's not borrowed
-        totalBorrowedAmount + parseFloat(isBorrowed ? 0 : token.totalCollateralAmount),
-    };
-  }, {});
+const config = {
+  ethereum: { graphId: 'ethereum' },
+  arbitrum: { graphId: 'arbitrum' },
+  bsc: { graphId: 'bsc' },
+  base: { graphId: 'base' },
+  polygon: { graphId: 'polygon' },
 }
 
-module.exports = {
-  ethereum: {
-    tvl: () => getP2pData(),
-    borrowed: () => getP2pData(true),
-  },
-};
-// node test.js projects/p2p-lending/index.js
+Object.keys(config).forEach(chain => {
+
+  async function getData() {
+    const { graphId, } = config[chain]
+    const subgraphUrl = `https://subgraph.smardex.io/${graphId}/spro`
+    const result = await post(subgraphUrl, { query: tokenMetricsQuery, }, {
+      headers: {
+        origin: "https://subgraph.smardex.io",
+        referer: "https://subgraph.smardex.io",
+        "x-api-key": getEnv('SMARDEX_SUBGRAPH_API_KEY'),
+      },
+    })
+
+    return result.data.tokenMetrics_collection;
+  }
+
+  module.exports[chain] = {
+    tvl:  async (api) => {
+      const data = await getData()
+      data.forEach((token) => {
+        if (blacklistedTokenSet.has(token.id.toLowerCase())) return;
+        api.add(token.id, token.totalCollateralAmount);
+      })
+      api.getBalancesV2().removeNegativeBalances()
+    }, 
+    borrowed: async (api) => {
+      const data = await getData()
+      data.forEach((token) => {
+        api.add(token.id, token.totalBorrowedAmount);
+      })
+    },
+  }
+})
+
+
+const tokenMetricsQuery = `{
+  tokenMetrics_collection {
+    id
+    totalCollateralAmount
+    totalBorrowedAmount
+  }
+}`;

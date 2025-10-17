@@ -99,6 +99,21 @@ const configs = {
         '0x3de03fafe6120a3d21dc77e101de62e165b2cdfe84d12540853bd962b970f99',
       ]
     },
+    tac:{
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
+    linea:{
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
+    plasma: {
+      eulerVaultOwners: [
+        '0xE5EAE3770750dC9E9eA5FB1B1d81A0f9C6c3369c',
+      ],
+    },
   }
 }
 

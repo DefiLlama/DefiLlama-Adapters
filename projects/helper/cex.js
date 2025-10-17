@@ -78,7 +78,7 @@ const defaultTokens = {
     '0x356A5160F2B34BC8d88FB084745465eBBbed0174', //invi
     '0x9813037ee2218799597d83D4a5B6F3b6778218d9', //bone
     '0xf3b9569F82B18aEf890De263B84189bd33EBe452',//caw
-    '0x04abeda201850ac0124161f037efd70c74ddc74c',//nest
+    // '0x04abeda201850ac0124161f037efd70c74ddc74c',//nest -- old token, hacked
     '0x9d71CE49ab8A0E6D2a1e7BFB89374C9392FD6804',//nvir
     '0x5b649C07E7Ba0a1C529DEAabEd0b47699919B4a2',//sgt
     '0x4385328cc4d643ca98dfea734360c0f596c83449',
@@ -114,7 +114,11 @@ const defaultTokens = {
     ADDRESSES.ethereum.METH, //METH
     ADDRESSES.mantle.cmETH, // CMETH
     "0x54d2252757e1672eead234d27b1270728ff90581", // BITGET TOKEN, NEW
-    ADDRESSES.ethereum.USDe // USDE
+    ADDRESSES.ethereum.USDe, // USDE
+    "0x136471a34f6ef19fe571effc1ca711fdb8e49f2b", //USYC
+    "0x7712c34205737192402172409a8f7ccef8aa2aec", // BUIDL
+    '0xaf6186b3521b60e27396b5d23b48abc34bf585c5', // GUSD - STABLE FROM GATE,IO EXCHANGE
+    '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', //USD1
   ],
   tron: [
     nullAddress,
@@ -181,6 +185,7 @@ const defaultTokens = {
     '0xbf5140a22578168fd562dccf235e5d43a02ce9b1', // UNI
     '0x25d887ce7a35172c62febfd67a1856f20faebb00', //pepe
     '0x2024b9be6b03f2a57d3533ae33c7e1d0b0b4be47', //Bitcointry exchange token BTTY
+    '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', // USD1
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],

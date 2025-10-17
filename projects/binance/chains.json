@@ -5,9 +5,12 @@
   ],
   "aptos": [
     "0x1d14ee0c332546658b13965a39faf5ec24ad195b722435d9fe23dc55487e67e3",
+    "0x292f853b48a28864755c971299ce8a73a3e32c19a0f7b8dbbf782482396e8ef3",
     "0x33f91e694d40ca0a14cb84e1f27a4d03de5cf292b07ed75ed3286e4f243dab34",
     "0x5bd7de5c56d5691f32ea86c973c73fec7b1445e59736c97158020018c080bb00",
+    "0x716666e019eb2cd1eea5ae29760e064f14984d8d6db2ff9ee56d0bd994e8c9b3",
     "0x80174e0fe8cb2d32b038c6c888dd95c3e1560736f0d4a6e8bed6ae43b5c91f6f",
+    "0x9fbc354d59041b8b1b8368e3e7397ac943a3c7c6da3ffde3aa4f4d221a1d205d",
     "0xae1a6f3d3daccaf77b55044cea133379934bba04a11b9d0bbd643eae5e6e9c70",
     "0xbdb53eb583ba02ab0606bdfc71b59a191400f75fb62f9df124494ab877cdfe2a",
     "0xd91c64b777e51395c6ea9dec562ed79a4afa0cd6dad5a87b187c37198a1f855a",
@@ -23,15 +26,17 @@
     "0x4ed6cf63bd9c009d247ee51224fc1c7041f517f1",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x835678a611b28684005a5e2233695fb6cbbb0007",
+    "0x9dfb9014e88087fba78cc9309c64031d02be9a33",
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
     "0xb38e8c17e38363af6ebdcb3dae12e0243582891d",
+    "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
     "0xf92402bb795fd7cd08fb83839689db79099c8c9c",
-    "0xf977814e90da44bfa03b6295a0616a897441acec",
-    "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
   "avax": [
     "0x3bce63c6c9abf7a47f52c9a3a7950867700b0158",
     "0x43684d03d81d3a4c70da68febdd61029d426f042",
+    "0x45d3d68f14038099530b1c4448db8ecdd78179b1",
     "0x4aefa39caeadd662ae31ab0ce7c8c2c9c0a013e8",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x6d8be5cdf0d7dee1f04e25fd70b001ae3b907824",
@@ -40,14 +45,18 @@
     "0x9f8c163cba728e99993abe7495f06c0a3c8ac8b9",
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
     "0xaba2d404c5c41da5964453a368aff2604ae80a14",
-    "0xcddc5d0ebeb71a08fff26909aa6c0d4e256b4fe1"
+    "0xcddc5d0ebeb71a08fff26909aa6c0d4e256b4fe1",
+    "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055"
   ],
   "base": [
+    "0x18e226459ccf0eec276514a4fd3b226d8961e4d1",
     "0x3304e22ddaa22bcdc5fca2269b418046ae7b566a",
     "0x4ed6cf63bd9c009d247ee51224fc1c7041f517f1",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x835678a611b28684005a5e2233695fb6cbbb0007",
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
+    "0xd62e55b19135eb3c645573288ee4b6050f86ff54",
+    "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
     "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
   "bsc": [
@@ -72,11 +81,11 @@
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
     "0xbd612a3f30dca67bf60a39fd0d35e39b7ab80774",
     "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",
+    "0xbf83d18a46325acb7d8f40a462d23a92f467ed7a",
     "0xdccf3b77da55107280bd850ea519df3705d1a75a",
     "0xe2fc31f816a9b94326492132018c3aecc4a93ae1",
     "0xeb2d2f1b8c558a40207669291fda468e50c8a0bb",
-    "0xf977814e90da44bfa03b6295a0616a897441acec",
-    "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
   "bitcoin": [
     "1DEuKerATHWRfyB14s6QCt4LPkfCTx4zaW",
@@ -88,6 +97,7 @@
     "32bhzEniykYRFADVaRM5PYswsjC23cxtes",
     "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP",
     "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo",
+    "36oiSkAi1VVuUpfdv8E2V5fZ2EarHRJpis",
     "378GLcve92X2Q4UrCyoMFDL5k5QrzeG7JN",
     "395vnFScKQ1ay695C6v7gf89UzoFpx3WuJ",
     "39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v",
@@ -97,10 +107,10 @@
     "3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN",
     "3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2",
     "3EVVc8e2rxwUuERtdJCduWig8DnpsUqyA6",
-    "3F3HXxeNpmAovCMByiwC6MYHcogZCJtgRt",
     "3F9CGMu7JSJnMHA8jFM2KgxuH6hhxtvENP",
     "3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B",
     "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA",
+    "3HkgC2R5PhqyXy6RVFyemvxN1VuFbQiQ5V",
     "3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ",
     "3JqPhvKkAPcFB3oLELBT7z2tQdjpnxuDi9",
     "3LQUu4v9z6KNch71j7kbj8GPeAGUo1FW6a",
@@ -117,16 +127,16 @@
     "bc1q5rsc4uscnmemlwru8xsys26k3xgxewqfnf3k7j",
     "bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h",
     "bc1qdtmav38lca8yu3rrcknnqx5242cckgxqws7m72",
-    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h",
-    "36oiSkAi1VVuUpfdv8E2V5fZ2EarHRJpis",
-    "3HkgC2R5PhqyXy6RVFyemvxN1VuFbQiQ5V"
+    "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
   ],
   "celo": [
     "0xef268b5c05452d63a17da12f562368e88a036ef1",
-    "0xf6436829cf96ea0f8bc49d300c536fcc4f84c4ed"
+    "0xf6436829cf96ea0f8bc49d300c536fcc4f84c4ed",
+    "0x2977aa854ac29251afccaa3935369483eb296a3b"
   ],
   "chz": [
     "0x43684d03d81d3a4c70da68febdd61029d426f042",
+    "0x4ed6cf63bd9c009d247ee51224fc1c7041f517f1",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x87917d879ba83ce3ada6e02d49a10c1ec1988062",
     "0xf977814e90da44bfa03b6295a0616a897441acec"
@@ -175,6 +185,8 @@
     "0x1b46970cfe6a271e884f636663c257a5a571fb2c",
     "0x21a31ee1afc51d94c2efccaa2092ad1028285549",
     "0x28c6c06298d514db089934071355e5743bf21d60",
+    "0x308a2a0712570daeea77c8ba9c27a32cdc4000d4",
+    "0x38aaef3782910bdd9ea3566c839788af6ff9b200",
     "0x43684d03d81d3a4c70da68febdd61029d426f042",
     "0x4976a4a02f38326660d17bf34b431dc6e2eb2327",
     "0x4aec0e98fc1fb55b9cc2faaa7a81acca42cb4e96",
@@ -184,28 +196,36 @@
     "0x56eddb7aa87536c09ccc2793473599fd21a8b17f",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x835678a611b28684005a5e2233695fb6cbbb0007",
+    "0x87433fec6f8d9df13d1e17c4b11364ecd2e93a51",
     "0x9696f59e4d72e237be84ffd425dcad154bf96976",
     "0x98adef6f2ac8572ec48965509d69a8dd5e8bba9d",
+    "0xa64b436964e7415c0e70b9989a53e1fb9a90e726",
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
     "0xad354cfbaa4a8572dd6df021514a3931a8329ef5",
     "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8",
+    "0xc8daf809c7d7c27dd62d006196d8901ba57e5eae",
     "0xdfd5293d8e347dfe59e90efd55b2956a1343963d",
     "0xe1940f578743367f38d3f25c2d2d32d6636929b6",
-    "0xf977814e90da44bfa03b6295a0616a897441acec",
-    "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
+    "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
-  "hedera": ["0.0.1030878", "0.0.4523906", "0.0.652978"],
+  "hedera": [
+    "0.0.1030878",
+    "0.0.4523906",
+    "0.0.652978",
+    "0.0.9933945"
+  ],
   "litecoin": [
     "LXTras9zXwkUvmsAF15hUu86by2UdNLSWk",
     "LZEjckteAtWrugbsy9zU8VHEZ4iUiXo9Nm",
     "LbmGksLBwtwRXyxeazCZqKiAHX6cWN2AzN",
     "LhcTcrMrheBqbthwfit43jkT9qnge5wSs1",
     "LhzEoDXHXASi4hSMxrKeVoSGrED9QsBpPq",
-    "MGnj7jsQH6vMZRG7rZCSswwBNnGtvdrWPR",
+    "LiDY79SxUJfjE6fyqyxXxh9kBpfi4sRoKf",
+    "MB6LrCx4qjEFpU9U1WBrgPrntkfMR5GtCA",
     "MLj1bgnNs8iAmNxhZNnrymQaAZNqnXXV3E",
     "MQSs17ECe51kqhkFPQY98wiyPvGuK5iCB6",
     "MQd1fJwqBJvwLuyhr17PhEFx1swiqDbPQS",
-    "MRTFVNPgsC63Z3i3PoHrSh8J7Y9kTmWbty",
     "MS56eJAupdvN5bYo6ythw784qahCpTzZ5V",
     "MW87w56tHzzBYuHS4tfTQ1aYN7Kz6iuSra"
   ],
@@ -226,16 +246,18 @@
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0x835678a611b28684005a5e2233695fb6cbbb0007",
     "0xa7c0d36c4698981fab42a7d8c783674c6fe2592d",
+    "0xb75f972af41d6ff0bcc6b2613b832632de1e418b",
     "0xe7804c37c13166ff0b37f5ae0bb07a3aebb6e245",
-    "0xf977814e90da44bfa03b6295a0616a897441acec",
-    "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
+    "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
   ],
   "near": [
-    "1ff65ecdcd5dd3965f80f969c65120cddfc965ee9741e5655b44461b718037c6",
+    "27ddc83845172d5ee380af7ba6bcc524145892ff0b91a6078e9ae6d26655e56a",
     "451913e633c72fb951effe076d3bd2977e3f08083dcf6c87fa89992b0d437c5c",
     "56203c5b21b828175fa9c1fd4161ecaca76de9a1f6008935eeb9b4d6dc821a22",
     "5c33c6218d47e00ef229f60da78d0897e1ee9665312550b8afd5f9c7bc6957d2",
     "7747991786f445efb658b69857eadc7a57b6b475beec26ed14da8bc35bb2b5b6",
+    "7e6e17fcb8e8e6a22ecd47bbd1b58b1af3582b97bbfd4a8d974bb9c266fa282b",
     "9c484fa5d2d069569ba063fc555c34e621ccd88fdbb0295fc79bad232621c5c1",
     "binance1.near",
     "binancecold3.near",
@@ -253,16 +275,23 @@
     "0x18e226459ccf0eec276514a4fd3b226d8961e4d1",
     "0x4ed6cf63bd9c009d247ee51224fc1c7041f517f1",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
+    "0x8c991b8bb43859d2f3dff541eb43add2ce92505f",
     "0xacd03d601e5bb1b275bb94076ff46ed9d753435a",
-    "0xf977814e90da44bfa03b6295a0616a897441acec",
-    "0xfe9cdb35f8c777e73ddd303efa4fdd7d6071b81f"
+    "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
+  ],
+  "plasma": [
+    "0x8741b106e9738a6971ad07dabcfe95ff66337b51",
+    "0xc8daf809c7d7c27dd62d006196d8901ba57e5eae"
   ],
   "ronin": [
     "0x030e37ddd7df1b43db172b23916d523f1599c6cb",
     "0x5a52e96bacdabb82fd05763e25335261b270efcb",
     "0xb32e9a84ae0b55b8ab715e4ac793a61b277bafa3"
   ],
-  "scroll": ["0xf977814e90da44bfa03b6295a0616a897441acec"],
+  "scroll": [
+    "0xf977814e90da44bfa03b6295a0616a897441acec"
+  ],
   "solana": [
     "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S",
     "3gd3dqgtJ4jWfBfLYTX67DALFetjc5iS72sCgRhCkW2u",
@@ -272,15 +301,17 @@
     "6oCa9Tz8VXVp63WiFyruE5PD6yXz3pCsv6oGzUGvg9TP",
     "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
     "EPauhjQjjTBCpeBtszS3xGRASLpEJFM1cspSiFRXZa9Z",
-    "Edbef6Xi35u6iYEmeGAFmThCZrgj6MxzYAgAmZFYPmFF",
     "G9RCBaYb8aBRxoe8QBC2ucGrVqjuZFysRhY8d56cnNT1",
     "GBrURzmtWujJRTA3Bkvo7ZgWuZYLMMwPCwre7BejJXnK",
     "GK35nWN6ZHSGZrRTf8kTQd8RkFCighChPEb41XwSFVAC",
-    "HXsKP7wrBWaQ8T2Vtjry3Nj3oUgwYcqq9vrHDM12G664"
+    "HXsKP7wrBWaQ8T2Vtjry3Nj3oUgwYcqq9vrHDM12G664",
+    "c5f9zfpkKMD9N8uLqJcFeJAAz7v12vDMnup9Y6EeQkk",
+    "H8BgJgae6qhMtf7BM2JtddywSQt11WdxHHxkGLNX5hss"
   ],
   "sonic": [
     "0x18e226459ccf0eec276514a4fd3b226d8961e4d1",
     "0x4fdfe365436b5273a42f135c6a6244a20404271e",
+    "0x64de13c46f627d9c86212050d48756fb65c06d8a",
     "0xa4e471dbfe8c95d4c44f520b19cee436c01c3267",
     "0xab72bd3eb3b5cc90165fa39da85ad0d496330c00",
     "0xf977814e90da44bfa03b6295a0616a897441acec"
@@ -288,7 +319,6 @@
   "starknet": [
     "0x00c1ce9c68f1c4a1b05e8d043b9b05784f41685d68e5009ffe379aa7f7c95ccf",
     "0x0213c67ed78bc280887234fe5ed5e77272465317978ae86c25a71531d9332a2d",
-    "0x028ebd4daafaec7e29dad521f083fb7054d05d6571c9c5f13f55d9bad5333291",
     "0x04164013f90b05d67f026779bf96e9c401c96f3485b645a786166e6935fba116"
   ],
   "sui": [

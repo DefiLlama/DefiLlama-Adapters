@@ -1,6 +1,5 @@
-const { call } = require("../helper/chain/ton");
+const { call, processTVMSliceReadAddress } = require("../helper/chain/ton");
 const { get } = require('../helper/http')
-const { processTVMSliceReadAddress } = require("./utils");
 const ADDRESSES = require("../helper/coreAssets.json");
 
 const factorial_ton = "EQDIKEz2BYLnTRWo5W5a6moZ9PXNtyOVOFF7noi8Ufv3axz_";

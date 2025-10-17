@@ -30,6 +30,9 @@ const config = {
       '0x52b37e6dB2Fe5bB2781355Ac397aE49C9Bd29275',
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
+      '0x49841B9bb1dc499B36C4F618bf8feAC85fDFE889',
+      '0xaCA8FB892Ac27d2f84Fa78EDb32F3AD221538c3e',
     ],
   },
   bitcoin: {
@@ -71,6 +74,9 @@ const config = {
       'J6wLEPrT8Jd2NiNSJAQwxdK7FDtDssawsMtLqkZ5E1ZP',
       'EcGfuxwkM3ujBWaty5VW7H9mjJLd7LkY3m7nJZ6Sv7Sy',
       'C57RBagtGDYpTGxwG92gSKQ5ptQr4Wa9qz3yDBB6uu1B',
+      'EbUkjPNjzcbjK3iELhZS6PpNCr62pUsE7VkUvNdQpEYB',
+      'FQxGUUAX3BdFArA2XdvPcRHt4CmRMCw5wLt8F5uDXmwa',
+      'EKtwdf5gFPb58WJPENcS8qqPRoAkEwDLHfHk2S2nbTnB',
     ],
   },
   polkadot: {
@@ -113,6 +119,7 @@ const config = {
       '0xE8322f6234B6F1e6e3489600f8b1297aB3dE22ab',
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
     ]
   },
   avax: {
@@ -126,6 +133,8 @@ const config = {
       '0xC6A4e26E07a848F2AB180a455C211d38BF483E3E',
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
+      '0x9483C76AB7dC91c958b98eAAf6cBcE33f70547D2',
     ]
   },
   polygon: {
@@ -134,6 +143,7 @@ const config = {
       '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
     ]
   },
   moonbeam: {
@@ -157,6 +167,7 @@ const config = {
       '0x5509Be53b2dD0CD6fb8473B0EdA94e0a3059b73a',
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
     ]
   },
   osmosis: {
@@ -179,18 +190,20 @@ const config = {
     owners: [
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
     ]
   },
   sonic: {
     owners: [
       '0x28cC933fecf280E720299b1258e8680355D8841F',
       '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
+      '0x0926a7b610B9Fc2D1E3F09FcBa52Ba3BEDCFfd91',
     ]
   },
   sei: {
     owners: [
-      'sei1cuqk29f94hnp7zwtuhl0aw69kud5ngdaxqa3u2',
-      'sei105zqcfv3z9z79yhsfg8v6rql3huzhyfpg4mpfu',
+      '0x28cC933fecf280E720299b1258e8680355D8841F',
+      '0x85AC393adDd65bcf6Ab0999F2a5c064E867F255f',
     ]
   },
   tron: {
@@ -221,6 +234,7 @@ const config = {
     owners: [
       'UQAvfvh141q7M2ZmPE6YCmTFQW6pdoUXVTGrM2YBpt4iqOBF',
       'UQDR4lFPsfCx4TdWKsFUmiPdrkpl6xEixZ3VTn474lZsGuTd',
+      'UQCL3aiqqyo5FKgKJOscigFey15rouAz2ZrLOVBq6axIZslU',
     ]
   },
   stellar: {
