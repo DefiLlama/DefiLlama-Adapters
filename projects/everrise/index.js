@@ -2,13 +2,9 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const http = require('../helper/http');
 const { getConfig } = require('../helper/cache')
-const BigNumber = require("bignumber.js");
 const { unwrapUniswapLPs, nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
 const getPairFactory = 'function getPair(address, address) view returns (address)'
 
-const zeroAddress = ADDRESSES.null
-const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
 const RESERVES = [
   // '0x78b939518f51b6da10afb3c3238Dd04014e00057',
   '0x3776B8C349BC9Af202E4D98Af163D59cA56d2fC5'];
@@ -144,7 +140,6 @@ Object.keys(chainConfig).forEach(chain => {
   async function pool2(ts, _block, chainBlocks) {
     let balances = {}
     const block = chainBlocks[chain]
-    const transformAddress = await getChainTransform(chain)
     const { LPs } = chainConfig[chain]
 
     let lpPositions = [];
@@ -164,18 +159,11 @@ Object.keys(chainConfig).forEach(chain => {
         token: i.input.target,
       });
     });
-    await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
+    await unwrapUniswapLPs(balances, lpPositions, block, chain);
     return balances
   }
 
   async function staking() {
-    const { chainId } = chainConfig[chain]
-    const stakedAmounts = await http.get(STAKE_HOLDING_API)
-    let stakedAmount = stakedAmounts.find(({ id }) => id === chainId)
-
-    return {
-      'everrise': stakedAmount ? stakedAmount.amount : 0
-    }
   }
 
   chainExports[chain] = {

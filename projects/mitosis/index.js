@@ -175,10 +175,21 @@ const chainTVL = ({ vaults = [] }) => async (api) => {
   }
 
   if (api.chainId === BASE_CHAIN_ID && EOL_VAULTS_ADDRESS.length > 0) {
-    const eolTotalSupplies = await api.multiCall({
-      abi: "uint256:totalAssets", // get underlying asset amount
-      calls: EOL_VAULTS_ADDRESS.map((i) => i.address),
-    });
+    let eolTotalSupplies
+
+    // contract upgrade: https://basescan.org/tx/0x8624341d4541cff6177c61d860e0d4f7fcfae4dbbd5843817714f211f8ce2dd9
+    if (api.block < 34761002) {
+      eolTotalSupplies = await api.multiCall({
+        abi: "uint256:totalAssets", // get underlying asset amount
+        calls: EOL_VAULTS_ADDRESS.map((i) => i.address),
+      });
+    } else {
+      const totalSupplies = await api.multiCall({
+        abi: "uint256:totalSupply", // get underlying asset amount
+        calls: EOL_VAULTS_ADDRESS.map((i) => i.address),
+      });
+      eolTotalSupplies = totalSupplies.map(item => Number(item) / 1000000)
+    }
 
     EOL_VAULTS_ADDRESS.forEach((eolVault, i) => {
       const underlyingAsset = EOL_UNDERLYING_ASSETS[eolVault.address];

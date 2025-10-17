@@ -44,6 +44,11 @@ const HubPools = {
       tokenAddress: '0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3',
       chainPoolAddress: '0xe53189D00D1b4F231A2a208a7967E0dCaE8Db073',
     },
+    {
+      // SHIB
+      poolAddress: '0x9f59642C6733397dF5c2696D3Ac9ceb431b1b573',
+      tokenAddress: '0x2f643d728926C20269f0A04931dd7b4b6B650204',
+    },
     { // aUSD
       poolAddress: '0xc7DdB440666c144c2F27a3a5156D636Bacfc769C',
       tokenAddress: ADDRESSES.mantle.AUSD,
@@ -62,13 +67,38 @@ const HubPools = {
     { // YBTCB
       poolAddress: '0x13A21bC65844CD530098Ab15431c57078ea90737',
       tokenAddress: '0x2cd3CdB3bd68Eea0d3BE81DA707bC0c8743D7335',
-      chainPoolAddress: '0x24dB057615203c0f27F0968452A0f2327e6bC86F',
+    },
+    { // USDe_ava
+      poolAddress: '0x5431e7f480C4985e9C3FaAcd3Bd1fc7143eAdEFa',
+      tokenAddress: '0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34',
+      chainPoolAddress: '0x07C911b5a1657126B14C25e697E3d00f3a134A23',
+    },
+    { // sUSDe_ava
+      poolAddress: '0x94307E63eF02Cf9B39894553f14b21378Ef20adB',
+      tokenAddress: '0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2',
+      chainPoolAddress: '0x1C7EC7198F297119D4e9f359d91127c8B2f9A9D2',
+    },
+    { // EURC_ava
+      poolAddress: '0x3F87F3B301f031ba59C479EDF067621DcC72DDca',
+      tokenAddress: '0xc891eb4cbdeff6e073e859e987815ed1505c2acd',
+      chainPoolAddress: '0xe47285cc79A8de62DFaED52Abe919B87973294C8',
+    },
+    { // tETH
+      poolAddress: '0x5FE123B659FC5242f46884C37550F05Ef08C816a',
+      tokenAddress: '0xd09ACb80C1E8f2291862c4978A008791c9167003',
+    },
+    { // tAVAX
+      poolAddress: '0x3F63A6401e6354a486e6a38127409fD16e222B59',
+      tokenAddress: '0x14A84F1a61cCd7D1BE596A6cc11FE33A36Bc1646',
+      chainPoolAddress: '0x0aeE2B84bd3E280CFcc9325917bFA0Bb20F3cdC6',
     },
   ],
   'ethereum': [
     // excluding USDC cause bridged
     // excluding SolvBTC cause bridged
+    // excluding SHIB cause bridged
     // excluding YBTCB cause bridged
+    // excluding tETH cause bridged
     { // ETH_eth      
       poolAddress: "0xB6DF8914C084242A19A4C7fb15368be244Da3c75",
       tokenAddress: ADDRESSES.null,
@@ -125,6 +155,7 @@ const HubPools = {
   'base': [
     // excluding USDC cause bridged
     // excluding SolvBTC cause bridged
+    // excluding SHIB cause bridged
     { // ETH_base
       poolAddress: "0x51958ed7B96F57142CE63BB223bbd9ce23DA7125",
       tokenAddress: ADDRESSES.null,
@@ -175,6 +206,7 @@ const HubPools = {
   'bsc': [
     // excluding SolvBTC cause bridged
     // excluding YBTCB cause bridged
+    // excluding SHIB cause bridged
     { // BNB
       poolAddress: "0x89970d3662614a5A4C9857Fcc9D9C3FA03824fe3",
       tokenAddress: ADDRESSES.null,
@@ -194,6 +226,7 @@ const HubPools = {
   'arbitrum': [
     // excluding USDC cause bridged
     // excluding SolvBTC cause bridged
+    // excluding SHIB cause bridged
     { // ETH_arb
       poolAddress: "0x44E0d0809AF8Ee37BFb1A4e75D5EF5B96F6346A3",
       tokenAddress: ADDRESSES.null,
@@ -304,7 +337,7 @@ const HubPools = {
     },
     { // wBTC_sei
       poolAddress: "0x7Cd4afD7F4DB51A0bF06Bf4630752A5B28e0B6C1",
-      tokenAddress: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
+      tokenAddress: ADDRESSES.bsc.WBTC,
       chainPoolAddress: '0x7218Bd1050D41A9ECfc517abdd294FB8116aEe81',
     },
   ]
