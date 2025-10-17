@@ -112,6 +112,7 @@ function tvl(config) {
 
 module.exports = {
   timetravel: false,
+  methodology: `TVL is calculated by querying KyberSwap's subgraphs to get all liquidity pools and summing the balances of all tokens held in these pools. It also includes tokens held in Kyber's Meta Aggregation Router contracts on specified chains.`,
   hallmarks: [
     [ '2023-04-17', 'Kyber team identified a vuln' ],
     // [1700611200,'Protocol exploit'],
