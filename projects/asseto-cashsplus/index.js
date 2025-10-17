@@ -25,8 +25,8 @@ module.exports = {
   bsc: {
     tvl: (api) => getTokensTvl(api, 'bsc', bscTokens)
   },
-  eth: {
-    tvl: (api) => getTokensTvl(api, 'eth', ethTokens)
+  ethereum: {
+    tvl: (api) => getTokensTvl(api, 'ethereum', ethTokens)
   },
   hallmarks: [
     ["2025-10-14", "CASH+ is a 1:1 asset-backed token collateralized by the CMS USD Money Market Fund, which invests in high-quality short-term USD instruments."]
