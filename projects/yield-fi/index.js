@@ -11,6 +11,8 @@ const yusd_config = {
     bsc: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     avax: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     tac: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
+    linea: "0x4e559dBCCbe87De66c6a9F3f25231096F24c2e28",
+    plasma: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
 }
 
 const vyusd_config = {
@@ -24,6 +26,8 @@ const vyusd_config = {
     bsc: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     avax: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     tac: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    linea: "0x168BC4DB5dcbecA279983324d3082c47e47569E7",
+    plasma: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
 }
 
 const yeth_config = {
