@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 
-// Actual deployed contract address on Arbitrum One.
+// Actual deployed contract address on Arbitrum One
 const CONTRACT_ADDRESS = "0xEDA164585a5FF8c53c48907bD102A1B593bd17eF"; 
 
 async function tvl(api) {
