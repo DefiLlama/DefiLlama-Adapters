@@ -69,7 +69,7 @@ function getChainTvlFunction(chain) {
 
 const adapter = {
   methodology:
-    'TVL = totalSupply() (human units using decimals) * getSharePrice() (formatted with 6 decimals). Aggregated across configured contracts.',
+    'TVL is calculated by summing total supply of shares distributed to depositors and multiplied by their share price (comprehensive of profit and loss). Aggregated across configured contracts.',
 };
 
 for (const chain of Object.keys(contractsByChain)) {
