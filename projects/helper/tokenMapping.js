@@ -105,7 +105,13 @@ const fixBalancesTokens = {
   },
   somnia: {
     '0x936ab8c674bcb567cd5deb85d8a216494704e9d8': { coingeckoId: 'ethereum', decimals: 18 }
-  }
+  },
+  ink: {
+    '0xfc421ad3c883bf9e7c4f42de845c4e4405799e73': { coingeckoId: 'gho', decimals: 18 }
+  },
+  kasplex: {
+    '0x2c2Ae87Ba178F48637acAe54B87c3924F544a83e': { coingeckoId: 'kaspa', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
