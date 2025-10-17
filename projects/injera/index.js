@@ -21,9 +21,8 @@ async function addRedBankTvl(balances, chain) {
 }
 
 module.exports = {
+  deadFrom: '2025-09-01',
   timetravel: false,
   methodology: 'For Injective chain, sum token balances in Bank/Credit Manager smart contracts to approximate net deposits, plus vault underlying assets held',
-  injective: {
-    tvl: injectiveTVL,
-  },
+  injective: { tvl: injectiveTVL },
 };
