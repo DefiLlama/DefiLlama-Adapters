@@ -50,8 +50,3 @@ Object.keys(primeMarketsConfig).forEach(chain => {
 })
 
 module.exports = mergeExports([primeMarketExports, coreMarkets])
-
-module.exports.hallmarks = [
-  // [1704178500, "flash loan exploit"],
-  // ['2024-10-16', 'Multisig was compromised'],
-]
