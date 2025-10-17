@@ -23,11 +23,6 @@ module.exports = {
             tokens: TOKENS_YBR_ARBITRUM,
             chain: 'arbitrum'
         }),
-
-        tvl: sumTokensExport({
-            owners: STAKING_POOLS,
-            tokens: TOKENS_YBR_ARBITRUM,
-            chain: 'arbitrum'
-        }),
+        tvl: () => ({}),
     },
 }
