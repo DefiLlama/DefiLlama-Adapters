@@ -13,13 +13,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: pnpm-setup
+        uses: pnpm/action-setup@v2
         with:
-          node-version: "20"
+          version: 10
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --prefer-offline --frozen-lockfile
 
       - name: Run buildImports script
         run: node scripts/buildImports.js
