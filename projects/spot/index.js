@@ -15,4 +15,4 @@ module.exports = {
       return api.sumTokens({ tokens: ["0xd46ba6d942050d489dbd938a2c909a5d5039a161"], owners: [...bonds, "0x82A91a0D599A45d8E9Af781D67f695d7C72869Bd"] })
     }
   }
-} 
+}
