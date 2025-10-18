@@ -1,3 +1,8 @@
+// Atrium - Distributed Staking Protocol on Cardano
+// Website: https://atrium.io
+// Tracks ADA locked in staking basket smart contracts
+// Diffusion: The first staking basket delegates to 50 community-selected pools
+
 const { trySumTokens } = require("../helper/chain/cardano");
 const { assetsAddresses } = require("../helper/chain/cardano/blockfrost");
 const poolAssetAssetID = "f91c399aa9d544edc8059d4856acdbd8331f462cdcbd56733d6a85185374616b65506f6f6c"
