@@ -72,5 +72,4 @@ jobs:
         
       - name: Run ESLint
         run: |
-          npm ci
           npm run lint
