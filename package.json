@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "weeklyChanges": "git pull && git diff $(git log -1 --before=@{7.days.ago} --format=%H) --stat | grep -E \"projects/\" | cut -d / -f 2 | cut -d \" \" -f 1 | uniq | wc -l",
     "dev": "babel-watch curve.js",
+    "build": "node scripts/buildImports.js",
     "lint": "eslint -c .eslintrc.js .",
     "eslint:github-action": "eslint -c .eslintrc.js .",
     "test-interactive": "node utils/testInteractive",

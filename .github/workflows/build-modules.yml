@@ -1,0 +1,33 @@
+name: Build tvlModules and upload artifact
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run buildImports script
+        run: node scripts/buildImports.js
+
+      - name: Publish tvlModules.json as "latest" release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: latest
+          name: Latest tvlModules
+          artifacts: scripts/tvlModules.json
+          allowUpdates: true

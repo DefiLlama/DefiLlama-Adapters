@@ -74,7 +74,7 @@ async function tvl(api) {
   chunks.forEach(chunk => {
     const { token0, token1, tick, } = poolData[chunk.pool.id.toLowerCase()] ?? {}
     if (!tick) return;
-    addUniV3LikePosition({ api, token0, token1, tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
+    addUniV3LikePosition({ api, token0, token1, tick: Number(tick), liquidity: Number(chunk.netLiquidity), tickUpper: Number(chunk.tickUpper), tickLower: Number(chunk.tickLower), })
   })
 
   const usdValue = await api.getUSDValue()
