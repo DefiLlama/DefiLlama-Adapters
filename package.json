@@ -32,10 +32,13 @@
     "@solendprotocol/solend-sdk": "^0.4.3",
     "@supercharge/promise-pool": "^2.1.0",
     "axios": "^1.6.5",
+    "base-x": "^5.0.1",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
     "bn.js": "^5.2.1",
     "borsh": "^0.7.0",
+    "bs58": "^6.0.0",
+    "buffer-layout": "^1.2.2",
     "curve25519-js": "^0.0.4",
     "dotenv": "^8.6.0",
     "ethers": "^6.0.0",
@@ -47,7 +50,8 @@
     "miscreant": "^0.3.2",
     "p-limit": "^3.1.0",
     "starknet": "^5.24.3",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "ws": "^8.18.3"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
@@ -60,7 +64,7 @@
   },
   "description": "",
   "devDependencies": {
-    "eslint": "^8.32.0",
+    "eslint": "^9.38.0",
     "ts-node": "^10.8.1"
   }
 }
