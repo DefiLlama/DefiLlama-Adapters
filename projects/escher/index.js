@@ -42,7 +42,7 @@ module.exports = {
     tvl: eBabyTVL,
   },
   ethereum: {
-    methodology: '-',
+    methodology: 'TVL counts the token of each delegator',
     tvl: eUTVL,
   },
 } //  node test.js projects/escher/index.js
