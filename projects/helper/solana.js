@@ -226,7 +226,7 @@ async function sumTokens2({
         if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
         sdk.util.sumSingleBalance(tokenBalances, item.mint, item.amount)
       }
-      await transformBalances({ tokenBalances, balances, chain, })
+      transformBalances({ tokenBalances, balances, chain, })
     }
   }
 
@@ -249,7 +249,7 @@ async function sumTokens2({
     tokenAccounts = getUniqueAddresses(tokenAccounts, chain)
 
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError, chain })
-    await transformBalances({ tokenBalances, balances, chain, })
+    transformBalances({ tokenBalances, balances, chain, })
   }
 
   if (solOwners.length) {
@@ -351,8 +351,8 @@ async function sumTokens2({
   }
 }
 
-async function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
-  await transformBalancesOrig(chain, tokenBalances)
+function transformBalances({ tokenBalances, balances = {}, chain = 'solana' }) {
+  transformBalancesOrig(chain, tokenBalances)
   for (const [token, balance] of Object.entries(tokenBalances))
     sdk.util.sumSingleBalance(balances, token, balance)
   return balances

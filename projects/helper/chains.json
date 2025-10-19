@@ -1,4 +1,5 @@
 [
+  "0g",
   "abstract",
   "acala",
   "ace",
@@ -162,6 +163,7 @@
   "fuse",
   "fusion",
   "gala",
+  "gatelayer",
   "genesys",
   "genshiro",
   "goat",
@@ -205,6 +207,7 @@
   "joltify",
   "juno",
   "kadena",
+  "kasplex",
   "karak",
   "kardia",
   "karura",
@@ -446,6 +449,7 @@
   "xrplevm",
   "xsat",
   "yomi",
+  "zcash",
   "zeniq",
   "zero_network",
   "zeta",
@@ -456,5 +460,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "xone"
 ]
