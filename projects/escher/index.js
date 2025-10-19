@@ -19,10 +19,30 @@ async function eBabyTVL(api) {
   api.add(token, totalStakedAmount);
 }
 
+async function eUTVL(api) {
+  const lcd = 'https://rest.union.build';
+  const delegator = 'union19ydrfy0d80vgpvs6p0cljlahgxwrkz54ps8455q7jfdfape7ld7quaq69v';
+
+  const res = await fetch(`${lcd}/cosmos/staking/v1beta1/delegations/${delegator}`);
+  const json = await res.json();
+  const delegations = Array.isArray(json?.delegation_responses) ? json.delegation_responses : [];
+
+  let tvlAtomic = 0;
+  for (const d of delegations) {
+    tvlAtomic += Number(d?.balance?.amount || 0);
+  }
+
+  const token = CORE_ASSETS.ethereum.U;
+  api.add(token, tvlAtomic);
+}
 
 module.exports = {
-  methodology: 'TVL counts the tokens that are locked in the Escher staking hub',
   babylon: {
+    methodology: 'TVL counts the tokens that are locked in the Escher staking hub',
     tvl: eBabyTVL,
   },
-} //  node test.js projects/milky-way/index.js
+  ethereum: {
+    methodology: '-',
+    tvl: eUTVL,
+  },
+} //  node test.js projects/escher/index.js
