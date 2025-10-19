@@ -8,9 +8,8 @@ const graphs = {
 }
 
 const queries = {
-    current: `query get_current_positions($first: Int, $skip: Int) {
-        positions(first: $first, skip: $skip, orderBy: id, orderDirection: desc) {
-            id
+    current: `query get_current_positions {
+        positionRegistries(first: 1) {
             totalDepositedUSD
         }
     }`, 
@@ -48,15 +47,8 @@ Object.keys(graphs).forEach(chain => {
                 Object.values(depositedUSD).map(({ totalDepositedUSD }) => api.addUSDValue(Number(totalDepositedUSD).toFixed(0)))
             } else {
                 // do current query
-                let isMore = true
-                const first = 1000
-                let skip = 0
-
-                while (isMore) {
-                    const { positions } = await cachedGraphQuery(`odyssey-${chain}-current`, graphs[chain], queries.current, { variables: { first, skip } })
-                    positions.map(({ totalDepositedUSD }) => api.addUSDValue(Number(totalDepositedUSD).toFixed(0)))
-                    isMore = positions.length == first
-                }
+                const { positionRegistries } = await cachedGraphQuery(`odyssey-${chain}-current-2`, graphs[chain], queries.current)
+                api.addUSDValue(Number(positionRegistries[0].totalDepositedUSD).toFixed(0))
             }
             return api.getBalances()
         }
