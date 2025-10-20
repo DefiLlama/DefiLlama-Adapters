@@ -14,7 +14,7 @@ const coreMarkets = {
   },
   xdc: {
     ...aaveExports(undefined, '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07'),
-    pool2: staking("0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80", "0xffA04F091128fb89D3B1eCd0149DC677dfAe1C69")
+    pool2: staking("0x01E7cd81D3d7A4907815877e0C937a77dE537e99", "0xffA04F091128fb89D3B1eCd0149DC677dfAe1C69")
   },
 };
 
