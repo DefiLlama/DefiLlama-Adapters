@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 
@@ -8,7 +9,7 @@ module.exports = treasuryExports({
     ],
     tokens: [
         nullAddress,
-        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+        ADDRESSES.base.USDC
     ],
     ownTokens: [],
   },

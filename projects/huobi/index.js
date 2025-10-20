@@ -1,9 +1,6 @@
 const { cexExports } = require("../helper/cex");
-const { mergeExports, sliceIntoChunks, sleep } = require("../helper/utils");
-const { post, get } = require("../helper/http");
-const sdk = require("@defillama/sdk");
-const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
-
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js');
+const { mergeExports, getStakedEthTVL } = require("../helper/utils");
 
 const config = {
   bitcoin: {
@@ -188,48 +185,8 @@ const config = {
 
 module.exports = mergeExports([
   cexExports(config),
-  { ethereum: { tvl: stakingTVL } },
+  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: ['0x08deb6278d671e2a1adc7b00839b402b9cf3375d', '0x39fd78fe6a72faae2ab5f1f053c253b2e3685c15'], size: 200, proxy: true, sleepTime: 20_000 }) } },
 ]);
-module.exports.methodology =
-  "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
+
+module.exports.methodology = "We added the wallets from here https://github.com/huobiapi/Tool-Node.js-VerifyAddress/blob/main/snapshot/huobi_por_20230701.csv . We are not tracking 3 wallets, 2 on Heco Chain, 1 on BTTC chain. We also count stUSDT.";
 module.exports.hallmarks = [[1723066836, "remove usdd collateral"]];
-
-async function stakingTVL() {
-  const withdrawalAddress = "0x08DeB6278D671E2a1aDc7b00839b402B9cF3375d";
-  let fetchedValidators = 2400;
-  let size = 200;
-  let ethBalance =
-    (
-      await sdk.api2.eth.getBalance({
-        target: "0x08DeB6278D671E2a1aDc7b00839b402B9cF3375d",
-      })
-    ).output / 1e18;
-  do {
-    const validators = (
-      await get(
-        `https://beaconcha.in/api/v1/validator/withdrawalCredentials/${withdrawalAddress}?limit=${size}&offset=${fetchedValidators}`
-      )
-    ).data.map((i) => i.publickey);
-    fetchedValidators += validators.length;
-    await addValidatorBalance(validators);
-    await sleep(10000);
-  } while (fetchedValidators % size === 0);
-
-  return {
-    ethereum: ethBalance,
-  };
-
-  async function addValidatorBalance(validators) {
-    if (validators.length > 100) {
-      const chunks = sliceIntoChunks(validators, 100);
-      for (const chunk of chunks) await addValidatorBalance(chunk);
-      return;
-    }
-
-    const { data } = await post("https://beaconcha.in/api/v1/validator", {
-      indicesOrPubkey: validators.join(","),
-    });
-
-    data.forEach((i) => (ethBalance += i.balance / 1e9));
-  }
-}

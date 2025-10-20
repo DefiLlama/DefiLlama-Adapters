@@ -92,7 +92,7 @@ async function tvl(api) {
       api.add(token.address, tokenTotalSupply);
     } else {
       const tickerPricing = await axios.post(
-        'https://sailingprotocol.org/api/sailingprotocol/market_data/historical_intraday',
+        'https://sailingprotocol.org/api/market_data/historical_intraday',
         {
           ticker: token.ticker
         }
@@ -114,6 +114,6 @@ async function tvl(api) {
 module.exports = {
   misrepresentedTokens: true, // false, // until all tokens are indexed by defillama
   timetravel: false, // true, // until there is enough dex liquidity for the main tokens
-  kava: { tvl, },
+  kava: { tvl: () => ({}), },
   methodology: 'The total supply of their circulating stocks is extracted from their stock token contracts.'
 }

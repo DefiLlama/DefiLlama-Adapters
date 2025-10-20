@@ -120,48 +120,19 @@ const totalTVLByEVMNetwork = async (api) => {
     bridgeAasByChain.forEach((_, index) => {
         const voteTokenAddress = voteTokenAddresses[index];
         const governanceAddress = governanceAddresses[index];
-        tokensAndOwners.push([voteTokenAddress, governanceAddress ])
+        tokensAndOwners.push([voteTokenAddress, governanceAddress])
     });
-
-    const sum = await sumTokens2({ api, tokensAndOwners });
-
-    return tryToGetUSDPriceOfUnknownTokens(sum, api);
-};
-
-const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
-    const LINE_CONTRACT = '0x31f8d38df6514b6cc3c360ace3a2efa7496214f6';
-    const LINE_TOKEN_KEY = `kava:${LINE_CONTRACT}`;
-
-    const transformedSumObject = { ...sum };
-
-    if (LINE_TOKEN_KEY in sum) { // support LINE token on Kava Network
-
-        const ORACLE_CONTRACT_ADDRESS = await api.call({
-            abi: "address:oracle",
-            target: LINE_CONTRACT,
-        });
-
-        const totalLocked = transformedSumObject[LINE_TOKEN_KEY]
-
-        const linePriceInCollateral = await api.call({
-            abi: "uint256:getPrice",
-            target: ORACLE_CONTRACT_ADDRESS,
-        });
-
-        const priceInCollateral = totalLocked * linePriceInCollateral / 1e36
-        const exchangeRates = await fetchOswapExchangeRates();
-
-        transformedSumObject['usd'] = exchangeRates['GBYTE_USD'] * priceInCollateral;
-
-        delete transformedSumObject[LINE_TOKEN_KEY];
+    const blacklistedTokens = []
+    if (api.chain === 'kava') {
+        // okay, no way line has a tvl of 12m when it is backed by 60k? https://linetoken.org https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/line/index.js
+        blacklistedTokens.push('0x31f8d38df6514b6cc3c360ace3a2efa7496214f6')
     }
-
-    return transformedSumObject;
-}
+    return sumTokens2({ api, tokensAndOwners });
+};
 
 module.exports = {
     timetravel: false,
-        misrepresentedTokens: true,
+    misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Counterstake protocol. " +
         "This includes the value of exported assets held in the custody of cross-chain bridges, the stakes of cross-chain transfers, " +

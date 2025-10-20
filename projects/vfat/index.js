@@ -314,8 +314,17 @@ Object.keys(config).forEach(chain => {
   switch (chain) {
     case 'base':
     case 'optimism': tvl = tvlBaseOptimism; break;
+    case 'fraxtal':
+    case 'avax':
     case 'arbitrum':
-    case 'linea': tvl = tvlArbitrumLinea; break;
+    case 'sonic':
+    case 'hemi':
+    case 'linea':
+    case 'ink':
+    case 'unichain':
+    case 'katana':
+    case 'polygon':
+    case 'lisk': tvl = tvlArbitrumLinea; break;
     case 'fantom': tvl = tvlFantom; break;
     case 'mode': tvl = modeTvl; break;
     case 'mantle': tvl = tvlMantle; break;
@@ -331,12 +340,14 @@ module.exports.misrepresentedTokens = true
 let _get
 
 async function tvl2(api) {
-  if (!_get) 
+  if (!_get)
     _get = get(`https://api.vfat.io/v1/sickle-stats`)
-  
+
   const { chainStats } = await _get
   chainStats.filter(chain => chain.chainId === api.chainId).forEach(chain => {
     api.addUSDValue(chain.tvl)
   })
 
 }
+
+module.exports.hemi =  { tvl: tvl2 }

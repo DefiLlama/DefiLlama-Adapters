@@ -1,5 +1,9 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = {
+  "pendingMlpCount": "uint256:pendingMlpCount",
+  "allMlp": "function allMlp(uint256) view returns (address)",
+  "uniswapPair": "address:uniswapPair",
+  "getMlp": "function getMlp(uint256) view returns (address uniswapPair, address submitter, uint256 liquidity, uint256 endDate, uint8 status, uint256 bonusToken0, uint256 bonusToken1)"
+}
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { stakings } = require("../helper/staking");
 
@@ -11,42 +15,21 @@ const candyFarmsContracts = [
 ];
 const POP = "0x7fc3ec3574d408f3b59cd88709bacb42575ebf2b";
 
-const ethTvl = async (ts, block) => {
-  const countMlp = (
-    await sdk.api.abi.call({
-      abi: abi.pendingMlpCount,
-      target: proxyContract,
-      block,
-    })
-  ).output;
+const ethTvl = async (api) => {
+  const countMlp = await api.call({ abi: abi.pendingMlpCount, target: proxyContract, })
 
   const calls = []
   const mlpCalls = []
 
   for (let i = 0; i < countMlp; i++) {
-    calls.push({ params: i })
-    if (i < 6) mlpCalls.push({ params: i })
+    calls.push(i)
+    if (i < 6) mlpCalls.push(i)
   }
 
-  const { output: getMlp } = await sdk.api.abi.multiCall({
-    target: proxyContract,
-    abi: abi.getMlp,
-    calls, block,
-  })
-
-  const { output: mlps } = await sdk.api.abi.multiCall({
-    target: proxyContract,
-    abi: abi.allMlp,
-    calls: mlpCalls, block,
-  })
-  const tokensAndOwners = []
-  getMlp.forEach(({ output: { uniswapPair }}, i) => {
-    let owner = mlps[i] ? mlps[i].output : proxyContract
-    tokensAndOwners.push([uniswapPair, owner])
-  })
-
-
-  return sumTokens2({ block, tokensAndOwners, resolveLP: true, })
+  const getMlp = await api.multiCall({ target: proxyContract, abi: abi.getMlp, calls, })
+  const mlps = await api.multiCall({ target: proxyContract, abi: abi.allMlp, calls: mlpCalls, })
+  mlps.push(proxyContract)
+  return sumTokens2({ api, tokens: getMlp.map(i => i.uniswapPair), owners: mlps, resolveLP: true, })
 };
 
 module.exports = {

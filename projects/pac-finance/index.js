@@ -40,8 +40,6 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  blast: {
-    tvl,
-    borrowed,
-  },
+  deadFrom: '2025-03-01',
+  blast: { tvl, borrowed },
 };
