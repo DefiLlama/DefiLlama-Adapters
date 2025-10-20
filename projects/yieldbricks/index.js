@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { pool2 } = require("../helper/pool2.js");
 const { stakings } = require('../helper/staking');
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const arbConfig = {
     chain: 'arbitrum',
@@ -17,10 +18,12 @@ const ethConfig = {
     lpAddresses: [ADDRESSES.ethereum.YBR, ADDRESSES.ethereum.WETH]
 };
 
-const tvl = (chain) => async (api) => {
-    //const tokens = await api.call({ target: chain.tokenList });
-    //const toa = tokens.map((token) => [token, chain.depositContract]);
-    return 0 // api.sumTokens({ tokensAndOwners: toa });
+const tvl = (config) => async (api) => {
+    return sumTokensExport({
+        owners: config.stakingContracts,
+        tokens: config.contracts,
+        chain: config.chain
+    })
 };
 
 module.exports = {
@@ -31,7 +34,7 @@ module.exports = {
         Pool2 covers LP tokens staked in the YieldBricks LP contracts.
     `,
     arbitrum: {
-        tvl: tvl(arbConfig),
+        tvl: () => ({}),
         pool2: pool2(arbConfig.lpContracts, arbConfig.lpAddresses, arbConfig.chain),
         staking: stakings(arbConfig.stakingContracts, arbConfig.contracts, arbConfig.chain)
     },
