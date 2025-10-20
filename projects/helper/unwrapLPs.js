@@ -31,7 +31,7 @@ const getPositionLiquidityAbi = 'function getPositionLiquidity(uint256 tokenId) 
 */
 async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = null, excludeTokensRaw = [], uni_type = 'standard',) {
   if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+    transformAddress = getChainTransform(chain)
   const api = new sdk.ChainApi({ chain, block })
   lpPositions = lpPositions.filter(i => +i.balance > 0)
   const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
@@ -578,7 +578,7 @@ tokensAndOwners [
 */
 async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, permitFailure = false, sumChunkSize = undefined, sumChunkSleep = 3000 } = {}) {
   if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+    transformAddress = getChainTransform(chain)
 
   let ethBalanceInputs = []
 
@@ -662,7 +662,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await unwrapLPsAuto({ balances, block, chain, transformAddress, blacklistedLPs, abis })
 
   if (!skipFixBalances && ['astar', 'harmony', 'kava', 'thundercore', 'klaytn', 'evmos'].includes(chain)) {
-    const fixBalances = await getFixBalances(chain)
+    const fixBalances = getFixBalances(chain)
     fixBalances(balances)
   }
 
@@ -723,7 +723,7 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
   }
 
   if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+    transformAddress = getChainTransform(chain)
 
   pool2Tokens = pool2Tokens.map(token => token.toLowerCase())
   blacklistedLPs = blacklistedLPs.map(token => token.toLowerCase())
@@ -1004,7 +1004,7 @@ group by
 
 
   if (!skipFixBalances) {
-    const fixBalances = await getFixBalances(chain)
+    const fixBalances = getFixBalances(chain)
     fixBalances(balances)
   }
 
