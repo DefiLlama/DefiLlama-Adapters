@@ -14,12 +14,12 @@ const UNISWAP_KNC_V3 = "0x32263442a49650D89B2AB3dCB46B8C8DeC612F4D";
 const KYBER_AGGREGATOR = "0x6E4141d33021b52C91c28608403db4A0FFB50Ec6";
 const KYBER_META_AGGREGATION_ROUTER_V2 = "0x6131b5fae19ea4f9d964eac0408e4408b66337b5";
 const KYBER_AGGREGATION_ROUTER_V2 = "0xdf1a1b60f2d438842916c0adc43748768353ec25";
-
+const KYBER_FEE_COLLECTOR = "0x4f82e73edb06d29ff62c91ec8f5ff06571bdeb29"
 const CONFIG = {
   ethereum: {
     graphId: "mainnet",
-    owners: [ KYBER_META_AGGREGATION_ROUTER_V2 ],
-    tokens: [ ADDRESSES.ethereum.WETH, ADDRESSES.null, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT ],
+    owners: [ KYBER_META_AGGREGATION_ROUTER_V2, KYBER_FEE_COLLECTOR ],
+    tokens: [ ADDRESSES.ethereum.WETH, ADDRESSES.null, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.WBTC, ADDRESSES.ethereum.DAI ],
     staking: sumTokens2.bind(null, {
       owners: [ KYBER_STAKING_ADDRESS, KYBER_STAKING_ADDRESS_2 ],
       tokens: [
@@ -30,9 +30,19 @@ const CONFIG = {
     })
   },
   arbitrum: { graphId: "arbitrum-one", blacklistedTokens: [ '0x0df5dfd95966753f01cb80e76dc20ea958238c46' ] }, // rWETH
-  polygon: { graphId: "matic" },
-  avax: { graphId: "avalanche" },
+  polygon: {
+    graphId: "matic",
+    owners: [ KYBER_META_AGGREGATION_ROUTER_V2, KYBER_FEE_COLLECTOR ],
+    tokens: [ ADDRESSES.polygon.WMATIC, ADDRESSES.null, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT, ADDRESSES.polygon.DAI ],
+  },
+  avax: {
+    graphId: "avalanche",
+    owners: [ KYBER_META_AGGREGATION_ROUTER_V2, KYBER_FEE_COLLECTOR ],
+    tokens: [ ADDRESSES.avax.WAVAX, ADDRESSES.null, ADDRESSES.avax.USDC, ADDRESSES.avax.USDt, ADDRESSES.avax.DAI ],
+  },
   bsc: {
+    owners: [ KYBER_META_AGGREGATION_ROUTER_V2, KYBER_FEE_COLLECTOR ],
+    tokens: [ ADDRESSES.bsc.WBNB, ADDRESSES.null, ADDRESSES.bsc.BUSD, ADDRESSES.bsc.USDT, ADDRESSES.bsc.ETH ],
     graphId: "bsc",
   },
   fantom: { graphId: "fantom" },
@@ -40,12 +50,12 @@ const CONFIG = {
   optimism: { graphId: "optimism" },
   linea: {
     graphId: 'linea',
-    owners: [ KYBER_META_AGGREGATION_ROUTER_V2 ],
+    owners: [ KYBER_META_AGGREGATION_ROUTER_V2, KYBER_FEE_COLLECTOR ],
     tokens: [ ADDRESSES.linea.WETH, ADDRESSES.null, ADDRESSES.linea.USDC, ADDRESSES.linea.USDT, ADDRESSES.linea.BNB ],
   },
   base: {
     // graphId: 'base', // not using standard subgraph due to issues
-    owners: [ KYBER_META_AGGREGATION_ROUTER_V2 ],
+    owners: [ KYBER_META_AGGREGATION_ROUTER_V2, KYBER_FEE_COLLECTOR ],
     tokens: [ ADDRESSES.base.WETH, ADDRESSES.null, ADDRESSES.base.USDC, ADDRESSES.base.USDT ],
   },
   scroll: { graphId: 'scroll' },
