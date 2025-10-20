@@ -55,8 +55,18 @@ const tvl = async (api) => {
 const borrowed = async (api) =>  {
   const { pool } = config[api.chain]
   const tokens = (await getTokens(api, pool)).filter(addr => addr.toLowerCase() !== ADDRESSES.null)
-  const bals = await api.multiCall({ abi: abi.getTotalTokenBorrowed, calls: tokens, target: pool })
-  api.add(tokens, bals)
+  
+  // For plume_mainnet, avoid multiCall due to Multicall3 issues
+  if (api.chain === 'plume_mainnet') {
+    // Make individual calls instead of multiCall
+    for (const token of tokens) {
+      const bal = await api.call({ abi: abi.getTotalTokenBorrowed, target: pool, params: [token] })
+      api.add(token, bal)
+    }
+  } else {
+    const bals = await api.multiCall({ abi: abi.getTotalTokenBorrowed, calls: tokens, target: pool })
+    api.add(tokens, bals)
+  }
 }
 
 module.exports.methodology = "Counts the tokens locked in the multichainz pool contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. The TVL calculation includes all tokens held by the pool contract, and DefiLlama automatically subtracts borrowed amounts to show available liquidity."
@@ -65,3 +75,4 @@ Object.entries(config).forEach(([chain, { deprecated, isStakingPool }]) => {
     ? { tvl: () => ({}), borrowed: () => ({}) }
     : isStakingPool ? {tvl} :  { tvl, borrowed }
 })
+

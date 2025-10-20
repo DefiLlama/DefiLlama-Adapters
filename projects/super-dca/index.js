@@ -100,11 +100,9 @@ function createTvlFunction(chain) {
     return sumTokens2({
       api,
       resolveUniV4: true,
-      uniV3WhitelistedTokens: config.WHITELISTED_TOKENS, // Only count non-DCA tokens
       uniV4ExtraConfig: { 
+        whitelistedTokens: config.WHITELISTED_TOKENS, // Only count non-DCA tokens
         positionIds: allPositionIds, 
-        nftAddress: config.POSM, 
-        stateViewer: config.STATE_VIEW 
       },
     })
   }
@@ -115,10 +113,8 @@ module.exports = {
   methodology: "The TVL is calculated by summing the value of tokens in Uniswap V4 liquidity pools that have the Super DCA Hook associated with them. The value represents the value of all non-DCA tokens (e.g., ETH, USDC, WBTC, AAVE, etc.) in these pools.",
   optimism: {
     tvl: createTvlFunction('optimism'),
-    start: CONFIG.optimism.FROM_BLOCK
   },
   base: {
     tvl: createTvlFunction('base'),
-    start: CONFIG.base.FROM_BLOCK
   }
 }; 
