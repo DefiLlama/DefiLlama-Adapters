@@ -8,10 +8,6 @@ const config = {
   hyperliquid: { factory: '0x6B65ed7315274eB9EF06A48132EB04D808700b86' }
 }
 
-module.exports = {
-  doublecounted: true,
-};
-
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
