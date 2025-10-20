@@ -9,19 +9,7 @@ const ABI = {
     },
 }
 
-// ------------------------------ CONFIG --------------------------------------
-// Structure per chain:
-// {
-//   erc4626:        [vaultAddr, ...],
-// }
-const CONFIG = {
-    ethereum: {
-        // ERC-4626 vaults (RAW underlying via totalAssets)
-        erc4626: [
-            '0xBb876b2012af9Ca8591723B4fe7F05aC50E6C1eC', // UltraYield cbBTC
-        ],
-    },
-}
+const { CONFIG } = require('./tvl.addresses.js');
 
 // ---------------------------- TVL: ERC-4626 ---------------------------------
 async function getErc4626TVL(api, vaults) {
