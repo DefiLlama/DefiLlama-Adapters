@@ -12,7 +12,6 @@ const CONFIG = {
     erc4626: [
       '0x472425cc95be779126afa4aa17980210d299914f', // UltraYield BTC
       '0x8ecc0b419dfe3ae197bc96f2a03636b5e1be91db', // Kelp sbUSD Vault
-      '0xbb876b2012af9ca8591723b4fe7f05ac50e6c1ec', // UltraYield cbBTC
     ],
   },
 };

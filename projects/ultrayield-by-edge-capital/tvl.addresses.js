@@ -16,7 +16,6 @@ const CONFIG = {
             '0x9a6340ce1282e01cb4ec9faae5fc5f4b60ca8839', // Mellow UltraYield x Edge x Allnodes
             '0x8ecc0b419dfe3ae197bc96f2a03636b5e1be91db', // Kelp sbUSD Vault
             '0xeaa3b922e9febca37d1c02d2142a59595094c605', // Upshift upEDGE Vault
-            '0xbb876b2012af9ca8591723b4fe7f05ac50e6c1ec', // UltraYield cbBTC
             '0x59d675f75f973835b94d02b6d27b8539757dc65f', // Term UltraYield ETH
             '0x2be901715468c3c5393efa841525a713c583a8ec', // Term UltraYield USDC
         ],
