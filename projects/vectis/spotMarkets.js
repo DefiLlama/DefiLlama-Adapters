@@ -1,16 +1,20 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const anchor = require('@coral-xyz/anchor');
 const { PublicKey } = require("@solana/web3.js");
 const DRIFT_PROGRAM_ID = new PublicKey('dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH')
+const DRIFT_VAULT_PROGRAM_ID = new PublicKey('vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR')
+const CUSTOM_PROGRAM_ID = new PublicKey('EDnxACbdY1GeXnadh5gRuCJnivP7oQSAHGGAHCma4VzG')
+const VOLTR_PROGRAM_ID = new PublicKey('vVoLTRjQmtFpiYoegx285Ze4gsLJ8ZxgFKVcuvmG1a8')
 
 const SPOT_MARKETS = {
   0: {
     name: 'USDC',
-    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mint: ADDRESSES.solana.USDC,
     decimals: 6
   },
   1: {
     name: 'SOL',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     decimals: 9
   },
   6: {
@@ -48,7 +52,7 @@ const SPOT_MARKETS = {
 const PERP_MARKETS = {
   0: {
     name: 'SOL-PERP',
-    mint: 'So11111111111111111111111111111111111111112',
+    mint: ADDRESSES.solana.SOL,
     baseDecimals: 9,
     quoteDecimals: 6
   },
@@ -112,7 +116,9 @@ function processSpotPosition(position, spotMarketAccountInfo) {
     return -balance;  // Return negative for borrows
   }
 
-  return balance;  // Return positive for deposits
+  const cumulativeDepositInterest = getSpotMarketCumulativeDepositInterest(spotMarketAccountInfo);
+
+  return balance * cumulativeDepositInterest / BigInt(10 ** 10);  // Return positive for deposits
 }
 
 function getSpotMarketCumulativeBorrowInterest(accountInfo) {
@@ -129,16 +135,29 @@ function getSpotMarketCumulativeBorrowInterest(accountInfo) {
   }
 
 
+function getSpotMarketCumulativeDepositInterest(accountInfo) {
+    if (!accountInfo) { 
+      throw new Error(`No account info found for market`);
+    }
+  
+    const CUMULATIVE_DEPOSIT_INTEREST_OFFSET = 8 + 48 + 32 + 256 + (16 * 8) + 8 - 16; // 16 bytes before the borrow interest
+  
+    const lower64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_DEPOSIT_INTEREST_OFFSET);
+    const upper64Bits = accountInfo.data.readBigInt64LE(CUMULATIVE_DEPOSIT_INTEREST_OFFSET + 8);
+    
+    return (upper64Bits << 64n) + lower64Bits;
+  }
+
+
 function processPerpPosition(position) {
 
-  //if perp market 0, amount needs to mul by 10 
+
   let baseBalance = position.market_index === 0 ? position.base_asset_amount : position.base_asset_amount / BigInt(10);
 
   let quoteBalance = position.quote_asset_amount;
 
   return { baseBalance, quoteBalance };
 }
-
 
 
 function getPerpMarketFundingRates(accountInfo) {
@@ -170,6 +189,8 @@ module.exports = {
   getPerpMarketFundingRates,
   getPerpTokenMintFromMarketIndex,
   getVaultPublicKey,
+  VOLTR_PROGRAM_ID,
+  DRIFT_VAULT_PROGRAM_ID,
 };
 
 function getVaultPublicKey(seed, marketIndex) {

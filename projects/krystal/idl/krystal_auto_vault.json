@@ -1,0 +1,21 @@
+{
+  "address": "6tgjvHkFUUUbbacEWg225H6AazxoSTso8ix9vkXFScTU",
+  "metadata": {"name": "krystal_auto_vault", "version": "0.1.0", "spec": "0.1.0", "description": "Created with Anchor"},
+  "instructions": [],
+  "accounts": [
+    {"name": "GlobalState", "discriminator": [163, 46, 74, 168, 216, 123, 133, 98]},
+    {"name": "UserVault", "discriminator": [23, 76, 96, 159, 210, 10, 5, 22]}
+  ],
+  "errors": [],
+  "types": [
+    {
+      "name": "GlobalState",
+      "type": {
+        "kind": "struct",
+        "fields": [{"name": "admin", "type": "pubkey"}, {"name": "bump", "type": "u8"}, {"name": "operators", "type": {"vec": "pubkey"}}]
+      }
+    },
+    {"name": "UserVault", "type": {"kind": "struct", "fields": [{"name": "owner", "type": "pubkey"}, {"name": "bump", "type": "u8"}]}}
+  ],
+  "events": []
+}

@@ -1,50 +1,84 @@
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { stakings } = require("../helper/staking");
+const { balanceOf } = require('@defillama/sdk/build/erc20');
+const { ethereum } = require('../helper/whitelistedNfts');
 
 module.exports = {
   methodology: 'TVL counts the tokens deposited in the boring vaults.',
   start: 1733726867
 }
 
-const config = {
+const CONFIG = {
   ethereum: {
     vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812',
+      ADDRESSES.sonic.scUSD,
+      ADDRESSES.sonic.scETH,
+      '0xBb30e76d9Bb2CC9631F7fC5Eb8e87B5Aff32bFbd'
     ],
     supportedAssets: [
-      '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-      '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // AAVEUSDC
-      '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-      '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a', // AAVEUSDT
+      ADDRESSES.ethereum.USDC,                         // USDC
+      ADDRESSES.ethereum.USDT,                         // USDT
+      ADDRESSES.ethereum.DAI,                          // DAI
+      ADDRESSES.ethereum.SDAI,                         // SDAI
+      ADDRESSES.ethereum.sUSDS,                        // SUSDS
+      '0xCAcd6fd266aF91b8AeD52aCCc382b4e165586E29',    // frxUSD
+      '0xcf62F905562626CfcDD2261162a51fd02Fc9c5b6',   // sfrxUSD
+      ADDRESSES.ethereum.WETH,                         // WETH
+      ADDRESSES.ethereum.WSTETH,                       // WSTETH
+      ADDRESSES.ethereum.STETH,                       // WSTETH
+      ADDRESSES.ethereum.WEETH,                        // WEETH
+      ADDRESSES.ethereum.EETH,                        // WEETH
       '0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f', // GHO
+      '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // AAVEUSDC
+      '0x23878914EFE38d27C4D67Ab83ed1b93A74D4086a', // AAVEUSDT
+      '0x32a6268f9Ba3642Dda7892aDd74f1D34469A4259', // AAVESUSDS
       '0x1a88Df1cFe15Af22B3c4c783D4e6F7F9e0C1885d', // STKGHO
-      '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-      '0x83F20F44975D03b1b09e64809B757c47f942BEeA', // SDAI
       '0xdC035D45d973E3EC169d2276DDab16f1e407384F', // USDS
-      '0xa3931d71877C0E7a3148CB7Eb4463524FEc27fbD', // SUSDS
-      '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
       '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // AAVEWETH
-      '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', // WSTETH
-      '0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee', // WEETH
-      '0xd63070114470f685b75B74D60EEc7c1113d33a3D' // USDO MORPHO
+      '0xd63070114470f685b75B74D60EEc7c1113d33a3D',  // USDO MORPHO,
+      '0xBEEF01735c132Ada46AA9aA4c54623cAA92A64CB', // STEAK_USDC
+      '0x6A29A46E21C730DcA1d8b23d637c101cec605C5B', // FGHO
+      '0x5C20B550819128074FD538Edf79791733ccEdd18', // FUSDT
+      '0x9Fb7b4477576Fe5B32be4C1843aFB1e55F251B33', // FUSDC
+      '0x2371e134e3455e0593363cBF89d3b6cf53740618', // GAUNTLET WETH
+      '0xFF94993fA7EA27Efc943645F95Adb36C1b81244b', // GEARBOX STETH
+      ADDRESSES.ethereum.WBTC,
+      ADDRESSES.ethereum.EBTC, // EBTC
+      ADDRESSES.ethereum.LBTC // LBTC
     ]
   },
   sonic: {
     vaults: [
-      '0xd3DCe716f3eF535C5Ff8d041c1A41C3bd89b97aE',
-      '0x3bcE5CB273F0F148010BbEa2470e7b5df84C7812'
+      ADDRESSES.sonic.scUSD,
+      ADDRESSES.sonic.scETH,
+      '0xBb30e76d9Bb2CC9631F7fC5Eb8e87B5Aff32bFbd'
     ],
     supportedAssets: [
-      '0x29219dd400f2Bf60E5a23d13Be72B486D4038894', // USDC
-      '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b', // WETH
-    ]
+      ADDRESSES.sonic.USDC_e,
+      '0x50c42dEAcD8Fc9773493ED674b675bE577f2634b',  // WETH
+      ADDRESSES.berachain.WBTC,                      // WBTC
+      ADDRESSES.sonic.LBTC,  // LBTC
+      '0x578Ee1ca3a8E1b54554Da1Bf7C583506C4CD11c6',  // AUSDC
+      '0xe18Ab82c81E7Eecff32B8A82B1b7d2d23F1EcE96',   // AWETH
+      '0x80Eede496655FB9047dd39d9f418d5483ED600df', // frxUSD 
+      '0x5Bff88cA1442c2496f7E475E9e7786383Bc070c0' // sfrxUSD
+    ],
   },
+  plasma: {
+    vaults: [
+      '0xd1E70089Bd036896B7454ED5dc5E74C656CC0F7a',
+    ],
+    supportedAssets: [
+      '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B',
+      '0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb'
+    ],
+  }
 }
 
-Object.keys(config).forEach(chain => {
-  const { vaults, supportedAssets } = config[chain]
-  module.exports[chain] = {
-    tvl: sumTokensExport({ owners: vaults, tokens: supportedAssets})
-  }
-})
+Object.keys(CONFIG).forEach((chain) => {
+  const {  vaults, supportedAssets } = CONFIG[chain]
+  module.exports[chain] = { 
+    tvl: sumTokensExport({ owners: vaults, tokens: supportedAssets }),
+  };
+});

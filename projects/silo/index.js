@@ -114,6 +114,7 @@ module.exports = {
   base: { tvl, borrowed, },
   sonic: { tvl, borrowed, },
   hallmarks: [
-    [1692968400, "Launch CRV market"]
+    [1692968400, "Launch CRV market"],
+    [1736978400, "Launch Silo V2"],
   ]
 }
