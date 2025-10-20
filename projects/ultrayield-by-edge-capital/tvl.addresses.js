@@ -30,7 +30,7 @@ const CONFIG = {
         predeposit: [
             '0x699e04f98de2fc395a7dcbf36b48ec837a976490', // Turtle tacUSD
         ],
-        boting: [
+        boring: [
             '0xbc0f3B23930fff9f4894914bD745ABAbA9588265', //EtherFi UltraYield Stablecoin vault
         ]
     },
