@@ -5,15 +5,15 @@ const { mergeExports } = require('../helper/utils');
 const coreMarkets = {
   methodology,
   base: {
-    ...aaveExports(undefined, '0xBC2adF6bEE6E8468f9E60DFC017D4E2Ce682be0C'),
+    ...aaveExports(undefined, '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07'),
     pool2: staking("0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80", "0x87B417AF600312df37F551a05ae14bCC3d55bC36")
   },
   hyperliquid: {
-    ...aaveExports(undefined, '0x07093CA1E6c8c03Ff77dea07532F738d88De1D75'),
+    ...aaveExports(undefined, '0x69A3c30A85aA1E22791466a08819c1080f0Aab7f'),
     pool2: staking("0x33cd734739c6DeD500fD080d476D93135cB813Ef", "0x981F145a71Da6DF4A7cBe892807782c9CC9a5515")
   },
   xdc: {
-    ...aaveExports(undefined, '0xBC2adF6bEE6E8468f9E60DFC017D4E2Ce682be0C'),
+    ...aaveExports(undefined, '0xBfeE735e3868f8990787CCEAA4B920C9Ed162b07'),
     pool2: staking("0x5b6D95545750f1bb1812F5c564d9a401D3DeBd80", "0xffA04F091128fb89D3B1eCd0149DC677dfAe1C69")
   },
 };
