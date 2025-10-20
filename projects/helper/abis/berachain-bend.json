@@ -1,0 +1,11 @@
+{
+
+  "morphoBlueFunctions": {
+    "idToMarketParams": "function idToMarketParams(bytes32 Id) returns (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv)",
+    "market": "function market(bytes32 input) returns (uint128 totalSupplyAssets, uint128 totalSupplyShares, uint128 totalBorrowAssets, uint128 totalBorrowShares, uint128 lastUpdate, uint128 fee)"
+  },
+  "metaMorphoFunctions": {
+    "withdrawQueueLength": "function withdrawQueueLength() view returns (uint256)",
+    "withdrawQueue": "function withdrawQueue(uint256 index) view returns (bytes32)"
+  }
+}
