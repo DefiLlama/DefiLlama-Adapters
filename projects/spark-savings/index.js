@@ -17,6 +17,9 @@ const CONFIG = {
   unichain: {
     susdc: '0x14d9143BEcC348920b68D123687045db49a016C6',
   },
+  avax: {
+    sparkVaultUsdc: '0x28B3a8fb53B741A8Fd78c0fb9A6B2393d896a43d'
+  }
 }
 
 async function tvl(api) {
