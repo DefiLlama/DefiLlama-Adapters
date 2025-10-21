@@ -1008,6 +1008,17 @@ group by
     fixBalances(balances)
   }
 
+
+  // we current dont have mapping or price support for hex address format (0x...) of tron tokens so we convert them to T... format
+  if (api.chain === 'tron') {
+    Object.entries(balances).forEach(([token, value]) => {
+      if (!token.startsWith('tron:0x')) return;
+      api.removeTokenBalance(token)
+      const tronToken = sdk.util.evmToTronAddress(token.split(':')[1])
+      sdk.util.sumSingleBalance(balances, tronToken, value, chain)
+    })
+  }
+
   return balances
 
   function getUniqueToA(toa) {
@@ -1047,6 +1058,7 @@ async function unwrapHypervisorVaults({ api, lps }) {
     api.add(token1s[i], token1Bal)
     api.removeTokenBalance(lpToken)
   })
+
 
   return api.getBalances()
 }
