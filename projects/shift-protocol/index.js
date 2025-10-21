@@ -10,50 +10,44 @@ function getChainTvlFunction(chain) {
     const addresses = contractsByChain[chain] || [];
     for (const address of addresses) {
       // totalSupply using standard ERC20 short ABI
-      let totalSupply;
-      try {
-        totalSupply = await sdk.api.abi.call({
-          target: address,
-          abi: 'erc20:totalSupply',
-          block,
-          chain,
-        });
-      } catch (e) {
-        // no totalSupply -> skip this contract
-        console.warn(`totalSupply() missing for ${address} on ${chain}: ${e.message || e}`);
+      const totalSupply = await sdk.api.abi.call({
+        target: address,
+        abi: 'erc20:totalSupply',
+        block,
+        chain,
+      });
+
+      if (!totalSupply || !totalSupply.output) {
+        console.warn(`totalSupply() missing for ${address} on ${chain}`);
         continue;
       }
 
       // decimals using standard ERC20 short ABI (fallback to 18 if fails)
-      let decimals = 18;
-      try {
-        const decRes = await sdk.api.abi.call({
-          target: address,
-          abi: 'erc20:decimals',
-          block,
-          chain,
-        });
-        decimals = Number(decRes.output);
-      } catch (e) {
-        console.warn(`decimals() missing for ${address} on ${chain}, defaulting to 18: ${e.message || e}`);
-        decimals = 18;
+      const decRes = await sdk.api.abi.call({
+        target: address,
+        abi: 'erc20:decimals',
+        block,
+        chain,
+      });
+      
+      const decimals = decRes && decRes.output ? Number(decRes.output) : 18;
+      if (!decRes || !decRes.output) {
+        console.warn(`decimals() missing for ${address} on ${chain}, defaulting to 18`);
       }
 
       // getSharePrice() - custom function, format with 6 decimals
+      const spRes = await sdk.api.abi.call({
+        target: address,
+        abi: 'function getSharePrice() view returns (uint256)',
+        block,
+        chain,
+      });
+
       let sharePrice = 0;
-      try {
-        const spRes = await sdk.api.abi.call({
-          target: address,
-          abi: 'function getSharePrice() view returns (uint256)',
-          block,
-          chain,
-        });
-        // format with 6 decimals as requested
+      if (spRes && spRes.output) {
         sharePrice = Number(formatUnits(spRes.output, 6));
-      } catch (e) {
-        // If contract doesn't expose getSharePrice, log and treat as 0
-        console.warn(`getSharePrice() missing for ${address} on ${chain}, using 0: ${e.message || e}`);
-        sharePrice = 0;
+      } else {
+        console.warn(`getSharePrice() missing for ${address} on ${chain}, using 0`);
       }
 
       const supplyHuman = Number(formatUnits(totalSupply.output, decimals));
