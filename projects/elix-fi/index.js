@@ -32,7 +32,7 @@ query DefiLlama {
 
 module.exports = {
   methodology: "TVL is the total value promised on Elix.fi markets in addition to all non promised value that are in the ALM vaults.",
-  start: "2025-04-25",
+  start: "2025-10-20",
   doublecounted: true,
 }
 
@@ -53,7 +53,6 @@ Object.keys(config).forEach(chain => {
     tvl: async (api) => {
       // vault tvl
       const { vaultsV2s: { items: itemsV2 } } = await cachedGraphQuery(`elix-vaults-v2-${configEntry.chainId}`, configEntry.api_url, query(configEntry.chainId))
-      
       const vaultMakers = new Set()
       
       await getBalances(api, itemsV2, vaultMakers, 2)
@@ -83,8 +82,3 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
-
-
-
-
-
