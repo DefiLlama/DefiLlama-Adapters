@@ -56,9 +56,7 @@ Object.keys(config).forEach(chain => {
       
       const vaultMakers = new Set()
       
-      await Promise.all([
-        getBalances(api, itemsV2, vaultMakers, 2)
-      ])
+      await getBalances(api, itemsV2, vaultMakers, 2)
 
       // book tvl
       const openMarkets = await api.call({ target: configEntry.reader, abi: abi.openMarkets, })
