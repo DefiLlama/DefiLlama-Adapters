@@ -29,7 +29,7 @@ const config = {
       ],
       // [
       //   // FTM Token
-      //   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      //   ADDRESSES.GAS_TOKEN_2,
       //   // EngineChip (owner)
       //   "0x614aA983f54409D475aeC5D18120FECFD6320eF4"
       // ],
@@ -123,7 +123,7 @@ const config = {
       ],
       [
         // sFUSE Token
-        "0xb1DD0B683d9A56525cC096fbF5eec6E60FE79871",
+        ADDRESSES.fuse.SFUSE,
         // OFTChipAdapter (owner)
         "0x707f3d554B47E17F1FDfb408FE091B39D51929CF",
       ],
@@ -161,7 +161,7 @@ const config = {
       ],
       [
         // stEUR Token
-        "0x004626a008b1acdc4c74ab51644093b155e59a23",
+        ADDRESSES.celo.STEUR,
         // OFTChipAdapter (owner)
         "0xc5e782e2a4e2cfcb7ed454cf5a7b6aa2bb424b90",
       ],
