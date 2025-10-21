@@ -104,7 +104,7 @@ const fetchStakedToken = async (ts, _block, chainBlocks) => {
   return toUSDTBalances(BigNumber(skokoaTvl).toFixed(2));
 }
 
-
+// https://github.com/kokoa-finance/kokonutswap-contract
 module.exports = {
   misrepresentedTokens: true,
   klaytn: {

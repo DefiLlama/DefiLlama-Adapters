@@ -1,6 +1,4 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { chainExports } = require("../helper/exports");
-const { sumTokens } = require("../helper/unwrapLPs");
 
 // Same address of the OriginalTokenBridge contract on all primary chains
 const ORIGINAL_TOKEN_BRIDGE_ADDRESS =
@@ -64,14 +62,13 @@ const bridgedTokensPerPrimaryChain = [
 ];
 
 function chainTvl(chain) {
-  return async (time, _, { [chain]: block }) => {
+  return async (api) => {
     const toa = [];
     bridgedTokensPerPrimaryChain.forEach((token) => {
       if (!token[chain]) return;
       toa.push([token[chain], ORIGINAL_TOKEN_BRIDGE_ADDRESS]);
     });
-    const balances = await sumTokens({}, toa, block, chain, undefined);
-    return balances;
+    return api.sumTokens({ tokensAndOwners: toa });
   };
 }
 
@@ -80,9 +77,13 @@ let chains = bridgedTokensPerPrimaryChain.reduce((allChains, token) => {
   return allChains;
 }, new Set());
 
-module.exports = chainExports(chainTvl, Array.from(chains));
 module.exports.methodology = `Tokens bridged via shimmerbridge.org are counted as TVL`;
 module.exports.misrepresentedTokens = true;
 module.exports.hallmarks = [
-  [Math.floor(new Date("2023-12-27") / 1e3), "First Launch"],
+  ["2023-12-27", "First Launch"],
 ];
+
+
+Array.from(chains).forEach(chain => {
+  module.exports[chain] =  { tvl: chainTvl(chain)}
+})
