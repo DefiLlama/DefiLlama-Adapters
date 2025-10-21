@@ -19,8 +19,7 @@ const graphQuery = gql`
 `;
 
 const VAULT_CONTRACT = '0x5Dcd7e6EbFE2F4C3572f569d1ba7aDEEbD8CEa4c';
-// TODO: Update with actual USDT address on Monad when available
-const USDT_MONAD = '0x0000000000000000000000000000000000000000'; // Placeholder
+const USDT_MONAD = '0xb2f82D0f38dc453D596Ad40A37799446Cc89274A';
 
 async function tvl(api) {
   const res = await request(graphUrl, graphQuery);
