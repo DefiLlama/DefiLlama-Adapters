@@ -4,9 +4,6 @@
 */
 
 const ADDRESSES = require('../helper/coreAssets.json')
-const axios = require('axios')
-
-const API_URL_COMPLEX = `https://api.marquee.fi/api/client/indexdata`
 
 const CoinPoolAddress = "0x304829862C52BB4A4066e0085395E93439FAC657"
 const InsurancePoolAddress = "0x5387733F5f457541a671Fe02923F146b4040530C"
