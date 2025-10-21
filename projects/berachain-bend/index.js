@@ -1,14 +1,28 @@
 const { berachain } = require("../beracana");
 const abi = require("../helper/abis/berachain-bend.json");
-const { sumTokens2 } = require("../helper/unwrapLPs");
-
+const { graphQuery } = require("../helper/http");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const MORPHO_BLUE_ADDRESS = "0x24147243f9c08d835C218Cda1e135f8dFD0517D0";
 
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
 
+const BERACHAIN_API = "https://api.berachain.com";
+
 const getWhitelistedVaults = async (api) => {
-    return ["0x30BbA9CD9Eb8c95824aa42Faa1Bb397b07545bc1"]
+    try {
+        const data = await graphQuery(BERACHAIN_API, `
+            {
+                polGetRewardVaults(where: {protocolsIn: ["Bend"], includeNonWhitelisted: false}) {
+                    vaults {
+                        stakingTokenAddress
+                    }
+                }
+            }
+        `);
+        return data.polGetRewardVaults.vaults.map(v => v.stakingTokenAddress);
+    } catch {}
+    return [];
 }
 
 const getMarketFromWhitelistedVaults = async (api) => {
@@ -55,7 +69,6 @@ const borrowed = async (api) => {
         api.add(loanToken, data.totalBorrowAssets);
     });
 }
-
 
 module.exports = {
     berachain: {
