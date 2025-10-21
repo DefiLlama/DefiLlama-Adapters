@@ -33,7 +33,7 @@ query DefiLlama {
 module.exports = {
   methodology: "TVL is the total value promised on Elix.fi markets in addition to all non promised value that are in the ALM vaults.",
   start: "2025-04-25",
-  doublecounted: true,  // tokens are kept in yei vault to get the yield
+  doublecounted: true,
 }
 
 async function getBalances(api, items, vaultMakers, version) {
