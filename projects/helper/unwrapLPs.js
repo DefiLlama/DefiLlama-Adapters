@@ -1012,6 +1012,7 @@ group by
   // we current dont have mapping or price support for hex address format (0x...) of tron tokens so we convert them to T... format
   if (api.chain === 'tron') {
     Object.entries(balances).forEach(([token, value]) => {
+      if (token.includes(nullAddress)) return;
       if (!token.startsWith('tron:0x')) return;
       api.removeTokenBalance(token)
       const tronToken = sdk.util.evmToTronAddress(token.split(':')[1])
