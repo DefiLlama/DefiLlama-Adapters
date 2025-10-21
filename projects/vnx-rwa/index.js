@@ -1,5 +1,5 @@
 const { getTokenSupplies } = require("../helper/solana");
-const fetch = require('node-fetch');
+const { get } = require("../helper/http");
 
 const ASSETS = {
   EVM: {
@@ -115,8 +115,7 @@ const evmTvl = (chain, assets) => {
 
 const fetchIcpSupply = async (asset) => {
   const url = `https://${asset}.raw.icp0.io/metrics`;
-  let response = await fetch(url);
-  response = await response.text();
+  let response = await get(url);
   // Extract ledger_total_supply from the response
   const lines = response.split('\n');
   let totalSupply = 0;

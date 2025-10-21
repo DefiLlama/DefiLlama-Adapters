@@ -307,7 +307,11 @@ function cexExports(config) {
     }
 
     const options = { ...config[chain], owners, tokens, chain, blacklistedTokens }
-    if (chain === 'solana') options.solOwners = owners
+    if (chain === 'solana') {
+      options.solOwners = owners
+      if (!options.blacklistedTokens) options.blacklistedTokens = []
+      options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
+    }
     if (chain === 'ton') options.onlyWhitelistedTokens = true
     if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
     exportObj[chain] = { tvl: sumTokensExport(options) }
