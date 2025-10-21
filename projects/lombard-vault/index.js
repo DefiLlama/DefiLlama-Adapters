@@ -19,14 +19,57 @@ async function tvlCurve(_, _b, _cb, { api }) {
   return sumTokens2({ api, tokensAndOwners, resolveLP: true })
 }
 
+// Curve (Corn)
+async function tvlCurveCorn(_, _b, _cb, { api }) {
+  const curveLpToken = '0xAB3291b73a1087265E126E330cEDe0cFd4B8A693'
+  
+  // Get LP token balance held by vault
+  const lpBalance = await api.call({
+    target: curveLpToken,
+    abi: 'erc20:balanceOf',
+    params: [LBTCV]
+  })
+  
+  if (!lpBalance || lpBalance === '0') return {}
+  
+  // Get total supply of LP token
+  const totalSupply = await api.call({
+    target: curveLpToken,
+    abi: 'erc20:totalSupply'
+  })
+  
+  // Get coins (underlying tokens)
+  const [token0, token1] = await Promise.all([
+    api.call({ target: curveLpToken, abi: 'function coins(uint256) view returns (address)', params: [0] }),
+    api.call({ target: curveLpToken, abi: 'function coins(uint256) view returns (address)', params: [1] })
+  ])
+  
+  // Get pool balances for each token
+  const [balance0, balance1] = await Promise.all([
+    api.call({ target: curveLpToken, abi: 'function balances(uint256) view returns (uint256)', params: [0] }),
+    api.call({ target: curveLpToken, abi: 'function balances(uint256) view returns (uint256)', params: [1] })
+  ])
+  
+  // Calculate vault's share: (lpBalance / totalSupply) * poolBalance
+  const share = BigInt(lpBalance) * BigInt(1e18) / BigInt(totalSupply)
+  const amount0 = BigInt(balance0) * share / BigInt(1e18)
+  const amount1 = BigInt(balance1) * share / BigInt(1e18)
+  
+  // Add underlying tokens to balances
+  api.add(token0, amount0)
+  api.add(token1, amount1)
+  
+  return {}
+}
+
 // universal composer to avoid double counting
-function composeChainTVL(baseScanner) {
+function composeChainTVL(baseScanner, curveFn = tvlCurve) {
   return async (...args) => {
     const [, , , { api }] = args
     // 1) base scanner (owners + resolveUniV3)
     if (baseScanner) await baseScanner(...args)
     // 2) add Curve positions
-    await tvlCurve(...args)
+    if (curveFn) await curveFn(...args)
     return api.getBalances()
   }
 }
@@ -59,6 +102,20 @@ module.exports = {
       tokenConfig: { onlyWhitelisted: false },
       resolveUniV3: true,
     }),
+  },
+
+  corn: {
+    tvl: composeChainTVL(
+      sumTokensExport({
+        owners: [LBTCV],
+        tokens: [
+          '0x386E7A3a0c0919c9d53c3b04FF67E73Ff9e45Fb6', // BTCN on Corn
+          '0xda5dDd7270381A7C2717aD10D1c0ecB19e3CDFb2', // wBTCN (Wrapped BTCN)
+          '0xecAc9C5F704e954931349Da37F60E39f515c11c1', // LBTC on Corn
+        ],
+      }),
+      tvlCurveCorn
+    ),
   },
 
   sonic: {
