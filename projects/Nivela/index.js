@@ -40,6 +40,7 @@ async function tvl(api) {
 
     // Add all vault tokens
     for (const [_, tokenAddress] of Object.entries(tokens)) {
+        if (tokenAddress.toLowerCase() === tokens.NIV.toLowerCase()) continue;
         tokensAndOwners.push([tokenAddress, contracts.NivelaVault]);
     }
 
@@ -57,7 +58,6 @@ async function tvl(api) {
 async function staking(api) {
     const tokensAndOwners = [
         [tokens.NIV, contracts.VoteEscrowedNIV],
-        [nUSD, contracts.StakednUSD],
     ];
 
     const balances = await sumTokens2({ api, tokensAndOwners });
@@ -85,24 +85,15 @@ async function borrowed(api) {
         
         // Get borrowed amounts from all lenders
         for (const lender of lenders) {
-            try {
-                const borrowedAmount = await api.call({
-                    abi,
-                    target: contracts.MarketLens,
-                    params: [lender],
-                });
-                api.add(nUSD, borrowedAmount);
-            } catch (lenderError) {
-                console.log(`Error getting borrowed amount for lender ${lender}: ${lenderError.message}`);
-                // Continue with other lenders if one fails
-            }
-        }
-        
-        return api.getBalances();
-    } catch (error) {
-        console.log(`Error in borrowed function: ${error.message}`);
-        return {};
+        const borrowedAmount = await api.call({
+            abi,
+            target: contracts.MarketLens,
+            params: [lender],
+        });
+        api.add(nUSD, borrowedAmount);
     }
+    
+    return api.getBalances();
 }
 
 module.exports = {
@@ -121,3 +112,4 @@ module.exports = {
     },
 
 };
+
