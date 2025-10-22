@@ -11,7 +11,7 @@ const abis = {
   "getStakingPoolAddress": "function getStakingPoolAddress(address) view returns (address)",
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const tokens = await api.call({ abi: abis.getStakingTokens, target: FACTORY_CONTRACT, })
   const owners = await api.multiCall({ abi: abis.getStakingPoolAddress, target: FACTORY_CONTRACT, calls: tokens })
   tokens.forEach((v, i) => {
@@ -24,7 +24,6 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  start: 16831303,
   ethereum: {
     tvl,
     pool2: staking(['0x1D31755E03119311c7F00ae107874dddEC7573f3', '0xE05630Da82604591F002b61F7116429CfDC4B542'], LSD_LPs),

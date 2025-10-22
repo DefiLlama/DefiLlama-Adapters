@@ -11,7 +11,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { url } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const { tokens, contracts } = await getConfig('opium/' + api.chain, url)
       return sumTokens2({ api, tokens, owners: contracts })
     }

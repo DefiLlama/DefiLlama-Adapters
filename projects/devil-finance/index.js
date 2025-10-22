@@ -16,6 +16,7 @@ module.exports = {
     pool2: tvl("nativeLP"),
     staking: tvl("native"),
   },
+  deadFrom: '2023-01-01',
 };
 
 module.exports.fantom = { tvl: () => 0}

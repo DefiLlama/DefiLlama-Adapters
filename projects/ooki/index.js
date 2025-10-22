@@ -51,8 +51,16 @@ let stakingContracts = [
 
 Object.keys(contracts).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => getBalances(api, false),
-    borrowed: async (_, _b, _cb, { api, }) => getBalances(api, true),
+    tvl: async (api) => getBalances(api, false),
+    borrowed: async (api) => getBalances(api, true),
   }
 })
 module.exports.ethereum.staking = stakings(stakingContracts, [ooki, bzrx])
+
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.polygon.borrowed = ()  => ({})
+module.exports.bsc.borrowed = ()  => ({})
+module.exports.arbitrum.borrowed = ()  => ({})
+module.exports.optimism.borrowed = ()  => ({})
+module.exports.ethereum.borrowed = ()  => ({})
+module.exports.deadFrom = '2025-05-01' 

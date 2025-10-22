@@ -10,9 +10,13 @@ const chains = {
 };
 let output = {};
 
+const blacklistedTokens = [
+  "0x61cc6af18c351351148815c5f4813a16dee7a7e4"
+];
+
 Object.keys(chains).map((chain) => {
   output[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let res = await getConfig('optmism-bridge', "https://static.optimism.io/optimism.tokenlist.json");
       const tokenData = res.tokens.filter(
         (t) => t.chainId == chains[chain]
@@ -20,7 +24,7 @@ Object.keys(chains).map((chain) => {
 
       const tokens = [
         ADDRESSES.null,
-        ...tokenData.map((t) => t.address),
+        ...tokenData.map((t) => t.address)
       ];
       const owners = [
         ...new Set(tokenData.map((t) => t.extensions.optimismBridgeAddress)),
@@ -33,6 +37,7 @@ Object.keys(chains).map((chain) => {
         tokens,
         owners,
         fetchCoValentTokens: true,
+        blacklistedTokens
       });
     },
   };

@@ -1,7 +1,7 @@
 const { addPools, calculatePies, } = require("./pieDAO.js");
 const { staking } = require('../helper/staking')
 
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
     await Promise.all([
         addPools(api),
         calculatePies(api),

@@ -20,7 +20,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const key = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await getConfig('magik-farm/'+chain, `https://raw.githubusercontent.com/magikfinance/magik-farm-fe-master/main/src/features/configure/vault/${key}_pools.js`)
       const vaults = data.split('\n').filter(line => line.includes('earnedTokenAddress')).map(line => line.split(':')[1].trim().replace(/['",]/g, ''))
       const tokens = await api.multiCall({ calls: vaults, abi: 'address:want'})

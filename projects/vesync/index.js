@@ -16,7 +16,7 @@ module.exports = {
       useDefaultCoreAssets: true,
       hasStablePools: true,
     }),
-    staking: async (_, _b, cb, { api } = {}) => {
+    staking: async (api = {}) => {
       const vsBalance = await api.call({ target: VS, abi: 'erc20:balanceOf', params: VOTING_ESCROW, })
 
       // Use 1 VS as input to get the conversion rate from VS to USDC

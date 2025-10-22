@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const VAULTS = {
   Neutral: {
     Vault: '0x90A039797E93f2c671DE25DD24E5333b5e8F9Ab3',
@@ -14,7 +15,7 @@ const VAULTS = {
 };
 
 const HELPER = "0x8A2dD0eabE8b1A1066731C43AaC08dCDd50fcA63"
-const SUSD = '0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9'
+const SUSD = ADDRESSES.optimism.sUSD
 
 module.exports = {
   VAULTS,

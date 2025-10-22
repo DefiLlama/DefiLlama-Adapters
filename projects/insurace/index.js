@@ -33,7 +33,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { endpoint, INSUR, stakingPool, pool2Pool, pool2Token, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let blacklistedTokens = []
       if (INSUR) blacklistedTokens.push(INSUR)
       if (pool2Token) blacklistedTokens.push(pool2Token)

@@ -9,7 +9,7 @@ const FRACTAL_YIELD_RESERVE_ETH = '0xbA83B569e99B6afc2f2BfE5124460Be6f36a4a56';
 //Token Addresses ETH
 const USDC_ETH = ADDRESSES.ethereum.USDC;
 
-//Fractal Addreses ARB
+//Fractal Addresses ARB
 const FRACTAL_VAULT_CONTRACT_ARB = '0x80e1a981285181686a3951B05dEd454734892a09'
 const FRACTAL_YIELD_RESERVE_ARB = '0x7d7068fB0398906C693DBFc425584FD5b58c4B60'
 const FRACTAL_CHRONOS_POOL = '0x468B6e0f89fa727A47d9512021050797B4875D6d'
@@ -58,11 +58,11 @@ async function getLoanDebt(loans, api) {
   return api.getBalances()
 }
 
-const getEthTvl = async (_, ethBlock, __, { api }) => {
+const getEthTvl = async (api) => {
   return sumTokens2({ owners: [FRACTAL_YIELD_RESERVE_ETH, FRACTAL_VAULT_CONTRACT_ETH], tokens: [USDC_ETH,], api })
 };
 
-const getEthLoans = async (_, ethBlock, __, { api }) => {
+const getEthLoans = async (api) => {
   return getLoanDebt(ETH_LOANS, api)
 }
 

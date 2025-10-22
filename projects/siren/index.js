@@ -9,7 +9,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, vault, hedgePools } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokensAndOwners = []
       if (hedgePools) {
         const tokens = await api.multiCall({ abi: 'address:collateralToken', calls: hedgePools })

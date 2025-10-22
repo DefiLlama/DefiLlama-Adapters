@@ -15,10 +15,10 @@ const contracts = {
 module.exports = {
   misrepresentedTokens: true,
   avax:{
-    tvl: getUniTVL({ chain: 'avax', useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
-    staking: staking(contracts.avax.stakingContract, contracts.avax.cnr, "avax"),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
+    staking: staking(contracts.avax.stakingContract, contracts.avax.cnr),
   },
   scroll:{
-    tvl: getUniTVL({ chain: 'scroll', useDefaultCoreAssets: true, factory: contracts.scroll.factory, }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.scroll.factory, }),
   },
 }

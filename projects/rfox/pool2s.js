@@ -13,6 +13,6 @@ const stakingContracts = [
 
 module.exports = {
   bsc: {
-    pool2: pool2s(stakingContracts, lpTokens, 'bsc'),
+    pool2: pool2s(stakingContracts, lpTokens),
   },
 }

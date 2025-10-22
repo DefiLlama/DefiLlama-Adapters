@@ -133,7 +133,8 @@ async function getLiquidityPoolBalances(timestamp, block, api) {
   return toa
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const { timestamp, block } = api
   const tokensAndOwners = await getLiquidityPoolBalances(timestamp, block);
   const balances = await getHidingVaultBalances(timestamp, block);
 
@@ -141,7 +142,7 @@ async function tvl(timestamp, block, _, { api }) {
 }
 
 module.exports = {
-  start: 1611991703, // 01/30/2021 @ 07:28:23 AM +UTC
+  start: '2021-01-30', // 01/30/2021 @ 07:28:23 AM +UTC
   ethereum: {
     tvl
   }

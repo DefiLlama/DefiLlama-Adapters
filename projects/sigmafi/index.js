@@ -2,7 +2,7 @@ const { nullAddress } = require('../helper/tokenMapping')
 const { sumTokensExport } = require('../helper/chain/ergo')
 const { get } = require('../helper/http')
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const data  = await get('https://api.sigmaexplorer.org/sigmafi/loans/ongoing?limit=10000')
   data.forEach(({ repayment: { tokenId, amount}}) => {
     api.add(tokenId === 'erg' ? nullAddress : tokenId, amount)

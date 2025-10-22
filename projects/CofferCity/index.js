@@ -14,7 +14,7 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const vaults = Object.values(config[chain])
       const tokens = await api.multiCall({ abi: abi.getSupportedTokens, calls: vaults })
       const ownerTokens = vaults.map((v, i) => [tokens[i], v])

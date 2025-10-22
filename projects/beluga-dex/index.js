@@ -2,7 +2,7 @@ const { staking } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const asssetsContract = "0xF6Eb0eE167e3b8a43E74999C47720140A9431448"
 
-async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const tokensAndOwners  = await api.call({
     target: asssetsContract,
     abi: "function getAssets() view returns (address[][])",

@@ -17,7 +17,7 @@ const RociRevenueManagerABI = 'function balanceAvailable(address _poolAddress) v
 const poolValueAbi = "uint256:poolValue"
 
 
-async function tvl(timestamp, _, _1, { api }) {
+async function tvl(api) {
   return sumTokens2({
     api, tokensAndOwners: [
       [WETH, ROCI_COLLATERAL_MANAGER],
@@ -26,7 +26,7 @@ async function tvl(timestamp, _, _1, { api }) {
   })
 }
 
-async function borrowed(timestamp, _, _1, { api }) {
+async function borrowed(api) {
   const poolValues = await api.multiCall({
     abi: poolValueAbi,
     calls: ROCI_POOLS,

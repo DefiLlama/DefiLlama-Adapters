@@ -1,4 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -29,8 +31,8 @@ const config = {
         '0x8c7Efd5B04331EFC618e8006f19019A3Dc88973e',
         '0xCCFA6f3b01c7bf07B033A9d496Fdf22F0cdF5293',
         '0x90f76616d34Cb6A1F4423B33c0201B2A1980Fc81',
-        '0x4E15361FD6b4BB609Fa63C81A2be19d873717870',
-        '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+        ADDRESSES.ethereum.FTM,
+        ADDRESSES.ethereum.MATIC,
         '0xC1723Af0Dc5400A1cAAa47E76a45c39538A6AD49',
         '0x07E114C06462D8892Ae4574A7502b8c1c0FBdFbb',
         '0x274c427B1BF0bB4a137EDE688c6D621263CA7Ce8',
@@ -54,32 +56,7 @@ const config = {
     ]
   },
   bitcoin: {
-    owners: [
-        '12hGEyxk4zMLquxiMiFrkvYSohsXz2D3uZ',
-        'bc1qz22hegkllltcydg3pz3an6h352mjmyp7n2vhd9',
-        '1MzSJodjNmACPKyj9VUv9X55Pby87osLhc',
-        'bc1qucl4n347qc6e48w85xdxcv86sm3an8fr250hhm',
-        '1F6CrpEnHEZh6gQtJ7cf1MtK7Y8GYKoP4i',
-        'bc1qn2xm6agnanuyuwfcfw92el7nvt2lpsqr5s5c0w',
-        '17mxRZ9WeXigSwg3Cm62HxeATnuUphMxGL',
-        'bc1qffg4ya27430vv5ymg2lhf4mj7tvtc3ur5qyyq3',
-        '1JV3umtGC6H6tFUVoFyV5KwbJDscUwrtX7',
-        'bc1qhlyrdhfqry06nj902p9dxdftm4pxkhdqeum8y8',
-        '1KXxS6QnzpB8mSLm5kmXJXqvZF7wVvQDCw',
-        'bc1qedxsgzuj8ga644gwlqw4nw7f3xncq4g2rskmzu',
-        '12T8i8tpeczk5JGf8ppZf1w6SFBRwEa9y4',
-        'bc1qpl5kqjkugyncr72a4fhxvm0360ehfdl27e00ja',
-        '1PRwacjHVksLNTkSYNkiWkRgTm1yDSgLMG',
-        'bc1q7c9ylgjsyc0yaxwm84jjh6avfajzfe7dhk6e0e',
-        '1477uXZ1NfUaaZZdnztQ7h8ftGRpuWQPfA',
-        'bc1qygg2x02cfy0e6r7798v4qrcjjkzm8tl5t0xkwf',
-        'bc1qljm7vwdgdy6ca97stsyjyl3zdjtkdsdm8vnh8f',
-        'bc1qqhwh3tcg5duwq7hdlnlr5n2tg2uq755cwmkjqn',
-        'bc1qqe4g7sjxzk90nsgj0mwufwcdtd7kufg7k32xch',
-        '1avi3SkWKGLis8dGCP9JUnFfVeheP8wkt',  
-        'bc1qmulc2ju4kykj24xuw0fu73h9h3usa897xhaucz', //
-        '3Dm2TL1pt1VzeBCq9jgvQG81QPv19PyReh'
-    ]
+    owners: bitcoinAddressBook.coindcx
   },
   tron: {
     owners: [

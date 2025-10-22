@@ -13,7 +13,7 @@ const config = {
   bsc: {}
 };
 
-async function tvl(_a, _b, _c, { api }) {
+async function tvl(api) {
   const { TOKEN, DECIMALS } = api.chain === "bsc" ? { TOKEN: "USDT", DECIMALS: 12 } : { TOKEN: "USDC", DECIMALS: 0 };
   const TOKEN_ADDRESS = ADDRESSES[api.chain][TOKEN];
 

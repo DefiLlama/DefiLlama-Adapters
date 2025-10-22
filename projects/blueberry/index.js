@@ -1,6 +1,5 @@
-const { compoundExports2 } = require('../helper/compound')
+const v1 = require("./v1");
+const v2 = require("./v2");
+const { mergeExports } = require("../helper/utils");
 
-module.exports = {
-  methodology: 'Gets the total value locked in the Blueberry Lending Market',
-  ethereum: compoundExports2({ comptroller: '0xfFadB0bbA4379dFAbFB20CA6823F6EC439429ec2'}),
-}
+module.exports = mergeExports([v1, v2]);

@@ -17,4 +17,10 @@ module.exports = treasuryExports({
     owners: [treasury, l1_surplus_fees, l2_surplus_fees, l2_base_fees, l2_treasury_timelock],
     ownTokens: [ARB],
   },
+  arbitrum_nova: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: ["0x509386DbF5C0BE6fd68Df97A05fdB375136c32De", "0x3B68a689c929327224dBfCe31C1bf72Ffd2559Ce", "0x9fCB6F75D99029f28F6F4a1d277bae49c5CAC79f"],
+  },
 })

@@ -2,7 +2,7 @@ const { queryContract } = require("../helper/chain/cosmos");
 const { getConfig } = require("../helper/cache");
 const { fetchURL } = require("../helper/utils");
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const chain = api.chain;
   const contracts = await getConfig(
     "kujira/contracts",

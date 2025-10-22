@@ -41,16 +41,16 @@ const config = {
 }
 
 module.exports = {
-  hallmarks: [
-    [1648339200, "Reentrancy attack"]
-  ],
+  // hallmarks: [
+  //   [1648339200, "Reentrancy attack"]
+  // ],
   methodology: "We list all tokens in our vault and sum them together",
 };
 
 Object.keys(config).forEach(chain => {
   const { holder, revest, tokenVaultV2, fnftHandler, revest_lp } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _1, { api }) => {
+    tvl: async (api) => {
 
       const blacklistedTokens = []
       if (revest) blacklistedTokens.push(revest.toLowerCase())
@@ -124,7 +124,7 @@ Object.keys(config).forEach(chain => {
   }
 
   if (revest)
-    module.exports[chain].staking = async (_, _b, _1, { api }) => {
+    module.exports[chain].staking = async (api) => {
       //Get the number of FNFTS for the TokenVaultV2
       let info = await api.batchCall([
         { target: config[chain].tokenVaultV2, abi: CutoffABI, },

@@ -1,6 +1,17 @@
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens } = require("../helper/sumTokens");
 
 module.exports = {
+  bitcoin: {
+    tvl: async (api) => {
+      return sumTokens({ 
+        chain: 'bitcoin',
+        owners: bitcoinAddressBook.rskBridge, 
+        balances: api.getBalances(),
+      });
+    },
+  },
   ethereum: {
     tvl: sumTokensExport({
       owner: "0x12eD69359919Fc775bC2674860E8Fe2d2b6a7B5D",
@@ -17,7 +28,6 @@ module.exports = {
         "0xFF9EA341d9ea91CB7c54342354377f5104Fd403f",
         "0x4991516DF6053121121274397A8C1DAD608bc95B",
         "0x1BDa44fda023F2af8280a16FD1b01D1A493BA6c4",
-        "0xEf213441a85DF4d7acBdAe0Cf78004E1e486BB96",
         "0x75c6e15702ebAcd51177154ff383DF9695E1B1DA",
         "0x9C3a5F8d686fadE293c0Ce989A62a34408C4e307",
         "0xe506F698B31a66049bD4653Ed934e7A07Cbc5549",

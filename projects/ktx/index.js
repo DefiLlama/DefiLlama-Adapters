@@ -15,15 +15,15 @@ const arbitrumKTC = "0x487f6baB6DEC7815dcd7Dfa2C44a8a17bd3dEd27";
 
 module.exports = {
   bsc: {
-    staking: staking(bscStaking, bscKTC, "bsc"),
+    staking: staking(bscStaking, bscKTC),
     tvl: gmxExports({ vault: bscVault }),
   },
   mantle: {
-    staking: staking(mantleStaking, mantleKTC, "mantle"),
+    staking: staking(mantleStaking, mantleKTC),
     tvl: gmxExports({ vault: mantleVault }),
   },
   arbitrum: {
-    staking: staking(arbitrumStaking, arbitrumKTC, "arbitrum"),
+    staking: staking(arbitrumStaking, arbitrumKTC),
     tvl: gmxExports({ vault: arbitrumVault }),
   },
 };

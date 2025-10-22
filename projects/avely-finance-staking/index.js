@@ -17,8 +17,7 @@ const tvlFields = {
   'zilliqa': 'totalstakeamount',
 }
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const query = prepareQuery(tvlFields)
 
   const data = await call(query)

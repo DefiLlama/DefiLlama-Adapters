@@ -15,6 +15,6 @@ module.exports = {
       useDefaultCoreAssets: true,
       factory: '0x1589DD24f11e1e49566fE99744E7487CbcAb2d43',
     }),
-    staking: staking(pool,contractAddr,"rpg")
+    staking: staking(pool,contractAddr)
   }
 }

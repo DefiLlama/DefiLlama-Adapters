@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
-async function tvl(ts, _b, _cb, { api, }) {
-  const tsString = new Date(ts * 1000).toISOString()
+async function tvl(api) {
+  const tsString = new Date(api.timestamp * 1000).toISOString()
   const addBal = bal => api.add('coingecko:tezos', bal * 2/ 1e6, { skipChain: true })
   const getBal = async (address) =>  get(`https://api.tzkt.io/v1/accounts/${address}/balance_history/${tsString}`)
 
@@ -15,7 +15,7 @@ async function tvl(ts, _b, _cb, { api, }) {
     'KT1PDrBE59Zmxnb8vXRgRAG1XmvTMTs5EDHU',
   ]
 
-  if (ts < 1613861579 && ts > 1612738379)
+  if (api.timestamp < 1613861579 && api.timestamp > 1612738379)
     owners.push('KT1Xf2Cwwwh67Ycu7E9yd3UhsABQC4YZPkab')
 
 

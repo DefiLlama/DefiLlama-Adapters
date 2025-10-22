@@ -1,7 +1,7 @@
 const { staking } = require('../helper/staking')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens2({
     api,
     resolveUniV3: true,

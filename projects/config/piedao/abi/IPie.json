@@ -1,4 +1,0 @@
-{
-  "totalSupply": "uint256:totalSupply",
-  "calcTokensForAmount": "function calcTokensForAmount(uint256 _amount) view returns (address[] tokens, uint256[] amounts)"
-}

@@ -1,6 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: '0x592f70cE43a310D15fF59BE1460F38Ab6DF3Fe65',
@@ -17,7 +17,7 @@ async function tvl(_, _b, _cb, { api, }) {
 module.exports = {
   ethereum: { tvl },
   hallmarks: [
-    [Math.floor(new Date('2021-10-14')/1e3), 'Protocol was hacked'],
-    [Math.floor(new Date('2023-03-20')/1e3), 'Balancing arbitrage'],
+    // ['2021-10-14', 'Protocol was hacked'],
+    ['2023-03-20', 'Balancing arbitrage'],
   ],
 }

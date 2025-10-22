@@ -52,11 +52,11 @@ const STABILITY_POOL_COLLATERAL_ADDRESSES = {
   }
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, owner: STABILITY_POOL, tokens: Object.values(STABILITY_POOL_COLLATERAL_ADDRESSES[api.chain])})
 }
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   // return sumTokens2({ api, owner: STABILITY_POOL, tokens: [GENIUS_CONTRACT]})
   const balances = {};
   /* Collect Basic miner locked */
@@ -74,9 +74,9 @@ async function staking(_, _1, _2, { api }) {
     target: STABILITY_POOL,
     abi: stabilityAbi.totalSettledGenitos
   });
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, basicLockedMinersSupply);
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, advLockedMinersSupply);
-  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, totalSettledGenitos);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, basicLockedMinersSupply, api.chain);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, advLockedMinersSupply, api.chain);
+  sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, totalSettledGenitos, api.chain);
   return balances;
 }
 

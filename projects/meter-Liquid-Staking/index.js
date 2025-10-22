@@ -1,5 +1,5 @@
 const stMTRG = '0x215d603293357ca222bE92A1bf75eEc38DeF0aad';
-async function tvl(timestamp, _, { meter: block }, { api }) {
+async function tvl(api) {
   const stMTRGStaking = await api.call({
     target: stMTRG,
     abi: 'erc20:totalSupply',

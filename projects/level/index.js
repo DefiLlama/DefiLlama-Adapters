@@ -27,10 +27,10 @@ const ContractsArb = {
     ARB: ADDRESSES.arbitrum.ARB
   }
 }
-async function arbtvl(_,b, _cb, { api, }) {
+async function arbtvl(api) {
   return sumTokens2({ api, owner: ContractsArb.Pool, tokens: Object.values(ContractsArb.Tokens)})
 }
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens2({ api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
 }
 
@@ -40,7 +40,7 @@ module.exports = {
     pool2: pool2(Contracts.Chef, Contracts.LVL_BNB_LP)
   },
   arbitrum: { tvl: arbtvl },
-  hallmarks: [
-    [Math.floor(new Date('2023-05-01')/1e3), 'Referral contract exploited'],
-  ],
+  // hallmarks: [
+  //   ['2023-05-01', 'Referral contract exploited'],
+  // ],
 };

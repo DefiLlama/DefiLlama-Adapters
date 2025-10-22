@@ -1,13 +1,13 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 const config = {
-  avax: { factory: '0xdd723d9273642d82c5761a4467fd5265d94a22da', fromBlock: 31563526 },
+  avax: { factory: '0x1A49Bc8464731A08c16EdF17F33CF77db37228a4', fromBlock: 62736566 },
 }
 
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,

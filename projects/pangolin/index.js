@@ -1,8 +1,7 @@
 const { staking, stakingPricedLP } = require("../helper/staking");
-const { graphQuery } = require("../helper/http");
-const { getCurrentBlock } = require("../helper/chain/hbar");
 const { getUniTVL } = require('../helper/unknownTokens')
-const { toUSDTBalances } = require('../helper/balances')
+const { cachedGraphQuery } = require("../helper/cache");
+const { transformDexBalances } = require("../helper/portedTokens");
 
 const contracts = {
   avax: {
@@ -28,7 +27,7 @@ module.exports = {
     "The Pangolin factory contract address are used to obtain the balance held in every LP pair and the stake contract is used to get the locked PNG balance.",
   avax: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
-    staking: staking(contracts.avax.stakingContract, contracts.avax.png, "avax"),
+    staking: staking(contracts.avax.stakingContract, contracts.avax.png),
   },
   songbird: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.songbird.factory, }),
@@ -45,15 +44,23 @@ module.exports = {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.flare.factory, }),
   },
   hedera: {
-    tvl: async () => {
-      const block = await getCurrentBlock()
-      const data = await graphQuery('https://graph-hedera-main.pangolin.network/subgraphs/name/pangolin', `{
-          pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
-          totalLiquidityUSD
-          }
-      }`)
-      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
-    }
+    tvl: async (api) => {
+      const { pairs } = await cachedGraphQuery('pangolin-v2/hedera', 'https://graph-hedera-pangolin.canary.exchange/subgraphs/name/pangolin', `{pairs(first: 1000) {
+    id
+    token0 { id}
+    token1 { id }
+  }}`)
+  const calls = pairs.map(({ id}) => id)
+  const reserves = await api.multiCall({ abi: 'function getReserves() view returns (uint112 token0Bal, uint112 token1Bal, uint32 blockTimestampLast)', calls })
+  
+    const data = reserves.map(({ token0Bal, token1Bal }, idx) => ({
+        token0: pairs[idx].token0.id,
+        token1: pairs[idx].token1.id,
+        token0Bal,
+        token1Bal,
+    }))
+    return transformDexBalances({ api, data })
+    },
   },
-  start: 1612715300, // 7th-Feb-2021
+  start: '2021-02-07', // 7th-Feb-2021
 };

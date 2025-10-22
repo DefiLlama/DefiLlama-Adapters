@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function v3Tvl(_, _b, _cb, { api, }) {
+async function v3Tvl(api) {
   const factory = '0xA15Be7e90df29A4aeaD0C7Fc86f7a9fBe6502Ac9';
   const wklay = '0x19aac5f612f524b754ca7e7c41cbfa2e981a4432';
   const klay = ADDRESSES.null;

@@ -1,7 +1,7 @@
 const { sumTokens, getStorage } = require("../helper/chain/tezos")
 const SIRS = 'KT1TxqZ8QtKvLu3V3JH7Gx58n7Co8pgtpQU5'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { lqtAddress, tokenAddress, xtzPool, lqtTotal, tokenPool } = await getStorage(SIRS)
   await sumTokens({
     includeTezos: true, balances: api.getBalances(), owners: [

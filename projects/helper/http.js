@@ -11,6 +11,7 @@ async function getCache(endpoint) {
 }
 
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   if (chainBlocks[chain] || (!getEnv('HISTORICAL') && undefinedOk)) {
     return chainBlocks[chain]
   } else {
@@ -48,6 +49,9 @@ async function post(endpoint, body, options) {
 }
 
 async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, chain, chainBlocks, useBlock = false } = {}) {
+
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   if (api) {
     if (!timestamp) timestamp = api.timestamp
     if (!chain) chain = api.chain
@@ -60,7 +64,22 @@ async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, c
   return request(endpoint, graphQuery, params)
 }
 
+function extractIndexedBlockNumberFromError(errorString) {
+  const patterns = [
+    /Failed to decode.*block\.number.*has only indexed up to block number (\d+)/,
+    /missing block: \d+, latest: (\d+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = errorString.match(pattern);
+    if (match) return +match[1];
+  }
+  
+  return null;
+}
+
 async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
+  endpoint = sdk.graph.modifyEndpoint(endpoint)
   const graphQLClient = new GraphQLClient(endpoint)
   await api.getBlock()
   const block = api.block
@@ -68,12 +87,12 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
     const results = await graphQLClient.request(query, { block })
     return results
   } catch (e) {
+    e.chain = api.chain
     if (!block) throw e
     const errorString = e.toString()
-    const isBlockCatchupIssue = /Failed to decode.*block.number.*has only indexed up to block number \d+/.test(errorString)
-    if (!isBlockCatchupIssue) throw e
-    const indexedBlockNumber = +errorString.match(/indexed up to block number (\d+) /)[1]
-    sdk.log('We have indexed only upto ', indexedBlockNumber, 'requested block: ', block)
+    const indexedBlockNumber = extractIndexedBlockNumberFromError(errorString);
+    if (!indexedBlockNumber) throw e;
+    sdk.log('Block catchup detected: subgraph indexed up to', indexedBlockNumber, 'but requested block was', block, 'falling back to indexed block')
     if (block - blockCatchupLimit > indexedBlockNumber)
       throw e
     return graphQLClient.request(query, { block: indexedBlockNumber })

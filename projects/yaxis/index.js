@@ -2,8 +2,7 @@ const { staking } = require('../helper/staking')
 const { abi } = require("../yaxis/abi.js");
 const constants = require("../yaxis/constants.js");
 
-async function tvl(timestamp, block) {
-  const { api } = arguments[3]
+async function tvl(api) {
   const token = await api.call({ abi: 'address:want', target: constants.METAVAULT })
   const bal = await api.call({ abi: 'uint256:balance', target: constants.METAVAULT })
   api.add(token, bal)
@@ -12,8 +11,7 @@ async function tvl(timestamp, block) {
   api.addTokens(tokens, bals)
 }
 
-async function staking_(time, block) {
-  const { api } = arguments[3]
+async function staking_(api) {
   const token = constants.CURRENCIES["YAXIS"]
   api.add(token, await api.call({ abi: abi.votingEscrow, target: constants.VOTING_ESCROW }))
   api.add(token, await api.call({ abi: abi.yAxisBar, target: constants.BAR }))
@@ -28,5 +26,5 @@ module.exports = {
     staking: staking_,
     pool2: staking(constants.UNISWAP_LPS.map(i => i.staking), constants.UNISWAP_LPS.map(i => i.address))
   },
-  start: 1600185600, // 09/16/2020 @ 12:00am (UTC+8)
+  start: '2020-09-15', // 09/16/2020 @ 12:00am (UTC+8)
 };

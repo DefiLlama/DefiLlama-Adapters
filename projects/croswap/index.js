@@ -7,7 +7,7 @@ module.exports = {
   misrepresentedTokens: true,
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { factory, fromBlock } = config[api.chain]
   let pools
 

@@ -13,7 +13,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { pools } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = await api.multiCall({  abi: 'address:asset', calls: pools})
       return sumTokens2({ api, tokensAndOwners2: [tokens, pools] })
     }

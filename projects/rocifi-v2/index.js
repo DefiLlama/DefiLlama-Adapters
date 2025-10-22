@@ -24,7 +24,7 @@ const getPools = async (chain, api) => {
   return { pools, underlyings }
 }
 
-const tvl = (chain) => async (_, __, _1, { api }) => {
+const tvl = (chain) => async (api) => {
   const { pools, underlyings } = await getPools(chain, api);
 
   const collaterals = await api.call({
@@ -43,7 +43,7 @@ const tvl = (chain) => async (_, __, _1, { api }) => {
   });
 }
 
-const borrowed = (chain) => async (_, __, _1, { api }) => {
+const borrowed = (chain) => async (api) => {
   const { pools, underlyings } = await getPools(chain, api);
 
   const balances = {};

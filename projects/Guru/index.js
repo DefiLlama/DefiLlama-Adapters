@@ -14,7 +14,8 @@ const tvlGuru = {
   "bsc": "0xD600Ec98cf6418c50EE051ACE53219D95AeAa134",
   "arbitrum": "0xFAB311FE3E3be4bB3fEd77257EE294Fb22Fa888b",
   "avax": "0xFAB311FE3E3be4bB3fEd77257EE294Fb22Fa888b",
-  "polygon" : "0x18C7AD880A07D363f2d034a8523ae34b8068845a"
+  "polygon" : "0x18C7AD880A07D363f2d034a8523ae34b8068845a",
+  "sonic" : "0x52ce715Ca439A031fC3cc103f08A378BaD18546B"
 }
 
 module.exports = {
@@ -24,9 +25,9 @@ module.exports = {
 
 Object.entries(tvlGuru).forEach(([chain, target]) => {
   module.exports[chain] = {
-    // pool2: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.pool2 }))) / 1e18 }),
-    // staking: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.staking}))) / 1e18 }),
-    tvl: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.tvl }))) / 1e18 }),
+    // pool2: async (api) => ({ tether: ((await api.call({ target, abi: ITVL.pool2 }))) / 1e18 }),
+    // staking: async (api) => ({ tether: ((await api.call({ target, abi: ITVL.staking}))) / 1e18 }),
+    tvl: async (api) => ({ tether: ((await api.call({ target, abi: ITVL.tvl }))) / 1e18 }),
   }
 })
 

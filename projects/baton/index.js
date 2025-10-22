@@ -1,7 +1,7 @@
 const { getLogs } = require("../helper/cache/getLogs");
 const { nullAddress } = require("../helper/tokenMapping");
 
-async function tvl(timestamp, blockHeight, _2, { api }) {
+async function tvl(api) {
   const batonFactory = "0xEB8D09235255b37fBC810df41Fa879225c04639a";
 
   // get all the farms from the factory
@@ -36,7 +36,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "Sums the total staked in baton farms and the total amount of tokens deposited as yield farming rewards.",
-  start: 17411300,
   ethereum: {
     tvl
   }

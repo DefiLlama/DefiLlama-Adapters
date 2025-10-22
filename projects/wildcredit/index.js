@@ -1,74 +1,48 @@
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
-
-BigNumber.config({ EXPONENTIAL_AT: 100 })
+const { getLogs, getLogs2 } = require('../helper/cache/getLogs')
 
 const PAIR_FACTORY = "0x0fC7e80090bbc1740595b1fcCd33E0e82547212F";
 const START_BLOCK = 13847198
 
-const calculateTokenTotal = async (balances, block, pairs, abi) => {
-  const pairsTokenBalances = (await sdk.api.abi.multiCall({
+const calculateTokenTotal = async (api, pairs, abi) => {
+  const pairsTokenBalances = await api.multiCall({
     calls: pairs.map(pair => ({
       target: pair.pair,
       params: pair.token
     })),
     abi,
-    block
-  })).output.map(result => result.output);
-
-  for (let index = 0; index < pairs.length; index++) {
-    sdk.util.sumSingleBalance(
-      balances,
-      pairs[index].token,
-      pairsTokenBalances[index]
-    );
-  }
+  })
+  const tokens = pairs.map(pair => pair.token)
+  api.add(tokens, pairsTokenBalances)
 }
 
 const getPairs = async (api) => {
-  const logs = (await getLogs({
+  return getLogs2({
     target: PAIR_FACTORY,
-    topic: 'PairCreated(address,address,address)',
+    eventAbi: 'event PairCreated(address indexed pair, address indexed tokenA, address indexed tokenB)',
     fromBlock: START_BLOCK,
-    api,
-  }))
-
-  return logs.map(log => {
-    return {
-      pair: `0x${log.topics[1].substr(-40).toLowerCase()}`,
-      tokenA: `0x${log.topics[2].substr(-40).toLowerCase()}`,
-      tokenB: `0x${log.topics[3].substr(-40).toLowerCase()}`
-    }
+    api, 
+    onlyUseExistingCache: true,
   })
 }
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
-  const balances = {};
-
+const ethTvl = async (api) => {
   const pairs = await getPairs(api)
-  await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenA'), abi.totalSupplyAmount)
-  await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenB'), abi.totalSupplyAmount)
+  const ownerTokens = pairs.map(p => [[p.tokenA, p.tokenB], p.pair])
+  await api.sumTokens({ ownerTokens })
 
-  await sumTokens2({ balances, resolveUniV3: true, owners: pairs.map(pair => pair.pair), block: ethBlock, })
-
-  return balances;
+  await sumTokens2({ api, resolveUniV3: true, owners: pairs.map(p => p.pair) })
 };
 
 function getTokenPairs(pairs, key) {
   return pairs.map(p => ({ pair: p.pair, token: p[key] }))
 }
 
-const borrowed = async (timestamp, ethBlock, chainBlocks, { api }) => {
-  const balances = {};
-
+const borrowed = async (api) => {
   const pairs = await getPairs(api)
-  await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenA'), abi.totalDebtAmount)
-  await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenB'), abi.totalDebtAmount)
-
-  return balances
+  await calculateTokenTotal(api, getTokenPairs(pairs, 'tokenA'), abi.totalDebtAmount)
+  await calculateTokenTotal(api, getTokenPairs(pairs, 'tokenB'), abi.totalDebtAmount)
 }
 
 module.exports = {
