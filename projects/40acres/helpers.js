@@ -66,7 +66,7 @@ async function getXpharTvl(api) {
     });
   }))
 
-  portfolioBalances.forEach(balance => api.addTokens(baseTokenMapping['avax'], balance / 2));
+  portfolioBalances.forEach(balance => api.addTokens(baseTokenMapping['avax'], balance));
 }
 
 module.exports = {
