@@ -1,4 +1,4 @@
-const axios = require('axios')
+const { getConfig } = require('../helper/cache')
 
 const URL = 'https://apy.api.concrete.xyz/v1/vault:tvl/all'
 
@@ -10,7 +10,7 @@ const abis = {
 
 const tvl = async (api) => {
   const chainId = api.chainId
-  const { data } = await axios.get(URL)
+  const data = await getConfig('concrete-xyz/vaults', URL)
   const datas = Object.values(data[chainId]).map(v => v.address)
 
   const [assets, strategiess] = await Promise.all([
