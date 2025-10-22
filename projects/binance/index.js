@@ -1,9 +1,10 @@
-const axios = require('axios')
 const { defaultTokens } = require('../helper/cex')
-const { sumTokensExport } = require('../helper/sumTokens')
+const { sumTokensExport, sumTokens } = require('../helper/sumTokens')
 const { nullAddress } = require('../helper/unwrapLPs')
 const { getStakedEthTVL, mergeExports } = require('../helper/utils')
 const ADDRESSES = require('../helper/coreAssets.json')
+const { getConfig } = require('../helper/cache')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const ENDPOINT = "https://www.binance.com/bapi/apex/v1/public/apex/market/por/address"
 
@@ -109,7 +110,7 @@ const tvl = async (api) => {
   const chain = api.chain.toLowerCase()
   const networks = chainToNetworks[chain]
 
-  const { data } = await axios.get(ENDPOINT)
+  const data  = await getConfig('binance-cex/all-assets', ENDPOINT)
 
   const contracts = data.data
     .filter(({ network }) => networks.includes(network.toUpperCase()))
@@ -130,3 +131,9 @@ const ethStakedExport = { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses
 
 module.exports = mergeExports([chainExports, ethStakedExport])
 module.exports.methodology = 'We collect the wallets from this Binance blog post https://www.binance.com/en/blog/community/our-commitment-to-transparency-2895840147147652626. We are not counting the Binance Recovery Fund wallet. On Ethereum, we also include staked ETH tracked via known withdrawal addresses.'
+
+module.exports.bitcoin = { tvl: bitcoinTvl }
+
+async function bitcoinTvl(api) {
+  return sumTokens({ api, owners: await bitcoinAddressBook.binanceFetcher() })
+}
