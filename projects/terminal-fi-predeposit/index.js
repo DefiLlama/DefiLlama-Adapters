@@ -1,16 +1,20 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs');
-
-module.exports = {
+const config = {
   ethereum: {
-    tvl: sumTokensExport({
-      tokensAndOwners: [
-        [ADDRESSES.ethereum.sUSDe, '0xFaAE52c6A6d477f859a740a76B29c33559ace18c'],
-        [ADDRESSES.ethereum.USDe, '0xFaAE52c6A6d477f859a740a76B29c33559ace18c'],
-        [ADDRESSES.ethereum.WEETH, '0xe042678e6c6871fa279e037c11e390f31334ba0b'],
-        [ADDRESSES.ethereum.WETH, '0xe042678e6c6871fa279e037c11e390f31334ba0b'],
-        [ADDRESSES.ethereum.WBTC, '0x2db1ec186acdeaf7d0fc78bffe335560b0fe0085'],
-      ]
-    }),
+    tUSDe: "0xA01227A26A7710bc75071286539E47AdB6DEa417",
+    tETH: "0xa1150cd4A014e06F5E0A6ec9453fE0208dA5adAb",
+    tBTC: "0x6b6b870C7f449266a9F40F94eCa5A6fF9b0857E4",
   }
+};
+
+async function tvl(api) {
+  const tokens = Object.values(config[api.chain]);
+  const bals = await api.multiCall({
+    abi: "uint256:totalSupply",
+    calls: tokens,
+  });
+  api.add(tokens, bals);
 }
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl };
+});
