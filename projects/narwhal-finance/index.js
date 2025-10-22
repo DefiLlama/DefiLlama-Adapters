@@ -23,7 +23,6 @@ const ADDRESS_aprMON = '0xb2f82D0f38dc453D596Ad40A37799446Cc89274A';
 async function tvl(api) {
   const res = await request(graphUrl, graphQuery);
 
-  // Get the market with id "0"
   const market = res.markets.find(m => m.id === "1");
 
   if (!market) {
@@ -31,13 +30,19 @@ async function tvl(api) {
   }
 
   // vaultLock is the TVL in the vault (in wei/18 decimals)
-  // api.add(ADDRESS_aprMON, market.vaultLock);
-  const vaultLockNormalized = new BigNumber(market.vaultLock)
-    .dividedBy(new BigNumber(10).pow(18))
-    .toFixed(0);
+  const vaultLockAprMON = new BigNumber(market.vaultLock)
+    .dividedBy(new BigNumber(10).pow(18));
+  const ratio_aprMON_MON_raw = await api.call({
+    target: ADDRESS_aprMON,
+    abi: 'function convertToAssets(uint256) returns (uint256)',
+    params: ['1000000000000000000'],
+  });
+  const ratio_aprMON_MON = new BigNumber(ratio_aprMON_MON_raw)
+    .dividedBy(new BigNumber(10).pow(18));
+  const vaultLockMON = vaultLockAprMON.multipliedBy(ratio_aprMON_MON);
 
   return {
-    "coingecko:tether": vaultLockNormalized,
+    "coingecko:tether": vaultLockMON.toFixed(0),
   };
 }
 

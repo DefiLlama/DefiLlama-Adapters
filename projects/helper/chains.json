@@ -210,10 +210,10 @@
   "joltify",
   "juno",
   "kadena",
-  "kasplex",
   "karak",
   "kardia",
   "karura",
+  "kasplex",
   "katana",
   "kava",
   "kcc",
@@ -266,7 +266,6 @@
   "moonriver",
   "morph",
   "move",
-  "monad",
   "mtt_network",
   "multivac",
   "muuchain",
@@ -449,6 +448,7 @@
   "xdc",
   "xion",
   "xlayer",
+  "xone",
   "xp",
   "xpla",
   "xpr",
@@ -467,6 +467,5 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx",
-  "xone"
+  "zyx"
 ]
