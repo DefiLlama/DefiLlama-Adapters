@@ -25,6 +25,14 @@ async function tvl(api) {
         params: [InsurancePoolAddress]
     })
 
+    // Add USDT balances
+    api.add(ADDRESSES.arbitrum.USDT, coinPoolBalance)
+    api.add(ADDRESSES.arbitrum.USDT, insurancePoolBalance)
+
+}
+
+async function staking(api) {
+
     // Get NED token balance in NeiVault
     const nedBalance = await api.call({
         target: NEDAddress,
@@ -32,16 +40,13 @@ async function tvl(api) {
         params: [NeiVaultAddress]
     })
 
-    // Add USDT balances
-    api.add(ADDRESSES.arbitrum.USDT, coinPoolBalance)
-    api.add(ADDRESSES.arbitrum.USDT, insurancePoolBalance)
-    
     // Add NED token balance
     api.add(NEDAddress, nedBalance)
 }
 
 module.exports = {
     arbitrum: {
-        tvl
+        tvl,
+        staking
     }
 }
