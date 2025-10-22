@@ -52,23 +52,17 @@ async function tvl(api) {
   }
 
   // Get all deployed hook contracts and tokens from PhiEthFactory
-  try {
-    const { hookAddresses, tokenAddresses } = await getDeployedHooks(api, contracts);
-    
-    // Add ETH holdings from all deployed hook contracts
-    hookAddresses.forEach(hookAddress => {
-      tokensAndOwners.push([nullAddress, hookAddress]);
-    });
-    
-    // Add ETH holdings from all deployed PhiEth token contracts
-    tokenAddresses.forEach(tokenAddress => {
-      tokensAndOwners.push([nullAddress, tokenAddress]);
-    });
-    
-  } catch (error) {
-    // If we can't get factory events, continue with core contracts only
-    console.warn('Could not fetch deployed hooks:', error.message);
-  }
+  const { hookAddresses, tokenAddresses } = await getDeployedHooks(api, contracts);
+  
+  // Add ETH holdings from all deployed hook contracts
+  hookAddresses.forEach(hookAddress => {
+    tokensAndOwners.push([nullAddress, hookAddress]);
+  });
+  
+  // Add ETH holdings from all deployed PhiEth token contracts
+  tokenAddresses.forEach(tokenAddress => {
+    tokensAndOwners.push([nullAddress, tokenAddress]);
+  });
 
   return api.sumTokens({ tokensAndOwners });
 }
