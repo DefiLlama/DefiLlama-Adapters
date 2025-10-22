@@ -4,31 +4,24 @@ const dUSDUSDCcurveLP = '0x32E616F4f17d43f9A5cd9Be0e294727187064cb3'
 const dETHETHcurveLP = '0x7D8b8344f2Acc6C1Edba0dA1B5313AF1e30C3369'
 const dBITWBTCcurveLP = '0x466eBB6eEeC7a3fd0628f6b05E53E848f9F3451F'
 
-async function tvl(api) {
-  // Get the underlying tokens and balances for each Curve LP
-  await unwrapCurveLP(api, dUSDUSDCcurveLP)
-  await unwrapCurveLP(api, dETHETHcurveLP)
-  await unwrapCurveLP(api, dBITWBTCcurveLP)
-}
+const curveLPs = [
+  {lp: dUSDUSDCcurveLP, underlying: ADDRESSES.ethereum.USDC, decimals: 6},
+  {lp: dETHETHcurveLP, underlying: ADDRESSES.ethereum.WETH, decimals: 18},
+  {lp: dBITWBTCcurveLP, underlying: ADDRESSES.ethereum.WBTC, decimals: 8},
+]
 
-async function unwrapCurveLP(api, lpToken) { 
-  // Get the underlying tokens (coins)
-  const coins = await api.multiCall({
-    abi: 'function coins(uint256) view returns (address)',
-    calls: [0, 1].map(i => ({ target: lpToken, params: [i] }))
+async function tvl(api) {
+  // Get total supply for each Curve LP pool
+  const totalSupplies = await api.multiCall({
+    abi: 'uint256:totalSupply',
+    calls: curveLPs.map(({lp}) => ({ target: lp }))
   })
   
-  // Get the balances of underlying tokens in the pool
-  const balances = await api.multiCall({
-    abi: 'function balances(uint256) view returns (uint256)',
-    calls: [0, 1].map(i => ({ target: lpToken, params: [i] }))
-  })
-  
-  // Add the underlying tokens to the TVL
-  coins.forEach((coin, i) => {
-    if (coin && coin !== ADDRESSES.null) {
-      api.add(coin, balances[i])
-    }
+  // Add underlying tokens with their corresponding LP total supplies converted to proper decimals
+  curveLPs.forEach(({underlying, decimals}, i) => {
+    const totalSupply = totalSupplies[i]
+    const convertedAmount = BigInt(totalSupply) / (10n ** BigInt(18-decimals))
+    api.add(underlying, convertedAmount)
   })
 }
 
