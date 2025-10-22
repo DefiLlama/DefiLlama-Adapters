@@ -18,6 +18,7 @@ const configs = {
         '0x614eb485de3c6c49701b40806ac1b985ad6f0a2f', '0xD172B64AA13d892bb5EB35f3482058eAE0BC5B2a',
       ]
     }
-}
+  }
+};
 
 module.exports = getCuratorExport(configs)
