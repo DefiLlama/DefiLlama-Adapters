@@ -20,6 +20,7 @@
     "check-bitcoin-duplicates": "node utils/scripts/checkBTCDupsv2.js",
     "string-timestamp": "node utils/scripts/stringTimestamp.js",
     "sort-chains": "node projects/helper/getChainList.js",
+    "preinstall": "npx only-allow pnpm",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
   "author": "",
@@ -62,6 +63,7 @@
   },
   "description": "",
   "devDependencies": {
-    "eslint": "^9.38.0"
+    "eslint": "^9.38.0",
+    "only-allow": "^1.2.1"
   }
 }
