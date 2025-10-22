@@ -48,10 +48,10 @@ jobs:
 
           # pnpm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk @hover-labs/kolibri-js
 
-          # fail if package.json or package-lock.json is changed
+          # fail if package.json or pnpm-lock.yaml is changed
           FILES_MODIFIED=${{ steps.file_changes.outputs.files_modified }}
-          if [[ $FILES_MODIFIED == *"package.json"* || $FILES_MODIFIED == *"package-lock.json"* ]]; then
-            echo "------ ERROR ------ > Please revert changes to package.json / package-lock.json" > /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt
+          if [[ $FILES_MODIFIED == *"package.json"* || $FILES_MODIFIED == *"pnpm-lock.yaml"* ]]; then
+            echo "------ ERROR ------ > Please revert changes to package.json / pnpm-lock.yaml" > /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt
             node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}"
             exit 1
           fi
