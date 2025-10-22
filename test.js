@@ -24,7 +24,7 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
-const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INFINITE_INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', ...ENV_KEYS])
+const whitelistedEnvKeys = new Set(['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', 'INTERNAL_API_KEY', 'GRAPH_API_KEY', 'LLAMA_DEBUG_LEVEL2', 'LLAMA_INDEXER_V2_API_KEY', 'LLAMA_INDEXER_V2_ENDPOINT', ...ENV_KEYS])
 
 if (process.env.LLAMA_SANITIZE)
   Object.keys(process.env).forEach((key) => {
@@ -138,9 +138,26 @@ function validateHallmarks(hallmark) {
 
   let unixTimestamp = Math.round(Date.now() / 1000) - 60;
   let chainBlocks = {}
-  const passedTimestamp = process.argv[3] ? Math.floor(new Date(process.argv[3]) / 1000) : undefined
+
+  function parseTimestampArg(arg) {
+    if (!arg) return undefined;
+    // Accept pure numeric input as unix seconds or milliseconds
+    if (/^\d+$/.test(arg)) {
+      const num = Number(arg);
+      if (!Number.isFinite(num)) return undefined;
+      // 13+ digits -> milliseconds, else assume seconds
+      return num > 1e12 ? Math.floor(num / 1000) : num;
+    }
+    // Fallback to Date string parsing (e.g., YYYY-MM-DD)
+    const d = new Date(arg);
+    const ms = d.getTime();
+    if (!Number.isFinite(ms)) return undefined;
+    return Math.floor(ms / 1000);
+  }
+
+  const passedTimestamp = parseTimestampArg(process.argv[3]);
   if (passedTimestamp !== undefined) {
-    unixTimestamp = Number(passedTimestamp)
+    unixTimestamp = passedTimestamp
 
     // other chains than evm will fail to get block at timestamp
     try {
@@ -477,7 +494,7 @@ setTimeout(() => {
 function buildPricesGetQueries(readKeys, timestamp) {
   if (!readKeys.length) return []
   console.log(`Building prices get queries for ${readKeys.length} tokens`)
-  const burl = (process.env.INFINITE_INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INFINITE_INTERNAL_API_KEY}/coins/` : 'https://coins.llama.fi/')
+  const burl = (process.env.INTERNAL_API_KEY ? `https://pro-api.llama.fi/${process.env.INTERNAL_API_KEY}/coins/` : 'https://coins.llama.fi/')
    + (timestamp && timestamp < (Date.now() / 1000 - 30 * 60) ? `prices/historical/${timestamp}/` : 'prices/current/')
   const queries = []  
   let query = burl

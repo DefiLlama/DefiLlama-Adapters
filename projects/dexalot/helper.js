@@ -17,7 +17,7 @@ function getTVL(env, contractName) {
     const contract = await get(`${dexalotTradingAPI}/deployment?contracttype=${contractName}&env=${env}`)
     const allTokens = await get(`${dexalotTradingAPI}/tokens`)
     const tokens = allTokens.filter((t) => t.env === env).map((t) => t.address)
-    return sumTokens2({ api, owner: contract[0].address, tokens })
+    return sumTokens2({ api, owner: contract[0].address, tokens, permitFailure: true })
   }
 }
 

@@ -27,7 +27,7 @@ module.exports = {
   methodology: "TVL counts the amount of pUsd locked in FVH_contract on each chain.",
   start: 1, 
 
-  plume: {
+  plume_mainnet: {
     tvl: async (api) => tvl(api, "plume"),
   },
   btnx: {

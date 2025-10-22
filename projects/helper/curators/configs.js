@@ -125,6 +125,14 @@ const MorphoConfigs = {
       },
     ],
   },
+  hemi: {
+    vaultFactories: [
+      {
+        address: '0x8e52179BeB18E882040b01632440d8Ca0f01da82',
+        fromBlock: 1188885,
+      }
+    ]
+  }
 }
 
 const EulerConfigs = {
