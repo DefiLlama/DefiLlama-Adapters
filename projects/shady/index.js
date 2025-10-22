@@ -18,3 +18,4 @@ module.exports = {
   timetravel: false,
   solana: { pool2 },
 }
+tvl: () => ({})
