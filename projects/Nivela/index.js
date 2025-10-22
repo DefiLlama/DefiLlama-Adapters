@@ -72,29 +72,29 @@ async function pool2(api) {
 
 // Gets borrowed nUSD amount from the MarketLens contract
 async function borrowed(api) {
-    try {
-        // Explicit ABI for the MarketLens contract function
-        const abi = 'function getTotalBorrowed(address lender) external view returns (uint256)';
-        
-        // List of lenders to check
-        const lenders = [
-            contracts.LenderVoteEscrowedNIV,
-            contracts.LenderWBNB,
-            contracts.LenderWETH
-        ];
-        
-        // Get borrowed amounts from all lenders
-        for (const lender of lenders) {
-        const borrowedAmount = await api.call({
-            abi,
-            target: contracts.MarketLens,
-            params: [lender],
-        });
-        api.add(nUSD, borrowedAmount);
-    }
-    
-    return api.getBalances();
+  // Explicit ABI for the MarketLens contract function
+  const abi = 'function getTotalBorrowed(address lender) external view returns (uint256)';
+
+  // List of lenders to check
+  const lenders = [
+    contracts.LenderVoteEscrowedNIV,
+    contracts.LenderWBNB,
+    contracts.LenderWETH,
+  ];
+
+  // Get borrowed amounts from all lenders
+  for (const lender of lenders) {
+    const borrowedAmount = await api.call({
+      abi,
+      target: contracts.MarketLens,
+      params: [lender],
+    });
+    api.add(nUSD, borrowedAmount);
+  }
+
+  return api.getBalances();
 }
+
 
 module.exports = {
     timetravel: true,
@@ -112,4 +112,5 @@ module.exports = {
     },
 
 };
+
 
