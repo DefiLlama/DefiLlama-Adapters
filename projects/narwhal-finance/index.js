@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
+const BigNumber = require("bignumber.js");
 
 const graphUrl = sdk.graph.modifyEndpoint(`2hcrVuaRPwMgnyejcNRYENsAtiSmRxWyoCPMVjTAG5Sg`);
 const graphQuery = gql`
@@ -30,7 +31,14 @@ async function tvl(api) {
   }
 
   // vaultLock is the TVL in the vault (in wei/18 decimals)
-  api.add(ADDRESS_aprMON, market.vaultLock);
+  // api.add(ADDRESS_aprMON, market.vaultLock);
+  const vaultLockNormalized = new BigNumber(market.vaultLock)
+    .dividedBy(new BigNumber(10).pow(18))
+    .toFixed(0);
+
+  return {
+    "coingecko:tether": vaultLockNormalized,
+  };
 }
 
 module.exports = {
