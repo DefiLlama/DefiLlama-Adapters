@@ -57,14 +57,16 @@ async function getXpharTvl(api) {
     abi: portfolioAbi,
     chain: 'avax'
   });
-
-  const portfolioBalances = await Promise.all(portfolioList.map(async (portfolio) => {
-    return await api.call({
-      target: paraohVoterModule,
-      abi: 'erc20:balanceOf',
-      params: portfolio
-    });
-  }))
+  
+  const portfolioBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: portfolioList.map(portfolio => {
+      return {
+        target: paraohVoterModule,
+        params: portfolio
+      }
+    })
+  });
 
   portfolioBalances.forEach(balance => api.addTokens(baseTokenMapping['avax'], balance));
 }
