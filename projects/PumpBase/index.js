@@ -15,7 +15,7 @@ async function tvl(api) {
     api,
     target: FACTORY,
     topics: ['0x0aca3d0708cc06a2b4b4bedc6fe1b5febc7f70a1c413ac1fb594bc32c911df16'],
-    fromBlock: 36935000,
+    fromBlock: 36935850,
   })
 
   if (logs.length === 0) return
@@ -43,6 +43,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Counts ETH and tokens locked in bonding curves. ETH reserves are calculated by subtracting the fake initial liquidity (1.5 ETH) from the total reserves.',
-  start: 1728936000,
+  start: 1750043447,
   base: { tvl }
 }
