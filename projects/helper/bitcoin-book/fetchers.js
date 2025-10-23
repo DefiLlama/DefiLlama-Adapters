@@ -224,7 +224,7 @@ module.exports = {
         return data.map(address => address)
       }
     })
-   
+
     return Array.from(new Set(staticAddresses))
   },
   zeusZBTC: async () => {
@@ -232,5 +232,14 @@ module.exports = {
     const data = await getConfig('zeus/zbtc', API_URL)
     const list = data.result.map(item => item.address)
     return list
+  },
+  binanceFetcher: async () => {
+    const staticAddresses = await getConfig('binance-cex/btc', undefined, {
+      fetcher: async () => {
+        const { data } = await axios.get('https://www.binance.com/bapi/apex/v1/public/apex/market/por/address')
+        return data.data.filter(i => i.network === 'BTC').map(item => item.address)
+      }
+    })
+    return Array.from(new Set(staticAddresses))
   },
 }
