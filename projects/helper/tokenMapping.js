@@ -112,6 +112,21 @@ const fixBalancesTokens = {
   kasplex: {
     '0x2c2Ae87Ba178F48637acAe54B87c3924F544a83e': { coingeckoId: 'kaspa', decimals: 18 },
   },
+  '0g': {
+    '0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c': { coingeckoId: 'zero-gravity', decimals: 18 }, // W0G (Wrapped 0G)
+    '0x7bbc63d01ca42491c3e084c941c3e86e55951404': { coingeckoId: 'zero-gravity', decimals: 18 }, // st0G (Liquid Staking 0G from Gimo)
+    '0x9cc1d782e6dfe5936204c3295cb430e641dcf300': { coingeckoId: 'ethereum', decimals: 18 }, // WETH (Wrapped ETH)
+    '0x1f3aa82227281ca364bfb3d253b0f1af1da6473e': { coingeckoId: 'usd-coin', decimals: 6 }, // USDCe (Bridged USDC)
+    '0x1217bfe6c773eec6cc4a38b5dc45b92292b6e189': { coingeckoId: 'tether', decimals: 6 }, // oUSDT (OpenUSDT)
+  },
+  'eclipse': {
+    'GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn': { coingeckoId: 'ethereum', decimals: 18 }, // tETH (Turbo ETH)
+    '27Kkn8PWJbKJsRZrxbsYDdedpUQKnJ5vNfserCxNEJ3R': { coingeckoId: 'usd-coin', decimals: 6 }, // tUSD (Turbo USD)
+  },
+  'hedera': {
+    '0x00000000000000000000000000000000000F7e89': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
+    '0x00000000000000000000000000000000002cc823': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
