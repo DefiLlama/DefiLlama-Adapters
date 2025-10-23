@@ -57,59 +57,12 @@ async function infinityPools(api) {
     return balances
 }
 
-// ---------- Farms TVL ----------
-const FARMS = "0x97ac386fFf8d25Bc3F949194f74a79E94617bc7F"
-
-const farms_abi = {
-    poolLength: "function poolLength() view returns (uint256)",
-    getActivePools: "function getActivePools() view returns (uint256[])",
-    poolInfo:
-        "function poolInfo(uint256) view returns (address lpToken,uint256 allocPoint,uint256 lastRewardBlock,uint256 accRewardPerShare,uint256 totalDeposited,bool isActive,bool isRemoved)",
-}
-
-async function farmsLP(api) {
-    let pids = await api.call({ abi: farms_abi.getActivePools, target: FARMS }).catch(() => null)
-    if (!pids) {
-        const len = await api.call({ abi: farms_abi.poolLength, target: FARMS })
-        pids = Array.from({ length: Number(len) }, (_, i) => i)
-    }
-
-    const infos = await api.multiCall({
-        abi: farms_abi.poolInfo,
-        calls: pids.map((pid) => ({ target: FARMS, params: [pid] })),
-        permitFailure: true,
-    })
-
-    const tokensAndOwners = []
-    for (const info of infos) {
-        if (!info) continue
-        const { lpToken, isActive, isRemoved } = info
-        if (!lpToken || isRemoved || !isActive) continue
-        tokensAndOwners.push([lpToken, FARMS])
-    }
-
-    return sumTokens2({
-        api,
-        tokensAndOwners,
-        resolveLP: true,
-        useDefaultCoreAssets: true,
-    })
-}
-
 const base = uniTvlExport(CHAIN, FACTORY)
 
 module.exports = {
     [CHAIN]: {
-        tvl: async (api) => {
-            const amm = await base[CHAIN].tvl(api)
-            const staking = await infinityPools(api)
-            Object.entries(staking).forEach(([token, val]) => {
-                amm[token] = (amm[token] ?? 0) + val
-            })
-            return amm
-        },
+        tvl: base[CHAIN].tvl,
         staking: infinityPools,
-        pool2: farmsLP,
     },
 }
 

@@ -111,9 +111,6 @@ const fixBalancesTokens = {
   },
   kasplex: {
     '0x2c2Ae87Ba178F48637acAe54B87c3924F544a83e': { coingeckoId: 'kaspa', decimals: 18 },
-    '0xb7a95035618354D9ADFC49Eca49F38586B624040': { coingeckoId: 'zeal', decimals: 18 },
-    '0x9a5a144290dffA24C6c7Aa8cA9A62319E60973D8': { coingeckoId: 'nacho-the-kat', decimals: 18 },
-    '0x1F3Ce97f8118035dba7FBCd5398005491Cf45603': { coingeckoId: 'kasper', decimals: 18 },
   },
   '0g': {
     '0x1cd0690ff9a693f5ef2dd976660a8dafc81a109c': { coingeckoId: 'zero-gravity', decimals: 18 }, // W0G (Wrapped 0G)
