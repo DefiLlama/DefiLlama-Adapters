@@ -19,6 +19,6 @@ const configs = {
       ]
     }
   }
-}
+};
 
 module.exports = getCuratorExport(configs)
