@@ -1,8 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { default: axios } = require("axios")
+const { get } = require('../helper/http')
 const token = ADDRESSES.ethereum.cbETH
 
 module.exports = {
+  timetravel: false,
   ethereum: {
     tvl: async (timestamp, block) => {
       if(timestamp < Date.now()/1e3 - 3600){

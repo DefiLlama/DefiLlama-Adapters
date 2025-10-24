@@ -1,20 +1,25 @@
 const utils = require('../helper/utils');
 const { toUSDTBalances } = require('../helper/balances');
 
-const vaultEndpointBase = 'https://raw.githubusercontent.com/bim-finance-org/staking-vaults/master/';
-const chainVaultEndpoints = {
-  10: vaultEndpointBase + "optimism.json",
-  100: vaultEndpointBase + "gnosis.json",
-  137: vaultEndpointBase + "polygon.json",
-  8453: vaultEndpointBase + "base.json",
-};
+
+const vaultsEndpoint = "https://staking-api.bim.finance/vaults";
 
 const chains = {
-  xdai: 100,
-  polygon: 137,
-  base: 8453,
-  optimism: 10,
+    "ethereum": "ethereum",
+    "optimism": "optimism",
+    "bsc": "bsc",
+    "xdai": "gnosis",
+    "polygon": "polygon",
+    "sonic": "sonic",
+    "fraxtal": "fraxtal",
+    "hyperliquid": "hyperliquid",
+    "base": "base",
+    "plasma": "plasma",
+    "arbitrum": "arbitrum",
+    "avax": "avax",
 }
+
+let _response;
 
 const getVaultBalances = async (chainId, vaults, api) => {
   if (!vaults) {
@@ -36,17 +41,18 @@ const getVaultBalances = async (chainId, vaults, api) => {
   return res;
 };
 
-function fetchChain(chainId) {
+function fetchChain(chain) {
   return async (_, _b, _cb, { api, }) => {
+    if (!_response) _response = utils.fetchURL(vaultsEndpoint);
+    const vaults = (await _response).data;
+    const chainVaults = vaults.filter(vault => vault.chain === chain);
 
-    const chainVaults = utils.fetchURL(chainVaultEndpoints[chainId])
-    const vaults = (await chainVaults).data;
-    if( !vaults || vaults.length === 0) {
+    if( !chainVaults || chainVaults.length === 0) {
       return toUSDTBalances(0);
     }
 
-    const balances = await getVaultBalances(chainId, vaults, api);
-    const tokens = vaults.map((vault) => vault.tokenAddress)
+    const balances = await getVaultBalances(chain, chainVaults, api);
+    const tokens = chainVaults.map((vault) => vault.tokenAddress)
 
     api.add(tokens, balances)
   }
@@ -56,7 +62,9 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   doublecounted: true,
-  ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
-    tvl: fetchChain(chain[1])
-  }]))
+  ...Object.fromEntries(
+    Object.entries(chains).map(chain => [chain[0], {
+      tvl: fetchChain(chain[1])
+    }]
+  ))
 }

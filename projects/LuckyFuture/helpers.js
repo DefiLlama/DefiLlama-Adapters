@@ -1,6 +1,6 @@
 const { PublicKey } = require("@solana/web3.js");
 const { getMultipleAccounts } = require('../helper/solana')
-const axios = require("axios");
+const { getConfig } = require("../helper/cache");
 
 function deserializeUserPositions(accountInfo) {
   if (!accountInfo) {
@@ -95,16 +95,8 @@ async function fetchVaultUserAddressesWithOffset(data, offset) {
 }
 
 async function fetchVaultAddresses() {
-  try {
-    const response = await axios.get('https://raw.githubusercontent.com/LuckyFutureAi/LuckyFuture-Assets/refs/heads/main/vaults-info.json');
-    if (response.status !== 200) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.data.vaults;
-  } catch (error) {
-    console.error('Error fetching vault addresses:', error);
-    throw error;
-  }
+  const data = await getConfig('lucky-future/vaults', 'https://raw.githubusercontent.com/LuckyFutureAi/LuckyFuture-Assets/refs/heads/main/vaults-info.json');
+  return data.vaults
 }
 
 

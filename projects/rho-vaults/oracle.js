@@ -1,8 +1,7 @@
-const axios = require('axios');
+const { getConfig } = require('../helper/cache');
 
 async function getOraclePackages() {
-    const response = await axios.get('https://v2.roaracle.app/records');
-    const raw = response.data;
+    const raw = await getConfig('rho/oracle', 'https://v2.roaracle.app/records');
 
     return raw.map(entry => ({
         marketId: entry.oraclePackage.marketId,

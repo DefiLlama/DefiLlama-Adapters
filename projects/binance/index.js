@@ -1,6 +1,53 @@
-const config = require('./config')
-const { cexExports } = require('../helper/cex')
-const { mergeExports, getStakedEthTVL } = require("../helper/utils");
+const { defaultTokens } = require('../helper/cex')
+const { sumTokensExport, sumTokens } = require('../helper/sumTokens')
+const { nullAddress } = require('../helper/unwrapLPs')
+const { getStakedEthTVL, mergeExports } = require('../helper/utils')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getConfig } = require('../helper/cache')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+
+const ENDPOINT = "https://www.binance.com/bapi/apex/v1/public/apex/market/por/address"
+
+const binanceToDefillama = {
+  BTC: 'bitcoin',
+  ETH: 'ethereum',
+  BEP20: 'bsc',
+  BSC: 'bsc',
+  CELO: 'celo',
+  CHZ2: 'chz',
+  HBAR: 'hedera',
+  TRX: 'tron',
+  AVAX: 'avax',
+  ARB: 'arbitrum',
+  ARBITRUM: 'arbitrum',
+  AVAXC: 'avax',
+  LTC: 'litecoin',
+  MATIC: 'polygon',
+  OP: 'optimism',
+  OPTIMISM: 'optimism',
+  RON: 'ronin',
+  XRP: 'ripple',
+  SOL: 'solana',
+  DOT: 'polkadot',
+  ALGO: 'algorand',
+  APT: 'aptos',
+  FTM: 'fantom',
+  BASE: 'base',
+  ERA: 'era',
+  ZKSYNCERA: 'era',
+  MANTA: 'manta',
+  SUI: 'sui',
+  TON: 'ton',
+  STK: 'starknet',
+  STARKNET: 'starknet',
+  OPBNB: 'op_bnb',
+  NEAR: 'near',
+  DOGE: 'doge',
+  XLM: 'stellar',
+  SCROLL: "scroll",
+  SONIC: "sonic",
+  PLASMA: "plasma",
+}
 
 const withdrawalAddresses = [
   '0x6454ac71ca260f99cca99a3f4241dfda20cfa965',
@@ -22,9 +69,71 @@ const withdrawalAddresses = [
   '0x6357e4bdaff733dfe8f50d12d07c03b3bed0884b',
 ]
 
-module.exports = mergeExports([
-  cexExports(config),
-  { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses: withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } },
-])
+const chainToNetworks = {}
+for (const [network, chain] of Object.entries(binanceToDefillama)) {
+  const c = chain.toLowerCase()
+  const n = network.toUpperCase()
+  if (!chainToNetworks[c]) chainToNetworks[c] = []
+  if (!chainToNetworks[c].includes(n)) chainToNetworks[c].push(n)
+}
 
-module.exports.methodology = 'We collect the wallets from this binance blog post https://www.binance.com/en/blog/community/our-commitment-to-transparency-2895840147147652626. We are not counting the Binance Recovery Fund wallet'
+const perChainConfig = {
+  ethereum: { blacklistedTokens: ['0x9be89d2a4cd102d8fecc6bf9da793be995c22541', ADDRESSES.ethereum.BNB] },
+  bsc: { blacklistedTokens: [ADDRESSES.bsc.BTCB, ADDRESSES.bsc.TUSD] },
+  solana: { blacklistedTokens: ['7XU84evF7TH4suTuL8pCXxA6V2jrE8jKA6qsbUpQyfCY', 'CQvadZTR8vikRqqwyhvYV8YpdfCRjUCGyQwCuY4rxBQt'] },
+}
+
+function buildConfig(chain, owners) {
+  const base = perChainConfig[chain] || {}
+  let { tokensAndOwners, tokens, blacklistedTokens, fungibleAssets } = base
+
+  if (!tokensAndOwners && !tokens && chain !== 'solana') {
+    tokens = defaultTokens[chain]
+    if (!tokens) tokens = [nullAddress]
+  }
+
+  const options = { ...base, owners, tokens, chain, blacklistedTokens }
+
+  if (chain === 'ton') options.onlyWhitelistedTokens = true
+  if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
+  if (chain === 'solana') {
+    options.solOwners = owners
+    delete options.owners
+    if (!options.blacklistedTokens) options.blacklistedTokens = []
+    options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
+  }
+
+  return options
+}
+
+const tvl = async (api) => {
+  const chain = api.chain.toLowerCase()
+  const networks = chainToNetworks[chain]
+
+  const data  = await getConfig('binance-cex/all-assets', ENDPOINT)
+
+  const contracts = data.data
+    .filter(({ network }) => networks.includes(network.toUpperCase()))
+    .map(({ address }) => address)
+    .filter(Boolean)
+
+  const owners = [...new Set(contracts)]
+  const options = buildConfig(chain, owners)
+
+  return await sumTokensExport(options)(api)
+}
+
+const chainExports = {}
+const chains = new Set(Object.values(binanceToDefillama))
+chains.forEach((chain) => { chainExports[chain] = { tvl } })
+
+const ethStakedExport = { ethereum: { tvl: getStakedEthTVL({ withdrawalAddresses, size: 200, sleepTime: 20_000, proxy: true }) } }
+
+module.exports = mergeExports([chainExports, ethStakedExport])
+module.exports.methodology = 'We collect the wallets from this Binance blog post https://www.binance.com/en/blog/community/our-commitment-to-transparency-2895840147147652626. We are not counting the Binance Recovery Fund wallet. On Ethereum, we also include staked ETH tracked via known withdrawal addresses.'
+
+module.exports.bitcoin = { tvl: bitcoinTvl }
+
+async function bitcoinTvl(api) {
+  return sumTokens({ api, owners: await bitcoinAddressBook.binanceFetcher() })
+}

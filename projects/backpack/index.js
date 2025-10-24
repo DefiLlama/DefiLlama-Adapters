@@ -1,13 +1,12 @@
-const axios = require('axios')
-const bitcoinAddressBook = require("../helper/bitcoin-book/index.js");
 const { sumTokensExport } = require('../helper/sumTokens')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { defaultTokens } = require('../helper/cex')
+const { getConfig } = require('../helper/cache.js')
 
 const API_URL = 'https://api.backpack.exchange/api/v1/wallets'
 
-const getConfig = async () => {
-  const { data } = await axios.get(API_URL)
+const _getConfig = async () => {
+  const data  = await getConfig('backpack/wallets', API_URL)
   const config   = {}
   data.forEach(({ address, blockchain }) => {
     let chain = blockchain.toLowerCase()
@@ -24,7 +23,7 @@ const chains = ['ethereum', 'solana', 'bitcoin', 'litecoin', 'arbitrum', 'optimi
 chains.forEach((chain) => {
   exportObj[chain] = {
     tvl: async () => {
-      const config = await getConfig()
+      const config = await _getConfig()
       const entry = config[chain]
       if (!entry) return {}
 

@@ -1,13 +1,13 @@
-const axios = require("axios");
 const { sui } = require("../helper/chain/rpcProxy");
+const { getConfig } = require("../helper/cache");
 
 const PACKAGE_ID =
   "0xc83d5406fd355f34d3ce87b35ab2c0b099af9d309ba96c17e40309502a49976f";
 
 async function suiTvl(api) {
   const vaults = (
-    await axios.get(`https://vaults.api.sui-prod.bluefin.io/api/v1/vaults/info`)
-  ).data.Vaults;
+    await getConfig('ember-protocol/vaults', `https://vaults.api.sui-prod.bluefin.io/api/v1/vaults/info`)
+  ).Vaults;
   for (const vault of Object.values(vaults)) {
     const vaultTvl = await sui.query({
       target: `${PACKAGE_ID}::vault::get_vault_tvl`,

@@ -1,58 +1,10 @@
-const axios = require("axios");
+const { uniTvlExports } = require('../helper/unknownTokens')
+module.exports = uniTvlExports({
+  'hedera': '0x0000000000000000000000000000000000134224'
+})
 
-const urlConfigs = {
-  graphQLUrl: "https://heliswap-prod-362307.oa.r.appspot.com/query",
-  tokenListUrl: "https://heliswap-api.ey.r.appspot.com/tokens/whitelisted/",
-};
+module.exports.hallmarks = [
+  ['2023-10-30', 'Protocol is sunset'],
+]
 
-const axiosConfig = {
-  url: urlConfigs.graphQLUrl,
-  method: "post",
-};
-
-const getWhitelistedTokenAddresses = async () => {
-  const response = await axios(urlConfigs.tokenListUrl);
-  const { data: whitelistedTokens } = response;
-
-  return whitelistedTokens;
-};
-
-const tvl = async () => {
-  let totalTVL = 0;
-
-  const whitelistedAddresses = await getWhitelistedTokenAddresses();
-
-  const { url, method } = axiosConfig;
-  const requestData = {
-    query: `query getWhitelistedPools($tokens: [String]!) {
-                poolsConsistingOf(tokens: $tokens) {
-                  tvl
-                }
-              }`,
-    variables: {
-      tokens: whitelistedAddresses,
-    },
-  };
-
-  const requestObject = {
-    url,
-    method,
-    data: requestData,
-  };
-
-  const {
-    data: { data: { poolsConsistingOf }}
-  } = await axios(requestObject);
-
-  totalTVL = poolsConsistingOf.reduce((acc, pool) => (isNaN(+pool.tvl) || +pool.tvl > 1e8) ? acc : acc + +pool.tvl, 0)
-
-  return { tether: totalTVL };
-};
-
-module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
-  hedera: {
-    tvl,
-  },
-};
+console.log(module.exports)

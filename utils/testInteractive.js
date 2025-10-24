@@ -3,7 +3,7 @@ const childProcess = require('child_process')
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'))
 
 // Load environment variables before changing directories
-require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') })
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') })
 
 console.log('Starting directory: ' + process.cwd());
 const args = process.argv.slice(2); // The first two elements are 'node' and the script filename
