@@ -9,8 +9,10 @@ module.exports = {
         throw new Error("Only works for current info")
       }
       const data = await axios.get("https://api.exchange.coinbase.com/wrapped-assets/CBETH")
+      // Convert cbETH supply to underlying ETH using the conversion rate
+      const underlyingETH = data.data.circulating_supply * data.data.conversion_rate
       return {
-        [token]: data.data.circulating_supply * 1e18
+        [token]: underlyingETH * 1e18
       }
     }
   }
