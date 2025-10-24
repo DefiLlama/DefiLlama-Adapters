@@ -1,9 +1,10 @@
 // defillama-adapters/projects/dscswap/getPrice.js
-
+// defoll
 const sdk = require('@defillama/sdk');
 
 const chain = 'dscs'; // your custom chain slug (must be configured in DefiLlama)
 const WDSC_USDT_LP = '0x50760591aFcC3F8E1CFe7d2E48a9993247A6E683';
+
 
 const TOKENS = {
   WDSC: '0x660f38cC4068550a73909ff891a3898593360c89',
