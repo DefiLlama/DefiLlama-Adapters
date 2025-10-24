@@ -11,7 +11,7 @@ const NON_CIRCULATING_ADDRESSES = [
 ]
 
 // ---- Treasury TVL ----
-async function treasury(api) {
+async function vesting(api) {
     return sumTokens2({
         api,
         tokensAndOwners: [
@@ -30,7 +30,6 @@ const v3TVL = uniV3Export({
 })
 
 async function tvl(api) {
-    await treasury(api);
     await v3TVL?.arbitrum?.tvl(api);
     return api.getBalances()
 }
@@ -41,6 +40,7 @@ module.exports = {
     methodology:
         "TVL includes RAIN tokens held in Rain.one’s vesting/presale contracts, and liquidity in Uniswap V3 pools on Arbitrum.",
     arbitrum: {
-        tvl
+        tvl,
+        vesting,
     },
 }
