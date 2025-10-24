@@ -126,6 +126,10 @@ const fixBalancesTokens = {
   'hedera': {
     '0x00000000000000000000000000000000000F7e89': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
     '0x00000000000000000000000000000000002cc823': { coingeckoId: 'hedera-hashgraph', decimals: 8 },
+  },
+  ethereal: {
+    [ADDRESSES.null]: { coingeckoId: 'ethena-usde', decimals: 18 }, 
+    '0xb6fc4b1bff391e5f6b4a3d2c7bda1fee3524692d': { coingeckoId: 'ethena-usde', decimals: 18 }, 
   }
 }
 
