@@ -1,6 +1,7 @@
 const { getLogs } = require('../helper/cache/getLogs')
+const sdk = require('@defillama/sdk')
 
-const FACTORY = '0xBF4114D783d96D2205cF5BD71B3CfBFD53E8fF00'
+const FACTORY = '0x19798E390E69a36814B25BbBC7e75530E8a0A101'
 const WETH = '0x4200000000000000000000000000000000000006'
 const INITIAL_LIQUIDITY = 1500_000_000_000_000_000n
 
@@ -15,7 +16,7 @@ async function tvl(api) {
     api,
     target: FACTORY,
     topics: ['0x0aca3d0708cc06a2b4b4bedc6fe1b5febc7f70a1c413ac1fb594bc32c911df16'],
-    fromBlock: 35905000,
+    fromBlock: 36935850,
   })
 
   if (logs.length === 0) return
@@ -26,13 +27,27 @@ async function tvl(api) {
   const bondingCurves = await api.multiCall({ abi: abi.bondingCurveMap, calls: tokens, target: FACTORY })
   const reserves = await api.multiCall({ abi: abi.getReserves, calls: bondingCurves })
   
-  let totalEth = 0n
+  // Get actual ETH balance of each bonding curve contract address
+  const balancePromises = bondingCurves.map(curve => 
+    sdk.api.eth.getBalance({
+      target: curve,
+      chain: api.chain,
+      block: api.block,
+    })
+  )
   
-  reserves.forEach(([reserveEth, reserveToken], i) => {
-    const actualEth = BigInt(reserveEth) - INITIAL_LIQUIDITY
-    if (actualEth > 0n) {
-      totalEth += actualEth
+  const balanceResults = await Promise.all(balancePromises)
+  const ethBalances = balanceResults.map(result => result.output)
+
+  let totalEth = 0n
+  ethBalances.forEach(balance => {
+    if (balance) {
+      totalEth += BigInt(balance)
     }
+  })
+
+  // Still add token reserves
+  reserves.forEach(([reserveEth, reserveToken], i) => {
     api.add(tokens[i], reserveToken)
   })
   
@@ -43,6 +58,6 @@ async function tvl(api) {
 
 module.exports = {
   methodology: 'Counts ETH and tokens locked in bonding curves. ETH reserves are calculated by subtracting the fake initial liquidity (1.5 ETH) from the total reserves.',
-  start: 1728936000,
+  start: 1750043447,
   base: { tvl }
 }
