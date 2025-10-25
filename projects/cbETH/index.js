@@ -5,10 +5,15 @@ const token = ADDRESSES.ethereum.cbETH
 module.exports = {
   timetravel: false,
   ethereum: {
-    tvl: async () => {
-      const data = await get("https://api.exchange.coinbase.com/wrapped-assets/CBETH")
+    tvl: async (timestamp, block) => {
+      if(timestamp < Date.now()/1e3 - 3600){
+        throw new Error("Only works for current info")
+      }
+      const data = await axios.get("https://api.exchange.coinbase.com/wrapped-assets/CBETH")
+      // Convert cbETH supply to underlying ETH using the conversion rate
+      const underlyingETH = data.data.circulating_supply * data.data.conversion_rate
       return {
-        [token]: data.circulating_supply * 1e18
+        [token]: underlyingETH * 1e18
       }
     }
   }
