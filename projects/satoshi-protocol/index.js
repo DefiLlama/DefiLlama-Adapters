@@ -207,6 +207,10 @@ module.exports = {
         smartVaultAddress: '0xEdE84f536448cC822a9318548Aa8618183743c4f',
         asset: ADDRESSES.bob.uniBTC, // uniBTC
       },
+      {
+        smartVaultAddress: '0x4f4EbFAeEa78d7ebc13c4aAb481fd8E36D9DC1Be',
+        asset: '0x09606e6A94E7a8e94fC1f43728475B82BF12E50b', // uBTC
+      },
     ]
   }),
   bsquared: createExports({
