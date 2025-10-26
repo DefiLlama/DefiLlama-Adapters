@@ -1,4 +1,4 @@
-// index.js - Enhanced with Balance Logging & TVL USD Conversion
+// index.js - Enhanced with REAL Balance from Cosmos Query (No Hardcoded Numbers)
 
 const { sumTokens } = require('../helper/chain/cosmos');
 const abi = require('./abi.json');
@@ -40,40 +40,48 @@ async function staking(api) {
     console.log(`[Juris]   Staking ${index + 1}: ${contract}`);
   });
   
-  console.log('[Juris]\n[Juris] Querying token balances...');
-  console.log('[Juris] JURIS token:', tokens.JURIS.address);
+  console.log('[Juris]\n[Juris] Querying balances from Cosmos blockchain...');
+  console.log('[Juris] JURIS token (CW20):', tokens.JURIS.address);
   console.log('[Juris] JURIS decimals:', tokens.JURIS.decimals);
   console.log('[Juris] JURIS CoinGecko ID:', tokens.JURIS.coingeckoId);
   
   try {
-    // Before query
-    console.log('[Juris]\n[Juris] 🔍 EXECUTING BALANCE QUERY...');
+    console.log('[Juris]\n[Juris] 🔍 EXECUTING WASM CONTRACT QUERY ON TERRA CLASSIC...');
+    console.log('[Juris] Query: { "balance": { "address": "' + stakingContracts[0] + '" } }');
     
-    // Query balances
-    const balancesBefore = JSON.stringify(api.balances || {});
-    
+    // Query Cosmos/CosmWasm - this fetches REAL data from blockchain
     await sumTokens({
       api,
       owner: stakingContracts,
       tokens: [tokens.JURIS.address]
     });
 
-    // After query
-    console.log('[Juris] ✅ Query complete\n');
+    console.log('[Juris] ✅ Query complete - received response from blockchain\n');
     
-    // Display current balances in api
+    // Display REAL balances fetched from Cosmos
     if (api.balances) {
-      console.log('[Juris] 📊 STAKING BALANCES (Raw):');
+      console.log('[Juris] 📊 STAKING BALANCES (Raw from Cosmos):');
       Object.entries(api.balances).forEach(([token, balance]) => {
-        console.log(`[Juris]   ${token}: ${balance} (raw units)`);
+        console.log(`[Juris]   Token: ${token}`);
+        console.log(`[Juris]   Raw Balance: ${balance.toString()} (raw units from blockchain)`);
+        
+        // Convert to formatted using actual balance
+        const decimals = 6;
+        const formatted = (parseFloat(balance) / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+        console.log(`[Juris]   Formatted: ${formatted} JURIS tokens\n`);
       });
       
-      console.log('[Juris]\n[Juris] 💰 STAKING BALANCES (Formatted):');
+      console.log('[Juris] 💰 USD CONVERSION:');
       Object.entries(api.balances).forEach(([token, balance]) => {
-        const decimals = 6; // Standard on Terra
-        const formatted = (balance / Math.pow(10, decimals)).toFixed(2);
-        console.log(`[Juris]   ${token}: ${formatted} tokens`);
+        const decimals = 6;
+        const formattedBalance = parseFloat(balance) / Math.pow(10, decimals);
+        const coingeckoPrice = tokens.JURIS.coingeckoId ? '(fetched from CoinGecko)' : 'N/A';
+        console.log(`[Juris]   ${token}:`);
+        console.log(`[Juris]     ${formattedBalance.toLocaleString('en-US', { maximumFractionDigits: 2 })} tokens × Price per token ${coingeckoPrice}`);
+        console.log(`[Juris]     = USD Value (calculated by DefiLlama)\n`);
       });
+    } else {
+      console.log('[Juris] ⚠️ No balances returned from query');
     }
     
     console.log('[Juris] ✅ Staking calculation complete\n');
@@ -97,32 +105,33 @@ async function lending(api) {
   const lendingContracts = getContractArray(contracts.lending);
   console.log(`[Juris] Found ${lendingContracts.length} lending contract(s)\n`);
   
-  console.log('[Juris] Querying collateral tokens...');
-  console.log('[Juris] LUNC:', tokens.LUNC.address, `(decimals: ${tokens.LUNC.decimals})`);
-  console.log('[Juris] USTC:', tokens.USTC.address, `(decimals: ${tokens.USTC.decimals})`);
+  console.log('[Juris] Querying collateral balances from Cosmos blockchain...');
+  console.log('[Juris] LUNC (native):', tokens.LUNC.address, `(decimals: ${tokens.LUNC.decimals})`);
+  console.log('[Juris] USTC (native):', tokens.USTC.address, `(decimals: ${tokens.USTC.decimals})`);
   
   try {
-    console.log('[Juris]\n[Juris] 🔍 EXECUTING BALANCE QUERY...');
+    console.log('[Juris]\n[Juris] 🔍 EXECUTING BANK QUERY ON TERRA CLASSIC...');
+    console.log('[Juris] Querying native coin balances for lending contract...');
     
+    // Query Cosmos Bank module for native coins - this fetches REAL data
     await sumTokens({
       api,
       owner: lendingContracts,
       tokens: [tokens.LUNC.address, tokens.USTC.address]
     });
 
-    console.log('[Juris] ✅ Query complete\n');
+    console.log('[Juris] ✅ Query complete - received response from blockchain\n');
     
+    // Display REAL balances from Cosmos
     if (api.balances) {
-      console.log('[Juris] 📊 LENDING COLLATERAL (Raw):');
+      console.log('[Juris] 📊 LENDING COLLATERAL BALANCES (Real from Cosmos):');
       Object.entries(api.balances).forEach(([token, balance]) => {
-        console.log(`[Juris]   ${token}: ${balance} (raw units)`);
-      });
-      
-      console.log('[Juris]\n[Juris] 💰 LENDING COLLATERAL (Formatted):');
-      Object.entries(api.balances).forEach(([token, balance]) => {
+        console.log(`[Juris]   Token: ${token}`);
+        console.log(`[Juris]   Raw Balance: ${balance.toString()} (from blockchain)`);
+        
         const decimals = 6;
-        const formatted = (balance / Math.pow(10, decimals)).toFixed(2);
-        console.log(`[Juris]   ${token}: ${formatted} coins`);
+        const formatted = (parseFloat(balance) / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+        console.log(`[Juris]   Formatted: ${formatted} coins\n`);
       });
     }
     
@@ -144,7 +153,7 @@ async function reserve(api) {
 
   const reserveContracts = getContractArray(contracts.reserve);
   console.log(`[Juris] Found ${reserveContracts.length} reserve contract(s)`);
-  console.log('[Juris] Querying reserve tokens...');
+  console.log('[Juris] Querying reserve balances from blockchain...');
   console.log('[Juris] LUNC:', tokens.LUNC.address);
   console.log('[Juris] USTC:', tokens.USTC.address);
   
@@ -154,6 +163,16 @@ async function reserve(api) {
       owner: reserveContracts,
       tokens: [tokens.LUNC.address, tokens.USTC.address]
     });
+    
+    if (api.balances) {
+      console.log('[Juris] 📊 RESERVE BALANCES (Real from Cosmos):');
+      Object.entries(api.balances).forEach(([token, balance]) => {
+        const decimals = 6;
+        const formatted = (parseFloat(balance) / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+        console.log(`[Juris]   ${token}: ${formatted}`);
+      });
+    }
+    
     console.log('[Juris] ✅ Reserve calculation complete');
   } catch (error) {
     console.error('[Juris] ❌ Reserve error:', error.message);
@@ -172,7 +191,8 @@ async function pool2(api) {
 
   const pool2Contracts = getContractArray(contracts.pool2);
   console.log(`[Juris] Found ${pool2Contracts.length} pool2 contract(s)`);
-  console.log('[Juris] Querying LP token:', tokens.JURIS_LP?.address || 'N/A');
+  console.log('[Juris] Querying LP token from blockchain...');
+  console.log('[Juris] LP Token:', tokens.JURIS_LP?.address || 'N/A');
   
   try {
     if (tokens.JURIS_LP?.address) {
@@ -181,6 +201,16 @@ async function pool2(api) {
         owner: pool2Contracts,
         tokens: [tokens.JURIS_LP.address]
       });
+      
+      if (api.balances) {
+        console.log('[Juris] 📊 POOL2 BALANCES (Real from Cosmos):');
+        Object.entries(api.balances).forEach(([token, balance]) => {
+          const decimals = 6;
+          const formatted = (parseFloat(balance) / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+          console.log(`[Juris]   ${token}: ${formatted}`);
+        });
+      }
+      
       console.log('[Juris] ✅ Pool2 calculation complete');
     } else {
       console.log('[Juris] ⚠️ No JURIS_LP token defined - SKIPPING');
@@ -202,10 +232,7 @@ async function treasury(api) {
 
   const treasuryContracts = getContractArray(contracts.treasury);
   console.log(`[Juris] Found ${treasuryContracts.length} treasury contract(s)`);
-  console.log('[Juris] Querying treasury tokens...');
-  console.log('[Juris] LUNC:', tokens.LUNC.address);
-  console.log('[Juris] USTC:', tokens.USTC.address);
-  console.log('[Juris] JURIS:', tokens.JURIS.address);
+  console.log('[Juris] Querying treasury balances from blockchain...');
   
   try {
     await sumTokens({
@@ -217,6 +244,16 @@ async function treasury(api) {
         tokens.JURIS.address
       ]
     });
+    
+    if (api.balances) {
+      console.log('[Juris] 📊 TREASURY BALANCES (Real from Cosmos):');
+      Object.entries(api.balances).forEach(([token, balance]) => {
+        const decimals = 6;
+        const formatted = (parseFloat(balance) / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+        console.log(`[Juris]   ${token}: ${formatted}`);
+      });
+    }
+    
     console.log('[Juris] ✅ Treasury calculation complete');
   } catch (error) {
     console.error('[Juris] ❌ Treasury error:', error.message);
@@ -240,7 +277,7 @@ async function vesting(api) {
     console.log(`[Juris]   Vesting ${index + 1}: ${contract}`);
   });
   
-  console.log('[Juris] Querying unvested JURIS:', tokens.JURIS.address);
+  console.log('[Juris] Querying unvested JURIS from blockchain...');
   
   try {
     await sumTokens({
@@ -248,6 +285,16 @@ async function vesting(api) {
       owner: vestingContracts,
       tokens: [tokens.JURIS.address]
     });
+    
+    if (api.balances) {
+      console.log('[Juris] 📊 VESTING BALANCES (Real from Cosmos):');
+      Object.entries(api.balances).forEach(([token, balance]) => {
+        const decimals = 6;
+        const formatted = (parseFloat(balance) / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+        console.log(`[Juris]   ${token}: ${formatted}`);
+      });
+    }
+    
     console.log('[Juris] ✅ Vesting calculation complete');
   } catch (error) {
     console.error('[Juris] ❌ Vesting error:', error.message);
@@ -257,12 +304,12 @@ async function vesting(api) {
 // === TOTAL TVL (Sum of all user-deposited components) ===
 async function tvl(api) {
   console.log('[Juris] ╔════════════════════════════════════════════╗');
-  console.log('[Juris] ║     💵 TOTAL TVL CALCULATION (USD) 💵     ║');
+  console.log('[Juris] ║  💵 TOTAL TVL CALCULATION (Real Data) 💵  ║');
   console.log('[Juris] ╚════════════════════════════════════════════╝');
-  console.log('[Juris]\n[Juris] TVL = Sum of all user-deposited assets across protocol');
-  console.log('[Juris] This includes: Staking + Lending + Reserve + LP Pools\n');
+  console.log('[Juris]\n[Juris] Fetching REAL balances from Terra Classic blockchain...');
+  console.log('[Juris] TVL = Sum of all real balances from contracts\n');
   
-  // Call all TVL components - API accumulates balances
+  // Call all TVL components - API accumulates REAL balances from Cosmos
   if (contractExists(contracts.staking)) {
     await staking(api);
   }
@@ -280,31 +327,21 @@ async function tvl(api) {
   }
 
   console.log('[Juris] ╔════════════════════════════════════════════╗');
-  console.log('[Juris] ║      FINAL CALCULATION & USD CONVERSION   ║');
+  console.log('[Juris] ║    FINAL TVL (Real Data from Cosmos)     ║');
   console.log('[Juris] ╚════════════════════════════════════════════╝\n');
   
-  console.log('[Juris] 📊 ACCUMULATED BALANCES (All components):');
-  if (api.balances) {
+  console.log('[Juris] 📊 ALL ACCUMULATED BALANCES (Real from Cosmos):');
+  if (api.balances && Object.keys(api.balances).length > 0) {
     Object.entries(api.balances).forEach(([token, balance]) => {
       const decimals = 6;
-      const formatted = (balance / Math.pow(10, decimals)).toFixed(2);
+      const formattedBalance = parseFloat(balance) / Math.pow(10, decimals);
+      const formatted = formattedBalance.toLocaleString('en-US', { maximumFractionDigits: 2 });
       console.log(`[Juris]   ${token}: ${formatted} tokens`);
     });
+  } else {
+    console.log('[Juris] ℹ️ No balances found - check if contracts are empty or configured');
   }
   
-  console.log('[Juris]\n[Juris] 💲 USD CONVERSION (Using CoinGecko Prices):');
-  console.log('[Juris]   JURIS: $0.00001040 per token');
-  console.log('[Juris]   LUNC:  $0.0001234 per token (example)');
-  console.log('[Juris]   USTC:  $0.01234 per token (example)');
-  
-  console.log('[Juris]\n[Juris] 📈 FINAL TVL BREAKDOWN:');
-  console.log('[Juris]   If staking has 325.5B JURIS:');
-  console.log('[Juris]     325,500,000,000 × $0.00001040 = $3,386,200 USD');
-  console.log('[Juris]\n[Juris] 🎯 DefiLlama will display this as:');
-  console.log('[Juris]   TVL: $3.39M (updated every block)');
-  console.log('[Juris]   Staking: $3.39M');
-  
-  console.log('[Juris]\n✅ TOTAL TVL CALCULATION COMPLETE\n');
 }
 
 // === BUILD EXPORT OBJECT DYNAMICALLY ===
@@ -340,7 +377,7 @@ if (contractExists(contracts.vesting)) {
 
 // === MODULE EXPORT ===
 module.exports = {
-  methodology: `${abi.protocol.description}. TVL = Sum of ${
+  methodology: `${abi.protocol.description}. TVL = Real-time sum of ${
     contractExists(contracts.staking) ? 'staking(JURIS) + ' : ''
   }${
     contractExists(contracts.lending) ? 'lending(LUNC/USTC collateral) + ' : ''
@@ -348,12 +385,7 @@ module.exports = {
     contractExists(contracts.reserve) ? 'reserve(LUNC/USTC) + ' : ''
   }${
     contractExists(contracts.pool2) ? 'pool2(LP tokens)' : ''
-  }${
-    (contractExists(contracts.staking) || contractExists(contracts.lending) || contractExists(contracts.reserve) || contractExists(contracts.pool2)) && 
-    (contractExists(contracts.treasury) || contractExists(contracts.vesting))
-      ? '. Treasury and vesting tracked separately (not in TVL).'
-      : '.'
-  } All values in USD converted using CoinGecko prices.`,
+  } queried from Cosmos blockchain. All balances fetched directly from smart contracts, converted to USD using CoinGecko prices.`,
   timetravel: false,
   misrepresentedTokens: false,
   doublecounted: false,
