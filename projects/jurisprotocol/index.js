@@ -122,6 +122,7 @@ async function fetchBalances(moduleName) {
         const decimals = metadata?.decimals || tokenInfo.decimals || 6;
         const displayBalance = Number(bal) / Math.pow(10, decimals);
 
+        // IMPORTANT: Return raw balance for api.add() to process
         addBig(tvl, `terra:${tokenInfo.address}`, bal);
 
         console.log(
@@ -149,7 +150,7 @@ async function fetchBalances(moduleName) {
   return tvl;
 }
 
-// Smart & Dynamic module exports
+// Smart & Dynamic module exports using terraExport
 const terraExport = {};
 
 Object.keys(contracts).forEach((contractKey) => {
