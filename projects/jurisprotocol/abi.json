@@ -1,8 +1,29 @@
 {
-  "juris": {
+  "JURIS": {
     "name": "Juris Protocol",
-    "symbol": "JURIS", 
+    "symbol": "JURIS",
     "decimals": 6,
-    "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2"
+    "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
+    "coingeckoId": "juris-protocol",
+    "chain": "terra",
+    "type": "cw20"
+  },
+  "LUNC": {
+    "name": "Terra Luna Classic",
+    "symbol": "LUNC", 
+    "decimals": 6,
+    "address": "uluna",
+    "coingeckoId": "terra-luna-classic",
+    "chain": "terra",
+    "type": "native"
+  },
+  "USTC": {
+    "name": "TerraClassicUSD",
+    "symbol": "USTC",
+    "decimals": 6, 
+    "address": "uusd",
+    "coingeckoId": "terraclassicusd",
+    "chain": "terra",
+    "type": "native"
   }
 }
