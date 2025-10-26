@@ -45,7 +45,7 @@ async function fetchBalances(moduleName) {
     for (const [tokenKey, tokenInfo] of Object.entries(tokens)) {
       if (tokenInfo.type === 'cw20') {
         const bal = await cw20Balance(tokenInfo.address, owner);
-        addBig(tvl, tokenInfo.address, bal);
+        addBig(tvl, `terra:${tokenInfo.address}`, bal);
         console.log(`[Juris] Module [${moduleName}] Contract [${owner}] CW20 [${tokenInfo.address}] Balance: ${Number(bal) / Math.pow(10, tokenInfo.decimals || 6)}`);
       }
       if (tokenInfo.type === 'native') {
