@@ -1,61 +1,27 @@
-const { queryContract } = require('../helper/chain/cosmos');
+const { 
+  JURIS_STAKING_CONTRACT,
+  JURIS_LENDING_CONTRACT,
+  TOKENS,
+  QUERY_METHODS,
+  STAKING_FIELDS,
+  LENDING_FIELDS,
+  queryContractWithFallback,
+  extractAmount
+} = require('./helper');
 
-// Juris Protocol contracts on Terra Classic
-const JURIS_STAKING_CONTRACT = 'terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y';
-const JURIS_LENDING_CONTRACT = ''; // Add your lending contract address when ready
-
-// Terra Classic token denominations
-const LUNC_TOKEN = 'uluna';
-const USTC_TOKEN = 'uusd';
-
+/**
+ * Staking TVL calculation
+ */
 async function staking(api) {
   try {
-    const queryMethods = [
-      { state: {} },
-      { config: {} },
-      { staking_state: {} },
-      { total_staked: {} },
-      { pool_info: {} },
-      { info: {} }
-    ];
+    const stakingData = await queryContractWithFallback(
+      JURIS_STAKING_CONTRACT, 
+      QUERY_METHODS.staking
+    );
     
-    let stakingData;
-    for (const query of queryMethods) {
-      try {
-        stakingData = await queryContract({
-          contract: JURIS_STAKING_CONTRACT,
-          chain: 'columbus-5',
-          data: query
-        });
-        
-        if (stakingData) break;
-      } catch (error) {
-        continue;
-      }
-    }
-    
-    if (stakingData) {
-      // Handle various response structures for staking
-      const stakingFields = [
-        'total_staked', 'total_stake', 'staked_amount', 'total_bonded',
-        'bonded_amount', 'pool_size', 'total_deposit', 'total_balance'
-      ];
-      
-      for (const field of stakingFields) {
-        if (stakingData[field]) {
-          api.add(LUNC_TOKEN, stakingData[field]);
-          return;
-        }
-      }
-      
-      // Check nested structures
-      if (stakingData.pool?.total_staked) {
-        api.add(LUNC_TOKEN, stakingData.pool.total_staked);
-      }
-      
-      if (stakingData.state?.total_staked) {
-        api.add(LUNC_TOKEN, stakingData.state.total_staked);
-      }
+    const amount = extractAmount(stakingData, STAKING_FIELDS);
+    if (amount) {
+      api.add(TOKENS.LUNC, amount);
     }
     
   } catch (error) {
@@ -63,47 +29,21 @@ async function staking(api) {
   }
 }
 
+/**
+ * Borrowed assets calculation (only if lending contract exists)
+ */
 async function borrowed(api) {
-  if (!JURIS_LENDING_CONTRACT) {
-    return; // Skip if lending contract not deployed yet
-  }
+  if (!JURIS_LENDING_CONTRACT) return; // Skip if no lending contract
   
   try {
-    // Query lending contract for total borrowed amounts
-    const lendingQueries = [
-      { borrowed_info: {} },
-      { total_borrowed: {} },
-      { market_state: {} },
-      { state: {} }
-    ];
+    const lendingData = await queryContractWithFallback(
+      JURIS_LENDING_CONTRACT,
+      QUERY_METHODS.lending
+    );
     
-    let lendingData;
-    for (const query of lendingQueries) {
-      try {
-        lendingData = await queryContract({
-          contract: JURIS_LENDING_CONTRACT,
-          chain: 'columbus-5',
-          data: query
-        });
-        
-        if (lendingData) break;
-      } catch (error) {
-        continue;
-      }
-    }
-    
-    if (lendingData) {
-      const borrowFields = [
-        'total_borrowed', 'borrowed_amount', 'outstanding_debt',
-        'total_debt', 'market_size'
-      ];
-      
-      for (const field of borrowFields) {
-        if (lendingData[field]) {
-          api.add(LUNC_TOKEN, lendingData[field]);
-          return;
-        }
-      }
+    const amount = extractAmount(lendingData, LENDING_FIELDS.borrowed);
+    if (amount) {
+      api.add(TOKENS.LUNC, amount);
     }
     
   } catch (error) {
@@ -111,21 +51,24 @@ async function borrowed(api) {
   }
 }
 
+/**
+ * TVL calculation (combines staking + lending supply)
+ */
 async function tvl(api) {
-  // For lending protocols, TVL typically includes supplied assets minus borrowed assets
-  await staking(api); // Add staking TVL
+  // Always include staking TVL
+  await staking(api);
   
+  // Only include lending supply if contract exists
   if (JURIS_LENDING_CONTRACT) {
-    // Query lending pools for supplied assets
     try {
-      const supplyData = await queryContract({
-        contract: JURIS_LENDING_CONTRACT,
-        chain: 'columbus-5',
-        data: { supply_info: {} }
-      });
+      const lendingData = await queryContractWithFallback(
+        JURIS_LENDING_CONTRACT,
+        QUERY_METHODS.lending
+      );
       
-      if (supplyData?.total_supply) {
-        api.add(LUNC_TOKEN, supplyData.total_supply);
+      const supplyAmount = extractAmount(lendingData, LENDING_FIELDS.supplied);
+      if (supplyAmount) {
+        api.add(TOKENS.LUNC, supplyAmount);
       }
       
     } catch (error) {
@@ -134,14 +77,24 @@ async function tvl(api) {
   }
 }
 
-module.exports = {
+// Base exports (always available)
+const baseExports = {
   timetravel: false,
   misrepresentedTokens: false,
-  methodology: 'Juris Protocol TVL includes LUNC tokens staked in staking contracts plus supplied assets in lending markets on Terra Classic. The protocol operates as a comprehensive DeFi platform offering both staking and lending services to the Terra Classic ecosystem.',
-  start: 1698796800, // Replace with actual launch timestamp
+  methodology: 'Juris Protocol TVL includes LUNC tokens staked in staking contracts. When lending is deployed, it will also include supplied assets minus borrowed amounts to avoid double counting.',
+  start: 1698796800, // Update with actual launch timestamp
   terra: {
     tvl,
-    staking,
-    borrowed // This will be tracked separately on DefiLlama's borrowed dashboard
+    staking // Always export staking since contract exists
   }
 };
+
+// Conditionally add borrowed function only if lending contract exists
+if (JURIS_LENDING_CONTRACT) {
+  baseExports.terra.borrowed = borrowed;
+  
+  // Update methodology when lending is available
+  baseExports.methodology = 'Juris Protocol TVL includes LUNC tokens staked in staking contracts plus supplied assets in lending markets. Borrowed amounts are tracked separately to avoid double counting.';
+}
+
+module.exports = baseExports;
