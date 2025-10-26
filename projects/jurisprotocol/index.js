@@ -1,8 +1,9 @@
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { sumTokens, queryContract, queryContracts, queryContractWithRetries } = require('../helper/chain/cosmos');
 const abi = require('./abi.json');
 
 const { contracts, tokens } = abi;
 
+// === Helper: Check if field is a non-empty string or array ===
 function contractExists(contract) {
   if (!contract) return false;
   if (typeof contract === 'string') return contract.trim() !== '';
@@ -16,6 +17,8 @@ function getContractArray(contract) {
   if (Array.isArray(contract)) return contract.filter(c => c && c.trim() !== '');
   return [];
 }
+
+// === Map tokens for DefiLlama and log full mapping ===
 function getValidTokens() {
   const validTokens = [];
   Object.entries(tokens).forEach(([key, tokenData]) => {
@@ -23,7 +26,6 @@ function getValidTokens() {
       console.warn(`[Juris] WARNING: Token ${key} has invalid/missing address - skipping`);
       return;
     }
-    // Log mapping for understanding (only!)
     let llamaKey = tokenData.address;
     let nativeDenom = '';
     if (key === 'LUNC') {
@@ -35,17 +37,65 @@ function getValidTokens() {
       nativeDenom = 'uusd';
     }
     if (llamaKey.startsWith('terra1') || llamaKey.startsWith('terra2')) {
-      console.log(`[Juris] Token ${key}: CW20 token address = "${llamaKey}"`);
+      console.log(`[Juris] Token ${key}: CW20 address = "${llamaKey}"`);
     } else {
       console.log(`[Juris] Token ${key}: DefiLlama key = "${llamaKey}" | native denom = "${nativeDenom}"`);
     }
-    validTokens.push(llamaKey);
+    validTokens.push({ key, llamaKey, decimals: tokenData.decimals || 6 });
   });
-  console.log(`[Juris] ✅ Valid tokens passed to sumTokens2: ${validTokens.join(', ')}`);
+  console.log(`[Juris] VALID tokens for scan: ${validTokens.map(t => t.llamaKey).join(', ')}`);
   return validTokens;
 }
 
-// Single unified function for all categories
+// === Query and log balances, per contract and per token ===
+async function fetchTokenBalance(api, owner, tokenObj) {
+  const { key, llamaKey, decimals } = tokenObj;
+  // Use DefiLlama-compatible key for balance lookups
+  await sumTokens({ api, owner: [owner], tokens: [llamaKey] });
+  const bal = api.getBalances()[llamaKey] || 0;
+  if (bal > 0) {
+    console.log(`[Juris]   ✓ sumTokens for ${key} (${llamaKey}) on ${owner} = ${bal / Math.pow(10, decimals)} ${key}`);
+    return bal;
+  }
+  // Fallback: if a CW20, try direct smart contract query
+  if (llamaKey.startsWith('terra1')) {
+    try {
+      const res = await queryContract({
+        contract: llamaKey,
+        chain: 'terra',
+        msg: { balance: { address: owner } },
+      });
+      if (res && res.balance && res.balance > 0) {
+        api.add(llamaKey, res.balance);
+        console.log(`[Juris]   ✓ queryContract (CW20) for ${key} (${llamaKey}) on ${owner} = ${res.balance / Math.pow(10, decimals)} ${key}`);
+        return res.balance;
+      }
+    } catch (e) {
+      console.log(`[Juris]   queryContract error for ${key}: ${e.message}`);
+    }
+  }
+  // Fallback: for native tokens (shouldn't be needed if keys are correct)
+  if (key === 'LUNC' || key === 'USTC') {
+    try {
+      const nativeDenom = key === 'LUNC' ? 'uluna' : 'uusd';
+      const res = await queryContractWithRetries({
+        chain: 'terra',
+        denom: nativeDenom,
+        address: owner,
+      });
+      if (res && res.amount && res.amount > 0) {
+        api.add(llamaKey, res.amount);
+        console.log(`[Juris]   ✓ queryContractWithRetries (native) for ${key} (${nativeDenom}) on ${owner} = ${res.amount / Math.pow(10, decimals)} ${key}`);
+        return res.amount;
+      }
+    } catch (e) {
+      console.log(`[Juris]   queryContractWithRetries error for ${key}: ${e.message}`);
+    }
+  }
+  console.log(`[Juris]   No balance found for ${key} (${llamaKey}) on ${owner}`);
+  return 0;
+}
+
 async function fetchBalances(api, contractKey) {
   if (!contractExists(contracts[contractKey])) return;
   const owners = getContractArray(contracts[contractKey]);
@@ -53,82 +103,62 @@ async function fetchBalances(api, contractKey) {
     console.log(`[Juris] ${contractKey}: No valid contract addresses`);
     return;
   }
-  const tokenList = getValidTokens();
-  if (tokenList.length === 0) {
-    console.log(`[Juris] ${contractKey}: No valid tokens configured`);
+  const tokenObjs = getValidTokens();
+  if (tokenObjs.length === 0) {
+    console.log(`[Juris] ${contractKey}: No valid tokens to process`);
     return;
   }
 
-  // Log summary of all addresses and tokens being queried
-  console.log(`[Juris] ${contractKey}: Passing to sumTokens2`);
-  console.log(`  Contracts:`);
-  owners.forEach(c => console.log(`    ${c}`));
-  console.log(`  Tokens:`);
-  tokenList.forEach(t => console.log(`    ${t}`));
+  // Log contracts and tokens being queried
+  console.log(`[Juris] ${contractKey}: Contracts to scan:`, owners);
+  console.log(`[Juris] ${contractKey}: Tokens to scan:`, tokenObjs.map(t => t.key).join(', '));
 
-  try {
-    await sumTokens2({
-      api,
-      owners,
-      tokens: tokenList,
-    });
-    // LOG returned balances
-    const balances = api.getBalances();
-    Object.entries(tokens).forEach(([key, tokenData]) => {
-      const addr = key === 'LUNC'
-        ? 'lunc'
-        : key === 'USTC'
-        ? 'ustc'
-        : tokenData.address;
-      const val = balances[addr];
-      const pretty = val ? (val / Math.pow(10, tokenData.decimals || 6)).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '0';
-      console.log(`[Juris] [${contractKey}] Final ${key} balance for addressKey "${addr}" = ${pretty}`);
-    });
-    console.log(`[Juris] ${contractKey}: Success`);
-  } catch (error) {
-    console.error(`[Juris] ${contractKey}: Error - ${error.message}`);
-    throw error;
+  for (const owner of owners) {
+    for (const tokenObj of tokenObjs) {
+      await fetchTokenBalance(api, owner, tokenObj);
+    }
   }
+
+  // Print summary per token
+  const balances = api.getBalances();
+  tokenObjs.forEach(({ key, llamaKey, decimals }) => {
+    const balance = balances[llamaKey] || 0;
+    const pretty = (balance / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 4 });
+    console.log(`[Juris] [${contractKey}] Final balance ${key} ("${llamaKey}"): ${pretty}`);
+  });
 }
 
+// === Individual module functions ===
+async function staking(api) { await fetchBalances(api, 'staking'); }
+async function lending(api) { await fetchBalances(api, 'lending'); }
+async function reserve(api) { await fetchBalances(api, 'reserve'); }
 
+// === Main TVL aggregator ===
 async function tvl(api) {
-  console.log('[Juris] TVL: Starting...');
-  
-  await Promise.all([
-    fetchBalances(api, 'staking'),
-    fetchBalances(api, 'lending'),
-    fetchBalances(api, 'reserve'),
-  ]);
+  console.log('[Juris] TVL start...');
+  const tasks = [];
+  if (contractExists(contracts.staking)) tasks.push(staking(api));
+  if (contractExists(contracts.lending)) tasks.push(lending(api));
+  if (contractExists(contracts.reserve)) tasks.push(reserve(api));
 
-  console.log('[Juris] TVL: Complete');
+  if (tasks.length === 0) {
+    console.log('[Juris] TVL: No contracts configured');
+    return api.getBalances();
+  }
+  await Promise.all(tasks);
+  console.log('[Juris] TVL complete.');
   return api.getBalances();
 }
 
-async function staking(api) {
-  return fetchBalances(api, 'staking');
-}
-
-async function lending(api) {
-  return fetchBalances(api, 'lending');
-}
-
-async function reserve(api) {
-  return fetchBalances(api, 'reserve');
-}
-
-// Dynamic exports based on ABI configuration
+// === Dynamic module exports ===
 const terraExport = {};
 if (contractExists(contracts.staking)) terraExport.staking = staking;
 if (contractExists(contracts.lending)) terraExport.lending = lending;
 if (contractExists(contracts.reserve)) terraExport.reserve = reserve;
-
-if (Object.keys(terraExport).length > 0) {
-  terraExport.tvl = tvl;
-}
+if (Object.keys(terraExport).length > 0) terraExport.tvl = tvl;
 
 module.exports = {
-  methodology: `${abi.protocol.description}. TVL is the sum of JURIS (CW20), LUNC, and USTC (native) balances across staking, lending, and reserve contracts.`,
+  methodology: `${abi.protocol.description}. TVL is balances for JURIS (CW20), LUNC and USTC (native) across all configured contracts.`,
   timetravel: false,
   terra: terraExport,
 };
