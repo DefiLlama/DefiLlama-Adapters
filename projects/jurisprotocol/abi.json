@@ -5,7 +5,7 @@
   },
   "tokens": {
     "JURIS": {
-      "name": "Juris Protocol", 
+      "name": "Juris Protocol",
       "symbol": "JURIS",
       "decimals": 6,
       "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
@@ -14,7 +14,7 @@
     "LUNC": {
       "name": "Terra Luna Classic",
       "symbol": "LUNC",
-      "decimals": 6, 
+      "decimals": 6,
       "address": "uluna",
       "coingeckoId": "terra-luna-classic"
     },
