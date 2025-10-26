@@ -3,9 +3,7 @@
     "name": "Juris Protocol",
     "website": "https://jurisprotocol.com",
     "description": "Decentralized lending and staking protocol on Terra Classic",
-    "category": "Lending",
-    "twitter": "@JurisProtocol",
-    "chains": ["Terra Classic"]
+    "category": "Lending"
   },
   "tokens": {
     "JURIS": {
