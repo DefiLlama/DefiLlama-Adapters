@@ -63,8 +63,17 @@ async function staking(api) {
       fetchTokenBalance(api, owner, tokens.USTC.address),
     ]);
   }
+
+  // Print final detected balances
+  ['JURIS', 'LUNC', 'USTC'].forEach((k) => {
+    const addr = tokens[k].address;
+    const bal = api.balances && api.balances[addr] ? api.balances[addr] : 0;
+    const formatted = (bal / 1e6).toLocaleString('en-US', { maximumFractionDigits: 2 });
+    console.log(`[Juris] FINAL ${k} balance: ${formatted} ${k}`);
+  });
   console.log('[Juris] Staking: Done');
 }
+
 
 // Similar pattern for lending, reserve, pool2, treasury, vesting if you wish:
 async function lending(api) {
