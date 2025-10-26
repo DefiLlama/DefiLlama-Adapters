@@ -26,10 +26,11 @@ function nativeBalance(balances, denom) {
   return row ? BigInt(row.amount) : BigInt(0);
 }
 function addBig(balances, key, amount) {
-  if (!amount || isNaN(amount) || amount === '0') return;
+  if (!amount || amount === '0') return;
   const prev = BigInt(balances[key] || 0);
   balances[key] = (prev + BigInt(amount)).toString();
 }
+
 
 // Core TVL logic using abi.json layout
 async function fetchBalances(moduleName) {
