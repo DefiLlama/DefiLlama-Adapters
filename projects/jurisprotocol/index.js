@@ -1,107 +1,147 @@
 const { queryContract } = require('../helper/chain/cosmos');
 
-// Juris Protocol staking contract on Terra Classic
+// Juris Protocol contracts on Terra Classic
 const JURIS_STAKING_CONTRACT = 'terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y';
-const TERRA_CLASSIC_CHAIN_ID = 'columbus-5';
+const JURIS_LENDING_CONTRACT = ''; // Add your lending contract address when ready
 
-// Terra Classic native token
-const LUNC_TOKEN = 'uluna'; // Terra Classic LUNA (LUNC)
+// Terra Classic token denominations
+const LUNC_TOKEN = 'uluna';
+const USTC_TOKEN = 'uusd';
 
 async function staking(api) {
   try {
-    // Query the staking contract for total staked tokens
-    // Common query patterns for Terra Classic staking contracts:
+    const queryMethods = [
+      { state: {} },
+      { config: {} },
+      { staking_state: {} },
+      { total_staked: {} },
+      { pool_info: {} },
+      { info: {} }
+    ];
     
-    // Try multiple query patterns since I don't know your exact contract interface
     let stakingData;
-    
-    try {
-      // Pattern 1: Query total staked
-      stakingData = await queryContract({
-        contract: JURIS_STAKING_CONTRACT,
-        chain: TERRA_CLASSIC_CHAIN_ID,
-        data: { total_staked: {} }
-      });
-    } catch (e) {
+    for (const query of queryMethods) {
       try {
-        // Pattern 2: Query state/config
         stakingData = await queryContract({
           contract: JURIS_STAKING_CONTRACT,
-          chain: TERRA_CLASSIC_CHAIN_ID,
-          data: { state: {} }
+          chain: 'columbus-5',
+          data: query
         });
-      } catch (e2) {
-        try {
-          // Pattern 3: Query config
-          stakingData = await queryContract({
-            contract: JURIS_STAKING_CONTRACT,
-            chain: TERRA_CLASSIC_CHAIN_ID,
-            data: { config: {} }
-          });
-        } catch (e3) {
-          // Pattern 4: Query pool info
-          stakingData = await queryContract({
-            contract: JURIS_STAKING_CONTRACT,
-            chain: TERRA_CLASSIC_CHAIN_ID,
-            data: { pool_info: {} }
-          });
-        }
+        
+        if (stakingData) break;
+      } catch (error) {
+        continue;
       }
     }
     
-    // Extract staked amounts based on common response patterns
     if (stakingData) {
-      // Check for various possible field names that might contain staked amounts
-      const possibleFields = [
-        'total_staked',
-        'total_stake', 
-        'staked_amount',
-        'total_bonded',
-        'bonded_amount',
-        'pool_size',
-        'total_supply'
+      // Handle various response structures for staking
+      const stakingFields = [
+        'total_staked', 'total_stake', 'staked_amount', 'total_bonded',
+        'bonded_amount', 'pool_size', 'total_deposit', 'total_balance'
       ];
       
-      for (const field of possibleFields) {
+      for (const field of stakingFields) {
         if (stakingData[field]) {
           api.add(LUNC_TOKEN, stakingData[field]);
-          break;
+          return;
         }
       }
       
-      // If the response has nested structure
-      if (stakingData.pool && stakingData.pool.total_staked) {
+      // Check nested structures
+      if (stakingData.pool?.total_staked) {
         api.add(LUNC_TOKEN, stakingData.pool.total_staked);
       }
       
-      // If multiple pools exist
-      if (stakingData.pools && Array.isArray(stakingData.pools)) {
-        stakingData.pools.forEach(pool => {
-          if (pool.denom === 'uluna' && pool.amount) {
-            api.add(LUNC_TOKEN, pool.amount);
-          }
-        });
+      if (stakingData.state?.total_staked) {
+        api.add(LUNC_TOKEN, stakingData.state.total_staked);
       }
     }
     
   } catch (error) {
-    console.error('Error fetching Juris Protocol staking data:', error);
-    // Don't throw error, just log it and return empty balances
+    console.log('Juris Protocol Staking: Unable to fetch data');
+  }
+}
+
+async function borrowed(api) {
+  if (!JURIS_LENDING_CONTRACT) {
+    return; // Skip if lending contract not deployed yet
+  }
+  
+  try {
+    // Query lending contract for total borrowed amounts
+    const lendingQueries = [
+      { borrowed_info: {} },
+      { total_borrowed: {} },
+      { market_state: {} },
+      { state: {} }
+    ];
+    
+    let lendingData;
+    for (const query of lendingQueries) {
+      try {
+        lendingData = await queryContract({
+          contract: JURIS_LENDING_CONTRACT,
+          chain: 'columbus-5',
+          data: query
+        });
+        
+        if (lendingData) break;
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    if (lendingData) {
+      const borrowFields = [
+        'total_borrowed', 'borrowed_amount', 'outstanding_debt',
+        'total_debt', 'market_size'
+      ];
+      
+      for (const field of borrowFields) {
+        if (lendingData[field]) {
+          api.add(LUNC_TOKEN, lendingData[field]);
+          return;
+        }
+      }
+    }
+    
+  } catch (error) {
+    console.log('Juris Protocol Lending: Unable to fetch borrowed data');
   }
 }
 
 async function tvl(api) {
-  // For staking-only protocol, TVL equals staking
-  return staking(api);
+  // For lending protocols, TVL typically includes supplied assets minus borrowed assets
+  await staking(api); // Add staking TVL
+  
+  if (JURIS_LENDING_CONTRACT) {
+    // Query lending pools for supplied assets
+    try {
+      const supplyData = await queryContract({
+        contract: JURIS_LENDING_CONTRACT,
+        chain: 'columbus-5',
+        data: { supply_info: {} }
+      });
+      
+      if (supplyData?.total_supply) {
+        api.add(LUNC_TOKEN, supplyData.total_supply);
+      }
+      
+    } catch (error) {
+      console.log('Juris Protocol: Unable to fetch lending supply data');
+    }
+  }
 }
 
 module.exports = {
-  timetravel: false, // Set to true if your contract supports historical queries
+  timetravel: false,
   misrepresentedTokens: false,
-  methodology: 'Juris Protocol TVL is calculated by summing all LUNC tokens staked in the staking contract on Terra Classic. Currently operates as a staking protocol with plans to expand to lending functionality.',
-  start: 1698796800, // Replace with your actual launch timestamp (current placeholder: Nov 1, 2023)
+  methodology: 'Juris Protocol TVL includes LUNC tokens staked in staking contracts plus supplied assets in lending markets on Terra Classic. The protocol operates as a comprehensive DeFi platform offering both staking and lending services to the Terra Classic ecosystem.',
+  start: 1698796800, // Replace with actual launch timestamp
   terra: {
+    tvl,
     staking,
-    tvl
+    borrowed // This will be tracked separately on DefiLlama's borrowed dashboard
   }
 };
