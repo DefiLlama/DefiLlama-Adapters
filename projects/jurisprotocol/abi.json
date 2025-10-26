@@ -1,7 +1,6 @@
 {
   "protocol": {
     "name": "Juris Protocol",
-    "website": "https://jurisprotocol.com",
     "description": "Decentralized lending and staking protocol on Terra Classic"
   },
   "tokens": {
