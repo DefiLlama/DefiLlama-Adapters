@@ -22,10 +22,12 @@ Object.keys(config).forEach(chain => {
       })
       const tokenSet = new Set()
       logs.forEach(log => {
-        tokenSet.add(log.currency0)
-        tokenSet.add(log.currency1)
+        tokenSet.add(String(log.currency0).toLowerCase())
+        tokenSet.add(String(log.currency1).toLowerCase())
       })
-      tokenSet.delete(blacklistTokens)
+      for (const t of blacklistTokens) {
+        tokenSet.delete(t.toLowerCase())
+      }
       const tokens = Array.from(tokenSet)
       return api.sumTokens({ tokens, owner: vault, })
     }
