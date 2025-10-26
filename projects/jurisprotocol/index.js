@@ -73,31 +73,47 @@ async function fetchTokenBalance(api, owner, token) {
 }
 
 // Main per-category contract group balance
-async function fetchBalances(api, contractKey) {
-  const owners = (contracts[contractKey] || []).filter(isNonEmptyAddress);
-  if (!owners.length) {
-    console.log(`[Juris] No contracts configured for "${contractKey}"`);
-    return;
+async function fetchTokenBalance(api, owner, token) {
+  const { key, address, type, decimals = 6 } = token;
+  let sumTokensKey = address;
+  if (type === 'native') {
+    if (address === 'uluna') sumTokensKey = 'lunc';
+    if (address === 'uusd') sumTokensKey = 'ustc';
   }
-  const tokenList = getTokenList();
-  console.log(`[Juris] ${contractKey}: Querying ${tokenList.length} tokens for ${owners.length} contracts.`);
-  owners.forEach(owner => console.log(`[Juris] ${contractKey} address: ${owner}`));
-  for (const owner of owners) {
-    for (const token of tokenList) {
-      await fetchTokenBalance(api, owner, token);
+
+  // Log
+  console.log(`[Juris] Querying contract ${owner} for token ${key} (${sumTokensKey})`);
+
+  // Try DefiLlama sumTokens first
+  await sumTokens({ api, owner: [owner], tokens: [sumTokensKey] });
+  let bal = api.getBalances()[sumTokensKey] || 0;
+  if (bal > 0) {
+    console.log(`[Juris]   ✓ sumTokens for ${key}: ${(bal/Math.pow(10, decimals)).toLocaleString('en-US')}`);
+    return bal;
+  }
+
+  // Fallback: query CW20 contract directly if sumTokens fails and token is cw20
+  if (type === 'cw20') {
+    try {
+      const resp = await queryContract({
+        contract: address,
+        chain: 'terra',
+        msg: { balance: { address: owner } },
+      });
+      if (resp && resp.balance) {
+        api.add(sumTokensKey, resp.balance);
+        console.log(`[Juris]   ✓ queryContract (CW20): ${(resp.balance/Math.pow(10, decimals)).toLocaleString('en-US')}`);
+        return resp.balance;
+      }
+    } catch (e) {
+      console.log(`[Juris]   ⚠ queryContract error: ${e.message}`);
     }
   }
-  // Final balances log
-  const balances = api.getBalances();
-  tokenList.forEach(({ key, decimals, address, type }) => {
-    let lookup = (type === 'native')
-      ? (address === 'uluna' ? 'lunc' : address === 'uusd' ? 'ustc' : address)
-      : address;
-    const bal = balances[lookup] || 0;
-    const pretty = (bal / Math.pow(10, decimals)).toLocaleString('en-US', { maximumFractionDigits: 4 });
-    console.log(`[Juris] [${contractKey}] Final balance ${key} ("${lookup}"): ${pretty}`);
-  });
+  // If this prints 0, something (address or call) is mismatched
+  console.log(`[Juris]   No balance found for ${key} on ${owner}`);
+  return 0;
 }
+
 
 // Dynamically export adapter methods for every non-empty contract category
 const terraExport = {};
