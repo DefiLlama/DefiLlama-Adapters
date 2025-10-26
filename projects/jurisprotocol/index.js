@@ -12,13 +12,12 @@ async function staking(api) {
       owner: JURIS_STAKING_CONTRACT,
       tokens: ['uluna', 'uusd'], // Native Terra Classic tokens
     });
-    
-    // Method 2: Query JURIS CW20 token balance held by the staking contract
+     
     try {
       const jurisBalance = await getBalance({
         token: JURIS_TOKEN_CONTRACT,
         owner: JURIS_STAKING_CONTRACT,
-        chain: 'terra' // Correct chain identifier for Terra Classic
+        chain: 'terra'  
       });
       
       if (jurisBalance > 0) {
@@ -27,8 +26,7 @@ async function staking(api) {
     } catch (e) {
       console.log('Juris Protocol: Could not fetch JURIS token balance:', e.message);
     }
-    
-    // Method 3: Try to query contract state for additional info (optional)
+     
     try {
       const contractState = await queryContract({
         contract: JURIS_STAKING_CONTRACT,
@@ -37,9 +35,7 @@ async function staking(api) {
       });
       
       console.log('Juris staking contract state:', contractState);
-      
-      // If your contract returns specific staked amounts in the state, add them here
-      // Example: if (contractState.total_lunc_staked) api.add('uluna', contractState.total_lunc_staked);
+       
       
     } catch (e) {
       console.log('Juris Protocol: Contract state query failed (this is optional):', e.message);
@@ -69,7 +65,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology: 'Juris Protocol TVL includes LUNC, USTC, and JURIS tokens staked in the staking contract on Terra Classic.',
-  start: 1698796800, // Update with your actual launch timestamp
+  start: 1698796800, 
   terra: { 
     staking
   }
