@@ -30,24 +30,11 @@
     }
   },
   "contracts": {
-    "staking": "terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y",
-    "lending": "",
-    "reserve": "",
-    "pool2": "",
-    "treasury": "",
-    "vesting": ""
-  },
-  "notes": {
-    "staking": "Contract where users stake JURIS tokens.",
-    "lending": "Contracts where users deposit LUNC/USTC.",
-    "reserve": "Protocol reserve contracts holding LUNC/USTC.",
-    "pool2": "Liquidity pool contracts with JURIS pairs.",
-    "treasury": "Protocol's treasury holdings.",
-    "vesting": "Vesting contracts for unvested tokens.",
-    "format_examples": {
-      "single_contract": "\"terra1xxx...\"",
-      "multiple_contracts": "[\"terra1xxx...\", \"terra1yyy...\", \"terra1zzz...\"]",
-      "empty": "\"\""
-    }
+    "staking": ["terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y"],
+    "lending": [""],
+    "reserve": [""],
+    "pool2": [""],
+    "treasury": [""],
+    "vesting":  [""]
   }
 }
