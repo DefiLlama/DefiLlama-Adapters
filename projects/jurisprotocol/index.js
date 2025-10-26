@@ -1,21 +1,29 @@
 const { getBalance, sumTokens } = require('../helper/chain/cosmos');
+const abi = require('./abi.json');
 
-const JURIS_STAKING_CONTRACT = "terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y";
-const JURIS_TOKEN_CONTRACT = "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2";
+// Extract contract addresses from ABI
+const { contracts, tokens } = abi.jurisProtocol;
+const JURIS_STAKING_CONTRACT = contracts.staking;
+const JURIS_TOKEN_CONTRACT = contracts.token;
+
+// Native Terra Classic token addresses
+const LUNC_DENOM = tokens.LUNC.address; // 'uluna'
+const USTC_DENOM = tokens.USTC.address; // 'uusd'
 
 async function tvl(api) {
   try {
     console.log('🔍 Querying Juris Protocol staking contract...');
+    console.log('📋 Contract:', JURIS_STAKING_CONTRACT);
     
-    // Query native tokens (LUNC & USTC) held by staking contract
+    // Method 1: Query native tokens (LUNC & USTC) held by staking contract
     console.log('📊 Checking native tokens (LUNC/USTC)...');
     await sumTokens({
       api,
       owner: JURIS_STAKING_CONTRACT,
-      tokens: ['uluna', 'uusd'] // LUNC and USTC native tokens
+      tokens: [LUNC_DENOM, USTC_DENOM]
     });
     
-    // Query JURIS CW20 tokens held by staking contract
+    // Method 2: Query JURIS CW20 tokens held by staking contract
     console.log('📊 Checking JURIS CW20 tokens...');
     try {
       const jurisBalance = await getBalance({
@@ -26,7 +34,7 @@ async function tvl(api) {
       
       if (jurisBalance > 0) {
         api.add(JURIS_TOKEN_CONTRACT, jurisBalance);
-        console.log('✅ JURIS balance found:', jurisBalance, '(raw with 6 decimals)');
+        console.log(`✅ JURIS balance found: ${jurisBalance} (${jurisBalance / 10**6} JURIS with 6 decimals)`);
       } else {
         console.log('ℹ️ No JURIS tokens found in staking contract');
       }
@@ -34,7 +42,7 @@ async function tvl(api) {
       console.log('❌ JURIS balance query failed:', error.message);
     }
     
-    // Log final balances for debugging
+    // Log final balances
     const balances = api.getBalances();
     console.log('📊 Final TVL balances:', Object.keys(balances).length > 0 ? balances : 'No balances found');
     
@@ -43,13 +51,24 @@ async function tvl(api) {
   }
 }
 
+async function staking(api) {
+  // Staking TVL is the same as total TVL for staking-only protocols
+  await tvl(api);
+}
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
-  methodology: 'Juris Protocol TVL tracks JURIS tokens (6 decimals), LUNC, and USTC staked in the staking contract on Terra Classic.',
+  methodology: `${abi.jurisProtocol.description}. TVL tracks ${tokens.JURIS.symbol} (${tokens.JURIS.decimals} decimals), ${tokens.LUNC.symbol}, and ${tokens.USTC.symbol} staked in the staking contract.`,
   start: 1707782400, // February 2024
   
+  // Token price mappings using ABI data
+  [`terra:${JURIS_TOKEN_CONTRACT}`]: tokens.JURIS.coingeckoId,
+  [`terra:${LUNC_DENOM}`]: tokens.LUNC.coingeckoId,  
+  [`terra:${USTC_DENOM}`]: tokens.USTC.coingeckoId,
+  
   terra: {
-    tvl
+    tvl,
+    staking
   }
 };
