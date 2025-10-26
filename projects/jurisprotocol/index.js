@@ -66,7 +66,7 @@ module.exports = {
   methodology: 'Juris Protocol TVL includes LUNC, USTC, and JURIS tokens staked in the staking contract on Terra Classic.',
   start: 1698796800, 
   terra: { 
-    tvl,      // ADD THIS LINE - you were missing it!
+    tvl,     
     staking
   }
 };
