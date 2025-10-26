@@ -13,6 +13,7 @@ const config = {
     // '0x31Eae643b679A84b37E3d0B4Bd4f5dA90fB04a61', - exluded RUSD because it is project's own token
   ],
   berachain: [],
+  plasma: []
 }
 
 const assets = {
@@ -85,6 +86,43 @@ Object.keys(config).forEach(chain => {
         shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: assets['PT-USDe'], params: ['0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'] })
 
         api.add(assets['PT-USDe'], shareBalance)
+
+        shareBalance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x62C6E813b9589C3631Ba0Cdb013acdB8544038B7', params: ['0x8d3A354f187065e0D4cEcE0C3a5886ac4eBc4903'] })
+
+        api.add('0x4c9EDD5852cd905f086C759E8383e09bff1E68B3', shareBalance)
+
+        return api.getBalances()
+      }
+    }
+  }
+  else if (chain === 'plasma') {
+    module.exports[chain] = {
+      tvl: async (api) => {
+
+        let balance;
+        // let balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x7519403E12111ff6b710877Fcd821D0c12CAF43A', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        // api.add('0x7519403E12111ff6b710877Fcd821D0c12CAF43A', balance)
+
+        // balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0xd8f824d4252caE7d5E49B95d47B0EfAfe6f2d570', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        // api.add('0xd8f824d4252caE7d5E49B95d47B0EfAfe6f2d570', balance)
+
+        // balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x7519403E12111ff6b710877Fcd821D0c12CAF43A', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        api.add('0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34', balance)
+
+        balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x1DD4b13fcAE900C60a350589BE8052959D2Ed27B', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        api.add('0x66bE42a0BdA425A8C3b3c2cF4F4Cb9EDfcAEd21d', balance)
+
+        balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0x66bE42a0BdA425A8C3b3c2cF4F4Cb9EDfcAEd21d', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        api.add('0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', balance)
+
+        balance = await api.call({ abi: 'function balanceOf(address) view returns (uint256)', target: '0xa9C251F8304b1B3Fc2b9e8fcae78D94Eff82Ac66', params: ['0x9A319b57B80c50f8B19DB35D3224655F3aDd8E4f'] })
+
+        api.add('0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb', balance)
 
         return api.getBalances()
       }
