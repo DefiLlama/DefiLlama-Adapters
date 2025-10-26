@@ -23,16 +23,28 @@ function getValidTokens() {
       console.warn(`[Juris] WARNING: Token ${key} has invalid/missing address - skipping`);
       return;
     }
-    // Native denom log (for developer)
-    if (key === 'LUNC')
-      console.log(`[Juris] Token ${key}: DefiLlama key = "lunc" | native denom = "uluna"`);
-    if (key === 'USTC')
-      console.log(`[Juris] Token ${key}: DefiLlama key = "ustc" | native denom = "uusd"`);
-    validTokens.push(tokenData.address);
+    // Log mapping for understanding (only!)
+    let llamaKey = tokenData.address;
+    let nativeDenom = '';
+    if (key === 'LUNC') {
+      llamaKey = 'lunc';
+      nativeDenom = 'uluna';
+    }
+    if (key === 'USTC') {
+      llamaKey = 'ustc';
+      nativeDenom = 'uusd';
+    }
+    if (llamaKey.startsWith('terra1') || llamaKey.startsWith('terra2')) {
+      console.log(`[Juris] Token ${key}: CW20 token address = "${llamaKey}"`);
+    } else {
+      console.log(`[Juris] Token ${key}: DefiLlama key = "${llamaKey}" | native denom = "${nativeDenom}"`);
+    }
+    validTokens.push(llamaKey);
   });
-  console.log(`[Juris] Valid tokens passed to sumTokens2: ${validTokens.join(', ')}`);
+  console.log(`[Juris] ✅ Valid tokens passed to sumTokens2: ${validTokens.join(', ')}`);
   return validTokens;
 }
+
 // Single unified function for all categories
 async function fetchBalances(api, contractKey) {
   if (!contractExists(contracts[contractKey])) return;
@@ -46,19 +58,39 @@ async function fetchBalances(api, contractKey) {
     console.log(`[Juris] ${contractKey}: No valid tokens configured`);
     return;
   }
-  console.log(`[Juris] ${contractKey}: Fetching ${tokenList.length} tokens from ${owners.length} contracts`);
-  await sumTokens2({ api, owners, tokens: tokenList });
-  // After balances fetched, print actual native denom match for clarity
-  Object.entries(tokens).forEach(([key, tokenData]) => {
-    const addr = tokenData.address;
-    const balance = api.getBalances()[addr] || 0;
-    let denom = addr;
-    if (key === 'LUNC') denom = 'uluna';
-    if (key === 'USTC') denom = 'uusd';
-    const formatted = (balance / Math.pow(10, tokenData.decimals || 6)).toLocaleString('en-US', { maximumFractionDigits: 2 });
-    console.log(`[Juris] FINAL BALANCE: ${key} (addressKey="${addr}", native="${denom}") = ${formatted}`);
-  });
+
+  // Log summary of all addresses and tokens being queried
+  console.log(`[Juris] ${contractKey}: Passing to sumTokens2`);
+  console.log(`  Contracts:`);
+  owners.forEach(c => console.log(`    ${c}`));
+  console.log(`  Tokens:`);
+  tokenList.forEach(t => console.log(`    ${t}`));
+
+  try {
+    await sumTokens2({
+      api,
+      owners,
+      tokens: tokenList,
+    });
+    // LOG returned balances
+    const balances = api.getBalances();
+    Object.entries(tokens).forEach(([key, tokenData]) => {
+      const addr = key === 'LUNC'
+        ? 'lunc'
+        : key === 'USTC'
+        ? 'ustc'
+        : tokenData.address;
+      const val = balances[addr];
+      const pretty = val ? (val / Math.pow(10, tokenData.decimals || 6)).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '0';
+      console.log(`[Juris] [${contractKey}] Final ${key} balance for addressKey "${addr}" = ${pretty}`);
+    });
+    console.log(`[Juris] ${contractKey}: Success`);
+  } catch (error) {
+    console.error(`[Juris] ${contractKey}: Error - ${error.message}`);
+    throw error;
+  }
 }
+
 
 async function tvl(api) {
   console.log('[Juris] TVL: Starting...');
