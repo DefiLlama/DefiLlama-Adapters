@@ -1,29 +1,24 @@
 {
   "protocol": {
     "name": "Juris Protocol",
-    "description": "Decentralized lending and staking protocol on Terra Classic"
+    "description": "Decentralized staking protocol on Terra Classic"
   },
   "tokens": {
     "JURIS": {
-      "name": "Juris Protocol",
-      "symbol": "JURIS",
-      "decimals": 6,
       "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
-      "coingeckoId": "juris-protocol"
+      "coingeckoId": "juris-protocol",
+      "decimals": 6,
+      "symbol": "JURIS"
     },
     "LUNC": {
-      "name": "Terra Luna Classic",
-      "symbol": "LUNC",
-      "decimals": 6,
       "address": "uluna",
-      "coingeckoId": "terra-luna-classic"
+      "coingeckoId": "terra-luna-classic",
+      "decimals": 6
     },
     "USTC": {
-      "name": "TerraClassicUSD",
-      "symbol": "USTC",
-      "decimals": 6,
       "address": "uusd",
-      "coingeckoId": "terraclassicusd"
+      "coingeckoId": "terraclassicusd",
+      "decimals": 6
     }
   },
   "contracts": {
