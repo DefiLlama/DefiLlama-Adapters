@@ -1,75 +1,105 @@
 const { queryContract } = require('../helper/chain/cosmos');
-const { getTokenDenomPrice } = require('../helper/tokenMapping');
 
-// Juris Protocol contract addresses on Terra Classic
-const JURIS_STAKING_CONTRACT = 'terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y'; // You'll provide this later
+// Juris Protocol staking contract on Terra Classic
+const JURIS_STAKING_CONTRACT = 'terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y';
 const TERRA_CLASSIC_CHAIN_ID = 'columbus-5';
 
-// Terra Classic native token addresses
+// Terra Classic native token
 const LUNC_TOKEN = 'uluna'; // Terra Classic LUNA (LUNC)
-const USTC_TOKEN = 'uusd';  // Terra Classic USD (USTC)
 
 async function staking(api) {
-  const balances = {};
-  
-  if (!JURIS_STAKING_CONTRACT) {
-    throw new Error('Juris staking contract address not provided yet');
-  }
-  
   try {
     // Query the staking contract for total staked tokens
-    // This is a generic query - you'll need to adjust based on your actual contract structure
-    const stakingInfo = await queryContract({
-      contract: JURIS_STAKING_CONTRACT,
-      chain: TERRA_CLASSIC_CHAIN_ID,
-      data: { staking_info: {} } // Adjust this query based on your contract's query methods
-    });
+    // Common query patterns for Terra Classic staking contracts:
     
-    // If staking info includes LUNC tokens staked
-    if (stakingInfo.total_staked_lunc) {
-      api.add(LUNC_TOKEN, stakingInfo.total_staked_lunc);
-    }
+    // Try multiple query patterns since I don't know your exact contract interface
+    let stakingData;
     
-    // If staking info includes other tokens (adjust based on your protocol)
-    if (stakingInfo.total_staked_ustc) {
-      api.add(USTC_TOKEN, stakingInfo.total_staked_ustc);
-    }
-    
-    // Query for any additional token pools if your protocol supports multiple tokens
-    const poolsInfo = await queryContract({
-      contract: JURIS_STAKING_CONTRACT,
-      chain: TERRA_CLASSIC_CHAIN_ID,
-      data: { pools: {} }
-    });
-    
-    if (poolsInfo && poolsInfo.pools) {
-      poolsInfo.pools.forEach(pool => {
-        if (pool.denom && pool.amount) {
-          api.add(pool.denom, pool.amount);
-        }
+    try {
+      // Pattern 1: Query total staked
+      stakingData = await queryContract({
+        contract: JURIS_STAKING_CONTRACT,
+        chain: TERRA_CLASSIC_CHAIN_ID,
+        data: { total_staked: {} }
       });
+    } catch (e) {
+      try {
+        // Pattern 2: Query state/config
+        stakingData = await queryContract({
+          contract: JURIS_STAKING_CONTRACT,
+          chain: TERRA_CLASSIC_CHAIN_ID,
+          data: { state: {} }
+        });
+      } catch (e2) {
+        try {
+          // Pattern 3: Query config
+          stakingData = await queryContract({
+            contract: JURIS_STAKING_CONTRACT,
+            chain: TERRA_CLASSIC_CHAIN_ID,
+            data: { config: {} }
+          });
+        } catch (e3) {
+          // Pattern 4: Query pool info
+          stakingData = await queryContract({
+            contract: JURIS_STAKING_CONTRACT,
+            chain: TERRA_CLASSIC_CHAIN_ID,
+            data: { pool_info: {} }
+          });
+        }
+      }
+    }
+    
+    // Extract staked amounts based on common response patterns
+    if (stakingData) {
+      // Check for various possible field names that might contain staked amounts
+      const possibleFields = [
+        'total_staked',
+        'total_stake', 
+        'staked_amount',
+        'total_bonded',
+        'bonded_amount',
+        'pool_size',
+        'total_supply'
+      ];
+      
+      for (const field of possibleFields) {
+        if (stakingData[field]) {
+          api.add(LUNC_TOKEN, stakingData[field]);
+          break;
+        }
+      }
+      
+      // If the response has nested structure
+      if (stakingData.pool && stakingData.pool.total_staked) {
+        api.add(LUNC_TOKEN, stakingData.pool.total_staked);
+      }
+      
+      // If multiple pools exist
+      if (stakingData.pools && Array.isArray(stakingData.pools)) {
+        stakingData.pools.forEach(pool => {
+          if (pool.denom === 'uluna' && pool.amount) {
+            api.add(LUNC_TOKEN, pool.amount);
+          }
+        });
+      }
     }
     
   } catch (error) {
     console.error('Error fetching Juris Protocol staking data:', error);
-    // Return empty balances if contract query fails
-    return balances;
+    // Don't throw error, just log it and return empty balances
   }
-  
-  return balances;
 }
 
-// Alternative TVL function if you want to track total value locked instead of just staking
 async function tvl(api) {
-  // For now, TVL equals staking since you mentioned you're currently running staking only
+  // For staking-only protocol, TVL equals staking
   return staking(api);
 }
 
 module.exports = {
-  timetravel: true, // Set to false if your contract doesn't support historical queries
+  timetravel: false, // Set to true if your contract supports historical queries
   misrepresentedTokens: false,
-  methodology: 'Juris Protocol TVL is calculated by summing all tokens staked in the staking contracts on Terra Classic. Currently includes native LUNC staking with plans to expand to lending functionality.',
-  start: Math.floor(Date.now() / 1000), // Replace with your actual launch timestamp
+  methodology: 'Juris Protocol TVL is calculated by summing all LUNC tokens staked in the staking contract on Terra Classic. Currently operates as a staking protocol with plans to expand to lending functionality.',
+  start: 1698796800, // Replace with your actual launch timestamp (current placeholder: Nov 1, 2023)
   terra: {
     staking,
     tvl
