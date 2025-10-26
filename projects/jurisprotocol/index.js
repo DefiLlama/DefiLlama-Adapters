@@ -21,37 +21,50 @@ function getContractArray(contract) {
 
 // === Safe universal balance fetch: multi-method with fallback ===
 async function fetchTokenBalance(api, owner, tokenAddr) {
-  // Try sumTokens first
+  console.log(`[Juris] ▶️ Checking balance for token: ${tokenAddr} @ ${owner}`);
+  // 1. Try sumTokens first
   await sumTokens({ api, owner: [owner], tokens: [tokenAddr] });
-  if (api.balances && api.balances[tokenAddr] && api.balances[tokenAddr] > 0) {
-    console.log(`[Juris] ${tokenAddr}: sumTokens ✓`);
+  const balSum = api.balances && api.balances[tokenAddr] ? api.balances[tokenAddr] : 0;
+  if (balSum > 0) {
+    console.log(`[Juris]   ✓ sumTokens succeeded for ${tokenAddr}: ${balSum}`);
     return;
+  } else {
+    console.log(`[Juris]   sumTokens returned zero or empty.`);
   }
-  // Fallback to queryContract for CW20
+  // 2. Fallback: queryContract (for CW20)
   if (tokenAddr.startsWith('terra1')) {
     try {
-      const result = await queryContract({
+      const r = await queryContract({
         chain: 'terra',
         contract: tokenAddr,
         msg: { balance: { address: owner } }
       });
-      if (result && result.balance && result.balance > 0) {
-        api.add(tokenAddr, result.balance);
-        console.log(`[Juris] ${tokenAddr}: queryContract ✓`);
+      if (r && r.balance && r.balance > 0) {
+        api.add(tokenAddr, r.balance);
+        console.log(`[Juris]   ✓ queryContract succeeded for ${tokenAddr}: ${r.balance}`);
         return;
+      } else {
+        console.log(`[Juris]   queryContract returned zero or empty.`);
       }
-    } catch {}
-  }
-  // Final fallback to getBalance for native
-  try {
-    const balance = await getBalance('terra', owner, tokenAddr);
-    if (balance && balance > 0) {
-      api.add(tokenAddr, balance);
-      console.log(`[Juris] ${tokenAddr}: getBalance ✓`);
-      return;
+    } catch (e) {
+      console.log(`[Juris]   queryContract errored: ${e.message}`);
     }
-  } catch {}
+  }
+  // 3. Fallback: getBalance (for native)
+  try {
+    const b = await getBalance('terra', owner, tokenAddr);
+    if (b && b > 0) {
+      api.add(tokenAddr, b);
+      console.log(`[Juris]   ✓ getBalance succeeded for ${tokenAddr}: ${b}`);
+      return;
+    } else {
+      console.log(`[Juris]   getBalance returned zero or empty.`);
+    }
+  } catch (e) {
+    console.log(`[Juris]   getBalance errored: ${e.message}`);
+  }
 }
+
 
 async function staking(api) {
   if (!contractExists(contracts.staking)) return;
