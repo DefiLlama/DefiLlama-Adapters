@@ -1,41 +1,41 @@
 {
-  "jurisProtocol": {
+  "protocol": {
     "name": "Juris Protocol",
     "website": "https://jurisprotocol.com",
-    "description": "Lending and staking protocol on Terra Classic",
-    "tokens": {
-      "JURIS": {
-        "name": "Juris Protocol",
-        "symbol": "JURIS",
-        "decimals": 6,
-        "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
-        "coingeckoId": "juris-protocol",
-        "type": "cw20",
-        "chain": "terra"
-      },
-      "LUNC": {
-        "name": "Terra Luna Classic",
-        "symbol": "LUNC", 
-        "decimals": 6,
-        "address": "uluna",
-        "coingeckoId": "terra-luna-classic",
-        "type": "native",
-        "chain": "terra"
-      },
-      "USTC": {
-        "name": "TerraClassicUSD",
-        "symbol": "USTC",
-        "decimals": 6,
-        "address": "uusd", 
-        "coingeckoId": "terraclassicusd",
-        "type": "native",
-        "chain": "terra"
-      }
+    "description": "Decentralized lending and staking protocol on Terra Classic",
+    "category": "Lending",
+    "twitter": "@JurisProtocol",
+    "chains": ["Terra Classic"]
+  },
+  "tokens": {
+    "JURIS": {
+      "name": "Juris Protocol", 
+      "symbol": "JURIS",
+      "decimals": 6,
+      "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
+      "coingeckoId": "juris-protocol",
+      "type": "cw20"
     },
-    "contracts": {
-      "staking": "terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y",
-      "token": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
-      "admin": "terra16mcjuy5xm9vwnuj0w224qrew9mn7s9zqc42c02"
+    "LUNC": {
+      "name": "Terra Luna Classic",
+      "symbol": "LUNC",
+      "decimals": 6, 
+      "address": "uluna",
+      "coingeckoId": "terra-luna-classic",
+      "type": "native"
+    },
+    "USTC": {
+      "name": "TerraClassicUSD",
+      "symbol": "USTC",
+      "decimals": 6,
+      "address": "uusd",
+      "coingeckoId": "terraclassicusd", 
+      "type": "native"
     }
+  },
+  "contracts": {
+    "staking": "terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y",
+    "token": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
+    "admin": "terra16mcjuy5xm9vwnuj0w224qrew9mn7s9zqc42c02"
   }
 }
