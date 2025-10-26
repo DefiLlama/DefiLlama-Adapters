@@ -34,7 +34,7 @@ async function tvl(api) {
       console.log('❌ JURIS balance query failed:', error.message);
     }
     
-    // Method 3: Contract state query (supplementary - for additional staking data)
+    // Method 3: Contract state query (supplementary)
     try {
       const contractState = await queryContract({
         contract: JURIS_STAKING_CONTRACT,
@@ -45,23 +45,21 @@ async function tvl(api) {
       if (contractState && Object.keys(contractState).length > 0) {
         console.log('✅ Contract state found:', contractState);
         
-        // Parse any additional staking amounts from contract state
+        // Parse additional staking amounts from contract state
         Object.entries(contractState).forEach(([key, value]) => {
           const numValue = Number(value);
           if (numValue > 0) {
             const keyLower = key.toLowerCase();
             
-            // JURIS token amounts
             if (keyLower.includes('juris') && keyLower.includes('stake')) {
-              api.add(JURIS_TOKEN_CONTRACT, numValue); 
-            }
-            // LUNC amounts  
-            else if ((keyLower.includes('lunc') || keyLower.includes('luna')) && keyLower.includes('stake')) {
-              api.add(LUNC_DENOM, numValue); 
-            }
-            // USTC amounts
-            else if ((keyLower.includes('ustc') || keyLower.includes('usd')) && keyLower.includes('stake')) {
-              api.add(USTC_DENOM, numValue); 
+              api.add(JURIS_TOKEN_CONTRACT, numValue);
+              console.log(`✅ Added ${numValue} JURIS from contract field: ${key}`);
+            } else if ((keyLower.includes('lunc') || keyLower.includes('luna')) && keyLower.includes('stake')) {
+              api.add(LUNC_DENOM, numValue);
+              console.log(`✅ Added ${numValue} LUNC from contract field: ${key}`);
+            } else if ((keyLower.includes('ustc') || keyLower.includes('usd')) && keyLower.includes('stake')) {
+              api.add(USTC_DENOM, numValue);
+              console.log(`✅ Added ${numValue} USTC from contract field: ${key}`);
             }
           }
         });
@@ -77,7 +75,6 @@ async function tvl(api) {
   }
 }
 
-// Optional: Separate staking function (useful for DefiLlama categorization)
 async function staking(api) {
   await tvl(api);
 }
@@ -86,14 +83,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology: 'Juris Protocol TVL tracks JURIS tokens (6 decimals), LUNC, and USTC staked in the staking contract on Terra Classic. Includes both direct token holdings and contract-tracked staking amounts.',
-  start: 1707782400,  
-  
-  // CoinGecko price mappings for all supported tokens
-  coingeckoIds: {
-    [JURIS_TOKEN_CONTRACT]: 'juris-protocol',  // JURIS token
-    [LUNC_DENOM]: 'terra-luna-classic',        // LUNC 
-    [USTC_DENOM]: 'terraclassicusd'           // USTC
-  },
+  start: 1707782400, // February 2024
   
   terra: {
     tvl,
