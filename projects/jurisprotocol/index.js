@@ -10,10 +10,12 @@ function b64(obj) {
 async function smartQuery(contract, msgObj) {
   const url = `${LCD}/cosmwasm/wasm/v1/contract/${contract}/smart/${b64(msgObj)}`;
   const res = await get(url);
+    console.log(url,'smartQuery')
   return res.data || res.result || res;
 }
 async function bankBalances(address) {
   const url = `${LCD}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`;
+  console.log(url,'bankBalances')
   const res = await get(url);
   return res.balances || [];
 }
