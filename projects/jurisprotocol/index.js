@@ -70,8 +70,7 @@ module.exports = {
   misrepresentedTokens: false,
   methodology: 'Juris Protocol TVL includes LUNC, USTC, and JURIS tokens staked in the staking contract on Terra Classic.',
   start: 1698796800, // Update with your actual launch timestamp
-  terra: {
-    tvl,
+  terra: { 
     staking
   }
 };
