@@ -1,5 +1,4 @@
 const { compoundExports2 } = require("../helper/compound");
-const { staking } = require("../helper/staking");
 
 module.exports = {
   methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
