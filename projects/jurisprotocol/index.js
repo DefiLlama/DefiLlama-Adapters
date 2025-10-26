@@ -30,13 +30,12 @@ async function staking(api) {
     try {
       const contractState = await queryContract({
         contract: JURIS_STAKING_CONTRACT,
-        chain: 'terra', // Use 'terra' not 'columbus-5'
+        chain: 'terra',
         data: { state: {} }
       });
       
       console.log('Juris staking contract state:', contractState);
        
-      
     } catch (e) {
       console.log('Juris Protocol: Contract state query failed (this is optional):', e.message);
     }
@@ -50,7 +49,7 @@ async function tvl(api) {
   // For now, TVL equals staking since lending is not deployed yet
   await staking(api);
   
-  // When you deploy lending contracts,:
+  // When you deploy lending contracts:
   // const JURIS_LENDING_CONTRACT = 'terra1...';
   // if (JURIS_LENDING_CONTRACT) {
   //   await sumTokens({
@@ -67,6 +66,7 @@ module.exports = {
   methodology: 'Juris Protocol TVL includes LUNC, USTC, and JURIS tokens staked in the staking contract on Terra Classic.',
   start: 1698796800, 
   terra: { 
+    tvl,      // ADD THIS LINE - you were missing it!
     staking
   }
 };
