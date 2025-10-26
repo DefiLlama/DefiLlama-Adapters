@@ -2,7 +2,7 @@ const { queryContract } = require('../helper/chain/cosmos');
 const { getTokenDenomPrice } = require('../helper/tokenMapping');
 
 // Juris Protocol contract addresses on Terra Classic
-const JURIS_STAKING_CONTRACT = ''; // You'll provide this later
+const JURIS_STAKING_CONTRACT = 'terra1rta0rnaxz9ww6hnrj9347vdn66gkgxcmcwgpm2jj6qulv8adc52s95qa5y'; // You'll provide this later
 const TERRA_CLASSIC_CHAIN_ID = 'columbus-5';
 
 // Terra Classic native token addresses
