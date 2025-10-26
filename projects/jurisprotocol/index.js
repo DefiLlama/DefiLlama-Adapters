@@ -32,10 +32,10 @@ async function fetchTokenBalance(api, owner, tokenAddr) {
     console.log(`[Juris]   sumTokens returned zero or empty.`);
   }
   // 2. Fallback: queryContract (for CW20)
-  if (tokenAddr.startsWith('terra1')) {
+  if (tokenAddr.startsWith('1')) {
     try {
       const r = await queryContract({
-        chain: 'terra',
+        chain: 'columbus-5',
         contract: tokenAddr,
         msg: { balance: { address: owner } }
       });
@@ -52,7 +52,7 @@ async function fetchTokenBalance(api, owner, tokenAddr) {
   }
   // 3. Fallback: getBalance (for native)
   try {
-    const b = await getBalance('terra', owner, tokenAddr);
+    const b = await getBalance('columbus-5', owner, tokenAddr);
     if (b && b > 0) {
       api.add(tokenAddr, b);
       console.log(`[Juris]   ✓ getBalance succeeded for ${tokenAddr}: ${b}`);
