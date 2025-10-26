@@ -10,7 +10,7 @@
       "decimals": 6,
       "address": "terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2",
       "coingeckoId": "juris-protocol",
-      "description": "Governance token for Juris Protocol"
+      "type": "cw20"
     },
     "LUNC": {
       "name": "Terra Luna Classic",
@@ -18,7 +18,7 @@
       "decimals": 6,
       "address": "uluna",
       "coingeckoId": "terra-luna-classic",
-      "description": "Native token of Terra Classic blockchain"
+      "type": "native"
     },
     "USTC": {
       "name": "TerraClassicUSD",
@@ -26,7 +26,7 @@
       "decimals": 6,
       "address": "uusd",
       "coingeckoId": "terraclassicusd",
-      "description": "Native stablecoin of Terra Classic blockchain"
+      "type": "native"
     }
   },
   "contracts": {
