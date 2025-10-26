@@ -12,6 +12,7 @@ function b64(obj) {
 
 // DEBUG: Test queryContractSmart availability
 console.log('[DEBUG] queryContractSmart imported:', typeof queryContractSmart);
+console.log('[DEBUG] abi.json contracts keys:', Object.keys(contracts));
 
 async function smartQuery(contract, msgObj) {
   const url = `${LCD}/cosmwasm/wasm/v1/contract/${contract}/smart/${b64(msgObj)}`;
@@ -46,7 +47,7 @@ function addBig(balances, key, amount) {
 // Cache for token metadata to avoid repeated queries
 const metadataCache = {};
 
-// NEW: Fetch token metadata using queryContractSmart
+// ENHANCED: Fetch token metadata - tries queryContractSmart FIRST, falls back if nothing found
 async function fetchTokenMetadata(tokenAddress) {
   try {
     // Check cache first
@@ -57,7 +58,7 @@ async function fetchTokenMetadata(tokenAddress) {
 
     console.log(`[DEBUG] Fetching metadata for token: ${tokenAddress}`);
 
-    // Try using queryContractSmart first
+    // PRIMARY: Try using queryContractSmart FIRST (DefiLlama SDK method)
     if (typeof queryContractSmart === 'function') {
       try {
         const metadata = await queryContractSmart({
@@ -65,23 +66,35 @@ async function fetchTokenMetadata(tokenAddress) {
           chain: 'terra',
           data: { token_info: {} }
         });
-        console.log(`[DEBUG] queryContractSmart SUCCESS for ${tokenAddress}:`, metadata);
-        metadataCache[tokenAddress] = metadata;
-        return metadata;
+        
+        if (metadata && Object.keys(metadata).length > 0) {
+          console.log(`[DEBUG] ✅ queryContractSmart SUCCESS for ${tokenAddress}:`, metadata);
+          metadataCache[tokenAddress] = metadata;
+          return metadata;
+        } else {
+          console.log(`[DEBUG] ⚠️  queryContractSmart returned empty/null for ${tokenAddress}, trying fallback...`);
+        }
       } catch (err) {
-        console.log(`[DEBUG] queryContractSmart FAILED for ${tokenAddress}:`, err.message);
+        console.log(`[DEBUG] ⚠️  queryContractSmart ERROR for ${tokenAddress}:`, err.message, '- falling back...');
       }
     } else {
-      console.log(`[DEBUG] queryContractSmart not a function, falling back to manual smartQuery`);
+      console.log(`[DEBUG] ⚠️  queryContractSmart not a function, using fallback smartQuery`);
     }
 
-    // Fallback to manual smartQuery
+    // FALLBACK: Use manual smartQuery if queryContractSmart fails or returns nothing
+    console.log(`[DEBUG] Attempting fallback smartQuery for ${tokenAddress}`);
     const metadata = await smartQuery(tokenAddress, { token_info: {} });
-    console.log(`[DEBUG] Fallback smartQuery SUCCESS for ${tokenAddress}:`, metadata);
-    metadataCache[tokenAddress] = metadata;
-    return metadata;
+    
+    if (metadata && Object.keys(metadata).length > 0) {
+      console.log(`[DEBUG] ✅ Fallback smartQuery SUCCESS for ${tokenAddress}:`, metadata);
+      metadataCache[tokenAddress] = metadata;
+      return metadata;
+    } else {
+      console.log(`[DEBUG] ❌ Both methods returned empty for ${tokenAddress}`);
+      return null;
+    }
   } catch (err) {
-    console.log(`[DEBUG] FAILED to fetch metadata for ${tokenAddress}:`, err.message);
+    console.log(`[DEBUG] ❌ CRITICAL ERROR fetching metadata for ${tokenAddress}:`, err.message);
     return null;
   }
 }
@@ -102,7 +115,7 @@ async function fetchBalances(moduleName) {
   for (const owner of contractList) {
     for (const [tokenKey, tokenInfo] of Object.entries(tokens)) {
       if (tokenInfo.type === 'cw20') {
-        // Fetch metadata once per token
+        // Fetch metadata - tries queryContractSmart first, then fallback
         const metadata = await fetchTokenMetadata(tokenInfo.address);
 
         const bal = await cw20Balance(tokenInfo.address, owner);
@@ -145,6 +158,8 @@ Object.keys(contracts).forEach((contractKey) => {
   }
 });
 
+console.log('[DEBUG] terraExport keys BEFORE tvl function:', Object.keys(terraExport));
+
 if (Object.keys(terraExport).length > 0) {
   terraExport.tvl = async () => {
     let all = {};
@@ -158,6 +173,16 @@ if (Object.keys(terraExport).length > 0) {
     return all;
   };
 }
+
+console.log('[DEBUG] terraExport keys AFTER tvl function:', Object.keys(terraExport));
+console.log('[DEBUG] Categories that DefiLlama will show:');
+Object.keys(terraExport).forEach((key) => {
+  if (key === 'tvl') {
+    console.log(`  - tvl (aggregate of all modules)`);
+  } else {
+    console.log(`  - terra-${key} (from module: ${key})`);
+  }
+});
 
 module.exports = {
   methodology: `${abi.protocol.description}. TVL fetched directly from on-chain LCD for each active contract and token in abi.json.`,
