@@ -10,7 +10,7 @@ const JURIS_TOKEN_CONTRACT = contracts.token;
 function stakingHelper(stakingContract, governanceToken) {
   return async function(api) {
     try {
-      console.log(`📊 Querying staking for governance token...`);
+      console.log('📊 Calculating governance token staking...');
       
       const balance = await getBalance({
         token: governanceToken,
@@ -20,19 +20,19 @@ function stakingHelper(stakingContract, governanceToken) {
       
       if (balance > 0) {
         api.add(governanceToken, balance);
-        console.log(`✅ Governance token staked: ${balance}`);
+        console.log(`✅ JURIS staked: ${balance}`);
       }
       
     } catch (error) {
-      console.error('🚨 Staking calculation error:', error.message);
+      console.error('Staking calculation error:', error.message);
     }
   };
 }
 
 // TVL function - tracks all protocol assets
-async function tvl(api) {
+async function tvlFunction(api) {
   try {
-    console.log('🔍 Calculating Juris Protocol TVL...');
+    console.log('🔍 Calculating total protocol TVL...');
     
     // Native tokens (LUNC & USTC) held by staking contract
     await sumTokens({
@@ -42,46 +42,46 @@ async function tvl(api) {
     });
     
     // JURIS governance tokens held by staking contract
-    try {
-      const jurisBalance = await getBalance({
-        token: JURIS_TOKEN_CONTRACT,
-        owner: JURIS_STAKING_CONTRACT,
-        chain: 'terra'
-      });
-      
-      if (jurisBalance > 0) {
-        api.add(JURIS_TOKEN_CONTRACT, jurisBalance);
-        console.log(`✅ JURIS balance: ${jurisBalance}`);
-      }
-    } catch (error) {
-      console.log('❌ JURIS balance query failed:', error.message);
+    const jurisBalance = await getBalance({
+      token: JURIS_TOKEN_CONTRACT,
+      owner: JURIS_STAKING_CONTRACT,
+      chain: 'terra'
+    });
+    
+    if (jurisBalance > 0) {
+      api.add(JURIS_TOKEN_CONTRACT, jurisBalance);
+      console.log(`✅ JURIS TVL: ${jurisBalance}`);
     }
     
+    console.log('📊 TVL calculation complete');
+    
   } catch (error) {
-    console.error('🚨 TVL calculation error:', error.message);
+    console.error('TVL calculation error:', error.message);
   }
 }
 
 module.exports = {
-  // Core functions
-  tvl,
-  staking: stakingHelper(JURIS_STAKING_CONTRACT, JURIS_TOKEN_CONTRACT),
-  
-  // Valid metadata keys only
-  methodology: `${protocol.description}. TVL includes all ${tokens.JURIS.symbol}, ${tokens.LUNC.symbol}, and ${tokens.USTC.symbol} tokens in protocol contracts. Staking tracks ${tokens.JURIS.symbol} governance token positions.`,
+  // Global metadata (valid keys only)
+  methodology: `${protocol.description}. TVL includes ${tokens.JURIS.symbol} (${tokens.JURIS.decimals} decimals), ${tokens.LUNC.symbol}, and ${tokens.USTC.symbol} tokens staked in the protocol on Terra Classic.`,
   timetravel: false,
   misrepresentedTokens: false,
   doublecounted: false,
   start: 1707782400,
   
-  // CoinGecko price mappings (these go at root level)
+  // CoinGecko price mappings (at root level)
   [`terra:${JURIS_TOKEN_CONTRACT}`]: tokens.JURIS.coingeckoId,
-  [`terra:${tokens.LUNC.address}`]: tokens.LUNC.coingeckoId,  
+  [`terra:${tokens.LUNC.address}`]: tokens.LUNC.coingeckoId,
   [`terra:${tokens.USTC.address}`]: tokens.USTC.coingeckoId,
   
-  // Chain-specific exports
+  // Chain-specific exports (NEW SPEC - tvl/staking INSIDE chain)
   terra: {
-    tvl,
+    tvl: tvlFunction,
     staking: stakingHelper(JURIS_STAKING_CONTRACT, JURIS_TOKEN_CONTRACT)
   }
+  
+  // Optional: Add when lending goes live
+  // hallmarks: [
+  //   [1707782400, "Protocol Launch"],
+  //   [1715040000, "Native Staking Added"]
+  // ]
 };
