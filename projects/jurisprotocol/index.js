@@ -1,30 +1,47 @@
 const { getBalance, sumTokens } = require('../helper/chain/cosmos');
 const abi = require('./abi.json');
 
-// Extract contract addresses from ABI
-const { contracts, tokens } = abi.jurisProtocol;
+// Extract configuration from ABI
+const { contracts, tokens, protocol } = abi;
 const JURIS_STAKING_CONTRACT = contracts.staking;
 const JURIS_TOKEN_CONTRACT = contracts.token;
 
-// Native Terra Classic token addresses
-const LUNC_DENOM = tokens.LUNC.address; // 'uluna'
-const USTC_DENOM = tokens.USTC.address; // 'uusd'
+// Staking helper function - tracks governance token staking
+function stakingHelper(stakingContract, governanceToken) {
+  return async function(api) {
+    try {
+      console.log(`📊 Querying staking for governance token...`);
+      
+      const balance = await getBalance({
+        token: governanceToken,
+        owner: stakingContract,
+        chain: 'terra'
+      });
+      
+      if (balance > 0) {
+        api.add(governanceToken, balance);
+        console.log(`✅ Governance token staked: ${balance}`);
+      }
+      
+    } catch (error) {
+      console.error('🚨 Staking calculation error:', error.message);
+    }
+  };
+}
 
+// TVL function - tracks all protocol assets
 async function tvl(api) {
   try {
-    console.log('🔍 Querying Juris Protocol staking contract...');
-    console.log('📋 Contract:', JURIS_STAKING_CONTRACT);
+    console.log('🔍 Calculating Juris Protocol TVL...');
     
-    // Method 1: Query native tokens (LUNC & USTC) held by staking contract
-    console.log('📊 Checking native tokens (LUNC/USTC)...');
+    // Native tokens (LUNC & USTC) held by staking contract
     await sumTokens({
       api,
       owner: JURIS_STAKING_CONTRACT,
-      tokens: [LUNC_DENOM, USTC_DENOM]
+      tokens: [tokens.LUNC.address, tokens.USTC.address]
     });
     
-    // Method 2: Query JURIS CW20 tokens held by staking contract
-    console.log('📊 Checking JURIS CW20 tokens...');
+    // JURIS governance tokens held by staking contract
     try {
       const jurisBalance = await getBalance({
         token: JURIS_TOKEN_CONTRACT,
@@ -34,41 +51,37 @@ async function tvl(api) {
       
       if (jurisBalance > 0) {
         api.add(JURIS_TOKEN_CONTRACT, jurisBalance);
-        console.log(`✅ JURIS balance found: ${jurisBalance} (${jurisBalance / 10**6} JURIS with 6 decimals)`);
-      } else {
-        console.log('ℹ️ No JURIS tokens found in staking contract');
+        console.log(`✅ JURIS balance: ${jurisBalance}`);
       }
     } catch (error) {
       console.log('❌ JURIS balance query failed:', error.message);
     }
-    
-    // Log final balances
-    const balances = api.getBalances();
-    console.log('📊 Final TVL balances:', Object.keys(balances).length > 0 ? balances : 'No balances found');
     
   } catch (error) {
     console.error('🚨 TVL calculation error:', error.message);
   }
 }
 
-async function staking(api) {
-  // Staking TVL is the same as total TVL for staking-only protocols
-  await tvl(api);
-}
-
 module.exports = {
+  // Core functions
+  tvl,
+  staking: stakingHelper(JURIS_STAKING_CONTRACT, JURIS_TOKEN_CONTRACT),
+  
+  // Valid metadata keys only
+  methodology: `${protocol.description}. TVL includes all ${tokens.JURIS.symbol}, ${tokens.LUNC.symbol}, and ${tokens.USTC.symbol} tokens in protocol contracts. Staking tracks ${tokens.JURIS.symbol} governance token positions.`,
   timetravel: false,
   misrepresentedTokens: false,
-  methodology: `${abi.jurisProtocol.description}. TVL tracks ${tokens.JURIS.symbol} (${tokens.JURIS.decimals} decimals), ${tokens.LUNC.symbol}, and ${tokens.USTC.symbol} staked in the staking contract.`,
-  start: 1707782400, // February 2024
+  doublecounted: false,
+  start: 1707782400,
   
-  // Token price mappings using ABI data
+  // CoinGecko price mappings (these go at root level)
   [`terra:${JURIS_TOKEN_CONTRACT}`]: tokens.JURIS.coingeckoId,
-  [`terra:${LUNC_DENOM}`]: tokens.LUNC.coingeckoId,  
-  [`terra:${USTC_DENOM}`]: tokens.USTC.coingeckoId,
+  [`terra:${tokens.LUNC.address}`]: tokens.LUNC.coingeckoId,  
+  [`terra:${tokens.USTC.address}`]: tokens.USTC.coingeckoId,
   
+  // Chain-specific exports
   terra: {
     tvl,
-    staking
+    staking: stakingHelper(JURIS_STAKING_CONTRACT, JURIS_TOKEN_CONTRACT)
   }
 };
