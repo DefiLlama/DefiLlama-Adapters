@@ -185,26 +185,12 @@ async function fetchBalances(moduleName, api) {
         const decimals = metadata?.decimals || tokenInfo.decimals || 6;
         const displayBalance = Number(bal) / Math.pow(10, decimals);
 
-        // DIAGNOSTIC: Log what we're sending to api.add()
-        const addressFormats = [
-          `terra:${tokenInfo.address}`,
-          tokenInfo.address,
-          `lunc:${tokenInfo.address}`,
-          tokenInfo.address.replace('terra', 'lunc')
-        ];
-
-        console.log(`[DIAGNOSTIC] Testing address formats for ${tokenInfo.address}:`);
-        addressFormats.forEach((fmt, idx) => {
-          console.log(`  Format ${idx + 1}: ${fmt}`);
-        });
-
-        // Use primary format but log details
-        const primaryAddress = `terra:${tokenInfo.address}`;
-        console.log(`[API.ADD] Calling api.add with: '${primaryAddress}', ${bal.toString()}`);
+        // FIX: Use ONLY the token address WITHOUT 'terra:' prefix
+        // DefiLlama adds the chain prefix automatically
+        console.log(`[API.ADD] Calling api.add with: '${tokenInfo.address}', ${bal.toString()}`);
         console.log(`[API.ADD] Token decimals: ${decimals}, Display: ${displayBalance}`);
 
-        // CORRECT: Use api.add() - DefiLlama processes it immediately
-        api.add(primaryAddress, bal);
+        api.add(tokenInfo.address, bal);
 
         console.log(
           `[Juris] Module [${moduleName}] Contract [${owner}] CW20 [${tokenInfo.address}]\n` +
@@ -250,7 +236,7 @@ console.log('[DEBUG] terraExport keys BEFORE tvl function:', Object.keys(terraEx
 
 if (Object.keys(terraExport).length > 0) {
   terraExport.tvl = async (api) => {
-    // Aggregate TVL by calling all module functions with api
+    // Aggregate TVL by calling all module functions with api (without duplicating)
     for (const key of Object.keys(terraExport).filter((k) => k !== 'tvl')) {
       console.log(`[TVL] Processing module: ${key}`);
       await terraExport[key](api);
