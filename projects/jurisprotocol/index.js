@@ -1,261 +1,290 @@
+// index.js — Juris Protocol adapter (uses queryContractSmart first, then fallbacks)
 const { get } = require('../helper/http');
 const abi = require('./abi.json');
-const { queryContractSmart } = require('../helper/chain/cosmos');
+const { queryContractSmart } = require('../helper/chain/cosmos'); // may be undefined in some runtimes
 
 const LCD = process.env.TERRA_LCD || 'https://terra-classic-lcd.publicnode.com';
-const { contracts, tokens } = abi;
+const { contracts, tokens, protocol } = abi;
 
-// Helper: base64 encode JSON for smart queries
+// Debugging toggle: DEBUG=1 for verbose logs
+const DEBUG = !!process.env.DEBUG;
+const log = (...args) => { if (DEBUG) console.log('[JURIS]', ...args); };
+
+/* -------------------------
+   Helpers
+   ------------------------- */
+
+// base64 encode for cosmwasm smart queries
 function b64(obj) {
   return Buffer.from(JSON.stringify(obj)).toString('base64');
 }
 
-// DEBUG: Test queryContractSmart availability
-console.log('[DEBUG] queryContractSmart imported:', typeof queryContractSmart);
-console.log('[DEBUG] abi.json contracts keys:', Object.keys(contracts));
-
-async function smartQuery(contract, msgObj) {
+/**
+ * smartQuery via LCD (robustly unwraps common shapes)
+ */
+async function lcdSmartQuery(contract, msgObj) {
   const url = `${LCD}/cosmwasm/wasm/v1/contract/${contract}/smart/${b64(msgObj)}`;
-  const res = await get(url);
-  console.log(url, 'smartQuery');
-  return res.data || res.result || res;
-}
-
-async function bankBalances(address) {
-  const url = `${LCD}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`;
-  console.log(url, 'bankBalances');
-  const res = await get(url);
-  return res.balances || [];
-}
-
-async function cw20Balance(token, address) {
-  const r = await smartQuery(token, { balance: { address } });
-  return BigInt((r && r.balance) || (r?.data?.balance) || '0');
-}
-
-function nativeBalance(balances, denom) {
-  const row = balances.find((x) => x.denom === denom);
-  return row ? BigInt(row.amount) : BigInt(0);
-}
-
-// Cache for token metadata to avoid repeated queries
-const metadataCache = {};
-
-// ENHANCED: Fetch token metadata - tries queryContractSmart FIRST, then 4 fallbacks
-async function fetchTokenMetadata(tokenAddress) {
   try {
-    // Check cache first
-    if (metadataCache[tokenAddress]) {
-      console.log(`[DEBUG] Metadata cache HIT for ${tokenAddress}:`, metadataCache[tokenAddress]);
-      return metadataCache[tokenAddress];
+    const res = await get(url);
+    let payload = res?.data ?? res?.result ?? res;
+    if (payload && typeof payload === 'object') {
+      if (payload.data && typeof payload.data === 'object' && Object.keys(payload.data).length) payload = payload.data;
+      else if (payload.result && typeof payload.result === 'object' && Object.keys(payload.result).length) payload = payload.result;
     }
-
-    console.log(`[DEBUG] Fetching metadata for token: ${tokenAddress}`);
-
-    // PRIMARY: Try using queryContractSmart FIRST (DefiLlama SDK method)
-    if (typeof queryContractSmart === 'function') {
-      try {
-        const metadata = await queryContractSmart({
-          contract: tokenAddress,
-          chain: 'terra',
-          data: { token_info: {} }
-        });
-        
-        if (metadata && Object.keys(metadata).length > 0) {
-          console.log(`[DEBUG] ✅ queryContractSmart SUCCESS for ${tokenAddress}:`, metadata);
-          metadataCache[tokenAddress] = metadata;
-          return metadata;
-        } else {
-          console.log(`[DEBUG] ⚠️  queryContractSmart returned empty/null for ${tokenAddress}, trying fallbacks...`);
-        }
-      } catch (err) {
-        console.log(`[DEBUG] ⚠️  queryContractSmart ERROR for ${tokenAddress}:`, err.message, '- trying fallbacks...');
-      }
-    } else {
-      console.log(`[DEBUG] ⚠️  queryContractSmart not available, using fallbacks`);
-    }
-
-    // FALLBACK 1: Try manual smartQuery with token_info
-    try {
-      console.log(`[DEBUG] FALLBACK 1: Attempting smartQuery (token_info) for ${tokenAddress}`);
-      const metadata = await smartQuery(tokenAddress, { token_info: {} });
-      
-      if (metadata && Object.keys(metadata).length > 0) {
-        console.log(`[DEBUG] ✅ FALLBACK 1 smartQuery SUCCESS for ${tokenAddress}:`, metadata);
-        metadataCache[tokenAddress] = metadata;
-        return metadata;
-      } else {
-        console.log(`[DEBUG] ⚠️  FALLBACK 1 returned empty, trying FALLBACK 2...`);
-      }
-    } catch (err) {
-      console.log(`[DEBUG] ⚠️  FALLBACK 1 ERROR for ${tokenAddress}:`, err.message, '- trying FALLBACK 2...');
-    }
-
-    // FALLBACK 2: Try different query method - direct contract query
-    try {
-      console.log(`[DEBUG] FALLBACK 2: Attempting direct contract query for ${tokenAddress}`);
-      const url = `${LCD}/cosmwasm/wasm/v1/contract/${tokenAddress}/smart/${b64({ token_info: {} })}`;
-      const res = await get(url);
-      const metadata = res.data || res.result || res;
-      
-      if (metadata && Object.keys(metadata).length > 0) {
-        console.log(`[DEBUG] ✅ FALLBACK 2 direct query SUCCESS for ${tokenAddress}:`, metadata);
-        metadataCache[tokenAddress] = metadata;
-        return metadata;
-      } else {
-        console.log(`[DEBUG] ⚠️  FALLBACK 2 returned empty, trying FALLBACK 3...`);
-      }
-    } catch (err) {
-      console.log(`[DEBUG] ⚠️  FALLBACK 2 ERROR for ${tokenAddress}:`, err.message, '- trying FALLBACK 3...');
-    }
-
-    // FALLBACK 3: Try from abi.json tokens config
-    try {
-      console.log(`[DEBUG] FALLBACK 3: Checking abi.json tokens config for ${tokenAddress}`);
-      for (const [key, tokenInfo] of Object.entries(tokens)) {
-        if (tokenInfo.address === tokenAddress) {
-          const metadata = {
-            name: tokenInfo.name || 'Unknown',
-            symbol: tokenInfo.symbol || 'Unknown',
-            decimals: tokenInfo.decimals || 6,
-            total_supply: tokenInfo.total_supply || '0'
-          };
-          console.log(`[DEBUG] ✅ FALLBACK 3 found in abi.json for ${tokenAddress}:`, metadata);
-          metadataCache[tokenAddress] = metadata;
-          return metadata;
-        }
-      }
-      console.log(`[DEBUG] ⚠️  FALLBACK 3 not found in abi.json config, trying FALLBACK 4...`);
-    } catch (err) {
-      console.log(`[DEBUG] ⚠️  FALLBACK 3 ERROR for ${tokenAddress}:`, err.message, '- trying FALLBACK 4...');
-    }
-
-    // FALLBACK 4: Return defaults with config decimals
-    try {
-      console.log(`[DEBUG] FALLBACK 4: Using default values for ${tokenAddress}`);
-      for (const [key, tokenInfo] of Object.entries(tokens)) {
-        if (tokenInfo.address === tokenAddress) {
-          const metadata = {
-            name: 'Unknown Token',
-            symbol: 'UNKNOWN',
-            decimals: tokenInfo.decimals || 6
-          };
-          console.log(`[DEBUG] ✅ FALLBACK 4 using config decimals for ${tokenAddress}:`, metadata);
-          metadataCache[tokenAddress] = metadata;
-          return metadata;
-        }
-      }
-      // Last resort - return with default 6 decimals
-      const metadata = {
-        name: 'Unknown Token',
-        symbol: 'UNKNOWN',
-        decimals: 6
-      };
-      console.log(`[DEBUG] ✅ FALLBACK 4 using hardcoded defaults for ${tokenAddress}:`, metadata);
-      metadataCache[tokenAddress] = metadata;
-      return metadata;
-    } catch (err) {
-      console.log(`[DEBUG] ❌ FALLBACK 4 ERROR for ${tokenAddress}:`, err.message);
-      return null;
-    }
+    log('lcdSmartQuery OK', contract, msgObj);
+    return payload;
   } catch (err) {
-    console.log(`[DEBUG] ❌ CRITICAL ERROR fetching metadata for ${tokenAddress}:`, err.message);
-    return null;
+    log('lcdSmartQuery ERROR', contract, err?.message ?? err);
+    throw err;
   }
 }
 
-// Core TVL logic using abi.json layout - NOW RECEIVES api PARAMETER
-async function fetchBalances(moduleName, api) {
-  const contractList = Array.isArray(contracts[moduleName])
-    ? contracts[moduleName].filter((addr) => addr && addr.trim() !== '')
-    : [];
+/**
+ * Unified smartQuery: prefer queryContractSmart (helper) if available, else LCD
+ * Accepts same msgObj shapes as before.
+ */
+async function smartQuery(contract, msgObj) {
+  // try queryContractSmart helper first if available (most efficient in DFL runner)
+  if (typeof queryContractSmart === 'function') {
+    try {
+      // queryContractSmart helper often expects { contract, chain, data }
+      const res = await queryContractSmart({ contract, chain: 'terra', data: msgObj });
+      if (res && Object.keys(res).length > 0) {
+        log('queryContractSmart OK', contract, msgObj);
+        return res;
+      }
+      // fall through to LCD if empty
+      log('queryContractSmart returned empty, falling back to LCD', contract);
+    } catch (err) {
+      log('queryContractSmart failed — fallback to LCD', contract, err?.message ?? err);
+    }
+  }
+  // fallback to direct LCD smart query
+  return await lcdSmartQuery(contract, msgObj);
+}
 
+/**
+ * bankBalances via LCD (native balances)
+ */
+async function bankBalances(address) {
+  const url = `${LCD}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=1000`;
+  try {
+    const res = await get(url);
+    const payload = res?.data ?? res?.result ?? res;
+    const balances = payload?.balances ?? payload?.result?.balances ?? payload?.balances ?? [];
+    return Array.isArray(balances) ? balances : [];
+  } catch (err) {
+    log('bankBalances ERROR', address, err?.message ?? err);
+    return [];
+  }
+}
+
+/**
+ * Read cw20 balance -> BigInt
+ * Tries queryContractSmart first (via unified smartQuery)
+ */
+async function cw20Balance(tokenAddr, owner) {
+  try {
+    const r = await smartQuery(tokenAddr, { balance: { address: owner } });
+    let raw = '0';
+    if (!r) raw = '0';
+    else if (typeof r === 'string') raw = r;
+    else if (typeof r.balance === 'string' || typeof r.balance === 'number') raw = String(r.balance);
+    else if (r.balance && typeof r.balance === 'object' && (r.balance.amount || r.balance[0])) raw = String(r.balance.amount ?? r.balance[0] ?? '0');
+    else if (r.data && (r.data.balance || r.data.amount)) raw = String(r.data.balance ?? r.data.amount);
+    else {
+      const found = Object.values(r).find(v => typeof v === 'string' && /^\d+$/.test(v));
+      raw = found ?? '0';
+    }
+    raw = raw.replace(/[^0-9]/g, '') || '0';
+    return BigInt(raw);
+  } catch (err) {
+    log('cw20Balance ERROR', tokenAddr, owner, err?.message ?? err);
+    return 0n;
+  }
+}
+
+/* -------------------------
+   Concurrency limiter (small p-limit)
+   ------------------------- */
+const pLimit = (concurrency) => {
+  let active = 0;
+  const queue = [];
+  const next = () => {
+    if (!queue.length) return;
+    if (active >= concurrency) return;
+    active++;
+    const { fn, resolve, reject } = queue.shift();
+    fn()
+      .then((v) => resolve(v))
+      .catch((e) => reject(e))
+      .finally(() => { active--; next(); });
+  };
+  return (fn) => new Promise((resolve, reject) => {
+    queue.push({ fn, resolve, reject });
+    next();
+  });
+};
+const limit = pLimit(Number(process.env.CONCURRENCY || 6));
+
+/* -------------------------
+   Metadata caching + fetch
+   ------------------------- */
+const metadataCache = {};
+async function fetchTokenMetadata(tokenAddress) {
+  if (!tokenAddress) return null;
+  if (metadataCache[tokenAddress]) {
+    log('metadata cache hit', tokenAddress);
+    return metadataCache[tokenAddress];
+  }
+  log('fetchTokenMetadata start', tokenAddress);
+
+  // 1) Try token_info via unified smartQuery (prefers queryContractSmart)
+  try {
+    const data = await smartQuery(tokenAddress, { token_info: {} });
+    if (data && Object.keys(data).length) {
+      if (data.decimals !== undefined) data.decimals = Number(data.decimals);
+      metadataCache[tokenAddress] = data;
+      log('metadata via token_info OK', tokenAddress, data);
+      return data;
+    }
+  } catch (e) {
+    log('token_info smartQuery failed', tokenAddress, e?.message ?? e);
+  }
+
+  // 2) Try direct LCD token_info (redundant but defensive)
+  try {
+    const url = `${LCD}/cosmwasm/wasm/v1/contract/${tokenAddress}/smart/${b64({ token_info: {} })}`;
+    const res = await get(url);
+    const payload = res?.data ?? res?.result ?? res;
+    if (payload && Object.keys(payload).length) {
+      if (payload.decimals !== undefined) payload.decimals = Number(payload.decimals);
+      metadataCache[tokenAddress] = payload;
+      log('metadata via direct LCD OK', tokenAddress, payload);
+      return payload;
+    }
+  } catch (e) {
+    log('direct LCD token_info failed', tokenAddress, e?.message ?? e);
+  }
+
+  // 3) From abi.json config
+  for (const tokenInfo of Object.values(tokens)) {
+    if (tokenInfo.address === tokenAddress) {
+      const md = { name: tokenInfo.name || 'Unknown', symbol: tokenInfo.symbol || 'UNKNOWN', decimals: Number(tokenInfo.decimals ?? 6) };
+      metadataCache[tokenAddress] = md;
+      log('metadata from abi.json', tokenAddress, md);
+      return md;
+    }
+  }
+
+  // 4) default fallback
+  const fallback = { name: 'Unknown', symbol: 'UNKNOWN', decimals: 6 };
+  metadataCache[tokenAddress] = fallback;
+  log('metadata fallback used', tokenAddress, fallback);
+  return fallback;
+}
+
+/* -------------------------
+   Balance helpers
+   ------------------------- */
+function nativeBalance(balancesArray, denom) {
+  if (!Array.isArray(balancesArray)) return 0n;
+  const row = balancesArray.find(r => r?.denom === denom);
+  if (!row) return 0n;
+  const amt = String(row.amount ?? '0').replace(/[^0-9]/g, '') || '0';
+  return BigInt(amt);
+}
+
+/* -------------------------
+   Core: fetchBalances(module, api)
+   ------------------------- */
+async function fetchBalances(moduleName, api) {
+  const contractList = Array.isArray(contracts[moduleName]) ? contracts[moduleName].filter(a => a && a.trim()) : [];
   if (!contractList.length) {
-    console.log(`[Juris] No contracts found for module: ${moduleName}`);
+    log('no contracts for module', moduleName);
     return;
   }
 
-  for (const owner of contractList) {
-    for (const [tokenKey, tokenInfo] of Object.entries(tokens)) {
-      if (tokenInfo.type === 'cw20') {
-        // Fetch metadata - tries queryContractSmart first, then 4 fallbacks
-        const metadata = await fetchTokenMetadata(tokenInfo.address);
+  // prefetch metadata for cw20 tokens (cached)
+  const cw20s = Object.values(tokens).filter(t => t.type === 'cw20').map(t => t.address);
+  await Promise.all(cw20s.map(addr => fetchTokenMetadata(addr)));
 
-        const bal = await cw20Balance(tokenInfo.address, owner);
-        const decimals = metadata?.decimals || tokenInfo.decimals || 6;
-        const displayBalance = Number(bal) / Math.pow(10, decimals);
+  // process each owner contract in parallel (limited)
+  await Promise.all(contractList.map(owner => limit(async () => {
+    log('processing owner', owner, 'module', moduleName);
 
-        // FIX: Use ONLY the token address WITHOUT 'terra:' prefix
-        // DefiLlama adds the chain prefix automatically
-        console.log(`[API.ADD] Calling api.add with: '${tokenInfo.address}', ${bal.toString()}`);
-        console.log(`[API.ADD] Token decimals: ${decimals}, Display: ${displayBalance}`);
+    // fetch bank balances once for native tokens
+    let bank = [];
+    try { bank = await bankBalances(owner); } catch (e) { log('bankBalances failed', owner, e?.message ?? e); bank = []; }
 
-        api.add(tokenInfo.address, bal);
-
-        console.log(
-          `[Juris] Module [${moduleName}] Contract [${owner}] CW20 [${tokenInfo.address}]\n` +
-          `  Metadata: Name=${metadata?.name || '?'}, Symbol=${metadata?.symbol || '?'}, Decimals=${decimals}\n` +
-          `  Raw Balance: ${bal.toString()}\n` +
-          `  Display Balance: ${displayBalance}`
-        );
-      }
-
-      if (tokenInfo.type === 'native') {
-        const allBank = await bankBalances(owner);
-        const bal = nativeBalance(allBank, tokenInfo.address);
-        
-        // CORRECT: Use api.add() for native tokens
-        if (bal > 0n) {
-          console.log(`[API.ADD] Calling api.add with: '${tokenInfo.address}', ${bal.toString()}`);
-          api.add(tokenInfo.address, bal);
+    // iterate tokens
+    await Promise.all(Object.entries(tokens).map(([tk, tokenInfo]) => limit(async () => {
+      try {
+        if (tokenInfo.type === 'cw20') {
+          const md = await fetchTokenMetadata(tokenInfo.address);
+          const bal = await cw20Balance(tokenInfo.address, owner); // BigInt
+          if (bal > 0n) {
+            // ALWAYS pass string to api.add to avoid JS precision loss
+            api.add(tokenInfo.address, bal.toString());
+            log('api.add cw20', tokenInfo.address, owner, bal.toString(), 'decimals', md?.decimals);
+            // optional: price via coingecko id (human amount)
+            // if (tokenInfo.coingeckoId) {
+            //   const human = BigIntToHumanString(bal, md?.decimals ?? tokenInfo.decimals ?? 6);
+            //   api.add(`coingecko:${tokenInfo.coingeckoId}`, human);
+            // }
+          }
+        } else if (tokenInfo.type === 'native') {
+          const bal = nativeBalance(bank, tokenInfo.address);
+          if (bal > 0n) {
+            api.add(tokenInfo.address, bal.toString());
+            log('api.add native', tokenInfo.address, owner, bal.toString(), 'decimals', tokenInfo.decimals);
+          }
         }
-        
-        const decimals = tokenInfo.decimals || 6;
-        console.log(
-          `[Juris] Module [${moduleName}] Contract [${owner}] Native [${tokenInfo.address}] Balance: ${
-            Number(bal) / Math.pow(10, decimals)
-          }`
-        );
+      } catch (e) {
+        log('token loop error', tokenInfo?.address ?? tk, owner, e?.message ?? e);
       }
-    }
-  }
+    })));
+  })));
 }
 
-// Smart & Dynamic module exports using terraExport
-// IMPORTANT: Each function must receive 'api' parameter and pass it to fetchBalances
-const terraExport = {};
+/* -------------------------
+   BigInt -> human helper (optional)
+   ------------------------- */
+function BigIntToHumanString(bigintAmount, decimals = 6) {
+  const s = bigintAmount.toString().padStart(decimals + 1, '0');
+  const intPart = s.slice(0, s.length - decimals);
+  const frac = s.slice(s.length - decimals).replace(/0+$/, '') || '0';
+  return `${intPart}.${frac}`;
+}
 
-Object.keys(contracts).forEach((contractKey) => {
-  if ((contracts[contractKey] || []).some((addr) => addr && addr.trim() !== '')) {
-    // Wrap fetchBalances to receive and pass api
-    terraExport[contractKey] = async (api) => await fetchBalances(contractKey, api);
+/* -------------------------
+   Exports: build terraExport dynamically
+   ------------------------- */
+const terraExport = {};
+Object.keys(contracts).forEach(moduleKey => {
+  const arr = contracts[moduleKey] || [];
+  if (Array.isArray(arr) && arr.some(a => a && a.trim())) {
+    terraExport[moduleKey] = async (api) => {
+      await fetchBalances(moduleKey, api);
+    };
   }
 });
 
-console.log('[DEBUG] terraExport keys BEFORE tvl function:', Object.keys(terraExport));
-
+// aggregate tvl
 if (Object.keys(terraExport).length > 0) {
   terraExport.tvl = async (api) => {
-    // Aggregate TVL by calling all module functions with api (without duplicating)
-    for (const key of Object.keys(terraExport).filter((k) => k !== 'tvl')) {
-      console.log(`[TVL] Processing module: ${key}`);
+    for (const key of Object.keys(terraExport)) {
+      if (key === 'tvl') continue;
+      log('running module for tvl', key);
       await terraExport[key](api);
     }
   };
+} else {
+  terraExport.tvl = async () => {};
 }
 
-console.log('[DEBUG] terraExport keys AFTER tvl function:', Object.keys(terraExport));
-console.log('[DEBUG] Categories that DefiLlama will show:');
-Object.keys(terraExport).forEach((key) => {
-  if (key === 'tvl') {
-    console.log(`  - tvl (aggregate of all modules)`);
-  } else {
-    console.log(`  - terra-${key} (from module: ${key})`);
-  }
-});
-
 module.exports = {
-  methodology: `${abi.protocol.description}. TVL fetched directly from on-chain LCD for each active contract and token in abi.json.`,
+  methodology: `${protocol?.description || 'Protocol'}. TVL fetched from on-chain LCD and contract queries. Dynamic contract list is in abi.json.`,
   timetravel: false,
   terra: terraExport,
 };
