@@ -16,26 +16,47 @@ function getContractArray(contract) {
   if (Array.isArray(contract)) return contract.filter(c => c && c.trim() !== '');
   return [];
 }
-
+function getValidTokens() {
+  const validTokens = [];
+  Object.entries(tokens).forEach(([key, tokenData]) => {
+    if (!tokenData || !tokenData.address || tokenData.address.trim() === '') {
+      console.warn(`[Juris] WARNING: Token ${key} has invalid/missing address - skipping`);
+      return;
+    }
+    // Native denom log (for developer)
+    if (key === 'LUNC')
+      console.log(`[Juris] Token ${key}: DefiLlama key = "lunc" | native denom = "uluna"`);
+    if (key === 'USTC')
+      console.log(`[Juris] Token ${key}: DefiLlama key = "ustc" | native denom = "uusd"`);
+    validTokens.push(tokenData.address);
+  });
+  console.log(`[Juris] Valid tokens passed to sumTokens2: ${validTokens.join(', ')}`);
+  return validTokens;
+}
 // Single unified function for all categories
 async function fetchBalances(api, contractKey) {
-  if (!contractExists(contracts[contractKey])) {
+  if (!contractExists(contracts[contractKey])) return;
+  const owners = getContractArray(contracts[contractKey]);
+  if (owners.length === 0) {
+    console.log(`[Juris] ${contractKey}: No valid contract addresses`);
     return;
   }
-
-  const owners = getContractArray(contracts[contractKey]);
-  const tokens_list = [
-    tokens.JURIS.address,   // CW20
-    tokens.LUNC.address,    // Native
-    tokens.USTC.address,    // Native
-  ];
-
-  console.log(`[Juris] ${contractKey}: Fetching ${tokens_list.length} tokens from ${owners.length} contracts`);
-
-  await sumTokens2({
-    api,
-    owners,
-    tokens: tokens_list,
+  const tokenList = getValidTokens();
+  if (tokenList.length === 0) {
+    console.log(`[Juris] ${contractKey}: No valid tokens configured`);
+    return;
+  }
+  console.log(`[Juris] ${contractKey}: Fetching ${tokenList.length} tokens from ${owners.length} contracts`);
+  await sumTokens2({ api, owners, tokens: tokenList });
+  // After balances fetched, print actual native denom match for clarity
+  Object.entries(tokens).forEach(([key, tokenData]) => {
+    const addr = tokenData.address;
+    const balance = api.getBalances()[addr] || 0;
+    let denom = addr;
+    if (key === 'LUNC') denom = 'uluna';
+    if (key === 'USTC') denom = 'uusd';
+    const formatted = (balance / Math.pow(10, tokenData.decimals || 6)).toLocaleString('en-US', { maximumFractionDigits: 2 });
+    console.log(`[Juris] FINAL BALANCE: ${key} (addressKey="${addr}", native="${denom}") = ${formatted}`);
   });
 }
 
