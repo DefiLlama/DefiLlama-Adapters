@@ -17,7 +17,7 @@ async function tvl(api) {
       owner: JURIS_STAKING_CONTRACT,
       tokens: [tokens.LUNC.address, tokens.USTC.address] // 'uluna', 'uusd'
     });
-    
+    console.log(tokens.LUNC.address,'lunc')
     // JURIS CW20 tokens held by staking contract
     const jurisBalance = await getBalance({
       token: JURIS_TOKEN_CONTRACT,
