@@ -124,27 +124,27 @@ const ADDRESSES = {
     FactoryV2: [
       {
         address: "0x4BC4F8f9B212B5a3F9f7Eeb35Ae1A91902670F7f",
-        fromBlock: 11541942,
+        fromBlock: 11541952,
       },
     ],
     VaultFactoryV2: [
       {
         address: "0x65fC69DE62E11592E8Acf57a0c97535209090Ef1",
-        fromBlock: 11541942,
+        fromBlock: 11541953,
       },
     ],
   },
   hyperliquid: {
     FactoryV2: [
       {
-        address: "0xDeC5E1D1E1bC3E3c6b8b7b5E3f0F1A2B3C4D5E6F",
-        fromBlock: 12345678,
+        address: "0xC1Ce945e55506B384daDDEf48FA5A78554560ad3",
+        fromBlock: 15997179,
       },
     ],
     VaultFactoryV2: [
       {
-        address: "0xF1E2D3C4B5A697887766554433221100FFEEDDCC",
-        fromBlock: 12345678,
+        address: "0xA0E0702b701cCaC329732Bb409681612f43E41AD",
+        fromBlock: 15997362,
       },
     ],
   },
