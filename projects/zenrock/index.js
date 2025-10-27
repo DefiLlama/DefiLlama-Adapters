@@ -1,5 +1,6 @@
 const { getTokenSupplies } = require('../helper/solana');
 const { PublicKey } = require('@solana/web3.js');
+const { sumTokens: sumBitcoinTokens } = require('../helper/chain/bitcoin');
 
 // Ethereum zenBTC configuration
 const ZENBTC_ETHEREUM = '0x2fE9754d5D28bac0ea8971C0Ca59428b8644C776';
@@ -7,8 +8,8 @@ const ZENBTC_ETHEREUM = '0x2fE9754d5D28bac0ea8971C0Ca59428b8644C776';
 // Solana zenBTC configuration
 const ZENBTC_PROGRAM_ID = '9t9RfpterTs95eXbKQWeAriZqET13TbjwDa6VW6LJHFb';
 
-// zrchain API endpoint for actual custodied Bitcoin
-const ZRCHAIN_API = 'https://api.diamond.zenrocklabs.io/zenbtc/supply';
+// zrchain treasury wallet endpoint for Bitcoin addresses
+const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
 
 // Cache for supplies to avoid redundant fetches
 let suppliesPromise = null;
@@ -23,17 +24,83 @@ function getMintAddress() {
 }
 
 /**
- * Fetches the actual custodied Bitcoin amount from zrchain API
- * This represents the real BTC locked by the protocol
+ * Fetches all Bitcoin mainnet addresses from zrchain treasury with pagination
+ * Filters for WALLET_TYPE_BTC_MAINNET type only
  */
-async function getCustodiedBTC() {
+async function getBitcoinAddresses() {
+  const btcAddresses = [];
+  let nextKey = null;
+
   try {
-    const response = await fetch(ZRCHAIN_API);
-    const data = await response.json();
-    // custodiedBTC is in satoshis (8 decimals)
-    return BigInt(data.custodiedBTC);
+    while (true) {
+      let url = ZRCHAIN_WALLETS_API;
+      if (nextKey) {
+        url += `?pagination.key=${encodeURIComponent(nextKey)}`;
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      // Extract Bitcoin mainnet addresses from zenbtc_wallets array
+      if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
+        for (const walletGroup of data.zenbtc_wallets) {
+          if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
+            for (const wallet of walletGroup.wallets) {
+              // Filter for Bitcoin mainnet addresses only
+              if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
+                btcAddresses.push(wallet.address);
+              }
+            }
+          }
+        }
+      }
+
+      // Check for next page
+      if (data.pagination && data.pagination.next_key) {
+        nextKey = data.pagination.next_key;
+      } else {
+        // No more pages, exit loop
+        break;
+      }
+    }
+
+    console.log(`Fetched ${btcAddresses.length} Bitcoin mainnet addresses from zrchain treasury`);
+    return btcAddresses;
   } catch (error) {
-    console.error(`Error fetching custodied BTC from zrchain API: ${error.message}`);
+    console.error(`Error fetching Bitcoin addresses from zrchain API: ${error.message}`);
+    return [];
+  }
+}
+
+/**
+ * Queries Bitcoin balances for all treasury addresses
+ * Returns total BTC balance in satoshis
+ */
+async function getBitcoinTVL() {
+  try {
+    const btcAddresses = await getBitcoinAddresses();
+
+    if (btcAddresses.length === 0) {
+      console.warn('No Bitcoin addresses found in treasury');
+      return 0n;
+    }
+
+    // Add change address
+    const changeAddress = 'bc1qngthd4lgz6pjkf24d2cesltlnd7nd0pjguuvqu';
+    btcAddresses.push(changeAddress);
+
+    // Use Bitcoin helper to sum balances for all addresses
+    const balances = {};
+    await sumBitcoinTokens({ balances, owners: btcAddresses });
+
+    // Extract Bitcoin balance and convert to satoshis (from BTC)
+    const btcAmount = balances.bitcoin || 0;
+    const satoshis = BigInt(Math.round(btcAmount * 1e8));
+
+    console.log(`Bitcoin TVL from ${btcAddresses.length} addresses: ${satoshis.toString()} satoshis (${btcAmount} BTC)`);
+    return satoshis;
+  } catch (error) {
+    console.error(`Error calculating Bitcoin TVL: ${error.message}`);
     return 0n;
   }
 }
@@ -57,12 +124,12 @@ async function getEthereumSupply(api) {
 
 /**
  * Main TVL function - handles both Ethereum and Solana
- * Reports each chain's proportional share of the custodied Bitcoin
+ * Reports each chain's proportional share of the actual Bitcoin in treasury
  */
 async function fetchSupplies(api) {
   // Fetch all data in parallel
   const [custodiedBTC, ethSupply] = await Promise.all([
-    getCustodiedBTC(),
+    getBitcoinTVL(),
     getEthereumSupply(api),
   ]);
 
@@ -129,4 +196,4 @@ module.exports = {
   },
 };
 
-// node test.js projects/zrchain/index.js
+// node test.js projects/zenrock/index.js
