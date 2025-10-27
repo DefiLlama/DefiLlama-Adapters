@@ -11,6 +11,8 @@ const yusd_config = {
     bsc: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     avax: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
     tac: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
+    linea: "0x4e559dBCCbe87De66c6a9F3f25231096F24c2e28",
+    plasma: "0x4772D2e014F9fC3a820C444e3313968e9a5C8121",
 }
 
 const vyusd_config = {
@@ -24,14 +26,20 @@ const vyusd_config = {
     bsc: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     avax: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
     tac: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
+    linea: "0x168BC4DB5dcbecA279983324d3082c47e47569E7",
+    plasma: "0xF4F447E6AFa04c9D11Ef0e2fC0d7f19C24Ee55de",
 }
 
 const yeth_config = {
     ethereum: "0x8464F6eCAe1EA58EC816C13f964030eAb8Ec123A",
+    arbitrum: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8",
+    base: "0x1F52Edf2815BfA625890B61d6bf43dDC24671Fe8"
 }
 
 const vyeth_config = {
     ethereum: "0x3073112c2c4800b89764973d5790ccc7fba5c9f9",
+    arbitrum: "0x8c93a6752Bfe29FDA26EbA8df4390c642e6A7f90",
+    base: "0x8c93a6752Bfe29FDA26EbA8df4390c642e6A7f90"
 }
 
 const ybtc_config = {

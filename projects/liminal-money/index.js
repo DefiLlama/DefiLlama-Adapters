@@ -1,4 +1,4 @@
-const axios = require('axios')
+const { getConfig } = require('../helper/cache');
 
 const API_URL = "https://api.liminal.money/api/info/tvl-history";
 const API_ASSET_URL = "https://api.liminal.money/api/info/strategy-assets";
@@ -16,14 +16,14 @@ const COINGECKO_MAPPING = {
 };
 
 async function fetchAssetList() {
-  const response = await axios.get(API_ASSET_URL);
-  const assets = response.data.data;
+  const response = await getConfig('liminal-money/asset-list', API_ASSET_URL);
+  const assets = response.data;
   return assets.map(({ _id, perpName, spotName }) => ({ id: _id, perpName, spotName }))
 }
 
 const getClosestRecord = async (api) => {
   const targetMs = api.timestamp * 1000;
-  const { data: { data: records } } = await axios.get(API_URL);
+  const { data: records } = await getConfig('liminal-money/tvl-history', API_URL);
 
   const closest = records
     .map((r) => ({ ...r, diff: Math.abs(new Date(r.timestamp).getTime() - targetMs) }))

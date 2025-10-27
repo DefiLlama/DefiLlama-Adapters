@@ -84,17 +84,17 @@ function createTvlFunction(chain) {
     const config = CONFIG[chain]
     if (!config) throw new Error(`Config not found for chain: ${chain}`)
 
-    api.log(`Using ${config.POOL_IDS.length} hardcoded pool IDs for ${chain}`)
+    // api.log(`Using ${config.POOL_IDS.length} hardcoded pool IDs for ${chain}`)
 
     // Get all position IDs for all our pools
     const allPositionIds = []
     for (const poolId of config.POOL_IDS) {
       const positionIds = await getAllPositionIdsForPool(api, poolId, config)
-      api.log(`Pool ${poolId}: ${positionIds.length} positions`)
+      // api.log(`Pool ${poolId}: ${positionIds.length} positions`)
       allPositionIds.push(...positionIds)
     }
 
-    api.log(`Total positions found: ${allPositionIds.length}`)
+    // api.log(`Total positions found: ${allPositionIds.length}`)
 
     // Use the correct Uniswap v4 position resolver
     return sumTokens2({
