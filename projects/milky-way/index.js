@@ -1,4 +1,4 @@
-const { queryContract, queryV1Beta1 } = require("../helper/chain/cosmos");
+const { queryContract } = require("../helper/chain/cosmos");
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const consts = {
