@@ -1,10 +1,12 @@
-// Сurator adapter that computes TVL for four vault types:
+// Сurator adapter that computes TVL for five vault types:
 // 1) ERC-4626 (totalAssets())
 // 2) MidasIssuance (supply)
 // 3) Boring (rate × supply via hook → accountant)
 // 4) Pre-deposit (same as MidasIssuance)
+// 5) Edge Capital Euler vaults (via curator)
 
 const { CONFIG } = require('./tvl.addresses.js');
+const { getCuratorTvl } = require("../helper/curators");
 // ------------------------------- ABIs ---------------------------------------
 const ABI = {
     ERC4626: {
@@ -87,12 +89,19 @@ async function getBoringTVL(api, vaults) {
 async function getTvl(api, chain) {
     const config = CONFIG[chain] || {}
 
-    await Promise.all([
+    const promises = [
         getErc4626TVL(api, config.erc4626),
         getIssuanceTokensTVL(api, config.issuance),
         getIssuanceTokensTVL(api, config.predeposit),
         getBoringTVL(api, config.boring)
-    ])
+    ]
+
+    // Handle curator functionality for Euler vaults
+    if (config.eulerVaultOwners) {
+        promises.push(getCuratorTvl(api, { eulerVaultOwners: config.eulerVaultOwners }))
+    }
+
+    await Promise.all(promises)
 }
 
 // ------------------------------- Export -------------------------------------
@@ -101,7 +110,7 @@ const adapters = {
     timetravel: true,
     doublecounted: true,
     start: 0,
-    methodology: 'TVL = sum of underlying balances: ERC-4626 via totalAssets(); Issuance/Pre-deposit via share totalSupply; Boring via accountant.getRate × vault.totalSupply.',
+    methodology: 'TVL = sum of underlying balances: ERC-4626 via totalAssets(); Issuance/Pre-deposit via share totalSupply; Boring via accountant.getRate × vault.totalSupply; Edge Capital Euler vaults via curator.',
 }
 
 Object.keys(CONFIG).forEach((chain) => {
