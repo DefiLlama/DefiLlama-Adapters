@@ -47,7 +47,6 @@ async function getGearboxV31Collateral(api, marketConfigurator, pageSize = 1e3) 
   // page through credit accounts for each CM
   for (const cm of creditManagers) {
     let offset = 0
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       const accounts = await api.call({
         abi: GearboxCompressorABI.getCreditAccounts,

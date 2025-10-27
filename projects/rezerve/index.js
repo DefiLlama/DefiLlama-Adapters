@@ -14,6 +14,23 @@ const ethereum = {
   stakingContract: "0xcD43c9c6ECCA33a0C3EF6E509f7559c5C5e46399",
   tokenList: "0xb68b2BeD621dcE656Ddcc607769fb6AAc3F67B5C",
 }
+const bsc = {
+  rzr: '0xb4444468e444f89e1c2CAc2F1D3ee7e336cBD1f5',
+  depositContract: "0x0000030d7a7C4888851F35705B0852CF20Ac1bA6",
+  tokenList: "0x3B3c534D22dEEd568813AfA1b75996B8241126E0",
+}
+
+const hyperliquid = {
+  rzr: '0xb4444468e444f89e1c2CAc2F1D3ee7e336cBD1f5',
+  depositContract: "0x0000030d7a7C4888851F35705B0852CF20Ac1bA6",
+  tokenList: "0xBf1607FDb610A246d957456cD844E228b6c712CE",
+}
+
+const base = {
+  rzr: '0xb4444468e444f89e1c2CAc2F1D3ee7e336cBD1f5',
+  depositContract: "0x0000030d7a7C4888851F35705B0852CF20Ac1bA6",
+  tokenList: "0x06f9617E604019af5e28c9e2e75F0886bBdc03aE",
+}
 
 const tvl = (addresses) => async (api) => {
   const abi = 'function getTokens() external view returns (address[] memory)'
@@ -39,6 +56,18 @@ const data = {
     tvl: tvl(ethereum),
     pool2: pool2(ethereum),
     staking: staking(ethereum.stakingContract, ethereum.rzr, "ethereum"),
+  },
+  base: {
+    tvl: tvl(base),
+    pool2: pool2(base),
+  },
+  bsc: {
+    tvl: tvl(bsc),
+    pool2: pool2(bsc),
+  },
+  hyperliquid: {
+    tvl: tvl(hyperliquid),
+    pool2: pool2(hyperliquid),
   },
 };
 
