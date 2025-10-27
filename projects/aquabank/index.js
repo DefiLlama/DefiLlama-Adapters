@@ -94,7 +94,7 @@ module.exports = {
         ' TVL = USDt underlying represented by Benqi/Euler receipt tokens held in vaults (Benqi: shares*exchangeRate/1e18, Euler: convertToAssets). Staking = bUSDT deposited in BankStaking contracts, reported as USDt via 1:1 mapping.',
     avax: { 
         tvl,
-        staking,
+        // staking,
     },
 }
 
