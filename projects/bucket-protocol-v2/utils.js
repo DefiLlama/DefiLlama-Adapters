@@ -136,6 +136,8 @@ function mappingTokenAsset(type){
             return ADDRESSES.sui.SUI
         case '0x876a4b7bce8aeaef60464c11f4026903e9afacab79b9b142686158aa86560b50::xbtc::XBTC':
             return ADDRESSES.sui.BTC
+		case '0x7438e8caf5c345fbd3772517380bf0ca432f53892dee65ee0dda3eb127993cd9::bfbtc::BFBTC':
+            return ADDRESSES.sui.BTC
         default:
             return type
     }

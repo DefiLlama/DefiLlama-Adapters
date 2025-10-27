@@ -11,7 +11,7 @@ async function getDexalotChainLockedOrders(_) {
     if (coingecko_id == null) {
       continue
     }
-    res[coingecko_id] = amount
+    res[coingecko_id] = +amount
   }
   return res
 }

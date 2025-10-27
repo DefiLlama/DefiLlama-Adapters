@@ -200,6 +200,8 @@ const configs = {
         '0x28d24d4380b26a1ef305ad8d8db258159e472f33', // USUAL Vault
         '0xd41830d88dfd08678b0b886e0122193d54b02acc', // MEV Capital PTs USDC
         '0x1265a81d42d513df40d0031f8f2e1346954d665a', // MEV Capital Elixir USDC
+        '0x5F7827FDeb7c20b443265Fc2F40845B715385Ff2', // MEV Capital EURCV
+        '0x5422374B27757da72d5265cC745ea906E0446634', // MEV Capital USDCV
       ],
       mellow: [
         '0x5fd13359ba15a84b76f7f87568309040176167cd', // Amphor Restaked ETH
