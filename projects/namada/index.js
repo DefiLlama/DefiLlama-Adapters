@@ -1,6 +1,4 @@
 const { fetchURL } = require('../helper/utils');
-const { deserialize } = require("borsh");
-const { v4: uuidv4 } = require("uuid");
 const BigNumber = require("bignumber.js");
 
 // Define the Borsh schema for deserializing the balance response
@@ -42,7 +40,7 @@ async function tvl(api) {
         // Prepare RPC request
         const requestBody = {
             jsonrpc: "2.0",
-            id: uuidv4(),
+            id: '1',
             method: "abci_query",
             params: {
                 path: `/shell/value/#${MULTITOKEN_ADDRESS}/#${data.tokenAddress}/balance/#${MASP_ADDRESS}`,
