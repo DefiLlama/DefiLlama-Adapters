@@ -120,7 +120,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'zrchain locks native Bitcoin through its decentralized MPC network. zenBTC representations are issued on Ethereum and Solana mainnet, where they serve as wrapped claims on the native Bitcoin collateral held by the protocol. TVL represents the total Bitcoin locked, calculated as the sum of zenBTC supplies across all chains. Each zenBTC token is fully backed 1:1 by Bitcoin in custody.',
+  methodology: 'zrchain locks native assets through its decentralized MPC network. zenBTC, Zenrock\'s flagship product, is a yield-bearing wrapped Bitcoin issued on Solana and EVM chains. zenBTC TVL represents the total Bitcoin locked, calculated as the sum of zenBTC supplies across all chains. All zenBTC is fully backed 1:1 by Bitcoin in custody, but the price of zenBTC is anticipated to increase as yield payments are made on a continuous basis.',
   ethereum: {
     tvl,
   },
