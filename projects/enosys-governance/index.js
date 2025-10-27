@@ -8,7 +8,8 @@ const EnosysGovernanceStakeManagerSfin =
 
 module.exports = {
   songbird: {
-    tvl: sumTokensExport({
+    tvl: () => ({}),
+    staking: sumTokensExport({
       tokensAndOwners: [
         [ADDRESSES.songbird.EXFI, EnosysGovernanceStakeManagerExfi],
         [ADDRESSES.songbird.SFIN, EnosysGovernanceStakeManagerSfin],
