@@ -779,18 +779,18 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "ethf": {
-    "owners": [
-      "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
-      "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
-      "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
-      "0x54c82d26624e85000d1387ee7c9580c3c6d7b5b7",
-      "0x7750fe679d47a9e00575ad46043297a234e83fa2",
-      "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
-      "0xd793281182a0e3e023116004778f45c29fc14f19",
-      "0x354e0184a6a6e634ccb07388e2617e05e427563c"
-    ]
-  },
+  // "ethf": {
+  //   "owners": [
+  //     "0x0d0707963952f2fba59dd06f2b425ace40b492fe",
+  //     "0x6596da8b65995d5feacff8c2936f0b7a2051b0d0",
+  //     "0x1c4b70a3968436b9a0a9cf5205c787eb81bb558c",
+  //     "0x54c82d26624e85000d1387ee7c9580c3c6d7b5b7",
+  //     "0x7750fe679d47a9e00575ad46043297a234e83fa2",
+  //     "0xc882b111a75c0c657fc507c04fbfcd2cc984f071",
+  //     "0xd793281182a0e3e023116004778f45c29fc14f19",
+  //     "0x354e0184a6a6e634ccb07388e2617e05e427563c"
+  //   ]
+  // },
   "etlk": {
     "owners": [
       "0x0d0707963952f2fba59dd06f2b425ace40b492fe",

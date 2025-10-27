@@ -66,10 +66,14 @@ module.exports = {
       );
 
       for (const pool of filteredPools) {
-        const coinA = (await getPairedCoin(pool.assets[0])) || pool.assets[0];
-        const coinB = (await getPairedCoin(pool.assets[1])) || pool.assets[1];
-        api.add(coinA, pool.reserves[0]);
-        api.add(coinB, pool.reserves[1]);
+        // loop coins
+        for (let i = 0; i < pool.assets.length; i++) {
+          const coin = pool.assets[i];
+          const pairedCoin = await getPairedCoin(coin) || coin;
+          if (pairedCoin) {
+            api.add(pairedCoin, pool.reserves[i]);
+          } 
+        }
       }
     },
   },
