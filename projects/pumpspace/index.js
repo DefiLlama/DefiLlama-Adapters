@@ -39,8 +39,8 @@ function transformAddress(addr) {
   const a = addr.toLowerCase()
   if (a === TOKENS.bUSDT.toLowerCase())
     return `avax:${ADDRESSES.avax.USDt.toLowerCase()}`
-  if (a === TOKENS.WAVAX_PROXY.toLowerCase())
-    return `avax:${ADDRESSES.avax.WAVAX.toLowerCase()}`
+  // if (a === TOKENS.WAVAX_PROXY.toLowerCase())
+  //   return `avax:${ADDRESSES.avax.WAVAX.toLowerCase()}`
   return `avax:${a}`
 }
 
