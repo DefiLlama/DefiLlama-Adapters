@@ -38,9 +38,6 @@ async function milkBabyTVL(api) {
   //  when calculating TVL, current unbonding batches with TIA should be added since they are 'locked' inside the contract at that current point in time
   batches.filter(b => b.status !== 'received').forEach((b) => api.add(token, b.expected_native_unstaked))
   api.add(token, data.total_native_token)
-  
-  // Add restaking TVL - query the chain supply for locked denoms
-  await addRestakingTVL(api)
 }
 
 async function milkINITTVL(api) {
@@ -53,30 +50,8 @@ async function milkINITTVL(api) {
   api.add(token, data.total_native_token)
 }
 
-// Query restaking TVL from MilkyWay chain's locked denoms
-async function addRestakingTVL(api) {
-  const res = await queryV1Beta1({
-    chain: api.chain,
-    url: "bank/v1beta1/supply",
-  });
-
-  // Process all locked denoms (restaked assets)
-  res.supply.forEach(({ denom, amount }) => {
-    if (denom.startsWith("locked/")) {
-      // Remove the "locked/" prefix to get the underlying asset
-      const underlyingDenom = denom.replace("locked/", "")
-      // Add the restaked amount to balances
-      if (underlyingDenom.startsWith("ibc/")) {
-        api.add(`${underlyingDenom.replace("/", ":")}`, amount)
-      } else {
-        api.add(underlyingDenom, amount)
-      }
-    }
-  })
-}
-
 module.exports = {
-  methodology: 'TVL counts the tokens that are locked in the Milky Way protocol including liquid staking and restaking',
+  methodology: 'TVL counts the tokens that are locked in the Milky Way liquid staking protocol',
   osmosis: {
     tvl: milkTIATVL,
   },
