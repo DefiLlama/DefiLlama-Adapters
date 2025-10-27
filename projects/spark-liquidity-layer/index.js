@@ -7,6 +7,7 @@ const almProxy = {
   arbitrum: '0x92afd6F2385a90e44da3a8B60fe36f6cBe1D8709',
   optimism: '0x876664f0c9Ff24D1aa355Ce9f1680AE1A5bf36fB',
   unichain: '0x345E368fcCd62266B3f5F37C9a131FD1c39f5869',
+  avax: '0xecE6B0E8a54c2f44e066fBb9234e7157B15b7FeC',
 }
 
 const mainnetAllocatorToTokens = {
@@ -72,12 +73,20 @@ const unichainAllocatorToTokens = {
   ]
 }
 
+const avaxAllocatorToTokens = {
+  [almProxy.avax]: [
+    ADDRESSES.avax.USDC,
+    '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aave aUSDC
+  ]
+}
+
 const CONFIG = {
   ethereum: mainnetAllocatorToTokens,
   base: baseAllocatorToTokens,
   arbitrum: arbitrumAllocatorToTokens,
   optimism: optimismAllocatorToTokens,
   unichain: unichainAllocatorToTokens,
+  avax: avaxAllocatorToTokens,
 }
 
 async function tvl(api) {
