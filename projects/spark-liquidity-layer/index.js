@@ -31,6 +31,7 @@ const mainnetAllocatorToTokens = {
     '0xe7dF13b8e3d6740fe17CBE928C7334243d86c92f', // spUSDT
     '0x377C3bd93f2a2984E1E7bE6A5C22c525eD4A4815', // spUSDC
     '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho blue chip sparkUSDC
+    '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
   ]
 }
 
