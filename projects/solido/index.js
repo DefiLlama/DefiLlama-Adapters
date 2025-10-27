@@ -1,38 +1,36 @@
-const {
-  invokeViewFunction,
-} = require("../helper/chain/supra");
+const { invokeViewFunction } = require("../helper/chain/supra");
 
 const { transformBalances } = require("../helper/portedTokens");
+
 const CDP_GET_TOTAL_STATS_FUNCTION_TYPE =
   "0x9176f70f125199a3e3d5549ce795a8e906eed75901d535ded623802f15ae3637::cdp_multi::get_total_stats";
-const CONVERT_TO_ASSETS_FUNCTION_TYPE="0x81846514536430ea934c7270f86cf5b067e2a2faef0e91379b4f284e91c7f53c::vault_core::convert_to_assets";
+
+const SUPRA_ADDR = "0x1::supra_coin::SupraCoin";
+const STSUPRA_ADDR =
+  "0x81846514536430ea934c7270f86cf5b067e2a2faef0e91379b4f284e91c7f53c::vault_core::VaultShare";
+
 const calculateSolidoTVL = async (api) => {
   const chain = api.chain;
-  const collateralTokens =[
-    '0x1::supra_coin::SupraCoin',
-    '0x81846514536430ea934c7270f86cf5b067e2a2faef0e91379b4f284e91c7f53c::vault_core::VaultShare'
-  ]
   let balances = {};
-  let totalCollateral_in_supra=0;
-  const [SUPRA_TVL,SUPRA_DEBT] = await invokeViewFunction(
+
+  // Fetch native SUPRA collateral
+  const [SUPRA_TVL] = await invokeViewFunction(
     CDP_GET_TOTAL_STATS_FUNCTION_TYPE,
-    [collateralTokens[0]],
+    [SUPRA_ADDR],
     []
   );
-  const [stSUPRA_TVL,stSUPRA_DEBT] = await invokeViewFunction(
+  balances[SUPRA_ADDR] = BigInt(SUPRA_TVL);
+
+  const [stSUPRA_TVL] = await invokeViewFunction(
     CDP_GET_TOTAL_STATS_FUNCTION_TYPE,
-    [collateralTokens[1]],
+    [STSUPRA_ADDR],
     []
   );
-  const stSUPRA_TVL_in_supra = await invokeViewFunction(
-    CONVERT_TO_ASSETS_FUNCTION_TYPE,
-    [collateralTokens[0]],
-    [stSUPRA_TVL]
-  );
-  totalCollateral_in_supra = BigInt(SUPRA_TVL) + BigInt(stSUPRA_TVL_in_supra[0]);
-  balances={ '0x1::supra_coin::SupraCoin': totalCollateral_in_supra }
+  balances[STSUPRA_ADDR] = BigInt(stSUPRA_TVL);
+
   return transformBalances(chain, balances);
 };
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
@@ -40,4 +38,3 @@ module.exports = {
     tvl: calculateSolidoTVL,
   },
 };
-
