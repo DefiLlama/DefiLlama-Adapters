@@ -39,7 +39,7 @@ const ADDRESSES = {
   arbitrum: {
     Factory: {
       address: "0x14920Eb11b71873d01c93B589b40585dacfCA096",
-      fromBlock: 322193553,
+      fromBlock: 322190000,
     },
     VaultFactory: [
       {
@@ -52,6 +52,10 @@ const ADDRESSES = {
         address: "0xa7c93162962D050098f4BB44E88661517484C5EB",
         fromBlock: 385228046,
       },
+      {
+        address: "0x18b8A9433dBefcd15370F10a75e28149bcc2e301",
+        fromBlock: 385228046,
+      },
     ],
   },
   bsc: {
@@ -62,20 +66,24 @@ const ADDRESSES = {
     VaultFactory: [
       {
         address: "0x48bCd27e208dC973C3F56812F762077A90E88Cea",
-        fromBlock: 50519690,
+        fromBlock: 50519589,
       },
     ],
     VaultFactoryV2: [
       {
         address: "0x1401049368eD6AD8194f8bb7E41732c4620F170b",
-        fromBlock: 63192842,
+        fromBlock: 63100000,
+      },
+      {
+        address: "0xdffE6De6de1dB8e1B5Ce77D3222eba401C2573b5",
+        fromBlock: 63100000,
       },
     ],
   },
   ethereum: {
     Factory: {
       address: "0x37Ba9934aAbA7a49cC29d0952C6a91d7c7043dbc",
-      fromBlock: 22174761,
+      fromBlock: 22174000,
     },
     FactoryV2: [
       {
@@ -96,15 +104,19 @@ const ADDRESSES = {
         address: "0x4778CBf91d8369843281c8f5a2D7b56d1420dFF5",
         fromBlock: 22283092,
       },
+      {
+        address: "0x3a9ECfFDBDc595907f65640F810d3dDDDDe2FA61",
+        fromBlock: 23138659,
+      },
     ],
     VaultFactoryV2: [
       {
         address: "0xF2BDa87CA467eB90A1b68f824cB136baA68a8177",
-        fromBlock: 23445703,
+        fromBlock: 23430000,
       },
       {
         address: "0x5b8B26a6734B5eABDBe6C5A19580Ab2D0424f027",
-        fromBlock: 23488637,
+        fromBlock: 23430000,
       },
     ],
   },
