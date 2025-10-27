@@ -7,7 +7,6 @@ const { sumTokens2 } = require('../helper/unwrapLPs');
 const blacklists = {
   ethereum: ['0xcF9273BA04b875F94E4A9D8914bbD6b3C1f08EDb', '0x77e88cA17A6D384DCBB13747F6767F30e3753e63'],
   base: ['0x023577b99e8A59ac18454161EecD840Bd648D782'],
-
 }
 
 const chains = ['ethereum', 'bsc', 'polygon', 'arbitrum', 'optimism', 'base', 'hemi']
@@ -23,6 +22,11 @@ const fraxLockVaultsNotRegistered = [
   "0xDc5Ed7b972710594082479AF498B1dA02d03a273",
 ];
 
+const hemiBTCVaults = [
+  "0x748973D83d499019840880f61B32F1f83B46f1A5",
+  "0x0b8E088a35879f30a4d63F686B10adAD9cB3DBE1"
+]
+
 const abis = {
   getRegisteredAddresses: 'address[]:getRegisteredAddresses',
   asset: 'address:asset',
@@ -30,9 +34,9 @@ const abis = {
 }
 
 const getHemiTvl = async (api) => {
-  const totalAsset = await api.call({ abi: abis.totalAssets, target: "0x748973D83d499019840880f61B32F1f83B46f1A5" });
-  
-  api.add(ADDRESSES.hemi.WBTC, totalAsset)  // NBTC Price alternative
+  const assets = hemiBTCVaults.map(vault => ADDRESSES.hemi.WBTC) // NBTC/bgBTC Price alternative on hemi
+  const totalAssets = await api.multiCall({ abi: abis.totalAssets, calls: hemiBTCVaults });
+  api.add(assets, totalAssets)  
 }
 
 const getArbTvl = async (balances, api, vaults) => {
@@ -63,11 +67,11 @@ const tvl = async (api) => {
 }
 
 chains.forEach((chain) => {
-  module.exports[chain] = { 
+  module.exports[chain] = {
     tvl,
     ...(chain === 'ethereum' && {
       staking: stakings([stVCX, veVCX], [VCX, WETH_VCX_BAL_LP_TOKEN]),
     })
-   }
+  }
 })
 

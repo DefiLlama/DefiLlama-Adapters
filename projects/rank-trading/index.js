@@ -13,7 +13,15 @@ const rankTokenAddress = "0x978aB3D5A5C39bCBb2a15f2ad324187dD7cBf952";
 
 const rankFactoryContracts = [
   "0x6E9d30690E433503d3dB7001610f60290a286a3f",
-  "0x7cD6ead7e0834Ae8bc393bA4c933Bb9e80e7dC19"
+  "0x7cD6ead7e0834Ae8bc393bA4c933Bb9e80e7dC19",
+  "0x185f8bc81FC95bcdb8ebD8A7C4429A461931c82e",
+  "0xAB5389b054B763F9d86Be0381BD6C7385E40e452",
+  "0x8e9fc089c7eF09cD1c8bfc7FFdf5fa00E1A90601",
+  "0x276ee92c144A7FBe0931813cC7bb30d388a17eb8",
+  "0x1563c9837f9b71ba6F69342276dEDa6158447227",
+  "0xCBAbBa2af00EB3c0F4Ae98D14FFEB07587B5A679",
+  "0x95DeFC7388038fe97512f355686f060Fa2B573f3",
+  "0xF86adA1552817637EC843A4c5EB915fc125b70db",
 ];
 
 const stakingContracts = [{ poolAddress: "0xd6A07b8065f9e8386A9a5bBA6A754a10A9CD1074", poolId: 380 }];
@@ -39,7 +47,7 @@ async function staking(api) {
 }
 
 module.exports = {
-  methodology: "TVL = Sum of all assets locked in Rank Trading contracts, Staking = Total $RAN staked in the Staking Pools, Vesting = Total $RAN in vesting contracts, Liquidity = Total locked liquidity in V3 pools",
+  methodology: "TVL = Sum of all assets locked in Rank Trading contracts, Staking = Total $RAN staked in the Staking Pools, Vesting = Total $RAN in vesting contracts",
   bsc: {
     tvl,
     staking,

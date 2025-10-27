@@ -19,6 +19,10 @@ const chainMapping = {
   BCH: 'bitcoin-cash',
   DOGE: 'dogecoin',
   GAIA: 'cosmos',
+  BASE: 'base',
+  BSC: 'bsc',
+  XRP: 'ripple',
+  THOR: 'thorchain',
 }
 
 const defillamaChainMapping = {
@@ -37,6 +41,8 @@ const tokenGeckoMapping = {
   'BNB.BTCB-1DE': 'bitcoin-bep2',
   'BNB.AVA-645': 'concierge-io',
   'BNB.ETH-1C9': 'ethereum',
+  'THOR.RUJI': 'rujira',
+  'THOR.TCY': 'tcy',
 }
 
 
@@ -54,7 +60,6 @@ async function tvl(api) {
     if (blacklistedPools.includes(pool)) return;
     if (aChain === 'thorchain') {
       sdk.util.sumSingleBalance(balances, 'thorchain', runeDepth/1e8)
-      return;
     }
     if (+totalDepth < 1) return;
     let [chainStr, token] = pool.split('.')
@@ -63,7 +68,7 @@ async function tvl(api) {
     if (dChain !== aChain) return;
 
     let [baseToken, address] = token.split('-')
-    if (['ethereum', 'bsc', 'avax'].includes(chain)) {
+    if (['ethereum', 'bsc', 'avax', 'base'].includes(chain)) {
       totalDepth = totalDepth * (10 ** (+nativeDecimal - 8))
       if (address && address.length > 8) {
         address = address.toLowerCase()
