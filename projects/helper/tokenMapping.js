@@ -43,9 +43,7 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  terra: { 
-    'uluna': { coingeckoId: 'terra-luna-classic', decimals: 6 },
-    'uusd': { coingeckoId: 'terraclassicusd', decimals: 6 }, 
+  terra: {  
     'terra1vhgq25vwuhdhn9xjll0rhl2s67jzw78a4g2t78y5kz89q9lsdskq2pxcj2': {
       coingeckoId: 'juris-protocol',
       decimals: 6
