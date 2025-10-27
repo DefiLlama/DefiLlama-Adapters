@@ -8,8 +8,10 @@ const ZENBTC_ETHEREUM = '0x2fE9754d5D28bac0ea8971C0Ca59428b8644C776';
 // Solana zenBTC configuration
 const ZENBTC_PROGRAM_ID = '9t9RfpterTs95eXbKQWeAriZqET13TbjwDa6VW6LJHFb';
 
-// zrchain treasury wallet endpoint for Bitcoin addresses
+// zrchain API endpoints
 const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
+const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';
+const ZRCHAIN_KEY_BY_ID_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/key_by_id';
 
 // Cache for supplies to avoid redundant fetches
 let suppliesPromise = null;
@@ -21,6 +23,50 @@ function getMintAddress() {
   const seeds = [Buffer.from('wrapped_mint')];
   const [address] = PublicKey.findProgramAddressSync(seeds, new PublicKey(ZENBTC_PROGRAM_ID));
   return address.toString();
+}
+
+/**
+ * Fetches change addresses from zenbtc params
+ * Queries each change address key ID to get the actual Bitcoin addresses
+ */
+async function getChangeAddresses() {
+  const changeAddresses = [];
+
+  try {
+    // Fetch zenbtc params to get change address key IDs
+    const paramsResponse = await fetch(ZENBTC_PARAMS_API);
+    const paramsData = await paramsResponse.json();
+
+    const changeAddressKeyIDs = paramsData.params?.changeAddressKeyIDs || [];
+
+    // Fetch each change address
+    for (const keyID of changeAddressKeyIDs) {
+      try {
+        const keyResponse = await fetch(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+        const keyData = await keyResponse.json();
+
+        // Extract addresses from wallets array
+        if (keyData.wallets && Array.isArray(keyData.wallets)) {
+          for (const wallet of keyData.wallets) {
+            if (wallet.address) {
+              changeAddresses.push(wallet.address);
+            }
+          }
+        }
+      } catch (error) {
+        console.warn(`Error fetching change address for key ID ${keyID}: ${error.message}`);
+      }
+    }
+
+    if (changeAddresses.length > 0) {
+      console.log(`Fetched ${changeAddresses.length} change address(es)`);
+    }
+
+    return changeAddresses;
+  } catch (error) {
+    console.error(`Error fetching change addresses from zenbtc params: ${error.message}`);
+    return [];
+  }
 }
 
 /**
@@ -73,31 +119,34 @@ async function getBitcoinAddresses() {
 }
 
 /**
- * Queries Bitcoin balances for all treasury addresses
+ * Queries Bitcoin balances for all treasury addresses and change addresses
  * Returns total BTC balance in satoshis
  */
 async function getBitcoinTVL() {
   try {
-    const btcAddresses = await getBitcoinAddresses();
+    // Fetch treasury addresses and change addresses in parallel
+    const [btcAddresses, changeAddresses] = await Promise.all([
+      getBitcoinAddresses(),
+      getChangeAddresses(),
+    ]);
 
-    if (btcAddresses.length === 0) {
-      console.warn('No Bitcoin addresses found in treasury');
+    // Combine all addresses
+    const allAddresses = [...btcAddresses, ...changeAddresses];
+
+    if (allAddresses.length === 0) {
+      console.warn('No Bitcoin addresses found in treasury or change addresses');
       return 0n;
     }
 
-    // Add change address
-    const changeAddress = 'bc1qngthd4lgz6pjkf24d2cesltlnd7nd0pjguuvqu';
-    btcAddresses.push(changeAddress);
-
     // Use Bitcoin helper to sum balances for all addresses
     const balances = {};
-    await sumBitcoinTokens({ balances, owners: btcAddresses });
+    await sumBitcoinTokens({ balances, owners: allAddresses });
 
     // Extract Bitcoin balance and convert to satoshis (from BTC)
     const btcAmount = balances.bitcoin || 0;
     const satoshis = BigInt(Math.round(btcAmount * 1e8));
 
-    console.log(`Bitcoin TVL from ${btcAddresses.length} addresses: ${satoshis.toString()} satoshis (${btcAmount} BTC)`);
+    console.log(`Bitcoin TVL from ${allAddresses.length} addresses (${btcAddresses.length} treasury + ${changeAddresses.length} change): ${satoshis.toString()} satoshis (${btcAmount} BTC)`);
     return satoshis;
   } catch (error) {
     console.error(`Error calculating Bitcoin TVL: ${error.message}`);
