@@ -25,7 +25,8 @@ const EVENTS = {
       "event CreateVault(address indexed vault, address indexed creator, (address admin,address curator,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate) indexed initialParams)",
   },
   V1Plus: {
-    VaultCreated: "event VaultCreated(address indexed vault, address indexed creator, tuple(address admin,address curator,address guardian,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy,uint64 minIdleFundRate) initialParams)",
+    VaultCreated:
+      "event VaultCreated(address indexed vault, address indexed creator, tuple(address admin,address curator,address guardian,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy,uint64 minIdleFundRate) initialParams)",
   },
   V2: {
     MarketCreated:
@@ -289,15 +290,14 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] = await Promise.all([
-    getTermMaxVaultAddresses(api),
-    getTermMaxVaultV1PlusAddresses(api),
-    getTermMaxVaultV2Addresses(api),
-  ]);
+  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] =
+    await Promise.all([
+      getTermMaxVaultAddresses(api),
+      getTermMaxVaultV1PlusAddresses(api),
+    ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
     .concat(vaultV1PlusAddresses)
-    .concat(vaultV2Addresses)
     .filter((address) => !VAULT_BLACKLIST[api.chain]?.includes(address));
   const assets = await api.multiCall({
     abi: ABIS.Vault.asset,
@@ -307,11 +307,31 @@ async function getTermMaxVaultOwnerTokens(api) {
   return assets.map((asset, idx) => [[asset], vaultAddresses[idx]]);
 }
 
+async function recordVaultV2Assets(api) {
+  const vaultV2Addresses = await getTermMaxVaultV2Addresses(api);
+  const [assets, totalAssets] = await Promise.all([
+    api.multiCall({
+      abi: ABIS.Vault.asset,
+      calls: vaultV2Addresses,
+    }),
+    api.multiCall({
+      abi: "uint256:totalAssets",
+      calls: vaultV2Addresses,
+    }),
+  ]);
+  for (let i = 0; i < vaultV2Addresses.length; i += 1) {
+    const asset = assets[i];
+    const totalAsset = totalAssets[i];
+    api.add(asset, totalAsset);
+  }
+}
+
 async function getTermMaxOwnerTokens(api) {
   const [marketOwnerTokens, vaultOwnerTokens] = await Promise.all([
     getTermMaxMarketOwnerTokens(api),
     getTermMaxVaultOwnerTokens(api),
   ]);
+  await recordVaultV2Assets(api);
   const ownerTokens = [].concat(marketOwnerTokens).concat(vaultOwnerTokens);
   return ownerTokens;
 }
