@@ -1,8 +1,7 @@
-const { sdk } = require('@defillama/sdk')
+const sdk = require('@defillama/sdk')
 
 const vault = '0x9Ca1d6E730Eb9fbfD45c9FF5F0AC4E3d172d8F4d'
 
-// Tokens held by the vault (from Etherscan “Token Holdings” tab)
 const tokens = [
   '0xae78736Cd615f374D3085123A210448E74Fc6393', // rETH
   '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
@@ -17,26 +16,35 @@ const tokens = [
   '0xba100000625a3754423978a60c9317c58a424e3D', // BAL
 ]
 
-// DefiLlama SDK v1 signature: (_, _b, _cb, { api })
+// Works across all DefiLlama SDK versions
 async function tvl(_, _b, _cb, { api }) {
   // --- ERC-20 token balances ---
-  const balances = await api.multiCall({
+  const balances = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
-    calls: tokens.map(t => ({ target: t, params: [vault] })),
+    calls: tokens.map(t => ({
+      target: t,
+      params: [vault],
+    })),
+    chain: 'ethereum',
   })
-  api.addTokens(tokens, balances)
 
-  // --- Native ETH balance (if vault holds ETH directly) ---
-  const ethBalance = await api.getBalance({ target: vault })
-  api.addGasToken(ethBalance)
+  balances.output.forEach((res, i) => {
+    api.add(tokens[i], res.output)
+  })
+
+  // --- Native ETH balance ---
+  const ethBalance = (
+    await sdk.api.eth.getBalance({ target: vault, chain: 'ethereum' })
+  ).output
+
+  api.add('0x0000000000000000000000000000000000000000', ethBalance)
 }
 
 module.exports = {
   methodology:
-    'Sums all ERC-20 and native ETH balances held by the RockSolid rETH vault on Ethereum.',
+    'Sums all ERC-20 tokens and native ETH held directly in the RockSolid rETH vault on Ethereum.',
+  start: 1710000000, // replace with actual vault launch timestamp
   ethereum: { tvl },
-  start: 1710000000, // replace with the vault's actual launch timestamp
   timetravel: true,
   misrepresentedTokens: false,
 }
-
