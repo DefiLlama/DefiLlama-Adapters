@@ -24,6 +24,9 @@ const EVENTS = {
     CreateVault:
       "event CreateVault(address indexed vault, address indexed creator, (address admin,address curator,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate) indexed initialParams)",
   },
+  V1Plus: {
+    VaultCreated: "event VaultCreated(address indexed vault, address indexed creator, tuple(address admin,address curator,address guardian,uint256 timelock,address asset,uint256 maxCapacity,string name,string symbol,uint64 performanceFeeRate,uint64 minApy,uint64 minIdleFundRate) initialParams)",
+  },
   V2: {
     MarketCreated:
       "event MarketCreated(address indexed market, address indexed collateral, address indexed debtToken, tuple(address collateral,address debtToken,address admin,address gtImplementation,tuple(address treasurer,uint64 maturity,tuple(uint32 lendTakerFeeRatio,uint32 lendMakerFeeRatio,uint32 borrowTakerFeeRatio,uint32 borrowMakerFeeRatio,uint32 mintGtFeeRatio,uint32 mintGtFeeRef) feeConfig) marketConfig,(address oracle,uint32 liquidationLtv,uint32 maxLtv,bool liquidatable) loanConfig,bytes gtInitalParams,string tokenName,string tokenSymbol) params)",
@@ -104,6 +107,8 @@ const ADDRESSES = {
         address: "0x4778CBf91d8369843281c8f5a2D7b56d1420dFF5",
         fromBlock: 22283092,
       },
+    ],
+    VaultFactoryV1Plus: [
       {
         address: "0x3a9ECfFDBDc595907f65640F810d3dDDDDe2FA61",
         fromBlock: 23138659,
@@ -239,6 +244,28 @@ async function getTermMaxVaultAddresses(api) {
   return addresses;
 }
 
+async function getTermMaxVaultV1PlusAddresses(api) {
+  if (!ADDRESSES[api.chain].VaultFactoryV1Plus) return [];
+  const addresses = [];
+  const promises = [];
+  for (const vaultFactory of ADDRESSES[api.chain].VaultFactoryV1Plus) {
+    const promise = async () => {
+      const logs = await getLogs({
+        api,
+        eventAbi: EVENTS.V1Plus.VaultCreated,
+        fromBlock: vaultFactory.fromBlock,
+        target: vaultFactory.address,
+        onlyArgs: true,
+        extraKey: `termmax-vault-v1-plus-${api.chain}`,
+      });
+      for (const [vault] of logs) addresses.push(vault);
+    };
+    promises.push(promise());
+  }
+  await Promise.all(promises);
+  return addresses;
+}
+
 async function getTermMaxVaultV2Addresses(api) {
   if (!ADDRESSES[api.chain].VaultFactoryV2) return [];
   const addresses = [];
@@ -262,12 +289,14 @@ async function getTermMaxVaultV2Addresses(api) {
 }
 
 async function getTermMaxVaultOwnerTokens(api) {
-  const [vaultV1Addresses, vaultV2Addresses] = await Promise.all([
+  const [vaultV1Addresses, vaultV1PlusAddresses, vaultV2Addresses] = await Promise.all([
     getTermMaxVaultAddresses(api),
+    getTermMaxVaultV1PlusAddresses(api),
     getTermMaxVaultV2Addresses(api),
   ]);
   const vaultAddresses = []
     .concat(vaultV1Addresses)
+    .concat(vaultV1PlusAddresses)
     .concat(vaultV2Addresses)
     .filter((address) => !VAULT_BLACKLIST[api.chain]?.includes(address));
   const assets = await api.multiCall({
