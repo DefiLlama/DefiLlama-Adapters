@@ -1,8 +1,10 @@
+const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { uniV3Export } = require('../helper/uniswapV3')
 
 // Rain.one RAIN token address on Arbitrum
 const RAIN_TOKEN = "0x25118290e6a5f4139381d072181157035864099d"
+const USDT = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9" // Arbitrum USDT
+const RAIN_PROTOCOL_FACTORY = "0xccCB3C03D9355B01883779EF15C1Be09cf3623F1"
 
 // Non-circulating & treasury wallets
 const NON_CIRCULATING_ADDRESSES = [
@@ -20,27 +22,34 @@ async function vesting(api) {
     })
 }
 
-// ---- DEX TVLs ----
-// Uniswap V3 (official factory)
-const v3TVL = uniV3Export({
-    arbitrum:{
-        factory: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
-        fromBlock: 377328276,
-    }
-})
+async function rainProtocolTvl(api) {
 
-async function tvl(api) {
-    await v3TVL?.arbitrum?.tvl(api);
-    return api.getBalances()
+    const logs = await getLogs({
+        api,
+        target: RAIN_PROTOCOL_FACTORY,
+        topic: 'PoolCreated(address,address,string)',
+        eventAbi: 'event PoolCreated(address indexed poolAddress, address indexed poolCreator, string uri)',
+        onlyArgs: true,
+        fromBlock: 307025521,
+    })
+
+    const poolAddresses = logs.map(log => log.poolAddress)
+    if (poolAddresses.length === 0) return {}
+
+    // Sum USDT balances in all pools
+    return sumTokens2({
+        api,
+        tokensAndOwners: poolAddresses.map(addr => [USDT, addr]),
+    })
 }
 
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
     methodology:
-        "TVL includes RAIN tokens held in Rain.one’s vesting/presale contracts, and liquidity in Uniswap V3 pools on Arbitrum.",
+        "TVL includes RAIN tokens held in Rain.one’s vesting/presale contracts and pools created on rain.one platform.",
     arbitrum: {
-        tvl,
+        tvl: rainProtocolTvl,
         vesting,
     },
 }
