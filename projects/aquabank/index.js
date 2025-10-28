@@ -1,6 +1,5 @@
 // projects/aquabank/index.js
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const USDt = ADDRESSES.avax.USDt  // 0x9702230A8Ea53601f5Cd2dc00fDBc13d4dF4A8c7
 
@@ -12,12 +11,6 @@ const EULER_VAULT = '0x61E8f77eD693d3edeCBCc2dd9c55c1d987c47775'
 const BENQI_RECEIPT = '0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF'
 const EULER_RECEIPT = '0xa446938b0204Aa4055cdFEd68Ddf0E0d1BAB3E9E'
 
-// Bank staking contracts where bUSDT is deposited
-const bUSDT = '0x3C594084dC7AB1864AC69DFd01AB77E8f65B83B7'
-const STAKERS = [
-    '0x00F8a3B9395B4B02d12ee26536046c3C52459674', // Benqi BankStaking
-    '0x743BcD612866fC7485BfC487B14Ebf9a67D753Cb', // Euler BankStaking
-]
 
 // ABIs
 const erc20Bal = 'function balanceOf(address) view returns (uint256)'
@@ -72,29 +65,11 @@ async function tvl(api) {
     return api.getBalances()
 }
 
-// Staking: sum bUSDT deposited in BankStaking contracts, mapped 1:1 to USDt
-async function staking(api) {
-    const tokensAndOwners = STAKERS.map(owner => [bUSDT, owner])
-  
-    // - bUSDT → USDt (Tether on Avalanche)
-    return await sumTokens2({
-        api,
-        tokensAndOwners,
-        transformAddress: (addr) => {
-            const a = addr.toLowerCase()
-            if (a === bUSDT.toLowerCase()) return `avax:${USDt.toLowerCase()}`
-            return `avax:${a}`
-        },
-    })
-}
-  
-
 module.exports = {
     methodology:
-        ' TVL = USDt underlying represented by Benqi/Euler receipt tokens held in vaults (Benqi: shares*exchangeRate/1e18, Euler: convertToAssets). Staking = bUSDT deposited in BankStaking contracts, reported as USDt via 1:1 mapping.',
+        'TVL = USDt underlying represented by Benqi/Euler receipt tokens held in vaults (Benqi: shares*exchangeRate/1e18, Euler: convertToAssets).',
     avax: { 
         tvl,
-        // staking,
     },
 }
 

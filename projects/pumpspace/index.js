@@ -1,8 +1,6 @@
 // projects/pumpspace/index.js
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
-const { getUniTVL } = require('../helper/unknownTokens');
-const { getTridentTVL } = require('../helper/sushi-trident')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
@@ -21,27 +19,7 @@ const MASTERCHEFS = [
 
 // --- TOKENS (project/local wrappers + protocol tokens) ---
 const TOKENS = {
-  bUSDT: '0x3C594084dC7AB1864AC69DFd01AB77E8f65B83B7',  // mapped to USDt
-  WAVAX_PROXY: "0xAB4fBa02a2905a03adA8BD3d493FB289Dcf84024",  // mapped to canonical WAVAX below
-  sBWPM: "0x6c960648d5F16f9e12895C28655cc6Dd73B660f7",
-  sADOL: "0x6214D13725d458890a8EF39ECB2578BdfCd82170",
-  CLAM:  "0x1ea53822f9B2a860A7d20C6D2560Fd07db7CFF85",
-  PEARL: "0x08c4b51e6Ca9Eb89C255F0a5ab8aFD721420e447",
-  KRILL: "0x4ED0A710a825B9FcD59384335836b18C75A34270",
   SHELL: '0xaD4CB79293322c07973ee83Aed5DF66A53214dc6',
-}
-
-
-// Map wrapped/local tokens to canonical core assets for pricing/aggregation.
-// - bUSDT → USDt (Tether on Avalanche)
-// - WAVAX proxy (0xAB4f...) → canonical WAVAX (0xB31f...) 
-function transformAddress(addr) {
-  const a = addr.toLowerCase()
-  if (a === TOKENS.bUSDT.toLowerCase())
-    return `avax:${ADDRESSES.avax.USDt.toLowerCase()}`
-  // if (a === TOKENS.WAVAX_PROXY.toLowerCase())
-  //   return `avax:${ADDRESSES.avax.WAVAX.toLowerCase()}`
-  return `avax:${a}`
 }
 
 // ---------- V2 factory TVL (sum token reserves held by each pair) ----------
@@ -60,8 +38,7 @@ const tridentAbis = {
 }
 
 
-async function v2FactoryTVLWithBusdtMapping(api) {
-  // 1) enumerate all pairs from the V2 factory
+async function v2FactoryTVL(api) {
   const n = await api.call({ target: PUMP_FACTORY, abi: uniAbis.allPairsLength })
   const idx = Array.from({ length: Number(n) }, (_, i) => i)
   const pairs = await api.multiCall({
@@ -69,13 +46,11 @@ async function v2FactoryTVLWithBusdtMapping(api) {
     calls: idx.map(i => ({ target: PUMP_FACTORY, params: i })),
   })
 
-  // 2) get token0/token1 for each pair
   const [token0s, token1s] = await Promise.all([
     api.multiCall({ abi: uniAbis.token0, calls: pairs.map(p => ({ target: p })) }),
     api.multiCall({ abi: uniAbis.token1, calls: pairs.map(p => ({ target: p })) }),
   ])
 
-  // 3) for each pair, count reserves via ERC20.balanceOf(pair)
   const tokensAndOwners = []
   for (let i = 0; i < pairs.length; i++) {
     const t0 = token0s[i]?.toLowerCase()
@@ -85,58 +60,50 @@ async function v2FactoryTVLWithBusdtMapping(api) {
     tokensAndOwners.push([t1, pairs[i]])
   }
 
-  // 4) aggregate with transforms (bUSDT→USDt, WAVAX proxy→WAVAX)
   return sumTokens2({
     api,
     tokensAndOwners,
-    transformAddress,
-    // resolveLP: false  // V2 pairs counted by reserves; no unwrapping required here
   })
 }
 
-async function v3FactoryTVLWithMappings(ts, _block, { [CHAIN]: block }) {
-  // 1) number of pools
+async function v3FactoryTVL(ts, _block, { [CHAIN]: block }) {
   const pairLength = (await sdk.api.abi.call({
     target: PUMP_V3, abi: tridentAbis.totalPoolsCount, chain: CHAIN, block
   })).output
 
-  // 2) pool addresses
   const idxs = Array.from({ length: Number(pairLength) }, (_, i) => i)
   const pools = (await sdk.api.abi.multiCall({
     abi: tridentAbis.getPoolAddress, chain: CHAIN,
     calls: idxs.map(i => ({ target: PUMP_V3, params: [i] })), block
   })).output.map(r => r.output)
 
-  // 3) assets per pool
   const { output: assetLists } = await sdk.api.abi.multiCall({
     abi: tridentAbis.getAssets, chain: CHAIN,
     calls: pools.map(p => ({ target: p })), block,
   })
 
-  // 4) build [token, owner(pool)] tuples
-  const toa = []
+  const tokensAndOwners = []
   assetLists.forEach(({ output, input: { target: pool } }) =>
-    output.forEach(token => toa.push([token, pool]))
+    output.forEach(token => tokensAndOwners.push([token, pool]))
   )
 
-  // 5) aggregate with transforms (bUSDT→USDt, WAVAX proxy→WAVAX)
-  return sumTokens2({ chain: CHAIN, block, tokensAndOwners: toa, transformAddress })
+  return sumTokens2({ 
+    chain: CHAIN, 
+    block, 
+    tokensAndOwners, 
+  })
 }
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: `
-  TVL is calculated by summing up all reserves from both PumpSpace V2 and V3 (Trident) factories.  
-  For accurate valuation, the following transformations are applied:
-  - bUSDT is mapped 1:1 to USDt (Tether) so its liquidity and price are aggregated under USDT.
-  - WAVAX proxy token (0xAB4f...) is mapped to the canonical Avalanche WAVAX (0xB31f...).
-  This ensures all liquidity pools using wrapped variants are properly reflected in total TVL.  
-  Staking represents single-token staking of SHELL from the Shell MasterChef contract.
+  TVL is computed by summing reserves across PumpSpace V2 and V3 (Trident) factories on Avalanche.
+  Single-asset staking (if enabled) reflects tokens deposited in the respective MasterChef contracts.
   `,
     avax: {
     tvl: sdk.util.sumChainTvls([
-      v2FactoryTVLWithBusdtMapping, 
-      v3FactoryTVLWithMappings,
+      v2FactoryTVL, 
+      v3FactoryTVL,
     ]),
     staking: sdk.util.sumChainTvls([
       // If you later add KRILL/PEARL single-asset staking, append similar lines here.
