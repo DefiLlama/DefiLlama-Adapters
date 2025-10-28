@@ -21,8 +21,11 @@ const configs = {
     ethereum: {
       // your existing ERC-4626 vaults
       erc4626: [
-        "0x9396dcbf78fc526bb003665337c5e73b699571ef",
-        "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64",
+        "0x9396dcbf78fc526bb003665337c5e73b699571ef", //Gearbox ETH
+        "0xA9d17f6D3285208280a1Fd9B94479c62e0AABa64", //Gearbox wstETH
+        "0xe108fbc04852B5df72f9E44d7C29F47e7A993aDd", //Morpho USDC Prime
+        "0x0c6aec603d48eBf1cECc7b247a2c3DA08b398DC1", //Morpho EURC Yield
+        "0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8", //Morpho ETH Prime
       ],
 
       // NEW: Gearbox v3.1 Market Configurator (legacy configurator) to crawl
