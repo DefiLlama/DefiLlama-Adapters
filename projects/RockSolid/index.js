@@ -23,7 +23,7 @@ async function tvl(_, _b, _cb, { api }) {
 module.exports = {
   methodology:
     'Calls totalAssets() on the RockSolid rock.rETH vault to get the total amount of rETH managed by the vault.',
-  start: 1710000000, // replace with actual vault launch timestamp
+  start: 1756339201, // vault launch timestamp
   ethereum: { tvl },
   timetravel: true,
   misrepresentedTokens: false,
