@@ -15,10 +15,20 @@ async function tvl(api) {
   const chain = api.chain
 
   if (supportedTokens[chain]) {
-    for (const address of supportedTokens[chain]) {
-      const locked = await api.call({  abi: DEPOSIT_ABI, target: BounceBitGatewayPrime, params: [address]})
-      api.add(address, locked)
-    }
+    const calls = supportedTokens[chain].map(address => ({
+      target: BounceBitGatewayPrime,
+      params: [address]
+    }))
+
+    const lockedAmounts = await api.multiCall({
+      abi: DEPOSIT_ABI,
+      calls
+    })
+
+    supportedTokens[chain].forEach((address, i) => {
+      api.add(address, lockedAmounts[i])
+    })
+
     return sumTokens({
       api
     })
