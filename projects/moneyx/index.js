@@ -1,6 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const VAULT = '0xeB0E5E1a8500317A1B8fDd195097D5509Ef861de'  // MoneyX main vault
+// 🏦 Vault contract that holds trading liquidity
+const VAULT = '0xeB0E5E1a8500317A1B8fDd195097D5509Ef861de'
+
+// 💰 Supported assets in the vault
 const TOKENS = [
   '0x55d398326f99059fF775485246999027B3197955', // USDT
   '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
@@ -12,6 +15,18 @@ const TOKENS = [
   '0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE', // XRP
 ]
 
+// 🧱 Tokens and staking contracts
+const MONEY = '0x4fFe5ec4D8B9822e01c9E49678884bAEc17F60D9'
+const ES_MONEY = '0x4768232700c2f81721fA94822535d35c2354633B'
+
+const STAKING_CONTRACTS = [
+  '0xEB445ac93eDc6F91E69CA35674CEbE9CC96CFEaB', // RewardTrackerStakedMONEY
+  '0x8Bb13A67be7d9ea51cA74327bC81807D1461403D', // RewardTrackerStakedBonusMONEY
+  '0xeBBc55644c9bD5095a0eA0Ea64ac92Fb60E0B5fB', // RewardTrackerStakedBonusFeeMONEY
+  '0xe3394F30568D36593147c93Cce75cc497319C99D', // VestedMONEY
+]
+
+// 🧮 Vault TVL — liquidity backing open positions
 async function tvl(api) {
   return sumTokens2({
     api,
@@ -19,7 +34,19 @@ async function tvl(api) {
   })
 }
 
+// 💎 Staking TVL — MONEY & esMONEY across all reward trackers
+async function staking(api) {
+  return sumTokens2({
+    api,
+    tokensAndOwners: [
+      ...STAKING_CONTRACTS.map(c => [MONEY, c]),
+      ...STAKING_CONTRACTS.map(c => [ES_MONEY, c]),
+    ],
+  })
+}
+
 module.exports = {
-  bsc: { tvl },
-  methodology: 'TVL is calculated by summing the balance of stablecoins and major assets in the main MoneyX vault on BNB Chain.',
+  bsc: { tvl, staking },
+  methodology:
+    'TVL includes vault assets (USDT, USDC, WBNB, BTCB, ETH, SOL, DOGE, XRP) held in the main Vault. Staking TVL includes MONEY and esMONEY tokens staked across reward tracker and vesting contracts.',
 }
