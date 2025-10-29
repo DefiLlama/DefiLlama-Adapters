@@ -6,7 +6,7 @@ const config = {
   base: {
     factory: '0x61a98bef11867c69489b91f340fe545eefc695d7',
     fromBlock: 21180486,
-    vaults: ['0xb13cF163D916917D9cD6E836905cA5f12A1DeF4b']
+    vaults: ['0xb13CF163d916917d9cD6E836905cA5f12a1dEF4B']
   },
 }
 
@@ -21,11 +21,9 @@ Object.keys(config).forEach(chain => {
 
       // Add TYD Vault(s) TVL
       if (vaults && vaults.length > 0) {
-        for (const vault of vaults) {
-          const underlying = await api.call({ abi: 'address:asset', target: vault })
-          const vaultAssets = await api.call({ abi: 'uint256:totalAssets', target: vault })
-          api.add(underlying, vaultAssets)
-        }
+        const underlyingTokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+        const totalAssets = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
+        api.addTokens(underlyingTokens, totalAssets)
       }
     }
   }
