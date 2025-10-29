@@ -41,13 +41,6 @@ module.exports = {
 			};
 		},
 	},
-	filecoin: {
-		tvl: async () => {
-			const { bifrost } = getExports("bifrost-staking", ["bifrost"]);
-			const { filecoin } = await bifrost.tvl();
-			return { filecoin };
-		},
-	},
 	astar: {
 		tvl: async () => {
 			const { bifrost } = getExports("bifrost-staking", ["bifrost"]);
