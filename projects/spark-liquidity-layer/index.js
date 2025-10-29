@@ -7,6 +7,7 @@ const almProxy = {
   arbitrum: '0x92afd6F2385a90e44da3a8B60fe36f6cBe1D8709',
   optimism: '0x876664f0c9Ff24D1aa355Ce9f1680AE1A5bf36fB',
   unichain: '0x345E368fcCd62266B3f5F37C9a131FD1c39f5869',
+  avax: '0xecE6B0E8a54c2f44e066fBb9234e7157B15b7FeC',
 }
 
 const mainnetAllocatorToTokens = {
@@ -30,6 +31,7 @@ const mainnetAllocatorToTokens = {
     '0xe7dF13b8e3d6740fe17CBE928C7334243d86c92f', // spUSDT
     '0x377C3bd93f2a2984E1E7bE6A5C22c525eD4A4815', // spUSDC
     '0x56A76b428244a50513ec81e225a293d128fd581D', // morpho blue chip sparkUSDC
+    '0x14d60E7FDC0D71d8611742720E4C50E7a974020c', // Superstate's USCC
   ]
 }
 
@@ -72,12 +74,20 @@ const unichainAllocatorToTokens = {
   ]
 }
 
+const avaxAllocatorToTokens = {
+  [almProxy.avax]: [
+    ADDRESSES.avax.USDC,
+    '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aave aUSDC
+  ]
+}
+
 const CONFIG = {
   ethereum: mainnetAllocatorToTokens,
   base: baseAllocatorToTokens,
   arbitrum: arbitrumAllocatorToTokens,
   optimism: optimismAllocatorToTokens,
   unichain: unichainAllocatorToTokens,
+  avax: avaxAllocatorToTokens,
 }
 
 async function tvl(api) {
@@ -116,6 +126,7 @@ const vaultConfigs = {
   arbitrum: [],
   optimism: [],
   unichain: [],
+  avax: [],
 }
 
 // discards idle supply on aave like markets for USDS and DAI
@@ -266,6 +277,7 @@ const curveConfigs = {
   arbitrum: [],
   optimism: [],
   unichain: [],
+  avax: [],
 }
 
 async function addCurveBalances(api) {

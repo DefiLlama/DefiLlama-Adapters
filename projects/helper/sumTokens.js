@@ -79,7 +79,6 @@ async function sumTokens(options) {
   const evmAddressExceptions = new Set(['tron', 'xdc'])
   const nonEvmOwnerFound = !evmAddressExceptions.has(chain) && owners.some(o => !o.startsWith('0x'))
   const isAltEvm = altEVMHelper[chain] && nonEvmOwnerFound
-  console.log('chain:', chain, 'isAltEvm:', isAltEvm, 'nonEvmOwnerFound:', nonEvmOwnerFound)
   
   if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain) && !isAltEvm) {
     if (nonEvmOwnerFound) throw new Error('chain handler missing: ' + chain)

@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
-const { getCache } = require("../helper/http");
 const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
 const sdk = require("@defillama/sdk");
@@ -53,8 +52,12 @@ const blacklistedPools = {
     '0xc528b0571D0BE4153AEb8DdB8cCeEE63C3Dd7760',
     '0x8272E1A3dBef607C04AA6e5BD3a1A134c8ac063B'
   ],
+  base: [  ]
+}
+
+const globalBlacklistedTokens = {
   base: [
-    '0x302A94E3C28c290EAF2a4605FC52e11Eb915f378', // superOETH
+    '0xdbfefd2e8460a6ee4955a68582f85708baea60a3', // superOETHb
   ]
 }
 
@@ -159,29 +162,6 @@ function aggregateBalanceCalls({ coins, nCoins, wrapped }) {
   return toa;
 }
 
-async function handleUnlistedFxTokens(balances, chain) {
-  if ("fxTokens" in contracts[chain]) {
-    const tokens = Object.values(contracts[chain].fxTokens);
-    for (let token of tokens) {
-      if (token.address in balances) {
-        const [rate, { output: decimals }] = await Promise.all([
-          getCache(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
-          getDecimals(chain, token.address)
-        ]);
-
-        sdk.util.sumSingleBalance(
-          balances,
-          "usd-coin",
-          balances[token.address] * rate.result / 10 ** decimals
-        );
-        delete balances[token.address];
-        delete balances[`${chain}:${token.address}`];
-      }
-    }
-  }
-  return;
-}
-
 async function unwrapPools({ poolList, registry, chain, block }) {
   if (!poolList.length) return;
   const registryAddress = poolList[0].input.target
@@ -197,10 +177,10 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   let calls = aggregateBalanceCalls({ coins, nCoins, wrapped });
   const allTokens = getUniqueAddresses(calls.map(i => i[0]))
   const tokenNames = await getNames(chain, allTokens)
-  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases))]
+  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases)), ...(globalBlacklistedTokens[chain] ?? [])]
   Object.entries(tokenNames).forEach(([token, name]) => {
     if ((name ?? '').startsWith('Curve.fi ')) {
-      sdk.log(chain, 'blacklisting', name)
+      // sdk.log(chain, 'blacklisting', name)
       blacklistedTokens.push(token)
     }
   })
@@ -331,8 +311,7 @@ async function tvl(api) {
   }
   tokensAndOwners = filteredTOA
 
-  await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens })
-  await handleUnlistedFxTokens(balances, chain);
+  await sumTokens2({ balances, chain, block, tokensAndOwners, blacklistedTokens, permitFailure: true, })
   return balances;
 }
 
