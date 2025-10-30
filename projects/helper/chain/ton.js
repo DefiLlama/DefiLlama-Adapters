@@ -132,7 +132,7 @@ async function addTonBalances({ api, addresses }) {
   let i = 0
   for (const chunk of chunks) {
     api.log('Fetching TON balances', { chunk: i++, chunks: chunks.length })
-    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + (key ? `?api_key=${key}` : '') + encodeURIComponent(chunk.join(',')) + '&include_boc=false')
+    const { accounts } = await get('https://toncenter.com/api/v3/accountStates?address=' + encodeURIComponent(chunk.join(',')) + '&include_boc=false' + (key ? `&api_key=${key}` : ''))
     accounts.forEach(({ balance }) => {
       api.add(ADDRESSES.null, balance)
     })

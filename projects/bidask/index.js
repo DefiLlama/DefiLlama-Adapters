@@ -1,23 +1,30 @@
 const { get } = require('../helper/http')
-const { transformDexBalances } = require('../helper/portedTokens')
+const { sumTokensExport } = require('../helper/chain/ton')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sliceIntoChunks } = require('../helper/utils')
+
+const TON_ADDRESS = '0:0000000000000000000000000000000000000000000000000000000000000000'
 
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   ton: {
-    tvl: async () => {
-      const response = await get('https://bidask.finance/api/pools?limit=1000&all=false')
+    tvl: async (api) => {
+      const response = await get('https://bidask.finance/api/pools?size=1000&all=false')
       const pools = response.result;
 
-      return transformDexBalances({
-        chain: 'ton',
-        data: pools.map(pool => ({
-          token0: pool.tokens.token_x.address,
-          token1: pool.tokens.token_y.address,
-          token0Bal: pool.token_x_amount,
-          token1Bal: pool.token_y_amount,
+      const chunks = sliceIntoChunks(pools, 5)
+
+      for (const chunk of chunks) {
+        await Promise.all(chunk.map((pool) => {
+          const tokenYAddress = pool.tokens.token_y.address === TON_ADDRESS ? ADDRESSES.ton.TON : pool.tokens.token_y.address;
+
+          return sumTokensExport({
+            owner: pool.address,
+            tokens: [pool.tokens.token_x.address, tokenYAddress],
+          })(api)
         }))
-      })
+      }
     }
   }
 }
