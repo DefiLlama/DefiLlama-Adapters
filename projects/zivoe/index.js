@@ -40,6 +40,7 @@ async function tvl(api) {
       [USDC, ST_STT],
       [USDC, OCT_DAO],
       [USDC, OCC_Variable],
+      [USDC, OCC_Cycle],
 
       // USDT balances
       [USDT, DAO],
