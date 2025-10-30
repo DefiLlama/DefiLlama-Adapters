@@ -203,6 +203,14 @@ module.exports = {
         smartVaultAddress: '0xd62E2F6b6616271001DCd0988AD2D73DEeE1b491',
         asset: ADDRESSES.bob.uniBTC, // uniBTC
       },
+      {
+        smartVaultAddress: '0xEdE84f536448cC822a9318548Aa8618183743c4f',
+        asset: ADDRESSES.bob.uniBTC, // uniBTC
+      },
+      {
+        smartVaultAddress: '0x4f4EbFAeEa78d7ebc13c4aAb481fd8E36D9DC1Be',
+        asset: '0x09606e6A94E7a8e94fC1f43728475B82BF12E50b', // uBTC
+      },
     ]
   }),
   bsquared: createExports({
@@ -271,6 +279,12 @@ module.exports = {
       address: '0x07BbC5A83B83a5C440D1CAedBF1081426d0AA4Ec',
       assetList: [ADDRESSES.hemi.USDT, ADDRESSES.hemi.USDC_e, ADDRESSES.hemi.DAI],
     }],
+    smartVaultList: [
+      {
+        smartVaultAddress: '0xC7ab85e1afB80EC40eC3745D4Be6e7DE618735f2',
+        asset: '0x99e3dE3817F6081B2568208337ef83295b7f591D', // HEMI
+      },
+    ],
   }),
   base: createExports({
     troveList: [

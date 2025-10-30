@@ -16,7 +16,6 @@ async function tvlEth(_, _1, _2, { api }) {
 
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: "Calculates the TVL of all Stream vaults",
   start: 1739697390,
   hallmarks: [[1740283200, "Stream V2 Launch"]],

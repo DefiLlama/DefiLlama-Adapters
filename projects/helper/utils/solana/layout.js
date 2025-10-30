@@ -5,7 +5,7 @@ const { parsePhoenix } = require('./layouts/phoenix-dex')
 const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, RAYDIUM_POSITION_INFO_LAYOUT } = require('./layouts/raydium-layout')
 const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
 const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2, MARKET_STATE_LAYOUT_V3_MINIMAL } = require('./layouts/openbook-layout')
-const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT, 
+const { ReserveLayout, ReserveLayoutLarix, ReserveLayoutSendit, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, PARLAY_LAYOUT_PARTIAL, HH_PARI_LAYOUT_PARTIAL, ACCESS_LAYOUT, 
   METEORA_STABLE_SWAP_LAYOUT, ZEUS_GUARDIAN_SETTING_LAYOUT,
 } = require('./layouts/mixed-layout');
 const { SCN_STAKE_POOL, TOKEN_LAYOUT, } = require("./layouts/scnSOL");
@@ -38,6 +38,7 @@ const parseReserve = (info) => {
   return details;
 }
 
+
 const defaultParseLayout = Layout => info => {
   const { data } = info;
   const buffer = Buffer.from(data);
@@ -47,6 +48,7 @@ const defaultParseLayout = Layout => info => {
 const customDecoders = {
   tokenAccount: defaultParseLayout(TOKEN_LAYOUT),
   reserve: parseReserve,
+  senditReserve: defaultParseLayout(ReserveLayoutSendit),
   lido: parseLido,
   lidoValidatorList: parseLidoValidatorList,
   mint: defaultParseLayout(MintLayout),
