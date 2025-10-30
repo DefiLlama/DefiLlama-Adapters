@@ -1,6 +1,6 @@
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs, getLogs2 } = require('../helper/cache/getLogs')
 
 const PAIR_FACTORY = "0x0fC7e80090bbc1740595b1fcCd33E0e82547212F";
 const START_BLOCK = 13847198
@@ -18,28 +18,21 @@ const calculateTokenTotal = async (api, pairs, abi) => {
 }
 
 const getPairs = async (api) => {
-  const logs = (await getLogs({
+  return getLogs2({
     target: PAIR_FACTORY,
-    topic: 'PairCreated(address,address,address)',
+    eventAbi: 'event PairCreated(address indexed pair, address indexed tokenA, address indexed tokenB)',
     fromBlock: START_BLOCK,
-    api,
-  }))
-
-  return logs.map(log => {
-    return {
-      pair: `0x${log.topics[1].substr(-40).toLowerCase()}`,
-      tokenA: `0x${log.topics[2].substr(-40).toLowerCase()}`,
-      tokenB: `0x${log.topics[3].substr(-40).toLowerCase()}`
-    }
+    api, 
+    onlyUseExistingCache: true,
   })
 }
 
 const ethTvl = async (api) => {
   const pairs = await getPairs(api)
-  await calculateTokenTotal(api, getTokenPairs(pairs, 'tokenA'), abi.totalSupplyAmount)
-  await calculateTokenTotal(api, getTokenPairs(pairs, 'tokenB'), abi.totalSupplyAmount)
+  const ownerTokens = pairs.map(p => [[p.tokenA, p.tokenB], p.pair])
+  await api.sumTokens({ ownerTokens })
 
-  await sumTokens2({ api, resolveUniV3: true, owners: pairs.map(pair => pair.pair) })
+  await sumTokens2({ api, resolveUniV3: true, owners: pairs.map(p => p.pair) })
 };
 
 function getTokenPairs(pairs, key) {

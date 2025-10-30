@@ -1,6 +1,7 @@
 
 const { getCache, setCache, } = require('../cache');
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { default: axios } = require('axios');
 const ethers = require("ethers")
 
 const cacheFolder = 'logs'
@@ -67,7 +68,6 @@ async function getLogs({ target,
     // remove tuple baseType from type
     // ex: CreateMarket(bytes32,tuple(address,address,address,address,uint256)) -> CreateMarket(bytes32,(address,address,address,address,uint256))
     if (eventAbi) {
-      const fragment = iface.fragments[0]
       if (!topics?.length) {
         const fragment = iface.fragments[0]
         topic = `${fragment.name}(${fragment.inputs.map(i => i.baseType === 'tuple' ? i.type.replace('tuple', '') : i.type).join(',')})`
@@ -76,6 +76,7 @@ async function getLogs({ target,
     let logs = (await sdk.api.util.getLogs({
       chain, target, topic, keys, topics, fromBlock, toBlock,
     })).output
+    // let logs = await getLogsFromEtherscanAPI({ address: target, fromBlock, toBlock, api, topic0: topic })
 
     if (!customCacheFunction)
       cache.logs = cache.logs.concat(logs)
@@ -188,4 +189,26 @@ module.exports = {
   getLogs,
   getLogs2,
   getAddress: s => "0x" + s.slice(26, 66),
+}
+
+async function getLogsFromEtherscanAPI({ address, fromBlock, toBlock, api, topic0 }) {
+  if (!topic0.startsWith('0x')) topic0 = ethers.id(topic0)
+  const apiKey = process.env.SDK_ETHERSCAN_API_KEY
+
+  const { data } = await axios.get('https://api.etherscan.io/v2/api', {
+    params: {
+      address,
+      fromBlock,
+      toBlock,
+      topic0,
+      chainid: api.chainId,
+      module: 'logs',
+      action: 'getLogs',
+      page: 1,
+      offset: 0,
+      apikey: apiKey,
+    }
+  })
+  console.log('Etherscan API response:', data.result.length, 'logs fetched')
+  return data.result
 }

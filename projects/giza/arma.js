@@ -29,6 +29,23 @@ const PLASMA_PROTOCOLS = {
     ]
 };
 
+// Arbitrum chain protocol addresses
+const ARBITRUM_PROTOCOLS = {
+    aavePoolDataProvider: '0x6b4E260b765B3cA1514e618C0215A6B7839fF93e', // Aave V3 Pool Data Provider
+    tokens: [
+        "0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf", // Compound USDC
+        "0x1A996cb54bb95462040408C06122D45D6Cdb6096", // Fluid USDC
+        "0x05d28A86E057364F6ad1a88944297E58Fc6160b3", // Euler Yield USDC
+        "0x0a1eCC5Fe8C9be3C809844fcBe615B46A869b899", // Euler USDC
+        "0x7e97fa6893871A2751B5fE961978DCCb2c201E65", // Morpho Gauntlet USDC Core
+        "0x7c574174DA4b2be3f705c6244B4BfA0815a8B3Ed", // Morpho Gauntlet USDC Prime
+        "0xa53Cf822FE93002aEaE16d395CD823Ece161a6AC", // Morpho Clearstar USDC Reactor
+        "0x4B6F1C9E5d470b97181786b26da0d0945A7cf027", // Morpho Hyperithm USDC
+        "0xa60643c90A542A95026C0F1dbdB0615fF42019Cf", // Morpho MEV Capital USDC
+        "0x5c0C306Aaa9F877de636f4d5822cA9F2E81563BA", // Morpho Steakhouse High Yield USDC
+    ]
+};
+
 const abi = {
     getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
 };
@@ -99,7 +116,41 @@ async function plasmaTvl(api) {
     });
 }
 
+async function arbitrumTvl(api) {
+    // For Arbitrum chain
+    const owners = await getConfig('giza/arma/' + api.chain, 'https://api.arma.xyz/api/v1/42161/smart-accounts');
+
+    api.log(`[Arma] Found ${owners.length} smart accounts on Arbitrum`);
+
+    // Get aUSDC token from Aave Pool Data Provider
+    const USDC = ADDRESSES.arbitrum.USDC_CIRCLE;
+    const aaveReserveData = await api.call({
+        target: ARBITRUM_PROTOCOLS.aavePoolDataProvider,
+        abi: abi.getReserveTokensAddresses,
+        params: [USDC]
+    });
+
+    const allTokens = [
+        ...ARBITRUM_PROTOCOLS.tokens,
+        aaveReserveData.aTokenAddress // Add the actual aUSDC token
+    ];
+
+    // Build tokensAndOwners array for each token-owner combination
+    const tokensAndOwners = [];
+    allTokens.forEach(token => {
+        owners.forEach(owner => {
+            tokensAndOwners.push([token, owner]);
+        });
+    });
+
+    return api.sumTokens({
+        tokensAndOwners,
+        permitFailure: true
+    });
+}
+
 module.exports = {
     base: { tvl: baseTvl },
-    plasma: { tvl: plasmaTvl }
+    plasma: { tvl: plasmaTvl },
+    arbitrum: { tvl: arbitrumTvl }
 };
