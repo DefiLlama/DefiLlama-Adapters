@@ -319,7 +319,7 @@ module.exports = {
       },
       {
         smartVaultAddress: '0xd72dCb68fF80aB8666f7A800BE438212581914c6',
-        asset: '0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a', // uniBTC
+        asset: '0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a', // brBTC
       },
     ],
   }),
