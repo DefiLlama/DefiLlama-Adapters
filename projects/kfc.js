@@ -23,8 +23,6 @@ async function tvl() {
 module.exports = {
   kasplex: {
     tvl,
-    name: 'Kaspa Finance V3 (KFC)',
-    logo: 'https://app.kaspafinance.io/images/chains/0xf87e587ab945f7b111329a6ace6dc497d34f098b.png',
   },
   methodology:
     'TVL is fetched directly from KaspaFinance’s official subgraph, which aggregates the total USD value of all liquidity in Uniswap V3-style pools deployed by the factory.',
