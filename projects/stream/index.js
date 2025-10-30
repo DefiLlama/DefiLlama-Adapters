@@ -43,8 +43,9 @@ async function tvl(api) {
     
     // remove deposit from team wallets
     let teamDeposit = 0;
-    const stakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: StakeEvent, topics: StakeTopics, });
-    const unstakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: UnStakeEvent, topics: UnStakeTopics, });
+    const symbol = Object.keys(xTokens)[i];
+    const stakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: StakeEvent, topics: StakeTopics, extraKey: `stream-stake-${api.chain}${symbol}` });
+    const unstakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: UnStakeEvent, topics: UnStakeTopics, extraKey: `stream-unstake-${api.chain}${symbol}` });
     for (const log of stakeEvents) {
       teamDeposit += Number(log.amount);
     }
