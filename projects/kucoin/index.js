@@ -254,8 +254,6 @@ const config = {
       "addr1q9h4f2vhh5vnqgnsejan3psw6mj3a504fxlqm2eh3262qufesdvfs83ulr22vprsv9mwnt0vgkfwxlflxkns32twqzdqjpq2na",
       "addr1x86wkztx2pqvvh9nlqclpfn3lc43gh8gjgqe258hp7fflr05avykv5zqcewt87p37zn8rl3tz3ww3yspj4g0wrujn7xsn3ekxy",
       "addr1x8z7n429sfah3edwj5cgle7hjur5ge6z20shr644lrxe9l79a825tqnm0rj6a9fs3lna09c8g3n5y5lpw84tt7xdjtlslelrez",
-      "addr1x86wkztx2pqvvh9nlqclpfn3lc43gh8gjgqe258hpvr5yhz7l7e0qvvl4x6qpjgxyfkv",
-      "addr1x8z7n429sfah3edwj5cgle7hjur5ge6z20shr644lt0lwgh9n8n8fptn76csf8xw4jq",
     ],
   },
   sui: {
