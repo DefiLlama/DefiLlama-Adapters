@@ -23,12 +23,18 @@ const UnStakeEvent = 'event Unstake(address indexed account, uint256 amount, uin
 // they bridge xUSD, xBTC, xETH to other chains
 // they used xUSD, xBTC, xETH as collateral to borrow USDT, USDC, deUSD
 // they use swap all borrowed tokens to USDC, WBTC, ETH, deposit back to xUSD, xBTC, xETH
-const IgnoreWallets = [
-  String('0x1597E4B7cF6D2877A1d690b6088668afDb045763').toLowerCase(),
-];
 const FromBlock = 21870476;
 
-async function tvlEth(_, _1, _2, { api }) {
+const StakeTopics = [
+  '0x5af417134f72a9d41143ace85b0a26dce6f550f894f2cbc1eeee8810603d91b6',
+  '0x0000000000000000000000001597e4b7cf6d2877a1d690b6088668afdb045763',
+];
+const UnStakeTopics = [
+  '0xf960dbf9e5d0682f7a298ed974e33a28b4464914b7a2bfac12ae419a9afeb280',
+  '0x0000000000000000000000001597e4b7cf6d2877a1d690b6088668afdb045763',
+];
+
+async function tvl(api) {
   const bals = await api.multiCall({  abi: abi.totalSupply, calls: vaults})
   const assets = await api.multiCall({  abi: abi.asset, calls: vaults})
   
@@ -37,17 +43,13 @@ async function tvlEth(_, _1, _2, { api }) {
     
     // remove deposit from team wallets
     let teamDeposit = 0;
-    const stakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: StakeEvent, skipCache: true });
-    const unstakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: UnStakeEvent, skipCache: true  });
+    const stakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: StakeEvent, topics: StakeTopics, });
+    const unstakeEvents = await getLogs2({ api, target: xTokens[i], fromBlock: FromBlock, eventAbi: UnStakeEvent, topics: UnStakeTopics, });
     for (const log of stakeEvents) {
-      if (IgnoreWallets.includes(String(log.account).toLowerCase())) {
-        teamDeposit += Number(log.amount);
-      }
+      teamDeposit += Number(log.amount);
     }
     for (const log of unstakeEvents) {
-      if (IgnoreWallets.includes(String(log.account).toLowerCase())) {
-        teamDeposit -= Number(log.amount);
-      }
+      teamDeposit -= Number(log.amount);
     }
     
     const balance = teamDeposit > 0 ? totalBalance - teamDeposit : totalBalance;
@@ -62,6 +64,6 @@ module.exports = {
   start: 1739697390,
   hallmarks: [[1740283200, "Stream V2 Launch"]],
   ethereum: {
-    tvl: tvlEth,
+    tvl,
   },
 };
