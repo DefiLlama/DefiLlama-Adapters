@@ -10,15 +10,10 @@ async function restakingTVL(api) {
 
   // Process all locked denoms (restaked assets)
   res.supply.forEach(({ denom, amount }) => {
-    if (denom.startsWith("locked/")) {
-      // Remove the "locked/" prefix to get the underlying asset
-      const underlyingDenom = denom.replace("locked/", "")
-      // Add the restaked amount to balances
-      if (underlyingDenom.startsWith("ibc/")) {
-        api.add(`${underlyingDenom.replace("/", ":")}`, amount)
-      } else {
-        api.add(underlyingDenom, amount)
-      }
+    if (denom.startsWith("ibc/")) {
+      api.add(`${denom.replace("/", ":")}`, amount)
+    } else {
+      api.add(denom, amount)
     }
   })
 }
