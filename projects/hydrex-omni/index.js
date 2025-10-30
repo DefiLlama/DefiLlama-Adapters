@@ -63,7 +63,7 @@ async function tvlForChain(api) {
 }
 
 module.exports = {
-  methodology: 'TVL counts the tokens locked in ALM vaults that Hydrex manages on top of Uniswap V4 and Morpho',
+  methodology: 'TVL counts the tokens locked in ALM vaults & forwarded deposits that Hydrex manages on top of multiple protocols, such as UniV4 and Morpho.',
   doublecounted: true,
   start: '2025-06-17',
   base: { tvl: (api) => tvlForChain(api) },
