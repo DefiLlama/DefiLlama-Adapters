@@ -92,6 +92,6 @@ module.exports = {
   sei: {
     tvl: sumTokensExport({ tokensAndOwners: [
       ['0xBE574b6219C6D985d08712e90C21A88fd55f1ae8', '0x3490a00b308C5A1f0bBF67BA71361F543deBd08F']
-    ]})
+    ], permitFailure: true })
   }
 };
