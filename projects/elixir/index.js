@@ -23,11 +23,10 @@ const LP_TOKENS = [
 const VERTEX_MANAGER = '0x052Ab3fd33cADF9D9f227254252da3f996431f75'
 const ORDERLY_MANAGER = '0x79865208f5dc18a476f49e6dbfd7d79785cb8cd8'
 
-// these addresses invoke in leverage borrowing to fake deUSD supply, TVL
+// these addresses invoke in leverage borrowing to increase deUSD supply, TVL
 // they use initial USDC, USDT to mint deUSD, stake deUSD to sdeUSD
 // deposit sdeUSD to lending markets, borrow more USDC, USDT
 // after that, they transfer tokens to Stream Finance team wallet and manipulate TVL on Stream Finance too
-// NOTE: tracking starts with deUSD minted by these addresses
 const BLACKLIST_MINTERS = [
   String('0x25E028A45a6012763A76145d7CEEa3587015e990').toLowerCase(),
   String('0x1bB3c7F27A9170194Dcc6B143c0FBC4ad162F123').toLowerCase(),
