@@ -133,7 +133,6 @@ const fixBalancesTokens = {
   },
   'zigchain': {
     'uzig': { coingeckoId: 'zignaly', decimals: 6 }, // Native ZIG token
-    'coin.zig109f7g2rzl2aqee7z6gffn8kfe9cpqx0mjkk7ethmx8m2hq4xpe9snmaam2.stzig': { coingeckoId: 'zignaly', decimals: 6 }, // Staked ZIG by Valdora Finance
   }
 }
 
