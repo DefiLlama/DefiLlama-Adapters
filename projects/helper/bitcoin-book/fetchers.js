@@ -242,4 +242,158 @@ module.exports = {
     })
     return Array.from(new Set(staticAddresses))
   },
+  zenrock: async () => {
+    const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
+    const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';
+    const ZRCHAIN_KEY_BY_ID_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/key_by_id';
+
+    return getConfig('zenrock/addresses', undefined, {
+      fetcher: async () => {
+        async function getBitcoinAddresses() {
+          const btcAddresses = [];
+          let nextKey = null;
+          try {
+            while (true) {
+              let url = ZRCHAIN_WALLETS_API;
+              if (nextKey) {
+                url += `?pagination.key=${encodeURIComponent(nextKey)}`;
+              }
+              const { data } = await axios.get(url);
+              if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
+                for (const walletGroup of data.zenbtc_wallets) {
+                  if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
+                    for (const wallet of walletGroup.wallets) {
+                      if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
+                        btcAddresses.push(wallet.address);
+                      }
+                    }
+                  }
+                }
+              }
+              if (data.pagination && data.pagination.next_key) {
+                nextKey = data.pagination.next_key;
+              } else {
+                break;
+              }
+            }
+            return btcAddresses;
+          } catch (error) {
+            sdk.log(`Error fetching Bitcoin addresses from zrchain API: ${error.message}`);
+            return [];
+          }
+        }
+
+        async function getChangeAddresses() {
+          const changeAddresses = [];
+          try {
+            const { data: paramsData } = await axios.get(ZENBTC_PARAMS_API);
+            const changeAddressKeyIDs = paramsData.params?.changeAddressKeyIDs || [];
+            for (const keyID of changeAddressKeyIDs) {
+              try {
+                const { data: keyData } = await axios.get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+                if (keyData.wallets && Array.isArray(keyData.wallets)) {
+                  for (const wallet of keyData.wallets) {
+                    if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
+                      changeAddresses.push(wallet.address);
+                    }
+                  }
+                }
+              } catch (error) {
+                sdk.log(`Error fetching change address for key ID ${keyID}: ${error.message}`);
+              }
+            }
+            return changeAddresses;
+          } catch (error) {
+            sdk.log(`Error fetching change addresses from zenbtc params: ${error.message}`);
+            return [];
+          }
+        }
+
+        const [btcAddresses, changeAddresses] = await Promise.all([
+          getBitcoinAddresses(),
+          getChangeAddresses(),
+        ]);
+        const allAddresses = [...btcAddresses, ...changeAddresses];
+        sdk.log(`Zenrock: Fetched ${btcAddresses.length} treasury addresses + ${changeAddresses.length} change addresses = ${allAddresses.length} total`);
+        return allAddresses;
+      }
+    });
+  },
+  zenrockDCT: async () => {
+    const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
+    const DCT_PARAMS_API = 'https://api.diamond.zenrocklabs.io/dct/params';
+    const ZRCHAIN_KEY_BY_ID_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/key_by_id';
+
+    return getConfig('zenrock/dct_addresses', undefined, {
+      fetcher: async () => {
+        async function getZcashAddresses() {
+          const zecAddresses = [];
+          let nextKey = null;
+          try {
+            while (true) {
+              let url = ZRCHAIN_WALLETS_API;
+              if (nextKey) {
+                url += `?pagination.key=${encodeURIComponent(nextKey)}`;
+              }
+              const { data } = await axios.get(url);
+              if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
+                for (const walletGroup of data.zenbtc_wallets) {
+                  if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
+                    for (const wallet of walletGroup.wallets) {
+                      if (wallet.type === 'WALLET_TYPE_ZCASH_MAINNET' && wallet.address) {
+                        zecAddresses.push(wallet.address);
+                      }
+                    }
+                  }
+                }
+              }
+              if (data.pagination && data.pagination.next_key) {
+                nextKey = data.pagination.next_key;
+              } else {
+                break;
+              }
+            }
+            return zecAddresses;
+          } catch (error) {
+            sdk.log(`Error fetching Zcash addresses from zrchain API: ${error.message}`);
+            return [];
+          }
+        }
+
+        async function getChangeAddresses() {
+          const changeAddresses = [];
+          try {
+            const { data: paramsData } = await axios.get(DCT_PARAMS_API);
+            const changeAddressKeyIDs = paramsData.params?.assets?.[0]?.change_address_key_ids || [];
+            for (const keyID of changeAddressKeyIDs) {
+              try {
+                const { data: keyData } = await axios.get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_ZCASH_MAINNET/`);
+                if (keyData.wallets && Array.isArray(keyData.wallets)) {
+                  for (const wallet of keyData.wallets) {
+                    if (wallet.type === 'WALLET_TYPE_ZCASH_MAINNET' && wallet.address) {
+                      changeAddresses.push(wallet.address);
+                    }
+                  }
+                }
+              } catch (error) {
+                sdk.log(`Error fetching change address for key ID ${keyID}: ${error.message}`);
+              }
+            }
+            return changeAddresses;
+          } catch (error) {
+            sdk.log(`Error fetching change addresses from dct params: ${error.message}`);
+            return [];
+          }
+        }
+
+        const [zecAddresses, changeAddresses] = await Promise.all([
+          getZcashAddresses(),
+          getChangeAddresses(),
+        ]);
+        const allAddresses = [...zecAddresses, ...changeAddresses];
+        sdk.log(`Zenrock DCT: Fetched ${zecAddresses.length} treasury addresses + ${changeAddresses.length} change addresses = ${allAddresses.length} total`);
+        return allAddresses;
+      }
+    });
+  },
 }
