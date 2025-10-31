@@ -1176,6 +1176,9 @@
     "axlDAI": "0x5c7e299cf531eb66f2a1df637d37abb78e6200c7",
     "USX": "0xdb0e1e86b01c4ad25241b1843e407efc4d615248"
   },
+  "kasplex": {
+    "KAS": "0x2c2ae87ba178f48637acae54b87c3924f544a83e"
+  },
   "sx": {
     "WSX": "0xaa99be3356a11ee92c3f099bd7a038399633566f",
     "WETH": "0xa173954cc4b1810c0dbdb007522adbc182dab380",
