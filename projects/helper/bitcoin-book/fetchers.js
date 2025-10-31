@@ -19,7 +19,7 @@ module.exports = {
     return vault
   },
   bedrock: async () => {
-    const API_URL = 'https://raw.githubusercontent.com/Bedrock-Technology/uniBTC/refs/heads/main/data/tvl/reserve_address.json'
+    const API_URL = 'https://bedrock-datacenter.rockx.com/data/tvl/reserve_address.json'
     const { btc } = await getConfig('bedrock.btc_address', API_URL)
     return btc
   },
