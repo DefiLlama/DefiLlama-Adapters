@@ -64,6 +64,7 @@ async function borrowed(api) {
 
 module.exports = {
   start: '2023-06-13',
+  deadFrom: '2025-01-01',
   hallmarks: [
     [1702367571, "Launch of Fluna V2 Pool on Polygon"],
     [1713855195, "Launch of Arjan pool on Mode Network"],

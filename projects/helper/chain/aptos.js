@@ -23,17 +23,29 @@ async function aQuery(api, chain = 'aptos') {
 
 async function getResources(account, chain = 'aptos') {
   const data = []
-  let lastData
   let cursor
+  let pageLen = 0
+
   do {
     let url = `${endpointMap[chain]()}/v1/accounts/${account}/resources?limit=9999`
     if (cursor) url += '&start=' + cursor
     const res = await http.getWithMetadata(url)
-    lastData = res.data
-    data.push(...lastData)
-    sdk.log('fetched resource length', lastData.length)
+
+    const page = Array.isArray(res?.data)
+      ? res.data
+      : Array.isArray(res?.data?.resources)
+        ? res.data.resources
+        : Array.isArray(res?.data?.data)
+          ? res.data.data
+          : Array.isArray(res?.data?.items)
+            ? res.data.items
+            : []
+
+    data.push(...page)
+    pageLen = page.length
+    sdk.log('fetched resource length', pageLen)
     cursor = res.headers['x-aptos-cursor']
-  } while (lastData.length === 9999)
+  } while (pageLen === 9999 && cursor)
   return data
 }
 

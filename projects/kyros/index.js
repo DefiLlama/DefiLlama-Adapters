@@ -9,9 +9,17 @@ async function tvl() {
     })
 }
 
+async function staking() {
+  return sumTokens2({
+    tokenAccounts: [
+      "Ct8QS77TMFF98gvN1ZXrNjGqUmdkJQACi5Xi2sCTSC7D", // KYROS account in kyKYROS Vault address
+    ]
+  })
+}
+
 module.exports = {
     timetravel: false,
     doublecounted: true,
-    solana: { tvl },
+    solana: { tvl, staking },
     methodology: 'The TVL is calculated by summing all restaked assets.',
 };
