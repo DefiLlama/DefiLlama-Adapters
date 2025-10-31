@@ -1,4 +1,5 @@
 const { function_view } = require("../helper/chain/aptos");
+const { sleep } = require("../helper/utils");
 
 const MODULE_VIEW = "0xf5840b576a3a6a42464814bc32ae1160c50456fb885c62be389b817e75b2a385";
 
@@ -66,10 +67,16 @@ module.exports = {
       );
 
       for (const pool of filteredPools) {
-        const coinA = (await getPairedCoin(pool.assets[0])) || pool.assets[0];
-        const coinB = (await getPairedCoin(pool.assets[1])) || pool.assets[1];
-        api.add(coinA, pool.reserves[0]);
-        api.add(coinB, pool.reserves[1]);
+        // loop coins
+        for (let i = 0; i < pool.assets.length; i++) {
+          const coin = pool.assets[i];
+          const pairedCoin = await getPairedCoin(coin) || coin;
+          if (pairedCoin) {
+            api.add(pairedCoin, pool.reserves[i]);
+          }
+          // Add small delay to avoid rate limiting
+          await sleep(200);
+        }
       }
     },
   },

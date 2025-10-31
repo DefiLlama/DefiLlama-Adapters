@@ -3,8 +3,8 @@ const ADDRESSES = require('./coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
-const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { getChainTransform, getFixBalances, } = require('../helper/portedTokens')
+const { sumTokens2, } = require('../helper/unwrapLPs');
 const methodologies = require('./methodologies');
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress, abis = {}) {
@@ -142,6 +142,7 @@ module.exports = {
   aaveExports,
   getBorrowed,
   aaveV2Export,
+  aaveV3Export,
 }
 
 const cachedData = {}
@@ -156,8 +157,8 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
   async function _getData() {
     sdk.log('get aava metadata:', key)
 
-    const transformAddress = transformAddressRaw || await getChainTransform(chain)
-    const fixBalances = await getFixBalancesSync(chain)
+    const transformAddress = transformAddressRaw || getChainTransform(chain)
+    const fixBalances = getFixBalances(chain)
     const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses, abis)
     let updateBalances
 
@@ -204,7 +205,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
       return sumTokens2({ tokensAndOwners, api, blacklistedTokens })
     const balances = {}
     const res = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
-    
+
     res.forEach((v, i) => {
       sdk.util.sumSingleBalance(balances, data[i].currency, v * data[i].price, api.chain)
     })
@@ -253,7 +254,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
       const currencyDecimal = 18
       const prices = await api.call({ abi: abiv2.getAssetsPrices, target: oracle, params: [tokens] })
       prices.forEach((v, i) => {
-        data[i].price = (v / unit )/ (10 ** (decimals[i] - currencyDecimal))
+        data[i].price = (v / unit) / (10 ** (decimals[i] - currencyDecimal))
         data[i].currency = currency
       })
     }
@@ -283,4 +284,67 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
   }
 
   return { tvl, borrowed, }
+}
+
+
+function aaveV3Export(config) {
+  const abi = {
+    getReserveTokensAddresses: "function getReserveTokensAddresses(address asset) view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress)",
+    getAllReservesTokens: "function getAllReservesTokens() view returns ((string symbol, address tokenAddress)[])",
+    getReserveData: "function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)",
+  };
+
+  const exports = {
+    methodology: methodologies.lendingMarket,
+  }
+
+  Object.keys(config).forEach(chain => {
+    let chainConfig = config[chain]
+
+    let poolDatas
+    let abis
+
+    if (typeof chainConfig === 'object') {
+      poolDatas = chainConfig.poolDatas
+      abis = chainConfig.abis || {}
+      Object.entries(abis).forEach(([k, v]) => abi[k] = v)
+    }
+
+    if (Array.isArray(chainConfig)) poolDatas = chainConfig
+
+    if (typeof chainConfig === 'string') poolDatas = [chainConfig]
+
+    if (!poolDatas) throw new Error(`No poolDatas for ${chain} in aaveV3Export`)
+
+
+    const fetchReserveData = async (api, poolDatas, isBorrowed) => {
+      const reserveTokens = await api.multiCall({ calls: poolDatas, abi: abi.getAllReservesTokens });
+      const calls = []
+
+      poolDatas.map((pool, i) => {
+        reserveTokens[i].forEach(({ tokenAddress }) => calls.push({ target: pool, params: tokenAddress }));
+      });
+      const reserveData = await api.multiCall({ abi: isBorrowed ? abi.getReserveData : abi.getReserveTokensAddresses, calls, })
+      let tokensAndOwners = []
+      reserveData.forEach((data, i) => {
+        const token = calls[i].params
+        if (isBorrowed) {
+          api.add(token, data.totalVariableDebt)
+          api.add(token, data.totalStableDebt)
+        } else
+          tokensAndOwners.push([token, data.aTokenAddress])
+      })
+
+      if (isBorrowed) tokensAndOwners = []  // we still do sumTokens to transform the response
+      return sumTokens2({ api, tokensAndOwners })
+    }
+
+    exports[chain] = {
+      tvl: (api) => fetchReserveData(api, poolDatas),
+      borrowed: (api) => fetchReserveData(api, poolDatas, true),
+    }
+  })
+
+
+  return exports
 }
