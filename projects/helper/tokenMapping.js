@@ -104,7 +104,6 @@ const fixBalancesTokens = {
     '0x33e22f85cc1877697773ca5c85988663388883a0': {coingeckoId: "besc-hyperchain", decimals: 18 },
     '0xb54ad626e127f0f228dbeab6f2a61e8e6e029a4b': {coingeckoId: "usd-coin",decimals: 18 },
   },
-}
   chromia: {
     '9bacd576f40b6674aa76b8bfa1330077a3b94f581bfdb2ef806122c384dcdf25': { coingeckoId: 'usd-coin', decimals: 18 },
   },
