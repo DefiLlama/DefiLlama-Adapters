@@ -4,6 +4,9 @@ const vaults = [
   '0x77d56ce63cf4d8c36a60a8a8f29e11ebbf7a1c0e22d6cd069d7f2e950d2fd0bd', // APT-USDC
   '0x7a6ef286a6d3f482dcb56d683678dadc7a18be133bf5f01626d5164a52e68eeb', // APT-USDt
   '0xab8fdae5dd99a4379362c01218cd7aef40758cd8111d11853ce6efd2f82b7cad', // USDt-USDC
+  '0x41cfdef11efd671cbcffa66f57716ee5698308b233359481d52d6dac34b42af2', // APT-kAPT
+  '0xfee3dc8a7d53e4ababf77033bb429ecbcaf2d58ba6c2809ab0f503bb14098ea7', // USDt-USDC private
+  '0xb60a7fb8a217de3d44085cf37c680a99100e393005081545a5e237797e71952f', // APT-USDC private
 ];
 async function getVaultsLiquidity() {
   const vaultResources = await Promise.all(vaults.map(vault => getResource(vault, '0x19bcbcf8e688fd5ddf52725807bc8bf455a76d4b5a6021cfdc4b5b2652e5cd55::vaults::Vault')));

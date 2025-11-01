@@ -6,7 +6,7 @@ const fetchAgentConfigs = async (api, chain) => {
     const infra = capConfig[chain].infra;
     const networkMiddlewareToNetwork = capConfig[chain].symbiotic.networkMiddlewareToNetwork;
 
-    const agentAndNetworkMiddleware = await getLogs2({
+    let agentAndNetworkMiddleware = await getLogs2({
         api,
         onlyArgs: false, // need the blocknumber
         eventAbi: capABI.Delegation.AddAgentEvent,
@@ -19,6 +19,10 @@ const fetchAgentConfigs = async (api, chain) => {
         })
     })
 
+    const blacklistedAgents = new Set(['0xd32147536a86d0ff48ca6fac028180ae8f39b84d'].map(a => a.toLowerCase()))
+
+    agentAndNetworkMiddleware = agentAndNetworkMiddleware.filter(({ agent }) => !blacklistedAgents.has(agent.toLowerCase()))
+    
     const networks = agentAndNetworkMiddleware.map(({ networkMiddleware }) => networkMiddlewareToNetwork[networkMiddleware] ?? networkMiddlewareToNetwork.default)
 
     const vaults = await api.multiCall({

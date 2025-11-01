@@ -1,29 +1,24 @@
-const { sumTokensExport } = require('../helper/unwrapLPs');
-
-const config = {
-  base: {
-    owner: "0x663585f2464b673efbe6f46af2c0e2514a6f199a",
-    tokens: [
-      "0x7082aa45919B49C8bC6F4bC06C058d7a043a94f4",
-      "0x8A183E87726bdDf7fF6ff1b8440391141281CfEf", 
-      "0xE74c499fA461AF1844fCa84204490877787cED56"
-    ]
-  }
-};
+const target = "0x1D283b668F947E03E8ac8ce8DA5505020434ea0E";
 
 module.exports = {
-  methodology: "Counts the balances of the listed tokens in the Surf liquid vault contract on Base chain",
-  start: 1734192000,
-  misrepresentedTokens: false,
-  timetravel: true,
+  methodology: "Counts the morpho deposits of each Surf Liquid vault.",
   base: {
-    tvl: sumTokensExport({
-      owner: config.base.owner,
-      tokens: config.base.tokens,
-    }),
-    staking: sumTokensExport({
-      owner: config.base.owner,
-      tokens: config.base.tokens,
-    })
-  }
+    tvl: async (api) => {
+      const vaults = await api.call({ abi: "uint256:getTotalVaults", target });
+      const vaultInfos = await api.multiCall({
+        abi: "function getVaultInfo(uint256) view returns (address, address, address, uint256, bytes32, uint256)",
+        calls: [...Array(Number(vaults)).keys()].map((i) => ({ target, params: [i] })),
+      });
+      const owners = vaultInfos.map(info => info[0])
+      const morphoVaults = await api.multiCall({
+        abi: "address:currentVault",
+        calls: owners.map(target => ({ target }))
+      })
+
+      await api.sumTokens({
+        tokens: [...new Set(morphoVaults)],
+        owners
+      })
+    },
+  },
 };

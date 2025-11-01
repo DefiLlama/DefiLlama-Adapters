@@ -68,6 +68,9 @@ module.exports = [
   '1EVosahWYJKUj5b861eiHWvwZxfq5SuXqk',
   'bc1pzd6luyardlle9f7lul2y8fl72c22p6vxspc4k4g4gzgjf8975s0sr042yt',
 
-  'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0'
+  'bc1q4jnycjnu2322hjk20e56qymu4pwk0kpgds62y0',
+
+  // babylon unstake transit address
+  'bc1p754prt7xj5vh9vcrwsjv7aa0f60xlrmm8arcrxg7kcg0gxrtemdsnzlwvn'
 
 ]
