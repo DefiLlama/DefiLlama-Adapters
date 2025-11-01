@@ -22,6 +22,10 @@ const config = {
   },
 }
 
+module.exports = {
+  methodology: "Total value of the CFMM liquidity held as collateral in the GammaPool smart contracts.",
+}
+
 Object.keys(config).forEach(chain => {
   const { factories, deltaswapFactory } = config[chain]
   module.exports[chain] = {
