@@ -21,5 +21,5 @@ async function tvlHyperEVM(api) {
 module.exports = {
   methodology: "Token balance in the vault contract",
   ethereum: { tvl: tvlEthereum },
-  hyperevm: { tvl: tvlHyperEVM }
+  hyperliquid: { tvl: tvlHyperEVM }
 };
