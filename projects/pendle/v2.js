@@ -13,6 +13,7 @@ const {
 
 // const scaledFactory = 0x992ec6a490a4b7f256bd59e63746951d98b29be9;
 
+// can get deployments from https://github.com/pendle-finance/pendle-core-v2-public/blob/main/deployments
 const config = {
   ethereum: {
     factory: "0x27b1dacd74688af24a64bd3c9c1b143118740784",
@@ -128,10 +129,22 @@ const config = {
       '0x2719e657ec3b3cbe521a18e640ca55799836376f',
       '0xdc9b87e5efd6ca2beaa33dde9c544e1e98345de4'
     ]
+  },
+  hyperliquid: {
+    factories: [{
+        factory: "0x44A2DdF5339FfdE8c23AF4099a64Def59b11b128",
+        fromBlock: 9665302
+      }, // v5
+    ],
+  },
+  plasma: {
+    factories: [{
+      factory: "0x28dE02Ac3c3F5ef427e55c321F73fDc7F192e8E4",
+      fromBlock: 1887344
+    }], // v5
   }
 };
 
-module.exports = {};
 
 Object.keys(config).forEach((chain) => {
   const {

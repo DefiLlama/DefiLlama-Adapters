@@ -1,105 +1,92 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { getLogs } = require('../helper/cache/getLogs')
 
-const contractAbis = {
+const nullAddress = ADDRESSES.null
+
+const CONFIG = {
+  ethereum: {
+    factories : [
+      { START_BLOCK: 20432393, TOKEN_FACTORY_V2: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29' }, // v2
+      { START_BLOCK: 22924277, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+    ],
+    assets: { USDC: ADDRESSES.ethereum.USDC }
+  },
+  base: {
+    factories : [
+      { START_BLOCK: 17854404, TOKEN_FACTORY_V2: '0x7f192F34499DdB2bE06c4754CFf2a21c4B056994' }, // v2
+      { START_BLOCK: 32901390, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+    ],
+    assets: { USDC: ADDRESSES.base.USDC }
+  },
+  arbitrum: {
+    factories : [
+      { START_BLOCK: 238245701, TOKEN_FACTORY_V2: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29' }, // v2
+      { START_BLOCK: 357984300, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+    ],
+    assets: { USDC: ADDRESSES.arbitrum.USDC_CIRCLE }
+  },
+  avax: {
+    factories : [
+      { START_BLOCK: 65493376, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+    ],
+    assets: { USDC: ADDRESSES.avax.USDC }
+  },
+  bsc: {
+    factories : [
+      { START_BLOCK: 54801665, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+    ],
+    assets: { USDC: ADDRESSES.bsc.USDC }
+  },
+  plume_mainnet: {
+    factories : [
+      { START_BLOCK: 15715268, TOKEN_FACTORY_V3: '0xd30Da1d7F964E5f6C2D9fE2AAA97517F6B23FA2B' }, // v3
+    ],
+    assets: { USDC: ADDRESSES.plume_mainnet.USDC }
+  },
+}
+
+const abis = {
   getVault: "function vault(address asset) external view returns (address)",
   totalAssets: "function totalAssets() external view returns (uint256)",
 };
 
-
-const config = {
-  ethereum: {
-    factories: [
-      {
-        START_BLOCK: 20432393,
-        TOKEN_FACTORY: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29'
-      }
-    ],
-    assets: {
-      USDC: ADDRESSES.ethereum.USDC
-    }
-  },
-  base: {
-    factories: [
-      {
-        START_BLOCK: 17854404,
-        TOKEN_FACTORY: '0x7f192F34499DdB2bE06c4754CFf2a21c4B056994'
-      }
-    ],
-    assets: {
-      USDC: ADDRESSES.base.USDC
-    }
-  },
-  arbitrum: {
-    factories: [
-      {
-        START_BLOCK: 238245701,
-        TOKEN_FACTORY: '0x91808B5E2F6d7483D41A681034D7c9DbB64B9E29'
-      }
-    ],
-    assets: {
-      USDC: ADDRESSES.arbitrum.USDC_CIRCLE
-    }
-  },
+const eventAbis = {
+  deployTranches: 'event DeployTranche(uint64 indexed poolId, bytes16 indexed trancheId, address indexed tranche)',
+  addShareClass: 'event AddShareClass(uint64 indexed poolId, bytes16 indexed scId, address token)'
 }
 
-async function tvl(api) {
-  if (config[api.chain]) {
-    const targets = await getTokens(api);
+const getTokens = async (api, block, factories) => {
+  const logs = await Promise.all(
+    factories.map(async (factory) => {
+      let allTranches = []
 
-    const vaults = await api.multiCall({
-      abi: contractAbis.getVault,
-      calls: targets.map(i => ({ target: i, params: [config[api.chain].assets.USDC] })),
-      permitFailure: true
-    });
-
-    const totalAssets = await api.multiCall({
-      abi: contractAbis.totalAssets,
-      calls: vaults.map(i => ({ target: i })),
-      permitFailure: true
-    });
-
-    const decimals = await api.multiCall({
-      abi: "erc20:decimals",
-      calls: targets.map(i => ({ target: i })),
-      permitFailure: true
-    });
-
-    for (let i = 0; i <= targets.length; i++) {
-      if (totalAssets[i] > 0 && decimals[i] > 0) {
-        let value = totalAssets[i] / 10 ** (decimals[i]);
-        api.addUSDValue(value);
+      if (factory.TOKEN_FACTORY_V2) {
+        const tranches = await api.getLogs({  target: factory.TOKEN_FACTORY_V2, fromBlock: factory.START_BLOCK, toBlock: block, eventAbi: eventAbis.deployTranches, onlyArgs: true })
+        allTranches.push(...tranches.map(({ tranche }) => tranche))
       }
-    }
-  }
+
+      if (factory.TOKEN_FACTORY_V3) {
+        const shareClasses = await api.getLogs({  target: factory.TOKEN_FACTORY_V3, fromBlock: factory.START_BLOCK, toBlock: block, eventAbi: eventAbis.addShareClass, onlyArgs: true })
+        allTranches.push(...shareClasses.map(({ token }) => token))
+      }
+
+      return allTranches
+    })
+  )
+
+  return [...new Set(logs.flat())]
+}
+ 
+const tvl = async (api) => {
+  const chain = api.chain
+  const block = await api.getBlock() - 100
+  const { factories, assets: { USDC } } = CONFIG[chain]
+  const tokens = await getTokens(api, block, factories)
+  if (!tokens) return;
+  const vaults = (await api.multiCall({ calls: tokens.map((t) => ({ target: t, params: [USDC] })), abi: abis.getVault })).filter(addr => addr.toLowerCase() !== nullAddress)
+  await api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:totalAssets', permitFailure: true })
 }
 
-async function getTokens(api) {
-  const chain = api.chain;
-  let logs = [];
-  let tokenAddresses = [];
-  if (config[chain]) {
-    for (let factory of config[chain].factories) {
-      const { TOKEN_FACTORY, START_BLOCK } = factory;
-      let logChunk = await getLogs({
-        api,
-        target: TOKEN_FACTORY,
-        fromBlock: START_BLOCK,
-        eventAbi: 'event DeployTranche(uint64 indexed poolId, bytes16 indexed trancheId, address indexed tranche)',
-      });
-      logs = [...logs, ...logChunk];
-    }
-
-    tokenAddresses = logs.map((log) => log.args[2]);
-
-  }
-  return tokenAddresses;
-}
-
-
-module.exports = {
-  methodology: `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`,
-  ethereum: { tvl },
-  base: { tvl },
-  arbitrum: { tvl },
-}
+module.exports.methodology = `TVL corresponds to the total USD value of tokens minted on Centrifuge across Ethereum, Base, and Arbitrum.`
+Object.keys(CONFIG).forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

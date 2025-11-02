@@ -76,7 +76,7 @@ async function tvl(api) {
       .for(allPools)
       .process(getPoolAssetsState)
 
-    if (factory === data[chain].standardFactory) await transformDexBalances({ chain, data: poolAssets, balances: api.getBalances() })
+    if (factory === data[chain].standardFactory) transformDexBalances({ chain, data: poolAssets, balances: api.getBalances() })
     else {
       poolAssets.forEach(({ token0, token0Bal, token1, token1Bal }) => {
         api.add(token0, token0Bal)
