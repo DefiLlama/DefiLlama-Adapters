@@ -19,7 +19,6 @@ const helpers = {
   "near": require("./chain/near"),
   "bitcoin": require("./chain/bitcoin"),
   "litecoin": require("./chain/litecoin"),
-  "zcash": require("./chain/zcash"),
   "polkadot": require("./chain/polkadot"),
   "acala": require("./chain/acala"),
   "bifrost": require("./chain/bifrost"),

@@ -302,7 +302,6 @@ module.exports = {
           getChangeAddresses(),
         ]);
         const allAddresses = [...btcAddresses, ...changeAddresses];
-        sdk.log(`Zenrock: Fetched ${btcAddresses.length} treasury addresses + ${changeAddresses.length} change addresses = ${allAddresses.length} total`);
         return allAddresses;
       }
     });
@@ -367,7 +366,6 @@ module.exports = {
           getChangeAddresses(),
         ]);
         const allAddresses = [...zecAddresses, ...changeAddresses];
-        sdk.log(`Zenrock DCT: Fetched ${zecAddresses.length} treasury addresses + ${changeAddresses.length} change addresses = ${allAddresses.length} total`);
         return allAddresses;
       }
     });
