@@ -1,4 +1,4 @@
-const { v3Tvl } = require('../potatoswap/v3.js');
+const { v3Tvl } = require('./v3.js');
 
 module.exports = {
   xlayer: {
