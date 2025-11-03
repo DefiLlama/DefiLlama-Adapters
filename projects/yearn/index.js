@@ -76,6 +76,7 @@ async function tvl(api) {
 
 module.exports = {
   doublecounted: true,
+  timetravel: false,
   hallmarks: [
     [1594944000, "YFI token Launch"],
   ]
