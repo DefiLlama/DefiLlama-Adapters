@@ -346,14 +346,14 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "archway": {
-    "owners": [
-      "archway155svs6sgxe55rnvs6ghprtqu0mh69kehkcnf25",
-      "archway1jm068whkhkxk48gx80ppm2m0nwy677prr4m8ru",
-      "archway1xunyznpjmj9jv5e2zwngp2qrzmulr2ggdna6rp",
-      "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
-    ]
-  },
+  // "archway": {
+  //   "owners": [
+  //     "archway155svs6sgxe55rnvs6ghprtqu0mh69kehkcnf25",
+  //     "archway1jm068whkhkxk48gx80ppm2m0nwy677prr4m8ru",
+  //     "archway1xunyznpjmj9jv5e2zwngp2qrzmulr2ggdna6rp",
+  //     "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
+  //   ]
+  // },
   "astar": {
     "owners": [
       "WEo9Gi7T28niGb3pTwcHFDgGW4PjKDQvcS1stTxa68v73nQ",
