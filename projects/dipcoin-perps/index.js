@@ -3,7 +3,7 @@ const { getConfig } = require('../helper/cache');
 const ADDRESSES = require('../helper/coreAssets.json');
 
 async function suiTvl(api) {
-  const tvl = (await getConfig('dipcoin/perps-tvl', 'https://api.dipcoin.io/api/perp-market-api/tvl'))?.data?.tvl;
+  const tvl = (await getConfig('dipcoin/perps-tvl', 'https://gray-api.dipcoin.io/api/perp-market-api/tvl'))?.data?.tvl;
   api.add(ADDRESSES.sui.USDC, tvl/1e12);
 }
 
