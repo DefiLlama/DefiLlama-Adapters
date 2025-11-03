@@ -9,6 +9,7 @@ const v3 = uniV3Export({
   base:     { factory: '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2', fromBlock: 32873000 },
   optimism: { factory: '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2', fromBlock: 138469000 },
   sonic:    { factory: '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2', fromBlock: 38533000 },
+  plasma:    { factory: '0xd6Ab0566e7E60B67c50AC73ddFf4e3DdcB829EC2', fromBlock: 2531200 },
 });
 
 // Export merged adapters
