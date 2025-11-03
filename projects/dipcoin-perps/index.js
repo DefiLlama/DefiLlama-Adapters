@@ -1,5 +1,6 @@
 const sui = require("../helper/chain/sui");
 const { getConfig } = require('../helper/cache');
+const ADDRESSES = require('../helper/coreAssets.json');
 
 async function suiTvl(api) {
   const tvl = (await getConfig('dipcoin/perps-tvl', 'https://api.dipcoin.io/api/perp-market-api/tvl'))?.data?.tvl;
