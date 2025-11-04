@@ -51,6 +51,7 @@ const config = {
       ADDRESSES.bsc.USDT,
       ADDRESSES.bsc.USDC,
       ADDRESSES.bsc.ETH,
+      "0x854b5f2bFcC5B7cd05d6259cf5D035aF57CFa301",
     ],
   },
   polygon: {
