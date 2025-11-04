@@ -9,8 +9,9 @@ const BUSS_ADDRESS = "0xfC35Bf79270bCad22Ce7dd5651Aa2435fce9b7C5"; // BookUSD Sh
 module.exports = {
   start: '2025-04-26',
   bsc: {
-
+    // Calculate the total BNB collateral locked in the protocol
     tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS),
+    // Tracks the amount of BUSS tokens currently staked by users.
     staking: staking(STAKING_ADDRESS, BUSS_ADDRESS),
   }
 };
