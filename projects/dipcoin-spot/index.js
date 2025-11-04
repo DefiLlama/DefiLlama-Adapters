@@ -1,6 +1,5 @@
 const sui = require("../helper/chain/sui");
 const { getConfig } = require('../helper/cache');
-const { get } = require("../helper/http");
 
 async function suiTvl(api) {
   const pools = (await getConfig('dipcoin/amm-sui', 'https://api.dipcoin.io/api/pools'))?.data?.map(i => i.poolAddress)
