@@ -28,6 +28,8 @@ const blacklistedTokens_default = [
   'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
   'C5xtJBKm24WTt3JiXrvguv7vHCe7CknDB7PNabp4eYX6', //TINY
   '5fTwKZP2AK39LtFN9Ayppu6hdCVKfMGVm79F2EgHCtsi', //WHEY
+  'EtQE3GREPyFBCU3yUXc5nWs3wRtLYuMmtKAFAvXD1yuR', // BITCOIN CAT
+  '7SaitRVfcP3b3KVSGHfamhznJornMXAefXByXstYhTys', // SASHA CAT
 ]
 
 let connection = {}
@@ -259,6 +261,8 @@ async function sumTokens2({
 
   blacklistedTokens.forEach(i => delete balances[`${chain}:` + i])
 
+  console.log(balances['solana:EtQE3GREPyFBCU3yUXc5nWs3wRtLYuMmtKAFAvXD1yuR'])
+  
   return balances
 
   function getUnique(tokensAndOwners) {
