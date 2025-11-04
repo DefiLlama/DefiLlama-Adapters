@@ -169,10 +169,10 @@ const morphoBeatTvl = async (api) => {
   const marketDatas = await api.multiCall({ target: morphoBlue, calls: morphoBeatMarkets, abi: abi.morphoBlueFunctions.market })
   marketDatas.forEach((data, idx) => {
     const { collateralToken, loanToken } = marketInfos[idx];
-    if (collateralToken.toLowerCase() !== '0xda1c2c3c8fad503662e41e324fc644dc2c5e0ccd') {
-      api.add(loanToken, data.totalBorrowAssets * -1);
-      api.add(loanToken, data.totalSupplyAssets);
-    }
+
+    api.add(loanToken, data.totalBorrowAssets * -1);
+    api.add(loanToken, data.totalSupplyAssets);
+
   });
 
 
