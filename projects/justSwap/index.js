@@ -1,5 +1,5 @@
 const { getCache, setCache } = require('../helper/cache')
-const { sliceIntoChunks } = require('../helper/utils')
+const { sliceIntoChunks, sleep } = require('../helper/utils')
 
 module.exports = {
   misrepresentedTokens: true,
@@ -35,7 +35,7 @@ async function tvl(api) {
   }
 
   const multicallContract = 'TEazPvZwDjDtFeJupyo7QunvnrnUjPH8ED'
-  const chunks = sliceIntoChunks(allPairs, 1000)
+  const chunks = sliceIntoChunks(allPairs, 200)
 
   const chunkCount = chunks.length
   console.log(`Processing ${chunkCount} chunks of calls to get TRX balance`)
@@ -45,5 +45,6 @@ async function tvl(api) {
     api.addGasToken(trxBalance)
     api.addGasToken(trxBalance)  // adding twice to add token balance on the LP
     console.log(`Processed chunk ${chunks.indexOf(calls) + 1} of ${chunkCount}`)
+    await sleep(1500)
   }
 }

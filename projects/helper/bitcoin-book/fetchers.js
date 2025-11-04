@@ -242,4 +242,68 @@ module.exports = {
     })
     return Array.from(new Set(staticAddresses))
   },
+  zenrock: async () => {
+    const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
+    const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';
+    const ZRCHAIN_KEY_BY_ID_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/key_by_id';
+
+    return getConfig('zenrock/addresses', undefined, {
+      fetcher: async () => {
+        async function getBitcoinAddresses() {
+          const btcAddresses = [];
+          let nextKey = null;
+
+          while (true) {
+            let url = ZRCHAIN_WALLETS_API;
+            if (nextKey) {
+              url += `?pagination.key=${encodeURIComponent(nextKey)}`;
+            }
+            const { data } = await axios.get(url);
+            if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
+              for (const walletGroup of data.zenbtc_wallets) {
+                if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
+                  for (const wallet of walletGroup.wallets) {
+                    if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
+                      btcAddresses.push(wallet.address);
+                    }
+                  }
+                }
+              }
+            }
+            if (data.pagination && data.pagination.next_key) {
+              nextKey = data.pagination.next_key;
+            } else {
+              break;
+            }
+          }
+          return btcAddresses;
+        }
+
+        async function getChangeAddresses() {
+          const changeAddresses = [];
+
+          const { data: paramsData } = await axios.get(ZENBTC_PARAMS_API);
+          const changeAddressKeyIDs = paramsData.params?.changeAddressKeyIDs || [];
+          for (const keyID of changeAddressKeyIDs) {
+            const { data: keyData } = await axios.get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+            if (keyData.wallets && Array.isArray(keyData.wallets)) {
+              for (const wallet of keyData.wallets) {
+                if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
+                  changeAddresses.push(wallet.address);
+                }
+              }
+            }
+          }
+          return changeAddresses;
+        }
+
+        const [btcAddresses, changeAddresses] = await Promise.all([
+          getBitcoinAddresses(),
+          getChangeAddresses(),
+        ]);
+        const allAddresses = [...btcAddresses, ...changeAddresses];
+        return allAddresses;
+      }
+    });
+  },
 }
