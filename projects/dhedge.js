@@ -1,6 +1,4 @@
-/* *** Common config *** */
-
-const { sliceIntoChunks } = require("@defillama/sdk/build/util");
+const sdk = require("@defillama/sdk");
 
 const DHEDGE_FACTORY_PROXIES = {
   ethereum: "0x96d33bcf84dde326014248e2896f79bbb9c13d6d",
@@ -76,7 +74,7 @@ const tvl = async (api) => {
   const dhedgeVaults = allVaults.filter(v => !torosVaults.includes(v) && !mstableVaults.includes(v));
 
   let chunkSize = chain === 'optimism' ? 42 : 51 // Optimism has a lower gas limit
-  const vaultChunks = sliceIntoChunks(dhedgeVaults, chunkSize);
+  const vaultChunks = sdk.util.sliceIntoChunks(dhedgeVaults, chunkSize);
   const summaries = [];
   for (const chunk of vaultChunks) {
     summaries.push(...await api.multiCall({ abi: DHEDGE_V2_VAULT_SUMMARY_ABI, calls: chunk, permitFailure: true,  }))
