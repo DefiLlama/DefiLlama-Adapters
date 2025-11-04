@@ -261,8 +261,6 @@ async function sumTokens2({
 
   blacklistedTokens.forEach(i => delete balances[`${chain}:` + i])
 
-  console.log(balances['solana:EtQE3GREPyFBCU3yUXc5nWs3wRtLYuMmtKAFAvXD1yuR'])
-  
   return balances
 
   function getUnique(tokensAndOwners) {
