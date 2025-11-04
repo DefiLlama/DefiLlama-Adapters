@@ -1,41 +1,72 @@
 const { getCuratorExport } = require("../helper/curators");
 
 const configs = {
-  methodology: 'Count all assets are depoisted in all vaults curated by K3 Capital.',
+  methodology: 'Count all assets are deposited in all vaults curated by K3 Capital.',
   blockchains: {
+    ethereum: {
+      symbiotic: [
+        '0xdC47953c816531a8CA9E1D461AB53687d48EEA26',
+      ],
+      eulerVaultOwners: [
+        '0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B',
+      ],
+      morphoVaultOwners: [
+        '0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B',
+      ],
+      mellow: [
+        '0xc65433845ecD16688eda196497FA9130d6C47Bd8',
+        '0x82f5104b23FF2FA54C2345F821dAc9369e9E0B26',
+      ],
+      erc4626: [
+        '0x50bd66d59911f5e086ec87ae43c811e0d059dd11',
+        '0xf5503d3d4bd254c2c17690eed523bcb2935db6de',
+        '0x866C6c6627303Be103814150fC0e886BE5D9ea83',
+      ],
+    },
     bsc: {
-      euler: [
-        '0x8E01DB38a409D6E6B8A81fd21d84E05912e8730A',
-        '0xca522ECab584b5430ADb946edEE4224A63628362',
-        '0x10888BD509aC3e1f423D171008288462988827d5',
-        '0x78F5d9909163695dfB064d55A222E398918e00a3',
-        '0x470379C4416300068E9Afb938b7A0cfF7735d42f',
-        '0x9D30f4226D9aBE940F05acAfD456153BD49ba6D9',
-        '0x88A81184243c561026973d25384651E6cc0796A4',
-        '0x07167e620612069830fdB5289406bB7A1Ddf781c',
-        '0x1E55a40c9C7ca76a8671D8366bEC8c5f8754a336',
-        '0x8CE379f1e092f0afCef665529F0d86acf92E8Cd4',
-        '0x554a419891bD825e47bC132011821dE1070c35C0',
-        '0xA3031755F95E57E1AC9Bb01dBfEb135d40b6DA96',
+      eulerVaultOwners: [
+        '0x5Bb012482Fa43c44a29168C6393657130FDF0506',
+        '0x2E28c94eE56Ac6d82600070300d86b3a14D5d71A',
       ],
     },
     avax: {
-      euler: [
-        '0xa446938b0204Aa4055cdFEd68Ddf0E0d1BAB3E9E',
-        '0x5030183B3DD0105d69D7d45595C120Fc4b542EC3',
-        '0x6072A6d18446278bB5a43eb747de8F61e34cB77f',
-        '0x03ef14425CF0d7Af62Cdb8D6E0Acb0b0512aE35C',
-        '0x4d758aB40Abb122402F01e1ec4C71ACb06A1f620',
-        '0xe91841F707936faf515ff6d478624A325A4f9199',
-        '0x38eA4c0724b20B02e5fdE235F657a3aFc184f5aC',
-        '0x6fC9b3a52944A577cd8971Fd8fDE0819001bC595',
+      eulerVaultOwners: [
+        '0xa4dC6C20475fDD05b248fbE51F572bD3154dd03B',
+        '0xdD84A24eeddE63F10Ec3e928f1c8302A47538b6B',
+      ],
+      erc4626: [
+        '0x8fc260cd0a00cac30eb1f444b8f1511d71420af9'
       ],
     },
     bob: {
-      euler: [
-        '0xf168679179AA9b6E7772C8eCa4F8afB0B75ED346',
-        '0x80E0d452da8eb37c8db9C8E89103DC92aD477773',
-        '0x6f421F025DD9e3EfF6097536b7991029859C888A',
+      eulerVaultOwners: [
+        '0xDb81B93068B886172988A1A4Dd5A1523958a23f0',
+      ],
+    },
+    unichain: {
+      morphoVaultOwners: [
+        '0xe34A3fb26B3121F4E68bE89Ea553BaC2149F975d',
+      ],
+    },
+    plasma: {
+      eulerVaultOwners: [
+        '0x060DB084bF41872861f175d83f3cb1B5566dfEA3',
+      ],
+      erc4626: [
+        '0x539b2ee4f3a04f33d53c0813f77e65148963f72b',
+        '0xAADEA03f6D6F198Bdc9229bD8113aceD19031773',
+        '0x767d33217e7d2670695FfE2a104548B780f4F5d8',
+        '0x141A6f77ca186861BFB323b07012e80Ef4e09041',
+        '0x2F33b4AE409e86c6BEa9E2Bbe98361c19F2A1f0c',
+        '0x9d86B4fc23D8438fC4Aba58642DC35D5F64fE941',
+        '0xDa33Ba72A303C26515edE275a2521b469F97D71b',
+        '0xFE8d21E64e0c6CFb9abF224e805452acdE8e91Fa',
+        '0xfc5c4e5593A352CEDc9E5D7fD4e21b321140c345',
+      ],
+    },
+    arbitrum: {
+      eulerVaultOwners: [
+        '0xAeE4e2E8024C1B58f4686d1CB1646a6d5755F05C',
       ],
     },
   }

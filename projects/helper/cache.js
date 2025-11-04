@@ -15,12 +15,12 @@ function getLink(project, chain) {
   return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
-async function getCache(project, chain, { _ } = {}) {
+async function getCache(project, chain, { skipCompression } = {}) {
   const Key = getKey(project, chain)
   const fileKey = getFileKey(project, chain)
 
   try {
-    const json = await sdk.cache.readCache(fileKey)
+    const json = await sdk.cache.readCache(fileKey, { skipCompression})
     if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
   } catch (e) {
@@ -36,11 +36,13 @@ async function getCache(project, chain, { _ } = {}) {
   }
 }
 
-async function setCache(project, chain, cache) {
+async function setCache(project, chain, cache, { skipCompression } = {}) {
   const Key = getKey(project, chain)
 
   try {
-    await sdk.cache.writeCache(getFileKey(project, chain), cache)
+    await sdk.cache.writeCache(getFileKey(project, chain), cache, {
+      skipCompression,
+    })
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
     sdk.log(e)
