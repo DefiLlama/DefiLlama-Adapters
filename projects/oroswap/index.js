@@ -112,16 +112,11 @@ async function getAllPairs() {
 }
 
 async function getPoolInfo(contractAddr) {
-    try {
-        return await withRetry(() => queryContract({
-            contract: contractAddr,
-            chain: 'zigchain',
-            data: { pool: {} }
-        }));
-    } catch (error) {
-        console.error(`Failed to fetch pool info for ${contractAddr} after retries:`, error);
-        return null;
-    }
+    return await withRetry(() => queryContract({
+        contract: contractAddr,
+        chain: 'zigchain',
+        data: { pool: {} }
+    }));
 }
 
 function getAssetKey(assetInfo) {
