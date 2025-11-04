@@ -10,7 +10,7 @@ const boringVaultsV0Berachain = [
     startBlock: 200107,
     baseAsset: ADDRESSES.berachain.WBTC,
   },
-    {
+  {
     name: "Prime Liquid Bera ETH",
     vault: "0xB83742330443f7413DBD2aBdfc046dB0474a944e",
     accountant: "0x0B24A469d7c155a588C8a4ee24020F9f27090B0d",

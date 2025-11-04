@@ -15,6 +15,22 @@ const Endur = [
         ],
         "state_mutability": "view"
     },
+    {
+        "name": "convert_to_assets",
+        "type": "function",
+        "inputs": [
+          {
+            "name": "shares",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
   ]
   
   const endurABIMap = {}

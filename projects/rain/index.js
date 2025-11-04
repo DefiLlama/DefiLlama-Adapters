@@ -1,6 +1,5 @@
-
 const { Program } = require("@coral-xyz/anchor");
-const bs58 = require('bs58');
+const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
 const { getProvider } = require("../helper/solana");
 const bankIdl = require('./bank-idl');
 const defiIdl = require('./defi-idl');
@@ -11,7 +10,32 @@ async function tvl(api) {
   const defiProgram = new Program(defiIdl, provider);
 
   // Get all banks
-  const banks = await bankProgram.account.bank.all();
+  const banks = [];
+  
+  const expectedDiscriminant = Buffer.from([142, 49, 166, 242, 50, 66, 97, 188]);
+  const rawAccounts = await provider.connection.getProgramAccounts(bankProgram.programId, {
+    filters: [
+      {
+        memcmp: {
+          offset: 0,
+          bytes: bs58.encode(expectedDiscriminant),
+        },
+      },
+    ],
+  });
+
+  for (const acc of rawAccounts) {
+    const data = acc.account.data;
+
+    if (!data.slice(0, 8).equals(expectedDiscriminant)) continue;
+    if (data.length < 900) continue;
+
+    const bankTypeTag = data.readUInt8(128);
+    if (bankTypeTag !== 0 && bankTypeTag !== 1) continue;
+
+    const decoded = bankProgram.coder.accounts.decode('bank', data);
+    banks.push({ publicKey: acc.pubkey, account: decoded });
+  }
 
   // Get all active defi loans
   const defiLoans = await defiProgram.account.loan.all([

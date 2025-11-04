@@ -1,17 +1,64 @@
 const { getConfig } = require('../helper/cache')
-const { sumTokens } = require('../helper/sumTokens');
+const { sumTokens, sumTokensExport } = require('../helper/sumTokens');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const chainMapping = {
   avax: 'avalanche',
   cosmos: 'cosmoshub',
+  xrplevm: 'xrpl-evm',
   terra2: 'terra-2',
   bsc: 'binance'
 };
 
 const blackListChains = ['comdex', 'crescent'];
-const chainListSupply = ['juno', 'cosmos', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
-const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum', 'base'];
+const chainListSupply = [
+  'agoric', 
+  'archway', 
+  'carbon', 
+  'celestia', 
+  'chihuahua', 
+  'cosmos', 
+  'dymension', 
+  'evmos', 
+  'fraxtal',
+  'injective', 
+  'kujira', 
+  'juno', 
+  'migaloo',
+  'neutron',
+  'osmosis', 
+  'persistence', 
+  'regen',
+  'secret', 
+  'sei',
+  // 'sommelier',
+  'stargaze', 
+  'stride',
+  'terra2',
+  'umee', 
+  'xpla'
+];
+const chainListTotal = [
+  'arbitrum', 
+  'aurora', 
+  'avax', 
+  'base', 
+  'blast', 
+  'bsc', 
+  'celo', 
+  'ethereum', 
+  'xrplevm', 
+  'fantom', 
+  'filecoin',
+  'imx',
+  'kava', 
+  'linea',
+  'mantle', 
+  'moonbeam',
+  'optimism', 
+  'polygon',
+  'scroll', 
+];
 
 const blacklistedTokensChain = {
   ethereum: ['0x946fb08103b400d1c79e07acCCDEf5cfd26cd374'], // KIP tvl is higher than the circulating supply
@@ -51,3 +98,7 @@ chainListSupply.concat(chainListTotal).forEach(chain => {
 });
 
 module.exports.timetravel = false;
+
+module.exports.ripple = {
+  tvl: sumTokensExport({ owner: 'rfmS3zqrQrka8wVyhXifEeyTwe8AMz2Yhw'})
+}

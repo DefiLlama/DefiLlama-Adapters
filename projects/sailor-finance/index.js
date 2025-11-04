@@ -9,7 +9,7 @@ module.exports = {
 async function tvl(api) {
   const pools = await getConfig('sailor', undefined, {
     fetcher: async () => {
-      let { pools } = await get(`https://asia-southeast1-ktx-finance-2.cloudfunctions.net/poolapi/pools`)
+      let { pools } = await get(`https://asia-southeast1-ktx-finance-2.cloudfunctions.net/sailor_poolapi/pools`)
       pools = pools.map(i => i.pool_address)
       return pools
     }

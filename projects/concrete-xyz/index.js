@@ -1,20 +1,27 @@
-const { sumERC4626Vaults } = require("../helper/erc4626");
+const { getConfig } = require('../helper/cache')
 
-const registryAddresses = {
-  berachain: ['0x34C83440fF0b21a7DaD14c22fB7B1Bb3fc8433E6'],
-  ethereum: ['0x0Ed9E3271B7bD5a94E95d5c36d87321372B2FA14'],
-  morph: ['0x04c60a0468BC0d329A0C04e8391699c41D95D981'],
-  corn: ['0xed497422Eb43d309D63bee71741FF17511bAb577']
+const URL = 'https://apy.api.concrete.xyz/v1/vault:tvl/all'
+
+const abis = {
+  asset: "address:asset",
+  totalAssets: "uint256:totalAssets",
+  // getStrategies: "function getStrategies() view returns ((address strategy, (uint256 index, uint256 amount) allocation)[])"
 }
-module.exports = {
-  methodology: "TVL includes all deposits made to the protocols vaults.",
-};
 
-Object.keys(registryAddresses).forEach(chain => {
-  module.exports[chain] = {
-    tvl: async (api) => {
-      const vaults = await api.multiCall({ abi: 'address[]:getAllVaults', calls: registryAddresses[chain] })
-      return sumERC4626Vaults({ api, calls: vaults.flat(), isOG4626: true })
-    }
+const tvl = async (api) => {
+  const chainId = api.chainId
+  const data = await getConfig('concrete-xyz/vaults', URL)
+  const vaults = Object.values(data[chainId]).map(v => v.address)
+
+  const assets = await api.multiCall({ calls: vaults, abi: abis.asset })
+  const totalAssets = await api.multiCall({ calls: vaults, abi: abis.totalAssets })
+
+  for (let i = 0; i < vaults.length; i++) {
+    api.add(assets[i], totalAssets[i])
   }
+} 
+
+const chains = ['ethereum', 'berachain', 'arbitrum', 'katana']
+chains.forEach((chain) => {
+  module.exports[chain] = { tvl }
 })

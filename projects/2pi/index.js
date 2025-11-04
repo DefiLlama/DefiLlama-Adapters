@@ -31,6 +31,7 @@ const tvl = async (api) => {
   api.add(tokens, bals)
 }
 
+module.exports.deadFrom = '2025-01-01'
 
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = { tvl }

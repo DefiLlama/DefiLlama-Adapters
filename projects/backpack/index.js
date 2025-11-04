@@ -1,26 +1,43 @@
-const { cexExports } = require('../helper/cex')
-const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
+const { sumTokensExport } = require('../helper/sumTokens')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { defaultTokens } = require('../helper/cex')
+const { getConfig } = require('../helper/cache.js')
 
-// https://dune.com/21co/backpack-exchange
-const config = {
-  solana: {
-    owners: [
-      '43DbAvKxhXh1oSxkJSqGosNw3HpBnmsWiak6tB5wpecN',
-      'BbHG9GvPActFGogv3iNrpDAj4qpXr8t3jF16uGxXcKci',
-      '9NJmj9VaTU9D7ytdzy5RHMrfAgw2pYwqnUhuMqatcsr',
-      'HwDX5eJkzPAJ7y7ENrH23HaDGUgB4nXPxG8UsB4cEMGE'
-    ],
-  },
-  ethereum: {
-    owners: [
-      '0x2228e5704B637131A3798A186CAF18366c146f74',
-      '0x6a3eAb9Ee70C82A2B13708041f2C5892bEa6857B',
-      '0xEC8F9ef3031b0CdF05E42e0Ece8D6397F92595e8'
-    ],
-  },
-    bitcoin: {
-      owners: bitcoinAddressBook.backpack,
-    },
+const API_URL = 'https://api.backpack.exchange/api/v1/wallets'
+
+const _getConfig = async () => {
+  const data  = await getConfig('backpack/wallets', API_URL)
+  const config   = {}
+  data.forEach(({ address, blockchain }) => {
+    let chain = blockchain.toLowerCase()
+    if (chain === 'avalanche') chain = 'avax'
+    if (!config[chain]) config[chain] = { owners: [] }
+    config[chain].owners.push(address)
+  })
+  return config
 }
 
-module.exports = cexExports(config)
+const exportObj = {  timetravel: false }
+const chains = ['ethereum', 'solana', 'bitcoin', 'litecoin', 'arbitrum', 'optimism', 'polygon', 'base', 'bsc', 'avax', 'tron'];
+
+chains.forEach((chain) => {
+  exportObj[chain] = {
+    tvl: async () => {
+      const config = await _getConfig()
+      const entry = config[chain]
+      if (!entry) return {}
+
+      let { tokensAndOwners, owners, tokens, blacklistedTokens, fungibleAssets } = entry
+      if (!tokensAndOwners && !tokens && chain !== 'solana') tokens = defaultTokens[chain] || [ADDRESSES.null]
+
+      const options = { ...entry, owners, tokens, chain, blacklistedTokens }
+      if (chain === 'solana' || chain === 'eclipse') options.solOwners = owners
+      if (chain === 'ton') options.onlyWhitelistedTokens = true
+      if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
+
+      return sumTokensExport(options)()
+    }
+  }
+})
+
+module.exports = exportObj

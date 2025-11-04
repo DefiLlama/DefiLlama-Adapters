@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 // sonic
 const tokens = [
-  "0x0000000000000000000000000000000000000000", // ETH
+  ADDRESSES.null, // ETH
 ];
 
 const owner = '0xe220E8d200d3e433b8CFa06397275C03994A5123';

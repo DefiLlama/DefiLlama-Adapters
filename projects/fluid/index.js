@@ -26,6 +26,12 @@ const config = {
   base: {
     liquidityResolver: (block) => "0x35A915336e2b3349FA94c133491b915eD3D3b0cd",
   },
+  polygon: {
+    liquidityResolver: (block) => "0x98d900e25AAf345A4B23f454751EC5083443Fa83",
+  },
+  plasma: {
+    liquidityResolver: (block) => "0x4b6Bb77196A7B6D0722059033a600BdCD6C12DB7",
+  },
 };
 
 async function getListedTokens(api) {
@@ -65,7 +71,7 @@ async function tvl(api) {
     tokens: [
       ADDRESSES.null,
       ...tokens.filter(
-        (t) => t.toLowerCase() !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        (t) => t.toLowerCase() !== ADDRESSES.GAS_TOKEN_2.toLowerCase()
       ),
     ],
   });
@@ -89,5 +95,7 @@ module.exports = {
   ethereum: { tvl, borrowed },
   arbitrum: { tvl, borrowed },
   base: { tvl, borrowed },
+  polygon: { tvl, borrowed },
+  plasma: { tvl, borrowed },
 };
 // node test.js projects/fluid/index.js

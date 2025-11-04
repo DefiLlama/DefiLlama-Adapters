@@ -1,12 +1,12 @@
 const { get } = require('./helper/http')
 
-async function fetch() {
-  return get('https://btn.group/pools/tvl')
+async function tvl(api) {
+  const result = await get('https://btn.group/pools/tvl')
+  return api.addUSDValue(result)
 }
 
 module.exports = {
-  secret: {
-    fetch
-  },
-  fetch
+  deadFrom: '2025-09-01',
+  misrepresentedTokens: true,
+  secret: { tvl },
 }

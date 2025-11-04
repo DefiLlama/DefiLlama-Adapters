@@ -78,6 +78,7 @@ const pionexCex = require('./pionex-cex.js')
 const probit = require('./probit.js')
 const robinhood = require('./robinhood.js')
 const rosenBridge = require('./rosen-bridge.js')
+const rskBridge = require('./rsk-bridge.js')
 const silkroad = require('./silkroad.js')
 const swissborg = require('./swissborg.js')
 const toobit = require('./toobit.js')
@@ -97,6 +98,22 @@ const cygnus = require('./cygnus.js')
 const unitbtc = require('./unit-btc.js')
 const backpack = require('./backpack.js')
 const coinbasebtc = require('./coinbase-btc.js')
+const coinbaseltc = require('./coinbase-ltc.js')
+const prosper = require('./prosper.js')
+const hotcoin = require('./hotcoin.js')
+const orangex = require('./orangex.js')
+const exmo = require('./exmo.js')
+const esbtc = require('./esbtc.js')
+const bimaCdp = require('./bima-cdp.js')
+const tzbtc = require('./tezos-btc.js')
+const tothemoon = require('./tothemoon.js')
+const indodax = require('./indodax.js')
+const river = require('./river.js')
+const echoMBTC = require('./echo-mBTC.js')
+const xbtc = require('./okx-xbtc.js')
+const leadbtc = require('./leadbtc.js')
+const bitgetBtc = require('./bitget-bgBTC.js')
+const magicEden = require('./magic-eden.js')
 
 const p2pb2b = ['39BFtTzZjj6o2s7eewefFQxqM4617VmhEK']
 const teleswap = [
@@ -115,6 +132,10 @@ const bitomato = [
   'bc1qgmtx3caf8rlxmzw703ga2sljv3rkkj39e4ysk9',
 ]
 
+const lbank = [
+  '1MZwhQkkt9wy8Mwm4rx5W3AYiDCJLasffn',
+]
+
 const stacksSBTC = [
   // https://docs.stacks.co/concepts/sbtc/clarity-contracts/sbtc-deposit
   'bc1pl033nz4lj7u7wz3l2k2ew3f7af4sdja8r25ernl00thflwempayswr5hvc',
@@ -128,6 +149,7 @@ const magpie = [
 
 module.exports = {
   ...fetchers,
+  hemiBTC: ['16NuSCxDVCAXbKs9GRbjbHXbwGXu3tnPSo', '1GawhMSUVu3bgRiNmejbVTBjpwBygGWSqf'],
   cygnus,
   magpie,
   stacksSBTC,
@@ -139,6 +161,7 @@ module.exports = {
   allo,
   avalanche,
   bevm,
+  bimaCdp,
   binance,
   binance2,
   bitstable,
@@ -169,6 +192,7 @@ module.exports = {
   bingCex,
   bitfinex,
   bitget,
+  bitgetBtc,
   bitmake,
   bitmark,
   bitmex,
@@ -214,6 +238,7 @@ module.exports = {
   probit,
   robinhood,
   rosenBridge,
+  rskBridge,
   silkroad,
   swissborg,
   toobit,
@@ -231,5 +256,20 @@ module.exports = {
   bitrue,
   unitbtc,
   backpack,
-  coinbasebtc
+  coinbasebtc,
+  coinbaseltc,
+  prosper,
+  lbank,
+  hotcoin,
+  orangex,
+  exmo,
+  esbtc,
+  tzbtc,
+  tothemoon,
+  indodax,
+  river,
+  echoMBTC,
+  xbtc,
+  leadbtc,
+  magicEden,
 }
