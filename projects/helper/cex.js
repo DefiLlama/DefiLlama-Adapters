@@ -311,6 +311,7 @@ function cexExports(config) {
       options.solOwners = owners
       if (!options.blacklistedTokens) options.blacklistedTokens = []
       options.blacklistedTokens.push('rTCAfDDrTAiP2hxBdfRtqnVZ9SF9E9JaQn617oStvPF')
+      options.blacklistedTokens.push('EtQE3GREPyFBCU3yUXc5nWs3wRtLYuMmtKAFAvXD1yuR')
     }
     if (chain === 'ton') options.onlyWhitelistedTokens = true
     if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
