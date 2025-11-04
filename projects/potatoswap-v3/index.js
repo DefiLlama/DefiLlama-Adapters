@@ -1,8 +1,8 @@
-const { v2Tvl } = require('./v2.js');
+const { v3Tvl } = require('./v3.js');
 
 module.exports = {
   xlayer: {
-    tvl: v2Tvl,
+    tvl: v3Tvl,
   },
   misrepresentedTokens: true,
 };
