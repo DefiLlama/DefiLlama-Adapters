@@ -57,7 +57,7 @@ const positions = async () => {
   const prices = {}
   for (const c of collAddresses) {
     const info = await getTokenInfo(`ethereum:${c}`)
-    prices[c] = BigNumber(info.price).times(10e18).toFixed()
+    prices[c] = BigNumber(info.price).times(10e17).toFixed()
   }
 
   const vesselCounts = (

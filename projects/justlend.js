@@ -1,6 +1,6 @@
-const { unhexifyTarget, } = require('@defillama/sdk/build/abi/tron');
 const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens } = require('./helper/sumTokens')
+const sdk = require('@defillama/sdk')
 
 const comptroller = 'TGjYzgCyPobsNS9n6WcbdLVR9dH7mWqFx7'
 
@@ -14,7 +14,7 @@ module.exports = {
 };
 
 async function tvl(api) {
-  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(unhexifyTarget)
+  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(sdk.tron.unhexifyTarget)
   const cMarkets = ['TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP']
   const tokensAndOwners = []
   const otherMarkets = []
@@ -31,7 +31,7 @@ async function tvl(api) {
 }
 
 async function borrowed(api) {
-  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(unhexifyTarget)
+  const markets = (await api.call({ abi: 'address[]:getAllMarkets', target: comptroller })).map(sdk.tron.unhexifyTarget)
   const cMarkets = ['TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP']
   const otherMarkets = []
   for (let i = 0; i < markets.length; i++) {

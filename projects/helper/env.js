@@ -70,6 +70,7 @@ const ENV_KEYS = [
   'SMARDEX_SUBGRAPH_API_KEY',
   'PROXY_AUTH',
   'ALLIUM_API_KEY',
+  'TON_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

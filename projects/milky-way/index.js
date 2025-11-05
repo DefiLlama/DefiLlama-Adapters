@@ -51,7 +51,7 @@ async function milkINITTVL(api) {
 }
 
 module.exports = {
-  methodology: 'TVL counts the tokens that are locked in the Milky Way protocol',
+  methodology: 'TVL counts the tokens that are locked in the Milky Way liquid staking protocol',
   osmosis: {
     tvl: milkTIATVL,
   },
