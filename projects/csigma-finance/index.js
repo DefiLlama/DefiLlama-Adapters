@@ -158,7 +158,7 @@ async function csUsdTvl(api) {
   const cfg = csUSDVaults && csUSDVaults[chain];
   if (!cfg) return;
   const owners = cfg.map(v => v.vault).filter(Boolean);
-  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings : []).filter(Boolean);
+  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings.map(t => ADDRESSES[chain][t] || t) : []).filter(Boolean);
   if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
 }
 async function csLYDTvl(api) {
@@ -166,7 +166,7 @@ async function csLYDTvl(api) {
   const cfg = csLYDVaults && csLYDVaults[chain];
   if (!cfg) return;
   const owners = cfg.map(v => v.vault).filter(Boolean);
-  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings : []).filter(Boolean);
+  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings.map(t => ADDRESSES[chain][t] || t) : []).filter(Boolean);
   if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
 }
 

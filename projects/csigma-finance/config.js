@@ -49,14 +49,14 @@ const csUSDVaults = {
       vault: '0xd5d097f278a735d0a3c609deee71234cac14b47e', // USDC vault (csUSD)
       startBlock: 23251807,
       underlyings: [
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+        'USDC',
       ],
     },
     {
       vault: '0xbd3f0befa86794b999b29a91d201124d8fbdf777', // USDT vault (csUSD)
       startBlock: 23251807,
       underlyings: [
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+        'USDT',
       ],
     },
   ],
@@ -65,7 +65,7 @@ const csUSDVaults = {
       vault: '0x4896a087f78E1DcB44B9231f9a6f35EA2aA0c8AC', // USDC vault (csUSDh)
       startBlock: 85080753,
       underlyings: [
-        '0x000000000000000000000000000000000006f89a', // USDC on Hedera (HTS EVM address)
+        'USDC',
       ],
     },
   ],
@@ -76,13 +76,13 @@ const csLYDVaults = {
     {
       vault: '0xead9190db1a6a5f4262572845cf75c31e474fd4c',
       underlyings: [
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+        'USDC',
       ],
     },
     {
       vault: '0x1922d16cc88cd60499906915b30ec891ceb6e151',
       underlyings: [
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+        'USDT',
       ],
     },
   ],
