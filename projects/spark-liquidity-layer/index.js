@@ -271,10 +271,6 @@ const curveConfigs = {
       address: '0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f',
       coinIndex: 0,
     },
-    {
-      address: '0xA632D59b9B804a956BfaA9b48Af3A1b74808FC1f',
-      coinIndex: 1,
-    },
   ],
   base: [],
   arbitrum: [],
