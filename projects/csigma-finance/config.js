@@ -33,6 +33,36 @@ const pdnContractAddress = {
   startBlock: 218221531
 };
 
+// csUSD multi-asset vault configuration per chain
+// Supports multiple vaults per chain
+const csUsdVaults = {
+  ethereum: [
+    {
+      vault: '0xd5d097f278a735d0a3c609deee71234cac14b47e', // USDC vault (csUSD)
+      startBlock: 23251807,
+      underlyings: [
+        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+      ],
+    },
+    {
+      vault: '0xbd3f0befa86794b999b29a91d201124d8fbdf777', // USDT vault (csUSD)
+      startBlock: 23251807,
+      underlyings: [
+        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+      ],
+    },
+  ],
+  hedera: [
+    {
+      vault: '0x4896a087f78E1DcB44B9231f9a6f35EA2aA0c8AC', // USDC vault (csUSDh)
+      startBlock: 85080753,
+      underlyings: [
+        '0x000000000000000000000000000000000006f89a', // USDC on Hedera (HTS EVM address)
+      ],
+    },
+  ],
+};
+
 
 const invalidPDNPaymentIds = [
   "0x99460d3affdd3d92b7947811ee9d3081c9c2f0a9d0ee9b30af2d842f4423dd83",
@@ -49,5 +79,6 @@ module.exports = {
   instituitionalContractAddress,
   edgeContractAddress,
   pdnContractAddress,
+  csUsdVaults,
   invalidPDNPaymentIds
 };

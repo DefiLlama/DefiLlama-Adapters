@@ -6,6 +6,7 @@ const {
   instituitionalContractAddress,
   edgeContractAddress,
   pdnContractAddress,
+  csUsdVaults,
   invalidPDNPaymentIds
 } = require('./config.js');
 
@@ -99,7 +100,7 @@ async function institutionalTvl(api) {
       }),
     ]);
     api.add(ADDRESSES[chain].USDT, usdtBalance);
-    api.add(ADDRESSES[chain].USDT, usdcBalance);
+    api.add(ADDRESSES[chain].USDC, usdcBalance);
   }));
 
   const totalInvestments = {};
@@ -150,9 +151,24 @@ async function edgeTvl(api) {
   await api.sumTokens({ owners: pools, tokens: [...new Set(tokens)], chain, block: 'latest' })
 }
 
+async function csUsdTvl(api) {
+  const chain = api.chain;
+  const cfg = csUsdVaults && csUsdVaults[chain];
+  if (!cfg) return;
+  if (Array.isArray(cfg)) {
+    const owners = cfg.map(v => v.vault).filter(Boolean);
+    const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings : []).filter(Boolean);
+    if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
+    return;
+  }
+  if (!cfg.vault || !Array.isArray(cfg.underlyings) || cfg.underlyings.length === 0) return;
+  await api.sumTokens({ owners: [cfg.vault], tokens: cfg.underlyings, chain, block: 'latest' });
+}
+
 async function getTvl(api) {
   await institutionalTvl(api);
   await edgeTvl(api);
+  await csUsdTvl(api);
   const chain = api.chain;
   if(chain === 'arbitrum') {
     await getPDNTvl(api);
@@ -164,5 +180,6 @@ module.exports = {
   'arbitrum': { tvl: getTvl },
   'ethereum': { tvl: getTvl },
   'base': { tvl: getTvl },
+  'hedera': { tvl: csUsdTvl },
   methodology: `The TVL of Csigma Finance is calculated by querying smart contracts on Ethereum, Arbitrum, and Base. It includes the total investments in institutional pools, balances in Edge pools, and private debt network investments (on Arbitrum) while subtracting repayments. Token balances (USDT/USDC) are fetched on-chain, and the final TVL is derived by summing these values.`,
 }
