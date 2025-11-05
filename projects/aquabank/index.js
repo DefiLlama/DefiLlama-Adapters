@@ -1,73 +1,20 @@
 // projects/aquabank/index.js
-const ADDRESSES = require('../helper/coreAssets.json')
-
-const USDt = ADDRESSES.avax.USDt  // 0x9702230A8Ea53601f5Cd2dc00fDBc13d4dF4A8c7
-
-// Vaults that hold receipt tokens (not the underlying)
-const BENQI_VAULT = '0x7D336B49879a173626E51BFF780686D88b8081ec'
-const EULER_VAULT = '0x61E8f77eD693d3edeCBCc2dd9c55c1d987c47775'
-
-// Protocol receipt tokens (convertible to USDt underlying)
-const BENQI_RECEIPT = '0xd8fcDa6ec4Bdc547C0827B8804e89aCd817d56EF'
-const EULER_RECEIPT = '0xa446938b0204Aa4055cdFEd68Ddf0E0d1BAB3E9E'
+const bUSDt = '0x3C594084dC7AB1864AC69DFd01AB77E8f65B83B7'
 
 
-// ABIs
-const erc20Bal = 'function balanceOf(address) view returns (uint256)'
+// AQUABANK TVL adapter
+// bUSDT (bTether) is a fully backed wrapped USDt token on Avalanche.
+// The underlying USDt is deposited into Benqi and Euler to earn yield.
+// TVL reflects the total USDt-equivalent backing represented by bUSDT supply.
 
-const benqiAbi = {
-    // Compound-style exchange rate (scaled by 1e18)
-    exchangeRateStored: 'function exchangeRateStored() view returns (uint256)',
-    underlying: 'function underlying() view returns (address)',
-}
-
-const eulerAbi = {
-    // ERC4626-style conversion from shares to assets
-    convertToAssets: 'function convertToAssets(uint256 shares) view returns (uint256)',
-    asset: 'function asset() view returns (address)',
-}
-
-const toStr = (x) => (x?.toString?.() ?? String(x))
-const toBN  = (x) => BigInt(toStr(x))
-
-// TVL: sum USDt underlying represented by Benqi/Euler receipt tokens held in the vaults
-async function tvl(api) {
-
-    // 1) Read receipt balances held by the two vaults
-    const [benqiShares, eulerShares] = await Promise.all([
-        api.call({ target: BENQI_RECEIPT, abi: erc20Bal, params: BENQI_VAULT, permitFailure: true }),
-        api.call({ target: EULER_RECEIPT, abi: erc20Bal, params: EULER_VAULT, permitFailure: true }),
-    ])
-
-    // 2) Convert Benqi shares -> USDt underlying using Compound-style exchange rate
-    let benqiUnderlying = 0n
-    if (benqiShares) {
-        const rate = await api.call({ target: BENQI_RECEIPT, abi: benqiAbi.exchangeRateStored, permitFailure: true })
-        if (rate) {
-            // underlying = shares * rate / 1e18
-            benqiUnderlying = (toBN(benqiShares) * toBN(rate)) / 10n**18n
-        }
-    }
-
-    // 3) Convert Euler shares -> USDt underlying using ERC4626 conversion
-    let eulerUnderlying = 0n
-        if (eulerShares) {
-            const out = await api.call({
-                target: EULER_RECEIPT, abi: eulerAbi.convertToAssets, params: eulerShares, permitFailure: true
-            })
-        if (out) eulerUnderlying = toBN(out)
-    }
-
-    // 4) Add both underlyings as USDt
-    if (benqiUnderlying > 0n) api.add(USDt, benqiUnderlying)
-    if (eulerUnderlying > 0n) api.add(USDt, eulerUnderlying)
-
-    return api.getBalances()
-}
+const tvl = async (api) => {
+    const supply = await api.call({ abi: 'erc20:totalSupply', target: bUSDt })
+    api.add(bUSDt, supply)
+  }
 
 module.exports = {
     methodology:
-        'TVL = USDt underlying represented by Benqi/Euler receipt tokens held in vaults (Benqi: shares*exchangeRate/1e18, Euler: convertToAssets).',
+        'TVL is calculated based on the total supply of bUSDT, which is fully backed by USDt deposited into Benqi and Euler vaults. Each bUSDT represents 1 USDt of collateralized liquidity.',
     avax: { 
         tvl,
     },
