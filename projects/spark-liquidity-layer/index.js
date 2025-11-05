@@ -126,6 +126,7 @@ const vaultConfigs = {
   arbitrum: [],
   optimism: [],
   unichain: [],
+  avax: [],
 }
 
 // discards idle supply on aave like markets for USDS and DAI
@@ -276,6 +277,7 @@ const curveConfigs = {
   arbitrum: [],
   optimism: [],
   unichain: [],
+  avax: [],
 }
 
 async function addCurveBalances(api) {

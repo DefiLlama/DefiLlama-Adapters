@@ -11,6 +11,27 @@ const CALL_TIMEOUT_MS = 30000
 
 const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
 
+function detectCrossChainToken(tokenId) {
+  if (tokenId.includes('v2_1.omni.hot.tg:1100_')) {
+    const stellarMappings = {
+      '111bzQBB5v7AhLyPMDwS8uJgQV24KaAPXtwyVWu2KXbbfQU6NXRCz': 'coingecko:stellar',
+      '111bzQBB65GxAPAVoxqmMcgYo5oS3txhqs1Uh1cgahKQUeTUq1TJu': 'stellar:GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN',
+    }
+    const match = tokenId.match(/1100_([a-zA-Z0-9]+)$/)
+    if (match && stellarMappings[match[1]]) {
+      return stellarMappings[match[1]]
+    }
+  }
+  
+  if (tokenId === 'btc.omft.near') return 'coingecko:bitcoin'
+  if (tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)) {
+    const match = tokenId.match(/^eth-0x([a-fA-F0-9]{40})\.omft\.near$/)
+    return `ethereum:0x${match[1].toLowerCase()}`
+  }
+  
+  return tokenId
+}
+
 async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_DELAY_MS) {
   let lastError
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -48,7 +69,7 @@ function extractTokenAddress(assetConfig, assetType) {
     if (typeof assetConfig.Nep141 !== 'string' || assetConfig.Nep141.length === 0) {
       throw new Error(`Invalid NEP-141 address for ${assetType} asset`)
     }
-    return assetConfig.Nep141
+    return detectCrossChainToken(assetConfig.Nep141)
   }
 
   if (assetConfig.Nep245?.token_id) {
@@ -56,17 +77,21 @@ function extractTokenAddress(assetConfig, assetType) {
     if (typeof tokenId !== 'string' || tokenId.length === 0) {
       throw new Error(`Invalid NEP-245 token ID for ${assetType} asset`)
     }
-    const parts = tokenId.split(':')
-    if (parts.length !== 2) {
-      throw new Error(`Invalid NEP-245 token ID format for ${assetType} asset: ${tokenId}`)
+    
+    const crossChainResult = detectCrossChainToken(tokenId)
+    if (crossChainResult !== tokenId) {
+      return crossChainResult
     }
-    if (parts[0] === 'nep141') {
+    
+    const parts = tokenId.split(':')
+    if (parts.length >= 2 && parts[0] === 'nep141') {
       if (parts[1].length === 0) {
         throw new Error(`Empty NEP-141 address in NEP-245 token for ${assetType} asset`)
       }
-      return parts[1]
+      return detectCrossChainToken(parts[1])
     }
-    throw new Error(`Unsupported NEP-245 token type for ${assetType} asset: ${parts[0]}`)
+    
+    return tokenId
   }
 
   throw new Error(`Unsupported ${assetType} asset format: missing both Nep141 and valid Nep245`)
@@ -76,6 +101,16 @@ function validateConfiguration(configuration) {
   if (!configuration || typeof configuration !== 'object') throw new Error('Configuration is not an object')
   if (!configuration.borrow_asset) throw new Error('Missing borrow_asset in configuration')
   if (!configuration.collateral_asset) throw new Error('Missing collateral_asset in configuration')
+}
+
+function scaleTokenAmount(amount, tokenAddress) {
+  if (tokenAddress === 'coingecko:bitcoin') {
+    return amount.div(1e8).toFixed()
+  }
+  if (tokenAddress === 'coingecko:stellar') {
+    return amount.div(1e7).toFixed()
+  }
+  return amount.toFixed()
 }
 
 function coerceAndValidateSnapshot(snapshot) {
@@ -221,8 +256,8 @@ async function tvl() {
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
       const { borrowAssetToken, collateralAssetToken, availableLiquidity, totalCollateral } = result.value
-      sumSingleBalance(balances, borrowAssetToken, availableLiquidity.toFixed())
-      sumSingleBalance(balances, collateralAssetToken, totalCollateral.toFixed())
+      sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(availableLiquidity, borrowAssetToken))
+      sumSingleBalance(balances, collateralAssetToken, scaleTokenAmount(totalCollateral, collateralAssetToken))
     } else {
       throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
     }
@@ -245,7 +280,7 @@ async function borrowed() {
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
       const { borrowAssetToken, totalBorrowed } = result.value
-      sumSingleBalance(balances, borrowAssetToken, totalBorrowed.toFixed())
+      sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(totalBorrowed, borrowAssetToken))
     } else {
       throw new Error(`Market ${deployments[index]} failed: ${result.reason?.message || result.reason}`)
     }
