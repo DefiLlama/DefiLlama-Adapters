@@ -1,5 +1,8 @@
-const { uniV3Export } = require("../helper/uniswapV3");
+const { v3Tvl } = require('./v3.js');
 
-module.exports = uniV3Export({
-  xlayer: { factory: "0x70355463122C113b0931146F6C9488D9b0a09037", fromBlock: 40201510, },
-});
+module.exports = {
+  xlayer: {
+    tvl: v3Tvl,
+  },
+  misrepresentedTokens: true,
+};
