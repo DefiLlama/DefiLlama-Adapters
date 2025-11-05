@@ -242,12 +242,27 @@ module.exports = {
     })
     return Array.from(new Set(staticAddresses))
   },
-  zenrock: async () => {
+  zenrock: async (blockHeight = null) => {
     const ZRCHAIN_WALLETS_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/zenbtc_wallets';
     const ZENBTC_PARAMS_API = 'https://api.diamond.zenrocklabs.io/zenbtc/params';
     const ZRCHAIN_KEY_BY_ID_API = 'https://api.diamond.zenrocklabs.io/zrchain/treasury/key_by_id';
 
-    return getConfig('zenrock/addresses', undefined, {
+    // Helper function to make API requests with optional height header
+    async function apiRequest(url, height = null) {
+      const options = {};
+      if (height) {
+        options.headers = {
+          'x-cosmos-block-height': String(height)
+        };
+      }
+
+      return await get(url, options);
+    }
+
+    // Use cache key that includes block height for historical queries
+    const cacheKey = blockHeight ? `zenrock/addresses/${blockHeight}` : 'zenrock/addresses';
+
+    return getConfig(cacheKey, undefined, {
       fetcher: async () => {
         async function getBitcoinAddresses() {
           const btcAddresses = [];
@@ -258,7 +273,11 @@ module.exports = {
             if (nextKey) {
               url += `?pagination.key=${encodeURIComponent(nextKey)}`;
             }
-            const { data } = await axios.get(url);
+            const data = await apiRequest(url, blockHeight);
+            if (!data) {
+              // Historical state not available, return empty array
+              return [];
+            }
             if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
               for (const walletGroup of data.zenbtc_wallets) {
                 if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
@@ -282,10 +301,17 @@ module.exports = {
         async function getChangeAddresses() {
           const changeAddresses = [];
 
-          const { data: paramsData } = await axios.get(ZENBTC_PARAMS_API);
+          const paramsData = await apiRequest(ZENBTC_PARAMS_API, blockHeight);
+          if (!paramsData) {
+            // Historical state not available, return empty array
+            return [];
+          }
           const changeAddressKeyIDs = paramsData.params?.changeAddressKeyIDs || [];
           for (const keyID of changeAddressKeyIDs) {
-            const { data: keyData } = await axios.get(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`);
+            const keyData = await apiRequest(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`, blockHeight);
+            if (!keyData) {
+              continue; // Skip this key if historical state not available
+            }
             if (keyData.wallets && Array.isArray(keyData.wallets)) {
               for (const wallet of keyData.wallets) {
                 if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {
