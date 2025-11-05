@@ -1,6 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumUnknownTokens } = require('../helper/unknownTokens')
 
 const {
   instituitionalContractAddress,
@@ -155,14 +154,9 @@ async function csUsdTvl(api) {
   const chain = api.chain;
   const cfg = csUsdVaults && csUsdVaults[chain];
   if (!cfg) return;
-  if (Array.isArray(cfg)) {
-    const owners = cfg.map(v => v.vault).filter(Boolean);
-    const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings : []).filter(Boolean);
-    if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
-    return;
-  }
-  if (!cfg.vault || !Array.isArray(cfg.underlyings) || cfg.underlyings.length === 0) return;
-  await api.sumTokens({ owners: [cfg.vault], tokens: cfg.underlyings, chain, block: 'latest' });
+  const owners = cfg.map(v => v.vault).filter(Boolean);
+  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings : []).filter(Boolean);
+  if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
 }
 
 async function getTvl(api) {
