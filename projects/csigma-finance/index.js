@@ -86,20 +86,22 @@ async function institutionalTvl(api) {
   }, {});
 
   await Promise.all(uniqeLenderIDs.map(async lenderID => {
+    const usdtAddress = chain === 'hedera' ? ADDRESSES.hedera.USDT_HTS : ADDRESSES[chain].USDT;
+    const usdcAddress = ADDRESSES[chain].USDC;
     const [usdtBalance, usdcBalance] = await Promise.all([
       api.call({
         target: factory,
         abi: 'function getTokenBalance(string calldata _roleId, address _token) external view returns (uint256)',
-        params: [lenderID, ADDRESSES[chain].USDT]
+        params: [lenderID, usdtAddress]
       }),
       api.call({
         target: factory,
         abi: 'function getTokenBalance(string calldata _roleId, address _token) external view returns (uint256)',
-        params: [lenderID, ADDRESSES[chain].USDC]
+        params: [lenderID, usdcAddress]
       }),
     ]);
-    api.add(ADDRESSES[chain].USDT, usdtBalance);
-    api.add(ADDRESSES[chain].USDC, usdcBalance);
+    api.add(usdtAddress, usdtBalance);
+    api.add(usdcAddress, usdcBalance);
   }));
 
   const totalInvestments = {};
@@ -174,6 +176,6 @@ module.exports = {
   'arbitrum': { tvl: getTvl },
   'ethereum': { tvl: getTvl },
   'base': { tvl: getTvl },
-  'hedera': { tvl: csUsdTvl },
+  'hedera': { tvl: getTvl },
   methodology: `The TVL of Csigma Finance is calculated by querying smart contracts on Ethereum, Arbitrum, and Base. It includes the total investments in institutional pools, balances in Edge pools, and private debt network investments (on Arbitrum) while subtracting repayments. Token balances (USDT/USDC) are fetched on-chain, and the final TVL is derived by summing these values.`,
 }

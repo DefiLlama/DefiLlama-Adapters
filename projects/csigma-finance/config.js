@@ -10,6 +10,10 @@ const instituitionalContractAddress = {
   base: {
     address: '0x07D7bf6dCc4A2f03E82E3da52eBfBAe871443322',
     startBlock: 23596015
+  },
+  hedera: {
+    address: '0xF80bA51189763B7AC484A23f7d7695345B1149C9',
+    startBlock: 84085356
   }
 };
 
@@ -25,6 +29,10 @@ const edgeContractAddress = {
   base: {
     address: '0xe76C20761BFCD471196bB61f68250DAf3dA3568B',
     startBlock: 23604031
+  },
+  hedera: {
+    address: '0x78B17FbE17925622139382FE7809A9D687C5e7Bd',
+    startBlock: 84093455
   }
 };
 
