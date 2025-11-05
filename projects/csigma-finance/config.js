@@ -43,7 +43,7 @@ const pdnContractAddress = {
 
 // csUSD multi-asset vault configuration per chain
 // Supports multiple vaults per chain
-const csUsdVaults = {
+const csUSDVaults = {
   ethereum: [
     {
       vault: '0xd5d097f278a735d0a3c609deee71234cac14b47e', // USDC vault (csUSD)
@@ -71,6 +71,22 @@ const csUsdVaults = {
   ],
 };
 
+const csLYDVaults = {
+  ethereum: [
+    {
+      vault: '0xead9190db1a6a5f4262572845cf75c31e474fd4c',
+      underlyings: [
+        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+      ],
+    },
+    {
+      vault: '0x1922d16cc88cd60499906915b30ec891ceb6e151',
+      underlyings: [
+        '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+      ],
+    },
+  ],
+};
 
 const invalidPDNPaymentIds = [
   "0x99460d3affdd3d92b7947811ee9d3081c9c2f0a9d0ee9b30af2d842f4423dd83",
@@ -87,6 +103,7 @@ module.exports = {
   instituitionalContractAddress,
   edgeContractAddress,
   pdnContractAddress,
-  csUsdVaults,
+  csUSDVaults,
+  csLYDVaults,
   invalidPDNPaymentIds
 };

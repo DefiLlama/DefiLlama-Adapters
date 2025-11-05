@@ -5,7 +5,8 @@ const {
   instituitionalContractAddress,
   edgeContractAddress,
   pdnContractAddress,
-  csUsdVaults,
+  csUSDVaults,
+  csLYDVaults,
   invalidPDNPaymentIds
 } = require('./config.js');
 
@@ -154,7 +155,15 @@ async function edgeTvl(api) {
 
 async function csUsdTvl(api) {
   const chain = api.chain;
-  const cfg = csUsdVaults && csUsdVaults[chain];
+  const cfg = csUSDVaults && csUSDVaults[chain];
+  if (!cfg) return;
+  const owners = cfg.map(v => v.vault).filter(Boolean);
+  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings : []).filter(Boolean);
+  if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
+}
+async function csLYDTvl(api) {
+  const chain = api.chain;
+  const cfg = csLYDVaults && csLYDVaults[chain];
   if (!cfg) return;
   const owners = cfg.map(v => v.vault).filter(Boolean);
   const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings : []).filter(Boolean);
@@ -165,8 +174,9 @@ async function getTvl(api) {
   await institutionalTvl(api);
   await edgeTvl(api);
   await csUsdTvl(api);
+  await csLYDTvl(api);
   const chain = api.chain;
-  if(chain === 'arbitrum') {
+  if (chain === 'arbitrum') {
     await getPDNTvl(api);
     return;
   }
