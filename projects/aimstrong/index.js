@@ -7,6 +7,7 @@ const abi = {
 const CONFIG = {
 	arbitrum: "0x7c94606f2240E61E242D14Ed984Aa38FA4C79c0C",
 	base: "0x7c94606f2240E61E242D14Ed984Aa38FA4C79c0C",
+	bsc: "0xA0a61cFa5798976b0064fBbFfc73dc81080d929F",
 };
 
 async function tvl(api) {
@@ -46,4 +47,5 @@ module.exports = {
 		"TVL is the sum of collateral tokens backing the protocol, by checking balances held in each reserve’s tToken.",
 	arbitrum: { tvl, borrowed },
 	base: { tvl, borrowed },
+	bsc: { tvl, borrowed },
 };
