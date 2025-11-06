@@ -122,8 +122,6 @@ async function institutionalTvl(api) {
   Object.keys(totalInvestments).forEach(token => {
     const remainingBalance = totalInvestments[token] - (totalPrincipalPaid[token] || 0n);
     api.add(token, remainingBalance);
-    console.log('INST TVL', chain, token, Number(remainingBalance) / 1e6);
-
   });
 }
 
@@ -164,8 +162,6 @@ async function edgeTvl(api) {
 
   balances.forEach((balance, i) => {
     api.add(tokens[i], balance);
-    console.log('Edge TVL', chain, tokens[i], Number(balance) / 1e6);
-
   });
 
   await api.sumTokens({ owners: pools, tokens: [...new Set(tokens)], chain, block: 'latest' })
@@ -197,7 +193,6 @@ async function sumVaultTvl(api, vaultConfig, logLabel) {
 
   balances.forEach((balance, i) => {
     api.add(tokens[i], balance);
-    console.log(logLabel, chain, tokens[i], Number(balance) / 1e6);
   });
 }
 
