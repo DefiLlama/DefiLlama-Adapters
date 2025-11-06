@@ -70,11 +70,12 @@ async function tvl(api) {
 
   await api.sumTokens({ ownerTokens })
 
-  const chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  const block = api.block ?? 0
+  const chunks = await cachedGraphQuery(`panoptic/v1/${chain}/sfpm-chunks@${block}`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
   chunks.forEach(chunk => {
     const { token0, token1, tick, } = poolData[chunk.pool.id.toLowerCase()] ?? {}
     if (!tick) return;
-    addUniV3LikePosition({ api, token0, token1, tick, liquidity: chunk.netLiquidity, tickUpper: chunk.tickUpper, tickLower: chunk.tickLower, })
+    addUniV3LikePosition({ api, token0, token1, tick: Number(tick), liquidity: Number(chunk.netLiquidity), tickUpper: Number(chunk.tickUpper), tickLower: Number(chunk.tickLower), })
   })
 
   const usdValue = await api.getUSDValue()

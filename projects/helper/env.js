@@ -46,8 +46,8 @@ const DEFAULTS = {
   TAC_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   ABSTRACT_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
   BITCI_RPC_MULTICALL: "0x777238B119cD07e6849b0817f284532DC0F9F8D9",  // bitci multicall3
-  PLASMA_RPC: "https://rpc.plasma.to",
-  PLASMA_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",  // plasma multicall3
+  XONE_RPC: 'https://rpc.xone.org',
+  KASPLEX_RPC: "https://evmrpc.kasplex.org",
 }
 
 const ENV_KEYS = [
@@ -70,6 +70,7 @@ const ENV_KEYS = [
   'SMARDEX_SUBGRAPH_API_KEY',
   'PROXY_AUTH',
   'ALLIUM_API_KEY',
+  'TON_API_KEY',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

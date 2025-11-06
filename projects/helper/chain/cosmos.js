@@ -35,7 +35,7 @@ const endPoints = {
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
-  neutron: "https://rest-kralum.neutron-1.neutron.org",
+  neutron: "https://rest-solara.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://gravity-api.polkachu.com",
   sei: "https://sei-api.polkachu.com",
@@ -70,7 +70,9 @@ const endPoints = {
   embr: 'https://rest-embrmainnet-1.anvil.asia-southeast.initia.xyz', 
   civitia: 'https://rest-civitia-1.anvil.asia-southeast.initia.xyz', 
   echelon_initia: 'https://rest-echelon-1.anvil.asia-southeast.initia.xyz', 
-  inertia: 'https://rest.inrt.fi'
+  inertia: 'https://rest.inrt.fi',
+  union: 'https://rest.union.build',
+  zigchain: 'https://public-zigchain-lcd.numia.xyz'
 };
 
 const chainSubpaths = {

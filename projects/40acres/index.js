@@ -1,11 +1,13 @@
 
-const { getVaultBalance, fortyAcresMapping, baseTokenMapping, veNftMapping, getBorrowed } = require("./helpers");
+const { getVaultBalance, fortyAcresMapping, baseTokenMapping, veNftMapping, getBorrowed , getAvaxTvl,} = require("./helpers");
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 
 
 async function getLockedVeNFTBalance(api) {
-  await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[api.chain], veNft: veNftMapping[api.chain], owner: fortyAcresMapping[api.chain], isAltAbi: api.chain === 'avax' });
-  await api.sumTokens({ owner: fortyAcresMapping[api.chain], tokens: [baseTokenMapping[api.chain]] },)
+  if(api.chain==='avax')
+    await getAvaxTvl(api);
+  else
+    await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[api.chain], veNft: veNftMapping[api.chain], owner:fortyAcresMapping[api.chain][0]});
 }
 
 
