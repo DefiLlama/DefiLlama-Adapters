@@ -1,25 +1,11 @@
-const { getCache, } = require('../helper/http')
-const sdk = require("@defillama/sdk");
-
-async function tvl(_, _1, _2) {
-  const pools = await getCache('https://midgard.ninerealms.com/v2/pools')
-
-  const balances = {}
-
-  pools.map(({ totalCollateral, assetPrice }) => {
-    if (totalCollateral > 0) {
-      sdk.util.sumSingleBalance(balances, 'thorchain', (Number(totalCollateral) / 1e8)* Number(assetPrice))
-    }
-  })
-
-  return balances
-}
-
 module.exports = {
   hallmarks: [
+    // are these 2 in 2021 correct?
     [1626656400, "Protocol paused"],
     [1631754000, "Protocol resumed"],
+    ["2025-01-24", "Protocol paused due to death spiral"],
+    ['2025-02-03', 'Thorfi unwinds'],  // https://medium.com/thorchain/thorfi-unwind-96b46dff72c0 https://thorfi-unwind.vercel.app/
   ],
   timetravel: false,
-  thorchain: { tvl, },
+  thorchain: { tvl: () => ({}), },  // debt is higher than the collateral
 }

@@ -3,7 +3,7 @@ const MOONBEAM_FACTORY = '0x9504d0d43189d208459e15c7f643aac1abe3735d';
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
-  start: 1621220505, //2021-05-17 00:00:00 +UTC
+  start: '2021-05-17', //2021-05-17 00:00:00 +UTC
   misrepresentedTokens: true,
     ethereum: {
     tvl: getUniTVL({

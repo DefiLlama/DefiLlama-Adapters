@@ -8,7 +8,6 @@ async function tvl(api) {
   // const provider = await fuels.Provider.create('https://mainnet.fuel.network/v1/graphql')
   // const contract = new fuels.Contract(contractId, abi, provider)
   // const { value } = await contract.functions.total_assets().get()
-  // console.log(contract.functions, +value)
   return sumTokens({ api, owner: contractId,  })
 }
 

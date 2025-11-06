@@ -32,5 +32,5 @@ module.exports = {
   bsc:{
     tvl: bsc
   },
-  start: 1600185600,    // 09/16/2020 @ 12:00am (UTC+8)
+  start: '2020-09-15',    // 09/16/2020 @ 12:00am (UTC+8)
 };

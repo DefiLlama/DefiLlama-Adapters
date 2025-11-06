@@ -11,6 +11,7 @@ const USDC = ADDRESSES.arbitrum.USDC;
 
 
 module.exports = {
+  deadFrom: "2024-12-14",
   methodology: `Counts fsGLP and USDC deposited to lionDEXVault. Staking counts Lion deposited to stakingPool.`,
   arbitrum: {
     tvl:  sumTokensExport({ owners: [lionDEXVault], tokens: [ fsGLP, USDC]}),

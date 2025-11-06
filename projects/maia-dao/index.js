@@ -25,6 +25,6 @@ async function tvl(api) {
 
 module.exports = {
   metis: {
-    tvl,
+    tvl: () => ({}),
   }
 }

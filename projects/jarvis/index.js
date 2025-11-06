@@ -75,9 +75,11 @@ async function tvl(api) {
     ].map(i => i.toLowerCase())
     const calls = liquidityPools.filter(i => !blacklistedPools.includes(i.toLowerCase()))
     const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls })
-    const totalCollateralAmounts = await api.multiCall({ abi: abi.totalCollateralAmount, calls })
+    const totalCollateralAmounts = await api.multiCall({ abi: abi.totalCollateralAmount, calls, permitFailure: true })
     collateralTokens.forEach((data, i) => {
-      api.add(data, totalCollateralAmounts[i].totalCollateral)
+      const totalCollateralAmount = totalCollateralAmounts[i]
+      if (!totalCollateralAmount) return
+      api.add(data, totalCollateralAmount.totalCollateral)
     })
   } else if (version === 5) {
     // Get balances of every LiquidityPool and SynthToken Contracts

@@ -10,7 +10,7 @@ async function tvl(api) {
       ADDRESSES.fantom.USDC,
       ADDRESSES.fantom.WFTM,
       ADDRESSES.fantom.DAI,
-      "0x321162Cd933E2Be498Cd2267a90534A804051b11",
+      ADDRESSES.fantom.WBTC,
       "0x74b23882a30290451A17c44f4F05243b6b58C76d"
     ]
   })

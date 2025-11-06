@@ -7,7 +7,7 @@ async function tvl(api) {
 module.exports = {
   methodology:
     "TVL is KLAY staked by the users and rewards accrued from node staking",
-  start: 1663585837,
+  start: '2022-09-19',
   klaytn: {
     tvl,
   },

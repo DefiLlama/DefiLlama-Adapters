@@ -1,4 +1,5 @@
 const { cexExports } = require('../helper/cex')
+const bitcoinAddressBook = require('../helper/bitcoin-book/index.js')
 
 const config = {
   ethereum: {
@@ -7,11 +8,7 @@ const config = {
     ],
   },
   bitcoin: {
-    owners: [
-        "bc1qxh9ruwejxz7ztzxejafd74tyxg4sgfeqxun42f",
-        "bc1qhjfnumgcsqsx6grxa7mfl7rr5g3u8xl4gtt7tr",
-        "bc1qkvrddql6hh00apslzsxnysl75hhnm5fpqdah37"
-    ],
+    owners: bitcoinAddressBook.bitunixCex,
   },
   tron: {
     owners: [
@@ -37,7 +34,11 @@ const config = {
         'TVaRQRPJh3MT3AfGLVZuaTdJL8nd176tpB',
         'TXP66hCnRzRP4ZNbQcNSWcBV4C5JnHK51F',
         'TP5UzNzk4tL2Jo6twHavUM9s9NjUPSgrvN',
-        'TJRkfdgdQTSTmfQQzFy8RR6o73eLCEorSH'
+        'TJRkfdgdQTSTmfQQzFy8RR6o73eLCEorSH',
+        'TSuAmGTDB9oowddNqg9Gm2rAmKztF9jhU4',
+        'TKXvBz4TmLMY5o1rirHndusiVT5Lj4i75E',
+        'TTXc32nXdJMTkWakntMLZS88HUUjn1u4Ev',
+        'TKmiqjVG9jvYd9atx5qwhTRdQBf6rETsSg'
     ],
   },
 }

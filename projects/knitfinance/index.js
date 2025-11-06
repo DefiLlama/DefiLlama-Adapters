@@ -1,7 +1,4 @@
 const { get } = require("../helper/http");
-const { toUSDTBalances } = require("../helper/balances");
-const { transformBalances } = require('../helper/portedTokens')
-const sdk = require('@defillama/sdk')
 const url = "https://knit-admin.herokuapp.com/api/public/tvl/";
 
 const chainConfig = {
@@ -53,8 +50,7 @@ module.exports = {
 function addChain(chain) {
   module.exports.deadFrom = "2023-02-01"
   module.exports[chain] = {
-    tvl: async () => {
-      const balances = {}
+    tvl: async (api) => {
       const key = chainConfig[chain];
       const mapping = tokenMapping[chain] || {}
       let response = await get(url + key);
@@ -67,10 +63,9 @@ function addChain(chain) {
             bal /= 10 ** (mapping[token].decimals || 18)
             token = mapping[token].geckoId
           }
-          sdk.util.sumSingleBalance(balances, token, bal)
+          api.add(token, bal)
         }
       }
-      return transformBalances(chain, balances)
     },
   };
 }
