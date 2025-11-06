@@ -4,12 +4,18 @@ const methodologies = require('../helper/methodologies');
 
 const endpoint = 'https://cu.ao-testnet.xyz'
 const controllerId = 'SmmMv0rJwfIDVM3RvY2-P729JFYwhdGSeGo2deynbfY'
-const tickerTransformations = {
-    'qAR': 'arweave',
+const geckoTickerTransformations = {
     'wAR': 'arweave',
     'wUSDC': 'usd-coin',
     'wUSDT': 'tether',
+    'wETH': 'ethereum',
+    'USDA': 'usd-coin',
+    'vAR': 'arweave',
+    'vUSDC': 'usd-coin',
+    'vDAI': 'dai',
+    'vETH': 'ethereum',
 };
+
 
 
 // Access AO on chain data via the node endpoint
@@ -57,7 +63,7 @@ async function getTokenInfos(supportedTokens) {
     const tagsObject = Object.fromEntries(
       infoRes.Messages[0].Tags.map((tag) => [tag.name, tag.value])
     );
-    const ticker = tickerTransformations[balanceObject.ticker] || balanceObject.ticker;
+    const ticker = geckoTickerTransformations[balanceObject.ticker] || balanceObject.ticker;
     
     tokenInfo.push({
       ticker: `coingecko:${ticker}`,
@@ -90,9 +96,10 @@ async function tvl() {
 
 
 async function borrowed() {
+    await new Promise(resolve => setTimeout(resolve, 5000)); // don't trigger both functions at the same time to not overload node
   const supportedTokensRes = await DryRun(controllerId, "Get-Tokens");
-  await new Promise(resolve => setTimeout(resolve, 1000)); // don't overload node
   const supportedTokens = JSON.parse(supportedTokensRes.Messages[0].Data);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // don't overload node
   const tokensInfo = await getTokenInfos(supportedTokens);
   const combinedBalances = {};
   
@@ -104,6 +111,8 @@ async function borrowed() {
       combinedBalances[token.ticker] = token.totalBorrows;
     }
   });
+
+  return combinedBalances
   
 }
 
@@ -113,4 +122,3 @@ module.exports = {
   ao: { tvl, borrowed },
 };
 // node test.js projects/LiquidOps/index.js
-

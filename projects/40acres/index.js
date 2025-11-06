@@ -1,11 +1,13 @@
 
-const { getVaultBalance, fortyAcresMapping, baseTokenMapping, veNftMapping, getBorrowed } = require("./helpers");
+const { getVaultBalance, fortyAcresMapping, baseTokenMapping, veNftMapping, getBorrowed , getAvaxTvl,} = require("./helpers");
 const { unwrapSolidlyVeNft } = require('../helper/unwrapLPs');
 
 
 async function getLockedVeNFTBalance(api) {
-  await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[api.chain], veNft: veNftMapping[api.chain], owner: fortyAcresMapping[api.chain] })
-  await api.sumTokens({ owner: fortyAcresMapping[api.chain], tokens: [baseTokenMapping[api.chain]] },)
+  if(api.chain==='avax')
+    await getAvaxTvl(api);
+  else
+    await unwrapSolidlyVeNft({ api, baseToken: baseTokenMapping[api.chain], veNft: veNftMapping[api.chain], owner:fortyAcresMapping[api.chain][0]});
 }
 
 
@@ -28,4 +30,5 @@ module.exports = {
   methodology: `TVL is comprised of tokens deposited to the protocol as collateral and tokens deposited to the vault for lending. Borrowed tokens are not counted towards TVL.`,
   base: { tvl: tvl, borrowed: borrowed },
   optimism: { tvl: tvl, borrowed: borrowed },
+  avax : { tvl: tvl, borrowed: borrowed }
 }

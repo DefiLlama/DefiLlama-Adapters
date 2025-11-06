@@ -13,7 +13,7 @@ const ethTokens = [
   "0x9Ba021B0a9b958B5E75cE9f6dff97C7eE52cb3E6", // apxETH
   "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6", // pxETH
   ADDRESSES.ethereum.WEETH, // weETH
-  "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110", // ezETH
+  ADDRESSES.linea.rzETH, // ezETH
   "0xC329400492c6ff2438472D4651Ad17389fCb843a", // sym_wstETH
   "0x38B86004842D3FA4596f0b7A0b53DE90745Ab654", // sym_swETH
   "0xB26ff591F44b04E78de18f43B46f8b70C6676984", // sym_cbETH
@@ -44,6 +44,10 @@ const swellchainEulerVaults = [
   '0x10D0D11A8B693F4E3e33d09BBab7D4aFc3C03ef3', // weETH
   '0xf34253Ec3Dd0cb39C29cF5eeb62161FB350A9d14', // swETH
   '0x1773002742A2bCc7666e38454F761CE8fe613DE5', // rswETH
+]
+
+const swellchainEulerBorrows = [
+  '0x0444A8FB38264DC7E594b2acAD1AcBC7276A773c', // WETH Debt
 ]
 
 const swellchainVeloPoolsStaked = [{
@@ -83,6 +87,24 @@ const swellErc20Tvl = async (api) => {
   })
 }
 
+const swellErc20Borrows = async (api) => {
+  const [balances, vaultTokens] = await Promise.all([
+    api.multiCall({
+      abi: 'function balanceOf(address owner) external view returns (uint256)',
+      calls: swellchainEulerBorrows.map(i => ({ target: i, params: earnETHVault}))
+    }),
+    api.multiCall({
+      abi: 'function eVault() external view returns (address)',
+      calls: swellchainEulerBorrows
+    })
+  ]) 
+  
+  // We subtract the euler Borrows
+  // we are pricing euler Borrows as Vault price as Borrow index is always greater than Supply index
+  api.addTokens(vaultTokens, balances.map(i => -i)) 
+  return api.getBalances()
+}
+
 const earnBTCVault = '0x66E47E6957B85Cf62564610B76dD206BB04d831a';
 
 const ethBTCErc20Tvl = async (api) => {
@@ -95,6 +117,7 @@ const ethBTCErc20Tvl = async (api) => {
     '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa', // tBTC
     ADDRESSES.ethereum.LBTC, // LBTC
     '0x7A56E1C57C7475CCf742a1832B028F0456652F97', // solvBTC
+    '0x856ca0217838e9fefefd6141028c85bd423ec54b', // PT-pumpBTC-29May2025
   ]
 
   return sumTokens2({ api, owner: earnBTCVault, tokens: ethTokens, fetchCoValentTokens: true })
@@ -108,7 +131,6 @@ const swellVeloStakedTvl = async (api) => {
       abi: 'function stakedValues(address depositor) external view override returns (uint256[] memory staked)',
       params: earnETHVault,
     })
-    // console.log(l)
     stakedIds = stakedIds.concat(ids)
   }
 
@@ -134,7 +156,12 @@ module.exports = {
   methodology: 'TVL represents the sum of tokens deposited in the vault + LP positions',
   doublecounted: true,
   ethereum: { tvl: sdk.util.sumChainTvls([ethErc20Tvl, ethBTCErc20Tvl]) },
-  swellchain: { tvl: sdk.util.sumChainTvls([swellErc20Tvl, swellBTCErc20Tvl, swellVeloStakedTvl]) },
+  swellchain: { tvl: sdk.util.sumChainTvls([
+    swellErc20Tvl, 
+    swellBTCErc20Tvl, 
+    swellVeloStakedTvl, 
+    swellErc20Borrows
+  ]) },
   // ethereum: { tvl: sdk.util.sumChainTvls([ethTvl]) },
   // swellchain: { tvl: sdk.util.sumChainTvls([swellTvl]) },
 }

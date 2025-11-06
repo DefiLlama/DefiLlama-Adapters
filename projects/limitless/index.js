@@ -45,6 +45,8 @@ query($lastId: String, $block: Int) {
 }
 `
 
+module.exports.deadFrom = '2025-01-01'
+
 Object.keys(config).forEach(chain => {
   const { postionManager, factory, limWETH, marginContract, graphEndpoint, } = config[chain]
 

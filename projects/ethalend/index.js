@@ -49,9 +49,9 @@ async function avaxTvl(_, _block, cb) {
 async function tvl(chain, block, chainId) {
   const balances = {}
   if (chain === 'polygon') {
-    const globalData = (await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 100 })).globalDatas
+    const globalData = (await request(sdk.graph.modifyEndpoint('3fJ6wwsbCeMUrsohMRsmzgzrWwRMWnEac8neYkYQuJaz'), globalDataQuery, { block: block - 500 })).globalDatas
     await Promise.all(globalData.filter(v => v.type === "lending").map(async v => {
-      if (v.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
+      if (v.address.toLowerCase() === ADDRESSES.GAS_TOKEN_2.toLowerCase()) {
         v.address = ADDRESSES.polygon.WMATIC_2
       }
       const decimals = await sdk.api.erc20.decimals(v.address, chain)
@@ -92,7 +92,7 @@ async function tvl(chain, block, chainId) {
 module.exports = {
   polygon: {
     tvl: polygonTvl,
-    staking: staking("0x85e6A965950ACa02fdf680d4b087DdD64DF28a81", "0x59e9261255644c411afdd00bd89162d09d862e38", "polygon", "0x59e9261255644c411afdd00bd89162d09d862e38"),
+    staking: staking("0x85e6A965950ACa02fdf680d4b087DdD64DF28a81", "0x59e9261255644c411afdd00bd89162d09d862e38", "polygon"),
     pool2: pool2("0x2f4de75a8e591cbd4d2c0d3aee7c36fe62a64f79", "0xb417da294ae7c5cbd9176d1a7a0c7d7364ae1c4e", "polygon",
       addr => addr.toLowerCase() === "0x59e9261255644c411afdd00bd89162d09d862e38" ? "0x59e9261255644c411afdd00bd89162d09d862e38" : `polygon:${addr}`)
   },

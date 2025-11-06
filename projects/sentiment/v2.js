@@ -1,3 +1,4 @@
+const { getConfig } = require("../helper/cache");
 const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 
@@ -6,8 +7,16 @@ const PORTFOLIO_LENS_ADDRESS = "0x9700750001dDD7C4542684baC66C64D74fA833c0";
 
 const SUPERPOOLS = [
   {
-    superPool: "0x2831775cb5e64b1d892853893858a261e898fbeb",
-    underlyingAsset: "hyperliquid:" + ADDRESSES.hyperliquid.WHYPE,
+    superPool: "0x2831775cb5e64b1d892853893858a261e898fbeb", // wHYPE superpool
+    underlyingAsset: "hyperliquid:" + ADDRESSES.hyperliquid.WHYPE, // wHYPE
+  },
+  {
+    superPool: "0xe45E7272DA7208C7a137505dFB9491e330BF1a4e", // USDe superpool
+    underlyingAsset: "hyperliquid:" + ADDRESSES.arbitrum.USDe, // USDe
+  },
+  {
+    superPool: "0x34B2B0DE7d288e79bbcfCEe6C2a222dAe25fF88D", // USDT0 superpool
+    underlyingAsset: "hyperliquid:" + ADDRESSES.corn.USDT0, // USDT0
   },
 ];
 
@@ -70,8 +79,8 @@ async function getPositionAddresses() {
     const items = result.data?.positions?.items || [];
     positions.push(...items.map((i) => i.id));
 
-    hasNextPage = result.data?.positions?.pageInfo?.hasNextPage;
-    afterCursor = result.data?.positions?.pageInfo?.endCursor;
+    hasNextPage = result.data.positions.pageInfo.hasNextPage;
+    afterCursor = result.data.positions.pageInfo.endCursor;
   }
 
   return positions;
@@ -98,10 +107,12 @@ async function tvl(api) {
   }
 
   // Collateral TVL
-  const positions = await getPositionAddresses();
+  const positions = await getConfig('sentiment/'+api.chain, null, {
+    fetcher: getPositionAddresses,
+  });
 
   // Batch positions into chunks of 30
-  const BATCH_SIZE = 30;
+  const BATCH_SIZE = 200;
   for (let i = 0; i < positions.length; i += BATCH_SIZE) {
     const positionBatch = positions.slice(i, i + BATCH_SIZE);
 

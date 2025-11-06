@@ -8,7 +8,6 @@ const treasuries = [
   "0x63Fe55B3fe3f74B42840788cFbe6229869590f83",
   "0xdFac83173A96b06C5D6176638124d028269cfCd2"
 ]
-
 const uniBTC = "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568";
 const uniBTC_Genesis_Gauge = "0x1D20671A21112E85b03B00F94Fd760DE0Bef37Ba"
 const fxUSD_stabilityPool = "0x65C9A641afCEB9C0E6034e558A319488FA0FA3be"
@@ -24,19 +23,25 @@ module.exports = {
 };
 
 async function getGaugeTvl(api) {
-  const gauges = await api.fetchList({  lengthAbi: 'n_gauges', itemAbi: 'gauges', target: '0xe60eB8098B34eD775ac44B1ddE864e098C6d7f37'})
+  const gauges = await api.fetchList({ lengthAbi: 'n_gauges', itemAbi: 'gauges', target: '0xe60eB8098B34eD775ac44B1ddE864e098C6d7f37' })
 
   const tokens = await api.multiCall({ abi: 'address:stakingToken', calls: gauges, permitFailure: true })
   const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: gauges, permitFailure: true })
   tokens.forEach((token, i) => {
-    if(token && bals[i])
+    if (token && bals[i])
       api.add(token, bals[i])
   })
 }
 
 async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address:baseToken', calls: treasuries })
-  const tokensAndOwners = [[uniBTC, uniBTC_Genesis_Gauge], [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool], [ADDRESSES.ethereum.WSTETH, FxProtocol_PoolManager], [ADDRESSES.ethereum.WBTC, FxProtocol_PoolManager],["0xc035a7cf15375ce2706766804551791ad035e0c2", FxProtocol_PoolManager_AaveV3Strategy],["0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", FxProtocol_PoolManager_AaveV3Strategy_USDC]
+  const tokensAndOwners = [
+    [uniBTC, uniBTC_Genesis_Gauge],
+    [ADDRESSES.ethereum.USDC, fxUSD_stabilityPool],
+    [ADDRESSES.ethereum.WSTETH, FxProtocol_PoolManager],
+    [ADDRESSES.ethereum.WBTC, FxProtocol_PoolManager],
+    ["0xc035a7cf15375ce2706766804551791ad035e0c2", FxProtocol_PoolManager_AaveV3Strategy],
+    ["0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c", FxProtocol_PoolManager_AaveV3Strategy_USDC],
   ]
   tokens.forEach((v, i) => tokensAndOwners.push([v, treasuries[i]]))
   return api.sumTokens({ tokensAndOwners })
