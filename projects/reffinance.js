@@ -1,18 +1,14 @@
 const { default: BigNumber } = require('bignumber.js')
 const { call, sumSingleBalance, } = require('./helper/chain/near')
 
-
 const PROJECT_CONTRACT = 'v2.ref-finance.near'
 const PROJECT_DCL_CONTRACT = 'dclv2.ref-labs.near'
-const PROJECT_LST_CONTRACT = "lst.rhealab.near";
 
 async function tvl() {
   const balances = {}
   let poolIndex = 0
   const numberOfPools = await call(PROJECT_CONTRACT, 'get_number_of_pools', {})
   const allDclPools = await call(PROJECT_DCL_CONTRACT, 'list_pools', {});
-  const lstSummary = await call(PROJECT_LST_CONTRACT, 'get_summary', {});
-  sumSingleBalance(balances, 'wrap.near', lstSummary.total_staked_near_amount);
   allDclPools.forEach((dclPoolDetail) => {
     const { token_x, token_y, total_order_x, total_order_y, total_x, total_y } = dclPoolDetail;
     sumSingleBalance(balances, token_x, BigNumber(total_order_x).plus(total_x).toFixed());
