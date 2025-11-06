@@ -71,7 +71,6 @@ CHAINS.forEach((chain) => {
       if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
 
       if (chain === 'solana') {
-        console.log(options)
         const balances = await sumTokensExport(options)()
 
         if (Array.isArray(owners) && owners.length) {
