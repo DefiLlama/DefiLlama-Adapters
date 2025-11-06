@@ -5,11 +5,19 @@ const userReserveDataAbi = "function getUserReserveData(address asset, address u
 
 async function tvl(api) {
     const balances = {};
-    
-    for(const vault of config.VAULTS) {
-        await processVault(api, vault, balances);
-    }
+        
+    for(let i = 0; i < config.VAULTS.length; i++) {
+        const vault = config.VAULTS[i];
+        const v1Vault = config.V1_VAULTS[i];
+        const migrationBlock = config.MIGRATION_BLOCKS[i];
 
+        if(!api.block || api.block > migrationBlock) {
+            await processVault(api, vault, balances);
+        } else {
+            await processVault(api, v1Vault, balances);
+        }
+    }
+    
     return balances;
 }
 
@@ -37,8 +45,16 @@ async function processVault(api, vault, balances) {
 async function borrowed(api) {
     const balances = {}
 
-    for(const vault of config.VAULTS) {
-        await processVaultBorrow(api, vault, balances);
+    for(let i = 0; i < config.VAULTS.length; i++) {
+        const vault = config.VAULTS[i];
+        const v1Vault = config.V1_VAULTS[i];
+        const migrationBlock = config.MIGRATION_BLOCKS[i];
+
+        if(!api.block || api.block > migrationBlock) {
+            await processVaultBorrow(api, vault, balances);
+        } else {
+            await processVaultBorrow(api, v1Vault, balances);
+        }
     }
 
     return balances;

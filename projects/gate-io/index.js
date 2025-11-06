@@ -346,14 +346,14 @@ const config = {
       "0xffeb0f61871acdb4838dfc6d5082f063e738e421"
     ]
   },
-  "archway": {
-    "owners": [
-      "archway155svs6sgxe55rnvs6ghprtqu0mh69kehkcnf25",
-      "archway1jm068whkhkxk48gx80ppm2m0nwy677prr4m8ru",
-      "archway1xunyznpjmj9jv5e2zwngp2qrzmulr2ggdna6rp",
-      "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
-    ]
-  },
+  // "archway": {
+  //   "owners": [
+  //     "archway155svs6sgxe55rnvs6ghprtqu0mh69kehkcnf25",
+  //     "archway1jm068whkhkxk48gx80ppm2m0nwy677prr4m8ru",
+  //     "archway1xunyznpjmj9jv5e2zwngp2qrzmulr2ggdna6rp",
+  //     "archway1n5ukn9q2r5vrgt6su0e6cvm5lyxe2cn95hdua6"
+  //   ]
+  // },
   "astar": {
     "owners": [
       "WEo9Gi7T28niGb3pTwcHFDgGW4PjKDQvcS1stTxa68v73nQ",
@@ -1670,7 +1670,8 @@ const config = {
 };
 
 const unsupportedChains = ['aeternity', 'beam', 'binance', 'bitchain', 'bitcoincash', 'bittensor', 'bone', 'callisto', 'chainx', 'clv', 'concordium', 'conflux', 'cmp', 'dash', 'cube', 'defichain', 'edg', 'elastos', 'elys', 'equilibrium', 'evmos', 'filecoin', 'findora', 'flow', 'fusion', 'heiko', 'hydra', 'hyperliquid', 'icon', 'icp', 'interlay', 'kadena', 'karura', 'kava', 'kintsugi', 'kusuma', 'manta_atlantic', 'lisk', 'neo', 'neo3', 'near', 'nibiru', 'nuls', 'ontology', 'oasis', 'parallel', 'pokt', 'polkadex', 'proton', 'reef', 'rvn', 'shiden', 'sora', 'stafi', 'starcoin', 'syscoin', 'stellar', 'telos', 'thorchain', 'velas', 'venom', 'vite', 'waves', 'wax', 'zilliqa', 'secret', 'etn', 'tara', 'zkfair',
-  'vinu', 'rollux', 'syscoin', 'aelf', 'ailayer', 'heco',
+  'vinu', 'rollux', 'syscoin', 'aelf', 'ailayer', 'heco', 'archway',
+  'ton', // never had any tvl
 ]
 
 unsupportedChains.forEach(chain => delete config[chain]);
