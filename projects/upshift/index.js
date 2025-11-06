@@ -39,7 +39,6 @@ const suiVaultsTvl = async () => {
     await axios.get(suiVaultsEndpoint)
   ).data.Vaults;
   for (const vault of Object.values(vaults)) {
-    console.log(vault);
     const vaultTvl = await sui.query({
       target: `${PACKAGE_ID}::vault::get_vault_tvl`,
       contractId: vault.ObjectId,
