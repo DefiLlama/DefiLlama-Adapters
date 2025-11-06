@@ -20,7 +20,7 @@ async function tvl(api) {
   const lbtcBackingInBTC = Number(data.balance) / 1e8
   
   if (balances.bitcoin) {
-    balances.bitcoin = Math.min(balances.bitcoin, lbtcBackingInBTC)
+    balances.bitcoin = balances.bitcoin - lbtcBackingInBTC
   }
 
   return balances
@@ -33,3 +33,7 @@ module.exports = {
   bitcoin: { tvl },
   ethereum: { tvl: sumTokensExport({ owners: ['0x838f0c257ab27856ee9be57f776b186140834b58'], tokens: ['0xfe4ecd930a1282325aef8e946f17c0e25744de45'] })}
 }
+
+module.exports.hallmarks = [
+  [1761782400, 'Lombard has acquired BTC.b'],  //2025-10-30
+]
