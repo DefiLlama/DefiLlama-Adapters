@@ -132,7 +132,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
 
       if (isVtoken) {
-        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool(currentToken === "BNC" ? { "native": currentToken } : { "token": currentToken });
+        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool( { "vToken": currentToken });
         const totalIssuance = await kusamaApi.query.tokens.totalIssuance({ "vToken": currentToken });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
@@ -193,7 +193,7 @@ async function tvl() {
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
       currentToken = isVstoken ? currentToken.slice(2) : currentToken;
       if (isVtoken) {
-        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool(currentToken === "BNC" ? { "native": currentToken } : { "token": currentToken });
+        const tokenPool = await kusamaApi.query.vtokenMinting.tokenPool({ "vToken": currentToken });
         const totalIssuance = await kusamaApi.query.tokens.totalIssuance({ "vToken": currentToken });
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
