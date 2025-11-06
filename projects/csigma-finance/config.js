@@ -75,12 +75,14 @@ const csLYDVaults = {
   ethereum: [
     {
       vault: '0xead9190db1a6a5f4262572845cf75c31e474fd4c',
+      startBlock: 23645911,
       underlyings: [
         'USDC',
       ],
     },
     {
       vault: '0x1922d16cc88cd60499906915b30ec891ceb6e151',
+      startBlock: 23645923,
       underlyings: [
         'USDT',
       ],
