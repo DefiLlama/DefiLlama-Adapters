@@ -256,7 +256,18 @@ module.exports = {
         };
       }
 
-      return await get(url, options);
+      try {
+        return await get(url, options);
+      } catch (error) {
+        // If historical query fails (code 13 - nil pointer), throw descriptive error
+        // This indicates either: (1) the module was not present on-chain at this block height,
+        // or (2) historical state has been pruned (varies by module)
+        const errorStr = error.message || error.toString() || '';
+        if (errorStr.includes('code 13') || errorStr.includes('nil pointer')) {
+          throw new Error(`Historical data unavailable for block height ${height}. The module may not have been present on-chain at this block height, or historical state may have been pruned (varies by module).`);
+        }
+        throw error;
+      }
     }
 
     // Use cache key that includes block height for historical queries
@@ -274,10 +285,6 @@ module.exports = {
               url += `?pagination.key=${encodeURIComponent(nextKey)}`;
             }
             const data = await apiRequest(url, blockHeight);
-            if (!data) {
-              // Historical state not available, return empty array
-              return [];
-            }
             if (data.zenbtc_wallets && Array.isArray(data.zenbtc_wallets)) {
               for (const walletGroup of data.zenbtc_wallets) {
                 if (walletGroup.wallets && Array.isArray(walletGroup.wallets)) {
@@ -302,16 +309,9 @@ module.exports = {
           const changeAddresses = [];
 
           const paramsData = await apiRequest(ZENBTC_PARAMS_API, blockHeight);
-          if (!paramsData) {
-            // Historical state not available, return empty array
-            return [];
-          }
           const changeAddressKeyIDs = paramsData.params?.changeAddressKeyIDs || [];
           for (const keyID of changeAddressKeyIDs) {
             const keyData = await apiRequest(`${ZRCHAIN_KEY_BY_ID_API}/${keyID}/WALLET_TYPE_BTC_MAINNET/`, blockHeight);
-            if (!keyData) {
-              continue; // Skip this key if historical state not available
-            }
             if (keyData.wallets && Array.isArray(keyData.wallets)) {
               for (const wallet of keyData.wallets) {
                 if (wallet.type === 'WALLET_TYPE_BTC_MAINNET' && wallet.address) {

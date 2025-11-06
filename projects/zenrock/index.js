@@ -15,7 +15,7 @@ const blockHeightCache = new Map();
 async function timestampToBlockHeight(timestamp) {
   // Ensure timestamp is not before chain launch
   if (timestamp < GENESIS_TIMESTAMP) {
-    return 1; // Return genesis block height
+    throw new Error(`Timestamp ${timestamp} is before chain genesis (${GENESIS_TIMESTAMP})`);
   }
 
   // Check cache first (cache by day to reduce API calls)
@@ -101,11 +101,12 @@ async function apiRequest(url, blockHeight = null) {
   try {
     return await get(url, options);
   } catch (error) {
-    // If historical query fails (code 13 - nil pointer), return null
-    // This indicates historical state is not available
+    // If historical query fails (code 13 - nil pointer), throw descriptive error
+    // This indicates either: (1) the module was not present on-chain at this block height,
+    // or (2) historical state has been pruned (varies by module - DCT was launched on 2025-10-31)
     const errorStr = error.message || error.toString() || '';
     if (errorStr.includes('code 13') || errorStr.includes('nil pointer')) {
-      return null;
+      throw new Error(`Historical data unavailable for block height ${blockHeight}. The module may not have been present on-chain at this block height, or historical state may have been pruned (varies by module).`);
     }
     throw error;
   }
@@ -153,11 +154,6 @@ async function zcashTvl(api) {
 
   // Fetch custodied amount from DCT supply endpoint with height header
   const supplyData = await apiRequest(`${ZRCHAIN_API}/dct/supply`, blockHeight);
-
-  // If historical query failed (state not available), return empty balances
-  if (!supplyData) {
-    return balances;
-  }
 
   // Find ASSET_ZENZEC in supplies array
   const zenZecSupply = supplyData.supplies?.find(
