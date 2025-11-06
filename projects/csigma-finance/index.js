@@ -120,8 +120,10 @@ async function institutionalTvl(api) {
   })
 
   Object.keys(totalInvestments).forEach(token => {
-    const remainingBalance = totalInvestments[token] - totalPrincipalPaid[token];
+    const remainingBalance = totalInvestments[token] - (totalPrincipalPaid[token] || 0n);
     api.add(token, remainingBalance);
+    console.log('INST TVL', chain, token, Number(remainingBalance) / 1e6);
+
   });
 }
 
@@ -142,6 +144,7 @@ async function edgeTvl(api) {
     fromBlock: startBlock,
   })
   const pools = logs.map(log => log[0]);
+  const fundManagers = logs.map(log => log[2]);
 
   const tokens = await Promise.all(pools.map(async pool => {
     const poolToken = await api.call({
@@ -150,30 +153,66 @@ async function edgeTvl(api) {
     });
     return poolToken
   }));
+
+  const balances = await api.multiCall({
+    abi: 'function balanceOf(address) view returns (uint256)',
+    calls: fundManagers.map((fundManager, i) => ({
+      target: tokens[i],
+      params: [fundManager]
+    }))
+  });
+
+  balances.forEach((balance, i) => {
+    api.add(tokens[i], balance);
+    console.log('Edge TVL', chain, tokens[i], Number(balance) / 1e6);
+
+  });
+
   await api.sumTokens({ owners: pools, tokens: [...new Set(tokens)], chain, block: 'latest' })
 }
 
-async function csUsdTvl(api) {
+async function sumVaultTvl(api, vaultConfig, logLabel) {
   const chain = api.chain;
-  const cfg = csUSDVaults && csUSDVaults[chain];
+  const cfg = vaultConfig && vaultConfig[chain];
   if (!cfg) return;
-  const owners = cfg.map(v => v.vault).filter(Boolean);
-  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings.map(t => ADDRESSES[chain][t] || t) : []).filter(Boolean);
-  if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
+
+  const calls = [];
+  const tokens = [];
+  cfg.forEach(vaultInfo => {
+    const owner = vaultInfo.vault;
+    if (!owner) return;
+    const underlyings = (Array.isArray(vaultInfo.underlyings) ? vaultInfo.underlyings.map(t => ADDRESSES[chain][t] || t) : []).filter(Boolean);
+    underlyings.forEach(token => {
+      calls.push({ target: token, params: [owner] });
+      tokens.push(token);
+    });
+  });
+
+  if (calls.length === 0) return;
+
+  const balances = await api.multiCall({
+    abi: 'function balanceOf(address) view returns (uint256)',
+    calls,
+  });
+
+  balances.forEach((balance, i) => {
+    api.add(tokens[i], balance);
+    console.log(logLabel, chain, tokens[i], Number(balance) / 1e6);
+  });
 }
+
+async function csUSDTvl(api) {
+  return sumVaultTvl(api, csUSDVaults, 'csUSD TVL');
+}
+
 async function csLYDTvl(api) {
-  const chain = api.chain;
-  const cfg = csLYDVaults && csLYDVaults[chain];
-  if (!cfg) return;
-  const owners = cfg.map(v => v.vault).filter(Boolean);
-  const tokens = cfg.flatMap(v => Array.isArray(v.underlyings) ? v.underlyings.map(t => ADDRESSES[chain][t] || t) : []).filter(Boolean);
-  if (owners.length && tokens.length) await api.sumTokens({ owners, tokens, chain, block: 'latest' });
+  return sumVaultTvl(api, csLYDVaults, 'csLYD TVL');
 }
 
 async function getTvl(api) {
   await institutionalTvl(api);
   await edgeTvl(api);
-  await csUsdTvl(api);
+  await csUSDTvl(api);
   await csLYDTvl(api);
   const chain = api.chain;
   if (chain === 'arbitrum') {
@@ -187,5 +226,5 @@ module.exports = {
   'ethereum': { tvl: getTvl },
   'base': { tvl: getTvl },
   'hedera': { tvl: getTvl },
-  methodology: `The TVL of Csigma Finance is calculated by querying smart contracts on Ethereum, Arbitrum, and Base. It includes the total investments in institutional pools, balances in Edge pools, and private debt network investments (on Arbitrum) while subtracting repayments. Token balances (USDT/USDC) are fetched on-chain, and the final TVL is derived by summing these values.`,
+  methodology: `The TVL of Csigma Finance is calculated by querying smart contracts on Ethereum, Arbitrum, and Base. It includes the total investments in institutional pools, balances in Edge pools, and private debt network investments (on Arbitrum) while subtracting repayments. Token balances (USDT/USDC) are fetched on-chain, and the final TVL is derived by summing these values. The TVL also includes the value of our yield-bearing tokens, csUSD and csLYD.`,
 }
