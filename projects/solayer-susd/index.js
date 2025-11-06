@@ -5,7 +5,7 @@ async function tvl() {
     // Sum up assets in sUSD pool
     return sumTokens2({
         tokensAndOwners: [
-          ['4MmJVdwYN8LwvbGeCowYjSx7KoEi6BJWg8XXnW4fDDp6', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'],
+          ['BnANu5CtUogLqcvBNByJuwaRvRxNtVuDcAytwjsUUtqs', 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'],
           [ADDRESSES.solana.USDC, 'FhVcYNEe58SMtxpZGnTu2kpYJrTu2vwCZDGpPLqbd2yG'],
         ]
     })

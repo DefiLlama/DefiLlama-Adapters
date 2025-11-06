@@ -201,7 +201,6 @@ async function fetchAllTokens(subgraph, query, block, type) {
   const isKashi = type === 'kashi';
   const key = isKashi ? 'kashiPairs' : 'tokens';
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const result = await request(subgraph, query, { id: lastId, block });
     const tokens = result[key] || [];

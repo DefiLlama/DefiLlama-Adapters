@@ -170,6 +170,17 @@ async function getCuratorTvlSymbioticVault(api, vaults) {
   api.add(assets, totalStakes.map(v => v || 0))
 }
 
+async function getNested4626Vaults(api, vaults) {
+  const vaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaults, permitFailure: true })
+  const nestedVaultAsset = await api.multiCall({ abi: ABI.ERC4626.asset, calls: vaultAsset, permitFailure: true })
+  const totalAssets = await api.multiCall({ abi: ABI.ERC4626.totalAssets, calls: vaults, permitFailure: true })
+  for (let i = 0; i < vaults.length; i++) {
+    const resolvedAsset = nestedVaultAsset[i] || vaultAsset[i]
+    if (!resolvedAsset) continue
+    api.add(resolvedAsset, totalAssets[i])
+  }
+}
+
 async function getCuratorTvl(api, vaults) {
   const allVaults = {
     morpho: vaults.morpho ? vaults.morpho : [],
@@ -225,6 +236,11 @@ async function getCuratorTvl(api, vaults) {
   // custom ERC4626 vaults {
   if (vaults.erc4626) {
     await getCuratorTvlErc4626(api, vaults.erc4626)
+  }
+
+  // nested 4626 vaults
+  if (vaults.nestedVaults) {
+    await getNested4626Vaults(api, vaults.nestedVaults)
   }
 }
 

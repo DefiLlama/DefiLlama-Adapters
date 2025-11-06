@@ -1,4 +1,4 @@
-const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey, DRIFT_VAULT_PROGRAM_ID, VOLTR_PROGRAM_ID } = require("./spotMarkets");
+const { getTokenMintFromMarketIndex, processSpotPosition, processPerpPosition, getPerpTokenMintFromMarketIndex, getVaultPublicKey, DRIFT_VAULT_PROGRAM_ID, VOLTR_PROGRAM_ID, CUSTOM_PROGRAM_ID } = require("./spotMarkets");
 const { deserializeUserPositions, fetchVaultUserAddressesWithOffset, fetchVaultAddresses, fetchPositionAddresses} = require("./helpers");
 const { getPerpMarketFundingRates } = require("./spotMarkets");
 const { getMultipleAccounts, getProvider, getAssociatedTokenAddress, sumTokens2} = require('../helper/solana');
@@ -38,7 +38,7 @@ module.exports = {
 async function tvl(api) {
 
   const vaultAddresses = await fetchVaultAddresses();
-  const driftVaultAddresses = vaultAddresses.filter(vault => vault.programId === DRIFT_VAULT_PROGRAM_ID.toBase58());
+  const driftVaultAddresses = vaultAddresses.filter(vault => [DRIFT_VAULT_PROGRAM_ID.toBase58(), CUSTOM_PROGRAM_ID.toBase58()].includes(vault.programId) );
   const voltrVaultAddresses = vaultAddresses.filter(vault => vault.programId === VOLTR_PROGRAM_ID.toBase58());
 
   const { vaultUserAddresses, } = await fetchVaultUserAddressesWithOffset(driftVaultAddresses, 168);
