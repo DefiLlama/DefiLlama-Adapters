@@ -39,6 +39,9 @@ async function withRetry(fn, maxAttempts = MAX_RETRY_ATTEMPTS, delayMs = RETRY_D
       return await fn()
     } catch (error) {
       lastError = error
+      if (error.message && error.message.includes('does not exist')) {
+        throw error
+      }
       if (attempt === maxAttempts) throw lastError
       console.log(`Attempt ${attempt} failed, retrying in ${delayMs}ms: ${error.message}`)
       await sleep(delayMs)
@@ -205,10 +208,11 @@ async function fetchDeploymentsFromContract(registryContract) {
 }
 
 async function processMarket(marketContract) {
-  const [snapshotRaw, configurationRaw] = await Promise.all([
-    safeCall(marketContract, 'get_current_snapshot', {}),
-    safeCall(marketContract, 'get_configuration', {}),
-  ])
+  try {
+    const [snapshotRaw, configurationRaw] = await Promise.all([
+      safeCall(marketContract, 'get_current_snapshot', {}),
+      safeCall(marketContract, 'get_configuration', {}),
+    ])
 
   const snapshot = coerceAndValidateSnapshot(snapshotRaw)
   const configuration = configurationRaw
@@ -234,14 +238,21 @@ async function processMarket(marketContract) {
     .plus(borrow_asset_deposited_incoming)
     .minus(borrow_asset_borrowed)
 
-  return {
-    borrowAssetToken,
-    collateralAssetToken,
-    availableLiquidity,
-    totalBorrowed: borrow_asset_borrowed,
-    totalCollateral: collateral_asset_deposited,
-    borrowDecimals,
-    collateralDecimals,
+    return {
+      borrowAssetToken,
+      collateralAssetToken,
+      availableLiquidity,
+      totalBorrowed: borrow_asset_borrowed,
+      totalCollateral: collateral_asset_deposited,
+      borrowDecimals,
+      collateralDecimals,
+    }
+  } catch (error) {
+    if (error.message && error.message.includes('does not exist')) {
+      console.log(`Market ${marketContract} has been deleted, skipping...`)
+      return null
+    }
+    throw error
   }
 }
 
@@ -258,6 +269,9 @@ async function tvl() {
 
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
+      if (result.value === null) {
+        return
+      }
       const { borrowAssetToken, collateralAssetToken, availableLiquidity, totalCollateral, borrowDecimals, collateralDecimals } = result.value
       sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(availableLiquidity, borrowAssetToken, borrowDecimals))
       sumSingleBalance(balances, collateralAssetToken, scaleTokenAmount(totalCollateral, collateralAssetToken, collateralDecimals))
@@ -282,6 +296,9 @@ async function borrowed() {
 
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
+      if (result.value === null) {
+        return
+      }
       const { borrowAssetToken, totalBorrowed, borrowDecimals } = result.value
       sumSingleBalance(balances, borrowAssetToken, scaleTokenAmount(totalBorrowed, borrowAssetToken, borrowDecimals))
     } else {
