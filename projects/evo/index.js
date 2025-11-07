@@ -32,17 +32,12 @@ const getPoolIds = async chain => {
  * @returns {Promise<Object|null>} - Pool data or null if error
  */
 const getPoolData = async (poolId, chain) => {
-  try {
-    const result = await invokeViewFunction(
-      GET_POOL_VIEW_FUNCTION,
-      [],
-      [poolId]
-    );
-    return result[0];
-  } catch (error) {
-    console.error(`Error fetching data for pool ${poolId}: ${error.message}`);
-    return null;
-  }
+  const result = await invokeViewFunction(
+    GET_POOL_VIEW_FUNCTION,
+    [],
+    [poolId]
+  );
+  return result[0];
 };
 
 module.exports = {
@@ -51,24 +46,18 @@ module.exports = {
   supra: {
     tvl: async api => {
       const poolIds = await getPoolIds(api.chain);
-      console.log("poolIds: ", poolIds)
       // Process pools in parallel for better performance
       const poolDataPromises = poolIds.map(id => getPoolData(id, api.chain));
       const poolsData = await Promise.all(poolDataPromises);
 
-      console.log("poolsData: ", poolsData)
-
       // Add token reserves to TVL
       poolsData.forEach(pool => {
         if (pool) {
-          console.log('Adding token:', pool.token_0, 'with reserve:', pool.token_0_reserve);
           api.add(pool.token_0, pool.token_0_reserve);
-          console.log('Adding token:', pool.token_1, 'with reserve:', pool.token_1_reserve);
           api.add(pool.token_1, pool.token_1_reserve);
         }
       });
 
-      console.log('Final balances:', api.getBalances());
     }
   }
 };

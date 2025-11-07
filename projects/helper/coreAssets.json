@@ -2527,6 +2527,7 @@
   },
   "supra": {
     "SUPRA": "0x1::supra_coin::SupraCoin",
+    "SUPRA_1": "0xa",
     "dexUSDC": "0x8f7d16ade319b0fce368ca6cdb98589c4527ce7f5b51e544a9e68e719934458b::hyper_coin::DexlynUSDC"
   },
   "prom": {
