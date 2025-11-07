@@ -1,16 +1,18 @@
-const sAMLP_arbitrum = '0xbC08F30c18a79a3a18dBbd40931C551F91EDB9dB'
-const sAHLP_arbitrum = '0x50c30f24b957B1ac9e31558e55Bf7dc4ab685eA9'
+const config = require('./config.json')
 
 module.exports = {
-  methodology: 'counts the number of sAMLP and sAHLP tokens in the contract.',
+  methodology: 'counts the number of AMLP and AHLP tokens in the staking contracts.',
   arbitrum: {
     tvl: async (api) => {
-      const [sAMLP_supply, sAHLP_supply] = await api.multiCall({
-        abi: 'erc20:totalSupply',
-        calls: [sAMLP_arbitrum, sAHLP_arbitrum]
+      const [amlp_staker_balance, ahlp_staker_balance] = await api.multiCall({
+        abi: 'erc20:balanceOf',
+        calls: [
+          { target: config.arbitrum.AMLP.token, params: [config.arbitrum.AMLP.staker] },
+          { target: config.arbitrum.AHLP.token, params: [config.arbitrum.AHLP.staker] }
+        ]
       })
-      api.add(sAMLP_arbitrum, sAMLP_supply)
-      api.add(sAHLP_arbitrum, sAHLP_supply)
+      api.add(config.arbitrum.AMLP.token, amlp_staker_balance)
+      api.add(config.arbitrum.AHLP.token, ahlp_staker_balance)
     }
   }
 }
