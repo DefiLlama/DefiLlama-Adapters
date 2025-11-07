@@ -203,6 +203,7 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
   computeTokenAccount = false,
+  includeStakedSol = false,
   chain = 'solana',
 }) {
 
@@ -210,6 +211,16 @@ async function sumTokens2({
   if (!balances) {
     if (api) balances = api.getBalances()
     else balances = {}
+  }
+
+  if (includeStakedSol) {
+    let stakeOwners = solOwners.length ? solOwners : owners.length ? owners : owner ? [owner] : []
+    stakeOwners = getUniqueAddresses(stakeOwners, chain)
+    for (const so of stakeOwners) {
+      const staked = await getStakedSol(so)
+      await sleep(2000)
+      sdk.util.sumSingleBalance(balances, `solana:${ADDRESSES.solana.SOL}`, staked)
+    }
   }
 
   const endpoint = getEndpoint(chain)
