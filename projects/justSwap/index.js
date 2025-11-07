@@ -35,7 +35,7 @@ async function tvl(api) {
   }
 
   const multicallContract = 'TEazPvZwDjDtFeJupyo7QunvnrnUjPH8ED'
-  const chunks = sliceIntoChunks(allPairs, 100)
+  const chunks = sliceIntoChunks(allPairs, 500)
 
   const chunkCount = chunks.length
   console.log(`Processing ${chunkCount} chunks of calls to get TRX balance`)
