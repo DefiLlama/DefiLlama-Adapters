@@ -45,3 +45,25 @@ The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain c
 
 ## Adapter rules
 - Never add extra npm packages, if you need a chain-level package for your chain, ask us, and we'll consider it, but we can't accept any npm package that is project-specific
+
+## Pegged Asset Adapters
+
+This repository contains example pegged asset adapters for reference. These adapters are meant for the separate [peggedassets-server](https://github.com/DefiLlama/peggedassets-server) repository.
+
+### chUSD Pegged Asset Adapter
+
+Example adapters for chUSD (Chateau's synthetic dollar) on Plasma chain are available:
+- **Shorthand version**: [chusd-pegged-adapter-shorthand.ts](chusd-pegged-adapter-shorthand.ts) - Recommended, uses helper functions
+- **Full version**: [chusd-pegged-adapter.ts](chusd-pegged-adapter.ts) - Vanilla implementation with explicit code
+
+**Contract Details:**
+- Chain: Plasma (chainId: 9745)
+- chUSD Contract: `0x22222215d4edc5510d23d0886133e7ece7f5fdc1`
+- Peg Type: `peggedUSD`
+- Decimals: 18
+
+To use these adapters in peggedassets-server:
+1. Create folder `src/adapters/peggedAssets/chusd/`
+2. Copy adapter content to `src/adapters/peggedAssets/chusd/index.ts`
+3. Import and export in `src/adapters/peggedAssets/index.ts`
+4. Test with: `npx ts-node test chusd/index peggedUSD`
