@@ -27,7 +27,6 @@ async function solanaTVL(api) {
     'BRNTNaZeTJANz9PeuD8drNbBHwGgg7ZTjiQYrFgWQ48p', // tesouro
     'USTRYnGgcHAhdWsanv8BG6vHGd4p7UGgoB9NRd8ei7j'  // ustry
   ];
-
   await getTokenSupplies(mints, api);  
 
 }
