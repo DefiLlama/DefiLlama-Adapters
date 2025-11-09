@@ -1,9 +1,7 @@
-const sdk = require('@defillama/sdk')
 const { sumTokensExport } = require('../helper/sumTokens')
 const ADDRESSES = require('../helper/coreAssets.json')
 const { defaultTokens } = require('../helper/cex')
 const { getConfig } = require('../helper/cache.js')
-const { getStakedSol } = require('../helper/solana')
 
 const API_URL = 'https://api.backpack.exchange/api/v1/wallets'
 
@@ -66,28 +64,15 @@ CHAINS.forEach((chain) => {
       }
 
       const options = { ...entry, owners, tokens, chain, blacklistedTokens }
-      if (chain === 'solana' || chain === 'eclipse') options.solOwners = owners
-      if (chain === 'ton') options.onlyWhitelistedTokens = true
-      if (chain === 'aptos' && Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
 
-      if (chain === 'solana') {
-        const balances = await sumTokensExport(options)()
-
-        if (Array.isArray(owners) && owners.length) {
-          const uniqOwners = [...new Set(owners)]
-          const BATCH = 50
-          let totalStaked = 0
-          for (let i = 0; i < uniqOwners.length; i += BATCH) {
-            const chunk = uniqOwners.slice(i, i + BATCH)
-            const parts = await Promise.all(chunk.map(addr => getStakedSol(addr)))
-            totalStaked += parts.reduce((a, b) => a + b, 0)
-          }
-          sdk.util.sumSingleBalance(balances, `solana:${ADDRESSES.solana.SOL}`, totalStaked)
-        }
-
-        return balances
+      switch (chain) {
+        case 'solana': options.includeStakedSol = true
+        case 'eclipse': options.solOwners = owners; break
+        case 'ton': options.onlyWhitelistedTokens = true; break
+        case 'aptos':
+          if (Array.isArray(fungibleAssets)) options.fungibleAssets = fungibleAssets
+          break
       }
-
       return sumTokensExport(options)()
     }
   }
