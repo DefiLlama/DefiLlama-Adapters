@@ -27,7 +27,7 @@ async function solanaTVL(api) {
     'USTRYnGgcHAhdWsanv8BG6vHGd4p7UGgoB9NRd8ei7j'  // ustry
   ];
 
-  await getTokenSupplies(mints, api);  // ← NOW ALL 5
+  await getTokenSupplies(mints, api);  
 
 }
 
