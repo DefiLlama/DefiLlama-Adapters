@@ -46,7 +46,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       let supplies
-      if (chain === 'starknet')
+     if (chain === 'starknet')
         supplies = await multiCall({ abi: totalSupplyAbi, calls: assets })
       else
         supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: assets })
