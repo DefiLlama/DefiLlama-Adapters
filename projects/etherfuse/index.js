@@ -37,7 +37,6 @@ module.exports = {
   } 
    }
 
-
 Object.keys(config).forEach(chain => {
   const assets = config[chain];
   module.exports[chain] = {
