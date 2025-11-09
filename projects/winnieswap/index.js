@@ -21,7 +21,7 @@ const { uniV3Export } = require('../helper/uniswapV3');
 const { mergeExports } = require('../helper/utils')
 
 const uniExports = uniV3Export({
-  berachain: { factory: '0x76fD9D07d5e4D889CAbED96884F15f7ebdcd6B63', fromBlock: 7402487 },
+  berachain: { factory: '0x76fD9D07d5e4D889CAbED96884F15f7ebdcd6B63', fromBlock: 2500000 },
 })
 
 module.exports = mergeExports([{
