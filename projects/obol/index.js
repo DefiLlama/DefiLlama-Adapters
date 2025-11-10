@@ -49,5 +49,6 @@ const staking = async (api) => {
 }
 
 module.exports = {
+  methodology: "Total value of ETH staked on Obol's Distributed Validators",
   ethereum : { tvl, staking }
 }
