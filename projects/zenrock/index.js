@@ -124,8 +124,7 @@ async function tvl(api) {
   }
 
   // Fetch all protocol addresses (treasury + change) from the bitcoin-book fetcher
-  // Pass blockHeight for historical queries
-  const allAddresses = await zenrock(blockHeight);
+  const allAddresses = await zenrock();
 
   if (allAddresses.length === 0) {
     return { bitcoin: '0' };
