@@ -9,4 +9,14 @@ module.exports = [
   '1FhncfokiSDagazXbuVqKQ6ew4oyDmAzhG',
   '1FLKsCiEsABS7LysfDA8R181TQ6eLjoxPv',
   '1L1SN3BxXaXEAzzGcWqjF9svxmN6F2mBoR',
+  'bc1p6xexk4fmuzafc9ryflmn4ssfgtap0j3p0zrueyagfqnwfqc60mhsjrm0pd',
+  'bc1p7p0re55adj45dacj83h2jyfz2ka0ghlph7ud8klgq0nc7c2a0d6sx3tcyv',
+  'bc1p9tw7swmqtfpe8gj7llhvuun86esqs0va9wepwsljva00s8cu25fq3tr775',
+  'bc1pfc7mc6repcxhn3pqnlpvwpz377r3va8c6jglh5c4kgu779plddmss3jn55',
+  'bc1pg6t68yfcum3d2pp98h3h7sypra2yml03sa00hl7eqxe9zu6z48aqmq8t0s',
+  'bc1pjkxsx5sr9g6y2psjv680l40kewhf8xpnal96k9cncxgst7806kzqwxq9n4',
+  'bc1psd5djk3g7u69upaww2ds44dcs7rlnht4k8yz7xv9wlk3j5sfjz2qg7hc2n',
+  'bc1puglknm7e2hk5gdnu9rjx022g7rwc7xwegwdrgwspl07q55p6a3wq4y0rsj',
+  'bc1puk7pamvpvy5g4ccw8l0dl368jf5apauu384036yud9n2waq2xqysz0g6w3',
+  'bc1puszzma9qklx7nmv7qp7fgztdf6yvg7z35tljggrhmw4rksuu2l9qsthslc'
 ]
