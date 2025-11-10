@@ -4,13 +4,21 @@
     "description": "DeFi Llama TVL adapter for 0xRoulette protocol on Solana",
     "main": "index.js",
     "scripts": {
-      "test": "node index.js"
+      "test": "node ../../../test.js projects/0xroulette"
     },
     "dependencies": {
-      "@solana/web3.js": "^1.87.0",
+      "@defillama/sdk": "^4.60.0",
+      "@solana/web3.js": "^1.91.4",
       "@solana/buffer-layout": "^4.0.1",
       "@solana/buffer-layout-utils": "^0.2.0"
     },
-    "keywords": ["defi", "solana", "tvl", "roulette"],
+    "keywords": [
+      "defi",
+      "solana",
+      "tvl",
+      "roulette",
+      "defillama"
+    ],
+    "author": "0xRoulette Team",
     "license": "MIT"
   }
