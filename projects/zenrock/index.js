@@ -153,20 +153,27 @@ async function zcashTvl(api) {
   }
 
   // Fetch custodied amount from DCT supply endpoint with height header
-  const supplyData = await apiRequest(`${ZRCHAIN_API}/dct/supply`, blockHeight);
+  try {
+    const supplyData = await apiRequest(`${ZRCHAIN_API}/dct/supply`, blockHeight);
 
-  // Find ASSET_ZENZEC in supplies array
-  const zenZecSupply = supplyData.supplies?.find(
-    item => item.supply?.asset === 'ASSET_ZENZEC'
-  );
+    // Find ASSET_ZENZEC in supplies array
+    const zenZecSupply = supplyData.supplies?.find(
+      item => item.supply?.asset === 'ASSET_ZENZEC'
+    );
 
-  if (zenZecSupply && zenZecSupply.supply?.custodied_amount) {
-    // custodied_amount is in Zatoshi (smallest unit, like satoshis for BTC)
-    // Convert to ZEC by dividing by 1e8
-    const custodiedAmount = Number(zenZecSupply.supply.custodied_amount);
-    const custodiedZEC = custodiedAmount / 1e8;
+    if (zenZecSupply && zenZecSupply.supply?.custodied_amount) {
+      // custodied_amount is in Zatoshi (smallest unit, like satoshis for BTC)
+      // Convert to ZEC by dividing by 1e8
+      const custodiedAmount = Number(zenZecSupply.supply.custodied_amount);
+      const custodiedZEC = custodiedAmount / 1e8;
 
-    sdk.util.sumSingleBalance(balances, 'zcash', custodiedZEC);
+      sdk.util.sumSingleBalance(balances, 'zcash', custodiedZEC);
+    }
+  } catch (error) {
+    // If DCT supply API fails, return 0 supply instead of erroring
+    // This can happen for historical queries when the module wasn't present
+    // or when historical state has been pruned
+    // balances object is already initialized as empty, so returning it means 0 supply
   }
 
   return balances;
