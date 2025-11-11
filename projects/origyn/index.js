@@ -1,7 +1,7 @@
 const { toUSDTBalances } = require("../helper/balances");
 const { get } = require('../helper/http')
 
-async function staking() {
+async function staking(api) {
   // Get the total supply in OGY
   // Ref: https://github.com/ORIGYN-SA/origyn-sns/blob/master/backend/canisters/token_metrics/impl/src/queries/http_request.rs#L40
   const totalSupplyUrl = 'https://juolv-3yaaa-aaaal-ajc6a-cai.raw.icp0.io/total-supply';
@@ -13,15 +13,15 @@ async function staking() {
   const circulatingSupply = await get(circulatingSupplyUrl);
   
   // Get the OGY/USDT market price
-  const ogyPriceUrl = 'https://api.origyn.com/ogy/price';
-  const ogyPriceData = await get(ogyPriceUrl);
-  const ogyUsdt = ogyPriceData.ogyPrice;
+  // const ogyPriceUrl = 'https://api.origyn.com/ogy/price';
+  // const ogyPriceData = await get(ogyPriceUrl);
+  // const ogyUsdt = ogyPriceData.ogyPrice;
 
   // The token value locked is the locked supply
   // total supply - circulating supply
-  const tokenTvl = (totalSupply - circulatingSupply) * ogyUsdt;
+  const tokenTvl = (totalSupply - circulatingSupply);
 
-  return toUSDTBalances(tokenTvl);
+  api.addCGToken('origyn-foundation', tokenTvl)
 }
 
 async function tvl() {
@@ -38,8 +38,5 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "TVL the total locked value of staked tokens and the total asset value of ORIGYN certificates.",
-  icp: {
-    tvl,
-    staking,
-  },
+  icp: { tvl, staking },
 }
