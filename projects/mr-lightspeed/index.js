@@ -20,7 +20,7 @@ module.exports = {
   timetravel: true,
   start: '2025-10-23',
   methodology: 'TVL counts ETH collateral locked in protocol-owned Uniswap v4 positions.',
-  doublecounted: false,
+  doublecounted: true,
   base: {
     tvl,
   },
