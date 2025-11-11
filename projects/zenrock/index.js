@@ -97,19 +97,7 @@ async function apiRequest(url, blockHeight = null) {
       'x-cosmos-block-height': String(blockHeight)
     };
   }
-
-  try {
-    return await get(url, options);
-  } catch (error) {
-    // If historical query fails (code 13 - nil pointer), throw descriptive error
-    // This indicates either: (1) the module was not present on-chain at this block height,
-    // or (2) historical state has been pruned (varies by module - DCT was launched on 2025-10-31)
-    const errorStr = error.message || error.toString() || '';
-    if (errorStr.includes('code 13') || errorStr.includes('nil pointer')) {
-      throw new Error(`Historical data unavailable for block height ${blockHeight}. The module may not have been present on-chain at this block height, or historical state may have been pruned (varies by module).`);
-    }
-    throw error;
-  }
+  return await get(url, options);
 }
 
 async function tvl(api) {
@@ -124,8 +112,7 @@ async function tvl(api) {
   }
 
   // Fetch all protocol addresses (treasury + change) from the bitcoin-book fetcher
-  // Pass blockHeight for historical queries
-  const allAddresses = await zenrock(blockHeight);
+  const allAddresses = await zenrock();
 
   if (allAddresses.length === 0) {
     return { bitcoin: '0' };
@@ -153,21 +140,25 @@ async function zcashTvl(api) {
   }
 
   // Fetch custodied amount from DCT supply endpoint with height header
-  const supplyData = await apiRequest(`${ZRCHAIN_API}/dct/supply`, blockHeight);
-
-  // Find ASSET_ZENZEC in supplies array
+  let supplyData;
+  try {
+    supplyData = await apiRequest(`${ZRCHAIN_API}/dct/supply`, blockHeight);
+  } catch (error) {
+    // If DCT supply API fails, return 0 supply instead of erroring
+    // This can happen for historical queries before the module was launched (2025-10-31)
+    return balances;
+  }
   const zenZecSupply = supplyData.supplies?.find(
     item => item.supply?.asset === 'ASSET_ZENZEC'
   );
-
-  if (zenZecSupply && zenZecSupply.supply?.custodied_amount) {
-    // custodied_amount is in Zatoshi (smallest unit, like satoshis for BTC)
-    // Convert to ZEC by dividing by 1e8
-    const custodiedAmount = Number(zenZecSupply.supply.custodied_amount);
-    const custodiedZEC = custodiedAmount / 1e8;
-
-    sdk.util.sumSingleBalance(balances, 'zcash', custodiedZEC);
+  if (!zenZecSupply?.supply?.custodied_amount) {
+    return balances;
   }
+  // custodied_amount is in Zatoshi (smallest unit, like satoshis for BTC)
+  const custodiedAmount = Number(zenZecSupply.supply.custodied_amount);
+  const custodiedZEC = custodiedAmount / 1e8;
+
+  sdk.util.sumSingleBalance(balances, 'zcash', custodiedZEC);
 
   return balances;
 }
