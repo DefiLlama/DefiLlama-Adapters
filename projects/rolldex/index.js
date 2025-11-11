@@ -10,6 +10,12 @@ const CONFIG = {
   ],
 };
 
+const blacklistedTokens = {
+  base: [
+    '0x623F2774d9f27B59bc6b954544487532CE79d9DF', // almost all of it deposited by a single user
+  ]
+}
+
 const tvl = async (api) => {
   var tokens = []
   for(var i = 0; i < CONFIG[api.chain].length; i++){
@@ -19,7 +25,7 @@ const tvl = async (api) => {
     })
   }
   
-  return api.sumTokens({ tokens, owners: CONFIG[api.chain] });
+  return api.sumTokens({ tokens, owners: CONFIG[api.chain], blacklistedTokens: blacklistedTokens[api.chain]  });
 }
 
 module.exports.methodology = "RollX functions as a decentralized exchange for crypto derivatives. It offers on-chain perpetuals, providing traders and stakers with exceptional opportunities."
