@@ -2,7 +2,7 @@ const { queryKey, u8ArrayToString, getTokenBalances, } = require('../helper/chai
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const factory1Address = 'AS1rahehbQkvtynTomfoeLmwRgymJYgktGv5xd1jybRtiJMdu8XX'
-const factory2Address = ""
+const factory2Address = "AS127Lxdux4HCUkZL89SrRYR5kq2u8t64Jt3aYj786t6fBF1cZGcu"
 
 const getPairAddress = async (factoryAddress) => {
   const transform = val => {
