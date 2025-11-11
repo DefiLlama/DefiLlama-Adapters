@@ -11,11 +11,6 @@ async function staking(api) {
   // Ref: https://github.com/ORIGYN-SA/origyn-sns/blob/master/backend/canisters/token_metrics/impl/src/queries/http_request.rs#L43
   const circulatingSupplyUrl = 'https://juolv-3yaaa-aaaal-ajc6a-cai.raw.icp0.io/circulating-supply';
   const circulatingSupply = await get(circulatingSupplyUrl);
-  
-  // Get the OGY/USDT market price
-  // const ogyPriceUrl = 'https://api.origyn.com/ogy/price';
-  // const ogyPriceData = await get(ogyPriceUrl);
-  // const ogyUsdt = ogyPriceData.ogyPrice;
 
   // The token value locked is the locked supply
   // total supply - circulating supply
