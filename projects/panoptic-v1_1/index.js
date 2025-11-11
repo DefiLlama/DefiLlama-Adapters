@@ -67,8 +67,8 @@ async function tvl(api) {
     api.addTokens(tokens, balancesRaw)
   }
 
-
-  const chunks = await cachedGraphQuery(`panoptic/v1_1/${chain}/sfpm-chunks`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
+  const block = api.block ?? 0
+  const chunks = await cachedGraphQuery(`panoptic/v1_1/${chain}/sfpm-chunks@${block}`, graphUrl, SFPMChunksQuery, { api, useBlock: true, fetchById: true, safeBlockLimit, })
   chunks.forEach(chunk => {
     if (!isV4[chunk.panopticPool.id.toLowerCase()]) return
     addUniV3LikePosition({ api, token0: chunk.pool.token0.id, token1: chunk.pool.token1.id, tick: Number(chunk.pool.tick), liquidity: Number(chunk.netLiquidity), tickUpper: Number(chunk.tickUpper), tickLower: Number(chunk.tickLower), })
