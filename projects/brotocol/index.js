@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { getTotalSupply } = require("./helper");
 
 module.exports = {
-    methodology: "TVL of XLink is the sum of the tokens locked in its contracts",
+    methodology: "TVL of Brotocol is the sum of the tokens locked in its contracts",
     timetravel: false,
 };
 

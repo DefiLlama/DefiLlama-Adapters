@@ -21,7 +21,7 @@ const obelisk = require('./obelisk.js')
 const roup = require('./roup.js')
 const tronBTC = require('./tron-btc.js')
 const wbtc = require('./wbtc.js')
-const xlink = require('./xlink.js')
+const brotocol = require('./brotocol.js')
 const xlinkLST = require('./xlinkLST.js')
 const xrgb = require('./xrgb.js')
 const imbtc = require('./imbtc.js')
@@ -180,7 +180,7 @@ module.exports = {
   roup,
   tronBTC,
   wbtc,
-  xlink,
+  brotocol,
   xlinkLST,
   xrgb,
   imbtc,
